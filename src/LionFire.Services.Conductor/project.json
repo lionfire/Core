@@ -1,8 +1,8 @@
 {
-  "version": "0.0.1-*",
+  "version": "1.0.0-*",
 
   "dependencies": {
-    "LionFire.Environment": "0.0.2",
+    "LionFire.Services": "0.0.1-*",
     "NETStandard.Library": "1.6.0"
   },
 

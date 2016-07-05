@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Serilog;
 
@@ -15,6 +16,9 @@ namespace LionFire.Logging.Tester
         static Microsoft.Extensions.Logging.ILogger logger;
         public static void Main(string[] args)
         {
+            //var config = new ConfigurationBuilder()
+            //    .AddEnvironmentVariables
+
             ILoggerFactory loggerFactory = new LoggerFactory();
 
 #if MicrosoftLoggers

@@ -3,11 +3,11 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace LionFire.Services
+namespace LionFire.Scripting.Roslyn
 {
-    public class LionService
+    public class Class1
     {
-        public LionService()
+        public Class1()
         {
         }
     }

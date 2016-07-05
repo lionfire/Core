@@ -25,10 +25,6 @@ namespace LionFire.Logging.Tester
                 //.WriteTo.ColoredConsole()
                 .WriteTo.File(Path.Combine(serilogDir, "File.log"))
                 .CreateLogger();
-
-            Log.Information("Ah, there you are!");
-
-            
             
 
         }

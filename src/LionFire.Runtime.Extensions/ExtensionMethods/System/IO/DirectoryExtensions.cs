@@ -4,9 +4,9 @@ using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace System.IO
+namespace LionFire.ExtensionMethods
 {
-    public static class LionFireDirectoryExtensions
+    public static class DirectoryExtensions
     {
         public static string EnsureDirectoryExists(this string dirPath)
         {
