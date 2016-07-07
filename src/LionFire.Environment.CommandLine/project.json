@@ -1,7 +1,9 @@
-﻿{
-  "version": "0.0.1-*",
+{
+  "version": "1.0.0-*",
 
   "dependencies": {
+    "LionFire.CommandLine": "1.0.0-*",
+    "LionFire.Environment": "0.0.3-alpha-*",
     "NETStandard.Library": "1.6.0"
   },
 
@@ -9,6 +11,6 @@
     "netstandard1.6": {
       "imports": "dnxcore50"
     },
-    "net461":  {}
+    "net461": { }
   }
 }

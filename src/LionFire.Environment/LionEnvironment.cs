@@ -7,51 +7,64 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.PlatformAbstractions;
 using LionFire.ExtensionMethods;
 
+
 namespace LionFire
 {
-    public class LionEnvironment
+
+    public partial class LionEnvironment
     {
-//#if NET451
-//            Console.WriteLine($"Hello {string.Join(" ", args)} From .NETFramework,Version=v4.5.1");
-//#elif NETCOREAPP1_0
-//            Console.WriteLine($"Hello {string.Join(" ", args)} From .NETCoreApp,Version=v1.0");
-//#endif
+        #region Compile Environment
 
-        #region Windows Store
-
-        // Windows store:
-        // http://stackoverflow.com/a/21274767/208304
-        // Windows.Storage.ApplicationData.Current.LocalFolder or Windows.Storage.ApplicationData.Current.RoamingFolder
+        public static string CompileTargetFrameworkMoniker {
+            get {
+#if NET451
+                           return "NET451";
+#elif NET461
+                    return "NET461";
+#elif NETCOREAPP1_0
+                return "NETCOREAPP1_0";
+#else
+                throw new NotImplementedException();
+#endif
+            }
+        }
 
         #endregion
 
-        public static string CompanyProgramDataDir {
-            get {
-                //Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData)
-                //return PlatformServices.Default.Application.
-                return @"C:\ProgramData\LionFire\"; // TODO FIXME
+        #region Runtime Environment
+
+        //PlatformServices.Default.Application.RuntimeFramework
+
+        #endregion
+
+        #region Program Environment
+
+        public static string ProgramName { get { return "LionFireProgram(TODO)"; } }
+
+        public static string ProgramVersion { get { return "0.0.0-alpha"; } }
+
+        #endregion
+
+        public static TextWriter StandardOutput { get; private set; }
+
+        public static Stream StandardOutputStream {
+            get { return standardOutputStream; }
+            set {
+                standardOutputStream = value;
+                StandardOutput = new StreamWriter(value);
             }
         }
+        private static Stream standardOutputStream;
+
+        #region Construction
 
         static LionEnvironment()
         {
-
-            //PlatformServices.Default.Application.RuntimeFramework
-            
-
-            LogDir.EnsureDirectoryExists();
+            Directories.EnsureAllDirectoriesExist();
+            StandardOutputStream = Console.OpenStandardOutput();
         }
 
-        private static void EnsureDirectoryExists(string dir)
-        {
-            if (!Directory.Exists(dir))
-            {
-                Directory.CreateDirectory(dir);
-            }
-        }
+        #endregion
 
-        public static string LogDir { get { return Path.Combine(CompanyProgramDataDir, "Logs", Assembly.GetEntryAssembly().GetName().Name); } }
-
-        
     }
 }

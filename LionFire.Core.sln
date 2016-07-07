@@ -40,6 +40,16 @@ Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "LionFire.Services.Conductor
 EndProject
 Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "LionFire.Services.Abstractions", "src\LionFire.Services.Abstractions\LionFire.Services.Abstractions.xproj", "{3F713CA2-AB4D-4159-8595-4D8E2A5BAA87}"
 EndProject
+Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "LionFire.Scripting.Roslyn.Host", "src\LionFire.Scripting.Roslyn.Host\LionFire.Scripting.Roslyn.Host.xproj", "{D53B8164-2124-4087-AD2D-440EBDF639DF}"
+EndProject
+Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "LionFire.Services.Discovery", "src\LionFire.Services.Discovery\LionFire.Services.Discovery.xproj", "{A200D72B-1BEE-4740-AB6A-3DBEB2946918}"
+EndProject
+Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "LionFire.Services.Hosting.Program", "src\LionFire.Services.Hosting.Program\LionFire.Services.Hosting.Program.xproj", "{B19AF698-E4CC-4AA5-AE7F-03449AE6A69C}"
+EndProject
+Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "LionFire.CommandLine", "src\LionFire.CommandLine\LionFire.CommandLine.xproj", "{7DC81B18-573D-4A9F-954E-001C834B0C84}"
+EndProject
+Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "LionFire.Environment.CommandLine", "src\LionFire.Environment.CommandLine\LionFire.Environment.CommandLine.xproj", "{8AC9E69E-08D0-4497-A142-37D37BE5D6B9}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -90,6 +100,26 @@ Global
 		{3F713CA2-AB4D-4159-8595-4D8E2A5BAA87}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{3F713CA2-AB4D-4159-8595-4D8E2A5BAA87}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{3F713CA2-AB4D-4159-8595-4D8E2A5BAA87}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D53B8164-2124-4087-AD2D-440EBDF639DF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D53B8164-2124-4087-AD2D-440EBDF639DF}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D53B8164-2124-4087-AD2D-440EBDF639DF}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D53B8164-2124-4087-AD2D-440EBDF639DF}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A200D72B-1BEE-4740-AB6A-3DBEB2946918}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A200D72B-1BEE-4740-AB6A-3DBEB2946918}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A200D72B-1BEE-4740-AB6A-3DBEB2946918}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A200D72B-1BEE-4740-AB6A-3DBEB2946918}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B19AF698-E4CC-4AA5-AE7F-03449AE6A69C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B19AF698-E4CC-4AA5-AE7F-03449AE6A69C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B19AF698-E4CC-4AA5-AE7F-03449AE6A69C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B19AF698-E4CC-4AA5-AE7F-03449AE6A69C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{7DC81B18-573D-4A9F-954E-001C834B0C84}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7DC81B18-573D-4A9F-954E-001C834B0C84}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7DC81B18-573D-4A9F-954E-001C834B0C84}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7DC81B18-573D-4A9F-954E-001C834B0C84}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8AC9E69E-08D0-4497-A142-37D37BE5D6B9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8AC9E69E-08D0-4497-A142-37D37BE5D6B9}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8AC9E69E-08D0-4497-A142-37D37BE5D6B9}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8AC9E69E-08D0-4497-A142-37D37BE5D6B9}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -106,5 +136,10 @@ Global
 		{8E882BC5-125C-474F-8464-C5AF5FB13C6B} = {1439D5A0-81DF-4BC3-8507-93D0F00BD4D0}
 		{2FB4402B-A343-4FF0-90EE-485CC00A29EB} = {CC2A1D96-12E3-471C-AD89-82D9778B415E}
 		{3F713CA2-AB4D-4159-8595-4D8E2A5BAA87} = {CC2A1D96-12E3-471C-AD89-82D9778B415E}
+		{D53B8164-2124-4087-AD2D-440EBDF639DF} = {BB7CDC1F-3D38-4656-97A9-132B25AD72D4}
+		{A200D72B-1BEE-4740-AB6A-3DBEB2946918} = {CC2A1D96-12E3-471C-AD89-82D9778B415E}
+		{B19AF698-E4CC-4AA5-AE7F-03449AE6A69C} = {CC2A1D96-12E3-471C-AD89-82D9778B415E}
+		{7DC81B18-573D-4A9F-954E-001C834B0C84} = {418497D4-D25E-4254-9DB1-E5F7EBE24DA0}
+		{8AC9E69E-08D0-4497-A142-37D37BE5D6B9} = {418497D4-D25E-4254-9DB1-E5F7EBE24DA0}
 	EndGlobalSection
 EndGlobal

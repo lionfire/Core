@@ -19,11 +19,11 @@ namespace LionFire.Logging.Tester
         {
             loggerFactory.AddSerilog(); // Uses static serilog logger
 
-            var serilogDir = Path.Combine(LionEnvironment.LogDir, "Logs").EnsureDirectoryExists();
+            var serilogDir = LionEnvironment.Directories.LogsDir;
 
             Log.Logger = new LoggerConfiguration()
                 //.WriteTo.ColoredConsole()
-                .WriteTo.File(Path.Combine(serilogDir, "File.log"))
+                .WriteTo.File(Path.Combine(serilogDir, LionEnvironment.ProgramName + ".log"))
                 .CreateLogger();
             
 

@@ -9,6 +9,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Serilog;
 
+
 namespace LionFire.Logging.Tester
 {
     public class Program

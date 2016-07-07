@@ -2,7 +2,9 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-
+using Microsoft.CodeAnalysis.Scripting;
+using Microsoft.CodeAnalysis;
+using System.Collections.Immutable;
 
 namespace LionFire.Scripting.Roslyn
 {
@@ -10,8 +12,14 @@ namespace LionFire.Scripting.Roslyn
     {
         public static void TestScript()
             {
-#if NET461
-            CSharpScriptEngine.Execute(
+            var opts = ScriptOptions.Default.
+                  AddImports("System").
+                  WithSourceResolver(new SourceFileResolver(ImmutableArray<string>.Empty, AppContext.BaseDirectory));
+
+
+            //#if NET461
+            var script = Microsoft.CodeAnalysis.CSharp.Scripting.CSharpScript.Create(
+            //CSharpScriptEngine.Execute(
             //This could be code submitted from the editor
             @"
             public class ScriptedClass
@@ -20,11 +28,15 @@ namespace LionFire.Scripting.Roslyn
                 public ScriptedClass()
                 {
                     HelloWorld = ""Hello Roslyn!"";
+                    Console.WriteLine(""Hello from inside script"");
                 }
-            }");
+            }
+new ScriptedClass();
+", opts);
+            script.RunAsync().Wait();
             //And this from the REPL
-            Console.WriteLine(CSharpScriptEngine.Execute("new ScriptedClass().HelloWorld"));
-#endif
+            //Console.WriteLine(CSharpScriptEngine.Execute("new ScriptedClass().HelloWorld"));
+//#endif
             Console.ReadKey();
         }
     }

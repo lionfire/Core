@@ -1,9 +1,9 @@
 {
-  "version": "0.0.2-*",
+  "version": "0.0.3-alpha-*",
   "description": "Standardized approach to commonly used runtime info, such as program data, user directories, program name, company name, etc.",
 
   "dependencies": {
-    "LionFire.Runtime.Extensions": "0.0.1-*",
+    "LionFire.Runtime.Extensions": "0.0.2-alpha-*",
     "Microsoft.Extensions.PlatformAbstractions": "1.0.0",
     "NETStandard.Library": "1.6.0"
   },
@@ -11,6 +11,10 @@
   "frameworks": {
     "netstandard1.6": {
       "imports": "dnxcore50"
+    },
+    "net461": {
+      
     }
+
   }
 }
