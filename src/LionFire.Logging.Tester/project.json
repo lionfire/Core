@@ -1,12 +1,12 @@
 {
-  "version": "1.0.0-*",
+  "version": "0.1.0-*",
   "buildOptions": {
     "emitEntryPoint": true,
     "define": [ "Serilog" ]
   },
 
   "dependencies": {
-    "LionFire.Environment": "1.0.0-*",
+    "LionFire.Environment": "0.*",
     "Microsoft.Extensions.Configuration": "1.0.0",
     "Microsoft.Extensions.Logging": "1.0.0",
     "Microsoft.Extensions.Logging.Abstractions": "1.0.0",

@@ -9,6 +9,7 @@ namespace LionFire.Services.Hosting
     {
         Uninitialized, // includes Disposed
         Initialized,
+        Initializing,
         Starting,
         Started,
         Pausing,

@@ -40,18 +40,35 @@ namespace LionFire.CommandLine.Arguments
 
         #region Static
 
-
         public static List<CliArgumentDefinition> GetForType(object instance = null, Type type = null)
+
         {
             if (type == null) type = instance.GetType();
 
-            List<CliArgumentDefinition> list = new List<CliArgumentDefinition>();
+            // FUTURE: Allow multiple attributes to decorate the method, in which case a key may be helpful
+
+            Dictionary<string, CliArgumentDefinition> dict = new Dictionary<string, CliArgumentDefinition>();
             foreach (var mi in type.GetMethods())
             {
                 if (instance == null && !mi.IsStatic) continue;
 
-                foreach (var cliAttr in mi.GetCustomAttributes().OfType<ICliArgumentAttribute>())
+                foreach (var cliAttr in mi.GetCustomAttributes().OfType<CliArgumentAttribute>())
                 {
+                    string key = null;
+
+                    if (!string.IsNullOrWhiteSpace(cliAttr.LongForm))
+                    {
+                        key = cliAttr.LongForm;
+                    }
+                    else if (cliAttr.LongForm == string.Empty)
+                    {
+                        key = "___" + mi.Name.ToLower();
+                    }
+                    else
+                    {
+                        key = cliAttr.LongForm ?? mi.Name.ToLower();
+                    }
+
                     var def = new CliArgumentDefinition
                     {
                         Handler = mi,
@@ -59,10 +76,12 @@ namespace LionFire.CommandLine.Arguments
                     };
                     cliAttr.AssignPropertiesTo(def);
 
-                    list.Add(def);
+                    if (def.LongForm == null) def.LongForm = mi.Name.ToLower();
+
+                    dict.Add(key, def);
                 }
             }
-            return list;
+            return dict.Values.ToList();
         }
 
         #endregion

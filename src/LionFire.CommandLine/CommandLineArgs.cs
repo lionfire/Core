@@ -27,9 +27,9 @@ namespace LionFire.CommandLine
         {
             var cla = new CommandLineArgs();
 
-            cla.Args = new List<string>(args);
+            cla.Args = new List<string>();
 
-            foreach (var arg in cla.Args.ToArray())
+            foreach (var arg in args)
             {
                 if (arg.StartsWith(CommandLineConfiguration.LongParameterPrefix) || arg.StartsWith(CommandLineConfiguration.ShortParameterPrefix))
                 {

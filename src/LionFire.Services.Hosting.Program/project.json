@@ -7,7 +7,7 @@
 
   "dependencies": {
     "NETStandard.Library": "1.6.0",
-    "LionFire.Services.Hosting": "0.0.1-alpha-*"
+    "LionFire.Services.Hosting": "0.0.1-alpha"
   },
 
   "frameworks": {

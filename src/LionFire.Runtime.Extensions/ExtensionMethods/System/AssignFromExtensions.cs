@@ -51,13 +51,15 @@ namespace LionFire.ExtensionMethods
             return me;
         }
 
-        public static object AssignPropertiesTo(this object me, object other)
+        public static object AssignPropertiesTo(this object me, object other, BindingFlags bindingFlags = BindingFlags.Public | BindingFlags.Instance)
         {
-            Type T = me.GetType();
-            foreach (PropertyInfo mi in T.GetProperties())
+            Type T = other.GetType();
+            Type myType = me.GetType();
+            foreach (PropertyInfo mi in T.GetProperties(bindingFlags))
             {
                 if (!mi.CanRead || !mi.CanWrite) continue;
                 if (mi.GetIndexParameters().Length > 0) continue;
+
 #if NET35
                 if (mi.GetGetMethod().IsStatic) continue;
 #else
@@ -69,7 +71,11 @@ namespace LionFire.ExtensionMethods
                 if (miMode == AssignmentMode.Ignore) continue;
 #endif
 
-                object val = mi.GetValue(me, null);
+                var myMethodInfo = myType.GetProperty(mi.Name, bindingFlags);
+                if (myMethodInfo == null) continue;
+
+
+                object val = myMethodInfo.GetValue(me);
 
 #if LFU
 #error Switch me/other

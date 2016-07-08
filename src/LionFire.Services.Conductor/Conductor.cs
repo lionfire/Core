@@ -19,7 +19,7 @@ namespace LionFire.Services
             return Task.CompletedTask;
         }
 
-        public Task Stop(StopMode stopMode)
+        public Task Stop(StopMode stopMode, StopOptions options)
         {
 
 

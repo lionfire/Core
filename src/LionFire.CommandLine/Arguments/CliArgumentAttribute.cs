@@ -11,7 +11,7 @@ namespace LionFire.CommandLine.Arguments
         /// <summary>
         /// Defaults to null (none)
         /// </summary>
-        public string ShortForm {
+        public char ShortForm {
             get;
             set;
         }
@@ -38,7 +38,10 @@ namespace LionFire.CommandLine.Arguments
         public bool UsesOptionPrefix {
             get; set;
         } = false;
+
+        public string Description { get; set; }
+        public string Usage { get; set; }
     }
-      
-  
+
+
 }

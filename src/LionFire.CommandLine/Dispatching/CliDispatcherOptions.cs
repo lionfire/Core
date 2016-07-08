@@ -21,10 +21,13 @@ namespace LionFire.CommandLine.Dispatching
         /// <summary>
         /// Add these handlers if present
         /// </summary>
-        public List<string> AdditionalHandlerTypes { get; set; } = new List<string>
+        public List<string> AdditionalHandlerTypeNames { get; set; } = new List<string>
         {
-            "LionFire.Environment.CommandLine,LionFire.Environment.CommandLine.LionEnvironmentCliHandlers"
+            "LionFire.Environment.CommandLine.LionEnvironmentCliHandlers, LionFire.Environment.CommandLine, Version=0.1.0.0"
         };
+
+        public List<Type> AdditionalHandlerTypes { get; set; } = new List<Type>();
+
 
         /// <summary>
         /// If no verbs match, the default verb will be this one, if it is implemented.

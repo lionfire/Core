@@ -7,10 +7,10 @@ using LionFire.CommandLine.Arguments;
 
 namespace LionFire.CommandLine.Dispatching
 {
-    
+
     public static class CliDispatcher
     {
-        static readonly CliDispatcherOptions DefaultOptions = new CliDispatcherOptions();
+        public static CliDispatcherOptions DefaultOptions = new CliDispatcherOptions();
 
         /// <summary>
         /// 
@@ -22,13 +22,21 @@ namespace LionFire.CommandLine.Dispatching
         public static bool Dispatch(this string[] args, object handlerInstance = null, Type handlerClass = null, object context = null, CliDispatcherOptions options = null)
         {
             if (options == null) options = DefaultOptions;
-            var argDefs = CliArgumentDefinition.GetForType(handlerInstance?.GetType() ?? handlerClass ?? handlerInstance.GetType());
-
-#region AdditionalHandlerTypes
-
-            if (options.AdditionalHandlerTypes != null)
+            List<CliArgumentDefinition> argDefs;
+            if (handlerInstance != null)
             {
-                foreach (var additionalTypeName in options.AdditionalHandlerTypes)
+                argDefs = CliArgumentDefinition.GetForType(handlerInstance);
+            }
+            else
+            {
+                argDefs = CliArgumentDefinition.GetForType(type:handlerClass);
+            }
+
+            #region AdditionalHandlerTypes
+
+            if (options.AdditionalHandlerTypeNames != null)
+            {
+                foreach (var additionalTypeName in options.AdditionalHandlerTypeNames)
                 {
                     Type additionalType = null;
                     try
@@ -37,7 +45,6 @@ namespace LionFire.CommandLine.Dispatching
                     }
                     catch
                     {
-Console.WriteLine("TEMP - Failed to load class " + additionalTypeName);
                     }
                     if (additionalType != null)
                     {
@@ -45,16 +52,39 @@ Console.WriteLine("TEMP - Failed to load class " + additionalTypeName);
                         // TODO: only add ones that don't overlap
                         argDefs.AddRange(additionalDefinitions);
                     }
+                    else
+                    {
+                        Console.WriteLine("TEMP - Failed to load class " + additionalTypeName);
+                        Console.WriteLine("test: " + typeof(LionFire.CommandLine.CommandLineArgs).AssemblyQualifiedName);
+                    }
+                }
+                foreach (var additionalType in options.AdditionalHandlerTypes)
+                {
+                    var additionalDefinitions = CliArgumentDefinition.GetForType(type: additionalType);
+                    // TODO: only add ones that don't overlap
+                    argDefs.AddRange(additionalDefinitions);
                 }
             }
 
-#endregion
+            #endregion
 
             argDefs.Validate();
 
             var cla = args.ParseCommandLineArgs();
 
-            if (cla.Args.Count <= 0)
+            bool showUsage = true;
+
+            if (cla.Args.Count >= 1)
+            {
+                var argDef = argDefs.Where(def => def.LongForm == cla.Verb || def.ShortForm.ToString() == cla.Verb).FirstOrDefault();
+                if (argDef != null)
+                {
+                    showUsage = false;
+                    RunHandler(argDef.Handler, handlerInstance ?? argDef.HandlerInstance, context, args, cla);
+                }
+            }
+
+            if (showUsage)
             {
                 if (options.DefaultUsageLongForm != null)
                 {
@@ -63,9 +93,14 @@ Console.WriteLine("TEMP - Failed to load class " + additionalTypeName);
                     {
                         RunHandler(argDef.Handler, handlerInstance ?? argDef.HandlerInstance, context, args, cla);
                     }
+                    else
+                    {
+                        Console.WriteLine("Unrecognized command line arguments.  Please consult documentation.");
+                    }
                 }
                 return false;
             }
+
             return true;
         }
 
@@ -76,6 +111,7 @@ Console.WriteLine("TEMP - Failed to load class " + additionalTypeName);
             if (paraDefs.Length == 0)
             {
                 handler.Invoke(instance, null);
+                return;
             }
 
             List<object> paras = new List<object>();

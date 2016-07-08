@@ -9,7 +9,7 @@ namespace LionFire.Services
     public interface IService
     {
         Task Start();
-        Task Stop(StopMode mode, StopOptions options);
+        Task Stop(StopMode mode = StopMode.GracefulShutdown, StopOptions options = StopOptions.StopChildren);
     }
 
   

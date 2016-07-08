@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
+using System.Runtime.InteropServices;
 using System.Threading.Tasks;
 
 namespace LionFire
@@ -37,10 +38,18 @@ namespace LionFire
             public static string UserProfile {
                 get {
 #if NET461 || NET451
-                return Environment.GetFolderPath(Environment.SpecialFolder.UserProfile);
+                    return Environment.GetFolderPath(Environment.SpecialFolder.UserProfile);
 #else
-                    return Environment.GetEnvironmentVariable("USERPROFILE");
+                    if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+                    {
+                        return Environment.GetEnvironmentVariable("USERPROFILE");
+                    }
+                    else
+                    {
+                        return Environment.GetEnvironmentVariable("HOME");
+                    }
 #endif
+
                 }
             }
 

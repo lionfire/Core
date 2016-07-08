@@ -2,9 +2,12 @@
   "version": "0.0.1-alpha-*",
 
   "dependencies": {
-    "LionFire.CommandLine": "1.0.0-*",
-    "LionFire.Environment": "0.0.3-alpha-*",
-    "LionFire.Runtime.Extensions": "0.1.0-*",
+    "LionFire.CommandLine": "0.*",
+    "LionFire.Environment": "0.*",
+    "LionFire.Environment.CommandLine": "0.*",
+    "LionFire.Runtime.Extensions": "0.*",
+    "LionFire.Services.Abstractions": "0.0.1-*",
+    "Microsoft.Extensions.PlatformAbstractions": "1.0.0",
     "NETStandard.Library": "1.6.0",
     "System.Diagnostics.Process": "4.1.0",
     "System.Threading.Thread": "4.0.0"
@@ -14,7 +17,7 @@
     "netstandard1.6": {
       "imports": "dnxcore50",
       "dependencies": {
-
+        "System.Runtime.Loader": "4.0.0"
       }
     },
     "net461": {
