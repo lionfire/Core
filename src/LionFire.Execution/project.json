@@ -1,0 +1,27 @@
+{
+  "version": "1.0.0-*",
+
+  "dependencies": {
+    "LionFire.Execution.Abstractions": "0.1.0-*",
+    "LionFire.Runtime.Extensions": "1.*",
+    "LionFire.Annotations.Compilation": {
+      "version": "1.0.0",
+      "type": "build"
+    },
+    "Microsoft.Extensions.DependencyInjection": "1.0.0",
+    "NETStandard.Library": "1.6.0",
+    "Newtonsoft.Json": "9.0.1",
+    "System.Reflection": "4.1.0",
+    "System.Diagnostics.Process": "4.1.0"
+  },
+
+  "frameworks": {
+    "netstandard1.6": {
+      "imports": "dnxcore50",
+      "dependencies": {
+        "System.Runtime.Loader": "4.0.0"
+      }
+    },
+    "net461": {}
+  }
+}

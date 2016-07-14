@@ -2,7 +2,6 @@
   "version": "0.1.0-*",
 
   "dependencies": {
-    "LionFire.Runtime.Extensions": "1.*",
     "NETStandard.Library": "1.6.0"
   },
 

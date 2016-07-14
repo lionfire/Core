@@ -1,15 +1,18 @@
-{
-  "version": "1.0.0",
+﻿{
+  "version": "1.0.0-*",
 
   "dependencies": {
+    "JTForks.MiscUtil": "1.285.0",
+    "Microsoft.CSharp": "4.0.1",
     "NETStandard.Library": "1.6.0",
+    "Newtonsoft.Json": "9.0.1",
+    "System.Dynamic.Runtime": "4.0.11",
     "System.Reflection.TypeExtensions": "4.1.0"
   },
 
   "frameworks": {
     "netstandard1.6": {
       "imports": "dnxcore50"
-    },
-    "net461": {}
+    }
   }
 }

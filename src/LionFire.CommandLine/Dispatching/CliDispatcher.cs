@@ -7,10 +7,10 @@ using LionFire.CommandLine.Arguments;
 
 namespace LionFire.CommandLine.Dispatching
 {
-
-    public static class CliDispatcher
+    public class CliDispatcher
     {
         public static CliDispatcherOptions DefaultOptions = new CliDispatcherOptions();
+
 
         /// <summary>
         /// 
@@ -19,9 +19,12 @@ namespace LionFire.CommandLine.Dispatching
         /// <param name="context"></param>
         /// <param name="handlerClass">If null, type of context will be used</param>
         /// <returns>True if something was dispatched, false otherwise (and options.Usage method was invoked if present)</returns>
-        public static bool Dispatch(this string[] args, object handlerInstance = null, Type handlerClass = null, object context = null, CliDispatcherOptions options = null)
+        public static bool Dispatch( string[] args, object handlerInstance = null, Type handlerClass = null, object context = null, CliDispatcherOptions options = null)
         {
-            if (options == null) options = DefaultOptions;
+            //CliDispatcher cd = new CliDispatcher(); // FUTURE
+
+            if (options == null) options = CliDispatcher.DefaultOptions;
+
             List<CliArgumentDefinition> argDefs;
             if (handlerInstance != null)
             {
@@ -29,7 +32,7 @@ namespace LionFire.CommandLine.Dispatching
             }
             else
             {
-                argDefs = CliArgumentDefinition.GetForType(type:handlerClass);
+                argDefs = CliArgumentDefinition.GetForType(type: handlerClass);
             }
 
             #region AdditionalHandlerTypes
@@ -119,7 +122,7 @@ namespace LionFire.CommandLine.Dispatching
             {
                 if (pi.ParameterType == typeof(string[]))
                 {
-                    paras.Add(args);
+                    paras.Add(args.Skip(1).ToArray());
                 }
                 else if (pi.ParameterType == typeof(object))
                 {
@@ -132,6 +135,14 @@ namespace LionFire.CommandLine.Dispatching
             }
 
             handler.Invoke(instance, paras.ToArray());
+        }
+    }
+
+    public static class CliDispatcherExtensions
+    {
+        public static bool Dispatch(this string[] args, object handlerInstance = null, Type handlerClass = null, object context = null, CliDispatcherOptions options = null)
+        {
+            return CliDispatcher.Dispatch(args, handlerInstance, handlerClass, context, options);
         }
     }
 

@@ -2,7 +2,10 @@
   "version": "0.0.1-*",
 
   "dependencies": {
-    "LionFire.Environment": "0.0.2",
+    "LionFire.Environment": "0.0.*",
+    "Microsoft.Extensions.Configuration": "1.0.0",
+    "Microsoft.Extensions.Configuration.Json": "1.0.0",
+    "Microsoft.Extensions.Configuration.UserSecrets": "1.0.0",
     "NETStandard.Library": "1.6.0"
   },
 

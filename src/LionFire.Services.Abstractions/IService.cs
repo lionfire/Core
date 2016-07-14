@@ -1,4 +1,5 @@
-﻿using System;
+﻿using LionFire.Execution;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -6,10 +7,9 @@ using System.Threading.Tasks;
 namespace LionFire.Services
 {
     
-    public interface IService
+    public interface IService : IExecutable
     {
-        Task Start();
-        Task Stop(StopMode mode = StopMode.GracefulShutdown, StopOptions options = StopOptions.StopChildren);
+        
     }
 
   
