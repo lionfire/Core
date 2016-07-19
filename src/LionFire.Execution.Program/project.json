@@ -11,7 +11,7 @@
     "Microsoft.Extensions.DependencyInjection": "1.0.0",
     "LionFire.Execution.Hosting": "0.1.0-*",
     "LionFire.Runtime.Extensions": "1.*",
-    "LionFire.Execution.Roslyn": "1.0.0-*"
+    "LionFire.Execution.Roslyn": "0.1.0-*"
   },
 
   "frameworks": {

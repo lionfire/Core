@@ -26,7 +26,9 @@ namespace LionFire.Execution.Configuration
         public Dictionary<string, string> Parameters { get; set; }
         public object Arguments { get; internal set; } // REVIEW
         public string SourceUriScheme { get; internal set; }
-        
+        public string ResolvedSourceUri { get; internal set; }
+        public object SourceContent { get;  set; }
+
         public string SourceUriBody { get; set; }
         public string ExecutionLocation { get; set; }
         public ExecutionLocationType ExecutionLocationType { get; set; }
@@ -49,8 +51,6 @@ namespace LionFire.Execution.Configuration
 
         #endregion
 
-
-
         public string ConfigName { get; internal set; }
 
         #endregion
@@ -68,8 +68,6 @@ namespace LionFire.Execution.Configuration
         }
 
         #endregion
-
-        
 
         #region From ServiceConfig REVIEW
 
@@ -107,16 +105,11 @@ namespace LionFire.Execution.Configuration
 
         #endregion
 
-        
 
         /// <summary>
         /// Single file script file, for Roslyn
         /// </summary>
-        public string Script { get; internal set; }
-        
-
-
-
+        public string Script { get { return SourceContent as string; } } // REVIEW - eliminate this, move to roslyn dll
 
         #endregion
 

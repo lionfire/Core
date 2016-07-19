@@ -28,7 +28,7 @@ namespace LionFire.Execution
         /// <summary>
         /// The mechanism for executing the code could not be determined or is not available
         /// </summary>
-        MissingExecutor = 1 << 2,
+        MissingController = 1 << 2,
 
         /// <summary>
         /// The location on which the ExecutionContext is set to be run is not available
@@ -47,6 +47,12 @@ namespace LionFire.Execution
 
         MissingConstructor = 1 << 6,
 
-        MissingEverything = MissingConstructor | MissingCode | MissingExecutor | MissingHost,
+        
+        /// <summary>
+        /// Controller initialization may fail due to invalid input.
+        /// </summary>
+        MissingControllerInitialization = 1 << 8,
+
+        MissingEverything = MissingConstructor | MissingController | MissingCode | MissingHost| MissingControllerInitialization,
     }
 }

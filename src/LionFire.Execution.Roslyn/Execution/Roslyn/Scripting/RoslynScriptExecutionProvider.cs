@@ -14,11 +14,13 @@ namespace LionFire.Execution.Roslyn.Scripting
     {
         public bool TryAttachController(ExecutionContext context)
         {
+            if (!IsCompatible(context)) return false;
+
             context.Controller = new RoslynScriptExecutionController(context);
-            return false;
+            return true;
         }
 
-        public ImmutableArray<string> RuntimeNames = new ImmutableArray<string> { "roslyn", "roslyn-script" };
+        public readonly List<string> RuntimeNames = new List<string> { "roslyn", "roslyn-script" };
 
         public bool IsCompatible(ExecutionContext context)
         {
@@ -33,18 +35,14 @@ namespace LionFire.Execution.Roslyn.Scripting
                 }
             }
 
-            //if(c.Mime
+            if (context.Config.SourceContent == null)
+            {
+                return false;
+            }
 
             return true;
         }
     }
 
-    public static class RoslynScriptExecutionProviderExtensions
-    {
-        public static IServiceCollection AddRoslynScripting(this IServiceCollection sc)
-        {
-            sc.AddSingleton(typeof(IExecutionControllerProvider), typeof(RoslynScriptExecutionProvider));
-            return sc;
-        }
-    }
+    
 }

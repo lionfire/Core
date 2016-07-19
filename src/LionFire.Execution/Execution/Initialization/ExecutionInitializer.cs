@@ -17,7 +17,9 @@ namespace LionFire.Execution.Initialization
             ".",
             "127.0.0.1",
         };
-       
+
+
+
 
         public async Task<bool> Initialize(ExecutionContext context)
         {
@@ -25,8 +27,8 @@ namespace LionFire.Execution.Initialization
 
             #region Get Config Object
 
-            var c = context.Config;
-            if (c == null)
+            var config = context.Config;
+            if (config == null)
             {
                 context.InitializationState = ExecutionContextInitializationState.Uninitialized;
                 return false;
@@ -37,18 +39,18 @@ namespace LionFire.Execution.Initialization
             #region Load Config
 
             // TODO: Resolve default config (which may fill in some extra params)
-            if (c.ConfigName != null)
+            if (config.ConfigName != null)
             {
-                var configDir = @"E:\src\temp\ExecutionConfigs";
+                var configDir = @"E:\src\temp\ExecutionConfigs"; // HARDPATH TEMP
                 var suffix = ".json";
                 var configPath = Path.Combine(configDir, context.Config.ConfigName + suffix);
                 try
                 {
-                    c.ImportFromFile(configPath);
+                    config.ImportFromFile(configPath);
                 }
                 catch (Exception ex)
                 {
-                    throw new Exception($"Failed to load configuration '{c.ConfigName}' from file: {configPath}", ex);
+                    throw new Exception($"Failed to load configuration '{config.ConfigName}' from file: {configPath}", ex);
                 }
             }
 
@@ -65,7 +67,7 @@ namespace LionFire.Execution.Initialization
             else
             {
                 isLocal = false;
-                if (LocalhostNames.Contains (c.ExecutionLocation.ToLowerInvariant()))
+                if (LocalhostNames.Contains(config.ExecutionLocation.ToLowerInvariant()))
                 {
                     isLocal = true;
                 }
@@ -73,20 +75,63 @@ namespace LionFire.Execution.Initialization
 
             #endregion
 
+            #region SourceContent
+
+            bool result = await Singleton<ExecutionConfigResolver>.Instance.ResolveSourceContent(config);
+            if (!result) return false;
+
+            #endregion
+
             var sp = ManualSingleton<IServiceCollection>.Instance.BuildServiceProvider(); // TODO: centralize and do this only once?
 
-
-            var executionLocationType = c.ExecutionLocationType;
+            var executionLocationType = config.ExecutionLocationType;
             if (executionLocationType == ExecutionLocationType.OtherMachine && isLocal)
             {
                 executionLocationType = ExecutionLocationType.LocalMachine;
             }
 
+            bool gotController = false;
+            bool controllerInitSucceeded = false;
+            bool controllerInitializeAttempted = false;
             switch (executionLocationType)
             {
                 case ExecutionLocationType.InProcess:
-                    context.Controller = new ObjectController() { ExecutionContext = context };
-                    context.InitializationState &= ~ExecutionContextInitializationState.MissingHost;
+
+
+                    if (context.Config.Type != null)
+                    {
+                        context.Controller = new ObjectController() { ExecutionContext = context }; // Move to AddExecutionDefaults extension method on app builder
+                        gotController = true;
+                    }
+                    else
+                    {
+                        foreach (var svc in sp.GetServices<IExecutionControllerProvider>())
+                        {
+                            controllerInitializeAttempted = false;
+                            gotController |= svc.TryAttachController(context);
+
+                            if (gotController)
+                            {
+                                try
+                                {
+                                    controllerInitializeAttempted = true;
+                                    var controllerInitResult = await context.Controller.Initialize();
+                                    if (controllerInitResult)
+                                    {
+                                        gotController = true;
+                                        controllerInitSucceeded = true;
+                                    }
+                                }
+                                catch (ExecutionInitializationException)
+                                {
+                                    // Got the right controller but it failed on the input.
+                                    gotController = true;
+                                }
+                            }
+
+                            if (gotController) break;
+                        }
+                    }
                     break;
                 case ExecutionLocationType.CurrentUser:
                     break;
@@ -101,24 +146,47 @@ namespace LionFire.Execution.Initialization
                 case ExecutionLocationType.Global:
                     break;
                 default:
-                    break;
+                    throw new NotImplementedException();
             }
 
+            #region Init controller if we haven't yet
+            
+            if (!controllerInitializeAttempted && context.Controller != null)
+            {
+                var controllerInitResult = await context.Controller.Initialize();
+                if (controllerInitResult)
+                {
+                    gotController = true;
+                    controllerInitSucceeded = true;
+                }
+            }
+
+            #endregion
+
+            #region Update InitializationState based on what happened here
+
+            if (gotController)
+            {
+                context.InitializationState &= ~(ExecutionContextInitializationState.MissingHost | ExecutionContextInitializationState.MissingController);
+            }
+            if (controllerInitSucceeded)
+            {
+                context.InitializationState &= ~(ExecutionContextInitializationState.MissingControllerInitialization);
+            }
             if (context.Controller != null)
             {
-                context.InitializationState &= ~ExecutionContextInitializationState.MissingExecutor;
-                
+                context.InitializationState &= ~ExecutionContextInitializationState.MissingController;
             }
-            else {
+            else
+            {
                 return false;
             }
+            if (context.InitializationState == ExecutionContextInitializationState.None)
+            {
+                context.InitializationState = ExecutionContextInitializationState.Initialized;
+            }
 
-            var result = await context.Controller.Initialize();
-
-            //foreach (var s in sp.GetServices<IExecutionControllerProvider>())
-            //{
-            //    if (s.TryAttachController(context)) break;
-            //}
+            #endregion
 
             return context.InitializationState == ExecutionContextInitializationState.Initialized;
         }

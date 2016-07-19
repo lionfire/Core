@@ -35,12 +35,14 @@ namespace LionFire.Execution.Hosting
             this.hostedExecutions.Remove(ec.Guid);
         }
 
-        public void WaitForAll()
+        public void WaitForAllExecutionsToComplete()
         {
             foreach (var h in hostedExecutions.Values)
             {
                 if (h.RunTask != null)
                 {
+                    var serviceDescription = h.ExecutionObject?.GetType()?.Name ?? h.ToString();
+                    Console.WriteLine("Waiting for " + serviceDescription + " to complete.");
                     h.RunTask.Wait();
                 }
             }

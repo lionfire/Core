@@ -6,7 +6,13 @@ using System.Diagnostics;
 
 void main(string[] args)
 {
-	Run("start LionFire.Execution.Utilities/Count");   
+	
+	Run("start TestScript.csx");
+	
+	
+	Run("start LionFire.Trading.Feeds.TrueFx[QuoteReceiver]");
+
+	Run("start LionFire.Execution.Utilities/[Count");   
 	
 	Run("start https://gist.githubusercontent.com/jaredthirsk/91660b3f6c1e4174a9698029458967f8/raw/4e1f0f9d0f5086b43660427abb73a18721eed3a9/Environment.SpecialFolders.csscript.cs");
 	

@@ -2,7 +2,7 @@
   "profiles": {
     "LionFire.Services.Hosting.Program": {
       "commandName": "Project",
-      "commandLineArgs": "start LionFire.Trading.Feeds.TrueFx[QuoteReceiver"
+      "commandLineArgs": "start TestLx.cs"
     },
     "LionFire.Execution.Program": {
       "commandName": "Project"

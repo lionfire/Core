@@ -64,10 +64,10 @@ namespace LionFire.Execution.Hosting
         [CliVerb]
         public void Start(params string[] args)
         {
-            var ec = new ExecutionContext(args.Aggregate((x,y)=>x+" " + y));
-             ec.Initialize().Wait();
+            var ec = new ExecutionContext(args.Aggregate((x, y) => x + " " + y));
+            ec.Initialize().Wait();
             ec.Start().Wait();
-            ProcessExecutionHost.Instance.WaitForAll();
+            ProcessExecutionHost.Instance.WaitForAllExecutionsToComplete();
         }
 
         [CliVerb]

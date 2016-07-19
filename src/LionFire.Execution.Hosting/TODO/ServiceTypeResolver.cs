@@ -13,31 +13,6 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace Test
-{
-    public class TestService
-    {
-        public TestService()
-        {
-            for (int i = 5; i >= 0; i--)
-            {
-                Console.WriteLine("Time left: " + i);
-                Thread.Sleep(1000);
-            }
-        }
-    }
-}
-namespace LionFire.Services.Utilities
-{
-    public class WaitForKey
-    {
-        public WaitForKey()
-        {
-            //Console.WriteLine();
-            Console.ReadKey();
-        }
-    }
-}
 
 namespace LionFire.Execution.Hosting
 {
@@ -214,43 +189,7 @@ namespace LionFire.Execution.Hosting
             WaitForTasksToComplete();
         }
 
-        private void WaitForTasksToComplete()
-        {
-            foreach (var kvp in startTasks)
-            {
-                Console.WriteLine("Waiting for " + kvp.Key + " to complete.");
-                kvp.Value.Wait();
-            }
-        }
-
-        [CliVerb]
-        public void Stop(params string[] args)
-        {
-            if (args.Length < 0) { throw new ArgumentException("Requires a service name"); }
-
-            var serviceState = hostedServices.TryGetValue(args[0]);
-
-            Console.WriteLine("TODO: stop");
-        }
-
-        [CliVerb]
-        public static void Status(params string[] args)
-        {
-            Console.WriteLine("TODO: Status");
-        }
-
-        [CliVerb]
-        public static void Usage()
-        {
-            Console.WriteLine("SAMPLE USAGE");
-        }
-
-        [CliVerb]
-        public static void Info()
-        {
-            Console.WriteLine("IsTestOptionEnabled: " + IsTestOptionEnabled);
-        }
-
+     
         #endregion
 
 
