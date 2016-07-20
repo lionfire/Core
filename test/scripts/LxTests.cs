@@ -7,6 +7,9 @@ using System.Diagnostics;
 void main(string[] args)
 {
 	
+	
+	Run("start gist:91660b3f6c1e4174a9698029458967f8");
+	
 	Run("start TestScript.csx");
 	
 	
