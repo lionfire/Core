@@ -13,7 +13,7 @@ namespace LionFire.Analytics
 
 
 
-    public class StatsRollup
+    public class HierarchicalRollup
     {
         public static string FileExtension = ".jsx";
 

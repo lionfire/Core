@@ -12,6 +12,6 @@ string root = @"C:\ProgramData\LionFire\TimeTracker\Data\TimeTracking\Default\Da
 void main(string[] args)
 {
 	
-	StatsRollup.Rollup(root,null,null);
+	HierarchicalRollup.Rollup(root,null,null);
 	
 }
