@@ -37,7 +37,7 @@ namespace LionFire.Execution.Roslyn.Scripting
                   WithSourceResolver(new SourceFileResolver(ImmutableArray<string>.Empty, AppContext.BaseDirectory));
 
 
-            //#if NET461
+            //#if NET462
             var script = Microsoft.CodeAnalysis.CSharp.Scripting.CSharpScript.Create(
             //CSharpScriptEngine.Execute(
             //This could be code submitted from the editor

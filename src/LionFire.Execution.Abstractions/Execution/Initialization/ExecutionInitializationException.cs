@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 
 namespace LionFire.Execution.Initialization
 {
-#if NET461
+#if NET462
     [Serializable]
 #endif
     public class ExecutionInitializationException : Exception
@@ -14,7 +14,7 @@ namespace LionFire.Execution.Initialization
         public ExecutionInitializationException(string message) : base(message) { }
         public ExecutionInitializationException(string message, Exception inner) : base(message, inner) { }
 
-#if NET461
+#if NET462
         protected ExecutionInitializationException(
           System.Runtime.Serialization.SerializationInfo info,
           System.Runtime.Serialization.StreamingContext context) : base(info, context) { }
