@@ -29,7 +29,7 @@ namespace LionFire.Execution.Roslyn.Scripting
                    .AddReferences("System.Runtime, Version=4.1.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a") // Doesn't work!?
                    .AddReferences("System.Runtime") // Doesn't work!?
                    .AddReferences("System.Private.Mscorlib") // Doesn't work!?
-#if NET461
+#if NET462
                 .AddReferences(typeof(System.Security.Cryptography.Aes).GetTypeInfo().Assembly) // Doesn't work!?
                    .AddReferences("System.Security.Cryptography.Algorithms") // Doesn't work!?
 #endif
@@ -47,7 +47,7 @@ namespace LionFire.Execution.Roslyn.Scripting
         public static unsafe ScriptOptions AddReferencesCore(this ScriptOptions options, Assembly assembly)
         {
             // See http://www.strathweb.com/2016/03/roslyn-scripting-on-coreclr-net-cli-and-dnx-and-in-memory-assemblies/
-#if NET461
+#if NET462
                 options.AddReferences(assembly);
 #else
             byte* b;

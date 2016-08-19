@@ -21,7 +21,7 @@ namespace LionFire.Execution.Initialization
 
 //            var psi = new ProcessStartInfo("nuget.exe");
 //            psi.WorkingDirectory = NugetPackageCacheDir;
-//#if NET461
+//#if NET462
 //            psi.CreateNoWindow = true;
 //#endif
 
