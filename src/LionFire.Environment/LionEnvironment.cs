@@ -19,8 +19,10 @@ namespace LionFire
             get {
 #if NET451
                            return "NET451";
+#elif NET461
+                    return "net461";
 #elif NET462
-                    return "NET462";
+                    return "net462";
 #elif NETCOREAPP1_0
                 return "NETCOREAPP1_0";
 #else

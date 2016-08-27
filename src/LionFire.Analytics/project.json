@@ -18,7 +18,7 @@
         "System.Dynamic.Runtime": "4.0.11"
       }
     },
-    "net462": {
+    "net461": {
       "dependencies": {
         "Microsoft.CSharp": "4.0.0.0",
         "System.Dynamic.Runtime": "4.0.10.0"

@@ -21,7 +21,7 @@
         "System.Runtime.Loader": "4.0.0"
       }
     },
-      "net462": {
+      "net461": {
         "dependencies": {
           "System.Security.Cryptography.Algorithms":  "4.0.0.0"
         },

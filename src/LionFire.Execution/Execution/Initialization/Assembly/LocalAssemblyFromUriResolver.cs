@@ -3,7 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
-#if !NET462
+#if !NET462 && !NET461
 using System.Runtime.Loader;
 #endif
 using System.Threading.Tasks;
@@ -67,7 +67,7 @@ namespace LionFire.Execution.Initialization
                 catch { }
                 if (assembly != null) { return assembly; }
 
-#if NET462
+#if NET462 || NET461
             throw new NotImplementedException();
 #else
                 var dir = DirForLocalDevelopmentAssembly(assemblyName);

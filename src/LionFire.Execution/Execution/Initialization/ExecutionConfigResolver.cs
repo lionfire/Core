@@ -7,7 +7,7 @@ using System.Net.Http;
 using System.Reflection;
 using LionFire.Structures;
 using LionFire.Execution.Configuration;
-#if !NET462
+#if !NET462 && !NET461
 using System.Runtime.Loader;
 #endif
 using System.Threading.Tasks;

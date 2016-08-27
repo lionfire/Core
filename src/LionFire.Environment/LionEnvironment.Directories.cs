@@ -21,7 +21,7 @@ namespace LionFire
 
             public static string CompanyProgramDataDir {
                 get {
-#if NET462
+#if NET461 || NET462
                     return Environment.GetFolderPath(Environment.SpecialFolder.CommonApplicationData);
 #else
                     return @"C:\ProgramData\LionFire\"; // TODO FIXME
@@ -37,7 +37,7 @@ namespace LionFire
 
             public static string UserProfile {
                 get {
-#if NET462 || NET451
+#if NET462 || NET461 || NET451
                     return Environment.GetFolderPath(Environment.SpecialFolder.UserProfile);
 #else
                     if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
