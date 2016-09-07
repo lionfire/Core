@@ -12,23 +12,26 @@ namespace LionFire.Extensions.Logging
 
     public static class LogInitializer
     {
+        public static Func<string, ILogger> GetLoggerMethod;
+
         public static ILogger GetLogger(this object obj, string name = null, bool isEnabled = true)
         {
+            if (!isEnabled) return Singleton<NullLogger>.Instance; ;
+
             if (name == null) name = obj.GetType().FullName;
 
-            ILogger l;
+            if (GetLoggerMethod != null)
+            {
+                return GetLoggerMethod(name);
+            }
 
             var fac = ManualSingleton<IServiceProvider>.Instance?.GetService<ILoggerFactory>();
-            if (isEnabled && fac != null)
+            if (fac != null)
             {
-                l = fac.CreateLogger(name);
-            }
-            else
-            {
-                l = Singleton<NullLogger>.Instance;
+                return fac.CreateLogger(name);
             }
 
-            return l;
+            return Singleton<NullLogger>.Instance;
         }
     }
 }
