@@ -3,9 +3,10 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace LionFire.Application.Configuration
+namespace LionFire.Applications
 {
-    public class ConfigurationExtensions
+    public interface IAppInitializer  : IAppComponent
     {
+        bool TryInitialize();
     }
 }

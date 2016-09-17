@@ -11,8 +11,11 @@ namespace LionFire.ExtensionMethods
     {
         public static object AssignPropertiesFrom(this object me, object other)
         {
-            Type T = me.GetType();
-            foreach (PropertyInfo mi in T.GetProperties())
+            Type myType = me.GetType();
+            Type otherType = other.GetType();
+            bool sameType = myType == otherType;
+
+            foreach (PropertyInfo mi in myType.GetProperties())
             {
                 if (!mi.CanRead || !mi.CanWrite) continue;
                 if (mi.GetIndexParameters().Length > 0) continue;
@@ -27,7 +30,12 @@ namespace LionFire.ExtensionMethods
                 if (miMode == AssignmentMode.Ignore) continue;
 #endif
 
-                object val = mi.GetValue(other, null);
+                // TODO: Copy this same logic to AssignProperties to, and field methods
+                var otherMi = sameType ? mi : otherType.GetProperty(mi.Name);
+
+                if (otherMi == null || otherMi.PropertyType != mi.PropertyType) continue;
+                
+                object val = otherMi.GetValue(other, null);
 
 #if LFU
                 //if (GetAssignmentValue(mi, other, useICloneableIfAvailable, ref val))

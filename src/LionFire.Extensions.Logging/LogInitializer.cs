@@ -16,7 +16,7 @@ namespace LionFire.Extensions.Logging
 
         public static ILogger GetLogger(this object obj, string name = null, bool isEnabled = true)
         {
-            if (!isEnabled) return Singleton<NullLogger>.Instance; ;
+            if (!isEnabled) return Singleton<NullLogger>.Instance;
 
             if (name == null) name = obj.GetType().FullName;
 
@@ -26,12 +26,11 @@ namespace LionFire.Extensions.Logging
             }
 
             var fac = ManualSingleton<IServiceProvider>.Instance?.GetService<ILoggerFactory>();
-            if (fac != null)
+            if (fac == null)
             {
-                return fac.CreateLogger(name);
+                return Singleton<NullLogger>.Instance;
             }
-
-            return Singleton<NullLogger>.Instance;
+            return fac.CreateLogger(name);
         }
     }
 }

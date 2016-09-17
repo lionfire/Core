@@ -1,5 +1,5 @@
 {
-  "version": "0.0.3-*",
+  "version": "0.0.4-*",
   "description": "Standardized approach to commonly used runtime info, such as program data, user directories, program name, company name, etc.",
 
   "dependencies": {
@@ -9,10 +9,10 @@
   },
 
   "frameworks": {
-    "netstandard1.6": {
+    "netstandard1.5": {
       "imports": "dnxcore50"
     },
-    "net461": {      
+    "net462": {      
     }
 
   }

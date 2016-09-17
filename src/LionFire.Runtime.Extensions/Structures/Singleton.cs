@@ -25,4 +25,6 @@ namespace LionFire.Structures
         public static T Instance { get; set; }
         
     }
+
+    
 }
