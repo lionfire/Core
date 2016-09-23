@@ -15,6 +15,7 @@ namespace LionFire.Extensions.Logging.NLog
         public static void LoadDefaultConfig()
         {
             var config = new LoggingConfiguration();
+#if NET
             {
                 var targ = new NetworkTarget
                 {
@@ -36,7 +37,7 @@ namespace LionFire.Extensions.Logging.NLog
                 config.AddTarget("udp", targ);
                 config.AddRule(LogLevel.Debug, LogLevel.Fatal, targ);
             }
-
+#endif
             {
                 var targ = new FileTarget
                 {
@@ -48,23 +49,26 @@ namespace LionFire.Extensions.Logging.NLog
                 config.AddRule(LogLevel.Debug, LogLevel.Fatal, targ);
             }
 
-            
+
             {
-                // Step 2. Create targets and add them to the configuration 
-                var consoleTarget = new ColoredConsoleTarget();
+#if Console
+                    // Step 2. Create targets and add them to the configuration 
+                    var consoleTarget = new ColoredConsoleTarget();
                 config.AddTarget("console", consoleTarget);
+                consoleTarget.Layout = @"${date:format=HH\:mm\:ss} ${logger} ${message}";
+                    var rule1 = new LoggingRule("*", LogLevel.Debug, consoleTarget);
+                config.LoggingRules.Add(rule1);
+#endif
 
                 var fileTarget = new FileTarget();
                 config.AddTarget("file", fileTarget);
 
                 // Step 3. Set target properties 
-                consoleTarget.Layout = @"${date:format=HH\:mm\:ss} ${logger} ${message}";
                 fileTarget.FileName = "${basedir}/file.txt";
                 fileTarget.Layout = "${message}";
 
                 // Step 4. Define rules
-                var rule1 = new LoggingRule("*", LogLevel.Debug, consoleTarget);
-                config.LoggingRules.Add(rule1);
+
 
                 var rule2 = new LoggingRule("*", LogLevel.Debug, fileTarget);
                 config.LoggingRules.Add(rule2);
