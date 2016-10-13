@@ -7,9 +7,15 @@ namespace LionFire.Execution
 {
     public enum ExecutionHostState
     {
-        Uninitialized, // includes Disposed
-        Initialized,
+        Uninitialized,
+        Configuring,
+        Configured,
         Initializing,
+
+        /// <summary>
+        /// Ready to be started
+        /// </summary>
+        Initialized,
         Starting,
         Running,
         Pausing,
@@ -20,6 +26,11 @@ namespace LionFire.Execution
         Aborting,
         Aborted,
         Finished,
+
+        /// <summary>
+        /// Cannot be restarted without first being reinitialized (if supported)
+        /// </summary>
+        Disposed,
     }
 
 

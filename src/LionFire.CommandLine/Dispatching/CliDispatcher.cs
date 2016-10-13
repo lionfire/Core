@@ -4,6 +4,7 @@ using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
 using LionFire.CommandLine.Arguments;
+using System.Threading;
 
 namespace LionFire.CommandLine.Dispatching
 {
@@ -19,7 +20,7 @@ namespace LionFire.CommandLine.Dispatching
         /// <param name="context"></param>
         /// <param name="handlerClass">If null, type of context will be used</param>
         /// <returns>True if something was dispatched, false otherwise (and options.Usage method was invoked if present)</returns>
-        public static bool Dispatch( string[] args, object handlerInstance = null, Type handlerClass = null, object context = null, CliDispatcherOptions options = null)
+        public static bool Dispatch( string[] args, object handlerInstance = null, Type handlerClass = null, object context = null, CliDispatcherOptions options = null, CancellationToken? cancellationToken = null)
         {
             //CliDispatcher cd = new CliDispatcher(); // FUTURE
 
@@ -94,7 +95,7 @@ namespace LionFire.CommandLine.Dispatching
                     var argDef = argDefs.Where(def => def.LongForm == options.DefaultUsageLongForm).FirstOrDefault();
                     if (argDef != null)
                     {
-                        RunHandler(argDef.Handler, handlerInstance ?? argDef.HandlerInstance, context, args, cla);
+                        RunHandler(argDef.Handler, handlerInstance ?? argDef.HandlerInstance, context, args, cla, cancellationToken);
                     }
                     else
                     {
@@ -107,7 +108,7 @@ namespace LionFire.CommandLine.Dispatching
             return true;
         }
 
-        private static void RunHandler(MethodInfo handler, object instance, object context, string[] args, CommandLineArgs cla)
+        private static void RunHandler(MethodInfo handler, object instance, object context, string[] args, CommandLineArgs cla, CancellationToken? cancellationToken = null)
         {
             var paraDefs = handler.GetParameters();
 
@@ -134,8 +135,11 @@ namespace LionFire.CommandLine.Dispatching
                 }
             }
 
-            handler.Invoke(instance, paras.ToArray());
+            Invoker.Invoke(handler, instance, paras.ToArray());
+            //handler.Invoke(instance, paras.ToArray());
         }
+
+        public static Func<MethodInfo, object, object[], object> Invoker { get; set; } = (handler, instance, parameters) => handler.Invoke(instance, parameters);
     }
 
     public static class CliDispatcherExtensions

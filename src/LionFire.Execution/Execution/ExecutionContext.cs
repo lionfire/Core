@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace LionFire.Execution
 {
-    
+
     public class ExecutionContext
     {
         public Guid Guid { get; } = Guid.NewGuid();
@@ -38,7 +38,7 @@ namespace LionFire.Execution
         public string ExecutionRootDir { get; set; }
         public string ExecutionPath { get; set; }
 
-#region ExecutionObject
+        #region ExecutionObject
 
         /// <summary>
         /// An optional object holding a reference to the primary object or proxy to the item being executed.
@@ -46,7 +46,7 @@ namespace LionFire.Execution
         /// </summary>
         public object ExecutionObject { get; set; }
 
-#region Derived Object
+        #region Derived Object
 
         public IExecutable Executable { get { return ExecutionObject as IExecutable; } }
 
@@ -63,7 +63,7 @@ namespace LionFire.Execution
 
         #endregion
 
-#endregion
+        #endregion
 
 
         public IExecutionController Controller { get; set; }
@@ -72,7 +72,7 @@ namespace LionFire.Execution
 
         #region Status
 
-        public ExecutionHostState Status {
+        public ExecutionHostState Status { // RENAME State
             get { return state; }
             set { state = value; }
         }
@@ -85,9 +85,6 @@ namespace LionFire.Execution
         public Task RunTask { get; internal set; }
 
         #endregion
-
-
-
 
         //public string Runtime { get; set; }
         //public string RuntimeVersion { get; set; }

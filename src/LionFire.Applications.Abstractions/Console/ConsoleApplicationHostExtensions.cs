@@ -1,4 +1,5 @@
 ﻿using LionFire.Applications.Hosting;
+using LionFire.Execution;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -25,7 +26,7 @@ namespace LionFire.Applications
                         app.Shutdown();
                     })
                 {
-                    WaitForCompletion = waitForCompletion
+                    ExecutionFlags = waitForCompletion ? ExecutionFlags.WaitForRunCompletion : ExecutionFlags.None,
                 });
             return app;
         }

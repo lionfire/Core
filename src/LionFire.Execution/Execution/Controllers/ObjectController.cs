@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using LionFire.Execution.Hosting;
 using LionFire.Execution.Configuration;
 using LionFire.Execution.Initialization;
+using System.Reactive.Subjects;
 
 namespace LionFire.Execution
 {
@@ -79,10 +80,10 @@ namespace LionFire.Execution
             //    }
         }
 
-        public bool IsIExecutable {
+        public bool IsStartable {
             get {
                 var type = ExecutionContext.Config.Type;
-                return type != null && typeof(IExecutable).GetTypeInfo().IsAssignableFrom(type);
+                return type != null && typeof(IStartable).GetTypeInfo().IsAssignableFrom(type);
             }
         }
         public bool IsIDisposable {
@@ -91,6 +92,26 @@ namespace LionFire.Execution
                 return type != null && typeof(IDisposable).GetTypeInfo().IsAssignableFrom(type);
             }
         }
+
+        #region ExecutionState
+
+        public ExecutionState ExecutionState {
+            get {
+                return bExecutionState.Value;
+            }
+            set {
+                bExecutionState.OnNext(value);
+            }
+        }
+
+        public IObservable<ExecutionState> ExecutionStates {
+            get {
+                return bExecutionState;
+            }
+        } private BehaviorSubject<ExecutionState> bExecutionState = new BehaviorSubject<ExecutionState>(ExecutionState.Unspecified);
+
+        #endregion
+
 
         public async Task Start(/*params string[] args*/)
         {
@@ -103,9 +124,9 @@ namespace LionFire.Execution
 
             ExecutionContext.Status = ExecutionHostState.Starting;
 
-            if (IsIExecutable)
+            if (IsStartable)
             {
-                IExecutable execObj = ExecutionContext.ExecutionObject as IExecutable;
+                var execObj = ExecutionContext.ExecutionObject as IStartable;
                 await execObj.Start();
                 ExecutionContext.Status = ExecutionHostState.Running;
             }
@@ -132,9 +153,9 @@ namespace LionFire.Execution
         {
             
             ExecutionContext.Status = ExecutionHostState.Stopping;
-            if (IsIExecutable)
+            if (ExecutionContext.ExecutionObject as IStoppable != null)
             {
-                IExecutable execObj = ExecutionContext.ExecutionObject as IExecutable;
+                var execObj = ExecutionContext.ExecutionObject as IStoppable;
                 await execObj.Stop(mode, options);
                 ExecutionContext.Status = ExecutionHostState.Stopped;
             }

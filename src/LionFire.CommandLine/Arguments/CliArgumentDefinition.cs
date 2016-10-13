@@ -88,7 +88,7 @@ namespace LionFire.CommandLine.Arguments
 
     }
 
-    public static class CliargumentDefinitionExtensions
+    public static class CliArgumentDefinitionExtensions
     {
         public static void Validate(this List<CliArgumentDefinition> args)
         {

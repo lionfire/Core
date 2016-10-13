@@ -3,7 +3,10 @@
 
   "dependencies": {
     "LionFire.Applications.Abstractions": "1.0.0-*",
+    "LionFire.Assets": "1.0.0-*",
+    "LionFire.Assets.Abstractions": "1.0.0-*",
     "LionFire.Environment": "0.0.*",
+    "LionFire.Templating": "1.0.0-*",
     "Microsoft.Extensions.Configuration": "1.0.0",
     "Microsoft.Extensions.Configuration.Json": "1.0.0",
     "Microsoft.Extensions.Configuration.UserSecrets": "1.0.0",
@@ -16,6 +19,10 @@
     "netstandard1.3": {
       "imports": "dnxcore50"
     },
-    "net462":  { }
+    "net462": {
+      "dependencies": {
+        "LionFire.Execution.Abstractions": "0.1.0-*"
+      }
+    }
   }
 }

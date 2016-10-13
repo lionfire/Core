@@ -3,8 +3,6 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 14
 VisualStudioVersion = 14.0.25420.1
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "LionFire.Application", "src\LionFire.Application\LionFire.Application.xproj", "{E4B27AE8-25AF-4F17-B857-BF2EDEC416A9}"
-EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{A48456D5-DD7D-4E1C-9307-4996EA3D2CA8}"
 	ProjectSection(SolutionItems) = preProject
 		global.json = global.json
@@ -52,16 +50,26 @@ Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "LionFire.Execution.Hosting"
 EndProject
 Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "LionFire.Extensions.Logging", "src\LionFire.Extensions.Logging\LionFire.Extensions.Logging.xproj", "{EA6D46B9-F8F8-442B-8813-6FBD31D67E45}"
 EndProject
+Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "LionFire.Applications", "..\Core\src\LionFire.Applications\LionFire.Applications.xproj", "{E4B27AE8-25AF-4F17-B857-BF2EDEC416A9}"
+EndProject
+Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "LionFire.Applications.Abstractions", "..\Core\src\LionFire.Applications.Abstractions\LionFire.Applications.Abstractions.xproj", "{2AFB9C8B-9AEB-4B23-8782-91D9E93C769C}"
+EndProject
+Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "LionFire.Assets", "..\Core\src\LionFire.Assets\LionFire.Assets.xproj", "{4029EE49-9ECE-43B4-B4BE-794CC55B7FBB}"
+EndProject
+Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "LionFire.Assets.Abstractions", "..\Core\src\LionFire.Assets.Abstractions\LionFire.Assets.Abstractions.xproj", "{2DD65C05-7F2A-443B-BE09-6E5B9D10CE7D}"
+EndProject
+Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "LionFire.Environment", "..\Core\src\LionFire.Environment\LionFire.Environment.xproj", "{C4B84D02-4336-4574-8E89-72144F47F0A1}"
+EndProject
+Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "LionFire.Runtime.Extensions", "..\Core\src\LionFire.Runtime.Extensions\LionFire.Runtime.Extensions.xproj", "{48C97621-6132-4F09-B808-EEEE46B4717C}"
+EndProject
+Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "LionFire.Templating", "..\Core\src\LionFire.Templating\LionFire.Templating.xproj", "{347AD689-F3C8-42DF-98F4-3BD74502D229}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{E4B27AE8-25AF-4F17-B857-BF2EDEC416A9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{E4B27AE8-25AF-4F17-B857-BF2EDEC416A9}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{E4B27AE8-25AF-4F17-B857-BF2EDEC416A9}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{E4B27AE8-25AF-4F17-B857-BF2EDEC416A9}.Release|Any CPU.Build.0 = Release|Any CPU
 		{A138D9CC-E76A-4861-8D99-AC0287C249D5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{A138D9CC-E76A-4861-8D99-AC0287C249D5}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{A138D9CC-E76A-4861-8D99-AC0287C249D5}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -126,12 +134,39 @@ Global
 		{EA6D46B9-F8F8-442B-8813-6FBD31D67E45}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{EA6D46B9-F8F8-442B-8813-6FBD31D67E45}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{EA6D46B9-F8F8-442B-8813-6FBD31D67E45}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E4B27AE8-25AF-4F17-B857-BF2EDEC416A9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E4B27AE8-25AF-4F17-B857-BF2EDEC416A9}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E4B27AE8-25AF-4F17-B857-BF2EDEC416A9}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E4B27AE8-25AF-4F17-B857-BF2EDEC416A9}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2AFB9C8B-9AEB-4B23-8782-91D9E93C769C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2AFB9C8B-9AEB-4B23-8782-91D9E93C769C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2AFB9C8B-9AEB-4B23-8782-91D9E93C769C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2AFB9C8B-9AEB-4B23-8782-91D9E93C769C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{4029EE49-9ECE-43B4-B4BE-794CC55B7FBB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4029EE49-9ECE-43B4-B4BE-794CC55B7FBB}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4029EE49-9ECE-43B4-B4BE-794CC55B7FBB}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4029EE49-9ECE-43B4-B4BE-794CC55B7FBB}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2DD65C05-7F2A-443B-BE09-6E5B9D10CE7D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2DD65C05-7F2A-443B-BE09-6E5B9D10CE7D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2DD65C05-7F2A-443B-BE09-6E5B9D10CE7D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2DD65C05-7F2A-443B-BE09-6E5B9D10CE7D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C4B84D02-4336-4574-8E89-72144F47F0A1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C4B84D02-4336-4574-8E89-72144F47F0A1}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C4B84D02-4336-4574-8E89-72144F47F0A1}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C4B84D02-4336-4574-8E89-72144F47F0A1}.Release|Any CPU.Build.0 = Release|Any CPU
+		{48C97621-6132-4F09-B808-EEEE46B4717C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{48C97621-6132-4F09-B808-EEEE46B4717C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{48C97621-6132-4F09-B808-EEEE46B4717C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{48C97621-6132-4F09-B808-EEEE46B4717C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{347AD689-F3C8-42DF-98F4-3BD74502D229}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{347AD689-F3C8-42DF-98F4-3BD74502D229}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{347AD689-F3C8-42DF-98F4-3BD74502D229}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{347AD689-F3C8-42DF-98F4-3BD74502D229}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
-		{E4B27AE8-25AF-4F17-B857-BF2EDEC416A9} = {418497D4-D25E-4254-9DB1-E5F7EBE24DA0}
 		{A138D9CC-E76A-4861-8D99-AC0287C249D5} = {418497D4-D25E-4254-9DB1-E5F7EBE24DA0}
 		{1BACFEC6-25EB-4FD5-B3CB-0117F2335BA9} = {418497D4-D25E-4254-9DB1-E5F7EBE24DA0}
 		{0885A773-CD9E-47A9-A427-1139F7CB17D4} = {EB2EE17E-C328-4EA5-9A21-DFB083E602EB}
@@ -148,5 +183,6 @@ Global
 		{B19AF698-E4CC-4AA5-AE7F-03449AE6A69C} = {BB7CDC1F-3D38-4656-97A9-132B25AD72D4}
 		{19FBDDB0-1017-4557-BFD8-DD73E7C8B1BC} = {BB7CDC1F-3D38-4656-97A9-132B25AD72D4}
 		{EA6D46B9-F8F8-442B-8813-6FBD31D67E45} = {418497D4-D25E-4254-9DB1-E5F7EBE24DA0}
+		{E4B27AE8-25AF-4F17-B857-BF2EDEC416A9} = {418497D4-D25E-4254-9DB1-E5F7EBE24DA0}
 	EndGlobalSection
 EndGlobal

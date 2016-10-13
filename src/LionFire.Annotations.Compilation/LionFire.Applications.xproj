@@ -6,8 +6,8 @@
   </PropertyGroup>
   <Import Project="$(VSToolsPath)\DotNet\Microsoft.DotNet.Props" Condition="'$(VSToolsPath)' != ''" />
   <PropertyGroup Label="Globals">
-    <ProjectGuid>a138d9cc-e76a-4861-8d99-ac0287c249d5</ProjectGuid>
-    <RootNamespace>LionFire.Environment</RootNamespace>
+    <ProjectGuid>e4b27ae8-25af-4f17-b857-bf2edec416a9</ProjectGuid>
+    <RootNamespace>LionFire</RootNamespace>
     <BaseIntermediateOutputPath Condition="'$(BaseIntermediateOutputPath)'=='' ">.\obj</BaseIntermediateOutputPath>
     <OutputPath Condition="'$(OutputPath)'=='' ">.\bin\</OutputPath>
     <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>

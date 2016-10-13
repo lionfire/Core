@@ -18,17 +18,17 @@ namespace LionFire.Templating
         public static TInstance Create<TInstance>(this ITemplate<TInstance> template)
             where TInstance : new()
         {
-            var instance = Create((ITemplate)template);
+            var instance = Create((ITemplate)template, typeof(TInstance));
             return (TInstance) instance;
         }
 
-        public static object Create(this ITemplate template)
+        public static object Create(this ITemplate template, Type instanceType = null)
         {
-
-            var interfaceType = template.GetType().GetInterfaces().Where(t => t.Name == typeof(ITemplate).Name+"`1").FirstOrDefault();
-            var instanceType = interfaceType.GenericTypeArguments[0];
-
-
+            if (instanceType == null)
+            {
+                var interfaceType = template.GetType().GetInterfaces().Where(t => t.Name == typeof(ITemplate).Name + "`1").FirstOrDefault();
+                instanceType = interfaceType.GenericTypeArguments[0];
+            }
             var inst = Activator.CreateInstance(instanceType);
 
             var templateInstance = inst as ITemplateInstance;

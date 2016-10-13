@@ -5,11 +5,11 @@ using System.Threading.Tasks;
 
 namespace LionFire.Execution
 {
-    public interface IExecutionController : IExecutable
+
+    public interface IExecutionController : IExecutable, IStartable, IInitializable
     {
         [SetOnce]
         ExecutionContext ExecutionContext { get; set;  }
-
-        Task<bool> Initialize();
+        
     }
 }

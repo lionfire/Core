@@ -6,11 +6,12 @@ using System.Threading;
 using Microsoft.Extensions.DependencyInjection;
 using LionFire.Applications.Hosting;
 using LionFire.Structures;
+using LionFire.Execution;
 
 namespace LionFire.Applications
 {
 
-    public class AppTask : IAppTask, IAppInitializer
+    public class AppTask : IAppTask, IAppInitializer, IRequiresServices
     {
 
         #region Configuration
@@ -23,6 +24,15 @@ namespace LionFire.Applications
 
         public bool RunSynchronously { get; set; } = false;
         public bool WaitForCompletion { get; set; } = true;
+
+        public ExecutionFlags ExecutionFlags { get; set; }
+
+        #endregion
+
+        #region Relationships
+
+        IServiceProvider IRequiresServices.ServiceProvider { set { this.ServiceProvider = value; } }
+        protected IServiceProvider ServiceProvider { get; private set; }
 
         #endregion
 
@@ -64,19 +74,17 @@ namespace LionFire.Applications
             }
             else
             {
-                this.Task = Task.Factory.StartNew(runAction);
+                this.RunTask = Task.Factory.StartNew(runAction);
             }
         }
 
         #endregion
 
         #region State
-        
-        
 
         protected CancellationToken? CancellationToken { get; set; }
 
-        public Task Task { get; private set; }
+        public Task RunTask { get; private set; }
 
         #endregion
     }

@@ -1,0 +1,16 @@
+{
+  "version": "1.0.0-*",
+
+  "dependencies": {
+    "LionFire.Applications.Abstractions": "1.0.0-*",
+    "LionFire.CommandLine": "0.1.0-*",
+    "NETStandard.Library": "1.6.0"
+  },
+
+  "frameworks": {
+    "net462":  { },
+    "netstandard1.3": {
+      "imports": "dnxcore50"
+    }
+  }
+}

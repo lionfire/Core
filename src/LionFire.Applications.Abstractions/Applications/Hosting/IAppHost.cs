@@ -7,6 +7,26 @@ using LionFire.Applications.Hosting;
 
 namespace LionFire.Applications.Hosting
 {
+
+
+    public enum BootstrapMode
+    {
+        /// <summary>
+        /// Keep the ServiceCollection, and rebuild the ServiceProvider
+        /// </summary>
+        Rebuild = 1,
+
+        /// <summary>
+        /// [NOT IMPLEMENTED] Keep the same ServiceCollection parameters, and attempt to later reuse any instances that were created at bootstrap time.
+        /// </summary>
+        Reuse = 2,
+
+        /// <summary>
+        /// Discard the ServiceCollection
+        /// </summary>
+        Discard = 3,
+    }
+
     public interface IAppHost
     {
         #region Dependency Injection
@@ -26,19 +46,26 @@ namespace LionFire.Applications.Hosting
 
         #endregion
 
-            #region Execution
+        #region Execution
+
+        /// <summary>
+        /// Build the ServiceProvider from the ServiceCollection and inject into any components already added.  This initializes the services registered so far that are required for futher app composition.
+        /// </summary>
+        /// <param name="mode"></param>
+        IAppHost Bootstrap(BootstrapMode mode = BootstrapMode.Rebuild);
 
         /// <summary>
         /// Optionally call this to prepare the application to run without running it.  If it is not invoked by the user, it will be invoked from the Run() method.  Invokations of this after initialization has completed will be ignored.  
         /// </summary>
         void Initialize();
-        
+
         /// <summary>
         /// Start application and return a task that waits for all ApplicationTasks with WaitForComplete = true to complete.
         /// (Also see Run extension method which will block until the application completes.)
         /// </summary>
+        /// <param name="runMethod">additional run method</param>
         /// <returns></returns>
-        Task Start();
+        Task Run(Func<Task> runMethod = null);
 
         #endregion
 
@@ -88,10 +115,21 @@ namespace LionFire.Applications
         /// <summary>
         /// Start application and wait until all ApplicationTasks with WaitForComplete = true to complete.
         /// </summary>
-        public static void Run(this IAppHost host)
+        public static void RunAndWait(this IAppHost host, Func<Task> runMethod = null)
         {
-            host.Start().Wait();
+            if (runMethod != null) host.Add(new AppTask(() => runMethod().Wait()));
+            host.Run().Wait();
         }
+
+        /// <summary>
+        /// Initialize the services registered so far that are required for futher app composition
+        /// </summary>
+        //public static IAppHost Bootstrap(this IAppHost host)
+        //{
+        //    host.Bootstrap();
+        //    return host;
+        //}
+
 
 
     }

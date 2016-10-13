@@ -7,6 +7,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using System.Threading;
 using System.Reflection;
+using System.Reactive.Subjects;
 
 namespace LionFire.Execution.Roslyn.Scripting
 {
@@ -15,8 +16,6 @@ namespace LionFire.Execution.Roslyn.Scripting
         public string A = "123";
         public int B = 456;
     }
-
-
 
     public class RoslynScriptExecutionController : IExecutionController
     {
@@ -55,6 +54,26 @@ namespace LionFire.Execution.Roslyn.Scripting
         Dictionary<string, object> globals = new Dictionary<string, object>();
 
         #region State
+
+        #region ExecutionState
+
+        public ExecutionState ExecutionState {
+            get {
+                return bExecutionState.Value;
+            }
+            set {
+                bExecutionState.OnNext(value);
+            }
+        }
+
+        public IObservable<ExecutionState> ExecutionStates {
+            get {
+                return bExecutionState;
+            }
+        }
+        private BehaviorSubject<ExecutionState> bExecutionState = new BehaviorSubject<ExecutionState>(ExecutionState.Unspecified);
+
+        #endregion
 
 
         Script<object> script;

@@ -5,12 +5,8 @@ using System.Threading.Tasks;
 
 namespace LionFire.Execution
 {
-    /// <summary>
-    /// May also implement IPausable if such functionality is supported.
-    /// </summary>
-    public interface IExecutable
+    public interface IStoppable
     {
-        Task Start();
         Task Stop(StopMode mode = StopMode.GracefulShutdown, StopOptions options = StopOptions.StopChildren);
     }
 }

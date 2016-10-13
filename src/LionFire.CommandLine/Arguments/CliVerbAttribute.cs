@@ -5,7 +5,9 @@ using System.Threading.Tasks;
 
 namespace LionFire.CommandLine.Arguments
 {
-    [System.AttributeUsage(AttributeTargets.Method, Inherited = false, AllowMultiple = false)]
+    [System.AttributeUsage(AttributeTargets.Method
+        //| AttributeTargets.Class FUTURE
+        , Inherited = false, AllowMultiple = false)]
     public sealed class CliVerbAttribute : CliArgumentAttribute
     {
         public CliVerbAttribute()
