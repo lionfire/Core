@@ -1,4 +1,6 @@
-﻿using System;
+﻿using LionFire.Reactive;
+using LionFire.Reactive.Subjects;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reactive.Subjects;
@@ -10,7 +12,7 @@ namespace LionFire.Execution
 
     public class RemoteExecutionControllerProxy : IExecutionController
     {
-        public IObservable<ExecutionState> BExecutionState {
+        public IBehaviorObservable<ExecutionState> ExecutionState {
             get {
                 throw new NotImplementedException();
             }
@@ -31,21 +33,12 @@ namespace LionFire.Execution
 
         #region ExecutionState
 
-        public ExecutionState ExecutionState {
+        public IBehaviorObservable<ExecutionState> ExecutionState {
             get {
-                return bExecutionState.Value;
-            }
-            set {
-                bExecutionState.OnNext(value);
+                return executionState;
             }
         }
-
-        public IObservable<ExecutionState> ExecutionStates {
-            get {
-                return bExecutionState;
-            }
-        }
-        private BehaviorSubject<ExecutionState> bExecutionState = new BehaviorSubject<ExecutionState>(ExecutionState.Unspecified);
+        private BehaviorObservable<ExecutionState> executionState = new BehaviorObservable<ExecutionState>();
 
         #endregion
 

@@ -20,6 +20,10 @@ namespace LionFire.Assets
             else
             {
                 diskPath = typeof(T).Name;
+                if (typeof(T).Name.StartsWith("T") && typeof(T).Name.Length > 1 && char.IsUpper(typeof(T).Name[1]))
+                {
+                    diskPath = diskPath.Substring(1);
+                }                
             }
 
             var path = diskPath;

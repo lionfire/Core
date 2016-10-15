@@ -7,6 +7,8 @@ using LionFire.Execution.Hosting;
 using LionFire.Execution.Configuration;
 using LionFire.Execution.Initialization;
 using System.Reactive.Subjects;
+using LionFire.Reactive;
+using LionFire.Reactive.Subjects;
 
 namespace LionFire.Execution
 {
@@ -95,20 +97,21 @@ namespace LionFire.Execution
 
         #region ExecutionState
 
-        public ExecutionState ExecutionState {
-            get {
-                return bExecutionState.Value;
-            }
-            set {
-                bExecutionState.OnNext(value);
-            }
-        }
-
-        public IObservable<ExecutionState> ExecutionStates {
+        public IBehaviorObservable<ExecutionState> ExecutionState {
             get {
                 return bExecutionState;
             }
-        } private BehaviorSubject<ExecutionState> bExecutionState = new BehaviorSubject<ExecutionState>(ExecutionState.Unspecified);
+            //set {
+            //    bExecutionState.OnNext(value);
+            //}
+        }
+
+        //public IObservable<ExecutionState> ExecutionStates {
+        //    get {
+        //        return bExecutionState;
+        //    }
+        //}
+        protected BehaviorObservable<ExecutionState> bExecutionState = new BehaviorObservable<ExecutionState>();
 
         #endregion
 

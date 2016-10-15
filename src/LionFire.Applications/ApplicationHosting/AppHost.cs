@@ -7,6 +7,8 @@ using System.Threading.Tasks;
 using System.Threading;
 using LionFire.Structures;
 using LionFire.Execution;
+using TInitializable = LionFire.Execution.IInitializable;
+using LionFire.Dependencies;
 
 namespace LionFire.Applications.Hosting
 {
@@ -32,10 +34,9 @@ namespace LionFire.Applications.Hosting
 
         #region Register
 
-        private List<IAppComponent> components = new List<IAppComponent>();
+        private List<object> components = new List<object>();
 
         public T Add<T>(T appComponent)
-            where T : IAppComponent
         {
             components.Add(appComponent);
             return appComponent;
@@ -79,6 +80,11 @@ get{return ManualSingleton<IAppHost>.Instance == this;}
             return ServiceCollection.BuildServiceProvider();
         }
 
+        /// <summary>
+        /// Build ServiceProvider
+        /// </summary>
+        /// <param name="mode"></param>
+        /// <returns></returns>
         public IAppHost Bootstrap(BootstrapMode mode = BootstrapMode.Rebuild)
         {
             // FUTURE: Consider reusing existing service object instances
@@ -105,38 +111,63 @@ get{return ManualSingleton<IAppHost>.Instance == this;}
             }
         }
 
-        public void Initialize()
+        public async Task Initialize()
         {
             if (IsInitialized) return;
 
             Bootstrap();
 
-            var needsInitialization = new List<IAppInitializer>(components.OfType<IAppInitializer>());
+            var needsInitialization = new List<TInitializable>(components.OfType<TInitializable>());
             int componentsRequiringInit = needsInitialization.Count;
-            List<IAppInitializer> stillNeedsInitialization = null;
+            List<TInitializable> stillNeedsInitialization = null;
             do
             {
+                Dictionary<object, UnsatisfiedDependencies> uds = new Dictionary<object, Dependencies.UnsatisfiedDependencies>();
+
                 if (stillNeedsInitialization != null)
                 {
                     needsInitialization = stillNeedsInitialization;
                 }
-                stillNeedsInitialization = new List<IAppInitializer>();
+                stillNeedsInitialization = new List<TInitializable>();
 
                 foreach (var component in needsInitialization)
                 {
-                    if (!component.TryInitialize())
+                    UnsatisfiedDependencies ud = null;
+                    if (!component.TryResolveDependencies(ref ud, ServiceProvider))
+                    {
+                        uds.Add(component, ud);
+                        stillNeedsInitialization.Add(component);                        
+                    }
+                    else if (await component.Initialize() == false)
                     {
                         stillNeedsInitialization.Add(component);
                     }
                 }
                 if (stillNeedsInitialization.Count == componentsRequiringInit)
                 {
-                    throw new Exception($"No progress made on initializing {componentsRequiringInit} remaining components: " + stillNeedsInitialization.Select(c => c.ToString()).Aggregate((x, y) => x + ", " + y));
+                    var msg = $"No progress made on initializing {componentsRequiringInit} remaining components: " + stillNeedsInitialization.Select(c => c.ToString()).Aggregate((x, y) => x + ", " + y);
+                    if (uds.Count > 0)
+                    {
+                        msg += " Missing dependencies: ";
+                        foreach (var kvp in uds)
+                        {
+                            if (kvp.Value.Count == 0) continue;
+                            msg += $"Object of type {kvp.Key.GetType().Name} needs: ";
+                            bool isFirst = true;
+                            foreach (var d in kvp.Value)
+                            {
+                                if (isFirst) isFirst = false; else msg += ", ";
+                                msg += d.Description;
+                            }
+                        }
+                    }
+                    throw new Exception(msg);
                 }
 
             } while (stillNeedsInitialization.Count > 0);
 
             IsInitialized = true;
+            
         }
 
         #endregion
@@ -145,7 +176,7 @@ get{return ManualSingleton<IAppHost>.Instance == this;}
         private List<Task> WaitForTasks { get; set; } = new List<Task>();
         private List<Task> Tasks { get; set; } = new List<Task>();
 
-        public async Task Run(Func<Task> runMethod = null)
+        public async Task Run()
         {
             Initialize();
 

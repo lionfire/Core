@@ -11,7 +11,7 @@ using LionFire.Execution;
 namespace LionFire.Applications
 {
 
-    public class AppTask : IAppTask, IAppInitializer, IRequiresServices
+    public class AppTask : IAppTask, IInitializable, IRequiresServices
     {
 
         #region Configuration
@@ -53,16 +53,16 @@ namespace LionFire.Applications
 
         #region Initialization
 
-        public virtual bool TryInitialize()
+        public virtual async Task<bool> Initialize()
         {
-            return TryInitializeAction();
+            await return TryInitializeAction();
         }
 
         protected virtual void Run() { }
 
         public virtual void Start(System.Threading.CancellationToken? cancellationToken = null)
         {
-            if (!TryInitialize()) { throw new Exception($"{this} failed to initialize.  Cannot start it."); }
+            if (!Initialize()) { throw new Exception($"{this} failed to initialize.  Cannot start it."); }
 
             if (cancellationToken.HasValue) { this.CancellationToken = cancellationToken; }
 

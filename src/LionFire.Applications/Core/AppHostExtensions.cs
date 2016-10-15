@@ -31,14 +31,14 @@ namespace LionFire.Applications.Hosting
 
             var templateInstance = template.Create();
 
-            var appComponent = templateInstance as IAppComponent;
+            //var appComponent = templateInstance as IAppComponent;
 
-            if (appComponent == null)
-            {
-                throw new ArgumentException($"Created object of type '{templateInstance.GetType().FullName}' does not implement IAppComponent.  There is no implementation available for adding it to the IAppHost.");
-            }
+            //if (appComponent == null)
+            //{
+            //    throw new ArgumentException($"Created object of type '{templateInstance.GetType().FullName}' does not implement IAppComponent.  There is no implementation available for adding it to the IAppHost.");
+            //}
 
-            host.Add(appComponent);
+            host.Add(templateInstance);
 
             return host;
         }

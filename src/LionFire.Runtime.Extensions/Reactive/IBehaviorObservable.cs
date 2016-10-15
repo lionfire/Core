@@ -3,10 +3,10 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace LionFire
+namespace LionFire.Reactive
 {
-    public interface IRequiresServices
+    public interface IBehaviorObservable<T> : IObservable<T>
     {
-        IServiceProvider ServiceProvider { get; set; }
+        T Value { get; }
     }
 }
