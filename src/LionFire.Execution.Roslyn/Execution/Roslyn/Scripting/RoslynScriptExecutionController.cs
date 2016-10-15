@@ -8,6 +8,8 @@ using System.Threading.Tasks;
 using System.Threading;
 using System.Reflection;
 using System.Reactive.Subjects;
+using LionFire.Reactive;
+using LionFire.Reactive.Subjects;
 
 namespace LionFire.Execution.Roslyn.Scripting
 {
@@ -57,21 +59,12 @@ namespace LionFire.Execution.Roslyn.Scripting
 
         #region ExecutionState
 
-        public ExecutionState ExecutionState {
-            get {
-                return bExecutionState.Value;
-            }
-            set {
-                bExecutionState.OnNext(value);
-            }
-        }
-
-        public IObservable<ExecutionState> ExecutionStates {
+        public IBehaviorObservable<ExecutionState> ExecutionState {
             get {
                 return bExecutionState;
             }
         }
-        private BehaviorSubject<ExecutionState> bExecutionState = new BehaviorSubject<ExecutionState>(ExecutionState.Unspecified);
+        private BehaviorObservable<ExecutionState> bExecutionState = new BehaviorObservable<ExecutionState>();
 
         #endregion
 

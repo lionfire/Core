@@ -8,19 +8,14 @@ using System.Threading.Tasks;
 
 namespace LionFire.Execution
 {
-    
+
 
     public class RemoteExecutionControllerProxy : IExecutionController
     {
-        public IBehaviorObservable<ExecutionState> ExecutionState {
-            get {
-                throw new NotImplementedException();
-            }
-        }
 
         [SetOnce]
         public ExecutionContext ExecutionContext { get; set; }
-        
+
 
         public Task<bool> Initialize()
         {
@@ -28,8 +23,8 @@ namespace LionFire.Execution
             //return false;
         }
 
-        public async Task Start() { }
-        public async Task Stop(StopMode mode = StopMode.GracefulShutdown, StopOptions options = StopOptions.StopChildren) { }
+        public Task Start() { return Task.CompletedTask; }
+        public Task Stop(StopMode mode = StopMode.GracefulShutdown, StopOptions options = StopOptions.StopChildren) { return Task.CompletedTask; }
 
         #region ExecutionState
 
@@ -41,7 +36,6 @@ namespace LionFire.Execution
         private BehaviorObservable<ExecutionState> executionState = new BehaviorObservable<ExecutionState>();
 
         #endregion
-
 
     }
 }

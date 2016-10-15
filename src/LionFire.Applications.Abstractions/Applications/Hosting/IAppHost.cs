@@ -4,11 +4,12 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
 using LionFire.Applications.Hosting;
+using LionFire.Execution;
 
 namespace LionFire.Applications.Hosting
 {
 
-    public interface IAppHost
+    public interface IAppHost : IInitializable
     {
         #region Dependency Injection
 
@@ -37,7 +38,7 @@ namespace LionFire.Applications.Hosting
         /// <summary>
         /// Optionally call this to prepare the application to run without running it.  If it is not invoked by the user, it will be invoked from the Run() method.  Invokations of this after initialization has completed will be ignored.  
         /// </summary>
-        Task Initialize();
+        Task<bool> Initialize();
 
         /// <summary>
         /// Start application and return a task that waits for all ApplicationTasks with WaitForComplete = true to complete.

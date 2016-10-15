@@ -60,15 +60,15 @@ namespace LionFire.Applications.Hosting
             ServiceCollection = new ServiceCollection();
             ServiceCollection.AddSingleton(typeof(IAppTask), this);
 
-            if(ManualSingleton<IAppHost>.Instance == null){
+            if (ManualSingleton<IAppHost>.Instance == null)
+            {
                 ManualSingleton<IAppHost>.Instance = this;
             }
         }
 
-        public bool IsRootApplication
-{
-get{return ManualSingleton<IAppHost>.Instance == this;}
-}
+        public bool IsRootApplication {
+            get { return ManualSingleton<IAppHost>.Instance == this; }
+        }
 
 
         public virtual IServiceProvider ConfigureServices(IServiceCollection services)
@@ -106,23 +106,31 @@ get{return ManualSingleton<IAppHost>.Instance == this;}
                 component.ServiceProvider = ServiceProvider;
             }
 
-            if(IsRootApplication){
-            ManualSingleton<IServiceProvider>.Instance = ServiceProvider;
+            if (IsRootApplication)
+            {
+                ManualSingleton<IServiceProvider>.Instance = ServiceProvider;
             }
         }
 
-        public async Task Initialize()
+        public async Task<bool> Initialize()
         {
-            if (IsInitialized) return;
+            if (IsInitialized) return IsInitialized;
 
             Bootstrap();
 
             var needsInitialization = new List<TInitializable>(components.OfType<TInitializable>());
             int componentsRequiringInit = needsInitialization.Count;
             List<TInitializable> stillNeedsInitialization = null;
+
+            var unresolvedDependencies = await needsInitialization.TryResolveSet();
+            if (unresolvedDependencies != null && unresolvedDependencies.Count > 0)
+            {
+                throw new HasUnresolvedDependenciesException(unresolvedDependencies);
+            }
+
             do
             {
-                Dictionary<object, UnsatisfiedDependencies> uds = new Dictionary<object, Dependencies.UnsatisfiedDependencies>();
+                //Dictionary<object, UnsatisfiedDependencies> uds = new Dictionary<object, Dependencies.UnsatisfiedDependencies>();
 
                 if (stillNeedsInitialization != null)
                 {
@@ -132,13 +140,14 @@ get{return ManualSingleton<IAppHost>.Instance == this;}
 
                 foreach (var component in needsInitialization)
                 {
-                    UnsatisfiedDependencies ud = null;
-                    if (!component.TryResolveDependencies(ref ud, ServiceProvider))
-                    {
-                        uds.Add(component, ud);
-                        stillNeedsInitialization.Add(component);                        
-                    }
-                    else if (await component.Initialize() == false)
+                    //UnsatisfiedDependencies ud;
+                    //if (!component.TryResolveDependencies(out ud, ServiceProvider))
+                    //{
+                    //    uds.Add(component, ud);
+                    //    stillNeedsInitialization.Add(component);
+                    //}
+                    //else 
+                    if (await component.Initialize() == false)
                     {
                         stillNeedsInitialization.Add(component);
                     }
@@ -146,28 +155,28 @@ get{return ManualSingleton<IAppHost>.Instance == this;}
                 if (stillNeedsInitialization.Count == componentsRequiringInit)
                 {
                     var msg = $"No progress made on initializing {componentsRequiringInit} remaining components: " + stillNeedsInitialization.Select(c => c.ToString()).Aggregate((x, y) => x + ", " + y);
-                    if (uds.Count > 0)
-                    {
-                        msg += " Missing dependencies: ";
-                        foreach (var kvp in uds)
-                        {
-                            if (kvp.Value.Count == 0) continue;
-                            msg += $"Object of type {kvp.Key.GetType().Name} needs: ";
-                            bool isFirst = true;
-                            foreach (var d in kvp.Value)
-                            {
-                                if (isFirst) isFirst = false; else msg += ", ";
-                                msg += d.Description;
-                            }
-                        }
-                    }
+                    //if (uds.Count > 0)
+                    //{
+                    //    msg += " Missing dependencies: ";
+                    //    foreach (var kvp in uds)
+                    //    {
+                    //        if (kvp.Value.Count == 0) continue;
+                    //        msg += $"Object of type {kvp.Key.GetType().Name} needs: ";
+                    //        bool isFirst = true;
+                    //        foreach (var d in kvp.Value)
+                    //        {
+                    //            if (isFirst) isFirst = false; else msg += ", ";
+                    //            msg += d.Description;
+                    //        }
+                    //    }
+                    //}
                     throw new Exception(msg);
                 }
 
             } while (stillNeedsInitialization.Count > 0);
 
             IsInitialized = true;
-            
+            return IsInitialized;
         }
 
         #endregion
@@ -178,15 +187,23 @@ get{return ManualSingleton<IAppHost>.Instance == this;}
 
         public async Task Run()
         {
-            Initialize();
+            await Initialize();
 
             WaitForTasks.Clear();
             Tasks.Clear();
 
+            List<Task> startTasks = new List<Task>();
+
+            foreach (var component in components.OfType<IStartable>())
+            {
+                // Parallel start
+                startTasks.Add(component.Start(tokenSource.Token));
+            }
+
+            Task.WaitAll(startTasks.ToArray());
+
             foreach (var component in components.OfType<IAppTask>())
             {
-                component.Start(tokenSource.Token);
-
                 if (component.WaitForRunCompletion() == true && component.RunTask != null)
                 {
                     WaitForTasks.Add(component.RunTask);
@@ -196,6 +213,7 @@ get{return ManualSingleton<IAppHost>.Instance == this;}
                     Tasks.Add(component.RunTask);
                 }
             }
+
             await WaitForShutdown();
         }
 
@@ -212,8 +230,15 @@ get{return ManualSingleton<IAppHost>.Instance == this;}
 
         public Task WaitForShutdown()
         {
-            var shutdownTask = Task.Factory.ContinueWhenAll(Tasks.ToArray(), _ => { });
-            return shutdownTask;
+            if (Tasks.Count > 0)
+            {
+                var shutdownTask = Task.Factory.ContinueWhenAll(Tasks.ToArray(), _ => { });
+                return shutdownTask;
+            }
+            else
+            {
+                return Task.CompletedTask;
+            }
         }
 
         #endregion

@@ -2,10 +2,7 @@
   "version": "1.0.0-*",
 
   "dependencies": {
-    "LionFire.Annotations.Compilation": {
-      "version": "1.0.0",
-      "type": "build"
-    },
+    "LionFire.Annotations.Compilation": "1.0.0",
     "LionFire.Execution.Abstractions": "0.1.0-*",
     "LionFire.Runtime.Extensions": "1.0.2",
     "NETStandard.Library": "1.6.0",

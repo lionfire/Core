@@ -1,4 +1,5 @@
 ﻿using LionFire.Applications.Hosting;
+using LionFire.Execution;
 using LionFire.Structures;
 using System;
 using System.Threading;
@@ -6,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace LionFire.Applications
 {
-    public class AppInitializer : IAppInitializer
+    public class AppInitializer : IInitializable
     {
 
         public Func<IAppHost, bool> InitMethod { get; set; }
@@ -18,7 +19,7 @@ namespace LionFire.Applications
 
         #endregion
 
-        public bool TryInitialize()
+        public async Task<bool> Initialize()
         {
             return InitMethod(ManualSingleton<IAppHost>.Instance);
         }

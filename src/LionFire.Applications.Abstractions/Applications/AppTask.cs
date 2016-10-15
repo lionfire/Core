@@ -31,7 +31,7 @@ namespace LionFire.Applications
 
         #region Relationships
 
-        IServiceProvider IRequiresServices.ServiceProvider { set { this.ServiceProvider = value; } }
+        IServiceProvider IRequiresServices.ServiceProvider { get { return ServiceProvider; } set { this.ServiceProvider = value; } }
         protected IServiceProvider ServiceProvider { get; private set; }
 
         #endregion
@@ -53,18 +53,18 @@ namespace LionFire.Applications
 
         #region Initialization
 
-        public virtual async Task<bool> Initialize()
+        public virtual  Task<bool> Initialize()
         {
-            await return TryInitializeAction();
+            return Task.FromResult(TryInitializeAction());
         }
 
         protected virtual void Run() { }
 
-        public virtual void Start(System.Threading.CancellationToken? cancellationToken = null)
+        public virtual async Task Start(/*System.Threading.CancellationToken? cancellationToken = null*/)
         {
-            if (!Initialize()) { throw new Exception($"{this} failed to initialize.  Cannot start it."); }
+            if (await Initialize() == false) { throw new Exception($"{this} failed to initialize.  Cannot start it."); }
 
-            if (cancellationToken.HasValue) { this.CancellationToken = cancellationToken; }
+            //if (cancellationToken.HasValue) { this.CancellationToken = cancellationToken; }
 
             var runAction = RunAction ?? Run;
 

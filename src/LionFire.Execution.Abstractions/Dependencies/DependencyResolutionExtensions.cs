@@ -106,7 +106,7 @@ namespace LionFire.Dependencies
             {
                 Dictionary<object, UnsatisfiedDependencies> dict = new Dictionary<object, UnsatisfiedDependencies>();
 
-                foreach (var obj in remaining)
+                foreach (var obj in remaining.ToArray())
                 {
                     UnsatisfiedDependencies ud; // = (obj as IHasDependencies)?.UnsatisfiedDependencies;
                     if (!obj.TryResolveDependencies(out ud))
@@ -124,7 +124,9 @@ namespace LionFire.Dependencies
                 {
                     return Task.FromResult(dict); // Fail to make progress.  Quit.
                 }
-            } while (true);
+                lastCount = count;
+            } while (remaining.Count > 0);
+            return Task.FromResult<Dictionary<object, UnsatisfiedDependencies>>(null);
         }
 
         #endregion

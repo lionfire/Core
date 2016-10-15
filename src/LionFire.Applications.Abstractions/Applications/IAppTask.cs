@@ -11,9 +11,8 @@ namespace LionFire.Applications
         
 
 
-    public interface IAppTask : IAppComponent, IHasRunTask
+    public interface IAppTask : IAppComponent, IHasRunTask, IStartable
     {        
-        void Start(CancellationToken? cancellationToken = null);
 
         /// <summary>
         /// App will continue running until the IAppTask.Task completes
