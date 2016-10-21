@@ -1,7 +1,9 @@
-﻿using System;
+﻿using LionFire.Execution.Composition;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace LionFire.Applications.Hosting
 {
@@ -16,17 +18,12 @@ namespace LionFire.Applications.Hosting
             return host;
         }
 
-        public static IAppHost AddConfig(this IAppHost host, Action<IAppHost> tryInitialize)
-        {
-            host.Add(new AppConfigurer(tryInitialize));
-            return host;
-        }
-
         public static IAppHost AddInit(this IAppHost host, Func<IAppHost, bool> tryInitialize)
         {
             host.Add(new AppInitializer(tryInitialize));
             return host;
         }
+
         public static IAppHost AddInit(this IAppHost host, Action<IAppHost> initialize)
         {
             host.Add(new AppInitializer(initialize));

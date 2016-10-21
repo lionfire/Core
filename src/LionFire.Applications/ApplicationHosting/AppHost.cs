@@ -9,12 +9,27 @@ using LionFire.Structures;
 using LionFire.Execution;
 using TInitializable = LionFire.Execution.IInitializable;
 using LionFire.Dependencies;
+using LionFire.MultiTyping;
+using LionFire.Execution.Composition;
 
 namespace LionFire.Applications.Hosting
 {
 
-    public class AppHost : IAppHost
+    public class AppHost : IAppHost, IReadonlyMultiTyped
     {
+
+        T IReadonlyMultiTyped.AsType<T>()
+        {
+            switch (typeof(T).Name)
+            {
+                case nameof(IServiceCollection):
+                    return (T)ServiceCollection;
+                case nameof(IServiceProvider):
+                    return (T)ServiceProvider;
+                default:
+                    return null;
+            }
+        }
 
         #region Dependency Injection
 
@@ -36,12 +51,21 @@ namespace LionFire.Applications.Hosting
 
         private List<object> components = new List<object>();
 
-        public T Add<T>(T appComponent)
+        public IAppHost Add<T>(T appComponent)
         {
             components.Add(appComponent);
-            return appComponent;
+            return this;
         }
-
+        IAppHost IComposableExecutable<IAppHost>.Add(IConfigures component)
+        {
+            components.Add(component);
+            return this;
+        }
+        IAppHost IComposableExecutable<IAppHost>.Add(IInitializes component)
+        {
+            components.Add(component);
+            return this;
+        }
 
         public T Add<T>()
             where T : IAppTask, new()
@@ -73,10 +97,19 @@ namespace LionFire.Applications.Hosting
 
         public virtual IServiceProvider ConfigureServices(IServiceCollection services)
         {
-            foreach (var configurer in components.OfType<IAppConfigurer>())
+            var configContext = this;
+            foreach (var configurer in components.OfType<IConfigures<IServiceCollection>>())
             {
-                configurer.Config(this);
+                configurer.Configure(ServiceCollection);
             }
+            foreach (var configurer in components.OfType<IConfigures<IAppHost>>())
+            {
+                configurer.Configure(this);
+            }
+            //foreach (var configurer in components.OfType<IAppConfigurer>())
+            //{
+            //    configurer.Config(this);
+            //}
             return ServiceCollection.BuildServiceProvider();
         }
 
@@ -122,7 +155,7 @@ namespace LionFire.Applications.Hosting
             int componentsRequiringInit = needsInitialization.Count;
             List<TInitializable> stillNeedsInitialization = null;
 
-            var unresolvedDependencies = await needsInitialization.TryResolveSet();
+            var unresolvedDependencies = await needsInitialization.TryResolveSet(this.ServiceProvider);
             if (unresolvedDependencies != null && unresolvedDependencies.Count > 0)
             {
                 throw new HasUnresolvedDependenciesException(unresolvedDependencies);
@@ -202,7 +235,7 @@ namespace LionFire.Applications.Hosting
 
             Task.WaitAll(startTasks.ToArray());
 
-            foreach (var component in components.OfType<IAppTask>())
+            foreach (var component in components.OfType<IHasRunTask>())
             {
                 if (component.WaitForRunCompletion() == true && component.RunTask != null)
                 {
@@ -230,9 +263,11 @@ namespace LionFire.Applications.Hosting
 
         public Task WaitForShutdown()
         {
-            if (Tasks.Count > 0)
+            var tasks = WaitForTasks;
+
+            if (tasks.Count > 0)
             {
-                var shutdownTask = Task.Factory.ContinueWhenAll(Tasks.ToArray(), _ => { });
+                var shutdownTask = Task.Factory.ContinueWhenAll(tasks.ToArray(), _ => { });
                 return shutdownTask;
             }
             else
@@ -241,6 +276,7 @@ namespace LionFire.Applications.Hosting
             }
         }
 
+      
         #endregion
     }
 

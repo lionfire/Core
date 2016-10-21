@@ -5,11 +5,13 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
 using LionFire.Applications.Hosting;
 using LionFire.Execution;
+using LionFire.MultiTyping;
+using LionFire.Execution.Composition;
 
 namespace LionFire.Applications.Hosting
 {
-
-    public interface IAppHost : IInitializable
+    [MultiTypeFromProperties]
+    public interface IAppHost : IInitializable, IComposableExecutable<IAppHost>
     {
         #region Dependency Injection
 
@@ -25,7 +27,7 @@ namespace LionFire.Applications.Hosting
 
         #endregion
 
-        T Add<T>(T component);
+        IAppHost Add<T>(T component);
 
         #region Execution
 
@@ -35,10 +37,10 @@ namespace LionFire.Applications.Hosting
         /// <param name="mode"></param>
         IAppHost Bootstrap(BootstrapMode mode = BootstrapMode.Rebuild);
 
-        /// <summary>
-        /// Optionally call this to prepare the application to run without running it.  If it is not invoked by the user, it will be invoked from the Run() method.  Invokations of this after initialization has completed will be ignored.  
-        /// </summary>
-        Task<bool> Initialize();
+        ///// <summary>
+        ///// Optionally call this to prepare the application to run without running it.  If it is not invoked by the user, it will be invoked from the Run() method.  Invokations of this after initialization has completed will be ignored.  
+        ///// </summary>
+        //new Task<bool> Initialize();
 
         /// <summary>
         /// Start application and return a task that waits for all ApplicationTasks with WaitForComplete = true to complete.

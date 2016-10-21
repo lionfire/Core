@@ -5,10 +5,11 @@ using System.Threading.Tasks;
 using LionFire.CommandLine;
 using System.Threading;
 using LionFire.CommandLine.Dispatching;
+using LionFire.Execution;
 
 namespace LionFire.Applications.Hosting
 {
-    public class CommandLineDispatchTask : IAppTask
+    public class CommandLineDispatchTask : IHasExecutionFlags, IStartable, IHasRunTask
     {
         #region Parameters
 
@@ -20,27 +21,39 @@ namespace LionFire.Applications.Hosting
 
         #endregion
 
+        #region Construction
+
+        #endregion
 
         public CommandLineDispatchTask(string[] args = null)
         {
             this.Args = args;
         }
 
+        #region Execution
+
+        #region Configuration
+
+        public ExecutionFlags ExecutionFlags {
+            get {
+                return ExecutionFlags.WaitForRunCompletion;
+            }
+        }
+
+        #endregion
+
+        public Task Start()
+        {
+            //CancellationToken? cancellationToken = null;
+            this.RunTask = Task.Factory.StartNew(() => CliDispatcher.Dispatch(Args, DispatcherObject, DispatcherType, Context, Options));
+            return Task.CompletedTask;
+        }
+
         public Task RunTask {
             get; private set;
         }
 
-        public bool WaitForCompletion {
-            get {
-                return true;
-            }
-        }
+        #endregion
 
-        public void Start(CancellationToken? cancellationToken = null)
-        {
-            this.RunTask = Task.Factory.StartNew(() => CliDispatcher.Dispatch(Args, DispatcherObject, DispatcherType, Context, Options));
-        }
     }
-
-
 }

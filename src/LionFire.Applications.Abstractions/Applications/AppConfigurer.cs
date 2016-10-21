@@ -4,19 +4,13 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using LionFire.MultiTyping;
+using LionFire.Execution.Composition;
 
 namespace LionFire.Applications
 {
-    public class AppConfigurer : IAppConfigurer
+    public class AppConfigurer : Configurer<IAppHost>
     {
-        public AppConfigurer(Action<IAppHost> configMethod) { this.ConfigMethod = configMethod; }
-
-        public Action<IAppHost> ConfigMethod { get; set; }
-
-        public void Config(IAppHost app)
-        {
-            ConfigMethod(ManualSingleton<IAppHost>.Instance);
-        }
+        public AppConfigurer(Action<IAppHost> configMethod) : base(configMethod) { }
     }
-
 }

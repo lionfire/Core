@@ -11,7 +11,7 @@ namespace LionFire.Execution
         Task Start();
     }
 
-    public static class IExecutableExtensions
+    public static class IStartableExecutableExtensions
     {
         public static async Task Start(this IStartable startable, CancellationToken token)
         {

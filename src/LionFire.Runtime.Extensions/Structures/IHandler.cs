@@ -3,10 +3,10 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace LionFire
+namespace LionFire.Structures
 {
-    public interface IConfigurable
+    public interface IHandler<MessageType>
     {
-        Task<bool> TryConfigure();
+        void Handle(MessageType message);
     }
 }

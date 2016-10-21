@@ -32,6 +32,13 @@ namespace LionFire.Dependencies
 
         #region Methods
 
+        public static void ValidateDependencies(this object obj)
+        {
+            // REVIEW - consider putting this on IHasDependencies and moving this namespace to LionFire
+            UnsatisfiedDependencies unresolvedDependencies;
+            if (!obj.AreDependenciesResolved(out unresolvedDependencies)) throw new HasUnresolvedDependenciesException(obj, unresolvedDependencies);
+        }
+
         public static bool AreDependenciesResolved(this object obj, out UnsatisfiedDependencies unresolvedDependencies)
         {
             return _ResolveDependencies(obj, out unresolvedDependencies, null, false);
@@ -85,20 +92,11 @@ namespace LionFire.Dependencies
             return results.Count == 0;
         }
 
-        public static void ResolveDependencies(this object obj)
-        {
-            UnsatisfiedDependencies unresolvedDependencies;
-            if (!obj.TryResolveDependencies(out unresolvedDependencies))
-            {
-                throw new HasUnresolvedDependenciesException();
-            }
-        }
-
         #endregion
 
         #region Resolve Set
 
-        public static Task<Dictionary<object, UnsatisfiedDependencies>> TryResolveSet(this IEnumerable<object> objects)
+        public static Task<Dictionary<object, UnsatisfiedDependencies>> TryResolveSet(this IEnumerable<object> objects, IServiceProvider serviceProvider = null)
         {
             int lastCount = int.MaxValue;
             var remaining = new List<object>(objects);
@@ -109,7 +107,7 @@ namespace LionFire.Dependencies
                 foreach (var obj in remaining.ToArray())
                 {
                     UnsatisfiedDependencies ud; // = (obj as IHasDependencies)?.UnsatisfiedDependencies;
-                    if (!obj.TryResolveDependencies(out ud))
+                    if (!obj.TryResolveDependencies(out ud, serviceProvider))
                     {
                         dict.Add(obj, ud);
                     }

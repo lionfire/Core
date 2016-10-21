@@ -6,7 +6,8 @@
     "LionFire.Runtime.Extensions": "1.0.2",
     "LionFire.Annotations.Compilation": "1.0.0",
     "Microsoft.Extensions.DependencyInjection.Abstractions": "1.0.0",
-    "NETStandard.Library": "1.6.0"
+    "NETStandard.Library": "1.6.0",
+    "LionFire.Execution.Abstractions": "0.1.0-*"
   },
 
   "frameworks": {
