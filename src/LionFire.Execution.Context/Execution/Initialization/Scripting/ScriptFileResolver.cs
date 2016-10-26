@@ -41,7 +41,10 @@ namespace LionFire.Execution.Initialization
             try
             {
                 var hc = new HttpClient();
+                //hc.DefaultRequestHeaders.Add("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/54.0.2840.71 Safari/537.36");
                 hc.DefaultRequestHeaders.Add("User-Agent", ".NET");
+                //hc.DefaultRequestHeaders.Add("Cache -Control", "max-age=0");
+                
 
                 var split = config.SourceUriBody.Split('/');
                 //if (split.Length != 2) throw new ArgumentException("gist: URIs must be in the format gist:username/path/to/gist");
