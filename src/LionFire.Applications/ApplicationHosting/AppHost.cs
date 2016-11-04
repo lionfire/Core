@@ -11,6 +11,8 @@ using TInitializable = LionFire.Execution.IInitializable;
 using LionFire.Dependencies;
 using LionFire.MultiTyping;
 using LionFire.Execution.Composition;
+using LionFire.Assets;
+using LionFire.Templating;
 
 namespace LionFire.Applications.Hosting
 {
@@ -56,6 +58,13 @@ namespace LionFire.Applications.Hosting
             components.Add(appComponent);
             return this;
         }
+        public IAppHost Add<T>(string assetSubPath)
+            where T : class
+        {
+            components.Add(new AssetReadHandle<T>(assetSubPath));
+            return this;
+        }
+
         IAppHost IComposableExecutable<IAppHost>.Add(IConfigures component)
         {
             components.Add(component);
@@ -113,6 +122,32 @@ namespace LionFire.Applications.Hosting
             return ServiceCollection.BuildServiceProvider();
         }
 
+        public IAppHost LoadHandles()
+        {
+            Parallel.ForEach(components.OfType<IReadHandle>(), async rh => await rh.Initialize());
+            
+
+            foreach (var component in components.OfType<IReadHandle>().ToArray())
+            {
+                this.Add(component.Object);
+                components.Remove(component);
+            }
+
+            return this;
+        }
+
+        public IAppHost InstantiateTemplates()
+        {
+            foreach (var tComponent in components.OfType<ITemplate>().ToArray())
+            {
+                var component = tComponent.Create();
+                this.Add(component);
+                components.Remove(tComponent);
+            }
+
+            return this;
+        }
+
         /// <summary>
         /// Build ServiceProvider
         /// </summary>
@@ -120,6 +155,9 @@ namespace LionFire.Applications.Hosting
         /// <returns></returns>
         public IAppHost Bootstrap(BootstrapMode mode = BootstrapMode.Rebuild)
         {
+            LoadHandles();
+            InstantiateTemplates();
+
             // FUTURE: Consider reusing existing service object instances
             BuildServiceProvider();
 

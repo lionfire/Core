@@ -9,4 +9,8 @@ namespace LionFire.Templating
     {
         object Template { get;  set; }
     }
+    public interface ITemplateInstance<T> : ITemplateInstance
+    {
+        new T Template { get;  set; }
+    }
 }

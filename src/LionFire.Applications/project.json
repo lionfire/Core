@@ -13,7 +13,9 @@
     "Microsoft.Extensions.Configuration.UserSecrets": "1.0.0",
     "Microsoft.Extensions.DependencyInjection": "1.0.0",
     "NETStandard.Library": "1.6.0",
-    "System.Reactive.Linq": "3.0.0"
+    "System.Linq.Parallel": "4.0.1",
+    "System.Reactive.Linq": "3.0.0",
+    "System.Threading.Tasks.Parallel": "4.0.1"
   },
 
   "frameworks": {

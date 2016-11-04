@@ -28,6 +28,7 @@ namespace LionFire.Applications.Hosting
         #endregion
 
         IAppHost Add<T>(T component);
+        IAppHost Add<T>(string assetSubPath) where T : class;
 
         #region Execution
 

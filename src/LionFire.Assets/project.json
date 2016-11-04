@@ -4,6 +4,7 @@
   "dependencies": {
     "LionFire.Applications.Abstractions": "1.0.0-*",
     "LionFire.Assets.Abstractions": "1.0.0-*",
+    "LionFire.Runtime.Extensions": "1.0.2",
     "NETStandard.Library": "1.6.0",
     "Newtonsoft.Json": "9.0.1",
     "System.IO.FileSystem": "4.0.1",
