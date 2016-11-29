@@ -7,10 +7,10 @@
     "LionFire.Environment.CommandLine": "0.*",
     "LionFire.Execution.Context": "1.0.0-*",
     "LionFire.Execution": "0.1.0-*",
-    "LionFire.Runtime.Extensions": "1.*",
+    "LionFire.Runtime.Extensions": "1.0.2",
     "Microsoft.Extensions.Configuration": "1.0.0",
     "Microsoft.Extensions.PlatformAbstractions": "1.0.0",
-    "NETStandard.Library": "1.6.0",
+    "NETStandard.Library": "1.6.1",
     "System.Diagnostics.Process": "4.1.0",
     "System.Threading.Thread": "4.0.0"
   },

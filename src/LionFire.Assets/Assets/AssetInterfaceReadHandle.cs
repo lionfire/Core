@@ -6,48 +6,55 @@ using System.Threading.Tasks;
 
 namespace LionFire.Assets
 {
-    public class AssetReadHandle<TAsset> : IReadHandle<TAsset>
-        where TAsset : class
+    public class AssetInterfaceReadHandle<TAssetInterface> : IReadHandle<TAssetInterface>
+        where TAssetInterface : class
     {
+        public string AssetTypeName { get; set; }
+
         string assetSubPath;
 
-        public AssetReadHandle(string assetSubPath)
+        public AssetInterfaceReadHandle(string assetTypeName, string assetSubPath)
         {
+            this.AssetTypeName = assetTypeName;
             this.assetSubPath = assetSubPath;
         }
 
+        #region Object
+
         object IReadHandle.Object { get { return Object; } }
-        public TAsset Object
+        public TAssetInterface Object
         {
             get
             {
                 if (!isLoaded)
                 {
-                    _Load();
+                    Initialize().Wait();
                 }
                 return obj;
             }
         }
-        private TAsset obj;
+        private TAssetInterface obj;
         private bool isLoaded = false;
 
-        public AssetReadHandle<TAsset> Clone()
-        {
-            return new AssetReadHandle<TAsset>(assetSubPath);
-        }
+        #endregion
 
-        private void _Load()
+        #region Utility Methods
+
+
+        public AssetInterfaceReadHandle<TAssetInterface> Clone()
         {
-            obj = assetSubPath.Load<TAsset>();
-            isLoaded = true;
+            return new AssetInterfaceReadHandle<TAssetInterface>(AssetTypeName, assetSubPath);
         }
+        
+        #endregion
+
 
         public async Task<bool> Initialize()
         {
             return await Task.Factory.StartNew(() =>
             {
-                _Load();
-                
+                obj = assetSubPath.Load<TAssetInterface>(AssetTypeName);
+                isLoaded = true;
                 return obj != null;
             });
         }

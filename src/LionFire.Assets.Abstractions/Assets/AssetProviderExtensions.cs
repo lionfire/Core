@@ -13,6 +13,11 @@ namespace LionFire.Assets
             var ap = (IAssetProvider)ManualSingleton<IServiceProvider>.Instance.GetService(typeof(IAssetProvider));
             return ap.Load<T>(assetSubPath);
         }
+        public static T Load<T>(this string assetSubPath, string concreteTypeName) // TODO: Async?
+        {
+            var ap = (IAssetProvider)ManualSingleton<IServiceProvider>.Instance.GetService(typeof(IAssetProvider));
+            return ap.Load<T>(assetSubPath);
+        }
 
         public static void Save<T>(this string assetSubPath, T obj)
         {

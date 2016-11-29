@@ -10,7 +10,13 @@ namespace LionFire.Applications.Hosting
 {
     public static class TemplateAssetAppExtensions
     {
-        public static IAppHost Add<T>(this IAppHost host, string assetSubpath)
+        public static IAppHost Add<T, TInstance>(this IAppHost host, string assetSubpath)
+            where T : ITemplate
+        {
+            return host.Add<T,object>(assetSubpath,null);
+        }
+
+        public static IAppHost Add<T,TInstance>(this IAppHost host, string assetSubpath, Action<TInstance> initializer)
             where T : ITemplate
         {
             var sp = ManualSingleton<IServiceProvider>.Instance;
@@ -31,14 +37,16 @@ namespace LionFire.Applications.Hosting
 
             var templateInstance = template.Create();
 
+            if (initializer != null) { initializer((TInstance)templateInstance); }
+
             //var appComponent = templateInstance as IAppComponent;
 
-            //if (appComponent == null)
-            //{
-            //    throw new ArgumentException($"Created object of type '{templateInstance.GetType().FullName}' does not implement IAppComponent.  There is no implementation available for adding it to the IAppHost.");
-            //}
+                //if (appComponent == null)
+                //{
+                //    throw new ArgumentException($"Created object of type '{templateInstance.GetType().FullName}' does not implement IAppComponent.  There is no implementation available for adding it to the IAppHost.");
+                //}
 
-            host.Add(templateInstance);
+                host.Add(templateInstance);
 
             return host;
         }

@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 
 namespace LionFire.Assets
 {
-    [System.AttributeUsage(AttributeTargets.Class, Inherited = false, AllowMultiple = false)]
+    [System.AttributeUsage(AttributeTargets.Class, Inherited = true, AllowMultiple = false)]
     public sealed class AssetPathAttribute : Attribute
     {
         public AssetPathAttribute(string assetPath)

@@ -5,7 +5,7 @@
     "allowUnsafe": true
   },
   "dependencies": {
-    "NETStandard.Library": "1.6.0",
+    "NETStandard.Library": "1.6.1",
     "System.Reflection": "4.1.0",
     "LionFire.Execution.Context": "1.0.0-*",
     "LionFire.Execution": "0.1.0-*",

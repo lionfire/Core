@@ -46,7 +46,7 @@ namespace LionFire.Extensions.Logging.NLog
                 };
 
                 config.AddTarget("file", targ);
-                config.AddRule(LogLevel.Debug, LogLevel.Fatal, targ);
+                config.AddRule(LogLevel.Trace, LogLevel.Fatal, targ);
             }
 
 

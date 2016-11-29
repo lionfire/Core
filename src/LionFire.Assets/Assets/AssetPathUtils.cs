@@ -12,7 +12,7 @@ namespace LionFire.Assets
         public static string GetSubpath<T>(string assetSubpath)
         {
             string diskPath;
-            var attr = (AssetPathAttribute)typeof(T).GetTypeInfo().GetCustomAttributes(typeof(AssetPathAttribute), false).FirstOrDefault();
+            var attr = (AssetPathAttribute)typeof(T).GetTypeInfo().GetCustomAttributes(typeof(AssetPathAttribute), true).FirstOrDefault();
             if (attr != null)
             {
                 diskPath = attr.AssetPath;

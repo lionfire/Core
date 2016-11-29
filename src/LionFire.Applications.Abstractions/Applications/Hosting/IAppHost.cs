@@ -27,6 +27,10 @@ namespace LionFire.Applications.Hosting
 
         #endregion
 
+        IEnumerable<object> Components
+        {
+            get;
+        }
         IAppHost Add<T>(T component);
         IAppHost Add<T>(string assetSubPath) where T : class;
 

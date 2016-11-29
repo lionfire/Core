@@ -7,9 +7,10 @@ namespace LionFire.Templating
 {
     public interface ITemplateInstance
     {
-        object Template { get;  set; }
+        ITemplate Template { get;  set; }
     }
     public interface ITemplateInstance<T> : ITemplateInstance
+        where T : ITemplate
     {
         new T Template { get;  set; }
     }

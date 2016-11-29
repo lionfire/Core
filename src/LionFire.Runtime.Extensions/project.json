@@ -2,7 +2,7 @@
   "version": "1.0.2",
 
   "dependencies": {
-    "NETStandard.Library": "1.6.0",
+    "NETStandard.Library": "1.6.1",
     "System.Collections.Immutable": "1.2.0",
     "System.ComponentModel": "4.0.*",
     "System.Reactive.Linq": "3.0.0",

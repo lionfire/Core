@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 
 namespace LionFire.Templating
 {
-    public interface IHierarchicalTemplate
+    public interface IHierarchicalTemplate : ITemplate
     {
         List<ITemplate> Children { get; set; }
     }

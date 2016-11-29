@@ -51,6 +51,7 @@ namespace LionFire.Applications.Hosting
 
         #region Register
 
+        public IEnumerable<object> Components { get { return components; } }
         private List<object> components = new List<object>();
 
         public IAppHost Add<T>(T appComponent)
