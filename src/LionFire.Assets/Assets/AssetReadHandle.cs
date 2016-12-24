@@ -16,7 +16,7 @@ namespace LionFire.Assets
             this.assetSubPath = assetSubPath;
         }
 
-        object IReadHandle.Object { get { return Object; } }
+        //object IReadHandle.Object { get { return Object; } }
         public TAsset Object
         {
             get

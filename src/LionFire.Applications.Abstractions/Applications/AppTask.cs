@@ -25,7 +25,7 @@ namespace LionFire.Applications
         public bool RunSynchronously { get; set; } = false;
         public bool WaitForCompletion { get; set; } = true;
 
-        public ExecutionFlags ExecutionFlags { get; set; }
+        public ExecutionFlag ExecutionFlags { get; set; }
 
         #endregion
 

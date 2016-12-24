@@ -59,7 +59,7 @@ namespace LionFire.Execution.Roslyn.Scripting
 
         #region ExecutionState
 
-        public IBehaviorObservable<ExecutionState> ExecutionState {
+        public IBehaviorObservable<ExecutionState> State {
             get {
                 return bExecutionState;
             }

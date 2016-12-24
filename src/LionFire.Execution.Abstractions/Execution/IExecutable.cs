@@ -8,8 +8,15 @@ namespace LionFire.Execution
 {
     public interface IExecutable
     {        
-        IBehaviorObservable<ExecutionState> ExecutionState { get; }
+        IBehaviorObservable<ExecutionState> State { get; }
 
     }
-    
+
+    public interface IControllableExecutable
+    {
+        // TODO
+        ExecutionState DesiredState { get; set; }
+    }
+
+        
 }

@@ -7,6 +7,6 @@ namespace LionFire.Execution
 {
     public interface IHasExecutionFlags
     {
-        ExecutionFlags ExecutionFlags { get; }
+        ExecutionFlag ExecutionFlags { get; }
     }
 }

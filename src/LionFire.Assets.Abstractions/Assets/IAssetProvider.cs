@@ -9,5 +9,7 @@ namespace LionFire.Assets
     {
         T Load<T>(string assetSubPath);
         void Save<T>(string assetSubPath, T obj);
+
+        IEnumerable<string> Find<T>(string searchString);
     }
 }

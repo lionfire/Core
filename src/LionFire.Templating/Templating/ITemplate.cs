@@ -1,4 +1,5 @@
-﻿using System;
+﻿using LionFire.Validation;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
@@ -18,6 +19,11 @@ namespace LionFire.Templating
         public static TInstance Create<TInstance>(this ITemplate<TInstance> template)
             where TInstance : new()
         {
+            var validates = template as IValidatesCreate;
+            if (validates != null)
+            {
+                validates.Validate().ValidateCreate().EnsureValid();
+            }
             var instance = Create((ITemplate)template, typeof(TInstance));
             return (TInstance) instance;
         }

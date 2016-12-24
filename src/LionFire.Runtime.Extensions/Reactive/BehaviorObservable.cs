@@ -35,7 +35,7 @@ namespace LionFire.Reactive.Subjects
 
         #region Constructors
 
-        public BehaviorObservable() : this(default(T)){}
+        public BehaviorObservable() : this(default(T)) { }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="System.Reactive.Subjects.BehaviorSubject&lt;T&gt;"/> class which creates a subject that caches its last value and starts with the specified value.
@@ -54,18 +54,24 @@ namespace LionFire.Reactive.Subjects
         /// <summary>
         /// Indicates whether the subject has observers subscribed to it.
         /// </summary>
-        public override bool HasObservers {
-            get {
+        public override bool HasObservers
+        {
+            get
+            {
                 var observers = _observers;
                 return observers != null && observers.Count > 0;
             }
         }
 
+        public event Action<object, bool> HasObserversChangedTo;
+
         /// <summary>
         /// Indicates whether the subject has been disposed.
         /// </summary>
-        public override bool IsDisposed {
-            get {
+        public override bool IsDisposed
+        {
+            get
+            {
                 lock (_gate)
                 {
                     return _isDisposed;
@@ -87,8 +93,10 @@ namespace LionFire.Reactive.Subjects
         /// </alert>
         /// </remarks>
         /// <exception cref="ObjectDisposedException">Dispose was called.</exception>
-        public T Value {
-            get {
+        public T Value
+        {
+            get
+            {
                 lock (_gate)
                 {
                     CheckDisposed();
@@ -155,9 +163,11 @@ namespace LionFire.Reactive.Subjects
 
                 if (!_isStopped)
                 {
+                    var oldHasObservers = HasObservers;
                     os = _observers.ToArray(); // REVIEW - was Data instead of ToArray
                     _observers = ImmutableList<IObserver<T>>.Empty;
                     _isStopped = true;
+                    TryRaiseHasObserversChangedTo(oldHasObservers);
                 }
             }
 
@@ -166,6 +176,12 @@ namespace LionFire.Reactive.Subjects
                 foreach (var o in os)
                     o.OnCompleted();
             }
+        }
+
+        private void TryRaiseHasObserversChangedTo(bool oldValue)
+        {
+            if (oldValue == HasObservers) return;
+            HasObserversChangedTo?.Invoke(this, HasObservers);
         }
 
         /// <summary>
@@ -185,10 +201,12 @@ namespace LionFire.Reactive.Subjects
 
                 if (!_isStopped)
                 {
+                    var oldHasObservers = HasObservers;
                     os = _observers.ToArray(); // REVIEW - was Data instead of ToArray
                     _observers = ImmutableList<IObserver<T>>.Empty;
                     _isStopped = true;
                     _exception = error;
+                    TryRaiseHasObserversChangedTo(oldHasObservers);
                 }
             }
 
@@ -247,7 +265,9 @@ namespace LionFire.Reactive.Subjects
 
                 if (!_isStopped)
                 {
+                    var oldHasObservers = HasObservers;
                     _observers = _observers.Add(observer);
+                    TryRaiseHasObserversChangedTo(oldHasObservers);
                     observer.OnNext(_value);
                     return new Subscription(this, observer);
                 }
@@ -272,6 +292,7 @@ namespace LionFire.Reactive.Subjects
         /// </summary>
         public override void Dispose()
         {
+            var oldHasObservers = HasObservers;
             lock (_gate)
             {
                 _isDisposed = true;
@@ -279,6 +300,7 @@ namespace LionFire.Reactive.Subjects
                 _value = default(T);
                 _exception = null;
             }
+            TryRaiseHasObserversChangedTo(oldHasObservers);
         }
 
         private void CheckDisposed()

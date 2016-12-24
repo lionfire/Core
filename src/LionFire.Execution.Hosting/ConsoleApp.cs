@@ -23,7 +23,7 @@ namespace LionFire.Applications.CommandLine
 
             //Console.WriteLine(typeof(LionFire.Environment.LionEnvironmentCliHandlers).AssemblyQualifiedName);
             CliDispatcher.Dispatch(args, this);
-            LionEnvironment.StandardOutput.Flush(); // REVIEW
+            LionFireEnvironment.StandardOutput.Flush(); // REVIEW
         }
     }
 }

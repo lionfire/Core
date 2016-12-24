@@ -34,9 +34,9 @@ namespace LionFire.Applications.Hosting
 
         #region Configuration
 
-        public ExecutionFlags ExecutionFlags {
+        public ExecutionFlag ExecutionFlags {
             get {
-                return ExecutionFlags.WaitForRunCompletion;
+                return ExecutionFlag.WaitForRunCompletion;
             }
         }
 

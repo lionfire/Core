@@ -27,9 +27,9 @@ namespace LionFire.Environment
         public static void Version()
         {
             var sb = new StringBuilder();
-            sb.Append(LionEnvironment.ProgramName);
+            sb.Append(LionFireEnvironment.ProgramName);
             sb.Append(" ");
-            sb.Append(LionEnvironment.ProgramVersion);
+            sb.Append(LionFireEnvironment.ProgramVersion);
             sb.AppendLine();
 
             Console.WriteLine(sb.ToString());

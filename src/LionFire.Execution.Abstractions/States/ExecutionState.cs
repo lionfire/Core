@@ -30,6 +30,7 @@ namespace LionFire.Execution
         Finished = 1 << 11,
 
         Disposed = 1 << 12,
+        WaitingToStart = 1 << 13,
     }
 
     public interface IHasExecutionState

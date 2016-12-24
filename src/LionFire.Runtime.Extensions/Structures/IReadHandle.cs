@@ -6,23 +6,26 @@ using System.Threading.Tasks;
 
 namespace LionFire
 {
+    
+    //public interface IReadHandle : IInitializable
+    //{
+    //    object Object { get; }
+    //}
 
     /// <summary>
     /// Initialize: returns true if Object loaded successfully, false if null object loaded, exception on failure or object not found
     /// </summary>
-    public interface IReadHandle : IInitializable
+    public interface IReadHandle<out T> 
+    //: IReadHandle
     {
-        object Object { get; }
+         T Object { get; }
+
         bool HasObject { get; }
-    }
-    public interface IReadHandle<T> : IReadHandle
-    {
-        new T Object { get; }
     }
 
     public static class IReadHandleExtensions
     {
-        public static async Task<bool> TryLoad(this IReadHandle rh)
+        public static async Task<bool> TryLoad(this IReadHandle<object> rh)
         {
             return await Task.Factory.StartNew(() =>
             {
@@ -30,7 +33,7 @@ namespace LionFire
                 return true;
             });
         }
-        public static async Task<bool> TryLoadNonNull(this IReadHandle rh)
+        public static async Task<bool> TryLoadNonNull(this IReadHandle<object> rh)
         {
             return await Task.Factory.StartNew(() =>
             {

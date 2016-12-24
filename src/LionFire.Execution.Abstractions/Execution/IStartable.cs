@@ -10,6 +10,7 @@ namespace LionFire.Execution
     {
         Task Start();
     }
+    
 
     public static class IStartableExecutableExtensions
     {

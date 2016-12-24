@@ -21,7 +21,7 @@ namespace LionFire.Assets
 
         #region Object
 
-        object IReadHandle.Object { get { return Object; } }
+        //object IReadHandle.Object { get { return Object; } }
         public TAssetInterface Object
         {
             get

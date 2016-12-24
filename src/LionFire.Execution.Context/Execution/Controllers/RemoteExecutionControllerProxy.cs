@@ -28,7 +28,7 @@ namespace LionFire.Execution
 
         #region ExecutionState
 
-        public IBehaviorObservable<ExecutionState> ExecutionState {
+        public IBehaviorObservable<ExecutionState> State {
             get {
                 return executionState;
             }

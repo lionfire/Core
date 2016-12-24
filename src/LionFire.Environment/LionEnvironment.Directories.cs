@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace LionFire
 {
-    public partial class LionEnvironment
+    public partial class LionFireEnvironment
     {
         // .NET Framework Special Folders:
         //  - http://stackoverflow.com/questions/895723/environment-getfolderpath-commonapplicationdata-is-still-returning-c-docum
@@ -65,7 +65,7 @@ namespace LionFire
 
             internal static void EnsureAllDirectoriesExist()
             {
-                foreach (var pi in typeof(LionEnvironment.Directories).GetProperties(BindingFlags.Static | BindingFlags.Public))
+                foreach (var pi in typeof(LionFireEnvironment.Directories).GetProperties(BindingFlags.Static | BindingFlags.Public))
                 {
                     try
                     {

@@ -125,10 +125,10 @@ namespace LionFire.Applications.Hosting
 
         public IAppHost LoadHandles()
         {
-            Parallel.ForEach(components.OfType<IReadHandle>(), async rh => await rh.Initialize());
+            Parallel.ForEach(components.OfType<IReadHandle<object>>(), async rh => await rh.TryLoadNonNull());
             
 
-            foreach (var component in components.OfType<IReadHandle>().ToArray())
+            foreach (var component in components.OfType<IReadHandle<object>>().ToArray())
             {
                 this.Add(component.Object);
                 components.Remove(component);

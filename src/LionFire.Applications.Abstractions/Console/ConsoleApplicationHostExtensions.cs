@@ -26,7 +26,7 @@ namespace LionFire.Applications
                         app.Shutdown();
                     })
                 {
-                    ExecutionFlags = waitForCompletion ? ExecutionFlags.WaitForRunCompletion : ExecutionFlags.None,
+                    ExecutionFlags = waitForCompletion ? ExecutionFlag.WaitForRunCompletion : ExecutionFlag.None,
                 });
             return app;
         }

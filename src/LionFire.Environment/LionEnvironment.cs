@@ -11,12 +11,14 @@ using LionFire.ExtensionMethods;
 namespace LionFire
 {
 
-    public partial class LionEnvironment
+    public partial class LionFireEnvironment
     {
         #region Compile Environment
 
-        public static string CompileTargetFrameworkMoniker {
-            get {
+        public static string CompileTargetFrameworkMoniker
+        {
+            get
+            {
 #if NET451
                            return "NET451";
 #elif NET461
@@ -41,17 +43,83 @@ namespace LionFire
 
         #region Program Environment
 
-        public static string ProgramName { get { return "LionFireProgram(TODO)"; } }
+        public static string HomeDir
+        {
+            get
+            {
+                return Environment.ExpandEnvironmentVariables("%HOMEPATH%");
+            }
+        }
 
-        public static string ProgramVersion { get { return "0.0.0-alpha"; } }
+        // %LOCALAPPDATA% LOCALAPPDATA
+
+        // C:\Users\{username}\AppData\Roaming
+        public static string AppDataDir
+        {
+            get
+            {
+                if (appDataDir == null)
+                {
+                    var result = Environment.ExpandEnvironmentVariables("%APPDATA%");
+                    if (String.IsNullOrWhiteSpace(result))
+                    {
+                        throw new Exception("%APPDATA% is not set");
+                    }
+                }
+                return appDataDir;
+            }
+            set { appDataDir = value; }
+        }
+        private static string appDataDir;
+
+        //	C:\ProgramData
+        public static string ProgramDataDir
+        {
+            get
+            {
+                if (programDataDir == null)
+                {
+                    programDataDir = Environment.ExpandEnvironmentVariables("%ALLUSERSPROFILE%");
+                    if (String.IsNullOrWhiteSpace(programDataDir))
+                    {
+                        throw new Exception("%ALLUSERSPROFILE% is not set");
+                    }
+                }
+                return programDataDir;
+            }
+            set { programDataDir = value; }
+        }
+        private static string programDataDir;
+
+        public static string CompanyName { get; set; } = "LionFire";
+        public static string ProgramName { get; set; } = "ProgramName";
+        public static string AppDataDirName
+        {
+            get
+            {
+                return appDataDirName ?? ProgramName;
+            }
+            set { appDataDirName = value; }
+        }
+        private static string appDataDirName;
+
+        public static string AppProgramDataDir
+        {
+            get { return Path.Combine(ProgramDataDir, CompanyName, AppDataDirName); }
+        }
+
+        //[SetOnce]
+        public static string ProgramVersion { get; set; } = "0.0.0";
 
         #endregion
 
         public static TextWriter StandardOutput { get; private set; }
 
-        public static Stream StandardOutputStream {
+        public static Stream StandardOutputStream
+        {
             get { return standardOutputStream; }
-            set {
+            set
+            {
                 standardOutputStream = value;
                 StandardOutput = new StreamWriter(value);
             }
@@ -60,7 +128,7 @@ namespace LionFire
 
         #region Construction
 
-        static LionEnvironment()
+        static LionFireEnvironment()
         {
             Directories.EnsureAllDirectoriesExist();
             StandardOutputStream = Console.OpenStandardOutput();

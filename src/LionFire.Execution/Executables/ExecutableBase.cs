@@ -13,7 +13,7 @@ namespace LionFire.Execution.Executables
     {
         #region ExecutionState
 
-        public IBehaviorObservable<ExecutionState> ExecutionState {
+        public IBehaviorObservable<ExecutionState> State {
             get {
                 return executionState;
             }

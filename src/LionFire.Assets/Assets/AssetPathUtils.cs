@@ -9,7 +9,7 @@ namespace LionFire.Assets
 {
     public static class AssetPathUtils
     {
-        public static string GetSubpath<T>(string assetSubpath)
+        public static string GetSubpath<T>(string assetSubpath = null)
         {
             string diskPath;
             var attr = (AssetPathAttribute)typeof(T).GetTypeInfo().GetCustomAttributes(typeof(AssetPathAttribute), true).FirstOrDefault();
@@ -23,11 +23,14 @@ namespace LionFire.Assets
                 if (typeof(T).Name.StartsWith("T") && typeof(T).Name.Length > 1 && char.IsUpper(typeof(T).Name[1]))
                 {
                     diskPath = diskPath.Substring(1);
-                }                
+                }
             }
 
             var path = diskPath;
-            path = Path.Combine(path, assetSubpath);
+            if (assetSubpath != null)
+            {
+                path = Path.Combine(path, assetSubpath);
+            }
 
             return path;
         }

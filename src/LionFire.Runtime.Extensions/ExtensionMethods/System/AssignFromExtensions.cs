@@ -17,12 +17,36 @@ namespace LionFire.ExtensionMethods
 
             foreach (PropertyInfo mi in myType.GetProperties())
             {
-                if (!mi.CanRead || !mi.CanWrite) continue;
-                if (mi.GetIndexParameters().Length > 0) continue;
+                me.AssignPropertyFrom(other, mi);
+            }
+            return me;
+        }
+        public static object AssignFieldsFrom(this object me, object other)
+        {
+            Type myType = me.GetType();
+            Type otherType = other.GetType();
+            bool sameType = myType == otherType;
+
+            foreach (FieldInfo mi in myType.GetFields())
+            {
+                me.AssignFieldFrom(other, mi);
+            }
+            return me;
+        }
+
+
+        public static void AssignPropertyFrom(this object me, object other, PropertyInfo mi)
+        {
+            Type myType = me.GetType();
+            Type otherType = other.GetType();
+            bool sameType = myType == otherType;
+
+            if (!mi.CanRead || !mi.CanWrite) return;
+            if (mi.GetIndexParameters().Length > 0) return;
 #if NET35
-                if (mi.GetGetMethod().IsStatic) continue;
+                if (mi.GetGetMethod().IsStatic) return;
 #else
-                if (mi.GetMethod.IsStatic) continue;
+            if (mi.GetMethod.IsStatic) return;
 #endif
 
 #if LFU
@@ -30,12 +54,12 @@ namespace LionFire.ExtensionMethods
                 if (miMode == AssignmentMode.Ignore) continue;
 #endif
 
-                // TODO: Copy this same logic to AssignProperties to, and field methods
-                var otherMi = sameType ? mi : otherType.GetProperty(mi.Name);
+            // TODO: Copy this same logic to AssignProperties to, and field methods
+            var otherMi = sameType ? mi : otherType.GetProperty(mi.Name);
 
-                if (otherMi == null || otherMi.PropertyType != mi.PropertyType) continue;
-                
-                object val = otherMi.GetValue(other, null);
+            if (otherMi == null || otherMi.PropertyType != mi.PropertyType) return;
+
+            object val = otherMi.GetValue(other, null);
 
 #if LFU
                 //if (GetAssignmentValue(mi, other, useICloneableIfAvailable, ref val))
@@ -53,10 +77,53 @@ namespace LionFire.ExtensionMethods
                 }
 #endif
 #else
-                mi.SetValue(me, val, null);
+            mi.SetValue(me, val, null);
 #endif
-            }
-            return me;
+        }
+        public static void AssignFieldFrom(this object me, object other, FieldInfo mi)
+        {
+            Type myType = me.GetType();
+            Type otherType = other.GetType();
+            bool sameType = myType == otherType;
+
+            if (mi.IsInitOnly) return;
+
+#if NET35
+                if (mi.IsStatic.IsStatic) return;
+#else
+            if (mi.IsStatic) return;
+#endif
+
+#if LFU
+                AssignmentMode miMode = GetAssignmentMode(mi, assignmentMode);
+                if (miMode == AssignmentMode.Ignore) continue;
+#endif
+
+            // TODO: Copy this same logic to AssignProperties to, and field methods
+            var otherMi = sameType ? mi : otherType.GetField(mi.Name);
+
+            if (otherMi == null || otherMi.FieldType != mi.FieldType) return;
+
+            object val = otherMi.GetValue(other);
+
+#if LFU
+                //if (GetAssignmentValue(mi, other, useICloneableIfAvailable, ref val))
+                if (GetAssignmentValue(mi, other, miMode, ref val))
+                {
+#if TRACE_ASSIGNFROM
+                    l.Debug("[ASSIGNFROM] " + T.Name + "." + mi.Name + " = " + val);
+#endif
+                    mi.SetValue(me, val, null);
+                }
+#if TRACE_ASSIGNFROM
+                else
+                {
+                    l.Trace("[ASSIGNFROM] Skipping " + T.Name + "." + mi.Name);
+                }
+#endif
+#else
+            mi.SetValue(me, val);
+#endif
         }
 
         public static object AssignPropertiesTo(this object me, object other, BindingFlags bindingFlags = BindingFlags.Public | BindingFlags.Instance)

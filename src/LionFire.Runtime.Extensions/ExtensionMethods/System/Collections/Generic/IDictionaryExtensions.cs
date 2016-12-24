@@ -9,9 +9,9 @@ namespace LionFire.ExtensionMethods
 
     public static class IDictionaryExtensions
     {
-        public static TValue TryGetValue<TKey, TValue>(this IDictionary<TKey, TValue> dict, TKey key)
+        public static TValue TryGetValue<TKey, TValue>(this IDictionary<TKey, TValue> dict, TKey key, TValue defaultValue = default(TValue))
         {
-            if (!dict.ContainsKey(key)) return default(TValue);
+            if (!dict.ContainsKey(key)) return defaultValue;
             return dict[key];
         }
         public static TValue GetOrAdd<TKey, TValue>(this IDictionary<TKey, TValue> dict, TKey key, Func<TKey, TValue> factory)
