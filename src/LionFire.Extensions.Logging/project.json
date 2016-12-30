@@ -3,8 +3,8 @@
 
   "dependencies": {
     "LionFire.Runtime.Extensions": "1.0.2",
-    "Microsoft.Extensions.Logging": "1.0.0",
-    "Microsoft.Extensions.Logging.Abstractions": "1.0.0",
+    "Microsoft.Extensions.Logging": "1.*",
+    "Microsoft.Extensions.Logging.Abstractions": "1.*",
     "NETStandard.Library": "1.6.1"
   },
 

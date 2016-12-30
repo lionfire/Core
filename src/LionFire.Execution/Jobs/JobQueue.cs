@@ -193,7 +193,7 @@ namespace LionFire.Execution.Jobs
 
         
 
-        public ExecutionState DesiredState { get; set; }
+        public ExecutionState DesiredExecutionState { get; set; }
         public IBehaviorObservable<ExecutionState> State { get { return state; } }
         BehaviorObservable<ExecutionState> state = new BehaviorObservable<ExecutionState>(ExecutionState.Ready);
     }

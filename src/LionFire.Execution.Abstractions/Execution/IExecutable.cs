@@ -15,7 +15,7 @@ namespace LionFire.Execution
     public interface IControllableExecutable
     {
         // TODO
-        ExecutionState DesiredState { get; set; }
+        ExecutionState DesiredExecutionState { get; set; }
     }
 
         

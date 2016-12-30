@@ -21,6 +21,10 @@ namespace LionFire.Assets.Providers.FileSystem
         {
             return Path.Combine(RootDir, AssetPathUtils.GetSubpath<T>(assetSubpath)) + (assetSubpath == null ? "" : FileExtensionWithDot); ;
         }
+        public string GetPath(object obj, string assetSubpath = null)
+        {
+            return Path.Combine(RootDir, AssetPathUtils.GetSubpath(obj, assetSubpath)) + (assetSubpath == null ? "" : FileExtensionWithDot); ;
+        }
 
         public abstract string FileExtension { get; }
         public string FileExtensionWithDot { get { return (string.IsNullOrWhiteSpace(FileExtension) ? "" : "." + FileExtension); } }

@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 
 namespace LionFire.Assets
 {
+
     public static class AssetProviderExtensions
     {
         public static IEnumerable<string> Find<T>(this string searchString)
@@ -36,5 +37,8 @@ namespace LionFire.Assets
             var ap = (IAssetProvider)ManualSingleton<IServiceProvider>.Instance.GetService(typeof(IAssetProvider));
             ap.Save<T>(assetSubPath, obj);
         }
+
+        
+
     }
 }

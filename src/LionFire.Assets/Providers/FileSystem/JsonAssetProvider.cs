@@ -31,15 +31,23 @@ namespace LionFire.Assets.Providers.FileSystem
         public JsonAssetProvider(string rootDir) : base(rootDir)
         {
         }
-        
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="assetSubPath"></param>
+        /// <returns>Returns default(T) if file not found.</returns>
         public T Load<T>(string assetSubPath)
         {
-            return Newtonsoft.Json.JsonConvert.DeserializeObject<T>(File.ReadAllText(GetPath<T>(assetSubPath)));
+            var path = GetPath<T>(assetSubPath);
+            if (!File.Exists(path)) return default(T);
+            return Newtonsoft.Json.JsonConvert.DeserializeObject<T>(File.ReadAllText(path));
         }
 
         public void Save<T>(string assetSubPath, T obj)
         {
-            File.WriteAllText(GetPath<T>(assetSubPath), JsonConvert.SerializeObject(obj, JsonSettings));
+            File.WriteAllText(GetPath(obj, assetSubPath), JsonConvert.SerializeObject(obj, JsonSettings));
         }
     }
 }

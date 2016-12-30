@@ -5,14 +5,17 @@
     "LionFire.Applications.Abstractions": "1.0.0-*",
     "LionFire.Assets.Abstractions": "1.0.0-*",
     "LionFire.Runtime.Extensions": "1.0.2",
+    "LionFire.Templating": "1.0.0-*",
     "NETStandard.Library": "1.6.1",
     "Newtonsoft.Json": "9.0.1",
-    "System.IO.FileSystem": "4.0.1",
-    "System.Reflection.Extensions": "4.0.1"
+    "System.IO.FileSystem": "4.*",
+    "System.Reflection": "4.*",
+    "System.Reflection.Extensions": "4.*",
+    "System.Reflection.TypeExtensions": "4.*"
   },
 
   "frameworks": {
-    "netstandard1.1": {
+    "netstandard1.5": {
       "imports": "dnxcore50"
     },
     "net462": { }

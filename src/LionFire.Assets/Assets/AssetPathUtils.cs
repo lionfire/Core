@@ -11,16 +11,26 @@ namespace LionFire.Assets
     {
         public static string GetSubpath<T>(string assetSubpath = null)
         {
+            return GetSubpath(typeof(T), assetSubpath);
+        }
+        public static string GetSubpath(object obj, string assetSubpath = null)
+        {
+            var type = obj.GetType();
+            return GetSubpath(type, assetSubpath);
+        }
+        public static string GetSubpath(Type type, string assetSubpath = null)
+        {
             string diskPath;
-            var attr = (AssetPathAttribute)typeof(T).GetTypeInfo().GetCustomAttributes(typeof(AssetPathAttribute), true).FirstOrDefault();
+
+            var attr = (AssetPathAttribute)type.GetTypeInfo().GetCustomAttributes(typeof(AssetPathAttribute), true).FirstOrDefault();
             if (attr != null)
             {
                 diskPath = attr.AssetPath;
             }
             else
             {
-                diskPath = typeof(T).Name;
-                if (typeof(T).Name.StartsWith("T") && typeof(T).Name.Length > 1 && char.IsUpper(typeof(T).Name[1]))
+                diskPath = type.Name;
+                if (type.Name.StartsWith("T") && type.Name.Length > 1 && char.IsUpper(type.Name[1]))
                 {
                     diskPath = diskPath.Substring(1);
                 }

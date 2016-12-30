@@ -1,4 +1,4 @@
-﻿#define TRACE_PROGRESSIVETASK
+﻿//#define TRACE_PROGRESSIVETASK
 using LionFire.Reactive;
 using LionFire.Reactive.Subjects;
 using LionFire.Structures;

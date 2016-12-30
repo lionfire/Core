@@ -3,10 +3,10 @@
 
   "dependencies": {
     "NETStandard.Library": "1.6.1",
-    "System.Collections.Immutable": "1.2.0",
-    "System.ComponentModel": "4.0.*",
-    "System.Reactive.Linq": "3.0.0",
-    "System.Reflection.TypeExtensions": "4.1.0"
+    "System.Collections.Immutable": "1.*",
+    "System.ComponentModel": "4.*",
+    "System.Reactive.Linq": "3.*",
+    "System.Reflection.TypeExtensions": "4.*"
   },
 
   "frameworks": {
