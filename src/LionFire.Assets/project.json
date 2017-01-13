@@ -5,7 +5,7 @@
     "LionFire.Applications.Abstractions": "1.0.0-*",
     "LionFire.Assets.Abstractions": "1.0.0-*",
     "LionFire.Runtime.Extensions": "1.0.2",
-    "LionFire.Templating": "1.0.0-*",
+    "LionFire.Instantiating.Abstractions": "1.0.0-*",
     "NETStandard.Library": "1.6.1",
     "Newtonsoft.Json": "9.0.1",
     "System.IO.FileSystem": "4.*",

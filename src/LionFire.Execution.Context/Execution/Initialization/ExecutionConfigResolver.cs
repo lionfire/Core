@@ -86,15 +86,15 @@ namespace LionFire.Execution.Initialization
             return result;
         }
 
-        public async Task<bool> ResolveType(ExecutionConfig c, bool reresolve = false)
+        public  Task<bool> ResolveType(ExecutionConfig c, bool reresolve = false)
         {
             if (!reresolve)
             {
-                if (c.Type != null) { return true; }
+                if (c.Type != null) { return Task.FromResult(true); }
                 if (c.Object != null)
                 {
                     c.Type = c.Object.GetType();
-                    return true;
+                    return Task.FromResult(true);
                 }
             }
 
@@ -179,7 +179,7 @@ namespace LionFire.Execution.Initialization
 
             //c.TypeName = typeName;
 
-            return c.Type != null;
+            return Task.FromResult(c.Type != null);
         }
 
         /*      public async Task<bool> ResolveAssembly(ExecutionConfig c)

@@ -100,7 +100,7 @@ namespace LionFire.Execution.Jobs
 
             if (HasJobsWaiting)
             {
-                if (State.Value != ExecutionState.Ready && State.Value != ExecutionState.Started && State.Value != ExecutionState.Starting && State.Value != ExecutionState.WaitingToStart)
+                if (State.Value != ExecutionState.Ready && State.Value != ExecutionState.Started && State.Value != ExecutionState.Starting)
                 {
                     throw new Exception($"Invalid state: {State.Value}");
                 }

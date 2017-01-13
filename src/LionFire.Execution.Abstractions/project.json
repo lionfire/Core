@@ -2,11 +2,11 @@
   "version": "0.1.0-*",
 
   "dependencies": {
-    "LionFire.Annotations.Compilation": "1.0.0-*",
-    "LionFire.Runtime.Extensions": "1.0.2",
-    "Microsoft.Extensions.DependencyInjection.Abstractions": "1.0.0",
+    "LionFire.Annotations.Compilation": "1.*",
+    "LionFire.Runtime.Extensions": "1.*",
+    "Microsoft.Extensions.DependencyInjection.Abstractions": "1.*",
     "NETStandard.Library": "1.6.1",
-    "System.Reactive.Linq": "3.0.0"
+    "System.Reactive.Linq": "3.*"
   },
 
   "frameworks": {

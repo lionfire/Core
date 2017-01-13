@@ -93,6 +93,7 @@ namespace LionFire
 
         public static string CompanyName { get; set; } = "LionFire";
         public static string ProgramName { get; set; } = "ProgramName";
+        public static string ProgramDisplayName { get; set; } = "Program Name";
         public static string AppDataDirName
         {
             get

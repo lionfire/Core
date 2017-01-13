@@ -2,6 +2,7 @@
   "version": "1.0.2",
 
   "dependencies": {
+    "Microsoft.Extensions.DependencyInjection.Abstractions": "1.*",
     "NETStandard.Library": "1.6.1",
     "System.Collections.Immutable": "1.*",
     "System.ComponentModel": "4.*",

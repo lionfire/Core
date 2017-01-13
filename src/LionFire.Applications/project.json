@@ -7,7 +7,7 @@
     "LionFire.Assets.Abstractions": "1.0.0-*",
     "LionFire.Environment": "0.0.*",
     "LionFire.Execution": "1.0.0-*",
-    "LionFire.Templating": "1.0.0-*",
+    "LionFire.Instantiating.Abstractions": "1.0.0-*",
     "Microsoft.Extensions.Configuration.FileExtensions": "1.*",
     "Microsoft.Extensions.Configuration.Json": "1.*",
     "Microsoft.Extensions.DependencyInjection": "1.*",

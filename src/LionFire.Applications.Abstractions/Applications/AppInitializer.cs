@@ -19,9 +19,9 @@ namespace LionFire.Applications
 
         #endregion
 
-        public async Task<bool> Initialize()
+        public Task<bool> Initialize()
         {
-            return InitMethod(ManualSingleton<IAppHost>.Instance);
+            return Task.FromResult(InitMethod(ManualSingleton<IAppHost>.Instance));
         }
     }
 }

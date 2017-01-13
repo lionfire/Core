@@ -7,6 +7,7 @@ namespace LionFire.Validation
 {
     public class ValidationContext
     {
+        public object ValidationKind { get; set; }
         public List<ValidationIssue> Issues { get; private set; }
         public bool IsValid { get { return Issues == null || Issues.Count == 0; } }
         public object Object { get; set; }

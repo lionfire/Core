@@ -12,7 +12,8 @@ using LionFire.Dependencies;
 using LionFire.MultiTyping;
 using LionFire.Execution.Composition;
 using LionFire.Assets;
-using LionFire.Templating;
+using LionFire.Instantiating;
+using LionFire.DependencyInjection;
 
 namespace LionFire.Applications.Hosting
 {
@@ -37,7 +38,25 @@ namespace LionFire.Applications.Hosting
 
         public IServiceCollection ServiceCollection { get; private set; }
 
-        public IServiceProvider ServiceProvider { get; private set; }
+        //public IServiceProvider ServiceProvider { get; private set; }
+
+        #region ServiceProvider
+
+        public IServiceProvider ServiceProvider
+        {
+            get { return serviceProvider; }
+            set
+            {
+                serviceProvider = value;
+                if (IsRootApplication)
+                {
+                    InjectionContext.SetSingletonDefault(serviceProvider);
+                }
+            }
+        }
+        private IServiceProvider serviceProvider;
+
+        #endregion
 
         #endregion
 
@@ -100,7 +119,8 @@ namespace LionFire.Applications.Hosting
             }
         }
 
-        public bool IsRootApplication {
+        public bool IsRootApplication
+        {
             get { return ManualSingleton<IAppHost>.Instance == this; }
         }
 
@@ -120,13 +140,15 @@ namespace LionFire.Applications.Hosting
             //{
             //    configurer.Config(this);
             //}
+
+
             return ServiceCollection.BuildServiceProvider();
         }
 
         public IAppHost LoadHandles()
         {
             Parallel.ForEach(components.OfType<IReadHandle<object>>(), async rh => await rh.TryLoadNonNull());
-            
+
 
             foreach (var component in components.OfType<IReadHandle<object>>().ToArray())
             {
@@ -315,7 +337,7 @@ namespace LionFire.Applications.Hosting
             }
         }
 
-      
+
         #endregion
     }
 

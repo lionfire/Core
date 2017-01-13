@@ -21,6 +21,9 @@ namespace LionFire.Assets.Providers.FileSystem
         {
             Formatting = Formatting.Indented,
             TypeNameHandling = TypeNameHandling.Auto,
+            DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate,
+            
+            //TypeNameAssemblyFormat = System.Runtime.Serialization.Formatters.FormatterAssemblyStyle.Simple, // TODO: Does simple work in .NET Core?
             
         };
 

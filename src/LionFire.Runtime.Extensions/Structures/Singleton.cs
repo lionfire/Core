@@ -2,6 +2,9 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using System.Reflection;
+using LionFire.DependencyInjection;
+using LionFire.Types;
 
 namespace LionFire.Structures
 {
@@ -18,13 +21,5 @@ namespace LionFire.Structures
         {
         }
     }
-
-    public sealed class ManualSingleton<T>
-    {
-
-        public static T Instance { get; set; }
-        
-    }
-
     
 }

@@ -9,6 +9,32 @@ namespace LionFire.ExtensionMethods
 {
     public static class AssignFromExtensions
     {
+        public static object AssignFrom(this object me, Dictionary<string, object> dict)
+        {
+            Type myType = me.GetType();
+
+            foreach (var kvp in dict)
+            {
+                {
+                    var mi = myType.GetProperty(kvp.Key);
+                    if (mi != null)
+                    {
+                        mi.SetValue(me, kvp.Value);
+                        continue;
+                    }
+                }
+                {
+                    var mi = myType.GetField(kvp.Key);
+                    if (mi != null)
+                    {
+                        mi.SetValue(me, kvp.Value);
+                        continue;
+                    }
+                }
+            }
+            return me;
+        }
+
         public static object AssignPropertiesFrom(this object me, object other)
         {
             Type myType = me.GetType();

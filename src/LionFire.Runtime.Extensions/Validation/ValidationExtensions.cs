@@ -10,10 +10,11 @@ namespace LionFire.Validation
 {
     public static class ValidateExtensions
     {
-        public static ValidationContext Validate(this object obj)
+        public static ValidationContext Validate(this object obj, object validationKind = null)
         {
-            return new ValidationContext() { Object = obj };
+            return new ValidationContext() { Object = obj, ValidationKind = validationKind ?? ValidationKind.Unspecified };
         }
+
         public static ValidationContext MemberNonNull(this ValidationContext ctx, object val, string memberName)
         {
             if (val == null)

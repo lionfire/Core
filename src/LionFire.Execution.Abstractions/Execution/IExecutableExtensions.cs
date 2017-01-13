@@ -42,11 +42,28 @@ namespace LionFire.Execution
                 case ExecutionState.Pausing:
                 case ExecutionState.Paused:
                 case ExecutionState.Unpausing:
-                case ExecutionState.WaitingToStart:
+                //case ExecutionState.WaitingToStart:
                     return true;
                 default:
                     return false;
             }
+        }
+
+        public static async Task Restart(this IExecutable e, Action actionDuringShutdown = null, StopMode stopMode = StopMode.ImminentRestart | StopMode.GracefulShutdown, StopOptions stopOptions = StopOptions.StopChildren)
+        {
+            var exFlags = e as IAcceptsExecutionStateFlags;
+
+            if (exFlags != null) { exFlags.ExecutionStateFlags |= ExecutionStateFlags.Restarting; }
+            var stoppable = e as IStoppable;
+            if (stoppable != null) { await stoppable.Stop(stopMode, stopOptions); }
+
+            if (actionDuringShutdown != null) actionDuringShutdown();
+
+            var startable = e as IStartable;
+            if (startable != null) { await startable.Start(); }
+
+            if (exFlags != null) { exFlags.ExecutionStateFlags &= ~ExecutionStateFlags.Restarting; }
+
         }
     }
 }

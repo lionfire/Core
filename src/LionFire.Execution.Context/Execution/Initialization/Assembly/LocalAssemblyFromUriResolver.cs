@@ -80,8 +80,8 @@ namespace LionFire.Execution.Initialization
                 {
                     Console.WriteLine("Exception loading assembly: " + dll + System.Environment.NewLine + ex.ToString());
                 }
-#endif
                 return assembly;
+#endif
             });
         }
 

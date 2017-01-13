@@ -16,6 +16,8 @@ namespace LionFire.Execution
         /// Auto-start when configuration state receives some sort of action to perform
         /// </summary>
         AutoStart = 1 << 3,
+
+        
     }
 
     public static class ExecutionFlagsExtensions
