@@ -33,5 +33,9 @@ namespace LionFire.Instantiating
 
             return null;
         }
+        public static object ToInstantiatorOrObject(this object obj, InstantiationContext context = null)
+        {
+            return ToInstantiator(obj,context) ?? obj;
+        }
     }
 }

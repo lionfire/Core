@@ -11,7 +11,7 @@ namespace LionFire.Instantiating
         {
             foreach (var a in this)
             {
-                a.Affect(obj, context);
+                obj = a.Affect(obj, context);
             }
             return obj;
         }

@@ -11,7 +11,8 @@
     "System.IO.FileSystem": "4.*",
     "System.Reflection": "4.*",
     "System.Reflection.Extensions": "4.*",
-    "System.Reflection.TypeExtensions": "4.*"
+    "System.Reflection.TypeExtensions": "4.*",
+    "System.Threading.Thread": "4.*"
   },
 
   "frameworks": {

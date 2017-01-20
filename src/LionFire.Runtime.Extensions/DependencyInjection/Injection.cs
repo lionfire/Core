@@ -9,13 +9,15 @@ namespace LionFire
     // FUTURE: Add interface here for default implementation Type and trickle it through to ManualSingleton.GetGuaranteedInsance<CreateType>()
     public static class Injection
     {
-        public static object GetService(Type serviceType, IServiceProvider serviceProvider = null)
+        private const bool CreateIfMissingDefault = false;
+
+        public static object GetService(Type serviceType, IServiceProvider serviceProvider = null, bool createIfMissing = CreateIfMissingDefault)
         {
-            return InjectionContext.Current.GetService(serviceType, serviceProvider);
+            return InjectionContext.Current.GetService(serviceType, serviceProvider, createIfMissing);
         }
-        public static T GetService<T>(IServiceProvider serviceProvider = null)
+        public static T GetService<T>(IServiceProvider serviceProvider = null, bool createIfMissing = CreateIfMissingDefault)
         {
-            return (T)InjectionContext.Current.GetService(typeof(T), serviceProvider);
+            return (T)InjectionContext.Current.GetService(typeof(T), serviceProvider, createIfMissing);
         }
     }
 }

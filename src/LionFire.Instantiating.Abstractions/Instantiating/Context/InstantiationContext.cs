@@ -12,6 +12,7 @@ namespace LionFire.Instantiating
     public class InstantiationContext : MultiTypedBase
     {
         public object RootObject { get; set; }
+        public HashSet<object> Dependencies { get; set; } = new HashSet<object>();
 
         public LoadingContext Loading
         {
@@ -29,6 +30,8 @@ namespace LionFire.Instantiating
         }
 
         public static InstantiationContext Default => ManualSingleton<InstantiationContext>.GuaranteedInstance;
+
+        
 
     }
 

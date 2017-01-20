@@ -1,4 +1,5 @@
 ﻿using LionFire.Assets;
+using LionFire.ExtensionMethods;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -10,7 +11,7 @@ namespace LionFire.Instantiating
     {
         public static void Enable(InstantiationStrategyContext context = null)
         {
-            (context ?? InstantiationStrategyContext.Default).Strategies.Add(30, new AssetInstantiationStrategy());
+            (context ?? InstantiationStrategyContext.Default).Strategies.Add(130, new AssetInstantiationStrategy());
         }
 
         public IInstantiator TryProvide(object instance, InstantiationContext context = null)
@@ -24,7 +25,7 @@ namespace LionFire.Instantiating
                 AssetSubPath = asset.AssetSubPath,
             };
 
-            context.Saving.RequiresSave.Add(instance);
+            context.Dependencies.TryAdd(instance);
 
             return ai;
         }

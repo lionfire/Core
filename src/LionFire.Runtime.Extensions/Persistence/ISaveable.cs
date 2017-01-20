@@ -3,13 +3,10 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace LionFire.Instantiating
+namespace LionFire.Persistence
 {
-    public class SavingContext
+    public interface ISaveable
     {
-
-        
+        Task Save(object persistenceContext = null);
     }
-
-
 }

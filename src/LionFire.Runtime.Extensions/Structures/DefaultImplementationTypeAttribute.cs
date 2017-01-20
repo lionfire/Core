@@ -6,9 +6,9 @@ using System.Threading.Tasks;
 namespace LionFire.Structures
 {
     [System.AttributeUsage(AttributeTargets.Interface, Inherited = false, AllowMultiple = false)]
-    sealed class DefaultConcreteTypeAttribute : Attribute
+    sealed class DefaultImplementationTypeAttribute : Attribute
     {
-        public DefaultConcreteTypeAttribute(Type type)
+        public DefaultImplementationTypeAttribute(Type type)
         {
             this.type = type;
         }

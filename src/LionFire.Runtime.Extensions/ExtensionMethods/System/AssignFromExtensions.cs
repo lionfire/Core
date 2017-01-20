@@ -1,6 +1,7 @@
 ﻿//#define LFU // Imported from LionFire.Utility
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
@@ -35,15 +36,44 @@ namespace LionFire.ExtensionMethods
             return me;
         }
 
+        public static object AssignPropertiesFrom(this object me, Dictionary<string,object> dict)
+        {
+            Type myType = me.GetType();
+
+            foreach (var kvp in dict)
+            {
+                var pi = myType.GetProperty(kvp.Key);
+                if (pi == null)
+                {
+                    Debug.WriteLine($"WARN - AssignPropertiesFrom: property {kvp.Key} not found on object {me.GetType().FullName}");
+                    continue;
+                }
+                var val = kvp.Value;
+                if (pi.PropertyType.GetTypeInfo().IsEnum)
+                {
+                    if (val is string)
+                    {
+                        val = Enum.Parse(pi.PropertyType, (string)val);
+                    }
+                    else
+                    {
+                        val = Enum.ToObject(pi.PropertyType, val);
+                    }
+                }
+                pi.SetValue(me, val);
+            }
+            return me;
+        }
+
         public static object AssignPropertiesFrom(this object me, object other)
         {
             Type myType = me.GetType();
             Type otherType = other.GetType();
             bool sameType = myType == otherType;
 
-            foreach (PropertyInfo mi in myType.GetProperties())
+            foreach (PropertyInfo otherMethodInfo in otherType.GetProperties())
             {
-                me.AssignPropertyFrom(other, mi);
+                me.AssignPropertyFrom(other, otherMethodInfo);
             }
             return me;
         }
@@ -53,6 +83,7 @@ namespace LionFire.ExtensionMethods
             Type otherType = other.GetType();
             bool sameType = myType == otherType;
 
+            // TOOPTIMIZE - iterate through othertype.
             foreach (FieldInfo mi in myType.GetFields())
             {
                 me.AssignFieldFrom(other, mi);
@@ -61,18 +92,18 @@ namespace LionFire.ExtensionMethods
         }
 
 
-        public static void AssignPropertyFrom(this object me, object other, PropertyInfo mi)
+        public static void AssignPropertyFrom(this object me, object other, PropertyInfo otherPropertyInfo)
         {
             Type myType = me.GetType();
             Type otherType = other.GetType();
             bool sameType = myType == otherType;
 
-            if (!mi.CanRead || !mi.CanWrite) return;
-            if (mi.GetIndexParameters().Length > 0) return;
+            if (!otherPropertyInfo.CanRead || !otherPropertyInfo.CanWrite) return;
+            if (otherPropertyInfo.GetIndexParameters().Length > 0) return;
 #if NET35
                 if (mi.GetGetMethod().IsStatic) return;
 #else
-            if (mi.GetMethod.IsStatic) return;
+            if (otherPropertyInfo.GetMethod.IsStatic) return;
 #endif
 
 #if LFU
@@ -81,11 +112,11 @@ namespace LionFire.ExtensionMethods
 #endif
 
             // TODO: Copy this same logic to AssignProperties to, and field methods
-            var otherMi = sameType ? mi : otherType.GetProperty(mi.Name);
+            var myPi = sameType ? otherPropertyInfo : myType.GetProperty(otherPropertyInfo.Name);
 
-            if (otherMi == null || otherMi.PropertyType != mi.PropertyType) return;
+            if (myPi == null || myPi.PropertyType != otherPropertyInfo.PropertyType) return;
 
-            object val = otherMi.GetValue(other, null);
+            object val = myPi.GetValue(other, null);
 
 #if LFU
                 //if (GetAssignmentValue(mi, other, useICloneableIfAvailable, ref val))
@@ -103,7 +134,7 @@ namespace LionFire.ExtensionMethods
                 }
 #endif
 #else
-            mi.SetValue(me, val, null);
+            otherPropertyInfo.SetValue(me, val, null);
 #endif
         }
         public static void AssignFieldFrom(this object me, object other, FieldInfo mi)
@@ -112,7 +143,7 @@ namespace LionFire.ExtensionMethods
             Type otherType = other.GetType();
             bool sameType = myType == otherType;
 
-            if (mi.IsInitOnly) return;
+            if (mi.IsInitOnly) return; 
 
 #if NET35
                 if (mi.IsStatic.IsStatic) return;

@@ -18,18 +18,19 @@ namespace LionFire.States
 
         #endregion
 
-#region Construction
+        #region Construction
 
+        public StateRestorer() { }
         public StateRestorer(Dictionary<string, object> state)
-{
-this.State = state;
-}
-public StateRestorer( object obj)
-{
-this.State = obj.GetState();
-}
+        {
+            this.State = state;
+        }
+        public StateRestorer(object obj)
+        {
+            this.State = obj.GetState();
+        }
 
-#endregion
+        #endregion
 
         public Dictionary<string, object> State { get; set; }
 

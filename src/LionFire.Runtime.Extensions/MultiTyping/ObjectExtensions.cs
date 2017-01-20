@@ -8,22 +8,34 @@ namespace LionFire.MultiTyping
 {
     public static class ObjectExtensions
     {
-        public static T AsType<T>(this object obj)
-            where T : class
-        {
-            T result = obj as T;
-            if (result != null) return result;
+        // REVIEW - I don't think I want object extensions.  Did I need this for something?
+        //public static T AsType<T>(this object obj)
+        //    where T : class
+        //{
+        //    T result = obj as T;
+        //    if (result != null) return result;
 
-            var mt = obj as IMultiTyped;
-            if (mt == null)
-            {
-                var cmt = obj as IContainsMultiTyped;
-                mt = cmt?.MultiTyped;
-            }
-            if (mt == null) return null;
+        //    var mt = obj as IMultiTyped;
+        //    if (mt == null)
+        //    {
+        //        var cmt = obj as IContainsMultiTyped;
+        //        mt = cmt?.MultiTyped;
+        //    }
+        //    if (mt == null) return null;
 
-            return mt.AsType<T>();
-        }
+        //    return mt.AsType<T>();
+        //}
+
+
+        //public static T AsType<T>(this IContainsMultiTyped obj)
+        //    where T : class
+        //{
+        //    var cmt = obj as IContainsMultiTyped;
+        //    var mt = cmt?.MultiTyped;
+        //    if (mt == null) return null;
+
+        //    return mt.AsType<T>();
+        //}
 
         #region AsTypeFromProperties
 
@@ -33,10 +45,10 @@ namespace LionFire.MultiTyping
         {
             if (propertyFilter == null) propertyFilter = DefaultPropertyFilter;
 
-             return (T) obj.GetType().GetProperties(BindingFlags.Public | BindingFlags.Instance)
-                .Where(_pi => typeof(T).IsAssignableFrom(_pi.PropertyType) && propertyFilter(typeof(T), _pi))
-                .FirstOrDefault()
-                ?.GetValue(obj);
+            return (T)obj.GetType().GetProperties(BindingFlags.Public | BindingFlags.Instance)
+               .Where(_pi => typeof(T).IsAssignableFrom(_pi.PropertyType) && propertyFilter(typeof(T), _pi))
+               .FirstOrDefault()
+               ?.GetValue(obj);
         }
 
         public static bool DefaultPropertyFilter(Type type, PropertyInfo propertyInfo)

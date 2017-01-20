@@ -11,6 +11,6 @@ namespace LionFire.MultiTyping
     /// </remarks>
     public class MultiTypedBase : IContainsMultiTyped
     {
-        public MultiTypeContainer MultiTyped { get; }
+        public MultiType MultiTyped { get; protected set; } = new MultiType();
     }
 }

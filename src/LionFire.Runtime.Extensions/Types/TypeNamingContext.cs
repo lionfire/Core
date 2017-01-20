@@ -14,6 +14,9 @@ namespace LionFire.Types
         private Dictionary<string, Type> types = new Dictionary<string, Type>();
         HashSet<string> conflictingShortNames = new HashSet<string>();
 
+        public TypeNamingContext()
+        {
+        }
 
         public Type TryResolve(string typeName)
         {
@@ -37,6 +40,10 @@ namespace LionFire.Types
 
         public void Register(string typeName, Type type)
         {
+            if (types.ContainsKey(typeName))
+            {
+                throw new AlreadyException($"{typeName} is already registered.  Was the same Assembly registered twice, or is there a conflict?");
+            }
             types.GetOrAdd(typeName, x => type);
         }
         public void Register<T>(string typeName)

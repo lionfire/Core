@@ -8,7 +8,7 @@ namespace LionFire.Assets
     public interface IAssetProvider
     {
         T Load<T>(string assetSubPath);
-        void Save<T>(string assetSubPath, T obj);
+        void Save(string assetSubPath, object obj);
 
         IEnumerable<string> Find<T>(string searchString);
     }

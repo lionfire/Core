@@ -6,7 +6,7 @@ using LionFire.Structures;
 
 namespace LionFire.Types
 {
-    [DefaultConcreteType(typeof(TypeNamingContext))]
+    [DefaultImplementationType(typeof(TypeNamingContext))]
     public interface ITypeNamingContext
     {
         Type Resolve(string typeName);

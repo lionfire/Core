@@ -29,6 +29,5 @@ namespace LionFire.Instantiating.Templating
 
     public class TemplateAssetInstantiation : AssetInstantiator
     {
-
     }
 }

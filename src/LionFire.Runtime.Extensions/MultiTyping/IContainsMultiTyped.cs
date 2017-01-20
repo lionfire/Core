@@ -9,7 +9,7 @@ namespace LionFire.MultiTyping
 {
     public interface IContainsMultiTyped
     {
-        MultiTypeContainer MultiTyped { get; }
+        MultiType MultiTyped { get; }
     }
 
     public static class IContainsMultiTypedExtensions
@@ -17,7 +17,7 @@ namespace LionFire.MultiTyping
         public static T AsType<T>(this IContainsMultiTyped cmt)
             where T : class
         {
-            return cmt.MultiTyped.AsType<T>();
+            return cmt?.MultiTyped?.AsType<T>();
         }
 
         public static T AsTypeOrInject<T>(this IContainsMultiTyped cmt, InjectionContext context = null)

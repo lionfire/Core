@@ -5,15 +5,13 @@ using System.Threading.Tasks;
 
 namespace LionFire.Instantiating
 {
-    public class IProvidesInstantiatorStrategy : IInstantiationProvider
+    public class IsIInstantiatorStrategy : IInstantiationProvider
     {
         public IInstantiator TryProvide(object instance, InstantiationContext context = null)
         {
-            var ipi = instance as IProvidesInstantiator;
-            if (ipi != null) return ObjectInstantiationExtensions.ToInstantiator(ipi, context);
-
+            var ii = instance as IInstantiator;
+            if (ii != null) return ii;
             return null;
         }
     }
-    
 }

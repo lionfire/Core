@@ -21,7 +21,7 @@ namespace LionFire.Structures
 
                     if (typeof(T).GetTypeInfo().IsAbstract || typeof(T).GetTypeInfo().IsInterface)
                     {
-                        var attr = typeof(T).GetTypeInfo().GetCustomAttribute<DefaultConcreteTypeAttribute>();
+                        var attr = typeof(T).GetTypeInfo().GetCustomAttribute<DefaultImplementationTypeAttribute>();
                         if (attr != null)
                         {
                             createType = attr.Type;
@@ -29,6 +29,15 @@ namespace LionFire.Structures
                         else
                         {
                             createType = null;
+                        }
+
+                        var sType = typeof(ManualSingleton<>).MakeGenericType(createType);
+
+                        var sTypeInstance = (T)sType.GetProperty("Instance", BindingFlags.Static | BindingFlags.Public).GetValue(null);
+                        if (sTypeInstance != null)
+                        {
+                            Instance = (T)sTypeInstance;
+                            return Instance;
                         }
                     }
                     if (createType != null)

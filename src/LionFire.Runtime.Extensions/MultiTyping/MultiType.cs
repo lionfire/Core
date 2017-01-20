@@ -7,12 +7,20 @@ using System.Threading.Tasks;
 namespace LionFire.MultiTyping
 {
 
-    public class MultiTypeContainer : IMultiTyped
+    public class MultiType : IMultiTyped, IContainsMultiTyped
     {
         protected Dictionary<Type, object> TypeDict { get { return typeDict; } }
         protected Dictionary<Type, object> typeDict;
 
         public IEnumerable<Type> Types { get { if (TypeDict == null) return Enumerable.Empty<Type>(); else return TypeDict.Keys; } }
+
+        public MultiType MultiTyped
+        {
+            get
+            {
+                return this;
+            }
+        }
 
         public T AsType<T>()
             where T : class

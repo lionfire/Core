@@ -11,50 +11,50 @@ using System.Diagnostics;
 using System.Reflection;
 using System.Collections.Specialized;
 
-namespace LionFire.Assets
+namespace LionFire.Persistence
 {
     public class AutoSaveManager
     {
         public static AutoSaveManager Instance { get { return Singleton<AutoSaveManager>.Instance; } }
 
-        internal ConcurrentDictionary<IAsset, ThrottledChangeHandler<IAsset>> handlers = new ConcurrentDictionary<IAsset, ThrottledChangeHandler<IAsset>>();
-
+        internal ConcurrentDictionary<ISaveable, ThrottledChangeHandler<ISaveable>> handlers = new ConcurrentDictionary<ISaveable, ThrottledChangeHandler<ISaveable>>();
     }
 
     public static class AutoSaveManagerExtensions
     {
         public static readonly int AutoSaveThrottleMilliseconds = 2000;
-        public static void QueueAutoSave(this IAsset asset)
+        public static void QueueAutoSave(this ISaveable saveable)
         {
-            var handler = GetHandler(asset);
+            Debug.WriteLine($"Queued autosave for {saveable.GetType().Name}");
+            var handler = GetHandler(saveable);
             handler.Queue();
         }
 
-        private static ThrottledChangeHandler<IAsset> GetHandler(IAsset asset)
+        private static ThrottledChangeHandler<ISaveable> GetHandler(ISaveable asset)
         {
             if (asset == null) return null;
-            return AutoSaveManager.Instance.handlers.GetOrAdd(asset, a => new ThrottledChangeHandler<IAsset>((INotifyPropertyChanged)a,
-                o => IAssetExtensions.Save(o), TimeSpan.FromMilliseconds(2000)));
+            return AutoSaveManager.Instance.handlers.GetOrAdd(asset, a => new ThrottledChangeHandler<ISaveable>((INotifyPropertyChanged)a,
+                o => o.Save(), TimeSpan.FromMilliseconds(2000)));
         }
 
         private static void OnChangeQueueHandler(object sender)
         {
-            var h = GetHandler(sender as IAsset);
+            var h = GetHandler(sender as ISaveable);
             h?.Queue();
         }
 
         /// <summary>
         /// If the asset implements IChanged, only it will be used.  Otherwise, it tries both INotifyPropertyChanged on the asset, and also INotifyCollectionChanged on the asset's properties.
         /// </summary>
-        /// <param name="asset"></param>
+        /// <param name="saveable"></param>
         /// <param name="enable"></param>
-        public static void EnableAutoSave(this IAsset asset, bool enable = true)
+        public static void EnableAutoSave(this ISaveable saveable, bool enable = true)
         {
 
             bool attachedToSomething = false;
-            var handler = GetHandler(asset);
+            var handler = GetHandler(saveable);
 
-            var ic = asset as IChanged;
+            var ic = saveable as IChanged;
             if (ic != null) // TO C#7
             {
                 if (enable)
@@ -69,7 +69,7 @@ namespace LionFire.Assets
                 return; // If this one is available, skip other options.
             }
 
-            var inpc = asset as INotifyPropertyChanged;
+            var inpc = saveable as INotifyPropertyChanged;
             
             if (inpc != null)
             {
@@ -79,19 +79,19 @@ namespace LionFire.Assets
                 }
                 else
                 {
-                    ThrottledChangeHandler<IAsset> removedHandler;
-                    if (AutoSaveManager.Instance.handlers.TryRemove(asset, out removedHandler))
+                    ThrottledChangeHandler<ISaveable> removedHandler;
+                    if (AutoSaveManager.Instance.handlers.TryRemove(saveable, out removedHandler))
                     {
                         removedHandler.Dispose();
                     }
                 }
             }
 
-            foreach (var pi in asset.GetType().GetProperties(BindingFlags.Public | BindingFlags.Instance))
+            foreach (var pi in saveable.GetType().GetProperties(BindingFlags.Public | BindingFlags.Instance))
             {
                 if (typeof(INotifyCollectionChanged).IsAssignableFrom(pi.PropertyType))
                 {
-                    var incc = pi.GetValue(asset) as INotifyCollectionChanged;
+                    var incc = pi.GetValue(saveable) as INotifyCollectionChanged;
                     incc.CollectionChanged += (s, e) => handler.Queue();
                     attachedToSomething = true;
                 }
@@ -99,7 +99,7 @@ namespace LionFire.Assets
 
             if (!attachedToSomething)
             {
-                throw new ArgumentException("Does not implement INotifyPropertyChanged, and no other change interfaces are currently supported.", nameof(asset));
+                throw new ArgumentException("Does not implement INotifyPropertyChanged, and no other change interfaces are currently supported.", nameof(saveable));
             }
 
         }

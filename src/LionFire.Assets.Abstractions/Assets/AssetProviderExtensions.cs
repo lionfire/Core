@@ -7,6 +7,7 @@ using LionFire.Validation;
 using LionFire.Types;
 using System.Reflection;
 using LionFire.Instantiating;
+using LionFire.Persistence;
 
 namespace LionFire.Assets
 {
@@ -54,6 +55,7 @@ namespace LionFire.Assets
             var result = mi.Invoke(ap, new object[] { assetSubPath });
             var v = result as IValidatable;
             if (v != null && (context == null || !context.Loading.SkipValidation)) { v.Validate(ValidationKind.Deserialized); }
+
             return result;
         }
 
@@ -66,7 +68,12 @@ namespace LionFire.Assets
         public static void Save<T>(this T obj, string assetSubPath, InstantiationContext context = null)
         {
             var ap = (IAssetProvider)ManualSingleton<IServiceProvider>.Instance.GetService(typeof(IAssetProvider));
-            ap.Save<T>(assetSubPath, obj);
+
+            (obj as INotifyOnSaving)?.OnSaving();
+
+            var inst = obj.ToInstantiatorOrObject(); // FUTURE - Use instantiation framework?
+
+            ap.Save(assetSubPath, obj);
         }
 
     }

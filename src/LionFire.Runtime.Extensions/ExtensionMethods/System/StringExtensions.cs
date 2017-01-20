@@ -18,5 +18,13 @@ namespace LionFire.ExtensionMethods
             }
             return sb.ToString();
         }
+        public static string TryRemoveFromEnd(this string str, string textToRemove)
+        {
+            if (str.EndsWith(textToRemove))
+            {
+                str = str.Substring(0, str.Length - textToRemove.Length);
+            }
+            return str;
+        }
     }
 }

@@ -9,4 +9,5 @@ namespace LionFire.Instantiating
     {
         IInstantiator TryProvide(object instance, InstantiationContext context = null);
     }
+    
 }
