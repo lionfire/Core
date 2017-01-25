@@ -13,5 +13,5 @@ namespace LionFire.Execution
         IBehaviorObservable<ExecutionState> State { get; }
 
     }
-
+    
 }
