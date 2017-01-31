@@ -27,7 +27,7 @@ namespace LionFire.Messaging
         // REVIEW - expose this marshaller interface?
         public void Publish(object message, MessagingContext context = null)
         {
-            Publish(message, context);
+            Publish(message, context,null);
         }
         public void Publish(object message, MessagingContext context = null, System.Action<System.Action> marshaller = null)
         {

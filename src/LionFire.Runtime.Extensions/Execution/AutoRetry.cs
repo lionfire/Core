@@ -91,7 +91,7 @@ namespace LionFire.Execution
                     if (exceptions == null) exceptions = new List<Exception>();
                     exceptions.Add(ex);
 
-                    Debug.WriteLine($"AutoRetry got {ex.GetType().Name}, retrying after {millisecondsBetweenAttempts}ms.  {retriesRemaining} retries remaining.");
+                    Debug.WriteLine($"AutoRetry got {ex.GetType().Name}, retrying after {millisecondsBetweenAttempts}ms.  {retriesRemaining} retries remaining. \r\n"+ex.ToString());
                     if (millisecondsBetweenAttempts > 0)
                     {
                         await Task.Delay(millisecondsBetweenAttempts);

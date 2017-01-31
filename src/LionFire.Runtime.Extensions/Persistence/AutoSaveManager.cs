@@ -25,7 +25,7 @@ namespace LionFire.Persistence
         public static readonly int AutoSaveThrottleMilliseconds = 2000;
         public static void QueueAutoSave(this ISaveable saveable)
         {
-            Debug.WriteLine($"Queued autosave for {saveable.GetType().Name}");
+            //Debug.WriteLine($"Queued autosave for {saveable.GetType().Name}");
             var handler = GetHandler(saveable);
             handler.Queue();
         }

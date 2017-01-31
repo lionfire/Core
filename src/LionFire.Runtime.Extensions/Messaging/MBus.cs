@@ -40,7 +40,7 @@ namespace LionFire.Messaging
             broker.Publish(obj, context);
         }
 
-        public static void Subscribe<T>(object subscriber, MessagingContext context = null)
+        public static void Subscribe(object subscriber, MessagingContext context = null)
         {
             var broker = context?.Broker ?? DefaultBroker;
             broker.Subscribe(subscriber, context);
