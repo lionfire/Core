@@ -36,10 +36,13 @@ namespace LionFire
                     sb.Append(",");
                 }
 
+                var val = pi.GetValue(obj);
+                if (object.ReferenceEquals(obj, val)) continue;
+
                 sb.Append(" ");
                 sb.Append(pi.Name);
                 sb.Append("=");
-                sb.Append(pi.GetValue(obj).ToString());
+                sb.Append(pi.GetValue(obj)?.ToString());
             }
             sb.Append("}");
             return sb.ToString();

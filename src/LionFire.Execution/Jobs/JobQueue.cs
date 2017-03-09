@@ -25,34 +25,81 @@ namespace LionFire.Execution.Jobs
     {
         #region State
 
-        private ConcurrentQueue<IJob> jobQueue = new ConcurrentQueue<IJob>();
+        private ConcurrentList<IJob> unstartedJobs = new ConcurrentList<IJob>(); // REVIEW - make this a linkedlist if job count gets large?
 
-        public IEnumerable<IJob> ActiveJobs { get { return activeJobs.Keys; } }
-        private ConcurrentDictionary<IJob, IJob> activeJobs { get; set; } = new ConcurrentDictionary<IJob, IJob>();
-        private ConcurrentDictionary<IJob, IJob> completedJobs { get; set; } = new ConcurrentDictionary<IJob, IJob>();
+        private ConcurrentHashSet<IJob> runningJobs = new ConcurrentHashSet<IJob>();
+        private List<IJob> completedJobs = new List<IJob>();
 
+        //public IEnumerable<IJob> ActiveJobs { get { return activeJobs.Keys; } }
+        //private ConcurrentDictionary<IJob, IJob> activeJobs { get; set; } = new ConcurrentDictionary<IJob, IJob>();
+
+
+        public bool TryAcceptJob(IJob job)
+        {
+            if (Prioritizer == null)
+            {
+                return true; // Accept all jobs if has no prioritizer
+            }
+
+            var priority = Prioritizer.GetPriority(job);
+            if (double.IsNaN(priority))
+            {
+                return false; // Prioritizer can reject the job by returning NaN
+            }
+            Enqueue(job);
+            return true;
+        }
 
         #endregion
 
         #region Settings
 
-        public int MaxConcurrentJobs { get; set; } = 1;
+        /// <summary>
+        /// Default: Logical CPU count + 1
+        /// </summary>
+        public int MaxConcurrentJobs { get; set; }
 
         #endregion
 
+        public IJobPrioritizer Prioritizer { get; set; }
+
+        public JobManager JobManager
+        {
+            get;set;
+        }
+
+        public JobQueue()
+        {
+            MaxConcurrentJobs = System.Environment.ProcessorCount + 1;
+        }
+
+        public bool RequestStart(IJob job)
+        {
+            lock (lock_)
+            {
+                if (startingJob == job) return true;
+                //if (ExecutionFlags.HasFlag(ExecutionFlag.AutoStart))
+                //{
+                //    TryStartJobs();
+                //}
+                return false;
+            }
+        }
+
         #region Methods
 
-        /// <summary>
-        /// Also consinder EnqueueOrGet to avoid adding duplicate jobs
-        /// </summary>
-        /// <param name="job"></param>
         public void Enqueue(IJob job)
         {
-            jobQueue.Enqueue(job);
+            if (job.Queue == this) return;
+            if (job.Queue != null) throw new Exception("Job already in another queue");
+            job.Queue = this;
+            if (unstartedJobs.Contains(job)) return;
+            JobManager.OnJobAdded(job);
+            unstartedJobs.Add(job);
             OnJobEnqueued();
         }
 
-        private void OnJobEnqueued()
+        protected virtual void OnJobEnqueued()
         {
             if (ExecutionFlags.HasFlag(ExecutionFlag.AutoStart))
             {
@@ -62,32 +109,35 @@ namespace LionFire.Execution.Jobs
 
         private object _lock = new object();  // TOTHREADSAFETY
 
-        public IJob EnqueueOrGet(IJob job)
-        {
-            lock (_lock)
-            {
-                IJob result;
+        //public IJob EnqueueOrGet(IJob job)
+        //{
+        //    lock (_lock)
+        //    {
+        //        IJob result;
 
-                if (activeJobs.TryGetValue(job, out result))
-                {
-                    return result;
-                }
-                if (completedJobs.TryGetValue(job, out result))
-                {
-                    return result;
-                }
-                // O(n) OPTIMIZE
-                result = jobQueue.Where(j => j == job).FirstOrDefault();
-                if (result != null) { return result; }
+        //        if (activeJobs.TryGetValue(job, out result))
+        //        {
+        //            return result;
+        //        }
+        //        if (completedJobs.TryGetValue(job, out result))
+        //        {
+        //            return result;
+        //        }
+        //        // O(n) OPTIMIZE
+        //        result = jobQueue.Where(j => j == job).FirstOrDefault();
+        //        if (result != null) { return result; }
 
-                Debug.WriteLine($"[JOB] job with hash: {job.GetHashCode()}: {job.ToString()}");
+        //        Debug.WriteLine($"[JOB] job with hash: {job.GetHashCode()}: {job.ToString()}");
 
-                jobQueue.Enqueue(job);
-                OnJobEnqueued();
-                return job;
-            }
-        }
+        //        jobQueue.Enqueue(job);
+        //        OnJobEnqueued();
+        //        return job;
+        //    }
+        //}
 
+        object lock_ = new object();
+
+        private IJob startingJob = null;
         /// <summary>
         /// Must be invoked if ExecutionFlag.AutoStart is not set
         /// </summary>
@@ -95,65 +145,115 @@ namespace LionFire.Execution.Jobs
         public int TryStartJobs()
         {
             // TOTHREADSAFE
-
-            int jobsStarted = 0;
-
-            if (HasJobsWaiting)
+            lock (lock_)
             {
-                if (State.Value != ExecutionState.Ready && State.Value != ExecutionState.Started && State.Value != ExecutionState.Starting)
+                int jobsStarted = 0;
+
+                if (CanStartJob)
                 {
-                    throw new Exception($"Invalid state: {State.Value}");
+                    if (State.Value != ExecutionState.Ready && State.Value != ExecutionState.Started && State.Value != ExecutionState.Starting)
+                    {
+                        throw new Exception($"Invalid state: {State.Value}");
+                    }
+
+                    do
+                    {
+                        var highestPriorityJobs = GetHighestPriorityJobs();
+
+                        foreach (var job in highestPriorityJobs.ToArray())
+                        {
+                            if (state.Value != ExecutionState.Started) { state.OnNext(ExecutionState.Starting); }
+                            unstartedJobs.Remove(job);
+                            startingJob = job;
+                            job.Start();
+                            jobsStarted++;
+                            if (state.Value != ExecutionState.Started) { state.OnNext(ExecutionState.Started); }
+
+                            if (job.RunTask != null && !job.RunTask.IsCompleted)
+                            {
+                                runningJobs.Add(job);
+                                //while (!activeJobs.TryAdd(job, job))
+                                //{
+                                //    IJob replacement;
+                                //    if (activeJobs.TryGetValue(job, out replacement)) { job = replacement; }
+                                //}
+                                job.RunTask.ContinueWith(t =>
+                                {
+                                    OnJobComplete(job);
+                                });
+                            }
+                        }
+                    }
+                    while (CanStartJob);
+
+                    //IJob job;
+                    //while (activeJobs.Count < MaxConcurrentJobs && unstartedJobs.TryDequeue(out job))
+                    //{
+                    //    job.Start();
+                    //    jobsStarted++;
+                    //    state.OnNext(ExecutionState.Started);
+                    //    if (!job.RunTask.IsCompleted)
+                    //    {
+                    //        while (!activeJobs.TryAdd(job, job))
+                    //        {
+                    //            IJob replacement;
+                    //            if (activeJobs.TryGetValue(job, out replacement)) { job = replacement; }
+                    //        }
+                    //        job.RunTask.ContinueWith(t =>
+                    //        {
+                    //            OnJobComplete(job);
+                    //        });
+                    //    }
+                    //}
                 }
-                if (State.Value == ExecutionState.Ready)
+                return jobsStarted;
+            }
+        }
+
+        public IEnumerable<IJob> GetHighestPriorityJobs(int maxJobs = 0)
+        {
+            if (maxJobs == 0) maxJobs = MaxConcurrentJobs - runningJobs.Count;
+
+            var list = new SortedList<double, IJob>();
+
+            if (Prioritizer == null) { return unstartedJobs.Take(maxJobs); }
+
+            double nextPriority = 1;
+            foreach (var job in unstartedJobs)
+            {
+                var priority = Prioritizer.GetPriority(job);
+                if (double.IsNaN(priority)) priority = nextPriority++;
+
+                while (list.ContainsKey(priority))
                 {
-                    state.OnNext(ExecutionState.Starting);
+                    priority += 0.001;
                 }
 
-                IJob job;
-                while (activeJobs.Count < MaxConcurrentJobs && jobQueue.TryDequeue(out job))
-                {
-                    job.Start();
-                    jobsStarted++;
-                    state.OnNext(ExecutionState.Started);
-                    if (!job.RunTask.IsCompleted)
-                    {
-                        while (!activeJobs.TryAdd(job, job))
-                        {
-                            IJob replacement;
-                            if (activeJobs.TryGetValue(job, out replacement)) { job = replacement; }
-                        }
-                        job.RunTask.ContinueWith(t =>
-                        {
-                            OnJobComplete(job);
-                            state.OnNext(ExecutionState.Ready);
-                        });
-                    }
-                }
+                list.Add(priority, job);
             }
-            return jobsStarted;
+
+            return list.Reverse().Select(kvp => kvp.Value);
         }
 
         #endregion
 
-        public bool HasJobsWaiting
+        public bool CanStartJob
         {
-            get { return activeJobs.Count < MaxConcurrentJobs && jobQueue.Count > 0; }
+            get { return runningJobs.Count < MaxConcurrentJobs && unstartedJobs.Count > 0; } // REVIEW - move state check to here?
         }
 
         /// <returns>True if Job was started, False if no Jobs are in queue</returns>
 
-
-
         protected void OnJobComplete(IJob job)
         {
-            IJob _;
-            completedJobs.TryAdd(job, job);
-            activeJobs.TryRemove(job, out _);
+            completedJobs.Add(job);
+            runningJobs.Remove(job);
+            JobManager.OnJobRemoved(job);
             if (ExecutionFlags.HasFlag(ExecutionFlag.AutoStart))
             {
                 TryStartJobs();
             }
-            if (activeJobs.Count == 0)
+            if (runningJobs.Count == 0)
             {
                 if (State.Value == ExecutionState.Started)
                 {
@@ -175,23 +275,20 @@ namespace LionFire.Execution.Jobs
         {
             while (TryStartJobs() > 0)
             {
-                foreach (var j in activeJobs.Keys.ToArray())
+                foreach (var j in runningJobs.ToArray())
                 {
-                    await j.RunTask;
+                    await j.RunTask.ConfigureAwait(false);
                 }
             }
         }
 
         #endregion
 
-
-
         public ExecutionFlag ExecutionFlags
         {
             get; set;
         } = ExecutionFlag.AutoStart;
 
-        
 
         public ExecutionState DesiredExecutionState { get; set; }
         public IBehaviorObservable<ExecutionState> State { get { return state; } }

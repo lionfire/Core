@@ -23,9 +23,9 @@ namespace LionFire.Instantiating
                 context = new InstantiationContext();
             }
 
-            var oic = context.AsType<InstantiationStrategyContext>() ?? InstantiationStrategyContext.Default;
+            var instantiationStrategyContext = context.AsType<InstantiationStrategyContext>() ?? InstantiationStrategyContext.Default;
 
-            foreach (var strategy in oic.Strategies.Values)
+            foreach (var strategy in instantiationStrategyContext.Strategies.Values)
             {
                 var result = strategy.TryProvide(obj, context);
                 if (result != null) return result;

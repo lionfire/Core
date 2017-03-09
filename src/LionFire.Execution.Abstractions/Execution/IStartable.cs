@@ -17,7 +17,7 @@ namespace LionFire.Execution
         public static async Task Start(this IStartable startable, CancellationToken token)
         {
             // TODO: token
-            await startable.Start();
+            await startable.Start().ConfigureAwait(false);
         }
     }
 }

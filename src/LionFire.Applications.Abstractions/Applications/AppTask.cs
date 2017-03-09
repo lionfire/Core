@@ -62,7 +62,7 @@ namespace LionFire.Applications
 
         public virtual async Task Start(/*System.Threading.CancellationToken? cancellationToken = null*/)
         {
-            if (await Initialize() == false) { throw new Exception($"{this} failed to initialize.  Cannot start it."); }
+            if (await Initialize().ConfigureAwait(false) == false) { throw new Exception($"{this} failed to initialize.  Cannot start it."); }
 
             //if (cancellationToken.HasValue) { this.CancellationToken = cancellationToken; }
 

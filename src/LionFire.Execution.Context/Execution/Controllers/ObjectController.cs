@@ -36,7 +36,7 @@ namespace LionFire.Execution
         {
             var c = ExecutionContext.Config;
 
-            var result = await c.ResolveType();
+            var result = await c.ResolveType().ConfigureAwait(false);
             if (c.Type != null)
             {
                 ExecutionContext.InitializationState &= ~(ExecutionContextInitializationState.MissingCode);
@@ -68,7 +68,7 @@ namespace LionFire.Execution
 
             return ExecutionContext.Status == ExecutionHostState.Initialized;
 
-            //var result = await c.ResolveObject();
+            //var result = await c.ResolveObject().ConfigureAwait(false);
             //if (c.Object != null)
             //{
             //    ExecutionContext.InitializationState &= ~(ExecutionContextInitializationState.MissingCode | ExecutionContextInitializationState.MissingExecutor | ExecutionContextInitializationState.MissingHost);
@@ -130,7 +130,7 @@ namespace LionFire.Execution
             if (IsStartable)
             {
                 var execObj = ExecutionContext.ExecutionObject as IStartable;
-                await execObj.Start();
+                await execObj.Start().ConfigureAwait(false);
                 ExecutionContext.Status = ExecutionHostState.Running;
             }
             else if (IsIDisposable)
@@ -159,7 +159,7 @@ namespace LionFire.Execution
             if (ExecutionContext.ExecutionObject as IStoppable != null)
             {
                 var execObj = ExecutionContext.ExecutionObject as IStoppable;
-                await execObj.Stop(mode, options);
+                await execObj.Stop(mode, options).ConfigureAwait(false);
                 ExecutionContext.Status = ExecutionHostState.Stopped;
             }
             else if (IsIDisposable)
@@ -168,7 +168,7 @@ namespace LionFire.Execution
                 {
                     ExecutionContext.ExecutionObject = Activator.CreateInstance(ExecutionContext.Config.Type);
                     ExecutionContext.Status = ExecutionHostState.Running;
-                });
+                }).ConfigureAwait(false);
                 
             }
             else
@@ -178,7 +178,7 @@ namespace LionFire.Execution
                     ExecutionContext.Status = ExecutionHostState.Running;
                     ExecutionContext.ExecutionObject = Activator.CreateInstance(ExecutionContext.Config.Type);
                     ExecutionContext.Status = ExecutionHostState.Finished;
-                });
+                }).ConfigureAwait(false);
             }
         }
     }

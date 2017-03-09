@@ -7,12 +7,17 @@ namespace LionFire.Instantiating
 {
     public class InstantiationPipeline : List<IInstantiator>, IInstantiator
     {
+
+
         public object Affect(object obj, InstantiationContext context = null)
         {
             foreach (var a in this)
             {
                 obj = a.Affect(obj, context);
             }
+
+            (obj as INotifyOnInstantiated)?.OnInstantiated(context);
+
             return obj;
         }
     }
@@ -21,7 +26,7 @@ namespace LionFire.Instantiating
     //{
     //    public static object Instantiate(this IEnumerable<IInstantiator> pipeline, InstantiationContext context = null)
     //    {
-            
+
     //    }
     //}
 }

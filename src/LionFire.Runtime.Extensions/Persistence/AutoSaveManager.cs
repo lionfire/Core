@@ -17,7 +17,9 @@ namespace LionFire.Persistence
     {
         public static AutoSaveManager Instance { get { return Singleton<AutoSaveManager>.Instance; } }
 
-        internal ConcurrentDictionary<ISaveable, ThrottledChangeHandler<ISaveable>> handlers = new ConcurrentDictionary<ISaveable, ThrottledChangeHandler<ISaveable>>();
+        internal ConcurrentDictionary<ISaveable, ThrottledChangeHandler> handlers = new ConcurrentDictionary<ISaveable, ThrottledChangeHandler>();
+
+
     }
 
     public static class AutoSaveManagerExtensions
@@ -30,11 +32,17 @@ namespace LionFire.Persistence
             handler.Queue();
         }
 
-        private static ThrottledChangeHandler<ISaveable> GetHandler(ISaveable asset)
+        private static ThrottledChangeHandler GetHandler(ISaveable asset, Action<object> saveAction = null)
         {
             if (asset == null) return null;
-            return AutoSaveManager.Instance.handlers.GetOrAdd(asset, a => new ThrottledChangeHandler<ISaveable>((INotifyPropertyChanged)a,
-                o => o.Save(), TimeSpan.FromMilliseconds(2000)));
+            if (saveAction == null) saveAction = o => ((ISaveable)o).Save();
+            return AutoSaveManager.Instance.handlers.GetOrAdd(asset, a =>
+            {
+                var inpc = a as INotifyPropertyChanged ?? ((a as IWrapper)?.WrapperTarget as INotifyPropertyChanged);
+                if (inpc == null) { throw new ArgumentException("asset must implement INotifyPropertyChanged, or wrap an object via IWrapper that does."); }
+                return new ThrottledChangeHandler(inpc, saveAction, TimeSpan.FromMilliseconds(2000));
+            }
+            );
         }
 
         private static void OnChangeQueueHandler(object sender)
@@ -48,11 +56,11 @@ namespace LionFire.Persistence
         /// </summary>
         /// <param name="saveable"></param>
         /// <param name="enable"></param>
-        public static void EnableAutoSave(this ISaveable saveable, bool enable = true)
+        public static void EnableAutoSave(this ISaveable saveable, bool enable = true, Action<object> saveAction=null)
         {
 
             bool attachedToSomething = false;
-            var handler = GetHandler(saveable);
+            var handler = GetHandler(saveable, saveAction);
 
             var ic = saveable as IChanged;
             if (ic != null) // TO C#7
@@ -63,23 +71,27 @@ namespace LionFire.Persistence
                 }
                 else
                 {
-                    ic.Changed -= OnChangeQueueHandler; 
+                    ic.Changed -= OnChangeQueueHandler;
                 }
                 attachedToSomething = true;
                 return; // If this one is available, skip other options.
             }
 
             var inpc = saveable as INotifyPropertyChanged;
-            
+            if (inpc == null)
+            {
+                inpc = (saveable as IWrapper)?.WrapperTarget as INotifyPropertyChanged;
+            }
             if (inpc != null)
             {
                 if (enable)
                 {
+                    // Already attached in GetHandler
                     attachedToSomething = true;
                 }
                 else
                 {
-                    ThrottledChangeHandler<ISaveable> removedHandler;
+                    ThrottledChangeHandler removedHandler;
                     if (AutoSaveManager.Instance.handlers.TryRemove(saveable, out removedHandler))
                     {
                         removedHandler.Dispose();

@@ -55,12 +55,12 @@ namespace LionFire.Execution
 
             if (exFlags != null) { exFlags.ExecutionStateFlags |= ExecutionStateFlags.Restarting; }
             var stoppable = e as IStoppable;
-            if (stoppable != null) { await stoppable.Stop(stopMode, stopOptions); }
+            if (stoppable != null) { await stoppable.Stop(stopMode, stopOptions).ConfigureAwait(false); }
 
             if (actionDuringShutdown != null) actionDuringShutdown();
 
             var startable = e as IStartable;
-            if (startable != null) { await startable.Start(); }
+            if (startable != null) { await startable.Start().ConfigureAwait(false); }
 
             if (exFlags != null) { exFlags.ExecutionStateFlags &= ~ExecutionStateFlags.Restarting; }
 

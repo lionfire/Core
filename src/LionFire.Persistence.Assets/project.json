@@ -1,0 +1,24 @@
+{
+  "version": "1.0.0-*",
+
+  "dependencies": {
+    "LionFire.Applications.Abstractions": "1.0.0-*",
+    "LionFire.Runtime.Extensions": "1.0.2",
+    "LionFire.Instantiating.Abstractions": "1.0.0-*",
+    "NETStandard.Library": "1.6.1",
+    "Newtonsoft.Json": "9.0.1",
+    "System.IO.FileSystem": "4.*",
+    "System.Reflection": "4.*",
+    "System.Reflection.Extensions": "4.*",
+    "System.Reflection.TypeExtensions": "4.*",
+    "System.Threading.Thread": "4.*",
+    "LionFire.Persistence.Assets.Abstractions": "1.0.0-*"
+  },
+
+  "frameworks": {
+    "netstandard1.5": {
+      "imports": "dnxcore50"
+    },
+    "net462": { }
+  }
+}

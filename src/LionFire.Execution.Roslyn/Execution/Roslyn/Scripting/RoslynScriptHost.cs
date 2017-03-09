@@ -22,7 +22,7 @@ namespace LionFire.Execution.Roslyn.Scripting
             var script = Microsoft.CodeAnalysis.CSharp.Scripting.CSharpScript.Create(Code
             //CSharpScriptEngine.Execute(
             , scriptContext.Options);
-            var result = await script.RunAsync();
+            var result = await script.RunAsync().ConfigureAwait(false);
             //And this from the REPL
             //Console.WriteLine(CSharpScriptEngine.Execute("new ScriptedClass().HelloWorld"));
             //Console.ReadKey();

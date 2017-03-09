@@ -38,7 +38,7 @@ namespace LionFire.Execution
             return await AutoRetryExtensions.AutoRetry<TResult>(action, maxRetries == int.MinValue ? DefaultMaxRetries : maxRetries,
                 throwLastExceptionOnFail.HasValue ? throwLastExceptionOnFail.Value : ThrowLastExceptionOnFail,
                 millisecondsBetweenAttempts == int.MinValue ? DefaultMillisecondsBetweenAttempts : millisecondsBetweenAttempts,
-                allowException ?? AllowException);
+                allowException ?? AllowException).ConfigureAwait(false);
 
         }
 
@@ -52,7 +52,7 @@ namespace LionFire.Execution
             await AutoRetryExtensions.AutoRetry(action, maxRetries == int.MinValue ? DefaultMaxRetries : maxRetries,
                 throwLastExceptionOnFail.HasValue ? throwLastExceptionOnFail.Value : ThrowLastExceptionOnFail,
                 millisecondsBetweenAttempts == int.MinValue ? DefaultMillisecondsBetweenAttempts : millisecondsBetweenAttempts,
-                allowException ?? AllowException);
+                allowException ?? AllowException).ConfigureAwait(false);
 
         }
     }

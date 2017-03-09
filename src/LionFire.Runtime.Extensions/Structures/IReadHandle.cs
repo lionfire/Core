@@ -31,7 +31,7 @@ namespace LionFire
             {
                 var _ = rh.Object;
                 return true;
-            });
+            }).ConfigureAwait(false);
         }
         public static async Task<bool> TryLoadNonNull(this IReadHandle<object> rh)
         {
@@ -39,7 +39,7 @@ namespace LionFire
             {
                 var _ = rh.Object;
                 return _ != null;
-            });
+            }).ConfigureAwait(false);
         }
     }
 

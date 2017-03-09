@@ -19,7 +19,7 @@ namespace LionFire.Execution.Composition
 
         public async Task<bool> Initialize(T target)
         {
-            return await InitializeMethod(target);
+            return await InitializeMethod(target).ConfigureAwait(false);
         }
     }
 }

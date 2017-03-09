@@ -56,7 +56,7 @@ namespace LionFire.Execution
 
                     if (millisecondsBetweenAttempts > 0)
                     {
-                        await Task.Delay(millisecondsBetweenAttempts);
+                        await Task.Delay(millisecondsBetweenAttempts).ConfigureAwait(false);
                     }
                 }
             }
@@ -94,7 +94,7 @@ namespace LionFire.Execution
                     Debug.WriteLine($"AutoRetry got {ex.GetType().Name}, retrying after {millisecondsBetweenAttempts}ms.  {retriesRemaining} retries remaining. \r\n"+ex.ToString());
                     if (millisecondsBetweenAttempts > 0)
                     {
-                        await Task.Delay(millisecondsBetweenAttempts);
+                        await Task.Delay(millisecondsBetweenAttempts).ConfigureAwait(false);
                     }
                 }
             }

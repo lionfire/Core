@@ -18,8 +18,7 @@ namespace LionFire.Instantiating
         Type type;
         public InstantiatorTypeAttribute(Type type) { this.type = type; }
     }
-
-
+    
     public class InstantiationStrategyContext
     {
 
@@ -32,22 +31,7 @@ namespace LionFire.Instantiating
         {
             get
             {
-                var result = ManualSingleton<InstantiationStrategyContext>.Instance;
-                if (result != null) return result;
-
-                result = new InstantiationStrategyContext();
-
-                var strategies = new SortedList<int, IInstantiationProvider>();
-                strategies.Add(10, new IToInstantiatorStrategy());
-                strategies.Add(20, new IsIInstantiatorStrategy());
-                strategies.Add(30, new IProvidesInstantiatorStrategy());
-                strategies.Add(40, new IProvidesInstantiatorsStrategy());
-                strategies.Add(50, new InstantiatorsFromAttributesStrategy());
-                //strategies.Add(60000, new SerializeObjectStrategy());  Use ToInstantiatorOrObject instead 
-                result.Strategies = strategies;
-
-                ManualSingleton<InstantiationStrategyContext>.Instance = result;
-                return result;
+                return Defaults.TryGet<InstantiationStrategyContext>();
             }
         }
     }

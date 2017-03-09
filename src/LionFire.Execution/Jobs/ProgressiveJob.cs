@@ -1,9 +1,11 @@
 ﻿//#define TRACE_PROGRESSIVETASK
+using LionFire.Execution.Jobs;
 using LionFire.Reactive;
 using LionFire.Reactive.Subjects;
 using LionFire.Structures;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 using System.Reactive.Subjects;
 using System.Threading;
@@ -11,37 +13,76 @@ using System.Threading.Tasks;
 
 namespace LionFire.Execution
 {
-    
 
-    public abstract class ProgressiveJob : IHasRunTask, IHasDescription, IHasProgress, IHasProgressMessage, IJob, IExecutable
+
+
+    public abstract class ProgressiveJob : JobBase, IHasRunTask, IHasDescription, IHasProgress, IHasProgressMessage, INotifyPropertyChanged
     {
 
-        public bool IsCompleted { get { return progress.Value >= 1; } }
+        public override bool IsCompleted { get { return progress >= 1; } }
         public string Description { get; set; }
-
-        public IObservable<double> Progress { get { return progress; } }
-        private BehaviorSubject<double> progress = new BehaviorSubject<double>(double.NaN);
 
         public CancellationToken CancellationToken { get; set; }
 
-        public Task RunTask { get; set; }
 
-        public IObservable<string> ProgressMessage { get { return progressMessage; } }
-        private BehaviorSubject<string> progressMessage = new BehaviorSubject<string>("Not yet started.");
+        #region Progress
 
+        public double Progress
+        {
+            get { return progress; }
+            set
+            {
+                if (progress == value) return;
+                progress = value;
+                OnPropertyChanged(nameof(Progress));
+            }
+        }
+        private double progress = double.NaN;
+
+        #endregion
+
+        #region ProgressMessage
+
+        public string ProgressMessage
+        {
+            get { return progressMessage; }
+            set
+            {
+                if (progressMessage == value) return;
+                progressMessage = value;
+                OnPropertyChanged(nameof(ProgressMessage));
+            }
+        }
+        private string progressMessage;
+
+        #endregion
+
+
+   
         public void UpdateProgress(double progressFactor, string message = null)
         {
             // TODO: Log
 #if TRACE_PROGRESSIVETASK
             Console.WriteLine(this.ToString() + $" {progressFactor*100.0}% {message}");
 #endif
-            progress.OnNext(progressFactor);
-            if (message != null) { progressMessage.OnNext(message); }
+            Progress = progressFactor;
+            if (message != null) { ProgressMessage = message; }
         }
 
-        public IBehaviorObservable<ExecutionState> State { get { return state; } }
-        protected BehaviorObservable<ExecutionState> state = new BehaviorObservable<ExecutionState>(ExecutionState.Ready);
 
-        public abstract Task Start();
+        #region INotifyPropertyChanged Implementation
+
+        public event PropertyChangedEventHandler PropertyChanged;
+
+        protected void OnPropertyChanged(string propertyName)
+        {
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+        }
+
+        #endregion
+
+
+
+
     }
 }

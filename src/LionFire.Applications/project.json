@@ -3,8 +3,8 @@
 
   "dependencies": {
     "LionFire.Applications.Abstractions": "1.0.0-*",
-    "LionFire.Assets": "1.0.0-*",
-    "LionFire.Assets.Abstractions": "1.0.0-*",
+    "LionFire.Persistence.Assets": "1.0.0-*",
+    "LionFire.Persistence.Assets.Abstractions": "1.0.0-*",
     "LionFire.Environment": "0.0.*",
     "LionFire.Execution": "1.0.0-*",
     "LionFire.Instantiating.Abstractions": "1.0.0-*",

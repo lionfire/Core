@@ -147,7 +147,7 @@ namespace LionFire.Applications.Hosting
 
         public IAppHost LoadHandles()
         {
-            Parallel.ForEach(components.OfType<IReadHandle<object>>(), async rh => await rh.TryLoadNonNull());
+            Parallel.ForEach(components.OfType<IReadHandle<object>>(), async rh => await rh.TryLoadNonNull().ConfigureAwait(false));
 
 
             foreach (var component in components.OfType<IReadHandle<object>>().ToArray())
@@ -216,7 +216,7 @@ namespace LionFire.Applications.Hosting
             int componentsRequiringInit = needsInitialization.Count;
             List<TInitializable> stillNeedsInitialization = null;
 
-            var unresolvedDependencies = await needsInitialization.TryResolveSet(this.ServiceProvider);
+            var unresolvedDependencies = await needsInitialization.TryResolveSet(this.ServiceProvider).ConfigureAwait(false);
             if (unresolvedDependencies != null && unresolvedDependencies.Count > 0)
             {
                 throw new HasUnresolvedDependenciesException(unresolvedDependencies);
@@ -241,7 +241,7 @@ namespace LionFire.Applications.Hosting
                     //    stillNeedsInitialization.Add(component);
                     //}
                     //else 
-                    if (await component.Initialize() == false)
+                    if (await component.Initialize().ConfigureAwait(false) == false)
                     {
                         stillNeedsInitialization.Add(component);
                     }

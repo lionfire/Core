@@ -9,8 +9,18 @@ namespace LionFire.ExtensionMethods
 
     public static class IDictionaryExtensions
     {
+        /// <summary>
+        /// Returns default(TValue) if key is null
+        /// </summary>
+        /// <typeparam name="TKey"></typeparam>
+        /// <typeparam name="TValue"></typeparam>
+        /// <param name="dict"></param>
+        /// <param name="key"></param>
+        /// <param name="defaultValue"></param>
+        /// <returns></returns>
         public static TValue TryGetValue<TKey, TValue>(this IDictionary<TKey, TValue> dict, TKey key, TValue defaultValue = default(TValue))
         {
+            if (key == null) return default(TValue);
             if (!dict.ContainsKey(key)) return defaultValue;
             return dict[key];
         }

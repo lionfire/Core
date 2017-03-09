@@ -59,7 +59,7 @@ namespace LionFire.Execution
                 if (cancellationToken.HasValue && cancellationToken.Value.IsCancellationRequested) return StateChangeResult.OperationCanceled;
 
                
-                await Task.Delay(100);
+                await Task.Delay(100).ConfigureAwait(false);
             }
         }
     }

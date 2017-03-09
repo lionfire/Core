@@ -40,7 +40,7 @@ namespace LionFire.Execution.Initialization
 
         public async Task<bool> Resolve(ExecutionConfig c)
         {
-            c.Assembly = await ResolveAssemblyFromName(c.SourceUriBody, c.AssemblyVersion);
+            c.Assembly = await ResolveAssemblyFromName(c.SourceUriBody, c.AssemblyVersion).ConfigureAwait(false);
             if (c.Assembly != null)
             {
                 c.AssemblyName = c.SourceUriBody;
@@ -82,7 +82,7 @@ namespace LionFire.Execution.Initialization
                 }
                 return assembly;
 #endif
-            });
+            }).ConfigureAwait(false);
         }
 
     }

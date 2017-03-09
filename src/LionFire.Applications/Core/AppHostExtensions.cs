@@ -11,13 +11,13 @@ namespace LionFire.Applications.Hosting
     public static class TemplateAssetAppExtensions
     {
         public static IAppHost Add<T, TInstance>(this IAppHost host, string assetSubpath)
-            where T : ITemplate
+            where T : class,ITemplate
         {
             return host.Add<T,object>(assetSubpath,null);
         }
 
         public static IAppHost Add<T,TInstance>(this IAppHost host, string assetSubpath, Action<TInstance> initializer)
-            where T : ITemplate
+            where T : class, ITemplate
         {
             var sp = ManualSingleton<IServiceProvider>.Instance;
             if (sp == null)

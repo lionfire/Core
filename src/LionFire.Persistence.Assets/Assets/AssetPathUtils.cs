@@ -1,0 +1,55 @@
+﻿using LionFire.Instantiating;
+using LionFire.Persistence;
+using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+using System.Reflection;
+using System.Threading.Tasks;
+
+namespace LionFire.Assets
+{
+    public static class AssetPathUtils
+    {
+        public static string GetSubpath<T>(string assetSubpath = null, PersistenceContext context = null)
+        {
+            return GetSubpath(typeof(T), assetSubpath, context);
+        }
+        public static string GetSubpath(object obj, string assetSubpath = null, PersistenceContext context = null)
+        {
+            var type = obj.GetType();
+            return GetSubpath(type, assetSubpath,context);
+        }
+        public static string GetSubpath(Type type, string assetSubpath = null, PersistenceContext context = null)
+        {
+            if (context  != null)
+            {
+                type = context.RootObject?.GetType();
+            }
+
+            string diskPath;
+
+            var attr = (AssetPathAttribute)type.GetTypeInfo().GetCustomAttributes(typeof(AssetPathAttribute), true).FirstOrDefault();
+            if (attr != null)
+            {
+                diskPath = attr.AssetPath;
+            }
+            else
+            {
+                diskPath = type.Name;
+                if (type.Name.StartsWith("T") && type.Name.Length > 1 && char.IsUpper(type.Name[1]))
+                {
+                    diskPath = diskPath.Substring(1);
+                }
+            }
+
+            var path = diskPath;
+            if (assetSubpath != null)
+            {
+                path = Path.Combine(path, assetSubpath);
+            }
+
+            return path;
+        }
+    }
+}

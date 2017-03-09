@@ -31,6 +31,24 @@ namespace LionFire.DependencyInjection
 
         #endregion
 
+
+        #region ServiceProvider
+
+        public IServiceProvider ServiceProvider
+        {
+            get { return serviceProvider; }
+            set { serviceProvider = value; }
+        }
+        private IServiceProvider serviceProvider;
+
+        #endregion
+
+        public T GetService<T>(IServiceProvider serviceProvider = null, bool createIfMissing = DefaultCreateIfMissing)
+        {
+            var mi = typeof(InjectionContext).GetMethod("GetService", new Type[] { typeof(Type), typeof(IServiceProvider), typeof(bool) });
+            return (T)mi.Invoke(this, new object[] { typeof(T), serviceProvider, createIfMissing });
+        }
+
         /// <summary>
         /// Locate the service for the specified type.
         /// Search order:
@@ -61,11 +79,29 @@ namespace LionFire.DependencyInjection
                 if (result != null) { return result; }
             }
 
-            var pi = typeof(ManualSingleton<>).MakeGenericType(serviceType).GetProperty(createIfMissing ? "GuaranteedInstance": "Instance", BindingFlags.Static | BindingFlags.Public);
+            serviceProvider = this.ServiceProvider;
+            if (serviceProvider != null)
+            {
+                result = serviceProvider.GetService(serviceType);
+                if (result != null) { return result; }
+            }
+
+            var pi = typeof(ManualSingleton<>).MakeGenericType(serviceType).GetProperty(createIfMissing ? "GuaranteedInstance" : "Instance", BindingFlags.Static | BindingFlags.Public);
             result = pi.GetValue(null);
 
             return result;
         }
+
+        public void AddSingleton<T>(T obj, bool force = false)
+            where T : class
+        {
+            if (!force && ManualSingleton<T>.Instance != null && !object.ReferenceEquals(ManualSingleton<T>.Instance, obj))
+            {
+                throw new AlreadyException($"{typeof(T).Name} singleton already set.  Use force to override.");
+            }
+            ManualSingleton<T>.Instance = obj;
+        }
+
         object IServiceProvider.GetService(Type serviceType)
         {
             return GetService(serviceType, null, DefaultCreateIfMissing);

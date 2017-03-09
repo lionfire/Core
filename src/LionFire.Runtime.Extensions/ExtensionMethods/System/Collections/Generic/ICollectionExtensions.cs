@@ -7,13 +7,21 @@ namespace LionFire.ExtensionMethods
 {
     public static class ICollectionExtensions
     {
-        public static void SetToMatch<T>(this ICollection<T> me, IEnumerable<T> other)
+        /// <summary>
+        /// Sets me to match other
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="me"></param>
+        /// <param name="other"></param>
+        public static void SetToMatch<T>(this ICollection<T> me, IEnumerable<T> other, Func<T, bool> filter = null)
         {
             var otherArr = other.ToList();
 
             var meArr = me.ToList();
 
-            foreach (var item in otherArr)
+            if (filter == null) filter = _ => true;
+
+            foreach (var item in otherArr.Where(filter))
             {
                 if (!me.Contains(item))
                 {

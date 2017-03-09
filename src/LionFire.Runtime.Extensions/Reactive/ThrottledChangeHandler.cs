@@ -11,26 +11,26 @@ using System.Reactive.Subjects;
 namespace LionFire.Reactive
 {
 
-    public class ThrottledChangeHandler<T> : IDisposable
+    public class ThrottledChangeHandler : IDisposable
     {
         INotifyPropertyChanged inpc;
         IDisposable subscription;
         IDisposable subscription2;
         Subject<int> thr;
 
-        public ThrottledChangeHandler(INotifyPropertyChanged inpc, Action<T> action, TimeSpan delay)
+        public ThrottledChangeHandler(INotifyPropertyChanged inpc, Action<object> action, TimeSpan delay)
         {
             if (inpc == null) throw new ArgumentNullException(nameof(inpc));
             this.inpc = inpc;
-            if (!typeof(T).GetTypeInfo(). IsAssignableFrom(inpc.GetType().GetTypeInfo()))
-            {
-                throw new ArgumentException();
-            }
+            //if (!typeof(T).GetTypeInfo().IsAssignableFrom(inpc.GetType().GetTypeInfo()))
+            //{
+            //    throw new ArgumentException();
+            //}
 
             var obs = Observable.FromEventPattern<PropertyChangedEventHandler, PropertyChangedEventArgs>(h => inpc.PropertyChanged += h, h2 => inpc.PropertyChanged -= h2);
             thr = new Subject<int>();
-            subscription = obs.Throttle(delay).Subscribe(eventPattern => action((T)eventPattern.Sender));
-            subscription2 = thr.Throttle(delay).Subscribe(_ => action((T)inpc));
+            subscription = obs.Throttle(delay).Subscribe(eventPattern => action(eventPattern.Sender));
+            subscription2 = thr.Throttle(delay).Subscribe(_ => action(inpc));
         }
 
         public void Queue()

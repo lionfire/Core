@@ -9,8 +9,13 @@ using LionFire.Types;
 
 namespace LionFire.Instantiating
 {
-    public class InstantiationContext : MultiTypedBase
+    public class InstantiationContext : ContainsMultiTyped
     {
+
+        public InstantiationContext() { }
+        public InstantiationContext(object rootObject) { this.RootObject = rootObject; }
+
+
         public object RootObject { get; set; }
         public HashSet<object> Dependencies { get; set; } = new HashSet<object>();
 
@@ -30,8 +35,6 @@ namespace LionFire.Instantiating
         }
 
         public static InstantiationContext Default => ManualSingleton<InstantiationContext>.GuaranteedInstance;
-
-        
 
     }
 
