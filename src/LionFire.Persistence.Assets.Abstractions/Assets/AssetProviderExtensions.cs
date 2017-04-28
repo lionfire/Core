@@ -8,6 +8,7 @@ using LionFire.Types;
 using System.Reflection;
 using LionFire.Instantiating;
 using LionFire.Persistence;
+using LionFire.DependencyInjection;
 
 namespace LionFire.Assets
 {
@@ -17,31 +18,28 @@ namespace LionFire.Assets
     {
         public static IEnumerable<string> Find<T>(this string searchString)
         {
-            var ap = (IAssetProvider)ManualSingleton<IServiceProvider>.Instance.GetService(typeof(IAssetProvider));
-            return ap.Find<T>(searchString);
+            return AssetProvider.Find<T>(searchString);
         }
+
+        private static IAssetProvider AssetProvider => InjectionContext.Current.GetService<IAssetProvider>();
 
         public static T Load<T>(this string assetSubPath, InstantiationContext context = null)
             where T : class
         {
-
-            var ap = (IAssetProvider)ManualSingleton<IServiceProvider>.Instance.GetService(typeof(IAssetProvider));
-            var result = ap.Load<T>(assetSubPath);
+            var result = AssetProvider.Load<T>(assetSubPath);
             var v = result as IValidatable;
-            if (v != null && (context == null || !context.Loading.SkipValidation)) { v.Validate(ValidationKind.Deserialized); }
+            if (v != null && (context == null || !context.Loading.SkipValidation)) { v.Validate(new ValidationContext(result, ValidationKind.Deserialized)); }
             return result;
         }
         public static T Load<T>(this string assetSubPath, string concreteTypeName, InstantiationContext context = null)
         {
             Type t = TypeResolver.Default.Resolve(concreteTypeName); // TODO: Get typeresolver from InstantiationContext
 
-            var ap = (IAssetProvider)ManualSingleton<IServiceProvider>.Instance.GetService(typeof(IAssetProvider));
+            var mi = typeof(IAssetProvider).GetMethod("Load", BindingFlags.Instance | BindingFlags.Public).MakeGenericMethod(t);
 
-            var mi = typeof(IAssetProvider).GetTypeInfo().GetMethod("Load", BindingFlags.Instance | BindingFlags.Public).MakeGenericMethod(t);
-
-            var result = (T)mi.Invoke(ap, new object[] { assetSubPath });
+            var result = (T)mi.Invoke(AssetProvider, new object[] { assetSubPath });
             var v = result as IValidatable;
-            if (v != null && (context == null || !context.Loading.SkipValidation)) { v.Validate(ValidationKind.Deserialized); }
+            if (v != null && (context == null || !context.Loading.SkipValidation)) { v.Validate(new ValidationContext(result, ValidationKind.Deserialized)); }
             return result;
         }
 
@@ -49,13 +47,10 @@ namespace LionFire.Assets
         {
             Type t = TypeResolver.Default.Resolve(concreteTypeName); // TODO: Get typeresolver from InstantiationContext
 
-            var ap = (IAssetProvider)ManualSingleton<IServiceProvider>.Instance.GetService(typeof(IAssetProvider));
+            var mi = typeof(IAssetProvider).GetMethod("Load", BindingFlags.Instance | BindingFlags.Public).MakeGenericMethod(t);
 
-            var mi = typeof(IAssetProvider).GetTypeInfo().GetMethod("Load", BindingFlags.Instance | BindingFlags.Public).MakeGenericMethod(t);
-
-            var result = mi.Invoke(ap, new object[] { assetSubPath });
-            var v = result as IValidatable;
-            if (v != null && (context == null || !context.Loading.SkipValidation)) { v.Validate(ValidationKind.Deserialized); }
+            var result = mi.Invoke(AssetProvider, new object[] { assetSubPath });
+            if (result is IValidatable v && (context == null || !context.Loading.SkipValidation)) { v.Validate(new ValidationContext(result, ValidationKind.Deserialized)); }
 
             return result;
         }
@@ -68,8 +63,6 @@ namespace LionFire.Assets
 
         public static void Save<T>(this T obj, string assetSubPath, PersistenceContext persistenceContext = null)
         {
-            var ap = (IAssetProvider)ManualSingleton<IServiceProvider>.Instance.GetService(typeof(IAssetProvider));
-
             (obj as INotifyOnSaving)?.OnSaving();
 
             var inst = obj.ToInstantiatorOrObject(); // FUTURE - Use instantiation framework?
@@ -80,7 +73,7 @@ namespace LionFire.Assets
             }
             persistenceContext.RootObject = obj;
 
-            ap.Save(assetSubPath, inst, persistenceContext);
+            AssetProvider.Save(assetSubPath, inst, persistenceContext);
         }
 
     }

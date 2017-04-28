@@ -1,5 +1,6 @@
 ﻿using LionFire.Applications.Hosting;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -22,9 +23,9 @@ namespace LionFire.Extensions.Options
             {
                 builder.AddDefault();
             }
-
+            
             var configRoot = builder.Build();
-            Structures.ManualSingleton<IConfigurationRoot>.Instance = configRoot; // TEMP REVIEW
+            app.ConfigureServices(s => s.AddSingleton<IConfigurationRoot>(configRoot));
             app.Add(configRoot);
             return app;
         }

@@ -1,8 +1,10 @@
-﻿using System;
+﻿
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using LionFire.Execution.Composition;
+using LionFire.Structures;
 
 namespace LionFire.Execution.Composition
 {
@@ -29,11 +31,11 @@ namespace LionFire.Execution
 {
     public static class ConfigurerExtensions
     {
-        public static T AddConfigurer<T>(this T composableExecutable, Action<T> configure)
-            where T : class, IComposableExecutable<T>
+        public static T AddConfigurer<T>(this T composable, Action<T> configure)
+            where T : class, IComposable<T>
         {
-            composableExecutable.Add(new Configurer<T>(configure));
-            return composableExecutable;
+            composable.Add(new Configurer<T>(configure));
+            return composable;
         }
     }
 }

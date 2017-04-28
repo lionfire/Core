@@ -40,7 +40,7 @@ namespace LionFire.Execution
 
         public static async Task<StateChangeResult> SetDesiredStateAndWait(this IControllableExecutable e, ExecutionState state, CancellationToken? cancellationToken = null)
         {
-            if (e.State.Value == state) return StateChangeResult.Success;
+            if (e.State == state) return StateChangeResult.Success;
 
             //var onState = state =>
             //{
@@ -52,7 +52,7 @@ namespace LionFire.Execution
             // For now, poll
             while (true)
             {
-                var curState = e.State.Value;
+                var curState = e.State;
                 if (curState == state) return StateChangeResult.Success;
                 if (curState == ExecutionState.Disposed || curState == ExecutionState.Faulted) return StateChangeResult.Failed;
                 if (e.DesiredExecutionState != state) return StateChangeResult.Overridden;

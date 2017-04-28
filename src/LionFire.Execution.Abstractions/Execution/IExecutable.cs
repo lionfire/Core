@@ -10,8 +10,13 @@ namespace LionFire.Execution
     public interface IExecutable // RENAME to IReadOnlyExecutable?
     {
         // REVIEW - use a property + event here?
-        IBehaviorObservable<ExecutionState> State { get; }
+        //[Obsolete]
+        //IBehaviorObservable<ExecutionState> State { get; }
 
+        ExecutionState State { get; }
+        event Action<ExecutionState, IExecutable> StateChangedToFor;
+
+        //ExecutionState CurrentState { get; } // TODO: RENAME to State once State is gone
     }
     
 }

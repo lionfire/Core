@@ -15,6 +15,12 @@ namespace LionFire.Validation
             return new ValidationContext() { Object = obj, ValidationKind = validationKind ?? ValidationKind.Unspecified };
         }
 
+        public static ValidationContext IsTrue(this ValidationContext ctx, Func<bool> func, Func<ValidationIssue> issue)
+        {
+            if (!func()) ctx.AddIssue(issue());
+            return ctx;
+        }
+
         public static ValidationContext MemberNonNull(this ValidationContext ctx, object val, string memberName)
         {
             if (val == null)
@@ -59,6 +65,20 @@ namespace LionFire.Validation
             }
             return ctx;
         }
+
+        public static void ValidateMethods(this ValidationContext ctx, object obj = null)
+        {
+            if (obj == null) { obj = ctx.Object; }
+            if (obj == null) { throw new ArgumentNullException("obj == null and ctx.Object == null"); }
+
+            // OPTIMIZE: Use Fody to add a method "ValidateMethods" to the obj and invoke that instead of reflecting over method attributes
+
+            foreach (var mi in obj.GetType().GetMethods(BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance).Where(m => m.GetCustomAttribute<ValidateAttribute>() != null))
+            {
+                mi.Invoke(obj, new object[] { ctx });
+            }
+        }
+
     }
 }
 

@@ -14,7 +14,7 @@ namespace LionFire.Validation
 
     public interface IValidatable
     {
-        ValidationContext Validate(object validationKind = null);
+        ValidationContext Validate(ValidationContext validationContext);
     }
 
     // ENH Ideas:

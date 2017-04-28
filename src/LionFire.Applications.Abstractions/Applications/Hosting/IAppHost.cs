@@ -7,11 +7,14 @@ using LionFire.Applications.Hosting;
 using LionFire.Execution;
 using LionFire.MultiTyping;
 using LionFire.Execution.Composition;
+using LionFire.Structures;
 
 namespace LionFire.Applications.Hosting
 {
     [MultiTypeFromProperties]
-    public interface IAppHost : IInitializable, IComposableExecutable<IAppHost>
+    public interface IAppHost : 
+        //IInitializable,
+        IComposable<IAppHost>
     {
         #region Dependency Injection
 
@@ -27,25 +30,26 @@ namespace LionFire.Applications.Hosting
 
         #endregion
 
-        IEnumerable<object> Components
+        ICollection<object> Components
         {
             get;
         }
-        IAppHost Add<T>(T component);
-        IAppHost Add<T>(string assetSubPath) where T : class;
+        
+        IAppHost AddAsset<T>(string assetSubPath) where T : class; // RENAME AddAsset?
 
         #region Execution
 
-        /// <summary>
-        /// Build the ServiceProvider from the ServiceCollection and inject into any components already added.  This initializes the services registered so far that are required for futher app composition.
-        /// </summary>
-        /// <param name="mode"></param>
-        IAppHost Bootstrap(BootstrapMode mode = BootstrapMode.Rebuild);
+        ///// <summary>
+        ///// Build the ServiceProvider from the ServiceCollection and inject into any components already added.  This initializes the services registered so far that are required for futher app composition.
+        ///// </summary>
+        ///// <param name="mode"></param>
+        //IAppHost Bootstrap(BootstrapMode mode = BootstrapMode.Rebuild);
 
         ///// <summary>
         ///// Optionally call this to prepare the application to run without running it.  If it is not invoked by the user, it will be invoked from the Run() method.  Invokations of this after initialization has completed will be ignored.  
         ///// </summary>
         //new Task<bool> Initialize();
+        IAppHost Initialize(BootstrapMode mode = BootstrapMode.Rebuild);
 
         /// <summary>
         /// Start application and return a task that waits for all ApplicationTasks with WaitForComplete = true to complete.

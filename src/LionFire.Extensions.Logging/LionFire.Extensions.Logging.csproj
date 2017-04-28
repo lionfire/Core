@@ -12,6 +12,11 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="GetLoggerExtensions.cs" />
+    <Compile Remove="NullLogger.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
     <ProjectReference Include="..\LionFire.Runtime.Extensions\LionFire.Runtime.Extensions.csproj" />
   </ItemGroup>
 

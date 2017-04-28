@@ -1,4 +1,5 @@
 ﻿using LionFire.Collections.Concurrent;
+using LionFire.Execution.Executables;
 using LionFire.Reactive;
 using LionFire.Reactive.Subjects;
 using System;
@@ -21,7 +22,7 @@ namespace LionFire.Execution.Jobs
     ///  - Starting
     ///  - Started
     /// </remarks>
-    public class JobQueue : IHasExecutionFlags, IExecutable, IControllableExecutable
+    public class JobQueue : ExecutableBase, IHasExecutionFlags, IExecutable, IControllableExecutable
     {
         #region State
 
@@ -151,9 +152,9 @@ namespace LionFire.Execution.Jobs
 
                 if (CanStartJob)
                 {
-                    if (State.Value != ExecutionState.Ready && State.Value != ExecutionState.Started && State.Value != ExecutionState.Starting)
+                    if (State != ExecutionState.Ready && State != ExecutionState.Started && State != ExecutionState.Starting)
                     {
-                        throw new Exception($"Invalid state: {State.Value}");
+                        throw new Exception($"Invalid state: {State}");
                     }
 
                     do
@@ -162,12 +163,12 @@ namespace LionFire.Execution.Jobs
 
                         foreach (var job in highestPriorityJobs.ToArray())
                         {
-                            if (state.Value != ExecutionState.Started) { state.OnNext(ExecutionState.Starting); }
+                            if (State != ExecutionState.Started) { State = ExecutionState.Starting; }
                             unstartedJobs.Remove(job);
                             startingJob = job;
                             job.Start();
                             jobsStarted++;
-                            if (state.Value != ExecutionState.Started) { state.OnNext(ExecutionState.Started); }
+                            if (State != ExecutionState.Started) { State = ExecutionState.Started; }
 
                             if (job.RunTask != null && !job.RunTask.IsCompleted)
                             {
@@ -255,9 +256,9 @@ namespace LionFire.Execution.Jobs
             }
             if (runningJobs.Count == 0)
             {
-                if (State.Value == ExecutionState.Started)
+                if (State == ExecutionState.Started)
                 {
-                    state.OnNext(ExecutionState.Ready);
+                    State = ExecutionState.Ready;
                 }
             }
         }
@@ -291,7 +292,6 @@ namespace LionFire.Execution.Jobs
 
 
         public ExecutionState DesiredExecutionState { get; set; }
-        public IBehaviorObservable<ExecutionState> State { get { return state; } }
-        BehaviorObservable<ExecutionState> state = new BehaviorObservable<ExecutionState>(ExecutionState.Ready);
+        
     }
 }

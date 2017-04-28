@@ -1,4 +1,5 @@
 ﻿using LionFire.Execution.Composition;
+using LionFire.Structures;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -29,7 +30,7 @@ namespace LionFire.Execution
     public static class InitializerExtensions
     {
         public static T Initializer<T>(this T composableExecutable, Func<T, Task<bool>> tryInitialize)
-            where T : class, IComposableExecutable<T>
+            where T : class, IComposable<T>
         {
             composableExecutable.Add(new Initializer<T>(tryInitialize));
             return composableExecutable;

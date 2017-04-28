@@ -13,7 +13,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\LionFire.Annotations.Compilation\LionFire.Annotations.Compilation.csproj" />
     <ProjectReference Include="..\LionFire.Runtime.Extensions\LionFire.Runtime.Extensions.csproj" />
   </ItemGroup>
 

@@ -9,6 +9,7 @@ using LionFire.Execution.Initialization;
 using System.Reactive.Subjects;
 using LionFire.Reactive;
 using LionFire.Reactive.Subjects;
+using LionFire.Execution.Executables;
 
 namespace LionFire.Execution
 {
@@ -16,7 +17,7 @@ namespace LionFire.Execution
     /// <summary>
     /// Uses an in-process ProcessExecutionHost
     /// </summary>
-    public class ObjectController : IExecutionController
+    public class ObjectController : ExecutableBase, IExecutionController
     {
         #region Configuration
 
@@ -94,26 +95,6 @@ namespace LionFire.Execution
                 return type != null && typeof(IDisposable).GetTypeInfo().IsAssignableFrom(type);
             }
         }
-
-        #region ExecutionState
-
-        public IBehaviorObservable<ExecutionState> State {
-            get {
-                return bExecutionState;
-            }
-            //set {
-            //    bExecutionState.OnNext(value);
-            //}
-        }
-
-        //public IObservable<ExecutionState> ExecutionStates {
-        //    get {
-        //        return bExecutionState;
-        //    }
-        //}
-        protected BehaviorObservable<ExecutionState> bExecutionState = new BehaviorObservable<ExecutionState>();
-
-        #endregion
 
 
         public async Task Start(/*params string[] args*/)

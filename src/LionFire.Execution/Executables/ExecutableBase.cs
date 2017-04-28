@@ -1,4 +1,4 @@
-﻿using LionFire.Dependencies;
+﻿using LionFire.DependencyInjection;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,16 +9,41 @@ using LionFire.Reactive.Subjects;
 
 namespace LionFire.Execution.Executables
 {
+    //public class ExecutionStateMachine : ExecutableBase
+    //{
+    //    public object Owner { get; protected set; }
+    //}
+
     public class ExecutableBase : IExecutable
     {
-        #region ExecutionState
+        //#region ExecutionState
 
-        public IBehaviorObservable<ExecutionState> State {
-            get {
-                return executionState;
+        //public IBehaviorObservable<ExecutionState> State
+        //{
+        //    get
+        //    {
+        //        return executionState;
+        //    }
+        //}
+        //private BehaviorObservable<ExecutionState> executionState = new BehaviorObservable<ExecutionState>();
+
+        //#endregion
+
+        #region State
+
+        public ExecutionState State
+        {
+            get { return state; }
+            protected set
+            {
+                if (state == value) return;
+                state = value;
+                StateChangedToFor?.Invoke(state, this);
             }
         }
-        private BehaviorObservable<ExecutionState> executionState = new BehaviorObservable<ExecutionState>();
+        private ExecutionState state;
+
+        public event Action<ExecutionState, IExecutable> StateChangedToFor;
 
         #endregion
 

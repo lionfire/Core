@@ -9,6 +9,20 @@ namespace LionFire.Applications.Hosting
 {
     public static class IAppHostExtensions
     {
+
+        public static IAppHost ConfigureServices(this IAppHost appHost, Action<IServiceCollection> action)
+        {
+            action(appHost.ServiceCollection);
+            return appHost;
+        }
+
+        public static IAppHost Add<T>(this IAppHost host)
+            where T : new()
+        {
+            host.Add(new T());
+            return host;
+        }
+
         /// <summary>
         /// Adds a task to the application
         /// </summary>
@@ -53,6 +67,8 @@ namespace LionFire.Applications.Hosting
         //    host.Bootstrap();
         //    return host;
         //}
+
+
         
     }
 

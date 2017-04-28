@@ -1,0 +1,33 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using LionFire.Types;
+
+namespace LionFire.ObjectBus
+{
+    public static class ObjectTypeExtensions
+    {
+        /// <summary>
+        /// Try to upcast to IMultiType and use its AsType, otherwise fall back to as operator
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="obj"></param>
+        /// <returns></returns>
+        
+#if !AOT
+		public static T AsType<T>(object obj)
+            where T : class
+        {
+            // Try Upcasting
+            IMultiTyped mt = obj as IMultiTyped;
+            if (mt != null)
+            {
+                return mt.AsType<T>();
+            }
+
+            return obj as T;
+        }
+#endif
+    }
+}

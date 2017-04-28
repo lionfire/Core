@@ -17,6 +17,7 @@ using LionFire.Persistence;
 using Newtonsoft.Json.Serialization;
 using LionFire.Instantiating;
 using Newtonsoft.Json.Linq;
+using LionFire.Validation;
 
 namespace LionFire.Assets.Providers.FileSystem
 {
@@ -33,7 +34,7 @@ namespace LionFire.Assets.Providers.FileSystem
     //}
 
     //[ContextPath("Persistence.FileSystem.Json")]
-    public class JsonAssetProvider : FileSystemAssetProviderBase, IAssetProvider
+    public class JsonAssetProvider : FileSystemAssetProviderBase, IAssetProvider, IInitializable
     //, IFileExtensionHandler
     {
 
@@ -143,6 +144,21 @@ namespace LionFire.Assets.Providers.FileSystem
         {
             await autoRetry.AutoRetry(() => _SaveMethod(obj, assetSubPath, context)).ConfigureAwait(false);
         }
+
+        public Task<bool> Initialize()
+        {            
+            if (RootDir == null)
+            {
+                RootDir = LionFireEnvironment.AppProgramDataDir;
+            }
+
+            // TODO: return ValidationContext
+            return new ValidationContext()
+                .IsTrue(() => !string.IsNullOrEmpty(RootDir), "RootDir not set after trying to set it from LionFireEnvironment.AppProgramDataDir")
+                .IsTrue(() => !string.IsNullOrEmpty(Directory.Exists(RootDir)), "RootDir does not exist: " + RootDir)
+                .IsValid
+                ;
+        }
     }
 }
 
@@ -151,7 +167,7 @@ namespace LionFire.Applications.Hosting
 
     public static class JsonAssetProviderExtensions
     {
-        public static IAppHost AddJsonAssetProvider(this IAppHost app, string rootDir)
+        public static IAppHost AddJsonAssetProvider(this IAppHost app, string rootDir = null)
         {
             app.ServiceCollection.AddSingleton<IAssetProvider, JsonAssetProvider>(p => new JsonAssetProvider(rootDir));
             return app;

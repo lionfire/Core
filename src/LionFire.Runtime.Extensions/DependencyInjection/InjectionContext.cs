@@ -14,23 +14,41 @@ namespace LionFire.DependencyInjection
         #region Static
 
         // FUTURE: Facilitate per-thread context?  An ambient stack using Disposable?
-        public static InjectionContext Current { get { return current ?? Default; } set { current = value; } }
+        public static InjectionContext Current
+        {
+            get { return current ?? Default; }
+            set
+            {
+                if (current != null && value != null && value != current)
+                {
+                    throw new Exception("Cannot be set to another value without first setting to null.");
+                }
+                current = value;
+            }
+        }
         public static InjectionContext current;
         public static InjectionContext Default { get { return ManualSingleton<InjectionContext>.GuaranteedInstance; } }
 
         static InjectionContext()
         {
-            ManualSingleton<IServiceProvider>.SetIfMissing(Current);
         }
 
-        public static void SetSingletonDefault<T>(T singletonInstance)
-            where T : class
+        public static void UseDefaultServiceProvider()
         {
-            ManualSingleton<T>.Instance = singletonInstance;
+            if (ManualSingleton<IServiceProvider>.Instance != null)
+            {
+                throw new Exception("ManualSingleton<IServiceProvider>.Instance is already set");
+            }
+            ManualSingleton<IServiceProvider>.Instance = Current;
         }
 
         #endregion
 
+        //public void UseSingletonInstance<T>(T singletonInstance)
+        //    where T : class
+        //{
+        //    ManualSingleton<T>.Instance = singletonInstance;
+        //}
 
         #region ServiceProvider
 
@@ -48,6 +66,8 @@ namespace LionFire.DependencyInjection
             var mi = typeof(InjectionContext).GetMethod("GetService", new Type[] { typeof(Type), typeof(IServiceProvider), typeof(bool) });
             return (T)mi.Invoke(this, new object[] { typeof(T), serviceProvider, createIfMissing });
         }
+
+        private bool UseManualSingletonServiceProvider = false;
 
         /// <summary>
         /// Locate the service for the specified type.
@@ -72,18 +92,23 @@ namespace LionFire.DependencyInjection
                 if (result != null) { return result; }
             }
 
-            serviceProvider = ManualSingleton<IServiceProvider>.Instance;
-            if (serviceProvider != null && serviceProvider != this)
             {
-                result = serviceProvider.GetService(serviceType);
-                if (result != null) { return result; }
+                var _serviceProvider = this.ServiceProvider;
+                if (_serviceProvider != null)
+                {
+                    result = _serviceProvider.GetService(serviceType);
+                    if (result != null) { return result; }
+                }
             }
 
-            serviceProvider = this.ServiceProvider;
-            if (serviceProvider != null)
+            if (UseManualSingletonServiceProvider)
             {
-                result = serviceProvider.GetService(serviceType);
-                if (result != null) { return result; }
+                var _serviceProvider = ManualSingleton<IServiceProvider>.Instance;
+                if (_serviceProvider != null && _serviceProvider != this)
+                {
+                    result = _serviceProvider.GetService(serviceType);
+                    if (result != null) { return result; }
+                }
             }
 
             var pi = typeof(ManualSingleton<>).MakeGenericType(serviceType).GetProperty(createIfMissing ? "GuaranteedInstance" : "Instance", BindingFlags.Static | BindingFlags.Public);

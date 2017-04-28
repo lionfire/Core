@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace LionFire
 {
-    // Deprecated, Use InjectionContext instead, but then maybe use this to point to InjectionContext for a nicer syntax.  Maybe rename to Ambient
+    // REVIEW - Deprecate?, Use InjectionContext instead, but then maybe use this to point to InjectionContext for a nicer syntax.  Maybe rename to Ambient
     public static class Defaults
     {
         public static T Get<T>()
@@ -19,14 +19,24 @@ namespace LionFire
             }
             return result;
         }
-        public static T TryGet<T>()
+
+
+        public static T TryGet<T>(Func<T> defaultProvider = null)
             where T : class
         {
             var inst = ManualSingleton<T>.Instance;
             if (inst != null) return inst;
 
             var sp = ManualSingleton<IServiceProvider>.Instance;
-            return (T)sp?.GetService(typeof(T));
+            var result = (T)sp?.GetService(typeof(T));
+            if (result != null) return result;
+
+            if (defaultProvider != null)
+            {
+                result = defaultProvider();
+            }
+
+            return result;
         }
 
         // FUTURE: Make the Set/Get methods extensible.  Need to have type as a parameter?

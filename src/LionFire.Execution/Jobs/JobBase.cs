@@ -1,4 +1,5 @@
-﻿using LionFire.Reactive;
+﻿using LionFire.Execution.Executables;
+using LionFire.Reactive;
 using LionFire.Reactive.Subjects;
 using System;
 using System.Collections.Generic;
@@ -11,7 +12,7 @@ namespace LionFire.Execution.Jobs
     /// <summary>
     /// Registers with the JobManager (if present) and asks the JobManager if it can start.  If not, the JobManager will tell the Job later when it can start.
     /// </summary>
-    public abstract class JobBase : IJob, IExecutable
+    public abstract class JobBase : ExecutableBase, IJob, IExecutable
     {
         public abstract bool IsCompleted { get; }
 
@@ -29,15 +30,15 @@ namespace LionFire.Execution.Jobs
 
             if (!RequestStart()) return;
 
-            state.OnNext(ExecutionState.Starting);
+            State = ExecutionState.Starting;
             if (!await OnStarting().ConfigureAwait(false)) return;
             RunTask = Run();
             await OnStarted().ConfigureAwait(false);
-            state.OnNext(ExecutionState.Started);
+            State = ExecutionState.Started;
             if (RunTask != null)
             {
 #pragma warning disable 4014
-                RunTask.ContinueWith(_ => state.OnNext(ExecutionState.Finished)); // REVIEW
+                RunTask.ContinueWith(_ => State = ExecutionState.Finished); // REVIEW
 #pragma warning restore 0414
             }
         }
@@ -68,11 +69,11 @@ namespace LionFire.Execution.Jobs
 
         private bool TryDoFinished()
         {
-            if (state.Value == ExecutionState.Finished)
+            if (State == ExecutionState.Finished)
             {
                 return true;
             }
-            if (state.Value == ExecutionState.Faulted)
+            if (State == ExecutionState.Faulted)
             {
                 throw new Exception("Job faulted.  See inner exception for the exception thrown at the time it faulted.", ExecutionException);
             }
@@ -91,10 +92,7 @@ namespace LionFire.Execution.Jobs
                 delay = Math.Min(maxDelay, delay + 100);
             }
         }
-
-
-        public IBehaviorObservable<ExecutionState> State { get { return state; } }
-        protected BehaviorObservable<ExecutionState> state = new BehaviorObservable<ExecutionState>(ExecutionState.Ready);
+        
 
     }
 }

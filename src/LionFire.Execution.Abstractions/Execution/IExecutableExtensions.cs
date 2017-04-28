@@ -15,7 +15,7 @@ namespace LionFire.Execution
         /// <returns></returns>
         public static bool IsStarted(this IExecutable e)
         {
-            switch (e.State.Value)
+            switch (e.State)
             {
                 //case ExecutionState.Unspecified:
                 //    break;
