@@ -153,10 +153,10 @@ namespace LionFire.Assets.Providers.FileSystem
             }
 
             // TODO: return ValidationContext
-            return new ValidationContext()
-                .IsTrue(() => !string.IsNullOrEmpty(RootDir), "RootDir not set after trying to set it from LionFireEnvironment.AppProgramDataDir")
-                .IsTrue(() => !string.IsNullOrEmpty(Directory.Exists(RootDir)), "RootDir does not exist: " + RootDir)
-                .IsValid
+            return Task.FromResult(new ValidationContext()
+                .IsTrue(!string.IsNullOrEmpty(RootDir), () => "RootDir not set after trying to set it from LionFireEnvironment.AppProgramDataDir")
+                .IsTrue(!Directory.Exists(RootDir), () => "RootDir does not exist: " + RootDir)
+                .IsValid)
                 ;
         }
     }

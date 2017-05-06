@@ -6,6 +6,8 @@ using System.Reactive.Subjects;
 using System.Threading.Tasks;
 using LionFire.Reactive;
 using LionFire.Reactive.Subjects;
+using System.ComponentModel;
+using LionFire.Structures;
 
 namespace LionFire.Execution.Executables
 {
@@ -14,7 +16,7 @@ namespace LionFire.Execution.Executables
     //    public object Owner { get; protected set; }
     //}
 
-    public class ExecutableBase : IExecutable
+    public class ExecutableBase : NotifyPropertyChangedBase, IExecutable
     {
         //#region ExecutionState
 

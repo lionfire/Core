@@ -15,9 +15,14 @@ namespace LionFire.Validation
             return new ValidationContext() { Object = obj, ValidationKind = validationKind ?? ValidationKind.Unspecified };
         }
 
-        public static ValidationContext IsTrue(this ValidationContext ctx, Func<bool> func, Func<ValidationIssue> issue)
+        public static ValidationContext IsTrue(this ValidationContext ctx, bool func, Func<ValidationIssue> issue)
         {
-            if (!func()) ctx.AddIssue(issue());
+            if (!func) ctx.AddIssue(issue());
+            return ctx;
+        }
+        public static ValidationContext IsTrue(this ValidationContext ctx, bool func, ValidationIssue issue)
+        {
+            if (!func) ctx.AddIssue(issue);
             return ctx;
         }
 
