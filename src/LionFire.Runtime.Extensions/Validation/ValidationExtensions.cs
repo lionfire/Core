@@ -32,7 +32,20 @@ namespace LionFire.Validation
             {
                 ctx.AddIssue(new ValidationIssue
                 {
-                    MemberName = memberName,
+                    VariableName = memberName,
+                    Kind = ValidationIssueKind.MemberNotSet,
+                });
+            }
+            return ctx;
+        }
+        public static ValidationContext ArgumentNonNull(this ValidationContext ctx, object val, string memberName)
+        {
+            if (val == null)
+            {
+                ctx.AddIssue(new ValidationIssue
+                {
+                    VariableName = memberName,
+                    Kind = ValidationIssueKind.ArgumentNotSet,
                 });
             }
             return ctx;
@@ -53,7 +66,7 @@ namespace LionFire.Validation
                 ctx.AddIssue(new ValidationIssue
                 {
                     Kind = ValidationIssueKind.PropertyNotSet,
-                    MemberName = pi.Name,
+                    VariableName = pi.Name,
                 });
             }
             return ctx;
@@ -65,7 +78,7 @@ namespace LionFire.Validation
                 ctx.AddIssue(new ValidationIssue
                 {
                     Kind = ValidationIssueKind.PropertyNotSet,
-                    MemberName = propertyName,
+                    VariableName = propertyName,
                 });
             }
             return ctx;

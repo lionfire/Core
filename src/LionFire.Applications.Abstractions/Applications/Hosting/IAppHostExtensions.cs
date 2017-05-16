@@ -58,6 +58,7 @@ namespace LionFire.Applications.Hosting
             if (runMethod != null) host.Add(new AppTask(() => runMethod().Wait()));
             return host.Run();
         }
+        
 
         /// <summary>
         /// Initialize the services registered so far that are required for futher app composition
@@ -69,7 +70,7 @@ namespace LionFire.Applications.Hosting
         //}
 
 
-        
+
     }
 
 }

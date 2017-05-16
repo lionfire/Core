@@ -40,8 +40,8 @@ namespace LionFire.Notifications.Service
 
     public interface IHasOperationalStatus
     {
-        OperationalStatus CurrentStatus { get; }
-        event Action<OperationalStatus, OperationalStatus, IHasOperationalStatus> CurrentStatusChangedFromToFor;
+        OperationalStatus OperationalStatus { get; }
+        event Action<OperationalStatus, OperationalStatus, IHasOperationalStatus> OperationalStatusChangedFromToFor;
     }
 
     /// <summary>
@@ -77,14 +77,14 @@ namespace LionFire.Notifications.Service
                 if (operationalStatus == value) return;
                 var oldValue = operationalStatus;
                 operationalStatus = value;
-                CurrentStatusChangedFromToFor?.Invoke(oldValue, operationalStatus, this);
+                OperationalStatusChangedFromToFor?.Invoke(oldValue, operationalStatus, this);
             }
         }
         private OperationalStatus operationalStatus;
 
         #endregion
 
-        public event Action<OperationalStatus> CurrentStatusChangedFromToFor;
+        public event Action<OperationalStatus, OperationalStatus, IHasOperationalStatus> OperationalStatusChangedFromToFor;
 
         public Task Start()
         {

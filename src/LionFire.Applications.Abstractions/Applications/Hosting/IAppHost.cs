@@ -8,6 +8,7 @@ using LionFire.Execution;
 using LionFire.MultiTyping;
 using LionFire.Execution.Composition;
 using LionFire.Structures;
+using LionFire.Composables;
 
 namespace LionFire.Applications.Hosting
 {
@@ -30,12 +31,12 @@ namespace LionFire.Applications.Hosting
 
         #endregion
 
-        ICollection<object> Components
+        IReadOnlyCollection<object> Components
         {
             get;
         }
         
-        IAppHost AddAsset<T>(string assetSubPath) where T : class; // RENAME AddAsset?
+        //IAppHost AddAsset<T>(string assetSubPath) where T : class; // RENAME AddAsset?
 
         #region Execution
 

@@ -91,6 +91,15 @@ namespace LionFire
         }
         private static string programDataDir;
 
+        public static string CompanyProgramDataDir
+        {
+            get
+            {
+                if (String.IsNullOrWhiteSpace(CompanyName)) return null;
+                return Path.Combine(ProgramDataDir, CompanyName);
+            }
+        }
+
         public static string CompanyName { get; set; } = "LionFire";
         public static string ProgramName { get; set; } = "ProgramName";
         public static string ProgramDisplayName { get; set; } = "Program Name";

@@ -60,7 +60,7 @@ namespace LionFire.Threading.Tasks
     {
         public int KeepCompletedTasksInCurrentListForMilliseconds { get; set; } = 60000;
     }
-    
+
     // TODO: Make this a service?
     public class TaskManager
     {
@@ -113,5 +113,13 @@ namespace LionFire.Threading.Tasks
 
         public ObservableCollection<TrackedTask> CurrentTasks { get; private set; } = new ObservableCollection<TrackedTask>();
         private static object lock_ = new object();
+    }
+    public static class TaskManagerExtensions
+    {
+        public static Task RegisterFireAndForget(Task task, TaskFlags flags = TaskFlags.Unowned, string name = null)
+        {
+            TaskManager.OnFireAndForget(task, flags, name);
+            return task;
+        }
     }
 }

@@ -22,6 +22,8 @@ using LionFire.Validation;
 namespace LionFire.Assets.Providers.FileSystem
 {
 
+    
+
     // FUTURE?
     //[System.AttributeUsage(AttributeTargets.Class, Inherited = false, AllowMultiple = true)]
     //sealed class ContextPathAttribute : Attribute

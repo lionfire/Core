@@ -24,9 +24,9 @@ namespace LionFire.Validation
         public ValidationIssueKind Kind { get; set; }
 
         /// <summary>
-        /// Set for PropertyNotSet, FieldNotSet
+        /// Set for PropertyNotSet, FieldNotSet, MemberNotSet, ArgumentNotSet
         /// </summary>
-        public string MemberName { get; set; }
+        public string VariableName { get; set; }
        
 
         public string Message { get; set; }

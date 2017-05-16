@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using LionFire.Composables;
 
 namespace LionFire.Execution.Composition
 {
@@ -29,11 +30,11 @@ namespace LionFire.Execution
 {
     public static class InitializerExtensions
     {
-        public static T Initializer<T>(this T composableExecutable, Func<T, Task<bool>> tryInitialize)
+        public static T InitializeWith<T>(this T composable, Func<T, Task<bool>> tryInitialize)
             where T : class, IComposable<T>
         {
-            composableExecutable.Add(new Initializer<T>(tryInitialize));
-            return composableExecutable;
+            composable.Add(new Initializer<T>(tryInitialize));
+            return composable;
         }
     }
 }

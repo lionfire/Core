@@ -7,20 +7,36 @@ using System.Threading.Tasks;
 namespace LionFire.Serialization
 {
     [Flags]
-    public enum SerlializationSettingsFlags
+    public enum SerializationFlags
     {
         None = 0,
 
         /// <summary>
-        /// If not set, binary will be used.
+        /// Exclusive with UseText.  If neither are specified, default will be used.
         /// </summary>
-        UseText = 1 << 0,
+        Binary = 1 << 0,
+
+        /// <summary>
+        ///  Exclusive with UseBinary.  If neither are specified, default will be used.
+        /// </summary>
+        Text = 1 << 2,
 
         /// <summary>
         /// Only considered if UseText is set
         /// </summary>
-        UseHumanReadable = 1 << 1,
+        HumanReadable = 1 << 3,
 
+
+        Compress = 1 << 4,
+        Decompress = 1 << 5,
+        Serialize = 1 << 6,
+        Deserialize = 1 << 7,
+
+    }
+
+#if false
+    public enum SerializerCapabilityFlags // REVEW - not sure whether to do this or just have interfaces
+    {
         /// <summary>
         /// Serializers have this capability if they can detect their own format with no extra identifiers.
         /// </summary>
@@ -38,13 +54,14 @@ namespace LionFire.Serialization
 
         UseDefaults = 1 << 32,
     }
+#endif
 
-    public static class SerlializationSettingsFlagsExtensions
-    {
+    //public static class SerlializationSettingsFlagsExtensions
+    //{
 
-        public static bool HasBitFlag(this SerlializationSettingsFlags e, SerlializationSettingsFlags other)
-        {
-             return ((e & other) == other);
-        }
-    }
+    //    public static bool HasBitFlag(this SerlializationSettingsFlags e, SerlializationSettingsFlags other)
+    //    {
+    //         return ((e & other) == other);
+    //    }
+    //}
 }

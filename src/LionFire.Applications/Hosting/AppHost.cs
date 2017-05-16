@@ -14,6 +14,7 @@ using LionFire.Execution.Composition;
 using LionFire.Assets;
 using LionFire.Instantiating;
 using System.Collections;
+using LionFire.Composables;
 
 namespace LionFire.Applications.Hosting
 {
@@ -83,41 +84,17 @@ namespace LionFire.Applications.Hosting
 
         #region Register
 
-        public ICollection<object> Components { get { return components; } }
+        public IReadOnlyCollection<object> Components { get { return components; } }
         private List<object> components = new List<object>();
 
         public IEnumerator<object> GetEnumerator() => Components.GetEnumerator(); // REVIEW - expose IAppHost.Components instead?
 
         IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
 
-        public IAppHost Add(object appComponent)
+        public IAppHost Add(object component)
         {
-            components.Add(appComponent);
-            return this;
-        }
-        public IAppHost AddAsset<T>(string assetSubPath)
-            where T : class
-        {
-            components.Add(new AssetReadHandle<T>(assetSubPath));
-            return this;
-        }
-
-        //IAppHost IComposableExecutable<IAppHost>.Add(IConfigures component)
-        //{
-        //    components.Add(component);
-        //    return this;
-        //}
-        //IAppHost IComposableExecutable<IAppHost>.Add(IInitializes component)
-        //{
-        //    components.Add(component);
-        //    return this;
-        //}
-
-        public IAppHost Add<T>()
-            where T : new()
-        {
-            var component = new T();
-            Add(component);
+            var adding = component as IAdding;
+            if(adding(this)) components.Add(component);
             return this;
         }
 
@@ -182,6 +159,18 @@ namespace LionFire.Applications.Hosting
             }
         }
 
+        /* FUTURE
+        public class ResolutionContext
+        {
+
+        }
+
+        public static object Resolve(object obj)
+        {
+
+        }
+        */
+
         public IAppHost Initialize(BootstrapMode mode = BootstrapMode.Rebuild)
         {
             if (IsInitializeFrozen) throw new Exception("AppHost can no longer be initialized");
@@ -191,6 +180,7 @@ namespace LionFire.Applications.Hosting
                 InjectionContext.Current = this.InjectionContext;
             }
 
+            // FUTURE TODO: Use Resolution context?
             Components.ResolveHandles();
 
             InstantiateTemplates();
@@ -309,4 +299,5 @@ namespace LionFire.Applications.Hosting
         #endregion
     }
 
+    
 }

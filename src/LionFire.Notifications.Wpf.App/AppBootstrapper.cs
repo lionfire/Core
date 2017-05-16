@@ -4,6 +4,7 @@ using System.Windows;
 using Caliburn.Micro;
 using LionFire.Applications.Hosting;
 using System.Threading.Tasks;
+using LionFire.Threading.Tasks;
 
 namespace LionFire.Notifications.Wpf.App
 {
@@ -13,13 +14,18 @@ namespace LionFire.Notifications.Wpf.App
 
     public class LionFireAppBootstrapper : CaliburnMicroAppBootstrapper
     {
-        AppHost app;
+        IAppHost app;
         Task runTask;
 
         protected override void Configure()
         {
             base.Configure();
             app = new AppHost()
+                .Add(new AppInfo("LionFire", "Notifier.WPF", "Notifications/Apps/Notifier.WPF"))
+                
+                .Add<WpfNotifierService>()
+                .Add<LionFireSerialization>()
+                .AddPackage<NewtonsoftJsonSerialization>()
                 ;
         }
 
@@ -27,7 +33,7 @@ namespace LionFire.Notifications.Wpf.App
         {
             base.OnStartup(sender, e);
 
-            runTask = app.Run();
+            runTask = app.Run().FireAndForget("App");
         }
     }
 

@@ -8,7 +8,7 @@
   <ItemGroup>
     <ProjectReference Include="..\..\..\Trading\src\LionFire.Trading.Abstractions\LionFire.Trading.Abstractions.csproj" />
     <ProjectReference Include="..\..\..\Trading\src\LionFire.Trading.Feeds.Simulated\LionFire.Trading.Feeds.Simulated.csproj" />
-    <ProjectReference Include="..\..\..\Trading\src\LionFire.Trading.Feeds.TrueFx\LionFire.Trading.Feeds.TrueFx.csproj" />
+    <ProjectReference Include="..\..\..\Trading\src\LionFire.Trading.Feeds.TrueFx\LionFire.Trading.TrueFx.csproj" />
     <ProjectReference Include="..\..\..\Trading\src\LionFire.Trading.Triggers\LionFire.Trading.Triggers.csproj" />
     <ProjectReference Include="..\..\..\Trading\src\LionFire.Trading\LionFire.Trading.csproj" />
     <ProjectReference Include="..\LionFire.Applications.Abstractions\LionFire.Applications.Abstractions.csproj" />

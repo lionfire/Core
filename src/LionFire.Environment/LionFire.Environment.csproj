@@ -3,7 +3,7 @@
   <PropertyGroup>
     <Description>Standardized approach to commonly used runtime info, such as program data, user directories, program name, company name, etc.</Description>
     <VersionPrefix>0.0.4</VersionPrefix>
-    <TargetFrameworks>netstandard1.5;net462</TargetFrameworks>
+    <TargetFramework>netstandard1.5</TargetFramework>
     <AssemblyName>LionFire.Environment</AssemblyName>
     <PackageId>LionFire.Environment</PackageId>
     <NetStandardImplicitPackageVersion>1.6.1</NetStandardImplicitPackageVersion>

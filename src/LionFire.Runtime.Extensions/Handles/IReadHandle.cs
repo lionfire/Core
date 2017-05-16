@@ -1,4 +1,5 @@
 ﻿using LionFire.Execution;
+using LionFire.Structures;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -6,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace LionFire
 {
-    
+
     //public interface IReadHandle : IInitializable
     //{
     //    object Object { get; }
@@ -15,10 +16,10 @@ namespace LionFire
     /// <summary>
     /// Initialize: returns true if Object loaded successfully, false if null object loaded, exception on failure or object not found
     /// </summary>
-    public interface IReadHandle<out T> 
+    public interface IReadHandle<out T>
     //: IReadHandle
     {
-         T Object { get; }
+        T Object { get; }
 
         bool HasObject { get; }
     }
@@ -42,7 +43,6 @@ namespace LionFire
             }).ConfigureAwait(false);
         }
     }
-
 }
 
 

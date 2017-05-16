@@ -7,8 +7,6 @@ namespace LionFire.Serialization
 {
     public interface INotifyDeserialized
     {
-        //void OnSerializing();
-        //void OnSerialized();
         void OnDeserialized();
     }
 }

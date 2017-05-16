@@ -10,6 +10,10 @@ using LionFire.Trading.Accounts;
 using LionFire.Trading.Statistics;
 using Microsoft.Extensions.Logging;
 using System.Threading.Tasks;
+using LionFire.Trading.TrueFx;
+using Microsoft.Extensions.DependencyInjection;
+using LionFire.Execution;
+using LionFire.DependencyInjection;
 
 namespace LionFire.Notifications.Service
 {
@@ -43,7 +47,7 @@ namespace LionFire.Notifications.Service
     //}
 
 
-    public class TTrueFxTradingAccount : TMarketAccount
+    /*public class TTrueFxTradingAccount : TMarketAccount
     {
     }
     public class TrueFxTradingAccount : LiveAccountBase<TTrueFxTradingAccount>
@@ -73,15 +77,16 @@ namespace LionFire.Notifications.Service
             throw new NotImplementedException();
         }
     }
-
+    */
 
     class Program
     {
         static void Main(string[] args)
         {
 
-            
-
+            var tNotifications = new List<TNotification>
+            {
+            };
 
 
             var triggers = new List<object>();
@@ -99,10 +104,58 @@ namespace LionFire.Notifications.Service
                 .Add(new AppInfo("LionFire", "Notification Service", "Notifications"))
                 .AddJsonAssetProvider()
                 .Initialize()
+                //.AddAsset<TTrueFxFeed>("jaredthirsk")
+                .Add(new TTrueFxFeed
+                    {
+                    }
+                    .Register<IFeed>()
+                )
                 .Add<TServiceSupervisor>()
-                .Add<>()
+                
                 .Run().Wait();
 
+        }
+    }
+
+    public interface IHasResolutionObject
+    {
+        object ResolutionObject { get; set; }
+    }
+
+    public class IocRegistration : IConfigures<IServiceCollection>, IHasResolutionObject
+    {
+        object IHasResolutionObject.ResolutionObject { get { return Object; } set { Object = value; } }
+
+        //public object ResolutionObject { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
+
+        object Object;
+        Type Type;
+        public IocRegistration(object obj, Type t)
+        {
+            this.Object = obj;
+            this.Type = t;
+        }
+
+        public void Configure(IServiceCollection context)
+        {
+            // FUTURE: More addition types: transient, or bag of available services
+            context.AddSingleton(Type, Object);
+        }
+    }
+
+    public interface IServiceSelector<T>
+    {
+        InjectionContext InjectionContext { get; set; }
+        T SelectedService { get; }
+        event Action<T, T> SelectedServiceChangedFromTo;
+    }
+
+    public static class RegistrationExtensions
+    {
+        public static IocRegistration Register<T>(this object obj)
+        {
+            var r = new IocRegistration(obj, typeof(T));
+            return r;
         }
     }
 }
