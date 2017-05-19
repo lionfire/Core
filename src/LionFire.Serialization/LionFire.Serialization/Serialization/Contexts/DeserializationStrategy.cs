@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace LionFire.Serialization.Contexts
+namespace LionFire.Serialization
 {
     public enum DeserializationStrategy
     {

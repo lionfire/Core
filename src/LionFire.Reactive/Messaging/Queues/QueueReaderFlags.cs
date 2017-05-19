@@ -2,10 +2,10 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace LionFire.Queues
+namespace LionFire.Messaging.Queues
 {
     [Flags]
-    public enum QueueFlags
+    public enum QueueReaderFlags
     {
         None,
 

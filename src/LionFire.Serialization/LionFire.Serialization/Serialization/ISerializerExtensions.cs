@@ -1,26 +1,34 @@
-﻿namespace LionFire.Serialization
+﻿using LionFire.Serialization.Contexts;
+
+namespace LionFire.Serialization
 {
     public static class ISerializerExtensions
     {
-        /// <summary>
-        /// Returns true if the flags are supported by this serializer
-        /// </summary>
-        /// <param name="flags"></param>
-        /// <returns></returns>
-        public static bool SupportsCapability(this ISerializer serializer, SerializationFlags flags)
+
+        public static object ToObject(this ISerializer serializer, byte[] serializedData, SerializationContext context = null)
         {
-            return (serializer.SupportedCapabilities & flags) == flags;
+            if (context == null) context = new SerializationContext();
+            context.BytesData = serializedData;
+            return serializer.ToObject<object>(context);
+        }
+        public static object ToObject(this ISerializer serializer, string serializedData, SerializationContext context = null)
+        {
+            if (context == null) context = new SerializationContext();
+            context.StringData = serializedData;
+            return serializer.ToObject<object>(context);
         }
 
-        public static object ToObject(this ISerializer serializer, byte[] serializedData)
+        public static byte[] ToBytes(this ISerializer serializer, object obj, SerializationContext context = null)
         {
-            return serializer.ToObject<object>(serializedData);
+            if (context == null) context = new SerializationContext();
+            context.Object = obj;
+            return serializer.ToBytes(context);
         }
-        public static object ToObject(this ISerializer serializer, string serializedData)
+        public static string ToString(this ISerializer serializer, object obj, SerializationContext context = null)
         {
-            return serializer.ToObject<object>(serializedData);
+            if (context == null) context = new SerializationContext();
+            context.Object = obj;
+            return serializer.ToString(context);
         }
-
     }
-
 }

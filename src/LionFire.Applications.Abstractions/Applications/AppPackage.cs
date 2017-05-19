@@ -1,4 +1,5 @@
-﻿using LionFire.Applications.Hosting;
+﻿#if REVIEW_then_discard
+using LionFire.Applications.Hosting;
 using LionFire.Composables;
 using Microsoft.Extensions.DependencyInjection;
 using System.Collections.Generic;
@@ -50,3 +51,4 @@ namespace LionFire.Serialization.Json.Newtonsoft
 
     }
 }
+#endif

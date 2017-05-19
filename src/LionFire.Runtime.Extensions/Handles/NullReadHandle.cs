@@ -1,10 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace LionFire.Handles
+﻿namespace LionFire.Handles
 {
-    class NullReadHandle
+    public class NullReadHandle<T> : IReadHandle<T>
     {
+        public T Object => default(T);
+        public bool HasObject => false;
     }
+
 }

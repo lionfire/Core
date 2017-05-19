@@ -11,14 +11,15 @@ namespace LionFire.Serialization
             | SerializationFlags.Deserialize
             | SerializationFlags.Serialize;
 
-        public override T ToObject<T>(byte[] bytes, SerializationContext context = null)
-        {
-            return this.ToObject<T>(UTF8Encoding.UTF8.GetString(bytes), context);
-        }
+        //public override T ToObject<T>(SerializationContext context)
+        //{
+        //    return this.ToObject<T>(UTF8Encoding.UTF8.GetString(context.BytesData), context);
+        //}
+        
 
-        public override byte[] ToBytes(object obj, SerializationContext context = null)
+        public override byte[] ToBytes(SerializationContext context)
         {
-            return UTF8Encoding.UTF8.GetBytes(this.ToString(obj, context));
+            return UTF8Encoding.UTF8.GetBytes(this.ToString( context));
         }
     }
 }

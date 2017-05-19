@@ -1,25 +1,48 @@
 <Window x:Class="LionFire.Notifications.Wpf.App.ShellView"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:cm="http://www.caliburnproject.org"
+        >
 
-    <Grid Background="White">
-        <Grid.Resources>
-            <Style TargetType="Button">
-                <Setter Property="Margin" Value="10"/>
-                <Setter Property="Padding" Value="10"/>
-            </Style>
-        </Grid.Resources>
+    <TabControl TabStripPlacement="Left">
+        <TabItem Header="TrueFx">
+            <DockPanel>
+                <ListView x:Name="TrueFxPrices" ItemsSource="{Binding TrueFxPrices}" DockPanel.Dock="Top">
 
-        <DockPanel LastChildFill="False" Margin="50">
-        <TextBlock Text="Notifier" DockPanel.Dock="Top"
+                </ListView>
+                <DockPanel DockPanel.Dock="Bottom">
+
+                    <Slider x:Name="UpdateInterval" Minimum="500" Maximum="60000" Value="{Binding UpdateInterval}"/>
+                    <CheckBox IsChecked="{Binding AutoUpdate}">Auto-update</CheckBox>
+                    
+                    <Button cm:Message.Attach="Update">Update</Button>
+                </DockPanel>
+            </DockPanel>
+        </TabItem>
+        <TabItem Header="Notification Test">
+
+        </TabItem>
+        <TabItem Header="Twilio Test">
+            <Grid Background="White">
+                <Grid.Resources>
+                    <Style TargetType="Button">
+                        <Setter Property="Margin" Value="10"/>
+                        <Setter Property="Padding" Value="10"/>
+                    </Style>
+                </Grid.Resources>
+
+                <DockPanel LastChildFill="False" Margin="50">
+                    <TextBlock Text="Notifier" DockPanel.Dock="Top"
                    VerticalAlignment="Center"
                    HorizontalAlignment="Center"
                    FontSize="20" />
 
-            <TextBlock Text="{Binding StatusText}"/>
-            <Button x:Name="SMS" DockPanel.Dock="Bottom" >SMS</Button>
-            <Button x:Name="Voice" DockPanel.Dock="Bottom">Voice</Button>
-        </DockPanel>
-    </Grid>
+                    <TextBlock Text="{Binding StatusText}"/>
+                    <Button x:Name="SMS" DockPanel.Dock="Bottom" >SMS</Button>
+                    <Button x:Name="Voice" DockPanel.Dock="Bottom">Voice</Button>
+                </DockPanel>
+            </Grid>
+        </TabItem>
+    </TabControl>
 
 </Window>

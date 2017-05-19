@@ -5,6 +5,8 @@ using Caliburn.Micro;
 using LionFire.Applications.Hosting;
 using System.Threading.Tasks;
 using LionFire.Threading.Tasks;
+using LionFire.Serialization;
+using LionFire.Serialization.Json.Newtonsoft;
 
 namespace LionFire.Notifications.Wpf.App
 {
@@ -22,10 +24,11 @@ namespace LionFire.Notifications.Wpf.App
             base.Configure();
             app = new AppHost()
                 .Add(new AppInfo("LionFire", "Notifier.WPF", "Notifications/Apps/Notifier.WPF"))
-                
+                .Add<SerializationPackage>()
+                .Add<NewtonsoftJsonSerialization>()
+                //.Add<VosPackage>()
                 .Add<WpfNotifierService>()
-                .Add<LionFireSerialization>()
-                .AddPackage<NewtonsoftJsonSerialization>()
+                .Add<TestNotificationQueueFiller>()
                 ;
         }
 
@@ -33,13 +36,13 @@ namespace LionFire.Notifications.Wpf.App
         {
             base.OnStartup(sender, e);
 
-            runTask = app.Run().FireAndForget("App");
+            runTask = app.Run();
         }
     }
 
     public class CaliburnMicroAppBootstrapper : BootstrapperBase
     {
-        SimpleContainer container;
+        protected SimpleContainer caliburnContainer;
 
         public CaliburnMicroAppBootstrapper()
         {
@@ -48,26 +51,26 @@ namespace LionFire.Notifications.Wpf.App
 
         protected override void Configure()
         {
-            container = new SimpleContainer();
+            caliburnContainer = new SimpleContainer();
 
-            container.Singleton<IWindowManager, WindowManager>();
-            container.Singleton<IEventAggregator, EventAggregator>();
-            container.PerRequest<IShell, ShellViewModel>();
+            caliburnContainer.Singleton<IWindowManager, WindowManager>();
+            caliburnContainer.Singleton<IEventAggregator, EventAggregator>();
+            caliburnContainer.PerRequest<IShell, ShellViewModel>();
         }
 
         protected override object GetInstance(Type service, string key)
         {
-            return container.GetInstance(service, key);
+            return caliburnContainer.GetInstance(service, key);
         }
 
         protected override IEnumerable<object> GetAllInstances(Type service)
         {
-            return container.GetAllInstances(service);
+            return caliburnContainer.GetAllInstances(service);
         }
 
         protected override void BuildUp(object instance)
         {
-            container.BuildUp(instance);
+            caliburnContainer.BuildUp(instance);
         }
 
         protected override void OnStartup(object sender, System.Windows.StartupEventArgs e)

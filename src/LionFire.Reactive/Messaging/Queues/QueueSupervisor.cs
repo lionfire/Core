@@ -1,6 +1,6 @@
 ﻿using LionFire.Instantiating;
 
-namespace LionFire.Queues
+namespace LionFire.Messaging.Queues
 {
 
     public enum QueueSupervisorOptions

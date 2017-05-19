@@ -93,8 +93,17 @@ namespace LionFire.Applications.Hosting
 
         public IAppHost Add(object component)
         {
-            var adding = component as IAdding;
-            if(adding(this)) components.Add(component);
+            if (component is IAdding adding)
+            {
+                if (adding.OnAdding(this))
+                {
+                    components.Add(component);
+                }
+            }
+            else
+            {
+                components.Add(component);
+            }
             return this;
         }
 
@@ -110,6 +119,7 @@ namespace LionFire.Applications.Hosting
             if (ManualSingleton<IAppHost>.Instance == null)
             {
                 ManualSingleton<IAppHost>.Instance = this; // IsRootApplication == true
+                InjectionContext.Default = this.InjectionContext;
             }
         }
 
@@ -181,7 +191,7 @@ namespace LionFire.Applications.Hosting
             }
 
             // FUTURE TODO: Use Resolution context?
-            Components.ResolveHandles();
+            components.ResolveHandles();
 
             InstantiateTemplates();
 
@@ -239,8 +249,12 @@ namespace LionFire.Applications.Hosting
             WaitForTasks.Clear();
             Tasks.Clear();
 
-            List<Task> startTasks = new List<Task>();
+            await components.OfType<IInitializable>().InitializeAll();
 
+            #region Start
+
+            List<Task> startTasks = new List<Task>();
+            
             foreach (var component in components.OfType<IStartable>())
             {
                 // Parallel start
@@ -248,6 +262,8 @@ namespace LionFire.Applications.Hosting
             }
 
             Task.WaitAll(startTasks.ToArray());
+            
+            #endregion
 
             foreach (var component in components.OfType<IHasRunTask>())
             {
@@ -299,5 +315,5 @@ namespace LionFire.Applications.Hosting
         #endregion
     }
 
-    
+
 }

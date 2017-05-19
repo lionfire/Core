@@ -6,11 +6,11 @@ using System.Text;
 namespace LionFire.Serialization.Json.Newtonsoft
 {
 
-    public class NewtonsoftJsonSerialization : AppPackage
+    public class NewtonsoftJsonSerialization : IConfigures<IServiceCollection>
     {
-        public override void ConfigureServices(IServiceCollection sc)
+        public void Configure(IServiceCollection sc)
         {
-            sc.AddSingleton(typeof(ISerializer), typeof(NewtonsoftJsonSerializer));
+            sc.AddSingleton(typeof(ISerializerStrategy), typeof(NewtonsoftJsonSerializer));
         }
 
         //public override  IEnumerable<ServiceDescriptor> ServiceDescriptors
@@ -20,6 +20,6 @@ namespace LionFire.Serialization.Json.Newtonsoft
         //        yield return new ServiceDescriptor(typeof(ISerializer), typeof(NewtonsoftJsonSerializer), ServiceLifetime.Singleton);
         //    }
         //}
-        
+
     }
 }

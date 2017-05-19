@@ -7,9 +7,8 @@ namespace System.Threading.Tasks
 {
     public static class TaskExtensions
     {
-        public static Task FireAndForget(this Task task)
+        public static void FireAndForget(this Task task, string taskName = null)
         {
-            return task;
         }
     }
 }

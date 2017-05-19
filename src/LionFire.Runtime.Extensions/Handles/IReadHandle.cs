@@ -22,6 +22,10 @@ namespace LionFire
         T Object { get; }
 
         bool HasObject { get; }
+
+        // TODO?
+        //void ResolveObject();
+        //bool DiscardObject();
     }
 
     public static class IReadHandleExtensions

@@ -15,6 +15,26 @@ namespace LionFire.Serialization.Contexts
             }
         }
 
+
+        public override void LoadStringDataIfNeeded()
+        {
+            if (StringData != null) return;
+
+            if (string.IsNullOrWhiteSpace(FileName)) throw new ArgumentNullException(nameof(FileName));
+
+            StringData = File.ReadAllText(FileName);
+        }
+
+        public override void LoadBytesDataIfNeeded()
+        {
+            if (BytesData != null) return;
+
+            if (string.IsNullOrWhiteSpace(FileName)) throw new ArgumentNullException(nameof(FileName));
+
+            BytesData = File.ReadAllBytes(FileName);
+        }
+
+
         #region FileName
 
         /// <summary>
@@ -33,13 +53,30 @@ namespace LionFire.Serialization.Contexts
         {
             get
             {
+                if (fileExtension != null) return fileExtension;
+
                 if (FileName == null) return null;
+
                 return Path.GetExtension(FileName);
             }
+            set
+            {
+                fileExtension = value;
+            }
         }
+        private string fileExtension;
 
         #endregion
 
         #endregion
+
+
+        public override void OnSerialized(ISerializerStrategy s)
+        {
+            if (FileExtension == null)
+            {
+                FileExtension = s.DefaultFileExtension;
+            }
+        }
     }
 }

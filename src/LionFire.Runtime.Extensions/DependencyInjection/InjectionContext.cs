@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using System.Reflection;
 using LionFire.Structures;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace LionFire.DependencyInjection
 {
@@ -27,7 +28,7 @@ namespace LionFire.DependencyInjection
             }
         }
         public static InjectionContext current;
-        public static InjectionContext Default { get { return ManualSingleton<InjectionContext>.GuaranteedInstance; } }
+        public static InjectionContext Default { get { return ManualSingleton<InjectionContext>.Instance; } set { ManualSingleton<InjectionContext>.Instance = value; } }
 
         static InjectionContext()
         {
@@ -66,6 +67,8 @@ namespace LionFire.DependencyInjection
             var mi = typeof(InjectionContext).GetMethod("GetService", new Type[] { typeof(Type), typeof(IServiceProvider), typeof(bool) });
             return (T)mi.Invoke(this, new object[] { typeof(T), serviceProvider, createIfMissing });
         }
+
+
 
         private bool UseManualSingletonServiceProvider = false;
 
@@ -116,6 +119,48 @@ namespace LionFire.DependencyInjection
 
             return result;
         }
+
+        //public IEnumerable<T> GetServices<T>(IServiceProvider serviceProvider = null, bool createIfMissing = DefaultCreateIfMissing)
+        //{
+        //    var mi = typeof(InjectionContext).GetMethod("GetServices", new Type[] { typeof(Type), typeof(IServiceProvider), typeof(bool) });
+        //    return (IEnumerable<T>)mi.Invoke(this, new object[] { typeof(T), serviceProvider, createIfMissing });
+        //}
+
+        //public virtual IEnumerable<object> GetServices(Type serviceType, IServiceProvider serviceProvider = null, bool createIfMissing = DefaultCreateIfMissing)
+        //{
+        //    IEnumerable<object> result;
+
+        //    if (serviceProvider != null && serviceProvider != this)
+        //    {
+        //        result = serviceProvider.GetServices(serviceType);
+        //        if (result != null) { return result; }
+        //    }
+
+        //    {
+        //        var _serviceProvider = this.ServiceProvider;
+        //        if (_serviceProvider != null)
+        //        {
+        //            result = _serviceProvider.GetServices(serviceType);
+        //            if (result != null) { return result; }
+        //        }
+        //    }
+
+        //    if (UseManualSingletonServiceProvider)
+        //    {
+        //        var _serviceProvider = ManualSingleton<IServiceProvider>.Instance;
+        //        if (_serviceProvider != null && _serviceProvider != this)
+        //        {
+        //            result = _serviceProvider.GetServices(serviceType);
+        //            if (result != null) { return result; }
+        //        }
+        //    }
+
+        //    var pi = typeof(ManualSingleton<>).MakeGenericType(serviceType).GetProperty(createIfMissing ? "GuaranteedInstance" : "Instance", BindingFlags.Static | BindingFlags.Public);
+        //    var service = pi.GetValue(null);
+        //    result = service == null ? Enumerable.Empty<object>() : new object[] { service };
+
+        //    return result;
+        //}
 
         public void AddSingleton<T>(T obj, bool force = false)
             where T : class

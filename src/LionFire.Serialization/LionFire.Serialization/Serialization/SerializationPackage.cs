@@ -9,7 +9,9 @@ namespace LionFire.Serialization
     {
         public void Configure(IServiceCollection sc)
         {
-            sc.AddSingleton<IFileDeserializer, FileDeserializer>();
+            //sc.AddSingleton<IFileDeserializer, FileDeserializer>();
+            sc.AddSingleton<ISerializationService, SerializationService>();
+            
         }
     }
 }

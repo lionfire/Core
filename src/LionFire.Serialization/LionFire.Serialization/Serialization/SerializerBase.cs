@@ -1,15 +1,53 @@
-﻿using System;
+﻿using LionFire.Serialization.Contexts;
+using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Reflection;
 
 namespace LionFire.Serialization
 {
-    public abstract class SerializerBase : ISerializer
+    public abstract class SerializerBase : ISerializerStrategy
     {
 
+        #region FileExtensions
+
         public virtual IEnumerable<string> FileExtensions { get { yield break; } }
+
+        public virtual string DefaultFileExtension
+        {
+            get
+            {
+                return defaultFileExtension ?? FileExtensions.First();
+            }
+            set
+            {
+                defaultFileExtension = value;
+            }
+        }
+        protected string defaultFileExtension;
+
+        #endregion
+
+        #region MimeTypes
+
         public virtual IEnumerable<string> MimeTypes { get { yield break; } }
 
+
+        public virtual string DefaultMimeType
+        {
+            get
+            {
+                return defaultMimeType ?? MimeTypes.First();
+            }
+            set
+            {
+                defaultMimeType = value;
+            }
+        }
+        protected string defaultMimeType;
+
+        #endregion
+        
         #region DefaultSettingsFlags
 
         public SerializationFlags DefaultSettingsFlags
@@ -31,18 +69,32 @@ namespace LionFire.Serialization
         public virtual object DefaultDeserializationSettings { get; set; }
         public virtual object DefaultSerializationSettings { get; set; }
 
+        public virtual float GetPriorityForContext(SerializationContext context)
+        {
+            float score = 0;
+
+            var fs = context as FileSerializationContext; // Move to derived class?
+            if (fs != null)
+            {
+                if (FileExtensions.Contains(fs.FileExtension)) score += 100;
+            }
+
+            return score;
+        }
+
         #region Serialize
 
-        public abstract byte[] ToBytes(object obj, SerializationContext context = null);
+        public abstract byte[] ToBytes(SerializationContext context);
 
-        public abstract string ToString(object obj, SerializationContext context = null);
+        public abstract string ToString(SerializationContext context);
 
         #endregion
 
         #region Deserialize
 
-        public abstract T ToObject<T>(byte[] bytes, SerializationContext context = null);
-        public abstract T ToObject<T>(string serializedData, SerializationContext context = null);
+        public abstract T ToObject<T>(SerializationContext context);
+
+        //public abstract T ToObject<T>(string serializedData, SerializationContext context = null);
 
         // FUTURE if needed?
         //public virtual object ToObject(byte[] bytes, Type type)
