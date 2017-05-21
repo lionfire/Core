@@ -7,12 +7,19 @@ using System.Threading.Tasks;
 using LionFire.Threading.Tasks;
 using LionFire.Serialization;
 using LionFire.Serialization.Json.Newtonsoft;
+using LionFire.Trading.Applications;
+using LionFire.Trading;
+using LionFire.Composables;
+using LionFire.Trading.TrueFx;
+using LionFire.Trading.Spotware.Connect;
+using LionFire.Assets;
 
 namespace LionFire.Notifications.Wpf.App
 {
     public class AppBootstrapper : LionFireAppBootstrapper
     {
     }
+   
 
     public class LionFireAppBootstrapper : CaliburnMicroAppBootstrapper
     {
@@ -23,12 +30,26 @@ namespace LionFire.Notifications.Wpf.App
         {
             base.Configure();
             app = new AppHost()
-                .Add(new AppInfo("LionFire", "Notifier.WPF", "Notifications/Apps/Notifier.WPF"))
+                //.Add(new AppInfo("LionFire", "Notifier.WPF", "Notifications/Apps/Notifier.WPF"))
+                .Add(new AppInfo("LionFire", "Trading Dash", "Trading"))
+                .AddJsonAssetProvider()
+                .Initialize()
                 .Add<SerializationPackage>()
                 .Add<NewtonsoftJsonSerialization>()
                 //.Add<VosPackage>()
                 .Add<WpfNotifierService>()
                 .Add<TestNotificationQueueFiller>()
+                .AddTrading(new TradingOptions
+                {
+                    AccountModes = AccountMode.Demo,
+                })
+                //.Add(new TTrueFxFeed
+                //{
+                //    //AccountId = "",
+                //    //AccessToken = "",
+                //})
+                .AddSpotwareConnectClient("LionFire.Trading.App")
+                .AddAsset<TCTraderAccount, IAppHost>("IC Markets.Demo")
                 ;
         }
 

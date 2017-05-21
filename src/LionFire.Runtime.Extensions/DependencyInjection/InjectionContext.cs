@@ -114,8 +114,12 @@ namespace LionFire.DependencyInjection
                 }
             }
 
-            var pi = typeof(ManualSingleton<>).MakeGenericType(serviceType).GetProperty(createIfMissing ? "GuaranteedInstance" : "Instance", BindingFlags.Static | BindingFlags.Public);
-            result = pi.GetValue(null);
+            if (!serviceType.GetTypeInfo().IsInterface)
+            {
+                var pi = typeof(ManualSingleton<>).MakeGenericType(serviceType).GetProperty(createIfMissing ? "GuaranteedInstance" : "Instance", BindingFlags.Static | BindingFlags.Public);
+                result = pi.GetValue(null);
+            }
+            else { result = null; }
 
             return result;
         }

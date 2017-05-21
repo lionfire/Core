@@ -20,7 +20,11 @@
             </DockPanel>
         </TabItem>
         <TabItem Header="Notification Test">
-
+            <DockPanel>
+                <Button x:Name="Notify1"/>
+                <Button x:Name="Notify2"/>
+            </DockPanel>
+            
         </TabItem>
         <TabItem Header="Twilio Test">
             <Grid Background="White">

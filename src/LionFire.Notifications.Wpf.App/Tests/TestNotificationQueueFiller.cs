@@ -18,7 +18,7 @@ namespace LionFire.Notifications.Wpf.App
         {
             writer.QueueDir = Path.Combine(NotificationEnvironment.DesktopAlertQueueDir, DirectoryQueue.InSubDir);
 
-            timer = new Timer(4000);
+            timer = new Timer(8000);
             timer.Elapsed += Timer_Elapsed;
             timer.AutoReset = true;
             timer.Start();

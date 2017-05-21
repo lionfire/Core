@@ -25,14 +25,19 @@ namespace LionFire.Instantiating
         /// <summary>
         /// Reserved: Below 100 and above 60000
         /// </summary>
-        public SortedList<int, IInstantiationProvider> Strategies { get; set; }
+        public SortedList<int, IInstantiationProvider> Strategies { get; set; } = new SortedList<int, IInstantiationProvider>();
+
+
+        #region Static
 
         public static InstantiationStrategyContext Default
         {
             get
             {
-                return Defaults.TryGet<InstantiationStrategyContext>();
+                return Defaults.Get<InstantiationStrategyContext>();
             }
         }
+        
+        #endregion
     }
 }

@@ -12,7 +12,7 @@ namespace LionFire.Structures
         public static T ResolveHandles<T>(this T collection)
             where T : ICollection<object>
         {
-            collection.ResolveHandlesAsync().Wait();
+            collection.ResolveHandlesAsync().GetResultSafe();
             return collection;
         }
 
@@ -22,14 +22,13 @@ namespace LionFire.Structures
             var replacements = new List<object>();
             var removals = new List<object>();
 
-            await Task.WhenAll(collection.OfType<IReadHandle<object>>().Select(async rh => await rh.TryLoadNonNull()));
+            await Task.WhenAll(collection.OfType<IReadHandle<object>>().Select(async rh => await rh.TryLoadNonNull().ConfigureAwait(false))).ConfigureAwait(false);
 
             foreach (var component in collection.OfType<IReadHandle<object>>().ToArray())
             {
                 if (component.Object == null) throw new HandleObjectMissingException(component);
                 try
                 {
-
                     collection.Remove(component);
                     collection.Add(component.Object);
                 }

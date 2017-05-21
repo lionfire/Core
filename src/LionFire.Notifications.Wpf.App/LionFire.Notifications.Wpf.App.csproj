@@ -6,7 +6,7 @@
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProjectGuid>{D3A605C2-E22F-424E-A14B-86061AB72AE0}</ProjectGuid>
     <OutputType>WinExe</OutputType>
-    <RootNamespace>LionFire.Notifications.Wpf</RootNamespace>
+    <RootNamespace>LionFire.Notifications</RootNamespace>
     <AssemblyName>LionFire.Notifications.Wpf.App</AssemblyName>
     <TargetFrameworkVersion>v4.6.2</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
@@ -43,6 +43,9 @@
     <Reference Include="Caliburn.Micro.Platform.Core, Version=3.0.3.0, Culture=neutral, PublicKeyToken=8e5891231f2ed21f, processorArchitecture=MSIL">
       <HintPath>..\..\packages\Caliburn.Micro.3.0.3\lib\net45\Caliburn.Micro.Platform.Core.dll</HintPath>
     </Reference>
+    <Reference Include="Hardcodet.Wpf.TaskbarNotification, Version=1.0.5.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\..\..\Trading.Proprietary\packages\Hardcodet.NotifyIcon.Wpf.1.0.8\lib\net451\Hardcodet.Wpf.TaskbarNotification.dll</HintPath>
+    </Reference>
     <Reference Include="Microsoft.Extensions.DependencyInjection, Version=1.1.1.0, Culture=neutral, PublicKeyToken=adb9793829ddae60, processorArchitecture=MSIL">
       <HintPath>..\..\..\Trading.Proprietary\packages\Microsoft.Extensions.DependencyInjection.1.1.1\lib\netstandard1.1\Microsoft.Extensions.DependencyInjection.dll</HintPath>
     </Reference>
@@ -70,6 +73,7 @@
     <Reference Include="System.Diagnostics.Tracing, Version=4.1.1.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
       <HintPath>..\..\..\Trading.Proprietary\packages\System.Diagnostics.Tracing.4.3.0\lib\net462\System.Diagnostics.Tracing.dll</HintPath>
     </Reference>
+    <Reference Include="System.Drawing" />
     <Reference Include="System.Globalization.Calendars, Version=4.0.2.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
       <HintPath>..\..\..\Trading.Proprietary\packages\System.Globalization.Calendars.4.3.0\lib\net46\System.Globalization.Calendars.dll</HintPath>
     </Reference>
@@ -126,6 +130,9 @@
     <Reference Include="System.Security.Cryptography.X509Certificates, Version=4.1.1.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
       <HintPath>..\..\..\Trading.Proprietary\packages\System.Security.Cryptography.X509Certificates.4.3.0\lib\net461\System.Security.Cryptography.X509Certificates.dll</HintPath>
     </Reference>
+    <Reference Include="System.Threading.Thread, Version=4.0.1.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>..\..\..\Trading.Proprietary\packages\System.Threading.Thread.4.3.0\lib\net46\System.Threading.Thread.dll</HintPath>
+    </Reference>
     <Reference Include="System.Windows.Interactivity, Version=4.5.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <HintPath>..\..\packages\Caliburn.Micro.3.0.3\lib\net45\System.Windows.Interactivity.dll</HintPath>
       <Private>True</Private>
@@ -150,15 +157,14 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
-    <Compile Include="AppBootstrapper.cs" />
+    <Compile Include="Application\AppBootstrapper.cs" />
     <Compile Include="IShell.cs" />
-    <Compile Include="WpfNotifierService.cs" />
     <Compile Include="ShellViewModel.cs" />
     <Compile Include="App.xaml.cs">
       <DependentUpon>App.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="TestNotificationQueueFiller.cs" />
+    <Compile Include="Tests\TestNotificationQueueFiller.cs" />
     <Page Include="ShellView.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
@@ -192,6 +198,22 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\..\..\Trading\src\LionFire.Trading.Abstractions\LionFire.Trading.Abstractions.csproj">
+      <Project>{26fb13f9-2095-425a-9904-86438a3482b1}</Project>
+      <Name>LionFire.Trading.Abstractions</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\Trading\src\LionFire.Trading.Feeds.TrueFx\LionFire.Trading.TrueFx.csproj">
+      <Project>{4ac0e462-e3e5-49b0-a3ea-46de82076745}</Project>
+      <Name>LionFire.Trading.TrueFx</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\Trading\src\LionFire.Trading\LionFire.Trading.csproj">
+      <Project>{bb75938c-7cac-49de-aeba-502e6340f92b}</Project>
+      <Name>LionFire.Trading</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\Trading\src\Spotware\LionFire.Trading.Spotware.Connect\LionFire.Trading.Spotware.Connect.csproj">
+      <Project>{3f5ce5bd-c8b7-48ad-9316-a4b397a6ef73}</Project>
+      <Name>LionFire.Trading.Spotware.Connect</Name>
+    </ProjectReference>
     <ProjectReference Include="..\LionFire.Applications.Abstractions\LionFire.Applications.Abstractions.csproj">
       <Project>{b3a9bca9-2ee5-46a8-b3ee-0738bb68cdaf}</Project>
       <Name>LionFire.Applications.Abstractions</Name>
@@ -228,6 +250,10 @@
       <Project>{b624da7e-b283-4b56-89e5-dab4627afb71}</Project>
       <Name>LionFire.Notifications.Twilio</Name>
     </ProjectReference>
+    <ProjectReference Include="..\LionFire.Notifications.Wpf\LionFire.Notifications.Wpf.csproj">
+      <Project>{b51d006c-96b5-4653-bdc0-a101fd8e30b9}</Project>
+      <Name>LionFire.Notifications.Wpf</Name>
+    </ProjectReference>
     <ProjectReference Include="..\LionFire.Notifications\LionFire.Notifications.csproj">
       <Project>{5492c9ac-0bd9-4745-b90c-6399e66fe966}</Project>
       <Name>LionFire.Notifications</Name>
@@ -257,5 +283,6 @@
       <Name>LionFire.Serialization</Name>
     </ProjectReference>
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

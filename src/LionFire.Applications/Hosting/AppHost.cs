@@ -191,7 +191,7 @@ namespace LionFire.Applications.Hosting
             }
 
             // FUTURE TODO: Use Resolution context?
-            components.ResolveHandles();
+            components.ResolveHandlesAsync().GetResultSafe();
 
             InstantiateTemplates();
 

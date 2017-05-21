@@ -22,7 +22,7 @@ using LionFire.Validation;
 namespace LionFire.Assets.Providers.FileSystem
 {
 
-    
+
 
     // FUTURE?
     //[System.AttributeUsage(AttributeTargets.Class, Inherited = false, AllowMultiple = true)]
@@ -36,7 +36,7 @@ namespace LionFire.Assets.Providers.FileSystem
     //}
 
     //[ContextPath("Persistence.FileSystem.Json")]
-    public class JsonAssetProvider : FileSystemAssetProviderBase, IAssetProvider, IInitializable
+    public class JsonAssetProvider : FileSystemAssetProviderBase, IAssetProvider, IInitializable, IInitializable2
     //, IFileExtensionHandler
     {
 
@@ -147,19 +147,22 @@ namespace LionFire.Assets.Providers.FileSystem
             await autoRetry.AutoRetry(() => _SaveMethod(obj, assetSubPath, context)).ConfigureAwait(false);
         }
 
-        public Task<bool> Initialize()
-        {            
+        public async Task<bool> Initialize()
+        {
+            return (await((IInitializable2)this).Initialize()).IsValid;
+            
+        }
+
+        Task<ValidationContext> IInitializable2.Initialize()
+        {
             if (RootDir == null)
             {
                 RootDir = LionFireEnvironment.AppProgramDataDir;
             }
 
-            // TODO: return ValidationContext
             return Task.FromResult(new ValidationContext()
                 .IsTrue(!string.IsNullOrEmpty(RootDir), () => "RootDir not set after trying to set it from LionFireEnvironment.AppProgramDataDir")
-                .IsTrue(!Directory.Exists(RootDir), () => "RootDir does not exist: " + RootDir)
-                .IsValid)
-                ;
+                .IsTrue(Directory.Exists(RootDir), () => "RootDir does not exist: " + RootDir));
         }
     }
 }
@@ -171,7 +174,15 @@ namespace LionFire.Applications.Hosting
     {
         public static IAppHost AddJsonAssetProvider(this IAppHost app, string rootDir = null)
         {
-            app.ServiceCollection.AddSingleton<IAssetProvider, JsonAssetProvider>(p => new JsonAssetProvider(rootDir));
+            var jap = new JsonAssetProvider(rootDir);
+
+            app.Add(jap);
+
+            app.ConfigureServices(sc =>
+           {
+               sc.AddSingleton<IAssetProvider>(jap);
+           });
+
             return app;
         }
     }

@@ -1,5 +1,13 @@
 using Caliburn.Micro;
+using LionFire.Applications.Hosting;
+using LionFire.DependencyInjection;
+using LionFire.Execution;
 using LionFire.Notifications.Twilio;
+using LionFire.Structures;
+using LionFire.Trading;
+using LionFire.Trading.Spotware.Connect;
+using System.Diagnostics;
+using System.Linq;
 using System.Timers;
 
 namespace LionFire.Notifications.Wpf.App
@@ -25,10 +33,11 @@ namespace LionFire.Notifications.Wpf.App
 
         #endregion
 
+        IWindowManager windowManager;
 
-        public ShellViewModel()
+        public ShellViewModel(IWindowManager windowManager)
         {
-            
+            this.windowManager = windowManager;
         }
 
         protected override void OnActivate()
@@ -39,7 +48,7 @@ namespace LionFire.Notifications.Wpf.App
         }
 
 
-        #region TrueFxAutoUpdate
+        #region AutoUpdate
 
         public bool AutoUpdate
         {
@@ -48,27 +57,52 @@ namespace LionFire.Notifications.Wpf.App
             {
                 if (autoUpdate == value) return;
                 autoUpdate = value;
-                
+                autoUpdateTimer.Enabled = value;
                 NotifyOfPropertyChange(() => AutoUpdate);
             }
         }
         private bool autoUpdate;
-
+        
+        Timer autoUpdateTimer = new Timer();
+        
         #endregion
 
-        Timer autoUpdateTimer = new Timer();
+        bool isInit = false;
 
-        private void OnTrueFxAutoUpdateChanged()
+        IFeed feed;
+        Symbol gu;
+
+        public async void Update()
         {
-            if (autoUpdate)
+            Debug.WriteLine("Update timer...");
+
+            if (!isInit)
             {
-                autoUpdateTimer.Interval = UpdateInterval;
-            }
-            else
-            {
+                isInit = true;
+
+                feed = ManualSingleton<IAppHost>.Instance.Components.OfType<IFeed>().FirstOrDefault();
+                if (feed == null) return;
+
+                var st = feed as IStartable;
+                await st?.Start();
+
+                CTraderAccount ct = feed as CTraderAccount;
+                if (ct != null)
+                {
+                    ct.IsTradeApiEnabled = true;
+                }
+
+                gu = feed.GetSymbol("GBPUSD");
+
+                gu.Ticked += OnTick;
+                
             }
         }
 
+        private void OnTick(SymbolTick tick)
+        {
+            Debug.WriteLine(tick.ToString());
+        }
 
 
         #region UpdateInterval
@@ -86,6 +120,17 @@ namespace LionFire.Notifications.Wpf.App
         private int updateInterval = 3000;
 
         #endregion
+
+        public void Notify1() { Notify("1"); }
+        public void Notify2() { Notify("2"); }
+
+        public void Notify(string msg)
+        {
+            InjectionContext.Current.GetService<INotificationService>().Publish("DesktopAlerts", new
+            {
+                Message = "hello "+msg
+            });
+        }
 
 
 

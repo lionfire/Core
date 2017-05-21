@@ -1,0 +1,21 @@
+﻿<UserControl x:Class="LionFire.Notifications.PopupAlertView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:LionFire.Notifications.Wpf"
+             mc:Ignorable="d" 
+             d:DesignHeight="300" d:DesignWidth="300"
+             MinHeight="300" MinWidth="300">
+    <UserControl.Resources>
+        <BooleanToVisibilityConverter x:Key="bvc"/>
+    </UserControl.Resources>
+    <DockPanel>
+
+        <TextBlock x:Name="Title" FontSize="20" HorizontalAlignment="Center"></TextBlock>
+        <TextBlock x:Name="Message"></TextBlock>
+        <Expander Visibility="{Binding HasDetail, Converter={StaticResource bvc}}">
+            <TextBlock x:Name="Detail"></TextBlock>
+        </Expander>
+    </DockPanel>
+</UserControl>

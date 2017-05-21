@@ -62,8 +62,10 @@ namespace LionFire.Execution
 
                 if (stillNeedsTrue.Count == itemsRequiringTrue)
                 {
+                    // No progress made
                     return (false, stillNeedsTrue);
                 }
+                itemsRequiringTrue = stillNeedsTrue.Count;
 
             } while (stillNeedsTrue.Count > 0);
             return (true, Enumerable.Empty<object>());
