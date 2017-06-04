@@ -52,6 +52,10 @@
     <Compile Include="Windowing\WindowUtils.cs" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\LionFire.Core\LionFire.Core.csproj">
+      <Project>{62e82f33-2263-49a2-8a81-1403ab343ef1}</Project>
+      <Name>LionFire.Core</Name>
+    </ProjectReference>
     <ProjectReference Include="..\LionFire.UI\LionFire.UI.csproj">
       <Project>{9cce0f03-f678-42aa-87a4-cb1b681a64e2}</Project>
       <Name>LionFire.UI</Name>

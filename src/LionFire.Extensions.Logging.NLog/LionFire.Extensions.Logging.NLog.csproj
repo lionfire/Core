@@ -21,4 +21,8 @@
     <Reference Include="Microsoft.CSharp" />
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\LionFire.Core\LionFire.Core.csproj" />
+  </ItemGroup>
+
 </Project>

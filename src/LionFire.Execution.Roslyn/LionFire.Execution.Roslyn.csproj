@@ -13,6 +13,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\LionFire.Core\LionFire.Core.csproj" />
     <ProjectReference Include="..\LionFire.Execution.Context\LionFire.Execution.Context.csproj" />
     <ProjectReference Include="..\LionFire.Execution\LionFire.Execution.csproj" />
   </ItemGroup>

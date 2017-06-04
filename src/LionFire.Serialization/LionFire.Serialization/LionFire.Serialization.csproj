@@ -17,7 +17,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\LionFire.Runtime.Extensions\LionFire.Core.csproj" />
+    <ProjectReference Include="..\..\LionFire.Core\LionFire.Core.csproj" />
   </ItemGroup>
 
 </Project>

@@ -8,8 +8,4 @@
     <PackageReference Include="Newtonsoft.Json" Version="10.0.2" />
   </ItemGroup>
 
-  <ItemGroup>
-    <ProjectReference Include="..\LionFire.Runtime.Extensions\LionFire.Core.csproj" />
-  </ItemGroup>
-
 </Project>

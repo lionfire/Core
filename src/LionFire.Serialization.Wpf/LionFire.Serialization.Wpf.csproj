@@ -101,13 +101,13 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\LionFire.Core\LionFire.Core.csproj">
+      <Project>{62e82f33-2263-49a2-8a81-1403ab343ef1}</Project>
+      <Name>LionFire.Core</Name>
+    </ProjectReference>
     <ProjectReference Include="..\LionFire.Environment\LionFire.Environment.csproj">
       <Project>{a138d9cc-e76a-4861-8d99-ac0287c249d5}</Project>
       <Name>LionFire.Environment</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\LionFire.Runtime.Extensions\LionFire.Core.csproj">
-      <Project>{1bacfec6-25eb-4fd5-b3cb-0117f2335ba9}</Project>
-      <Name>LionFire.Core</Name>
     </ProjectReference>
     <ProjectReference Include="..\LionFire.Serialization\LionFire.Serialization\LionFire.Serialization.csproj">
       <Project>{5254cd3f-fffe-49c4-9159-71896305e496}</Project>

@@ -3,9 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace LionFire
+namespace LionFire.Deprecated
 {
-    public enum LogLevel
+    public enum LogLevel // Use Microsoft LogLevel now.
     {
         Disabled = 101,
         Fatal = 90,

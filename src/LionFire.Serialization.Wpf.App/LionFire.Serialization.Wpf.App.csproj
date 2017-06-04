@@ -221,13 +221,13 @@
       <Project>{e4b27ae8-25af-4f17-b857-bf2edec416a9}</Project>
       <Name>LionFire.Applications</Name>
     </ProjectReference>
+    <ProjectReference Include="..\LionFire.Core\LionFire.Core.csproj">
+      <Project>{62e82f33-2263-49a2-8a81-1403ab343ef1}</Project>
+      <Name>LionFire.Core</Name>
+    </ProjectReference>
     <ProjectReference Include="..\LionFire.Environment\LionFire.Environment.csproj">
       <Project>{a138d9cc-e76a-4861-8d99-ac0287c249d5}</Project>
       <Name>LionFire.Environment</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\LionFire.Runtime.Extensions\LionFire.Core.csproj">
-      <Project>{1bacfec6-25eb-4fd5-b3cb-0117f2335ba9}</Project>
-      <Name>LionFire.Core</Name>
     </ProjectReference>
     <ProjectReference Include="..\LionFire.Serialization.Json.Newtonsoft\LionFire.Serialization.Json.Newtonsoft.csproj">
       <Project>{41368335-bff6-45e1-a89b-31f93808cc2e}</Project>

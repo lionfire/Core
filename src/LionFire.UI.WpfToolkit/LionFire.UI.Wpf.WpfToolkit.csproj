@@ -92,8 +92,8 @@
     </Page>
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\LionFire.Runtime.Extensions\LionFire.Core.csproj">
-      <Project>{1bacfec6-25eb-4fd5-b3cb-0117f2335ba9}</Project>
+    <ProjectReference Include="..\LionFire.Core\LionFire.Core.csproj">
+      <Project>{62e82f33-2263-49a2-8a81-1403ab343ef1}</Project>
       <Name>LionFire.Core</Name>
     </ProjectReference>
     <ProjectReference Include="..\LionFire.UI\LionFire.UI.csproj">

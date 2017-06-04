@@ -14,6 +14,7 @@
   <ItemGroup>
     <ProjectReference Include="..\LionFire.Applications.Abstractions\LionFire.Applications.Abstractions.csproj" />
     <ProjectReference Include="..\LionFire.CommandLine\LionFire.CommandLine.csproj" />
+    <ProjectReference Include="..\LionFire.Core\LionFire.Core.csproj" />
   </ItemGroup>
 
   <ItemGroup Condition=" '$(TargetFramework)' == 'net462' ">

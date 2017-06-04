@@ -70,7 +70,7 @@ namespace LionFire.Execution
 #if TRACE_PROGRESSIVETASK
             if(!logLevel.HasValue) logLevel = LogLevel.Trace;
 #endif
-            if (logLevel.HasValue && logLevel.Value != LogLevel.Disabled)
+            if (logLevel.HasValue && logLevel.Value != LogLevel.None)
             {
                 var logMessage = this.ToString() + $" {progressFactor * 100.0}% {message}";
                 logger.Log(logLevel.Value, logMessage);
@@ -88,9 +88,7 @@ namespace LionFire.Execution
         {
             switch (logLevel)
             {
-                case LogLevel.Disabled:
-                    break;
-                case LogLevel.Fatal:
+                case LogLevel.None:
                     break;
                 case LogLevel.Critical:
                     break;
@@ -100,30 +98,30 @@ namespace LionFire.Execution
                     //case LogLevel.Warn:
                     logger.LogWarning(message);
                     break;
-                case LogLevel.MajorMessage:
-                    break;
-                case LogLevel.Message:
-                    break;
-                case LogLevel.MinorMessage:
-                    break;
-                case LogLevel.Info:
-                    break;
-                case LogLevel.Verbose:
-                    break;
+                //case LogLevel.MajorMessage:
+                //    break;
+                //case LogLevel.Message:
+                //    break;
+                //case LogLevel.MinorMessage:
+                //    break;
+                //case LogLevel.Info:
+                //    break;
+                //case LogLevel.Verbose:
+                //    break;
                 case LogLevel.Debug:
                     logger.LogDebug(message);
                     break;
                 case LogLevel.Trace:
                     logger.LogTrace(message);
                     break;
-                case LogLevel.Default:
-                    break;
-                case LogLevel.Step:
-                    break;
-                case LogLevel.All:
-                    break;
-                case LogLevel.Unspecified:
-                    break;
+                //case LogLevel.Default:
+                //    break;
+                //case LogLevel.Step:
+                //    break;
+                //case LogLevel.All:
+                //    break;
+                //case LogLevel.Unspecified:
+                //    break;
                 default:
                     break;
             }

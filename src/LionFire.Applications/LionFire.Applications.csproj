@@ -34,6 +34,7 @@ new AppHost()
 
   <ItemGroup>
     <ProjectReference Include="..\LionFire.Applications.Abstractions\LionFire.Applications.Abstractions.csproj" />
+    <ProjectReference Include="..\LionFire.Core\LionFire.Core.csproj" />
     <ProjectReference Include="..\LionFire.Persistence.Assets\LionFire.Persistence.Assets.csproj" />
     <ProjectReference Include="..\LionFire.Persistence.Assets.Abstractions\LionFire.Persistence.Assets.Abstractions.csproj" />
     <ProjectReference Include="..\LionFire.Environment\LionFire.Environment.csproj" />
