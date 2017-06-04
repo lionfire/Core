@@ -1,4 +1,5 @@
-﻿using LionFire.Reactive;
+﻿using LionFire.Execution.Executables;
+using LionFire.Reactive;
 using LionFire.Reactive.Subjects;
 using System;
 using System.Collections.Generic;
@@ -10,7 +11,7 @@ namespace LionFire.Execution
 {
 
 
-    public class RemoteExecutionControllerProxy : IExecutionController
+    public class RemoteExecutionControllerProxy : ExecutableBase, IExecutionController
     {
 
         [SetOnce]
@@ -26,16 +27,7 @@ namespace LionFire.Execution
         public Task Start() { return Task.CompletedTask; }
         public Task Stop(StopMode mode = StopMode.GracefulShutdown, StopOptions options = StopOptions.StopChildren) { return Task.CompletedTask; }
 
-        #region ExecutionState
-
-        public IBehaviorObservable<ExecutionState> State {
-            get {
-                return executionState;
-            }
-        }
-        private BehaviorObservable<ExecutionState> executionState = new BehaviorObservable<ExecutionState>();
-
-        #endregion
+    
 
     }
 }

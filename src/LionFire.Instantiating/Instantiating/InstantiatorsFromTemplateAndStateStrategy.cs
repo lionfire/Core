@@ -32,15 +32,16 @@ namespace LionFire.Instantiating
             var templateInstance = instance as ITemplateInstance;
             if (templateInstance != null)
             {
-                if (templateInstance.Template != null)
+                var template = templateInstance.GetTemplate();
+                if (template != null)
                 {
-                    if (typeof(IAsset).IsAssignableFrom(templateInstance.Template.GetType()))
+                    if (typeof(IAsset).IsAssignableFrom(template.GetType()))
                     {
-                        context.Dependencies.Add(templateInstance.Template);
+                        context.Dependencies.Add(template);
                     }
                     else
                     {
-                        pipe.Add(new TemplateRestorer(templateInstance.Template, templateInstance));
+                        pipe.Add(new TemplateRestorer(template, templateInstance));
                     }
                 }
             }
