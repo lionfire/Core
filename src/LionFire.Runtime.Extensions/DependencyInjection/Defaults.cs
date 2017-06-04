@@ -1,4 +1,5 @@
-﻿using LionFire.Structures;
+﻿using LionFire.DependencyInjection;
+using LionFire.Structures;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -12,23 +13,30 @@ namespace LionFire
         public static T Get<T>()
             where T : class, new()
         {
-            var result = TryGet<T>();
+            var result = TryGet<T>(createIfMissing: true);
             if (result == null)
             {
-                ManualSingleton<T>.Instance = result = new T();
+                throw new Exception($"Failed to get or create non-null instance of {typeof(T).Name}");
+                // Should never be reached, but this could be a fallback if the GetService in TryGet fails to create
+                //ManualSingleton<T>.Instance = result = new T();
             }
             return result;
         }
 
 
-        public static T TryGet<T>(Func<T> defaultProvider = null)
+        public static T TryGet<T>(Func<T> defaultProvider = null, bool createIfMissing = false)
             where T : class
         {
+            T result;
+
+            result = InjectionContext.Current?.GetService<T>(createIfMissing: createIfMissing);
+            if (result != null) return result; // This is the new approach.  REVIEW below this
+
             var inst = ManualSingleton<T>.Instance;
             if (inst != null) return inst;
 
             var sp = ManualSingleton<IServiceProvider>.Instance;
-            var result = (T)sp?.GetService(typeof(T));
+            result = (T)sp?.GetService(typeof(T));
             if (result != null) return result;
 
             if (defaultProvider != null)

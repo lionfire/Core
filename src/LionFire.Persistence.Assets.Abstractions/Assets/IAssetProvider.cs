@@ -11,6 +11,6 @@ namespace LionFire.Assets
         T Load<T>(string assetSubPath) where T : class;
         void Save(string assetSubPath, object obj, PersistenceContext context = null);
 
-        IEnumerable<string> Find<T>(string searchString);
+        IEnumerable<string> Find<T>(string searchString = null);
     }
 }

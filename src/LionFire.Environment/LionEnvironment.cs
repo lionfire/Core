@@ -100,6 +100,11 @@ namespace LionFire
             }
         }
 
+        public static string GetProgramDataDir(string namedDataDir)
+        {
+            return Path.Combine(ProgramDataDir, CompanyName, namedDataDir);
+        }
+
         public static string CompanyName { get; set; } = "LionFire";
         public static string ProgramName { get; set; } = "ProgramName";
         public static string ProgramDisplayName { get; set; } = "Program Name";
@@ -117,7 +122,7 @@ namespace LionFire
 
         public static string AppProgramDataDir
         {
-            get { return Path.Combine(ProgramDataDir, CompanyName, AppDataDirName); }
+            get { return GetProgramDataDir(AppDataDirName); }
         }
 
         //[SetOnce]

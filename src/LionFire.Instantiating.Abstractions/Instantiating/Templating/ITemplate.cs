@@ -45,7 +45,7 @@ namespace LionFire.Instantiating
             var templateInstance = inst as ITemplateInstance;
             if (templateInstance != null)
             {
-                templateInstance.Template = template;
+                templateInstance.SetTemplate(template);
             }
 
             var hierarchicalTemplate = template as IHierarchicalTemplate;

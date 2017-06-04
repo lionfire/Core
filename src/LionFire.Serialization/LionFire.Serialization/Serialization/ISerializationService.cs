@@ -74,9 +74,14 @@ namespace LionFire.Serialization
                 {
                     if (exceptions == null)
                     {
-                        exceptions.Add(ex);
+                        exceptions = new List<Exception>();
                     }
+                    exceptions.Add(ex);
                 }
+            }
+            if (exceptions == null)
+            {
+                throw new Exception("No serializers configured for context: " + context);
             }
             throw exceptions.Count == 1 ? exceptions[0] : new AggregateException(exceptions.ToArray());
         }

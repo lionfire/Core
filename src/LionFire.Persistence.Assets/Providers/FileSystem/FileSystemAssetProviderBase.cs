@@ -1,7 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
 using System.IO;
 using LionFire.Instantiating;
 using LionFire.Persistence;
@@ -35,6 +33,7 @@ namespace LionFire.Assets.Providers.FileSystem
         public IEnumerable<string> Find<T>(string searchString = null)
         {
             var dir = GetPath<T>();
+            if (searchString == null) searchString = "*";
             foreach (var path in Directory.GetFiles(dir, searchString + FileExtensionWithDot))
             {
                 var assetName = path.Replace(dir, "").TrimStart('/').TrimStart('\\').Replace(FileExtensionWithDot, "");
@@ -42,5 +41,7 @@ namespace LionFire.Assets.Providers.FileSystem
             }
         }
 
+        
     }
+
 }

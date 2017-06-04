@@ -1,0 +1,62 @@
+﻿<UserControl x:Class="LionFire.Serialization.UI.FsObjectCollectionView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:LionFire.Serialization.UI"
+             xmlns:cm="http://www.caliburnproject.org"
+             mc:Ignorable="d" 
+             d:DesignHeight="400" d:DesignWidth="600">
+    <UserControl.Resources>
+        <local:FileNameFromPathConverter x:Key="FileNameFromPath"/>
+    </UserControl.Resources>
+    <DockPanel>
+        <!--<ToolBarPanel DockPanel.Dock="Top">
+            <ToolBarTray>
+                <ToolBar >
+                    <Button>Refresh</Button>
+                </ToolBar>
+            </ToolBarTray>
+        </ToolBarPanel>-->
+        <TextBlock Text="{Binding Directory}" DockPanel.Dock="Top"/>
+        <Expander ExpandDirection="Right" IsExpanded="True">
+            <Expander.Header>
+                <TextBlock Text="Directory Explorer">
+                    <TextBlock.LayoutTransform>
+                        <RotateTransform Angle="-90"/>
+                    </TextBlock.LayoutTransform>
+                </TextBlock>
+            </Expander.Header>
+            <DockPanel>
+                <ToolBarPanel DockPanel.Dock="Top">
+                    <ToolBarTray>
+                        <ToolBar >
+                            <Button x:Name="RefreshDirectories">Refresh</Button>
+                        </ToolBar>
+                    </ToolBarTray>
+                </ToolBarPanel>
+
+                <TreeView DockPanel.Dock="Left" ItemsSource="{Binding Root.Children}" MinWidth="150"  SelectedItemChanged="TreeView_SelectedItemChanged">
+                    <TreeView.ItemTemplate>
+                        <HierarchicalDataTemplate ItemsSource="{Binding Children}">
+                            <TextBlock Text="{Binding Name}"/>
+                        </HierarchicalDataTemplate>
+                    </TreeView.ItemTemplate>
+                </TreeView>
+            </DockPanel>
+        </Expander>
+
+        <ListView  ItemsSource="{Binding ObjectCollection.Handles}" SelectedValue="{Binding SelectedObject}" SelectedValuePath="Value.Object" MinWidth="100" >
+            <ListView.ItemTemplate>
+                <DataTemplate>
+                    <DockPanel>
+                        <TextBlock Text="{Binding Key, Converter={StaticResource FileNameFromPath}}"/>
+                    </DockPanel>
+                </DataTemplate>
+            </ListView.ItemTemplate>
+        </ListView>
+
+        <ContentControl cm:View.Model="{Binding SelectedObjectViewModel}" DockPanel.Dock="Right" MinWidth="100"/>
+
+    </DockPanel>
+</UserControl>

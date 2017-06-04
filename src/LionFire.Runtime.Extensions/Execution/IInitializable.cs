@@ -24,6 +24,28 @@ namespace LionFire.Execution
 
     public static class IInitializableExtensions
     {
+        /// <summary>
+        /// Throw on TryInitializeAll, else return nothing
+        /// </summary>
+        public static async Task InitializeAll(this IEnumerable<IInitializable2> initializables, int maxRepetitions = int.MaxValue)
+        {
+            var result = await initializables.TryValidateAll(async i => await i.Initialize(), int.MaxValue).ConfigureAwait(false);
+            if (result == null) return;
+            if (result.Count() > 1)
+            {
+                throw new AggregateException(result.Select(r => new ValidationException(r)));
+            }
+            else if(result.Count() == 1)
+            {
+                throw new ValidationException(result.First());
+            }
+        }
+
+        public static async Task<IEnumerable<ValidationContext>> TryInitializeAll(this IEnumerable<IInitializable2> initializables, int maxRepetitions = int.MaxValue)
+        {
+            return await initializables.TryValidateAll(async i => await i.Initialize(), int.MaxValue).ConfigureAwait(false);
+        }
+
         public static async Task InitializeAll(this IEnumerable<IInitializable> initializables)
         {
             await initializables.RepeatAllUntilTrue(obj => ((IInitializable)obj).Initialize);

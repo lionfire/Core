@@ -5,20 +5,6 @@ using System.Text;
 
 namespace LionFire.Notifications
 {
-    public class TNotification
-    {
-        public NotificationFlags Flags { get; set; }
-
-        public string Message { get; set; }
-
-        
-
-
-        public override string ToString()
-        {
-            return $"Notification: '{Message}'";
-        }
-    }
 
     public class Notification : INotifyPropertyChanged
     {

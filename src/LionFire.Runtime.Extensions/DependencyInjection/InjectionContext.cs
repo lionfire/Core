@@ -9,7 +9,6 @@ using Microsoft.Extensions.DependencyInjection;
 namespace LionFire.DependencyInjection
 {
 
-
     public class InjectionContext : IServiceProvider
     {
         #region Static
@@ -181,6 +180,8 @@ namespace LionFire.DependencyInjection
             return GetService(serviceType, null, DefaultCreateIfMissing);
         }
         private const bool DefaultCreateIfMissing = true;
+
+
 
     }
 

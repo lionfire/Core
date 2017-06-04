@@ -13,6 +13,7 @@ using LionFire.Composables;
 using LionFire.Trading.TrueFx;
 using LionFire.Trading.Spotware.Connect;
 using LionFire.Assets;
+using System.Reflection;
 
 namespace LionFire.Notifications.Wpf.App
 {
@@ -38,7 +39,12 @@ namespace LionFire.Notifications.Wpf.App
                 .Add<NewtonsoftJsonSerialization>()
                 //.Add<VosPackage>()
                 .Add<WpfNotifierService>()
-                .Add<TestNotificationQueueFiller>()
+                //.Add<TestNotificationQueueFiller>()
+                .Add(new TradingNotificationsService
+                {
+                    //AccountNames = new List<string> { "IC Markets.Demo" },
+                    AccountNames = new List<string> { "IC Markets^301078" },
+                })
                 .AddTrading(new TradingOptions
                 {
                     AccountModes = AccountMode.Demo,
@@ -55,9 +61,21 @@ namespace LionFire.Notifications.Wpf.App
 
         protected override void OnStartup(object sender, StartupEventArgs e)
         {
+            runTask = app.Run();
             base.OnStartup(sender, e);
 
-            runTask = app.Run();
+        }
+
+        protected override IEnumerable<Assembly> SelectAssemblies()
+        {
+
+            yield return typeof(Trading.UI.TradingNotificationsViewModel).Assembly; // LionFire.Trading.UI
+            yield return typeof(Trading.UI.TradingNotificationsView).Assembly; // LionFire.Trading.UI.WPF
+
+            foreach (var assembly in base.SelectAssemblies())
+            {
+                yield return assembly;
+            }
         }
     }
 

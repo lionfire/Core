@@ -54,7 +54,7 @@ namespace LionFire.Applications.Hosting
 
         /// <summary>
         /// Start application and return a task that waits for all ApplicationTasks with WaitForComplete = true to complete.
-        /// (Also see Run extension method which will block until the application completes.)
+        /// (Also see Run extension method which will block until the application completes.)  (RENAME to Start, and use IStartable)
         /// </summary>
         /// <returns></returns>
         Task Run();

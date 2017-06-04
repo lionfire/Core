@@ -48,5 +48,33 @@ namespace LionFire.ExtensionMethods
                 dict[key] = value;
             }
         }
+
+        /// <summary>
+        /// Sets me to match other, by checking keys
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="me"></param>
+        /// <param name="other"></param>
+        public static void SetToMatch<TKey,TValue>(this IDictionary<TKey,TValue> me, IDictionary<TKey,TValue> other, Func<TKey, bool> filter = null)
+        {
+            var otherArr = other.Keys.ToList();
+
+            var meArr = me.Keys.ToList();
+
+            if (filter == null) filter = _ => true;
+
+            foreach (var item in otherArr.Where(filter))
+            {
+                if (!me.ContainsKey(item))
+                {
+                    me.Add(item, other[item]);
+                }
+                meArr.Remove(item);
+            }
+            foreach (var item in meArr)
+            {
+                me.Remove(item);
+            }
+        }
     }
 }

@@ -6,8 +6,8 @@ using System.Runtime.InteropServices;
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
 [assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("Jared Thirsk")]
-[assembly: AssemblyProduct("LionFire.Runtime.Extensions")]
+[assembly: AssemblyCompany("LionFire Games")]
+[assembly: AssemblyProduct("LionFire.Core")]
 [assembly: AssemblyTrademark("")]
 
 // Setting ComVisible to false makes the types in this assembly not visible

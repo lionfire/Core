@@ -12,9 +12,7 @@ namespace LionFire.Applications
         public static IAppHost AddShutdownOnConsoleExitCommand(this IAppHost app, bool waitForCompletion = false)
         {
             app.Add(
-                new AppTask(
-                    () =>
-                    {
+                new AppTask(() => {
                         var exit = "exit";
                         while (Console.ReadLine() != "exit")
                         {

@@ -1,4 +1,6 @@
-﻿using LionFire.DependencyInjection;
+﻿using Microsoft.Extensions.DependencyInjection;
+using System.Windows.Media;
+using LionFire.DependencyInjection;
 using LionFire.Execution;
 using LionFire.Execution.Executables;
 using LionFire.Messaging;
@@ -14,12 +16,17 @@ using System.Windows;
 using Hardcodet.Wpf;
 using Hardcodet.Wpf.TaskbarNotification;
 using Caliburn.Micro;
+using LionFire.Validation;
+using System.IO;
+using System.Media;
 
 namespace LionFire.Notifications.Wpf
 {
 
-    public class WpfNotifierService : ExecutableBase, IStartable, IStoppable
+
+    public class WpfNotifierService : ExecutableBase, IStartable, IStoppable, IInitializable
     {
+        public NotificationConfiguration NotificationConfiguration { get; set; }
 
         TaskbarIcon taskbarIcon;
         FSDirectoryQueueReader queue;
@@ -41,6 +48,30 @@ namespace LionFire.Notifications.Wpf
             await queue.Start().ConfigureAwait(false);
         }
 
+        public string FindPathForFile(string subpath, IEnumerable<string> candidatePaths)
+        {
+            foreach (var dir in candidatePaths)
+            {
+                var path = Path.Combine(dir, subpath);
+                if (File.Exists(path)) return path;
+            }
+            return null;
+        }
+
+        public IDisposable StartSound(NotificationProfile notificationProfile)
+        {
+            var path = FindPathForFile(notificationProfile.Sound, NotificationConfiguration.SoundPaths);
+
+            if (path == null)
+            {
+                Debug.WriteLine("Sound not found in soundpath: " + notificationProfile.Sound);
+                return null;
+            }
+            var mp = new MediaPlayer();
+            mp.Open(new Uri("file:///" + path));
+            mp.Play();
+            return null;
+        }
         private void OnMessageReceived(MessageEnvelope env)
         {
             if (env == null) return;
@@ -55,10 +86,21 @@ namespace LionFire.Notifications.Wpf
                     var vm = new PopupAlertViewModel()
                     {
                         Detail = env?.Payload?.ToString(),
+                        //Message = en
                         Properties = {
                             ["MessageEnvelope"] = env
                         }
                     };
+
+                    var profileKey = "G3";
+
+                    if (!NotificationConfiguration.Profiles.TryGetValue(profileKey, out var notificationProfile))
+                    {
+                        Debug.WriteLine("No notification profile found: " + profileKey);
+                        return;
+                    }
+
+                    StartSound(notificationProfile);
 
                     //dynamic settings = new ExpandoObject();
                     //settings.WindowStartupLocation = WindowStartupLocation.CenterOwner;
@@ -71,7 +113,7 @@ namespace LionFire.Notifications.Wpf
                     //manager.ShowDialog(myViewModel, null, settings);
                     //wm.ShowDialog(vm, null);
                 }
-                catch (Exception )
+                catch (Exception)
                 {
                     taskbarIcon.ShowBalloonTip("Error", "Exception showing notification popup", BalloonIcon.Error);
                 }
@@ -79,11 +121,20 @@ namespace LionFire.Notifications.Wpf
             //MessageBox.Show("Got new env: " + env?.Payload?.ToString());
         }
 
-        public Task Stop(StopMode mode = StopMode.GracefulShutdown, StopOptions options = StopOptions.StopChildren)
+        public Task Stop()
         {
             queue.MessageReceived -= OnMessageReceived;
             queue.Stop();
             return Task.CompletedTask;
+        }
+
+        public Task<bool> Initialize()
+        {
+            this.NotificationConfiguration = InjectionContext.Current.ServiceProvider.GetService<NotificationConfiguration>() ?? NotificationDefaults.DefaultConfiguration;
+
+            //if(NotificationConfiguration==null)
+
+            return Task.FromResult(true);
         }
     }
 }

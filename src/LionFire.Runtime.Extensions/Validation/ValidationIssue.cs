@@ -28,6 +28,7 @@ namespace LionFire.Validation
         /// </summary>
         public string VariableName { get; set; }
        
+        public object DataContext { get; set; }
 
         public string Message { get; set; }
 

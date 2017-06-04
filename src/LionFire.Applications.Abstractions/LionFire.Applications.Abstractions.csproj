@@ -9,21 +9,37 @@
     <GenerateAssemblyConfigurationAttribute>false</GenerateAssemblyConfigurationAttribute>
     <GenerateAssemblyCompanyAttribute>false</GenerateAssemblyCompanyAttribute>
     <GenerateAssemblyProductAttribute>false</GenerateAssemblyProductAttribute>
+    <Description>Fluent application builder, inspired by ASP.NET Core but can be used to build any type of application.  
+
+Reference this package in DLLs that can help build applications via the IAppHost interface, and the related LionFire.Applications package in your executable, which contains an AppHost implementation.</Description>
+    <Copyright>2017 Jared Thirsk</Copyright>
+    <PackageLicenseUrl>https://github.com/jaredthirsk/Core/blob/master/LICENSE</PackageLicenseUrl>
+    <PackageProjectUrl>http://open.lionfire.software/</PackageProjectUrl>
+    <PackageIconUrl>https://avatars3.githubusercontent.com/u/19334699?v=3&amp;s=200</PackageIconUrl>
+    <RepositoryUrl>https://github.com/jaredthirsk/Core</RepositoryUrl>
+    <PackageTags>DependencyInjection AppBuilder di</PackageTags>
+    <NeutralLanguage>English (United States)</NeutralLanguage>
+    <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
+    <Authors>Jared Thirsk</Authors>
   </PropertyGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\LionFire.Execution\LionFire.Execution.csproj" />
-    <ProjectReference Include="..\LionFire.Runtime.Extensions\LionFire.Runtime.Extensions.csproj" />
     <ProjectReference Include="..\LionFire.Execution.Abstractions\LionFire.Execution.Abstractions.csproj" />
+    <ProjectReference Include="..\LionFire.Runtime.Extensions\LionFire.Core.csproj" />
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="1.1.0" />
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="1.1.1" />
   </ItemGroup>
 
   <ItemGroup Condition=" '$(TargetFramework)' == 'net462' ">
     <Reference Include="System" />
     <Reference Include="Microsoft.CSharp" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Hosting\Applications\" />
   </ItemGroup>
 
 </Project>

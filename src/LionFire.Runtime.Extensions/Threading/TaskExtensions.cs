@@ -7,6 +7,14 @@ namespace System.Threading.Tasks
 {
     public static class TaskExtensions
     {
+        // MOVE to some sort of task supervisor?
+        public static event Action<Exception> SwallowedException;
+        public static void SwallowException(this Task task)
+        {
+            if (task.Exception != null) SwallowedException?.Invoke(task.Exception);
+
+            task.ContinueWith(_ => { return; });
+        }
         public static void FireAndForget(this Task task, string taskName = null)
         {
         }

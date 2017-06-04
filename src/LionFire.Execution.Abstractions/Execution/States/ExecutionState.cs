@@ -16,7 +16,7 @@ namespace LionFire.Execution
 
         Uninitialized = 1 << 2,
         /// <summary>
-        /// Next: fix configuration/state, and initialize and start
+        /// Next: fix configuration/state, and initialize and start.  Effectively same as Uninitialized, but indicates there was an error.
         /// </summary>
         Faulted = 1 << 16,
 
@@ -32,15 +32,20 @@ namespace LionFire.Execution
         Unpausing = 1 << 9,
 
         Stopping = 1 << 10,
+
         Stopped = 1 << 11,
 
+        ///// <summary>
+        ///// Completed.  Needs to be initialized
+        ///// TODO: Merge with Stopped
+        ///// </summary>
+        //Finished = 1 << 15,
+
         /// <summary>
-        /// Completed.  Needs to be initialized
+        /// Effectively the same as Uninitialized.  Indicates the object may have been torn down and various members may no longer be available.  
+        /// Initialize will determine whether the object can be re-initialized.
         /// </summary>
-        Finished = 1 << 15,
-
         Disposed = 1 << 12,
-
         
     }
 

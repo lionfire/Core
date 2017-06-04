@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFrameworks>netstandard1.3;net462</TargetFrameworks>
+    <TargetFramework>netstandard1.3</TargetFramework>
     <AssemblyName>LionFire.Instantiating.Abstractions</AssemblyName>
     <PackageId>LionFire.Instantiating.Abstractions</PackageId>
     <NetStandardImplicitPackageVersion>1.6.1</NetStandardImplicitPackageVersion>
@@ -10,10 +10,6 @@
     <GenerateAssemblyCompanyAttribute>false</GenerateAssemblyCompanyAttribute>
     <GenerateAssemblyProductAttribute>false</GenerateAssemblyProductAttribute>
   </PropertyGroup>
-
-  <ItemGroup>
-    <ProjectReference Include="..\LionFire.Runtime.Extensions\LionFire.Runtime.Extensions.csproj" />
-  </ItemGroup>
 
   <ItemGroup>
     <PackageReference Include="Newtonsoft.Json" Version="10.0.2" />
@@ -25,6 +21,10 @@
   <ItemGroup Condition=" '$(TargetFramework)' == 'net462' ">
     <Reference Include="System" />
     <Reference Include="Microsoft.CSharp" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\LionFire.Runtime.Extensions\LionFire.Core.csproj" />
   </ItemGroup>
 
 </Project>

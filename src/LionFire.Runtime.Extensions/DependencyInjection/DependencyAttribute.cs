@@ -9,4 +9,8 @@ namespace LionFire
     public class DependencyAttribute : Attribute
     {
     }
+    [AttributeUsage(AttributeTargets.Class, AllowMultiple = false,  Inherited = true)]
+    public class HasDependenciesAttribute : Attribute
+    {
+    }
 }

@@ -21,7 +21,6 @@ namespace LionFire.Applications.Hosting
 
     public class AppHost : IAppHost, IReadonlyMultiTyped
     {
-
         public InjectionContext InjectionContext { get; private set; } = new InjectionContext();
 
         // REVIEW - Not sure this is needed or a good idea
@@ -93,11 +92,20 @@ namespace LionFire.Applications.Hosting
 
         public IAppHost Add(object component)
         {
+            //// REVIEW - only do this block if not added?
+            //if (component is IConfigures<IServiceCollection> csc)
+            //{
+            //    csc.Configure(this.ServiceCollection);
+            //}
+            
             if (component is IAdding adding)
             {
                 if (adding.OnAdding(this))
                 {
                     components.Add(component);
+                }
+                else
+                {
                 }
             }
             else
@@ -167,19 +175,19 @@ namespace LionFire.Applications.Hosting
             {
                 component.ServiceProvider = ServiceProvider;
             }
+
         }
 
-        /* FUTURE
-        public class ResolutionContext
+        /// <summary>
+        /// Injects InjectionContext to components implementing IRequiresServices
+        /// </summary>
+        protected void InjectInjectionContextToComponents()
         {
-
+            foreach (var component in components.OfType<IRequiresInjection>())
+            {
+                component.InjectionContext = this.InjectionContext;
+            }
         }
-
-        public static object Resolve(object obj)
-        {
-
-        }
-        */
 
         public IAppHost Initialize(BootstrapMode mode = BootstrapMode.Rebuild)
         {
@@ -209,12 +217,14 @@ namespace LionFire.Applications.Hosting
 
             ServiceProvider = BuildServiceProvider(ServiceCollection);
 
+            InjectInjectionContextToComponents();
             InjectServiceProviderToComponents();
 
             ResolveComponentDependencyProperties();
 
 
-            components.OfType<TInitializable>().InitializeAll().Wait();
+            components.OfType<TInitializable>().InitializeAll().Wait(); // Deprecated
+            components.OfType<IInitializable2>().InitializeAll().Wait();
 
             if (mode == BootstrapMode.Discard)
             {
@@ -250,11 +260,12 @@ namespace LionFire.Applications.Hosting
             Tasks.Clear();
 
             await components.OfType<IInitializable>().InitializeAll();
+            //var validationErrors = await components.OfType<IInitializable2>().InitializeAll();
 
             #region Start
 
             List<Task> startTasks = new List<Task>();
-            
+
             foreach (var component in components.OfType<IStartable>())
             {
                 // Parallel start
@@ -262,7 +273,7 @@ namespace LionFire.Applications.Hosting
             }
 
             Task.WaitAll(startTasks.ToArray());
-            
+
             #endregion
 
             foreach (var component in components.OfType<IHasRunTask>())

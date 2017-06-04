@@ -7,12 +7,17 @@
 
   <ItemGroup>
     <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="1.1.1" />
+    <PackageReference Include="System.IO.FileSystem.Watcher" Version="4.3.0" />
     <PackageReference Include="System.Reflection" Version="4.3.0" />
     <PackageReference Include="System.Reflection.TypeExtensions" Version="4.3.0" />
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\LionFire.Runtime.Extensions\LionFire.Runtime.Extensions.csproj" />
+    <Folder Include="Contexts\Serialization\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\LionFire.Runtime.Extensions\LionFire.Core.csproj" />
   </ItemGroup>
 
 </Project>

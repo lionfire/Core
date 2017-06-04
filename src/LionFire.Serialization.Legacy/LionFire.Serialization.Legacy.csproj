@@ -9,7 +9,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\LionFire.Runtime.Extensions\LionFire.Runtime.Extensions.csproj" />
+    <ProjectReference Include="..\LionFire.Runtime.Extensions\LionFire.Core.csproj" />
   </ItemGroup>
 
 </Project>

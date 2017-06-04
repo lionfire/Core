@@ -149,7 +149,7 @@ namespace LionFire.Assets.Providers.FileSystem
 
         public async Task<bool> Initialize()
         {
-            return (await((IInitializable2)this).Initialize()).IsValid;
+            return (await((IInitializable2)this).Initialize()).Valid;
             
         }
 

@@ -137,10 +137,16 @@ namespace LionFire.Execution
         {
             
             ExecutionContext.Status = ExecutionHostState.Stopping;
-            if (ExecutionContext.ExecutionObject as IStoppable != null)
+            if (ExecutionContext.ExecutionObject as IStoppableEx != null)
+            {
+                var execObj = ExecutionContext.ExecutionObject as IStoppableEx;
+                await execObj.Stop(mode, options).ConfigureAwait(false);
+                ExecutionContext.Status = ExecutionHostState.Stopped;
+            }
+            else if (ExecutionContext.ExecutionObject as IStoppable != null)
             {
                 var execObj = ExecutionContext.ExecutionObject as IStoppable;
-                await execObj.Stop(mode, options).ConfigureAwait(false);
+                await execObj.Stop().ConfigureAwait(false);
                 ExecutionContext.Status = ExecutionHostState.Stopped;
             }
             else if (IsIDisposable)

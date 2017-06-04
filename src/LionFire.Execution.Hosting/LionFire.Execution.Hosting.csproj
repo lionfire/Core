@@ -18,7 +18,7 @@
     <ProjectReference Include="..\LionFire.Environment.CommandLine\LionFire.Environment.CommandLine.csproj" />
     <ProjectReference Include="..\LionFire.Execution.Context\LionFire.Execution.Context.csproj" />
     <ProjectReference Include="..\LionFire.Execution\LionFire.Execution.csproj" />
-    <ProjectReference Include="..\LionFire.Runtime.Extensions\LionFire.Runtime.Extensions.csproj" />
+    <ProjectReference Include="..\LionFire.Runtime.Extensions\LionFire.Core.csproj" />
   </ItemGroup>
 
   <ItemGroup>

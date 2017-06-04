@@ -13,7 +13,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\LionFire.Instantiating.Abstractions\LionFire.Instantiating.Abstractions.csproj" />
-    <ProjectReference Include="..\LionFire.Runtime.Extensions\LionFire.Runtime.Extensions.csproj" />
+    <ProjectReference Include="..\LionFire.Runtime.Extensions\LionFire.Core.csproj" />
   </ItemGroup>
 
   <ItemGroup Condition=" '$(TargetFramework)' == 'net462' ">

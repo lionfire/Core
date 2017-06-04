@@ -8,6 +8,8 @@ using LionFire.Reactive;
 using LionFire.Reactive.Subjects;
 using System.ComponentModel;
 using LionFire.Structures;
+using LionFire.Validation;
+using System.Reflection;
 
 namespace LionFire.Execution.Executables
 {
@@ -15,35 +17,65 @@ namespace LionFire.Execution.Executables
     //{
     //    public object Owner { get; protected set; }
     //}
+    public class InitializableExecutableBase : ExecutableBase
+    {
+
+        public virtual bool CanInitializeAfterDispose => false;
+
+        public async Task<ValidationContext> Initialize()
+        {
+            ValidationContext validationContext = null;
+            if (!this.IsInitailized())
+            {
+                if (!CanInitializeAfterDispose && State == ExecutionState.Disposed) throw new ObjectDisposedException(this.GetType().Name);
+                await OnInitializing(ref validationContext);
+                if (validationContext.IsValid()) State = ExecutionState.Ready;
+            }
+
+            return validationContext;
+        }
+
+        protected virtual Task OnInitializing(ref ValidationContext validationContext)
+        {
+            if (GetType().GetTypeInfo().GetCustomAttribute<HasDependenciesAttribute>() != null)
+            {
+                this.TryResolveDependencies(ref validationContext);
+            }
+            return Task.CompletedTask;
+        }
+
+    }
 
     public class ExecutableBase : NotifyPropertyChangedBase, IExecutable
     {
-        //#region ExecutionState
-
-        //public IBehaviorObservable<ExecutionState> State
-        //{
-        //    get
-        //    {
-        //        return executionState;
-        //    }
-        //}
-        //private BehaviorObservable<ExecutionState> executionState = new BehaviorObservable<ExecutionState>();
-
-        //#endregion
 
         #region State
 
         public ExecutionState State
         {
-            get { return state; }
+            get { lock (stateLock) return state; }
             protected set
             {
-                if (state == value) return;
-                state = value;
-                StateChangedToFor?.Invoke(state, this);
+                lock (stateLock)
+                {
+                    if (state == value) return;
+                    state = value;
+                }
+                StateChangedToFor?.Invoke(value, this);
             }
         }
         private ExecutionState state;
+
+        public bool SetState(ExecutionState from, ExecutionState to)
+        {
+            lock (stateLock)
+            {
+                if (state != from) return false;
+                State = to;
+            }
+            return true;
+        }
+        private object stateLock = new object();
 
         public event Action<ExecutionState, IExecutable> StateChangedToFor;
 

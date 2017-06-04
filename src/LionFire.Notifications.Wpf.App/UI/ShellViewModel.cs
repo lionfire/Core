@@ -1,21 +1,72 @@
 using Caliburn.Micro;
+using System.Threading.Tasks;
 using LionFire.Applications.Hosting;
-using LionFire.DependencyInjection;
 using LionFire.Execution;
+using LionFire.Messaging;
+using LionFire.Messaging.Queues;
+using LionFire.Messaging.Queues.IO;
 using LionFire.Notifications.Twilio;
 using LionFire.Structures;
 using LionFire.Trading;
 using LionFire.Trading.Spotware.Connect;
+using System.Collections.Generic;
 using System.Diagnostics;
+using System.IO;
 using System.Linq;
 using System.Timers;
+using System;
+using LionFire.Trading.UI;
 
 namespace LionFire.Notifications.Wpf.App
 {
-    
 
-    public class ShellViewModel : Screen, IShell {
+    //public enum 
 
+
+
+    public class GenerateNotificationViewModel : Screen
+    {
+        #region Message
+
+        public string Message
+        {
+            get { return message; }
+            set
+            {
+                if (message == value) return;
+                message = value;
+                NotifyOfPropertyChange(() => Message);
+            }
+        }
+        private string message;
+
+        #endregion
+
+
+        #region Profile
+
+        public string Profile
+        {
+            get { return profile; }
+            set
+            {
+                if (profile == value) return;
+                profile = value;
+                NotifyOfPropertyChange(() => Profile);
+            }
+        }
+        private string profile = "G3";
+
+        #endregion
+
+    }
+
+    public class NotificationHistoryViewModel : Screen
+    {
+    }
+
+    public class ShellViewModel : Screen, IShell
+    {
 
         #region StatusText
 
@@ -33,7 +84,21 @@ namespace LionFire.Notifications.Wpf.App
 
         #endregion
 
+        #region Dependencies
+
         IWindowManager windowManager;
+
+        #endregion
+
+        #region Children
+
+        public NotificationHistoryViewModel NotificationHistory { get; private set; } = new NotificationHistoryViewModel();
+        public GenerateNotificationViewModel GenerateNotification { get; private set; } = new GenerateNotificationViewModel();
+        public TradingNotificationsViewModel NotificationsList { get; private set; } = new TradingNotificationsViewModel();
+
+        public AccountsViewModel Accounts { get; set; } = new AccountsViewModel();
+
+        #endregion
 
         public ShellViewModel(IWindowManager windowManager)
         {
@@ -45,8 +110,9 @@ namespace LionFire.Notifications.Wpf.App
             base.OnActivate();
 
             AutoUpdate = true;
+            InitWriter();
+            InitAccount().FireAndForget();
         }
-
 
         #region AutoUpdate
 
@@ -72,10 +138,12 @@ namespace LionFire.Notifications.Wpf.App
         IFeed feed;
         Symbol gu;
 
-        public async void Update()
+        public void Update()
         {
             Debug.WriteLine("Update timer...");
-
+        }
+        public async Task InitAccount()
+        {
             if (!isInit)
             {
                 isInit = true;
@@ -83,25 +151,23 @@ namespace LionFire.Notifications.Wpf.App
                 feed = ManualSingleton<IAppHost>.Instance.Components.OfType<IFeed>().FirstOrDefault();
                 if (feed == null) return;
 
-                var st = feed as IStartable;
-                await st?.Start();
+                feed.AllowSubscribeToTicks = true;
 
-                CTraderAccount ct = feed as CTraderAccount;
-                if (ct != null)
+                if (feed is CTraderAccount ct)
                 {
                     ct.IsTradeApiEnabled = true;
                 }
 
-                gu = feed.GetSymbol("GBPUSD");
+                if (feed is IStartable startable)
+                {
+                    await startable.Start();
+                }
 
-                gu.Ticked += OnTick;
+                //gu = feed.GetSymbol("GBPUSD");
+
+                //gu.Ticked += OnTick;
                 
             }
-        }
-
-        private void OnTick(SymbolTick tick)
-        {
-            Debug.WriteLine(tick.ToString());
         }
 
 
@@ -126,14 +192,29 @@ namespace LionFire.Notifications.Wpf.App
 
         public void Notify(string msg)
         {
-            InjectionContext.Current.GetService<INotificationService>().Publish("DesktopAlerts", new
+            //InjectionContext.Current.GetService<INotificationService>().Publish("DesktopAlerts", new
+            //{
+            //    Message = "hello "+msg
+            //});
+            writer.Enqueue(new MessageEnvelope
             {
-                Message = "hello "+msg
+                Payload = new TNotification
+                {
+                    Flags = NotificationFlags.MustAck,
+                    Message = Message??"(no message)",
+                    Profile = "G3",
+                    
+                }
             });
         }
+        int counter = 0;
 
+        FSDirectoryQueueWriter writer = new FSDirectoryQueueWriter();
 
-
+        public void InitWriter()
+        {
+            writer.QueueDir = Path.Combine(NotificationEnvironment.DesktopAlertQueueDir, DirectoryQueue.InSubDir);
+        }
 
         #region Twilio
 
@@ -152,4 +233,6 @@ namespace LionFire.Notifications.Wpf.App
         #endregion
 
     }
+
+
 }

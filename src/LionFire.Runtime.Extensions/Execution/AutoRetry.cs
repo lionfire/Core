@@ -6,7 +6,8 @@ using System.Threading.Tasks;
 
 namespace LionFire.Execution
 {
-    public class AutoRetrySettings
+        // TODO: Use this.  Maybe have a key/value system: AutoRetry("Filesystem") AutoRetry("Web")
+    public class AutoRetrySettings 
     {
         public int DefaultMaxRetries = 50;
         public bool ThrowLastExceptionOnFail = true;
@@ -32,6 +33,44 @@ namespace LionFire.Execution
         private const int DefaultMaxRetries = 15;
         private const bool ThrowLastExceptionOnFail = true;
         private const int DefaultMillisecondsBetweenAttempts = 150;
+
+
+#if !AOT
+        public static async Task<TResult> AutoRetry<TResult>(this Func<Task<TResult>> taskGenerator, int maxRetries = DefaultMaxRetries, bool throwLastExceptionOnFail = ThrowLastExceptionOnFail, int millisecondsBetweenAttempts = DefaultMillisecondsBetweenAttempts, Predicate<Exception> allowException = null)
+#else
+		[AotReplacement]
+        public static object AutoRetry(this Func<object> action, int maxRetries = DefaultMaxRetries, bool throwLastExceptionOnFail = ThrowLastExceptionOnFail, int millisecondsBetweenAttempts = DefaultMillisecondsBetweenAttempts)
+#endif
+        {
+            List<Exception> exceptions = null;
+            for (int retriesRemaining = maxRetries; retriesRemaining >= 0; retriesRemaining--)
+            {
+                try
+                {
+                    return await taskGenerator();
+                }
+                catch (Exception ex)
+                {
+                    if (allowException != null && !allowException(ex)) throw;
+
+                    if (exceptions == null) exceptions = new List<Exception>();
+                    exceptions.Add(ex);
+
+                    if (millisecondsBetweenAttempts > 0)
+                    {
+                        await Task.Delay(millisecondsBetweenAttempts).ConfigureAwait(false);
+                    }
+                }
+            }
+            if (throwLastExceptionOnFail)
+            {
+                throw exceptions.Last();
+            }
+            else
+            {
+                throw new Exception("Multiple retries failed and created the exceptions in the inner exception.", new AggregateException(exceptions));
+            }
+        }
 
 #if !AOT
         public static async Task<TResult> AutoRetry<TResult>(this Func<TResult> action, int maxRetries = DefaultMaxRetries, bool throwLastExceptionOnFail = ThrowLastExceptionOnFail, int millisecondsBetweenAttempts = DefaultMillisecondsBetweenAttempts, Predicate<Exception> allowException = null)
@@ -69,6 +108,9 @@ namespace LionFire.Execution
                 throw new Exception("Multiple retries failed and created the exceptions in the inner exception.", new AggregateException(exceptions));
             }
         }
+
+
+
 #if !AOT
         public static async Task AutoRetry(this Action action, int maxRetries = DefaultMaxRetries, bool throwLastExceptionOnFail = ThrowLastExceptionOnFail, int millisecondsBetweenAttempts = DefaultMillisecondsBetweenAttempts, Predicate<Exception> allowException = null)
 #else

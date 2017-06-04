@@ -1,9 +1,8 @@
 ﻿using LionFire.Execution.Composition;
 using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
+using LionFire.Execution;
 
 namespace LionFire.Applications.Hosting
 {
@@ -14,6 +13,12 @@ namespace LionFire.Applications.Hosting
         {
             action(appHost.ServiceCollection);
             return appHost;
+        }
+
+        public static IAppHost ConfigureServices(this IAppHost app, IConfigures<IServiceCollection> configures)
+        {
+            configures.Configure(app.ServiceCollection);
+            return app;
         }
 
         public static IAppHost Add<T>(this IAppHost host)
@@ -47,18 +52,20 @@ namespace LionFire.Applications.Hosting
         /// <summary>
         /// Start application and wait until all ApplicationTasks with WaitForComplete = true to complete.
         /// </summary>
-        public static void RunAndWait(this IAppHost host, Func<Task> runMethod = null)
+        public static async Task<IAppHost> RunNowAndWait(this IAppHost host, Func<Task> runMethod = null)
         {
-            if (runMethod != null) host.Add(new AppTask(() => runMethod().Wait()));
-            host.Run().Wait();
+            if (runMethod != null) host.Add(new AppTask(runMethod));
+            await host.Run();
+            return host;
         }
 
-        public static Task Run(this IAppHost host, Func<Task> runMethod)
+        public static IAppHost Run(this IAppHost host, Func<Task> runMethod)
         {
-            if (runMethod != null) host.Add(new AppTask(() => runMethod().Wait()));
-            return host.Run();
+            if (runMethod != null) host.Add(new AppTask(runMethod));
+            host.Run();
+            return host;
         }
-        
+
 
         /// <summary>
         /// Initialize the services registered so far that are required for futher app composition
@@ -72,5 +79,4 @@ namespace LionFire.Applications.Hosting
 
 
     }
-
 }

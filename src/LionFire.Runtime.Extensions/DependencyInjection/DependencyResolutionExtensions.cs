@@ -1,4 +1,5 @@
-﻿using System;
+﻿using LionFire.Validation;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
@@ -60,6 +61,31 @@ namespace LionFire.DependencyInjection
             }
             return _ResolveDependencies(obj, out unresolvedDependencies, serviceProvider, true);
         }
+        public static ValidationContext TryResolveDependencies(this object obj, ref ValidationContext validationContext, IServiceProvider serviceProvider = null)
+        {
+            if (serviceProvider == null)
+            {
+                serviceProvider = (obj as IRequiresServices)?.ServiceProvider;
+            }
+            if (serviceProvider == null)
+            {
+                serviceProvider = InjectionContext.Current;
+            }
+
+            UnsatisfiedDependencies unresolvedDependencies;
+            _ResolveDependencies(obj, out unresolvedDependencies, serviceProvider, true);
+
+            if (unresolvedDependencies != null && unresolvedDependencies.Count > 0)
+            {
+                if (validationContext == null) validationContext = new ValidationContext();
+                foreach (var ud in unresolvedDependencies)
+                {
+                    validationContext.AddMissingDependencyIssue(ud.Description);
+                }
+            }
+            return validationContext;
+        }
+
         private static bool _ResolveDependencies(this object obj, out UnsatisfiedDependencies unresolvedDependencies, IServiceProvider serviceProvider, bool resolve)
         {
             //if (object.ReferenceEquals(UnsatisfiedDependencies.Resolved, unresolvedDependencies)) return true;

@@ -14,8 +14,8 @@ namespace LionFire.Validation
         public List<ValidationIssue> Issues { get; private set; }
         public object Object { get; set; }
 
-        public bool IsValid => Issues == null || Issues.Count == 0;
-        public bool HasIssues => !IsValid;
+        public bool Valid => Issues == null || Issues.Count == 0;
+        public bool HasIssues => !Valid;
 
         public void AddIssue(ValidationIssue issue)
         {

@@ -12,7 +12,7 @@ namespace LionFire.Instantiating
     {
         #region Identity
 
-        ITemplate ITemplateInstance.Template { get { return Template; } set { Template = (TemplateType)value; } }
+        //ITemplate ITemplateInstance.Template { get { return Template; } set { Template = (TemplateType)value; } }
         //[SetOnce]
         public TemplateType Template { get; set; }
 

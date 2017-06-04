@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using LionFire.Structures;
+using System.Collections.Generic;
 
 namespace LionFire.Notifications
 {
@@ -14,37 +15,49 @@ namespace LionFire.Notifications
             }
         }
 
-        public static SoundProfile DefaultSoundProfile
-        {
-            get { return new SoundProfile { Sounds = DefaultSounds }; }
-        }
+
+
+        //public static SoundProfile DefaultSoundProfile
+        //{
+        //    get { return new SoundProfile { Sounds = DefaultSounds }; }
+        //}
 
         public static Dictionary<string, string> DefaultSounds
         {
             get
             {
                 var sounds = new Dictionary<string, string>();
-
-                sounds.Add("Alarm.Info", "bell_elevator_bell.mp3");
+                sounds.Add("Message.", "bell_elevator_bell.mp3");
                 return sounds;
             }
         }
 
-        public static List<NotificationProfile> DefaultProfiles
+        public static Dictionary<string,NotificationProfile> DefaultProfiles
         {
             get
             {
-                var profiles = new List<NotificationProfile>();
+                var profiles = new Dictionary<string,NotificationProfile>();
 
-                profiles.Add(new NotificationProfile("InfoAlarm")
+                profiles.Add(new NotificationProfile("G3")
                 {
-                    Importance = NotificationSeverity.Info,
-                    SoundProfile = "Alarm.Info",
-                    DefaultTitle = "Info",
+                    Importance = Importance.Info,
+// SoundProfile = "Alarm.Info",
+                    Sound = "Bell/bell_elevator_bell.mp3",
+//                    DefaultTitle = "Info",
                 });
+
 
                 return profiles;
             }
         }
+
+        public static NotificationConfiguration DefaultConfiguration { get; set; } = new NotificationConfiguration
+        {
+            Profiles = DefaultProfiles,
+            SoundPaths = new string[] {
+                @"C:\st\Projects\Valor\Assets\Sound\02 ZapSplat", // STUB TEMP
+            },
+ //           Sounds = DefaultSounds,
+        };
     }
 }

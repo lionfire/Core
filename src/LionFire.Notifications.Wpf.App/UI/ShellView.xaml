@@ -5,6 +5,29 @@
         >
 
     <TabControl TabStripPlacement="Left">
+        <!--<TabItem Header="Trading Accounts">
+            <ContentControl cm:View.Model="{Binding Accounts}" />
+            
+        </TabItem>-->
+
+        <TabItem Header="Price Alerts">
+            <ContentControl cm:View.Model="{Binding NotificationsList}" />
+        </TabItem>
+
+        <TabItem Header="Trading Notifications Settings">
+            <ContentControl cm:View.Model="{Binding NotificationsList}" />
+        </TabItem>
+        <TabItem Header="Notification Test">
+            <UniformGrid Rows="2" DataContext="{Binding NewNotification}">
+                <TextBox x:Name="Message"></TextBox>
+                <TextBox x:Name="Profile"></TextBox>
+                <ComboBox x:Name="Importance"></ComboBox>
+                <ComboBox x:Name="Urgency"></ComboBox>
+                <Button x:Name="Notify1" Width="100" Height="100">1</Button>
+                <Button x:Name="Notify2">2</Button>
+        </UniformGrid>
+            
+        </TabItem>
         <TabItem Header="TrueFx">
             <DockPanel>
                 <ListView x:Name="TrueFxPrices" ItemsSource="{Binding TrueFxPrices}" DockPanel.Dock="Top">
@@ -18,13 +41,6 @@
                     <Button cm:Message.Attach="Update">Update</Button>
                 </DockPanel>
             </DockPanel>
-        </TabItem>
-        <TabItem Header="Notification Test">
-            <DockPanel>
-                <Button x:Name="Notify1"/>
-                <Button x:Name="Notify2"/>
-            </DockPanel>
-            
         </TabItem>
         <TabItem Header="Twilio Test">
             <Grid Background="White">

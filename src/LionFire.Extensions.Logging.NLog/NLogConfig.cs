@@ -12,7 +12,7 @@ namespace LionFire.Extensions.Logging.NLog
     {
         // TODO: Read config from config file and/or parameter
 
-        public static void LoadDefaultConfig()
+        public static void LoadDefaultConfig(string console = "Off")
         {
             var config = new LoggingConfiguration();
 #if NET
@@ -51,14 +51,16 @@ namespace LionFire.Extensions.Logging.NLog
 
 
             {
-#if Console
+                LogLevel consoleLevel = LogLevel.FromString(console);
+                if (consoleLevel != LogLevel.Off)
+                {
                     // Step 2. Create targets and add them to the configuration 
                     var consoleTarget = new ColoredConsoleTarget();
-                config.AddTarget("console", consoleTarget);
-                consoleTarget.Layout = @"${date:format=HH\:mm\:ss} ${logger} ${message}";
-                    var rule1 = new LoggingRule("*", LogLevel.Debug, consoleTarget);
-                config.LoggingRules.Add(rule1);
-#endif
+                    config.AddTarget("console", consoleTarget);
+                    consoleTarget.Layout = @"${date:format=HH\:mm\:ss} ${logger} ${message}";
+                    var rule1 = new LoggingRule("*", consoleLevel, consoleTarget);
+                    config.LoggingRules.Add(rule1);
+                }
 
                 var fileTarget = new FileTarget();
                 config.AddTarget("file", fileTarget);

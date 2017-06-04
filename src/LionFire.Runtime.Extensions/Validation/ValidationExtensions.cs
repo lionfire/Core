@@ -5,11 +5,46 @@ using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
 using LionFire.Extensions;
+using LionFire.Execution;
 
 namespace LionFire.Validation
 {
     public static class ValidateExtensions
     {
+       
+
+        /// <summary>
+        /// Repeatedly cycle through a group of objects, running validateAction on them until all validate.
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="validatables">List of objects to validate</param>
+        /// <param name="validateAction">Some sort of intitialization/validation action to perform</param>
+        /// <param name="maxRepetitions">Max repetitions to perform on a failure.  Set to zero to only attempt validation once.</param>
+        /// <returns>Null on success, or a list of failing ValidationContexts on fail</returns>
+        public static async Task<IEnumerable<ValidationContext>> TryValidateAll<T>(this IEnumerable<T> validatables, Func<T, Task<ValidationContext>> validateAction, int maxRepetitions = int.MaxValue)
+        {
+            int lastFailCount = int.MaxValue;
+
+            List<ValidationContext> fails = null;
+
+            do
+            {
+                if (fails != null)
+                {
+                    lastFailCount = fails.Count;
+                }
+                fails = new List<ValidationContext>();
+
+                foreach (var validatable in validatables)
+                {
+                    var result = await validateAction(validatable).ConfigureAwait(false);
+                    if (result == null || result.Valid) continue;
+                    fails.Add(result);
+                }
+            } while (fails.Count > 0 && fails.Count < lastFailCount && maxRepetitions-- > 0);
+            return fails.Count == 0 ? null : fails;
+        }
+
         public static ValidationContext Validate(this object obj, object validationKind = null)
         {
             return new ValidationContext() { Object = obj, ValidationKind = validationKind ?? ValidationKind.Unspecified };
@@ -51,12 +86,20 @@ namespace LionFire.Validation
             return ctx;
         }
 
-        public static void EnsureValid(this ValidationContext ctx)
+        /// <summary>
+        /// If context is null, it is treated as valid
+        /// </summary>
+        /// <param name="context"></param>
+        public static void EnsureValid(this ValidationContext context)
         {
-            if (!ctx.IsValid)
+            if (context != null && !context.Valid)
             {
-                throw new ValidationException(ctx);
+                throw new ValidationException(context);
             }
+        }
+        public static bool IsValid(this ValidationContext context)
+        {
+            return context == null || context.Valid;
         }
 
         public static ValidationContext PropertyNonDefault(this ValidationContext ctx, PropertyInfo pi, object obj = null)

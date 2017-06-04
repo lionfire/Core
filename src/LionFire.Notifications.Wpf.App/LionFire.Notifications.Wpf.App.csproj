@@ -46,6 +46,10 @@
     <Reference Include="Hardcodet.Wpf.TaskbarNotification, Version=1.0.5.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\..\..\Trading.Proprietary\packages\Hardcodet.NotifyIcon.Wpf.1.0.8\lib\net451\Hardcodet.Wpf.TaskbarNotification.dll</HintPath>
     </Reference>
+    <Reference Include="LionFire.Trading.Spotware.Connect, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\Trading\src\Spotware\LionFire.Trading.Spotware.Connect\bin\Debug\net462\LionFire.Trading.Spotware.Connect.dll</HintPath>
+    </Reference>
     <Reference Include="Microsoft.Extensions.DependencyInjection, Version=1.1.1.0, Culture=neutral, PublicKeyToken=adb9793829ddae60, processorArchitecture=MSIL">
       <HintPath>..\..\..\Trading.Proprietary\packages\Microsoft.Extensions.DependencyInjection.1.1.1\lib\netstandard1.1\Microsoft.Extensions.DependencyInjection.dll</HintPath>
     </Reference>
@@ -93,8 +97,11 @@
     <Reference Include="System.IO.FileSystem.Primitives, Version=4.0.2.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
       <HintPath>..\..\..\Trading.Proprietary\packages\System.IO.FileSystem.Primitives.4.3.0\lib\net46\System.IO.FileSystem.Primitives.dll</HintPath>
     </Reference>
-    <Reference Include="System.Net.Http, Version=4.1.1.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
-      <HintPath>..\..\..\Trading.Proprietary\packages\System.Net.Http.4.3.0\lib\net46\System.Net.Http.dll</HintPath>
+    <Reference Include="System.IO.FileSystem.Watcher, Version=4.0.1.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>..\..\..\Trading.Proprietary\packages\System.IO.FileSystem.Watcher.4.3.0\lib\net46\System.IO.FileSystem.Watcher.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Net.Http, Version=4.1.1.1, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>..\..\..\Trading.Proprietary\packages\System.Net.Http.4.3.2\lib\net46\System.Net.Http.dll</HintPath>
     </Reference>
     <Reference Include="System.Net.Sockets, Version=4.1.1.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
       <HintPath>..\..\..\Trading.Proprietary\packages\System.Net.Sockets.4.3.0\lib\net46\System.Net.Sockets.dll</HintPath>
@@ -153,19 +160,19 @@
     <Reference Include="PresentationFramework" />
   </ItemGroup>
   <ItemGroup>
-    <ApplicationDefinition Include="App.xaml">
+    <ApplicationDefinition Include="UI\App.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
     <Compile Include="Application\AppBootstrapper.cs" />
-    <Compile Include="IShell.cs" />
-    <Compile Include="ShellViewModel.cs" />
-    <Compile Include="App.xaml.cs">
+    <Compile Include="UI\IShell.cs" />
+    <Compile Include="UI\ShellViewModel.cs" />
+    <Compile Include="UI\App.xaml.cs">
       <DependentUpon>App.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="Tests\TestNotificationQueueFiller.cs" />
-    <Page Include="ShellView.xaml">
+    <Page Include="UI\ShellView.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
@@ -198,6 +205,14 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\..\..\Trading.Proprietary\src\LionFire.Trading.UI.Wpf\LionFire.Trading.UI.Wpf.csproj">
+      <Project>{c84333d7-e90d-44cd-ab7b-edb20483134a}</Project>
+      <Name>LionFire.Trading.UI.Wpf</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\Trading.Proprietary\src\LionFire.Trading.UI\LionFire.Trading.UI.csproj">
+      <Project>{dfee6677-bc53-4577-8bf7-d3c7e259b682}</Project>
+      <Name>LionFire.Trading.UI</Name>
+    </ProjectReference>
     <ProjectReference Include="..\..\..\Trading\src\LionFire.Trading.Abstractions\LionFire.Trading.Abstractions.csproj">
       <Project>{26fb13f9-2095-425a-9904-86438a3482b1}</Project>
       <Name>LionFire.Trading.Abstractions</Name>
@@ -209,10 +224,6 @@
     <ProjectReference Include="..\..\..\Trading\src\LionFire.Trading\LionFire.Trading.csproj">
       <Project>{bb75938c-7cac-49de-aeba-502e6340f92b}</Project>
       <Name>LionFire.Trading</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\..\Trading\src\Spotware\LionFire.Trading.Spotware.Connect\LionFire.Trading.Spotware.Connect.csproj">
-      <Project>{3f5ce5bd-c8b7-48ad-9316-a4b397a6ef73}</Project>
-      <Name>LionFire.Trading.Spotware.Connect</Name>
     </ProjectReference>
     <ProjectReference Include="..\LionFire.Applications.Abstractions\LionFire.Applications.Abstractions.csproj">
       <Project>{b3a9bca9-2ee5-46a8-b3ee-0738bb68cdaf}</Project>
@@ -270,9 +281,9 @@
       <Project>{D3D5C710-D20B-41E3-B5C1-FE1609C2465D}</Project>
       <Name>LionFire.Reactive</Name>
     </ProjectReference>
-    <ProjectReference Include="..\LionFire.Runtime.Extensions\LionFire.Runtime.Extensions.csproj">
+    <ProjectReference Include="..\LionFire.Runtime.Extensions\LionFire.Core.csproj">
       <Project>{1BACFEC6-25EB-4FD5-B3CB-0117F2335BA9}</Project>
-      <Name>LionFire.Runtime.Extensions</Name>
+      <Name>LionFire.Core</Name>
     </ProjectReference>
     <ProjectReference Include="..\LionFire.Serialization.Json.Newtonsoft\LionFire.Serialization.Json.Newtonsoft.csproj">
       <Project>{41368335-bff6-45e1-a89b-31f93808cc2e}</Project>

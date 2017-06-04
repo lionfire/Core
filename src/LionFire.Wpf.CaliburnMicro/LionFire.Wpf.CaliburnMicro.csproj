@@ -64,9 +64,9 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\LionFire.Runtime.Extensions\LionFire.Runtime.Extensions.csproj">
+    <ProjectReference Include="..\LionFire.Runtime.Extensions\LionFire.Core.csproj">
       <Project>{1bacfec6-25eb-4fd5-b3cb-0117f2335ba9}</Project>
-      <Name>LionFire.Runtime.Extensions</Name>
+      <Name>LionFire.Core</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

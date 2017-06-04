@@ -94,7 +94,7 @@ namespace LionFire.Messaging.Queues.IO
                 CleanDeadQueues();
             }
 
-            if (vc == null || vc.IsValid)
+            if (vc == null || vc.Valid)
                 isInitialized = true;
             return Task.FromResult(isInitialized);
         }
@@ -328,7 +328,7 @@ namespace LionFire.Messaging.Queues.IO
             }
         }
 
-        public Task Stop(StopMode mode = StopMode.GracefulShutdown, StopOptions options = StopOptions.StopChildren)
+        public Task Stop()
         {
             IsPolling = false;
             return Task.CompletedTask;

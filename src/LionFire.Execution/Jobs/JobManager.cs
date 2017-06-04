@@ -1,4 +1,6 @@
-﻿using LionFire.Structures;
+﻿using LionFire.Extensions.Logging;
+using LionFire.Structures;
+using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
@@ -12,7 +14,7 @@ namespace LionFire.Execution.Jobs
     {
         #region Static
 
-        public static JobManager Instance { get { return Singleton<JobManager>.Instance; } }
+        public static JobManager Default { get { return Defaults.Get<JobManager>(); } }
 
         #endregion
 
@@ -21,9 +23,11 @@ namespace LionFire.Execution.Jobs
 
         #region Construction
 
+
         public JobManager()
         {
             _readOnlyJobs = new ReadOnlyObservableCollection<Execution.IJob>(jobs);
+            logger = this.GetLogger();
         }
 
         #endregion
@@ -31,13 +35,16 @@ namespace LionFire.Execution.Jobs
         internal void OnJobAdded(IJob job)
         {
             jobs.Add(job);
+            //logger.LogInformation($"[job++] {jobs.Count} {_readOnlyJobs.Count}");
         }
 
         internal void OnJobRemoved(IJob job)
         {
             jobs.Remove(job);
+            //logger.LogDebug($"[job--] {jobs.Count} {_readOnlyJobs.Count}");
         }
-        
+
+        public int JobCount => jobs.Count;
 
         #region Jobs
 
@@ -46,22 +53,54 @@ namespace LionFire.Execution.Jobs
             get { return _readOnlyJobs; }
         }
 
-        public bool RequestStart(IJob job)
+        ///// <summary>
+        ///// Return true if job has started
+        ///// </summary>
+        ///// <param name="job"></param>
+        ///// <returns></returns>
+        //public bool RequestStartQueue(IQueueableJob job)
+        //{
+        //    if (job.Queue != null) { return true; }
+        //    else
+        //    {
+        //        foreach (var queue in listeningQueues)
+        //        {
+        //            (var accepted, var started) = queue.TryAcceptJob(job);
+        //            if (
+        //                )
+        //            {
+        //                return true;
+        //            }
+        //        }
+        //    }
+
+        //    // No Queue willing to take the job, so let the job start on its own
+        //    return true;
+        //}
+
+
+        /// <summary>
+        /// Return true if the job can start now, false if it may need to wait on StartBlockers
+        /// </summary>
+        /// <param name="job"></param>
+        /// <returns></returns>
+        public bool TryEnqueue(IQueueableJob job)
         {
-            if (job.Queue != null) { return job.Queue.RequestStart(job); }
+            if (job.Queue != null) { job.Queue.RequestStart(job); return true; }
             else
             {
                 foreach (var queue in listeningQueues)
                 {
-                    if (queue.TryAcceptJob(job))
+                    var result = queue.TryAcceptJob(job);
+                    if (result.accepted)
                     {
-                        return queue.RequestStart(job);
+                        return true;
                     }
                 }
             }
 
             // No Queue willing to take the job, so let the job start on its own
-            return true;
+            return false;
         }
 
         ReadOnlyObservableCollection<IJob> _readOnlyJobs;
@@ -110,15 +149,13 @@ namespace LionFire.Execution.Jobs
 
         #endregion
 
-
-
-
+        protected ILogger logger;
     }
     public static class JobManagerExtensions
     {
         public static IJob GetJob(this Task task)
         {
-            return JobManager.Instance.GetJob(task);
+            return JobManager.Default.GetJob(task);
         }
         //public static void RegisterJobTask(this Task task, IJob job)
         //{

@@ -1,0 +1,46 @@
+﻿using System;
+
+namespace LionFire.Notifications
+{
+    public class TNotification
+    {
+        #region Construction
+
+        public TNotification() { }
+        public TNotification(Importance importance, Urgency urgency) {
+            this.Importance = importance;
+            this.Urgency = urgency;
+        }
+
+        #endregion
+
+        public virtual string Key { get; set; }
+        public virtual string CalculateKey() { return null; }
+        public NotificationFlags Flags { get; set; }
+
+        public Importance Importance { get; set; }
+        public Urgency Urgency { get; set; }
+
+        public string Message { get; set; }
+        
+        public string Profile { get; set; }
+
+        /// <summary>
+        /// If null, keep raising this notificiation when relevant 
+        /// </summary>
+        public int? NotificationsRemaining { get; set; } // TODO
+
+        /// <summary>
+        /// If the condition is true, and stays true or becomes true again, create another notification this amount of time afterwards.  By default, prior notifications should be superceded.
+        /// </summary>
+        public TimeSpan TimeBetweenNotifications { get; set; } // TODO
+
+        public override string ToString()
+        {
+            var msg = Message != null ? $" '{Message}'" : "";
+            return $"!{Importance.ToCode()}-{Urgency.ToCode()} {Key} {msg}";
+        }
+
+
+    }
+}

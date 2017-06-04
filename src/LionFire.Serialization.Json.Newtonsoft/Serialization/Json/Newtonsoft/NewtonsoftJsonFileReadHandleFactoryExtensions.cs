@@ -3,6 +3,7 @@ using Newtonsoft.Json;
 using Microsoft.Extensions.DependencyInjection;
 using System.IO;
 using LionFire.Structures;
+using LionFire.Handles;
 
 namespace LionFire.Serialization.Json.Newtonsoft
 {
@@ -11,9 +12,8 @@ namespace LionFire.Serialization.Json.Newtonsoft
         public static IReadHandle<T> GetJsonFileReadHandle<T>(this string path)
             where T : class
         {
-            return new ReadHandle<string, T>()
+            return new CustomReadHandle<T>(path)
             {
-                Key = path,
                 Resolver = ResolveFileToJsonDeserialize<T>
             };
         }

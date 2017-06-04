@@ -1,4 +1,5 @@
 ﻿using LionFire.Execution;
+using LionFire.Persistence;
 using LionFire.Structures;
 using System;
 using System.Collections.Generic;
@@ -7,25 +8,29 @@ using System.Threading.Tasks;
 
 namespace LionFire
 {
-
-    //public interface IReadHandle : IInitializable
-    //{
-    //    object Object { get; }
-    //}
+    public interface IRawDataReadHandle
+    {
+        object RawData { get; }
+    }
+    public interface IRawDataWriteHandle
+    {
+        object RawData { set; }
+    }
 
     /// <summary>
     /// Initialize: returns true if Object loaded successfully, false if null object loaded, exception on failure or object not found
     /// </summary>
-    public interface IReadHandle<out T>
+    public interface IReadHandle<out T> : IKeyed<string>
     //: IReadHandle
     {
         T Object { get; }
 
         bool HasObject { get; }
 
-        // TODO?
-        //void ResolveObject();
-        //bool DiscardObject();
+        Task<bool> TryResolveObject(object persistenceContext = null);
+        void ForgetObject();
+
+        event Action<IReadHandle<T>, T /*oldValue*/ , T /*newValue*/> ObjectChanged;
     }
 
     public static class IReadHandleExtensions
@@ -46,7 +51,12 @@ namespace LionFire
                 return _ != null;
             }).ConfigureAwait(false);
         }
+        public static bool IsWritable<T>(this IReadHandle<T> readHandle)
+        {
+            return readHandle as ISaveable != null;
+        }
     }
+
 }
 
 

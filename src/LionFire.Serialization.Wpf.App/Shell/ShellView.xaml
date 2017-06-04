@@ -1,0 +1,9 @@
+<Window x:Class="LionFire.Serialization.Wpf.App.ShellView"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" MinHeight="300" MinWidth="300"
+        xmlns:cm="http://www.caliburnproject.org"
+        xmlns:fsc="clr-namespace:LionFire.Serialization.UI;assembly=LionFire.Serialization.Wpf"
+        >
+
+    <ContentControl cm:View.Model="{x:Static fsc:FsObjectCollectionViewModel.Instance}"/>
+</Window>

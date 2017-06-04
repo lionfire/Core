@@ -7,7 +7,7 @@ namespace LionFire.Validation
 {
     public static class DependencyValidationExtensions
     {
-        public static  ValidationContext DependenciesAreSet(this ValidationContext validationContext)
+        public static ValidationContext DependenciesAreSet(this ValidationContext validationContext)
         {
             if (validationContext.Object == null) throw new ArgumentNullException("validationContext.Object");
 
@@ -18,13 +18,19 @@ namespace LionFire.Validation
 
                 if (pi.GetValue(validationContext.Object) == null)
                 {
-                    validationContext.AddIssue(new ValidationIssue
-                    {
-                        Message = $"Missing dependency '{pi.Name}'"
-                    });
+                    validationContext.AddMissingDependencyIssue(pi.Name);
                 }
             }
             return validationContext;
         }
+
+        public static void AddMissingDependencyIssue(this ValidationContext context, string memberName)
+        {
+            context.AddIssue(new ValidationIssue
+            {
+                Message = $"Missing dependency '{memberName}'"
+            });
+        }
     }
+
 }

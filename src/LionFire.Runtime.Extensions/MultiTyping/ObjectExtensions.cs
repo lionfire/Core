@@ -6,25 +6,35 @@ using System.Threading.Tasks;
 
 namespace LionFire.MultiTyping
 {
-    public static class ObjectExtensions
+    public static class ObjectMultiTypingExtensions
     {
-        // REVIEW - I don't think I want object extensions.  Did I need this for something?
-        //public static T AsType<T>(this object obj)
-        //    where T : class
-        //{
-        //    T result = obj as T;
-        //    if (result != null) return result;
+        public static T ObjectAsType<T>(this object obj)
+            where T : class
+        {
+            if (obj == null) return null;
 
-        //    var mt = obj as IMultiTyped;
-        //    if (mt == null)
-        //    {
-        //        var cmt = obj as IContainsMultiTyped;
-        //        mt = cmt?.MultiTyped;
-        //    }
-        //    if (mt == null) return null;
+            if (obj is T result) return result;
 
-        //    return mt.AsType<T>();
-        //}
+            var mt = obj as IMultiTyped;
+            if (mt == null)
+            {
+                var cmt = obj as IContainsMultiTyped;
+                mt = cmt?.MultiTyped;
+            }
+            if (mt != null)
+            {
+                var mtChild = mt.AsType<T>();
+                if (mtChild != null) return mtChild;
+            }
+
+            if (obj is IServiceProvider sp)
+            {
+                var service = (T)sp.GetService(typeof(T));
+                if (service != null) return service;
+            }
+
+            return null;
+        }
 
 
         //public static T AsType<T>(this IContainsMultiTyped obj)

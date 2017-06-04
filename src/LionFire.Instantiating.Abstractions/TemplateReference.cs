@@ -11,7 +11,7 @@ namespace LionFire.Instantiating
         public TemplateReference() { }
         public TemplateReference(ITemplateInstance instance)
         {
-            this.Template = instance.Template;
+            this.Template = instance.GetTemplate();
             this.TypeName = Template.GetType().FullName;
             this.Assembly = Template.GetType().AssemblyQualifiedName;
         }

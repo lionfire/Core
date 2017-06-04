@@ -17,6 +17,5 @@ namespace LionFire.Messaging.Queues
     public class QueueSupervisor : ITemplateInstance<TQueueSupervisorOptions>
     {
         public TQueueSupervisorOptions Template { get; set; }
-        ITemplate ITemplateInstance.Template { get => Template; set => Template = (TQueueSupervisorOptions)value; }
     }
 }
