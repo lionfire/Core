@@ -1,12 +1,15 @@
 ﻿using LionFire.Collections;
 using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 using System.Diagnostics;
+using System.Collections;
+using System.Linq;
 
 namespace LionFire.Serialization
 {
-    public abstract class ObservableReadHandleDictionary<TKey, THandle, T> 
+    public abstract class ObservableReadHandleDictionary<TKey, THandle, T> : IEnumerable<T>
         where THandle : IReadHandle<T>
     {
 
@@ -20,8 +23,34 @@ namespace LionFire.Serialization
 
         private void Handles_CollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
         {
-            
-            Debug.WriteLine("NewItems: " + e.NewItems);
+            if (IsObjectsEnabled)
+            {
+                if (e.Action == System.Collections.Specialized.NotifyCollectionChangedAction.Reset)
+                {
+                    objects.Clear();
+                    foreach (var item in Handles.Select(h => h.Value))
+                    {
+                        objects.Add(item.Object);
+                    }
+                }
+                else
+                {
+                    if (e.NewItems != null)
+                    {
+                        foreach (var item in e.NewItems.OfType<KeyValuePair<TKey,THandle>>().Select(kvp=>kvp.Value.Object).OfType<T>())
+                        {
+                            objects.Add(item);
+                        }
+                    }
+                    if (e.OldItems != null)
+                    {
+                        foreach (var item in e.OldItems.OfType<KeyValuePair<TKey, THandle>>().Select(kvp => kvp.Value.Object).OfType<T>())
+                        {
+                            objects.Remove(item);
+                        }
+                    }
+                }
+            }
         }
 
         //public bool IsWritable => typeof(IWriteHandle<T>).IsAssignableFrom(typeof(THandle);
@@ -183,6 +212,20 @@ namespace LionFire.Serialization
 
 
         public abstract void RefreshHandles();
+
+        #region IEnumerable<T>
+
+        public IEnumerator<T> GetEnumerator()
+        {
+            return ((IEnumerable<T>)Objects).GetEnumerator();
+        }
+
+        IEnumerator IEnumerable.GetEnumerator()
+        {
+            return ((IEnumerable<T>)Objects).GetEnumerator();
+        }
+
+        #endregion
 
     }
 

@@ -2,11 +2,11 @@
 {
     public class PropertyGridViewModelProvider : IViewModelProvider
     {
-        public object ProvideViewModel(object model)
+        public T ProvideViewModelFor<T>(object model, object context = null)
         {
             var rh = model as IReadHandle<object>;
             if (rh != null) model = rh.Object ?? rh;
-            return new PropertyGridViewModel { Model = model };
+            return (T)(object)new PropertyGridViewModel { Model = model };
         }
     }
 }

@@ -11,13 +11,13 @@ namespace LionFire.MultiTyping
 
     public static class NamedMultiTypeExtensions
     {
-        public static T AsType<T>(this IContainsMultiTyped cmt, string name)
+        public static T AsType<T>(this IMultiTypable cmt, string name)
         {
             var c = cmt.AsType<NamedMultiTypeContainer>();
             if (c == null) return default(T);
             return (T)c.Dictionary.TryGetValue(name);
         }
-        public static T AsTypeOrCreate<T>(this IContainsMultiTyped cmt, string name, Func<string, T> factory = null)
+        public static T AsTypeOrCreate<T>(this IMultiTypable cmt, string name, Func<string, T> factory = null)
         {
             var c = cmt.AsTypeOrCreate<NamedMultiTypeContainer>();
 
@@ -37,7 +37,7 @@ namespace LionFire.MultiTyping
             return (T)c.Dictionary.TryGetValue(name);
         }
 
-        public static void SetType<T>(this IContainsMultiTyped cmt, string name, T value)
+        public static void SetType<T>(this IMultiTypable cmt, string name, T value)
         {
             var c = cmt.AsType<NamedMultiTypeContainer>();
         }

@@ -6,8 +6,9 @@ using System.Threading.Tasks;
 
 namespace LionFire.Persistence
 {
-    public class PersistenceContext : ContainsMultiTyped
+    public class PersistenceContext : MultiTypable
     {
+        public string RootPath { get; set; }
         public object RootObject { get; set; }
 
         /// <summary>

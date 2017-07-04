@@ -5,12 +5,28 @@ using System.Threading.Tasks;
 
 namespace LionFire.Composables
 {
-    public interface IComposable<T> 
-        : IEnumerable<object>
-         //: IReadOnlyCollection<object> // ? Adds count
+
+    public interface IComposition
     {
-        T Add(object component);
+        IEnumerable<object> Children { get; }
     }
 
-    
+    //public interface IComposition<T>
+    //{
+    //    IEnumerable<T> Children { get; }
+    //}
+
+    //public interface IComposable<TComposable, TChildType> : IComposition<TChildType>
+    //    where TChildType : class
+    //{
+    //    TComposable Add(TChildType component);
+    //}
+
+    public interface IComposable<TComposable>
+    : IComposition
+    {
+        // REVIEW - does it make sense to impose a fluent interface?
+        TComposable Add<T>(T component) where T : class;
+    }
+
 }

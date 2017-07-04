@@ -41,6 +41,38 @@ namespace LionFire.Serialization
             this.RootPath = path;
         }
 
+        //private void OnHandlesChanged(object sender, NotifyCollectionChangedEventArgs e)
+        //{
+        //    this.Changed
+
+        //    if (e.Action == System.Collections.Specialized.NotifyCollectionChangedAction.Reset)
+        //    {
+        //    }
+        //    else
+        //    {
+        //        if (e.NewItems != null)
+        //        {
+        //            foreach (var item in e.NewItems)
+        //            {
+
+        //            }
+        //        }
+        //        if (e.OldItems != null)
+        //        {
+        //            foreach (var item in e.OldItems)
+        //            {
+        //            }
+        //        }
+        //    }
+        //    throw new NotImplementedException("TODO: propagate INCC");
+        //    //foreach (var n in e.NewItems)
+        //    //{
+
+        //    //}
+        //}
+
+        
+
         #endregion
 
         #region State
@@ -61,6 +93,7 @@ namespace LionFire.Serialization
                 if (rootPath == value) return;
                 if (fsw != null && (value == null || !Directory.Exists(value)))
                 {
+                    fsw.EnableRaisingEvents = false;
                     fsw.Changed -= OnChanged;
                     fsw.Created -= OnCreated;
                     fsw.Deleted -= OnDeleted;
@@ -79,6 +112,7 @@ namespace LionFire.Serialization
                     fsw.Created += OnCreated;
                     fsw.Deleted += OnDeleted;
                     fsw.Error += OnError;
+                    fsw.EnableRaisingEvents = true;
                 }
                 else
                 {

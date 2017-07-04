@@ -19,20 +19,20 @@ namespace LionFire.Assets.Providers.FileSystem
 
         public string GetPath<T>(string assetSubpath = null, PersistenceContext context = null)
         {
-            return Path.Combine(RootDir, AssetPathUtils.GetSubpath<T>(assetSubpath, context)) + (assetSubpath == null ? "" : FileExtensionWithDot); ;
+            return Path.Combine(context?.RootPath ?? RootDir, AssetPathUtils.GetSubpath<T>(assetSubpath, context)) + (assetSubpath == null ? "" : FileExtensionWithDot); ;
         }
         public string GetPath(object obj, string assetSubpath = null, PersistenceContext context = null)
         {
-            return Path.Combine(RootDir, AssetPathUtils.GetSubpath(obj, assetSubpath, context)) + (assetSubpath == null ? "" : FileExtensionWithDot); ;
+            return Path.Combine(context?.RootPath ?? RootDir, AssetPathUtils.GetSubpath(obj, assetSubpath, context)) + (assetSubpath == null ? "" : FileExtensionWithDot); ;
         }
 
         public abstract string FileExtension { get; }
         public string FileExtensionWithDot { get { return (string.IsNullOrWhiteSpace(FileExtension) ? "" : "." + FileExtension); } }
 
 
-        public IEnumerable<string> Find<T>(string searchString = null)
+        public IEnumerable<string> Find<T>(string searchString = null, PersistenceContext context = null)
         {
-            var dir = GetPath<T>();
+            var dir = GetPath<T>(context: context);
             if (searchString == null) searchString = "*";
             foreach (var path in Directory.GetFiles(dir, searchString + FileExtensionWithDot))
             {
@@ -40,8 +40,5 @@ namespace LionFire.Assets.Providers.FileSystem
                 yield return assetName;
             }
         }
-
-        
     }
-
 }

@@ -35,20 +35,16 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="Caliburn.Micro, Version=3.0.3.0, Culture=neutral, PublicKeyToken=8e5891231f2ed21f, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\Caliburn.Micro.Core.3.0.3\lib\net45\Caliburn.Micro.dll</HintPath>
+      <HintPath>..\..\..\Trading.Proprietary\packages\Caliburn.Micro.Core.3.1.0\lib\net45\Caliburn.Micro.dll</HintPath>
     </Reference>
     <Reference Include="Caliburn.Micro.Platform, Version=3.0.3.0, Culture=neutral, PublicKeyToken=8e5891231f2ed21f, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\Caliburn.Micro.3.0.3\lib\net45\Caliburn.Micro.Platform.dll</HintPath>
+      <HintPath>..\..\..\Trading.Proprietary\packages\Caliburn.Micro.3.1.0\lib\net45\Caliburn.Micro.Platform.dll</HintPath>
     </Reference>
     <Reference Include="Caliburn.Micro.Platform.Core, Version=3.0.3.0, Culture=neutral, PublicKeyToken=8e5891231f2ed21f, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\Caliburn.Micro.3.0.3\lib\net45\Caliburn.Micro.Platform.Core.dll</HintPath>
+      <HintPath>..\..\..\Trading.Proprietary\packages\Caliburn.Micro.3.1.0\lib\net45\Caliburn.Micro.Platform.Core.dll</HintPath>
     </Reference>
     <Reference Include="Hardcodet.Wpf.TaskbarNotification, Version=1.0.5.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\..\..\Trading.Proprietary\packages\Hardcodet.NotifyIcon.Wpf.1.0.8\lib\net451\Hardcodet.Wpf.TaskbarNotification.dll</HintPath>
-    </Reference>
-    <Reference Include="LionFire.Trading.Spotware.Connect, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\Trading\src\Spotware\LionFire.Trading.Spotware.Connect\bin\Debug\net462\LionFire.Trading.Spotware.Connect.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.Extensions.DependencyInjection, Version=1.1.1.0, Culture=neutral, PublicKeyToken=adb9793829ddae60, processorArchitecture=MSIL">
       <HintPath>..\..\..\Trading.Proprietary\packages\Microsoft.Extensions.DependencyInjection.1.1.1\lib\netstandard1.1\Microsoft.Extensions.DependencyInjection.dll</HintPath>
@@ -141,7 +137,7 @@
       <HintPath>..\..\..\Trading.Proprietary\packages\System.Threading.Thread.4.3.0\lib\net46\System.Threading.Thread.dll</HintPath>
     </Reference>
     <Reference Include="System.Windows.Interactivity, Version=4.5.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\Caliburn.Micro.3.0.3\lib\net45\System.Windows.Interactivity.dll</HintPath>
+      <HintPath>..\..\..\Trading.Proprietary\packages\Caliburn.Micro.3.1.0\lib\net45\System.Windows.Interactivity.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="System.Xml" />
@@ -166,12 +162,19 @@
     </ApplicationDefinition>
     <Compile Include="Application\AppBootstrapper.cs" />
     <Compile Include="UI\IShell.cs" />
+    <Compile Include="UI\TabsView.xaml.cs">
+      <DependentUpon>TabsView.xaml</DependentUpon>
+    </Compile>
     <Compile Include="UI\ShellViewModel.cs" />
     <Compile Include="UI\App.xaml.cs">
       <DependentUpon>App.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="Tests\TestNotificationQueueFiller.cs" />
+    <Page Include="UI\TabsView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="UI\ShellView.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
@@ -205,26 +208,6 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\..\Trading.Proprietary\src\LionFire.Trading.UI.Wpf\LionFire.Trading.UI.Wpf.csproj">
-      <Project>{c84333d7-e90d-44cd-ab7b-edb20483134a}</Project>
-      <Name>LionFire.Trading.UI.Wpf</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\..\Trading.Proprietary\src\LionFire.Trading.UI\LionFire.Trading.UI.csproj">
-      <Project>{dfee6677-bc53-4577-8bf7-d3c7e259b682}</Project>
-      <Name>LionFire.Trading.UI</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\..\Trading\src\LionFire.Trading.Abstractions\LionFire.Trading.Abstractions.csproj">
-      <Project>{26fb13f9-2095-425a-9904-86438a3482b1}</Project>
-      <Name>LionFire.Trading.Abstractions</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\..\Trading\src\LionFire.Trading.Feeds.TrueFx\LionFire.Trading.TrueFx.csproj">
-      <Project>{4ac0e462-e3e5-49b0-a3ea-46de82076745}</Project>
-      <Name>LionFire.Trading.TrueFx</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\..\Trading\src\LionFire.Trading\LionFire.Trading.csproj">
-      <Project>{bb75938c-7cac-49de-aeba-502e6340f92b}</Project>
-      <Name>LionFire.Trading</Name>
-    </ProjectReference>
     <ProjectReference Include="..\LionFire.Applications.Abstractions\LionFire.Applications.Abstractions.csproj">
       <Project>{b3a9bca9-2ee5-46a8-b3ee-0738bb68cdaf}</Project>
       <Name>LionFire.Applications.Abstractions</Name>
@@ -232,6 +215,10 @@
     <ProjectReference Include="..\LionFire.Applications\LionFire.Applications.csproj">
       <Project>{7ec019ec-9a04-452d-a360-13b5d25e0ca0}</Project>
       <Name>LionFire.Applications</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\LionFire.Core\LionFire.Core.csproj">
+      <Project>{62e82f33-2263-49a2-8a81-1403ab343ef1}</Project>
+      <Name>LionFire.Core</Name>
     </ProjectReference>
     <ProjectReference Include="..\LionFire.Environment\LionFire.Environment.csproj">
       <Project>{a138d9cc-e76a-4861-8d99-ac0287c249d5}</Project>
@@ -261,6 +248,10 @@
       <Project>{b624da7e-b283-4b56-89e5-dab4627afb71}</Project>
       <Name>LionFire.Notifications.Twilio</Name>
     </ProjectReference>
+    <ProjectReference Include="..\LionFire.Notifications.UI\LionFire.Notifications.UI.csproj">
+      <Project>{f2bc6b88-b29a-4086-b8b9-0649360f4581}</Project>
+      <Name>LionFire.Notifications.UI</Name>
+    </ProjectReference>
     <ProjectReference Include="..\LionFire.Notifications.Wpf\LionFire.Notifications.Wpf.csproj">
       <Project>{b51d006c-96b5-4653-bdc0-a101fd8e30b9}</Project>
       <Name>LionFire.Notifications.Wpf</Name>
@@ -280,10 +271,6 @@
     <ProjectReference Include="..\LionFire.Reactive\LionFire.Reactive.csproj">
       <Project>{D3D5C710-D20B-41E3-B5C1-FE1609C2465D}</Project>
       <Name>LionFire.Reactive</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\LionFire.Runtime.Extensions\LionFire.Core.csproj">
-      <Project>{1BACFEC6-25EB-4FD5-B3CB-0117F2335BA9}</Project>
-      <Name>LionFire.Core</Name>
     </ProjectReference>
     <ProjectReference Include="..\LionFire.Serialization.Json.Newtonsoft\LionFire.Serialization.Json.Newtonsoft.csproj">
       <Project>{41368335-bff6-45e1-a89b-31f93808cc2e}</Project>

@@ -8,21 +8,11 @@ using System.Collections.Specialized;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using System.Windows.Threading;
+//using System.Windows.Threading;
 
-namespace LionFire.Collections
+namespace LionFire.UI
 {
-    public interface IViewModel { object Model { get; set; } }
-    public interface IViewModel<T> : IViewModel
-    {
-        new T Model { get; set; }
-        bool IsViewModelOf(object obj);
-    }
-    public interface IViewModelProvider
-    {
-        T GetFor<T>(object model, object context);
-    }
-
+    // Default implementation of a IViewModel -- useless? Or good base class?
     //public class ViewModel<T> : IViewModel<T>
     //{
     //    object IViewModel.Model { get { return Model; } set { Model = (T)value; } }
@@ -30,19 +20,12 @@ namespace LionFire.Collections
     //    bool IsViewModelOf(object obj);
     //}
 
-    public class ViewModelProvider : IViewModelProvider
-    {
-        public T GetFor<T>(object model, object context)
-        {
-            return default(T);
-        }
-
-    }
-
-    //public interface IViewModelProvider<T> : IViewModelProvider
-    //    where T : IViewModel
+    //public class NullViewModelProvider : IViewModelProvider
     //{
-
+    //    public T ProvideViewModelFor<T>(object model, object context)
+    //    {
+    //        return default(T);
+    //    }
     //}
 
     /// <summary>
@@ -53,19 +36,30 @@ namespace LionFire.Collections
     public class VmCollection<TViewModel, TModel> : ObservableCollection<TViewModel>
         where TViewModel : class, IViewModel
         where TModel : class
-
     {
-        private readonly object _context;
-        private readonly Dispatcher dispatcher; // TODO: Use this where required in this class
+        protected readonly object _context;
         private readonly ICollection<TModel> _models;
-        private readonly IEnumerable<TModel> _readOnlyModels;
+        protected readonly IEnumerable<TModel> _readOnlyModels;
         private bool _synchDisabled;
-        private readonly IViewModelProvider _viewModelProvider;
+        protected readonly IViewModelProvider _viewModelProvider;
+        private readonly IDispatcher dispatcher; // TODO: Use this where required in this class
+
 
         // TODO: Split this into ReadOnlyVmCollection
-        public VmCollection(IEnumerable<TModel> readOnlyModels, IViewModelProvider viewModelProvider = null, object context = null, bool autoFetch = true, Dispatcher dispatcher = null, bool useApplicationDispatcher = true)
+        
+            /// <summary>
+        /// Constructor
+        /// </summary>
+        /// <param name="models">List of models to synch with</param>
+        /// <param name="viewModelProvider"></param>
+        /// <param name="context"></param>
+        /// <param name="autoFetch">
+        /// Determines whether the collection of ViewModels should be
+        /// fetched from the model collection on construction
+        /// </param>
+        public VmCollection(IEnumerable<TModel> models, IViewModelProvider viewModelProvider = null, object context = null, bool autoFetch = true, IDispatcher dispatcher = null, bool useApplicationDispatcher = true)
         {
-            _readOnlyModels = readOnlyModels;
+            _readOnlyModels = _models;
             _context = context;
 
             _viewModelProvider = viewModelProvider;
@@ -76,14 +70,17 @@ namespace LionFire.Collections
 
             // If model collection is observable register change
             // handling for synchronization from Models to ViewModels
-            if (readOnlyModels is ReadOnlyObservableCollection<TModel>)
+            if (models is ObservableCollection<TModel>)
             {
-                //var observableModels = readOnlyModels as ReadOnlyObservableCollection<TModel>;
-                var observableModels = readOnlyModels as INotifyCollectionChanged;
+                var observableModels = models as ObservableCollection<TModel>;
+                observableModels.CollectionChanged += ModelCollectionChanged;
+            }
+            else if (models is IEnumerable<TModel> && models is INotifyCollectionChanged observableModels)
+            {
                 observableModels.CollectionChanged += ModelCollectionChanged;
             }
 
-            this.dispatcher = useApplicationDispatcher ? System.Windows.Application.Current.Dispatcher : dispatcher;
+            this.dispatcher = dispatcher;
 
             // Fecth ViewModels
             if (autoFetch) FetchFromModels();
@@ -99,7 +96,7 @@ namespace LionFire.Collections
         /// Determines whether the collection of ViewModels should be
         /// fetched from the model collection on construction
         /// </param>
-        public VmCollection(ICollection<TModel> models, IViewModelProvider viewModelProvider = null, object context = null, bool autoFetch = true, Dispatcher dispatcher = null, bool useApplicationDispatcher = true)
+        public VmCollection(ICollection<TModel> models, IViewModelProvider viewModelProvider = null, object context = null, bool autoFetch = true, IDispatcher dispatcher = null, bool useApplicationDispatcher = true)
         {
             _models = models;
             _readOnlyModels = _models;
@@ -118,9 +115,12 @@ namespace LionFire.Collections
                 var observableModels = models as ObservableCollection<TModel>;
                 observableModels.CollectionChanged += ModelCollectionChanged;
             }
+            else if (models is IEnumerable<TModel> && models is INotifyCollectionChanged observableModels)
+            {
+                observableModels.CollectionChanged += ModelCollectionChanged;
+            }
 
-            this.dispatcher = useApplicationDispatcher ? System.Windows.Application.Current.Dispatcher : dispatcher;
-
+            this.dispatcher = dispatcher;
 
             // Fecth ViewModels
             if (autoFetch) FetchFromModels();
@@ -188,7 +188,7 @@ namespace LionFire.Collections
             _synchDisabled = false;
         }
 
-        private void ModelCollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
+        protected void ModelCollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
         {
             if (_synchDisabled) return;
             _synchDisabled = true;
@@ -236,7 +236,7 @@ namespace LionFire.Collections
             {
                 throw new Exception("No ViewModelProvider was provided at create time.  Cannot CreateViewModel.");
             }
-            return _viewModelProvider.GetFor<TViewModel>(model, _context);
+            return _viewModelProvider.ProvideViewModelFor<TViewModel>(model, _context);
         }
 
         public TViewModel GetViewModelOfModel(TModel model)

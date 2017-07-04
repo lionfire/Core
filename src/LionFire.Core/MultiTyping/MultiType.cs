@@ -7,8 +7,9 @@ using System.Threading.Tasks;
 namespace LionFire.MultiTyping
 {
 
-    public class MultiType : IMultiTyped, IContainsMultiTyped
+    public class MultiType : IMultiTyped, IMultiTypable
     {
+        // TODO: Switch to ConcurrentDictionary?
         protected Dictionary<Type, object> TypeDict { get { return typeDict; } }
         protected Dictionary<Type, object> typeDict;
 

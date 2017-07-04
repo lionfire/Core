@@ -40,6 +40,7 @@ new AppHost()
     <ProjectReference Include="..\LionFire.Environment\LionFire.Environment.csproj" />
     <ProjectReference Include="..\LionFire.Execution\LionFire.Execution.csproj" />
     <ProjectReference Include="..\LionFire.Instantiating.Abstractions\LionFire.Instantiating.Abstractions.csproj" />
+    <ProjectReference Include="..\LionFire.Plugins\LionFire.Plugins.csproj" />
   </ItemGroup>
 
   <ItemGroup>

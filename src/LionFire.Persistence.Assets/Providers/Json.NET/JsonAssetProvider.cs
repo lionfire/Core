@@ -85,10 +85,10 @@ namespace LionFire.Assets.Providers.FileSystem
         /// <typeparam name="T"></typeparam>
         /// <param name="assetSubPath"></param>
         /// <returns>Returns default(T) if file not found.</returns>
-        public T Load<T>(string assetSubPath)
+        public T Load<T>(string assetSubPath, PersistenceContext context = null)
             where T : class
         {
-            var path = GetPath<T>(assetSubPath);
+            var path = GetPath<T>(assetSubPath, context);
             if (!File.Exists(path)) return default(T);
 
 
@@ -150,7 +150,6 @@ namespace LionFire.Assets.Providers.FileSystem
         public async Task<bool> Initialize()
         {
             return (await((IInitializable2)this).Initialize()).Valid;
-            
         }
 
         Task<ValidationContext> IInitializable2.Initialize()

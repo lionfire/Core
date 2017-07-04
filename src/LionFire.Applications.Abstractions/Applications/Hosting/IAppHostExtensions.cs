@@ -22,7 +22,7 @@ namespace LionFire.Applications.Hosting
         }
 
         public static IAppHost Add<T>(this IAppHost host)
-            where T : new()
+            where T : class, new()
         {
             host.Add(new T());
             return host;

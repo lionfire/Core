@@ -9,7 +9,7 @@ using LionFire.Types;
 
 namespace LionFire.Instantiating
 {
-    public class InstantiationContext : ContainsMultiTyped
+    public class InstantiationContext : MultiTypable
     {
 
         public InstantiationContext() { }

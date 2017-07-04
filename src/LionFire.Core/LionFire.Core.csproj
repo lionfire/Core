@@ -26,6 +26,10 @@ This package is typically not added on its own, but is a dependency required by 
   </PropertyGroup>
 
   <ItemGroup>
+    <None Include="MultiTyping\IMultiTypable.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="1.1.1" />
     <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="1.1.2" />
     <PackageReference Include="System.Collections.Immutable" Version="1.3.1" />

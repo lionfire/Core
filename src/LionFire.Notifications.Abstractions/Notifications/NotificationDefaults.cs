@@ -11,7 +11,7 @@ namespace LionFire.Notifications
         {
             get
             {
-                yield return @"C:\st\Projects\Valor\Assets\Sound\02 ZapSplat";
+                yield return @"C:\st\Projects\Valor\Assets\Sound\02 ZapSplat"; // HARDCODE HARDPATH TODO TEMP
             }
         }
 

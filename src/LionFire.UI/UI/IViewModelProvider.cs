@@ -1,8 +1,8 @@
 ﻿namespace LionFire.UI
 {
+
     public interface IViewModelProvider
     {
-        object ProvideViewModel(object model);
-
+        T ProvideViewModelFor<T>(object model, object context = null);
     }
 }

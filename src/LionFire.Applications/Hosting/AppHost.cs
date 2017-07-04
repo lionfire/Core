@@ -21,7 +21,10 @@ namespace LionFire.Applications.Hosting
 
     public class AppHost : IAppHost, IReadonlyMultiTyped
     {
+        MultiType multiType { get; set; } = new MultiType();
+
         public InjectionContext InjectionContext { get; private set; } = new InjectionContext();
+
 
         // REVIEW - Not sure this is needed or a good idea
         T IReadonlyMultiTyped.AsType<T>()
@@ -33,6 +36,9 @@ namespace LionFire.Applications.Hosting
                 case nameof(IServiceProvider):
                     return (T)ServiceProvider;
                 default:
+                    var result = multiType.AsType<T>();
+                    if (result != null) return result;
+
                     //if (ServiceProvider == null)
                     //{
                     //    return null;
@@ -83,14 +89,13 @@ namespace LionFire.Applications.Hosting
 
         #region Register
 
-        public IReadOnlyCollection<object> Components { get { return components; } }
-        private List<object> components = new List<object>();
+        public IEnumerable<object> Children { get { return children; } }
+        private List<object> children = new List<object>();
 
-        public IEnumerator<object> GetEnumerator() => Components.GetEnumerator(); // REVIEW - expose IAppHost.Components instead?
+        //public IEnumerator<object> GetEnumerator() => Children.GetEnumerator(); // REVIEW - expose IAppHost.Components instead?
 
-        IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
-
-        public IAppHost Add(object component)
+        public IAppHost Add<T>(T component)
+            where T : class
         {
             //// REVIEW - only do this block if not added?
             //if (component is IConfigures<IServiceCollection> csc)
@@ -102,7 +107,8 @@ namespace LionFire.Applications.Hosting
             {
                 if (adding.OnAdding(this))
                 {
-                    components.Add(component);
+                    children.Add(component);
+                    multiType.SetType<T>(component);
                 }
                 else
                 {
@@ -110,7 +116,7 @@ namespace LionFire.Applications.Hosting
             }
             else
             {
-                components.Add(component);
+                children.Add(component);
             }
             return this;
         }
@@ -143,11 +149,11 @@ namespace LionFire.Applications.Hosting
 
         public IAppHost InstantiateTemplates() // MOVE to ITemplateExtensions
         {
-            foreach (var tComponent in components.OfType<ITemplate>().ToArray())
+            foreach (var tComponent in children.OfType<ITemplate>().ToArray())
             {
                 var component = tComponent.Create();
                 this.Add(component);
-                components.Remove(tComponent);
+                children.Remove(tComponent);
             }
 
             return this;
@@ -163,7 +169,7 @@ namespace LionFire.Applications.Hosting
 
         //}
 
-        public virtual void ResolveComponentDependencyProperties() => Components.TryResolveDependencies(ServiceProvider);
+        public virtual void ResolveComponentDependencyProperties() => Children.TryResolveDependencies(ServiceProvider);
 
 
         /// <summary>
@@ -171,7 +177,7 @@ namespace LionFire.Applications.Hosting
         /// </summary>
         protected void InjectServiceProviderToComponents()
         {
-            foreach (var component in components.OfType<IRequiresServices>())
+            foreach (var component in children.OfType<IRequiresServices>())
             {
                 component.ServiceProvider = ServiceProvider;
             }
@@ -183,7 +189,7 @@ namespace LionFire.Applications.Hosting
         /// </summary>
         protected void InjectInjectionContextToComponents()
         {
-            foreach (var component in components.OfType<IRequiresInjection>())
+            foreach (var component in children.OfType<IRequiresInjection>())
             {
                 component.InjectionContext = this.InjectionContext;
             }
@@ -199,16 +205,16 @@ namespace LionFire.Applications.Hosting
             }
 
             // FUTURE TODO: Use Resolution context?
-            components.ResolveHandlesAsync().GetResultSafe();
+            children.ResolveHandlesAsync().GetResultSafe();
 
             InstantiateTemplates();
 
-            foreach (var configurer in components.OfType<IConfigures<IAppHost>>())
+            foreach (var configurer in children.OfType<IConfigures<IAppHost>>())
             {
                 configurer.Configure(this);
             }
 
-            foreach (var configurer in components.OfType<IConfigures<IServiceCollection>>())
+            foreach (var configurer in children.OfType<IConfigures<IServiceCollection>>())
             {
                 configurer.Configure(ServiceCollection);
             }
@@ -223,8 +229,8 @@ namespace LionFire.Applications.Hosting
             ResolveComponentDependencyProperties();
 
 
-            components.OfType<TInitializable>().InitializeAll().Wait(); // Deprecated
-            components.OfType<IInitializable2>().InitializeAll().Wait();
+            children.OfType<TInitializable>().InitializeAll().Wait(); // Deprecated
+            children.OfType<IInitializable2>().InitializeAll().Wait();
 
             if (mode == BootstrapMode.Discard)
             {
@@ -259,14 +265,14 @@ namespace LionFire.Applications.Hosting
             WaitForTasks.Clear();
             Tasks.Clear();
 
-            await components.OfType<IInitializable>().InitializeAll();
+            await children.OfType<IInitializable>().InitializeAll();
             //var validationErrors = await components.OfType<IInitializable2>().InitializeAll();
 
             #region Start
 
             List<Task> startTasks = new List<Task>();
 
-            foreach (var component in components.OfType<IStartable>())
+            foreach (var component in children.OfType<IStartable>())
             {
                 // Parallel start
                 startTasks.Add(component.Start(tokenSource.Token));
@@ -276,7 +282,7 @@ namespace LionFire.Applications.Hosting
 
             #endregion
 
-            foreach (var component in components.OfType<IHasRunTask>())
+            foreach (var component in children.OfType<IHasRunTask>())
             {
                 if (component.WaitForRunCompletion() == true && component.RunTask != null)
                 {

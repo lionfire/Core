@@ -10,11 +10,11 @@ namespace LionFire.Applications
     {
         public static T GetComponent<T>()
         {
-            return InjectionContext.Current.GetService<IAppHost>().OfType<T>().SingleOrDefault();
+            return InjectionContext.Current.GetService<IAppHost>().Children.OfType<T>().SingleOrDefault();
         }
         public static IEnumerable<T> GetComponents<T>()
         {
-            return InjectionContext.Current.GetService<IAppHost>().OfType<T>();
+            return InjectionContext.Current.GetService<IAppHost>().Children.OfType<T>();
         }
         public static T GetService<T>()
         {

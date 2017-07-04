@@ -84,7 +84,7 @@ namespace LionFire.Notifications.Service
         static void Main(string[] args)
         {
 
-            var tNotifications = new List<TNotification>
+            var tNotifications = new List<Notifier>
             {
             };
 

@@ -13,7 +13,7 @@ namespace LionFire.Notifications.Wpf.App
 
         FSDirectoryQueueWriter writer = new FSDirectoryQueueWriter();
 
-                Timer timer;
+        Timer timer;
         public Task Start()
         {
             writer.QueueDir = Path.Combine(NotificationEnvironment.DesktopAlertQueueDir, DirectoryQueue.InSubDir);
@@ -31,10 +31,10 @@ namespace LionFire.Notifications.Wpf.App
         {
             writer.Enqueue(new MessageEnvelope
             {
-                Payload = new TNotification
+                Payload = new Notifier
                 {
                     Flags = NotificationFlags.MustAck,
-                    Message = "Test " +  counter++,
+                    Message = "Test " + counter++,
                 }
             });
 

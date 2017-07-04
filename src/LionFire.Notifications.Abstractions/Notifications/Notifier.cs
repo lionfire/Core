@@ -2,12 +2,16 @@
 
 namespace LionFire.Notifications
 {
-    public class TNotification
+    public interface INotifier
+    {
+    }
+
+    public class Notifier : INotifier
     {
         #region Construction
 
-        public TNotification() { }
-        public TNotification(Importance importance, Urgency urgency) {
+        public Notifier() { }
+        public Notifier(Importance importance, Urgency urgency) {
             this.Importance = importance;
             this.Urgency = urgency;
         }
@@ -21,6 +25,15 @@ namespace LionFire.Notifications
         public Importance Importance { get; set; }
         public Urgency Urgency { get; set; }
 
+        /// <summary>
+        /// Description for the notifier, such as how it is related to some other event or why it exists
+        /// </summary>
+        public string Comment { get; set; }
+
+        /// <summary>
+        /// A custom  message to display.  May be ignored by subtypes.
+        /// REVIEW - don't have this? Move to derived classes?
+        /// </summary>
         public string Message { get; set; }
         
         public string Profile { get; set; }

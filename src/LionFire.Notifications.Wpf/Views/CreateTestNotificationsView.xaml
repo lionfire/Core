@@ -1,0 +1,26 @@
+﻿<UserControl x:Class="LionFire.Notifications.UI.CreateTestNotificationsView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:LionFire.Notifications.UI"
+             xmlns:wpftk="http://schemas.xceed.com/wpf/xaml/toolkit"
+             mc:Ignorable="d" 
+             d:DesignHeight="300" d:DesignWidth="300">
+    <Grid>
+        <DockPanel>
+            
+            <wpftk:PropertyGrid DockPanel.Dock="Right" SelectedObject="{Binding}">
+                
+            </wpftk:PropertyGrid>
+
+        <UniformGrid Rows="2" DataContext="{Binding NewNotification}">
+            <TextBox x:Name="Profile"></TextBox>
+            <ComboBox x:Name="Importance"></ComboBox>
+            <ComboBox x:Name="Urgency"></ComboBox>
+            <Button x:Name="Notify1" Width="100" Height="100">1</Button>
+            <Button x:Name="Notify2">2</Button>
+        </UniformGrid>
+        </DockPanel>
+    </Grid>
+</UserControl>

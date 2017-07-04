@@ -35,7 +35,7 @@ namespace LionFire.Serialization
             {
                 if (serializers == null)
                 {
-                    serializers = InjectionContext.Current.ServiceProvider.GetServices<ISerializerStrategy>();
+                    serializers = InjectionContext.Current.ServiceProvider.GetServices<ISerializerStrategy>().Distinct(); 
                 }
                 return serializers;
             }
@@ -54,6 +54,7 @@ namespace LionFire.Serialization
             {
                 var priority = serializer.GetPriorityForContext(context);
                 if (float.IsNaN(priority)) continue;
+                while (results.ContainsKey(priority)) priority += 0.0001f;
                 results.Add(-priority, serializer);
             }
             return results.Values;

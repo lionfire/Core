@@ -18,7 +18,7 @@ namespace LionFire.MultiTyping
             var mt = obj as IMultiTyped;
             if (mt == null)
             {
-                var cmt = obj as IContainsMultiTyped;
+                var cmt = obj as IMultiTypable;
                 mt = cmt?.MultiTyped;
             }
             if (mt != null)

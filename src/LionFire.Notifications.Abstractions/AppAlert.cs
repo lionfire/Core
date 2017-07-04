@@ -10,7 +10,7 @@ namespace LionFire.Notifications.Abstractions
     
 
 
-    public class TAppAlert : TNotification, ITemplate<AppAlert>
+    public class TAppAlert : Notifier, ITemplate<AppAlert>
     {
     }
 

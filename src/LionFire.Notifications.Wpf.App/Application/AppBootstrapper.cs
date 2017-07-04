@@ -7,20 +7,23 @@ using System.Threading.Tasks;
 using LionFire.Threading.Tasks;
 using LionFire.Serialization;
 using LionFire.Serialization.Json.Newtonsoft;
+#if Trading
 using LionFire.Trading.Applications;
 using LionFire.Trading;
-using LionFire.Composables;
 using LionFire.Trading.TrueFx;
 using LionFire.Trading.Spotware.Connect;
+using LionFire.Trading.Notifications;
+#endif
 using LionFire.Assets;
 using System.Reflection;
+using LionFire.Notifications.UI;
 
 namespace LionFire.Notifications.Wpf.App
 {
     public class AppBootstrapper : LionFireAppBootstrapper
     {
     }
-   
+
 
     public class LionFireAppBootstrapper : CaliburnMicroAppBootstrapper
     {
@@ -34,12 +37,14 @@ namespace LionFire.Notifications.Wpf.App
                 //.Add(new AppInfo("LionFire", "Notifier.WPF", "Notifications/Apps/Notifier.WPF"))
                 .Add(new AppInfo("LionFire", "Trading Dash", "Trading"))
                 .AddJsonAssetProvider()
-                .Initialize()
                 .Add<SerializationPackage>()
                 .Add<NewtonsoftJsonSerialization>()
+                .Initialize()
                 //.Add<VosPackage>()
                 .Add<WpfNotifierService>()
                 //.Add<TestNotificationQueueFiller>()
+#if Trading
+                .Add<TradingNotifierHost>()
                 .Add(new TradingNotificationsService
                 {
                     //AccountNames = new List<string> { "IC Markets.Demo" },
@@ -56,6 +61,7 @@ namespace LionFire.Notifications.Wpf.App
                 //})
                 .AddSpotwareConnectClient("LionFire.Trading.App")
                 .AddAsset<TCTraderAccount, IAppHost>("IC Markets.Demo")
+#endif
                 ;
         }
 
@@ -69,8 +75,11 @@ namespace LionFire.Notifications.Wpf.App
         protected override IEnumerable<Assembly> SelectAssemblies()
         {
 
+#if Trading
             yield return typeof(Trading.UI.TradingNotificationsViewModel).Assembly; // LionFire.Trading.UI
             yield return typeof(Trading.UI.TradingNotificationsView).Assembly; // LionFire.Trading.UI.WPF
+#endif
+            yield return typeof(NotificationHistoryView).Assembly; // LionFire.Notifications.WPF
 
             foreach (var assembly in base.SelectAssemblies())
             {

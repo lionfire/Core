@@ -113,6 +113,7 @@ namespace LionFire.Notifications.Twilio
             //return new VoiceAlertResult()
             //{
             //};
+            throw new NotImplementedException();
         }
 
         public string TheSystemIsDown = @"<?xml version=""1.0"" encoding=""UTF-8""?>

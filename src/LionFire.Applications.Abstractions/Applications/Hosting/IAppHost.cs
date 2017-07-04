@@ -16,6 +16,7 @@ namespace LionFire.Applications.Hosting
     public interface IAppHost : 
         //IInitializable,
         IComposable<IAppHost>
+
     {
         #region Dependency Injection
 
@@ -31,10 +32,6 @@ namespace LionFire.Applications.Hosting
 
         #endregion
 
-        IReadOnlyCollection<object> Components
-        {
-            get;
-        }
         
         //IAppHost AddAsset<T>(string assetSubPath) where T : class; // RENAME AddAsset?
 

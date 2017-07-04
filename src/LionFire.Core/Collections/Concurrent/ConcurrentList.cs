@@ -31,14 +31,12 @@ namespace LionFire.Collections.Concurrent
 
         private void UpdateLists()
         {
-            if (!isDirty)
-                return;
+            if (!isDirty) return;
+
             lock (syncRoot)
             {
                 requiresSync = true;
-                T temp;
-                while (underlyingQueue.TryDequeue(out temp))
-                    underlyingList.Add(temp);
+                while (underlyingQueue.TryDequeue(out T temp)) underlyingList.Add(temp);
                 requiresSync = false;
             }
         }
@@ -72,6 +70,10 @@ namespace LionFire.Collections.Concurrent
             else
                 underlyingQueue.Enqueue(item);
             isDirty = true;
+            lock (syncRoot)
+            {
+                UpdateLists();
+            }
         }
 
         public int Add(object value)

@@ -3,66 +3,62 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:cm="http://www.caliburnproject.org"
         >
+    <DockPanel>
 
-    <TabControl TabStripPlacement="Left">
-        <!--<TabItem Header="Trading Accounts">
-            <ContentControl cm:View.Model="{Binding Accounts}" />
-            
-        </TabItem>-->
+         <!-- Old tabcontrol -->
+        <TabControl Visibility="Collapsed">
+            <TabItem Header="TrueFx">
+                <DockPanel>
+                    <ListView x:Name="TrueFxPrices" ItemsSource="{Binding TrueFxPrices}" DockPanel.Dock="Top">
 
-        <TabItem Header="Price Alerts">
-            <ContentControl cm:View.Model="{Binding NotificationsList}" />
-        </TabItem>
+                    </ListView>
+                    <DockPanel DockPanel.Dock="Bottom">
 
-        <TabItem Header="Trading Notifications Settings">
-            <ContentControl cm:View.Model="{Binding NotificationsList}" />
-        </TabItem>
-        <TabItem Header="Notification Test">
-            <UniformGrid Rows="2" DataContext="{Binding NewNotification}">
-                <TextBox x:Name="Message"></TextBox>
-                <TextBox x:Name="Profile"></TextBox>
-                <ComboBox x:Name="Importance"></ComboBox>
-                <ComboBox x:Name="Urgency"></ComboBox>
-                <Button x:Name="Notify1" Width="100" Height="100">1</Button>
-                <Button x:Name="Notify2">2</Button>
-        </UniformGrid>
-            
-        </TabItem>
-        <TabItem Header="TrueFx">
-            <DockPanel>
-                <ListView x:Name="TrueFxPrices" ItemsSource="{Binding TrueFxPrices}" DockPanel.Dock="Top">
+                        <Slider x:Name="UpdateInterval" Minimum="500" Maximum="60000" Value="{Binding UpdateInterval}"/>
+                        <CheckBox IsChecked="{Binding AutoUpdate}">Auto-update</CheckBox>
 
-                </ListView>
-                <DockPanel DockPanel.Dock="Bottom">
-
-                    <Slider x:Name="UpdateInterval" Minimum="500" Maximum="60000" Value="{Binding UpdateInterval}"/>
-                    <CheckBox IsChecked="{Binding AutoUpdate}">Auto-update</CheckBox>
-                    
-                    <Button cm:Message.Attach="Update">Update</Button>
+                        <Button cm:Message.Attach="Update">Update</Button>
+                    </DockPanel>
                 </DockPanel>
-            </DockPanel>
-        </TabItem>
-        <TabItem Header="Twilio Test">
-            <Grid Background="White">
-                <Grid.Resources>
-                    <Style TargetType="Button">
-                        <Setter Property="Margin" Value="10"/>
-                        <Setter Property="Padding" Value="10"/>
-                    </Style>
-                </Grid.Resources>
+            </TabItem>
+            <TabItem Header="Twilio Test">
+                <Grid Background="White">
+                    <Grid.Resources>
+                        <Style TargetType="Button">
+                            <Setter Property="Margin" Value="10"/>
+                            <Setter Property="Padding" Value="10"/>
+                        </Style>
+                    </Grid.Resources>
 
-                <DockPanel LastChildFill="False" Margin="50">
-                    <TextBlock Text="Notifier" DockPanel.Dock="Top"
+                    <DockPanel LastChildFill="False" Margin="50">
+                        <TextBlock Text="Notifier" DockPanel.Dock="Top"
                    VerticalAlignment="Center"
                    HorizontalAlignment="Center"
                    FontSize="20" />
 
-                    <TextBlock Text="{Binding StatusText}"/>
-                    <Button x:Name="SMS" DockPanel.Dock="Bottom" >SMS</Button>
-                    <Button x:Name="Voice" DockPanel.Dock="Bottom">Voice</Button>
-                </DockPanel>
-            </Grid>
-        </TabItem>
-    </TabControl>
+                        <TextBlock Text="{Binding StatusText}"/>
+                        <Button x:Name="SMS" DockPanel.Dock="Bottom" >SMS</Button>
+                        <Button x:Name="Voice" DockPanel.Dock="Bottom">Voice</Button>
+                    </DockPanel>
+                </Grid>
+            </TabItem>
+        </TabControl>
+        
+        <TabControl TabStripPlacement="Left" SelectedItem="{Binding ActiveItem}" ItemsSource="{Binding ViewModels}" >
+            <TabControl.ContentTemplate>
+                <DataTemplate>
+                    <ContentControl cm:View.Model="{Binding}" />
+                </DataTemplate>
+            </TabControl.ContentTemplate>
+
+            <!--<TabItem Header="Price Alerts">
+            <ContentControl cm:View.Model="{Binding NotificationsList}" />
+        </TabItem>-->
+
+            <!--<TabItem Header="Trading Notifications Settings">
+            <ContentControl cm:View.Model="{Binding NotificationsList}" />
+        </TabItem>-->
+        </TabControl>
+    </DockPanel>
 
 </Window>

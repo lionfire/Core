@@ -53,6 +53,13 @@ namespace LionFire.DependencyInjection
             //    unresolvedDependencies = results.Count > 0 ? results : UnsatisfiedDependencies.Resolved;
             //    return results.Count == 0;
         }
+
+        public static void ResolveDependencies(this object obj, IServiceProvider serviceProvider = null)
+        {
+            ValidationContext vc = null;
+            obj.TryResolveDependencies(ref vc, serviceProvider);
+            vc.EnsureValid();
+        }
         public static bool TryResolveDependencies(this object obj, out UnsatisfiedDependencies unresolvedDependencies, IServiceProvider serviceProvider = null)
         {
             if (serviceProvider == null)

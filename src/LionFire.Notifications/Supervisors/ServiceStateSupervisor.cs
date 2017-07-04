@@ -14,8 +14,8 @@ namespace LionFire.Supervisors
 {
     public class TServiceStateSupervisorBase
     {
-        public AssetReadHandle<TNotification> ServiceNotStarted { get; set; } = "ServiceNotStarted";
-        public AssetReadHandle<TNotification> ServiceFaulted { get; set; } = "ServiceFaulted";
+        public AssetReadHandle<Notifier> ServiceNotStarted { get; set; } = "ServiceNotStarted";
+        public AssetReadHandle<Notifier> ServiceFaulted { get; set; } = "ServiceFaulted";
     }
 
     public class TServiceStateSupervisor : TServiceStateSupervisorBase, ITemplate<ServiceStateSupervisor>
@@ -26,6 +26,8 @@ namespace LionFire.Supervisors
         public Type Type { get; set; }
     }
 
+    // MOVE
+    // What is this for?
     public class ServiceStateSupervisor : IStartable, INotifyPropertyChanged, ITemplateInstance<TServiceStateSupervisor>, IStoppable
     {
 
@@ -44,7 +46,6 @@ namespace LionFire.Supervisors
         private object serviceObject;
 
         public TServiceStateSupervisor Template { get; set; }
-        ITemplate ITemplateInstance.Template { get => Template; set => Template = (TServiceStateSupervisor)value; }
 
         #endregion
 
