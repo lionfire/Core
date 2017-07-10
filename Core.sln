@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
-VisualStudioVersion = 15.0.26403.7
+VisualStudioVersion = 15.0.26430.14
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{A48456D5-DD7D-4E1C-9307-4996EA3D2CA8}"
 	ProjectSection(SolutionItems) = preProject
@@ -19,8 +19,6 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Analytics", "Analytics", "{CBB07872-38A9-400C-B8C0-16CF6E1CBA1F}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "LionFire.Environment", "src\LionFire.Environment\LionFire.Environment.csproj", "{F5DD631D-3248-4854-8CF5-0642B6A51D93}"
-EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "LionFire.Runtime.Extensions", "src\LionFire.Runtime.Extensions\LionFire.Runtime.Extensions.csproj", "{CDD959D2-8FEF-44AE-9E83-64E66C75A37E}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Data", "Data", "{A3A8115C-B22B-4A3F-B738-46720422BAE2}"
 EndProject
@@ -76,17 +74,21 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LionFire.Notifications.Wpf.
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LionFire.Applications.Tests", "src\LionFire.Applications.Tests\LionFire.Applications.Tests.csproj", "{8F4B0B44-5A94-456F-BBCE-B6DFD81E86F3}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LionFire.Notifications.Twilio", "src\LionFire.Notifications.Twilio\LionFire.Notifications.Twilio.csproj", "{B624DA7E-B283-4B56-89E5-DAB4627AFB71}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "LionFire.Notifications.Twilio", "src\LionFire.Notifications.Twilio\LionFire.Notifications.Twilio.csproj", "{B624DA7E-B283-4B56-89E5-DAB4627AFB71}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "LionFire.Machine", "..\Machine\src\LionFire.Machine\LionFire.Machine.csproj", "{31DB2989-A6CC-460B-BCE0-A51768272A71}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Machine", "Machine", "{195AAB78-089E-404C-A919-E713613A0B0B}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WebApplication1", "..\..\dev\temp\WebApplication1\WebApplication1.csproj", "{EF1BD350-6828-49A7-9C3C-2461E4A80E9D}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WebApplication1", "..\..\dev\temp\WebApplication1\WebApplication1.csproj", "{EF1BD350-6828-49A7-9C3C-2461E4A80E9D}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LionFire.Machine.AspNet.Host", "..\Machine\src\LionFire.Machine.AspNet.Host\LionFire.Machine.AspNet.Host.csproj", "{DF9766CF-DFED-48BF-AE9B-180164740DA3}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "LionFire.Machine.AspNet.Host", "..\Machine\src\LionFire.Machine.AspNet.Host\LionFire.Machine.AspNet.Host.csproj", "{DF9766CF-DFED-48BF-AE9B-180164740DA3}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LionFire.Notifications.Service", "src\LionFire.Notifications.Service\LionFire.Notifications.Service.csproj", "{C049973E-8763-4480-BCFE-2990F8A0C1CE}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "LionFire.Notifications.Service", "src\LionFire.Notifications.Service\LionFire.Notifications.Service.csproj", "{C049973E-8763-4480-BCFE-2990F8A0C1CE}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "LionFire.Core", "src\LionFire.Core\LionFire.Core.csproj", "{43FC315B-303A-4D3F-83AB-490E6ECC9834}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "LionFire.Core.Tests", "src\LionFire.Core.Tests\LionFire.Core.Tests.csproj", "{AF541BD8-A794-4990-A8CE-F3ABC2161210}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -98,10 +100,6 @@ Global
 		{F5DD631D-3248-4854-8CF5-0642B6A51D93}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{F5DD631D-3248-4854-8CF5-0642B6A51D93}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{F5DD631D-3248-4854-8CF5-0642B6A51D93}.Release|Any CPU.Build.0 = Release|Any CPU
-		{CDD959D2-8FEF-44AE-9E83-64E66C75A37E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{CDD959D2-8FEF-44AE-9E83-64E66C75A37E}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{CDD959D2-8FEF-44AE-9E83-64E66C75A37E}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{CDD959D2-8FEF-44AE-9E83-64E66C75A37E}.Release|Any CPU.Build.0 = Release|Any CPU
 		{421E9A19-D78A-4767-9FF0-F2BB5752B5AF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{421E9A19-D78A-4767-9FF0-F2BB5752B5AF}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{421E9A19-D78A-4767-9FF0-F2BB5752B5AF}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -214,13 +212,20 @@ Global
 		{C049973E-8763-4480-BCFE-2990F8A0C1CE}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{C049973E-8763-4480-BCFE-2990F8A0C1CE}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{C049973E-8763-4480-BCFE-2990F8A0C1CE}.Release|Any CPU.Build.0 = Release|Any CPU
+		{43FC315B-303A-4D3F-83AB-490E6ECC9834}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{43FC315B-303A-4D3F-83AB-490E6ECC9834}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{43FC315B-303A-4D3F-83AB-490E6ECC9834}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{43FC315B-303A-4D3F-83AB-490E6ECC9834}.Release|Any CPU.Build.0 = Release|Any CPU
+		{AF541BD8-A794-4990-A8CE-F3ABC2161210}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{AF541BD8-A794-4990-A8CE-F3ABC2161210}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{AF541BD8-A794-4990-A8CE-F3ABC2161210}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{AF541BD8-A794-4990-A8CE-F3ABC2161210}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{F5DD631D-3248-4854-8CF5-0642B6A51D93} = {418497D4-D25E-4254-9DB1-E5F7EBE24DA0}
-		{CDD959D2-8FEF-44AE-9E83-64E66C75A37E} = {418497D4-D25E-4254-9DB1-E5F7EBE24DA0}
 		{421E9A19-D78A-4767-9FF0-F2BB5752B5AF} = {A3A8115C-B22B-4A3F-B738-46720422BAE2}
 		{0E485681-0249-49F3-B08C-E68C29E25D7C} = {A3A8115C-B22B-4A3F-B738-46720422BAE2}
 		{B3A9BCA9-2EE5-46A8-B3EE-0738BB68CDAF} = {09B43286-7E2B-4635-9DDB-DB0E01300E19}
@@ -248,5 +253,7 @@ Global
 		{31DB2989-A6CC-460B-BCE0-A51768272A71} = {195AAB78-089E-404C-A919-E713613A0B0B}
 		{DF9766CF-DFED-48BF-AE9B-180164740DA3} = {195AAB78-089E-404C-A919-E713613A0B0B}
 		{C049973E-8763-4480-BCFE-2990F8A0C1CE} = {59FBE985-A65C-4691-8149-D422A53D8E5F}
+		{43FC315B-303A-4D3F-83AB-490E6ECC9834} = {418497D4-D25E-4254-9DB1-E5F7EBE24DA0}
+		{AF541BD8-A794-4990-A8CE-F3ABC2161210} = {418497D4-D25E-4254-9DB1-E5F7EBE24DA0}
 	EndGlobalSection
 EndGlobal

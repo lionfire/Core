@@ -63,10 +63,6 @@
       <Project>{7ec019ec-9a04-452d-a360-13b5d25e0ca0}</Project>
       <Name>LionFire.Applications</Name>
     </ProjectReference>
-    <ProjectReference Include="..\LionFire.Runtime.Extensions\LionFire.Runtime.Extensions.csproj">
-      <Project>{cdd959d2-8fef-44ae-9e83-64e66c75a37e}</Project>
-      <Name>LionFire.Runtime.Extensions</Name>
-    </ProjectReference>
   </ItemGroup>
   <Import Project="$(VSToolsPath)\TeamTest\Microsoft.TestTools.targets" Condition="Exists('$(VSToolsPath)\TeamTest\Microsoft.TestTools.targets')" />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

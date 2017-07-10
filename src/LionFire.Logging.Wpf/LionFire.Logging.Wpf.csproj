@@ -190,10 +190,6 @@
       <Project>{42d8890f-edc1-453f-b1ff-ced7862bdc8e}</Project>
       <Name>LionFire.Extensions.Logging.NLog</Name>
     </ProjectReference>
-    <ProjectReference Include="..\LionFire.Runtime.Extensions\LionFire.Runtime.Extensions.csproj">
-      <Project>{cdd959d2-8fef-44ae-9e83-64e66c75a37e}</Project>
-      <Name>LionFire.Runtime.Extensions</Name>
-    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
