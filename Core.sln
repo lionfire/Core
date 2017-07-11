@@ -76,8 +76,6 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LionFire.Applications.Tests
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "LionFire.Notifications.Twilio", "src\LionFire.Notifications.Twilio\LionFire.Notifications.Twilio.csproj", "{B624DA7E-B283-4B56-89E5-DAB4627AFB71}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WebApplication1", "..\..\dev\temp\WebApplication1\WebApplication1.csproj", "{EF1BD350-6828-49A7-9C3C-2461E4A80E9D}"
-EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "LionFire.Notifications.Service", "src\LionFire.Notifications.Service\LionFire.Notifications.Service.csproj", "{C049973E-8763-4480-BCFE-2990F8A0C1CE}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "LionFire.Core", "src\LionFire.Core\LionFire.Core.csproj", "{43FC315B-303A-4D3F-83AB-490E6ECC9834}"
@@ -190,10 +188,6 @@ Global
 		{B624DA7E-B283-4B56-89E5-DAB4627AFB71}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{B624DA7E-B283-4B56-89E5-DAB4627AFB71}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{B624DA7E-B283-4B56-89E5-DAB4627AFB71}.Release|Any CPU.Build.0 = Release|Any CPU
-		{EF1BD350-6828-49A7-9C3C-2461E4A80E9D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{EF1BD350-6828-49A7-9C3C-2461E4A80E9D}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{EF1BD350-6828-49A7-9C3C-2461E4A80E9D}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{EF1BD350-6828-49A7-9C3C-2461E4A80E9D}.Release|Any CPU.Build.0 = Release|Any CPU
 		{C049973E-8763-4480-BCFE-2990F8A0C1CE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{C049973E-8763-4480-BCFE-2990F8A0C1CE}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{C049973E-8763-4480-BCFE-2990F8A0C1CE}.Release|Any CPU.ActiveCfg = Release|Any CPU
