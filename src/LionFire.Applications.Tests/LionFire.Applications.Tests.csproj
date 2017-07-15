@@ -63,6 +63,14 @@
       <Project>{7ec019ec-9a04-452d-a360-13b5d25e0ca0}</Project>
       <Name>LionFire.Applications</Name>
     </ProjectReference>
+    <ProjectReference Include="..\LionFire.Execution.Abstractions\LionFire.Execution.Abstractions.csproj">
+      <Project>{a443488c-8097-4de5-83b0-272089c47d61}</Project>
+      <Name>LionFire.Execution.Abstractions</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\LionFire.Execution\LionFire.Execution.csproj">
+      <Project>{2638f46f-0e74-4095-a955-fc171211444d}</Project>
+      <Name>LionFire.Execution</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(VSToolsPath)\TeamTest\Microsoft.TestTools.targets" Condition="Exists('$(VSToolsPath)\TeamTest\Microsoft.TestTools.targets')" />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

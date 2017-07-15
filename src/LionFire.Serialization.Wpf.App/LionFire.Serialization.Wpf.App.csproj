@@ -240,10 +240,6 @@
       <Project>{3ac095c1-1080-4d84-af02-8b536b3aad67}</Project>
       <Name>LionFire.Serialization.Wpf</Name>
     </ProjectReference>
-    <ProjectReference Include="..\LionFire.Serialization\LionFire.Serialization\LionFire.Serialization.csproj">
-      <Project>{5254cd3f-fffe-49c4-9159-71896305e496}</Project>
-      <Name>LionFire.Serialization</Name>
-    </ProjectReference>
     <ProjectReference Include="..\LionFire.UI.WpfToolkit\LionFire.UI.Wpf.WpfToolkit.csproj">
       <Project>{F33ED36D-0D56-4E34-BF2A-2EB27E0F5513}</Project>
       <Name>LionFire.UI.Wpf.WpfToolkit</Name>

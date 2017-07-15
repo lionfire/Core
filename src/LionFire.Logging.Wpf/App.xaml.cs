@@ -18,7 +18,8 @@ namespace LionFire.Logging.Wpf
         public App()
         {
             var app = new AppHost()
-                .Add(
+                //.Add(
+                ;
         }
     }
 }

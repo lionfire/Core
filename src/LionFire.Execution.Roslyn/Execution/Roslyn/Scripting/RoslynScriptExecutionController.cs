@@ -56,18 +56,19 @@ namespace LionFire.Execution.Roslyn.Scripting
         Dictionary<string, object> globals = new Dictionary<string, object>();
 
         #region State
-
-        #region ExecutionState
-
-        public IBehaviorObservable<ExecutionState> State {
-            get {
-                return bExecutionState;
+        public ExecutionState State
+        {
+            get { return state; }
+            protected set
+            {
+                if (state == value) return;
+                state = value;
+                StateChangedToFor?.Invoke(state, this);
             }
         }
-        private BehaviorObservable<ExecutionState> bExecutionState = new BehaviorObservable<ExecutionState>();
+        private ExecutionState state;
 
-        #endregion
-
+        public event Action<ExecutionState, IExecutable> StateChangedToFor;
 
         Script<object> script;
 

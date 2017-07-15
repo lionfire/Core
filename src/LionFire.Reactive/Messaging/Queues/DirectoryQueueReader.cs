@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Linq;
 using LionFire.Instantiating;
-using LionFire.Serialization.Contexts;
 
 namespace LionFire.Messaging.Queues
 {
