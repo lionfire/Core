@@ -7,7 +7,7 @@ using System.Collections.Generic;
 namespace LionFire.UI.Workspaces
 {
     // MOVE? Split Caliburn.Micro app stuff into its own DLL?
-    public class Workspace<TTemplate, TChild> : ExecutableBase, ITemplateInstance<TTemplate>, IComposition, IWorkspace
+    public class Workspace<TTemplate, TChild> : InitializableExecutableBase, ITemplateInstance<TTemplate>, IComposition, IWorkspace
         where TTemplate : class, ITemplate
     {
         IEnumerable<object> IComposition.Children => Children;

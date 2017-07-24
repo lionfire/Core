@@ -13,7 +13,7 @@
   <ItemGroup>
     <ProjectReference Include="..\LionFire.Applications.Abstractions\LionFire.Applications.Abstractions.csproj" />
     <ProjectReference Include="..\LionFire.Core\LionFire.Core.csproj" />
-    <ProjectReference Include="..\LionFire.Serialization\LionFire.Serialization\LionFire.Serialization.csproj" />
+    <ProjectReference Include="..\LionFire.Serialization\LionFire.Serialization.csproj" />
   </ItemGroup>
 
   <ItemGroup>

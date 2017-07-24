@@ -12,7 +12,7 @@ namespace LionFire.Execution
         /// </summary>
         /// <param name="e"></param>
         /// <returns></returns>
-        public static bool IsInitailized(this IExecutable e)
+        public static bool IsInitialized(this IExecutable e)
         {
             switch (e.State)
             {

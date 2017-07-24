@@ -9,9 +9,8 @@
     <GenerateAssemblyConfigurationAttribute>false</GenerateAssemblyConfigurationAttribute>
     <GenerateAssemblyCompanyAttribute>false</GenerateAssemblyCompanyAttribute>
     <GenerateAssemblyProductAttribute>false</GenerateAssemblyProductAttribute>
-    <Description>Fluent application builder, inspired by ASP.NET Core but can be used to build any type of application.  
-
-Reference this package in DLLs that can help build applications via the IAppHost interface, and the related LionFire.Applications package in your executable, which contains an AppHost implementation.</Description>
+    <Description>Fluent application builder, inspired by ASP.NET Core but can be used to build any type of application. 
+    Reference this package in DLLs that can help build applications via the IAppHost interface, and the related LionFire.Applications package in your executable, which contains an AppHost implementation.</Description>
     <Copyright>2017 Jared Thirsk</Copyright>
     <PackageLicenseUrl>https://github.com/jaredthirsk/Core/blob/master/LICENSE</PackageLicenseUrl>
     <PackageProjectUrl>http://open.lionfire.software/</PackageProjectUrl>
@@ -21,6 +20,7 @@ Reference this package in DLLs that can help build applications via the IAppHost
     <NeutralLanguage>English (United States)</NeutralLanguage>
     <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
     <Authors>Jared Thirsk</Authors>
+    <PackageReleaseNotes></PackageReleaseNotes>
   </PropertyGroup>
 
   <ItemGroup>

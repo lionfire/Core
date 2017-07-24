@@ -57,9 +57,11 @@ namespace LionFire.DependencyInjection
         public static void ResolveDependencies(this object obj, IServiceProvider serviceProvider = null)
         {
             ValidationContext vc = null;
-            obj.TryResolveDependencies(ref vc, serviceProvider);
+
+            obj.TryResolveDependencies(() => RefParameterHelpers.GetOrCreate<ValidationContext>(ref vc), serviceProvider);
             vc.EnsureValid();
         }
+
         public static bool TryResolveDependencies(this object obj, out UnsatisfiedDependencies unresolvedDependencies, IServiceProvider serviceProvider = null)
         {
             if (serviceProvider == null)
@@ -68,7 +70,7 @@ namespace LionFire.DependencyInjection
             }
             return _ResolveDependencies(obj, out unresolvedDependencies, serviceProvider, true);
         }
-        public static ValidationContext TryResolveDependencies(this object obj, ref ValidationContext validationContext, IServiceProvider serviceProvider = null)
+        public static ValidationContext TryResolveDependencies(this object obj, Func<ValidationContext> validationContext, IServiceProvider serviceProvider = null)
         {
             if (serviceProvider == null)
             {
@@ -79,18 +81,18 @@ namespace LionFire.DependencyInjection
                 serviceProvider = InjectionContext.Current;
             }
 
-            UnsatisfiedDependencies unresolvedDependencies;
-            _ResolveDependencies(obj, out unresolvedDependencies, serviceProvider, true);
+            ValidationContext vc = null;
+            _ResolveDependencies(obj, out UnsatisfiedDependencies unresolvedDependencies, serviceProvider, true);
 
             if (unresolvedDependencies != null && unresolvedDependencies.Count > 0)
             {
-                if (validationContext == null) validationContext = new ValidationContext();
                 foreach (var ud in unresolvedDependencies)
                 {
-                    validationContext.AddMissingDependencyIssue(ud.Description);
+                    if (vc == null) vc = validationContext();
+                    vc.AddMissingDependencyIssue(ud.Description);
                 }
             }
-            return validationContext;
+            return vc;
         }
 
         private static bool _ResolveDependencies(this object obj, out UnsatisfiedDependencies unresolvedDependencies, IServiceProvider serviceProvider, bool resolve)
@@ -171,5 +173,16 @@ namespace LionFire.DependencyInjection
 
         #endregion
 
+    }
+}
+namespace LionFire
+{
+    public static class RefParameterHelpers
+    {
+        public static T GetOrCreate<T>(ref T obj) where T : class, new()
+        {
+            if (obj == null) obj = new T();
+            return obj;
+        }
     }
 }

@@ -53,6 +53,7 @@ namespace LionFire.Collections
         #region Events
 
         public event Action<TKey, TValue> Removed;
+        [Obsolete("WARNING: NOT IMPLEMENTED TODO")]
         public event Action<TKey, TValue> Added;
 
         #endregion
