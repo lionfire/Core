@@ -4,10 +4,10 @@ using System.Text;
 
 namespace LionFire.StateMachines
 {
-    public interface IStateMachineState<TState, TTransition>
+    public interface IStateMachineState<TState, TTransition,TOwner>
     {
         TState CurrentState { get; }
-        StateChange<TState,TTransition> LastTransition { get; }
+        StateChange<TState,TTransition,TOwner> LastTransition { get; }
     }
 
 }

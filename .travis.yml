@@ -1,0 +1,7 @@
+language: csharp
+mono: none
+dotnet: 1.0.4
+dist: xenial
+script:
+ - dotnet restore
+ 

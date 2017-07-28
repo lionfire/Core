@@ -7,8 +7,8 @@ namespace LionFire.StateMachines
         //StateChange LastStateChange { get; set; }
     }
     // Basis for undo/redo?
-    public interface IRemembersStateTransitions<TState,TTransition> : IRemembersLastStateTransition
+    public interface IRemembersStateTransitions<TState,TTransition,TOwner> : IRemembersLastStateTransition
     {
-        Queue<StateChange<TState, TTransition>> History { get; }
+        Queue<StateChange<TState, TTransition,TOwner>> History { get; }
     }
 }

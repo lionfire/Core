@@ -1,0 +1,20 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netcoreapp1.0</TargetFramework>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <DotNetCliToolReference Include="dotnet-codegen" Version="0.4.6" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="CodeGeneration.Roslyn.BuildTime" Version="0.4.11" />
+    <PackageReference Include="System.CommandLine" Version="0.1.0-e170725-1" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\LionFire.StateMachines.Generation\LionFire.StateMachines.Generation.csproj" />
+    <ProjectReference Include="..\LionFire.StateMachines\LionFire.StateMachines.csproj" />
+  </ItemGroup>
+</Project>

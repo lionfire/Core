@@ -1,0 +1,52 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 15
+VisualStudioVersion = 15.0.26430.14
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "LionFire.StateMachines", "..\src\LionFire.StateMachines\LionFire.StateMachines.csproj", "{DC128BD5-0722-4929-B28B-21E03029E013}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "LionFire.StateMachines.Generation", "..\src\LionFire.StateMachines.Generation\LionFire.StateMachines.Generation.csproj", "{CDF4C9A7-4DA6-4549-A7F3-422FEB2FC5F3}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "LionFire.StateMachines.Tests", "..\src\LionFire.StateMachines.Tests\LionFire.StateMachines.Tests.csproj", "{272C9B29-20F5-4AEC-A4FE-14AFF4F46126}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "LionFire.StateMachines.Tests.Library", "..\src\LionFire.StateMachines.Tests.Library\LionFire.StateMachines.Tests.Library.csproj", "{0FCD0AA2-5839-4046-A450-B7EF0DA3EEBF}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LionFire.StateMachines.Tests.NetCore", "..\src\LionFire.StateMachines.Tests.NetCore\LionFire.StateMachines.Tests.NetCore.csproj", "{D081ED17-5F1E-4AB8-A3EE-36BC9651A396}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LionFire.StateMachines.Tests.NetFramework", "..\src\LionFire.StateMachines.Tests.NetFramework\LionFire.StateMachines.Tests.NetFramework.csproj", "{CF153000-1913-4BE6-9B65-E4B5D05CCAF6}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{DC128BD5-0722-4929-B28B-21E03029E013}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{DC128BD5-0722-4929-B28B-21E03029E013}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{DC128BD5-0722-4929-B28B-21E03029E013}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{DC128BD5-0722-4929-B28B-21E03029E013}.Release|Any CPU.Build.0 = Release|Any CPU
+		{CDF4C9A7-4DA6-4549-A7F3-422FEB2FC5F3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{CDF4C9A7-4DA6-4549-A7F3-422FEB2FC5F3}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{CDF4C9A7-4DA6-4549-A7F3-422FEB2FC5F3}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{CDF4C9A7-4DA6-4549-A7F3-422FEB2FC5F3}.Release|Any CPU.Build.0 = Release|Any CPU
+		{272C9B29-20F5-4AEC-A4FE-14AFF4F46126}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{272C9B29-20F5-4AEC-A4FE-14AFF4F46126}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{272C9B29-20F5-4AEC-A4FE-14AFF4F46126}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{272C9B29-20F5-4AEC-A4FE-14AFF4F46126}.Release|Any CPU.Build.0 = Release|Any CPU
+		{0FCD0AA2-5839-4046-A450-B7EF0DA3EEBF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0FCD0AA2-5839-4046-A450-B7EF0DA3EEBF}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0FCD0AA2-5839-4046-A450-B7EF0DA3EEBF}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0FCD0AA2-5839-4046-A450-B7EF0DA3EEBF}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D081ED17-5F1E-4AB8-A3EE-36BC9651A396}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D081ED17-5F1E-4AB8-A3EE-36BC9651A396}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D081ED17-5F1E-4AB8-A3EE-36BC9651A396}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D081ED17-5F1E-4AB8-A3EE-36BC9651A396}.Release|Any CPU.Build.0 = Release|Any CPU
+		{CF153000-1913-4BE6-9B65-E4B5D05CCAF6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{CF153000-1913-4BE6-9B65-E4B5D05CCAF6}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{CF153000-1913-4BE6-9B65-E4B5D05CCAF6}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{CF153000-1913-4BE6-9B65-E4B5D05CCAF6}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal
