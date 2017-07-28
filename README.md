@@ -1,21 +1,15 @@
 
-# Build Status
-
-.NET Core on Ubuntu 14.04: [![Build Status](https://travis-ci.org/jaredthirsk/Core.svg?branch=master)](https://travis-ci.org/jaredthirsk/Core)
-
-
-<!--
-Markdown | Less | Pretty
---- | --- | ---
-*Still* | `renders` | **nicely**
-1 | 2 | 3
--->
+Target    | SDK Version | OS           | Status
+--------- | ----------- | ---          | ---
+.NET Core | 1.0.4       | Ubuntu 14.04 | [![Build Status](https://travis-ci.org/jaredthirsk/Core.svg?branch=master)](https://travis-ci.org/jaredthirsk/Core)
 
 
 # LionFire.Core
-Core utilities and frameworks for other LionFire packages
 
-Overview and docs at https://lionfire.readthedocs.io
+Ambitious set of mini-frameworks being developed for other LionFire packages
+
+Docs: https://lionfire.readthedocs.io
+Home: https://open.lionfire.software
 
 # ROADMAP
 
