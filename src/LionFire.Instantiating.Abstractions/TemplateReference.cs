@@ -17,7 +17,7 @@ namespace LionFire.Instantiating
         }
         public ITemplate Template { get; set; }
 
-        [JsonIgnore] // TODO - use custom attribute from LionFire.Runtime.Extensions
+        [JsonIgnore] // TODO - use custom attribute from LionFire.Core
         public Type Type { get; set; }
         public string TypeName { get; set; }
         public string Assembly { get; set; }

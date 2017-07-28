@@ -7,7 +7,6 @@
   <ItemGroup>
     <PackageReference Include="CodeGeneration.Roslyn" Version="0.4.11" />
     <PackageReference Include="CodeGeneration.Roslyn.BuildTime" Version="0.4.11" />
-    <PackageReference Include="System.CommandLine" Version="0.1.0-e170725-1" />
     <DotNetCliToolReference Include="dotnet-codegen" Version="0.4.6" />
   </ItemGroup>
 

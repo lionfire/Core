@@ -5,14 +5,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
+
 namespace LionFire.ObjectBus
 {
-    public enum KeyProviderMode
-    {
-        Unspecified = 0,
-        Increment,
-        Guid,
-    }
 
     //public static class VobMetaData
     //{
@@ -26,7 +21,7 @@ namespace LionFire.ObjectBus
     //}
 
 
-    public class VobKeyProvider
+    public class VobKeyProvider // MOVE to vob namespace?
     {
         public static VobHandle<IVobKeyProvider> GetOrCreateDefault(Vob vob)
         {

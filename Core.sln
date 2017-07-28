@@ -5,8 +5,10 @@ VisualStudioVersion = 15.0.26430.14
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{A48456D5-DD7D-4E1C-9307-4996EA3D2CA8}"
 	ProjectSection(SolutionItems) = preProject
+		.travis.yml = .travis.yml
 		appveyor.yml = appveyor.yml
 		global.json = global.json
+		README.md = README.md
 	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Standard", "Standard", "{418497D4-D25E-4254-9DB1-E5F7EBE24DA0}"
@@ -83,7 +85,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "LionFire.Core", "src\LionFi
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "LionFire.Core.Tests", "src\LionFire.Core.Tests\LionFire.Core.Tests.csproj", "{AF541BD8-A794-4990-A8CE-F3ABC2161210}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LionFire.Misc", "src\LionFire.Misc\LionFire.Misc.csproj", "{B7ED0A85-67DF-4E27-90FF-4FE271EAEA69}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "LionFire.Misc", "src\LionFire.Misc\LionFire.Misc.csproj", "{B7ED0A85-67DF-4E27-90FF-4FE271EAEA69}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LionFire.Plugins", "src\LionFire.Plugins\LionFire.Plugins.csproj", "{DC6FCD30-6D89-48D3-B953-9F4E9DD78D61}"
 EndProject
@@ -91,9 +93,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "LionFire.StateMachines", "s
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "LionFire.StateMachines.Tests", "src\LionFire.StateMachines.Tests\LionFire.StateMachines.Tests.csproj", "{F4550AB8-D110-44D8-993F-8BC48182CF03}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LionFire.StateMachines.Generation", "src\LionFire.StateMachines.Generation\LionFire.StateMachines.Generation.csproj", "{DA2FAB04-C4EF-47BB-ABAF-41757735A3FD}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "LionFire.StateMachines.Generation", "src\LionFire.StateMachines.Generation\LionFire.StateMachines.Generation.csproj", "{DA2FAB04-C4EF-47BB-ABAF-41757735A3FD}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LionFire.StateMachines.Tests.Library", "Src\LionFire.StateMachines.Tests.Library\LionFire.StateMachines.Tests.Library.csproj", "{55A49D46-DB2F-40BD-97C2-C759138E5A44}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "LionFire.Execution.Program", "src\LionFire.Execution.Program\LionFire.Execution.Program.csproj", "{BC904049-FE78-4F9A-9CFD-400F086F5658}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -233,10 +235,10 @@ Global
 		{DA2FAB04-C4EF-47BB-ABAF-41757735A3FD}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{DA2FAB04-C4EF-47BB-ABAF-41757735A3FD}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{DA2FAB04-C4EF-47BB-ABAF-41757735A3FD}.Release|Any CPU.Build.0 = Release|Any CPU
-		{55A49D46-DB2F-40BD-97C2-C759138E5A44}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{55A49D46-DB2F-40BD-97C2-C759138E5A44}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{55A49D46-DB2F-40BD-97C2-C759138E5A44}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{55A49D46-DB2F-40BD-97C2-C759138E5A44}.Release|Any CPU.Build.0 = Release|Any CPU
+		{BC904049-FE78-4F9A-9CFD-400F086F5658}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{BC904049-FE78-4F9A-9CFD-400F086F5658}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{BC904049-FE78-4F9A-9CFD-400F086F5658}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{BC904049-FE78-4F9A-9CFD-400F086F5658}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -275,6 +277,6 @@ Global
 		{99C0D907-5BFB-4081-A290-83C191E1AE93} = {418497D4-D25E-4254-9DB1-E5F7EBE24DA0}
 		{F4550AB8-D110-44D8-993F-8BC48182CF03} = {418497D4-D25E-4254-9DB1-E5F7EBE24DA0}
 		{DA2FAB04-C4EF-47BB-ABAF-41757735A3FD} = {418497D4-D25E-4254-9DB1-E5F7EBE24DA0}
-		{55A49D46-DB2F-40BD-97C2-C759138E5A44} = {418497D4-D25E-4254-9DB1-E5F7EBE24DA0}
+		{BC904049-FE78-4F9A-9CFD-400F086F5658} = {BB7CDC1F-3D38-4656-97A9-132B25AD72D4}
 	EndGlobalSection
 EndGlobal

@@ -6,12 +6,16 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="System.Reflection.TypeExtensions" Version="4.3.0" />
+    <Compile Remove="StateMachines\States\**" />
+    <Compile Remove="States\**" />
+    <EmbeddedResource Remove="StateMachines\States\**" />
+    <EmbeddedResource Remove="States\**" />
+    <None Remove="StateMachines\States\**" />
+    <None Remove="States\**" />
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="StateMachines\States\" />
-    <Folder Include="States\StateMachines\" />
+    <PackageReference Include="System.Reflection.TypeExtensions" Version="4.3.0" />
   </ItemGroup>
 
 </Project>

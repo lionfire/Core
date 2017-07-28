@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace LionFire.ObjectBus
 {
-    public static class VobKeyProviderExtensions
+    public static class VobKeyProviderExtensions // MOVE to vob namespace?
     {
         public static bool WarnOnNewKeyExists = true;
         public static int MaxGenerateKeyAttempts = 10;
