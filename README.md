@@ -3,6 +3,15 @@
 
 .NET Core on Ubuntu 14.04: [![Build Status](https://travis-ci.org/jaredthirsk/Core.svg?branch=master)](https://travis-ci.org/jaredthirsk/Core)
 
+
+<!--
+Markdown | Less | Pretty
+--- | --- | ---
+*Still* | `renders` | **nicely**
+1 | 2 | 3
+-->
+
+
 # LionFire.Core
 Core utilities and frameworks for other LionFire packages
 

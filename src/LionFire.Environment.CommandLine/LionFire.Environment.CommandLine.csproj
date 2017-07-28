@@ -2,7 +2,7 @@
 
   <PropertyGroup>
     <VersionPrefix>0.1.0</VersionPrefix>
-    <TargetFrameworks>netstandard1.5;net462</TargetFrameworks>
+    <TargetFrameworks>netstandard1.5</TargetFrameworks>
     <AssemblyName>LionFire.Environment.CommandLine</AssemblyName>
     <PackageId>LionFire.Environment.CommandLine</PackageId>
     <NetStandardImplicitPackageVersion>1.6.1</NetStandardImplicitPackageVersion>
