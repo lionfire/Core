@@ -1,0 +1,93 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Solution>
+  <Profile Name="All Working" IsDefault="false" SingleStartProjectGuid="">
+    <Include>
+      <Project Guid="7ec019ec-9a04-452d-a360-13b5d25e0ca0" />
+      <Project Guid="b3a9bca9-2ee5-46a8-b3ee-0738bb68cdaf" />
+      <Project Guid="4c627e72-90d8-45a0-b9b7-6c0fbe0a3bb2" />
+      <Project Guid="8f4b0b44-5a94-456f-bbce-b6dfd81e86f3" />
+      <Project Guid="555ffaf1-8efd-4243-9599-9f4ee75635be" />
+      <Project Guid="dc6fcd30-6d89-48d3-b953-9f4e9dd78d61" />
+      <Project Guid="5ed8a64d-f11b-4f82-8fa8-b634b0772e6f" />
+      <Project Guid="233ba497-988a-41a2-b4c9-b09c4de2067c" />
+      <Project Guid="df296a2b-eb88-47de-b22a-41b18dddace4" />
+      <Project Guid="0e485681-0249-49f3-b08c-e68c29e25d7c" />
+      <Project Guid="421e9a19-d78a-4767-9ff0-f2bb5752b5af" />
+      <Project Guid="7c986424-f950-41ce-aa86-07fdff85e361" />
+      <Project Guid="2638f46f-0e74-4095-a955-fc171211444d" />
+      <Project Guid="a443488c-8097-4de5-83b0-272089c47d61" />
+      <Project Guid="5bea636e-b857-41a0-b3a4-170fd5f4b7ad" />
+      <Project Guid="81140c2b-fbf7-448c-be6c-db7133eb7f3d" />
+      <Project Guid="bc904049-fe78-4f9a-9cfd-400f086f5658" />
+      <Project Guid="90143a38-8f1b-4eef-8308-d4b775a44e66" />
+      <Project Guid="24b8668e-8e46-47f9-a1bf-a7bfee9e40aa" />
+      <Project Guid="06c01e0e-db1d-40f0-b67e-e0c9353791f1" />
+      <Project Guid="42d8890f-edc1-453f-b1ff-ced7862bdc8e" />
+      <Project Guid="26b38ed5-7ef6-4149-91bb-a5cf1aaf7c73" />
+      <Project Guid="5492c9ac-0bd9-4745-b90c-6399e66fe966" />
+      <Project Guid="60fa5795-357c-4bd3-ae42-792735285b8b" />
+      <Project Guid="b624da7e-b283-4b56-89e5-dab4627afb71" />
+      <Project Guid="d3a605c2-e22f-424e-a14b-86061ab72ae0" />
+      <Project Guid="43fc315b-303a-4d3f-83ab-490e6ecc9834" />
+      <Project Guid="af541bd8-a794-4990-a8ce-f3abc2161210" />
+      <Project Guid="f5dd631d-3248-4854-8cf5-0642b6a51d93" />
+      <Project Guid="7ba9647e-fd29-455a-8857-57276e9a83f9" />
+      <Project Guid="b7ed0a85-67df-4e27-90ff-4fe271eaea69" />
+      <Project Guid="99c0d907-5bfb-4081-a290-83c191e1ae93" />
+    </Include>
+  </Profile>
+  <Profile Name="Minimal" IsDefault="false" SingleStartProjectGuid="">
+    <Include>
+      <Project Guid="b3a9bca9-2ee5-46a8-b3ee-0738bb68cdaf" />
+      <Project Guid="233ba497-988a-41a2-b4c9-b09c4de2067c" />
+      <Project Guid="df296a2b-eb88-47de-b22a-41b18dddace4" />
+      <Project Guid="421e9a19-d78a-4767-9ff0-f2bb5752b5af" />
+      <Project Guid="a443488c-8097-4de5-83b0-272089c47d61" />
+      <Project Guid="60fa5795-357c-4bd3-ae42-792735285b8b" />
+      <Project Guid="43fc315b-303a-4d3f-83ab-490e6ecc9834" />
+    </Include>
+  </Profile>
+  <Profile Name="All" IsDefault="false" SingleStartProjectGuid="">
+    <Include>
+      <Project Guid="7ec019ec-9a04-452d-a360-13b5d25e0ca0" />
+      <Project Guid="b3a9bca9-2ee5-46a8-b3ee-0738bb68cdaf" />
+      <Project Guid="4c627e72-90d8-45a0-b9b7-6c0fbe0a3bb2" />
+      <Project Guid="8f4b0b44-5a94-456f-bbce-b6dfd81e86f3" />
+      <Project Guid="555ffaf1-8efd-4243-9599-9f4ee75635be" />
+      <Project Guid="dc6fcd30-6d89-48d3-b953-9f4e9dd78d61" />
+      <Project Guid="5ed8a64d-f11b-4f82-8fa8-b634b0772e6f" />
+      <Project Guid="233ba497-988a-41a2-b4c9-b09c4de2067c" />
+      <Project Guid="b95556cf-f25b-47a0-b67d-251750dc814c" />
+      <Project Guid="df296a2b-eb88-47de-b22a-41b18dddace4" />
+      <Project Guid="b66e2433-6552-4061-b0a0-4600f0966a3e" />
+      <Project Guid="0e485681-0249-49f3-b08c-e68c29e25d7c" />
+      <Project Guid="421e9a19-d78a-4767-9ff0-f2bb5752b5af" />
+      <Project Guid="7c986424-f950-41ce-aa86-07fdff85e361" />
+      <Project Guid="2e8c620c-378a-4f81-a004-489b405c3d4c" />
+      <Project Guid="fa32bd92-3cdc-47d9-b8d4-d70e3b7188d2" />
+      <Project Guid="2638f46f-0e74-4095-a955-fc171211444d" />
+      <Project Guid="a443488c-8097-4de5-83b0-272089c47d61" />
+      <Project Guid="5bea636e-b857-41a0-b3a4-170fd5f4b7ad" />
+      <Project Guid="81140c2b-fbf7-448c-be6c-db7133eb7f3d" />
+      <Project Guid="bc904049-fe78-4f9a-9cfd-400f086f5658" />
+      <Project Guid="90143a38-8f1b-4eef-8308-d4b775a44e66" />
+      <Project Guid="24b8668e-8e46-47f9-a1bf-a7bfee9e40aa" />
+      <Project Guid="06c01e0e-db1d-40f0-b67e-e0c9353791f1" />
+      <Project Guid="42d8890f-edc1-453f-b1ff-ced7862bdc8e" />
+      <Project Guid="26b38ed5-7ef6-4149-91bb-a5cf1aaf7c73" />
+      <Project Guid="5492c9ac-0bd9-4745-b90c-6399e66fe966" />
+      <Project Guid="60fa5795-357c-4bd3-ae42-792735285b8b" />
+      <Project Guid="c049973e-8763-4480-bcfe-2990f8a0c1ce" />
+      <Project Guid="b624da7e-b283-4b56-89e5-dab4627afb71" />
+      <Project Guid="d3a605c2-e22f-424e-a14b-86061ab72ae0" />
+      <Project Guid="43fc315b-303a-4d3f-83ab-490e6ecc9834" />
+      <Project Guid="af541bd8-a794-4990-a8ce-f3abc2161210" />
+      <Project Guid="f5dd631d-3248-4854-8cf5-0642b6a51d93" />
+      <Project Guid="7ba9647e-fd29-455a-8857-57276e9a83f9" />
+      <Project Guid="b7ed0a85-67df-4e27-90ff-4fe271eaea69" />
+      <Project Guid="99c0d907-5bfb-4081-a290-83c191e1ae93" />
+      <Project Guid="da2fab04-c4ef-47bb-abaf-41757735a3fd" />
+      <Project Guid="f4550ab8-d110-44d8-993f-8bc48182cf03" />
+    </Include>
+  </Profile>
+</Solution>
