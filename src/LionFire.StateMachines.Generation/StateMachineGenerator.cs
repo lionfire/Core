@@ -15,20 +15,20 @@ namespace LionFire.StateMachines.Generation
 {
     public class StateMachineGenerator : ICodeGenerator
     {
-
-        //private readonly string suffix;
-        //AttributeData attributeData;
+        AttributeData attributeData;
+        private StateMachineOptions stateMachineOptions;
 
         public StateMachineGenerator(AttributeData attributeData)
         {
             Requires.NotNull(attributeData, nameof(attributeData));
-            //this.attributeData = attributeData;
-            //this.suffix = (string)attributeData.ConstructorArguments[0].Value;
+            this.attributeData = attributeData;
+            this.stateMachineOptions = (StateMachineOptions)attributeData.ConstructorArguments[0].Value;
         }
 
         public Task<SyntaxList<MemberDeclarationSyntax>> GenerateAsync(TransformationContext context, IProgress<Diagnostic> progress, CancellationToken cancellationToken)
         {
-            //attributeData.
+            if (this.stateMachineOptions.HasFlag(StateMachineOptions.NoGeneration)) { return Task.FromResult(new SyntaxList<MemberDeclarationSyntax>()); }
+
             if (context.ProcessingMember == null) throw new ArgumentNullException("context.ProcessingMember");
             var applyToClass = (ClassDeclarationSyntax)context.ProcessingMember;
             if (context.SemanticModel == null) throw new Exception("no SemanticModel");

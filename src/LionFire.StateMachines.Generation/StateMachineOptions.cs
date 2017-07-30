@@ -13,5 +13,7 @@
         /// Include all transitions from model, even if there are no handler methods and they are not mentioned in the transitionsAllowed parameter
         /// </summary>
         NoTransitionPrune = 1 << 1,
+
+        NoGeneration = 1 << 2,
     }
 }
