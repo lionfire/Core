@@ -16,6 +16,10 @@ public class DuplicateWithSuffixGenerator : ICodeGenerator
     {
         Requires.NotNull(attributeData, nameof(attributeData));
 
+        if (attributeData.ConstructorArguments[0].Value?.GetType() != typeof(string))
+        {
+            throw new Exception("first param must be a string, but got: " + attributeData.ConstructorArguments[0].Value + " of type " + attributeData.ConstructorArguments[0].Value?.GetType());
+        }
         this.suffix = (string)attributeData.ConstructorArguments[0].Value;
     }
 

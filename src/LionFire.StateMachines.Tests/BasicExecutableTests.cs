@@ -14,7 +14,7 @@ namespace LionFire.StateMachines.Tests
         public void NormalExecutableStateFlow()
         {
             var te = new ManualExecutable();
-            var teA= new ManualExecutableA();
+            //var teA= new ManualExecutableA();
             Assert.Equal(te.StateMachine.CurrentState, ExecutionState.Uninitialized);
             te.Initialize();
             Assert.Equal(te.LastMessage.Pop(), "OnReady");

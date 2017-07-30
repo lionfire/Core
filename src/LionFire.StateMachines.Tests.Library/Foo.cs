@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace LionFire.StateMachines.Tests.NetFramework
 {
-    [DuplicateWithSuffix("X")]
+    [DuplicateWithSuffix("A")]
     public class Foo
     {
 
