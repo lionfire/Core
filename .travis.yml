@@ -3,6 +3,7 @@ mono: none
 dotnet: 1.0.4
 dist: trusty
 script:
+ - cs src
  - dotnet restore
  - dotnet build -c R-Core-CI
  
