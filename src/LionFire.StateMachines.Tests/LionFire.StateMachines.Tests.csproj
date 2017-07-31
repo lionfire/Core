@@ -1,6 +1,6 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
-  <PropertyGroup>    
+  <PropertyGroup>
     <TargetFramework>netcoreapp1.1</TargetFramework>
   </PropertyGroup>
 
@@ -11,10 +11,8 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\LionFire.StateMachines.Generation\LionFire.StateMachines.Generation.csproj" />
-    <ProjectReference Include="..\LionFire.StateMachines.Tests.Library\LionFire.StateMachines.Tests.Library.csproj" />
+    <ProjectReference Include="..\LionFire.StateMachines.Tests.Model\LionFire.StateMachines.Tests.Model.csproj" />
     <ProjectReference Include="..\LionFire.StateMachines\LionFire.StateMachines.csproj" />
-   <DotNetCliToolReference Include="dotnet-codegen" Version="0.4.11" />
   </ItemGroup>
 
   <ItemGroup>

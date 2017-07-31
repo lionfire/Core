@@ -6,6 +6,8 @@ using System.Text;
 
 namespace LionFire.StateMachines
 {
+    // TODO: Make generation attribute separate
+    // Todo: Change StateMachineAttribute to StateTransitions(Allowed = , Disallowed = )]
 
     [AttributeUsage(AttributeTargets.Class, AllowMultiple = false, Inherited = true)]
     [CodeGenerationAttribute(typeof(StateMachineGenerator))]

@@ -3,6 +3,7 @@
   <PropertyGroup>
     <TargetFramework>netstandard1.5</TargetFramework>
     <RootNamespace>LionFire</RootNamespace>
+    <GeneratePackageOnBuild>False</GeneratePackageOnBuild>
   </PropertyGroup>
 
   <ItemGroup>

@@ -5,7 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using ES = LionFire.Execution.ExecutionState;
+using ES = LionFire.Execution.TState;
 using ET = LionFire.Execution.ExecutionTransition;
 
 // TODO: Once this gets fleshed out, move to Core? Or create shared library?

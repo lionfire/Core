@@ -7,38 +7,38 @@ namespace LionFire.Execution
     [Flags]
     public enum ExecutionTransition
     {
-        [Transition(ExecutionState.Uninitialized, ExecutionState.Ready)]
+        [Transition(TState.Uninitialized, TState.Ready)]
         Initialize = 1 << 1,
 
-        [Transition(ExecutionState.Uninitialized, ExecutionState.Finished)]
+        [Transition(TState.Uninitialized, TState.Finished)]
         Invalidate = 1 << 2,
 
-        [Transition(ExecutionState.Ready, ExecutionState.Uninitialized)]
+        [Transition(TState.Ready, TState.Uninitialized)]
         Deinitialize = 1 << 3,
 
-        [Transition(ExecutionState.Ready, ExecutionState.Running)]
+        [Transition(TState.Ready, TState.Running)]
         Start = 1 << 4,
 
-        [Transition(ExecutionState.Ready, ExecutionState.Finished)]
+        [Transition(TState.Ready, TState.Finished)]
         Skip = 1 << 5,
 
-        [Transition(ExecutionState.Ready, ExecutionState.Finished)]
+        [Transition(TState.Ready, TState.Finished)]
         Noop = 1 << 6,
 
-        [Transition(ExecutionState.Running, ExecutionState.Ready)]
+        [Transition(TState.Running, TState.Ready)]
         Undo = 1 << 7,
-        [Transition(ExecutionState.Running, ExecutionState.Finished)]
+        [Transition(TState.Running, TState.Finished)]
         Complete = 1 << 8,
-        [Transition(ExecutionState.Running, ExecutionState.Finished)]
+        [Transition(TState.Running, TState.Finished)]
         Terminate = 1 << 9,
-        [Transition(ExecutionState.Running, ExecutionState.Finished)]
+        [Transition(TState.Running, TState.Finished)]
         Fail = 1 << 10,
 
-        [Transition(ExecutionState.Finished, ExecutionState.Disposed)]
+        [Transition(TState.Finished, TState.Disposed)]
         CleanUp = 1 << 12,
-        [Transition(ExecutionState.Finished, ExecutionState.Ready)]
+        [Transition(TState.Finished, TState.Ready)]
         Reset = 1 << 13,
-        [Transition(ExecutionState.Finished, ExecutionState.Uninitialized)]
+        [Transition(TState.Finished, TState.Uninitialized)]
         Reuse = 1 << 14,
 
         Cancel = Deinitialize | Undo,

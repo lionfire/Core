@@ -7,7 +7,7 @@ namespace LionFire.StateMachines.Tests
     //public partial class GeneratedExecutable
     //{
 
-    //     //public void Initialize() => StateMachine. ChangeState(ExecutionTransition.Initialize);
+    //     //public void Initialize() => StateMachine.ChangeState(ExecutionTransition.Initialize);
     //    public void Initialize() => StateMachine.ChangeState(Transitions.Initialize);
     //    public void Start() => StateMachine.ChangeState(Transitions.Start);
     //    //public void Complete() => StateMachine.ChangeState(ExecutionTransition.Complete);
@@ -56,30 +56,38 @@ namespace LionFire.StateMachines.Tests
     //    }
     //    public StateMachineState<ExecutionState, ExecutionTransition, GeneratedExecutable> StateMachine => stateMachine;
     //    private StateMachineState<ExecutionState, ExecutionTransition, GeneratedExecutable> stateMachine;
-    //    private void InitStateMachine()
-    //    {
-    //        stateMachine = StateMachine<ExecutionState, ExecutionTransition>.CreateState(this);
-    //    }
     //}
 
-        [StateMachine(StateMachineOptions.StateMethods
-        //, ExecutionTransition.Initialize | ExecutionTransition.Start | ExecutionTransition.Finish | ExecutionTransition.CleanUp
-        )]
+
+
+    [StateMachine(StateMachineOptions.StateMethods
+    //, ExecutionTransition.Initialize | ExecutionTransition.Start | ExecutionTransition.Finish | ExecutionTransition.CleanUp
+    )]
     public partial class GeneratedExecutable
     {
 
+        #region To generate
+
+        private void InitStateMachine()
+        {
+            stateMachine = StateMachine<TState, ExecutionTransition>.CreateState(this);
+        }
+
+        StateMachineState<TState, ExecutionTransition,GeneratedExecutable> stateMachine;
+
+        #endregion
 
         public GeneratedExecutable()
         {
-            //InitStateMachine();
-            //GeneratedExecutableA a;
+            InitStateMachine(); // To generate?
+            Action initMethod = Initialize;
         }
 
         public void AfterUninitialized()
         {
             Log("AfterUninitialized");
         }
-        public void OnInitializing()
+        public void OnInitialize()
         {
             Log("OnInitializing");
         }
