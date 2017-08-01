@@ -4,7 +4,7 @@ using System;
 namespace LionFire.Execution
 {
     [Flags]
-    public enum ExecutionState : int
+    public enum ExecutionState2 : int
     {
         [Start]
         Uninitialized = 1 << 0,

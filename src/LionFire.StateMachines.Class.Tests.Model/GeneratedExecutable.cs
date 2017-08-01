@@ -1,67 +1,12 @@
 using System.Collections.Generic;
 using System;
 using LionFire.Execution;
+using TS = LionFire.Execution.ExecutionState2;
 
 namespace LionFire.StateMachines.Class.Tests
 {
-    //public partial class GeneratedExecutable
-    //{
-
-    //     //public void Initialize() => StateMachine.ChangeState(ExecutionTransition.Initialize);
-    //    public void Initialize() => StateMachine.ChangeState(Transitions.Initialize);
-    //    public void Start() => StateMachine.ChangeState(Transitions.Start);
-    //    //public void Complete() => StateMachine.ChangeState(ExecutionTransition.Complete);
-    //    //public void Terminate() => StateMachine.ChangeState(ExecutionTransition.Terminate);
-    //    //public void Dispose() => StateMachine.ChangeState(ExecutionTransition.Dispose);
-
-    //    public static class Transitions
-    //    {
-    //        public static StateTransitionTypeBinding<ExecutionState, ExecutionTransition, GeneratedExecutable> Initialize = new StateTransitionTypeBinding<ExecutionState, ExecutionTransition, GeneratedExecutable>(ExecutionTransition.Initialize)
-    //        {
-    //            Info = StateMachine<ExecutionState, ExecutionTransition>.GetTransitionInfo(ExecutionTransition.Initialize),
-    //            OnTransitioningMethod = (owner) => owner.OnInitializing(),
-    //            From = States.Uninitialized,
-    //            To = States.Ready,
-    //        };
-    //        public static StateTransitionTypeBinding<ExecutionState, ExecutionTransition, GeneratedExecutable> Start = new StateTransitionTypeBinding<ExecutionState, ExecutionTransition, GeneratedExecutable>(ExecutionTransition.Initialize)
-    //        {
-    //            Info = StateMachine<ExecutionState, ExecutionTransition>.GetTransitionInfo(ExecutionTransition.Start),
-    //            OnTransitioningMethod = (owner) => owner.OnStarting(),
-    //            From = States.Ready,
-    //            To = States.Running,
-    //        };
-    //    }
-    //    public static class States
-    //    {
-    //        public static StateTypeBinding<ExecutionState, ExecutionTransition, GeneratedExecutable> Uninitialized = new StateTypeBinding<ExecutionState, ExecutionTransition, GeneratedExecutable>(ExecutionState.Uninitialized)
-    //        {
-    //            //EnteringStateAction = owner => owner.OnReady(),
-    //            OnLeaving = owner => owner.AfterUninitialized(),
-    //        };
-    //        public static StateTypeBinding<ExecutionState, ExecutionTransition, GeneratedExecutable> Ready = new StateTypeBinding<ExecutionState, ExecutionTransition, GeneratedExecutable>(ExecutionState.Ready)
-    //        {
-    //            OnEntering = owner => owner.OnReady(),
-    //            OnLeaving = owner => owner.AfterReady(),
-    //        };
-    //        public static StateTypeBinding<ExecutionState, ExecutionTransition, GeneratedExecutable> Running = new StateTypeBinding<ExecutionState, ExecutionTransition, GeneratedExecutable>(ExecutionState.Running)
-    //        {
-    //            //EnteringStateAction = owner => owner.OnReady(),
-    //            //LeavingStateAction = owner => owner.AfterReady(),
-    //        };
-    //        public static StateTypeBinding<ExecutionState, ExecutionTransition, GeneratedExecutable> Finished = new StateTypeBinding<ExecutionState, ExecutionTransition, GeneratedExecutable>(ExecutionState.Finished)
-    //        {
-    //            OnEntering = owner => owner.OnFinished(),
-    //            //LeavingStateAction = owner => owner.AfterReady(),
-    //        };
-    //    }
-    //    public StateMachineState<ExecutionState, ExecutionTransition, GeneratedExecutable> StateMachine => stateMachine;
-    //    private StateMachineState<ExecutionState, ExecutionTransition, GeneratedExecutable> stateMachine;
-    //}
-
-
-
-    //[StateMachine(StateMachineStatePropertyName ="sm")]
-    [StateMachine(typeof(ExecutionState), typeof(ExecutionTransition), StateMachineOptions.None, IncludeStates = ExecutionState.Disposed)]
+    [StateMachine(typeof(TS), typeof(ExecutionTransition), StateMachineOptions.None, IncludeStates = TS.Disposed)]
+    //StateMachineStatePropertyName ="sm",
     //, ExecutionTransition.Initialize | ExecutionTransition.Start | ExecutionTransition.Finish | ExecutionTransition.CleanUp
     public partial class GeneratedExecutable
     {
@@ -70,11 +15,11 @@ namespace LionFire.StateMachines.Class.Tests
 
         private void InitStateMachine()
         {
-            stateMachine = StateMachine<ExecutionState, ExecutionTransition>.CreateState(this);
+            stateMachine = StateMachine<TS, ExecutionTransition>.CreateState(this);
         }
 
-        public StateMachineState<ExecutionState, ExecutionTransition, GeneratedExecutable> StateMachine => stateMachine;
-        StateMachineState<ExecutionState, ExecutionTransition,GeneratedExecutable> stateMachine;
+        public StateMachineState<TS, ExecutionTransition, GeneratedExecutable> StateMachine => stateMachine;
+        StateMachineState<TS, ExecutionTransition,GeneratedExecutable> stateMachine;
 
         #endregion
 
@@ -118,4 +63,51 @@ namespace LionFire.StateMachines.Class.Tests
 
         private void Log(string msg) => LastMessage.Push(msg);
     }
+
+    //public partial class GeneratedExecutable
+    //{
+    //    public static class Transitions
+    //    {
+    //        public static StateTransitionTypeBinding<TS, ExecutionTransition, GeneratedExecutable> Initialize = new StateTransitionTypeBinding<TS, ExecutionTransition, GeneratedExecutable>(ExecutionTransition.Initialize)
+    //        {
+    //            Info = StateMachine<TS, ExecutionTransition>.GetTransitionInfo(ExecutionTransition.Initialize),
+    //            OnTransitioningMethod = (owner) => owner.OnInitializing(),
+    //            From = States.Uninitialized,
+    //            To = States.Ready,
+    //        };
+    //        public static StateTransitionTypeBinding<TS, ExecutionTransition, GeneratedExecutable> Start = new StateTransitionTypeBinding<TS, ExecutionTransition, GeneratedExecutable>(ExecutionTransition.Initialize)
+    //        {
+    //            Info = StateMachine<TS, ExecutionTransition>.GetTransitionInfo(ExecutionTransition.Start),
+    //            OnTransitioningMethod = (owner) => owner.OnStarting(),
+    //            From = States.Ready,
+    //            To = States.Running,
+    //        };
+    //    }
+    //    public static class States
+    //    {
+    //        public static StateTypeBinding<TS, ExecutionTransition, GeneratedExecutable> Uninitialized = new StateTypeBinding<TS, ExecutionTransition, GeneratedExecutable>(TS.Uninitialized)
+    //        {
+    //            //EnteringStateAction = owner => owner.OnReady(),
+    //            OnLeaving = owner => owner.AfterUninitialized(),
+    //        };
+    //        public static StateTypeBinding<TS, ExecutionTransition, GeneratedExecutable> Ready = new StateTypeBinding<TS, ExecutionTransition, GeneratedExecutable>(TS.Ready)
+    //        {
+    //            OnEntering = owner => owner.OnReady(),
+    //            OnLeaving = owner => owner.AfterReady(),
+    //        };
+    //        public static StateTypeBinding<TS, ExecutionTransition, GeneratedExecutable> Running = new StateTypeBinding<TS, ExecutionTransition, GeneratedExecutable>(TS.Running)
+    //        {
+    //            //EnteringStateAction = owner => owner.OnReady(),
+    //            //LeavingStateAction = owner => owner.AfterReady(),
+    //        };
+    //        public static StateTypeBinding<TS, ExecutionTransition, GeneratedExecutable> Finished = new StateTypeBinding<TS, ExecutionTransition, GeneratedExecutable>(TS.Finished)
+    //        {
+    //            OnEntering = owner => owner.OnFinished(),
+    //            //LeavingStateAction = owner => owner.AfterReady(),
+    //        };
+    //    }
+    //    public StateMachineState<TS, ExecutionTransition, GeneratedExecutable> StateMachine => stateMachine;
+    //    private StateMachineState<TS, ExecutionTransition, GeneratedExecutable> stateMachine;
+    //}
+
 }

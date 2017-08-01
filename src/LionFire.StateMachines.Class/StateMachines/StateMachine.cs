@@ -1,12 +1,8 @@
-﻿
-using System.Reflection;
-using LionFire.Execution;
+﻿using System.Reflection;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using ES = LionFire.Execution.ExecutionState;
-using ET = LionFire.Execution.ExecutionTransition;
 
 // TODO: Once this gets fleshed out, move to Core? Or create shared library?
 
@@ -96,6 +92,14 @@ namespace LionFire.StateMachines.Class
 
     //}
 
+
+    public static class StateMachine
+    {
+        public static IStateTransitionInfo GetTransitionInfo(Type stateType, Type transitionType, object transition)
+        {
+            return (IStateTransitionInfo)typeof(StateMachine<,>).MakeGenericType(stateType, transitionType).GetMethod(nameof(GetTransitionInfo /* wrong one but they should match*/)).Invoke(null, new object[] { transition });
+        }
+    }
 
     /// <summary>
     /// 

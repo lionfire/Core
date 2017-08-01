@@ -1,5 +1,4 @@
 ﻿using CodeGeneration.Roslyn;
-using LionFire.Execution;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
@@ -16,6 +15,7 @@ using SF = Microsoft.CodeAnalysis.CSharp.SyntaxFactory;
 using static Microsoft.CodeAnalysis.CSharp.SyntaxFactory;
 using System.Runtime.Loader;
 using System.Diagnostics;
+using LionFire.ExtensionMethods.CodeAnalysis;
 
 // Tool: http://roslynquoter.azurewebsites.net/
 
@@ -134,24 +134,36 @@ namespace LionFire.StateMachines.Class.Generation
 
         int i = 0;
 
-        public string GetFullName(INamedTypeSymbol nts)
-        {
-            List<string> list = new System.Collections.Generic.List<string>();
+        //public string GetFullName(INamedTypeSymbol nts)
+        //{
+        //    return nts.GetFullMetadataName();
+        //    //List<string> list = new System.Collections.Generic.List<string>();
 
-            list.Add(nts.Name);
-            ISymbol s = nts;
-            while (s.ContainingNamespace != null && !string.IsNullOrWhiteSpace(s.Name))
-            {
-                s = s.ContainingNamespace;
-                list.Add(s.Name);
-            }
-            list.Reverse();
-            return list.Aggregate((x, y) => x + "." + y).TrimStart('.');
-        }
-        private Type ResolveType(object o)
+        //    //list.Add(nts.Name);
+        //    //ISymbol s = nts;
+        //    //while (s.ContainingNamespace != null && !string.IsNullOrWhiteSpace(s.Name))
+        //    //{
+        //    //    s = s.ContainingNamespace;
+        //    //    list.Add(s.Name);
+        //    //}
+        //    //list.Reverse();
+        //    //return list.Aggregate((x, y) => x + "." + y).TrimStart('.');
+        //}
+        private Type ResolveType(TransformationContext context, object o)
         {
-            var nts = (INamedTypeSymbol)o;
-            var combined = GetFullName(nts);
+            var result = TryResolveType(context, o);
+            if (result != null) return result;
+
+            var combined = ((INamedTypeSymbol)o).GetFullMetadataName();
+            foreach (var a in assemblies)
+            {
+                Log(" - looking in " + a.FullName);
+            }
+            throw new Exception("Failed to resolve " + combined);
+        }
+        private Type TryResolveType(TransformationContext context, object o)
+        {
+            var combined = ((INamedTypeSymbol)o).GetFullMetadataName();
 
             var type = Type.GetType(combined);
 
@@ -160,16 +172,54 @@ namespace LionFire.StateMachines.Class.Generation
                 foreach (var a in assemblies)
                 {
                     type = a.GetType(combined);
+
                     if (type != null) break;
+                    else
+                    {
+                        if (a.FullName.StartsWith("LionFire.Execution.Abstractions"))
+                        {
+                            foreach (var t in a.GetTypes())
+                            {
+                                Log(".. " + t.FullName);
+                            }
+                        }
+                    }
                 }
             }
 
             if (type != null) Log("Resolved " + type.FullName);
-            else Log("Failed to resolve " + combined);
+            else
+            {
+                Log("Failed to resolve " + combined);
+
+                //type = context.Compilation.References
+                //    .Select(context.Compilation.GetAssemblyOrModuleSymbol)
+                //    .OfType<IAssemblySymbol>()
+                //    .Select(assemblySymbol => assemblySymbol.GetTypeByMetadataName(combined));
+
+                //if (type != null)
+                //{
+                //    Log("resolved using 2nd approach" + combined);
+                //}
+            }
+
 
             return type;
             //if (i++ == 0) return stateMachineAttribute.StateType;
             //else return stateMachineAttribute.TransitionType;
+
+            /*  REVIEW -- See this for other options  https://github.com/dotnet/roslyn/issues/3864
+              
+              @robintheilade The GetTypeByMetadataName API exists on both the Compilation and the IAssemblySymbol types. Therefore, if you have a Compilation, you can get the interesting IAssemblySymbols from that, and then call IAssemblySymbol.GetTypeByMetadataName.
+
+            compilation.References
+            .Select(compilation.GetAssemblyOrModuleSymbol)
+            .OfType<IAssemblySymbol>()
+            .Select(assemblySymbol => assemblySymbol.GetTypeByMetadataName(typeMetadataName))
+            Depending on your use case, you might also want to include Compilation.Assembly in the list of searched IAssemblySymbols.
+
+
+                */
         }
         private Task<SyntaxList<MemberDeclarationSyntax>> part2(TransformationContext context, IProgress<Diagnostic> progress, CancellationToken cancellationToken)
         {
@@ -185,10 +235,9 @@ namespace LionFire.StateMachines.Class.Generation
                 }
                 else
                 {
-
                     stateMachineAttribute = (StateMachineAttribute)Activator.CreateInstance(typeof(StateMachineAttribute),
-                        ResolveType(attributeData.ConstructorArguments[0].Value),
-                        ResolveType(attributeData.ConstructorArguments[1].Value),
+                        ResolveType(context, attributeData.ConstructorArguments[0].Value),
+                        ResolveType(context, attributeData.ConstructorArguments[1].Value),
                         (StateMachineOptions)attributeData.ConstructorArguments[2].Value
                         );
                 }
@@ -272,7 +321,7 @@ namespace LionFire.StateMachines.Class.Generation
                 }
                 foreach (var transition in usedTransitions)
                 {
-                    var info = StateMachine<ExecutionState, ExecutionTransition>.GetTransitionInfo((ExecutionTransition)Enum.Parse(stateMachineAttribute.TransitionType, transition));
+                    var info = StateMachine.GetTransitionInfo(stateType, transitionType, Enum.Parse(stateMachineAttribute.TransitionType, transition));
 
                     if (info != null)
                     {
@@ -331,7 +380,7 @@ namespace LionFire.StateMachines.Class.Generation
                                             MemberAccessExpression(
                                                 SyntaxKind.SimpleMemberAccessExpression,
                                                 IdentifierName(stateMachineAttribute.StateMachineStatePropertyName),
-                                                IdentifierName(nameof(StateMachineState<ExecutionState, ExecutionTransition, object>.ChangeState))))
+                                                IdentifierName(nameof(StateMachineState<object, object, object>.ChangeState))))
                                         .WithArgumentList(
                                             ArgumentList(
                                                 SingletonSeparatedList<ArgumentSyntax>(

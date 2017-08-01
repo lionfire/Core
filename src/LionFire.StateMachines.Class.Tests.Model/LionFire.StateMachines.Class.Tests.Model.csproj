@@ -13,6 +13,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\LionFire.Execution.Abstractions\LionFire.Execution.Abstractions.csproj" />
     <ProjectReference Include="..\LionFire.StateMachines.Class.Generation\LionFire.StateMachines.Class.Generation.csproj" />
     <ProjectReference Include="..\LionFire.StateMachines.Class\LionFire.StateMachines.Class.csproj" />
   </ItemGroup>

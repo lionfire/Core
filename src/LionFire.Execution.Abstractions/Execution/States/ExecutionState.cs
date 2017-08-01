@@ -8,6 +8,7 @@ namespace LionFire.Execution
 {
     // FUTURE: State machine with states at nodes and states at edges?
 
+    [Flags]
     public enum ExecutionState
     {
         Unspecified = 0,
@@ -46,7 +47,7 @@ namespace LionFire.Execution
         /// Initialize will determine whether the object can be re-initialized.
         /// </summary>
         Disposed = 1 << 12,
-        
+
     }
 
     public interface IHasExecutionState
@@ -57,7 +58,7 @@ namespace LionFire.Execution
     {
         ExecutionState ExecutionState { set; }
     }
-    
+
     public interface IChangesExecutionState
     {
         IObservable<ExecutionState> ExecutionStates { get; }
