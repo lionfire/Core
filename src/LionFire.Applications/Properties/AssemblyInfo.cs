@@ -2,9 +2,9 @@
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 
-[assembly: AssemblyCompany("LionFire Games")]
-[assembly: AssemblyProduct("LionFire.Applications")]
-[assembly: AssemblyTrademark("")]
+//[assembly: AssemblyCompany("LionFire Games")]
+//[assembly: AssemblyProduct("LionFire.Applications")]
+//[assembly: AssemblyTrademark("")]
 
 // Setting ComVisible to false makes the types in this assembly not visible
 // to COM components.  If you need to access a type in this assembly from

@@ -5,8 +5,6 @@
     <AssemblyName>LionFire.Applications</AssemblyName>
     <PackageId>LionFire.Applications</PackageId>
     <PackageTargetFallback Condition=" '$(TargetFramework)' == 'netstandard1.5' ">$(PackageTargetFallback);dnxcore50</PackageTargetFallback>
-    <GenerateAssemblyCompanyAttribute>false</GenerateAssemblyCompanyAttribute>
-    <GenerateAssemblyProductAttribute>false</GenerateAssemblyProductAttribute>
     <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
     <Description>Fluent application builder, inspired by ASP.NET Core but can be used to quickly build any type of application.  
 
