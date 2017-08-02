@@ -3,7 +3,7 @@ mono: none
 dotnet: 1.0.4
 dist: trusty
 install:
- - dotnet restore
+ - dotnet restore Core.sln
 # - nuget install xunit.runners -Version 2.2.0 -OutputDirectory testrunner
 
 script:
