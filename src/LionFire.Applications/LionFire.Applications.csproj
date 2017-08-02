@@ -5,20 +5,10 @@
     <AssemblyName>LionFire.Applications</AssemblyName>
     <PackageId>LionFire.Applications</PackageId>
     <PackageTargetFallback Condition=" '$(TargetFramework)' == 'netstandard1.5' ">$(PackageTargetFallback);dnxcore50</PackageTargetFallback>
-    <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
+    <GeneratePackageOnBuild>False</GeneratePackageOnBuild>
     <Description>Fluent application builder, inspired by ASP.NET Core but can be used to quickly build any type of application.  
 
-Reference this package in your main executable, and the related LionFire.Applications.Abstractions package in DLLs that can help build applications.
-
-Quick start: 
-
-public class MyComponent : IStartable { ... } 
-
-and 
-
-new AppHost()
-  .Add&lt;MyComponent&gt;()
-  .Run();</Description>
+Reference this package in your main executable, and the related LionFire.Applications.Abstractions package in DLLs that can help build applications.</Description>
     <Copyright>2017 Jared Thirsk</Copyright>
     <PackageLicenseUrl>https://github.com/jaredthirsk/Core/blob/master/LICENSE</PackageLicenseUrl>
     <PackageProjectUrl>http://open.lionfire.software/</PackageProjectUrl>
