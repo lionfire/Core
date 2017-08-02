@@ -3,6 +3,11 @@
     <TargetFramework>netstandard1.5</TargetFramework>
 <PackageTargetFallback>$(PackageTargetFallback);portable-net45+win8+wp8+wpa81;</PackageTargetFallback>
   </PropertyGroup>
+  <ItemGroup>
+    <Compile Remove="StateInfo\**" />
+    <EmbeddedResource Remove="StateInfo\**" />
+    <None Remove="StateInfo\**" />
+  </ItemGroup>
 
   <ItemGroup>
     <PackageReference Include="CodeGeneration.Roslyn" Version="0.4.11" />
@@ -11,10 +16,6 @@
 
   <ItemGroup>
     <ProjectReference Include="..\LionFire.StateMachines.Class\LionFire.StateMachines.Class.csproj" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="StateInfo\" />
   </ItemGroup>
 
 </Project>

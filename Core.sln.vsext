@@ -34,6 +34,8 @@
       <Project Guid="7ba9647e-fd29-455a-8857-57276e9a83f9" />
       <Project Guid="b7ed0a85-67df-4e27-90ff-4fe271eaea69" />
       <Project Guid="99c0d907-5bfb-4081-a290-83c191e1ae93" />
+      <Project Guid="da2fab04-c4ef-47bb-abaf-41757735a3fd" />
+      <Project Guid="f4550ab8-d110-44d8-993f-8bc48182cf03" />
     </Include>
   </Profile>
   <Profile Name="Minimal" IsDefault="false" SingleStartProjectGuid="">
