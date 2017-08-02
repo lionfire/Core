@@ -1,5 +1,6 @@
 ﻿using Xunit;
 using LionFire.Execution;
+using ExecutionState = LionFire.Execution.ExecutionState2;
 
 namespace LionFire.StateMachines.Class.Tests
 {
