@@ -43,5 +43,3 @@ namespace LionFire.StateMachines.Class.Tests
         }
     }
 }
-
-#warning TODO: LionFire.Dump - nuget shared library, conditional compile "LionFire.Dump"
