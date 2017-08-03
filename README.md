@@ -19,7 +19,5 @@ If you find a certain part interesting and want to help advance it into a first 
 
 # TODO
 
-  - Get travis building 
   - Add travis-ci for mono
-  - Move repo to LionFire org
 
