@@ -14,7 +14,7 @@ namespace LionFire.StateMachines.Class
     //[Conditional("CodeGeneration")]
     public sealed class StateMachineAttribute : Attribute
     {
-        public StateMachineOptions Options { get; private set; }
+        public GenerateStateMachineFlags Options { get; private set; }
         public Type StateType { get; private set; }
         public Type TransitionType { get; private set; }
 
@@ -32,7 +32,7 @@ namespace LionFire.StateMachines.Class
             this.TransitionType = transition;
         }
 
-        public StateMachineAttribute(Type state, Type transition, StateMachineOptions options)
+        public StateMachineAttribute(Type state, Type transition, GenerateStateMachineFlags options)
         {
             this.StateType = state;
             this.TransitionType = transition;

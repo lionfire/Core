@@ -23,6 +23,7 @@ namespace LionFire.StateMachines.Class
             //attr.From
 
         }
-        public Action<TOwner> OnTransitioningMethod { get; set; } = DefaultActions<TOwner>.DefaultAction;
+        public MethodInfo CanTransitionMethod { get; set; } = null;
+        public MethodInfo OnTransitioningMethod { get; set; } = null;
     }
 }

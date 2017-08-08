@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Reflection;
 
 namespace LionFire.StateMachines.Class
 {
@@ -10,9 +11,10 @@ namespace LionFire.StateMachines.Class
         {
             //this.Info = StateMachine<TState, TTransition>.GetStateInfo(state);
         }
-        public Action<TOwner> OnEntering { get; set; } = DefaultActions<TOwner>.DefaultAction;
-        public Action<TOwner> OnLeaving { get; set; } = DefaultActions<TOwner>.DefaultAction;
-
+        public MethodInfo CanEnter { get; set; } 
+        public MethodInfo OnEntering { get; set; } 
+        public MethodInfo CanLeave { get; set; }
+        public MethodInfo OnLeaving { get; set; }
 
 
     }

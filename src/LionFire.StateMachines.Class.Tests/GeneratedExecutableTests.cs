@@ -32,7 +32,7 @@ namespace LionFire.StateMachines.Class.Tests
             var te = new GeneratedExecutable();
 
             te.Initialize();
-            Assert.Equal(te.LastMessage.Pop(), "OnReady");
+            Assert.Equal(te.LogMessageQueue.Dequeue(), "OnReady");
             //Assert.Equal(te.LastMessage.Pop(), "OnInitialize");
             //Assert.Equal(te.LastMessage.Pop(), "AfterUninitialized");
             te.Start();

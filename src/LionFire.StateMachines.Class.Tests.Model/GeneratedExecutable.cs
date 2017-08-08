@@ -5,7 +5,7 @@ using TS = LionFire.Execution.ExecutionState2;
 
 namespace LionFire.StateMachines.Class.Tests
 {
-    [StateMachine(typeof(TS), typeof(ExecutionTransition), StateMachineOptions.None, IncludeStates = TS.Disposed)]
+    [StateMachine(typeof(TS), typeof(ExecutionTransition), GenerateStateMachineFlags.None, IncludeStates = TS.Disposed)]
     //StateMachineStatePropertyName ="sm",
     //, ExecutionTransition.Initialize | ExecutionTransition.Start | ExecutionTransition.Finish | ExecutionTransition.CleanUp
     public partial class GeneratedExecutable
@@ -28,7 +28,7 @@ namespace LionFire.StateMachines.Class.Tests
             InitStateMachine(); // To generate?
             Action initMethod = Initialize;
         }
-
+         
         public void AfterUninitialized()
         {
             Log("AfterUninitialized");
@@ -59,9 +59,9 @@ namespace LionFire.StateMachines.Class.Tests
             Log("OnFinished");
         }
 
-        public Stack<string> LastMessage { get; set; } = new Stack<string>();
+        public Queue<string> LogMessageQueue { get; set; } = new Queue<string>();
 
-        private void Log(string msg) => LastMessage.Push(msg);
+        private void Log(string msg) => LogMessageQueue.Enqueue(msg);
     }
 
     //public partial class GeneratedExecutable

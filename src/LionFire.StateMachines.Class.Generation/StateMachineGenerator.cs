@@ -94,29 +94,56 @@ namespace LionFire.StateMachines.Class.Generation
         const string unusedIndicator = " - ";
         const string usedIndicator = " * ";
 
+        #region Log
+
+        // Just writing to a file
+
         [Conditional("DEBUG")]
         public void Log(string msg = null)
         {
             log?.WriteLine(msg);
         }
 
+        private void InitLog(string name)
+        {
+            log = new StreamWriter(new FileStream($"C:\\src\\Core\\obj\\{name}.codegen.log", FileMode.Create));
+        }
 
+        private void CloseLog()
+        {
+            log.Dispose();
+        }
 
+        #endregion
+        
         public async Task<SyntaxList<MemberDeclarationSyntax>> GenerateAsync(TransformationContext context, IProgress<Diagnostic> progress, CancellationToken cancellationToken)
         {
-
             if (context.ProcessingMember == null) throw new ArgumentNullException("context.ProcessingMember");
             var dClass = (ClassDeclarationSyntax)context.ProcessingMember;
-            if (context.SemanticModel == null) throw new Exception("no SemanticModel");
-            var sm = context.SemanticModel;
-            var typeInfo = context.SemanticModel.GetTypeInfo(dClass);
 
-            using (log = new StreamWriter(new FileStream(@"C:\src\Core\obj\codegen." + dClass.Identifier + ".txt", FileMode.Create)))
+            var typeInfo = context.SemanticModel.GetTypeInfo(dClass);
+            try
             {
-                //Log("Location: " + Assembly.GetEntryAssembly().Location);
-                //Log("BaseDir: " + AppContext.BaseDirectory);
-                //Log("Compilation: " + (context.Compilation.SourceModule.Name));
-                //Log("Compilation: " + (context.Compilation.SourceModule.Locations.Select(l => l.ToString()).Aggregate((x, y) => x + ", " + y)));
+                foreach (var loc in
+                context.Compilation.ScriptClass.Locations)
+                {
+                    Log("Script class location: " + loc);
+                }
+            }
+            catch { }
+            try
+            {
+                InitLog(dClass.Identifier.ToString());
+                ////Log("Location: " + Assembly.GetEntryAssembly().Location);
+                Log("BaseDir: " + AppContext.BaseDirectory);
+                Log("Compilation: ");
+                Log(" - Source module name " + (context.Compilation.SourceModule.Name));
+                Log(" - source module locations: " + (context.Compilation.SourceModule.Locations.Select(l => l.ToString()).Aggregate((x, y) => x + ", " + y)));
+
+                foreach (var exref in context.Compilation.ExternalReferences)
+                {
+                    //Log(" - External ref: " + exref.Display);
+                }
                 foreach (var r in context.Compilation.References)
                 {
                     if (r.Display.Contains(".nuget")) continue;
@@ -127,6 +154,10 @@ namespace LionFire.StateMachines.Class.Generation
                 Log();
 
                 return await part2(context, progress, cancellationToken);
+            }
+            finally
+            {
+                CloseLog();
             }
         }
 
@@ -231,14 +262,14 @@ namespace LionFire.StateMachines.Class.Generation
             {
                 if (attributeData.ConstructorArguments[0].Value is int o)
                 {
-                    stateMachineAttribute = (StateMachineAttribute)Activator.CreateInstance(typeof(StateMachineAttribute), (StateMachineOptions)o);
+                    stateMachineAttribute = (StateMachineAttribute)Activator.CreateInstance(typeof(StateMachineAttribute), (GenerateStateMachineFlags)o);
                 }
                 else
                 {
                     stateMachineAttribute = (StateMachineAttribute)Activator.CreateInstance(typeof(StateMachineAttribute),
                         ResolveType(context, attributeData.ConstructorArguments[0].Value),
                         ResolveType(context, attributeData.ConstructorArguments[1].Value),
-                        (StateMachineOptions)attributeData.ConstructorArguments[2].Value
+                        (GenerateStateMachineFlags)attributeData.ConstructorArguments[2].Value
                         );
                 }
             }
@@ -259,7 +290,7 @@ namespace LionFire.StateMachines.Class.Generation
                 pi.SetValue(stateMachineAttribute, na.Value.Value);
             }
 
-            if (stateMachineAttribute.Options.HasFlag(StateMachineOptions.DisableGeneration)) { return Task.FromResult(new SyntaxList<MemberDeclarationSyntax>()); }
+            if (stateMachineAttribute.Options.HasFlag(GenerateStateMachineFlags.DisableGeneration)) { return Task.FromResult(new SyntaxList<MemberDeclarationSyntax>()); }
 
             Type stateType = stateMachineAttribute.StateType;
             Type transitionType = stateMachineAttribute.TransitionType;
@@ -269,7 +300,7 @@ namespace LionFire.StateMachines.Class.Generation
             HashSet<string> usedStates;
             HashSet<string> usedTransitions;
 
-            if (stateMachineAttribute.Options.HasFlag(StateMachineOptions.DisablePruneUnusedTransitions))
+            if (stateMachineAttribute.Options.HasFlag(GenerateStateMachineFlags.DisablePruneUnusedTransitions))
             {
                 usedTransitions = allTransitions;
             }
@@ -295,8 +326,7 @@ namespace LionFire.StateMachines.Class.Generation
             }
 
 
-
-            if (stateMachineAttribute.Options.HasFlag(StateMachineOptions.DisablePruneUnusedStates))
+            if (stateMachineAttribute.Options.HasFlag(GenerateStateMachineFlags.DisablePruneUnusedStates))
             {
                 usedStates = allStates;
             }
