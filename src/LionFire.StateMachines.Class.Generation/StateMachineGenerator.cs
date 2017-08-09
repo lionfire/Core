@@ -153,7 +153,7 @@ namespace LionFire.StateMachines.Class.Generation
                 }
                 Log();
 
-                return await part2(context, progress, cancellationToken);
+                return await Part2(context, progress, cancellationToken);
             }
             finally
             {
@@ -252,7 +252,7 @@ namespace LionFire.StateMachines.Class.Generation
 
                 */
         }
-        private Task<SyntaxList<MemberDeclarationSyntax>> part2(TransformationContext context, IProgress<Diagnostic> progress, CancellationToken cancellationToken)
+        private Task<SyntaxList<MemberDeclarationSyntax>> Part2(TransformationContext context, IProgress<Diagnostic> progress, CancellationToken cancellationToken)
         {
             var dClass = (ClassDeclarationSyntax)context.ProcessingMember;
 
@@ -260,9 +260,9 @@ namespace LionFire.StateMachines.Class.Generation
 
             if (attributeData.ConstructorArguments.Any())
             {
-                if (attributeData.ConstructorArguments[0].Value is int o)
+                if (attributeData.ConstructorArguments[0].Value is int flagsInt)
                 {
-                    stateMachineAttribute = (StateMachineAttribute)Activator.CreateInstance(typeof(StateMachineAttribute), (GenerateStateMachineFlags)o);
+                    stateMachineAttribute = (StateMachineAttribute)Activator.CreateInstance(typeof(StateMachineAttribute), (GenerateStateMachineFlags)flagsInt);
                 }
                 else
                 {
@@ -365,8 +365,8 @@ namespace LionFire.StateMachines.Class.Generation
 
             foreach (var n in stateMachineAttribute.StateType.GetFields(bf).Select(fi => fi.Name))
             {
-                //bool isUsed = ;
                 Log((usedStates.Contains(n) ? usedIndicator : unusedIndicator) + n);
+                
             }
             Log();
 

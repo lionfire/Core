@@ -1,6 +1,7 @@
 ﻿using Xunit;
 using LionFire.Execution;
 using ExecutionState = LionFire.Execution.ExecutionState2;
+using System;
 
 namespace LionFire.StateMachines.Class.Tests
 {
@@ -30,12 +31,16 @@ namespace LionFire.StateMachines.Class.Tests
         public void OnStateHandlers()
         {
             var te = new GeneratedExecutable();
+            Func<string> next = () => te.LogMessageQueue.Dequeue();
 
             te.Initialize();
+
+            Assert.Equal(next(), "AfterUninitialized");
+            Assert.Equal(te.LogMessageQueue.Dequeue(), "OnInitialize");
             Assert.Equal(te.LogMessageQueue.Dequeue(), "OnReady");
-            //Assert.Equal(te.LastMessage.Pop(), "OnInitialize");
-            //Assert.Equal(te.LastMessage.Pop(), "AfterUninitialized");
+
             te.Start();
+
             //Assert.Equal(te.LastMessage.Pop(), "OnStart");
             //Assert.Equal(te.LastMessage.Pop(), "AfterReady");
             te.Complete();

@@ -13,22 +13,21 @@ namespace LionFire.StateMachines.Class.Tests
 
         #region To generate
 
-        private void InitStateMachine()
+        public StateMachineState<TS, ExecutionTransition, GeneratedExecutable> StateMachine
         {
-            stateMachine = StateMachine<TS, ExecutionTransition>.CreateState(this);
+            get
+            {
+                if (stateMachine == null) stateMachine = StateMachine<TS, ExecutionTransition>.CreateState(this);
+            }
         }
-
-        public StateMachineState<TS, ExecutionTransition, GeneratedExecutable> StateMachine => stateMachine;
-        StateMachineState<TS, ExecutionTransition,GeneratedExecutable> stateMachine;
+        private StateMachineState<TS, ExecutionTransition, GeneratedExecutable> stateMachine;
 
         #endregion
 
         public GeneratedExecutable()
         {
-            InitStateMachine(); // To generate?
-            Action initMethod = Initialize;
         }
-         
+
         public void AfterUninitialized()
         {
             Log("AfterUninitialized");
@@ -64,8 +63,6 @@ namespace LionFire.StateMachines.Class.Tests
         private void Log(string msg) => LogMessageQueue.Enqueue(msg);
     }
 
-    //public partial class GeneratedExecutable
-    //{
     //    public static class Transitions
     //    {
     //        public static StateTransitionTypeBinding<TS, ExecutionTransition, GeneratedExecutable> Initialize = new StateTransitionTypeBinding<TS, ExecutionTransition, GeneratedExecutable>(ExecutionTransition.Initialize)

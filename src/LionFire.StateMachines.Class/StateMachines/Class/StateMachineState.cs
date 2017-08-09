@@ -107,26 +107,26 @@ namespace LionFire.StateMachines.Class
         {
             lock (lockObject)
             {
-                if (!CurrentState.Equals(transitionBinding.From))
+                if (!CurrentState.Equals(transitionBinding.From.Id))
                 {
-                    return new object[] { new InvalidFromStateException($"{transitionBinding.Info.Id} requires from state of {transitionBinding.From.ToString()} but CurrentState is {CurrentState}") };
+                    return new object[] { new InvalidFromStateException($"{transitionBinding.Info.Id} requires starting state of {transitionBinding.From.ToString()} but CurrentState is {CurrentState}") };
                 }
 
                 var parameters = new object[] { };
 
                 List<object> results = null;
 
-                if (false == (bool)transitionBinding.From?.CanLeave?.Invoke(Owner, parameters))
+                if (false == (bool?)transitionBinding.From?.CanLeave?.Invoke(Owner, parameters))
                 {
                     results = new List<object>();
                     results.Add(new StateMachineException("CanLeave returned false"));
                 }
-                if (false == (bool)transitionBinding.CanTransitionMethod?.Invoke(Owner, parameters))
+                if (false == (bool?)transitionBinding.CanTransitionMethod?.Invoke(Owner, parameters))
                 {
                     if (results == null) results = new List<object>();
                     results.Add(new StateMachineException("CanTransition returned false"));
                 }
-                if (false == (bool)transitionBinding.To?.CanEnter?.Invoke(Owner, parameters))
+                if (false == (bool?)transitionBinding.To?.CanEnter?.Invoke(Owner, parameters))
                 {
                     if (results == null) results = new List<object>();
                     results.Add(new StateMachineException("CanEnter returned false"));
@@ -161,17 +161,47 @@ namespace LionFire.StateMachines.Class
 
         public bool TryChangeState(StateTransitionTypeBinding<TState, TTransition, TOwner> transitionBinding, object transitionData = null)
         {
-            try
+            // See also - ChangeState for similar code
+            lock (lockObject)
             {
-                // FUTURE TODO FIXME - make a non-throwing version of this method.
-                ChangeState(transitionBinding, transitionData);
+                //// TODO FIXME: Pass this sc to the CanChangeState?
+                //var sc = new StateChange<TState, TTransition, TOwner>
+                //{
+                //    Transition = transitionBinding,
+                //    TransitionData = transitionData,
+                //    IsDeterminingCanChange = true,
+                //    //StateChangeContext =
+                //};
+
+                var reasons = CannotChangeStateReasons(transitionBinding, transitionData);
+                if (reasons.Any()) return false;
+
+                //sc.IsTest = false;
+
+                //var context = new MultiTypeSeed
+
+                //var sc = new StateChange<TState, TTransition, TOwner>
+                //{
+                //    Transition = transitionBinding,
+                //    TransitionData = transitionData,
+                //};
+
+                DoChangeState(transitionBinding);
+                return true;
             }
-            catch
-            {
-                return false;
-            }
-            return true;
         }
+
+        private void DoChangeState(StateTransitionTypeBinding<TState, TTransition, TOwner> transitionBinding)
+        {
+            var parameters = new object[] { };
+
+            transitionBinding.From?.OnLeaving?.Invoke(Owner, parameters);
+            transitionBinding.OnTransitioningMethod?.Invoke(Owner, parameters);
+            transitionBinding.To?.OnEntering?.Invoke(Owner, parameters);
+
+            CurrentState = transitionBinding.Info.To;
+        }
+
         public bool CanChangeState(StateTransitionTypeBinding<TState, TTransition, TOwner> transitionBinding, object transitionData = null)
         {
             return !CannotChangeStateReasons(transitionBinding, transitionData).Any();
@@ -179,6 +209,8 @@ namespace LionFire.StateMachines.Class
 
         public void ChangeState(StateTransitionTypeBinding<TState, TTransition, TOwner> transitionBinding, object transitionData = null)
         {
+            // See also - TryChangeState for similar code
+
             lock (lockObject)
             {
                 //// TODO FIXME: Pass this sc to the CanChangeState?
@@ -195,11 +227,6 @@ namespace LionFire.StateMachines.Class
 
                 //sc.IsTest = false;
 
-                if (!CurrentState.Equals(transitionBinding.From))
-                {
-                    throw new StateMachineException($"Invalid starting state {CurrentState} for transition {transitionBinding.Info.Id}");
-                }
-
                 //var context = new MultiTypeSeed
 
                 //var sc = new StateChange<TState, TTransition, TOwner>
@@ -208,13 +235,7 @@ namespace LionFire.StateMachines.Class
                 //    TransitionData = transitionData,
                 //};
 
-                var parameters = new object[] { };
-
-                transitionBinding.From?.OnLeaving?.Invoke(Owner, parameters);
-                transitionBinding.OnTransitioningMethod?.Invoke(Owner, parameters);
-                transitionBinding.To?.OnEntering?.Invoke(Owner, parameters);
-
-                CurrentState = transitionBinding.Info.To;
+                DoChangeState(transitionBinding);
             }
         }
     }
