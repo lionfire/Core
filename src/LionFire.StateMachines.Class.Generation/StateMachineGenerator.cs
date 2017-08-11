@@ -11,13 +11,10 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using Validation;
-using SF = Microsoft.CodeAnalysis.CSharp.SyntaxFactory;
 using static Microsoft.CodeAnalysis.CSharp.SyntaxFactory;
 using System.Runtime.Loader;
 using System.Diagnostics;
 using LionFire.ExtensionMethods.CodeAnalysis;
-
-// Tool: http://roslynquoter.azurewebsites.net/
 
 namespace LionFire.StateMachines.Class.Generation
 {
@@ -81,14 +78,8 @@ namespace LionFire.StateMachines.Class.Generation
         }
         private HashSet<string> leavingPrefixes;
 
-        //public class TransitionInfo
-        //{
-        //    public Enum EnumValue { get; set; }
-        //    public string PresentTense { get; set; }
-        //    public string PastTense { get; set; }
-        //}
-
-        public StreamWriter log;
+    
+        private List<string> logEntries = new List<string>();
 
         public const BindingFlags bf = BindingFlags.Static | BindingFlags.Public;
         const string unusedIndicator = " - ";
@@ -96,69 +87,50 @@ namespace LionFire.StateMachines.Class.Generation
 
         #region Log
 
-        // Just writing to a file
-
-        [Conditional("DEBUG")]
+        //[Conditional("DEBUG")]
         public void Log(string msg = null)
         {
-            log?.WriteLine(msg);
-        }
-
-        private void InitLog(string name)
-        {
-            log = new StreamWriter(new FileStream($"C:\\src\\Core\\obj\\{name}.codegen.log", FileMode.Create));
-        }
-
-        private void CloseLog()
-        {
-            log.Dispose();
+            logEntries.Add(msg);
         }
 
         #endregion
-        
+
         public async Task<SyntaxList<MemberDeclarationSyntax>> GenerateAsync(TransformationContext context, IProgress<Diagnostic> progress, CancellationToken cancellationToken)
         {
             if (context.ProcessingMember == null) throw new ArgumentNullException("context.ProcessingMember");
             var dClass = (ClassDeclarationSyntax)context.ProcessingMember;
 
             var typeInfo = context.SemanticModel.GetTypeInfo(dClass);
-            try
-            {
-                foreach (var loc in
-                context.Compilation.ScriptClass.Locations)
-                {
-                    Log("Script class location: " + loc);
-                }
-            }
-            catch { }
-            try
-            {
-                InitLog(dClass.Identifier.ToString());
-                ////Log("Location: " + Assembly.GetEntryAssembly().Location);
-                Log("BaseDir: " + AppContext.BaseDirectory);
-                Log("Compilation: ");
-                Log(" - Source module name " + (context.Compilation.SourceModule.Name));
-                Log(" - source module locations: " + (context.Compilation.SourceModule.Locations.Select(l => l.ToString()).Aggregate((x, y) => x + ", " + y)));
+            //try
+            //{
+            //    foreach (var loc in
+            //    context.Compilation.ScriptClass.Locations)
+            //    {
+            //        Log("Script class location: " + loc);
+            //    }
+            //}
+            //catch { }
 
-                foreach (var exref in context.Compilation.ExternalReferences)
-                {
-                    //Log(" - External ref: " + exref.Display);
-                }
-                foreach (var r in context.Compilation.References)
-                {
-                    if (r.Display.Contains(".nuget")) continue;
-                    Log("#r \"" + r.Display + "\"");
+            ////Log("Location: " + Assembly.GetEntryAssembly().Location);
+            Log("BaseDir: " + AppContext.BaseDirectory);
+            Log("Compilation: ");
+            Log(" - Source module name " + (context.Compilation.SourceModule.Name));
+            Log(" - source module locations: " + (context.Compilation.SourceModule.Locations.Select(l => l.ToString()).Aggregate((x, y) => x + ", " + y)));
 
-                    assemblies.Add(AssemblyLoadContext.Default.LoadFromAssemblyPath(r.Display));
-                }
-                Log();
-
-                return await Part2(context, progress, cancellationToken);
-            }
-            finally
+            foreach (var exref in context.Compilation.ExternalReferences)
             {
-                CloseLog();
+                //Log(" - External ref: " + exref.Display);
             }
+            foreach (var r in context.Compilation.References)
+            {
+                if (r.Display.Contains(".nuget")) continue;
+                Log("#r \"" + r.Display + "\"");
+
+                assemblies.Add(AssemblyLoadContext.Default.LoadFromAssemblyPath(r.Display));
+            }
+            Log();
+
+            return await Part2(context, progress, cancellationToken);
         }
 
         List<Assembly> assemblies = new System.Collections.Generic.List<Assembly>();
@@ -325,7 +297,6 @@ namespace LionFire.StateMachines.Class.Generation
                 }
             }
 
-
             if (stateMachineAttribute.Options.HasFlag(GenerateStateMachineFlags.DisablePruneUnusedStates))
             {
                 usedStates = allStates;
@@ -366,30 +337,29 @@ namespace LionFire.StateMachines.Class.Generation
             foreach (var n in stateMachineAttribute.StateType.GetFields(bf).Select(fi => fi.Name))
             {
                 Log((usedStates.Contains(n) ? usedIndicator : unusedIndicator) + n);
-                
+
             }
             Log();
 
             Log("Transitions:");
             foreach (var n in stateMachineAttribute.TransitionType.GetFields(bf).Select(fi => fi.Name))
             {
-                //bool isUsed = ;
                 Log((usedTransitions.Contains(n) ? usedIndicator : unusedIndicator) + n);
             }
             Log();
 
-            //CompilationUnitSyntax cu = SF.ClassDeclaration()
-            //       .AddUsings(SF.UsingDirective(SF.IdentifierName("System")))
-            //       .AddUsings(SF.UsingDirective(SF.IdentifierName("LionFire.StateMachines.Class")))
+            //CompilationUnitSyntax cu = ClassDeclaration()
+            //       .AddUsings(UsingDirective(IdentifierName("System")))
+            //       .AddUsings(UsingDirective(IdentifierName("LionFire.StateMachines.Class")))
             //    ;
 
-            ClassDeclarationSyntax c = SF.ClassDeclaration(dClass.Identifier).AddModifiers(SF.Token(SyntaxKind.PartialKeyword));
+            ClassDeclarationSyntax c = ClassDeclaration(dClass.Identifier).AddModifiers(Token(SyntaxKind.PartialKeyword));
 
             //foreach (var used in usedStates)
             //{
-            //    var m = SF.MethodDeclaration(SyntaxFactory.ParseTypeName("void"), used);
+            //    var m = MethodDeclaration(SyntaxFactory.ParseTypeName("void"), used);
             //    //m = m.WithBody((BlockSyntax)BlockSyntax.DeserializeFrom(new MemoryStream(UTF8Encoding.UTF8.GetBytes("{}"))));
-            //    var block = SF.Block();
+            //    var block = Block();
             //    m = m.WithBody(block);
             //    c = c.AddMembers(m);
             //}
@@ -404,8 +374,6 @@ namespace LionFire.StateMachines.Class.Generation
                                 Token(SyntaxKind.PublicKeyword)))
                         .WithExpressionBody(
                             ArrowExpressionClause(
-                                        //SingletonList<StatementSyntax>(
-                                        //    ExpressionStatement(
                                         InvocationExpression(
                                             MemberAccessExpression(
                                                 SyntaxKind.SimpleMemberAccessExpression,
@@ -419,36 +387,12 @@ namespace LionFire.StateMachines.Class.Generation
                                                             SyntaxKind.SimpleMemberAccessExpression,
                                                             IdentifierName(transitionType.Name),
                                                             IdentifierName(used))))))))
-                                                            //))
                                                             .WithSemicolonToken(Token(SyntaxKind.SemicolonToken))
                 ;
 
-
-
-
-                //var m = SF.MethodDeclaration(SyntaxFactory.ParseTypeName("void"), used);
-                //m = m.WithBody((BlockSyntax)BlockSyntax.DeserializeFrom(new MemoryStream(UTF8Encoding.UTF8.GetBytes("{}"))));
-                //var block = SF.Block();
-
-                ////StateMachine.ChangeState(ExecutionTransition.Initialize);
-                //block.AddStatements(
-                //    SF.ExpressionStatement(SyntaxFactory.InvocationExpression(
-                //            SF.MemberAccessExpression(
-                //                SyntaxKind.SimpleMemberAccessExpression,
-                //                SF.IdentifierName("StateMachine"),
-                //                SF.IdentifierName("ChangeState")
-                //            )),
-                //        SF.SeparatedList<SyntaxNode>(
-                //            //SF.Argument(SF.MemberAccessExpression(SyntaxKind.Enum))
-                //            )
-                //            )
-                //    )
-                //    );
-
-                //m = m.WithBody(block);
                 c = c.AddMembers(md);
-
             }
+            c = AddStateMachineProperty(c, stateMachineAttribute);
 
             //foreach (var used in usedStates)
             //{
@@ -482,37 +426,125 @@ namespace LionFire.StateMachines.Class.Generation
             //    c = c.AddMembers(md);
 
             //}
-            //NamespaceDeclarationSyntax ns = SF.NamespaceDeclaration(SF.IdentifierName(typeInfo.Type.ContainingNamespace.Name));
+            //NamespaceDeclarationSyntax ns = NamespaceDeclaration(IdentifierName(typeInfo.Type.ContainingNamespace.Name));
             //cu = cu.AddMembers(ns);
 
-            //ClassDeclarationSyntax c = SF.ClassDeclaration(typeInfo.Type.Name)
-            //    //.AddModifiers(SF.Token(SyntaxKind.PrivateKeyword))
-            //    .AddModifiers(SF.Token(SyntaxKind.PartialKeyword))
+            //ClassDeclarationSyntax c = ClassDeclaration(typeInfo.Type.Name)
+            //    //.AddModifiers(Token(SyntaxKind.PrivateKeyword))
+            //    .AddModifiers(Token(SyntaxKind.PartialKeyword))
             //    ;
             //ns = ns.AddMembers(c);
+
+            c = AddLog(c);
 
             var results = SyntaxFactory.List<MemberDeclarationSyntax>();
             results = results.Add(c);
             return Task.FromResult(results);
-
-
-
-            //// Our generator is applied to any class that our attribute is applied to.
-
-
-
-            //ns = ns.AddMembers(c);
-
-
-            //// Apply a suffix to the name of a copy of the class.
-            ////var copy = applyToClass .WithIdentifier(SyntaxFactory.Identifier(applyToClass.Identifier.ValueText));
-
-            //applyToClass
-
-            //// Return our modified copy. It will be added to the user's project for compilation.
-            //results = results.Add(copy);
-            //return Task.FromResult<SyntaxList<MemberDeclarationSyntax>>(results);
         }
-    }
+        private ClassDeclarationSyntax AddStateMachineProperty(ClassDeclarationSyntax c, StateMachineAttribute attr)
+        {
+            string StateMachineStatePropertyName = "StateMachine";
+            string StateMachineStateFieldName = "stateMachine";
 
+            string typeName = typeof(StateMachineState<,,>).Name;
+            typeName = typeName.Substring(0, typeName.LastIndexOf('`'));
+
+            return c.AddMembers(
+               new MemberDeclarationSyntax[]{
+                    PropertyDeclaration(
+                        GenericName(Identifier(typeName))
+
+                        .WithTypeArgumentList(
+                            TypeArgumentList(
+                                SeparatedList<TypeSyntax>(
+                                    new SyntaxNodeOrToken[]{
+                                        IdentifierName(attr.StateType.FullName),
+                                        Token(SyntaxKind.CommaToken),
+                                        IdentifierName(attr.TransitionType.FullName),
+                                        Token(SyntaxKind.CommaToken),
+                                        IdentifierName(c.Identifier)})))
+                                ,
+
+                        Identifier(StateMachineStatePropertyName))
+                    .WithModifiers(TokenList(Token(SyntaxKind.PublicKeyword)))
+                    .WithAccessorList(
+                        AccessorList(
+                            SingletonList<AccessorDeclarationSyntax>(
+                                AccessorDeclaration(
+                                    SyntaxKind.GetAccessorDeclaration)
+                                .WithBody(
+                                    Block(
+                                        IfStatement(
+                                            BinaryExpression(
+                                                SyntaxKind.EqualsExpression,
+                                                IdentifierName("stateMachine"),
+                                                LiteralExpression(
+                                                    SyntaxKind.NullLiteralExpression)),
+                                            Block(
+                                                SingletonList<StatementSyntax>(
+                                                    ExpressionStatement(
+                                                        AssignmentExpression(
+                                                            SyntaxKind.SimpleAssignmentExpression,
+                                                            IdentifierName("stateMachine"),
+                                                            InvocationExpression(
+                                                                MemberAccessExpression(
+                                                                    SyntaxKind.SimpleMemberAccessExpression,
+                                                                    GenericName(
+                                                                        Identifier("StateMachine"))
+                                                                    .WithTypeArgumentList(
+                                                                        TypeArgumentList(
+                                                                            SeparatedList<TypeSyntax>(
+                                                                                new SyntaxNodeOrToken[]{
+                                                                                    IdentifierName("TS"), // TODO
+                                                                                    Token(SyntaxKind.CommaToken),
+                                                                                    IdentifierName("ExecutionTransition")}))),// TODO
+                                                                    IdentifierName("CreateState")))
+                                                            .WithArgumentList(
+                                                                ArgumentList(
+                                                                    SingletonSeparatedList<ArgumentSyntax>(
+                                                                        Argument(
+                                                                            ThisExpression()))))))))),
+                                        ReturnStatement(
+                                            IdentifierName(StateMachineStateFieldName))))))),
+                    FieldDeclaration(
+                        VariableDeclaration(
+                            GenericName(
+                                Identifier("StateMachineState"))
+                            .WithTypeArgumentList(
+                                TypeArgumentList(
+                                    SeparatedList<TypeSyntax>(
+                                        new SyntaxNodeOrToken[]{
+                                            IdentifierName("TS"),// TODO
+                                            Token(SyntaxKind.CommaToken),
+                                            IdentifierName("ExecutionTransition"),// TODO
+                                            Token(SyntaxKind.CommaToken),
+                                            IdentifierName("GeneratedExecutable")}))))// TODO
+                        .WithVariables(
+                            SingletonSeparatedList<VariableDeclaratorSyntax>(
+                                VariableDeclarator(
+                                    Identifier("stateMachine")))))
+                    .WithModifiers(
+                        TokenList(
+                            Token(SyntaxKind.PrivateKeyword)))});
+        }
+
+        private ClassDeclarationSyntax AddLog(ClassDeclarationSyntax c)
+        {
+            var prefix = "// ";
+            var output = new SyntaxTrivia[] {
+                Comment(prefix),
+                Comment(prefix + " Generated on " + DateTime.Now.ToString()),
+                Comment(prefix)
+            }
+                    .Concat(logEntries.Select(m => Comment(prefix + (m ?? ""))))
+                    .Concat(new SyntaxTrivia[] { Comment(prefix) })
+                    .ToArray();
+
+            return c.WithCloseBraceToken(
+            Token(TriviaList(output),
+                SyntaxKind.CloseBraceToken,
+                TriviaList()));
+        }
+
+    }
 }

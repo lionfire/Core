@@ -5,29 +5,13 @@ using TS = LionFire.Execution.ExecutionState2;
 
 namespace LionFire.StateMachines.Class.Tests
 {
-    [StateMachine(typeof(TS), typeof(ExecutionTransition), GenerateStateMachineFlags.None, IncludeStates = TS.Disposed)]
+    [StateMachine(typeof(ExecutionState2), typeof(ExecutionTransition), GenerateStateMachineFlags.None, IncludeTransitions = ExecutionTransition.Dispose
+        //, IncludeStates = ExecutionState2.Disposed
+        )]
     //StateMachineStatePropertyName ="sm",
     //, ExecutionTransition.Initialize | ExecutionTransition.Start | ExecutionTransition.Finish | ExecutionTransition.CleanUp
     public partial class GeneratedExecutable
     {
-
-        #region To generate
-
-        public StateMachineState<TS, ExecutionTransition, GeneratedExecutable> StateMachine
-        {
-            get
-            {
-                if (stateMachine == null) stateMachine = StateMachine<TS, ExecutionTransition>.CreateState(this);
-            }
-        }
-        private StateMachineState<TS, ExecutionTransition, GeneratedExecutable> stateMachine;
-
-        #endregion
-
-        public GeneratedExecutable()
-        {
-        }
-
         public void AfterUninitialized()
         {
             Log("AfterUninitialized");
@@ -58,9 +42,13 @@ namespace LionFire.StateMachines.Class.Tests
             Log("OnFinished");
         }
 
+        #region Log for testing
+
         public Queue<string> LogMessageQueue { get; set; } = new Queue<string>();
 
         private void Log(string msg) => LogMessageQueue.Enqueue(msg);
+
+        #endregion
     }
 
     //    public static class Transitions
@@ -72,14 +60,7 @@ namespace LionFire.StateMachines.Class.Tests
     //            From = States.Uninitialized,
     //            To = States.Ready,
     //        };
-    //        public static StateTransitionTypeBinding<TS, ExecutionTransition, GeneratedExecutable> Start = new StateTransitionTypeBinding<TS, ExecutionTransition, GeneratedExecutable>(ExecutionTransition.Initialize)
-    //        {
-    //            Info = StateMachine<TS, ExecutionTransition>.GetTransitionInfo(ExecutionTransition.Start),
-    //            OnTransitioningMethod = (owner) => owner.OnStarting(),
-    //            From = States.Ready,
-    //            To = States.Running,
-    //        };
-    //    }
+
     //    public static class States
     //    {
     //        public static StateTypeBinding<TS, ExecutionTransition, GeneratedExecutable> Uninitialized = new StateTypeBinding<TS, ExecutionTransition, GeneratedExecutable>(TS.Uninitialized)
@@ -87,24 +68,7 @@ namespace LionFire.StateMachines.Class.Tests
     //            //EnteringStateAction = owner => owner.OnReady(),
     //            OnLeaving = owner => owner.AfterUninitialized(),
     //        };
-    //        public static StateTypeBinding<TS, ExecutionTransition, GeneratedExecutable> Ready = new StateTypeBinding<TS, ExecutionTransition, GeneratedExecutable>(TS.Ready)
-    //        {
-    //            OnEntering = owner => owner.OnReady(),
-    //            OnLeaving = owner => owner.AfterReady(),
-    //        };
-    //        public static StateTypeBinding<TS, ExecutionTransition, GeneratedExecutable> Running = new StateTypeBinding<TS, ExecutionTransition, GeneratedExecutable>(TS.Running)
-    //        {
-    //            //EnteringStateAction = owner => owner.OnReady(),
-    //            //LeavingStateAction = owner => owner.AfterReady(),
-    //        };
-    //        public static StateTypeBinding<TS, ExecutionTransition, GeneratedExecutable> Finished = new StateTypeBinding<TS, ExecutionTransition, GeneratedExecutable>(TS.Finished)
-    //        {
-    //            OnEntering = owner => owner.OnFinished(),
-    //            //LeavingStateAction = owner => owner.AfterReady(),
-    //        };
-    //    }
-    //    public StateMachineState<TS, ExecutionTransition, GeneratedExecutable> StateMachine => stateMachine;
-    //    private StateMachineState<TS, ExecutionTransition, GeneratedExecutable> stateMachine;
-    //}
+  
+ 
 
 }
