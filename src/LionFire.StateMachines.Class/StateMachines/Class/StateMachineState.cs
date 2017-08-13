@@ -149,7 +149,7 @@ namespace LionFire.StateMachines.Class
 
         public bool TryChangeState(TTransition transition, object transitionData = null)
         {
-            throw new NotImplementedException();
+            return TryChangeState(StateInfoProvider<TState, TTransition, TOwner>.Default.GetTransitionTypeBinding(transition), transitionData);
         }
 
         public void ChangeState(TTransition transition, object transitionData = null)
@@ -186,12 +186,12 @@ namespace LionFire.StateMachines.Class
                 //    TransitionData = transitionData,
                 //};
 
-                DoChangeState(transitionBinding);
+                DoChangeState(transitionBinding, transitionData);
                 return true;
             }
         }
 
-        private void DoChangeState(StateTransitionTypeBinding<TState, TTransition, TOwner> transitionBinding)
+        private void DoChangeState(StateTransitionTypeBinding<TState, TTransition, TOwner> transitionBinding, object transitionData = null)
         {
             var parameters = new object[] { };
 

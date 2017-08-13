@@ -16,6 +16,19 @@ namespace LionFire.StateMachines.Class.Tests
         {
             Log("AfterUninitialized");
         }
+
+        public bool InitializePrereq { get; set; }
+        public int CanInitializeCount { get; set; }
+        public bool CanInitialize
+        {
+            get
+            {
+                CanInitializeCount++;
+                return InitializePrereq;
+            }
+        }
+
+
         public void OnInitialize()
         {
             Log("OnInitialize");
@@ -68,7 +81,7 @@ namespace LionFire.StateMachines.Class.Tests
     //            //EnteringStateAction = owner => owner.OnReady(),
     //            OnLeaving = owner => owner.AfterUninitialized(),
     //        };
-  
- 
+
+
 
 }
