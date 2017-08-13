@@ -3,7 +3,7 @@
 
   <PropertyGroup>
     <VersionPrefix>1.0.2</VersionPrefix>
-    <Version>1.0.2.15</Version>
+    <Version>1.0.2.23</Version>
     <TargetFramework>netstandard1.3</TargetFramework>
     <AssemblyName>LionFire.Core</AssemblyName>
     <PackageId>LionFire.Core</PackageId>
@@ -21,7 +21,10 @@ This package is typically not added on its own, but is a dependency required by 
     <PackageTags>utility collections</PackageTags>
 
   
-    <PostBuildEvent>xcopy $(TargetDir)\*.nupkg c:\st\lionfire-nuget</PostBuildEvent>
+    <RunPostBuildEvent>Always</RunPostBuildEvent>
+
+  
+    
   </PropertyGroup>
 
   <ItemGroup>
@@ -50,6 +53,7 @@ This package is typically not added on its own, but is a dependency required by 
   <PropertyGroup Condition=" '$(Configuration)'=='Release'">
     <BumpRevision>True</BumpRevision>
     <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
+    <PostBuildEvent></PostBuildEvent>
   </PropertyGroup>
 
   <!--<PropertyGroup Condition=" '$(Configuration)'=='Debug'">
