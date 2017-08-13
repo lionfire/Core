@@ -3,5 +3,13 @@
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <BaseIntermediateOutputPath>$(MSBuildThisFileDirectory)..\obj\$(MSBuildProjectName)\</BaseIntermediateOutputPath>
     <BaseOutputPath Condition=" '$(BaseOutputPath)' == '' ">$(MSBuildThisFileDirectory)..\bin\$(MSBuildProjectName)\</BaseOutputPath>
+
+    <Authors>Jared Thirsk</Authors>
+    <Copyright>2017 Jared Thirsk</Copyright>
+    <PackageLicenseUrl>https://github.com/jaredthirsk/Core/blob/master/LICENSE</PackageLicenseUrl>
+    <PackageProjectUrl>http://open.lionfire.software/</PackageProjectUrl>
+    <PackageIconUrl>https://avatars3.githubusercontent.com/u/19334699?v=3&amp;s=200</PackageIconUrl>
+    <RepositoryUrl>https://github.com/jaredthirsk/Core</RepositoryUrl>
+    <NeutralLanguage>English (United States)</NeutralLanguage>
   </PropertyGroup>
 </Project>
