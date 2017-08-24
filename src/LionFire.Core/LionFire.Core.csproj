@@ -3,7 +3,7 @@
 
   <PropertyGroup>
     <VersionPrefix>1.0.2</VersionPrefix>
-    <Version>1.0.2.7</Version>
+    <Version>1.0.2.11-dev0032</Version>
     <TargetFramework>netstandard1.3</TargetFramework>
     <AssemblyName>LionFire.Core</AssemblyName>
     <PackageId>LionFire.Core</PackageId>
@@ -16,7 +16,6 @@
     <Description>Core interfaces, data structures and attributes required by the LionFire.Core suite of mini-frameworks.
 
 This package is typically not added on its own, but is a dependency required by many LionFire packages.</Description>
-    <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
     <Authors>Jared Thirsk</Authors>
     <Copyright>2017 Jared Thirsk</Copyright>
     <PackageLicenseUrl>https://github.com/jaredthirsk/Core/blob/master/LICENSE</PackageLicenseUrl>
@@ -56,11 +55,13 @@ This package is typically not added on its own, but is a dependency required by 
 
   <PropertyGroup Condition=" '$(Configuration)'=='Release'">
     <BumpRevision>True</BumpRevision>
+    <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
   </PropertyGroup>
 
   <PropertyGroup Condition=" '$(Configuration)'=='Debug'">
     <BumpLabel>dev</BumpLabel>
     <BumpLabelDigits>4</BumpLabelDigits>
+    <GeneratePackageOnBuild>False</GeneratePackageOnBuild>
   </PropertyGroup>
 
 </Project>
