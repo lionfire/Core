@@ -3,7 +3,7 @@
 
   <PropertyGroup>
     <VersionPrefix>1.0.2</VersionPrefix>
-    <Version>1.0.2.11-dev0032</Version>
+    <Version>1.0.2.11-dev0037</Version>
     <TargetFramework>netstandard1.3</TargetFramework>
     <AssemblyName>LionFire.Core</AssemblyName>
     <PackageId>LionFire.Core</PackageId>
