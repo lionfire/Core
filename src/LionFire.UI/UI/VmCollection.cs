@@ -59,7 +59,7 @@ namespace LionFire.UI
         /// </param>
         public VmCollection(IEnumerable<TModel> models, IViewModelProvider viewModelProvider = null, object context = null, bool autoFetch = true, IDispatcher dispatcher = null, bool useApplicationDispatcher = true)
         {
-            _readOnlyModels = _models;
+            _readOnlyModels = models;
             _context = context;
 
             _viewModelProvider = viewModelProvider;

@@ -2,10 +2,9 @@
 
   <PropertyGroup>
     <VersionPrefix>0.1.0-alpha</VersionPrefix>
-    <TargetFrameworks>netstandard1.6</TargetFrameworks>
+    <TargetFramework>netstandard2.0</TargetFramework>
     <AssemblyName>LionFire.Execution.Hosting</AssemblyName>
     <PackageId>LionFire.Execution.Hosting</PackageId>
-    <NetStandardImplicitPackageVersion>1.6.1</NetStandardImplicitPackageVersion>
     <PackageTargetFallback Condition=" '$(TargetFramework)' == 'netstandard1.6' ">$(PackageTargetFallback);dnxcore50</PackageTargetFallback>
     <GenerateAssemblyConfigurationAttribute>false</GenerateAssemblyConfigurationAttribute>
     <GenerateAssemblyCompanyAttribute>false</GenerateAssemblyCompanyAttribute>

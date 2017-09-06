@@ -131,10 +131,12 @@ namespace LionFire
         #endregion
 
         public static TextWriter StandardOutput { get; private set; }
-
+        
         public static Stream StandardOutputStream
         {
-            get { return standardOutputStream; }
+            get {
+                if (standardOutputStream == null) { StandardOutputStream = Console.OpenStandardOutput(); }
+                return standardOutputStream; }
             set
             {
                 standardOutputStream = value;
@@ -147,8 +149,7 @@ namespace LionFire
 
         static LionFireEnvironment()
         {
-            Directories.EnsureAllDirectoriesExist();
-            StandardOutputStream = Console.OpenStandardOutput();
+            Directories.EnsureAllDirectoriesExist();            
         }
 
         #endregion

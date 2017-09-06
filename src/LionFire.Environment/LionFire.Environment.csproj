@@ -3,10 +3,9 @@
   <PropertyGroup>
     <Description>Standardized approach to commonly used runtime info, such as program data, user directories, program name, company name, etc.</Description>
     <VersionPrefix>0.0.4</VersionPrefix>
-    <TargetFramework>netstandard1.5</TargetFramework>
+    <TargetFramework>netstandard2.0</TargetFramework>
     <AssemblyName>LionFire.Environment</AssemblyName>
     <PackageId>LionFire.Environment</PackageId>
-    <NetStandardImplicitPackageVersion>1.6.1</NetStandardImplicitPackageVersion>
     <PackageTargetFallback Condition=" '$(TargetFramework)' == 'netstandard1.5' ">$(PackageTargetFallback);dnxcore50</PackageTargetFallback>
     <GenerateAssemblyConfigurationAttribute>false</GenerateAssemblyConfigurationAttribute>
     <GenerateAssemblyCompanyAttribute>false</GenerateAssemblyCompanyAttribute>
