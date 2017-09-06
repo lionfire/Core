@@ -12,14 +12,59 @@ namespace LionFire.StateMachines.Class.Tests
     //, ExecutionTransition.Initialize | ExecutionTransition.Start | ExecutionTransition.Finish | ExecutionTransition.CleanUp
     public partial class GeneratedExecutable
     {
-        public void AfterUninitialized()
+
+        public bool InitializePrereq { get; set; } = true;
+        public int CanInitializeCount { get; set; }
+        public bool CanInitialize
         {
-            Log("AfterUninitialized");
+            get
+            {
+                CanInitializeCount++;
+                return InitializePrereq;
+            }
         }
+
+
         public void OnInitialize()
         {
             Log("OnInitialize");
         }
+
+        #region Leave Uninitialized
+
+        public bool LeaveUninitializedPrereq { get; set; } = true;
+        public int CanLeaveUninitializedCount { get; set; }
+        public bool CanLeaveUninitialized
+        {
+            get
+            {
+                CanLeaveUninitializedCount++;
+                return LeaveUninitializedPrereq;
+            }
+        }
+
+        public void AfterUninitialized()
+        {
+            Log("AfterUninitialized");
+        }
+
+        #endregion
+
+        #region CanReady
+
+        public bool ReadyPrereq { get; set; } = true;
+        public int CanReadyCount { get; set; }
+        public bool CanReady
+        {
+            get
+            {
+                CanReadyCount++;
+                return ReadyPrereq;
+            }
+        }
+        
+        #endregion
+
         public void OnReady()
         {
             Log("OnReady");
@@ -68,7 +113,7 @@ namespace LionFire.StateMachines.Class.Tests
     //            //EnteringStateAction = owner => owner.OnReady(),
     //            OnLeaving = owner => owner.AfterUninitialized(),
     //        };
-  
- 
+
+
 
 }
