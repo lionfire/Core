@@ -3,7 +3,7 @@
 
   <PropertyGroup>
     <VersionPrefix>1.0.2</VersionPrefix>
-    <Version>1.0.2.43-dev0062</Version>
+    <Version>1.0.2.47</Version>
     <TargetFramework>netstandard2.0</TargetFramework>
     <AssemblyName>LionFire.Core</AssemblyName>
     <PackageId>LionFire.Core</PackageId>
@@ -31,7 +31,6 @@ This package is typically not added on its own, but is a dependency required by 
   <ItemGroup>
     <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="2.0.0" />
     <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="2.0.0" />
-    <PackageReference Include="MSBump" Version="2.3.0" />
     <PackageReference Include="System.Collections.Immutable" Version="1.4.0" />
     <PackageReference Include="System.ComponentModel" Version="4.3.0" />
     <PackageReference Include="System.Linq.Parallel" Version="4.3.0" />
