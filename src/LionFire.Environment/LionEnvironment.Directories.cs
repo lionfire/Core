@@ -19,8 +19,10 @@ namespace LionFire
         {
             #region Company
 
-            public static string CompanyProgramDataDir {
-                get {
+            public static string CompanyProgramDataDir
+            {
+                get
+                {
 #if NET461 || NET462
                     return Environment.GetFolderPath(Environment.SpecialFolder.CommonApplicationData);
 #else
@@ -35,8 +37,10 @@ namespace LionFire
 
             #region User
 
-            public static string UserProfile {
-                get {
+            public static string UserProfile
+            {
+                get
+                {
 #if NET462 || NET461 || NET451
                     return Environment.GetFolderPath(Environment.SpecialFolder.UserProfile);
 #else
@@ -57,7 +61,15 @@ namespace LionFire
 
             #region Logging
 
-            public static string LogsDir { get { return Path.Combine(CompanyProgramDataDir, "Logs", Assembly.GetEntryAssembly().GetName().Name); } }
+            public static string LogsDir
+            {
+                get
+                {
+                    var assembly = Assembly.GetEntryAssembly();
+                    if (CompanyProgramDataDir == null || assembly == null) return null;
+                    return Path.Combine(CompanyProgramDataDir, "Logs", assembly.GetName().Name);
+                }
+            }
 
             #endregion
 
