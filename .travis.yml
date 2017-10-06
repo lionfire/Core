@@ -1,6 +1,6 @@
 language: csharp
 mono: none
-dotnet: 1.0.4
+dotnet: 2.0.0
 dist: trusty
 install:
  - dotnet restore Core.sln
@@ -8,5 +8,5 @@ install:
 
 script:
  - dotnet build -c R-Core-CI Core.sln
- - dotnet test src/LionFire.StateMachines.Class.Tests/LionFire.StateMachines.Class.Tests.csproj
+# - dotnet test src/LionFire.StateMachines.Class.Tests/LionFire.StateMachines.Class.Tests.csproj
 # - mono ./testrunner/xunit.runners.1.9.2/tools/xunit.console.clr4.exe ./MyProject.Tests/bin/Release/MyProject.Tests.dll
