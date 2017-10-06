@@ -5,12 +5,16 @@
     <AssemblyName>LionFire.Execution.Roslyn.Host</AssemblyName>
     <OutputType>Exe</OutputType>
     <PackageId>LionFire.Execution.Roslyn.Host</PackageId>
-    <RuntimeFrameworkVersion>1.1.2</RuntimeFrameworkVersion>
+    <!--<RuntimeFrameworkVersion>1.1.2</RuntimeFrameworkVersion>-->
     <PackageTargetFallback>$(PackageTargetFallback);dnxcore50</PackageTargetFallback>
     <GenerateAssemblyConfigurationAttribute>false</GenerateAssemblyConfigurationAttribute>
     <GenerateAssemblyCompanyAttribute>false</GenerateAssemblyCompanyAttribute>
     <GenerateAssemblyProductAttribute>false</GenerateAssemblyProductAttribute>
   </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="NETStandard.Library" Version="2.0.0" />
+  </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\LionFire.Core\LionFire.Core.csproj" />

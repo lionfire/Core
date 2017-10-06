@@ -30,7 +30,7 @@ namespace LionFire.Assets
 
         public static ReturnType Load<ReturnType>(this string assetSubPath, Type assetType, object context = null)
         {
-            return (ReturnType) typeof(AssetProviderExtensions).GetMethod("Load", new Type[] { typeof(string), typeof(object) }).MakeGenericMethod(assetType).Invoke(null, new object[] { assetSubPath, context });
+            return (ReturnType)typeof(AssetProviderExtensions).GetMethod("Load", new Type[] { typeof(string), typeof(object) }).MakeGenericMethod(assetType).Invoke(null, new object[] { assetSubPath, context });
         }
         public static T Load<T>(this string assetSubPath, object context = null)
             where T : class
@@ -78,7 +78,15 @@ namespace LionFire.Assets
         {
             (obj as INotifyOnSaving)?.OnSaving();
 
-            var inst = obj.ToInstantiatorOrObject(); // FUTURE - Use instantiation framework?
+            object inst;
+            if (persistenceContext==null||persistenceContext.AllowInstantiator != false)
+            {
+                inst = obj.ToInstantiatorOrObject(); // FUTURE - Use instantiation framework?
+            }
+            else
+            {
+                inst = obj;
+            }
 
             if (persistenceContext == null)
             {

@@ -11,6 +11,8 @@ namespace LionFire.Persistence
         public string RootPath { get; set; }
         public object RootObject { get; set; }
 
+        public bool? AllowInstantiator { get; set; } // REVIEW
+
         /// <summary>
         /// Defaults to typeof(object) which will save the full type information.
         /// </summary>
