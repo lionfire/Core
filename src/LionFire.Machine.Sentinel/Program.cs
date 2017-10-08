@@ -7,6 +7,7 @@ using Microsoft.AspNetCore;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
+using LionFire.Applications.Hosting;
 
 namespace LionFire.Machine.Sentinel
 {
@@ -14,7 +15,13 @@ namespace LionFire.Machine.Sentinel
     {
         public static void Main(string[] args)
         {
-            BuildWebHost(args).Run();
+
+            var app = new AppHost()
+                .AddJsonAssetProvider()
+            //.RunNowAndWait(async () => await Task.Run(()=>BuildWebHost(args).Run()))
+            //;
+            .RunNowAndWait(() => BuildWebHost(args).Run());
+            //BuildWebHost(args).Run();
         }
 
         public static IWebHost BuildWebHost(string[] args) =>

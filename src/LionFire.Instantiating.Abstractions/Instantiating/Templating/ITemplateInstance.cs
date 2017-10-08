@@ -10,10 +10,15 @@ namespace LionFire.Instantiating
     {
         //ITemplate Template { get; set; }
     }
-    public interface ITemplateInstance<T> : ITemplateInstance
-        where T : ITemplate
+    public interface IInstanceFor<T> 
     {
          T Template { get; set; }
+    }
+
+    public interface ITemplateInstance<T> : ITemplateInstance, IInstanceFor<T>
+        where T : ITemplate
+    {
+         new T Template { get; set; }
     }
 
     public static class ITemplateInstanceExtensions

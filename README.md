@@ -1,7 +1,7 @@
 
 Target    | SDK Version | OS           | Status
 --------- | ----------- | ---          | ---
-.NET Core | 1.0.4       | Ubuntu 14.04 | [![Build Status](https://travis-ci.org/lionfire/Core.svg?branch=master)](https://travis-ci.org/lionfire/Core)
+.NET Core | 2.0.0       | Ubuntu 14.04 | [![Build Status](https://travis-ci.org/lionfire/Core.svg?branch=master)](https://travis-ci.org/lionfire/Core)
 
 
 # LionFire.Core

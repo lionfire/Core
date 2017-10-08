@@ -52,6 +52,16 @@ namespace LionFire.Applications.Hosting
         /// <summary>
         /// Start application and wait until all ApplicationTasks with WaitForComplete = true to complete.
         /// </summary>
+        public static async Task<IAppHost> RunNowAndWait(this IAppHost host, Action runMethod)
+        {
+            if (runMethod != null) host.Add(new AppTask(runMethod));
+            await host.Run();
+            return host;
+        }
+
+        /// <summary>
+        /// Start application and wait until all ApplicationTasks with WaitForComplete = true to complete.
+        /// </summary>
         public static async Task<IAppHost> RunNowAndWait(this IAppHost host, Func<Task> runMethod = null)
         {
             if (runMethod != null) host.Add(new AppTask(runMethod));
@@ -60,6 +70,12 @@ namespace LionFire.Applications.Hosting
         }
 
         public static IAppHost Run(this IAppHost host, Func<Task> runMethod)
+        {
+            if (runMethod != null) host.Add(new AppTask(runMethod));
+            host.Run();
+            return host;
+        }
+        public static IAppHost Run(this IAppHost host, Action runMethod)
         {
             if (runMethod != null) host.Add(new AppTask(runMethod));
             host.Run();

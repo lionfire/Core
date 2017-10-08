@@ -5,7 +5,6 @@
     <TargetFramework>netstandard2.0</TargetFramework>
     <AssemblyName>LionFire.Execution.Hosting</AssemblyName>
     <PackageId>LionFire.Execution.Hosting</PackageId>
-    <PackageTargetFallback Condition=" '$(TargetFramework)' == 'netstandard1.6' ">$(PackageTargetFallback);dnxcore50</PackageTargetFallback>
     <GenerateAssemblyConfigurationAttribute>false</GenerateAssemblyConfigurationAttribute>
     <GenerateAssemblyCompanyAttribute>false</GenerateAssemblyCompanyAttribute>
     <GenerateAssemblyProductAttribute>false</GenerateAssemblyProductAttribute>

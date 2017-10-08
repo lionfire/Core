@@ -22,8 +22,6 @@ using LionFire.Validation;
 namespace LionFire.Assets.Providers.FileSystem
 {
 
-
-
     // FUTURE?
     //[System.AttributeUsage(AttributeTargets.Class, Inherited = false, AllowMultiple = true)]
     //sealed class ContextPathAttribute : Attribute
@@ -154,10 +152,7 @@ namespace LionFire.Assets.Providers.FileSystem
 
         Task<ValidationContext> IInitializable2.Initialize()
         {
-            if (RootDir == null)
-            {
-                RootDir = LionFireEnvironment.AppProgramDataDir;
-            }
+            InitRootDir();
 
             return Task.FromResult(new ValidationContext()
                 .IsTrue(!string.IsNullOrEmpty(RootDir), () => "RootDir not set after trying to set it from LionFireEnvironment.AppProgramDataDir")

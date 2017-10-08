@@ -4,7 +4,7 @@
     <TargetFramework>netstandard2.0</TargetFramework>
     <AssemblyName>LionFire.Applications</AssemblyName>
     <PackageId>LionFire.Applications</PackageId>
-    <GeneratePackageOnBuild>False</GeneratePackageOnBuild>
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <Description>Fluent application builder, inspired by ASP.NET Core but can be used to quickly build any type of application.  
 
 Reference this package in your main executable, and the related LionFire.Applications.Abstractions package in DLLs that can help build applications.</Description>
@@ -16,11 +16,11 @@ Reference this package in your main executable, and the related LionFire.Applica
     <PackageTags>DependencyInjection AppBuilder</PackageTags>
     <NeutralLanguage>en-US</NeutralLanguage>
     <Authors>Jared Thirsk</Authors>
+    <Version>2.0.1</Version>
   </PropertyGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\LionFire.Applications.Abstractions\LionFire.Applications.Abstractions.csproj" />
-    <ProjectReference Include="..\LionFire.Core\LionFire.Core.csproj" />
     <ProjectReference Include="..\LionFire.Persistence.Assets\LionFire.Persistence.Assets.csproj" />
     <ProjectReference Include="..\LionFire.Persistence.Assets.Abstractions\LionFire.Persistence.Assets.Abstractions.csproj" />
     <ProjectReference Include="..\LionFire.Environment\LionFire.Environment.csproj" />
@@ -36,5 +36,9 @@ Reference this package in your main executable, and the related LionFire.Applica
     <PackageReference Include="Microsoft.Extensions.Options.ConfigurationExtensions" Version="2.0.0" />
     <PackageReference Include="System.Threading.Tasks.Parallel" Version="4.3.0" />
   </ItemGroup>
+
+  <Target Name="PostBuild" AfterTargets="PostBuildEvent">
+    <Exec Command="xcopy $(TargetDir)*.nupkg c:\st\lionfire-nuget" />
+  </Target>
 
 </Project>

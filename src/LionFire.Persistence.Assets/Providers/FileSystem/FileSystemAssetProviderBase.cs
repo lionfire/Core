@@ -12,10 +12,23 @@ namespace LionFire.Assets.Providers.FileSystem
     {
         public string RootDir { get; set; }
 
+        #region Construction and Initialization
+
         public FileSystemAssetProviderBase(string rootDir)
         {
             RootDir = rootDir;
         }
+
+        protected void InitRootDir()
+        {
+            if (RootDir == null)
+            {
+                RootDir = LionFireEnvironment.AppProgramDataDir;
+            }
+        }
+
+        #endregion
+
 
         public string GetPath<T>(string assetSubpath = null, PersistenceContext context = null)
         {

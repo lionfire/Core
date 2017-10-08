@@ -19,10 +19,10 @@
     <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
     <Authors>Jared Thirsk</Authors>
     <PackageReleaseNotes></PackageReleaseNotes>
+    <Version>2.0.0</Version>
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\LionFire.Core\LionFire.Core.csproj" />
     <ProjectReference Include="..\LionFire.Execution\LionFire.Execution.csproj" />
     <ProjectReference Include="..\LionFire.Execution.Abstractions\LionFire.Execution.Abstractions.csproj" />
   </ItemGroup>

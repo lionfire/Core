@@ -34,12 +34,16 @@ namespace LionFire.Applications.Hosting
         }
 
     }
-    //public static class AppInfoExtensions
-    //{
-    //    public static IAppHost SetAppInfo(this IAppHost app, string companyName, string programName, string appDataDirName)
-    //    {
-    //        LionFireEnvironment.CompanyName = companyName;
-    //        LionFireEnvironment.ProgramName = programName
-    //    }
-    //}
+    public static class AppInfoExtensions
+    {
+        // FUTURE ENH: IComposableAdding and IReplaces, not best used here but maybe elssewhere?
+        public static IAppHost AppInfo(this IAppHost app, AppInfo appInfo)
+            //string companyName, string programName, string appDataDirName)
+        {
+            app.Add(appInfo);
+            return app;
+            //LionFireEnvironment.CompanyName = companyName;
+            //LionFireEnvironment.ProgramName = programName
+        }
+    }
 }

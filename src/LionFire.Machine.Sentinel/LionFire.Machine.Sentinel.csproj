@@ -10,6 +10,8 @@
   </ItemGroup>
 
   <ItemGroup>
+    <PackageReference Include="LionFire.Applications" Version="2.0.0" />
+    <PackageReference Include="LionFire.Serialization.Json.Newtonsoft" Version="2.0.0" />
     <PackageReference Include="Microsoft.AspNetCore.All" Version="2.0.0" />
   </ItemGroup>
 

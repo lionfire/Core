@@ -1,11 +1,9 @@
-﻿using LionFire.Applications;
-using LionFire.Applications.Hosting;
+﻿using LionFire.Applications.Hosting;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace LionFire.Plugins
