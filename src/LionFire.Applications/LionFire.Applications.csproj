@@ -38,7 +38,7 @@ Reference this package in your main executable, and the related LionFire.Applica
   </ItemGroup>
 
   <Target Name="PostBuild" AfterTargets="PostBuildEvent">
-    <Exec Command="xcopy $(TargetDir)*.nupkg c:\st\lionfire-nuget" />
+    <Exec Command="rem xcopy $(TargetDir)*.nupkg c:\st\lionfire-nuget" />
   </Target>
 
 </Project>

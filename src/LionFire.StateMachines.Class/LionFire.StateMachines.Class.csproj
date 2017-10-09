@@ -1,5 +1,5 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
-  <UsingTask TaskName="GetCurrentBuildVersion" AssemblyFile="$(MSBuildThisFileFullPath)\..\..\..\deps\DC.Build.Tasks.dll" />
+  <!--<UsingTask TaskName="GetCurrentBuildVersion" AssemblyFile="$(MSBuildThisFileFullPath)\..\..\..\deps\DC.Build.Tasks.dll" />-->
 
 
   <PropertyGroup>
@@ -33,14 +33,14 @@
   </ItemGroup>
 
 
-  <Target Name="BeforeBuildActionsProject1" BeforeTargets="BeforeBuild">
+  <!--<Target Name="BeforeBuildActionsProject1" BeforeTargets="BeforeBuild">
     <GetCurrentBuildVersion BaseVersion="$(FileVersion)">
       <Output TaskParameter="Version" PropertyName="FileVersion" />
     </GetCurrentBuildVersion>
     <PropertyGroup>
       <AssemblyVersion>$(FileVersion)</AssemblyVersion>
     </PropertyGroup>
-  </Target>
+  </Target>-->
 
   
 </Project>
