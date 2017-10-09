@@ -1,6 +1,6 @@
 ﻿using Xunit;
 using LionFire.Execution;
-using ExecutionState = LionFire.Execution.ExecutionState2;
+using ExecutionState = LionFire.Execution.ExecutionState;
 using System;
 
 namespace LionFire.StateMachines.Class.Tests
@@ -17,7 +17,7 @@ namespace LionFire.StateMachines.Class.Tests
         [Fact]
         public void TransitionBinding()
         {
-            var binding = StateInfoProvider<ExecutionState2, ExecutionTransition, GeneratedExecutable>.Default.GetTransitionTypeBinding(ExecutionTransition.Initialize);
+            var binding = StateInfoProvider<ExecutionState, ExecutionTransition, GeneratedExecutable>.Default.GetTransitionTypeBinding(ExecutionTransition.Initialize);
 
             Assert.NotNull(binding.CanTransitionMethod);
             Assert.Equal("get_CanInitialize", binding.CanTransitionMethod.Name);
@@ -30,7 +30,7 @@ namespace LionFire.StateMachines.Class.Tests
         [Fact]
         public void StateBinding()
         {
-            var binding = StateInfoProvider<ExecutionState2, ExecutionTransition, GeneratedExecutable>.Default.GetStateTypeBinding(ExecutionState2.Ready);
+            var binding = StateInfoProvider<ExecutionState, ExecutionTransition, GeneratedExecutable>.Default.GetStateTypeBinding(ExecutionState.Ready);
 
             //Assert.NotNull(binding.CanEnter);
             //Assert.NotNull(binding.CanLeave);

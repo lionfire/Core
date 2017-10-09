@@ -1,7 +1,7 @@
 ﻿// FUTURE
 //using Xunit;
 //using LionFire.Execution;
-//using ExecutionState = LionFire.Execution.ExecutionState2;
+//using ExecutionState = LionFire.Execution.ExecutionState;
 
 //namespace LionFire.StateMachines.Class.Tests
 //{

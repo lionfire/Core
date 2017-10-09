@@ -1,12 +1,12 @@
 using System.Collections.Generic;
 using System;
 using LionFire.Execution;
-using TS = LionFire.Execution.ExecutionState2;
+using TS = LionFire.Execution.ExecutionState;
 
 namespace LionFire.StateMachines.Class.Tests
 {
-    [StateMachine(typeof(ExecutionState2), typeof(ExecutionTransition), GenerateStateMachineFlags.None, IncludeTransitions = ExecutionTransition.Dispose
-        //, IncludeStates = ExecutionState2.Disposed
+    [StateMachine(typeof(ExecutionState), typeof(ExecutionTransition), GenerateStateMachineFlags.None, IncludeTransitions = ExecutionTransition.Dispose
+        //, IncludeStates = ExecutionState.Disposed
         )]
     //StateMachineStatePropertyName ="sm",
     //, ExecutionTransition.Initialize | ExecutionTransition.Start | ExecutionTransition.Finish | ExecutionTransition.CleanUp

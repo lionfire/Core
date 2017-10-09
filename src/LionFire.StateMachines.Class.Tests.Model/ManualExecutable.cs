@@ -5,7 +5,7 @@ using LionFire.Execution;
 namespace LionFire.StateMachines.Class.Tests
 {
 
-    [StateMachine(typeof(ExecutionState2), typeof(ExecutionTransition), GenerateStateMachineFlags.DisableGeneration)]
+    [StateMachine(typeof(ExecutionState), typeof(ExecutionTransition), GenerateStateMachineFlags.DisableGeneration)]
     //, ExecutionTransition.Initialize | ExecutionTransition.Start | ExecutionTransition.Finish | ExecutionTransition.CleanUp
     public partial class ManualExecutable
     {
@@ -22,16 +22,16 @@ namespace LionFire.StateMachines.Class.Tests
 
         public static class Transitions
         {
-            public static StateTransitionTypeBinding<ExecutionState2, ExecutionTransition, ManualExecutable> Initialize = new StateTransitionTypeBinding<ExecutionState2, ExecutionTransition, ManualExecutable>(ExecutionTransition.Initialize)
+            public static StateTransitionTypeBinding<ExecutionState, ExecutionTransition, ManualExecutable> Initialize = new StateTransitionTypeBinding<ExecutionState, ExecutionTransition, ManualExecutable>(ExecutionTransition.Initialize)
             {
-                Info = StateMachine<ExecutionState2, ExecutionTransition>.GetTransitionInfo(ExecutionTransition.Initialize),
+                Info = StateMachine<ExecutionState, ExecutionTransition>.GetTransitionInfo(ExecutionTransition.Initialize),
                 //OnTransitioningMethod = (owner) => owner.OnInitializing(),
                 From = States.Uninitialized,
                 To = States.Ready,
             };
-            public static StateTransitionTypeBinding<ExecutionState2, ExecutionTransition, ManualExecutable> Start = new StateTransitionTypeBinding<ExecutionState2, ExecutionTransition, ManualExecutable>(ExecutionTransition.Initialize)
+            public static StateTransitionTypeBinding<ExecutionState, ExecutionTransition, ManualExecutable> Start = new StateTransitionTypeBinding<ExecutionState, ExecutionTransition, ManualExecutable>(ExecutionTransition.Initialize)
             {
-                Info = StateMachine<ExecutionState2, ExecutionTransition>.GetTransitionInfo(ExecutionTransition.Start),
+                Info = StateMachine<ExecutionState, ExecutionTransition>.GetTransitionInfo(ExecutionTransition.Start),
                 //OnTransitioningMethod = (owner) => owner.OnStarting(),
                 From = States.Ready,
                 To = States.Running,
@@ -39,32 +39,32 @@ namespace LionFire.StateMachines.Class.Tests
         }
         public static class States
         {
-            public static StateTypeBinding<ExecutionState2, ExecutionTransition, ManualExecutable> Uninitialized = new StateTypeBinding<ExecutionState2, ExecutionTransition, ManualExecutable>(ExecutionState2.Uninitialized)
+            public static StateTypeBinding<ExecutionState, ExecutionTransition, ManualExecutable> Uninitialized = new StateTypeBinding<ExecutionState, ExecutionTransition, ManualExecutable>(ExecutionState.Uninitialized)
             {
                 //EnteringStateAction = owner => owner.OnReady(),
                 //OnLeaving = owner => owner.AfterUninitialized(),
             };
-            public static StateTypeBinding<ExecutionState2, ExecutionTransition, ManualExecutable> Ready = new StateTypeBinding<ExecutionState2, ExecutionTransition, ManualExecutable>(ExecutionState2.Ready)
+            public static StateTypeBinding<ExecutionState, ExecutionTransition, ManualExecutable> Ready = new StateTypeBinding<ExecutionState, ExecutionTransition, ManualExecutable>(ExecutionState.Ready)
             {
                 //OnEntering = owner => owner.OnReady(),
                 //OnLeaving = owner => owner.AfterReady(),
             };
-            public static StateTypeBinding<ExecutionState2, ExecutionTransition, ManualExecutable> Running = new StateTypeBinding<ExecutionState2, ExecutionTransition, ManualExecutable>(ExecutionState2.Running)
+            public static StateTypeBinding<ExecutionState, ExecutionTransition, ManualExecutable> Running = new StateTypeBinding<ExecutionState, ExecutionTransition, ManualExecutable>(ExecutionState.Running)
             {
                 //EnteringStateAction = owner => owner.OnReady(),
                 //LeavingStateAction = owner => owner.AfterReady(),
             };
-            public static StateTypeBinding<ExecutionState2, ExecutionTransition, ManualExecutable> Finished = new StateTypeBinding<ExecutionState2, ExecutionTransition, ManualExecutable>(ExecutionState2.Finished)
+            public static StateTypeBinding<ExecutionState, ExecutionTransition, ManualExecutable> Finished = new StateTypeBinding<ExecutionState, ExecutionTransition, ManualExecutable>(ExecutionState.Finished)
             {
                 //OnEntering = owner => owner.OnFinished(),
                 //LeavingStateAction = owner => owner.AfterReady(),
             };
         }
-        public StateMachineState<ExecutionState2, ExecutionTransition, ManualExecutable> StateMachine => stateMachine;
-        private StateMachineState<ExecutionState2, ExecutionTransition, ManualExecutable> stateMachine;
+        public StateMachineState<ExecutionState, ExecutionTransition, ManualExecutable> StateMachine => stateMachine;
+        private StateMachineState<ExecutionState, ExecutionTransition, ManualExecutable> stateMachine;
         private void InitStateMachine()
         {
-            stateMachine = StateMachine<ExecutionState2, ExecutionTransition>.CreateState(this);
+            stateMachine = StateMachine<ExecutionState, ExecutionTransition>.CreateState(this);
         }
 
         #endregion
