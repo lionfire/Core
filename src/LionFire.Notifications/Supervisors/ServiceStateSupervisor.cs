@@ -9,6 +9,7 @@ using LionFire.Notifications;
 using LionFire.Assets;
 using System.Threading;
 using System.Diagnostics;
+using LionFire.Persistence.Assets;
 
 namespace LionFire.Supervisors
 {
