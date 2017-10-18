@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using LionFire.Applications.Hosting;
+using System.Collections.ObjectModel;
 
 namespace LionFire.Machine.Sentinel
 {
@@ -15,9 +16,12 @@ namespace LionFire.Machine.Sentinel
     {
         public static void Main(string[] args)
         {
-
+            
             var app = new AppHost()
-                .AddJsonAssetProvider()
+                 .Add(new AppInfo("LionFire", "Machine", "Sentinel"))
+                 .AddJsonAssetProvider()
+            //.Host<HeartbeatMonitor>()  // TODO.  Monitors assets: HeartbeatMonitor, auto creates and starts SHeartbeatMonitor.
+
             //.RunNowAndWait(async () => await Task.Run(()=>BuildWebHost(args).Run()))
             //;
             .RunNowAndWait(() => BuildWebHost(args).Run());

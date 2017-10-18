@@ -5,6 +5,7 @@ using System.Text;
 using LionFire.Serialization;
 using LionFire.Collections;
 using LionFire.Meta;
+using Microsoft.Extensions.Logging;
 
 namespace LionFire.ObjectBus
 {
@@ -80,9 +81,9 @@ namespace LionFire.ObjectBus
 				throw new NotImplementedException("set_Key");
 			}
 		}
-        //#if AOT
+#if AOT
 		object IKeyed.Key { get { return Key; } }
-        //#endif
+#endif
 
 
         //    public string Key
@@ -144,7 +145,7 @@ namespace LionFire.ObjectBus
             }
         } private string host;
 
-        #endregion
+#endregion
 
 		public bool IsLocalhost {
 			get {
@@ -159,7 +160,7 @@ namespace LionFire.ObjectBus
 			}
 		}
 
-        #region Port
+#region Port
 
         [SerializeDefaultValue(false)]
         [SetOnce]
@@ -174,11 +175,11 @@ namespace LionFire.ObjectBus
             }
         } private string port;
 
-        #endregion
+#endregion
 
-        #endregion
+#endregion
 
-        #region Path
+#region Path
 
         [SetOnce]
         public virtual string Path
@@ -211,9 +212,9 @@ namespace LionFire.ObjectBus
 				//return chunks[chunks.Length - 1];
 			}
 		}
-        #endregion
+#endregion
         
-        #region Package, Location, Type
+#region Package, Location, Type
 
         [SerializeDefaultValue(false)]
         public string Package {
@@ -263,9 +264,9 @@ namespace LionFire.ObjectBus
 
 		private Type type;
 
-        #endregion
+#endregion
 
-        #region IOBase
+#region IOBase
 
         public virtual IOBaseProvider DefaultObjectStoreProvider {
 			get {
@@ -282,10 +283,10 @@ namespace LionFire.ObjectBus
         //    return this;
         //}
 
-        #endregion
+#endregion
 
 
-        #region ToHandle
+#region ToHandle
 
 #if !AOT
         public virtual IHandle<T> GetHandle<T>( T obj = null)
@@ -306,9 +307,9 @@ namespace LionFire.ObjectBus
 
         //#endif
 
-        #endregion
+#endregion
 
-        #region Children
+#region Children
 
         public virtual IReference GetChild(string subPath)
         {
@@ -333,11 +334,11 @@ namespace LionFire.ObjectBus
             return GetChild(sb.ToString());
         }
 
-        #endregion
+#endregion
 
-        #region Misc
+#region Misc
 
-        #region Object Overrides
+#region Object Overrides
 
         public override bool Equals(object obj)
         {
@@ -352,11 +353,11 @@ namespace LionFire.ObjectBus
             return Key.GetHashCode();
         }
 
-        #endregion
+#endregion
 
         private static ILogger l = Log.Get();
 
-        #endregion
+#endregion
 
 	}
 }

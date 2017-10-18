@@ -10,17 +10,20 @@ using System.ComponentModel;
 using System.IO;
 using System.Text;
 using System.Threading.Tasks;
+using LionFire.ObjectBus;
+using LionFire.Handles;
+using LionFire.IO;
 
-namespace LionFire.Handles
+namespace LionFire.Serialization
 {
-
-
-    public class SerializingFileHandle<T> : HandleBase<T>
+    public class SerializingFileHandle<T> : WritableHandleBase<T>
+        //, IReferencable, IChangeableReferencable
         where T : class
     {
-
         [SetOnce]
         public string Path { get => Key; private set => Key = value; }
+
+        #region UnderlyingHandle
 
         public BinaryFileHandle UnderlyingHandle
         {
@@ -35,10 +38,39 @@ namespace LionFire.Handles
         }
         private BinaryFileHandle underlyingHandle;
 
+        #endregion
+
+        #region Reference
+
+        // TODO: 
+
+        //public IReference Reference { get => new FsReference(Path); set => throw new NotImplementedException(); }
+
+        //IReference IReferencable.Reference => throw new NotImplementedException();
+
+        //public event Action<IChangeableReferencable, IReference> ReferenceChangedForFrom;
+
+        #endregion
+
+        #region Changing reference
+
+        public Task Move(string newPath)
+        {
+            throw new NotImplementedException();
+        }
+
+        #endregion
+
+        #region Construction
+
         public SerializingFileHandle(string path)
         {
             this.Path = path;
         }
+
+        #endregion
+
+        #region Load
 
         public override Task<bool> TryResolveObject(object persistenceContext = null)
         {
@@ -51,33 +83,43 @@ namespace LionFire.Handles
             return Task.FromResult(HasObject);
         }
 
+        #endregion
 
-        public override async Task Save(object persistenceContext = null)
+        #region Delete
+
+        public override async Task DeleteObject(object persistenceContext = null)
         {
-            if (DeletePending)
-            {
-                Action deleteAction = () => File.Delete(Path);
-                await deleteAction.AutoRetry();
-                DeletePending = false;
-                return;
-            }
-
-            var serializationService = persistenceContext.ObjectAsType<ISerializationService>();
-            if (serializationService == null) { serializationService = InjectionContext.Current.GetService<ISerializationService>(); }
-
-            if (serializationService == null) throw new HasUnresolvedDependenciesException($"No {typeof(ISerializationService).Name} available");
-
-            var sc = new FileSerializationContext();
-
-            var bytes = serializationService.ToBytes(Object, sc);
-
-            var writePath = Path;
-            if (sc?.FileExtension != null)
-            {
-                writePath += "." + sc.FileExtension;
-            }
-
-            File.WriteAllBytes(writePath, bytes);
+            Action deleteAction = () => File.Delete(Path);
+            await deleteAction.AutoRetry(); // TODO: Use File IO parameters registered in DI.
         }
+
+        #endregion
+
+        #region Save
+
+        public override async Task WriteObject(object persistenceContext = null)
+        {
+            await Task.Run(() =>
+            {
+                var serializationService = persistenceContext.ObjectAsType<ISerializationService>();
+                if (serializationService == null) { serializationService = InjectionContext.Current.GetService<ISerializationService>(); }
+
+                if (serializationService == null) throw new HasUnresolvedDependenciesException($"No {typeof(ISerializationService).Name} available");
+
+                var sc = new FileSerializationContext();
+
+                var bytes = serializationService.ToBytes(Object, sc);
+
+                var writePath = Path;
+                if (sc?.FileExtension != null)
+                {
+                    writePath += "." + sc.FileExtension;
+                }
+
+                File.WriteAllBytes(writePath, bytes);
+            }).ConfigureAwait(false);
+        }
+
+        #endregion
     }
 }

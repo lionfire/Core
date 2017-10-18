@@ -36,7 +36,7 @@ namespace LionFire.Applications.Hosting
     }
     public static class AppInfoExtensions
     {
-        // FUTURE ENH: IComposableAdding and IReplaces, not best used here but maybe elssewhere?
+        // FUTURE ENH: IComposableAdding and IReplaces, not best us
         public static IAppHost AppInfo(this IAppHost app, AppInfo appInfo)
             //string companyName, string programName, string appDataDirName)
         {

@@ -8,7 +8,6 @@ namespace LionFire.MultiTyping
     public interface IReadonlyMultiTyped
     {
         T AsType<T>() where T : class;
-
         //IEnumerable<Type> Types { get; }
     }
 }

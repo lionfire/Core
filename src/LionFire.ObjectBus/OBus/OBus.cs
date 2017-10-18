@@ -14,6 +14,7 @@ using System.Runtime.CompilerServices;
 using System.Text;
 using LionFire.Collections;
 using LionFire.Structures;
+using Microsoft.Extensions.Logging;
 
 namespace LionFire
 {

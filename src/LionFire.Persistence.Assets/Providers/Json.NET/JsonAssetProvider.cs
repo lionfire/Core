@@ -83,7 +83,7 @@ namespace LionFire.Assets.Providers.FileSystem
         /// <typeparam name="T"></typeparam>
         /// <param name="assetSubPath"></param>
         /// <returns>Returns default(T) if file not found.</returns>
-        public T Load<T>(string assetSubPath, PersistenceContext context = null)
+        public T Load<T>(string assetSubPath, object context = null)
             where T : class
         {
             var path = GetPath<T>(assetSubPath, context);
@@ -131,12 +131,12 @@ namespace LionFire.Assets.Providers.FileSystem
 
         AutoRetryContext autoRetry => InjectionContextUtils.AsTypeInPathOrDefault<AutoRetryContext>(ContextPath);
 
-        private void _SaveMethod(object obj, string assetSubPath, PersistenceContext context)
+        private void _SaveMethod(object obj, string assetSubPath, object context)
         {
-            Type saveType = context?.SaveType ?? typeof(object);
+            Type saveType = (context.ObjectAsType<PersistenceContext>())?.SaveType ?? typeof(object);
             File.WriteAllText(GetPath(obj, assetSubPath, context), JsonConvert.SerializeObject(obj, saveType, JsonSettings));
         }
-        public void Save(string assetSubPath, object obj, PersistenceContext context = null)
+        public void Save(string assetSubPath, object obj, object context = null)
         {
             autoRetry.AutoRetry(() => _SaveMethod(obj, assetSubPath, context)).ConfigureAwait(false).GetAwaiter().GetResult();
         }

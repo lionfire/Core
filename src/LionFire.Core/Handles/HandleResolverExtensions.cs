@@ -1,10 +1,11 @@
-﻿using System;
+﻿using LionFire.ObjectBus;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace LionFire.Structures
+namespace LionFire.Referencing
 {
 
     public static class HandleResolverExtensions
@@ -26,7 +27,7 @@ namespace LionFire.Structures
 
             foreach (var component in collection.OfType<IReadHandle<object>>().ToArray())
             {
-                if (component.Object == null) throw new HandleObjectMissingException(component);
+                if (component.Object == null) throw new ObjectNotFoundException(component);
                 try
                 {
                     collection.Remove(component);

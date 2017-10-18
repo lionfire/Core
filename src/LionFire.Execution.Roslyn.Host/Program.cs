@@ -10,7 +10,7 @@ namespace LionFire.Execution.Roslyn.Scripting
     {
         public static void Main(string[] args)
         {
-            RoslynScriptHost.TestScript();
+            Task.Run(async()=> await RoslynScriptHost.TestScript()).Wait();
         }
     }
 }

@@ -7,7 +7,8 @@ using LionFire.Types;
 
 namespace LionFire.Instantiating
 {
-    public class AssetInstantiator : IInstantiator, IAsset
+    public class AssetInstantiator : IInstantiator
+        //, IAsset
     {
         public string TypeName { get; set; }
         public string AssetSubPath { get; set; }

@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading;
-using LionFire.ObjectBus.Filesystem;
+using Microsoft.Extensions.Logging;
 
 #if RAPTORDB
 using LionFire.ObjectBus.RaptorKV;
@@ -23,8 +23,6 @@ namespace LionFire.ObjectBus
                 if (isInitialized) return;
                 isInitialized = true;
 
-                SchemeBroker.Instance.Register(VosOBaseProvider.Instance);
-                SchemeBroker.Instance.Register(FsOBaseProvider.Instance); // HARDCODE HARDCONF
 #if RAPTORDB
                 SchemeBroker.Instance.Register(RkvOBaseProvider.Instance);
 #endif

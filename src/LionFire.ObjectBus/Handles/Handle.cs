@@ -5,36 +5,45 @@ using System.Text;
 using System.Reflection;
 using LionFire.Types;
 
-namespace LionFire.ObjectBus
+namespace LionFire.ObjectBus // RENAME to LionFire.Handles? or LionFire.Referencing?
 {
-    public class Handle<T> : HandleBase<T>
+    public class Handle<T> : OBusHandleBase<T>
         where T : class//, new()
     {
         #region Construction
 
-        internal Handle(string uri, T obj = null)
-            : base(uri, obj)
+        internal Handle(string uri, T obj = null) : base(uri, obj)
         {
         }
 
-        public Handle(IReference reference, T obj = null)
-            : base(reference, obj)
+        public Handle(IReference reference, T obj = null) : base(reference, obj)
         {
         }
 
-        public Handle(IReferencable referencable, T obj = null)
-            : base(referencable, obj)
+        public Handle(IReferencable referencable, T obj = null) : base(referencable, obj)
         {
         }
 
-        public Handle(T obj = null, bool freezeObjectIfProvided = true)
-            : base(obj, freezeObjectIfProvided)
+        public Handle(T obj = null, bool freezeObjectIfProvided = true) : base(obj, freezeObjectIfProvided)
         {
         }
 
         #endregion
 
-        public override RetrieveInfo RetrieveInfo { get; set; }
+        public virtual RetrieveInfo RetrieveInfo { get; set; }
+
+        public virtual bool IsRetrieveInfoEnabled
+        {
+            get { return RetrieveInfo != null; }
+            set
+            {
+                if (value) { if (RetrieveInfo == null) { RetrieveInfo = new RetrieveInfo(); } }
+                else
+                {
+                    RetrieveInfo = null;
+                }
+            }
+        }
     }
 
     /// <summary>
@@ -64,6 +73,4 @@ namespace LionFire.ObjectBus
 
         public override RetrieveInfo RetrieveInfo { get; set; }
     }
-
-
 }

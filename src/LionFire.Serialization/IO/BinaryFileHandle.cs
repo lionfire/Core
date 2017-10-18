@@ -1,10 +1,11 @@
 ﻿using LionFire.Structures;
 using System.IO;
 using System.Threading.Tasks;
+using LionFire.Handles;
 
-namespace LionFire.Handles
+namespace LionFire.IO
 {
-    public class BinaryFileHandle : ReadHandleBase<byte[]>, IHandle<byte[]>, IWriteHandle<byte[]>
+    public class BinaryFileHandle : WritableHandleBase<byte[]>
     {
         [SetOnce]
         public string Path { get => Key; set => Key = value;}
@@ -14,14 +15,15 @@ namespace LionFire.Handles
             this.Path = path;
         }
 
-        byte[] IWriteHandle<byte[]>.Object
-        {
-            set => File.WriteAllBytes(Path, value);
-        }
-
-        public Task Save(object persistenceContext = null)
+        public override Task WriteObject(object persistenceContext = null)
         {
             File.WriteAllBytes(Path, Object);
+            return Task.CompletedTask;
+        }
+
+        public override Task DeleteObject(object persistenceContext = null)
+        {
+            if(File.Exists(Path)) File.Delete(Path);
             return Task.CompletedTask;
         }
 

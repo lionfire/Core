@@ -18,8 +18,6 @@ namespace LionFire.Persistence
         public static AutoSaveManager Instance { get { return Singleton<AutoSaveManager>.Instance; } }
 
         internal ConcurrentDictionary<ISaveable, ThrottledChangeHandler> handlers = new ConcurrentDictionary<ISaveable, ThrottledChangeHandler>();
-
-
     }
 
     public static class AutoSaveManagerExtensions

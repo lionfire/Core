@@ -3,7 +3,7 @@
 
   <PropertyGroup>
     <!--<VersionPrefix>1.0.2</VersionPrefix>-->
-    <Version>2.0.48</Version>
+   
     <TargetFramework>netstandard2.0</TargetFramework>
     <AssemblyName>LionFire.Core</AssemblyName>
     <PackageId>LionFire.Core</PackageId>
@@ -22,8 +22,6 @@ This package is typically not added on its own, but is a dependency required by 
     <RepositoryUrl>https://github.com/jaredthirsk/Core</RepositoryUrl>
     <NeutralLanguage>English (United States)</NeutralLanguage>
     <PackageTags>utility collections</PackageTags>
-    <AssemblyVersion>2.0.48.0</AssemblyVersion>
-    <FileVersion>2.0.48.0</FileVersion>
   </PropertyGroup>
 
   <ItemGroup>
@@ -36,12 +34,24 @@ This package is typically not added on its own, but is a dependency required by 
 <PackageReference Include="System.Reactive.Linq" Version="3.1.1" />
 <PackageReference Include="System.Collections.Immutable" Version="1.4.0" />  </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\LionFire.Base\LionFire.Base.csproj" />
+    <ProjectReference Include="..\LionFire.Referencing.Abstractions\LionFire.Referencing.Abstractions.csproj" />
+    <ProjectReference Include="..\LionFire.Structures\LionFire.Structures.csproj" />
+  </ItemGroup>
+
  
 
   <ItemGroup>
     <None Update="Licensing\DrWPF.txt">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
+  </ItemGroup>
+
+ 
+
+  <ItemGroup>
+    <Folder Include="Execution\" />
   </ItemGroup>
 
   <PropertyGroup Condition=" '$(Configuration)'=='Release'">

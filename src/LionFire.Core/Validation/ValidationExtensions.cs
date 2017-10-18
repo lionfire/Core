@@ -104,7 +104,7 @@ namespace LionFire.Validation
 
         public static ValidationContext PropertyNonDefault(this ValidationContext ctx, PropertyInfo pi, object obj = null)
         {
-            if ((obj ?? ctx.Object).IsDefault(pi))
+            if ((obj ?? ctx.Object).IsDefaultValue(pi))
             {
                 ctx.AddIssue(new ValidationIssue
                 {
@@ -116,7 +116,7 @@ namespace LionFire.Validation
         }
         public static ValidationContext PropertyNonDefault<T>(this ValidationContext ctx, string propertyName, T value)
         {
-            if (value.IsDefault())
+            if (value.IsDefaultValue())
             {
                 ctx.AddIssue(new ValidationIssue
                 {

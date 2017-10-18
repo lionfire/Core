@@ -71,8 +71,6 @@ namespace LionFire.Serialization
         //    //}
         //}
 
-        
-
         #endregion
 
         #region State

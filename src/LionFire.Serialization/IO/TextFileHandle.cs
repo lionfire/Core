@@ -4,7 +4,7 @@ using System.Threading.Tasks;
 
 namespace LionFire.Handles
 {
-    public class TextFileHandle : ReadHandleBase<string>, IHandle<string>
+    public class TextFileHandle : WritableHandleBase<string>
     {
         [SetOnce]
         public string Path { get => Key; set => Key = value; }
@@ -15,14 +15,15 @@ namespace LionFire.Handles
             this.Path = path;
         }
 
-        string IWriteHandle<string>.Object
-        {
-            set => File.WriteAllText(Path, value);
-        }
-
-        public Task Save(object persistenceContext = null)
+        public override Task WriteObject(object persistenceContext = null)
         {
             File.WriteAllText(Path, Object);
+            return Task.CompletedTask;
+        }
+
+        public override Task DeleteObject(object persistenceContext = null)
+        {
+            if (File.Exists(Path)) File.Delete(Path);
             return Task.CompletedTask;
         }
 

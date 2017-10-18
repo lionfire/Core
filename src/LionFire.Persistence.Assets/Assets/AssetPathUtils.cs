@@ -1,4 +1,5 @@
 ﻿using LionFire.Instantiating;
+using LionFire.MultiTyping;
 using LionFire.Persistence;
 using System;
 using System.Collections.Generic;
@@ -11,21 +12,28 @@ namespace LionFire.Assets
 {
     public static class AssetPathUtils
     {
-        public static string GetSubpath<T>(string assetSubpath = null, PersistenceContext context = null)
+        public static string DefaultRoot()
+        {
+            return LionFireEnvironment.AppProgramDataDir;
+        }
+
+        public static string GetSubpath<T>(string assetSubpath = null, object context = null)
         {
             return GetSubpath(typeof(T), assetSubpath, context);
         }
-        public static string GetSubpath(object obj, string assetSubpath = null, PersistenceContext context = null)
+        public static string GetSubpath(object obj, string assetSubpath = null, object context = null)
         {
             var type = obj.GetType();
             return GetSubpath(type, assetSubpath,context);
         }
-        public static string GetSubpath(Type type, string assetSubpath = null, PersistenceContext context = null)
+        private static string GetSubpath(Type type, string assetSubpath = null, object context = null)
         {
-            if (context  != null)
-            {
-                type = context.RootObject?.GetType();
-            }
+            // OLD Another approach, specifying type via context.RootObject - not sure it is needed or worth it. 
+            //if ( context .ObjectAsType<PeristenceContext>() is PeristenceContext pc)
+            //{
+            //    type = context.ObjectAsType<PeristenceContext>()?.RootObject?.GetType();
+            //}
+            if (type == null) throw new ArgumentNullException(nameof(type));
 
             string diskPath;
 

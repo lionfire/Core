@@ -7,10 +7,8 @@ using System.Reactive.Linq;
 using System.Reflection;
 using System.Reactive.Subjects;
 
-
 namespace LionFire.Reactive
 {
-
     public class ThrottledChangeHandler : IDisposable
     {
         INotifyPropertyChanged inpc;

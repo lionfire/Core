@@ -11,7 +11,7 @@
 //    //}
 
 
-//    public class DynamicTreeNode : IMultiTyped, IDirectory,
+//    public class DynamicTreeNode : IReadonlyMultiTyped, IDirectory,
 //        IReferencable, IHasHandle
 //    {
 

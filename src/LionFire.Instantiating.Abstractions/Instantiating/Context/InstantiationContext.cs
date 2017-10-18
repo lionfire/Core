@@ -36,6 +36,7 @@ namespace LionFire.Instantiating
 
         public static InstantiationContext Default => ManualSingleton<InstantiationContext>.GuaranteedInstance;
 
+        public bool? AllowInstantiator { get; set; }
     }
 
 }

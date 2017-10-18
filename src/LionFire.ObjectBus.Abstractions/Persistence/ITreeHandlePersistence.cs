@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace LionFire.ObjectBus
 {
-    public interface ITreeHandlePersistence
+    public interface ITreeHandlePersistence // RENAME? to ITreeReadHandle
     {
         IEnumerable<IHandle> GetChildren();
 #if !AOT

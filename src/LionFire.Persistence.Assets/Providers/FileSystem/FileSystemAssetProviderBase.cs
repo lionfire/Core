@@ -3,6 +3,7 @@ using System.Linq;
 using System.IO;
 using LionFire.Instantiating;
 using LionFire.Persistence;
+using LionFire.MultiTyping;
 
 namespace LionFire.Assets.Providers.FileSystem
 {
@@ -30,20 +31,22 @@ namespace LionFire.Assets.Providers.FileSystem
         #endregion
 
 
-        public string GetPath<T>(string assetSubpath = null, PersistenceContext context = null)
+        public string GetPath<T>(string assetSubpath = null, object context = null)
         {
-            return Path.Combine(context?.RootPath ?? RootDir, AssetPathUtils.GetSubpath<T>(assetSubpath, context)) + (assetSubpath == null ? "" : FileExtensionWithDot); ;
+            var pc = context.ObjectAsType<PersistenceContext>();
+            return Path.Combine(pc?.RootPath ?? RootDir, AssetPathUtils.GetSubpath<T>(assetSubpath, context)) + (assetSubpath == null ? "" : FileExtensionWithDot); ;
         }
-        public string GetPath(object obj, string assetSubpath = null, PersistenceContext context = null)
+        public string GetPath(object obj, string assetSubpath = null, object context = null)
         {
-            return Path.Combine(context?.RootPath ?? RootDir, AssetPathUtils.GetSubpath(obj, assetSubpath, context)) + (assetSubpath == null ? "" : FileExtensionWithDot); ;
+            var pc = context.ObjectAsType<PersistenceContext>();
+            return Path.Combine(pc?.RootPath ?? RootDir, AssetPathUtils.GetSubpath(obj, assetSubpath, context)) + (assetSubpath == null ? "" : FileExtensionWithDot); ;
         }
 
         public abstract string FileExtension { get; }
         public string FileExtensionWithDot { get { return (string.IsNullOrWhiteSpace(FileExtension) ? "" : "." + FileExtension); } }
 
 
-        public IEnumerable<string> Find<T>(string searchString = null, PersistenceContext context = null)
+        public IEnumerable<string> Find<T>(string searchString = null, object context = null)
         {
             var dir = GetPath<T>(context: context);
             if (searchString == null) searchString = "*";

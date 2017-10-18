@@ -1,4 +1,6 @@
-﻿using System;
+﻿#if TOMIGRATE
+using System;
+
 using System.Collections.Generic;
 using System.Text;
 using LionFire.Composables;
@@ -61,3 +63,4 @@ namespace LionFire.Assets
         }
     }
 }
+#endif

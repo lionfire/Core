@@ -15,6 +15,7 @@ using LionFire.Assets;
 using LionFire.Instantiating;
 using System.Collections;
 using LionFire.Composables;
+using LionFire.Referencing;
 
 namespace LionFire.Applications.Hosting
 {
