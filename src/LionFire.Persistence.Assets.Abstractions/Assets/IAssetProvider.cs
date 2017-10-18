@@ -8,6 +8,7 @@ namespace LionFire.Assets
 {
     public interface IAssetProvider
     {
+        // TODO: Make this async
         T Load<T>(string assetSubPath, object context = null) where T : class;
         void Save(string assetSubPath, object obj, object context = null);
 
