@@ -7,7 +7,7 @@ using System.Reflection;
 namespace LionFire.Execution.Executables
 {
     // REFACTOR - Use a visitor pattern instead of inheritance, ENH - some sort of elegant state machine with opt-in to Initializable logic
-    public class InitializableExecutableBase : ExecutableBase
+    public class InitializableExecutableBase : ExecutableExBase
     {
 
         public virtual bool CanInitializeAfterDispose => false;
@@ -56,11 +56,11 @@ namespace LionFire.Execution.Executables
             {
                 //ValidateCanInitialize();  
 
-                State = ExecutionState.Initializing;
-                if (!CanInitializeAfterDispose && State == ExecutionState.Disposed) throw new ObjectDisposedException(this.GetType().Name);
+                SetState (State,ExecutionStateEx.Initializing);
+                if (!CanInitializeAfterDispose && State == ExecutionStateEx.Disposed) throw new ObjectDisposedException(this.GetType().Name);
                 //StateChangeContext c = new StateChangeContext();
                 await OnInitializing(vcGetter);
-                if (validationContext.IsValid()) State = ExecutionState.Ready;
+                if (validationContext.IsValid()) State = ExecutionStateEx.Ready;
             }
 
             return validationContext;

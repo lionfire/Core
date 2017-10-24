@@ -9,7 +9,7 @@ namespace LionFire.Execution
     public class MExecutionStateChanged : IMessage
     {
         public object Source { get; set; }
-        public ExecutionState OldState {get;set;}
-        public ExecutionState NewState {get;set;}
+        public ExecutionStateEx OldState {get;set;}
+        public ExecutionStateEx NewState {get;set;}
     }
 }

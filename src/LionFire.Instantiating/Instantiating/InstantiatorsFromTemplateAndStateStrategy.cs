@@ -35,7 +35,7 @@ namespace LionFire.Instantiating
                 var template = templateInstance.GetTemplate();
                 if (template != null)
                 {
-                    if (typeof(IAsset).IsAssignableFrom(template.GetType()))
+                    if (typeof(IAsset).IsAssignableFrom(template.GetType())) // REVIEW - what's going on here? Do I even want to use IAsset?
                     {
                         context.Dependencies.Add(template);
                     }

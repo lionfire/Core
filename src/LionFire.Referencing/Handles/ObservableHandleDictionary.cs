@@ -1,8 +1,9 @@
 ﻿using LionFire.Persistence;
 using System;
 using System.Reflection;
+using System.Threading.Tasks;
 
-namespace LionFire.Serialization
+namespace LionFire.Handles
 {
     public abstract class ObservableHandleDictionary<TKey, THandle, T> : ObservableReadHandleDictionary<TKey, THandle, T>
         where THandle : class, IReadHandle<T>, IWriteHandle<T>
@@ -20,10 +21,10 @@ namespace LionFire.Serialization
 
         #endregion
 
-        public void Remove(string key) // RENAME to Unset?
+        public async Task Remove(string key) // RENAME to Unset?
         {
             if (key == null) throw new ArgumentNullException(nameof(key));
-            Add((T)null, key);
+            await Add((T)null, key);
         }
 
         /// <summary>
@@ -33,7 +34,7 @@ namespace LionFire.Serialization
         /// <param name="obj"></param>
         /// <param name="key"></param>
         /// <returns></returns>
-        public THandle Add(T obj, string key = null) // RENAME to Set
+        public async Task<THandle> Add(T obj, string key = null) // RENAME to Set
         {
             //if (!IsWritable) throw new ReadOnlyException("THandle does not implement IWriteHandle<T>");
 
@@ -52,7 +53,7 @@ namespace LionFire.Serialization
 
             if (handle is ISaveable saveable)
             {
-                saveable.Save(PersistenceContext);
+                await saveable.Save(PersistenceContext).ConfigureAwait(false);
             }
             return handle;
         }

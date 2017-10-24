@@ -14,21 +14,21 @@ using LionFire.Structures;
 
 namespace LionFire.Serialization
 {
-    /// <summary>
-    /// A general-purpose collection of objects, with change events.
-    /// FUTURE: Also use this for Voc 2.0?
-    /// </summary>
-    public interface IPersistedObjectCollection<T>
-    //: INotifyCollectionChanged
-    {
-        string RootPath { get; set; }
+    ///// <summary>
+    ///// A general-purpose collection of objects, with change events. REVIEW - not sure at the moment about the usefulness.  Think about it later.
+    ///// FUTURE: Also use this for Voc 2.0?
+    ///// </summary>
+    //public interface IPersistedObjectCollection<T>
+    ////: INotifyCollectionChanged
+    //{
+    //    string RootPath { get; set; }
 
-        //IReadOnlyDictionary<string, IReadHandle<T>> Handles { get; }
-        //IReadOnlyCollection<IReadHandle<T>> Objects { get; }
-    }
+    //    //IReadOnlyDictionary<string, IReadHandle<T>> Handles { get; }
+    //    //IReadOnlyCollection<IReadHandle<T>> Objects { get; }
+    //}
     public class FsObjectCollection<T> : ObservableHandleDictionary<string, SerializingFileHandle<T>, T>
         //ObservableDictionary<string, IReadHandle<T>>, 
-        , IPersistedObjectCollection<T>
+        //, IPersistedObjectCollection<T>
         , INotifyPropertyChanged
         where T : class
     {
@@ -36,15 +36,15 @@ namespace LionFire.Serialization
         #region Construction
 
         public FsObjectCollection() { }
-        public FsObjectCollection(string path)
+        public FsObjectCollection(string path, bool createIfMissing = true)
         {
+            if (!Directory.Exists(path)) { Directory.CreateDirectory(path); }
             this.RootPath = path;
         }
 
         //private void OnHandlesChanged(object sender, NotifyCollectionChangedEventArgs e)
         //{
         //    this.Changed
-
         //    if (e.Action == System.Collections.Specialized.NotifyCollectionChangedAction.Reset)
         //    {
         //    }
@@ -72,6 +72,8 @@ namespace LionFire.Serialization
         //}
 
         #endregion
+            
+        
 
         #region State
 
@@ -102,15 +104,18 @@ namespace LionFire.Serialization
 
                 rootPath = value;
 
-                if (fsw == null && (value != null && Directory.Exists(value)))
+                if (fsw == null)
                 {
-                    fsw = new FileSystemWatcher(rootPath, SearchPattern ?? "*");
+                    if (value != null && Directory.Exists(value))
+                    {
+                        fsw = new FileSystemWatcher(rootPath, SearchPattern ?? "*");
 
-                    fsw.Changed += OnChanged;
-                    fsw.Created += OnCreated;
-                    fsw.Deleted += OnDeleted;
-                    fsw.Error += OnError;
-                    fsw.EnableRaisingEvents = true;
+                        fsw.Changed += OnChanged;
+                        fsw.Created += OnCreated;
+                        fsw.Deleted += OnDeleted;
+                        fsw.Error += OnError;
+                        fsw.EnableRaisingEvents = true;
+                    }
                 }
                 else
                 {
@@ -156,7 +161,7 @@ namespace LionFire.Serialization
 
         // FUTURE:
         //public bool AutoLoad { get; set; }
-        public override void RefreshHandles()
+        public override Task RefreshHandles()
         {
             var newList = new Dictionary<string, SerializingFileHandle<T>>();
 
@@ -170,6 +175,7 @@ namespace LionFire.Serialization
             }
 
             handles.SetToMatch(newList);
+            return Task.CompletedTask;
         }
 
         public override string KeyToHandleKey(string key)

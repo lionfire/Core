@@ -6,10 +6,10 @@ using System.Threading.Tasks;
 
 namespace LionFire.Execution
 {
-    public interface IControllableExecutable : IExecutable
+    public interface IControllableExecutable : IExecutableEx
     {
         // REVIEW - make this observable too?
-        ExecutionState DesiredExecutionState { get; set; }
+        ExecutionStateEx DesiredExecutionState { get; set; }
     }
 
     public enum StateChangeResult
@@ -38,7 +38,7 @@ namespace LionFire.Execution
     public static class IControllableExecutableExtensions
     {
 
-        public static async Task<StateChangeResult> SetDesiredStateAndWait(this IControllableExecutable e, ExecutionState state, CancellationToken? cancellationToken = null)
+        public static async Task<StateChangeResult> SetDesiredStateAndWait(this IControllableExecutable e, ExecutionStateEx state, CancellationToken? cancellationToken = null)
         {
             if (e.State == state) return StateChangeResult.Success;
 
@@ -54,7 +54,7 @@ namespace LionFire.Execution
             {
                 var curState = e.State;
                 if (curState == state) return StateChangeResult.Success;
-                if (curState == ExecutionState.Disposed || curState == ExecutionState.Faulted) return StateChangeResult.Failed;
+                if (curState == ExecutionStateEx.Disposed || curState == ExecutionStateEx.Faulted) return StateChangeResult.Failed;
                 if (e.DesiredExecutionState != state) return StateChangeResult.Overridden;
                 if (cancellationToken.HasValue && cancellationToken.Value.IsCancellationRequested) return StateChangeResult.OperationCanceled;
 

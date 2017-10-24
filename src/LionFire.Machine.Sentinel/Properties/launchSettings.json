@@ -19,7 +19,7 @@
     "LionFire.Machine.Sentinel": {
       "commandName": "Project",
       "launchBrowser": true,
-      "launchUrl": "api/values",
+      "launchUrl": "api/heartmonitor",
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development"
       },

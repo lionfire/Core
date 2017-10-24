@@ -1,4 +1,4 @@
-﻿#if truex
+﻿#if truex // OLD - REVIEW and discard / log
 using LionFire.Structures;
 using Microsoft.Extensions.DependencyInjection;
 using System;
@@ -25,7 +25,6 @@ namespace LionFire.Execution
 
     public interface IStateParticipant
     {
-
     }
 
     public class StateParticipant<T> : IStateParticipant
@@ -46,42 +45,9 @@ namespace LionFire.Execution
 
     }
 
-    public static class StateExtensions
-    {
-
-
-    }
-
     public class ServiceCollectionPopulation : State<IServiceCollection>, IHasDescription
     {
         public string Description => "All ServiceDescriptions are provided to an AppHost's ServicesCollection at application startup";
-    }
-
-    public class StateMachine
-    {
-
-        #region CurrentState
-
-        public IState CurrentState
-        {
-            get { return currentState; }
-            private set
-            {
-                if (currentState == value) return;
-                currentState = value;
-
-            }
-        }
-        private string currentState;
-
-        #endregion
-
-
-        public void OnStateTransition(IState from, IState to)
-        {
-            StateChanged?.Invoke(this, from, to);
-        }
-        public Action<StateMachine, IState, IState> StateChanged;
     }
 
     public class StateMachineSequence
@@ -107,10 +73,8 @@ namespace LionFire.Execution
 
         public void Run()
         {
-
         }
     }
-    
 
     public class ServiceCollectionPopulator : StateParticipant<IServiceCollection>
     {
@@ -119,8 +83,6 @@ namespace LionFire.Execution
             base.OnEnter();
 
             State.StateData.AddSingleton(typeof(string), "The one string to rule them all");
-
-
         }
     }
 
@@ -129,7 +91,6 @@ namespace LionFire.Execution
     {
         public InjectPropertiesAttribute() { }
     }
-
 
     public class InjectDependencies : State<IEnumerable<object>>
     {

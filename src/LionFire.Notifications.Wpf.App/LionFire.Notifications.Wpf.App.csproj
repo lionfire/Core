@@ -286,14 +286,6 @@
       <Project>{5492c9ac-0bd9-4745-b90c-6399e66fe966}</Project>
       <Name>LionFire.Notifications</Name>
     </ProjectReference>
-    <ProjectReference Include="..\LionFire.Persistence.Assets.Abstractions\LionFire.Persistence.Assets.Abstractions.csproj">
-      <Project>{b842d521-3f3c-4cb7-9daa-5f91bec7a8cf}</Project>
-      <Name>LionFire.Persistence.Assets.Abstractions</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\LionFire.Persistence.Assets\LionFire.Persistence.Assets.csproj">
-      <Project>{4029ee49-9ece-43b4-b4be-794cc55b7fbb}</Project>
-      <Name>LionFire.Persistence.Assets</Name>
-    </ProjectReference>
     <ProjectReference Include="..\LionFire.Reactive\LionFire.Reactive.csproj">
       <Project>{D3D5C710-D20B-41E3-B5C1-FE1609C2465D}</Project>
       <Name>LionFire.Reactive</Name>

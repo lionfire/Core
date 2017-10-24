@@ -17,7 +17,7 @@ namespace LionFire.Execution
     /// <summary>
     /// Uses an in-process ProcessExecutionHost
     /// </summary>
-    public class ObjectController : ExecutableBase, IExecutionController
+    public class ObjectController : ExecutableExBase, IExecutionController
     {
         #region Configuration
 
@@ -50,7 +50,7 @@ namespace LionFire.Execution
                 ExecutionContext.InitializationState &= ~(ExecutionContextInitializationState.MissingConstructor);
             }
 
-            if (typeof(IExecutable).GetTypeInfo().IsAssignableFrom(c.Type))
+            if (typeof(IExecutableEx).GetTypeInfo().IsAssignableFrom(c.Type))
             {
                 ExecutionContext.Status = ExecutionHostState.Initializing;
                 ExecutionContext.ExecutionObject = Activator.CreateInstance(c.Type);

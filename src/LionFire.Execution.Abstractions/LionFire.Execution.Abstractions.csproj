@@ -11,7 +11,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="LionFire.StateMachines.Class.Abstractions" Version="1.0.0" />
     <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="2.0.0" />
     <PackageReference Include="System.Reactive.Linq" Version="3.1.1" />
   </ItemGroup>
@@ -19,6 +18,7 @@
 
 
   <ItemGroup>
+    <ProjectReference Include="..\..\..\LionFire\StateMachines\src\LionFire.StateMachines.Abstractions\LionFire.StateMachines.Abstractions.csproj" />
     <ProjectReference Include="..\LionFire.Core\LionFire.Core.csproj" />
   </ItemGroup>
 

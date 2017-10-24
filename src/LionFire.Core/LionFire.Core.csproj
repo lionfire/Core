@@ -36,6 +36,7 @@ This package is typically not added on its own, but is a dependency required by 
 
   <ItemGroup>
     <ProjectReference Include="..\LionFire.Base\LionFire.Base.csproj" />
+    <ProjectReference Include="..\LionFire.MultiTyping.Abstractions\LionFire.MultiTyping.Abstractions.csproj" />
     <ProjectReference Include="..\LionFire.Referencing.Abstractions\LionFire.Referencing.Abstractions.csproj" />
     <ProjectReference Include="..\LionFire.Structures\LionFire.Structures.csproj" />
   </ItemGroup>
@@ -52,6 +53,7 @@ This package is typically not added on its own, but is a dependency required by 
 
   <ItemGroup>
     <Folder Include="Execution\" />
+    <Folder Include="MultiTyping\Validation\" />
   </ItemGroup>
 
   <PropertyGroup Condition=" '$(Configuration)'=='Release'">

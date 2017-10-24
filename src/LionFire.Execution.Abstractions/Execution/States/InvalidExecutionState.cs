@@ -8,18 +8,18 @@ namespace LionFire.Execution
 
     public class InvalidExecutionStateException : Exception
     {
-        public ExecutionState RequiredState { get; set; }
-        public ExecutionState CurrentState { get; set; }
+        public ExecutionStateEx RequiredState { get; set; }
+        public ExecutionStateEx CurrentState { get; set; }
 
         public InvalidExecutionStateException() { }
-        public InvalidExecutionStateException(ExecutionState requiredState, ExecutionState currentState) { }
+        public InvalidExecutionStateException(ExecutionStateEx requiredState, ExecutionStateEx currentState) { }
         public InvalidExecutionStateException(string message) : base(message) { }
         public InvalidExecutionStateException(string message, Exception inner) : base(message, inner) { }
 
 
         public override string ToString()
         {
-            if (RequiredState != ExecutionState.Unspecified || CurrentState != ExecutionState.Unspecified)
+            if (RequiredState != ExecutionStateEx.Unspecified || CurrentState != ExecutionStateEx.Unspecified)
             {
                 return $"Invalid execution state.  Required: {RequiredState} Current: {CurrentState}";
             }

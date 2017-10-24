@@ -10,6 +10,7 @@ using System.Reflection;
 using System.Reactive.Subjects;
 using LionFire.Reactive;
 using LionFire.Reactive.Subjects;
+using LionFire.Execution.Executables;
 
 namespace LionFire.Execution.Roslyn.Scripting
 {
@@ -19,7 +20,7 @@ namespace LionFire.Execution.Roslyn.Scripting
         public int B = 456;
     }
 
-    public class RoslynScriptExecutionController : IExecutionController
+    public class RoslynScriptExecutionController : ExecutableExBase, IExecutionController
     {
         #region Relationships
 
@@ -45,8 +46,10 @@ namespace LionFire.Execution.Roslyn.Scripting
 
         #region Derived Properties
 
-        public string ScriptCode {
-            get {
+        public string ScriptCode
+        {
+            get
+            {
                 return ExecutionContext.Config.SourceContent as string;
             }
         }
@@ -56,19 +59,6 @@ namespace LionFire.Execution.Roslyn.Scripting
         Dictionary<string, object> globals = new Dictionary<string, object>();
 
         #region State
-        public ExecutionState State
-        {
-            get { return state; }
-            protected set
-            {
-                if (state == value) return;
-                state = value;
-                StateChangedToFor?.Invoke(state, this);
-            }
-        }
-        private ExecutionState state;
-
-        public event Action<ExecutionState, IExecutable> StateChangedToFor;
 
         Script<object> script;
 

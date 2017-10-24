@@ -11,7 +11,7 @@ namespace LionFire.Execution
 {
 
 
-    public class RemoteExecutionControllerProxy : ExecutableBase, IExecutionController
+    public class RemoteExecutionControllerProxy : ExecutableExBase, IExecutionController
     {
 
         [SetOnce]

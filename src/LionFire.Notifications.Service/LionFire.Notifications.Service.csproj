@@ -19,8 +19,6 @@
     <ProjectReference Include="..\LionFire.Notifications.Abstractions\LionFire.Notifications.Abstractions.csproj" />
     <ProjectReference Include="..\LionFire.Notifications.Twilio\LionFire.Notifications.Twilio.csproj" />
     <ProjectReference Include="..\LionFire.Notifications\LionFire.Notifications.csproj" />
-    <ProjectReference Include="..\LionFire.Persistence.Assets.Abstractions\LionFire.Persistence.Assets.Abstractions.csproj" />
-    <ProjectReference Include="..\LionFire.Persistence.Assets\LionFire.Persistence.Assets.csproj" />
   </ItemGroup>
 
 </Project>

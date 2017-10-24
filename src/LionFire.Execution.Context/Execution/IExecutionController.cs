@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 namespace LionFire.Execution
 {
 
-    public interface IExecutionController : IExecutable, IStartable, IInitializable
+    public interface IExecutionController : IExecutableEx, IStartable, IInitializable
     {
         [SetOnce]
         ExecutionContext ExecutionContext { get; set;  }

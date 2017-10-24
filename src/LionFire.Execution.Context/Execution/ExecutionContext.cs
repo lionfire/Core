@@ -48,7 +48,7 @@ namespace LionFire.Execution
 
         #region Derived Object
 
-        public IExecutable Executable { get { return ExecutionObject as IExecutable; } }
+        public IExecutableEx Executable { get { return ExecutionObject as IExecutableEx; } }
 
         public IDisposable DisposableExecutionObject { get { return ExecutionObject as IDisposable; } }
 

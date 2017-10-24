@@ -90,21 +90,21 @@ namespace LionFire.Execution // MOVE to Execution dll
         {
             if (ParentObjects != null)
             {
-                foreach (var s in ParentObjects.OfType<IExecutable>())
+                foreach (var s in ParentObjects.OfType<IExecutableEx>())
                 {
                     s.StateChangedToFor += S_StateChangedToFor;
-                    UpdateState(s as IExecutable);
+                    UpdateState(s as IExecutableEx);
                 }
             }
             return Task.CompletedTask;
         }
 
-        private void S_StateChangedToFor(ExecutionState arg1, IExecutable arg2)
+        private void S_StateChangedToFor(ExecutionStateEx arg1, IExecutableEx arg2)
         {
             UpdateState(arg2);
         }
 
-        private void UpdateState(IExecutable arg2)
+        private void UpdateState(IExecutableEx arg2)
         {
             if (arg2 == null) return;
 

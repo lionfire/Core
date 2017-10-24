@@ -6,12 +6,18 @@ using System.Collections.Specialized;
 using System.Diagnostics;
 using System.Collections;
 using System.Linq;
+using System.Threading.Tasks;
 
-namespace LionFire.Serialization
+namespace LionFire.Handles
 {
     public abstract class ObservableReadHandleDictionary<TKey, THandle, T> : IEnumerable<T>
         where THandle : IReadHandle<T>
     {
+
+        public bool ContainsKey(TKey key)
+        {
+            return handles.ContainsKey(key);
+        }
 
         public ObservableReadHandleDictionary()
         {
@@ -211,7 +217,7 @@ namespace LionFire.Serialization
         }
 
 
-        public abstract void RefreshHandles();
+        public abstract Task RefreshHandles();
 
         #region IEnumerable<T>
 

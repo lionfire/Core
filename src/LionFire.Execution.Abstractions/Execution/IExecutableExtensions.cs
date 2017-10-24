@@ -12,7 +12,7 @@ namespace LionFire.Execution
         /// </summary>
         /// <param name="e"></param>
         /// <returns></returns>
-        public static bool IsInitialized(this IExecutable e)
+        public static bool IsInitialized(this IExecutableEx e)
         {
             switch (e.State)
             {
@@ -26,14 +26,14 @@ namespace LionFire.Execution
                 //    break;
                 //case ExecutionState.Initializing:
                 //    break;
-                case ExecutionState.Ready:
-                case ExecutionState.Stopped:
-                case ExecutionState.Starting:
-                case ExecutionState.Started:
-                case ExecutionState.Pausing:
-                case ExecutionState.Paused:
-                case ExecutionState.Unpausing:
-                case ExecutionState.Stopping:
+                case ExecutionStateEx.Ready:
+                case ExecutionStateEx.Stopped:
+                case ExecutionStateEx.Starting:
+                case ExecutionStateEx.Started:
+                case ExecutionStateEx.Pausing:
+                case ExecutionStateEx.Paused:
+                case ExecutionStateEx.Unpausing:
+                case ExecutionStateEx.Stopping:
                     return true;
                 //case ExecutionState.Disposed:
                 //    break;
@@ -47,7 +47,7 @@ namespace LionFire.Execution
         /// </summary>
         /// <param name="e"></param>
         /// <returns></returns>
-        public static bool IsStarted(this IExecutable e)
+        public static bool IsStarted(this IExecutableEx e)
         {
             switch (e.State)
             {
@@ -69,12 +69,12 @@ namespace LionFire.Execution
                 //    break;
                 //case ExecutionState.Disposed:
                 //    break;
-                case ExecutionState.Starting:
-                case ExecutionState.Started:
-                case ExecutionState.Pausing:
-                case ExecutionState.Paused:
-                case ExecutionState.Unpausing:
-                case ExecutionState.Stopping:
+                case ExecutionStateEx.Starting:
+                case ExecutionStateEx.Started:
+                case ExecutionStateEx.Pausing:
+                case ExecutionStateEx.Paused:
+                case ExecutionStateEx.Unpausing:
+                case ExecutionStateEx.Stopping:
                     //case ExecutionState.WaitingToStart:
                     return true;
                 default:
@@ -87,7 +87,7 @@ namespace LionFire.Execution
         /// </summary>
         /// <param name="e"></param>
         /// <returns></returns>
-        public static bool IsFinished(this IExecutable e)
+        public static bool IsFinished(this IExecutableEx e)
         {
             switch (e.State)
             {
@@ -103,7 +103,7 @@ namespace LionFire.Execution
                 //    break;
                 //case ExecutionState.Ready:
                 //    break;
-                case ExecutionState.Stopped:
+                case ExecutionStateEx.Stopped:
                     return true;
                 //case ExecutionState.Disposed:
                 //    break;
@@ -120,7 +120,7 @@ namespace LionFire.Execution
         }
 
 
-        public static async Task Restart(this IExecutable e, Action actionDuringShutdown = null, StopMode stopMode = StopMode.ImminentRestart | StopMode.GracefulShutdown, StopOptions stopOptions = StopOptions.StopChildren)
+        public static async Task Restart(this IExecutableEx e, Action actionDuringShutdown = null, StopMode stopMode = StopMode.ImminentRestart | StopMode.GracefulShutdown, StopOptions stopOptions = StopOptions.StopChildren)
         {
             var exFlags = e as IAcceptsExecutionStateFlags;
 
