@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using System.Diagnostics;
+using System.Threading.Tasks;
 using LionFire.Assets;
 using LionFire.Execution.Executables;
 using LionFire.StateMachines.Class;
@@ -6,6 +7,14 @@ using LionFire.Validation;
 
 namespace LionFire.Execution.Hosts
 {
+
+    public class TestExecutable : ExecutableBase
+    {
+        private void StateMachine_StateChanging(StateMachines.IStateChange<ExecutionState2, ExecutionTransition> context)
+        {
+            //Debug.WriteLine(StateMachine_StateChanging);
+        }
+    }
 
     /// <summary>
     /// Automatically instantiates all assets of Type TAsset and starts them.
@@ -19,19 +28,33 @@ namespace LionFire.Execution.Hosts
         where TAsset : class
     {
 
-        LiveAssetCollection<TAsset> assets = LiveAssetCollection<TAsset>.Instance;
+        LiveAssetCollection<TAsset> assets;
+
+     
+
+        private void StateMachine_StateChanged(StateMachines.IStateChange<ExecutionState2, ExecutionTransition> context)
+        {
+            Debug.WriteLine("StateMachine_StateChanged");
+        }
 
         public void OnInitialize()
         {
-            throw new System.Exception("OnInitialized!");
+            assets = LiveAssetCollection<TAsset>.Instance;
+            Debug.WriteLine("OnInitialized!");
+        }
+
+        public void OnReady()
+        {
+            Debug.WriteLine("OnReady");
         }
         public void OnStart()
         {
-            throw new System.Exception("started!");
+            Debug.WriteLine("OnStart");
         }
 
         private void Test()
         {
+            Debug.WriteLine("Test");
             Initialize();
         }
 
