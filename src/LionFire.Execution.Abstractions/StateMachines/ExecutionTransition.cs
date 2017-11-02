@@ -9,12 +9,18 @@ namespace LionFire.Execution
     [Flags]
     public enum ExecutionTransition
     {
-        [Run]
+
+        // Construction
+
         [Transition(null, TS.Uninitialized)]
         Create = 1 << 0,
 
-        [Run]
+
+        // Initialization
+
+        [Initialize]
         [Transition(TS.Uninitialized, TS.Ready)]
+        [TransitionKind(TransitionKind.Initialize)]
         Initialize = 1 << 1,
 
         [Transition(TS.Uninitialized, TS.Finished)]
@@ -23,8 +29,11 @@ namespace LionFire.Execution
         [Transition(TS.Ready, TS.Uninitialized)]
         Deinitialize = 1 << 3,
 
-        [Run]
+
+        // Running
+
         [Transition(TS.Ready, TS.Running)]
+        [TransitionKind(TransitionKind.Run)]
         Start = 1 << 4,
 
         [Transition(TS.Ready, TS.Finished)]
@@ -36,26 +45,33 @@ namespace LionFire.Execution
         [Transition(TS.Running, TS.Ready)]
         Undo = 1 << 7,
 
-        [Run]
         [Transition(TS.Running, TS.Finished)]
+        [TransitionKind(TransitionKind.Wait)]
         Complete = 1 << 8,
 
         [Transition(TS.Running, TS.Finished)]
         Terminate = 1 << 9,
+
         [Transition(TS.Running, TS.Finished)]
         Fail = 1 << 10,
 
-        [CleanUp]
+        // Cleanup
+
         [Transition(TS.Finished, TS.Disposed)]
+        [TransitionKind(TransitionKind.Cleanup)]
         CleanUp = 1 << 12,
         [Transition(TS.Finished, TS.Ready)]
+
         Reset = 1 << 13,
         [Transition(TS.Finished, TS.Uninitialized)]
+
         Reuse = 1 << 14,
 
-        [CleanUp]
         [Transition(TS.Disposed, null)]
+        [TransitionKind(TransitionKind.Cleanup)]
         Destroy = 1 << 15,
+
+        // Aggregates
 
         Cancel = Deinitialize | Undo,
         End = Complete | Skip,

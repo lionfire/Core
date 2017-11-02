@@ -20,12 +20,13 @@ using LionFire.Referencing;
 namespace LionFire.Applications.Hosting
 {
 
-    public class AppHost : IAppHost, IReadonlyMultiTyped
+    // Derive from new ExecutionContainer, move most stuff there?
+    public class AppHost : ExecutablesHost<AppHost>, IAppHost, IReadonlyMultiTyped
     {
-        MultiType multiType { get; set; } = new MultiType();
 
-        public InjectionContext InjectionContext { get; private set; } = new InjectionContext();
+        #region MultiType
 
+        protected readonly MultiType multiType = new MultiType();
 
         // REVIEW - Not sure this is needed or a good idea
         T IReadonlyMultiTyped.AsType<T>()
@@ -52,7 +53,18 @@ namespace LionFire.Applications.Hosting
             }
         }
 
-        #region Dependency Injection
+        #endregion
+
+        IAppHost IComposable<IAppHost>.Add<TComponent>(TComponent component) { base.Add(component); return this; }
+
+        #region Injection
+
+        public InjectionContext InjectionContext { get; private set; } = new InjectionContext();
+
+     
+        #endregion
+        
+        #region Microsoft.Extensions.DependencyInjection
 
         public IServiceCollection ServiceCollection { get; private set; }
 
@@ -80,49 +92,10 @@ namespace LionFire.Applications.Hosting
 
         #endregion
 
+
+        // TODO: Put this into the Multitype?  Maybe make it a common extensionmethod thing?
         public IDictionary<string, object> Properties { get; private set; } = new Dictionary<string, object>();
 
-        #region State
-
-        public bool IsInitializeFrozen { get; private set; } = false;
-
-        #endregion
-
-        #region Register
-
-        public IEnumerable<object> Children { get { return children; } }
-        private List<object> children = new List<object>();
-
-        //public IEnumerator<object> GetEnumerator() => Children.GetEnumerator(); // REVIEW - expose IAppHost.Components instead?
-
-        public IAppHost Add<T>(T component)
-            where T : class
-        {
-            //// REVIEW - only do this block if not added?
-            //if (component is IConfigures<IServiceCollection> csc)
-            //{
-            //    csc.Configure(this.ServiceCollection);
-            //}
-            
-            if (component is IAdding adding)
-            {
-                if (adding.OnAdding(this))
-                {
-                    children.Add(component);
-                    multiType.SetType<T>(component);
-                }
-                else
-                {
-                }
-            }
-            else
-            {
-                children.Add(component);
-            }
-            return this;
-        }
-
-        #endregion
 
         #region Construction and Initialization
 
@@ -167,11 +140,9 @@ namespace LionFire.Applications.Hosting
         ///// <returns></returns>
         //public IAppHost Bootstrap(BootstrapMode mode = BootstrapMode.Rebuild)
         //{
-
         //}
 
-        public virtual void ResolveComponentDependencyProperties() => Children.TryResolveDependencies(ServiceProvider);
-
+        public virtual void ResolveComponentDependencyProperties() => children.TryResolveDependencies(ServiceProvider);
 
         /// <summary>
         /// Injects ServiceProvider to components implementing IRequiresServices
@@ -182,7 +153,6 @@ namespace LionFire.Applications.Hosting
             {
                 component.ServiceProvider = ServiceProvider;
             }
-
         }
 
         /// <summary>
@@ -229,9 +199,10 @@ namespace LionFire.Applications.Hosting
 
             ResolveComponentDependencyProperties();
 
-
+            // LIMITATION: These can't be lazily initialized as a batch.
             children.OfType<TInitializable>().InitializeAll().Wait(); // Deprecated
             children.OfType<IInitializable2>().InitializeAll().Wait();
+            children.OfType<IInitializable3>().InitializeAll().Wait();
 
             if (mode == BootstrapMode.Discard)
             {
@@ -243,6 +214,11 @@ namespace LionFire.Applications.Hosting
 
         #endregion
 
+        #region State
+
+        public bool IsInitializeFrozen { get; private set; } = false;
+
+        #endregion
         #region Derived Properties
 
         public bool IsRootApplication
@@ -252,11 +228,21 @@ namespace LionFire.Applications.Hosting
 
         #endregion
 
+
         #region Run
 
         CancellationTokenSource tokenSource = new CancellationTokenSource();
         private List<Task> WaitForTasks { get; set; } = new List<Task>();
         private List<Task> Tasks { get; set; } = new List<Task>();
+
+        public class StateMachineWrapper<TState, TTransition>
+        {
+            static StateMachineWrapper()
+            {
+
+            }
+
+        }
 
         public async Task Run()
         {
@@ -268,6 +254,8 @@ namespace LionFire.Applications.Hosting
 
             await children.OfType<IInitializable>().InitializeAll();
             //var validationErrors = await components.OfType<IInitializable2>().InitializeAll();
+
+            // FUTURE: Handle 
 
             #region Start
 
@@ -282,6 +270,7 @@ namespace LionFire.Applications.Hosting
             Task.WaitAll(startTasks.ToArray());
 
             #endregion
+
 
             foreach (var component in children.OfType<IHasRunTask>())
             {

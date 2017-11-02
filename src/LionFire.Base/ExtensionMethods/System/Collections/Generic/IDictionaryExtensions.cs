@@ -55,24 +55,45 @@ namespace LionFire.ExtensionMethods
         /// <typeparam name="T"></typeparam>
         /// <param name="me"></param>
         /// <param name="other"></param>
-        public static void SetToMatch<TKey,TValue>(this IDictionary<TKey,TValue> me, IDictionary<TKey,TValue> other, Func<TKey, bool> filter = null)
+        public static void SetToMatch<TKey, TValue>(this IDictionary<TKey, TValue> me, IDictionary<TKey, TValue> other)
         {
-            var otherArr = other.Keys.ToList();
-
             var meArr = me.Keys.ToList();
 
-            if (filter == null) filter = _ => true;
-
-            foreach (var item in otherArr.Where(filter))
+            foreach (var key in other.Keys)
             {
-                if (!me.ContainsKey(item))
+                if (!me.ContainsKey(key))
                 {
-                    me.Add(item, other[item]);
+                    me.Add(key, other[key]);
                 }
-                meArr.Remove(item);
+                meArr.Remove(key);
             }
             foreach (var item in meArr)
             {
+                me.Remove(item);
+            }
+        }
+
+        /// <summary>
+        /// Sets me to match other, by checking keys
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="me"></param>
+        /// <param name="other"></param>
+        public static void SetToMatch<TKey, TValue>(this IDictionary<TKey, TValue> me, IEnumerable<TKey> other, Func<TKey, TValue> valueProvider, Action<TKey, TValue> onRemove = null)
+        {
+            var meArr = me.Keys.ToList();
+
+            foreach (var key in other)
+            {
+                if (!me.ContainsKey(key))
+                {
+                    me.Add(key, valueProvider(key));
+                }
+                meArr.Remove(key);
+            }
+            foreach (var item in meArr)
+            {
+                onRemove?.Invoke(item, me[item]);
                 me.Remove(item);
             }
         }

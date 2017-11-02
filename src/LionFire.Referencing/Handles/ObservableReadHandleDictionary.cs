@@ -61,7 +61,6 @@ namespace LionFire.Handles
 
         //public bool IsWritable => typeof(IWriteHandle<T>).IsAssignableFrom(typeof(THandle);
 
-
         private async void OnHandleAdded(TKey key, THandle handle)
         {
             if (objectChanged != null)

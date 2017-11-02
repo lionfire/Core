@@ -5,8 +5,11 @@ using System.Linq;
 using System.Threading.Tasks;
 using LionFire.Handles;
 
+
 namespace LionFire.Assets
 {
+    public interface INotifyingAssetProvider : INotifyPersistence, IAssetProvider { }
+
     public interface IAssetProvider
     {
         T Load<T>(string assetSubPath, object context = null) where T : class;

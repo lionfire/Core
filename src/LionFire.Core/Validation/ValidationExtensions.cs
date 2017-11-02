@@ -11,7 +11,7 @@ namespace LionFire.Validation
 {
     public static class ValidateExtensions
     {
-       
+
 
         /// <summary>
         /// Repeatedly cycle through a group of objects, running validateAction on them until all validate.
@@ -25,7 +25,39 @@ namespace LionFire.Validation
         {
             int lastFailCount = int.MaxValue;
 
-            List<ValidationContext> fails = null;
+            List<ValidationContext> fails = new List<ValidationContext>();
+
+            do
+            {
+                foreach (var validatable in validatables)
+                {
+                    var result = await validateAction(validatable).ConfigureAwait(false);
+                    if (result == null || result.Valid) continue;
+                    if (fails == null) fails = new List<ValidationContext>();
+                    fails.Add(result);
+                }
+                if (fails != null)
+                {
+                    lastFailCount = fails.Count;
+                    fails.Clear();
+                }
+            } while (fails.Count > 0 && fails.Count < lastFailCount && maxRepetitions-- > 0);
+            return fails.Count == 0 ? null : fails;
+        }
+
+        /// <summary>
+        /// Repeatedly cycle through a group of objects, running validateAction on them until all return null.  
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="objects">List of objects to validate</param>
+        /// <param name="action">Some sort of intitialization/validation action to perform</param>
+        /// <param name="maxRepetitions">Max repetitions to perform on a failure.  Set to zero to only attempt validation once.</param>
+        /// <returns>Null on success, or a list of failing ValidationContexts on fail</returns>
+        public static async Task<IEnumerable<object>> TryResolveAll<T>(this IEnumerable<T> objects, Func<T, Task<object>> action, int maxRepetitions = int.MaxValue)
+        {
+            int lastFailCount = int.MaxValue;
+
+            List<object> fails = null;
 
             do
             {
@@ -33,12 +65,12 @@ namespace LionFire.Validation
                 {
                     lastFailCount = fails.Count;
                 }
-                fails = new List<ValidationContext>();
+                fails = new List<object>();
 
-                foreach (var validatable in validatables)
+                foreach (var validatable in objects)
                 {
-                    var result = await validateAction(validatable).ConfigureAwait(false);
-                    if (result == null || result.Valid) continue;
+                    var result = await action(validatable).ConfigureAwait(false);
+                    if (result == null) continue;
                     fails.Add(result);
                 }
             } while (fails.Count > 0 && fails.Count < lastFailCount && maxRepetitions-- > 0);
@@ -102,7 +134,19 @@ namespace LionFire.Validation
             return context == null || context.Valid;
         }
 
-        public static ValidationContext PropertyNonDefault(this ValidationContext ctx, PropertyInfo pi, object obj = null)
+        public static ValidationContext PropertyNotNull(this ValidationContext ctx, string propertyName, object propertyValue = null)
+        {
+            if (propertyValue == null)
+            {
+                ctx.AddIssue(new ValidationIssue
+                {
+                    Kind = ValidationIssueKind.PropertyNotSet,
+                    VariableName = propertyName,
+                });
+            }
+            return ctx;
+        }
+        public static ValidationContext PropertyNotSet(this ValidationContext ctx, PropertyInfo pi, object obj = null)
         {
             if ((obj ?? ctx.Object).IsDefaultValue(pi))
             {

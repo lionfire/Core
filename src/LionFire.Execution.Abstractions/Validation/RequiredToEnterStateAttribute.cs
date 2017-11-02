@@ -26,7 +26,7 @@ namespace LionFire.Execution
                 var attrs = pi.GetCustomAttributes<RequiredToEnterStateAttribute>();
                 if (attrs.Where(a => a.State == state).Any())
                 {
-                    ctx.PropertyNonDefault(pi);
+                    ctx.PropertyNotSet(pi);
                 }
             }
             return ctx;

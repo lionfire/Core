@@ -12,6 +12,12 @@ using LionFire.Composables;
 
 namespace LionFire.Applications.Hosting
 {
+    // RENAME to ExecutionContainer?
+    // - InjectionContext
+    // - MultiType
+    // - IComposable (children & multitype)
+    // Can
+    //  - Init/Run/Query result/Cleanup
     [MultiTypeFromProperties]
     public interface IAppHost : 
         //IInitializable,

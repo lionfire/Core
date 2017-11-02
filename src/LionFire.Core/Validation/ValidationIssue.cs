@@ -7,11 +7,16 @@ using System.Threading.Tasks;
 
 namespace LionFire.Validation
 {
-    public class ValidationIssue 
+    public class ValidationIssue
     {
 
         public ValidationIssue() { }
         public ValidationIssue(string message) { this.Message = message; }
+        public ValidationIssue(object data)
+        {
+            if (data is string s) { Message = s; }
+            else Data = data;
+        }
 
         public static implicit operator ValidationIssue(string msg)
         {
@@ -27,10 +32,15 @@ namespace LionFire.Validation
         /// Set for PropertyNotSet, FieldNotSet, MemberNotSet, ArgumentNotSet
         /// </summary>
         public string VariableName { get; set; }
-       
-        public object DataContext { get; set; }
 
-        public string Message { get; set; }
+        public object Data { get; set; }
+
+        public string Message
+        {
+            get { return message ?? Data?.ToString(); }
+            set { message = value; }
+        }
+        private string message;
 
         public string Detail { get; set; }
         //public Dictionary<string, object> Properties { get; set; }

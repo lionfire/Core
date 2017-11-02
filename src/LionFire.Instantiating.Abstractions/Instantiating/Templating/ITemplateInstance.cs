@@ -6,13 +6,9 @@ using System.Threading.Tasks;
 
 namespace LionFire.Instantiating
 {
-    public interface ITemplateInstance
+    public interface ITemplateInstance // RENAME: IGenerated
     {
         //ITemplate Template { get; set; }
-    }
-    public interface IInstanceFor<T> 
-    {
-         T Template { get; set; }
     }
 
     public interface ITemplateInstance<T> : ITemplateInstance, IInstanceFor<T>

@@ -5,12 +5,14 @@ using LionFire.Instantiating;
 using LionFire.Persistence;
 using LionFire.MultiTyping;
 using System.Threading.Tasks;
+using System;
 
 namespace LionFire.Assets.Providers.FileSystem
 {
     // FUTURE: Integrate with Serializer framework to try loading files based on extension
 
-    public abstract class FileSystemAssetProviderBase
+
+    public abstract class FileSystemAssetProviderBase : INotifyPersistence
     {
         public string RootDir { get; set; }
 
@@ -20,6 +22,7 @@ namespace LionFire.Assets.Providers.FileSystem
         {
             RootDir = rootDir;
         }
+
 
         protected void InitRootDir()
         {
@@ -62,6 +65,12 @@ namespace LionFire.Assets.Providers.FileSystem
             return Path.Combine(pc?.RootPath ?? RootDir, AssetPathUtils.GetSubpath(obj, assetSubpath, context)) + (assetSubpath == null ? "" : FileExtensionWithDot); ;
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <remarks>
+        /// Changes won't be reflected in file system watcher until EffectiveListeningToPersistenceEvents is toggled.
+        /// </remarks>
         public abstract string FileExtension { get; }
         public string FileExtensionWithDot { get { return (string.IsNullOrWhiteSpace(FileExtension) ? "" : "." + FileExtension); } }
 
@@ -81,5 +90,127 @@ namespace LionFire.Assets.Providers.FileSystem
                 return (IEnumerable<string>)result;
             });
         }
+
+        #region INotifyPersistenceEvent
+
+        public virtual bool ListenToPersistenceEventsRecursively => true;
+        protected virtual bool DiscardDisabledFSW => true;
+
+        public event PersistenceEventHandler PersistenceEvent
+        {
+            add
+            {
+                persistenceEvent += value;
+                EvaluateEffectiveListeningToPersistenceEvents();
+            }
+            remove
+            {
+                persistenceEvent -= value;
+                EvaluateEffectiveListeningToPersistenceEvents();
+            }
+        }
+        private event PersistenceEventHandler persistenceEvent;
+
+        protected NotifyFilters NotifyFilters { get; set; } = NotifyFilters.FileName | NotifyFilters.Size | NotifyFilters.LastWrite;
+
+        #region EffectiveListeningToPersistenceEvents
+
+        FileSystemWatcher fsw;
+
+        public bool EffectiveListeningToPersistenceEvents
+        {
+            get
+            {
+                return fsw != null && fsw.EnableRaisingEvents;
+            }
+            set
+            {
+                if (value == EffectiveListeningToPersistenceEvents) return;
+
+                if (value)
+                {
+                    if (fsw == null)
+                    {
+                        fsw = new FileSystemWatcher(RootDir);
+                    }
+                    if (!string.IsNullOrWhiteSpace(FileExtensionWithDot)) fsw.Filter = "*" + FileExtensionWithDot;
+                    fsw.NotifyFilter = NotifyFilters;
+                    fsw.Changed += Fsw_Changed;
+                    fsw.Created += Fsw_Created;
+                    fsw.Deleted += Fsw_Deleted;
+                    fsw.Error += Fsw_Error;
+                    fsw.Renamed += Fsw_Renamed;
+                    fsw.EnableRaisingEvents = true;
+                }
+                else
+                {
+                    fsw.EnableRaisingEvents = false;
+                    if (DiscardDisabledFSW)
+                    {
+                        fsw.Dispose();
+                        fsw = null;
+                    }
+                }
+            }
+        }
+
+        private void Fsw_Renamed(object sender, RenamedEventArgs e)
+        {
+            throw new NotImplementedException();
+        }
+
+        private void Fsw_Error(object sender, ErrorEventArgs e)
+        {
+            throw new NotImplementedException();
+        }
+
+        private void Fsw_Deleted(object sender, FileSystemEventArgs e)
+        {
+            throw new NotImplementedException();
+        }
+
+        private void Fsw_Created(object sender, FileSystemEventArgs e)
+        {
+            throw new NotImplementedException();
+        }
+
+        private void Fsw_Changed(object sender, FileSystemEventArgs e)
+        {
+            throw new NotImplementedException();
+        }
+
+        private void EvaluateEffectiveListeningToPersistenceEvents()
+        {
+            if(ListeningToPersistenceEvents.HasValue) { EffectiveListeningToPersistenceEvents = ListeningToPersistenceEvents.Value }
+            if (persistenceEvent != null)
+            {
+
+                EffectiveListeningToPersistenceEvents = true;
+            }
+        }
+
+
+        #endregion
+
+        public bool? ListeningToPersistenceEvents
+        {
+            get
+            {
+                if (listeningToPersistenceEvents.HasValue)
+                {
+                    return listeningToPersistenceEvents.Value;
+                }
+                return EffectiveListeningToPersistenceEvents;
+            }
+            set
+            {
+                if (listeningToPersistenceEvents == value) return;
+                listeningToPersistenceEvents = value;
+                EvaluateEffectiveListeningToPersistenceEvents();
+            }
+        }
+        private bool? listeningToPersistenceEvents;
+
+        #endregion
     }
 }

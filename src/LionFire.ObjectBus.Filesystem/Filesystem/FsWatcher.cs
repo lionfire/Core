@@ -50,7 +50,7 @@ namespace LionFire.ObjectBus.Filesystem
             set
             {
                 if (path == value) return;
-                if (path != default(string)) throw new AlreadySetException();
+                if (path != default(string)) throw new AlreadyException();
 
                 if (fsw != null)
                 {

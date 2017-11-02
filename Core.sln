@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
-VisualStudioVersion = 15.0.27004.2005
+VisualStudioVersion = 15.0.27004.2006
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{A48456D5-DD7D-4E1C-9307-4996EA3D2CA8}"
 	ProjectSection(SolutionItems) = preProject
@@ -143,6 +143,10 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "MultiTyping", "MultiTyping", "{B55D4B15-E53D-42FF-A016-88EDC878BD3C}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "LionFire.MultiTyping.Abstractions", "src\LionFire.MultiTyping.Abstractions\LionFire.MultiTyping.Abstractions.csproj", "{B6BC22A2-2328-4BE3-9D9D-53EFBB1E910A}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Bridge", "Bridge", "{122AD5F5-2E32-4E7B-A3FE-3A28760DDC9F}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LionFire.Framework.Bridge", "src\LionFire.Framework.Bridge\LionFire.Framework.Bridge.csproj", "{22864EB5-A681-4C50-9C31-23BB59556309}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -446,6 +450,12 @@ Global
 		{B6BC22A2-2328-4BE3-9D9D-53EFBB1E910A}.R-Core-CI|Any CPU.Build.0 = Release|Any CPU
 		{B6BC22A2-2328-4BE3-9D9D-53EFBB1E910A}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{B6BC22A2-2328-4BE3-9D9D-53EFBB1E910A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{22864EB5-A681-4C50-9C31-23BB59556309}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{22864EB5-A681-4C50-9C31-23BB59556309}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{22864EB5-A681-4C50-9C31-23BB59556309}.R-Core-CI|Any CPU.ActiveCfg = Release|Any CPU
+		{22864EB5-A681-4C50-9C31-23BB59556309}.R-Core-CI|Any CPU.Build.0 = Release|Any CPU
+		{22864EB5-A681-4C50-9C31-23BB59556309}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{22864EB5-A681-4C50-9C31-23BB59556309}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -505,6 +515,7 @@ Global
 		{67E0BB61-DA4E-4137-945F-A78435945341} = {378B0962-3AB6-4673-94FC-E60F87E64B49}
 		{B55D4B15-E53D-42FF-A016-88EDC878BD3C} = {378B0962-3AB6-4673-94FC-E60F87E64B49}
 		{B6BC22A2-2328-4BE3-9D9D-53EFBB1E910A} = {B55D4B15-E53D-42FF-A016-88EDC878BD3C}
+		{22864EB5-A681-4C50-9C31-23BB59556309} = {122AD5F5-2E32-4E7B-A3FE-3A28760DDC9F}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {C2DE943D-AF10-4912-8DC3-91980A92426C}

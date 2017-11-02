@@ -1,4 +1,5 @@
-﻿
+﻿#if false
+
 // Retrieved from http://stackoverflow.com/a/15831128/208304
 
 using System;
@@ -6,9 +7,8 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
-//using System.Windows.Threading;
+using LionFire.Threading;
 
 namespace LionFire.UI
 {
@@ -20,44 +20,23 @@ namespace LionFire.UI
     //    bool IsViewModelOf(object obj);
     //}
 
-    //public class NullViewModelProvider : IViewModelProvider
-    //{
-    //    public T ProvideViewModelFor<T>(object model, object context)
-    //    {
-    //        return default(T);
-    //    }
-    //}
+    
 
-    /// <summary>
-    /// Observable collection of ViewModels that pushes changes to a related collection of models
-    /// </summary>
-    /// <typeparam name="TViewModel">Type of ViewModels in collection</typeparam>
-    /// <typeparam name="TModel">Type of models in underlying collection</typeparam>
-    public class VmCollection<TViewModel, TModel> : ObservableCollection<TViewModel>
-        where TViewModel : class, IViewModel
-        where TModel : class
+    public class ReadOnlyCollectionAdapter<TViewModel, TModel> : VmCollectionBase<TViewModel, TModel>
     {
-        protected readonly object _context;
-        private readonly ICollection<TModel> _models;
         protected readonly IEnumerable<TModel> _readOnlyModels;
-        private bool _synchDisabled;
-        protected readonly IViewModelProvider _viewModelProvider;
-        private readonly IDispatcher dispatcher; // TODO: Use this where required in this class
 
-
-        // TODO: Split this into ReadOnlyVmCollection
-        
-            /// <summary>
-        /// Constructor
-        /// </summary>
-        /// <param name="models">List of models to synch with</param>
-        /// <param name="viewModelProvider"></param>
-        /// <param name="context"></param>
-        /// <param name="autoFetch">
-        /// Determines whether the collection of ViewModels should be
-        /// fetched from the model collection on construction
-        /// </param>
-        public VmCollection(IEnumerable<TModel> models, IViewModelProvider viewModelProvider = null, object context = null, bool autoFetch = true, IDispatcher dispatcher = null, bool useApplicationDispatcher = true)
+        ///// <summary>
+        ///// Constructor
+        ///// </summary>
+        ///// <param name="models">List of models to synch with</param>
+        ///// <param name="viewModelProvider"></param>
+        ///// <param name="context"></param>
+        ///// <param name="autoFetch">
+        ///// Determines whether the collection of ViewModels should be
+        ///// fetched from the model collection on construction
+        ///// </param>
+        public ReadOnlyCollectionAdapter(IEnumerable<TModel> models, IViewModelProvider viewModelProvider = null, object context = null, bool autoFetch = true, IDispatcher dispatcher = null) 
         {
             _readOnlyModels = models;
             _context = context;
@@ -85,6 +64,68 @@ namespace LionFire.UI
             // Fecth ViewModels
             if (autoFetch) FetchFromModels();
         }
+    }
+    
+    internal class VmCollectionBase<TViewModel, TModel>: ObservableCollection<TViewModel>
+    {
+        protected readonly object _context;
+        private bool _synchDisabled;
+        protected readonly IViewModelProvider _viewModelProvider;
+        protected readonly IDispatcher dispatcher; // TODO: Make sure this is used where required 
+
+    }
+
+      /// <summary>
+    /// Observable collection of ViewModels that pushes changes to a related collection of models
+    /// </summary>
+    /// <typeparam name="TViewModel">Type of ViewModels in collection</typeparam>
+    /// <typeparam name="TModel">Type of models in underlying collection</typeparam>
+    public class VmCollection<TViewModel, TModel> : VmCollectionBase<TViewModel, TModel>
+        where TViewModel : class, IViewModel
+        where TModel : class
+    {
+        private readonly ICollection<TModel> _models;
+
+        #region Constructors
+
+        ///// <summary>
+        ///// Constructor
+        ///// </summary>
+        ///// <param name="models">List of models to synch with</param>
+        ///// <param name="viewModelProvider"></param>
+        ///// <param name="context"></param>
+        ///// <param name="autoFetch">
+        ///// Determines whether the collection of ViewModels should be
+        ///// fetched from the model collection on construction
+        ///// </param>
+        //public VmCollection(IEnumerable<TModel> models, IViewModelProvider viewModelProvider = null, object context = null, bool autoFetch = true, IDispatcher dispatcher = null, bool useApplicationDispatcher = true)
+        //{
+        //    _readOnlyModels = models;
+        //    _context = context;
+
+        //    _viewModelProvider = viewModelProvider;
+
+        //    // Register change handling for synchronization
+        //    // from ViewModels to Models
+        //    CollectionChanged += ViewModelCollectionChanged;
+
+        //    // If model collection is observable register change
+        //    // handling for synchronization from Models to ViewModels
+        //    if (models is ObservableCollection<TModel>)
+        //    {
+        //        var observableModels = models as ObservableCollection<TModel>;
+        //        observableModels.CollectionChanged += ModelCollectionChanged;
+        //    }
+        //    else if (models is IEnumerable<TModel> && models is INotifyCollectionChanged observableModels)
+        //    {
+        //        observableModels.CollectionChanged += ModelCollectionChanged;
+        //    }
+
+        //    this.dispatcher = dispatcher;
+
+        //    // Fecth ViewModels
+        //    if (autoFetch) FetchFromModels();
+        //}
 
         /// <summary>
         /// Constructor
@@ -120,11 +161,13 @@ namespace LionFire.UI
                 observableModels.CollectionChanged += ModelCollectionChanged;
             }
 
-            this.dispatcher = dispatcher;
+
 
             // Fecth ViewModels
             if (autoFetch) FetchFromModels();
         }
+
+        #endregion
 
         /// <summary>
         /// CollectionChanged event of the ViewModelCollection
@@ -266,3 +309,5 @@ namespace LionFire.UI
         }
     }
 }
+
+#endif

@@ -7,14 +7,14 @@ using System.Threading.Tasks;
 
 namespace LionFire.Instantiating
 {
-    public interface ITemplate { }
+    public interface ITemplate { } // RENAME: IGenerator
 
     public interface IInstantiatingTemplate
     {
         object Instantiate();
     }
 
-    public interface ITemplate<T> : ITemplate
+    public interface ITemplate<T> : ITemplate, IForInstancesOf<T>
         where T : new()
     {
     }
