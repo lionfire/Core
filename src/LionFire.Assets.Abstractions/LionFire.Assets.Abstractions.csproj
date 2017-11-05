@@ -2,8 +2,8 @@
 
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
-    <AssemblyName>LionFire.Persistence.Assets.Abstractions</AssemblyName>
-    <PackageId>LionFire.Persistence.Assets.Abstractions</PackageId>
+    <AssemblyName>LionFire.Assets.Abstractions</AssemblyName>
+    <PackageId>LionFire.Assets.Abstractions</PackageId>
     <GenerateAssemblyConfigurationAttribute>false</GenerateAssemblyConfigurationAttribute>
     <GenerateAssemblyCompanyAttribute>false</GenerateAssemblyCompanyAttribute>
     <GenerateAssemblyProductAttribute>false</GenerateAssemblyProductAttribute>

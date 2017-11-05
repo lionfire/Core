@@ -31,10 +31,10 @@ namespace LionFire.Validation
             {
                 foreach (var validatable in validatables)
                 {
-                    var result = await validateAction(validatable).ConfigureAwait(false);
-                    if (result == null || result.Valid) continue;
+                    var validationContext = await validateAction(validatable).ConfigureAwait(false);
+                    if (validationContext.Valid) continue;
                     if (fails == null) fails = new List<ValidationContext>();
-                    fails.Add(result);
+                    fails.Add(validationContext);
                 }
                 if (fails != null)
                 {
@@ -124,14 +124,14 @@ namespace LionFire.Validation
         /// <param name="context"></param>
         public static void EnsureValid(this ValidationContext context)
         {
-            if (context != null && !context.Valid)
+            if (!context.Valid)
             {
                 throw new ValidationException(context);
             }
         }
         public static bool IsValid(this ValidationContext context)
         {
-            return context == null || context.Valid;
+            return context.Valid;
         }
 
         public static ValidationContext PropertyNotNull(this ValidationContext ctx, string propertyName, object propertyValue = null)

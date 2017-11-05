@@ -1,4 +1,5 @@
-﻿#if !NET35
+﻿#if TOMIGRATE // Newtonsoft Json
+#if !NET35
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -60,4 +61,5 @@ namespace LionFire.Serialization.JsonEx
         }
     }
 }
+#endif
 #endif

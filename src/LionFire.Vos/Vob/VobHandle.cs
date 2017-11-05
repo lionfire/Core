@@ -402,7 +402,7 @@ namespace LionFire.ObjectBus
             get {
                 if (Path != null)
                 {
-                    return VosPath.GetName(Path);
+                    return LionPath.GetName(Path);
                 }
                 else
                 {

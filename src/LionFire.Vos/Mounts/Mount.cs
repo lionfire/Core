@@ -63,7 +63,7 @@ namespace LionFire.ObjectBus
 
         public static string GetMountName(string packageName = null, string layerName = null)
         {
-            var mountName = ((packageName ?? "") + VosPath.LocationDelimiter + (layerName ?? "")).Trim(VosPath.LocationDelimiter);
+            var mountName = ((packageName ?? "") + LionPath.LocationDelimiter + (layerName ?? "")).Trim(LionPath.LocationDelimiter);
             return StringX.IsNullOrWhiteSpace(mountName) ? null : mountName;
         }
 

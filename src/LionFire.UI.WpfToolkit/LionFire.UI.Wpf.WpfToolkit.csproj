@@ -101,10 +101,6 @@
       <Project>{9cce0f03-f678-42aa-87a4-cb1b681a64e2}</Project>
       <Name>LionFire.UI</Name>
     </ProjectReference>
-    <ProjectReference Include="..\LionFire.Wpf\LionFire.UI.Wpf.csproj">
-      <Project>{1fa5dbde-630e-4384-a4d9-d325106cae62}</Project>
-      <Name>LionFire.UI.Wpf</Name>
-    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

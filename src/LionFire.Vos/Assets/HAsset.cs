@@ -171,7 +171,7 @@ namespace LionFire.Assets
         public string AssetName {
             get {
                 if (AssetTypePath == null) return null;
-                return VosPath.GetName(AssetTypePath);
+                return LionPath.GetName(AssetTypePath);
             }
         }
 

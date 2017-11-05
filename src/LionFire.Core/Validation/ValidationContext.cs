@@ -25,11 +25,11 @@ namespace LionFire.Validation
         /// <param name="validation"></param>
         /// <param name="separator">If null, NewLine is used.</param>
         /// <returns>Null if no reasons</returns>
-        public static string FailReasons(ValidationContext validation, string separator = null)
+        public static string FailReasons(this ValidationContext validation, string separator = null)
         {
             if (separator == null) separator = Environment.NewLine;
-            if (validation.issues == null || !validation.issues.Any()) return null;
-            return validation.issues.Select(i => i.Message).Aggregate((x, y) => x + Environment.NewLine + y);
+            if (validation.Issues == null || !validation.Issues.Any()) return null;
+            return validation.Issues.Select(i => i.Message).Aggregate((x, y) => x + Environment.NewLine + y);
         }
     }
     //public struct LazyValidation : IValidation
@@ -62,6 +62,8 @@ namespace LionFire.Validation
 
         #endregion
 
+        #region Properties
+
         public object Object { get; set; }
 
         // REVIEW: Rethink this here.  Move it to IValidateEx if it is really necessary.  Or change to Context
@@ -71,12 +73,16 @@ namespace LionFire.Validation
         private List<ValidationIssue> issues { get; set; }
         public IEnumerable<ValidationIssue> Issues => issues;
 
+        #endregion
+
         #region Derived
 
         public bool Valid => issues == null || issues.Count == 0;
         public bool HasIssues => !Valid;
 
         #endregion
+
+        #region Methods
 
         public ValidationContext AddIssue(ValidationIssue issue)
         {
@@ -85,7 +91,7 @@ namespace LionFire.Validation
             return this;
         }
 
-
+        #endregion
     }
 
     //public static class ValidationContextExtensions

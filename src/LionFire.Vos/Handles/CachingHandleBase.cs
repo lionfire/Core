@@ -364,7 +364,7 @@ namespace LionFire.ObjectBus
 
             NodeType child;
 
-            if (!subpathChunks.MoveNext() || StringX.IsNullOrWhiteSpace(subpathChunks.Current
+            if (!subpathChunks.MoveNext() || string.IsNullOrWhiteSpace(subpathChunks.Current
 #if AOT
             as string
 #endif

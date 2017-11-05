@@ -30,7 +30,7 @@ namespace LionFire.DependencyInjection
 
         #endregion
 
-        #region Methods
+        //#region Methods
 
         public static void ValidateDependencies(this object obj)
         {
@@ -53,15 +53,14 @@ namespace LionFire.DependencyInjection
             //    unresolvedDependencies = results.Count > 0 ? results : UnsatisfiedDependencies.Resolved;
             //    return results.Count == 0;
         }
-
         public static void ResolveDependencies(this object obj, IServiceProvider serviceProvider = null)
         {
-            ValidationContext vc = null;
+            ValidationContext vc = new ValidationContext();
 
-            obj.TryResolveDependencies(() => RefParameterHelpers.GetOrCreate<ValidationContext>(ref vc), serviceProvider);
+            //obj.TryResolveDependencies(() => RefParameterHelpers.GetOrCreate<ValidationContext>(ref vc), serviceProvider);
+            obj.TryResolveDependencies(ref vc, serviceProvider);
             vc.EnsureValid();
         }
-
         public static bool TryResolveDependencies(this object obj, out UnsatisfiedDependencies unresolvedDependencies, IServiceProvider serviceProvider = null)
         {
             if (serviceProvider == null)
@@ -70,7 +69,7 @@ namespace LionFire.DependencyInjection
             }
             return _ResolveDependencies(obj, out unresolvedDependencies, serviceProvider, true);
         }
-        public static ValidationContext TryResolveDependencies(this object obj, Func<ValidationContext> validationContext, IServiceProvider serviceProvider = null)
+        public static ValidationContext TryResolveDependencies(this object obj, ref ValidationContext vc, IServiceProvider serviceProvider = null)
         {
             if (serviceProvider == null)
             {
@@ -81,14 +80,12 @@ namespace LionFire.DependencyInjection
                 serviceProvider = InjectionContext.Current;
             }
 
-            ValidationContext vc = null;
             _ResolveDependencies(obj, out UnsatisfiedDependencies unresolvedDependencies, serviceProvider, true);
 
             if (unresolvedDependencies != null && unresolvedDependencies.Count > 0)
             {
                 foreach (var ud in unresolvedDependencies)
                 {
-                    if (vc == null) vc = validationContext();
                     vc.AddMissingDependencyIssue(ud.Description);
                 }
             }
@@ -125,8 +122,6 @@ namespace LionFire.DependencyInjection
             unresolvedDependencies = results.Count > 0 ? results : UnsatisfiedDependencies.Resolved;
             return results.Count == 0;
         }
-
-        #endregion
 
         public static async Task ResolveDependencies(this IEnumerable<object> objects, IServiceProvider serviceProvider)
         {

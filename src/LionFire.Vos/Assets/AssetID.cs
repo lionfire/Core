@@ -4,8 +4,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using JsonExSerializer;
-using LionFire.LionRing;
 using LionFire.ObjectBus;
 using LionFire.Serialization;
 
@@ -21,11 +19,11 @@ namespace LionFire.Assets
     /// <summary>
     /// Default paths are not incorporated here
     /// </summary>
-    [JsonConvert(typeof(AssetIDSerializationConverter))]
+    //[JsonConvert(typeof(AssetIDSerializationConverter))] TOMIGRATE
 #if !AOT
     [LionSerializable(SerializeMethod.ByValue)]
 #endif
-    public class AssetID : IHasPath, IFreezable
+    public class AssetID : IFreezable
     {
         #region (Public) Constants
 

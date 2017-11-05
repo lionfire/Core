@@ -191,6 +191,8 @@ namespace LionFire.Execution.Hosts
         public IReadOnlyCollectionAdapter<object> Instances => instances;
         IReadOnlyCollectionAdapter<object> instances;
 
+        Dictionary<TAsset,object> hostedInstances = new Dictionary<TAsset, object>();
+
         public void OnInitialize()
         {
             assets = LiveAssetCollection<TAsset>.Instance;
@@ -236,7 +238,6 @@ namespace LionFire.Execution.Hosts
         public void OnStart()
         {
             Debug.WriteLine("OnStart");
-            assets.
             //assets.Handles.Added += Handles_Added;
             //assets.Handles.Removed += Handles_Removed;
         }
@@ -249,7 +250,7 @@ namespace LionFire.Execution.Hosts
             {
                 newItem = template.Create();
             }
-            instances.Add(newAsset, newItem);
+            hostedInstances.Add(newAsset, newItem);
         }
 
         //private void Handles_Removed(string arg1, Persistence.Assets.AssetHandle<TAsset> arg2)

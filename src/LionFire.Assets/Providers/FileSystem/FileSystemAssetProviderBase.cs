@@ -181,7 +181,7 @@ namespace LionFire.Assets.Providers.FileSystem
 
         private void EvaluateEffectiveListeningToPersistenceEvents()
         {
-            if(ListeningToPersistenceEvents.HasValue) { EffectiveListeningToPersistenceEvents = ListeningToPersistenceEvents.Value }
+            if(ListeningToPersistenceEvents.HasValue) { EffectiveListeningToPersistenceEvents = ListeningToPersistenceEvents.Value; }
             if (persistenceEvent != null)
             {
 

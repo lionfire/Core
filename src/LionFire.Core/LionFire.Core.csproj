@@ -19,7 +19,7 @@ This package is typically not added on its own, but is a dependency required by 
     <PackageLicenseUrl>https://github.com/jaredthirsk/Core/blob/master/LICENSE</PackageLicenseUrl>
     <PackageProjectUrl>http://open.lionfire.software/</PackageProjectUrl>
     <PackageIconUrl>https://avatars3.githubusercontent.com/u/19334699?v=3&amp;s=200</PackageIconUrl>
-    <RepositoryUrl>https://github.com/jaredthirsk/Core</RepositoryUrl>
+    <RepositoryUrl>https://github.com/lionfire/core</RepositoryUrl>
     <NeutralLanguage>English (United States)</NeutralLanguage>
     <PackageTags>utility collections</PackageTags>
   </PropertyGroup>

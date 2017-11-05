@@ -13,7 +13,7 @@ namespace LionFire.Collections
     /// <typeparam name="TTarget">Type of ViewModels in collection</typeparam>
     /// <typeparam name="TSource">Type of models in underlying collection</typeparam>
     public class CollectionAdapter<TTarget, TSource> : CollectionAdapterBase<TTarget, TSource>, ICollectionAdapter<TTarget>
-        where TTarget : class, IInstanceFor<TSource>
+        where TTarget : class//, IInstanceFor<TSource>
         where TSource : class
     {
         private readonly ICollection<TSource> sources;

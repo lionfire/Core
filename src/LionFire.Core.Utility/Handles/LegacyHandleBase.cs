@@ -1519,7 +1519,7 @@
 //            get
 //            {
 //                if (Reference == null) throw new ArgumentNullException("Reference == null");
-//                if (StringX.IsNullOrWhiteSpace(subpath)) return this;
+//                if (string.IsNullOrWhiteSpace(subpath)) return this;
 //                //return this.Reference.GetChild(VosPath.Combine(this.Reference.Path, subpath)).ToHandle(); BUG
 //                return this.Reference.GetChild(subpath).GetHandle<Folder>();
 //            }

@@ -19,11 +19,10 @@ using SUtils.Serialization.MsgPack;
 using System.Collections.Generic;
 using System.Reflection;
 using System.Diagnostics.Contracts;
-
-using LionFire.LionRing;
 using System.ComponentModel;
 using System.Collections;
 using LionFire.Events;
+using Microsoft.Extensions.Logging;
 
 namespace LionFire.Serialization
 {

@@ -52,7 +52,7 @@ namespace LionFire.Persistence
 
         public static void EnableAutoSave(this IAsset asset, bool enable = true)
         {
-            Action<object> saveAction = o => ((IAsset)o).Save();
+            Action<object> saveAction = o => ((ISaveable)o).Save();
             if (enable)
             {
                 asset.ToSaveable().EnableAutoSave(true, saveAction);

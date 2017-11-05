@@ -1,4 +1,6 @@
-﻿using System;
+﻿#if TOMIGRATE // to Newtonsoft Json
+
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -9,6 +11,7 @@ using JsonExSerializer.TypeConversion;
 using JsonExSerializer.Collections;
 using JsonExSerializer.Framework.ExpressionHandlers;
 using System.Reflection;
+using Microsoft.Extensions.Logging;
 
 namespace LionFire.Serialization
 {
@@ -241,3 +244,4 @@ namespace LionFire.Serialization
 
 
 }
+#endif

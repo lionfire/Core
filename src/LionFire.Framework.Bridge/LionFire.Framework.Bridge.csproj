@@ -13,8 +13,8 @@
     <ProjectGuid>{22864EB5-A681-4C50-9C31-23BB59556309}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>LionFire.Framework.Bridge</RootNamespace>
-    <AssemblyName>LionFire.Framework.Bridge</AssemblyName>
+    <RootNamespace>LionFire.Framework</RootNamespace>
+    <AssemblyName>LionFire.Framework.BridgeApp</AssemblyName>
     <TargetFrameworkVersion>v4.7</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
   </PropertyGroup>

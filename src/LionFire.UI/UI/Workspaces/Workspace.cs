@@ -3,11 +3,14 @@ using LionFire.Execution.Executables;
 using System.Collections.ObjectModel;
 using LionFire.Composables;
 using System.Collections.Generic;
+using LionFire.Persistence;
+using System.Threading.Tasks;
+using System;
 
 namespace LionFire.UI.Workspaces
 {
     // MOVE? Split Caliburn.Micro app stuff into its own DLL?
-    public class Workspace<TTemplate, TChild> : InitializableExecutableBase, ITemplateInstance<TTemplate>, IComposition, IWorkspace
+    public class Workspace<TTemplate, TChild> : InitializableExecutableBase, ITemplateInstance<TTemplate>, IComposition, IWorkspace, ISaveable
         where TTemplate : class, ITemplate
     {
         IEnumerable<object> IComposition.Children => Children;
@@ -30,6 +33,11 @@ namespace LionFire.UI.Workspaces
 
 
         protected virtual void OnTemplateChanged(TTemplate oldValue, TTemplate newValue) { }
+
+        public virtual Task Save(object persistenceContext = null)
+        {
+            throw new NotImplementedException();
+        }
     }
 
     // TODO: Children Executable Visitor: attach to object, then on onstarting/onstopping, crawl thru the hierarchy

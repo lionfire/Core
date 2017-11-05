@@ -32,7 +32,7 @@ namespace LionFire.ObjectBus
         {
             string result = AssetPaths.AssetPathFromAssetTypePath(assetSubpath, typeof(T)); ;
             
-            return VosPath.Combine(V.Assets.Path, result);
+            return LionPath.Combine(V.Assets.Path, result);
         }
         public static string[] AssetSubpathToPath(string[] assetSubpathComponents)
         {

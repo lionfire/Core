@@ -49,8 +49,8 @@ namespace LionFire.Execution.Executables
 
         public async Task<ValidationContext> Initialize()
         {
-            ValidationContext validationContext = null;
-            Func<ValidationContext> vcGetter = () => { if (validationContext == null) validationContext = new ValidationContext(); return validationContext; };
+            ValidationContext validationContext = new ValidationContext();
+            //Func<ValidationContext> vcGetter = () => { if (validationContext == null) validationContext = new ValidationContext(); return validationContext; };
 
             if (!this.IsInitialized())
             {
@@ -59,20 +59,19 @@ namespace LionFire.Execution.Executables
                 SetState (State,ExecutionStateEx.Initializing);
                 if (!CanInitializeAfterDispose && State == ExecutionStateEx.Disposed) throw new ObjectDisposedException(this.GetType().Name);
                 //StateChangeContext c = new StateChangeContext();
-                await OnInitializing(vcGetter);
+                await Task.Run(()=>OnInitializing(ref validationContext)).ConfigureAwait(false);
                 if (validationContext.IsValid()) State = ExecutionStateEx.Ready;
             }
 
             return validationContext;
         }
 
-        protected virtual Task OnInitializing(Func<ValidationContext> validationContext)
+        protected virtual void OnInitializing(ref ValidationContext validationContext)
         {
             if (GetType().GetTypeInfo().GetCustomAttribute<HasDependenciesAttribute>() != null)
             {
-                this.TryResolveDependencies(validationContext);
+                this.TryResolveDependencies(ref validationContext);
             }
-            return Task.CompletedTask;
         }
 
     }

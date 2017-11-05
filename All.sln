@@ -24,9 +24,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "LionFire.Environment", "src
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Data", "Data", "{A3A8115C-B22B-4A3F-B738-46720422BAE2}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "LionFire.Persistence.Assets.Abstractions", "src\LionFire.Persistence.Assets.Abstractions\LionFire.Persistence.Assets.Abstractions.csproj", "{421E9A19-D78A-4767-9FF0-F2BB5752B5AF}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "LionFire.Assets.Abstractions", "src\LionFire.Assets.Abstractions\LionFire.Assets.Abstractions.csproj", "{421E9A19-D78A-4767-9FF0-F2BB5752B5AF}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "LionFire.Persistence.Assets", "src\LionFire.Persistence.Assets\LionFire.Persistence.Assets.csproj", "{0E485681-0249-49F3-B08C-E68C29E25D7C}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "LionFire.Assets", "src\LionFire.Assets\LionFire.Assets.csproj", "{0E485681-0249-49F3-B08C-E68C29E25D7C}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Applications", "Applications", "{09B43286-7E2B-4635-9DDB-DB0E01300E19}"
 EndProject

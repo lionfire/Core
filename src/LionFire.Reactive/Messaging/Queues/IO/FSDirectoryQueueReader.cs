@@ -79,7 +79,7 @@ namespace LionFire.Messaging.Queues.IO
         public Task<bool> Initialize()
         {
             if (isInitialized) return Task.FromResult(true);
-            ValidationContext vc = null;
+            ValidationContext vc = default(ValidationContext);
             if (QueueDir == null)
             {
                 this.QueueDir = ResolveUriToDiskDir(Template.QueueDataUri, ref vc); // TODO FIXME vc code flow
@@ -87,15 +87,13 @@ namespace LionFire.Messaging.Queues.IO
 
             InitHandlerDir();
             InDir.CreateDirectoryIfMissing();
-            
 
             if (AutoCleanDeadQueues)
             {
                 CleanDeadQueues();
             }
 
-            if (vc == null || vc.Valid)
-                isInitialized = true;
+            if (vc.Valid) isInitialized = true;
             return Task.FromResult(isInitialized);
         }
 

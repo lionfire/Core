@@ -49,7 +49,7 @@ namespace LionFire.ObjectBus
             for (int i = 0; i < pathComponents.Length; i++)
             {
                 string chunk = pathComponents[i];
-                pathComponents[i] = String.Concat(VosPath.SeparatorChar, chunk.TrimStart(VosPath.SeparatorChar));
+                pathComponents[i] = String.Concat(LionPath.SeparatorChar, chunk.TrimStart(LionPath.SeparatorChar));
 
                 //if (i == pathComponents.Length - 1)
                 //{
@@ -96,7 +96,7 @@ namespace LionFire.ObjectBus
                 StringBuilder sb = new StringBuilder();
                 if (Host != null)
                 {
-                    sb.Append(VosPath.HostDelimiter);
+                    sb.Append(LionPath.HostDelimiter);
                     sb.Append(Host);
                 }
                 if (Port != null)
@@ -128,26 +128,26 @@ namespace LionFire.ObjectBus
                     return;
                 }
                 int index = 0;
-                if (value.StartsWith(VosPath.HostDelimiter))
+                if (value.StartsWith(LionPath.HostDelimiter))
                 {
-                    index += VosPath.HostDelimiter.Length;
-                    Host = value.Substring(index, index + value.IndexOfAny(VosPath.Delimiters, index));
+                    index += LionPath.HostDelimiter.Length;
+                    Host = value.Substring(index, index + value.IndexOfAny(LionPath.Delimiters, index));
                 }
-                if (value[index] == VosPath.PortDelimiter)
+                if (value[index] == LionPath.PortDelimiter)
                 {
                     index++;
-                    Port = value.Substring(index, index + value.IndexOfAny(VosPath.Delimiters, index));
+                    Port = value.Substring(index, index + value.IndexOfAny(LionPath.Delimiters, index));
                 }
-                if (value[index] == VosPath.PathDelimiter)
+                if (value[index] == LionPath.PathDelimiter)
                 {
                     //index += PathDelimiter.Length; -- Keep the initial /
                     //Path = value.Substring(index);
-                    Path = value.Substring(index, index + value.IndexOfAny(VosPath.Delimiters, index));
+                    Path = value.Substring(index, index + value.IndexOfAny(LionPath.Delimiters, index));
                 }
-                if (value[index] == VosPath.LayerDelimiter)
+                if (value[index] == LionPath.LayerDelimiter)
                 {
                     index++;
-                    Package = value.Substring(index, index + value.IndexOfAny(VosPath.Delimiters, index));
+                    Package = value.Substring(index, index + value.IndexOfAny(LionPath.Delimiters, index));
                 }
             }
         }

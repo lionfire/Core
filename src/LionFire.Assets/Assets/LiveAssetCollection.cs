@@ -13,6 +13,7 @@ using LionFire.Execution.Executables;
 using LionFire.StateMachines;
 using LionFire.StateMachines.Class;
 using LionFire.Persistence;
+using LionFire.MultiTyping;
 
 namespace LionFire.Assets
 {
@@ -23,7 +24,7 @@ namespace LionFire.Assets
     //}
 
     public class LiveAssetCollection<TAsset> : ObservableHandleDictionary<string, AssetHandle<TAsset>, TAsset>, INotifyPropertyChanged
-        , IStartable, // Maybe replace IStartable with pure IExecutable2 later? Or generate the IStartable from CSM.Generation
+        , IStartable // Maybe replace IStartable with pure IExecutable2 later? Or generate the IStartable from CSM.Generation
         , IStoppable
     where TAsset : class
     {
@@ -32,7 +33,7 @@ namespace LionFire.Assets
         public IStateMachine<ExecutionState2, ExecutionTransition> StateMachine => stateMachine;
         private IStateMachine<ExecutionState2, ExecutionTransition> stateMachine;
 
-        IStateMachine<ExecutionState2, ExecutionTransition> IIs<IStateMachine<ExecutionState2, ExecutionTransition>>.Object => stateMachine;
+        //IStateMachine<ExecutionState2, ExecutionTransition> IHas<IStateMachine<ExecutionState2, ExecutionTransition>>.Object => stateMachine;
 
         #endregion
 

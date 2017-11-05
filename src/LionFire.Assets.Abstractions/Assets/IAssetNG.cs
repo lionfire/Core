@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace LionFire.Assets
 {
-    public interface IAsset : ISaveable
+    public interface IAsset //: ISaveable
     {
         string AssetSubPath { get; }
     }

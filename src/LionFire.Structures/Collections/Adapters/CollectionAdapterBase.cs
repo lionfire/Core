@@ -10,7 +10,7 @@ using LionFire.Threading;
 namespace LionFire.Collections
 {
     public abstract class CollectionAdapterBase<TTarget, TSource> : ObservableCollection<TTarget>
-        where TTarget : class, IInstanceFor<TSource>
+        where TTarget : class//, IInstanceFor<TSource>
         where TSource : class
     {
         // TODO: Contain ObservableCollection (and provide read-only access for ReadOnlyCollectionAdapter) instead of having it as a base type

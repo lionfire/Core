@@ -696,8 +696,8 @@ namespace LionFire.ObjectBus
             this.parent = parent;
             this.name = name;
 
-            this.path = VosPath.CleanAbsolutePathEnds(VosPath.Combine((parent == null ? "" : parent.Path), name));
-            VobDepth = VosPath.GetAbsolutePathDepth(path);
+            this.path = LionPath.CleanAbsolutePathEnds(LionPath.Combine((parent == null ? "" : parent.Path), name));
+            VobDepth = LionPath.GetAbsolutePathDepth(path);
 
             InitializeEffectiveMounts();
             //MountStateVersion = -1;
@@ -1128,7 +1128,7 @@ namespace LionFire.ObjectBus
             }
             else
             {
-                result = VosPath.Combine(mount.Root.Path, this.PathElements.Skip(mount.VobDepth)); // OPTIMIZE: cache this enumerable alongside the mount
+                result = LionPath.Combine(mount.Root.Path, this.PathElements.Skip(mount.VobDepth)); // OPTIMIZE: cache this enumerable alongside the mount
                 l.Trace("UNTESTED: MountPath: " + result);
             }
 
@@ -1608,7 +1608,7 @@ namespace LionFire.ObjectBus
                 var tempSaveHandle = "".PathToVobHandle<T>(package, location);
 #endif
                 //#error SAving Timeline--no save location??
-                if (!StringX.IsNullOrWhiteSpace(tempSaveHandle.Path.TrimEnd(VosPath.PathDelimiter)) && this.Path.StartsWith(tempSaveHandle.Path.TrimEnd(VosPath.PathDelimiter))) // TEMP approach TODO
+                if (!StringX.IsNullOrWhiteSpace(tempSaveHandle.Path.TrimEnd(LionPath.PathDelimiter)) && this.Path.StartsWith(tempSaveHandle.Path.TrimEnd(LionPath.PathDelimiter))) // TEMP approach TODO
                 {
                     saveHandle = GetFirstWriteHandle<T>();
 
@@ -2986,7 +2986,7 @@ namespace LionFire.ObjectBus
                     {
                         foreach (string childName in GetMountHandle(mount).GetChildrenNames())
                         {
-                            if (!includeHidden && VosPath.IsHidden(childName)) continue;
+                            if (!includeHidden && LionPath.IsHidden(childName)) continue;
 
                             if (namesDiscovered.Contains(childName)) continue;
                             namesDiscovered.Add(childName);

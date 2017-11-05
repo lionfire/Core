@@ -118,8 +118,6 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Machine", "Machine", "{6492
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "LionFire.Supervising.Sentinel", "src\LionFire.Machine.Sentinel\LionFire.Supervising.Sentinel.csproj", "{FE8C16F3-55C3-46F5-AD9C-CBB0E3B2B9ED}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "LionFire.Standard.All", "src\LionFire.Standard.All\LionFire.Standard.All.csproj", "{0D8C53BE-7A51-4B4B-8608-33EE1E755435}"
-EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "LionFire.Assets", "src\LionFire.Assets\LionFire.Assets.csproj", "{C726E2CF-4461-472D-93A2-952CD9606545}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "LionFire.Assets.Abstractions", "src\LionFire.Assets.Abstractions\LionFire.Assets.Abstractions.csproj", "{FE61140E-E5BE-47D8-9960-61005F242268}"
@@ -128,7 +126,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "LionFire.Assets.Api", "src\
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "LionFire.Framework", "src\LionFire.Framework\LionFire.Framework.csproj", "{F9D370CC-5119-4519-BA11-E1F59F4A2ED0}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Incubation", "Incubation", "{378B0962-3AB6-4673-94FC-E60F87E64B49}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Standalone", "Standalone", "{378B0962-3AB6-4673-94FC-E60F87E64B49}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "LionFire.StateMachines.Abstractions", "..\LionFire\StateMachines\src\LionFire.StateMachines.Abstractions\LionFire.StateMachines.Abstractions.csproj", "{6E4A45DF-B47D-4588-8C72-F9AEB25D93C6}"
 EndProject
@@ -397,11 +395,6 @@ Global
 		{FE8C16F3-55C3-46F5-AD9C-CBB0E3B2B9ED}.R-Core-CI|Any CPU.Build.0 = Release|Any CPU
 		{FE8C16F3-55C3-46F5-AD9C-CBB0E3B2B9ED}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{FE8C16F3-55C3-46F5-AD9C-CBB0E3B2B9ED}.Release|Any CPU.Build.0 = Release|Any CPU
-		{0D8C53BE-7A51-4B4B-8608-33EE1E755435}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{0D8C53BE-7A51-4B4B-8608-33EE1E755435}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{0D8C53BE-7A51-4B4B-8608-33EE1E755435}.R-Core-CI|Any CPU.ActiveCfg = Release|Any CPU
-		{0D8C53BE-7A51-4B4B-8608-33EE1E755435}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{0D8C53BE-7A51-4B4B-8608-33EE1E755435}.Release|Any CPU.Build.0 = Release|Any CPU
 		{C726E2CF-4461-472D-93A2-952CD9606545}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{C726E2CF-4461-472D-93A2-952CD9606545}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{C726E2CF-4461-472D-93A2-952CD9606545}.R-Core-CI|Any CPU.ActiveCfg = Release|Any CPU

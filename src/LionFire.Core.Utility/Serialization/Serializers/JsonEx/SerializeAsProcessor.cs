@@ -2,11 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using JsonExSerializer.MetaData.Attributes;
-using JsonExSerializer.MetaData;
 using System.Reflection;
-using JsonExSerializer;
-using JsonExSerializer.TypeConversion;
 
 namespace LionFire.Serialization.JsonEx
 {

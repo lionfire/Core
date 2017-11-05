@@ -13,8 +13,7 @@ namespace LionFire.Serialization
         // FUTURE: also add mime-types or something like that, so that compression 
         // serialization types like zip can recurse
 
-
-        public static LionFire.Collections.IReadOnlyCollection<LionSerializer> Serializers
+        public static IReadOnlyCollection<LionSerializer> Serializers
         { get { return serializers; } }
         private static MultiBindableCollection<LionSerializer> serializers = new MultiBindableCollection<LionSerializer>();
 
@@ -24,13 +23,14 @@ namespace LionFire.Serialization
 
         #region Json
 
-        public static LionJsonSerializer Json
+        public static ILionSerializer Json
         {
             get
             {
-                return lionJsonSerializer;
+                throw new NotImplementedException();
+                //return lionJsonSerializer;
             }
-        } private static LionJsonSerializer lionJsonSerializer = new LionJsonSerializer();
+        } //private static LionJsonSerializer lionJsonSerializer = new LionJsonSerializer();
 
         #endregion
 

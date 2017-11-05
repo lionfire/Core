@@ -6,6 +6,7 @@ using System.IO;
 using System.Threading;
 using LionFire.Collections;
 using System.Collections;
+using Microsoft.Extensions.Logging;
 
 namespace LionFire.Serialization
 {
@@ -322,8 +323,7 @@ namespace LionFire.Serialization
 
         #endregion
 
-        public static LionFire.Collections.IReadOnlyCollection<LionSerializer> Serializers { get { return LionSerializers.Serializers; } }
-
+        public static IReadOnlyCollection<LionSerializer> Serializers { get { return LionSerializers.Serializers; } }
 
         #region Misc
 

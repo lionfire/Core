@@ -102,7 +102,7 @@ namespace LionFire.Assets
 #endif
         #region Handle Accessors
 
-        IReadHandle IHasReadHandle.ReadHandle { get { return this.ReadHandle; } }
+        //IReadHandle IHasReadHandle.ReadHandle { get { return this.ReadHandle; } }
 
         public IReadHandle
 #if !AOT
@@ -158,6 +158,7 @@ namespace LionFire.Assets
                 vh.Object = AssetObject;
             }
         }
+
         #endregion
 
 #if false // AOT
@@ -379,7 +380,7 @@ namespace LionFire.Assets
 
         #region Path
 
-        public string Name { get { return VosPath.GetName(AssetTypePath); } set { this.AssetTypePath = value; } } // REVIEW
+        public string Name { get { return LionPath.GetName(AssetTypePath); } set { this.AssetTypePath = value; } } // REVIEW
 
         public virtual bool AllowRename { get { return false; } }
 

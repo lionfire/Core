@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Windows.Threading;
+using LionFire.Threading;
 
 namespace LionFire.UI.Wpf
 {
@@ -8,6 +9,8 @@ namespace LionFire.UI.Wpf
         Dispatcher dispatcher;
         public WindowsDispatcherWrapper(Dispatcher dispatcher) { this.dispatcher = dispatcher; }
         public bool CheckAccess() => dispatcher.CheckAccess();
+
+        public bool IsInvokeRequired => !dispatcher.CheckAccess();
 
         public void Invoke(Action action) => dispatcher.Invoke(action);
 

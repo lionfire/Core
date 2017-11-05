@@ -154,7 +154,7 @@ namespace LionFire.Execution.Jobs
             {
                 State = ExecutionStateEx.Ready;
             }
-            return Task.FromResult<ValidationContext>(null);
+            return Task.FromResult(default(ValidationContext));
         }
 
         object lock_ = new object();

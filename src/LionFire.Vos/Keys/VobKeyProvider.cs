@@ -137,7 +137,7 @@ namespace LionFire.ObjectBus
         }
 
         public VobStringKeyProvider(Vob vob)
-            : base(vob, VosPath.Combine(VosPaths.MetaDataSubPathPrefix, MetaDataSlot))
+            : base(vob, LionPath.Combine(VosPaths.MetaDataSubPathPrefix, MetaDataSlot))
         {
         }
 

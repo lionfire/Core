@@ -33,7 +33,7 @@ namespace LionFire.Validation
 
         public override string ToString()
         {
-            return nameof(ValidationException) + ":"+Environment.NewLine + (Context?.FailReasons()) + Environment.NewLine + StackTrace;
+            return nameof(ValidationException) + ":"+Environment.NewLine + (Context.FailReasons()) + Environment.NewLine + StackTrace;
         }
     }
 }
