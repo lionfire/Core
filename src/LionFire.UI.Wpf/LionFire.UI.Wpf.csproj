@@ -54,6 +54,8 @@
     <Compile Include="Input\CommandMap.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="ThemeUtils.cs" />
+    <Compile Include="Threading\WpfDispatcherProvider.cs" />
+    <Compile Include="Threading\WpfDispatcherWrapper.cs" />
     <Compile Include="UI\Windowing\WindowUtils.cs" />
     <Compile Include="UI\Wpf\WindowsDispatcherWrapper.cs" />
     <Compile Include="WpfVmCollection.cs" />

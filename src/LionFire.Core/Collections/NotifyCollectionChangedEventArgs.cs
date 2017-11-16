@@ -1,8 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.ComponentModel;
 using System.Collections.Specialized;
 using LionFire.Serialization;
 using System.Collections;
@@ -14,7 +11,7 @@ namespace LionFire.Collections
     // OLD - Clean up past experiments
 
     //public delegate void NotifyCollectionChangedHandler<T> (NotifyCollectionChangedEventArgs<T> collection, NotifyCollectionChangedEventArgs<T> args);
-    public delegate void NotifyCollectionChangedHandler<T>(NotifyCollectionChangedEventArgs<T> e);
+
     //#if AOT
     //	public delegate void NotifyCollectionChangedHandler2<TValue>(NotifyCollectionChangedEventArgs<TValue> e);
     //#endif
@@ -108,97 +105,6 @@ namespace LionFire.Collections
 
             return nonGenericArgs;
         }
-    }
-
-    public interface INotifyCollectionChanged<ChildType>
-#if AOT
- : INotifyCollectionChanged
-#endif
-    {
-#if AOT
-#else
-		event NotifyCollectionChangedHandler<ChildType> CollectionChanged ;
-#endif
-    }
-
-    //    public interface INotifyListChanged<ChildType> FUTURE - for efficient list updates in WPF?
-    //{
-    //    event NotifyListChangedHandler<ChildType> CollectionChanged;
-    //}
-
-    #region Collection Interfaces
-
-    public interface INotifyingReadOnlyCollection<T> : IReadOnlyCollection<T>, INotifyCollectionChanged<T>
-    {
-    }
-
-    public interface INotifyingCollection<T> : ICollection<T>, INotifyCollectionChanged<T>
-#if AOT
-, INotifyCollectionChanged
-#endif
-    {
-        T[] ToArray();
-    }
-
-    #endregion
-
-    #region List Interfaces
-
-    public interface IReadOnlyList<T> : IReadOnlyCollection<T>
-    {
-        T this[int index] { get; }
-    }
-
-    public interface INotifyingReadOnlyList<ChildType> :
-        IReadOnlyList<ChildType>,
-        INotifyCollectionChanged<ChildType>
-    {
-    }
-
-    public interface INotifyingList<ChildType> : // RENAME to eliminate Modifible, rename INotifyingCollection to INotifyingReadonlyCollection
-        //SNotifyingCollection<ChildType>,
-        INotifyingCollection<ChildType>,
-        //INotifyingReadOnlyList<ChildType>,  //RECENTCHANGE - Commetned this
-        INotifyCollectionChanged<ChildType>, //RECENTCHANGE - Added this
-        IList<ChildType>
-    {
-        #if !AOT
-        INotifyingList<FilterType> Filter<FilterType>();
-#endif
-        //where ChildType : FilterType;
-    }
-
-    #endregion
-
-    //////IList, ICollection
-    //////INotifyPropertyChanged
-    ////, INotifyCollectionChanged
-    //public interface INotifyingList<ChildType> : IList<ChildType>, INotifyingList<ChildType>
-    //{
-
-    //}
-
-    //public interface INotifyingReadOnlyDictionary<TKey, TValue> :
-    //    IReadOnlyDictionary<TKey, TValue>
-    //    //, INotifyCollectionChanged<KeyValuePair<TKey, TValue>>
-    //    //, INotifyingCollection<TValue>
-    //{
-    //}
-
-    public interface INotifyingDictionary<TKey, TValue> : IDictionary<TKey, TValue>
-#if !AOT
-        , IReadOnlyDictionary<TKey, TValue> // TEMP TODO - not really readonly - use duck typing instead
-#endif
-, INotifyingCollection<TValue>
-    //, INotifyCollectionChanged<TValue>
-    //, INotifyCollectionChanged<KeyValuePair<TKey, TValue>>
-    //, INotifyCollectionChanged // Add this too? And implement in MultiBindableDictionary<>
-    {
-#if !AOT
-        INotifyingDictionary<FilterKey, FilterValue> Filter<FilterKey, FilterValue>();
-#endif
-        //where TKey : FilterKey
-        //where TValue : FilterValue;
     }
 
 }

@@ -28,18 +28,24 @@ namespace LionFire.Assets
 
         public override Task<bool> TryResolveObject(object persistenceContext = null)
         {
-            base.Object = AssetSubPath.Load<T>(persistenceContext);
+            IAssetProvider AssetProvider = InjectionContext.Current.GetService<IAssetProvider>();
+            base.Object = AssetProvider.Load<T>(AssetSubPath, persistenceContext);
+            //base.Object = AssetSubPath.Load<T>(persistenceContext);
             return Task.FromResult(HasObject);
         }
 
 
-        public static IEnumerable<AssetReadHandle<T>> All()
+        public static async Task<IEnumerable<AssetReadHandle<T>>> All()
         {
             IAssetProvider AssetProvider = InjectionContext.Current.GetService<IAssetProvider>();
-            foreach (var assetSubPath in AssetProvider.Find<T>())
+
+            List<AssetReadHandle<T>> results = new List<AssetReadHandle<T>>();
+
+            foreach (var assetSubPath in (await AssetProvider.Find<T>()))
             {
-                yield return assetSubPath;
+                results.Add(assetSubPath);
             }
+            return results;
         }
     }
 

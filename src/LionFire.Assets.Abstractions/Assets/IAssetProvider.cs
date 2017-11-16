@@ -21,6 +21,4 @@ namespace LionFire.Assets
 
         Task<IEnumerable<string>> Find<T>(string searchString = null, object context = null);
     }
-
-   
 }

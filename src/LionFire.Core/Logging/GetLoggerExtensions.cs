@@ -8,6 +8,7 @@ using Microsoft.Extensions.Logging.Abstractions;
 using MSLogger = Microsoft.Extensions.Logging.ILogger;
 using LionFire.DependencyInjection;
 using LionFire.Composables;
+using System.Diagnostics;
 
 namespace LionFire.Extensions.Logging
 {
@@ -24,22 +25,30 @@ namespace LionFire.Extensions.Logging
 
         public static MSLogger GetLogger(this object obj, string name = null, bool isEnabled = true)
         {
-            if (!isEnabled) return NullLogger;
-
-            if (name == null) name = obj.GetType().FullName;
-
-            if (GetLoggerMethod != null)
+            try
             {
-                return GetLoggerMethod(name);
+                if (!isEnabled) return NullLogger;
+
+                if (name == null) name = obj.GetType().FullName;
+
+                if (GetLoggerMethod != null)
+                {
+                    return GetLoggerMethod(name);
+                }
+
+                // REVIEW: Use InjectionContext?
+                var fac = InjectionContext.Current?.GetService<ILoggerFactory>();
+                if (fac == null)
+                {
+                    return NullLogger;
+                }
+                return fac.CreateLogger(name) ?? NullLogger;
             }
-
-            // REVIEW: Use InjectionContext?
-            var fac = InjectionContext.Current.GetService<ILoggerFactory>();
-            if (fac == null)
+            catch(Exception ex)
             {
+                Debug.WriteLine("Exception in GetLogger: " + ex.ToString());
                 return NullLogger;
             }
-            return fac.CreateLogger(name);
         }
 
     }
