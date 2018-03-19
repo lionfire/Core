@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading.Tasks;
 using System.Windows.Threading;
 using LionFire.Threading;
 
@@ -14,6 +15,15 @@ namespace LionFire.UI.Wpf
 
         public void Invoke(Action action) => dispatcher.Invoke(action);
 
+        public void Invoke(Delegate p, params object[] args)
+        {
+            dispatcher.Invoke(p, args);
+        }
+
+        public Task BeginInvoke(Delegate p, params object[] args)
+        {
+            return dispatcher.BeginInvoke(p, args).Task;
+        }
     }
     public static class WindowsDispatcherExtensions
     {
