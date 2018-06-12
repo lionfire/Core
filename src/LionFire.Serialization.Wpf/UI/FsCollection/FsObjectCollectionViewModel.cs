@@ -120,7 +120,7 @@ namespace LionFire.Serialization.UI
                 if (selectedObject == value) return;
                 selectedObject = value;
                 NotifyOfPropertyChange(() => SelectedObject);
-                SelectedObjectViewModel = ViewModelProvider?.ProvideViewModelFor<object>(selectedObject) ?? selectedObject;
+                SelectedObjectViewModel = ViewModelProvider?.ProvideViewModelFor(selectedObject) ?? selectedObject;
             }
         }
         private object selectedObject;

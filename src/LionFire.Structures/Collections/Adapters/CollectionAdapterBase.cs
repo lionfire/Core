@@ -5,39 +5,48 @@ using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 using System.Linq;
 using LionFire.Instantiating;
+using LionFire.Structures;
 using LionFire.Threading;
 
 namespace LionFire.Collections
 {
-    public abstract class CollectionAdapterBase<TTarget, TSource> : ObservableCollection<TTarget>
-        where TTarget : class//, IInstanceFor<TSource>
-        where TSource : class
+    public abstract class CollectionAdapterBase<TViewModel, TModel> : ObservableCollection<TViewModel>
+        where TViewModel : class//, IInstanceFor<TSource>
+        where TModel : class
     {
         // TODO: Contain ObservableCollection (and provide read-only access for ReadOnlyCollectionAdapter) instead of having it as a base type
-        //protected ObservableCollection<TTarget> collection = new ObservableCollection<TTarget>();
+        //protected ObservableCollection<TViewModel> collection = new ObservableCollection<TViewModel>();
 
-        protected virtual IEnumerable<TSource> ReadOnlySources { get; }
+        public TViewModel[] ToArray()
+        {
+            return this.ToArray();
+        }
+
+        protected readonly IEnumerable<TModel> ReadOnlySources;
         protected readonly object context;
         protected bool syncDisabled;
-        protected readonly ObjectTranslator<TSource, TTarget> targetProvider;
+        //protected readonly ObjectTranslator<TSource, TViewModel> targetProvider;
+        protected readonly ObjectTranslator targetProvider;
         protected readonly IDispatcher dispatcher; // TODO: Use this where required in this class
 
         // FUTURE: Reintroduce class IViewModel<T> { T Model{get;} } in a more generic way?  Such as ITemplate/ITemplateInstance.  And avoid this map if such interfaces are provided.
         // FUTURE: Support the map, since O(n) search for removals 
-        //Dictionary<TSource, TTarget> sourceToTargetMap;
+        //Dictionary<TSource, TViewModel> sourceToTargetMap;
 
-        public Type InstanceType => typeof(TTarget);
-        public Type SourceType => typeof(TSource);
+        public Type InstanceType => typeof(TViewModel);
+        public Type SourceType => typeof(TModel);
 
-        public CollectionAdapterBase(ObjectTranslator<TSource, TTarget> targetProvider = null, object context = null, bool autoFetch = true, IDispatcher dispatcher = null)
+        public CollectionAdapterBase(IEnumerable<TModel> readOnlySources, ObjectTranslator targetProvider = null, object context = null, bool autoFetch = true, IDispatcher dispatcher = null)
         {
-            //if (typeof(TSource).IsAssignableFrom(IForInstanceOf<TTarget>))
+            this.ReadOnlySources = readOnlySources;
+
+            //if (typeof(TSource).IsAssignableFrom(IForInstanceOf<TViewModel>))
             //{
             //    sourceToTargetMap = null;
             //}
             //else
             //{
-            //    sourceToTargetMap = new Dictionary<TSource, TTarget>();
+            //    sourceToTargetMap = new Dictionary<TSource, TViewModel>();
             //}
 
             this.targetProvider = targetProvider;
@@ -45,7 +54,7 @@ namespace LionFire.Collections
             this.dispatcher = dispatcher;
 
             // If model collection is observable register change handling for synchronization from Models to ViewModels
-            if (ReadOnlySources is ObservableCollection<TSource> observableCollection)
+            if (ReadOnlySources is ObservableCollection<TModel> observableCollection)
             {
                 observableCollection.CollectionChanged += SourceCollectionChanged;
             }
@@ -66,12 +75,12 @@ namespace LionFire.Collections
             switch (e.Action)
             {
                 case NotifyCollectionChangedAction.Add:
-                    foreach (var m in e.NewItems.OfType<TSource>())
+                    foreach (var m in e.NewItems.OfType<TModel>())
                         this.AddIfNotNull(CreateViewModel(m));
                     break;
 
                 case NotifyCollectionChangedAction.Remove:
-                    foreach (var m in e.OldItems.OfType<TSource>())
+                    foreach (var m in e.OldItems.OfType<TModel>())
                     {
 #if SourceToTargetMap
                         if (sourceToTargetMap.ContainsKey(m))
@@ -102,12 +111,12 @@ namespace LionFire.Collections
             switch (e.Action)
             {
                 case NotifyCollectionChangedAction.Add:
-                    foreach (var m in e.NewItems.OfType<TSource>())
+                    foreach (var m in e.NewItems.OfType<TModel>())
                         this.AddIfNotNull(CreateViewModel(m));
                     break;
 
                 case NotifyCollectionChangedAction.Remove:
-                    foreach (var m in e.OldItems.OfType<TSource>())
+                    foreach (var m in e.OldItems.OfType<TModel>())
                         this.Remove(GetViewModelOfModel(m));
                     break;
 
@@ -148,7 +157,7 @@ namespace LionFire.Collections
             syncDisabled = false;
         }
 
-        private void AddIfNotNull(TTarget viewModel)
+        private void AddIfNotNull(TViewModel viewModel)
         {
             if (viewModel != null)
             {
@@ -163,13 +172,13 @@ namespace LionFire.Collections
             }
         }
 
-        private TTarget CreateViewModel(TSource source)
+        private TViewModel CreateViewModel(TModel source)
         {
             if (targetProvider == null)
             {
                 throw new Exception("No ViewModelProvider was provided at create time.  Cannot CreateViewModel.");
             }
-            var target = targetProvider(source, context);
+            var target = (TViewModel) targetProvider(source, context);
 #if SourceToTargetMap
             //this.sourceToTargetMap.Add(source, target);
 #endif
@@ -180,7 +189,7 @@ namespace LionFire.Collections
         /// Adds a new ViewModel for the specified Model instance
         /// </summary>
         /// <param name="model">Model to create ViewModel for</param>
-        public void AddForModel(TSource model)
+        public void AddForModel(TModel model)
         {
             Add(CreateViewModel(model));
         }
@@ -190,16 +199,16 @@ namespace LionFire.Collections
         /// which is the ModelType or derived from the Model type
         /// </summary>
         /// <typeparam name="TSpecificModel">Type of Model to add ViewModel for</typeparam>
-        public void AddNew<TSpecificModel>() where TSpecificModel : TSource, new()
+        public void AddNew<TSpecificModel>() where TSpecificModel : TModel, new()
         {
             var m = new TSpecificModel();
             Add(CreateViewModel(m));
         }
 
-        public TTarget GetViewModelOfModel(TSource model)
+        public TViewModel GetViewModelOfModel(TModel model)
         {
             // TODO OPTIMIZE SLOWALGO - O(n) search
-            return Items.OfType<IInstanceFor<TSource>>().FirstOrDefault(v => v.Template == model) as TTarget;
+            return Items.OfType<IInstanceFor<TModel>>().FirstOrDefault(v => v.Template == model) as TViewModel;
         }
 
     }

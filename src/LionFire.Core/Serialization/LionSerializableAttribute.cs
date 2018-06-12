@@ -9,7 +9,7 @@ namespace LionFire.Serialization
     {
         Unspecified = 0,
         ByValue,
-        ByServiceReference,
+        ByReference,
     }
 
     [AttributeUsage(AttributeTargets.All, Inherited = true, AllowMultiple = false)]

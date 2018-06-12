@@ -44,7 +44,7 @@ namespace LionFire.Persistence
 
         #endregion
 
-        public static void QueueAutoSave(this IAsset asset)
+        public static void QueueAutoSaveAsset(this IAsset asset)
         {
             var wrapper = wrappers.TryGetValue(asset);
             if (wrapper != null) wrapper.QueueAutoSave();

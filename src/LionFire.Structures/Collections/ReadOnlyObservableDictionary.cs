@@ -251,6 +251,8 @@ namespace LionFire.Collections
             get { return UnderlyingDictionary.Count; }
         }
 
+        public bool IsReadOnly => throw new NotImplementedException();
+
         #endregion IReadOnlyCollection<KeyValuePair<TKey, TValue>>
 
         #region ICollection
@@ -292,8 +294,11 @@ namespace LionFire.Collections
         {
             return GetEnumerator();
         }
-
+        
         #endregion IEnumerable
+
+        public KeyValuePair<TKey, TValue>[] ToArray() =>  System.Linq.Enumerable.ToArray(this);
+        
 
         #region INotifyCollectionChanged
 
@@ -522,5 +527,20 @@ namespace LionFire.Collections
 
 
         #endregion fields
+
+        //public bool Contains(KeyValuePair<TKey, TValue> item)
+        //{
+        //    return UnderlyingDictionary.Contains
+        //}
+
+        //public void CopyTo(KeyValuePair<TKey, TValue>[] array, int arrayIndex)
+        //{
+        //    throw new NotImplementedException();
+        //}
+
+        //public KeyValuePair<TKey, TValue>[] ToArray()
+        //{
+        //    throw new NotImplementedException();
+        //}
     }
 }

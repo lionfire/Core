@@ -5,7 +5,7 @@ using System.Collections.Specialized;
 
 namespace LionFire.Collections
 {
-    public interface IReadOnlyCollectionAdapter<out T> : IReadOnlyCollection<T>, INotifyCollectionChanged
+    public interface IReadOnlyCollectionAdapter<T> : IReadOnlyCollection<T>, INotifyCollectionChanged
     {
         Type InstanceType { get; }
         Type SourceType { get; }

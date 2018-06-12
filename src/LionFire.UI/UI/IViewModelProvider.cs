@@ -3,6 +3,8 @@
 
     public interface IViewModelProvider
     {
-        T ProvideViewModelFor<T>(object model, object context = null);
+        //T ProvideViewModelFor<TModel, T>(TModel model, object context = null);
+        object ProvideViewModelFor(object model, object context = null);
+
     }
 }

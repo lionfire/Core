@@ -14,5 +14,7 @@ namespace LionFire.Persistence
         /// Defaults to typeof(object) which will save the full type information.
         /// </summary>
         public Type SaveType { get; set; }
+
+        public bool AllowInstantiator { get; set; }
     }
 }
