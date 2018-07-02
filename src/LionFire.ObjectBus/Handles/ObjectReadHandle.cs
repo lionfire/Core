@@ -40,10 +40,10 @@ namespace LionFire.ObjectBus.Handles
             get { return null; }
         }
 
-        object IReadHandle.Object {
-            get {
-                return Object;
-            }
-        }
+        //object IReadHandle.Object {
+        //    get {
+        //        return Object;
+        //    }
+        //}
     }
 }

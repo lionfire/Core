@@ -22,7 +22,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\LionFire.Core\LionFire.Core.csproj" />
+    <ProjectReference Include="..\LionFire.Base\LionFire.Base.csproj" />
   </ItemGroup>
 
 </Project>

@@ -1,9 +1,5 @@
-﻿using LionFire.Execution;
-using LionFire.Structures;
-using System;
+﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace LionFire.Validation
 {
@@ -25,8 +21,7 @@ namespace LionFire.Validation
 
         public string Key { get; set; }
 
-        // REVIEW - don't have hardcoded enums here
-        public ValidationIssueKind Kind { get; set; }
+        public object Kind { get; set; }
 
         /// <summary>
         /// Set for PropertyNotSet, FieldNotSet, MemberNotSet, ArgumentNotSet

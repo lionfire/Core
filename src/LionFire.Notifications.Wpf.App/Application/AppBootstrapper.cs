@@ -14,7 +14,6 @@ using LionFire.Trading.TrueFx;
 using LionFire.Trading.Spotware.Connect;
 using LionFire.Trading.Notifications;
 #endif
-using LionFire.Assets;
 using System.Reflection;
 using LionFire.Notifications.UI;
 

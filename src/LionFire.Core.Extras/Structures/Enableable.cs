@@ -38,7 +38,7 @@ namespace LionFire.Structures
     //    }
     //}
 
-    public class EnableableBase : IEnableable, IPropertyChanged, INotifyPropertyChanged
+    public class EnableableBase : IEnableableEx, IPropertyChanged, INotifyPropertyChanged
     {
         /// <summary>
         /// Parameter is what it was changed to.  (TODO RENAME - EnabledChangedTo)
@@ -249,7 +249,7 @@ namespace LionFire.Structures
         #endregion
     }
 
-    public class Enableable : EnableableBase, IEnableable
+    public class Enableable : EnableableBase, IEnableableEx
     {
         [Ignore]
         public Action EnableAction;

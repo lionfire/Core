@@ -2,8 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Reactive.Subjects;
-using LionFire.Reactive;
-using LionFire.Reactive.Subjects;
 using System.ComponentModel;
 using LionFire.Structures;
 using LionFire.StateMachines.Class;

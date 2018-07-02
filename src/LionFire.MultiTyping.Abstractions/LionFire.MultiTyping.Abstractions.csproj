@@ -5,8 +5,4 @@
     <RootNamespace>LionFire</RootNamespace>
   </PropertyGroup>
 
-  <ItemGroup>
-    <Folder Include="MultiTyping\" />
-  </ItemGroup>
-
 </Project>

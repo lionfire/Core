@@ -1,9 +1,4 @@
-﻿using LionFire.Validation;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Reflection;
-using System.Threading.Tasks;
+﻿using System;
 
 namespace LionFire.Execution
 {
@@ -14,22 +9,6 @@ namespace LionFire.Execution
         public RequiredToEnterStateAttribute(ExecutionStateEx state)
         {
             this.State = state;
-        }
-    }
-
-    public static class ExecutionValidateExtensions
-    {
-        public static ValidationContext CanEnterState(this ValidationContext ctx, ExecutionStateEx state)
-        {
-            foreach (var pi in ctx.Object.GetType().GetProperties(BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic))
-            {
-                var attrs = pi.GetCustomAttributes<RequiredToEnterStateAttribute>();
-                if (attrs.Where(a => a.State == state).Any())
-                {
-                    ctx.PropertyNotSet(pi);
-                }
-            }
-            return ctx;
         }
     }
 }

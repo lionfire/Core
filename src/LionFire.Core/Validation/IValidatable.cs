@@ -5,12 +5,6 @@ using System.Threading.Tasks;
 
 namespace LionFire.Validation
 {
-    public enum ValidationKind
-    {
-        Unspecified,
-        Deserialized = 1,
-
-    }
 
     public interface IValidatable
     {

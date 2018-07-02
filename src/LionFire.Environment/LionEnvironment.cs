@@ -5,8 +5,6 @@ using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
 using Microsoft.Extensions.PlatformAbstractions;
-using LionFire.ExtensionMethods;
-
 
 namespace LionFire
 {

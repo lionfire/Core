@@ -116,7 +116,7 @@ namespace LionFire.ExtensionMethods
 
             if (myPi == null || myPi.PropertyType != otherPropertyInfo.PropertyType) return;
 
-            object val = myPi.GetValue(other, null);
+            object val = otherPropertyInfo.GetValue(other, null);
 
 #if LFU
                 //if (GetAssignmentValue(mi, other, useICloneableIfAvailable, ref val))
@@ -134,7 +134,8 @@ namespace LionFire.ExtensionMethods
                 }
 #endif
 #else
-            otherPropertyInfo.SetValue(me, val, null);
+            //Trace.WriteLine(me.GetType().Name + "." + myPi.Name + " = " + other.GetType() + "." + otherPropertyInfo.Name + " (" + val + ")");
+            myPi.SetValue(me, val, null);
 #endif
         }
         public static void AssignFieldFrom(this object me, object other, FieldInfo mi)

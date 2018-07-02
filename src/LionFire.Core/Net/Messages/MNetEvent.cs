@@ -24,7 +24,7 @@ using System.Text;
 //}
 namespace LionFire.Net.Messages
 {
-    public class MNetEvent : IMessage
+    public class MNetEvent
     {
         public string Url { get; set; }
         public object Message { get; set; }

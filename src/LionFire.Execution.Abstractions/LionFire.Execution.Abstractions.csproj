@@ -15,11 +15,11 @@
     <PackageReference Include="System.Reactive.Linq" Version="4.0.0" />
   </ItemGroup>
 
-
-
   <ItemGroup>
-    <ProjectReference Include="..\..\..\LionFire\StateMachines\src\LionFire.StateMachines.Abstractions\LionFire.StateMachines.Abstractions.csproj" />
-    <ProjectReference Include="..\LionFire.Core\LionFire.Core.csproj" />
+    <ProjectReference Include="..\LionFire.MultiTyping.Abstractions\LionFire.MultiTyping.Abstractions.csproj" />
+    <ProjectReference Include="..\LionFire.Structures\LionFire.Structures.csproj" />
+    <ProjectReference Include="D:\src\Core\src\LionFire.Validation\LionFire.Validation.csproj" />
+    <ProjectReference Include="D:\src\StateMachines\src\LionFire.StateMachines.Abstractions\LionFire.StateMachines.Abstractions.csproj" />
   </ItemGroup>
 
 </Project>

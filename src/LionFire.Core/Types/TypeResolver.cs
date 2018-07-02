@@ -8,7 +8,6 @@ using LionFire.ExtensionMethods;
 
 namespace LionFire
 {
-  
 
     public static class TypeResolver 
     {

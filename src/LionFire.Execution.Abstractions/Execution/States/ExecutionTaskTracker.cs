@@ -20,14 +20,4 @@ namespace LionFire.Execution
             return cts.Token;
         }
     }
-
-    public static class TaskTrackerExtensions
-    {
-        public static CancellationToken OnEnteringState(this IExecutableEx executable, ExecutionStateEx state)
-        {
-            var tt = ManualSingleton<TaskTracker>.Instance;
-            if (tt == null) return default(CancellationToken);
-            return tt.OnEnteringState(executable, state);
-        }
-    }
 }
