@@ -66,9 +66,12 @@ namespace LionFire.Applications.Hosting
 
         public InjectionContext InjectionContext { get; private set; } = new InjectionContext();
 
-        public ExecutionContainer Add<TComponent>(TComponent component)
-      where TComponent : class
+        public override ExecutionContainer Add<TComponent>(TComponent component)
+            //where TComponent : class
         {
+#if true
+            throw new Exception("TODO REVIEW: Add adds to multiType in this class and children in the base class.  Is that right?");
+#else
             base.Add(component);
             //// REVIEW - only do this block if not added?
             //if (component is IConfigures<IServiceCollection> csc)
@@ -88,6 +91,7 @@ namespace LionFire.Applications.Hosting
                 multiType.AddType<TComponent>(component);
             }
             return this;
+#endif
         }
 
 

@@ -1,4 +1,5 @@
-﻿using System;
+﻿using LionFire.Referencing;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -152,8 +153,6 @@ namespace LionFire.ObjectBus
             //}
             return handle;
         }
-
-
     }
 
     public static class HandleExtensions

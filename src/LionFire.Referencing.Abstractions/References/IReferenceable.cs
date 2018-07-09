@@ -2,7 +2,7 @@
 using System.Linq;
 using System.Text;
 
-namespace LionFire.ObjectBus // MOVE to References
+namespace LionFire.Referencing
 {
     /// <summary>
     /// If the reference can change, expose IChangeableReference.

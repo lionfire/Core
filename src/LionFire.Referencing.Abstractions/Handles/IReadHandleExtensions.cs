@@ -1,7 +1,7 @@
 ﻿using LionFire.Persistence;
 using System.Threading.Tasks;
 
-namespace LionFire.ObjectBus
+namespace LionFire.Referencing
 {
 
     public static class IReadHandleExtensions

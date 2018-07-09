@@ -1,15 +1,10 @@
 ﻿namespace LionFire.ObjectBus
 {
-    //public enum QueryFlags
-    //{
-    //    None = 0,
-    //    Hidden = 1 << 0,
-    //    Persisted = 1 << 1,
-    //}
-
-    public class RetrieveInfo // MOVE
+    /// <summary>
+    /// Contains the "physical" location representing the lowest level reference before integrating with a data source outside the ObjectBus framework
+    /// </summary>
+    public class RetrieveInfo
     {
-        
         public IOBase UltimateOBase { get; set; }
         public IReference UltimateReference { get; set; }
     }

@@ -1,10 +1,11 @@
-﻿using System;
+﻿#if true // UNUSED
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace LionFire.ObjectBus
+namespace LionFire.Referencing
 {
     /// <summary>
     /// Resolves one type of references to another type of reference.  E.g. AssetReference
@@ -15,3 +16,4 @@ namespace LionFire.ObjectBus
         //IReference Resolve(IReference reference);  // UNUSED
     }
 }
+#endif

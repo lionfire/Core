@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace LionFire.ObjectBus
+namespace LionFire.Referencing
 {
 #if !AOT
     public interface IHasHandle<T>

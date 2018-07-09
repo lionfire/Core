@@ -9,12 +9,19 @@ namespace LionFire.Handles
     public abstract class ReadHandleBase<T> : IReadHandle<T>, INotifyPropertyChanged, IReadHandle, IKeyed<string>
         where T : class
     {
+        #region Identity
 
         [SetOnce]
         public string Key { get; protected set; }
 
+        #endregion
+
+        #region Construction
+
         public ReadHandleBase() { }
         public ReadHandleBase(string key) { this.Key = key; }
+
+        #endregion
 
         #region Object
 

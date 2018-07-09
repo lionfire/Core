@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using LionFire.Structures;
 
-namespace LionFire.ObjectBus
+namespace LionFire.Referencing
 {
 
     public interface IReference :

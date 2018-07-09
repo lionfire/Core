@@ -29,6 +29,10 @@ namespace LionFire
         {
             logger.LogDebug(msg);
         }
+        public static void Trace(this MSLogger logger, string msg)
+        {
+            logger.LogTrace(msg);
+        }
 
     }
 }

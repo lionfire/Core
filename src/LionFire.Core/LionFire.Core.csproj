@@ -39,7 +39,7 @@ This package is typically not added on its own, but is a dependency required by 
     <ProjectReference Include="..\LionFire.MultiTyping.Abstractions\LionFire.MultiTyping.Abstractions.csproj" />
     <ProjectReference Include="..\LionFire.Referencing.Abstractions\LionFire.Referencing.Abstractions.csproj" />
     <ProjectReference Include="..\LionFire.Structures\LionFire.Structures.csproj" />
-    <ProjectReference Include="D:\src\Core\src\LionFire.Validation\LionFire.Validation.csproj" />
+    <ProjectReference Include="..\LionFire.Validation\LionFire.Validation.csproj" />
   </ItemGroup>
 
  

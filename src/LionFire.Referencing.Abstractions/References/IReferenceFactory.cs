@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace LionFire.ObjectBus
+namespace LionFire.Referencing
 {
     public interface IReferenceFactory : IUriProvider
     {

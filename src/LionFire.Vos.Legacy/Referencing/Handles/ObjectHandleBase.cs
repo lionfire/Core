@@ -3,6 +3,7 @@ using System.Threading.Tasks;
 
 namespace LionFire.Handles
 {
+    // UNUSED?
     // TODO: Reconcile with Legacy  HandleBase
     public abstract class ObjectHandleBase<T> : ReadHandleBase<T>, IWriteHandle<T>
         where T : class

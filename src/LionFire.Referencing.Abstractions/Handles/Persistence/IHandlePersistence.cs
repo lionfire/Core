@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace LionFire.ObjectBus
+namespace LionFire.Referencing
 {
     public interface IHandlePersistence : ISaveable
     {
@@ -28,7 +28,13 @@ namespace LionFire.ObjectBus
         //bool TryRetrieve(bool setToNullOnFail = true); superceded by IReadHandle.TryResolveObject(object persistenceContext=null)
 
         void EnsureRetrieved();
-        bool TryEnsureRetrieved(object persistenceContext = null);
+
+        /// <summary>
+        /// TODO: Change to async
+        /// </summary>
+        /// <param name="persistenceContext"></param>
+        /// <returns></returns>
+        bool TryEnsureRetrieved(object persistenceContext = null); 
 
         void RetrieveOrCreate();
 

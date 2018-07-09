@@ -3,9 +3,10 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using LionFire.Persistence;
+using LionFire.Referencing;
 using LionFire.Structures;
 
-namespace LionFire.ObjectBus
+namespace LionFire // MOVE to LionFire.Referencing
 {
     // TODO REFACTOR - try (again?) to replace this with IReadHandle<object>?
     public interface IHandle : IChangeableReferencable,

@@ -24,7 +24,7 @@ namespace LionFire.Execution
         //    return (T) this;
         //}
 
-        public T Add<TComponent>(TComponent component)
+        public virtual T Add<TComponent>(TComponent component)
             where TComponent : class
         {
             //// REVIEW - only do this block if not added?

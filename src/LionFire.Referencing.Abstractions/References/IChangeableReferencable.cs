@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace LionFire.ObjectBus // MOVE to References
+namespace LionFire.Referencing
 {
     public interface IChangeableReferencable : IReferencable // An idea: RENAME to pointer?
     {

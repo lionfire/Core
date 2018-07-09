@@ -1,158 +1,49 @@
-﻿#if FIXME // TODO
+﻿#if true // FIXME // TODO
 //#define DEBUG_LOAD
 //#define TRACE_LOAD_FAIL
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using LionFire.Types;
-using LionFire.Collections;
-using LionFire.Instantiating;
-using System.Collections.Concurrent;
-using System.Collections;
-using System.ComponentModel;
-using System.Collections.Specialized;
-using Microsoft.Extensions.Logging;
-using LionFire.Referencing;
 using LionFire.MultiTyping;
 using LionFire.Persistence;
-using LionFire.Structures;
+using Microsoft.Extensions.Logging;
+using System;
+using System.Collections;
+using System.Collections.Generic;
+using System.Collections.Specialized;
+using System.ComponentModel;
+using System.Linq;
+using System.Threading.Tasks;
 //using LionFire.Input;
 //using LionFire.Extensions.DefaultValues;
 
-namespace LionFire.ObjectBus
+namespace LionFire.Referencing
 {
-
-    /// <summary>
-    /// Typical base for a handle
-    /// </summary>
-    /// <typeparam name="T"></typeparam>
-    public abstract class HandleBase<T> : HandleBase2<T>
-        , IChangeableReferencable
-        , IFreezable
-        where T : class
-    {
-
-#region Construction
-
-        public HandleBase(T obj = null, bool freezeObjectIfProvided = true)
-            : base(obj, freezeObjectIfProvided)
-        {
-        }
-
-        internal HandleBase(string uri, T obj = null, bool freezeObjectIfProvided = true)
-            : base(uri, obj, freezeObjectIfProvided)
-        {
-        }
-
-        public HandleBase(IReference reference, T obj = null, bool freezeObjectIfProvided = true)
-            : base(reference, obj, freezeObjectIfProvided)
-        {
-        }
-
-        public HandleBase(IReferencable referencable, T obj = null, bool freezeObjectIfProvided = true)
-            : base(referencable, obj, freezeObjectIfProvided)
-        {
-            IReference reference = referencable.Reference;
-
-            if (!reference.IsValid())
-            {
-                throw new ArgumentException("referencable.Reference must be valid");
-            }
-
-            this.Reference = referencable.Reference;
-        }
-
-#endregion
-
-#region Reference
-
-        public override IReference Reference {
-            get { return reference; }
-            set {
-                if (reference == value) return;
-                if (isFrozen)
-                {
-                    if (reference != default(IReference)) throw new NotSupportedException("IsFrozen == true.  Reference can only be set once.");
-                }
-#if DEBUG
-                //if (value as VosReference != null) throw new InvalidOperationException("vh not valid here");
-#endif
-
-                var oldReference = reference;
-
-                if (value != null)
-                {
-                    if (value.Type == null)
-                    {
-                        //IChangeableReferencable cr = reference as IChangeableReferencable;
-                        //if (cr != null)
-                        //{
-                        //    cr.Type = typeof(T);
-                        //}
-                    }
-                    else
-                    {
-                        if (value.Type != typeof(T))
-                        {
-                            if (!typeof(T).IsAssignableFrom(value.Type))
-                            {
-                                throw new ArgumentException("!typeof(T).IsAssignableFrom(value.Type)");
-                            }
-                        }
-                    }
-                }
-                reference = value;
-                OnReferenceChangedFrom(oldReference);
-            }
-        }
-        private IReference reference;
-
-#endregion
-
-#region IFreezable
-
-        public bool IsFrozen {
-            get {
-                return isFrozen;
-            }
-            set {
-                if (isFrozen == value) return;
-
-                if (isFrozen && !value) { throw new NotSupportedException("Unfreeze not supported"); }
-
-                isFrozen = value;
-            }
-        }
-        private bool isFrozen;
-
-#endregion
-    }
-
     /// Minimalistic Handle Base
     //   - Abstract Reference
     public abstract class HandleBase2<ObjectType>
-        : IHandle
-#if !AOT
-<ObjectType>
+        :
+#if AOT
+        IHandle
+#else
+        IHandle<ObjectType>
 #endif
         , INotifyCreating
+        , IReadHandle
+        , ITreeHandle
+        , IHandlePersistence
         //, IKeyed<string> // Move this?
         // IHasHandle?
         where ObjectType : class//, new()
     {
-#region Construction
-
+        #region Construction
+ 
         public HandleBase2(ObjectType obj = null, bool freezeObjectIfProvided
 
 #if AOT
-		                   = false
+		    = false
 #else
- = true
+            = true
 #endif
 )
         {
-
             this._object = obj;
             if (obj != null && freezeObjectIfProvided)
             {
@@ -176,7 +67,6 @@ namespace LionFire.ObjectBus
         {
             this.Reference = reference;
 
-
             //if (LoadOnDemandByDefault)
             //{
             //    RetrieOnDemandByDefault = true;
@@ -198,11 +88,12 @@ namespace LionFire.ObjectBus
             if (typeof(ObjectType) == typeof(object)) { l.Trace("HandleBase2<object>: " + this.ToString()); }
         }
 
-#endregion
+        #endregion
 
-#region Reference
+        #region Reference
 
-        public abstract IReference Reference {
+        public abstract IReference Reference
+        {
             get;
             set;
         }
@@ -210,83 +101,31 @@ namespace LionFire.ObjectBus
         //#if AOT
         // object IKeyed<string>.Key { get { return Key; } }
         //#endif
-        public string Key {
-            get {
+        public string Key
+        {
+            get
+            {
                 return Reference.Key;
             }
         }
 
-        protected void OnReferenceChangedFrom(IReference oldReference)
-        {
-            var ev = ReferenceChangedForFrom;
-            if (ev != null) ev(this, oldReference);
-        }
+        #endregion
 
-        public event Action<IChangeableReferencable, IReference> ReferenceChangedForFrom;
+        #region Object
 
-#endregion
-
-#region INotifyPropertyChanged
-
-#region INotifyPropertyChanged Implementation
-
-        public event PropertyChangedEventHandler ObjectPropertyChanged {
-            add {
-                if (propertyChanged == null)
-                {
-                    if (this._object != null)
-                    {
-                        INotifyPropertyChanged inpc = _object as INotifyPropertyChanged;
-                        if (inpc != null)
-                        {
-                            inpc.PropertyChanged += inpc_PropertyChanged;
-                        }
-                    }
-                }
-                propertyChanged += value;
-            }
-            remove {
-                propertyChanged -= value;
-                if (propertyChanged == null)
-                {
-                    if (this._object != null)
-                    {
-                        INotifyPropertyChanged inpc = _object as INotifyPropertyChanged;
-                        if (inpc != null)
-                        {
-                            inpc.PropertyChanged += inpc_PropertyChanged;
-                        }
-                    }
-                }
-            }
-        }
-        event PropertyChangedEventHandler propertyChanged;
-
-        //void inpc_PropertyChanged(object sender, PropertyChangedEventArgs e)
-        //{
-
-        //}
-
-
-        private void OnPropertyChanged(string propertyName)
-        {
-            var ev = propertyChanged;
-            if (ev != null) ev(this, new PropertyChangedEventArgs(propertyName));
-        }
-
-#endregion
-
-#endregion
-        
-#region Object
-
-#region IsObjectFrozen
+        #region IsObjectFrozen
 
         [Ignore]
-        public bool IsObjectReferenceFrozen {
+        public bool IsObjectReferenceFrozen
+        {
             get { return isObjectReferenceFrozen; }
-            set {
-                if (isObjectReferenceFrozen == value) return;
+            set
+            {
+                if (isObjectReferenceFrozen == value)
+                {
+                    return;
+                }
+
                 if (value == false && isObjectReferenceFrozen)
                 {
                     throw new NotSupportedException("IsObjectReferenceFrozen cannot be set to false after setting to true.");
@@ -302,7 +141,7 @@ namespace LionFire.ObjectBus
         }
         private bool isObjectReferenceFrozen;
 
-#endregion
+        #endregion
 
         //protected bool loadObjectOnDemand { get { return SpecialObject.LoadOnDemand.Equals(_object); } }
 
@@ -339,8 +178,10 @@ namespace LionFire.ObjectBus
 
         //public static bool LoadOnDemandByDefault = true;
 
-        object IReadHandle.Object {
-            get {
+        object IReadHandle.Object
+        {
+            get
+            {
                 //l.Trace("ZX HandleBase2.get_Object, iReadHandle");
                 return this.Object;
             }
@@ -357,22 +198,24 @@ namespace LionFire.ObjectBus
         }
 
 
-//#if AOT && true // AOTTEMP
-//#else
-//        object IHandle.Object {
-//            get {
-//                //l.Trace("ZX HandleBase2.get_Object, IHandle");
+        //#if AOT && true // AOTTEMP
+        //#else
+        //        object IHandle.Object {
+        //            get {
+        //                //l.Trace("ZX HandleBase2.get_Object, IHandle");
 
-//                return this.Object;
-//            }
-//            set {
-//                this.Object = (ObjectType)value;
-//            }
-//        }
-//#endif
+        //                return this.Object;
+        //            }
+        //            set {
+        //                this.Object = (ObjectType)value;
+        //            }
+        //        }
+        //#endif
 
-        public ObjectType ObjectOrThrow {
-            get {
+        public ObjectType ObjectOrThrow
+        {
+            get
+            {
                 var result = Object;
                 if (result == null)
                 {
@@ -383,8 +226,10 @@ namespace LionFire.ObjectBus
             }
         }
         [Ignore]
-        public ObjectType Object {
-            get {
+        public ObjectType Object
+        {
+            get
+            {
                 //System.Threading.Thread.MemoryBarrier();
                 //				l.Info("ZX HandleBase2.get_Object");
                 //System.Threading.Thread.MemoryBarrier();
@@ -409,9 +254,13 @@ namespace LionFire.ObjectBus
                 return _object;
 #endif
             }
-            set {
+            set
+            {
                 forgotObject = false;
-                if (System.Object.ReferenceEquals(_object, value)) return;
+                if (System.Object.ReferenceEquals(_object, value))
+                {
+                    return;
+                }
 
                 if (IsObjectReferenceFrozen)
                 {
@@ -467,9 +316,19 @@ namespace LionFire.ObjectBus
         /// </summary>
         protected bool forgotObject;
 
+        public bool HasObject
+        {
+            get
+            {
+                return _object != null;
+                //&& !loadObjectOnDemand;
+            }
+        }
 
-        public ObjectType ObjectOrCreate {
-            get {
+        public ObjectType ObjectOrCreate
+        {
+            get
+            {
                 if (Object == null)
                 {
                     Object = CreateDefault();
@@ -478,10 +337,12 @@ namespace LionFire.ObjectBus
             }
         }
 
-#region ObjectField
+        #region ObjectField
 
-        public ObjectType ObjectField {
-            get {
+        public ObjectType ObjectField
+        {
+            get
+            {
 #if AOT
 				return (ObjectType)_object;
 #else
@@ -491,7 +352,7 @@ namespace LionFire.ObjectBus
             set { _object = value; }
         }
 
-#endregion
+        #endregion
 
         private void RegisterForAutoSave(object obj)
         {
@@ -499,26 +360,92 @@ namespace LionFire.ObjectBus
         }
 
         public bool IsObjectChangedEnabled { get { return objectChanged != null; } }
-        public event ObjectChanged ObjectChanged {
-            add {
+        public event ObjectChanged ObjectChanged
+        {
+            add
+            {
                 objectChanged += value;
                 IsPropertyChangedEventsAttached = true;
             }
-            remove {
+            remove
+            {
                 objectChanged -= value;
                 IsPropertyChangedEventsAttached = objectChanged == null;
             }
         }
         private event ObjectChanged objectChanged;
 
-#region Propety Changed Events
+        #region Propety Changed Events
+                
+        #region INotifyPropertyChanged
 
-#region IsPropertyChangedEventsAttached
+        public event PropertyChangedEventHandler ObjectPropertyChanged
+        {
+            add
+            {
+                if (propertyChanged == null)
+                {
+                    if (this._object != null)
+                    {
+                        INotifyPropertyChanged inpc = _object as INotifyPropertyChanged;
+                        if (inpc != null)
+                        {
+                            inpc.PropertyChanged += inpc_PropertyChanged;
+                        }
+                    }
+                }
+                propertyChanged += value;
+            }
+            remove
+            {
+                propertyChanged -= value;
+                if (propertyChanged == null)
+                {
+                    if (this._object != null)
+                    {
+                        INotifyPropertyChanged inpc = _object as INotifyPropertyChanged;
+                        if (inpc != null)
+                        {
+                            inpc.PropertyChanged += inpc_PropertyChanged;
+                        }
+                    }
+                }
+            }
+        }
 
-        public bool IsPropertyChangedEventsAttached {
+        event Action<IReadHandle<ObjectType>, ObjectType, ObjectType> IReadHandle<ObjectType>.ObjectChanged
+        {
+            add
+            {
+                throw new NotImplementedException();
+            }
+
+            remove
+            {
+                throw new NotImplementedException();
+            }
+        }
+
+        private event PropertyChangedEventHandler propertyChanged;
+
+        private void OnPropertyChanged(string propertyName)
+        {
+            propertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+        }
+
+        #endregion
+
+        #region IsPropertyChangedEventsAttached
+
+        public bool IsPropertyChangedEventsAttached
+        {
             get { return isPropertyChangedEventsAttached; }
-            set {
-                if (isPropertyChangedEventsAttached == value) return;
+            set
+            {
+                if (isPropertyChangedEventsAttached == value)
+                {
+                    return;
+                }
 
                 isPropertyChangedEventsAttached = value;
                 if (_object == null)
@@ -569,27 +496,36 @@ namespace LionFire.ObjectBus
         }
         private bool isPropertyChangedEventsAttached;
 
-#endregion
+        #endregion
 
-        void inc_CollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
+        private void inc_CollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
         {
             var ev = objectChanged;
-            if (ev != null) ev(this, "(CollectionChanged)");
+            if (ev != null)
+            {
+                ev(this, "(CollectionChanged)");
+            }
         }
 
-        void ipc_PropertyValueChanged(string propertyName)
+        private void ipc_PropertyValueChanged(string propertyName)
         {
             var ev = objectChanged;
-            if (ev != null) ev(this, propertyName);
+            if (ev != null)
+            {
+                ev(this, propertyName);
+            }
         }
 
-        void inpc_PropertyChanged(object sender, PropertyChangedEventArgs e)
+        private void inpc_PropertyChanged(object sender, PropertyChangedEventArgs e)
         {
             var ev = objectChanged;
-            if (ev != null) ev(this, e.PropertyName);
+            if (ev != null)
+            {
+                ev(this, e.PropertyName);
+            }
         }
 
-#endregion
+        #endregion
 
 
         protected IReadonlyMultiTyped ObjectMT { get { return _object as IReadonlyMultiTyped; } }
@@ -604,18 +540,13 @@ namespace LionFire.ObjectBus
         //    OnObjectChanged();
         //}
 
-        public bool HasObject {
-            get {
-                return _object != null;
-                //&& !loadObjectOnDemand;
-            }
-        }
         
-#endregion
 
-#region Persistence
+        #endregion
 
-#region Create / Update
+        #region Persistence
+
+        #region Create / Update
 
         private const bool saveCreatedObject = true; // HACK Hackish to save?  Or does "Create" include saving?
         public void RetrieveOrCreate()
@@ -666,9 +597,9 @@ namespace LionFire.ObjectBus
             return true;
         }
 
-#endregion
-        
-#region Create
+        #endregion
+
+        #region Create
 
         public void OnCreating()
         {
@@ -686,16 +617,19 @@ namespace LionFire.ObjectBus
             Save();
         }
 
-#endregion
+        #endregion
 
-#region Construction (No persistence)
+        #region Construction (No persistence)
 
         private ObjectType CreateDefault(bool applyDefaultValues = true)
         {
             ObjectType result;
             if (typeof(ObjectType) == typeof(object))
             {
-                if (Reference == null) throw new ArgumentException("Reference.Type must be set when using non-generic Handle, or when the generic type is object.");
+                if (Reference == null)
+                {
+                    throw new ArgumentException("Reference.Type must be set when using non-generic Handle, or when the generic type is object.");
+                }
 
                 if (Reference.Type == null)
                 {
@@ -736,39 +670,10 @@ namespace LionFire.ObjectBus
             }
         }
 
-#endregion
+        #endregion
+      
 
-#region Delete
-
-        public virtual bool? CanDelete()
-        {
-            bool? result = OBus.CanDelete(this.Reference);
-            return result;
-        }
-        public virtual bool TryDelete(bool preview = false)
-        {
-            bool result = OBus.TryDelete(this.Reference, preview);
-            if (result && !preview)
-            {
-                OnDeleted();
-            }
-            return result;
-        }
-
-        public virtual void Delete()
-        {
-            OBus.Delete(this.Reference); // Throws if doesn't exist
-
-            // OLD:
-            //Object = null;
-            //Object = SpecialObject.NullObject;
-
-            OnDeleted();
-        }
-
-#endregion
-
-#region Move / Copy
+        #region Move / Copy
 
         public void Copy(IReference newReference)
         {
@@ -779,21 +684,22 @@ namespace LionFire.ObjectBus
             throw new NotImplementedException();
         }
 
-#endregion
+        #endregion
 
-#region AssignFrom
+        #region AssignFrom
 
         void IHandlePersistence.AssignFrom(object other)
         {
             AssignFrom((ObjectType)other);
         }
 
-#region (Static) ObjectTypeAssignmentMode
+        #region (Static) ObjectTypeAssignmentMode
 
-        const AssignmentMode DefaultAssignmentMode = AssignmentMode.DeepCopy;
+        private const AssignmentMode DefaultAssignmentMode = AssignmentMode.DeepCopy;
         internal static AssignmentMode ObjectTypeAssignmentMode // MOVE?
         {
-            get {
+            get
+            {
                 if (assignmentMode == LionFire.AssignmentMode.Unspecified)
                 {
                     var attr = typeof(ObjectType).GetCustomAttribute<AssignmentAttribute>();
@@ -809,9 +715,10 @@ namespace LionFire.ObjectBus
                 return assignmentMode;
             }
         }
-        static AssignmentMode assignmentMode = AssignmentMode.Unspecified;
 
-#endregion
+        private static AssignmentMode assignmentMode = AssignmentMode.Unspecified;
+
+        #endregion
 
         public void AssignFrom(ObjectType other, AssignmentMode assignmentMode = AssignmentMode.Unspecified) // Move to generic extension method?
         {
@@ -819,7 +726,10 @@ namespace LionFire.ObjectBus
 			throw new NotSupportedException("AssignFrom not supported in AOT");
 #else
 
-            if (other == null) return; // Empty out this?
+            if (other == null)
+            {
+                return; // Empty out this?
+            }
 
             if (assignmentMode == AssignmentMode.Unspecified)
             {
@@ -836,9 +746,9 @@ namespace LionFire.ObjectBus
             //#endif
 #endif
         }
-#endregion
+        #endregion
 
-#region Retrieve
+        #region Retrieve
 
         //public bool RetrieveOnDemand { get; set; }
 
@@ -846,7 +756,10 @@ namespace LionFire.ObjectBus
         {
             //if (this.Reference == null) throw new ArgumentException("this.Reference is null");
 
-            if (!TryRetrieve()) throw new ObjectNotFoundException();
+            if (!TryRetrieve())
+            {
+                throw new ObjectNotFoundException();
+            }
 
             //    ObjectType result;
             //    if (typeof(ObjectType) == typeof(object))
@@ -860,11 +773,16 @@ namespace LionFire.ObjectBus
             //    OnRetrieved(result);
         }
 
-        public virtual ObjectType TryGetOrCreate()
+        public bool TryRetrieve()
+        {
+            throw new NotImplementedException();
+        }
+
+        public virtual async Task<ObjectType> TryGetOrCreate(object persistenceContext = null)
         {
             if (!HasObject)
             {
-                TryRetrieve();
+                await TryEnsureRetrieved(persistenceContext).ConfigureAwait(false);
                 if (!HasObject) { ConstructDefault(); }
             }
             return Object;
@@ -879,91 +797,50 @@ namespace LionFire.ObjectBus
             return Object != null;
         }
 
-        public abstract RetrieveInfo RetrieveInfo { get; set; }
-        public virtual bool IsRetrieveInfoEnabled {
-            get { return RetrieveInfo != null; }
-            set {
-                if (value) { if (RetrieveInfo == null) { RetrieveInfo = new RetrieveInfo(); } }
-                else
-                {
-                    RetrieveInfo = null;
-                }
-            }
-        }
-
-        public virtual bool TryRetrieve(bool setToNullOnFail = true)
+        public async Task EnsureRetrieved()
         {
-            //			Log.Info("ZX HandleBase2.TryRetrieve");
-
-            if (!setToNullOnFail) throw new NotImplementedException("setToNullOnFail = false");
-
-            ObjectType result;
-            //IHandle resolvedTo = null;
-#if !AOT
-            if (typeof(ObjectType) != typeof(object))
+            bool result = await TryEnsureRetrieved().ConfigureAwait(false);
+            if (!result)
             {
-                result = OBus.TryGetAs<ObjectType>(this.Reference, RetrieveInfo);
+                throw new ObjectNotFoundException();
             }
-            else
-#endif
-            {
-                result = (ObjectType)OBus.TryGet(this.Reference, RetrieveInfo);
-            }
-
-            //T obj = OBus.TryGetAs<T>(this.Reference);
-
-            if (result == null)
-            {
-#if TRACE_LOAD_FAIL
-                lFailLoad.Trace("Failed to retrieve " + this.Reference);
-#endif
-            }
-            else
-            {
-#if DEBUG_LOAD
-                lLoad.Debug("HandleBase2 Retrieved " + this.Reference);
-#endif
-            }
-
-            OnRetrieved(result);
-
-            return result != null;
-
-        }
-
-
-        public void EnsureRetrieved()
-        {
-            bool result = TryEnsureRetrieved();
-            if (!result) throw new ObjectNotFoundException();
         }
 
         /// <summary>
         /// If Object is null, attempts to retrieve.  Returns true if Object != null
         /// </summary>
         /// <returns></returns>
-        public bool TryEnsureRetrieved()
+        public async Task<bool> TryEnsureRetrieved(object persistenceContext = null)
         {
-            if (_object != null) return true;
+            if (_object != null)
+            {
+                return true;
+            }
 
             if (Reference != null)
             {
-                TryRetrieve();
+                await TryResolveObject(persistenceContext).ConfigureAwait(false);
             }
 
             return _object != null;
         }
 
-#endregion
+        #endregion
 
-#region Save
+        #region Save
 
-#region AutoSave
+        #region AutoSave
 
-        public bool? AutoSave {
+        public bool? AutoSave
+        {
             get { return autoSave; }
-            set {
-                if (autoSave == value) return;
+            set
+            {
+                if (autoSave == value)
+                {
+                    return;
+                }
+
                 var oldEffectiveAutoSave = EffectiveAutoSave;
                 autoSave = value;
                 //l.Info("TEMP - AutoSave = " + value + " for " + this);
@@ -983,104 +860,58 @@ namespace LionFire.ObjectBus
         }
         private bool? autoSave;
 
-        public bool EffectiveAutoSave {
-            get {
-                if (AutoSave.HasValue) return AutoSave.Value;
+        public bool EffectiveAutoSave
+        {
+            get
+            {
+                if (AutoSave.HasValue)
+                {
+                    return AutoSave.Value;
+                }
+
                 return InheritedAutoSave;
             }
         }
 
-        protected bool InheritedAutoSave {
-            get {
-                if (AutoSaveManager.AutoSaveTypes.Contains(typeof(ObjectType))) return true;
-                if (_object != null && AutoSaveManager.AutoSaveTypes.Contains(_object.GetType())) return true;
+        protected bool InheritedAutoSave
+        {
+            get
+            {
+                if (AutoSaveManager.AutoSaveTypes.Contains(typeof(ObjectType)))
+                {
+                    return true;
+                }
+
+                if (_object != null && AutoSaveManager.AutoSaveTypes.Contains(_object.GetType()))
+                {
+                    return true;
+                }
+
                 return false;
             }
         } // FUTURE: Actually inherit
 
 
 
-#endregion
+        #endregion
 
-        private bool AllowOverwriteOnSave = true;
+        private readonly bool AllowOverwriteOnSave = true;
 
+        protected void RaiseSaving()
+        {
+            Saving?.Invoke(this);
+        }
         public event Action<IHandle> Saving;
-        public virtual void Save(bool allowDelete = false, bool preview = false)
-        {
-            var ev = Saving; if (ev != null) ev(this);
-            if (!HasObject)
-            {
-                if (allowDelete)
-                {
-                    TryDelete(preview);
-                }
-                else
-                {
-                    throw new ArgumentException("Attempt to save null when allowDelete == false");
-                }
-                return;
-            }
+        public abstract Task Save(object persistenceContext = null);
+        
 
-            if (AllowOverwriteOnSave)
-            {
-                OBus.Set(this.Reference, this._object);
-            }
-            else
-            {
-                if (IsPersisted)
-                {
-                    OBus.Set(this.Reference, this._object); // TODO: Use update instead to make sure it wasn't deleted out from under us
+        #endregion
 
-                    // FUTURE: Some kind of threadsafe versioning logic to make sure the object wasn't updated from under us.
-                }
-                else
-                {
-                    OBus.Create(this.Reference, this._object); // Throws if already exists
-                }
-            }
+        
 
-            OnSaved(); // Sets IsPersisted = true
-        }
+        #endregion
 
-#endregion
-
-#region Children Names
-
-        public virtual IEnumerable<string> GetChildrenNames(bool includeHidden = false)
-        {
-            return OBus.GetChildrenNames(this.Reference).Where(n => includeHidden || !VosPath.IsHidden(n));
-        }
-
-        public virtual IEnumerable<string> GetChildrenNamesOfType<ChildType>() where ChildType : class, new()
-        {
-            return OBus.GetChildrenNamesOfType<ChildType>(this.Reference);
-        }
-        public virtual IEnumerable<string> GetChildrenNamesOfType(Type childType)
-        {
-            return OBus.GetChildrenNamesOfType(childType, this.Reference);
-        }
-
-        public virtual IEnumerable<IHandle> GetChildren()
-        {
-            return OBus.GetChildren(this.Reference);
-        }
-
-#if !AOT
-        public virtual IEnumerable<IHandle<ChildType>> GetChildrenOfType<ChildType>() where ChildType : class//,new()
-        {
-            return OBus.GetChildrenOfType<ChildType>(this.Reference);
-        }
-#endif
-        public virtual IEnumerable<IHandle> GetChildrenOfType(Type childType)
-        {
-            return OBus.GetChildrenOfType(this.Reference, childType);
-        }
-
-#endregion
-
-#endregion
-
-#region Change Events
+        #region Change Events
 
         protected virtual void OnObjectChanged()
         {
@@ -1104,20 +935,27 @@ namespace LionFire.ObjectBus
             }
         }
 
-        protected virtual IReference MountReference {
+        protected virtual IReference MountReference
+        {
             get { return null; }
         }
 
-#endregion
+        #endregion
 
-#region Persistence Events
+        #region Persistence Events
 
-#region IsPersisted
+        #region IsPersisted
 
-        public bool IsPersisted {
+        public bool IsPersisted
+        {
             get { return isPersisted; }
-            set {
-                if (isPersisted == value) return;
+            set
+            {
+                if (isPersisted == value)
+                {
+                    return;
+                }
+
                 isPersisted = value;
 
                 //var ev = IsPersistedChanged;
@@ -1128,7 +966,7 @@ namespace LionFire.ObjectBus
 
         //public event Action IsPersistedChanged;
 
-#endregion
+        #endregion
 
         protected void OnDeleted()
         {
@@ -1184,17 +1022,18 @@ namespace LionFire.ObjectBus
             IsPersisted = true;
         }
 
-#endregion
+        #endregion
 
-#region IHasHandle
+        #region IHasHandle
 
         [Ignore]
-        public IHandle Handle {
+        public IHandle Handle
+        {
             get { return this; }
             set { throw new NotSupportedException("this is a handle.  Cannot set this.Handle"); }
         }
 
-#endregion
+        #endregion
 
         public override string ToString()
         {
@@ -1208,11 +1047,16 @@ namespace LionFire.ObjectBus
             }
         }
 
-#region IReadonlyMultiTyped
+        #region IReadonlyMultiTyped
 
-        public object this[Type type] {
-            get {
-                if (!TryEnsureRetrieved()) return null;
+        public object this[Type type]
+        {
+            get
+            {
+                if (!TryEnsureRetrieved())
+                {
+                    return null;
+                }
 
                 if (type.IsAssignableFrom(_object.GetType()))
                 {
@@ -1236,14 +1080,20 @@ namespace LionFire.ObjectBus
         public bool IsPersistable<T>()
         {
             var attr = typeof(T).GetCustomAttribute<IgnoreAttribute>();
-            if (attr != null && attr.Ignore.HasFlag(LionSerializeContext.Persistence)) return false;
+            if (attr != null && attr.Ignore.HasFlag(LionSerializeContext.Persistence))
+            {
+                return false;
+            }
 
             return true;
         }
         public bool IsPersistable(Type T)
         {
             var attr = T.GetCustomAttribute<IgnoreAttribute>();
-            if (attr != null && attr.Ignore.HasFlag(LionSerializeContext.Persistence)) return false;
+            if (attr != null && attr.Ignore.HasFlag(LionSerializeContext.Persistence))
+            {
+                return false;
+            }
 
             return true;
         }
@@ -1253,12 +1103,22 @@ namespace LionFire.ObjectBus
         {
             if (!HasObject)
             {
-                if (!IsPersistable<T>() && !IsPersistable<ObjectType>()) return null;
-                if (!TryEnsureRetrieved()) return null;
+                if (!IsPersistable<T>() && !IsPersistable<ObjectType>())
+                {
+                    return null;
+                }
+
+                if (!TryEnsureRetrieved())
+                {
+                    return null;
+                }
             }
 
             T result = _object as T;
-            if (result != null) return result;
+            if (result != null)
+            {
+                return result;
+            }
 
             IReadonlyMultiTyped mtObj = ObjectMT;
 
@@ -1275,8 +1135,15 @@ namespace LionFire.ObjectBus
         {
             if (!HasObject)
             {
-                if (!IsPersistable(T) && !IsPersistable(typeof(ObjectType))) return null;
-                if (!TryEnsureRetrieved()) return null;
+                if (!IsPersistable(T) && !IsPersistable(typeof(ObjectType)))
+                {
+                    return null;
+                }
+
+                if (!TryEnsureRetrieved())
+                {
+                    return null;
+                }
             }
 
             if (_object != null && T.IsAssignableFrom(_object.GetType()))
@@ -1325,8 +1192,14 @@ namespace LionFire.ObjectBus
                     throw new Exception("This handle supports objects of type " + typeof(ObjectType).FullName + " but requested type is not assignable: " + typeof(T).FullName);
                 }
 
-                if (factory != null) obj = factory();
-                else obj = (T)Activator.CreateInstance(typeof(T));
+                if (factory != null)
+                {
+                    obj = factory();
+                }
+                else
+                {
+                    obj = (T)Activator.CreateInstance(typeof(T));
+                }
 
                 if (ObjectEMT != null)
                 {
@@ -1378,13 +1251,22 @@ namespace LionFire.ObjectBus
         // REVIEW: Non array version with optional array version (for network)?
         public T[] OfType<T>() where T : class
         {
-            if (!TryEnsureRetrieved()) return null;
+            if (!TryEnsureRetrieved())
+            {
+                return null;
+            }
 
             IEnumerable<T> result = _object as IEnumerable<T>;
-            if (result != null) return result.ToArray();
+            if (result != null)
+            {
+                return result.ToArray();
+            }
 
             T resultItem = _object as T;
-            if (result != null) return new T[] { resultItem };
+            if (result != null)
+            {
+                return new T[] { resultItem };
+            }
 
             IReadonlyMultiTyped mtObj = _object as IReadonlyMultiTyped;
             if (mtObj != null)
@@ -1409,11 +1291,17 @@ namespace LionFire.ObjectBus
         [AotReplacement]
         public object[] OfType(Type T)
         {
-            if (!TryEnsureRetrieved()) return null;
+            if (!TryEnsureRetrieved())
+            {
+                return null;
+            }
 
             IEnumerable result = _object as IEnumerable;
             IEnumerable<object> objArray = result.Cast<object>();
-            if (result != null) return objArray.ToArray();
+            if (result != null)
+            {
+                return objArray.ToArray();
+            }
 
             if (_object != null && T.IsAssignableFrom(_object.GetType()))
             {
@@ -1439,9 +1327,14 @@ namespace LionFire.ObjectBus
         }
 
 
-        public object[] SubTypes {
-            get {
-                if (!TryEnsureRetrieved()) return null;
+        public object[] SubTypes
+        {
+            get
+            {
+                if (!TryEnsureRetrieved())
+                {
+                    return null;
+                }
 
                 //if (_object == null) return new object[] { };
 
@@ -1455,46 +1348,87 @@ namespace LionFire.ObjectBus
             }
         }
 
-#endregion
-        
-#region Child Accessors
+        #endregion
 
-        IHandle ITreeHandle.this[string subpath] {
-            get {
-                if (Reference == null) throw new ArgumentNullException("Reference == null");
-                if (StringX.IsNullOrWhiteSpace(subpath)) return this;
+        #region Child Accessors
+
+        IHandle ITreeHandle.this[string subpath]
+        {
+            get
+            {
+                if (Reference == null)
+                {
+                    throw new ArgumentNullException("Reference == null");
+                }
+
+                if (String.IsNullOrWhiteSpace(subpath))
+                {
+                    return this;
+                }
                 //return this.Reference.GetChild(VosPath.Combine(this.Reference.Path, subpath)).ToHandle(); BUG
                 return this.Reference.GetChild(subpath).GetHandle<Folder>();
             }
         }
 
 
-        IHandle ITreeHandle.this[IEnumerable<string> subpathChunks] {
-            get {
-                if (Reference == null) throw new ArgumentNullException("Reference == null");
-                if (!subpathChunks.Any()) return this;
+        IHandle ITreeHandle.this[IEnumerable<string> subpathChunks]
+        {
+            get
+            {
+                if (Reference == null)
+                {
+                    throw new ArgumentNullException("Reference == null");
+                }
+
+                if (!subpathChunks.Any())
+                {
+                    return this;
+                }
+
                 return ((IHandle)this)[subpathChunks.ToSubPath()]; // OPTIMIZE
             }
         }
 
-        IHandle ITreeHandle.this[IEnumerator<string> subpathChunks] {
-            get {
-                if (Reference == null) throw new ArgumentNullException("Reference == null");
+        IHandle ITreeHandle.this[IEnumerator<string> subpathChunks]
+        {
+            get
+            {
+                if (Reference == null)
+                {
+                    throw new ArgumentNullException("Reference == null");
+                }
+
                 return ((IHandle)this)[subpathChunks.ToSubPath()]; // OPTIMIZE
             }
         }
 
-        IHandle ITreeHandle.this[int index, string[] subpathChunks] {
-            get {
-                if (Reference == null) throw new ArgumentNullException("Reference == null");
-                if (subpathChunks == null) return this;
-                if (index == subpathChunks.Length) return this;
+        IHandle ITreeHandle.this[int index, string[] subpathChunks]
+        {
+            get
+            {
+                if (Reference == null)
+                {
+                    throw new ArgumentNullException("Reference == null");
+                }
+
+                if (subpathChunks == null)
+                {
+                    return this;
+                }
+
+                if (index == subpathChunks.Length)
+                {
+                    return this;
+                }
+
                 return ((IHandle)this)[subpathChunks.ToSubPath()];
             }
         }
 
-        IHandle ITreeHandle.this[params string[] subpathChunks] {
-            get {
+        IHandle ITreeHandle.this[params string[] subpathChunks]
+        {
+            get
+            {
                 return ((IHandle)this)[0, subpathChunks];
             }
         }
@@ -1513,39 +1447,44 @@ namespace LionFire.ObjectBus
             return this.Reference.GetChildSubpath(subpathChunks).GetHandle<T1>();
         }
 
-#endregion
+        public abstract Task<bool> TryResolveObject(object persistenceContext = null);
 
-#region CommandMap
+        #endregion
 
-        public CommandMap Commands {
-            get {
-                if (commands == null)
-                {
-                    commands = new CommandMap();
-                    commands.AddCommand("Delete", obj => Delete());
-                    commands.AddCommand("Save", obj => Save());
-                    //commands.AddCommand("SaveAs", obj => Save());
-                    //commands.AddCommand("Rename", obj => Rename());
-                    OnInitializingCommands(commands);
-                }
-                return commands;
-            }
-        }
-        private CommandMap commands;
+        #region CommandMap
 
-        protected virtual void OnInitializingCommands(CommandMap commands)
-        {
-        }
+        public object Commands => throw new NotImplementedException("Do this externally?");
+        //public CommandMap Commands
+        //{
+        //    get
+        //    {
+        //        if (commands == null)
+        //        {
+        //            commands = new CommandMap();
+        //            commands.AddCommand("Delete", obj => Delete());
+        //            commands.AddCommand("Save", obj => Save());
+        //            //commands.AddCommand("SaveAs", obj => Save());
+        //            //commands.AddCommand("Rename", obj => Rename());
+        //            OnInitializingCommands(commands);
+        //        }
+        //        return commands;
+        //    }
+        //}
+        //private CommandMap commands;
 
-#endregion
+        //protected virtual void OnInitializingCommands(CommandMap commands)
+        //{
+        //}
 
-#region Misc
+        #endregion
+
+        #region Misc
 
         private static ILogger l = Log.Get();
-        private static ILogger lLoad = Log.Get("LionFire.OBus.Load");
-        private static ILogger lFailLoad = Log.Get("LionFire.OBus.Fail.Load");
+        private static readonly ILogger lLoad = Log.Get("LionFire.OBus.Load");
+        private static readonly ILogger lFailLoad = Log.Get("LionFire.OBus.Fail.Load");
 
-#endregion
+        #endregion
 
     }
 }

@@ -1,16 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
+﻿using LionFire.Serialization;
+using System;
 using System.Text;
-using LionFire.Serialization;
-using JsonExSerializer;
 
 namespace LionFire.ObjectBus
 {
 
-
-
-    
     // RENAME to VobReference?
     //[JsonConvert(typeof(VosReferenceSerializationConverter))] FUTURE
     [LionSerializable(SerializeMethod.ByValue)]
@@ -27,9 +21,14 @@ namespace LionFire.ObjectBus
         public override string Scheme
         {
             get { return UriSchemeDefault; }
-            set {
-                if (value == Scheme) return;
-                throw new NotSupportedException(); 
+            set
+            {
+                if (value == Scheme)
+                {
+                    return;
+                }
+
+                throw new NotSupportedException();
             }
         }
 
@@ -68,27 +67,6 @@ namespace LionFire.ObjectBus
 
         #endregion
 
-        #region ObjectStoreProvider
-
-        public override IOBaseProvider DefaultObjectStoreProvider
-        {
-            get
-            {
-                return VosOBaseProvider.Instance;
-            }
-        }
-
-        public override IOBase ObjectStore
-        {
-            get
-            {
-                return VosOBaseProvider.Instance.DefaultOBase;
-            }
-        }
-        public Vos Vos { get { return VosOBaseProvider.Instance.DefaultVos; } }
-
-        #endregion
-
         public override string Key
         {
             get
@@ -122,7 +100,7 @@ namespace LionFire.ObjectBus
             }
             set
             {
-                if (StringX.IsNullOrWhiteSpace(value))
+                if (String.IsNullOrWhiteSpace(value))
                 {
                     Reset();
                     return;
@@ -163,6 +141,29 @@ namespace LionFire.ObjectBus
 
         #region Convenience
 
+        #region ObjectStoreProvider
+
+        public override IOBaseProvider DefaultObjectStoreProvider
+        {
+            get
+            {
+                return VosOBaseProvider.Instance;
+            }
+        }
+
+        public override IOBase ObjectStore
+        {
+            get
+            {
+                return VosOBaseProvider.Instance.DefaultOBase;
+            }
+        }
+
+
+        #endregion
+
+        public Vos Vos { get { return VosOBaseProvider.Instance.DefaultVos; } }
+
         public Vob Vob
         {
             get
@@ -170,12 +171,13 @@ namespace LionFire.ObjectBus
                 return this.Vos[Path];
             }
         }
-#if !AOT
-        public override IHandle<T> GetHandle<T>(T obj )
-            //where T : class//, new()
+
+        #if !AOT
+        public override IHandle<T> GetHandle<T>(T obj)
+        //where T : class//, new()
         {
             var vh = GetVobHandle<T>();
-            if(obj!=null)
+            if (obj != null)
             {
                 vh.Object = obj;
             }
@@ -205,9 +207,16 @@ namespace LionFire.ObjectBus
         public override bool Equals(object obj)
         {
             VosReference other = obj as VosReference;
-            if (other == null) return false;
+            if (other == null)
+            {
+                return false;
+            }
 
-            if (!Key.Equals(other.Key)) return false;
+            if (!Key.Equals(other.Key))
+            {
+                return false;
+            }
+
             return true;
         }
 
@@ -217,7 +226,6 @@ namespace LionFire.ObjectBus
         }
 
         #endregion
-
 
     }
 

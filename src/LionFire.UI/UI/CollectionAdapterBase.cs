@@ -18,14 +18,13 @@ namespace LionFire.UI
         protected ObjectTranslator<TModel, TViewModel> _viewModelProvider;
         protected IDispatcher dispatcher; // TODO: Make sure this is used where required 
 
-        public CollectionAdapterBase(IEnumerable<TModel> models, ObjectTranslator<TModel, TViewModel> viewModelProvider = null, object context = null, bool autoFetch = true)
+        public CollectionAdapterBase(IEnumerable<TModel> models, ObjectTranslator<TModel, TViewModel> viewModelProvider = null, object context = null, bool autoFetch = true, IDispatcher dispatcher = null)
         {
             _readOnlyModels = models;
             _context = context;
             _viewModelProvider = viewModelProvider;
             this.dispatcher = dispatcher;
-
-
+            
             // If model collection is observable register change handling for synchronization from Models to ViewModels
             if (_readOnlyModels is ObservableCollection<TModel> observableCollection)
             {

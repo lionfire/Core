@@ -1,5 +1,4 @@
-﻿using LionFire.ObjectBus;
-using LionFire.Persistence;
+﻿using LionFire.Persistence;
 using LionFire.Structures;
 using System;
 using System.Collections.Generic;
@@ -10,7 +9,7 @@ namespace LionFire
 
     // REVIEW: Consider leaning on covariance and IReadHandle<object> everywhere instead of this?
     public interface IReadHandle : IResolvableHandle
-    //, ITreeHandlePersistence  TODO
+    //, ITreeHandlePersistence  OLD
     {
         object Object { get; }
     }

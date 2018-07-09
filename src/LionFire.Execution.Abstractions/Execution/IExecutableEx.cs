@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 namespace LionFire.Execution
 {
 
-    [Obsolete("Migrate to new IExecutable2")]
+    //[Obsolete("Migrate to new IExecutable2")] // TODO - obsolete this
     public interface IExecutableEx //: IStateful<ExecutionStateEx>
     {
         ExecutionStateEx State { get; }

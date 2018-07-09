@@ -19,4 +19,8 @@
     <ProjectReference Include="..\LionFire.Structures\LionFire.Structures.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Path\" />
+  </ItemGroup>
+
 </Project>

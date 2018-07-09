@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace LionFire.ObjectBus
+namespace LionFire.Referencing
 {
 //#if !AOT  //150309 RECENTCHANGE - try this again  TOAOT  - comment?
     public interface ILegacyHandle<T> :
@@ -27,7 +27,7 @@ namespace LionFire.ObjectBus
         new T Object { get; set; }
         //T ObjectField { get; set; } // Set not needed?
 
-        void ForgetObject();
+        //void ForgetObject();
         
     }
 //#endif
