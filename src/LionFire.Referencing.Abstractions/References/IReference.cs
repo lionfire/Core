@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using LionFire.Referencing.Resolution;
 using LionFire.Structures;
 
 namespace LionFire.Referencing
@@ -21,6 +22,7 @@ IKeyed<string>
         /// </summary>
         IOBaseProvider DefaultObjectStoreProvider { get; }
 #endif
+        IHandleResolver HandleResolver { get; }
 
         string Uri { get; }
         string Scheme { get; }

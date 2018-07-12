@@ -3,7 +3,7 @@ using LionFire.Structures;
 
 namespace LionFire.Execution.Executables
 {
-    [Obsolete("Use ExecutableBase")]
+    //[Obsolete("Use ExecutableBase")] TODO - obsolete this?
     public class ExecutableExBase : NotifyPropertyChangedBase, IExecutableEx
     {
         #region State

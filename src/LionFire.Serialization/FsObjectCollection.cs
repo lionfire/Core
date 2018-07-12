@@ -72,8 +72,6 @@ namespace LionFire.Serialization
         //}
 
         #endregion
-            
-        
 
         #region State
 
@@ -135,7 +133,6 @@ namespace LionFire.Serialization
 
         public bool IsStarted => fsw != null;
 
-
         #region SearchPattern
 
         public string SearchPattern
@@ -155,7 +152,6 @@ namespace LionFire.Serialization
         #endregion
 
         public ISerializer Serializer { get; set; }
-
 
         // FUTURE: Objects -- attaching to it auto-retrieves the handles.
 

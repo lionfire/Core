@@ -1,16 +1,21 @@
-﻿using System.Threading.Tasks;
+﻿using System;
+using System.Threading.Tasks;
 
 namespace LionFire
 {
-    // REFACTOR REVIEW - is there a benefit to having this separate from IReadHandle<T>?  Should the ObjectChanged be here too?
-    // For now, this is sort of acting as a IReadHandle base that isn't dependant on generic vs object.  
+    /// <summary>
+    /// Used as the base for the IReadHandle interfaces.  (In the future, it perhaps could also be used for Write only handles)
+    /// </summary>
     public interface IResolvableHandle
     {
         bool HasObject { get; }
+        bool IsResolved { get; }
+         event Action<bool> IsResolvedChanged;
 
-        Task<bool> TryResolveObject(object persistenceContext = null);
+        // REVIEW: Is persistenceContext helpful?
+        Task<bool> TryResolveObject();
+        //Task<bool> TryResolveObject(bool forgetOnFail = false);
+        //Task<bool> TryResolveObject(object persistenceContext = null, bool forgetOnFail = false);
         void ForgetObject();
-
-        
     }
 }

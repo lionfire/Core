@@ -4,25 +4,50 @@ using System.Text;
 using System.Threading.Tasks;
 using LionFire.Assets;
 using LionFire.Handles;
+using LionFire.Referencing;
+using LionFire.Referencing.Resolution;
 
 namespace LionFire.Persistence.Assets
 {
-    public class AssetReadHandle<T> : ReadHandleBase<T>
+
+    public class AssetResolver : IHandleResolver
+    {
+        public Task<ResolveHandleResult<T>> Resolve<T>(IReadHandle<T> handle) where T : class
+        {
+            throw new NotImplementedException();
+        }
+    }
+
+    // Reads via Injection.GetService<IAssetProvider>
+    // OPTIMIZE: Change the base class to an H base class that stores a string (key) instead of a IReference
+    public class AssetReadHandle<T> : HByKey<T>
         where T : class
     {
 
         public AssetReadHandle() { }
         public AssetReadHandle(string assetSubPath)
         {
-            this.Key = assetSubPath;
+            this.Reference = new AssetReference<T>(assetSubPath);
         }
+
+        protected override IReference GetReferenceFromKey(string key)
+        {
+            throw new NotImplementedException();
+        }
+
+        protected override string SetKeyFromReference(IReference reference)
+        {
+            throw new NotImplementedException();
+        }
+
         public static implicit operator AssetReadHandle<T>(string assetSubPath)
         {
             return new AssetReadHandle<T>(assetSubPath);
         }
 
-        public override Task<bool> TryResolveObject(object persistenceContext = null)
+        public override Task<bool> TryResolveObject()
         {
+            // TODO: Use async/await here once IAssetProvider supports it
             var ap = Injection.GetService<IAssetProvider>(createIfMissing: true);
             var result = ap.Load<T>(this.Key);
             if (result != null)

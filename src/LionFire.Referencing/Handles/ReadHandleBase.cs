@@ -1,4 +1,5 @@
-﻿using LionFire.ObjectBus;
+﻿#if false
+using LionFire.ObjectBus;
 using System;
 using System.ComponentModel;
 using System.Threading.Tasks;
@@ -6,7 +7,9 @@ using LionFire.Structures;
 
 namespace LionFire.Handles
 {
-    public abstract class ReadHandleBase<T> : IReadHandle<T>, INotifyPropertyChanged, IReadHandle, IKeyed<string>
+    public abstract class ReadHandleBase<T> : H<T>, 
+        //IReadHandle<T>, 
+        INotifyPropertyChanged, IReadHandle, IKeyed<string>
         where T : class
     {
         #region Identity
@@ -84,3 +87,4 @@ namespace LionFire.Handles
 
     }
 }
+#endif

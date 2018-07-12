@@ -28,6 +28,12 @@ namespace LionFire.Assets.Providers.FileSystem
         {
             JsonProperty property = base.CreateProperty(member, memberSerialization);
 
+            //var attr = (IgnoreAttribute)member.GetCustomAttribute(typeof(IgnoreAttribute));
+            //if(attr != null)
+            //{
+            //    if(attr.Ignore.HasFlag(LionSerializeContext.AllSerialization)) // TODO
+            //}
+
             var attr = member.GetCustomAttribute(typeof(SerializeIgnoreAttribute));
             if (attr != null)
             {

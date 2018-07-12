@@ -12,6 +12,7 @@ namespace LionFire.Assets
 
     public interface IAssetProvider
     {
+        
         T Load<T>(string assetSubPath, object context = null) where T : class;
         void Save(string assetSubPath, object obj, object context = null);
 #if TODO

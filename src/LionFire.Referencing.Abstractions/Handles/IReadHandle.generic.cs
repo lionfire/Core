@@ -5,6 +5,7 @@ namespace LionFire
 {       
     public interface IReadHandle<out T> : IResolvableHandle
     {
+        
         T Object { get; }
 
         event Action<IReadHandle<T>, T /*oldValue*/ , T /*newValue*/> ObjectChanged;

@@ -1,4 +1,5 @@
-﻿using System;
+﻿#if false // LEGACY
+using System;
 using System.Threading.Tasks;
 
 namespace LionFire.Handles
@@ -43,3 +44,4 @@ namespace LionFire.Handles
         public abstract Task Save(object persistenceContext = null);
     }
 }
+#endif

@@ -13,13 +13,13 @@ namespace LionFire.ObjectBus
         public static IEnumerable<IOBaseProvider> GetOBaseProviders(this IReference reference)
         {
             //reference.DefaultObjectStoreProvider?
-            var osps = SchemeBroker.Instance[reference.Scheme];
+            var osps = OBaseSchemeBroker.Instance[reference.Scheme];
             return osps;
         }
 
         public static IOBaseProvider GetOBaseProvider(this IReference reference)
         {
-            var osps = SchemeBroker.Instance[reference.Scheme];
+            var osps = OBaseSchemeBroker.Instance[reference.Scheme];
             return osps.SingleOrDefault();
         }
 

@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace LionFire.ObjectBus
+namespace LionFire.Referencing
 {
     
     public static class ReferenceFactory
@@ -37,7 +37,7 @@ namespace LionFire.ObjectBus
             string scheme = uri.Substring(0, colonIndex);
 
             // TOREFACTOR TODO: Use LionFire.Core DI to get SchemeBroker here.
-            var osp = SchemeBroker.Instance[scheme].FirstOrDefault(); // TODO: Review First
+            var osp = OBaseSchemeBroker.Instance[scheme].FirstOrDefault(); // TODO: Review First
 
             //if (!referenceFactoriesByUriScheme.ContainsKey(scheme))
             if (osp == null)

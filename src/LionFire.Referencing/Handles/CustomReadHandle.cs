@@ -1,4 +1,5 @@
-﻿using System;
+﻿#if false
+using System;
 using LionFire.Structures;
 using System.Threading.Tasks;
 
@@ -39,3 +40,4 @@ namespace LionFire.Handles
 
     }
 }
+#endif

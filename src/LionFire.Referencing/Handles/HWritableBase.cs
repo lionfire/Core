@@ -1,15 +1,12 @@
-﻿#if false
-
-using System;
+﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace LionFire.Handles
+namespace LionFire.Referencing
 {
-    public abstract class WritableHandleBase<T> : 
-        //ReadHandleBase<T>, 
-        IWriteHandle<T>
+    public abstract class HWritableBase<T> : HBase<T>, IWriteHandle<T>
         where T : class
     {
         #region DeletePending
@@ -22,10 +19,28 @@ namespace LionFire.Handles
             get { return deletePending; }
             set
             {
+                if (deletePending == value)
+                {
+                    if(value)
+                    {
+                        if(this.Object!=null)
+                        {
+                            Trace.TraceWarning("DeletePending set to true again.  Object was not null.  Setting Object to null again.");
+                        }
+                        this.Object = null;
+                    }
+                    return;
+                }
+
                 deletePending = value;
+
                 if (value)
                 {
-                    _object = null;
+                    this.Object = null;
+                }
+                else
+                {
+                    Trace.TraceWarning("DeletePending set to false from true.  Object was discarded.  There is currently no way to undiscard the Object.");
                 }
             }
         }
@@ -54,11 +69,9 @@ namespace LionFire.Handles
             }
 
             await WriteObject(persistenceContext);
-
         }
 
         public abstract Task WriteObject(object persistenceContext = null);
         public abstract Task DeleteObject(object persistenceContext = null);
     }
 }
-#endif

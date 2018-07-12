@@ -3,23 +3,24 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using LionFire.Collections;
+using LionFire.ObjectBus;
 
-namespace LionFire.ObjectBus
+namespace LionFire.Referencing
 {
     // TODO: Revamp this to a IReference to IReadHandle/IWritableHandle registrar, with no involvement of OBases.
 
     // THREADUNSAFE - perhaps this is ok as long as there are no writes after initialization: TODO: freeze after config, and during reconfig, lock it except for current thread
-    public class SchemeBroker
+    public class OBaseSchemeBroker
     {
         #region (Static) Singleton Accessor
 
-        public static SchemeBroker Instance { get { return Singleton<SchemeBroker>.Instance; } }
+        public static OBaseSchemeBroker Instance { get { return Singleton<OBaseSchemeBroker>.Instance; } }
 
         #endregion
 
         #region Construction
 
-        static SchemeBroker()
+        static OBaseSchemeBroker()
         {
             OBusConfig.Initialize();
         }
