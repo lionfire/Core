@@ -1,7 +1,6 @@
 ﻿//#define TRACE_GET
 #define TRACE_GET_NOTFOUND
 
-
 #if NET4
 #define WEAKMETADATA // Experimental way to attach various info
 #endif
@@ -17,84 +16,12 @@ using LionFire.Structures;
 using Microsoft.Extensions.Logging;
 using LionFire.Referencing;
 
-namespace LionFire
-{
-    public interface IValidatable // MOVE
-    {
-        /// <summary>
-        /// Validate the object, throwing an exception if validation fails.
-        /// </summary>
-        /// <param name="throwMany">If an error is detected, attempt to keep detecting more errors, and throw all errors within an AggregateException</param>
-        void Validate(bool throwMany = true);
-    }
-}
-
 namespace LionFire.ObjectBus
 {
-
-
-    public enum OBusOperations
-    {
-        Unspecified,
-        Get,
-        Set,
-        Delete,
-        GetChildren,
-
-    }
-
-
-
-    public static class OBusEvents
-    {
-
-        public static bool ValidateOnRetrieve = true;
-
-        /// <summary>
-        /// Retrieved from a bottom-tier data source.
-        /// </summary>
-        /// <param name="obj"></param>
-        public static void OnRetrievedObjectFromExternalSource(object obj)
-        {
-            if (ValidateOnRetrieve)
-            {
-                IValidatable v = obj as IValidatable;
-                if (v != null)
-                {
-                    v.Validate();
-                }
-            }
-
-            INotifyOnRetrieve nor = obj as INotifyOnRetrieve;
-            if (nor != null) nor.OnRetrieved();
-
-        }
-
-        public static void OnSaving(object obj)
-        {
-            INotifyOnSaving nos = obj as INotifyOnSaving;
-            if (nos != null) nos.OnSaving();
-
-            ILastModified lm = obj as ILastModified;
-            if (lm != null) lm.LastModified = DateTime.Now;
-
-        }
-
-        internal static void OnException(OBusOperations operation, IReference r, Exception ex)
-        {
-            l.Error("Exception during " + operation.ToString() + " for " + r + ": " + ex.ToStringSafe());
-            throw ex;
-        }
-        private static ILogger l = Log.Get("LionFire.OBus");
-        
-
-    }
-
     public static class OBus
     {
         //public static OBus Instance { get { return Singleton<OBus>.Instance; } }
-
-
+        
         static OBus()
         {
             OBusConfig.Initialize();
@@ -211,15 +138,7 @@ namespace LionFire.ObjectBus
         //{
         //    throw new NotImplementedException();
         //}
-
-        public static object Get(string diskPath)
-        {
-            return Get(new FileReference(diskPath));
-        }
-        public static object TryGet(string diskPath, OptionalRef<RetrieveInfo> optionalRef = null)
-        {
-            return TryGet(new FileReference(diskPath), optionalRef: optionalRef);
-        }
+        
 
         public static object Get(IReference reference)
         {
@@ -393,10 +312,7 @@ namespace LionFire.ObjectBus
 
         #region Set
 
-        public static void Set(string diskPath, object value)
-        {
-            Set(new FileReference(diskPath), value);
-        }
+        
         public static void Set(IReference reference, object value, bool preview = false)
         {
             try
@@ -432,11 +348,11 @@ namespace LionFire.ObjectBus
 
         // IDEA: MEMOPTIMIZE Memory Efficient storage of path Chunks.  Store path chunks, and use yield return in IReference.PathChunks that is hierarchical?
 
-        public static IEnumerable<IHandle> GetChildren(IReference reference)
+        public static IEnumerable<IHandle> GetChildren(IReferenceEx2 reference)
         {
             try
             {
-                List<IHandle> children = new List<IHandle>();
+                var children = new List<H<object>>();
 
                 foreach (IOBase obase in (IEnumerable)OBaseBroker.GetOBases(reference))
                 {

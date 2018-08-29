@@ -1,13 +1,28 @@
 ﻿using LionFire.Referencing.Resolution;
 using System;
+using System.Diagnostics;
 using System.Threading.Tasks;
 
 namespace LionFire.Referencing
-{    public abstract class HBase<ObjectType> : IH<ObjectType>
+{
+    // REVIEW - Deletion logic
+
+    /// <summary>
+    /// Base class for read/write handles
+    /// </summary>
+    /// <typeparam name="ObjectType"></typeparam>
+    public abstract class RBase<ObjectType> : R<ObjectType>
     where ObjectType : class
     {
         public abstract string Key { get; set; }
         public abstract IReference Reference { get; set; }
+
+        #region Construction
+
+        protected RBase() { }
+        protected RBase(ObjectType obj) { this._object = obj; }
+
+        #endregion
 
         #region Object
 
@@ -25,7 +40,7 @@ namespace LionFire.Referencing
                 }
                 return _object;
             }
-            protected set
+            set
             {
                 if (object.ReferenceEquals(_object, value))
                 {
@@ -34,11 +49,17 @@ namespace LionFire.Referencing
 
                 var oldValue = _object;
                 _object = value;
+                OnObjectChanged();
                 ObjectChanged?.Invoke(this, oldValue, value);
             }
         }
-        private ObjectType _object;
-        public event Action<IReadHandle<ObjectType>, ObjectType /*oldValue*/ , ObjectType /*newValue*/> ObjectChanged;
+
+        protected virtual void OnObjectChanged()
+        {
+        }
+
+        protected ObjectType _object;
+        public event Action<R<ObjectType>, ObjectType /*oldValue*/ , ObjectType /*newValue*/> ObjectChanged;
 
         protected void OnRetrievedObject(ObjectType obj)
         {
@@ -113,5 +134,17 @@ namespace LionFire.Referencing
 
         //#endregion
 
+        
+
+        //public void SetObject(T value)
+        //{
+        //    this.Object = value;
+        //    if (value == null)
+        //    {
+        //        DeletePending = true;
+        //    }
+        //}
+
+        
     }
 }

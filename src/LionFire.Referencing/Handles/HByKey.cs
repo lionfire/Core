@@ -1,7 +1,7 @@
 ﻿namespace LionFire.Referencing
 {
     // OPTIMIZATION: Store a key, and generate the IReference on demand if really needed
-    public abstract class HByKey<ObjectType> : HBase<ObjectType>, IH<ObjectType>
+    public abstract class HByKey<ObjectType> : RBase<ObjectType>, H<ObjectType>
         where ObjectType : class
     {
 

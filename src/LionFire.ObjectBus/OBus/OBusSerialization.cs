@@ -1,4 +1,6 @@
-﻿using System;
+﻿#if TOPORT
+
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -14,8 +16,8 @@ namespace LionFire.ObjectBus
     {
         public static OBusSerialization Instance { get { return Singleton<OBusSerialization>.Instance; } }
 
-        protected static LionSerializer defaultSerializer = 
-             LionSerializers.Json;
+        //protected static LionSerializer defaultSerializer = 
+             //LionSerializers.Json;
         //LionSerializers.FastJson;
 
         #region Byte Array
@@ -31,17 +33,21 @@ namespace LionFire.ObjectBus
 
         public static object Deserialize(Stream stream, Type type = null, string path = null)
         {
-            return SerializationFacility.Deserialize(stream, type, path);
+            throw new NotImplementedException();
+            //return SerializationFacility.Deserialize(stream, type, path);
         }
 
         public static object Deserialize<T>(Stream stream, string path = null)
         {
-            return SerializationFacility.Deserialize<T>(stream);
+            throw new NotImplementedException();
+            //return SerializationFacility.Deserialize<T>(stream);
         }
 
-        public static LionSerializer GetSerializer(object obj = null, string path = null)
+        public static object GetSerializer(object obj = null, string path = null)
+        //public static LionSerializer GetSerializer(object obj = null, string path = null)
         {
-            return defaultSerializer;
+            throw new NotImplementedException();
+            //return defaultSerializer;
         }
 
         //internal static void Serialize(Stream fs, object obj)
@@ -53,3 +59,5 @@ namespace LionFire.ObjectBus
 
     }
 }
+
+#endif

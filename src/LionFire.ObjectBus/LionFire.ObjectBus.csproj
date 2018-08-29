@@ -22,6 +22,7 @@
     <ProjectReference Include="..\LionFire.ObjectBus.Abstractions\LionFire.ObjectBus.Abstractions.csproj" />
     <ProjectReference Include="..\LionFire.Referencing.Abstractions\LionFire.Referencing.Abstractions.csproj" />
     <ProjectReference Include="..\LionFire.Referencing\LionFire.Referencing.csproj" />
+    <ProjectReference Include="..\LionFire.Serialization\LionFire.Serialization.csproj" />
   </ItemGroup>
 
   <ItemGroup Condition=" '$(TargetFramework)' == 'net462' ">

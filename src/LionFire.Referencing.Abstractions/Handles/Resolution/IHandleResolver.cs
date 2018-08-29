@@ -4,7 +4,7 @@ namespace LionFire.Referencing.Resolution
 {
     public interface IHandleResolver
     {
-        Task<ResolveHandleResult<T>> Resolve<T>(IReadHandle<T> handle)
+        Task<ResolveHandleResult<T>> Resolve<T>(R<T> handle)
             where T : class;
     }
 }

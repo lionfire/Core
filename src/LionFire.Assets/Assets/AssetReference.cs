@@ -2,9 +2,14 @@
 
 namespace LionFire.Persistence.Assets
 {
-    public class AssetReference<T> : ReferenceBase
+    public class AssetReference<T> : LocalReferenceBase
         where T : class
     {
+        public override string Scheme => "asset";
+
+        public override string Key => Path;
+
+
         #region AssetSubPath
 
         public string AssetSubPath
@@ -12,17 +17,29 @@ namespace LionFire.Persistence.Assets
             get { return assetSubPath; }
             set
             {
-                if (assetSubPath == value) return;
-                if (assetSubPath != default(string)) throw new AlreadySetException();
+                if (assetSubPath == value)
+                {
+                    return;
+                }
+
+                if (assetSubPath != default(string))
+                {
+                    throw new AlreadySetException();
+                }
+
                 assetSubPath = value;
             }
         }
+
         private string assetSubPath;
 
+        public override string Path => typeof(T).Name + ReferenceConstants.PathSeparator + AssetSubPath;
+
         #endregion
-        
+
         public AssetReference() { }
-        public AssetReference(string assetSubPath) {
+        public AssetReference(string assetSubPath)
+        {
             AssetSubPath = assetSubPath;
         }
     }

@@ -1,4 +1,5 @@
 ﻿#define TRAGE_GET
+using LionFire.Referencing;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
@@ -25,15 +26,13 @@ namespace LionFire.ObjectBus
 
         public virtual object TryGet(ReferenceType reference, OptionalRef<RetrieveInfo> optionalRef = null)
         {
-            //l.Trace(" TryGet " + reference);
-            if (reference.Type != null)
+            if (reference is ITypedReference typedReference && typedReference.Type != null)
             {
-                var mi = _TryGetMethodInfo.MakeGenericMethod(reference.Type);
+                var mi = _TryGetMethodInfo.MakeGenericMethod(typedReference.Type);
                 return mi.Invoke(this, new object[] { reference, optionalRef });
             }
             else
             {
-                //                l.Trace("ZX Invoking TryGet<object> - " + reference);
                 return TryGet<object>(reference);
             }
         }
@@ -152,30 +151,30 @@ namespace LionFire.ObjectBus
 
         #region GetHandle
 //#if !AOT // TOAOT
-        public virtual IHandle<T> GetHandle<T>(IReference reference) where T : class
+        public virtual H<T> GetHandle<T>(IReference reference) where T : class
         {
             // Uses HandleFactory
-            return reference.GetHandle<T>();
-        }
-//#endif
+            return HandleFactory<T>.GetHandle(reference);
+    }
+    //#endif
 
-        //// Prefer IHandle.GetSubpath.  Default implementation of that uses this:
-        //public virtual IHandle<T> GetHandleSubpath<T>(IReference reference, params string[] subpathChunks) where T : class
-        //{
-        //    reference.GetChildSubpath(subpathChunks);
-        //    return reference.ToHandle<T>();
-        //}
-        //public virtual IHandle<T> GetHandleSubpath<T>(IHandle handle, params string[] subpathChunks) where T : class
-        //{
-        //    handle.Reference.GetChildSubpath(subpathChunks);
-        //    return reference.ToHandle<T>();
-        //}
+    //// Prefer IHandle.GetSubpath.  Default implementation of that uses this:
+    //public virtual IHandle<T> GetHandleSubpath<T>(IReference reference, params string[] subpathChunks) where T : class
+    //{
+    //    reference.GetChildSubpath(subpathChunks);
+    //    return reference.ToHandle<T>();
+    //}
+    //public virtual IHandle<T> GetHandleSubpath<T>(IHandle handle, params string[] subpathChunks) where T : class
+    //{
+    //    handle.Reference.GetChildSubpath(subpathChunks);
+    //    return reference.ToHandle<T>();
+    //}
 
-        #endregion
+    #endregion
 
-        #region (Protected) Conversion utils
+    #region (Protected) Conversion utils
 
-        protected ReferenceType ConvertToReferenceType(IReference reference)
+    protected ReferenceType ConvertToReferenceType(IReference reference)
         {
             if (reference == null) return null;
             ReferenceType reft = reference as ReferenceType;

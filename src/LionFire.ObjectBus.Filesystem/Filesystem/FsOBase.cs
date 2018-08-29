@@ -4,6 +4,8 @@ using System.Linq;
 using System.Text;
 using System.IO;
 using LionFire.Serialization;
+using LionFire.Structures;
+using LionFire.Referencing;
 
 namespace LionFire.ObjectBus.Filesystem
 {
@@ -65,7 +67,12 @@ namespace LionFire.ObjectBus.Filesystem
 #else
     public class FsOBase : OBaseBase<FileReference>
     {
+        #region Static
+
         public static FsOBase Instance { get { return Singleton<FsOBase>.Instance; } }
+        
+        #endregion
+                
 
         public override string[] UriSchemes { get { return FileReference.UriSchemes; } }
 
@@ -89,10 +96,7 @@ namespace LionFire.ObjectBus.Filesystem
         {
             if (reference.Scheme != FileReference.UriScheme) throw new FsOBaseException("Invalid scheme");
             if (!reference.IsLocalhost) throw new FsOBaseException("Only localhost supported");
-
         }
-
-
 
         public override ResultType TryGet<ResultType>(FileReference reference, OptionalRef<RetrieveInfo> optionalRef = null)
         {

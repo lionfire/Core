@@ -1,4 +1,5 @@
-﻿using System;
+﻿using LionFire.Referencing;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -32,7 +33,7 @@ namespace LionFire.ObjectBus
         //event Action<string> Changed;
 
 #if !AOT
-        IHandle<T> GetHandle<T>(IReference reference) where T : class;
+        H<T> GetHandle<T>(IReference reference) where T : class;
         
 #endif
 

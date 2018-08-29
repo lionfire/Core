@@ -4,14 +4,19 @@ using System.Threading.Tasks;
 
 namespace LionFire.Referencing
 {
-    public abstract class HRetrieveInfoBase<ObjectType> : HBase<ObjectType>, IHasObjectRetrievalInfo<ObjectType>
+    public abstract class HRetrieveInfoBase<ObjectType> : RBase<ObjectType>, IHasObjectRetrievalInfo<ObjectType>
     where ObjectType : class
     {
+        #region Construction
+
         public HRetrieveInfoBase()
         {
-            throw new NotImplementedException("Needs more thought.  Not sure I want to force EffectiveReferenceResolver on derived classes.  May still want derived classes to be able to implement their own TryResovleObject method.");
         }
 
+        public HRetrieveInfoBase(ObjectType obj) : base(obj) { }
+        
+        #endregion
+        
         public ResolveHandleResult<ObjectType>? ResolveHandleResult
         {
             get;

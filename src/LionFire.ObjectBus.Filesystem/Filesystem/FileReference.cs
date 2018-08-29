@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using LionFire.Referencing;
 using LionFire.Serialization;
 
 namespace LionFire.ObjectBus.Filesystem

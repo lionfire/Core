@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace LionFire.ObjectBus
 {
-    internal interface IHandlePersistenceEvents
+    public interface IHandlePersistenceEvents // REVIEW
     {
         void OnSaved();
         void OnDeleted();

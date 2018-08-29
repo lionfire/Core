@@ -1,4 +1,5 @@
-﻿using LionFire.Serialization;
+﻿using LionFire.Referencing;
+using LionFire.Serialization;
 using System;
 using System.Text;
 
@@ -13,7 +14,7 @@ namespace LionFire.ObjectBus
         #region Scheme
 
         public const string UriSchemeDefault = "vos";
-        public const string UriPrefixDefault = "vos://";
+        public const string UriPrefixDefault = "vos://"; // TODO CHANGE to "vos:"
         public static readonly string[] UriSchemes = new string[] { UriSchemeDefault };
 
         [Ignore]
@@ -98,35 +99,36 @@ namespace LionFire.ObjectBus
                 }
                 return sb.ToString();
             }
-            set
+        }
+        protected void SetKey(string key)
+        {
+            if (String.IsNullOrWhiteSpace(key))
             {
-                if (String.IsNullOrWhiteSpace(value))
-                {
-                    Reset();
-                    return;
-                }
-                int index = 0;
-                if (value.StartsWith(LionPath.HostDelimiter))
-                {
-                    index += LionPath.HostDelimiter.Length;
-                    Host = value.Substring(index, index + value.IndexOfAny(LionPath.Delimiters, index));
-                }
-                if (value[index] == LionPath.PortDelimiter)
-                {
-                    index++;
-                    Port = value.Substring(index, index + value.IndexOfAny(LionPath.Delimiters, index));
-                }
-                if (value[index] == LionPath.PathDelimiter)
-                {
-                    //index += PathDelimiter.Length; -- Keep the initial /
-                    //Path = value.Substring(index);
-                    Path = value.Substring(index, index + value.IndexOfAny(LionPath.Delimiters, index));
-                }
-                if (value[index] == LionPath.LayerDelimiter)
-                {
-                    index++;
-                    Package = value.Substring(index, index + value.IndexOfAny(LionPath.Delimiters, index));
-                }
+                Reset();
+                return;
+            }
+            int index = 0;
+            if (key.StartsWith(LionPath.HostDelimiter))
+            {
+                index += LionPath.HostDelimiter.Length;
+                Host = key.Substring(index, index + key.IndexOfAny(LionPath.Delimiters, index));
+            }
+            if (key[index] == LionPath.PortDelimiter)
+            {
+                index++;
+                Port = key.Substring(index, index + key.IndexOfAny(LionPath.Delimiters, index));
+            }
+            if (key[index] == LionPath.PathDelimiter)
+            {
+                //index += PathDelimiter.Length; -- Keep the initial /
+                //Path = value.Substring(index);
+                Path = key.Substring(index, index + key.IndexOfAny(LionPath.Delimiters, index));
+            }
+            if (key[index] == VosPath.LayerDelimiter)
+            {
+                throw new NotImplementedException("TODO: Reimplement Layer delimiter");
+                //index++;
+                //Package = key.Substring(index, index + key.IndexOfAny(VosPath.Delimiters, index));
             }
         }
 
@@ -134,8 +136,8 @@ namespace LionFire.ObjectBus
         {
             this.Host = null;
             this.Port = null;
-            this.Package = null;
             this.Path = null;
+            this.Package = null;
             this.TypeName = null;
         }
 

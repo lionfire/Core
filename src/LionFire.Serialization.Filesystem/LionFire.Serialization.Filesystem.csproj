@@ -1,0 +1,12 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netstandard2.0</TargetFramework>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\LionFire.IO.Filesystem\LionFire.IO.Filesystem.csproj" />
+    <ProjectReference Include="..\LionFire.Serialization\LionFire.Serialization.csproj" />
+  </ItemGroup>
+
+</Project>

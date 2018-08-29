@@ -1,4 +1,5 @@
-﻿//#define DEBUG_LOAD
+﻿#if TOPORT
+//#define DEBUG_LOAD
 //#define TRACE_LOAD_FAIL
 //using LionFire.Input; REVIEW
 //using LionFire.Extensions.DefaultValues; REVIEW
@@ -305,3 +306,4 @@ namespace LionFire.ObjectBus
         }
     }
 }
+#endif

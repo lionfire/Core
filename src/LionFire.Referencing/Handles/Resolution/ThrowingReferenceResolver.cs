@@ -6,7 +6,7 @@ namespace LionFire.Referencing.Handles
 {
     public class ThrowingReferenceResolver : IHandleResolver
     {
-        public Task<ResolveHandleResult<T>> Resolve<T>(IReadHandle<T> handle)
+        public Task<ResolveHandleResult<T>> Resolve<T>(R<T> handle)
             where T : class
         {
             throw new Exception("No IReferenceResolver available");

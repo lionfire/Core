@@ -1,4 +1,6 @@
-﻿namespace LionFire.ObjectBus
+﻿using LionFire.Referencing;
+
+namespace LionFire.ObjectBus
 {
     /// <summary>
     /// Contains the "physical" location representing the lowest level reference before integrating with a data source outside the ObjectBus framework

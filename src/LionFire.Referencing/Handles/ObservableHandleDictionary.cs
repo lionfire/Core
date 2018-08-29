@@ -1,4 +1,5 @@
 ﻿using LionFire.Persistence;
+using LionFire.Referencing;
 using System;
 using System.Reflection;
 using System.Threading.Tasks;
@@ -6,7 +7,7 @@ using System.Threading.Tasks;
 namespace LionFire.Handles
 {
     public abstract class ObservableHandleDictionary<TKey, THandle, T> : ObservableReadHandleDictionary<TKey, THandle, T>
-        where THandle : class, IReadHandle<T>, IWriteHandle<T>
+        where THandle : class, R<T>, W<T>
         where T : class
     {
 
@@ -24,7 +25,13 @@ namespace LionFire.Handles
         public async Task Remove(string key) // RENAME to Unset?
         {
             if (key == null) throw new ArgumentNullException(nameof(key));
-            await Add((T)null, key);
+            await Set((T)null, key);
+        }
+
+        [Obsolete]
+        public Task<THandle> Add(T obj, string key = null)
+        {
+            throw new NotSupportedException("Use Set instead");
         }
 
         /// <summary>
@@ -34,7 +41,7 @@ namespace LionFire.Handles
         /// <param name="obj"></param>
         /// <param name="key"></param>
         /// <returns></returns>
-        public async Task<THandle> Add(T obj, string key = null) // RENAME to Set
+        public async Task<THandle> Set(T obj, string key = null) 
         {
             //if (!IsWritable) throw new ReadOnlyException("THandle does not implement IWriteHandle<T>");
 

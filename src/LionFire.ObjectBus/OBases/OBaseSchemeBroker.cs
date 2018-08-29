@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using LionFire.Collections;
 using LionFire.ObjectBus;
+using LionFire.Structures;
 
 namespace LionFire.Referencing
 {
