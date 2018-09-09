@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading.Tasks;
 
 namespace LionFire.Referencing
 {
@@ -8,16 +9,13 @@ namespace LionFire.Referencing
         #region Construction
 
         public HDynamic() { }
-        public HDynamic(ObjectType obj) : base(obj) { }
-        public HDynamic(IReference reference, ObjectType obj) : base(reference, obj)
-        {
-        }
-        public HDynamic(IReference reference) : base(reference)
+        public HDynamic(IReference reference, ObjectType obj = null) : base(reference, obj)
         {
         }
 
         #endregion
 
         public void MarkDeleted() => throw new NotImplementedException();
+        public Task Save(object persistenceContext = null) => throw new NotImplementedException();
     }
 }

@@ -1,12 +1,12 @@
-﻿using LionFire.Referencing.Resolution;
+﻿using LionFire.Referencing.Persistence;
 using System;
 using System.Threading.Tasks;
 
-namespace LionFire.Referencing.Handles
+namespace LionFire.Referencing.Persistence
 {
-    public class ThrowingReferenceResolver : IHandleResolver
+    public class ThrowingReferenceResolver : IReferenceRetriever
     {
-        public Task<ResolveHandleResult<T>> Resolve<T>(R<T> handle)
+        public Task<RetrieveReferenceResult<T>> Retrieve<T>(IReference reference)
             where T : class
         {
             throw new Exception("No IReferenceResolver available");

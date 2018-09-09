@@ -1,4 +1,4 @@
-﻿using LionFire.Referencing.Resolution;
+﻿using LionFire.Referencing.Persistence;
 using System.Threading.Tasks;
 
 namespace LionFire.Referencing
@@ -6,7 +6,7 @@ namespace LionFire.Referencing
     public interface IHasObjectRetrievalInfo<ObjectType>
         where ObjectType : class
     {
-        Task<ResolveHandleResult<ObjectType>> TryResolveObjectWithInfo();
-        ResolveHandleResult<ObjectType>? ResolveHandleResult { get; }
+        Task<RetrieveReferenceResult<ObjectType>> TryRetrieveObjectWithInfo();
+        RetrieveReferenceResult<ObjectType>? ResolveHandleResult { get; }
     }
 }

@@ -10,6 +10,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using LionFire.Structures;
+using LionFire.Referencing;
 
 namespace LionFire.ObjectBus
 {
@@ -26,22 +27,21 @@ namespace LionFire.ObjectBus
             //ChangeWatcher = new ChangeWatcher();
         }
 
-        public void Register(IReadHandle<object> handle)
+        public void Register(H<object> handle)
         {
             // TODO MEMORYLEAK ToWeakEvents
-            handle.ObjectChanged += handle_ObjectChanged;
+            handle.ObjectChanged += OnHandleObjectChanged;
             //ChangeWatcher.Add(handle.Object, handle);
 #if TRACE_Autosave
             l.LogTrace("[autosave] Registered " + handle?.ToString()); 
 #endif
         }
 
-        void handle_ObjectChanged(IReadHandle<object> handle, object oldObject, object newObject)
+        void OnHandleObjectChanged(R<object> handle)
         {
-            IIsValid isValid = handle.Object as IIsValid;
 
             // Abort saving if reports !IsValid, and handle has yet to be persisted
-            if (isValid != null && !isValid.IsValid) // TODO: Use something like Validate(PurposeKind.Persistence), to save partially valid works in progress
+            if (handle.Object is IIsValid isValid && !isValid.IsValid) // TODO: Use something like Validate(PurposeKind.Persistence), to save partially valid works in progress
             {
                 if (!handle.IsPersisted)
                 {
@@ -50,13 +50,12 @@ namespace LionFire.ObjectBus
                 }
             }
 
-            ThrottledSaveManager.Instance.OnChanged(handle);
-            
+            ThrottledSaveManager.Instance.OnChanged((H<object>)handle);            
         }
 
-        public void Unregister(IReadHandle<object> handle)
+        public void Unregister(H<object> handle)
         {
-            handle.ObjectChanged -= handle_ObjectChanged;
+            handle.ObjectChanged -= OnHandleObjectChanged;
 #if TRACE_Autosave
             l.LogTrace("[autosave] Unregistered " + handle?.ToString()); 
 #endif
@@ -71,7 +70,7 @@ namespace LionFire.ObjectBus
 
     public static class AutoSaveManagerExtensions
     {
-        public static void SetAutosave(this IHandle obj, bool enabled = true)
+        public static void SetAutosave(this H<object> obj, bool enabled = true)
         {
             if (enabled)
             {

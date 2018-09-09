@@ -1,14 +1,14 @@
 ﻿using System;
 using System.Threading.Tasks;
 
-namespace LionFire.Referencing.Resolution
+namespace LionFire.Referencing.Persistence
 {
-    public class NoopReferenceResolver : IHandleResolver
+    public class NoopReferenceResolver : IReferenceRetriever
     {
-        public Task<ResolveHandleResult<T>> Resolve<T>(R<T> handle)
+        public Task<RetrieveReferenceResult<T>> Retrieve<T>(IReference reference)
             where T : class
         {
-            return Task.FromResult(ResolveHandleResult<T>.Unsuccessful);
+            return Task.FromResult(RetrieveReferenceResult<T>.Unsuccessful);
         }
     }
 }

@@ -282,7 +282,7 @@ namespace LionFire.ObjectBus
 
         private void CleanDeadChildReferences()
         {
-            IEnumerable<KeyValuePair<string, WeakReferenceX<NodeType>>> ce = (IEnumerable<KeyValuePair<string, WeakReferenceX<NodeType>>>)children;
+            var ce = (IEnumerable<KeyValuePair<string, WeakReferenceX<NodeType>>>)children;
 
             foreach (var kvp in ce.ToArray())
             {

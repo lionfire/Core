@@ -1,4 +1,4 @@
-﻿using LionFire.Referencing.Resolution;
+﻿using LionFire.Referencing.Persistence;
 using System;
 using System.Threading.Tasks;
 
@@ -13,16 +13,16 @@ namespace LionFire.Referencing
         {
         }
 
-        public HRetrieveInfoBase(ObjectType obj) : base(obj) { }
+        public HRetrieveInfoBase(IReference reference, ObjectType obj = null) : base(reference, obj) { }
         
         #endregion
         
-        public ResolveHandleResult<ObjectType>? ResolveHandleResult
+        public RetrieveReferenceResult<ObjectType>? ResolveHandleResult
         {
             get;
             protected set;
         }
 
-        public abstract Task<ResolveHandleResult<ObjectType>> TryResolveObjectWithInfo();
+        public abstract Task<RetrieveReferenceResult<ObjectType>> TryRetrieveObjectWithInfo();
     }
 }

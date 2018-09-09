@@ -564,12 +564,12 @@ namespace LionFire.Referencing
         }
         bool IHandlePersistence.RetrieveOrCreateDefault(Func<object> defaultValue)
         {
-            return RetrieveOrCreateDefault_Object(defaultValue);
+            return RetrieveOrCreateDefault_Object(defaultValue).ConfigureAwait(false).GetAwaiter().GetResult();
         }
 
         public bool RetrieveOrCreateDefault(ObjectType defaultValue)
         {
-            if (!TryEnsureRetrieved())
+            if (!TryEnsureRetrieved().ConfigureAwait(false).GetAwaiter().GetResult())
             {
                 Object = defaultValue;
                 return false;
@@ -579,7 +579,7 @@ namespace LionFire.Referencing
 
         public bool RetrieveOrCreateDefault(Func<ObjectType> defaultValue)
         {
-            if (!TryEnsureRetrieved())
+            if (!TryEnsureRetrieved().ConfigureAwait(false).GetAwaiter().GetResult())
             {
                 Object = defaultValue();
                 return false;
@@ -587,9 +587,9 @@ namespace LionFire.Referencing
             return true;
         }
 
-        public bool RetrieveOrCreateDefault_Object(Func<object> defaultValue)
+        public async Task<bool> RetrieveOrCreateDefault_Object(Func<object> defaultValue)
         {
-            if (!TryEnsureRetrieved())
+            if (!(await TryEnsureRetrieved().ConfigureAwait(false)))
             {
                 Object = (ObjectType)defaultValue();
                 return false;

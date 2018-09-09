@@ -73,17 +73,20 @@ namespace LionFire.ObjectBus
     //        }
     //    }
 
+        /// <summary>
+        /// REVIEW - keep this?  What about ToReadHandle?
+        /// </summary>
     public static class HandleExtensions
     {
         // TODO: Add more obj params
         public static H<object> ToHandle(this string uri) // Add obj?
         {
-            return HandleFactory.GetHandle(uri.ToReference());
+            return HandleProvider.GetHandle(uri.ToReference());
         }
 
         public static H<object> ToHandle(this IReference reference, object obj = null)
         {
-            return HandleFactory.GetHandle(reference, obj);
+            return HandleProvider.GetHandle(reference, obj);
         }
         
 #if !AOT

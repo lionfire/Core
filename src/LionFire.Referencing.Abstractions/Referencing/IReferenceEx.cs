@@ -1,5 +1,7 @@
-﻿using LionFire.Referencing.Resolution;
-using System.Collections.Generic;
+﻿using LionFire.Collections;
+using LionFire.Referencing.Persistence;
+using System;
+using System.Reflection;
 
 namespace LionFire.Referencing
 {
@@ -7,19 +9,78 @@ namespace LionFire.Referencing
 
     public interface IResolvingReference
     {
-        IHandleResolver HandleResolver { get; }
+        IReferenceRetriever Retriever { get; }
     }
 
-    public interface IReferenceEx2 : IReference
+    public static class IReferenceExtensions
     {
-        /// <summary>
-        /// Clones the reference and appends the path with the specified child name
-        /// </summary>
-        /// <param name="childName"></param>
-        /// <returns></returns>
-        IReference GetChild(string subPath);
-        //IReference GetChildSubpath(params string[] subpath);
-        IReference GetChildSubpath(IEnumerable<string> subpath);
+        public static IReference<T> OfType<T>(this IReference reference) => new TypedReference<T>(reference);
+
+        private static readonly ConcurrentDictionaryCache<Type, MethodInfo> FromUriMethods =
+            new ConcurrentDictionaryCache<Type, MethodInfo>(type =>
+            type.GetMethod("FromUri", new Type[] { typeof(string) })
+            ?? type.GetMethod(type.Name, new Type[] { typeof(string) })
+            );
+        private static readonly ConcurrentDictionaryCache<Type, Func<IReference, string, IReference>> FromUriMethods2 =
+            new ConcurrentDictionaryCache<Type, Func<IReference, string, IReference>>(type =>
+            {
+                MethodInfo mi;
+
+                if ((mi = type.GetMethod("FromUri", new Type[] { typeof(string) })) != null)
+                {
+                    return (reference, subPath) =>
+                    {
+                        var uri = new Uri(reference.Key);
+                        var newUri = new Uri(uri, subPath);
+
+                        return (IReference)mi.Invoke(null, new object[] { newUri });
+                    };
+                }
+                else if ((mi = type.GetMethod("FromStringUri", new Type[] { typeof(string) })) != null)
+                {
+                    return (reference, subPath) =>
+                    {
+                        var uri = new Uri(reference.Key);
+                        var newUri = new Uri(uri, subPath);
+
+                        return (IReference)mi.Invoke(null, new object[] { newUri.ToString() });
+                    };
+                }
+                else if ((mi = type.GetMethod("FromPath", new Type[] { typeof(string) })) != null)
+                {
+                    return (reference, subPath) =>
+                    {
+                        var uri = new Uri(reference.Key);
+                        var newUri = new Uri(uri, subPath);
+
+                        return (IReference)mi.Invoke(null, new object[] { newUri.AbsolutePath });
+                    };
+                }
+                else
+                {
+                    return (reference, subPath) =>
+                        throw new NotImplementedException($"This reference type ({reference.GetType().Name}) does not implement one of: FromUri FromStringUri FromPath.");
+                }
+            });
+
+        public static IReference GetChild(this IReference reference, string subPath)
+        {
+            if (reference is IReferenceEx2 rex)
+            {
+                return rex.GetChild(subPath);
+            }
+
+            var uri = new Uri(reference.Key);
+            var newUri = new Uri(uri, subPath);
+
+            var mi = FromUriMethods[reference.GetType()];
+            if (mi != null)
+            {
+                return (IReference)mi.Invoke(null, new object[] { newUri });
+            }
+
+            return null;
+        }
     }
 
     public interface IOBaseReference : IReferenceWithLocation
@@ -39,11 +100,11 @@ namespace LionFire.Referencing
     //IKeyed<string>
     //#endif
     {
-        
+
         string Uri { get; }
 
         string Name { get; }
-      
+
 
         //string Dimension { get; set; } // What is this???  Package or something
 
@@ -54,7 +115,7 @@ namespace LionFire.Referencing
         {
             get;
         }
-        
+
         ///// <summary>
         ///// For Reference types that are aliases to other References, this will return the target.
         ///// This is invoked by the HandleFactory.

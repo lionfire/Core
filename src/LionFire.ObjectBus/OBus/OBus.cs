@@ -5,23 +5,19 @@
 #define WEAKMETADATA // Experimental way to attach various info
 #endif
 //#define USE_READCACHE
-using System;
-using System.Collections.Generic;
-using System.Collections;
-using System.Linq;
-using System.Runtime.CompilerServices;
-using System.Text;
-using LionFire.Collections;
-using LionFire.Structures;
-using Microsoft.Extensions.Logging;
 using LionFire.Referencing;
+using Microsoft.Extensions.Logging;
+using System;
+using System.Collections;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace LionFire.ObjectBus
 {
     public static class OBus
     {
         //public static OBus Instance { get { return Singleton<OBus>.Instance; } }
-        
+
         static OBus()
         {
             OBusConfig.Initialize();
@@ -37,11 +33,7 @@ namespace LionFire.ObjectBus
 
         #region Mounting
 
-        public static void Mount(string vosPath, IReference reference)
-        {
-            throw new NotImplementedException();
-            //MountManager.Instance.Mount(
-        }
+        public static void Mount(string vosPath, IReference reference) => throw new NotImplementedException();//MountManager.Instance.Mount(
 
         #endregion
 
@@ -61,10 +53,7 @@ namespace LionFire.ObjectBus
 
         #region References
 
-        internal static bool IsValid(IReference reference)
-        {
-            return reference.GetOBases().Any();
-        }
+        internal static bool IsValid(IReference reference) => reference.GetOBases().Any();
 
         #endregion
 
@@ -118,7 +107,11 @@ namespace LionFire.ObjectBus
             where T : class
         {
             T result = TryGetAs<T>(reference);
-            if (result == null) throw new ObjectNotFoundException();
+            if (result == null)
+            {
+                throw new ObjectNotFoundException();
+            }
+
             return result;
         }
 
@@ -138,7 +131,7 @@ namespace LionFire.ObjectBus
         //{
         //    throw new NotImplementedException();
         //}
-        
+
 
         public static object Get(IReference reference)
         {
@@ -167,7 +160,10 @@ namespace LionFire.ObjectBus
 #if TRACE_GET
 			Log.Trace("TryGet " + reference);
 #endif
-            if (reference == null) throw new ArgumentNullException("reference");
+            if (reference == null)
+            {
+                throw new ArgumentNullException("reference");
+            }
 
             IEnumerable<IOBase> os = reference.GetOBases();
 
@@ -182,7 +178,10 @@ namespace LionFire.ObjectBus
 #endif
 #endif
 
-            if (reference.Scheme == null) throw new ArgumentNullException("reference.Scheme == null");
+            if (reference.Scheme == null)
+            {
+                throw new ArgumentNullException("reference.Scheme == null");
+            }
 
             List<object> results = new List<object>();
 
@@ -212,11 +211,17 @@ namespace LionFire.ObjectBus
 
             try
             {
-                if (reference == null) throw new ArgumentNullException("reference");
+                if (reference == null)
+                {
+                    throw new ArgumentNullException("reference");
+                }
 
                 IEnumerable<IOBase> os = reference.GetOBases();
 
-                if (reference.Scheme == null) throw new ArgumentNullException("reference.Scheme == null");
+                if (reference.Scheme == null)
+                {
+                    throw new ArgumentNullException("reference.Scheme == null");
+                }
 
                 List<object> results = new List<object>();
 
@@ -312,7 +317,7 @@ namespace LionFire.ObjectBus
 
         #region Set
 
-        
+
         public static void Set(IReference reference, object value, bool preview = false)
         {
             try
@@ -348,7 +353,7 @@ namespace LionFire.ObjectBus
 
         // IDEA: MEMOPTIMIZE Memory Efficient storage of path Chunks.  Store path chunks, and use yield return in IReference.PathChunks that is hierarchical?
 
-        public static IEnumerable<IHandle> GetChildren(IReferenceEx2 reference)
+        public static IEnumerable<H<object>> GetChildren(IReferenceEx2 reference)
         {
             try
             {
@@ -371,34 +376,80 @@ namespace LionFire.ObjectBus
         }
 
 #if !AOT
-        public static IEnumerable<IHandle<T>> GetChildrenOfType<T>(IReference reference)
+        // TODO: async
+        public static IEnumerable<H<T>> GetChildrenOfType<T>(IReference reference, bool verifyExistAsType = true)
             where T : class//, new()
         {
-            try
-            {
-                List<IHandle<T>> hChildren = new List<IHandle<T>>();
+            //try
+            //{
+                //var hChildren = new List<H<T>>();
 
-                // TODO: Where object exists??
                 foreach (var obase in OBaseBroker.GetOBases(reference))
                 {
-                    hChildren.AddRange(obase.GetChildrenNames(reference).Select(childName => reference.GetChild(childName).GetHandle<T>(null))
-                        .Where(h => h.QueryExistance())
-                        );
+                    var en = obase
+                        .GetChildrenNames(reference)
+                        .Select(childName => reference.GetChild(childName).OfType<T>().GetHandle());
+
+                    if (verifyExistAsType)
+                    {
+                        en = en.Where(h => h.Exists().Result);
+                    }
+
+                    foreach (var e in en)
+                    {
+                        yield return e;
+                    }
+
+                    //hChildren.AddRange(en);
                 }
-                return hChildren;
-            }
-            catch (Exception ex)
-            {
-                OBusEvents.OnException(OBusOperations.GetChildren, reference, ex);
-                throw;
-            }
+                //return hChildren;
+            //}
+            //catch (Exception ex)
+            //{
+            //    OBusEvents.OnException(OBusOperations.GetChildren, reference, ex);
+            //    throw;
+            //}
         }
+
+        //// TODO: async
+        //public static IEnumerable<H<T>> GetChildrenOfType<T>(IReference reference, bool verifyExistAsType = true)
+        //    where T : class//, new()
+        //{
+        //    try
+        //    {
+        //        var hChildren = new List<H<T>>();
+
+        //        // TODO: Where object exists??
+        //        foreach (var obase in OBaseBroker.GetOBases(reference))
+        //        {
+        //            var en = obase
+        //                .GetChildrenNames(reference)
+        //                .Select(childName => reference.GetChild(childName).OfType<T>().GetHandle());
+
+        //            if (verifyExistAsType)
+        //            {
+        //                en = en.Where(h => h.Exists().Result);
+        //            }
+
+        //            hChildren.AddRange(en);
+        //        }
+        //        return hChildren;
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        OBusEvents.OnException(OBusOperations.GetChildren, reference, ex);
+        //        throw;
+        //    }
+        //}
 #endif
-        public static IEnumerable<IHandle> GetChildrenOfType(IReference reference, Type T)
+
+            // TODO REFACTOR: Use yield return instead of creating list
+            // TODO: async version
+        public static IEnumerable<H> GetChildrenOfType(IReference reference, Type T)
         {
             try
             {
-                var hChildren = new List<IHandle>();
+                var hChildren = new List<H>();
 
                 foreach (IOBase obase in (IEnumerable)OBaseBroker.GetOBases(reference))
                 {
@@ -492,7 +543,10 @@ namespace LionFire.ObjectBus
         {
             foreach (IOBase obase in (IEnumerable)OBaseBroker.GetOBases(reference))
             {
-                if (obase.Exists(reference)) return true;
+                if (obase.Exists(reference))
+                {
+                    return true;
+                }
             }
             return false;
         }
@@ -563,7 +617,10 @@ namespace LionFire.ObjectBus
             foreach (IOBase obase in (IEnumerable)OBaseBroker.GetOBases(reference))
             {
                 result |= obase.TryDelete(reference, preview);
-                if (result) break;
+                if (result)
+                {
+                    break;
+                }
             }
 
             return result;

@@ -66,5 +66,4 @@ namespace LionFire.Handles
         }
         public object PersistenceContext { get; set; }
     }
-
 }

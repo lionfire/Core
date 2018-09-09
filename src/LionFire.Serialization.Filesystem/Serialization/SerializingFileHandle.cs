@@ -62,7 +62,7 @@ namespace LionFire.Serialization
 
         #region Load
 
-        public override Task<bool> TryResolveObject()
+        public override Task<bool> TryRetrieveObject()
         {
             this.Object = ValidatedSerializationService.FileToObject<T>(Path);
             return Task.FromResult(HasObject);

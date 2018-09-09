@@ -70,7 +70,7 @@ namespace LionFire.Handles
             }
             if (AutoResolveObjects)
             {
-                await handle.TryResolveObject().ConfigureAwait(false);
+                await handle.TryRetrieveObject().ConfigureAwait(false);
             }
         }
         private void OnHandleRemoved(TKey key, THandle handle)
@@ -173,8 +173,7 @@ namespace LionFire.Handles
 
         #endregion
 
-        // This event is mapped to ObjectChanged on all child handles
-        public event Action<R<T>, T, T> ObjectChanged
+        public event Action<R<T>> ObjectChanged
         {
             add
             {
@@ -199,11 +198,39 @@ namespace LionFire.Handles
                 }
             }
         }
-        private event Action<R<T>, T, T> objectChanged;
+        private event Action<R<T>> objectChanged;
 
-        private void OnHandleObjectChanged(R<T> handle, T oldValue, T newValue)
+        // This event is mapped to ObjectChanged on all child handles
+        public event Action<R<T>, T, T> ObjectReferenceChanged
         {
-            objectChanged?.Invoke(handle, oldValue, newValue);
+            add
+            {
+                if (objectReferenceChanged == null)
+                {
+                    foreach (var handle in handles.Values)
+                    {
+                        handle.ObjectReferenceChanged += OnHandleObjectReferenceChanged;
+                    }
+                }
+                objectReferenceChanged += value;
+            }
+            remove
+            {
+                objectReferenceChanged -= value;
+                if (objectReferenceChanged == null)
+                {
+                    foreach (var handle in handles.Values)
+                    {
+                        handle.ObjectReferenceChanged += OnHandleObjectReferenceChanged;
+                    }
+                }
+            }
+        }
+        private event Action<R<T>, T, T> objectReferenceChanged;
+
+        private void OnHandleObjectReferenceChanged(R<T> handle, T oldValue, T newValue)
+        {
+            objectReferenceChanged?.Invoke(handle, oldValue, newValue);
             if (IsObjectsEnabled)
             {
                 if (oldValue != null)
@@ -215,6 +242,11 @@ namespace LionFire.Handles
                     objects.Add(newValue);
                 }
             }
+        }
+
+        private void OnHandleObjectChanged(R<T> handle)
+        {
+            objectChanged?.Invoke(handle);
         }
 
 

@@ -5,13 +5,12 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
-using System.Text;
 
 namespace LionFire.ObjectBus
 {
     public abstract class OBaseBase<ReferenceType> : IOBase
         where ReferenceType : class, IReference
-    //where HandleInterfaceType : IHandle
+        //where HandleInterfaceType : IHandle
     {
         #region Uri
 
@@ -43,7 +42,7 @@ namespace LionFire.ObjectBus
             {
                 if (tryGetMethodInfo == null)
                 {
-                    tryGetMethodInfo = this.GetType().GetMethods().Where(mi => mi.Name == "TryGet" && mi.ContainsGenericParameters).First();
+                    tryGetMethodInfo = GetType().GetMethods().Where(mi => mi.Name == "TryGet" && mi.ContainsGenericParameters).First();
                 }
                 return tryGetMethodInfo;
             }
@@ -53,9 +52,17 @@ namespace LionFire.ObjectBus
         public virtual ResultType TryGet<ResultType>(IReference reference, OptionalRef<RetrieveInfo> optionalRef = null)
             where ResultType : class
         {
-            if (reference == null) return null;
+            if (reference == null)
+            {
+                return null;
+            }
+
             ReferenceType r = reference as ReferenceType;
-            if (r == null) throw new ArgumentException("Reference type not supported by this OBase: " + reference.GetType().FullName);
+            if (r == null)
+            {
+                throw new ArgumentException("Reference type not supported by this OBase: " + reference.GetType().FullName);
+            }
+
             return TryGet<ResultType>(r, optionalRef);
         }
 
@@ -64,10 +71,7 @@ namespace LionFire.ObjectBus
 
         public abstract object TryGet(ReferenceType reference, Type resultType, OptionalRef<RetrieveInfo> optionalRef = null);
 
-        public object TryGet(IReference reference, OptionalRef<RetrieveInfo> optionalRef = null)
-        {
-            return TryGet(ConvertToReferenceType(reference), optionalRef);
-        }
+        public object TryGet(IReference reference, OptionalRef<RetrieveInfo> optionalRef = null) => TryGet(ConvertToReferenceType(reference), optionalRef);
 
         //public virtual object TryGet(HandleInterfaceType handle)
         //{
@@ -82,10 +86,7 @@ namespace LionFire.ObjectBus
 
         #region Exists
 
-        bool IOBase.Exists(IReference reference)
-        {
-            return Exists(ConvertToReferenceType(reference));
-        }
+        bool IOBase.Exists(IReference reference) => Exists(ConvertToReferenceType(reference));
         public virtual bool Exists(ReferenceType reference)
         {
             object obj = TryGet(reference);
@@ -100,27 +101,18 @@ namespace LionFire.ObjectBus
         #region Set
 
         public abstract void Set(ReferenceType reference, object obj, bool allowOverwrite = true, bool preview = false);
-        public void Set(IReference reference, object obj, bool allowOverwrite = true)
-        {
-            Set(ConvertToReferenceType(reference), obj, allowOverwrite);
-        }
+        public void Set(IReference reference, object obj, bool allowOverwrite = true) => Set(ConvertToReferenceType(reference), obj, allowOverwrite);
 
         #endregion
 
         #region Delete
 
         public abstract bool? CanDelete(ReferenceType reference);
-        bool? IOBase.CanDelete(IReference reference)
-        {
-            return CanDelete(ConvertToReferenceType(reference));
-        }
+        bool? IOBase.CanDelete(IReference reference) => CanDelete(ConvertToReferenceType(reference));
 
         public abstract bool TryDelete(ReferenceType reference, bool preview = false);
 
-        bool IOBase.TryDelete(IReference reference, bool preview)
-        {
-            return TryDelete(ConvertToReferenceType(reference), preview);
-        }
+        bool IOBase.TryDelete(IReference reference, bool preview) => TryDelete(ConvertToReferenceType(reference), preview);
 
         #endregion
 
@@ -128,57 +120,53 @@ namespace LionFire.ObjectBus
 
         public abstract IEnumerable<string> GetChildrenNames(ReferenceType parent);
 
-        public IEnumerable<string> GetChildrenNames(IReference parent)
-        {
-            return GetChildrenNames(ConvertToReferenceType(parent));
-        }
+        public IEnumerable<string> GetChildrenNames(IReference parent) => GetChildrenNames(ConvertToReferenceType(parent));
 
         public abstract IEnumerable<string> GetChildrenNamesOfType<T>(ReferenceType parent)
             where T : class, new();
 
         public IEnumerable<string> GetChildrenNamesOfType<T>(IReference parent)
-            where T : class, new()
-        {
-            return GetChildrenNamesOfType<T>(ConvertToReferenceType(parent));
-        }
+            where T : class, new() => GetChildrenNamesOfType<T>(ConvertToReferenceType(parent));
 
-        public IEnumerable<string> GetChildrenNamesOfType(Type type, IReference parent)
-        {
-            return GetChildrenNamesOfType(type, ConvertToReferenceType(parent));
-        }
+        public IEnumerable<string> GetChildrenNamesOfType(Type type, IReference parent) => GetChildrenNamesOfType(type, ConvertToReferenceType(parent));
 
         #endregion
 
         #region GetHandle
-//#if !AOT // TOAOT
-        public virtual H<T> GetHandle<T>(IReference reference) where T : class
+
+        //#if !AOT // TOAOT
+        public virtual H<T> GetHandle<T>(IReference reference) where T : class => HandleProvider<T>.GetHandle(reference);
+        //#endif
+
+        //// Prefer IHandle.GetSubpath.  Default implementation of that uses this:
+        //public virtual IHandle<T> GetHandleSubpath<T>(IReference reference, params string[] subpathChunks) where T : class
+        //{
+        //    reference.GetChildSubpath(subpathChunks);
+        //    return reference.ToHandle<T>();
+        //}
+        //public virtual IHandle<T> GetHandleSubpath<T>(IHandle handle, params string[] subpathChunks) where T : class
+        //{
+        //    handle.Reference.GetChildSubpath(subpathChunks);
+        //    return reference.ToHandle<T>();
+        //}
+
+        #endregion
+
+        #region (Protected) Conversion utils
+
+        protected ReferenceType ConvertToReferenceType(IReference reference)
         {
-            // Uses HandleFactory
-            return HandleFactory<T>.GetHandle(reference);
-    }
-    //#endif
+            if (reference == null)
+            {
+                return null;
+            }
 
-    //// Prefer IHandle.GetSubpath.  Default implementation of that uses this:
-    //public virtual IHandle<T> GetHandleSubpath<T>(IReference reference, params string[] subpathChunks) where T : class
-    //{
-    //    reference.GetChildSubpath(subpathChunks);
-    //    return reference.ToHandle<T>();
-    //}
-    //public virtual IHandle<T> GetHandleSubpath<T>(IHandle handle, params string[] subpathChunks) where T : class
-    //{
-    //    handle.Reference.GetChildSubpath(subpathChunks);
-    //    return reference.ToHandle<T>();
-    //}
-
-    #endregion
-
-    #region (Protected) Conversion utils
-
-    protected ReferenceType ConvertToReferenceType(IReference reference)
-        {
-            if (reference == null) return null;
             ReferenceType reft = reference as ReferenceType;
-            if (reft == null) throw new ArgumentException("Unsupported reference type");
+            if (reft == null)
+            {
+                throw new ArgumentException("Unsupported reference type");
+            }
+
             return reft;
         }
 
@@ -194,13 +182,13 @@ namespace LionFire.ObjectBus
 
         #region Watcher
 
-        public virtual IObjectWatcher GetWatcher(IReference reference) { return null; }
+        public virtual IObjectWatcher GetWatcher(IReference reference) => null;
 
         #endregion
 
         #region Misc
 
-        private static ILogger l = Log.Get();
+        private static readonly ILogger l = Log.Get();
 
         #endregion
 

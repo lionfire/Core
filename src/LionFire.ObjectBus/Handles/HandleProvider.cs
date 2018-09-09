@@ -8,7 +8,11 @@ namespace LionFire.ObjectBus
 {
     public static class HandleProvider
     {
-        public static H GetHandle(IReference reference, object obj = null) => (H)HandleProvider<object>.GetHandle(reference, obj);
+        // UNTESTED: need to force this cast? (H)(object)
+        public static H GetHandle(this IReference reference, object obj = null) => (H)HandleProvider<object>.GetHandle(reference, obj);
+        public static H<T> GetHandle<T>(this IReference<T> reference, T obj = null)
+         where T : class
+             => HandleProvider<T>.GetHandle((IReference)reference, obj);
     }
 
     public static class HandleProvider<T>

@@ -1,9 +1,7 @@
-﻿using LionFire.Referencing;
+﻿using LionFire.ObjectBus;
+using LionFire.Referencing;
 using LionFire.Serialization;
-using Microsoft.Extensions.Logging;
 using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace LionFire.Vos
 {
@@ -22,25 +20,19 @@ namespace LionFire.Vos
             base.CopyFrom(other, newPath);
             if (other is IVReference vref)
             {
-                this.Package = vref.Package;
-                this.TypeName = vref.TypeName;
+                Package = vref.Package;
+                TypeName = vref.TypeName;
             }
         }
 
         #endregion
-                
+
         #endregion
 
 
         #region Uri and Key
 
-        public virtual string Uri
-        {
-            get
-            {
-                return this.ToUriString();
-            }
-        }
+        public virtual string Uri => ToUriString();
 
         public string ToUriString()
         {
@@ -58,18 +50,8 @@ namespace LionFire.Vos
         #region Key
 
         [Ignore]
-        public virtual string Key
-        {
-            get
-            {
-                return this.ToString();
-            }
-            set
-            {
-                // Parse from key
-                throw new NotImplementedException("set_Key");
-            }
-        }
+        public override string Key => ToString();
+
 #if AOT
 		object IKeyed.Key { get { return Key; } }
 #endif
@@ -124,7 +106,7 @@ namespace LionFire.Vos
         [SetOnce]
         public override string Host
         {
-            get { return host; }
+            get => host;
             set
             {
                 if (host == value)
@@ -170,7 +152,7 @@ namespace LionFire.Vos
         [SetOnce]
         public override string Port
         {
-            get { return port; }
+            get => port;
             set
             {
                 if (port == value)
@@ -197,7 +179,7 @@ namespace LionFire.Vos
         [SetOnce]
         public override string Path
         {
-            get { return path; }
+            get => path;
             set
             {
                 if (path == value)
@@ -215,27 +197,14 @@ namespace LionFire.Vos
         }
         private string path;
 
-        public string[] GetPathArray()
-        {
-            return LionPath.ToPathArray(Path);
-        }
+        public string[] GetPathArray() => LionPath.ToPathArray(Path);
 
         //// IDEA: MEMOPTIMIZE - some kind of linked array for paths: internally works with memory addresses as nodes instead of strings, like Vobs
         //public string[] PathChunks
         //{
         //} private List<string>
 
-        public string Name
-        {
-            get
-            {
-                return LionPath.GetName(Path);
-
-                //var chunks = LionPath.ToPathArray(Path);
-                //if(chunks==null || chunks.Length ==0) return null;
-                //return chunks[chunks.Length - 1];
-            }
-        }
+        public string Name => LionPath.GetName(Path);//var chunks = LionPath.ToPathArray(Path);//if(chunks==null || chunks.Length ==0) return null;//return chunks[chunks.Length - 1];
         #endregion
 
         #region Package, Location, Type
@@ -260,7 +229,7 @@ namespace LionFire.Vos
         [Ignore]
         public string TypeName
         {
-            get { return typeName; }
+            get => typeName;
             set
             {
                 if (typeName == value)
@@ -268,8 +237,8 @@ namespace LionFire.Vos
                     return;
                 }
 
-                this.typeName = value;
-                this.type = null; // will recalculate on demand
+                typeName = value;
+                type = null; // will recalculate on demand
             }
         }
 
@@ -296,8 +265,8 @@ namespace LionFire.Vos
                     return;
                 }
 
-                this.type = value;
-                this.typeName = type.FullName;
+                type = value;
+                typeName = type.FullName;
             }
         }
         private string typeName;
@@ -319,7 +288,7 @@ namespace LionFire.Vos
         /// <summary>
         /// Can be set if there is only ever one OBase for this reference type
         /// </summary>
-		public virtual IOBase ObjectStore { get { return null; } }
+		public virtual IOBase ObjectStore => null;
         //public virtual IReference Resolve()
         //{
         //    return this;
@@ -332,9 +301,7 @@ namespace LionFire.Vos
 #if !AOT
         public virtual IHandle<T> GetHandle<T>(T obj = null)
             where T : class//, new()
-        {
-            return HandleFactory<T>.GetHandle(this, obj);
-        }
+=> HandleFactory<T>.GetHandle(this, obj);
 
 #endif
 

@@ -1,4 +1,4 @@
-﻿using LionFire.Referencing.Resolution;
+﻿using LionFire.Referencing.Persistence;
 using System;
 using System.Threading.Tasks;
 
@@ -15,75 +15,47 @@ namespace LionFire.Referencing
         #region Construction
 
         public RDynamic() { }
-        public RDynamic(ObjectType obj) : base(obj) { }
-        public RDynamic(IReference reference, ObjectType obj) : base(obj)
+        public RDynamic(IReference reference, ObjectType obj = null) : base(reference, obj)
         {
-            this.reference = reference;
-        }
-        public RDynamic(IReference reference) : base()
-        {
-            this.reference = reference;
         }
 
         #endregion
 
-        public override string Key { get => Reference?.Key; set => throw new NotImplementedException("TODO: Create an IReference from Key, perhaps via a UrlReference class "); }
+        #region Dynamic Retrieve
 
-        #region Reference
-
-        public override IReference Reference
-        {
-            get { return reference; }
-            set
-            {
-                if (reference == value)
-                {
-                    return;
-                }
-
-                if (reference != default(IReference))
-                {
-                    throw new AlreadySetException();
-                }
-
-                reference = value;
-            }
-        }
-        private IReference reference;
-
-        #endregion
-
-        public virtual IHandleResolver EffectiveReferenceResolver
+        public virtual IReferenceRetriever EffectiveRetriever
         {
             get
             {
-                return this.ReferenceResolver ?? (this.Reference as IResolvingReference)?.HandleResolver ?? ReferencingConfig.DefaultReferenceResolver();
+                return this.Retriever 
+                    ?? (this.Reference as IResolvingReference)?.Retriever 
+                    ?? ReferencingConfig.DefaultRetriever();
             }
         }
 
-        public virtual IHandleResolver ReferenceResolver
+        public virtual IReferenceRetriever Retriever
         {
             get; set;
         }
 
-        public override async Task<bool> TryResolveObject()
+        public override async Task<bool> TryRetrieveObject()
         {
-            return (await TryResolveObjectWithInfo().ConfigureAwait(false)).IsSuccess;
+            return (await TryRetrieveObjectWithInfo().ConfigureAwait(false)).IsSuccess;
         }
 
-        public override async Task<ResolveHandleResult<ObjectType>> TryResolveObjectWithInfo()
+        public override async Task<RetrieveReferenceResult<ObjectType>> TryRetrieveObjectWithInfo()
         {
-            var result = await EffectiveReferenceResolver.Resolve(this).ConfigureAwait(false);
+            var result = await EffectiveRetriever.Retrieve<ObjectType>(this.Reference).ConfigureAwait(false);
             if (result.IsSuccess)
             {
                 this.Object = result.Result;
                 this.ResolveHandleResult = result;
-                this.IsResolved = true;
+                this.IsRetrieved = true;
             }
             else
             {
                 ResolveHandleResult = null;
-                IsResolved = false;
+                IsRetrieved = false;
                 //if (forgetOnFail)
                 //{
                 //    this.ForgetObject();
@@ -91,5 +63,43 @@ namespace LionFire.Referencing
             }
             return result;
         }
+
+        #endregion
+
+
+        //#region PersistenceContext
+
+        //// TODO: Make this MultiTyped and allow OBases to add to it for different reasons?
+        //// Or use ConditionalWeakTable?
+        //public object PersistenceContext
+        //{
+        //    get { return persistenceContext; }
+        //    set
+        //    {
+        //        if (persistenceContext == value)
+        //        {
+        //            return;
+        //        }
+
+        //        if (persistenceContext != default(object))
+        //        {
+        //            throw new AlreadySetException();
+        //        }
+
+        //        persistenceContext = value;
+        //    }
+        //}
+        //private object persistenceContext;
+
+        //#endregion
+
+        //public void SetObject(T value)
+        //{
+        //    this.Object = value;
+        //    if (value == null)
+        //    {
+        //        DeletePending = true;
+        //    }
+        //}
     }
 }

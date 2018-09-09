@@ -16,5 +16,4 @@
             OBus.Set(new FileReference(diskPath), value);
         }
     }
-#endif
 }

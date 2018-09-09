@@ -6,13 +6,13 @@ namespace LionFire.Referencing
     public abstract class WBase<T> : RBase<T>, W<T>
         where T : class
     {
-        protected override void OnObjectChanged()
-        {
-            if (_object == null)
-            {
-                DeletePending = true;
-            }
-        }
+        //protected override void OnObjectChanged()
+        //{
+        //    if (_object == null)
+        //    {
+        //        DeletePending = true;
+        //    }
+        //}
 
 
         #region DeletePending

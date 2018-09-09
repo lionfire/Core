@@ -5,14 +5,14 @@ using System.Threading.Tasks;
 using LionFire.Assets;
 using LionFire.Handles;
 using LionFire.Referencing;
-using LionFire.Referencing.Resolution;
+using LionFire.Referencing.Persistence;
 
 namespace LionFire.Persistence.Assets
 {
 
-    public class AssetResolver : IHandleResolver
+    public class AssetResolver : IReferenceRetriever
     {
-        public Task<ResolveHandleResult<T>> Resolve<T>(IReadHandle<T> handle) where T : class
+        public Task<RetrieveReferenceResult<T>> Retrieve<T>(IReadHandle<T> handle) where T : class
         {
             throw new NotImplementedException();
         }
@@ -20,7 +20,7 @@ namespace LionFire.Persistence.Assets
 
     // Reads via Injection.GetService<IAssetProvider>
     // OPTIMIZE: Change the base class to an H base class that stores a string (key) instead of a IReference
-    public class AssetReadHandle<T> : HByKey<T>
+    public class AssetReadHandle<T> : RByKeyBase<T>
         where T : class
     {
 
@@ -45,7 +45,7 @@ namespace LionFire.Persistence.Assets
             return new AssetReadHandle<T>(assetSubPath);
         }
 
-        public override Task<bool> TryResolveObject()
+        public override Task<bool> TryRetrieveObject()
         {
             // TODO: Use async/await here once IAssetProvider supports it
             var ap = Injection.GetService<IAssetProvider>(createIfMissing: true);

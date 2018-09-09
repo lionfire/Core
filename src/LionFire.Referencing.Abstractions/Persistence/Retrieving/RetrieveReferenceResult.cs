@@ -1,6 +1,6 @@
-﻿namespace LionFire.Referencing.Resolution
+﻿namespace LionFire.Referencing.Persistence
 {
-    public struct ResolveHandleResult<T>
+    public struct RetrieveReferenceResult<T>
         where T : class
     {
         public bool IsSuccess { get; set; }
@@ -10,13 +10,13 @@
 
         #region Static
 
-        public static readonly ResolveHandleResult<T> Unsuccessful = new ResolveHandleResult<T>()
+        public static readonly RetrieveReferenceResult<T> Unsuccessful = new RetrieveReferenceResult<T>()
         {
             IsSuccess = false,
             Result = null,
         };
 
-        public static readonly ResolveHandleResult<T> Successful = new ResolveHandleResult<T>()
+        public static readonly RetrieveReferenceResult<T> Successful = new RetrieveReferenceResult<T>()
         {
             IsSuccess = true,
             Result = null,

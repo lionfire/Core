@@ -34,7 +34,7 @@ namespace LionFire.IO
             }).ConfigureAwait(false);
         }
 
-        public override async Task<bool> TryResolveObject()
+        public override async Task<bool> TryRetrieveObject()
         {
             return await Task.Run(() =>
             {
