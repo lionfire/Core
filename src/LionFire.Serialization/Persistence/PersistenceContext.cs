@@ -1,7 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+using LionFire.Serialization;
 
 namespace LionFire.Persistence
 {
@@ -16,5 +14,7 @@ namespace LionFire.Persistence
         public Type SaveType { get; set; }
 
         public bool AllowInstantiator { get; set; }
+        public SerializationContext SerializationContext { get; set; }
+        public Func<SerializationOperation> SerializationOperationFunc { get; set; }
     }
 }

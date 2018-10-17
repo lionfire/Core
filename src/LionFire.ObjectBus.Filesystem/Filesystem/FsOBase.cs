@@ -6,6 +6,7 @@ using System.IO;
 using LionFire.Serialization;
 using LionFire.Structures;
 using LionFire.Referencing;
+using Microsoft.Extensions.Logging;
 
 namespace LionFire.ObjectBus.Filesystem
 {
@@ -65,7 +66,7 @@ namespace LionFire.ObjectBus.Filesystem
 		
 	}
 #else
-    public class FsOBase : OBaseBase<FileReference>
+    public class FsOBase : OBaseBase<LocalFileReference>
     {
         #region Static
 
@@ -74,11 +75,11 @@ namespace LionFire.ObjectBus.Filesystem
         #endregion
                 
 
-        public override string[] UriSchemes { get { return FileReference.UriSchemes; } }
+        public override string[] UriSchemes { get { return LocalFileReference.UriSchemes; } }
 
         public override IObjectWatcher GetWatcher(IReference reference)
         {
-            FileReference fref = reference as FileReference;
+            LocalFileReference fref = reference as LocalFileReference;
             if (fref == null) return null;
             var dir = System.IO.Path.GetDirectoryName(reference.Path);
             if (!Directory.Exists(dir))
@@ -92,13 +93,13 @@ namespace LionFire.ObjectBus.Filesystem
             };
         }
 
-        private void ValidateReference(FileReference reference)
+        private void ValidateReference(LocalFileReference reference)
         {
-            if (reference.Scheme != FileReference.UriScheme) throw new FsOBaseException("Invalid scheme");
-            if (!reference.IsLocalhost) throw new FsOBaseException("Only localhost supported");
+            //if (reference.Scheme != LocalFileReference.UriScheme) throw new FsOBaseException("Invalid scheme");
+            //if (!reference.IsLocalhost) throw new FsOBaseException("Only localhost supported");
         }
 
-        public override ResultType TryGet<ResultType>(FileReference reference, OptionalRef<RetrieveInfo> optionalRef = null)
+        public override ResultType TryGet<ResultType>(LocalFileReference reference, OptionalRef<RetrieveInfo> optionalRef = null)
         {
             var result = (ResultType)TryGet(reference, typeof(ResultType), optionalRef);
             return result;
@@ -119,13 +120,13 @@ namespace LionFire.ObjectBus.Filesystem
             }
         }
 
-        public static IEnumerable<FileReference> GetEncapsulatedPaths(FileReference reference, Type ResultType)
+        public static IEnumerable<LocalFileReference> GetEncapsulatedPaths(LocalFileReference reference, Type ResultType)
         {
             foreach (var typeName in GetEncapsulatedTypeNames(ResultType))
             {
                 foreach (var fileName in EncapsulatedFileNameConverters.Select(converter => converter(typeName)))
                 {
-                    yield return (FileReference)reference.GetChild(fileName);
+                    yield return (LocalFileReference)reference.GetChild(fileName);
                 }
             }
         }
@@ -142,18 +143,18 @@ namespace LionFire.ObjectBus.Filesystem
             }
             return obj;
         }
-        public override object TryGet(FileReference reference, Type ResultType, OptionalRef<RetrieveInfo> optionalRef = null)
+        public override object TryGet(LocalFileReference reference, Type ResultType, OptionalRef<RetrieveInfo> optionalRef = null)
         {
             try
             {
-                object obj = FsPersistence.TryGet(reference.Path);
+                object obj = FsOBasePersistence.TryGet(reference.Path);
                 obj = TryConvertToType(obj, ResultType);
 
                 if (obj == null)
                 {
                     foreach (var encapsulatedRef in GetEncapsulatedPaths(reference, ResultType))
                     {
-                        obj = FsPersistence.TryGet(encapsulatedRef.Path);
+                        obj = FsOBasePersistence.TryGet(encapsulatedRef.Path);
                         obj = TryConvertToType(obj, ResultType);
                         if (obj != null) break;
                     }
@@ -180,13 +181,13 @@ namespace LionFire.ObjectBus.Filesystem
         }
 
 
-        public override bool Exists(FileReference reference)
+        public override bool Exists(LocalFileReference reference)
         {
-            bool result = FsPersistence.Exists(reference.Path);
+            bool result = FsOBasePersistence.Exists(reference.Path);
             return result;
         }
 
-        public override bool? CanDelete(FileReference reference)
+        public override bool? CanDelete(LocalFileReference reference)
         {
             // FUTURE: Check filesystem permissions
             return Exists(reference);
@@ -194,7 +195,7 @@ namespace LionFire.ObjectBus.Filesystem
             //return FsPersistence.TryDelete(filePath);
         }
 
-        public override bool TryDelete(FileReference reference, bool preview = false)
+        public override bool TryDelete(LocalFileReference reference, bool preview = false)
         {
             string filePath = reference.Path;
             //if (!defaultTypeForDirIsT)
@@ -202,56 +203,46 @@ namespace LionFire.ObjectBus.Filesystem
             //    filePath = filePath + FileTypeDelimiter + type.Name + FileTypeEndDelimiter;
             //}
 
-            return FsPersistence.TryDelete(filePath, preview: preview);
+            return FsOBasePersistence.TryDelete(filePath, preview: preview);
         }
 
-        public override void Set(FileReference reference, object obj, bool allowOverwrite = true, bool preview = false)
+        public override void Set(LocalFileReference reference, object obj, bool allowOverwrite = true, bool preview = false)
         {
-            bool defaultTypeForDirIsT;
+            //bool defaultTypeForDirIsT = false;
             Type type = obj.GetType();
-            var chunks = reference.GetPathArray();
-            if (chunks == null || chunks.Length < 2)
-            {
-                defaultTypeForDirIsT = false;
-            }
-            else
-            {
-                string parentDirName;
-                parentDirName = chunks[chunks.Length - 2];
-                defaultTypeForDirIsT = Assets.AssetPaths.GetAssetTypeFolder(type).TrimEnd('/').Equals(parentDirName);
-            }
+            var chunks = LionPath.ToPathArray(reference.Path);
+            //if (chunks == null || chunks.Length < 2)
+            //{
+            //    defaultTypeForDirIsT = false;
+            //}
+            //else // TOPORT
+            //{
+            //    string parentDirName;
+            //    parentDirName = chunks[chunks.Length - 2];
+            //    defaultTypeForDirIsT = Assets.AssetPaths.GetAssetTypeFolder(type).TrimEnd('/').Equals(parentDirName);
+            //}
 
             // REVIEW - This should be done up a layer, since most persistance mechanisms will not support multi-type
             string filePath = reference.Path;
-            if (AppendTypeNameToFileNames && !defaultTypeForDirIsT)
-            {
-                filePath = filePath + VosPath.TypeDelimiter + type.Name + VosPath.TypeEndDelimiter;
-            }
+            //if (AppendTypeNameToFileNames && !defaultTypeForDirIsT) // TOPORT
+            //{
+            //    filePath = filePath + VosPath.TypeDelimiter + type.Name + VosPath.TypeEndDelimiter;
+            //}
 
-            FsPersistence.Set(obj, filePath, preview: preview);
+            FsOBasePersistence.Set(obj, filePath, preview: preview);
         }
 
         public const bool AppendTypeNameToFileNames = false; // TEMP - TODO: Figure out a way to do this in VOS land
 
-        public override IEnumerable<string> GetChildrenNames(FileReference parent)
+        public override IEnumerable<string> GetChildrenNames(LocalFileReference parent)
         {
-            FileReference fileRef = FileReference.ConvertFrom(parent);
+            LocalFileReference fileRef = LocalFileReference.ConvertFrom(parent);
 
             if (fileRef == null) throw new ArgumentException("Could not convert to FileReference");
 
-            return FsPersistence.GetChildrenNames(fileRef.Path);
+            return FsOBasePersistence.GetChildrenNames(fileRef.Path);
         }
-
-        //public const char FileTypeDelimiter = '(';
-        //public const char FileTypeEndDelimiter = ')';
-
-        private string GetTypeNameFromFileName(string fileName)
-        {
-            int index = fileName.IndexOf(VosPath.TypeDelimiter);
-            if (index == -1) return null;
-            return fileName.Substring(index, fileName.IndexOf(VosPath.TypeEndDelimiter, index) - index);
-        }
-
+        
         //private static string GetDirNameForType(string filePath)
         //{
         //    var chunks = VosPath.ToPathArray(filePath);
@@ -261,8 +252,10 @@ namespace LionFire.ObjectBus.Filesystem
         //    return Assets.AssetPath.GetDefaultDirectory(typeof(T));
         //}
 
-        public override IEnumerable<string> GetChildrenNamesOfType<T>(FileReference parent)
+        public override IEnumerable<string> GetChildrenNamesOfType<T>(LocalFileReference parent)
         {
+            throw new NotImplementedException();
+#if TOPORT
             var chunks = VosPath.ToPathArray(parent.Path);
             if (chunks == null || chunks.Length == 0) yield break;
             string parentDirName = chunks[chunks.Length - 1];
@@ -286,15 +279,15 @@ namespace LionFire.ObjectBus.Filesystem
                     yield return name;
                     continue;
                 }
-
             }
 
             //l.Warn("PARTIALLY IMPLEMENTED: GetChildrenNamesOfType - does not filter types");
             //return GetChildrenNames(parent);
+#endif
         }
 
         private static ILogger l = Log.Get();
 
     }
 #endif
-}
+        }

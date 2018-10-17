@@ -12,33 +12,39 @@ namespace LionFire.Persistence.Assets
 
     public class AssetResolver : IReferenceRetriever
     {
-        public Task<RetrieveReferenceResult<T>> Retrieve<T>(IReadHandle<T> handle) where T : class
-        {
-            throw new NotImplementedException();
-        }
+        //public Task<RetrieveReferenceResult<T>> Retrieve<T>(IReadHandle<T> handle) where T : class
+        //{
+        //    throw new NotImplementedException();
+        //}
+
+        public Task<RetrieveReferenceResult<T>> Retrieve<T>(IReference reference) where T : class => throw new NotImplementedException();
     }
 
     // Reads via Injection.GetService<IAssetProvider>
     // OPTIMIZE: Change the base class to an H base class that stores a string (key) instead of a IReference
-    public class AssetReadHandle<T> : RByKeyBase<T>
+    public class AssetReadHandle<T> : RBase<T>
         where T : class
     {
+
+        #region Construction
 
         public AssetReadHandle() { }
         public AssetReadHandle(string assetSubPath)
         {
             this.Reference = new AssetReference<T>(assetSubPath);
         }
+        
+        #endregion
 
-        protected override IReference GetReferenceFromKey(string key)
-        {
-            throw new NotImplementedException();
-        }
+        //protected override IReference GetReferenceFromKey(string key)
+        //{
+        //    throw new NotImplementedException();
+        //}
 
-        protected override string SetKeyFromReference(IReference reference)
-        {
-            throw new NotImplementedException();
-        }
+        //protected override string SetKeyFromReference(IReference reference)
+        //{
+        //    throw new NotImplementedException();
+        //}
 
         public static implicit operator AssetReadHandle<T>(string assetSubPath)
         {

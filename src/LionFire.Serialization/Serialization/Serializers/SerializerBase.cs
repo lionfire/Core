@@ -1,0 +1,254 @@
+﻿using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+using System.Text;
+using LionFire.Persistence;
+
+namespace LionFire.Serialization
+{
+
+    public abstract class SerializerBase<ConcreteType>: ISerializationStrategy
+        where ConcreteType : SerializerBase<ConcreteType>
+    {
+        #region SerializerBaseReflectionInfo
+
+        private static class SerializerBaseReflectionInfo<T>
+            where T : /* SerializerBase<>, */ ISerializationStrategy
+        {
+            public static readonly bool HasToString;
+            public static readonly bool HasToBytes;
+            public static readonly bool HasToStream;
+
+            public static readonly bool HasFromString;
+            public static readonly bool HasFromBytes;
+            public static readonly bool HasFromStream;
+
+            static SerializerBaseReflectionInfo()
+            {
+                HasToString = typeof(T).GetMethod("ToString", System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.Public).DeclaringType != typeof(SerializerBaseReflectionInfo<T>);
+                HasToBytes = typeof(T).GetMethod("ToBytes", System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.Public).DeclaringType != typeof(SerializerBaseReflectionInfo<T>);
+                HasToStream = typeof(T).GetMethod("ToStream", System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.Public).DeclaringType != typeof(SerializerBaseReflectionInfo<T>);
+
+                HasFromString = typeof(T).GetMethod("ToString", new Type[] { typeof(string), typeof(SerializationContext) }).DeclaringType != typeof(SerializerBaseReflectionInfo<T>);
+                HasFromBytes = typeof(T).GetMethod("ToString", new Type[] { typeof(byte[]), typeof(SerializationContext) }).DeclaringType != typeof(SerializerBaseReflectionInfo<T>);
+                HasFromStream = typeof(T).GetMethod("ToString", new Type[] { typeof(Stream), typeof(SerializationContext) }).DeclaringType != typeof(SerializerBaseReflectionInfo<T>);
+            }
+        }
+
+        #endregion
+
+
+        public virtual IEnumerable<SerializationFormat> Formats { get { yield return DefaultFormat; } }
+        public abstract SerializationFormat DefaultFormat { get; }
+
+        #region DefaultSettingsFlags
+
+        public SerializationFlags DefaultSettingsFlags
+        {
+            get => defaultSettingsFlags;
+            set { if (defaultSettingsFlags == value) { return; } defaultSettingsFlags = value; OnFlagsChanged(); }
+        }
+
+        public abstract SerializationFlags SupportedCapabilities { get; }
+
+        protected SerializationFlags defaultSettingsFlags;
+
+        protected virtual void OnFlagsChanged()
+        {
+        }
+
+        #endregion
+
+        public virtual IEnumerable<Type> SerializationOptionsTypes => Enumerable.Empty<Type>();
+
+        #region Serialize
+
+        public virtual (byte[] Bytes, SerializationResult Result) ToBytes(object obj, Lazy<PersistenceContext> context = null)
+        {
+            if (SerializerBaseReflectionInfo<ConcreteType>.HasToString)
+            {
+                var (String, Result) = ToString(obj, context);
+                return (Result.IsSuccess ? StringToBytes(String, context) : null, Result);
+            }
+            else if (SerializerBaseReflectionInfo<ConcreteType>.HasToStream)
+            {
+                using (var ms = new MemoryStream())
+                {
+                    var result = ToStream(obj, ms, context);
+                    if (!result.IsSuccess) { return (null, result); }
+                    ms.Seek(0, SeekOrigin.Begin);
+                    return (ms.StreamToBytes(), result);
+                }
+            }
+            return (null, SerializationResult.NotSupported);
+        }
+
+        public virtual (string String, SerializationResult Result) ToString(object obj, Lazy<PersistenceContext> context = null)
+        {
+            if (SerializerBaseReflectionInfo<ConcreteType>.HasToBytes)
+            {
+                var (Bytes, Result) = ToBytes(obj, context);
+                return (Result.IsSuccess ? BytesToString(Bytes, context) : null, Result);
+            }
+            else if (SerializerBaseReflectionInfo<ConcreteType>.HasToStream)
+            {
+                using (var ms = new MemoryStream())
+                {
+                    var result = ToStream(obj, ms, context);
+                    if (!result.IsSuccess) { return (null, result); }
+                    ms.Seek(0, SeekOrigin.Begin);
+                    return (BytesToString(ms.StreamToBytes(), context), result);
+                }
+            }
+            return (null, SerializationResult.NotSupported);
+        }
+
+        public virtual SerializationResult ToStream(object obj, Stream stream, Lazy<PersistenceContext> context = null)
+        {
+            byte[] bytes;
+            SerializationResult result;
+            if (SerializerBaseReflectionInfo<ConcreteType>.HasToBytes)
+            {
+                (bytes, result) = ToBytes(obj, context);
+                if (!result.IsSuccess) { return result; }
+            }
+            else if (SerializerBaseReflectionInfo<ConcreteType>.HasToString)
+            {
+                string str;
+                (str, result) = ToString(obj, context);
+                if (!result.IsSuccess) { return result; }
+                bytes = StringToBytes(str, context);
+            }
+            else
+            {
+                return SerializationResult.NotSupported;
+            }
+            stream.Write(bytes, 0, bytes.Length);
+            return SerializationResult.Success;
+        }
+
+        #endregion
+
+        #region Deserialize
+
+        public virtual (T Object, SerializationResult Result) ToObject<T>(string str, Lazy<PersistenceContext> context = null)
+        {
+            if (SerializerBaseReflectionInfo<ConcreteType>.HasFromBytes)
+            {
+                return ToObject<T>(StringToBytes(str, context), context);
+            }
+            return (default(T), SerializationResult.NotSupported);
+        }
+
+        public virtual (T Object, SerializationResult Result) ToObject<T>(byte[] bytes, Lazy<PersistenceContext> context = null)
+        {
+            if (SerializerBaseReflectionInfo<ConcreteType>.HasFromString)
+            {
+                return ToObject<T>(BytesToString(bytes, context), context);
+            }
+            return (default(T), SerializationResult.NotSupported);
+        }
+
+        public virtual (T Object, SerializationResult Result) ToObject<T>(Stream stream, Lazy<PersistenceContext> context = null)
+        {
+            var bytes = new byte[stream.Length - stream.Position];
+            stream.Read(bytes, 0, bytes.Length);
+
+            if (SerializerBaseReflectionInfo<ConcreteType>.HasToBytes)
+            {
+                return ToObject<T>(bytes, context);
+            }
+            else if (SerializerBaseReflectionInfo<ConcreteType>.HasToString)
+            {
+                return ToObject<T>(BytesToString(bytes, context), context);
+            }
+            else
+            {
+                return (default(T), SerializationResult.NotSupported);
+            }
+        }
+
+        public virtual Encoding DefaultEncoding => System.Text.UTF8Encoding.UTF8;
+        protected byte[] StringToBytes(string str, Lazy<PersistenceContext> context) => (context?.Value?.SerializationContext.Encoding ?? DefaultEncoding).GetBytes(str);
+        protected string BytesToString(byte[] bytes, Lazy<PersistenceContext> context) => (context?.Value?.SerializationContext.Encoding ?? DefaultEncoding).GetString(bytes);
+
+        //public abstract T ToObject<T>(string serializedData, SerializationContext context = null);
+
+        #endregion
+
+        #region OLD / Resurrect / MOVE
+
+        // FUTURE if needed?
+        //public virtual object ToObject(byte[] bytes, Type type)
+        //{
+        //    var obj = ToObject(bytes);
+        //    if (!type.IsAssignableFrom(obj.GetType()))
+        //    {
+        //        throw new ArgumentException("Got type " + obj.GetType().FullName + " but exepected type matching parameter: " + type.FullName);
+        //    }
+        //    return obj;
+        //}
+
+        //#region FileExtensions
+
+        //public virtual IEnumerable<string> FileExtensions { get { yield break; } }
+
+        //public virtual string DefaultFileExtension
+        //{
+        //    get => defaultFileExtension ?? FileExtensions.First();
+        //    set => defaultFileExtension = value;
+        //}
+        //protected string defaultFileExtension;
+
+        //#endregion
+
+        //#region MimeTypes
+
+        //public virtual IEnumerable<string> MimeTypes { get { yield break; } }
+
+
+        //public virtual string DefaultMimeType
+        //{
+        //    get => defaultMimeType ?? MimeTypes.First();
+        //    set => defaultMimeType = value;
+        //}
+        //protected string defaultMimeType;
+
+        //#endregion
+
+        //public virtual object DefaultDeserializationSettings => null;
+        //public virtual object DefaultSerializationSettings => null;
+
+        //public virtual float GetPriorityForContext(SerializationContext context) // MOVE to standalone scoring strategy
+        //{
+        //    float score = 0;
+
+        //    var fs = context as FileSerializationContext; // Move to derived class?
+        //    if (fs != null)
+        //    {
+        //        if (FileExtensions.Contains(fs.FileExtension))
+        //        {
+        //            score += 100;
+        //        }
+        //    }
+
+        //    return score;
+        //}
+
+        #endregion
+
+    }
+
+    public static class SerializationModeConversion
+    {
+        public static byte[] StreamToBytes(this Stream str)
+        {
+            byte[] bytes = new byte[str.Length];
+            str.Read(bytes, 0, (int)str.Length);
+            return bytes;
+        }
+        public static void BytesToStream(this byte[] bytes, Stream str) => str.Write(bytes, 0, bytes.Length);
+
+    }
+}

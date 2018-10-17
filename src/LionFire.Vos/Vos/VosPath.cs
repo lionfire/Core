@@ -125,5 +125,12 @@ where T : class
         //}
 
         #endregion
+
+        public static string GetTypeNameFromPath(string path)
+        {
+            int index = path.IndexOf(VosPath.TypeDelimiter);
+            if (index == -1) return null;
+            return path.Substring(index, path.IndexOf(VosPath.TypeEndDelimiter, index) - index);
+        }
     }
 }

@@ -34,8 +34,18 @@ namespace LionFire.Assets.Providers.FileSystem
             //    if(attr.Ignore.HasFlag(LionSerializeContext.AllSerialization)) // TODO
             //}
 
-            var attr = member.GetCustomAttribute(typeof(SerializeIgnoreAttribute));
-            if (attr != null)
+            {
+#pragma warning disable CS0618 // Type or member is obsolete
+                var attr = member.GetCustomAttribute(typeof(SerializeIgnoreAttribute));
+#pragma warning restore CS0618 // Type or member is obsolete
+                if (attr != null)
+                {
+                    property.ShouldSerialize = instance => false;
+                }
+            }
+            
+            var ignoreAttr = member.GetCustomAttribute<IgnoreAttribute>();
+            if (ignoreAttr != null && ignoreAttr.Ignore.HasFlag(LionSerializeContext.AllSerialization)) // REVIEW
             {
                 property.ShouldSerialize = instance => false;
             }

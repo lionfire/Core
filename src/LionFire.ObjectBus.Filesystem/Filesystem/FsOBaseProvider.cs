@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using LionFire.Referencing;
+using LionFire.Structures;
 
 namespace LionFire.ObjectBus.Filesystem
 {
@@ -14,18 +16,18 @@ namespace LionFire.ObjectBus.Filesystem
 
         public string[] UriSchemes
         {
-            get { return FileReference.UriSchemes; }
+            get { return LocalFileReference.UriSchemes; }
         }
         public string UriSchemeDefault
         {
-            get { return FileReference.UriScheme; }
+            get { return LocalFileReference.UriScheme; }
         }
 
         #endregion
 
         public IEnumerable<IOBase> GetOBases(IReference reference)
         {
-            FileReference fileReference = reference as FileReference;
+            var fileReference = reference as LocalFileReference;
 
             if (fileReference != null)
             {
@@ -68,10 +70,10 @@ namespace LionFire.ObjectBus.Filesystem
             }
 
             #region // TODO: Verify scheme is supported!
-            if (!uri.StartsWith(FileReference.UriScheme)) throw new ArgumentException("Unsupported scheme");
+            if (!uri.StartsWith(LocalFileReference.UriScheme)) throw new ArgumentException("Unsupported scheme");
             #endregion
 
-            int slashIndex = FileReference.UriScheme.Length;
+            int slashIndex = LocalFileReference.UriScheme.Length;
             for (int i = 3; i > 0; i--)
             {
                 slashIndex = uri.IndexOf('/', slashIndex);
@@ -79,7 +81,7 @@ namespace LionFire.ObjectBus.Filesystem
             }
 
             string path = uri.Substring(slashIndex); // UNTESTED
-            return new FileReference(path);
+            return new LocalFileReference(path);
         }
 
         #region Persistence

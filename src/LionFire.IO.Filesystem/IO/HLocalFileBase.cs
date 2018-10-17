@@ -7,25 +7,25 @@ namespace LionFire.IO
     public abstract class HLocalFileBase<T> : WBase<T>
         where T : class
     {
-        public override string Key { get => Path; set => Path = Key; }
+        //public override string Key { get => Path; set => Path = Key; }
 
-        public override IReference Reference
-        {
-            get
-            {
-                // TODO: Populate a File or UrlReference with hostname?
-                // e.g. file:///c/Temp/file.txt - no host specified, assume using localhost wherever this URL shows up
-                // e.g. file://localhost/c/Temp/file.txt - if localhost explicitly specified
-                // e.g. file://mymachine/c/Temp/file.txt - Explicit host
-                throw new NotImplementedException();
-            }
-            set
-            {
-                // TODO: Make sure machine name matches?  If this class only deals with local files
-                throw new NotImplementedException();
-            }
-            //Path = ((FileReference)value).Path;
-        }
+        //public override IReference Reference
+        //{
+        //    get
+        //    {
+        //        // TODO: Populate a File or UrlReference with hostname?
+        //        // e.g. file:///c/Temp/file.txt - no host specified, assume using localhost wherever this URL shows up
+        //        // e.g. file://localhost/c/Temp/file.txt - if localhost explicitly specified
+        //        // e.g. file://mymachine/c/Temp/file.txt - Explicit host
+        //        throw new NotImplementedException();
+        //    }
+        //    set
+        //    {
+        //        // TODO: Make sure machine name matches?  If this class only deals with local files
+        //        throw new NotImplementedException();
+        //    }
+        //    //Path = ((FileReference)value).Path;
+        //}
 
         #region Path
 

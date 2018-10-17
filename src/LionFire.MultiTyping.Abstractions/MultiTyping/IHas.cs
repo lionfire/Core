@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace LionFire.MultiTyping
+namespace LionFire.MultiTyping // MOVE to LionFire.Introspection or LionFire.Reflection?
 {
     /// <summary>
     /// Object "is"/has a particular type, and the type will be returned upon a call to ObjectAsType<typeparamref name="T"/>()

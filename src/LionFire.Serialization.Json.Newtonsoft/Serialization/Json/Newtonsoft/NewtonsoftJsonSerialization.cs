@@ -10,7 +10,7 @@ namespace LionFire.Serialization.Json.Newtonsoft
     {
         public void Configure(IServiceCollection sc)
         {
-            sc.AddSingleton(typeof(ISerializerStrategy), typeof(NewtonsoftJsonSerializer));
+            sc.AddSingleton(typeof(ISerializationStrategy), typeof(NewtonsoftJsonSerializer));
         }
 
         //public override  IEnumerable<ServiceDescriptor> ServiceDescriptors

@@ -1,4 +1,6 @@
 ﻿using LionFire.ObjectBus.Filesystem;
+using LionFire.Referencing;
+using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -36,11 +38,11 @@ namespace LionFire.ObjectBus.Filesystem
             }
             set
             {
-                if ((value as FileReference) == reference) return;
-                reference = (FileReference)value;
+                if ((value as LocalFileReference) == reference) return;
+                reference = (LocalFileReference)value;
                 this.Path = reference.Path;
             }
-        } private FileReference reference;
+        } private LocalFileReference reference;
 
         #region Path
 
@@ -125,7 +127,7 @@ namespace LionFire.ObjectBus.Filesystem
 
         void fsw_Changed(object sender, FileSystemEventArgs e)
         {
-            var fileRef = new FileReference(e.FullPath);
+            var fileRef = new LocalFileReference(e.FullPath);
 
             l.Trace("Got change: " + e.ChangeType + " for " + Reference);
             var ev = referenceChangedFor;

@@ -11,7 +11,7 @@ using Microsoft.Extensions.Logging;
 namespace LionFire.Serialization
 {
 
-    public static class SerializationFacility // TODO, Rename to file store, integrate with existing ObjectStore/FileStore????
+    public static class LegacySerializationFacility // TODO, Rename to file store, integrate with existing ObjectStore/FileStore????
     {
 
         #region Serializers

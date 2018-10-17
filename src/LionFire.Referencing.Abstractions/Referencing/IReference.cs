@@ -12,7 +12,7 @@ namespace LionFire.Referencing
         string Path { get; }
     }
 
-    public interface IReference<T>
+    public interface IReference<T> // REVIEW - is this type helpful?
     {
         IReference Reference { get; }
     }

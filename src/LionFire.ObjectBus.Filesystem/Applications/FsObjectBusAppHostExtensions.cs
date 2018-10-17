@@ -1,6 +1,7 @@
 ﻿using LionFire.Applications.Hosting;
 using LionFire.ObjectBus;
 using LionFire.ObjectBus.Filesystem;
+using LionFire.Referencing;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -14,7 +15,7 @@ namespace LionFire.Applications.Hosting
             return app.AddInit(_ =>
             {
                 // TODO TOUNGLOBAL: Remove global
-                SchemeBroker.Instance.Register(FsOBaseProvider.Instance); // HARDCODE HARDCONF
+                OBaseSchemeBroker.Instance.Register(FsOBaseProvider.Instance); // HARDCODE HARDCONF
                 return true;
             });
         }

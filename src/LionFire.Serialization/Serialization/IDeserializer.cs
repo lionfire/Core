@@ -8,7 +8,7 @@ namespace LionFire.Serialization
     public interface IDeserializer
     {
         /// <summary>
-        /// Deserialize based on information in the context.  The SerializationContext does not contain enough info to be useful, so a derived class should be supplied.
+        /// Deserialize based on information in the context.  (REVIEW: (?)  The SerializationContext does not contain enough info to be useful, so a derived class should be supplied.)
         /// </summary>
         /// <typeparam name="T"></typeparam>
         /// <param name="context"></param>

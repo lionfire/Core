@@ -1,13 +1,20 @@
 ﻿using System.Threading.Tasks;
 using LionFire.Assets;
+using LionFire.Referencing;
 
 namespace LionFire.Persistence.Assets
 {
-    public class AssetHandle<T> : AssetReadHandle<T>, IWriteHandle<T>
+    public class AssetHandle<T> : AssetReadHandle<T>, IWriteHandle<T>, W<T>
         where T : class
     {
+        #region Construction
+
         public AssetHandle() { }
         public AssetHandle(string subPath) :base(subPath) { }
+
+        #endregion
+
+        public void MarkDeleted() => throw new System.NotImplementedException();
 
         public Task Save(object persistenceContext = null)
         {

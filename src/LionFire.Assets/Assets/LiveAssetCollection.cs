@@ -17,7 +17,6 @@ using LionFire.MultiTyping;
 
 namespace LionFire.Assets
 {
-
     //public class TLiveAssetCollection<TAsset>
     //{
     //    public 

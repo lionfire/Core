@@ -1,4 +1,5 @@
 ﻿using LionFire.Referencing.Persistence;
+using LionFire.Structures;
 using System;
 using System.Diagnostics;
 using System.Threading.Tasks;
@@ -10,7 +11,7 @@ namespace LionFire.Referencing
     /// Base class for read/write handles
     /// </summary>
     /// <typeparam name="ObjectType"></typeparam>
-    public abstract class RBase<ObjectType> : R<ObjectType>
+    public abstract class RBase<ObjectType> : R<ObjectType>, IKeyed<string>
         where ObjectType : class
     {
         #region Identity

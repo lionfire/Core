@@ -15,14 +15,8 @@ namespace LionFire.Execution
 
         #region IComposable Implementation
 
-        IEnumerable<object> IComposition.Children => throw new NotImplementedException();
+        IEnumerable<object> IComposition.Children => children;
         protected List<object> children = new List<object>();
-
-        //T IComposable<T>.Add<TComponent>(TComponent component)
-        //{
-        //    children.Add(component);
-        //    return (T) this;
-        //}
 
         public virtual T Add<TComponent>(TComponent component)
             where TComponent : class
@@ -32,6 +26,8 @@ namespace LionFire.Execution
             //{
             //    csc.Configure(this.ServiceCollection);
             //}
+
+            if (children.Contains(component)) return;
 
             if (component is IAdding adding)
             {
@@ -50,8 +46,6 @@ namespace LionFire.Execution
         }
 
         #endregion
-
-
 
     }
 }

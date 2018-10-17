@@ -16,10 +16,12 @@ namespace LionFire.ObjectBus.Filesystem
 
         internal static string GetTypeNameFromFileName(string fileName)
         {
-
+            throw new NotImplementedException();
+#if TOPORT
             int index = fileName.IndexOf(VosPath.TypeDelimiter);
             if (index == -1) return null;
             return fileName.Substring(index, fileName.IndexOf(VosPath.TypeEndDelimiter, index) - index);
+#endif
         }
     }
 }

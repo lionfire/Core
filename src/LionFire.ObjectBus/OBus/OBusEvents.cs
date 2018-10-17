@@ -42,7 +42,7 @@ namespace LionFire.ObjectBus
 
         }
 
-        internal static void OnException(OBusOperations operation, IReference r, Exception ex)
+        public static void OnException(OBusOperations operation, IReference r, Exception ex)
         {
             l.Error("Exception during " + operation.ToString() + " for " + r + ": " + ex.ToStringSafe());
             throw ex;

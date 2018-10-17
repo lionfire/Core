@@ -7,7 +7,7 @@
         /// </summary>
         /// <param name="flags"></param>
         /// <returns></returns>
-        public static bool SupportsCapability(this ISerializerStrategy serializer, SerializationFlags flags)
+        public static bool SupportsCapability(this ISerializationStrategy serializer, SerializationFlags flags)
         {
             return (serializer.SupportedCapabilities & flags) == flags;
         }

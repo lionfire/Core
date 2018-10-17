@@ -6,7 +6,7 @@ namespace LionFire.Serialization.Contexts
 {
     public class MessageSerializationContext : SerializationContext
     {
-        public override IEnumerable<DeserializationStrategy> DeserializationStrategies
+        public override IEnumerable<DeserializationStrategy> DefaultDeserializationStrategies
         {
             get
             {

@@ -9,11 +9,23 @@ using Microsoft.Extensions.DependencyInjection;
 namespace LionFire.DependencyInjection
 {
 
+    /// <summary>
+    /// Wraps a IServiceProvider, with potential fallback to other IServiceProviders
+    /// </summary>
+    /// <remarks>
+    /// FUTURE:
+    ///  - Named services?
+    /// </remarks>
     public class InjectionContext : IServiceProvider
     {
-        #region Static
+        #region (Static)
 
-        // FUTURE: Facilitate per-thread context?  An ambient stack using Disposable?
+        /// <summary>
+        /// REVIEW - need to think seriously about this.
+        ///  - AsyncLocal
+        ///  - Thread local / threadstatic
+        ///  - Ambient stack (maybe also async/thread local)
+        /// </summary>
         public static InjectionContext Current
         {
             get { return current ?? Default; }
@@ -26,12 +38,12 @@ namespace LionFire.DependencyInjection
                 current = value;
             }
         }
-        public static InjectionContext current;
-        public static InjectionContext Default { get { return ManualSingleton<InjectionContext>.Instance; } set { ManualSingleton<InjectionContext>.Instance = value; } }
+        protected static InjectionContext current;
 
-        static InjectionContext()
-        {
-        }
+        /// <summary>
+        /// Set by AppHost
+        /// </summary>
+        public static InjectionContext Default { get { return ManualSingleton<InjectionContext>.Instance; } set { ManualSingleton<InjectionContext>.Instance = value; } }
 
         public static void UseDefaultServiceProvider()
         {
@@ -67,8 +79,6 @@ namespace LionFire.DependencyInjection
             return (T)mi.Invoke(this, new object[] { typeof(T), serviceProvider, createIfMissing });
         }
 
-
-
         private bool UseManualSingletonServiceProvider = false;
 
         /// <summary>
@@ -88,12 +98,17 @@ namespace LionFire.DependencyInjection
         {
             object result;
 
+            #region Try IServiceProvider from Parameter
+
             if (serviceProvider != null && serviceProvider != this)
             {
                 result = serviceProvider.GetService(serviceType);
                 if (result != null) { return result; }
             }
 
+            #endregion
+
+            #region Try this.ServiceProvider
             {
                 var _serviceProvider = this.ServiceProvider;
                 if (_serviceProvider != null)
@@ -102,6 +117,9 @@ namespace LionFire.DependencyInjection
                     if (result != null) { return result; }
                 }
             }
+            #endregion
+
+            #region Try ManualSingleton<IServiceProvider>.Instance
 
             if (UseManualSingletonServiceProvider)
             {
@@ -113,14 +131,19 @@ namespace LionFire.DependencyInjection
                 }
             }
 
+            #endregion
+
+            #region Try ManualSingleton<>'s GuaranteedInstance (if createIfMissing is true), or else Instance
+
             if (!serviceType.GetTypeInfo().IsInterface)
             {
                 var pi = typeof(ManualSingleton<>).MakeGenericType(serviceType).GetProperty(createIfMissing ? "GuaranteedInstance" : "Instance", BindingFlags.Static | BindingFlags.Public);
-                result = pi.GetValue(null);
+                result = pi.GetValue(null); // Might be null for ManualSingleton<>.Instance
+                if (result != null) { return result; }
             }
-            else { result = null; }
+            #endregion
 
-            return result;
+            return null;
         }
 
         //public IEnumerable<T> GetServices<T>(IServiceProvider serviceProvider = null, bool createIfMissing = DefaultCreateIfMissing)

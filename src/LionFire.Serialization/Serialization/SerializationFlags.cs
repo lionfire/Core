@@ -25,12 +25,14 @@ namespace LionFire.Serialization
         /// Only considered if UseText is set
         /// </summary>
         HumanReadable = 1 << 3,
+        Uglify = 1 << 4,
+        Minify = 1 << 5,
 
 
-        Compress = 1 << 4,
-        Decompress = 1 << 5,
-        Serialize = 1 << 6,
-        Deserialize = 1 << 7,
+        Compress = 1 << 6,
+        Decompress = 1 << 7,
+        Serialize = 1 << 8,
+        Deserialize = 1 << 9,
 
     }
 

@@ -1,4 +1,5 @@
-﻿using LionFire.Referencing;
+﻿using System;
+using LionFire.Referencing;
 
 namespace LionFire.Persistence.Assets
 {
@@ -14,7 +15,7 @@ namespace LionFire.Persistence.Assets
 
         public string AssetSubPath
         {
-            get { return assetSubPath; }
+            get => assetSubPath;
             set
             {
                 if (assetSubPath == value)
@@ -33,7 +34,10 @@ namespace LionFire.Persistence.Assets
 
         private string assetSubPath;
 
-        public override string Path => typeof(T).Name + ReferenceConstants.PathSeparator + AssetSubPath;
+        public override string Path {
+            get => typeof(T).Name + ReferenceConstants.PathSeparator + AssetSubPath;
+            protected set => throw new NotImplementedException();
+        }
 
         #endregion
 

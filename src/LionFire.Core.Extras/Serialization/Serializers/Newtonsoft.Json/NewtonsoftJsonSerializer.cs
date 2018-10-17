@@ -1,4 +1,5 @@
-﻿using System;
+﻿// DEPRECTED - see LionFire.Serialization.Json.Newtonsoft
+using System;
 using System.Text;
 using System.IO;
 using Newtonsoft.Json;

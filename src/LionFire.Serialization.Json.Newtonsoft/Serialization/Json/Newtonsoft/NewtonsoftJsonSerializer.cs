@@ -7,8 +7,16 @@ using System.Text;
 
 namespace LionFire.Serialization.Json.Newtonsoft
 {
-    public class NewtonsoftJsonSerializer : StringSerializerBase
+    public class NewtonsoftJsonSerializer : SerializerBase
     {
+        public override SerializationFlags SupportedCapabilities =>
+            SerializationFlags.Text
+            | SerializationFlags.HumanReadable
+            | SerializationFlags.Minify
+            | SerializationFlags.Deserialize
+            | SerializationFlags.Serialize
+            ;
+
         #region Static
 
         public static JsonSerializerSettings DefaultSettings = new JsonSerializerSettings
@@ -26,6 +34,7 @@ namespace LionFire.Serialization.Json.Newtonsoft
         {
             get
             {
+                base.FileExtensions
                 yield return "json";
             }
         }
@@ -46,6 +55,12 @@ namespace LionFire.Serialization.Json.Newtonsoft
             get { return settings ?? DefaultSettings; }
             set { settings = value; }
         }
+
+        
+        
+
+        public override SerializationFormat DefaultFormat => throw new NotImplementedException();
+
         private JsonSerializerSettings  settings;
         
         #endregion

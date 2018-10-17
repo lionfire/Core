@@ -8,32 +8,44 @@ using LionFire.Serialization;
 namespace LionFire.ObjectBus.Filesystem
 {
 
+    //public static class testext
+    //{
+    //    public static T ZZ<T>(this T z)
+    //    {
+    //        return z;
+    //    }
+    //    public static ConcreteType GetChild<ConcreteType>(this ConcreteType reference, string subPath)
+    //        where ConcreteType : IReference
+    //    {
+    //        return (ConcreteType)base.GetChild(subPath);
+    //    }
+    //}
     [LionSerializable(SerializeMethod.ByValue)]
-    public class FileReference : ReferenceBase<FileReference>
+    public class LocalFileReference : LocalReferenceBase
     {
 
         #region Construction and Implicit Construction
 
-        public FileReference() { }
+        public LocalFileReference() { }
 
         /// <summary>
         /// (Does not support URIs (TODO))
         /// </summary>
         /// <param name="path"></param>
-        public FileReference(string path)
+        public LocalFileReference(string path)
         {
             this.Path = path;
         }
 
-        public FileReference(IReference reference)
-        {
-            ValidateCanConvertFrom(reference);
-            CopyFrom(reference);
-        }
+        //public LocalFileReference(IReference reference)
+        //{
+        //    ValidateCanConvertFrom(reference);
+        //    CopyFrom(reference);
+        //}
 
-        public static implicit operator FileReference(string path)
+        public static implicit operator LocalFileReference(string path)
         {
-            return new FileReference(path);
+            return new LocalFileReference(path);
         }
 
         #endregion
@@ -51,19 +63,19 @@ namespace LionFire.ObjectBus.Filesystem
 
         public static void ValidateCanConvertFrom(IReference reference)
         {
-            if (reference.Scheme == UriScheme)
+            if (reference.Scheme != UriScheme)
             {
-                throw new OBusReferenceException("UriScheme not valid");
+                throw new OBusReferenceException("UriScheme not supported");
             }
         }
 
-        public static FileReference ConvertFrom(IReference parent)
+        public static LocalFileReference ConvertFrom(IReference parent)
         {
-            FileReference fileRef = parent as FileReference;
+            LocalFileReference fileRef = parent as LocalFileReference;
 
             if (fileRef == null && parent.Scheme == UriScheme)
             {
-                fileRef = new FileReference(parent.Path);
+                fileRef = new LocalFileReference(parent.Path);
             }
 
             return fileRef;
@@ -83,22 +95,20 @@ namespace LionFire.ObjectBus.Filesystem
             {
                 return UriScheme;
             }
-            set { throw new NotSupportedException(); }
         }
 
         #endregion
 
         public override string Path
         {
-            get { return base.Path; }
-            set
+            get { return path; }
+            protected set
             {
 #if MONO
                 value = value.Replace('\\', '/');
 #else
                 value = value.Replace('/', '\\');
 #endif
-
 
                 if (value != null)
                 {
@@ -114,37 +124,30 @@ namespace LionFire.ObjectBus.Filesystem
                     }
                 }
 
-                base.Path = value;
+                path = value;
             }
         }
+        private string path;
 
-        public override IOBaseProvider DefaultObjectStoreProvider
-        {
-            get
-            {
-                return FsOBaseProvider.Instance;
-            }
-        }
+        //public override IOBaseProvider DefaultObjectStoreProvider
+        //{
+        //    get
+        //    {
+        //        return FsOBaseProvider.Instance;
+        //    }
+        //}
 
-        public override string ToString()
-        {
-            return String.Concat(UriPrefixDefault, Path);
-        }
-
-        public override string Key
-        {
-            get
-            { return this.ToString(); }
-            set
-            { throw new NotImplementedException("set_Key"); }
-        }
+        public override string ToString() => String.Concat(UriPrefixDefault, Path);
+        
+        public override string Key => this.ToString();
+        
     }
 
-    public static class FileReferenceExtensions
+    public static class LocalFileReferenceExtensions
     {
-        public static FileReference AsFileReference(this string path)
+        public static LocalFileReference AsLocalFileReference(this string path)
         {
-            return new FileReference(path);
+            return new LocalFileReference(path);
         }
     }
 }

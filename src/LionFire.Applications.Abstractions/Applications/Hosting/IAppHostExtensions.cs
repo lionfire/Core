@@ -21,6 +21,33 @@ namespace LionFire.Applications.Hosting
             return app;
         }
 
+        #region DependencyInjection pass-through
+
+        public static IAppHost AddSingleton<T>(this IAppHost host)
+            where T : class
+        {
+            host.ServiceCollection.AddSingleton<T>();
+            return host;
+        }
+
+        public static IAppHost AddSingleton<TService, TImplementation>(this IAppHost host)
+            where TService : class
+            where TImplementation : class, TService
+        {
+            host.ServiceCollection.AddSingleton<TService, TImplementation>();
+            return host;
+        }
+
+        public static IAppHost AddSingleton(this IAppHost host, Type serviceType, Type implementationType)
+        {
+            host.ServiceCollection.AddSingleton(serviceType, implementationType);
+            return host;
+        }
+
+        // TODO: others for singleton, transient, etc. ??
+
+        #endregion
+
         public static IAppHost Add<T>(this IAppHost host)
             where T : class, new()
         {

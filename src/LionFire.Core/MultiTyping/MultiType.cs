@@ -11,6 +11,19 @@ namespace LionFire.MultiTyping
 
     public class MultiType : IMultiTyped, IMultiTypable // RENAME to MultiTyped
     {
+
+        #region Construction
+
+        public MultiType() { }
+        public MultiType(IEnumerable<object> objects) {
+            foreach(var obj in objects)
+            {
+                this.SetType(obj);
+            }
+        }
+
+        #endregion
+
         // TODO: Switch to ConcurrentDictionary?
         protected Dictionary<Type, object> TypeDict { get { return typeDict; } }
         protected Dictionary<Type, object> typeDict;
@@ -102,6 +115,21 @@ namespace LionFire.MultiTyping
             }
             typeDict.Add(typeof(T), obj);
         }
+        public void SetType(object obj, Type type)
+        {
+            if (type.IsValueType) throw new NotSupportedException("ValueType not currently supported");
+            if (obj == null) { UnsetType(type); return; }
+
+            if (typeDict == null)
+            {
+                typeDict = new Dictionary<Type, object>();
+            }
+            if (typeDict.ContainsKey(type))
+            {
+                throw new ArgumentException($"Already contains an object of type {type.Name}.  Either remove the previous value or use the Add method to add to a IEnumerable<T> for the type.");
+            }
+            typeDict.Add(type, obj);
+        }
 
         public bool UnsetType<T>()
         {
@@ -110,6 +138,20 @@ namespace LionFire.MultiTyping
             if (typeDict.ContainsKey(typeof(T)))
             {
                 typeDict.Remove(typeof(T));
+                foundItem = true;
+            }
+            if (typeDict.Count == 0) typeDict = null;
+
+            return foundItem;
+        }
+
+        public bool UnsetType(Type type)
+        {
+            if (typeDict == null) return false;
+            bool foundItem = false;
+            if (typeDict.ContainsKey(type))
+            {
+                typeDict.Remove(type);
                 foundItem = true;
             }
             if (typeDict.Count == 0) typeDict = null;
