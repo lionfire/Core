@@ -35,8 +35,8 @@ namespace LionFire.Referencing
 
         #region State
 
-        HandleState HandleState { get; }
-        event Action<HandleState, HandleState> HandleStateChangedFromTo;
+        PersistenceState HandleState { get; }
+        event Action<PersistenceState, PersistenceState> HandleStateChangedFromTo;
 
         bool IsPersisted { get; }
 

@@ -5,6 +5,7 @@
 #define WEAKMETADATA // Experimental way to attach various info
 #endif
 //#define USE_READCACHE
+using LionFire.DependencyInjection;
 using LionFire.Referencing;
 using Microsoft.Extensions.Logging;
 using System;
@@ -31,11 +32,11 @@ namespace LionFire.ObjectBus
 
         #endregion
 
-        #region Mounting
+        //#region Mounting
 
-        public static void Mount(string vosPath, IReference reference) => throw new NotImplementedException();//MountManager.Instance.Mount(
+        //public static void Mount(string vosPath, IReference reference) => throw new NotImplementedException();//MountManager.Instance.Mount(
 
-        #endregion
+        //#endregion
 
         #region ObjectStores
 
@@ -536,6 +537,18 @@ namespace LionFire.ObjectBus
 
         private static ILogger lNotFound = Log.Get("LionFire.OBus.NotFound");
         private static ILogger l = Log.Get();
+
+        public static IEnumerable<string> Roots
+        {
+            get
+            {
+                foreach(var provider in InjectionContext.Current.GetService<IEnumerable<IOBaseProvider>>())
+                {
+                    // TODO
+                    yield return provider.GetType().Name;
+                }
+            }
+        }
 
         #region Exists
 

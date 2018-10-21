@@ -12,27 +12,29 @@ namespace LionFire.Serialization
         /// <summary>
         /// Get available strategies, sorted to have best scores first
         /// </summary>
-        /// <param name="context"></param>
-        /// <returns></returns>
-        IEnumerable<SerializationSelectionResult> Strategies(Lazy<PersistenceContext> context = null);
-        //IEnumerable<SerializationSelectionResult> Strategies(Lazy<PersistenceContext> context = null);
+        IEnumerable<SerializationSelectionResult> Strategies(Lazy<PersistenceOperation> operation = null, PersistenceContext context = null);
     }
 
     public static class IResolvesSerializationStrategiesExtensions
     {
+        public static IEnumerable<SerializationSelectionResult> Strategies(this IResolvesSerializationStrategies resolves, Func<PersistenceOperation> operation, PersistenceContext context = null) => resolves.Strategies(operation.ToLazy(), context);
+
         public static bool ThrowWithSerializationFailureData = true;
 
-        //public static ISerializationStrategy Strategy(this IResolvesSerializationStrategies resolves, Lazy<PersistenceContext> context = null) => resolves.Strategies(context).Select(result => result.Strategy).FirstOrDefault();
+        //public static ISerializationStrategy Strategy(this IResolvesSerializationStrategies resolves, Lazy<PersistenceOperation> operation = null, PersistenceContext context = null) => resolves.Strategies(operation, context).Select(result => result.Strategy).FirstOrDefault();
 
-        //private static T ForEachStrategy(this IResolvesSerializationStrategies resolves, Func<ISerializationStrategy, T>, Lazy<PersistenceContext> context = null)
-        
+        //private static T ForEachStrategy(this IResolvesSerializationStrategies resolves, Func<ISerializationStrategy, T>, Lazy<PersistenceOperation> operation = null, PersistenceContext context = null)
 
-        public static byte[] ToBytes(this IResolvesSerializationStrategies resolves, object obj, Lazy<PersistenceContext> context = null)
+        #region ToBytes
+
+        public static byte[] ToBytes(this IResolvesSerializationStrategies resolves, object obj, Func<PersistenceOperation> operation, PersistenceContext context = null) => resolves.ToBytes(obj, operation.ToLazy(), context);
+
+        public static byte[] ToBytes(this IResolvesSerializationStrategies resolves, object obj, Lazy<PersistenceOperation> operation = null, PersistenceContext context = null)
         {
             List<KeyValuePair<ISerializationStrategy, SerializationResult>> failures = null;
-            foreach (var strategy in resolves.Strategies(context).Select(r => r.Strategy))
+            foreach (var strategy in resolves.Strategies(operation, context).Select(r => r.Strategy))
             {
-                var (Bytes, Result) = strategy.ToBytes(obj, context);
+                var (Bytes, Result) = strategy.ToBytes(obj, operation, context);
                 if (Result.IsSuccess)
                 {
                     return Bytes;
@@ -46,15 +48,20 @@ namespace LionFire.Serialization
                     failures.Add(new KeyValuePair<ISerializationStrategy, SerializationResult>(strategy, Result));
                 }
             }
-            throw new SerializationException(SerializationOperationType.ToBytes, context.Value, failures);
+            throw new SerializationException(SerializationOperationType.ToBytes, operation, context, failures);
         }
+        #endregion
 
-        public static string ToString(this IResolvesSerializationStrategies resolves, object obj, Lazy<PersistenceContext> context = null)
+        #region ToString
+
+        public static string ToString(this IResolvesSerializationStrategies resolves, object obj, Func<PersistenceOperation> operation, PersistenceContext context = null) => resolves.ToString(obj, operation.ToLazy(), context);
+
+        public static string ToString(this IResolvesSerializationStrategies resolves, object obj, Lazy<PersistenceOperation> operation = null, PersistenceContext context = null)
         {
             List<KeyValuePair<ISerializationStrategy, SerializationResult>> failures = null;
-            foreach (var strategy in resolves.Strategies(context).Select(r => r.Strategy))
+            foreach (var strategy in resolves.Strategies(operation, context).Select(r => r.Strategy))
             {
-                var (String, Result) = strategy.ToString(obj, context);
+                var (String, Result) = strategy.ToString(obj, operation, context);
                 if (Result.IsSuccess)
                 {
                     return String;
@@ -68,14 +75,21 @@ namespace LionFire.Serialization
                     failures.Add(new KeyValuePair<ISerializationStrategy, SerializationResult>(strategy, Result));
                 }
             }
-            throw new SerializationException(SerializationOperationType.ToString, context.Value, failures);
+            throw new SerializationException(SerializationOperationType.ToString, operation, context, failures);
         }
-        public static void ToStream(this IResolvesSerializationStrategies resolves, object obj, Stream stream, Lazy<PersistenceContext> context = null)
+
+        #endregion
+
+        #region ToStream
+
+        public static void ToStream(this IResolvesSerializationStrategies resolves, object obj, Stream stream, Func<PersistenceOperation> operation, PersistenceContext context = null) => resolves.ToStream(obj, stream, operation.ToLazy(), context);
+
+        public static void ToStream(this IResolvesSerializationStrategies resolves, object obj, Stream stream, Lazy<PersistenceOperation> operation = null, PersistenceContext context = null)
         {
             List<KeyValuePair<ISerializationStrategy, SerializationResult>> failures = null;
-            foreach (var strategy in resolves.Strategies(context).Select(r => r.Strategy))
+            foreach (var strategy in resolves.Strategies(operation, context).Select(r => r.Strategy))
             {
-                var result = strategy.ToStream(obj, stream, context);
+                var result = strategy.ToStream(obj, stream, operation, context);
                 if (result.IsSuccess)
                 {
                     return;
@@ -89,8 +103,10 @@ namespace LionFire.Serialization
                     failures.Add(new KeyValuePair<ISerializationStrategy, SerializationResult>(strategy, result));
                 }
             }
-            throw new SerializationException(SerializationOperationType.ToStream, context.Value, failures);
+            throw new SerializationException(SerializationOperationType.ToStream, operation, context, failures);
         }
+
+        #endregion
 
         //public struct Wrapper<T>
         //{
@@ -126,12 +142,16 @@ namespace LionFire.Serialization
         //    public static implicit WrapperOrFunc<T>(Func<T> func) => new WrapperOrFunc<T> { ObjectFunc = func };
         //}
 
-        public static T ToObject<T>(this IResolvesSerializationStrategies resolves, byte[] bytes, Lazy<PersistenceContext> context = null)
+        #region ToObject - byte[]
+
+        public static T ToObject<T>(this IResolvesSerializationStrategies resolves, byte[] bytes, Func<PersistenceOperation> operation, PersistenceContext context = null) => resolves.ToObject<T>(bytes, operation.ToLazy(), context);
+
+        public static T ToObject<T>(this IResolvesSerializationStrategies resolves, byte[] bytes, Lazy<PersistenceOperation> operation = null, PersistenceContext context = null)
         {
             List<KeyValuePair<ISerializationStrategy, SerializationResult>> failures = null;
-            foreach (var strategy in resolves.Strategies(context).Select(r => r.Strategy))
+            foreach (var strategy in resolves.Strategies(operation, context).Select(r => r.Strategy))
             {
-                var (Object, Result) = strategy.ToObject<T>(bytes, context);
+                var (Object, Result) = strategy.ToObject<T>(bytes, operation, context);
                 if (Result.IsSuccess)
                 {
                     return Object;
@@ -145,14 +165,21 @@ namespace LionFire.Serialization
                     failures.Add(new KeyValuePair<ISerializationStrategy, SerializationResult>(strategy, Result));
                 }
             }
-            throw new SerializationException(SerializationOperationType.FromBytes, context.Value, failures);
+            throw new SerializationException(SerializationOperationType.FromBytes, operation, context, failures);
         }
-        public static T ToObject<T>(this IResolvesSerializationStrategies resolves, string str, Lazy<PersistenceContext> context = null)
+
+        #endregion
+
+        #region ToObject - string
+
+        public static T ToObject<T>(this IResolvesSerializationStrategies resolves, string str, Func<PersistenceOperation> operation, PersistenceContext context = null) => resolves.ToObject<T>(str, operation.ToLazy(), context);
+
+        public static T ToObject<T>(this IResolvesSerializationStrategies resolves, string str, Lazy<PersistenceOperation> operation = null, PersistenceContext context = null)
         {
             List<KeyValuePair<ISerializationStrategy, SerializationResult>> failures = null;
-            foreach (var strategy in resolves.Strategies(context).Select(r => r.Strategy))
+            foreach (var strategy in resolves.Strategies(operation, context).Select(r => r.Strategy))
             {
-                var (Object, Result) = strategy.ToObject<T>(str, context);
+                var (Object, Result) = strategy.ToObject<T>(str, operation, context);
                 if (Result.IsSuccess)
                 {
                     return Object;
@@ -166,14 +193,21 @@ namespace LionFire.Serialization
                     failures.Add(new KeyValuePair<ISerializationStrategy, SerializationResult>(strategy, Result));
                 }
             }
-            throw new SerializationException(SerializationOperationType.FromString, context.Value, failures);
+            throw new SerializationException(SerializationOperationType.FromString, operation, context, failures);
         }
-        public static T ToObject<T>(this IResolvesSerializationStrategies resolves, Stream stream, Lazy<PersistenceContext> context = null)
+
+        #endregion
+
+        #region ToObject - Stream
+
+        public static T ToObject<T>(this IResolvesSerializationStrategies resolves, Stream stream, Func<PersistenceOperation> operation, PersistenceContext context = null) => resolves.ToObject<T>(stream, operation.ToLazy(), context);
+
+        public static T ToObject<T>(this IResolvesSerializationStrategies resolves, Stream stream, Lazy<PersistenceOperation> operation = null, PersistenceContext context = null)
         {
             List<KeyValuePair<ISerializationStrategy, SerializationResult>> failures = null;
-            foreach (var strategy in resolves.Strategies(context).Select(r => r.Strategy))
+            foreach (var strategy in resolves.Strategies(operation, context).Select(r => r.Strategy))
             {
-                var (Object, Result) = strategy.ToObject<T>(stream, context);
+                var (Object, Result) = strategy.ToObject<T>(stream, operation, context);
                 if (Result.IsSuccess)
                 {
                     return Object;
@@ -188,7 +222,59 @@ namespace LionFire.Serialization
                 }
             }
             //return (default(T), new SerializationResult { AggregateResults = failures }));
-            throw new SerializationException(SerializationOperationType.FromStream, context.Value, failures);
+            throw new SerializationException(SerializationOperationType.FromStream, operation, context, failures);
         }
+
+        public static T ToObject<T>(this IResolvesSerializationStrategies resolves, Func<ISerializationStrategy, IEnumerable<Stream>> streams,  Func<PersistenceOperation> operation, PersistenceContext context = null) => resolves.ToObject<T>(streams, operation.ToLazy(), context);
+        public static T ToObject<T>(this IResolvesSerializationStrategies resolves, Func<ISerializationStrategy, IEnumerable<Stream>> streams, Lazy<PersistenceOperation> operation = null, PersistenceContext context = null)
+        {
+            List<KeyValuePair<ISerializationStrategy, SerializationResult>> failures = null;
+            foreach (var strategy in resolves.Strategies(operation, context).Select(r => r.Strategy))
+            {
+                foreach (var stream in streams(strategy))
+                {
+                    try
+                    {
+                        var (Object, Result) = strategy.ToObject<T>(stream, operation, context);
+                        if (Result.IsSuccess)
+                        {
+                            return Object;
+                        }
+                        else if (ThrowWithSerializationFailureData)
+                        {
+                            if (failures == null)
+                            {
+                                failures = new List<KeyValuePair<ISerializationStrategy, SerializationResult>>();
+                            }
+                            failures.Add(new KeyValuePair<ISerializationStrategy, SerializationResult>(strategy, Result));
+                        }
+                    }
+                    finally
+                    {
+                        stream.Dispose();
+                    }
+                }
+            }
+            //return (default(T), new SerializationResult { AggregateResults = failures }));
+            throw new SerializationException(SerializationOperationType.FromStream, operation, context, failures);
+
+            //List<KeyValuePair<ISerializationStrategy, SerializationResult>> failures = null;
+
+            //foreach (var stream in streams)
+            //{
+            //    try
+            //    {
+            //        var result = resolves.ToObject<T>(stream, operation, context);
+            //        return result;
+            //    }
+            //    catch(SerializationException sex)
+            //    {
+            //        failures.AddRange(sex.FailReasons);
+            //    }
+            //}
+            //throw new SerializationException(SerializationOperationType.FromStream, operation, context, failures);
+        }
+
+        #endregion
     }
 }

@@ -7,6 +7,7 @@ using LionFire.Serialization;
 using LionFire.Structures;
 using LionFire.Referencing;
 using Microsoft.Extensions.Logging;
+using System.Threading.Tasks;
 
 namespace LionFire.ObjectBus.Filesystem
 {
@@ -66,7 +67,7 @@ namespace LionFire.ObjectBus.Filesystem
 		
 	}
 #else
-    public class FsOBase : OBaseBase<LocalFileReference>
+    public class FsOBase : WritableOBaseBase<LocalFileReference>
     {
         #region Static
 
@@ -147,14 +148,14 @@ namespace LionFire.ObjectBus.Filesystem
         {
             try
             {
-                object obj = FsOBasePersistence.TryGet(reference.Path);
+                object obj = FsOBasePersistence.TryGet(reference.Path).ConfigureAwait(false).GetAwaiter().GetResult();
                 obj = TryConvertToType(obj, ResultType);
 
                 if (obj == null)
                 {
                     foreach (var encapsulatedRef in GetEncapsulatedPaths(reference, ResultType))
                     {
-                        obj = FsOBasePersistence.TryGet(encapsulatedRef.Path);
+                        obj = FsOBasePersistence.TryGet(encapsulatedRef.Path).ConfigureAwait(false).GetAwaiter().GetResult();
                         obj = TryConvertToType(obj, ResultType);
                         if (obj != null) break;
                     }
@@ -183,7 +184,7 @@ namespace LionFire.ObjectBus.Filesystem
 
         public override bool Exists(LocalFileReference reference)
         {
-            bool result = FsOBasePersistence.Exists(reference.Path);
+            bool result = FsOBasePersistence.Exists(reference.Path).ConfigureAwait(false).GetAwaiter().GetResult();
             return result;
         }
 
@@ -203,14 +204,16 @@ namespace LionFire.ObjectBus.Filesystem
             //    filePath = filePath + FileTypeDelimiter + type.Name + FileTypeEndDelimiter;
             //}
 
-            return FsOBasePersistence.TryDelete(filePath, preview: preview);
+            return FsOBasePersistence.TryDelete(filePath, preview: preview).ConfigureAwait(false).GetAwaiter().GetResult();
         }
 
         public override void Set(LocalFileReference reference, object obj, bool allowOverwrite = true, bool preview = false)
         {
+            #region TODO
+
             //bool defaultTypeForDirIsT = false;
-            Type type = obj.GetType();
-            var chunks = LionPath.ToPathArray(reference.Path);
+            //Type type = obj.GetType();
+            //var chunks = LionPath.ToPathArray(reference.Path);
             //if (chunks == null || chunks.Length < 2)
             //{
             //    defaultTypeForDirIsT = false;
@@ -222,14 +225,16 @@ namespace LionFire.ObjectBus.Filesystem
             //    defaultTypeForDirIsT = Assets.AssetPaths.GetAssetTypeFolder(type).TrimEnd('/').Equals(parentDirName);
             //}
 
-            // REVIEW - This should be done up a layer, since most persistance mechanisms will not support multi-type
-            string filePath = reference.Path;
+            // TODO - This should be done up a layer, since most persistance mechanisms will not support multi-type
+            //string filePath = reference.Path;
             //if (AppendTypeNameToFileNames && !defaultTypeForDirIsT) // TOPORT
             //{
             //    filePath = filePath + VosPath.TypeDelimiter + type.Name + VosPath.TypeEndDelimiter;
             //}
 
-            FsOBasePersistence.Set(obj, filePath, preview: preview);
+            #endregion
+
+            FsOBasePersistence.Set(obj, reference.Path, preview: preview);
         }
 
         public const bool AppendTypeNameToFileNames = false; // TEMP - TODO: Figure out a way to do this in VOS land

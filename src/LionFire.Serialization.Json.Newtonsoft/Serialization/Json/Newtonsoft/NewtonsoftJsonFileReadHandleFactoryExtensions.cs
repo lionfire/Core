@@ -1,39 +1,28 @@
-﻿using LionFire.Applications.Hosting;
-using Newtonsoft.Json;
-using Microsoft.Extensions.DependencyInjection;
-using System.IO;
+﻿using System.IO;
 using LionFire.Structures;
 using LionFire.Handles;
 
 namespace LionFire.Serialization.Json.Newtonsoft
 {
-    public static class NewtonsoftJsonFileReadHandleFactoryExtensions
-    {
-        public static IReadHandle<T> GetJsonFileReadHandle<T>(this string path)
-            where T : class
-        {
-            return new CustomReadHandle<T>(path)
-            {
-                Resolver = ResolveFileToJsonDeserialize<T>
-            };
-        }
+    // FUTURE - to revive?
+    //public static class NewtonsoftJsonFileReadHandleFactoryExtensions
+    //{
+    //    public static IReadHandle<T> GetJsonFileReadHandle<T>(this string path)
+    //        where T : class
+    //    {
+    //        return new CustomReadHandle<T>(path)
+    //        {
+    //            Resolver = ResolveFileToJsonDeserialize<T>
+    //        };
+    //    }
 
-        public static T ResolveFileToJsonDeserialize<T>(string path)
-        {
-            return JsonConvert.DeserializeObject<T>(File.ReadAllText(path));
-        }
-    }
+    //    public static T ResolveFileToJsonDeserialize<T>(string path)
+    //    {
+    //        return JsonConvert.DeserializeObject<T>(File.ReadAllText(path));
+    //    }
+    //}
 
-    public static class NewtonsoftJsonAppHostExtensions
-    {
-        //public static IAppHost AddNewtonsoftJson(this IAppHost app)
-        //{
-        //    app.ServiceCollection.Add(new ServiceDescriptor()
-        //    {
-                
-        //    });
-        //}
-    }
+    
 }
 
 //namespace LionFire.Applications.AutoInit

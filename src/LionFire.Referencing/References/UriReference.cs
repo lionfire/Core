@@ -1,34 +1,27 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace LionFire.Referencing
 {
-    public class UriReference : IReference
+
+    public sealed class UriReference : IReference
     {
         #region Construction
 
         public UriReference() { }
         public UriReference(Uri uri)
         {
-            this.Uri = uri;
+            Uri = uri;
         }
         public UriReference(string uri)
         {
-            this.Uri = new Uri(uri);
+            Uri = new Uri(uri);
         }
 
         #region (Static) Construction Operators
 
-        public static implicit operator UriReference(string uri)
-        {
-            return new UriReference(uri);
-        }
+        public static implicit operator UriReference(string uri) => new UriReference(uri);
 
-        public static implicit operator UriReference(Uri uri)
-        {
-            return new UriReference(uri);
-        }
+        public static implicit operator UriReference(Uri uri) => new UriReference(uri);
 
         #endregion
 
@@ -38,11 +31,19 @@ namespace LionFire.Referencing
 
         public Uri Uri
         {
-            get { return uri; }
+            get => uri;
             set
             {
-                if (uri == value) return;
-                if (uri != default(Uri)) throw new AlreadySetException();
+                if (uri == value)
+                {
+                    return;
+                }
+
+                if (uri != default(Uri))
+                {
+                    throw new AlreadySetException();
+                }
+
                 uri = value;
             }
         }

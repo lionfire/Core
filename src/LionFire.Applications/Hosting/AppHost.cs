@@ -21,15 +21,17 @@ namespace LionFire.Applications.Hosting
 {
 
     // Derive from new ExecutionContainer, move most stuff there?
-    public class AppHost : ExecutablesHost<AppHost>, IAppHost, IReadonlyMultiTyped
+    public class AppHost : ExecutablesHost<AppHost>, IAppHost, IReadOnlyMultiTyped
     {
+
+        public static IAppHost MainApp { get => ManualSingleton<IAppHost>.Instance; protected set => ManualSingleton<IAppHost>.Instance = value; }
 
         #region MultiType
 
         protected readonly MultiType multiType = new MultiType();
 
         // REVIEW - Not sure this is needed or a good idea
-        T IReadonlyMultiTyped.AsType<T>()
+        T IReadOnlyMultiTyped.AsType<T>()
         {
             switch (typeof(T).Name)
             {
@@ -96,19 +98,40 @@ namespace LionFire.Applications.Hosting
         // TODO: Put this into the Multitype?  Maybe make it a common extensionmethod thing?
         public IDictionary<string, object> Properties { get; private set; } = new Dictionary<string, object>();
 
+        /// <summary>
+        /// Reset the MainApp and InjectionContext.Default.  Can be used to conduct multiple unit tests in one process.
+        /// </summary>
+        public static void Reset()
+        {
+            MainApp = null;
+            InjectionContext.Default = null;
+            InjectionContext.Current = null;
+        }
 
         #region Construction and Initialization
 
-        public AppHost()
+        public AppHost(bool notPrimaryApp = false)
         {
             ServiceCollection = new ServiceCollection();
             ServiceCollection.AddSingleton(typeof(IAppHost), this);
 
-            if (ManualSingleton<IAppHost>.Instance == null)
+            if (MainApp != null)
             {
-                ManualSingleton<IAppHost>.Instance = this; // IsRootApplication == true
-                InjectionContext.Default = this.InjectionContext;
+                if(!notPrimaryApp) throw new Exception("Already has a AppHost.MainApp set.  Create AppHost with notPrimaryApp set to true to create multiple applications, or else set AppHost.MainApp to null first.");
             }
+            else
+            {
+                MainApp = this; // IsRootApplication == true
+            }
+
+            if (InjectionContext.Default != null)
+            {
+                if (!notPrimaryApp) throw new Exception("Already has an InjectionContext.Default.  Create AppHost with notPrimaryApp set to true to create multiple applications, or else set InjectionContext.Default to null first.");
+            }
+            else
+            {
+                InjectionContext.Default = this.InjectionContext;
+            }            
         }
 
         /// <summary>
@@ -223,7 +246,7 @@ namespace LionFire.Applications.Hosting
 
         public bool IsRootApplication
         {
-            get { return ManualSingleton<IAppHost>.Instance == this; }
+            get { return object.ReferenceEquals(this, MainApp); }
         }
 
         #endregion

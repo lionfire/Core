@@ -6,14 +6,10 @@ using System.Text;
 namespace LionFire.Bindings
 {
     [Serializable]
-    public class LionBindingException
+    public class LionBindingException : Exception
     {
         public LionBindingException() { }
         public LionBindingException(string message) : base(message) { }
         public LionBindingException(string message, Exception inner) : base(message, inner) { }
-        protected LionBindingException(
-          System.Runtime.Serialization.SerializationInfo info,
-          System.Runtime.Serialization.StreamingContext context)
-            : base(info, context) { }
     }
 }

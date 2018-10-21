@@ -27,20 +27,21 @@ namespace LionFire.Execution
             //    csc.Configure(this.ServiceCollection);
             //}
 
-            if (children.Contains(component)) return;
-
-            if (component is IAdding adding)
+            if (!children.Contains(component))
             {
-                if (adding.OnAdding(this))
+                if (component is IAdding adding)
+                {
+                    if (adding.OnAdding(this))
+                    {
+                        children.Add(component);
+                        //multiType.SetType<T>(component);
+                    }
+                }
+                else
                 {
                     children.Add(component);
-                    //multiType.SetType<T>(component);
+                    //multiType.AddType<TComponent>(component);
                 }
-            }
-            else
-            {
-                children.Add(component);
-                //multiType.AddType<TComponent>(component);
             }
             return (T)this;
         }

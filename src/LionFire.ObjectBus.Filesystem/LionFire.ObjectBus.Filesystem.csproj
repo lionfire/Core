@@ -2,12 +2,14 @@
 
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
+    <RootNamespace>LionFire.ObjectBus</RootNamespace>
   </PropertyGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\LionFire.Applications.Abstractions\LionFire.Applications.Abstractions.csproj" />
     <ProjectReference Include="..\LionFire.ObjectBus.Abstractions\LionFire.ObjectBus.Abstractions.csproj" />
     <ProjectReference Include="..\LionFire.ObjectBus\LionFire.ObjectBus.csproj" />
+    <ProjectReference Include="..\LionFire.Serialization.Json.Newtonsoft\LionFire.Serialization.Json.Newtonsoft.csproj" />
   </ItemGroup>
 
 </Project>

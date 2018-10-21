@@ -9,4 +9,8 @@
     <ProjectReference Include="..\LionFire.Serialization\LionFire.Serialization.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Handles\" />
+  </ItemGroup>
+
 </Project>

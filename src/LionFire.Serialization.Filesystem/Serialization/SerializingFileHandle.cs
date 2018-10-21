@@ -35,7 +35,7 @@ namespace LionFire.Serialization
 
         //#endregion
 
-        public SerializationOperation SerializationOperation { get; set; }
+        public PersistenceOperation SerializationOperation { get; set; }
 
         #region Construction
 
@@ -72,11 +72,11 @@ namespace LionFire.Serialization
         //    Object = SerializationFacility.Default.ToObject<T>(fs, operation: SerializationOperation, context: DefaultSerializationContext, );
         //}
 
-        public SerializationOperation GetSerializationOperation()
+        public PersistenceOperation GetSerializationOperation()
         {
             if (SerializationOperation == null)
             {
-                SerializationOperation = new SerializationOperation();
+                SerializationOperation = new PersistenceOperation();
             }
 
             //if (SerializationOperation.Path == null) // Don't allow path spoofing
@@ -97,7 +97,7 @@ namespace LionFire.Serialization
             var persistenceContext = new PersistenceContext();
 
             persistenceContext.SerializationContext = SerializationContext ?? DefaultSerializationContext;
-            persistenceContext.SerializationOperationFunc = GetSerializationOperation;
+            persistenceContext.GetPersistenceOperation = GetSerializationOperation;
 
             return persistenceContext;
         }

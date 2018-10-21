@@ -1,13 +1,21 @@
-﻿using LionFire.DependencyInjection;
-using LionFire.Serialization.Contexts;
-using Newtonsoft.Json;
-using System;
+﻿using System;
 using System.Collections.Generic;
-using System.Text;
+using LionFire.DependencyInjection;
+using LionFire.Persistence;
+using Newtonsoft.Json;
 
 namespace LionFire.Serialization.Json.Newtonsoft
 {
-    public class NewtonsoftJsonSerializer : SerializerBase
+    //public class NewtonsoftJsonService : ISerializationService
+    //{
+    //    public IEnumerable<ISerializationStrategy> AllStrategies { get {
+    //            yield return new NewtonsoftJsonSerializer();
+    //        } }
+    //}
+
+    // UPSTREAM - Concurrency issue: https://github.com/JamesNK/Newtonsoft.Json/issues/1452
+
+    public class NewtonsoftJsonSerializer : SerializerBase<NewtonsoftJsonSerializer>
     {
         public override SerializationFlags SupportedCapabilities =>
             SerializationFlags.Text
@@ -17,7 +25,7 @@ namespace LionFire.Serialization.Json.Newtonsoft
             | SerializationFlags.Serialize
             ;
 
-        #region Static
+        #region (Static) Default Settings
 
         public static JsonSerializerSettings DefaultSettings = new JsonSerializerSettings
         {
@@ -30,60 +38,36 @@ namespace LionFire.Serialization.Json.Newtonsoft
 
         #endregion
 
-        public override IEnumerable<string> FileExtensions
+        public override SerializationFormat DefaultFormat => defaultFormat;
+        private static readonly SerializationFormat defaultFormat = new SerializationFormat("json", "JSON", "application/json")
         {
-            get
-            {
-                base.FileExtensions
-                yield return "json";
-            }
-        }
-
-        public override IEnumerable<string> MimeTypes
-        {
-            get
-            {
-                yield return "application/json";
-            }
-        }
+            Description = "Javascript Object Notation",
+        };
 
         #region Settings
 
         [TryInject]
         public JsonSerializerSettings Settings
         {
-            get { return settings ?? DefaultSettings; }
-            set { settings = value; }
+            get => settings ?? DefaultSettings;
+            set => settings = value;
         }
+        private JsonSerializerSettings settings;
 
-        
-        
-
-        public override SerializationFormat DefaultFormat => throw new NotImplementedException();
-
-        private JsonSerializerSettings  settings;
-        
         #endregion
 
         #region Serialize
 
-        public override string ToString(SerializationContext context)
-        {
-            return JsonConvert.SerializeObject(context.Object, typeof(object), Settings);
-        }
+        public override (string String, SerializationResult Result) ToString(object obj, Lazy<PersistenceOperation> operation = null, PersistenceContext context = null) => (JsonConvert.SerializeObject(obj, typeof(object), Settings), SerializationResult.Success);
 
         #endregion
 
         #region Deserialize
 
-        public override T ToObject<T>(SerializationContext context = null)
-        {
-            context.LoadStringDataIfNeeded();
-            return JsonConvert.DeserializeObject<T>(context.StringData, Settings);
-        }
+        public override (T Object, SerializationResult Result) ToObject<T>(string str, Lazy<PersistenceOperation> operation = null, PersistenceContext context = null) => (JsonConvert.DeserializeObject<T>(str, Settings), SerializationResult.Success);
 
         #endregion
 
-        
+
     }
 }

@@ -528,7 +528,7 @@ namespace LionFire.Referencing
         #endregion
 
 
-        protected IReadonlyMultiTyped ObjectMT { get { return _object as IReadonlyMultiTyped; } }
+        protected IReadOnlyMultiTyped ObjectMT { get { return _object as IReadOnlyMultiTyped; } }
 
         protected IMultiTyped ObjectEMT { get { return _object as IMultiTyped; } }
 
@@ -1063,7 +1063,7 @@ namespace LionFire.Referencing
                     return _object;
                 }
 
-                IReadonlyMultiTyped mtObj = _object as IReadonlyMultiTyped;
+                IReadOnlyMultiTyped mtObj = _object as IReadOnlyMultiTyped;
 
                 if (mtObj != null)
                 {
@@ -1120,7 +1120,7 @@ namespace LionFire.Referencing
                 return result;
             }
 
-            IReadonlyMultiTyped mtObj = ObjectMT;
+            IReadOnlyMultiTyped mtObj = ObjectMT;
 
             if (mtObj != null)
             {
@@ -1151,7 +1151,7 @@ namespace LionFire.Referencing
                 return _object;
             }
 
-            IReadonlyMultiTyped mtObj = ObjectMT;
+            IReadOnlyMultiTyped mtObj = ObjectMT;
 
             object result = null;
             if (mtObj != null)
@@ -1268,7 +1268,7 @@ namespace LionFire.Referencing
                 return new T[] { resultItem };
             }
 
-            IReadonlyMultiTyped mtObj = _object as IReadonlyMultiTyped;
+            IReadOnlyMultiTyped mtObj = _object as IReadOnlyMultiTyped;
             if (mtObj != null)
             {
                 result = mtObj.OfType<T>();
@@ -1310,7 +1310,7 @@ namespace LionFire.Referencing
 
             object resultObj = null;
 
-            IReadonlyMultiTyped mtObj = _object as IReadonlyMultiTyped;
+            IReadOnlyMultiTyped mtObj = _object as IReadOnlyMultiTyped;
             if (mtObj != null)
             {
                 resultObj = mtObj.OfType(T);
@@ -1338,7 +1338,7 @@ namespace LionFire.Referencing
 
                 //if (_object == null) return new object[] { };
 
-                IReadonlyMultiTyped mtObj = _object as IReadonlyMultiTyped;
+                IReadOnlyMultiTyped mtObj = _object as IReadOnlyMultiTyped;
                 if (mtObj != null)
                 {
                     return mtObj.SubTypes;

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.IO;
 using LionFire.Serialization;
 
 namespace LionFire.Persistence
@@ -15,6 +16,26 @@ namespace LionFire.Persistence
 
         public bool AllowInstantiator { get; set; }
         public SerializationContext SerializationContext { get; set; }
-        public Func<SerializationOperation> SerializationOperationFunc { get; set; }
+
+        public Func<PersistenceOperation> GetPersistenceOperation { get; set; }
+        public ISerializationProvider SerializationProvider { get; set; }
+
+        public SerializePersistenceContext Serialization { get; set; }
+        public DeserializePersistenceContext Deserialization { get; set; }
+
+    }
+    public class SerializePersistenceContext 
+    {
+        public SerializerSelectionContext SerializerSelectionContext { get; set; } = new SerializerSelectionContext();
+    }
+
+    public class DeserializePersistenceContext 
+    {
+        public SerializerSelectionContext DeserializerSelectionContext { get; set; } = new SerializerSelectionContext();
+
+        // TODO Make async
+        public Func<string, Stream> PathToStream { get; set; }
+        public Func<string, byte[]> PathToBytes { get; set; }
+        public Func<string, string> PathToString { get; set; }
     }
 }

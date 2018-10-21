@@ -1,10 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using System.Reflection;
 using LionFire.Structures;
-using Microsoft.Extensions.DependencyInjection;
 
 namespace LionFire.DependencyInjection
 {
@@ -18,6 +14,12 @@ namespace LionFire.DependencyInjection
     /// </remarks>
     public class InjectionContext : IServiceProvider
     {
+        public static void Reset()
+        {
+            current = null;
+            Default = null;
+        }
+
         #region (Static)
 
         /// <summary>
@@ -28,7 +30,7 @@ namespace LionFire.DependencyInjection
         /// </summary>
         public static InjectionContext Current
         {
-            get { return current ?? Default; }
+            get => current ?? Default;
             set
             {
                 if (current != null && value != null && value != current)
@@ -43,16 +45,32 @@ namespace LionFire.DependencyInjection
         /// <summary>
         /// Set by AppHost
         /// </summary>
-        public static InjectionContext Default { get { return ManualSingleton<InjectionContext>.Instance; } set { ManualSingleton<InjectionContext>.Instance = value; } }
-
-        public static void UseDefaultServiceProvider()
+        public static InjectionContext Default
         {
-            if (ManualSingleton<IServiceProvider>.Instance != null)
+            get => ManualSingleton<InjectionContext>.Instance;
+            set
             {
-                throw new Exception("ManualSingleton<IServiceProvider>.Instance is already set");
+                if (value == ManualSingleton<InjectionContext>.Instance)
+                {
+                    return;
+                }
+
+                if (value != null && ManualSingleton<InjectionContext>.Instance != null)
+                {
+                    throw new AlreadyException("InjectionContext.Default is already set");
+                }
+                ManualSingleton<InjectionContext>.Instance = value;
             }
-            ManualSingleton<IServiceProvider>.Instance = Current;
         }
+
+        //public static void UseDefaultServiceProvider()
+        //{
+        //    if (ManualSingleton<IServiceProvider>.Instance != null)
+        //    {
+        //        throw new Exception("ManualSingleton<IServiceProvider>.Instance is already set");
+        //    }
+        //    ManualSingleton<IServiceProvider>.Instance = Current;
+        //}
 
         #endregion
 
@@ -66,8 +84,8 @@ namespace LionFire.DependencyInjection
 
         public IServiceProvider ServiceProvider
         {
-            get { return serviceProvider; }
-            set { serviceProvider = value; }
+            get => serviceProvider;
+            set => serviceProvider = value;
         }
         private IServiceProvider serviceProvider;
 
@@ -79,7 +97,7 @@ namespace LionFire.DependencyInjection
             return (T)mi.Invoke(this, new object[] { typeof(T), serviceProvider, createIfMissing });
         }
 
-        private bool UseManualSingletonServiceProvider = false;
+        //private readonly bool UseManualSingletonServiceProvider = false;
 
         /// <summary>
         /// Locate the service for the specified type.
@@ -110,7 +128,7 @@ namespace LionFire.DependencyInjection
 
             #region Try this.ServiceProvider
             {
-                var _serviceProvider = this.ServiceProvider;
+                var _serviceProvider = ServiceProvider;
                 if (_serviceProvider != null)
                 {
                     result = _serviceProvider.GetService(serviceType);
@@ -119,24 +137,26 @@ namespace LionFire.DependencyInjection
             }
             #endregion
 
-            #region Try ManualSingleton<IServiceProvider>.Instance
+            //#region Try ManualSingleton<IServiceProvider>.Instance
 
-            if (UseManualSingletonServiceProvider)
-            {
-                var _serviceProvider = ManualSingleton<IServiceProvider>.Instance;
-                if (_serviceProvider != null && _serviceProvider != this)
-                {
-                    result = _serviceProvider.GetService(serviceType);
-                    if (result != null) { return result; }
-                }
-            }
+            //if (UseManualSingletonServiceProvider)
+            //{
+            //    var _serviceProvider = ManualSingleton<IServiceProvider>.Instance;
+            //    if (_serviceProvider != null && _serviceProvider != this)
+            //    {
+            //        result = _serviceProvider.GetService(serviceType);
+            //        if (result != null) { return result; }
+            //    }
+            //}
 
-            #endregion
+            //#endregion
 
             #region Try ManualSingleton<>'s GuaranteedInstance (if createIfMissing is true), or else Instance
 
             if (!serviceType.GetTypeInfo().IsInterface)
             {
+                // BREAKINGCHANGE TODO: store the instance with this object, rather than the global ManualSingleton<>.Instance
+
                 var pi = typeof(ManualSingleton<>).MakeGenericType(serviceType).GetProperty(createIfMissing ? "GuaranteedInstance" : "Instance", BindingFlags.Static | BindingFlags.Public);
                 result = pi.GetValue(null); // Might be null for ManualSingleton<>.Instance
                 if (result != null) { return result; }
@@ -188,23 +208,18 @@ namespace LionFire.DependencyInjection
         //    return result;
         //}
 
-        public void AddSingleton<T>(T obj, bool force = false)
-            where T : class
-        {
-            if (!force && ManualSingleton<T>.Instance != null && !object.ReferenceEquals(ManualSingleton<T>.Instance, obj))
-            {
-                throw new AlreadyException($"{typeof(T).Name} singleton already set.  Use force to override.");
-            }
-            ManualSingleton<T>.Instance = obj;
-        }
+        //public void AddSingleton<T>(T obj, bool force = false)
+        //    where T : class
+        //{
+        //    if (!force && ManualSingleton<T>.Instance != null && !object.ReferenceEquals(ManualSingleton<T>.Instance, obj))
+        //    {
+        //        throw new AlreadyException($"{typeof(T).Name} singleton already set.  Use force to override.");
+        //    }
+        //    ManualSingleton<T>.Instance = obj;
+        //}
 
-        object IServiceProvider.GetService(Type serviceType)
-        {
-            return GetService(serviceType, null, DefaultCreateIfMissing);
-        }
+        object IServiceProvider.GetService(Type serviceType) => GetService(serviceType, null, DefaultCreateIfMissing);
         private const bool DefaultCreateIfMissing = true;
-
-
 
     }
 

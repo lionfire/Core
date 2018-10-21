@@ -29,6 +29,12 @@ namespace LionFire.Applications.Hosting
             host.ServiceCollection.AddSingleton<T>();
             return host;
         }
+        public static IAppHost AddSingleton<T>(this IAppHost host, T implementationInstance)
+            where T : class
+        {
+            host.ServiceCollection.AddSingleton<T>(implementationInstance);
+            return host;
+        }
 
         public static IAppHost AddSingleton<TService, TImplementation>(this IAppHost host)
             where TService : class
@@ -38,9 +44,23 @@ namespace LionFire.Applications.Hosting
             return host;
         }
 
+        public static IAppHost AddSingleton<TService, TImplementation>(this IAppHost host, Func<IServiceProvider, TImplementation> implementationFactory)
+            where TService : class
+            where TImplementation : class, TService
+        {
+            host.ServiceCollection.AddSingleton<TService, TImplementation>(implementationFactory);
+            return host;
+        }
+
         public static IAppHost AddSingleton(this IAppHost host, Type serviceType, Type implementationType)
         {
             host.ServiceCollection.AddSingleton(serviceType, implementationType);
+            return host;
+        }
+
+        public static IAppHost AddSingleton(this IAppHost host, Type serviceType, Func<IServiceProvider, object> implementationFactory)
+        {
+            host.ServiceCollection.AddSingleton(serviceType, implementationFactory);
             return host;
         }
 

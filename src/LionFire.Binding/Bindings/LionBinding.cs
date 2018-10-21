@@ -17,6 +17,7 @@ using System.Linq.Expressions;
 using Expression = System.Linq.Expressions.Expression;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
+using LionFire.Structures;
 
 namespace LionFire.Bindings
 {

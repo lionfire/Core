@@ -67,7 +67,7 @@ namespace LionFire.Bindings
                 string typeName = MultiTypeTypeName;
                 if (typeName == null) return null;
 
-                Type type = TypeResolver.GetType(typeName);
+                Type type = TypeResolver.Resolve(typeName);
 
                 //Type type = Type.GetType(typeName);
                 //l.Trace("UNTESTED - MultiTypeType: " + (type == null ? "null" : type.FullName));
@@ -121,7 +121,7 @@ namespace LionFire.Bindings
             BindingFlags bindingFlags = BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance;
             if (PropertyName.StartsWith("(") && PropertyName.EndsWith(")"))
             {
-                l.Fatal("UNTESTED: Explicit interface property");
+                l.LogCritical("UNTESTED: Explicit interface property");
                 string propertyNameInt = PropertyName.TrimStart('(').TrimEnd(')');
                 int lastIndex = propertyNameInt.LastIndexOf('.');
                 string interfaceName = propertyNameInt.Substring(0, lastIndex);
@@ -300,15 +300,15 @@ namespace LionFire.Bindings
                 }
                 else
                 {
-                    MethodInfo miGet = typeof(SReadonlyMultiTypedEx).GetMethod("AsType", new Type[] { }).MakeGenericMethod(type);
+                    MethodInfo miGet = typeof(SReadOnlyMultiTypedEx).GetMethod("AsType", new Type[] { }).MakeGenericMethod(type);
                     GetMethod = (o) => CachedValue = miGet.Invoke(o, null);
 
                     ///////////////////// ---------  --------- ------------------  
 
                     //MethodInfo miSet = typeof(IExtendableMultiTyped).GetMethod("SetType").MakeGenericMethod(type);
-                    if (typeof(IExtendableMultiTyped).IsAssignableFrom(type))
+                    if (typeof(IMultiTyped).IsAssignableFrom(type))
                     {
-                        MethodInfo miSet = typeof(IExtendableMultiTyped).GetMethod("SetType");
+                        MethodInfo miSet = typeof(IMultiTyped).GetMethod("SetType");
                         SetMethod = (o, val) =>
                             {
                                 try
@@ -339,27 +339,28 @@ namespace LionFire.Bindings
         
         private void UpdateAccessorWrapperMethods()
         {
-            if (TryUpdateAccessorWrapperMethods != null)
-            {
-                var result = TryUpdateAccessorWrapperMethods(depObj);
-                if (result.succeeded)
-                {
-                    GetMethodWrapper = (p1) => result.GetMethodWrapper(this,p1);
-                    SetMethodWrapper = (p1, p2) => result.SetMethodWrapper(this, p1, p2);
-                    return;
-                }
-            }
+            throw new NotImplementedException("TODO: fix depObj");
+            //if (TryUpdateAccessorWrapperMethods != null)
+            //{
+            //    var result = TryUpdateAccessorWrapperMethods(depObj);
+            //    if (result.succeeded)
+            //    {
+            //        GetMethodWrapper = (p1) => result.GetMethodWrapper(this,p1);
+            //        SetMethodWrapper = (p1, p2) => result.SetMethodWrapper(this, p1, p2);
+            //        return;
+            //    }
+            //}
 
-            if (isAsync)
-            {
-                GetMethodWrapper = AllowAsyncGet ? GetWrapperForAsync : new Func<object, object>((o) => GetMethod(o));
-                SetMethodWrapper = SetWrapperForAsync;
-                return;
-            }
+            //if (isAsync)
+            //{
+            //    GetMethodWrapper = AllowAsyncGet ? GetWrapperForAsync : new Func<object, object>((o) => GetMethod(o));
+            //    SetMethodWrapper = SetWrapperForAsync;
+            //    return;
+            //}
 
-            GetMethodWrapper = (o) => GetMethod(o);
-            SetMethodWrapper = (o, value) => SetMethod(o, value);
-            return;
+            //GetMethodWrapper = (o) => GetMethod(o);
+            //SetMethodWrapper = (o, value) => SetMethod(o, value);
+            //return;
 
         }
 
@@ -731,12 +732,12 @@ namespace LionFire.Bindings
         }
         private EventInfo propertyChangedEventInfo;
 
-        private void MultiTypeObjectChanged(IMultiTyped sender, Type type)
+        private void MultiTypeObjectChanged(IReadOnlyMultiTyped sender, Type type)
         {
             if (MultiTypeType == type)
             {
                 l.Trace("UNTESTED - Got MultiTypeObjectChanged for " + type.FullName);
-
+                
                 try
                 {
                     GetValue();
@@ -753,7 +754,7 @@ namespace LionFire.Bindings
             }
         }
 
-        private void SMultiTypeObjectChanged(SReadonlyMultiTypedEx sender, Type type)
+        private void SMultiTypeObjectChanged(SReadOnlyMultiTypedEx sender, Type type)
         {
             if (MultiTypeType == type)
             {
@@ -796,8 +797,8 @@ namespace LionFire.Bindings
 
             if (IsMultiTypeAccessor)
             {
-                IMultiTyped multiTyped = bindingObject as IMultiTyped;
-                IExtendableMultiTyped extendableMultiTyped = bindingObject as IExtendableMultiTyped;
+                var multiTyped = bindingObject as IReadOnlyMultiTyped;
+                var extendableMultiTyped = bindingObject as IMultiTyped;
                 INotifyMultiTypeChanged notifyMultiTypeChanged = bindingObject as INotifyMultiTypeChanged;
                 SNotifyMultiTypeChanged sNotifyMultiTypeChanged = bindingObject as SNotifyMultiTypeChanged;
 
@@ -817,7 +818,7 @@ namespace LionFire.Bindings
                 {
                     if (multiTyped == null && bindingObject != null)
                     {
-                        l.Error("UNEXPECTED: BindingObject is not of type IMultiTyped: " + bindingObject.GetType().FullName);
+                        l.Error("UNEXPECTED: BindingObject is not of type IReadOnlyMultiTyped: " + bindingObject.GetType().FullName);
                     }
                     if (bindingObject != null && !isBound)
                     {
@@ -910,8 +911,7 @@ namespace LionFire.Bindings
 
             #region IPropertyChanged
             {
-                IPropertyChanged propertyChanged = bindingObject as IPropertyChanged;
-                if (propertyChanged != null)
+                if (bindingObject is IPropertyChanged propertyChanged)
                 {
                     propertyChanged.PropertyValueChanged += new Action<string>(OnPropertyChanged);
                     isBoundToPropertyChanged = true;
@@ -1486,10 +1486,10 @@ namespace LionFire.Bindings
                 if (isBoundToMultiTypeMethod)
                 {
                     //IExtendableMultiTyped multiTyped = bindingObject as IExtendableMultiTyped;
-                    INotifyMultiTypeChanged notifyMultiTypeChanged = bindingObject as INotifyMultiTypeChanged;
+                    var notifyMultiTypeChanged = bindingObject as INotifyMultiTypeChanged;
                     if (notifyMultiTypeChanged != null)
                     {
-                        notifyMultiTypeChanged.RemoveTypeHandler(MultiTypeType, new Action<IMultiTyped, Type>(MultiTypeObjectChanged));
+                        notifyMultiTypeChanged.RemoveTypeHandler(MultiTypeType, new Action<IReadOnlyMultiTyped, Type>(MultiTypeObjectChanged));
                         isBoundToMultiTypeMethod = false;
                     }
                     else
@@ -1500,10 +1500,10 @@ namespace LionFire.Bindings
                 }
                 else if (isBoundToSMultiTypeMethod)
                 {
-                    SNotifyMultiTypeChanged notifySMultiTypeChanged = bindingObject as SNotifyMultiTypeChanged;
+                    var notifySMultiTypeChanged = bindingObject as SNotifyMultiTypeChanged;
                     if (notifySMultiTypeChanged != null)
                     {
-                        notifySMultiTypeChanged.RemoveTypeHandler(MultiTypeType, new Action<SReadonlyMultiTypedEx, Type>(SMultiTypeObjectChanged));
+                        notifySMultiTypeChanged.RemoveTypeHandler(MultiTypeType, new Action<SReadOnlyMultiTypedEx, Type>(SMultiTypeObjectChanged));
                         isBoundToSMultiTypeMethod = false;
                     }
                     else

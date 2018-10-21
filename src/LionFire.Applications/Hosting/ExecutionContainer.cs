@@ -34,12 +34,12 @@ namespace LionFire.Applications.Hosting
     }
 #endif
 
-    public class ExecutionContainer : ExecutablesHost<ExecutionContainer>, IReadonlyMultiTyped
+    public class ExecutionContainer : ExecutablesHost<ExecutionContainer>, IReadOnlyMultiTyped
     {
         protected readonly MultiType multiType = new MultiType();
 
         // REVIEW - Not sure this is needed or a good idea
-        T IReadonlyMultiTyped.AsType<T>()
+        T IReadOnlyMultiTyped.AsType<T>()
         {
             switch (typeof(T).Name)
             {

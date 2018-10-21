@@ -14,7 +14,6 @@ namespace LionFire.Referencing
         //    }
         //}
 
-
         #region DeletePending
 
         /// <summary>

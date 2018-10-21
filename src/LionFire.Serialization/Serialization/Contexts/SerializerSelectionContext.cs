@@ -9,6 +9,14 @@ namespace LionFire.Serialization
 
         public bool RoundTripCapable { get; set; }
 
+        public SerializerSelectionScores Scores { get; set; } = new SerializerSelectionScores();
+
+    }
+
+    public class SerializerSelectionScores
+    {
+        public float SupportedFileExtension { get; set; } = 100;
+        public float SupportedMimeType { get; set; } = 100;
     }
 
 }

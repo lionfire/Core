@@ -7,7 +7,7 @@ namespace LionFire.MultiTyping
 {
     public interface IContainsReadOnlyMultiTyped
     {
-        IReadonlyMultiTyped MultiTyped { get; }
+        IReadOnlyMultiTyped MultiTyped { get; }
     }
     public static class IContainsReadOnlyMultiTypedExtensions
     {

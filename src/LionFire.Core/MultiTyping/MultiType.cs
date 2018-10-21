@@ -162,14 +162,14 @@ namespace LionFire.MultiTyping
 
         #region Type Change Events
 
-        private Dictionary<Type, Action<IReadonlyMultiTyped, Type>> handlers = new Dictionary<Type, Action<IReadonlyMultiTyped, Type>>();
+        private Dictionary<Type, Action<IReadOnlyMultiTyped, Type>> handlers = new Dictionary<Type, Action<IReadOnlyMultiTyped, Type>>();
         private object handlersLock = new object();
 
-        private Dictionary<Type, Action<SReadonlyMultiTypedEx, Type>> sHandlers = new Dictionary<Type, Action<SReadonlyMultiTypedEx, Type>>();
+        private Dictionary<Type, Action<SReadOnlyMultiTypedEx, Type>> sHandlers = new Dictionary<Type, Action<SReadOnlyMultiTypedEx, Type>>();
         private object sHandlersLock = new object();
 
 
-        public void AddTypeHandler(Type type, Action<IReadonlyMultiTyped, Type> callback)
+        public void AddTypeHandler(Type type, Action<IReadOnlyMultiTyped, Type> callback)
         {
             lock (handlersLock)
             {
@@ -179,7 +179,7 @@ namespace LionFire.MultiTyping
             }
         }
 
-        public void RemoveTypeHandler(Type type, Action<IReadonlyMultiTyped, Type> callback)
+        public void RemoveTypeHandler(Type type, Action<IReadOnlyMultiTyped, Type> callback)
         {
             lock (handlersLock)
             {
@@ -189,7 +189,7 @@ namespace LionFire.MultiTyping
             }
         }
 
-        public void AddTypeHandler(Type type, Action<SReadonlyMultiTypedEx, Type> callback)
+        public void AddTypeHandler(Type type, Action<SReadOnlyMultiTypedEx, Type> callback)
         {
             lock (sHandlersLock)
             {
@@ -199,7 +199,7 @@ namespace LionFire.MultiTyping
             }
         }
 
-        public void RemoveTypeHandler(Type type, Action<SReadonlyMultiTypedEx, Type> callback)
+        public void RemoveTypeHandler(Type type, Action<SReadOnlyMultiTypedEx, Type> callback)
         //public void RemoveTypeHandler<T>(Type type, MulticastDelegate callback)
         //where T : class
         {

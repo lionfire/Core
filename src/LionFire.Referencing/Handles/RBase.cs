@@ -1,12 +1,11 @@
-﻿using LionFire.Referencing.Persistence;
-using LionFire.Structures;
-using System;
-using System.Diagnostics;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
+using LionFire.Structures;
 
 namespace LionFire.Referencing
 {
-
     /// <summary>
     /// Base class for read/write handles
     /// </summary>
@@ -14,40 +13,58 @@ namespace LionFire.Referencing
     public abstract class RBase<ObjectType> : R<ObjectType>, IKeyed<string>
         where ObjectType : class
     {
+        /// <summary>
+        /// Reference only allows types assignable to types in this Enumerable
+        /// </summary>
+        public virtual IEnumerable<Type> AllowedReferenceTypes => null;
+
         #region Identity
 
         #region Reference
 
         public IReference Reference
         {
-            get { return reference; }
+            get => reference;
             protected set
             {
-                if (reference == value) return;
-                if (reference != default(IReference)) throw new AlreadySetException();
+                if (reference == value)
+                {
+                    return;
+                }
+
+                if (reference != default(IReference))
+                {
+                    throw new AlreadySetException();
+                }
+
+                var art = AllowedReferenceTypes;
+                if (art != null && value != null && !art.Where(type => type.IsAssignableFrom(value.GetType())).Any())
+                {
+                    throw new ArgumentException("This type does not support IReferences of that type.  See AllowedReferenceTypes for allowed types.");
+                }
+
                 reference = value;
             }
         }
-        private IReference reference;
+        protected IReference reference;
 
         #endregion
 
         public string Key
         {
-            get=> Reference.Key;
-            
-            set => this.Reference = Injection.GetService<IReferenceFactory>().ToReference(value);
-            
+            get => Reference.Key;
+            set => Reference = Injection.GetService<IReferenceFactory>().ToReference(value);
         }
-        
+
         #endregion
 
         #region Construction
 
         protected RBase() { }
-        protected RBase(IReference reference) { this.Reference = reference; }
-        public RBase(IReference reference, ObjectType obj = null) : this(reference) {
-            this._object = obj;
+        protected RBase(IReference reference) { Reference = reference; }
+        public RBase(IReference reference, ObjectType obj = null) : this(reference)
+        {
+            _object = obj;
         }
 
         #endregion
@@ -56,12 +73,16 @@ namespace LionFire.Referencing
 
         #region HandleState
 
-        public HandleState HandleState
+        public PersistenceState HandleState
         {
-            get { return handleState; }
+            get => handleState;
             set
             {
-                if (handleState == value) return;
+                if (handleState == value)
+                {
+                    return;
+                }
+
                 var oldValue = handleState;
                 handleState = value;
 
@@ -69,23 +90,25 @@ namespace LionFire.Referencing
                 HandleStateChangedFromTo?.Invoke(oldValue, value);
             }
         }
-        private HandleState handleState;
+        private PersistenceState handleState;
 
-        public event Action<HandleState,HandleState> HandleStateChangedFromTo;
+        public event Action<PersistenceState, PersistenceState> HandleStateChangedFromTo;
 
         #endregion
 
+        // REVIEW - is this useful?
         public bool IsPersisted
         {
-            get { return HandleState.HasFlag(HandleState.Persisted); }
-            set {
-                if(value)
+            get => HandleState.HasFlag(PersistenceState.Persisted);
+            set
+            {
+                if (value)
                 {
-                    HandleState |= HandleState.Persisted;
+                    HandleState |= PersistenceState.Persisted;
                 }
                 else
                 {
-                    HandleState &= ~HandleState.Persisted;
+                    HandleState &= ~PersistenceState.Persisted;
                 }
             }
         }
@@ -132,10 +155,7 @@ namespace LionFire.Referencing
         public event Action<R<ObjectType>, ObjectType /*oldValue*/ , ObjectType /*newValue*/> ObjectReferenceChanged;
         public event Action<R<ObjectType>> ObjectChanged;
 
-        protected void OnRetrievedObject(ObjectType obj)
-        {
-            this.Object = obj; // TODO FUTURE: Bypass events, or trigger different events (don't trigger "user changed", but instead "retrieved")
-        }
+        protected void OnRetrievedObject(ObjectType obj) => Object = obj; // TODO FUTURE: Bypass events, or trigger different events (don't trigger "user changed", but instead "retrieved")
         protected void OnRetrieveFailed()
         {
             // TODO: Events?
@@ -155,7 +175,7 @@ namespace LionFire.Referencing
 
         public bool IsRetrieved
         {
-            get { return isResolved; }
+            get => isResolved;
             protected set
             {
                 if (isResolved == value)
@@ -179,10 +199,7 @@ namespace LionFire.Referencing
 
         public event Action<R<ObjectType>, HandleEvents> HandleEvents;
 
-        protected void RaiseEvent(HandleEvents eventType)
-        {
-            HandleEvents?.Invoke(this, eventType);
-        }
+        protected void RaiseEvent(HandleEvents eventType) => HandleEvents?.Invoke(this, eventType);
 
         #endregion
 
@@ -198,7 +215,10 @@ namespace LionFire.Referencing
         /// <returns>True if an object was found after a retrieval or was manually set on the handle, false otherwise.</returns>
         public virtual async Task<bool> TryGetObject()
         {
-            if (HasObject) return true;
+            if (HasObject)
+            {
+                return true;
+            }
 
             if (!IsRetrieved)
             {

@@ -4,7 +4,7 @@ namespace LionFire.MultiTyping
 {
     // REVIEW this
 
-    public interface SReadonlyMultiTypedEx
+    public interface SReadOnlyMultiTypedEx
     {
 #if !NoGenericMethods
         T AsType<T>() where T : class;

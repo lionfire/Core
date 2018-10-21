@@ -11,6 +11,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\LionFire.Core.Extras.Abstractions\LionFire.Core.Extras.Abstractions.csproj" />
     <ProjectReference Include="..\LionFire.Core\LionFire.Core.csproj" />
     <ProjectReference Include="..\LionFire.Structures\LionFire.Structures.csproj" />
   </ItemGroup>

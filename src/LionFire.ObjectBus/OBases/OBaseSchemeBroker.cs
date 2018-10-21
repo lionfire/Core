@@ -1,12 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using LionFire.Collections;
-using LionFire.ObjectBus;
+using LionFire.DependencyInjection;
 using LionFire.Structures;
 
-namespace LionFire.Referencing
+namespace LionFire.ObjectBus
 {
     // TODO: Revamp this to a IReference to IReadHandle/IWritableHandle registrar, with no involvement of OBases.
 
@@ -40,14 +39,28 @@ namespace LionFire.Referencing
 
         #endregion
 
-        public void Register<T>(T objectStoreProvider)
-            where T : IOBaseProvider
+        public void RegisterAvailableProviders()
         {
-            foreach (var scheme in objectStoreProvider.UriSchemes)
+            foreach(var obaseProvider in InjectionContext.Current.GetService<IEnumerable<IOBaseProvider>>())
             {
-                objectStores.Add(scheme, objectStoreProvider);
+                foreach (var scheme in obaseProvider.UriSchemes)
+                {
+                    objectStores.Add(scheme, obaseProvider);
+                }
             }
         }
+
+        //// OLD - use IAppHost.AddSingleton<IOBaseProvider, ImplType>() and IAppHost.AddObjectBus() instead,
+        //public void Register<T>(T obaseProvider)
+        //    where T : IOBaseProvider
+        //{
+        //    throw new NotImplementedException("OLD");
+
+        //    foreach (var scheme in obaseProvider.UriSchemes)
+        //    {
+        //        objectStores.Add(scheme, obaseProvider);
+        //    }
+        //}
 
         public IEnumerable<IOBaseProvider> this[string scheme]
         {

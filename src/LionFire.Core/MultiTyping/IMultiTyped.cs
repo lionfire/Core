@@ -4,7 +4,7 @@ using System.Threading.Tasks;
 
 namespace LionFire.MultiTyping
 {
-    public interface IMultiTyped : IReadonlyMultiTyped
+    public interface IMultiTyped : IReadOnlyMultiTyped
     {
         void SetType<T>(T obj) where T : class;
     }

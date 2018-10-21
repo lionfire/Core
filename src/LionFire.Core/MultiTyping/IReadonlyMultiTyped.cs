@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 
 namespace LionFire.MultiTyping
 {
-    public interface IReadonlyMultiTyped
+    public interface IReadOnlyMultiTyped
     {
         T AsType<T>() where T : class;
 
@@ -13,7 +13,7 @@ namespace LionFire.MultiTyping
 
     // REVIEW these:
 
-    public interface IReadonlyMultiTypedEx : SReadonlyMultiTypedEx
+    public interface IReadOnlyMultiTypedEx : SReadOnlyMultiTypedEx
     {
         IReadOnlyDictionary<Type, object> Types { get; }
         object this[Type type] { get; }

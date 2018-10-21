@@ -8,6 +8,31 @@ using System.Reflection;
 
 namespace LionFire.ObjectBus
 {
+    public abstract class WritableOBaseBase<ReferenceType> : OBaseBase<ReferenceType>, IWritableOBase
+        where ReferenceType : class, IReference
+        //where HandleInterfaceType : IHandle
+    {
+
+        #region Set
+
+        public abstract void Set(ReferenceType reference, object obj, bool allowOverwrite = true, bool preview = false);
+        public void Set(IReference reference, object obj, bool allowOverwrite = true) => Set(ConvertToReferenceType(reference), obj, allowOverwrite);
+
+        #endregion
+
+        #region Delete
+
+        public abstract bool? CanDelete(ReferenceType reference);
+        bool? IWritableOBase.CanDelete(IReference reference) => CanDelete(ConvertToReferenceType(reference));
+
+        public abstract bool TryDelete(ReferenceType reference, bool preview = false);
+
+        bool IWritableOBase.TryDelete(IReference reference, bool preview) => TryDelete(ConvertToReferenceType(reference), preview);
+
+        #endregion
+
+    }
+
     public abstract class OBaseBase<ReferenceType> : IOBase
         where ReferenceType : class, IReference
         //where HandleInterfaceType : IHandle
@@ -95,24 +120,6 @@ namespace LionFire.ObjectBus
         }
 
         #endregion
-
-        #endregion
-
-        #region Set
-
-        public abstract void Set(ReferenceType reference, object obj, bool allowOverwrite = true, bool preview = false);
-        public void Set(IReference reference, object obj, bool allowOverwrite = true) => Set(ConvertToReferenceType(reference), obj, allowOverwrite);
-
-        #endregion
-
-        #region Delete
-
-        public abstract bool? CanDelete(ReferenceType reference);
-        bool? IOBase.CanDelete(IReference reference) => CanDelete(ConvertToReferenceType(reference));
-
-        public abstract bool TryDelete(ReferenceType reference, bool preview = false);
-
-        bool IOBase.TryDelete(IReference reference, bool preview) => TryDelete(ConvertToReferenceType(reference), preview);
 
         #endregion
 

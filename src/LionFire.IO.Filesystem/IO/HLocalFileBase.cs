@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 
 namespace LionFire.IO
 {
+
     public abstract class HLocalFileBase<T> : WBase<T>
         where T : class
     {
