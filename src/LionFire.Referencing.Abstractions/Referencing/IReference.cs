@@ -1,4 +1,5 @@
-﻿using LionFire.Structures;
+﻿using LionFire.DependencyInjection;
+using LionFire.Structures;
 
 namespace LionFire.Referencing
 {
@@ -6,7 +7,7 @@ namespace LionFire.Referencing
     /// Reference interface for all references: OBase, Vos, Handles.
     /// References should be round-trip convertible to and from a string key (from IKeyed)
     /// </summary>
-    public interface IReference : IKeyed<string>, IMachineReference
+    public interface IReference : IKeyed<string>, IMachineReference, ICompatibleWithSome<string>
     {
         string Scheme { get; }
         string Path { get; }

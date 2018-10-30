@@ -8,22 +8,14 @@ namespace LionFire.Applications.Hosting
     {
         public static IAppHost AddFilesystemObjectBus(this IAppHost app)
         {
-            var obus = new FsOBus();
-            var obp = new FsOBaseProvider();
+            app.TryAddEnumerableSingleton<IOBus, FsOBus>();
+            //var obp = new FsOBus();
+            //app.AddSingleton(obp);
+            //app.AddSingleton<IHandleProvider, FilesystemOBus>();
+            //app.AddSingleton<IReferenceProvider, FilesystemOBus>();
+            //app.AddSingleton<IOBaseProvider, FilesystemOBus>();
 
-            app.AddSingleton<IOBaseProvider>(obp);
-            app.AddSingleton(obp);
-            app.AddSingleton<IHandleProvider, FsOBaseHandleProvider>();
+            return app;
         }
-        //{
-            
-
-        //    //return app.AddInit(_ =>
-        //    //{
-        //    //    // TODO TOUNGLOBAL: Remove global
-        //    //    OBaseSchemeBroker.Instance.Register(FsOBaseProvider.Instance); // HARDCODE HARDCONF
-        //    //    return true;
-        //    //});
-        //}
     }
 }

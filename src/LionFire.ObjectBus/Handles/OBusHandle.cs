@@ -1,22 +1,195 @@
-﻿#if TOPORT
-//#define DEBUG_LOAD
+﻿//#define DEBUG_LOAD
 //#define TRACE_LOAD_FAIL
 //using LionFire.Input; REVIEW
 //using LionFire.Extensions.DefaultValues; REVIEW
 
-using LionFire.Referencing;
 using System;
-using System.Collections.Generic;
 using System.Threading.Tasks;
+using LionFire.ObjectBus.Resolution;
+using LionFire.Referencing;
 
 namespace LionFire.ObjectBus
 {
+    public class OBusHandle<TObject> : OBusHandle<TObject, object>
+    {
+        public OBusHandle() { }
+        public OBusHandle(IReference reference, TObject handleObject = default(TObject)) : base(reference, handleObject) { }
+    }
 
+    //public class OBaseResolutionData
+    //{        
+    //}
+
+    /// <summary>
+    ///  TODO NEXT: A standard handle can contain: IReference, TObject, cached OBase, cached OBase resolution data
+    ///  (e.g. sub-reference for VOS, or just path for FS).  If the obase or obase resolution data can change/expire, a
+    ///  more sophisticated handle might be needed.  A genericized handle could be the same, but be strongly typed
+    ///  for the OBase resolution data and/or IReference and/or OBase??
+    /// </summary>
+    /// <typeparam name="TObject"></typeparam>
+    public class OBusHandle<TObject, TOBaseData> : WBase<TObject>, H<TObject>
+    //where TOBaseData : OBaseResolutionData
+    {
+        #region OBase
+
+
+        public IOBase OBase
+        {
+            get => obase;
+            set
+            {
+                if (obase == value)
+                {
+                    return;
+                }
+
+                if (obase != default(IOBase))
+                {
+                    throw new AlreadySetException();
+                }
+
+                obase = value;
+            }
+        }
+        private IOBase obase;
+
+        #endregion
+
+        #region OBus
+
+        public IOBus OBus
+        {
+            get => obus ?? OBase?.OBus;
+            set
+            {
+                if (obus == value)
+                {
+                    return;
+                }
+
+                if (obus != default(IOBus))
+                {
+                    throw new AlreadySetException();
+                }
+
+                obus = value;
+            }
+        }
+        private IOBus obus;
+
+        #endregion
+
+        #region Construction
+
+        public OBusHandle() { }
+        public OBusHandle(IReference reference, TObject handleObject = default(TObject))
+        {
+            Reference = reference;
+            _object = handleObject;
+        }
+
+        #endregion
+
+        public void ResetResolutionCache() => ResolutionInfo = null;
+        public ResolutionInfo<TOBaseData> ResolutionInfo { get; set; }
+
+        [SetOnce]
+        private object OBaseData { get; }
+
+        private void EnsureOBaseResolved()
+        {
+            if (OBase != null) return;
+
+            IOBase obase = OBase;
+
+            if (obase == null)
+            {
+                // REVIEW - keep OBase/OBus in less places?  Should ResolutionInfo not be transient?
+                obase = ResolutionInfo?.OBase;
+            }
+
+            if (obase == null)
+            {
+                IOBus obaseProvider;
+                (obaseProvider, obase) = Reference.TryResolve();
+                if (obase == null)
+                {
+                    ResolutionInfo = null;
+                }
+                else
+                {
+                    if (ResolutionInfo == null)
+                    {
+                        ResolutionInfo = new ResolutionInfo<TOBaseData>
+                        {
+                            OBase = obase,
+                        };
+                    }
+                }
+            }
+
+            OBase = obase ?? throw new ObjectBusException("Could not resolve OBase for OBusHandle.  Reference: " + this.Reference);
+        }
+
+        public override async Task<bool> TryRetrieveObject()
+        {
+            if (Reference == null) throw new ArgumentNullException(nameof(Reference));
+            EnsureOBaseResolved();
+            
+            var result = await OBase.TryGet<TObject>(Reference).ConfigureAwait(false);
+
+            if (result.IsSuccess)
+            {
+                OnRetrievedObject(result.Result);
+            }
+            else
+            {
+                OnRetrieveFailed(result);
+            }
+            return result.IsSuccess;
+        }
+
+        public override Task DeleteObject(object persistenceContext = null) => throw new NotImplementedException();
+        public override async Task WriteObject(object persistenceContext = null)
+        {
+            if (Reference == null) throw new ArgumentNullException(nameof(Reference));
+            EnsureOBaseResolved();
+
+            await OBase.Set(Reference, this._object, typeof(TObject)).ConfigureAwait(false);
+
+            //if (result.IsSuccess)
+            {
+                OnSavedObject();
+            }
+            //else
+            //{
+            //    OnRetrieveFailed(result);
+            //}
+            //return result.IsSuccess;
+        }
+    }
+
+    public class OBusHandle<TObject, TReference, TOBase, TOBaseData>
+    {
+
+        [SetOnce]
+        private TReference Reference { get; set; }
+
+        [SetOnce]
+        private TOBase OBase { get; }
+
+        [SetOnce]
+        private TOBaseData OBaseData { get; }
+    }
+
+
+
+#if TOPORT // OLD - see above
     // TODO: Use IOC, extension methods here instead of this class
     public class OBusHandle<ObjectType> : HandleBase<ObjectType>
         where ObjectType : class
     {
-        #region Construction
+    #region Construction
 
         public OBusHandle(ObjectType obj = null, bool freezeObjectIfProvided = true)
             : base(obj, freezeObjectIfProvided)
@@ -40,10 +213,10 @@ namespace LionFire.ObjectBus
             this.Reference = referencable.Reference;
         }
 
-        #endregion
+    #endregion
 
 
-        #region Reference
+    #region Reference
 
         [SetOnce]
         public override IReference Reference
@@ -95,9 +268,9 @@ namespace LionFire.ObjectBus
         }
         private IReference reference;
 
-        #endregion
+    #endregion
 
-        #region RetrieveInfo
+    #region RetrieveInfo
 
         public RetrieveInfo RetrieveInfo { get; set; }
         public virtual bool IsRetrieveInfoEnabled
@@ -113,9 +286,9 @@ namespace LionFire.ObjectBus
             }
         }
 
-        #endregion
+    #endregion
 
-        #region Saving
+    #region Saving
       
 
         public virtual Task Save(object persistenceContext = null)
@@ -160,9 +333,9 @@ namespace LionFire.ObjectBus
             OnSaved(); // Sets IsPersisted = true
         }
 
-        #endregion
+    #endregion
 
-        #region Delete
+    #region Delete
 
         public virtual bool? CanDelete()
         {
@@ -190,7 +363,7 @@ namespace LionFire.ObjectBus
             OnDeleted();
         }
 
-        #endregion
+    #endregion
         public virtual bool TryRetrieve(bool setToNullOnFail = true)
         {
             //			Log.Info("ZX HandleBase2.TryRetrieve");
@@ -234,7 +407,7 @@ namespace LionFire.ObjectBus
 
         }
 
-        #region Children Names
+    #region Children Names
 
         public virtual IEnumerable<string> GetChildrenNames(bool includeHidden = false)
         {
@@ -266,7 +439,7 @@ namespace LionFire.ObjectBus
             return OBus.GetChildrenOfType(this.Reference, childType);
         }
 
-        #endregion
+    #endregion
 
         public override Task<bool> TryResolveObject(object persistenceContext = null)
         {
@@ -304,6 +477,6 @@ namespace LionFire.ObjectBus
 
             return Task.FromResult(result != null);
         }
-    }
 }
 #endif
+}

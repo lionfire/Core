@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Reflection;
+using System.Threading;
 using LionFire.Structures;
 
 namespace LionFire.DependencyInjection
@@ -30,7 +31,7 @@ namespace LionFire.DependencyInjection
         /// </summary>
         public static InjectionContext Current
         {
-            get => current ?? Default;
+            get => AsyncLocal ?? current ?? Default;
             set
             {
                 if (current != null && value != null && value != current)
@@ -90,6 +91,47 @@ namespace LionFire.DependencyInjection
         private IServiceProvider serviceProvider;
 
         #endregion
+
+        #region AsyncLocal
+
+        public static InjectionContext AsyncLocal
+        {
+            get => asyncLocal?.Value;
+            set
+            {
+                if (asyncLocal == null)
+                {
+                    asyncLocal = new AsyncLocal<InjectionContext>();
+                }
+
+                asyncLocal.Value = value;
+            }
+        }
+        private static AsyncLocal<InjectionContext> asyncLocal;
+
+        #endregion
+
+        #region ThreadLocal
+
+        public static InjectionContext ThreadLocal
+        {
+            get => threadLocal?.Value;
+            set
+            {
+                if (threadLocal == null)
+                {
+                    threadLocal = new ThreadLocal<InjectionContext>();
+                }
+
+                threadLocal.Value = value;
+            }
+        }
+        private static ThreadLocal<InjectionContext> threadLocal;
+
+        #endregion
+
+
+
 
         public T GetService<T>(IServiceProvider serviceProvider = null, bool createIfMissing = DefaultCreateIfMissing)
         {

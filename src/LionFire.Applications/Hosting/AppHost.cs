@@ -1,28 +1,39 @@
-﻿using Microsoft.Extensions.DependencyInjection;
-using System;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reactive.Subjects;
-using System.Threading.Tasks;
 using System.Threading;
-using LionFire.Structures;
-using LionFire.Execution;
-using TInitializable = LionFire.Execution.IInitializable;
-using LionFire.DependencyInjection;
-using LionFire.MultiTyping;
-using LionFire.Execution.Composition;
+using System.Threading.Tasks;
 using LionFire.Assets;
-using LionFire.Instantiating;
-using System.Collections;
 using LionFire.Composables;
+using LionFire.DependencyInjection;
+using LionFire.Execution;
+using LionFire.Execution.Composition;
+using LionFire.Instantiating;
+using LionFire.MultiTyping;
 using LionFire.Referencing;
+using LionFire.Structures;
+using Microsoft.Extensions.DependencyInjection;
+using TInitializable = LionFire.Execution.IInitializable;
 
 namespace LionFire.Applications.Hosting
 {
-
     // Derive from new ExecutionContainer, move most stuff there?
     public class AppHost : ExecutablesHost<AppHost>, IAppHost, IReadOnlyMultiTyped
     {
+        private static IAppHost _CreateUnitTestApp()
+        {
+            if (CreateUnitTestApp == null)
+            {
+                return null;
+            }
+
+            IsCreatingUnitTestApp = true;
+            return CreateUnitTestApp();
+        }
+        public static Func<IAppHost> CreateUnitTestApp = () => new AppHost().Initialize();
+        private volatile static bool IsCreatingUnitTestApp = false;
 
         public static IAppHost MainApp { get => ManualSingleton<IAppHost>.Instance; protected set => ManualSingleton<IAppHost>.Instance = value; }
 
@@ -41,7 +52,10 @@ namespace LionFire.Applications.Hosting
                     return (T)ServiceProvider;
                 default:
                     var result = multiType.AsType<T>();
-                    if (result != null) return result;
+                    if (result != null)
+                    {
+                        return result;
+                    }
 
                     //if (ServiceProvider == null)
                     //{
@@ -63,9 +77,9 @@ namespace LionFire.Applications.Hosting
 
         public InjectionContext InjectionContext { get; private set; } = new InjectionContext();
 
-     
+
         #endregion
-        
+
         #region Microsoft.Extensions.DependencyInjection
 
         public IServiceCollection ServiceCollection { get; private set; }
@@ -74,7 +88,7 @@ namespace LionFire.Applications.Hosting
 
         public IServiceProvider ServiceProvider
         {
-            get { return serviceProvider; }
+            get => serviceProvider;
             set
             {
                 //if (IsRootApplication)
@@ -85,10 +99,36 @@ namespace LionFire.Applications.Hosting
                 //    }
                 //}
                 serviceProvider = value;
-                this.InjectionContext.ServiceProvider = value;
+
+                if (SetManualSingletons != null)
+                {
+                    foreach (var type in SetManualSingletons)
+                    {
+                        ManualSingleton.SetInstance(serviceProvider.GetService(type), type);
+                    }
+                    SetManualSingletons = null;
+                }
+
+                InjectionContext.ServiceProvider = value;
             }
         }
         private IServiceProvider serviceProvider;
+
+        public void SetManualSingletonFromService(Type serviceType)
+        {
+            if (!object.ReferenceEquals(MainApp, this))
+            {
+                return;
+            }
+
+            if (SetManualSingletons == null)
+            {
+                SetManualSingletons = new List<Type>();
+            }
+
+            SetManualSingletons.Add(serviceType);
+        }
+        private List<Type> SetManualSingletons; // MOVE to AppHostBuilder
 
         #endregion
 
@@ -99,40 +139,85 @@ namespace LionFire.Applications.Hosting
         public IDictionary<string, object> Properties { get; private set; } = new Dictionary<string, object>();
 
         /// <summary>
-        /// Reset the MainApp and InjectionContext.Default.  Can be used to conduct multiple unit tests in one process.
+        /// Can be used to conduct multiple unit tests in one process.
+        /// 
+        /// Resets these to null:
+        ///  - MainApp
+        ///  - InjectionContext.Default 
+        ///  - InjectionContext.Current
+        ///  - ManualSingleton.Instance for all types
         /// </summary>
         public static void Reset()
         {
             MainApp = null;
             InjectionContext.Default = null;
             InjectionContext.Current = null;
+            ManualSingletonRegistrar.ResetAll();
         }
 
         #region Construction and Initialization
 
-        public AppHost(bool notPrimaryApp = false)
+        public static bool AutoMultipleAppsWithoutSpecifyingPrimaryAppFalse = true;
+
+        private static object ctorLock = new object();
+
+        public static bool DetectUnitTestMode = true;
+
+        public string Name { get; set; }
+        public AppHost(string name = null, bool primaryApp = true)
         {
-            ServiceCollection = new ServiceCollection();
-            ServiceCollection.AddSingleton(typeof(IAppHost), this);
+            this.Name = name;
+            lock (ctorLock)
+            {
+                ServiceCollection = new ServiceCollection();
+                ServiceCollection.AddSingleton(typeof(IAppHost), this);
 
-            if (MainApp != null)
-            {
-                if(!notPrimaryApp) throw new Exception("Already has a AppHost.MainApp set.  Create AppHost with notPrimaryApp set to true to create multiple applications, or else set AppHost.MainApp to null first.");
-            }
-            else
-            {
-                MainApp = this; // IsRootApplication == true
-            }
+                if (MainApp == null)
+                {
+                    if (DetectUnitTestMode && !IsCreatingUnitTestApp && UnitTestingDetection.IsInUnitTest && CreateUnitTestApp != null)
+                    {
+                        _CreateUnitTestApp();
+                        if (MainApp == null)
+                        {
+                            throw new Exception("CreateUnitTestApp did not set MainApp");
+                        }
+                        primaryApp = true;
+                    }
+                }
 
-            if (InjectionContext.Default != null)
-            {
-                if (!notPrimaryApp) throw new Exception("Already has an InjectionContext.Default.  Create AppHost with notPrimaryApp set to true to create multiple applications, or else set InjectionContext.Default to null first.");
+                if (MainApp == null)
+                {
+                    MainApp = this; // IsRootApplication == true
+                }
+                else
+                {
+                    if (AutoMultipleAppsWithoutSpecifyingPrimaryAppFalse)
+                    {
+                        primaryApp = false;
+                    }
+
+                    if (primaryApp)
+                    {
+                        throw new Exception("Already has a AppHost.MainApp set.  Create AppHost with primaryApp set to false to create multiple applications, or else set AppHost.MainApp to null first before creating another AppHost.");
+                    }
+                }
+
+                if (primaryApp)
+                {
+                    if (InjectionContext.Default != null)
+                    {
+                        throw new Exception($"Already has an InjectionContext.Default.  Create AppHost with {nameof(primaryApp)} set to false to create multiple applications, or else set InjectionContext.Default to null first before creating another AppHost.");
+                    }
+                    InjectionContext.Default = InjectionContext;
+                }
+                else
+                {
+                    InjectionContext.AsyncLocal = InjectionContext;
+                }
             }
-            else
-            {
-                InjectionContext.Default = this.InjectionContext;
-            }            
         }
+
+        
 
         /// <summary>
         /// Default implementation is Microsoft.Extensions.DependencyInjection.ServiceCollectionContainerBuilderExtensions.BuildServiceProvider().
@@ -140,16 +225,15 @@ namespace LionFire.Applications.Hosting
         /// <param name="serviceCollection"></param>
         /// <returns></returns>
         protected virtual IServiceProvider BuildServiceProvider(IServiceCollection serviceCollection)
-        {
-            return serviceCollection.BuildServiceProvider(); // Microsoft extension method
-        }
+            => serviceCollection.BuildServiceProvider(); // Microsoft extension method
+
 
         public IAppHost InstantiateTemplates() // MOVE to ITemplateExtensions
         {
             foreach (var tComponent in children.OfType<ITemplate>().ToArray())
             {
                 var component = tComponent.Create();
-                this.Add(component);
+                Add(component);
                 children.Remove(tComponent);
             }
 
@@ -185,17 +269,20 @@ namespace LionFire.Applications.Hosting
         {
             foreach (var component in children.OfType<IRequiresInjection>())
             {
-                component.InjectionContext = this.InjectionContext;
+                component.InjectionContext = InjectionContext;
             }
         }
 
         public IAppHost Initialize(BootstrapMode mode = BootstrapMode.Rebuild)
         {
-            if (IsInitializeFrozen) throw new Exception("AppHost can no longer be initialized");
+            if (IsInitializeFrozen)
+            {
+                throw new Exception("AppHost can no longer be initialized");
+            }
 
             if (IsRootApplication)
             {
-                InjectionContext.Current = this.InjectionContext;
+                InjectionContext.Current = InjectionContext;
             }
 
             // FUTURE TODO: Use Resolution context?
@@ -244,17 +331,14 @@ namespace LionFire.Applications.Hosting
         #endregion
         #region Derived Properties
 
-        public bool IsRootApplication
-        {
-            get { return object.ReferenceEquals(this, MainApp); }
-        }
+        public bool IsRootApplication => object.ReferenceEquals(this, MainApp);
 
         #endregion
 
 
         #region Run
 
-        CancellationTokenSource tokenSource = new CancellationTokenSource();
+        private CancellationTokenSource tokenSource = new CancellationTokenSource();
         private List<Task> WaitForTasks { get; set; } = new List<Task>();
         private List<Task> Tasks { get; set; } = new List<Task>();
 

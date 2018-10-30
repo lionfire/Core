@@ -5,4 +5,8 @@
     <RootNamespace>LionFire</RootNamespace>
   </PropertyGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\LionFire.Referencing.Abstractions\LionFire.Referencing.Abstractions.csproj" />
+  </ItemGroup>
+
 </Project>

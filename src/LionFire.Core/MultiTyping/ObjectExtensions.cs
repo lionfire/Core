@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
+using LionFire.Ontology;
+using LionFire.Structures;
 
 namespace LionFire.Validation.MultiTyping
 {

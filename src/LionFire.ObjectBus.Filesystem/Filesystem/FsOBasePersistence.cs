@@ -13,6 +13,7 @@ using LionFire.Extensions.Collections;
 using LionFire.IO.Filesystem;
 using LionFire.MultiTyping;
 using LionFire.Persistence;
+using LionFire.Referencing;
 using LionFire.Serialization;
 using LionFire.Structures;
 using Microsoft.Extensions.Logging;
@@ -98,7 +99,7 @@ namespace LionFire.ObjectBus.Filesystem
 
         #region Get
 
-        public static async Task<T> GetFromPath<T>(string diskPath, Lazy<PersistenceOperation> operation = null, PersistenceContext context = null) => (T) await GetObjectFromPath(diskPath, typeof(T), operation, context);
+        public static async Task<T> GetFromPath<T>(string diskPath, Lazy<PersistenceOperation> operation = null, PersistenceContext context = null) => (T)await GetObjectFromPath(diskPath, typeof(T), operation, context);
         public static async Task<object> GetObjectFromPath(string diskPath, Type type = null, Lazy<PersistenceOperation> operation = null, PersistenceContext context = null)
         {
             #region Give Interceptors a chance to return the result
@@ -213,7 +214,7 @@ namespace LionFire.ObjectBus.Filesystem
             return obj != null;
         }
 
-        public static async Task<T> TryGet<T>(string objectPath) => (T) await TryGet(objectPath, typeof(T));
+        public static async Task<T> TryGet<T>(string objectPath) => (T)await TryGet(objectPath, typeof(T));
         // TODO - Extract common bits for bottom tier Persistence layers 
         // - this method is for OBases that may return multiple objects?
         public static async Task<object> TryGet(string objectPath, Type type = null)
@@ -270,16 +271,17 @@ namespace LionFire.ObjectBus.Filesystem
 
             objectPath;
 
-        public static void Set(object obj, string objectPath, Type type = null, bool preview = false)
+        public static async Task Set(object obj, string objectPath, Type type = null, bool preview = false)
         {
             try
             {
 #if TRACE_SAVE
                 l.Debug("[FS SAVE] " + objectPath);
 #endif
-                string objectDiskPath = GetSavePathWithoutExtension(obj, objectPath, type); // (No extension)
+                //string objectDiskPath = GetSavePathWithoutExtension(obj, objectPath, type); // (No extension)
+                string objectDiskPath = objectPath; // GetSavePathWithoutExtension(obj, objectPath, type); // (No extension)
 
-                Write(obj, objectDiskPath, type, preview);
+                await Write(obj, objectDiskPath, type, preview);
             }
             catch (Exception ex)
             {
@@ -287,6 +289,7 @@ namespace LionFire.ObjectBus.Filesystem
                 throw;
             }
         }
+
 
         public static ISerializationProvider DefaultSerializationProvider
         {
@@ -301,51 +304,59 @@ namespace LionFire.ObjectBus.Filesystem
         }
         private static ISerializationProvider defaultSerializationProvider;
 
-        public static void Write(object obj, string diskPath, Type type = null, bool preview = false, PersistenceContext context = null)
+        public static async Task Write(object obj, string diskPath, Type type = null, bool preview = false, PersistenceContext context = null)
         {
             if (preview)
             {
                 return; // TOPREVIEW - REVIEW - is this still useful?
             }
 
-            string objectSaveDir = System.IO.Path.GetDirectoryName(diskPath);
-            Directory.CreateDirectory(objectSaveDir); // TODO SECURITY - set permissions to all users writable
-
-            //foreach (var interceptor in FsPersistence.Interceptors)
-            //{
-            //    throw new NotImplementedException("TOPORT");
-            //    //if (interceptor.Write(obj, fullDiskPath, type, serializer)) return;
-            //}
-
-            var op = ((Func<PersistenceOperation>)(() => new PersistenceOperation()
+            await Task.Run(() =>
             {
-                Serialization = new SerializePersistenceOperation()
+                string objectSaveDir = System.IO.Path.GetDirectoryName(diskPath);
+                Directory.CreateDirectory(objectSaveDir); // TODO SECURITY - set permissions to all users writable
+
+                //foreach (var interceptor in FsPersistence.Interceptors)
+                //{
+                //    throw new NotImplementedException("TOPORT");
+                //    //if (interceptor.Write(obj, fullDiskPath, type, serializer)) return;
+                //}
+
+                var op = ((Func<PersistenceOperation>)(() => new PersistenceOperation()
                 {
-                    Object = obj,
-                },
-                Path = diskPath,
-                PathIsMissingExtension = true,
-            })).ToLazy();
+                    Serialization = new SerializePersistenceOperation()
+                    {
+                        Object = obj,
+                    },
+                    Reference = new PathReference(diskPath),
+                    //PathIsMissingExtension = true,
+                    PathIsMissingExtension = false,
+                })).ToLazy();
 
-            var strategyResults = (context?.SerializationProvider ?? DefaultSerializationProvider).Strategies(op, context);
+                var strategyResults = (context?.SerializationProvider ?? DefaultSerializationProvider).Strategies(op, context);
 
-            foreach (var strategyResult in strategyResults)
-            {
-                var strategy = strategyResult.Strategy;
-                string fullDiskPath = diskPath + "." + strategy.DefaultFormat.DefaultFileExtension;
+                foreach (var strategyResult in strategyResults)
+                {
+                    var strategy = strategyResult.Strategy;
+                    string fullDiskPath = diskPath;
+                    if (op.Value.PathIsMissingExtension == true)
+                    {
+                        fullDiskPath += "." + strategy.DefaultFormat.DefaultFileExtension;
+                    }
 #if MONO
             fullDiskPath = fullDiskPath.Replace('\\', '/');
 #else
-                fullDiskPath = fullDiskPath.Replace('/', '\\'); // REVIEW
+                    fullDiskPath = fullDiskPath.Replace('/', '\\'); // REVIEW
 #endif
 
-                using (var fs = new FileStream(fullDiskPath, FileMode.Create))
-                {
-                    strategy.ToStream(obj, fs, op, context);
-                }
+                    using (var fs = new FileStream(fullDiskPath, FileMode.Create))
+                    {
+                        strategy.ToStream(obj, fs, op, context);
+                    }
 
-                RecentSaves.AddOrUpdate(fullDiskPath, DateTime.UtcNow, (x, y) => DateTime.UtcNow);
-            }
+                    RecentSaves.AddOrUpdate(fullDiskPath, DateTime.UtcNow, (x, y) => DateTime.UtcNow);
+                }
+            });
         }
 
         //public static void Set<T>(object obj, string objectPath)

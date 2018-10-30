@@ -22,16 +22,16 @@ namespace LionFire.ObjectBus
     // I am liking the state tracking within HandleBase2 as an ActiveRecord kind of object.
     public static class IHandlePersistenceExtensions
     {
-        public static bool TryDelete(this IHandle handle)
-    //where ObjectType : class, new()
-        {
-            bool result = OBus.TryDelete(handle.Reference);
-            if (result)
-            {
-                ((IHandlePersistenceEvents)handle).OnDeleted();
-            }
-            return result;
-        }
+    //    public static bool TryDelete(this IHandle handle)
+    ////where ObjectType : class, new()
+    //    {
+    //        bool result = OBus.TryDelete(handle.Reference);
+    //        if (result)
+    //        {
+    //            ((IHandlePersistenceEvents)handle).OnDeleted();
+    //        }
+    //        return result;
+    //    }
 
 #if !AOT
         public static void Save<ObjectType>(this H<ObjectType> handle) // UNUSED?  Alternative to HandleBase?

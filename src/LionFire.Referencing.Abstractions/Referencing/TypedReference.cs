@@ -1,4 +1,5 @@
-﻿namespace LionFire.Referencing
+﻿// REVIEW - UNUSED? TODEPRECATE ?
+namespace LionFire.Referencing
 {
     public struct TypedReference<T> : IReference<T>
     {

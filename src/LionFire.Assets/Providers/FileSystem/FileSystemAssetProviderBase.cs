@@ -189,6 +189,8 @@ namespace LionFire.Assets.Providers.FileSystem
             }
         }
 
+        public void OnPersistenceEvent(PersistenceEvent ev) => throw new NotImplementedException();
+
 
         #endregion
 

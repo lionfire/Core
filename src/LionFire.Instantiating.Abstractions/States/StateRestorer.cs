@@ -6,6 +6,7 @@ using System.Dynamic;
 using System.Linq;
 using System.Threading.Tasks;
 using LionFire.Instantiating;
+using LionFire.ExtensionMethods.Copying;
 
 namespace LionFire.States
 {

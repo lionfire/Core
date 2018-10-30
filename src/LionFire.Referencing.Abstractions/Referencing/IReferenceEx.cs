@@ -1,16 +1,9 @@
 ﻿using LionFire.Collections;
-using LionFire.Referencing.Persistence;
 using System;
 using System.Reflection;
 
 namespace LionFire.Referencing
 {
-    // REVIEW File
-
-    public interface IResolvingReference
-    {
-        IReferenceRetriever Retriever { get; }
-    }
 
     public static class IReferenceExtensions
     {
@@ -123,9 +116,9 @@ namespace LionFire.Referencing
         ///// <returns></returns>
         //IReference Resolve();
 
-#if !AOT
-        IHandle<T> GetHandle<T>(T obj = null)
-            where T : class;//, new();
-#endif
+//#if !AOT
+//        IHandle<T> GetHandle<T>(T obj = null)
+//            where T : class;//, new();
+//#endif
     }
 }

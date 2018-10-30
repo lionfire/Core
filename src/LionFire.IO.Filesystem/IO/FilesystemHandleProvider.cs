@@ -25,7 +25,7 @@ namespace LionFire.IO.Filesystem
     {
         public override string Scheme => "file(byte[])";
 
-        public H<T> ToHandle<T>(IReference reference)
+        public H<T> GetHandle<T>(IReference reference)
             where T : class
         {
             ValidateReference(reference);
@@ -36,7 +36,7 @@ namespace LionFire.IO.Filesystem
     {
         public override string Scheme => "file(string)";
 
-        public H<T> ToHandle<T>(IReference reference)
+        public H<T> GetHandle<T>(IReference reference)
             where T : class
         {
             if (typeof(T) != typeof(string)) throw new ArgumentException("Object type must be string");
@@ -48,7 +48,7 @@ namespace LionFire.IO.Filesystem
     {
         public override string Scheme => "file(RStream)";
 
-        public H<T> ToHandle<T>(IReference reference)
+        public H<T> GetHandle<T>(IReference reference)
             where T : class
         {
             if (typeof(T) != typeof(Stream)) throw new ArgumentException("Object type must be Stream");
@@ -61,7 +61,7 @@ namespace LionFire.IO.Filesystem
     {
         public override string Scheme => "file(WStream)";
 
-        public H<T> ToHandle<T>(IReference reference)
+        public H<T> GetHandle<T>(IReference reference)
             where T : class
         {
             if (typeof(T) != typeof(Stream)) throw new ArgumentException("Object type must be Stream");

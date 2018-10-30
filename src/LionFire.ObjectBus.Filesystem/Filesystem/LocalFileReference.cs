@@ -2,27 +2,19 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using LionFire.MultiTyping;
 using LionFire.Referencing;
 using LionFire.Serialization;
+using LionFire.Structures;
 
 namespace LionFire.ObjectBus.Filesystem
 {
-
-    //public static class testext
-    //{
-    //    public static T ZZ<T>(this T z)
-    //    {
-    //        return z;
-    //    }
-    //    public static ConcreteType GetChild<ConcreteType>(this ConcreteType reference, string subPath)
-    //        where ConcreteType : IReference
-    //    {
-    //        return (ConcreteType)base.GetChild(subPath);
-    //    }
-    //}
     [LionSerializable(SerializeMethod.ByValue)]
-    public class LocalFileReference : LocalReferenceBase
+    public class LocalFileReference : LocalReferenceBase, IHas<IOBase>, IHas<IOBus>
     {
+        IOBus IHas<IOBus>.Object => ManualSingleton<FsOBus>.GuaranteedInstance;
+        IOBase IHas<IOBase>.Object => FsOBase;
+        FsOBase FsOBase => ManualSingleton<FsOBase>.GuaranteedInstance;
 
         #region Construction and Implicit Construction
 
@@ -86,8 +78,9 @@ namespace LionFire.ObjectBus.Filesystem
         #region Scheme
 
         public const string UriScheme = "file";
-        public const string UriPrefixDefault = "file://";
-        public static readonly string[] UriSchemes = new string[] { UriScheme };
+        public const string UriPrefixDefault = "file:///";
+        public static readonly IEnumerable<string> UriSchemes = new string[] { UriScheme };
+        public override IEnumerable<string> AllowedSchemes => UriSchemes;
 
         public override string Scheme
         {
@@ -104,25 +97,25 @@ namespace LionFire.ObjectBus.Filesystem
             get { return path; }
             protected set
             {
-#if MONO
+//#if MONO
                 value = value.Replace('\\', '/');
-#else
-                value = value.Replace('/', '\\');
-#endif
+//#else
+//                value = value.Replace('/', '\\');
+//#endif
 
-                if (value != null)
-                {
-                    if (value.Length >= 1)
-                    {
-                        if (value[0] == ':') throw new ArgumentException();
-                    }
-                    
-                    var colon = value.LastIndexOf(':');
-                    if (colon != -1 && colon != 1)
-                    {
-                        throw new ArgumentException();
-                    }
-                }
+                //if (value != null)
+                //{
+                //    if (value.Length >= 1)
+                //    {
+                //        if (value[0] == ':') throw new ArgumentException();
+                //    }
+
+                //    var colon = value.LastIndexOf(':');
+                //    if (colon != -1 && colon != 1)
+                //    {
+                //        throw new ArgumentException();
+                //    }
+                //}
 
                 path = value;
             }
@@ -140,7 +133,7 @@ namespace LionFire.ObjectBus.Filesystem
         public override string ToString() => String.Concat(UriPrefixDefault, Path);
         
         public override string Key => this.ToString();
-        
+
     }
 
     public static class LocalFileReferenceExtensions

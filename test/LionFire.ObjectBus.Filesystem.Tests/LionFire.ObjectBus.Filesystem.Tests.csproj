@@ -1,0 +1,30 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netcoreapp2.1</TargetFramework>
+
+    <IsPackable>false</IsPackable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Include="..\XunitDisableParallelization.cs" Link="XunitDisableParallelization.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="15.8.0" />
+    <PackageReference Include="xunit" Version="2.3.1" />
+    <PackageReference Include="xunit.runner.visualstudio" Version="2.3.1" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\src\LionFire.Applications\LionFire.Applications.csproj" />
+    <ProjectReference Include="..\..\src\LionFire.ObjectBus.Filesystem\LionFire.ObjectBus.Filesystem.csproj" />
+    <ProjectReference Include="..\..\src\LionFire.Referencing\LionFire.Referencing.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="RoundTrip\" />
+    <Folder Include="_OBusHandle\" />
+  </ItemGroup>
+
+</Project>

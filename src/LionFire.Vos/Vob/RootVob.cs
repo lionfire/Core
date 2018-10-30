@@ -3,11 +3,11 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace LionFire.ObjectBus
+namespace LionFire.Vos
 {
     public class RootVob : Vob
     {
-        internal RootVob(Vos vos)
+        internal RootVob(VBase vos)
             : base(vos, null, String.Empty)
         {
         }

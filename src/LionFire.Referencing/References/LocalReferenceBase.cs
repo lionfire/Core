@@ -1,7 +1,13 @@
-﻿namespace LionFire.Referencing
+﻿using System.Collections.Generic;
+using System.Linq;
+
+namespace LionFire.Referencing
 {
     public abstract class LocalReferenceBase : IReference
     {
+        public bool IsCompatibleWith(string stringUrl) => AllowedSchemes.Contains(stringUrl.GetUriScheme());
+        public abstract IEnumerable<string> AllowedSchemes { get; }
+
         public string Host => "";
         public string Port => "";
 

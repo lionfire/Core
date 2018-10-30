@@ -4,128 +4,24 @@
 #define TRACE_VOB
 
 using System;
+using System.Collections;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using LionFire.Types;
 using LionFire.Assets;
 using LionFire.Collections;
-using LionFire.Instantiating;
-using System.Collections;
-using LionFire.Structures;
 using LionFire.Extensions.ObjectBus;
-using LionFire.ObjectBus;
-using System.Collections.Concurrent;
+using LionFire.Instantiating;
+using LionFire.Ontology;
+using LionFire.Referencing;
+using LionFire.Structures;
+using LionFire.Types;
+using LionFire.Vos;
 using Microsoft.Extensions.Logging;
 
-namespace LionFire.Extensions.ObjectBus
+namespace LionFire.Vos
 {
-    public static class VobHandleExtensions
-    {
-        #region NonVirtual
-        public static IEnumerable<IReference> ToNonVirtualReferences(this IHandle parent)
-        {
-            foreach (var handle in ToNonVirtualHandle(parent).Select(h => h.Reference))
-            {
-                yield return handle;
-            }
-        }
-
-        public static IEnumerable<IHandle> ToNonVirtualHandle(this IHandle parent)
-        {
-            var vhParent = parent as IVobHandle;
-            if (vhParent == null) { yield return parent; yield break; }
-
-            foreach (var vhChild in vhParent.Vob.ReadHandles)
-            {
-                foreach (var result in ToNonVirtualHandle(vhChild))
-                {
-                    yield return result;
-                }
-            }
-        }
-
-        #endregion
-    }
-}
-namespace LionFire.ObjectBus
-{
-
-
-    #region EBus
-
-    public class EventBase
-    {
-        public readonly DateTime EventTime = DateTime.Now;
-
-        public bool IsBefore { get; set; }
-    }
-    public enum VobEventType
-    {
-        Unspecified,
-        Save,
-        Retrieve,
-        NotFound,
-        Created,
-    }
-
-    public class VobSaveEvent : EventBase
-    {
-        public VobSaveEvent(VosReference logicalReference, IReference targetReference)
-        {
-            //VobEventType eventType = VobEventType.Save;
-            this.LogicalReference = logicalReference;
-            this.TargetReference = targetReference;
-        }
-
-        #region EventType
-
-        public VobEventType EventType {
-            get { return VobEventType.Save; }
-        }
-        //    get { return eventType; }
-        //    set { eventType = value; }
-        //} private VobEventType eventType;
-
-        #endregion
-
-        #region Reference
-
-        public VosReference LogicalReference {
-            get { return logicalReference; }
-            set {
-                if (logicalReference == value) return;
-                if (logicalReference != default(VosReference)) throw new AlreadySetException();
-                logicalReference = value;
-            }
-        }
-        private VosReference logicalReference;
-
-        #endregion
-
-
-        #region TargetReference
-
-        public IReference TargetReference {
-            get { return targetReference; }
-            set {
-                if (targetReference == value) return;
-                if (targetReference != default(IReference)) throw new AlreadySetException();
-                targetReference = value;
-            }
-        }
-        private IReference targetReference;
-
-        #endregion
-
-
-        public override string ToString()
-        {
-            return (IsBefore ? "Saving " : "Saved ") + logicalReference + " to " + targetReference;
-        }
-    }
-
-    #endregion
 
     //public class FilteredVob
     //{
@@ -224,7 +120,7 @@ namespace LionFire.ObjectBus
 #if AOT
 		IParented
 #else
- IParented<Vob>
+        IParented<Vob>
 #endif
     {
 
@@ -350,24 +246,18 @@ namespace LionFire.ObjectBus
         }
 
 #if ConcurrentHandles
-        ConcurrentDictionary<Type, IVobHandle> handles = new ConcurrentDictionary<Type, IVobHandle>(new zEC());
+        private ConcurrentDictionary<Type, IVobHandle> handles = new ConcurrentDictionary<Type, IVobHandle>(new zEC());
 
-        class zEC : IEqualityComparer<Type>
+        private class zEC : IEqualityComparer<Type>
         {
             //public int Compare(Type x, Type y)
             //{
             //    //if(x.Equals(y))return0;
             //    return x.FullName.CompareTo(y.FullName);
             //}
-            public bool Equals(Type x, Type y)
-            {
-                return x == y;
-            }
+            public bool Equals(Type x, Type y) => x == y;
 
-            public int GetHashCode(Type obj)
-            {
-                return obj.GetHashCode();
-            }
+            public int GetHashCode(Type obj) => obj.GetHashCode();
         }
 
 #else
@@ -436,7 +326,7 @@ namespace LionFire.ObjectBus
             {
                 if (vocs.ContainsKey(T1))
                 {
-                    return (IVoc)vocs[T1];
+                    return vocs[T1];
                 }
                 else
                 {
@@ -489,7 +379,7 @@ namespace LionFire.ObjectBus
             }
         }
 
-        private object vocsLock = new object();
+        private readonly object vocsLock = new object();
         private SortedDictionary<Type, IVoc> vocs = new SortedDictionary<Type, IVoc>(); // TODO: Make ConcurrentDictionary
 
         #endregion
@@ -597,22 +487,22 @@ namespace LionFire.ObjectBus
 
         #region Vos
 
-        public Vos Vos {
-            get { return vos; }
-        }
-        private readonly Vos vos;
+        public VBase Vos => vos;
+        private readonly VBase vos;
 
         #endregion
 
         #region IParented
 
+#if AOT
         object IParented.Parent { get { return this.Parent; } set { throw new NotSupportedException(); } }
+#endif
 
         #region Parent
 
         public Vob Parent {
-            get { return parent; }
-            set { throw new NotSupportedException(); }
+            get => parent;
+            set => throw new NotSupportedException();
         }
         private readonly Vob parent;
 
@@ -620,18 +510,16 @@ namespace LionFire.ObjectBus
 
         #endregion
 
-        public string Name {
-            get { return name; }
-        }
+        public string Name => name;
         private readonly string name;
 
-        public string Path {
-            get { return path; }
-        }
+        public string Path => path;
         private readonly string path;
 
-        public IEnumerable<string> PathElements {
-            get {
+        public IEnumerable<string> PathElements
+        {
+            get
+            {
                 if (Parent != null)
                 {
                     foreach (var pathElement in Parent.PathElements)
@@ -659,8 +547,10 @@ namespace LionFire.ObjectBus
             }
         }
 
-        public IEnumerable<string> PathElementsReverse {
-            get {
+        public IEnumerable<string> PathElementsReverse
+        {
+            get
+            {
                 yield return Name;
 
                 if (Parent != null)
@@ -677,17 +567,31 @@ namespace LionFire.ObjectBus
 
         #region Construction
 
-        public Vob(Vos vos, Vob parent, string name)
+        public Vob(VBase vos, Vob parent, string name)
         {
-            if (vos == null) throw new ArgumentNullException("vos");
-            if (this.GetType() == typeof(RootVob))
+            if (vos == null)
             {
-                if (!String.IsNullOrEmpty(name)) throw new ArgumentException("name must be null or empty for root");
+                throw new ArgumentNullException("vos");
+            }
+
+            if (GetType() == typeof(RootVob))
+            {
+                if (!String.IsNullOrEmpty(name))
+                {
+                    throw new ArgumentException("name must be null or empty for root");
+                }
             }
             else
             {
-                if (parent == null) throw new ArgumentNullException("parent must be set for all non-RootVob Vobs.");
-                if (name == null) throw new ArgumentNullException("name must not be null for non-root");
+                if (parent == null)
+                {
+                    throw new ArgumentNullException("parent must be set for all non-RootVob Vobs.");
+                }
+
+                if (name == null)
+                {
+                    throw new ArgumentNullException("name must not be null for non-root");
+                }
             }
 
             //if (StringX.IsNullOrWhiteSpace(name) && this.GetType() != typeof(RootVob)) throw new ArgumentNullException("Name must be set for all non-RootVob Vobs.");
@@ -696,7 +600,7 @@ namespace LionFire.ObjectBus
             this.parent = parent;
             this.name = name;
 
-            this.path = LionPath.CleanAbsolutePathEnds(LionPath.Combine((parent == null ? "" : parent.Path), name));
+            path = LionPath.CleanAbsolutePathEnds(LionPath.Combine((parent == null ? "" : parent.Path), name));
             VobDepth = LionPath.GetAbsolutePathDepth(path);
 
             InitializeEffectiveMounts();
@@ -726,19 +630,30 @@ namespace LionFire.ObjectBus
 
         #region Reference
 
-        public string Key { get { return VosReference.Key; } }
+        public string Key => VosReference.Key;
 
-        public VosReference VosReference {
-            get {
+        public VosReference VosReference
+        {
+            get
+            {
                 if (vosReference == null)
                 {
-                    vosReference = new VosReference(this.path);
+                    vosReference = new VosReference(path);
                 }
                 return vosReference;
             }
-            set {
-                if (vosReference == value) return;
-                if (vosReference != default(IReference)) throw new NotSupportedException("Reference can only be set once.  To relocate, use the Move() method.");
+            set
+            {
+                if (vosReference == value)
+                {
+                    return;
+                }
+
+                if (vosReference != default(IReference))
+                {
+                    throw new NotSupportedException("Reference can only be set once.  To relocate, use the Move() method.");
+                }
+
                 vosReference = value;
             }
         }
@@ -746,8 +661,9 @@ namespace LionFire.ObjectBus
 
         public IReference Reference // TODO MEMORYOPTIMIZE: I think a base class has an IReference field
         {
-            get { return VosReference; }
-            set {
+            get => VosReference;
+            set
+            {
                 if (value == null) { VosReference = null; return; }
                 VosReference vr = value as VosReference;
                 if (vr != null)
@@ -772,10 +688,16 @@ namespace LionFire.ObjectBus
 
         #region HasMounts
 
-        public bool HasMounts {
-            get { return hasMounts; }
-            private set {
-                if (hasMounts == value) return;
+        public bool HasMounts
+        {
+            get => hasMounts;
+            private set
+            {
+                if (hasMounts == value)
+                {
+                    return;
+                }
+
                 hasMounts = value;
                 if (hasMounts)
                 {
@@ -790,18 +712,16 @@ namespace LionFire.ObjectBus
         }
         private bool hasMounts;
 
-        private void UpdateHasMounts()
-        {
-            HasMounts = mounts != null && mounts.Count > 0;
-
-        }
+        private void UpdateHasMounts() => HasMounts = mounts != null && mounts.Count > 0;
 
         #endregion
 
 
 
-        internal MultiBindableDictionary<string, Mount> Mounts {
-            get {
+        internal MultiBindableDictionary<string, Mount> Mounts
+        {
+            get
+            {
 
                 if (mounts == null)
                 {
@@ -814,7 +734,7 @@ namespace LionFire.ObjectBus
         }
         private MultiBindableDictionary<string, Mount> mounts;
 
-        private object mountsLock = new object();
+        private readonly object mountsLock = new object();
 
         #endregion
 
@@ -844,7 +764,7 @@ namespace LionFire.ObjectBus
                 // TODO EVENTS: mounting/mounted
                 try
                 {
-                    this.Mounts.Add(mount);
+                    Mounts.Add(mount);
                 }
                 catch (Exception ex)
                 {
@@ -881,13 +801,13 @@ namespace LionFire.ObjectBus
             {
                 // Fires mounts changed event. 
                 // REVIEW: Fire events outside the lock?  Fire unmounting/mounting event outside the lock?
-                this.Mounts.Remove(mountKey);
+                Mounts.Remove(mountKey);
             }
         }
 
         internal void Unmount(string mountKey)
         {
-            Mount knownMount = this.Mounts.TryGetValue(mountKey);
+            Mount knownMount = Mounts.TryGetValue(mountKey);
             if (knownMount == null)
             {
                 // Already unmounted, if it ever was
@@ -898,7 +818,7 @@ namespace LionFire.ObjectBus
 
         internal void Unmount(Mount mount)
         {
-            Mount knownMount = this.Mounts.TryGetValue(mount.Root.Key);
+            Mount knownMount = Mounts.TryGetValue(mount.Root.Key);
             if (!System.Object.ReferenceEquals(knownMount, mount))
             {
                 return;
@@ -975,14 +895,17 @@ namespace LionFire.ObjectBus
         private MultiValueSortedList<int, Mount> effectiveMountsByReadPriority;
         private MultiValueSortedList<int, Mount> effectiveMountsByWritePriority;
         private Dictionary<string, Mount> effectiveMountsByName;
-        private bool AreEffectiveMountsInitialized { get { return effectiveMountsByReadPriority != null; } }
+        private bool AreEffectiveMountsInitialized => effectiveMountsByReadPriority != null;
         //private Vob FirstAncestorWithMounts;
         //private int FirstAncestorWithMountsRelativeDepth;
         //private IEnumerable<string> FirstAncestorToThisSubPath;
 
         private bool InitializeEffectiveMounts(bool reset = false)
         {
-            if (AreEffectiveMountsInitialized && !reset) return true;
+            if (AreEffectiveMountsInitialized && !reset)
+            {
+                return true;
+            }
 
             //// TODO: OPTIMIZE: To save memory, pass the buck to the first ancestor that has a mount.
             //if (!HasMounts)
@@ -1077,13 +1000,13 @@ namespace LionFire.ObjectBus
 
             //if (mountDepthDelta == 0)
 
-            if (System.Object.ReferenceEquals(mount.Vob, this))
+            if (Object.ReferenceEquals(mount.Vob, this))
             {
                 result = mount.RootHandle.GetHandle<T>();
             }
             else
             {
-                result = mount.RootHandle.GetHandle<T>(this.PathElements.Skip(mount.VobDepth));
+                result = mount.RootHandle.GetHandle<T>(PathElements.Skip(mount.VobDepth));
 
                 //result = mount.RootHandle[this.PathElements.Skip(mount.VobDepth)].ToHandle();
                 //.GetHandle<T>(); // OPTIMIZE: cache this enumerable alongside the mount
@@ -1110,7 +1033,7 @@ namespace LionFire.ObjectBus
             }
             else
             {
-                result = mount.RootHandle[this.PathElements.Skip(mount.VobDepth)]; // OPTIMIZE: cache this enumerable alongside the mount
+                result = mount.RootHandle[PathElements.Skip(mount.VobDepth)]; // OPTIMIZE: cache this enumerable alongside the mount
             }
 
             //result.Mount = mount;
@@ -1128,7 +1051,7 @@ namespace LionFire.ObjectBus
             }
             else
             {
-                result = LionPath.Combine(mount.Root.Path, this.PathElements.Skip(mount.VobDepth)); // OPTIMIZE: cache this enumerable alongside the mount
+                result = LionPath.Combine(mount.Root.Path, PathElements.Skip(mount.VobDepth)); // OPTIMIZE: cache this enumerable alongside the mount
                 l.Trace("UNTESTED: MountPath: " + result);
             }
 
@@ -1138,11 +1061,7 @@ namespace LionFire.ObjectBus
         #endregion
 
 #if !UNITY
-        public IEnumerable<IHandle> Handles {
-            get {
-                return ReadHandles.Concat(handles.Values).Distinct();
-            }
-        }
+        public IEnumerable<IHandle> Handles => ReadHandles.Concat(handles.Values).Distinct();
 #else
         public IEnumerable<IHandle> Handles {
             get {
@@ -1156,9 +1075,14 @@ namespace LionFire.ObjectBus
 
         #region Persistence Utils
 
-        public IEnumerable<IHandle> ReadHandles {
-            get {
-                if (!InitializeEffectiveMounts()) yield break;
+        public IEnumerable<IHandle> ReadHandles
+        {
+            get
+            {
+                if (!InitializeEffectiveMounts())
+                {
+                    yield break;
+                }
                 //if (HasMounts)
                 {
                     foreach (Mount mount in effectiveMountsByReadPriority.Values.SelectMany(x => x))
@@ -1184,9 +1108,14 @@ namespace LionFire.ObjectBus
 
         //    }
         //}
-        private IEnumerable<Mount> ReadHandleMounts {
-            get {
-                if (!InitializeEffectiveMounts()) yield break;
+        private IEnumerable<Mount> ReadHandleMounts
+        {
+            get
+            {
+                if (!InitializeEffectiveMounts())
+                {
+                    yield break;
+                }
                 //if (HasMounts)
                 {
                     foreach (Mount mount in effectiveMountsByReadPriority.Values.SelectMany(x => x))
@@ -1198,15 +1127,16 @@ namespace LionFire.ObjectBus
             }
         }
 
-        public bool CanWrite {
-            get {
-                return WriteHandleMounts.Where(m => !m.MountOptions.IsReadOnly).Any();
-            }
-        }
+        public bool CanWrite => WriteHandleMounts.Where(m => !m.MountOptions.IsReadOnly).Any();
 
-        public IEnumerable<IHandle> WriteHandles {
-            get {
-                if (!InitializeEffectiveMounts()) yield break;
+        public IEnumerable<IHandle> WriteHandles
+        {
+            get
+            {
+                if (!InitializeEffectiveMounts())
+                {
+                    yield break;
+                }
 
                 //if (!HasMounts) yield break;
                 foreach (Mount mount in effectiveMountsByWritePriority.Values.SelectMany(x => x))
@@ -1231,9 +1161,14 @@ namespace LionFire.ObjectBus
 
         //    }
         //}
-        private IEnumerable<Mount> WriteHandleMounts {
-            get {
-                if (!InitializeEffectiveMounts()) yield break;
+        private IEnumerable<Mount> WriteHandleMounts
+        {
+            get
+            {
+                if (!InitializeEffectiveMounts())
+                {
+                    yield break;
+                }
                 //if (HasMounts)
                 {
                     foreach (Mount mount in effectiveMountsByWritePriority.Values.SelectMany(x => x))
@@ -1245,8 +1180,10 @@ namespace LionFire.ObjectBus
             }
         }
 
-        private IEnumerable<Mount> EffectiveWriteMounts {
-            get {
+        private IEnumerable<Mount> EffectiveWriteMounts
+        {
+            get
+            {
                 if (effectiveMountsByWritePriority == null) { InitializeEffectiveMounts(); }
                 if (effectiveMountsByWritePriority == null) { return Enumerable.Empty<Mount>(); }
                 return effectiveMountsByWritePriority.Values.SelectMany(x => x);
@@ -1254,7 +1191,8 @@ namespace LionFire.ObjectBus
         }
         private IHandle FirstWriteHandle // REVIEW Don't use this?
         {
-            get {
+            get
+            {
                 //if (!HasMounts) return null;
                 foreach (Mount mount in
 #if AOT
@@ -1262,7 +1200,11 @@ namespace LionFire.ObjectBus
 #endif
  EffectiveWriteMounts)
                 {
-                    if (mount.MountOptions.IsReadOnly && !VosContext.Current.IgnoreReadonly) continue;
+                    if (mount.MountOptions.IsReadOnly && !VosContext.Current.IgnoreReadonly)
+                    {
+                        continue;
+                    }
+
                     return GetMountHandle(mount);
                 }
                 return null;
@@ -1280,7 +1222,11 @@ namespace LionFire.ObjectBus
 #endif
  EffectiveWriteMounts)
                 {
-                    if (mount.MountOptions.IsReadOnly && !VosContext.Current.IgnoreReadonly) continue;
+                    if (mount.MountOptions.IsReadOnly && !VosContext.Current.IgnoreReadonly)
+                    {
+                        continue;
+                    }
+
                     return GetMountHandle<T>(mount);
                 }
                 return null;
@@ -1307,7 +1253,7 @@ namespace LionFire.ObjectBus
             //            {
             //                if (package != null && layer != null)
             //                {
-            //                    string mountName = LionFire.ObjectBus.Mount.GetMountName(package, layer);
+            //                    string mountName = LionFire.Vos.Mount.GetMountName(package, layer);
             //                    Mount mount = effectiveMountsByName.TryGetValue(mountName);
             //                    if (mount.MountOptions.IsReadOnly)
             //                    {
@@ -1360,7 +1306,9 @@ namespace LionFire.ObjectBus
  (IEnumerable)
 #endif
  WriteHandles)
+            {
                 deletedSomething |= handle.TryDelete(preview: preview);
+            }
 
             // FUTURE: Delete based on cached loaded objects only: (may require sync to make sure it's up to date)
             //if (IsObjectSynced)
@@ -1398,7 +1346,9 @@ namespace LionFire.ObjectBus
  (IEnumerable)
 #endif
  WriteHandles)
+            {
                 deletedSomething |= handle.TryDelete();
+            }
 
             //objectHandle = null;
             //objectHandles = null;
@@ -1468,7 +1418,7 @@ namespace LionFire.ObjectBus
             else
             {
                 //VobHandle<T> h = this.UnitypeHandle as VobHandle<T>;
-                actualVH = this.GetHandle<T>();
+                actualVH = GetHandle<T>();
                 actualVH.Object = obj;
             }
 
@@ -1534,7 +1484,7 @@ namespace LionFire.ObjectBus
 
             if (obj == null) // FUTURE: test IsDeleted flag instead or in addition?
             {
-                if (!preview) { l.Trace("REVIEW - Save called when !HasObject.  Attempting Delete. - " + allowDelete + " " + this.ToString()); }
+                if (!preview) { l.Trace("REVIEW - Save called when !HasObject.  Attempting Delete. - " + allowDelete + " " + ToString()); }
                 if (allowDelete)
                 {
                     TryDelete(preview: preview);
@@ -1549,7 +1499,10 @@ namespace LionFire.ObjectBus
             if (!preview)
             {
                 INotifyOnSavingTo nos = obj as INotifyOnSavingTo;
-                if (nos != null) nos.OnSavingTo(this);
+                if (nos != null)
+                {
+                    nos.OnSavingTo(this);
+                }
             }
 
             //    Save(_object, package, location);
@@ -1562,11 +1515,17 @@ namespace LionFire.ObjectBus
 
             if (package == null)
             {
-                if (context != null) package = context.Package;
+                if (context != null)
+                {
+                    package = context.Package;
+                }
             }
             if (location == null)
             {
-                if (context != null) location = context.Store;
+                if (context != null)
+                {
+                    location = context.Store;
+                }
             }
 
             IHandle<T> saveHandle = null;
@@ -1608,7 +1567,7 @@ namespace LionFire.ObjectBus
                 var tempSaveHandle = "".PathToVobHandle<T>(package, location);
 #endif
                 //#error SAving Timeline--no save location??
-                if (!StringX.IsNullOrWhiteSpace(tempSaveHandle.Path.TrimEnd(LionPath.PathDelimiter)) && this.Path.StartsWith(tempSaveHandle.Path.TrimEnd(LionPath.PathDelimiter))) // TEMP approach TODO
+                if (!StringX.IsNullOrWhiteSpace(tempSaveHandle.Path.TrimEnd(LionPath.PathDelimiter)) && Path.StartsWith(tempSaveHandle.Path.TrimEnd(LionPath.PathDelimiter))) // TEMP approach TODO
                 {
                     saveHandle = GetFirstWriteHandle<T>();
 
@@ -1620,8 +1579,15 @@ namespace LionFire.ObjectBus
                     {
                         var mount = kvp;
 
-                        if (package != null && package != mount.Package) continue;
-                        if (location != null && location != mount.Store) continue;
+                        if (package != null && package != mount.Package)
+                        {
+                            continue;
+                        }
+
+                        if (location != null && location != mount.Store)
+                        {
+                            continue;
+                        }
 
                         //saveHandle = kvp.Key;
                         //saveHandle = mount.Vob.GetHandle<T>();
@@ -1643,8 +1609,15 @@ namespace LionFire.ObjectBus
                         {
                             var mount = kvp;
 
-                            if (package != null && mount.Package != null && package != mount.Package) continue;
-                            if (location != null && mount.Store != null && location != mount.Store) continue;
+                            if (package != null && mount.Package != null && package != mount.Package)
+                            {
+                                continue;
+                            }
+
+                            if (location != null && mount.Store != null && location != mount.Store)
+                            {
+                                continue;
+                            }
 
                             //saveHandle = kvp.Key;
                             //saveHandle = mount.Vob.GetHandle<T>();
@@ -1681,7 +1654,7 @@ namespace LionFire.ObjectBus
 
             if (saveHandle == null)
             {
-                this.Vos.OnNoSaveLocation(this);
+                Vos.OnNoSaveLocation(this);
                 return;
             }
 
@@ -1694,11 +1667,11 @@ namespace LionFire.ObjectBus
 #if WARN_VOB
                         if (saveHandle.Object.GetType() != obj.GetType())
                         {
-                            lSave.Warn(this.ToString() + ": Vob.Save Replacing object '" + saveHandle.Object.GetType().Name + "' in concrete OBase with object of different type: " + obj.GetType().Name);
+                            lSave.Warn(ToString() + ": Vob.Save Replacing object '" + saveHandle.Object.GetType().Name + "' in concrete OBase with object of different type: " + obj.GetType().Name);
                         }
                         else
                         {
-                            lSave.Info(this.ToString() + ": Vob.Save Replacing object in concrete OBase with object of same type. "
+                            lSave.Info(ToString() + ": Vob.Save Replacing object in concrete OBase with object of same type. "
                                            //							           + Environment.NewLine + Environment.StackTrace
                                            );
                         }
@@ -1711,7 +1684,7 @@ namespace LionFire.ObjectBus
                     saveHandle.Object = obj;
                 }
 
-                MBus.Current.Publish(new VobSaveEvent(this.VosReference, saveHandle.Reference));
+                MBus.Current.Publish(new VobSaveEvent(VosReference, saveHandle.Reference));
 
 
 #if INFO_VOB
@@ -1860,7 +1833,7 @@ namespace LionFire.ObjectBus
         //        var handle = kvp.Key;
         //        if (handleParam.Equals(handle))
         //        {
-        //            //l.Fatal("== - " + handle + " " + handleParam);
+        //            //l.LogCritical("== - " + handle + " " + handleParam);
         //            return kvp.Value;
         //        }
         //        else
@@ -1946,15 +1919,25 @@ namespace LionFire.ObjectBus
         {
             foreach (var handle in ReadHandles)
             {
-                if (!handle.TryEnsureRetrieved()) continue;
+                if (!handle.TryEnsureRetrieved())
+                {
+                    continue;
+                }
+
                 yield return handle.Object;
             }
         }
-        public IEnumerable<IHandle> AllRetrievableReadHandles {
-            get {
+        public IEnumerable<IHandle> AllRetrievableReadHandles
+        {
+            get
+            {
                 foreach (var handle in ReadHandles)
                 {
-                    if (!handle.TryEnsureRetrieved()) continue;
+                    if (!handle.TryEnsureRetrieved())
+                    {
+                        continue;
+                    }
+
                     yield return handle;
                 }
             }
@@ -1990,7 +1973,10 @@ namespace LionFire.ObjectBus
         {
             foreach (var handle in ReadHandles)
             {
-                if (!handle.TryEnsureRetrieved()) continue;
+                if (!handle.TryEnsureRetrieved())
+                {
+                    continue;
+                }
 
                 T obj = handle.Object as T;
                 if (obj != null)
@@ -2015,20 +2001,20 @@ namespace LionFire.ObjectBus
 #endif
 
         [AotReplacement]
-        public object AsTypeOrCreate(Type type) { throw new NotImplementedException("Vob.AsTypeOrCreate"); }
+        public object AsTypeOrCreate(Type type) => throw new NotImplementedException("Vob.AsTypeOrCreate");
 
         [AotReplacement]
-        public object AsType(Type T)
-        {
-            return AllLayersOfType(T).FirstOrDefault();
-        }
+        public object AsType(Type T) => AllLayersOfType(T).FirstOrDefault();
 
         [AotReplacement] // TODO - support this in Rewriter
         public IEnumerable<object> AllLayersOfType(Type T)
         {
             foreach (var handle in ReadHandles)
             {
-                if (!handle.TryEnsureRetrieved()) continue;
+                if (!handle.TryEnsureRetrieved())
+                {
+                    continue;
+                }
 
                 object obj = handle.Object;
                 if (T.IsAssignableFrom(obj.GetType()))
@@ -2055,7 +2041,10 @@ namespace LionFire.ObjectBus
         {
             foreach (var handle in ReadHandles)
             {
-                if (!handle.TryEnsureRetrieved()) continue;
+                if (!handle.TryEnsureRetrieved())
+                {
+                    continue;
+                }
 
                 object obj = handle.Object;
 
@@ -2072,11 +2061,7 @@ namespace LionFire.ObjectBus
                 if (obj != null) { yield return obj; }
             }
         }
-        public bool Exists {
-            get {
-                return AllLayers().Any();
-            }
-        }
+        public bool Exists => AllLayers().Any();
 
 #if !AOT
         // FUTURE ENH: Return IHandle<T>'s? or VobHandle<T>'s, with T based on detected type of the object?
@@ -2085,29 +2070,31 @@ namespace LionFire.ObjectBus
         {
             foreach (var handle in ReadHandles)
             {
-                if (!handle.TryEnsureRetrieved()) continue;
+                if (!handle.TryEnsureRetrieved())
+                {
+                    continue;
+                }
 
                 T obj = handle.Object as T;
-                if (obj != null) yield return handle;
+                if (obj != null)
+                {
+                    yield return handle;
+                }
 
                 IMultiTyped mt = obj as IMultiTyped;
                 obj = mt.AsType<T>();
-                if (obj != null) yield return handle;
-
+                if (obj != null)
+                {
+                    yield return handle;
+                }
             }
         }
 
         internal RetrieveType TryRetrieve<RetrieveType>(VobHandle<RetrieveType> vosLogicalHandle = null)
-            where RetrieveType : class
-        {
-            return TryEnsureRetrieved_(true, vosLogicalHandle);
-        }
+            where RetrieveType : class => TryEnsureRetrieved_(true, vosLogicalHandle);
 
         internal RetrieveType TryEnsureRetrieved<RetrieveType>(VobHandle<RetrieveType> vosLogicalHandle = null)
-            where RetrieveType : class
-        {
-            return TryEnsureRetrieved_(false, vosLogicalHandle);
-        }
+            where RetrieveType : class => TryEnsureRetrieved_(false, vosLogicalHandle);
 
 #if FUTURE // Get read handle
         private IVobHandle TryGetReadHandle<RetrieveType>(bool reload, VobHandle<RetrieveType> vosLogicalHandle = null)
@@ -2407,7 +2394,7 @@ namespace LionFire.ObjectBus
                     }
                     if (mount == null) // No mount for specified location
                     {
-                        l.Trace($"Retrieve specified location '{location}' but no mount was found at {this.Path}");
+                        l.Trace($"Retrieve specified location '{location}' but no mount was found at {Path}");
                         result = null;
                         goto end;
                     }
@@ -2438,7 +2425,7 @@ namespace LionFire.ObjectBus
                         // FUTURE: RetrieveAsType? multitype stuff?
                         if (reload ? handle.TryRetrieve() : handle.TryEnsureRetrieved())
                         {
-                            
+
                             System.Diagnostics.Debug.Assert(handle.Object != null, "handle.Object == null after TryEnsureRetrieved == true");
                             resultObj = handle.Object;
                             result = resultObj as RetrieveType;
@@ -2518,7 +2505,7 @@ namespace LionFire.ObjectBus
                                 readFromMount = mount;
                                 // REVIEW - allow mount hints? make this an option?  Downside is that desired mount may change, and hint would not be updated
 
-                                l.Trace($"Retrieved obj of type '{typeof(RetrieveType).Name}' from mount hint: '{mount}' at {this.Path}");
+                                l.Trace($"Retrieved obj of type '{typeof(RetrieveType).Name}' from mount hint: '{mount}' at {Path}");
                                 goto end;
                             }
                         }
@@ -2792,13 +2779,19 @@ namespace LionFire.ObjectBus
         {
             if (reload)
             {
-                if (!handle.TryRetrieve(setToNullOnFail: true)) return null;
+                if (!handle.TryRetrieve(setToNullOnFail: true))
+                {
+                    return null;
+                }
                 //handle.ForgetObject(); // FUTURE?
                 //if (!handle.TryEnsureRetrieved()) return null;
             }
             else
             {
-                if (!handle.TryEnsureRetrieved()) return null;
+                if (!handle.TryEnsureRetrieved())
+                {
+                    return null;
+                }
             }
 
             //ObjType result = handle.Object as ObjType;
@@ -2812,7 +2805,7 @@ namespace LionFire.ObjectBus
 
             if (vosLogicalHandle != null)
             {
-                //l.Fatal("TEMP Retrieve succeeded.  Setting VobHandle<>.Mount: " + vosLogicalHandle + " => " + mount);
+                //l.LogCritical("TEMP Retrieve succeeded.  Setting VobHandle<>.Mount: " + vosLogicalHandle + " => " + mount);
                 vosLogicalHandle.Mount = mount;
                 // REVIEW - also store handle as a hint to go with mount, or instead of it?
             }
@@ -2861,7 +2854,7 @@ namespace LionFire.ObjectBus
 
             if (vosLogicalHandle != null)
             {
-                //l.Fatal("TEMP Retrieve succeeded.  Setting VobHandle<>.Mount: " + vosLogicalHandle + " => " + mount);
+                //l.LogCritical("TEMP Retrieve succeeded.  Setting VobHandle<>.Mount: " + vosLogicalHandle + " => " + mount);
                 vosLogicalHandle.Mount = mount;
                 // REVIEW - also store handle as a hint to go with mount, or instead of it?
             }
@@ -2986,9 +2979,16 @@ namespace LionFire.ObjectBus
                     {
                         foreach (string childName in GetMountHandle(mount).GetChildrenNames())
                         {
-                            if (!includeHidden && LionPath.IsHidden(childName)) continue;
+                            if (!includeHidden && LionPath.IsHidden(childName))
+                            {
+                                continue;
+                            }
 
-                            if (namesDiscovered.Contains(childName)) continue;
+                            if (namesDiscovered.Contains(childName))
+                            {
+                                continue;
+                            }
+
                             namesDiscovered.Add(childName);
 
                             yield return childName;
@@ -2998,10 +2998,21 @@ namespace LionFire.ObjectBus
             }
             foreach (var childName in children.Keys)
             {
-                if (namesDiscovered.Contains(childName)) continue;
+                if (namesDiscovered.Contains(childName))
+                {
+                    continue;
+                }
+
                 var child = children[childName].Target;
-                if (child == null) continue;
-                if (persistedOnly && !child.Handles.Where(h => h.IsPersisted).Any()) continue;
+                if (child == null)
+                {
+                    continue;
+                }
+
+                if (persistedOnly && !child.Handles.Where(h => h.IsPersisted).Any())
+                {
+                    continue;
+                }
 
                 namesDiscovered.Add(childName);
                 yield return childName;
@@ -3016,7 +3027,11 @@ namespace LionFire.ObjectBus
             {
                 foreach (var c in GetMountHandle(mount).GetChildrenNamesOfType(childType))
                 {
-                    if (namesDiscovered.Contains(c)) continue;
+                    if (namesDiscovered.Contains(c))
+                    {
+                        continue;
+                    }
+
                     namesDiscovered.Add(c);
 
                     yield return c;
@@ -3035,7 +3050,11 @@ namespace LionFire.ObjectBus
             {
                 foreach (var c in GetMountHandle(mount).GetChildrenNamesOfType<ChildType>())
                 {
-                    if (namesDiscovered.Contains(c)) continue;
+                    if (namesDiscovered.Contains(c))
+                    {
+                        continue;
+                    }
+
                     namesDiscovered.Add(c);
                     yield return c;
                 }
@@ -3058,11 +3077,7 @@ namespace LionFire.ObjectBus
         //    //return children;
         //}
 
-        public IEnumerable<Vob> GetChildren()
-        {
-
-            return this.children.Values.Select(wr => wr.IsAlive ? wr.Target : null).Where(h => h != null);
-        }
+        public IEnumerable<Vob> GetChildren() => children.Values.Select(wr => wr.IsAlive ? wr.Target : null).Where(h => h != null);
 
 #if !AOT
         public IEnumerable<VobHandle<ChildType>> GetVobChildrenOfType<ChildType>()
@@ -3126,7 +3141,7 @@ namespace LionFire.ObjectBus
                 {
                     var vh = this[c.Reference.Name].ToHandle<ChildType>();
                     vh.Mount = mount;
-                    //l.Fatal("TEMP GetVobHandleChildrenOfType: " + vh + " mount: " + mount);
+                    //l.LogCritical("TEMP GetVobHandleChildrenOfType: " + vh + " mount: " + mount);
                     yield return vh;
                 }
             }
@@ -3140,7 +3155,7 @@ namespace LionFire.ObjectBus
         protected Vob CreateChild(string childName) // TODO
         {
             Vob parent = this;
-            return new Vob(this.vos, parent, childName);
+            return new Vob(vos, parent, childName);
         }
         //protected override Vob CreateChild(Vob parent, string childName)
         //{
@@ -3198,36 +3213,26 @@ namespace LionFire.ObjectBus
 
         #region Index accessors (GetChild)
 
-        public Vob this[string subpath] {
-            get {
-                if (subpath == null) return this;
+        public Vob this[string subpath]
+        {
+            get
+            {
+                if (subpath == null)
+                {
+                    return this;
+                }
+
                 return this[0, subpath.ToPathArray()];
             }
         }
 
-        public Vob this[IEnumerator<string> subpathChunks] {
-            get {
-                return GetChild(subpathChunks);
-            }
-        }
+        public Vob this[IEnumerator<string> subpathChunks] => GetChild(subpathChunks);
 
-        public Vob this[IEnumerable<string> subpathChunks] {
-            get {
-                return GetChild(subpathChunks);
-            }
-        }
+        public Vob this[IEnumerable<string> subpathChunks] => GetChild(subpathChunks);
 
-        public Vob this[int index, string[] subpathChunks] {
-            get {
-                return GetChild(subpathChunks, index);
-            }
-        }
+        public Vob this[int index, string[] subpathChunks] => GetChild(subpathChunks, index);
 
-        public Vob this[params string[] subpathChunks] {
-            get {
-                return GetChild(subpathChunks);
-            }
-        }
+        public Vob this[params string[] subpathChunks] => GetChild(subpathChunks);
 
         #endregion
 
@@ -3240,10 +3245,16 @@ namespace LionFire.ObjectBus
 
         public readonly object SyncRoot = new object();
 
-        public bool CacheChildren {
-            get { return children != null; }
-            set {
-                if (value == CacheChildren) return;
+        public bool CacheChildren
+        {
+            get => children != null;
+            set
+            {
+                if (value == CacheChildren)
+                {
+                    return;
+                }
+
                 if (value)
                 {
                     children = new MultiBindableDictionary<string, WeakReferenceX<Vob>>();
@@ -3257,7 +3268,7 @@ namespace LionFire.ObjectBus
 
         private void CleanDeadChildReferences()
         {
-            IEnumerable<KeyValuePair<string, WeakReferenceX<Vob>>> ce = (IEnumerable<KeyValuePair<string, WeakReferenceX<Vob>>>)children;
+            IEnumerable<KeyValuePair<string, WeakReferenceX<Vob>>> ce = children;
 
             foreach (var kvp in ce.ToArray())
             {
@@ -3278,10 +3289,7 @@ namespace LionFire.ObjectBus
 #if !AOT
 <string>
 #endif
- subpathChunks)
-        {
-            return GetChild(subpathChunks.GetEnumerator());
-        }
+ subpathChunks) => GetChild(subpathChunks.GetEnumerator());
 
         // DUPLICATED - Similar logic as GetChild and QueryChild
         private Vob GetChild(IEnumerator
@@ -3290,7 +3298,11 @@ namespace LionFire.ObjectBus
 #endif
  subpathChunks)
         {
-            if (subpathChunks == null) return this;
+            if (subpathChunks == null)
+            {
+                return this;
+            }
+
             Vob child;
 
             if (!subpathChunks.MoveNext() || StringX.IsNullOrWhiteSpace(subpathChunks.Current
@@ -3299,7 +3311,7 @@ namespace LionFire.ObjectBus
 #endif
 ))
             {
-                return (Vob)this;
+                return this;
             }
 
             string childName = subpathChunks.Current
@@ -3312,7 +3324,7 @@ namespace LionFire.ObjectBus
             {
                 if (childName == "..")
                 {
-                    child = this.Parent;
+                    child = Parent;
                 }
                 else if (childName == ".")
                 {
@@ -3320,7 +3332,7 @@ namespace LionFire.ObjectBus
                 }
                 else
                 {
-                    var wVob = this.children.TryGetValue(childName);
+                    var wVob = children.TryGetValue(childName);
                     if (wVob != null)
                     {
                         if (!wVob.IsAlive)
@@ -3337,7 +3349,7 @@ namespace LionFire.ObjectBus
                     else
                     {
                         child = CreateChild(childName);
-                        this.children.Add(childName, new WeakReferenceX<Vob>(child));
+                        children.Add(childName, new WeakReferenceX<Vob>(child));
                     }
                 }
             }
@@ -3359,7 +3371,10 @@ namespace LionFire.ObjectBus
         {
             Vob vob;
 
-            if (subpathChunks == null || subpathChunks.Length == 0) return this;
+            if (subpathChunks == null || subpathChunks.Length == 0)
+            {
+                return this;
+            }
 
             string childName = subpathChunks[index];
 
@@ -3367,7 +3382,7 @@ namespace LionFire.ObjectBus
             {
                 if (childName == "..")
                 {
-                    vob = this.Parent ?? this;
+                    vob = Parent ?? this;
                 }
                 else if (childName == ".")
                 {
@@ -3375,7 +3390,7 @@ namespace LionFire.ObjectBus
                 }
                 else
                 {
-                    var wVob = this.children.TryGetValue(childName);
+                    var wVob = children.TryGetValue(childName);
                     if (wVob != null)
                     {
                         if (!wVob.IsAlive || wVob.Target == null)
@@ -3391,7 +3406,7 @@ namespace LionFire.ObjectBus
                     else
                     {
                         vob = CreateChild(childName);
-                        this.children.Add(childName, new WeakReferenceX<Vob>(vob));
+                        children.Add(childName, new WeakReferenceX<Vob>(vob));
                     }
                 }
             }
@@ -3411,14 +3426,18 @@ namespace LionFire.ObjectBus
         // DUPLICATED - Similar logic as GetChild
         public Vob QueryChild(string[] subpathChunks, int index)
         {
-            if (subpathChunks == null || subpathChunks.Length == 0) return this;
+            if (subpathChunks == null || subpathChunks.Length == 0)
+            {
+                return this;
+            }
+
             Vob vob;
 
             string childName = subpathChunks[index];
 
             if (childName == "..")
             {
-                vob = this.Parent;
+                vob = Parent;
             }
             else if (childName == ".")
             {
@@ -3426,7 +3445,7 @@ namespace LionFire.ObjectBus
             }
             else
             {
-                var wVob = this.children.TryGetValue(childName);
+                var wVob = children.TryGetValue(childName);
                 if (wVob != null)
                 {
                     if (wVob.IsAlive)
@@ -3458,21 +3477,11 @@ namespace LionFire.ObjectBus
 
         #region Children by VosReference
 
-        public Vob this[VosReference reference] {
-            get {
-                return this[reference.Path];
-            }
-        }
+        public Vob this[VosReference reference] => this[reference.Path];
 
-        public Vob GetChild(VosReference reference)
-        {
-            return this.GetChild(reference.Path.ToPathArray(), 0);
-        }
+        public Vob GetChild(VosReference reference) => GetChild(reference.Path.ToPathArray(), 0);
 
-        public Vob QueryChild(VosReference reference)
-        {
-            return this.QueryChild(reference.Path.ToPathArray(), 0);
-        }
+        public Vob QueryChild(VosReference reference) => QueryChild(reference.Path.ToPathArray(), 0);
 
         #endregion
 
@@ -3485,8 +3494,10 @@ namespace LionFire.ObjectBus
 
         #region Read
 
-        public string DumpNonVirtualReadLocations {
-            get {
+        public string DumpNonVirtualReadLocations
+        {
+            get
+            {
                 return GetNonVirtualReadLocations
 #if NET35
 .Cast<object>()
@@ -3494,14 +3505,19 @@ namespace LionFire.ObjectBus
                 .ToStringList();
             }
         }
-        public IEnumerable<IReference> GetNonVirtualReadLocations {
-            get {
-                foreach (var handle in this.ReadHandles)
+        public IEnumerable<IReference> GetNonVirtualReadLocations
+        {
+            get
+            {
+                foreach (var handle in ReadHandles)
                 {
                     var references = handle.ToNonVirtualReferences();
                     foreach (var reference in references)
                     {
-                        if (reference != null) yield return reference;
+                        if (reference != null)
+                        {
+                            yield return reference;
+                        }
                     }
                 }
             }
@@ -3511,8 +3527,10 @@ namespace LionFire.ObjectBus
 
         #region Write
 
-        public string DumpNonVirtualWriteLocations {
-            get {
+        public string DumpNonVirtualWriteLocations
+        {
+            get
+            {
                 return GetNonVirtualWriteLocations
 #if NET35
                 .Cast<object>()
@@ -3520,14 +3538,19 @@ namespace LionFire.ObjectBus
                 .ToStringList();
             }
         }
-        public IEnumerable<IReference> GetNonVirtualWriteLocations {
-            get {
-                foreach (var handle in this.WriteHandles)
+        public IEnumerable<IReference> GetNonVirtualWriteLocations
+        {
+            get
+            {
+                foreach (var handle in WriteHandles)
                 {
                     var references = handle.ToNonVirtualReferences();
                     foreach (var reference in references)
                     {
-                        if (reference != null) yield return reference;
+                        if (reference != null)
+                        {
+                            yield return reference;
+                        }
                     }
                 }
             }
@@ -3544,27 +3567,24 @@ namespace LionFire.ObjectBus
         public override bool Equals(object obj)
         {
             var other = obj as Vob;
-            if (other == null) return false;
+            if (other == null)
+            {
+                return false;
+            }
 #if DEBUG
-            if (this.Path == other.Path && this != other) { l.TraceWarn("Two Vobs with same path but !="); }
-            if (this.Path == other.Path && !object.ReferenceEquals(this, other)) { l.TraceWarn("Two Vobs with same path but !ReferenceEquals"); }
+            if (Path == other.Path && this != other) { l.TraceWarn("Two Vobs with same path but !="); }
+            if (Path == other.Path && !object.ReferenceEquals(this, other)) { l.TraceWarn("Two Vobs with same path but !ReferenceEquals"); }
 #endif
-            return this.Path == other.Path;
+            return Path == other.Path;
         }
 
-        public override int GetHashCode()
-        {
-            return this.Path.GetHashCode();
-        }
+        public override int GetHashCode() => Path.GetHashCode();
 
-        public override string ToString()
-        {
-            return this.Path;
-        }
+        public override string ToString() => Path;
 
         private static ILogger l = Log.Get();
-        private static ILogger lSave = Log.Get("LionFire.ObjectBus.Vob.Save");
-        private static ILogger lLoad = Log.Get("LionFire.ObjectBus.Vob.Load");
+        private static ILogger lSave = Log.Get("LionFire.Vos.Vob.Save");
+        private static ILogger lLoad = Log.Get("LionFire.Vos.Vob.Load");
 
         #endregion
 
@@ -3575,12 +3595,10 @@ namespace LionFire.ObjectBus
         }
 
 
-#if !AOT
-        internal static void DeleteChildren(VobFilter filter)
-        {
-            throw new NotImplementedException();
-        }
-#endif
+        //        internal static void DeleteChildren(VobFilter filter)
+        //        {
+        //            throw new NotImplementedException();
+        //        }
 
         #region TreeLastModified
 
@@ -3591,11 +3609,7 @@ namespace LionFire.ObjectBus
             vh.Save();
         }
 
-        public VobHandle<TimeStamp> VHTreeLastModified {
-            get {
-                return this[VosPaths.MetaDataSubPath]["TreeLastModified"].GetHandle<TimeStamp>();
-            }
-        }
+        public VobHandle<TimeStamp> VHTreeLastModified => this[VosPaths.MetaDataSubPath]["TreeLastModified"].GetHandle<TimeStamp>();
         public DateTime? GetTreeLastModified()
         {
             VHTreeLastModified.ForgetObject();
@@ -3614,9 +3628,9 @@ namespace LionFire.ObjectBus
     {
         public DateTime DateTime { get; set; }
         public TimeStamp() { }
-        public TimeStamp(DateTime dateTime) { this.DateTime = dateTime; }
-        public static implicit operator TimeStamp(DateTime dateTime) { return new TimeStamp(dateTime); }
-        public static implicit operator DateTime(TimeStamp timeStamp) { return timeStamp.DateTime; }
+        public TimeStamp(DateTime dateTime) { DateTime = dateTime; }
+        public static implicit operator TimeStamp(DateTime dateTime) => new TimeStamp(dateTime);
+        public static implicit operator DateTime(TimeStamp timeStamp) => timeStamp.DateTime;
     }
 
     public static class VobExtensions

@@ -1,6 +1,5 @@
-﻿using LionFire.MultiTyping;
-using LionFire.StateMachines;
-using HSM = LionFire.MultiTyping.IHas<LionFire.StateMachines.IStateMachine<LionFire.Execution.ExecutionState2, LionFire.Execution.ExecutionTransition>>;
+﻿using LionFire.StateMachines;
+using HSM = LionFire.Ontology.IHas<LionFire.StateMachines.IStateMachine<LionFire.Execution.ExecutionState2, LionFire.Execution.ExecutionTransition>>;
 
 namespace LionFire.Execution
 {

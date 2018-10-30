@@ -7,6 +7,8 @@ namespace LionFire.Referencing
     /// </summary>
     public sealed class SlimUriStringReference : IReference
     {
+        public bool IsCompatibleWith(string obj) => Uri.TryCreate(obj, UriKind.RelativeOrAbsolute, out Uri _);
+
         #region Construction
 
         public SlimUriStringReference() { }
@@ -58,5 +60,7 @@ namespace LionFire.Referencing
         public string Host => Uri.Host;
         public string Port => Uri.Port.ToString();
         public string Path => Uri.AbsolutePath;
+
+        
     }
 }

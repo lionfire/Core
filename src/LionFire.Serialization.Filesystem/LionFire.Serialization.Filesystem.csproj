@@ -6,7 +6,6 @@
 
   <ItemGroup>
     <ProjectReference Include="..\LionFire.IO.Filesystem\LionFire.IO.Filesystem.csproj" />
-    <ProjectReference Include="..\LionFire.Serialization\LionFire.Serialization.csproj" />
   </ItemGroup>
 
   <ItemGroup>

@@ -1,14 +1,30 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using System.Reflection;
+using LionFire.Collections.Concurrent;
 
 namespace LionFire.Structures
 {
+
+    public static class ManualSingletonRegistrar
+    {
+        public static ConcurrentList<Type> List = new ConcurrentList<Type>();
+
+        public static void ResetAll()
+        {
+            foreach(var type in List)
+            {
+                typeof(ManualSingleton<>).MakeGenericType(type).GetProperty("Instance").SetValue(null, null);
+            }   
+        }
+    }
+
     public sealed class ManualSingleton<T>
         where T : class
     {
+        static ManualSingleton()
+        {
+            ManualSingletonRegistrar.List.Add(typeof(T));
+        }
 
         public static T Instance { get; set; }
         public static T GuaranteedInstance
@@ -36,13 +52,20 @@ namespace LionFire.Structures
                         var sTypeInstance = (T)sType.GetProperty("Instance", BindingFlags.Static | BindingFlags.Public).GetValue(null);
                         if (sTypeInstance != null)
                         {
-                            Instance = (T)sTypeInstance;
+                            Instance = sTypeInstance;
                             return Instance;
                         }
                     }
                     if (createType != null)
                     {
-                        Instance = (T)Activator.CreateInstance(createType);
+                        try
+                        {
+                            Instance = (T)Activator.CreateInstance(createType);
+                        }
+                        catch (MissingMethodException mme)
+                        {
+                            throw new Exception("Missing method when creating instance of " + createType.Name + (createType != typeof(T) ? $" for {typeof(T).Name}" : ""), mme);
+                        }
                     }
                 }
                 return Instance;
@@ -66,6 +89,11 @@ namespace LionFire.Structures
             }
             return Instance;
         }
-    }
 
+    }
+    public sealed class ManualSingleton
+    {
+        public static object GetInstance(object obj, Type type) => typeof(ManualSingleton<>).MakeGenericType(type).GetProperty("Instance").GetValue(null);
+        public static void SetInstance(object obj, Type type) => typeof(ManualSingleton<>).MakeGenericType(type).GetProperty("Instance").SetValue(null, obj);
+    }
 }

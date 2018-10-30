@@ -16,11 +16,13 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\LionFire.Structures\LionFire.Structures.csproj" />
+    <Compile Remove="Path\**" />
+    <EmbeddedResource Remove="Path\**" />
+    <None Remove="Path\**" />
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Path\" />
+    <ProjectReference Include="..\LionFire.Structures\LionFire.Structures.csproj" />
   </ItemGroup>
 
 </Project>

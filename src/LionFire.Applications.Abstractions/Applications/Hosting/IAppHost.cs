@@ -34,11 +34,13 @@ namespace LionFire.Applications.Hosting
 
         #region Configuration
 
+        string Name { get; set; }
         IDictionary<string, object> Properties { get; }
 
         #endregion
 
-        
+        bool IsRootApplication { get; }
+
         //IAppHost AddAsset<T>(string assetSubPath) where T : class; // RENAME AddAsset?
 
         #region Execution
@@ -72,6 +74,7 @@ namespace LionFire.Applications.Hosting
         /// Sets IsShuttingDown to true.  All components that run perpetually until shutdown should monitor this flag and shut down in a timely manner.
         /// </summary>
         Task Shutdown(long millisecondsTimeout = 0);
+        void SetManualSingletonFromService(Type serviceType);
 
         #endregion
     }

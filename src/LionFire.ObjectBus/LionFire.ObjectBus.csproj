@@ -19,15 +19,19 @@
     <ProjectReference Include="..\..\..\StateMachines\src\LionFire.StateMachines.Abstractions\LionFire.StateMachines.Abstractions.csproj" />
     <ProjectReference Include="..\LionFire.Applications.Abstractions\LionFire.Applications.Abstractions.csproj" />
     <ProjectReference Include="..\LionFire.Core\LionFire.Core.csproj" />
+    <ProjectReference Include="..\LionFire.Handles\LionFire.Handles.csproj" />
     <ProjectReference Include="..\LionFire.ObjectBus.Abstractions\LionFire.ObjectBus.Abstractions.csproj" />
     <ProjectReference Include="..\LionFire.Referencing.Abstractions\LionFire.Referencing.Abstractions.csproj" />
     <ProjectReference Include="..\LionFire.Referencing\LionFire.Referencing.csproj" />
-    <ProjectReference Include="..\LionFire.Serialization\LionFire.Serialization.csproj" />
   </ItemGroup>
 
   <ItemGroup Condition=" '$(TargetFramework)' == 'net462' ">
     <Reference Include="System" />
     <Reference Include="Microsoft.CSharp" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="OBus\Resolution\" />
   </ItemGroup>
 
 </Project>

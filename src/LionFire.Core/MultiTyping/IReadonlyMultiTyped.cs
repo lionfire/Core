@@ -5,7 +5,8 @@ using System.Threading.Tasks;
 
 namespace LionFire.MultiTyping
 {
-    public interface IReadOnlyMultiTyped
+    
+    public interface IReadOnlyMultiTyped // REVIEW MOVE - should this be in LionFire.Structures?
     {
         T AsType<T>() where T : class;
 

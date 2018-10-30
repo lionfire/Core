@@ -1,75 +1,31 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using LionFire.Persistence;
 using LionFire.Referencing;
 
 namespace LionFire.ObjectBus
 {
 
-    public interface IWritableOBase : IOBase
+    /// <summary>
+    /// TODO: All persistence async! (?)
+    /// </summary>
+    public interface IOBase : ISupportsUriSchemes
     {
-        void Set(IReference reference, object obj, bool allowOverwrite = true);
-        bool TryDelete(IReference reference, bool preview = false);
+        #region Parent
 
-        /// <returns>true if can be fully deleted, false if no delete can take place, and null if it can be partially deleted</returns>
-        bool? CanDelete(IReference reference);
-    }
-
-    public interface IHasPersistenceEvents
-    {
-        PersistenceEventType SupportsEvents(PersistenceEventSourceType sourceType = PersistenceEventSourceType.Unspecified);
-        event IObservable<OBasePersistenceEvent> Subscribe(Predicate < IReference > filter = null, PersistenceEventSourceType sourceType = PersistenceEventSourceType.Unspecified);
-    }
-
-    public struct OBasePersistenceEvent
-    {
-        //public IReference Reference { get; set; }
-
-        #region Reference
-
-        public IReference Reference
-        {
-            get { return reference ?? Handle?.Reference; }
-            set { if (handle!=null) { throw new AlreadyException("Cannot set if Handle is already set."); } reference = value; }
-        }
-        private IReference reference;
+        IOBus OBus { get; }
 
         #endregion
 
-        #region Object
+        #region Read
 
-        public object Object
-        {
-            get { return obj ?? Handle?.Object; }
-            set { obj = value; }
-        }
-        private object obj;
+        //object TryGet(IReference reference, OptionalRef<RetrieveInfo> optionalRef = null);
+        //T TryGet<T>(IReference reference, OptionalRef<RetrieveInfo> optionalRef = null) where T : class;
 
-        #endregion
+        Task<IRetrieveResult<T>> TryGet<T>(IReference reference);
 
-        #region Handle
-
-        public IHandle Handle
-        {
-            get { return handle /* ?? Reference?.ToHandle()*/; }
-            set { if (reference != null) { throw new AlreadyException("Cannot set if Reference is already set."); }  handle = value; }
-        }
-        private IHandle handle;
-
-        #endregion
-    }
-
-
-    public interface IOBase : IUriProvider
-    {
-        //T Get<T>(IReference reference);
-        //T TryGet<T>(IReference reference);
-
-        object TryGet(IHandle handle);
-
-        object TryGet(IReference reference, OptionalRef<RetrieveInfo> optionalRef = null);
-        T TryGet<T>(IReference reference, OptionalRef<RetrieveInfo> optionalRef = null) where T : class;
-
+        Task<IRetrieveResult<bool>> Exists(IReference reference);
 
         // FUTURE: flags for hidden, persisted
         //IEnumerable<string> GetChildrenNames(IReference parent, QueryFlags requiredFlags = QueryFlags.None, QueryFlags excludeFlags = QueryFlags.None);
@@ -80,16 +36,9 @@ namespace LionFire.ObjectBus
 
         //event Action<string> Changed;
 
-#if !AOT
-        H<T> GetHandle<T>(IReference reference) where T : class;
-
-#endif
-
         // Prefer IHandle.GetSubpath.  Default implementation of that uses this:
         //IHandle<T> GetHandleSubpath<T>(IReference reference, params string[] subpathChunks) where T : class;
-
-        bool Exists(IReference reference);
-
+        
         ///// <summary>
         ///// FUTURE? Or ObjectWatcher that parallels FileSystemWatcher? Set changeTypes to None to disable
         ///// </summary>
@@ -98,25 +47,60 @@ namespace LionFire.ObjectBus
         ///// <param name="changeTypes"></param>
         //void MonitorEvents(ObjectChangedHandler handler, IReference reference, ChangeTypes changeTypes = ChangeTypes.All);
 
-        IObjectWatcher GetWatcher(IReference reference);
-    }
+        #endregion
 
-    //public class ObjectWatcher
-    //{
-    //public IReference Reference{get;set;}
-    //}
+        #region Events
+
+        IObjectWatcher GetWatcher(IReference reference);
+
+        PersistenceEventKind SupportsEvents(PersistenceEventSourceKind sourceType = PersistenceEventSourceKind.Unspecified);
+        IObservable<OBasePersistenceEvent> Subscribe(Predicate<IReference> filter = null, PersistenceEventSourceKind sourceType = PersistenceEventSourceKind.Unspecified);
+
+        #endregion
+
+        #region Write
+        
+        /// <summary>
+        /// Rules for type:
+        ///  - leave null to use type of obj (defaults to typeof(object) if null).
+        ///  - TBD (when to save type info?  what about multityping?)
+        /// </summary>
+        /// <param name="reference"></param>
+        /// <param name="obj"></param>
+        /// <param name="type"></param>
+        /// <param name="allowOverwrite"></param>
+        /// <returns></returns>
+        Task Set(IReference reference, object obj, Type type = null, bool allowOverwrite = true);
+
+        Task<bool> TryDelete(IReference reference, bool preview = false);
+
+        /// <returns>true if can be fully deleted, false if no delete can take place, and null if it can be partially deleted</returns>
+        Task<bool?> CanDelete(IReference reference);
+
+        #endregion
+    }
 
     public static class IOBaseExtensions
     {
-        public static object Get(this IOBase obase, IReference reference, OptionalRef<RetrieveInfo> optionalRef = null)
+        public static Task<IRetrieveResult<object>> TryGet(this IOBase obase, IReference reference) => obase.TryGet<object>(reference);
+
+        public static async Task<IRetrieveResult<object>> Get(this IOBase obase, IReference reference)
         {
-            object result = obase.TryGet(reference, optionalRef);
-            if (result == null)
+            var result = await obase.TryGet(reference);
+            if (!result.IsSuccess)
             {
                 throw new ObjectNotFoundException("Could not find object with specified reference");
             }
             return result;
         }
-    }
 
+        public static async Task Delete(this IOBase obase, IReference reference)
+        {
+            if (!(await obase.TryDelete(reference).ConfigureAwait(false)))
+            {
+                throw new ObjectNotFoundException("Delete failed: no object found at specified reference.");
+            }
+        }
+    }
+ 
 }

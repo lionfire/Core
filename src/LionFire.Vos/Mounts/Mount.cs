@@ -3,9 +3,12 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using LionFire.Collections;
+using LionFire.Persistence;
+using LionFire.Referencing;
 using LionFire.Structures;
+using Microsoft.Extensions.Logging;
 
-namespace LionFire.ObjectBus
+namespace LionFire.Vos
 {
     public class Mount :
 #if AOT
@@ -27,7 +30,7 @@ namespace LionFire.ObjectBus
         {
         }
 
-        private Mount(Vob vob, IHandle rootHandle, string package = null, string store = null, bool enable = false, MountOptions mountOptions = null)
+        private Mount(Vob vob, H rootHandle, string package = null, string store = null, bool enable = false, MountOptions mountOptions = null)
         {
             if (vob == null) throw new ArgumentNullException("vob");
             this.Vob = vob;
@@ -53,7 +56,7 @@ namespace LionFire.ObjectBus
         //public readonly string MountName;
         //string IKeyed<string>.Key { get { return MountName; } }
 
-        object IKeyed.Key { get { return this.Root.Key; } }
+        //object IKeyed.Key { get { return this.Root.Key; } }
 #if AOT
         string IROStringKeyed.Key { get { return this.Root.Key; } }
 #else
@@ -67,20 +70,20 @@ namespace LionFire.ObjectBus
             return StringX.IsNullOrWhiteSpace(mountName) ? null : mountName;
         }
 
-        public IHandle RootHandle {
+        public R<MountHandleObject> RootHandle {
             get {
                 if (rootHandle == null)
                 {
-                    rootHandle = Root.GetHandle<MountHandleObject>();
+                    rootHandle = Root.GetReadHandle<MountHandleObject>();
                 }
                 return rootHandle;
             }
         }
-        private IHandle rootHandle;
+        private R<MountHandleObject> rootHandle;
 
         public class MountHandleObject : INotifyOnSaving
         {
-            public void OnSaving()
+            public void OnSaving(object persistenceContext = null)
             {
                 throw new NotSupportedException("Do not save this object");
             }

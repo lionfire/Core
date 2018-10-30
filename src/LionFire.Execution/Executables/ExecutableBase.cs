@@ -6,7 +6,7 @@ using System.ComponentModel;
 using LionFire.Structures;
 using LionFire.StateMachines.Class;
 using LionFire.StateMachines;
-using LionFire.MultiTyping;
+using LionFire.Ontology;
 
 namespace LionFire.Execution.Executables
 {

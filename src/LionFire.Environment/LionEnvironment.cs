@@ -154,5 +154,57 @@ namespace LionFire
 
         #endregion
 
+        #region MachineName
+
+        public static string MachineName
+        {
+            get
+            {
+                return machineName ?? Environment.MachineName;
+            }
+            set { machineName = value; }
+        }
+        private static string machineName;
+
+        #endregion
+
+        #region MachineGuid
+        
+        public static Guid MachineGuid
+        {
+            get
+            {
+                if(machineGuid == null)
+                {
+                    var path = Path.Combine(CompanyProgramDataDir, "machineid.txt");
+                    string guidString;
+                    Guid guid;
+                    bool parsed;
+                    if (File.Exists(path))
+                    {
+                        guidString = File.ReadAllText(path);
+                        if(parsed = Guid.TryParse(guidString, out guid))
+                        {
+                            machineGuid = guid;
+                        }
+                        else
+                        {
+                            throw new Exception("Machine GUID file is corrupt.  Please delete or restore it: " + path);
+                        }
+                    }
+                    else
+                    {
+                        guid = Guid.NewGuid();
+                        File.WriteAllText(path, guid.ToString());
+                        machineGuid = guid;
+                    }
+                }
+                return machineGuid;
+            }
+            //set { machineGuid = value; }
+        }
+        private static Guid machineGuid;
+
+        #endregion
     }
 }

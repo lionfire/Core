@@ -1,5 +1,6 @@
 ﻿using LionFire.Collections;
 using LionFire.Structures;
+using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.Collections.Specialized;
@@ -8,7 +9,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace LionFire.ObjectBus
+namespace LionFire.Vos
 {
     [Flags]
     public enum PersistenceStatus // MOVE

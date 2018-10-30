@@ -1,17 +1,15 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using LionFire.ObjectBus;
+using LionFire.Ontology;
+using LionFire.Referencing;
+using LionFire.Structures;
 
-namespace LionFire.Referencing
+namespace LionFire.ObjectBus
 {
     public static class IReferenceOBusExtensions
     {
-        public static IHandle ToHandle(this IReference reference)
-        {
-
-
-            throw new NotImplementedException();
-
-        }
+        public static bool IsResolvedReferenceType(IReference reference) => reference is IHas<IOBase> || reference is IHas<IOBus>;
     }
 }

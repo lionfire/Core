@@ -22,4 +22,8 @@
     <ProjectReference Include="..\LionFire.Validation\LionFire.Validation.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Structures\" />
+  </ItemGroup>
+
 </Project>

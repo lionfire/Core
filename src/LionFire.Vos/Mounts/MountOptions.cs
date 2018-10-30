@@ -3,9 +3,9 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
 using System.Text;
-using LionFire.Extensions.AssignFrom;
+//using LionFire.Extensions.AssignFrom;
 
-namespace LionFire.ObjectBus
+namespace LionFire.Vos
 {
     public class MountOptions
     {
@@ -24,7 +24,9 @@ namespace LionFire.ObjectBus
 
         public MountOptions(MountOptions other)
         {
-            this.ShallowAssignFrom(other);
+            throw new NotImplementedException("TODO");
+            //using LionFire.Extensions.AssignFrom;
+            //this.ShallowAssignFrom(other);
         }
 #if AOT
 		public void AssignFrom(MountOptions o)

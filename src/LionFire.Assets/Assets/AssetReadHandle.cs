@@ -5,20 +5,20 @@ using System.Threading.Tasks;
 using LionFire.Assets;
 using LionFire.Handles;
 using LionFire.Referencing;
-using LionFire.Referencing.Persistence;
+using LionFire.Persistence;
 
 namespace LionFire.Persistence.Assets
 {
 
-    public class AssetResolver : IReferenceRetriever
-    {
-        //public Task<RetrieveReferenceResult<T>> Retrieve<T>(IReadHandle<T> handle) where T : class
-        //{
-        //    throw new NotImplementedException();
-        //}
+    //public class AssetResolver : IReferenceRetriever
+    //{
+    //    //public Task<RetrieveReferenceResult<T>> Retrieve<T>(IReadHandle<T> handle) where T : class
+    //    //{
+    //    //    throw new NotImplementedException();
+    //    //}
 
-        public Task<RetrieveReferenceResult<T>> Retrieve<T>(IReference reference) where T : class => throw new NotImplementedException();
-    }
+    //    public Task<RetrieveResult<T>> Retrieve<T>(IReference reference) where T : class => throw new NotImplementedException();
+    //}
 
     // Reads via Injection.GetService<IAssetProvider>
     // OPTIMIZE: Change the base class to an H base class that stores a string (key) instead of a IReference

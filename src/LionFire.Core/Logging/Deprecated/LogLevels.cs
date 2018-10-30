@@ -40,7 +40,6 @@ namespace LionFire.Deprecated
         public static LogLevel ToLogLevel(int level)
         {
             if (level > (int)LogLevel.Disabled) return LogLevel.Disabled;
-            if (level > (int)LogLevel.Fatal) return LogLevel.Fatal;
             if (level > (int)LogLevel.Critical) return LogLevel.Critical;
             if (level > (int)LogLevel.Error) return LogLevel.Error;
             if (level > (int)LogLevel.Warn) return LogLevel.Warn;

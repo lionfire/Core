@@ -403,7 +403,7 @@ namespace LionFire.ObjectBus
                     //l.Warn("_object == null during change to IsPropertyChangedEventsAttached.  This should only be set when _object is set.");
                     return;
                 }
-                //l.Fatal("(TEMP) IsPropertyChangedEventsAttached: " + value + " " + this.ToString());
+                //l.LogCritical("(TEMP) IsPropertyChangedEventsAttached: " + value + " " + this.ToString());
 
                 if (isPropertyChangedEventsAttached)
                 {

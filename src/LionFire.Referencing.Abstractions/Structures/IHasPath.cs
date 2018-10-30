@@ -10,6 +10,7 @@ namespace LionFire.Structures
     /// <remarks>
     ///  - Used by FileSerializationService
     ///  - (used by Service RPC system)
+    ///  MOVE to LionFire.Structures?
     /// </remarks>
     public interface IHasPath 
     {

@@ -1,0 +1,20 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netstandard2.0</TargetFramework>
+    <RootNamespace>LionFire</RootNamespace>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\LionFire.Applications.Abstractions\LionFire.Applications.Abstractions.csproj" />
+    <ProjectReference Include="..\LionFire.Core\LionFire.Core.csproj" />
+    <ProjectReference Include="..\LionFire.ObjectBus.Abstractions\LionFire.ObjectBus.Abstractions.csproj" />
+    <ProjectReference Include="..\LionFire.ObjectBus\LionFire.ObjectBus.csproj" />
+    <ProjectReference Include="..\LionFire.Vos.Abstractions\LionFire.Vos.Abstractions.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Mounts\" />
+  </ItemGroup>
+
+</Project>

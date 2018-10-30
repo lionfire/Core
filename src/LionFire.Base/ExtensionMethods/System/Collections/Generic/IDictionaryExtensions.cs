@@ -9,6 +9,13 @@ namespace LionFire.ExtensionMethods
 
     public static class IDictionaryExtensions
     {
+        public static bool TryAdd<TKey, TValue>(this IDictionary<TKey, TValue> dict, TKey key, TValue val)
+        {
+            if (dict.ContainsKey(key)) return false;
+            dict.Add(key, val);
+            return true;
+        }
+
         /// <summary>
         /// Returns default(TValue) if key is null
         /// </summary>

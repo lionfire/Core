@@ -23,5 +23,6 @@
 
         public string Port => null;
 
+        public bool IsCompatibleWith(string obj) => string.IsNullOrWhiteSpace(obj.GetUriScheme());
     }
 }

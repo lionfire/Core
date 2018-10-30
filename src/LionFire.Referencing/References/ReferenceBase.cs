@@ -1,6 +1,6 @@
-﻿using LionFire.Referencing.Persistence;
-using System;
+﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 
 namespace LionFire.Referencing
@@ -9,13 +9,14 @@ namespace LionFire.Referencing
     public abstract class ReferenceBase : IReference
         //, IReferenceEx2
     {
+        public bool IsCompatibleWith(string stringUrl) => AllowedSchemes.Contains(stringUrl.GetUriScheme());
+        public abstract IEnumerable<string> AllowedSchemes { get; }
 
         #region Scheme
 
         public abstract string Scheme
         {
             get;
-            set;
         }
 
         public virtual bool CanSetScheme { get { return false; } }

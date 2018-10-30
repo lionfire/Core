@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using LionFire.ExtensionMethods;
+using LionFire.ExtensionMethods.Copying;
 using LionFire.Structures;
 
 namespace LionFire.Structures
