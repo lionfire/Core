@@ -29,7 +29,7 @@ namespace LionFire.Environment
             var sb = new StringBuilder();
             sb.Append(LionFireEnvironment.ProgramName);
             sb.Append(" ");
-            sb.Append(LionFireEnvironment.ProgramVersion);
+            sb.Append(LionFireEnvironment.MainAppInfo.ProgramVersion);
             sb.AppendLine();
 
             Console.WriteLine(sb.ToString());

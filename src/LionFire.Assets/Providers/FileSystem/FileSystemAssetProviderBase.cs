@@ -28,7 +28,7 @@ namespace LionFire.Assets.Providers.FileSystem
         {
             if (RootDir == null)
             {
-                RootDir = LionFireEnvironment.AppProgramDataDir;
+                RootDir = LionFireEnvironment.Directories.AppProgramDataDir;
             }
 
             if (!Directory.Exists(RootDir))

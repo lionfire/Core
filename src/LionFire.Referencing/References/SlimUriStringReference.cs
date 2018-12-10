@@ -5,7 +5,7 @@ namespace LionFire.Referencing
     /// <summary>
     /// Uses string as a backing field, will resolve to System.Uri each time it is requested
     /// </summary>
-    public sealed class SlimUriStringReference : IReference
+    public sealed class SlimUriStringReference : ReferenceBaseBase, IReference
     {
         public bool IsCompatibleWith(string obj) => Uri.TryCreate(obj, UriKind.RelativeOrAbsolute, out Uri _);
 
@@ -33,6 +33,7 @@ namespace LionFire.Referencing
 
         #region Uri
 
+        [SetOnce]
         public Uri Uri
         {
             get => new Uri(key);
@@ -41,6 +42,7 @@ namespace LionFire.Referencing
 
         #endregion
 
+        [SetOnce]
         public string Key
         {
             get => key;
@@ -59,8 +61,12 @@ namespace LionFire.Referencing
         public string Scheme => Uri.Scheme;
         public string Host => Uri.Host;
         public string Port => Uri.Port.ToString();
-        public string Path => Uri.AbsolutePath;
 
+        [SetOnce]
+        public override string Path {
+            get => Uri.AbsolutePath;
+            set => throw new Exception("Use set_Uri or set_Key instead");
+        }
         
     }
 }

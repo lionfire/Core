@@ -14,7 +14,7 @@ namespace LionFire.Serialization
         // serialization types like zip can recurse
 
 
-        public static LionFire.Collections.IReadOnlyCollection<LionSerializer> Serializers
+        public static IReadOnlyCollection<LionSerializer> Serializers
         { get { return serializers; } }
         private static MultiBindableCollection<LionSerializer> serializers = new MultiBindableCollection<LionSerializer>();
 

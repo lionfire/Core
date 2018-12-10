@@ -11,4 +11,10 @@ namespace LionFire.Referencing
     {
         IReference Reference { get; }
     }
+
+    public interface IReferencable<TReference>
+        where TReference : IReference
+    {
+        TReference Reference { get; }
+    }
 }

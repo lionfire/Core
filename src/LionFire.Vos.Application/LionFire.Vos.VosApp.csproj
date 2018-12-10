@@ -1,0 +1,19 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netstandard2.0</TargetFramework>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Remove="Application\**" />
+    <EmbeddedResource Remove="Application\**" />
+    <None Remove="Application\**" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\LionFire.Applications\LionFire.Applications.csproj" />
+    <ProjectReference Include="..\LionFire.ObjectBus.Filesystem\LionFire.ObjectBus.Filesystem.csproj" />
+    <ProjectReference Include="..\LionFire.Vos\LionFire.Vos.csproj" />
+  </ItemGroup>
+
+</Project>

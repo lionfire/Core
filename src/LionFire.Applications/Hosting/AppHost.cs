@@ -163,10 +163,11 @@ namespace LionFire.Applications.Hosting
 
         public static bool DetectUnitTestMode = true;
 
-        public string Name { get; set; }
-        public AppHost(string name = null, bool primaryApp = true)
+        public string AppId { get; set; }
+        public AppHost(string appId = null, bool primaryApp = true)
         {
-            this.Name = name;
+            this.AppId = appId;
+
             lock (ctorLock)
             {
                 ServiceCollection = new ServiceCollection();
@@ -313,6 +314,7 @@ namespace LionFire.Applications.Hosting
             children.OfType<TInitializable>().InitializeAll().Wait(); // Deprecated
             children.OfType<IInitializable2>().InitializeAll().Wait();
             children.OfType<IInitializable3>().InitializeAll().Wait();
+            children.OfType<IInitializerFor<IAppHost>>().InitializeAll(this).Wait();
 
             if (mode == BootstrapMode.Discard)
             {

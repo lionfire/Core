@@ -160,13 +160,13 @@ namespace LionFire.Messaging.Queues.IO
                 {
                     await Task.Run(() =>
                     {
-                        var obj = serializationService.FileToObject<object>(path);
+                        var obj = serializationService.AllStrategies.First().ToObject<object>(File.ReadAllText(path));
                         TryHandle(path, obj);
                     });
                 }
                 else
                 {
-                    var obj = serializationService.FileToObject<object>(path);
+                    var obj = serializationService.AllStrategies.First().ToObject<object>(File.ReadAllText(path));
                     TryHandle(path, obj);
                 }
             }

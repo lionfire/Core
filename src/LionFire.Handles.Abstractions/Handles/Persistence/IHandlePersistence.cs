@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace LionFire.Referencing
 {
-    public interface IHandlePersistence : ISaveable
+    public interface IHandlePersistence : ICommitable
     {
         void AssignFrom(object other);
 

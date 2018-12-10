@@ -37,7 +37,7 @@ namespace LionFire.ObjectBus
 #endif
         }
 
-        void OnHandleObjectChanged(R<object> handle)
+        void OnHandleObjectChanged(RH<object> handle)
         {
 
             // Abort saving if reports !IsValid, and handle has yet to be persisted

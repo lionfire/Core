@@ -1,6 +1,8 @@
-﻿using LionFire.Execution;
+﻿// -- Experimental service supervisor concept ...?
+using LionFire.Execution;
 using LionFire.Execution.Executables;
 using LionFire.Instantiating;
+using LionFire.Ontology;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -99,9 +101,9 @@ namespace LionFire.Execution // MOVE to Execution dll
             return Task.CompletedTask;
         }
 
-        private void S_StateChangedToFor(ExecutionStateEx arg1, IExecutableEx arg2)
+        private void S_StateChangedToFor(ExecutionStateEx arg1, object arg2)
         {
-            UpdateState(arg2);
+            UpdateState((IExecutableEx)arg2);
         }
 
         private void UpdateState(IExecutableEx arg2)

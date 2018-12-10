@@ -618,7 +618,7 @@ namespace LionFire.Collections
         }
         event NotifyCollectionChangedHandler<BaseT> collectionChanged;
 #endif
-        void target_CollectionChanged(NotifyCollectionChangedEventArgs<DerivedT> e)
+        void target_CollectionChanged(INotifyCollectionChangedEventArgs<DerivedT> e)
         {
 #if !AOT
 

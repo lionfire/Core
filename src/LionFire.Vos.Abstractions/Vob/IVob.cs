@@ -8,7 +8,9 @@ using LionFire.Types;
 
 namespace LionFire.Vos
 {
-    public interface IVob : IReadOnlyMultiTyped, IReferencable
+    public interface IVob : 
+        //IReadOnlyMultiTyped, 
+        IReferencable
     {
     }
 }

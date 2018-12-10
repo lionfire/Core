@@ -38,7 +38,7 @@ namespace LionFire.Vos
 
         #region AppDir
 
-        public static string AppRoot { get { return LionEnvironment.AppDir; } }
+        public static string AppRoot { get { return LionFireEnvironment.Directories.AppProgramDataDir; } }
 
         public static string AppBase
         {
@@ -92,18 +92,18 @@ namespace LionFire.Vos
         #region Shared
 
 #if !UNITY
-        public static string GlobalSharedDataRoot { get { return Path.Combine(LionEnvironment.CompanyFolderPath, "Data"); } }
-        public static string GlobalSharedStoresRoot { get { return Path.Combine(LionEnvironment.CompanyFolderPath, "Stores"); } }
+        public static string GlobalSharedDataRoot { get { return Path.Combine(LionFireEnvironment.Directories.CompanyProgramData, "Data"); } }
+        public static string GlobalSharedStoresRoot { get { return Path.Combine(LionFireEnvironment.Directories.CompanyProgramData, "Stores"); } }
 #endif
 
-        public static string UserSharedDataRoot { get { return Path.Combine(LionEnvironment.CompanyUserFolderPath, "Data"); } }
-        public static string UserSharedStoresRoot { get { return Path.Combine(LionEnvironment.CompanyUserFolderPath, "Stores"); } }
+        public static string UserSharedDataRoot { get { return Path.Combine(LionFireEnvironment.Directories.CompanyLocalAppDataPath, "Data"); } }
+        public static string UserSharedStoresRoot { get { return Path.Combine(LionFireEnvironment.Directories.CompanyLocalAppDataPath, "Stores"); } }
 
         #endregion
 
         #region Var (CommonAppData aka Var aka ProgramData)
 
-        public static string VarRoot { get { return LionEnvironment.CommonApplicationFolderPath; } }
+        public static string VarRoot { get { return LionFireEnvironment.Directories.AppProgramDataDir; } } // c:\ProgramData\{CompanyFolder}\{applicationFolder}
 
         public static string VarBase
         {
@@ -134,21 +134,21 @@ namespace LionFire.Vos
 
         public static string CompanyVarDir(string companyName = null)
         {
-            if (companyName == null) { companyName = LionEnvironment.CompanyName; }
-            return Path.Combine(LionEnvironment.VarRoot, companyName);
+            if (companyName == null) { companyName = LionFireEnvironment.CompanyName; }
+            return Path.Combine(VarRoot, companyName);
         }
 
         public static string AppVarDir(string appName = null, string companyName = null)
         {
-            if (appName == null) { appName = LionEnvironment.CommonAppDirDirectoryName;  }
-            if (companyName == null) { companyName = LionEnvironment.CompanyName; }
+            if (appName == null) { appName = LionFireEnvironment.Directories.AppDataDirName;  }
+            if (companyName == null) { companyName = LionFireEnvironment.CompanyName; }
 
             return Path.Combine(CompanyVarDir(companyName), appName);
         }
         public static string AppVarDataDir(string appName = null, string companyName = null)
         {
-            if (appName == null) { appName = LionEnvironment.CommonAppDirDirectoryName; }
-            if (companyName == null) { companyName = LionEnvironment.CompanyName; }
+            if (appName == null) { appName = LionFireEnvironment.Directories.AppDataDirName; }
+            if (companyName == null) { companyName = LionFireEnvironment.MainAppInfo.CompanyName; }
             return Path.Combine(AppVarDir(appName, companyName), VosDiskPaths.Data);
         }
 
@@ -181,21 +181,21 @@ namespace LionFire.Vos
 
         #endregion
 
-        public static class Databases
-        {
-            public static string Default
-            {
-                get { return VosDiskPaths.Default.Databases; }
-            }
-        }
+        //public static class Databases
+        //{
+        //    public static string Default
+        //    {
+        //        get { return VosDiskPaths.Default.Databases; }
+        //    }
+        //}
 
-        public static class Default
-        {
-            public static string Databases
-            {
-                get { return Path.Combine(LionEnvironment.DefaultDataRoot, VosDiskPaths.Database); }
-            }
-        }
+        //public static class Default
+        //{
+        //    public static string Databases
+        //    {
+        //        get { return Path.Combine(LionEnvironment.DefaultDataRoot, VosDiskPaths.Database); }
+        //    }
+        //}
     }
 
 }

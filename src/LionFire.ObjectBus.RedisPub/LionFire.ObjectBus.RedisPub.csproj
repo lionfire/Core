@@ -1,0 +1,18 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netcoreapp2.1</TargetFramework>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="StackExchange.Redis" Version="2.0.513" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\LionFire.Applications.Abstractions\LionFire.Applications.Abstractions.csproj" />
+    <ProjectReference Include="..\LionFire.ObjectBus\LionFire.ObjectBus.csproj" />
+    <ProjectReference Include="..\LionFire.Persistence\LionFire.Persistence.csproj" />
+    <ProjectReference Include="..\LionFire.Structures\LionFire.Structures.csproj" />
+  </ItemGroup>
+
+</Project>

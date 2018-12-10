@@ -47,6 +47,15 @@ namespace LionFire.Referencing // MOVE to Referencing
             return (paths[0].StartsWith(Separator) ? Separator : "") + String.Concat(paths.Zip(PathSeparatorRepeater, (x, y) => x.Trim(SeparatorChar) + y)).TrimEnd(SeparatorChar);
         }
 
+        public static string GetDirectoryName(string path)
+        {
+            return System.IO.Path.GetDirectoryName(path).Replace('\\', '/'); // TODO
+        }
+        public static string GetFileName(string path)
+        {
+            return System.IO.Path.GetFileName(path); // TODO
+        }
+
         public static string Combine(string path1, IEnumerable<string> path2)
         {
             var sb = new StringBuilder();
@@ -86,12 +95,12 @@ namespace LionFire.Referencing // MOVE to Referencing
         //    return chunks.ToArray();
         //}
 
-        internal static string CleanAbsolutePathEnds(string p)
+        public static string CleanAbsolutePathEnds(string p)
         {
             return String.Concat(SeparatorChar, p.TrimStart(SeparatorChars).TrimEnd(SeparatorChars));
         }
 
-        internal static int GetAbsolutePathDepth(string path)
+        public static int GetAbsolutePathDepth(string path)
         {
             // TODO: Debug-time SanityCheck for is absolute path
             return path.Count(c => c == SeparatorChar);

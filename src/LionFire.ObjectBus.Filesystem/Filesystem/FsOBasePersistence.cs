@@ -408,7 +408,7 @@ namespace LionFire.ObjectBus.Filesystem
 
         #region Delete
 
-        public static async Task<bool> TryDelete(string objectPath, Type type = null, bool preview = false)
+        public static async Task<bool?> TryDelete(string objectPath, Type type = null, bool preview = false)
         {
             bool result = false;
             var paths = GetFilePathsForNamePath(objectPath);

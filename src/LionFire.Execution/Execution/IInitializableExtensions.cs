@@ -47,6 +47,10 @@ namespace LionFire.Execution
             return await initializables.TryValidateAll(async i => await i.Initialize(), int.MaxValue).ConfigureAwait(false);
         }
 
+        public static async Task InitializeAll<T>(this IEnumerable<IInitializerFor<T>> initializables, T target)
+        {
+            await initializables.RepeatAllUntilTrue(obj => () => ((IInitializerFor<T>)obj).Initialize(target));
+        }
         public static async Task InitializeAll(this IEnumerable<IInitializable> initializables)
         {
             await initializables.RepeatAllUntilTrue(obj => ((IInitializable)obj).Initialize);

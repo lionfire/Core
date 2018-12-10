@@ -7,8 +7,8 @@ namespace LionFire.Referencing
     /// Backing fields: none
     /// </summary>
     /// <typeparam name="T"></typeparam>
-    public abstract class WBase<T> : RBase<T>, W<T>
-        //where T : class
+    public abstract class WBase<T> : RBase<T>, H<T>
+    //where T : class
     {
         // TODO: Delete on set to empty?  Should it be an Option, or per OBase or per handle?
         //protected override void OnObjectChanged()
@@ -43,7 +43,7 @@ namespace LionFire.Referencing
 
         #endregion
 
-        public async Task Save(object persistenceContext = null)
+        public async Task Commit(object persistenceContext = null)
         {
             if (DeletePending)
             {
@@ -56,13 +56,23 @@ namespace LionFire.Referencing
             }
         }
 
-        public abstract Task WriteObject(object persistenceContext = null);
-        public abstract Task DeleteObject(object persistenceContext = null);
+        protected abstract Task WriteObject(object persistenceContext = null);
+        protected abstract Task<bool?> DeleteObject(object persistenceContext = null);
+
+        public async Task<bool?> Delete() => await DeleteObject(); 
+
+        public async Task<bool?> Delete(object persistenceContext = null)
+        {
+            this.Object = default(T);
+            var result = await DeleteObject(persistenceContext);
+            DeletePending = false;
+            return result;
+        }
 
         public void MarkDeleted()
         {
             this.Object = default(T);
-            //DeletePending = true;
+            DeletePending = true;
         }
     }
 }

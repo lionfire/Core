@@ -22,7 +22,7 @@ using System.Media;
 
 namespace LionFire.Notifications.Wpf
 {
-
+    // TODO: Decouple from FSDirectoryQueueReader, switch to ObjectBus/Vos
 
     public class WpfNotifierService : ExecutableBase, IStartable, IStoppable, IInitializable
     {

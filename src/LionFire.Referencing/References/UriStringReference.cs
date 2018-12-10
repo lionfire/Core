@@ -5,7 +5,7 @@ namespace LionFire.Referencing
     /// <summary>
     /// Uses string as a backing field, but will also lazily resolve to System.Uri on demand
     /// </summary>
-    public sealed class UriStringReference : IReference
+    public sealed class UriStringReference : ReferenceBaseBase, IReference
     {
         public bool IsCompatibleWith(string obj) => Uri.TryCreate(obj, UriKind.RelativeOrAbsolute, out Uri _);
 
@@ -81,8 +81,7 @@ namespace LionFire.Referencing
         public string Scheme => Uri.Scheme;
         public string Host => Uri.Host;
         public string Port => Uri.Port.ToString();
-        public string Path => Uri.AbsolutePath;
+        public override string Path { get => Uri.AbsolutePath; set => throw new Exception("Use set_Uri"); }
 
-        
     }
 }

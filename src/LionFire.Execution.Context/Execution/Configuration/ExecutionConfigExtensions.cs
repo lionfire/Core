@@ -5,6 +5,7 @@ using System.IO;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
 using LionFire.ExtensionMethods;
+using LionFire.ExtensionMethods.Copying;
 
 namespace LionFire.Execution.Configuration
 {

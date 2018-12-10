@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO;
+using System.Linq;
 using LionFire.DependencyInjection;
 using LionFire.Serialization;
 using LionFire.Serialization.Contexts;
@@ -43,6 +44,8 @@ namespace LionFire.Messaging.Queues.IO
         }
         ISerializationService serializationService;
 
+        ISerializationStrategy SerializationStrategy => SerializationService.AllStrategies.First();
+
         #endregion
 
         //[TryInject]
@@ -52,14 +55,16 @@ namespace LionFire.Messaging.Queues.IO
         {
             Guid guid = Guid.NewGuid();
 
-            var context = new FileSerializationContext
-            {
-                Flags = SerializationOptions.SerializationFlags
-            };
+            // TODO
+            //var context = new FileSerializationContext
+            //{
+            //    Flags = SerializationOptions.SerializationFlags
+            //};
 
-            var bytes = SerializationService.ToBytes(env, context);
-            var path = Path.Combine(QueueDir, guid + "." + context.FileExtension);
+            var bytes = SerializationStrategy.ToBytes(env).Bytes;
 
+            var path = Path.Combine(QueueDir, guid + "." + SerializationStrategy.DefaultFormat.DefaultFileExtension);
+            
             using (var sw = new FileStream(path, FileMode.CreateNew))
             {
                 sw.Write(bytes, 0, bytes.Length);

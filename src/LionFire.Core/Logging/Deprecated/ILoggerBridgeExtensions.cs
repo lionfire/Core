@@ -1,6 +1,7 @@
 ﻿using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Text;
 using MSLogger = Microsoft.Extensions.Logging.ILogger;
 
@@ -32,6 +33,11 @@ namespace LionFire
         public static void Trace(this MSLogger logger, string msg)
         {
             logger.LogTrace(msg);
+        }
+        [Conditional("TRACE")]
+        public static void Trace(this MSLogger logger, Func<string> msg)
+        {
+            logger.LogTrace(msg());
         }
 
     }

@@ -9,6 +9,11 @@ namespace LionFire.Execution
     // FUTURE: Modular init/run strategies?
     // - Strat 1: IInitializable/IStartable
     // - Strat 2: IStateMachine with TransitionKind attributes indicating init/run path
+
+    /// <summary>
+    /// INCOMPLETE - no point yet?
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
     public class ExecutablesHost<T> : ExecutableBase, IComposable<T>, IExecutable2
         where T : ExecutablesHost<T>
     {

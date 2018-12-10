@@ -22,6 +22,7 @@ namespace LionFire.Referencing
         public override string Key => Key;
         private string key;
 
+        [SetOnce]
         public void SetKey(string key)
         {
             if (this.key != null)
@@ -31,6 +32,7 @@ namespace LionFire.Referencing
             this.key = key;
         }
 
-        public override string Path { get => Key; protected set => SetKey(value); }
+        [SetOnce]
+        public override string Path { get => Key; set => SetKey(value); }
     }
 }

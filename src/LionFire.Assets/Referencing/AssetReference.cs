@@ -43,10 +43,8 @@ namespace LionFire.Persistence.Assets
 
         public override string Path {
             get => typeof(T).Name + ReferenceConstants.PathSeparator + AssetSubPath;
-            protected set => throw new NotImplementedException();
+            set => throw new NotImplementedException();
         }
-
-        
 
         #endregion
 

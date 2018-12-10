@@ -16,20 +16,22 @@ namespace LionFire.IO
         #endregion
 
 
-        public override Task WriteObject(object persistenceContext = null)
+        protected override Task WriteObject(object persistenceContext = null)
         {
             File.WriteAllBytes(Path, Object);
             return Task.CompletedTask;
         }
 
-        public override async Task DeleteObject(object persistenceContext = null)
+        protected override async Task<bool?> DeleteObject(object persistenceContext = null)
         {
-            await Task.Run(() =>
+            return await Task.Run(() =>
             {
                 if (File.Exists(Path))
                 {
                     File.Delete(Path);
+                    return true;
                 }
+                return false;
             }).ConfigureAwait(false);
         }
 

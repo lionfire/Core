@@ -12,7 +12,7 @@ using LionFire.Referencing;
 namespace LionFire.Handles
 {
     public abstract class ObservableReadHandleDictionary<TKey, THandle, T> : IEnumerable<T>
-        where THandle : R<T>
+        where THandle : RH<T>
     {
 
         public bool ContainsKey(TKey key)
@@ -173,7 +173,7 @@ namespace LionFire.Handles
 
         #endregion
 
-        public event Action<R<T>> ObjectChanged
+        public event Action<RH<T>> ObjectChanged
         {
             add
             {
@@ -198,10 +198,10 @@ namespace LionFire.Handles
                 }
             }
         }
-        private event Action<R<T>> objectChanged;
+        private event Action<RH<T>> objectChanged;
 
         // This event is mapped to ObjectChanged on all child handles
-        public event Action<R<T>, T, T> ObjectReferenceChanged
+        public event Action<RH<T>, T, T> ObjectReferenceChanged
         {
             add
             {
@@ -226,9 +226,9 @@ namespace LionFire.Handles
                 }
             }
         }
-        private event Action<R<T>, T, T> objectReferenceChanged;
+        private event Action<RH<T>, T, T> objectReferenceChanged;
 
-        private void OnHandleObjectReferenceChanged(R<T> handle, T oldValue, T newValue)
+        private void OnHandleObjectReferenceChanged(RH<T> handle, T oldValue, T newValue)
         {
             objectReferenceChanged?.Invoke(handle, oldValue, newValue);
             if (IsObjectsEnabled)
@@ -244,7 +244,7 @@ namespace LionFire.Handles
             }
         }
 
-        private void OnHandleObjectChanged(R<T> handle)
+        private void OnHandleObjectChanged(RH<T> handle)
         {
             objectChanged?.Invoke(handle);
         }

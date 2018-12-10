@@ -22,11 +22,11 @@ namespace LionFire.Execution
 
     public static class ExecutionFlagsExtensions
     {
-        public static bool? WaitForRunCompletion(this object @object)
+        public static bool? WaitForRunCompletion(this object @object) // REFACTOR / RENAME - reduce confusing pollution
         {
             return @object.HasFlag(ExecutionFlag.WaitForRunCompletion);
         }
-        public static bool? HasFlag(this object @object, ExecutionFlag flag)
+        public static bool? HasFlag(this object @object, ExecutionFlag flag) // REFACTOR / RENAME- reduce confusing pollution
         {
             var hef = @object as IHasExecutionFlags;
             if (hef == null) return null;

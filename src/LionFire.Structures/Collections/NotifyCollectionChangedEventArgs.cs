@@ -3,6 +3,7 @@ using System.Linq;
 using System.Collections.Specialized;
 using LionFire.Serialization;
 using System.Collections;
+using System.Collections.Generic;
 
 namespace LionFire.Collections
 {
@@ -35,8 +36,13 @@ namespace LionFire.Collections
     //    NotifyCollectionChangedEventArgs ToNonGeneric();
     //}
 
+    //    public interface INotifyCollectionChangedEventArgs<out T>
+    //{
+
+    //}
+
     [LionSerializable(SerializeMethod.ByValue)]
-    public class NotifyCollectionChangedEventArgs<T>
+    public class NotifyCollectionChangedEventArgs<T> : INotifyCollectionChangedEventArgs<T>
     //: NotifyCollectionChangedEventArgs<T>
     {
         public static NotifyCollectionChangedEventArgs<T> Added(params T[] items)
@@ -82,9 +88,9 @@ namespace LionFire.Collections
         public NotifyCollectionChangedAction Action { get; set; }
 
         [LionSerializable(SerializeMethod.ByValue)]
-        public T[] NewItems { get; set; }
+        public IEnumerable<T> NewItems { get; set; }
         [LionSerializable(SerializeMethod.ByValue)]
-        public T[] OldItems { get; set; }
+        public IEnumerable<T> OldItems { get; set; }
 
         public NotifyCollectionChangedEventArgs ToNonGeneric()
         {

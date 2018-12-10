@@ -3,7 +3,7 @@ using System.Linq;
 
 namespace LionFire.Referencing
 {
-    public abstract class LocalReferenceBase : IReference
+    public abstract class LocalReferenceBase : ReferenceBaseBase, IReference
     {
         public bool IsCompatibleWith(string stringUrl) => AllowedSchemes.Contains(stringUrl.GetUriScheme());
         public abstract IEnumerable<string> AllowedSchemes { get; }
@@ -16,7 +16,23 @@ namespace LionFire.Referencing
             get;
         }
         public abstract string Key { get; }
-        public abstract string Path { get; protected set; }
+
+        #region Path
+
+        [SetOnce]
+        public override string Path
+        {
+            get { return path; }
+            set
+            {
+                if (path == value) return;
+                if (path != default(string)) throw new AlreadySetException();
+                path = value;
+            }
+        }
+        private string path;
+
+        #endregion
 
     }
 

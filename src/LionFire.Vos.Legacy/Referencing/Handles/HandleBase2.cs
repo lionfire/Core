@@ -540,8 +540,6 @@ namespace LionFire.Referencing
         //    OnObjectChanged();
         //}
 
-        
-
         #endregion
 
         #region Persistence
@@ -554,7 +552,7 @@ namespace LionFire.Referencing
             if (!TryEnsureRetrieved())
             {
                 ConstructDefault();
-                if (saveCreatedObject) { Save(); }
+                if (saveCreatedObject) { Commit(); }
             }
         }
 
@@ -614,7 +612,7 @@ namespace LionFire.Referencing
         public void CreateOrOverwrite()
         {
             EnsureConstructed();
-            Save();
+            Commit();
         }
 
         #endregion
@@ -902,7 +900,7 @@ namespace LionFire.Referencing
             Saving?.Invoke(this);
         }
         public event Action<IHandle> Saving;
-        public abstract Task Save(object persistenceContext = null);
+        public abstract Task Commit(object persistenceContext = null);
         
 
         #endregion

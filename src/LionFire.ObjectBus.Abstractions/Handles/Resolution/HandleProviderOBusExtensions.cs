@@ -1,24 +1,42 @@
-﻿using LionFire.DependencyInjection;
-using LionFire.ObjectBus;
+﻿using System;
+using System.Collections.Generic;
+using LionFire.DependencyInjection;
 using LionFire.Referencing;
-using System;
 
-namespace LionFire.Referencing
+namespace LionFire.ObjectBus
 {
     /// <summary>
     /// Gets handles for References via OBus
     /// </summary>
-    public static class HandleProviderExtensions
+    public static class HandleProviderOBusExtensions
     {
         //public static H<T> ToHandle<T>(this string uriString) where T : class => InjectionContext.Current.GetService<IHandleProvider>().GetHandle<T>(new UriStringReference(uriString));
 
-        public static H<object> GetHandle(this IReference reference, object obj = null) => reference.GetOBus().GetHandle<object>(reference, obj);
-        public static H<T> GetHandle<T>(this IReference reference, T obj = default(T)) => reference.GetOBus().GetHandle<T>(reference, obj);
-        public static H<T> GetHandle<T>(this T obj) => throw new NotImplementedException("FUTURE: if obj != null, create a NamedObjectHandle and assign a random key");
+        //#region  TODO: see if reference implelements IProvidesHandleFromPath
 
-        public static R<object> GetReadHandle(this IReference reference, object obj = null) => reference.GetOBus().GetReadHandle<object>(reference);
-        public static R<T> GetReadHandle<T>(this IReference reference, T obj = default(T)) => reference.GetOBus().GetReadHandle<T>(reference);
-        public static R<T> GetReadHandle<T>(this T obj) => throw new NotImplementedException("FUTURE: if obj != null, create a NamedObjectHandle and assign a random key");
+        //public static H GetHandle(this IReference reference/*, object obj = null*/) => (H)reference.GetOBus().GetHandle<object>(reference/*, obj*/);
+        //public static H<T> GetHandle<T>(this IReference reference/*, T obj = default(T)*/) => (reference is IProvidesHandleFromPath ph) ? ph.GetHandle<T>(reference.Path) : reference.GetOBus().GetHandle<T>(reference/*, obj*/);
+        //public static H<T> ObjectToHandle<T>(this T obj) => throw new NotImplementedException("FUTURE: if obj != null, create a NamedObjectHandle and assign a random key");
+
+        //public static R GetReadHandle(this IReference reference/*, object obj = null*/) => (R)reference.GetOBus().GetReadHandle<object>(reference);
+        //public static R<T> GetReadHandle<T>(this IReference reference/*, T obj = default(T)*/) => reference.GetOBus().GetReadHandle<T>(reference);
+        //public static R<T> ObjectToReadHandle<T>(this T obj) => throw new NotImplementedException("FUTURE: if obj != null, create a NamedObjectHandle and assign a random key");
+
+        //#endregion
+
+        public static C GetCollectionHandle(this IReference reference) => (C)reference.GetOBus().GetCollectionHandle<object>(reference);
+        public static C<T> GetCollectionHandle<T>(this IReference reference) => (C<T>)reference.GetOBus().GetCollectionHandle<object>(reference);
+        public static RC GetReadCollectionHandle(this IReference reference) => (RC)reference.GetOBus().GetReadCollectionHandle<object>(reference);
+        public static RC<T> GetReadCollectionHandle<T>(this IReference reference) => (RC<T>)reference.GetOBus().GetReadCollectionHandle<object>(reference);
+
+
+        public static H GetHandle(this IReference reference/*, object obj = null*/) => (H)reference.GetOBus().GetHandle<object>(reference/*, obj*/);
+        public static H<T> GetHandle<T>(this IReference reference/*, T obj = default(T)*/) => reference.GetOBus().GetHandle<T>(reference/*, obj*/);
+        public static H<T> ObjectToHandle<T>(this T obj) => throw new NotImplementedException("FUTURE: if obj != null, create a NamedObjectHandle and assign a random key");
+
+        public static RH GetReadHandle(this IReference reference/*, object obj = null*/) => (RH)reference.GetOBus().GetReadHandle<object>(reference);
+        public static RH<T> GetReadHandle<T>(this IReference reference/*, T obj = default(T)*/) => reference.GetOBus().GetReadHandle<T>(reference);
+        public static RH<T> ObjectToReadHandle<T>(this T obj) => throw new NotImplementedException("FUTURE: if obj != null, create a NamedObjectHandle and assign a random key");
 
         //      public static H<T> ToHandle<T>(this IReferencable referencable, T obj = null)
         //          where T : class//, new()

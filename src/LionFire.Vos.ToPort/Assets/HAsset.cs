@@ -6,88 +6,21 @@
 #define HASSETG
 
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
-using JsonExSerializer;
-using LionFire.Assets.SerializationConverters;
-using LionFire.Vos;
+//using LionFire.Assets.SerializationConverters;
+using LionFire.Copying;
 using LionFire.Serialization;
-using System.Collections;
-using System.Diagnostics;
+using LionFire.Vos;
 
 namespace LionFire.Assets
 {
 
-
-    public static class HAssetExtensions
-    {
-#if !AOT
-        public static T TryGetObject<T>(this HAsset<T> ha)
-            where T : class
-        {
-            if (ha == null) return null;
-            return ha.Object;
-        }
-#endif
-
-        [AotReplacement] // First param is different, not sure it works :-/
-        public static object TryGetObject(this IReadHandle ha, Type type)
-        {
-            if (ha == null) return null;
-            return ha.Object
-                ;
-        }
-    }
-    //
-    //	public class HAssetBaseTest<AssetType>
-    //    where AssetType : class
-    //		
-    //
-    //	{
-    //		public AssetType Object
-    //		{
-    //			get{Log.Info("HAssetBaseTest<AssetType>.get_Object"); return null;}
-    //			set{Log.Info("HAssetBaseTest<AssetType>.set_Object");}
-    //		}
-    //	}
-
-
-    public interface IHAsset : IHRAsset
-    {
-
-
-        bool HasPathOrObject { get; }
-        void Save();
-    }
-
-    public interface IHRAsset : IReadHandle
-    {
-        string AssetTypePath { get; }
-        Type Type {
-            get;
-        }
-
-    }
-
-
-
 #if HASSETG
-
-    //    public class HRAsset<AssetType> 
-
-    //        :
-    //        #if !AOT
-    //            IReadHandle<AssetType>
-    //#else
-    //            IReadHandle
-    //#endif
-    //        , IHRAsset
-    //        where AssetType : class
-    //        {
-
-    //        }
 
     /// <summary>
     /// A read-only handle based on an asset name (which could have a subpath (UNTESTED)) and a type.
@@ -103,7 +36,7 @@ namespace LionFire.Assets
     /// <typeparam name="AssetType"></typeparam>
     [Assignment(AssignmentMode.Assign)]
     [LionSerializable(SerializeMethod.ByValue)]
-    [JsonConvert(typeof(HAssetSerializationConverter))]
+    //[JsonConvert(typeof(HAssetSerializationConverter))] TOPORT
     public class HAsset<AssetType>
         :
             //VobHandle<AssetType>,
@@ -123,18 +56,13 @@ namespace LionFire.Assets
 
 #region (Static) Accessors
 
-        public static HAsset<AssetType> Get(string assetSubPath)
-        {
-            return assetSubPath.ToHAsset<AssetType>();
-        }
+        public static HAsset<AssetType> Get(string assetSubPath) => assetSubPath.ToHAsset<AssetType>();
 
 #endregion
 
 #region Ontology
 
-        public Type Type {
-            get { return typeof(AssetType); }
-        }
+        public Type Type => typeof(AssetType);
 
 #region AssetSubPath
 
@@ -142,12 +70,26 @@ namespace LionFire.Assets
         /// <summary>
         /// Example: MyLoadouts/MyLoadout
         /// </summary>
-        public string AssetTypePath {
-            get { return assetTypeSubPath; }
-            set {
-                if (assetTypeSubPath == value) return;
-                if (value.Contains("SimpleEntities")) throw new ArgumentException(); // TEMP
-                if (assetTypeSubPath != null) throw new NotSupportedException("AssetSubPath can only be set once.  Use Rename instead");
+        public string AssetTypePath
+        {
+            get => assetTypeSubPath;
+            set
+            {
+                if (assetTypeSubPath == value)
+                {
+                    return;
+                }
+
+                if (value.Contains("SimpleEntities"))
+                {
+                    throw new ArgumentException(); // TEMP
+                }
+
+                if (assetTypeSubPath != null)
+                {
+                    throw new NotSupportedException("AssetSubPath can only be set once.  Use Rename instead");
+                }
+
                 assetTypeSubPath = value;
 
                 OnAssetTypeSubPathChanged();
@@ -157,10 +99,12 @@ namespace LionFire.Assets
 
 #region AssetPath
 
-        public string AssetPath {
-            get {
+        public string AssetPath
+        {
+            get
+            {
                 //var assetPath = VosPath.Combine(AssetPaths.GetAssetTypeFolder(typeof(AssetType)), this.AssetTypePath); OLD
-                
+
                 var assetPath = AssetPaths.AssetPathFromAssetTypePath(AssetTypePath, typeof(AssetType));
                 return assetPath;
             }
@@ -169,16 +113,22 @@ namespace LionFire.Assets
         /// <summary>
         ///  Example: MyLoadout
         /// </summary>
-        public string AssetName {
-            get {
-                if (AssetTypePath == null) return null;
+        public string AssetName
+        {
+            get
+            {
+                if (AssetTypePath == null)
+                {
+                    return null;
+                }
+
                 return LionPath.GetName(AssetTypePath);
             }
         }
 
         protected virtual void OnAssetTypeSubPathChanged()
         {
-            if (this.vobHandle != null)
+            if (vobHandle != null)
             {
                 var oldVobHandle = vobHandle;
                 vobHandle = null;
@@ -193,26 +143,29 @@ namespace LionFire.Assets
         /// <param name="newAssetPath"></param>
         public void Rename(string newAssetPath)
         {
-            if (newAssetPath == AssetTypePath) return;
+            if (newAssetPath == AssetTypePath)
+            {
+                return;
+            }
 
-            l.Debug("RENAME - " + this.ToString() + " --> " + newAssetPath);
+            l.Debug("RENAME - " + ToString() + " --> " + newAssetPath);
 
-            this.assetTypeSubPath = null;
+            assetTypeSubPath = null;
             AssetTypePath = newAssetPath;
 
-            if (this.HasObject)
+            if (HasObject)
             {
-                if (VobHandle.Object != this.Object)
+                if (VobHandle.Object != Object)
                 {
                     l.Warn("RENAME - Overwriting existing object at " + VobHandle);
                 }
-                VobHandle.Object = this.Object;
+                VobHandle.Object = Object;
             }
             else
             {
                 if (VobHandle.HasObject)
                 {
-                    this.Object = VobHandle.Object;
+                    Object = VobHandle.Object;
                 }
             }
         }
@@ -223,18 +176,18 @@ namespace LionFire.Assets
 
 #region VobHandle
 
-        public IVobReadHandle<AssetType> VobReadHandle {
-            get { return VobHandle; }
-        }
+        public IVobReadHandle<AssetType> VobReadHandle => VobHandle;
         /// <summary>
         /// TODO: Make this a read-only VobHandle
         /// </summary>
-        public VobHandle<AssetType> VobHandle {
-            get {
+        public VobHandle<AssetType> VobHandle
+        {
+            get
+            {
 #if !ASSETCACHE
-                if (vobHandle == null && this.AssetTypePath != null)
+                if (vobHandle == null && AssetTypePath != null)
                 {
-                    this.VobHandle = GetVobHandle(VobHandlePropertyIgnoreContext);
+                    VobHandle = GetVobHandle(VobHandlePropertyIgnoreContext);
 
                     //this.VobHandle = this.AssetPath.AssetNameToHandle<AssetType>(ignoreContext: IgnoreContext);
                     //l.LogCritical("HAsset getting VobHandle from name: " + AssetName + " -- " + this.VobHandle.TryEnsureRetrieved());
@@ -247,19 +200,27 @@ namespace LionFire.Assets
 #endif
                 return vobHandle;
             }
-            private set {
+            private set
+            {
 #if ASSETCACHE
                 l.Warn("Ignoring HAsset.set_VobHandle");
                 return;
 #endif
-                if (vobHandle == value) return;
-                if (vobHandle != null) throw new NotSupportedException("VobHandle can only be set once.");
+                if (vobHandle == value)
+                {
+                    return;
+                }
+
+                if (vobHandle != null)
+                {
+                    throw new NotSupportedException("VobHandle can only be set once.");
+                }
 
                 vobHandle = value;
 
-                if (this.objectField != null && vobHandle != null)
+                if (objectField != null && vobHandle != null)
                 {
-                    vobHandle.Object = this.objectField;
+                    vobHandle.Object = objectField;
                 }
             }
         }
@@ -271,15 +232,15 @@ namespace LionFire.Assets
 
 #region IReferencable
 
-        public IReference Reference {
-            get { return AssetReference; }
-        }
+        public IReference Reference => AssetReference;
 
-        public RAsset AssetReference {
-            get {
+        public RAsset AssetReference
+        {
+            get
+            {
                 return new RAsset()
                 {
-                    Path = this.AssetTypePath,
+                    Path = AssetTypePath,
                     Type = typeof(AssetType),
                 };
             }
@@ -297,10 +258,19 @@ namespace LionFire.Assets
 
 #endregion
 
-        public Type ConcreteType {
-            get {
-                if (concreteType != null) return concreteType;
-                if (!typeof(AssetType).IsInterface) return typeof(AssetType);
+        public Type ConcreteType
+        {
+            get
+            {
+                if (concreteType != null)
+                {
+                    return concreteType;
+                }
+
+                if (!typeof(AssetType).IsInterface)
+                {
+                    return typeof(AssetType);
+                }
 
                 //var attr = typeof(AssetType).GetCustomAttribute<AssetAttribute>();
                 //if (attr != null)
@@ -322,11 +292,16 @@ namespace LionFire.Assets
 
                 return result;
             }
-            set {
+            set
+            {
                 if (!typeof(AssetType).IsInterface &&
                     !typeof(AssetType).IsAssignableFrom(value)
                         //value != typeof(AssetType)
-                        ) throw new ArgumentException("This instance is of type HAsset<" + typeof(AssetType).Name + "> and cannot have its ConcreteType set to " + value.Name);
+                        )
+                {
+                    throw new ArgumentException("This instance is of type HAsset<" + typeof(AssetType).Name + "> and cannot have its ConcreteType set to " + value.Name);
+                }
+
                 concreteType = value;
             }
         }
@@ -360,21 +335,25 @@ namespace LionFire.Assets
                 //throw new ArgumentNullException("obj");
             }
             InitWithObject(obj);
-            
+
             ctorFinished();
         }
 
         private void InitWithObject(AssetType obj)
         {
-            if (obj == null) return;
+            if (obj == null)
+            {
+                return;
+            }
+
             ConcreteType = obj.GetType();
-            this.objectField = obj;
+            objectField = obj;
         }
 
-        public HAsset(AssetType obj, string assetTypePath) 
+        public HAsset(AssetType obj, string assetTypePath)
         {
             InitWithObject(obj);
-            this.AssetTypePath = assetTypePath;
+            AssetTypePath = assetTypePath;
             ctorFinished();
         }
 
@@ -383,16 +362,16 @@ namespace LionFire.Assets
 
         internal HAsset(AssetIdentifier<AssetType> reference) : this(reference.AssetTypePath)
         {
-            this.VobHandle = AssetReferenceResolver.ToVobHandle(reference);
+            VobHandle = AssetReferenceResolver.ToVobHandle(reference);
         }
-        
+
         /// <remarks>
         ///Internal use:  Used in deserialization; see HAssetSerializationConverter.
         /// </remarks>
         /// <param name="assetTypePath"></param>
-        public HAsset(string assetTypePath) 
+        public HAsset(string assetTypePath)
         {
-            this.AssetTypePath = assetTypePath;
+            AssetTypePath = assetTypePath;
             ctorFinished();
         }
 
@@ -407,7 +386,7 @@ namespace LionFire.Assets
 
         private HAsset(string assetSubPath, VobHandle<AssetType> vobHandle)
         {
-            this.AssetTypePath = assetSubPath;
+            AssetTypePath = assetSubPath;
 #if SanityChecks
             if (!vobHandle.Path.EndsWith(assetSubPath))
             {
@@ -423,7 +402,7 @@ namespace LionFire.Assets
         {
             l.Warn("HAsset<AssetType>(VobHandle<AssetType>) - Does not support subpaths in asset names, cannot detect failure: " + vobHandle);
             string assetName = vobHandle.Name;
-            this.AssetTypePath = assetName;
+            AssetTypePath = assetName;
 #if !ASSETCACHE
             this.vobHandle = vobHandle;
 #endif
@@ -472,7 +451,7 @@ namespace LionFire.Assets
             return assetTypePath.ToHAsset<AssetType>();
         }
 
-        
+
 
 #if !AOT
         public static implicit operator HAsset<AssetType>(AssetType obj)
@@ -512,14 +491,14 @@ namespace LionFire.Assets
         }
 #endif
 
-        public static implicit operator HAsset<AssetType>(VobHandle<AssetType> vobHandle)
-        {
-            return new HAsset<AssetType>(vobHandle);
-        }
+        public static implicit operator HAsset<AssetType>(VobHandle<AssetType> vobHandle) => new HAsset<AssetType>(vobHandle);
 
         public static implicit operator VobHandle<AssetType>(HAsset<AssetType> assetHandle)
         {
-            if (assetHandle == null) return null;
+            if (assetHandle == null)
+            {
+                return null;
+            }
             //return (VobHandle<AssetType>)assetHandle.VobHandle;
             return assetHandle.VobHandle;
         }
@@ -539,22 +518,14 @@ namespace LionFire.Assets
 
 #endregion
 
-        
+
 
 #region Derived Properties
 
-        public bool HasPath {
-            get {
-                return !String.IsNullOrEmpty(AssetTypePath);
-            }
-        }
-        public bool HasPathOrObject {
-            get {
-                return !String.IsNullOrEmpty(AssetTypePath) || HasObject;
-            }
-        }
+        public bool HasPath => !String.IsNullOrEmpty(AssetTypePath);
+        public bool HasPathOrObject => !String.IsNullOrEmpty(AssetTypePath) || HasObject;
 
-        public string FullPath { get { return AssetPaths.AssetPathFromAssetTypePath(this.AssetTypePath, typeof(AssetType)); } }
+        public string FullPath => AssetPaths.AssetPathFromAssetTypePath(AssetTypePath, typeof(AssetType));
 
 
 #endregion
@@ -564,10 +535,10 @@ namespace LionFire.Assets
 #if !AOT
         public VobHandle<AssetType> GetVobHandle(bool ignoreContext = false)
         {
-            var vh = this.AssetPath.AssetPathToHandle<AssetType>(ignoreContext: ignoreContext, concreteType: ConcreteType);
-            if (!vh.HasObject && this.HasObject)
+            var vh = AssetPath.AssetPathToHandle<AssetType>(ignoreContext: ignoreContext, concreteType: ConcreteType);
+            if (!vh.HasObject && HasObject)
             {
-                vh.Object = this.Object;
+                vh.Object = Object;
             }
             return vh;
         }
@@ -580,11 +551,7 @@ namespace LionFire.Assets
 #endif
 
 #if !ASSETCACHE
-        public VobHandle<AssetType> ContextualVobHandle {
-            get {
-                return GetVobHandle(false);
-            }
-        }
+        public VobHandle<AssetType> ContextualVobHandle => GetVobHandle(false);
 #endif
 
         private const bool VobHandlePropertyIgnoreContext = true; // RECENTCHANGE - was false, but TResourceDistributor loaded from ForCom instead of Nextrek
@@ -594,19 +561,17 @@ namespace LionFire.Assets
 
 #region IReadHandle
 
-        object IReadHandle.Object {
-            get {
-                return this.Object;
-            }
-        }
+        object IReadHandle.Object => Object;
 
         [Browsable(false)]
         [DebuggerBrowsable(DebuggerBrowsableState.Never)]
-        public HAsset<AssetType> EnsureLoaded {
-            get {
+        public HAsset<AssetType> EnsureLoaded
+        {
+            get
+            {
                 if (Object == null)
                 {
-                    var msg = "Failed to load " + typeof(AssetType) + " from " + this.FullPath;
+                    var msg = "Failed to load " + typeof(AssetType) + " from " + FullPath;
                     l.Error(msg);
                     throw new AssetNotFoundException(msg);
                 }
@@ -615,8 +580,10 @@ namespace LionFire.Assets
         }
 
         [Ignore]
-        public AssetType Object {
-            get {
+        public AssetType Object
+        {
+            get
+            {
                 if (ObjectField == null)
                 {
 #if ASSETCACHE
@@ -630,36 +597,41 @@ namespace LionFire.Assets
                 }
                 return ObjectField;
             }
-            set {
-                objectField = value;
-            }
+            set => objectField = value;
         }
 
-        public bool HasObject {
-            get {
-                if (objectField != null) return true;
+        public bool HasObject
+        {
+            get
+            {
+                if (objectField != null)
+                {
+                    return true;
+                }
 #if !ASSETCACHE
-                if (vobHandle != null) return vobHandle != null && vobHandle.HasObject;
+                if (vobHandle != null)
+                {
+                    return vobHandle != null && vobHandle.HasObject;
+                }
 #endif
                 return false;
             }
         }
 
         [Ignore]
-        public AssetType ObjectField {
-            get {
-                return objectField;
-            }
-        }
+        public AssetType ObjectField => objectField;
 
         // REVIEW REFACTOR - Why is there both objectField and VobHandle.Object?  Try to remove it from here?
         [Ignore]
-        private AssetType objectField {
-            get {
-                return _objectField;
-            }
-            set {
-                if (_objectField == value) return;
+        private AssetType objectField
+        {
+            get => _objectField;
+            set
+            {
+                if (_objectField == value)
+                {
+                    return;
+                }
 
                 _objectField = value;
 
@@ -740,7 +712,11 @@ namespace LionFire.Assets
 #endif
 			return obj != null;
 #else
-            if (VobHandle == null) return false;
+            if (VobHandle == null)
+            {
+                return false;
+            }
+
             return VobHandle.TryEnsureRetrieved();
 #endif
         }
@@ -771,7 +747,7 @@ namespace LionFire.Assets
             //l.Debug("TEMP - HAsset<>.Save()");
             //var xThis = Object;
             //HAsset.VobHandle.Object = xThis;
-            var h = this.ContextualHandle;
+            var h = ContextualHandle;
             h.Save();
             //Log.Info("ZX Saved - " + this.GetType().Name + " " + h.Reference.ToString());
             //return xThis;
@@ -786,7 +762,7 @@ namespace LionFire.Assets
             //l.Debug("TEMP - HAsset<>.Delete()");
             //            var xThis = Object;
             //HAsset.VobHandle.Object = xThis;
-            var h = this.ContextualHandle;
+            var h = ContextualHandle;
             h.Delete();
 #endif
         }
@@ -805,8 +781,10 @@ namespace LionFire.Assets
 #endregion
 
 #if !ASSETCACHE
-        public IHandle<AssetType> ContextualHandle {
-            get {
+        public IHandle<AssetType> ContextualHandle
+        {
+            get
+            {
                 var vh = ContextualVobHandle;
                 EnsureHandleSetToThis(vh);
                 return vh;
@@ -834,17 +812,23 @@ namespace LionFire.Assets
         public override bool Equals(object obj)
         {
             HAsset<AssetType> other = obj as HAsset<AssetType>;
-            if (other == null) return false;
-
-            if (AssetTypePath != other.AssetTypePath) return false;
-
-            if (other.HasObject && this.HasObject)
+            if (other == null)
             {
-                if (object.ReferenceEquals(other.Object, this.Object)) { return true; }
+                return false;
+            }
+
+            if (AssetTypePath != other.AssetTypePath)
+            {
+                return false;
+            }
+
+            if (other.HasObject && HasObject)
+            {
+                if (object.ReferenceEquals(other.Object, Object)) { return true; }
                 else
                 {
                     // REVIEW - Same assetpath pointing to two different objects
-                    return this.Object.Equals(other.Object);
+                    return Object.Equals(other.Object);
                 }
             }
             else
@@ -863,7 +847,11 @@ namespace LionFire.Assets
 
         public override int GetHashCode()
         {
-            if (AssetTypePath == null) return 0;
+            if (AssetTypePath == null)
+            {
+                return 0;
+            }
+
             return AssetTypePath.GetHashCode();
         }
 
@@ -879,7 +867,7 @@ namespace LionFire.Assets
                 return String.Concat(">", (Reference == null ? "null" : Reference.ToString()), "<") + "-" + FullPath;
             }
 #else
-            return (VobHandle == null ? "(null HAsset<" + typeof(AssetType) + ">)" : VobHandle.ToString() ) + (IsRegistered ? "(Registered)" : "(Non-registered)");
+            return (VobHandle == null ? "(null HAsset<" + typeof(AssetType) + ">)" : VobHandle.ToString()) + (IsRegistered ? "(Registered)" : "(Non-registered)");
 #endif
         }
 
@@ -890,14 +878,17 @@ namespace LionFire.Assets
         private void OnPropertyChanged(string propertyName)
         {
             var ev = PropertyChanged;
-            if (ev != null) ev(this, new PropertyChangedEventArgs(propertyName));
+            if (ev != null)
+            {
+                ev(this, new PropertyChangedEventArgs(propertyName));
+            }
         }
 
 #endregion
 
 #endregion
 
-      
+
     }
 
 #if OLD_UNUSED

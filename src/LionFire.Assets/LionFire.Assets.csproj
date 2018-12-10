@@ -10,6 +10,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\..\..\StateMachines\src\LionFire.StateMachines\LionFire.StateMachines.csproj" />
     <ProjectReference Include="..\LionFire.Applications.Abstractions\LionFire.Applications.Abstractions.csproj" />
     <ProjectReference Include="..\LionFire.Base\LionFire.Base.csproj" />
     <ProjectReference Include="..\LionFire.Core\LionFire.Core.csproj" />

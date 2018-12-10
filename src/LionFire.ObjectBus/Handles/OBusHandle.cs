@@ -149,8 +149,20 @@ namespace LionFire.ObjectBus
             return result.IsSuccess;
         }
 
-        public override Task DeleteObject(object persistenceContext = null) => throw new NotImplementedException();
-        public override async Task WriteObject(object persistenceContext = null)
+        protected override async Task<bool?> DeleteObject(object persistenceContext = null)
+        {
+            if (Reference == null) throw new ArgumentNullException(nameof(Reference));
+            EnsureOBaseResolved();
+
+            var result = await OBase.TryDelete(Reference).ConfigureAwait(false);
+
+            if (result != false)
+            {
+                OnDeletedObject();  
+            }
+            return result;
+        }
+        protected override async Task WriteObject(object persistenceContext = null)
         {
             if (Reference == null) throw new ArgumentNullException(nameof(Reference));
             EnsureOBaseResolved();
@@ -159,7 +171,7 @@ namespace LionFire.ObjectBus
 
             //if (result.IsSuccess)
             {
-                OnSavedObject();
+                OnSavedObject(); 
             }
             //else
             //{

@@ -54,7 +54,7 @@ namespace LionFire.ObjectBus
         #region Delete
 
         public static async Task<bool?> CanDelete(this IReference reference) => await reference.GetOBase().CanDelete(reference).ConfigureAwait(false);
-        public static async Task<bool> TryDelete(this IReference reference) => await reference.GetOBase().TryDelete(reference).ConfigureAwait(false);
+        public static async Task<bool?> TryDelete(this IReference reference) => await reference.GetOBase().TryDelete(reference).ConfigureAwait(false);
         public static async Task Delete(this IReference reference, bool preview = false) => await reference.GetOBase().Delete(reference).ConfigureAwait(false);
         // FUTURE: public static Task<bool> Delete(this IReference reference, object onlyDeleteIfThisObject) => reference.GetOBase().Set(reference, value);
 

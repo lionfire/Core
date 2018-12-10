@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Collections.Concurrent;
+using LionFire.Structures;
 
 namespace LionFire.Types
 {
@@ -13,7 +14,7 @@ namespace LionFire.Types
     {
         public static CollectionInstanceFactory Default
         {
-            get { return Singleton<CollectionInstanceFactory>.Instance; }
+            get { return ManualSingleton<CollectionInstanceFactory>.GuaranteedInstance; }
         }
 
         #region Collections

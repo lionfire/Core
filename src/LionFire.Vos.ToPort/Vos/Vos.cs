@@ -45,28 +45,7 @@ namespace LionFire.Vos
 
         
 
-        #region Vos Mounts
-
-        // RECENTCHANGE - was SynchronizedObservableCollection
-        internal MultiBindableCollection<Vob> VobsWithMounts {
-            get {
-                return vobsWithMounts;
-            }
-        }
-        private MultiBindableCollection<Vob> vobsWithMounts = new MultiBindableCollection<Vob>();
-
-        internal void OnMountsChangedFor(Vob changedVob, NotifyCollectionChangedEventArgs<Mount> e)
-        {
-            foreach (var vobWithMounts in VobsWithMounts.ToArray())
-            {
-                if (changedVob.IsAncestorOf(vobWithMounts))
-                {
-                    vobWithMounts.OnAncestorMountsChanged(changedVob, e);
-                }
-            }
-        }
-
-        #endregion
+        
 
         #region Persistence
 

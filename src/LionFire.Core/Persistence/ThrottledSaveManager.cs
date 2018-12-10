@@ -73,22 +73,22 @@ namespace LionFire.Persistence
         {
             lock (saveLock)
             {
-                HashSet<ISaveable> saved = new HashSet<ISaveable>();
+                HashSet<ICommitable> saved = new HashSet<ICommitable>();
 
                 if (queue.Count > 0)
                 {
-                    while (queue.TryDequeue(out ISaveable item))
+                    while (queue.TryDequeue(out ICommitable item))
                     {
                         if (saved.Contains(item))
                         {
                             continue;
                         }
 
-                        if (item is ISaveable h)
+                        if (item is ICommitable h)
                         {
                             try
                             {
-                                h.Save();
+                                h.Commit();
                                 l.Trace("UNTESTED - Delay saved " + item.ToString());
                             }
                             catch (Exception ex)
@@ -114,9 +114,9 @@ namespace LionFire.Persistence
 
         #region Manual Change Notifications
 
-        private ConcurrentQueue<ISaveable> queue = new ConcurrentQueue<ISaveable>();
+        private ConcurrentQueue<ICommitable> queue = new ConcurrentQueue<ICommitable>();
 
-        public void OnChanged(ISaveable obj)
+        public void OnChanged(ICommitable obj)
         {
             queue.Enqueue(obj);
             timer.Enabled = true;

@@ -13,7 +13,7 @@ namespace LionFire.Notifications.Wpf
             get
             {
                 return Path.GetFullPath(Path.Combine(
-                    LionFireEnvironment.CompanyProgramDataDir,
+                    LionFireEnvironment.Directories.CompanyProgramData,
                     NotificationsSubPath,
                     "localhost",
                     DesktopNotificationQueue

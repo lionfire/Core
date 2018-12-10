@@ -34,7 +34,7 @@ namespace LionFire.Applications.Hosting
 
         #region Configuration
 
-        string Name { get; set; }
+        string AppId { get; set; }
         IDictionary<string, object> Properties { get; }
 
         #endregion

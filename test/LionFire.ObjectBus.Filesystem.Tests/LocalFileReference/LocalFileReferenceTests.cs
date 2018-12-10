@@ -1,14 +1,15 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using LionFire.ObjectBus.Filesystem;
 using Xunit;
 
-namespace LionFire.ObjectBus.Filesystem.Tests
+namespace LocalFileReference_
 {
-    public class LocalFileReferenceTests
+    public class Path_to_Url
     {
         [Fact]
-        public void Path_to_Url()
+        public void Pass()
         {
             var pathWithoutExtension = @"c:\Temp\Path\Test\" + Guid.NewGuid().ToString();
 

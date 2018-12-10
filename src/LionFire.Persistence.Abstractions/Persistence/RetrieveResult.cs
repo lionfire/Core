@@ -2,6 +2,9 @@
 {
     public interface IRetrieveResult<out T>
     {
+        /// <summary>
+        /// True if operation was successful, even if retrieve did not find anything
+        /// </summary>
         bool IsSuccess { get; }
         T Result { get; }
         object Details { get; }
@@ -9,6 +12,7 @@
 
     public struct RetrieveResult<T> : IRetrieveResult<T>
     {
+
         public bool IsSuccess { get; set; }
         public T Result { get; set; }
 

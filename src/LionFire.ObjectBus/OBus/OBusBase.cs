@@ -54,6 +54,7 @@ namespace LionFire.ObjectBus
             return false;
         }
 
+        public H<T> GetHandle<T>(IReference reference) => GetHandle<T>(reference, default(T));
         public virtual H<T> GetHandle<T>(IReference reference, T handleObject = default(T))
         {
             // TODO: If handle reuse is on, try to find existing handle.
@@ -73,7 +74,7 @@ namespace LionFire.ObjectBus
             return h;
         }
 
-        public virtual R<T> GetReadHandle<T>(IReference reference)
+        public virtual RH<T> GetReadHandle<T>(IReference reference)
         {
             // TODO: If handle reuse is on, try to find existing handle.
 
@@ -82,6 +83,15 @@ namespace LionFire.ObjectBus
             return h;
         }
 
+        public virtual C<T> GetCollectionHandle<T>(IReference reference)
+        {
+            throw new NotImplementedException();
+            //var oboc = new OBoc<T, OBaseCollectionEntry>();
+        }
+        public virtual RC<T> GetReadCollectionHandle<T>(IReference reference)
+        {
+            throw new NotImplementedException();
+        }
     }
 
     //public abstract class OBaseProvider : IOBaseProvider

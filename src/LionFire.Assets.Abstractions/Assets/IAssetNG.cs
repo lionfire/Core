@@ -8,6 +8,7 @@ namespace LionFire.Assets
 {
     public interface IAsset //: ISaveable
     {
+        Type Type { get; }
         string AssetSubPath { get; }
     }
 }

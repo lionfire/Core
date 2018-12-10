@@ -17,23 +17,23 @@ namespace LionFire.Persistence
     {
         public static AutoSaveManager Instance { get { return Singleton<AutoSaveManager>.Instance; } }
 
-        internal ConcurrentDictionary<ISaveable, ThrottledChangeHandler> handlers = new ConcurrentDictionary<ISaveable, ThrottledChangeHandler>();
+        internal ConcurrentDictionary<ICommitable, ThrottledChangeHandler> handlers = new ConcurrentDictionary<ICommitable, ThrottledChangeHandler>();
     }
 
     public static class AutoSaveManagerExtensions
     {
         public static readonly int AutoSaveThrottleMilliseconds = 2000;
-        public static void QueueAutoSave(this ISaveable saveable)
+        public static void QueueAutoSave(this ICommitable saveable)
         {
             //Debug.WriteLine($"Queued autosave for {saveable.GetType().Name}");
             var handler = GetHandler(saveable);
             handler.Queue();
         }
 
-        private static ThrottledChangeHandler GetHandler(ISaveable asset, Action<object> saveAction = null)
+        private static ThrottledChangeHandler GetHandler(ICommitable asset, Action<object> saveAction = null)
         {
             if (asset == null) return null;
-            if (saveAction == null) saveAction = o => ((ISaveable)o).Save();
+            if (saveAction == null) saveAction = o => ((ICommitable)o).Commit();
             return AutoSaveManager.Instance.handlers.GetOrAdd(asset, a =>
             {
                 var inpc = a as INotifyPropertyChanged ?? ((a as IWrapper)?.WrapperTarget as INotifyPropertyChanged);
@@ -45,7 +45,7 @@ namespace LionFire.Persistence
 
         private static void OnChangeQueueHandler(object sender)
         {
-            var h = GetHandler(sender as ISaveable);
+            var h = GetHandler(sender as ICommitable);
             h?.Queue();
         }
 
@@ -54,7 +54,7 @@ namespace LionFire.Persistence
         /// </summary>
         /// <param name="saveable"></param>
         /// <param name="enable"></param>
-        public static void EnableAutoSave(this ISaveable saveable, bool enable = true, Action<object> saveAction=null)
+        public static void EnableAutoSave(this ICommitable saveable, bool enable = true, Action<object> saveAction=null)
         {
 
             bool attachedToSomething = false;

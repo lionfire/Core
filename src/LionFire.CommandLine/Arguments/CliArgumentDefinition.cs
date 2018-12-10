@@ -4,6 +4,7 @@ using System.Linq;
 using System.Reflection;
 using LionFire.ExtensionMethods;
 using System.Threading.Tasks;
+using LionFire.ExtensionMethods.Copying;
 
 namespace LionFire.CommandLine.Arguments
 {

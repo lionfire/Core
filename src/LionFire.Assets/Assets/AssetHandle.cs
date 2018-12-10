@@ -4,7 +4,7 @@ using LionFire.Referencing;
 
 namespace LionFire.Persistence.Assets
 {
-    public class AssetHandle<T> : AssetReadHandle<T>, IWriteHandle<T>, W<T>
+    public class AssetHandle<T> : AssetReadHandle<T>, IWriteHandle<T>, WH<T>
         where T : class
     {
         #region Construction
@@ -15,8 +15,9 @@ namespace LionFire.Persistence.Assets
         #endregion
 
         public void MarkDeleted() => throw new System.NotImplementedException();
+        public Task<bool?> Delete() => throw new System.NotImplementedException();
 
-        public Task Save(object persistenceContext = null)
+        public Task Commit(object persistenceContext = null)
         {
             var ap = Injection.GetService<IAssetProvider>(createIfMissing: true);
             ap.Save(this.Key, this.Object, persistenceContext);

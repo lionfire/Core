@@ -34,7 +34,7 @@ namespace LionFire.Referencing
             throw new NotImplementedException();
         }
 
-        public override Task Save(object persistenceContext = null)
+        public override Task Commit(object persistenceContext = null)
         {
             throw new NotImplementedException();
         }

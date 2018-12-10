@@ -17,6 +17,18 @@ namespace LionFire.Vos
 
         #endregion
 
+        #region Ontology
+
+        public override IOBase SingleOBase => singleVBase;
+
+        public VBase SingleVBase => singleVBase;
+        private VBase singleVBase = new VBase();
+
+        public VBase DefaultVBase => SingleVBase;
+        
+        #endregion
+
+
         public override IEnumerable<Type> HandleTypes
         {
             get

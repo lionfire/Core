@@ -30,7 +30,9 @@ namespace LionFire.ObjectBus
         // FUTURE: flags for hidden, persisted
         //IEnumerable<string> GetChildrenNames(IReference parent, QueryFlags requiredFlags = QueryFlags.None, QueryFlags excludeFlags = QueryFlags.None);
 
-        IEnumerable<string> GetChildrenNames(IReference parent);
+        Task<IEnumerable<string>> GetKeys(IReference parent);
+
+        IEnumerable<string> GetChildrenNames(IReference parent); // RENAME to GetKeyNames
         IEnumerable<string> GetChildrenNamesOfType<T>(IReference parent) where T : class, new();
         IEnumerable<string> GetChildrenNamesOfType(Type type, IReference parent);
 
@@ -51,7 +53,7 @@ namespace LionFire.ObjectBus
 
         #region Events
 
-        IObjectWatcher GetWatcher(IReference reference);
+        IObjectWatcher GetObjectWatcher(IReference reference);
 
         PersistenceEventKind SupportsEvents(PersistenceEventSourceKind sourceType = PersistenceEventSourceKind.Unspecified);
         IObservable<OBasePersistenceEvent> Subscribe(Predicate<IReference> filter = null, PersistenceEventSourceKind sourceType = PersistenceEventSourceKind.Unspecified);
@@ -72,7 +74,7 @@ namespace LionFire.ObjectBus
         /// <returns></returns>
         Task Set(IReference reference, object obj, Type type = null, bool allowOverwrite = true);
 
-        Task<bool> TryDelete(IReference reference, bool preview = false);
+        Task<bool?> TryDelete(IReference reference/*, bool preview = false*/);
 
         /// <returns>true if can be fully deleted, false if no delete can take place, and null if it can be partially deleted</returns>
         Task<bool?> CanDelete(IReference reference);
@@ -96,7 +98,7 @@ namespace LionFire.ObjectBus
 
         public static async Task Delete(this IOBase obase, IReference reference)
         {
-            if (!(await obase.TryDelete(reference).ConfigureAwait(false)))
+            if (false == (await obase.TryDelete(reference).ConfigureAwait(false)))
             {
                 throw new ObjectNotFoundException("Delete failed: no object found at specified reference.");
             }

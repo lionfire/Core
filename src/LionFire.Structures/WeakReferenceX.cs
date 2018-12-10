@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using System.Runtime.Serialization;
+//using System.Runtime.Serialization;
 
 namespace LionFire.Structures
 {
@@ -28,6 +28,7 @@ namespace LionFire.Structures
         public WeakReferenceX(T target)
             : base(target)
         { }
+
         /// <summary>
         /// Initializes a new instance of the WeakReference{T} class, referencing
         /// the specified object and using the specified resurrection tracking.
@@ -40,9 +41,11 @@ namespace LionFire.Structures
         public WeakReferenceX(T target, bool trackResurrection)
             : base(target, trackResurrection)
         { }
-        protected WeakReferenceX(SerializationInfo info, StreamingContext context)
-            : base(info, context)
-        { }
+
+        //protected WeakReferenceX(SerializationInfo info, StreamingContext context)
+        //    : base(info, context)
+        //{ }
+
         /// <summary>
         /// Gets or sets the object (the target) referenced by the 
         /// current WeakReference{T} object.

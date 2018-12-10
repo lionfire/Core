@@ -2,11 +2,9 @@
 
 namespace LionFire
 {
-    public interface IWriteHandle<in T> : ISaveable
+    public interface IWriteHandle<in T> : ICommitable, IDeletable
     {
         void SetObject(T obj);
-
-        void MarkDeleted();
     }
 }
 

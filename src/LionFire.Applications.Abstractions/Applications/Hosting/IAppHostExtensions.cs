@@ -156,17 +156,22 @@ namespace LionFire.Applications.Hosting
 
         #region Init / AppInitializer
 
-        public static IAppHost AddInit(this IAppHost host, Func<IAppHost, bool> tryInitialize)
+        public static IAppHost AddInit(this IAppHost host, Func<IAppHost, object> tryInitialize)
         {
             host.Add(new AppInitializer(tryInitialize));
             return host;
         }
-
+        public static IAppHost AddInit(this IAppHost host, Func<IAppHost, Task<object>> tryInitialize)
+        {
+            host.Add(new AppInitializer(tryInitialize));
+            return host;
+        }
         public static IAppHost AddInit(this IAppHost host, Action<IAppHost> initialize)
         {
             host.Add(new AppInitializer(initialize));
             return host;
         }
+
 
         #endregion
 

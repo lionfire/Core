@@ -7,9 +7,9 @@ namespace LionFire.Collections
     //	public delegate void NotifyCollectionChangedHandler2<TValue>(NotifyCollectionChangedEventArgs<TValue> e);
     //#endif
 
-    public delegate void NotifyCollectionChangedHandler<T>(NotifyCollectionChangedEventArgs<T> e);
+    public delegate void NotifyCollectionChangedHandler<in T>(INotifyCollectionChangedEventArgs<T> e);
 
-    public interface INotifyCollectionChanged<ChildType>
+    public interface INotifyCollectionChanged<out ChildType>
 #if AOT
  : INotifyCollectionChanged
 #endif

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using LionFire.MultiTyping;
+using LionFire.Ontology;
 using LionFire.Referencing;
 using LionFire.Serialization;
 using LionFire.Structures;
@@ -95,7 +96,7 @@ namespace LionFire.ObjectBus.Filesystem
         public override string Path
         {
             get { return path; }
-            protected set
+            set
             {
 //#if MONO
                 value = value.Replace('\\', '/');
@@ -139,6 +140,10 @@ namespace LionFire.ObjectBus.Filesystem
     public static class LocalFileReferenceExtensions
     {
         public static LocalFileReference AsLocalFileReference(this string path)
+        {
+            return new LocalFileReference(path);
+        }
+        public static LocalFileReference AsFileReference(this string path)
         {
             return new LocalFileReference(path);
         }

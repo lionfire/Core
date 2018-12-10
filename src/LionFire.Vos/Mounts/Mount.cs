@@ -3,18 +3,19 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using LionFire.Collections;
-using LionFire.Persistence;
+using LionFire.ObjectBus;
 using LionFire.Referencing;
 using LionFire.Structures;
 using Microsoft.Extensions.Logging;
 
 namespace LionFire.Vos
 {
+
     public class Mount :
 #if AOT
         IROStringKeyed
 #else
-		IKeyed<string>
+        IKeyed<string>
 #endif
     {
         #region Construction
@@ -22,27 +23,31 @@ namespace LionFire.Vos
         public Mount(Vob vob, IReference reference, string package = null, string store = null, bool enable = false, MountOptions mountOptions = null)
             : this(vob, reference.GetHandle<MountHandleObject>(), package, store, enable, mountOptions)
         {
-            this.Root = reference;
+            Root = reference;
         }
 
         public Mount(Vob vob, Vob target, string package = null, string store = null, bool enable = false, MountOptions mountOptions = null)
-            : this(vob, target.ToHandle<MountHandleObject>(), package, store, enable, mountOptions)
+            : this(vob, target.GetHandle<MountHandleObject>(), package, store, enable, mountOptions)
         {
         }
 
-        private Mount(Vob vob, H rootHandle, string package = null, string store = null, bool enable = false, MountOptions mountOptions = null)
+        private Mount(Vob vob, H<MountHandleObject> rootHandle, string package = null, string store = null, bool enable = false, MountOptions mountOptions = null)
         {
-            if (vob == null) throw new ArgumentNullException("vob");
-            this.Vob = vob;
-            this.VobDepth = vob.VobDepth;
-            this.Root = rootHandle.Reference;
-            this.rootHandle = rootHandle;
-            this.Package = package;
-            this.Store = store;
-            //this.MountName =GetMountName(packageName, layerName);
-            this.MountOptions = mountOptions;//.HasValue ? mountOptions.Value : MountOptions.Default;
+            if (vob == null)
+            {
+                throw new ArgumentNullException($"{nameof(vob)}");
+            }
 
-            this.IsEnabled = enable; // Do this last, as it triggers a mount
+            Vob = vob;
+            VobDepth = vob.VobDepth;
+            Root = rootHandle.Reference;
+            this.rootHandle = rootHandle;
+            Package = package;
+            Store = store;
+            //this.MountName =GetMountName(packageName, layerName);
+            MountOptions = mountOptions;//.HasValue ? mountOptions.Value : MountOptions.Default;
+
+            IsEnabled = enable; // Do this last, as it triggers a mount
         }
 
         #endregion
@@ -60,18 +65,23 @@ namespace LionFire.Vos
 #if AOT
         string IROStringKeyed.Key { get { return this.Root.Key; } }
 #else
-        string IKeyed<string>.Key { get { return this.Root.Key; } }
+        string IKeyed<string>.Key => Root.Key;
 #endif
 
 
         public static string GetMountName(string packageName = null, string layerName = null)
         {
-            var mountName = ((packageName ?? "") + LionPath.LocationDelimiter + (layerName ?? "")).Trim(LionPath.LocationDelimiter);
-            return StringX.IsNullOrWhiteSpace(mountName) ? null : mountName;
+            var mountName = ((packageName ?? "") + VosPath.LocationDelimiter + (layerName ?? "")).Trim(VosPath.LocationDelimiter);
+            return string.IsNullOrWhiteSpace(mountName) ? null : mountName;
         }
 
-        public R<MountHandleObject> RootHandle {
-            get {
+        /// <summary>
+        /// MountHandleObject
+        /// </summary>
+        public RH<MountHandleObject> RootHandle
+        {
+            get
+            {
                 if (rootHandle == null)
                 {
                     rootHandle = Root.GetReadHandle<MountHandleObject>();
@@ -79,15 +89,9 @@ namespace LionFire.Vos
                 return rootHandle;
             }
         }
-        private R<MountHandleObject> rootHandle;
+        private RH<MountHandleObject> rootHandle;
 
-        public class MountHandleObject : INotifyOnSaving
-        {
-            public void OnSaving(object persistenceContext = null)
-            {
-                throw new NotSupportedException("Do not save this object");
-            }
-        }
+        
 
         public readonly IReference Root;
 
@@ -95,22 +99,25 @@ namespace LionFire.Vos
 
         #region State
 
-        public bool IsEnabled {
-            get {
-                return isEnabled;
-            }
-            set {
-                if (isEnabled == value) return;
+        public bool IsEnabled
+        {
+            get => isEnabled;
+            set
+            {
+                if (isEnabled == value)
+                {
+                    return;
+                }
 
                 isEnabled = value;
 
                 if (value)
                 {
-                    this.Vob.Mount(this);
+                    Vob.Mount(this);
                 }
                 else
                 {
-                    this.Vob.Unmount(this);
+                    Vob.Unmount(this);
                 }
             }
         }
@@ -118,14 +125,11 @@ namespace LionFire.Vos
 
         #endregion
 
-        public override string ToString()
-        {
-            return "{Mount " + Vob + " ==> " + Root + "}";
-        }
+        public override string ToString() => "{Mount " + Vob + " ==> " + Root + "}";
 
         #region Misc
 
-        private static ILogger l = Log.Get();
+        private static readonly ILogger l = Log.Get();
 
         #endregion
     }

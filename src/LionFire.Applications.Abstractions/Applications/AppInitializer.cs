@@ -8,21 +8,22 @@ using System.Threading.Tasks;
 
 namespace LionFire.Applications
 {
-    public class AppInitializer : IInitializable
+    public class AppInitializer : IInitializable3
     {
 
-        public Func<IAppHost, bool> InitMethod { get; set; }
+        public Func<IAppHost, Task<object>> InitMethod { get; set; }
 
         #region Construction
 
-        public AppInitializer(Func<IAppHost, bool> tryInitMethod) { this.InitMethod = tryInitMethod; }
-        public AppInitializer(Action<IAppHost> initMethod) { this.InitMethod = app => { initMethod(app); return true; }; }
+        public AppInitializer(Func<IAppHost, Task<object>> tryInitMethod) { this.InitMethod = (app) => tryInitMethod(app); }
+        public AppInitializer(Func<IAppHost, object> tryInitMethod) { this.InitMethod = (app) => Task.FromResult(tryInitMethod(app)); }
+        public AppInitializer(Action<IAppHost> initMethod) { this.InitMethod = app => { initMethod(app); return Task.FromResult<object>(null); }; }
 
         #endregion
 
-        public Task<bool> Initialize()
+        public async Task<object> Initialize()
         {
-            return Task.FromResult(InitMethod(ManualSingleton<IAppHost>.Instance));
+            return await InitMethod(ManualSingleton<IAppHost>.Instance).ConfigureAwait(false);
         }
     }
 }

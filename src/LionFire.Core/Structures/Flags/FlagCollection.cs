@@ -93,7 +93,7 @@ namespace LionFire.Structures
 
         #region Flag Changed Events
 
-        private void FlagCollection_CollectionChanged(NotifyCollectionChangedEventArgs<Flag> e)
+        private void FlagCollection_CollectionChanged(INotifyCollectionChangedEventArgs<Flag> e)
         {
             OnPropertyChanged("FlagsString");
 

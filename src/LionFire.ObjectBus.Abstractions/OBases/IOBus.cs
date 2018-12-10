@@ -24,7 +24,7 @@ namespace LionFire.ObjectBus
         IOBase SingleOBase { get; }
     }
 
-    public interface IOBus : IOBaseProvider, IHandleProvider, IReferenceProvider, ICompatibleWithSome<IReference>
+    public interface IOBus : IOBaseProvider, IHandleProvider, ICollectionHandleProvider, IReferenceProvider, ICompatibleWithSome<IReference>
     {
     }
 

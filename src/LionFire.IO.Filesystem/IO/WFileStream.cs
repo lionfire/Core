@@ -28,7 +28,7 @@ namespace LionFire.IO
         /// </summary>
         /// <param name="persistenceContext"></param>
         /// <returns></returns>
-        public override async Task WriteObject(object persistenceContext = null)
+        protected override async Task WriteObject(object persistenceContext = null)
         {
             await Object.FlushAsync();
             //throw new NotSupportedException("TODO: Implement if it make sense, or change this message.  You already have a Stream that you can write to yourself.");

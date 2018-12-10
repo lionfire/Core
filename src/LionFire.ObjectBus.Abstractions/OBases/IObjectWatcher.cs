@@ -22,13 +22,20 @@ namespace LionFire.ObjectBus
     }
 
     public delegate void ObjectChangedHandler(IReference reference, WatcherChangeType changeType, IReference renamedFrom);
+       
 
-    
-
+    /// <summary>
+    /// Watch individual object
+    /// </summary>
     public interface IObjectWatcher : IDisposable
     {
         string Path { get; set; }
         //event Action<IReference, WatcherChangeType, IObjectWatcher> ReferenceEventForWatcher;
+
+        // TODO REVIEW - eliminate ReferenceChangedFor?
+
         event Action<IObjectWatcher, IReference> ReferenceChangedFor;
+
+        event ObjectChangedHandler ObjectChanged;
     }
 }

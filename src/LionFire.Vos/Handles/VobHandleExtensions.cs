@@ -14,7 +14,7 @@ namespace LionFire.Extensions.ObjectBus
     {
         #region NonVirtual
 
-        public static IEnumerable<IReference> ToNonVirtualReferences(this IHandle parent)
+        public static IEnumerable<IReference> ToNonVirtualReferences(this RH<object> parent)
         {
             foreach (var handle in ToNonVirtualHandle(parent).Select(h => h.Reference))
             {
@@ -22,9 +22,9 @@ namespace LionFire.Extensions.ObjectBus
             }
         }
 
-        public static IEnumerable<IHandle> ToNonVirtualHandle(this IHandle parent)
+        public static IEnumerable<IHandle> ToNonVirtualHandle(this RH<object> parent)
         {
-            throw new NotImplementedException();
+            throw new NotImplementedException("TOPORT");
             // TOPORT
             //var vhParent = parent as IVobHandle;
             //if (vhParent == null) { yield return parent; yield break; }

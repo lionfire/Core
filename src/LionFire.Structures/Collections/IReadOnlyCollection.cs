@@ -10,7 +10,7 @@ namespace LionFire.Collections
     
 
     // REVIEW - needed?
-    public interface IReadOnlyCollection<out T> : IEnumerable<T>
+    public interface IReadOnlyCollectionLF<out T> : IEnumerable<T>
     {
         #region From ICollection
 

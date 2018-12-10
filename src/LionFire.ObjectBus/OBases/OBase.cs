@@ -122,6 +122,9 @@ namespace LionFire.ObjectBus
 
         #region Children
 
+        public abstract Task<IEnumerable<string>> GetKeys(TReference parent);
+        Task<IEnumerable<string>> IOBase.GetKeys(IReference parent) => GetKeys(ConvertToReferenceType(parent));
+
         public abstract IEnumerable<string> GetChildrenNames(TReference parent);
 
         public IEnumerable<string> GetChildrenNames(IReference parent) => GetChildrenNames(ConvertToReferenceType(parent));
@@ -185,10 +188,10 @@ namespace LionFire.ObjectBus
         #region Delete
 
         public abstract Task<bool?> CanDelete(TReference reference);
-        public abstract Task<bool> TryDelete(TReference reference, bool preview = false);
+        public abstract Task<bool?> TryDelete(TReference reference/*, bool preview = false*/);
 
         public Task<bool?> CanDelete(IReference reference) => CanDelete(ConvertToReferenceType(reference));
-        public Task<bool> TryDelete(IReference reference, bool preview) => TryDelete(ConvertToReferenceType(reference), preview);
+        public Task<bool?> TryDelete(IReference reference/*, bool preview*/) => TryDelete(ConvertToReferenceType(reference)/*, preview*/);
 
         #endregion
 
@@ -196,9 +199,8 @@ namespace LionFire.ObjectBus
 
         #region Handle
 
-        //#if !AOT // TOAOT
         public abstract H<T> GetHandle<T>(IReference reference);// where T : class => HandleProvider<T>.GetHandle(reference);
-        //#endif
+        public abstract RH<T> GetReadHandle<T>(IReference reference);
 
         //// Prefer IHandle.GetSubpath.  Default implementation of that uses this:
         //public virtual IHandle<T> GetHandleSubpath<T>(IReference reference, params string[] subpathChunks) where T : class
@@ -248,7 +250,8 @@ namespace LionFire.ObjectBus
         public IObservable<OBasePersistenceEvent> Subscribe(Predicate<IReference> filter = null, PersistenceEventSourceKind sourceType = PersistenceEventSourceKind.Unspecified) => throw new NotImplementedException();
 
 
-        public virtual IObjectWatcher GetWatcher(IReference reference) => null;
+        public virtual IObjectWatcher GetObjectWatcher(IReference reference) => null;
+        
 
         #endregion
 

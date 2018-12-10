@@ -16,7 +16,12 @@ using Microsoft.Extensions.Configuration;
 
 namespace LionFire.Execution.Hosting
 {
-
+    /// <summary>
+    /// INCOMPLETE
+    /// 
+    /// It has been a while since I wrote this.  Is this the idea?:
+    ///  - Start / stop / status for the current executable.  Knows how to find existing running processes of itself, and query status, or stop, or start if needed.
+    /// </summary>
     public class ExecutionHostConsoleApp : ConsoleApp
     {
         ProcessExecutionHost host { get { return ProcessExecutionHost.Instance; } }

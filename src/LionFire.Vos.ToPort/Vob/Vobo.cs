@@ -562,7 +562,7 @@ namespace LionFire.Vos
  IHasVobHandle<HandleType>
 #endif
 , ICanSetVobHandle
-, ISaveable
+, ICommitable
         , IRetrievedListener
         //, IKeyed<string> // REVIEW
         where ObjectType : class, new()

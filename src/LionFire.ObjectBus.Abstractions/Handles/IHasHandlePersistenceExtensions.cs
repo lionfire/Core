@@ -29,7 +29,7 @@ namespace LionFire.ObjectBus
                 l.Warn("Saving: !object.ReferenceEquals(hasHandle.Handle.Object, hasHandle)");
                 //hasHandle.Handle.Object = hasHandle;  --- this doesn't make sense for Ihashandle objects that do not save themselves!
             }
-            hasHandle.Handle.Save();
+            hasHandle.Handle.Commit();
         }
 
 		#if !AOT
@@ -55,7 +55,7 @@ namespace LionFire.ObjectBus
                 //hasHandle.Handle.Object = (T)hasHandle; --- this doesn't make sense for Ihashandle objects that do not save themselves!
             }
 
-            hasHandle.Handle.Save();
+            hasHandle.Handle.Commit();
         }
 #endif
         #endregion

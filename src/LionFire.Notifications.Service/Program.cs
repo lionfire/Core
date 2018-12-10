@@ -1,16 +1,11 @@
 ﻿using LionFire.Applications.Hosting;
-using LionFire.Trading;
-using LionFire.Trading.Triggers;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Reactive.Subjects;
 using LionFire.Reactive;
-using LionFire.Trading.Accounts;
-using LionFire.Trading.Statistics;
 using Microsoft.Extensions.Logging;
 using System.Threading.Tasks;
-using LionFire.Trading.TrueFx;
 using Microsoft.Extensions.DependencyInjection;
 using LionFire.Execution;
 using LionFire.DependencyInjection;
@@ -117,6 +112,8 @@ namespace LionFire.Notifications.Service
         }
     }
 
+#if ThoughtExperiment
+
     public interface IHasResolutionObject
     {
         object ResolutionObject { get; set; }
@@ -158,4 +155,5 @@ namespace LionFire.Notifications.Service
             return r;
         }
     }
+#endif
 }

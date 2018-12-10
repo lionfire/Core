@@ -323,7 +323,7 @@ namespace LionFire.Serialization
 
         #endregion
 
-        public static LionFire.Collections.IReadOnlyCollection<LionSerializer> Serializers { get { return LionSerializers.Serializers; } }
+        public static IReadOnlyCollection<LionSerializer> Serializers { get { return LionSerializers.Serializers; } }
 
 
         #region Misc

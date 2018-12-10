@@ -15,7 +15,7 @@ namespace LionFire.IO
 
         #endregion
 
-        public override async Task WriteObject(object persistenceContext = null)
+        protected override async Task WriteObject(object persistenceContext = null)
         {
             await Task.Run(() =>
             {
@@ -23,7 +23,7 @@ namespace LionFire.IO
             }).ConfigureAwait(false);
         }
 
-        public override async Task DeleteObject(object persistenceContext = null)
+        protected override async Task DeleteObject(object persistenceContext = null)
         {
             await Task.Run(() =>
             {

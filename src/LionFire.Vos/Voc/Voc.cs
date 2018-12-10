@@ -1,4 +1,5 @@
 ﻿using LionFire.Collections;
+using LionFire.Referencing;
 using LionFire.Structures;
 using Microsoft.Extensions.Logging;
 using System;
@@ -11,40 +12,148 @@ using System.Threading.Tasks;
 
 namespace LionFire.Vos
 {
-    [Flags]
-    public enum PersistenceStatus // MOVE
+    public class OBaseNameList<T> : RCollectionBase<INotifyingList<string>, string>
     {
-        None=0,
-        UnsavedChanges = 1 << 0,
-        
-        NotLoaded = 1 << 1,
+        public abstract Task<bool> TryRetrieveObject();
+    }
 
-        SourceChanged = 1<<9,
+    //public class OBaseCollection<T> : OBaseNameList<T>
+    //{
 
-        /// <summary>
-        /// SourceChanged & UnsavedChanges and !AutoMerge or AutoMergeFail
-        /// </summary>
-        Conflict = 1<<10,
-        
-        AutoMerge = 1 << 11,
-        AutoMergeFail = 1 << 12,
+    //}
 
-        Monitoring = 1 << 15,
+    public class VosChildList<T> : OBaseNameList<T>
+    {
+        #region Change events
+
+        #endregion
+        public IObserver<T> Removed { get; private set; }
+        public IObserver<T> Added { get; private set; }
+    }
+
+    // how fat do i want this to be?  should I keep it to strings?  
+    public class OBaseChild
+    {
+        public string Name { get; set; }
+        public object Handle { get; set; }
+        public Type Type { get; set; }
     }
 
     /// <summary>
     /// A collection class designed for ease of use with manipulating a set of Vobs.
     /// By default, Delete operations are carried out immediately,
     /// and Create operations may reserve an Identifier and save a partially created object.
+    /// 
+    /// Fields:
+    ///  - Vob
     /// </summary>
     /// <typeparam name="ChildType"></typeparam>
-    public class Voc<ChildType> : VocBase, INotifyingList<ChildType>, IVoc
+    public class Voc<ChildType> : INotifyingList<ChildType>, IVoc
         , IVohac<ChildType>
         , INotifyCollectionChanged
         //, ICollection<ChildType>
-
         where ChildType : class, new()
     {
+        #region Ontology
+
+        #region Vob
+
+        /// <summary>
+        /// User can only set this once directly.  It may be modified by Move, Rename or Delete
+        /// </summary>
+        public Vob Vob
+        {
+            get { return vob; }
+            private set
+            {
+                if (vob == value) return;
+                if (vob != default(Vob)) throw new AlreadySetException();
+                vob = value;
+
+                if (EffectiveAutoLoad)
+                {
+                    //Clear();
+                    TryRetrieve();
+                }
+
+            }
+        }
+        private Vob vob;
+
+        #endregion
+
+        #endregion
+
+        #region Construction
+
+        public Voc(Vob vob)
+        {
+            this.Vob = vob;
+        }
+
+        #endregion
+
+
+
+        public IEnumerable<string> ChildPaths => this.Select(vh => vh.Path);
+        public IEnumerable<string> Names => this.Select(vh => LionPath.GetName(vh.Path));
+        public IEnumerable<VobReadHandle<T>> Handles => this;
+
+        #region Parameters
+
+        #region AutoLoad
+
+        public static bool DefaultAutoLoad = true;
+
+        public bool EffectiveAutoLoad { get { return AutoLoad.HasValue ? AutoLoad.Value : DefaultAutoLoad; } }
+
+        public bool? AutoLoad
+        {
+            get { return autoLoad; }
+            set { autoLoad = value; }
+        }
+        private bool? autoLoad;
+
+        #endregion
+
+        public bool? AutoSave { get; set; }
+
+        #endregion
+
+        #region List
+
+        public void Clear()
+        {
+            throw new NotImplementedException();
+            //if (Vob == null) return;
+            //VobFilter filter = null;
+            //Vob.DeleteChildren(filter);
+        }
+
+        public abstract int Count { get; }
+
+        #endregion
+
+        #region Misc
+
+        public string ToStringStatus
+        {
+            get
+            {
+                if (Vob == null) return "null";
+                //if (Count > 0)
+                return Count.ToString() + " items";
+            }
+        }
+
+        public override string ToString()
+        {
+            return "[Voc: " + Vob.ToString() + " (" + ToStringStatus + ")]";
+        }
+
+        #endregion
+
+
         #region Fields
 
         protected MultiBindableDictionary<string, VobHandle<ChildType>> Dict
@@ -89,19 +198,7 @@ namespace LionFire.Vos
         static readonly ChildType[] empty = new ChildType[] { };
 
         #endregion
-
-        #region Construction
-
-        public Voc()
-        {
-        }
-
-        public Voc(Vob vob)
-        {
-            this.Vob = vob;
-        }
-
-        #endregion
+               
 
         #region CRUD
 
@@ -119,12 +216,13 @@ namespace LionFire.Vos
 
         public override void Delete() // Does not delete keyKeeper?
         {
-            var children = Vob.GetVobChildrenOfType<ChildType>();
+            throw new NotImplementedException("TOPORT");
+            //var children = Vob.GetVobChildrenOfType<ChildType>();
 
-            foreach (var child in children)
-            {
-                child.TryDelete();
-            }
+            //foreach (var child in children)
+            //{
+            //    child.TryDelete();
+            //}
         }
 
         #endregion

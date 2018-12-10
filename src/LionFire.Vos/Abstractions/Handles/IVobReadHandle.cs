@@ -7,15 +7,7 @@ using LionFire.Referencing;
 
 namespace LionFire.Vos
 {
-    public interface IVobReadHandle<
-#if !UNITY
-out
-#endif
- ObjectType>
-#if !AOT
-    : R<ObjectType>
-#endif
- where ObjectType : class
+    public interface IVobReadHandle<out ObjectType> : RH<ObjectType>
     {
         IVob Vob { get; }
         Type Type { get; }

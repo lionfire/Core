@@ -14,7 +14,7 @@ namespace LionFire.Assets
     {
         public static string DefaultRoot()
         {
-            return LionFireEnvironment.AppProgramDataDir;
+            return LionFireEnvironment.Directories.AppProgramDataDir;
         }
 
         public static string GetSubpath<T>(string assetSubpath = null, object context = null)

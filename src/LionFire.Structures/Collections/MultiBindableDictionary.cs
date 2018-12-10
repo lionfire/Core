@@ -452,10 +452,10 @@ namespace LionFire.Collections
         {
             return Values.ToArray();
         }
-        TValue[] IReadOnlyCollection<TValue>.ToArray()
-        {
-            return Values.ToArray();
-        }
+        //TValue[] IReadOnlyCollection<TValue>.ToArray()
+        //{
+        //    return Values.ToArray();
+        //}
 
 #if !AOT
                
@@ -782,13 +782,15 @@ namespace LionFire.Collections
 
         event NotifyCollectionChangedHandler<BaseValue> collectionChanged;
 
-        void target_CollectionChanged(NotifyCollectionChangedEventArgs<DerivedValue> e)
+        void target_CollectionChanged(INotifyCollectionChangedEventArgs<DerivedValue> e)
         {
             var ev = collectionChanged;
             if (ev == null) { return; }
 
-            var newE = new NotifyCollectionChangedEventArgs<BaseValue>();
-            newE.Action = e.Action;
+            var newE = new NotifyCollectionChangedEventArgs<BaseValue>
+            {
+                Action = e.Action
+            };
 
             if (e.OldItems != null)
             {

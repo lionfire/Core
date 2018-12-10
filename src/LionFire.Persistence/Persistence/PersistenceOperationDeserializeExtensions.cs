@@ -10,10 +10,20 @@ namespace LionFire.Persistence
 {
     public static class PersistenceOperationDeserializeExtensions
     {
+        /// <summary>
+        /// NOTE FIXME: currently specific to:
+        ///  - file extensions, and
+        ///  - multiple potential paths, and 
+        ///  - streams
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="op"></param>
+        /// <param name="context"></param>
+        /// <returns></returns>
         public static T ToObject<T>(this PersistenceOperation op, PersistenceContext context = null)
         {
             if (context == null) context = op.Context;
-            var resolver = (context?.SerializationProvider ?? Defaults.TryGet<ISerializationProvider>());
+            var serializationProvider = (context?.SerializationProvider ?? Defaults.TryGet<ISerializationProvider>());
 
             IEnumerable<Stream> streams(ISerializationStrategy strategy)
             {
@@ -28,7 +38,7 @@ namespace LionFire.Persistence
                 }
             }
 
-            return resolver.ToObject<T>(streams, op, context);
+            return serializationProvider.ToObject<T>(streams, op, context);
             
             
             //var strategyResults = .Strategies(streams(), op, context);

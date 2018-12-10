@@ -7,7 +7,7 @@ using LionFire.Applications.Hosting;
 using LionFire.ObjectBus;
 using LionFire.ObjectBus.Filesystem;
 using LionFire.ObjectBus.Filesystem.Tests;
-using LionFire.Persistence.Tests;
+using LionFire.ObjectBus.Testing;
 using LionFire.Referencing;
 using Xunit;
 
@@ -53,7 +53,7 @@ namespace Handle
                     .AddFilesystemObjectBus()
                     .RunNowAndWait(async () =>
                     {
-                        var pathWithoutExtension = PersistenceTestUtils.TestFile;
+                        var pathWithoutExtension = FsTestUtils.TestFile;
                         var path = pathWithoutExtension + ".json";
 
                         var savePath = withExtension ? path : pathWithoutExtension;
@@ -64,13 +64,13 @@ namespace Handle
                         var h = reference.GetHandle<TestClass1>();
                         h.Object = TestClass1.Create;
 
-                        await h.Save(); // --------- Save
+                        await h.Commit(); // --------- Save
 
                         Assert.True(File.Exists(savePath), "Missing file: " + path);
                         var json = File.ReadAllText(savePath);
                         Assert.Equal(PersistenceTestUtils.TestClass1Json, json);
 
-                        PersistenceTestUtils.CleanPath(savePath);
+                        FsTestUtils.CleanPath(savePath);
                     });
         }
     }

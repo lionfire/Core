@@ -3,7 +3,7 @@
     /// <summary>
     /// Just a Path
     /// </summary>
-    public sealed class PathReference : IReference
+    public sealed class PathReference : ReferenceBaseBase, IReference
     {
         #region Construction
 
@@ -15,7 +15,23 @@
 
         public string Scheme => null;
 
-        public string Path { get; set; }
+
+        #region Path
+
+        [SetOnce]
+        public override string Path
+        {
+            get { return path; }
+            set
+            {
+                if (path == value) return;
+                if (path != default(string)) throw new AlreadySetException();
+                path = value;
+            }
+        }
+        private string path;
+
+        #endregion
 
         public string Key => Path;
 

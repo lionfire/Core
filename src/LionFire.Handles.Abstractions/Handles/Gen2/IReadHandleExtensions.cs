@@ -32,7 +32,7 @@ namespace LionFire.Referencing
 
         public static bool IsWritable<T>(this IReadHandle<T> readHandle)
         {
-            return readHandle as ISaveable != null;
+            return readHandle as ICommitable != null;
         }
     }
 

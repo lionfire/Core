@@ -1,11 +1,10 @@
 using System;
 using System.IO;
 using LionFire.Applications.Hosting;
-using LionFire.Persistence.Tests;
 using LionFire.Referencing;
 using Xunit;
 using Xunit.Abstractions;
-using static LionFire.Persistence.Tests.PersistenceTestUtils;
+using static LionFire.Persistence.Tests.FsTestUtils;
 
 namespace LionFire.ObjectBus.Filesystem.Tests
 {

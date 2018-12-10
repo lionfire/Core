@@ -1,4 +1,5 @@
-﻿using LionFire.Execution;
+﻿#if UNUSED // INCOMPLETE - no point yet?
+using LionFire.Execution;
 using LionFire.DependencyInjection;
 using LionFire.Composables;
 using LionFire.MultiTyping;
@@ -34,6 +35,9 @@ namespace LionFire.Applications.Hosting
     }
 #endif
 
+    /// <summary>
+    /// INCOMPLETE - no point yet?
+    /// </summary>
     public class ExecutionContainer : ExecutablesHost<ExecutionContainer>, IReadOnlyMultiTyped
     {
         protected readonly MultiType multiType = new MultiType();
@@ -99,3 +103,4 @@ namespace LionFire.Applications.Hosting
 
 
 }
+#endif

@@ -7,7 +7,7 @@ using LionFire.Applications.Hosting;
 using LionFire.ObjectBus;
 using LionFire.ObjectBus.Filesystem;
 using LionFire.ObjectBus.Filesystem.Tests;
-using LionFire.Persistence.Tests;
+using LionFire.ObjectBus.Testing;
 using LionFire.Referencing;
 using Xunit;
 
@@ -29,7 +29,7 @@ namespace Handle
                     .AddFilesystemObjectBus()
                     .RunNowAndWait(() =>
                     {
-                        var pathWithoutExtension = PersistenceTestUtils.TestFile;
+                        var pathWithoutExtension = FsTestUtils.TestFile;
                         var path = pathWithoutExtension + ".json";
 
                         File.WriteAllText(path, PersistenceTestUtils.TestClass1Json);
@@ -42,9 +42,9 @@ namespace Handle
 
                         Assert.NotNull(obj);
                         Assert.IsType<TestClass1>(obj);
-                        PersistenceTestUtils.AssertEqual(TestClass1.Create, obj);
+                        FsTestUtils.AssertEqual(TestClass1.Create, obj);
 
-                        PersistenceTestUtils.CleanPath(path);
+                        FsTestUtils.CleanPath(path);
                     });
         }
     }
