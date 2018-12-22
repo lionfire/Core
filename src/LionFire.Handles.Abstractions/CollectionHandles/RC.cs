@@ -12,6 +12,10 @@ namespace LionFire.Referencing
         where TListEntry : ICollectionEntry
     {
         RH<INotifyingReadOnlyCollection<T>> Handle { get; }
+
+        /// <summary>
+        /// Direct data object
+        /// </summary>
         INotifyingReadOnlyCollection<TListEntry> Entries { get; }
 
     }

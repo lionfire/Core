@@ -96,6 +96,7 @@ namespace LionFire.ObjectBus.Redis
         ///  - make use of the pub/sub features of redis
         ///  - access an individual server for maintenance / monitoring purposes
         /// </summary>
+        internal ConnectionMultiplexer Redis => redis;
         private ConnectionMultiplexer redis;
 
         #endregion

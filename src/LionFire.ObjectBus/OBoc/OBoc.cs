@@ -1,5 +1,4 @@
-﻿
-using System;
+﻿using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Text;
@@ -18,7 +17,6 @@ namespace LionFire.ObjectBus
     public abstract class OBoc<T, TListEntry> : RBase<INotifyingReadOnlyCollection<TListEntry>>, RC<T, TListEntry>
         where TListEntry : ICollectionEntry
     {
-
         #region Construction
 
         public OBoc() : this(null) { }
@@ -26,16 +24,17 @@ namespace LionFire.ObjectBus
         /// <param name="reference">(Can be null)</param>
         public OBoc(IReference reference) : base(reference)
         {
-
         }
 
         #endregion
 
         public RH<INotifyingReadOnlyCollection<T>> Handle { get; protected set; }
-        public INotifyingReadOnlyCollection<TListEntry> Entries { get; set; }
+        public INotifyingReadOnlyCollection<TListEntry> Entries => Object;
 
-        public int Count => throw new NotImplementedException();
-        IEnumerator IEnumerable.GetEnumerator() => throw new NotImplementedException();
-        IEnumerator<T> IEnumerable<T>.GetEnumerator() => throw new NotImplementedException();
+        public int Count => Entries.Count;
+
+        IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
+        public abstract IEnumerator<T> GetEnumerator();
+
     }
 }

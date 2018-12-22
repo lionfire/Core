@@ -8,24 +8,19 @@ using LionFire.Referencing;
 
 namespace LionFire.ObjectBus.Redis
 {
-    public class RedisEntry : OBaseCollectionEntry
-    {
-    }
-
-    public class OBocEvent
-    {
-        public PersistenceEventKind PersistenceEventKind { get; set; }
-    }
-
-    public class RedisOBoc : SyncableOBoc<RedisEntry>
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
+    public class RedisHashOBoc<T> : SyncableOBoc<T, RedisEntry>
     {
         RedisOBase obase;
         RedisPubOBase pubOBase;
 
         #region Construction
 
-        public RedisOBoc() { }
-        public RedisOBoc(IReference reference) : base(reference) { }
+        public RedisHashOBoc() { }
+        public RedisHashOBoc(IReference reference) : base(reference) { }
 
         #endregion
 
@@ -44,14 +39,22 @@ namespace LionFire.ObjectBus.Redis
                 {
 
                 }
+                isReadSyncEnabled = value;
             }
         } private bool isReadSyncEnabled;
 
         public IObservable<OBocEvent> SubscribeOBocEvents()
         {
+            throw new NotImplementedException();
+        }
+
+        public override Task<bool> TryRetrieveObject()
+        {
+            throw new NotImplementedException();
+            //obase.OBus.
 
         }
 
-        public override Task<bool> TryRetrieveObject() => throw new NotImplementedException();
+        public override IEnumerator<T> GetEnumerator() => throw new NotImplementedException();
     }
 }
