@@ -23,14 +23,16 @@ namespace LionFire.IO
             }).ConfigureAwait(false);
         }
 
-        protected override async Task DeleteObject(object persistenceContext = null)
+        protected override async Task<bool?> DeleteObject(object persistenceContext = null)
         {
-            await Task.Run(() =>
+            return await Task.Run(() =>
             {
                 if (File.Exists(Path))
                 {
                     File.Delete(Path);
+                    return (bool?)true;
                 }
+                return (bool?)null;
             }).ConfigureAwait(false);
         }
 

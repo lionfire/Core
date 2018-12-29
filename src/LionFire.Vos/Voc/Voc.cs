@@ -12,7 +12,7 @@ using System.Threading.Tasks;
 
 namespace LionFire.Vos
 {
-    public class OBaseNameList<T> : RCollectionBase<INotifyingList<string>, string>
+    public abstract class OBaseNameList<T> : RCollectionBase<INotifyingList<string>, string>
     {
         public abstract Task<bool> TryRetrieveObject();
     }
