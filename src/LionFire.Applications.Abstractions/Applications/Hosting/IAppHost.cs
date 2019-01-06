@@ -9,6 +9,7 @@ using LionFire.MultiTyping;
 using LionFire.Execution.Composition;
 using LionFire.Structures;
 using LionFire.Composables;
+using System.Threading;
 
 namespace LionFire.Applications.Hosting
 {
@@ -62,7 +63,7 @@ namespace LionFire.Applications.Hosting
         /// (Also see Run extension method which will block until the application completes.)  (RENAME to Start, and use IStartable)
         /// </summary>
         /// <returns></returns>
-        Task Run();
+        Task Run(CancellationToken cancellationToken = default(CancellationToken));
 
         #endregion
 
@@ -73,7 +74,7 @@ namespace LionFire.Applications.Hosting
         /// <summary>
         /// Sets IsShuttingDown to true.  All components that run perpetually until shutdown should monitor this flag and shut down in a timely manner.
         /// </summary>
-        Task Shutdown(long millisecondsTimeout = 0);
+        Task Shutdown(long millisecondsTimeout = 0, CancellationToken cancellationToken = default(CancellationToken));
         void SetManualSingletonFromService(Type serviceType);
 
         #endregion

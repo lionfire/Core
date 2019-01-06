@@ -6,6 +6,7 @@ namespace LionFire.Notifications.Api
     [Route("api/[controller]")]
     public class NotificationsController : ControllerBase
     {
+
         [HttpGet]
         public string Test()
         {

@@ -15,7 +15,10 @@ namespace System.Threading.Tasks
 
             task.ContinueWith(_ => { return; });
         }
-        public static void FireAndForget(this Task task, string taskName = null)
+        public static void FireAndForget(this Task task)
+        {
+        }
+        public static void FireAndForget(this Task task, string taskName)
         {
         }
 

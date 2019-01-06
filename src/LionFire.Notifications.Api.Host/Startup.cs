@@ -27,8 +27,9 @@ namespace LionFire.Notifications.Api.Host
         {
             services
                 .AddMvc()
-                    .SetCompatibilityVersion(CompatibilityVersion.Version_2_1)
+                    .SetCompatibilityVersion(CompatibilityVersion.Version_2_2)
                     .AddApplicationPart(typeof(NotificationsController).Assembly)
+                    .AddApplicationPart(typeof(NewAlertController).Assembly)
                 ;
         }
 

@@ -6,6 +6,9 @@ namespace LionFire.Notifications
     {
     }
 
+    /// <summary>
+    /// TODO: think about how to create a generic "SeriousAlerts" SDK.  Integrate with the PriceAlert.
+    /// </summary>
     public class Notifier : INotifier
     {
         #region Construction

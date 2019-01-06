@@ -20,7 +20,7 @@ using TInitializable = LionFire.Execution.IInitializable;
 namespace LionFire.Applications.Hosting
 {
     // Derive from new ExecutionContainer, move most stuff there?
-    public class AppHost : ExecutablesHost<AppHost>, IAppHost, IReadOnlyMultiTyped
+    public class AppHost : ExecutablesHost<AppHost>, IAppHost, IReadOnlyMultiTyped, Microsoft.Extensions.Hosting.IHost
     {
         private static IAppHost _CreateUnitTestApp()
         {
@@ -344,6 +344,8 @@ namespace LionFire.Applications.Hosting
         private List<Task> WaitForTasks { get; set; } = new List<Task>();
         private List<Task> Tasks { get; set; } = new List<Task>();
 
+        public IServiceProvider Services => throw new NotImplementedException();
+
         public class StateMachineWrapper<TState, TTransition>
         {
             static StateMachineWrapper()
@@ -353,7 +355,7 @@ namespace LionFire.Applications.Hosting
 
         }
 
-        public async Task Run()
+        public async Task Run(CancellationToken cancellationToken = default(CancellationToken))
         {
             Initialize();
             IsInitializeFrozen = true;
@@ -403,7 +405,7 @@ namespace LionFire.Applications.Hosting
 
         //public int ShutdownMillisecondsDelay = 60000;  // FUTURE?
 
-        public Task Shutdown(long millisecondsTimeout = 0)
+        public Task Shutdown(long millisecondsTimeout = 0, CancellationToken cancellationToken = default(CancellationToken))
         {
             tokenSource.Cancel();
             var shutdownTask = Task.Factory.ContinueWhenAll(Tasks.ToArray(), _ => { Tasks.Clear(); });
@@ -425,11 +427,39 @@ namespace LionFire.Applications.Hosting
             }
         }
 
+        #endregion
 
+        #region Microsoft.Extensions.IHost
 
+        public Task StartAsync(CancellationToken cancellationToken = default(CancellationToken)) => Run(cancellationToken);
+        public Task StopAsync(CancellationToken cancellationToken = default(CancellationToken)) => Shutdown(cancellationToken: cancellationToken);
+               
+        #endregion
+
+        #region IDisposable Support
+
+        private bool disposedValue = false; // To detect redundant calls
+
+        protected event Action Disposing;
+
+        protected virtual void Dispose(bool disposing)
+        {
+            if (!disposedValue)
+            {
+                if (disposing)
+                {
+                    Disposing?.Invoke();
+                }
+
+                disposedValue = true;
+            }
+        }
+
+        public void Dispose()
+        {
+            Dispose(true);
+        }
 
         #endregion
     }
-
-
 }
