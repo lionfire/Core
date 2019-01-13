@@ -1,5 +1,4 @@
 ﻿using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using StackExchange.Redis;
 using System.Threading;
@@ -7,26 +6,39 @@ using System.Threading.Tasks;
 
 namespace LionFire.Redis
 {
-    public class RedisConnection : IHostedService
+
+    // FUTURE - state machine?
+    //public enum ConnectionStates
+    //{
+    //    Unspecified,
+    //    Connected,
+    //    Connecting,
+    //    WaitingToReconnect,
+    //    Reconnecting,
+    //    FailedToConnect,
+    //    Disconnected,
+    //}
+    
+        /// <summary>
+        /// Connection string:
+        ///   Comma separated host:port
+        ///   E.g. "server1:6379,server2:6379"
+        ///   Order not important; master is automatically identified
+        /// </summary>
+    public class RedisConnection : ConnectionBase
     {
         public IDatabase Db => redis.GetDatabase();
         public ConnectionMultiplexer Redis => redis;
         private ConnectionMultiplexer redis;
+               
 
-        private readonly ILogger logger;
-
-        /// <summary>
-        /// Comma separated host:port
-        /// E.g. "server1:6379,server2:6379"
-        /// Order not important; master is automatically identified
-        /// </summary>
-        public string ConnectionString { get; private set; }
-
-        public RedisConnection(string connectionString, ILogger<RedisConnection> logger)
+        public RedisConnection()
         {
-            ConnectionString = connectionString;
-            this.logger = logger;
         }
+        //public RedisConnection(string connectionString, ILogger<RedisConnection> logger) : base(logger)
+        //{
+        //    ConnectionString = connectionString;
+        //}
 
         public bool IsConnectionDesired
         {
@@ -46,7 +58,7 @@ namespace LionFire.Redis
         private bool isConnectionDesired;
         private Task<ConnectionMultiplexer> connectingTask;
 
-        public async Task Connect()
+        public override async Task Connect(CancellationToken cancellationToken = default(CancellationToken))
         {
         start:
             #region Detect already done or in progress REVIEW
@@ -80,7 +92,7 @@ namespace LionFire.Redis
             logger.LogInformation($"[connected] ...connected to redis at {ConnectionString}");
         }
 
-        public async Task Disconnect()
+        public override async Task Disconnect(CancellationToken cancellationToken = default(CancellationToken))
         {
             isConnectionDesired = false;
             if (redis != null)
@@ -100,14 +112,6 @@ namespace LionFire.Redis
             }
         }
 
-        #region IHostedService
-
-        // TODO: cancellationToken
-        public async Task StartAsync(CancellationToken cancellationToken = default(CancellationToken)) => await Connect();
-
-        // TODO: cancellationToken
-        public async Task StopAsync(CancellationToken cancellationToken = default(CancellationToken)) => await Disconnect();
-
-        #endregion
+        
     }
 }
