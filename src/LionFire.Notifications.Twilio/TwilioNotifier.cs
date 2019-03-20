@@ -52,9 +52,9 @@ namespace LionFire.Notifications.Twilio
     }
     public class TwilioNotifier : ISmsNotifier, IVoiceNotifier
     {
-        public string VoiceNumber { get; set; } = "+14034670230";
-        public string SmsNumber { get; set; } = "+14034670230";
-        public string NumberSource { get; set; } = "+15873337977";
+        public string VoiceNumber { get; set; } = "";
+        public string SmsNumber { get; set; } = "";
+        public string NumberSource { get; set; } = "";
 
         //public void SendAlert(string msg)
         //{
@@ -75,8 +75,9 @@ namespace LionFire.Notifications.Twilio
         private void InitTwilio()
         {
             if (twilioRestClient != null) return;
-            //TwilioClient.Init("ACe1aef29ecb40ad6da88144caad48822c", "09c7512b3d9570533d0526abf31dd156"); // Lionfire
-            TwilioClient.Init("AC48cd274a9a6a876b722a6b0e50e1f2e1", "40079c9f0f108ee5191e72779e1c9a0e"); // Jared
+	    string account = "AC";
+	    string key = "";
+            TwilioClient.Init(account, key);
             twilioRestClient = TwilioClient.GetRestClient();
         }
 
