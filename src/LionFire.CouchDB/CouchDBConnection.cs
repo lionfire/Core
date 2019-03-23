@@ -1,11 +1,11 @@
 ﻿using LionFire.Data;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
-using StackExchange.Redis;
+using StackExchange.CouchDB;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace LionFire.Redis
+namespace LionFire.CouchDB
 {
 
     // FUTURE - state machine?
@@ -26,16 +26,16 @@ namespace LionFire.Redis
     ///   E.g. "server1:6379,server2:6379"
     ///   Order not important; master is automatically identified
     /// </summary>
-    public class RedisConnection : ConnectionBase
+    public class CouchDBConnection : ConnectionBase
     {
         public IDatabase Db => redis.GetDatabase();
-        public ConnectionMultiplexer Redis => redis;
+        public ConnectionMultiplexer CouchDB => redis;
         private ConnectionMultiplexer redis;
 
-        public RedisConnection(ILogger<RedisConnection> logger) : base(logger)
+        public CouchDBConnection(ILogger<CouchDBConnection> logger) : base(logger)
         {
         }
-        //public RedisConnection(string connectionString, ILogger<RedisConnection> logger) : base(logger)
+        //public CouchDBConnection(string connectionString, ILogger<CouchDBConnection> logger) : base(logger)
         //{
         //    ConnectionString = connectionString;
         //}

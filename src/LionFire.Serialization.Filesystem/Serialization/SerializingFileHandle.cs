@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using LionFire.DependencyInjection;
 using LionFire.Execution;
 using LionFire.IO;
+using LionFire.ObjectBus.Filesystem;
 using LionFire.Persistence;
 using LionFire.Serialization.Contexts;
 
@@ -35,7 +36,7 @@ namespace LionFire.Serialization
 
         //#endregion
 
-        public PersistenceOperation SerializationOperation { get; set; }
+        public PersistenceOperation PersistenceOperation { get; set; }
 
         #region Construction
 
@@ -52,7 +53,7 @@ namespace LionFire.Serialization
                 //var serializationService = persistenceContext.ObjectAsType<ISerializationService>();
                 //if (serializationService == null) { serializationService = InjectionContext.Current.GetService<ISerializationService>(); }
                 //var serializationService = InjectionContext.Current.GetService<ISerializationService>();
-                var serializationService = Defaults.TryGet<ISerializationProvider>() ?? ;
+                var serializationService = Defaults.TryGet<ISerializationProvider>();
 
                 if (serializationService == null)
                 {
@@ -72,23 +73,25 @@ namespace LionFire.Serialization
         //    Object = SerializationFacility.Default.ToObject<T>(fs, operation: SerializationOperation, context: DefaultSerializationContext, );
         //}
 
-        public PersistenceOperation GetSerializationOperation()
+        public PersistenceOperation GetPersistenceOperation()
         {
-            if (SerializationOperation == null)
+            if (PersistenceOperation == null)
             {
-                SerializationOperation = new PersistenceOperation();
+                PersistenceOperation = new PersistenceOperation();
             }
 
             //if (SerializationOperation.Path == null) // Don't allow path spoofing
             //{
-                SerializationOperation.Path = Path;
+            // REVIEW MOVE this note - LionFire.ObjectBus.Filesystem is brought in just from this LocalFileReference?  Move it out?
+                PersistenceOperation.Reference = new LocalFileReference(Path);
+                //SerializationOperation.Path = Path;
             //}
 
-            if (SerializationOperation.Path == null)
+            if (PersistenceOperation.Path == null)
             {
                 throw new ArgumentNullException("Path or SerializationOperation.Path must be set");
             }
-            return SerializationOperation;
+            return PersistenceOperation;
         }
 
         public PersistenceContext GetPersistenceContext()
@@ -97,7 +100,7 @@ namespace LionFire.Serialization
             var persistenceContext = new PersistenceContext();
 
             persistenceContext.SerializationContext = SerializationContext ?? DefaultSerializationContext;
-            persistenceContext.GetPersistenceOperation = GetSerializationOperation;
+            persistenceContext.GetPersistenceOperation = GetPersistenceOperation;
 
             return persistenceContext;
         }
@@ -120,11 +123,11 @@ namespace LionFire.Serialization
                     using (var fs = new FileStream(Path, FileMode.Open, FileAccess.Read, FileShare.Read))
                     {
                         //Object = SerializationFacility.Default.ToObject<T>(fs, operation: SerializationOperation, context: DefaultSerializationContext);
-                        Object = SerializationFacility.Default.ToObject<T>(fs, new Lazy<PersistenceContext>(GetPersistenceContext));
+                        Object = SerializationFacility.Default.ToObject<T>(fs, new Lazy<PersistenceOperation>(GetPersistenceOperation));
                     }
 #else
-            var bytes = File.ReadAllBytes(Path);
-            Object = Defaults.Get<ISerializationProvider>.ToObject<T>(bytes, operation: SerializationOperation, context: DefaultSerializationContext)
+                    var bytes = File.ReadAllBytes(Path);
+                    Object = Defaults.Get<ISerializationProvider>().ToObject<T>(bytes, operation: SerializationOperation, context: DefaultSerializationContext);
 #endif
 
                     //if(Result.IsSuccess)
@@ -144,17 +147,18 @@ namespace LionFire.Serialization
 
         #region Delete
 
-        public override async Task DeleteObject(object persistenceContext = null)
+        protected override async Task<bool?> DeleteObject(object persistenceContext = null)
         {
             Action deleteAction = () => File.Delete(Path);
             await deleteAction.AutoRetry(); // TODO: Use File IO parameters registered in DI.
+            return true;
         }
 
         #endregion
 
         #region Save
 
-        public override async Task WriteObject(object persistenceContext = null)
+        protected override async Task WriteObject(object persistenceContext = null)
         {
             await Task.Run(() =>
             {

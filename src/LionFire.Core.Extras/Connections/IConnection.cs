@@ -7,8 +7,9 @@ namespace LionFire.Data
 {
     public interface IConnection : IHostedService
     {
-        ILogger Logger { set; }
+        //ILogger Logger { set; }
         string ConnectionString { get; set; }
+        
 
         new Task StartAsync(CancellationToken cancellationToken = default(CancellationToken));
         new Task StopAsync(CancellationToken cancellationToken = default(CancellationToken));

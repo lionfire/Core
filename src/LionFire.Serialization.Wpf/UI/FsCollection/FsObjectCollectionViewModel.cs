@@ -95,7 +95,7 @@ namespace LionFire.Serialization.UI
 
         #region SelectedHandle
 
-        public IReadHandle<object> SelectedHandle
+        public R<object> SelectedHandle
         {
             get { return selectedHandle; }
             set
@@ -106,7 +106,7 @@ namespace LionFire.Serialization.UI
                 NotifyOfPropertyChange(() => SelectedHandle);
             }
         }
-        private IReadHandle<object> selectedHandle;
+        private R<object> selectedHandle;
 
         #endregion
 

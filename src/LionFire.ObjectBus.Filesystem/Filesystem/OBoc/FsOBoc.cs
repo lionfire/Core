@@ -5,7 +5,21 @@ using System.Threading.Tasks;
 
 namespace LionFire.ObjectBus.Filesystem
 {
-    public class FsOBoc : SyncableOBoc<FsListEntry>
+    public class FsOBoc : FsOBoc<object> {
+
+        #region Construction
+
+        public FsOBoc() { }
+        public FsOBoc(LocalFileReference reference) : base(reference)
+        {
+        }
+
+        #endregion
+
+    }
+
+    public class FsOBoc<TObject> : SyncableOBoc<TObject, FsListEntry>
+
     {
 
         #region Construction
@@ -18,6 +32,8 @@ namespace LionFire.ObjectBus.Filesystem
         #endregion
 
         public override bool IsReadSyncEnabled { get => throw new System.NotImplementedException(); set => throw new System.NotImplementedException(); }
+
+        public override IEnumerator<TObject> GetEnumerator() => throw new System.NotImplementedException();
 
         public override async Task<bool> TryRetrieveObject()
         {

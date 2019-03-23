@@ -55,7 +55,11 @@ namespace LionFire.Serialization.Wpf.App
         protected override void OnStartup(object sender, System.Windows.StartupEventArgs e)
         {
             app = new AppHost()
-                .Add(new AppInfo("LionFire", "Serialization.Wpf", ""))
+                .Add(new AppInfo
+                {
+                    CompanyName = "LionFire",
+                    ProgramName = "Serialization.Wpf",
+                })
                 .Add<SerializationPackage>()
                 .Add<NewtonsoftJsonSerialization>()
                 ;

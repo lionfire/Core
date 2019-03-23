@@ -1,6 +1,6 @@
 ﻿namespace LionFire.ObjectBus.Filesystem
 {
-    public class FsListEntry : OBaseCollectionListEntry
+    public class FsListEntry : OBaseCollectionEntry
     {
         public string Path { get; internal set; }
     }

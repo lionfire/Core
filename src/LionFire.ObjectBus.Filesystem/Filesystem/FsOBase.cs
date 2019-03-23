@@ -242,7 +242,7 @@ namespace LionFire.ObjectBus.Filesystem
             //    filePath = filePath + FileTypeDelimiter + type.Name + FileTypeEndDelimiter;
             //}
 
-            return await FsOBasePersistence.TryDelete(filePath, preview: preview).ConfigureAwait(false);
+            return await FsOBasePersistence.TryDelete(filePath).ConfigureAwait(false);
         }
 
         //protected override async Task _Set<T>(LocalFileReference reference, T obj, bool allowOverwrite = true, bool preview = false)
@@ -305,7 +305,8 @@ namespace LionFire.ObjectBus.Filesystem
 
         public override IEnumerable<string> GetChildrenNamesOfType<T>(LocalFileReference parent) => throw new NotImplementedException();
         public override H<T> GetHandle<T>(IReference reference) => throw new NotImplementedException();
-        public override R<T> GetReadHandle<T>(IReference reference) => throw new NotImplementedException();
+        public override RH<T> GetReadHandle<T>(IReference reference) => throw new NotImplementedException();
+        public override Task<IEnumerable<string>> GetKeys(LocalFileReference parent) => throw new NotImplementedException();
 
 #if TOPORT
             var chunks = VosPath.ToPathArray(parent.Path);
