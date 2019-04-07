@@ -1,6 +1,6 @@
 using LionFire.Applications.Hosting;
 using LionFire.ObjectBus;
-using LionFire.ObjectBus.Redis;
+using LionFire.ObjectBus.Postgres;
 using LionFire.ObjectBus.Testing;
 using System;
 using System.Collections.Generic;

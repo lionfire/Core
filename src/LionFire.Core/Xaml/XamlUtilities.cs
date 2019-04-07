@@ -27,6 +27,10 @@ namespace LionFire
             {
                 if (whitelist != null && !whitelist.Contains(pi.Name)) continue;
 
+                var val = pi.GetValue(obj);
+                if (object.ReferenceEquals(obj, val)) continue;
+                if (val == null) continue;
+
                 if (firstProperty)
                 {
                     firstProperty = false;
@@ -35,9 +39,6 @@ namespace LionFire
                 {
                     sb.Append(",");
                 }
-
-                var val = pi.GetValue(obj);
-                if (object.ReferenceEquals(obj, val)) continue;
 
                 sb.Append(" ");
                 sb.Append(pi.Name);

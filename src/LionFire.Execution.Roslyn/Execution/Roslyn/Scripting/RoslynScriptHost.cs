@@ -26,7 +26,7 @@ namespace LionFire.Execution.Roslyn.Scripting
 
         public static async Task<object> TestScript()
         {
-            LionFireEnvironment.ProgramName = "RunnerProgramName";
+            LionFireEnvironment.MainAppInfo = new AppInfo { ProgramName = "RunnerProgramName" };
 
             var opts = ScriptOptions.Default
                 //.AddReferences("LionFire.Core")

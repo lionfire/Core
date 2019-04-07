@@ -45,9 +45,10 @@ namespace LionFire
             }
         }
 
-        public static string ToPercentString(this double perunage)
+        public static string ToPercentString(this double perunage, int decimals = 0)
         {
-            return double.IsNaN(perunage) ? "???" : String.Format("{0:0.%}", perunage);
+            var format = decimals == 0 ? "{0:0.%}" : $"{{0:0.{Enumerable.Repeat("0", decimals).Aggregate((x,y)=>x+y)}%}}"; // OPTIMIZE
+            return double.IsNaN(perunage) ? "???" : String.Format(format, perunage);
         }
         public static string ToPercentString(this float perunage)
         {

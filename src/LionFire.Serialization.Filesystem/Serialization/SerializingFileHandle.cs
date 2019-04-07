@@ -162,14 +162,15 @@ namespace LionFire.Serialization
         {
             await Task.Run(() =>
             {
-                var sc = new FileSerializationContext();
+                //var sc = new FileSerializationContext();
+                var op = new PersistenceOperation();
 
-                var bytes = SerializationFacility.Default.ToBytes(Object, sc);
+                var bytes = SerializationFacility.Default.ToBytes(Object, () => op);
 
                 var writePath = Path;
-                if (sc?.FileExtension != null)
+                if (op?.Extension != null)
                 {
-                    writePath += "." + sc.FileExtension;
+                    writePath += "." +op.Extension;
                 }
 
                 File.WriteAllBytes(writePath, bytes);

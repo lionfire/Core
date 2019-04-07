@@ -1,6 +1,6 @@
-﻿using LionFire.ObjectBus.FsFacade;
+﻿
+using LionFire.ObjectBus.FsFacade;
 using LionFire.Referencing;
-using StackExchange.Postgres;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -8,30 +8,32 @@ using System.Threading.Tasks;
 namespace LionFire.ObjectBus.Postgres
 {
 
-    public class PostgresFsFacade : IFsFacade
+    public class PostgresFsFacade //: IFsFacade
     {
-        #region Relationships
+#region Relationships
 
-        private PostgresOBase obase;
+        private readonly PostgresOBase obase;
 
-        #endregion
+#endregion
 
-        #region Convenience
+#region Convenience
 
         //private IDatabase Db => obase.Postgres.GetDatabase();
 
-        #endregion
+#endregion
 
-        #region Construction
+#region Construction
 
         public PostgresFsFacade(PostgresOBase obase)
         {
             this.obase = obase;
         }
 
-        #endregion
+#endregion
+
 
         public static (string dir, string name) BreakPath(string path) => (LionPath.GetDirectoryName(path), LionPath.GetFileName(path));
+        #if TODO
 
         public async Task<bool> Exists(string path) => await Db.KeyExistsAsync(path).ConfigureAwait(false);
         public async Task<bool?> Delete(string path)
@@ -48,7 +50,7 @@ namespace LionFire.ObjectBus.Postgres
         public async Task WriteAllBytes(string path, byte[] data) => await Db.StringSetAsync(path, data).ConfigureAwait(false);
         public async Task WriteAllText(string path, string data) => await Db.StringSetAsync(path, data).ConfigureAwait(false);
 
-        #region GetFiles
+#region GetFiles
 
         public static int GetFilesPageSize = 1000;
 
@@ -83,10 +85,8 @@ namespace LionFire.ObjectBus.Postgres
             }).ConfigureAwait(false);
         }
 
-        #endregion
-
+#endregion
+#endif
     }
-
-
 
 }

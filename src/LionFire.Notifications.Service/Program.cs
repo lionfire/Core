@@ -9,6 +9,9 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
 using LionFire.Execution;
 using LionFire.DependencyInjection;
+using LionFire.Trading.Triggers;
+using LionFire.Trading.TrueFx;
+using LionFire.Trading;
 
 namespace LionFire.Notifications.Service
 {
@@ -96,7 +99,12 @@ namespace LionFire.Notifications.Service
             });
 
             new AppHost()
-                .Add(new AppInfo("LionFire", "Notification Service", "Notifications"))
+                .Add(new AppInfo()
+                {
+                    CompanyName = "LionFire",
+                    ProgramName = "Notifications",
+                    ProgramDisplayName = "Notification Service",
+                })
                 .AddJsonAssetProvider()
                 .Initialize()
                 //.AddAsset<TTrueFxFeed>("jaredthirsk")

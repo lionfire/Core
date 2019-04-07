@@ -32,7 +32,7 @@ This package is typically not added on its own, but is a dependency required by 
     <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="2.2.0" />
     <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="2.2.0" />
 <PackageReference Include="System.Collections.Immutable" Version="1.5.0" />
-<PackageReference Include="System.Reactive" Version="4.1.2" />  </ItemGroup>
+<PackageReference Include="System.Reactive" Version="4.1.3" />  </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\LionFire.Base\LionFire.Base.csproj" />

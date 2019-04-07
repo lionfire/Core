@@ -8,7 +8,11 @@ using TLogLevel = Microsoft.Extensions.Logging.LogLevel;
 
 namespace LionFire.Logging.Null
 {
-    public class NullLogger : TLogger
+    public class NullLogger : NullLogger<object>
+    {
+
+    }
+    public class NullLogger<T> : TLogger, ILogger<T>
     {
         public static NullLogger Instance { get { return Singleton<NullLogger>.Instance;  } }
         public IDisposable BeginScope<TState>(TState state)

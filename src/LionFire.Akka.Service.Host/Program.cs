@@ -1,7 +1,9 @@
-﻿using System;
+﻿using Microsoft.Extensions.Hosting;
+using System;
 
 namespace LionFire.Akka.Service.Host
 {
+    
     class Program
     {
         public static async void Main(string[] args)

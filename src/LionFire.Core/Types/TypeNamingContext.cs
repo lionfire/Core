@@ -24,7 +24,11 @@ namespace LionFire.Types
 
             if (type != null) return type;
 
-            type = Type.GetType(typeName);
+            try
+            {
+                type = Type.GetType(typeName);
+            }
+            catch { } // EMPTYCATCH
 
             return type;
         }
