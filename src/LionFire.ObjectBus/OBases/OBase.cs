@@ -22,8 +22,7 @@ namespace LionFire.ObjectBus
 
         #region Uri
 
-        public abstract IEnumerable<string> UriSchemes
-        {
+        public abstract IEnumerable<string> UriSchemes {
             get;
         }
 
@@ -59,10 +58,8 @@ namespace LionFire.ObjectBus
 
         #endregion
 
-        protected MethodInfo _TryGetMethodInfo
-        {
-            get
-            {
+        protected MethodInfo _TryGetMethodInfo {
+            get {
                 if (tryGetMethodInfo == null)
                 {
                     tryGetMethodInfo = GetType().GetMethods().Where(mi => mi.Name == "TryGet" && mi.ContainsGenericParameters).First();
@@ -132,10 +129,19 @@ namespace LionFire.ObjectBus
         public abstract IEnumerable<string> GetChildrenNamesOfType<T>(TReference parent)
             where T : class, new();
 
+        [Obsolete]
         public IEnumerable<string> GetChildrenNamesOfType<T>(IReference parent)
-            where T : class, new() => GetChildrenNamesOfType<T>(ConvertToReferenceType(parent));
+            where T : class, new() => GetKeysOfType<T>(ConvertToReferenceType(parent)).Result;
+        public Task<IEnumerable<string>> GetKeysOfType<T>(IReference parent)
+            where T : class, new() => GetKeysOfType<T>(ConvertToReferenceType(parent));
 
-        public IEnumerable<string> GetChildrenNamesOfType(Type type, IReference parent) => GetChildrenNamesOfType(type, ConvertToReferenceType(parent));
+        public abstract Task<IEnumerable<string>> GetKeysOfType<T>(TReference parent)
+            where T : class, new();
+
+        [Obsolete]
+        public IEnumerable<string> GetChildrenNamesOfType(IReference parent, Type type) => GetKeysOfType(ConvertToReferenceType(parent), type).Result;
+
+        public Task<IEnumerable<string>> GetKeysOfType(IReference parent, Type type) => (Task<IEnumerable<string>>)this.GetType().GetMethod("GetKeysOfType", new Type[] { typeof(IReference) }).MakeGenericMethod(type).Invoke(this, new object[] { parent }); // TOOPTIMIZE - cache the MethodInfo?
 
         #endregion
 
@@ -251,7 +257,7 @@ namespace LionFire.ObjectBus
 
 
         public virtual IObjectWatcher GetObjectWatcher(IReference reference) => null;
-        
+
 
         #endregion
 

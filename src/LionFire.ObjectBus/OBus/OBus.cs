@@ -7,10 +7,13 @@ using LionFire.Referencing;
 namespace LionFire.ObjectBus
 {
     /// <summary>
-    /// Simple API for convenience.
+    /// Static-only API, with extension methods.
     /// Performance consideration: 
     ///  - Unbound reference types will be resolved to a bound reference type each time.  (TODO:) Consider using a Handle instead of this interface, which will only resolve the bound reference type once.
     /// </summary>
+    /// <remarks>
+    /// How things get from a Reference to a concrete IOBase is via InjectionContext.Current.GetService<IReferenceToOBaseService>()
+    /// </remarks>
     public static class OBus
     {
         #region Get
@@ -48,7 +51,7 @@ namespace LionFire.ObjectBus
         //}
 
         #endregion
-                       
+
         public static async Task Set(this IReference reference, object value) => await reference.GetOBase().Set(reference, value).ConfigureAwait(false);
 
         #region Delete
@@ -62,7 +65,14 @@ namespace LionFire.ObjectBus
 
         #region GetChildren
 
-        public static Task<IEnumerable<IReference>> GetChildren(IReference reference) => throw new NotImplementedException();
+        /// <summary>
+        /// Get References for children.  E.g. for filesystem paths, this may be file:/// with the full path for each file.
+        /// </summary>
+        /// <param name="reference"></param>
+        /// <returns></returns>
+        public static Task<IEnumerable<IReference>> GetChildren(this IReference reference) => throw new NotImplementedException();
+
+        public static async Task<IEnumerable<string>> GetKeys(this IReference reference) => await reference.GetOBase().GetKeys(reference).ConfigureAwait(false);
 
         //public static Task<IEnumerable<H<object>>> GetChildrenHandles(IReferenceEx2 reference)
         //{

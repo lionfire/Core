@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Concurrent;
 using System.Reflection;
 using System.Threading;
 using LionFire.Structures;
@@ -29,11 +30,9 @@ namespace LionFire.DependencyInjection
         ///  - Thread local / threadstatic
         ///  - Ambient stack (maybe also async/thread local)
         /// </summary>
-        public static InjectionContext Current
-        {
+        public static InjectionContext Current {
             get => AsyncLocal ?? current ?? Default;
-            set
-            {
+            set {
                 if (current != null && value != null && value != current)
                 {
                     throw new Exception("Cannot be set to another value without first setting to null.");
@@ -46,11 +45,9 @@ namespace LionFire.DependencyInjection
         /// <summary>
         /// Set by AppHost
         /// </summary>
-        public static InjectionContext Default
-        {
+        public static InjectionContext Default {
             get => ManualSingleton<InjectionContext>.Instance;
-            set
-            {
+            set {
                 if (value == ManualSingleton<InjectionContext>.Instance)
                 {
                     return;
@@ -83,8 +80,7 @@ namespace LionFire.DependencyInjection
 
         #region ServiceProvider
 
-        public IServiceProvider ServiceProvider
-        {
+        public IServiceProvider ServiceProvider {
             get => serviceProvider;
             set => serviceProvider = value;
         }
@@ -94,11 +90,9 @@ namespace LionFire.DependencyInjection
 
         #region AsyncLocal
 
-        public static InjectionContext AsyncLocal
-        {
+        public static InjectionContext AsyncLocal {
             get => asyncLocal?.Value;
-            set
-            {
+            set {
                 if (asyncLocal == null)
                 {
                     asyncLocal = new AsyncLocal<InjectionContext>();
@@ -113,11 +107,9 @@ namespace LionFire.DependencyInjection
 
         #region ThreadLocal
 
-        public static InjectionContext ThreadLocal
-        {
+        public static InjectionContext ThreadLocal {
             get => threadLocal?.Value;
-            set
-            {
+            set {
                 if (threadLocal == null)
                 {
                     threadLocal = new ThreadLocal<InjectionContext>();
@@ -130,14 +122,7 @@ namespace LionFire.DependencyInjection
 
         #endregion
 
-
-
-
-        public T GetService<T>(IServiceProvider serviceProvider = null, bool createIfMissing = DefaultCreateIfMissing)
-        {
-            var mi = typeof(InjectionContext).GetMethod("GetService", new Type[] { typeof(Type), typeof(IServiceProvider), typeof(bool) });
-            return (T)mi.Invoke(this, new object[] { typeof(T), serviceProvider, createIfMissing });
-        }
+        public T GetService<T>(IServiceProvider serviceProvider = null, bool createIfMissing = DefaultCreateIfMissing) => (T)GetService(typeof(T), serviceProvider, createIfMissing);
 
         //private readonly bool UseManualSingletonServiceProvider = false;
 

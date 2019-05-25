@@ -29,6 +29,8 @@ namespace LionFire
 
             #endregion
 
+            public static Dictionary<string, string> Other { get; } = new Dictionary<string, string>();
+
             #region OS
 
             /// <summary>

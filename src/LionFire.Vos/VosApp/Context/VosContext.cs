@@ -81,8 +81,6 @@ namespace LionFire.Vos
 #endif
             rootContext = new VosContext();
 
-            DefaultRoot = V.ActiveData;
-
         }
 
         public static string DefaultPackage
@@ -341,7 +339,7 @@ namespace LionFire.Vos
                 throw new UnreachableCodeException("VosContext.Current.Root == null");
             }
             // REvIEW - should this be in a asset subpath????
-            return VosContext.Current.Root[assetPath].ToHandle(type);
+            return VosContext.Current.Root[assetPath].GetHandle(type);
         }
         public static VobHandle<T> ToAssetVobHandle<T>(this string assetPath)
             where T : class
@@ -354,30 +352,12 @@ namespace LionFire.Vos
             {
                 throw new UnreachableCodeException("VosContext.Current.Root == null");
             }
-            return VosContext.Current.Root[assetPath].ToHandle<T>();
+            return VosContext.Current.Root[assetPath].GetHandle<T>();
         }
 
         #endregion
 
-        public static VobHandle<T> ToCurrentContext<T>(this VobHandle<T> h)
-            where T : class
-        {
-            var ctx = VosContext.Current;
-
-            var store = ctx.Store ?? h.EffectiveStore;
-            var package = ctx.Package ?? h.EffectivePackage;
-
-            if (h.EffectivePackage == package && h.EffectiveStore == store)
-            {
-                l.TraceWarn("OPTIMIZE - don't change Vob since store/pkg match");
-                return h;
-            }
-
-            var subPath = h.Vob.GetPackageStoreSubPath();
-            var vob = ctx.Root[subPath];
-            return vob.ToHandle<T>();
-        }
-
+        
         private static ILogger l = Log.Get();
 
     }

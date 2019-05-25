@@ -1,8 +1,10 @@
-﻿using System;
+﻿#if TOPORT
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using LionFire.Referencing;
+using LionFire.ObjectBus;
 
 namespace LionFire.Vos
 {
@@ -25,7 +27,7 @@ namespace LionFire.Vos
         {
             foreach (var mount in effectiveMountsByReadPriority.Values.SelectMany(x => x))
             {
-                mount.RootHandle.GetChildrenNames();
+                mount.RootHandle.GetKeys();
             }
         }
 #endif
@@ -44,7 +46,7 @@ namespace LionFire.Vos
                 {
                     foreach (Mount mount in effectiveMountsByReadPriority.Values.SelectMany(x => x))
                     {
-                        foreach (string childName in GetMountHandle(mount).GetChildrenNames())
+                        foreach (string childName in GetMountHandle(mount).GetKeys())
                         {
                             if (!includeHidden && VosPath.IsHidden(childName)) continue;
 
@@ -209,3 +211,4 @@ namespace LionFire.Vos
 
     }
 }
+#endif

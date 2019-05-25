@@ -103,6 +103,7 @@ namespace LionFire.Vos
         #region List
 
         public override Task<IEnumerable<string>> GetKeys(VosReference parent) => throw new NotImplementedException();
+        public override Task<IEnumerable<string>> GetKeysOfType<T>(VosReference parent) => throw new NotImplementedException();
         public override IEnumerable<string> GetChildrenNames(VosReference parent) => throw new NotImplementedException();
         public override IEnumerable<string> GetChildrenNamesOfType<T>(VosReference parent) => throw new NotImplementedException();
 
@@ -134,7 +135,7 @@ namespace LionFire.Vos
         }
         private MultiBindableCollection<Vob> vobsWithMounts = new MultiBindableCollection<Vob>();
 
-        internal void OnMountsChangedFor(Vob changedVob, NotifyCollectionChangedEventArgs<Mount> e)
+        internal void OnMountsChangedFor(Vob changedVob, INotifyCollectionChangedEventArgs<Mount> e)
         {
             foreach (var vobWithMounts in VobsWithMounts.ToArray())
             {

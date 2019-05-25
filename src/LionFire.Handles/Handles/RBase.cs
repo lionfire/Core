@@ -13,7 +13,7 @@ using LionFire.Structures;
 
 namespace LionFire.Referencing
 {
-    
+
 
     public abstract class RCollectionBase<TCollection, TItem> : RBase<TCollection>, IReadOnlyCollection<TItem>
         where TCollection : IEnumerable<TItem>
@@ -47,7 +47,7 @@ namespace LionFire.Referencing
     //public class WritableCollectionExperiment<T> : HCollectionBase<List<T>, T>
     //{
     //    MultiBindableCollection<T> collection = new MultiBindableCollection<T>();
-        
+
     //    public override int Count => collection.Count;
 
     //    public override bool IsReadOnly => collection.IsReadOnly;
@@ -85,11 +85,9 @@ namespace LionFire.Referencing
 
         #region Reference
 
-        public IReference Reference
-        {
+        public IReference Reference {
             get => reference;
-            protected set
-            {
+            protected set {
                 if (reference == value)
                 {
                     return;
@@ -114,8 +112,7 @@ namespace LionFire.Referencing
 
         #endregion
 
-        public string Key
-        {
+        public string Key {
             get => Reference.Key;
             set => Reference = value.ToReference();
         }
@@ -142,11 +139,9 @@ namespace LionFire.Referencing
 
         #region State
 
-        public PersistenceState State
-        {
+        public PersistenceState State {
             get => handleState;
-            set
-            {
+            set {
                 if (handleState == value)
                 {
                     return;
@@ -165,11 +160,9 @@ namespace LionFire.Referencing
 
         #region Derived - Convenience
 
-        public bool IsPersisted
-        {
+        public bool IsPersisted {
             get => State.HasFlag(PersistenceState.Persisted);
-            set
-            {
+            set {
                 if (value)
                 {
                     State |= PersistenceState.Persisted;
@@ -183,11 +176,9 @@ namespace LionFire.Referencing
 
         #region Reachable
 
-        public bool? IsReachable
-        {
+        public bool? IsReachable {
             get => State.HasFlag(PersistenceState.Reachable) ? true : (State.HasFlag(PersistenceState.Reachable) ? false : (bool?)null);
-            set
-            {
+            set {
                 if (value.HasValue)
                 {
                     if (value.Value)
@@ -216,19 +207,16 @@ namespace LionFire.Referencing
 
         #region Object
 
-        public ObjectType Object
-        {
+        public ObjectType Object {
             [Blocking]
-            get
-            {
+            get {
                 if (!IsPersisted)
                 {
                     TryRetrieveObject().ConfigureAwait(false).GetAwaiter().GetResult();
                 }
                 return _object;
             }
-            set
-            {
+            set {
                 if (object.ReferenceEquals(_object, value))
                 {
                     return;
@@ -335,8 +323,19 @@ namespace LionFire.Referencing
         protected virtual void OnSavedObject() { }
         protected virtual void OnDeletedObject() { }
 
-        protected void OnRetrievedObject(ObjectType obj) => Object = obj; // TODO FUTURE: Bypass events, or trigger different events (don't trigger "user changed", but instead "retrieved")
-        protected void OnRetrievedObjectInPlace() => throw new NotImplementedException("TODO - raise Object changed events?"); 
+        protected void OnRetrievedObject(ObjectType obj)
+        {
+            Object = obj;
+            RaiseRetrievedObject();
+        }
+
+        /// <summary>
+        /// Reused existing Object instance, applied new retrieval results to it.
+        /// </summary>
+        protected void OnRetrievedObjectInPlace() => RaiseRetrievedObject();
+
+        protected void RaiseRetrievedObject() { } // TODO
+
         protected void OnRetrieveFailed(IRetrieveResult<ObjectType> retrieveResult)
         {
             // TODO: Events?

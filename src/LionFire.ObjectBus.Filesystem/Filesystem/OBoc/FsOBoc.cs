@@ -19,7 +19,6 @@ namespace LionFire.ObjectBus.Filesystem
     }
 
     public class FsOBoc<TObject> : SyncableOBoc<TObject, FsListEntry>
-
     {
 
         #region Construction

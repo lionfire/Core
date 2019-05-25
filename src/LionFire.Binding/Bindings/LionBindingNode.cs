@@ -49,21 +49,17 @@ namespace LionFire.Bindings
 
         #region IMultiType support
 
-        public bool IsMultiTypeAccessor
-        {
+        public bool IsMultiTypeAccessor {
             get { return isMultiTypeAccessor; }
         }
         private readonly bool isMultiTypeAccessor;
 
-        public string MultiTypeTypeName
-        {
+        public string MultiTypeTypeName {
             get { if (!IsMultiTypeAccessor) return null; return PropertyName.Substring(1, PropertyName.Length - 2); }
         }
 
-        public Type MultiTypeType
-        {
-            get
-            {
+        public Type MultiTypeType {
+            get {
                 string typeName = MultiTypeTypeName;
                 if (typeName == null) return null;
 
@@ -81,18 +77,15 @@ namespace LionFire.Bindings
 
         protected MethodInfo GetMethodInfo;
         protected MethodInfo SetMethodInfo;
-        public PropertyInfo PropertyInfo
-        {
-            get
-            {
+        public PropertyInfo PropertyInfo {
+            get {
                 if (__propertyInfo == null)
                 {
                     UpdatePropertyInfo();
                 }
                 return __propertyInfo;
             }
-            private set
-            {
+            private set {
                 if (__propertyInfo == value) return;
 
                 __propertyInfo = value;
@@ -157,10 +150,8 @@ namespace LionFire.Bindings
             }
         }
 
-        public bool CanWrite
-        {
-            get
-            {
+        public bool CanWrite {
+            get {
 
                 var pi = PropertyInfo;
                 if (pi == null)
@@ -178,10 +169,8 @@ namespace LionFire.Bindings
             }
         }
 
-        public bool CanRead
-        {
-            get
-            {
+        public bool CanRead {
+            get {
                 var pi = PropertyInfo;
                 if (pi == null)
                 {
@@ -204,16 +193,14 @@ namespace LionFire.Bindings
 
         // FUTURE: Dynamic binding using property name instead of property info
 
-        private string PropertyName
-        {
+        private string PropertyName {
             get { return propertyName; }
         }
         private readonly string propertyName;
 
         #region ExpectedType
 
-        public Type ExpectedType
-        {
+        public Type ExpectedType {
             get;
             set;
             //{
@@ -247,8 +234,7 @@ namespace LionFire.Bindings
         private bool isBoundToMultiTypeMethod;
         private bool isBoundToSMultiTypeMethod;
 
-        internal LionBindingNode NextBinding
-        {
+        internal LionBindingNode NextBinding {
             get;
             set;
         }
@@ -261,11 +247,9 @@ namespace LionFire.Bindings
 
         #region LionBinding
 
-        public LionBinding LionBinding
-        {
+        public LionBinding LionBinding {
             get { return lionBinding; }
-            set
-            {
+            set {
                 if (lionBinding == value) return;
                 if (lionBinding != default(LionBinding)) throw new NotSupportedException("LionBinding can only be set once.");
                 lionBinding = value;
@@ -336,7 +320,7 @@ namespace LionFire.Bindings
 
         public static Func<object, (bool succeeded, Func<LionBindingNode, object, object> GetMethodWrapper, Action<LionBindingNode, object, object> SetMethodWrapper)> TryUpdateAccessorWrapperMethods { get; set; } = null;
 
-        
+
         private void UpdateAccessorWrapperMethods()
         {
             throw new NotImplementedException("TODO: fix depObj");
@@ -580,11 +564,9 @@ namespace LionFire.Bindings
 
         #region BindingObject
 
-        protected Type BindingObjectType
-        {
+        protected Type BindingObjectType {
             get { return bindingObjectType; }
-            set
-            {
+            set {
                 if (bindingObjectType != null)
                 {
                     propertyChangedEventInfo = null;
@@ -594,11 +576,9 @@ namespace LionFire.Bindings
         }
         private Type bindingObjectType;
 
-        public object BindingObject
-        {
+        public object BindingObject {
             get { return bindingObject; }
-            set
-            {
+            set {
                 if (bindingObject == value) return;
 
                 if (value != null && (ExpectedType != null && !ExpectedType.IsAssignableFrom(value.GetType())))
@@ -684,11 +664,9 @@ namespace LionFire.Bindings
 
         #region IsAsync
 
-        public bool IsAsync
-        {
+        public bool IsAsync {
             get { return isAsync; }
-            set
-            {
+            set {
                 isAsync = value;
             }
         }
@@ -702,10 +680,8 @@ namespace LionFire.Bindings
         #endregion
 
         //private EventInfo PropertyChangedToEventInfo// REFACTOR to be more precise when probing?
-        private EventInfo PropertyChangedEventInfo
-        {
-            get
-            {
+        private EventInfo PropertyChangedEventInfo {
+            get {
                 if (propertyChangedEventInfo == null)
                 {
                     if (bindingObject != null)
@@ -737,7 +713,7 @@ namespace LionFire.Bindings
             if (MultiTypeType == type)
             {
                 l.Trace("UNTESTED - Got MultiTypeObjectChanged for " + type.FullName);
-                
+
                 try
                 {
                     GetValue();
@@ -932,13 +908,13 @@ namespace LionFire.Bindings
                     goto doneBinding;
                 }
             }
-            #endregion
+        #endregion
 
 
-            // Not required!  Either this should be a non-notifying node, or ___Changed events should exist.  FUTURE - ctor option to indicate mandatory?
-            //throw new NotSupportedException("BindingObject must support INotifyPropertyChanged or IPropertyChanged.");
+        // Not required!  Either this should be a non-notifying node, or ___Changed events should exist.  FUTURE - ctor option to indicate mandatory?
+        //throw new NotSupportedException("BindingObject must support INotifyPropertyChanged or IPropertyChanged.");
 
-            doneBinding:
+        doneBinding:
 
             IsBoundToNotifyCollectionChanged = true; // Attempts to be bound to collection.  Reverts to false on fail.
 
@@ -972,8 +948,7 @@ namespace LionFire.Bindings
 
         //public const bool EnforceIsRetrieveEnabled = true; // Setting to true causes problems: Teams need a manual refresh
         public static readonly bool EnforceIsRetrieveEnabled = false;
-        private bool IsRetrieveEnabled
-        {
+        private bool IsRetrieveEnabled {
             get { return NextBinding != null || (isTargetNode ? LionBinding.ToSource : LionBinding.ToTarget) || IsValueCollection; }
         }
 
@@ -1024,6 +999,8 @@ namespace LionFire.Bindings
             _DoRange("Add", items, enumType);
         }
 
+
+
         private void _DoRange(string methodName, object itemsObject, Type enumType = null)
         {
             if (itemsObject == null) return;
@@ -1041,7 +1018,7 @@ namespace LionFire.Bindings
                 return;
             }
 
-            if (itemsObject.IsProxy())  // itemsObject.GetType().Name.EndsWith("Proxy"))
+            if (itemsObject.IsBindingProxy())  // itemsObject.GetType().Name.EndsWith("Proxy"))
             {
                 // Try to grab the whole List at once -- don't do IEnumerable iteration over the network.
 
@@ -1052,7 +1029,7 @@ namespace LionFire.Bindings
                 {
                     if (mis.Length > 1)
                     {
-                        l.Warn("More than one ToList method.");
+                        l.Warn("More than one ToArray method.");
                     }
                     object listObject;
                     listObject = mis[0].Invoke(itemsObject, null);
@@ -1060,7 +1037,7 @@ namespace LionFire.Bindings
                 }
                 else
                 {
-                    throw new LionBindingException("Only proxy types with ToList methods are currently supported. (TODO: support serialization of objects to support IEnumerable, or else determine specific IEnumerable<> type.");
+                    throw new LionBindingException("Only proxy types with ToArray methods are currently supported. (TODO: support serialization of objects to support IEnumerable, or else determine specific IEnumerable<> type.");
                     //Type enumerableType = typeof(IEnumerable<>).MakeGenericType(Value);
 
                     //enumerableType.GetMethod("MoveNext");
@@ -1164,10 +1141,8 @@ namespace LionFire.Bindings
 
         #endregion
 
-        protected MethodInfo ClearMethod
-        {
-            get
-            {
+        protected MethodInfo ClearMethod {
+            get {
                 if (clearMethod == null)
                 {
                     TryEnsureRetrieved();
@@ -1298,11 +1273,9 @@ namespace LionFire.Bindings
 
         public bool IsPropertyCollection { get { return PropertyCollectionTypes != null && PropertyCollectionTypes.Count > 0; } }
 
-        public List<Type> PropertyCollectionTypes
-        {
+        public List<Type> PropertyCollectionTypes {
             get { return propertyCollectionTypes; }
-            set
-            {
+            set {
                 if (propertyCollectionTypes == value) return;
 
                 propertyCollectionTypes = value;
@@ -1316,11 +1289,9 @@ namespace LionFire.Bindings
 
         #region PropertyNotifyCollectionTypes
 
-        public List<Type> PropertyNotifyCollectionTypes
-        {
+        public List<Type> PropertyNotifyCollectionTypes {
             get { return propertyNotifyCollectionTypes; }
-            set
-            {
+            set {
                 if (propertyNotifyCollectionTypes == value) return;
 
                 propertyNotifyCollectionTypes = value;
@@ -1338,11 +1309,9 @@ namespace LionFire.Bindings
 
         public bool IsValueCollection { get { return ValueCollectionTypes != null && ValueCollectionTypes.Count > 0; } }
 
-        public List<Type> ValueCollectionTypes
-        {
+        public List<Type> ValueCollectionTypes {
             get { return valueCollectionTypes; }
-            set
-            {
+            set {
                 if (valueCollectionTypes == value) return;
 
                 valueCollectionTypes = value;
@@ -1356,28 +1325,23 @@ namespace LionFire.Bindings
 
         #endregion
 
-        public bool IsEnumerable
-        {
-            get
-            {
+        public bool IsEnumerable {
+            get {
                 return
                     (PropertyCollectionTypes != null && PropertyCollectionTypes.Any()) ||
                     ValueEnumerableTypes != null && ValueEnumerableTypes.Any();
             }
         }
 
-        public List<Type> ValueEnumerableTypes
-        {
+        public List<Type> ValueEnumerableTypes {
             get { return ValueNotifyCollectionTypes; }  // LIMITATION TODO - Support Enumerable for one-time collection bindings
         }
 
         //public bool IsNotifyingCollection { get { return ValueNotifyCollectionTypes != null && ValueNotifyCollectionTypes.Count > 0; } } // UNUSED
 
-        public List<Type> ValueNotifyCollectionTypes
-        {
+        public List<Type> ValueNotifyCollectionTypes {
             get { return valueNotifyCollectionTypes; }
-            set
-            {
+            set {
                 if (valueNotifyCollectionTypes == value) return;
 
                 valueNotifyCollectionTypes = value;
@@ -1629,10 +1593,8 @@ namespace LionFire.Bindings
             }
         }
 
-        public object Value
-        {
-            get
-            {
+        public object Value {
+            get {
                 if (!isBound // If not bound to a change event, then retrieve every time.
                     || !hasRetrieved // If value hasn't been retrieved yet (or gotten via event), retrieve it.
                                      //|| _cachedValue == null // HACK 
@@ -1648,8 +1610,7 @@ namespace LionFire.Bindings
 
                 return CachedValue;
             }
-            set
-            {
+            set {
                 if (SetMethod == null) { l.Warn("Get Value: No SetMethod"); return; }
                 if (SetMethodWrapper == null) { l.Warn("Get Value: No SetMethodWrapper"); return; }
 
@@ -1682,8 +1643,7 @@ namespace LionFire.Bindings
 
         public object CachedOrCurrentValue // REVIEW - things changed, this may no longer make sense, or things may need clarification
         {
-            get
-            {
+            get {
                 TryEnsureRetrieved();
                 if (CachedValue != null) return CachedValue;
                 return Value;
@@ -1692,14 +1652,11 @@ namespace LionFire.Bindings
 
 
 
-        internal object CachedValue
-        {
-            get
-            {
+        internal object CachedValue {
+            get {
                 return _cachedValue;
             }
-            private set
-            {
+            private set {
                 SetCachedValue(value);
             }
         }
@@ -1732,14 +1689,11 @@ namespace LionFire.Bindings
             OnValueChanged(_cachedValue);
         }
 
-        private Type CachedValueType
-        {
-            get
-            {
+        private Type CachedValueType {
+            get {
                 return cachedValueType;
             }
-            set
-            {
+            set {
                 if (value == cachedValueType) return;
                 cachedValueType = value;
                 OnCachedValueTypeChanged();
@@ -1769,14 +1723,11 @@ namespace LionFire.Bindings
         #region Collection Support
 
 
-        public Type IsBoundToNotifyCollectionChangedType
-        {
-            get
-            {
+        public Type IsBoundToNotifyCollectionChangedType {
+            get {
                 return isBoundToNotifyCollectionChangedType;
             }
-            private set
-            {
+            private set {
                 isBoundToNotifyCollectionChangedType = value;
             }
         }
@@ -1796,7 +1747,7 @@ namespace LionFire.Bindings
 #endif
             }
 
-            public void OnCollectionChanged(NotifyCollectionChangedEventArgs<T> e)
+            public void OnCollectionChanged(INotifyCollectionChangedEventArgs<T> e)
             {
                 //l.Info("HandlerClass<T>.NotifyCollectionChangedHandler");
                 if (!this.lionBindingNode.LionBinding.BindToCollectionEvents) return; // RECENTCHANGE
@@ -1813,11 +1764,9 @@ namespace LionFire.Bindings
 
         private List<IDisposable> collectionChangedHandlers = new List<IDisposable>();
 
-        public bool IsBoundToNotifyCollectionChanged
-        {
+        public bool IsBoundToNotifyCollectionChanged {
             get { return isBoundToNotifyCollectionChanged; }
-            set
-            {
+            set {
                 if (isBoundToNotifyCollectionChanged == value) return;
 
                 bool oldValue = isBoundToNotifyCollectionChanged;
@@ -1906,13 +1855,7 @@ namespace LionFire.Bindings
         //    if (ev != null) ev(sender, e);
         //}
 
-        private void OnCollectionChanged<CollectionType>(NotifyCollectionChangedEventArgs<CollectionType> args)
-        {
-            NotifyCollectionChangedEventArgs nonGenericArgs = args.ToNonGeneric();
-
-            var ev = CollectionChanged;
-            if (ev != null) ev(CachedValue, nonGenericArgs);
-        }
+        private void OnCollectionChanged<CollectionType>(INotifyCollectionChangedEventArgs<CollectionType> args) => CollectionChanged?.Invoke(CachedValue, args.ToNonGeneric());
 
         public event NotifyCollectionChangedEventHandler CollectionChanged;
 
@@ -1935,5 +1878,9 @@ namespace LionFire.Bindings
         {
             Detach();
         }
+    }
+    public static class LionBindingExtensions
+    {
+        public static bool IsBindingProxy(this object itemsObject) => itemsObject.GetType().Name.EndsWith("Proxy");
     }
 }

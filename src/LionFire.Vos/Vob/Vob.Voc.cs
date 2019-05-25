@@ -1,4 +1,5 @@
-﻿using System;
+﻿#if VOC
+using System;
 using System.Collections.Generic;
 using System.Text;
 
@@ -7,7 +8,6 @@ namespace LionFire.Vos
     public partial class Vob
     {
         #region Main Voc (Voc<object>)
-
         /// <summary>
         /// Primary Voc for the Vob.  (TODO) Used as the master in-memory list of children
         /// </summary>
@@ -23,17 +23,16 @@ namespace LionFire.Vos
             }
         }
         private Voc<object> voc;
+#endregion
 
-        #endregion
+#region Vocs (of various types)
 
-        #region Vocs (of various types)
-
-        #region Fields
+#region Fields
 
         private SortedDictionary<Type, IVoc> vocs = new SortedDictionary<Type, IVoc>(); // TODO: Make ConcurrentDictionary
         private readonly object vocsLock = new object();
 
-        #endregion
+#endregion
 
         public Voc<T> GetVoc<T>()
             where T : class, new()
@@ -85,7 +84,8 @@ namespace LionFire.Vos
             }
         }
 
-        #endregion
+#endregion
 
     }
 }
+#endif

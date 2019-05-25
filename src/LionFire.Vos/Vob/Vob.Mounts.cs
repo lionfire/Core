@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 using LionFire.Collections;
+using LionFire.ObjectBus;
 using LionFire.Referencing;
 
 namespace LionFire.Vos
@@ -169,7 +171,7 @@ namespace LionFire.Vos
         public event Action<Vob, Mount> Mounted;
         public event Action<Vob, Mount> Unmounted;
 
-        private void OnMountsCollectionChanged(NotifyCollectionChangedEventArgs<Mount> e)
+        private void OnMountsCollectionChanged(INotifyCollectionChangedEventArgs<Mount> e)
         {
             InitializeEffectiveMounts(); // OPTIMIZE TEMP - overkill
 
@@ -304,7 +306,7 @@ namespace LionFire.Vos
         }
 
 
-        public void OnAncestorMountsChanged(Vob ancestor, NotifyCollectionChangedEventArgs<Mount> e)
+        public void OnAncestorMountsChanged(Vob ancestor, INotifyCollectionChangedEventArgs<Mount> e)
         {
             // TODO: Adapt changes
             InitializeEffectiveMounts(reset: true);

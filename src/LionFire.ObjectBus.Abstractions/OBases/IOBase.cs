@@ -31,16 +31,24 @@ namespace LionFire.ObjectBus
         //IEnumerable<string> GetChildrenNames(IReference parent, QueryFlags requiredFlags = QueryFlags.None, QueryFlags excludeFlags = QueryFlags.None);
 
         Task<IEnumerable<string>> GetKeys(IReference parent);
-
+        [Obsolete("Use GetKeys instead")]
         IEnumerable<string> GetChildrenNames(IReference parent); // RENAME to GetKeyNames
+
+
+        Task<IEnumerable<string>> GetKeysOfType<T>(IReference parent) where T : class, new();
+        [Obsolete("Use GetKeysOfType")]
         IEnumerable<string> GetChildrenNamesOfType<T>(IReference parent) where T : class, new();
-        IEnumerable<string> GetChildrenNamesOfType(Type type, IReference parent);
+
+        Task<IEnumerable<string>> GetKeysOfType(IReference parent, Type type);
+
+        [Obsolete("Use GetKeysOfType")]
+        IEnumerable<string> GetChildrenNamesOfType(IReference parent, Type type);
 
         //event Action<string> Changed;
 
         // Prefer IHandle.GetSubpath.  Default implementation of that uses this:
         //IHandle<T> GetHandleSubpath<T>(IReference reference, params string[] subpathChunks) where T : class;
-        
+
         ///// <summary>
         ///// FUTURE? Or ObjectWatcher that parallels FileSystemWatcher? Set changeTypes to None to disable
         ///// </summary>

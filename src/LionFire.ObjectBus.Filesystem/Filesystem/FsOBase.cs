@@ -307,6 +307,7 @@ namespace LionFire.ObjectBus.Filesystem
         public override H<T> GetHandle<T>(IReference reference) => throw new NotImplementedException();
         public override RH<T> GetReadHandle<T>(IReference reference) => throw new NotImplementedException();
         public override Task<IEnumerable<string>> GetKeys(LocalFileReference parent) => throw new NotImplementedException();
+        public override Task<IEnumerable<string>> GetKeysOfType<T>(LocalFileReference parent) => throw new NotImplementedException();
 
 #if TOPORT
             var chunks = VosPath.ToPathArray(parent.Path);

@@ -2,13 +2,15 @@
 
 namespace LionFire.ObjectBus
 {
-    public abstract class SyncableOBoc : OBoc<object, OBaseCollectionEntry>
+    // TODO: Make this extrinsic?
+
+    public abstract class SyncableOBoc : ROBoc<object, OBaseCollectionEntry>
     {
         public SyncableOBoc() { }
         public SyncableOBoc(IReference reference) : base(reference) { }
     }
 
-    public abstract class SyncableOBoc<T, TListEntry> : OBoc<T, TListEntry>, ISyncableRC<T, TListEntry>
+    public abstract class SyncableOBoc<T, TListEntry> : ROBoc<T, TListEntry>, ISyncableRC<T, TListEntry>
         where TListEntry : OBaseCollectionEntry
     {
 

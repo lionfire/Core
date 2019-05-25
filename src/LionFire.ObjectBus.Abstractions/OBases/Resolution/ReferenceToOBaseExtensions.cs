@@ -11,14 +11,13 @@ namespace LionFire.ObjectBus
     /// <seealso cref="LionFire.ObjectBus.DependencyInjection.OBusResolutionHelpers"/>
     public static class ReferenceToOBaseExtensions
     {
-        public static IReferenceToOBaseService OBaseResolverService =>
-            ManualSingleton<IReferenceToOBaseService>.Instance ?? InjectionContext.Current.GetService<IReferenceToOBaseService>();
+        public static IReferenceToOBaseService ReferenceToOBaseService => InjectionContext.Current.GetService<IReferenceToOBaseService>();
 
         #region Reference to OBase
 
-        public static (IOBus OBus, IOBase OBase) TryResolve(this IReference reference) => OBaseResolverService.Resolve(reference);
-        public static IOBus  TryGetOBus(this IReference reference) => OBaseResolverService.ResolveOBus(reference);
-        public static IOBase TryGetOBase(this IReference reference) => OBaseResolverService.Resolve(reference).OBase;
+        public static (IOBus OBus, IOBase OBase) TryResolve(this IReference reference) => ReferenceToOBaseService.Resolve(reference);
+        public static IOBus  TryGetOBus(this IReference reference) => ReferenceToOBaseService.ResolveOBus(reference);
+        public static IOBase TryGetOBase(this IReference reference) => ReferenceToOBaseService.Resolve(reference).OBase;
 
         public static IOBus GetOBus(this IReference reference)
         {

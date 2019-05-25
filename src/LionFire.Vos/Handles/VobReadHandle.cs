@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
+using LionFire.Copying;
 using LionFire.DependencyInjection;
 using LionFire.ObjectBus;
 using LionFire.Ontology;
@@ -119,9 +120,84 @@ namespace LionFire.Vos
 
         #endregion
 
-        #region Resolution info
+        #region Mount
 
-        public Mount Mount { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
+        protected IReference MountReference {
+            get {
+                var path = MountPath;
+                if (path == null) return null;
+                return new VosReference(path);
+            }
+        }
+
+        public string MountPath {
+            get {
+                if (Mount == null || Vob == null) return null;
+                var result = Vob.GetMountPath(Mount);
+                return result;
+            }
+        }
+
+        [Assignment(AssignmentMode.Assign)]
+        public Mount Mount {
+            get => mount;
+            set {
+                if (mount == value) return;
+                if (value != null && mount != default(Mount)) throw new NotSupportedException("Mount can only be set once, unless it is set back to null.");
+                mount = value;
+            }
+        }
+        private Mount mount;
+
+        #endregion
+
+        #region Package
+
+        public string EffectivePackage {
+            get {
+                if (Mount != null && Mount.Package != null) return Mount.Package;
+                return Package;
+            }
+        }
+        public string Package {
+            get {
+                //if (Mount != null && Mount.Package != null) return Mount.Package;
+                return package;
+            }
+            set {
+                if (package == value) return;
+                if (package != default(string)) throw new NotSupportedException("Package can only be set once.");
+                package = value;
+            }
+        }
+        private string package;
+
+        #endregion
+
+        #region Store
+
+        public string EffectiveStore {
+            get {
+                if (Mount != null && Mount.Store != null) return Mount.Store;
+                return Store;
+            }
+        }
+        public string Store {
+            get {
+                if (Mount != null && Mount.Store != null) return Mount.Store;
+                return store;
+            }
+            set {
+                if (store == value) return;
+                if (store != default(string)) throw new NotSupportedException("Store can only be set once.");
+                store = value;
+            }
+        }
+        private string store;
+
+        #endregion
+
+        #region Resolution info
 
         //public VosRetrieveInfo VosRetrieveInfo => throw new NotImplementedException();
 
