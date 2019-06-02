@@ -14,10 +14,18 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\LionFire.Assets.Abstractions\LionFire.Assets.Abstractions.csproj" />
     <ProjectReference Include="..\LionFire.Core.Extras.Abstractions\LionFire.Core.Extras.Abstractions.csproj" />
     <ProjectReference Include="..\LionFire.Core\LionFire.Core.csproj" />
     <ProjectReference Include="..\LionFire.Environment\LionFire.Environment.csproj" />
+    <ProjectReference Include="..\LionFire.Handles.Abstractions\LionFire.Handles.Abstractions.csproj" />
+    <ProjectReference Include="..\LionFire.Instantiating.Abstractions\LionFire.Instantiating.Abstractions.csproj" />
     <ProjectReference Include="..\LionFire.Structures\LionFire.Structures.csproj" />
+    <ProjectReference Include="..\LionFire.Vos\LionFire.Vos.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Instantiating\Assets\" />
   </ItemGroup>
 
 </Project>

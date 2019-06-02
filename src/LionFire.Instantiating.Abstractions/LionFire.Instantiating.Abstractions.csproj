@@ -18,11 +18,13 @@
 
   <ItemGroup>
     <ProjectReference Include="..\LionFire.Core\LionFire.Core.csproj" />
+    <ProjectReference Include="..\LionFire.Handles.Abstractions\LionFire.Handles.Abstractions.csproj" />
     <ProjectReference Include="..\LionFire.MultiTyping.Abstractions\LionFire.MultiTyping.Abstractions.csproj" />
     <ProjectReference Include="..\LionFire.Validation\LionFire.Validation.csproj" />
   </ItemGroup>
 
   <ItemGroup>
+    <Folder Include="Instantiating\NewFolder\" />
     <Folder Include="Structures\" />
   </ItemGroup>
 

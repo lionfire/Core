@@ -7,7 +7,7 @@ using LionFire.Referencing;
 
 namespace LionFire.Vos
 {
-    public class VosReference : ReferenceBase, IHas<IOBase>, IHas<IOBus>, ITypedReference
+    public class VosReference : ReferenceBase, IVosReference
     {
         #region Ontology
 

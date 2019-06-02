@@ -6,6 +6,11 @@
 
   <ItemGroup>
     <Folder Include="Serialization\" />
+    <Folder Include="Structures\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\LionFire.Structures\LionFire.Structures.csproj" />
   </ItemGroup>
 
 </Project>

@@ -14,5 +14,4 @@ namespace LionFire.Instantiating
         where T : IHierarchicalTemplateInstance, new()
     {
     }
-    
 }

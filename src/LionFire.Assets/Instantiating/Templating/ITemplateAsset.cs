@@ -1,29 +1,19 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using LionFire.Assets;
-using System.Threading.Tasks;
-using LionFire.Instantiating.Templating;
+﻿using LionFire.Assets;
 
 namespace LionFire.Instantiating
 {
-    public interface ITemplateAsset : ITemplate, IAsset
+    // TODO: Make it optional for instance types to implement ITemplateInstance!  The related features can then be opt-in
+
+    /// <summary>
+    /// Templates are a lightweight parameterized factory framework.  
+    /// No factories are needed.  Simply call 
+    /// </summary>
+    //[Asset("")]
+    public interface ITemplateAsset
+        : IAsset, ITemplate
+    //: ITreeNode<ITemplate>
+    //: INode
     {
+        IAssetInstantiation CreateAssetInstantiation();
     }
-
-    //public static class ITemplateAssetExtensions
-    //{
-    //    public static IInstantiator ToInstantiator(this ITemplateAsset ta)
-    //    {
-    //        if (ta == null) return null;
-
-    //        return new TemplateAssetInstantiation
-    //        {
-    //            AssetSubPath = ta.AssetSubPath,
-    //            TypeName = ta.GetType().FullName, // TODO ENH: alias system for short names
-    //        };
-    //    }
-    //}
-
-
 }

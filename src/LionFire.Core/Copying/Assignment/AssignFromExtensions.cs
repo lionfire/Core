@@ -101,6 +101,22 @@ namespace LionFire.ExtensionMethods.Copying
             return me;
         }
 
+        public static object AssignNonDefaultPropertiesFrom(this object me, object other) => AssignPropertiesFrom(me, other, (m, o, pi) => pi.GetValue(o) != Activator.CreateInstance(pi.PropertyType));
+        public static object AssignNonNullPropertiesFrom(this object me, object other) => AssignPropertiesFrom(me, other, (m, o, pi) => pi.GetValue(o) != null);
+
+        public static object AssignPropertiesFrom(this object me, object other, Func<object,object, PropertyInfo, bool> filter = null)
+        {
+            Type myType = me.GetType();
+            Type otherType = other.GetType();
+            var sameType = myType == otherType;
+
+            foreach (PropertyInfo otherMethodInfo in otherType.GetProperties())
+            {
+                if (!filter(me, other, otherMethodInfo)) continue;
+                me.AssignPropertyFrom(other, otherMethodInfo);
+            }
+            return me;
+        }
         public static object AssignPropertiesFrom(this object me, object other)
         {
             Type myType = me.GetType();

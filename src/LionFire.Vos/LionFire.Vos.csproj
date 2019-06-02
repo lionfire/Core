@@ -12,7 +12,6 @@
 
   <ItemGroup>
     <ProjectReference Include="..\LionFire.Applications\LionFire.Applications.csproj" />
-    <ProjectReference Include="..\LionFire.Assets\LionFire.Assets.csproj" />
     <ProjectReference Include="..\LionFire.Environment\LionFire.Environment.csproj" />
     <ProjectReference Include="..\LionFire.Execution.Abstractions\LionFire.Execution.Abstractions.csproj" />
     <ProjectReference Include="..\LionFire.Execution\LionFire.Execution.csproj" />

@@ -61,12 +61,6 @@ namespace LionFire.Instantiating
     //}
     
 /*
-    /// <summary>
-    /// Instantiation Stack:
-    ///  - ConcreteType 
-    ///    - State data
-    ///    - Parent: Parameter
-    /// </summary>
     public class Instantiation
     {
         public Instantiation Parent { get; set; }
@@ -78,5 +72,11 @@ namespace LionFire.Instantiating
         public Dictionary<string, object> State { get; set; }
     }
     */
+    /// <summary>
+    /// Instantiation Stack:
+    ///  - ConcreteType 
+    ///    - State data
+    ///    - Parent: Parameter
+    /// </summary>
 
 }

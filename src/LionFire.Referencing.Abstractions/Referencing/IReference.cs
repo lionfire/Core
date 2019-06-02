@@ -13,6 +13,10 @@ namespace LionFire.Referencing
         string Scheme { get; }
         string Path { get; }
 
+        #region TODO: MOVE to extension methods, and add IReferenceProvider?
+
+        //IReferenceProvider ReferenceProvider { get; }
+
         /// <summary>
         /// Clones the reference and appends the path with the specified child name
         /// </summary>
@@ -21,7 +25,11 @@ namespace LionFire.Referencing
         IReference GetChild(string subPath);
         //IReference GetChildSubpath(params string[] subpath);
         IReference GetChildSubpath(IEnumerable<string> subpath);
+
+        #endregion
     }
+
+    
 
     public interface IReference<T> // REVIEW - is this type helpful?
     {
