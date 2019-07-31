@@ -4,12 +4,26 @@ using System.Text;
 using LionFire.DependencyInjection;
 
 namespace LionFire.Referencing
-{ 
-    public interface IReferenceProvider : ISupportsUriSchemes, ICompatibleWithSome<string>
+{
+    public interface IReferenceProvider : ISupportsUriSchemes
     {
+        IReference TryGetReference(string uri);
+
         IEnumerable<Type> ReferenceTypes { get; }
-        IReference TryGetReference(string uri, bool strictMode = false);
-        bool IsValid(IReference reference);
+
     }
 
+    public static class IReferenceProviderExtensions
+    {
+        public static IReference GetReference(this IReferenceProvider referenceProvider, string uri) => 
+            referenceProvider.TryGetReference(uri) ?? throw new NotFoundException();
+
+        
+    }
+
+    public interface IReferenceProviderService : IReferenceProvider
+    {
+    }
+
+    
 }

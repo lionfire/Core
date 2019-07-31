@@ -6,7 +6,7 @@ namespace LionFire.Threading
 {
     public static class DispatcherUtils 
     {
-        // FUTURE: Integrate with InjectionContext?
+        // FUTURE: Integrate with DependencyContext?
 
         public static List<IDispatcherProvider> DispatcherProviders
         {

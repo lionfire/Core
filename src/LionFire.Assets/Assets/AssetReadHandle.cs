@@ -54,7 +54,7 @@ namespace LionFire.Persistence.Assets
         public override Task<bool> TryRetrieveObject()
         {
             // TODO: Use async/await here once IAssetProvider supports it
-            var ap = Injection.GetService<IAssetProvider>(createIfMissing: true);
+            var ap = Dependencies.GetServiceOrSingleton<IAssetProvider>(createIfMissing: true);
             var result = ap.Load<T>(this.Key);
             if (result != null)
             {

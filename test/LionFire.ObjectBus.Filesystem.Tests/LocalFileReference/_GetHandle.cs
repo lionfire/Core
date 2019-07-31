@@ -10,32 +10,37 @@ using LionFire.ObjectBus.Filesystem.Tests;
 using LionFire.Referencing;
 using LionFire.Structures;
 using Xunit;
+using LionFire.ObjectBus.Testing;
+using Microsoft.Extensions.DependencyInjection.Extensions;
+using Microsoft.Extensions.DependencyInjection;
+using LionFire.DependencyInjection;
+using System.Diagnostics;
+using Microsoft.Extensions.Logging;
+using LionFire.Hosting;
 
 namespace LocalFileReference_
 {
+
     public class _GetHandle
     {
         [Fact]
-        public async void Pass()
+        public async Task Pass() // No persistence
         {
-            await new AppHost()
-                .AddSerialization()
-                .AddNewtonsoftJson()
-                .AddObjectBus()
-                .AddFilesystemObjectBus() // Adds HandleProvider for LocalFileReference
-                .RunNowAndWait(() =>
+            await FrameworkHost.Create()
+                .AddObjectBus<FsOBus>()
+                .Run(() =>
                 {
-                    Assert.Null(ManualSingleton<FsOBus>.Instance); // Null until used (?) Not essential
+                    Assert.NotNull(ManualSingleton<FsOBus>.Instance); // Created in AddObjectBus<FsOBus>()
 
                     var pathWithoutExtension = Guid.NewGuid().ToString();
                     var reference = new LocalFileReference(pathWithoutExtension);
                     H<TestClass1> h;
-                    h = reference.GetHandle<TestClass1>(); // --------------- GetHandle
+                    h = reference.GetHandle<TestClass1>();
 
                     Assert.NotNull(ManualSingleton<FsOBus>.Instance);
 
                     Assert.Same(reference, h.Reference);
-                    Assert.IsAssignableFrom<R<TestClass1>>(h);
+                    Assert.IsAssignableFrom<RH<TestClass1>>(h);
                     Assert.IsAssignableFrom<H<TestClass1>>(h);
                     Assert.IsType<OBusHandle<TestClass1>>(h);
 
@@ -45,23 +50,21 @@ namespace LocalFileReference_
                 });
         }
 
-        //[Fact]
-        //public async void F_MissingFsOBus()
-        //{
-        //    await new AppHost()
-        //        .AddSerialization()
-        //        .AddNewtonsoftJson()
-        //        .AddObjectBus()
-        //        // MISSING .AddFilesystemObjectBus() // Adds HandleProvider for file:
-        //        .RunNowAndWait(async () =>
-        //        {
-        //            var pathWithoutExtension = Guid.NewGuid().ToString();
-        //            var reference = new LocalFileReference(pathWithoutExtension);
-        //            H<TestClass1> h;
-        //            await Assert.ThrowsAsync<Exception>(() => Task.FromResult(h = reference.GetHandle<TestClass1>()));
-        //            //Assert.Equal($"Failed to provide handle for reference with scheme {reference.Scheme}.  Have you registered the relevant IHandleProvider service?", e.Message);
-        //        });
-        //}
+        [Fact]
+        public async Task F_MissingFsOBus()
+        {
+            await FrameworkHost.Create()
+                //.AddObjectBus<FsOBus>() // MISSING
+                .Run(() =>
+                {
+                        Assert.Null(ManualSingleton<FsOBus>.Instance); // Null until used
+
+                        var pathWithoutExtension = Guid.NewGuid().ToString();
+                        var reference = new LocalFileReference(pathWithoutExtension);
+                        H<TestClass1> h;
+                        Assert.Throws<HasUnresolvedDependenciesException>(() => h = reference.GetHandle<TestClass1>());
+                });
+        }
 
         //[Fact]
         //public async void _WithoutExtension_ToHandle()

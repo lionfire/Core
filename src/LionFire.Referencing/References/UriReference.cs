@@ -3,7 +3,7 @@
 namespace LionFire.Referencing
 {
 
-    public sealed class UriReference : ReferenceBaseBase, IReference
+    public sealed class UriReference : ReferenceBaseBase<UriReference>, IReference
     {
         public bool IsCompatibleWith(string obj) => Uri.TryCreate(obj, UriKind.RelativeOrAbsolute, out Uri _);
 
@@ -41,7 +41,7 @@ namespace LionFire.Referencing
                     return;
                 }
 
-                if (uri != default(Uri))
+                if (uri != default)
                 {
                     throw new AlreadySetException();
                 }
@@ -54,7 +54,7 @@ namespace LionFire.Referencing
 
         #endregion
 
-        public string Key => Uri.ToString();
+        public override string Key { get => Uri.ToString(); protected set => Uri = new Uri(value); }
 
         public string Scheme => Uri.Scheme;
         public string Host => Uri.Host;

@@ -27,7 +27,7 @@
 
 //            double counter = 1;
 
-//            foreach (var s in InjectionContext.Current.GetService<IEnumerable<ISerializerStrategy>>())
+//            foreach (var s in DependencyContext.Current.GetService<IEnumerable<ISerializerStrategy>>())
 //            {
 //                foreach (var extension in s.FileExtensions.Where(ext=>path.EndsWith(ext)))
 //                {

@@ -45,7 +45,7 @@ namespace LionFire.Vos
 
         #endregion
 
-        internal MultiBindableDictionary<string, Mount> Mounts
+        public MultiBindableDictionary<string, Mount> Mounts
         {
             get
             {

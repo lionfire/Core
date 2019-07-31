@@ -1,10 +1,20 @@
-﻿using System;
+﻿using LionFire.Ontology;
+using LionFire.Referencing;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
 namespace LionFire.ObjectBus
 {
+    public static class IOBaseExtensions
+    {
+        public static IOBase TryGetOBase(this IReference reference) => 
+            ((reference.GetReadHandle<object>() ?? reference.GetHandle<object>()) as IHas<IOBase>)?.Object;
+    }
+
+
+    // REVIEW
     //public interface IRest
     //{
     //    object Get(string uri);
@@ -50,7 +60,7 @@ namespace LionFire.ObjectBus
     //    {
     //        return Load(uri.ToReference());
     //    }
-        
+
     //    #endregion
 
     //    #region Save
@@ -59,7 +69,7 @@ namespace LionFire.ObjectBus
     //    {
     //        Save(uri.ToReference(), obj);
     //    }
-        
+
     //    #endregion
 
     //}    

@@ -4,6 +4,11 @@ using System.Threading.Tasks;
 
 namespace LionFire.Structures
 {
+    public interface IKeyGenerator<TKey, TObject>
+    {
+        TKey GetKey(TObject obj);
+    }
+
     public interface IKeyed<TKey>
     {
         TKey Key { get; }

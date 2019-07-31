@@ -11,7 +11,7 @@ using LionFire.Structures;
 namespace LionFire.ObjectBus.Filesystem
 {
     [LionSerializable(SerializeMethod.ByValue)]
-    public class LocalFileReference : LocalReferenceBase, IHas<IOBase>, IHas<IOBus>
+    public sealed class LocalFileReference : LocalReferenceBase<LocalFileReference>, IHas<IOBase>, IHas<IOBus>, IOBaseReference
     {
         IOBus IHas<IOBus>.Object => ManualSingleton<FsOBus>.GuaranteedInstance;
         IOBase IHas<IOBase>.Object => FsOBase;
@@ -36,10 +36,13 @@ namespace LionFire.ObjectBus.Filesystem
         //    CopyFrom(reference);
         //}
 
-        public static implicit operator LocalFileReference(string path)
-        {
-            return new LocalFileReference(path);
-        }
+        public static implicit operator LocalFileReference(string path) => ToReference(path);
+
+        public static LocalFileReference ToReference(string path) => new LocalFileReference(path);
+
+        public static LocalFileReference ReferenceFromKey(string path) => ToReference(path);
+
+        public static string ToReferenceKey(string path) => path;
 
         #endregion
 
@@ -64,7 +67,7 @@ namespace LionFire.ObjectBus.Filesystem
 
         public static LocalFileReference ConvertFrom(IReference parent)
         {
-            LocalFileReference fileRef = parent as LocalFileReference;
+            var fileRef = parent as LocalFileReference;
 
             if (fileRef == null && parent.Scheme == UriScheme)
             {
@@ -79,62 +82,64 @@ namespace LionFire.ObjectBus.Filesystem
         #region Scheme
 
         public const string UriScheme = "file";
+        public const string UriSchemeColon = "file:";
         public const string UriPrefixDefault = "file:///";
         public static readonly IEnumerable<string> UriSchemes = new string[] { UriScheme };
         public override IEnumerable<string> AllowedSchemes => UriSchemes;
 
-        public override string Scheme
-        {
-            get
-            {
-                return UriScheme;
-            }
-        }
+        public override string Scheme => UriScheme;
 
         #endregion
 
-        public override string Path
+        public static string CoercePath(string path)
         {
-            get { return path; }
-            set
+            //#if MONO
+            path = path.Replace('\\', '/');
+            //#else
+            //                value = value.Replace('/', '\\');
+            //#endif
+
+            //if (value != null)
+            //{
+            //    if (value.Length >= 1)
+            //    {
+            //        if (value[0] == ':') throw new ArgumentException();
+            //    }
+
+            //    var colon = value.LastIndexOf(':');
+            //    if (colon != -1 && colon != 1)
+            //    {
+            //        throw new ArgumentException();
+            //    }
+            //}
+
+            return path;
+        }
+        
+        protected override void InternalSetPath(string path)
+        {
+            this.path = CoercePath(path);
+        }
+
+        public override string Key
+        {
+            get => string.Concat(UriPrefixDefault, Path);
+            protected set
             {
-//#if MONO
-                value = value.Replace('\\', '/');
-//#else
-//                value = value.Replace('/', '\\');
-//#endif
-
-                //if (value != null)
-                //{
-                //    if (value.Length >= 1)
-                //    {
-                //        if (value[0] == ':') throw new ArgumentException();
-                //    }
-
-                //    var colon = value.LastIndexOf(':');
-                //    if (colon != -1 && colon != 1)
-                //    {
-                //        throw new ArgumentException();
-                //    }
-                //}
-
-                path = value;
+                if (value.StartsWith(UriSchemeColon))
+                {
+                    if (value.StartsWith(UriPrefixDefault))
+                    {
+                        value = value.Substring(UriPrefixDefault.Length);
+                    }
+                    else
+                    {
+                        value = value.Substring(UriSchemeColon.Length);
+                    }
+                }
+                Path = value;
             }
         }
-        private string path;
-
-        //public override IOBaseProvider DefaultObjectStoreProvider
-        //{
-        //    get
-        //    {
-        //        return FsOBaseProvider.Instance;
-        //    }
-        //}
-
-        public override string ToString() => String.Concat(UriPrefixDefault, Path);
-        
-        public override string Key => this.ToString();
-
     }
 
     public static class LocalFileReferenceExtensions
@@ -148,4 +153,5 @@ namespace LionFire.ObjectBus.Filesystem
             return new LocalFileReference(path);
         }
     }
+
 }

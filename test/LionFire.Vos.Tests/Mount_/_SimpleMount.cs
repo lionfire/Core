@@ -4,6 +4,8 @@ using System.Text;
 using System.Threading.Tasks;
 using LionFire.Applications.Hosting;
 using Xunit;
+using LionFire.Hosting;
+using LionFire.Hosting.ExtensionMethods;
 
 namespace Mount_
 {
@@ -12,13 +14,11 @@ namespace Mount_
         [Fact]
         public async void Pass()
         {
-            await new AppHost()
+            await FrameworkHost.Create()
                 .AddVos()
-                .RunNowAndWait(async () =>
+                .Run(async () =>
                 {
-
                     await Task.Delay(1);
-
                 });
         }
     }

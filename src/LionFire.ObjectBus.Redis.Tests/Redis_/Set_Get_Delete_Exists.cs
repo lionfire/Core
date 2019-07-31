@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 using LionFire.Applications.Hosting;
+using LionFire.Hosting;
 using LionFire.ObjectBus;
 using LionFire.ObjectBus.Redis;
 using Xunit;
@@ -15,11 +16,8 @@ namespace Redis_
         {
             const string testData = "testData";
 
-            await new AppHost()
-                .AddSerialization()
-                .AddNewtonsoftJson()
-                .AddObjectBus()
-                .AddRedisObjectBus()
+            await FrameworkHost.Create()
+                .AddObjectBus<RedisOBus>()
                 .RunNowAndWait(async () =>
                 {
                     var path = @"\temp\tests\" + GetType().FullName + @"\" + nameof(Pass_String) + @"\TestFile";
@@ -62,12 +60,9 @@ namespace Redis_
         {
             const string testData = "testData";
 
-            await new AppHost()
-                .AddSerialization()
-                .AddNewtonsoftJson()
-                .AddObjectBus()
-                .AddRedisObjectBus()
-                .RunNowAndWait(async () =>
+            await FrameworkHost.Create()
+                .AddObjectBus<RedisOBus>()
+                .RunAndExit(async () =>
                 {
                     var path = @"\temp\tests\" + GetType().FullName + @"\" + nameof(Pass_NonGenericHandle) + @"\TestFile";
 

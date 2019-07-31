@@ -4,6 +4,9 @@ using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using LionFire.Applications.Hosting;
+using LionFire.Hosting;
+using LionFire.ObjectBus;
+using LionFire.ObjectBus.Filesystem;
 using Microsoft.AspNetCore;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
@@ -16,15 +19,11 @@ namespace LionFire.AccessPanel.Api
         public static void Main(string[] args)
         {
 
-            new AppHost()
-                .AddSerialization()
-                .AddNewtonsoftJson()
-                .AddFilesystemObjectBus()
-                .RunNowAndWait(() =>
-                {
-                    
+            FrameworkHost.Create()
+                .AddObjectBus<FsOBus>()
+                .Run(() =>
+                {                    
                     CreateWebHostBuilder(args).Build().Run();
-
                 }).Wait();
 
         }

@@ -15,7 +15,13 @@ namespace LionFire.Assets
     public class AssetBase : IAsset, INotifyPropertyChanged
     {
 
-#region AssetID
+        public AssetBase()
+        {
+            this.Package = AssetContext.Current.DefaultCreatePackage;
+        }
+
+
+        #region AssetID
 
         [SerializeDefaultValue(false)]
         public AssetID ID
@@ -33,14 +39,54 @@ namespace LionFire.Assets
 
         private static ILogger l = Log.Get();
 
-#endregion
+        #endregion
+
+        //[Ignore]
+        //public Package Package
+        //{
+        //    get => ID?.Package;
+        //    set => ID.Package = value;
+        //}
+
+        #region Package
 
         [Ignore]
         public Package Package
         {
-            get => ID?.Package;
-            set => ID.Package = value;
+            get
+            {
+                if (_package == null)
+                {
+                    if (ID?.PackageName != null)
+                    {
+                        Package = AssetManager<Package>.Load(new AssetID(ID.PackageName) { PackageName = ID.PackageName });
+                    }
+                }
+                return _package;
+            }
+            set
+            {
+                if (value != null)
+                {
+                    if (ID == null)
+                    {
+                        ID = new AssetID();
+                    }
+                    ID.PackageName = value.ID.Name; // Throws if already set to something different.
+                }
+                else
+                {
+                    if (ID != null)
+                    {
+                        ID.PackageName = null;
+                    }
+                }
+                _package = value;
+            }
         }
+        private Package _package;
+
+        #endregion
 
         //[Ignore]
         //public virtual string AssetTypePath {
@@ -107,16 +153,18 @@ namespace LionFire.Assets
             var clone = (AssetBase)this.MemberwiseClone();
             if (ID != null)
             {
-                if (this.ID.Package != null)
+                if (this.Package != null)
                 {
                     clone.ID = new AssetID();
-                    clone.ID.Package = this.ID.Package;
+                    clone.ID.PackageName = this.Package.Name;
                 }
             }
             return clone;
         }
 
         //IReadHandle IHasReadHandle.ReadHandle => VosAssets.AssetToHandle(this);  TOPORT ?
+
+        
 
         #region Misc
 
@@ -125,16 +173,12 @@ namespace LionFire.Assets
 
         public event PropertyChangedEventHandler PropertyChanged;
 
-        protected void OnPropertyChanged(string propertyName)
-        {
-            var ev = PropertyChanged;
-            if (ev != null) ev(this, new PropertyChangedEventArgs(propertyName));
-        }
+        protected void OnPropertyChanged(string propertyName) => PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
 
-#endregion
+        #endregion
 
 
-#endregion
+        #endregion
     }
 
 }

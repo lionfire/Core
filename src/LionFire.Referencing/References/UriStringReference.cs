@@ -5,7 +5,7 @@ namespace LionFire.Referencing
     /// <summary>
     /// Uses string as a backing field, but will also lazily resolve to System.Uri on demand
     /// </summary>
-    public sealed class UriStringReference : ReferenceBaseBase, IReference
+    public sealed class UriStringReference : ReferenceBaseBase<UriStringReference>, IReference
     {
         public bool IsCompatibleWith(string obj) => Uri.TryCreate(obj, UriKind.RelativeOrAbsolute, out Uri _);
 
@@ -63,10 +63,10 @@ namespace LionFire.Referencing
 
         #endregion
 
-        public string Key
+        public override string Key
         {
             get => key;
-            set
+            protected set
             {
                 if (key != null)
                 {

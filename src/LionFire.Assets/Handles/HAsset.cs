@@ -13,8 +13,12 @@ using System.Text;
 using System.Threading.Tasks;
 //using LionFire.Assets.SerializationConverters;
 using LionFire.Copying;
+using LionFire.Persistence;
 using LionFire.Referencing;
 using LionFire.Serialization;
+using LionFire.Structures;
+using LionFire.Vos;
+using Microsoft.Extensions.Logging;
 
 namespace LionFire.Assets
 {
@@ -38,22 +42,18 @@ namespace LionFire.Assets
     //[JsonConvert(typeof(HAssetSerializationConverter))] TOPORT
     public class HAsset<AssetType>
         :
-            //VobHandle<AssetType>,
-            //			HAssetBaseTest<AssetType>,
-#if !AOT
-            RH<AssetType>
-#else
-			IReadHandle
-#endif
-        , IHAsset, IHRAsset
-
-        //, IHandle
+        //VobHandle<AssetType>,
+        //			HAssetBaseTest<AssetType>,
+        //#if !AOT
+        //            RH<AssetType>
+        //#else
+        //			IReadHandle
+        //#endif
+        IHAsset<AssetType>
         , INotifyPropertyChanged
         //, IChangeableReferencable // FUTURE
      where AssetType : class
     {
-
-#if TOPORT
 
         #region (Static) Accessors
 
@@ -66,7 +66,6 @@ namespace LionFire.Assets
         public Type Type => typeof(AssetType);
 
         #region AssetSubPath
-
 
         /// <summary>
         /// Example: MyLoadouts/MyLoadout
@@ -134,7 +133,6 @@ namespace LionFire.Assets
                 var oldVobHandle = vobHandle;
                 vobHandle = null;
 
-                oldVobHandle.OnRenamed(VobHandle);
             }
         }
 
@@ -149,10 +147,13 @@ namespace LionFire.Assets
                 return;
             }
 
-            l.Debug("RENAME - " + ToString() + " --> " + newAssetPath);
+            //l.Debug("RENAME - " + ToString() + " --> " + newAssetPath);
 
             assetTypeSubPath = null;
             AssetTypePath = newAssetPath;
+
+            var oldVobHandle = vobHandle;
+            oldVobHandle.OnRenamed(VobHandle);
 
             if (HasObject)
             {
@@ -177,11 +178,12 @@ namespace LionFire.Assets
 
         #region VobHandle
 
-        public IVobReadHandle<AssetType> VobReadHandle => VobHandle;
+        //public IVobReadHandle<AssetType> VobReadHandle => VobHandle;
+        public IVobReadHandle<AssetType> VobReadHandle => throw new NotImplementedException("TOPORT");
         /// <summary>
         /// TODO: Make this a read-only VobHandle
         /// </summary>
-        public VobHandle<AssetType> VobHandle
+        public IVobHandle<AssetType> VobHandle
         {
             get
             {
@@ -225,7 +227,7 @@ namespace LionFire.Assets
                 }
             }
         }
-        private VobHandle<AssetType> vobHandle;
+        private IVobHandle<AssetType> vobHandle;
 
         #endregion
 
@@ -378,14 +380,7 @@ namespace LionFire.Assets
 
         #endregion
 
-        #region (Protected) Constructors
-
-
-
-        #endregion
-
-
-        private HAsset(string assetSubPath, VobHandle<AssetType> vobHandle)
+        private HAsset(string assetSubPath, IVobHandle<AssetType> vobHandle)
         {
             AssetTypePath = assetSubPath;
 #if SanityChecks
@@ -399,15 +394,67 @@ namespace LionFire.Assets
 #endif
             ctorFinished();
         }
-        private HAsset(VobHandle<AssetType> vobHandle)
+        private HAsset(IVobHandle<AssetType> vobHandle)
         {
             l.Warn("HAsset<AssetType>(VobHandle<AssetType>) - Does not support subpaths in asset names, cannot detect failure: " + vobHandle);
-            string assetName = vobHandle.Name;
+            string assetName = vobHandle.Name();
             AssetTypePath = assetName;
 #if !ASSETCACHE
             this.vobHandle = vobHandle;
 #endif
             ctorFinished();
+        }
+
+        public event PersistenceStateChangeHandler StateChanged
+        {
+            add
+            {
+                VobHandle.StateChanged += value;
+            }
+
+            remove
+            {
+                VobHandle.StateChanged -= value;
+            }
+        }
+
+        public event Action<RH<AssetType>, HandleEvents> HandleEvents
+        {
+            add
+            {
+                VobHandle.HandleEvents += value;
+            }
+
+            remove
+            {
+                VobHandle.HandleEvents -= value;
+            }
+        }
+
+        public event Action<RH<AssetType>, AssetType, AssetType> ObjectReferenceChanged
+        {
+            add
+            {
+                VobHandle.ObjectReferenceChanged += value;
+            }
+
+            remove
+            {
+                VobHandle.ObjectReferenceChanged -= value;
+            }
+        }
+
+        public event Action<RH<AssetType>> ObjectChanged
+        {
+            add
+            {
+                VobHandle.ObjectChanged += value;
+            }
+
+            remove
+            {
+                VobHandle.ObjectChanged -= value;
+            }
         }
 
         #region Static and Implicit construction
@@ -452,8 +499,6 @@ namespace LionFire.Assets
             return assetTypePath.ToHAsset<AssetType>();
         }
 
-
-
 #if !AOT
         public static implicit operator HAsset<AssetType>(AssetType obj)
         {
@@ -461,7 +506,7 @@ namespace LionFire.Assets
             {
                 return null;
             }
-            IHasHAsset<AssetType> hasha = obj as IHasHAsset<AssetType>;
+            var hasha = obj as IHasHAsset<AssetType>;
             if (hasha != null)
             {
                 //l.Trace("Avoided creating new HAsset in implicit operator AssetType => HAsset<>");
@@ -494,32 +539,13 @@ namespace LionFire.Assets
 
         public static implicit operator HAsset<AssetType>(VobHandle<AssetType> vobHandle) => new HAsset<AssetType>(vobHandle);
 
-        public static implicit operator VobHandle<AssetType>(HAsset<AssetType> assetHandle)
-        {
-            if (assetHandle == null)
-            {
-                return null;
-            }
-            //return (VobHandle<AssetType>)assetHandle.VobHandle;
-            return assetHandle.VobHandle;
-        }
+        public static implicit operator VobHandle<AssetType>(HAsset<AssetType> assetHandle) => (VobHandle<AssetType>)assetHandle?.VobHandle;
 
-        public static implicit operator AssetType(HAsset<AssetType> assetHandle)
-        {
-            if (assetHandle == null)
-            {
-                //l.Trace("AssetHandle == null, returning null. ");
-                return null;
-            }
-            return assetHandle.Object;
-        }
+        public static implicit operator AssetType(HAsset<AssetType> assetHandle) => assetHandle?.Object;
 
         #endregion
 
-
         #endregion
-
-
 
         #region Derived Properties
 
@@ -562,7 +588,7 @@ namespace LionFire.Assets
 
         #region IReadHandle
 
-        object IReadHandle.Object => Object;
+        //object IReadHandle.Object => Object;
 
         [Browsable(false)]
         [DebuggerBrowsable(DebuggerBrowsableState.Never)]
@@ -641,17 +667,19 @@ namespace LionFire.Assets
                     ConcreteType = value.GetType();
                 }
 
-                var hasHAsset = value as IHasHAsset;
-                if (hasHAsset != null)
-                {
-                    //#if SanityChecks  
-                    //                    if (hasHAsset.HAsset != null && !object.ReferenceEquals(this, hasHAsset.HAsset)) STACKOVERFLOW
-                    //                    {
-                    //                        l.Warn("set_objectField: hasHAsset.HAsset != null && !object.ReferenceEquals(this, hasHAsset.HAsset) - Path: " + this.AssetPath);
-                    //                    }
-                    //#endif
-                    hasHAsset.HAsset = this;
-                }
+#if TOPORT
+                //var hasHAsset = value as IHasHRAsset;
+                //if (hasHAsset != null)
+                //{
+                //    //#if SanityChecks  
+                //    //                    if (hasHAsset.HAsset != null && !object.ReferenceEquals(this, hasHAsset.HAsset)) STACKOVERFLOW
+                //    //                    {
+                //    //                        l.Warn("set_objectField: hasHAsset.HAsset != null && !object.ReferenceEquals(this, hasHAsset.HAsset) - Path: " + this.AssetPath);
+                //    //                    }
+                //    //#endif
+                //    hasHAsset.HRAsset = this;
+                //}
+#endif
 
 #if !ASSETCACHE
                 if (vobHandle != null)
@@ -665,11 +693,13 @@ namespace LionFire.Assets
         }
         private AssetType _objectField;
 
-        #endregion
+#endregion
 
-        #region CRUD Methods
+                #region CRUD Methods
 
-        public bool TryEnsureLoaded()
+
+
+        public async Task<bool> TryGetObject()
         {
 #if ASSETCACHE
             if(objectField != null) return true;
@@ -718,11 +748,11 @@ namespace LionFire.Assets
                 return false;
             }
 
-            return VobHandle.TryEnsureRetrieved();
+            return await VobHandle.TryEnsureRetrieved().ConfigureAwait(false);
 #endif
         }
 
-        public void Save()
+        public async Task Save(bool allowDelete = false)
         {
 #if ASSETCACHE
 #if ASSETCACHEFLAT
@@ -749,7 +779,7 @@ namespace LionFire.Assets
             //var xThis = Object;
             //HAsset.VobHandle.Object = xThis;
             var h = ContextualHandle;
-            h.Save();
+            await h.Commit(allowDelete);
             //Log.Info("ZX Saved - " + this.GetType().Name + " " + h.Reference.ToString());
             //return xThis;
 #endif
@@ -768,9 +798,9 @@ namespace LionFire.Assets
 #endif
         }
 
-        #endregion
+                #endregion
 
-        #region Asset Cache
+                #region Asset Cache
 #if ASSETCACHE
 
 //        private static Dictionary<Type, Dictionary<string, object>> assetCache 
@@ -779,10 +809,10 @@ namespace LionFire.Assets
 		private static Dictionary<string, object> assetCacheFlat {get{return HAsset.assetCacheFlat;}}
 
 #endif
-        #endregion
+                #endregion
 
 #if !ASSETCACHE
-        public IHandle<AssetType> ContextualHandle
+        public H<AssetType> ContextualHandle
         {
             get
             {
@@ -791,6 +821,11 @@ namespace LionFire.Assets
                 return vh;
             }
         }
+
+        public PersistenceState State => VobHandle.State;
+
+        public bool IsPersisted => VobHandle.IsPersisted;
+
 #endif
 
         private void EnsureHandleSetToThis(VobHandle<AssetType> vh)
@@ -806,13 +841,13 @@ namespace LionFire.Assets
             }
         }
 
-        #region Misc
+                #region Misc
 
         private static ILogger l = Log.Get();
 
         public override bool Equals(object obj)
         {
-            HAsset<AssetType> other = obj as HAsset<AssetType>;
+            var other = obj as HAsset<AssetType>;
             if (other == null)
             {
                 return false;
@@ -872,56 +907,22 @@ namespace LionFire.Assets
 #endif
         }
 
-        #region INotifyPropertyChanged Implementation
+                #region INotifyPropertyChanged Implementation
 
         public event PropertyChangedEventHandler PropertyChanged;
 
-        private void OnPropertyChanged(string propertyName)
-        {
-            var ev = PropertyChanged;
-            if (ev != null)
-            {
-                ev(this, new PropertyChangedEventArgs(propertyName));
-            }
-        }
+        private void OnPropertyChanged(string propertyName) => PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+        public void ForgetObject() => VobHandle.ForgetObject();
+        public Task<bool> TryRetrieveObject() => VobHandle.TryRetrieveObject();
+        public Task<bool> Exists(bool forceCheck = false) => VobHandle.Exists(forceCheck);
 
-        #endregion
+                #endregion
 
-        #endregion
+                #endregion
 
 #endif
-        public PersistenceState State => throw new NotImplementedException();
 
-        public bool IsPersisted => throw new NotImplementedException();
-
-        public bool HasObject => throw new NotImplementedException();
-
-        public AssetType Object => throw new NotImplementedException();
-
-        public IReference Reference => throw new NotImplementedException();
-
-        public bool HasPathOrObject => throw new NotImplementedException();
-
-        public string AssetTypePath => throw new NotImplementedException();
-
-        public Type Type => throw new NotImplementedException();
-
-        public bool IsResolved => throw new NotImplementedException();
-
-        public event PersistenceStateChangeHandler StateChanged;
-        public event Action<RH<AssetType>, HandleEvents> HandleEvents;
-        public event Action<RH<AssetType>, AssetType, AssetType> ObjectReferenceChanged;
-        public event Action<RH<AssetType>> ObjectChanged;
-        public event Action<bool> IsResolvedChanged;
-        public event PropertyChangedEventHandler PropertyChanged;
-
-        public Task<bool> Exists(bool forceCheck = false) => throw new NotImplementedException();
-        public void ForgetObject() => throw new NotImplementedException();
-        public void Save() => throw new NotImplementedException();
-        public Task<bool> TryGetObject() => throw new NotImplementedException();
-        public Task<bool> TryResolveObject() => throw new NotImplementedException();
-        public Task<bool> TryRetrieveObject() => throw new NotImplementedException();
-    }
+            }
 
 #if OLD_UNUSED
     /// <summary>
@@ -1098,7 +1099,6 @@ namespace LionFire.Assets
     #endregion
 
     }
-#endif
 #endif
 
 }

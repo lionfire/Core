@@ -1,5 +1,6 @@
 using System;
 using LionFire.Applications.Hosting;
+using LionFire.Hosting;
 using LionFire.ObjectBus;
 using LionFire.ObjectBus.RedisPub;
 using Xunit;
@@ -16,10 +17,9 @@ namespace RedisPub_
         {
             var url = "redispub:test";
 
-            await new AppHost()
-            .AddObjectBus()
-            .AddRedisPubObjectBus()
-            .RunNowAndWait(async () =>
+            await FrameworkHost.Create()
+            .AddObjectBus<RedisPubOBus>()
+            .RunAndExit(async () =>
             {
                 {
                     var refRead = new RedisPubReference(url);

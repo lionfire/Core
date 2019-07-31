@@ -275,6 +275,7 @@ namespace LionFire.Vos
 
         public VobReadHandle<T> GetReadHandle<T>() => (VobReadHandle<T>)readHandles.GetOrAdd(typeof(T), t => CreateReadHandle(t));
 
+        
         /// <seealso cref="CreateHandle(Type)"/>
         public VobHandle<T> GetHandle<T>() => (VobHandle<T>)handles.GetOrAdd(typeof(T), t => CreateHandle(t));
         public IVobHandle GetHandle(Type type) => (IVobHandle)handles.GetOrAdd(type, t => CreateHandle(t));
@@ -287,7 +288,7 @@ namespace LionFire.Vos
         internal IVobReadHandle CreateReadHandle(Type type)
         {
             Type vhType = typeof(VobReadHandle<>).MakeGenericType(type);
-            return (IVobHandle)Activator.CreateInstance(vhType, this);
+            return (IVobReadHandle)Activator.CreateInstance(vhType, this);
         }
         
         private ConcurrentDictionary<Type, object> handles = new ConcurrentDictionary<Type, object>();

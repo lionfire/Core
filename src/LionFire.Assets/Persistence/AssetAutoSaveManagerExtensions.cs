@@ -35,11 +35,7 @@ namespace LionFire.Persistence
             public IAsset Asset { get; set; }
             object IWrapper.WrapperTarget=> Asset;
 
-            Task ICommitable.Commit(object context)
-            {
-                Asset.Save(Asset.AssetSubPath);
-                return Task.CompletedTask;
-            }
+            async Task ICommitable.Commit(object context) => await Asset.SaveAtSubPath(Asset.AssetSubPath);
         }
 
         #endregion

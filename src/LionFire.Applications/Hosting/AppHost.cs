@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.ComponentModel.Design;
 using System.Linq;
 using System.Reactive.Subjects;
 using System.Threading;
@@ -15,6 +16,7 @@ using LionFire.MultiTyping;
 using LionFire.Referencing;
 using LionFire.Structures;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
 using TInitializable = LionFire.Execution.IInitializable;
 
 namespace LionFire.Applications.Hosting
@@ -75,7 +77,7 @@ namespace LionFire.Applications.Hosting
 
         #region Injection
 
-        public InjectionContext InjectionContext { get; private set; } = new InjectionContext();
+        public DependencyContext DependencyContext { get; private set; } = new DependencyContext();
 
 
         #endregion
@@ -109,7 +111,7 @@ namespace LionFire.Applications.Hosting
                     SetManualSingletons = null;
                 }
 
-                InjectionContext.ServiceProvider = value;
+                DependencyContext.ServiceProvider = value;
             }
         }
         private IServiceProvider serviceProvider;
@@ -143,15 +145,15 @@ namespace LionFire.Applications.Hosting
         /// 
         /// Resets these to null:
         ///  - MainApp
-        ///  - InjectionContext.Default 
-        ///  - InjectionContext.Current
+        ///  - DependencyContext.Default 
+        ///  - DependencyContext.Current
         ///  - ManualSingleton.Instance for all types
         /// </summary>
         public static void Reset()
         {
             MainApp = null;
-            InjectionContext.Default = null;
-            InjectionContext.Current = null;
+            DependencyContext.Default = null;
+            DependencyContext.Current = null;
             ManualSingletonRegistrar.ResetAll();
         }
 
@@ -164,6 +166,7 @@ namespace LionFire.Applications.Hosting
         public static bool DetectUnitTestMode = true;
 
         public string AppId { get; set; }
+
         public AppHost(string appId = null, bool primaryApp = true)
         {
             this.AppId = appId;
@@ -205,21 +208,19 @@ namespace LionFire.Applications.Hosting
 
                 if (primaryApp)
                 {
-                    if (InjectionContext.Default != null)
+                    if (DependencyContext.Default != null)
                     {
-                        throw new Exception($"Already has an InjectionContext.Default.  Create AppHost with {nameof(primaryApp)} set to false to create multiple applications, or else set InjectionContext.Default to null first before creating another AppHost.");
+                        throw new Exception($"Already has an DependencyContext.Default.  Create AppHost with {nameof(primaryApp)} set to false to create multiple applications, or else set DependencyContext.Default to null first before creating another AppHost.");
                     }
-                    InjectionContext.Default = InjectionContext;
+                    DependencyContext.Default = DependencyContext;
                 }
                 else
                 {
-                    InjectionContext.AsyncLocal = InjectionContext;
+                    DependencyContext.AsyncLocal = DependencyContext;
                 }
             }
         }
-
-        
-
+               
         /// <summary>
         /// Default implementation is Microsoft.Extensions.DependencyInjection.ServiceCollectionContainerBuilderExtensions.BuildServiceProvider().
         /// </summary>
@@ -264,13 +265,13 @@ namespace LionFire.Applications.Hosting
         }
 
         /// <summary>
-        /// Injects InjectionContext to components implementing IRequiresServices
+        /// Injects DependencyContext to components implementing IRequiresServices
         /// </summary>
-        protected void InjectInjectionContextToComponents()
+        protected void InjectDependencyContextToComponents()
         {
             foreach (var component in children.OfType<IRequiresInjection>())
             {
-                component.InjectionContext = InjectionContext;
+                component.DependencyContext = DependencyContext;
             }
         }
 
@@ -283,7 +284,7 @@ namespace LionFire.Applications.Hosting
 
             if (IsRootApplication)
             {
-                InjectionContext.Current = InjectionContext;
+                DependencyContext.Current = DependencyContext;
             }
 
             // FUTURE TODO: Use Resolution context?
@@ -305,7 +306,7 @@ namespace LionFire.Applications.Hosting
 
             ServiceProvider = BuildServiceProvider(ServiceCollection);
 
-            InjectInjectionContextToComponents();
+            InjectDependencyContextToComponents();
             InjectServiceProviderToComponents();
 
             ResolveComponentDependencyProperties();
@@ -433,8 +434,45 @@ namespace LionFire.Applications.Hosting
 
         public Task StartAsync(CancellationToken cancellationToken = default(CancellationToken)) => Run(cancellationToken);
         public Task StopAsync(CancellationToken cancellationToken = default(CancellationToken)) => Shutdown(cancellationToken: cancellationToken);
-               
+
         #endregion
+
+        public IAppHost Args(string[] args = null)
+        {
+            this.args = args;
+            return this;
+        }
+        private string[] args = null;
+
+
+        /// <summary>
+        /// Parameters are only used the first time this is invoked.
+        /// </summary>
+        /// <param name="defaultHostBuilder"></param>
+        /// <returns></returns>
+        public IHostBuilder GenericHost(bool defaultHostBuilder = true)
+        {
+            if (hostBuilder == null)
+            {
+                hostBuilder = CreateGenericHost(args, defaultHostBuilder);
+            }
+            return hostBuilder;
+        }
+        private IHostBuilder hostBuilder;
+   
+        private IHostBuilder CreateGenericHost(string[] args = null, bool defaultHostBuilder = true)
+        {
+            
+            var hostBuilder = defaultHostBuilder ? Microsoft.Extensions.Hosting.Host.CreateDefaultBuilder(args) : new HostBuilder();
+            hostBuilder.ConfigureContainer<IServiceContainer>((context, services) =>
+            {
+                throw new NotImplementedException("TODO: How to merge AppHost and HostBuilder?  Get AppHost to ");
+            });
+            // TODO: hook in?
+
+            return hostBuilder;
+        }
+
 
         #region IDisposable Support
 

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.IO;
 using LionFire.Referencing;
+using LionFire.Referencing.Handles;
 
 namespace LionFire.IO.Filesystem
 {

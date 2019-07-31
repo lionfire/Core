@@ -9,7 +9,7 @@ using LionFire.Structures;
 
 namespace LionFire.Vos
 {
-    public class VosOBus : OBusBase, IOBus
+    public class VosOBus : OBusBase<VosOBus>, IOBus
     {
         #region (Static) Singleton
 
@@ -49,7 +49,7 @@ namespace LionFire.Vos
 
         public override IOBase TryGetOBase(IReference reference) => ManualSingleton<VBase>.GuaranteedInstance;
 
-        public override IReference TryGetReference(string referenceString, bool strictMode)
+        public override IReference TryGetReference(string referenceString)
         {
             return VosReference.TryGetFromString(referenceString);
         }

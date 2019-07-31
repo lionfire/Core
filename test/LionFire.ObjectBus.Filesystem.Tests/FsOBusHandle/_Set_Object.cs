@@ -4,6 +4,8 @@ using System.IO;
 using System.Text;
 using System.Threading.Tasks;
 using LionFire.Applications.Hosting;
+using LionFire.Hosting;
+using LionFire.Hosting.ExtensionMethods;
 using LionFire.ObjectBus;
 using LionFire.ObjectBus.Filesystem;
 using LionFire.ObjectBus.Filesystem.Tests;
@@ -46,25 +48,24 @@ namespace Handle
 
         private async Task _Pass(bool withExtension)
         {
-            await new AppHost()
-                    .AddSerialization()
-                    .AddNewtonsoftJson()
-                    .AddObjectBus()
-                    .AddFilesystemObjectBus()
-                    .RunNowAndWait(async () =>
+            await FrameworkHost.Create(
+                //serializers: s => s.AddJson()
+                )
+            //await FrameworkHost.Create()
+                    .AddObjectBus<FsOBus>()
+                    .Run(async () =>
                     {
                         var pathWithoutExtension = FsTestUtils.TestFile;
                         var path = pathWithoutExtension + ".json";
 
                         var savePath = withExtension ? path : pathWithoutExtension;
 
-
                         var reference = new LocalFileReference(savePath); // -------- With / WithoutExtension
 
                         var h = reference.GetHandle<TestClass1>();
                         h.Object = TestClass1.Create;
 
-                        await h.Commit(); // --------- Save
+                        await h.Commit().ConfigureAwait(false); // --------- Save
 
                         Assert.True(File.Exists(savePath), "Missing file: " + path);
                         var json = File.ReadAllText(savePath);

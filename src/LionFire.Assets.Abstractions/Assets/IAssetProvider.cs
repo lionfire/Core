@@ -13,7 +13,7 @@ namespace LionFire.Assets
     {
         
         T Load<T>(string assetSubPath, object context = null) where T : class;
-        void Save(string assetSubPath, object obj, object context = null);
+        Task Save(string assetSubPath, object obj, object context = null);
 #if TODO
         //Task<T> Load<T>(string assetSubPath, object context = null) where T : class;
         //Task Save(string assetSubPath, object obj, object context = null);

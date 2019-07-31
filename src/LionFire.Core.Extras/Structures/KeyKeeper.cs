@@ -1,4 +1,5 @@
-﻿// See http://www.codeproject.com/Articles/33617/Arithmetic-in-Generic-Classes-in-C for 
+﻿#if false // DUPE - LionFire.Instantiating
+// See http://www.codeproject.com/Articles/33617/Arithmetic-in-Generic-Classes-in-C for 
 // thoughts on how to genericize this (but perhaps performance hit is too much?)
 
 using Microsoft.Extensions.Logging;
@@ -438,3 +439,4 @@ namespace LionFire.Structures
         }
     }
 }
+#endif

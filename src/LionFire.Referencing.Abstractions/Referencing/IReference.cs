@@ -17,21 +17,10 @@ namespace LionFire.Referencing
 
         //IReferenceProvider ReferenceProvider { get; }
 
-        /// <summary>
-        /// Clones the reference and appends the path with the specified child name
-        /// </summary>
-        /// <param name="childName"></param>
-        /// <returns></returns>
-        IReference GetChild(string subPath);
-        //IReference GetChildSubpath(params string[] subpath);
-        IReference GetChildSubpath(IEnumerable<string> subpath);
-
         #endregion
     }
 
-    
-
-    public interface IReference<T> // REVIEW - is this type helpful?
+    public interface IReference<T> // REVIEW - is this type helpful?  If so, document what T is for here
     {
         IReference Reference { get; }
     }

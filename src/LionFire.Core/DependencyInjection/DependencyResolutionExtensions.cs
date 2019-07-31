@@ -77,7 +77,7 @@ namespace LionFire.DependencyInjection
             }
             if (serviceProvider == null)
             {
-                serviceProvider = InjectionContext.Current;
+                serviceProvider = DependencyContext.Current;
             }
 
             _ResolveDependencies(obj, out UnsatisfiedDependencies unresolvedDependencies, serviceProvider, true);

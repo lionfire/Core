@@ -43,7 +43,7 @@ namespace LionFire.Serialization
                     break;
             }
 
-            foreach (var scorer in ((IEnumerable)InjectionContext.Current.GetService(serviceType)).OfType<ISerializerScorerBase>())
+            foreach (var scorer in ((IEnumerable)DependencyContext.Current.GetService(serviceType)).OfType<ISerializerScorerBase>())
             {
                 if (float.IsNaN(sum))
                 {
@@ -102,7 +102,7 @@ namespace LionFire.Serialization
         //{
         //    float sum = preference.Preference;
 
-        //    foreach (var scorer in InjectionContext.Current.GetService<IEnumerable<IDeserializerScorer>>())
+        //    foreach (var scorer in DependencyContext.Current.GetService<IEnumerable<IDeserializerScorer>>())
         //    {
         //        if (float.IsNaN(sum))
         //        {

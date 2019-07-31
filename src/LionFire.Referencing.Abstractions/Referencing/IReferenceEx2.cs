@@ -2,8 +2,8 @@
 
 namespace LionFire.Referencing
 {
-    public interface IReferenceEx2 : IReference
-    {
+    //public interface IReferenceEx2 : IReference // REVIEW - Remove this - OLD
+    //{
         
-    }
+    //}
 }

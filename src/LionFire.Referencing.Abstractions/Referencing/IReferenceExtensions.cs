@@ -6,16 +6,19 @@ using System.Reflection;
 
 namespace LionFire.Referencing
 {
-
     public static class IReferenceExtensions
     {
+        public static string Name(this IReference reference) => LionPath.GetName(reference.Path);
+
         public static IReference<T> OfType<T>(this IReference reference) => new TypedReference<T>(reference);
+
+        #region GetChild
 
         public static IReference GetChild(this IReference reference, string subPath)
         {
-            if (reference is IReferenceEx2 rex)
+            if (reference is ICloneableReference cr)
             {
-                return rex.GetChild(subPath);
+                return cr.CloneWithPath(LionPath.Combine(reference.Path, subPath));
             }
 
             var uri = new Uri(reference.Key);
@@ -27,29 +30,39 @@ namespace LionFire.Referencing
                 return (IReference)mi.Invoke(null, new object[] { newUri });
             }
 
-            return null;
+            throw ThrowUnsupported(reference, nameof(GetChild));
         }
 
-        public static IReference GetChildSubpath(this IReference reference, params string[] subPath) => GetChildSubpath(reference, (IEnumerable<string>) subPath);
+        #endregion
+
+        #region GetChildSubpath
+
+        public static IReference GetChildSubpath(this IReference reference, params string[] subPath) => reference.GetChildSubpath((IEnumerable<string>)subPath);
 
         //[Untested]
         public static IReference GetChildSubpath(this IReference reference, IEnumerable<string> subPath)
         {
-            if (reference is IReferenceEx2 rex)
+            if (reference is ICloneableReference cr)
             {
-                return rex.GetChildSubpath(subPath);
+                return cr.CloneWithPath(LionPath.Combine(reference.Path, subPath));
             }
 
             var uri = new Uri(reference.Key);
-            var newUri = new Uri(uri, subPath.Aggregate((x,y)=> x + "/" + y));
+            var newUri = new Uri(uri, subPath.Aggregate((x, y) => x + "/" + y));
 
             var mi = FromUriMethods[reference.GetType()];
             if (mi != null)
             {
                 return (IReference)mi.Invoke(null, new object[] { newUri });
             }
-            return null;
+
+            throw ThrowUnsupported(reference, nameof(GetChildSubpath));
         }
+
+        private static NotSupportedException ThrowUnsupported(IReference reference, string methodName) => 
+            new NotSupportedException($"To use {methodName}, reference type ${reference.GetType().FullName} must implement ICloneableReference or have a FromUri method accepting a single parameter of type Uri.");
+
+        #endregion
 
         #region (Private)
 
@@ -59,6 +72,7 @@ namespace LionFire.Referencing
             ?? type.GetMethod(type.Name, new Type[] { typeof(string) })
             );
 
+#if FUTURE // Also support FromPath instead of 
         private static readonly ConcurrentDictionaryCache<Type, Func<IReference, string, IReference>> FromUriMethods2 =
             new ConcurrentDictionaryCache<Type, Func<IReference, string, IReference>>(type =>
             {
@@ -100,10 +114,9 @@ namespace LionFire.Referencing
                         throw new NotImplementedException($"This reference type ({reference.GetType().Name}) does not implement one of: FromUri FromStringUri FromPath.");
                 }
             });
+#endif
 
-        #endregion
+#endregion
 
-        
     }
-
 }

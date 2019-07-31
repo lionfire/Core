@@ -16,8 +16,8 @@ namespace LionFire.AccessPanel
         public IEnumerable<string> Services()
         {
                 var list = new List<string>();
-                var sp = InjectionContext.Default.ServiceProvider as ServiceProvider;
-            //foreach (var service in InjectionContext.Default.ServiceProvider)
+                var sp = DependencyContext.Default.ServiceProvider as ServiceProvider;
+            //foreach (var service in DependencyContext.Default.ServiceProvider)
             //{
             //    yield return service.GetType().Name;
             //}

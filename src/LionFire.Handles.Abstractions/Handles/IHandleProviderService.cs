@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace LionFire.Referencing
+namespace LionFire.Referencing.Handles
 {
     public interface IHandleProviderService : IHandleProvider
     {

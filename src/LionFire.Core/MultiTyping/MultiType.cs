@@ -12,13 +12,16 @@ namespace LionFire.MultiTyping
     public class MultiType : IMultiTyped, IMultiTypable // RENAME to MultiTyped
     {
 
+        private object _lock = new object();
+
         #region Construction
 
         public MultiType() { }
-        public MultiType(IEnumerable<object> objects) {
-            foreach(var obj in objects)
+        public MultiType(IEnumerable<object> objects)
+        {
+            foreach (var obj in objects)
             {
-                this.SetType(obj);
+                this.AddType(obj);
             }
         }
 
@@ -51,7 +54,7 @@ namespace LionFire.MultiTyping
         {
             if (typeDict == null) return null;
             if (!typeDict.ContainsKey(typeof(T))) return null;
-            return (T) typeDict[typeof(T)] ;
+            return (T)typeDict[typeof(T)];
         }
 
         [AotReplacement]
@@ -63,7 +66,7 @@ namespace LionFire.MultiTyping
         }
 
         #region OfType
-        
+
         public T[] OfType<T>() // TODO: Make IEnumerable once LionRpc supports it.
          where T : class
         {
@@ -99,6 +102,36 @@ namespace LionFire.MultiTyping
         }
 
         #endregion
+
+        public void AddType<T>(T obj)
+            where T : class
+        {
+            //if (obj == default(T)) { UnsetType<T>(); return; }
+
+            lock (_lock)
+            {
+                if (typeDict == null)
+                {
+                    typeDict = new Dictionary<Type, object>();
+                }
+                if (typeDict.ContainsKey(typeof(List<T>)))
+                {
+                    ((List<T>)typeDict[typeof(T)]).Add(obj);
+                }
+                else if (typeDict.ContainsKey(typeof(T)))
+                {
+                    var list = new List<T>();
+                    list.Add((T)typeDict[typeof(T)]);
+                    list.Add(obj);
+                    typeDict.Add(typeof(List<T>), list);
+                    typeDict.Remove(typeof(T));
+                }
+                else
+                {
+                    typeDict.Add(typeof(T), obj);
+                }
+            }
+        }
 
         public void SetType<T>(T obj)
             where T : class

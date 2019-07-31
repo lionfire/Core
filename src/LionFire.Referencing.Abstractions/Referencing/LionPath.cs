@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace LionFire.Referencing // MOVE to Referencing
+namespace LionFire.Referencing
 {
     public static class LionPath
     {

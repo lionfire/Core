@@ -6,7 +6,7 @@ using LionFire.ObjectBus;
 
 namespace LionFire.Vos
 {
-    public class VosOBus : OBusBase
+    public class VosOBus : OBusBase<VosOBus>
     {
         public override IOBase DefaultOBase => LionFire.Vos.VBase.Default;
 

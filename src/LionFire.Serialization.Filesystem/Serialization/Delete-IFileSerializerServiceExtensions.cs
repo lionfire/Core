@@ -17,7 +17,7 @@
 
 //            if (context.FileName == null) throw new ArgumentNullException("path or context.FileName must be set");
 
-//            return InjectionContext.Current.GetService<ISerializationService>().ToObject<T>(context);
+//            return DependencyContext.Current.GetService<ISerializationService>().ToObject<T>(context);
 //        }
 //    }
 //}

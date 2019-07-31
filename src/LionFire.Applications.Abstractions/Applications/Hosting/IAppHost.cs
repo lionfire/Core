@@ -10,11 +10,12 @@ using LionFire.Execution.Composition;
 using LionFire.Structures;
 using LionFire.Composables;
 using System.Threading;
+using Microsoft.Extensions.Hosting;
 
 namespace LionFire.Applications.Hosting
 {
     // RENAME to ExecutionContainer?
-    // - InjectionContext
+    // - DependencyContext
     // - MultiType
     // - IComposable (children & multitype)
     // Can
@@ -78,6 +79,10 @@ namespace LionFire.Applications.Hosting
         void SetManualSingletonFromService(Type serviceType);
 
         #endregion
+
+        IAppHost Args(string[] args);
+        IHostBuilder GenericHost(bool defaultHostBuilder = true);
+        
     }
 }
 

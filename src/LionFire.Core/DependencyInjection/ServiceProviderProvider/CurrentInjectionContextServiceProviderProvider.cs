@@ -2,9 +2,9 @@
 
 namespace LionFire.DependencyInjection
 {
-    public class CurrentInjectionContextServiceProviderProvider : IServiceProviderProvider
+    public class CurrentDependencyContextServiceProviderProvider : IServiceProviderProvider
     {
-        public IServiceProvider GetServiceProvider(object obj) => InjectionContext.Current.ServiceProvider;
+        public IServiceProvider GetServiceProvider(object obj) => DependencyContext.Current.ServiceProvider;
     }
 
 

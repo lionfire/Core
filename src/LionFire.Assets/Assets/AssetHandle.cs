@@ -19,7 +19,7 @@ namespace LionFire.Persistence.Assets
 
         public Task Commit(object persistenceContext = null)
         {
-            var ap = Injection.GetService<IAssetProvider>(createIfMissing: true);
+            var ap = Dependencies.GetServiceOrSingleton<IAssetProvider>(createIfMissing: true);
             ap.Save(this.Key, this.Object, persistenceContext);
             return Task.CompletedTask;
         }

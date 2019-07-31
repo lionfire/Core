@@ -6,6 +6,7 @@ using System.Threading;
 using System.ComponentModel;
 using LionFire.Referencing;
 using Microsoft.Extensions.Logging;
+using LionFire.Vos;
 
 namespace LionFire.Assets
 {
@@ -18,7 +19,7 @@ namespace LionFire.Assets
             <ConcreteType>
             , IHasHAsset<ConcreteType>
             , IAsset<ConcreteType>
-            , IHasHandle
+            //, IHasHandle
 #else
 			, IHasHAsset
 			, IAsset
@@ -32,7 +33,7 @@ namespace LionFire.Assets
 
         #region Self
 
-        object IHasHAsset.AssetObject { get { return this.AssetObject; } }
+        //object IHasHAsset.AssetObject { get { return this.AssetObject; } }
         internal virtual ConcreteType AssetObject
         {
             get
@@ -105,7 +106,7 @@ namespace LionFire.Assets
 
         //IReadHandle IHasReadHandle.ReadHandle { get { return this.ReadHandle; } }
 
-        public IReadHandle
+        public RH
 #if !AOT
             <ConcreteType>
 #endif
@@ -120,15 +121,14 @@ namespace LionFire.Assets
 
 #if !AOT
 #if !AOT
-        IHandle IHasHandle.Handle { get { return this.Handle; } }
-        public IHandle<ConcreteType> Handle
+        //H IHasHandle.Handle => this.Handle;
+        public H<ConcreteType> Handle
 #else
-		public IHandle Handle
+		public H Handle
 #endif
         {
             get
             {
-
                 var vh = HAsset.VobHandle;
                 EnsureHandleSetToThis(vh);
                 return vh;
@@ -137,13 +137,7 @@ namespace LionFire.Assets
 #endif
 #if !ASSETCACHE
         [Obsolete("Use HAsset.ContextualHandle")]
-        public IHandle<ConcreteType> ContextualHandle
-        {
-            get
-            {
-                return HAsset.ContextualHandle;
-            }
-        }
+        public H<ConcreteType> ContextualHandle => HAsset.ContextualHandle;
 #endif
 
         private void EnsureHandleSetToThis(IVobHandle<ConcreteType> vh)
@@ -230,6 +224,7 @@ namespace LionFire.Assets
 			}
 		} private HAsset hAsset;
 #else
+#if TOPORT
         IHAsset IHasHAsset.HAsset
         {
             get { return this.HAsset; }
@@ -247,7 +242,7 @@ namespace LionFire.Assets
 
             }
         }
-
+#endif
 
         protected HAsset<ConcreteType> CreateHAsset()
         {
@@ -321,7 +316,7 @@ namespace LionFire.Assets
                 {
                     l.Warn("set_HAsset(null) " + this);
                 }
-#endif                
+#endif
 
                 if (hAsset != null && hAsset.HasObject && value != null && value.HasObject)
                 {
@@ -377,7 +372,7 @@ namespace LionFire.Assets
         }
         private HAsset<ConcreteType> hAsset;
 #endif
-        #endregion
+#endregion
 
         #region Path
 

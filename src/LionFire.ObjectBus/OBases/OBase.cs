@@ -10,11 +10,18 @@ using Microsoft.Extensions.Logging;
 
 namespace LionFire.ObjectBus
 {
-    /// <summary>
-    /// Single reference type
-    /// </summary>
-    /// <typeparam name="TReference"></typeparam>
-    public abstract class OBase<TReference> : IOBase
+
+    //public abstract class MultiTypeOBase<TReference> : OBase<TReference>, IMultiTypeOBase
+    //    where TReference : class, IReference
+    //{
+    //    public abstract Task<IRetrieveResult<T>> TryGetName<T>(TReference reference);
+    //}
+
+        /// <summary>
+        /// Single reference type
+        /// </summary>
+        /// <typeparam name="TReference"></typeparam>
+        public abstract class OBase<TReference> : IOBase
         where TReference : class, IReference
         //where HandleInterfaceType : IHandle
     {
@@ -32,6 +39,7 @@ namespace LionFire.ObjectBus
 
         #region Get
 
+        
         public abstract Task<IRetrieveResult<T>> TryGet<T>(TReference reference);
         public abstract Task<IRetrieveResult<object>> TryGet(TReference reference, Type type);
 
@@ -109,7 +117,7 @@ namespace LionFire.ObjectBus
             var result = new RetrieveResult<bool>();
             var getResult = await TryGet(reference);
             result.IsSuccess = getResult.IsSuccess;
-            result.Result = getResult.Result != null;
+            result.Object = getResult.Object != null;
             return result;
         }
 
@@ -205,8 +213,16 @@ namespace LionFire.ObjectBus
 
         #region Handle
 
-        public abstract H<T> GetHandle<T>(IReference reference);// where T : class => HandleProvider<T>.GetHandle(reference);
-        public abstract RH<T> GetReadHandle<T>(IReference reference);
+        public virtual H<T> GetHandle<T>(IReference reference)
+        {
+            if (!(reference is TReference)) throw new ArgumentException($"{nameof(reference)} must be a {typeof(TReference).FullName} (TODO: Convert from compatible reference types)");
+            return new OBaseHandle<T>(reference, this);
+        }
+        public virtual RH<T> GetReadHandle<T>(IReference reference)
+        {
+            if (!(reference is TReference)) throw new ArgumentException($"{nameof(reference)} must be a {typeof(TReference).FullName} (TODO: Convert from compatible reference types)");
+            return new OBaseReadHandle<T>(reference, this);
+        }
 
         //// Prefer IHandle.GetSubpath.  Default implementation of that uses this:
         //public virtual IHandle<T> GetHandleSubpath<T>(IReference reference, params string[] subpathChunks) where T : class

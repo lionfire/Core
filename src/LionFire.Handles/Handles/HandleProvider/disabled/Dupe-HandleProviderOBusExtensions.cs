@@ -80,7 +80,7 @@
 //    /// </summary>
 //    public static class HandleProviderOBusExtensions
 //    {
-//        //public static H<T> ToHandle<T>(this string uriString) where T : class => InjectionContext.Current.GetService<IHandleProvider>().GetHandle<T>(new UriStringReference(uriString));
+//        //public static H<T> ToHandle<T>(this string uriString) where T : class => DependencyContext.Current.GetService<IHandleProvider>().GetHandle<T>(new UriStringReference(uriString));
 
 //        public static H<object> GetHandle(this IReference reference, object obj = null) => reference.GetOBase().GetHandle<object>(reference);
 //        public static H<T> GetHandle<T>(this IReference reference, object obj = null) => reference.GetOBase().GetHandle<object>(reference);

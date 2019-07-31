@@ -5,7 +5,7 @@ namespace LionFire.IO.Filesystem
 {
     public abstract class FilesystemHandleProviderBase
     {
-        public abstract string Scheme { get; } // e.g. "file(something)";
+        public abstract string Scheme { get; } // e.g. "file-something";
 
         protected void ValidateReference(IReference reference)
         {

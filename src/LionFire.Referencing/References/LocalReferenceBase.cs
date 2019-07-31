@@ -1,9 +1,12 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using System;
 
 namespace LionFire.Referencing
 {
-    public abstract class LocalReferenceBase : ReferenceBaseBase, IReference
+    
+    public abstract class LocalReferenceBase<ConcreteType> : ReferenceBaseBase<ConcreteType>, IReference
+        where ConcreteType : ReferenceBaseBase<ConcreteType>, IReference
     {
         public bool IsCompatibleWith(string stringUrl) => AllowedSchemes.Contains(stringUrl.GetUriScheme());
         public abstract IEnumerable<string> AllowedSchemes { get; }
@@ -15,26 +18,72 @@ namespace LionFire.Referencing
         {
             get;
         }
-        public abstract string Key { get; }
 
         #region Path
 
         [SetOnce]
         public override string Path
         {
-            get { return path; }
+            get => path;
             set
             {
-                if (path == value) return;
-                if (path != default(string)) throw new AlreadySetException();
-                path = value;
+                if (path != default) throw new AlreadySetException();
+                InternalSetPath(value);
             }
         }
-        private string path;
+        protected string path;
+
+        protected override void InternalSetPath(string path) => this.path = path;
 
         #endregion
 
+        //public virtual IReference GetChild(string subpath)
+        //{
+        //    ReferenceUtils.GetChild(this, subpath, ref path);
+
+        //    // Use ctor instead? Or reference factory?
+
+        //    var result = (ReferenceBaseBase)Activator.CreateInstance(this.GetType());
+        //    result.CopyFromWithPath(this, this.Path + String.Concat(ReferenceConstants.PathSeparator, subPath));
+        //    return result;
+        //}
+
+        ////public IReference GetChildSubpath(params string[] subpath)
+        //public IReference GetChildSubpath(IEnumerable<string> subpath)
+        //{
+        //    var sb = new StringBuilder();
+        //    bool isFirst = true;
+        //    foreach (var subpathChunk in subpath)
+        //    {
+        //        if (isFirst)
+        //        {
+        //            isFirst = false;
+        //        }
+        //        else { sb.Append("/"); }
+        //        sb.Append(subpathChunk);
+        //    }
+        //    return GetChild(sb.ToString());
+        //}
+
     }
+
+    //public static class ReferenceUtils
+    //{
+    //    public static void CombinePath(this IReference reference, string subpath, ref string path)
+    //    {
+    //        path = LionPath.Combine(path, subpath);
+    //    }
+
+    //    public static IReference GetChild(this IReference reference, string subpath)
+    //    {
+    //        // Use ctor instead? Or reference factory?
+
+    //        var result = (ReferenceBaseBase<LocalReferenceBase>)Activator.CreateInstance(reference.GetType());
+    //        result.CopyFrom(reference, reference.Path + String.Concat(ReferenceConstants.PathSeparator, subpath));
+    //        return (IReference)result;
+    //    }
+
+    //}
 
     //public abstract class LocalReferenceBase<T> : LocalReferenceBase
     //{

@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading;
-using LionFire.Assets;
 using LionFire.Collections;
 using LionFire.Copying;
 using LionFire.DependencyInjection;
@@ -195,7 +194,7 @@ namespace LionFire.Vos
             {
                 if (defaultResolver == null)
                 {
-                    defaultResolver = InjectionContext.Default.GetService<IVosContextResolver>();
+                    defaultResolver = DependencyContext.Default.GetService<IVosContextResolver>();
                 }
                 return defaultResolver;
             }
@@ -321,45 +320,6 @@ namespace LionFire.Vos
         private static readonly ILogger l = Log.Get();
 
         #endregion
-    }
-    public static class VosContextExtensions
-    {
-        #region Assets
-
-        public static Vob ToAssetVob(this string assetPath) => VosContext.Current.Root[assetPath];
-
-        public static IVobHandle ToAssetVobHandle(this string assetPath, Type type)
-        {
-            if (VosContext.Current == null)
-            {
-                throw new UnreachableCodeException("VosContext.Current == null");
-            }
-            if (VosContext.Current.Root == null)
-            {
-                throw new UnreachableCodeException("VosContext.Current.Root == null");
-            }
-            // REvIEW - should this be in a asset subpath????
-            return VosContext.Current.Root[assetPath].GetHandle(type);
-        }
-        public static VobHandle<T> ToAssetVobHandle<T>(this string assetPath)
-            where T : class
-        {
-            if (VosContext.Current == null)
-            {
-                throw new UnreachableCodeException("VosContext.Current == null");
-            }
-            if (VosContext.Current.Root == null)
-            {
-                throw new UnreachableCodeException("VosContext.Current.Root == null");
-            }
-            return VosContext.Current.Root[assetPath].GetHandle<T>();
-        }
-
-        #endregion
-
-        
-        private static ILogger l = Log.Get();
-
     }
 }
 

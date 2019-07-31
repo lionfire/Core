@@ -45,7 +45,7 @@ namespace LionFire.Execution.Jobs
             StartBlockers = new BlockerCollection(); // REFACTOR - JobQueue invoke something to create this
             StartBlockers.Unblocked += StartBlockers_Unblocked;
             // / If can start right away, StartBlockers will be empty
-            if (InjectionContext.Current.GetService<JobManager>()?.TryEnqueue(this) != true)
+            if (DependencyContext.Current.GetService<JobManager>()?.TryEnqueue(this) != true)
             {
                 await StartContinuation();
             }

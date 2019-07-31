@@ -10,6 +10,6 @@ namespace LionFire
     public interface IConfigures<T> : IConfigures
         where T : class
     {
-        void Configure(T context);
+        void Configure(T context); // TODO: Return this for fluent interfaces?
     }
 }

@@ -2,9 +2,9 @@
 using System.Collections.Generic;
 using LionFire.Referencing;
 
-namespace LionFire.Persistence.Assets
+namespace LionFire.Assets
 {
-    public class AssetReference<T> : LocalReferenceBase
+    public class AssetReference<T> : LocalReferenceBase<AssetReference<T>>
         where T : class
     {
         public override string Scheme => "asset";
@@ -15,7 +15,7 @@ namespace LionFire.Persistence.Assets
                 yield return Scheme;
             }
         }
-        public override string Key => Path;
+        public override string Key { get => Path; protected set => Path = value; }
 
 
         #region AssetSubPath
@@ -52,6 +52,15 @@ namespace LionFire.Persistence.Assets
         public AssetReference(string assetSubPath)
         {
             AssetSubPath = assetSubPath;
+        }
+        public AssetReference(T asset) {
+            throw new Exception("Probably broken. Verify.");
+            //AssetSubPath = asset.ID.Path;
+        }
+        public AssetReference(AssetID assetId)
+        {
+            throw new Exception("Probably broken. Verify.");
+            AssetSubPath = assetId.Path;
         }
     }
 

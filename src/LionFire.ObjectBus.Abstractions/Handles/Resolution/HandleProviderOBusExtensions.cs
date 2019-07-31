@@ -1,4 +1,6 @@
-﻿using System;
+﻿#if FUTURE // ...maybe.  Focus on IReferenceToHandleProviders and extensions first then see if this is still needed.
+
+using System;
 using System.Collections.Generic;
 using LionFire.DependencyInjection;
 using LionFire.Referencing;
@@ -10,7 +12,7 @@ namespace LionFire.ObjectBus
     /// </summary>
     public static class HandleProviderOBusExtensions
     {
-        //public static H<T> ToHandle<T>(this string uriString) where T : class => InjectionContext.Current.GetService<IHandleProvider>().GetHandle<T>(new UriStringReference(uriString));
+        //public static H<T> ToHandle<T>(this string uriString) where T : class => DependencyContext.Current.GetService<IHandleProvider>().GetHandle<T>(new UriStringReference(uriString));
 
         //#region  TODO: see if reference implelements IProvidesHandleFromPath
 
@@ -139,3 +141,5 @@ namespace LionFire.ObjectBus
 
 
 }
+
+#endif

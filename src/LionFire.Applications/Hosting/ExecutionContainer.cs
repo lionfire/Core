@@ -68,7 +68,7 @@ namespace LionFire.Applications.Hosting
         }
 
 
-        public InjectionContext InjectionContext { get; private set; } = new InjectionContext();
+        public DependencyContext DependencyContext { get; private set; } = new DependencyContext();
 
         public override ExecutionContainer Add<TComponent>(TComponent component)
             //where TComponent : class

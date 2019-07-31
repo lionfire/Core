@@ -8,7 +8,7 @@ namespace LionFire.DependencyInjection
     public static class ServiceProviderProvider
     {
         public static IServiceProvider GetServiceProvider(this object obj) => Provider.GetServiceProvider(obj);
-        public static IServiceProviderProvider Provider { get; set; } = new CurrentInjectionContextServiceProviderProvider();
+        public static IServiceProviderProvider Provider { get; set; } = new CurrentDependencyContextServiceProviderProvider();
     }
 
 

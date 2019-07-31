@@ -20,6 +20,7 @@ namespace LionFire.Referencing
     //    public Task<bool> TryResolveObject() => throw new NotImplementedException();
     //}
 
+
     public interface WH<in T> : IWriteWrapper<T>
     {
     }

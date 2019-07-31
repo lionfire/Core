@@ -20,6 +20,13 @@ namespace LionFire.Referencing
         //    base.OnO
         //}
 
+        #region Construction
+
+        public WBase() { }
+        public WBase(IReference reference) : base(reference) { }
+
+        #endregion
+
         #region DeletePending
 
         /// <summary>
@@ -59,7 +66,7 @@ namespace LionFire.Referencing
         protected abstract Task WriteObject(object persistenceContext = null);
         protected abstract Task<bool?> DeleteObject(object persistenceContext = null);
 
-        public async Task<bool?> Delete() => await DeleteObject(); 
+        public async Task<bool?> Delete() => await DeleteObject();
 
         public async Task<bool?> Delete(object persistenceContext = null)
         {

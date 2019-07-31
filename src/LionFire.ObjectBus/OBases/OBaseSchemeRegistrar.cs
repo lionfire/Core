@@ -97,7 +97,7 @@ namespace LionFire.ObjectBus
 
     //        public void RegisterAvailableProviders()
     //        {
-    //            foreach (var obaseProvider in InjectionContext.Current.GetService<IEnumerable<IOBaseProvider>>())
+    //            foreach (var obaseProvider in DependencyContext.Current.GetService<IEnumerable<IOBaseProvider>>())
     //            {
     //                foreach (var scheme in obaseProvider.SupportedUriSchemes)
     //                {

@@ -15,7 +15,7 @@ namespace LionFire.DependencyInjection
     public class ResolverService<TResolvedService, TInput> : IResolverService<TResolvedService, TInput>
             where TResolvedService : ICompatibleWithSome<TInput>
     {
-        public TResolvedService Resolve(TInput input) => InjectionContext.Current.GetService<IEnumerable<TResolvedService>>().Where(s => s.IsCompatibleWith(input)).FirstOrDefault();
-        public IEnumerable<TResolvedService> ResolveAll(TInput input, bool strict = false) => InjectionContext.Current.GetService<IEnumerable<TResolvedService>>().Where(s => s.IsCompatibleWith(input));
+        public TResolvedService Resolve(TInput input) => DependencyContext.Current.GetService<IEnumerable<TResolvedService>>().Where(s => s.IsCompatibleWith(input)).FirstOrDefault();
+        public IEnumerable<TResolvedService> ResolveAll(TInput input, bool strict = false) => DependencyContext.Current.GetService<IEnumerable<TResolvedService>>().Where(s => s.IsCompatibleWith(input));
     }
 }

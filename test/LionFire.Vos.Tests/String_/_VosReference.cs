@@ -2,6 +2,9 @@ using System;
 using LionFire.Applications.Hosting;
 using LionFire.ObjectBus;
 using Xunit;
+using LionFire.Hosting;
+using LionFire.Vos;
+using LionFire.Hosting.ExtensionMethods;
 
 namespace LionFire.Valor.Tests
 {
@@ -10,15 +13,15 @@ namespace LionFire.Valor.Tests
         [Fact]
         public async void String_to_Reference()
         {
-            await new AppHost()
-                .AddObjectBus()
+            await FrameworkHost.Create()
+                .AddObjectBus<VosOBus>()
                 .AddVos()
-                .RunNowAndWait(() =>
+                .Run(() =>
                 {
                     var str = "vos:/path/to/vob";
-                    var reference = str.ToReference();
+                    var reference = str.GetReference();
 
-                    Assert.IsType<VosReference>
+                    Assert.IsType<VosReference>(reference);
 
                 });
 

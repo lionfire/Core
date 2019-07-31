@@ -1,11 +1,17 @@
-﻿using System;
+﻿using LionFire.Referencing;
+using System;
 
 namespace LionFire.Assets
 {
-    public interface IHRAsset : IReadHandle
+    public interface IHRAsset : IHRAsset<object>
+    {        
+    }
+
+    public interface IHRAsset<out T> : RH<T>
     {
         string AssetTypePath { get; }
-        Type Type {
+        Type Type
+        {
             get;
         }
     }

@@ -13,19 +13,20 @@ namespace LionFire.Vos
     //#error When retrieve vh.Object, set ReadMount
 
 
-    public interface IVobReadHandle : IReferencable<IVosReference> // RENAME to VR?
-    {
+    
 
-    }
-    public interface IVobHandle<T> : IVobHandle { }
-    public interface IVobHandle : IVobReadHandle  // RENAME to VH?
-    {
+    public interface IVobHandle<T> : H<T> {
+        
         //event PropertyChangedEventHandler ObjectPropertyChanged;
+
         IVob Vob { get; }
 
+        /// <summary>
+        /// Vob path
+        /// </summary>
         string Path { get; }
 
-        //object Object { get; set; }
+        new T Object { get; set; }
 
         ///// <summary>
         ///// Mount that was used to load (FUTURE: or save) Object, or that should be used.
@@ -58,6 +59,12 @@ namespace LionFire.Vos
 
         //IVobHandle GetSibling(string name); // Can this be moved to IHandle?
         //bool CanWriteToReadSource();
+
+        void OnRenamed(IVobHandle<T> newHandle);
+    }
+
+    public interface IVobHandle : IVobHandle<object>  // RENAME to VH?
+    {
     }
 
 }

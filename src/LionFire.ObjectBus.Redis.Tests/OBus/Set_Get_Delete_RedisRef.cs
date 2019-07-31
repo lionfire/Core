@@ -7,7 +7,7 @@ using LionFire.ObjectBus;
 using LionFire.ObjectBus.Testing;
 using LionFire.ObjectBus.Redis;
 using Xunit;
-
+using LionFire.Hosting;
 
 namespace OBus_
 {
@@ -16,12 +16,9 @@ namespace OBus_
         [Fact]
         public async void Pass()
         {
-            await new AppHost()
-                .AddSerialization()
-                .AddNewtonsoftJson()
-                .AddObjectBus()
-                .AddRedisObjectBus()
-                .RunNowAndWait(async () =>
+            await FrameworkHost.Create()
+                .AddObjectBus<RedisOBus>()
+                .RunAndExit(async () =>
                 {
                     var path = @"\temp\tests\" + this.GetType().FullName + @"\" + nameof(Pass) + @"\TestFile";
                     var pathWithExtension = path + ".json";

@@ -9,7 +9,7 @@ using LionFire.Referencing;
 
 namespace LionFire.Vos
 {
-    public class VBase : OBase<VosReference>
+    public class VBase : OBase<VosReference>, IVBase
     {
         #region Ontology
 
@@ -65,7 +65,7 @@ namespace LionFire.Vos
                 //vh.IsRetrieveInfoEnabled = true;  TOPORT ?
                 if (await vh.TryGetObject().ConfigureAwait(false))
                 {
-                    result.Result = vh.Object;
+                    result.Object = vh.Object;
                 }
                 else
                 {

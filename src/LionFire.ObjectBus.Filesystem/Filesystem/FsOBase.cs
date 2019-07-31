@@ -2,76 +2,47 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using LionFire.ObjectBus.Typing;
 using LionFire.Persistence;
 using LionFire.Referencing;
+using LionFire.Referencing.Filesystem;
 using LionFire.Structures;
 using Microsoft.Extensions.Logging;
 
 namespace LionFire.ObjectBus.Filesystem
 {
-
-#if AOT
-	public class FsOBase : OBaseBase<FileReference>
-	{
-		public static FsOBase Instance { get { return Singleton<FsOBase>.Instance; } }
-		
-		public override string[] UriSchemes { get { return FileReference.UriSchemes; } }
-		
-		private void ValidateReference(FileReference reference)
-		{
-			if (reference.Scheme != FileReference.UriScheme) throw new FsOBaseException("Invalid scheme");
-			if (!reference.IsLocalhost) throw new FsOBaseException("Only localhost supported");
-			
-		}
-		
-		public override ResultType TryGet<ResultType>(FileReference reference)
-		{
-			var result = (ResultType) TryGet(reference, typeof(ResultType));
-			return result;
-		}
-		public override object TryGet(FileReference reference, Type ResultType)
-		{
-			return null;
-		}
-		
-		
-		public override bool Exists(FileReference reference)
-		{
-			return false;
-		}
-		
-		public override bool TryDelete(FileReference reference)
-		{
-			return false;
-		}
-		
-		public override void Set(FileReference reference, object obj, bool allowOverwrite = true)
-		{
-			return;
-		}
-		
-		
-		public override IEnumerable<string> GetChildrenNames(FileReference parent)
-		{
-			yield break;
-		}
-
-		public override IEnumerable<string> GetChildrenNamesOfType<T>(FileReference parent)
-		{
-			yield break;
-		}
-		
-//		private static ILogger l = Log.Get();
-		
-	}
-#else
-    public class FsOBase : WritableOBase<LocalFileReference>
+    public class FsOBase : OBase<LocalFileReference>
     {
         #region Static
 
         public static FsOBase Instance => ManualSingleton<FsOBase>.GuaranteedInstance;
+
+        #endregion
+
+        #region Options
+
+
+        protected FsOptions Options
+        {
+            get
+            {
+                return localOptions.Value ?? options ?? OptionsDefaults;
+            }
+            set
+            {
+                options = value;
+            }
+        }
+        private FsOptions options;
+
+        AsyncLocal<FsOptions> localOptions = new AsyncLocal<FsOptions>();
+
+        protected FsOptions OptionsDefaults = new FsOptions
+        {
+            //ReferenceResolutionService = FileReferenceResolutionPolicies.Default.ReferenceResolutionService
+        };
 
         #endregion
 
@@ -80,8 +51,7 @@ namespace LionFire.ObjectBus.Filesystem
 
         public override IObjectWatcher GetObjectWatcher(IReference reference)
         {
-            var fref = reference as LocalFileReference;
-            if (fref == null)
+            if (!(reference is LocalFileReference))
             {
                 return null;
             }
@@ -114,7 +84,11 @@ namespace LionFire.ObjectBus.Filesystem
         //        Result = converted,
         //    };
         //}
-        public override async Task<IRetrieveResult<object>> TryGet(LocalFileReference reference, Type ResultType)
+
+        //LogicalReferenceResolver
+
+
+        public override async Task<RetrieveResult<object>> TryGet(LocalFileReference reference, Type ResultType)
         {
             var result = new RetrieveResult<object>();
             try
@@ -148,7 +122,7 @@ namespace LionFire.ObjectBus.Filesystem
                     //}
                 }
 
-                result.Result = obj;
+                result.Object = obj;
                 result.IsSuccess = true;
 
                 return result;
@@ -159,8 +133,12 @@ namespace LionFire.ObjectBus.Filesystem
                 throw ex;
             }
         }
+        //public override Task<IRetrieveResult<ResultType>> TryGetName<ResultType>(LocalFileReference reference)
+        //{
+        //    throw new NotImplementedException();
+        //}
 
-        public override async Task<IRetrieveResult<ResultType>> TryGet<ResultType>(LocalFileReference reference)
+        public override async Task<RetrieveResult<ResultType>> TryGet<ResultType>(LocalFileReference reference)
         {
             var result = new RetrieveResult<ResultType>();
             try
@@ -193,7 +171,7 @@ namespace LionFire.ObjectBus.Filesystem
                     //}
                 }
 
-                result.Result = converted;
+                result.Object = converted;
                 result.IsSuccess = true;
 
                 return result;
@@ -208,13 +186,13 @@ namespace LionFire.ObjectBus.Filesystem
         public override IOBus OBus => ManualSingleton<FsOBus>.GuaranteedInstance;
 
 
-        public override async Task<IRetrieveResult<bool>> Exists(LocalFileReference reference)
+        public override async Task<RetrieveResult<bool>> Exists(LocalFileReference reference)
         {
             var result = new RetrieveResult<bool>();
 
             bool existsResult = await FsOBasePersistence.Exists(reference.Path).ConfigureAwait(false);
 
-            result.Result = existsResult;
+            result.Object = existsResult;
             result.IsSuccess = true;
             return result;
         }
@@ -224,7 +202,7 @@ namespace LionFire.ObjectBus.Filesystem
             // FUTURE: Check filesystem permissions
             var existsResult = await Exists(reference);
             if (!existsResult.IsSuccess) return null;
-            return existsResult.Result;
+            return existsResult.Object;
             //return new RetrieveResult<bool?>
             //{
             //    IsSuccess = existsResult.IsSuccess,
@@ -276,7 +254,7 @@ namespace LionFire.ObjectBus.Filesystem
             //}
 
             #endregion
-            
+
             await FsOBasePersistence.Set(obj, reference.Path, preview: preview, type: type);
         }
 
@@ -304,8 +282,7 @@ namespace LionFire.ObjectBus.Filesystem
         //}
 
         public override IEnumerable<string> GetChildrenNamesOfType<T>(LocalFileReference parent) => throw new NotImplementedException();
-        public override H<T> GetHandle<T>(IReference reference) => throw new NotImplementedException();
-        public override RH<T> GetReadHandle<T>(IReference reference) => throw new NotImplementedException();
+
         public override Task<IEnumerable<string>> GetKeys(LocalFileReference parent) => throw new NotImplementedException();
         public override Task<IEnumerable<string>> GetKeysOfType<T>(LocalFileReference parent) => throw new NotImplementedException();
 
@@ -343,5 +320,4 @@ namespace LionFire.ObjectBus.Filesystem
         private static ILogger l = Log.Get();
 
     }
-#endif
 }

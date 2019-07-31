@@ -59,7 +59,7 @@ namespace LionFire.Assets
 
         public IAssetProvider AssetProvider
         {
-            get { if (assetProvider == null) { assetProvider = Injection.GetService<IAssetProvider>(); } return assetProvider; }
+            get { if (assetProvider == null) { assetProvider = Dependencies.GetService<IAssetProvider>(); } return assetProvider; }
         }
         private IAssetProvider assetProvider;
 

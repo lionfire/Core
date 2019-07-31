@@ -7,7 +7,7 @@ namespace LionFire.Referencing // RENAME to LionFire.Handles? or LionFire.Refere
         where T : class
     {
         //new
-            IReadHandle<T> ReadHandle { get; }
+            RH<T> ReadHandle { get; }
     }
 #endif
 

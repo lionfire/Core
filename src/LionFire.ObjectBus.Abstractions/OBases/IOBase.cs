@@ -7,9 +7,21 @@ using LionFire.Referencing;
 namespace LionFire.ObjectBus
 {
 
+    public interface IMultiTypeOBase : IOBase
+    {
+        Task<IRetrieveResult<T>> TryGetName<T>(IReference reference);
+    }
+
     /// <summary>
-    /// TODO: All persistence async! (?)
+    /// Performs operations on a certain URI schemas and types of IReferences that it understands (typically just one schema and one type.)
+    /// 
     /// </summary>
+    /// <remarks>
+    /// OBases do not deal with handles, but it may be useful to use handles a layer above this in order to facilitate caching and object reuse.
+    /// 
+    /// TODO: Make all persistence async!
+    /// TODO: Reword GetChildren to List.
+    /// </remarks>
     public interface IOBase : ISupportsUriSchemes
     {
         #region Parent
@@ -23,9 +35,12 @@ namespace LionFire.ObjectBus
         //object TryGet(IReference reference, OptionalRef<RetrieveInfo> optionalRef = null);
         //T TryGet<T>(IReference reference, OptionalRef<RetrieveInfo> optionalRef = null) where T : class;
 
-        Task<IRetrieveResult<T>> TryGet<T>(IReference reference);
+        // RENAME to Retrieve, and instead have EnsureGet which throws on not found
+        // TODO BREAKING: make Get an extension method on HBase(this IOBase obase, IReference)
+        Task<RetrieveResult<T>> TryGet<T>(IReference reference);
 
-        Task<IRetrieveResult<bool>> Exists(IReference reference);
+
+        Task<RetrieveResult<bool>> Exists(IReference reference);
 
         // FUTURE: flags for hidden, persisted
         //IEnumerable<string> GetChildrenNames(IReference parent, QueryFlags requiredFlags = QueryFlags.None, QueryFlags excludeFlags = QueryFlags.None);
@@ -69,7 +84,7 @@ namespace LionFire.ObjectBus
         #endregion
 
         #region Write
-        
+
         /// <summary>
         /// Rules for type:
         ///  - leave null to use type of obj (defaults to typeof(object) if null).
@@ -81,11 +96,12 @@ namespace LionFire.ObjectBus
         /// <param name="allowOverwrite"></param>
         /// <returns></returns>
         Task Set(IReference reference, object obj, Type type = null, bool allowOverwrite = true);
+#error NEXT: Change Set() to Set<T>()
 
-        Task<bool?> TryDelete(IReference reference/*, bool preview = false*/);
+        Task<IPersistenceResult> TryDelete<T>(IReference reference);
 
         /// <returns>true if can be fully deleted, false if no delete can take place, and null if it can be partially deleted</returns>
-        Task<bool?> CanDelete(IReference reference);
+        Task<IPersistenceResult> CanDelete<T>(IReference reference);
 
         #endregion
     }
@@ -97,20 +113,20 @@ namespace LionFire.ObjectBus
         public static async Task<IRetrieveResult<object>> Get(this IOBase obase, IReference reference)
         {
             var result = await obase.TryGet(reference);
-            if (!result.IsSuccess)
+            if (!result.IsSuccess())
             {
                 throw new ObjectNotFoundException("Could not find object with specified reference");
             }
             return result;
         }
 
-        public static async Task Delete(this IOBase obase, IReference reference)
+        public static async Task Delete<T>(this IOBase obase, IReference reference)
         {
-            if (false == (await obase.TryDelete(reference).ConfigureAwait(false)))
+            if ((await obase.TryDelete<T>(reference).ConfigureAwait(false)).WriteCount <= 0)
             {
                 throw new ObjectNotFoundException("Delete failed: no object found at specified reference.");
             }
         }
     }
- 
+
 }

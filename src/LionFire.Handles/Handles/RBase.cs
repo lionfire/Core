@@ -1,10 +1,8 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Linq;
 using System.Threading.Tasks;
-using LionFire.Collections;
 using LionFire.DependencyInjection;
 using LionFire.Extensions.DefaultValues;
 using LionFire.ObjectBus;
@@ -13,55 +11,6 @@ using LionFire.Structures;
 
 namespace LionFire.Referencing
 {
-
-
-    public abstract class RCollectionBase<TCollection, TItem> : RBase<TCollection>, IReadOnlyCollection<TItem>
-        where TCollection : IEnumerable<TItem>
-    {
-        public abstract int Count { get; }
-
-        public abstract IEnumerator<TItem> GetEnumerator();
-        IEnumerator IEnumerable.GetEnumerator() => throw new NotImplementedException();
-
-        public abstract void OnCollectionChangedEvent(INotifyCollectionChangedEventArgs<TItem> a);
-    }
-
-    //public abstract class HCollectionBase<ObjectType, T> : WBase<ObjectType>, ICollection<T>
-    //    where ObjectType : IEnumerable<T>
-    //{
-    //    public abstract int Count { get; }
-    //    public abstract bool IsReadOnly { get; }
-
-    //    public abstract void Add(T item);
-    //    public abstract bool Remove(T item);
-    //    public abstract void Clear();
-
-    //    public abstract bool Contains(T item);
-
-    //    public abstract void CopyTo(T[] array, int arrayIndex);
-
-    //    public abstract IEnumerator<T> GetEnumerator();
-    //    IEnumerator IEnumerable.GetEnumerator() => throw new NotImplementedException();
-    //}
-
-    //public class WritableCollectionExperiment<T> : HCollectionBase<List<T>, T>
-    //{
-    //    MultiBindableCollection<T> collection = new MultiBindableCollection<T>();
-
-    //    public override int Count => collection.Count;
-
-    //    public override bool IsReadOnly => collection.IsReadOnly;
-
-    //    public override void Add(T item) => collection.Add(item);
-    //    public override void Clear() => collection.Clear();
-    //    public override bool Contains(T item) => collection.Contains(item);
-    //    public override void CopyTo(T[] array, int arrayIndex) => collection.CopyTo(array, arrayIndex);
-    //    public override Task DeleteObject(object persistenceContext = null) => collection.DeleteObject(persistenceContext);
-    //    public override IEnumerator<T> GetEnumerator() => collection.GetEnumerator();
-    //    public override bool Remove(T item) => collection.Remove();
-    //    public override Task<bool> TryRetrieveObject() => collection.TryRetrieveObject();
-    //    public override Task WriteObject(object persistenceContext = null) => collection.WriteObject(persistenceContext);
-    //}
 
     /// <summary>
     /// Base class for read/write handles
@@ -81,13 +30,15 @@ namespace LionFire.Referencing
         /// </summary>
         public virtual IEnumerable<Type> AllowedReferenceTypes => null;
 
-        #region Identity
+#region Identity
 
-        #region Reference
+#region Reference
 
-        public IReference Reference {
+        public IReference Reference
+        {
             get => reference;
-            protected set {
+            protected set
+            {
                 if (reference == value)
                 {
                     return;
@@ -110,16 +61,18 @@ namespace LionFire.Referencing
         protected IReference reference;
         public ITypedReference TypedReference => Reference as ITypedReference;
 
-        #endregion
+#endregion
 
-        public string Key {
+        public string Key
+        {
             get => Reference.Key;
-            set => Reference = value.ToReference();
+            set => throw new NotImplementedException("TODO");
+            //set => Reference = value.GetReference(); // TODO
         }
 
-        #endregion
+#endregion
 
-        #region Construction
+#region Construction
 
         protected RBase() { }
 
@@ -133,15 +86,17 @@ namespace LionFire.Referencing
             _object = obj;
         }
 
-        #endregion
+#endregion
 
-        #region State
+#region State
 
-        #region State
+#region State
 
-        public PersistenceState State {
+        public PersistenceState State
+        {
             get => handleState;
-            set {
+            set
+            {
                 if (handleState == value)
                 {
                     return;
@@ -158,11 +113,13 @@ namespace LionFire.Referencing
 
         public event PersistenceStateChangeHandler StateChanged;
 
-        #region Derived - Convenience
+#region Derived - Convenience
 
-        public bool IsPersisted {
+        public bool IsPersisted
+        {
             get => State.HasFlag(PersistenceState.Persisted);
-            set {
+            set
+            {
                 if (value)
                 {
                     State |= PersistenceState.Persisted;
@@ -174,11 +131,13 @@ namespace LionFire.Referencing
             }
         }
 
-        #region Reachable
+#region Reachable
 
-        public bool? IsReachable {
+        public bool? IsReachable
+        {
             get => State.HasFlag(PersistenceState.Reachable) ? true : (State.HasFlag(PersistenceState.Reachable) ? false : (bool?)null);
-            set {
+            set
+            {
                 if (value.HasValue)
                 {
                     if (value.Value)
@@ -199,24 +158,27 @@ namespace LionFire.Referencing
             }
         }
 
-        #endregion
+#endregion
 
-        #endregion
+#endregion
 
-        #endregion
+#endregion
 
-        #region Object
+#region Object
 
-        public ObjectType Object {
+        public ObjectType Object
+        {
             [Blocking]
-            get {
+            get
+            {
                 if (!IsPersisted)
                 {
                     TryRetrieveObject().ConfigureAwait(false).GetAwaiter().GetResult();
                 }
                 return _object;
             }
-            set {
+            set
+            {
                 if (object.ReferenceEquals(_object, value))
                 {
                     return;
@@ -251,7 +213,7 @@ namespace LionFire.Referencing
 
         private static bool IsDefaultValue(ObjectType value) => EqualityComparer<ObjectType>.Default.Equals(value, default(ObjectType));
 
-        #region Instantiation 
+#region Instantiation 
 
         // No persistence, just instantiating an ObjectType
 
@@ -304,7 +266,7 @@ namespace LionFire.Referencing
             }
         }
 
-        #endregion
+#endregion
 
         //protected virtual async Task<bool> DoTryRetrieve()
         //{
@@ -349,20 +311,20 @@ namespace LionFire.Referencing
             IsReachable = false;
         }
 
-        #endregion
+#endregion
 
 
-        #endregion
+#endregion
 
-        #region Events
+#region Events
 
         public event Action<RH<ObjectType>, HandleEvents> HandleEvents;
 
         protected void RaiseEvent(HandleEvents eventType) => HandleEvents?.Invoke(this, eventType);
 
-        #endregion
+#endregion
 
-        #region Retrieve
+#region Retrieve
 
         public abstract Task<bool> TryRetrieveObject();
 
@@ -411,7 +373,7 @@ namespace LionFire.Referencing
             }
         }
 
-        #endregion
+#endregion
 
     }
 }

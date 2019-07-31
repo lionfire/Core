@@ -165,7 +165,7 @@ namespace LionFire.Assets
         public Type InstantiationType { get { return typeof(InstantiationType_); } }
 
         //IInstantiation ITemplate.CreateInstantiation() { return this.CreateInstantiation(); } TOPORT ?
-        IAssetInstantiation ITemplateAsset.CreateAssetInstantiation() { return this.CreateInstantiation(); }
+        //IAssetInstantiation ITemplateAsset.CreateAssetInstantiation() { return this.CreateInstantiation(); }
 
         public InstantiationType_ CreateInstantiation()
         {
@@ -205,23 +205,23 @@ namespace LionFire.Assets
 
         #region Instance
 
-        ITemplateAssetInstance ITemplate.ConstructInstance()
-        {
+//        ITemplateAssetInstance ITemplate.ConstructInstance()
+//        {
 
-#if AOT && true // AOTTEMP
-			object obj = ConstructInstance();
-			if(obj.GetType() == typeof(string))
-				l.Fatal("[RUNTIME ERROR] TemplateBase.ConstructInstance was supposed to return ITemplateInstance but returned string instead");
-			return obj as ITemplateInstance;
+//#if AOT && true // AOTTEMP
+//			object obj = ConstructInstance();
+//			if(obj.GetType() == typeof(string))
+//				l.Fatal("[RUNTIME ERROR] TemplateBase.ConstructInstance was supposed to return ITemplateInstance but returned string instead");
+//			return obj as ITemplateInstance;
 
-#else
-#if AOT
-			(ITemplateInstance)(object) // REVIEW Not sure this helps but something weird is going on
-#endif
+//#else
+//#if AOT
+//			(ITemplateInstance)(object) // REVIEW Not sure this helps but something weird is going on
+//#endif
 
-            return ConstructInstance();
-#endif
-        }
+//            return ConstructInstance();
+//#endif
+//        }
 
         public InstanceType_ ConstructInstance()
         {

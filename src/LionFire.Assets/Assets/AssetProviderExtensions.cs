@@ -28,7 +28,7 @@ namespace LionFire.Assets
             return (await (assetProvider.Find<T>(searchString, context).ConfigureAwait(false))).Select(subPath => new AssetHandle<T>(subPath));
         }
 
-        private static IAssetProvider AssetProvider => InjectionContext.Current.GetService<IAssetProvider>();
+        private static IAssetProvider AssetProvider => DependencyContext.Current.GetService<IAssetProvider>();
 
         // TODO: Async?
         //public static Task<T> LoadAsync<T>(this string assetSubPath, object context = null)
@@ -81,7 +81,7 @@ namespace LionFire.Assets
         //     ap.Save<T>(assetSubPath, obj);
         //}
 
-        public static void Save<T>(this T obj, string assetSubPath, object persistenceContext = null)
+        public static async Task SaveAtSubPath<T>(this T obj, string assetSubPath, object persistenceContext = null)
         {
             (obj as INotifyOnSaving)?.OnSaving();
 
@@ -103,7 +103,7 @@ namespace LionFire.Assets
             }
             instantiationContext.RootObject = obj;
 
-            AssetProvider.Save(assetSubPath, inst, persistenceContext);
+            await AssetProvider.Save(assetSubPath, inst, persistenceContext);
         }
 
     }

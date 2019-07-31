@@ -10,19 +10,19 @@ namespace LionFire.Applications
     {
         public static T GetComponent<T>()
         {
-            return InjectionContext.Current.GetService<IAppHost>().Children.OfType<T>().SingleOrDefault();
+            return DependencyContext.Current.GetService<IAppHost>().Children.OfType<T>().SingleOrDefault();
         }
         public static IEnumerable<T> GetComponents<T>()
         {
-            return InjectionContext.Current.GetService<IAppHost>().Children.OfType<T>();
+            return DependencyContext.Current.GetService<IAppHost>().Children.OfType<T>();
         }
         public static T GetService<T>()
         {
-            return InjectionContext.Current.GetService<T>();
+            return DependencyContext.Current.GetService<T>();
         }
         public static IEnumerable<T> GetServices<T>()
         {
-            return InjectionContext.Current.GetServices<T>();
+            return DependencyContext.Current.GetServices<T>();
         }
         public static T Get<T>()
             where T : class

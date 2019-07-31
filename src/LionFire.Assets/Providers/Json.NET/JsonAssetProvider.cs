@@ -129,22 +129,19 @@ namespace LionFire.Assets.Providers.FileSystem
 
         public const string ContextPath = "Persistence/FileSystem";
 
-        AutoRetryContext autoRetry => InjectionContextUtils.AsTypeInPathOrDefault<AutoRetryContext>(ContextPath);
+        AutoRetryContext autoRetry => DependencyContextUtils.AsTypeInPathOrDefault<AutoRetryContext>(ContextPath);
 
         private void _SaveMethod(object obj, string assetSubPath, object context)
         {
             Type saveType = (context.ObjectAsType<PersistenceContext>())?.SaveType ?? typeof(object);
-            CreateDirIfNeeded(obj,assetSubPath,context); // TOOPTIMIZE - only create after an exception.  REFACTOR - move to base class?
+            CreateDirIfNeeded(obj, assetSubPath, context); // TOOPTIMIZE - only create after an exception.  REFACTOR - move to base class?
             File.WriteAllText(GetPath(obj, assetSubPath, context), JsonConvert.SerializeObject(obj, saveType, JsonSettings));
         }
-        public void Save(string assetSubPath, object obj, object context = null)
-        {
-                autoRetry.AutoRetry(() => _SaveMethod(obj, assetSubPath, context)).ConfigureAwait(false).GetAwaiter().GetResult();
-        }
+        public async Task Save(string assetSubPath, object obj, object context = null) 
+            => await autoRetry.AutoRetry(() => _SaveMethod(obj, assetSubPath, context)).ConfigureAwait(false);
+
         public async Task SaveAsync(string assetSubPath, object obj, PersistenceContext context = null) // FUTURE replacement
-        {
-            await autoRetry.AutoRetry(() => _SaveMethod(obj, assetSubPath, context)).ConfigureAwait(false);
-        }
+            => await autoRetry.AutoRetry(() => _SaveMethod(obj, assetSubPath, context)).ConfigureAwait(false);
 
         public async Task<bool> Initialize()
         {

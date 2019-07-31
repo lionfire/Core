@@ -7,6 +7,7 @@ using LionFire.DependencyInjection;
 using LionFire.ObjectBus;
 using LionFire.Ontology;
 using LionFire.Referencing;
+using LionFire.Structures;
 
 namespace LionFire.Vos
 {
@@ -21,7 +22,6 @@ namespace LionFire.Vos
     [ReadOnlyEditionFor(typeof(VobHandle<>))]
     public class VobReadHandle<T> : RBase<T>
         , IVobReadHandle<T> // Has T because it is contravariantt
-        , IVobHandle // No T because it is invariant
         , IProvidesHandleFromSubPath
       //, IHandleProvider -- FUTURE: get relative paths? Maybe a stretch.
     {
@@ -29,7 +29,7 @@ namespace LionFire.Vos
         
         #region Ontology
 
-        public new VosReference Reference
+        public new IVosReference Reference
         {
             get => (VosReference)base.Reference;
             set => base.Reference = value;
@@ -37,13 +37,13 @@ namespace LionFire.Vos
 
         #endregion
 
-        private static VBase VBase => InjectionContext.Current.GetService<VosOBus>().DefaultVBase;
+        private static VBase VBase => DependencyContext.Current.GetService<VosOBus>().DefaultVBase;
         public Type Type => Reference.Type ?? typeof(T);
         public string Path => Reference.Path;
 
         #region Vob
 
-        IVob IVobHandle.Vob => Vob;
+        //IVob IVobHandle<object>.Vob => Vob;
         IVob IVobReadHandle<T>.Vob => Vob;
         public Vob Vob
         {
@@ -117,6 +117,7 @@ namespace LionFire.Vos
         #region Read handle implementation
 
         public override Task<bool> TryRetrieveObject() => throw new NotImplementedException();
+        public void OnRenamed(IVobHandle<object> newHandle) => throw new NotImplementedException();
 
         #endregion
 
@@ -214,7 +215,9 @@ namespace LionFire.Vos
 
         #region Object
 
-        //object IVobHandle.Object { get => Object; set => Object = (T)value; }
+        //object IVobHandle<object>.Object { get => Object; set => Object = (T)value; }
+
+        //object IReadWrapper<object>.Object => throw new NotImplementedException();
         //object H<object>.Object { get => Object; set => Object = (T)value; }
         //object IReadWrapper<object>.Object => Object;
         //object IWriteWrapper<object>.Object { set => Object = (T)value; }
@@ -235,6 +238,47 @@ namespace LionFire.Vos
 
         //public IVobHandle GetSibling(string name) => throw new NotImplementedException();
         //public bool CanWriteToReadSource() => throw new NotImplementedException();
+
+
+        //event Action<RH<object>, HandleEvents> RH<object>.HandleEvents
+        //{
+        //    add
+        //    {
+        //        throw new NotImplementedException();
+        //    }
+
+        //    remove
+        //    {
+        //        throw new NotImplementedException();
+        //    }
+        //}
+
+        //event Action<RH<object>, object, object> RH<object>.ObjectReferenceChanged
+        //{
+        //    add
+        //    {
+        //        throw new NotImplementedException();
+        //    }
+
+        //    remove
+        //    {
+        //        throw new NotImplementedException();
+        //    }
+        //}
+
+        //event Action<RH<object>> RH<object>.ObjectChanged
+        //{
+        //    add
+        //    {
+        //        throw new NotImplementedException();
+        //    }
+
+        //    remove
+        //    {
+        //        throw new NotImplementedException();
+        //    }
+        //}
+
 
     }
 }

@@ -10,42 +10,19 @@ using Microsoft.Extensions.Logging;
 
 namespace LionFire.Vos
 {
+    // !!! PORT: Already partially ported
 
     /// <summary>
     /// Represents a Vos hierarchy, analogous to a file system.
     /// Typically only one exists per app, although it could be useful to create child Vos's as a sort of chroot, or as a simulation of a remote Vos.
     /// </summary>
-    public class VBase : OBase<VosReference>, IOBase
+    public class VBase : OBase<VosReference>, IVBase
     {
         #region (Static) Singleton
 
-        public static VBase Default { get { return ManualSingleton<VBase>.GuaranteedInstance; } }
+        public static VBase Default => ManualSingleton<VBase>.GuaranteedInstance;
 
         #endregion
-
-        #region Uri
-
-        public override string[] UriSchemes {
-            get { return VosReference.UriSchemes; }
-        }
-
-        #endregion
-
-        #region Construction
-
-        /// <summary>
-        /// 
-        /// </summary>
-        public VBase()
-        {
-            root = new RootVob(this);
-        }
-
-        #endregion
-
-        
-
-        
 
         #region Persistence
 
@@ -65,9 +42,6 @@ namespace LionFire.Vos
         //        return null;
         //    }
         //}
-
-
-        
 
         public Type DefaultHandleTypeForConcreteType(Type type)
         {
@@ -206,13 +180,7 @@ namespace LionFire.Vos
 #region Root Handle Pass-through
 
 #region Path Accessors
-
-        public Vob this[string path] {
-            get {
-                return this.Root[path];
-            }
-        }
-
+        
         public Vob this[params string[] pathChunks] {
             get {
                 return this.Root[0, pathChunks];

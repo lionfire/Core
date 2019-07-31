@@ -1,11 +1,14 @@
 ﻿using System;
 using System.Threading.Tasks;
+using LionFire.DependencyInjection;
 using LionFire.Structures;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 
 namespace LionFire.Applications.Hosting
 {
+
+
 
     public static class IAppHostExtensions
     {
@@ -26,7 +29,7 @@ namespace LionFire.Applications.Hosting
         #endregion
 
         #region DependencyInjection pass-through
-
+        
         public static IAppHost TryAddEnumerableSingleton<TService, TImplementation>(this IAppHost host)
         {
             var sd = new ServiceDescriptor(typeof(TService), typeof(TImplementation), ServiceLifetime.Singleton);
@@ -177,6 +180,11 @@ namespace LionFire.Applications.Hosting
         {
             host.Add(new AppInitializer(initialize));
             return host;
+        }
+        public static IServiceCollection AddInit(this IServiceCollection services, Action<IAppHost> initialize)
+        {
+            services.TryAddEnumerableSingleton(new AppInitializer(initialize));
+            return services;
         }
 
 

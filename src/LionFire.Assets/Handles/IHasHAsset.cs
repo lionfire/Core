@@ -7,7 +7,8 @@ namespace LionFire.Assets
 {
 
     //#if !AOT
-    public interface IHasHAsset<ConcreteType> : IHasHAsset
+    public interface IHasHAsset<ConcreteType> 
+        //: IHasHAsset
         where ConcreteType : class
     {
 

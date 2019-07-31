@@ -2,7 +2,7 @@
 
 namespace LionFire.ObjectBus
 {
-    public interface IOBusReferenceProviderService : IResolverService<IOBus, string>
-    {
-    }
+    //public interface IOBusReferenceProviderService : IResolverService<IOBus, string>
+    //{
+    //}
 }

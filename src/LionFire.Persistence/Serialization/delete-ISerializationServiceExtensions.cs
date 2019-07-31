@@ -118,7 +118,7 @@
 //        //{
 //        //    if (serializationService == null)
 //        //    {
-//        //        serializationService = InjectionContext.Current.GetService<ISerializationService>();
+//        //        serializationService = DependencyContext.Current.GetService<ISerializationService>();
 //        //    }
 //        //    return serializationService.GetSerializationStrategies(context).FirstOrDefault();
 //        //}

@@ -1,12 +1,15 @@
 ﻿#define ASSETCACHEFLAT
 #define HASSETG
 
+using LionFire.Persistence;
+
 namespace LionFire.Assets
 {
-    public interface IHAsset : IHRAsset
+    public interface IHAsset : IHAsset<object>
     {
-        bool HasPathOrObject { get; }
-        void Save();
+    }
+    public interface IHAsset<T> : IHRAsset<T>, ISaveable
+    {
     }
 
 }

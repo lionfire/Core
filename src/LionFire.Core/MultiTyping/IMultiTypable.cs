@@ -45,13 +45,13 @@ namespace LionFire.MultiTyping
             return Array.Empty<T>();
         }
 
-        public static T AsTypeOrInject<T>(this IMultiTypable cmt, InjectionContext context = null)
+        public static T AsTypeOrInject<T>(this IMultiTypable cmt, DependencyContext context = null)
             where T : class
         {
             var result = cmt.MultiTyped.AsType<T>();
             if (result == null)
             {
-                result = (context ?? InjectionContext.Current).GetService<T>();
+                result = (context ?? DependencyContext.Current).GetService<T>();
                 cmt.MultiTyped.SetType<T>(result);
             }
             return result;

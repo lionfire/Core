@@ -16,9 +16,9 @@ namespace LionFire.Serialization
             {
                 if (serializers == null)
                 {
-                    // Get strategies from InjectionContext, but only the first time.  This may be useful when initializing a Program
+                    // Get strategies from DependencyContext, but only the first time.  This may be useful when initializing a Program
                     // with some strategies and then attempting to use the SerializationService.
-                    serializers = InjectionContext.Current.ServiceProvider.GetServices<ISerializationStrategy>().Distinct().ToList();
+                    serializers = DependencyContext.Current.ServiceProvider.GetServices<ISerializationStrategy>().Distinct().ToList();
                 }
                 return serializers;
             }

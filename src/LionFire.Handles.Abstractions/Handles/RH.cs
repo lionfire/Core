@@ -1,4 +1,5 @@
-﻿using LionFire.Structures;
+﻿#pragma warning disable IDE1006 // Naming Styles
+using LionFire.Structures;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -91,5 +92,5 @@ namespace LionFire.Referencing
 
         #endregion
     }
-
 }
+#pragma warning restore IDE1006 // Naming Styles

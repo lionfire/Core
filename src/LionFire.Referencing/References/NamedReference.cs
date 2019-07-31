@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace LionFire.Referencing
 {
-    public class NamedReference : LocalReferenceBase
+    public class NamedReference : LocalReferenceBase<NamedReference>
     {
         public override IEnumerable<string> AllowedSchemes => UriSchemes;
         public static string[] UriSchemes = new string[] { "object" };
@@ -19,20 +19,23 @@ namespace LionFire.Referencing
 
         #endregion
 
-        public override string Key => Key;
+        [SetOnce]
+        public override string Key
+        {
+            get => Key;
+            protected set
+            {
+                if (this.key != null)
+                {
+                    throw new AlreadySetException();
+                }
+                this.key = value;
+            }
+        }
+
         private string key;
 
         [SetOnce]
-        public void SetKey(string key)
-        {
-            if (this.key != null)
-            {
-                throw new AlreadySetException();
-            }
-            this.key = key;
-        }
-
-        [SetOnce]
-        public override string Path { get => Key; set => SetKey(value); }
+        public override string Path { get => Key; set => Key = value; }
     }
 }

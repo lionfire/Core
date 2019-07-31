@@ -5,7 +5,7 @@ using LionFire.Referencing;
 
 namespace LionFire.ObjectBus.Redis
 {
-    public class RedisOBus : OBusBase, IDefaultOBaseProvider
+    public class RedisOBus : OBusBase<RedisOBus>, IDefaultOBaseProvider
     {
         public override IOBase DefaultOBase => RedisOBase.DefaultInstance;
 

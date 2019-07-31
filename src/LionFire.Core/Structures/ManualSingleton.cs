@@ -11,11 +11,55 @@ namespace LionFire.Structures
 
         public static void ResetAll()
         {
-            foreach(var type in List)
+            foreach (var type in List)
             {
                 typeof(ManualSingleton<>).MakeGenericType(type).GetProperty("Instance").SetValue(null, null);
-            }   
+            }
         }
+    }
+
+    public sealed class ManualSingletonProvider
+    {
+        public static Func<Type, object> GuaranteedInstanceProvider = DefaultGuaranteedInstanceProviderMethod;
+
+        public static object DefaultGuaranteedInstanceProviderMethod(Type createType)
+        {
+
+            if (createType.GetTypeInfo().IsAbstract || createType.GetTypeInfo().IsInterface)
+            {
+                var attr = createType.GetTypeInfo().GetCustomAttribute<DefaultImplementationTypeAttribute>();
+                if (attr != null)
+                {
+                    createType = attr.Type;
+                }
+                else
+                {
+                    createType = null;
+                }
+
+                var sType = typeof(ManualSingleton<>).MakeGenericType(createType);
+
+                var sTypeInstance = sType.GetProperty("Instance", BindingFlags.Static | BindingFlags.Public).GetValue(null);
+                if (sTypeInstance != null)
+                {
+                    return sTypeInstance;
+                }
+            }
+
+            if (createType != null)
+            {
+                try
+                {
+                    return Activator.CreateInstance(createType);
+                }
+                catch (MissingMethodException mme)
+                {
+                    throw new Exception("Missing method when creating instance of " + createType.Name, mme);
+                    //throw new Exception("Missing method when creating instance of " + createType.Name + (createType != typeof(T) ? $" for {typeof(T).Name}" : ""), mme);
+                }
+            }
+            return null;
+        } 
     }
 
     public sealed class ManualSingleton<T>
@@ -27,46 +71,16 @@ namespace LionFire.Structures
         }
 
         public static T Instance { get; set; }
+
+        
+
         public static T GuaranteedInstance
         {
             get
             {
                 if (Instance == null)
                 {
-                    var createType = typeof(T);
-
-                    if (typeof(T).GetTypeInfo().IsAbstract || typeof(T).GetTypeInfo().IsInterface)
-                    {
-                        var attr = typeof(T).GetTypeInfo().GetCustomAttribute<DefaultImplementationTypeAttribute>();
-                        if (attr != null)
-                        {
-                            createType = attr.Type;
-                        }
-                        else
-                        {
-                            createType = null;
-                        }
-
-                        var sType = typeof(ManualSingleton<>).MakeGenericType(createType);
-
-                        var sTypeInstance = (T)sType.GetProperty("Instance", BindingFlags.Static | BindingFlags.Public).GetValue(null);
-                        if (sTypeInstance != null)
-                        {
-                            Instance = sTypeInstance;
-                            return Instance;
-                        }
-                    }
-                    if (createType != null)
-                    {
-                        try
-                        {
-                            Instance = (T)Activator.CreateInstance(createType);
-                        }
-                        catch (MissingMethodException mme)
-                        {
-                            throw new Exception("Missing method when creating instance of " + createType.Name + (createType != typeof(T) ? $" for {typeof(T).Name}" : ""), mme);
-                        }
-                    }
+                    Instance = (T)ManualSingletonProvider.GuaranteedInstanceProvider(typeof(T));
                 }
                 return Instance;
             }
@@ -80,12 +94,21 @@ namespace LionFire.Structures
             }
         }
 
-        public static T GetGuaranteedInstance<CreateType>(Func<T> createFunc = null)
+        public static T GetGuaranteedInstance<CreateType>()
             where CreateType : class, T, new()
         {
             if (Instance == null)
             {
-                Instance = createFunc != null ? createFunc() : new CreateType();
+                Instance = new CreateType();
+            }
+            return Instance;
+        }
+        public static T GetGuaranteedInstance<CreateType>(Func<T> createFunc)
+            where CreateType : class, T
+        {
+            if (Instance == null)
+            {
+                Instance = createFunc();
             }
             return Instance;
         }

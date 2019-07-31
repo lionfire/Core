@@ -2,10 +2,11 @@
 using System.Collections.Generic;
 using System.Text;
 using LionFire.Referencing;
+using LionFire.Referencing.Handles;
 
 namespace LionFire.ObjectBus.Filesystem
 {
-    public class FsOBus : OBusBase, IDefaultOBaseProvider
+    public class FsOBus : OBusBase<FsOBus>, IDefaultOBaseProvider, IHandleProvider<LocalFileReference>, IReadHandleProvider<LocalFileReference>
     {
         //#region (Static) Singleton
 
@@ -22,7 +23,7 @@ namespace LionFire.ObjectBus.Filesystem
                 yield return typeof(LocalFileReference);
             }
         }
-        
+
         public override IEnumerable<Type> HandleTypes
         {
             get
@@ -57,18 +58,13 @@ namespace LionFire.ObjectBus.Filesystem
         //}
 
 
-        public override IReference TryGetReference(string uri, bool strictMode)
+        public override IReference TryGetReference(string uri)
         {
-            int colonIndex = uri.IndexOf(':');
-            if (colonIndex < 0)
-            {
-                return null;
-                //throw new ArgumentException("Scheme missing");
-            }
+            var scheme = LionUri.GetUriScheme(uri, false);
 
-            #region // TODO: Verify scheme is supported!
+            #region Verify scheme is supported
 
-            if (!uri.StartsWith(LocalFileReference.UriScheme))
+            if (scheme != LocalFileReference.UriScheme)
             {
                 return null;
                 //throw new ArgumentException("Unsupported scheme");
@@ -82,7 +78,7 @@ namespace LionFire.ObjectBus.Filesystem
             int slashIndex = LocalFileReference.UriScheme.Length;
             for (int i = 3; i > 0; i--)
             {
-                slashIndex = uri.IndexOf('/', slashIndex+1);
+                slashIndex = uri.IndexOf('/', slashIndex + 1);
                 if (slashIndex < 0)
                 {
                     // FUTURE: Relative paths?
@@ -91,7 +87,7 @@ namespace LionFire.ObjectBus.Filesystem
                 }
             }
 
-            string path = uri.Substring(slashIndex+1);
+            string path = uri.Substring(slashIndex + 1);
             return new LocalFileReference(path);
         }
 
@@ -101,9 +97,16 @@ namespace LionFire.ObjectBus.Filesystem
 
         public override IOBase TryGetOBase(IReference reference)
         {
-            if (IsValid(reference)) return this.DefaultOBase;
+            if (reference is LocalFileReference) return this.DefaultOBase;
             return null;
         }
+
+        #endregion
+
+        #region Handles
+
+        public H<T> GetHandle<T>(LocalFileReference reference) => new OBaseHandle<T>(reference, DefaultOBase);
+        public RH<T> GetReadHandle<T>(LocalFileReference reference) => new OBaseReadHandle<T>(reference, DefaultOBase);
 
         #endregion
     }

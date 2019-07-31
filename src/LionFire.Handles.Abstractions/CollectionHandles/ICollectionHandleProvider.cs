@@ -2,18 +2,18 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace LionFire.Referencing
-{    
+namespace LionFire.Referencing.Handles
+{
     public interface ICollectionHandleProvider : IReadCollectionHandleProvider
     {
         C<T> GetCollectionHandle<T>(IReference reference);
+        //C<T> GetCollectionHandle<T>(IReference reference/*, T handleObject = default(T)*/);
+
     }
 
-    public static class ICollectionHandleProviderExtensions
+    public interface ICollectionHandleProvider<TReference>
+    where TReference : IReference
     {
-        // Do these casts work, or
-        //H GetCollectionHandle(IReference reference, T handleObject = default(T)); // Needed? and R version?
-        public static C GetCollectionHandle(this ICollectionHandleProvider handleProvider, IReference reference) => (C)handleProvider.GetCollectionHandle<object>(reference);
-        
+        C<T> GetCollectionHandle<T>(TReference reference);
     }
 }

@@ -130,7 +130,7 @@ namespace LionFire.Notifications.Wpf
 
         public Task<bool> Initialize()
         {
-            this.NotificationConfiguration = InjectionContext.Current.ServiceProvider.GetService<NotificationConfiguration>() ?? NotificationDefaults.DefaultConfiguration;
+            this.NotificationConfiguration = DependencyContext.Current.ServiceProvider.GetService<NotificationConfiguration>() ?? NotificationDefaults.DefaultConfiguration;
 
             //if(NotificationConfiguration==null)
 

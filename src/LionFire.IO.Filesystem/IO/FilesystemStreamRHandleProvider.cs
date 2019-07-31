@@ -4,9 +4,9 @@ using LionFire.Referencing;
 
 namespace LionFire.IO.Filesystem
 {
-    public class FilesystemStreamRHandleProvider : FilesystemHandleProviderBase, IReadHandleProvider
+    public class FilesystemStreamReadHandleProvider : FilesystemHandleProviderBase, IReadHandleProvider
     {
-        public override string Scheme => "file(RStream)";
+        public override string Scheme => "file-stream-ro";
 
         public RH<T> GetReadHandle<T>(IReference reference)
         {

@@ -1,0 +1,189 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Threading.Tasks;
+using LionFire.DependencyInjection;
+using LionFire.Ontology;
+using LionFire.Referencing;
+using LionFire.Referencing.Persistence;
+using LionFire.Serialization;
+
+namespace LionFire.ObjectBus.ExtensionlessFs
+{
+    /// <summary>
+    /// Look in SerializationService for all possible file extensions, and return those as possibilities for resolving a reference.
+    /// </summary>
+    [Immutable]
+    public class ExtensionlessReferenceResolutionService : IReferenceToReferenceResolver
+    {
+        #region Static
+
+        public static ISerializationService DefaultSerializationService => DependencyContext.Default.GetService<ISerializationService>();
+        public static ISerializationService CurrentSerializationService => DependencyContext.Current.GetService<ISerializationService>();
+
+        #endregion
+
+        #region Relationships
+
+        public IOBase OBase { get; }
+
+        public ISerializationService SerializationService { get; }
+
+        #endregion
+
+        [Immutable]
+        private readonly IReadOnlyList<(string extension, ISerializationStrategy strategy, SerializationFormat format)> extensions;
+
+        #region Construction
+
+        public ExtensionlessReferenceResolutionService(IOBase obase, ISerializationService serializationService = null)
+        {
+            this.OBase = obase;
+            this.SerializationService = serializationService ?? CurrentSerializationService ?? DefaultSerializationService;
+            if (serializationService == null) throw new ArgumentNullException(nameof(serializationService));
+
+            extensions = SerializationService.GetDistinctRankedStrategiesByExtension();
+        }
+
+        #endregion
+
+        // FUTURE NETSTANDARD3 IAsyncEnumerable
+        //public async Task<IEnumerable<ReadResolutionResult<T>>> ResolveAll<T>(IReference r, ResolveOptions options = null)
+        //{
+        //    return await Task.Run(async () =>
+        //    {
+        //        var result = new List<ReadResolutionResult<T>>();
+        //        foreach (var x in await _ResolveAll<T>(r, options)) {
+        //            result.Add(await x);
+        //        }
+        //        return result;
+        //    });
+        //}
+        public async Task<IEnumerable<ReadResolutionResult<T>>> ResolveAll<T>(IReference r, ResolveOptions options = null)
+        {
+            var results = new List<ReadResolutionResult<T>>();
+            foreach (var (extension, strategy, format) in extensions)
+            {
+                results.Add(await x());
+                async Task<ReadResolutionResult<T>> x() {
+                    //results.Add (await Task.Run(async () =>
+                    //{
+                    var referenceWithExtension = r.WithRelativePath("." + extension);
+                    Persistence.IRetrieveResult<T> retrieveResult = null;
+                    if (options?.VerifyDeserializable == true)
+                    {
+                        var readHandle = referenceWithExtension.GetReadHandle<T>();
+
+                        retrieveResult = await OBase.TryGet<T>(referenceWithExtension).ConfigureAwait(false);
+
+                        if(!(await readHandle.TryEnsureRetrieved()))
+                        {
+                            return null;
+                        }
+                        else
+                        {
+                            return new ReadResolutionResult<T>(readHandle);
+                        }
+                    }
+                    else if (options?.VerifyExists == true)
+                    {
+                        var readHandle = referenceWithExtension.GetReadHandle<T>();
+                        
+                        if (await readHandle.Exists().ConfigureAwait(false))
+                        {
+                            return null;
+                        }
+                        else
+                        {
+                            return new ReadResolutionResult<T>(readHandle);
+                        }
+                    }
+                    else
+                    {
+                        return new ReadResolutionResult<T>(referenceWithExtension.GetReadHandle<T>());
+                    }
+                    //});
+                }
+            }
+            return results;
+        }
+
+        private static ResolveOptions DefaultResolveReadOptions = new ResolveOptions
+        {
+            VerifyDeserializable = true,
+            VerifyExists = true,
+        };
+
+//        /// <summary>
+//        /// Returns the first potentially valid underlying reference for the given logical reference.  If options specifies VerifyDeserializable = true, the object will actually be read into
+//        /// ReadResolutionResult.ReadHandle.  
+//        /// </summary>
+//        /// <typeparam name="T">Non-multitype OBases should always use object</typeparam>
+//        /// <param name="reference"></param>
+//        /// <param name="options"></param>
+//        /// <returns></returns>
+//        public async IAsyncEnumerable<ReadResolutionResult<T>> ResolveForRead<T>(IReference reference, ResolveOptions options = null)
+//        {
+//            if (options == null) options = DefaultResolveReadOptions;
+
+//            foreach (var (extension, strategy, format) in extensions)
+//            {
+//                var referenceWithExtension = reference.WithPath(reference.Path + "." + extension);
+
+//                if (options.VerifyDeserializable)
+//                {
+
+//#warning FIXME ObjectBus.mmap - see Overview TODO
+
+
+
+//                    var retrieveResult = OBase.TryGet<T>(referenceWithExtension);
+//                    if (retrieveResult != null)
+//                    {
+//                        yield return new ReadResolutionResult<T>(new RH<T>(referenceWithExtension, retrieveResult));
+//                    }
+//                }
+//                else if (options.VerifyExists && (await OBase.Exists(referenceWithExtension).ConfigureAwait(false)))
+//                {
+//                    yield return new ReadResolutionResult<T>(referenceWithExtension);
+//                }
+//                else
+//                {
+//                    yield return new ReadResolutionResult<T>(referenceWithExtension);
+//                }
+
+//                if (await OBase.ExistsAsType<T>(referenceWithExtension).ConfigureAwait(false))
+//                {
+//                    // So a question is, when deserializing, whether to do: 1) throw exception if unexpected type, 2) return nothing if unexpected type, 3) attempt duck typing.
+//                    // Another question, when serializing: merge or replace if using duck typing.
+//                    // I don't want to impose any limitations -- that means a more complicated / powerful Vos/OBase API.
+//                    yield return referenceWithExtension;
+//                }
+//            }
+//        }
+
+
+        public Task<IEnumerable<WriteResolutionResult<T>>> ResolveAllForWrite<T>(IReference r, ResolveOptions options = null) => throw new NotImplementedException();
+    }
+
+    //public class ReferenceResolver
+    //{
+    //    public List<ReferenceResolutionStrategy> Strategies { get; private set; }
+
+    //    public IEnumerable<R<T>> Resolve<T>(IReference r, ResolveOptions options = null)
+    //    {
+    //        //DependencyContext
+    //    }
+
+    //    public Task<T> Get(IReference r)
+    //    {
+
+    //    }
+
+    //    public Task<bool> Exists<T>(IReference r)
+    //    {
+
+    //    }
+
+
+    //}
+}

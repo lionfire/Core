@@ -5,25 +5,33 @@ using System.Threading.Tasks;
 
 namespace LionFire.Execution
 {
-    public static class RepeatAllUntilTrueExtensions
+    public static class RepeatAllUntilExtensions
     {
-        public static async Task RepeatAllUntilTrue(this IEnumerable<object> items, Func<object, Func<Task<bool>>> selector, bool parallel = false)
+        public static async Task RepeatAllUntil<TItem, TResult>(this IEnumerable<TItem> items, Func<TItem, Func<Task<TResult>>> getResultForItem, Predicate<TResult> resultIsSuccessful, bool parallel = false)
         {
-            var (succeeded, remaining) = await TryRepeatAllUntilTrue(items, selector, parallel);
+            (bool succeeded, IEnumerable<KeyValuePair<TItem, TResult>> remaining) = await TryRepeatAllUntil<TItem, TResult>(items, getResultForItem, resultIsSuccessful, parallel);
             if (!succeeded)
             {
-                var msg = $"No progress made on executing {remaining} remaining items: " + remaining.Select(c => c.ToString()).Aggregate((x, y) => x + ", " + y);
+                string msg;
+                try
+                {
+                    msg = $"No progress made on executing {remaining} remaining items: " + remaining.Select(c => c.Key.ToString()).Aggregate((x, y) => x + ", " + y);
+                }
+                catch
+                {
+                    msg = $"No progress made on executing {remaining} remaining items.";
+                }
                 throw new Exception(msg);
             }
         }
 
-        public static async Task<(bool succeeded, IEnumerable<object> remainingItems)> TryRepeatAllUntilTrue(this IEnumerable<object> items, Func<object, Func<Task<bool>>> selector, bool parallel = false)
+        public static async Task<(bool succeeded, IEnumerable<KeyValuePair<TItem, TResult>> remainingItems)> TryRepeatAllUntil<TItem, TResult>(this IEnumerable<TItem> items, Func<TItem, Func<Task<TResult>>> getResultForItem, Predicate<TResult> resultIsSuccessful, bool parallel = false)
         {
-            if (!items.Any()) return (true, Enumerable.Empty<object>());
+            if (!items.Any()) return (true, Enumerable.Empty<KeyValuePair<TItem, TResult>>());
 
-            var needsTrue = items.ToList();
+            var needsTrue = items.Select(i => new KeyValuePair<TItem, TResult>(i, default)).ToList();
             int itemsRequiringTrue = needsTrue.Count;
-            List<object> stillNeedsTrue = null;
+            List<KeyValuePair<TItem, TResult>> stillNeedsTrue = null;
 
             do
             {
@@ -31,7 +39,7 @@ namespace LionFire.Execution
                 {
                     needsTrue = stillNeedsTrue;
                 }
-                stillNeedsTrue = new List<object>();
+                stillNeedsTrue = new List<KeyValuePair<TItem, TResult>>();
 
                 if (parallel)
                 {
@@ -39,11 +47,12 @@ namespace LionFire.Execution
                     object collectionLock = new object();
                     var tasks = needsTrue.Select(async item =>
                     {
-                        if (await selector(item)().ConfigureAwait(false) == false)
+                        var result = await getResultForItem(item.Key)().ConfigureAwait(false);
+                        if (!resultIsSuccessful(result))
                         {
                             lock (collectionLock)
                             {
-                                stillNeedsTrue.Add(item);
+                                stillNeedsTrue.Add(new KeyValuePair<TItem, TResult>(item.Key, result));
                             }
                         }
                     });
@@ -53,9 +62,11 @@ namespace LionFire.Execution
                 {
                     foreach (var item in needsTrue)
                     {
-                        if (await selector(item)().ConfigureAwait(false) == false)
+                        var result = await getResultForItem(item.Key)().ConfigureAwait(false);
+
+                        if (!resultIsSuccessful(result))
                         {
-                            stillNeedsTrue.Add(item);
+                            stillNeedsTrue.Add(new KeyValuePair<TItem, TResult>(item.Key, result));
                         }
                     }
                 }
@@ -68,8 +79,26 @@ namespace LionFire.Execution
                 itemsRequiringTrue = stillNeedsTrue.Count;
 
             } while (stillNeedsTrue.Count > 0);
-            return (true, Enumerable.Empty<object>());
+            return (true, Enumerable.Empty<KeyValuePair<TItem, TResult>>());
         }
+    }
+
+    public static class RepeatAllUntilTrueExtensions
+    {
+        public static Task RepeatAllUntilTrue<TItem>(this IEnumerable<TItem> items, Func<TItem, Func<Task<bool>>> getResultForItem, bool parallel = false)
+            => items.RepeatAllUntil<TItem, bool>(getResultForItem, r => r, parallel);
+
+        public static Task<(bool succeeded, IEnumerable<KeyValuePair<TItem, bool>> remainingItems)> TryRepeatAllUntilTrue<TItem>(this IEnumerable<TItem> items, Func<TItem, Func<Task<bool>>> getResultForItem, bool parallel = false)
+            => items.TryRepeatAllUntil(getResultForItem, r => r, parallel);
+    }
+
+    public static class RepeatAllUntilNullExtensions
+    {
+        public static Task RepeatAllUntilNull<TItem>(this IEnumerable<TItem> items, Func<TItem, Func<Task<object>>> getResultForItem, bool parallel = false)
+            => items.RepeatAllUntil(getResultForItem, r => r == null, parallel);
+
+        public static Task<(bool succeeded, IEnumerable<KeyValuePair<TItem, object>> remainingItems)> TryRepeatAllUntilNull<TItem>(this IEnumerable<TItem> items, Func<TItem, Func<Task<object>>> getResultForItem, bool parallel = false)
+            => items.TryRepeatAllUntil(getResultForItem, r => r == null, parallel);
 
     }
 }

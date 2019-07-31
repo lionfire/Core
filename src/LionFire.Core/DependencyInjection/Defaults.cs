@@ -1,4 +1,5 @@
-﻿using LionFire.DependencyInjection;
+﻿using LionFire.Applications;
+using LionFire.DependencyInjection;
 using LionFire.Structures;
 using System;
 using System.Collections.Generic;
@@ -7,9 +8,10 @@ using System.Threading.Tasks;
 
 namespace LionFire
 {
-    // REVIEW - Deprecate?, Use InjectionContext instead, but then maybe use this to point to InjectionContext for a nicer syntax.  Maybe rename to Ambient
+    // REVIEW - Deprecate?, Use DependencyContext instead, but then maybe use this to point to DependencyContext for a nicer syntax.  Maybe rename to Ambient
     public static class Defaults
     {
+
         public static T Get<T>()
             where T : class, new()
         {
@@ -23,21 +25,24 @@ namespace LionFire
             return result;
         }
 
-
+        // TODO: If SingletonConfiguration.UseSingletons is true, try the singleton first?  For performance and simplicity?
         public static T TryGet<T>(Func<T> defaultProvider = null, bool createIfMissing = false)
             where T : class
         {
             T result;
 
-            result = InjectionContext.Current?.GetService<T>(createIfMissing: createIfMissing);
+            result = DependencyContext.Current?.GetServiceOrSingleton<T>(createIfMissing: createIfMissing);
             if (result != null) return result; // This is the new approach.  REVIEW below this
 
-            var inst = ManualSingleton<T>.Instance;
-            if (inst != null) return inst;
+            if (SingletonConfiguration.UseSingletons)
+            {
+                var inst = ManualSingleton<T>.Instance;
+                if (inst != null) return inst;
 
-            var sp = ManualSingleton<IServiceProvider>.Instance;
-            result = (T)sp?.GetService(typeof(T));
-            if (result != null) return result;
+                var sp = ManualSingleton<IServiceProvider>.Instance;
+                result = (T)sp?.GetService(typeof(T));
+                if (result != null) return result;
+            }
 
             if (defaultProvider != null)
             {
@@ -66,6 +71,8 @@ namespace LionFire
         public static void Set<T>(T obj)
                         where T : class
         {
+            if (!SingletonConfiguration.UseSingletons) { throw new Exception("Cannot use Set when SingletonConfiguration.UseSingletons == false"); }
+
             if (ManualSingleton<T>.Instance != null) throw new InvalidOperationException("Already set");
 
             ManualSingleton<T>.Instance = obj;

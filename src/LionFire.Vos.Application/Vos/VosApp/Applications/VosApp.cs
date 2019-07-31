@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 using LionFire.Assets;
 using LionFire.DependencyInjection;
 using LionFire.Execution;
+using LionFire.ObjectBus.Filesystem;
 using LionFire.Referencing;
 using LionFire.Structures;
 using Microsoft.Extensions.Logging;
@@ -69,7 +70,7 @@ namespace LionFire.Vos
             }
 
             // ENH: Consider mixing in the in-class Initialize_ methods with the batch of IEnumerable<IInitializerFor<VosApp>> to allow them to sort it out
-            await InjectionContext.Current.GetService<IEnumerable<IInitializerFor<VosApp>>>().InitializeAll(this).ConfigureAwait(false);
+            await DependencyContext.Current.GetService<IEnumerable<IInitializerFor<VosApp>>>().InitializeAll(this).ConfigureAwait(false);
 
             Initialize_MountDefaultMounts();
 
@@ -781,6 +782,7 @@ namespace LionFire.Vos
 
         public static VobHandle<AssetType> GetAsset<AssetType>(string name)
             where AssetType : class, new() => V.Assets[AssetPaths.GetAssetTypeFolder(typeof(AssetType)), name];
+
         public static Vob GetAsset(Type assetType, string name) => V.Assets[AssetPaths.GetAssetTypeFolder(assetType), name];
 
         public static string GetAssetPath(string name, Type assetType) => V.Assets[AssetPaths.GetAssetTypeFolder(assetType), name].Path;
@@ -919,7 +921,7 @@ namespace LionFire.Vos
                 return null;
             }
 
-            return result.Aggregate((x, y) => x + VosPath.Separator + y);
+            return result.Aggregate((x, y) => x + LionPath.Separator + y);
         }
 
         public static IEnumerable<string> GetSubPathChunksOfAncestor(this Vob vob, Vob potentialAncestor)
@@ -962,7 +964,7 @@ namespace LionFire.Vos
 
             if (h.EffectivePackage == package && h.EffectiveStore == store)
             {
-                l.TraceWarn("OPTIMIZE - don't change Vob since store/pkg match");
+                // l.TraceWarn("OPTIMIZE - don't change Vob since store/pkg match");
                 return h;
             }
 

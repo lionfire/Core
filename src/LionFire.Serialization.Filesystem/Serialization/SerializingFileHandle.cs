@@ -11,7 +11,7 @@ using LionFire.Serialization.Contexts;
 namespace LionFire.Serialization
 {
     /// <summary>
-    /// Uses ISerializationService from InjectionContext.Current to save/load an object to a local file 
+    /// Uses ISerializationService from DependencyContext.Current to save/load an object to a local file 
     /// </summary>
     /// <typeparam name="T"></typeparam>
     public class SerializingFileHandle<T> : HLocalFileBase<T>
@@ -51,8 +51,8 @@ namespace LionFire.Serialization
             get
             {
                 //var serializationService = persistenceContext.ObjectAsType<ISerializationService>();
-                //if (serializationService == null) { serializationService = InjectionContext.Current.GetService<ISerializationService>(); }
-                //var serializationService = InjectionContext.Current.GetService<ISerializationService>();
+                //if (serializationService == null) { serializationService = DependencyContext.Current.GetService<ISerializationService>(); }
+                //var serializationService = DependencyContext.Current.GetService<ISerializationService>();
                 var serializationService = Defaults.TryGet<ISerializationProvider>();
 
                 if (serializationService == null)

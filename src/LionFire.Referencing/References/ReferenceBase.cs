@@ -4,8 +4,8 @@ using System.Linq;
 
 namespace LionFire.Referencing
 {
-
-    public abstract class ReferenceBase : ReferenceBaseBase, IReference
+    public abstract class ReferenceBase<ConcreteType> : ReferenceBaseBase<ConcreteType>, IReference
+        where ConcreteType : ReferenceBase<ConcreteType>
     {
         public bool IsCompatibleWith(string stringUrl) => AllowedSchemes.Contains(stringUrl.GetUriScheme());
         public abstract IEnumerable<string> AllowedSchemes { get; }
@@ -33,27 +33,27 @@ namespace LionFire.Referencing
 
         #endregion
 
-        public abstract string Key { get; }
-
         public abstract string Host { get; set; }
         public abstract string Port { get; set; }
 
-        #region Construction
+        // OLD
+        //#region Construction
 
-        #region Copy From
+        //#region Copy From
 
-        protected override void CopyFrom(IReference other, string newPath = null)
-        {
-            this.Host = other.Host;
-            this.Port = other.Port;
-            this.Path = newPath ?? other.Path;
-        }
+        //protected override void CopyFrom(T other)
+        //{
+        //    this.Key = other.Key;
+        //    //this.Host = other.Host;
+        //    //this.Port = other.Port;
+        //    //this.Path = newPath ?? other.Path;
+        //}
 
-        #endregion
+        //#endregion
 
-        #endregion
+        //#endregion
 
-        
+
         #region Misc
 
         #region Object Overrides

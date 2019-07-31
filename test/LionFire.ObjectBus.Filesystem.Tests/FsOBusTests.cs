@@ -4,7 +4,6 @@ using LionFire.Applications.Hosting;
 using LionFire.Referencing;
 using Xunit;
 using Xunit.Abstractions;
-using static LionFire.Persistence.Tests.FsTestUtils;
 
 namespace LionFire.ObjectBus.Filesystem.Tests
 {

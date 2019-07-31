@@ -7,28 +7,68 @@ using LionFire.Execution;
 using LionFire.ObjectBus;
 using LionFire.Vos;
 using LionFire.Vos.Assets;
+using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.DependencyInjection;
+using System.Threading;
+using System.Threading.Tasks;
+using Microsoft.Extensions.Hosting.Internal;
 
-namespace LionFire.Applications.Hosting
+namespace LionFire.Hosting.ExtensionMethods
 {
+    public class InitializingLifetimeWrapper<T> : IHostLifetime
+        where T : IHostLifetime
+    {
+        IServiceProvider serviceProvider;
+        T WrappedLifetime;
+        //public IHostLifetime WrappedLifetime { get; set; }
+
+
+        public InitializingLifetimeWrapper(T wrappedLifetime) {
+            //this.serviceProvider = serviceProvider;
+            this.WrappedLifetime = wrappedLifetime;// ?? new T();
+        }
+
+        //public InitializingLifetimeWrapper(IHostLifetime wrapped = null) { WrappedLifetime = wrapped ?? new ConsoleLifetime(); }
+
+        public async Task WaitForStartAsync(CancellationToken cancellationToken)
+        {
+            var initializers = serviceProvider.GetService<IEnumerable<IInitializable3>>();
+            if (initializers != null)
+            {
+                await initializers.RepeatAllUntilNull(i => i.Initialize);
+            }
+            await WrappedLifetime.WaitForStartAsync(cancellationToken);
+        }
+
+        public async Task StopAsync(CancellationToken cancellationToken)
+        {
+            await WrappedLifetime.StopAsync(cancellationToken);
+        }
+    }
+
     public static class VosAppHostExtensions
     {
-        public static IAppHost AddVos(this IAppHost app) => app.TryAddEnumerableSingleton<IOBus, VosOBus>();
+        //public static IAppHost AddVos(this IAppHost app) => app.TryAddEnumerableSingleton<IOBus, VosOBus>();
 
-        public static IAppHost AddVosApp(this IAppHost app, VosAppOptions options = null)
+        public static IHostBuilder AddVosApp(this IHostBuilder app, VosAppOptions options = null)
         {
-            app.AddVos();
+            app.AddObjectBus<VosOBus>();
 
-            app.AddSingleton<IVosContextResolver, DefaultVosContextResolver>();
+            //var va = new VosApp(options);
+            //app.Add(va);
 
+            app.ConfigureServices((c, s) =>
             {
-                var va = new VosApp(options);
-                app.Add(va);
-                app.AddSingleton<VosApp>(va);
-            }
+                s
+                .AddSingleton<IHostLifetime, InitializingLifetimeWrapper<ConsoleLifetime>>()
+                .AddSingleton<IVosContextResolver, DefaultVosContextResolver>()
+                .AddSingleton<VosApp>()
+                .TryAddEnumerableSingleton<IInitializable3, VosApp>()
+                ;
+                //s.AddInit(async a => await a.GetService<VosApp>().Initialize());
+            });
 
             app.UseVosAppForAssets();
-
-            app.AddInit(a => a.GetService<VosApp>().Initialize());
 
             return app;
         }
@@ -38,7 +78,7 @@ namespace LionFire.Applications.Hosting
         /// </summary>
         /// <param name="app"></param>
         /// <returns></returns>
-        public static IAppHost UseVosAppForAssets(this IAppHost app)
+        public static IHostBuilder UseVosAppForAssets(this IHostBuilder app)
         {
             VosAssetsSettings.DefaultPathFromNameForType = VosApp.GetAssetPath;
 

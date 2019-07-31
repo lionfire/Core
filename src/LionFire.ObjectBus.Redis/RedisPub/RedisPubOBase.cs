@@ -241,7 +241,7 @@ namespace LionFire.ObjectBus.RedisPub
                     OBaseEvents.OnRetrievedObjectFromExternalSource(obj); // Put reference in here?
                 }
 
-                result.Result = obj;
+                result.Object = obj;
                 result.IsSuccess = true; // True regardless of whether an object was found
 
                 return result;
@@ -278,7 +278,7 @@ namespace LionFire.ObjectBus.RedisPub
 
                 return new RetrieveResult<ResultType>
                 {
-                    Result = converted,
+                    Object = converted,
                     IsSuccess = true
                 };
             }
@@ -298,7 +298,7 @@ namespace LionFire.ObjectBus.RedisPub
 
             bool existsResult = await FsFacade.Exists(reference.Path).ConfigureAwait(false);
 
-            result.Result = existsResult;
+            result.Object = existsResult;
             result.IsSuccess = true;
             return result;
         }
@@ -314,7 +314,7 @@ namespace LionFire.ObjectBus.RedisPub
                 return null;
             }
 
-            return existsResult.Result;
+            return existsResult.Object;
             //return new RetrieveResult<bool?>
             //{
             //    IsSuccess = existsResult.IsSuccess,

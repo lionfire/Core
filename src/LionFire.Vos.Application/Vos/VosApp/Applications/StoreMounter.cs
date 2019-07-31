@@ -3,6 +3,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using LionFire.ObjectBus.Filesystem;
 using LionFire.Referencing;
 using Microsoft.Extensions.Logging;
 
@@ -87,6 +88,8 @@ namespace LionFire.Vos
                         var metadata = new StoreMetadata();
 
                         hStore.Object = metadata;
+                        throw new NotImplementedException("Save()");
+#if TODO
                         hStore.Save();
 
                         mount = new Mount(V.Stores[mountAsStoreName], storeLocation, store: storeName, enable: true, mountOptions: new MountOptions()
@@ -94,6 +97,7 @@ namespace LionFire.Vos
                             IsExclusive = true,
                         });
                         break;
+#endif
                     }
                     catch (Exception)
                     {
@@ -112,11 +116,11 @@ namespace LionFire.Vos
 
         //}
 
-        #region Misc
+#region Misc
 
         private static ILogger l = Log.Get();
 
-        #endregion
+#endregion
     }
 
 }

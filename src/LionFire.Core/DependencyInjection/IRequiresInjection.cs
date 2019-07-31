@@ -8,6 +8,6 @@ namespace LionFire
 {
     public interface IRequiresInjection
     {
-        InjectionContext InjectionContext { get; set; }
+        DependencyContext DependencyContext { get; set; }
     }
 }

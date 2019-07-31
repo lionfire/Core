@@ -20,7 +20,7 @@ namespace LionFire.ObjectBus
             {
                 if (providers == null)
                 {
-                    providers = InjectionContext.Current.GetService<IEnumerable<IOBus>>(); // TODO FIXME - deterministic init flow
+                    providers = DependencyContext.Current.GetService<IEnumerable<IOBus>>(); // TODO FIXME - deterministic init flow
                 }
                 return providers;
             }
@@ -32,7 +32,7 @@ namespace LionFire.ObjectBus
         //    Providers = providers;
         //}
 
-        public IOBus GetFirstCompatible(IReference input) => InjectionContext.Current.GetService<IEnumerable<IOBus>>().Where(s => s.IsCompatibleWith(input)).FirstOrDefault();
+        public IOBus GetFirstCompatible(IReference input) => DependencyContext.Current.GetService<IEnumerable<IOBus>>().Where(s => s.IsCompatibleWith(input)).FirstOrDefault();
 
         public (IOBus OBus, IOBase OBase) Resolve(IReference reference)
         {

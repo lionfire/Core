@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Text;
 using LionFire.Applications.Hosting;
+using LionFire.Hosting;
 using LionFire.ObjectBus;
 using LionFire.ObjectBus.Filesystem;
 using LionFire.ObjectBus.Filesystem.Tests;
@@ -17,20 +18,16 @@ namespace OBus_
         [Fact]
         public async void Pass()
         {
-            await new AppHost()
-                .AddSerialization()
-                .AddNewtonsoftJson()
-                .AddObjectBus()
-                .AddFilesystemObjectBus()
-                .RunNowAndWait(async () =>
+            await FrameworkHost.Create()
+                .AddObjectBus<FsOBus>()
+                .Run(async () =>
                 {
                     var path = @"c:\temp\tests\" + this.GetType().FullName + @"\" + nameof(Pass) + @"\TestFile";
                     var pathWithExtension = path + ".json";
-                    var reference = new LocalFileReference(path);
+                    var reference = new LocalFileReference(pathWithExtension);
 
                     var obj = TestClass1.Create;
                     {
-                        //await OBus.Set(reference, obj);
                         await reference.Set(obj);  // ----------------------- Set
                         Assert.True(File.Exists(pathWithExtension));
                     }
@@ -40,7 +37,7 @@ namespace OBus_
                     Assert.Equal(expectedJson, textFromFile);
 
                     {
-                        var deserialized = await OBus.Get(reference);  // ----------------------- Get
+                        var deserialized = await OBus.Get<object>(reference);  // ----------------------- Get
                         Assert.Equal(typeof(TestClass1), deserialized.GetType());
                         TestClass1 obj2 = (TestClass1)deserialized;
                         Assert.Equal(obj.StringProp, obj2.StringProp);

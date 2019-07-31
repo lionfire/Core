@@ -579,11 +579,6 @@ namespace LionFire.Vos
 
         #region Construction Operators
 
-        public static implicit operator VobHandle<ObjectType>(Vob vob)
-        {
-            return new VobHandle<ObjectType>(vob);
-        }
-
         public static explicit operator VobHandle<ObjectType>(string path)
         {
             return VBase.Default[path].ToHandle<ObjectType>();

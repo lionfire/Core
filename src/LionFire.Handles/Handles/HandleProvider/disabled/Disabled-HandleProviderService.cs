@@ -7,7 +7,7 @@
 //{
 //    public class HandleProviderService : IHandleProviderService
 //    {
-//        public IEnumerable<Type> HandleTypes => InjectionContext.Current.GetService<IEnumerable<IHandleProvider>>().SelectMany(hp => hp.HandleTypes);
+//        public IEnumerable<Type> HandleTypes => DependencyContext.Current.GetService<IEnumerable<IHandleProvider>>().SelectMany(hp => hp.HandleTypes);
 
 //        public H<T> ToHandleOrThrow<T>(IReference reference) where T : class
 //        {
@@ -19,7 +19,7 @@
 
 //        public H<T> GetHandle<T>(IReference reference, T handleObject = default(T))
 //        {
-//            foreach(var hp in InjectionContext.Current.GetService<IEnumerable<IHandleProvider>>())
+//            foreach(var hp in DependencyContext.Current.GetService<IEnumerable<IHandleProvider>>())
 //            {
 //                var h = hp.GetHandle<T>(reference, handleObject);
 //                if (h != null) return h;

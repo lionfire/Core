@@ -7,6 +7,6 @@ namespace LionFire.Referencing
 {
     public interface IHasHandle
     {
-        IHandle Handle { get;  }
+        H Handle { get;  }
     }
 }

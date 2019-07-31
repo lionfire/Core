@@ -9,7 +9,7 @@ namespace LionFire.Applications.Hosting
 {
     public static class AppInfoInstances 
     {
-        public static AppInfo CurrentAppInfo => InjectionContext.Current.GetService<AppInfo>();
-        public static AppInfo MainAppInfo => InjectionContext.Default.GetService<AppInfo>();
+        public static AppInfo CurrentAppInfo => DependencyContext.Current.GetService<AppInfo>();
+        public static AppInfo MainAppInfo => DependencyContext.Default.GetService<AppInfo>();
     }
 }

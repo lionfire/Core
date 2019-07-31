@@ -10,5 +10,7 @@ namespace LionFire.Assets
     {
         Type Type { get; }
         string AssetSubPath { get; }
+
+        AssetID ID { get; }
     }
 }

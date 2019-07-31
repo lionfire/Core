@@ -7,7 +7,7 @@ using LionFire.Referencing;
 
 namespace LionFire.Vos
 {
-    public class VosReference : ReferenceBase, IVosReference
+    public class VosReference : ReferenceBase<VosReference>, IVosReference
     {
         #region Ontology
 
@@ -118,40 +118,39 @@ namespace LionFire.Vos
                 }
                 return sb.ToString();
             }
+            protected set
+            {
+                if (string.IsNullOrWhiteSpace(value))
+                {
+                    Reset();
+                    return;
+                }
+                int index = 0;
+                if (value.StartsWith(LionPath.HostDelimiter))
+                {
+                    index += LionPath.HostDelimiter.Length;
+                    Host = value.Substring(index, index + value.IndexOfAny(LionPath.Delimiters, index));
+                }
+                if (value[index] == LionPath.PortDelimiter)
+                {
+                    index++;
+                    Port = value.Substring(index, index + value.IndexOfAny(LionPath.Delimiters, index));
+                }
+                if (value[index] == LionPath.PathDelimiter)
+                {
+                    //index += PathDelimiter.Length; -- Keep the initial /
+                    //Path = value.Substring(index);
+                    Path = value.Substring(index, index + value.IndexOfAny(LionPath.Delimiters, index));
+                }
+                if (value[index] == VosPath.LayerDelimiter)
+                {
+                    throw new NotImplementedException("TODO: Reimplement Layer delimiter");
+                    //index++;
+                    //Package = value.Substring(index, index + value.IndexOfAny(VosPath.Delimiters, index));
+                }
+            }
         }
-
-        protected void SetKey(string key)
-        {
-            if (string.IsNullOrWhiteSpace(key))
-            {
-                Reset();
-                return;
-            }
-            int index = 0;
-            if (key.StartsWith(LionPath.HostDelimiter))
-            {
-                index += LionPath.HostDelimiter.Length;
-                Host = key.Substring(index, index + key.IndexOfAny(LionPath.Delimiters, index));
-            }
-            if (key[index] == LionPath.PortDelimiter)
-            {
-                index++;
-                Port = key.Substring(index, index + key.IndexOfAny(LionPath.Delimiters, index));
-            }
-            if (key[index] == LionPath.PathDelimiter)
-            {
-                //index += PathDelimiter.Length; -- Keep the initial /
-                //Path = value.Substring(index);
-                Path = key.Substring(index, index + key.IndexOfAny(LionPath.Delimiters, index));
-            }
-            if (key[index] == VosPath.LayerDelimiter)
-            {
-                throw new NotImplementedException("TODO: Reimplement Layer delimiter");
-                //index++;
-                //Package = key.Substring(index, index + key.IndexOfAny(VosPath.Delimiters, index));
-            }
-        }
-
+        
         #endregion
 
 

@@ -2,8 +2,11 @@
 using System.Collections.Generic;
 using System.Text;
 using LionFire.Applications.Hosting;
+using LionFire.Hosting;
 using LionFire.ObjectBus;
 using LionFire.ObjectBus.Redis;
+using LionFire.ObjectBus.RedisPub;
+using LionFire.Referencing;
 using Xunit;
 
 namespace RedisOBoc_
@@ -15,13 +18,10 @@ namespace RedisOBoc_
         {
             const string testChildVal = "testChildVal";
 
-            await new AppHost()
-                .AddSerialization()
-                .AddNewtonsoftJson()
-                .AddObjectBus()
-                .AddRedisObjectBus()
-                .AddRedisPubObjectBus()
-                .RunNowAndWait(async () =>
+            await FrameworkHost.Create()
+                .AddObjectBus<RedisOBus>()
+                .AddObjectBus<RedisPubOBus>()
+                .RunAndExit(async () =>
                 {
                     var dir = @"\temp\tests\" + this.GetType().FullName + @"\" + nameof(Pass) + @"\";
                     var rDir = new RedisReference(dir);

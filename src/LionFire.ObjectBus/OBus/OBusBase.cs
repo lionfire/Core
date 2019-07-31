@@ -1,12 +1,16 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using LionFire.Applications.Hosting;
 using LionFire.DependencyInjection;
 using LionFire.Referencing;
+using LionFire.Referencing.Handles;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace LionFire.ObjectBus
 {
-    public abstract class OBusBase : IOBus
+    public abstract class OBusBase<TConcrete> : IOBus
+        where TConcrete : IOBus
     {
         public virtual IOBase SingleOBase => null;
         public virtual IOBase DefaultOBase => SingleOBase;
@@ -28,14 +32,54 @@ namespace LionFire.ObjectBus
         //        return result;
         //    }
 
-        public abstract IEnumerable<string> UriSchemes { get; }
-        public abstract IEnumerable<Type> ReferenceTypes { get; }
         public abstract IEnumerable<Type> HandleTypes { get; }
 
+        #region IReferenceProvider
+
+        public abstract IEnumerable<Type> ReferenceTypes { get; }
+
+        public abstract IEnumerable<string> UriSchemes { get; }
+
+        public abstract IReference TryGetReference(string uri);
+
+        #endregion
+
         public abstract IOBase TryGetOBase(IReference reference);
-        public abstract IReference TryGetReference(string referenceString, bool strictMode);
-        public virtual bool IsValid(IReference reference) => reference != null && UriSchemes.Contains(reference.Scheme);
-        bool ICompatibleWithSome<string>.IsCompatibleWith(string stringUri) => stringUri != null && UriSchemes.Where(scheme => stringUri.StartsWith(scheme)).Any();
+
+        //public virtual bool IsValid(IReference reference) => reference != null && UriSchemes.Contains(reference.Scheme); // Not sure on usefulness of this
+        //bool ICompatibleWithSome<string>.IsCompatibleWith(string stringUri) => stringUri != null && UriSchemes.Where(scheme => stringUri.StartsWith(scheme)).Any();
+
+        /// <summary>
+        /// Register as the singleton for all IHandleProvider&lt;&gt;'s that this OBus implements
+        /// </summary>
+        /// <param name="sc"></param>
+        /// <returns></returns>
+        public IServiceCollection AddServices(IServiceCollection sc)
+        {
+
+            foreach (var type in ReferenceTypes)
+            {
+                {
+                    var hpType = typeof(IHandleProvider<>).MakeGenericType(type);
+                    if (hpType.IsAssignableFrom(this.GetType()))
+                    {
+                        sc.AddSingleton(hpType, this);
+                    }
+                }
+                {
+                    var rhpType = typeof(IReadHandleProvider<>).MakeGenericType(type);
+                    if (rhpType.IsAssignableFrom(this.GetType()))
+                    {
+                        sc.AddSingleton(rhpType, this);
+                    }
+                }
+            }
+            sc.TryAddEnumerableSingleton<IOBus, TConcrete>();
+            sc.TryAddEnumerableSingleton<IReferenceProvider, TConcrete>();
+            sc.TryAddEnumerableSingleton<IReadHandleProvider, TConcrete>();
+            sc.TryAddEnumerableSingleton<IHandleProvider, TConcrete>();
+            return sc;
+        }
 
         public virtual bool IsCompatibleWith(IReference obj)
         {
@@ -92,6 +136,8 @@ namespace LionFire.ObjectBus
         {
             throw new NotImplementedException();
         }
+
+
     }
 
     //public abstract class OBaseProvider : IOBaseProvider

@@ -15,9 +15,9 @@ namespace LionFire.Vos
 
         #region Copy From
 
-        protected override void CopyFrom(IReference other, string newPath = null)
+        protected override void CopyFromWithPath(IReference other, string newPath = null)
         {
-            base.CopyFrom(other, newPath);
+            base.CopyFromWithPath(other, newPath);
             if (other is IVReference vref)
             {
                 Package = vref.Package;

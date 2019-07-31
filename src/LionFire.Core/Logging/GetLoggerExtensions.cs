@@ -36,8 +36,8 @@ namespace LionFire.Extensions.Logging
                     return GetLoggerMethod(name);
                 }
 
-                // REVIEW: Use InjectionContext?
-                var fac = InjectionContext.Current?.GetService<ILoggerFactory>();
+                // REVIEW: Use DependencyContext?
+                var fac = DependencyContext.Current?.GetService<ILoggerFactory>();
                 if (fac == null)
                 {
                     return NullLogger;

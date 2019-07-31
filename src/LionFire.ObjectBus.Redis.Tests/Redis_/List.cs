@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 using LionFire.Applications.Hosting;
+using LionFire.Hosting;
 using LionFire.ObjectBus;
 using LionFire.ObjectBus.Redis;
 using LionFire.Referencing;
@@ -18,12 +19,9 @@ namespace Redis_
 
             const int itemCount = 200;
 
-            await new AppHost()
-                    .AddSerialization()
-                    .AddNewtonsoftJson()
-                    .AddObjectBus()
-                    .AddRedisObjectBus()
-                    .RunNowAndWait(async () =>
+            await FrameworkHost.Create()
+                    .AddObjectBus<RedisOBus>()
+                    .RunAndExit(async () =>
                     {
                         var path = @"\temp\tests\" + GetType().FullName + @"\" + nameof(Pass) + @"\TestFile";
 

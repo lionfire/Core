@@ -95,8 +95,8 @@ namespace LionFire.MultiTyping
                 if (service != null) return service;
             }
 
-            // TODO: Use InjectionContext parameter to do further querying
-            // TODO: Use static InjectionContext.Current to do further querying
+            // TODO: Use DependencyContext parameter to do further querying
+            // TODO: Use static DependencyContext.Current to do further querying
 
             return null;
         }

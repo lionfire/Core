@@ -32,7 +32,7 @@ namespace LionFire.IO.Filesystem // MOVE to LionFire.IO.Filesystem
         public static List<IFsPersistenceInterceptor> Interceptors => interceptors;
         private static readonly List<IFsPersistenceInterceptor> interceptors = new List<IFsPersistenceInterceptor>();
 
-        // TODO: get this from InjectionContext
+        // TODO: get this from DependencyContext
         public static FsPersistenceOptions Options { get; set; } = new FsPersistenceOptions();
     }
 
@@ -202,6 +202,108 @@ namespace LionFire.ObjectBus.Filesystem
                 throw;
             }
         }
+        public static async Task<object> GetObjectFromPathExtensionless(string diskPath, Type type = null, Lazy<PersistenceOperation> operation = null, PersistenceContext context = null)
+        {
+            #region Give Interceptors a chance to return the result
+
+            // REVIEW
+
+            foreach (var interceptor in FsPersistence.Interceptors)
+            {
+                var obj = interceptor.Read(diskPath, type);
+                if (obj is DBNull)
+                {
+                    return Task.FromResult<object>(null);
+                }
+
+                if (obj != null)
+                {
+                    return Task.FromResult(obj);
+                }
+            }
+
+            #endregion
+
+            try
+            {
+                return await new Func<object>(() =>
+                {
+                    //bool deleteFile = false; // FUTURE?
+                    try
+                    {
+                        #region Directory
+
+                        var dir = Path.GetDirectoryName(diskPath);
+                        if (!Directory.Exists(dir))
+                        {
+                            return null; // DOESNOTEXIST
+                        }
+
+                        #endregion
+
+                        #region candidatePaths
+
+                        var fileName = Path.GetFileName(diskPath);
+                        var candidatePaths = Directory.GetFiles(dir, fileName + "*").ToList();
+                        if (candidatePaths.Count == 0)
+                        {
+                            return null; // DOESNOTEXIST
+                        }
+
+
+                        #endregion
+
+                        #region Operation
+
+                        var persistenceOperation = new PersistenceOperation()
+                        {
+                            Type = type,
+                            Deserialization = new DeserializePersistenceOperation()
+                            {
+                                #region ENH - optional alternative: combine dir and filenames to get candidatepaths
+                                //Directory = dir,
+                                //CandidateFilemes = 
+                                #endregion
+                                CandidatePaths = candidatePaths.Select(path => Path.Combine(dir, Path.GetFileName(path))),
+                            }
+                        };
+
+                        #endregion
+
+                        #region Context
+
+                        if (context != null)
+                        {
+                            throw new NotImplementedException($"{nameof(context)} not implemented yet");
+                        }
+                        var effectiveContext = FsOBaseDeserializingPersistenceContext;
+
+                        #endregion
+
+                        return persistenceOperation.ToObject<object>(effectiveContext);
+                    }
+                    finally
+                    {
+                        //if (deleteFile)
+                        //{
+                        //    try
+                        //    {
+                        //        File.Delete(diskPath);
+                        //    }
+                        //    catch (Exception ex)
+                        //    {
+                        //        l.Error("Failed to autodelete empty file: " + diskPath + ". " + ex);
+                        //    }
+                        //}
+                    }
+                }).AutoRetry(maxRetries: FsPersistence.Options.MaxGetRetries, millisecondsBetweenAttempts: FsPersistence.Options.MillisecondsBetweenGetRetries);
+            }
+            catch (Exception ex)
+            {
+                l.Error("Exception retrieving '" + diskPath + "': " + ex.ToString());
+                throw;
+            }
+        }
         public static async Task<bool> Exists(string objectPath, Type type = null)
         {
             if (type == null)
@@ -220,12 +322,28 @@ namespace LionFire.ObjectBus.Filesystem
         public static async Task<object> TryGet(string objectPath, Type type = null)
         {
             var objects = new List<object>();
+            
+            object obj = await GetObjectFromPath(objectPath, type);
+            objects.Add(obj);
+
+            if (objects.Count > 1)
+            {
+                return new MultiType(objects);
+            }
+            else
+            {
+                return objects.SingleOrDefault();
+            }
+        }
+        public static async Task<object> TryGetExtensionless(string objectPath, Type type = null) // MOVE
+        {
+            var objects = new List<object>();
 
             var paths = GetFilePathsForNamePath(objectPath);
 
             foreach (var path in paths)
             {
-                object obj = await GetObjectFromPath(path, type);
+                object obj = await GetObjectFromPathExtensionless(path, type);
                 objects.Add(obj);
             }
 
@@ -370,7 +488,7 @@ namespace LionFire.ObjectBus.Filesystem
 
         //public static ISerializationStrategy GetSerializer(object obj = null, string path = null)
         //{
-        //    return InjectionContext.Current.GetService<ISerializationProvider>().Strategy(
+        //    return DependencyContext.Current.GetService<ISerializationProvider>().Strategy(
         //        new SerializerSelectionContext
         //        {
         //            Serialize = true,
@@ -381,7 +499,7 @@ namespace LionFire.ObjectBus.Filesystem
         //public static ISerializationStrategy GetDeserializer(object obj = null, string path = null)
         //{
         //    throw new NotImplementedException();
-        //    return InjectionContext.Current.GetService<ISerializationProvider>().Strategy(
+        //    return DependencyContext.Current.GetService<ISerializationProvider>().Strategy(
         //        new SerializerSelectionContext
         //        {
         //            Deserialize = true,
@@ -394,7 +512,7 @@ namespace LionFire.ObjectBus.Filesystem
         //{
 
 
-        //    //var serializer = InjectionContext.Current.GetService<ISerializationProvider>().Strategy(
+        //    //var serializer = DependencyContext.Current.GetService<ISerializationProvider>().Strategy(
         //    //    new SerializerSelectionContext
         //    //    {
         //    //        Deserialize = true,

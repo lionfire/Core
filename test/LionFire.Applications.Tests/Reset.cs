@@ -1,101 +1,103 @@
-using System;
-using System.Runtime.CompilerServices;
-using System.Threading.Tasks;
-using LionFire.Applications.Hosting;
-using LionFire.Serialization;
-using Xunit;
+// REVIEW - Is there still a use for AppHost? Should there be a static DependencyContext.Default?  How to manage statics?  How to do unit testing?
 
-namespace LionFire.Applications.Tests
-{
-    public class Reset_ManualSingleton
-    {
-        [Fact]
-        public async void Fail()
-        {
-            AppHost.DetectUnitTestMode = false;
+//using System;
+//using System.Runtime.CompilerServices;
+//using System.Threading.Tasks;
+//using LionFire.Applications.Hosting;
+//using LionFire.Serialization;
+//using Xunit;
 
-            AppHost.Reset();
-            await No_SerializationProvider();
+//namespace LionFire.Applications.Tests
+//{
+//    public class Reset_ManualSingleton
+//    {
+//        [Fact]
+//        public async void Fail()
+//        {
+//            AppHost.DetectUnitTestMode = false;
 
-            AppHost.Reset();
-            await With_SerializationProvider();
+//            AppHost.Reset();
+//            await No_SerializationProvider();
 
-            // MISSING: AppHost.Reset();
-            await No_SerializationProvider(expectFail: true);
-        }
+//            AppHost.Reset();
+//            await With_SerializationProvider();
 
-        [Fact]
-        public async void Pass()
-        {
-            AppHost.DetectUnitTestMode = false;
+//            // MISSING: AppHost.Reset();
+//            await No_SerializationProvider(expectFail: true);
+//        }
 
-            AppHost.Reset();
-            await No_SerializationProvider();
+//        [Fact]
+//        public async void Pass()
+//        {
+//            AppHost.DetectUnitTestMode = false;
 
-            AppHost.Reset();
-            await With_SerializationProvider();
+//            AppHost.Reset();
+//            await No_SerializationProvider();
 
-            AppHost.Reset();
-            await No_SerializationProvider();
-        }
+//            AppHost.Reset();
+//            await With_SerializationProvider();
 
-        [Fact]
-        public async void Pass_UnitTestMode()
-        {
-            AppHost.Reset();
-            AppHost.DetectUnitTestMode = true;
+//            AppHost.Reset();
+//            await No_SerializationProvider();
+//        }
 
-            await No_SerializationProvider();
-            await With_SerializationProvider();
-            await No_SerializationProvider();
-        }
+//        [Fact]
+//        public async void Pass_UnitTestMode()
+//        {
+//            AppHost.Reset();
+//            AppHost.DetectUnitTestMode = true;
 
-        #region Utilities
+//            await No_SerializationProvider();
+//            await With_SerializationProvider();
+//            await No_SerializationProvider();
+//        }
 
-        private async Task No_SerializationProvider(bool expectFail = false, [CallerMemberName] string callerName = null)
-        {
-            var app = new AppHost(appId: callerName + $" No_SerializationProvider({expectFail})");
+//        #region Utilities
+
+//        private async Task No_SerializationProvider(bool expectFail = false, [CallerMemberName] string callerName = null)
+//        {
+//            var app = new AppHost(appId: callerName + $" No_SerializationProvider({expectFail})");
             
-            await app.RunNowAndWait(() =>
-            {
+//            await app.RunNowAndWait(() =>
+//            {
                 
-                if(!expectFail && !AppHost.DetectUnitTestMode)
-                {
-                    Assert.Equal(app.AppId, AppHost.MainApp.AppId);
-                }
-                else
-                {
-                    Assert.NotEqual(app.AppId, AppHost.MainApp.AppId);
-                }
+//                if(!expectFail && !AppHost.DetectUnitTestMode)
+//                {
+//                    Assert.Equal(app.AppId, AppHost.MainApp.AppId);
+//                }
+//                else
+//                {
+//                    Assert.NotEqual(app.AppId, AppHost.MainApp.AppId);
+//                }
                 
-                var ser = Defaults.TryGet<ISerializationProvider>();
-                if (!expectFail)
-                {
-                    Assert.Null(ser);
-                }
-                else
-                {
-                    Assert.NotNull(ser);
-                }
-            });
-        }
+//                var ser = Defaults.TryGet<ISerializationProvider>();
+//                if (!expectFail)
+//                {
+//                    Assert.Null(ser);
+//                }
+//                else
+//                {
+//                    Assert.NotNull(ser);
+//                }
+//            });
+//        }
 
-        private async Task With_SerializationProvider([CallerMemberName] string callerName = null)
-        {
-            var app = new AppHost(appId: callerName + $" With_SerializationProvider");
+//        private async Task With_SerializationProvider([CallerMemberName] string callerName = null)
+//        {
+//            var app = new AppHost(appId: callerName + $" With_SerializationProvider");
 
-            await app
-                .AddSerialization()
-                .RunNowAndWait(() =>
-                {
-                    if(!AppHost.DetectUnitTestMode) Assert.Equal(app.AppId, AppHost.MainApp.AppId);
-                    var ser = Defaults.TryGet<ISerializationProvider>();
-                    Assert.NotNull(ser);
-                })
-            ;
-        }
+//            await app
+//                .AddSerialization()
+//                .RunNowAndWait(() =>
+//                {
+//                    if(!AppHost.DetectUnitTestMode) Assert.Equal(app.AppId, AppHost.MainApp.AppId);
+//                    var ser = Defaults.TryGet<ISerializationProvider>();
+//                    Assert.NotNull(ser);
+//                })
+//            ;
+//        }
 
-        #endregion
+//        #endregion
 
-    }
-}
+//    }
+//}
