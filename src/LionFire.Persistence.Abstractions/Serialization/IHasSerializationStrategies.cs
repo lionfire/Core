@@ -5,7 +5,7 @@ namespace LionFire.Serialization
 {
     public interface IHasSerializationStrategies
     {
-        IEnumerable<ISerializationStrategy> AllStrategies { get; }
+        IEnumerable<ISerializationStrategy> Strategies { get; }
     }
 
     public static class IHasSerializationStrategiesExtensions
@@ -15,7 +15,7 @@ namespace LionFire.Serialization
             var list = new List<(string, ISerializationStrategy, SerializationFormat)>();
             var extensions = new HashSet<string>();
 
-            foreach (var strategy in hss.AllStrategies)
+            foreach (var strategy in hss.Strategies)
             {
                 if (filter != null && !filter(strategy)) continue;
                 foreach (var format in strategy.Formats)

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using LionFire.DependencyInjection;
 using LionFire.Ontology;
+using LionFire.Persistence;
 using LionFire.Referencing;
 
 namespace LionFire.Vos
@@ -69,7 +70,7 @@ namespace LionFire.Vos
         {
             if (!HasObject)
             {
-                await TryRetrieveObject().ConfigureAwait(false);
+                await RetrieveObject().ConfigureAwait(false);
                 if (!HasObject) { Object = ReferenceObjectFactory.ConstructDefault<T>(Reference); }
             }
             return Object;
@@ -124,16 +125,16 @@ namespace LionFire.Vos
 
 #endregion
 
-        public async Task Commit(object persistenceContext = null)
+        public async Task Commit()
         {
             if (DeletePending)
             {
-                await DeleteObject(persistenceContext);
+                await DeleteObject();
                 DeletePending = false;
             }
             else
             {
-                await WriteObject(persistenceContext);
+                await WriteObject();
             }
         }
 
@@ -147,11 +148,12 @@ namespace LionFire.Vos
 
 #region Writable Handle Implementation
 
-        public Task DeleteObject(object persistenceContext = null) => throw new NotImplementedException();
-        public Task WriteObject(object persistenceContext = null) => throw new NotImplementedException();
-        public Task<bool?> Delete() => throw new NotImplementedException();
+        public Task DeleteObject() => throw new NotImplementedException();
+        public Task WriteObject() => throw new NotImplementedException();
+        public Task<bool> Delete() => throw new NotImplementedException();
+
         public void OnRenamed(IVobHandle<T> newHandle) => throw new NotImplementedException();
 
-#endregion
+        #endregion
     }
 }

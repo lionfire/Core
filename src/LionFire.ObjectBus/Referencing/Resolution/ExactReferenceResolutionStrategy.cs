@@ -1,7 +1,8 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
+using LionFire.Referencing;
 
-namespace LionFire.Referencing.Persistence
+namespace LionFire.Persistence.Resolution
 {
     public class ExactReferenceResolutionStrategy : IReferenceResolutionStrategy
     {

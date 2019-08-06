@@ -4,12 +4,13 @@ using System.Collections.ObjectModel;
 using LionFire.Execution;
 using System.IO;
 using System.Diagnostics;
-using LionFire.Handles;
+using LionFire.Persistence.Handles;
 using System.Collections.Specialized;
 using System.ComponentModel;
 using System.Collections.Generic;
 using LionFire.ExtensionMethods;
 using LionFire.Structures;
+using LionFire.Persistence;
 
 namespace LionFire.Serialization
 {

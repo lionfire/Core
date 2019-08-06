@@ -4,7 +4,7 @@ using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 
-namespace LionFire.Referencing.Handles
+namespace LionFire.Persistence.Handles
 {
     /// <summary>
     /// 

@@ -12,6 +12,11 @@ namespace LionFire.ObjectBus
         Task<IRetrieveResult<T>> TryGetName<T>(IReference reference);
     }
 
+    //public interface IOBaseImpl 
+    //{
+    // Not sure if this is needed / desired.  If going for it, may need extension methods this IOBase to cast to IOBaseImpl.
+    //}
+
     /// <summary>
     /// Performs operations on a certain URI schemas and types of IReferences that it understands (typically just one schema and one type.)
     /// 
@@ -37,27 +42,28 @@ namespace LionFire.ObjectBus
 
         // RENAME to Retrieve, and instead have EnsureGet which throws on not found
         // TODO BREAKING: make Get an extension method on HBase(this IOBase obase, IReference)
-        Task<RetrieveResult<T>> TryGet<T>(IReference reference);
+        Task<IRetrieveResult<T>> TryGet<T>(IReference reference);
 
-
-        Task<RetrieveResult<bool>> Exists(IReference reference);
+        Task<bool> Exists(IReference reference);
 
         // FUTURE: flags for hidden, persisted
         //IEnumerable<string> GetChildrenNames(IReference parent, QueryFlags requiredFlags = QueryFlags.None, QueryFlags excludeFlags = QueryFlags.None);
 
-        Task<IEnumerable<string>> GetKeys(IReference parent);
-        [Obsolete("Use GetKeys instead")]
-        IEnumerable<string> GetChildrenNames(IReference parent); // RENAME to GetKeyNames
+        //Task<IEnumerable<string>> List(IReference parent);
+
+        //[Obsolete("Use GetKeys instead")]
+        //IEnumerable<string> GetChildrenNames(IReference parent); // RENAME to GetKeyNames
 
 
-        Task<IEnumerable<string>> GetKeysOfType<T>(IReference parent) where T : class, new();
-        [Obsolete("Use GetKeysOfType")]
-        IEnumerable<string> GetChildrenNamesOfType<T>(IReference parent) where T : class, new();
+        Task<IEnumerable<string>> List<T>(IReference parent) where T : class, new();
 
-        Task<IEnumerable<string>> GetKeysOfType(IReference parent, Type type);
+        //[Obsolete("Use GetKeysOfType")]
+        //IEnumerable<string> GetChildrenNamesOfType<T>(IReference parent) where T : class, new();
 
-        [Obsolete("Use GetKeysOfType")]
-        IEnumerable<string> GetChildrenNamesOfType(IReference parent, Type type);
+        //Task<IEnumerable<string>> List(IReference parent, Type type);
+
+        //[Obsolete("Use GetKeysOfType")]
+        //IEnumerable<string> GetChildrenNamesOfType(IReference parent, Type type);
 
         //event Action<string> Changed;
 
@@ -95,19 +101,28 @@ namespace LionFire.ObjectBus
         /// <param name="type"></param>
         /// <param name="allowOverwrite"></param>
         /// <returns></returns>
-        Task Set(IReference reference, object obj, Type type = null, bool allowOverwrite = true);
-#error NEXT: Change Set() to Set<T>()
+        Task<IPersistenceResult> Set<T>(IReference reference, T obj, bool allowOverwrite = true);
 
         Task<IPersistenceResult> TryDelete<T>(IReference reference);
 
-        /// <returns>true if can be fully deleted, false if no delete can take place, and null if it can be partially deleted</returns>
-        Task<IPersistenceResult> CanDelete<T>(IReference reference);
+        /// <summary>
+        /// Detect whether deletion of the specified reference will succeed
+        /// </summary>
+        /// <returns>A IPersistenceResult with PreviewSuccess or PreviewFail set</returns>
+        Task<IPersistenceResult> CanDeleteImpl<T>(IReference reference);
 
         #endregion
     }
 
     public static class IOBaseExtensions
     {
+        /// <returns>true if can be fully deleted, false if no delete can take place</returns>
+        public static async Task<bool> CanDelete<T>(this IOBase obase, IReference reference)
+        {
+            var flags = (await obase.CanDeleteImpl<T>(reference)).Flags;
+            return flags.HasFlag(PersistenceResultFlags.PreviewSuccess) && !flags.HasFlag(PersistenceResultFlags.PreviewFail);
+        }
+
         public static Task<IRetrieveResult<object>> TryGet(this IOBase obase, IReference reference) => obase.TryGet<object>(reference);
 
         public static async Task<IRetrieveResult<object>> Get(this IOBase obase, IReference reference)
@@ -122,11 +137,10 @@ namespace LionFire.ObjectBus
 
         public static async Task Delete<T>(this IOBase obase, IReference reference)
         {
-            if ((await obase.TryDelete<T>(reference).ConfigureAwait(false)).WriteCount <= 0)
+            if (!((await obase.TryDelete<T>(reference).ConfigureAwait(false)).IsSuccess()))
             {
                 throw new ObjectNotFoundException("Delete failed: no object found at specified reference.");
             }
         }
     }
-
 }

@@ -53,8 +53,8 @@ namespace LionFire.Serialization
         private ISerializationService service;
 
         #endregion
-
-        public IEnumerable<SerializationStrategyPreference> ResolveToStrategies()
+        
+        public IEnumerable<SerializationStrategyPreference> ResolveAllStrategyPreferences()
         {
             if (individualStrategies == null)
             {
@@ -62,7 +62,7 @@ namespace LionFire.Serialization
                 {
                     individualStrategies = new SerializationStrategyPreference[] { this };
                 }
-                individualStrategies = this.Service.AllStrategies.Select(strategy => new SerializationStrategyPreference(this, strategy));
+                individualStrategies = this.Service.Strategies.Select(strategy => new SerializationStrategyPreference(this, strategy));
             }
             return individualStrategies;
         }

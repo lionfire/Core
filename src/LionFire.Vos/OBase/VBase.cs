@@ -83,29 +83,24 @@ namespace LionFire.Vos
             return result;
         }
 
-        public override Task<IRetrieveResult<object>> TryGet(VosReference reference, Type type) => TryGet<object>(reference);
-
         #endregion
 
         #region Set
 
-        protected override Task _Set(VosReference reference, object obj, Type type = null, bool allowOverwrite = true, bool preview = false) => throw new NotImplementedException();
+        protected override Task<IPersistenceResult> _Set<T>(VosReference reference, T obj, bool allowOverwrite = true) => throw new NotImplementedException();
 
         #endregion
 
         #region Delete
 
-        public override Task<bool?> CanDelete(VosReference reference) => throw new NotImplementedException();
-        public override Task<bool?> TryDelete(VosReference reference) => throw new NotImplementedException();
+        public override Task<IPersistenceResult> CanDeleteImpl<T>(VosReference reference) => throw new NotImplementedException();
+        public override Task<IPersistenceResult> TryDelete<T>(VosReference reference) => throw new NotImplementedException();
 
         #endregion
 
         #region List
 
-        public override Task<IEnumerable<string>> GetKeys(VosReference parent) => throw new NotImplementedException();
-        public override Task<IEnumerable<string>> GetKeysOfType<T>(VosReference parent) => throw new NotImplementedException();
-        public override IEnumerable<string> GetChildrenNames(VosReference parent) => throw new NotImplementedException();
-        public override IEnumerable<string> GetChildrenNamesOfType<T>(VosReference parent) => throw new NotImplementedException();
+        public override Task<IEnumerable<string>> List<T>(VosReference parent) => throw new NotImplementedException();
 
         #endregion
 

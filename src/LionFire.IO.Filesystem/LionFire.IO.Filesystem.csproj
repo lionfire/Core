@@ -5,7 +5,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\LionFire.Handles\LionFire.Handles.csproj" />
+    <ProjectReference Include="..\LionFire.Handles\LionFire.Persistence.Handles.csproj" />
     <ProjectReference Include="..\LionFire.Referencing.Abstractions\LionFire.Referencing.Abstractions.csproj" />
     <ProjectReference Include="..\LionFire.Referencing\LionFire.Referencing.csproj" />
   </ItemGroup>

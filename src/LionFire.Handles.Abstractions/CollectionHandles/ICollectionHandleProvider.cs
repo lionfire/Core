@@ -1,8 +1,9 @@
-﻿using System;
+﻿using LionFire.Referencing;
+using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace LionFire.Referencing.Handles
+namespace LionFire.Persistence.Handles
 {
     public interface ICollectionHandleProvider : IReadCollectionHandleProvider
     {

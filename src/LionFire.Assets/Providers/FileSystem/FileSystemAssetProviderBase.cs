@@ -75,11 +75,12 @@ namespace LionFire.Assets.Providers.FileSystem
         public string FileExtensionWithDot { get { return (string.IsNullOrWhiteSpace(FileExtension) ? "" : "." + FileExtension); } }
 
 
-        public async Task<IEnumerable<string>> Find<T>(string searchString = null, object context = null)
+        public async Task<IEnumerable<string>> Find<T>(string searchString = null)
         {
             return await Task.Run(() =>
             {
-                var dir = GetPath<T>(context: context);
+                var dir = GetPath<T>();
+                //var dir = GetPath<T>(context: context);
                 if (searchString == null) searchString = "*";
                 var result = new List<string>();
                 foreach (var path in Directory.GetFiles(dir, searchString + FileExtensionWithDot))

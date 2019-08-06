@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
+using LionFire.Persistence.Resolution;
 using LionFire.Referencing;
-using LionFire.Referencing.Persistence;
 using LionFire.Structures;
 
 namespace LionFire.ObjectBus.Filesystem

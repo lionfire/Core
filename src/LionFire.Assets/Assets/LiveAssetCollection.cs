@@ -3,7 +3,7 @@ using LionFire.Structures;
 using LionFire.Serialization;
 using System.IO;
 using LionFire.ExtensionMethods;
-using LionFire.Handles;
+using LionFire.Persistence.Handles;
 using System.ComponentModel;
 using LionFire.Assets;
 using System.Threading.Tasks;

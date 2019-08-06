@@ -1,4 +1,5 @@
-﻿using LionFire.Referencing;
+﻿using LionFire.Persistence.Handles;
+using LionFire.Referencing;
 using System;
 using System.Threading.Tasks;
 
@@ -41,7 +42,7 @@ namespace LionFire.IO
                     return;
                 }
 
-                if (path != default(string))
+                if (path != default)
                 {
                     throw new AlreadySetException();
                 }

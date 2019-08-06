@@ -17,6 +17,7 @@ namespace LionFire.ObjectBus
 
             return sc;
         }
+
         public static IHostBuilder AddObjectBus<T>(this IHostBuilder host) 
             where T : class, IOBus, new()
         {

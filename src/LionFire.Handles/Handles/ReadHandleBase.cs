@@ -5,7 +5,7 @@ using System.ComponentModel;
 using System.Threading.Tasks;
 using LionFire.Structures;
 
-namespace LionFire.Handles
+namespace LionFire.Persistence.Handles
 {
     public abstract class ReadHandleBase<T> : H<T>, 
         //IReadHandle<T>, 

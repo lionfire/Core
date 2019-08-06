@@ -7,11 +7,14 @@ using LionFire.Applications.Hosting;
 using LionFire.Hosting;
 using LionFire.Hosting.ExtensionMethods;
 using LionFire.ObjectBus;
+using LionFire.ObjectBus.ExtensionlessFs;
 using LionFire.ObjectBus.Filesystem;
 using LionFire.ObjectBus.Filesystem.Tests;
 using LionFire.ObjectBus.Testing;
 using LionFire.Referencing;
 using Xunit;
+using LionFire.ObjectBus.ExtensionlessFs;
+using LionFire.Serialization;
 
 namespace Handle
 {
@@ -24,10 +27,17 @@ namespace Handle
 
         private async Task _Pass(bool withExtension)
         {
-            await FrameworkHost.Create(
+            var host = FrameworkHost.Create(
                 //serializers: s => s.AddJson()
-                )
-                    .AddObjectBus<FsOBus>()
+                );
+
+            if(!withExtension)
+            {
+                host.AddObjectBus<ExtensionlessFSOBus>();
+            }
+
+            await host
+                    .AddObjectBus<FsOBus>()                    
                     .Run(() =>
                     {
                         var pathWithoutExtension = FsTestUtils.TestFile;
@@ -35,7 +45,15 @@ namespace Handle
 
                         File.WriteAllText(path, PersistenceTestUtils.TestClass1Json);
 
-                        var reference = new LocalFileReference(withExtension ? path : pathWithoutExtension); // -------- With / WithoutExtension
+                        IReference reference;
+                        if (withExtension)
+                        {
+                            reference = new FileReference(path);
+                        }
+                        else
+                        {                            
+                            reference = new ExtensionlessFileReference(pathWithoutExtension); 
+                        }
 
                         var h = reference.GetHandle<TestClass1>();
 

@@ -1,4 +1,6 @@
-﻿namespace LionFire.Referencing
+﻿using LionFire.Referencing;
+
+namespace LionFire.Persistence.Handles
 {
     public interface IReadCollectionHandleProvider
     {

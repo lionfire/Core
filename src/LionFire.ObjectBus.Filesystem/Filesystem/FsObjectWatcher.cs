@@ -41,11 +41,11 @@ namespace LionFire.ObjectBus.Filesystem
             }
             set
             {
-                if ((value as LocalFileReference) == reference) return;
-                reference = (LocalFileReference)value;
+                if ((value as FileReference) == reference) return;
+                reference = (FileReference)value;
                 this.Path = reference.Path;
             }
-        } private LocalFileReference reference;
+        } private FileReference reference;
 
         #region Path
 
@@ -147,7 +147,7 @@ namespace LionFire.ObjectBus.Filesystem
 
         void fsw_Changed(object sender, FileSystemEventArgs e)
         {
-            var fileRef = new LocalFileReference(e.FullPath);
+            var fileRef = new FileReference(e.FullPath);
 
             l.Trace("Got change: " + e.ChangeType + " for " + Reference);
             switch (e.ChangeType)

@@ -1,9 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 
-namespace LionFire.Referencing
+namespace LionFire.Persistence
 {
     public static class RHExtensions
     {

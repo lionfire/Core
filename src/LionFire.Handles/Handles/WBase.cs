@@ -1,30 +1,63 @@
-﻿using System.Diagnostics;
+﻿using LionFire.Persistence;
+using LionFire.Persistence.Implementation;
+using LionFire.Referencing;
+using LionFire.Threading;
+using System;
 using System.Threading.Tasks;
 
-namespace LionFire.Referencing
+namespace LionFire.Persistence.Handles
 {
     /// <summary>
     /// Backing fields: none
     /// </summary>
     /// <typeparam name="T"></typeparam>
-    public abstract class WBase<T> : RBase<T>, H<T>
+    public abstract class WBase<T> : RBase<T>, H<T>, ICommitableImpl, IDeletableImpl
     //where T : class
     {
-        // TODO: Delete on set to empty?  Should it be an Option, or per OBase or per handle?
-        //protected override void OnObjectChanged()
-        //{
-        //    if (_object == null)
-        //    {
-        //        DeletePending = true;
-        //    }
-        //    base.OnO
-        //}
+        internal static readonly bool DeleteIfObjectNull = true; // TODO: Decide how to configure/hardcode this
 
         #region Construction
 
         public WBase() { }
-        public WBase(IReference reference) : base(reference) { }
+        public WBase(IReference reference, T handleObject = default) : base(reference, handleObject) { }
 
+        #endregion
+
+        #region Events (TODO)
+
+
+        //event Action<RH<T>, HandleEvents> RH<T>.HandleEvents
+        //{
+        //    add
+        //    {
+        //    }
+
+        //    remove
+        //    {
+        //    }
+        //}
+
+        //event Action<RH<T>, T, T> RH<T>.ObjectReferenceChanged
+        //{
+        //    add
+        //    {
+        //    }
+
+        //    remove
+        //    {
+        //    }
+        //}
+
+        //event Action<RH<T>> RH<T>.ObjectChanged
+        //{
+        //    add
+        //    {
+        //    }
+
+        //    remove
+        //    {
+        //    }
+        //}
         #endregion
 
         #region DeletePending
@@ -34,7 +67,7 @@ namespace LionFire.Referencing
         /// </summary>
         public bool DeletePending
         {
-            get => State.HasFlag(PersistenceState.Persisted);
+            get => State.HasFlag(PersistenceState.DeletePending);
             set
             {
                 if (value)
@@ -48,38 +81,48 @@ namespace LionFire.Referencing
             }
         }
 
+
         #endregion
 
-        public async Task Commit(object persistenceContext = null)
+        public async Task Commit() => (await ((ICommitableImpl)this).Commit()).ThrowIfUnsuccessful();
+
+        async Task<IPersistenceResult> ICommitableImpl.Commit()
         {
-            if (DeletePending)
+            if (DeletePending || (DeleteIfObjectNull && _object == null))
             {
-                await DeleteObject(persistenceContext);
+                var result = await DeleteObject();
                 DeletePending = false;
+                return result;
             }
             else
             {
-                await WriteObject(persistenceContext);
+                return await WriteObject();
             }
         }
 
-        protected abstract Task WriteObject(object persistenceContext = null);
-        protected abstract Task<bool?> DeleteObject(object persistenceContext = null);
+        public async Task<bool> Delete() => (await ((IDeletableImpl)this).Delete()).IsSuccess();
 
-        public async Task<bool?> Delete() => await DeleteObject();
-
-        public async Task<bool?> Delete(object persistenceContext = null)
+        [ThreadSafe(false)]
+        async Task<IPersistenceResult> IDeletableImpl.Delete()
         {
-            this.Object = default(T);
-            var result = await DeleteObject(persistenceContext);
+            this.Object = default;
+            DeletePending = true;
+            var result = await DeleteObject();
             DeletePending = false;
             return result;
         }
 
         public void MarkDeleted()
         {
-            this.Object = default(T);
+            this.Object = default;
             DeletePending = true;
         }
+
+        #region Abstract
+
+        protected abstract Task<IPersistenceResult> WriteObject();
+        protected abstract Task<IPersistenceResult> DeleteObject();
+
+        #endregion
     }
 }

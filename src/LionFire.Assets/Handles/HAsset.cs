@@ -779,7 +779,8 @@ namespace LionFire.Assets
             //var xThis = Object;
             //HAsset.VobHandle.Object = xThis;
             var h = ContextualHandle;
-            await h.Commit(allowDelete);
+            if (allowDelete) throw new NotImplementedException();
+            await h.Commit();
             //Log.Info("ZX Saved - " + this.GetType().Name + " " + h.Reference.ToString());
             //return xThis;
 #endif
@@ -824,7 +825,7 @@ namespace LionFire.Assets
 
         public PersistenceState State => VobHandle.State;
 
-        public bool IsPersisted => VobHandle.IsPersisted;
+        public bool IsPersisted => VobHandle.IsPersisted();
 
 #endif
 
@@ -913,16 +914,17 @@ namespace LionFire.Assets
 
         private void OnPropertyChanged(string propertyName) => PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         public void ForgetObject() => VobHandle.ForgetObject();
-        public Task<bool> TryRetrieveObject() => VobHandle.TryRetrieveObject();
+        //public Task<bool> TryRetrieveObject() => VobHandle.TryRetrieveObject();
         public Task<bool> Exists(bool forceCheck = false) => VobHandle.Exists(forceCheck);
+        public Task<bool> Retrieve() => throw new NotImplementedException();
 
-                #endregion
+        #endregion
 
-                #endregion
+        #endregion
 
 #endif
 
-            }
+    }
 
 #if OLD_UNUSED
     /// <summary>

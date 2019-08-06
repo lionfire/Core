@@ -1,4 +1,5 @@
 ﻿
+using LionFire.Persistence;
 using LionFire.Referencing;
 
 namespace LionFire.Vos

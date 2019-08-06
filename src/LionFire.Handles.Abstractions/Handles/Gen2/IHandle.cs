@@ -1,9 +1,13 @@
-﻿using LionFire.Referencing;
+﻿using LionFire.Persistence.Handles;
+using LionFire.Referencing;
 using LionFire.Structures;
+using System;
 
-namespace LionFire // MOVE to LionFire.Referencing
+namespace LionFire.Persistence
 {
     // TODO REFACTOR - try (again?) to replace this with IReadHandle<object>?
+
+    [Obsolete("Use H<T>")] // TODO
     public interface IHandle : IChangeableReferencable,
         IHandlePersistence,  // Move this to extension methods?
         IHasHandle,

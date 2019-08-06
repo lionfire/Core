@@ -3,8 +3,10 @@ using System.Threading.Tasks;
 using LionFire.ObjectBus;
 using LionFire.Ontology;
 using LionFire.Persistence;
+using LionFire.Persistence.Handles;
+using LionFire.Referencing;
 
-namespace LionFire.Referencing
+namespace LionFire.ObjectBus
 {
     public class OBaseHandle<T> : WBase<T>, IHas<IOBase>
     {
@@ -12,25 +14,27 @@ namespace LionFire.Referencing
         IOBase IHas<IOBase>.Object => OBase;
 
 
-        public OBaseHandle(IReference reference, IOBase obase) : base(reference)
+        public OBaseHandle(IReference reference, IOBase obase, T handleObject = default) : base(reference, handleObject)
         {
             this.OBase = obase ?? throw new ArgumentNullException(nameof(obase));
         }
 
         // Some code duplication with OBaseReadHandle
-        public override async Task<bool> TryRetrieveObject()
-        {
-            var result = await OBase.TryGet(this.Reference).ConfigureAwait(false);
-            return result?.IsRetrieved == true;
-        }
+        public override async Task<IRetrieveResult<T>> RetrieveObject() 
+            => await OBase.TryGet<T>(this.Reference).ConfigureAwait(false);
 
-        protected override async Task<IPersistenceResult> DeleteObject<T>(object persistenceContext = null) 
+        //protected async Task<IPersistenceResult> DeleteObject()
+        //    => await OBase.TryDelete<T>(this.Reference).ConfigureAwait(false);
+        protected override async Task<IPersistenceResult> DeleteObject()
             => await OBase.TryDelete<T>(this.Reference).ConfigureAwait(false);
 
-        protected override async Task WriteObject(object persistenceContext = null)
+        protected override async Task<IPersistenceResult> WriteObject()
         {
             // TODO: propagate persistenceContext?  Or remove it and rely on ambient AsyncLocal?
-            await OBase.Set(this.Reference, Object, typeof(T)).ConfigureAwait(false);
+            var result = await OBase.Set<T>(this.Reference, _object).ConfigureAwait(false);
+            if (!result.IsSuccess()) throw new PersistenceException(result, "Failed to persist.  See Result for more information.");
+            return result;
+
         }
     }
 }

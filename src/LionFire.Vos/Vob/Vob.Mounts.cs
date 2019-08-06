@@ -4,6 +4,8 @@ using System.Linq;
 using System.Text;
 using LionFire.Collections;
 using LionFire.ObjectBus;
+using LionFire.Persistence;
+using LionFire.Persistence.Handles;
 using LionFire.Referencing;
 
 namespace LionFire.Vos

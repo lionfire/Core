@@ -46,6 +46,7 @@ namespace LionFire.ObjectBus.Filesystem
         #region Get
 
         public static async Task<T> GetFromPath<T>(string diskPath, Lazy<PersistenceOperation> operation = null, PersistenceContext context = null) => (T)await GetObjectFromPath(diskPath, typeof(T), operation, context);
+
         public static async Task<object> GetObjectFromPath(string diskPath, Type type = null, Lazy<PersistenceOperation> operation = null, PersistenceContext context = null)
         {
             #region Give Interceptors a chance to return the result
@@ -268,7 +269,7 @@ namespace LionFire.ObjectBus.Filesystem
         public static async Task<object> TryGet(string objectPath, Type type = null)
         {
             var objects = new List<object>();
-            
+
             object obj = await GetObjectFromPath(objectPath, type);
             objects.Add(obj);
 
@@ -314,7 +315,7 @@ namespace LionFire.ObjectBus.Filesystem
             return obj;
         }
 
-        #endregion
+#endregion
 
         #region Set
 
@@ -397,7 +398,7 @@ namespace LionFire.ObjectBus.Filesystem
                     PathIsMissingExtension = false,
                 })).ToLazy();
 
-                var strategyResults = (context?.SerializationProvider ?? DefaultSerializationProvider).Strategies(op, context);
+                var strategyResults = (context?.SerializationProvider ?? DefaultSerializationProvider).ResolveStrategies(op, context);
 
                 foreach (var strategyResult in strategyResults)
                 {
@@ -552,7 +553,7 @@ namespace LionFire.ObjectBus.Filesystem
         {
             string name = System.IO.Path.GetFileNameWithoutExtension(filename);
 
-            int indexOfNameEnd = name.IndexOf(EndOfNameMarker);
+            int indexOfNameEnd = name.IndexOf(FsOBasePersistence.EndOfNameMarker);
 
             if (indexOfNameEnd != -1)
             {

@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Threading.Tasks;
 
 namespace LionFire.ObjectBus
 {
@@ -11,6 +12,10 @@ namespace LionFire.ObjectBus
     {
         public static IOBase TryGetOBase(this IReference reference) => 
             ((reference.GetReadHandle<object>() ?? reference.GetHandle<object>()) as IHas<IOBase>)?.Object;
+
+        public static Task<IEnumerable<string>> List(this IOBase obase, IReference parent, Type type) 
+            => (Task<IEnumerable<string>>)obase.GetType().GetMethod("List", new Type[] { typeof(IReference) }).MakeGenericMethod(type).Invoke(obase, new object[] { parent }); // TOOPTIMIZE - cache the MethodInfo?
+
     }
 
 

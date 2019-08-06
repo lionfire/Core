@@ -6,17 +6,27 @@ using LionFire.DependencyInjection;
 
 namespace LionFire.Serialization
 {
-  
-    /// <summary>
-    /// Uses current injection context (REVIEW)
-    /// </summary>
+
     public class SerializationProvider : ResolvingSerializationServiceBase, ISerializationProvider
     {
-        public IEnumerable<ISerializationService> SerializationServices => DependencyContext.Current.GetService<IEnumerable<ISerializationService>>();
-        public IEnumerable<ISerializationStrategy> SerializationStrategies =>
-            SerializationServices.SelectMany(service => service.AllStrategies).Concat(DependencyContext.Current.GetService<IEnumerable<ISerializationStrategy>>());
-        public override IEnumerable<SerializationStrategyPreference> SerializationStrategyPreferences =>
-            DependencyContext.Current.GetService<IEnumerable<SerializationStrategyPreference>>().SelectMany(pref => pref.ResolveToStrategies())
-            .Concat(SerializationStrategies.Select(strategy => new SerializationStrategyPreference(strategy)));
+        public IEnumerable<ISerializationService> SerializationServices { get; private set; }
+        //=> DependencyContext.Current.GetService<IEnumerable<ISerializationService>>();
+        //public IEnumerable<ISerializationStrategy> SerializationStrategies { get; private set; }
+        //=> SerializationServices.SelectMany(service => service.AllStrategies).Concat(DependencyContext.Current.GetService<IEnumerable<ISerializationStrategy>>());
+
+        /// <summary>
+        /// Used by the Strategies() method to determine the most preferred strategy for an operation
+        /// </summary>
+        public override IEnumerable<SerializationStrategyPreference> SerializationStrategyPreferences => serializationStrategyPreferences;
+        private IEnumerable<SerializationStrategyPreference> serializationStrategyPreferences;
+
+        public SerializationProvider(IEnumerable<ISerializationService> serializationServices, IEnumerable<ISerializationStrategy> serializationStrategies, IEnumerable<SerializationStrategyPreference> registeredSerializationStrategyPreferences)
+        {
+            SerializationServices = serializationServices;
+            strategies = serializationStrategies;
+            serializationStrategyPreferences = registeredSerializationStrategyPreferences.SelectMany(pref => pref.ResolveAllStrategyPreferences())
+                .Concat(Strategies.Select(strategy => new SerializationStrategyPreference(strategy)));
+
+        }
     }
 }

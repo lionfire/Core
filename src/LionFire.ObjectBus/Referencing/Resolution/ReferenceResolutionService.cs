@@ -1,8 +1,9 @@
-﻿using System;
+﻿using LionFire.Referencing;
+using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
-namespace LionFire.Referencing.Persistence
+namespace LionFire.Persistence.Resolution
 {
     public class ReferenceResolutionService : IReferenceResolutionService
     {

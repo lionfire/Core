@@ -1,4 +1,5 @@
-﻿//#if false // Not needed?
+﻿#if OLD // Use OBaseHandle instead
+//#if false // Not needed?
 //#define DEBUG_LOAD
 //#define TRACE_LOAD_FAIL
 //using LionFire.Input; REVIEW
@@ -8,6 +9,8 @@ using System;
 using System.Threading.Tasks;
 using LionFire.ObjectBus.Resolution;
 using LionFire.Ontology;
+using LionFire.Persistence;
+using LionFire.Persistence.Handles;
 using LionFire.Referencing;
 
 namespace LionFire.ObjectBus
@@ -158,7 +161,7 @@ namespace LionFire.ObjectBus
             OBase = _obase ?? throw new ObjectBusException("Could not resolve OBase for OBusHandle.  Reference: " + this.Reference);
         }
 
-        public override async Task<bool> TryRetrieveObject()
+        public override async Task<bool> Retrieve()
         {
             if (Reference == null) throw new ArgumentNullException(nameof(Reference));
 
@@ -166,7 +169,7 @@ namespace LionFire.ObjectBus
 
             var result = await OBase.TryGet<TObject>(Reference).ConfigureAwait(false);
 
-            if (result.IsSuccess)
+            if (result.IsSuccess())
             {
                 OnRetrievedObject(result.Object);
             }
@@ -174,35 +177,36 @@ namespace LionFire.ObjectBus
             {
                 OnRetrieveFailed(result);
             }
-            return result.IsSuccess;
+            return result.IsSuccess();
         }
 
-        protected override async Task<bool?> DeleteObject(object persistenceContext = null)
+        protected override async Task<IPersistenceResult> DeleteObject()
         {
             if (Reference == null) throw new ArgumentNullException(nameof(Reference));
 
             EnsureOBaseResolved();
 
-            var result = await OBase.TryDelete(Reference).ConfigureAwait(false);
+            var result = await OBase.TryDelete<TObject>(Reference).ConfigureAwait(false);
 
-            if (result != false)
+            if (result.IsSuccess())
             {
                 OnDeletedObject();  
             }
             return result;
         }
-        protected override async Task WriteObject(object persistenceContext = null)
+        protected override async Task<IPersistenceResult> WriteObject()
         {
             if (Reference == null) throw new ArgumentNullException(nameof(Reference));
 
             EnsureOBaseResolved();
 
-            await OBase.Set(Reference, this._object, typeof(TObject)).ConfigureAwait(false);
+            var result = await OBase.Set<TObject>(Reference, this._object, typeof(TObject)).ConfigureAwait(false);
 
-            //if (result.IsSuccess)
+            if (result.IsSuccess())
             {
                 OnSavedObject(); 
             }
+            return result;
             //else
             //{
             //    OnRetrieveFailed(result);
@@ -522,3 +526,5 @@ namespace LionFire.ObjectBus
 }
 #endif
 }
+
+#endif

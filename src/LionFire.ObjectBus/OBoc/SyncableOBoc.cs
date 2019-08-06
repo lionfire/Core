@@ -1,6 +1,7 @@
 ﻿using LionFire.Referencing;
+using LionFire.Persistence.Handles;
 
-namespace LionFire.ObjectBus
+namespace LionFire.ObjectBus.Handles
 {
     // TODO: Make this extrinsic?
 

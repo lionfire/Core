@@ -3,7 +3,7 @@ using System;
 using LionFire.Structures;
 using System.Threading.Tasks;
 
-namespace LionFire.Handles
+namespace LionFire.Persistence.Handles
 {
     public class CustomReadHandle<TObject> : ReadHandleBase<TObject>, IReadHandle<TObject>
         //, IKeyed<TKey>

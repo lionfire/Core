@@ -1,5 +1,6 @@
 ﻿// TODO: Move to LionFire namespace?  
-namespace LionFire.Referencing // RENAME to LionFire.Handles? or LionFire.Referencing?
+
+namespace LionFire.Persistence.Handles
 {
 #if !AOT
     public interface IHasReadHandle<out T> 

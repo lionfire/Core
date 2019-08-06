@@ -10,6 +10,6 @@ namespace LionFire.Serialization
         /// <summary>
         /// Get available strategies, sorted to have best scores first
         /// </summary>
-        IEnumerable<SerializationSelectionResult> Strategies(Lazy<PersistenceOperation> operation = null, PersistenceContext context = null);
+        IEnumerable<SerializationSelectionResult> ResolveStrategies(Lazy<PersistenceOperation> operation = null, PersistenceContext context = null);
     }
 }

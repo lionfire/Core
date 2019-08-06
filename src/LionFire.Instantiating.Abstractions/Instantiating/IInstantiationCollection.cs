@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using LionFire.Collections;
 using LionFire.Ontology;
+using LionFire.Persistence;
 using LionFire.Referencing;
 
 namespace LionFire.Instantiating

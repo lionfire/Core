@@ -3,7 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace LionFire.Handles.Experimental
+namespace LionFire.Persistence.Handles.Experimental
 {
     public interface IReadHandleBase
     {

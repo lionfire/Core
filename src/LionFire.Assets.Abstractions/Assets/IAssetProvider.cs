@@ -12,13 +12,13 @@ namespace LionFire.Assets
     public interface IAssetProvider
     {
         
-        T Load<T>(string assetSubPath, object context = null) where T : class;
-        Task Save(string assetSubPath, object obj, object context = null);
+        Task<T> Load<T>(string assetSubPath) where T : class;
+        Task Save(string assetSubPath, object obj);
 #if TODO
         //Task<T> Load<T>(string assetSubPath, object context = null) where T : class;
         //Task Save(string assetSubPath, object obj, object context = null);
 #endif
 
-        Task<IEnumerable<string>> Find<T>(string searchString = null, object context = null);
+        Task<IEnumerable<string>> Find<T>(string searchString = null);
     }
 }

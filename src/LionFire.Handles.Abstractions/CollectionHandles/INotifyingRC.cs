@@ -1,6 +1,6 @@
 ﻿using LionFire.Collections;
 
-namespace LionFire.Referencing
+namespace LionFire.Persistence.Handles
 {
     public interface INotifyingRC<T, TListEntry> : RC<T, TListEntry>, INotifyingReadOnlyCollection<T>
         where  TListEntry : ICollectionEntry

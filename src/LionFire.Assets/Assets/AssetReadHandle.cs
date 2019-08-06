@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
 using LionFire.Assets;
-using LionFire.Handles;
+using LionFire.Persistence.Handles;
 using LionFire.Referencing;
 using LionFire.Persistence;
 
@@ -33,7 +33,11 @@ namespace LionFire.Persistence.Assets
         {
             this.Reference = new AssetReference<T>(assetSubPath);
         }
-        
+
+        public AssetReadHandle(IReference reference, T obj = null) : base(reference, obj)
+        {
+        }
+
         #endregion
 
         //protected override IReference GetReferenceFromKey(string key)
@@ -51,20 +55,21 @@ namespace LionFire.Persistence.Assets
             return new AssetReadHandle<T>(assetSubPath);
         }
 
-        public override Task<bool> TryRetrieveObject()
+        public override Task<IRetrieveResult<T>> RetrieveObject()
         {
-            // TODO: Use async/await here once IAssetProvider supports it
-            var ap = Dependencies.GetServiceOrSingleton<IAssetProvider>(createIfMissing: true);
-            var result = ap.Load<T>(this.Key);
-            if (result != null)
-            {
-                this.Object = result;
-                return Task.FromResult(true);
-            }
-            else
-            {
-                return Task.FromResult(false);
-            }
+            throw new NotImplementedException("TODO: Convert Assets to an OBus");
+            //// TODO: Use async/await here once IAssetProvider supports it
+            //var ap = Dependencies.GetServiceOrSingleton<IAssetProvider>(createIfMissing: true);
+            //var result = await ap.Load<T>(this.Key);
+            //if (result != null)
+            //{
+            //    this.Object = result;
+            //    return Task.FromResult(true);
+            //}
+            //else
+            //{
+            //    return Task.FromResult(false);
+            //}
         }
     }
 

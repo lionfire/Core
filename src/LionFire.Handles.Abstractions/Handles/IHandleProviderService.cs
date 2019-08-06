@@ -1,7 +1,8 @@
-﻿using System;
+﻿using LionFire.Persistence.Handles;
+using System;
 using System.Collections.Generic;
 
-namespace LionFire.Referencing.Handles
+namespace LionFire.Persistence.Handles
 {
     public interface IHandleProviderService : IHandleProvider
     {

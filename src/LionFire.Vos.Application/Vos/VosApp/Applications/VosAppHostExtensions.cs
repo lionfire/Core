@@ -20,22 +20,23 @@ namespace LionFire.Hosting.ExtensionMethods
     {
         IServiceProvider serviceProvider;
         T WrappedLifetime;
+        IEnumerable<IInitializable3> initializers;
         //public IHostLifetime WrappedLifetime { get; set; }
 
 
-        public InitializingLifetimeWrapper(T wrappedLifetime) {
+        public InitializingLifetimeWrapper(T wrappedLifetime, IEnumerable<IInitializable3> initializers) {
             //this.serviceProvider = serviceProvider;
             this.WrappedLifetime = wrappedLifetime;// ?? new T();
+            this.initializers = initializers;
         }
 
         //public InitializingLifetimeWrapper(IHostLifetime wrapped = null) { WrappedLifetime = wrapped ?? new ConsoleLifetime(); }
 
         public async Task WaitForStartAsync(CancellationToken cancellationToken)
         {
-            var initializers = serviceProvider.GetService<IEnumerable<IInitializable3>>();
             if (initializers != null)
             {
-                await initializers.RepeatAllUntilNull(i => i.Initialize);
+                await initializers.RepeatAllUntilNull(i => i.Initialize, cancellationToken);
             }
             await WrappedLifetime.WaitForStartAsync(cancellationToken);
         }

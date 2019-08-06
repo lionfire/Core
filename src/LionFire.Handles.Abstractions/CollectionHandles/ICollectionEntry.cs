@@ -1,4 +1,4 @@
-﻿namespace LionFire.Referencing
+﻿namespace LionFire.Persistence
 {
     /// <summary>
     /// Analogous to a file entry in a filesystem's directory listing.  Contains a primary key (such as a filename)

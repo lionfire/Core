@@ -83,7 +83,7 @@ namespace LionFire.Serialization
             //if (SerializationOperation.Path == null) // Don't allow path spoofing
             //{
             // REVIEW MOVE this note - LionFire.ObjectBus.Filesystem is brought in just from this LocalFileReference?  Move it out?
-                PersistenceOperation.Reference = new LocalFileReference(Path);
+                PersistenceOperation.Reference = new FileReference(Path);
                 //SerializationOperation.Path = Path;
             //}
 
@@ -147,18 +147,18 @@ namespace LionFire.Serialization
 
         #region Delete
 
-        protected override async Task<bool?> DeleteObject(object persistenceContext = null)
+        protected override async Task<IPersistenceResult> DeleteObject()
         {
             Action deleteAction = () => File.Delete(Path);
             await deleteAction.AutoRetry(); // TODO: Use File IO parameters registered in DI.
-            return true;
+            return PersistenceResult.Success;
         }
 
         #endregion
 
         #region Save
 
-        protected override async Task WriteObject(object persistenceContext = null)
+        protected override async Task<IPersistenceResult> WriteObject()
         {
             await Task.Run(() =>
             {
@@ -175,6 +175,8 @@ namespace LionFire.Serialization
 
                 File.WriteAllBytes(writePath, bytes);
             }).ConfigureAwait(false);
+
+            return PersistenceResult.Success;
         }
 
         #endregion

@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
+using LionFire.ObjectBus.Handles;
 using LionFire.Persistence;
 using LionFire.Referencing;
 using Microsoft.Extensions.Logging;
@@ -17,21 +18,19 @@ namespace LionFire.ObjectBus
     //    public abstract Task<IRetrieveResult<T>> TryGetName<T>(TReference reference);
     //}
 
-        /// <summary>
-        /// Single reference type
-        /// </summary>
-        /// <typeparam name="TReference"></typeparam>
-        public abstract class OBase<TReference> : IOBase
-        where TReference : class, IReference
+    /// <summary>
+    /// Single reference type
+    /// </summary>
+    /// <typeparam name="TReference"></typeparam>
+    public abstract class OBase<TReference> : IOBase
+    where TReference : class, IReference
         //where HandleInterfaceType : IHandle
     {
         public abstract IOBus OBus { get; }
 
         #region Uri
 
-        public abstract IEnumerable<string> UriSchemes {
-            get;
-        }
+        public abstract IEnumerable<string> UriSchemes { get; }
 
         #endregion
 
@@ -39,11 +38,12 @@ namespace LionFire.ObjectBus
 
         #region Get
 
-        
+
         public abstract Task<IRetrieveResult<T>> TryGet<T>(TReference reference);
-        public abstract Task<IRetrieveResult<object>> TryGet(TReference reference, Type type);
+        //Task<IRetrieveResult<T>> IOBase.TryGet<T>(IReference reference, Type type) => TryGet(ConvertToReferenceType(reference), type);
 
         Task<IRetrieveResult<T>> IOBase.TryGet<T>(IReference reference) => TryGet<T>(ConvertToReferenceType(reference));
+
 
         //public abstract ResultType TryGet<ResultType>(TReference reference, OptionalRef<RetrieveInfo> optionalRef = null)
         //where ResultType : class;
@@ -66,8 +66,10 @@ namespace LionFire.ObjectBus
 
         #endregion
 
-        protected MethodInfo _TryGetMethodInfo {
-            get {
+        protected MethodInfo _TryGetMethodInfo
+        {
+            get
+            {
                 if (tryGetMethodInfo == null)
                 {
                     tryGetMethodInfo = GetType().GetMethods().Where(mi => mi.Name == "TryGet" && mi.ContainsGenericParameters).First();
@@ -94,8 +96,6 @@ namespace LionFire.ObjectBus
         //    return TryGet<ResultType>(r, optionalRef);
         //}
 
-
-
         //public object TryGet(IReference reference, OptionalRef<RetrieveInfo> optionalRef = null) => TryGet(ConvertToReferenceType(reference), optionalRef);
 
         //public virtual object TryGet(HandleInterfaceType handle)
@@ -103,53 +103,34 @@ namespace LionFire.ObjectBus
         //    return TryGet(handle.Reference);
         //}
 
-        public object TryGet(IHandle handle)
-        {
-            //return TryGet(ConvertToHandleType(handle));
-            return TryGet(ConvertToReferenceType(handle.Reference));
-        }
+        //public object TryGet(IHandle handle)
+        //{
+        //    //return TryGet(ConvertToHandleType(handle));
+        //    return TryGet(ConvertToReferenceType(handle.Reference));
+        //}
 
         #region Exists
 
-        Task<IRetrieveResult<bool>> IOBase.Exists(IReference reference) => Exists(ConvertToReferenceType(reference));
-        public virtual async Task<IRetrieveResult<bool>> Exists(TReference reference)
-        {
-            var result = new RetrieveResult<bool>();
-            var getResult = await TryGet(reference);
-            result.IsSuccess = getResult.IsSuccess;
-            result.Object = getResult.Object != null;
-            return result;
-        }
+        /// <remarks>
+        /// Default implementation does a retrieve.  Override this to use a faster implementation that may be able to skip deserialization.
+        /// </remarks>
+        /// <param name="reference"></param>
+        /// <returns></returns>
+        public virtual async Task<bool> Exists(TReference reference)
+            => (await TryGet(reference)).IsFound();
+
+        public Task<bool> Exists(IReference reference)
+            => Exists(ConvertToReferenceType(reference));
 
         #endregion
 
         #endregion
 
-        #region Children
+        #region List
 
-        public abstract Task<IEnumerable<string>> GetKeys(TReference parent);
-        Task<IEnumerable<string>> IOBase.GetKeys(IReference parent) => GetKeys(ConvertToReferenceType(parent));
-
-        public abstract IEnumerable<string> GetChildrenNames(TReference parent);
-
-        public IEnumerable<string> GetChildrenNames(IReference parent) => GetChildrenNames(ConvertToReferenceType(parent));
-
-        public abstract IEnumerable<string> GetChildrenNamesOfType<T>(TReference parent)
+        public abstract Task<IEnumerable<string>> List<T>(TReference parent)
             where T : class, new();
-
-        [Obsolete]
-        public IEnumerable<string> GetChildrenNamesOfType<T>(IReference parent)
-            where T : class, new() => GetKeysOfType<T>(ConvertToReferenceType(parent)).Result;
-        public Task<IEnumerable<string>> GetKeysOfType<T>(IReference parent)
-            where T : class, new() => GetKeysOfType<T>(ConvertToReferenceType(parent));
-
-        public abstract Task<IEnumerable<string>> GetKeysOfType<T>(TReference parent)
-            where T : class, new();
-
-        [Obsolete]
-        public IEnumerable<string> GetChildrenNamesOfType(IReference parent, Type type) => GetKeysOfType(ConvertToReferenceType(parent), type).Result;
-
-        public Task<IEnumerable<string>> GetKeysOfType(IReference parent, Type type) => (Task<IEnumerable<string>>)this.GetType().GetMethod("GetKeysOfType", new Type[] { typeof(IReference) }).MakeGenericMethod(type).Invoke(this, new object[] { parent }); // TOOPTIMIZE - cache the MethodInfo?
+        Task<IEnumerable<string>> IOBase.List<T>(IReference parent) => List<object>(ConvertToReferenceType(parent));
 
         #endregion
 
@@ -157,11 +138,11 @@ namespace LionFire.ObjectBus
 
         #region Write
 
-        Task IOBase.Set(IReference reference, object obj, Type type, bool allowOverwrite) => Set(ConvertToReferenceType(reference), obj, type, allowOverwrite);
+        Task<IPersistenceResult> IOBase.Set<T>(IReference reference, T obj, bool allowOverwrite) => Set(ConvertToReferenceType(reference), obj, allowOverwrite);
 
-        protected abstract Task _Set(TReference reference, object obj, Type type = null, bool allowOverwrite = true, bool preview = false);
+        protected abstract Task<IPersistenceResult> _Set<T>(TReference reference, T obj, bool allowOverwrite = true);
 
-        public virtual async Task Set(TReference reference, object obj, Type type = null, bool allowOverwrite = true/*, bool preview = false*/)
+        public virtual async Task<IPersistenceResult> Set<T>(TReference reference, T obj, bool allowOverwrite = true)
         {
             try
             {
@@ -171,7 +152,7 @@ namespace LionFire.ObjectBus
 
                 OBaseEvents.OnSaving(obj);
 
-                await _Set(reference, obj, obj?.GetType() ?? typeof(object), allowOverwrite/*, preview*/).ConfigureAwait(false);
+                return await _Set<T>(reference, obj, allowOverwrite).ConfigureAwait(false);
             }
             catch (Exception ex)
             {
@@ -201,11 +182,17 @@ namespace LionFire.ObjectBus
 
         #region Delete
 
-        public abstract Task<bool?> CanDelete(TReference reference);
-        public abstract Task<bool?> TryDelete(TReference reference/*, bool preview = false*/);
+        public abstract Task<IPersistenceResult> CanDeleteImpl<T>(TReference reference);
 
-        public Task<bool?> CanDelete(IReference reference) => CanDelete(ConvertToReferenceType(reference));
-        public Task<bool?> TryDelete(IReference reference/*, bool preview*/) => TryDelete(ConvertToReferenceType(reference)/*, preview*/);
+        public abstract Task<IPersistenceResult> TryDelete<T>(TReference reference/*, bool preview = false*/);
+
+        #region IReference overloads
+
+        Task<IPersistenceResult> IOBase.CanDeleteImpl<T>(IReference reference) => CanDeleteImpl<T>(ConvertToReferenceType(reference));
+        //public Task<bool?> CanDelete<T>(IReference reference) => CanDelete<T>(ConvertToReferenceType(reference));
+        public Task<IPersistenceResult> TryDelete<T>(IReference reference/*, bool preview*/) => TryDelete<T>(ConvertToReferenceType(reference)/*, preview*/);
+
+        #endregion
 
         #endregion
 
@@ -250,7 +237,7 @@ namespace LionFire.ObjectBus
             TReference reft = reference as TReference;
             if (reft == null)
             {
-                throw new ArgumentException("Unsupported reference type");
+                throw new ArgumentException($"Unsupported reference type '{reference?.GetType().Name}'.  Supported: '{typeof(TReference).Name}'");
             }
 
             return reft;

@@ -1,5 +1,5 @@
 ﻿using LionFire.ObjectBus.Filesystem;
-using LionFire.Referencing.Persistence;
+using LionFire.Persistence.Resolution;
 using LionFire.Structures;
 using System.Collections.Generic;
 

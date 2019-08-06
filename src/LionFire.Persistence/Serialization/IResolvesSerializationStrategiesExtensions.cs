@@ -9,7 +9,7 @@ namespace LionFire.Serialization
 {
     public static class IResolvesSerializationStrategiesExtensions
     {
-        public static IEnumerable<SerializationSelectionResult> Strategies(this IResolvesSerializationStrategies resolves, Func<PersistenceOperation> operation, PersistenceContext context = null) => resolves.Strategies(operation.ToLazy(), context);
+        public static IEnumerable<SerializationSelectionResult> Strategies(this IResolvesSerializationStrategies resolves, Func<PersistenceOperation> operation, PersistenceContext context = null) => resolves.ResolveStrategies(operation.ToLazy(), context);
 
         public static bool ThrowWithSerializationFailureData = true;
 
@@ -24,7 +24,7 @@ namespace LionFire.Serialization
         public static byte[] ToBytes(this IResolvesSerializationStrategies resolves, object obj, Lazy<PersistenceOperation> operation = null, PersistenceContext context = null)
         {
             List<KeyValuePair<ISerializationStrategy, SerializationResult>> failures = null;
-            foreach (var strategy in resolves.Strategies(operation, context).Select(r => r.Strategy))
+            foreach (var strategy in resolves.ResolveStrategies(operation, context).Select(r => r.Strategy))
             {
                 var (Bytes, Result) = strategy.ToBytes(obj, operation, context);
                 if (Result.IsSuccess)
@@ -51,7 +51,7 @@ namespace LionFire.Serialization
         public static string ToString(this IResolvesSerializationStrategies resolves, object obj, Lazy<PersistenceOperation> operation = null, PersistenceContext context = null)
         {
             List<KeyValuePair<ISerializationStrategy, SerializationResult>> failures = null;
-            foreach (var strategy in resolves.Strategies(operation, context).Select(r => r.Strategy))
+            foreach (var strategy in resolves.ResolveStrategies(operation, context).Select(r => r.Strategy))
             {
                 var (String, Result) = strategy.ToString(obj, operation, context);
                 if (Result.IsSuccess)
@@ -79,7 +79,7 @@ namespace LionFire.Serialization
         public static void ToStream(this IResolvesSerializationStrategies resolves, object obj, Stream stream, Lazy<PersistenceOperation> operation = null, PersistenceContext context = null)
         {
             List<KeyValuePair<ISerializationStrategy, SerializationResult>> failures = null;
-            foreach (var strategy in resolves.Strategies(operation, context).Select(r => r.Strategy))
+            foreach (var strategy in resolves.ResolveStrategies(operation, context).Select(r => r.Strategy))
             {
                 var result = strategy.ToStream(obj, stream, operation, context);
                 if (result.IsSuccess)
@@ -141,7 +141,7 @@ namespace LionFire.Serialization
         public static T ToObject<T>(this IResolvesSerializationStrategies resolves, byte[] bytes, Lazy<PersistenceOperation> operation = null, PersistenceContext context = null)
         {
             List<KeyValuePair<ISerializationStrategy, SerializationResult>> failures = null;
-            foreach (var strategy in resolves.Strategies(operation, context).Select(r => r.Strategy))
+            foreach (var strategy in resolves.ResolveStrategies(operation, context).Select(r => r.Strategy))
             {
                 var (Object, Result) = strategy.ToObject<T>(bytes, operation, context);
                 if (Result.IsSuccess)
@@ -169,7 +169,7 @@ namespace LionFire.Serialization
         public static T ToObject<T>(this IResolvesSerializationStrategies resolves, string str, Lazy<PersistenceOperation> operation = null, PersistenceContext context = null)
         {
             List<KeyValuePair<ISerializationStrategy, SerializationResult>> failures = null;
-            foreach (var strategy in resolves.Strategies(operation, context).Select(r => r.Strategy))
+            foreach (var strategy in resolves.ResolveStrategies(operation, context).Select(r => r.Strategy))
             {
                 var (Object, Result) = strategy.ToObject<T>(str, operation, context);
                 if (Result.IsSuccess)
@@ -197,7 +197,7 @@ namespace LionFire.Serialization
         public static T ToObject<T>(this IResolvesSerializationStrategies resolves, Stream stream, Lazy<PersistenceOperation> operation = null, PersistenceContext context = null)
         {
             List<KeyValuePair<ISerializationStrategy, SerializationResult>> failures = null;
-            foreach (var strategy in resolves.Strategies(operation, context).Select(r => r.Strategy))
+            foreach (var strategy in resolves.ResolveStrategies(operation, context).Select(r => r.Strategy))
             {
                 var (Object, Result) = strategy.ToObject<T>(stream, operation, context);
                 if (Result.IsSuccess)
@@ -221,7 +221,7 @@ namespace LionFire.Serialization
         public static T ToObject<T>(this IResolvesSerializationStrategies resolves, Func<ISerializationStrategy, IEnumerable<Stream>> streams, Lazy<PersistenceOperation> operation = null, PersistenceContext context = null)
         {
             List<KeyValuePair<ISerializationStrategy, SerializationResult>> failures = null;
-            foreach (var strategy in resolves.Strategies(operation, context).Select(r => r.Strategy))
+            foreach (var strategy in resolves.ResolveStrategies(operation, context).Select(r => r.Strategy))
             {
                 foreach (var stream in streams(strategy))
                 {

@@ -13,7 +13,7 @@ using Microsoft.Extensions.Logging;
 
 namespace LionFire.ObjectBus.Filesystem
 {
-    public class FsOBase : OBase<LocalFileReference>
+    public class FsOBase : OBase<FileReference>
     {
         #region Static
 
@@ -46,12 +46,13 @@ namespace LionFire.ObjectBus.Filesystem
 
         #endregion
 
+        public override IOBus OBus => ManualSingleton<FsOBus>.GuaranteedInstance;
 
-        public override IEnumerable<string> UriSchemes => LocalFileReference.UriSchemes;
+        public override IEnumerable<string> UriSchemes => FileReference.UriSchemes;
 
         public override IObjectWatcher GetObjectWatcher(IReference reference)
         {
-            if (!(reference is LocalFileReference))
+            if (!(reference is FileReference))
             {
                 return null;
             }
@@ -68,91 +69,43 @@ namespace LionFire.ObjectBus.Filesystem
             };
         }
 
-        private void ValidateReference(LocalFileReference reference)
+        private void ValidateReference(FileReference reference)
         {
             //if (reference.Scheme != LocalFileReference.UriScheme) throw new FsOBaseException("Invalid scheme");
             //if (!reference.IsLocalhost) throw new FsOBaseException("Only localhost supported");
         }
 
-        //public override async Task<IRetrieveResult<ResultType>> TryGet<ResultType>(LocalFileReference reference)
-        //{
-        //    var result = await TryGet(reference, typeof(ResultType));
-        //    var converted = (ResultType)OBaseTypeUtils.TryConvertToType(result.Result, typeof(ResultType));
-        //    return new RetrieveResult<ResultType>
-        //    {
-        //        IsSuccess = true,
-        //        Result = converted,
-        //    };
-        //}
+        #region Read
 
-        //LogicalReferenceResolver
-
-
-        public override async Task<RetrieveResult<object>> TryGet(LocalFileReference reference, Type ResultType)
+        public override async Task<bool> Exists(FileReference reference)
         {
-            var result = new RetrieveResult<object>();
-            try
-            {
-                object obj = await FsOBasePersistence.TryGet(reference.Path).ConfigureAwait(false);
-                obj = OBaseTypeUtils.TryConvertToType(obj, ResultType);
+            //var result = new RetrieveResult<bool>();
 
-                // TODO: Move this to an optional MultiType Multiplexing layer
-                if (obj == null)
-                {
-                    foreach (var encapsulatedRef in OBaseTypeUtils.GetEncapsulatedPaths(reference, ResultType))
-                    {
-                        obj = FsOBasePersistence.TryGet(encapsulatedRef.Path).ConfigureAwait(false).GetAwaiter().GetResult();
-                        obj = OBaseTypeUtils.TryConvertToType(obj, ResultType);
-                        if (obj != null)
-                        {
-                            break;
-                        }
-                    }
-                }
-
-                if (obj != null)
-                {
-                    OBaseEvents.OnRetrievedObjectFromExternalSource(obj); // Put reference in here?
-
-                    // TOPORT
-                    //if (optionalRef != null)
-                    //{
-                    //    optionalRef.Value.UltimateOBase = this;
-                    //    optionalRef.Value.UltimateReference = reference;
-                    //}
-                }
-
-                result.Object = obj;
-                result.IsSuccess = true;
-
-                return result;
-            }
-            catch (Exception ex)
-            {
-                OBaseEvents.OnException(OBusOperations.Get, reference, ex);
-                throw ex;
-            }
+            bool existsResult = await FsOBasePersistence.Exists(reference.Path).ConfigureAwait(false);
+            return existsResult;
+            //result.Object = existsResult;
+            //result.Flags |= PersistenceResultFlags.Success;
+            //return result;
         }
-        //public override Task<IRetrieveResult<ResultType>> TryGetName<ResultType>(LocalFileReference reference)
-        //{
-        //    throw new NotImplementedException();
-        //}
 
-        public override async Task<RetrieveResult<ResultType>> TryGet<ResultType>(LocalFileReference reference)
+        #region Get
+
+        public override async Task<IRetrieveResult<T>> TryGet<T>(FileReference reference)
         {
-            var result = new RetrieveResult<ResultType>();
+            var result = new RetrieveResult<T>();
             try
             {
-                object obj = await FsOBasePersistence.TryGet(reference.Path).ConfigureAwait(false);
-                ResultType converted = (ResultType)OBaseTypeUtils.TryConvertToType(obj, typeof(ResultType));
+                T converted = await FsOBasePersistence.TryGet<T>(reference.Path).ConfigureAwait(false);
+                //ResultType converted = (ResultType)OBaseTypeUtils.TryConvertToType(obj, typeof(ResultType));
 
                 if (converted == null)
                 {
-                    foreach (var encapsulatedRef in OBaseTypeUtils.GetEncapsulatedPaths(reference, typeof(ResultType)))
+                    foreach (var encapsulatedRef in OBaseTypeUtils.GetEncapsulatedPaths(reference, typeof(T)))
                     {
-                        obj = await FsOBasePersistence.TryGet(encapsulatedRef.Path).ConfigureAwait(false);
-                        converted = (ResultType)OBaseTypeUtils.TryConvertToType(obj, typeof(ResultType));
-                        if (converted != null)
+
+                        var obj = await FsOBasePersistence.TryGet<T>(encapsulatedRef.Path).ConfigureAwait(false);
+                        //converted = (T)OBaseTypeUtils.TryConvertToType(obj, typeof(T));
+                        if (obj != null)
                         {
                             break;
                         }
@@ -172,7 +125,7 @@ namespace LionFire.ObjectBus.Filesystem
                 }
 
                 result.Object = converted;
-                result.IsSuccess = true;
+                result.Flags |= PersistenceResultFlags.Success;
 
                 return result;
             }
@@ -183,26 +136,28 @@ namespace LionFire.ObjectBus.Filesystem
             }
         }
 
-        public override IOBus OBus => ManualSingleton<FsOBus>.GuaranteedInstance;
+        #endregion
 
+        #region List
 
-        public override async Task<RetrieveResult<bool>> Exists(LocalFileReference reference)
+        public override Task<IEnumerable<string>> List<T>(FileReference parent) => throw new NotImplementedException();
+
+        #endregion
+
+        #endregion
+
+        #region Write
+
+        #region Delete
+
+        public override async Task<IPersistenceResult> CanDeleteImpl<T>(FileReference reference)
         {
-            var result = new RetrieveResult<bool>();
-
-            bool existsResult = await FsOBasePersistence.Exists(reference.Path).ConfigureAwait(false);
-
-            result.Object = existsResult;
-            result.IsSuccess = true;
-            return result;
-        }
-
-        public override async Task<bool?> CanDelete(LocalFileReference reference)
-        {
-            // FUTURE: Check filesystem permissions
             var existsResult = await Exists(reference);
-            if (!existsResult.IsSuccess) return null;
-            return existsResult.Object;
+            if (!existsResult) return PersistenceResult.PreviewFail;
+
+            // FUTURE: Check filesystem permissions
+            return PersistenceResult.PreviewSuccess;
+
             //return new RetrieveResult<bool?>
             //{
             //    IsSuccess = existsResult.IsSuccess,
@@ -212,7 +167,7 @@ namespace LionFire.ObjectBus.Filesystem
             //return FsPersistence.TryDelete(filePath);
         }
 
-        public override async Task<bool?> TryDelete(LocalFileReference reference/*, bool preview = false*/)
+        public override async Task<IPersistenceResult> TryDelete<T>(FileReference reference)
         {
             string filePath = reference.Path;
             //if (!defaultTypeForDirIsT)
@@ -220,15 +175,89 @@ namespace LionFire.ObjectBus.Filesystem
             //    filePath = filePath + FileTypeDelimiter + type.Name + FileTypeEndDelimiter;
             //}
 
-            return await FsOBasePersistence.TryDelete(filePath).ConfigureAwait(false);
+            var succeeded = await FsOBasePersistence.TryDelete<T>(filePath).ConfigureAwait(false);
+
+            return succeeded ? PersistenceResult.Success : PersistenceResult.NotFound;
         }
+
+        #endregion
+
+        #endregion
+
+        #region Events
+
+        #endregion
+
+
+        //public override async Task<IRetrieveResult<ResultType>> TryGet<ResultType>(LocalFileReference reference)
+        //{
+        //    var result = await TryGet(reference, typeof(ResultType));
+        //    var converted = (ResultType)OBaseTypeUtils.TryConvertToType(result.Result, typeof(ResultType));
+        //    return new RetrieveResult<ResultType>
+        //    {
+        //        IsSuccess = true,
+        //        Result = converted,
+        //    };
+        //}
+
+        // OLD
+        //public override async Task<IRetrieveResult<T>> TryGet<T>(LocalFileReference reference)
+        //{
+        //    Type ResultType = typeof(T); // REFACTOR
+        //    var result = new RetrieveResult<T>();
+        //    try
+        //    {
+        //        object obj = await FsOBasePersistence.TryGet(reference.Path, type: typeof(T)).ConfigureAwait(false);
+        //        obj = OBaseTypeUtils.TryConvertToType(obj, ResultType);
+
+        //        // TODO: Move this to an optional MultiType Multiplexing layer
+        //        if (obj == null)
+        //        {
+        //            foreach (var encapsulatedRef in OBaseTypeUtils.GetEncapsulatedPaths(reference, ResultType))
+        //            {
+        //                obj = FsOBasePersistence.TryGet(encapsulatedRef.Path).ConfigureAwait(false).GetAwaiter().GetResult();
+        //                obj = OBaseTypeUtils.TryConvertToType(obj, ResultType);
+        //                if (obj != null)
+        //                {
+        //                    break;
+        //                }
+        //            }
+        //        }
+
+        //        if (obj != null)
+        //        {
+        //            OBaseEvents.OnRetrievedObjectFromExternalSource(obj); // Put reference in here?
+
+        //            // TOPORT
+        //            //if (optionalRef != null)
+        //            //{
+        //            //    optionalRef.Value.UltimateOBase = this;
+        //            //    optionalRef.Value.UltimateReference = reference;
+        //            //}
+        //        }
+
+        //        result.Object = obj;
+        //        result.Flags |= PersistenceResultFlags.Success;
+
+        //        return result;
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        OBaseEvents.OnException(OBusOperations.Get, reference, ex);
+        //        throw ex;
+        //    }
+        //}
+        //public override Task<IRetrieveResult<ResultType>> TryGetName<ResultType>(LocalFileReference reference)
+        //{
+        //    throw new NotImplementedException();
+        //}
 
         //protected override async Task _Set<T>(LocalFileReference reference, T obj, bool allowOverwrite = true, bool preview = false)
         //{
         //    await FsOBasePersistence.Set(obj, reference.Path, preview: preview, type: typeof(T));
         //}
 
-        protected override async Task _Set(LocalFileReference reference, object obj, Type type = null, bool allowOverwrite = true, bool preview = false)
+        protected override async Task<IPersistenceResult> _Set<T>(FileReference reference, T obj, bool allowOverwrite = true)
         {
             #region TODO
 
@@ -255,22 +284,24 @@ namespace LionFire.ObjectBus.Filesystem
 
             #endregion
 
-            await FsOBasePersistence.Set(obj, reference.Path, preview: preview, type: type);
+            await FsOBasePersistence.Set(obj, reference.Path, allowOverwrite: allowOverwrite);
+            return PersistenceResult.Success;
         }
 
         public const bool AppendTypeNameToFileNames = false; // TEMP - TODO: Figure out a way to do this in VOS land
 
-        public override IEnumerable<string> GetChildrenNames(LocalFileReference parent)
-        {
-            LocalFileReference fileRef = LocalFileReference.ConvertFrom(parent);
+        // OLD - use <object>
+        //public override IEnumerable<string> List(FileReference parent)
+        //{
+        //    FileReference fileRef = FileReference.ConvertFrom(parent);
 
-            if (fileRef == null)
-            {
-                throw new ArgumentException("Could not convert to FileReference");
-            }
+        //    if (fileRef == null)
+        //    {
+        //        throw new ArgumentException("Could not convert to FileReference");
+        //    }
 
-            return FsOBasePersistence.GetChildrenNames(fileRef.Path);
-        }
+        //    return FsOBasePersistence.List(fileRef.Path);
+        //}
 
         //private static string GetDirNameForType(string filePath)
         //{
@@ -281,10 +312,6 @@ namespace LionFire.ObjectBus.Filesystem
         //    return Assets.AssetPath.GetDefaultDirectory(typeof(T));
         //}
 
-        public override IEnumerable<string> GetChildrenNamesOfType<T>(LocalFileReference parent) => throw new NotImplementedException();
-
-        public override Task<IEnumerable<string>> GetKeys(LocalFileReference parent) => throw new NotImplementedException();
-        public override Task<IEnumerable<string>> GetKeysOfType<T>(LocalFileReference parent) => throw new NotImplementedException();
 
 #if TOPORT
             var chunks = VosPath.ToPathArray(parent.Path);

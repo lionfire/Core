@@ -26,7 +26,7 @@ namespace LionFire.ObjectBus
         {
             var result = await GetReadResult<TObject>(reference);
 
-            if (!result.IsFound) throw new NotFoundException();
+            if (!result.IsFound()) throw new NotFoundException();
             return result.Object;
         }
 
@@ -54,7 +54,7 @@ namespace LionFire.ObjectBus
 
             var result = await obase.TryGet<TObject>(reference).ConfigureAwait(false);
 
-            if (result.IsError) throw new RetrieveException(result);
+            if (result.IsFail()) throw new RetrieveException(result);
 
             return result.Object;
 
@@ -109,19 +109,20 @@ namespace LionFire.ObjectBus
             var obase = reference.TryGetOBase();
             if (obase == null) throw new NotSupportedException($"Could not get IOBase for this reference of type {reference.GetType().Name}");
 
-            await obase.Set(reference, value, typeof(T)).ConfigureAwait(false);
+            await obase.Set(reference, value).ConfigureAwait(false);
         }
 
 #region Delete
 
-        public static async Task<IPersistenceResult> CanDelete<T>(this IReference reference) => await reference.TryGetOBase().CanDelete<T>(reference).ConfigureAwait(false);
+        public static async Task<bool> CanDelete<T>(this IReference reference) => await reference.TryGetOBase().CanDelete<T>(reference).ConfigureAwait(false);
         public static async Task<IPersistenceResult> TryDelete<T>(this IReference reference) => await reference.TryGetOBase().TryDelete<T>(reference).ConfigureAwait(false);
-        public static async Task Delete<T>(this IReference reference, bool preview = false) => await reference.TryGetOBase().Delete<T>(reference).ConfigureAwait(false);
+        public static async Task Delete<T>(this IReference reference) => await reference.TryGetOBase().Delete<T>(reference).ConfigureAwait(false);
+        public static async Task Delete(this IReference reference) => await reference.TryGetOBase().Delete<object>(reference).ConfigureAwait(false);
         // FUTURE: public static Task<bool> Delete(this IReference reference, object onlyDeleteIfThisObject) => reference.GetOBase().Set(reference, value);
 
-#endregion
+        #endregion
 
-#region GetChildren
+        #region GetChildren
 
         /// <summary>
         /// Get References for children.  E.g. for filesystem paths, this may be file:/// with the full path for each file.
@@ -130,6 +131,11 @@ namespace LionFire.ObjectBus
         /// <returns></returns>
         public static Task<IEnumerable<IReference>> GetChildren(this IReference reference) => throw new NotImplementedException();
 
+        /// <summary>
+        /// RENAME - List
+        /// </summary>
+        /// <param name="reference"></param>
+        /// <returns></returns>
         public static async Task<IEnumerable<string>> GetKeys(this IReference reference)
         {
             throw new NotImplementedException();
@@ -158,7 +164,7 @@ namespace LionFire.ObjectBus
         //    }
         //}
 
-#endregion
+        #endregion
 
 
     }

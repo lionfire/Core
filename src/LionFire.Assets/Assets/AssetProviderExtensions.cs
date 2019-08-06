@@ -25,7 +25,7 @@ namespace LionFire.Assets
         public static async Task<IEnumerable<AssetHandle<T>>> FindHandles<T>(this IAssetProvider assetProvider, string searchString = null, object context = null)
             where T : class
         {
-            return (await (assetProvider.Find<T>(searchString, context).ConfigureAwait(false))).Select(subPath => new AssetHandle<T>(subPath));
+            return (await (assetProvider.Find<T>(searchString).ConfigureAwait(false))).Select(subPath => new AssetHandle<T>(subPath));
         }
 
         private static IAssetProvider AssetProvider => DependencyContext.Current.GetService<IAssetProvider>();
@@ -39,10 +39,10 @@ namespace LionFire.Assets
         {
             return (ReturnType)typeof(AssetProviderExtensions).GetMethod("Load", new Type[] { typeof(string), typeof(object) }).MakeGenericMethod(assetType).Invoke(null, new object[] { assetSubPath, context });
         }
-        public static T Load<T>(this string assetSubPath, object context = null)
+        public static async Task<T> Load<T>(this string assetSubPath, object context = null)
             where T : class
         {
-            var result = AssetProvider.Load<T>(assetSubPath);
+            var result = await AssetProvider.Load<T>(assetSubPath);
             ValidateIfNeeded(result, context.ObjectAsType<InstantiationContext>());
             return result;
         }
@@ -102,8 +102,9 @@ namespace LionFire.Assets
                 persistenceContext = instantiationContext = new InstantiationContext();
             }
             instantiationContext.RootObject = obj;
+            // FIXME - persistenceContext is ignored
 
-            await AssetProvider.Save(assetSubPath, inst, persistenceContext);
+            await AssetProvider.Save(assetSubPath, inst);
         }
 
     }

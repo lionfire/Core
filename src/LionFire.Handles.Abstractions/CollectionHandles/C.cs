@@ -1,7 +1,7 @@
 ﻿using LionFire.Collections;
 using LionFire.Referencing;
 
-namespace LionFire.Referencing
+namespace LionFire.Persistence.Handles
 {
 
     public interface C : RH<INotifyingReadOnlyCollection<object>> { }

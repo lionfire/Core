@@ -3,7 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using LionFire.Collections;
 
-namespace LionFire.Referencing
+namespace LionFire.Persistence.Handles
 {
     public abstract class RCollectionBase<TCollection, TItem> : RBase<TCollection>, IReadOnlyCollection<TItem>
         where TCollection : IEnumerable<TItem>

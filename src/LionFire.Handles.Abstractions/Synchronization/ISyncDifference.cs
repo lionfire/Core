@@ -1,4 +1,4 @@
-﻿namespace LionFire.Handles
+﻿namespace LionFire.Persistence.Handles
 {
     public interface ISyncDifference
     {

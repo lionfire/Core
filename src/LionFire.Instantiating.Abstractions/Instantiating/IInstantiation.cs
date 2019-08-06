@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text;
 using LionFire.Collections;
 using LionFire.Ontology;
+using LionFire.Persistence;
 using LionFire.Referencing;
 using LionFire.Structures;
 using Microsoft.Extensions.Logging;

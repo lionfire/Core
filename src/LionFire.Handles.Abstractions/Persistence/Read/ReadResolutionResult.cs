@@ -1,5 +1,7 @@
 ﻿
-namespace LionFire.Referencing.Persistence
+using LionFire.Referencing;
+
+namespace LionFire.Persistence.Resolution
 {
     public class ReadResolutionResult<T> : ReferenceResolutionResult
     {

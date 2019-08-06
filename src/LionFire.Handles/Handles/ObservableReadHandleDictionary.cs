@@ -9,7 +9,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using LionFire.Referencing;
 
-namespace LionFire.Handles
+namespace LionFire.Persistence.Handles
 {
     public abstract class ObservableReadHandleDictionary<TKey, THandle, T> : IEnumerable<T>
         where THandle : RH<T>
@@ -70,7 +70,7 @@ namespace LionFire.Handles
             }
             if (AutoResolveObjects)
             {
-                await handle.TryRetrieveObject().ConfigureAwait(false);
+                await handle.Retrieve().ConfigureAwait(false);
             }
         }
         private void OnHandleRemoved(TKey key, THandle handle)

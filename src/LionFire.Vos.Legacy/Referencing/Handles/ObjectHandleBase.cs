@@ -2,7 +2,7 @@
 using System;
 using System.Threading.Tasks;
 
-namespace LionFire.Handles
+namespace LionFire.Persistence.Handles
 {
     // UNUSED?
     // TODO: Reconcile with Legacy  HandleBase

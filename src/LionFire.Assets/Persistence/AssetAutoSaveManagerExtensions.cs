@@ -9,7 +9,7 @@ using LionFire.Structures;
 
 namespace LionFire.Persistence
 {
-    
+
 
     public static class AssetToSaveable
     {
@@ -33,9 +33,9 @@ namespace LionFire.Persistence
         private class SaveableAssetWrapper : ICommitable, IWrapper
         {
             public IAsset Asset { get; set; }
-            object IWrapper.WrapperTarget=> Asset;
+            object IWrapper.WrapperTarget => Asset;
 
-            async Task ICommitable.Commit(object context) => await Asset.SaveAtSubPath(Asset.AssetSubPath);
+            async Task ICommitable.Commit() => await Asset.SaveAtSubPath(Asset.AssetSubPath);
         }
 
         #endregion

@@ -1,30 +1,40 @@
 ﻿using System.Threading.Tasks;
 using LionFire.Assets;
+using LionFire.Persistence.Handles;
+using LionFire.Persistence.Implementation;
 using LionFire.Referencing;
 
 namespace LionFire.Persistence.Assets
 {
-    public class AssetHandle<T> : AssetReadHandle<T>, IWriteHandle<T>, WH<T>
+    public class AssetHandle<T> : AssetReadHandle<T>, IHandleImpl<T>
         where T : class
     {
         #region Construction
 
         public AssetHandle() { }
-        public AssetHandle(string subPath) :base(subPath) { }
+        public AssetHandle(string subPath) : base(subPath) { }
+
+        public AssetHandle(IReference reference, T handleObject = null) : base(reference, handleObject)
+        {
+        }
 
         #endregion
 
         public void MarkDeleted() => throw new System.NotImplementedException();
         public Task<bool?> Delete() => throw new System.NotImplementedException();
 
-        public Task Commit(object persistenceContext = null)
+        public Task Commit()
         {
             var ap = Dependencies.GetServiceOrSingleton<IAssetProvider>(createIfMissing: true);
-            ap.Save(this.Key, this.Object, persistenceContext);
+            ap.Save(this.Key, this.Object);
             return Task.CompletedTask;
         }
 
         public void SetObject(T obj) { base.Object = obj; }
+
+        Task<bool> IDeletable.Delete() => throw new System.NotImplementedException();
+        Task<IPersistenceResult> ICommitableImpl.Commit() => throw new System.NotImplementedException();
+        Task<IPersistenceResult> IDeletableImpl.Delete() => throw new System.NotImplementedException();
     }
 
     //public class AssetReadHandle<T> : IReadHandle<T>

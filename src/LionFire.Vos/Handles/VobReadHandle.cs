@@ -6,6 +6,8 @@ using LionFire.Copying;
 using LionFire.DependencyInjection;
 using LionFire.ObjectBus;
 using LionFire.Ontology;
+using LionFire.Persistence;
+using LionFire.Persistence.Handles;
 using LionFire.Referencing;
 using LionFire.Structures;
 
@@ -116,7 +118,7 @@ namespace LionFire.Vos
 
         #region Read handle implementation
 
-        public override Task<bool> TryRetrieveObject() => throw new NotImplementedException();
+        public override Task<IRetrieveResult<T>> RetrieveObject() => throw new NotImplementedException();
         public void OnRenamed(IVobHandle<object> newHandle) => throw new NotImplementedException();
 
         #endregion

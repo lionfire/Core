@@ -14,7 +14,7 @@ namespace LocalFileReference_
         {
             var pathWithoutExtension = @"c:\Temp\Path\Test\" + Guid.NewGuid().ToString();
 
-            var reference = new LocalFileReference(pathWithoutExtension);
+            var reference = new FileReference(pathWithoutExtension);
 
             Assert.Equal("file:///" + pathWithoutExtension.Replace('\\', '/'), reference.Key);
         }

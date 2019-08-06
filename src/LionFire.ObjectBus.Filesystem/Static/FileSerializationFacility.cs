@@ -11,7 +11,7 @@ namespace LionFire.ObjectBus.Filesystem
         public static async Task<T> DeserializePath<T>(this string path)
         {
             var result = await FsOBase.Instance.TryGet<T>(path);
-            if(!result.IsSuccess) throw new RetrieveException(result);
+            if(!result.IsSuccess()) throw new RetrieveException(result);
 
             return result.Object;
         }

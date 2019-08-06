@@ -1,5 +1,6 @@
 ﻿// REVIEW - probably move out of ObjectBus TOREFACTOR
 //using LionFire.Assets;
+using LionFire.Persistence.Handles;
 using LionFire.Referencing;
 using Microsoft.Extensions.Logging;
 using System;

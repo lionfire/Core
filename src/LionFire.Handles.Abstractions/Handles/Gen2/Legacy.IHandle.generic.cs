@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace LionFire.Referencing
+namespace LionFire.Persistence
 {
 //#if !AOT  //150309 RECENTCHANGE - try this again  TOAOT  - comment?
     public interface ILegacyHandle<T> :

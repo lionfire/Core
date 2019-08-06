@@ -1,8 +1,9 @@
-﻿using System.Collections.Generic;
+﻿using LionFire.Referencing;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace LionFire.Referencing.Persistence
+namespace LionFire.Persistence.Resolution
 {
 
     /// <design>

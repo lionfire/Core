@@ -9,9 +9,7 @@ namespace LionFire.Persistence
     public interface IReadResult : IPersistenceResult
     {
 
-        Type[] Types { get; }
-
-        IReference UnderlyingReference { get; }
+        //Type[] Types { get; }
 
     }
 

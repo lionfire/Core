@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace LionFire.Handles
+namespace LionFire.Persistence.Handles
 {
     //public interface ITreeHandle
     //{

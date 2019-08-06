@@ -1,4 +1,4 @@
-﻿namespace LionFire.Referencing
+﻿namespace LionFire.Persistence.Merging
 {
     public enum MergePolicy
     {

@@ -1,4 +1,4 @@
-﻿namespace LionFire.Referencing
+﻿namespace LionFire.Persistence
 {
     public static class HExtensions
     {

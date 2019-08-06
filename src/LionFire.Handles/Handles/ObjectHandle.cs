@@ -1,9 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using LionFire.Persistence.Handles;
 using LionFire.Structures;
+using LionFire.Referencing;
 
-namespace LionFire.Referencing
+namespace LionFire.Persistence.Handles
 {
     /// <summary>
     /// REVIEW: Incomplete? / needs design analysis
@@ -21,7 +23,22 @@ namespace LionFire.Referencing
                 yield return typeof(NamedReference);
             }
         }
-        public override Task<bool> TryRetrieveObject() => Task.FromResult(false);
+        public override Task<IRetrieveResult<ObjectType>> RetrieveObject()
+        {
+            if (HasObject)
+            {
+                return Task.FromResult((IRetrieveResult<ObjectType>)new RetrieveResult<ObjectType>()
+                {
+                    Flags = PersistenceResultFlags.Success,
+                    Object = Object,
+                });
+            }
+            else
+            {
+                return Task.FromResult((IRetrieveResult<ObjectType>)RetrieveResult<ObjectType>.NotFound);
+            }
+        }
+
 
         #region Construction
 

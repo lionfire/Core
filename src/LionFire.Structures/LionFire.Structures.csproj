@@ -6,8 +6,13 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Folder Include="Persistence\" />
     <Folder Include="Types\" />
     <Folder Include="Validation\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\LionFire.Base\LionFire.Base.csproj" />
   </ItemGroup>
 
 </Project>

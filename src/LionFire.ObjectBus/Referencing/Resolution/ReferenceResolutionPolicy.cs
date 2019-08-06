@@ -1,4 +1,4 @@
-﻿namespace LionFire.Referencing.Persistence
+﻿namespace LionFire.Persistence.Resolution
 {
     // REVIEW - if this only holds the ReferenceResolutionService, consider collapsing it.  Otherwise, maybe this could hold OBase-specific options.
     public class ReferenceResolutionPolicy

@@ -1,4 +1,6 @@
-﻿namespace LionFire.Referencing.Persistence
+﻿using LionFire.Referencing;
+
+namespace LionFire.Persistence.Resolution
 {
     // TOTEST:
     //  ResolveAllForRead with 2 serializers configured: json, msgpack or something, and IncludeNonexistant = true

@@ -1,4 +1,6 @@
-﻿namespace LionFire.Referencing.Handles
+﻿using LionFire.Referencing;
+
+namespace LionFire.Persistence.Handles
 {
     public static class ICollectionHandleProviderExtensions
     {

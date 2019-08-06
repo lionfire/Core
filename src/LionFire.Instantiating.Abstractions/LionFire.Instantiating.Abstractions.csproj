@@ -18,7 +18,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\LionFire.Core\LionFire.Core.csproj" />
-    <ProjectReference Include="..\LionFire.Handles.Abstractions\LionFire.Handles.Abstractions.csproj" />
+    <ProjectReference Include="..\LionFire.Handles.Abstractions\LionFire.Persistence.Handles.Abstractions.csproj" />
     <ProjectReference Include="..\LionFire.MultiTyping.Abstractions\LionFire.MultiTyping.Abstractions.csproj" />
     <ProjectReference Include="..\LionFire.Validation\LionFire.Validation.csproj" />
   </ItemGroup>

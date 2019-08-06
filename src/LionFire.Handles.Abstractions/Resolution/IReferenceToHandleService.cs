@@ -2,7 +2,7 @@
 using System;
 using System.Collections.Generic;
 
-namespace LionFire.Referencing.Handles
+namespace LionFire.Persistence.Handles
 {
     public interface IReferenceToHandleService //: IReferenceToHandleProvider<IReference>
     {

@@ -51,7 +51,7 @@ namespace FsOBoc_
 
                     #endregion
 
-                    var reference = new LocalFileReference(path);
+                    var reference = new FileReference(path);
                     var oboc = new FsOBoc(reference);
                     var obj = oboc.Object;
 

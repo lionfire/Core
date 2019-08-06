@@ -1,7 +1,8 @@
 ﻿using System;
 using System.IO;
 using LionFire.Referencing;
-using LionFire.Referencing.Handles;
+using LionFire.Persistence.Handles;
+using LionFire.Persistence;
 
 namespace LionFire.IO.Filesystem
 {

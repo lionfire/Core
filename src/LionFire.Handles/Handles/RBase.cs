@@ -1,15 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Collections.Specialized;
 using System.Linq;
 using System.Threading.Tasks;
-using LionFire.DependencyInjection;
 using LionFire.Extensions.DefaultValues;
-using LionFire.ObjectBus;
-using LionFire.Persistence;
+using LionFire.Referencing;
 using LionFire.Structures;
 
-namespace LionFire.Referencing
+namespace LionFire.Persistence.Handles
 {
 
     /// <summary>
@@ -22,7 +19,7 @@ namespace LionFire.Referencing
     ///  - ObjectChanged 
     /// </remarks>
     /// <typeparam name="ObjectType"></typeparam>
-    public abstract class RBase<ObjectType> : RH<ObjectType>, IKeyed<string>
+    public abstract class RBase<ObjectType> : RH<ObjectType>, IKeyed<string>, IRetrievableImpl<ObjectType>
     //where ObjectType : class
     {
         /// <summary>
@@ -30,9 +27,9 @@ namespace LionFire.Referencing
         /// </summary>
         public virtual IEnumerable<Type> AllowedReferenceTypes => null;
 
-#region Identity
+        #region Identity
 
-#region Reference
+        #region Reference
 
         public IReference Reference
         {
@@ -61,7 +58,7 @@ namespace LionFire.Referencing
         protected IReference reference;
         public ITypedReference TypedReference => Reference as ITypedReference;
 
-#endregion
+        #endregion
 
         public string Key
         {
@@ -70,9 +67,9 @@ namespace LionFire.Referencing
             //set => Reference = value.GetReference(); // TODO
         }
 
-#endregion
+        #endregion
 
-#region Construction
+        #region Construction
 
         protected RBase() { }
 
@@ -81,16 +78,16 @@ namespace LionFire.Referencing
 
         /// <param name="reference">(Can be null)</param>
         /// <param name="obj">Starting value for Object</param>
-        public RBase(IReference reference, ObjectType obj = default(ObjectType)) : this(reference)
+        public RBase(IReference reference, ObjectType obj = default) : this(reference)
         {
             _object = obj;
         }
 
-#endregion
+        #endregion
 
-#region State
+        #region State
 
-#region State
+        #region State
 
         public PersistenceState State
         {
@@ -113,7 +110,7 @@ namespace LionFire.Referencing
 
         public event PersistenceStateChangeHandler StateChanged;
 
-#region Derived - Convenience
+        #region Derived - Convenience
 
         public bool IsPersisted
         {
@@ -131,7 +128,7 @@ namespace LionFire.Referencing
             }
         }
 
-#region Reachable
+        #region Reachable
 
         public bool? IsReachable
         {
@@ -158,13 +155,13 @@ namespace LionFire.Referencing
             }
         }
 
-#endregion
+        #endregion
 
-#endregion
+        #endregion
 
-#endregion
+        #endregion
 
-#region Object
+        #region Object
 
         public ObjectType Object
         {
@@ -173,7 +170,8 @@ namespace LionFire.Referencing
             {
                 if (!IsPersisted)
                 {
-                    TryRetrieveObject().ConfigureAwait(false).GetAwaiter().GetResult();
+                    Retrieve().ConfigureAwait(false).GetAwaiter().GetResult();
+                    //_ = Retrieve().Result;
                 }
                 return _object;
             }
@@ -196,7 +194,7 @@ namespace LionFire.Referencing
         {
             if (!IsPersisted)
             {
-                await TryRetrieveObject().ConfigureAwait(false);
+                await Retrieve().ConfigureAwait(false);
             }
             // TOTEST NOTE / REVIEW: Consider case where IsPersisted is true and _object is null.  How can this happen?
             return _object;
@@ -213,7 +211,7 @@ namespace LionFire.Referencing
 
         private static bool IsDefaultValue(ObjectType value) => EqualityComparer<ObjectType>.Default.Equals(value, default(ObjectType));
 
-#region Instantiation 
+        #region Instantiation 
 
         // No persistence, just instantiating an ObjectType
 
@@ -266,7 +264,7 @@ namespace LionFire.Referencing
             }
         }
 
-#endregion
+        #endregion
 
         //protected virtual async Task<bool> DoTryRetrieve()
         //{
@@ -289,6 +287,7 @@ namespace LionFire.Referencing
         {
             Object = obj;
             RaiseRetrievedObject();
+            this.State |= PersistenceState.Persisted;
         }
 
         /// <summary>
@@ -307,26 +306,40 @@ namespace LionFire.Referencing
 
         public void ForgetObject()
         {
-            Object = default(ObjectType);
+            Object = default;
             IsReachable = false;
+            this.State &= ~PersistenceState.Persisted;
         }
 
-#endregion
+        #endregion
 
 
-#endregion
+        #endregion
 
-#region Events
+        #region Events
 
         public event Action<RH<ObjectType>, HandleEvents> HandleEvents;
 
         protected void RaiseEvent(HandleEvents eventType) => HandleEvents?.Invoke(this, eventType);
 
-#endregion
+        #endregion
 
-#region Retrieve
+        #region Retrieve
 
-        public abstract Task<bool> TryRetrieveObject();
+        public abstract Task<IRetrieveResult<ObjectType>> RetrieveObject();
+
+        //async Task<IRetrieveResult<ObjectType>> IRetrievableImpl<ObjectType>.RetrieveObject() => await RetrieveObject().ConfigureAwait(false);
+        public async Task<bool> Retrieve()
+        {
+            var result = await RetrieveObject().ConfigureAwait(false);
+
+            if (result.IsSuccess())
+            {
+                OnRetrievedObject(result.Object);
+            }
+
+            return result.IsSuccess();
+        }
 
         /// <summary>
         /// Invokes get_Object, forcing a lazy retrieve if it was null.  Override to avoid this.
@@ -344,7 +357,7 @@ namespace LionFire.Referencing
             if (!IsPersisted)
             {
                 //await DoTryRetrieve().ConfigureAwait(false);
-                await TryRetrieveObject().ConfigureAwait(false);
+                await Retrieve().ConfigureAwait(false);
             }
 
             return HasObject;
@@ -359,7 +372,7 @@ namespace LionFire.Referencing
         {
             if (forceCheck)
             {
-                return await TryRetrieveObject().ConfigureAwait(false);
+                return (await RetrieveObject().ConfigureAwait(false)).IsFound();
             }
             else if (IsPersisted)
             {
@@ -368,12 +381,12 @@ namespace LionFire.Referencing
             }
             else
             {
-                await TryRetrieveObject().ConfigureAwait(false);
+                await Retrieve().ConfigureAwait(false);
                 return HasObject;
             }
         }
 
-#endregion
+        #endregion
 
     }
 }

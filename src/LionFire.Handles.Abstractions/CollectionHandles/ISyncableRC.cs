@@ -1,4 +1,4 @@
-﻿namespace LionFire.Referencing
+﻿namespace LionFire.Persistence.Handles
 {
     public interface ISyncableRC<out T, TListEntry> : RC<T, TListEntry>
         where  TListEntry : ICollectionEntry

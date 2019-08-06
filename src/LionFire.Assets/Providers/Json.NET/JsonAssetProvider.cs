@@ -83,47 +83,50 @@ namespace LionFire.Assets.Providers.FileSystem
         /// <typeparam name="T"></typeparam>
         /// <param name="assetSubPath"></param>
         /// <returns>Returns default(T) if file not found.</returns>
-        public T Load<T>(string assetSubPath, object context = null)
+        public Task<T> Load<T>(string assetSubPath)
             where T : class
         {
-            var path = GetPath<T>(assetSubPath, context);
-            if (!File.Exists(path)) return default(T);
+            var path = GetPath<T>(assetSubPath);
 
-
-            var obj = Newtonsoft.Json.JsonConvert.DeserializeObject<object>(File.ReadAllText(path), JsonSettings);
-            var jObject = obj as JObject;
-
-            if (obj as T != null) return (T)obj;
-
-            var inst = obj as InstantiationPipeline;
-            if (inst != null)
+            return Task.Run(() =>
             {
-                return inst.Instantiate<T>();
-            }
+                if (!File.Exists(path)) return default;
 
-            T result;
-            if (jObject != null)
-            {
-                result = jObject.ToObject<T>();
-                if (result != null) return result;
+                var obj = Newtonsoft.Json.JsonConvert.DeserializeObject<object>(File.ReadAllText(path), JsonSettings);
+                var jObject = obj as JObject;
 
-                inst = jObject.ToObject<InstantiationPipeline>();
+                if (obj as T != null) return (T)obj;
+
+                var inst = obj as InstantiationPipeline;
                 if (inst != null)
                 {
                     return inst.Instantiate<T>();
                 }
-                var typeName = jObject["_type"];
 
-                throw new InvalidDataException($"After deserializing, expected type {typeof(T).FullName} but got {typeName ?? obj.GetType().FullName}");
+                T result;
+                if (jObject != null)
+                {
+                    result = jObject.ToObject<T>();
+                    if (result != null) return result;
 
-            }
+                    inst = jObject.ToObject<InstantiationPipeline>();
+                    if (inst != null)
+                    {
+                        return inst.Instantiate<T>();
+                    }
+                    var typeName = jObject["_type"];
 
-            throw new InvalidDataException($"After deserializing, expected type {typeof(T).FullName} but got {obj.GetType().FullName}");
+                    throw new InvalidDataException($"After deserializing, expected type {typeof(T).FullName} but got {typeName ?? obj.GetType().FullName}");
 
-            //var typeName = obj["_type"];
-            //(String)((Newtonsoft.Json.Linq.JObject)obj)["_type"];
+                }
 
-            //return _PostLoadConvert<T>(obj);
+                throw new InvalidDataException($"After deserializing, expected type {typeof(T).FullName} but got {obj.GetType().FullName}");
+
+                //var typeName = obj["_type"];
+                //(String)((Newtonsoft.Json.Linq.JObject)obj)["_type"];
+
+                //return _PostLoadConvert<T>(obj);
+            });
 
         }
 
@@ -131,17 +134,19 @@ namespace LionFire.Assets.Providers.FileSystem
 
         AutoRetryContext autoRetry => DependencyContextUtils.AsTypeInPathOrDefault<AutoRetryContext>(ContextPath);
 
-        private void _SaveMethod(object obj, string assetSubPath, object context)
+        private void _SaveMethod(object obj, string assetSubPath)
         {
-            Type saveType = (context.ObjectAsType<PersistenceContext>())?.SaveType ?? typeof(object);
-            CreateDirIfNeeded(obj, assetSubPath, context); // TOOPTIMIZE - only create after an exception.  REFACTOR - move to base class?
-            File.WriteAllText(GetPath(obj, assetSubPath, context), JsonConvert.SerializeObject(obj, saveType, JsonSettings));
-        }
-        public async Task Save(string assetSubPath, object obj, object context = null) 
-            => await autoRetry.AutoRetry(() => _SaveMethod(obj, assetSubPath, context)).ConfigureAwait(false);
 
-        public async Task SaveAsync(string assetSubPath, object obj, PersistenceContext context = null) // FUTURE replacement
-            => await autoRetry.AutoRetry(() => _SaveMethod(obj, assetSubPath, context)).ConfigureAwait(false);
+            //Type saveType = (context.ObjectAsType<PersistenceContext>())?.SaveType ?? typeof(object);
+            Type saveType = typeof(object);
+            CreateDirIfNeeded(obj, assetSubPath); // TOOPTIMIZE - only create after an exception.  REFACTOR - move to base class?
+            File.WriteAllText(GetPath(obj, assetSubPath), JsonConvert.SerializeObject(obj, saveType, JsonSettings));
+        }
+        public async Task Save(string assetSubPath, object obj)
+            => await autoRetry.AutoRetry(() => _SaveMethod(obj, assetSubPath)).ConfigureAwait(false);
+
+        public async Task SaveAsync(string assetSubPath, object obj) // FUTURE replacement
+            => await autoRetry.AutoRetry(() => _SaveMethod(obj, assetSubPath)).ConfigureAwait(false);
 
         public async Task<bool> Initialize()
         {

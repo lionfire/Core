@@ -2,13 +2,11 @@
 
 namespace LionFire.Persistence
 {
-    public interface IPersistenceResult
+    public interface ITieredPersistenceResult : IPersistenceResult
     {
-        object Error { get; }
 
-        int WriteCount { get; set; }
+        int RelevantUnderlyingCount { get; set; }
 
-        PersistenceResultKind Kind { get; set;}
 
         IEnumerable<IPersistenceResult> Successes { get; set; }
         IEnumerable<IPersistenceResult> Failures { get; set; }

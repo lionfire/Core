@@ -43,7 +43,7 @@ namespace LionFire.ObjectBus
             // Abort saving if reports !IsValid, and handle has yet to be persisted
             if (handle.Object is IIsValid isValid && !isValid.IsValid) // TODO: Use something like Validate(PurposeKind.Persistence), to save partially valid works in progress
             {
-                if (!handle.IsPersisted)
+                if (!handle.IsPersisted())
                 {
                     l.Debug("[autosave] UNTESTED - Not autosaving changes because this object is not persisted and it is not valid yet: " + handle.ToStringSafe());
                     return;

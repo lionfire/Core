@@ -8,9 +8,9 @@ namespace LionFire.Serialization
     {
         public abstract IEnumerable<SerializationStrategyPreference> SerializationStrategyPreferences { get; }
 
-        public IEnumerable<ISerializationStrategy> AllStrategies => strategies;
-        protected List<ISerializationStrategy> strategies;
+        public IEnumerable<ISerializationStrategy> Strategies => strategies;
+        protected IEnumerable<ISerializationStrategy> strategies;
 
-        public IEnumerable<SerializationSelectionResult> Strategies(Lazy<PersistenceOperation> operation = null, PersistenceContext context = null) => SerializeHelpers.ResolveStrategies(SerializationStrategyPreferences, operation, context);
+        public IEnumerable<SerializationSelectionResult> ResolveStrategies(Lazy<PersistenceOperation> operation = null, PersistenceContext context = null) => SerializeHelpers.ResolveStrategies(SerializationStrategyPreferences, operation, context);
     }
 }

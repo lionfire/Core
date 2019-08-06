@@ -5,7 +5,7 @@ using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace LionFire.Handles
+namespace LionFire.Persistence.Handles
 {
     public abstract class WritableHandleBase<T> : 
         //ReadHandleBase<T>, 

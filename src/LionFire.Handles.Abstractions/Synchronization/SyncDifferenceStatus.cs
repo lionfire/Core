@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace LionFire.Handles
+namespace LionFire.Persistence.Handles
 {
     [Flags]
     public enum SyncDifferenceStatus

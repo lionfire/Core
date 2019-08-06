@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace LionFire.Referencing
+namespace LionFire.Persistence
 {
     public delegate void ObjectChanged(IHandle handle, string propertyName);
 

@@ -36,7 +36,7 @@ namespace string_
                     var reference = str.ToReference();
 
                     Assert.IsAssignableFrom<IReference>(reference);
-                    Assert.IsType<LocalFileReference>(reference);
+                    Assert.IsType<FileReference>(reference);
 
                     Assert.Equal("file", reference.Scheme);
                     Assert.Equal(@"c:/test/string/reference.txt#1234?zxcv(asdf)", reference.Path);

@@ -1,13 +1,8 @@
-﻿using LionFire.Structures;
-
-namespace LionFire.Referencing
+﻿
+namespace LionFire.Persistence
 {
-    //public interface IH : IReadHandle<object>, IKeyed<string>, IReferencable
-    //{
-    //}
     public interface H : H<object>
     {
         
     }
-    
 }

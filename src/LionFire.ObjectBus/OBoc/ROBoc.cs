@@ -4,9 +4,11 @@ using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
 using LionFire.Collections;
+using LionFire.Persistence;
+using LionFire.Persistence.Handles;
 using LionFire.Referencing;
 
-namespace LionFire.ObjectBus
+namespace LionFire.ObjectBus.Handles
 {
     public enum OBocTrackingState
     {

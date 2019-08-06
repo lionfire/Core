@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace LionFire.Referencing
+namespace LionFire.Persistence.Handles
 {
     public interface IProvidesHandleFromSubPath
     {

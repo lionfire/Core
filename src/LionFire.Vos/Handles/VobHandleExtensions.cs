@@ -6,6 +6,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using LionFire.Persistence;
 using LionFire.Referencing;
 
 namespace LionFire.Extensions.ObjectBus
@@ -16,13 +17,13 @@ namespace LionFire.Extensions.ObjectBus
 
         public static IEnumerable<IReference> ToNonVirtualReferences(this RH<object> parent)
         {
-            foreach (var handle in ToNonVirtualHandle(parent).Select(h => h.Reference))
+            foreach (var reference in ToNonVirtualHandle(parent).Select(h => h.Reference))
             {
-                yield return handle;
+                yield return reference;
             }
         }
 
-        public static IEnumerable<IHandle> ToNonVirtualHandle(this RH<object> parent)
+        public static IEnumerable<RH> ToNonVirtualHandle(this RH<object> parent)
         {
             throw new NotImplementedException("TOPORT");
             // TOPORT

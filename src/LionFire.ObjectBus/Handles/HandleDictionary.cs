@@ -1,4 +1,5 @@
-﻿using System;
+﻿using LionFire.Persistence;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.CompilerServices;
@@ -9,24 +10,15 @@ namespace LionFire.ObjectBus
 {
     public class HandleDictionary
     {
-        internal static ConditionalWeakTable<object, IHandle> handles = new ConditionalWeakTable<object, IHandle>();
-
-        
-
+        internal static ConditionalWeakTable<object, H<object>> handles = new ConditionalWeakTable<object, H<object>>();
     }
+    
     public static class HandleDictionaryExtensions
     {
-        public static IHandle FindHandle(this object obj)
-        {
-            IHandle h;
-            if (HandleDictionary.handles.TryGetValue(obj, out h))
-            {
-                return h;
-            }
-            return null;
-        }
+        public static H<object> FindHandle(this object obj) 
+            => HandleDictionary.handles.TryGetValue(obj, out H<object> h) ? h : null;
 
-        public static bool TryRegisterHandle(this IHandle h)
+        public static bool TryRegisterHandle(this H<object> h)
         {
             object o = h.Object;
 
@@ -40,7 +32,7 @@ namespace LionFire.ObjectBus
                 return false;
             }
         }
-        public static void RegisterHandle(this IHandle h)
+        public static void RegisterHandle(this H<object> h)
         {
             object o = h.Object;
             HandleDictionary.handles.Add(o, h);

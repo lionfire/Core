@@ -21,7 +21,7 @@ namespace LionFire
         /// </summary>
         CanCreate = 1 << 1,
 
-        NotCreatedYet = 1 << 9,
+        NotCreatedYet = 1 << 2,
 
         #endregion
 
@@ -31,17 +31,19 @@ namespace LionFire
         /// Object is believed to exist in the source, either because Create was committed, or write/update was done, or a previously persisted item was moved to this location.
         /// Example usage: do not auto-save if client has not saved it yet.  (But maybe auto-save to a temp location anyway?)
         /// </summary>
-        Persisted = 1 << 15,
+        Persisted = 1 << 3,
 
         /// <summary>
         /// Happens after primary key is set, or source-side change detection is enabled and a modification is detected.
         /// </summary>
-        RetrieveAvailable = 1 << 3,
+        RetrieveAvailable = 1 << 4,
 
         /// <summary>
         /// Happens after source-side change detection is enabled and a modification is detected.
         /// </summary>
-        SourceModified = 1 << 4,
+        SourceModified = 1 << 5,
+
+        NotFound = 1 << 6,
 
         #endregion
 
@@ -61,9 +63,9 @@ namespace LionFire
         /// <summary>
         /// A delete has been staged
         /// </summary>
-        DeletePending = 1 << 5,
+        DeletePending = 1 << 9,
 
-        DeletedAtSource = 1 << 16,
+        DeletedAtSource = 1 << 10,
 
         #endregion
 
@@ -74,7 +76,7 @@ namespace LionFire
         MergeConflict = 1 << 13, // Out of sync
         AutoMergeable = 1 << 14,  // Out of sync
 
-        InSync = 1 << 18,
+        InSync = 1 << 11,
 
         #endregion
 

@@ -2,7 +2,7 @@
 using System.Threading.Tasks;
 using LionFire.Synchronization;
 
-namespace LionFire.Handles
+namespace LionFire.Persistence.Handles
 {
     /// <summary>
     /// Enable updates from the source 

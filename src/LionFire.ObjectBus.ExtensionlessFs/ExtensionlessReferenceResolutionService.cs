@@ -2,9 +2,10 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using LionFire.DependencyInjection;
+using LionFire.ObjectBus.Filesystem;
 using LionFire.Ontology;
+using LionFire.Persistence.Resolution;
 using LionFire.Referencing;
-using LionFire.Referencing.Persistence;
 using LionFire.Serialization;
 
 namespace LionFire.ObjectBus.ExtensionlessFs
@@ -17,8 +18,8 @@ namespace LionFire.ObjectBus.ExtensionlessFs
     {
         #region Static
 
-        public static ISerializationService DefaultSerializationService => DependencyContext.Default.GetService<ISerializationService>();
-        public static ISerializationService CurrentSerializationService => DependencyContext.Current.GetService<ISerializationService>();
+        //public static ISerializationService DefaultSerializationService => DependencyContext.Default.GetService<ISerializationService>();
+        //public static ISerializationService CurrentSerializationService => DependencyContext.Current.GetService<ISerializationService>();
 
         #endregion
 
@@ -26,7 +27,7 @@ namespace LionFire.ObjectBus.ExtensionlessFs
 
         public IOBase OBase { get; }
 
-        public ISerializationService SerializationService { get; }
+        public ISerializationProvider SerializationService { get; }
 
         #endregion
 
@@ -35,11 +36,11 @@ namespace LionFire.ObjectBus.ExtensionlessFs
 
         #region Construction
 
-        public ExtensionlessReferenceResolutionService(IOBase obase, ISerializationService serializationService = null)
+        public ExtensionlessReferenceResolutionService(IOBase obase, ISerializationProvider serializationProvider)
         {
             this.OBase = obase;
-            this.SerializationService = serializationService ?? CurrentSerializationService ?? DefaultSerializationService;
-            if (serializationService == null) throw new ArgumentNullException(nameof(serializationService));
+            this.SerializationService = serializationProvider; // ?? CurrentSerializationService ?? DefaultSerializationService;
+            // if (serializationService == null) throw new ArgumentNullException(nameof(serializationService)); FIXME
 
             extensions = SerializationService.GetDistinctRankedStrategiesByExtension();
         }
@@ -67,7 +68,8 @@ namespace LionFire.ObjectBus.ExtensionlessFs
                 async Task<ReadResolutionResult<T>> x() {
                     //results.Add (await Task.Run(async () =>
                     //{
-                    var referenceWithExtension = r.WithRelativePath("." + extension);
+                    //var referenceWithExtension = r.WithRelativePath("." + extension, FileReference.Constants.UriScheme);
+                    var referenceWithExtension = new FileReference(r.Path + "." + extension);
                     Persistence.IRetrieveResult<T> retrieveResult = null;
                     if (options?.VerifyDeserializable == true)
                     {
@@ -75,7 +77,7 @@ namespace LionFire.ObjectBus.ExtensionlessFs
 
                         retrieveResult = await OBase.TryGet<T>(referenceWithExtension).ConfigureAwait(false);
 
-                        if(!(await readHandle.TryEnsureRetrieved()))
+                        if(!(await readHandle.TryGetObject()))
                         {
                             return null;
                         }

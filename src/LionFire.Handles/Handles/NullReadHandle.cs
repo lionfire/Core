@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Threading.Tasks;
 
-namespace LionFire.Handles
+namespace LionFire.Persistence.Handles
 {
     public class NullReadHandle<T> : IReadHandle<T>
     {

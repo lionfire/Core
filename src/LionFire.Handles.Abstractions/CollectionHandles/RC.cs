@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 using LionFire.Collections;
 using LionFire.Referencing;
 
-namespace LionFire.Referencing
+namespace LionFire.Persistence
 {
 
     public interface RC<out T, TListEntry> : IReadOnlyCollection<T>

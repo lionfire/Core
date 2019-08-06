@@ -11,7 +11,7 @@ namespace LocalFileReference_
         {
             var pathWithoutExtension = @"c:\Temp\Path\Test\" + Guid.NewGuid().ToString();
 
-            var reference = new LocalFileReference(pathWithoutExtension);
+            var reference = new FileReference(pathWithoutExtension);
 
             Assert.Equal("file", reference.Scheme);
             Assert.Equal(string.Empty, reference.Host);

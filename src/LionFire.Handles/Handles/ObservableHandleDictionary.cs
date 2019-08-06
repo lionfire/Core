@@ -4,7 +4,7 @@ using System;
 using System.Reflection;
 using System.Threading.Tasks;
 
-namespace LionFire.Handles
+namespace LionFire.Persistence.Handles
 {
     public abstract class ObservableHandleDictionary<TKey, THandle, T> : ObservableReadHandleDictionary<TKey, THandle, T>
         where THandle : class, RH<T>, WH<T>
@@ -60,10 +60,10 @@ namespace LionFire.Handles
 
             if (handle is ICommitable saveable)
             {
-                await saveable.Commit(PersistenceContext).ConfigureAwait(false);
+                await saveable.Commit().ConfigureAwait(false);
             }
             return handle;
         }
-        public object PersistenceContext { get; set; }
+        //public object PersistenceContext { get; set; }
     }
 }

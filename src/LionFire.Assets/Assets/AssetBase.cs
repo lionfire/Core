@@ -7,6 +7,8 @@ using System.ComponentModel;
 using LionFire.Referencing;
 using Microsoft.Extensions.Logging;
 using LionFire.Vos;
+using LionFire.Persistence;
+using LionFire.Persistence.Handles;
 
 namespace LionFire.Assets
 {

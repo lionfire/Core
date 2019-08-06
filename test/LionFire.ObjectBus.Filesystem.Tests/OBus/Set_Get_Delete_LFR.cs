@@ -24,7 +24,7 @@ namespace OBus_
                 {
                     var path = @"c:\temp\tests\" + this.GetType().FullName + @"\" + nameof(Pass) + @"\TestFile";
                     var pathWithExtension = path + ".json";
-                    var reference = new LocalFileReference(pathWithExtension);
+                    var reference = new FileReference(pathWithExtension);
 
                     var obj = TestClass1.Create;
                     {

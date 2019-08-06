@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Threading.Tasks;
+using LionFire.Persistence.Handles;
+using LionFire.Persistence;
 using LionFire.Referencing;
 
 namespace LionFire.ObjectBus.Filesystem
@@ -8,13 +10,13 @@ namespace LionFire.ObjectBus.Filesystem
         where T : class
     {
         public RFile() { }
-        public RFile(string path) : base(new LocalFileReference(path))
+        public RFile(string path) : base(new FileReference(path))
         {
         }
-        public RFile(LocalFileReference fileReference) : base(fileReference)
+        public RFile(FileReference fileReference) : base(fileReference)
         {
         }
 
-        public override Task<bool> TryRetrieveObject() => throw new NotImplementedException();
+        public override Task<IRetrieveResult<T>> RetrieveObject() => throw new NotImplementedException();
     }
 }

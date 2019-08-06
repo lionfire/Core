@@ -21,7 +21,7 @@ namespace LionFire.ObjectBus.RedisPub
         {
             get
             {
-                yield return typeof(OBusHandle<>);
+                yield return typeof(OBaseHandle<>);
             }
         }
 

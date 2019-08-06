@@ -1,12 +1,12 @@
 ﻿using System;
 using System.Threading.Tasks;
 using LionFire.ObjectBus;
+using LionFire.Persistence;
+using LionFire.Persistence.Handles;
+using LionFire.Referencing;
 
-namespace LionFire.Referencing
+namespace LionFire.ObjectBus.Handles
 {
-    
-
-
     /// <summary>
     /// New experiment - general purpose concrete read handle, but I may want ObjectBuses to create their own???
     /// </summary>
@@ -16,18 +16,15 @@ namespace LionFire.Referencing
     /// <typeparam name="T"></typeparam>
     public class OBaseReadHandle<T> : RBase<T>
     {
-        public IOBase OBase { get;  }
+        public IOBase OBase { get; }
 
-        public OBaseReadHandle(IReference reference, IOBase obase) : base(reference)
+        public OBaseReadHandle(IReference reference, IOBase obase, T handleObject = default) : base(reference, handleObject)
         {
             this.OBase = obase ?? throw new ArgumentNullException(nameof(obase));
         }
 
-        public override async Task<bool> TryRetrieveObject()
-        {
-            var result = await OBase.TryGet(this.Reference).ConfigureAwait(false);
-            return result?.IsRetrieved == true;
-        }
+        public override async Task<IRetrieveResult<T>> RetrieveObject()
+            => await OBase.TryGet<T>(this.Reference).ConfigureAwait(false);
     }
 
 #if TODO // ? Useful?

@@ -7,6 +7,7 @@ using LionFire.Applications.Hosting;
 using LionFire.Hosting;
 using LionFire.Hosting.ExtensionMethods;
 using LionFire.ObjectBus;
+using LionFire.ObjectBus.ExtensionlessFs;
 using LionFire.ObjectBus.Filesystem;
 using LionFire.ObjectBus.Filesystem.Tests;
 using LionFire.ObjectBus.Testing;
@@ -48,31 +49,55 @@ namespace Handle
 
         private async Task _Pass(bool withExtension)
         {
-            await FrameworkHost.Create(
+            var host = FrameworkHost.Create(
                 //serializers: s => s.AddJson()
-                )
-            //await FrameworkHost.Create()
-                    .AddObjectBus<FsOBus>()
-                    .Run(async () =>
+                );
+
+            if (!withExtension)
+            {
+                host.AddObjectBus<ExtensionlessFSOBus>();
+            }
+
+            await host
+                .AddObjectBus<FsOBus>()
+                .Run(async () =>
+                {
+                    var extension = ".json";
+                    var pathWithoutExtension = FsTestUtils.TestFile;
+                    var path = pathWithoutExtension + extension;
+
+                    var savePath = withExtension ? path : pathWithoutExtension;
+
+                    IReference reference;
+                    if (withExtension)
                     {
-                        var pathWithoutExtension = FsTestUtils.TestFile;
-                        var path = pathWithoutExtension + ".json";
+                        reference = new FileReference(savePath);
+                    }
+                    else
+                    {
+                        reference = new ExtensionlessFileReference(savePath);
+                    }
 
-                        var savePath = withExtension ? path : pathWithoutExtension;
+                    var h = reference.GetHandle<TestClass1>();
+                    h.Object = TestClass1.Create;
 
-                        var reference = new LocalFileReference(savePath); // -------- With / WithoutExtension
+                    await h.Commit().ConfigureAwait(false); // --------- Save
+                    try
+                    {
+                        //if (withExtension)
+                        //{
+                        //    Assert.True(path.EndsWith(extension), "Wrong file extension");
+                        //}
 
-                        var h = reference.GetHandle<TestClass1>();
-                        h.Object = TestClass1.Create;
-
-                        await h.Commit().ConfigureAwait(false); // --------- Save
-
-                        Assert.True(File.Exists(savePath), "Missing file: " + path);
-                        var json = File.ReadAllText(savePath);
+                        Assert.True(File.Exists(path), "Missing file: " + path);
+                        var json = File.ReadAllText(path);
                         Assert.Equal(PersistenceTestUtils.TestClass1Json, json);
-
+                    }
+                    finally
+                    {
                         FsTestUtils.CleanPath(savePath);
-                    });
+                    }
+                });
         }
     }
 }

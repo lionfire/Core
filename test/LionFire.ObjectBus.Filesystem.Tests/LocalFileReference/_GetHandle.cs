@@ -17,6 +17,7 @@ using LionFire.DependencyInjection;
 using System.Diagnostics;
 using Microsoft.Extensions.Logging;
 using LionFire.Hosting;
+using LionFire.Persistence;
 
 namespace LocalFileReference_
 {
@@ -33,7 +34,7 @@ namespace LocalFileReference_
                     Assert.NotNull(ManualSingleton<FsOBus>.Instance); // Created in AddObjectBus<FsOBus>()
 
                     var pathWithoutExtension = Guid.NewGuid().ToString();
-                    var reference = new LocalFileReference(pathWithoutExtension);
+                    var reference = new FileReference(pathWithoutExtension);
                     H<TestClass1> h;
                     h = reference.GetHandle<TestClass1>();
 
@@ -42,11 +43,11 @@ namespace LocalFileReference_
                     Assert.Same(reference, h.Reference);
                     Assert.IsAssignableFrom<RH<TestClass1>>(h);
                     Assert.IsAssignableFrom<H<TestClass1>>(h);
-                    Assert.IsType<OBusHandle<TestClass1>>(h);
+                    Assert.IsType<OBaseHandle<TestClass1>>(h);
 
-                    var obh = (OBusHandle<TestClass1>)h;
+                    var obh = (OBaseHandle<TestClass1>)h;
                     Assert.Same(FsOBase.Instance, obh.OBase);
-                    Assert.Same(ManualSingleton<FsOBus>.Instance, obh.OBus);
+                    Assert.Same(ManualSingleton<FsOBus>.Instance, obh.OBase.OBus);
                 });
         }
 
@@ -60,7 +61,7 @@ namespace LocalFileReference_
                         Assert.Null(ManualSingleton<FsOBus>.Instance); // Null until used
 
                         var pathWithoutExtension = Guid.NewGuid().ToString();
-                        var reference = new LocalFileReference(pathWithoutExtension);
+                        var reference = new FileReference(pathWithoutExtension);
                         H<TestClass1> h;
                         Assert.Throws<HasUnresolvedDependenciesException>(() => h = reference.GetHandle<TestClass1>());
                 });

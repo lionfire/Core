@@ -1,19 +1,17 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
+﻿using LionFire.Referencing;
 
-namespace LionFire.Referencing.Handles
+namespace LionFire.Persistence.Handles
 {
     public interface IHandleProvider
     {
-        H<T> GetHandle<T>(IReference reference/*, T handleObject = default(T)*/);
+        H<T> GetHandle<T>(IReference reference, T handleObject = default);
     }
 
     //[AutoRegister]
     public interface IHandleProvider<TReference>
         where TReference : IReference
     {
-        H<T> GetHandle<T>(TReference reference);
+        H<T> GetHandle<T>(TReference reference, T handleObject = default);
     }
 
     

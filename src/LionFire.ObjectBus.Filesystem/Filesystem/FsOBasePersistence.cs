@@ -99,10 +99,51 @@ namespace LionFire.ObjectBus.Filesystem
 
         #region Get
 
-        public static async Task<T> GetFromPath<T>(string diskPath, Lazy<PersistenceOperation> operation = null, PersistenceContext context = null) => (T)await GetObjectFromPath(diskPath, typeof(T), operation, context);
+        public static async Task<T> GetFromPath<T>(string diskPath, Lazy<PersistenceOperation> operation = null, PersistenceContext context = null) 
+            => await GetObjectFromDiskPath<T>(diskPath, typeof(T), operation, context);
+
+        public static async Task<T> GetObjectFromDiskPath<T>(string diskPath, Type type = null, Lazy<PersistenceOperation> operation = null, PersistenceContext context = null)
+        {
+            return await new Func<T>(() =>
+            {
+                var fileName = Path.GetFileName(diskPath);
+
+                if (!File.Exists(diskPath)) return default; // DOESNOTEXIST
+
+                var persistenceOperation = new PersistenceOperation()
+                {
+                    Type = type,
+                    Deserialization = new DeserializePersistenceOperation()
+                    {
+                        #region ENH - optional alternative: combine dir and filenames to get candidatepaths
+                        //Directory = dir,
+                        //CandidateFilemes = 
+                        #endregion
+                        CandidatePaths = new string[] { diskPath },
+                    }
+                };
+
+                #endregion
+
+                #region Context
+
+                if (context != null)
+                {
+                    throw new NotImplementedException($"{nameof(context)} not implemented yet");
+                }
+                var effectiveContext = FsOBaseDeserializingPersistenceContext;
+
+                #endregion
+
+                return persistenceOperation.ToObject<T>(effectiveContext);
+            }).AutoRetry(maxRetries: FsPersistence.Options.MaxGetRetries, millisecondsBetweenAttempts: FsPersistence.Options.MillisecondsBetweenGetRetries);
+        }
+
+
+#if false
         public static async Task<object> GetObjectFromPath(string diskPath, Type type = null, Lazy<PersistenceOperation> operation = null, PersistenceContext context = null)
         {
-            #region Give Interceptors a chance to return the result
+        #region Give Interceptors a chance to return the result
 
             // REVIEW
 
@@ -120,7 +161,7 @@ namespace LionFire.ObjectBus.Filesystem
                 }
             }
 
-            #endregion
+        #endregion
 
             try
             {
@@ -129,7 +170,7 @@ namespace LionFire.ObjectBus.Filesystem
                     //bool deleteFile = false; // FUTURE?
                     try
                     {
-                        #region Directory
+        #region Directory
 
                         var dir = Path.GetDirectoryName(diskPath);
                         if (!Directory.Exists(dir))
@@ -137,9 +178,9 @@ namespace LionFire.ObjectBus.Filesystem
                             return null; // DOESNOTEXIST
                         }
 
-                        #endregion
+        #endregion
 
-                        #region candidatePaths
+        #region candidatePaths
 
                         var fileName = Path.GetFileName(diskPath);
                         var candidatePaths = Directory.GetFiles(dir, fileName + "*").ToList();
@@ -149,26 +190,26 @@ namespace LionFire.ObjectBus.Filesystem
                         }
 
 
-                        #endregion
+        #endregion
 
-                        #region Operation
+        #region Operation
 
                         var persistenceOperation = new PersistenceOperation()
                         {
                             Type = type,
                             Deserialization = new DeserializePersistenceOperation()
                             {
-                                #region ENH - optional alternative: combine dir and filenames to get candidatepaths
+        #region ENH - optional alternative: combine dir and filenames to get candidatepaths
                                 //Directory = dir,
                                 //CandidateFilemes = 
-                                #endregion
+        #endregion
                                 CandidatePaths = candidatePaths.Select(path => Path.Combine(dir, Path.GetFileName(path))),
                             }
                         };
 
-                        #endregion
+        #endregion
 
-                        #region Context
+        #region Context
 
                         if (context != null)
                         {
@@ -176,7 +217,7 @@ namespace LionFire.ObjectBus.Filesystem
                         }
                         var effectiveContext = FsOBaseDeserializingPersistenceContext;
 
-                        #endregion
+        #endregion
 
                         return persistenceOperation.ToObject<object>(effectiveContext);
                     }
@@ -204,7 +245,7 @@ namespace LionFire.ObjectBus.Filesystem
         }
         public static async Task<object> GetObjectFromPathExtensionless(string diskPath, Type type = null, Lazy<PersistenceOperation> operation = null, PersistenceContext context = null)
         {
-            #region Give Interceptors a chance to return the result
+        #region Give Interceptors a chance to return the result
 
             // REVIEW
 
@@ -222,7 +263,7 @@ namespace LionFire.ObjectBus.Filesystem
                 }
             }
 
-            #endregion
+        #endregion
 
             try
             {
@@ -231,7 +272,7 @@ namespace LionFire.ObjectBus.Filesystem
                     //bool deleteFile = false; // FUTURE?
                     try
                     {
-                        #region Directory
+        #region Directory
 
                         var dir = Path.GetDirectoryName(diskPath);
                         if (!Directory.Exists(dir))
@@ -239,9 +280,9 @@ namespace LionFire.ObjectBus.Filesystem
                             return null; // DOESNOTEXIST
                         }
 
-                        #endregion
+        #endregion
 
-                        #region candidatePaths
+        #region candidatePaths
 
                         var fileName = Path.GetFileName(diskPath);
                         var candidatePaths = Directory.GetFiles(dir, fileName + "*").ToList();
@@ -251,26 +292,26 @@ namespace LionFire.ObjectBus.Filesystem
                         }
 
 
-                        #endregion
+        #endregion
 
-                        #region Operation
+        #region Operation
 
                         var persistenceOperation = new PersistenceOperation()
                         {
                             Type = type,
                             Deserialization = new DeserializePersistenceOperation()
                             {
-                                #region ENH - optional alternative: combine dir and filenames to get candidatepaths
+        #region ENH - optional alternative: combine dir and filenames to get candidatepaths
                                 //Directory = dir,
                                 //CandidateFilemes = 
-                                #endregion
+        #endregion
                                 CandidatePaths = candidatePaths.Select(path => Path.Combine(dir, Path.GetFileName(path))),
                             }
                         };
 
-                        #endregion
+        #endregion
 
-                        #region Context
+        #region Context
 
                         if (context != null)
                         {
@@ -278,7 +319,7 @@ namespace LionFire.ObjectBus.Filesystem
                         }
                         var effectiveContext = FsOBaseDeserializingPersistenceContext;
 
-                        #endregion
+        #endregion
 
                         return persistenceOperation.ToObject<object>(effectiveContext);
                     }
@@ -304,71 +345,99 @@ namespace LionFire.ObjectBus.Filesystem
                 throw;
             }
         }
-        public static async Task<bool> Exists(string objectPath, Type type = null)
-        {
-            if (type == null)
-            {
-                var paths = GetFilePathsForNamePath(objectPath);
-                return paths.Any();
-            }
 
-            var obj = await TryGet(objectPath, type);
-            return obj != null;
-        }
+#endif
 
-        public static async Task<T> TryGet<T>(string objectPath) => (T)await TryGet(objectPath, typeof(T));
+        // MOVE to Extensionless
+        //public static async Task<bool> Exists<T>(string objectPath)
+        //{
+        //    if (type == null)
+        //    {
+        //        var paths = GetFilePathsForNamePath(objectPath);
+        //        return paths.Any();
+        //    }
+
+        //    var obj = await TryGet(objectPath, type);
+        //    return obj != null;
+        //}
+
+        public static async Task<bool> Exists<T>(string objectPath) => await TryGet<T>(objectPath) != null;
+
+        public static async Task<bool> Exists(string objectPath) => await TryGet<object>(objectPath) != null;
+
+        public static async Task<T> TryGet<T>(string objectPath) => await GetObjectFromDiskPath<T>(objectPath);
+
+        // MOVE to Extensionless:
+        //public static async Task<T> TryGet<T>(string objectPath)
+        //{
+        //    var objects = new List<object>();
+        //    object obj = await GetObjectFromDiskPath<T>(objectPath, typeof(T));
+        //    objects.Add(obj);
+
+        //    if (objects.Count > 1)
+        //    {
+        //        return new MultiType(objects);
+        //    }
+        //    else
+        //    {
+        //        return objects.SingleOrDefault();
+        //    }
+
+        //    (T)await TryGet(objectPath, typeof(T));
+        //}
+
+
         // TODO - Extract common bits for bottom tier Persistence layers 
         // - this method is for OBases that may return multiple objects?
-        public static async Task<object> TryGet(string objectPath, Type type = null)
+        //public static async Task<object> TryGetOneOrMany(string objectPath, Type type = null)
+        //{
+        //    var objects = new List<object>();
+        //    object obj = await GetObjectFromPath<T>(objectPath, type);
+        //    objects.Add(obj);
+
+        //    if (objects.Count > 1)
+        //    {
+        //        return new MultiType(objects);
+        //    }
+        //    else
+        //    {
+        //        return objects.SingleOrDefault();
+        //    }
+        //}
+
+            // MOVE to extensionless
+        //public static async Task<object> TryGetExtensionless(string objectPath, Type type = null) // MOVE
+        //{
+        //    var objects = new List<object>();
+
+        //    var paths = GetFilePathsForNamePath(objectPath);
+
+        //    foreach (var path in paths)
+        //    {
+        //        object obj = await GetObjectFromPathExtensionless(path, type);
+        //        objects.Add(obj);
+        //    }
+
+
+        //    if (objects.Count > 1)
+        //    {
+        //        return new MultiType(objects);
+        //    }
+        //    else
+        //    {
+        //        return objects.SingleOrDefault();
+        //    }
+        //}
+
+        public static async Task<T> Get<T>(string objectPath, Type type = null) // Move to base or extension
         {
-            var objects = new List<object>();
-            
-            object obj = await GetObjectFromPath(objectPath, type);
-            objects.Add(obj);
-
-            if (objects.Count > 1)
-            {
-                return new MultiType(objects);
-            }
-            else
-            {
-                return objects.SingleOrDefault();
-            }
-        }
-        public static async Task<object> TryGetExtensionless(string objectPath, Type type = null) // MOVE
-        {
-            var objects = new List<object>();
-
-            var paths = GetFilePathsForNamePath(objectPath);
-
-            foreach (var path in paths)
-            {
-                object obj = await GetObjectFromPathExtensionless(path, type);
-                objects.Add(obj);
-            }
-
-
-            if (objects.Count > 1)
-            {
-                return new MultiType(objects);
-            }
-            else
-            {
-                return objects.SingleOrDefault();
-            }
-        }
-
-        public static async Task<object> Get(string objectPath, Type type = null) // Move to base or extension
-        {
-            object obj = await TryGet(objectPath, type);
+            var obj = await TryGet<T>(objectPath);
             if (obj == null)
             {
                 throw new FileNotFoundException();
             }
             return obj;
         }
-
-        #endregion
 
         #region Set
 
@@ -389,7 +458,7 @@ namespace LionFire.ObjectBus.Filesystem
 
             objectPath;
 
-        public static async Task Set(object obj, string objectPath, Type type = null, bool preview = false)
+        public static async Task Set(object obj, string objectPath, Type type = null, bool allowOverwrite = true)
         {
             try
             {
@@ -399,7 +468,7 @@ namespace LionFire.ObjectBus.Filesystem
                 //string objectDiskPath = GetSavePathWithoutExtension(obj, objectPath, type); // (No extension)
                 string objectDiskPath = objectPath; // GetSavePathWithoutExtension(obj, objectPath, type); // (No extension)
 
-                await Write(obj, objectDiskPath, type, preview);
+                await Write(obj, objectDiskPath, type, allowOverwrite);
             }
             catch (Exception ex)
             {
@@ -422,15 +491,12 @@ namespace LionFire.ObjectBus.Filesystem
         }
         private static ISerializationProvider defaultSerializationProvider;
 
-        public static async Task Write(object obj, string diskPath, Type type = null, bool preview = false, PersistenceContext context = null)
+        public static async Task Write(object obj, string diskPath, Type type = null, bool allowOverwrite = true, PersistenceContext context = null)
         {
-            if (preview)
+            await Task.Run(async () =>
             {
-                return; // TOPREVIEW - REVIEW - is this still useful?
-            }
+                if (!allowOverwrite && (await Exists(diskPath))) throw new AlreadySetException($"File already exists at '{diskPath}'"); // TOTEST
 
-            await Task.Run(() =>
-            {
                 string objectSaveDir = System.IO.Path.GetDirectoryName(diskPath);
                 Directory.CreateDirectory(objectSaveDir); // TODO SECURITY - set permissions to all users writable
 
@@ -451,7 +517,7 @@ namespace LionFire.ObjectBus.Filesystem
                     PathIsMissingExtension = false,
                 })).ToLazy();
 
-                var strategyResults = (context?.SerializationProvider ?? DefaultSerializationProvider).Strategies(op, context);
+                var strategyResults = (context?.SerializationProvider ?? DefaultSerializationProvider).ResolveStrategies(op, context);
 
                 foreach (var strategyResult in strategyResults)
                 {
@@ -526,29 +592,29 @@ namespace LionFire.ObjectBus.Filesystem
 
         #region Delete
 
-        public static async Task<bool?> TryDelete(string objectPath, Type type = null, bool preview = false)
+        public static async Task<bool> TryDelete<T>(string objectPath, bool preview = false)
         {
             bool result = false;
             var paths = GetFilePathsForNamePath(objectPath);
-            if (type == null)
-            {
-                if (paths.Any())
-                {
-                    foreach (var path in paths)
-                    {
-                        if (!preview)
-                        {
-                            File.Delete(path);
-                        }
-                        result = true;
-                    }
-                }
-                return result;
-            }
+            //if (type == null)
+            //{
+            //    if (paths.Any())
+            //    {
+            //        foreach (var path in paths)
+            //        {
+            //            if (!preview)
+            //            {
+            //                File.Delete(path);
+            //            }
+            //            result = true;
+            //        }
+            //    }
+            //    return result;
+            //}
 
             foreach (var path in paths)
             {
-                object obj = await GetObjectFromPath(path, type);
+                object obj = await GetObjectFromDiskPath<T>(path);
                 if (obj != null)
                 {
                     if (!preview)
@@ -630,7 +696,7 @@ namespace LionFire.ObjectBus.Filesystem
             return name;
         }
 
-        public static List<string> GetChildrenNames(string path)
+        public static List<string> List(string path)
         {
             List<string> children = new List<string>();
             if (Directory.Exists(path))

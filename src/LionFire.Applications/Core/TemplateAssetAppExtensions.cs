@@ -16,6 +16,7 @@ namespace LionFire.Applications.Hosting
             return host.Add<T,object>(assetSubpath,null);
         }
 
+        [Blocking]
         public static IAppHost Add<T,TInstance>(this IAppHost host, string assetSubpath, Action<TInstance> initializer)
             where T : class, ITemplate
         {
@@ -31,7 +32,7 @@ namespace LionFire.Applications.Hosting
                 throw new InvalidOperationException("No IAssetProvider is registered.  One must be registered in order to retrieve the asset using this method.");
             }
 
-            var template = ap.Load<T>(assetSubpath);
+            var template = ap.Load<T>(assetSubpath).Result;
 
             if (template == null) throw new ArgumentException($"Failed to load: \"{assetSubpath}\" of type '{typeof(T).FullName}'");
 

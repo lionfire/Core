@@ -8,6 +8,7 @@ using LionFire.Structures;
 using LionFire.Ontology;
 using Microsoft.Extensions.Logging;
 using LionFire.Referencing;
+using LionFire.Persistence;
 
 namespace LionFire.Instantiating
 {

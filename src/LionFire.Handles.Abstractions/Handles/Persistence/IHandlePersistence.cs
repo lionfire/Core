@@ -1,11 +1,12 @@
 ﻿using LionFire.Persistence;
+using LionFire.Referencing;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace LionFire.Referencing
+namespace LionFire.Persistence
 {
     public interface IHandlePersistence : ICommitable
     {

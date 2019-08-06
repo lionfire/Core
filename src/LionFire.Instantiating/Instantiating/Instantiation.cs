@@ -7,6 +7,8 @@ using System.Text;
 using LionFire.Collections;
 using LionFire.Copying;
 using LionFire.Ontology;
+using LionFire.Persistence;
+using LionFire.Persistence.Handles;
 using LionFire.Referencing;
 using LionFire.Serialization;
 using LionFire.Structures;

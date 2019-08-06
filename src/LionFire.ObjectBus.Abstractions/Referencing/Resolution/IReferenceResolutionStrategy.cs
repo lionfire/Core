@@ -1,4 +1,4 @@
-﻿namespace LionFire.Referencing.Persistence
+﻿namespace LionFire.Persistence.Resolution
 {
     public interface IReferenceResolutionStrategy : IReferenceToReferenceResolver
     {

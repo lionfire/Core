@@ -1,6 +1,6 @@
 ﻿using LionFire.Structures;
 
-namespace LionFire.Referencing
+namespace LionFire.Persistence
 {
     //public class ConcreteHandle : H<object>
     //{

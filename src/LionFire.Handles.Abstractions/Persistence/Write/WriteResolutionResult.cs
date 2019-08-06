@@ -1,6 +1,7 @@
 ﻿using LionFire.ObjectBus;
+using LionFire.Referencing;
 
-namespace LionFire.Referencing.Persistence
+namespace LionFire.Persistence.Resolution
 {
     public class WriteResolutionResult<T> : ReferenceResolutionResult
     {

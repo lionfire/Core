@@ -56,6 +56,7 @@ This package is typically not added on its own, but is a dependency required by 
     <Folder Include="Execution\" />
     <Folder Include="Handles\" />
     <Folder Include="MultiTyping\Validation\" />
+    <Folder Include="Persistence\" />
     <Folder Include="Threading\" />
   </ItemGroup>
 
