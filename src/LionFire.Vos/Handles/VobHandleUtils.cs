@@ -11,7 +11,7 @@ namespace LionFire.Vos
 
             if (typedReference.Type != null)
             {
-                // TODO FIXME: Move this check into reference.GetReadHandle / VobHandle ctor
+                // TODO FIXME: Move this check into reference.ToReadHandle / VobHandle ctor
 
                 //if (!reference.Type.IsAssignableFrom(typeof(T)))
                 //{

@@ -14,7 +14,7 @@ namespace LionFire.ObjectBus
 
         public override Task<IPersistenceResult> Set<T>(ReferenceType reference, T obj, bool allowOverwrite = true) => throw ReadOnlyException;
 
-        public override Task<IPersistenceResult> CanDeleteImpl<T>(ReferenceType reference) => Task.FromResult((IPersistenceResult)PersistenceResult.PreviewFail);
+        public override Task<IPersistenceResult> CanDelete<T>(ReferenceType reference) => Task.FromResult((IPersistenceResult)PersistenceResult.PreviewFail);
 
     }
 }

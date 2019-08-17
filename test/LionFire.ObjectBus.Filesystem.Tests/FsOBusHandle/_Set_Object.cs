@@ -49,7 +49,7 @@ namespace Handle
 
         private async Task _Pass(bool withExtension)
         {
-            var host = FrameworkHost.Create(
+            var host = FrameworkHostBuilder.Create(
                 //serializers: s => s.AddJson()
                 );
 
@@ -59,7 +59,7 @@ namespace Handle
             }
 
             await host
-                .AddObjectBus<FsOBus>()
+                .AddObjectBus<FSOBus>()
                 .Run(async () =>
                 {
                     var extension = ".json";
@@ -78,7 +78,7 @@ namespace Handle
                         reference = new ExtensionlessFileReference(savePath);
                     }
 
-                    var h = reference.GetHandle<TestClass1>();
+                    var h = reference.ToHandle<TestClass1>();
                     h.Object = TestClass1.Create;
 
                     await h.Commit().ConfigureAwait(false); // --------- Save

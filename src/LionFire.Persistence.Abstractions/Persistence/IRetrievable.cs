@@ -2,6 +2,11 @@
 
 namespace LionFire.Persistence
 {
+    /// <summary>
+    /// An interface for directly initiating read-related persistence operations of single objects:
+    ///  - Retrieve
+    ///  - Exists
+    /// </summary>
     public interface IRetrievable
     {
         /// <summary>

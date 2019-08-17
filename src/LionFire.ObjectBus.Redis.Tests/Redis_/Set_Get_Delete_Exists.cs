@@ -5,6 +5,7 @@ using LionFire.Applications.Hosting;
 using LionFire.Hosting;
 using LionFire.ObjectBus;
 using LionFire.ObjectBus.Redis;
+using LionFire.Referencing;
 using Xunit;
 
 namespace Redis_
@@ -16,16 +17,16 @@ namespace Redis_
         {
             const string testData = "testData";
 
-            await FrameworkHost.Create()
+            await FrameworkHostBuilder.Create()
                 .AddObjectBus<RedisOBus>()
-                .RunNowAndWait(async () =>
+                .Run(async () =>
                 {
                     var path = @"\temp\tests\" + GetType().FullName + @"\" + nameof(Pass_String) + @"\TestFile";
 
                     var r = new RedisReference(path);
 
                     {
-                        var h = r.GetHandle<string>();
+                        var h = r.ToHandle<string>();
 
                         Assert.False(await h.Exists(), "test object already exists: " + path);
 
@@ -37,7 +38,7 @@ namespace Redis_
                     }
 
                     {
-                        var h = r.GetHandle<string>();
+                        var h = r.ToHandle<string>();
                         Assert.True(await h.Exists(), "test object does not exist after saving: " + path);
 
                         var retrievedData = h.Object;
@@ -48,7 +49,7 @@ namespace Redis_
                         Assert.False(await h.Exists(), "test object still exists after deleting: " + path);
                     }
                     {
-                        var h = r.GetHandle<string>();
+                        var h = r.ToHandle<string>();
                         Assert.False(await h.Exists(), "test object still exists after deleting: " + path);
 
                     }
@@ -60,9 +61,9 @@ namespace Redis_
         {
             const string testData = "testData";
 
-            await FrameworkHost.Create()
+            await FrameworkHostBuilder.Create()
                 .AddObjectBus<RedisOBus>()
-                .RunAndExit(async () =>
+                .Run(async () =>
                 {
                     var path = @"\temp\tests\" + GetType().FullName + @"\" + nameof(Pass_NonGenericHandle) + @"\TestFile";
 

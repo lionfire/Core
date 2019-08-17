@@ -18,6 +18,21 @@ namespace LionFire.Referencing
     [RegisterSingletonAsInterface]
     public class ReferenceProviderService : IReferenceProviderService
     {
+        #region Dependencies
+
+        IEnumerable<IReferenceProvider> referenceProviders;
+
+        #endregion
+
+        #region Construction
+
+        public ReferenceProviderService(IEnumerable<IReferenceProvider> referenceProviders)
+        {
+            this.referenceProviders = referenceProviders;
+        }
+
+        #endregion
+
         public bool AllowMultipleProvidersPerScheme { get; set; } = false;
 
         private class ReferenceProviderServiceState
@@ -34,7 +49,7 @@ namespace LionFire.Referencing
                 {
                     var newState = new ReferenceProviderServiceState();
 
-                    foreach (var provider in DependencyContext.Current.GetService<IEnumerable<IReferenceProvider>>())
+                    foreach (var provider in referenceProviders)
                     {
                         if (AllowMultipleProvidersPerScheme)
                         {

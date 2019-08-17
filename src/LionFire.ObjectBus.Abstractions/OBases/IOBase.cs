@@ -26,6 +26,7 @@ namespace LionFire.ObjectBus
     /// 
     /// TODO: Make all persistence async!
     /// TODO: Reword GetChildren to List.
+    /// TODO make return values tuples with simple and detailed results?
     /// </remarks>
     public interface IOBase : ISupportsUriSchemes
     {
@@ -42,9 +43,9 @@ namespace LionFire.ObjectBus
 
         // RENAME to Retrieve, and instead have EnsureGet which throws on not found
         // TODO BREAKING: make Get an extension method on HBase(this IOBase obase, IReference)
-        Task<IRetrieveResult<T>> TryGet<T>(IReference reference);
+        Task<IRetrieveResult<T>> Get<T>(IReference reference);
 
-        Task<bool> Exists(IReference reference);
+        Task<(bool exists, IPersistenceResult result)> Exists(IReference reference);
 
         // FUTURE: flags for hidden, persisted
         //IEnumerable<string> GetChildrenNames(IReference parent, QueryFlags requiredFlags = QueryFlags.None, QueryFlags excludeFlags = QueryFlags.None);
@@ -53,7 +54,6 @@ namespace LionFire.ObjectBus
 
         //[Obsolete("Use GetKeys instead")]
         //IEnumerable<string> GetChildrenNames(IReference parent); // RENAME to GetKeyNames
-
 
         Task<IEnumerable<string>> List<T>(IReference parent) where T : class, new();
 
@@ -109,7 +109,7 @@ namespace LionFire.ObjectBus
         /// Detect whether deletion of the specified reference will succeed
         /// </summary>
         /// <returns>A IPersistenceResult with PreviewSuccess or PreviewFail set</returns>
-        Task<IPersistenceResult> CanDeleteImpl<T>(IReference reference);
+        Task<IPersistenceResult> CanDelete<T>(IReference reference);
 
         #endregion
     }
@@ -119,11 +119,11 @@ namespace LionFire.ObjectBus
         /// <returns>true if can be fully deleted, false if no delete can take place</returns>
         public static async Task<bool> CanDelete<T>(this IOBase obase, IReference reference)
         {
-            var flags = (await obase.CanDeleteImpl<T>(reference)).Flags;
+            var flags = (await obase.CanDelete<T>(reference)).Flags;
             return flags.HasFlag(PersistenceResultFlags.PreviewSuccess) && !flags.HasFlag(PersistenceResultFlags.PreviewFail);
         }
 
-        public static Task<IRetrieveResult<object>> TryGet(this IOBase obase, IReference reference) => obase.TryGet<object>(reference);
+        public static Task<IRetrieveResult<object>> TryGet(this IOBase obase, IReference reference) => obase.Get<object>(reference);
 
         public static async Task<IRetrieveResult<object>> Get(this IOBase obase, IReference reference)
         {

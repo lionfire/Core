@@ -1,8 +1,14 @@
 ﻿using LionFire.Persistence;
+using LionFire.Persistence.Handles;
 using LionFire.Referencing;
+using System;
 
 namespace LionFire.ObjectBus
 {
+
+    /// <summary>
+    /// (REVIEW)
+    /// </summary>
     public struct OBasePersistenceEvent
     {
         //public IReference Reference { get; set; }
@@ -25,21 +31,28 @@ namespace LionFire.ObjectBus
 
         public object Object
         {
-            get { return obj ?? Handle?.Object; }
-            set { obj = value; }
+            get {
+                //throw new NotImplementedException();
+                return /*obj ?? */Handle?.Object<object>();
+            }
+
+            //set {
+            //    throw new NotImplementedException();
+            //    //obj = value;
+            //}
         }
-        private object obj;
+        //private object obj;
 
         #endregion
 
         #region Handle
 
-        public IHandle Handle
+        public IHandleBase Handle
         {
             get { return handle /* ?? Reference?.ToHandle()*/; }
             set { if (reference != null) { throw new AlreadyException("Cannot set if Reference is already set."); }  handle = value; }
         }
-        private IHandle handle;
+        private IHandleBase handle;
 
         #endregion
     }

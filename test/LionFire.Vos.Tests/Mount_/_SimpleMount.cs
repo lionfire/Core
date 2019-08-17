@@ -14,8 +14,8 @@ namespace Mount_
         [Fact]
         public async void Pass()
         {
-            await FrameworkHost.Create()
-                .AddVos()
+            await FrameworkHostBuilder.Create()
+                .AddVosApp()
                 .Run(async () =>
                 {
                     await Task.Delay(1);

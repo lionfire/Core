@@ -18,8 +18,8 @@ namespace FsOBoc_
         public async Task Pass()
         {
             Assert.True(true);
-            await FrameworkHost.Create()
-                .AddObjectBus<FsOBus>()
+            await FrameworkHostBuilder.Create()
+                .AddObjectBus<FSOBus>()
                 .Run(() =>
                 {
 

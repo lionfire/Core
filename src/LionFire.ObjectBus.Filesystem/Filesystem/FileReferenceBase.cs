@@ -17,9 +17,9 @@ namespace LionFire.ObjectBus.Filesystem
         public override IEnumerable<string> AllowedSchemes { get { yield return UriScheme; } }
 
 
-        IOBus IHas<IOBus>.Object => ManualSingleton<FsOBus>.GuaranteedInstance;
+        IOBus IHas<IOBus>.Object => ManualSingleton<FSOBus>.GuaranteedInstance;
         IOBase IHas<IOBase>.Object => FsOBase;
-        FsOBase FsOBase => ManualSingleton<FsOBase>.GuaranteedInstance;
+        FSOBase FsOBase => ManualSingleton<FSOBase>.GuaranteedInstance;
 
         public FileReferenceBase() { }
         public FileReferenceBase(string path)

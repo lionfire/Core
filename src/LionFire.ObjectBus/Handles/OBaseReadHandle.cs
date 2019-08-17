@@ -23,8 +23,8 @@ namespace LionFire.ObjectBus.Handles
             this.OBase = obase ?? throw new ArgumentNullException(nameof(obase));
         }
 
-        public override async Task<IRetrieveResult<T>> RetrieveObject()
-            => await OBase.TryGet<T>(this.Reference).ConfigureAwait(false);
+        public override async Task<IRetrieveResult<T>> RetrieveImpl()
+            => await OBase.Get<T>(this.Reference).ConfigureAwait(false);
     }
 
 #if TODO // ? Useful?

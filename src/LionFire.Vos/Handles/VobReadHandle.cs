@@ -15,8 +15,8 @@ namespace LionFire.Vos
 {
     //public static class IReferenceableTreeHandleExtensions
     //{
-    //    public static H<T1> GetHandle<T1>(this IReferencable r, params string[] subpathChunks) where T1 : class => r.Reference.GetChildSubpath(subpathChunks).GetHandle<T1>();
-    //    public static H<T1> GetHandle<T1>(this IReferencable r, IEnumerable<string> subpathChunks) where T1 : class => r.Reference.GetChildSubpath(subpathChunks).GetHandle<T1>();
+    //    public static H<T1> ToHandle<T1>(this IReferencable r, params string[] subpathChunks) where T1 : class => r.Reference.GetChildSubpath(subpathChunks).ToHandle<T1>();
+    //    public static H<T1> ToHandle<T1>(this IReferencable r, IEnumerable<string> subpathChunks) where T1 : class => r.Reference.GetChildSubpath(subpathChunks).ToHandle<T1>();
     //}
 
    // OPTIMIZE - (Here and VobHandle)  Create Reference on demand?  Store the reference path in Vob, instead of VosReference?  Generate VosReference on demand?  or is this an app specific thing?
@@ -105,20 +105,20 @@ namespace LionFire.Vos
 
         //// Move this to IReferencable extensions?
 
-        //public H<T1> GetHandle<T1>(params string[] subpathChunks) where T1 : class => Reference.GetChildSubpath(subpathChunks).GetHandle<T1>();
-        //public H<T1> GetHandle<T1>(IEnumerable<string> subpathChunks) where T1 : class => Reference.GetChildSubpath(subpathChunks).GetHandle<T1>();
+        //public H<T1> ToHandle<T1>(params string[] subpathChunks) where T1 : class => Reference.GetChildSubpath(subpathChunks).ToHandle<T1>();
+        //public H<T1> ToHandle<T1>(IEnumerable<string> subpathChunks) where T1 : class => Reference.GetChildSubpath(subpathChunks).ToHandle<T1>();
 
         //// REVIEW - string, vs params string[] - does that resolve the way I think?
-        //public H this[string subpath] => Reference.GetChildSubpath(subpath).GetHandle();
-        //public H this[IEnumerable<string> subpathChunks] => Reference.GetChildSubpath(subpathChunks).GetHandle();
-        //public H this[params string[] subpathChunks] => Reference.GetChildSubpath(subpathChunks).GetHandle();
+        //public H this[string subpath] => Reference.GetChildSubpath(subpath).ToHandle();
+        //public H this[IEnumerable<string> subpathChunks] => Reference.GetChildSubpath(subpathChunks).ToHandle();
+        //public H this[params string[] subpathChunks] => Reference.GetChildSubpath(subpathChunks).ToHandle();
         //public H this[int index, string[] subpathChunks] => throw new NotImplementedException();
 
         #endregion
 
         #region Read handle implementation
 
-        public override Task<IRetrieveResult<T>> RetrieveObject() => throw new NotImplementedException();
+        public override Task<IRetrieveResult<T>> RetrieveImpl() => throw new NotImplementedException();
         public void OnRenamed(IVobHandle<object> newHandle) => throw new NotImplementedException();
 
         #endregion

@@ -70,7 +70,7 @@ namespace LionFire.Vos
         {
             if (!HasObject)
             {
-                await RetrieveObject().ConfigureAwait(false);
+                await RetrieveImpl().ConfigureAwait(false);
                 if (!HasObject) { Object = ReferenceObjectFactory.ConstructDefault<T>(Reference); }
             }
             return Object;

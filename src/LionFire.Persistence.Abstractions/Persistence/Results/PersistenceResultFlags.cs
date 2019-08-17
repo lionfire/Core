@@ -21,6 +21,8 @@ namespace LionFire.Persistence
 
         Retrieved = 1 << 4,
 
+        RetrievedNull = 1 << 5,
+
         /// <summary>
         /// When checking for whether an operation is possible, this is set if the operation is expected to succeed.
         /// </summary>

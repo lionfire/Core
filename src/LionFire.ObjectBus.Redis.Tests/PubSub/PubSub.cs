@@ -3,6 +3,8 @@ using LionFire.Applications.Hosting;
 using LionFire.Hosting;
 using LionFire.ObjectBus;
 using LionFire.ObjectBus.RedisPub;
+using LionFire.Persistence;
+using LionFire.Referencing;
 using Xunit;
 
 namespace RedisPub_
@@ -17,18 +19,18 @@ namespace RedisPub_
         {
             var url = "redispub:test";
 
-            await FrameworkHost.Create()
+            await FrameworkHostBuilder.Create()
             .AddObjectBus<RedisPubOBus>()
-            .RunAndExit(async () =>
+            .Run(async () =>
             {
                 {
                     var refRead = new RedisPubReference(url);
-                    var rRead = refRead.GetReadHandle<object>();
+                    var rRead = refRead.ToReadHandle<object>();
                     rRead.ObjectChanged += H_ObjectChanged;
                 }
                 {
                     var refWrite = new RedisPubReference(url);
-                    var hWrite = refWrite.GetHandle<object>();
+                    var hWrite = refWrite.ToHandle<object>();
                     hWrite.Object = "testMessage";
                     await hWrite.Commit();
                     Assert.Equal(TestMessage, ReceivedMessage);
@@ -37,7 +39,7 @@ namespace RedisPub_
 
         }
 
-        private void H_ObjectChanged(LionFire.Referencing.RH<object> obj)
+        private void H_ObjectChanged(RH<object> obj)
         {
             Assert.NotNull(obj);
             Assert.NotNull(obj.Object);

@@ -55,8 +55,10 @@ namespace LionFire.Persistence.Assets
             return new AssetReadHandle<T>(assetSubPath);
         }
 
-        public override Task<IRetrieveResult<T>> RetrieveObject()
+        
+        public override Task<IRetrieveResult<T>> RetrieveImpl()
         {
+            
             throw new NotImplementedException("TODO: Convert Assets to an OBus");
             //// TODO: Use async/await here once IAssetProvider supports it
             //var ap = Dependencies.GetServiceOrSingleton<IAssetProvider>(createIfMissing: true);

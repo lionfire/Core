@@ -116,7 +116,7 @@ namespace LionFire.Assets
 
                         string packagePathWithoutExtension = Path.Combine(potentialPackageDirectory, potentialPackageName);
 
-                        throw new NotImplementedException("TODO: use FsOBase instead of serializationfacility");
+                        throw new NotImplementedException("TODO: use FSOBase instead of serializationfacility");
 #if TOPORT
                         object potentialPackage;
                         try
@@ -264,7 +264,7 @@ namespace LionFire.Assets
             foreach (string packagePath in (IEnumerable)PackageDirectories)
             {
                 string combined = Path.Combine(packagePath, assetPath);
-                throw new NotImplementedException("TODO: use FsOBase instead of serializationfacility");
+                throw new NotImplementedException("TODO: use FSOBase instead of serializationfacility");
 #if TOPORT
                 if (SerializationFacility.Exists(combined))
                 {

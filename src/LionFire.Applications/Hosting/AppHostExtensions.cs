@@ -1,6 +1,7 @@
 ﻿using LionFire.Applications.Hosting;
 using Microsoft.Extensions.Hosting;
 using LionFire.DependencyInjection;
+using System;
 
 namespace LionFire.Applications.Hosting
 {
@@ -16,9 +17,10 @@ namespace LionFire.Applications.Hosting
         {
             //SingletonConfiguration.UseSingletons = true; // already default
             DependencyContext.Default.UseAsGuaranteedSingletonProvider();
+            throw new NotSupportedException("Obsolete.  Use 'UseDependencyContext' instead");
         }
 
-        public static IHostBuilder UseDefaults(this IHostBuilder hostBuilder)
+        public static IHostBuilder UseLionFireDefaults(this IHostBuilder hostBuilder)
         {
             _useDefaults();
             return hostBuilder;

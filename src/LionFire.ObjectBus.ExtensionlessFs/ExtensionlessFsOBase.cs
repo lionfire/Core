@@ -16,7 +16,7 @@ namespace LionFire.ObjectBus.ExtensionlessFs
     {
         #region Static
 
-        public static ExtensionlessFSOBase Instance => DependencyContext.Default.GetServiceOrSingleton<ExtensionlessFSOBase>();
+        public static ExtensionlessFSOBase Instance => (ExtensionlessFSOBase)ManualSingleton<ExtensionlessFSOBus>.Instance?.SingleOBase;
 
         #endregion
 
@@ -37,7 +37,7 @@ namespace LionFire.ObjectBus.ExtensionlessFs
 
         public override IOBus OBus => ManualSingleton<ExtensionlessFSOBus>.GuaranteedInstance;
 
-        public override IOBase UnderlyingOBase => FsOBase.Instance;
+        public override IOBase UnderlyingOBase => FSOBase.Instance;
 
         #endregion
 
@@ -61,6 +61,8 @@ namespace LionFire.ObjectBus.ExtensionlessFs
         }
 
         #endregion
+
+        protected override Task<IPersistenceResult> SetImpl<T>(ExtensionlessFileReference reference, T obj, bool allowOverwrite = true) => base.SetImpl(reference, obj, allowOverwrite);
 
     }
 }

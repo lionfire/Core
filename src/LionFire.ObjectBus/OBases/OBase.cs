@@ -42,7 +42,7 @@ namespace LionFire.ObjectBus
         public abstract Task<IRetrieveResult<T>> TryGet<T>(TReference reference);
         //Task<IRetrieveResult<T>> IOBase.TryGet<T>(IReference reference, Type type) => TryGet(ConvertToReferenceType(reference), type);
 
-        Task<IRetrieveResult<T>> IOBase.TryGet<T>(IReference reference) => TryGet<T>(ConvertToReferenceType(reference));
+        Task<IRetrieveResult<T>> IOBase.Get<T>(IReference reference) => TryGet<T>(ConvertToReferenceType(reference));
 
 
         //public abstract ResultType TryGet<ResultType>(TReference reference, OptionalRef<RetrieveInfo> optionalRef = null)
@@ -116,10 +116,13 @@ namespace LionFire.ObjectBus
         /// </remarks>
         /// <param name="reference"></param>
         /// <returns></returns>
-        public virtual async Task<bool> Exists(TReference reference)
-            => (await TryGet(reference)).IsFound();
+        public virtual async Task<(bool exists, IPersistenceResult result)> Exists(TReference reference)
+        {
+            var result = (await TryGet(reference));
+            return (result.IsFound(), result);
+        }
 
-        public Task<bool> Exists(IReference reference)
+        public Task<(bool exists, IPersistenceResult result)> Exists(IReference reference)
             => Exists(ConvertToReferenceType(reference));
 
         #endregion
@@ -138,9 +141,11 @@ namespace LionFire.ObjectBus
 
         #region Write
 
+        #region Set
+
         Task<IPersistenceResult> IOBase.Set<T>(IReference reference, T obj, bool allowOverwrite) => Set(ConvertToReferenceType(reference), obj, allowOverwrite);
 
-        protected abstract Task<IPersistenceResult> _Set<T>(TReference reference, T obj, bool allowOverwrite = true);
+        protected abstract Task<IPersistenceResult> SetImpl<T>(TReference reference, T obj, bool allowOverwrite = true);
 
         public virtual async Task<IPersistenceResult> Set<T>(TReference reference, T obj, bool allowOverwrite = true)
         {
@@ -152,7 +157,7 @@ namespace LionFire.ObjectBus
 
                 OBaseEvents.OnSaving(obj);
 
-                return await _Set<T>(reference, obj, allowOverwrite).ConfigureAwait(false);
+                return await SetImpl<T>(reference, obj, allowOverwrite).ConfigureAwait(false);
             }
             catch (Exception ex)
             {
@@ -180,15 +185,17 @@ namespace LionFire.ObjectBus
         //    }
         //}
 
+        #endregion
+
         #region Delete
 
-        public abstract Task<IPersistenceResult> CanDeleteImpl<T>(TReference reference);
+        public abstract Task<IPersistenceResult> CanDelete<T>(TReference reference);
 
         public abstract Task<IPersistenceResult> TryDelete<T>(TReference reference/*, bool preview = false*/);
 
         #region IReference overloads
 
-        Task<IPersistenceResult> IOBase.CanDeleteImpl<T>(IReference reference) => CanDeleteImpl<T>(ConvertToReferenceType(reference));
+        Task<IPersistenceResult> IOBase.CanDelete<T>(IReference reference) => CanDelete<T>(ConvertToReferenceType(reference));
         //public Task<bool?> CanDelete<T>(IReference reference) => CanDelete<T>(ConvertToReferenceType(reference));
         public Task<IPersistenceResult> TryDelete<T>(IReference reference/*, bool preview*/) => TryDelete<T>(ConvertToReferenceType(reference)/*, preview*/);
 

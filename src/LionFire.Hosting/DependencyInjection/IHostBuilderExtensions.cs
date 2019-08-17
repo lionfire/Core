@@ -12,6 +12,13 @@ namespace LionFire.Hosting
             return hostBuilder;
         }
 
+        public static IHostBuilder AddHostedService<TImplementation>(this IHostBuilder hostBuilder)
+            where TImplementation : class, IHostedService
+        {
+            hostBuilder.ConfigureServices((c, sc) => sc.AddHostedService<TImplementation>());
+            return hostBuilder;
+        }
+
         public static IHostBuilder AddSingleton<TService, TImplementation>(this IHostBuilder hostBuilder)
             where TService : class
             where TImplementation : class, TService

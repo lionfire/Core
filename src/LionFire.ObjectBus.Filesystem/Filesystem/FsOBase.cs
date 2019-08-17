@@ -13,13 +13,18 @@ using Microsoft.Extensions.Logging;
 
 namespace LionFire.ObjectBus.Filesystem
 {
-    public class FsOBase : OBase<FileReference>
+    public class FSOBase : OBase<FileReference>
     {
         #region Static
 
-        public static FsOBase Instance => ManualSingleton<FsOBase>.GuaranteedInstance;
+        public static FSOBase Instance => (FSOBase)ManualSingleton<FSOBus>.Instance?.SingleOBase;
 
         #endregion
+
+        public FSOBase()
+        {
+            System.Diagnostics.Debug.WriteLine("fso create");
+        }
 
         #region Options
 
@@ -46,7 +51,7 @@ namespace LionFire.ObjectBus.Filesystem
 
         #endregion
 
-        public override IOBus OBus => ManualSingleton<FsOBus>.GuaranteedInstance;
+        public override IOBus OBus => ManualSingleton<FSOBus>.GuaranteedInstance;
 
         public override IEnumerable<string> UriSchemes => FileReference.UriSchemes;
 
@@ -77,12 +82,12 @@ namespace LionFire.ObjectBus.Filesystem
 
         #region Read
 
-        public override async Task<bool> Exists(FileReference reference)
+        public override async Task<(bool exists, IPersistenceResult result)> Exists(FileReference reference)
         {
             //var result = new RetrieveResult<bool>();
 
             bool existsResult = await FsOBasePersistence.Exists(reference.Path).ConfigureAwait(false);
-            return existsResult;
+            return (existsResult, existsResult ? PersistenceResult.Found : PersistenceResult.NotFound);
             //result.Object = existsResult;
             //result.Flags |= PersistenceResultFlags.Success;
             //return result;
@@ -126,6 +131,8 @@ namespace LionFire.ObjectBus.Filesystem
 
                 result.Object = converted;
                 result.Flags |= PersistenceResultFlags.Success;
+                if (converted != null) result.Flags |= PersistenceResultFlags.Found;
+                else result.Flags |= PersistenceResultFlags.NotFound;
 
                 return result;
             }
@@ -150,10 +157,10 @@ namespace LionFire.ObjectBus.Filesystem
 
         #region Delete
 
-        public override async Task<IPersistenceResult> CanDeleteImpl<T>(FileReference reference)
+        public override async Task<IPersistenceResult> CanDelete<T>(FileReference reference)
         {
             var existsResult = await Exists(reference);
-            if (!existsResult) return PersistenceResult.PreviewFail;
+            if (!existsResult.exists) return PersistenceResult.PreviewFail;
 
             // FUTURE: Check filesystem permissions
             return PersistenceResult.PreviewSuccess;
@@ -257,7 +264,7 @@ namespace LionFire.ObjectBus.Filesystem
         //    await FsOBasePersistence.Set(obj, reference.Path, preview: preview, type: typeof(T));
         //}
 
-        protected override async Task<IPersistenceResult> _Set<T>(FileReference reference, T obj, bool allowOverwrite = true)
+        protected override async Task<IPersistenceResult> SetImpl<T>(FileReference reference, T obj, bool allowOverwrite = true)
         {
             #region TODO
 

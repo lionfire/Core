@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Threading.Tasks;
 using LionFire.MultiTyping;
 using LionFire.Referencing;
 
@@ -32,34 +33,37 @@ namespace LionFire.Vos
         }
 
         // TODO: Async version?
-        public IEnumerable<T> AllLayersOfType<T>()
+        public async Task<IEnumerable<T>> AllLayersOfType<T>()
             where T : class
         {
+            var results = new List<T>();
+
             foreach (var handle in ReadHandles)
             {
-                if (!(handle.TryGetObject().Result))
+                if (!(await handle.Get<T>()).HasObject)
                 {
                     continue;
                 }
 
-                T obj = handle.Object as T;
-                if (obj != null)
+                var obj = handle.Object;
+
+                if (obj is T typedObj)
                 {
-                    yield return obj;
+                    results.Add(typedObj);
                     continue;
                 }
 
-                var mt = obj as IReadOnlyMultiTyped;
-                if (mt != null)
+                if (obj is IReadOnlyMultiTyped mt)
                 {
-                    obj = mt.AsType<T>();
-                    if (obj != null)
+                    var typedObj = mt.AsType<T>();
+                    if (typedObj != null)
                     {
-                        yield return obj;
+                        results.Add(typedObj);
                         continue;
                     }
                 }
             }
+            return results;
         }
         
         [AotReplacement]

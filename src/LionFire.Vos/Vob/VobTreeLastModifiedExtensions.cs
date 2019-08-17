@@ -8,7 +8,7 @@ namespace LionFire.Vos
         public static async Task UpdateTreeLastModified(this Vob vob)
         {
             var vh = vob.GetVHTreeLastModified();
-            (await vh.GetObjectOrInstantiate().ConfigureAwait(false)).DateTime = DateTime.Now;
+            (await vh.GetOrInstantiate().ConfigureAwait(false)).DateTime = DateTime.Now;
             await vh.Commit().ConfigureAwait(false);
         }
 

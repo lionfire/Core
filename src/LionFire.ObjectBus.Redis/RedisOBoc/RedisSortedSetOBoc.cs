@@ -1,4 +1,7 @@
-﻿using LionFire.ObjectBus.RedisPub;
+﻿using LionFire.Collections;
+using LionFire.ObjectBus.Handles;
+using LionFire.ObjectBus.RedisPub;
+using LionFire.Persistence;
 using LionFire.Referencing;
 using StackExchange.Redis;
 using System;
@@ -12,7 +15,7 @@ namespace LionFire.ObjectBus.Redis
     /// H
     /// </summary>
     /// <typeparam name="T"></typeparam>
-    public class RedisSortedSetOBoc<T> : SyncableOBoc<T, RedisEntry>
+    public class RedisSortedSetOBoc<T> : WatchableOBoc<T, RedisEntry>
     {
         #region Relationships
 
@@ -121,48 +124,49 @@ namespace LionFire.ObjectBus.Redis
         public int PageSize = 5;
 
 
-        public override async Task<bool> TryRetrieveObject()
+        public override async Task<IRetrieveResult<INotifyingReadOnlyCollection<RedisEntry>>> RetrieveImpl()
         {
-            return await Task.Run(() =>
-            {               
-                //ZRANGEBYSCORE myzset -inf +inf
-                //db.SortedSetRangeByScoreWithScores("asdf", StartingScore, EndingScore, order: Order.Ascending);
+            throw new NotImplementedException("NEXT");
+            //return await Task.Run(() =>
+            //{               
+            //    //ZRANGEBYSCORE myzset -inf +inf
+            //    //db.SortedSetRangeByScoreWithScores("asdf", StartingScore, EndingScore, order: Order.Ascending);
 
-                //int max = Math.Abs(StartingScore.HasValue ? StartingScore.Value : int.MaxValue);
+            //    //int max = Math.Abs(StartingScore.HasValue ? StartingScore.Value : int.MaxValue);
 
-                var scanResult = Redis.GetDatabase().SortedSetScan(RedisKey, pageSize: PageSize);
-                var scanCursor = (IScanningCursor)scanResult;
+            //    var scanResult = Redis.GetDatabase().SortedSetScan(RedisKey, pageSize: PageSize);
+            //    var scanCursor = (IScanningCursor)scanResult;
 
-                int i = 0;
-                var results = new List<string>();
-                foreach (var item in scanResult)
-                {
-                    if (i++ > 0)
-                    {
-                        Console.WriteLine("----scan result " + i);
-                    }
+            //    int i = 0;
+            //    var results = new List<string>();
+            //    foreach (var item in scanResult)
+            //    {
+            //        if (i++ > 0)
+            //        {
+            //            Console.WriteLine("----scan result " + i);
+            //        }
 
-                    var element = item.Element.ToString();
-                    var score = item.Score;
+            //        var element = item.Element.ToString();
+            //        var score = item.Score;
 
-                    results.Add($"{score}: {element}");
+            //        results.Add($"{score}: {element}");
 
-                    //if (StartingScore != int.MaxValue && results.Count >= StartingScore)
-                    //{
-                    //    break;
-                    //}
-                }
+            //        //if (StartingScore != int.MaxValue && results.Count >= StartingScore)
+            //        //{
+            //        //    break;
+            //        //}
+            //    }
 
-                foreach (var r in results)
-                {
-                    Console.WriteLine($"[RedisOBoc retrieve] {r}");
-                }
+            //    foreach (var r in results)
+            //    {
+            //        Console.WriteLine($"[RedisOBoc retrieve] {r}");
+            //    }
 
-                //db.HashScan
-                //db.Scan
+            //    //db.HashScan
+            //    //db.Scan
 
-                return true;
-            });
+            //    return true;
+            //});
         }
 
         #endregion

@@ -216,182 +216,103 @@ namespace LionFire.ObjectBus.RedisPub
 
         #endregion
 
-        public override async Task<IRetrieveResult<object>> TryGet(RedisPubReference reference, Type ResultType)
+        public override Task<IRetrieveResult<T>> TryGet<T>(RedisPubReference reference)
         {
-            var result = new RetrieveResult<object>();
-            try
-            {
-                IDatabase db = redis.GetDatabase();
-                var value = await db.StringGetAsync(reference.Path).ConfigureAwait(false);
-                if (!value.HasValue)
-                {
-                    return null;
-                }
+            throw new NotImplementedException("TODO: think about what TryGet means in PubOBase");
+            //try
+            //{
+            //    IDatabase db = redis.GetDatabase();
+            //    var value = await db.StringGetAsync(reference.Path).ConfigureAwait(false);
+            //    if (!value.HasValue)
+            //    {
+            //        return RetrieveResult<T>.RetrievedNull;
+            //    }
 
-                string str = value;
+            //    string str = value;
 
-                object obj = DefaultSerializationProvider.ToObject<object>(str);
+            //    object obj = DefaultSerializationProvider.ToObject<object>(str);
+            //    var converted = OBaseTypeUtils.TryConvertToType<T>(obj);
 
-                obj = OBaseTypeUtils.TryConvertToType(obj, ResultType);
+            //    // ... TODO Multitype multiplex layer
 
-                // ... TODO Multitype multiplex layer
+            //    if (converted.success)
+            //    {
+            //        OBaseEvents.OnRetrievedObjectFromExternalSource(converted.result); // Put reference in here?
+            //    }
 
-                if (obj != null)
-                {
-                    OBaseEvents.OnRetrievedObjectFromExternalSource(obj); // Put reference in here?
-                }
-
-                result.Object = obj;
-                result.IsSuccess = true; // True regardless of whether an object was found
-
-                return result;
-            }
-            catch (Exception ex)
-            {
-                OBaseEvents.OnException(OBusOperations.Get, reference, ex);
-                throw ex;
-            }
-        }
-
-        public override async Task<IRetrieveResult<ResultType>> TryGet<ResultType>(RedisPubReference reference)
-        {
-            try
-            {
-                IDatabase db = redis.GetDatabase();
-                var value = await db.StringGetAsync(reference.Path).ConfigureAwait(false);
-                if (!value.HasValue)
-                {
-                    return RetrieveResult<ResultType>.NullSuccessful;
-                }
-
-                string str = value;
-
-                object obj = DefaultSerializationProvider.ToObject<object>(str);
-                ResultType converted = (ResultType)OBaseTypeUtils.TryConvertToType(obj, typeof(ResultType));
-
-                // ... TODO Multitype multiplex layer
-
-                if (converted != null)
-                {
-                    OBaseEvents.OnRetrievedObjectFromExternalSource(converted); // Put reference in here?
-                }
-
-                return new RetrieveResult<ResultType>
-                {
-                    Object = converted,
-                    IsSuccess = true
-                };
-            }
-            catch (Exception ex)
-            {
-                OBaseEvents.OnException(OBusOperations.Get, reference, ex);
-                throw ex;
-            }
+            //    return new RetrieveResult<T>
+            //    {
+            //        Object = converted.result,
+            //        Flags =PersistenceResultFlags.Success | PersistenceResultFlags.Found | PersistenceResultFlags.Retrieved,
+            //    };
+            //}
+            //catch (Exception ex)
+            //{
+            //    OBaseEvents.OnException(OBusOperations.Get, reference, ex);
+            //    throw ex;
+            //}
         }
 
         #endregion
 
-
-        public override async Task<IRetrieveResult<bool>> Exists(RedisPubReference reference)
-        {
-            var result = new RetrieveResult<bool>();
-
-            bool existsResult = await FsFacade.Exists(reference.Path).ConfigureAwait(false);
-
-            result.Object = existsResult;
-            result.IsSuccess = true;
-            return result;
-        }
-
-        #region Delete
-
-        public override async Task<bool?> CanDelete(RedisPubReference reference)
-        {
-            // FUTURE: Check filesystem permissions
-            var existsResult = await Exists(reference);
-            if (!existsResult.IsSuccess)
-            {
-                return null;
-            }
-
-            return existsResult.Object;
-            //return new RetrieveResult<bool?>
-            //{
-            //    IsSuccess = existsResult.IsSuccess,
-            //    Result = existsResult.Result,
-            //};
-            //string filePath = reference.Path;
-            //return FsPersistence.TryDelete(filePath);
-        }
-
-        public override async Task<bool?> TryDelete(RedisPubReference reference/*, bool preview = false*/)
-        {
-            string filePath = reference.Path;
-            //if (!defaultTypeForDirIsT)
-            //{
-            //    filePath = filePath + FileTypeDelimiter + type.Name + FileTypeEndDelimiter;
-            //}
-
-            //if (preview)
-            //{
-            //    return await FsFacade.Exists(filePath).ConfigureAwait(false);
-            //}
-            //else
-            //{
-                return await FsFacade.Delete(filePath).ConfigureAwait(false);
-            //}
-        }
         
-        #endregion
-
-        //protected override async Task _Set<T>(RedisPubReference reference, T obj, bool allowOverwrite = true, bool preview = false)
-        //{
-        //    await RedisPubOBasePersistence.Set(obj, reference.Path, preview: preview, type: typeof(T));
-        //}
-
-        protected override async Task _Set(RedisPubReference reference, object obj, Type type = null, bool allowOverwrite = true, bool preview = false)
+        protected override Task<IPersistenceResult> SetImpl<T>(RedisPubReference reference, T obj, bool allowOverwrite = true)
         {
-            #region TODO
+            throw new NotImplementedException();
+            //#region TODO
 
-            //bool defaultTypeForDirIsT = false;
-            //Type type = obj.GetType();
-            //var chunks = LionPath.ToPathArray(reference.Path);
-            //if (chunks == null || chunks.Length < 2)
-            //{
-            //    defaultTypeForDirIsT = false;
-            //}
-            //else // TOPORT
-            //{
-            //    string parentDirName;
-            //    parentDirName = chunks[chunks.Length - 2];
-            //    defaultTypeForDirIsT = Assets.AssetPaths.GetAssetTypeFolder(type).TrimEnd('/').Equals(parentDirName);
-            //}
+            ////bool defaultTypeForDirIsT = false;
+            ////Type type = obj.GetType();
+            ////var chunks = LionPath.ToPathArray(reference.Path);
+            ////if (chunks == null || chunks.Length < 2)
+            ////{
+            ////    defaultTypeForDirIsT = false;
+            ////}
+            ////else // TOPORT
+            ////{
+            ////    string parentDirName;
+            ////    parentDirName = chunks[chunks.Length - 2];
+            ////    defaultTypeForDirIsT = Assets.AssetPaths.GetAssetTypeFolder(type).TrimEnd('/').Equals(parentDirName);
+            ////}
 
-            // TODO - This should be done up a layer, since most persistance mechanisms will not support multi-type
-            //string filePath = reference.Path;
-            //if (AppendTypeNameToFileNames && !defaultTypeForDirIsT) // TOPORT
-            //{
-            //    filePath = filePath + VosPath.TypeDelimiter + type.Name + VosPath.TypeEndDelimiter;
-            //}
+            //// TODO - This should be done up a layer, since most persistance mechanisms will not support multi-type
+            ////string filePath = reference.Path;
+            ////if (AppendTypeNameToFileNames && !defaultTypeForDirIsT) // TOPORT
+            ////{
+            ////    filePath = filePath + VosPath.TypeDelimiter + type.Name + VosPath.TypeEndDelimiter;
+            ////}
 
-            #endregion
+            //#endregion
 
-            if (preview) throw new NotImplementedException("preview");
-            var bytes = this.DefaultSerializationProvider.ToBytes(obj, type != null ? () => new PersistenceOperation { Type = type } : (Func<PersistenceOperation>)null );
+            //var bytes = this.DefaultSerializationProvider.ToBytes(obj, type != null ? () => new PersistenceOperation { Type = type } : (Func<PersistenceOperation>)null);
 
-            var path = reference.Path;
-            var dir = LionPath.GetDirectoryName(path) + "/";
-            var filename = LionPath.GetFileName(path);
-            await redis.GetDatabase().SetAddAsync(dir, filename);
+            //var path = reference.Path;
+            //var dir = LionPath.GetDirectoryName(path) + "/";
+            //var filename = LionPath.GetFileName(path);
+            //await redis.GetDatabase().SetAddAsync(dir, filename);
 
-            await FsFacade.WriteAllBytes(reference.Path, bytes).ConfigureAwait(false);
+            //await FsFacade.WriteAllBytes(reference.Path, bytes).ConfigureAwait(false);
         }
 
         public const bool AppendTypeNameToFileNames = false; // TEMP - TODO: Figure out a way to do this in VOS land
 
-        #region TODO: Rename to Keys() and make async
+        #region List
 
-        public override IEnumerable<string> GetChildrenNames(RedisPubReference parent)
+        //public async override Task<IEnumerable<string>> List<T>(RedisPubReference parent)
+        //{
+        //    throw new NotImplementedException();
+        //    RedisPubReference fileRef = RedisPubReference.ConvertFrom(parent);
+
+        //    if (fileRef == null)
+        //    {
+        //        throw new ArgumentException("Could not convert to FileReference");
+        //    }
+
+        //    return (await FsFacade.List(fileRef.Path)).Select(p => Path.GetFileName(p));
+        //}
+
+
+        public override async Task<IEnumerable<string>> List<T>(RedisPubReference parent) 
         {
             RedisPubReference fileRef = RedisPubReference.ConvertFrom(parent);
 
@@ -400,19 +321,7 @@ namespace LionFire.ObjectBus.RedisPub
                 throw new ArgumentException("Could not convert to FileReference");
             }
 
-            return (FsFacade.GetKeys(fileRef.Path).Result).Select(p=>Path.GetFileName(p));
-        }
-
-        public override async Task<IEnumerable<string>> GetKeys(RedisPubReference parent) // 
-        {
-            RedisPubReference fileRef = RedisPubReference.ConvertFrom(parent);
-
-            if (fileRef == null)
-            {
-                throw new ArgumentException("Could not convert to FileReference");
-            }
-
-            return (await FsFacade.GetKeys(fileRef.Path + "/").ConfigureAwait(false)).Select(p => Path.GetFileName(p));
+            return (await FsFacade.List(fileRef.Path + "/").ConfigureAwait(false)).Select(p => Path.GetFileName(p));
         }
 
         #endregion
@@ -426,9 +335,11 @@ namespace LionFire.ObjectBus.RedisPub
         //    return Assets.AssetPath.GetDefaultDirectory(typeof(T));
         //}
 
-        public override IEnumerable<string> GetChildrenNamesOfType<T>(RedisPubReference parent) => throw new NotImplementedException();
         public override H<T> GetHandle<T>(IReference reference) => throw new NotImplementedException();
         public override RH<T> GetReadHandle<T>(IReference reference) => throw new NotImplementedException();
+        
+
+        public override Task<IPersistenceResult> TryDelete<T>(RedisPubReference reference) => throw new NotImplementedException();
 
 #if TOPORT
             var chunks = VosPath.ToPathArray(parent.Path);

@@ -17,6 +17,6 @@ namespace LionFire.ObjectBus.Filesystem
         {
         }
 
-        public override Task<IRetrieveResult<T>> RetrieveObject() => throw new NotImplementedException();
+        public override Task<IRetrieveResult<T>> RetrieveImpl() => throw new NotImplementedException();
     }
 }

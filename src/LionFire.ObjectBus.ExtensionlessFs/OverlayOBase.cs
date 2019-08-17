@@ -153,10 +153,10 @@ namespace LionFire.ObjectBus.ExtensionlessFs
         public override async Task<IRetrieveResult<T>> TryGet<T>(TOverlayReference reference)
             => await DoUnderlyingAction<IRetrieveResult<T>, TieredRetrieveResult<T>>(reference, (async underlyingReference =>
             {
-                return new OverlayRetrieveResult<T>(await UnderlyingOBase.TryGet<T>(underlyingReference));
+                return new OverlayRetrieveResult<T>(await UnderlyingOBase.Get<T>(underlyingReference));
             }));
 
-        public Task<IRetrieveResult<T>> TryGet<T>(IReference reference)
+        Task<IRetrieveResult<T>> IOBase.Get<T>(IReference reference)
         {
             if (reference is TOverlayReference overlayReference)
             {
@@ -178,7 +178,7 @@ namespace LionFire.ObjectBus.ExtensionlessFs
         #region Write
 
         #region Set
-        protected override async Task<IPersistenceResult> _Set<T>(TOverlayReference reference, T obj, bool allowOverwrite = true)
+        protected override async Task<IPersistenceResult> SetImpl<T>(TOverlayReference reference, T obj, bool allowOverwrite = true)
             => await DoUnderlyingAction<IPersistenceResult, TieredPersistenceResult>(reference, (async underlyingReference =>
             {
                 return new OverlayPersistenceResult(await UnderlyingOBase.Set<T>(underlyingReference, obj, allowOverwrite: allowOverwrite));
@@ -189,7 +189,7 @@ namespace LionFire.ObjectBus.ExtensionlessFs
 
         #region Delete
 
-        public override Task<IPersistenceResult> CanDeleteImpl<T>(TOverlayReference reference) => throw new NotImplementedException();
+        public override Task<IPersistenceResult> CanDelete<T>(TOverlayReference reference) => throw new NotImplementedException();
         public override Task<IPersistenceResult> TryDelete<T>(TOverlayReference reference) => throw new NotImplementedException();
 
         #endregion

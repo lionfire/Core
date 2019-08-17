@@ -16,13 +16,13 @@ namespace LionFire.ObjectBus.Filesystem
         //    {
         //        //if (fileReference.IsValid())
         //        {
-        //            yield return FsOBase.Instance;
+        //            yield return FSOBase.Instance;
         //        }
         //    }
         //    yield break;
         //}
 
-        //public IOBase DefaultOBase => FsOBase.Instance;
+        //public IOBase DefaultOBase => FSOBase.Instance;
         
 
     }

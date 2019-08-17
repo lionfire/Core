@@ -27,7 +27,7 @@ Reference this package in your main executable, and the related LionFire.Applica
     <ProjectReference Include="..\LionFire.Base\LionFire.Base.csproj" />
     <ProjectReference Include="..\LionFire.Environment\LionFire.Environment.csproj" />
     <ProjectReference Include="..\LionFire.Execution\LionFire.Execution.csproj" />
-    <ProjectReference Include="..\LionFire.Handles\LionFire.Persistence.Handles.csproj" />
+    <ProjectReference Include="..\LionFire.Persistence.Handles\LionFire.Persistence.Handles.csproj" />
     <ProjectReference Include="..\LionFire.Instantiating.Abstractions\LionFire.Instantiating.Abstractions.csproj" />
     <ProjectReference Include="..\LionFire.Plugins\LionFire.Plugins.csproj" />
   </ItemGroup>

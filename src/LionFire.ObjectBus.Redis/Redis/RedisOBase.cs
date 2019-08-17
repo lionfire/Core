@@ -12,6 +12,7 @@ using LionFire.Structures;
 using Microsoft.Extensions.Logging;
 using StackExchange.Redis;
 
+
 namespace LionFire.ObjectBus.Redis
 {
 
@@ -217,13 +218,16 @@ namespace LionFire.ObjectBus.Redis
 
         #endregion
 
-        public override async Task<IRetrieveResult<object>> TryGet(RedisReference reference, Type ResultType)
+        public override async Task<IRetrieveResult<T>> TryGet<T>(RedisReference reference)
         {
-            var result = new RetrieveResult<object>();
+            var result = new RetrieveResult<T>();
             try
             {
                 IDatabase db = redis.GetDatabase();
                 var value = await db.StringGetAsync(reference.Path).ConfigureAwait(false);
+                if(value.IsNull) return RetrieveResult<T>.RetrievedNull;
+                if(!value.HasValue) return RetrieveResult<T>.NotFound; 
+                // REVIEW TOTEST - not found vs storing null (nil?) vs empty strings, vs non-strings (unexpected for this OBase but might be used by other users of the OBase)
                 if (!value.HasValue)
                 {
                     return null;
@@ -233,17 +237,16 @@ namespace LionFire.ObjectBus.Redis
 
                 object obj = DefaultSerializationProvider.ToObject<object>(str);
 
-                obj = OBaseTypeUtils.TryConvertToType(obj, ResultType);
+                (T converted, bool conversionSuccess) = OBaseTypeUtils.TryConvertToType<T>(obj);
 
                 // ... TODO Multitype multiplex layer
 
-                if (obj != null)
+                if (conversionSuccess)
                 {
-                    OBaseEvents.OnRetrievedObjectFromExternalSource(obj); // Put reference in here?
+                    OBaseEvents.OnRetrievedObjectFromExternalSource(converted); // Put reference in here?
+                    result.Object = converted;
+                    result.Flags |= PersistenceResultFlags.Success; // True regardless of whether an object was found
                 }
-
-                result.Object = obj;
-                result.IsSuccess = true; // True regardless of whether an object was found
 
                 return result;
             }
@@ -254,103 +257,9 @@ namespace LionFire.ObjectBus.Redis
             }
         }
 
-        public override async Task<IRetrieveResult<ResultType>> TryGet<ResultType>(RedisReference reference)
-        {
-            try
-            {
-                IDatabase db = redis.GetDatabase();
-                var value = await db.StringGetAsync(reference.Path).ConfigureAwait(false);
-                if (!value.HasValue)
-                {
-                    return RetrieveResult<ResultType>.NullSuccessful;
-                }
-
-                string str = value;
-
-                object obj = DefaultSerializationProvider.ToObject<object>(str);
-                ResultType converted = (ResultType)OBaseTypeUtils.TryConvertToType(obj, typeof(ResultType));
-
-                // ... TODO Multitype multiplex layer
-
-                if (converted != null)
-                {
-                    OBaseEvents.OnRetrievedObjectFromExternalSource(converted); // Put reference in here?
-                }
-
-                return new RetrieveResult<ResultType>
-                {
-                    Object = converted,
-                    IsSuccess = true
-                };
-            }
-            catch (Exception ex)
-            {
-                OBaseEvents.OnException(OBusOperations.Get, reference, ex);
-                throw ex;
-            }
-        }
-
         #endregion
 
-
-        public override async Task<IRetrieveResult<bool>> Exists(RedisReference reference)
-        {
-            var result = new RetrieveResult<bool>();
-
-            bool existsResult = await FsFacade.Exists(reference.Path).ConfigureAwait(false);
-
-            result.Object = existsResult;
-            result.IsSuccess = true;
-            return result;
-        }
-
-        #region Delete
-
-        public override async Task<bool?> CanDelete(RedisReference reference)
-        {
-            // FUTURE: Check filesystem permissions
-            var existsResult = await Exists(reference);
-            if (!existsResult.IsSuccess)
-            {
-                return null;
-            }
-
-            return existsResult.Object;
-            //return new RetrieveResult<bool?>
-            //{
-            //    IsSuccess = existsResult.IsSuccess,
-            //    Result = existsResult.Result,
-            //};
-            //string filePath = reference.Path;
-            //return FsPersistence.TryDelete(filePath);
-        }
-
-        public override async Task<bool?> TryDelete(RedisReference reference/*, bool preview = false*/)
-        {
-            string filePath = reference.Path;
-            //if (!defaultTypeForDirIsT)
-            //{
-            //    filePath = filePath + FileTypeDelimiter + type.Name + FileTypeEndDelimiter;
-            //}
-
-            //if (preview)
-            //{
-            //    return await FsFacade.Exists(filePath).ConfigureAwait(false);
-            //}
-            //else
-            //{
-                return await FsFacade.Delete(filePath).ConfigureAwait(false);
-            //}
-        }
-        
-        #endregion
-
-        //protected override async Task _Set<T>(RedisReference reference, T obj, bool allowOverwrite = true, bool preview = false)
-        //{
-        //    await RedisOBasePersistence.Set(obj, reference.Path, preview: preview, type: typeof(T));
-        //}
-
-        protected override async Task _Set(RedisReference reference, object obj, Type type = null, bool allowOverwrite = true, bool preview = false)
+        protected override async Task<IPersistenceResult> SetImpl<T>(RedisReference reference, T obj, bool allowOverwrite = true)
         {
             #region TODO
 
@@ -377,22 +286,25 @@ namespace LionFire.ObjectBus.Redis
 
             #endregion
 
-            if (preview) throw new NotImplementedException("preview");
-            var bytes = this.DefaultSerializationProvider.ToBytes(obj, type != null ? () => new PersistenceOperation { Type = type } : (Func<PersistenceOperation>)null );
+            var bytes = this.DefaultSerializationProvider.ToBytes(obj, new PersistenceOperation { Type = typeof(T) });
 
             var path = reference.Path;
             var dir = LionPath.GetDirectoryName(path) + "/";
             var filename = LionPath.GetFileName(path);
-            await redis.GetDatabase().SetAddAsync(dir, filename);
 
+            await redis.GetDatabase().SetAddAsync(dir, filename);
             await FsFacade.WriteAllBytes(reference.Path, bytes).ConfigureAwait(false);
+
+            // TODO: transaction: roll back on fail and throw
+
+            return PersistenceResult.Success;
         }
 
         public const bool AppendTypeNameToFileNames = false; // TEMP - TODO: Figure out a way to do this in VOS land
 
-        #region TODO: Rename to Keys() and make async
+        #region List
 
-        public override IEnumerable<string> GetChildrenNames(RedisReference parent)
+        public override async Task<IEnumerable<string>> List<T>(RedisReference parent) 
         {
             RedisReference fileRef = RedisReference.ConvertFrom(parent);
 
@@ -401,19 +313,9 @@ namespace LionFire.ObjectBus.Redis
                 throw new ArgumentException("Could not convert to FileReference");
             }
 
-            return (FsFacade.GetKeys(fileRef.Path).Result).Select(p=>Path.GetFileName(p));
-        }
-
-        public override async Task<IEnumerable<string>> GetKeys(RedisReference parent) // 
-        {
-            RedisReference fileRef = RedisReference.ConvertFrom(parent);
-
-            if (fileRef == null)
-            {
-                throw new ArgumentException("Could not convert to FileReference");
-            }
-
-            return (await FsFacade.GetKeys(fileRef.Path + "/").ConfigureAwait(false)).Select(p => Path.GetFileName(p));
+            // FIXME: Which is correct?
+            //return (await FsFacade.List(fileRef.Path)).Select(p => Path.GetFileName(p));
+            return (await FsFacade.List(fileRef.Path + "/").ConfigureAwait(false)).Select(p => Path.GetFileName(p));
         }
 
         #endregion
@@ -427,9 +329,9 @@ namespace LionFire.ObjectBus.Redis
         //    return Assets.AssetPath.GetDefaultDirectory(typeof(T));
         //}
 
-        public override IEnumerable<string> GetChildrenNamesOfType<T>(RedisReference parent) => throw new NotImplementedException();
         public override H<T> GetHandle<T>(IReference reference) => throw new NotImplementedException();
         public override RH<T> GetReadHandle<T>(IReference reference) => throw new NotImplementedException();
+        
 
 #if TOPORT
             var chunks = VosPath.ToPathArray(parent.Path);
@@ -462,7 +364,7 @@ namespace LionFire.ObjectBus.Redis
 #endif
 
 
-        private static ILogger l = Log.Get();
+        private static readonly ILogger l = Log.Get();
 
     }
 

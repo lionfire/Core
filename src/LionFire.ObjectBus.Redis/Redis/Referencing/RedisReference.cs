@@ -11,7 +11,7 @@ using LionFire.Structures;
 namespace LionFire.ObjectBus.Redis
 {
     [LionSerializable(SerializeMethod.ByValue)]
-    public class RedisReference : LocalReferenceBase, IHas<IOBase>, IHas<IOBus>
+    public class RedisReference : LocalReferenceBase<RedisReference>, IHas<IOBase>, IHas<IOBus>
     {
         IOBus IHas<IOBus>.Object => ManualSingleton<RedisOBus>.GuaranteedInstance;
         IOBase IHas<IOBase>.Object => RedisOBase;
@@ -127,7 +127,7 @@ namespace LionFire.ObjectBus.Redis
 
         public override string ToString() => String.Concat(UriPrefixDefault, Path);
         
-        public override string Key => this.ToString();
+        public override string Key { get => this.ToString(); protected set => throw new NotImplementedException(); }
 
     }
 

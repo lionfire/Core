@@ -32,9 +32,9 @@ namespace LionFire.Persistence
             Object = default,
         };
 
-        public static readonly RetrieveResult<T> NullSuccessful = new RetrieveResult<T>()
+        public static readonly RetrieveResult<T> RetrievedNull = new RetrieveResult<T>()
         {
-            Flags = PersistenceResultFlags.Success | PersistenceResultFlags.Found,
+            Flags = PersistenceResultFlags.Success | PersistenceResultFlags.Found | PersistenceResultFlags.RetrievedNull,
             Object = default,
         };
 

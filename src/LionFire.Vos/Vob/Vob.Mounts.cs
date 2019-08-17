@@ -346,7 +346,7 @@ namespace LionFire.Vos
             {
                 var reference = Object.ReferenceEquals(mount.Vob, this) ? mount.RootHandle.Reference : mount.RootHandle.Reference.GetChildSubpath(PathElements.Skip(mount.VobDepth));
                 // ... otherwise, we have to get the handle from the reference.
-                result = reference.GetHandle<T>();
+                result = reference.ToHandle<T>();
             }
 #else
             if (Object.ReferenceEquals(mount.Vob, this))
@@ -410,7 +410,7 @@ namespace LionFire.Vos
             }
             else
             {
-                result = mount.RootHandle.Reference.GetChildSubpath(PathElements.Skip(mount.VobDepth)).GetReadHandle<MountHandleObject>(); // OPTIMIZE: cache this enumerable alongside the mount
+                result = mount.RootHandle.Reference.GetChildSubpath(PathElements.Skip(mount.VobDepth)).ToReadHandle<MountHandleObject>(); // OPTIMIZE: cache this enumerable alongside the mount
             }
 
             //result.Mount = mount;

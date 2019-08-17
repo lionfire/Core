@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
+using LionFire.Collections;
+using LionFire.ObjectBus.Handles;
 using LionFire.ObjectBus.RedisPub;
 using LionFire.Persistence;
 using LionFire.Referencing;
@@ -12,7 +14,7 @@ namespace LionFire.ObjectBus.Redis
     /// 
     /// </summary>
     /// <typeparam name="T"></typeparam>
-    public class RedisHashOBoc<T> : SyncableOBoc<T, RedisEntry>
+    public class RedisHashOBoc<T> : WatchableOBoc<T, RedisEntry>
     {
         RedisOBase obase;
         RedisPubOBase pubOBase;
@@ -47,14 +49,8 @@ namespace LionFire.ObjectBus.Redis
         {
             throw new NotImplementedException();
         }
-
-        public override Task<bool> TryRetrieveObject()
-        {
-            throw new NotImplementedException();
-            //obase.OBus.
-
-        }
-
+        
         public override IEnumerator<T> GetEnumerator() => throw new NotImplementedException();
+        public override Task<IRetrieveResult<INotifyingReadOnlyCollection<RedisEntry>>> RetrieveImpl() => throw new NotImplementedException();
     }
 }

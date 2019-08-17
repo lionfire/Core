@@ -7,7 +7,7 @@ using LionFire.DependencyInjection;
 
 namespace LionFire.ObjectBus
 {
-    public class SingletonOBusBase<TConcrete, TOBase, TReference> : OBusBase<TConcrete, TOBase, TReference>, IDefaultOBaseProvider, IHandleProvider<TReference>, IReadHandleProvider<TReference>
+    public class SingletonOBusBase<TConcrete, TOBase, TReference> : OBusBase<TConcrete, TOBase, TReference>, IDefaultOBaseProvider
     where TConcrete : OBusBase<TConcrete, TOBase, TReference>, IOBus
         where TOBase : class, IOBase
     where TReference : IReference

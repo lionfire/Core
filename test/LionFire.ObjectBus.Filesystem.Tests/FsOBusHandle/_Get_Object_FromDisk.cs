@@ -13,7 +13,6 @@ using LionFire.ObjectBus.Filesystem.Tests;
 using LionFire.ObjectBus.Testing;
 using LionFire.Referencing;
 using Xunit;
-using LionFire.ObjectBus.ExtensionlessFs;
 using LionFire.Serialization;
 
 namespace Handle
@@ -27,7 +26,7 @@ namespace Handle
 
         private async Task _Pass(bool withExtension)
         {
-            var host = FrameworkHost.Create(
+            var host = FrameworkHostBuilder.Create(
                 //serializers: s => s.AddJson()
                 );
 
@@ -37,7 +36,7 @@ namespace Handle
             }
 
             await host
-                    .AddObjectBus<FsOBus>()                    
+                    .AddObjectBus<FSOBus>()                    
                     .Run(() =>
                     {
                         var pathWithoutExtension = FsTestUtils.TestFile;
@@ -55,7 +54,7 @@ namespace Handle
                             reference = new ExtensionlessFileReference(pathWithoutExtension); 
                         }
 
-                        var h = reference.GetHandle<TestClass1>();
+                        var h = reference.ToHandle<TestClass1>();
 
                         var obj = h.Object; // --------------- Object
 

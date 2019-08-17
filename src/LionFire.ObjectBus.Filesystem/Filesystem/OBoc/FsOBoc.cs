@@ -22,7 +22,7 @@ namespace LionFire.ObjectBus.Filesystem
 
     }
 
-    public class FsOBoc<TObject> : SyncableOBoc<TObject, FsListEntry>
+    public class FsOBoc<TObject> : WatchableOBoc<TObject, FsListEntry>
     {
 
         #region Construction
@@ -38,7 +38,9 @@ namespace LionFire.ObjectBus.Filesystem
 
         public override IEnumerator<TObject> GetEnumerator() => throw new System.NotImplementedException();
 
-        public override async Task<IRetrieveResult<INotifyingReadOnlyCollection<FsListEntry>>> RetrieveObject()
+        
+
+        public override async Task<IRetrieveResult<INotifyingReadOnlyCollection<FsListEntry>>> RetrieveImpl()
         {
             var dir = Reference.Path;
 

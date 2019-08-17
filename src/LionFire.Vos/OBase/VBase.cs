@@ -63,7 +63,7 @@ namespace LionFire.Vos
                 var vh = reference.GetReadHandle<T>();
 
                 //vh.IsRetrieveInfoEnabled = true;  TOPORT ?
-                if (await vh.TryGetObject().ConfigureAwait(false))
+                if (await vh.Get().ConfigureAwait(false))
                 {
                     result.Object = vh.Object;
                 }
@@ -87,13 +87,13 @@ namespace LionFire.Vos
 
         #region Set
 
-        protected override Task<IPersistenceResult> _Set<T>(VosReference reference, T obj, bool allowOverwrite = true) => throw new NotImplementedException();
+        protected override Task<IPersistenceResult> SetImpl<T>(VosReference reference, T obj, bool allowOverwrite = true) => throw new NotImplementedException();
 
         #endregion
 
         #region Delete
 
-        public override Task<IPersistenceResult> CanDeleteImpl<T>(VosReference reference) => throw new NotImplementedException();
+        public override Task<IPersistenceResult> CanDelete<T>(VosReference reference) => throw new NotImplementedException();
         public override Task<IPersistenceResult> TryDelete<T>(VosReference reference) => throw new NotImplementedException();
 
         #endregion

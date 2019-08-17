@@ -11,7 +11,7 @@ using LionFire.Structures;
 namespace LionFire.ObjectBus.RedisPub
 {
     [LionSerializable(SerializeMethod.ByValue)]
-    public class RedisPubReference : LocalReferenceBase, IHas<IOBase>, IHas<IOBus>
+    public class RedisPubReference : LocalReferenceBase<RedisPubReference>, IHas<IOBase>, IHas<IOBus>
     {
         IOBus IHas<IOBus>.Object => ManualSingleton<RedisPubOBus>.GuaranteedInstance;
         IOBase IHas<IOBase>.Object => RedisPubOBase;
@@ -89,14 +89,14 @@ namespace LionFire.ObjectBus.RedisPub
 
         public override string Path
         {
-            get { return path; }
+            get => path;
             set
             {
-//#if MONO
+                //#if MONO
                 value = value.Replace('\\', '/');
-//#else
-//                value = value.Replace('/', '\\');
-//#endif
+                //#else
+                //                value = value.Replace('/', '\\');
+                //#endif
 
                 //if (value != null)
                 //{
@@ -126,8 +126,8 @@ namespace LionFire.ObjectBus.RedisPub
         //}
 
         public override string ToString() => String.Concat(UriPrefixDefault, Path);
-        
-        public override string Key => this.ToString();
+
+        public override string Key { get => this.ToString(); protected set => throw new NotImplementedException(); }
 
     }
 

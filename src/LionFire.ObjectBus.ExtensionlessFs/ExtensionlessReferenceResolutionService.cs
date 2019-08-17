@@ -73,11 +73,11 @@ namespace LionFire.ObjectBus.ExtensionlessFs
                     Persistence.IRetrieveResult<T> retrieveResult = null;
                     if (options?.VerifyDeserializable == true)
                     {
-                        var readHandle = referenceWithExtension.GetReadHandle<T>();
+                        var readHandle = referenceWithExtension.ToReadHandle<T>();
 
-                        retrieveResult = await OBase.TryGet<T>(referenceWithExtension).ConfigureAwait(false);
+                        retrieveResult = await OBase.Get<T>(referenceWithExtension).ConfigureAwait(false);
 
-                        if(!(await readHandle.TryGetObject()))
+                        if(!(await readHandle.Get<T>()).HasObject)
                         {
                             return null;
                         }
@@ -88,7 +88,7 @@ namespace LionFire.ObjectBus.ExtensionlessFs
                     }
                     else if (options?.VerifyExists == true)
                     {
-                        var readHandle = referenceWithExtension.GetReadHandle<T>();
+                        var readHandle = referenceWithExtension.ToReadHandle<T>();
                         
                         if (await readHandle.Exists().ConfigureAwait(false))
                         {
@@ -101,7 +101,7 @@ namespace LionFire.ObjectBus.ExtensionlessFs
                     }
                     else
                     {
-                        return new ReadResolutionResult<T>(referenceWithExtension.GetReadHandle<T>());
+                        return new ReadResolutionResult<T>(referenceWithExtension.ToReadHandle<T>());
                     }
                     //});
                 }

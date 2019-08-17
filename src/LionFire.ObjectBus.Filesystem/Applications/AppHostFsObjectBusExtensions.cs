@@ -15,7 +15,7 @@
 //        }
 //        public static IServiceCollection AddFilesystemObjectBus(this IServiceCollection services)
 //        {
-//            services.AddObjectBus<FsOBus>();
+//            services.AddObjectBus<FSOBus>();
 //            return services;
 //        }
 

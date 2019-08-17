@@ -6,8 +6,10 @@ using LionFire.Hosting;
 using LionFire.ObjectBus;
 using LionFire.ObjectBus.Redis;
 using LionFire.ObjectBus.RedisPub;
+using LionFire.Persistence;
 using LionFire.Referencing;
 using Xunit;
+using LionFire.Persistence.Handles;
 
 namespace RedisOBoc_
 {
@@ -18,17 +20,17 @@ namespace RedisOBoc_
         {
             const string testChildVal = "testChildVal";
 
-            await FrameworkHost.Create()
+            await FrameworkHostBuilder.Create()
                 .AddObjectBus<RedisOBus>()
                 .AddObjectBus<RedisPubOBus>()
-                .RunAndExit(async () =>
+                .Run(async () =>
                 {
                     var dir = @"\temp\tests\" + this.GetType().FullName + @"\" + nameof(Pass) + @"\";
                     var rDir = new RedisReference(dir);
                     
                     {
                         var r = new RedisReference(dir + "testChild");
-                        var h = r.GetHandle<string>();
+                        var h = r.ToHandle<string>();
                         Assert.False(await h.Exists(), "test object already exists: " + r.Path);
                         h.Object = testChildVal;
                         await h.Commit();
@@ -71,6 +73,6 @@ namespace RedisOBoc_
                 });
         }
 
-        private void Entries_CollectionChanged(LionFire.Collections.INotifyCollectionChangedEventArgs<LionFire.Referencing.ICollectionEntry> e) => throw new NotImplementedException();
+        private void Entries_CollectionChanged(LionFire.Collections.INotifyCollectionChangedEventArgs<ICollectionEntry> e) => throw new NotImplementedException();
     }
 }

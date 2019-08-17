@@ -14,7 +14,13 @@ using LionFire.ObjectBus.Resolution;
 namespace LionFire.ObjectBus
 {
 
-    public abstract class OBusBase<TConcrete, TOBase, TReference> : OBusBase<TConcrete>
+    /// <summary>
+    /// Convenience base class
+    /// </summary>
+    /// <typeparam name="TConcrete"></typeparam>
+    /// <typeparam name="TOBase"></typeparam>
+    /// <typeparam name="TReference"></typeparam>
+    public abstract class OBusBase<TConcrete, TOBase, TReference> : OBusBase<TConcrete>, IHandleProvider<TReference>, IReadHandleProvider<TReference>
         where TConcrete : OBusBase<TConcrete, TOBase, TReference>, IOBus
         where TOBase : IOBase
         where TReference : IReference
@@ -32,8 +38,8 @@ namespace LionFire.ObjectBus
                 ReferenceConstructor = typeof(TReference).GetConstructor(new Type[] { typeof(string) });
             }
             catch { }
-
-            uriSchemes = ((IEnumerable<string>)typeof(TReference).GetProperty("UriSchemes")?.GetMethod?.Invoke(null, null)) ?? Enumerable.Empty<string>();
+            
+            uriSchemes = ((IEnumerable<string>)typeof(TReference).GetField("UriSchemes", BindingFlags.Static | BindingFlags.Public | BindingFlags.NonPublic)?.GetValue(null)) ?? Enumerable.Empty<string>();
             //defaultUriScheme = uriSchemes?.FirstOrDefault();
         }
 
@@ -101,6 +107,10 @@ namespace LionFire.ObjectBus
 
     }
 
+    /// <summary>
+    /// Standard base class
+    /// </summary>
+    /// <typeparam name="TConcrete"></typeparam>
     public abstract class OBusBase<TConcrete> : IOBus
     where TConcrete : IOBus
     {
@@ -235,7 +245,7 @@ namespace LionFire.ObjectBus
             return h;
         }
 
-        public virtual C<T> GetCollectionHandle<T>(IReference reference)
+        public virtual HC<T> GetCollectionHandle<T>(IReference reference)
         {
             throw new NotImplementedException();
             //var oboc = new OBoc<T, OBaseCollectionEntry>();
@@ -244,35 +254,6 @@ namespace LionFire.ObjectBus
         {
             throw new NotImplementedException();
         }
-
     }
-
-    //public abstract class OBaseProvider : IOBaseProvider
-    ////where ReferenceType : IReference
-    //{
-    //    public abstract string[] UriSchemes { get; }
-
-    //    public abstract IOBase GetOBase(string connectionString);
-
-    //    public abstract string UriSchemeDefault
-    //    {
-    //        get;
-    //    }
-
-    //    public abstract IOBase DefaultOBase
-    //    {
-    //        get;
-    //    }
-
-    //    public abstract IEnumerable<IOBase> OBases
-    //    {
-    //        get;
-    //    }
-
-    //    public abstract IEnumerable<IOBase> GetOBases(IReference reference);
-
-
-    //    public abstract IReference ToReference(string uri);
-
-    //}
+    
 }

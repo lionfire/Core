@@ -21,7 +21,7 @@ namespace LionFire.Referencing.Filesystem
             ReferenceResolutionService = new ReferenceResolutionService(new List<IReferenceResolutionStrategy>
             {
                 Singleton<ExactReferenceResolutionStrategy>.Instance,
-                //ManualSingleton<ExtensionlessReferenceResolutionService>.GetGuaranteedInstance<ExtensionlessReferenceResolutionService>(()=>new ExtensionlessReferenceResolutionService(FsOBase.Instance)),
+                //ManualSingleton<ExtensionlessReferenceResolutionService>.GetGuaranteedInstance<ExtensionlessReferenceResolutionService>(()=>new ExtensionlessReferenceResolutionService(FSOBase.Instance)),
             })
         };
 

@@ -6,16 +6,15 @@ using LionFire.Hosting;
 using LionFire.Vos;
 using LionFire.Hosting.ExtensionMethods;
 
-namespace LionFire.Valor.Tests
+namespace LionFire.Vos.Tests
 {
     public class _VosReference
     {
         [Fact]
         public async void String_to_Reference()
         {
-            await FrameworkHost.Create()
-                .AddObjectBus<VosOBus>()
-                .AddVos()
+            await FrameworkHostBuilder.Create()
+                .AddVosApp()
                 .Run(() =>
                 {
                     var str = "vos:/path/to/vob";

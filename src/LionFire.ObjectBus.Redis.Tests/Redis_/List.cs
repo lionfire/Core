@@ -7,6 +7,7 @@ using LionFire.ObjectBus;
 using LionFire.ObjectBus.Redis;
 using LionFire.Referencing;
 using Xunit;
+using LionFire.Persistence.Handles;
 
 namespace Redis_
 {
@@ -19,9 +20,9 @@ namespace Redis_
 
             const int itemCount = 200;
 
-            await FrameworkHost.Create()
+            await FrameworkHostBuilder.Create()
                     .AddObjectBus<RedisOBus>()
-                    .RunAndExit(async () =>
+                    .Run(async () =>
                     {
                         var path = @"\temp\tests\" + GetType().FullName + @"\" + nameof(Pass) + @"\TestFile";
 
@@ -34,7 +35,7 @@ namespace Redis_
                             var childPath = LionPath.Combine(path, "item-" + i);
                             {
                                 var childRef = new RedisReference(childPath);
-                                var h = childRef.GetHandle<string>();
+                                var h = childRef.ToHandle<string>();
                                 await h.Delete();
                                 Assert.False(await h.Exists(), "test object exists after delete: " + childPath);
                             }
@@ -49,7 +50,7 @@ namespace Redis_
                             var childPath = LionPath.Combine(path, "item-" + i);
                             {
                                 var childRef = new RedisReference(childPath);
-                                var h = childRef.GetHandle<string>();
+                                var h = childRef.ToHandle<string>();
                                 Assert.False(await h.Exists(), "test object already exists: " + childPath);
                                 h.Object = testData + i;
                                 await h.Commit();
@@ -74,7 +75,7 @@ namespace Redis_
 
                         #region Get keys
 
-                        var keys = await r.GetOBase().GetKeys(r); //TODO - extension method
+                        var keys = await r.GetCollectionHandle().GetKeys(r); //TODO - extension method
                         foreach(var foundItem in keys)
                         {
                             if(!expected.Remove(foundItem))
@@ -95,7 +96,7 @@ namespace Redis_
                             var childPath = LionPath.Combine(path, "item-" + i);
                             {
                                 var childRef = new RedisReference(childPath);
-                                var h = childRef.GetHandle<string>();
+                                var h = childRef.ToHandle<string>();
                                 await h.Delete();
                                 Assert.False(await h.Exists(), "test object exists after delete: " + childPath);
                             }
@@ -104,7 +105,7 @@ namespace Redis_
                         #endregion
 
                         //{
-                        //    var h = r.GetHandle<string>();
+                        //    var h = r.ToHandle<string>();
                         //    Assert.True(await h.Exists(), "test object does not exist after saving: " + path);
 
                         //    var retrievedData = h.Object;
@@ -115,7 +116,7 @@ namespace Redis_
                         //    Assert.False(await h.Exists(), "test object still exists after deleting: " + path);
                         //}
                         //{
-                        //    var h = r.GetHandle<string>();
+                        //    var h = r.ToHandle<string>();
                         //    Assert.False(await h.Exists(), "test object still exists after deleting: " + path);
 
                         //}

@@ -1,56 +1,62 @@
-﻿using LionFire.Applications.Hosting;
-using LionFire.Referencing;
-using LionFire.Persistence.Handles;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Hosting;
+﻿using Microsoft.Extensions.Hosting;
 using System;
-using System.Collections.Generic;
-using System.Text;
+using System.Threading;
+using System.Threading.Tasks;
+using LionFire.Threading;
 
 namespace LionFire.Hosting
 {
-    public static class FrameworkHost
+    public class VosHost : FrameworkHost
     {
-        public static void AddDefaultSerializers(this IServiceCollection services)
+        public override IHostBuilder CreateHostBuilder() => FrameworkHostBuilder.CreateVos(args);
+
+        public VosHost(Action<IHostBuilder> configure = null) : base(configure) { }
+    }
+
+    public class FrameworkHost : IDisposable
+    {
+
+        protected readonly string[] args;
+
+        #region State
+
+        readonly CancellationTokenSource hostFinished = new CancellationTokenSource();
+        Task task;
+
+        #endregion
+
+        public FrameworkHost(string[] args = null)
         {
-            //services.AddJson();
-            services.AddNewtonsoftJson();
+            this.args = args;
         }
 
-        public static IHostBuilder Create(Action<IServiceCollection> serializers = null)
+        public virtual IHostBuilder CreateHostBuilder() => FrameworkHostBuilder.Create(args);
+
+        public Action<IHostBuilder> ConfigureHostBuilder { get; set; } = h => { };
+
+        protected void Run()
         {
-            return new HostBuilder()
-                .UseDefaults()
-                .UseDependencyContext()
-                //.ConfigureLogging(loggingBuilder =>
-                //{
-                //})
-                .ConfigureServices((context, services) =>
+            var hostBuilder = CreateHostBuilder();
+            ConfigureHostBuilder(hostBuilder);
+            task = hostBuilder
+                .Run(async () =>
                 {
-                    services
-                    .AddSerialization();
+                    await hostFinished.Token.WaitHandle.WaitOneAsync();
+                    //hostFinished.Token.WaitHandle.WaitOne();
+                });
+        }
 
-                    (serializers ?? AddDefaultSerializers)(services);
+        public FrameworkHost(Action<IHostBuilder> configure = null)
+        {
+            if (configure != null) ConfigureHostBuilder = configure;
 
-                    services
-                    .AddSingleton<IReferenceToHandleService, ReferenceToHandleService>()
-                    .AddSingleton<IReferenceProviderService, ReferenceProviderService>()
-                    ;
-                    //services.Configure<ObjectBusOptions>(option => // Allows injection of IOptions<ObjectBusOptions>
-                    //{
-                    //    option.SampleOption = 123;
-                    //});
+            Run();
+        }
 
-                })
-                //.ConfigureHostConfiguration(config =>
-                //{
-
-                //})
-                //.ConfigureAppConfiguration((context, config) =>
-                //{
-                //    //context.HostingEnvironment.
-                //})
-                ;
+        public virtual void Dispose()
+        {
+            hostFinished.Cancel();
+            hostFinished.Dispose();
         }
     }
 }

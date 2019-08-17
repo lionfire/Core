@@ -1,4 +1,5 @@
 ﻿using LionFire.ObjectBus.FsFacade;
+using LionFire.Persistence;
 using LionFire.Referencing;
 using StackExchange.Redis;
 using System.Collections.Generic;
@@ -34,12 +35,12 @@ namespace LionFire.ObjectBus.Redis
         public static (string dir, string name) BreakPath(string path) => (LionPath.GetDirectoryName(path), LionPath.GetFileName(path));
 
         public async Task<bool> Exists(string path) => await Db.KeyExistsAsync(path).ConfigureAwait(false);
-        public async Task<bool?> Delete(string path)
+        public async Task<IPersistenceResult> Delete(string path)
         {
-            var p = BreakPath(path);
-            bool deleted = await Db.SetRemoveAsync(p.dir + "/", p.name).ConfigureAwait(false);
+            var (dir, name) = BreakPath(path);
+            bool deleted = await Db.SetRemoveAsync(dir + "/", name).ConfigureAwait(false);
             await Db.KeyDeleteAsync(path).ConfigureAwait(false);
-            return deleted;
+            return deleted ? PersistenceResult.Success : PersistenceResult.NotFound;
         }
 
         public async Task<byte[]> ReadAllBytes(string path) => await Db.StringGetAsync(path).ConfigureAwait(false);
@@ -53,7 +54,7 @@ namespace LionFire.ObjectBus.Redis
         public static int GetFilesPageSize = 1000;
 
         // Non-blocking
-        public async Task<IEnumerable<string>> GetKeys(string directoryPath, string pattern = null)
+        public async Task<IEnumerable<string>> List(string directoryPath, string pattern = null)
         {
             return await Task.Run(() =>
             {

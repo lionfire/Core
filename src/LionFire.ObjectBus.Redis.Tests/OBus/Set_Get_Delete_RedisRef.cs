@@ -16,9 +16,9 @@ namespace OBus_
         [Fact]
         public async void Pass()
         {
-            await FrameworkHost.Create()
+            await FrameworkHostBuilder.Create()
                 .AddObjectBus<RedisOBus>()
-                .RunAndExit(async () =>
+                .Run(async () =>
                 {
                     var path = @"\temp\tests\" + this.GetType().FullName + @"\" + nameof(Pass) + @"\TestFile";
                     var pathWithExtension = path + ".json";

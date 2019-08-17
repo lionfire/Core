@@ -28,8 +28,8 @@ namespace string_
         [Fact]
         public async void Pass()
         {
-            await FrameworkHost.Create()
-                .AddObjectBus<FsOBus>()
+            await FrameworkHostBuilder.Create()
+                .AddObjectBus<FSOBus>()
                 .Run(() =>
                 {
                     var str = @"file:///c:\test\string\reference.txt#1234?zxcv(asdf)";
@@ -40,16 +40,16 @@ namespace string_
 
                     Assert.Equal("file", reference.Scheme);
                     Assert.Equal(@"c:/test/string/reference.txt#1234?zxcv(asdf)", reference.Path);
-                    //Assert.IsType<FsOBus>(reference.GetOBus());
-                    //Assert.IsType<FsOBase>(reference.GetOBase());
+                    //Assert.IsType<FSOBus>(reference.GetOBus());
+                    //Assert.IsType<FSOBase>(reference.GetOBase());
                 });
         }
 
         [Fact]
         public async Task Fail_No_Scheme_Throws()
         {
-            await FrameworkHost.Create()
-                .AddObjectBus<FsOBus>()
+            await FrameworkHostBuilder.Create()
+                .AddObjectBus<FSOBus>()
                 .Run(() =>
                 {
                     var path = @"c:\Temp\Path\Test\" + Guid.NewGuid().ToString();
@@ -61,8 +61,8 @@ namespace string_
         [Fact]
         public async Task Fail_No_Scheme_Null()
         {
-            await FrameworkHost.Create()
-            .AddObjectBus<FsOBus>()
+            await FrameworkHostBuilder.Create()
+            .AddObjectBus<FSOBus>()
             .Run(() =>
             {
                 var path = @"c:\Temp\Path\Test\" + Guid.NewGuid().ToString();

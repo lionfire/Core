@@ -6,7 +6,7 @@ using LionFire.Persistence;
 using LionFire.Persistence.Handles;
 using LionFire.Referencing;
 
-namespace LionFire.ObjectBus
+namespace LionFire.ObjectBus.Handles
 {
     public class OBaseHandle<T> : WBase<T>, IHas<IOBase>
     {
@@ -20,11 +20,12 @@ namespace LionFire.ObjectBus
         }
 
         // Some code duplication with OBaseReadHandle
-        public override async Task<IRetrieveResult<T>> RetrieveObject() 
-            => await OBase.TryGet<T>(this.Reference).ConfigureAwait(false);
+        public override async Task<IRetrieveResult<T>> RetrieveImpl() 
+            => await OBase.Get<T>(this.Reference).ConfigureAwait(false);
 
         //protected async Task<IPersistenceResult> DeleteObject()
         //    => await OBase.TryDelete<T>(this.Reference).ConfigureAwait(false);
+
         protected override async Task<IPersistenceResult> DeleteObject()
             => await OBase.TryDelete<T>(this.Reference).ConfigureAwait(false);
 

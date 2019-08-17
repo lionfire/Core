@@ -118,5 +118,12 @@ namespace LionFire.Referencing
 
 #endregion
 
+        public static NotFoundException NotFoundException(this IReference reference)
+        {
+            return new NotFoundException($"Could not find {reference.ToString()}")
+            {
+                Reference = reference,
+            };
+        }
     }
 }

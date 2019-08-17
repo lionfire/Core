@@ -2,6 +2,7 @@
 using System.Linq;
 using System.Threading.Tasks;
 using LionFire.ObjectBus.FsFacade;
+using LionFire.Persistence;
 using LionFire.Referencing;
 using StackExchange.Redis;
 
@@ -10,7 +11,7 @@ namespace LionFire.ObjectBus.RedisPub
 
     public partial class RedisPubOBase
     {
-        
+
         public class RedisPubFsFacade : IFsFacade
         {
             #region Relationships
@@ -40,12 +41,13 @@ namespace LionFire.ObjectBus.RedisPub
             }
 
             public async Task<bool> Exists(string path) => await Db.KeyExistsAsync(path).ConfigureAwait(false);
-            public async Task<bool?> Delete(string path)
+            public async Task<IPersistenceResult> Delete(string path)
             {
                 var p = BreakPath(path);
-                bool deleted = await Db.SetRemoveAsync(p.dir+"/", p.name).ConfigureAwait(false);
+                bool deleted = await Db.SetRemoveAsync(p.dir + "/", p.name).ConfigureAwait(false);
                 await Db.KeyDeleteAsync(path).ConfigureAwait(false);
-                return deleted;
+                // TODO: Transaction
+                return deleted ? PersistenceResult.Success : PersistenceResult.NotFound;
             }
 
             public async Task<byte[]> ReadAllBytes(string path) => await Db.StringGetAsync(path).ConfigureAwait(false);
@@ -59,7 +61,7 @@ namespace LionFire.ObjectBus.RedisPub
             public static int GetFilesPageSize = 1000;
 
             // Non-blocking
-            public async Task<IEnumerable<string>> GetKeys(string directoryPath, string pattern = null)
+            public async Task<IEnumerable<string>> List(string directoryPath, string pattern = null)
             {
                 return await Task.Run(() =>
                 {
@@ -86,6 +88,7 @@ namespace LionFire.ObjectBus.RedisPub
             }
 
             #endregion
+
 
         }
 

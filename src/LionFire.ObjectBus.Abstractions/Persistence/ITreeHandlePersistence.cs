@@ -1,4 +1,5 @@
-﻿using LionFire.Persistence;
+﻿#if OLD // Rethink how to do this, if needed.  Probably a better way
+using LionFire.Persistence;
 using LionFire.Referencing;
 using System;
 using System.Collections.Generic;
@@ -21,3 +22,4 @@ namespace LionFire.ObjectBus
         IEnumerable<string> GetChildrenNamesOfType(Type childType);
     }
 }
+#endif

@@ -2,13 +2,62 @@
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using LionFire.ObjectBus.Ex;
+using LionFire.ObjectBus.Handles;
 using LionFire.Ontology;
 using LionFire.Persistence;
 using LionFire.Referencing;
 
-namespace LionFire.ObjectBus
+namespace LionFire.ObjectBus.Ex // Extended API
 {
     /// <summary>
+    /// (Convenience API)
+    /// </summary>
+    public static class OBusEx
+    {
+        #region Resolve
+
+        /// <summary>
+        /// Validate reference is not null, resolves to an IOBase
+        /// </summary>
+        /// <returns>The OBase for the reference</returns>
+        public static IOBase ResolveOBase(this IReference reference)
+        {
+            if (reference == null) throw new ArgumentNullException(nameof(reference));
+
+            var obase = reference.TryGetOBase();
+            if (obase == null) throw new NotSupportedException($"Could not get IOBase for this reference of type {reference.GetType().Name}");
+
+            return obase;
+        }
+
+        #endregion
+
+        #region Read
+
+        #region Get
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <typeparam name="TObject"></typeparam>
+        /// <param name="reference"></param>
+        /// <returns></returns>
+        public static async Task<IRetrieveResult<TObject>> GetRetrieveResult<TObject>(this IReference reference)
+            => await ResolveOBase(reference).Get<TObject>(reference).ConfigureAwait(false);
+
+        #endregion
+
+        #endregion
+    }
+}
+
+namespace LionFire.ObjectBus
+{
+
+    /// <summary>
+    /// (Convenience API, shortcut compared to IReference.ToHandle())
+    /// 
     /// Static-only API, with extension methods.
     /// Performance consideration: 
     ///  - Unbound reference types will be resolved to a bound reference type each time.  (TODO:) Consider using a Handle instead of this interface, which will only resolve the bound reference type once.
@@ -18,105 +67,37 @@ namespace LionFire.ObjectBus
     /// </remarks>
     public static class OBus
     {
+
+        #region Read
+        
         #region Get
 
-        //public static async Task<object> Get(this IReference reference) => (await reference.GetOBase().Get(reference).ConfigureAwait(false)).Object;
-        //public static async Task<object> TryGet(this IReference reference) => (await reference.GetOBase().TryGet(reference).ConfigureAwait(false)).Object;
-        public static async Task<TObject> Get<TObject>(this IReference reference)
-        {
-            var result = await GetReadResult<TObject>(reference);
+        public static async Task<TObject> ToObject<TObject>(this IReference reference) => await ((OBaseReadHandle<TObject>)reference.ToReadHandle<TObject>()).ToObject();
 
-            if (!result.IsFound()) throw new NotFoundException();
-            return result.Object;
-        }
+        public static async Task<TObject> GetObject<TObject>(this IReference reference)
+            => (TObject)(await ((OBaseReadHandle<TObject>)reference.ToReadHandle<TObject>()).Get()).Object;
 
-        public static async Task<IRetrieveResult<TObject>> GetReadResult<TObject>(this IReference reference)
-        {
-            if (reference == null) throw new ArgumentNullException();
+        #endregion
 
-            var obase = reference.TryGetOBase();
-            if (obase == null) throw new NotSupportedException($"Could not get IOBase for this reference of type {reference.GetType().Name}");
+        #endregion
 
-            return await obase.TryGet<TObject>(reference).ConfigureAwait(false);
-        }
+        #region Write
 
-        /// <summary>
-        /// Convenience method to get the IOBase for a reference and invoke IOBase.Set
-        /// </summary>
-        /// <param name="reference"></param>
-        /// <returns></returns>
-        public static async Task<TObject> TryGet<TObject>(this IReference reference)
-        {
-            if (reference == null) throw new ArgumentNullException();
+        #region Set
 
-            var obase = reference.TryGetOBase();
-            if (obase == null) throw new NotSupportedException($"Could not get IOBase for this reference of type {reference.GetType().Name}");
+        public static async Task<TObject> SetObject<TObject>(this IReference reference, TObject @object) => (await ((OBaseHandle<TObject>)reference.ToHandle<TObject>()).Set(@object));
 
-            var result = await obase.TryGet<TObject>(reference).ConfigureAwait(false);
+        #endregion
 
-            if (result.IsFail()) throw new RetrieveException(result);
+        #endregion
 
-            return result.Object;
+        #region Delete
 
-#if UseHandles // best to avoid if necessary?  But what if user wants to go thru handle?  Should OBases use handles internally?
-            //var handle = reference.GetReadHandle<object>();
-            //if (await handle.TryRetrieveObject().ConfigureAwait(false))
-            //{
-            //    return handle.Object;
-            //}
-            //return null;
-#endif
-        }
+        public static async Task<bool> CanDelete<T>(this IReference reference) => (await reference.TryGetOBase().CanDelete<T>(reference).ConfigureAwait(false)).IsPreviewSuccess();
 
-        //public static T GetAs<T>(IReference reference)
-        //    where T : class
-        //{
-        //    T result = TryGetAs<T>(reference);
-        //    if (result == null)
-        //    {
-        //        throw new ObjectNotFoundException();
-        //    }
-
-        //    return result;
-        //}
-
-        //public static T GetAsOrCreate<T>(IReference reference, Func<T> createDefault = null)
-        //    where T : class
-        //{
-        //    T result = TryGetAs<T>(reference);
-        //    if (result == null)
-        //    {
-        //        result = _Create(createDefault);
-
-        //    }
-        //    return result;
-        //}
-
-        //public static T TryGetAsOrCreate<T>(IReference reference, Func<T> createDefault = null)
-        //{
-        //    throw new NotImplementedException();
-        //}
-
-#endregion
-
-        /// <summary>
-        /// Convenience method to get the IOBase for a reference and invoke IOBase.Set
-        /// </summary>
-        public static async Task Set<T>(this IReference reference, T value)
-        {
-            if (reference == null) throw new ArgumentNullException();
-
-            var obase = reference.TryGetOBase();
-            if (obase == null) throw new NotSupportedException($"Could not get IOBase for this reference of type {reference.GetType().Name}");
-
-            await obase.Set(reference, value).ConfigureAwait(false);
-        }
-
-#region Delete
-
-        public static async Task<bool> CanDelete<T>(this IReference reference) => await reference.TryGetOBase().CanDelete<T>(reference).ConfigureAwait(false);
         public static async Task<IPersistenceResult> TryDelete<T>(this IReference reference) => await reference.TryGetOBase().TryDelete<T>(reference).ConfigureAwait(false);
         public static async Task Delete<T>(this IReference reference) => await reference.TryGetOBase().Delete<T>(reference).ConfigureAwait(false);
+
         public static async Task Delete(this IReference reference) => await reference.TryGetOBase().Delete<object>(reference).ConfigureAwait(false);
         // FUTURE: public static Task<bool> Delete(this IReference reference, object onlyDeleteIfThisObject) => reference.GetOBase().Set(reference, value);
 
@@ -129,20 +110,21 @@ namespace LionFire.ObjectBus
         /// </summary>
         /// <param name="reference"></param>
         /// <returns></returns>
-        public static Task<IEnumerable<IReference>> GetChildren(this IReference reference) => throw new NotImplementedException();
+        public static Task<IEnumerable<IReference>> ListReferences(this IReference reference) => throw new NotImplementedException();
 
         /// <summary>
         /// RENAME - List
         /// </summary>
         /// <param name="reference"></param>
         /// <returns></returns>
-        public static async Task<IEnumerable<string>> GetKeys(this IReference reference)
+        public static Task<IEnumerable<string>> List(this IReference reference)
         {
             throw new NotImplementedException();
             //var handle = await reference.GetCollectionHandle<object>().GetKeys(reference).ConfigureAwait(false);
         }
 
-        //public static Task<IEnumerable<H<object>>> GetChildrenHandles(IReferenceEx2 reference)
+        //public static Task<IEnumerable<H<object>>> ListReadHandles(IReferenceEx2 reference)
+        //public static Task<IEnumerable<H<object>>> ListHandles(IReferenceEx2 reference)
         //{
         //    try
         //    {
@@ -168,26 +150,7 @@ namespace LionFire.ObjectBus
 
 
     }
-
-    //internal static class ObjectBusUtils
-    //{
-    //    private static T _Create<T>(Func<T> createDefault = null)
-    //    {
-    //        T result;
-
-    //        if (createDefault != null)
-    //        {
-    //            result = createDefault();
-    //        }
-    //        else
-    //        {
-    //            result = (T)Activator.CreateInstance(typeof(T));
-    //        }
-
-    //        return result;
-    //    }
-
-    //}
+    
 }
 
 #if OLD // TOPORT - if needed but not sure this makes sense anymore.  Brains moved to OBase.

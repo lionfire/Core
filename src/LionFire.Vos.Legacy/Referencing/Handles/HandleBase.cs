@@ -1,4 +1,5 @@
-﻿#if true // FIXME // TODO
+﻿#if LEGACY
+#if true // FIXME // TODO
 //#define DEBUG_LOAD
 //#define TRACE_LOAD_FAIL
 using LionFire.Referencing;
@@ -220,5 +221,6 @@ namespace LionFire.ObjectBus
     }
 }
 
+#endif
 #endif
 #endif

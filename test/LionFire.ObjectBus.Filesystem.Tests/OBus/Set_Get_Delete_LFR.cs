@@ -18,8 +18,8 @@ namespace OBus_
         [Fact]
         public async void Pass()
         {
-            await FrameworkHost.Create()
-                .AddObjectBus<FsOBus>()
+            await FrameworkHostBuilder.Create()
+                .AddObjectBus<FSOBus>()
                 .Run(async () =>
                 {
                     var path = @"c:\temp\tests\" + this.GetType().FullName + @"\" + nameof(Pass) + @"\TestFile";
@@ -37,7 +37,7 @@ namespace OBus_
                     Assert.Equal(expectedJson, textFromFile);
 
                     {
-                        var deserialized = await OBus.Get<object>(reference);  // ----------------------- Get
+                        var deserialized = await OBus.GetObject<object>(reference);  // ----------------------- Get
                         Assert.Equal(typeof(TestClass1), deserialized.GetType());
                         TestClass1 obj2 = (TestClass1)deserialized;
                         Assert.Equal(obj.StringProp, obj2.StringProp);

@@ -51,5 +51,19 @@ namespace LionFire.ObjectBus.Typing
             }
             return obj;
         }
+        public static (T result, bool success) TryConvertToType<T>(object obj)
+        {
+            if (obj == null && typeof(T).IsByRef) return (default /* null */, true);
+
+            //                ResultType result = obj as ResultType;
+            //                if (obj != null && result == null)
+
+            if (obj != null && !typeof(T).IsAssignableFrom(obj.GetType()))
+            {
+                //l.Debug("Retrieved object of type '" + obj.GetType().FullName + "' but it cannot be cast to the desired type: " + ResultType.FullName);
+                return (default, false);
+            }
+            return ((T)obj, true);
+        }
     }
 }

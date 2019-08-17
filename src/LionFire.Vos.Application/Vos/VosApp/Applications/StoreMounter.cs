@@ -63,7 +63,7 @@ namespace LionFire.Vos
             {
                 var storeLocation = location.GetChildSubpath(storeName);
                 var storeMetaLocation = storeLocation.GetChildSubpath(StoreMetadata.DefaultName);
-                var hStore = storeMetaLocation.GetHandle<StoreMetadata>();
+                var hStore = storeMetaLocation.ToHandle<StoreMetadata>();
                 var metadata = hStore.Object;
                 if (metadata != null)
                 {
@@ -84,7 +84,7 @@ namespace LionFire.Vos
                     {
                         var storeLocation = location.GetChildSubpath(storeName);
                         var storeMetaLocation = storeLocation.GetChildSubpath(StoreMetadata.DefaultName);
-                        var hStore = storeMetaLocation.GetHandle<StoreMetadata>();
+                        var hStore = storeMetaLocation.ToHandle<StoreMetadata>();
                         var metadata = new StoreMetadata();
 
                         hStore.Object = metadata;

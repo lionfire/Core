@@ -54,7 +54,7 @@ namespace LionFire.Assets
 
         private static AssetType TryLoad(AssetID assetID, string assetSavePath)
         {
-            throw new NotImplementedException("TODO - use FsOBase?");
+            throw new NotImplementedException("TODO - use FSOBase?");
 #if TOPORT
             AssetType asset;
 

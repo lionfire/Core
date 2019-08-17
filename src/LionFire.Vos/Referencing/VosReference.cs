@@ -58,11 +58,11 @@ namespace LionFire.Vos
 
         #region GetHandle
 
-        // Better/direct versions of the ObjectBus GetHandle
+        // Better/direct versions of the ObjectBus ToHandle
 
         public VobHandle<object> GetHandle(/*object obj = null*/) => new VobHandle<object>(this);
         public VobHandle<T> GetHandle<T>(/*T obj = default(T)*/) => new VobHandle<T>(this);
-        //public VobHandle<T> GetHandle<T>(this T obj) => throw new NotImplementedException("FUTURE: if obj != null, create a NamedObjectHandle and assign a random key");
+        //public VobHandle<T> ToHandle<T>(this T obj) => throw new NotImplementedException("FUTURE: if obj != null, create a NamedObjectHandle and assign a random key");
 
         public VobReadHandle<object> GetReadHandle(/*object obj = null*/) => new VobReadHandle<object>(this);
         public VobReadHandle<T> GetReadHandle<T>(/*T obj = default(T)*/) => new VobReadHandle<T>(this);

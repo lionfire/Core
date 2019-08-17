@@ -5,27 +5,27 @@ using LionFire.Referencing;
 
 namespace LionFire.ObjectBus.Redis
 {
-    public class RedisOBus : OBusBase<RedisOBus>, IDefaultOBaseProvider
+    public class RedisOBus : OBusBase<RedisOBus, RedisOBase, RedisReference>, IDefaultOBaseProvider
     {
         public override IOBase DefaultOBase => RedisOBase.DefaultInstance;
 
-        public override IEnumerable<Type> ReferenceTypes
-        {
-            get
-            {
-                yield return typeof(RedisReference);
-            }
-        }
-        
-        public override IEnumerable<Type> HandleTypes
-        {
-            get
-            {
-                yield return typeof(OBaseHandle<>);
-            }
-        }
+        //public override IEnumerable<Type> ReferenceTypes
+        //{
+        //    get
+        //    {
+        //        yield return typeof(RedisReference);
+        //    }
+        //}
 
-        public override IEnumerable<string> UriSchemes => RedisReference.UriSchemes;
+        //public override IEnumerable<Type> HandleTypes
+        //{
+        //    get
+        //    {
+        //        yield return typeof(OBaseHandle<>);
+        //    }
+        //}
+
+        //public override IEnumerable<string> UriSchemes => RedisReference.UriSchemes;
 
         //public bool IsValid(IReference reference) => reference.GetOBases().Any();
 
@@ -40,8 +40,7 @@ namespace LionFire.ObjectBus.Redis
         //    return RedisOBase.Instance;
         //}
 
-
-        public override IReference TryGetReference(string uri, bool strictMode)
+        public override IReference TryGetReference(string uri)
         {
             int colonIndex = uri.IndexOf(':');
             if (colonIndex < 0)
@@ -67,7 +66,7 @@ namespace LionFire.ObjectBus.Redis
             int slashIndex = RedisReference.UriScheme.Length;
             for (int i = 3; i > 0; i--)
             {
-                slashIndex = uri.IndexOf('/', slashIndex+1);
+                slashIndex = uri.IndexOf('/', slashIndex + 1);
                 if (slashIndex < 0)
                 {
                     // FUTURE: Relative paths?
@@ -76,7 +75,7 @@ namespace LionFire.ObjectBus.Redis
                 }
             }
 
-            string path = uri.Substring(slashIndex+1);
+            string path = uri.Substring(slashIndex + 1);
             return new RedisReference(path);
         }
 
@@ -86,8 +85,9 @@ namespace LionFire.ObjectBus.Redis
 
         public override IOBase TryGetOBase(IReference reference)
         {
-            if (IsValid(reference)) return this.DefaultOBase;
-            return null;
+            throw new NotImplementedException();
+            //if (IsValid(reference)) return this.DefaultOBase;
+            //return null;
         }
 
         #endregion

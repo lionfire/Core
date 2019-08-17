@@ -22,7 +22,7 @@ namespace LionFire.Vos
         #region Construction
 
         public Mount(Vob vob, IReference reference, string package = null, string store = null, bool enable = false, MountOptions mountOptions = null)
-            : this(vob, reference.GetHandle<MountHandleObject>(), package, store, enable, mountOptions)
+            : this(vob, reference.ToHandle<MountHandleObject>(), package, store, enable, mountOptions)
         {
             Root = reference;
         }
@@ -85,7 +85,7 @@ namespace LionFire.Vos
             {
                 if (rootHandle == null)
                 {
-                    rootHandle = Root.GetReadHandle<MountHandleObject>();
+                    rootHandle = Root.ToReadHandle<MountHandleObject>();
                 }
                 return rootHandle;
             }

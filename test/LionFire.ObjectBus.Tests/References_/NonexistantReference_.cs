@@ -1,17 +1,20 @@
 ﻿using System;
 using LionFire.Referencing;
+using LionFire;
+using LionFire.Hosting;
 using Xunit;
 
 namespace LocalFileReference_
 {
-    public class NonexistantReference_
+    public class NonexistantReference_ : FrameworkHost
     {
         private static readonly string bogusSchemeUri = @"bogus31415926535:///c:\Temp\Path\Test\" + Guid.NewGuid().ToString();
 
         [Fact]
-        public void Fail_Throws() => Assert.Throws<ArgumentException>(() => bogusSchemeUri.ToReference());
+        public void F_Throws() => Assert.Throws<NotFoundException>(() => bogusSchemeUri.ToReference());
 
         [Fact]
-        public void Fail_Null() => Assert.Null(bogusSchemeUri.TryToReference());
+        public void F_Null() => Assert.Null(bogusSchemeUri.TryToReference());
+        
     }
 }

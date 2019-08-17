@@ -5,27 +5,27 @@ using LionFire.Referencing;
 
 namespace LionFire.ObjectBus.RedisPub
 {
-    public class RedisPubOBus : OBusBase<RedisPubOBus>, IDefaultOBaseProvider
+    public class RedisPubOBus : OBusBase<RedisPubOBus, RedisPubOBase, RedisPubReference>, IDefaultOBaseProvider
     {
         public override IOBase DefaultOBase => RedisPubOBase.DefaultInstance;
 
-        public override IEnumerable<Type> ReferenceTypes
-        {
-            get
-            {
-                yield return typeof(RedisPubReference);
-            }
-        }
+        //public override IEnumerable<Type> ReferenceTypes
+        //{
+        //    get
+        //    {
+        //        yield return typeof(RedisPubReference);
+        //    }
+        //}
         
-        public override IEnumerable<Type> HandleTypes
-        {
-            get
-            {
-                yield return typeof(OBaseHandle<>);
-            }
-        }
+        //public override IEnumerable<Type> HandleTypes
+        //{
+        //    get
+        //    {
+        //        yield return typeof(OBaseHandle<>);
+        //    }
+        //}
 
-        public override IEnumerable<string> UriSchemes => RedisPubReference.UriSchemes;
+        //public override IEnumerable<string> UriSchemes => base.UriSchemes RedisPubReference.UriSchemes;
 
         //public bool IsValid(IReference reference) => reference.GetOBases().Any();
 
@@ -41,7 +41,8 @@ namespace LionFire.ObjectBus.RedisPub
         //}
 
 
-        public override IReference TryGetReference(string uri, bool strictMode)
+        
+        public override IReference TryGetReference(string uri)
         {
             int colonIndex = uri.IndexOf(':');
             if (colonIndex < 0)
@@ -50,7 +51,7 @@ namespace LionFire.ObjectBus.RedisPub
                 //throw new ArgumentException("Scheme missing");
             }
 
-            #region // TODO: Verify scheme is supported!
+#region // TODO: Verify scheme is supported!
 
             if (!uri.StartsWith(RedisPubReference.UriScheme))
             {
@@ -58,11 +59,11 @@ namespace LionFire.ObjectBus.RedisPub
                 //throw new ArgumentException("Unsupported scheme");
             }
 
-            #endregion
+#endregion
 
-            #region Eat up 3 slashes after file: to find the start of the path.
+#region Eat up 3 slashes after file: to find the start of the path.
 
-            #endregion
+#endregion
 
             int slashIndex = RedisPubReference.UriScheme.Length;
             for (int i = 3; i > 0; i--)
@@ -80,17 +81,20 @@ namespace LionFire.ObjectBus.RedisPub
             return new RedisPubReference(path);
         }
 
-        #region Persistence
+#region Persistence
 
         //public void Set(IReference reference, object obj) => DefaultOBase.Set(reference, obj);
 
         public override IOBase TryGetOBase(IReference reference)
         {
-            if (IsValid(reference)) return this.DefaultOBase;
-            return null;
+            throw new NotImplementedException();
+            //if (IsValid(reference)) return this.DefaultOBase;
+            //return null;
         }
 
+
         #endregion
+        
     }
 }
 
