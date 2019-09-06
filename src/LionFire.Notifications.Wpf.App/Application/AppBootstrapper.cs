@@ -16,6 +16,8 @@ using LionFire.Trading.Notifications;
 #endif
 using System.Reflection;
 using LionFire.Notifications.UI;
+using LionFire.Hosting;
+
 
 namespace LionFire.Notifications.Wpf.App
 {
@@ -32,6 +34,7 @@ namespace LionFire.Notifications.Wpf.App
         protected override void Configure()
         {
             base.Configure();
+
             app = new AppHost()
                 //.Add(new AppInfo("LionFire", "Notifier.WPF", "Notifications/Apps/Notifier.WPF"))
                 .Add(new AppInfo("LionFire", "Trading Dash", "Trading"))

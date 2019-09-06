@@ -11,6 +11,7 @@ using LionFire.Execution;
 using LionFire.ObjectBus.Filesystem;
 using LionFire.Referencing;
 using LionFire.Structures;
+using LionFire.Vos.Packages;
 using Microsoft.Extensions.Logging;
 
 namespace LionFire.Vos

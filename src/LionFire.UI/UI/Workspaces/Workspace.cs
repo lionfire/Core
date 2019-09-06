@@ -20,7 +20,7 @@ namespace LionFire.UI.Workspaces
 
         public TTemplate Template
         {
-            get { return template; }
+            get => template;
             set
             {
                 if (template == value) return;
@@ -34,7 +34,7 @@ namespace LionFire.UI.Workspaces
 
         protected virtual void OnTemplateChanged(TTemplate oldValue, TTemplate newValue) { }
 
-        public virtual Task Commit(object persistenceContext = null)
+        public virtual Task Commit()
         {
             throw new NotImplementedException();
         }

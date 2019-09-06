@@ -63,9 +63,10 @@ namespace LionFire.Vos
                 var vh = reference.GetReadHandle<T>();
 
                 //vh.IsRetrieveInfoEnabled = true;  TOPORT ?
-                if (await vh.Get().ConfigureAwait(false))
+                var getResult = await vh.Get().ConfigureAwait(false);
+                if (getResult.HasObject)
                 {
-                    result.Object = vh.Object;
+                    result.Object = getResult.Object;
                 }
                 else
                 {

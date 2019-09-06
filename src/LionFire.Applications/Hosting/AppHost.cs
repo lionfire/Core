@@ -15,6 +15,7 @@ using LionFire.Instantiating;
 using LionFire.MultiTyping;
 using LionFire.Referencing;
 using LionFire.Structures;
+using LionFire.Threading;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using TInitializable = LionFire.Execution.IInitializable;
@@ -208,10 +209,10 @@ namespace LionFire.Applications.Hosting
 
                 if (primaryApp)
                 {
-                    if (DependencyContext.Default != null)
-                    {
-                        throw new Exception($"Already has an DependencyContext.Default.  Create AppHost with {nameof(primaryApp)} set to false to create multiple applications, or else set DependencyContext.Default to null first before creating another AppHost.");
-                    }
+                    //if (DependencyContext.Default != null)
+                    //{
+                    //    throw new Exception($"Already has an DependencyContext.Default.  Create AppHost with {nameof(primaryApp)} set to false to create multiple applications, or else set DependencyContext.Default to null first before creating another AppHost.");
+                    //}
                     DependencyContext.Default = DependencyContext;
                 }
                 else

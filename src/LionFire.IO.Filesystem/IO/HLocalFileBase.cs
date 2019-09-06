@@ -57,9 +57,10 @@ namespace LionFire.IO
         #region Construction
 
         public HLocalFileBase() { }
-        public HLocalFileBase(string path)
+        public HLocalFileBase(string path, T initialObject = default)
         {
             this.Path = path;
+            SetObjectFromConstructor(initialObject);
         }
         
         #endregion

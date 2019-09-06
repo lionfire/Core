@@ -13,9 +13,21 @@ namespace LionFire.Persistence
 
         #region Static
 
-        public static readonly RetrieveResult<T> NotFound = new RetrieveResult<T>()
+        public static RetrieveResult<T> Success(T obj) =>  new RetrieveResult<T>()
         {
             Flags = PersistenceResultFlags.Success,
+            Object = obj,
+        };
+
+        public static RetrieveResult<T> Noop(T obj) => new RetrieveResult<T>()
+        {
+            Flags = PersistenceResultFlags.Noop,
+            Object = obj,
+        };
+
+        public static readonly RetrieveResult<T> NotFound = new RetrieveResult<T>()
+        {
+            Flags = PersistenceResultFlags.Success | PersistenceResultFlags.NotFound, // Success but did not find
             Object = default,
         };
 

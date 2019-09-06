@@ -1,4 +1,5 @@
-﻿using LionFire.Referencing;
+﻿using LionFire.Persistence.Handles;
+using LionFire.Referencing;
 
 namespace LionFire.IO
 {

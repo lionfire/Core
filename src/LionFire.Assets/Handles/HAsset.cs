@@ -14,6 +14,7 @@ using System.Threading.Tasks;
 //using LionFire.Assets.SerializationConverters;
 using LionFire.Copying;
 using LionFire.Persistence;
+using LionFire.Persistence.Handles;
 using LionFire.Referencing;
 using LionFire.Serialization;
 using LionFire.Structures;
@@ -26,6 +27,8 @@ namespace LionFire.Assets
 #if HASSETG
 
     /// <summary>
+    /// TODO: Redo assets as an OverlayOBase on top of Vos
+    /// 
     /// A read-only handle based on an asset name (which could have a subpath (UNTESTED)) and a type.
     /// Since it is read-only, the type could be an interface type.
     /// 
@@ -41,7 +44,7 @@ namespace LionFire.Assets
     [LionSerializable(SerializeMethod.ByValue)]
     //[JsonConvert(typeof(HAssetSerializationConverter))] TOPORT
     public class HAsset<AssetType>
-        :
+        : RBase<AssetType>,
         //VobHandle<AssetType>,
         //			HAssetBaseTest<AssetType>,
         //#if !AOT
@@ -431,7 +434,7 @@ namespace LionFire.Assets
             }
         }
 
-        public event Action<RH<AssetType>, AssetType, AssetType> ObjectReferenceChanged
+        public new event Action<RH<AssetType>, AssetType, AssetType> ObjectReferenceChanged // REVIEW FIXME - overrides base event
         {
             add
             {
@@ -444,7 +447,7 @@ namespace LionFire.Assets
             }
         }
 
-        public event Action<RH<AssetType>> ObjectChanged
+        public new event Action<RH<AssetType>> ObjectChanged  // REVIEW FIXME - overrides base event
         {
             add
             {
@@ -693,13 +696,12 @@ namespace LionFire.Assets
         }
         private AssetType _objectField;
 
-#endregion
+        #endregion
 
-                #region CRUD Methods
+        #region CRUD Methods
 
 
-
-        public async Task<bool> TryGetObject()
+        public override async Task<IRetrieveResult<AssetType>> RetrieveImpl()
         {
 #if ASSETCACHE
             if(objectField != null) return true;
@@ -743,12 +745,15 @@ namespace LionFire.Assets
 #endif
 			return obj != null;
 #else
+            throw new NotImplementedException();
+#if TODO
             if (VobHandle == null)
             {
                 return false;
             }
-
+            
             return await VobHandle.TryEnsureRetrieved().ConfigureAwait(false);
+#endif
 #endif
         }
 

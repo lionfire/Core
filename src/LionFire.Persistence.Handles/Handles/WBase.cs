@@ -120,7 +120,18 @@ namespace LionFire.Persistence.Handles
 
         #region Abstract
 
+        /// <summary>
+        /// If !HasObject, do nothing (REVIEW/confirm this)
+        /// </summary>
+        /// <returns></returns>
         protected abstract Task<IPersistenceResult> WriteObject();
+
+        public virtual Task<IPersistenceResult> WriteObject(T @object)
+        {
+            this.Object = @object;
+            return WriteObject();
+        }
+
         protected abstract Task<IPersistenceResult> DeleteObject();
 
         #endregion

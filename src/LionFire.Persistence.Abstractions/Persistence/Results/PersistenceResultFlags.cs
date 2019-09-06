@@ -32,6 +32,10 @@ namespace LionFire.Persistence
         /// When checking for whether an operation is possible, this is set if the operation is expected to fail.
         /// </summary>
         PreviewFail = 1 << 21,
+        
+        //PreviewNotFound = 1 << 22, // Not used yet. Should it be?
+
+        Noop = 1 << 31,
     }
 
 }

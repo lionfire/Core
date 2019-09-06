@@ -15,7 +15,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <DotNetCliToolReference Include="dotnet-codegen" Version="0.4.11" />
+    <DotNetCliToolReference Include="dotnet-codegen" Version="0.6.1" />
   </ItemGroup>
 
   <ItemGroup>

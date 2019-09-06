@@ -9,7 +9,7 @@ namespace LionFire.IO.Filesystem
     {
         public override string Scheme => "file(string)";
 
-        public H<T> GetHandle<T>(IReference reference)
+        public H<T> GetHandle<T>(IReference reference, T initialObject = default)
         {
             if (typeof(T) != typeof(string))
             {
@@ -17,7 +17,7 @@ namespace LionFire.IO.Filesystem
             }
 
             ValidateReference(reference);
-            return (H<T>)new HTextFile(reference.Path);
+            return (H<T>)new HTextFile(reference.Path, (string)(object)initialObject); // HARDCAST
         }
 
         public RH<T> GetReadHandle<T>(IReference reference)

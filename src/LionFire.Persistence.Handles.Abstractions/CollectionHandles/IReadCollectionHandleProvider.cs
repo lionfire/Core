@@ -5,7 +5,7 @@ namespace LionFire.Persistence.Handles
 {
     public interface IReadCollectionHandleProvider
     {
-        //RC<T> GetReadCollectionHandle<T>(IReference reference);
+        RC<T> GetReadCollectionHandle<T>(IReference reference);
     }
 
     public static class IReadCollectionHandleProviderExtensions

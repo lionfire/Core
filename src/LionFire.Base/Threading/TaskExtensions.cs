@@ -1,9 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 
-namespace System.Threading.Tasks
+namespace LionFire.Threading
 {
     public static class TaskExtensions
     {

@@ -1,4 +1,5 @@
-﻿using System.IO;
+﻿using LionFire.Persistence;
+using System.IO;
 using System.Threading.Tasks;
 
 namespace LionFire.IO
@@ -9,46 +10,40 @@ namespace LionFire.IO
         #region Construction
 
         public HTextFile() { }
-        public HTextFile(string path) : base(path)
+        public HTextFile(string path, string initialObject) : base(path, initialObject)
         {
         }
 
         #endregion
 
-        protected override async Task WriteObject(object persistenceContext = null)
+        protected override async Task<IPersistenceResult> WriteObject()
         {
             await Task.Run(() =>
             {
                 File.WriteAllText(Path, Object);
             }).ConfigureAwait(false);
+            return PersistenceResult.Success;
         }
 
-        protected override async Task<bool?> DeleteObject(object persistenceContext = null)
+        protected override async Task<IPersistenceResult> DeleteObject()
         {
             return await Task.Run(() =>
             {
-                if (File.Exists(Path))
-                {
-                    File.Delete(Path);
-                    return (bool?)true;
-                }
-                return (bool?)null;
+                if (!File.Exists(Path)) return PersistenceResult.NotFound;
+
+                File.Delete(Path);
+                return PersistenceResult.Success;
             }).ConfigureAwait(false);
         }
 
-        public override async Task<bool> TryRetrieveObject()
+        public override async Task<IRetrieveResult<string>> RetrieveImpl()
         {
             return await Task.Run(() =>
             {
-                if (!File.Exists(Path))
-                {
-                    return false;
-                }
-                OnRetrievedObject(File.ReadAllText(Path));
-                return true;
+                if (!File.Exists(Path)) return RetrieveResult<string>.NotFound;
+
+                return RetrieveResult<string>.Success(OnRetrievedObject(File.ReadAllText(Path)));
             }).ConfigureAwait(false);
         }
-
-
     }
 }

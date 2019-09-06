@@ -1,4 +1,5 @@
-﻿using System.IO;
+﻿using LionFire.Persistence;
+using System.IO;
 using System.Threading.Tasks;
 
 namespace LionFire.IO
@@ -9,43 +10,42 @@ namespace LionFire.IO
         #region Construction
 
         public HBinaryFile() { }
-        public HBinaryFile(string path) : base(path)
+        public HBinaryFile(string path, byte[] initialData = default) : base(path, initialData)
         {
         }
 
         #endregion
-
-
-        protected override Task WriteObject(object persistenceContext = null)
+                
+        protected override async Task<IPersistenceResult> WriteObject()
         {
-            File.WriteAllBytes(Path, Object);
-            return Task.CompletedTask;
+            await Task.Run(() =>
+            {
+                File.WriteAllBytes(Path, Object);
+            });
+            return PersistenceResult.Success;
         }
 
-        protected override async Task<bool?> DeleteObject(object persistenceContext = null)
+        protected override async Task<IPersistenceResult> DeleteObject()
         {
             return await Task.Run(() =>
             {
-                if (File.Exists(Path))
-                {
-                    File.Delete(Path);
-                    return true;
-                }
-                return false;
+                if (!File.Exists(Path)) return PersistenceResult.NotFound;
+
+                File.Delete(Path);
+                return PersistenceResult.Found;
             }).ConfigureAwait(false);
         }
 
-        public override async Task<bool> TryRetrieveObject()
+        public override async Task<IRetrieveResult<byte[]>> RetrieveImpl()
         {
             return await Task.Run(() =>
             {
                 if (!File.Exists(Path))
                 {
-                    return false;
+                    return RetrieveResult<byte[]>.NotFound;
                 }
 
-                OnRetrievedObject(File.ReadAllBytes(Path));
-                return true;
+                return RetrieveResult<byte[]>.Success(OnRetrievedObject(File.ReadAllBytes(Path)));
             }).ConfigureAwait(false);
         }
     }

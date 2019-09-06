@@ -10,7 +10,7 @@ namespace LionFire.IO.Filesystem
     {
         public override string Scheme => "file(WStream)";
 
-        public H<T> GetHandle<T>(IReference reference)
+        public H<T> GetHandle<T>(IReference reference, T initialObject = default)
         {
             if (typeof(T) != typeof(Stream))
             {
@@ -18,10 +18,10 @@ namespace LionFire.IO.Filesystem
             }
 
             ValidateReference(reference);
-            return (H<T>)new WFileStream(reference.Path);
+            return (H<T>)new WFileStream(reference.Path, (Stream)(object)initialObject); // HARDCAST
         }
 
-        public RH<T> GetReadHandle<T>(IReference reference) => throw new NotSupportedException();
+        public RH<T> GetReadHandle<T>(IReference reference, T initialObject = default) => throw new NotSupportedException();
     }
 
 

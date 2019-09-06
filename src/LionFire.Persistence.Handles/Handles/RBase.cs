@@ -87,7 +87,13 @@ namespace LionFire.Persistence.Handles
         /// <param name="obj">Starting value for Object</param>
         public RBase(IReference reference, TObject obj = default) : this(reference)
         {
-            _object = obj;
+            SetObjectFromConstructor(obj);
+        }
+
+        protected void SetObjectFromConstructor(TObject initialObject)
+        {
+            _object = initialObject;
+            // FUTURE: In the future, we may want to do something special here, like set something along the lines of PersistenceFlags.SetByUser
         }
 
         #endregion
@@ -284,11 +290,12 @@ namespace LionFire.Persistence.Handles
         protected virtual void OnSavedObject() { }
         protected virtual void OnDeletedObject() { }
 
-        protected void OnRetrievedObject(TObject obj)
+        protected TObject OnRetrievedObject(TObject obj)
         {
             Object = obj;
             RaiseRetrievedObject();
             this.State |= PersistenceState.Persisted;
+            return obj;
         }
 
         /// <summary>

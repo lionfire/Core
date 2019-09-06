@@ -44,7 +44,7 @@ namespace LionFire.Messaging.Queues.IO
         }
         ISerializationService serializationService;
 
-        ISerializationStrategy SerializationStrategy => SerializationService.AllStrategies.First();
+        ISerializationStrategy SerializationStrategy => SerializationService.Strategies.First();
 
         #endregion
 

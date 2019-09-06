@@ -5,7 +5,7 @@ using LionFire.Referencing;
 
 namespace LionFire.ObjectBus.Postgres
 {
-    public class PostgresOBus : OBusBase, IDefaultOBaseProvider
+    public class PostgresOBus : OBusBase<PostgresOBus>, IDefaultOBaseProvider
     {
         public override IOBase DefaultOBase => PostgresOBase.DefaultInstance;
 
@@ -14,14 +14,6 @@ namespace LionFire.ObjectBus.Postgres
             get
             {
                 yield return typeof(PostgresReference);
-            }
-        }
-        
-        public override IEnumerable<Type> HandleTypes
-        {
-            get
-            {
-                yield return typeof(OBusHandle<>);
             }
         }
 
@@ -40,8 +32,7 @@ namespace LionFire.ObjectBus.Postgres
         //    return PostgresOBase.Instance;
         //}
 
-
-        public override IReference TryGetReference(string uri, bool strictMode)
+        public override IReference TryGetReference(string uri)
         {
             int colonIndex = uri.IndexOf(':');
             if (colonIndex < 0)

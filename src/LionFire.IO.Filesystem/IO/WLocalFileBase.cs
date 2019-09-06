@@ -1,5 +1,7 @@
 ﻿using System.IO;
 using System.Threading.Tasks;
+using LionFire.Persistence;
+using LionFire.Persistence.Handles;
 using LionFire.Referencing;
 
 namespace LionFire.IO
@@ -35,23 +37,24 @@ namespace LionFire.IO
         #region Construction
 
         public WLocalFileBase() { }
-        public WLocalFileBase(string path)
+        public WLocalFileBase(string path, T initialData = default)
         {
             this.Path = path;
+            SetObjectFromConstructor(initialData);
         }
 
         #endregion
 
-        protected override async Task<bool?> DeleteObject(object persistenceContext = null)
+        protected override async Task<IPersistenceResult> DeleteObject()
         {
             return await Task.Run(() =>
             {
                 if (File.Exists(Path))
                 {
                     File.Delete(Path);
-                    return (bool?)true;
+                    return PersistenceResult.Success;
                 }
-                return null;
+                return PersistenceResult.NotFound;
             }).ConfigureAwait(false);
         }
 

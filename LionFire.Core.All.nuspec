@@ -1,6 +1,6 @@
 <package xmlns="http://schemas.microsoft.com/packaging/2012/06/nuspec.xsd">
   <metadata>
-    <id>LionFire.Core.All</id>
+    <id>LionFire.Framework.All</id>
     <version>1.0.0</version>
     <authors>Jared Thirsk</authors>
     <owners>Jared Thirsk</owners>
@@ -8,12 +8,11 @@
     <licenseUrl>https://github.com/lionfire/Core/blob/master/LICENSE</licenseUrl>
     <projectUrl>http://open.lionfire.software/</projectUrl>
     <!--<iconUrl>https://go.microsoft.com/fwlink/?LinkID=288859</iconUrl>-->
-    <description>LionFire.Core.All</description>
+    <description>LionFire.Framework.All</description>
     <copyright>Copyright © Jared Thirsk</copyright>
     <tags>LionFire</tags>
     <dependencies>
       <group targetFramework=".NETCoreApp2.0">
-		<dependency id="LionFire." version="1.0.0" />
 		<dependency id="LionFire.Execution" version="1.0.0" />
 		<dependency id="LionFire.Execution.Abstractions" version="1.0.0" />
 		<dependency id="LionFire.ObjectBus" version="1.0.0" />
@@ -26,6 +25,7 @@
 		<dependency id="LionFire." version="1.0.0" />
 		<dependency id="LionFire.Base" version="1.0.0" />
         <dependency id="LionFire.Core" version="1.0.0" />
+		<dependency id="LionFire.Environment" version="1.0.0" />
         <dependency id="LionFire.Core.Extras" version="1.0.0" />
         <dependency id="LionFire.Core.Extras.Abstractions" version="1.0.0" />
         <dependency id="LionFire.Structures" version="1.0.0" />

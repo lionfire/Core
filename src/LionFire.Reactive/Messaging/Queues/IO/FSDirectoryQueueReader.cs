@@ -10,6 +10,7 @@ using System.Reactive.Subjects;
 using LionFire.DependencyInjection;
 using LionFire.Serialization;
 using System.Linq;
+using LionFire.Threading;
 
 namespace LionFire.Messaging.Queues.IO
 {
@@ -160,13 +161,13 @@ namespace LionFire.Messaging.Queues.IO
                 {
                     await Task.Run(() =>
                     {
-                        var obj = serializationService.AllStrategies.First().ToObject<object>(File.ReadAllText(path));
+                        var obj = serializationService.Strategies.First().ToObject<object>(File.ReadAllText(path));
                         TryHandle(path, obj);
                     });
                 }
                 else
                 {
-                    var obj = serializationService.AllStrategies.First().ToObject<object>(File.ReadAllText(path));
+                    var obj = serializationService.Strategies.First().ToObject<object>(File.ReadAllText(path));
                     TryHandle(path, obj);
                 }
             }

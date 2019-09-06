@@ -85,7 +85,7 @@ namespace LionFire.ObjectBus
 
         #region Set
 
-        public static async Task<TObject> SetObject<TObject>(this IReference reference, TObject @object) => (await ((OBaseHandle<TObject>)reference.ToHandle<TObject>()).Set(@object));
+        public static async Task<IPersistenceResult> SetObject<TObject>(this IReference reference, TObject @object) => (await ((OBaseHandle<TObject>)reference.ToHandle<TObject>()).WriteObject(@object));
 
         #endregion
 

@@ -11,6 +11,7 @@ using LionFire.Serialization.Contexts;
 namespace LionFire.Serialization
 {
     /// <summary>
+    /// REVIEW - Use FS OBus instead of this?
     /// Uses ISerializationService from DependencyContext.Current to save/load an object to a local file 
     /// </summary>
     /// <typeparam name="T"></typeparam>
@@ -83,8 +84,8 @@ namespace LionFire.Serialization
             //if (SerializationOperation.Path == null) // Don't allow path spoofing
             //{
             // REVIEW MOVE this note - LionFire.ObjectBus.Filesystem is brought in just from this LocalFileReference?  Move it out?
-                PersistenceOperation.Reference = new FileReference(Path);
-                //SerializationOperation.Path = Path;
+            PersistenceOperation.Reference = new FileReference(Path);
+            //SerializationOperation.Path = Path;
             //}
 
             if (PersistenceOperation.Path == null)
@@ -105,41 +106,34 @@ namespace LionFire.Serialization
             return persistenceContext;
         }
 
-        public override async Task<bool> TryRetrieveObject()
+        public override async Task<IRetrieveResult<T>> RetrieveImpl()
         {
             // TODO: Change TryRetrieveObject() to TryRetrieveObject(Func<PersistenceContext>) which contains SerializationOperation?
-            
+
             //SerializationResult Result;
             //UnderlyingHandle.Object
 
             return await Task.Run(() =>
             {
-                if (!File.Exists(Path)) { return false; }
+                if (!File.Exists(Path)) { return RetrieveResult<T>.NotFound; }
 
-                try
-                {
-                    T Object;
+                T obj;
 #if true // Stream
-                    using (var fs = new FileStream(Path, FileMode.Open, FileAccess.Read, FileShare.Read))
-                    {
-                        //Object = SerializationFacility.Default.ToObject<T>(fs, operation: SerializationOperation, context: DefaultSerializationContext);
-                        Object = SerializationFacility.Default.ToObject<T>(fs, new Lazy<PersistenceOperation>(GetPersistenceOperation));
-                    }
+                using (var fs = new FileStream(Path, FileMode.Open, FileAccess.Read, FileShare.Read))
+                {
+                    //Object = SerializationFacility.Default.ToObject<T>(fs, operation: SerializationOperation, context: DefaultSerializationContext);
+                    obj = SerializationFacility.Default.ToObject<T>(fs, new Lazy<PersistenceOperation>(GetPersistenceOperation));
+                }
 #else
                     var bytes = File.ReadAllBytes(Path);
                     Object = Defaults.Get<ISerializationProvider>().ToObject<T>(bytes, operation: SerializationOperation, context: DefaultSerializationContext);
 #endif
 
-                    //if(Result.IsSuccess)
-                    {
-                        this.Object = Object;
-                    }
-                    return true;
-                }
-                catch (SerializationException)
+                //if(Result.IsSuccess)
                 {
-                    return false;
+                    this.Object = obj;
                 }
+                return RetrieveResult<T>.Success(obj);
             });
         }
 
@@ -170,7 +164,7 @@ namespace LionFire.Serialization
                 var writePath = Path;
                 if (op?.Extension != null)
                 {
-                    writePath += "." +op.Extension;
+                    writePath += "." + op.Extension;
                 }
 
                 File.WriteAllBytes(writePath, bytes);

@@ -10,10 +10,10 @@ namespace LionFire.Vos
 {
     public partial class Vob
     {
-        public T AsTypeOrCreate<T>()
+        public async Task<T> AsTypeOrCreate<T>()
             where T : class, new()
         {
-            var first = AsType<T>();
+            var first = await AsType<T>();
             if (first == null)
             {
                 first = new T();
@@ -21,11 +21,12 @@ namespace LionFire.Vos
             return first;
         }
 
-        public T AsType<T>()
+        public async Task<T> AsType<T>()
             where T : class
         {
-            var first = AllLayersOfType<T>().FirstOrDefault();
-            if (first != null && AllLayersOfType<T>().ElementAtOrDefault(1) != null)
+            var layers = await AllLayersOfType<T>().ConfigureAwait(false);
+            var first = layers.FirstOrDefault();
+            if (first != null && layers.ElementAtOrDefault(1) != null)
             {
                 l.Warn("AsType has more than one match: " + this);
             }
@@ -55,10 +56,10 @@ namespace LionFire.Vos
 
                 if (obj is IReadOnlyMultiTyped mt)
                 {
-                    var typedObj = mt.AsType<T>();
-                    if (typedObj != null)
+                    var asType = mt.AsType<T>();
+                    if (asType != null)
                     {
-                        results.Add(typedObj);
+                        results.Add(asType);
                         continue;
                     }
                 }

@@ -7,8 +7,7 @@ namespace LionFire.Persistence.Handles
 {
     public interface ICollectionHandleProvider : IReadCollectionHandleProvider
     {
-        //HC<T> GetCollectionHandle<T>(IReference reference);
-        //C<T> GetCollectionHandle<T>(IReference reference/*, T handleObject = default(T)*/);
+        HC<T> GetCollectionHandle<T>(IReference reference);
 
     }
 

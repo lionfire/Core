@@ -1,4 +1,5 @@
-﻿using System;
+﻿using LionFire.Persistence;
+using System;
 using System.IO;
 using System.Threading.Tasks;
 
@@ -7,17 +8,27 @@ namespace LionFire.IO
     // REVIEW
     public class WFileStream : WLocalFileBase<Stream>, IDisposable
     {
-        public override Task<bool> TryRetrieveObject()
+
+        public override Task<IRetrieveResult<Stream>> RetrieveImpl()
         {
             var stream = new FileStream(Path, FileMode.Open, FileAccess.Read, FileShare.Read);
-            base.OnRetrievedObject(stream);
-            return Task.FromResult(true);
+            return Task.FromResult((IRetrieveResult<Stream>)RetrieveResult<Stream>.Success(OnRetrievedObject(stream)));
         }
+
+        // OLD
+        //public override Task<IRetrieveResult<Stream>> RetrieveImpl()
+        //{
+        //    if (stream != null) return Task.FromResult((IRetrieveResult<Stream>)RetrieveResult<Stream>.Noop(stream));
+
+        //    stream = new FileStream(Path, FileMode.Open, FileAccess.Read, FileShare.Read);
+        //    base.OnRetrievedObject(stream); // REVIEW - only retrieved the stream object.  User still needs to pull data.  Document this better?
+        //    return Task.FromResult((IRetrieveResult<Stream>)RetrieveResult<Stream>.Success(stream));
+        //}
 
         #region Construction
 
         public WFileStream() { }
-        public WFileStream(string path) : base(path)
+        public WFileStream(string path, Stream initialData = default) : base(path,initialData)
         {
         }
 
@@ -28,9 +39,17 @@ namespace LionFire.IO
         /// </summary>
         /// <param name="persistenceContext"></param>
         /// <returns></returns>
-        protected override async Task WriteObject(object persistenceContext = null)
+        protected override async Task<IPersistenceResult> WriteObject()
         {
-            await Object.FlushAsync();
+            if (HasObject)
+            {
+                await Object.FlushAsync();
+                return PersistenceResult.Success;
+            }
+            else
+            {
+                throw new InvalidOperationException("Object is not set.  Cannot write.");
+            }
             //throw new NotSupportedException("TODO: Implement if it make sense, or change this message.  You already have a Stream that you can write to yourself.");
             //    .WriteAllBytes(Path, Object);
             //    return Task.CompletedTask;

@@ -7,6 +7,7 @@ using System.Text;
 using System.Threading.Tasks;
 using LionFire.UI;
 using System.Diagnostics;
+using LionFire.Persistence;
 
 namespace LionFire.Serialization.UI
 {
@@ -16,7 +17,7 @@ namespace LionFire.Serialization.UI
 
         public FsObjectCollectionViewModel()
         {
-            Root = new DirectoryTreeNode(LionFireEnvironment.AppProgramDataDir);
+            Root = new DirectoryTreeNode(LionFireEnvironment.Directories.AppProgramDataDir);
             objects.AutoResolveObjects = true;
             objects.IsObjectsEnabled = true;
             objects.Handles.CollectionChanged += Handles_CollectionChanged;
@@ -95,9 +96,9 @@ namespace LionFire.Serialization.UI
 
         #region SelectedHandle
 
-        public R<object> SelectedHandle
+        public RH<object> SelectedHandle
         {
-            get { return selectedHandle; }
+            get => selectedHandle;
             set
             {
                 if (selectedHandle == value) return;
@@ -106,7 +107,7 @@ namespace LionFire.Serialization.UI
                 NotifyOfPropertyChange(() => SelectedHandle);
             }
         }
-        private R<object> selectedHandle;
+        private RH<object> selectedHandle;
 
         #endregion
 

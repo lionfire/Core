@@ -1,4 +1,5 @@
-﻿using System.IO;
+﻿using LionFire.Persistence;
+using System.IO;
 using System.Threading.Tasks;
 
 namespace LionFire.IO
@@ -14,16 +15,16 @@ namespace LionFire.IO
 
         #endregion
         
-        public override async Task<bool> TryRetrieveObject()
+        public override async Task<IRetrieveResult<string>> RetrieveImpl()
         {
             return await Task.Run(() =>
             {
                 if (!File.Exists(Path))
                 {
-                    return false;
+                    return RetrieveResult<string>.NotFound;
                 }
-                OnRetrievedObject(File.ReadAllText(Path));
-                return true;
+                
+                return RetrieveResult<string>.Success(OnRetrievedObject(File.ReadAllText(Path)));
             }).ConfigureAwait(false);
         }
     }
