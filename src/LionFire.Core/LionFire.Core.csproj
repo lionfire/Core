@@ -29,9 +29,9 @@ This package is typically not added on its own, but is a dependency required by 
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="2.2.0" />
-    <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="2.2.0" />
-<PackageReference Include="System.Collections.Immutable" Version="1.6.0-preview8.19405.3" />
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="3.0.0" />
+    <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="3.0.0" />
+<PackageReference Include="System.Collections.Immutable" Version="1.6.0" />
 <PackageReference Include="System.Reactive" Version="4.2.0-preview.625" />  </ItemGroup>
 
   <ItemGroup>

@@ -284,7 +284,7 @@ namespace LionFire.Bindings
                 }
                 else
                 {
-                    MethodInfo miGet = typeof(SReadOnlyMultiTypedEx).GetMethod("AsType", new Type[] { }).MakeGenericMethod(type);
+                    MethodInfo miGet = typeof(SReadOnlyMultiTyped).GetMethod("AsType", new Type[] { }).MakeGenericMethod(type);
                     GetMethod = (o) => CachedValue = miGet.Invoke(o, null);
 
                     ///////////////////// ---------  --------- ------------------  
@@ -730,7 +730,7 @@ namespace LionFire.Bindings
             }
         }
 
-        private void SMultiTypeObjectChanged(SReadOnlyMultiTypedEx sender, Type type)
+        private void SMultiTypeObjectChanged(SReadOnlyMultiTyped sender, Type type)
         {
             if (MultiTypeType == type)
             {
@@ -1467,7 +1467,7 @@ namespace LionFire.Bindings
                     var notifySMultiTypeChanged = bindingObject as SNotifyMultiTypeChanged;
                     if (notifySMultiTypeChanged != null)
                     {
-                        notifySMultiTypeChanged.RemoveTypeHandler(MultiTypeType, new Action<SReadOnlyMultiTypedEx, Type>(SMultiTypeObjectChanged));
+                        notifySMultiTypeChanged.RemoveTypeHandler(MultiTypeType, new Action<SReadOnlyMultiTyped, Type>(SMultiTypeObjectChanged));
                         isBoundToSMultiTypeMethod = false;
                     }
                     else

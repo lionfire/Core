@@ -7,8 +7,8 @@ namespace LionFire.Assets
 {
 
     //#if !AOT
-    public interface IHasHAsset<ConcreteType> 
-        //: IHasHAsset
+    public interface IHasHAsset<ConcreteType>
+        : IHasHAsset
         where ConcreteType : class
     {
 
@@ -18,8 +18,14 @@ namespace LionFire.Assets
             set;
         } // Add set?#endif
           //		ConcreteType AssetObject { get; } // Might as well expose this?
+#endif
     }
 
-#endif
+    public interface IHasHAsset
+    {
+        IHAsset HAsset { get; set; }
+        object AssetObject { get; }
+
+    }
 
 }

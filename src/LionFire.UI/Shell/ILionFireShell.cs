@@ -40,9 +40,8 @@ namespace LionFire.Shell
 
         #region Presenter
 
-#if TOPORT
         IShellContentPresenter MainPresenter { get; }
-#endif
+
         #endregion
 
         #region Exceptions

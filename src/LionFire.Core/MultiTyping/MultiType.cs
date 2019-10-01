@@ -31,23 +31,13 @@ namespace LionFire.MultiTyping
         protected Dictionary<Type, object> TypeDict { get { return typeDict; } }
         protected Dictionary<Type, object> typeDict;
 
-        public IEnumerable<Type> Types { get { if (TypeDict == null) return Enumerable.Empty<Type>(); else return TypeDict.Keys; } }
+        public IEnumerable<Type> Types => TypeDict == null ? Enumerable.Empty<Type>() : TypeDict.Keys;
 
-        public MultiType MultiTyped
-        {
-            get
-            {
-                return this;
-            }
-        }
+        public IEnumerable<object> SubTypes => TypeDict?.Values ?? Enumerable.Empty<object>();
 
-        public object this[Type type]
-        {
-            get
-            {
-                return this.AsType(type);
-            }
-        }
+        public MultiType MultiTyped => this;
+
+        public object this[Type type] => AsType(type);
 
         public T AsType<T>()
             where T : class
@@ -67,10 +57,10 @@ namespace LionFire.MultiTyping
 
         #region OfType
 
-        public T[] OfType<T>() // TODO: Make IEnumerable once LionRpc supports it.
+        public IEnumerable<T> OfType<T>() // TODO: Make IEnumerable once LionRpc supports it.
          where T : class
         {
-            List<T> matches = new List<T>();
+            var matches = new List<T>();
             if (typeDict != null)
             {
                 foreach (object obj in typeDict.Values)
@@ -81,13 +71,13 @@ namespace LionFire.MultiTyping
                     }
                 }
             }
-            return matches.ToArray();
+            return matches;
         }
 
         [AotReplacement]
-        public object[] OfType(Type T) // TODO: Make IEnumerable once LionRpc supports it.
+        public IEnumerable<object> OfType(Type T) // TODO: Make IEnumerable once LionRpc supports it.
         {
-            List<object> matches = new List<object>();
+            var matches = new List<object>();
             if (typeDict != null)
             {
                 foreach (object obj in typeDict.Values)
@@ -98,7 +88,7 @@ namespace LionFire.MultiTyping
                     }
                 }
             }
-            return matches.ToArray();
+            return matches;
         }
 
         #endregion
@@ -198,7 +188,7 @@ namespace LionFire.MultiTyping
         private Dictionary<Type, Action<IReadOnlyMultiTyped, Type>> handlers = new Dictionary<Type, Action<IReadOnlyMultiTyped, Type>>();
         private object handlersLock = new object();
 
-        private Dictionary<Type, Action<SReadOnlyMultiTypedEx, Type>> sHandlers = new Dictionary<Type, Action<SReadOnlyMultiTypedEx, Type>>();
+        private Dictionary<Type, Action<SReadOnlyMultiTyped, Type>> sHandlers = new Dictionary<Type, Action<SReadOnlyMultiTyped, Type>>();
         private object sHandlersLock = new object();
 
 
@@ -222,7 +212,7 @@ namespace LionFire.MultiTyping
             }
         }
 
-        public void AddTypeHandler(Type type, Action<SReadOnlyMultiTypedEx, Type> callback)
+        public void AddTypeHandler(Type type, Action<SReadOnlyMultiTyped, Type> callback)
         {
             lock (sHandlersLock)
             {
@@ -232,7 +222,7 @@ namespace LionFire.MultiTyping
             }
         }
 
-        public void RemoveTypeHandler(Type type, Action<SReadOnlyMultiTypedEx, Type> callback)
+        public void RemoveTypeHandler(Type type, Action<SReadOnlyMultiTyped, Type> callback)
         //public void RemoveTypeHandler<T>(Type type, MulticastDelegate callback)
         //where T : class
         {

@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections;
-using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using LionFire.Collections;
@@ -58,20 +57,5 @@ namespace LionFire.Instantiating
     where TemplateType : ITemplate
     {
         RH<TemplateType> Template { get; set; }
-    }
-
-    public static class IInstantiationExtensions
-    {
-        // TODO - get from IAssetInstantiationExtensions?  Where did it go? Perhaps not needed?
-        public static IEnumerable<IInstantiation> GetChildrenEnumerable(this IInstantiation instantiation)
-        {
-            if (instantiation == null) yield break;
-            if (!instantiation.HasChildren) yield break;
-
-            foreach (var child in instantiation.Children)
-            {
-                yield return child;
-            }
-        }
     }
 }

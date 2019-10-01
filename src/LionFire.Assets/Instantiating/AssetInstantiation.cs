@@ -1,6 +1,9 @@
-﻿using LionFire.Assets;
+﻿#define AssetInstantiation
+using LionFire.Assets;
 using LionFire.Copying;
+using LionFire.Instantiating;
 using LionFire.Ontology;
+using LionFire.Persistence;
 using LionFire.Referencing;
 //using LionFire.ObjectBus;
 using LionFire.Serialization;

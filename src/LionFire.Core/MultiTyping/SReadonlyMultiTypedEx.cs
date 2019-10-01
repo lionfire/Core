@@ -1,17 +1,16 @@
 ﻿using System;
+using System.Collections.Generic;
 
 namespace LionFire.MultiTyping
 {
-    // REVIEW this
-
-    public interface SReadOnlyMultiTypedEx
+    public interface SReadOnlyMultiTyped
     {
 #if !NoGenericMethods
         T AsType<T>() where T : class;
-        T[] OfType<T>() where T : class;
+        IEnumerable<T> OfType<T>() where T : class;
 #endif
         object AsType(Type T);
-        object[] OfType(Type T);
+        IEnumerable<object> OfType(Type T);
     }
 
 }

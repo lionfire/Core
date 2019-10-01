@@ -6,19 +6,22 @@ using System.Threading.Tasks;
 namespace LionFire.MultiTyping
 {
     
-    public interface IReadOnlyMultiTyped // REVIEW MOVE - should this be in LionFire.Structures?
+    public interface IReadOnlyMultiTyped : SReadOnlyMultiTyped // REVIEW MOVE - should this be in LionFire.Structures?
     {
-        T AsType<T>() where T : class;
+        //T AsType<T>() where T : class;
+
+        object this[Type type] { get; }
+
+        IEnumerable<object> SubTypes { get; } // TODO - change to IEnumerable<object>
 
     }
 
-    // REVIEW these:
+    // REVIEW this -- add these back in and remove Ex interface?
 
-    public interface IReadOnlyMultiTypedEx : SReadOnlyMultiTypedEx
+    public interface IReadOnlyMultiTypedEx : IReadOnlyMultiTyped
     {
         IReadOnlyDictionary<Type, object> Types { get; }
-        object this[Type type] { get; }
-        object[] SubTypes { get; }
+        
     }
     
     //public interface IMultiTyped : SMultiTyped

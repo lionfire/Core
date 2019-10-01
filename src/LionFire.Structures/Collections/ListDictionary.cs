@@ -64,8 +64,7 @@ namespace LionFire.Instantiating
             }
             set
             {
-                this.UnkeyedItems.Clear();
-                this.KeyedItems.Clear();
+                Clear();
                 if (value != null)
                 {
                     foreach (TValue item in value)
@@ -74,6 +73,12 @@ namespace LionFire.Instantiating
                     }
                 }
             }
+        }
+
+        public void Clear()
+        {
+            this.UnkeyedItems.Clear();
+            this.KeyedItems.Clear();
         }
 
         #region List

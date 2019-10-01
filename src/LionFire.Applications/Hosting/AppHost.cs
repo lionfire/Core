@@ -45,7 +45,7 @@ namespace LionFire.Applications.Hosting
         protected readonly MultiType multiType = new MultiType();
 
         // REVIEW - Not sure this is needed or a good idea
-        T IReadOnlyMultiTyped.AsType<T>()
+        T SReadOnlyMultiTyped.AsType<T>()
         {
             switch (typeof(T).Name)
             {
@@ -71,6 +71,10 @@ namespace LionFire.Applications.Hosting
                     return null;
             }
         }
+
+        public IEnumerable<T> OfType<T>() where T : class => multiType.OfType<T>();
+        public object AsType(Type T) => multiType.AsType(T);
+        public IEnumerable<object> OfType(Type T) => multiType.OfType(T);
 
         #endregion
 
@@ -348,6 +352,10 @@ namespace LionFire.Applications.Hosting
 
         public IServiceProvider Services => throw new NotImplementedException();
 
+        public IEnumerable<object> SubTypes => throw new NotImplementedException();
+
+        public object this[Type type] => throw new NotImplementedException();
+
         public class StateMachineWrapper<TState, TTransition>
         {
             static StateMachineWrapper()
@@ -498,7 +506,8 @@ namespace LionFire.Applications.Hosting
         {
             Dispose(true);
         }
-
+        
         #endregion
+        
     }
 }
