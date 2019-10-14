@@ -1,5 +1,4 @@
-﻿using LionFire.ExtensionMethods;
-using LionFire.Types;
+﻿using LionFire.Types;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -8,6 +7,7 @@ using System.Threading.Tasks;
 
 namespace LionFire.MultiTyping
 {
+
 
     public class MultiType : IMultiTyped, IMultiTypable // RENAME to MultiTyped
     {
@@ -37,7 +37,7 @@ namespace LionFire.MultiTyping
 
         public MultiType MultiTyped => this;
 
-        public object this[Type type] => AsType(type);
+        public object this[Type type] { get => AsType(type); set => this.SetType(value, type); }
 
         public T AsType<T>()
             where T : class

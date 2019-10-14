@@ -5,7 +5,7 @@ using LionFire.Structures;
 namespace LionFire.Instantiating
 {
     public interface ITemplateParameters : IKeyed<string>
-        , ITemplateOverlayable
+        //, ITemplateOverlayable // This breaks AssetInstantiation
     {
         //ParameterOverlayMode OverlayMode { get; }
         //object OverlayParent { get; set; }

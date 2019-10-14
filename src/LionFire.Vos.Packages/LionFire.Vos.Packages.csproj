@@ -1,0 +1,18 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netstandard2.0</TargetFramework>
+    <RootNamespace>LionFire</RootNamespace>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\LionFire.Assets.Abstractions\LionFire.Assets.Abstractions.csproj" />
+    <ProjectReference Include="..\LionFire.Core.Extras\LionFire.Core.Extras.csproj" />
+    <ProjectReference Include="..\LionFire.Vos\LionFire.Vos.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Vos\Packages\" />
+  </ItemGroup>
+
+</Project>

@@ -34,7 +34,7 @@ namespace LionFire.Referencing
         // IHasHandle?
         where ObjectType : class//, new()
     {
-        #region Construction
+#region Construction
  
         public HandleBase2(ObjectType obj = null, bool freezeObjectIfProvided
 
@@ -89,9 +89,9 @@ namespace LionFire.Referencing
             if (typeof(ObjectType) == typeof(object)) { l.Trace("HandleBase2<object>: " + this.ToString()); }
         }
 
-        #endregion
+#endregion
 
-        #region Reference
+#region Reference
 
         public abstract IReference Reference
         {
@@ -110,11 +110,11 @@ namespace LionFire.Referencing
             }
         }
 
-        #endregion
+#endregion
 
-        #region Object
+#region Object
 
-        #region IsObjectFrozen
+#region IsObjectFrozen
 
         [Ignore]
         public bool IsObjectReferenceFrozen
@@ -142,7 +142,7 @@ namespace LionFire.Referencing
         }
         private bool isObjectReferenceFrozen;
 
-        #endregion
+#endregion
 
         //protected bool loadObjectOnDemand { get { return SpecialObject.LoadOnDemand.Equals(_object); } }
 
@@ -338,7 +338,7 @@ namespace LionFire.Referencing
             }
         }
 
-        #region ObjectField
+#region ObjectField
 
         public ObjectType ObjectField
         {
@@ -353,7 +353,7 @@ namespace LionFire.Referencing
             set { _object = value; }
         }
 
-        #endregion
+#endregion
 
         private void RegisterForAutoSave(object obj)
         {
@@ -376,9 +376,9 @@ namespace LionFire.Referencing
         }
         private event ObjectChanged objectChanged;
 
-        #region Propety Changed Events
+#region Propety Changed Events
                 
-        #region INotifyPropertyChanged
+#region INotifyPropertyChanged
 
         public event PropertyChangedEventHandler ObjectPropertyChanged
         {
@@ -434,9 +434,9 @@ namespace LionFire.Referencing
             propertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
 
-        #endregion
+#endregion
 
-        #region IsPropertyChangedEventsAttached
+#region IsPropertyChangedEventsAttached
 
         public bool IsPropertyChangedEventsAttached
         {
@@ -497,7 +497,7 @@ namespace LionFire.Referencing
         }
         private bool isPropertyChangedEventsAttached;
 
-        #endregion
+#endregion
 
         private void inc_CollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
         {
@@ -526,7 +526,7 @@ namespace LionFire.Referencing
             }
         }
 
-        #endregion
+#endregion
 
 
         protected IReadOnlyMultiTyped ObjectMT { get { return _object as IReadOnlyMultiTyped; } }
@@ -541,11 +541,11 @@ namespace LionFire.Referencing
         //    OnObjectChanged();
         //}
 
-        #endregion
+#endregion
 
-        #region Persistence
+#region Persistence
 
-        #region Create / Update
+#region Create / Update
 
         private const bool saveCreatedObject = true; // HACK Hackish to save?  Or does "Create" include saving?
         public void RetrieveOrCreate()
@@ -596,9 +596,9 @@ namespace LionFire.Referencing
             return true;
         }
 
-        #endregion
+#endregion
 
-        #region Create
+#region Create
 
         public void OnCreating()
         {
@@ -616,9 +616,9 @@ namespace LionFire.Referencing
             Commit();
         }
 
-        #endregion
+#endregion
 
-        #region Construction (No persistence)
+#region Construction (No persistence)
 
         private ObjectType CreateDefault(bool applyDefaultValues = true)
         {
@@ -669,10 +669,10 @@ namespace LionFire.Referencing
             }
         }
 
-        #endregion
+#endregion
       
 
-        #region Move / Copy
+#region Move / Copy
 
         public void Copy(IReference newReference)
         {
@@ -683,16 +683,16 @@ namespace LionFire.Referencing
             throw new NotImplementedException();
         }
 
-        #endregion
+#endregion
 
-        #region AssignFrom
+#region AssignFrom
 
         void IHandlePersistence.AssignFrom(object other)
         {
             AssignFrom((ObjectType)other);
         }
 
-        #region (Static) ObjectTypeAssignmentMode
+#region (Static) ObjectTypeAssignmentMode
 
         private const AssignmentMode DefaultAssignmentMode = AssignmentMode.DeepCopy;
         internal static AssignmentMode ObjectTypeAssignmentMode // MOVE?
@@ -717,7 +717,7 @@ namespace LionFire.Referencing
 
         private static AssignmentMode assignmentMode = AssignmentMode.Unspecified;
 
-        #endregion
+#endregion
 
         public void AssignFrom(ObjectType other, AssignmentMode assignmentMode = AssignmentMode.Unspecified) // Move to generic extension method?
         {
@@ -745,9 +745,9 @@ namespace LionFire.Referencing
             //#endif
 #endif
         }
-        #endregion
+#endregion
 
-        #region Retrieve
+#region Retrieve
 
         //public bool RetrieveOnDemand { get; set; }
 
@@ -824,11 +824,11 @@ namespace LionFire.Referencing
             return _object != null;
         }
 
-        #endregion
+#endregion
 
-        #region Save
+#region Save
 
-        #region AutoSave
+#region AutoSave
 
         public bool? AutoSave
         {
@@ -892,7 +892,7 @@ namespace LionFire.Referencing
 
 
 
-        #endregion
+#endregion
 
         private readonly bool AllowOverwriteOnSave = true;
 
@@ -904,13 +904,13 @@ namespace LionFire.Referencing
         public abstract Task Commit(object persistenceContext = null);
         
 
-        #endregion
+#endregion
 
         
 
-        #endregion
+#endregion
 
-        #region Change Events
+#region Change Events
 
         protected virtual void OnObjectChanged()
         {
@@ -939,11 +939,11 @@ namespace LionFire.Referencing
             get { return null; }
         }
 
-        #endregion
+#endregion
 
-        #region Persistence Events
+#region Persistence Events
 
-        #region IsPersisted
+#region IsPersisted
 
         public bool IsPersisted
         {
@@ -965,7 +965,7 @@ namespace LionFire.Referencing
 
         //public event Action IsPersistedChanged;
 
-        #endregion
+#endregion
 
         protected void OnDeleted()
         {
@@ -1021,9 +1021,9 @@ namespace LionFire.Referencing
             IsPersisted = true;
         }
 
-        #endregion
+#endregion
 
-        #region IHasHandle
+#region IHasHandle
 
         [Ignore]
         public IHandle Handle
@@ -1032,7 +1032,7 @@ namespace LionFire.Referencing
             set { throw new NotSupportedException("this is a handle.  Cannot set this.Handle"); }
         }
 
-        #endregion
+#endregion
 
         public override string ToString()
         {
@@ -1046,7 +1046,7 @@ namespace LionFire.Referencing
             }
         }
 
-        #region IReadonlyMultiTyped
+#region IReadonlyMultiTyped
 
         public object this[Type type]
         {
@@ -1288,7 +1288,7 @@ namespace LionFire.Referencing
         [AotReplacement]
         public void SetType(object obj, Type type) { throw new NotImplementedException("HandleBase2.SetType"); }
         [AotReplacement]
-        public object[] OfType(Type T)
+        public IEnumerable<object> OfType(Type T)
         {
             if (!TryEnsureRetrieved())
             {
@@ -1326,7 +1326,7 @@ namespace LionFire.Referencing
         }
 
 
-        public object[] SubTypes
+        public IEnumerable<object> SubTypes
         {
             get
             {
@@ -1347,9 +1347,9 @@ namespace LionFire.Referencing
             }
         }
 
-        #endregion
+#endregion
 
-        #region Child Accessors
+#region Child Accessors
 
         IHandle ITreeHandle.this[string subpath]
         {
@@ -1448,9 +1448,9 @@ namespace LionFire.Referencing
 
         public abstract Task<bool> TryResolveObject(object persistenceContext = null);
 
-        #endregion
+#endregion
 
-        #region CommandMap
+#region CommandMap
 
         public object Commands => throw new NotImplementedException("Do this externally?");
         //public CommandMap Commands
@@ -1475,15 +1475,15 @@ namespace LionFire.Referencing
         //{
         //}
 
-        #endregion
+#endregion
 
-        #region Misc
+#region Misc
 
         private static ILogger l = Log.Get();
         private static readonly ILogger lLoad = Log.Get("LionFire.OBus.Load");
         private static readonly ILogger lFailLoad = Log.Get("LionFire.OBus.Fail.Load");
 
-        #endregion
+#endregion
 
     }
 }

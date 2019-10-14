@@ -1,4 +1,5 @@
-﻿using LionFire.Instantiating;
+﻿#if OLD // Use ITemplateOverlayable
+using LionFire.Instantiating;
 using System.Collections.Generic;
 
 namespace LionFire.Assets
@@ -12,4 +13,6 @@ namespace LionFire.Assets
 #endif
 
     }
+    
 }
+#endif

@@ -146,7 +146,7 @@ namespace LionFire.Assets
     ITemplateAsset
         where TemplateType : class, ITemplateAsset
         where InstanceType_ : class, ITemplateAssetInstance//, new() // AOT - added class... if this works, take notice!
-        where InstantiationType_ : IAssetInstantiation, new()
+        where InstantiationType_ : IInstantiation, new()
     {
         #region Construction
 
@@ -193,8 +193,11 @@ namespace LionFire.Assets
             }
             //l.Fatal("hAsset.HasObject " +  hAsset.HasObject + " path: " + hAsset.AssetPath);
 
-            InstantiationType_ instantiation = (InstantiationType_)Activator.CreateInstance(InstantiationType);
-            instantiation.TemplateAsset = hAsset;
+            var instantiation = (InstantiationType_)Activator.CreateInstance(InstantiationType) ;
+            if(instantiation is IAssetInstantiation assetInstantiation)
+            {
+                assetInstantiation.TemplateAsset = hAsset;
+            }
 #if SanityChecks
 			if(instantiation.TemplateAsset == null){throw new UnreachableCodeException("instantiation.Template == null");}
 #endif

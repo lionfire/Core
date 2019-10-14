@@ -26,6 +26,8 @@ namespace LionFire.Assets
 
 #if HASSETG
 
+    // FIXME - DESIGN: Things seem mixed up between read-only and saveable.  HAsset is saveable, not just readonly.
+
     /// <summary>
     /// TODO: Redo assets as an OverlayOBase on top of Vos
     /// 

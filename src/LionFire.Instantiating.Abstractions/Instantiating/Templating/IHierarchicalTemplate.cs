@@ -7,7 +7,9 @@ namespace LionFire.Instantiating
 {
     public interface IHierarchicalTemplate : ITemplate
     {
-        List<IInstantiation> Children { get; set; }
+        IEnumerable<IInstantiation> Children { get; 
+            //set;  // TOPORT if needed 
+        }
     }
 
     public interface IHierarchicalTemplate<T> : ITemplate<T>, IHierarchicalTemplate

@@ -30,7 +30,7 @@ namespace LionFire.Vos
         //    return handle.OfType<ChildType>();
         //}
 
-        //public object[] SubTypes
+        //public IEnumerable<object> SubTypes
         //{
         //    get { return handle.SubTypes; }
         //}

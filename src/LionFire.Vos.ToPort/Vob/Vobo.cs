@@ -10,10 +10,13 @@ using LionFire.Overlays;
 using System.Collections;
 using LionFire.Persistence;
 using LionFire.MultiTyping;
+using Microsoft.Extensions.Logging;
+using LionFire.Copying;
 
 namespace LionFire.Vos
 {
-    public class LayeredMultiTypeVobo<ObjectType> : Vobo<ObjectType>, IExtendableMultiTyped
+    
+    public class LayeredMultiTypeVobo<ObjectType> : Vobo<ObjectType>, IMultiTyped
         , INotifyMultiTypeChanged
         where ObjectType : class, new()
     {
@@ -82,16 +85,16 @@ namespace LionFire.Vos
 
 #if !NoGenericMethods
         public T AsType<T>() where T : class { return overlayStack.AsType<T>(); }
-        public T[] OfType<T>() where T : class { return overlayStack.OfType<T>(); }
+        public IEnumerable<T> OfType<T>() where T : class { return overlayStack.OfType<T>(); }
 #endif
         public object AsType(Type T) { return overlayStack.AsType(T); }
-        public object[] OfType(Type T) { return overlayStack.OfType(T); }
+        public IEnumerable<object> OfType(Type T) { return overlayStack.OfType(T); }
 
-        public object[] SubTypes { get { return overlayStack.SubTypes; } }
+        public IEnumerable<object> SubTypes { get { return overlayStack.SubTypes; } }
 
         public object this[Type type]
         {
-            get { return overlayStack[type]; }
+            get => overlayStack[type];
             set
             {
 #if true // Autocreate DefaultLayer
@@ -140,27 +143,27 @@ namespace LionFire.Vos
         }
 
 #if !NoGenericMethods
-        T IExtendableMultiTyped.AsTypeOrSetDefault<T>(Func<T> defaultValueFunc, Type slotType
+        T IMultiTyped.AsTypeOrSetDefault<T>(Func<T> defaultValueFunc, Type slotType
             //= null
             )
         {
             throw new NotImplementedException();
         }
-        T IExtendableMultiTyped.AsTypeOrSetDefault<T>(Func<IExtendableMultiTyped, T> defaultValueFunc, Type slotType
+        T IMultiTyped.AsTypeOrSetDefault<T>(Func<IMultiTyped, T> defaultValueFunc, Type slotType
             //= null
             )
         {
             throw new NotImplementedException();
         }
 
-        T IExtendableMultiTyped.AsTypeOrCreateDefault<T>(Type slotType
+        T IMultiTyped.AsTypeOrCreateDefault<T>(Type slotType
             //= null
             )
         {
             throw new NotImplementedException();
         }
 #endif
-        object IExtendableMultiTyped.AsTypeOrCreateDefault(Type slotType, Type type) { throw new NotImplementedException(); }
+        object IMultiTyped.AsTypeOrCreateDefault(Type slotType, Type type) { throw new NotImplementedException(); }
         #endregion
 
         #region Overlay Objects
@@ -261,7 +264,7 @@ namespace LionFire.Vos
         //    });
         //}
 
-        public void AddLayer(int modPriority, IMultiTyped layer)
+        public void AddLayer(int modPriority, IReadOnlyMultiTyped layer)
         {
             DoModificationOperation(layer.SubTypes.Select(st => st.GetType()), () =>
             {
@@ -294,9 +297,9 @@ namespace LionFire.Vos
             lock (overlayStackLock)
             {
                 bool removedSomething;
-                IMultiTyped layer =
+                IReadOnlyMultiTyped layer =
 #if AOT
-					(IMultiTyped)
+					(IReadOnlyMultiTyped)
 #endif
  overlayStack.Objects.TryGetValue(key);
 
@@ -327,7 +330,7 @@ namespace LionFire.Vos
         }
 
 #if !AOT
-        public int RemoveLayer(IMultiTyped layer)
+        public int RemoveLayer(IReadOnlyMultiTyped layer)
         {
             lock (overlayStackLock)
             {
@@ -397,11 +400,11 @@ namespace LionFire.Vos
 
         #region Implementation
 
-        private Dictionary<Type, Action<IMultiTyped, Type>> handlers = new Dictionary<Type, Action<IMultiTyped, Type>>();
+        private Dictionary<Type, Action<IReadOnlyMultiTyped, Type>> handlers = new Dictionary<Type, Action<IReadOnlyMultiTyped, Type>>();
         private object handlersLock = new object();
 
 
-        public void AddTypeHandler(Type type, Action<IMultiTyped, Type> callback)
+        public void AddTypeHandler(Type type, Action<IReadOnlyMultiTyped, Type> callback)
         //where T : class
         {
             lock (handlersLock)
@@ -412,7 +415,7 @@ namespace LionFire.Vos
             }
         }
 
-        public void RemoveTypeHandler(Type type, Action<IMultiTyped, Type> callback)
+        public void RemoveTypeHandler(Type type, Action<IReadOnlyMultiTyped, Type> callback)
         //public void RemoveTypeHandler<T>(Type type, MulticastDelegate callback)
         //where T : class
         {
@@ -444,11 +447,11 @@ namespace LionFire.Vos
     }
 
     /// <summary>
-    /// Provided for convenience for ObjectTypes that are to support IExtendableMultiTyped
+    /// Provided for convenience for ObjectTypes that are to support IMultiTyped
     /// </summary>
     /// <typeparam name="ObjectType"></typeparam>
     [Asset(IsAbstract =true)]
-    public class MultiTypeVobo<ObjectType> : Vobo<ObjectType>, IExtendableMultiTyped
+    public class MultiTypeVobo<ObjectType> : Vobo<ObjectType>, IMultiTyped
         where ObjectType : class, new()
     {
         #region MultiType Pass-through
@@ -464,8 +467,8 @@ namespace LionFire.Vos
         public T[] OfType<T>() where T : class { return multiType.OfType<T>(); }
 #endif
         public object AsType(Type T) { return multiType.AsType(T); }
-        public object[] OfType(Type T) { return multiType.OfType(T); }
-        public object[] SubTypes { get { return multiType.SubTypes; } }
+        public IEnumerable<object> OfType(Type T) { return multiType.OfType(T); }
+        public IEnumerable<object> SubTypes { get { return multiType.SubTypes; } }
 
         public object this[Type type] { get { return multiType[type]; } set { multiType[type] = value; } }
         public void SetType(object obj, Type type) { multiType.SetType(obj, type); }
@@ -476,21 +479,21 @@ namespace LionFire.Vos
         }
 
 #if !NoGenericMethods
-        T IExtendableMultiTyped.AsTypeOrSetDefault<T>(Func<T> defaultValueFunc, Type slotType)
+        T IMultiTyped.AsTypeOrSetDefault<T>(Func<T> defaultValueFunc, Type slotType)
         {
             return multiType.AsTypeOrSetDefault<T>(defaultValueFunc, slotType);
         }
-        T IExtendableMultiTyped.AsTypeOrSetDefault<T>(Func<IExtendableMultiTyped, T> defaultValueFunc, Type slotType)
+        T IMultiTyped.AsTypeOrSetDefault<T>(Func<IMultiTyped, T> defaultValueFunc, Type slotType)
         {
             return multiType.AsTypeOrSetDefault<T>(defaultValueFunc, slotType);
         }
 
-        T IExtendableMultiTyped.AsTypeOrCreateDefault<T>(Type slotType)
+        T IMultiTyped.AsTypeOrCreateDefault<T>(Type slotType)
         {
             return multiType.AsTypeOrCreateDefault<T>(slotType);
         }
 #endif
-        object IExtendableMultiTyped.AsTypeOrCreateDefault(Type slotType, Type type) { throw new NotImplementedException(); }
+        object IMultiTyped.AsTypeOrCreateDefault(Type slotType, Type type) { throw new NotImplementedException(); }
 
         #endregion
 
@@ -550,7 +553,10 @@ namespace LionFire.Vos
     }
 
     /// <summary>
-    /// A Vob is a node in a hierarchy with a reference to an object.  A Vobo is both in one.
+    /// A Vobo is an Object that holds its own VobHandle
+    /// 
+    /// (Old wording: A Vob is a node in a hierarchy with a reference to an object.  A Vobo is both in one.)
+    /// 
     /// TODO REVIEW - I don't like how this works now.  How to resolve multiple addresses for the same object?  VosApp address, Package address, layer/physical address.
     /// </summary>
     /// <typeparam name="ObjectType">The type of the concrete object</typeparam>
@@ -634,20 +640,11 @@ namespace LionFire.Vos
 
         #region Derived
 
-        IVobHandle IHasVobHandle.VobHandle
-        {
-            get { return VobHandle; }
-        }
+        IVobHandle IHasVobHandle.VobHandle => VobHandle;
 
         #region Vob
 
-        public Vob Vob
-        {
-            get
-            {
-                return VobHandle==null?null:VobHandle.Vob;
-            }
-        }
+        public Vob Vob => VobHandle?.Vob;
 
         #endregion
 
@@ -676,11 +673,8 @@ namespace LionFire.Vos
                 Rename(value);
             }
         }
-        
-        public void SaveAs(string newName, bool saveNewIfExists = true, bool createIfNeeded = false)
-        {
-            Rename(newName, deleteOld: false, saveNewIfAlreadyHadVobHandle: true, createIfNeeded: true);
-        }
+
+        public void SaveAs(string newName, bool saveNewIfExists = true, bool createIfNeeded = false) => Rename(newName, deleteOld: false, saveNewIfAlreadyHadVobHandle: true, createIfNeeded: true);
         public void Rename(string newName, bool deleteOld = true, bool saveNewIfAlreadyHadVobHandle = true, bool createIfNeeded = false)
         {
             if (VobHandle == null) // Set name for first time

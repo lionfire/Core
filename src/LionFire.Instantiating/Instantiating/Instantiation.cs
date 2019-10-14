@@ -540,10 +540,4 @@ namespace LionFire.Instantiating
 
     }
 
-    public static class InstantiationExtensions
-    {
-        public static Instantiation CreateInstantiation(this ITemplate template) => new Instantiation(template);
-
-    }
-
 }

@@ -271,7 +271,7 @@ namespace LionFire.Vos
             return vob.OfType<T>();
         }
 
-        public object[] SubTypes
+        public IEnumerable<object> SubTypes
         {
             get { return vob.SubTypes; }
         }

@@ -20,6 +20,7 @@ namespace LionFire.Assets
 #if !AOT
             <ConcreteType>
             , IHasHAsset<ConcreteType>
+            , IHasHRAsset
             , IAsset<ConcreteType>
             //, IHasHandle
 #else
@@ -35,7 +36,8 @@ namespace LionFire.Assets
 
         #region Self
 
-        //object IHasHAsset.AssetObject { get { return this.AssetObject; } }
+        ConcreteType IHasHAsset<ConcreteType>.AssetObject => this.AssetObject;
+        object IHasHRAsset.AssetObject => this.AssetObject;
         internal virtual ConcreteType AssetObject
         {
             get
@@ -246,20 +248,18 @@ namespace LionFire.Assets
         }
 #endif
 
-        protected HAsset<ConcreteType> CreateHAsset()
-        {
-            return new AssetIdentifier<ConcreteType>(AssetTypePath).ToHAsset(this.AssetObject);
-        }
+        protected HAsset<ConcreteType> CreateHAsset() => new AssetIdentifier<ConcreteType>(AssetTypePath).ToHAsset(this.AssetObject);
 
 
         public const bool IgnoreAssignUnregisteredHAssetToRegisteredWithPotentialLoss = true; // TODO - turn this off?
 
+        IHRAsset<object> IHasHRAsset.HAsset { get => HAsset; set => HAsset = (HAsset<ConcreteType>)value; } // REVIEW. Can throw Invalid cast  
+        
         /// <summary>
         /// Setting HAsset:
         ///  - If applicable: this.AssetObject.HAsset = value
         ///  - Exception if this.HAsset.Object is not value.Object
         /// </summary>
-
         [Ignore] // REVIEW
         [SerializeDefaultValue(false)]
         public HAsset<ConcreteType> HAsset
@@ -291,39 +291,40 @@ namespace LionFire.Assets
             set
             {
                 if (object.ReferenceEquals(hAsset, value)) { return; }
-
-                // If AssetObject is IHasHAsset, make sure its HAsset matches the value being assigned here.
+                //var concreteValue = (HAsset<ConcreteType>)value; // OLD
+                var concreteValue = value;
+                // If AssetObject is IHasHAsset, make sure its HAsset matches the concreteValue being assigned here.
                 var hha = AssetObject as IHasHAsset<ConcreteType>;
-                if (hha != null && !object.ReferenceEquals(this, hha) && (hha.HAsset != null && !hha.HAsset.Equals(value)))
+                if (hha != null && !object.ReferenceEquals(this, hha) && (hha.HAsset != null && !hha.HAsset.Equals(concreteValue)))
                 {
-                    if (hha.HAsset != value) l.Warn("set_HAsset: hha.HAsset != value.  Attempting overwrite. " + value);
-                    hha.HAsset = value;
+                    if (hha.HAsset != concreteValue) l.Warn("set_HAsset: hha.HAsset != concreteValue.  Attempting overwrite. " + concreteValue);
+                    hha.HAsset = concreteValue;
                 }
 
-                if (value != null && hAsset != null)
+                if (concreteValue != null && hAsset != null)
                 {
-                    if (IgnoreAssignUnregisteredHAssetToRegisteredWithPotentialLoss && value.AssetPath == hAsset.AssetPath)
+                    if (IgnoreAssignUnregisteredHAssetToRegisteredWithPotentialLoss && concreteValue.AssetPath == hAsset.AssetPath)
                     {
-                        l.Warn("Ignoring reassignment to " + value.AssetPath + " with different HAsset instances.");
+                        l.Warn("Ignoring reassignment to " + concreteValue.AssetPath + " with different HAsset instances.");
                         return;
                     }
                     else
                     {
-                        throw new NotSupportedException("HAsset can only be set once unless it is first set back to null.  Current: " + hAsset.ToStringSafe() + ", New: " + value.ToStringSafe());
+                        throw new NotSupportedException("HAsset can only be set once unless it is first set back to null.  Current: " + hAsset.ToStringSafe() + ", New: " + concreteValue.ToStringSafe());
                     }
                 }
 
 #if SanityChecks
-                if (value == null)
+                if (concreteValue == null)
                 {
                     l.Warn("set_HAsset(null) " + this);
                 }
 #endif
 
-                if (hAsset != null && hAsset.HasObject && value != null && value.HasObject)
+                if (hAsset != null && hAsset.HasObject && concreteValue != null && concreteValue.HasObject)
                 {
-                    if (!object.ReferenceEquals(hAsset.Object, value.Object)
-                    //hAsset.Object != value.Object
+                    if (!object.ReferenceEquals(hAsset.Object, concreteValue.Object)
+                    //hAsset.Object != concreteValue.Object
                     )
                     {
                         var msg = this + " - set_HAsset: Ignoring setting of HAsset because their AssetPaths are equal, but both have an Object and they are not the same object reference.";
@@ -332,39 +333,39 @@ namespace LionFire.Assets
                     }
                     else
                     {
-                        l.TraceWarn("hAsset != null && hAsset.Equals(value) but objects match.");
+                        l.TraceWarn("hAsset != null && hAsset.Equals(concreteValue) but objects match.");
                     }
                     return;
                 }
 
-                if (value != null)
+                if (concreteValue != null)
                 {
-                    if (value.HasObject)
+                    if (concreteValue.HasObject)
                     {
-                        if (value.ObjectField != null && value.ObjectField != this)
+                        if (concreteValue.ObjectField != null && concreteValue.ObjectField != this)
                         {
                             // REVIEW FIXME - This happens with TheatreEngine (MultiAssetBase) because ContextualVobHandle.Object gets assigned to this.Objet or something, or one object gets loaded from disk, maybe
-                            var msg = "AssetBase.set_HAsset: value.ObjectField is set to an object other than this. " + this;
+                            var msg = "AssetBase.set_HAsset: concreteValue.ObjectField is set to an object other than this. " + this;
                             l.Warn(msg);
                             //throw new ArgumentException(msg);
                         }
 
-                        if (value.Object != this)
+                        if (concreteValue.Object != this)
                         {
-                            l.Debug("Replacing AssetBase.VobHandle with this.  FUTURE: Either avoid deserialization, or do an AssignFrom into the existing object.  AssetPath: " + value.AssetTypePath);
-                            value.Object = AssetObject;
-                            //throw new ArgumentException("Invalid value: value.Object is set to an object other than this.");
+                            l.Debug("Replacing AssetBase.VobHandle with this.  FUTURE: Either avoid deserialization, or do an AssignFrom into the existing object.  AssetPath: " + concreteValue.AssetTypePath);
+                            concreteValue.Object = AssetObject;
+                            //throw new ArgumentException("Invalid concreteValue: concreteValue.Object is set to an object other than this.");
                         }
                         // else ok
                     }
                     else
                     {
                         //l.Debug("Setting HAsset to HAsset with no Object specified.  Setting object to this. " + Environment.StackTrace);
-                        value.Object = AssetObject;
+                        concreteValue.Object = AssetObject;
                     }
                 }
 
-                hAsset = value;
+                hAsset = concreteValue;
                 OnPropertyChanged("Name");
                 //if (value == null)
                 //{

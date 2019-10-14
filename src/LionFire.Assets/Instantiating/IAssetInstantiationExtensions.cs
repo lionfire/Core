@@ -70,16 +70,17 @@ namespace LionFire.Assets
 
 #endif
 
-        public static IEnumerable<IAssetInstantiation> GetChildrenEnumerable(this IAssetInstantiation instantiation)
-        {
-            if (instantiation == null) yield break;
-            if (!instantiation.HasChildren) yield break;
+        // TOPORT if needed
+        //public static IEnumerable<IAssetInstantiation> GetChildrenEnumerable(this IAssetInstantiation instantiation)
+        //{
+        //    if (instantiation == null) yield break;
+        //    if (!instantiation.HasChildren) yield break;
 
-            foreach (var child in instantiation.AllChildren)
-            {
-                yield return child;
-            }
-        }
+        //    foreach (var child in instantiation.AllChildren())
+        //    {
+        //        yield return child;
+        //    }
+        //}
 
         #region Misc
 

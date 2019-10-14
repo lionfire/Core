@@ -6,21 +6,21 @@ using LionFire.Types;
 using System.Collections;
 using LionFire.MultiTyping;
 
-namespace LionFire.Overlays
+namespace LionFire.MultiTyping.Overlaying
 {
     /// <summary>
     /// A stack of IMultiTyped objects.  Retrievals either override or aggregate depending on the method.
     /// REVIEW: Overlay options, (using OverlayParameters or similar)
     /// </summary>
-    public class MultiTypeOverlay : IReadOnlyMultiTyped
+    public class MultiTypeOverlayStack : IReadOnlyMultiTyped
     {
 
-        public SortedList<int, IMultiTyped> Objects
+        public SortedList<int, IReadOnlyMultiTyped> Objects
         {
             get => objects;
             internal set => objects = value;  // For serialization
         }
-        private SortedList<int, IMultiTyped> objects = new SortedList<int, IMultiTyped>(
+        private SortedList<int, IReadOnlyMultiTyped> objects = new SortedList<int, IReadOnlyMultiTyped>(
 #if AOT
 Singleton<IntComparer>.Instance
 #endif

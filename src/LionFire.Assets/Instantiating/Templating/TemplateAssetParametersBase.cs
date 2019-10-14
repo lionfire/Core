@@ -27,7 +27,7 @@ namespace LionFire.Instantiating
 		}
 	}
 
-	public class TemplateParametersBase<TemplateType> : AssetInstantiation, IParentedTemplateParameters
+	public class TemplateAssetParametersBase<TemplateType> : AssetInstantiation, IParentedTemplateParameters
         , ITemplateParameters<TemplateType>
         where TemplateType : class
         //, IAsset
@@ -36,7 +36,7 @@ namespace LionFire.Instantiating
 
         #region Construction
 
-		public TemplateParametersBase()
+		public TemplateAssetParametersBase()
 		{
 		}
         //public TemplateParametersBase(AssetReference<ITemplate> template)
@@ -45,7 +45,7 @@ namespace LionFire.Instantiating
         //}
 
 #if true //!AOT
-        public TemplateParametersBase(HAsset<TemplateType> template, string parentKey = null)
+        public TemplateAssetParametersBase(HAsset<TemplateType> template, string parentKey = null)
             : base(
 #if AOT
                         (IReadHandle) // For Mono on Mac BACKPORTED
@@ -77,18 +77,11 @@ namespace LionFire.Instantiating
         //{
         //}
 
-		public TemplateParametersBase(ITemplateAsset template)
+		public TemplateAssetParametersBase(ITemplateAsset template)
 		{
-            var hasHA = template as IHasHAsset;
-            if (hasHA != null && hasHA.HAsset != null)
+            if (template is IHasHAsset hasHA && hasHA.HAsset != null)
             {
-                base.TemplateAsset =
-                    (IReadHandle
-                    #if !AOT && !UNITY // Unity crashes with contravariant IReadHandle
-            < ITemplateAsset >
-#endif
-            )
-                    hasHA.HAsset;
+                base.TemplateAsset = (RH<ITemplateAsset>)hasHA.HAsset; //#if !AOT && !UNITY // Unity crashes with contravariant IReadHandle
             }
             else
             {
@@ -99,7 +92,7 @@ namespace LionFire.Instantiating
 #endif
                             (template);
             }
-		}
+        }
 
 #if AOT
         //public TemplateParametersBase(HAsset hAsset)
@@ -202,8 +195,11 @@ namespace LionFire.Instantiating
         //    }
         //}
 
-				#if !AOT  // public new HAsset<TemplateType> Template
-            [Ignore]
+#if !AOT  // public new HAsset<TemplateType> Template
+
+        RH<ITemplate> ITemplateParameters.Template { get => Template; set => Template = (HAsset<TemplateType>)value; }
+
+        [Ignore]
         [SerializeDefaultValue(false)]
         [Assignment(AssignmentMode.Assign)]
         public new HAsset<TemplateType> Template

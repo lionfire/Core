@@ -93,7 +93,8 @@ namespace LionFire.Instantiating
 
     // RENAME to HierarchicalTemplateAssetBase
     // TODO REVIEW - Can this have IInstantiations, or just IAssetInstantiations?  IEnumerable<IAssetInstantiation> and Children support different types.
-    public abstract class HierarchicalTemplateAssetBase<TemplateType, InstanceType, InstantiationType_> : TemplateAssetBase<TemplateType, InstanceType, InstantiationType_>, IHierarchicalTemplate
+    public abstract class HierarchicalTemplateAssetBase<TemplateType, InstanceType, InstantiationType_> : TemplateAssetBase<TemplateType, InstanceType, InstantiationType_>
+        , IHierarchicalTemplate
         , IEnumerable<IAssetInstantiation>
         , IParented
         where TemplateType : class, ITemplateAsset
@@ -130,21 +131,19 @@ namespace LionFire.Instantiating
 
         #region Children
 
-        List<IInstantiation> IHierarchicalTemplate.Children
-        {
-            get => Children.AllItems;
-            set => Children.AllItems = value;
-        }
+        //List<IInstantiation> IHierarchicalTemplate.Children
+        //{
+        //    get => Children.AllItems;
+        //    set => Children.AllItems = value;
+        //}
 
         public bool HasChildren { get { return children != null && children.Count > 0; } }
 
+        IEnumerable<IInstantiation> IHierarchicalTemplate.Children => Children;
         [SerializeDefaultValue(false)]
-        public InstantiationCollection Children
+        public IInstantiationCollection Children
         {
-            get
-            {
-                return children;
-            }
+            get => children;
             set
             {
                 if (children == value) return;
@@ -155,7 +154,7 @@ namespace LionFire.Instantiating
                 }
             }
         }
-        private InstantiationCollection children;
+        private IInstantiationCollection children;
 
         #endregion
 

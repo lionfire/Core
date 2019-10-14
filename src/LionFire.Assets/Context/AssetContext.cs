@@ -12,6 +12,8 @@ using Microsoft.Extensions.Logging;
 
 namespace LionFire.Assets
 {
+    // TODO: REDESIGN this into a Vos add-on, separate from Assets
+
     public class AssetContext : IDisposable
     {
         public const string DefaultAssetsSubpath = "Packages";
@@ -47,6 +49,8 @@ namespace LionFire.Assets
             var packageParentDirectories = new MultiBindableCollection<string>();
 
             string rootLocation = LionFireEnvironment.Directories.AppDir;
+
+            
 
             Global.DefaultPackageDirectory = Path.Combine(Path.GetDirectoryName(rootLocation), DefaultAssetsSubpath);
             Global.DefaultUserPackageDirectory = Path.Combine(LionFireEnvironment.Directories.CompanyLocalAppDataPath + @"\" + Assembly.GetEntryAssembly().GetName(), DefaultAssetsSubpath);

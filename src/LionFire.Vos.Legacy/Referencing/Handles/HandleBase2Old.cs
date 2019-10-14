@@ -1283,7 +1283,7 @@ namespace LionFire.ObjectBus
         [AotReplacement]
         public void SetType(object obj, Type type) { throw new NotImplementedException("HandleBase2.SetType"); }
         [AotReplacement]
-        public object[] OfType(Type T)
+        public IEnumerable<object> OfType(Type T)
         {
             if (!TryEnsureRetrieved()) return null;
 
@@ -1315,7 +1315,7 @@ namespace LionFire.ObjectBus
         }
 
 
-        public object[] SubTypes {
+        public IEnumerable<object> SubTypes {
             get {
                 if (!TryEnsureRetrieved()) return null;
 

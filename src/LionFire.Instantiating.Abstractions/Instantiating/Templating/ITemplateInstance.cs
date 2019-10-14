@@ -6,8 +6,9 @@ using System.Threading.Tasks;
 
 namespace LionFire.Instantiating
 {
-    public interface ITemplateInstance // RENAME: IGenerated
+    public interface ITemplateInstance
     {
+        // Overkill?  If you want to get the template, search for ITemplateInstance<>'s -- there should only be one, or at least one that has a null value in Template.
         //ITemplate Template { get; set; }
     }
 

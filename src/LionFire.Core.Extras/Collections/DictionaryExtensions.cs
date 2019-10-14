@@ -9,7 +9,7 @@ using System.Collections;
 #endif
 using System.Collections.Concurrent;
 
-namespace LionFire
+namespace LionFire // RENAME LionFire.ExtensionMethods
 {
     public static class HashSetExtensions
     {
@@ -169,6 +169,7 @@ namespace LionFire
 #endif
 
 #if !AOT
+        [Obsolete("See LionFire.Base's GetOrAdd")]
         public static ValueType GetOrAddDefault<KeyType, ValueType>(this IDictionary<KeyType, ValueType> dictionary,
             KeyType key, Func<ValueType> defaultValue)
         {

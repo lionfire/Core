@@ -10,6 +10,12 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="Instantiating\NewFolder\**" />
+    <EmbeddedResource Remove="Instantiating\NewFolder\**" />
+    <None Remove="Instantiating\NewFolder\**" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="Newtonsoft.Json" Version="12.0.2" />
     <PackageReference Include="System.Reflection" Version="4.3.0" />
     <PackageReference Include="System.Reflection.Extensions" Version="4.3.0" />
@@ -24,7 +30,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Instantiating\NewFolder\" />
+    <Folder Include="Instantiating\Stateful\" />
     <Folder Include="Structures\" />
   </ItemGroup>
 

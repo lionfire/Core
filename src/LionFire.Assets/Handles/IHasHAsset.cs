@@ -5,26 +5,27 @@ using System.Threading.Tasks;
 
 namespace LionFire.Assets
 {
-
     //#if !AOT
     public interface IHasHAsset<ConcreteType>
-        : IHasHAsset
+        //: IHasHAsset
         where ConcreteType : class
     {
 
 #if !AOT // new HAsset<ConcreteType> HAsset
-        new HAsset<ConcreteType> HAsset {
+        HAsset<ConcreteType> HAsset {
             get;
             set;
         } // Add set?#endif
           //		ConcreteType AssetObject { get; } // Might as well expose this?
 #endif
+
+        ConcreteType AssetObject { get; }
     }
 
-    public interface IHasHAsset
+    public interface IHasHAsset : IHasHAsset<object>
     {
-        IHAsset HAsset { get; set; }
-        object AssetObject { get; }
+        //IHAsset<object> HAsset { get; set; }
+        //object AssetObject { get; }
 
     }
 

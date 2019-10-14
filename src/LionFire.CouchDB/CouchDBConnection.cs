@@ -1,24 +1,13 @@
 ﻿using LionFire.Data;
+using LionFire.Threading;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
-using StackExchange.CouchDB;
+using MyCouch;
 using System.Threading;
 using System.Threading.Tasks;
 
 namespace LionFire.CouchDB
 {
-
-    // FUTURE - state machine?
-    //public enum ConnectionStates
-    //{
-    //    Unspecified,
-    //    Connected,
-    //    Connecting,
-    //    WaitingToReconnect,
-    //    Reconnecting,
-    //    FailedToConnect,
-    //    Disconnected,
-    //}
 
     /// <summary>
     /// Connection string:
@@ -28,13 +17,14 @@ namespace LionFire.CouchDB
     /// </summary>
     public class CouchDBConnection : ConnectionBase
     {
-        public IDatabase Db => redis.GetDatabase();
-        public ConnectionMultiplexer CouchDB => redis;
-        private ConnectionMultiplexer redis;
+        //public IDatabase Db => redis.GetDatabase();
+        //public ConnectionMultiplexer CouchDB => redis;
+        //private ConnectionMultiplexer redis;
 
         public CouchDBConnection(ILogger<CouchDBConnection> logger) : base(logger)
         {
         }
+
         //public CouchDBConnection(string connectionString, ILogger<CouchDBConnection> logger) : base(logger)
         //{
         //    ConnectionString = connectionString;
@@ -56,12 +46,13 @@ namespace LionFire.CouchDB
             }
         }
         private bool isConnectionDesired;
-        private Task<ConnectionMultiplexer> connectingTask;
+        //private Task<ConnectionMultiplexer> connectingTask;
 
         public override async Task Connect(CancellationToken cancellationToken = default(CancellationToken))
         {
+#if TODO
         start:
-            #region Detect already done or in progress REVIEW
+#region Detect already done or in progress REVIEW
 
             if (redis != null)
             {
@@ -82,7 +73,7 @@ namespace LionFire.CouchDB
                 }
             }
 
-            #endregion
+#endregion
 
             isConnectionDesired = true;
             logger.LogDebug($"[CONNECTING] Connecting to redis at {ConnectionString}...");
@@ -90,10 +81,12 @@ namespace LionFire.CouchDB
             redis = connectingTask.Result;
             connectingTask = null;
             logger.LogInformation($"[connected] ...connected to redis at {ConnectionString}");
+#endif
         }
 
         public override async Task Disconnect(CancellationToken cancellationToken = default(CancellationToken))
         {
+#if TODO
             isConnectionDesired = false;
             if (redis != null)
             {
@@ -110,8 +103,7 @@ namespace LionFire.CouchDB
                     redisCopy.Dispose();
                 }
             }
+#endif
         }
-
-
     }
 }

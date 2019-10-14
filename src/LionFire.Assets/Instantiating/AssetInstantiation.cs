@@ -30,15 +30,7 @@ namespace LionFire.Assets
 
 
 #if AssetInstantiation // Don't think this is needed?  OLD
-    public interface IAssetTemplateOverlayable
-    {
-        object OverlayParent { get; set; }
-        ParameterOverlayMode OverlayMode { get; set; }
-#if !AOT
-        IEnumerable<IEnumerable<IInstantiation>> OverlayTargets { get; }
-#endif
 
-    }
     /// <summary>
     /// Represents the intent to instantiate an object from a template, and optionally template parameters and
     /// optionally state as understood by the instance.
@@ -49,27 +41,23 @@ namespace LionFire.Assets
     // , IParentedTemplateParameters TODO
     {
 
-#region Ontology - TODO - both Key and Pid???
+        #region Ontology - TODO - both Key and Pid???
 
-#region Parent
+        #region Parent
 
-#region Parent
+        #region Parent
 
         [Ignore]
         public object Parent { get; set; }
 
-#endregion
+        #endregion
 
         [SerializeDefaultValue(false)]
-        public string ParentKey
-        {
-            get;
-            set;
-        }
+        public string ParentKey { get; set; }
 
-#endregion
+        #endregion
 
-#region Key
+        #region Key
 
         // object IKeyed<string>.Key { get { return Key; } }
 
@@ -86,9 +74,9 @@ namespace LionFire.Assets
         }
         private string key;
 
-#endregion
+        #endregion
 
-#region Pid
+        #region Pid
 
         [DefaultValue(0)]
         [SerializeDefaultValue(false)]
@@ -130,14 +118,14 @@ namespace LionFire.Assets
                 return true;
             }
         }
-#endregion
+        #endregion
 
-#endregion
+        #endregion
 
         /// <summary>
         /// OverlayTargets: by default, the template's IInstantiation tree
         /// </summary>
-        public virtual IEnumerable<IEnumerable<IAssetInstantiation>> OverlayTargets
+        public virtual IEnumerable<IEnumerable<IInstantiation>> OverlayTargets
         {
             get
             {
@@ -163,7 +151,7 @@ namespace LionFire.Assets
             }
         }
 
-#region Construction
+        #region Construction
 
         public AssetInstantiation()
         {
@@ -249,9 +237,9 @@ namespace LionFire.Assets
             this.State = state;
         }
 
-#endregion
+        #endregion
 
-#region Implicit Construction
+        #region Implicit Construction
 
 
 
@@ -271,16 +259,16 @@ namespace LionFire.Assets
         //    return new Instantiation((IReadHandle<ITemplate>)handle);
         //}
 
-#endregion
+        #endregion
 
-#region Prototype
+        #region Prototype
 
         [SerializeDefaultValue(false)]
         public ICloneable Prototype { get; set; }
 
-#endregion
+        #endregion
 
-#region Template
+        #region Template
 
         //public ITemplate TemplateObject
         //{
@@ -318,7 +306,7 @@ namespace LionFire.Assets
         //    set;
         //}
 
-#region Template
+        #region Template
 
         [Ignore]
         public ITemplate Template
@@ -340,11 +328,7 @@ namespace LionFire.Assets
 
 
         [Assignment(AssignmentMode.Assign)]
-        public RH
-//#if !AOT && !UNITY // Unity crashes with contravariant IReadHandle
-            <ITemplateAsset>
-//#endif
- TemplateAsset
+        public RH<ITemplateAsset> TemplateAsset //#if !AOT && !UNITY // Unity used to crash with contravariant IReadHandle.  Does it still?
         {
             get
             {
@@ -352,9 +336,9 @@ namespace LionFire.Assets
                 if (templateAsset != null && templateAsset.GetType() == typeof(string))
                     throw new UnreachableCodeException("get_Template - got string: " + (string)(object)templateAsset);
 #endif
-                if (templateAsset == null && !object.ReferenceEquals(Parameters, this))
+                if (templateAsset == null && !object.ReferenceEquals(Parameters, this) && Parameters is IHasTemplateAsset hta)
                 {
-                    return Parameters.TemplateAsset;
+                    return hta.TemplateAsset;
                 }
                 return templateAsset;
             }
@@ -379,7 +363,7 @@ namespace LionFire.Assets
 #endif
  templateAsset;
 
-#endregion
+        #endregion
 
 
         //public AssetReference<ITemplate> Template
@@ -393,12 +377,12 @@ namespace LionFire.Assets
         //    }
         //} private AssetReference<ITemplate> template;
 
-#endregion
+        #endregion
 
         [SerializeDefaultValue(false)]
         public virtual ITemplateParameters Parameters { get; set; }
 
-#region Overlaying
+        #region Overlaying
 
         //public virtual ParameterOverlayMode OverlayMode { get { if (Parameters == null) return ParameterOverlayMode.None; return Parameters.OverlayMode; } set { throw new NotSupportedException("Cannot set OverlayMode on Instantiation."); } }
 
@@ -419,7 +403,7 @@ namespace LionFire.Assets
         //    }
         //}
 
-#region OverlayMode
+        #region OverlayMode
 
         [DefaultValue(ParameterOverlayMode.None)]
         [SerializeDefaultValue(false)]
@@ -430,9 +414,9 @@ namespace LionFire.Assets
         }
         private ParameterOverlayMode overlayMode = ParameterOverlayMode.None;
 
-#endregion
+        #endregion
 
-#region OverlayParent
+        #region OverlayParent
 
         [Ignore]
         [SerializeDefaultValue(false)]
@@ -443,9 +427,9 @@ namespace LionFire.Assets
         }
         private object _overlayParent;
 
-#endregion
+        #endregion
 
-#endregion
+        #endregion
 
         [Ignore]
         public Func<AssetInstantiation, string> GetDefaultKey = GetDefaultKeyMethodDefault;
@@ -480,7 +464,7 @@ namespace LionFire.Assets
         public Action<object> InitializationMethod { get; set; }
 #endif
 
-#region Children
+        #region Children
 
         public bool HasChildren => children != null && children.Count > 0;
 
@@ -489,9 +473,9 @@ namespace LionFire.Assets
         //[JsonExSerializer.JsonExDefault(defaultList)]
         //[JsonExSerializer.JsonExDefaultValues(typeof(List<Instance>), )]
         [LionSerializable(SerializeMethod.ByValue)]
-        public AssetInstantiationCollection Children
+        public IInstantiationCollection Children
         {
-            get { if (children == null) { Children = new AssetInstantiationCollection(); } return children; }
+            get { if (children == null) { Children = new InstantiationCollection(); } return children; }
             set
             {
                 if (children == value) return;
@@ -499,11 +483,11 @@ namespace LionFire.Assets
                 children.Parent = this;
             }
         }
-        private AssetInstantiationCollection children;
+        private IInstantiationCollection children;
 
-#endregion
+        #endregion
 
-#region IEnumerable
+        #region IEnumerable
 
         public IEnumerator GetEnumerator()
         {
@@ -521,36 +505,26 @@ namespace LionFire.Assets
             }
         }
 
-#endregion
+        #endregion
 
-#region AllChildren
+        #region AllChildren
 
-        public IEnumerable
-#if !AOT
-            <IAssetInstantiation>
-#endif
-                AllChildren
+        public IEnumerable<IInstantiation> AllChildren
         {
             get
             {
                 if (HasChildren)
                 {
-#if AOT
-					foreach (LionFire.IEnumerableExtensions.Recursion child in (this.Children.SelectRecursive(x => ((IAssetInstantiation)x).GetChildrenEnumerable())))
-					{
-						yield return child.Item;
-					}
-#else
+                    //foreach (LionFire.IEnumerableExtensions.Recursion child in (this.Children.SelectRecursive(x => ((IAssetInstantiation)x).GetChildrenEnumerable()))) // OLD AOT
                     foreach (var child in (this.Children.SelectRecursive(x => x.GetChildrenEnumerable()).Select(r => r.Item)))
                     {
                         yield return child;
                     }
-#endif
                 }
             }
         }
 
-#endregion
+        #endregion
 
     }
 #endif

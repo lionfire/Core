@@ -9,7 +9,7 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>LionFire.Serialization</RootNamespace>
     <AssemblyName>LionFire.Serialization.Wpf</AssemblyName>
-    <TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.8</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <TargetFrameworkProfile />
   </PropertyGroup>
@@ -114,7 +114,10 @@
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="Caliburn.Micro">
-      <Version>3.2.0</Version>
+      <Version>4.0.62-alpha</Version>
+    </PackageReference>
+    <PackageReference Include="Caliburn.Micro.Core">
+      <Version>4.0.62-alpha</Version>
     </PackageReference>
     <PackageReference Include="Extended.Wpf.Toolkit">
       <Version>3.4.0</Version>

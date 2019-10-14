@@ -12,7 +12,8 @@ using LionFire.Persistence;
 
 namespace LionFire.Instantiating
 {
-    public class InstantiationCollection : ListDictionary<string, IInstantiation>
+    
+        public class InstantiationCollection : ListDictionary<string, IInstantiation>
         , IInstantiationCollection
     //, INotifyingDictionary<string, IInstantiation>
     //, INestedNotifyingCollection
@@ -46,7 +47,7 @@ namespace LionFire.Instantiating
 
         public string GetDefaultKey(ITemplate template)
         {
-            IDefaultInstanceKeyProvider pro = template as IDefaultInstanceKeyProvider;
+            var pro = template as IDefaultInstanceKeyProvider;
             if (pro != null)
             {
                 return pro.DefaultKey;
@@ -77,30 +78,20 @@ namespace LionFire.Instantiating
         protected override void OnAdded(IInstantiation keyed)
         {
             base.OnAdded(keyed);
-            var parented = keyed as IParented;
-            if (parented != null) parented.Parent = this;
-
+            if (keyed is IParented parented) parented.Parent = this;
             CollectionChanged?.Invoke(NotifyCollectionChangedEventArgs<IInstantiation>.Added(keyed));
         }
 
         protected override void OnRemoved(IInstantiation keyed)
         {
             base.OnRemoved(keyed);
-            var parented = keyed as IParented;
-            if (parented != null) parented.Parent = null;
-
+            if (keyed is IParented parented) parented.Parent = null;
             CollectionChanged?.Invoke(NotifyCollectionChangedEventArgs<IInstantiation>.Removed(keyed));
         }
 
-        public void RaiseRemoved(IInstantiation child, int oldCount)
-        {
-            CollectionChanged?.Invoke(NotifyCollectionChangedEventArgs<IInstantiation>.Removed(child));
-        }
+        public void RaiseRemoved(IInstantiation child, int oldCount) => CollectionChanged?.Invoke(NotifyCollectionChangedEventArgs<IInstantiation>.Removed(child));
 
-        public void RaiseAdded(IInstantiation child, int oldCount)
-        {
-            CollectionChanged?.Invoke(NotifyCollectionChangedEventArgs<IInstantiation>.Added(child));
-        }
+        public void RaiseAdded(IInstantiation child, int oldCount) => CollectionChanged?.Invoke(NotifyCollectionChangedEventArgs<IInstantiation>.Added(child));
 
         public event NotifyCollectionChangedHandler<IInstantiation> CollectionChanged;
 

@@ -775,8 +775,8 @@ namespace LionFire.Bindings
             {
                 var multiTyped = bindingObject as IReadOnlyMultiTyped;
                 var extendableMultiTyped = bindingObject as IMultiTyped;
-                INotifyMultiTypeChanged notifyMultiTypeChanged = bindingObject as INotifyMultiTypeChanged;
-                SNotifyMultiTypeChanged sNotifyMultiTypeChanged = bindingObject as SNotifyMultiTypeChanged;
+                var notifyMultiTypeChanged = bindingObject as INotifyMultiTypeChanged;
+                var sNotifyMultiTypeChanged = bindingObject as SNotifyMultiTypeChanged;
 
                 if (notifyMultiTypeChanged != null)
                 {
