@@ -58,6 +58,7 @@ This package is typically not added on its own, but is a dependency required by 
     <Folder Include="MultiTyping\Overlaying\" />
     <Folder Include="MultiTyping\Validation\" />
     <Folder Include="Persistence\" />
+    <Folder Include="Structures\Resolvable\" />
     <Folder Include="Threading\" />
   </ItemGroup>
 

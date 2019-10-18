@@ -2,7 +2,6 @@
 
 namespace LionFire.Persistence
 {
-    [Serializable]
     public class PersistenceException : Exception
     {
         public PersistenceException() { }

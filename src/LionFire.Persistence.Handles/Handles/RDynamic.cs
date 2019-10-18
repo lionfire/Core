@@ -61,7 +61,7 @@
 //                IsReachable = false;
 //                //if (forgetOnFail)
 //                //{
-//                //    this.ForgetObject();
+//                //    this.DiscardObject();
 //                //}
 //            }
 //            return result;
@@ -101,7 +101,7 @@
 //        //    this.Object = value;
 //        //    if (value == null)
 //        //    {
-//        //        DeletePending = true;
+//        //        OutgoingDeletePending = true;
 //        //    }
 //        //}
 //    }

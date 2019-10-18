@@ -30,10 +30,8 @@ namespace LionFire.Persistence.Handles
 
 namespace LionFire.Persistence
 {
+    public interface IHandleEx<T> : IReadHandleEx<T>, H<T> { }
 
-    public interface H<T> : RH<T>, IWrapper<T>, ICommitable, IDeletable, WH<T>, IHandleBase
-    {
-        new T Object { get; set; }
-    }
+    public interface H<T> : RH<T>, IWrapper<T>, ICommitable, IDeletable, WH<T>, IHandleBase { } // Rename to W?  And write-only: WO
 
 }

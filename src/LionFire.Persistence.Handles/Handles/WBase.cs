@@ -67,16 +67,16 @@ namespace LionFire.Persistence.Handles
         /// </summary>
         public bool DeletePending
         {
-            get => State.HasFlag(PersistenceState.DeletePending);
+            get => State.HasFlag(PersistenceState.OutgoingDeletePending);
             set
             {
                 if (value)
                 {
-                    State |= PersistenceState.DeletePending;
+                    State |= PersistenceState.OutgoingDeletePending;
                 }
                 else
                 {
-                    State &= ~PersistenceState.DeletePending;
+                    State &= ~PersistenceState.OutgoingDeletePending;
                 }
             }
         }

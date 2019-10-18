@@ -11,6 +11,7 @@ using LionFire.ObjectBus.ExtensionlessFs;
 using LionFire.ObjectBus.Filesystem;
 using LionFire.ObjectBus.Filesystem.Tests;
 using LionFire.ObjectBus.Testing;
+using LionFire.Persistence;
 using LionFire.Referencing;
 using Xunit;
 
@@ -81,7 +82,8 @@ namespace Handle
                     var h = reference.ToHandle<TestClass1>();
                     h.Object = TestClass1.Create;
 
-                    await h.Commit().ConfigureAwait(false); // --------- Save
+                    var commitResult = await h.Commit().ConfigureAwait(false); // --------- Save
+                    Assert.True(commitResult.IsSuccess());
                     try
                     {
                         //if (withExtension)

@@ -7,7 +7,8 @@
         {
         }
 
-        public T Object => underlyingResult.Object;
+        public T Value => underlyingResult.Value;
+
 
     }
 }

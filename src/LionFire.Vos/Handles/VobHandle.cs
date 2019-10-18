@@ -68,10 +68,10 @@ namespace LionFire.Vos
 
         public virtual async Task<T> TryGetOrCreate()
         {
-            if (!HasObject)
+            if (!HasValue)
             {
                 await RetrieveImpl().ConfigureAwait(false);
-                if (!HasObject) { Object = ReferenceObjectFactory.ConstructDefault<T>(Reference); }
+                if (!HasValue) { Object = ReferenceObjectFactory.ConstructDefault<T>(Reference); }
             }
             return Object;
         }
@@ -107,16 +107,16 @@ namespace LionFire.Vos
         /// </summary>
         public bool DeletePending
         {
-            get => State.HasFlag(PersistenceState.Persisted);
+            get => State.HasFlag(PersistenceState.OutgoingDeletePending);
             set
             {
                 if (value)
                 {
-                    State |= PersistenceState.DeletePending;
+                    State |= PersistenceState.OutgoingDeletePending;
                 }
                 else
                 {
-                    State &= ~PersistenceState.DeletePending;
+                    State &= ~PersistenceState.OutgoingDeletePending;
                 }
             }
         }
@@ -141,7 +141,7 @@ namespace LionFire.Vos
         public void MarkDeleted()
         {
             this.Object = default(T);
-            //DeletePending = true;
+            //OutgoingDeletePending = true;
         }
 
 #endregion

@@ -8,4 +8,5 @@ namespace LionFire.Referencing
     {
         Type Type { get; }
     }
+
 }

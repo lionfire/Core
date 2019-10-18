@@ -30,7 +30,7 @@ namespace LionFire.Assets
             var registered = new AssetIdentifier<AssetType>(hAsset.AssetTypePath).ToHAsset();
 
 
-            if (registered.HasObject && hAsset.HasObject)
+            if (registered.HasValue && hAsset.HasValue)
             {
                 if (!allowDiscardHAssetObject)
                 {
@@ -44,7 +44,7 @@ namespace LionFire.Assets
                 }
             }
             else {
-                if (!registered.HasObject && hAsset.HasObject)
+                if (!registered.HasValue && hAsset.HasValue)
                 {
                     registered.Object = hAsset.Object;
                 }

@@ -66,7 +66,7 @@ namespace LionFire.Vos
                 var getResult = await vh.Get().ConfigureAwait(false);
                 if (getResult.HasObject)
                 {
-                    result.Object = getResult.Object;
+                    result.Value = getResult.Object;
                 }
                 else
                 {

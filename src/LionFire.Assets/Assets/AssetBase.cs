@@ -147,7 +147,7 @@ namespace LionFire.Assets
         private void EnsureHandleSetToThis(IVobHandle<ConcreteType> vh)
         {
 
-            if (!vh.HasObject)
+            if (!vh.HasValue)
             {
                 vh.Object = AssetObject;
             }
@@ -275,7 +275,7 @@ namespace LionFire.Assets
                         //hAsset = new HAsset<ConcreteType>(this.AssetObject, AssetTypePath);
                     }
                 }
-                else if (!hAsset.HasObject)
+                else if (!hAsset.HasValue)
                 {
                     hAsset.Object = AssetObject;
                 }
@@ -321,7 +321,7 @@ namespace LionFire.Assets
                 }
 #endif
 
-                if (hAsset != null && hAsset.HasObject && concreteValue != null && concreteValue.HasObject)
+                if (hAsset != null && hAsset.HasValue && concreteValue != null && concreteValue.HasValue)
                 {
                     if (!object.ReferenceEquals(hAsset.Object, concreteValue.Object)
                     //hAsset.Object != concreteValue.Object
@@ -340,7 +340,7 @@ namespace LionFire.Assets
 
                 if (concreteValue != null)
                 {
-                    if (concreteValue.HasObject)
+                    if (concreteValue.HasValue)
                     {
                         if (concreteValue.ObjectField != null && concreteValue.ObjectField != this)
                         {

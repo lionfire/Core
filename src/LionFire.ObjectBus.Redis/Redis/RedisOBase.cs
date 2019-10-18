@@ -244,7 +244,7 @@ namespace LionFire.ObjectBus.Redis
                 if (conversionSuccess)
                 {
                     OBaseEvents.OnRetrievedObjectFromExternalSource(converted); // Put reference in here?
-                    result.Object = converted;
+                    result.Value = converted;
                     result.Flags |= PersistenceResultFlags.Success; // True regardless of whether an object was found
                 }
 

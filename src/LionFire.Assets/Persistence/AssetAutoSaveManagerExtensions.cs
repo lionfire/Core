@@ -6,12 +6,13 @@ using System.Threading.Tasks;
 using System.Collections.Concurrent;
 using LionFire.ExtensionMethods;
 using LionFire.Structures;
+using LionFire.Results;
 
 namespace LionFire.Persistence
 {
 
 
-    public static class AssetToSaveable
+    public static class AssetToSaveable // TODO: Move this capability off of Asset to more generic interfaces
     {
         #region Wrappers
 
@@ -30,12 +31,16 @@ namespace LionFire.Persistence
         private static ConcurrentDictionary<IAsset, ICommitable> wrappers = new ConcurrentDictionary<IAsset, ICommitable>();
 
 
-        private class SaveableAssetWrapper : ICommitable, IWrapper
+        private class SaveableAssetWrapper : ICommitable, IReadWrapper<object>
         {
             public IAsset Asset { get; set; }
-            object IWrapper.WrapperTarget => Asset;
+            object IReadWrapper<object>.Object => Asset;
 
-            async Task ICommitable.Commit() => await Asset.SaveAtSubPath(Asset.AssetSubPath);
+            async Task<ICommitResult> ICommitable.Commit()
+            {
+                await Asset.SaveAtSubPath(Asset.AssetSubPath);
+                return (ICommitResult)SuccessResult.Success; // REVIEW - Fix this idea
+            }
         }
 
         #endregion
@@ -48,7 +53,7 @@ namespace LionFire.Persistence
 
         public static void EnableAutoSave(this IAsset asset, bool enable = true)
         {
-            Action<object> saveAction = o => ((ICommitable)o).Commit();
+            Action<object> saveAction = o => ((ICommitable)o).Commit(); // TODO: wrap the Commit with auto-retry logic
             if (enable)
             {
                 asset.ToSaveable().EnableAutoSave(true, saveAction);

@@ -1,5 +1,6 @@
 ﻿using LionFire.Assets;
 using LionFire.Persistence;
+using LionFire.Resources;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -15,7 +16,7 @@ namespace LionFire.Resources
     }
 }
 
-namespace LionFire.ExtensionMethods.Resources.Poco
+namespace LionFire.ExtensionMethods.Poco.Resources
 {
     public static class PocoAssetExtensions
     {
@@ -25,11 +26,11 @@ namespace LionFire.ExtensionMethods.Resources.Poco
         }
     }
 }
-namespace LionFire.ExtensionMethods.Resources
+namespace LionFire.ExtensionMethods
 {
-    public static class AssetExtensions
+    public static class ResourceExtensions
     {
-        public static Task Save(this IAsset asset)
+        public static Task Save(this IResource asset)
         {
             throw new NotImplementedException();
         }

@@ -2,46 +2,84 @@
 
 namespace LionFire
 {
+    //public enum PersistenceStateFlags
+    //{
+    //    None,
+    //    Pending = 1 << 1,
+    //    Watching = 1 << 2,
+    //    Autosave = 1 << 3,
+    //    PendingDelete = 1 << 15
+    //    Faulted = 1 << 31,
+    //}
+
+
+    // MERGE - is this somewhere else?
+    // TODO TOIMPLEMENT
+    // MOVE
+    public enum SyncOptionFlags 
+    {
+
+        ExplicitCreate,
+        NoRecreate,
+
+        DeleteBeatsUpdate,
+        UpdateBeatsDelete,
+    }
+
 
     [Flags]
     [Ignore]
     public enum PersistenceState
     {
         None = 0,
+
         /// <summary>
         /// If true, a retrieve or commit can be attempted
+        /// REVIEW TODO - offload this to CanRead and CanWrite properties?
         /// </summary>
         PrimaryKeyValid = 1 << 0,
 
         #region Create
 
         /// <summary>
-        /// If true (object is not null), a create can be attempted.  
+        /// If true, a Create can be attempted, either because Object is not default, or default values are allowed.
         /// (Some specialized handles may require some properties be set before create is allowoed) 
         /// </summary>
         CanCreate = 1 << 1,
 
-        NotCreatedYet = 1 << 2,
+        /// <summary>
+        /// 
+        /// </summary>
+        OutgoingCreatePending = 1 << 2,
+
+        IncomingCreateAvailable = 1 << 21, // TODO REORDER
 
         #endregion
 
         #region Retrieve & Change notification
 
         /// <summary>
-        /// Object is believed to exist in the source, either because Create was committed, or write/update was done, or a previously persisted item was moved to this location.
-        /// Example usage: do not auto-save if client has not saved it yet.  (But maybe auto-save to a temp location anyway?)
+        /// Object was read, or Object was written, and since then, there are have been no pending changes 
+        /// to the local copy of the Object, and no known changes from the underlying data store.
+        /// (Note that this instance may not be able to detect any changes, or may not be able to detect deep changes to the lcoal copy of the Object, nor may it be able to be notified when the underlying store retrieves an updated Object.)
+        /// 
+        /// If not UpToDate, state must have one of the following flags:
+        ///  - IncomingCreationAvailable (Object was known not to exist, or not yet retrieved, and the underlying data store reported the Object was created at the Primary Key)
+        ///  - IncomingRetrieveAvailable (it's not known whether the Object exists at the Primary Key)
+        ///  - IncomingUpdateAvailable
+        ///  - IncomingDeleteAvailable (it's known the Object existed, but it has been deleted.)
+        ///  - OutgoingChangeAvailable
+        ///  - OutgoingDeletePending
+        ///  
+        /// May also have one of these flags:
+        ///  - NotFound, if Object == default
         /// </summary>
-        Persisted = 1 << 3,
+        UpToDate = 1 << 3,
 
         /// <summary>
-        /// Happens after primary key is set, or source-side change detection is enabled and a modification is detected.
+        /// Happens after primary key is set, but the state of the Object in the store is unknown (no events have been retrieved from the underlying store.)
         /// </summary>
-        RetrieveAvailable = 1 << 4,
-
-        /// <summary>
-        /// Happens after source-side change detection is enabled and a modification is detected.
-        /// </summary>
-        SourceModified = 1 << 5,
+        IncomingRetrieveAvailable = 1 << 4,
 
         NotFound = 1 << 6,
 
@@ -50,11 +88,12 @@ namespace LionFire
         #region Update
 
         /// <summary>
-        /// Updates available from source
+        /// Changes available from underlying store
+        /// (Happens after source-side change detection is enabled and a modification is detected.)
         /// </summary>
-        UpdatesAvailable = 1 << 7,
+        IncomingUpdateAvailable = 1 << 7,
 
-        HasUnsavedChanges = 1 << 8,
+        OutgoingUpdatePending = 1 << 8,
 
         #endregion
 
@@ -63,9 +102,9 @@ namespace LionFire
         /// <summary>
         /// A delete has been staged
         /// </summary>
-        DeletePending = 1 << 9,
+        OutgoingDeletePending = 1 << 9,
 
-        DeletedAtSource = 1 << 10,
+        IncomingDeleteAvailable = 1 << 10,
 
         #endregion
 
@@ -96,7 +135,7 @@ namespace LionFire
 
 
         //ReadableStates = HasUnretrievedUpdates | NotRetrievedYet,
-        //WritableStates = NotCreatedYet | HasUnsavedChanges | MarkedForDeletion | NeedsMergeAnalysis | MergeConflict | AutoMergeable,
+        //WritableStates = OutgoingCreatePending | OutgoingUpdatePending | MarkedForDeletion | NeedsMergeAnalysis | MergeConflict | AutoMergeable,
 
     }
 }

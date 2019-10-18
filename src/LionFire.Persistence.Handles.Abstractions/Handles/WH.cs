@@ -16,12 +16,12 @@ namespace LionFire.Persistence
 
     //    public event Action<bool> IsResolvedChanged;
 
-    //    public void ForgetObject() => throw new NotImplementedException();
+    //    public void DiscardObject() => throw new NotImplementedException();
     //    public Task<bool> TryResolveObject() => throw new NotImplementedException();
     //}
 
 
-    public interface WH<in T> : IWriteWrapper<T>
+    public interface WH<in T> : IWriteWrapper<T>, IWrapper
     {
     }
 

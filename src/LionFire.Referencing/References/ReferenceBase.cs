@@ -53,7 +53,6 @@ namespace LionFire.Referencing
 
         //#endregion
 
-
         #region Misc
 
         #region Object Overrides

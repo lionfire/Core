@@ -7,22 +7,38 @@ namespace LionFire.Referencing
 
     public static class IReadHandleExtensions
     {
-        [Obsolete("Use TryResolveObject")]
-        public static async Task<bool> TryLoad(this IReadHandle<object> rh) 
-        {
-            return await rh.TryResolveObject().ConfigureAwait(false);
-            //return await Task.Factory.StartNew(() =>
-            //{
-            //    return await rh.TryResolveObject();
-            //    var _ = rh.Object;
-            //    return true;
-            //}).ConfigureAwait(false);
-        }
+        //[Obsolete("Use TryResolveObject")]
+        //public static async Task<bool> TryLoad(this IReadHandle<object> rh) 
+        //{
+        //    return await rh.Get().ConfigureAwait(false);
+        //    //return await Task.Factory.StartNew(() =>
+        //    //{
+        //    //    return await rh.TryResolveObject();
+        //    //    var _ = rh.Object;
+        //    //    return true;
+        //    //}).ConfigureAwait(false);
+        //}
 
-
-        public static async Task<bool> TryLoadNonNull(this IReadHandle<object> rh) // RENAME: TryResolveNonNull
+        /// <summary>
+        /// Fallback to provide ILazilyRetrievable<T>.Get to RH<T>
+        /// Also makes Object return value strongly typed for the covariant ILazilyRetrievable.
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="rh"></param>
+        /// <returns></returns>
+        public static async Task<(bool HasObject, T Object)> Get<T>(this RH<T> rh) // RENAME: TryResolveNonNull
         {
-            return (await rh.TryResolveObject().ConfigureAwait(false)) && rh.HasObject;
+            if (rh is ILazilyRetrievable<T> rhex)
+            {
+                var result = await rhex.Get();
+                return (result.HasObject, (T)result.Object); // CAST
+            }
+            else
+            {
+                var obj = rh.Object;
+                return (obj != default, obj);
+            }
+            //return (await rh.TryResolveObject().ConfigureAwait(false)) && rh.HasObject;  OLD
             //return await Task.Factory.StartNew(() =>
             //{
             //    var _ = rh.Object;
@@ -30,10 +46,7 @@ namespace LionFire.Referencing
             //}).ConfigureAwait(false);
         }
 
-        public static bool IsWritable<T>(this IReadHandle<T> readHandle)
-        {
-            return readHandle as ICommitable != null;
-        }
+        public static bool IsWritable<T>(this RH<T> readHandle) => readHandle as ICommitable != null;
     }
 
 }

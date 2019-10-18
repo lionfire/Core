@@ -1,4 +1,5 @@
 ﻿using LionFire.Referencing;
+using LionFire.Resolvables;
 using LionFire.Structures;
 using System;
 using System.Collections.Generic;
@@ -7,28 +8,18 @@ using System.Threading.Tasks;
 
 namespace LionFire.Persistence
 {
-    public delegate void PersistenceStateChangeHandler(PersistenceState from, PersistenceState to);
 
     public interface RH : RH<object>
     {
     }
 
-    public interface RH<out T> : IReadWrapper<T>, IReferencable, IRetrievable, ILazyRetrievable, IHasPersistenceState
+    public interface IReadHandleEvents<out T>
     {
-        //public static bool ForgetObjectOnRetrieveFail = false; // FUTURE?
-
         #region Events
 
         event Action<RH<T>, HandleEvents> HandleEvents;
 
         #endregion
-
-        #region Object
-
-        /// <summary>
-        /// Returns true if retrieval was attempted via get_Object or TryResolveObject, and a non-null object was retrieved.
-        /// </summary>
-        bool HasObject { get; }
 
         #region Events
 
@@ -40,14 +31,31 @@ namespace LionFire.Persistence
         event Action<RH<T> /* handle */> ObjectChanged;
 
         #endregion
+    }
 
-        #region Modify Object
+    public interface IEventedReadHandle<out T> : RH<T>, IReadHandleEvents<T> { }
+    public interface IPersistenceReadHandle<out T> : RH<T>, IHasPersistenceState { }
+    public interface IEventedPersistenceReadHandle<out T> : IEventedReadHandle<T>, IHasPersistenceState { }
 
-        void ForgetObject(); // RENAME DiscardObject
+    public interface ILazyRetrievableReadHandle<out T> : RH<T>, ILazilyRetrievable { }
 
-        #endregion
+    public interface IReadHandleEx<out T> : RH<T>, IReadHandleEvents<T>, IHasPersistenceState, ILazilyRetrievable<T>, INotifyingWrapper<T> { }
 
-        #endregion
+
+    /// <summary>
+    /// Interface for Read Handles.
+    /// Features: 
+    ///  - Resolves IReference to a value of type T
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
+    public interface RH<out T> : IReferencable, IRetrieves<T>
+    {
+        ///// <summary>
+        ///// Returns true if retrieval was attempted via get_Object or TryResolveObject, and a non-null object was retrieved.
+        ///// </summary>
+        //new bool HasObject { get; }
+
+        //public static bool ForgetObjectOnRetrieveFail = false; // FUTURE?
 
         #region Retrieve
 

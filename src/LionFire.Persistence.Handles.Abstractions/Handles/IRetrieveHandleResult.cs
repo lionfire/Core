@@ -5,11 +5,11 @@ using System.Text;
 
 namespace LionFire.Referencing
 {
-    public interface IRetrieveHandleResult<out T> : IReadResult
-    //, IRetrieveResult<out T> // FUTURE: Implement Object => Handle.Object?
-    {
-        //T Object => ReadHandle.Object; // FUTURE: Implement Object => Handle.Object?
+    // UNUSED - what would this be for?
+    //public interface IRetrieveHandleResult<out T> : IRetrieveResult<T>
+    //{
+    //    //T Object => ReadHandle.Object; // FUTURE: Implement Object => Handle.Object?
 
-        RH<T> ReadHandle { get; }
-    }
+    //    RH<T> ReadHandle { get; }
+    //}
 }

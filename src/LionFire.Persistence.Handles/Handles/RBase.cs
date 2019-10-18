@@ -3,7 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using LionFire.Extensions.DefaultValues;
+using LionFire.Ontology;
 using LionFire.Referencing;
+using LionFire.Resolvables;
 using LionFire.Structures;
 using LionFire.Threading;
 
@@ -20,9 +22,11 @@ namespace LionFire.Persistence.Handles
     ///  - ObjectChanged 
     /// </remarks>
     /// <typeparam name="TObject"></typeparam>
-    public abstract class RBase<TObject> : RH<TObject>, IKeyed<string>, IRetrievableImpl<TObject>
+    public abstract class RBase<TObject> : Resolvable<IReference, TObject>, IReadHandleEx<TObject>, IKeyed<string>, IRetrievableImpl<TObject>, IHas<PersistenceResultFlags>
     //where ObjectType : class
     {
+#error NEXT: Rename RBase to RBaseEx
+#error NEXT: I just added base class of Resolvable.  Reconcile/refactor
 
         /// <summary>
         /// Reference only allows types assignable to types in this Enumerable
@@ -85,7 +89,7 @@ namespace LionFire.Persistence.Handles
         /// <param name="reference">Must not be null</param>
         ///// <param name="reference">If null, it should be set before the reference is used.</param>
         /// <param name="obj">Starting value for Object</param>
-        public RBase(IReference reference, TObject obj = default) : this(reference)
+        protected RBase(IReference reference, TObject obj = default) : this(reference)
         {
             SetObjectFromConstructor(obj);
         }
@@ -127,16 +131,16 @@ namespace LionFire.Persistence.Handles
 
         public bool IsPersisted
         {
-            get => State.HasFlag(PersistenceState.Persisted);
+            get => State.HasFlag(PersistenceState.UpToDate);
             set
             {
                 if (value)
                 {
-                    State |= PersistenceState.Persisted;
+                    State |= PersistenceState.UpToDate;
                 }
                 else
                 {
-                    State &= ~PersistenceState.Persisted;
+                    State &= ~PersistenceState.UpToDate;
                 }
             }
         }
@@ -212,7 +216,7 @@ namespace LionFire.Persistence.Handles
             await Get().ConfigureAwait(false);
             lock (objectLock)
             {
-                if (!HasObject)
+                if (!HasValue)
                 {
                     Object = InstantiateDefault();
                 }
@@ -294,7 +298,7 @@ namespace LionFire.Persistence.Handles
         {
             Object = obj;
             RaiseRetrievedObject();
-            this.State |= PersistenceState.Persisted;
+            this.State |= PersistenceState.UpToDate;
             return obj;
         }
 
@@ -310,17 +314,38 @@ namespace LionFire.Persistence.Handles
             // TODO: Events?
         }
 
-        public bool HasObject => !IsDefaultValue(_object);
-
-        public void ForgetObject()
+        public void DiscardObject()
         {
             Object = default;
             IsReachable = false;
-            this.State &= ~PersistenceState.Persisted;
+            PersistenceResultFlags = PersistenceResultFlags.None;
+            this.State &= ~PersistenceState.UpToDate;
         }
 
         #endregion
 
+        /// <summary>
+        /// Default: false for reference types, true for value types
+        /// Extract to wrapper interface?
+        /// If false, set_Object(default) is the same as DiscardObject(), which sets PersistenceFlags to None, and if true, it sets PersistenceFlags to HasUnpersistedObject (unless it was already Retrieved, and Object already is set to default).  TODO - Implement this
+        /// </summary>
+        public virtual bool CanObjectBeDefault => canObjectBeDefault;
+        private static readonly bool canObjectBeDefault = typeof(TObject).IsValueType;
+
+        //public virtual bool HasObject => CanObjectBeDefault ? (!IsDefaultValue(_object) && !this.RetrievedNullOrDefault()) : (!IsDefaultValue(_object));
+        public virtual bool HasValue => State & (PersistenceState.UpToDate | PersistenceState.IncomingUpdateAvailable);
+
+        public PersistenceResultFlags PersistenceResultFlags
+        {
+            get => persistenceResultFlags;
+            protected set
+            {
+                if (persistenceResultFlags == value) return;
+                persistenceResultFlags = value;
+            }
+        }
+        private PersistenceResultFlags persistenceResultFlags;
+        PersistenceResultFlags IHas<PersistenceResultFlags>.Object => PersistenceResultFlags;
 
         #endregion
 
@@ -336,10 +361,16 @@ namespace LionFire.Persistence.Handles
 
         public abstract Task<IRetrieveResult<TObject>> RetrieveImpl();
 
+        
         //async Task<IRetrieveResult<ObjectType>> IRetrievableImpl<ObjectType>.RetrieveObject() => await RetrieveObject().ConfigureAwait(false);
         public async Task<bool> Retrieve()
         {
             var result = await RetrieveImpl().ConfigureAwait(false);
+
+            //var retrievableState = result.ToRetrievableState<TValue>(CanObjectBeDefault);
+            //this.RetrievableState = retrievableState;
+
+            this.PersistenceResultFlags = result.Flags;
 
             if (result.IsSuccess())
             {
@@ -349,8 +380,7 @@ namespace LionFire.Persistence.Handles
             return result.IsSuccess();
         }
 
-
-        async Task<(bool HasObject, T Object)> ILazyRetrievable.Get<T>()
+        async Task<(bool HasObject, T Object)> ILazilyRetrievable.Get<T>()
         {
             var result = await Get();
             return (result.HasObject, (T)(object)result.Object); // HARDCAST
@@ -364,7 +394,7 @@ namespace LionFire.Persistence.Handles
         /// <returns>True if an object was found after a retrieval or was manually set on the handle, false otherwise.</returns>
         public virtual async Task<(bool HasObject, TObject Object)> Get()
         {
-            if (HasObject)
+            if (HasValue)
             {
                 return (true, _object);
             }
@@ -375,7 +405,7 @@ namespace LionFire.Persistence.Handles
                 await Retrieve().ConfigureAwait(false);
             }
 
-            return (HasObject, _object); ;
+            return (HasValue, _object); ;
         }
 
         /// <summary>
@@ -397,7 +427,7 @@ namespace LionFire.Persistence.Handles
             else
             {
                 await Retrieve().ConfigureAwait(false);
-                return HasObject;
+                return HasValue;
             }
         }
 

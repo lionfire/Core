@@ -28,13 +28,7 @@ namespace LionFire
         private static ThreadLocal<UnityRandom> randomFloatWrapper = new ThreadLocal<UnityRandom>(() => new UnityRandom());
 #endif
 
-        public static SystemRandom ThreadRandom
-        {
-            get
-            {
-                return randomWrapper.Value;
-            }
-        }
+        public static SystemRandom ThreadRandom => randomWrapper.Value;
 
         public static FloatRandom ThreadRandomFloat
         {

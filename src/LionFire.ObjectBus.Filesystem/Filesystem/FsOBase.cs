@@ -129,7 +129,7 @@ namespace LionFire.ObjectBus.Filesystem
                     //}
                 }
 
-                result.Object = converted;
+                result.Value = converted;
                 result.Flags |= PersistenceResultFlags.Success;
                 if (converted != null) result.Flags |= PersistenceResultFlags.Found;
                 else result.Flags |= PersistenceResultFlags.NotFound;

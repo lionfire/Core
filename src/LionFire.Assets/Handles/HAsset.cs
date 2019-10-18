@@ -160,7 +160,7 @@ namespace LionFire.Assets
             var oldVobHandle = vobHandle;
             oldVobHandle.OnRenamed(VobHandle);
 
-            if (HasObject)
+            if (HasValue)
             {
                 if (VobHandle.Object != Object)
                 {
@@ -170,7 +170,7 @@ namespace LionFire.Assets
             }
             else
             {
-                if (VobHandle.HasObject)
+                if (VobHandle.HasValue)
                 {
                     Object = VobHandle.Object;
                 }
@@ -526,7 +526,7 @@ namespace LionFire.Assets
 
                 }
 
-                else if (!hasha.HAsset.HasObject)
+                else if (!hasha.HAsset.HasValue)
                 {
 #if AOT
 					l.Warn("operator HAsset<AssetType>(AssetType obj) using obj.HAsset.  Warning: HAsset's Object was not set to obj.  (Can't set  it): " + hasha.HAsset);
@@ -555,7 +555,7 @@ namespace LionFire.Assets
         #region Derived Properties
 
         public bool HasPath => !String.IsNullOrEmpty(AssetTypePath);
-        public bool HasPathOrObject => !String.IsNullOrEmpty(AssetTypePath) || HasObject;
+        public bool HasPathOrObject => !String.IsNullOrEmpty(AssetTypePath) || HasValue;
 
         public string FullPath => AssetPaths.AssetPathFromAssetTypePath(AssetTypePath, typeof(AssetType));
 
@@ -568,7 +568,7 @@ namespace LionFire.Assets
         public VobHandle<AssetType> GetVobHandle(bool ignoreContext = false)
         {
             var vh = AssetPath.AssetPathToHandle<AssetType>(ignoreContext: ignoreContext, concreteType: ConcreteType);
-            if (!vh.HasObject && HasObject)
+            if (!vh.HasValue && HasValue)
             {
                 vh.Object = Object;
             }
@@ -632,7 +632,7 @@ namespace LionFire.Assets
             set => objectField = value;
         }
 
-        public bool HasObject
+        public bool HasValue
         {
             get
             {
@@ -643,7 +643,7 @@ namespace LionFire.Assets
 #if !ASSETCACHE
                 if (vobHandle != null)
                 {
-                    return vobHandle != null && vobHandle.HasObject;
+                    return vobHandle != null && vobHandle.HasValue;
                 }
 #endif
                 return false;
@@ -838,7 +838,7 @@ namespace LionFire.Assets
 
         private void EnsureHandleSetToThis(VobHandle<AssetType> vh)
         {
-            if (!vh.HasObject)
+            if (!vh.HasValue)
             {
                 vh.Object = Object;
             }
@@ -866,7 +866,7 @@ namespace LionFire.Assets
                 return false;
             }
 
-            if (other.HasObject && HasObject)
+            if (other.HasValue && HasValue)
             {
                 if (object.ReferenceEquals(other.Object, Object)) { return true; }
                 else
@@ -920,7 +920,7 @@ namespace LionFire.Assets
         public event PropertyChangedEventHandler PropertyChanged;
 
         private void OnPropertyChanged(string propertyName) => PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
-        public void ForgetObject() => VobHandle.ForgetObject();
+        public void DiscardObject() => VobHandle.DiscardObject();
         //public Task<bool> TryRetrieveObject() => VobHandle.TryRetrieveObject();
         public Task<bool> Exists(bool forceCheck = false) => VobHandle.Exists(forceCheck);
         public Task<bool> Retrieve() => throw new NotImplementedException();

@@ -1,4 +1,5 @@
-﻿using System;
+﻿using LionFire.Persistence;
+using System;
 
 namespace LionFire.Assets
 {
@@ -14,10 +15,6 @@ namespace LionFire.Assets
 #endif
 
         [AotReplacement] // First param is different, not sure it works :-/
-        public static object TryGetObject(this IReadHandle ha, Type type)
-        {
-            if (ha == null) return null;
-            return ha.Object;
-        }
+        public static object TryGetObject(this RH ha, Type type) => ha == null ? null : ha.Object;
     }
 }

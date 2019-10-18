@@ -41,7 +41,7 @@ namespace LionFire.IO
         /// <returns></returns>
         protected override async Task<IPersistenceResult> WriteObject()
         {
-            if (HasObject)
+            if (HasValue)
             {
                 await Object.FlushAsync();
                 return PersistenceResult.Success;
@@ -60,7 +60,7 @@ namespace LionFire.IO
             var obj = base._object;
             if (_object != null)
             {
-                ForgetObject();
+                DiscardObject();
                 _object.Dispose();
             }
         }

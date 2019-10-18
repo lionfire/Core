@@ -1,4 +1,5 @@
-﻿using System;
+﻿using LionFire.Ontology;
+using System;
 
 namespace LionFire.Persistence
 {
@@ -7,21 +8,28 @@ namespace LionFire.Persistence
     [Flags]
     public enum PersistenceResultFlags
     {
-        Unspecified = 0,
+        None = 0,
 
         /// <summary>
         /// True if operation was successful, even if retrieve did not find anything
         /// </summary>
         Success = 1 << 0,
 
-        Fail = 1 << 1,
+        /// <summary>
+        /// Exception
+        /// </summary>
+        Fail = 1 << 1, // RENAME to exception?
 
         Found = 1 << 2,
+        
         NotFound = 1 << 3,
 
         Retrieved = 1 << 4,
-
-        RetrievedNull = 1 << 5,
+        
+        /// <summary>
+        /// Retrieved null (for reference types) or default value (for value types)
+        /// </summary>
+        RetrievedNullOrDefault = 1 << 5,
 
         /// <summary>
         /// When checking for whether an operation is possible, this is set if the operation is expected to succeed.
@@ -33,9 +41,28 @@ namespace LionFire.Persistence
         /// </summary>
         PreviewFail = 1 << 21,
         
-        //PreviewNotFound = 1 << 22, // Not used yet. Should it be?
+        PreviewIndeterminate = 1 << 22,
+
+        //PreviewNotFound = 1 << 23, // Not used yet. Should it be?
+
+        ProviderNotAvailable = 1 << 30,
 
         Noop = 1 << 31,
     }
 
+    public static class PersistenceResultFlagsExtensions
+    {
+        public static bool NotFound(this IHasPersistenceState has) => has.State.HasFlag(PersistenceState.NotFound);
+        public static bool RetrievedNullOrDefault(this IHasPersistenceState has) => has.State.HasFlag(PersistenceState.UpToDate);
+
+        public static bool IsSuccess(this PersistenceResultFlags flags) => flags.HasFlag(PersistenceResultFlags.Success) || flags.HasFlag(PersistenceResultFlags.PreviewSuccess);
+        public static bool? IsSuccessTernary(this PersistenceResultFlags flags)
+        {
+            if (flags.HasFlag(PersistenceResultFlags.Success) || flags.HasFlag(PersistenceResultFlags.PreviewSuccess)) return true;
+            if (flags.HasFlag(PersistenceResultFlags.Fail) || flags.HasFlag(PersistenceResultFlags.PreviewFail)) return true;
+            /// if (flags.HasFlag(PersistenceResultFlags.PreviewIndeterminate)) return null; // Redundant
+            return null;
+        }
+
+    }
 }

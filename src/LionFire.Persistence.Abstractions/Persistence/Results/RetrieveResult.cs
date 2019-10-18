@@ -7,47 +7,48 @@ namespace LionFire.Persistence
     public class RetrieveResult<T> : IRetrieveResult<T>
     {
         public object Error { get; set; }
-        public T Object { get; set; }
+        public T Value { get; set; }
 
         public PersistenceResultFlags Flags { get; set; }
+        public bool? IsSuccess => Flags.IsSuccessTernary();
 
         #region Static
 
         public static RetrieveResult<T> Success(T obj) =>  new RetrieveResult<T>()
         {
             Flags = PersistenceResultFlags.Success,
-            Object = obj,
+            Value = obj,
         };
 
         public static RetrieveResult<T> Noop(T obj) => new RetrieveResult<T>()
         {
             Flags = PersistenceResultFlags.Noop,
-            Object = obj,
+            Value = obj,
         };
 
         public static readonly RetrieveResult<T> NotFound = new RetrieveResult<T>()
         {
             Flags = PersistenceResultFlags.Success | PersistenceResultFlags.NotFound, // Success but did not find
-            Object = default,
+            Value = default,
         };
 
         public static readonly RetrieveResult<T> InvalidReferenceType = new RetrieveResult<T>()
         {
             Flags = PersistenceResultFlags.Fail,
-            Object = default,
+            Value = default,
             Error = "Invalid Reference Type",
         };
 
         public static readonly RetrieveResult<T> Fail = new RetrieveResult<T>()
         {
             Flags = PersistenceResultFlags.Fail,
-            Object = default,
+            Value = default,
         };
 
         public static readonly RetrieveResult<T> RetrievedNull = new RetrieveResult<T>()
         {
-            Flags = PersistenceResultFlags.Success | PersistenceResultFlags.Found | PersistenceResultFlags.RetrievedNull,
-            Object = default,
+            Flags = PersistenceResultFlags.Success | PersistenceResultFlags.Found | PersistenceResultFlags.RetrievedNullOrDefault,
+            Value = default,
         };
 
         #endregion

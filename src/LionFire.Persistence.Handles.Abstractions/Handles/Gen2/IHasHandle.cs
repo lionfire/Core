@@ -7,6 +7,6 @@ namespace LionFire.Persistence.Handles
 {
     public interface IHasHandle
     {
-        H Handle { get;  }
+        IHandleEx Handle { get;  }
     }
 }

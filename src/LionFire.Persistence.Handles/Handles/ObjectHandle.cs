@@ -25,12 +25,12 @@ namespace LionFire.Persistence.Handles
         }
         public override Task<IRetrieveResult<ObjectType>> RetrieveImpl()
         {
-            if (HasObject)
+            if (HasValue)
             {
                 return Task.FromResult((IRetrieveResult<ObjectType>)new RetrieveResult<ObjectType>()
                 {
                     Flags = PersistenceResultFlags.Success,
-                    Object = Object,
+                    Value = Object,
                 });
             }
             else

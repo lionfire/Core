@@ -1,9 +1,10 @@
-﻿namespace LionFire.Persistence
-{
-    public interface IPersistenceResult
-    {
-        object Error { get; }
+﻿using LionFire.Results;
 
+namespace LionFire.Persistence
+{
+
+    public interface IPersistenceResult : IErrorResult
+    {
         PersistenceResultFlags Flags { get; set; }
     }
 

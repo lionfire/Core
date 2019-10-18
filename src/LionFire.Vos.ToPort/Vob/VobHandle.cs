@@ -705,7 +705,7 @@ namespace LionFire.Vos
         //{
         //}
 
-        public override void ForgetObject()
+        public override void DiscardObject()
         {
             base.ForgetObject();
             if (ForgetMountOnForgetObject) { this.Mount = null; }

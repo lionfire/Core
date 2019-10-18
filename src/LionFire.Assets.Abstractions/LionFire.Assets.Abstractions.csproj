@@ -10,14 +10,18 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\LionFire.Instantiating.Abstractions\LionFire.Instantiating.Abstractions.csproj" />
-    <ProjectReference Include="..\LionFire.Persistence.Abstractions\LionFire.Persistence.Abstractions.csproj" />
-    <ProjectReference Include="..\LionFire.Persistence.Handles.Abstractions\LionFire.Persistence.Handles.Abstractions.csproj" />
+    <Compile Remove="Handles\**" />
+    <Compile Remove="Referencing\**" />
+    <EmbeddedResource Remove="Handles\**" />
+    <EmbeddedResource Remove="Referencing\**" />
+    <None Remove="Handles\**" />
+    <None Remove="Referencing\**" />
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Handles\" />
-    <Folder Include="Referencing\" />
+    <ProjectReference Include="..\LionFire.Instantiating.Abstractions\LionFire.Instantiating.Abstractions.csproj" />
+    <ProjectReference Include="..\LionFire.Persistence.Abstractions\LionFire.Persistence.Abstractions.csproj" />
+    <ProjectReference Include="..\LionFire.Persistence.Handles.Abstractions\LionFire.Persistence.Handles.Abstractions.csproj" />
   </ItemGroup>
 
 

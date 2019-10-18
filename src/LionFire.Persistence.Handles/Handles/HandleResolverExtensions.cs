@@ -1,4 +1,5 @@
-﻿using LionFire.Threading;
+﻿using LionFire.Persistence;
+using LionFire.Threading;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -22,9 +23,9 @@ namespace LionFire.Referencing
             var replacements = new List<object>();
             var removals = new List<object>();
 
-            await Task.WhenAll(collection.OfType<IReadHandle<object>>().Select(async rh => await rh.TryLoadNonNull().ConfigureAwait(false))).ConfigureAwait(false);
+            await Task.WhenAll(collection.OfType<RH<object>>().Select(async rh => await rh.Get().ConfigureAwait(false))).ConfigureAwait(false);
 
-            foreach (var component in collection.OfType<IReadHandle<object>>().ToArray())
+            foreach (var component in collection.OfType<RH<object>>().ToArray())
             {
                 if (component.Object == null) throw new ObjectNotFoundException(component);
                 try

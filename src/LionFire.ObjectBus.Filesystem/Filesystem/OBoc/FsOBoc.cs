@@ -48,7 +48,7 @@ namespace LionFire.ObjectBus.Filesystem
             {
                 if (!Directory.Exists(dir))
                 {
-                    if (HasObject)
+                    if (HasValue)
                     {
                         var fsList = (FsList)Object;
                         fsList.OnDirectoryDoesNotExist();
@@ -60,7 +60,7 @@ namespace LionFire.ObjectBus.Filesystem
                     };
                 }
 
-                if (HasObject)
+                if (HasValue)
                 {
                     var fsList = (FsList)Object;
                     await fsList.Refresh();
@@ -75,7 +75,7 @@ namespace LionFire.ObjectBus.Filesystem
 
                 return (IRetrieveResult<INotifyingReadOnlyCollection<FsListEntry>>)new RetrieveResult<INotifyingReadOnlyCollection<FsListEntry>>
                 {
-                    Object = Object,
+                    Value = Object,
                 };
             });
 

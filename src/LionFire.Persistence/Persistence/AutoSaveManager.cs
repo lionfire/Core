@@ -36,7 +36,7 @@ namespace LionFire.Persistence
             if (saveAction == null) saveAction = o => ((ICommitable)o).Commit();
             return AutoSaveManager.Instance.handlers.GetOrAdd(asset, a =>
             {
-                var inpc = a as INotifyPropertyChanged ?? ((a as IWrapper)?.WrapperTarget as INotifyPropertyChanged);
+                var inpc = a as INotifyPropertyChanged ?? ((a as IReadWrapper<object>)?.Object as INotifyPropertyChanged);
                 if (inpc == null) { throw new ArgumentException("asset must implement INotifyPropertyChanged, or wrap an object via IWrapper that does."); }
                 return new ThrottledChangeHandler(inpc, saveAction, TimeSpan.FromMilliseconds(2000));
             }
@@ -78,7 +78,7 @@ namespace LionFire.Persistence
             var inpc = saveable as INotifyPropertyChanged;
             if (inpc == null)
             {
-                inpc = (saveable as IWrapper)?.WrapperTarget as INotifyPropertyChanged;
+                inpc = (saveable as IReadWrapper<object>)?.Object as INotifyPropertyChanged;
             }
             if (inpc != null)
             {

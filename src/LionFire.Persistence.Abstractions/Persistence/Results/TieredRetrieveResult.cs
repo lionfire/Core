@@ -21,7 +21,9 @@ namespace LionFire.Persistence
         public IEnumerable<IPersistenceResult> Successes { get; set; }
         public IEnumerable<IPersistenceResult> Failures { get; set; }
         public object Error { get; set; }
-        public T Object { get; set; }
+        public T Value { get; set; }
+
+        public bool? IsSuccess => Flags.IsSuccessTernary();
 
         public PersistenceResultFlags Flags { get; set; }
     }

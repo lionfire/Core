@@ -137,6 +137,22 @@ namespace LionFire.Assets
     //#endregion
     //    }
 
+    [Asset(IsAbstract = true)]
+    public class TemplateAssetBase<TemplateType, InstanceType_> : TemplateAssetBase<TemplateType, InstanceType_, Instantiation>
+    where TemplateType : class, ITemplateAsset
+    where InstanceType_ : class, ITemplateAssetInstance//, new() // AOT - added class... if this works, take notice!
+    {
+        #region Construction
+
+        public TemplateAssetBase() { }
+        //		public TemplateBase(HAsset hAsset) : base(hAsset) { }
+        //#if !AOT
+        public TemplateAssetBase(HAsset<TemplateType> hAsset) : base(hAsset) { }
+        //#endif
+
+        #endregion
+    }
+
     // TODO: Try removing new() constraint on InstanceType_ and set up a DI mechanism for activating InstanceTypes at runtime.
     [Asset(IsAbstract = true)]
     public class TemplateAssetBase<TemplateType, InstanceType_, InstantiationType_> : AssetBase<TemplateType>,
@@ -186,7 +202,7 @@ namespace LionFire.Assets
             }
             else
             {
-                if (!hAsset.HasObject)
+                if (!hAsset.HasValue)
                 {
                     hAsset.Object = (TemplateType)(object)this;
                 }

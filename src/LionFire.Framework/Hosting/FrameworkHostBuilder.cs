@@ -27,6 +27,13 @@ namespace LionFire.Hosting
                 .AddVosApp();
         }
 
+        public static IHostBuilder CreateDefault(string[] args = null, Action<IServiceCollection> serializers = null)
+        {
+            return Create(args, serializers: serializers)
+                .AddObjectBus<FSOBus>()
+                .AddVosApp();
+        }
+
         /// <summary>
         /// Included:
         ///  - IReferenceToHandleService

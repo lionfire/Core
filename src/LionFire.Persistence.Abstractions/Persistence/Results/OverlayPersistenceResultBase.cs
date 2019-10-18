@@ -34,5 +34,6 @@ namespace LionFire.Persistence
         public object Error => underlyingResult.Error;
 
         public PersistenceResultFlags Flags { get => underlyingResult.Flags; set => throw new NotImplementedException(); }
+        public bool? IsSuccess => Flags.IsSuccessTernary();
     }
 }

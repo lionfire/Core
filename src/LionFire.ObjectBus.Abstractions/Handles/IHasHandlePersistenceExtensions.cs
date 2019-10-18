@@ -1,5 +1,6 @@
 ﻿// REVIEW - probably move out of ObjectBus TOREFACTOR
 //using LionFire.Assets;
+using LionFire.Persistence;
 using LionFire.Persistence.Handles;
 using LionFire.Referencing;
 using Microsoft.Extensions.Logging;
@@ -23,19 +24,19 @@ namespace LionFire.ObjectBus
 
         // UNUSED?  Use IHasHAsset instead?
         
-        public static void Save(this IHasHandle hasHandle) 
+        public static Task<ICommitResult> Commit(this IHasHandle hasHandle) 
         {
-            if (hasHandle.Handle.HasObject && !object.ReferenceEquals(hasHandle.Handle.Object, hasHandle))
+            if (hasHandle.Handle.HasValue && !object.ReferenceEquals(hasHandle.Handle.Object, hasHandle))
             {
                 l.Warn("Saving: !object.ReferenceEquals(hasHandle.Handle.Object, hasHandle)");
                 //hasHandle.Handle.Object = hasHandle;  --- this doesn't make sense for Ihashandle objects that do not save themselves!
             }
-            hasHandle.Handle.Commit();
+            return hasHandle.Handle.Commit();
         }
 
 		#if !AOT
 
-        public static void Save<T>(this IHasHandle<T> hasHandle)
+        public static Task<ICommitResult> Save<T>(this IHasHandle<T> hasHandle)
             where T : class
             //, new()
         {
@@ -48,7 +49,7 @@ namespace LionFire.ObjectBus
             }
 #endif
             
-            if (hasHandle.Handle.HasObject && !object.ReferenceEquals(hasHandle.Handle.Object, hasHandle))
+            if (hasHandle.Handle.HasValue && !object.ReferenceEquals(hasHandle.Handle.Object, hasHandle))
             {
                 l.Warn("Saving: !object.ReferenceEquals(hasHandle.Handle.Object, hasHandle).  hasHandle.Handle.Object type: " + hasHandle.Handle.Object?.GetType().Name + ", hasHandle type: " + hasHandle?.GetType().Name 
                     //+ ".  Using hasHandle."
@@ -56,7 +57,7 @@ namespace LionFire.ObjectBus
                 //hasHandle.Handle.Object = (T)hasHandle; --- this doesn't make sense for Ihashandle objects that do not save themselves!
             }
 
-            hasHandle.Handle.Commit();
+            return hasHandle.Handle.Commit();
         }
 #endif
         #endregion

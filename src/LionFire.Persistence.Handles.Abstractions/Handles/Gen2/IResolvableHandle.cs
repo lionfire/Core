@@ -1,4 +1,5 @@
-﻿using LionFire.Referencing;
+﻿using LionFire.Persistence;
+using LionFire.Referencing;
 using System;
 using System.Threading.Tasks;
 
@@ -73,29 +74,30 @@ namespace LionFire
     }
     
 
-    public delegate void ReadHandleEvent<T>(IReadHandle<T> handle, HandleEventKind kind, HandleEventLocation location);
+    public delegate void ReadHandleEvent<T>(IReadHandleEx<T> handle, HandleEventKind kind, HandleEventLocation location);
 
 
-    /// <summary>
-    /// Used as the base for the IReadHandle interfaces.
-    /// </summary>
-    public interface IResolvableHandle
-    {
-        /// <summary>
-        /// True if successfully retrieved the Object or lack thereof.  HasObject may be false if the retrieval mechanism succeeded and found no object at the source location.
-        /// </summary>
-        bool IsResolved { get; }
-        event Action<bool> IsResolvedChanged;
+    ///// <summary>
+    ///// Used as the base for the IReadHandle interfaces.
+    ///// </summary>
+    //[Obsolete("Use IResolvable / IStatefulResolvable?")]
+    //public interface IResolvableHandle
+    //{
+    //    /// <summary>
+    //    /// True if successfully retrieved the Object or lack thereof.  HasObject may be false if the retrieval mechanism succeeded and found no object at the source location.
+    //    /// </summary>
+    //    bool IsResolved { get; }
+    //    event Action<bool> IsResolvedChanged;
 
-        /// <summary>
-        /// Returns true if retrieval was attempted via get_Object or TryResolveObject, and a non-null object was retrieved.
-        /// </summary>
-        bool HasObject { get; }
+    //    /// <summary>
+    //    /// Returns true if retrieval was attempted via get_Object or TryResolveObject, and a non-null object was retrieved.
+    //    /// </summary>
+    //    bool HasObject { get; }
 
-        // REVIEW: Is persistenceContext helpful?
-        Task<bool> TryResolveObject();
-        //Task<bool> TryResolveObject(bool forgetOnFail = false);
-        //Task<bool> TryResolveObject(object persistenceContext = null, bool forgetOnFail = false);
-        void ForgetObject();
-    }
+    //    // REVIEW: Is persistenceContext helpful?
+    //    //Task<bool> TryResolveObject();
+    //    //Task<bool> TryResolveObject(bool forgetOnFail = false);
+    //    //Task<bool> TryResolveObject(object persistenceContext = null, bool forgetOnFail = false);
+    //    void ForgetObject();
+    //}
 }

@@ -70,7 +70,7 @@ namespace LionFire.Persistence.Handles
             }
             if (AutoResolveObjects)
             {
-                await handle.Retrieve().ConfigureAwait(false);
+                await handle.ResolveAsync().ConfigureAwait(false);
             }
         }
         private void OnHandleRemoved(TKey key, THandle handle)
