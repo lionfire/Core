@@ -22,7 +22,7 @@ namespace LionFire.Persistence.Assets
 
     // Reads via Injection.GetService<IAssetProvider>
     // OPTIMIZE: Change the base class to an H base class that stores a string (key) instead of a IReference
-    public class AssetReadHandle<T> : RBase<T>
+    public class AssetReadHandle<T> : RBaseEx<T>
         where T : class
     {
 

@@ -131,7 +131,7 @@ namespace LionFire.Serialization
 
                 //if(Result.IsSuccess)
                 {
-                    this.Object = obj;
+                    this.Value = obj;
                 }
                 return RetrieveResult<T>.Success(obj);
             });
@@ -159,7 +159,7 @@ namespace LionFire.Serialization
                 //var sc = new FileSerializationContext();
                 var op = new PersistenceOperation();
 
-                var bytes = SerializationFacility.Default.ToBytes(Object, () => op);
+                var bytes = SerializationFacility.Default.ToBytes(Value, () => op);
 
                 var writePath = Path;
                 if (op?.Extension != null)

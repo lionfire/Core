@@ -1,5 +1,6 @@
 ﻿using LionFire.Referencing;
 using LionFire.Resolvables;
+using LionFire.Resolves;
 using LionFire.Results;
 using LionFire.Structures;
 using System;
@@ -10,7 +11,7 @@ namespace LionFire.Persistence.Handles
     public class NullReadHandle<T> : IReadHandleEx<T>
     {
 
-        public T Object => default(T);
+        public T Value => default(T);
         public bool HasValue => false;
 
         public string Key => null;
@@ -30,12 +31,12 @@ namespace LionFire.Persistence.Handles
 
         public event Action<RH<T>> ObjectChanged { add { } remove { } }
 
-        public void DiscardObject() { }
+        public void DiscardValue() { }
         public Task<bool> Exists(bool forceCheck = false) => Task.FromResult(true);
 
 
-        public Task<(bool HasObject, object Object)> Get() => Task.FromResult<(bool,object)>((true, null));
-        public Task<IResolveResult> ResolveAsync() => Task.FromResult((IResolveResult)SuccessResult.Success);
+        public Task<ILazyResolveResult<object /* T */>> GetValue() => Task.FromResult<ILazyResolveResult<object>>(LazyResolveResultNoop<object>.Instance);
+        public Task<IResolveResult> Resolve() => Task.FromResult((IResolveResult)SuccessResult.Success);
         public Task<bool> TryResolveObject() => Task.FromResult(true);
     }
 

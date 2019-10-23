@@ -76,7 +76,7 @@ namespace LionFire.Assets
 
         public AssetBase(HAsset<ConcreteType> hAsset) : this()
         {
-            hAsset.Object = AssetObject;
+            hAsset.Value = AssetObject;
             this.HAsset = hAsset;
         }
         //#endif
@@ -149,12 +149,12 @@ namespace LionFire.Assets
 
             if (!vh.HasValue)
             {
-                vh.Object = AssetObject;
+                vh.Value = AssetObject;
             }
-            else if (!object.ReferenceEquals(vh.Object, AssetObject))
+            else if (!object.ReferenceEquals(vh.Value, AssetObject))
             {
-                l.Info("REVIEW - EnsureHandleSetToThis: AssetBase<" + typeof(ConcreteType).Name + ">.get_Handle: vh.HasObject && !object.ReferenceEquals(vh.Object, AssetObject): " + vh.ToStringSafe() + ", Existing object: " + vh.Object.ToStringSafe() + Environment.StackTrace);
-                vh.Object = AssetObject;
+                l.Info("REVIEW - EnsureHandleSetToThis: AssetBase<" + typeof(ConcreteType).Name + ">.get_Handle: vh.HasObject && !object.ReferenceEquals(vh.Object, AssetObject): " + vh.ToStringSafe() + ", Existing object: " + vh.Value.ToStringSafe() + Environment.StackTrace);
+                vh.Value = AssetObject;
             }
         }
 
@@ -277,7 +277,7 @@ namespace LionFire.Assets
                 }
                 else if (!hAsset.HasValue)
                 {
-                    hAsset.Object = AssetObject;
+                    hAsset.Value = AssetObject;
                 }
                 //#if SanityChecks
                 // #error not a valid check? This is ok, such as when loading an object?
@@ -323,7 +323,7 @@ namespace LionFire.Assets
 
                 if (hAsset != null && hAsset.HasValue && concreteValue != null && concreteValue.HasValue)
                 {
-                    if (!object.ReferenceEquals(hAsset.Object, concreteValue.Object)
+                    if (!object.ReferenceEquals(hAsset.Value, concreteValue.Value)
                     //hAsset.Object != concreteValue.Object
                     )
                     {
@@ -350,10 +350,10 @@ namespace LionFire.Assets
                             //throw new ArgumentException(msg);
                         }
 
-                        if (concreteValue.Object != this)
+                        if (concreteValue.Value != this)
                         {
                             l.Debug("Replacing AssetBase.VobHandle with this.  FUTURE: Either avoid deserialization, or do an AssignFrom into the existing object.  AssetPath: " + concreteValue.AssetTypePath);
-                            concreteValue.Object = AssetObject;
+                            concreteValue.Value = AssetObject;
                             //throw new ArgumentException("Invalid concreteValue: concreteValue.Object is set to an object other than this.");
                         }
                         // else ok
@@ -361,7 +361,7 @@ namespace LionFire.Assets
                     else
                     {
                         //l.Debug("Setting HAsset to HAsset with no Object specified.  Setting object to this. " + Environment.StackTrace);
-                        concreteValue.Object = AssetObject;
+                        concreteValue.Value = AssetObject;
                     }
                 }
 

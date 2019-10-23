@@ -680,7 +680,7 @@ namespace LionFire.Vos
             if (VobHandle == null) // Set name for first time
             {
                 var newHandle = AssetReferenceResolver.AssetNameToHandle<HandleType>(newName);
-                newHandle.Object = (HandleType)(object)this; // FORCECAST
+                newHandle.Value = (HandleType)(object)this; // FORCECAST
 
                 VobHandle = newHandle;
                 
@@ -702,7 +702,7 @@ namespace LionFire.Vos
 #else
  AssetReferenceResolver.AssetNameToHandle<HandleType>(newName, package: currentPackage, location: currentLocation);
 #endif
-                newHandle.Object = (HandleType)(object)this; // FORCECAST
+                newHandle.Value = (HandleType)(object)this; // FORCECAST
 
                 VobHandle = newHandle;
                 if (saveNewIfAlreadyHadVobHandle)

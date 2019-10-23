@@ -66,11 +66,11 @@ namespace LionFire.Vos
                 vh = vob.ToHandle(handleType);
             }
 
-            if (!allowOverwrite && vh.Object != null) // RETRIEVE
+            if (!allowOverwrite && vh.Value != null) // RETRIEVE
             {
                 throw new CannotOverwriteException("This would overwrite and overwrite is disabled");
             }
-            vh.Object = obj;
+            vh.Value = obj;
             vh.Save(allowDelete: true, preview: preview);
         }
 

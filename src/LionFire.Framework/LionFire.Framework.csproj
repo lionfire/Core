@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>netstandard2.1</TargetFramework>
+    <TargetFramework>netstandard2.0</TargetFramework>
     <RootNamespace>LionFire</RootNamespace>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
@@ -33,8 +33,11 @@
     <ProjectReference Include="..\LionFire.Execution\LionFire.Execution.csproj" />
     <ProjectReference Include="..\LionFire.Instantiating.Abstractions\LionFire.Instantiating.Abstractions.csproj" />
     <ProjectReference Include="..\LionFire.Instantiating\LionFire.Instantiating.csproj" />
+    <ProjectReference Include="..\LionFire.ObjectBus\LionFire.ObjectBus.csproj" />
     <ProjectReference Include="..\LionFire.Persistence.Handles.Abstractions\LionFire.Persistence.Handles.Abstractions.csproj" />
     <ProjectReference Include="..\LionFire.Persistence.Handles\LionFire.Persistence.Handles.csproj" />
+    <ProjectReference Include="..\LionFire.Referencing\LionFire.Referencing.csproj" />
+    <ProjectReference Include="..\LionFire.Resolves\LionFire.Resolves.csproj" />
     <ProjectReference Include="..\LionFire.Structures\LionFire.Structures.csproj" />
     <ProjectReference Include="..\LionFire.Vos.Application\LionFire.Vos.VosApp.csproj" />
   </ItemGroup>

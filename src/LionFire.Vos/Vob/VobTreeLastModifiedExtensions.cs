@@ -16,8 +16,8 @@ namespace LionFire.Vos
 
         public static DateTime? GetTreeLastModified(this Vob vob)
         {
-            vob.GetVHTreeLastModified().DiscardObject();
-            var obj = vob.GetVHTreeLastModified().Object;
+            vob.GetVHTreeLastModified().DiscardValue();
+            var obj = vob.GetVHTreeLastModified().Value;
             //if (obj != null) { l.Trace("[lastmodified] " + obj.DateTime.ToStringSafe() + " " + this); }
             return obj == null ? null : (DateTime?)obj.DateTime;
         }

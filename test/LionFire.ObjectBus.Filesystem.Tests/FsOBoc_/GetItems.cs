@@ -53,7 +53,7 @@ namespace FsOBoc_
 
                     var reference = new FileReference(path);
                     var oboc = new FsOBoc(reference);
-                    var obj = oboc.Object;
+                    var obj = oboc.Value;
 
                     Assert.IsType<FsList>(obj);
                     var fsList = (FsList)obj;

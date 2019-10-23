@@ -1,5 +1,6 @@
 ﻿using LionFire.Referencing;
 using LionFire.Resolvables;
+using LionFire.Resolves;
 using LionFire.Structures;
 using System;
 using System.Collections.Generic;
@@ -37,13 +38,14 @@ namespace LionFire.Persistence
     public interface IPersistenceReadHandle<out T> : RH<T>, IHasPersistenceState { }
     public interface IEventedPersistenceReadHandle<out T> : IEventedReadHandle<T>, IHasPersistenceState { }
 
-    public interface ILazyRetrievableReadHandle<out T> : RH<T>, ILazilyRetrievable { }
+    public interface ILazyRetrievableReadHandleCovariant<out T> : RH<T>, ILazilyResolvesCovariant<T> { }
+    public interface ILazyRetrievableReadHandle<T> : RH<T>, ILazilyResolves<T> { }
 
-    public interface IReadHandleEx<out T> : RH<T>, IReadHandleEvents<T>, IHasPersistenceState, ILazilyRetrievable<T>, INotifyingWrapper<T> { }
+    public interface IReadHandleEx<out T> : RH<T>, IReadHandleEvents<T>, IHasPersistenceState, ILazilyResolvesCovariant<T>, INotifyingWrapper<T> { }
 
 
     /// <summary>
-    /// Interface for Read Handles.
+    /// IReadHandle - Interface for Read Handles.
     /// Features: 
     ///  - Resolves IReference to a value of type T
     /// </summary>

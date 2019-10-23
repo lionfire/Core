@@ -30,7 +30,7 @@ namespace Redis_
 
                         Assert.False(await h.Exists(), "test object already exists: " + path);
 
-                        h.Object = testData;
+                        h.Value = testData;
 
                         await h.Commit();
 
@@ -41,7 +41,7 @@ namespace Redis_
                         var h = r.ToHandle<string>();
                         Assert.True(await h.Exists(), "test object does not exist after saving: " + path);
 
-                        var retrievedData = h.Object;
+                        var retrievedData = h.Value;
                         Assert.Equal(testData, retrievedData);
 
                         h.MarkDeleted(); // TODO: make one
@@ -74,7 +74,7 @@ namespace Redis_
 
                         Assert.False(await h.Exists(), "test object already exists: " + path);
 
-                        h.Object = testData;
+                        h.Value = testData;
 
                         await h.Commit();
 
@@ -85,7 +85,7 @@ namespace Redis_
                         var h = r.GetHandle();
                         Assert.True(await h.Exists(), "test object does not exist after saving: " + path);
 
-                        var retrievedData = h.Object;
+                        var retrievedData = h.Value;
                         Assert.Equal(testData, retrievedData);
 
                         h.MarkDeleted(); // TODO: make one

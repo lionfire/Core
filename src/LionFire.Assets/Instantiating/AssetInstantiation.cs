@@ -311,7 +311,7 @@ namespace LionFire.Assets
         [Ignore]
         public ITemplate Template
         {
-            get => TemplateAsset?.Object;
+            get => TemplateAsset?.Value;
             set => throw new NotSupportedException("To set the Template, use the TemplateAsset property.");
         }
 

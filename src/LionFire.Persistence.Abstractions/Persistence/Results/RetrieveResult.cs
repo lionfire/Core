@@ -8,6 +8,7 @@ namespace LionFire.Persistence
     {
         public object Error { get; set; }
         public T Value { get; set; }
+        public bool HasValue => Value != default;
 
         public PersistenceResultFlags Flags { get; set; }
         public bool? IsSuccess => Flags.IsSuccessTernary();

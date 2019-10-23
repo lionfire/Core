@@ -37,21 +37,21 @@ namespace LionFire.Persistence.Handles
                     objects.Clear();
                     foreach (var item in Handles.Select(h => h.Value))
                     {
-                        objects.Add(item.Object);
+                        objects.Add(item.Value);
                     }
                 }
                 else
                 {
                     if (e.NewItems != null)
                     {
-                        foreach (var item in e.NewItems.OfType<KeyValuePair<TKey,THandle>>().Select(kvp=>kvp.Value.Object).OfType<T>())
+                        foreach (var item in e.NewItems.OfType<KeyValuePair<TKey,THandle>>().Select(kvp=>kvp.Value.Value).OfType<T>())
                         {
                             objects.Add(item);
                         }
                     }
                     if (e.OldItems != null)
                     {
-                        foreach (var item in e.OldItems.OfType<KeyValuePair<TKey, THandle>>().Select(kvp => kvp.Value.Object).OfType<T>())
+                        foreach (var item in e.OldItems.OfType<KeyValuePair<TKey, THandle>>().Select(kvp => kvp.Value.Value).OfType<T>())
                         {
                             objects.Remove(item);
                         }
@@ -119,7 +119,7 @@ namespace LionFire.Persistence.Handles
                 {
                     foreach (var handle in handles.Values)
                     {
-                        var obj = handle.Object;
+                        var obj = handle.Value;
                         if (obj != null)
                         {
                             objects.Add(obj);

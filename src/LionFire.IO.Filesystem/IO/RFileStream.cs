@@ -28,7 +28,7 @@ namespace LionFire.IO
             var obj = base._object;
             if (_object != null)
             {
-                DiscardObject();
+                DiscardValue();
                 _object.Dispose();
             }
         }

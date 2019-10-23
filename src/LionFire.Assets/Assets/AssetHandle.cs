@@ -26,11 +26,11 @@ namespace LionFire.Persistence.Assets
         public Task Commit()
         {
             var ap = Dependencies.GetServiceOrSingleton<IAssetProvider>(createIfMissing: true);
-            ap.Save(this.Key, this.Object);
+            ap.Save(this.Key, this.Value);
             return Task.CompletedTask;
         }
 
-        public void SetObject(T obj) { base.Object = obj; }
+        public void SetObject(T obj) { base.Value = obj; }
 
         Task<bool> IDeletable.Delete() => throw new System.NotImplementedException();
         Task<IPersistenceResult> ICommitableImpl.Commit() => throw new System.NotImplementedException();

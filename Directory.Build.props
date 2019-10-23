@@ -1,0 +1,14 @@
+<Project>
+
+  <PropertyGroup>
+    <LangVersion>latest</LangVersion>
+  </PropertyGroup>
+  
+  <PropertyGroup>
+    <Authors>Jared Thirsk</Authors>
+    <Company>LionFire Games</Company>
+    <PackageProjectUrl>https://github.com/lionfire/core</PackageProjectUrl>
+    <PackageLicenseUrl>https://github.com/lionfire/Core/blob/master/LICENSE</PackageLicenseUrl>
+  </PropertyGroup>
+ 
+</Project>

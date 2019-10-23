@@ -43,7 +43,7 @@ namespace LionFire.IO
         {
             if (HasValue)
             {
-                await Object.FlushAsync();
+                await Value.FlushAsync();
                 return PersistenceResult.Success;
             }
             else
@@ -60,7 +60,7 @@ namespace LionFire.IO
             var obj = base._object;
             if (_object != null)
             {
-                DiscardObject();
+                DiscardValue();
                 _object.Dispose();
             }
         }

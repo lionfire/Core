@@ -52,7 +52,7 @@ namespace Redis_
                                 var childRef = new RedisReference(childPath);
                                 var h = childRef.ToHandle<string>();
                                 Assert.False(await h.Exists(), "test object already exists: " + childPath);
-                                h.Object = testData + i;
+                                h.Value = testData + i;
                                 await h.Commit();
                                 Assert.True(await h.Exists(), "test object does not exist after saving: " + childPath);
                             }

@@ -23,20 +23,20 @@ namespace LionFire.Referencing
             var replacements = new List<object>();
             var removals = new List<object>();
 
-            await Task.WhenAll(collection.OfType<RH<object>>().Select(async rh => await rh.Get().ConfigureAwait(false))).ConfigureAwait(false);
+            await Task.WhenAll(collection.OfType<RH<object>>().Select(async rh => await rh.GetValue().ConfigureAwait(false))).ConfigureAwait(false);
 
             foreach (var component in collection.OfType<RH<object>>().ToArray())
             {
-                if (component.Object == null) throw new ObjectNotFoundException(component);
+                if (component.Value == null) throw new ObjectNotFoundException(component);
                 try
                 {
                     collection.Remove(component);
-                    collection.Add(component.Object);
+                    collection.Add(component.Value);
                 }
                 catch
                 {
                     // Try to put things back to the way it was on failure
-                    if (!collection.Contains(component) && !collection.Contains(component.Object))
+                    if (!collection.Contains(component) && !collection.Contains(component.Value))
                     {
                         collection.Add(component);
                         // TODO: try/catch for this block, encapsulating outer exception

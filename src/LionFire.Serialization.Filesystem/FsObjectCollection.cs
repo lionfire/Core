@@ -216,7 +216,7 @@ namespace LionFire.Serialization
             }
             else
             {
-                handles[path].DiscardObject();
+                handles[path].DiscardValue();
             }
         }
 

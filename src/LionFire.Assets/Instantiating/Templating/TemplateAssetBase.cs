@@ -204,7 +204,7 @@ namespace LionFire.Assets
             {
                 if (!hAsset.HasValue)
                 {
-                    hAsset.Object = (TemplateType)(object)this;
+                    hAsset.Value = (TemplateType)(object)this;
                 }
             }
             //l.Fatal("hAsset.HasObject " +  hAsset.HasObject + " path: " + hAsset.AssetPath);

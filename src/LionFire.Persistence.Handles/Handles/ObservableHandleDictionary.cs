@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 namespace LionFire.Persistence.Handles
 {
     public abstract class ObservableHandleDictionary<TKey, THandle, T> : ObservableReadHandleDictionary<TKey, THandle, T>
-        where THandle : class, RH<T>, WH<T>
+        where THandle : class, RH<T>
         where T : class
     {
 
@@ -56,7 +56,7 @@ namespace LionFire.Persistence.Handles
             }
 
             var writable = (IWriteHandle<T>)handle;
-            writable.SetObject(obj);
+            writable.Value = obj;
 
             if (handle is ICommitable saveable)
             {

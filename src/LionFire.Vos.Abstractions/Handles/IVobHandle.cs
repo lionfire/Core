@@ -27,7 +27,7 @@ namespace LionFire.Vos
         /// </summary>
         string Path { get; }
 
-        new T Object { get; set; }
+        new T Value { get; set; }
 
         ///// <summary>
         ///// Mount that was used to load (FUTURE: or save) Object, or that should be used.

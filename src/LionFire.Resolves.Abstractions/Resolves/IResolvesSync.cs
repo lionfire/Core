@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace LionFire.Resolvables
+namespace LionFire.Resolves
 {
     public interface IResolvesSync
     {

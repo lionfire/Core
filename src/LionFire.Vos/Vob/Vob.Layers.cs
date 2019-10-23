@@ -46,7 +46,7 @@ namespace LionFire.Vos
                     continue;
                 }
 
-                var obj = handle.Object;
+                var obj = handle.Value;
 
                 if (obj is T typedObj)
                 {

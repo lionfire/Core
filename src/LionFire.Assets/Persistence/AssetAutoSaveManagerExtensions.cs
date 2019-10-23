@@ -34,7 +34,7 @@ namespace LionFire.Persistence
         private class SaveableAssetWrapper : ICommitable, IReadWrapper<object>
         {
             public IAsset Asset { get; set; }
-            object IReadWrapper<object>.Object => Asset;
+            object IReadWrapper<object>.Value => Asset;
 
             async Task<ICommitResult> ICommitable.Commit()
             {

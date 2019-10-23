@@ -31,7 +31,7 @@ namespace RedisPub_
                 {
                     var refWrite = new RedisPubReference(url);
                     var hWrite = refWrite.ToHandle<object>();
-                    hWrite.Object = "testMessage";
+                    hWrite.Value = "testMessage";
                     await hWrite.Commit();
                     Assert.Equal(TestMessage, ReceivedMessage);
                 }
@@ -42,9 +42,9 @@ namespace RedisPub_
         private void H_ObjectChanged(RH<object> obj)
         {
             Assert.NotNull(obj);
-            Assert.NotNull(obj.Object);
-            Assert.IsType<string>(obj.Object);
-            ReceivedMessage = obj.Object.ToString();
+            Assert.NotNull(obj.Value);
+            Assert.IsType<string>(obj.Value);
+            ReceivedMessage = obj.Value.ToString();
         }
     }
 }

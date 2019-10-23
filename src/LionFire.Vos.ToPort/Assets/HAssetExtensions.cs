@@ -10,11 +10,11 @@ namespace LionFire.Assets
             where T : class
         {
             if (ha == null) return null;
-            return ha.Object;
+            return ha.Value;
         }
 #endif
 
         [AotReplacement] // First param is different, not sure it works :-/
-        public static object TryGetObject(this RH ha, Type type) => ha == null ? null : ha.Object;
+        public static object TryGetObject(this RH ha, Type type) => ha == null ? null : ha.Value;
     }
 }

@@ -11,8 +11,11 @@
 
   <ItemGroup>
     <Compile Remove="Instantiating\NewFolder\**" />
+    <Compile Remove="Structures\**" />
     <EmbeddedResource Remove="Instantiating\NewFolder\**" />
+    <EmbeddedResource Remove="Structures\**" />
     <None Remove="Instantiating\NewFolder\**" />
+    <None Remove="Structures\**" />
   </ItemGroup>
 
   <ItemGroup>
@@ -31,7 +34,6 @@
 
   <ItemGroup>
     <Folder Include="Instantiating\Stateful\" />
-    <Folder Include="Structures\" />
   </ItemGroup>
 
 </Project>

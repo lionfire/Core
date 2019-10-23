@@ -2,6 +2,6 @@
 {
     public interface IWriteWrapper<in T>
     {
-        T Object { set; } // RENAME to Value
+        T Value { set; } // RENAME to Value
     }
 }

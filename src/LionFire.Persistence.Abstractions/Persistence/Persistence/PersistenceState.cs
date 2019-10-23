@@ -26,6 +26,10 @@ namespace LionFire
         UpdateBeatsDelete,
     }
 
+    public enum ResolveState
+    {
+
+    }
 
     [Flags]
     [Ignore]

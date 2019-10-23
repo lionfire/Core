@@ -32,7 +32,7 @@ namespace RedisOBoc_
                         var r = new RedisReference(dir + "testChild");
                         var h = r.ToHandle<string>();
                         Assert.False(await h.Exists(), "test object already exists: " + r.Path);
-                        h.Object = testChildVal;
+                        h.Value = testChildVal;
                         await h.Commit();
                         Assert.True(await h.Exists(), "test object does not exist after saving: " + r.Path);
                     }

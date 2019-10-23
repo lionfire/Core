@@ -1,4 +1,6 @@
-﻿using System;
+﻿using LionFire.Resolves;
+using LionFire.Structures;
+using System;
 
 namespace LionFire.Resolvables
 {
@@ -6,9 +8,13 @@ namespace LionFire.Resolvables
     {
         public static Func<object, bool?> DefaultHasValueResolver = o =>
         {
-            if (o is IResolvesEx rex)
+            if (o is ILazilyResolves rex)
             {
                 return rex.HasValue;
+            }
+            if (o is IWrapper w)
+            {
+                return w.HasValue;
             }
             return null;
         };

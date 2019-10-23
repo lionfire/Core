@@ -1,5 +1,6 @@
 ﻿using LionFire.Referencing;
 using LionFire.Resolvables;
+using LionFire.Resolves;
 using LionFire.Results;
 using System;
 
@@ -8,7 +9,7 @@ namespace LionFire.Persistence
     /// <summary>
     /// Returned for Retrieve or ResolveReference operations (which may do a Retrieve).
     /// </summary>
-    public interface IRetrieveResult<out T> : IResolveResult, IPersistenceResult, IValueResult<T>, ISuccessResult
+    public interface IRetrieveResult<out T> : IResolveResult<T>, IPersistenceResult
     {
     }
 

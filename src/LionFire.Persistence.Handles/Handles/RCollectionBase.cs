@@ -5,7 +5,7 @@ using LionFire.Collections;
 
 namespace LionFire.Persistence.Handles
 {
-    public abstract class RCollectionBase<TCollection, TItem> : RBase<TCollection>, IReadOnlyCollection<TItem>
+    public abstract class RCollectionBase<TCollection, TItem> : RBaseEx<TCollection>, IReadOnlyCollection<TItem>
         where TCollection : IEnumerable<TItem>
     {
         public abstract int Count { get; }

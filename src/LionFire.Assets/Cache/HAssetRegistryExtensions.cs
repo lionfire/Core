@@ -14,7 +14,7 @@ namespace LionFire.Assets
 
             if (obj != null)
             {
-                ha.Object = obj;
+                ha.Value = obj;
             }
 
             return ha;
@@ -34,9 +34,9 @@ namespace LionFire.Assets
             {
                 if (!allowDiscardHAssetObject)
                 {
-                    if (!object.ReferenceEquals(registered.Object, hAsset.Object))
+                    if (!object.ReferenceEquals(registered.Value, hAsset.Value))
                     {
-                        if (registered.Object != hAsset.Object)
+                        if (registered.Value != hAsset.Value)
                         {
                             throw new ArgumentException("registered.Object != hAsset.Object -- ToRegistered may lose data");
                         }
@@ -46,7 +46,7 @@ namespace LionFire.Assets
             else {
                 if (!registered.HasValue && hAsset.HasValue)
                 {
-                    registered.Object = hAsset.Object;
+                    registered.Value = hAsset.Value;
                 }
             }
             return registered;

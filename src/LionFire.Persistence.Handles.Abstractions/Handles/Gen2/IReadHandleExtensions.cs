@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Threading.Tasks;
 using LionFire.Persistence;
+using LionFire.Resolves;
 
 namespace LionFire.Referencing
 {
@@ -20,22 +21,27 @@ namespace LionFire.Referencing
         //}
 
         /// <summary>
-        /// Fallback to provide ILazilyRetrievable<T>.Get to RH<T>
-        /// Also makes Object return value strongly typed for the covariant ILazilyRetrievable.
+        /// Fallback to provide ILazilyResolves<T>.Get to RH<T>
+        /// Also makes Object return value strongly typed for the covariant ILazilyResolves.
         /// </summary>
         /// <typeparam name="T"></typeparam>
         /// <param name="rh"></param>
         /// <returns></returns>
-        public static async Task<(bool HasObject, T Object)> Get<T>(this RH<T> rh) // RENAME: TryResolveNonNull
+        public static async Task<(bool HasObject, T Object)> GetValue<T>(this RH<T> rh) // RENAME: TryResolveNonNull
         {
-            if (rh is ILazilyRetrievable<T> rhex)
+            if (rh is ILazilyResolves<T> lr)
             {
-                var result = await rhex.Get();
-                return (result.HasObject, (T)result.Object); // CAST
+                var result = await lr.GetValue();
+                return (result.HasValue, result.Value);
+            }
+            else if (rh is ILazilyResolvesCovariant<T> lrc)
+            {
+                var result = await lrc.GetValue();
+                return (result.HasValue, (T)result.Value); // CAST
             }
             else
             {
-                var obj = rh.Object;
+                var obj = rh.Value;
                 return (obj != default, obj);
             }
             //return (await rh.TryResolveObject().ConfigureAwait(false)) && rh.HasObject;  OLD

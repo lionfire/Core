@@ -11,7 +11,7 @@
 //    /// </summary>
 //    /// <typeparam name="ObjectType"></typeparam>
 //    public class RDynamic<ObjectType> :
-//        RBase<ObjectType>
+//        RBaseEx<ObjectType>
 //        //HRetrieveInfoBase<ObjectType>, IHasObjectRetrievalInfo<ObjectType>,
 //        where ObjectType : class
 //    {
@@ -61,7 +61,7 @@
 //                IsReachable = false;
 //                //if (forgetOnFail)
 //                //{
-//                //    this.DiscardObject();
+//                //    this.DiscardValue();
 //                //}
 //            }
 //            return result;

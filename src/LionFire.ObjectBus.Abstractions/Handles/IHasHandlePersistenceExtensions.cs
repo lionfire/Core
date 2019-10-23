@@ -26,7 +26,7 @@ namespace LionFire.ObjectBus
         
         public static Task<ICommitResult> Commit(this IHasHandle hasHandle) 
         {
-            if (hasHandle.Handle.HasValue && !object.ReferenceEquals(hasHandle.Handle.Object, hasHandle))
+            if (hasHandle.Handle.HasValue && !object.ReferenceEquals(hasHandle.Handle.Value, hasHandle))
             {
                 l.Warn("Saving: !object.ReferenceEquals(hasHandle.Handle.Object, hasHandle)");
                 //hasHandle.Handle.Object = hasHandle;  --- this doesn't make sense for Ihashandle objects that do not save themselves!
@@ -49,9 +49,9 @@ namespace LionFire.ObjectBus
             }
 #endif
             
-            if (hasHandle.Handle.HasValue && !object.ReferenceEquals(hasHandle.Handle.Object, hasHandle))
+            if (hasHandle.Handle.HasValue && !object.ReferenceEquals(hasHandle.Handle.Value, hasHandle))
             {
-                l.Warn("Saving: !object.ReferenceEquals(hasHandle.Handle.Object, hasHandle).  hasHandle.Handle.Object type: " + hasHandle.Handle.Object?.GetType().Name + ", hasHandle type: " + hasHandle?.GetType().Name 
+                l.Warn("Saving: !object.ReferenceEquals(hasHandle.Handle.Object, hasHandle).  hasHandle.Handle.Object type: " + hasHandle.Handle.Value?.GetType().Name + ", hasHandle type: " + hasHandle?.GetType().Name 
                     //+ ".  Using hasHandle."
                     );
                 //hasHandle.Handle.Object = (T)hasHandle; --- this doesn't make sense for Ihashandle objects that do not save themselves!

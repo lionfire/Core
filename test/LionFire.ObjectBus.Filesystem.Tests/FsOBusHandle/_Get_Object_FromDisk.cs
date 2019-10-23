@@ -56,7 +56,7 @@ namespace Handle
 
                         var h = reference.ToHandle<TestClass1>();
 
-                        var obj = h.Object; // --------------- Object
+                        var obj = h.Value; // --------------- Object
 
                         Assert.NotNull(obj);
                         Assert.IsType<TestClass1>(obj);

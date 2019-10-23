@@ -80,7 +80,7 @@ namespace Handle
                     }
 
                     var h = reference.ToHandle<TestClass1>();
-                    h.Object = TestClass1.Create;
+                    h.Value = TestClass1.Create;
 
                     var commitResult = await h.Commit().ConfigureAwait(false); // --------- Save
                     Assert.True(commitResult.IsSuccess());

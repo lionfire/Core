@@ -46,7 +46,7 @@ namespace LionFire.Assets
     [LionSerializable(SerializeMethod.ByValue)]
     //[JsonConvert(typeof(HAssetSerializationConverter))] TOPORT
     public class HAsset<AssetType>
-        : RBase<AssetType>,
+        : RBaseEx<AssetType>,
         //VobHandle<AssetType>,
         //			HAssetBaseTest<AssetType>,
         //#if !AOT
@@ -162,17 +162,17 @@ namespace LionFire.Assets
 
             if (HasValue)
             {
-                if (VobHandle.Object != Object)
+                if (VobHandle.Value != Value)
                 {
                     l.Warn("RENAME - Overwriting existing object at " + VobHandle);
                 }
-                VobHandle.Object = Object;
+                VobHandle.Value = Value;
             }
             else
             {
                 if (VobHandle.HasValue)
                 {
-                    Object = VobHandle.Object;
+                    Value = VobHandle.Value;
                 }
             }
         }
@@ -228,7 +228,7 @@ namespace LionFire.Assets
 
                 if (objectField != null && vobHandle != null)
                 {
-                    vobHandle.Object = objectField;
+                    vobHandle.Value = objectField;
                 }
             }
         }
@@ -532,7 +532,7 @@ namespace LionFire.Assets
 					l.Warn("operator HAsset<AssetType>(AssetType obj) using obj.HAsset.  Warning: HAsset's Object was not set to obj.  (Can't set  it): " + hasha.HAsset);
 #else
                     l.Warn("operator HAsset<AssetType>(AssetType obj) using obj.HAsset.  Warning: HAsset's Object was not set to obj, so setting it: " + hasha.HAsset);
-                    hasha.HAsset.Object = obj;
+                    hasha.HAsset.Value = obj;
 #endif
                 }
                 return hasha.HAsset;
@@ -546,7 +546,7 @@ namespace LionFire.Assets
 
         public static implicit operator VobHandle<AssetType>(HAsset<AssetType> assetHandle) => (VobHandle<AssetType>)assetHandle?.VobHandle;
 
-        public static implicit operator AssetType(HAsset<AssetType> assetHandle) => assetHandle?.Object;
+        public static implicit operator AssetType(HAsset<AssetType> assetHandle) => assetHandle?.Value;
 
         #endregion
 
@@ -570,7 +570,7 @@ namespace LionFire.Assets
             var vh = AssetPath.AssetPathToHandle<AssetType>(ignoreContext: ignoreContext, concreteType: ConcreteType);
             if (!vh.HasValue && HasValue)
             {
-                vh.Object = Object;
+                vh.Value = Value;
             }
             return vh;
         }
@@ -601,7 +601,7 @@ namespace LionFire.Assets
         {
             get
             {
-                if (Object == null)
+                if (Value == null)
                 {
                     var msg = "Failed to load " + typeof(AssetType) + " from " + FullPath;
                     l.Error(msg);
@@ -612,7 +612,7 @@ namespace LionFire.Assets
         }
 
         [Ignore]
-        public AssetType Object
+        public AssetType Value
         {
             get
             {
@@ -623,7 +623,7 @@ namespace LionFire.Assets
 #else
                     if (VobHandle != null)
                     {
-                        objectField = VobHandle.Object;
+                        objectField = VobHandle.Value;
                     }
 #endif
                 }
@@ -689,7 +689,7 @@ namespace LionFire.Assets
 #if !ASSETCACHE
                 if (vobHandle != null)
                 {
-                    vobHandle.Object = value;
+                    vobHandle.Value = value;
                 }
 #endif
 
@@ -840,12 +840,12 @@ namespace LionFire.Assets
         {
             if (!vh.HasValue)
             {
-                vh.Object = Object;
+                vh.Value = Value;
             }
-            else if (!object.ReferenceEquals(vh.Object, Object))
+            else if (!object.ReferenceEquals(vh.Value, Value))
             {
-                l.Info("REVIEW 2 - EnsureHandleSetToThis: AssetBase<" + typeof(AssetType).Name + ">.get_Handle: vh.HasObject && !object.ReferenceEquals(vh.Object, AssetObject): " + vh + ", Existing object: " + vh.Object + Environment.StackTrace);
-                vh.Object = Object;
+                l.Info("REVIEW 2 - EnsureHandleSetToThis: AssetBase<" + typeof(AssetType).Name + ">.get_Handle: vh.HasObject && !object.ReferenceEquals(vh.Object, AssetObject): " + vh + ", Existing object: " + vh.Value + Environment.StackTrace);
+                vh.Value = Value;
             }
         }
 
@@ -868,11 +868,11 @@ namespace LionFire.Assets
 
             if (other.HasValue && HasValue)
             {
-                if (object.ReferenceEquals(other.Object, Object)) { return true; }
+                if (object.ReferenceEquals(other.Value, Value)) { return true; }
                 else
                 {
                     // REVIEW - Same assetpath pointing to two different objects
-                    return Object.Equals(other.Object);
+                    return Value.Equals(other.Value);
                 }
             }
             else

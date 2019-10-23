@@ -15,16 +15,18 @@ using System.Collections.Specialized;
 using System.Collections;
 using System.Runtime.InteropServices;
 using System.Collections.ObjectModel;
+using LionFire.Structures;
 
 namespace LionFire.Collections
 {
-    public interface IWrapper
-    {
-        object WrappedObject { get; }
-    }
+    //public interface ISynchronizedObservableWrappedCollectionWrapper
+    //{
+    //    object Object { get; }
+    //}
 
     public class SynchronizedObservableWrappedCollection<T, WrapperType> : SynchronizedObservableCollection<WrapperType>
-        where WrapperType : IWrapper
+        //where WrapperType : ISynchronizedObservableWrappedCollectionWrapper
+        where WrapperType : IReadWrapper<object>
     {
 
         #region Static
@@ -102,7 +104,7 @@ namespace LionFire.Collections
                 {
                     foreach (var item in e.OldItems.OfType<T>().ToArray())
                     {
-                        foreach (var wrapper in this.Where(w => object.ReferenceEquals(w.WrappedObject, item)).ToArray())
+                        foreach (var wrapper in this.Where(w => object.ReferenceEquals(w.Value, item)).ToArray())
                         {
                             this.Remove(wrapper);
                         }
@@ -111,14 +113,11 @@ namespace LionFire.Collections
             }
         }
 
-
         public Func<T, WrapperType> WrapperFactory
         {
             get { return wrapperFactory ?? DefaultWrapperFactory; }
             set { wrapperFactory = value; }
         } private Func<T, WrapperType> wrapperFactory;
-
-
     }
 
     [ComVisible(false)]

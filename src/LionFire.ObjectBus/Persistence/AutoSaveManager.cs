@@ -41,7 +41,7 @@ namespace LionFire.ObjectBus
         {
 
             // Abort saving if reports !IsValid, and handle has yet to be persisted
-            if (handle.Object is IIsValid isValid && !isValid.IsValid) // TODO: Use something like Validate(PurposeKind.Persistence), to save partially valid works in progress
+            if (handle.Value is IIsValid isValid && !isValid.IsValid) // TODO: Use something like Validate(PurposeKind.Persistence), to save partially valid works in progress
             {
                 if (!handle.IsPersisted())
                 {

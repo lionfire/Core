@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using LionFire.Persistence.Handles;
 using LionFire.Structures;
 using LionFire.Referencing;
+using LionFire.Resolves;
 
 namespace LionFire.Persistence.Handles
 {
@@ -13,7 +14,7 @@ namespace LionFire.Persistence.Handles
     /// Read-only Handles to .NET object references (can be null) -- can be named and then retrieved by the handle registry system.
     /// </summary>
     /// <typeparam name="ObjectType"></typeparam>
-    public class ObjectHandle<ObjectType> : RBase<ObjectType>, IKeyed<string>
+    public class ObjectHandle<ObjectType> : RBaseEx<ObjectType>, IKeyed<string>
         where ObjectType : class
     {
         public override IEnumerable<Type> AllowedReferenceTypes
@@ -23,19 +24,19 @@ namespace LionFire.Persistence.Handles
                 yield return typeof(NamedReference);
             }
         }
-        public override Task<IRetrieveResult<ObjectType>> RetrieveImpl()
+        public override Task<IResolveResult<ObjectType>> ResolveImpl()
         {
             if (HasValue)
             {
-                return Task.FromResult((IRetrieveResult<ObjectType>)new RetrieveResult<ObjectType>()
+                return Task.FromResult<IResolveResult<ObjectType>>(new RetrieveResult<ObjectType>()
                 {
                     Flags = PersistenceResultFlags.Success,
-                    Value = Object,
+                    Value = Value,
                 });
             }
             else
             {
-                return Task.FromResult((IRetrieveResult<ObjectType>)RetrieveResult<ObjectType>.NotFound);
+                return Task.FromResult<IResolveResult<ObjectType>>(RetrieveResult<ObjectType>.NotFound);
             }
         }
 
@@ -43,8 +44,8 @@ namespace LionFire.Persistence.Handles
         #region Construction
 
         public ObjectHandle() { }
-        public ObjectHandle(ObjectType obj) { Object = obj; }
-        public ObjectHandle(NamedReference reference, ObjectType obj = null) { Reference = reference; if (obj != null) { Object = obj; } }
+        public ObjectHandle(ObjectType obj) { Value = obj; }
+        public ObjectHandle(NamedReference reference, ObjectType obj = null) { Reference = reference; if (obj != null) { Value = obj; } }
 
         #endregion
     }

@@ -17,16 +17,15 @@
 
   <ItemGroup>
     <Compile Remove="Path\**" />
+    <Compile Remove="Resolution\**" />
     <EmbeddedResource Remove="Path\**" />
+    <EmbeddedResource Remove="Resolution\**" />
     <None Remove="Path\**" />
+    <None Remove="Resolution\**" />
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\LionFire.Structures\LionFire.Structures.csproj" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="Resolution\" />
   </ItemGroup>
 
 </Project>

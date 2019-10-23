@@ -20,7 +20,7 @@ namespace LionFire.IO
         {
             await Task.Run(() =>
             {
-                File.WriteAllBytes(Path, Object);
+                File.WriteAllBytes(Path, Value);
             });
             return PersistenceResult.Success;
         }

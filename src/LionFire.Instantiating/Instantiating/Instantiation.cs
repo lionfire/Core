@@ -247,7 +247,7 @@ namespace LionFire.Instantiating
 
         #region Template
 
-        ITemplate IHasTemplate.Template { get => Template?.Object; set => throw new NotImplementedException(); }
+        ITemplate IHasTemplate.Template { get => Template?.Value; set => throw new NotImplementedException(); }
 
 
         //public ITemplate TemplateObject

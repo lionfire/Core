@@ -20,7 +20,7 @@ namespace LionFire.ObjectBus
 
         public static bool TryRegisterHandle(this H<object> h)
         {
-            object o = h.Object;
+            object o = h.Value;
 
             try
             {
@@ -34,7 +34,7 @@ namespace LionFire.ObjectBus
         }
         public static void RegisterHandle(this H<object> h)
         {
-            object o = h.Object;
+            object o = h.Value;
             HandleDictionary.handles.Add(o, h);
         }
     }

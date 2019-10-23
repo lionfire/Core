@@ -1,4 +1,5 @@
 ﻿using LionFire.Resolvables;
+using LionFire.Resolves;
 using System;
 using System.Threading.Tasks;
 
@@ -38,6 +39,6 @@ namespace LionFire.Persistence
 //            return handle.Object;
 //        }
 
-        public static bool HasReferenceOrValue<TValue>(this RH<TValue> handle) => handle != null && (handle.Reference != null || (handle as IResolvesEx)?.HasValue == true);
+        public static bool HasReferenceOrValue<TValue>(this RH<TValue> handle) => handle != null && (handle.Reference != null || (handle as ILazilyResolves)?.HasValue == true);
     }
 }

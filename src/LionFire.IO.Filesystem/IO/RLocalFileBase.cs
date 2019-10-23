@@ -3,7 +3,7 @@ using LionFire.Referencing;
 
 namespace LionFire.IO
 {
-    public abstract class RLocalFileBase<T> : RBase<T>
+    public abstract class RLocalFileBase<T> : RBaseEx<T>
         where T : class
     {
         #region Path

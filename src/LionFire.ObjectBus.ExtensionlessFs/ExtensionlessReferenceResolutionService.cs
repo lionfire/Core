@@ -77,7 +77,7 @@ namespace LionFire.ObjectBus.ExtensionlessFs
 
                         retrieveResult = await OBase.Get<T>(referenceWithExtension).ConfigureAwait(false);
 
-                        if(!(await readHandle.Get<T>()).HasObject)
+                        if(!(await readHandle.GetValue<T>()).HasObject)
                         {
                             return null;
                         }

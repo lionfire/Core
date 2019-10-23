@@ -3,7 +3,6 @@
     /// <summary>
     /// Marker interface
     /// </summary>
-    /// <seealso>IResolvableEx</seealso>
     public interface IResolvable { }
 
     //public interface IStatefulResolvable

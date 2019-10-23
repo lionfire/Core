@@ -11,7 +11,7 @@ namespace LionFire.Persistence.Handles
     /// Backing fields: none
     /// </summary>
     /// <typeparam name="T"></typeparam>
-    public abstract class WBase<T> : RBase<T>, H<T>, ICommitableImpl, IDeletableImpl
+    public abstract class WBase<T> : RBaseEx<T>, H<T>, ICommitableImpl, IDeletableImpl
     //where T : class
     {
         internal static readonly bool DeleteIfObjectNull = true; // TODO: Decide how to configure/hardcode this
@@ -105,7 +105,7 @@ namespace LionFire.Persistence.Handles
         [ThreadSafe(false)]
         async Task<IPersistenceResult> IDeletableImpl.Delete()
         {
-            this.Object = default;
+            this.Value = default;
             DeletePending = true;
             var result = await DeleteObject();
             DeletePending = false;
@@ -114,7 +114,7 @@ namespace LionFire.Persistence.Handles
 
         public void MarkDeleted()
         {
-            this.Object = default;
+            this.Value = default;
             DeletePending = true;
         }
 
@@ -128,7 +128,7 @@ namespace LionFire.Persistence.Handles
 
         public virtual Task<IPersistenceResult> WriteObject(T @object)
         {
-            this.Object = @object;
+            this.Value = @object;
             return WriteObject();
         }
 

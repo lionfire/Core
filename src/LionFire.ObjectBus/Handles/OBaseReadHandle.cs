@@ -14,7 +14,7 @@ namespace LionFire.ObjectBus.Handles
     /// Handles can act as gatekeeper logic
     /// </remarks>
     /// <typeparam name="T"></typeparam>
-    public class OBaseReadHandle<T> : RBase<T>
+    public class OBaseReadHandle<T> : RBaseEx<T>
     {
         public IOBase OBase { get; }
 

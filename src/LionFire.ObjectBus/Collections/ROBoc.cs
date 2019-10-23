@@ -23,7 +23,7 @@ namespace LionFire.ObjectBus.Handles
     /// (Examples: filesystem directory, database table.)
     /// </summary>
     /// <typeparam name="TListEntry"></typeparam>
-    public abstract class ROBoc<T, TListEntry> : RBase<INotifyingReadOnlyCollection<TListEntry>>, RC<T, TListEntry>
+    public abstract class ROBoc<T, TListEntry> : RBaseEx<INotifyingReadOnlyCollection<TListEntry>>, RC<T, TListEntry>
         where TListEntry : ICollectionEntry
     {
         #region Construction
@@ -38,7 +38,7 @@ namespace LionFire.ObjectBus.Handles
         #endregion
 
         public RH<INotifyingReadOnlyCollection<T>> Handle { get; protected set; }
-        public INotifyingReadOnlyCollection<TListEntry> Entries => Object;
+        public INotifyingReadOnlyCollection<TListEntry> Entries => Value;
 
         public int Count => Entries.Count;
 

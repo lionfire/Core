@@ -26,7 +26,7 @@ namespace LionFire.Assets
             : base(hAsset)
         {
             this.assetObject = assetObject;
-            hAsset.Object = assetObject;
+            hAsset.Value = assetObject;
             
         }
 #endif

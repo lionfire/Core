@@ -22,7 +22,7 @@ namespace LionFire.Vos
    // OPTIMIZE - (Here and VobHandle)  Create Reference on demand?  Store the reference path in Vob, instead of VosReference?  Generate VosReference on demand?  or is this an app specific thing?
 
     [ReadOnlyEditionFor(typeof(VobHandle<>))]
-    public class VobReadHandle<T> : RBase<T>
+    public class VobReadHandle<T> : RBaseEx<T>
         , IVobReadHandle<T> // Has T because it is contravariantt
         , IProvidesHandleFromSubPath
       //, IHandleProvider -- FUTURE: get relative paths? Maybe a stretch.

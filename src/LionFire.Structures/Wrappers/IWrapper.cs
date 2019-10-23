@@ -1,7 +1,7 @@
 ﻿namespace LionFire.Structures
 {
     /// <summary>
-    /// Typically combined with IReadWrapper and/or IWriteWrapper
+    /// Typically combined with IReadWrapper
     /// </summary>
     public interface IWrapper
     {

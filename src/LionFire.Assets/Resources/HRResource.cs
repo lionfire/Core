@@ -5,7 +5,7 @@ using LionFire.Persistence.Handles;
 
 namespace LionFire.Resources
 {
-    public class HRResource<T> : RBase<T>
+    public class HRResource<T> : RBaseEx<T>
         where T : class
     {
         public static implicit operator HRResource<T>(string resourcePath)

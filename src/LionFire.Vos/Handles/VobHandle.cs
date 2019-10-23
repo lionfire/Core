@@ -71,18 +71,18 @@ namespace LionFire.Vos
             if (!HasValue)
             {
                 await RetrieveImpl().ConfigureAwait(false);
-                if (!HasValue) { Object = ReferenceObjectFactory.ConstructDefault<T>(Reference); }
+                if (!HasValue) { Value = ReferenceObjectFactory.ConstructDefault<T>(Reference); }
             }
-            return Object;
+            return Value;
         }
 
         public void EnsureConstructed() // REVIEW: What should be done here?
         {
             //RetrieveOrCreateDefault(); ??
 
-            if (Object == null)
+            if (Value == null)
             {
-                Object = ReferenceObjectFactory.ConstructDefault<T>(Reference);
+                Value = ReferenceObjectFactory.ConstructDefault<T>(Reference);
             }
         }
 
@@ -140,7 +140,7 @@ namespace LionFire.Vos
 
         public void MarkDeleted()
         {
-            this.Object = default(T);
+            this.Value = default(T);
             //OutgoingDeletePending = true;
         }
 

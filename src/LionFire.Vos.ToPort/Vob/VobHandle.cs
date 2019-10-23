@@ -1163,7 +1163,7 @@ namespace LionFire.Vos
         void IVobHandle.MergeWith(IVobHandle other)
         {
             l.Warn("VobHandle<" + typeof(ObjectType).Name + ">.MergeFrom (REVIEW) " + this.ToString());
-            this.Object = (ObjectType)other.Object;
+            this.Object = (ObjectType)other.Value;
 
             other.MergeInto(this);
         }
