@@ -12,7 +12,7 @@ namespace LionFire.Persistence
     //{
     //}
 
-    //public class CachelessResolvable<TKey, TValue> : IResolvable<TKey, TValue>, IRetrieves<TValue>
+    //public class CachelessResolvable<TKey, T> : IResolvable<TKey, T>, IRetrieves<T>
     //{
     //    public CachelessResolvable() { }
     //    public CachelessResolvable(TKey input) { this.input = input; }

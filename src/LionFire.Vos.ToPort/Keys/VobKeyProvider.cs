@@ -12,10 +12,10 @@ namespace LionFire.Vos
 
     //public static class VobMetaData
     //{
-    //    public static VobHandle<TValue> GetMetaData<TValue>(Vob vob)
-    //        where TValue : class, new()
+    //    public static VobHandle<T> GetMetaData<T>(Vob vob)
+    //        where T : class, new()
     //    {
-    //        VobHandle<TValue> vh = vob[VosPaths.MetaDataSubPath].ToHandle<TValue>();
+    //        VobHandle<T> vh = vob[VosPaths.MetaDataSubPath].ToHandle<T>();
     //        vh.RetrieveOrCreateDefault(() => VobKeyProvider.CreateDefault(vob));
     //        return vh;
     //    }

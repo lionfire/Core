@@ -9,8 +9,8 @@ namespace LionFire.Instantiating
     {
         object Create(InstantiationContext context = null);
     }
-    //public interface IFactory<TValue>
+    //public interface IFactory<T>
     //{
-    //    TValue Create(InstantiationContext context = null);
+    //    T Create(InstantiationContext context = null);
     //}
 }

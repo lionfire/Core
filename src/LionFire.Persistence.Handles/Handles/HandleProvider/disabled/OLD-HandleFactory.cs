@@ -11,28 +11,28 @@
 //    /// <summary>
 //    /// Caches Reference URIs to IHandles
 //    /// </summary>
-//    /// <typeparam name="TValue">Type of Object</typeparam>
-//    public static class HandleFactory<TValue> // RENAME to HandleTracker or HandleCache
-//        where TValue : class//, new()
+//    /// <typeparam name="T">Type of Object</typeparam>
+//    public static class HandleFactory<T> // RENAME to HandleTracker or HandleCache
+//        where T : class//, new()
 //    {
 
-//        //public static H<TValue> CreateHandle(IReference reference, TValue obj = null)
-//        //    //where TValue:class
+//        //public static H<T> CreateHandle(IReference reference, T obj = null)
+//        //    //where T:class
 //        //{
-//        //    H<TValue> handle = new HDynamic<TValue>(reference, obj);
+//        //    H<T> handle = new HDynamic<T>(reference, obj);
 //        //    return handle;
 //        //}
 
 //        [Obsolete("Moved to HandleTracker")]
-//        public static H<TValue> ToHandle(IReference reference, TValue obj = null)
-//        //where TValue:class
+//        public static H<T> ToHandle(IReference reference, T obj = null)
+//        //where T:class
 //        {
-//            return HandleProvider<TValue>.ToHandle(reference, obj);
+//            return HandleProvider<T>.ToHandle(reference, obj);
 //        }         
 
-//        //public static H<TValue> CreateHandle(IReference reference)
+//        //public static H<T> CreateHandle(IReference reference)
 //        //{
-//        //    var handle = new HDynamic<TValue>(reference);
+//        //    var handle = new HDynamic<T>(reference);
 //        //    return handle;
 //        //}
 //    }

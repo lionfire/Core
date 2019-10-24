@@ -7,8 +7,8 @@
 //{
 //    public class ThrowingReferenceResolver : IReferenceRetriever
 //    {
-//        public Task<RetrieveReferenceResult<TValue>> Retrieve<TValue>(IReference reference)
-//            where TValue : class
+//        public Task<RetrieveReferenceResult<T>> Retrieve<T>(IReference reference)
+//            where T : class
 //        {
 //            throw new Exception("No IReferenceResolver available");
 //        }

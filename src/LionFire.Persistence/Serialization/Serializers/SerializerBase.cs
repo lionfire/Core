@@ -27,7 +27,7 @@ namespace LionFire.Serialization
 
             static SerializerBaseReflectionInfo()
             {
-                //foreach (var mi in typeof(TValue).GetMethods())
+                //foreach (var mi in typeof(T).GetMethods())
                 //{
                 //    Debug.WriteLine(mi.Name + " ");
                 //    foreach (var param in mi.GetParameters())
@@ -37,7 +37,7 @@ namespace LionFire.Serialization
                 //}
 
                 HasToString = typeof(T).GetMethod("ToString", new Type[] { typeof(object), typeof(Lazy<PersistenceOperation>), typeof(PersistenceContext) }).DeclaringType != typeof(SerializerBaseReflectionInfo<T>);
-                //System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.Public).DeclaringType != typeof(SerializerBaseReflectionInfo<TValue>);
+                //System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.Public).DeclaringType != typeof(SerializerBaseReflectionInfo<T>);
                 HasToBytes = typeof(T).GetMethod("ToBytes", System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.Public).DeclaringType != typeof(SerializerBaseReflectionInfo<T>);
                 HasToStream = typeof(T).GetMethod("ToStream", System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.Public).DeclaringType != typeof(SerializerBaseReflectionInfo<T>);
 
@@ -183,7 +183,7 @@ namespace LionFire.Serialization
         protected byte[] StringToBytes(string str, PersistenceContext context = null) => (context?.SerializationContext?.Encoding ?? DefaultEncoding).GetBytes(str);
         protected string BytesToString(byte[] bytes, PersistenceContext context = null) => (context?.SerializationContext?.Encoding ?? DefaultEncoding).GetString(bytes);
 
-        //public abstract TValue ToObject<TValue>(string serializedData, SerializationContext context = null);
+        //public abstract T ToObject<T>(string serializedData, SerializationContext context = null);
 
         #endregion
 

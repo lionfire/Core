@@ -10,9 +10,9 @@ namespace LionFire.Persistence
     //    object DeepClone();
     //}
 
-    //public interface IDeepCloner<TValue>
+    //public interface IDeepCloner<T>
     //{
-    //    TValue DeepClone(TValue source);
+    //    T DeepClone(T source);
     //}
 
     /*

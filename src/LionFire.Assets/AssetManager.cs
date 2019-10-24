@@ -237,13 +237,13 @@ namespace LionFire.Assets
         //}
 
 
-        //public static TValue Load(string path, string packageName = null)
+        //public static T Load(string path, string packageName = null)
         //{
         //    if (String.IsNullOrEmpty(path)) return null;
 
         //    if (instancesLoadedByPath.ContainsKey(path)) return instancesLoadedByPath[path];
 
-        //    //if (typeof(TValue) == typeof(Package)) throw new ValorException("Cannot load package with a path containing a package specifier");
+        //    //if (typeof(T) == typeof(Package)) throw new ValorException("Cannot load package with a path containing a package specifier");
 
         //    if (path.Contains(";"))
         //    {
@@ -265,7 +265,7 @@ namespace LionFire.Assets
         //    }
         //}
 
-        //public static void Save(TValue asset)
+        //public static void Save(T asset)
         //{
         //    if(asset.Package == null) throw new ArgumentException("Package not set.");
 
@@ -286,13 +286,13 @@ namespace LionFire.Assets
 
     //public static class AssetExtensions
     //{
-    //    public static void Save<TValue>(this TValue asset)
-    //        where TValue : class, IAsset
+    //    public static void Save<T>(this T asset)
+    //        where T : class, IAsset
     //    {
-    //        AssetManager<TValue>.Save(asset);
+    //        AssetManager<T>.Save(asset);
     //    }
 
-    //    //public static TValue Load<TValue>(string assetPath)
+    //    //public static T Load<T>(string assetPath)
     //    //{
 
     //    //}
@@ -344,7 +344,7 @@ namespace LionFire.Assets
 
     //    Dictionary<string, IAsset> loadedAssets = new Dictionary<string, IAsset>();
 
-    //    public void Register<TValue>(TValue asset) where TValue : IAsset
+    //    public void Register<T>(T asset) where T : IAsset
     //    {
     //        if (asset == null) throw new ArgumentNullException();
     //        if (loadedAssets.ContainsKey(asset.Id.Name))
@@ -357,7 +357,7 @@ namespace LionFire.Assets
 
     //    #region Unload
 
-    //    public void Unload<TValue>(TValue asset) where TValue : IAsset
+    //    public void Unload<T>(T asset) where T : IAsset
     //    {
     //        if (asset == null) throw new ArgumentNullException();
     //        loadedAssets.Remove(asset.Id.Name);
@@ -380,15 +380,15 @@ namespace LionFire.Assets
 
     //    public static Dictionary<string, Map> loadedMaps = new Dictionary<string, Map>();
 
-    //    public TValue Load<TValue>(string assetName)
-    //        //where TValue : IAsset
+    //    public T Load<T>(string assetName)
+    //        //where T : IAsset
     //    {
-    //        switch (typeof(TValue).Name)
+    //        switch (typeof(T).Name)
     //        {
     //            case "Map":
     //                // STUB
     //                {
-    //                    if (loadedMaps.ContainsKey(assetName)) return (TValue)(object) loadedMaps[assetName];
+    //                    if (loadedMaps.ContainsKey(assetName)) return (T)(object) loadedMaps[assetName];
 
     //                    Map map = new Map();
 
@@ -404,7 +404,7 @@ namespace LionFire.Assets
     //                    {
     //                        loadedMaps[assetName] = map;
     //                    }
-    //                    return (TValue) (object)map;
+    //                    return (T) (object)map;
     //                }
     //            case "TheatreEngine":
     //                if (loadedAssets.ContainsKey(assetName))
@@ -416,7 +416,7 @@ namespace LionFire.Assets
     //                    }
     //                    else
     //                    {
-    //                        return (TValue)(object)engine;
+    //                        return (T)(object)engine;
     //                    }
     //                }
     //                else
@@ -430,17 +430,17 @@ namespace LionFire.Assets
     //                    Name = "DefaultRules",
     //                    DisplayName = "Default",
     //                };
-    //                return (TValue) (object)rules;
+    //                return (T) (object)rules;
     //                break;
     //            default:
     //                throw new NotSupportedException();
     //        }
     //    }
 
-    //    public string[] GetLocalNames<TValue>() where TValue : IAsset
+    //    public string[] GetLocalNames<T>() where T : IAsset
     //    {
     //        return new string[] { "Test1", "Test2", "Test3" };
-    //        //switch (typeof(TValue).Name)
+    //        //switch (typeof(T).Name)
     //        //{
     //        //    case "Map":
     //        //        // STUB

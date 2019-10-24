@@ -307,10 +307,10 @@ namespace LionFire.Vos
 
         // OLD Extension methods
         //#if !AOT
-        //        public static IHandle<TValue> ToHandle<TValue>(this IReference reference, TValue obj = null)
-        //            where TValue : class//, new()
+        //        public static IHandle<T> ToHandle<T>(this IReference reference, T obj = null)
+        //            where T : class//, new()
         //        {
-        //            return HandleFactory<TValue>.GetHandle(reference, obj);
+        //            return HandleFactory<T>.GetHandle(reference, obj);
         //        }
 
         //#endif

@@ -7,20 +7,20 @@
 //{
 //    public static class ResolutionResultExtensions
 //    {
-//        public static RH<TValue> ToReadHandle<TValue>(this ReadResolutionResult<TValue> rrr)
+//        public static RH<T> ToReadHandle<T>(this ReadResolutionResult<T> rrr)
 //        {
 //            if (rrr.ReadHandle == null && rrr.Reference != null)
 //            {
-//                rrr.ReadHandle = rrr.Reference.ToReadHandle<TValue>();
+//                rrr.ReadHandle = rrr.Reference.ToReadHandle<T>();
 //            }
 //            return rrr.ReadHandle;
 //        }
 
-//        public static H<TValue> ToHandle<TValue>(this WriteResolutionResult<TValue> wrr)
+//        public static H<T> ToHandle<T>(this WriteResolutionResult<T> wrr)
 //        {
 //            if (wrr.Handle == null && wrr.Reference != null)
 //            {
-//                wrr.Handle = wrr.Reference.ToHandle<TValue>();
+//                wrr.Handle = wrr.Reference.ToHandle<T>();
 //            }
 //            return wrr.Handle;
 //        }

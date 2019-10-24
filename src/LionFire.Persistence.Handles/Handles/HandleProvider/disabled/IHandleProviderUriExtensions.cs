@@ -4,14 +4,14 @@
 //{
 //    public static class IHandleProviderUriExtensions
 //    {
-//        public static H<TValue> ToHandle<TValue>(this string uri) => new UriStringReference(uri).ToHandle<TValue>();
-//        public static H<TValue> ToHandle<TValue>(this Uri uri) => new UriReference(uri).ToHandle<TValue>();
+//        public static H<T> ToHandle<T>(this string uri) => new UriStringReference(uri).ToHandle<T>();
+//        public static H<T> ToHandle<T>(this Uri uri) => new UriReference(uri).ToHandle<T>();
 
 //    }
 
-//    public H<TValue> ToHandle<TValue>(IReference reference)
+//    public H<T> ToHandle<T>(IReference reference)
 //    {
-//        //new HDynamic<TValue>()
+//        //new HDynamic<T>()
 //        //    {
 //        //        Ref
 //        //    }

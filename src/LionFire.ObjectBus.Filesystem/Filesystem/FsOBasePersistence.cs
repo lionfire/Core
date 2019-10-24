@@ -349,7 +349,7 @@ namespace LionFire.ObjectBus.Filesystem
 #endif
 
         // MOVE to Extensionless
-        //public static async Task<bool> Exists<TValue>(string objectPath)
+        //public static async Task<bool> Exists<T>(string objectPath)
         //{
         //    if (type == null)
         //    {
@@ -368,10 +368,10 @@ namespace LionFire.ObjectBus.Filesystem
         public static async Task<T> TryGet<T>(string objectPath) => await GetObjectFromDiskPath<T>(objectPath);
 
         // MOVE to Extensionless:
-        //public static async Task<TValue> TryGet<TValue>(string objectPath)
+        //public static async Task<T> TryGet<T>(string objectPath)
         //{
         //    var objects = new List<object>();
-        //    object obj = await GetObjectFromDiskPath<TValue>(objectPath, typeof(TValue));
+        //    object obj = await GetObjectFromDiskPath<T>(objectPath, typeof(T));
         //    objects.Add(obj);
 
         //    if (objects.Count > 1)
@@ -383,7 +383,7 @@ namespace LionFire.ObjectBus.Filesystem
         //        return objects.SingleOrDefault();
         //    }
 
-        //    (TValue)await TryGet(objectPath, typeof(TValue));
+        //    (T)await TryGet(objectPath, typeof(T));
         //}
 
 
@@ -392,7 +392,7 @@ namespace LionFire.ObjectBus.Filesystem
         //public static async Task<object> TryGetOneOrMany(string objectPath, Type type = null)
         //{
         //    var objects = new List<object>();
-        //    object obj = await GetObjectFromPath<TValue>(objectPath, type);
+        //    object obj = await GetObjectFromPath<T>(objectPath, type);
         //    objects.Add(obj);
 
         //    if (objects.Count > 1)
@@ -543,8 +543,8 @@ namespace LionFire.ObjectBus.Filesystem
             });
         }
 
-        //public static void Set<TValue>(object obj, string objectPath)
-        //    where TValue : class
+        //public static void Set<T>(object obj, string objectPath)
+        //    where T : class
         //{
         //}
 

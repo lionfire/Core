@@ -12,9 +12,9 @@
 //            | SerializationFlags.Deserialize
 //            | SerializationFlags.Serialize;
 
-//        //public override TValue ToObject<TValue>(SerializationContext context)
+//        //public override T ToObject<T>(SerializationContext context)
 //        //{
-//        //    return this.ToObject<TValue>(UTF8Encoding.UTF8.GetString(context.BytesData), context);
+//        //    return this.ToObject<T>(UTF8Encoding.UTF8.GetString(context.BytesData), context);
 //        //}
 
 //        //public override byte[] ToBytes(object obj, SerializationContext context)

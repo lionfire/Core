@@ -11,22 +11,22 @@ namespace LionFire.Persistence
         ///// <summary>
         ///// If HasObject is true, do nothing (regardless of whether it was retrieved, or set by the user).  Otherwise, retrieve the Object.
         ///// </summary>
-        ///// <typeparam name="TValue"></typeparam>
+        ///// <typeparam name="T"></typeparam>
         ///// <param name="handle"></param>
         ///// <returns>handle.HasObject</returns>
-        //public static async Task<bool> TryEnsureRetrieved<TValue>(this RH<TValue> handle)
+        //public static async Task<bool> TryEnsureRetrieved<T>(this RH<T> handle)
         //{
         //    if (handle.HasObject) return true;
 
         //    if (handle.Reference == null) return false;
 
-        //    await handle.Get<TValue>().ConfigureAwait(false);
+        //    await handle.Get<T>().ConfigureAwait(false);
 
         //    return handle.HasObject;
         //}
 
             // OLD - Just use .Object
-//        public static async Task<TValue> ToObject<TValue>(this RH<TValue> handle)
+//        public static async Task<T> ToObject<T>(this RH<T> handle)
 //        {
 //            if (handle.HasObject) return handle.Object;
 

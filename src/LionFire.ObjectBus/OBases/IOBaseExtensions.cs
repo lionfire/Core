@@ -34,9 +34,9 @@ namespace LionFire.ObjectBus
 
     //    //private static Dictionary<string, IOBase> objectStoreProvidersByUriScheme = new Dictionary<string, IOBase>();
 
-    //    //private static void RegisterType<TValue>() where TValue : IOBase, new()
+    //    //private static void RegisterType<T>() where T : IOBase, new()
     //    //{
-    //    //    var objectStore = new TValue();
+    //    //    var objectStore = new T();
     //    //    foreach (var scheme in objectStore.UriSchemes)
     //    //    {
     //    //        objectStoreProvidersByUriScheme.Add(scheme, objectStore);

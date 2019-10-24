@@ -10,7 +10,7 @@ namespace LionFire.Assets
 {
     public static class AssetInstantiationExtensions
     {
-        public static object GetInstantiation<TValue>(this TValue obj)
+        public static object GetInstantiation<T>(this T obj)
         {
             var objTemplateInstance = obj as ITemplateInstance;
 

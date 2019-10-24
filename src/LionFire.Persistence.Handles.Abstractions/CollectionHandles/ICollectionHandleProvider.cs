@@ -14,6 +14,6 @@ namespace LionFire.Persistence.Handles
     public interface ICollectionHandleProvider<TReference>
     where TReference : IReference
     {
-        //HC<TValue> GetCollectionHandle<TValue>(TReference reference);
+        //HC<T> GetCollectionHandle<T>(TReference reference);
     }
 }

@@ -23,7 +23,7 @@ namespace LionFire.Vos
 
     [ReadOnlyEditionFor(typeof(VobHandle<>))]
     public class VobReadHandle<T> : RBaseEx<T>
-        , IVobReadHandle<T> // Has TValue because it is contravariantt
+        , IVobReadHandle<T> // Has T because it is contravariantt
         , IProvidesHandleFromSubPath
       //, IHandleProvider -- FUTURE: get relative paths? Maybe a stretch.
     {
@@ -70,7 +70,7 @@ namespace LionFire.Vos
         }
 
         /// <summary>
-        /// Finds Vob using default available VBase.  Uses VosReference from that Vob, typed to TValue.
+        /// Finds Vob using default available VBase.  Uses VosReference from that Vob, typed to T.
         /// </summary>
         /// <param name="vosReference"></param>
         public VobReadHandle(VosReference vosReference)
@@ -79,7 +79,7 @@ namespace LionFire.Vos
         }
 
         /// <summary>
-        /// Finds Vob using default available VBase.  Uses VosReference from that Vob, typed to TValue.
+        /// Finds Vob using default available VBase.  Uses VosReference from that Vob, typed to T.
         /// </summary>
         /// <param name="reference">Currently must be of type VosReference.  (FUTURE: Allow reference types compatible with / convertible to VosReference)</param>
         public VobReadHandle(IReference reference) : this((VosReference)reference)
@@ -217,12 +217,12 @@ namespace LionFire.Vos
 
         #region Object
 
-        //object IVobHandle<object>.Object { get => Object; set => Object = (TValue)value; }
+        //object IVobHandle<object>.Object { get => Object; set => Object = (T)value; }
 
         //object IReadWrapper<object>.Object => throw new NotImplementedException();
-        //object H<object>.Object { get => Object; set => Object = (TValue)value; }
+        //object H<object>.Object { get => Object; set => Object = (T)value; }
         //object IReadWrapper<object>.Object => Object;
-        //object IWriteWrapper<object>.Object { set => Object = (TValue)value; }
+        //object IWriteWrapper<object>.Object { set => Object = (T)value; }
 
         //public bool IsObjectReferenceFrozen { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
         //public event PropertyChangedEventHandler ObjectPropertyChanged;

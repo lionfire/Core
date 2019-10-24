@@ -11,12 +11,12 @@ namespace LionFire.Persistence.Collections
     //    public interface C : HC<object> { }
 
 
-    //    //public interface D<TValue>
+    //    //public interface D<T>
     //    //{
     //    //}
 
 
-    //        // HC<TValue> MOVED to RC.cs Temporarily
+    //        // HC<T> MOVED to RC.cs Temporarily
 
     //    public enum CollectionOperationType
     //    {
@@ -39,21 +39,21 @@ namespace LionFire.Persistence.Collections
     //    //{
     //    //    void InsertAt(int index, IHandleBase handle);
     //    //    void RemoveAt(int index, IHandleBase handle);
-    //    //    H<TValue> ElementAt(int index);
+    //    //    H<T> ElementAt(int index);
     //    //}
 
-    //    public interface IIndexableCollection<TValue>
+    //    public interface IIndexableCollection<T>
     //    {
-    //        void InsertAt(int index, H<TValue> handle);
-    //        void RemoveAt(int index, H<TValue> handle);
-    //        H<TValue> ElementAt(int index);
+    //        void InsertAt(int index, H<T> handle);
+    //        void RemoveAt(int index, H<T> handle);
+    //        H<T> ElementAt(int index);
     //    }
 
 
     //    // RC Collection types:
     //    // - IEnumerable
     //    // - ReadOnlyList
-    //    // - ReadOnlyDictionary<string,TValue>
+    //    // - ReadOnlyDictionary<string,T>
 
     //    // C Collection types:
     //    // - name value dict

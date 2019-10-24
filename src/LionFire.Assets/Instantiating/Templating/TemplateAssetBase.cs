@@ -322,21 +322,21 @@ namespace LionFire.Assets
     //    public override Type InstantiationType { get { return typeof(InstantiationType_); } }
     //}
 
-    //public class HRObject<TValue> : IReadHandle<TValue> // MOVE
-    //    where TValue:class
+    //public class HRObject<T> : IReadHandle<T> // MOVE
+    //    where T:class
     //{
-    //    public HRObject(TValue obj)
+    //    public HRObject(T obj)
     //    {
     //        this.obj = obj;
     //    }
 
     //    public bool HasObject { get { return obj != null; } }
-    //    public TValue Object
+    //    public T Object
     //    {
     //        get { return obj; }
-    //    } private TValue obj;
+    //    } private T obj;
 
-    //    public TValue ObjectField
+    //    public T ObjectField
     //    {
     //        get { return obj; }
     //    }

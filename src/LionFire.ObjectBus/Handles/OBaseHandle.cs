@@ -24,7 +24,7 @@ namespace LionFire.ObjectBus.Handles
             => await OBase.Get<T>(this.Reference).ConfigureAwait(false);
 
         //protected async Task<IPersistenceResult> DeleteObject()
-        //    => await OBase.TryDelete<TValue>(this.Reference).ConfigureAwait(false);
+        //    => await OBase.TryDelete<T>(this.Reference).ConfigureAwait(false);
 
         protected override async Task<IPersistenceResult> DeleteObject()
             => await OBase.TryDelete<T>(this.Reference).ConfigureAwait(false);

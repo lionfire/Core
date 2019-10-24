@@ -43,7 +43,7 @@ namespace LionFire.Vos
         }
 
         /// <summary>
-        /// Finds Vob using default available VBase.  Uses VosReference from that Vob, typed to TValue.
+        /// Finds Vob using default available VBase.  Uses VosReference from that Vob, typed to T.
         /// </summary>
         /// <param name="vosReference"></param>
         public VobHandle(VosReference vosReference) : base(vosReference)
@@ -51,7 +51,7 @@ namespace LionFire.Vos
         }
 
         /// <summary>
-        /// Finds Vob using default available VBase.  Uses VosReference from that Vob, typed to TValue.
+        /// Finds Vob using default available VBase.  Uses VosReference from that Vob, typed to T.
         /// </summary>
         /// <param name="reference">Currently must be of type VosReference.  (FUTURE: Allow reference types compatible with / convertible to VosReference)</param>
         public VobHandle(IReference reference) : base(reference)

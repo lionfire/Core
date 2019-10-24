@@ -29,7 +29,7 @@ namespace LionFire.Overlays
 
         OverlayParameters Parameters { get; }
 
-        //TValue EffectiveInstance(PropertyInfo pi);
+        //T EffectiveInstance(PropertyInfo pi);
 
     }
 

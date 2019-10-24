@@ -9,19 +9,19 @@
 //    {
 //        public IEnumerable<Type> HandleTypes => DependencyContext.Current.GetService<IEnumerable<IHandleProvider>>().SelectMany(hp => hp.HandleTypes);
 
-//        public H<TValue> ToHandleOrThrow<TValue>(IReference reference) where TValue : class
+//        public H<T> ToHandleOrThrow<T>(IReference reference) where T : class
 //        {
-//            var result = ToHandleOrThrow<TValue>(reference);
+//            var result = ToHandleOrThrow<T>(reference);
 //            if (result != null) return result;
 
 //            throw new Exception($"Failed to provide handle for reference with scheme {reference.Scheme}.  Have you registered the relevant IHandleProvider service?");
 //        }
 
-//        public H<TValue> ToHandle<TValue>(IReference reference, TValue handleObject = default(TValue))
+//        public H<T> ToHandle<T>(IReference reference, T handleObject = default(T))
 //        {
 //            foreach(var hp in DependencyContext.Current.GetService<IEnumerable<IHandleProvider>>())
 //            {
-//                var h = hp.ToHandle<TValue>(reference, handleObject);
+//                var h = hp.ToHandle<T>(reference, handleObject);
 //                if (h != null) return h;
 //            }
 

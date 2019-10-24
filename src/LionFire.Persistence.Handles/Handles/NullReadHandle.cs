@@ -36,7 +36,7 @@ namespace LionFire.Persistence.Handles
         public Task<bool> Exists(bool forceCheck = false) => Task.FromResult(true);
 
 
-        public Task<ILazyResolveResult<object /* TValue */>> GetValue() => Task.FromResult<ILazyResolveResult<object>>(LazyResolveResultNoop<object>.Instance);
+        public Task<ILazyResolveResult<object /* T */>> GetValue() => Task.FromResult<ILazyResolveResult<object>>(LazyResolveResultNoop<object>.Instance);
         public Task<IResolveResult<object>> Resolve() => Task.FromResult<IResolveResult<object>>(NoopRetrieveResult);
         public Task<bool> TryResolveObject() => Task.FromResult(true);
 

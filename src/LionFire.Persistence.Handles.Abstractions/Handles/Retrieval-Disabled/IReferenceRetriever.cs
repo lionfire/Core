@@ -9,7 +9,7 @@
 //    /// </summary>
 //    public interface IReferenceRetriever
 //    {
-//        Task<RetrieveReferenceResult<TValue>> Retrieve<TValue>(IReference reference)
-//            where TValue : class;
+//        Task<RetrieveReferenceResult<T>> Retrieve<T>(IReference reference)
+//            where T : class;
 //    }
 //}

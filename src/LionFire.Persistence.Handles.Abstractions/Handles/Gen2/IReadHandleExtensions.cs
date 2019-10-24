@@ -21,7 +21,7 @@ namespace LionFire.Referencing
         //}
 
         /// <summary>
-        /// Fallback to provide ILazilyResolves<TValue>.Get to RH<TValue>
+        /// Fallback to provide ILazilyResolves<T>.Get to RH<T>
         /// Also makes Object return value strongly typed for the covariant ILazilyResolves.
         /// </summary>
         /// <typeparam name="T"></typeparam>

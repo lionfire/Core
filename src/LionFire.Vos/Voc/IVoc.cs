@@ -10,7 +10,7 @@ namespace LionFire.Vos
 {
     /// <remarks>
     /// "Vob Handle Collection" - maybe change the name or combine with IVoc
-    /// Maybe make this a Dictionary&lt;name,VobReadHandle`TValue&gt;
+    /// Maybe make this a Dictionary&lt;name,VobReadHandle`T&gt;
     /// </remarks>
     /// <typeparam name="T"></typeparam>
     public interface IVohac<T> : INotifyingList<VobReadHandle<T>>

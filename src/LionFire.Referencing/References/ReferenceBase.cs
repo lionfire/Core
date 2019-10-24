@@ -41,7 +41,7 @@ namespace LionFire.Referencing
 
         //#region Copy From
 
-        //protected override void CopyFrom(TValue other)
+        //protected override void CopyFrom(T other)
         //{
         //    this.Key = other.Key;
         //    //this.Host = other.Host;

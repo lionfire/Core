@@ -74,7 +74,7 @@ namespace LionFire // RENAME LionFire.ExtensionMethods
 #endif
 #endif
 
-        //public static IReadOnlyDictionary<TKey, TValue> ToReadOnly<TKey, TValue>(this IDictionary<TKey, TValue> dictionary)
+        //public static IReadOnlyDictionary<TKey, T> ToReadOnly<TKey, T>(this IDictionary<TKey, T> dictionary)
         //{
         //    // TODO: Wrap dictionary in read-only wrapper
         //}

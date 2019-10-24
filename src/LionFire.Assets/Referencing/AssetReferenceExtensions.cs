@@ -10,7 +10,7 @@ namespace LionFire.Persistence.Assets
 #if !AOT
         public static AssetReference<T> ToAssetReference<T>(this string name)
             where T : class, IAsset => throw new NotImplementedException("TOPORT - AssetPaths");
-            //AssetPaths.AssetPathFromAssetTypePath<TValue>(name);
+            //AssetPaths.AssetPathFromAssetTypePath<T>(name);
 #endif
     }
 

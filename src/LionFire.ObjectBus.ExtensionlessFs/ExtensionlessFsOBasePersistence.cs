@@ -424,8 +424,8 @@ namespace LionFire.ObjectBus.Filesystem
             });
         }
 
-        //public static void Set<TValue>(object obj, string objectPath)
-        //    where TValue : class
+        //public static void Set<T>(object obj, string objectPath)
+        //    where T : class
         //{
         //}
 

@@ -6,18 +6,18 @@ namespace LionFire.Serialization.Json.Newtonsoft
     // FUTURE - to revive?
     //public static class NewtonsoftJsonFileReadHandleFactoryExtensions
     //{
-    //    public static IReadHandle<TValue> GetJsonFileReadHandle<TValue>(this string path)
-    //        where TValue : class
+    //    public static IReadHandle<T> GetJsonFileReadHandle<T>(this string path)
+    //        where T : class
     //    {
-    //        return new CustomReadHandle<TValue>(path)
+    //        return new CustomReadHandle<T>(path)
     //        {
-    //            Resolver = ResolveFileToJsonDeserialize<TValue>
+    //            Resolver = ResolveFileToJsonDeserialize<T>
     //        };
     //    }
 
-    //    public static TValue ResolveFileToJsonDeserialize<TValue>(string path)
+    //    public static T ResolveFileToJsonDeserialize<T>(string path)
     //    {
-    //        return JsonConvert.DeserializeObject<TValue>(File.ReadAllText(path));
+    //        return JsonConvert.DeserializeObject<T>(File.ReadAllText(path));
     //    }
     //}
 

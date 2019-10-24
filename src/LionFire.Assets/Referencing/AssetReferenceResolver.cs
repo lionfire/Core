@@ -32,7 +32,7 @@ namespace LionFire.Assets
             //            if (downcastIfInterfaceType && typeof(AssetType).IsInterface && typeof(AssetType) != concreteType)
             //            {
             //                return AssetPathToHandle
-            //                l.Error("AssetReferenceResolver.AssetNameToHandle: typeof(TValue) (" + typeof(AssetType) + ") != concreteAssetType (" + concreteType + ").  TODO: implement VobHandle downcast. For name: " + name + " Returning: " + result + " " + Environment.StackTrace);
+            //                l.Error("AssetReferenceResolver.AssetNameToHandle: typeof(T) (" + typeof(AssetType) + ") != concreteAssetType (" + concreteType + ").  TODO: implement VobHandle downcast. For name: " + name + " Returning: " + result + " " + Environment.StackTrace);
             //            }
             //#endif
             var result = path.AssetPathToHandle<AssetType>(package, location, ignoreContext: ignoreContext);
@@ -41,7 +41,7 @@ namespace LionFire.Assets
         //#endif
         public static IVobHandle<object> AssetNameToHandle(this string name, string package = null, string location = null, bool ignoreContext = false, Type concreteAssetType = null, Type T = null)
         {
-            if (T == null) throw new ArgumentNullException("TValue");
+            if (T == null) throw new ArgumentNullException("T");
 
             string path = LionPath.Combine(AssetPaths.GetAssetTypeFolder(concreteAssetType ?? T), name); // TOTEST
             return path.AssetPathToHandle(package, location, ignoreContext, concreteAssetType ?? T); // TOTEST
@@ -53,7 +53,7 @@ namespace LionFire.Assets
             where T : class
         {
             //if (concreteType != null) { l.Debug("Not implemented: casting to concrete type."); } // Needs further analysis about how to best handle this - TODO
-            //return (VobHandle<TValue>)AssetPathToHandle(assetPath, package, location, ignoreContext, concreteType ?? typeof(TValue));
+            //return (VobHandle<T>)AssetPathToHandle(assetPath, package, location, ignoreContext, concreteType ?? typeof(T));
             return (VobHandle<T>)AssetPathToHandle(assetPath, package, location, ignoreContext, typeof(T));
         }
 

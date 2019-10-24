@@ -26,7 +26,7 @@ namespace LionFire.Hosting.ExtensionMethods
 
         public InitializingLifetimeWrapper(T wrappedLifetime, IEnumerable<IInitializable3> initializers) {
             //this.serviceProvider = serviceProvider;
-            this.WrappedLifetime = wrappedLifetime;// ?? new TValue();
+            this.WrappedLifetime = wrappedLifetime;// ?? new T();
             this.initializers = initializers;
         }
 

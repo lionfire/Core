@@ -48,12 +48,12 @@ namespace LionFire.ObjectBus.ExtensionlessFs
         #endregion
 
         // FUTURE NETSTANDARD3 IAsyncEnumerable
-        //public async Task<IEnumerable<ReadResolutionResult<TValue>>> ResolveAll<TValue>(IReference r, ResolveOptions options = null)
+        //public async Task<IEnumerable<ReadResolutionResult<T>>> ResolveAll<T>(IReference r, ResolveOptions options = null)
         //{
         //    return await Task.Run(async () =>
         //    {
-        //        var result = new List<ReadResolutionResult<TValue>>();
-        //        foreach (var x in await _ResolveAll<TValue>(r, options)) {
+        //        var result = new List<ReadResolutionResult<T>>();
+        //        foreach (var x in await _ResolveAll<T>(r, options)) {
         //            result.Add(await x);
         //        }
         //        return result;
@@ -119,11 +119,11 @@ namespace LionFire.ObjectBus.ExtensionlessFs
 //        /// Returns the first potentially valid underlying reference for the given logical reference.  If options specifies VerifyDeserializable = true, the object will actually be read into
 //        /// ReadResolutionResult.ReadHandle.  
 //        /// </summary>
-//        /// <typeparam name="TValue">Non-multitype OBases should always use object</typeparam>
+//        /// <typeparam name="T">Non-multitype OBases should always use object</typeparam>
 //        /// <param name="reference"></param>
 //        /// <param name="options"></param>
 //        /// <returns></returns>
-//        public async IAsyncEnumerable<ReadResolutionResult<TValue>> ResolveForRead<TValue>(IReference reference, ResolveOptions options = null)
+//        public async IAsyncEnumerable<ReadResolutionResult<T>> ResolveForRead<T>(IReference reference, ResolveOptions options = null)
 //        {
 //            if (options == null) options = DefaultResolveReadOptions;
 
@@ -138,22 +138,22 @@ namespace LionFire.ObjectBus.ExtensionlessFs
 
 
 
-//                    var retrieveResult = OBase.TryGet<TValue>(referenceWithExtension);
+//                    var retrieveResult = OBase.TryGet<T>(referenceWithExtension);
 //                    if (retrieveResult != null)
 //                    {
-//                        yield return new ReadResolutionResult<TValue>(new RH<TValue>(referenceWithExtension, retrieveResult));
+//                        yield return new ReadResolutionResult<T>(new RH<T>(referenceWithExtension, retrieveResult));
 //                    }
 //                }
 //                else if (options.VerifyExists && (await OBase.Exists(referenceWithExtension).ConfigureAwait(false)))
 //                {
-//                    yield return new ReadResolutionResult<TValue>(referenceWithExtension);
+//                    yield return new ReadResolutionResult<T>(referenceWithExtension);
 //                }
 //                else
 //                {
-//                    yield return new ReadResolutionResult<TValue>(referenceWithExtension);
+//                    yield return new ReadResolutionResult<T>(referenceWithExtension);
 //                }
 
-//                if (await OBase.ExistsAsType<TValue>(referenceWithExtension).ConfigureAwait(false))
+//                if (await OBase.ExistsAsType<T>(referenceWithExtension).ConfigureAwait(false))
 //                {
 //                    // So a question is, when deserializing, whether to do: 1) throw exception if unexpected type, 2) return nothing if unexpected type, 3) attempt duck typing.
 //                    // Another question, when serializing: merge or replace if using duck typing.
@@ -171,17 +171,17 @@ namespace LionFire.ObjectBus.ExtensionlessFs
     //{
     //    public List<ReferenceResolutionStrategy> Strategies { get; private set; }
 
-    //    public IEnumerable<R<TValue>> Resolve<TValue>(IReference r, ResolveOptions options = null)
+    //    public IEnumerable<R<T>> Resolve<T>(IReference r, ResolveOptions options = null)
     //    {
     //        //DependencyContext
     //    }
 
-    //    public Task<TValue> Get(IReference r)
+    //    public Task<T> Get(IReference r)
     //    {
 
     //    }
 
-    //    public Task<bool> Exists<TValue>(IReference r)
+    //    public Task<bool> Exists<T>(IReference r)
     //    {
 
     //    }

@@ -109,7 +109,7 @@ namespace LionFire.ObjectBus.Filesystem
                     {
 
                         var obj = await FsOBasePersistence.TryGet<T>(encapsulatedRef.Path).ConfigureAwait(false);
-                        //converted = (TValue)OBaseTypeUtils.TryConvertToType(obj, typeof(TValue));
+                        //converted = (T)OBaseTypeUtils.TryConvertToType(obj, typeof(T));
                         if (obj != null)
                         {
                             break;
@@ -208,13 +208,13 @@ namespace LionFire.ObjectBus.Filesystem
         //}
 
         // OLD
-        //public override async Task<IRetrieveResult<TValue>> TryGet<TValue>(LocalFileReference reference)
+        //public override async Task<IRetrieveResult<T>> TryGet<T>(LocalFileReference reference)
         //{
-        //    Type ResultType = typeof(TValue); // REFACTOR
-        //    var result = new RetrieveResult<TValue>();
+        //    Type ResultType = typeof(T); // REFACTOR
+        //    var result = new RetrieveResult<T>();
         //    try
         //    {
-        //        object obj = await FsOBasePersistence.TryGet(reference.Path, type: typeof(TValue)).ConfigureAwait(false);
+        //        object obj = await FsOBasePersistence.TryGet(reference.Path, type: typeof(T)).ConfigureAwait(false);
         //        obj = OBaseTypeUtils.TryConvertToType(obj, ResultType);
 
         //        // TODO: Move this to an optional MultiType Multiplexing layer
@@ -259,9 +259,9 @@ namespace LionFire.ObjectBus.Filesystem
         //    throw new NotImplementedException();
         //}
 
-        //protected override async Task _Set<TValue>(LocalFileReference reference, TValue obj, bool allowOverwrite = true, bool preview = false)
+        //protected override async Task _Set<T>(LocalFileReference reference, T obj, bool allowOverwrite = true, bool preview = false)
         //{
-        //    await FsOBasePersistence.Set(obj, reference.Path, preview: preview, type: typeof(TValue));
+        //    await FsOBasePersistence.Set(obj, reference.Path, preview: preview, type: typeof(T));
         //}
 
         protected override async Task<IPersistenceResult> SetImpl<T>(FileReference reference, T obj, bool allowOverwrite = true)
@@ -316,7 +316,7 @@ namespace LionFire.ObjectBus.Filesystem
         //    if (chunks == null || chunks.Length == 0) yield break;
         //    string parentDirName = chunks[chunks.Length - 1];
 
-        //    return Assets.AssetPath.GetDefaultDirectory(typeof(TValue));
+        //    return Assets.AssetPath.GetDefaultDirectory(typeof(T));
         //}
 
 

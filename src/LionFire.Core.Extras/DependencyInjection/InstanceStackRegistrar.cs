@@ -80,8 +80,8 @@ namespace LionFire
         public T TryResolve<T>()
         {
             return (T)TryResolve(typeof(T));
-            //object result = TryResolve(typeof(TValue));
-            //TValue casted = (TValue)result;
+            //object result = TryResolve(typeof(T));
+            //T casted = (T)result;
             //return casted;
         }
 

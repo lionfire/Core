@@ -15,7 +15,7 @@ using MorseCode.ITask;
 namespace LionFire.Persistence.Handles
 {
 
-    //public abstract class ReadHandleBase<TValue> : ResolvesBase<IReference, TValue>, IReadHandleEx<TValue>, IRetrievableImpl<TValue>, IHas<PersistenceResultFlags>, IPersisted
+    //public abstract class ReadHandleBase<T> : ResolvesBase<IReference, T>, IReadHandleEx<T>, IRetrievableImpl<T>, IHas<PersistenceResultFlags>, IPersisted
     //{
     //    #region Reference
 
@@ -37,9 +37,9 @@ namespace LionFire.Persistence.Handles
 
     //}
 
-    //public  class ReadHandleBaseCovariant<TValue> : ResolvesBaseCovariant<IReference, TValue>, IReadHandleEx<TValue>, IKeyed<string>, IRetrievableImpl<TValue>, IHas<PersistenceResultFlags>
+    //public  class ReadHandleBaseCovariant<T> : ResolvesBaseCovariant<IReference, T>, IReadHandleEx<T>, IKeyed<string>, IRetrievableImpl<T>, IHas<PersistenceResultFlags>
     //{
-    //    public override Task<IResolveResult<TValue>> ResolveImpl() => throw new NotImplementedException();
+    //    public override Task<IResolveResult<T>> ResolveImpl() => throw new NotImplementedException();
     //}
 
 
@@ -55,8 +55,8 @@ namespace LionFire.Persistence.Handles
     /// <typeparam name="T"></typeparam>
     public abstract class RBaseEx<T> : ResolvesBase<IReference, T>, IReadHandleEx<T>, IReadHandleInvariant<T>
 
-    //, IRetrievableImpl<TValue>
-    //where TValue : class
+    //, IRetrievableImpl<T>
+    //where T : class
     {
 
         /// <summary>
@@ -395,7 +395,7 @@ namespace LionFire.Persistence.Handles
 
         #region Get
 
-        //public async ITask<IRetrieveResult<TValue>> RetrieveImpl() => (IRetrieveResult<TValue>)await ResolveImpl().ConfigureAwait(false);
+        //public async ITask<IRetrieveResult<T>> RetrieveImpl() => (IRetrieveResult<T>)await ResolveImpl().ConfigureAwait(false);
 
 
         //async Task<IRetrieveResult<ObjectType>> IRetrievableImpl<ObjectType>.RetrieveObject() => await RetrieveObject().ConfigureAwait(false);
@@ -403,7 +403,7 @@ namespace LionFire.Persistence.Handles
         //{
         //    var result = await RetrieveImpl().ConfigureAwait(false);
 
-        //    //var retrievableState = result.ToRetrievableState<TValue>(CanObjectBeDefault);
+        //    //var retrievableState = result.ToRetrievableState<T>(CanObjectBeDefault);
         //    //this.RetrievableState = retrievableState;
 
         //    this.PersistenceResultFlags = result.Flags;
@@ -416,10 +416,10 @@ namespace LionFire.Persistence.Handles
         //    return result.IsSuccess();
         //}
 
-        //async ITask<ILazyResolveResult<TValue>> ILazilyResolves<TValue>.GetValue()
+        //async ITask<ILazyResolveResult<T>> ILazilyResolves<T>.GetValue()
         //{
         //    var result = await GetValue();
-        //    return (result.HasObject, (TValue)(object)result.Object); // HARDCAST
+        //    return (result.HasObject, (T)(object)result.Object); // HARDCAST
         //}
 
         ///// <summary>
@@ -428,7 +428,7 @@ namespace LionFire.Persistence.Handles
         ///// </summary>
         ///// <seealso cref="Exists"/>
         ///// <returns>True if an object was found after a retrieval or was manually set on the handle, false otherwise.</returns>
-        //public virtual async ITask<ILazyResolveResult<TValue>> GetValue()
+        //public virtual async ITask<ILazyResolveResult<T>> GetValue()
         //{
         //    if (HasValue)
         //    {

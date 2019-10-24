@@ -10,8 +10,8 @@ namespace LionFire.ObjectBus
 //#error But what about a general purpose Reference versus a strongly-typed Reference belonging to an OBus?  
 //#error QUESTION: How to resolve References to OBus, References to OBase, References to a Handle that the OBase approves of???  (OBase may want to create that handle.)
 
-//#error RH<TValue> IOBase.CreateHandle<TValue>(IReference reference)
-//#error  RH<TValue> IOBase<MyKindOfReference>.TryCreateHandle<TValue>(MyKindOfReference reference)
+//#error RH<T> IOBase.CreateHandle<T>(IReference reference)
+//#error  RH<T> IOBase<MyKindOfReference>.TryCreateHandle<T>(MyKindOfReference reference)
 //#error OBuses should implement IHandleProvider (and register them at app start) or forever hold their peace, in which case fallback general purpose handles will be created which then use IOBaseProvider.TryGetOBase.  Or should I say OBuses must implement IHandleProvider?  In that case, do I still need IOBaseProvider, unless specific OBases want to use it internally, but then it probably doesn't need to be an interface?
 
 //#error Below is superceded
@@ -26,8 +26,8 @@ namespace LionFire.ObjectBus
         //IOBase GetOBaseForConnectionString(string connectionString);
         IOBase TryGetOBase(IReference reference);
 
-        //(IOBase OBase, RH<TValue> Replacement) TryGetOBase<TValue>(RH<TValue> readHandle);
-        //(IOBase OBase, H<TValue> Replacement) TryGetOBase<TValue>(H<TValue> handle);
+        //(IOBase OBase, RH<T> Replacement) TryGetOBase<T>(RH<T> readHandle);
+        //(IOBase OBase, H<T> Replacement) TryGetOBase<T>(H<T> handle);
 
         //IReference TryGetReference(string referenceString);
         //IEnumerable<IOBase> GetOBases(IReference reference);

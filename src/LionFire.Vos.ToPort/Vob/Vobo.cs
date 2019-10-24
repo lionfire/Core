@@ -405,7 +405,7 @@ namespace LionFire.Vos
 
 
         public void AddTypeHandler(Type type, Action<IReadOnlyMultiTyped, Type> callback)
-        //where TValue : class
+        //where T : class
         {
             lock (handlersLock)
             {
@@ -416,8 +416,8 @@ namespace LionFire.Vos
         }
 
         public void RemoveTypeHandler(Type type, Action<IReadOnlyMultiTyped, Type> callback)
-        //public void RemoveTypeHandler<TValue>(Type type, MulticastDelegate callback)
-        //where TValue : class
+        //public void RemoveTypeHandler<T>(Type type, MulticastDelegate callback)
+        //where T : class
         {
             lock (handlersLock)
             {

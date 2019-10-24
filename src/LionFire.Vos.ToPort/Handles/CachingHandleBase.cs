@@ -14,40 +14,40 @@ namespace LionFire.Vos
     ///// Caches children (using WeakReference)  for efficient repeated child traversal
     ///// TODONE: inherited by Vob, but I think this should not inherit HandleBase.
     ///// </summary>
-    ///// <typeparam name="TValue"></typeparam>
+    ///// <typeparam name="T"></typeparam>
     ///// <typeparam name="ChildType__"></typeparam>
-    //public abstract class CachingHandleBase<TValue, ChildType__> 
+    //public abstract class CachingHandleBase<T, ChildType__> 
     //    //:
-    //    //HandleBase<TValue>, 
-    //    //IHandle<TValue>, 
+    //    //HandleBase<T>, 
+    //    //IHandle<T>, 
     //    //IFreezable, 
     //    //IChangeableReferencable
-    //    where TValue : Vob
-    //    where ChildType__ : CachingHandleBase<TValue, ChildType__>
+    //    where T : Vob
+    //    where ChildType__ : CachingHandleBase<T, ChildType__>
     //    //, IHandle
     //{
     //    #region Construction
 
-    //    //public CachingHandleBase(TValue obj = null, bool freezeObjectIfProvided = true)
+    //    //public CachingHandleBase(T obj = null, bool freezeObjectIfProvided = true)
     //    //    : base(obj, freezeObjectIfProvided)
     //    //{
     //    //    CacheChildren = true;
     //    //}
 
-    //    //internal CachingHandleBase(string uri, TValue obj = null, bool freezeObjectIfProvided = true)
+    //    //internal CachingHandleBase(string uri, T obj = null, bool freezeObjectIfProvided = true)
     //    //    : base(uri, obj, freezeObjectIfProvided)
     //    //{
     //    //    CacheChildren = true;
     //    //}
 
-    //    //public CachingHandleBase(IReference reference, TValue obj = null, bool freezeObjectIfProvided = true)
+    //    //public CachingHandleBase(IReference reference, T obj = null, bool freezeObjectIfProvided = true)
 
     //    //    : base(reference, obj, freezeObjectIfProvided)
     //    //{
     //    //    CacheChildren = true;
     //    //}
 
-    //    //public CachingHandleBase(IReferencable referencable, TValue obj = null, bool freezeObjectIfProvided = true)
+    //    //public CachingHandleBase(IReferencable referencable, T obj = null, bool freezeObjectIfProvided = true)
     //    //    : base(referencable, obj, freezeObjectIfProvided)
     //    //{
     //    //    CacheChildren = true;

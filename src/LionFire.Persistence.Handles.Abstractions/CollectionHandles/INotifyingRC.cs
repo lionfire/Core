@@ -2,7 +2,7 @@
 
 //namespace LionFire.Persistence.Handles
 //{
-//    public interface INotifyingRC<TValue, TListEntry> : RC<TValue, TListEntry>, INotifyingReadOnlyCollection<TValue>
+//    public interface INotifyingRC<T, TListEntry> : RC<T, TListEntry>, INotifyingReadOnlyCollection<T>
 //        where  TListEntry : ICollectionEntry
 //    {
 //        /// <summary>

@@ -6,10 +6,10 @@
 //{
 //    public class NoopReferenceResolver : IReferenceRetriever
 //    {
-//        public Task<RetrieveReferenceResult<TValue>> Retrieve<TValue>(IReference reference)
-//            where TValue : class
+//        public Task<RetrieveReferenceResult<T>> Retrieve<T>(IReference reference)
+//            where T : class
 //        {
-//            return Task.FromResult(RetrieveReferenceResult<TValue>.Unsuccessful);
+//            return Task.FromResult(RetrieveReferenceResult<T>.Unsuccessful);
 //        }
 //    }
 //}

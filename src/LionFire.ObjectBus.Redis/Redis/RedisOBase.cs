@@ -326,7 +326,7 @@ namespace LionFire.ObjectBus.Redis
         //    if (chunks == null || chunks.Length == 0) yield break;
         //    string parentDirName = chunks[chunks.Length - 1];
 
-        //    return Assets.AssetPath.GetDefaultDirectory(typeof(TValue));
+        //    return Assets.AssetPath.GetDefaultDirectory(typeof(T));
         //}
 
         public override H<T> GetHandle<T>(IReference reference) => throw new NotImplementedException();

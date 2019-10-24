@@ -8,22 +8,22 @@ namespace LionFire.Referencing
 
     // OPTIMIZE Clone
     // https://stackoverflow.com/a/52972518/208304
-    //public static class CloneUtil<TValue>
+    //public static class CloneUtil<T>
     //{
-    //    private static readonly Func<TValue, object> clone;
+    //    private static readonly Func<T, object> clone;
 
     //    static CloneUtil()
     //    {
-    //        var cloneMethod = typeof(TValue).GetMethod("MemberwiseClone", System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.NonPublic);
-    //        clone = (Func<TValue, object>)cloneMethod.CreateDelegate(typeof(Func<TValue, object>));
+    //        var cloneMethod = typeof(T).GetMethod("MemberwiseClone", System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.NonPublic);
+    //        clone = (Func<T, object>)cloneMethod.CreateDelegate(typeof(Func<T, object>));
     //    }
 
-    //    public static TValue ShallowClone(TValue obj) => (TValue)clone(obj);
+    //    public static T ShallowClone(T obj) => (T)clone(obj);
     //}
 
     //public static class CloneUtil
     //{
-    //    public static TValue ShallowClone<TValue>(this TValue obj) => CloneUtil<TValue>.ShallowClone(obj);
+    //    public static T ShallowClone<T>(this T obj) => CloneUtil<T>.ShallowClone(obj);
     //}
 
     public abstract class ReferenceBaseBase<ConcreteType> : ICloneableReference

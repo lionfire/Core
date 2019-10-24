@@ -51,7 +51,7 @@ namespace LionFire.Overlays
                 //IProxyTargetAccessor pta = (IProxyTargetAccessor)this;
                 return this as T;
                 //pta.DynProxyGetTarget()
-                //return (TValue)pta.DynProxyGetTarget();
+                //return (T)pta.DynProxyGetTarget();
             }
         }
 

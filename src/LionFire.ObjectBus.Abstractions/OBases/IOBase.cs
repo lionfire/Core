@@ -39,7 +39,7 @@ namespace LionFire.ObjectBus
         #region Read
 
         //object TryGet(IReference reference, OptionalRef<RetrieveInfo> optionalRef = null);
-        //TValue TryGet<TValue>(IReference reference, OptionalRef<RetrieveInfo> optionalRef = null) where TValue : class;
+        //T TryGet<T>(IReference reference, OptionalRef<RetrieveInfo> optionalRef = null) where T : class;
 
         // RENAME to Retrieve, and instead have EnsureGet which throws on not found
         // TODO BREAKING: make Get an extension method on HBase(this IOBase obase, IReference)
@@ -58,7 +58,7 @@ namespace LionFire.ObjectBus
         Task<IEnumerable<string>> List<T>(IReference parent) where T : class, new();
 
         //[Obsolete("Use GetKeysOfType")]
-        //IEnumerable<string> GetChildrenNamesOfType<TValue>(IReference parent) where TValue : class, new();
+        //IEnumerable<string> GetChildrenNamesOfType<T>(IReference parent) where T : class, new();
 
         //Task<IEnumerable<string>> List(IReference parent, Type type);
 
@@ -68,7 +68,7 @@ namespace LionFire.ObjectBus
         //event Action<string> Changed;
 
         // Prefer IHandle.GetSubpath.  Default implementation of that uses this:
-        //IHandle<TValue> GetHandleSubpath<TValue>(IReference reference, params string[] subpathChunks) where TValue : class;
+        //IHandle<T> GetHandleSubpath<T>(IReference reference, params string[] subpathChunks) where T : class;
 
         ///// <summary>
         ///// FUTURE? Or ObjectWatcher that parallels FileSystemWatcher? Set changeTypes to None to disable

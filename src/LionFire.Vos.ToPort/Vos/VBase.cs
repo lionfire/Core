@@ -209,12 +209,12 @@ namespace LionFire.Vos
             return reference.GetHandle<T>();
         }
 
-        //public override IHandle<TValue> GetHandleSubpath<TValue>(IHandle handle, params string[] subpathChunks) 
+        //public override IHandle<T> GetHandleSubpath<T>(IHandle handle, params string[] subpathChunks) 
         //{
 
         //    IVobHandle vh = (IVobHandle) handle;
         //    handle.Reference.GetChildSubpath(subpathChunks);
-        //    return reference.ToHandle<TValue>();
+        //    return reference.ToHandle<T>();
         //}
 
 #endregion

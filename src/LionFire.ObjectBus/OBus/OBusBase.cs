@@ -102,7 +102,7 @@ namespace LionFire.ObjectBus
         public override IReference TryGetReference(string uri) => (IReference)ReferenceConstructor.Invoke(new object[] { ReferenceUriParsing.PathOnlyFromUri(uri, uriSchemes) });
         
         public H<T> GetHandle<T>(TReference reference, T handleObject = default) => (H<T>)handleCtor.Invoke(new object[] { reference, TryGetOBase(reference), handleObject });
-        //new OBaseHandle<TValue>(reference, DefaultOBase, handleObject);
+        //new OBaseHandle<T>(reference, DefaultOBase, handleObject);
         public RH<T> GetReadHandle<T>(TReference reference, T handleObject = default) => new OBaseReadHandle<T>(reference, DefaultOBase, handleObject);
 
     }
@@ -118,9 +118,9 @@ namespace LionFire.ObjectBus
         public virtual IOBase SingleOBase => null;
         public virtual IOBase DefaultOBase => SingleOBase;
 
-        //    public virtual TValue InstantiateObject<TValue>(Func<TValue> createDefault = null)
+        //    public virtual T InstantiateObject<T>(Func<T> createDefault = null)
         //    {
-        //        TValue result;
+        //        T result;
 
         //        if (createDefault != null)
         //        {
@@ -128,7 +128,7 @@ namespace LionFire.ObjectBus
         //        }
         //        else
         //        {
-        //            result = (TValue)Activator.CreateInstance(typeof(TValue));
+        //            result = (T)Activator.CreateInstance(typeof(T));
         //        }
         //        return result;
         //    }
@@ -216,7 +216,7 @@ namespace LionFire.ObjectBus
         public virtual H<T> GetHandle<T>(IReference reference, T handleObject = default)
         {
             // TODO: If handle reuse is on, try to find existing handle.
-            //var h = new OBusHandle<TValue>(reference, handleObject);
+            //var h = new OBusHandle<T>(reference, handleObject);
 
             var obase = TryGetOBase(reference) ?? throw new ObjectBusException("Couldn't resolve OBase for specified reference");
             var h = new OBaseHandle<T>(reference, obase, handleObject);
@@ -238,7 +238,7 @@ namespace LionFire.ObjectBus
             // TODO: If handle reuse is on, try to find existing handle.
 
             // TODO: create read-only handle
-            //var h = new OBusHandle<TValue>(reference);
+            //var h = new OBusHandle<T>(reference);
             var obase = TryGetOBase(reference) ?? throw new ObjectBusException("Couldn't resolve OBase for specified reference");
             var h = new OBaseReadHandle<T>(reference, obase, handleObject);
 
@@ -248,7 +248,7 @@ namespace LionFire.ObjectBus
         public virtual HC<T> GetCollectionHandle<T>(IReference reference)
         {
             throw new NotImplementedException();
-            //var oboc = new OBoc<TValue, OBaseCollectionEntry>();
+            //var oboc = new OBoc<T, OBaseCollectionEntry>();
         }
         public virtual RC<T> GetReadCollectionHandle<T>(IReference reference)
         {

@@ -60,7 +60,7 @@ namespace LionFire.Persistence.Handles
             }
         }
 
-        //public bool IsWritable => typeof(IWriteHandle<TValue>).IsAssignableFrom(typeof(THandle);
+        //public bool IsWritable => typeof(IWriteHandle<T>).IsAssignableFrom(typeof(THandle);
 
         private async void OnHandleAdded(TKey key, THandle handle)
         {

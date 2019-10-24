@@ -191,14 +191,14 @@ namespace LionFire.ObjectBus.Redis
 
         //new OBocEnumerator(this);
 
-        //public class OBocEnumerator : IEnumerator<TValue>
+        //public class OBocEnumerator : IEnumerator<T>
         //{
-        //    OBoc<TValue, TListEntry> oboc;
+        //    OBoc<T, TListEntry> oboc;
 
-        //    //RC<TValue, TListEntry> rc;
+        //    //RC<T, TListEntry> rc;
         //    //INotifyingReadOnlyCollection<TListEntry> entries;
 
-        //    public OBocEnumerator(OBoc<TValue, TListEntry> oboc)
+        //    public OBocEnumerator(OBoc<T, TListEntry> oboc)
         //    {
         //        this.oboc = oboc;
         //        Reset();
@@ -233,7 +233,7 @@ namespace LionFire.ObjectBus.Redis
         //        return false;
         //    }
 
-        //    public TValue Current { get; private set; }
+        //    public T Current { get; private set; }
 
         //    object IEnumerator.Current => Current;
         //    public void Dispose() {

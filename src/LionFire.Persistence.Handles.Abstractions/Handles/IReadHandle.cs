@@ -15,7 +15,7 @@ namespace LionFire.Persistence
     /// IReadHandle - Minimal interface for Read Handles.  (See also: IReadHandleEx)
     /// 
     /// Features: 
-    ///  - Resolves IReference to a value of type TValue
+    ///  - Resolves IReference to a value of type T
     ///  
     /// </summary>
     /// <typeparam name="T"></typeparam>
@@ -37,7 +37,7 @@ namespace LionFire.Persistence
         /// </summary>
         /// <seealso cref="Exists"/>
         /// <returns>True if an object was found after a retrieval or was manually set on the handle, false otherwise (in which case State is set to |= PersistenceState.NotFound, if it doesn't already have that flag (TOTEST)).</returns>
-        //Task<(bool success, TValue obj)> GetObject();        
+        //Task<(bool success, T obj)> GetObject();        
 
         #endregion
     }

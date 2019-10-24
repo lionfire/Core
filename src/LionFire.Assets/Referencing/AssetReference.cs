@@ -64,7 +64,7 @@ namespace LionFire.Assets
         }
     }
 
-    //public class AssetReadHandle<TValue> : IReadHandle<TValue>
+    //public class AssetReadHandle<T> : IReadHandle<T>
     //{
     //    string assetSubPath;
     //    public AssetReadHandle(string assetSubPath)
@@ -72,26 +72,26 @@ namespace LionFire.Assets
     //        this.assetSubPath = assetSubPath;
     //    }
 
-    //    public TValue Object
+    //    public T Object
     //    {
     //        get
     //        {
     //            if (obj == null)
     //            {
-    //                obj = assetSubPath.Load<TValue>();
+    //                obj = assetSubPath.Load<T>();
     //            }
     //            return obj;
     //        }
     //    }
-    //    private TValue obj;
+    //    private T obj;
     //    public bool HasObject { get { return } }
     //}
 
     //public static class ReadHandleExtensions
     //{
-    //    public static IReadHandle<TValue> Handle<TValue>(this string assetSubPath)
+    //    public static IReadHandle<T> Handle<T>(this string assetSubPath)
     //    {
-    //        return new AssetReadHandle<TValue>(assetSubPath);
+    //        return new AssetReadHandle<T>(assetSubPath);
     //    }
     //}
 }

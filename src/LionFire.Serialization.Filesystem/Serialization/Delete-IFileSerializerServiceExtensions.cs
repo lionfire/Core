@@ -8,8 +8,8 @@
 //    public static class IFileSerializerServiceExtensions
 //    {
 
-//        public static TValue FileToObject<TValue>(this ISerializationService service, string path = null, FileSerializationContext context = null)
-//            where TValue : class
+//        public static T FileToObject<T>(this ISerializationService service, string path = null, FileSerializationContext context = null)
+//            where T : class
 //        {
 //            if (context == null) context = new FileSerializationContext();
 
@@ -17,7 +17,7 @@
 
 //            if (context.FileName == null) throw new ArgumentNullException("path or context.FileName must be set");
 
-//            return DependencyContext.Current.GetService<ISerializationService>().ToObject<TValue>(context);
+//            return DependencyContext.Current.GetService<ISerializationService>().ToObject<T>(context);
 //        }
 //    }
 //}

@@ -1749,7 +1749,7 @@ namespace LionFire.Bindings
 
             public void OnCollectionChanged(INotifyCollectionChangedEventArgs<T> e)
             {
-                //l.Info("HandlerClass<TValue>.NotifyCollectionChangedHandler");
+                //l.Info("HandlerClass<T>.NotifyCollectionChangedHandler");
                 if (!this.lionBindingNode.LionBinding.BindToCollectionEvents) return; // RECENTCHANGE
                 lionBindingNode.OnCollectionChanged(e);
             }

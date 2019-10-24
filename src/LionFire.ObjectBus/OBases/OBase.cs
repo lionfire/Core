@@ -15,7 +15,7 @@ namespace LionFire.ObjectBus
     //public abstract class MultiTypeOBase<TReference> : OBase<TReference>, IMultiTypeOBase
     //    where TReference : class, IReference
     //{
-    //    public abstract Task<IRetrieveResult<TValue>> TryGetName<TValue>(TReference reference);
+    //    public abstract Task<IRetrieveResult<T>> TryGetName<T>(TReference reference);
     //}
 
     /// <summary>
@@ -40,7 +40,7 @@ namespace LionFire.ObjectBus
 
 
         public abstract Task<IRetrieveResult<T>> TryGet<T>(TReference reference);
-        //Task<IRetrieveResult<TValue>> IOBase.TryGet<TValue>(IReference reference, Type type) => TryGet(ConvertToReferenceType(reference), type);
+        //Task<IRetrieveResult<T>> IOBase.TryGet<T>(IReference reference, Type type) => TryGet(ConvertToReferenceType(reference), type);
 
         Task<IRetrieveResult<T>> IOBase.Get<T>(IReference reference) => TryGet<T>(ConvertToReferenceType(reference));
 
@@ -166,7 +166,7 @@ namespace LionFire.ObjectBus
             }
         }
 
-        //public virtual async Task Set<TValue>(TReference reference, TValue obj, bool allowOverwrite = true, bool preview = false)
+        //public virtual async Task Set<T>(TReference reference, T obj, bool allowOverwrite = true, bool preview = false)
         //{
         //    try
         //    {
@@ -176,7 +176,7 @@ namespace LionFire.ObjectBus
 
         //        OBaseEvents.OnSaving(obj);
 
-        //        await _Set<TValue>(reference, obj, allowOverwrite, preview).ConfigureAwait(false);
+        //        await _Set<T>(reference, obj, allowOverwrite, preview).ConfigureAwait(false);
         //    }
         //    catch (Exception ex)
         //    {
@@ -196,7 +196,7 @@ namespace LionFire.ObjectBus
         #region IReference overloads
 
         Task<IPersistenceResult> IOBase.CanDelete<T>(IReference reference) => CanDelete<T>(ConvertToReferenceType(reference));
-        //public Task<bool?> CanDelete<TValue>(IReference reference) => CanDelete<TValue>(ConvertToReferenceType(reference));
+        //public Task<bool?> CanDelete<T>(IReference reference) => CanDelete<T>(ConvertToReferenceType(reference));
         public Task<IPersistenceResult> TryDelete<T>(IReference reference/*, bool preview*/) => TryDelete<T>(ConvertToReferenceType(reference)/*, preview*/);
 
         #endregion
@@ -219,15 +219,15 @@ namespace LionFire.ObjectBus
         }
 
         //// Prefer IHandle.GetSubpath.  Default implementation of that uses this:
-        //public virtual IHandle<TValue> GetHandleSubpath<TValue>(IReference reference, params string[] subpathChunks) where TValue : class
+        //public virtual IHandle<T> GetHandleSubpath<T>(IReference reference, params string[] subpathChunks) where T : class
         //{
         //    reference.GetChildSubpath(subpathChunks);
-        //    return reference.ToHandle<TValue>();
+        //    return reference.ToHandle<T>();
         //}
-        //public virtual IHandle<TValue> GetHandleSubpath<TValue>(IHandle handle, params string[] subpathChunks) where TValue : class
+        //public virtual IHandle<T> GetHandleSubpath<T>(IHandle handle, params string[] subpathChunks) where T : class
         //{
         //    handle.Reference.GetChildSubpath(subpathChunks);
-        //    return reference.ToHandle<TValue>();
+        //    return reference.ToHandle<T>();
         //}
 
         #endregion

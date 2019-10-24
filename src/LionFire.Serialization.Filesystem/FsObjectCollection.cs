@@ -18,17 +18,17 @@ namespace LionFire.Serialization
     ///// A general-purpose collection of objects, with change events. REVIEW - not sure at the moment about the usefulness.  Think about it later.
     ///// FUTURE: Also use this for Voc 2.0?
     ///// </summary>
-    //public interface IPersistedObjectCollection<TValue>
+    //public interface IPersistedObjectCollection<T>
     ////: INotifyCollectionChanged
     //{
     //    string RootPath { get; set; }
 
-    //    //IReadOnlyDictionary<string, IReadHandle<TValue>> Handles { get; }
-    //    //IReadOnlyCollection<IReadHandle<TValue>> Objects { get; }
+    //    //IReadOnlyDictionary<string, IReadHandle<T>> Handles { get; }
+    //    //IReadOnlyCollection<IReadHandle<T>> Objects { get; }
     //}
     public class FsObjectCollection<T> : ObservableHandleDictionary<string, SerializingFileHandle<T>, T>
-        //ObservableDictionary<string, IReadHandle<TValue>>, 
-        //, IPersistedObjectCollection<TValue>
+        //ObservableDictionary<string, IReadHandle<T>>, 
+        //, IPersistedObjectCollection<T>
         , INotifyPropertyChanged
         where T : class
     {

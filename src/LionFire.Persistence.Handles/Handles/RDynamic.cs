@@ -96,7 +96,7 @@
 
 //        //#endregion
 
-//        //public void SetObject(TValue value)
+//        //public void SetObject(T value)
 //        //{
 //        //    this.Object = value;
 //        //    if (value == null)
