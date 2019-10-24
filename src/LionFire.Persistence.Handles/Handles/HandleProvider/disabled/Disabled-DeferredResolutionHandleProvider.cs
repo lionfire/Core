@@ -6,9 +6,9 @@
 //{
 //    public class DeferredResolutionHandleProvider : IHandleProvider
 //    {
-//        public H<T> ToHandle<T>(IReference reference)
-//            where T : class
-//            => new HDynamic<T>(reference);
+//        public H<TValue> ToHandle<TValue>(IReference reference)
+//            where TValue : class
+//            => new HDynamic<TValue>(reference);
         
 //    }
 //}

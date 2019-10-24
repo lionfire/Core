@@ -34,10 +34,10 @@
 //            //return SerializationFacility.Deserialize(stream, type, path);
 //        }
 
-//        public static object Deserialize<T>(Stream stream, string path = null)
+//        public static object Deserialize<TValue>(Stream stream, string path = null)
 //        {
 //            throw new NotImplementedException();
-//            //return SerializationFacility.Deserialize<T>(stream);
+//            //return SerializationFacility.Deserialize<TValue>(stream);
 //        }
 
 //        //internal static void Serialize(Stream fs, object obj)

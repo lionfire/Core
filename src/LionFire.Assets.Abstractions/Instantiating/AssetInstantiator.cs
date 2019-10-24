@@ -21,9 +21,9 @@ namespace LionFire.Instantiating
     //    }
     //}
 
-/*public class AssetReferenceInstantiator<T> : IInstantiationComponent, IFactory
+/*public class AssetReferenceInstantiator<TValue> : IInstantiationComponent, IFactory
     {
-        public AssetReference<T> AssetReference{get;set;}
+        public AssetReference<TValue> AssetReference{get;set;}
         
 
         public object Affect(object obj, InstantiationContext context = null)

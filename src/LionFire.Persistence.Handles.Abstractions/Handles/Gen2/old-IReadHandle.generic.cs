@@ -9,11 +9,11 @@ namespace LionFire
     ///// <summary>
     ///// ReadHandle -- Lazily (or manually) loads an Object 
     ///// </summary>
-    ///// <typeparam name="T"></typeparam>
+    ///// <typeparam name="TValue"></typeparam>
     //[Obsolete("Use RH or IReadHandleEx")]
-    //public interface IReadHandle<out T> : IReadWrapper<T>, IWrapper, IResolvableHandle
+    //public interface IReadHandle<out TValue> : IReadWrapper<TValue>, IWrapper, IResolvableHandle
     //{
-    //    event Action<IReadHandle<T>, T /*oldValue*/ , T /*newValue*/> ObjectChanged;
+    //    event Action<IReadHandle<TValue>, TValue /*oldValue*/ , TValue /*newValue*/> ObjectChanged;
     //}
 
     /// <summary>
@@ -26,19 +26,19 @@ namespace LionFire
 
 //        //#if !AOT
 //        /// <summary>
-//        /// Covariant version of IHandle&lt;T&gt;
+//        /// Covariant version of IHandle&lt;TValue&gt;
 //        /// </summary>
-//        /// <typeparam name="T"></typeparam>
+//        /// <typeparam name="TValue"></typeparam>
 //        public interface IReadHandle<
 //#if !UNITY
 //            out // Crashes unity???
 //#endif
-//    T> :
-//            //IReadHandleEx<T>,
+//    TValue> :
+//            //IReadHandleEx<TValue>,
 //            IReadHandle
-//            where T : class
+//            where TValue : class
 //    {
-//        new T Object { get; }
+//        new TValue Object { get; }
 //    }
 //#endif
     ////#endif

@@ -3,9 +3,9 @@ using System.Threading.Tasks;
 
 namespace LionFire.Resolves
 {
-    public abstract class ResolvesBaseCovariant<TKey, TValue> : ResolvesBase<TKey, TValue, object>, ILazilyResolvesCovariant<TValue>
-    {
-    }
+    //public abstract class ResolvesBaseCovariant<TKey, TValue> : ResolvesBase<TKey, TValue, object>, ILazilyResolvesCovariant<TValue>
+    //{
+    //}
 
 
     ///// <summary>

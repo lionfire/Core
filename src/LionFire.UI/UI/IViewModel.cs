@@ -22,10 +22,10 @@ namespace LionFire.UI
     }
 
     // Default implementation of a IViewModel -- useless? Or good base class?
-    //public class ViewModel<T> : IViewModel<T>
+    //public class ViewModel<TValue> : IViewModel<TValue>
     //{
-    //    object IViewModel.Model { get { return Model; } set { Model = (T)value; } }
-    //    public T Model { get; set; }
+    //    object IViewModel.Model { get { return Model; } set { Model = (TValue)value; } }
+    //    public TValue Model { get; set; }
     //    bool IsViewModelOf(object obj);
     //}
 }

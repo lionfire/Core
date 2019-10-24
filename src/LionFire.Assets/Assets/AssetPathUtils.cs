@@ -45,7 +45,7 @@ namespace LionFire.Assets
             else
             {
                 diskPath = type.Name;
-                if (type.Name.StartsWith("T") && type.Name.Length > 1 && char.IsUpper(type.Name[1]))
+                if (type.Name.StartsWith("TValue") && type.Name.Length > 1 && char.IsUpper(type.Name[1]))
                 {
                     diskPath = diskPath.Substring(1);
                 }

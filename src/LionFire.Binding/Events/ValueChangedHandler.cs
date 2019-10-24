@@ -5,7 +5,7 @@ using System.Text;
 
 namespace LionFire.Structures
 {
-    [Obsolete("Use EventHandler<ValueChanged<T>> or Action<ValueChanged<T>>")]
+    [Obsolete("Use EventHandler<ValueChanged<TValue>> or Action<ValueChanged<TValue>>")]
     public delegate void ValueChangedHandler<T>(T oldValue, T newValue);
 
 }

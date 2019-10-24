@@ -6,10 +6,10 @@ using System.Text;
 namespace LionFire.Referencing
 {
     // UNUSED - what would this be for?
-    //public interface IRetrieveHandleResult<out T> : IRetrieveResult<T>
+    //public interface IRetrieveHandleResult<out TValue> : IRetrieveResult<TValue>
     //{
-    //    //T Object => ReadHandle.Object; // FUTURE: Implement Object => Handle.Object?
+    //    //TValue Object => ReadHandle.Object; // FUTURE: Implement Object => Handle.Object?
 
-    //    RH<T> ReadHandle { get; }
+    //    RH<TValue> ReadHandle { get; }
     //}
 }

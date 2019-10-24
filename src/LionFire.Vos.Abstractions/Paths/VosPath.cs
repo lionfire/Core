@@ -62,7 +62,7 @@ namespace LionFire.Vos
         //    if (chunks == null || chunks.Length == 0) yield break;
         //    string parentDirName = chunks[chunks.Length - 1];
 
-        //    return Assets.AssetPath.GetDefaultDirectory(typeof(T));
+        //    return Assets.AssetPath.GetDefaultDirectory(typeof(TValue));
         //}
 
         #endregion

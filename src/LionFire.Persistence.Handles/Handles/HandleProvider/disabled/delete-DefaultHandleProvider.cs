@@ -2,10 +2,10 @@
 //{
 //    public class DefaultHandleProvider : IHandleProvider
 //    {
-//        public H<T> ToHandle<T>(IReference reference)
-//            where T: class
+//        public H<TValue> ToHandle<TValue>(IReference reference)
+//            where TValue: class
 //        {
-//            return new HDynamic<T>(reference);
+//            return new HDynamic<TValue>(reference);
 //        }
 //    }
 //}

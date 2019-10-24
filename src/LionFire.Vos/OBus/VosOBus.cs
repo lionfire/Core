@@ -54,8 +54,8 @@ namespace LionFire.Vos
             return VosReference.TryGetFromString(referenceString);
         }
 
-        //public H<T> ToHandle<T>(IReference reference, T handleObject = default(T)) => throw new NotImplementedException();
-        //public R<T> ToReadHandle<T>(IReference reference) => throw new NotImplementedException();
+        //public H<TValue> ToHandle<TValue>(IReference reference, TValue handleObject = default(TValue)) => throw new NotImplementedException();
+        //public R<TValue> ToReadHandle<TValue>(IReference reference) => throw new NotImplementedException();
         //public bool IsCompatibleWith(string obj) => throw new NotImplementedException();
         //public bool IsCompatibleWith(IReference obj) => throw new NotImplementedException();
         //public bool IsValid(IReference reference) => throw new NotImplementedException();

@@ -1,4 +1,5 @@
 ﻿using LionFire.Structures;
+using MorseCode.ITask;
 using System.Threading.Tasks;
 
 namespace LionFire.Resolves
@@ -18,7 +19,7 @@ namespace LionFire.Resolves
 
         public TValue Value => ProtectedValue ?? (TValue)(object)GetValue().Result.Value; // HARDCAST
 
-        public async Task<ILazyResolveResult<TValueReturned>> GetValue()
+        public async ITask<ILazyResolveResult<TValueReturned>> GetValue()
         {
             var currentValue = ProtectedValue;
             if (currentValue != null) return new LazyResolveResultNoop<TValueReturned>((TValueReturned)(object)ProtectedValue);
@@ -51,14 +52,14 @@ namespace LionFire.Resolves
 
         public void DiscardValue() => ProtectedValue = default;
 
-        public async Task<IResolveResult<TValue>> Resolve()
+        public async ITask<IResolveResult<TValue>> Resolve()
         {
             var resolveResult = await ResolveImpl();
             ProtectedValue = resolveResult.Value;
             return resolveResult;
         }
 
-        public abstract Task<IResolveResult<TValue>> ResolveImpl();
+        public abstract ITask<IResolveResult<TValue>> ResolveImpl();
     }
 
 }

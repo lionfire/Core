@@ -2,6 +2,6 @@
 
 //namespace LionFire.Persistence
 //{
-//    [Obsolete("Use H<T>")]
-//    public interface IHandle<T> : IWriteHandle<T>, IReadHandle<T> { }
+//    [Obsolete("Use H<TValue>")]
+//    public interface IHandle<TValue> : IWriteHandle<TValue>, IReadHandle<TValue> { }
 //}

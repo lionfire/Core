@@ -131,20 +131,20 @@ namespace LionFire.MultiTyping.Overlaying
         }
 
 #if !NoGenericMethods
-        //T IMultiTyped.AsTypeOrSetDefault<T>(Func<T> defaultValueFunc, Type slotType
+        //TValue IMultiTyped.AsTypeOrSetDefault<TValue>(Func<TValue> defaultValueFunc, Type slotType
         //    //= null
         //    )
         //{
         //    throw new NotImplementedException();
         //}
-        //T IMultiTyped.AsTypeOrSetDefault<T>(Func<IMultiTyped, T> defaultValueFunc, Type slotType
+        //TValue IMultiTyped.AsTypeOrSetDefault<TValue>(Func<IMultiTyped, TValue> defaultValueFunc, Type slotType
         //    //= null
         //    )
         //{
         //    throw new NotImplementedException();
         //}
 
-        //T IMultiTyped.AsTypeOrCreateDefault<T>(Type slotType
+        //TValue IMultiTyped.AsTypeOrCreateDefault<TValue>(Type slotType
         //    //= null
         //    )
         //{
@@ -393,7 +393,7 @@ namespace LionFire.MultiTyping.Overlaying
 
 
         public void AddTypeHandler(Type type, Action<IReadOnlyMultiTyped, Type> callback)
-        //where T : class
+        //where TValue : class
         {
             lock (handlersLock)
             {
@@ -404,8 +404,8 @@ namespace LionFire.MultiTyping.Overlaying
         }
 
         public void RemoveTypeHandler(Type type, Action<IReadOnlyMultiTyped, Type> callback)
-        //public void RemoveTypeHandler<T>(Type type, MulticastDelegate callback)
-        //where T : class
+        //public void RemoveTypeHandler<TValue>(Type type, MulticastDelegate callback)
+        //where TValue : class
         {
             lock (handlersLock)
             {

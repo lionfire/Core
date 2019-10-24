@@ -60,21 +60,21 @@ namespace LionFire.Assets.Providers.FileSystem
         {
         }
 
-        //protected T _PostLoadConvert<T>(object obj)
-        //    where T : class
+        //protected TValue _PostLoadConvert<TValue>(object obj)
+        //    where TValue : class
         //{
         //    if (obj == null) return null;
 
-        //    T result = obj as T;
+        //    TValue result = obj as TValue;
         //    if (result != null) return result;
 
         //    var inst = obj as IInstantiator;
         //    if (inst != null)
         //    {
-        //        return inst.Instantiate<T>();
+        //        return inst.Instantiate<TValue>();
         //    }
 
-        //    throw new InvalidDataException($"After deserializing, expected type {typeof(T).FullName} but got {obj.GetType().FullName}");
+        //    throw new InvalidDataException($"After deserializing, expected type {typeof(TValue).FullName} but got {obj.GetType().FullName}");
         //}
 
         /// <summary>
@@ -125,7 +125,7 @@ namespace LionFire.Assets.Providers.FileSystem
                 //var typeName = obj["_type"];
                 //(String)((Newtonsoft.Json.Linq.JObject)obj)["_type"];
 
-                //return _PostLoadConvert<T>(obj);
+                //return _PostLoadConvert<TValue>(obj);
             });
 
         }

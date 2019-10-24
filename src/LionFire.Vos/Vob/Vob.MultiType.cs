@@ -37,7 +37,7 @@ namespace LionFire.Vos
 
         //#endregion
 
-        //public Vob<T> FilterAsType<T>()
+        //public Vob<TValue> FilterAsType<TValue>()
         //{
         //}
     }

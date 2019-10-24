@@ -83,16 +83,16 @@
 //        }
         
 //#if !AOT
-//        public static H<T> ToHandle<T>(this IReferencable referencable, T obj = null)
-//            where T : class//, new()
+//        public static H<TValue> ToHandle<TValue>(this IReferencable referencable, TValue obj = null)
+//            where TValue : class//, new()
 //        {
-//            return HandleProvider<T>.ToHandle(referencable.Reference, obj);
+//            return HandleProvider<TValue>.ToHandle(referencable.Reference, obj);
 //        }
 //#endif
 
 //        public static H ToHandle(this IReference reference, object obj , Type type)
 //		{
-//			// TODO: Get HandleFactory<T> via reflection, perhaps only if not AOT
+//			// TODO: Get HandleFactory<TValue> via reflection, perhaps only if not AOT
 //			return HandleProvider.ToHandle(reference, obj);
 //		}
 
@@ -101,10 +101,10 @@
 //            return HandleFactory.CreateHandle(reference);
 //        }
 //#if !AOT
-//        public static H <T> CreateHandle<T>(this IReference reference)
-//            where T : class, new()
+//        public static H <TValue> CreateHandle<TValue>(this IReference reference)
+//            where TValue : class, new()
 //        {
-//            return HandleFactory<T>.CreateHandle(reference);
+//            return HandleFactory<TValue>.CreateHandle(reference);
 //        }
 //#endif
 //        public static H ToHandle(this IReferencable referencable)

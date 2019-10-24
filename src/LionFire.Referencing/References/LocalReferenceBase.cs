@@ -85,7 +85,7 @@ namespace LionFire.Referencing
 
     //}
 
-    //public abstract class LocalReferenceBase<T> : LocalReferenceBase
+    //public abstract class LocalReferenceBase<TValue> : LocalReferenceBase
     //{
     //    protected virtual void CopyFrom(IReference other, string newPath = null)
     //    {

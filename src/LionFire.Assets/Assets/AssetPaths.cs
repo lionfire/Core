@@ -46,7 +46,7 @@ namespace LionFire.Assets
         //            return AssetPaths.GetDefaultDirectory(type);
         //#else // OLD
         //            string typeName = type.Name;
-        //            if (typeName.StartsWith("T") && typeName.Length > 1 && Char.IsUpper(typeName[1]))
+        //            if (typeName.StartsWith("TValue") && typeName.Length > 1 && Char.IsUpper(typeName[1]))
         //            {
         //                typeName = typeName.Substring(1);
         //            }

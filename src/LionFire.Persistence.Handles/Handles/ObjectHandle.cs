@@ -5,6 +5,7 @@ using LionFire.Persistence.Handles;
 using LionFire.Structures;
 using LionFire.Referencing;
 using LionFire.Resolves;
+using MorseCode.ITask;
 
 namespace LionFire.Persistence.Handles
 {
@@ -24,7 +25,7 @@ namespace LionFire.Persistence.Handles
                 yield return typeof(NamedReference);
             }
         }
-        public override Task<IResolveResult<ObjectType>> ResolveImpl()
+        public override ITask<IResolveResult<ObjectType>> ResolveImpl()
         {
             if (HasValue)
             {
@@ -32,11 +33,11 @@ namespace LionFire.Persistence.Handles
                 {
                     Flags = PersistenceResultFlags.Success,
                     Value = Value,
-                });
+                }).AsITask();
             }
             else
             {
-                return Task.FromResult<IResolveResult<ObjectType>>(RetrieveResult<ObjectType>.NotFound);
+                return Task.FromResult<IResolveResult<ObjectType>>(RetrieveResult<ObjectType>.NotFound).AsITask();
             }
         }
 

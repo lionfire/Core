@@ -99,27 +99,27 @@ namespace LionFire.Assets
 #region VobHandle
 
 
-        //public VobHandle<T> ToVosHandle<T>()
-        //    where T : class, new()
+        //public VobHandle<TValue> ToVosHandle<TValue>()
+        //    where TValue : class, new()
         //{
 
-        //    return new VobHandle<T>(VosApp.Instance.ActiveData, Path);
+        //    return new VobHandle<TValue>(VosApp.Instance.ActiveData, Path);
         //}
 
-        //public VobHandle<T> ToVosHandleInPackage<T>()
-        //        where T : class, new()
+        //public VobHandle<TValue> ToVosHandleInPackage<TValue>()
+        //        where TValue : class, new()
         //{
-        //    return new VobHandle<T>(VosApp.Instance.ActiveData, Path);
+        //    return new VobHandle<TValue>(VosApp.Instance.ActiveData, Path);
         //}
 
 #endregion
 
 #region HAsset
 
-        //public HAsset<T> ToHAsset<T>()
-        //        where T : class
+        //public HAsset<TValue> ToHAsset<TValue>()
+        //        where TValue : class
         //{
-        //    var result = new HAsset<T>(Path);
+        //    var result = new HAsset<TValue>(Path);
 
         //    result.ObjectField = 
         //}

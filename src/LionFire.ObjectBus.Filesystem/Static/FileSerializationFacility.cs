@@ -15,9 +15,9 @@ namespace LionFire.ObjectBus.Filesystem
 
             return result.Object;
         }
-        //public static async Task<T> DeserializeName<T>(this string name)
+        //public static async Task<TValue> DeserializeName<TValue>(this string name)
         //{
-        //    var result = await FSOBase.Instance.TryGetName<T>(name);
+        //    var result = await FSOBase.Instance.TryGetName<TValue>(name);
         //    if (!result.IsSuccess) throw new RetrieveException(result);
 
         //    return result.Object;

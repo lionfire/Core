@@ -1,7 +1,7 @@
 ﻿namespace LionFire.Resolves
 {    
-    public interface IResolvesEx : IResolves
-    {
+    //public interface IResolvesEx : IResolves
+    //{
 
-    }
+    //}
 }

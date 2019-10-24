@@ -9,16 +9,16 @@ using LionFire.Referencing;
 namespace LionFire.Persistence
 {
     //    //public interface IPartialType { }
-    //    //public interface IPartialType<T> : IPartialType { }
+    //    //public interface IPartialType<TValue> : IPartialType { }
 
     //    //public interface IItem { }
-    //    //public interface IItem<T> : IItem { }
+    //    //public interface IItem<TValue> : IItem { }
 
 
     public interface HC<out T, TListEntry> : IReadOnlyCollection<T>
         where TListEntry : ICollectionEntry
     {
-        //        RH<INotifyingReadOnlyCollection<T>> Handle { get; }
+        //        RH<INotifyingReadOnlyCollection<TValue>> Handle { get; }
 
         //        /// <summary>
         //        /// Direct data object
@@ -31,13 +31,13 @@ namespace LionFire.Persistence
     {
         //        Task<int> Count();
 
-        //        IPersistenceResult Add(string name, T obj);
-        //        IPersistenceResult Add(H<T> handle);
-        //        IPersistenceResult Add(T obj);
+        //        IPersistenceResult Add(string name, TValue obj);
+        //        IPersistenceResult Add(H<TValue> handle);
+        //        IPersistenceResult Add(TValue obj);
 
         //        IPersistenceResult Remove(string name);
-        //        IPersistenceResult Remove(H<T> handle);
-        //        IPersistenceResult Remove(T value);
+        //        IPersistenceResult Remove(H<TValue> handle);
+        //        IPersistenceResult Remove(TValue value);
 
         //        IEnumerable<CollectionOperation> UncommittedChanges { get; }
 
@@ -49,7 +49,7 @@ namespace LionFire.Persistence
     public interface RC<T, TListEntry> : IReadOnlyCollection<T>
         where TListEntry : ICollectionEntry
     {
-        //        RH<INotifyingReadOnlyCollection<KeyValuePair<TListEntry,T>>> Handle { get; }
+        //        RH<INotifyingReadOnlyCollection<KeyValuePair<TListEntry,TValue>>> Handle { get; }
 
         //        ///// <summary>
         //        ///// Direct data object
@@ -65,7 +65,7 @@ namespace LionFire.Persistence
 
 
     /// <summary>
-    /// A collection of objects found at a particular combining a for ReadOnly Collection in ObjectBus.  Inherits IReadOnlyCollection&lt;T&gt;
+    /// A collection of objects found at a particular combining a for ReadOnly Collection in ObjectBus.  Inherits IReadOnlyCollection&lt;TValue&gt;
     /// </summary>
     /// <typeparam name="T"></typeparam>
     public interface RC<T> : RC<T, ICollectionEntry>

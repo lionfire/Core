@@ -54,7 +54,7 @@ namespace LionFire.ObjectBus
                 l.Warn("Saving: !object.ReferenceEquals(hasHandle.Handle.Object, hasHandle).  hasHandle.Handle.Object type: " + hasHandle.Handle.Value?.GetType().Name + ", hasHandle type: " + hasHandle?.GetType().Name 
                     //+ ".  Using hasHandle."
                     );
-                //hasHandle.Handle.Object = (T)hasHandle; --- this doesn't make sense for Ihashandle objects that do not save themselves!
+                //hasHandle.Handle.Object = (TValue)hasHandle; --- this doesn't make sense for Ihashandle objects that do not save themselves!
             }
 
             return hasHandle.Handle.Commit();

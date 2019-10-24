@@ -71,14 +71,14 @@ namespace LionFire.Vos
     //    // vos://host/path/to/node/.TYPEs/instanceName
     //    // vos://host/path/to/node%Type[] - all instances, except main instance
 
-    //public class PathTree<T>
-    //    where T : class
+    //public class PathTree<TValue>
+    //    where TValue : class
     //{
-    //    public T this[string subpath] => this[subpath];
+    //    public TValue this[string subpath] => this[subpath];
 
-    //    public T GetChild(string subpath) => GetChild(subpath.ToPathArray(), 0);
+    //    public TValue GetChild(string subpath) => GetChild(subpath.ToPathArray(), 0);
 
-    //    public T QueryChild(string reference) => QueryChild(subpath.ToPathArray(), 0);
+    //    public TValue QueryChild(string reference) => QueryChild(subpath.ToPathArray(), 0);
 
     //}
 

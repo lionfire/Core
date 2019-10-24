@@ -53,7 +53,7 @@ namespace LionFire.ObjectBus.Filesystem
                         var fsList = (FsList)Value;
                         fsList.OnDirectoryDoesNotExist();
                     }
-                    // OPTIMIZE: Use RetrieveResult<T>.NotFound
+                    // OPTIMIZE: Use RetrieveResult<TValue>.NotFound
                     return (IRetrieveResult<INotifyingReadOnlyCollection<FsListEntry>>)new RetrieveResult<INotifyingReadOnlyCollection<FsListEntry>>
                     {
                         Flags = PersistenceResultFlags.NotFound

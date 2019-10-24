@@ -563,7 +563,7 @@ namespace LionFire.Vos
             this.vob = VBase.Default.Root[subPathChunks];
         }
 
-        //public VobHandle(string path, T obj)
+        //public VobHandle(string path, TValue obj)
         //    : this(path)
         //{
         //    this.Vob.Object = obj;
@@ -671,7 +671,7 @@ namespace LionFire.Vos
 
         //                if (Vob != null)
         //                {
-        //                    obj = Vob.AsType<T>();
+        //                    obj = Vob.AsType<TValue>();
         //                }
         //                return obj;
         //#else
@@ -698,7 +698,7 @@ namespace LionFire.Vos
 
         //        }
         //#if CACHE_OBJECT
-        //        private T _obj;
+        //        private TValue _obj;
         //#endif
 
         //public override bool TryReload(bool setToNullOnFail = true)
@@ -881,7 +881,7 @@ namespace LionFire.Vos
         #region Save
 
         public VobHandle<ObjectType> SaveCopyAs(string name)
-        //where T : class, new()
+        //where TValue : class, new()
         {
             var vh = CopyTo(name);
             vh.Save();
@@ -921,7 +921,7 @@ namespace LionFire.Vos
         // TODO: HandleType?
         // FUTURE: AllowReplace option
         public VobHandle<ObjectType> CopyTo(string name, bool allowNonClone = false, bool save = true, CopyLocation copyLocation = CopyLocation.Immediate, bool allowReplace = true)
-        //where T : class, new()
+        //where TValue : class, new()
         {
             var pathElements = this.PathElements.ToArray();
             if (pathElements.Length == 0) throw new InvalidOperationException("Cannot SaveAs when PathElements is empty");

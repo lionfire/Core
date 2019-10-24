@@ -198,7 +198,7 @@ namespace LionFire.Execution.Hosts
             assets = LiveAssetCollection<TAsset>.Instance;
 
             //FUTURE: how to map LiveAssetCollection<> or some collection with Handles to this instances collection?  Should there be some addable collection that is transparently handled by a live object/asset collection?
-            // TODO: SaveManager.CanSaveType<T>()?  SaveManager.Save<T>(obj);  SaveContext.Add(myCollection);  SaveContext.AutoSave = true;  SaveContext.Description = "local auto-save objects"
+            // TODO: SaveManager.CanSaveType<TValue>()?  SaveManager.Save<TValue>(obj);  SaveContext.Add(myCollection);  SaveContext.AutoSave = true;  SaveContext.Description = "local auto-save objects"
             IEnumerable<TAsset> e = assets.Objects;
 
             instances = e.GetReadOnlyInstancesAdapter<TAsset, object>();

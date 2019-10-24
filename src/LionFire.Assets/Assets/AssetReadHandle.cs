@@ -12,12 +12,12 @@ namespace LionFire.Persistence.Assets
 
     //public class AssetResolver : IReferenceRetriever
     //{
-    //    //public Task<RetrieveReferenceResult<T>> Retrieve<T>(IReadHandle<T> handle) where T : class
+    //    //public Task<RetrieveReferenceResult<TValue>> Retrieve<TValue>(IReadHandle<TValue> handle) where TValue : class
     //    //{
     //    //    throw new NotImplementedException();
     //    //}
 
-    //    public Task<RetrieveResult<T>> Retrieve<T>(IReference reference) where T : class => throw new NotImplementedException();
+    //    public Task<RetrieveResult<TValue>> Retrieve<TValue>(IReference reference) where TValue : class => throw new NotImplementedException();
     //}
 
     // Reads via Injection.GetService<IAssetProvider>
@@ -62,7 +62,7 @@ namespace LionFire.Persistence.Assets
             throw new NotImplementedException("TODO: Convert Assets to an OBus");
             //// TODO: Use async/await here once IAssetProvider supports it
             //var ap = Dependencies.GetServiceOrSingleton<IAssetProvider>(createIfMissing: true);
-            //var result = await ap.Load<T>(this.Key);
+            //var result = await ap.Load<TValue>(this.Key);
             //if (result != null)
             //{
             //    this.Object = result;
@@ -75,7 +75,7 @@ namespace LionFire.Persistence.Assets
         }
     }
 
-    //public class AssetReadHandle<T> : IReadHandle<T>
+    //public class AssetReadHandle<TValue> : IReadHandle<TValue>
     //{
     //    string assetSubPath;
     //    public AssetReadHandle(string assetSubPath)
@@ -83,26 +83,26 @@ namespace LionFire.Persistence.Assets
     //        this.assetSubPath = assetSubPath;
     //    }
 
-    //    public T Object
+    //    public TValue Object
     //    {
     //        get
     //        {
     //            if (obj == null)
     //            {
-    //                obj = assetSubPath.Load<T>();
+    //                obj = assetSubPath.Load<TValue>();
     //            }
     //            return obj;
     //        }
     //    }
-    //    private T obj;
+    //    private TValue obj;
     //    public bool HasObject { get { return } }
     //}
 
     //public static class ReadHandleExtensions
     //{
-    //    public static IReadHandle<T> Handle<T>(this string assetSubPath)
+    //    public static IReadHandle<TValue> Handle<TValue>(this string assetSubPath)
     //    {
-    //        return new AssetReadHandle<T>(assetSubPath);
+    //        return new AssetReadHandle<TValue>(assetSubPath);
     //    }
     //}
 }

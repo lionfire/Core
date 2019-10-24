@@ -12,7 +12,7 @@ namespace LionFire.Persistence.Handles
     /// </summary>
     /// <typeparam name="T"></typeparam>
     public abstract class WBase<T> : RBaseEx<T>, H<T>, ICommitableImpl, IDeletableImpl
-    //where T : class
+    //where TValue : class
     {
         internal static readonly bool DeleteIfObjectNull = true; // TODO: Decide how to configure/hardcode this
 
@@ -26,7 +26,7 @@ namespace LionFire.Persistence.Handles
         #region Events (TODO)
 
 
-        //event Action<RH<T>, HandleEvents> RH<T>.HandleEvents
+        //event Action<RH<TValue>, HandleEvents> RH<TValue>.HandleEvents
         //{
         //    add
         //    {
@@ -37,7 +37,7 @@ namespace LionFire.Persistence.Handles
         //    }
         //}
 
-        //event Action<RH<T>, T, T> RH<T>.ObjectReferenceChanged
+        //event Action<RH<TValue>, TValue, TValue> RH<TValue>.ObjectReferenceChanged
         //{
         //    add
         //    {
@@ -48,7 +48,7 @@ namespace LionFire.Persistence.Handles
         //    }
         //}
 
-        //event Action<RH<T>> RH<T>.ObjectChanged
+        //event Action<RH<TValue>> RH<TValue>.ObjectChanged
         //{
         //    add
         //    {

@@ -12,7 +12,7 @@ namespace LionFire.Persistence.Handles
     //    ////H this[int index, string[] subpathChunks] { get; } // TOPORT - reenable this if/when the need rearises
     //    //H this[params string[] subpathChunks] { get; }
 
-    //    //H<T> GetHandle<T>(params string[] subpathChunks);
-    //    //H<T> GetHandle<T>(IEnumerable<string> subpathChunks);
+    //    //H<TValue> GetHandle<TValue>(params string[] subpathChunks);
+    //    //H<TValue> GetHandle<TValue>(IEnumerable<string> subpathChunks);
     //}
 }

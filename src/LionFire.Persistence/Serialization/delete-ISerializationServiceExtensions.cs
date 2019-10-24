@@ -10,7 +10,7 @@
 //    {
 //        #region ISerializer Demux 
 
-//        internal static T ForAllSerializers<T>(this IHasSerializationStrategies has, Func<ISerializationStrategy, SerializationOperation, SerializationContext, T> doIt, SerializationContext serializationContext = null, SerializerSelectionContext selectionContext = null) // REFACTOR?
+//        internal static TValue ForAllSerializers<TValue>(this IHasSerializationStrategies has, Func<ISerializationStrategy, SerializationOperation, SerializationContext, TValue> doIt, SerializationContext serializationContext = null, SerializerSelectionContext selectionContext = null) // REFACTOR?
 //        {
 //            var resolves = has as IResolvesSerializationStrategies;
 //            var strategies = resolves != null ? resolves.Strategies(selectionContext).Select(result => result.Strategy) : has.AllStrategies;
@@ -104,12 +104,12 @@
 //            //throw exceptions.Count == 1 ? exceptions[0] : new AggregateException(exceptions.ToArray());
 //        }
 
-//        //public static T ToObject<T>(this IHasSerializationStrategies has, Stream stream, SerializationContext serializationContext = null, SerializerSelectionContext selectionContext = null) => 
-//        //    has.ForAllSerializers<T>(
-//        //        (strategy, serializationContext2) => strategy.ToObject<T>(stream, s), serializationContext, selectionContext);
+//        //public static TValue ToObject<TValue>(this IHasSerializationStrategies has, Stream stream, SerializationContext serializationContext = null, SerializerSelectionContext selectionContext = null) => 
+//        //    has.ForAllSerializers<TValue>(
+//        //        (strategy, serializationContext2) => strategy.ToObject<TValue>(stream, s), serializationContext, selectionContext);
 
 
-//        //List<Exception> exceptions = null;//foreach (var serializer in service.SerializersForContext(context))//{//    try//    {//        return serializer.ToObject<T>(context);//    }//    catch (Exception ex)//    {//        if (exceptions == null)//        {//            exceptions.Add(ex);//        }//    }//}//throw exceptions.Count == 1 ? exceptions[0] : new AggregateException(exceptions.ToArray());
+//        //List<Exception> exceptions = null;//foreach (var serializer in service.SerializersForContext(context))//{//    try//    {//        return serializer.ToObject<TValue>(context);//    }//    catch (Exception ex)//    {//        if (exceptions == null)//        {//            exceptions.Add(ex);//        }//    }//}//throw exceptions.Count == 1 ? exceptions[0] : new AggregateException(exceptions.ToArray());
 
 //        #endregion
 

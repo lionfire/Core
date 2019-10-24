@@ -49,7 +49,7 @@ namespace LionFire.Vos
         #region Get
 
         /// <summary>
-        /// For Vos, the main get logic is in the VobHandles&lt;T&gt;, so this is largely a pass-through to that
+        /// For Vos, the main get logic is in the VobHandles&lt;TValue&gt;, so this is largely a pass-through to that
         /// </summary>
         /// <typeparam name="T"></typeparam>
         /// <param name="reference"></param>

@@ -225,13 +225,13 @@ namespace LionFire.ObjectBus.RedisPub
             //    var value = await db.StringGetAsync(reference.Path).ConfigureAwait(false);
             //    if (!value.HasValue)
             //    {
-            //        return RetrieveResult<T>.RetrievedNull;
+            //        return RetrieveResult<TValue>.RetrievedNull;
             //    }
 
             //    string str = value;
 
             //    object obj = DefaultSerializationProvider.ToObject<object>(str);
-            //    var converted = OBaseTypeUtils.TryConvertToType<T>(obj);
+            //    var converted = OBaseTypeUtils.TryConvertToType<TValue>(obj);
 
             //    // ... TODO Multitype multiplex layer
 
@@ -240,7 +240,7 @@ namespace LionFire.ObjectBus.RedisPub
             //        OBaseEvents.OnRetrievedObjectFromExternalSource(converted.result); // Put reference in here?
             //    }
 
-            //    return new RetrieveResult<T>
+            //    return new RetrieveResult<TValue>
             //    {
             //        Object = converted.result,
             //        Flags =PersistenceResultFlags.Success | PersistenceResultFlags.Found | PersistenceResultFlags.Retrieved,
@@ -298,7 +298,7 @@ namespace LionFire.ObjectBus.RedisPub
 
         #region List
 
-        //public async override Task<IEnumerable<string>> List<T>(RedisPubReference parent)
+        //public async override Task<IEnumerable<string>> List<TValue>(RedisPubReference parent)
         //{
         //    throw new NotImplementedException();
         //    RedisPubReference fileRef = RedisPubReference.ConvertFrom(parent);
@@ -332,7 +332,7 @@ namespace LionFire.ObjectBus.RedisPub
         //    if (chunks == null || chunks.Length == 0) yield break;
         //    string parentDirName = chunks[chunks.Length - 1];
 
-        //    return Assets.AssetPath.GetDefaultDirectory(typeof(T));
+        //    return Assets.AssetPath.GetDefaultDirectory(typeof(TValue));
         //}
 
         public override H<T> GetHandle<T>(IReference reference) => throw new NotImplementedException();

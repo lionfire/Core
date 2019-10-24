@@ -73,7 +73,7 @@ namespace LionFire.Overlays
         }
 
 //
-//        public static T Create(OverlayParameters? nParameters = null, T defaultInstance = null)
+//        public static TValue Create(OverlayParameters? nParameters = null, TValue defaultInstance = null)
 //        {
 //            
 //        }

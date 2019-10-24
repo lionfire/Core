@@ -86,12 +86,12 @@
 //            get { throw new NotImplementedException(); }
 //        }
 
-//        public T AsType<T>() where T : class
+//        public TValue AsType<TValue>() where TValue : class
 //        {
 //            throw new NotImplementedException();
 //        }
 
-//        public T[] OfType<T>() where T : class
+//        public TValue[] OfType<TValue>() where TValue : class
 //        {
 //            throw new NotImplementedException();
 //        }

@@ -31,7 +31,7 @@ namespace LionFire.Assets
         private static IAssetProvider AssetProvider => DependencyContext.Current.GetService<IAssetProvider>();
 
         // TODO: Async?
-        //public static Task<T> LoadAsync<T>(this string assetSubPath, object context = null)
+        //public static Task<TValue> LoadAsync<TValue>(this string assetSubPath, object context = null)
         //{
         //}
 
@@ -75,10 +75,10 @@ namespace LionFire.Assets
             }
         }
 
-        //public static void Save<T>(this string assetSubPath, T obj)
+        //public static void Save<TValue>(this string assetSubPath, TValue obj)
         //{
         //    var ap = (IAssetProvider)ManualSingleton<IServiceProvider>.Instance.GetService(typeof(IAssetProvider));
-        //     ap.Save<T>(assetSubPath, obj);
+        //     ap.Save<TValue>(assetSubPath, obj);
         //}
 
         public static async Task SaveAtSubPath<T>(this T obj, string assetSubPath, object persistenceContext = null)

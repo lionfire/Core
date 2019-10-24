@@ -18,9 +18,9 @@ namespace LionFire.Vos
 
         bool Equals(object obj);
         //VobHandle<object> GetHandle();
-        //VobHandle<T> GetHandle<T>();
+        //VobHandle<TValue> GetHandle<TValue>();
         int GetHashCode();
         //VobReadHandle<object> GetReadHandle();
-        //VobReadHandle<T> GetReadHandle<T>();
+        //VobReadHandle<TValue> GetReadHandle<TValue>();
     }
 }

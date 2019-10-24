@@ -1,4 +1,5 @@
-﻿using LionFire.Referencing;
+﻿#nullable enable
+using LionFire.Referencing;
 using LionFire.Resolvables;
 using LionFire.Resolves;
 using LionFire.Results;
@@ -35,9 +36,17 @@ namespace LionFire.Persistence.Handles
         public Task<bool> Exists(bool forceCheck = false) => Task.FromResult(true);
 
 
-        public Task<ILazyResolveResult<object /* T */>> GetValue() => Task.FromResult<ILazyResolveResult<object>>(LazyResolveResultNoop<object>.Instance);
-        public Task<IResolveResult> Resolve() => Task.FromResult((IResolveResult)SuccessResult.Success);
+        public Task<ILazyResolveResult<object /* TValue */>> GetValue() => Task.FromResult<ILazyResolveResult<object>>(LazyResolveResultNoop<object>.Instance);
+        public Task<IResolveResult<object>> Resolve() => Task.FromResult<IResolveResult<object>>(NoopRetrieveResult);
         public Task<bool> TryResolveObject() => Task.FromResult(true);
+
+        public static readonly RetrieveResult<object> NoopRetrieveResult = new RetrieveResult<object>()
+        {
+            Value = null,
+            Flags = PersistenceResultFlags.Success | PersistenceResultFlags.Noop,
+            Error = null
+        };
     }
 
 }
+#nullable restore

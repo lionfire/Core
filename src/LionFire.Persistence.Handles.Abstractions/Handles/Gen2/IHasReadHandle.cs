@@ -18,10 +18,10 @@ namespace LionFire.Persistence.Handles
 //#if !UNITY
 //out
 //#endif
-// T> : IHasReadHandle
-//        where T : class
+// TValue> : IHasReadHandle
+//        where TValue : class
 //    {
-//        new IReadHandle<T> ReadHandle { get; }
+//        new IReadHandle<TValue> ReadHandle { get; }
 //    }
 //#endif
 

@@ -37,7 +37,7 @@ namespace LionFire.Persistence.Assets
         Task<IPersistenceResult> IDeletableImpl.Delete() => throw new System.NotImplementedException();
     }
 
-    //public class AssetReadHandle<T> : IReadHandle<T>
+    //public class AssetReadHandle<TValue> : IReadHandle<TValue>
     //{
     //    string assetSubPath;
     //    public AssetReadHandle(string assetSubPath)
@@ -45,26 +45,26 @@ namespace LionFire.Persistence.Assets
     //        this.assetSubPath = assetSubPath;
     //    }
 
-    //    public T Object
+    //    public TValue Object
     //    {
     //        get
     //        {
     //            if (obj == null)
     //            {
-    //                obj = assetSubPath.Load<T>();
+    //                obj = assetSubPath.Load<TValue>();
     //            }
     //            return obj;
     //        }
     //    }
-    //    private T obj;
+    //    private TValue obj;
     //    public bool HasObject { get { return } }
     //}
 
     //public static class ReadHandleExtensions
     //{
-    //    public static IReadHandle<T> Handle<T>(this string assetSubPath)
+    //    public static IReadHandle<TValue> Handle<TValue>(this string assetSubPath)
     //    {
-    //        return new AssetReadHandle<T>(assetSubPath);
+    //        return new AssetReadHandle<TValue>(assetSubPath);
     //    }
     //}
 }

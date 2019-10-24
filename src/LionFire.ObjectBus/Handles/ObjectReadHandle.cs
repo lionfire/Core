@@ -1,4 +1,4 @@
-﻿#if false // See H<T>
+﻿#if false // See H<TValue>
 using System;
 using System.Collections.Generic;
 using System.Linq;

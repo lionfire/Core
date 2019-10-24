@@ -181,7 +181,7 @@ namespace LionFire.Vos
 
 #if !AOT
         public override IHandle<T> GetHandle<T>(T obj)
-        //where T : class//, new()
+        //where TValue : class//, new()
         {
             var vh = GetVobHandle<T>();
             if (obj != null)
@@ -196,8 +196,8 @@ namespace LionFire.Vos
         public VobHandle<T> GetVobHandle<T>()
             where T : class//, new()
         {
-            //return new VobHandle<T>(this.GetVob());// OLD 
-            //return this.GetVob().GetHandle<T>();
+            //return new VobHandle<TValue>(this.GetVob());// OLD 
+            //return this.GetVob().GetHandle<TValue>();
             return this.Vob.GetHandle<T>();
         }
 

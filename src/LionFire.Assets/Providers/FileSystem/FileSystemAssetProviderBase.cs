@@ -80,7 +80,7 @@ namespace LionFire.Assets.Providers.FileSystem
             return await Task.Run(() =>
             {
                 var dir = GetPath<T>();
-                //var dir = GetPath<T>(context: context);
+                //var dir = GetPath<TValue>(context: context);
                 if (searchString == null) searchString = "*";
                 var result = new List<string>();
                 foreach (var path in Directory.GetFiles(dir, searchString + FileExtensionWithDot))

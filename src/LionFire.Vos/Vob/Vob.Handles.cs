@@ -166,10 +166,10 @@ namespace LionFire.Vos
             }
         }
 
-        //private VobHandle<T> GetFirstWriteHandle<T>()
+        //private VobHandle<TValue> GetFirstWriteHandle<TValue>()
         //{
         //    H objectHandle;
-        //    objectHandle = FirstWriteHandle<T>();
+        //    objectHandle = FirstWriteHandle<TValue>();
         //    return objectHandle;
         //}
 

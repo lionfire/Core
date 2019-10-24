@@ -10,6 +10,6 @@ namespace LionFire.ObjectBus
     {
         public static Task<IEnumerable<string>> List<T>(this IReference reference)
             => throw new NotImplementedException();
-            //reference.ToReadCollectionHandle<T>().List();
+            //reference.ToReadCollectionHandle<TValue>().List();
     }
 }

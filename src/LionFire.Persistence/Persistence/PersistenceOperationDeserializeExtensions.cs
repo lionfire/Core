@@ -61,7 +61,7 @@ namespace LionFire.Persistence
 
             //        using (var fs = context.Deserialization.PathToStream(path))
             //        {
-            //            var (Object, Result) = strategy.ToObject<T>(fs, op, context);
+            //            var (Object, Result) = strategy.ToObject<TValue>(fs, op, context);
             //            if (Result.IsSuccess)
             //            {
             //                return (Object,Result);
@@ -69,7 +69,7 @@ namespace LionFire.Persistence
             //        }
             //    }
             //}
-            //return (default(T), );
+            //return (default(TValue), );
 
             //            using (var fs = new FileStream(diskPath, FileMode.Open, FileAccess.Read, FileShare.Read))
             //            {
