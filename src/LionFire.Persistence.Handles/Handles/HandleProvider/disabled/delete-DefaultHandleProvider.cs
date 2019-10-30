@@ -1,6 +1,6 @@
 ﻿//namespace LionFire.Referencing
 //{
-//    public class DefaultHandleProvider : IHandleProvider
+//    public class DefaultHandleProvider : IReadWriteHandleProvider
 //    {
 //        public H<T> ToHandle<T>(IReference reference)
 //            where T: class

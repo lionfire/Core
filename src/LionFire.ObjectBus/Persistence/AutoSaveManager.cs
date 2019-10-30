@@ -27,7 +27,7 @@ namespace LionFire.ObjectBus
             //ChangeWatcher = new ChangeWatcher();
         }
 
-        public void Register(H<object> handle)
+        public void Register(W<object> handle)
         {
             // TODO MEMORYLEAK ToWeakEvents
             handle.ObjectChanged += OnHandleObjectChanged;
@@ -50,10 +50,10 @@ namespace LionFire.ObjectBus
                 }
             }
 
-            ThrottledSaveManager.Instance.OnChanged((H<object>)handle);            
+            ThrottledSaveManager.Instance.OnChanged((W<object>)handle);            
         }
 
-        public void Unregister(H<object> handle)
+        public void Unregister(W<object> handle)
         {
             handle.ObjectChanged -= OnHandleObjectChanged;
 #if TRACE_Autosave
@@ -70,7 +70,7 @@ namespace LionFire.ObjectBus
 
     public static class AutoSaveManagerExtensions
     {
-        public static void SetAutosave(this H<object> obj, bool enabled = true)
+        public static void SetAutosave(this W<object> obj, bool enabled = true)
         {
             if (enabled)
             {

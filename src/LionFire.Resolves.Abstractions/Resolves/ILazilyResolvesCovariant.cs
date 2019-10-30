@@ -8,4 +8,5 @@ namespace LionFire.Resolves
     {
         Task<ILazyResolveResult<object /* T */>> GetValue();
     }
+    
 }

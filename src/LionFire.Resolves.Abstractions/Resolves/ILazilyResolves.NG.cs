@@ -2,7 +2,8 @@
 
 namespace LionFire.Resolves
 {
-    public interface ILazilyResolves : IWrapper
+
+    public interface ILazilyResolves : IWrapper, IDiscardableValue
     //: IHasPersistenceState
     {
         /// <summary>
@@ -31,11 +32,6 @@ namespace LionFire.Resolves
         /// Determine whether this object has a Value without triggering any lazy resolving of the value.
         /// </summary>
         new bool HasValue { get; }
-
-        /// <summary>
-        /// Discard whatever Object was retrieved, forcing another retrieve upon the next attempt to access the Object.
-        /// </summary>
-        void DiscardValue();
 
     }
 

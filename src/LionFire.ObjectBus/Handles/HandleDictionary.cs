@@ -10,15 +10,15 @@ namespace LionFire.ObjectBus
 {
     public class HandleDictionary
     {
-        internal static ConditionalWeakTable<object, H<object>> handles = new ConditionalWeakTable<object, H<object>>();
+        internal static ConditionalWeakTable<object, W<object>> handles = new ConditionalWeakTable<object, W<object>>();
     }
     
     public static class HandleDictionaryExtensions
     {
-        public static H<object> FindHandle(this object obj) 
-            => HandleDictionary.handles.TryGetValue(obj, out H<object> h) ? h : null;
+        public static W<object> FindHandle(this object obj) 
+            => HandleDictionary.handles.TryGetValue(obj, out W<object> h) ? h : null;
 
-        public static bool TryRegisterHandle(this H<object> h)
+        public static bool TryRegisterHandle(this W<object> h)
         {
             object o = h.Value;
 
@@ -32,7 +32,7 @@ namespace LionFire.ObjectBus
                 return false;
             }
         }
-        public static void RegisterHandle(this H<object> h)
+        public static void RegisterHandle(this W<object> h)
         {
             object o = h.Value;
             HandleDictionary.handles.Add(o, h);

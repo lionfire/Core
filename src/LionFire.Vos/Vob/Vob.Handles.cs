@@ -144,7 +144,7 @@ namespace LionFire.Vos
                 return null;
             }
         }
-        private H<T> GetFirstWriteHandle<T>()
+        private W<T> GetFirstWriteHandle<T>()
         {
             //get
             {

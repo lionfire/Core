@@ -1,7 +1,9 @@
 ﻿using LionFire.DependencyInjection;
+using LionFire.ExtensionMethods.Poco.Resolvables;
 using LionFire.Resolvables;
 using LionFire.Structures;
 using System;
+using System.Threading.Tasks;
 
 namespace LionFire.Referencing
 {
@@ -43,18 +45,20 @@ namespace LionFire.Referencing
     }
 #endif
 
+    // TODO: Document, maybe rename generic type names
     public abstract class ResolvingTypedReferenceBase<TConcrete, TReferenced> : ReferenceBase<TConcrete>, ITypedReference, IResolvable
         where TConcrete : ReferenceBase<TConcrete>
     {
         public Type Type => typeof(TReferenced);
 
+        [Blocking(Alternative = nameof(ResolveReference))]
         public IReference ResolvedReference
         {
             get
             {
                 if(resolvedReference == null)
                 {
-                    resolvedReference =((TConcrete)(object)this).Resolve<TConcrete, IReference>(); // HARDCAST
+                    ResolveReference().Wait();
                 }
                 return resolvedReference;
             }
@@ -64,6 +68,14 @@ namespace LionFire.Referencing
             }
         }
         private IReference resolvedReference;
+
+        public async Task ResolveReference()
+        {
+            if (resolvedReference == null)
+            {
+                resolvedReference = (await ((TConcrete)(object)this).Resolve<TConcrete, IReference>().ConfigureAwait(false)).Value; // HARDCAST
+            }
+        }
 
         public override string Scheme => resolvedReference.Scheme;
         public override string Host { get => resolvedReference.Host; set => throw new NotSupportedException(); }

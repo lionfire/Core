@@ -1,5 +1,5 @@
 ﻿using System;
-using System.Collections.Concurrent;
+using System.Collections.Generic;
 using System.Reflection;
 using System.Threading;
 using LionFire.Structures;
@@ -9,7 +9,6 @@ namespace LionFire.DependencyInjection
 
     public static class DependencyContextExtensions
     {
-
     }
 
     /// <summary>
@@ -19,7 +18,7 @@ namespace LionFire.DependencyInjection
     /// FUTURE:
     ///  - Named services?
     /// </remarks>
-    public class DependencyContext : IServiceProvider
+    public class DependencyContext : IServiceProvider // RENAME to AmbientContext?
     {
         public static void Reset()
         {
@@ -29,11 +28,11 @@ namespace LionFire.DependencyInjection
 
         public void UseAsGuaranteedSingletonProvider(bool useDefaultAsFallback = true)
         {
-            ManualSingletonProvider.GuaranteedInstanceProvider = 
-                GuaranteedInstanceProvider(fallback: useDefaultAsFallback ? ManualSingletonProvider.GuaranteedInstanceProvider  : null);
+            ManualSingletonProvider.GuaranteedInstanceProvider =
+                GuaranteedInstanceProvider(fallback: useDefaultAsFallback ? ManualSingletonProvider.GuaranteedInstanceProvider : null);
         }
 
-        protected Func<Type, object> GuaranteedInstanceProvider(Func<Type, object> fallback) => 
+        protected Func<Type, object> GuaranteedInstanceProvider(Func<Type, object> fallback) =>
             new Func<Type, object>(createType => GetService(createType) ?? fallback?.Invoke(createType));
 
         #region (Static)
@@ -148,6 +147,12 @@ namespace LionFire.DependencyInjection
         #endregion
 
         public T GetService<T>(IServiceProvider serviceProvider = null) => (T)GetService(typeof(T), serviceProvider);
+
+        public IEnumerable<T> GetServices<T>(IServiceProvider serviceProvider = null)
+        {
+            var singleResult = GetService<T>();
+            return singleResult != null ? (new T[] { singleResult }) : GetService<IEnumerable<T>>();
+        }
 
 
         public TInterface GetServiceOrSingleton<TInterface>(IServiceProvider serviceProvider = null, bool createIfMissing = DefaultCreateIfMissing)

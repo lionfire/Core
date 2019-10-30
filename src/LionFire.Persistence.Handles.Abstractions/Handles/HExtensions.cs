@@ -2,7 +2,7 @@
 {
     public static class HExtensions
     {
-        public static RH<TR> R<TR,TH>(this H<TH> h) => (RH<TR>)h;
+        public static RH<TR> R<TR,TH>(this W<TH> h) => (RH<TR>)h;
     }
 
 }

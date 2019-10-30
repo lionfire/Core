@@ -4,7 +4,7 @@
 
 //namespace LionFire.Referencing
 //{
-//    public class DeferredResolutionHandleProvider : IHandleProvider
+//    public class DeferredResolutionHandleProvider : IReadWriteHandleProvider
 //    {
 //        public H<T> ToHandle<T>(IReference reference)
 //            where T : class

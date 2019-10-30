@@ -126,7 +126,7 @@ namespace LionFire.Assets
 #if !AOT
 #if !AOT
         //H IHasHandle.Handle => this.Handle;
-        public H<ConcreteType> Handle
+        public W<ConcreteType> Handle
 #else
 		public H Handle
 #endif
@@ -141,7 +141,7 @@ namespace LionFire.Assets
 #endif
 #if !ASSETCACHE
         [Obsolete("Use HAsset.ContextualHandle")]
-        public H<ConcreteType> ContextualHandle => HAsset.ContextualHandle;
+        public W<ConcreteType> ContextualHandle => HAsset.ContextualHandle;
 #endif
 
         private void EnsureHandleSetToThis(IVobHandle<ConcreteType> vh)

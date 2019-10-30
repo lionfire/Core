@@ -6,19 +6,21 @@ namespace LionFire.Persistence.Handles
 {
     public interface IReferenceToHandleService //: IReferenceToHandleProvider<IReference>
     {
-        IHandleProvider GetHandleProvider(IReference input);
+        IReadWriteHandleProvider GetReadWriteHandleProvider(IReference input);
         IReadHandleProvider GetReadHandleProvider(IReference input);
+        IWriteHandleProvider GetWriteHandleProvider(IReference input);
+        
 
         ICollectionHandleProvider GetCollectionHandleProvider(IReference input);
 
-        //IHandleProvider GetHandleProvider(Type referenceType);
+        //IReadWriteHandleProvider GetHandleProvider(Type referenceType);
         //IReadHandleProvider GetReadHandleProvider(Type referenceType);
     }
 
     //public interface IReferenceToHandleProviderProvider<TReference>
     //    where TReference : IReference
     //{
-    //    IEnumerable<IHandleProvider> GetHandleProviders(IReference input);
+    //    IEnumerable<IReadWriteHandleProvider> GetHandleProviders(IReference input);
     //    IEnumerable<IReadHandleProvider> GetReadHandleProviders(IReference input);
     //}
 

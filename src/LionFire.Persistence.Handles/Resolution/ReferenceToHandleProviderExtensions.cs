@@ -15,12 +15,22 @@ namespace LionFire.Referencing.Ex
 
         #endregion
 
+        #region IWriteOnlyHandleProvider
+
+        public static IWriteHandleProvider GetWriteHandleProvider(this IReference reference)
+            => DependencyContext.Current.GetServiceOrSingleton<IReferenceToHandleService>().GetWriteHandleProvider(reference);
+
+        public static IWriteHandleProvider ToWriteHandleProvider(this IReference reference)
+            => GetWriteHandleProvider(reference) ?? throw new HasUnresolvedDependenciesException($"No {nameof(IWriteHandleProvider)}could be found for reference of type {reference?.GetType().FullName}");
+
+        #endregion
+
         #region IHandleProvider
 
-        public static IHandleProvider GetHandleProvider(this IReference reference)
-            => DependencyContext.Current.GetServiceOrSingleton<IReferenceToHandleService>().GetHandleProvider(reference);
-        public static IHandleProvider ToHandleProvider(this IReference reference) 
-            => GetHandleProvider(reference) ?? throw new HasUnresolvedDependenciesException($"No {nameof(IHandleProvider)} could be found for reference of type {reference?.GetType().FullName}");
+        public static IReadWriteHandleProvider GetReadWriteHandleProvider(this IReference reference)
+            => DependencyContext.Current.GetServiceOrSingleton<IReferenceToHandleService>().GetReadWriteHandleProvider(reference);
+        public static IReadWriteHandleProvider ToReadWriteHandleProvider(this IReference reference) 
+            => GetReadWriteHandleProvider(reference) ?? throw new HasUnresolvedDependenciesException($"No {nameof(IReadWriteHandleProvider)} could be found for reference of type {reference?.GetType().FullName}");
 
         #endregion
 

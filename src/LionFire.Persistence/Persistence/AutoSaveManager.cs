@@ -10,6 +10,7 @@ using LionFire.Structures;
 using System.Diagnostics;
 using System.Reflection;
 using System.Collections.Specialized;
+using LionFire.Resolves;
 
 namespace LionFire.Persistence
 {
@@ -17,23 +18,23 @@ namespace LionFire.Persistence
     {
         public static AutoSaveManager Instance { get { return Singleton<AutoSaveManager>.Instance; } }
 
-        internal ConcurrentDictionary<ICommitable, ThrottledChangeHandler> handlers = new ConcurrentDictionary<ICommitable, ThrottledChangeHandler>();
+        internal ConcurrentDictionary<IPuts, ThrottledChangeHandler> handlers = new ConcurrentDictionary<IPuts, ThrottledChangeHandler>();
     }
 
     public static class AutoSaveManagerExtensions
     {
         public static readonly int AutoSaveThrottleMilliseconds = 2000;
-        public static void QueueAutoSave(this ICommitable saveable)
+        public static void QueueAutoSave(this IPuts saveable)
         {
             //Debug.WriteLine($"Queued autosave for {saveable.GetType().Name}");
             var handler = GetHandler(saveable);
             handler.Queue();
         }
 
-        private static ThrottledChangeHandler GetHandler(ICommitable asset, Action<object> saveAction = null)
+        private static ThrottledChangeHandler GetHandler(IPuts asset, Action<object> saveAction = null)
         {
             if (asset == null) return null;
-            if (saveAction == null) saveAction = o => ((ICommitable)o).Commit();
+            if (saveAction == null) saveAction = o => ((IPuts)o).Put();
             return AutoSaveManager.Instance.handlers.GetOrAdd(asset, a =>
             {
                 var inpc = a as INotifyPropertyChanged ?? ((a as IReadWrapper<object>)?.Value as INotifyPropertyChanged);
@@ -45,7 +46,7 @@ namespace LionFire.Persistence
 
         private static void OnChangeQueueHandler(object sender)
         {
-            var h = GetHandler(sender as ICommitable);
+            var h = GetHandler(sender as IPuts);
             h?.Queue();
         }
 
@@ -54,7 +55,7 @@ namespace LionFire.Persistence
         /// </summary>
         /// <param name="saveable"></param>
         /// <param name="enable"></param>
-        public static void EnableAutoSave(this ICommitable saveable, bool enable = true, Action<object> saveAction=null)
+        public static void EnableAutoSave(this IPuts saveable, bool enable = true, Action<object> saveAction=null)
         {
 
             bool attachedToSomething = false;

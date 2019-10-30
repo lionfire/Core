@@ -1,9 +1,10 @@
 ﻿
 namespace LionFire.Events
 {
-    public interface IValueChanged<out T>
+
+    public interface IValueChanged<out TValue>
     {
-        T NewValue { get; }
-        T OldValue { get; }
+        TValue NewValue { get; }
+        TValue OldValue { get; }
     }
 }

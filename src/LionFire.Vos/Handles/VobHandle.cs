@@ -10,7 +10,7 @@ namespace LionFire.Vos
 {
 
     [ReadOnlyEditionIs(typeof(VobReadHandle<>))]
-    public class VobHandle<T> : VobReadHandle<T>, H<T>
+    public class VobHandle<T> : VobReadHandle<T>, W<T>
         , IVobHandle<T>
     //, ITreeHandle
     {

@@ -26,16 +26,19 @@ namespace LionFire.Persistence.Handles
             => DependencyContext.Current.GetServiceOrSingleton<IReferenceToHandleService, ReferenceToHandleService>();
 
 
-        public IHandleProvider GetHandleProvider(IReference input) 
-            => (IHandleProvider)DependencyContext.Current.GetServiceOrSingleton(typeof(IHandleProvider<>).MakeGenericType(input.GetType()));
-        
-        //if (handleProviders.TryGetValue(input.GetType(), out IHandleProvider result))
+        public IReadWriteHandleProvider GetReadWriteHandleProvider(IReference input) 
+            => (IReadWriteHandleProvider)DependencyContext.Current.GetServiceOrSingleton(typeof(IReadWriteHandleProvider<>).MakeGenericType(input.GetType()));
+
+        //if (handleProviders.TryGetValue(input.GetType(), out IReadWriteHandleProvider result))
         //{
         //    return result;
         //}
 
         public IReadHandleProvider GetReadHandleProvider(IReference input)
             => (IReadHandleProvider)DependencyContext.Current.GetServiceOrSingleton(typeof(IReadHandleProvider<>).MakeGenericType(input.GetType()));
+        
+        public IWriteHandleProvider GetWriteHandleProvider(IReference input)
+                    => (IWriteHandleProvider)DependencyContext.Current.GetServiceOrSingleton(typeof(IWriteHandleProvider<>).MakeGenericType(input.GetType()));
 
         public ICollectionHandleProvider GetCollectionHandleProvider(IReference input)
             => (ICollectionHandleProvider)DependencyContext.Current.GetServiceOrSingleton(typeof(ICollectionHandleProvider<>).MakeGenericType(input.GetType()));
@@ -43,10 +46,10 @@ namespace LionFire.Persistence.Handles
         /// ///////////////////
 
 
-        //ConcurrentDictionary<Type,  List<IHandleProvider>> handleProviders = new ConcurrentDictionary<Type, List<IHandleProvider>>();
+        //ConcurrentDictionary<Type,  List<IReadWriteHandleProvider>> handleProviders = new ConcurrentDictionary<Type, List<IReadWriteHandleProvider>>();
         //ConcurrentDictionary<Type,  List<IReadHandleProvider>> readHandleProviders = new ConcurrentDictionary<Type, List<IReadHandleProvider>>();
 
-        //ConcurrentDictionary<Type, SortedList<double, IHandleProvider>> handleProvidersRanked = new ConcurrentDictionary<Type, SortedList<double, IHandleProvider>>();
+        //ConcurrentDictionary<Type, SortedList<double, IReadWriteHandleProvider>> handleProvidersRanked = new ConcurrentDictionary<Type, SortedList<double, IReadWriteHandleProvider>>();
         //ConcurrentDictionary<Type, SortedList<double, IReadHandleProvider>> readHandleProvidersRanked = new ConcurrentDictionary<Type, SortedList<double, IReadHandleProvider>>();
 
         //public void Reset()
@@ -63,7 +66,7 @@ namespace LionFire.Persistence.Handles
 
         //public IReadHandleProvider GetReadHandleProvider(IReference input) => throw new System.NotImplementedException();
 
-        //public IEnumerable<IHandleProvider> GetHandleProviders(IReference input)=>handleProviders
+        //public IEnumerable<IReadWriteHandleProvider> GetHandleProviders(IReference input)=>handleProviders
         //public IEnumerable<IReadHandleProvider> GetReadHandleProviders(IReference input);
 
     }

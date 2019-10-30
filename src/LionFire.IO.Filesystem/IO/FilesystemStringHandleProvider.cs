@@ -5,11 +5,11 @@ using LionFire.Persistence;
 
 namespace LionFire.IO.Filesystem
 {
-    public class FilesystemStringHandleProvider : FilesystemHandleProviderBase, IHandleProvider
+    public class FilesystemStringHandleProvider : FilesystemHandleProviderBase, IReadWriteHandleProvider
     {
         public override string Scheme => "file(string)";
 
-        public H<T> GetHandle<T>(IReference reference, T initialObject = default)
+        public W<T> GetReadWriteHandle<T>(IReference reference, T initialObject = default)
         {
             if (typeof(T) != typeof(string))
             {
@@ -17,7 +17,7 @@ namespace LionFire.IO.Filesystem
             }
 
             ValidateReference(reference);
-            return (H<T>)new HTextFile(reference.Path, (string)(object)initialObject); // HARDCAST
+            return (W<T>)new HTextFile(reference.Path, (string)(object)initialObject); // HARDCAST
         }
 
         public RH<T> GetReadHandle<T>(IReference reference)

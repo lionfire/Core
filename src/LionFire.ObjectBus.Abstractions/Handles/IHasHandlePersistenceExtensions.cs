@@ -12,18 +12,20 @@ using System.Threading.Tasks;
 
 namespace LionFire.ObjectBus
 {
+#if UNUSED
     public static class IHasHandlePersistenceExtensions
     {
-        #region Misc
+    #region Misc
 
         private static ILogger l = Log.Get();
 
-        #endregion
+    #endregion
 
-        #region Save 
 
-        // UNUSED?  Use IHasHAsset instead?
-        
+    #region Save 
+
+// UNUSED?  Use IHasHAsset instead?
+
         public static Task<ICommitResult> Commit(this IHasHandle hasHandle) 
         {
             if (hasHandle.Handle.HasValue && !object.ReferenceEquals(hasHandle.Handle.Value, hasHandle))
@@ -34,7 +36,8 @@ namespace LionFire.ObjectBus
             return hasHandle.Handle.Commit();
         }
 
-		#if !AOT
+
+#if !AOT
 
         public static Task<ICommitResult> Save<T>(this IHasHandle<T> hasHandle)
             where T : class
@@ -60,6 +63,7 @@ namespace LionFire.ObjectBus
             return hasHandle.Handle.Commit();
         }
 #endif
-        #endregion
-    }
+    #endregion
+}
+#endif
 }

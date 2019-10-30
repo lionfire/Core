@@ -27,7 +27,7 @@ namespace LionFire.Persistence
 
     }
 
-    public interface HC<T> : RH<INotifyingReadOnlyCollection<H<T>>>
+    public interface HC<T> : RH<INotifyingReadOnlyCollection<W<T>>>
     {
         //        Task<int> Count();
 
@@ -41,7 +41,7 @@ namespace LionFire.Persistence
 
         //        IEnumerable<CollectionOperation> UncommittedChanges { get; }
 
-        //        IPersistenceResult Commit();
+        //        IPersistenceResult Put();
     }
 
 

@@ -142,4 +142,34 @@ namespace LionFire
         //WritableStates = OutgoingCreatePending | OutgoingUpdatePending | MarkedForDeletion | NeedsMergeAnalysis | MergeConflict | AutoMergeable,
 
     }
+
+    public static class PersistenceStateExtensions
+    {
+
+        public static PersistenceState ForgetIncomingAvailable(this PersistenceState state)
+             => state & ~(
+                    PersistenceState.IncomingCreateAvailable
+                    | PersistenceState.IncomingRetrieveAvailable
+                    | PersistenceState.IncomingUpdateAvailable
+                    | PersistenceState.IncomingDeleteAvailable
+                    );
+
+        /// <summary>
+        /// Does not reset:
+        ///  - Reachable/Unreachable
+        ///  - Incoming changes detected
+        /// </summary>
+        /// <param name="state"></param>
+        /// <returns></returns>
+        public static PersistenceState AfterDiscard(this PersistenceState state)
+             => state & ~(PersistenceState.OutgoingCreatePending
+                    | PersistenceState.UpToDate
+                    | PersistenceState.OutgoingUpdatePending
+                    | PersistenceState.OutgoingDeletePending
+                    | PersistenceState.NeedsMergeAnalysis
+                    | PersistenceState.MergeConflict
+                    | PersistenceState.AutoMergeable
+                    | PersistenceState.InSync
+                    );
+    }
 }

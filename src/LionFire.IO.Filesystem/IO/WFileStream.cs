@@ -57,11 +57,11 @@ namespace LionFire.IO
 
         public void Dispose()
         {
-            var obj = base._object;
-            if (_object != null)
+            var obj = base._value;
+            if (_value != null)
             {
                 DiscardValue();
-                _object.Dispose();
+                _value.Dispose();
             }
         }
     }

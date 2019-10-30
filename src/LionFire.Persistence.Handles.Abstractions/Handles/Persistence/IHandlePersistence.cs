@@ -1,5 +1,6 @@
 ﻿using LionFire.Persistence;
 using LionFire.Referencing;
+using LionFire.Resolves;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -8,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace LionFire.Persistence
 {
-    public interface IHandlePersistence : ICommitable
+    public interface IHandlePersistence : IPuts
     {
         void AssignFrom(object other);
 

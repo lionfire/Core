@@ -15,6 +15,6 @@ namespace LionFire.Assets
 #endif
 
         [AotReplacement] // First param is different, not sure it works :-/
-        public static object TryGetObject(this RH ha, Type type) => ha == null ? null : ha.Value;
+        public static object TryGetObject(this RH<object> ha, Type type) => ha == null ? null : ha.Value;
     }
 }

@@ -23,7 +23,7 @@ namespace LionFire.Extensions.ObjectBus
             }
         }
 
-        public static IEnumerable<RH> ToNonVirtualHandle(this RH<object> parent)
+        public static IEnumerable<RH<object>> ToNonVirtualHandle(this RH<object> parent)
         {
             throw new NotImplementedException("TOPORT");
             // TOPORT

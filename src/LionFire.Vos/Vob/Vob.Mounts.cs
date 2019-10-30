@@ -325,9 +325,9 @@ namespace LionFire.Vos
         /// <typeparam name="T"></typeparam>
         /// <param name="mount"></param>
         /// <returns></returns>
-        private H<T> GetHandleFromMount<T>(Mount mount)
+        private W<T> GetHandleFromMount<T>(Mount mount)
         {
-            H<T> result;
+            W<T> result;
 
             // TODO TO_ASSERT mount path is a parent of this.Path
 

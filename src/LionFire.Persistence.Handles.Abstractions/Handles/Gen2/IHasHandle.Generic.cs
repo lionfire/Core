@@ -9,7 +9,7 @@ namespace LionFire.Persistence.Handles
         //: IHasHandle
         where T : class
     {
-        H<T> Handle { get; }
+        W<T> Handle { get; }
     }
 #endif
 

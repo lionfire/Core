@@ -4,7 +4,7 @@ using System.Collections.Generic;
 
 namespace LionFire.Persistence.Handles
 {
-    public interface IHandleProviderService : IHandleProvider
+    public interface IHandleProviderService : IReadWriteHandleProvider
     {
         /// <summary>
         /// Informational

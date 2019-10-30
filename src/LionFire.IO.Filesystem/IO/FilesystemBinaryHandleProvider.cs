@@ -4,14 +4,14 @@ using LionFire.Persistence;
 
 namespace LionFire.IO.Filesystem
 {
-    public class FilesystemBinaryHandleProvider : FilesystemHandleProviderBase, IHandleProvider, IReadHandleProvider
+    public class FilesystemBinaryHandleProvider : FilesystemHandleProviderBase, IReadWriteHandleProvider, IReadHandleProvider
     {
         public override string Scheme => "file(byte[])";
 
-        public H<T> GetHandle<T>(IReference reference, T obj = default)
+        public W<T> GetReadWriteHandle<T>(IReference reference, T obj = default)
         {
             ValidateReference(reference);
-            return (H<T>)(object)new HBinaryFile(reference.Path);
+            return (W<T>)(object)new HBinaryFile(reference.Path);
         }
 
         public RH<T> GetReadHandle<T>(IReference reference, T obj = default)

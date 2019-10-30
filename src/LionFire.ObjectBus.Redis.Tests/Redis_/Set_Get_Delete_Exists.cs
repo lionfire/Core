@@ -32,7 +32,7 @@ namespace Redis_
 
                         h.Value = testData;
 
-                        await h.Commit();
+                        await h.Put();
 
                         Assert.True(await h.Exists(), "test object does not exist after saving: " + path);
                     }
@@ -45,7 +45,7 @@ namespace Redis_
                         Assert.Equal(testData, retrievedData);
 
                         h.MarkDeleted(); // TODO: make one
-                        await h.Commit();
+                        await h.Put();
                         Assert.False(await h.Exists(), "test object still exists after deleting: " + path);
                     }
                     {
@@ -76,7 +76,7 @@ namespace Redis_
 
                         h.Value = testData;
 
-                        await h.Commit();
+                        await h.Put();
 
                         Assert.True(await h.Exists(), "test object does not exist after saving: " + path);
                     }
@@ -89,7 +89,7 @@ namespace Redis_
                         Assert.Equal(testData, retrievedData);
 
                         h.MarkDeleted(); // TODO: make one
-                        await h.Commit();
+                        await h.Put();
                         Assert.False(await h.Exists(), "test object still exists after deleting: " + path);
                     }
                     {

@@ -18,10 +18,18 @@ namespace LionFire.Referencing
 
         #endregion
 
+        #region Write Handle
+
+        public static WO<T> GetWriteHandle<T>(this IReference reference) => reference.ToWriteHandleProvider().GetWriteHandle<T>(reference);
+        public static WO<T> ToWriteHandle<T>(this IReference reference) => reference.ToWriteHandleProvider().GetWriteHandle<T>(reference) ?? throw new HasUnresolvedDependenciesException($"Could not get {nameof(WO<T>)} type for reference of type {reference.GetType().FullName}");
+
+
+        #endregion
+
         #region Handles
 
-        public static H<T> GetHandle<T>(this IReference reference) => reference.ToHandleProvider().GetHandle<T>(reference);
-        public static H<T> ToHandle<T>(this IReference reference) => reference.ToHandleProvider().GetHandle<T>(reference) ?? throw new HasUnresolvedDependenciesException($"Could not get {nameof(H<T>)} type for reference of type {reference.GetType().FullName}");
+        public static W<T> GetReadWriteHandle<T>(this IReference reference) => reference.ToReadWriteHandleProvider().GetReadWriteHandle<T>(reference);
+        public static W<T> ToReadWriteHandle<T>(this IReference reference) => reference.ToReadWriteHandleProvider().GetReadWriteHandle<T>(reference) ?? throw new HasUnresolvedDependenciesException($"Could not get {nameof(W<T>)} type for reference of type {reference.GetType().FullName}");
 
         #endregion
 

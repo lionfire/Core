@@ -46,7 +46,7 @@ namespace LionFire.Assets
     [LionSerializable(SerializeMethod.ByValue)]
     //[JsonConvert(typeof(HAssetSerializationConverter))] TOPORT
     public class HAsset<AssetType>
-        : RBaseEx<AssetType>,
+        : ReadHandle<AssetType>,
         //VobHandle<AssetType>,
         //			HAssetBaseTest<AssetType>,
         //#if !AOT
@@ -787,7 +787,7 @@ namespace LionFire.Assets
             //HAsset.VobHandle.Object = xThis;
             var h = ContextualHandle;
             if (allowDelete) throw new NotImplementedException();
-            await h.Commit();
+            await h.Put();
             //Log.Info("ZX Saved - " + this.GetType().Name + " " + h.Reference.ToString());
             //return xThis;
 #endif
@@ -820,7 +820,7 @@ namespace LionFire.Assets
                 #endregion
 
 #if !ASSETCACHE
-        public H<AssetType> ContextualHandle
+        public W<AssetType> ContextualHandle
         {
             get
             {

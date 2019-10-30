@@ -6,7 +6,7 @@ using LionFire.Referencing;
 
 namespace LionFire.IO
 {
-    public abstract class WLocalFileBase<T> : WBase<T>
+    public abstract class WLocalFileBase<T> : ReadWriteHandleBaseEx<T>
         where T : class
     {
         #region Path
@@ -40,7 +40,7 @@ namespace LionFire.IO
         public WLocalFileBase(string path, T initialData = default)
         {
             this.Path = path;
-            SetObjectFromConstructor(initialData);
+            SetValueFromConstructor(initialData);
         }
 
         #endregion

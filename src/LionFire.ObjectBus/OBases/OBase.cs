@@ -207,7 +207,7 @@ namespace LionFire.ObjectBus
 
         #region Handle
 
-        public virtual H<T> GetHandle<T>(IReference reference)
+        public virtual W<T> GetHandle<T>(IReference reference)
         {
             if (!(reference is TReference)) throw new ArgumentException($"{nameof(reference)} must be a {typeof(TReference).FullName} (TODO: Convert from compatible reference types)");
             return new OBaseHandle<T>(reference, this);

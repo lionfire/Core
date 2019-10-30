@@ -53,7 +53,7 @@ namespace Redis_
                                 var h = childRef.ToHandle<string>();
                                 Assert.False(await h.Exists(), "test object already exists: " + childPath);
                                 h.Value = testData + i;
-                                await h.Commit();
+                                await h.Put();
                                 Assert.True(await h.Exists(), "test object does not exist after saving: " + childPath);
                             }
                         }
@@ -112,7 +112,7 @@ namespace Redis_
                         //    Assert.Equal(testData, retrievedData);
 
                         //    h.MarkDeleted(); // TODO: make one
-                        //    await h.Commit();
+                        //    await h.Put();
                         //    Assert.False(await h.Exists(), "test object still exists after deleting: " + path);
                         //}
                         //{

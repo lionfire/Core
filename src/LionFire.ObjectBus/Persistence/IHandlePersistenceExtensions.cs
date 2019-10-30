@@ -35,7 +35,7 @@ namespace LionFire.ObjectBus
     //    }
 
 #if !AOT
-        public static void Save<ObjectType>(this H<ObjectType> handle) // UNUSED?  Alternative to HandleBase?
+        public static void Save<ObjectType>(this W<ObjectType> handle) // UNUSED?  Alternative to HandleBase?
             where ObjectType : class, new()
         {
             throw new NotImplementedException("TOPORT");

@@ -8,4 +8,5 @@ namespace LionFire.Resolves
     public interface IResolveResult : IResult, ISuccessResult { }
 
     public interface IResolveResult<out TValue> : IResolveResult, IValueResult<TValue>, IHasValueResult { }
+    
 }

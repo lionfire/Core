@@ -33,7 +33,7 @@ namespace RedisOBoc_
                         var h = r.ToHandle<string>();
                         Assert.False(await h.Exists(), "test object already exists: " + r.Path);
                         h.Value = testChildVal;
-                        await h.Commit();
+                        await h.Put();
                         Assert.True(await h.Exists(), "test object does not exist after saving: " + r.Path);
                     }
 

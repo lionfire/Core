@@ -7,6 +7,7 @@ using System.Collections.Concurrent;
 using LionFire.ExtensionMethods;
 using LionFire.Structures;
 using LionFire.Results;
+using LionFire.Resolves;
 
 namespace LionFire.Persistence
 {
@@ -16,30 +17,30 @@ namespace LionFire.Persistence
     {
         #region Wrappers
 
-        public static ICommitable ToSaveable(this IAsset asset)
+        public static IPuts ToSaveable(this IAsset asset)
         {
             return wrappers.GetOrAdd(asset, a => new SaveableAssetWrapper
             {
                 Asset = a,
             });
         }
-        public static ICommitable TryGetSaveable(this IAsset asset)
+        public static IPuts TryGetSaveable(this IAsset asset)
         {
             return wrappers.TryGetValue(asset);
         }
 
-        private static ConcurrentDictionary<IAsset, ICommitable> wrappers = new ConcurrentDictionary<IAsset, ICommitable>();
+        private static ConcurrentDictionary<IAsset, IPuts> wrappers = new ConcurrentDictionary<IAsset, IPuts>();
 
 
-        private class SaveableAssetWrapper : ICommitable, IReadWrapper<object>
+        private class SaveableAssetWrapper : IPuts, IReadWrapper<object>
         {
             public IAsset Asset { get; set; }
             object IReadWrapper<object>.Value => Asset;
 
-            async Task<ICommitResult> ICommitable.Commit()
+            async Task<IPutResult> IPuts.Put()
             {
                 await Asset.SaveAtSubPath(Asset.AssetSubPath);
-                return (ICommitResult)SuccessResult.Success; // REVIEW - Fix this idea
+                return (IPutResult)SuccessResult.Success; // REVIEW - Fix this idea
             }
         }
 
@@ -53,14 +54,14 @@ namespace LionFire.Persistence
 
         public static void EnableAutoSave(this IAsset asset, bool enable = true)
         {
-            Action<object> saveAction = o => ((ICommitable)o).Commit(); // TODO: wrap the Commit with auto-retry logic
+            Action<object> saveAction = o => ((IPuts)o).Put(); // TODO: wrap the Put with auto-retry logic
             if (enable)
             {
                 asset.ToSaveable().EnableAutoSave(true, saveAction);
             }
             else
             {
-                ICommitable saveable;
+                IPuts saveable;
                 if (wrappers.TryRemove(asset, out saveable))
                 {
                     saveable.EnableAutoSave(false, saveAction);

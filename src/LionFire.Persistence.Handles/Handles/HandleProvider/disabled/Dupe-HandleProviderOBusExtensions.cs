@@ -80,7 +80,7 @@
 //    /// </summary>
 //    public static class HandleProviderOBusExtensions
 //    {
-//        //public static H<T> ToHandle<T>(this string uriString) where T : class => DependencyContext.Current.GetService<IHandleProvider>().ToHandle<T>(new UriStringReference(uriString));
+//        //public static H<T> ToHandle<T>(this string uriString) where T : class => DependencyContext.Current.GetService<IReadWriteHandleProvider>().ToHandle<T>(new UriStringReference(uriString));
 
 //        public static H<object> ToHandle(this IReference reference, object obj = null) => reference.GetOBase().ToHandle<object>(reference);
 //        public static H<T> ToHandle<T>(this IReference reference, object obj = null) => reference.GetOBase().ToHandle<object>(reference);

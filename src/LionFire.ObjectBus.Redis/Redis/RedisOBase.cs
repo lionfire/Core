@@ -329,7 +329,7 @@ namespace LionFire.ObjectBus.Redis
         //    return Assets.AssetPath.GetDefaultDirectory(typeof(T));
         //}
 
-        public override H<T> GetHandle<T>(IReference reference) => throw new NotImplementedException();
+        public override W<T> GetHandle<T>(IReference reference) => throw new NotImplementedException();
         public override RH<T> GetReadHandle<T>(IReference reference) => throw new NotImplementedException();
         
 

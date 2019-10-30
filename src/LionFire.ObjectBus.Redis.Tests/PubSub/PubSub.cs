@@ -32,7 +32,7 @@ namespace RedisPub_
                     var refWrite = new RedisPubReference(url);
                     var hWrite = refWrite.ToHandle<object>();
                     hWrite.Value = "testMessage";
-                    await hWrite.Commit();
+                    await hWrite.Put();
                     Assert.Equal(TestMessage, ReceivedMessage);
                 }
             });

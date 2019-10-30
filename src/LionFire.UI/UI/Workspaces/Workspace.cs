@@ -10,7 +10,7 @@ using System;
 namespace LionFire.UI.Workspaces
 {
     // MOVE? Split Caliburn.Micro app stuff into its own DLL?
-    public class Workspace<TTemplate, TChild> : InitializableExecutableBase, ITemplateInstance<TTemplate>, IComposition, IWorkspace, ICommitable
+    public class Workspace<TTemplate, TChild> : InitializableExecutableBase, ITemplateInstance<TTemplate>, IComposition, IWorkspace, ICommits
         where TTemplate : class, ITemplate
     {
         IEnumerable<object> IComposition.Children => Children;

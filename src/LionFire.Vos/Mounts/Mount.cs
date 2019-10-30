@@ -32,7 +32,7 @@ namespace LionFire.Vos
         {
         }
 
-        private Mount(Vob vob, H<MountHandleObject> rootHandle, string package = null, string store = null, bool enable = false, MountOptions mountOptions = null)
+        private Mount(Vob vob, W<MountHandleObject> rootHandle, string package = null, string store = null, bool enable = false, MountOptions mountOptions = null)
         {
             if (vob == null)
             {

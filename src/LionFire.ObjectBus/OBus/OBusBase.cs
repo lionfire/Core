@@ -20,7 +20,7 @@ namespace LionFire.ObjectBus
     /// <typeparam name="TConcrete"></typeparam>
     /// <typeparam name="TOBase"></typeparam>
     /// <typeparam name="TReference"></typeparam>
-    public abstract class OBusBase<TConcrete, TOBase, TReference> : OBusBase<TConcrete>, IHandleProvider<TReference>, IReadHandleProvider<TReference>
+    public abstract class OBusBase<TConcrete, TOBase, TReference> : OBusBase<TConcrete>, IReadWriteHandleProvider<TReference>, IReadHandleProvider<TReference>
         where TConcrete : OBusBase<TConcrete, TOBase, TReference>, IOBus
         where TOBase : IOBase
         where TReference : IReference
@@ -101,7 +101,7 @@ namespace LionFire.ObjectBus
 
         public override IReference TryGetReference(string uri) => (IReference)ReferenceConstructor.Invoke(new object[] { ReferenceUriParsing.PathOnlyFromUri(uri, uriSchemes) });
         
-        public H<T> GetHandle<T>(TReference reference, T handleObject = default) => (H<T>)handleCtor.Invoke(new object[] { reference, TryGetOBase(reference), handleObject });
+        public W<T> GetReadWriteHandle<T>(TReference reference, T handleObject = default) => (W<T>)handleCtor.Invoke(new object[] { reference, TryGetOBase(reference), handleObject });
         //new OBaseHandle<T>(reference, DefaultOBase, handleObject);
         public RH<T> GetReadHandle<T>(TReference reference, T handleObject = default) => new OBaseReadHandle<T>(reference, DefaultOBase, handleObject);
 
@@ -165,7 +165,7 @@ namespace LionFire.ObjectBus
         //bool ICompatibleWithSome<string>.IsCompatibleWith(string stringUri) => stringUri != null && UriSchemes.Where(scheme => stringUri.StartsWith(scheme)).Any();
 
         /// <summary>
-        /// Register as the singleton for all IHandleProvider&lt;&gt;'s that this OBus implements
+        /// Register as the singleton for all IReadWriteHandleProvider&lt;&gt;'s that this OBus implements
         /// </summary>
         /// <param name="sc"></param>
         /// <returns></returns>
@@ -175,7 +175,7 @@ namespace LionFire.ObjectBus
             foreach (var type in ReferenceTypes)
             {
                 {
-                    var hpType = typeof(IHandleProvider<>).MakeGenericType(type);
+                    var hpType = typeof(IReadWriteHandleProvider<>).MakeGenericType(type);
                     if (hpType.IsAssignableFrom(this.GetType()))
                     {
                         sc.AddSingleton(hpType, this);
@@ -192,7 +192,7 @@ namespace LionFire.ObjectBus
             sc.TryAddEnumerableSingleton<IOBus, TConcrete>();
             sc.TryAddEnumerableSingleton<IReferenceProvider, TConcrete>();
             sc.TryAddEnumerableSingleton<IReadHandleProvider, TConcrete>();
-            sc.TryAddEnumerableSingleton<IHandleProvider, TConcrete>();
+            sc.TryAddEnumerableSingleton<IReadWriteHandleProvider, TConcrete>();
             return sc;
         }
 
@@ -213,7 +213,7 @@ namespace LionFire.ObjectBus
             return false;
         }
 
-        public virtual H<T> GetHandle<T>(IReference reference, T handleObject = default)
+        public virtual W<T> GetReadWriteHandle<T>(IReference reference, T handleObject = default)
         {
             // TODO: If handle reuse is on, try to find existing handle.
             //var h = new OBusHandle<T>(reference, handleObject);

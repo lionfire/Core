@@ -6,11 +6,11 @@ using LionFire.Persistence;
 
 namespace LionFire.IO.Filesystem
 {
-    public class FilesystemStreamWHandleProvider : FilesystemHandleProviderBase, IHandleProvider
+    public class FilesystemStreamWHandleProvider : FilesystemHandleProviderBase, IReadWriteHandleProvider
     {
         public override string Scheme => "file(WStream)";
 
-        public H<T> GetHandle<T>(IReference reference, T initialObject = default)
+        public W<T> GetReadWriteHandle<T>(IReference reference, T initialObject = default)
         {
             if (typeof(T) != typeof(Stream))
             {
@@ -18,7 +18,7 @@ namespace LionFire.IO.Filesystem
             }
 
             ValidateReference(reference);
-            return (H<T>)new WFileStream(reference.Path, (Stream)(object)initialObject); // HARDCAST
+            return (W<T>)new WFileStream(reference.Path, (Stream)(object)initialObject); // HARDCAST
         }
 
         public RH<T> GetReadHandle<T>(IReference reference, T initialObject = default) => throw new NotSupportedException();

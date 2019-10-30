@@ -22,10 +22,10 @@ namespace LionFire.Vos
    // OPTIMIZE - (Here and VobHandle)  Create Reference on demand?  Store the reference path in Vob, instead of VosReference?  Generate VosReference on demand?  or is this an app specific thing?
 
     [ReadOnlyEditionFor(typeof(VobHandle<>))]
-    public class VobReadHandle<T> : RBaseEx<T>
+    public class VobReadHandle<T> : ReadHandle<T>
         , IVobReadHandle<T> // Has T because it is contravariantt
         , IProvidesHandleFromSubPath
-      //, IHandleProvider -- FUTURE: get relative paths? Maybe a stretch.
+      //, IReadWriteHandleProvider -- FUTURE: get relative paths? Maybe a stretch.
     {
         public virtual bool IsReadOnly => true;
         
@@ -98,8 +98,8 @@ namespace LionFire.Vos
 
         #region IProvidesHandleFromSubPath
 
-        public H<THandle> GetHandleFromSubPath<THandle>(params string[] subpathChunks) => Vob[subpathChunks].GetHandle<THandle>();
-        public H<THandle> GetHandleFromSubPath<THandle>(IEnumerable<string> subpathChunks) => Vob[subpathChunks].GetHandle<THandle>();
+        public W<THandle> GetHandleFromSubPath<THandle>(params string[] subpathChunks) => Vob[subpathChunks].GetHandle<THandle>();
+        public W<THandle> GetHandleFromSubPath<THandle>(IEnumerable<string> subpathChunks) => Vob[subpathChunks].GetHandle<THandle>();
         public RH<THandle> GetReadHandleFromSubPath<THandle>(params string[] subpathChunks) => Vob[subpathChunks].GetReadHandle<THandle>();
         public RH<THandle> GetReadHandleFromSubPath<THandle>(IEnumerable<string> subpathChunks) => Vob[subpathChunks].GetReadHandle<THandle>();
 

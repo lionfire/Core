@@ -6,7 +6,7 @@ using LionFire.Referencing;
 
 namespace LionFire.ObjectBus.Filesystem
 {
-    public class RFile<T> : RBaseEx<T>
+    public class RFile<T> : ReadHandle<T>
         where T : class
     {
         public RFile() { }

@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 namespace LionFire.IO
 {
 
-    public abstract class HLocalFileBase<T> : WBase<T>
+    public abstract class HLocalFileBase<T> : ReadWriteHandleBaseEx<T>
         where T : class
     {
         //public override string Key { get => Path; set => Path = Key; }
@@ -60,7 +60,7 @@ namespace LionFire.IO
         public HLocalFileBase(string path, T initialObject = default)
         {
             this.Path = path;
-            SetObjectFromConstructor(initialObject);
+            SetValueFromConstructor(initialObject);
         }
         
         #endregion

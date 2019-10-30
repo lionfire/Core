@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace LionFire.Persistence
 {
-    // Not sure I like this for next-gen.  Remove preview.  Rename to Commit
+    // Not sure I like this for next-gen.  Remove preview.  Rename to Put
 
     public interface ISaveable
     {
