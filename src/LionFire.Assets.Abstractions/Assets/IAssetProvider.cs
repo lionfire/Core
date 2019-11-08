@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace LionFire.Assets
 {
-    public interface INotifyingAssetProvider : INotifyPersistence, IAssetProvider { }
+    public interface INotifyingAssetProvider : INotifyPersists, IAssetProvider { }
 
     public interface IAssetProvider
     {

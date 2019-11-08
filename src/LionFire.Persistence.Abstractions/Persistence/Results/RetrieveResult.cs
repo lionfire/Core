@@ -5,6 +5,7 @@ namespace LionFire.Persistence
 {
 
     public class RetrieveResult<T> : IRetrieveResult<T>
+        where T : class
     {
         public object Error { get; set; }
         public T Value { get; set; }

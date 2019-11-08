@@ -2,8 +2,10 @@
 {
     public interface IPersistenceSnapshot<out T>
     {
+        PersistenceFlags Flags { get; }
         bool HasValue { get; }
-        PersistenceState State { get; }
         T Value { get; }
     }
+
+    
 }

@@ -14,6 +14,7 @@ namespace System
         //}
 
         public static void TryWithService<T>(this IServiceProvider serviceProvider, Action<T> action)
+            where T : class // REVIEW
         {
             var result = (T)serviceProvider.GetService(typeof(T));
             if (result != default)

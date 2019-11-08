@@ -27,7 +27,7 @@ namespace LionFire.ObjectBus
             //ChangeWatcher = new ChangeWatcher();
         }
 
-        public void Register(W<object> handle)
+        public void Register(IReadWriteHandleBase<object> handle)
         {
             // TODO MEMORYLEAK ToWeakEvents
             handle.ObjectChanged += OnHandleObjectChanged;
@@ -37,7 +37,7 @@ namespace LionFire.ObjectBus
 #endif
         }
 
-        void OnHandleObjectChanged(RH<object> handle)
+        void OnHandleObjectChanged(IReadHandleBase<object> handle)
         {
 
             // Abort saving if reports !IsValid, and handle has yet to be persisted
@@ -50,10 +50,10 @@ namespace LionFire.ObjectBus
                 }
             }
 
-            ThrottledSaveManager.Instance.OnChanged((W<object>)handle);            
+            ThrottledSaveManager.Instance.OnChanged((IReadWriteHandleBase<object>)handle);            
         }
 
-        public void Unregister(W<object> handle)
+        public void Unregister(IReadWriteHandleBase<object> handle)
         {
             handle.ObjectChanged -= OnHandleObjectChanged;
 #if TRACE_Autosave
@@ -70,7 +70,7 @@ namespace LionFire.ObjectBus
 
     public static class AutoSaveManagerExtensions
     {
-        public static void SetAutosave(this W<object> obj, bool enabled = true)
+        public static void SetAutosave(this IReadWriteHandleBase<object> obj, bool enabled = true)
         {
             if (enabled)
             {

@@ -7,7 +7,7 @@ namespace LionFire.Persistence.Resolution
     {
         public ReadResolutionResult() { }
         public ReadResolutionResult(IReference reference) : base(reference) { }
-        public ReadResolutionResult(RH<T> readHandle) : base(readHandle.Reference)
+        public ReadResolutionResult(IReadHandleBase<T> readHandle) : base(readHandle.Reference)
         {
             ReadHandle = readHandle;
         }
@@ -15,7 +15,7 @@ namespace LionFire.Persistence.Resolution
         /// <summary>
         /// See GetReadHandle (method in ReadResolutionResultExtensions)
         /// </summary>
-        public RH<T> ReadHandle { get; set; }
+        public IReadHandleBase<T> ReadHandle { get; set; }
     }
 
 }

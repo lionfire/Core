@@ -6,6 +6,8 @@ using System.Threading.Tasks;
 namespace LionFire.Resolves
 {
     public class DynamicResolves<TKey, TValue> : Resolves<TKey, TValue>, ILazilyResolves<TValue>
+        where TKey : class
+        where TValue : class
     {
         public Func<TKey, ITask<IResolveResult<TValue>>> Resolver { get; set; }
 

@@ -67,8 +67,8 @@ namespace LionFire.Assets
         //object IKeyed<string>.Key { get { return Key; } }
         //#endif
 
-        public RH<ITemplateAsset> TemplateAsset { get; set; }
-        public RH<ITemplate> Template { get => TemplateAsset; set => TemplateAsset = (RH<ITemplateAsset>)value; }
+        public IReadHandleBase<ITemplateAsset> TemplateAsset { get; set; }
+        public IReadHandleBase<ITemplate> Template { get => TemplateAsset; set => TemplateAsset = (IReadHandleBase<ITemplateAsset>)value; }
         public ParameterOverlayMode OverlayMode { get => ParameterOverlayMode.None; set => throw new NotSupportedException(); }
 
         [Ignore]

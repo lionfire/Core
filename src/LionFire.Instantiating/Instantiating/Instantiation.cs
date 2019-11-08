@@ -156,7 +156,7 @@ namespace LionFire.Instantiating
         //    Template = assetPath;
         //}
 
-        public Instantiation(RH<ITemplate> hTemplate)
+        public Instantiation(IReadHandleBase<ITemplate> hTemplate)
         {
             //Log.Info("ZX Instantiation.ctor");
             //Log.Info("ZX Instantiation.ctor " + (hTemplate == null ? "NULL" : hTemplate.Reference.ToString()));
@@ -188,7 +188,7 @@ namespace LionFire.Instantiating
             this.Parameters = parameters;
         }
 
-        public Instantiation(RH
+        public Instantiation(IReadHandleBase
 #if !AOT && !UNITY // Unity crashes with contravariant IReadHandle
 <ITemplate>
 #endif
@@ -198,7 +198,7 @@ namespace LionFire.Instantiating
             this.Parameters = parameters;
         }
 
-        public Instantiation(RH
+        public Instantiation(IReadHandleBase
 #if !AOT && !UNITY // Unity crashes with contravariant IReadHandle
 <ITemplate>
 #endif
@@ -302,7 +302,7 @@ namespace LionFire.Instantiating
         
         //#if !AOT && !UNITY // Unity crashes with contravariant IReadHandle -- commented out the generic part of RH<>
         [Assignment(AssignmentMode.Assign)]
-        public RH<ITemplate> Template
+        public IReadHandleBase<ITemplate> Template
         {
             get
             {
@@ -331,7 +331,7 @@ namespace LionFire.Instantiating
                 //}
             }
         }
-        protected RH<ITemplate> template;
+        protected IReadHandleBase<ITemplate> template;
 
 #endregion
 

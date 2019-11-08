@@ -105,7 +105,7 @@ namespace LionFire.Instantiating
             this.Add(instantiation);
         }
 #if !AOT
-        public void Add(RH<ITemplate> hTemplate) => Add(new Instantiation(hTemplate));
+        public void Add(IReadHandleBase<ITemplate> hTemplate) => Add(new Instantiation(hTemplate));
 #endif
 
         //public void Add(string templatePath)

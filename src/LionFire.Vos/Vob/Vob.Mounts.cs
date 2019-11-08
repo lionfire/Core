@@ -325,9 +325,9 @@ namespace LionFire.Vos
         /// <typeparam name="T"></typeparam>
         /// <param name="mount"></param>
         /// <returns></returns>
-        private W<T> GetHandleFromMount<T>(Mount mount)
+        private IReadWriteHandleBase<T> GetHandleFromMount<T>(Mount mount)
         {
-            W<T> result;
+            IReadWriteHandleBase<T> result;
 
             // TODO TO_ASSERT mount path is a parent of this.Path
 
@@ -394,9 +394,9 @@ namespace LionFire.Vos
         /// </summary>
         /// <param name="mount"></param>
         /// <returns></returns>
-        private RH<MountHandleObject> GetMountHandle(Mount mount)
+        private IReadHandleBase<MountHandleObject> GetMountHandle(Mount mount)
         {
-            RH<MountHandleObject> result;
+            IReadHandleBase<MountHandleObject> result;
 
             // TODO TO_ASSERT mount path is a parent of this.Path
 

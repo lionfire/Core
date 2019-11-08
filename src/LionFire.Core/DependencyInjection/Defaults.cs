@@ -8,7 +8,9 @@ using System.Threading.Tasks;
 
 namespace LionFire
 {
+
     // REVIEW - Deprecate?, Use DependencyContext instead, but then maybe use this to point to DependencyContext for a nicer syntax.  Maybe rename to Ambient
+    // THOUGHTS - Is there an orderly way in the API to fall back to indicate an intent to fall back ManualSingleton?  
     public static class Defaults
     {
 

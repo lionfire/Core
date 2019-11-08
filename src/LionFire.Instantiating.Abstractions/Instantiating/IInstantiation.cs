@@ -56,6 +56,6 @@ namespace LionFire.Instantiating
     public interface IInstantiation<TemplateType> : IStateful
     where TemplateType : ITemplate
     {
-        RH<TemplateType> Template { get; set; }
+        IReadHandleBase<TemplateType> Template { get; set; }
     }
 }

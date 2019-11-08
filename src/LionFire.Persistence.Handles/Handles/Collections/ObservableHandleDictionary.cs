@@ -1,4 +1,5 @@
-﻿using LionFire.Persistence;
+﻿#if TODO
+using LionFire.Persistence;
 using LionFire.Referencing;
 using LionFire.Resolves;
 using System;
@@ -7,9 +8,9 @@ using System.Threading.Tasks;
 
 namespace LionFire.Persistence.Handles
 {
-    public abstract class ObservableHandleDictionary<TKey, THandle, T> : ObservableReadHandleDictionary<TKey, THandle, T>
-        where THandle : class, IReadHandleEx<T>
-        where T : class
+    public abstract class ObservableHandleDictionary<TKey, THandle, TValue> : ObservableReadDictionary<TKey, THandle, TValue>
+        where THandle : class, IReadHandle<TValue>, INotifyPersists<TValue>
+        where TValue : class
     {
 
         #region Key translation
@@ -26,11 +27,11 @@ namespace LionFire.Persistence.Handles
         public async Task Remove(string key) // RENAME to Unset?
         {
             if (key == null) throw new ArgumentNullException(nameof(key));
-            await Set((T)null, key);
+            await Set((TValue)null, key);
         }
 
         [Obsolete]
-        public Task<THandle> Add(T obj, string key = null)
+        public Task<THandle> Add(TValue obj, string key = null)
         {
             throw new NotSupportedException("Use Set instead");
         }
@@ -42,7 +43,7 @@ namespace LionFire.Persistence.Handles
         /// <param name="obj"></param>
         /// <param name="key"></param>
         /// <returns></returns>
-        public async Task<THandle> Set(T obj, string key = null) 
+        public async Task<THandle> Set(TValue obj, string key = null) 
         {
             //if (!IsWritable) throw new ReadOnlyException("THandle does not implement IWriteHandle<T>");
 
@@ -56,7 +57,7 @@ namespace LionFire.Persistence.Handles
                 handle = (THandle)Activator.CreateInstance(typeof(THandle), KeyToHandleKey(key));
             }
 
-            var writable = (IWriteHandle<T>)handle;
+            var writable = (IWriteHandleBase<TValue>)handle;
             writable.Value = obj;
 
             if (handle is IPuts saveable)
@@ -68,3 +69,4 @@ namespace LionFire.Persistence.Handles
         //public object PersistenceContext { get; set; }
     }
 }
+#endif

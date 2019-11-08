@@ -32,7 +32,7 @@ namespace LionFire.Vos
         {
         }
 
-        private Mount(Vob vob, W<MountHandleObject> rootHandle, string package = null, string store = null, bool enable = false, MountOptions mountOptions = null)
+        private Mount(Vob vob, IReadWriteHandleBase<MountHandleObject> rootHandle, string package = null, string store = null, bool enable = false, MountOptions mountOptions = null)
         {
             if (vob == null)
             {
@@ -79,7 +79,7 @@ namespace LionFire.Vos
         /// <summary>
         /// MountHandleObject
         /// </summary>
-        public RH<MountHandleObject> RootHandle
+        public IReadHandleBase<MountHandleObject> RootHandle
         {
             get
             {
@@ -90,7 +90,7 @@ namespace LionFire.Vos
                 return rootHandle;
             }
         }
-        private RH<MountHandleObject> rootHandle;
+        private IReadHandleBase<MountHandleObject> rootHandle;
 
         
 

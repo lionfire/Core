@@ -22,7 +22,7 @@ namespace LionFire.Instantiating
         IEnumerable<IInstantiation> Values { get; }
         int Count { get; }
         void Add(IInstantiation instantiation);
-        void Add(RH<ITemplate> hTemplate);
+        void Add(IReadHandleBase<ITemplate> hTemplate);
         void Add(ITemplate template);
         string CreateKey(ITemplate template);
         string GetDefaultKey(ITemplate template);

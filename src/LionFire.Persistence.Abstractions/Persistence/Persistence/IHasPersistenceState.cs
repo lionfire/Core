@@ -6,6 +6,6 @@
         event PersistenceStateChangeHandler StateChanged;
     }
 
-    public delegate void PersistenceStateChangeHandler(PersistenceState from, PersistenceState to);
+    public delegate void PersistenceStateChangeHandler(PersistenceFlags from, PersistenceFlags to);
 
 }

@@ -37,8 +37,8 @@ namespace LionFire.Persistence.Collections
 
     //    //public interface IIndexableCollection
     //    //{
-    //    //    void InsertAt(int index, IHandleBase handle);
-    //    //    void RemoveAt(int index, IHandleBase handle);
+    //    //    void InsertAt(int index, IHandle handle);
+    //    //    void RemoveAt(int index, IHandle handle);
     //    //    H<T> ElementAt(int index);
     //    //}
 

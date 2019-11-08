@@ -101,9 +101,9 @@ namespace LionFire.ObjectBus
 
         public override IReference TryGetReference(string uri) => (IReference)ReferenceConstructor.Invoke(new object[] { ReferenceUriParsing.PathOnlyFromUri(uri, uriSchemes) });
         
-        public W<T> GetReadWriteHandle<T>(TReference reference, T handleObject = default) => (W<T>)handleCtor.Invoke(new object[] { reference, TryGetOBase(reference), handleObject });
+        public IReadWriteHandleBase<T> GetReadWriteHandle<T>(TReference reference, T handleObject = default) => (IReadWriteHandleBase<T>)handleCtor.Invoke(new object[] { reference, TryGetOBase(reference), handleObject });
         //new OBaseHandle<T>(reference, DefaultOBase, handleObject);
-        public RH<T> GetReadHandle<T>(TReference reference, T handleObject = default) => new OBaseReadHandle<T>(reference, DefaultOBase, handleObject);
+        public IReadHandleBase<T> GetReadHandle<T>(TReference reference, T handleObject = default) => new OBaseReadHandle<T>(reference, DefaultOBase, handleObject);
 
     }
 
@@ -213,7 +213,7 @@ namespace LionFire.ObjectBus
             return false;
         }
 
-        public virtual W<T> GetReadWriteHandle<T>(IReference reference, T handleObject = default)
+        public virtual IReadWriteHandleBase<T> GetReadWriteHandle<T>(IReference reference, T handleObject = default)
         {
             // TODO: If handle reuse is on, try to find existing handle.
             //var h = new OBusHandle<T>(reference, handleObject);
@@ -233,7 +233,7 @@ namespace LionFire.ObjectBus
             return h;
         }
 
-        public virtual RH<T> GetReadHandle<T>(IReference reference, T handleObject = default)
+        public virtual IReadHandleBase<T> GetReadHandle<T>(IReference reference, T handleObject = default)
         {
             // TODO: If handle reuse is on, try to find existing handle.
 

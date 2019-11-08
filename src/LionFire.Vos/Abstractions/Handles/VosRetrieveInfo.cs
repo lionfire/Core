@@ -7,7 +7,7 @@ namespace LionFire.Vos
     public class VosRetrieveInfo 
         //: RetrieveInfo TOPORT
     {
-        public RH<object> ReadHandle { get; set; }
+        public IReadHandleBase<object> ReadHandle { get; set; }
         public Mount Mount { get; set; }
     }
 }

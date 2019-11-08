@@ -3,12 +3,13 @@
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
     <RootNamespace>LionFire</RootNamespace>
+    <LangVersion>Latest</LangVersion>
   </PropertyGroup>
 
   <ItemGroup>
-    <Compile Remove="Handles\Resolution\**" />
-    <EmbeddedResource Remove="Handles\Resolution\**" />
-    <None Remove="Handles\Resolution\**" />
+    <Compile Remove="Persistence\Handles\Resolution\**" />
+    <EmbeddedResource Remove="Persistence\Handles\Resolution\**" />
+    <None Remove="Persistence\Handles\Resolution\**" />
   </ItemGroup>
 
   <ItemGroup>

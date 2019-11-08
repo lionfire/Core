@@ -1,9 +1,11 @@
-﻿using LionFire.Events;
+﻿#if UNUSED // Is this useful?
+using LionFire.Events;
 using System;
 
 namespace LionFire.Resolves
 {
-    public abstract class NotifyingResolvesBase<TKey, TValue> : Resolves<TKey, TValue>, ILazilyResolves<TValue>, INotifySenderChanged<TValue>
+    public abstract class NotifyingResolvesBase<TKey, TValue> : Resolves<TKey, TValue>, ILazilyResolves<TValue>
+        //, INotifySenderChanged<TValue>
     {
         public event EventHandler<ValueChanged<TValue>> ValueChanged;
 
@@ -12,3 +14,4 @@ namespace LionFire.Resolves
 
 }
 
+#endif

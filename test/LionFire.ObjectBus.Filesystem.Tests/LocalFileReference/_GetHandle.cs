@@ -35,14 +35,14 @@ namespace LocalFileReference_
 
                     var pathWithoutExtension = Guid.NewGuid().ToString();
                     var reference = new FileReference(pathWithoutExtension);
-                    W<TestClass1> h;
+                    IReadWriteHandleBase<TestClass1> h;
                     h = reference.ToHandle<TestClass1>();
 
                     Assert.NotNull(ManualSingleton<FSOBus>.Instance);
 
                     Assert.Same(reference, h.Reference);
-                    Assert.IsAssignableFrom<RH<TestClass1>>(h);
-                    Assert.IsAssignableFrom<W<TestClass1>>(h);
+                    Assert.IsAssignableFrom<IReadHandleBase<TestClass1>>(h);
+                    Assert.IsAssignableFrom<IReadWriteHandleBase<TestClass1>>(h);
                     Assert.IsType<OBaseHandle<TestClass1>>(h);
 
                     var obh = (OBaseHandle<TestClass1>)h;
@@ -62,7 +62,7 @@ namespace LocalFileReference_
 
                         var pathWithoutExtension = Guid.NewGuid().ToString();
                         var reference = new FileReference(pathWithoutExtension);
-                        W<TestClass1> h;
+                        IReadWriteHandleBase<TestClass1> h;
                         Assert.Throws<HasUnresolvedDependenciesException>(() => h = reference.ToHandle<TestClass1>());
                 });
         }

@@ -41,8 +41,8 @@ namespace LionFire.Vos
 
         #region Handles
 
-        public override W<T> GetHandle<T>(IReference reference) => new VobHandle<T>(reference);
-        public override RH<T> GetReadHandle<T>(IReference reference) => new VobReadHandle<T>(this[reference.Path]);
+        public override IReadWriteHandleBase<T> GetHandle<T>(IReference reference) => new VobHandle<T>(reference);
+        public override IReadHandleBase<T> GetReadHandle<T>(IReference reference) => new VobReadHandle<T>(this[reference.Path]);
 
         #endregion
 

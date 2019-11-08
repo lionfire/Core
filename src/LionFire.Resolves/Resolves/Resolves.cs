@@ -1,16 +1,19 @@
 ﻿using MorseCode.ITask;
+using System.Threading;
 
 namespace LionFire.Resolves
 {
     // REVIEW - Is this still needed with covariant ITask?
-    //public abstract class Resolves<TKey, TValue, TValueReturned> : ResolvesInputBase<TKey>
+    //public abstract class Resolves<TKey, TValue, TValueReturned> : DisposableKeyed<TKey>
     //    where TValueReturned : TValue
 
 
     /// <summary>
     /// Only requires one method to be implemented: ResolveImpl.
     /// </summary>
-    public abstract class Resolves<TKey, TValue> : ResolvesInputBase<TKey>
+    public abstract class Resolves<TKey, TValue> : DisposableKeyed<TKey>
+         where TKey : class
+        where TValue : class
     {
         #region Construction
 
@@ -35,25 +38,32 @@ namespace LionFire.Resolves
         #region Value
 
         /// <summary>
-        /// For nullable values, use TValue of DefaultableValue&lt;TValue&gt;
+        /// True if internal Value field is not default.  If default is a valid value, use DefaultableValue&lt;TValue&gt; as TValue type
         /// </summary>
         public bool HasValue => ProtectedValue != default;
 
-        [Blocking(Alternative = nameof(GetValue))]
-        public TValue Value => ProtectedValue ?? GetValue().Result.Value;
+        public TValue Value
+        {
+            [Blocking(Alternative = nameof(GetValue))]
+            get => ProtectedValue ?? GetValue().Result.Value;
+        }
 
         protected TValue ProtectedValue
         {
             get => protectedValue;
             set
             {
-                if (System.Collections.Generic.Comparer<TValue>.Default.Compare(protectedValue, value) == 0) return;
+                if (System.Collections.Generic.Comparer<TValue>.Default.Compare(protectedValue, value) == 0) return; // Should use Equality instead of Compare?
+                //if(value == protectedValue) { return; }
                 var oldValue = protectedValue;
                 protectedValue = value;
                 OnValueChanged(value, oldValue);
             }
         }
-        private TValue protectedValue;
+        /// <summary>
+        /// Raw field for protectedValue.  Should typically call OnValueChanged(TValue newValue, TValue oldValue) after this field changes.
+        /// </summary>
+        protected TValue protectedValue;
 
         /// <summary>
         /// Raised when ProtectedValue changes
@@ -69,20 +79,21 @@ namespace LionFire.Resolves
         public async ITask<ILazyResolveResult<TValue>> GetValue()
         {
             var currentValue = ProtectedValue;
-            if (currentValue != null) return new LazyResolveResultNoop<TValue>(ProtectedValue);
+            if (currentValue != null) return new ResolveResultNoop<TValue>(ProtectedValue);
 
             var resolveResult = await Resolve();
-            return new LazyResolveResult<TValue>(resolveResult.HasValue, resolveResult.Value);
+            return new ResolveResult<TValue>(resolveResult.HasValue, resolveResult.Value);
         }
 
-        //public async ITask<ILazyResolveResult<TValueReturned>> GetValue2()
-        //{
-        //    var currentValue = ProtectedValue;
-        //    if (currentValue != null) return new LazyResolveResultNoop<TValueReturned>((TValueReturned)(object)ProtectedValue);
+        #endregion
 
-        //    var resolveResult = await Resolve();
-        //    return new LazyResolveResult<TValueReturned>(resolveResult.HasValue, (TValueReturned)(object)resolveResult.Value);
-        //}
+        #region QueryValue
+
+        public ILazyResolveResult<TValue> QueryValue()
+        {
+            var currentValue = ProtectedValue;
+            return currentValue != null ? new ResolveResultNoop<TValue>(ProtectedValue) : (ILazyResolveResult<TValue>)ResolveResultNotResolved<TValue>.Instance;
+        }
 
         #endregion
 
@@ -108,6 +119,20 @@ namespace LionFire.Resolves
         public abstract ITask<IResolveResult<TValue>> ResolveImpl();
 
         #endregion
+
+        #region OLD
+
+        //public async ITask<ILazyResolveResult<TValueReturned>> GetValue2()
+        //{
+        //    var currentValue = ProtectedValue;
+        //    if (currentValue != null) return new LazyResolveResultNoop<TValueReturned>((TValueReturned)(object)ProtectedValue);
+
+        //    var resolveResult = await Resolve();
+        //    return new LazyResolveResult<TValueReturned>(resolveResult.HasValue, (TValueReturned)(object)resolveResult.Value);
+        //}
+
+        #endregion
     }
+
 }
 

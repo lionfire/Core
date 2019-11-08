@@ -4,6 +4,7 @@ namespace LionFire.Persistence
 {
 
     public class OverlayRetrieveResult<T> : OverlayPersistenceResultBase<IRetrieveResult<T>>, IRetrieveResult<T>, ITieredPersistenceResult
+        where T : class
     {
         public OverlayRetrieveResult(IRetrieveResult<T> underlyingResult) : base(underlyingResult)
         {
@@ -13,6 +14,6 @@ namespace LionFire.Persistence
 
         public bool HasValue => Value == default;
 
-        
+
     }
 }

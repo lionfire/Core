@@ -168,7 +168,7 @@ namespace LionFire.Assets
         //    Template = assetPath;
         //}
 
-        public AssetInstantiation(RH
+        public AssetInstantiation(IReadHandleBase
 #if !AOT && !UNITY // Unity crashes with contravariant IReadHandle
 <ITemplateAsset>
 #endif
@@ -211,7 +211,7 @@ namespace LionFire.Assets
             this.Parameters = parameters;
         }
 
-        public AssetInstantiation(RH
+        public AssetInstantiation(IReadHandleBase
 #if !AOT && !UNITY // Unity crashes with contravariant IReadHandle
 <ITemplateAsset>
 #endif
@@ -221,7 +221,7 @@ namespace LionFire.Assets
             this.Parameters = parameters;
         }
 
-        public AssetInstantiation(RH
+        public AssetInstantiation(IReadHandleBase
 #if !AOT && !UNITY // Unity crashes with contravariant IReadHandle
 <ITemplateAsset>
 #endif
@@ -328,7 +328,7 @@ namespace LionFire.Assets
 
 
         [Assignment(AssignmentMode.Assign)]
-        public RH<ITemplateAsset> TemplateAsset //#if !AOT && !UNITY // Unity used to crash with contravariant IReadHandle.  Does it still?
+        public IReadHandleBase<ITemplateAsset> TemplateAsset //#if !AOT && !UNITY // Unity used to crash with contravariant IReadHandle.  Does it still?
         {
             get
             {
@@ -357,7 +357,7 @@ namespace LionFire.Assets
                 //}
             }
         }
-        protected RH
+        protected IReadHandleBase
 #if !AOT && !UNITY // Unity crashes with contravariant IReadHandle
 <ITemplateAsset>
 #endif

@@ -8,6 +8,7 @@ namespace LionFire.Persistence.Handles
     /// <typeparam name="TReference"></typeparam>
     /// <typeparam name="TValue"></typeparam>
     public abstract class ReadHandle<TReference, TValue> : ReadHandle<TValue>
+        where TValue : class
     {
         protected override bool IsAllowedReferenceType(Type type) => type == typeof(TReference);
     }

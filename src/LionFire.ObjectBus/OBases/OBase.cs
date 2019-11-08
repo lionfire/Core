@@ -207,12 +207,12 @@ namespace LionFire.ObjectBus
 
         #region Handle
 
-        public virtual W<T> GetHandle<T>(IReference reference)
+        public virtual IReadWriteHandleBase<T> GetHandle<T>(IReference reference)
         {
             if (!(reference is TReference)) throw new ArgumentException($"{nameof(reference)} must be a {typeof(TReference).FullName} (TODO: Convert from compatible reference types)");
             return new OBaseHandle<T>(reference, this);
         }
-        public virtual RH<T> GetReadHandle<T>(IReference reference)
+        public virtual IReadHandleBase<T> GetReadHandle<T>(IReference reference)
         {
             if (!(reference is TReference)) throw new ArgumentException($"{nameof(reference)} must be a {typeof(TReference).FullName} (TODO: Convert from compatible reference types)");
             return new OBaseReadHandle<T>(reference, this);

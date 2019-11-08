@@ -9,7 +9,8 @@ namespace LionFire.Persistence.Handles
     /// </summary>
     /// <typeparam name="TValue"></typeparam>
     /// <seealso cref="ReadHandle{TValue}"/>
-    public abstract class ReadHandleBase<TValue> : Resolves<IReference, TValue>, RH<TValue>
+    public abstract class ReadHandleBase<TValue> : Resolves<IReference, TValue>, IReadHandleBase<TValue>
+        where TValue : class
         //, IReadHandleInvariant<TValue>
     {
 
@@ -48,7 +49,7 @@ namespace LionFire.Persistence.Handles
 
         #region Persistence State
 
-        public PersistenceState State
+        public PersistenceFlags Flags
         {
             get => handleState;
             set
@@ -58,12 +59,12 @@ namespace LionFire.Persistence.Handles
                 var oldValue = handleState;
                 handleState = value;
 
-                OnStateChanged(value, oldValue);
+                //OnStateChanged(value, oldValue);
             }
         }
-        private PersistenceState handleState;
+        private PersistenceFlags handleState;
 
-        protected virtual void OnStateChanged(PersistenceState newValue, PersistenceState oldValue) { }
+        //protected virtual void OnStateChanged(PersistenceFlags newValue, PersistenceFlags oldValue) { }
 
         #endregion
 

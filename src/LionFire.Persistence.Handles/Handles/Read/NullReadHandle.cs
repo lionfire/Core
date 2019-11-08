@@ -10,19 +10,24 @@ using System.Threading.Tasks;
 
 namespace LionFire.Persistence.Handles
 {
-    public class NullReadHandle<T> : IReadHandleEx<T>
+
+#pragma warning disable CS8603 // Possible null reference return. // TODO - uncomment this and use nullable types
+    public class NullReadHandle<T> : IReadHandle<T>
+        where T : class
     {
 
-        public T Value => default(T);
+        public T Value => default;
         public bool HasValue => false;
 
         public string Key => null;
 
         public bool IsResolved => true;
 
-        public IReference Reference => null;
 
-        public PersistenceState State => PersistenceState.UpToDate;
+        public IReference Reference => default;
+
+
+        public PersistenceFlags Flags => PersistenceFlags.UpToDate;
 
         //public event Action<RH<T>, HandleEvents> HandleEvents;
         //public event Action<RH<T>, T, T> ObjectReferenceChanged;
@@ -31,15 +36,16 @@ namespace LionFire.Persistence.Handles
 
         //event Action<INotifyingWrapper<T>, T, T> INotifyingWrapper<T>.ObjectChanged { add { } remove { } }
 
-        public event Action<RH<T>> ObjectChanged { add { } remove { } }
+        public event Action<IReadHandleBase<T>> ObjectChanged { add { } remove { } }
 
         public void DiscardValue() { }
         public Task<bool> Exists(bool forceCheck = false) => Task.FromResult(true);
 
 
-        public ITask<ILazyResolveResult<T>> GetValue() => Task.FromResult<ILazyResolveResult<T>>(LazyResolveResultNoop<T>.Instance).AsITask();
+        public ITask<ILazyResolveResult<T>> GetValue() => Task.FromResult<ILazyResolveResult<T>>(ResolveResultNoop<T>.Instance).AsITask();
         public ITask<IResolveResult<T>> Resolve() => Task.FromResult<IResolveResult<T>>(NoopRetrieveResult).AsITask();
         public Task<bool> TryResolveObject() => Task.FromResult(true);
+        public ILazyResolveResult<T> QueryValue() => ResolveResultNoop<T>.Instance;
 
         public static readonly RetrieveResult<T> NoopRetrieveResult = new RetrieveResult<T>()
         {
@@ -48,6 +54,7 @@ namespace LionFire.Persistence.Handles
             Error = null
         };
     }
+#pragma warning restore CS8603 // Possible null reference return.
 
 }
 #nullable restore

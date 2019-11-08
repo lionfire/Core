@@ -37,7 +37,7 @@ namespace LionFire.ObjectBus.Handles
 
         #endregion
 
-        public RH<INotifyingReadOnlyCollection<T>> Handle { get; protected set; }
+        public IReadHandleBase<INotifyingReadOnlyCollection<T>> Handle { get; protected set; }
         public INotifyingReadOnlyCollection<TListEntry> Entries => Value;
 
         public int Count => Entries.Count;

@@ -13,7 +13,7 @@ namespace LionFire.Resolves
     ///// </summary>
     ///// <typeparam name="TInput"></typeparam>
     ///// <typeparam name="TOutput"></typeparam>
-    //public abstract class ResolvesBaseCovariant<TKey, TValue> : ResolvesInputBase<TKey>, IResolvesEx, ILazilyResolvesCovariant<TValue>, ILazilyResolves<TValue>
+    //public abstract class ResolvesBaseCovariant<TKey, TValue> : DisposableKeyed<TKey>, IResolvesEx, ILazilyResolvesCovariant<TValue>, ILazilyResolves<TValue>
     //{
     //    public static implicit operator ResolvesBaseCovariant<TKey, TValue>(TKey input) => new ResolvesBaseCovariant<TKey, TValue>(input);
 

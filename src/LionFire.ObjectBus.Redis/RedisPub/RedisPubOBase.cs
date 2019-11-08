@@ -335,8 +335,8 @@ namespace LionFire.ObjectBus.RedisPub
         //    return Assets.AssetPath.GetDefaultDirectory(typeof(T));
         //}
 
-        public override W<T> GetHandle<T>(IReference reference) => throw new NotImplementedException();
-        public override RH<T> GetReadHandle<T>(IReference reference) => throw new NotImplementedException();
+        public override IReadWriteHandleBase<T> GetHandle<T>(IReference reference) => throw new NotImplementedException();
+        public override IReadHandleBase<T> GetReadHandle<T>(IReference reference) => throw new NotImplementedException();
         
 
         public override Task<IPersistenceResult> TryDelete<T>(RedisPubReference reference) => throw new NotImplementedException();

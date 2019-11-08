@@ -423,7 +423,7 @@ namespace LionFire.Assets
             }
         }
 
-        public event Action<RH<AssetType>, HandleEvents> HandleEvents
+        public event Action<IReadHandleBase<AssetType>, HandleEvents> HandleEvents
         {
             add
             {
@@ -436,7 +436,7 @@ namespace LionFire.Assets
             }
         }
 
-        public new event Action<RH<AssetType>, AssetType, AssetType> ObjectReferenceChanged // REVIEW FIXME - overrides base event
+        public new event Action<IReadHandleBase<AssetType>, AssetType, AssetType> ObjectReferenceChanged // REVIEW FIXME - overrides base event
         {
             add
             {
@@ -449,7 +449,7 @@ namespace LionFire.Assets
             }
         }
 
-        public new event Action<RH<AssetType>> ObjectChanged  // REVIEW FIXME - overrides base event
+        public new event Action<IReadHandleBase<AssetType>> ObjectChanged  // REVIEW FIXME - overrides base event
         {
             add
             {
@@ -820,7 +820,7 @@ namespace LionFire.Assets
                 #endregion
 
 #if !ASSETCACHE
-        public W<AssetType> ContextualHandle
+        public IReadWriteHandleBase<AssetType> ContextualHandle
         {
             get
             {
@@ -830,7 +830,7 @@ namespace LionFire.Assets
             }
         }
 
-        public PersistenceState State => VobHandle.State;
+        public PersistenceFlags Flags => VobHandle.Flags;
 
         public bool IsPersisted => VobHandle.IsPersisted();
 

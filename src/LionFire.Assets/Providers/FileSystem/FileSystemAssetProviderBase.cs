@@ -12,7 +12,7 @@ namespace LionFire.Assets.Providers.FileSystem
     // FUTURE: Integrate with Serializer framework to try loading files based on extension
 
 
-    public abstract class FileSystemAssetProviderBase : INotifyPersistence
+    public abstract class FileSystemAssetProviderBase : INotifyPersists
     {
         public string RootDir { get; set; }
 

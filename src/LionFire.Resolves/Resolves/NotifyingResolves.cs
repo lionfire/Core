@@ -1,4 +1,5 @@
-﻿using LionFire.Events;
+﻿#if UNUSED // Is this useful?
+using LionFire.Events;
 using MorseCode.ITask;
 using System;
 using System.Threading.Tasks;
@@ -14,3 +15,4 @@ namespace LionFire.Resolves
 
 }
 
+#endif

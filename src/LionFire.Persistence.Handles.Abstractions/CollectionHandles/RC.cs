@@ -27,7 +27,7 @@ namespace LionFire.Persistence
 
     }
 
-    public interface HC<T> : RH<INotifyingReadOnlyCollection<W<T>>>
+    public interface HC<T> : IReadHandleBase<INotifyingReadOnlyCollection<IReadWriteHandleBase<T>>>
     {
         //        Task<int> Count();
 

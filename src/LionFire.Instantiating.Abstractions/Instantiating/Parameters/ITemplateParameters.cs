@@ -9,7 +9,7 @@ namespace LionFire.Instantiating
     {
         //ParameterOverlayMode OverlayMode { get; }
         //object OverlayParent { get; set; }
-        RH<ITemplate> Template { get; set; }
+        IReadHandleBase<ITemplate> Template { get; set; }
         //IReadHandle<ITemplateAsset> TemplateAsset { get; set; }
     }
 

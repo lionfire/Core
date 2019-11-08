@@ -44,12 +44,12 @@ namespace LionFire.Resolves
     //    public override Task<IResolveResult<TValue>> ResolveImpl() => return Resolver(this.Key);
     //}
 
-    //public abstract class NotifyingDefaultableResolvesBase<TKey, TValue> : ResolvesInputBase<TKey>, ILazilyResolves<TValue>, INotifiesSenderValueChanged<DefaultableValue<TValue>>
+    //public abstract class NotifyingDefaultableResolvesBase<TKey, TValue> : DisposableKeyed<TKey>, ILazilyResolves<TValue>, INotifiesSenderValueChanged<DefaultableValue<TValue>>
     //{
     //    public event EventHandler<ValueChanged<DefaultableValue<TValue>>> ValueChanged;
     //}
 
-    //public abstract class DefaultableResolvesBase<TKey, TValue> : ResolvesInputBase<TKey>, ILazilyResolves<TValue>
+    //public abstract class DefaultableResolvesBase<TKey, TValue> : DisposableKeyed<TKey>, ILazilyResolves<TValue>
     //{
     //    #region Construction
 

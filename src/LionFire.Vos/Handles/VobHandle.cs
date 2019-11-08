@@ -10,7 +10,7 @@ namespace LionFire.Vos
 {
 
     [ReadOnlyEditionIs(typeof(VobReadHandle<>))]
-    public class VobHandle<T> : VobReadHandle<T>, W<T>
+    public class VobHandle<T> : VobReadHandle<T>, IReadWriteHandleBase<T>
         , IVobHandle<T>
     //, ITreeHandle
     {
@@ -107,16 +107,16 @@ namespace LionFire.Vos
         /// </summary>
         public bool DeletePending
         {
-            get => State.HasFlag(PersistenceState.OutgoingDeletePending);
+            get => Flags.HasFlag(PersistenceFlags.OutgoingDeletePending);
             set
             {
                 if (value)
                 {
-                    State |= PersistenceState.OutgoingDeletePending;
+                    Flags |= PersistenceFlags.OutgoingDeletePending;
                 }
                 else
                 {
-                    State &= ~PersistenceState.OutgoingDeletePending;
+                    Flags &= ~PersistenceFlags.OutgoingDeletePending;
                 }
             }
         }

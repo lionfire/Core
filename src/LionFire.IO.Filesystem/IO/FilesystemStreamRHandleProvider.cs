@@ -10,7 +10,7 @@ namespace LionFire.IO.Filesystem
     {
         public override string Scheme => "file-stream-ro";
 
-        public RH<T> GetReadHandle<T>(IReference reference, T initialData)
+        public IReadHandleBase<T> GetReadHandle<T>(IReference reference, T initialData)
         {
             if (typeof(T) != typeof(Stream))
             {
@@ -18,7 +18,7 @@ namespace LionFire.IO.Filesystem
             }
 
             ValidateReference(reference);
-            return (RH<T>)new RFileStream(reference.Path, (Stream)(object)initialData); // HARDCAST
+            return (IReadHandleBase<T>)new RFileStream(reference.Path, (Stream)(object)initialData); // HARDCAST
         }
     }
 

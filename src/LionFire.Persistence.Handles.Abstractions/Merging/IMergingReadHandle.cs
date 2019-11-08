@@ -1,6 +1,6 @@
 ﻿namespace LionFire.Persistence.Merging
 {
-    public interface IMergingReadHandle<out T> : RH<T>
+    public interface IMergingReadHandle<out T> : IReadHandleBase<T>
     {
         MergePolicy MergePolicy { get; set; }
     }

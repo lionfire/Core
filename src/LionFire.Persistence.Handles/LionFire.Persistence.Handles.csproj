@@ -4,6 +4,7 @@
     <TargetFramework>netstandard2.0</TargetFramework>
     <RootNamespace>LionFire</RootNamespace>
     <LangVersion>latest</LangVersion>
+    <Nullable>enable</Nullable>
   </PropertyGroup>
 
   <ItemGroup>
@@ -20,10 +21,6 @@
     <ProjectReference Include="..\LionFire.Referencing\LionFire.Referencing.csproj" />
     <ProjectReference Include="..\LionFire.Resolves\LionFire.Resolves.csproj" />
     <ProjectReference Include="..\LionFire.Structures\LionFire.Structures.csproj" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="Handles\ReadWrite\" />
   </ItemGroup>
 
 </Project>

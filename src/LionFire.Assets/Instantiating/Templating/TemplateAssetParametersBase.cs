@@ -50,7 +50,7 @@ namespace LionFire.Instantiating
 #if AOT
                         (IReadHandle) // For Mono on Mac BACKPORTED
 #else
-                        (RH<TemplateType>) // For Mono on Mac BACKPORTED
+                        (IReadHandleBase<TemplateType>) // For Mono on Mac BACKPORTED
 #endif
 						template)
         {
@@ -81,7 +81,7 @@ namespace LionFire.Instantiating
 		{
             if (template is IHasHAsset hasHA && hasHA.HAsset != null)
             {
-                base.TemplateAsset = (RH<ITemplateAsset>)hasHA.HAsset; //#if !AOT && !UNITY // Unity crashes with contravariant IReadHandle
+                base.TemplateAsset = (IReadHandleBase<ITemplateAsset>)hasHA.HAsset; //#if !AOT && !UNITY // Unity crashes with contravariant IReadHandle
             }
             else
             {
@@ -197,7 +197,7 @@ namespace LionFire.Instantiating
 
 #if !AOT  // public new HAsset<TemplateType> Template
 
-        RH<ITemplate> ITemplateParameters.Template { get => Template; set => Template = (HAsset<TemplateType>)value; }
+        IReadHandleBase<ITemplate> ITemplateParameters.Template { get => Template; set => Template = (HAsset<TemplateType>)value; }
 
         [Ignore]
         [SerializeDefaultValue(false)]

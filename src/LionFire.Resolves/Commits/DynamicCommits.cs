@@ -8,6 +8,8 @@ using LionFire.ExtensionMethods.Poco.Resolvables;
 namespace LionFire.Resolves
 {
     public class DynamicCommits<TKey, TValue> : Commits<TKey, TValue>
+        where TKey : class
+        where TValue : class
     {
         public Func<TKey, TValue, Task<IPutResult>> Committer { get; set; }
 
@@ -15,6 +17,8 @@ namespace LionFire.Resolves
     }
 
     public class AmbientCommits<TKey, TValue> : Commits<TKey, TValue>
+         where TKey : class
+        where TValue : class
     {
         public override Task<IPutResult> CommitImpl(TValue value) => this.Key.Commit(value);
         //foreach (var service in DependencyContext.Current.GetServices<ICommitter<TKey, TValue>>())

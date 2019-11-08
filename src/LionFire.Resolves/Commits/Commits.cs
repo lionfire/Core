@@ -10,7 +10,9 @@ namespace LionFire.Resolves
     /// 
     /// If setting to null or default is a legitimate operation, use DefaultableValue&lt;TValue&gt;
     /// </summary>
-    public abstract class Commits<TKey, TValue> : ResolvesInputBase<TKey>, IDiscardableValue
+    public abstract class Commits<TKey, TValue> : DisposableKeyed<TKey>, IDiscardableValue
+        where TKey : class
+        where TValue : class
     {
         #region Construction
 

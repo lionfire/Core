@@ -8,7 +8,7 @@ namespace LionFire.Assets
     {        
     }
 
-    public interface IHRAsset<out T> : RH<T>
+    public interface IHRAsset<out T> : IReadHandleBase<T>
     {
         string AssetTypePath { get; }
         Type Type

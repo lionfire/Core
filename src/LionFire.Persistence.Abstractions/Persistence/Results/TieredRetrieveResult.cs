@@ -16,6 +16,7 @@ namespace LionFire.Persistence
     }
 
     public class TieredRetrieveResult<T> : ITieredRetrieveResult<T>
+        where T : class
     {
         public int RelevantUnderlyingCount { get; set; }
         public IEnumerable<IPersistenceResult> Successes { get; set; }

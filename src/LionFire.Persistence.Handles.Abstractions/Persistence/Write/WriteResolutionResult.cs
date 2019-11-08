@@ -11,6 +11,6 @@ namespace LionFire.Persistence.Resolution
         /// <summary>
         /// See ResolutionResultExtensions.GetHandle.  (REVIEW: Consider making this an interface and making lazy-loading part of the implementation.)
         /// </summary>
-        public W<T> Handle { get; set; }
+        public IReadWriteHandleBase<T> Handle { get; set; }
     }
 }

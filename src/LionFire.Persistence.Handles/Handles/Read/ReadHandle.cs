@@ -1,7 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
+using LionFire.Activation;
 using LionFire.Events;
 using LionFire.Extensions.DefaultValues;
 using LionFire.Ontology;
@@ -24,15 +27,15 @@ namespace LionFire.Persistence.Handles
     ///  - ObjectChanged 
     /// </remarks>
     /// <typeparam name="TValue"></typeparam>
-    public abstract class ReadHandle<TValue> : ReadHandleBase<TValue>, IReadHandleEx<TValue>,
+    public abstract partial class ReadHandle<TValue> : ReadHandleBase<TValue>, IReadHandle<TValue>,
         //IReadHandleInvariantEx<TValue>, 
-        INotifyingPersisted<TValue>
-    //, IRetrievableImpl<T>
-    //where T : class
+        INotifyPersists<TValue>,
+        INotifyPropertyChanged
+        //, IRetrievableImpl<T>
+        where TValue : class
     {
         #region Identity
-
-        public ITypedReference TypedReference => Reference as ITypedReference; // REVIEW - does this belong here?
+        
 
         string IKeyed<string>.Key => Reference.Key;
 
@@ -52,7 +55,7 @@ namespace LionFire.Persistence.Handles
         {
             SetValueFromConstructor(value);
         }
-        
+
         protected void SetValueFromConstructor(TValue initialValue)
         {
             _value = initialValue;
@@ -62,106 +65,41 @@ namespace LionFire.Persistence.Handles
         #endregion
 
         #region State
-        
+
+        //private readonly object objectLock = new object();
+
+
         #region Value
 
-        public TValue Value
-        {
-            [Blocking(Alternative = nameof(GetValue))]
-            get
-            {
-                // TODO: Determine
-                if (!State.HasFlag(PersistenceState.UpToDate))
-                {
-                    Resolve().ConfigureAwait(false).GetAwaiter().GetResult();
-                    //_ = Retrieve().Result;
-                }
-                return _value;
-            }
-            set
-            {
-                if (object.ReferenceEquals(_value, value))
-                {
-                    return;
-                }
+        // OLD - Maybe I don't need to override Value or ProtectedValue?
+        //public TValue Value
+        //{
+        //    [Blocking(Alternative = nameof(GetValue))]
+        //    get
+        //    {
+        //        // TODO: Determine
+        //        if (!Flags.HasFlag(PersistenceFlags.UpToDate))
+        //        {
+        //            Resolve().ConfigureAwait(false).GetAwaiter().GetResult();
+        //            //_ = Retrieve().Result;
+        //        }
+        //        return _value;
+        //    }
+        //    set
+        //    {
+        //        if (object.ReferenceEquals(_value, value))
+        //        {
+        //            return;
+        //        }
+        //        var oldValue = _value;
+        //        _value = value;
+        //        ObjectReferenceChanged?.Invoke(this, oldValue, value);
+        //        ObjectChanged?.Invoke(this);
+        //    }
+        //}
+        //protected TValue _value;
 
-                var oldValue = _value;
-                _value = value;
-                ObjectReferenceChanged?.Invoke(this, oldValue, value);
-                ObjectChanged?.Invoke(this);
-            }
-        }
-        protected TValue _value;
-        private readonly object objectLock = new object();
-
-        #region Instantiation 
-
-        [ThreadSafe]
-        public async Task<TValue> GetOrInstantiate()
-        {
-            await GetValue().ConfigureAwait(false);
-            lock (objectLock)
-            {
-                if (!HasValue)
-                {
-                    Value = InstantiateDefault();
-                }
-                return _value;
-            }
-        }
-
-        // No persistence, just instantiating an ObjectType
-
-        /// <summary>
-        /// Returns null if ObjectType is object or interface and TypedReference?.Type is null
-        /// TODO: If ObjectType is Interface, get create type from attribute on Interface type.
-        /// </summary>
-        public Type GetInstantiationType()
-        {
-            if (typeof(TValue) == typeof(object))
-            {
-                if (TypedReference?.Type == null)
-                {
-                    return null;
-                }
-                return TypedReference.Type;
-            }
-            else
-            {
-                return typeof(TValue);
-            }
-        }
-
-        private TValue InstantiateDefault(bool applyDefaultValues = true)
-        {
-            TValue result = (TValue)Activator.CreateInstance(GetInstantiationType() ?? throw new ArgumentNullException("Reference.Type must be set when using non-generic Handle, or when the generic type is object."));
-
-            if (applyDefaultValues) { DefaultValueUtils.ApplyDefaultValues(result); }
-
-            return result;
-        }
-
-        public void InstantiateAndSet(bool applyDefaultValues = true) => Value = InstantiateDefault(applyDefaultValues);
-        private void InstantiateAndSetWithoutEvents(bool applyDefaultValues = true) => _value = InstantiateDefault(applyDefaultValues);
-
-        public void EnsureInstantiated() // REVIEW: What should be done here?
-        {
-            //RetrieveOrCreateDefault(); ??
-
-            if (Value == null)
-            {
-                InstantiateAndSet();
-            }
-        }
-        private void EnsureInstantiatedWithoutEvents() // REVIEW: What should be done here?
-        {
-            if (_value == null)
-            {
-                InstantiateAndSetWithoutEvents();
-            }
-        }
-
-        #endregion
+        protected override void OnValueChanged(TValue newValue, TValue oldValue) => OnPropertyChanged(nameof(Value));
 
         //protected virtual async Task<bool> DoTryRetrieve()
         //{
@@ -174,8 +112,8 @@ namespace LionFire.Persistence.Handles
         //    return result;
         //}
 
-        public event Action<RH<TValue>, TValue /*oldValue*/ , TValue /*newValue*/> ObjectReferenceChanged;
-        public event Action<RH<TValue>> ObjectChanged;
+        //public event Action<IReadHandleBase<TValue>, TValue /*oldValue*/ , TValue /*newValue*/> ObjectReferenceChanged;
+        //public event Action<IReadHandleBase<TValue>> ObjectChanged;
 
         protected virtual void OnSavedObject() { }
         protected virtual void OnDeletedObject() { }
@@ -184,7 +122,7 @@ namespace LionFire.Persistence.Handles
         {
             Value = obj;
             RaiseRetrievedObject();
-            this.State |= PersistenceState.UpToDate;
+            this.Flags |= PersistenceFlags.UpToDate;
             return obj;
         }
 
@@ -201,14 +139,14 @@ namespace LionFire.Persistence.Handles
         }
 
         //protected override void OnValueChanged(T newValue, T oldValue) { 
-        
+
         //}
 
         public override void DiscardValue()
         {
             base.DiscardValue();
             //PersistenceResultFlags = PersistenceResultFlags.None;
-            this.State = State.AfterDiscard();
+            this.Flags = Flags.AfterDiscard();
         }
 
         #endregion
@@ -234,19 +172,22 @@ namespace LionFire.Persistence.Handles
         //    }
         //}
         //private PersistenceResultFlags persistenceResultFlags;
-        
+
         #endregion
 
         #region Events
 
-        public event Action<RH<TValue>, HandleEvents> HandleEvents;
-
-        protected void RaiseHandleEvent(HandleEvents eventType) => HandleEvents?.Invoke(this, eventType);
+        public event Action<PersistenceEvent<TValue>>? PersistenceStateChanged;
 
 
-        protected void RaisePersistenceEvent(ValueChanged<PersistenceSnapshot> arg) => StateChanged?.Invoke(this, arg);
+        //public event Action<IReadHandleBase<TValue>, HandleEvents> HandleEvents;
 
-        public event EventHandler<IValueChanged<IPersistenceSnapshot<TValue>>> StateChanged;
+        //protected void RaiseHandleEvent(HandleEvents eventType) => HandleEvents?.Invoke(this, eventType);
+
+
+        //protected void RaisePersistenceEvent(ValueChanged<PersistenceSnapshot> arg) => StateChanged?.Invoke(this, arg);
+
+        //public event EventHandler<IValueChanged<IPersistenceSnapshot<TValue>>> StateChanged;
 
         #endregion
 
@@ -330,21 +271,21 @@ namespace LionFire.Persistence.Handles
 
         public bool IsUpToDate
         {
-            get => State.HasFlag(PersistenceState.UpToDate);
-            protected set => handleState.SetFlag(PersistenceState.UpToDate, value);
+            get => Flags.HasFlag(PersistenceFlags.UpToDate);
+            protected set => handleState.SetFlag(PersistenceFlags.UpToDate, value);
         }
         public bool IsPersisted // REVIEW FIXME
         {
-            get => State.HasFlag(PersistenceState.UpToDate);
+            get => Flags.HasFlag(PersistenceFlags.UpToDate);
             set
             {
                 if (value)
                 {
-                    State |= PersistenceState.UpToDate;
+                    Flags |= PersistenceFlags.UpToDate;
                 }
                 else
                 {
-                    State &= ~PersistenceState.UpToDate;
+                    Flags &= ~PersistenceFlags.UpToDate;
                 }
             }
         }
@@ -353,7 +294,7 @@ namespace LionFire.Persistence.Handles
 
         public bool? IsReachable
         {
-            get => State.HasFlag(PersistenceState.Reachable) ? true : (State.HasFlag(PersistenceState.Reachable) ? false : (bool?)null);
+            get => Flags.HasFlag(PersistenceFlags.Reachable) ? true : (Flags.HasFlag(PersistenceFlags.Reachable) ? false : (bool?)null);
             protected set
             {
                 // REFACTOR ?
@@ -361,18 +302,18 @@ namespace LionFire.Persistence.Handles
                 {
                     if (value.Value)
                     {
-                        State |= PersistenceState.Reachable;
-                        State &= ~PersistenceState.Unreachable;
+                        Flags |= PersistenceFlags.Reachable;
+                        Flags &= ~PersistenceFlags.Unreachable;
                     }
                     else
                     {
-                        State |= PersistenceState.Unreachable;
-                        State &= ~PersistenceState.Reachable;
+                        Flags |= PersistenceFlags.Unreachable;
+                        Flags &= ~PersistenceFlags.Reachable;
                     }
                 }
                 else
                 {
-                    State &= ~(PersistenceState.Reachable | PersistenceState.Unreachable);
+                    Flags &= ~(PersistenceFlags.Reachable | PersistenceFlags.Unreachable);
                 }
             }
         }
@@ -382,6 +323,16 @@ namespace LionFire.Persistence.Handles
         #endregion
 
         #region Misc
+
+
+        #region INotifyPropertyChanged Implementation
+
+        public event PropertyChangedEventHandler? PropertyChanged;
+
+        protected void OnPropertyChanged(string propertyName) => PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+
+        #endregion
+
         private static bool IsDefaultValue(TValue value) => EqualityComparer<TValue>.Default.Equals(value, default);
 
         #endregion

@@ -7,9 +7,9 @@ namespace LionFire.Persistence
 {
     public class ObjectNotFoundException : NotFoundException // RENAME to ValueNotFoundException to match RH.Value?
     {
-        public RH<object> ReadHandle { get; private set; }
+        public IReadHandleBase<object> ReadHandle { get; private set; }
         public ObjectNotFoundException() { }
-        public ObjectNotFoundException(RH<object> rh) { this.ReadHandle = rh; }
+        public ObjectNotFoundException(IReadHandleBase<object> rh) { this.ReadHandle = rh; }
         public ObjectNotFoundException(string message) : base(message) { }
         public ObjectNotFoundException(string message, Exception inner) : base(message, inner) { }
     }

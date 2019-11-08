@@ -110,7 +110,7 @@ namespace LionFire.Assets
 
         //IReadHandle IHasReadHandle.ReadHandle { get { return this.ReadHandle; } }
 
-        public RH
+        public IReadHandleBase
 #if !AOT
             <ConcreteType>
 #endif
@@ -126,7 +126,7 @@ namespace LionFire.Assets
 #if !AOT
 #if !AOT
         //H IHasHandle.Handle => this.Handle;
-        public W<ConcreteType> Handle
+        public IReadWriteHandleBase<ConcreteType> Handle
 #else
 		public H Handle
 #endif
@@ -141,7 +141,7 @@ namespace LionFire.Assets
 #endif
 #if !ASSETCACHE
         [Obsolete("Use HAsset.ContextualHandle")]
-        public W<ConcreteType> ContextualHandle => HAsset.ContextualHandle;
+        public IReadWriteHandleBase<ConcreteType> ContextualHandle => HAsset.ContextualHandle;
 #endif
 
         private void EnsureHandleSetToThis(IVobHandle<ConcreteType> vh)

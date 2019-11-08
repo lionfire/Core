@@ -2,7 +2,7 @@
 
 namespace LionFire.Events
 {
-    public interface INotifySenderChanged<out TValue>
+    public interface INotifySenderChanged<TValue>
     {
         event EventHandler<IValueChanged<TValue>> SenderChanged;
     }

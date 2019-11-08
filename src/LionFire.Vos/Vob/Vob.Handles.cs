@@ -9,7 +9,7 @@ namespace LionFire.Vos
 {
     public partial class Vob
     {
-        public IEnumerable<RH<MountHandleObject>> ReadHandles
+        public IEnumerable<IReadHandleBase<MountHandleObject>> ReadHandles
         {
             get
             {
@@ -63,7 +63,7 @@ namespace LionFire.Vos
 
         public bool CanWrite => WriteHandleMounts.Where(m => !m.MountOptions.IsReadOnly).Any();
 
-        public IEnumerable<RH<MountHandleObject>> WriteHandles
+        public IEnumerable<IReadHandleBase<MountHandleObject>> WriteHandles
         {
             get
             {
@@ -123,7 +123,7 @@ namespace LionFire.Vos
                 return effectiveMountsByWritePriority.Values.SelectMany(x => x);
             }
         }
-        private RH<MountHandleObject> FirstWriteHandle // REVIEW Don't use this?
+        private IReadHandleBase<MountHandleObject> FirstWriteHandle // REVIEW Don't use this?
         {
             get
             {
@@ -144,7 +144,7 @@ namespace LionFire.Vos
                 return null;
             }
         }
-        private W<T> GetFirstWriteHandle<T>()
+        private IReadWriteHandleBase<T> GetFirstWriteHandle<T>()
         {
             //get
             {
@@ -173,9 +173,9 @@ namespace LionFire.Vos
         //    return objectHandle;
         //}
 
-        private RH<MountHandleObject> GetFirstWriteHandle()
+        private IReadHandleBase<MountHandleObject> GetFirstWriteHandle()
         {
-            RH<MountHandleObject> objectHandle;
+            IReadHandleBase<MountHandleObject> objectHandle;
 
             //if (package == null && layer == null)
             {

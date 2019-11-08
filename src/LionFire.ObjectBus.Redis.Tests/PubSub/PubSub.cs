@@ -39,7 +39,7 @@ namespace RedisPub_
 
         }
 
-        private void H_ObjectChanged(RH<object> obj)
+        private void H_ObjectChanged(IReadHandleBase<object> obj)
         {
             Assert.NotNull(obj);
             Assert.NotNull(obj.Value);

@@ -1,7 +1,7 @@
 ﻿
 namespace LionFire.Events
 {
-    public interface ISenderValueChanged<out TValue, out TSender>: IValueChanged<TValue>
+    public interface ISenderValueChanged<out TSender, out TValue> : IValueChanged<TValue>
     {
         TSender Sender { get; }
     }

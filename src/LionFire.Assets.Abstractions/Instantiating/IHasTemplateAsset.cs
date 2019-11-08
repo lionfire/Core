@@ -7,7 +7,7 @@ namespace LionFire.Assets
     public interface IHasTemplateAsset
     {
         //ITemplateAsset TemplateAsset { get; set; }
-        RH
+        IReadHandleBase
 #if !AOT && !UNITY // Unity crashes with contravariant IReadHandle
         <ITemplateAsset>
 #endif
