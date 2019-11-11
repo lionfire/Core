@@ -2,7 +2,7 @@
 
 namespace LionFire.Persistence.Handles
 {
-    public class WriteHandle<TValue> : WriteHandle<IReference, TValue>, IWriteHandle<TValue>
+    public abstract class WriteHandle<TValue> : WriteHandle<IReference, TValue>, IWriteHandle<TValue>
         where TValue : class
     {
 

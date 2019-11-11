@@ -1,6 +1,6 @@
 using System;
 
-namespace LionFire.Vos.Blazor.Host.Data
+namespace LionFire.Vos.Blazor.Data
 {
     public class WeatherForecast
     {

@@ -5,10 +5,11 @@ using LionFire.Ontology;
 using LionFire.Persistence;
 using LionFire.Persistence.Handles;
 using LionFire.Referencing;
+using LionFire.Resolves;
 
 namespace LionFire.ObjectBus.Handles
 {
-    public class OBaseHandle<T> : ReadWriteHandleBaseEx<T>, IHas<IOBase>
+    public class OBaseHandle<T> : ReadWriteHandleBase<T>, IHas<IOBase>
     {
         public IOBase OBase { get;  }
         IOBase IHas<IOBase>.Object => OBase;
@@ -20,7 +21,7 @@ namespace LionFire.ObjectBus.Handles
         }
 
         // Some code duplication with OBaseReadHandle
-        public override async Task<IRetrieveResult<T>> RetrieveImpl() 
+        public override async Task<IResolveResult<T>> ResolveImpl() 
             => await OBase.Get<T>(this.Reference).ConfigureAwait(false);
 
         //protected async Task<IPersistenceResult> DeleteObject()
@@ -32,7 +33,7 @@ namespace LionFire.ObjectBus.Handles
         protected override async Task<IPersistenceResult> WriteObject()
         {
             // TODO: propagate persistenceContext?  Or remove it and rely on ambient AsyncLocal?
-            var result = await OBase.Set<T>(this.Reference, _value).ConfigureAwait(false);
+            var result = await OBase.Set<T>(this.Reference, ProtectedValue).ConfigureAwait(false);
             if (!result.IsSuccess()) throw new PersistenceException(result, "Failed to persist.  See Result for more information.");
             return result;
 

@@ -51,20 +51,86 @@ namespace LionFire.Persistence.Handles
 
         public PersistenceFlags Flags
         {
-            get => handleState;
+            get => flags;
             set
             {
-                if (handleState == value) { return; }
+                if (flags == value) { return; }
 
-                var oldValue = handleState;
-                handleState = value;
+                var oldValue = flags;
+                flags = value;
 
                 //OnStateChanged(value, oldValue);
             }
         }
-        private PersistenceFlags handleState;
+        private PersistenceFlags flags;
 
         //protected virtual void OnStateChanged(PersistenceFlags newValue, PersistenceFlags oldValue) { }
+
+        #endregion
+
+        #region Derived - Convenience
+
+        public bool IsUpToDate
+        {
+            get => Flags.HasFlag(PersistenceFlags.UpToDate);
+            //protected set => flags.SetFlag(PersistenceFlags.UpToDate, value);
+            protected set
+            {
+                if (value)
+                {
+                    Flags |= PersistenceFlags.UpToDate;
+                }
+                else
+                {
+                    Flags &= ~PersistenceFlags.UpToDate;
+                }
+            }
+        }
+        //public bool IsPersisted // REVIEW FIXME
+        //{
+        //    get => Flags.HasFlag(PersistenceFlags.UpToDate);
+        //    set
+        //    {
+        //        if (value)
+        //        {
+        //            Flags |= PersistenceFlags.UpToDate;
+        //        }
+        //        else
+        //        {
+        //            Flags &= ~PersistenceFlags.UpToDate;
+        //        }
+        //    }
+        //}
+
+        #region Reachable
+
+        public bool? IsReachable
+        {
+            get => Flags.HasFlag(PersistenceFlags.Reachable) ? true : (Flags.HasFlag(PersistenceFlags.Reachable) ? false : (bool?)null);
+            protected set
+            {
+                // REFACTOR ?
+                if (value.HasValue)
+                {
+                    if (value.Value)
+                    {
+                        Flags |= PersistenceFlags.Reachable;
+                        Flags &= ~PersistenceFlags.Unreachable;
+                    }
+                    else
+                    {
+                        Flags |= PersistenceFlags.Unreachable;
+                        Flags &= ~PersistenceFlags.Reachable;
+                    }
+                }
+                else
+                {
+                    Flags &= ~(PersistenceFlags.Reachable | PersistenceFlags.Unreachable);
+                }
+            }
+        }
+
+        #endregion
 
         #endregion
 

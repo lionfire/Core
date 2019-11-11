@@ -30,12 +30,12 @@ namespace LionFire.Persistence.Handles
     public abstract partial class ReadHandle<TValue> : ReadHandleBase<TValue>, IReadHandle<TValue>,
         //IReadHandleInvariantEx<TValue>, 
         INotifyPersists<TValue>,
-        INotifyPropertyChanged
+        INotifyPropertyChanged,
+        INotifyPersistsInternal<TValue>
         //, IRetrievableImpl<T>
         where TValue : class
     {
         #region Identity
-        
 
         string IKeyed<string>.Key => Reference.Key;
 
@@ -56,9 +56,9 @@ namespace LionFire.Persistence.Handles
             SetValueFromConstructor(value);
         }
 
-        protected void SetValueFromConstructor(TValue initialValue)
+        protected virtual void SetValueFromConstructor(TValue initialValue)
         {
-            _value = initialValue;
+            ProtectedValue = initialValue;
             // FUTURE: In the future, we may want to do something special here, like set something along the lines of PersistenceFlags.SetByUser
         }
 
@@ -67,7 +67,6 @@ namespace LionFire.Persistence.Handles
         #region State
 
         //private readonly object objectLock = new object();
-
 
         #region Value
 
@@ -120,11 +119,31 @@ namespace LionFire.Persistence.Handles
 
         protected TValue OnRetrievedObject(TValue obj)
         {
-            Value = obj;
-            RaiseRetrievedObject();
+            using var _ = new PersistenceEventTransaction<TValue>(this);
+
+            //var old = PersistenceSnapshot;
+
+            ProtectedValue = obj;
             this.Flags |= PersistenceFlags.UpToDate;
+
+            //this.PersistenceStateChanged?.Invoke(new PersistenceEvent<TValue>
+            //{
+            //    Sender = this,
+            //    Old = old,
+            //    New = PersistenceSnapshot
+            //}); 
+
+            //RaiseRetrievedObject();
             return obj;
         }
+
+        PersistenceSnapshot<TValue> IPersists<TValue>.PersistenceState
+             => new PersistenceSnapshot<TValue>
+             {
+                 Value = ProtectedValue,
+                 Flags = Flags,
+                 HasValue = HasValue,
+             };
 
         /// <summary>
         /// Reused existing Object instance, applied new retrieval results to it.
@@ -177,7 +196,10 @@ namespace LionFire.Persistence.Handles
 
         #region Events
 
+#nullable enable
         public event Action<PersistenceEvent<TValue>>? PersistenceStateChanged;
+        void INotifyPersistsInternal<TValue>.RaisePersistenceEvent(PersistenceEvent<TValue> ev) => PersistenceStateChanged?.Invoke(ev);
+#nullable disable
 
 
         //public event Action<IReadHandleBase<TValue>, HandleEvents> HandleEvents;
@@ -251,90 +273,39 @@ namespace LionFire.Persistence.Handles
         {
             if (forceCheck)
             {
-                return (await RetrieveImpl().ConfigureAwait(false)).IsFound();
+                return (await ResolveImpl().ConfigureAwait(false)).HasValue;
             }
-            else if (IsPersisted)
+            else if (HasValue && IsUpToDate)
             {
                 // Note: if delete is pending, it should set IsPersisted to false after deleting
                 return true;
             }
+#if true
+                throw new NotImplementedException("Figure out the logic on this");
+#else
             else
             {
-                await Resolve().ConfigureAwait(false);
-                return HasValue;
+                var result = await Resolve().ConfigureAwait(false);
+                return result.HasValue;
             }
+#endif
         }
 
-        #endregion
+#endregion
 
-        #region Derived - Convenience
-
-        public bool IsUpToDate
-        {
-            get => Flags.HasFlag(PersistenceFlags.UpToDate);
-            protected set => handleState.SetFlag(PersistenceFlags.UpToDate, value);
-        }
-        public bool IsPersisted // REVIEW FIXME
-        {
-            get => Flags.HasFlag(PersistenceFlags.UpToDate);
-            set
-            {
-                if (value)
-                {
-                    Flags |= PersistenceFlags.UpToDate;
-                }
-                else
-                {
-                    Flags &= ~PersistenceFlags.UpToDate;
-                }
-            }
-        }
-
-        #region Reachable
-
-        public bool? IsReachable
-        {
-            get => Flags.HasFlag(PersistenceFlags.Reachable) ? true : (Flags.HasFlag(PersistenceFlags.Reachable) ? false : (bool?)null);
-            protected set
-            {
-                // REFACTOR ?
-                if (value.HasValue)
-                {
-                    if (value.Value)
-                    {
-                        Flags |= PersistenceFlags.Reachable;
-                        Flags &= ~PersistenceFlags.Unreachable;
-                    }
-                    else
-                    {
-                        Flags |= PersistenceFlags.Unreachable;
-                        Flags &= ~PersistenceFlags.Reachable;
-                    }
-                }
-                else
-                {
-                    Flags &= ~(PersistenceFlags.Reachable | PersistenceFlags.Unreachable);
-                }
-            }
-        }
-
-        #endregion
-
-        #endregion
-
-        #region Misc
+#region Misc
 
 
-        #region INotifyPropertyChanged Implementation
+#region INotifyPropertyChanged Implementation
 
         public event PropertyChangedEventHandler? PropertyChanged;
 
         protected void OnPropertyChanged(string propertyName) => PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
 
-        #endregion
+#endregion
 
         private static bool IsDefaultValue(TValue value) => EqualityComparer<TValue>.Default.Equals(value, default);
 
-        #endregion
+#endregion
     }
 }

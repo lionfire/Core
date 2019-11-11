@@ -23,7 +23,7 @@ namespace LionFire.Persistence
     }
 
 
-    public interface IRetrieves<out T> : IRetrieves, IResolves<T>, IReadWrapper<T>, IWrapper { }
+    public interface IRetrieves<out T> : IRetrieves, IResolves<T>, IDefaultableReadWrapper<T> { }
 
     //public interface IRetrievesCovariant<out T> : IRetrieves, IResolves<T>, IReadWrapper<T>, IWrapper { }
 

@@ -3,5 +3,4 @@
 namespace LionFire.Resolves
 {
     public interface IPutResult : IResult, ISuccessResult { }
-
 }

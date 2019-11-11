@@ -3,13 +3,15 @@ using System;
 
 namespace LionFire.Persistence
 {
+    
     // TODO TODESIGN: Can OBus use this?
     //public delegate void PersistenceEventHandler(object source, PersistenceEventKind kind, object itemLocation, object context = null);
-    public interface INotifyPersists<T>
+    public interface INotifyPersists<TValue> : IPersists<TValue>
+        //where TValue : class
     {
         //event PersistenceEventHandler PersistenceEvent;
 
-        event Action<PersistenceEvent<T>> PersistenceStateChanged;
+        event Action<PersistenceEvent<TValue>> PersistenceStateChanged;
 
         ///// <summary>
         ///// Default: null, will listen if there are attached to PersistenceEvent.

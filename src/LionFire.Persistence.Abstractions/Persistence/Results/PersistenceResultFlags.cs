@@ -49,4 +49,13 @@ namespace LionFire.Persistence
 
         Noop = 1 << 31,
     }
+    public static class PersistenceResultFlagsExtensions
+    {
+        public static bool? IsFound(this PersistenceResultFlags flags)
+        {
+            if (flags.HasFlag(PersistenceResultFlags.Found)) return true;
+            if (flags.HasFlag(PersistenceResultFlags.NotFound)) return false;
+            return null;
+        }
+    }
 }

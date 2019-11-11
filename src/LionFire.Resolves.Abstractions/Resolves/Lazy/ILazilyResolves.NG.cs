@@ -3,7 +3,8 @@
 namespace LionFire.Resolves
 {
 
-    public interface ILazilyResolves : IWrapper, IDiscardableValue
+    public interface ILazilyResolves : IDefaultable
+        , IDiscardableValue // REVIEW - is this excessive / superfluous / unnecessary for this interface?  Change to IResets? TODO - try without this
     //: IHasPersistenceState
     {
         /// <summary>
@@ -28,10 +29,10 @@ namespace LionFire.Resolves
 
         //bool RetrievedNull { get; }
 
-        /// <summary>
-        /// Determine whether this object has a Value without triggering any lazy resolving of the value.
-        /// </summary>
-        new bool HasValue { get; }
+        ///// <summary>
+        ///// Determine whether this object has a Value without triggering any lazy resolving of the value.
+        ///// </summary>
+        //new bool HasValue { get; }
 
     }
 

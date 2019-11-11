@@ -2,18 +2,43 @@
 using LionFire.Structures;
 using MorseCode.ITask;
 using System;
+using System.Collections.Generic;
 
 namespace LionFire.Persistence.Handles
 {
-    public abstract class ReadWriteHandle<TValue> : ReadWriteHandleBase<TValue>, IReadWriteHandle<TValue>
-        where TValue : class
+    public abstract class ReadWriteHandle<TValue> : ReadWriteHandleBase<TValue>, IReadWriteHandle<TValue>, INotifyPersists<TValue>, INotifyingHandleInternal<TValue>
+    //where TValue : class
     {
         string IKeyed<string>.Key => Key?.ToString();
 
-        bool ILazilyResolves.HasValue => throw new NotImplementedException();
+        public abstract event Action<PersistenceEvent<TValue>> PersistenceStateChanged;
 
-        public ILazyResolveResult<TValue> QueryValue() => throw new NotImplementedException();
+        public abstract ILazyResolveResult<TValue> QueryValue();
         ITask<ILazyResolveResult<TValue>> ILazilyResolves<TValue>.GetValue() => throw new NotImplementedException();
+        public abstract void RaisePersistenceEvent(PersistenceEvent<TValue> ev);
+
+        //public abstract ITask<ILazyResolveResult<TValue>> GetValue();
+
+        #region Value
+
+        public override TValue Value
+        {
+            [Blocking(Alternative = nameof(GetValue))]
+            get => ProtectedValue ?? GetValue().Result.Value;
+            [PublicOnly]
+            set
+            {
+                if (EqualityComparer<TValue>.Default.Equals(protectedValue, value)) return;
+                this.MutatePersistenceStateAndNotify(() => HandleUtils.OnUserChangedValue_ReadWrite(this, value));
+            }
+        }
+
+        public abstract PersistenceSnapshot<TValue> PersistenceState { get; }
+        public abstract object PersistenceLock { get; }
+
+        #endregion
+
+
     }
 
 #if OLD

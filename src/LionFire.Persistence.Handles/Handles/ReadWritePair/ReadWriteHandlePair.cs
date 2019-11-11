@@ -1,4 +1,5 @@
 ﻿using LionFire.Events;
+using LionFire.ExtensionMethods.Resolves;
 using LionFire.Persistence;
 using LionFire.Referencing;
 using LionFire.Resolves;
@@ -10,28 +11,79 @@ using System.Threading.Tasks;
 namespace LionFire.Persistence
 {
     public class ReadWriteHandlePairEx<TValue> : ReadWriteHandlePairBase<TValue>
-    // , IReadWriteHandlePairEx<T> TODO
-        where  TValue : class
+        // , IReadWriteHandlePairEx<T> TODO
+        where TValue : class
     {
     }
 
-    public class ReadWriteHandlePair<T> : ReadWriteHandlePairBase<T, IReadHandle<T>, IWriteHandle<T>>, IReadWriteHandlePair<T>, IWriteHandle<T>
+    public interface IHandlePersistenceProvider
     {
-        public bool HasValue => throw new NotImplementedException();
+        Task<IPutPersistenceResult> Put<TReference, TValue>(TReference reference, TValue value)
+            where TReference : IReference;
+        Task<IPutPersistenceResult> Create<TReference, TValue>(TReference reference, TValue value)
+            where TReference : IReference;
+        Task<IPutPersistenceResult> Delete<TReference, TValue>(TReference reference, TValue value)
+            where TReference : IReference;
+        Task<IPutPersistenceResult> Update<TReference, TValue>(TReference reference, TValue value)
+            where TReference : IReference;
+        Task<IPutPersistenceResult> Upsert<TReference, TValue>(TReference reference, TValue value)
+            where TReference : IReference;
+        Task<IPutPersistenceResult> Retrieve<TReference, TValue>(TReference reference, TValue value)
+    where TReference : IReference;
 
-        public T Value { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
+        //    Task<IPutPersistenceResult> List<TReference, TValue>(TReference reference, TValue value)
+        //        where TReference : IReference;
+        //    Task<IPutPersistenceResult> Add<TReference, TValue>(TReference reference, TValue value)
+        //where TReference : IReference;
 
-        public PersistenceFlags Flags => throw new NotImplementedException();
+        //    Task<IPutPersistenceResult> Remove<TReference, TValue>(TReference reference, TValue value)
+        //where TReference : IReference;
+    }
 
-        T IReadWrapper<T>.Value => throw new NotImplementedException();
+    public class NoopHandlePersistenceProvider : IHandlePersistenceProvider
+    {
+        public Task<IPutPersistenceResult> Create<TReference, TValue>(TReference reference, TValue value) where TReference : IReference => NoopPutPersistenceResult.Instance;
+        public Task<IPutPersistenceResult> Delete<TReference, TValue>(TReference reference, TValue value) where TReference : IReference => NoopPutPersistenceResult.Instance;;
+        public Task<IPutPersistenceResult> Put<TReference, TValue>(TReference reference, TValue value) where TReference : IReference => NoopPutPersistenceResult.Instance;;
+        public Task<IPutPersistenceResult> Retrieve<TReference, TValue>(TReference reference, TValue value) where TReference : IReference => NoopPutPersistenceResult.Instance;;
+        public Task<IPutPersistenceResult> Update<TReference, TValue>(TReference reference, TValue value) where TReference : IReference => NoopPutPersistenceResult.Instance;;
+        public Task<IPutPersistenceResult> Upsert<TReference, TValue>(TReference reference, TValue value) where TReference : IReference => NoopPutPersistenceResult.Instance;;
+    }
 
-        T IWriteWrapper<T>.Value { set => throw new NotImplementedException(); }
+    // This gets back to OBus / OBase.
+    // Question: Previously, handles had a reference to the OBase that created the handle.  I think that can be a good idea, perhaps optionally
+    public abstract class HandlePersistenceProviderBase : IHandlePersistenceProvider
+    {
 
-        public Task<bool> Delete() => throw new NotImplementedException();
-        public void DiscardValue() => throw new NotImplementedException();
-        public void MarkDeleted() => throw new NotImplementedException();
-        public Task<IPutResult> Put() => throw new NotImplementedException();
-        public Task<IPutResult> Put(T value) => throw new NotImplementedException();
+    }
+
+    public class NoopReadWriteHandlePair<TValue> : ReadWriteHandlePair<TValue>
+    {
+        public override Task<bool?> Delete() => throw new NotImplementedException();
+        public override Task<IPutResult> Put() => throw new NotImplementedException();
+        public override Task<IPutResult> Put(TValue value) => throw new NotImplementedException();
+    }
+
+    public abstract class ReadWriteHandlePair<TValue>
+        : ReadWriteHandlePairBase<TValue, IReadHandle<TValue>, IWriteHandle<TValue>>
+        , IReadWriteHandlePair<TValue>
+        , IWriteHandle<TValue>
+        where TValue : class
+    {
+
+        public abstract TValue Value { get; set; }
+        public abstract bool HasValue { get; }
+        public abstract PersistenceFlags Flags { get; }
+
+        TValue IReadWrapper<TValue>.Value => throw new NotImplementedException();
+
+        TValue IWriteWrapper<TValue>.Value { set => throw new NotImplementedException(); }
+
+        public abstract Task<bool?> Delete();
+        public abstract void DiscardValue();
+        public abstract void MarkDeleted();
+        public abstract Task<IPutResult> Put();
+        public abstract Task<IPutResult> Put(TValue value);
     }
 
     /// <summary>
@@ -43,7 +95,7 @@ namespace LionFire.Persistence
         , IWrapper<TValue>
         , IReadWrapper<TValue>
         , IWriteWrapper<TValue>
-        where TValue : class
+    //where TValue : class
     {
 
         #region ReadHandle
@@ -78,7 +130,7 @@ namespace LionFire.Persistence
             }
         }
 
-        public async Task<IResolveResult<TValue>> GetReadValue() => await ReadHandle.GetValue().ConfigureAwait(false);
+        public async Task<IResolveResult<TValue>> GetReadValue() => await ReadHandle.GetValue().ConfigureAwait(false); // REVIEW - consider a ILazilyResolves<T> so we can use ILazilyResolves<T>.GetValue instead of the IDefaultableReadWrapper extension method 
 
 
         #endregion
@@ -138,7 +190,7 @@ namespace LionFire.Persistence
 
         public PersistenceFlags Flags => ReadHandle.Flags | WriteHandle.Flags; // TODO: Mask each state with read/write masks before combining them?
 
-        public bool HasValue => readHandle?.Value || writeHandle?.HasValue;
+        public bool HasValue => (readHandle?.HasValue == true) || (writeHandle?.HasValue == true);
 
         public TValue Value { get => ReadHandle.Value; set => WriteHandle.Value = value; }
 

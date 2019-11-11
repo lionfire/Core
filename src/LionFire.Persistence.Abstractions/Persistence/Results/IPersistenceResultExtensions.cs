@@ -6,7 +6,7 @@
 
         public static bool IsRetrieved(this IPersistenceResult result) => result.Flags.HasFlag(PersistenceResultFlags.Retrieved);
 
-        public static bool IsFound(this IPersistenceResult result) => result.Flags.HasFlag(PersistenceResultFlags.Found);
+        public static bool? IsFound(this IPersistenceResult result) => result.Flags.IsFound();
         public static bool IsSuccess(this IPersistenceResult result) => result.Flags.HasFlag(PersistenceResultFlags.Success);
         public static bool IsPreviewSuccess(this IPersistenceResult result) => result.Flags.HasFlag(PersistenceResultFlags.PreviewSuccess);
 

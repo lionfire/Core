@@ -1,8 +1,9 @@
-﻿using System.Threading.Tasks;
+﻿#if false // Deferring to ILazilyResolvesFallbackExtensions
+using System.Threading.Tasks;
 using LionFire.Resolves;
 using LionFire.Results;
 
-namespace LionFire.Persistence
+namespace LionFire.Persistence // Put in LionFire.ExtensionMethods.Persistence namespace?
 {
     public static class IUpcastingReadHandleExtensions
     {
@@ -48,3 +49,4 @@ namespace LionFire.Persistence
         }
     }
 }
+#endif

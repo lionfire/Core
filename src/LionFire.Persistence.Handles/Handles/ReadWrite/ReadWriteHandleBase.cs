@@ -11,8 +11,8 @@ namespace LionFire.Persistence.Handles
 {
     // REVIEW: Can/should I use ReadHandleBase, or a separate class?  I could write it from scratch and merge if it is the same
 
-    public abstract class ReadWriteHandleBase<TValue> : WriteHandleBase<IReference, TValue>, IReadWriteHandleBase<TValue>
-        where TValue : class
+    public abstract class ReadWriteHandleBase<TValue> : WriteHandleBase<IReference, TValue>, IReadWriteHandleBase<TValue>, IHandleInternal<TValue>
+    //where TValue : class
     {
 
         #region Value
@@ -26,9 +26,11 @@ namespace LionFire.Persistence.Handles
             {
                 if (System.Collections.Generic.Comparer<TValue>.Default.Compare(protectedValue, value) == 0) return; // Should use Equality instead of Compare?
                 //if (value == ProtectedValue) return;
-                this.MutatePersistenceState(() => HandleUtils.OnUserChangedValue_ReadWrite(this, value));
+                HandleUtils.OnUserChangedValue_ReadWrite(this, value);
             }
         }
+        TValue IHandleInternal<TValue>.ProtectedValue { get => ProtectedValue; set => ProtectedValue = value; }
+        PersistenceFlags IHandleInternal<TValue>.Flags { set => Flags = value; }
 
         #endregion
 
@@ -42,9 +44,12 @@ namespace LionFire.Persistence.Handles
             var getResult = await GetValue().ConfigureAwait(false);
             if (getResult.HasValue) return getResult.Value;
 
-            TrySetProtectedValueIfDefault(InstantiateDefault());
+            //TrySetProtectedValueIfDefault(InstantiateDefault());
+            //ProtectedValue = InstantiateDefault();
+            var newValue = InstantiateDefault();
+            this.OnUserChangedValue_Write(newValue);
 
-            return Value;
+            return newValue;
 
             // Consider .NET's LazyInitializer
             //lock (objectLock)

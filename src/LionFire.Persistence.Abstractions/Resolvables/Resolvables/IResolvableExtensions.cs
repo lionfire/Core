@@ -6,13 +6,14 @@ namespace LionFire.Resolvables
 {
     public static class IResolvableExtensions
     {
+#if UNUSED // Useful?  Users of handles won't be using this 
         public static Func<object, bool?> DefaultHasValueResolver = o =>
         {
             if (o is ILazilyResolves rex)
             {
                 return rex.HasValue;
             }
-            if (o is IWrapper w)
+            if (o is IDefaultable w)
             {
                 return w.HasValue;
             }
@@ -22,6 +23,7 @@ namespace LionFire.Resolvables
         public static Func<object, bool?> HasValueResolver = DefaultHasValueResolver;
 
         public static bool HasValue(this IResolvable resolvable) => HasValueResolver(resolvable) == true;
+#endif
 
         /// <summary>
         /// Always returns false  for IResolvable, unless the object is also IAsyncResolvable in which case the answer is deferred to IsResolutionExpensive(this IAsyncResolvable).

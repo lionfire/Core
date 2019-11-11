@@ -20,10 +20,12 @@
 
     public interface INotifyingReadWriteHandle<T> : IReadWriteHandleBase<T>, INotifyPersists<T>
         //, INotifyChanged<T>
+        //where T : class
     {
     }
 
     public interface INotifyingReadWriteHandleEx<T> : IReadHandle<T>, INotifyingReadWriteHandle<T>
+        //where T : class
     {
     }
 

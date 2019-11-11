@@ -1,4 +1,5 @@
-﻿using LionFire.Persistence;
+﻿using LionFire.ExtensionMethods.Resolves;
+using LionFire.Persistence;
 using LionFire.Persistence.Handles;
 using LionFire.Referencing;
 using LionFire.Resolves;
@@ -23,8 +24,9 @@ namespace LionFire.Persistence
     public class ReadWriteHandlePairBase<TValue, TReadHandle, TWriteHandle> : DisposableKeyed<IReference>
         , IResolveCommitPair<TValue>
         , IReadWriteHandlePairBase<TValue, TReadHandle, TWriteHandle>
-        where TReadHandle : IReadHandleBase<TValue>
-        where TWriteHandle : IWriteHandleBase<TValue>
+        where TReadHandle : class, IReadHandleBase<TValue>
+        where TWriteHandle : class, IWriteHandleBase<TValue>
+        //where TValue : class
     {
 
         #region Reference
@@ -89,7 +91,7 @@ namespace LionFire.Persistence
                 {
                     if (Reference != null)
                     {
-                        writeHandle = Reference.GetWriteHandle<TValue>();
+                        writeHandle = (TWriteHandle) Reference.GetWriteHandle<TValue>(); // CAST
                     }
                 }
                 return writeHandle;
@@ -177,7 +179,7 @@ namespace LionFire.Persistence
         public (TValue clonedValue, bool clonedSomething) CloneQueryReadHandleValueToWriteHandleValue(bool propagateNoValue = false)
             => _CloneGetOrQueryReadHandleValueToWriteHandleValue2(!HasReadHandle ? null : ReadHandle.QueryValue(), propagateNoValue);
 
-        private (TValue clonedValue, bool clonedSomething) _CloneGetOrQueryReadHandleValueToWriteHandleValue2(ILazyResolveResult<TValue> getOrQueryResult, bool propagateNoValue)
+        private (TValue clonedValue, bool clonedSomething) _CloneGetOrQueryReadHandleValueToWriteHandleValue2(IResolveResult<TValue> getOrQueryResult, bool propagateNoValue)
         {
             if (getOrQueryResult != null && getOrQueryResult.HasValue)
             {

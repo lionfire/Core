@@ -10,8 +10,8 @@ namespace LionFire.Persistence
         /// Returns false if delete was attempted but it is known that nothing was deleted.
         /// Returns null if unknown whether something was deleted.
         /// </summary>
-        /// <returns></returns>
-        Task<bool> Delete();
+        /// <returns>True if something was deleted, false if nothing was found to delete, null if it was not possible to immediately determine whether something was deleted.</returns>
+        Task<bool?> Delete();
 
         void MarkDeleted();
 

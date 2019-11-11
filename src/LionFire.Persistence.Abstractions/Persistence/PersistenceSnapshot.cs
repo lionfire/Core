@@ -1,4 +1,6 @@
-﻿namespace LionFire.Persistence
+﻿using System.Collections.Generic;
+
+namespace LionFire.Persistence
 {
     public struct PersistenceSnapshot : IPersistenceSnapshot<object>
     {
@@ -15,13 +17,14 @@
     }
 
     public struct PersistenceSnapshot<TValue> : IPersistenceSnapshot<TValue>
-        where TValue : class // REVIEW
+        //where TValue : class // REVIEW
     {
         public PersistenceSnapshot(PersistenceFlags flags, TValue value, bool? hasValue)
         {
             Flags = flags;
             Value = value;
-            HasValue = hasValue ?? value != default;
+            //HasValue = hasValue ?? value != default;
+            HasValue = hasValue ?? !EqualityComparer<TValue>.Default.Equals(value, default);
         }
 
         public PersistenceFlags Flags { get; set; }

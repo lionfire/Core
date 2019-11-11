@@ -119,7 +119,7 @@ namespace LionFire.ObjectBus
         public virtual async Task<(bool exists, IPersistenceResult result)> Exists(TReference reference)
         {
             var result = (await TryGet(reference));
-            return (result.IsFound(), result);
+            return (result.Flags.HasFlag(PersistenceResultFlags.Found), result);
         }
 
         public Task<(bool exists, IPersistenceResult result)> Exists(IReference reference)

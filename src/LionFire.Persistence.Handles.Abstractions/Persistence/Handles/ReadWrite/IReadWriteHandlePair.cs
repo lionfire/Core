@@ -19,20 +19,6 @@ namespace LionFire.Persistence
 
     public interface IReadWriteHandlePairBase<T> : IReadWriteHandlePairBase<T, IReadHandleBase<T>, IWriteHandleBase<T>>
     {
-    }
-
-    
-    public interface IReadWriteHandlePair<T> : IReadWriteHandlePairBase<T, IReadHandle<T>, IWriteHandle<T>>
-    {
-
-        //new IReadHandle<T> ReadHandle { get; }
-        //new IWriteHandle<T> WriteHandle { get; }
-
-        ///// <summary> // REVIEW - should this be a get property?
-        ///// If true, when the WriteHandle.Value is requested, it will attempt to initialize it with a clone of the ReadHandle.Value as a starting point.
-        ///// </summary>
-        //bool GetWriteValueFromReadHandle { get; }
-
         #region Changes
 
         bool HasChanges { get; }
@@ -57,6 +43,22 @@ namespace LionFire.Persistence
         (T clonedValue, bool clonedSomething) CloneQueryReadHandleValueToWriteHandleValue(bool propagateNoValue = false);
 
         Task<(T value, bool gotValue)> GetWriteValue(bool allowRetrieve = true, bool createIfMissing = true, Func<IReference, T> factory = null);
+    }
+
+
+    public interface IReadWriteHandlePair<T> : IReadWriteHandlePairBase<T, IReadHandle<T>, IWriteHandle<T>>
+    {
+
+        //new IReadHandle<T> ReadHandle { get; }
+        //new IWriteHandle<T> WriteHandle { get; }
+
+        ///// <summary> // REVIEW - should this be a get property?
+        ///// If true, when the WriteHandle.Value is requested, it will attempt to initialize it with a clone of the ReadHandle.Value as a starting point.
+        ///// </summary>
+        //bool GetWriteValueFromReadHandle { get; }
+        
+
+        
     }
 }
 

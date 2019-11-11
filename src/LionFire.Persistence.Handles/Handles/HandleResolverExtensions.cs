@@ -1,4 +1,5 @@
 ﻿using LionFire.Persistence;
+using LionFire.Resolves;
 using LionFire.Threading;
 using System;
 using System.Collections.Generic;
@@ -23,11 +24,11 @@ namespace LionFire.Referencing
             var replacements = new List<object>();
             var removals = new List<object>();
 
-            await Task.WhenAll(collection.OfType<IReadHandleBase<object>>().Select(async rh => await rh.GetValue().ConfigureAwait(false))).ConfigureAwait(false);
+            await Task.WhenAll(collection.OfType<ILazilyResolves<object>>().Select(async rh => await rh.GetValue().ConfigureAwait(false))).ConfigureAwait(false);
 
-            foreach (var component in collection.OfType<IReadHandleBase<object>>().ToArray())
+            foreach (var component in collection.OfType<ILazilyResolves<object>>().ToArray())
             {
-                if (component.Value == null) throw new ObjectNotFoundException(component);
+                if (component.Value == null) throw new ReferencedValueNotFoundException(component as IReferencable);
                 try
                 {
                     collection.Remove(component);

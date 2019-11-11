@@ -9,9 +9,9 @@ using Microsoft.AspNetCore.HttpsPolicy;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using LionFire.Vos.Blazor.Host.Data;
+using LionFire.Vos.Blazor.Data;
 
-namespace LionFire.Vos.Blazor.Host
+namespace LionFire.Vos.Blazor
 {
     public class Startup
     {

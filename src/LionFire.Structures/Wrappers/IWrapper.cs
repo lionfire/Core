@@ -1,10 +1,14 @@
-﻿namespace LionFire.Structures
+﻿using System;
+
+namespace LionFire.Structures
 {
-    /// <summary>
-    /// Typically combined with IReadWrapper
-    /// </summary>
-    public interface IWrapper
+    public interface IWrapper<T> : IReadWrapper<T>, IWriteWrapper<T>
     {
-        bool HasValue { get; }
+        new T Value { get; set; }
     }
+
+    //public interface INotifyingWrapper<out T>
+    //{
+    //    event Action<INotifyingWrapper<T>, T /*oldValue*/ , T /*newValue*/> ValueChanged;
+    //}
 }

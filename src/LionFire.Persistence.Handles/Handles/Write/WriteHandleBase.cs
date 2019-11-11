@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using LionFire.Activation;
@@ -10,14 +11,18 @@ using LionFire.Threading;
 
 namespace LionFire.Persistence.Handles
 {
-    public abstract class WriteHandleBase<TReference, TValue> : DisposableKeyed<TReference>, IWriteHandleBase<TValue>, IWrapper<TValue>, INotifyPersists<TValue>, IHandleInternal<TValue>
+    public abstract class WriteHandleBase<TReference, TValue>
+        : DisposableKeyed<TReference>
+        , IWriteHandleBase<TValue>
+        , IWrapper<TValue>
+        , IHandleInternal<TValue>
+        , IDeletable
         where TReference : class, IReference
-        where TValue : class
+        //where TValue : class
     {
         public IReference Reference => Key;
 
         private readonly object persistenceLock = new object();
-        object IHandleInternal<TValue>.persistenceLock => persistenceLock;
 
         #region Value
 
@@ -28,9 +33,9 @@ namespace LionFire.Persistence.Handles
             [PublicOnly]
             set
             {
-                if (System.Collections.Generic.Comparer<TValue>.Default.Compare(protectedValue, value) == 0) return; // Should use Equality instead of Compare?
+                if (EqualityComparer<TValue>.Default.Equals(protectedValue, value)) return; // Should use Equality instead of Compare?
                 //if (value == ProtectedValue) return;
-                this.MutatePersistenceState(() => HandleUtils.OnUserChangedValue_Write(this, value));
+                HandleUtils.OnUserChangedValue_Write(this, value);
             }
         }
 
@@ -69,9 +74,6 @@ namespace LionFire.Persistence.Handles
 
         #endregion
 
-        public event Action<PersistenceEvent<TValue>> PersistenceStateChanged;
-        void IHandleInternal<TValue>.RaisePersistenceStateChanged(PersistenceEvent<TValue> ev) => PersistenceStateChanged?.Invoke(ev);
-
         #endregion
 
         #region GetValue
@@ -108,22 +110,7 @@ namespace LionFire.Persistence.Handles
         #endregion
 
         public PersistenceFlags Flags { get; protected set; }
-        PersistenceFlags IHandleInternal<TValue>.Flags { get => Flags; set => Flags = value; }
-
-        //protected void DoPersistence(Action action)
-        //{
-        //    var oldValue = protectedValue;
-        //    action();
-        //    var newValue = Value;
-        //    var newHasValue = HasValue;
-
-        //    if (System.Collections.Generic.Comparer<TValue>.Default.Compare(protectedValue, value) != 0)
-        //    {
-        //        OnValue
-        //    }
-
-        //    return newValue;
-        //}
+        PersistenceFlags IHandleInternal<TValue>.Flags { set => Flags = value; }
 
         public void DiscardValue()
         {
@@ -135,11 +122,30 @@ namespace LionFire.Persistence.Handles
                 );
             throw new System.NotImplementedException();
         }
-        public Task<IPutResult> Put()
+        public virtual Task<IPutPersistenceResult> Put()
         {
-            throw new System.NotImplementedException();
+            if (Flags.HasFlag(PersistenceFlags.OutgoingUpdatePending))
+            {
+                return UpdateImpl();
+            }
+            else
+            if (Flags.HasFlag(PersistenceFlags.OutgoingUpsertPending))
+            {
+                return UpsertImpl();
+            }
+            else if (Flags.HasFlag(PersistenceFlags.OutgoingCreatePending))
+            {
+                return CreateImpl();
+            }
+            else if (Flags.HasFlag(PersistenceFlags.OutgoingDeletePending))
+            {
+                return DeleteImpl();
+            }
+            else
+            {
+                return Task.FromResult<IPutPersistenceResult>(NoopPutPersistenceResult.Instance);
+            }
         }
-
 
         #region Instantiation  - REVIEW for threadsafety and whether these belong here
 
@@ -150,16 +156,33 @@ namespace LionFire.Persistence.Handles
 
         public ITypedReference TypedReference => Reference as ITypedReference; // REVIEW - does this belong here?  If this is non-null, it is queried when creating the Value on demand.  Maybe it belongs in the ReadWriteHandle.  // MOVE to ReadWriteHandle(?)
 
+        //protected void DoPersistence(Action action)
+        //{
+        //    var oldValue = protectedValue;
+        //    action();
+        //    var newValue = Value;
+        //    var newHasValue = HasValue;
+
+        //    //if (System.Collections.Generic.Comparer<TValue>.Default.Compare(protectedValue, value) != 0)
+        //    //{
+        //    //    OnValue
+        //    //}
+        //    throw new NotImplementedException("Review logic of this, see if anything missing");
+
+        //    //return newValue;
+        //}
+
+        //protected void TrySetProtectedValueIfDefault(TValue value)
+        //{
+        //    if (EqualityComparer<TValue>.Default.Equals(value))
 
 
-        protected void TrySetProtectedValueIfDefault(TValue value)
-        {
-            DoPersistence(() => Interlocked.CompareExchange<TValue>(ref protectedValue, value, default));
-            //var oldValue = protectedValue;
-            //var newValue = Interlocked.CompareExchange<T>(ref protectedValue, value, default);
-            //OnValueChanged(newValue, oldValue);
-            //return newValue;
-        }
+        //    DoPersistence(() => Interlocked.CompareExchange<TValue>(ref protectedValue, value, default));
+        //    //var oldValue = protectedValue;
+        //    //var newValue = Interlocked.CompareExchange<T>(ref protectedValue, value, default);
+        //    //OnValueChanged(newValue, oldValue);
+        //    //return newValue;
+        //}
         //protected T TrySetProtectedValueIfDefault<T>(T value) where T : class, T => Interlocked.CompareExchange<T>(ref protectedValue, value, default);
 
         // No persistence, just instantiating an ObjectType
@@ -217,8 +240,40 @@ namespace LionFire.Persistence.Handles
 
         #endregion
 
-        public Task<bool> Delete() => throw new NotImplementedException();
-        public void MarkDeleted() => throw new NotImplementedException();
-        public Task<IPutResult> Put(TValue value) => throw new NotImplementedException();
+        public async Task<bool> CommitDelete() => (await DeleteImpl().ConfigureAwait(false)).IsFound();
+
+        public virtual void MarkDeleted() => this.OnUserChangedValue_Write(default);
+
+        #region Abstract Methods
+
+        public abstract Task<IPutPersistenceResult> UpsertImpl();
+
+        /// <summary>
+        /// Default implementation is to defer to UpsertImpl, which should set the value to the default value.  Override this for stores that have a dedicated delete API.
+        /// </summary>
+        public virtual Task<IPutPersistenceResult> DeleteImpl() => UpsertImpl();
+
+        /// <summary>
+        /// Default implementation is to defer to UpsertImpl.
+        /// </summary>
+        public virtual Task<IPutPersistenceResult> CreateImpl() => UpsertImpl();
+
+        /// <summary>
+        /// Default implementation is to defer to UpsertImpl.
+        /// </summary>
+        public virtual Task<IPutPersistenceResult> UpdateImpl() => UpsertImpl();
+
+        #endregion
+
+        #region Primitive Interface Implementations
+
+        async Task<bool?> IDeletable.Delete()
+        {
+            MarkDeleted();
+            var putResult = await Put();
+            return putResult.Flags.IsFound();
+        }
+
+        #endregion
     }
 }

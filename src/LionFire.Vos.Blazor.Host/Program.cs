@@ -9,7 +9,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 
-namespace LionFire.Vos.Blazor.Host
+namespace LionFire.Vos.Blazor
 {
     public class Program
     {

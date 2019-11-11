@@ -10,21 +10,22 @@ namespace LionFire.Persistence
     //{
     //}
 
-    public struct PersistenceEvent<T> : ISenderValueChanged<INotifyPersists<T>, IPersistenceSnapshot<T>>
+    public struct PersistenceEvent<TValue> : ISenderValueChanged<INotifyPersists<TValue>, IPersistenceSnapshot<TValue>>
     //: IPersistenceChangeEvent<T>
+        //where TValue : class
     {
-        public INotifyPersists<T> Sender { get; set; }
+        public INotifyPersists<TValue> Sender { get; set; }
 
         //public PersistenceEventKind Kind { get; set; }
 
-        public IPersistenceSnapshot<T> New { get; set; }
-        IPersistenceSnapshot<T> IValueChanged<IPersistenceSnapshot<T>>.New => New;
-        public IPersistenceSnapshot<T> Old { get; set; }
-        IPersistenceSnapshot<T> IValueChanged<IPersistenceSnapshot<T>>.Old => Old;
+        public IPersistenceSnapshot<TValue> New { get; set; }
+        IPersistenceSnapshot<TValue> IValueChanged<IPersistenceSnapshot<TValue>>.New => New;
+        public IPersistenceSnapshot<TValue> Old { get; set; }
+        IPersistenceSnapshot<TValue> IValueChanged<IPersistenceSnapshot<TValue>>.Old => Old;
 
-        public T NewValue => New.Value;
-        public T OldValue => Old.Value;
-        public bool ValueChanged => EqualityComparer<T>.Default.Equals(NewValue, OldValue);
+        public TValue NewValue => New.Value;
+        public TValue OldValue => Old.Value;
+        public bool ValueChanged => EqualityComparer<TValue>.Default.Equals(NewValue, OldValue);
 
         public PersistenceFlags NewFlags => New.Flags;
         public PersistenceFlags OldFlags => Old.Flags;

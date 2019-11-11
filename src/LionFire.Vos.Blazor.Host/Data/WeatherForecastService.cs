@@ -2,7 +2,7 @@ using System;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace LionFire.Vos.Blazor.Host.Data
+namespace LionFire.Vos.Blazor.Data
 {
     public class WeatherForecastService
     {

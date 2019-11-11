@@ -1,4 +1,7 @@
-﻿using System;
+﻿#nullable enable
+using System;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace LionFire.Persistence.Handles
 {
@@ -19,79 +22,100 @@ namespace LionFire.Persistence.Handles
 
     internal static class HandleUtils
     {
-        internal static void OnUserChangedValue_ReadWrite<TValue>(IHandleInternal<TValue> h, TValue newValue)
+        #region MutatePersistenceStateAndNotify
+
+        internal static async Task<PersistenceEvent<TValue>?> MutatePersistenceStateAndNotify<TValue>(this INotifyingHandleInternal<TValue> h, Func<Task> action)
         {
-            MutatePersistenceState(h, () =>
+            IPersists p = h;
+            lock (h.PersistenceLock)
             {
-                var newFlags = h.Flags;
+                var oldValue = h.ProtectedValue;
+                var oldHasValue = h.HasValue;
+                var oldFlags = p.Flags;
 
-                // REVIEW these flags.  TODO: Add a strict mode for Create/Update/Upsert, and also etags for strict update of etag
+                await action();
 
-                if (newValue == default)
+                if (
+                    oldFlags != p.Flags
+                    || oldHasValue != h.HasValue
+                    || !EqualityComparer<TValue>.Default.Equals(oldValue, h.ProtectedValue)
+                   )
                 {
-                    newFlags |= PersistenceFlags.OutgoingDeletePending;
-                    newFlags &= ~(PersistenceFlags.OutgoingUpsertPending | PersistenceFlags.OutgoingCreatePending | PersistenceFlags.OutgoingUpdatePending);
+                    var ev = new PersistenceEvent<TValue>
+                    {
+                        New = new PersistenceSnapshot<TValue>(p.Flags, h.ProtectedValue, h.HasValue),
+                        Old = new PersistenceSnapshot<TValue>(oldFlags, oldValue, oldHasValue),
+                        Sender = h,
+                    };
+
+                    h.RaisePersistenceEvent(ev);
+                    return ev;
                 }
                 else
                 {
-                    if (newFlags.HasFlag(PersistenceFlags.NotFound))
-                    {
-                        newFlags |= PersistenceFlags.OutgoingCreatePending;
-                        newFlags &= ~(PersistenceFlags.OutgoingDeletePending | PersistenceFlags.OutgoingUpdatePending | PersistenceFlags.OutgoingUpsertPending);
-                    }
-                    else if (newFlags.HasFlag(PersistenceFlags.Found))
-                    {
-                        newFlags |= PersistenceFlags.OutgoingUpdatePending;
-                        newFlags &= ~(PersistenceFlags.OutgoingDeletePending | PersistenceFlags.OutgoingCreatePending | PersistenceFlags.OutgoingUpsertPending);
-                    }
-                    else
-                    {
-                        newFlags |= PersistenceFlags.OutgoingUpsertPending;
-                        newFlags &= ~(PersistenceFlags.OutgoingDeletePending | PersistenceFlags.OutgoingCreatePending | PersistenceFlags.OutgoingUpdatePending);
-                    }
+                    return default;
                 }
-
-                h.ProtectedValue = newValue;
-            });
+            }
         }
 
-        internal static void OnUserChangedValue_Write<TValue>(IHandleInternal<TValue> h, TValue newValue)
-        {
-            MutatePersistenceState(h, () =>
-            {
-                var newFlags = h.Flags;
+        #endregion
 
-                if (newValue == default)
+        internal static void OnUserChangedValue_ReadWrite<TValue>(this IHandleInternal<TValue> h, TValue newValue)
+        {
+            IHandleInternal<TValue> hi = h;
+            IPersists p = h;
+            var newFlags = p.Flags;
+
+            // REVIEW these flags.  TODO: Add a strict mode for Create/Update/Upsert, and also etags for strict update of etag
+
+            if (newValue == default)
+            {
+                newFlags |= PersistenceFlags.OutgoingDeletePending;
+                newFlags &= ~(PersistenceFlags.OutgoingUpsertPending | PersistenceFlags.OutgoingCreatePending | PersistenceFlags.OutgoingUpdatePending);
+            }
+            else
+            {
+                if (newFlags.HasFlag(PersistenceFlags.NotFound))
                 {
-                    newFlags |= PersistenceFlags.OutgoingDeletePending;
-                    newFlags &= ~(PersistenceFlags.OutgoingUpsertPending | PersistenceFlags.OutgoingCreatePending | PersistenceFlags.OutgoingUpdatePending);
+                    newFlags |= PersistenceFlags.OutgoingCreatePending;
+                    newFlags &= ~(PersistenceFlags.OutgoingDeletePending | PersistenceFlags.OutgoingUpdatePending | PersistenceFlags.OutgoingUpsertPending);
+                }
+                else if (newFlags.HasFlag(PersistenceFlags.Found))
+                {
+                    newFlags |= PersistenceFlags.OutgoingUpdatePending;
+                    newFlags &= ~(PersistenceFlags.OutgoingDeletePending | PersistenceFlags.OutgoingCreatePending | PersistenceFlags.OutgoingUpsertPending);
                 }
                 else
                 {
                     newFlags |= PersistenceFlags.OutgoingUpsertPending;
                     newFlags &= ~(PersistenceFlags.OutgoingDeletePending | PersistenceFlags.OutgoingCreatePending | PersistenceFlags.OutgoingUpdatePending);
                 }
-
-                h.ProtectedValue = newValue;
-            });
-        }
-        internal static PersistenceEvent<TValue> MutatePersistenceState<TValue>(this IHandleInternal<TValue> h, Action action)
-        {
-            lock (h.persistenceLock)
-            {
-                var oldValue = h.ProtectedValue;
-                var oldHasValue = h.HasValue;
-                var oldFlags = h.Flags;
-
-                action();
-
-                return new PersistenceEvent<TValue>
-                {
-                    New = new PersistenceSnapshot<TValue>(h.Flags, h.ProtectedValue, h.HasValue),
-                    Old = new PersistenceSnapshot<TValue>(oldFlags, oldValue, oldHasValue),
-                    Sender = h,
-                };
             }
+
+            h.ProtectedValue = newValue;
+            hi.Flags = newFlags;
+        }
+
+        internal static void OnUserChangedValue_Write<TValue>(this IHandleInternal<TValue> h, TValue newValue)
+        {
+            IPersists p = h;
+            IHandleInternal<TValue> hi = h;
+
+            var newFlags = p.Flags;
+
+            if (newValue == default)
+            {
+                newFlags |= PersistenceFlags.OutgoingDeletePending;
+                newFlags &= ~(PersistenceFlags.OutgoingUpsertPending | PersistenceFlags.OutgoingCreatePending | PersistenceFlags.OutgoingUpdatePending);
+            }
+            else
+            {
+                newFlags |= PersistenceFlags.OutgoingUpsertPending;
+                newFlags &= ~(PersistenceFlags.OutgoingDeletePending | PersistenceFlags.OutgoingCreatePending | PersistenceFlags.OutgoingUpdatePending);
+            }
+
+            h.ProtectedValue = newValue;
+            hi.Flags = newFlags;
         }
     }
 }

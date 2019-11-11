@@ -4,14 +4,13 @@ using System.Threading.Tasks;
 
 namespace LionFire.Resolves
 {
-    public interface ILazilyResolves<out T> : ILazilyResolves, IReadWrapper<T>
+    public interface ILazilyResolves<out T> : ILazilyResolves, IDefaultableReadWrapper<T>
     {
         ITask<ILazyResolveResult<T>> GetValue();
 
         ILazyResolveResult<T> QueryValue();
     }
 
-    
 
 #if UNUSED
 
