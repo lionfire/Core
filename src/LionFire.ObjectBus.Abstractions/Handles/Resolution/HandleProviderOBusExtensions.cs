@@ -2,7 +2,7 @@
 
 using System;
 using System.Collections.Generic;
-using LionFire.DependencyInjection;
+using LionFire.Dependencies;
 using LionFire.Referencing;
 
 namespace LionFire.ObjectBus

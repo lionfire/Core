@@ -4,6 +4,8 @@ using LionFire.ObjectBus;
 using LionFire.Persistence;
 using LionFire.Persistence.Handles;
 using LionFire.Referencing;
+using LionFire.Resolves;
+using MorseCode.ITask;
 
 namespace LionFire.ObjectBus.Handles
 {
@@ -14,7 +16,7 @@ namespace LionFire.ObjectBus.Handles
     /// Handles can act as gatekeeper logic
     /// </remarks>
     /// <typeparam name="T"></typeparam>
-    public class OBaseReadHandle<T> : ReadHandle<T>
+    public class OBaseReadHandle<T> : ReadHandle<T> // TODO: Inherit from or replace with PersisterReadHandle
     {
         public IOBase OBase { get; }
 
@@ -23,7 +25,7 @@ namespace LionFire.ObjectBus.Handles
             this.OBase = obase ?? throw new ArgumentNullException(nameof(obase));
         }
 
-        public override async Task<IRetrieveResult<T>> RetrieveImpl()
+        protected override async ITask<IResolveResult<T>> ResolveImpl()
             => await OBase.Get<T>(this.Reference).ConfigureAwait(false);
     }
 

@@ -3,6 +3,7 @@ using LionFire.ExtensionMethods.Resolves;
 using LionFire.Persistence;
 using LionFire.Referencing;
 using LionFire.Resolves;
+using LionFire.Results;
 using LionFire.Structures;
 using MorseCode.ITask;
 using System;
@@ -16,59 +17,33 @@ namespace LionFire.Persistence
     {
     }
 
-    public interface IHandlePersistenceProvider
-    {
-        Task<IPutPersistenceResult> Put<TReference, TValue>(TReference reference, TValue value)
-            where TReference : IReference;
-        Task<IPutPersistenceResult> Create<TReference, TValue>(TReference reference, TValue value)
-            where TReference : IReference;
-        Task<IPutPersistenceResult> Delete<TReference, TValue>(TReference reference, TValue value)
-            where TReference : IReference;
-        Task<IPutPersistenceResult> Update<TReference, TValue>(TReference reference, TValue value)
-            where TReference : IReference;
-        Task<IPutPersistenceResult> Upsert<TReference, TValue>(TReference reference, TValue value)
-            where TReference : IReference;
-        Task<IPutPersistenceResult> Retrieve<TReference, TValue>(TReference reference, TValue value)
-    where TReference : IReference;
+    //// This gets back to OBus / OBase.
+    //// Question: Previously, handles had a reference to the OBase that created the handle.  I think that can be a good idea, perhaps optionally
+    //public abstract class HandlePersistenceProviderBase : IHandlePersistenceProvider
+    //{
 
-        //    Task<IPutPersistenceResult> List<TReference, TValue>(TReference reference, TValue value)
-        //        where TReference : IReference;
-        //    Task<IPutPersistenceResult> Add<TReference, TValue>(TReference reference, TValue value)
-        //where TReference : IReference;
-
-        //    Task<IPutPersistenceResult> Remove<TReference, TValue>(TReference reference, TValue value)
-        //where TReference : IReference;
-    }
-
-    public class NoopHandlePersistenceProvider : IHandlePersistenceProvider
-    {
-        public Task<IPutPersistenceResult> Create<TReference, TValue>(TReference reference, TValue value) where TReference : IReference => NoopPutPersistenceResult.Instance;
-        public Task<IPutPersistenceResult> Delete<TReference, TValue>(TReference reference, TValue value) where TReference : IReference => NoopPutPersistenceResult.Instance;;
-        public Task<IPutPersistenceResult> Put<TReference, TValue>(TReference reference, TValue value) where TReference : IReference => NoopPutPersistenceResult.Instance;;
-        public Task<IPutPersistenceResult> Retrieve<TReference, TValue>(TReference reference, TValue value) where TReference : IReference => NoopPutPersistenceResult.Instance;;
-        public Task<IPutPersistenceResult> Update<TReference, TValue>(TReference reference, TValue value) where TReference : IReference => NoopPutPersistenceResult.Instance;;
-        public Task<IPutPersistenceResult> Upsert<TReference, TValue>(TReference reference, TValue value) where TReference : IReference => NoopPutPersistenceResult.Instance;;
-    }
-
-    // This gets back to OBus / OBase.
-    // Question: Previously, handles had a reference to the OBase that created the handle.  I think that can be a good idea, perhaps optionally
-    public abstract class HandlePersistenceProviderBase : IHandlePersistenceProvider
-    {
-
-    }
+    //}
 
     public class NoopReadWriteHandlePair<TValue> : ReadWriteHandlePair<TValue>
     {
+        public override TValue Value { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
+
+        public override bool HasValue => throw new NotImplementedException();
+
+        public override PersistenceFlags Flags => throw new NotImplementedException();
+
         public override Task<bool?> Delete() => throw new NotImplementedException();
-        public override Task<IPutResult> Put() => throw new NotImplementedException();
-        public override Task<IPutResult> Put(TValue value) => throw new NotImplementedException();
+        public override void DiscardValue() => throw new NotImplementedException();
+        public override void MarkDeleted() => throw new NotImplementedException();
+        public override Task<ISuccessResult> Put() => throw new NotImplementedException();
+        public override Task<ISuccessResult> Put(TValue value) => throw new NotImplementedException();
     }
 
     public abstract class ReadWriteHandlePair<TValue>
         : ReadWriteHandlePairBase<TValue, IReadHandle<TValue>, IWriteHandle<TValue>>
         , IReadWriteHandlePair<TValue>
         , IWriteHandle<TValue>
-        where TValue : class
+        //where TValue : class
     {
 
         public abstract TValue Value { get; set; }
@@ -82,8 +57,8 @@ namespace LionFire.Persistence
         public abstract Task<bool?> Delete();
         public abstract void DiscardValue();
         public abstract void MarkDeleted();
-        public abstract Task<IPutResult> Put();
-        public abstract Task<IPutResult> Put(TValue value);
+        public abstract Task<ISuccessResult> Put();
+        public abstract Task<ISuccessResult> Put(TValue value);
     }
 
     /// <summary>
@@ -190,6 +165,8 @@ namespace LionFire.Persistence
 
         public PersistenceFlags Flags => ReadHandle.Flags | WriteHandle.Flags; // TODO: Mask each state with read/write masks before combining them?
 
+        public virtual PersistenceFlags SupportedFlags => PersistenceFlags.OutgoingFlags | PersistenceFlags.IncomingFlags;
+
         public bool HasValue => (readHandle?.HasValue == true) || (writeHandle?.HasValue == true);
 
         public TValue Value { get => ReadHandle.Value; set => WriteHandle.Value = value; }
@@ -217,7 +194,7 @@ namespace LionFire.Persistence
 
         TValue IWriteWrapper<TValue>.Value { set => WriteHandle.Value = value; }
 
-        Task<IPutResult> IPuts.Put() => WriteHandle.Put();
+        Task<ISuccessResult> IPuts.Put() => WriteHandle.Put();
 
         #endregion
 

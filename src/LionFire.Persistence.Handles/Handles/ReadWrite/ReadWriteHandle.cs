@@ -33,11 +33,10 @@ namespace LionFire.Persistence.Handles
             }
         }
 
-        public abstract PersistenceSnapshot<TValue> PersistenceState { get; }
-        public abstract object PersistenceLock { get; }
+        public PersistenceSnapshot<TValue> PersistenceState => new PersistenceSnapshot<TValue>(Flags, ProtectedValue, HasValue);
+        public object PersistenceLock { get; } = new object();
 
         #endregion
-
 
     }
 

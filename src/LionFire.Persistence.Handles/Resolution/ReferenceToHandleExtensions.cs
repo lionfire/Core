@@ -3,7 +3,7 @@ using LionFire.Persistence.Handles;
 using LionFire.Persistence;
 using System;
 using LionFire.Referencing.Ex;
-using LionFire.DependencyInjection;
+using LionFire.Dependencies;
 
 namespace LionFire.Referencing
 {

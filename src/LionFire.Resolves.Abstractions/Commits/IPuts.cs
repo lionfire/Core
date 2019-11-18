@@ -1,9 +1,10 @@
-﻿using System.Threading.Tasks;
+﻿using LionFire.Results;
+using System.Threading.Tasks;
 
 namespace LionFire.Resolves
 {
     public interface IPuts
     {
-        Task<IPutResult> Put();
+        Task<ISuccessResult> Put();
     }
 }

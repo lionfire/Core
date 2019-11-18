@@ -1,5 +1,5 @@
 ﻿using System;
-using LionFire.DependencyInjection;
+using LionFire.Dependencies;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace LionFire.Hosting

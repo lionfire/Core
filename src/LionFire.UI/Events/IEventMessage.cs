@@ -1,6 +1,6 @@
 ﻿using Caliburn.Micro;
 using LionFire.Applications;
-using LionFire.DependencyInjection;
+using LionFire.Dependencies;
 using LionFire.Structures;
 using LionFire.Threading;
 using System;

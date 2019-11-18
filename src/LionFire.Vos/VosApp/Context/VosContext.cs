@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading;
 using LionFire.Collections;
 using LionFire.Copying;
-using LionFire.DependencyInjection;
+using LionFire.Dependencies;
 using LionFire.ExtensionMethods.Copying;
 using Microsoft.Extensions.Logging;
 

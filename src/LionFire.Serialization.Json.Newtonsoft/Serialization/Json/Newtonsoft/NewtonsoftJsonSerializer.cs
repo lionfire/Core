@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using LionFire.DependencyInjection;
+using LionFire.Dependencies;
 using LionFire.Persistence;
 using Newtonsoft.Json;
 

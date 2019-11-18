@@ -22,8 +22,6 @@ Reference this package in your main executable, and the related LionFire.Applica
 
   <ItemGroup>
     <ProjectReference Include="..\LionFire.Applications.Abstractions\LionFire.Applications.Abstractions.csproj" />
-    <ProjectReference Include="..\LionFire.Assets.Abstractions\LionFire.Assets.Abstractions.csproj" />
-    <ProjectReference Include="..\LionFire.Assets\LionFire.Assets.csproj" />
     <ProjectReference Include="..\LionFire.Base\LionFire.Base.csproj" />
     <ProjectReference Include="..\LionFire.Environment\LionFire.Environment.csproj" />
     <ProjectReference Include="..\LionFire.Execution\LionFire.Execution.csproj" />
@@ -49,6 +47,10 @@ Reference this package in your main executable, and the related LionFire.Applica
     <PackageReference Include="Microsoft.Extensions.Logging.EventSource" Version="3.0.0" />
     <PackageReference Include="Microsoft.Extensions.Options.ConfigurationExtensions" Version="3.0.0" />
     <PackageReference Include="System.Threading.Tasks.Parallel" Version="4.3.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Core\" />
   </ItemGroup>
 
   <Target Name="PostBuild" AfterTargets="PostBuildEvent">

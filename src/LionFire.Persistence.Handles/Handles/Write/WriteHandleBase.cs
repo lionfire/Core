@@ -6,6 +6,7 @@ using LionFire.Activation;
 using LionFire.Extensions.DefaultValues;
 using LionFire.Referencing;
 using LionFire.Resolves;
+using LionFire.Results;
 using LionFire.Structures;
 using LionFire.Threading;
 
@@ -17,10 +18,19 @@ namespace LionFire.Persistence.Handles
         , IWrapper<TValue>
         , IHandleInternal<TValue>
         , IDeletable
+        , IPuts<TValue>
+        , IReferencable<IReference>
         where TReference : class, IReference
-        //where TValue : class
     {
         public IReference Reference => Key;
+        IReference IReferencable<IReference>.Reference => Key;
+
+        #region Construction
+
+        public WriteHandleBase() { }
+        public WriteHandleBase(TReference reference) : base(reference) { }
+
+        #endregion
 
         private readonly object persistenceLock = new object();
 
@@ -105,7 +115,7 @@ namespace LionFire.Persistence.Handles
         #region Abstract
 
         // DUPLICATE of Resolves, almost.  Returns Task instead of ITask.
-        public abstract Task<IResolveResult<TValue>> ResolveImpl();
+        protected abstract Task<IResolveResult<TValue>> ResolveImpl();
 
         #endregion
 
@@ -122,7 +132,14 @@ namespace LionFire.Persistence.Handles
                 );
             throw new System.NotImplementedException();
         }
-        public virtual Task<IPutPersistenceResult> Put()
+
+        async Task<ISuccessResult> IPuts.Put() => await Put();
+        public async Task<ISuccessResult> Put(TValue value)
+        {
+            Value = value;
+            return await Put().ConfigureAwait(false);
+        }
+        public virtual Task<IPersistenceResult> Put()
         {
             if (Flags.HasFlag(PersistenceFlags.OutgoingUpdatePending))
             {
@@ -143,7 +160,7 @@ namespace LionFire.Persistence.Handles
             }
             else
             {
-                return Task.FromResult<IPutPersistenceResult>(NoopPutPersistenceResult.Instance);
+                return Task.FromResult<IPersistenceResult>(NoopFailPersistenceResult<TValue>.Instance);
             }
         }
 
@@ -240,28 +257,28 @@ namespace LionFire.Persistence.Handles
 
         #endregion
 
-        public async Task<bool> CommitDelete() => (await DeleteImpl().ConfigureAwait(false)).IsFound();
+        public async Task<bool?> CommitDelete() => (await DeleteImpl().ConfigureAwait(false)).IsFound(); // REVIEW - superfluous? or does it belong in an interface?
 
         public virtual void MarkDeleted() => this.OnUserChangedValue_Write(default);
 
         #region Abstract Methods
 
-        public abstract Task<IPutPersistenceResult> UpsertImpl();
+        protected abstract Task<IPersistenceResult> UpsertImpl();
 
         /// <summary>
         /// Default implementation is to defer to UpsertImpl, which should set the value to the default value.  Override this for stores that have a dedicated delete API.
         /// </summary>
-        public virtual Task<IPutPersistenceResult> DeleteImpl() => UpsertImpl();
+        protected virtual Task<IPersistenceResult> DeleteImpl() => UpsertImpl();
 
         /// <summary>
         /// Default implementation is to defer to UpsertImpl.
         /// </summary>
-        public virtual Task<IPutPersistenceResult> CreateImpl() => UpsertImpl();
+        protected virtual Task<IPersistenceResult> CreateImpl() => UpsertImpl();
 
         /// <summary>
         /// Default implementation is to defer to UpsertImpl.
         /// </summary>
-        public virtual Task<IPutPersistenceResult> UpdateImpl() => UpsertImpl();
+        protected virtual Task<IPersistenceResult> UpdateImpl() => UpsertImpl();
 
         #endregion
 

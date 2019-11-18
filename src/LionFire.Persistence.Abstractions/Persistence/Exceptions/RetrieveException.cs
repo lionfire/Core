@@ -7,12 +7,11 @@ namespace LionFire.Persistence
 
     public class RetrieveException : PersistenceException
     {
-        public new IRetrieveResult<object> Result { get; private set; }
-
         public RetrieveException() { }
+        public RetrieveException(IPersistenceResult result) : base(result) { }
         public RetrieveException(string message) : base(message) { }
         public RetrieveException(string message, Exception inner) : base(message, inner) { }
-        public RetrieveException(IRetrieveResult<object> result) : base(result) { this.Result = result; }
+        //public RetrieveException(IRetrieveResult<object> result) : base(result) { this.Result = result; }
     }
 
 }

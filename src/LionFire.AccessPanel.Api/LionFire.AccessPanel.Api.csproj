@@ -19,7 +19,7 @@
     <ProjectReference Include="..\LionFire.AccessPanel\LionFire.AccessPanel.csproj" />
     <ProjectReference Include="..\LionFire.Applications\LionFire.Applications.csproj" />
     <ProjectReference Include="..\LionFire.Framework\LionFire.Framework.csproj" />
-    <ProjectReference Include="..\LionFire.ObjectBus.Filesystem\LionFire.ObjectBus.Filesystem.csproj" />
+    <ProjectReference Include="..\LionFire.ObjectBus.Filesystem\LionFire.Persistence.Filesystem.csproj" />
     <ProjectReference Include="..\LionFire.ObjectBus\LionFire.ObjectBus.csproj" />
     <ProjectReference Include="..\LionFire.Serialization.Json.Newtonsoft\LionFire.Serialization.Json.Newtonsoft.csproj" />
   </ItemGroup>

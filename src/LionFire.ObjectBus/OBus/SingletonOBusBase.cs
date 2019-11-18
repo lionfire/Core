@@ -3,7 +3,7 @@ using LionFire.Persistence.Handles;
 using LionFire.Structures;
 using System;
 using Microsoft.Extensions.DependencyInjection;
-using LionFire.DependencyInjection;
+using LionFire.Dependencies;
 
 namespace LionFire.ObjectBus
 {

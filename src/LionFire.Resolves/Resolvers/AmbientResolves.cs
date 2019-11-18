@@ -7,7 +7,7 @@ namespace LionFire.Resolves
          where TKey : class
         where TValue : class
     {
-        public override ITask<IResolveResult<TValue>> ResolveImpl() => this.Key.Resolve<TKey, TValue>().AsITask();
+        protected override ITask<IResolveResult<TValue>> ResolveImpl() => this.Key.Resolve<TKey, TValue>().AsITask();
     }
 }
 

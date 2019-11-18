@@ -2,7 +2,7 @@
 using LionFire.Serialization.Json.Newtonsoft;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
-using LionFire.DependencyInjection;
+using LionFire.Dependencies;
 using Microsoft.Extensions.Hosting;
 
 namespace LionFire.Applications.Hosting
@@ -15,6 +15,11 @@ namespace LionFire.Applications.Hosting
             hostBuilder.ConfigureServices((context, services) => services.TryAddEnumerableSingleton<ISerializationStrategy, NewtonsoftJsonSerializer>());
             return hostBuilder;
         }
-        public static IServiceCollection AddNewtonsoftJson(this IServiceCollection app) => app.TryAddEnumerableSingleton<ISerializationStrategy, NewtonsoftJsonSerializer>();
+        public static IServiceCollection AddNewtonsoftJson(this IServiceCollection services)
+        {
+            services.TryAddEnumerableSingleton<ISerializationStrategy, NewtonsoftJsonSerializer>();
+            services.AddSingleton<NewtonsoftJsonSerializer>();
+            return services;
+        }
     }
 }

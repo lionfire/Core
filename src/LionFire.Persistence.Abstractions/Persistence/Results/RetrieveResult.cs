@@ -4,8 +4,12 @@ using LionFire.Referencing;
 namespace LionFire.Persistence
 {
 
+    public interface IExistsResult : IPersistenceResult
+    {
+    }
+
     public class RetrieveResult<T> : IRetrieveResult<T>
-        where T : class
+        //where T : class
     {
         public object Error { get; set; }
         public T Value { get; set; }
@@ -31,6 +35,11 @@ namespace LionFire.Persistence
         public static readonly RetrieveResult<T> NotFound = new RetrieveResult<T>()
         {
             Flags = PersistenceResultFlags.Success | PersistenceResultFlags.NotFound, // Success but did not find
+            Value = default,
+        };
+        public static readonly RetrieveResult<T> Found = new RetrieveResult<T>()
+        {
+            Flags = PersistenceResultFlags.Success | PersistenceResultFlags.Found, // Success and did find, but did not retrieve Value
             Value = default,
         };
 

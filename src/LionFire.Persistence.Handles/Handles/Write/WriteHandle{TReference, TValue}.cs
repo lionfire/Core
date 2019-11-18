@@ -1,4 +1,5 @@
-﻿using System;
+﻿//#nullable enable
+using System;
 using System.Threading.Tasks;
 using LionFire.Referencing;
 using LionFire.Resolves;
@@ -12,7 +13,7 @@ namespace LionFire.Persistence.Handles
         where TReference : class, IReference
         where TValue : class
     {
-        public override Task<IResolveResult<TValue>> ResolveImpl() => throw new NotImplementedException();
+        protected override Task<IResolveResult<TValue>> ResolveImpl() => throw new NotImplementedException();
 
         PersistenceSnapshot<TValue> IPersists<TValue>.PersistenceState
              => new PersistenceSnapshot<TValue>

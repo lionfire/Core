@@ -5,6 +5,7 @@ namespace LionFire.Persistence
 
     public struct TieredRetrieveResult : ITieredPersistenceResult
     {
+        public bool? IsSuccess => Flags.IsSuccessTernary();
         public PersistenceResultFlags Flags { get; set; }
         public int RelevantUnderlyingCount { get; set; }
         public IEnumerable<IPersistenceResult> Successes { get; set; }

@@ -58,6 +58,8 @@ namespace LionFire.Applications.Hosting
         ///// </summary>
         //new Task<bool> Initialize();
         IAppHost Initialize(BootstrapMode mode = BootstrapMode.Rebuild);
+        
+        IAppHost Replace<T>(T toDelete, T toAdd) where T : class;
 
         /// <summary>
         /// Start application and return a task that waits for all ApplicationTasks with WaitForComplete = true to complete.

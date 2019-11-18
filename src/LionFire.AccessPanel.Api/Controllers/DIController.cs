@@ -1,5 +1,5 @@
 ﻿using System.Collections.Generic;
-using LionFire.DependencyInjection;
+using LionFire.Dependencies;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.DependencyInjection;
 

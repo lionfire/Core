@@ -1,4 +1,4 @@
-﻿using LionFire.DependencyInjection;
+﻿using LionFire.Dependencies;
 using LionFire.Persistence.Handles;
 
 namespace LionFire.Referencing.Ex
@@ -8,7 +8,7 @@ namespace LionFire.Referencing.Ex
         #region IReadHandleProvider
 
         public static IReadHandleProvider GetReadHandleProvider(this IReference reference)
-            => DependencyContext.Current.GetServiceOrSingleton<IReferenceToHandleService>().GetReadHandleProvider(reference);
+            => DependencyLocator.Get<IReferenceToHandleService>().GetReadHandleProvider(reference);
 
         public static IReadHandleProvider ToReadHandleProvider(this IReference reference) 
             => GetReadHandleProvider(reference) ?? throw new HasUnresolvedDependenciesException($"No {nameof(IReadHandleProvider)}could be found for reference of type {reference?.GetType().FullName}");
@@ -18,7 +18,7 @@ namespace LionFire.Referencing.Ex
         #region IWriteOnlyHandleProvider
 
         public static IWriteHandleProvider GetWriteHandleProvider(this IReference reference)
-            => DependencyContext.Current.GetServiceOrSingleton<IReferenceToHandleService>().GetWriteHandleProvider(reference);
+            => DependencyLocator.Get<IReferenceToHandleService>().GetWriteHandleProvider(reference);
 
         public static IWriteHandleProvider ToWriteHandleProvider(this IReference reference)
             => GetWriteHandleProvider(reference) ?? throw new HasUnresolvedDependenciesException($"No {nameof(IWriteHandleProvider)}could be found for reference of type {reference?.GetType().FullName}");
@@ -28,7 +28,7 @@ namespace LionFire.Referencing.Ex
         #region IHandleProvider
 
         public static IReadWriteHandleProvider GetReadWriteHandleProvider(this IReference reference)
-            => DependencyContext.Current.GetServiceOrSingleton<IReferenceToHandleService>().GetReadWriteHandleProvider(reference);
+            => DependencyLocator.Get<IReferenceToHandleService>().GetReadWriteHandleProvider(reference);
         public static IReadWriteHandleProvider ToReadWriteHandleProvider(this IReference reference) 
             => GetReadWriteHandleProvider(reference) ?? throw new HasUnresolvedDependenciesException($"No {nameof(IReadWriteHandleProvider)} could be found for reference of type {reference?.GetType().FullName}");
 
@@ -37,7 +37,7 @@ namespace LionFire.Referencing.Ex
         #region ICollectionHandleProvider
 
         public static ICollectionHandleProvider GetCollectionHandleProvider(this IReference reference)
-            => DependencyContext.Current.GetServiceOrSingleton<IReferenceToHandleService>().GetCollectionHandleProvider(reference);
+            => DependencyLocator.Get<IReferenceToHandleService>().GetCollectionHandleProvider(reference);
         public static ICollectionHandleProvider ToCollectionHandleProvider(this IReference reference)
             => GetCollectionHandleProvider(reference) ?? throw new HasUnresolvedDependenciesException($"No {nameof(ICollectionHandleProvider)} could be found for reference of type {reference?.GetType().FullName}");
 

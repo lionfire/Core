@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
-using LionFire.DependencyInjection;
+using LionFire.Dependencies;
 
 namespace LionFire.Referencing
 {

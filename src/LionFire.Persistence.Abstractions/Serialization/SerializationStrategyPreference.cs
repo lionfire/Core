@@ -72,10 +72,12 @@ namespace LionFire.Serialization
 
         public ISerializationStrategy Strategy
         {
-            get { return strategy; }
-            set {
+            get => strategy;
+            set
+            {
                 if (service != null) throw new ArgumentException("Only one of these can be set: Service, Strategy");
-                strategy = value; }
+                strategy = value;
+            }
         }
         private ISerializationStrategy strategy;
 

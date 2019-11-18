@@ -1,5 +1,7 @@
-﻿namespace LionFire.Resolves
+﻿using LionFire.Results;
+
+namespace LionFire.Resolves
 {
-    public interface IDeleteResult : IPutResult { } // REVIEW - is this useful?
+    public interface IDeleteResult : ISuccessResult { } // REVIEW - is this useful?
 
 }

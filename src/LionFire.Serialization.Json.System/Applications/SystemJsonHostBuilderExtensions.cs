@@ -1,7 +1,7 @@
 ﻿using LionFire.Serialization;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
-using LionFire.DependencyInjection;
+using LionFire.Dependencies;
 using Microsoft.Extensions.Hosting;
 using LionFire.Serialization.Json.System;
 

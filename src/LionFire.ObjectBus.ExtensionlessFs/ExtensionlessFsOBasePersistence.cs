@@ -8,7 +8,9 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
+using LionFire.Dependencies;
 using LionFire.Execution;
+using LionFire.ExtensionMethods.Persistence.ExtensionlessFilesystem;
 using LionFire.Extensions.Collections;
 using LionFire.IO.Filesystem;
 using LionFire.MultiTyping;
@@ -18,6 +20,15 @@ using LionFire.Serialization;
 using LionFire.Structures;
 using Microsoft.Extensions.Logging;
 
+namespace LionFire.ExtensionMethods.Persistence.ExtensionlessFilesystem
+{
+    public static class ExtensionlessExtensions
+    {
+        public static Task<Stream> PathToReadStream(string path) => await Task.Run(() => new FileStream(path, FileMode.Open, FileAccess.Read, FileShare.Read).ConfigureAwait(false);
+        public static Task<byte[]> PathToBytes(string path) => await Task.Run(() => File.ReadAllBytes(path)).ConfigureAwait(false);
+        public static Task<string> PathToString(string path) => await Task.Run(() => File.ReadAllText(path)).ConfigureAwait(false);
+    }
+}
 namespace LionFire.ObjectBus.Filesystem
 {
     public class ExtensionlessFsOBasePersistence
@@ -28,18 +39,16 @@ namespace LionFire.ObjectBus.Filesystem
 
         #endregion
 
-        public static Stream PathToReadStream(string path) => new FileStream(path, FileMode.Open, FileAccess.Read, FileShare.Read);
-        public static byte[] PathToBytes(string path) => File.ReadAllBytes(path);
-        public static string PathToString(string path) => File.ReadAllText(path);
+
 
         protected static PersistenceContext FsOBaseDeserializingPersistenceContext = new PersistenceContext
         {
-            SerializationProvider = Defaults.TryGet<ISerializationProvider>(),
+            SerializationProvider = DependencyLocator.TryGet<ISerializationProvider>(),
             Deserialization = new DeserializePersistenceContext
             {
-                PathToStream = PathToReadStream,
-                PathToBytes = PathToBytes,
-                PathToString = PathToString,
+                PathToStream = ExtensionlessExtensions.PathToReadStream,
+                PathToBytes = ExtensionlessExtensions.PathToBytes,
+                PathToString = ExtensionlessExtensions.PathToString,
             }
         };
 
@@ -51,9 +60,9 @@ namespace LionFire.ObjectBus.Filesystem
         {
             #region Give Interceptors a chance to return the result
 
-            // REVIEW
+            // REVIEW DESIGNFIXME - this functionality probably doesn't belong here
 
-            foreach (var interceptor in FsPersistence.Interceptors)
+            foreach (var interceptor in FSPersistenceStatic.Interceptors)
             {
                 var obj = interceptor.Read(diskPath, type);
                 if (obj is DBNull)
@@ -141,7 +150,7 @@ namespace LionFire.ObjectBus.Filesystem
                         //    }
                         //}
                     }
-                }).AutoRetry(maxRetries: FsPersistence.Options.MaxGetRetries, millisecondsBetweenAttempts: FsPersistence.Options.MillisecondsBetweenGetRetries);
+                }).AutoRetry(maxRetries: FSPersistenceStatic.Options.MaxGetRetries, millisecondsBetweenAttempts: FSPersistenceStatic.Options.MillisecondsBetweenGetRetries);
             }
             catch (Exception ex)
             {
@@ -155,7 +164,7 @@ namespace LionFire.ObjectBus.Filesystem
 
             // REVIEW
 
-            foreach (var interceptor in FsPersistence.Interceptors)
+            foreach (var interceptor in FSPersistenceStatic.Interceptors)
             {
                 var obj = interceptor.Read(diskPath, type);
                 if (obj is DBNull)
@@ -243,7 +252,7 @@ namespace LionFire.ObjectBus.Filesystem
                         //    }
                         //}
                     }
-                }).AutoRetry(maxRetries: FsPersistence.Options.MaxGetRetries, millisecondsBetweenAttempts: FsPersistence.Options.MillisecondsBetweenGetRetries);
+                }).AutoRetry(maxRetries: FSPersistenceStatic.Options.MaxGetRetries, millisecondsBetweenAttempts: FSPersistenceStatic.Options.MillisecondsBetweenGetRetries);
             }
             catch (Exception ex)
             {
@@ -315,7 +324,7 @@ namespace LionFire.ObjectBus.Filesystem
             return obj;
         }
 
-#endregion
+        #endregion
 
         #region Set
 
@@ -362,7 +371,7 @@ namespace LionFire.ObjectBus.Filesystem
             {
                 if (defaultSerializationProvider == null)
                 {
-                    defaultSerializationProvider = Defaults.TryGet<ISerializationProvider>();
+                    defaultSerializationProvider = DependencyLocator.TryGet<ISerializationProvider>();
                 }
                 return defaultSerializationProvider;
             }

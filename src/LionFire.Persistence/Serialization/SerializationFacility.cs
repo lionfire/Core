@@ -1,4 +1,4 @@
-﻿using LionFire.DependencyInjection;
+﻿using LionFire.Dependencies;
 
 namespace LionFire.Serialization
 {
@@ -8,7 +8,7 @@ namespace LionFire.Serialization
         {
             get
             {
-                IResolvesSerializationStrategies serializationResolver = Defaults.TryGet<ISerializationProvider>();
+                IResolvesSerializationStrategies serializationResolver = DependencyLocator.TryGet<ISerializationProvider>();
 
                 if (serializationResolver == null)
                 {

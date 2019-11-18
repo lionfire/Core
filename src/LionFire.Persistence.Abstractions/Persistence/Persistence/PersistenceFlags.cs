@@ -143,6 +143,9 @@ namespace LionFire
         //WritableStates = OutgoingCreatePending | OutgoingUpdatePending | MarkedForDeletion | NeedsMergeAnalysis | MergeConflict | AutoMergeable,
 
         OutgoingUpsertPending = 1 << 22,
+
+        OutgoingFlags = OutgoingCreatePending | OutgoingDeletePending | OutgoingUpdatePending | OutgoingUpsertPending,
+        IncomingFlags = IncomingCreateAvailable | IncomingDeleteAvailable | IncomingUpdateAvailable,
     }
 
     public static class PersistenceStateExtensions

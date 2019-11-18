@@ -6,7 +6,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using LionFire.Assets;
-using LionFire.DependencyInjection;
+using LionFire.Dependencies;
 using LionFire.Execution;
 using LionFire.ObjectBus.Filesystem;
 using LionFire.Referencing;
@@ -320,7 +320,7 @@ namespace LionFire.Vos
         {
             var vosMounts = new List<Mount>
             {
-                new Mount(VosApp.Instance.Stores[VosStoreNames.CustomData], VosConfiguration.CustomDataDir.AsFileReference(), null, VosStoreNames.CustomData, false, new MountOptions()
+                new Mount(VosApp.Instance.Stores[VosStoreNames.CustomData], VosConfiguration.CustomDataDir.ToFileReference(), null, VosStoreNames.CustomData, false, new MountOptions()
                 {
                     MountAtStartup = true,
                     MountOnDemand = true,
@@ -356,7 +356,7 @@ namespace LionFire.Vos
             List<Mount> vosMounts = new List<Mount>();
 
             {
-                vosMounts.Add(new Mount(VosApp.Instance.Stores[storeName], appVarData.AsFileReference(), null, storeName, enable, new MountOptions()
+                vosMounts.Add(new Mount(VosApp.Instance.Stores[storeName], appVarData.ToFileReference(), null, storeName, enable, new MountOptions()
                 {
                     IsExclusive = true,
                     IsReadOnly = isReadOnly,
@@ -365,7 +365,7 @@ namespace LionFire.Vos
 
             if (mountToActiveData)
             {
-                vosMounts.Add(new Mount(VosApp.Instance.ActiveData, appVarData.AsFileReference(), null, storeName, enable, new MountOptions()
+                vosMounts.Add(new Mount(VosApp.Instance.ActiveData, appVarData.ToFileReference(), null, storeName, enable, new MountOptions()
                 {
                     IsReadOnly = isReadOnly,
                     ReadPriority = 90,
@@ -436,7 +436,7 @@ namespace LionFire.Vos
 
             if (DefaultMountAppBase)
             {
-                vosMounts.Add(new Mount(VosApp.Instance.Stores[VosStoreNames.AppBase], VosDiskPaths.AppBase.AsFileReference(), null, VosStoreNames.AppBase, false, new MountOptions()
+                vosMounts.Add(new Mount(VosApp.Instance.Stores[VosStoreNames.AppBase], VosDiskPaths.AppBase.ToFileReference(), null, VosStoreNames.AppBase, false, new MountOptions()
                 {
                     IsExclusive = true,
                     IsReadOnly = true,
@@ -447,7 +447,7 @@ namespace LionFire.Vos
 
             if (DefaultMountActiveDataAtAppBase)
             {
-                vosMounts.Add(new Mount(VosApp.Instance.ActiveData, VosDiskPaths.AppBase.AsFileReference(), null, VosStoreNames.AppBase, false, new MountOptions()
+                vosMounts.Add(new Mount(VosApp.Instance.ActiveData, VosDiskPaths.AppBase.ToFileReference(), null, VosStoreNames.AppBase, false, new MountOptions()
                 {
                     IsReadOnly = true,
                     ReadPriority = -1000,
@@ -460,7 +460,7 @@ namespace LionFire.Vos
 
             if (DefaultMountVarBase)
             {
-                vosMounts.Add(new Mount(VosApp.Instance.Stores[VosStoreNames.VarBase], VosDiskPaths.VarBase.AsFileReference(), null, VosStoreNames.VarBase, false, new MountOptions()
+                vosMounts.Add(new Mount(VosApp.Instance.Stores[VosStoreNames.VarBase], VosDiskPaths.VarBase.ToFileReference(), null, VosStoreNames.VarBase, false, new MountOptions()
                 {
                     IsExclusive = true,
                     IsReadOnly = true,
@@ -471,7 +471,7 @@ namespace LionFire.Vos
 
             if (DefaultMountActiveDataAtVarBase)
             {
-                vosMounts.Add(new Mount(VosApp.Instance.ActiveData, VosDiskPaths.VarBase.AsFileReference(), null, VosStoreNames.VarBase, false, new MountOptions()
+                vosMounts.Add(new Mount(VosApp.Instance.ActiveData, VosDiskPaths.VarBase.ToFileReference(), null, VosStoreNames.VarBase, false, new MountOptions()
                 {
                     IsReadOnly = false, // RECENTCHANGE - this was true??
                     ReadPriority = -500,
@@ -497,7 +497,7 @@ namespace LionFire.Vos
 
             if (DefaultMountAppData)
             {
-                vosMounts.Add(new Mount(VosApp.Instance.Stores[VosStoreNames.AppData], VosDiskPaths.AppData.AsFileReference(), null, VosStoreNames.AppBase, false, new MountOptions()
+                vosMounts.Add(new Mount(VosApp.Instance.Stores[VosStoreNames.AppData], VosDiskPaths.AppData.ToFileReference(), null, VosStoreNames.AppBase, false, new MountOptions()
                 {
                     IsExclusive = true,
                     IsReadOnly = false, // Might be read-only on disk
@@ -508,7 +508,7 @@ namespace LionFire.Vos
 
             if (DefaultMountActiveDataAtAppData)
             {
-                vosMounts.Add(new Mount(VosApp.Instance.ActiveData, VosDiskPaths.AppData.AsFileReference(), null, VosStoreNames.AppData, false, new MountOptions()
+                vosMounts.Add(new Mount(VosApp.Instance.ActiveData, VosDiskPaths.AppData.ToFileReference(), null, VosStoreNames.AppData, false, new MountOptions()
                 {
                     IsReadOnly = false,  // Might be read-only on disk
                     ReadPriority = 50,
@@ -522,7 +522,7 @@ namespace LionFire.Vos
 
             if (DefaultMountVarData)
             {
-                vosMounts.Add(new Mount(VosApp.Instance.Stores[VosStoreNames.VarData], VosDiskPaths.VarData.AsFileReference(), null, VosStoreNames.VarBase, false, new MountOptions()
+                vosMounts.Add(new Mount(VosApp.Instance.Stores[VosStoreNames.VarData], VosDiskPaths.VarData.ToFileReference(), null, VosStoreNames.VarBase, false, new MountOptions()
                 {
                     IsExclusive = true,
                     IsReadOnly = false,
@@ -533,7 +533,7 @@ namespace LionFire.Vos
 
             if (DefaultMountActiveDataAtVarData)
             {
-                vosMounts.Add(new Mount(VosApp.Instance.ActiveData, VosDiskPaths.VarData.AsFileReference(), null, VosStoreNames.VarData, false, new MountOptions()
+                vosMounts.Add(new Mount(VosApp.Instance.ActiveData, VosDiskPaths.VarData.ToFileReference(), null, VosStoreNames.VarData, false, new MountOptions()
                 {
                     IsReadOnly = false,
                     ReadPriority = 100,

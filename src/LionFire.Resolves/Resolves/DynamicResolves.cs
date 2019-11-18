@@ -11,7 +11,7 @@ namespace LionFire.Resolves
     {
         public Func<TKey, ITask<IResolveResult<TValue>>> Resolver { get; set; }
 
-        public override ITask<IResolveResult<TValue>> ResolveImpl() => Resolver(Key);
+        protected override ITask<IResolveResult<TValue>> ResolveImpl() => Resolver(Key);
     }
 }
 

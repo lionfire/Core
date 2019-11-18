@@ -11,6 +11,8 @@ namespace LionFire.Persistence
 
         public object Error { get; set; }
 
+        public bool? IsSuccess => Flags.IsSuccessTernary();
+
         public static readonly TieredPersistenceResult NotFound = new TieredPersistenceResult { Flags = PersistenceResultFlags.NotFound };
     }
 }

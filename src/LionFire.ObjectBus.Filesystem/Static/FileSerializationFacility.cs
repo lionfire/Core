@@ -13,7 +13,7 @@ namespace LionFire.ObjectBus.Filesystem
             var result = await FSOBase.Instance.TryGet<T>(path);
             if(!result.IsSuccess()) throw new RetrieveException(result);
 
-            return result.Object;
+            return result.Value;
         }
         //public static async Task<T> DeserializeName<T>(this string name)
         //{

@@ -14,6 +14,7 @@ using LionFire.Referencing;
 
 namespace LionFire.ObjectBus
 {
+    // MOVE this to LionFire.Persistence.Handles and rename to HandleAutoSaveManager?
 
     public class AutoSaveManager
     {
@@ -27,13 +28,16 @@ namespace LionFire.ObjectBus
             //ChangeWatcher = new ChangeWatcher();
         }
 
-        public void Register(IReadWriteHandleBase<object> handle)
+        public void Register(IReadWriteHandle<object> handle)
         {
+            throw new NotImplementedException("TODO: figure out the change interfaces on handles");
+#if TODO
             // TODO MEMORYLEAK ToWeakEvents
-            handle.ObjectChanged += OnHandleObjectChanged;
+            handle.ValueChanged += OnHandleObjectChanged;
             //ChangeWatcher.Add(handle.Object, handle);
 #if TRACE_Autosave
             l.LogTrace("[autosave] Registered " + handle?.ToString()); 
+#endif
 #endif
         }
 
@@ -50,27 +54,30 @@ namespace LionFire.ObjectBus
                 }
             }
 
-            ThrottledSaveManager.Instance.OnChanged((IReadWriteHandleBase<object>)handle);            
+            ThrottledSaveManager.Instance.OnChanged((IReadWriteHandleBase<object>)handle);
         }
 
         public void Unregister(IReadWriteHandleBase<object> handle)
         {
+            throw new NotImplementedException("TODO: figure out the change interfaces on handles");
+#if TODO
             handle.ObjectChanged -= OnHandleObjectChanged;
 #if TRACE_Autosave
             l.LogTrace("[autosave] Unregistered " + handle?.ToString()); 
+#endif
 #endif
         }
 
         #region Misc
 
         private static ILogger l = Log.Get();
-		
+
         #endregion
     }
 
     public static class AutoSaveManagerExtensions
     {
-        public static void SetAutosave(this IReadWriteHandleBase<object> obj, bool enabled = true)
+        public static void SetAutosave(this IReadWriteHandle<object> obj, bool enabled = true)
         {
             if (enabled)
             {
@@ -80,7 +87,6 @@ namespace LionFire.ObjectBus
             {
                 AutoSaveManager.Instance.Unregister(obj);
             }
-
         }
     }
 }

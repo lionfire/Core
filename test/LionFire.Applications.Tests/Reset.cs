@@ -70,7 +70,7 @@
 //                    Assert.NotEqual(app.AppId, AppHost.MainApp.AppId);
 //                }
                 
-//                var ser = Defaults.TryGet<ISerializationProvider>();
+//                var ser = DependencyLocator.TryGet<ISerializationProvider>();
 //                if (!expectFail)
 //                {
 //                    Assert.Null(ser);
@@ -91,7 +91,7 @@
 //                .RunNowAndWait(() =>
 //                {
 //                    if(!AppHost.DetectUnitTestMode) Assert.Equal(app.AppId, AppHost.MainApp.AppId);
-//                    var ser = Defaults.TryGet<ISerializationProvider>();
+//                    var ser = DependencyLocator.TryGet<ISerializationProvider>();
 //                    Assert.NotNull(ser);
 //                })
 //            ;

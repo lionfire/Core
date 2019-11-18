@@ -4,7 +4,7 @@ using System.Threading.Tasks;
 
 namespace LionFire.ObjectBus.FsFacade
 {
-    // TODO: Backport this to FsOBase?
+    // TODO: Backport this to FSOBase?
     public interface IFsFacade
     {
         Task<bool> Exists(string path);

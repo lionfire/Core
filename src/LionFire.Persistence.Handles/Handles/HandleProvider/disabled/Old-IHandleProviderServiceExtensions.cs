@@ -1,5 +1,5 @@
 ﻿//using System;
-//using LionFire.DependencyInjection;
+//using LionFire.Dependencies;
 
 //namespace LionFire.Referencing
 //{

@@ -1,7 +1,7 @@
 ﻿using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.DependencyInjection;
 using MSLogger = Microsoft.Extensions.Logging.ILogger;
-using LionFire.DependencyInjection;
+using LionFire.Dependencies;
 
 namespace LionFire.Extensions.Logging
 {

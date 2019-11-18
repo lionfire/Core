@@ -3,7 +3,7 @@
 //#define WARN_RESOLVE_FAIL
 //#define TRACE_RESOLVE_CREATED
 
-using LionFire.DependencyInjection;
+using LionFire.Dependencies;
 using LionFire.Structures;
 using Microsoft.Extensions.Logging;
 using System;
@@ -21,7 +21,7 @@ namespace LionFire
         #region Static Accessor
 
         //public static InstanceStackRegistrar Instance => ManualSingleton<InstanceStackRegistrar>.Instance;
-        public static InstanceStackRegistrar Default => DependencyContext.Default.GetServiceOrSingleton<InstanceStackRegistrar>();
+        public static InstanceStackRegistrar Default => DependencyLocator.Get<InstanceStackRegistrar>();
 
         #endregion
 

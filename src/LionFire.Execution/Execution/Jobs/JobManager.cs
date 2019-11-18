@@ -1,4 +1,5 @@
-﻿using LionFire.Extensions.Logging;
+﻿using LionFire.Dependencies;
+using LionFire.Extensions.Logging;
 using LionFire.Structures;
 using Microsoft.Extensions.Logging;
 using System;
@@ -14,7 +15,7 @@ namespace LionFire.Execution.Jobs
     {
         #region Static
 
-        public static JobManager Default { get { return Defaults.Get<JobManager>(); } }
+        public static JobManager Default => DependencyLocator.Get<JobManager>();
 
         #endregion
 

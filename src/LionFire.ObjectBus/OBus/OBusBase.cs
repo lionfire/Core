@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using LionFire.Applications.Hosting;
-using LionFire.DependencyInjection;
+using LionFire.Dependencies;
 using LionFire.Referencing;
 using LionFire.Persistence.Handles;
 using Microsoft.Extensions.DependencyInjection;

@@ -1,6 +1,8 @@
 ﻿using LionFire.Collections;
 using LionFire.ObjectBus.Handles;
 using LionFire.Persistence;
+using LionFire.Resolves;
+using MorseCode.ITask;
 using System.Collections.Generic;
 using System.IO;
 using System.Text;
@@ -40,7 +42,7 @@ namespace LionFire.ObjectBus.Filesystem
 
         
 
-        public override async Task<IRetrieveResult<INotifyingReadOnlyCollection<FsListEntry>>> RetrieveImpl()
+        protected override async ITask<IResolveResult<INotifyingReadOnlyCollection<FsListEntry>>> ResolveImpl()
         {
             var dir = Reference.Path;
 
@@ -54,7 +56,7 @@ namespace LionFire.ObjectBus.Filesystem
                         fsList.OnDirectoryDoesNotExist();
                     }
                     // OPTIMIZE: Use RetrieveResult<T>.NotFound
-                    return (IRetrieveResult<INotifyingReadOnlyCollection<FsListEntry>>)new RetrieveResult<INotifyingReadOnlyCollection<FsListEntry>>
+                    return new RetrieveResult<INotifyingReadOnlyCollection<FsListEntry>>
                     {
                         Flags = PersistenceResultFlags.NotFound
                     };
@@ -73,11 +75,11 @@ namespace LionFire.ObjectBus.Filesystem
                     OnRetrievedObject(obj);
                 }
 
-                return (IRetrieveResult<INotifyingReadOnlyCollection<FsListEntry>>)new RetrieveResult<INotifyingReadOnlyCollection<FsListEntry>>
+                return new RetrieveResult<INotifyingReadOnlyCollection<FsListEntry>>
                 {
                     Value = Value,
                 };
-            });
+            }).AsITask();
 
         }
     }

@@ -1,4 +1,5 @@
 ﻿using MorseCode.ITask;
+using System.Collections.Generic;
 using System.Threading;
 
 namespace LionFire.Resolves
@@ -13,7 +14,6 @@ namespace LionFire.Resolves
     /// </summary>
     public abstract class Resolves<TKey, TValue> : DisposableKeyed<TKey>
          where TKey : class
-        where TValue : class
     {
         #region Construction
 
@@ -53,8 +53,7 @@ namespace LionFire.Resolves
             get => protectedValue;
             set
             {
-                if (System.Collections.Generic.Comparer<TValue>.Default.Compare(protectedValue, value) == 0) return; // Should use Equality instead of Compare?
-                //if(value == protectedValue) { return; }
+                if (EqualityComparer<TValue>.Default.Equals(protectedValue, value)) return;
                 var oldValue = protectedValue;
                 protectedValue = value;
                 OnValueChanged(value, oldValue);
@@ -116,7 +115,7 @@ namespace LionFire.Resolves
 
         #region Abstract
 
-        public abstract ITask<IResolveResult<TValue>> ResolveImpl();
+        protected abstract ITask<IResolveResult<TValue>> ResolveImpl();
 
         #endregion
 

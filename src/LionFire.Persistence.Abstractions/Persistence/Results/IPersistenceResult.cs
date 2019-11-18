@@ -2,7 +2,7 @@
 
 namespace LionFire.Persistence
 {
-    public interface IPersistenceResult : IErrorResult
+    public interface IPersistenceResult : IErrorResult, ISuccessResult
     {
         PersistenceResultFlags Flags { get; set; }
     }

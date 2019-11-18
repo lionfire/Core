@@ -2,7 +2,7 @@
 //using LionFire.ObjectBus.Filesystem;
 //using LionFire.Referencing;
 //using Microsoft.Extensions.DependencyInjection;
-//using LionFire.DependencyInjection;
+//using LionFire.Dependencies;
 
 //namespace LionFire.Applications.Hosting
 //{

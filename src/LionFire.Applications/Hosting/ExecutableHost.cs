@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using LionFire.Applications.Hosting;
 using LionFire.Composables;
 using LionFire.Execution.Executables;
 using LionFire.MultiTyping;

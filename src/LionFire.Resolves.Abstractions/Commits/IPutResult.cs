@@ -2,5 +2,5 @@
 
 namespace LionFire.Resolves
 {
-    public interface IPutResult : IResult, ISuccessResult { }
+    //public interface IPutResult : IResult, ISuccessResult { }
 }

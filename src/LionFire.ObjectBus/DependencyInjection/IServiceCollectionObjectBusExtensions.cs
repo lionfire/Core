@@ -1,4 +1,5 @@
 ﻿using LionFire.Applications;
+using LionFire.Dependencies;
 using LionFire.ObjectBus;
 using LionFire.Structures;
 using Microsoft.Extensions.DependencyInjection;
@@ -11,7 +12,7 @@ namespace LionFire.ObjectBus
         public static IServiceCollection AddObjectBus<T>(this IServiceCollection sc)
             where T : class, IOBus, new()
         {
-            var obus = SingletonConfiguration.UseSingletons ? ManualSingleton<T>.GuaranteedInstance : new T();
+            var obus = DependencyLocatorConfiguration.UseSingletons ? ManualSingleton<T>.GuaranteedInstance : new T();
 
             obus.AddServices(sc);
 

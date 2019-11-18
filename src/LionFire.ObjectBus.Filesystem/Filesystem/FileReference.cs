@@ -83,10 +83,7 @@ namespace LionFire.ObjectBus.Filesystem
 
     public static class FileReferenceExtensions
     {
-        public static FileReference AsFileReference(this string path)
-        {
-            return new FileReference(path);
-        }
+        public static FileReference ToFileReference(this string path) => new FileReference(path);
     }
 
 }

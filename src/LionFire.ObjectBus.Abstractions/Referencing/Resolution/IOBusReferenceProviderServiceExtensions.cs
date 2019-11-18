@@ -2,7 +2,7 @@
 //using System.Collections.Generic;
 //using System.Linq;
 //using System.Text;
-//using LionFire.DependencyInjection;
+//using LionFire.Dependencies;
 //using LionFire.Referencing;
 
 //namespace LionFire.ObjectBus

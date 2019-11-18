@@ -1,4 +1,4 @@
-﻿using LionFire.DependencyInjection;
+﻿using LionFire.Dependencies;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;

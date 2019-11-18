@@ -47,7 +47,7 @@ namespace LionFire.Execution
             {
                 try
                 {
-                    return await taskGenerator();
+                    return await taskGenerator().ConfigureAwait(false);
                 }
                 catch (Exception ex)
                 {

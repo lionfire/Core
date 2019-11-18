@@ -1,4 +1,4 @@
-﻿using LionFire.DependencyInjection;
+﻿using LionFire.Dependencies;
 using LionFire.Execution.Executables;
 using LionFire.Reactive;
 using LionFire.Reactive.Subjects;
@@ -101,7 +101,7 @@ namespace LionFire.Execution.Jobs
         ///// <returns></returns>
         //public bool RequestStart()
         //{
-        //    var jm = Defaults.TryGet<JobManager>();
+        //    var jm = DependencyLocator.TryGet<JobManager>();
         //    if (jm == null) return true;
 
         //    if (!jm.RequestStart(this))

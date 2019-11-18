@@ -24,7 +24,7 @@ namespace LionFire.Persistence.Handles
     {
         #region MutatePersistenceStateAndNotify
 
-        internal static async Task<PersistenceEvent<TValue>?> MutatePersistenceStateAndNotify<TValue>(this INotifyingHandleInternal<TValue> h, Func<Task> action)
+        internal static PersistenceEvent<TValue>? MutatePersistenceStateAndNotify<TValue>(this INotifyingHandleInternal<TValue> h, Action action)
         {
             IPersists p = h;
             lock (h.PersistenceLock)
@@ -33,7 +33,7 @@ namespace LionFire.Persistence.Handles
                 var oldHasValue = h.HasValue;
                 var oldFlags = p.Flags;
 
-                await action();
+                action();
 
                 if (
                     oldFlags != p.Flags

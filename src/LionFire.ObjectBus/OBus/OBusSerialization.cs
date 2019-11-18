@@ -9,7 +9,7 @@
 //using LionFire.Types;
 //using LionFire;
 //using LionFire.Structures;
-//using LionFire.DependencyInjection;
+//using LionFire.Dependencies;
 
 //namespace LionFire.ObjectBus
 //{

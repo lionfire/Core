@@ -11,17 +11,22 @@ namespace LionFire.ObjectBus.Filesystem
     {
         public async Task<IPersistenceResult> Delete(string path)
         {
-            var exists = await Exists(path);
-            if (exists)
+            var exists = await Exists(path).ConfigureAwait(false);
+            return await Task.Run(() =>
             {
-                File.Delete(path);
-                return PersistenceResult.Success;
-            }
-            else
-            {
-                return PersistenceResult.NotFound;
-            }
+
+                if (exists)
+                {
+                    File.Delete(path);
+                    return (PersistenceResultFlags.Found | PersistenceResultFlags.Success).ToResult();
+                }
+                else
+                {
+                    return (PersistenceResultFlags.NotFound | PersistenceResultFlags.Success).ToResult();
+                }
+            }).ConfigureAwait(false);
         }
+
         public Task<bool> Exists(string path) => Task.FromResult(File.Exists(path));
         public Task<IEnumerable<string>> GetFiles(string path, string pattern = null) => Task.FromResult<IEnumerable<string>>(Directory.GetFiles(path, pattern));
         public Task<IEnumerable<string>> List(string directoryPath, string pattern = null) => throw new System.NotImplementedException();

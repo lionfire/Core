@@ -2,7 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using LionFire.DependencyInjection;
+using LionFire.Dependencies;
 using LionFire.Persistence;
 
 namespace LionFire.Serialization

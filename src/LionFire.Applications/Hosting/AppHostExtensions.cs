@@ -1,6 +1,6 @@
 ﻿using LionFire.Applications.Hosting;
 using Microsoft.Extensions.Hosting;
-using LionFire.DependencyInjection;
+using LionFire.Dependencies;
 using System;
 
 namespace LionFire.Applications.Hosting

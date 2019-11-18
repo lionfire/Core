@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using Microsoft.Extensions.DependencyInjection;
-using LionFire.DependencyInjection;
+using LionFire.Dependencies;
 using LionFire.Applications.Hosting;
 
 namespace LionFire.Applications

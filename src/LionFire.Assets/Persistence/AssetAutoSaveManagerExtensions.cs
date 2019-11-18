@@ -37,10 +37,10 @@ namespace LionFire.Persistence
             public IAsset Asset { get; set; }
             object IReadWrapper<object>.Value => Asset;
 
-            async Task<IPutResult> IPuts.Put()
+            async Task<ISuccessResult> IPuts.Put()
             {
                 await Asset.SaveAtSubPath(Asset.AssetSubPath);
-                return (IPutResult)SuccessResult.Success; // REVIEW - Fix this idea
+                return SuccessResult.Success;
             }
         }
 

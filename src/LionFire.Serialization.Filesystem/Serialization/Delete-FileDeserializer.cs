@@ -1,4 +1,4 @@
-﻿//using LionFire.DependencyInjection;
+﻿//using LionFire.Dependencies;
 //using LionFire.Serialization.Contexts;
 //using System;
 //using System.Collections.Generic;

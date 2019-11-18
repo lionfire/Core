@@ -6,7 +6,7 @@ using LionFire.Referencing;
 using LionFire.Structures;
 using Xunit;
 using Microsoft.Extensions.Hosting;
-using LionFire.DependencyInjection;
+using LionFire.Dependencies;
 using System;
 
 namespace LionUri_

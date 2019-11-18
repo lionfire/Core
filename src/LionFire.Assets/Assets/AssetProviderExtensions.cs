@@ -8,7 +8,7 @@ using LionFire.Types;
 using System.Reflection;
 using LionFire.Instantiating;
 using LionFire.Persistence;
-using LionFire.DependencyInjection;
+using LionFire.Dependencies;
 using LionFire.MultiTyping;
 using LionFire.Persistence.Assets;
 

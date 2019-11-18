@@ -1,4 +1,4 @@
-﻿using LionFire.DependencyInjection;
+﻿using LionFire.Dependencies;
 using System;
 using System.Collections.Generic;
 using System.Linq;

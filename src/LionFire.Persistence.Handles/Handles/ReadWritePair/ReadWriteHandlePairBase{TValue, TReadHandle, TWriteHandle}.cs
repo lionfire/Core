@@ -15,6 +15,8 @@ namespace LionFire.Persistence
     //{
     //}
 
+    // REVIEW: May not make sense to inherit from DisposableKeyed
+
     /// <summary>
     /// Also see ReadWriteHandle
     /// </summary>

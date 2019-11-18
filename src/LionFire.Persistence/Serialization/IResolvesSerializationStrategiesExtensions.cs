@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Threading.Tasks;
 using LionFire.Persistence;
 using LionFire.Structures;
 
@@ -216,6 +217,57 @@ namespace LionFire.Serialization
             //return (default(T), new SerializationResult { AggregateResults = failures }));
             throw new SerializationException(SerializationOperationType.FromStream, operation, context, failures);
         }
+
+        public static Task<T> ToObject<T>(this IResolvesSerializationStrategies resolves, Func<ISerializationStrategy, IAsyncEnumerable<Stream>> streams, Func<PersistenceOperation> operation, PersistenceContext context = null) => resolves.ToObject<T>(streams, operation.ToLazy(), context);
+        public static async Task<T> ToObject<T>(this IResolvesSerializationStrategies resolves, Func<ISerializationStrategy, IAsyncEnumerable<Stream>> streams, Lazy<PersistenceOperation> operation = null, PersistenceContext context = null)
+        {
+            List<KeyValuePair<ISerializationStrategy, SerializationResult>> failures = null;
+            foreach (var strategy in resolves.ResolveStrategies(operation, context).Select(r => r.Strategy))
+            {
+                await foreach (var stream in streams(strategy).ConfigureAwait(false))
+                {
+                    try
+                    {
+                        var (Object, Result) = strategy.ToObject<T>(stream, operation, context);
+                        if (Result.IsSuccess)
+                        {
+                            return Object;
+                        }
+                        else if (ThrowWithSerializationFailureData)
+                        {
+                            if (failures == null)
+                            {
+                                failures = new List<KeyValuePair<ISerializationStrategy, SerializationResult>>();
+                            }
+                            failures.Add(new KeyValuePair<ISerializationStrategy, SerializationResult>(strategy, Result));
+                        }
+                    }
+                    finally
+                    {
+                        stream.Dispose();
+                    }
+                }
+            }
+            //return (default(T), new SerializationResult { AggregateResults = failures }));
+            throw new SerializationException(SerializationOperationType.FromStream, operation, context, failures);
+
+            //List<KeyValuePair<ISerializationStrategy, SerializationResult>> failures = null;
+
+            //foreach (var stream in streams)
+            //{
+            //    try
+            //    {
+            //        var result = resolves.ToObject<T>(stream, operation, context);
+            //        return result;
+            //    }
+            //    catch(SerializationException sex)
+            //    {
+            //        failures.AddRange(sex.FailReasons);
+            //    }
+            //}
+            //throw new SerializationException(SerializationOperationType.FromStream, operation, context, failures);
+        }
+
 
         public static T ToObject<T>(this IResolvesSerializationStrategies resolves, Func<ISerializationStrategy, IEnumerable<Stream>> streams,  Func<PersistenceOperation> operation, PersistenceContext context = null) => resolves.ToObject<T>(streams, operation.ToLazy(), context);
         public static T ToObject<T>(this IResolvesSerializationStrategies resolves, Func<ISerializationStrategy, IEnumerable<Stream>> streams, Lazy<PersistenceOperation> operation = null, PersistenceContext context = null)

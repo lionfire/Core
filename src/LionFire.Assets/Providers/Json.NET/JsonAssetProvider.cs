@@ -9,7 +9,7 @@ using System.Reflection;
 using Newtonsoft.Json;
 using LionFire.Assets.Providers.FileSystem;
 using LionFire.Assets;
-using LionFire.DependencyInjection;
+using LionFire.Dependencies;
 using LionFire.MultiTyping;
 using LionFire.Structures;
 using LionFire.Execution;

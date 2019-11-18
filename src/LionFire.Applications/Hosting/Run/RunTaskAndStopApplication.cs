@@ -2,7 +2,7 @@
 using System.Threading.Tasks;
 using Microsoft.Extensions.Hosting;
 using System.Threading;
-using LionFire.DependencyInjection;
+using LionFire.Dependencies;
 
 namespace LionFire.Hosting
 {

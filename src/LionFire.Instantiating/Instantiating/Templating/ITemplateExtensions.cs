@@ -1,4 +1,5 @@
-﻿using LionFire.Validation;
+﻿using LionFire.Applications.Hosting;
+using LionFire.Validation;
 using System;
 using System.Linq;
 
@@ -50,7 +51,18 @@ namespace LionFire.Instantiating
 
             return inst;
         }
-        
+
+        public static IAppHost InstantiateTemplates(IAppHost appHost) // MOVE to ITemplateAppHostExtensions
+        {
+            foreach (var tComponent in appHost.Children.OfType<ITemplate>().ToArray())
+            {
+                var component = tComponent.Create();
+                //appHost.Add(component);
+                appHost.Replace(tComponent, component);
+            }
+
+            return appHost;
+        }
     }
 
 }

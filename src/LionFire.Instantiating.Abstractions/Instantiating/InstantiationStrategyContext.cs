@@ -8,6 +8,7 @@ using LionFire.States;
 using System.Reflection;
 using LionFire.Instantiating;
 using LionFire.ExtensionMethods;
+using LionFire.Dependencies;
 
 namespace LionFire.Instantiating
 {
@@ -28,14 +29,8 @@ namespace LionFire.Instantiating
 
         #region Static
 
-        public static InstantiationStrategyContext Default
-        {
-            get
-            {
-                return Defaults.Get<InstantiationStrategyContext>();
-            }
-        }
-        
+        public static InstantiationStrategyContext Default => DependencyLocator.Get<InstantiationStrategyContext>();
+
         #endregion
     }
 }

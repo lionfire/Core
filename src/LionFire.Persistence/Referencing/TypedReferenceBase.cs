@@ -1,4 +1,4 @@
-﻿using LionFire.DependencyInjection;
+﻿using LionFire.Dependencies;
 using LionFire.ExtensionMethods.Poco.Resolvables;
 using LionFire.Resolvables;
 using LionFire.Structures;

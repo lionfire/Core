@@ -139,7 +139,7 @@ namespace LionFire.ObjectBus.RedisPub
         //        {
         //            obaseDeserializingPersistenceContext = new PersistenceContext
         //            {
-        //                SerializationProvider = Defaults.TryGet<ISerializationProvider>(),
+        //                SerializationProvider = DependencyLocator.TryGet<ISerializationProvider>(),
         //                Deserialization = new DeserializePersistenceContext
         //                {
         //                    //PathToStream = PathToReadStream,
@@ -157,7 +157,7 @@ namespace LionFire.ObjectBus.RedisPub
         //{
         //    IDatabase db = redis.GetDatabase();
         //    var value = await db.StringGetAsync(reference.Path);
-        //    var serializationProvider = (context?.SerializationProvider ?? Defaults.TryGet<ISerializationProvider>());
+        //    var serializationProvider = (context?.SerializationProvider ?? DependencyLocator.TryGet<ISerializationProvider>());
         //    #region Operation
 
         //    //var persistenceOperation = new PersistenceOperation()
@@ -206,7 +206,7 @@ namespace LionFire.ObjectBus.RedisPub
             {
                 if (defaultSerializationProvider == null)
                 {
-                    defaultSerializationProvider = (/*context?.SerializationProvider ??*/ Defaults.TryGet<ISerializationProvider>());
+                    defaultSerializationProvider = (/*context?.SerializationProvider ??*/ DependencyLocator.TryGet<ISerializationProvider>());
                 }
                 return defaultSerializationProvider;
             }

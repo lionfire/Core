@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 using LionFire.Applications.Hosting;
-using LionFire.DependencyInjection;
+using LionFire.Dependencies;
 using LionFire.Execution;
 using LionFire.ObjectBus;
 using LionFire.Vos;

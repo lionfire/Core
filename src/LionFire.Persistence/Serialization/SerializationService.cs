@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
-using LionFire.DependencyInjection;
+using LionFire.Dependencies;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace LionFire.Serialization

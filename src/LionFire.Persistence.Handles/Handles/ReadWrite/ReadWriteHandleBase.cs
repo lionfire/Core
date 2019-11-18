@@ -9,11 +9,10 @@ using System.Threading.Tasks;
 
 namespace LionFire.Persistence.Handles
 {
-    // REVIEW: Can/should I use ReadHandleBase, or a separate class?  I could write it from scratch and merge if it is the same
-
     public abstract class ReadWriteHandleBase<TValue> : WriteHandleBase<IReference, TValue>, IReadWriteHandleBase<TValue>, IHandleInternal<TValue>
-    //where TValue : class
     {
+        public ReadWriteHandleBase() { }
+        public ReadWriteHandleBase(IReference reference) : base(reference) { }
 
         #region Value
 
@@ -62,12 +61,15 @@ namespace LionFire.Persistence.Handles
             //}
         }
 
-        Task<bool> IDeletable.Delete()
+        async Task<bool?> IDeletable.Delete()
         {
-            //MulticastDelegate
-            throw new NotImplementedException();
+            MarkDeleted();
+            var putResult = await Put();
+            return putResult.IsFound();
         }
-        void IDeletable.MarkDeleted() => throw new NotImplementedException();
+
+        void IDeletable.MarkDeleted() => this.OnUserChangedValue_ReadWrite(default);
+
         ITask<IResolveResult<TValue>> IResolves<TValue>.Resolve() => Resolve().AsITask();
     }
 

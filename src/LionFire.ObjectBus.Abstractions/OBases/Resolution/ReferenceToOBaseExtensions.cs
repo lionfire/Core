@@ -1,6 +1,6 @@
 ﻿// For now, focus on IReferenceToHandleProviders.  OBuses implement IHandleProviders
 
-//using LionFire.DependencyInjection;
+//using LionFire.Dependencies;
 //using LionFire.MultiTyping;
 //using LionFire.Referencing;
 //using LionFire.Structures;

@@ -3,7 +3,7 @@
 namespace LionFire.Persistence.Handles
 {
     internal sealed class PersistenceEventTransaction<TValue> : IDisposable
-            where TValue : class
+            //where TValue : class
     {
         IPersistenceSnapshot<TValue> Old { get; set; }
         INotifyPersists<TValue> Sender { get; set; }

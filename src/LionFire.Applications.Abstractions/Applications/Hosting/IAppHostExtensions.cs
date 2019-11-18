@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Threading.Tasks;
-using LionFire.DependencyInjection;
+using LionFire.Dependencies;
 using LionFire.Structures;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;

@@ -13,7 +13,7 @@ using Xunit;
 using LionFire.ObjectBus.Testing;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.DependencyInjection;
-using LionFire.DependencyInjection;
+using LionFire.Dependencies;
 using System.Diagnostics;
 using Microsoft.Extensions.Logging;
 using LionFire.Hosting;

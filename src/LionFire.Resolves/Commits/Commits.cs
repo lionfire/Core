@@ -1,4 +1,5 @@
 ﻿using LionFire.Resolves;
+using LionFire.Results;
 using MorseCode.ITask;
 using System;
 using System.Threading.Tasks;
@@ -53,7 +54,7 @@ namespace LionFire.Resolves
 
         #region Partial Implementation: Resolve
 
-        public async Task<IPutResult> Commit()
+        public async Task<ISuccessResult> Commit()
         {
             var resolveResult = await CommitImpl(ProtectedValue);
             OnCommitted(resolveResult, ProtectedValue);
@@ -64,7 +65,7 @@ namespace LionFire.Resolves
 
         #region Abstract
 
-        public abstract Task<IPutResult> CommitImpl(TValue value);
+        public abstract Task<ISuccessResult> CommitImpl(TValue value);
 
         #endregion
 

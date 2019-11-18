@@ -64,6 +64,7 @@ namespace LionFire.Persistence.Handles
 #endif
 
     public abstract class ReadHandleBase<TReference, TValue> : ReadHandleBase<TValue>
+        , IReferencable<IReference>
         where TReference : IReference
         where TValue : class
     {
@@ -72,7 +73,7 @@ namespace LionFire.Persistence.Handles
         // Skips the reference type check
         public new TReference Reference
         {
-            get => (TReference)base.Reference;
+            get => (TReference)base.Reference; // TODO FIXME: Use TReference in the base class instead of casting here
             set
             {
                 if (ReferenceEquals(reference, value)) { return; }
@@ -81,7 +82,9 @@ namespace LionFire.Persistence.Handles
             }
         }
 
-#region Construction
+        IReference IReferencable<IReference>.Reference => base.Reference;
+
+        #region Construction
 
         protected ReadHandleBase() { }
 

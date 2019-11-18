@@ -1,16 +1,17 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using LionFire.DependencyInjection;
+using LionFire.Dependencies;
 using LionFire.Ontology;
 using LionFire.Persistence;
+using LionFire.Persistence.Handles;
 using LionFire.Referencing;
 
 namespace LionFire.Vos
 {
 
     [ReadOnlyEditionIs(typeof(VobReadHandle<>))]
-    public class VobHandle<T> : VobReadHandle<T>, IReadWriteHandleBase<T>
+    public class VobHandle<T> : ReadWriteHandle<T>, IReadWriteHandle<T>
         , IVobHandle<T>
     //, ITreeHandle
     {
@@ -32,9 +33,9 @@ namespace LionFire.Vos
         }
 #endif
 
-#endregion
+        #endregion
 
-#region Construction
+        #region Construction
 
         // Pass-through to base class
 
@@ -58,9 +59,9 @@ namespace LionFire.Vos
         {
         }
 
-#endregion
+        #endregion
 
-#region Object Construction
+        #region Object Construction
 
 
 
@@ -96,11 +97,11 @@ namespace LionFire.Vos
         }
 #endif
 
-#endregion
+        #endregion
 
-#region Duplicate from WBase
+        #region Duplicate from WBase
 
-#region DeletePending
+        #region DeletePending
 
         /// <summary>
         /// Next save will delete the underlying object
@@ -123,7 +124,7 @@ namespace LionFire.Vos
 
         IVob IVobHandle<T>.Vob => throw new NotImplementedException();
 
-#endregion
+        #endregion
 
         public async Task Commit()
         {
@@ -144,9 +145,9 @@ namespace LionFire.Vos
             //OutgoingDeletePending = true;
         }
 
-#endregion
+        #endregion
 
-#region Writable Handle Implementation
+        #region Writable Handle Implementation
 
         public Task DeleteObject() => throw new NotImplementedException();
         public Task WriteObject() => throw new NotImplementedException();

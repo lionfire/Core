@@ -7,6 +7,8 @@ using LionFire.ObjectBus.Handles;
 using LionFire.Ontology;
 using LionFire.Persistence;
 using LionFire.Referencing;
+using LionFire.Resolves;
+using LionFire.Results;
 
 namespace LionFire.ObjectBus.Ex // Extended API
 {
@@ -72,10 +74,11 @@ namespace LionFire.ObjectBus
         
         #region Get
 
-        public static async Task<TObject> ToObject<TObject>(this IReference reference) => await ((OBaseReadHandle<TObject>)reference.ToReadHandle<TObject>()).ToObject();
+        //public static async Task<TObject> ToObject<TObject>(this IReference reference) => (await ((OBaseReadHandle<TObject>)reference.ToReadHandle<TObject>()).GetValue().ConfigureAwait(false)).Value;
 
         public static async Task<TObject> GetObject<TObject>(this IReference reference)
-            => (TObject)(await ((OBaseReadHandle<TObject>)reference.ToReadHandle<TObject>()).Get()).Object;
+            => (await ((OBaseReadHandle<TObject>)reference.ToReadHandle<TObject>()).GetValue().ConfigureAwait(false)).Value;
+            //=> (TObject)(await ((OBaseReadHandle<TObject>)reference.ToReadHandle<TObject>()).Get()).Object;
 
         #endregion
 
@@ -85,7 +88,8 @@ namespace LionFire.ObjectBus
 
         #region Set
 
-        public static async Task<IPersistenceResult> SetObject<TObject>(this IReference reference, TObject @object) => (await ((OBaseHandle<TObject>)reference.ToHandle<TObject>()).WriteObject(@object));
+        public static async Task<ISuccessResult> SetObject<TObject>(this IReference reference, TObject @object) 
+            => (await ((OBaseHandle<TObject>)reference.ToWriteHandle<TObject>()).Put(@object));
 
         #endregion
 

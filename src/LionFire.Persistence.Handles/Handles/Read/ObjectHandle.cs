@@ -18,7 +18,7 @@ namespace LionFire.Persistence.Handles
     public class ObjectHandle<TValue> : ReadHandleBase<NamedReference, TValue>
         where TValue : class
     {
-        public override ITask<IResolveResult<TValue>> ResolveImpl()
+        protected override ITask<IResolveResult<TValue>> ResolveImpl()
         {
             if (HasValue)
             {

@@ -1,5 +1,4 @@
-﻿#if TODO
-using LionFire.Persistence;
+﻿using LionFire.Persistence;
 using LionFire.Referencing;
 using LionFire.Resolves;
 using System;
@@ -8,10 +7,12 @@ using System.Threading.Tasks;
 
 namespace LionFire.Persistence.Handles
 {
-    public abstract class ObservableHandleDictionary<TKey, THandle, TValue> : ObservableReadDictionary<TKey, THandle, TValue>
+    public abstract class ObservableHandleDictionary<TKey, THandle, TValue> 
+        //: ObservableReadDictionary<TKey, THandle, TValue>
         where THandle : class, IReadHandle<TValue>, INotifyPersists<TValue>
         where TValue : class
     {
+#if TODO
 
         #region Key translation
 
@@ -67,6 +68,6 @@ namespace LionFire.Persistence.Handles
             return handle;
         }
         //public object PersistenceContext { get; set; }
+#endif
     }
 }
-#endif

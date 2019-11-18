@@ -15,7 +15,7 @@ namespace LionFire.Vos
         {
             get
             {
-                yield return VosDiskPaths.UserSharedStoresRoot.AsFileReference();
+                yield return VosDiskPaths.UserSharedStoresRoot.ToFileReference();
             }
         }
         public static IEnumerable<IReference> GlobalLocations
@@ -25,7 +25,7 @@ namespace LionFire.Vos
 #if UNITY
                 yield break;
 #else
-                yield return VosDiskPaths.GlobalSharedStoresRoot.AsFileReference();
+                yield return VosDiskPaths.GlobalSharedStoresRoot.ToFileReference();
 
 #endif
             }

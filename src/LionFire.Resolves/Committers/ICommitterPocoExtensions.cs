@@ -1,9 +1,10 @@
-﻿using LionFire.DependencyInjection;
+﻿using LionFire.Dependencies;
 using LionFire.Resolvables;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using LionFire.Resolves;
 using LionFire.Resolvers;
+using LionFire.Results;
 
 namespace LionFire.ExtensionMethods.Poco.Resolvables
 {
@@ -17,7 +18,7 @@ namespace LionFire.ExtensionMethods.Poco.Resolvables
         /// <param name="key"></param>
         /// <param name="returnFirstSuccess">If false (default), it will instead return first result that has IsSuccess().HasValue == true.  If true, it will try all ICommitters until one returns IsSuccess() == true.</param>
         /// <returns></returns>
-        public static async Task<IPutResult> Commit<TKey, TValue>(this TKey key, TValue value, bool returnFirstSuccess = false)
+        public static async Task<ISuccessResult> Commit<TKey, TValue>(this TKey key, TValue value, bool returnFirstSuccess = false)
         {
             foreach (var resolver in DependencyContext.Current.GetServices<ICommitter<TKey, TValue>>())
             {

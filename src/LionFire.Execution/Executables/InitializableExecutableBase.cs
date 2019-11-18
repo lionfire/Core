@@ -2,7 +2,7 @@
 using System.Threading.Tasks;
 using LionFire.Validation;
 using System.Reflection;
-using LionFire.DependencyInjection;
+using LionFire.Dependencies;
 
 namespace LionFire.Execution.Executables
 {

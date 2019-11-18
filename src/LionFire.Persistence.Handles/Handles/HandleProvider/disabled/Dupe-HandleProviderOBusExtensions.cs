@@ -1,4 +1,4 @@
-﻿//using LionFire.DependencyInjection;
+﻿//using LionFire.Dependencies;
 //using LionFire.ObjectBus;
 //using LionFire.Referencing;
 //using System;

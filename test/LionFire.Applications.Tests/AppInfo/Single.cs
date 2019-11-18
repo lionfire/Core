@@ -4,7 +4,7 @@
 //using System.Threading.Tasks;
 //using LionFire;
 //using LionFire.Applications.Hosting;
-//using LionFire.DependencyInjection;
+//using LionFire.Dependencies;
 //using Xunit;
 
 //namespace AppInfo_

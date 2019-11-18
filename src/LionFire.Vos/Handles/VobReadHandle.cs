@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
 using LionFire.Copying;
-using LionFire.DependencyInjection;
+using LionFire.Dependencies;
 using LionFire.ObjectBus;
 using LionFire.Ontology;
 using LionFire.Persistence;

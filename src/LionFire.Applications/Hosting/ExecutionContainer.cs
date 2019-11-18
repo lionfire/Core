@@ -1,6 +1,6 @@
 ﻿#if UNUSED // INCOMPLETE - no point yet?
 using LionFire.Execution;
-using LionFire.DependencyInjection;
+using LionFire.Dependencies;
 using LionFire.Composables;
 using LionFire.MultiTyping;
 using Microsoft.Extensions.DependencyInjection;

@@ -3,6 +3,8 @@ using System.Threading.Tasks;
 using LionFire.Persistence.Handles;
 using LionFire.Persistence;
 using LionFire.Referencing;
+using LionFire.Resolves;
+using MorseCode.ITask;
 
 namespace LionFire.ObjectBus.Filesystem
 {
@@ -17,6 +19,6 @@ namespace LionFire.ObjectBus.Filesystem
         {
         }
 
-        public override Task<IRetrieveResult<T>> RetrieveImpl() => throw new NotImplementedException();
+        protected override ITask<IResolveResult<T>> ResolveImpl() => throw new NotImplementedException();
     }
 }

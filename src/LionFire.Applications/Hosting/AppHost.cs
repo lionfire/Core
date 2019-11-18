@@ -6,9 +6,8 @@ using System.Linq;
 using System.Reactive.Subjects;
 using System.Threading;
 using System.Threading.Tasks;
-using LionFire.Assets;
 using LionFire.Composables;
-using LionFire.DependencyInjection;
+using LionFire.Dependencies;
 using LionFire.Execution;
 using LionFire.Execution.Composition;
 using LionFire.Instantiating;
@@ -233,19 +232,7 @@ namespace LionFire.Applications.Hosting
         /// <returns></returns>
         protected virtual IServiceProvider BuildServiceProvider(IServiceCollection serviceCollection)
             => serviceCollection.BuildServiceProvider(); // Microsoft extension method
-
-
-        public IAppHost InstantiateTemplates() // MOVE to ITemplateExtensions
-        {
-            foreach (var tComponent in children.OfType<ITemplate>().ToArray())
-            {
-                var component = tComponent.Create();
-                Add(component);
-                children.Remove(tComponent);
-            }
-
-            return this;
-        }
+        
 
         ///// <summary>
         ///// 
@@ -295,7 +282,7 @@ namespace LionFire.Applications.Hosting
             // FUTURE TODO: Use Resolution context?
             children.ResolveHandlesAsync().GetResultSafe();
 
-            InstantiateTemplates();
+            // InstantiateTemplates(); MOVED to ITemplateExtensions.InstantiateTemplates.  Put it in a IConfigures if still desired
 
             foreach (var configurer in children.OfType<IConfigures<IAppHost>>())
             {
@@ -506,8 +493,18 @@ namespace LionFire.Applications.Hosting
         {
             Dispose(true);
         }
-        
+
         #endregion
-        
+
+        // TODO: Move this to IExecutableHost somehow?
+        public virtual IAppHost Replace<TComponent>(TComponent toRemove, TComponent toAdd)
+            where TComponent : class
+        {
+            // TODO: Fire only one event
+            children.Remove(toRemove);
+            Add(toAdd);
+            return this;
+        }
+
     }
 }

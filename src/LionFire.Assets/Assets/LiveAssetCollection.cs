@@ -63,7 +63,7 @@ namespace LionFire.Assets
         }
         private IAssetProvider assetProvider;
 
-        public INotifyingAssetProvider NotifyingAssetProvider => AssetProvider as INotifyingAssetProvider;
+        public INotifyingAssetProvider<T> NotifyingAssetProvider => AssetProvider as INotifyingAssetProvider<T>;
 
         #endregion
 

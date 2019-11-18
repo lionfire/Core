@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using LionFire.Ontology;
 using LionFire.Persistence;
 using LionFire.Referencing;
 

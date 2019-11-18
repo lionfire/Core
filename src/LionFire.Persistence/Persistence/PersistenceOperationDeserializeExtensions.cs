@@ -4,6 +4,8 @@
 //using LionFire.Extensions.Collections;
 using System.Collections.Generic;
 using System.IO;
+using System.Threading.Tasks;
+using LionFire.Dependencies;
 using LionFire.Serialization;
 
 namespace LionFire.Persistence
@@ -20,12 +22,12 @@ namespace LionFire.Persistence
         /// <param name="op"></param>
         /// <param name="context"></param>
         /// <returns></returns>
-        public static T ToObject<T>(this PersistenceOperation op, PersistenceContext context = null)
+        public static async Task<T> ToObject<T>(this PersistenceOperation op, PersistenceContext context = null)
         {
             if (context == null) context = op.Context;
-            var serializationProvider = (context?.SerializationProvider ?? Defaults.TryGet<ISerializationProvider>());
+            var serializationProvider = (context?.SerializationProvider ?? DependencyLocator.TryGet<ISerializationProvider>());
 
-            IEnumerable<Stream> streams(ISerializationStrategy strategy)
+            async IAsyncEnumerable<Stream> streams(ISerializationStrategy strategy)
             {
                 foreach (var path in op.Deserialization.CandidatePaths)
                 {
@@ -34,11 +36,11 @@ namespace LionFire.Persistence
                         continue;
                     }
 
-                    yield return context.Deserialization.PathToStream(path);
+                    yield return await context.Deserialization.PathToStream(path).ConfigureAwait(false);
                 }
             }
 
-            return serializationProvider.ToObject<T>(streams, op, context);
+            return await serializationProvider.ToObject<T>(streams, op, context);
             
             
             //var strategyResults = .Strategies(streams(), op, context);

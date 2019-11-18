@@ -2,7 +2,6 @@
 #define TRACE_LOAD
 
 using System;
-//using LionFire.Extensions.Collections;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.IO;
@@ -11,100 +10,102 @@ using System.Threading.Tasks;
 using LionFire.Execution;
 using LionFire.Extensions.Collections;
 using LionFire.IO.Filesystem;
-using LionFire.MultiTyping;
 using LionFire.Persistence;
 using LionFire.Referencing;
 using LionFire.Serialization;
 using LionFire.Structures;
 using Microsoft.Extensions.Logging;
+using LionFire.Dependencies;
+using Microsoft.Extensions.Options;
+using LionFire.ExtensionMethods.Persistence.Filesystem;
 
-namespace LionFire.IO.Filesystem // MOVE to LionFire.IO.Filesystem
+namespace LionFire.ExtensionMethods.Persistence.Filesystem
 {
-    public interface IFsPersistenceInterceptor
+    public static class FSPersistenceExtensions
     {
-        object Read(string diskPath, Type type = null);
+        public static async Task<Stream> PathToReadStream(this string path) => await Task.Run(() => new FileStream(path, FileMode.Open, FileAccess.Read, FileShare.Read)).ConfigureAwait(false);
+        public static async Task<byte[]> PathToBytes(this string path) => await Task.Run(() => File.ReadAllBytes(path)).ConfigureAwait(false);
+        public static async Task<string> PathToString(this string path) => await Task.Run(() => File.ReadAllText(path)).ConfigureAwait(false);
+    }
+}
 
-        //bool Write(object obj, string fullDiskPath, Type type, LionSerializer serializer); // TOPORT
+namespace LionFire.IO.Filesystem // MOVE to LionFire.Persistence.Filesystem
+{
+#warning NEXT: Rename FSOBasePersistence to FSPersistence, or rather move the methods into there.  Don't depend on ObjectBus.  
+
+    public class FSPersistence
+    {
+        public static FSPersistence Default => DependencyLocator.Get<FSPersistence>(() => new FSPersistence());
+
+        public FSPersistenceOptions Options
+        {
+            get
+            {
+                if (options == null) { options = DependencyLocator.Get<FSPersistenceOptions>(); }
+                return options;
+            }
+        }
+        public FSPersistenceOptions options;
+
+        protected FSPersistence() { }
+        public FSPersistence(IOptions<FSPersistenceOptions> options) { this.options = options.Value; }
     }
 
-    public class FsPersistence
+    public static class FSPersistenceStatic // REVIEW name - eliminate this class in favor of the singleton FSPersistence?
     {
         public static List<IFsPersistenceInterceptor> Interceptors => interceptors;
         private static readonly List<IFsPersistenceInterceptor> interceptors = new List<IFsPersistenceInterceptor>();
 
         // TODO: get this from DependencyContext
-        public static FsPersistenceOptions Options { get; set; } = new FsPersistenceOptions();
+        public static FSPersistenceOptions Options { get; set; } = new FSPersistenceOptions();
     }
 
-    public class FsPersistenceOptions
+    public class FSPersistenceOptions
     {
         public int MaxGetRetries { get; set; } = 10;
         public int MillisecondsBetweenGetRetries { get; set; } = 500;
     }
 }
 
-namespace LionFire.Serialization.Filesystem // MOVE to LionFire.Serialization.Filesystem
-{
-    /// <summary>
-    /// LionFire Filesystem serialization
-    /// </summary>
-    public class FsSerialization
-    {
-    }
-}
-namespace LionFire.Serialization.Net // MOVE to LionFire.Serialization.Net
-{
-    public class NetSerialization
-    {
-    }
-}
 
 namespace LionFire.ObjectBus.Filesystem
 {
-    public class FsOBasePersistence
+    public static class FsOBasePersistence
     {
-        #region Singletons
-
-        public static FsOBasePersistence Instance => Singleton<FsOBasePersistence>.Instance;
-
-        #endregion
 
         #region Constants
 
-        public static string EndOfNameMarker = "'";
+        public static string EndOfNameMarker = "'"; // REVIEW
 
         #endregion
 
         #region Configuration
 
         public static readonly bool AutoDeleteEmptyFiles = true;
-        //public static readonly bool AutoDeleteNullFiles = true; // FUTURE? Delete if file is all null (saw this on my SSDs after a machine crash)
+        //public static readonly bool AutoDeleteNullFiles = true; // FUTURE? Delete if file is all null (saw this on my SSDs after a machine crash) - TODO: some sort of null detection feature
 
         #endregion
 
-        public static Stream PathToReadStream(string path) => new FileStream(path, FileMode.Open, FileAccess.Read, FileShare.Read);
-        public static byte[] PathToBytes(string path) => File.ReadAllBytes(path);
-        public static string PathToString(string path) => File.ReadAllText(path);
 
-        protected static PersistenceContext FsOBaseDeserializingPersistenceContext = new PersistenceContext
+        static PersistenceContext FsOBaseDeserializingPersistenceContext = new PersistenceContext
         {
-            SerializationProvider = Defaults.TryGet<ISerializationProvider>(),
+            SerializationProvider = DependencyLocator.TryGet<ISerializationProvider>(),
             Deserialization = new DeserializePersistenceContext
             {
-                PathToStream = PathToReadStream,
-                PathToBytes = PathToBytes,
-                PathToString = PathToString,
+                PathToStream = FSPersistenceExtensions.PathToReadStream,
+                PathToBytes = FSPersistenceExtensions.PathToBytes,
+                PathToString = FSPersistenceExtensions.PathToString,
             }
         };
 
         #region Get
 
-        public static async Task<T> GetFromPath<T>(string diskPath, Lazy<PersistenceOperation> operation = null, PersistenceContext context = null) 
+        public static async Task<T> GetFromPath<T>(string diskPath, Lazy<PersistenceOperation> operation = null, PersistenceContext context = null)
             => await GetObjectFromDiskPath<T>(diskPath, typeof(T), operation, context);
 
         public static async Task<T> GetObjectFromDiskPath<T>(string diskPath, Type type = null, Lazy<PersistenceOperation> operation = null, PersistenceContext context = null)
         {
-            return await new Func<T>(() =>
+            return await new Func<Task<T>>(async () =>
             {
                 var fileName = Path.GetFileName(diskPath);
 
@@ -135,8 +136,8 @@ namespace LionFire.ObjectBus.Filesystem
 
                 #endregion
 
-                return persistenceOperation.ToObject<T>(effectiveContext);
-            }).AutoRetry(maxRetries: FsPersistence.Options.MaxGetRetries, millisecondsBetweenAttempts: FsPersistence.Options.MillisecondsBetweenGetRetries);
+                return await persistenceOperation.ToObject<T>(effectiveContext).ConfigureAwait(false);
+            }).AutoRetry(maxRetries: FSPersistenceStatic.Options.MaxGetRetries, millisecondsBetweenAttempts: FSPersistenceStatic.Options.MillisecondsBetweenGetRetries).ConfigureAwait(false);
         }
 
 
@@ -405,7 +406,7 @@ namespace LionFire.ObjectBus.Filesystem
         //    }
         //}
 
-            // MOVE to extensionless
+        // MOVE to extensionless
         //public static async Task<object> TryGetExtensionless(string objectPath, Type type = null) // MOVE
         //{
         //    var objects = new List<object>();
@@ -484,16 +485,16 @@ namespace LionFire.ObjectBus.Filesystem
             {
                 if (defaultSerializationProvider == null)
                 {
-                    defaultSerializationProvider = Defaults.TryGet<ISerializationProvider>();
+                    defaultSerializationProvider = DependencyLocator.TryGet<ISerializationProvider>();
                 }
                 return defaultSerializationProvider;
             }
         }
         private static ISerializationProvider defaultSerializationProvider;
 
-        public static async Task Write(object obj, string diskPath, Type type = null, bool allowOverwrite = true, PersistenceContext context = null)
+        public static async Task<IPersistenceResult> Write(object obj, string diskPath, Type type = null, bool allowOverwrite = true, PersistenceContext context = null)
         {
-            await Task.Run(async () =>
+            return await Task.Run(async () =>
             {
                 if (!allowOverwrite && (await Exists(diskPath))) throw new AlreadySetException($"File already exists at '{diskPath}'"); // TOTEST
 
@@ -517,7 +518,8 @@ namespace LionFire.ObjectBus.Filesystem
                     PathIsMissingExtension = false,
                 })).ToLazy();
 
-                var strategyResults = (context?.SerializationProvider ?? DefaultSerializationProvider).ResolveStrategies(op, context);
+                var serializationProvider = (context?.SerializationProvider ?? DefaultSerializationProvider) ?? throw new HasUnresolvedDependenciesException(typeof(ISerializationProvider).FullName);
+                var strategyResults = serializationProvider.ResolveStrategies(op, context);
 
                 foreach (var strategyResult in strategyResults)
                 {
@@ -533,13 +535,14 @@ namespace LionFire.ObjectBus.Filesystem
                     fullDiskPath = fullDiskPath.Replace('/', '\\'); // REVIEW
 #endif
 
-                    using (var fs = new FileStream(fullDiskPath, FileMode.Create))
+                    using (var fs = new FileStream(fullDiskPath, allowOverwrite ? FileMode.Create : FileMode.OpenOrCreate))
                     {
                         strategy.ToStream(obj, fs, op, context);
                     }
 
                     RecentSaves.AddOrUpdate(fullDiskPath, DateTime.UtcNow, (x, y) => DateTime.UtcNow);
                 }
+                return (PersistenceResultFlags.Success | (allowOverwrite ? PersistenceResultFlags.NotFound : PersistenceResultFlags.None)).ToResult();
             });
         }
 

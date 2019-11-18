@@ -1,10 +1,9 @@
 ﻿using System;
 using System.Threading.Tasks;
 using LionFire.Applications.Hosting;
-using LionFire.ObjectBus;
-using LionFire.ObjectBus.Filesystem;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.DependencyInjection;
+using LionFire.Dependencies;
 
 namespace LionFire.Hosting
 {
@@ -35,6 +34,20 @@ namespace LionFire.Hosting
             });
         }
 
+        public static IHost InitializeDependencyContext(this IHost host)
+        {
+            if (DependencyContext.Current == null)
+            {
+                DependencyContext.Current = new DependencyContext();
+            }
+
+            if (DependencyContext.Current.ServiceProvider == null)
+            {
+                DependencyContext.Current.ServiceProvider = host.Services;
+            }
+            return host;
+        }
+
         public static async Task Run(this IHostBuilder hostBuilder, Func<IServiceProvider, Task> taskFactory)
         {
             var tcs = new TaskCompletionSource<object>();
@@ -61,9 +74,14 @@ namespace LionFire.Hosting
                         ;
                  })
             .Build()
+            .InitializeDependencyContext()
             .RunAsync()
             .ContinueWith(t =>
             {
+                if (DependencyContext.Current != null)
+                {
+                    DependencyContext.Current.ServiceProvider = null;
+                }
                 if (exception != null)
                 {
                     tcs.SetException(exception);

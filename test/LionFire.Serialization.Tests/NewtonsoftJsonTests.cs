@@ -30,7 +30,7 @@ namespace LionFire.Serialization.Tests
                     .AddNewtonsoftJson()
                     .RunNowAndWait(() =>
                     {
-                        var ser = Defaults.TryGet<ISerializationProvider>();
+                        var ser = DependencyLocator.TryGet<ISerializationProvider>();
                         Assert.Null(ser);
                     });
             }
@@ -43,7 +43,7 @@ namespace LionFire.Serialization.Tests
                 .AddNewtonsoftJson()
                 .RunNowAndWait(() =>
                 {
-                    var ser = Defaults.TryGet<ISerializationProvider>();
+                    var ser = DependencyLocator.TryGet<ISerializationProvider>();
                     var obj = TestClass1.Create;
 
                     var json = ser.ToString(obj);
@@ -77,7 +77,7 @@ namespace LionFire.Serialization.Tests
                 .AddNewtonsoftJson()
                 .RunNowAndWait(() =>
                 {
-                    var ser = Defaults.TryGet<ISerializationProvider>();
+                    var ser = DependencyLocator.TryGet<ISerializationProvider>();
                     var obj = TestClass1.Create;
 
                     var json = ser.ToString(obj);
@@ -101,7 +101,7 @@ namespace LionFire.Serialization.Tests
                 .AddNewtonsoftJson()
                 .RunNowAndWait(() =>
                 {
-                    var ser = Defaults.TryGet<ISerializationProvider>();
+                    var ser = DependencyLocator.TryGet<ISerializationProvider>();
                     var obj = TestClass1.Create;
                     var json = ser.ToString(obj);
 

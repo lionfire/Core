@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using LionFire.Results;
+using System.Threading.Tasks;
 
 namespace LionFire.Resolves
 {
@@ -9,6 +10,6 @@ namespace LionFire.Resolves
         /// </summary>
         /// <param name="value"></param>
         /// <returns></returns>
-        Task<IPutResult> Put(T value);
+        Task<ISuccessResult> Put(T value);
     }
 }

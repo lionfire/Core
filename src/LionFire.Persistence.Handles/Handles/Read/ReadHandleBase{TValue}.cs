@@ -10,7 +10,6 @@ namespace LionFire.Persistence.Handles
     /// <typeparam name="TValue"></typeparam>
     /// <seealso cref="ReadHandle{TValue}"/>
     public abstract class ReadHandleBase<TValue> : Resolves<IReference, TValue>, IReadHandleBase<TValue>
-        where TValue : class
         //, IReadHandleInvariant<TValue>
     {
 

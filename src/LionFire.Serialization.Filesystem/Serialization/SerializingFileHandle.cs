@@ -1,7 +1,7 @@
 ﻿using System;
 using System.IO;
 using System.Threading.Tasks;
-using LionFire.DependencyInjection;
+using LionFire.Dependencies;
 using LionFire.Execution;
 using LionFire.IO;
 using LionFire.ObjectBus.Filesystem;
@@ -54,7 +54,7 @@ namespace LionFire.Serialization
                 //var serializationService = persistenceContext.ObjectAsType<ISerializationService>();
                 //if (serializationService == null) { serializationService = DependencyContext.Current.GetService<ISerializationService>(); }
                 //var serializationService = DependencyContext.Current.GetService<ISerializationService>();
-                var serializationService = Defaults.TryGet<ISerializationProvider>();
+                var serializationService = DependencyLocator.TryGet<ISerializationProvider>();
 
                 if (serializationService == null)
                 {
@@ -126,7 +126,7 @@ namespace LionFire.Serialization
                 }
 #else
                     var bytes = File.ReadAllBytes(Path);
-                    Object = Defaults.Get<ISerializationProvider>().ToObject<T>(bytes, operation: SerializationOperation, context: DefaultSerializationContext);
+                    Object = DependencyLocator.Get<ISerializationProvider>().ToObject<T>(bytes, operation: SerializationOperation, context: DefaultSerializationContext);
 #endif
 
                 //if(Result.IsSuccess)

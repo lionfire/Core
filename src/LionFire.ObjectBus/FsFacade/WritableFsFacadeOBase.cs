@@ -15,19 +15,21 @@ namespace LionFire.ObjectBus
 
         public override async Task<(bool exists, IPersistenceResult result)> Exists(TReference reference)
         {
-            var result = new RetrieveResult<bool>();
+            //var result = new RetrieveResult<bool>();
 
             bool existsResult = await FsFacade.Exists(reference.Path).ConfigureAwait(false);
 
-            result.Flags |= PersistenceResultFlags.Success | (existsResult ? PersistenceResultFlags.Found : PersistenceResultFlags.NotFound);
-            return (existsResult, result);
+            return existsResult ? (true, RetrieveResult<object>.Found) : (false, RetrieveResult<object>.NotFound);
+
+            //result.Flags |= PersistenceResultFlags.Success | (existsResult ? PersistenceResultFlags.Found : PersistenceResultFlags.NotFound);
+            //return (existsResult, result);
         }
 
         public override async Task<IPersistenceResult> CanDelete<T>(TReference reference)
         {
-            // FUTURE: Check filesystem permissions
             var existsResult = await Exists(reference);
-            return existsResult.exists ? PersistenceResult.PreviewSuccess : PersistenceResult.NotFound;
+            // FUTURE: Check filesystem permissions
+            return new PersistenceResult { Flags = existsResult.exists ? PersistenceResultFlags.PreviewSuccess : PersistenceResultFlags.PreviewFail }; 
 
             //return existsResult.Object;
             //return new RetrieveResult<bool?>

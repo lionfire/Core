@@ -5,7 +5,7 @@ using LionFire.Execution;
 using System.Threading.Tasks;
 using System.Reactive.Linq;
 
-namespace LionFire.DependencyInjection.Execution
+namespace LionFire.Dependencies.Execution
 {
     public class DependencyStatus
     {
