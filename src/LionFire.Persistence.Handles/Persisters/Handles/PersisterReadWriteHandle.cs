@@ -9,12 +9,14 @@ namespace LionFire.Persistence.Handles
         where TReference : IReference
     {
         protected PersisterReadWriteHandle() { }
+
         protected PersisterReadWriteHandle(TReference reference) : base(reference) { }
+        public PersisterReadWriteHandle(IPersister<TReference> persister, TReference reference) : base(reference) => Persister = persister;
 
         public abstract IPersister<TReference> Persister { get; protected set; }
 
 
-        public override event Action<PersistenceEvent<TValue>> PersistenceStateChanged;
+        //public override event Action<PersistenceEvent<TValue>> PersistenceStateChanged;
 
         public override ILazyResolveResult<TValue> QueryValue() => throw new NotImplementedException();
         public override void RaisePersistenceEvent(PersistenceEvent<TValue> ev) => throw new NotImplementedException();

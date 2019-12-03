@@ -6,17 +6,20 @@ using LionFire.Ontology;
 using LionFire.Persistence;
 using LionFire.Persistence.Handles;
 using LionFire.Referencing;
+using LionFire.Resolves;
 
 namespace LionFire.Vos
 {
 
     [ReadOnlyEditionIs(typeof(VobReadHandle<>))]
-    public class VobHandle<T> : ReadWriteHandle<T>, IReadWriteHandle<T>
+    public class VobHandle<T> : ReadWriteHandle<VosReference, T>
         , IVobHandle<T>
     //, ITreeHandle
     {
 
-        public override bool IsReadOnly => false;
+        public string Path => Reference?.Path;
+
+        //public override bool IsReadOnly => false;
 
         #region Construction Operators
 
@@ -39,7 +42,7 @@ namespace LionFire.Vos
 
         // Pass-through to base class
 
-        public VobHandle(Vob vob) : base(vob)
+        public VobHandle(Vob vob) : base(vob.VosReference)
         {
         }
 
@@ -51,13 +54,13 @@ namespace LionFire.Vos
         {
         }
 
-        /// <summary>
-        /// Finds Vob using default available VBase.  Uses VosReference from that Vob, typed to T.
-        /// </summary>
-        /// <param name="reference">Currently must be of type VosReference.  (FUTURE: Allow reference types compatible with / convertible to VosReference)</param>
-        public VobHandle(IReference reference) : base(reference)
-        {
-        }
+        ///// <summary>
+        ///// Finds Vob using default available VBase.  Uses VosReference from that Vob, typed to T.
+        ///// </summary>
+        ///// <param name="reference">Currently must be of type VosReference.  (FUTURE: Allow reference types compatible with / convertible to VosReference)</param>
+        //public VobHandle(IReference reference) : base((VosReference)reference)
+        //{
+        //}
 
         #endregion
 
@@ -71,7 +74,7 @@ namespace LionFire.Vos
         {
             if (!HasValue)
             {
-                await RetrieveImpl().ConfigureAwait(false);
+                await ResolveImpl().ConfigureAwait(false);
                 if (!HasValue) { Value = ReferenceObjectFactory.ConstructDefault<T>(Reference); }
             }
             return Value;
@@ -154,6 +157,10 @@ namespace LionFire.Vos
         public Task<bool> Delete() => throw new NotImplementedException();
 
         public void OnRenamed(IVobHandle<T> newHandle) => throw new NotImplementedException();
+        protected override Task<IResolveResult<T>> ResolveImpl() => throw new NotImplementedException();
+        protected override Task<IPersistenceResult> UpsertImpl() => throw new NotImplementedException();
+        public override ILazyResolveResult<T> QueryValue() => throw new NotImplementedException();
+        public override void RaisePersistenceEvent(PersistenceEvent<T> ev) => throw new NotImplementedException();
 
         #endregion
     }

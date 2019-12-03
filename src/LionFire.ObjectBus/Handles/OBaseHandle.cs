@@ -9,14 +9,30 @@ using LionFire.Resolves;
 
 namespace LionFire.ObjectBus.Handles
 {
-    // TODO: Derive from PersistsReadWriteHandleBase?
-    public class OBaseHandle<T> : ReadWriteHandleBase<IReference, T>, IHas<IOBase>
+    public class OBaseHandle<T> : PersisterReadWriteHandle<IReference, T>, IHas<IOBase>
     {
         public IOBase OBase { get;  }
         IOBase IHas<IOBase>.Object => OBase;
 
 
-        public OBaseHandle(IReference reference, IOBase obase, T handleObject = default) : base(reference)
+        #region Persister
+
+        [SetOnce]
+        public override IPersister<IReference> Persister
+        {
+            get => persister;
+            protected set
+            {
+                if (persister == value) return;
+                if (persister != default) throw new AlreadySetException();
+                persister = value;
+            }
+        }
+        private IPersister<IReference> persister;
+
+        #endregion
+
+        public OBaseHandle(IReference reference, IOBase obase, T handleObject = default) : base(obase.GetPersister<IReference>(), reference)
         {
             this.OBase = obase ?? throw new ArgumentNullException(nameof(obase));
             Value = handleObject;

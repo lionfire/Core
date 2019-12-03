@@ -13,23 +13,23 @@ namespace LionFire.Referencing
 
         #region ReadHandle
 
-        public static IReadHandleBase<T> GetReadHandle<T>(this IReference reference) => reference.GetReadHandleProvider().GetReadHandle<T>(reference);
-        public static IReadHandleBase<T> ToReadHandle<T>(this IReference reference) => reference.ToReadHandleProvider().GetReadHandle<T>(reference) ?? throw new HasUnresolvedDependenciesException($"Could not get {nameof(IReadHandleBase<T>)} type for reference of type {reference.GetType().FullName}");
+        public static IReadHandle<T> GetReadHandle<T>(this IReference reference) => reference.GetReadHandleProvider().GetReadHandle<T>(reference);
+        public static IReadHandle<T> ToReadHandle<T>(this IReference reference) => reference.ToReadHandleProvider().GetReadHandle<T>(reference) ?? throw new HasUnresolvedDependenciesException($"Could not get {nameof(IReadHandle<T>)} type for reference of type {reference.GetType().FullName}");
 
         #endregion
 
         #region Write Handle
 
-        public static IWriteHandleBase<T> GetWriteHandle<T>(this IReference reference) => reference.ToWriteHandleProvider().GetWriteHandle<T>(reference);
-        public static IWriteHandleBase<T> ToWriteHandle<T>(this IReference reference) => reference.ToWriteHandleProvider().GetWriteHandle<T>(reference) ?? throw new HasUnresolvedDependenciesException($"Could not get {nameof(Persistence.IWriteHandleBase<T>)} type for reference of type {reference.GetType().FullName}");
+        public static IWriteHandle<T> GetWriteHandle<T>(this IReference reference) => reference.ToWriteHandleProvider().GetWriteHandle<T>(reference);
+        public static IWriteHandle<T> ToWriteHandle<T>(this IReference reference) => reference.ToWriteHandleProvider().GetWriteHandle<T>(reference) ?? throw new HasUnresolvedDependenciesException($"Could not get {nameof(Persistence.IWriteHandle<T>)} type for reference of type {reference.GetType().FullName}");
 
 
         #endregion
 
         #region Handles
 
-        public static IReadWriteHandleBase<T> GetReadWriteHandle<T>(this IReference reference) => reference.ToReadWriteHandleProvider().GetReadWriteHandle<T>(reference);
-        public static IReadWriteHandleBase<T> ToReadWriteHandle<T>(this IReference reference) => reference.ToReadWriteHandleProvider().GetReadWriteHandle<T>(reference) ?? throw new HasUnresolvedDependenciesException($"Could not get {nameof(IReadWriteHandleBase<T>)} type for reference of type {reference.GetType().FullName}");
+        public static IReadWriteHandle<T> GetReadWriteHandle<T>(this IReference reference) => reference.ToReadWriteHandleProvider().GetReadWriteHandle<T>(reference);
+        public static IReadWriteHandle<T> ToReadWriteHandle<T>(this IReference reference) => reference.ToReadWriteHandleProvider().GetReadWriteHandle<T>(reference) ?? throw new HasUnresolvedDependenciesException($"Could not get {nameof(IReadWriteHandle<T>)} type for reference of type {reference.GetType().FullName}");
 
         #endregion
 

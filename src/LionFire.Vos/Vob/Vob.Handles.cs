@@ -9,7 +9,7 @@ namespace LionFire.Vos
 {
     public partial class Vob
     {
-        public IEnumerable<IReadHandleBase<MountHandleObject>> ReadHandles
+        public IEnumerable<IReadHandle<MountHandleObject>> ReadHandles
         {
             get
             {

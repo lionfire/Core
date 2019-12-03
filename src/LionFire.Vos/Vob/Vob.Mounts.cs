@@ -346,7 +346,7 @@ namespace LionFire.Vos
             {
                 var reference = Object.ReferenceEquals(mount.Vob, this) ? mount.RootHandle.Reference : mount.RootHandle.Reference.GetChildSubpath(PathElements.Skip(mount.VobDepth));
                 // ... otherwise, we have to get the handle from the reference.
-                result = reference.ToHandle<T>();
+                result = reference.ToReadWriteHandle<T>();
             }
 #else
             if (Object.ReferenceEquals(mount.Vob, this))
@@ -394,9 +394,9 @@ namespace LionFire.Vos
         /// </summary>
         /// <param name="mount"></param>
         /// <returns></returns>
-        private IReadHandleBase<MountHandleObject> GetMountHandle(Mount mount)
+        private IReadHandle<MountHandleObject> GetMountHandle(Mount mount)
         {
-            IReadHandleBase<MountHandleObject> result;
+            IReadHandle<MountHandleObject> result;
 
             // TODO TO_ASSERT mount path is a parent of this.Path
 

@@ -66,7 +66,7 @@ namespace LionFire.Persistence.Handles
     public abstract class ReadHandleBase<TReference, TValue> : ReadHandleBase<TValue>
         , IReferencable<IReference>
         where TReference : IReference
-        where TValue : class
+        //where TValue : class
     {
         protected override bool IsAllowedReferenceType(Type type) => type == typeof(TReference);
 

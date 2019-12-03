@@ -31,6 +31,11 @@ namespace LionFire.ObjectBus
     /// </remarks>
     public interface IOBase : ISupportsUriSchemes
     {
+
+        IPersister<TReference> GetPersister<TReference>()
+            where TReference : IReference;
+
+
         #region Parent
 
         IOBus OBus { get; }

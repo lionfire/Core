@@ -11,10 +11,10 @@ namespace LionFire.ExtensionMethods.Resolves
     /// </summary>
     public static class ILazilyResolvesFallbackExtensions
     {
-        public static ITask<IResolveResult<TValue>> GetValue<TValue>(this IDefaultable _)
-        {
-            throw new Exception("TEST - does this get reached?");
-        }
+        //public static ITask<IResolveResult<TValue>> GetValue<TValue>(this IDefaultable _)
+        //{
+        //    throw new Exception("TEST - does this get reached?");
+        //}
 
         #region Get
 

@@ -57,6 +57,7 @@ namespace LionFire.ObjectBus.Ex // Extended API
 namespace LionFire.ObjectBus
 {
 
+#if TOPORT
     /// <summary>
     /// (Convenience API, shortcut compared to IReference.ToHandle())
     /// 
@@ -70,9 +71,9 @@ namespace LionFire.ObjectBus
     public static class OBus
     {
 
-        #region Read
+    #region Read
         
-        #region Get
+    #region Get
 
         //public static async Task<TObject> ToObject<TObject>(this IReference reference) => (await ((OBaseReadHandle<TObject>)reference.ToReadHandle<TObject>()).GetValue().ConfigureAwait(false)).Value;
 
@@ -80,22 +81,22 @@ namespace LionFire.ObjectBus
             => (await ((OBaseReadHandle<TObject>)reference.ToReadHandle<TObject>()).GetValue().ConfigureAwait(false)).Value;
             //=> (TObject)(await ((OBaseReadHandle<TObject>)reference.ToReadHandle<TObject>()).Get()).Object;
 
-        #endregion
+    #endregion
 
-        #endregion
+    #endregion
 
-        #region Write
+    #region Write
 
-        #region Set
+    #region Set
 
         public static async Task<ISuccessResult> SetObject<TObject>(this IReference reference, TObject @object) 
             => (await ((OBaseHandle<TObject>)reference.ToWriteHandle<TObject>()).Put(@object));
 
-        #endregion
+    #endregion
 
-        #endregion
+    #endregion
 
-        #region Delete
+    #region Delete
 
         public static async Task<bool> CanDelete<T>(this IReference reference) => (await reference.TryGetOBase().CanDelete<T>(reference).ConfigureAwait(false)).IsPreviewSuccess();
 
@@ -105,9 +106,9 @@ namespace LionFire.ObjectBus
         public static async Task Delete(this IReference reference) => await reference.TryGetOBase().Delete<object>(reference).ConfigureAwait(false);
         // FUTURE: public static Task<bool> Delete(this IReference reference, object onlyDeleteIfThisObject) => reference.GetOBase().Set(reference, value);
 
-        #endregion
+    #endregion
 
-        #region GetChildren
+    #region GetChildren
 
         /// <summary>
         /// Get References for children.  E.g. for filesystem paths, this may be file:/// with the full path for each file.
@@ -150,11 +151,12 @@ namespace LionFire.ObjectBus
         //    }
         //}
 
-        #endregion
+    #endregion
 
 
     }
-    
+#endif
+
 }
 
 #if OLD // TOPORT - if needed but not sure this makes sense anymore.  Brains moved to OBase.

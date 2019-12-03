@@ -4,14 +4,14 @@ namespace LionFire.Persistence.Handles
 {
     public interface IReadWriteHandleProvider
     {
-        IReadWriteHandleBase<T> GetReadWriteHandle<T>(IReference reference);
+        IReadWriteHandle<T> GetReadWriteHandle<T>(IReference reference);
     }
 
     //[AutoRegister]
     public interface IReadWriteHandleProvider<TReference>
         where TReference : IReference
     {
-        IReadWriteHandleBase<T> GetReadWriteHandle<T>(TReference reference);
+        IReadWriteHandle<T> GetReadWriteHandle<T>(TReference reference);
     }
 
     

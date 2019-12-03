@@ -9,7 +9,9 @@ using LionFire.Ontology;
 using LionFire.Persistence;
 using LionFire.Persistence.Handles;
 using LionFire.Referencing;
+using LionFire.Resolves;
 using LionFire.Structures;
+using MorseCode.ITask;
 
 namespace LionFire.Vos
 {
@@ -22,7 +24,7 @@ namespace LionFire.Vos
    // OPTIMIZE - (Here and VobHandle)  Create Reference on demand?  Store the reference path in Vob, instead of VosReference?  Generate VosReference on demand?  or is this an app specific thing?
 
     [ReadOnlyEditionFor(typeof(VobHandle<>))]
-    public class VobReadHandle<T> : ReadHandle<T>
+    public class VobReadHandle<T> : ReadHandleBase<IVosReference, T>
         , IVobReadHandle<T> // Has T because it is contravariantt
         , IProvidesHandleFromSubPath
       //, IReadWriteHandleProvider -- FUTURE: get relative paths? Maybe a stretch.
@@ -118,8 +120,8 @@ namespace LionFire.Vos
 
         #region Read handle implementation
 
-        public override Task<IRetrieveResult<T>> RetrieveImpl() => throw new NotImplementedException();
         public void OnRenamed(IVobHandle<object> newHandle) => throw new NotImplementedException();
+        protected override ITask<IResolveResult<T>> ResolveImpl() => throw new NotImplementedException();
 
         #endregion
 

@@ -27,6 +27,12 @@ namespace LionFire.ObjectBus
         //where HandleInterfaceType : IHandle
     {
         public abstract IOBus OBus { get; }
+        public IPersister<TReference> GetPersister<TReference>()
+    where TReference : IReference
+        {
+            throw new NotImplementedException();
+        }
+
 
         #region Uri
 
@@ -201,12 +207,13 @@ namespace LionFire.ObjectBus
 
         #endregion
 
-        #endregion
+#endregion
 
-        #endregion
+#endregion
 
-        #region Handle
+#region Handle
 
+#if TOPORT
         public virtual IReadWriteHandleBase<T> GetHandle<T>(IReference reference)
         {
             if (!(reference is TReference)) throw new ArgumentException($"{nameof(reference)} must be a {typeof(TReference).FullName} (TODO: Convert from compatible reference types)");
@@ -217,6 +224,7 @@ namespace LionFire.ObjectBus
             if (!(reference is TReference)) throw new ArgumentException($"{nameof(reference)} must be a {typeof(TReference).FullName} (TODO: Convert from compatible reference types)");
             return new OBaseReadHandle<T>(reference, this);
         }
+#endif
 
         //// Prefer IHandle.GetSubpath.  Default implementation of that uses this:
         //public virtual IHandle<T> GetHandleSubpath<T>(IReference reference, params string[] subpathChunks) where T : class
@@ -230,9 +238,9 @@ namespace LionFire.ObjectBus
         //    return reference.ToHandle<T>();
         //}
 
-        #endregion
+#endregion
 
-        #region (Protected) Conversion utils
+#region (Protected) Conversion utils
 
         protected TReference ConvertToReferenceType(IReference reference)
         {
@@ -258,9 +266,9 @@ namespace LionFire.ObjectBus
         //    return reft;
         //}
 
-        #endregion
+#endregion
 
-        #region Watcher / Events
+#region Watcher / Events
 
         public PersistenceEventKind SupportsEvents(PersistenceEventSourceKind sourceType = PersistenceEventSourceKind.Unspecified) => throw new NotImplementedException();
         public IObservable<OBasePersistenceEvent> Subscribe(Predicate<IReference> filter = null, PersistenceEventSourceKind sourceType = PersistenceEventSourceKind.Unspecified) => throw new NotImplementedException();
@@ -269,13 +277,13 @@ namespace LionFire.ObjectBus
         public virtual IObjectWatcher GetObjectWatcher(IReference reference) => null;
 
 
-        #endregion
+#endregion
 
-        #region Misc
+#region Misc
 
         private static readonly ILogger l = Log.Get();
 
-        #endregion
+#endregion
 
     }
 }

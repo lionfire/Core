@@ -8,6 +8,7 @@ namespace LionFire.Persistence.Handles
         public IPersister<TReference> Persister { get; protected set; }
 
         public PersisterReadWriteHandleBase(IPersister<TReference> persister) => Persister = persister;
+        public PersisterReadWriteHandleBase(IPersister<TReference> persister, TReference reference) : base(reference) => Persister = persister;
 
 
         //public override event Action<PersistenceEvent<TValue>> PersistenceStateChanged;
@@ -20,6 +21,6 @@ namespace LionFire.Persistence.Handles
         //    await Persister.Upsert<IReference, TValue>(this, ProtectedValue);
     }
 
-    
+
 
 }

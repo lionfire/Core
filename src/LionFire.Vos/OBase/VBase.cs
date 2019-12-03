@@ -41,8 +41,8 @@ namespace LionFire.Vos
 
         #region Handles
 
-        public override IReadWriteHandleBase<T> GetHandle<T>(IReference reference) => new VobHandle<T>(reference);
-        public override IReadHandleBase<T> GetReadHandle<T>(IReference reference) => new VobReadHandle<T>(this[reference.Path]);
+        //public override IReadWriteHandleBase<T> GetHandle<T>(IReference reference) => new VobHandle<T>(reference);
+        //public override IReadHandleBase<T> GetReadHandle<T>(IReference reference) => new VobReadHandle<T>(this[reference.Path]);
 
         #endregion
 
@@ -63,10 +63,10 @@ namespace LionFire.Vos
                 var vh = reference.GetReadHandle<T>();
 
                 //vh.IsRetrieveInfoEnabled = true;  TOPORT ?
-                var getResult = await vh.Get().ConfigureAwait(false);
-                if (getResult.HasObject)
+                var getResult = await vh.GetValue().ConfigureAwait(false);
+                if (getResult.HasValue)
                 {
-                    result.Value = getResult.Object;
+                    result.Value = getResult.Value;
                 }
                 else
                 {

@@ -7,19 +7,38 @@ using System.Collections.Generic;
 
 namespace LionFire.Persistence.Handles
 {
-    public abstract class ReadWriteHandle<TReference, TValue> 
+    public abstract class NotifyingReadWriteHandle<TReference, TValue> : ReadWriteHandle<TReference, TValue>
+        , INotifyPersists<TValue>
+        , INotifyingHandleInternal<TValue>
+                where TReference : IReference
+
+    {
+        public abstract event Action<PersistenceEvent<TValue>> PersistenceStateChanged;
+
+        public override TValue Value
+        {
+            [Blocking(Alternative = nameof(GetValue))]
+            get => ProtectedValue ?? GetValue().Result.Value;
+            [PublicOnly]
+            set
+            {
+                if (EqualityComparer<TValue>.Default.Equals(protectedValue, value)) return;
+                this.MutatePersistenceStateAndNotify(() => HandleUtils.OnUserChangedValue_ReadWrite(this, value));
+            }
+        }
+
+    }
+
+    public abstract class ReadWriteHandle<TReference, TValue>
         : ReadWriteHandleBase<TReference, TValue>
         , IReadWriteHandle<TValue>
         , IReferencable<TReference>
-        , INotifyPersists<TValue>
-        , INotifyingHandleInternal<TValue>
         where TReference : IReference
-    //where TValue : class
+        //where TValue : class
     {
         public new TReference Reference => Key;
         string IKeyed<string>.Key => Key?.ToString();
 
-        public abstract event Action<PersistenceEvent<TValue>> PersistenceStateChanged;
 
         protected ReadWriteHandle() { }
         protected ReadWriteHandle(TReference reference) : base(reference) { }
@@ -40,7 +59,7 @@ namespace LionFire.Persistence.Handles
             set
             {
                 if (EqualityComparer<TValue>.Default.Equals(protectedValue, value)) return;
-                this.MutatePersistenceStateAndNotify(() => HandleUtils.OnUserChangedValue_ReadWrite(this, value));
+                ProtectedValue = value; // REVIEW TOTEST
             }
         }
 

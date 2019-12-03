@@ -16,7 +16,7 @@ namespace LionFire.Vos
 
     
 
-    public interface IVobHandle<T> : IReadWriteHandle<T> {
+    public interface IVobHandle<T> : IReadWriteHandleBase<T> {
         
         //event PropertyChangedEventHandler ObjectPropertyChanged;
 

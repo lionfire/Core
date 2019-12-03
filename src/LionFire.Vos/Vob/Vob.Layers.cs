@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using LionFire.ExtensionMethods.Resolves;
 using LionFire.MultiTyping;
 using LionFire.Referencing;
 
@@ -41,7 +42,7 @@ namespace LionFire.Vos
 
             foreach (var handle in ReadHandles)
             {
-                if (!(await handle.Get<T>()).HasObject)
+                if (!(await handle.GetValue()).HasValue)
                 {
                     continue;
                 }
