@@ -10,9 +10,9 @@ namespace LionFire.Serialization
 {
     public static class IResolvesSerializationStrategiesExtensions
     {
-        public static IEnumerable<SerializationSelectionResult> Strategies(this IResolvesSerializationStrategies resolves, Func<PersistenceOperation> operation, PersistenceContext context = null) => resolves.ResolveStrategies(operation.ToLazy(), context);
+        public static bool ThrowWithSerializationFailureData { get; set; } = true;
 
-        public static bool ThrowWithSerializationFailureData = true;
+        public static IEnumerable<SerializationSelectionResult> Strategies(this IResolvesSerializationStrategies resolves, Func<PersistenceOperation> operation, PersistenceContext context = null) => resolves.ResolveStrategies(operation.ToLazy(), context);
 
         //public static ISerializationStrategy Strategy(this IResolvesSerializationStrategies resolves, Lazy<PersistenceOperation> operation = null, PersistenceContext context = null) => resolves.Strategies(operation, context).Select(result => result.Strategy).FirstOrDefault();
 
@@ -22,7 +22,7 @@ namespace LionFire.Serialization
 
         public static byte[] ToBytes(this IResolvesSerializationStrategies resolves, object obj, Func<PersistenceOperation> operation, PersistenceContext context = null) => resolves.ToBytes(obj, operation.ToLazy(), context);
 
-        public static byte[] ToBytes(this IResolvesSerializationStrategies resolves, object obj, Lazy<PersistenceOperation> operation = null, PersistenceContext context = null)
+        public static byte[] ToBytes<T>(this IResolvesSerializationStrategies resolves, T obj, Lazy<PersistenceOperation> operation = null, PersistenceContext context = null)
         {
             List<KeyValuePair<ISerializationStrategy, SerializationResult>> failures = null;
             foreach (var strategy in resolves.ResolveStrategies(operation, context).Select(r => r.Strategy))
@@ -144,10 +144,10 @@ namespace LionFire.Serialization
             List<KeyValuePair<ISerializationStrategy, SerializationResult>> failures = null;
             foreach (var strategy in resolves.ResolveStrategies(operation, context).Select(r => r.Strategy))
             {
-                var (Object, Result) = strategy.ToObject<T>(bytes, operation, context);
-                if (Result.IsSuccess)
+                var result = strategy.ToObject<T>(bytes, operation, context);
+                if (result.IsSuccess)
                 {
-                    return Object;
+                    return result.Object;
                 }
                 else if (ThrowWithSerializationFailureData)
                 {
@@ -155,7 +155,7 @@ namespace LionFire.Serialization
                     {
                         failures = new List<KeyValuePair<ISerializationStrategy, SerializationResult>>();
                     }
-                    failures.Add(new KeyValuePair<ISerializationStrategy, SerializationResult>(strategy, Result));
+                    failures.Add(new KeyValuePair<ISerializationStrategy, SerializationResult>(strategy, result));
                 }
             }
             throw new SerializationException(SerializationOperationType.FromBytes, operation, context, failures);
@@ -172,10 +172,10 @@ namespace LionFire.Serialization
             List<KeyValuePair<ISerializationStrategy, SerializationResult>> failures = null;
             foreach (var strategy in resolves.ResolveStrategies(operation, context).Select(r => r.Strategy))
             {
-                var (Object, Result) = strategy.ToObject<T>(str, operation, context);
-                if (Result.IsSuccess)
+                var result = strategy.ToObject<T>(str, operation, context);
+                if (result.IsSuccess)
                 {
-                    return Object;
+                    return result.Object;
                 }
                 else if (ThrowWithSerializationFailureData)
                 {
@@ -183,7 +183,7 @@ namespace LionFire.Serialization
                     {
                         failures = new List<KeyValuePair<ISerializationStrategy, SerializationResult>>();
                     }
-                    failures.Add(new KeyValuePair<ISerializationStrategy, SerializationResult>(strategy, Result));
+                    failures.Add(new KeyValuePair<ISerializationStrategy, SerializationResult>(strategy, result));
                 }
             }
             throw new SerializationException(SerializationOperationType.FromString, operation, context, failures);
@@ -200,10 +200,10 @@ namespace LionFire.Serialization
             List<KeyValuePair<ISerializationStrategy, SerializationResult>> failures = null;
             foreach (var strategy in resolves.ResolveStrategies(operation, context).Select(r => r.Strategy))
             {
-                var (Object, Result) = strategy.ToObject<T>(stream, operation, context);
-                if (Result.IsSuccess)
+                var result = strategy.ToObject<T>(stream, operation, context);
+                if (result.IsSuccess)
                 {
-                    return Object;
+                    return result.Object;
                 }
                 else if (ThrowWithSerializationFailureData)
                 {
@@ -211,27 +211,30 @@ namespace LionFire.Serialization
                     {
                         failures = new List<KeyValuePair<ISerializationStrategy, SerializationResult>>();
                     }
-                    failures.Add(new KeyValuePair<ISerializationStrategy, SerializationResult>(strategy, Result));
+                    failures.Add(new KeyValuePair<ISerializationStrategy, SerializationResult>(strategy, result));
                 }
             }
             //return (default(T), new SerializationResult { AggregateResults = failures }));
             throw new SerializationException(SerializationOperationType.FromStream, operation, context, failures);
         }
 
-        public static Task<T> ToObject<T>(this IResolvesSerializationStrategies resolves, Func<ISerializationStrategy, IAsyncEnumerable<Stream>> streams, Func<PersistenceOperation> operation, PersistenceContext context = null) => resolves.ToObject<T>(streams, operation.ToLazy(), context);
-        public static async Task<T> ToObject<T>(this IResolvesSerializationStrategies resolves, Func<ISerializationStrategy, IAsyncEnumerable<Stream>> streams, Lazy<PersistenceOperation> operation = null, PersistenceContext context = null)
+        //public static Task<T> ToObject<T>(this IResolvesSerializationStrategies resolves, Func<PersistenceOperation> operation, PersistenceContext context = null)
+            //=> resolves.ToObject<T>(operation.ToLazy(), context);
+
+#nullable enable
+        public static async Task<T> ToObject<T>(this IResolvesSerializationStrategies resolves, PersistenceOperation operation)
         {
-            List<KeyValuePair<ISerializationStrategy, SerializationResult>> failures = null;
-            foreach (var strategy in resolves.ResolveStrategies(operation, context).Select(r => r.Strategy))
-            {
-                await foreach (var stream in streams(strategy).ConfigureAwait(false))
+            List<KeyValuePair<ISerializationStrategy, SerializationResult>>? failures = null;
+            foreach (var strategy in resolves.ResolveStrategies(operation, operation.Context).Select(r => r.Strategy))
+            {                
+                await foreach (var stream in operation.CandidateStreams(strategy).ConfigureAwait(false))
                 {
                     try
                     {
-                        var (Object, Result) = strategy.ToObject<T>(stream, operation, context);
-                        if (Result.IsSuccess)
+                        var result = strategy.ToObject<T>(stream, operation, operation.Context);
+                        if (result.IsSuccess)
                         {
-                            return Object;
+                            return result.Object;
                         }
                         else if (ThrowWithSerializationFailureData)
                         {
@@ -239,7 +242,7 @@ namespace LionFire.Serialization
                             {
                                 failures = new List<KeyValuePair<ISerializationStrategy, SerializationResult>>();
                             }
-                            failures.Add(new KeyValuePair<ISerializationStrategy, SerializationResult>(strategy, Result));
+                            failures.Add(new KeyValuePair<ISerializationStrategy, SerializationResult>(strategy, result));
                         }
                     }
                     finally
@@ -249,7 +252,7 @@ namespace LionFire.Serialization
                 }
             }
             //return (default(T), new SerializationResult { AggregateResults = failures }));
-            throw new SerializationException(SerializationOperationType.FromStream, operation, context, failures);
+            throw new SerializationException(SerializationOperationType.FromStream, operation, failReasons: failures);
 
             //List<KeyValuePair<ISerializationStrategy, SerializationResult>> failures = null;
 
@@ -267,6 +270,7 @@ namespace LionFire.Serialization
             //}
             //throw new SerializationException(SerializationOperationType.FromStream, operation, context, failures);
         }
+#nullable disable
 
 
         public static T ToObject<T>(this IResolvesSerializationStrategies resolves, Func<ISerializationStrategy, IEnumerable<Stream>> streams,  Func<PersistenceOperation> operation, PersistenceContext context = null) => resolves.ToObject<T>(streams, operation.ToLazy(), context);
@@ -279,10 +283,10 @@ namespace LionFire.Serialization
                 {
                     try
                     {
-                        var (Object, Result) = strategy.ToObject<T>(stream, operation, context);
-                        if (Result.IsSuccess)
+                        var result = strategy.ToObject<T>(stream, operation, context);
+                        if (result.IsSuccess)
                         {
-                            return Object;
+                            return result.Object;
                         }
                         else if (ThrowWithSerializationFailureData)
                         {
@@ -290,7 +294,7 @@ namespace LionFire.Serialization
                             {
                                 failures = new List<KeyValuePair<ISerializationStrategy, SerializationResult>>();
                             }
-                            failures.Add(new KeyValuePair<ISerializationStrategy, SerializationResult>(strategy, Result));
+                            failures.Add(new KeyValuePair<ISerializationStrategy, SerializationResult>(strategy, result));
                         }
                     }
                     finally

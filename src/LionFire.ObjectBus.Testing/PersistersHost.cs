@@ -4,6 +4,10 @@ using Microsoft.Extensions.DependencyInjection;
 using LionFire.Persistence.Handles;
 using LionFire.Referencing;
 using LionFire.Applications.Hosting;
+using LionFire.Serialization;
+using Microsoft.Extensions.DependencyInjection.Extensions;
+using LionFire.Dependencies;
+using LionFire.Persistence.Filesystem;
 
 namespace LionFire.Persistence
 {
@@ -11,8 +15,18 @@ namespace LionFire.Persistence
     {
         public static void AddDefaultSerializers(this IServiceCollection services)
         {
-            //services.AddJson();
             services.AddNewtonsoftJson();
+            services.AddTextSerializer(); // .txt
+            services.AddBinarySerializer(); // .bin
+            services.TryAddEnumerableSingleton<ISerializeScorer, MatchingExtensionSerializeScorer>();
+        }
+
+        public static IHostBuilder AllowAsync(this IHostBuilder hostBuilder)
+        {
+            DependencyLocatorConfiguration.UseServiceProviderToActivateSingletons = false;
+            DependencyLocatorConfiguration.UseSingletons = false;
+            DependencyContext.AsyncLocal = new DependencyContext();
+            return hostBuilder;
         }
 
         public static IHostBuilder Create(string[] args = null, bool defaultBuilder = true, Action<IServiceCollection> serializers = null)
@@ -20,6 +34,7 @@ namespace LionFire.Persistence
             IHostBuilder hostBuilder = defaultBuilder ? Host.CreateDefaultBuilder(args) : new HostBuilder();
 
             return hostBuilder
+                .AllowAsync()
                 .ConfigureServices((context, services) =>
                 {
                     services.AddSerialization();
@@ -27,6 +42,8 @@ namespace LionFire.Persistence
                     services
                         .AddSingleton<IReferenceToHandleService, ReferenceToHandleService>()
                         .AddSingleton<IReferenceProviderService, ReferenceProviderService>()
+                        .AddSingleton<FilesystemPersistenceOptions>()
+                        .AddSingleton<FilesystemPersister>()
                     ;
                 });
         }

@@ -15,7 +15,7 @@ namespace LionFire.Serialization
         #region SerializerBaseReflectionInfo
 
         private static class SerializerBaseReflectionInfo<T>
-            where T : /* SerializerBase<>, */ ISerializationStrategy
+            where T :  SerializerBase<T>,  ISerializationStrategy
         {
             public static readonly bool HasToString;
             public static readonly bool HasToBytes;
@@ -36,18 +36,21 @@ namespace LionFire.Serialization
                 //    }
                 //}
 
-                HasToString = typeof(T).GetMethod("ToString", new Type[] { typeof(object), typeof(Lazy<PersistenceOperation>), typeof(PersistenceContext) }).DeclaringType != typeof(SerializerBaseReflectionInfo<T>);
-                //System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.Public).DeclaringType != typeof(SerializerBaseReflectionInfo<T>);
-                HasToBytes = typeof(T).GetMethod("ToBytes", System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.Public).DeclaringType != typeof(SerializerBaseReflectionInfo<T>);
-                HasToStream = typeof(T).GetMethod("ToStream", System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.Public).DeclaringType != typeof(SerializerBaseReflectionInfo<T>);
+                HasToString = typeof(T).GetMethod("ToString", new Type[] { typeof(object), typeof(Lazy<PersistenceOperation>), typeof(PersistenceContext) }).DeclaringType != typeof(SerializerBase<T>);
+                HasToBytes = typeof(T).GetMethod("ToBytes", System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.Public).DeclaringType != typeof(SerializerBase<T>);
+                HasToStream = typeof(T).GetMethod("ToStream", System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.Public).DeclaringType != typeof(SerializerBase<T>);
 
-                HasFromString = typeof(T).GetMethod("ToObject", new Type[] { typeof(string), typeof(Lazy<PersistenceOperation>), typeof(PersistenceContext) }).DeclaringType != typeof(SerializerBaseReflectionInfo<T>);
-                HasFromBytes = typeof(T).GetMethod("ToObject", new Type[] { typeof(byte[]), typeof(Lazy<PersistenceOperation>), typeof(PersistenceContext) }).DeclaringType != typeof(SerializerBaseReflectionInfo<T>);
-                HasFromStream = typeof(T).GetMethod("ToObject", new Type[] { typeof(Stream), typeof(Lazy<PersistenceOperation>), typeof(PersistenceContext) }).DeclaringType != typeof(SerializerBaseReflectionInfo<T>);
+                HasFromString = typeof(T).GetMethod("ToObject", new Type[] { typeof(string), typeof(Lazy<PersistenceOperation>), typeof(PersistenceContext) }).DeclaringType != typeof(SerializerBase<T>);
+                HasFromBytes = typeof(T).GetMethod("ToObject", new Type[] { typeof(byte[]), typeof(Lazy<PersistenceOperation>), typeof(PersistenceContext) }).DeclaringType != typeof(SerializerBase<T>);
+                HasFromStream = typeof(T).GetMethod("ToObject", new Type[] { typeof(Stream), typeof(Lazy<PersistenceOperation>), typeof(PersistenceContext) }).DeclaringType != typeof(SerializerBase<T>);
             }
         }
 
         #endregion
+
+        public virtual IEnumerable<ISerializeScorer> SerializeScorers => Enumerable.Empty<ISerializeScorer>();
+        public virtual IEnumerable<IDeserializeScorer> DeserializeScorers => Enumerable.Empty<IDeserializeScorer>();
+
 
         public virtual IEnumerable<SerializationFormat> Formats { get { yield return DefaultFormat; } }
         public abstract SerializationFormat DefaultFormat { get; }
@@ -72,16 +75,23 @@ namespace LionFire.Serialization
 
         public virtual IEnumerable<Type> SerializationOptionsTypes => Enumerable.Empty<Type>();
 
+        public bool ImplementsToString => SerializerBaseReflectionInfo<ConcreteType>.HasToString;
+        public bool ImplementsToStream=> SerializerBaseReflectionInfo<ConcreteType>.HasToStream;
+        public bool ImplementsToBytes => SerializerBaseReflectionInfo<ConcreteType>.HasToBytes;
+        public bool ImplementsFromString => SerializerBaseReflectionInfo<ConcreteType>.HasFromString;
+        public bool ImplementsFromStream => SerializerBaseReflectionInfo<ConcreteType>.HasFromStream;
+        public bool ImplementsFromBytes => SerializerBaseReflectionInfo<ConcreteType>.HasFromBytes;
+
         #region Serialize
 
         public virtual (byte[] Bytes, SerializationResult Result) ToBytes(object obj, Lazy<PersistenceOperation> operation = null, PersistenceContext context = null)
         {
-            if (SerializerBaseReflectionInfo<ConcreteType>.HasToString)
+            if (ImplementsToString)
             {
                 var (String, Result) = ToString(obj, operation, context);
                 return (Result.IsSuccess ? StringToBytes(String, context) : null, Result);
             }
-            else if (SerializerBaseReflectionInfo<ConcreteType>.HasToStream)
+            else if (ImplementsToStream)
             {
                 using (var ms = new MemoryStream())
                 {
@@ -96,12 +106,12 @@ namespace LionFire.Serialization
 
         public virtual (string String, SerializationResult Result) ToString(object obj, Lazy<PersistenceOperation> operation = null, PersistenceContext context = null)
         {
-            if (SerializerBaseReflectionInfo<ConcreteType>.HasToBytes)
+            if (ImplementsToBytes)
             {
                 var (Bytes, Result) = ToBytes(obj, operation, context);
                 return (Result.IsSuccess ? BytesToString(Bytes, context) : null, Result);
             }
-            else if (SerializerBaseReflectionInfo<ConcreteType>.HasToStream)
+            else if (ImplementsToStream)
             {
                 using (var ms = new MemoryStream())
                 {
@@ -118,12 +128,12 @@ namespace LionFire.Serialization
         {
             byte[] bytes;
             SerializationResult result;
-            if (SerializerBaseReflectionInfo<ConcreteType>.HasToBytes)
+            if (ImplementsToBytes)
             {
                 (bytes, result) = ToBytes(obj, operation, context);
                 if (!result.IsSuccess) { return result; }
             }
-            else if (SerializerBaseReflectionInfo<ConcreteType>.HasToString)
+            else if (ImplementsToStream)
             {
                 string str;
                 (str, result) = ToString(obj, operation, context);
@@ -142,25 +152,25 @@ namespace LionFire.Serialization
 
         #region Deserialize
 
-        public virtual (T Object, SerializationResult Result) ToObject<T>(string str, Lazy<PersistenceOperation> operation = null, PersistenceContext context = null)
+        public virtual DeserializationResult<T> ToObject<T>(string str, Lazy<PersistenceOperation> operation = null, PersistenceContext context = null)
         {
             if (SerializerBaseReflectionInfo<ConcreteType>.HasFromBytes)
             {
                 return ToObject<T>(StringToBytes(str, context), operation, context);
             }
-            return (default(T), SerializationResult.NotSupported);
+            return DeserializationResult<T>.NotSupported;
         }
 
-        public virtual (T Object, SerializationResult Result) ToObject<T>(byte[] bytes, Lazy<PersistenceOperation> operation = null, PersistenceContext context = null)
+        public virtual DeserializationResult<T> ToObject<T>(byte[] bytes, Lazy<PersistenceOperation> operation = null, PersistenceContext context = null)
         {
             if (SerializerBaseReflectionInfo<ConcreteType>.HasFromString)
             {
                 return ToObject<T>(BytesToString(bytes, context), operation, context);
             }
-            return (default(T), SerializationResult.NotSupported);
+            return DeserializationResult<T>.NotSupported;
         }
 
-        public virtual (T Object, SerializationResult Result) ToObject<T>(Stream stream, Lazy<PersistenceOperation> operation = null, PersistenceContext context = null)
+        public virtual DeserializationResult<T> ToObject<T>(Stream stream, Lazy<PersistenceOperation> operation = null, PersistenceContext context = null)
         {
             var bytes = new byte[stream.Length - stream.Position];
             stream.Read(bytes, 0, bytes.Length);
@@ -175,13 +185,13 @@ namespace LionFire.Serialization
             }
             else
             {
-                return (default(T), SerializationResult.NotSupported);
+                return DeserializationResult<T>.NotSupported;
             }
         }
 
         public virtual Encoding DefaultEncoding => System.Text.UTF8Encoding.UTF8;
-        protected byte[] StringToBytes(string str, PersistenceContext context = null) => (context?.SerializationContext?.Encoding ?? DefaultEncoding).GetBytes(str);
-        protected string BytesToString(byte[] bytes, PersistenceContext context = null) => (context?.SerializationContext?.Encoding ?? DefaultEncoding).GetString(bytes);
+        protected byte[] StringToBytes(string str, PersistenceContext context = null) => str == null ? null : (context?.SerializationContext?.Encoding ?? DefaultEncoding).GetBytes(str);
+        protected string BytesToString(byte[] bytes, PersistenceContext context = null) => bytes == null ? null : (context?.SerializationContext?.Encoding ?? DefaultEncoding).GetString(bytes);
 
         //public abstract T ToObject<T>(string serializedData, SerializationContext context = null);
 

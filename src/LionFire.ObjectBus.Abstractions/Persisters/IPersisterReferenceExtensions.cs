@@ -14,7 +14,7 @@ namespace LionFire.ObjectBus
             where TReference : IReference
             => persister.Delete(new ReferenceWrapper<TReference>(reference));
 
-        public static Task<IExistsResult> Exists<TReference, TValue>(this IPersister<TReference> persister, TReference reference) 
+        public static Task<IPersistenceResult> Exists<TReference, TValue>(this IPersister<TReference> persister, TReference reference) 
             where TReference : IReference
             => persister.Exists(new ReferenceWrapper<TReference>(reference));
 

@@ -20,7 +20,7 @@ namespace LionFire.Persistence.Handles
         , IDeletable
         , IPuts<TValue>
         , IReferencable<IReference>
-        where TReference : class, IReference
+        where TReference : IReference
     {
         public IReference Reference => Key;
         IReference IReferencable<IReference>.Reference => Key;

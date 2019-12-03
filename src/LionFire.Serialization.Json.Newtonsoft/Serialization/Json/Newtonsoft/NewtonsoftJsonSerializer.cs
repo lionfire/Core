@@ -64,7 +64,8 @@ namespace LionFire.Serialization.Json.Newtonsoft
 
         #region Deserialize
 
-        public override (T Object, SerializationResult Result) ToObject<T>(string str, Lazy<PersistenceOperation> operation = null, PersistenceContext context = null) => (JsonConvert.DeserializeObject<T>(str, Settings), SerializationResult.Success);
+        public override DeserializationResult<T> ToObject<T>(string str, Lazy<PersistenceOperation> operation = null, PersistenceContext context = null) 
+            => JsonConvert.DeserializeObject<T>(str, Settings);
 
         #endregion
 

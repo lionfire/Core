@@ -4,6 +4,7 @@ using System.Linq;
 
 namespace LionFire.Persistence
 {
+    
     public class DeserializePersistenceOperation
     {
         //public PersistenceDirection PersistenceDirection => PersistenceDirection.Deserialize;
@@ -33,9 +34,4 @@ namespace LionFire.Persistence
         private IEnumerable<string> candidateFileNames;
         //public string Directory { get; set; }
     }
-
-    //public class MimeSerializationContext
-    //{
-    //    public string MimeType { get; set; }
-    //}
 }

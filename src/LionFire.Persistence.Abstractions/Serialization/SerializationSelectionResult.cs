@@ -1,4 +1,6 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using LionFire.Persistence;
 
 namespace LionFire.Serialization
 {
@@ -15,6 +17,7 @@ namespace LionFire.Serialization
         public Dictionary<string, int> Weights { get; set; } 
 
         public ISerializationStrategy Strategy => Preference.Strategy;
+
     }
 
 }

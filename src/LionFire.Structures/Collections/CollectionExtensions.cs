@@ -6,7 +6,7 @@ using System.Text;
 using System.Security.Cryptography;
 using System.Collections;
 
-namespace LionFire.Extensions.Collections
+namespace LionFire.ExtensionMethods.Collections
 {
     public static class CollectionExtensions
     {

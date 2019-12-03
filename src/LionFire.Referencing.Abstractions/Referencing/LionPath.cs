@@ -55,6 +55,10 @@ namespace LionFire.Referencing
         {
             return System.IO.Path.GetFileName(path); // TODO
         }
+        public static string GetExtension(string path)
+        {
+            return System.IO.Path.GetExtension(path); // TODO
+        }
 
         public static string Combine(string path1, IEnumerable<string> path2)
         {

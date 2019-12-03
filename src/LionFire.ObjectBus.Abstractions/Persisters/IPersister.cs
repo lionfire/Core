@@ -31,26 +31,16 @@ namespace LionFire.Persistence
     //    Add = 1 << 17,
     //    Remove = 1 << 18,
     //}
-
+    
     public interface IReadPersister<in TReference>
         where TReference : IReference
     {
-        Task<IExistsResult> Exists(IReferencable<TReference> referencable);
+        Task<IPersistenceResult> Exists(IReferencable<TReference> referencable);
         //where TReference : IReference;
         Task<IRetrieveResult<TValue>> Retrieve<TValue>(IReferencable<TReference> referencable);
-            //where TReference : IReference;
+        //where TReference : IReference;
     }
 
-    public interface IWritePersister<in TReference>
-        where TReference : IReference
-    {
-        Task<IPersistenceResult> Create<TValue>(IReferencable<TReference> referencable, TValue value);
-
-        Task<IPersistenceResult> Update<TValue>(IReferencable<TReference> referencable, TValue value);
-        Task<IPersistenceResult> Upsert<TValue>(IReferencable<TReference> referencable, TValue value);
-
-        Task<IPersistenceResult> Delete(IReferencable<TReference> referencable);
-    }
 
     //public interface IPersister : IPersister<IReference>
     //{

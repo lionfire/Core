@@ -1,4 +1,5 @@
-﻿using System;
+﻿
+using System;
 using LionFire.Referencing;
 
 namespace LionFire.Persistence
@@ -8,9 +9,22 @@ namespace LionFire.Persistence
     {
     }
 
-    public class RetrieveResult<T> : IRetrieveResult<T>
-        //where T : class
+    public struct RetrieveResult<T> : IRetrieveResult<T>
+    //where T : class
     {
+        #region Construction
+
+        //public RetrieveResult()
+        //{
+        //    Error = null;
+        //    Value = default;
+        //    Flags = default;
+        //}
+        public RetrieveResult(T value) : this() { this.Value = value; }
+        public RetrieveResult(T value, PersistenceResultFlags flags) : this(value) { Flags = flags; }
+
+        #endregion
+
         public object Error { get; set; }
         public T Value { get; set; }
         public bool HasValue => Value != default;
@@ -20,7 +34,7 @@ namespace LionFire.Persistence
 
         #region Static
 
-        public static RetrieveResult<T> Success(T obj) =>  new RetrieveResult<T>()
+        public static RetrieveResult<T> Success(T obj) => new RetrieveResult<T>()
         {
             Flags = PersistenceResultFlags.Success,
             Value = obj,
@@ -33,6 +47,11 @@ namespace LionFire.Persistence
         };
 
         public static readonly RetrieveResult<T> NotFound = new RetrieveResult<T>()
+        {
+            Flags = PersistenceResultFlags.Success | PersistenceResultFlags.NotFound, // Success but did not find
+            Value = default,
+        };
+        public static readonly RetrieveResult<T> SuccessNotFound = new RetrieveResult<T>()
         {
             Flags = PersistenceResultFlags.Success | PersistenceResultFlags.NotFound, // Success but did not find
             Value = default,
@@ -63,5 +82,20 @@ namespace LionFire.Persistence
         };
 
         #endregion
+
+        public override bool Equals(object obj)
+        {
+            throw new NotImplementedException();
+        }
+
+        public override int GetHashCode()
+        {
+            throw new NotImplementedException();
+        }
+
+        public static bool operator ==(RetrieveResult<T> left, RetrieveResult<T> right) => left.Equals(right);
+
+        public static bool operator !=(RetrieveResult<T> left, RetrieveResult<T> right) => !(left == right);
+
     }
 }

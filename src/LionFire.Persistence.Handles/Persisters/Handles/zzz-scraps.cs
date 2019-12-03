@@ -1,46 +1,9 @@
-﻿using LionFire.Referencing;
-using LionFire.Resolves;
-using LionFire.Structures;
-using System;
-using System.Threading.Tasks;
+﻿using System;
+using System.Collections.Generic;
+using System.Text;
 
-namespace LionFire.Persistence.Handles
+namespace LionFire.Persisters.Handles
 {
-    public abstract class PersisterReadWriteHandleBase<TReference, TValue> : ReadWriteHandleBase<TValue>
-        where TReference:IReference
-    {
-        public IPersister<TReference> Persister { get; protected set; }
-
-        public PersisterReadWriteHandleBase(IPersister<TReference> persister) => Persister = persister;
-
-
-        //public override event Action<PersistenceEvent<TValue>> PersistenceStateChanged;
-
-        //public override ILazyResolveResult<TValue> QueryValue() => throw new NotImplementedException();
-        //public override void RaisePersistenceEvent(PersistenceEvent<TValue> ev) => throw new NotImplementedException();
-        //protected override Task<IResolveResult<TValue>> ResolveImpl() => throw new NotImplementedException();
-
-        //protected override async Task<IPersistenceResult> UpsertImpl() =>
-        //    await Persister.Upsert<IReference, TValue>(this, ProtectedValue);
-    }
-
-    public abstract class PersisterReadWriteHandle<TReference, TValue> : ReadWriteHandle<TValue>
-        where TReference : IReference
-    {
-        public IPersister<TReference> Persister { get; protected set; }
-
-        public PersisterReadWriteHandle(IPersister<TReference> persister) => Persister = persister;
-
-
-        public override event Action<PersistenceEvent<TValue>> PersistenceStateChanged;
-
-        public override ILazyResolveResult<TValue> QueryValue() => throw new NotImplementedException();
-        public override void RaisePersistenceEvent(PersistenceEvent<TValue> ev) => throw new NotImplementedException();
-        protected override Task<IResolveResult<TValue>> ResolveImpl() => throw new NotImplementedException();
-
-        protected override async Task<IPersistenceResult> UpsertImpl() =>
-            await Persister.Upsert<TValue>(this, ProtectedValue);
-    }
 
     //public class NoopReadWriteHandle2<TValue> : SingletonProviderReadWriteHandle<TValue, NoopHandlePersistenceProvider>
     //{
@@ -162,6 +125,4 @@ namespace LionFire.Persistence.Handles
     #endregion
     }
 #endif
-
-
 }

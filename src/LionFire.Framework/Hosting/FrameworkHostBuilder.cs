@@ -18,6 +18,7 @@ namespace LionFire.Hosting
         {
             //services.AddJson();
             services.AddNewtonsoftJson();
+            services.AddTextSerializer();
         }
 
         public static IHostBuilder CreateVos(string[] args = null, Action<IServiceCollection> serializers = null)

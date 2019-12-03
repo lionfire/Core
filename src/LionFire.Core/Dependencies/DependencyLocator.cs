@@ -1,4 +1,5 @@
 ﻿using LionFire.Structures;
+using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -10,7 +11,7 @@ namespace LionFire.Dependencies
     /// Provides a simple and potentially complex implementation of a service locator (anti-)pattern.
     /// 
     /// Simple: 
-    ///  - use Get() or TryGet(createIfMissing = true), 
+    ///  - use Get() or TryGet(createIfMissing = true),  -- will create a singleton instance
     ///  - Don't bother:
     ///    - changing DependencyLocatorConfiguration.UseSingletons to false
     ///    - setting up a DependencyInjection provider to build a IServiceProvider
@@ -34,6 +35,8 @@ namespace LionFire.Dependencies
             where TImplementation : class, TInterface
             => Get<TInterface, TImplementation>();
 
+        #region Get
+
         public static TInterface Get<TInterface, TImplementation>(Func<TInterface> singletonFactory = null)
             where TInterface : class
             where TImplementation : class, TInterface
@@ -51,23 +54,50 @@ namespace LionFire.Dependencies
             where TInterface : class
             => Get<TInterface, TInterface>(singletonFactory: singletonFactory);
 
+        #endregion
+
+        #region TryGet
 
         public static TInterface TryGet<TInterface>(Func<TInterface> singletonFactory = null, bool tryCreateIfMissing = false)
         where TInterface : class
             => TryGet<TInterface, TInterface>(singletonFactory: singletonFactory, tryCreateIfMissing: tryCreateIfMissing);
 
-            /// <summary>
-            /// 
-            /// </summary>
-            /// <typeparam name="TInterface"></typeparam>
-            /// <param name="singletonFactory"></param>
-            /// <param name="tryCreateIfMissing">Will only be attempted if DependencyLocatorConfiguration.UseSingletons is true</param>
-            /// <returns></returns>
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <typeparam name="TInterface"></typeparam>
+        /// <param name="singletonFactory"></param>
+        /// <param name="tryCreateIfMissing">Will only be attempted if DependencyLocatorConfiguration.UseSingletons is true</param>
+        /// <returns></returns>
         public static TInterface TryGet<TInterface, TImplementation>(Func<TInterface> singletonFactory = null, bool tryCreateIfMissing = false)
             where TInterface : class
             where TImplementation : class, TInterface
         {
-            TInterface result;
+            TInterface result = default;
+
+            IServiceProvider serviceProvider = default;
+
+            IServiceProvider GetServiceProvider()
+            {
+                if (serviceProvider != null) return serviceProvider;
+                var spResult = DependencyContext.Current?.ServiceProvider;
+                if (spResult != null)
+                {
+                    serviceProvider = spResult;
+                    return spResult;
+                }
+
+                //if (DependencyLocatorConfiguration.UseIServiceProviderSingleton)
+                //{
+                //    spResult = ManualSingleton<IServiceProvider>.Instance;
+                //    if (spResult != null)
+                //    {
+                //        serviceProvider = spResult;
+                //        return spResult;
+                //    }
+                //}
+                return null;
+            }
 
             if (DependencyLocatorConfiguration.UseDependencyContext)
             {
@@ -88,24 +118,30 @@ namespace LionFire.Dependencies
                         ManualSingleton<TInterface>.Instance = result;
                         return result;
                     }
-                    else if (!typeof(TImplementation).IsInterface && DependencyLocatorConfiguration.AllowDefaultSingletonActivatorOnDemand)
+                    else if (!typeof(TImplementation).IsInterface)
                     {
-                        result = Activator.CreateInstance<TImplementation>();
-                        ManualSingleton<TInterface>.Instance = result;
-                        return result;
+                        if (DependencyLocatorConfiguration.UseServiceProviderToActivateSingletons && (serviceProvider ?? GetServiceProvider()) != null)
+                        {
+                            return ManualSingleton<TInterface>.Instance = ActivatorUtilities.CreateInstance<TImplementation>(serviceProvider);
+                        }
+                        else if (DependencyLocatorConfiguration.AllowDefaultSingletonActivatorOnDemand)
+                        {
+                            return ManualSingleton<TInterface>.Instance = Activator.CreateInstance<TImplementation>();
+                        }
                     }
                 }
             }
 
-            if (DependencyLocatorConfiguration.UseIServiceProviderSingleton)
-            {
-                var sp = ManualSingleton<IServiceProvider>.Instance;
-                result = (TInterface)sp?.GetService(typeof(TInterface));
-                if (result != null) return result;
-            }
+            //if (DependencyLocatorConfiguration.UseIServiceProviderSingleton)
+            //{
+            //    var sp = ManualSingleton<IServiceProvider>.Instance;
+            //    result = (TInterface)sp?.GetService(typeof(TInterface));
+            //    if (result != null) return result;
+            //}
 
             return default;
         }
+
 
         // FUTURE: Make the Set/Get methods extensible.  Need to have type as a parameter?
         //public Func<object> GetMethod { get; set; } = () =>
@@ -116,6 +152,10 @@ namespace LionFire.Dependencies
         //        var sp = ManualSingleton<IServiceProvider>.Instance;
         //        return (T)sp?.GetService(typeof(T));
         //    };
+
+        #endregion
+
+        #region Set
 
         //public Action<object> SetMethod { get; set; } = () =>
         //   {
@@ -132,5 +172,8 @@ namespace LionFire.Dependencies
 
             ManualSingleton<T>.Instance = obj;
         }
+
+        #endregion
+
     }
 }

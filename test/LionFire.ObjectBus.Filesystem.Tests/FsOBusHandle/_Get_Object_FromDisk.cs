@@ -14,6 +14,7 @@ using LionFire.ObjectBus.Testing;
 using LionFire.Referencing;
 using Xunit;
 using LionFire.Serialization;
+using LionFire.Persistence.Filesystem.Tests;
 
 namespace Handle
 {

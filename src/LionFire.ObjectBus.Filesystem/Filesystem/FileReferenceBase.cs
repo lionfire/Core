@@ -1,14 +1,18 @@
 ﻿using System;
 using System.Collections.Generic;
+using LionFire.ObjectBus;
+using LionFire.ObjectBus.Filesystem;
 using LionFire.Ontology;
 using LionFire.Referencing;
 using LionFire.Serialization;
 using LionFire.Structures;
 
-namespace LionFire.ObjectBus.Filesystem
+namespace LionFire.Persistence.Filesystem
 {
     [LionSerializable(SerializeMethod.ByValue)]
-    public abstract class FileReferenceBase<ConcreteType> : LocalReferenceBase<ConcreteType>, IHas<IOBase>, IHas<IOBus>, IOBaseReference
+    public abstract class FileReferenceBase<ConcreteType> : LocalReferenceBase<ConcreteType>
+        //, IHas<IOBase>, IHas<IOBus>
+        //, IOBaseReference
         where ConcreteType : FileReferenceBase<ConcreteType>
     {
         public abstract string UriPrefixDefault { get; }
@@ -17,9 +21,9 @@ namespace LionFire.ObjectBus.Filesystem
         public override IEnumerable<string> AllowedSchemes { get { yield return UriScheme; } }
 
 
-        IOBus IHas<IOBus>.Object => ManualSingleton<FSOBus>.GuaranteedInstance;
-        IOBase IHas<IOBase>.Object => FsOBase;
-        FSOBase FsOBase => ManualSingleton<FSOBase>.GuaranteedInstance;
+        //IOBus IHas<IOBus>.Object => ManualSingleton<FSOBus>.GuaranteedInstance;
+        //IOBase IHas<IOBase>.Object => FsOBase;
+        //FSOBase FsOBase => ManualSingleton<FSOBase>.GuaranteedInstance;
 
         public FileReferenceBase() { }
         public FileReferenceBase(string path)

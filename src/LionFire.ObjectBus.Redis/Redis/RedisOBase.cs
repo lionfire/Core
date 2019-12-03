@@ -71,7 +71,7 @@ namespace LionFire.ObjectBus.Redis
 
         public override IOBus OBus => ManualSingleton<RedisOBus>.GuaranteedInstance;
 
-        public override IFsFacade FsFacade => redisFsFacade;
+        public override ISimpleFsFacade FsFacade => redisFsFacade;
 
         private RedisFsFacade redisFsFacade;
 

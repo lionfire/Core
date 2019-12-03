@@ -1,4 +1,5 @@
-﻿using System;
+﻿#if TODO // OBase concept deprecated in favor of Persisters -- scavenge anything useful from here
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -6,6 +7,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using LionFire.ObjectBus.Typing;
 using LionFire.Persistence;
+using LionFire.Persistence.Filesystem;
 using LionFire.Referencing;
 using LionFire.Referencing.Filesystem;
 using LionFire.Structures;
@@ -21,35 +23,13 @@ namespace LionFire.ObjectBus.Filesystem
 
         #endregion
 
+        protected FilesystemPersister FSPersister { get; }
+
         public FSOBase()
         {
             System.Diagnostics.Debug.WriteLine("fso create");
         }
 
-        #region Options
-
-
-        protected FsOptions Options
-        {
-            get
-            {
-                return localOptions.Value ?? options ?? OptionsDefaults;
-            }
-            set
-            {
-                options = value;
-            }
-        }
-        private FsOptions options;
-
-        AsyncLocal<FsOptions> localOptions = new AsyncLocal<FsOptions>();
-
-        protected FsOptions OptionsDefaults = new FsOptions
-        {
-            //ReferenceResolutionService = FileReferenceResolutionPolicies.Default.ReferenceResolutionService
-        };
-
-        #endregion
 
         public override IOBus OBus => ManualSingleton<FSOBus>.GuaranteedInstance;
 
@@ -80,27 +60,28 @@ namespace LionFire.ObjectBus.Filesystem
             //if (!reference.IsLocalhost) throw new FsOBaseException("Only localhost supported");
         }
 
-        #region Read
+#region Read
 
         public override async Task<(bool exists, IPersistenceResult result)> Exists(FileReference reference)
         {
             //var result = new RetrieveResult<bool>();
 
-            bool existsResult = await FsOBasePersistence.Exists(reference.Path).ConfigureAwait(false);
+            var result = await FSPersister.Exists(reference.Path).ConfigureAwait(false);
+            //bool existsResult = 
             return (existsResult, existsResult ? PersistenceResult.Found : PersistenceResult.NotFound);
             //result.Object = existsResult;
             //result.Flags |= PersistenceResultFlags.Success;
             //return result;
         }
 
-        #region Get
+#region Get
 
         public override async Task<IRetrieveResult<T>> TryGet<T>(FileReference reference)
         {
             var result = new RetrieveResult<T>();
             try
             {
-                T converted = await FsOBasePersistence.TryGet<T>(reference.Path).ConfigureAwait(false);
+                T converted = await FSPersistence.TryGet<T>(reference.Path).ConfigureAwait(false);
                 //ResultType converted = (ResultType)OBaseTypeUtils.TryConvertToType(obj, typeof(ResultType));
 
                 if (converted == null)
@@ -108,7 +89,7 @@ namespace LionFire.ObjectBus.Filesystem
                     foreach (var encapsulatedRef in OBaseTypeUtils.GetEncapsulatedPaths(reference, typeof(T)))
                     {
 
-                        var obj = await FsOBasePersistence.TryGet<T>(encapsulatedRef.Path).ConfigureAwait(false);
+                        var obj = await FSPersistence.TryGet<T>(encapsulatedRef.Path).ConfigureAwait(false);
                         //converted = (T)OBaseTypeUtils.TryConvertToType(obj, typeof(T));
                         if (obj != null)
                         {
@@ -143,19 +124,19 @@ namespace LionFire.ObjectBus.Filesystem
             }
         }
 
-        #endregion
+#endregion
 
-        #region List
+#region List
 
         public override Task<IEnumerable<string>> List<T>(FileReference parent) => throw new NotImplementedException();
 
-        #endregion
+#endregion
 
-        #endregion
+#endregion
 
-        #region Write
+#region Write
 
-        #region Delete
+#region Delete
 
         public override async Task<IPersistenceResult> CanDelete<T>(FileReference reference)
         {
@@ -182,18 +163,18 @@ namespace LionFire.ObjectBus.Filesystem
             //    filePath = filePath + FileTypeDelimiter + type.Name + FileTypeEndDelimiter;
             //}
 
-            var succeeded = await FsOBasePersistence.TryDelete<T>(filePath).ConfigureAwait(false);
+            var succeeded = await FSPersistence.TryDelete<T>(filePath).ConfigureAwait(false);
 
             return succeeded ? PersistenceResult.Success : PersistenceResult.NotFound;
         }
 
-        #endregion
+#endregion
 
-        #endregion
+#endregion
 
-        #region Events
+#region Events
 
-        #endregion
+#endregion
 
 
         //public override async Task<IRetrieveResult<ResultType>> TryGet<ResultType>(LocalFileReference reference)
@@ -266,7 +247,7 @@ namespace LionFire.ObjectBus.Filesystem
 
         protected override async Task<IPersistenceResult> SetImpl<T>(FileReference reference, T obj, bool allowOverwrite = true)
         {
-            #region TODO
+#region TODO
 
             //bool defaultTypeForDirIsT = false;
             //Type type = obj.GetType();
@@ -289,9 +270,9 @@ namespace LionFire.ObjectBus.Filesystem
             //    filePath = filePath + VosPath.TypeDelimiter + type.Name + VosPath.TypeEndDelimiter;
             //}
 
-            #endregion
+#endregion
 
-            await FsOBasePersistence.Set(obj, reference.Path, allowOverwrite: allowOverwrite);
+            await FSPersistence.Set(obj, reference.Path, allowOverwrite: allowOverwrite);
             return PersistenceResult.Success;
         }
 
@@ -353,5 +334,33 @@ namespace LionFire.ObjectBus.Filesystem
 
         private static ILogger l = Log.Get();
 
+#if UNUSED
+        #region Options
+
+
+        //protected FsOptions Options
+        //{
+        //    get
+        //    {
+        //        return localOptions.Value ?? options ?? OptionsDefaults;
+        //    }
+        //    set
+        //    {
+        //        options = value;
+        //    }
+        //}
+        //private FsOptions options;
+
+        //AsyncLocal<FsOptions> localOptions = new AsyncLocal<FsOptions>();
+
+        //protected FsOptions OptionsDefaults = new FsOptions
+        //{
+        //    //ReferenceResolutionService = FileReferenceResolutionPolicies.Default.ReferenceResolutionService
+        //};
+        #endregion
+#endif
+
+
     }
 }
+#endif

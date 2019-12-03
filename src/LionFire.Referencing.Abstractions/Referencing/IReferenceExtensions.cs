@@ -59,7 +59,7 @@ namespace LionFire.Referencing
             throw ThrowUnsupported(reference, nameof(GetChildSubpath));
         }
 
-        private static NotSupportedException ThrowUnsupported(IReference reference, string methodName) => 
+        private static NotSupportedException ThrowUnsupported(IReference reference, string methodName) =>
             new NotSupportedException($"To use {methodName}, reference type ${reference.GetType().FullName} must implement ICloneableReference or have a FromUri method accepting a single parameter of type Uri.");
 
         #endregion
@@ -116,7 +116,7 @@ namespace LionFire.Referencing
             });
 #endif
 
-#endregion
+        #endregion
 
         public static NotFoundException NotFoundException(this IReference reference)
         {
@@ -125,5 +125,21 @@ namespace LionFire.Referencing
                 Reference = reference,
             };
         }
+
+        /// <summary>
+        /// Upcast to ITypedReference and return ITypedReference.Type.  Returns null if none available.
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="reference"></param>
+        /// <returns></returns>
+        public static Type ReferenceType(this IReference reference)
+        {
+            if (reference is ITypedReference tr && tr.Type != null)
+            {
+                return tr.Type;
+            }
+            return null;
+        }
+
     }
 }

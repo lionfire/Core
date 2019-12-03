@@ -3,13 +3,14 @@ using System.Collections.Generic;
 
 namespace LionFire.Serialization
 {
+
     public static class DefaultScorers
     {
         public static IEnumerable<Type> DefaultDeserializerScorers
         {
             get
             {
-                yield return typeof(MatchingExtensionDeserializerScorer);
+                yield return typeof(MatchingExtensionDeserializeScorer);
             }
         }
         public static IEnumerable<Type> DefaultSerializerScorers
@@ -17,6 +18,7 @@ namespace LionFire.Serialization
             get
             {
                 //yield return typeof(MatchingExtensionDeserializerScorer);
+                yield return typeof(MatchingExtensionSerializeScorer);
                 yield break;
             }
         }

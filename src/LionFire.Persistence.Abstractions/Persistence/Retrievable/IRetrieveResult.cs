@@ -3,6 +3,7 @@ using LionFire.Resolvables;
 using LionFire.Resolves;
 using LionFire.Results;
 using System;
+using System.IO;
 
 namespace LionFire.Persistence
 {
@@ -11,6 +12,26 @@ namespace LionFire.Persistence
     /// </summary>
     public interface IRetrieveResult<out T> : IResolveResult<T>, IPersistenceResult
     {
+    }
+
+    public static class IRetrieveResultExtensions
+    {
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <typeparam name="TValue"></typeparam>
+        /// <param name="retrieveResult"></param>
+        /// <returns></returns>
+        /// <exception cref="FileNotFoundException">If not found</exception>
+        public static TValue ValueOrThrow<TValue>(this IRetrieveResult<TValue> retrieveResult)
+        {
+            if (!retrieveResult.Flags.HasFlag(PersistenceResultFlags.Found))
+            {
+                throw new FileNotFoundException();
+            }
+            return retrieveResult.Value;
+        }
     }
 
 

@@ -31,6 +31,8 @@ namespace LionFire.Persistence
         /// </summary>
         RetrievedNullOrDefault = 1 << 5,
 
+        Indeterminate = 1 << 6,
+
         /// <summary>
         /// When checking for whether an operation is possible, this is set if the operation is expected to succeed.
         /// </summary>
@@ -46,6 +48,7 @@ namespace LionFire.Persistence
         //PreviewNotFound = 1 << 23, // Not used yet. Should it be?
 
         ProviderNotAvailable = 1 << 30,
+        SerializerNotAvailable = 1 << 31,
 
         Noop = 1 << 31,
     }

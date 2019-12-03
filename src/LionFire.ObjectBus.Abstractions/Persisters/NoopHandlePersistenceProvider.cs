@@ -10,9 +10,10 @@ namespace LionFire.Persistence
             => Task.FromResult<IPersistenceResult>(NoopPutPersistenceResult.Instance);
         public Task<IPersistenceResult> Delete(TReference reference)  
             => Task.FromResult<IPersistenceResult>(NoopPutPersistenceResult.Instance);
-        
-        
-        public Task<IExistsResult> Exists(TReference reference)  => throw new System.NotImplementedException();
+
+
+        public Task<IPersistenceResult> Exists(TReference reference) => Task.FromResult<IPersistenceResult>(PersistenceResult.NotFound);
+
         public Task<IPersistenceResult> Put<TValue>(TReference reference, TValue value) 
             => Task.FromResult<IPersistenceResult>(NoopPutPersistenceResult.Instance);
         public Task<IRetrieveResult<TValue>> Retrieve<TValue>(TReference reference)

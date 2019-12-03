@@ -1,4 +1,5 @@
-﻿using System;
+﻿using LionFire.IO;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -34,6 +35,24 @@ namespace LionFire.Serialization
         Serialize = 1 << 8,
         Deserialize = 1 << 9,
 
+    }
+
+    public static class SerializationFlagsExtensions
+    {
+        public static bool SupportsDirection(this SerializationFlags flags, IODirection direction)
+        {
+            switch (direction)
+            {
+                case IODirection.Unspecified:
+                    return flags.HasFlag(SerializationFlags.Serialize) || flags.HasFlag(SerializationFlags.Deserialize);
+                case IODirection.Write:
+                    return flags.HasFlag(SerializationFlags.Serialize);
+                case IODirection.Read:
+                    return flags.HasFlag(SerializationFlags.Deserialize);
+                default:
+                    throw new ArgumentException(nameof(direction));
+            }
+        }
     }
 
 #if false

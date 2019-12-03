@@ -30,13 +30,13 @@ namespace LionFire.Persistence
     
     public static class IRetrievesExtensions
     {
-        ///// <summary>
-        ///// Force a retrieve of the reference from the source.  Replace the Object.
-        ///// </summary>
-        ///// <remarks>Can't return a generic IRetrieveResult due to limitation of the language.</remarks>
-        ///// <returns>true if an object was retrieved.  False if object was not found at location of the Reference.  Throws if could not resolve the Reference to a valid source.</returns>
-        [Casts("retrieves.ResolveAsync must return IRetrieveResult<object>", typeof(IRetrieveResult<object>))]
-        public static async Task<IRetrieveResult<object>> Retrieve(this IRetrieves retrieves) => (IRetrieveResult<object>) (await ((IResolves<object>)retrieves).Resolve().ConfigureAwait(false));
+        /////// <summary>
+        /////// Force a retrieve of the reference from the source.  Replace the Object.
+        /////// </summary>
+        /////// <remarks>Can't return a generic IRetrieveResult due to limitation of the language.</remarks>
+        /////// <returns>true if an object was retrieved.  False if object was not found at location of the Reference.  Throws if could not resolve the Reference to a valid source.</returns>
+        //[Casts("retrieves.ResolveAsync must return IRetrieveResult<object>", typeof(IRetrieveResult<object>))]
+        //public static async Task<IRetrieveResult<object>> Retrieve(this IRetrieves retrieves) => (IRetrieveResult<object>) (await ((IResolves<object>)retrieves).Resolve().ConfigureAwait(false));
 
         ///// <summary>
         ///// Force a retrieve of the reference from the source.  Replace the Object.

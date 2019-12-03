@@ -1,4 +1,5 @@
-﻿using LionFire.Resolves;
+﻿using LionFire.Referencing;
+using LionFire.Resolves;
 using LionFire.Structures;
 using MorseCode.ITask;
 using System;
@@ -6,12 +7,22 @@ using System.Collections.Generic;
 
 namespace LionFire.Persistence.Handles
 {
-    public abstract class ReadWriteHandle<TValue> : ReadWriteHandleBase<TValue>, IReadWriteHandle<TValue>, INotifyPersists<TValue>, INotifyingHandleInternal<TValue>
+    public abstract class ReadWriteHandle<TReference, TValue> 
+        : ReadWriteHandleBase<TReference, TValue>
+        , IReadWriteHandle<TValue>
+        , IReferencable<TReference>
+        , INotifyPersists<TValue>
+        , INotifyingHandleInternal<TValue>
+        where TReference : IReference
     //where TValue : class
     {
+        public new TReference Reference => Key;
         string IKeyed<string>.Key => Key?.ToString();
 
         public abstract event Action<PersistenceEvent<TValue>> PersistenceStateChanged;
+
+        protected ReadWriteHandle() { }
+        protected ReadWriteHandle(TReference reference) : base(reference) { }
 
         public abstract ILazyResolveResult<TValue> QueryValue();
         ITask<ILazyResolveResult<TValue>> ILazilyResolves<TValue>.GetValue() => throw new NotImplementedException();

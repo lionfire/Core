@@ -101,9 +101,9 @@ namespace LionFire.ObjectBus
 
         public override IReference TryGetReference(string uri) => (IReference)ReferenceConstructor.Invoke(new object[] { ReferenceUriParsing.PathOnlyFromUri(uri, uriSchemes) });
         
-        public IReadWriteHandleBase<T> GetReadWriteHandle<T>(TReference reference, T handleObject = default) => (IReadWriteHandleBase<T>)handleCtor.Invoke(new object[] { reference, TryGetOBase(reference), handleObject });
+        public IReadWriteHandleBase<T> GetReadWriteHandle<T>(TReference reference) => (IReadWriteHandleBase<T>)handleCtor.Invoke(new object[] { reference, TryGetOBase(reference) });
         //new OBaseHandle<T>(reference, DefaultOBase, handleObject);
-        public IReadHandleBase<T> GetReadHandle<T>(TReference reference, T handleObject = default) => new OBaseReadHandle<T>(reference, DefaultOBase, handleObject);
+        public IReadHandleBase<T> GetReadHandle<T>(TReference reference) => new OBaseReadHandle<T>(reference, DefaultOBase);
 
     }
 
@@ -213,13 +213,13 @@ namespace LionFire.ObjectBus
             return false;
         }
 
-        public virtual IReadWriteHandleBase<T> GetReadWriteHandle<T>(IReference reference, T handleObject = default)
+        public virtual IReadWriteHandleBase<T> GetReadWriteHandle<T>(IReference reference)
         {
             // TODO: If handle reuse is on, try to find existing handle.
             //var h = new OBusHandle<T>(reference, handleObject);
 
             var obase = TryGetOBase(reference) ?? throw new ObjectBusException("Couldn't resolve OBase for specified reference");
-            var h = new OBaseHandle<T>(reference, obase, handleObject);
+            var h = new OBaseHandle<T>(reference, obase);
 
             //if (obase != null)
             //{
@@ -233,14 +233,14 @@ namespace LionFire.ObjectBus
             return h;
         }
 
-        public virtual IReadHandleBase<T> GetReadHandle<T>(IReference reference, T handleObject = default)
+        public virtual IReadHandleBase<T> GetReadHandle<T>(IReference reference)
         {
             // TODO: If handle reuse is on, try to find existing handle.
 
             // TODO: create read-only handle
             //var h = new OBusHandle<T>(reference);
             var obase = TryGetOBase(reference) ?? throw new ObjectBusException("Couldn't resolve OBase for specified reference");
-            var h = new OBaseReadHandle<T>(reference, obase, handleObject);
+            var h = new OBaseReadHandle<T>(reference, obase);
 
             return h;
         }

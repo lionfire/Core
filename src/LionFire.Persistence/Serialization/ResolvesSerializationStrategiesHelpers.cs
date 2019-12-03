@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using LionFire.Dependencies;
+using LionFire.IO;
 using LionFire.Persistence;
 
 namespace LionFire.Serialization
@@ -12,7 +13,7 @@ namespace LionFire.Serialization
     //    where TOp : PersistenceOperation
     //    where TContext : PersistenceContext 
     //{
-        
+
     //}
 
     //public class DeserializeHelpers 
@@ -20,30 +21,36 @@ namespace LionFire.Serialization
     //{
     //}
     public class SerializeHelpers
-        //: ResolvesSerializationStrategiesHelpersBase<ISerializerScorer, PersistenceOperation, PersistenceContext>
+    //: ResolvesSerializationStrategiesHelpersBase<ISerializerScorer, PersistenceOperation, PersistenceContext>
     {
-        public static float ScoreForStrategy(SerializationStrategyPreference preference, Lazy<PersistenceOperation> operation = null, PersistenceContext context = null)
+        public static float ScoreForStrategy(SerializationStrategyPreference preference, Lazy<PersistenceOperation> operation = null, PersistenceContext context = null, IODirection? direction = null)
         {
+            if (!direction.HasValue) direction = operation?.Value.Direction;
+
             float sum = preference.Preference;
 
             var op = operation?.Value;
 
             Type serviceType;
-            switch (op == null ? PersistenceDirection.Unspecified : op.Direction)
+            IEnumerable<ISerializerScorerBase> strategyScorers;
+            switch (op == null ? IODirection.Unspecified : op.Direction)
             {
                 default:
-                case PersistenceDirection.Unspecified:
-                    serviceType = typeof(IEnumerable<ISerializerScorerBase>);
-                    break;
-                case PersistenceDirection.Serialize:
+                case IODirection.Unspecified:
+                    throw new NotSupportedException();
+                //serviceType = typeof(IEnumerable<ISerializerScorerBase>);
+                //break;
+                case IODirection.Write:
                     serviceType = typeof(IEnumerable<ISerializeScorer>);
+                    strategyScorers = preference.Strategy.SerializeScorers;
                     break;
-                case PersistenceDirection.Deserialize:
+                case IODirection.Read:
                     serviceType = typeof(IEnumerable<IDeserializeScorer>);
+                    strategyScorers = preference.Strategy.DeserializeScorers;
                     break;
             }
 
-            foreach (var scorer in ((IEnumerable)DependencyContext.Current.GetService(serviceType)).OfType<ISerializerScorerBase>())
+            foreach (var scorer in ((IEnumerable)DependencyContext.Current.GetService(serviceType)).OfType<ISerializerScorerBase>().Concat(strategyScorers))
             {
                 if (float.IsNaN(sum))
                 {
@@ -51,6 +58,7 @@ namespace LionFire.Serialization
                 }
                 sum += scorer.ScoreForStrategy(preference, operation, context);
             }
+
             return sum;
         }
 
@@ -59,21 +67,23 @@ namespace LionFire.Serialization
         /// </summary>
         /// <param name="selectionContext"></param>
         /// <returns></returns>
-        public static IEnumerable<SerializationSelectionResult> ResolveStrategies(IEnumerable<SerializationStrategyPreference> preferences, Lazy<PersistenceOperation> operation = null, PersistenceContext context = null)
+        public static IEnumerable<SerializationSelectionResult> ResolveStrategies(IEnumerable<SerializationStrategyPreference> preferences, Lazy<PersistenceOperation> operation = null, PersistenceContext context = null, IODirection? direction = null)
         {
+            if (!direction.HasValue) direction = operation?.Value.Direction;
+
             var results = new SortedList<float, SerializationSelectionResult>();
 
             foreach (var preference in preferences)
             {
                 var result = new SerializationSelectionResult(preference);
 
-                var score = ScoreForStrategy(preference, operation, context);
+                var score = ScoreForStrategy(preference, operation, context, direction: direction);
                 if (float.IsNaN(score))
                 {
                     continue;
                 }
 
-                while (results.ContainsKey(score))
+                while (results.ContainsKey(-score))
                 {
                     score += 0.0001f;
                 }
@@ -89,7 +99,7 @@ namespace LionFire.Serialization
     {
         public static string TrimFirstDot(this string str)
         {
-            if (str.StartsWith(".")) return str.Substring(1);
+            if (str?.StartsWith(".") == true) return str.Substring(1);
             return str;
         }
     }
@@ -113,7 +123,7 @@ namespace LionFire.Serialization
         //    return sum;
         //}
 
-        
+
         //public static IEnumerable<SerializationSelectionResult> ResolveSerializeStrategies(IEnumerable<SerializationStrategyPreference> preferences, Lazy<SerializePersistenceOperation> operation = null, SerializationPersistenceContext context = null)
         //{
         //    var results = new SortedList<float, SerializationSelectionResult>();

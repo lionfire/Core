@@ -33,7 +33,6 @@ namespace LionFire.Persistence.Handles
         INotifyPropertyChanged,
         INotifyPersistsInternal<TValue>
         //, IRetrievableImpl<T>
-        //where TValue : class
     {
         #region Identity
 

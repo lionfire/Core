@@ -14,9 +14,10 @@
         public static bool UseDependencyContext { get; set; } = true;
 
 
+        public static bool UseServiceProviderToActivateSingletons { get; set; } = true;
         public static bool AllowDefaultSingletonActivatorOnDemand { get; set; } = true;
 
 
-        public static bool UseIServiceProviderSingleton { get; set; } = false;
+        //public static bool UseIServiceProviderSingleton { get; set; } = false; // OLD - just set DependencyContext.Default.ServiceProvider.
     }
 }

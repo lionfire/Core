@@ -2,6 +2,7 @@
 {
     public class TestClass1
     {
+
         public string StringProp { get; set; }
         public int IntProp { get; set; }
         public TestClass2 Object { get; set; }
@@ -16,5 +17,8 @@
                 IntProp2 = 2,
             }
         };
+        
+        public static string ExpectedNewtonsoftJson = @"{""$type"":""LionFire.ObjectBus.Testing.TestClass1, LionFire.ObjectBus.Testing"",""StringProp"":""string1"",""IntProp"":1,""Object"":{""StringProp2"":""string2"",""IntProp2"":2}}";
+
     }
 }

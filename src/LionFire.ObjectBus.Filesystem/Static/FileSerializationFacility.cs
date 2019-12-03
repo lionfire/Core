@@ -1,4 +1,7 @@
-﻿using LionFire.Persistence;
+﻿#if TOPORT
+using LionFire.Dependencies;
+using LionFire.Persistence;
+using LionFire.Persistence.Filesystem;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -10,6 +13,7 @@ namespace LionFire.ObjectBus.Filesystem
     {
         public static async Task<T> DeserializePath<T>(this string path)
         {
+            DependencyLocator.Get<FilesystemPersister>().Retrieve<T>(path);
             var result = await FSOBase.Instance.TryGet<T>(path);
             if(!result.IsSuccess()) throw new RetrieveException(result);
 
@@ -24,3 +28,4 @@ namespace LionFire.ObjectBus.Filesystem
         //}
     }
 }
+#endif

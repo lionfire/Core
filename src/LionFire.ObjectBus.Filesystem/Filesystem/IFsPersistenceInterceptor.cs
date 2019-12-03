@@ -1,12 +1,12 @@
-﻿//#define TRACE_SAVE
-#define TRACE_LOAD
+﻿using System;
 
-using System;
-//using LionFire.Extensions.Collections;
-
-namespace LionFire.IO.Filesystem // MOVE to LionFire.IO.Filesystem
+namespace LionFire.Persistence.Filesystem
 {
-    public interface IFsPersistenceInterceptor
+    public interface IPersistenceInterceptor
+    {
+
+    }
+    public interface IFilesystemPersistenceInterceptor : IPersistenceInterceptor
     {
         object Read(string diskPath, Type type = null);
 

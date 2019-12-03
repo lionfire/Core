@@ -3,12 +3,11 @@ using System.IO;
 using LionFire.ObjectBus.Testing;
 using Xunit;
 
-namespace LionFire.ObjectBus.Filesystem.Tests
+namespace LionFire.Persistence.Filesystem.Tests
 {
     public class FsTestUtils
     {
         public static bool EnableFileCleanup = true;
-
         
 
         public static string DataDir => Path.GetTempPath();

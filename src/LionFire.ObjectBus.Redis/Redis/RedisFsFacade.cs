@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 namespace LionFire.ObjectBus.Redis
 {
 
-    public class RedisFsFacade : IFsFacade
+    public class RedisFsFacade : ISimpleFsFacade
     {
         #region Relationships
 

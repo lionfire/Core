@@ -95,16 +95,16 @@ namespace LionFire.Serialization
             return PersistenceOperation;
         }
 
-        public PersistenceContext GetPersistenceContext()
-        {
-            //if (persistenceContext == null) persistenceContext = new PersistenceContext();
-            var persistenceContext = new PersistenceContext();
+        //public PersistenceContext GetPersistenceContext()
+        //{
+        //    //if (persistenceContext == null) persistenceContext = new PersistenceContext();
+        //    var persistenceContext = new PersistenceContext();
 
-            persistenceContext.SerializationContext = SerializationContext ?? DefaultSerializationContext;
-            persistenceContext.GetPersistenceOperation = GetPersistenceOperation;
+        //    persistenceContext.SerializationContext = SerializationContext ?? DefaultSerializationContext;
+        //    persistenceContext.GetPersistenceOperation = GetPersistenceOperation;
 
-            return persistenceContext;
-        }
+        //    return persistenceContext;
+        //}
 
         public override async Task<IRetrieveResult<T>> RetrieveImpl()
         {

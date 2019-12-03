@@ -18,8 +18,8 @@ namespace LionFire.Serialization
         (string String, SerializationResult Result) ToString(object obj, Lazy<PersistenceOperation> operation = null, PersistenceContext context = null);
         SerializationResult ToStream(object obj, Stream stream, Lazy<PersistenceOperation> operation = null, PersistenceContext context = null);
 
-        (T Object, SerializationResult Result) ToObject<T>(byte[] bytes, Lazy<PersistenceOperation> operation = null, PersistenceContext context = null);
-        (T Object, SerializationResult Result) ToObject<T>(string str, Lazy<PersistenceOperation> operation = null, PersistenceContext context = null);
-        (T Object, SerializationResult Result) ToObject<T>(Stream stream, Lazy<PersistenceOperation> operation = null, PersistenceContext context = null);
+        DeserializationResult<T> ToObject<T>(byte[] bytes, Lazy<PersistenceOperation> operation = null, PersistenceContext context = null);
+        DeserializationResult<T> ToObject<T>(string str, Lazy<PersistenceOperation> operation = null, PersistenceContext context = null);
+        DeserializationResult<T> ToObject<T>(Stream stream, Lazy<PersistenceOperation> operation = null, PersistenceContext context = null);
     }
 }

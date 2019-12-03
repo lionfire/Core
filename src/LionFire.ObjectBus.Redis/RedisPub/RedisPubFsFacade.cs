@@ -12,7 +12,7 @@ namespace LionFire.ObjectBus.RedisPub
     public partial class RedisPubOBase
     {
 
-        public class RedisPubFsFacade : IFsFacade
+        public class RedisPubFsFacade : ISimpleFsFacade
         {
             #region Relationships
 

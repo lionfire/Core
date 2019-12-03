@@ -1,13 +1,10 @@
-﻿using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using LionFire.MultiTyping;
+﻿using System;
+using System.Collections.Generic;
 using LionFire.Referencing;
 using LionFire.Serialization;
 
-namespace LionFire.ObjectBus.Filesystem
+namespace LionFire.Persistence.Filesystem
 {
-
     [LionSerializable(SerializeMethod.ByValue)]
     public class FileReference : FileReferenceBase<FileReference>
     {
@@ -61,7 +58,7 @@ namespace LionFire.ObjectBus.Filesystem
         {
             if (reference.Scheme != Constants.UriScheme)
             {
-                throw new OBusReferenceException("UriScheme not supported");
+                throw new ReferenceException("UriScheme not supported");
             }
         }
 
@@ -78,7 +75,6 @@ namespace LionFire.ObjectBus.Filesystem
         }
 
         #endregion
-
     }
 
     public static class FileReferenceExtensions

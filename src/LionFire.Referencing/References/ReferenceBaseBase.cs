@@ -26,9 +26,12 @@ namespace LionFire.Referencing
     //    public static T ShallowClone<T>(this T obj) => CloneUtil<T>.ShallowClone(obj);
     //}
 
-    public abstract class ReferenceBaseBase<ConcreteType> : ICloneableReference
+    public abstract class ReferenceBaseBase<ConcreteType> 
+        : ICloneableReference
+        , IReferencable<ConcreteType>
         where ConcreteType : ReferenceBaseBase<ConcreteType>, IReference
     {
+        ConcreteType IReferencable<ConcreteType>.Reference => (ConcreteType)this;
         IReference ICloneableReference.Clone() => Clone();
         public virtual ConcreteType Clone()
         {

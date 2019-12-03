@@ -1,7 +1,7 @@
-﻿//#define TRACE_SAVE
+﻿#nullable enable
+//#define TRACE_SAVE
 #define TRACE_LOAD
 
-//using LionFire.Extensions.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Threading.Tasks;
@@ -22,29 +22,30 @@ namespace LionFire.Persistence
         /// <param name="op"></param>
         /// <param name="context"></param>
         /// <returns></returns>
-        public static async Task<T> ToObject<T>(this PersistenceOperation op, PersistenceContext context = null)
-        {
-            if (context == null) context = op.Context;
-            var serializationProvider = (context?.SerializationProvider ?? DependencyLocator.TryGet<ISerializationProvider>());
+        //public static async Task<T> ToObject<T>(this PersistenceOperation op)
+        //    => await (op.Context?.SerializationProvider ?? DependencyLocator.TryGet<ISerializationProvider>()).ToObject<T>(op);
 
-            async IAsyncEnumerable<Stream> streams(ISerializationStrategy strategy)
-            {
-                foreach (var path in op.Deserialization.CandidatePaths)
-                {
-                    if (!op.IgnoreFileExtension && !strategy.SupportsExtension(Path.GetExtension(path)))
-                    {
-                        continue;
-                    }
-
-                    yield return await context.Deserialization.PathToStream(path).ConfigureAwait(false);
-                }
-            }
-
-            return await serializationProvider.ToObject<T>(streams, op, context);
             
-            
+
+            // OLD
+            //async IAsyncEnumerable<Stream> CandidateStreams(ISerializationStrategy strategy)
+            //{
+            //    foreach (var path in op.Deserialization.CandidatePaths)
+            //    {
+            //        if (!op.IgnoreFileExtension && !strategy.SupportsExtension(Path.GetExtension(path)))
+            //        {
+            //            continue;
+            //        }
+
+            //        yield return await context.Deserialization.PathToStream(path).ConfigureAwait(false);
+            //    }
+            //}
+
+
+
+
             //var strategyResults = .Strategies(streams(), op, context);
-            
+
             //foreach (var strategyResult in strategyResults)
             //{
             //    var strategy = strategyResult.Strategy;
@@ -63,10 +64,10 @@ namespace LionFire.Persistence
 
             //        using (var fs = context.Deserialization.PathToStream(path))
             //        {
-            //            var (Object, Result) = strategy.ToObject<T>(fs, op, context);
+            //            var Result) = strategy.ToObject<T>(fs, op, context);
             //            if (Result.IsSuccess)
             //            {
-            //                return (Object,Result);
+            //                return (Result.Object,Result);
             //            }
             //        }
             //    }
@@ -104,6 +105,5 @@ namespace LionFire.Persistence
             //                object obj = Deserialize(fs, type, diskPath, operation, context);
             //                return obj;
             //            }
-        }
     }
 }

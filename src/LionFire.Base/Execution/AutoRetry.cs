@@ -42,6 +42,8 @@ namespace LionFire.Execution
         public static object AutoRetry(this Func<object> action, int maxRetries = DefaultMaxRetries, bool throwLastExceptionOnFail = ThrowLastExceptionOnFail, int millisecondsBetweenAttempts = DefaultMillisecondsBetweenAttempts)
 #endif
         {
+            if (maxRetries == 0) { return await taskGenerator().ConfigureAwait(false); }
+
             List<Exception> exceptions = null;
             for (int retriesRemaining = maxRetries; retriesRemaining >= 0; retriesRemaining--)
             {

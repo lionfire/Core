@@ -7,7 +7,7 @@ namespace LionFire.Resolves
     // Is the Disposable part necessary for Resolvables?  It can act as a forceful signal from one part of an app to another that a handle/resolvable is dead and must not be used anymore.
     // Perhaps this could trigger the cleanup of any events and unmanaged resources in complex derived classes such as ones that sync
     public abstract class DisposableKeyed<TKey> : IDisposable, IKeyed<TKey>
-         where TKey : class
+         //where TKey : class
     {
         protected DisposableKeyed() { }
         protected DisposableKeyed(TKey key) { this.Key = key; }

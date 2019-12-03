@@ -1,8 +1,8 @@
-﻿//#define TRACE_SAVE
+﻿#if TODO
+//#define TRACE_SAVE
 #define TRACE_LOAD
 
 using System;
-//using LionFire.Extensions.Collections;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.IO;
@@ -11,8 +11,7 @@ using System.Threading.Tasks;
 using LionFire.Dependencies;
 using LionFire.Execution;
 using LionFire.ExtensionMethods.Persistence.ExtensionlessFilesystem;
-using LionFire.Extensions.Collections;
-using LionFire.IO.Filesystem;
+using LionFire.ExtensionMethods.Collections;
 using LionFire.MultiTyping;
 using LionFire.Persistence;
 using LionFire.Referencing;
@@ -20,26 +19,15 @@ using LionFire.Serialization;
 using LionFire.Structures;
 using Microsoft.Extensions.Logging;
 
-namespace LionFire.ExtensionMethods.Persistence.ExtensionlessFilesystem
-{
-    public static class ExtensionlessExtensions
-    {
-        public static Task<Stream> PathToReadStream(string path) => await Task.Run(() => new FileStream(path, FileMode.Open, FileAccess.Read, FileShare.Read).ConfigureAwait(false);
-        public static Task<byte[]> PathToBytes(string path) => await Task.Run(() => File.ReadAllBytes(path)).ConfigureAwait(false);
-        public static Task<string> PathToString(string path) => await Task.Run(() => File.ReadAllText(path)).ConfigureAwait(false);
-    }
-}
 namespace LionFire.ObjectBus.Filesystem
 {
     public class ExtensionlessFsOBasePersistence
     {
-        #region Singletons
+#region Singletons
 
-        public static FsOBasePersistence Instance => Singleton<FsOBasePersistence>.Instance;
+        public static FSPersistence Instance => Singleton<FSPersistence>.Instance;
 
-        #endregion
-
-
+#endregion
 
         protected static PersistenceContext FsOBaseDeserializingPersistenceContext = new PersistenceContext
         {
@@ -52,13 +40,21 @@ namespace LionFire.ObjectBus.Filesystem
             }
         };
 
-        #region Get
+#region Get
 
-        public static async Task<T> GetFromPath<T>(string diskPath, Lazy<PersistenceOperation> operation = null, PersistenceContext context = null) => (T)await GetObjectFromPath(diskPath, typeof(T), operation, context);
+        //public static async Task<T> TryRetrieve<T>(string diskPath, Lazy<PersistenceOperation> operation = null, PersistenceContext context = null) => (T)await TryRetrieve(diskPath, operation, context);
 
-        public static async Task<object> GetObjectFromPath(string diskPath, Type type = null, Lazy<PersistenceOperation> operation = null, PersistenceContext context = null)
+        public static async Task<IRetrieveResult<T>> TryRetrieve<T>(ExtensionlessFileReference reference, Lazy<PersistenceOperation> operation = null, PersistenceContext context = null)
         {
-            #region Give Interceptors a chance to return the result
+            Type type = fileReference.ReferenceType();
+#error TODO
+        }
+
+
+        public static async Task<IRetrieveResult<T>> TryRetrieve<T>(string diskPath, Lazy<PersistenceOperation> operation = null, PersistenceContext context = null)
+        {
+#error TODO
+#region Give Interceptors a chance to return the result
 
             // REVIEW DESIGNFIXME - this functionality probably doesn't belong here
 
@@ -76,7 +72,7 @@ namespace LionFire.ObjectBus.Filesystem
                 }
             }
 
-            #endregion
+#endregion
 
             try
             {
@@ -85,7 +81,7 @@ namespace LionFire.ObjectBus.Filesystem
                     //bool deleteFile = false; // FUTURE?
                     try
                     {
-                        #region Directory
+#region Directory
 
                         var dir = Path.GetDirectoryName(diskPath);
                         if (!Directory.Exists(dir))
@@ -93,9 +89,9 @@ namespace LionFire.ObjectBus.Filesystem
                             return null; // DOESNOTEXIST
                         }
 
-                        #endregion
+#endregion
 
-                        #region candidatePaths
+#region candidatePaths
 
                         var fileName = Path.GetFileName(diskPath);
                         var candidatePaths = Directory.GetFiles(dir, fileName + "*").ToList();
@@ -105,26 +101,26 @@ namespace LionFire.ObjectBus.Filesystem
                         }
 
 
-                        #endregion
+#endregion
 
-                        #region Operation
+#region Operation
 
                         var persistenceOperation = new PersistenceOperation()
                         {
                             Type = type,
                             Deserialization = new DeserializePersistenceOperation()
                             {
-                                #region ENH - optional alternative: combine dir and filenames to get candidatepaths
+#region ENH - optional alternative: combine dir and filenames to get candidatepaths
                                 //Directory = dir,
                                 //CandidateFilemes = 
-                                #endregion
+#endregion
                                 CandidatePaths = candidatePaths.Select(path => Path.Combine(dir, Path.GetFileName(path))),
                             }
                         };
 
-                        #endregion
+#endregion
 
-                        #region Context
+#region Context
 
                         if (context != null)
                         {
@@ -132,7 +128,7 @@ namespace LionFire.ObjectBus.Filesystem
                         }
                         var effectiveContext = FsOBaseDeserializingPersistenceContext;
 
-                        #endregion
+#endregion
 
                         return persistenceOperation.ToObject<object>(effectiveContext);
                     }
@@ -160,7 +156,7 @@ namespace LionFire.ObjectBus.Filesystem
         }
         public static async Task<object> GetObjectFromPathExtensionless(string diskPath, Type type = null, Lazy<PersistenceOperation> operation = null, PersistenceContext context = null)
         {
-            #region Give Interceptors a chance to return the result
+#region Give Interceptors a chance to return the result
 
             // REVIEW
 
@@ -178,7 +174,7 @@ namespace LionFire.ObjectBus.Filesystem
                 }
             }
 
-            #endregion
+#endregion
 
             try
             {
@@ -187,7 +183,7 @@ namespace LionFire.ObjectBus.Filesystem
                     //bool deleteFile = false; // FUTURE?
                     try
                     {
-                        #region Directory
+#region Directory
 
                         var dir = Path.GetDirectoryName(diskPath);
                         if (!Directory.Exists(dir))
@@ -195,9 +191,9 @@ namespace LionFire.ObjectBus.Filesystem
                             return null; // DOESNOTEXIST
                         }
 
-                        #endregion
+#endregion
 
-                        #region candidatePaths
+#region candidatePaths
 
                         var fileName = Path.GetFileName(diskPath);
                         var candidatePaths = Directory.GetFiles(dir, fileName + "*").ToList();
@@ -207,26 +203,26 @@ namespace LionFire.ObjectBus.Filesystem
                         }
 
 
-                        #endregion
+#endregion
 
-                        #region Operation
+#region Operation
 
                         var persistenceOperation = new PersistenceOperation()
                         {
                             Type = type,
                             Deserialization = new DeserializePersistenceOperation()
                             {
-                                #region ENH - optional alternative: combine dir and filenames to get candidatepaths
+#region ENH - optional alternative: combine dir and filenames to get candidatepaths
                                 //Directory = dir,
                                 //CandidateFilemes = 
-                                #endregion
+#endregion
                                 CandidatePaths = candidatePaths.Select(path => Path.Combine(dir, Path.GetFileName(path))),
                             }
                         };
 
-                        #endregion
+#endregion
 
-                        #region Context
+#region Context
 
                         if (context != null)
                         {
@@ -234,7 +230,7 @@ namespace LionFire.ObjectBus.Filesystem
                         }
                         var effectiveContext = FsOBaseDeserializingPersistenceContext;
 
-                        #endregion
+#endregion
 
                         return persistenceOperation.ToObject<object>(effectiveContext);
                     }
@@ -324,9 +320,9 @@ namespace LionFire.ObjectBus.Filesystem
             return obj;
         }
 
-        #endregion
+#endregion
 
-        #region Set
+#region Set
 
         // TODO: overwrite modes, etc.
 
@@ -438,9 +434,9 @@ namespace LionFire.ObjectBus.Filesystem
         //{
         //}
 
-        #endregion
+#endregion
 
-        #region Serialization
+#region Serialization
 
         //public static ISerializationStrategy GetSerializer(object obj = null, string path = null)
         //{
@@ -478,9 +474,9 @@ namespace LionFire.ObjectBus.Filesystem
         //    //return serializer.ToObject(stream, new SerializationContext { Type = type });
         //}
 
-        #endregion
+#endregion
 
-        #region Delete
+#region Delete
 
         public static async Task<bool?> TryDelete(string objectPath, Type type = null, bool preview = false)
         {
@@ -517,9 +513,9 @@ namespace LionFire.ObjectBus.Filesystem
             return result;
         }
 
-        #endregion
+#endregion
 
-        #region (Static) Directory accessors
+#region (Static) Directory accessors
 
         /// <summary>
         /// WARNING REVIEW: If files have multiple extensions, there may be strange behavior
@@ -562,7 +558,7 @@ namespace LionFire.ObjectBus.Filesystem
         {
             string name = System.IO.Path.GetFileNameWithoutExtension(filename);
 
-            int indexOfNameEnd = name.IndexOf(FsOBasePersistence.EndOfNameMarker);
+            int indexOfNameEnd = name.IndexOf(FSPersistence.EndOfNameMarker);
 
             if (indexOfNameEnd != -1)
             {
@@ -591,13 +587,13 @@ namespace LionFire.ObjectBus.Filesystem
             List<string> children = new List<string>();
             if (Directory.Exists(path))
             {
-                children.AddRange(Directory.GetFiles(path).Select(FsOBasePersistence.GetNameFromFileName));
-                children.TryAddRange(Directory.GetDirectories(path).Select(FsOBasePersistence.GetNameFromFileName));
+                children.AddRange(Directory.GetFiles(path).Select(FSPersistence.GetNameFromFileName));
+                children.TryAddRange(Directory.GetDirectories(path).Select(FSPersistence.GetNameFromFileName));
             }
             return children;
         }
 
-        #region Metadata
+#region Metadata
 
         //private static Vob VFSMetadata // TOPORT
         ////private Vob<FSMetaData> FSMetadata // TODO
@@ -620,13 +616,13 @@ namespace LionFire.ObjectBus.Filesystem
 
         private static Type GetDefaultChildTypeForPath(string path) => throw new NotImplementedException("TOPORT");//#if AOT // TOPORT//            var metadata = VFSMetadata[path].AsType(typeof(FSMetaData)) as FSMetaData;//#else//            var metadata = VFSMetadata[path].AsType<FSMetaData>();//#endif//            if (metadata == null) return null;//            return metadata.DefaultType;
 
-        #endregion
+#endregion
 
         public static List<string> GetChildrenNamesOfType<ChildType>(string path)
             where ChildType : class, new() => throw new NotImplementedException("TOPORT");//List<string> children = new List<string>();//if (typeof(ChildType) == typeof(VosDirectory))//{//    l.Warn("TEMP Behaviour - Scanning for VosDirectory returns all directories in filesystem");//    children.AddRange(Directory.GetDirectories(path));//}//else//{//    Type defaultType = GetDefaultChildTypeForPath(path); // Use a Vob overlay over the filesystem to access this?//    if (defaultType != null)//    {//    }//    else//    {//    }//    children.AddRange(Directory.GetFiles(path).Select(FsPersistence.GetNameFromFileName));//}//return children;
-        #endregion
+#endregion
 
-        #region RecentSaves
+#region RecentSaves
 
         public static ConcurrentDictionary<string, DateTime> RecentSaves => recentSaves;
         private static readonly ConcurrentDictionary<string, DateTime> recentSaves = new ConcurrentDictionary<string, DateTime>();
@@ -642,8 +638,9 @@ namespace LionFire.ObjectBus.Filesystem
             }
         }
 
-        #endregion
+#endregion
 
         private static ILogger l = Log.Get();
     }
 }
+#endif

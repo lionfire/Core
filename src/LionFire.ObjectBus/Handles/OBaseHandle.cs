@@ -10,7 +10,7 @@ using LionFire.Resolves;
 namespace LionFire.ObjectBus.Handles
 {
     // TODO: Derive from PersistsReadWriteHandleBase?
-    public class OBaseHandle<T> : ReadWriteHandleBase<T>, IHas<IOBase>
+    public class OBaseHandle<T> : ReadWriteHandleBase<IReference, T>, IHas<IOBase>
     {
         public IOBase OBase { get;  }
         IOBase IHas<IOBase>.Object => OBase;

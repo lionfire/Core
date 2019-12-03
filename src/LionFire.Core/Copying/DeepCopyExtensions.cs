@@ -9,7 +9,7 @@ using System.Reflection;
 using System.Runtime.Serialization;
 using OX.Copyable;
 using Microsoft.Extensions.Logging;
-using LionFire.Extensions.Collections;
+using LionFire.ExtensionMethods.Collections;
 using LionFire.ExtensionMethods;
 
 namespace LionFire.Copying

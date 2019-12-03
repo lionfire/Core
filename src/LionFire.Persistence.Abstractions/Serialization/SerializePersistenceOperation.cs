@@ -1,7 +1,9 @@
-﻿using System.IO;
+﻿using LionFire.IO;
+using System.IO;
 
 namespace LionFire.Persistence
 {
+
     public class SerializePersistenceOperation
     {
         //public PersistenceDirection PersistenceDirection => PersistenceDirection.Serialize;
@@ -12,6 +14,11 @@ namespace LionFire.Persistence
         public object Object { get; set; }
 
         public Stream Stream { get; set; }
+
+        public bool RequireOverwrite { get; set; }
+        public bool AllowOverwrite { get; set; }
+
+        public ReplaceMode ReplaceMode { get; set; }
     }
 
     //public class MimeSerializationContext

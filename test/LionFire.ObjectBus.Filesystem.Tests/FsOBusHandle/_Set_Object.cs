@@ -12,6 +12,7 @@ using LionFire.ObjectBus.Filesystem;
 using LionFire.ObjectBus.Filesystem.Tests;
 using LionFire.ObjectBus.Testing;
 using LionFire.Persistence;
+using LionFire.Persistence.Filesystem.Tests;
 using LionFire.Referencing;
 using Xunit;
 
