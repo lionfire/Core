@@ -14,12 +14,12 @@ namespace LionFire.Persistence.AutoExtensionFilesystem
     public abstract partial class AutoExtensionFilesystemPersister<TReference, TPersistenceOptions>
         : FilesystemPersister<TReference, TPersistenceOptions>
         where TReference : IReference
-        where TPersistenceOptions : FilesystemPersistenceOptions
+        where TPersistenceOptions : FilesystemPersisterOptions
     {
 
         #region Construction
 
-        public AutoExtensionFilesystemPersister(FilesystemPersistenceOptions persistenceOptions) : base(persistenceOptions)
+        public AutoExtensionFilesystemPersister(FilesystemPersisterOptions persistenceOptions) : base(persistenceOptions)
         {
 
         }

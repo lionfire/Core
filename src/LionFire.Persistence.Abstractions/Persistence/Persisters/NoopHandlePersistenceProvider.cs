@@ -1,7 +1,7 @@
 ﻿using LionFire.Referencing;
 using System.Threading.Tasks;
 
-namespace LionFire.Persistence
+namespace LionFire.Persistence.Persisters
 {
     public class NoopPersister<TReference> : IReferencePersister<TReference>
          where TReference : IReference

@@ -56,6 +56,7 @@ namespace LionFire.Persistence.Filesystem
 
         public static void ValidateCanConvertFrom(IReference reference)
         {
+            
             if (reference.Scheme != Constants.UriScheme)
             {
                 throw new ReferenceException("UriScheme not supported");

@@ -15,6 +15,7 @@ namespace FileReadHandle_
 {
     public class _Retrieve
     {
+        [Fact]
         public async void P_string()
         {
             await PersistersHost.Create()

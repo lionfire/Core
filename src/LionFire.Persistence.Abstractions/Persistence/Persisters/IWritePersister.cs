@@ -3,7 +3,7 @@ using LionFire.Serialization;
 using System;
 using System.Threading.Tasks;
 
-namespace LionFire.Persistence
+namespace LionFire.Persistence.Persisters
 {
     public interface IWritePersister<in TReference>
         where TReference : IReference

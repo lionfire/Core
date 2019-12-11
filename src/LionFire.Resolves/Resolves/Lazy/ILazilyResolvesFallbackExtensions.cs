@@ -2,6 +2,7 @@
 using LionFire.Structures;
 using MorseCode.ITask;
 using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace LionFire.ExtensionMethods.Resolves
@@ -28,7 +29,7 @@ namespace LionFire.ExtensionMethods.Resolves
         private static ITask<IResolveResult<TValue>> DefaultableReadWrapper_GetValue<TValue>(IDefaultableReadWrapper<TValue> readWrapper)
         {
             var value = readWrapper.Value;
-            return Task.FromResult((IResolveResult<TValue>)new ResolveResult<TValue>(value != default, value)).AsITask();
+            return Task.FromResult((IResolveResult<TValue>)new ResolveResult<TValue>(!EqualityComparer<TValue>.Default.Equals(value, default), value)).AsITask();
         }
 
         /// <summary>
@@ -45,7 +46,7 @@ namespace LionFire.ExtensionMethods.Resolves
             // Otherwise, assume it doesn't lazily load.
 
             var value = readWrapper.Value;
-            return Task.FromResult((IResolveResult<TValue>)new ResolveResult<TValue>(value != default, value)).AsITask();
+            return Task.FromResult((IResolveResult<TValue>)new ResolveResult<TValue>(!EqualityComparer<TValue>.Default.Equals(value, default), value)).AsITask();
         }
 
         /// <summary>
@@ -64,7 +65,7 @@ namespace LionFire.ExtensionMethods.Resolves
             return Task.Run(() =>
             {
                 var value = readWrapper.Value;
-                return (IResolveResult<TValue>)new ResolveResult<TValue>(value != default, value);
+                return (IResolveResult<TValue>)new ResolveResult<TValue>(!EqualityComparer<TValue>.Default.Equals(value, default), value);
             }).AsITask();
         }
 
@@ -92,7 +93,7 @@ namespace LionFire.ExtensionMethods.Resolves
             if (readWrapper is ILazilyResolves<TValue> lr) return lr.QueryValue<TValue>();
 
             var value = readWrapper.Value;
-            return new ResolveResult<TValue>(value != default, value);
+            return new ResolveResult<TValue>(!EqualityComparer<TValue>.Default.Equals(value, default), value);
         }
 
         #endregion

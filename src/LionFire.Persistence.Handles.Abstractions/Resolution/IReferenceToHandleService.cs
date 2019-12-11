@@ -8,6 +8,9 @@ namespace LionFire.Persistence.Handles
     {
         IReadWriteHandleProvider GetReadWriteHandleProvider(IReference input);
         IReadHandleProvider GetReadHandleProvider(IReference input);
+        IReadHandleProvider<TReference> GetReadHandleProvider<TReference>(TReference input)
+            where TReference : IReference
+            ;
         IWriteHandleProvider GetWriteHandleProvider(IReference input);
         
 

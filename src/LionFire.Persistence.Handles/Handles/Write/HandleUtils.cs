@@ -59,7 +59,7 @@ namespace LionFire.Persistence.Handles
         }
 
         #endregion
-
+//#nullable disable
         internal static void OnUserChangedValue_ReadWrite<TValue>(this IHandleInternal<TValue> h, TValue newValue)
         {
             IHandleInternal<TValue> hi = h;
@@ -68,7 +68,7 @@ namespace LionFire.Persistence.Handles
 
             // REVIEW these flags.  TODO: Add a strict mode for Create/Update/Upsert, and also etags for strict update of etag
 
-            if (newValue == default)
+            if (EqualityComparer<TValue>.Default.Equals(newValue,default(TValue)))
             {
                 newFlags |= PersistenceFlags.OutgoingDeletePending;
                 newFlags &= ~(PersistenceFlags.OutgoingUpsertPending | PersistenceFlags.OutgoingCreatePending | PersistenceFlags.OutgoingUpdatePending);
@@ -103,7 +103,7 @@ namespace LionFire.Persistence.Handles
 
             var newFlags = p.Flags;
 
-            if (newValue == default)
+            if (EqualityComparer<TValue>.Default.Equals(newValue, default))
             {
                 newFlags |= PersistenceFlags.OutgoingDeletePending;
                 newFlags &= ~(PersistenceFlags.OutgoingUpsertPending | PersistenceFlags.OutgoingCreatePending | PersistenceFlags.OutgoingUpdatePending);

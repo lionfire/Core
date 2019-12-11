@@ -5,11 +5,13 @@ using System.Collections.Generic;
 
 namespace LionFire.Persistence.Filesystem
 {
-    public class FilesystemPersistenceOptions : FilesystemPersistenceOptionsBase
+    public class FilesystemPersisterOptions : FilesystemPersisterOptionsBase
     {
         //public static FSPersistenceOptions Current { get; } = DependencyLocator.Get<FSPersistenceOptions>();
 
-        public FilesystemPersistenceOptions()
+        public string RootDirectory { get; set; }
+
+        public FilesystemPersisterOptions()
         {
             MaxGetRetries = 10;
         }

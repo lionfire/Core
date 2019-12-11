@@ -11,8 +11,9 @@ using System.Threading.Tasks;
 
 namespace LionFire.Persistence
 {
-    public class ReadWriteHandlePairEx<TValue> : ReadWriteHandlePairBase<TValue>
+    public class ReadWriteHandlePairEx<TReference, TValue> : ReadWriteHandlePairBase<TReference, TValue>
         // , IReadWriteHandlePairEx<T> TODO
+        where TReference : IReference
         where TValue : class
     {
     }
@@ -24,7 +25,8 @@ namespace LionFire.Persistence
 
     //}
 
-    public class NoopReadWriteHandlePair<TValue> : ReadWriteHandlePair<TValue>
+    public class NoopReadWriteHandlePair<TReference, TValue> : ReadWriteHandlePair<TReference, TValue>
+        where TReference  :IReference
     {
         public override TValue Value { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
 
@@ -39,10 +41,11 @@ namespace LionFire.Persistence
         public override Task<ISuccessResult> Put(TValue value) => throw new NotImplementedException();
     }
 
-    public abstract class ReadWriteHandlePair<TValue>
-        : ReadWriteHandlePairBase<TValue, IReadHandle<TValue>, IWriteHandle<TValue>>
+    public abstract class ReadWriteHandlePair<TReference, TValue>
+        : ReadWriteHandlePairBase<TReference, TValue, IReadHandle<TValue>, IWriteHandle<TValue>>
         , IReadWriteHandlePair<TValue>
         , IWriteHandle<TValue>
+        where TReference : IReference
         //where TValue : class
     {
 
@@ -66,10 +69,11 @@ namespace LionFire.Persistence
     ///  - WriteHandle is lazily created and HasReadHandle and ReadHandle.HasValue are true
     /// </summary>
     /// <typeparam name="TValue"></typeparam>
-    public class ReadWriteHandlePairBase<TValue> : ReadWriteHandlePairBase<TValue, IReadHandleBase<TValue>, IWriteHandleBase<TValue>>, IReadWriteHandlePairBase<TValue>, IWriteHandleBase<TValue>
+    public class ReadWriteHandlePairBase<TReference, TValue> : ReadWriteHandlePairBase<TReference, TValue, IReadHandleBase<TValue>, IWriteHandleBase<TValue>>, IReadWriteHandlePairBase<TValue>, IWriteHandleBase<TValue>
         , IWrapper<TValue>
         , IReadWrapper<TValue>
         , IWriteWrapper<TValue>
+        where TReference : IReference
     //where TValue : class
     {
 

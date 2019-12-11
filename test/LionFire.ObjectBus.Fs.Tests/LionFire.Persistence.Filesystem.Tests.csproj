@@ -29,6 +29,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\src\LionFire.Applications\LionFire.Applications.csproj" />
+    <ProjectReference Include="..\..\src\LionFire.Base\LionFire.Base.csproj" />
     <ProjectReference Include="..\..\src\LionFire.ObjectBus.Filesystem\LionFire.Persistence.Filesystem.csproj" />
     <ProjectReference Include="..\..\src\LionFire.ObjectBus.Testing\LionFire.ObjectBus.Testing.csproj" />
   </ItemGroup>

@@ -136,7 +136,8 @@ namespace LionFire.ObjectBus
         {
             get
             {
-                yield return typeof(OBaseHandle<>);
+                throw new NotImplementedException("REVIEW");
+                //yield return typeof(OBaseHandle<>);
             }
         }
 
@@ -214,6 +215,8 @@ namespace LionFire.ObjectBus
 
         public virtual IReadWriteHandle<T> GetReadWriteHandle<T>(IReference reference)
         {
+            throw new NotImplementedException();
+#if REVIEW
             // TODO: If handle reuse is on, try to find existing handle.
             //var h = new OBusHandle<T>(reference, handleObject);
 
@@ -230,6 +233,7 @@ namespace LionFire.ObjectBus
             //}
 
             return h;
+#endif
         }
 
         public virtual IReadHandle<T> GetReadHandle<T>(IReference reference)

@@ -1,10 +1,11 @@
-﻿using LionFire.Referencing;
+﻿using LionFire.Persistence.Handles;
+using LionFire.Referencing;
 using LionFire.Resolves;
 using MorseCode.ITask;
 using System;
 using System.Threading.Tasks;
 
-namespace LionFire.Persistence.Handles
+namespace LionFire.Persistence.Persisters
 {
     public abstract class PersisterReadHandle<TReference, TValue> : ReadHandle<TReference, TValue>, IPersisterHandle<TReference>
     where TReference : IReference

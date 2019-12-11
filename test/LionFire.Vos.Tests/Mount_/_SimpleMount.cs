@@ -15,7 +15,6 @@ namespace Mount_
         public async void Pass()
         {
             await FrameworkHostBuilder.Create()
-                .AddVosApp()
                 .Run(async () =>
                 {
                     await Task.Delay(1);

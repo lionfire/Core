@@ -1,5 +1,6 @@
 ﻿using LionFire.Dependencies;
 using LionFire.Referencing;
+using Microsoft.Extensions.Options;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
@@ -22,26 +23,56 @@ namespace LionFire.Persistence.Handles
     /// </design>
     public class ReferenceToHandleService : IReferenceToHandleService
     {
-        public static IReferenceToHandleService Instance 
-            => DependencyContext.Current.GetServiceOrSingleton<IReferenceToHandleService, ReferenceToHandleService>();
+        public static IReferenceToHandleService Current => DependencyLocator.Get<IReferenceToHandleService>();
 
+        //IOptionsFactory<NamedHandleProviderConfig> optionsFactory;
+
+        //public ReferenceToHandleService(IOptionsFactory<NamedHandleProviderConfig> optionsFactory)
+        //{
+        //    this.optionsFactory = optionsFactory;
+        //}
+#warning TODO: If this method is okay, do the same generic parameter for the others
+        public IReadHandleProvider<TReference> GetReadHandleProvider<TReference>(TReference input)
+            where TReference : IReference
+        {
+            // REVIEW - is this IReference check needed? What is performance?
+            //if (typeof(TReference) == typeof(IReference))
+            //{
+            //// Question: Handle named providers here, or let each provider type do it?
+            //return DependencyLocator.Get<IReadHandleProvider>(typeof(IReadHandleProvider<>).MakeGenericType(input.GetType()));
+            //}
+            //else
+            {
+                return DependencyLocator.Get<IReadHandleProvider<TReference>>(typeof(IReadHandleProvider<TReference>));
+
+            }
+        }
+        public IReadHandleProvider GetReadHandleProvider(IReference input)
+        {
+                // Question: Handle named providers here, or let each provider type do it?
+                return DependencyLocator.Get<IReadHandleProvider>(typeof(IReadHandleProvider<>).MakeGenericType(input.GetType()));
+        }
 
         public IReadWriteHandleProvider GetReadWriteHandleProvider(IReference input) 
-            => (IReadWriteHandleProvider)DependencyContext.Current.GetServiceOrSingleton(typeof(IReadWriteHandleProvider<>).MakeGenericType(input.GetType()));
+            => DependencyLocator.Get<IReadWriteHandleProvider>(typeof(IReadWriteHandleProvider<>).MakeGenericType(input.GetType()));
 
         //if (handleProviders.TryGetValue(input.GetType(), out IReadWriteHandleProvider result))
         //{
         //    return result;
         //}
 
-        public IReadHandleProvider GetReadHandleProvider(IReference input)
-            => (IReadHandleProvider)DependencyContext.Current.GetServiceOrSingleton(typeof(IReadHandleProvider<>).MakeGenericType(input.GetType()));
-        
+
+        //public IReadHandleProvider GetReadHandleProvider<TReference>(TReference input)
+        //    where TReference: IReference
+        //{
+        //    DependencyLocator.Get<IReadHandleProvider<TReference>>(typeof(IReadHandleProvider<TReference>));
+        //}
+
         public IWriteHandleProvider GetWriteHandleProvider(IReference input)
-                    => (IWriteHandleProvider)DependencyContext.Current.GetServiceOrSingleton(typeof(IWriteHandleProvider<>).MakeGenericType(input.GetType()));
+                    => DependencyLocator.Get<IWriteHandleProvider>(typeof(IWriteHandleProvider<>).MakeGenericType(input.GetType()));
 
         public ICollectionHandleProvider GetCollectionHandleProvider(IReference input)
-            => (ICollectionHandleProvider)DependencyContext.Current.GetServiceOrSingleton(typeof(ICollectionHandleProvider<>).MakeGenericType(input.GetType()));
+            => DependencyLocator.Get<ICollectionHandleProvider>(typeof(ICollectionHandleProvider<>).MakeGenericType(input.GetType()));
 
         /// ///////////////////
 
@@ -60,7 +91,7 @@ namespace LionFire.Persistence.Handles
 
         //public IReferenceToHandleProviderProvider HPP(IReference input)
         //{
-        //    DependencyContext.Current.GetServiceOrSingleton<>()
+        //    DependencyLocator.Get<><>()
         //}
 
 

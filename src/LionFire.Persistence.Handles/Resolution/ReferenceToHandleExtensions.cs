@@ -4,6 +4,8 @@ using LionFire.Persistence;
 using System;
 using LionFire.Referencing.Ex;
 using LionFire.Dependencies;
+using System.Reflection;
+using System.Linq;
 
 namespace LionFire.Referencing
 {
@@ -13,8 +15,19 @@ namespace LionFire.Referencing
 
         #region ReadHandle
 
-        public static IReadHandle<T> GetReadHandle<T>(this IReference reference) => reference.GetReadHandleProvider().GetReadHandle<T>(reference);
-        public static IReadHandle<T> ToReadHandle<T>(this IReference reference) => reference.ToReadHandleProvider().GetReadHandle<T>(reference) ?? throw new HasUnresolvedDependenciesException($"Could not get {nameof(IReadHandle<T>)} type for reference of type {reference.GetType().FullName}");
+        public static IReadHandle<TValue> GetReadHandle<TValue, TReference>(this TReference reference)
+            where TReference : IReference
+            => reference.GetReadHandleProvider<TReference>().GetReadHandle<TValue>(reference);
+        public static IReadHandle<TValue> GetReadHandle<TValue>(this IReference reference)
+        {
+            // REVIEW - this seems crazy.  Is it slow?  Should an [Obsolete] tell the user to use the <TValue, TReference> overload instead?
+            var TReference = reference.GetType();
+            return (IReadHandle<TValue>) (typeof(IReadHandleProvider<>).MakeGenericType(TReference).GetMethod ("GetReadHandle").MakeGenericMethod(typeof(TValue)).Invoke(
+                (typeof(ReferenceToHandleProviderExtensions).GetMethods(BindingFlags.Public | BindingFlags.Static).Where(mi => mi.Name == "GetReadHandleProvider" && mi.ContainsGenericParameters).First().MakeGenericMethod (TReference).Invoke(null, new object[] { /* Upcast */ reference }))
+                , new object[] { reference }));
+        }
+
+        public static IReadHandle<TValue> ToReadHandle<TValue>(this IReference reference) => reference.ToReadHandleProvider().GetReadHandle<TValue>(reference) ?? throw new HasUnresolvedDependenciesException($"Could not get {nameof(IReadHandle<TValue>)} type for reference of type {reference.GetType().FullName}");
 
         #endregion
 

@@ -26,6 +26,7 @@
 
   <ItemGroup>
     <Folder Include="Persistence\Resolvables\" />
+    <Folder Include="Providers\" />
   </ItemGroup>
 
 </Project>

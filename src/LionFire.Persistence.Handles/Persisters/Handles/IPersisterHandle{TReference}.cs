@@ -1,6 +1,6 @@
 ﻿using LionFire.Referencing;
 
-namespace LionFire.Persistence.Handles
+namespace LionFire.Persistence.Persisters
 {
     public interface IPersisterHandle<TReference>
         where TReference : IReference

@@ -40,7 +40,7 @@ namespace LionFire.Resolves
         /// <summary>
         /// True if internal Value field is not default.  If default is a valid value, use DefaultableValue&lt;TValue&gt; as TValue type
         /// </summary>
-        public bool HasValue => ProtectedValue != default;
+        public bool HasValue => !EqualityComparer<TValue>.Default.Equals(ProtectedValue, default);
 
         public TValue Value
         {

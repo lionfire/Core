@@ -37,7 +37,8 @@ namespace LionFire.Persistence.Filesystem
 
         // Default Exists implementation: try IPersister.Retrieve and return true/false/null based on PersistenceResultFlags Found / NotFound / neither
 
-        public virtual async Task<bool> Exists<T>(string fsPath) => (await Retrieve<T>(PathToReference(fsPath)).ConfigureAwait(false)).Flags.HasFlag(PersistenceResultFlags.Found);
+        public virtual async Task<bool> Exists<T>(string fsPath) 
+            => (await Retrieve<T>(PathToReference(fsPath)).ConfigureAwait(false)).Flags.HasFlag(PersistenceResultFlags.Found);
 
         public virtual Task<bool> Exists(string fsPath) => Exists<object>(fsPath);
 

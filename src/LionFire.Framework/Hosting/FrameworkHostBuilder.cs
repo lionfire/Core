@@ -5,9 +5,10 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using System;
 using LionFire.Hosting;
-using LionFire.Hosting.ExtensionMethods;
-using LionFire.ObjectBus.Filesystem;
+//using LionFire.Hosting.ExtensionMethods;
 using LionFire.ObjectBus;
+using LionFire.Persistence.Filesystem;
+using LionFire.Hosting.ExtensionMethods;
 
 namespace LionFire.Hosting
 {
@@ -21,19 +22,21 @@ namespace LionFire.Hosting
             services.AddTextSerializer();
         }
 
+#if TODO // TOVOSAPP
         public static IHostBuilder CreateVos(string[] args = null, Action<IServiceCollection> serializers = null)
         {
             return Create(args, serializers: serializers)
-                .AddObjectBus<FSOBus>()
+                //.AddObjectBus<FSOBus>()
                 .AddVosApp();
         }
 
         public static IHostBuilder CreateDefault(string[] args = null, Action<IServiceCollection> serializers = null)
         {
             return Create(args, serializers: serializers)
-                .AddObjectBus<FSOBus>()
+                //.AddObjectBus<FSOBus>()
                 .AddVosApp();
         }
+#endif
 
         /// <summary>
         /// Included:
@@ -58,7 +61,9 @@ namespace LionFire.Hosting
                 .ConfigureServices((context, services) =>
                 {
                     services
-                    .AddSerialization();
+                    .AddSerialization()
+
+                    .AddFilesystem();
 
                     (serializers ?? AddDefaultSerializers)(services);
 

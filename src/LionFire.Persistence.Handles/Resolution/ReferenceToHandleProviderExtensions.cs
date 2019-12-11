@@ -9,6 +9,9 @@ namespace LionFire.Referencing.Ex
 
         public static IReadHandleProvider GetReadHandleProvider(this IReference reference)
             => DependencyLocator.Get<IReferenceToHandleService>().GetReadHandleProvider(reference);
+        public static IReadHandleProvider<TReference> GetReadHandleProvider<TReference>(this TReference reference)
+            where TReference: IReference
+            => DependencyLocator.Get<IReferenceToHandleService>().GetReadHandleProvider<TReference>(reference);
 
         public static IReadHandleProvider ToReadHandleProvider(this IReference reference) 
             => GetReadHandleProvider(reference) ?? throw new HasUnresolvedDependenciesException($"No {nameof(IReadHandleProvider)}could be found for reference of type {reference?.GetType().FullName}");

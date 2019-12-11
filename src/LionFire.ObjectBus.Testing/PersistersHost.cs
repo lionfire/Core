@@ -8,6 +8,7 @@ using LionFire.Serialization;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using LionFire.Dependencies;
 using LionFire.Persistence.Filesystem;
+using LionFire.Hosting.ExtensionMethods;
 
 namespace LionFire.Persistence
 {
@@ -42,8 +43,7 @@ namespace LionFire.Persistence
                     services
                         .AddSingleton<IReferenceToHandleService, ReferenceToHandleService>()
                         .AddSingleton<IReferenceProviderService, ReferenceProviderService>()
-                        .AddSingleton<FilesystemPersistenceOptions>()
-                        .AddSingleton<FilesystemPersister>()
+                        .AddFilesystem()
                     ;
                 });
         }

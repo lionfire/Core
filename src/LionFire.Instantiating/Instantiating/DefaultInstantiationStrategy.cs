@@ -8,6 +8,7 @@ using LionFire.States;
 using System.Reflection;
 using LionFire.Instantiating;
 using LionFire.ExtensionMethods;
+using LionFire.Dependencies;
 
 namespace LionFire.Instantiating
 {
@@ -34,8 +35,8 @@ namespace LionFire.Instantiating
             defaultInstantiationStrategyContext.Strategies = strategies;
 
             //ManualSingleton<InstantiationStrategyContext>.Instance = defaultInstantiationStrategyContext;
-            
-            Defaults.Set(defaultInstantiationStrategyContext);
+
+            DependencyLocator.Set(defaultInstantiationStrategyContext);
             return defaultInstantiationStrategyContext;
         }
     }

@@ -2,18 +2,34 @@
 using LionFire.ExtensionMethods.Collections;
 using LionFire.ExtensionMethods.Persistence.Filesystem;
 using LionFire.IO;
+using LionFire.Persistence.Persisters;
 using LionFire.Serialization;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 
 namespace LionFire.Persistence.Filesystem
 {
-    public class FilesystemPersister : FilesystemPersister<FileReference, FilesystemPersistenceOptions>
+
+    // REVIEW - is there a way to do this?
+    //public static class PersisterBaseExtensions
+    //{
+    //    public static Task<IRetrieveResult<TValue>> Retrieve<TValue, TReference>(this IPersister<FileReference> persister, FileReference reference)
+    //        => persister.Retrieve<TValue>((TReference)reference.Path);
+    //}
+
+    public class FilesystemIO
+    {
+
+    }
+
+    public class FilesystemPersister : FilesystemPersister<FileReference, FilesystemPersisterOptions>, IPersister<FileReference>
     {
 
 
@@ -25,10 +41,13 @@ namespace LionFire.Persistence.Filesystem
 
         #region Construction
 
-        public FilesystemPersister(ISerializationProvider serializationProvider) :base(serializationProvider) { }
-        public FilesystemPersister(ISerializationProvider serializationProvider, FilesystemPersistenceOptions persistenceOptions) : base(serializationProvider, persistenceOptions )
-        {
+                //return (TPersister)Activator.CreateInstance(typeof(TPersister), name, options.Get(name));
+
+        public FilesystemPersister(string name, ISerializationProvider serializationProvider, FilesystemPersisterOptions persisterOptions, IOptionsMonitor<FilesystemPersisterOptions> optionsMonitor) : base(serializationProvider, persisterOptions, optionsMonitor) {
         }
+        //public FilesystemPersister(ISerializationProvider serializationProvider, FilesystemPersistenceOptions persistenceOptions) : base(serializationProvider, persistenceOptions)
+        //{
+        //}
 
         #endregion
 
@@ -82,7 +101,7 @@ namespace LionFire.Persistence.Filesystem
 
         #region Exists
 
-        public override async Task<bool> Exists(string fsPath) 
+        public override async Task<bool> Exists(string fsPath)
             => await FileExists(fsPath).ConfigureAwait(false) ? true : await DirectoryExists(fsPath).ConfigureAwait(false);
 
         public Task<bool> FileExists(string fsPath) => Task.Run(() => File.Exists(fsPath));
@@ -94,8 +113,8 @@ namespace LionFire.Persistence.Filesystem
 
         #region Delete
 
-        public override Task<bool?> DeleteFile(string fsPath) => Task.Run(() => { File.Delete(fsPath); return (bool?) null; });
-        public override Task<bool?> DeleteDirectory(string fsPath) => Task.Run(() => { Directory.Delete(fsPath); return (bool?) null; });
+        public override Task<bool?> DeleteFile(string fsPath) => Task.Run(() => { File.Delete(fsPath); return (bool?)null; });
+        public override Task<bool?> DeleteDirectory(string fsPath) => Task.Run(() => { Directory.Delete(fsPath); return (bool?)null; });
 
         #endregion
 
@@ -140,7 +159,7 @@ namespace LionFire.Persistence.Filesystem
             return paths;
         }
 
-        
+
         public string GetNameFromFileName(string filename) // MOVE to VOS
         {
             string name = System.IO.Path.GetFileNameWithoutExtension(filename);

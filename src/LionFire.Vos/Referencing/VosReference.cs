@@ -176,6 +176,26 @@ namespace LionFire.Vos
         public string Package { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
         public string Location { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
 
+        #region ProviderName
+
+        /// <summary>
+        /// Leave blank to base the reference off of the default provider
+        /// </summary>
+        [SetOnce]
+        public string Persister
+        {
+            get => providerName;
+            set
+            {
+                if (providerName == value) return;
+                if (providerName != default) throw new AlreadySetException();
+                providerName = value;
+            }
+        }
+        private string providerName;
+
+        #endregion
+
         private void Reset()
         {
             throw new NotImplementedException("Don't allow this anymore?");

@@ -16,10 +16,9 @@ namespace LionFire.Threading
 
             task.ContinueWith(_ => { return; });
         }
-        public static void FireAndForget(this Task task)
-        {
-        }
-        public static void FireAndForget(this Task task, string taskName)
+        public static void FireAndForget(this Task _) { }
+
+        public static void FireAndForget(this Task _, string taskName)
         {
         }
 

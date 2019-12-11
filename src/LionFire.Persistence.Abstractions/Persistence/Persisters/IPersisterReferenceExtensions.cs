@@ -2,7 +2,7 @@
 using LionFire.Referencing;
 using System.Threading.Tasks;
 
-namespace LionFire.ObjectBus
+namespace LionFire.Persistence.Persisters
 {
     public static class IPersisterReferenceExtensions
     {

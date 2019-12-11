@@ -48,6 +48,8 @@ namespace LionFire.Referencing
             return result;
         }
 
+        public virtual string Persister { get => null; set => throw new NotSupportedException(); }
+
         public abstract string Key { get; protected set; }
 
         public abstract string Path { get; set; } // TODO BREAKINGCHANGE: Make set protected, use constructors/factories to set Path and other properties

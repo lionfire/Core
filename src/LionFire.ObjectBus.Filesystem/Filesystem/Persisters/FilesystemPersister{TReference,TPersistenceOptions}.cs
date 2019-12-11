@@ -15,6 +15,8 @@ using System.Linq;
 using LionFire.IO;
 using System.IO;
 using LionFire.Execution;
+using LionFire.Persistence.Persisters;
+using Microsoft.Extensions.Options;
 
 namespace LionFire.Persistence.Filesystem
 {
@@ -72,11 +74,13 @@ namespace LionFire.Persistence.Filesystem
         , IWriter<string>
         , IReader<string>
         where TReference : IReference
-        where TPersistenceOptions : FilesystemPersistenceOptions
+        where TPersistenceOptions : FilesystemPersisterOptions
     {
         public abstract IOCapabilities Capabilities { get; }
 
         public abstract TReference PathToReference(string fsPath);
+
+        IOptionsMonitor<FilesystemPersisterOptions> optionsMonitor;
 
         #region Dependencies
 
@@ -117,17 +121,12 @@ namespace LionFire.Persistence.Filesystem
         #endregion
 
         #region Construction
-
-        public FilesystemPersister(ISerializationProvider serializationProvider)
-        {
-            this.serializationProvider = serializationProvider;
-            this.PersistenceOptions = DefaultOptions;
-        }
-
-        public FilesystemPersister(ISerializationProvider serializationProvider, TPersistenceOptions persistenceOptions)
+        
+        public FilesystemPersister(ISerializationProvider serializationProvider, TPersistenceOptions persistenceOptions, IOptionsMonitor<FilesystemPersisterOptions> optionsMonitor)
         {
             this.serializationProvider = serializationProvider;
             this.PersistenceOptions = persistenceOptions;
+            this.optionsMonitor = optionsMonitor;
         }
 
         #endregion
@@ -251,8 +250,16 @@ namespace LionFire.Persistence.Filesystem
         /// </remarks>
         public virtual async Task<IRetrieveResult<TValue>> Retrieve<TValue>(TReference reference)
         {
-            return await new Func<Task<IRetrieveResult<TValue>>>(() 
-                => ReadAndDeserializeExactPath<TValue>(reference.Path, ((Func<PersistenceOperation>)(() => 
+            var path = reference.Path;
+            if (!string.IsNullOrEmpty(reference.Persister))
+            {
+                var providerOptions = optionsMonitor.Get(reference.Persister);
+                if(providerOptions.RootDirectory == null) throw new UnknownPersisterException($"Provider '{reference.Persister}' is not known."); // REVIEW - better way to determine uninitialized/missing?
+                path = LionPath.Combine(providerOptions.RootDirectory, path);
+            }
+
+            return await new Func<Task<IRetrieveResult<TValue>>>(()
+                => ReadAndDeserializeExactPath<TValue>(path, ((Func<PersistenceOperation>)(() =>
                     new PersistenceOperation(reference)
                     {
                         Direction = IODirection.Read,

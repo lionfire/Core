@@ -1,26 +1,30 @@
-﻿using LionFire.Referencing;
+﻿using LionFire.Persistence.Handles;
+using LionFire.Referencing;
 using LionFire.Resolves;
 using System;
 using System.Threading.Tasks;
 
-namespace LionFire.Persistence.Handles
+namespace LionFire.Persistence.Persisters
 {
-    public abstract class PersisterReadWriteHandle<TReference, TValue> : ReadWriteHandle<TReference, TValue>, IPersisterHandle<TReference>
+    public  class PersisterReadWriteHandle<TReference, TValue, TPersister> : ReadWriteHandle<TReference, TValue>, IPersisterHandle<TReference>
         where TReference : IReference
+        where TPersister : IPersister<TReference>
     {
         protected PersisterReadWriteHandle() { }
 
         protected PersisterReadWriteHandle(TReference reference) : base(reference) { }
-        public PersisterReadWriteHandle(IPersister<TReference> persister, TReference reference) : base(reference) => Persister = persister;
+        public PersisterReadWriteHandle(TPersister persister, TReference reference) : base(reference) => Persister = persister;
 
-        public abstract IPersister<TReference> Persister { get; protected set; }
+        public  TPersister Persister { get; protected set; }
+
+        IPersister<TReference> IPersisterHandle<TReference>.Persister => Persister;
 
 
         //public override event Action<PersistenceEvent<TValue>> PersistenceStateChanged;
 
         public override ILazyResolveResult<TValue> QueryValue() => throw new NotImplementedException();
         public override void RaisePersistenceEvent(PersistenceEvent<TValue> ev) => throw new NotImplementedException();
-        protected override Task<IResolveResult<TValue>> ResolveImpl() => throw new NotImplementedException();
+        protected override async Task<IResolveResult<TValue>> ResolveImpl() => await Persister.Retrieve<TReference, TValue>(Reference).ConfigureAwait(false);
 
         protected override async Task<IPersistenceResult> UpsertImpl() => await Persister.Upsert(this, ProtectedValue);
     }

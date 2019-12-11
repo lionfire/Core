@@ -1,12 +1,17 @@
-﻿using System.Threading.Tasks;
+﻿using System;
+using System.Threading.Tasks;
 using LionFire.Assets;
+using LionFire.Dependencies;
 using LionFire.Persistence.Handles;
 using LionFire.Persistence.Implementation;
 using LionFire.Referencing;
 
 namespace LionFire.Persistence.Assets
 {
-    public class AssetHandle<T> : AssetReadHandle<T>, IHandleImpl<T>
+    // TODO: Convert to HandlePersister approach
+
+    public class AssetHandle<T> : AssetReadHandle<T>
+        //, IHandleImpl<T> TODO
         where T : class
     {
         #region Construction
@@ -25,17 +30,21 @@ namespace LionFire.Persistence.Assets
 
         public Task Commit()
         {
-            var ap = Dependencies.GetServiceOrSingleton<IAssetProvider>(createIfMissing: true);
+            throw new NotImplementedException();
+#if TODO
+            var ap = DependencyLocator.TryGet<IAssetProvider>(tryCreateIfMissing: true);
             ap.Save(this.Key, this.Value);
             return Task.CompletedTask;
-        }
+#endif
+            }
 
+#if TODO
         public void SetObject(T obj) { base.Value = obj; }
-
         Task<bool> IDeletable.Delete() => throw new System.NotImplementedException();
         Task<IPersistenceResult> ICommitableImpl.Commit() => throw new System.NotImplementedException();
         Task<IPersistenceResult> IDeletableImpl.Delete() => throw new System.NotImplementedException();
-    }
+#endif
+        }
 
     //public class AssetReadHandle<T> : IReadHandle<T>
     //{

@@ -5,7 +5,7 @@ namespace LionFire.Persistence.Filesystem
     /// <summary>
     /// For filesystem-like Persistence
     /// </summary>
-    public class FilesystemPersistenceOptionsBase : PersistenceOptions
+    public class FilesystemPersisterOptionsBase : PersistenceOptions
     {
         //public FilesystemPersistenceOptionsBase(ISerializationProvider serializationProvider) : base(serializationProvider) { }
 

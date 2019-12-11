@@ -1,6 +1,7 @@
-﻿using LionFire.Referencing;
+﻿using LionFire.Persistence.Handles;
+using LionFire.Referencing;
 
-namespace LionFire.Persistence.Handles
+namespace LionFire.Persistence.Persisters
 {
     public abstract class PersisterReadWriteHandleBase<TReference, TValue> : ReadWriteHandleBase<TReference, TValue>, IPersisterHandle<TReference>
         where TReference : IReference

@@ -1,5 +1,6 @@
 ﻿using LionFire.Structures;
 using System;
+using System.Collections.Generic;
 
 namespace LionFire.Resolves
 {
@@ -21,7 +22,8 @@ namespace LionFire.Resolves
             set
             {
                 if (ReferenceEquals(key, value)) return;
-                if (key != default) throw new AlreadySetException();
+                if (!EqualityComparer<TKey>.Default.Equals(key, default)) throw new AlreadySetException();
+                //if (key != default) throw new AlreadySetException();
                 key = value;
             }
         }

@@ -63,7 +63,7 @@ namespace LionFire.Assets
         }
         private IAssetProvider assetProvider;
 
-        public INotifyingAssetProvider<T> NotifyingAssetProvider => AssetProvider as INotifyingAssetProvider<T>;
+        public INotifyingAssetProvider<TAsset> NotifyingAssetProvider => AssetProvider as INotifyingAssetProvider<TAsset>;
 
         #endregion
 
@@ -96,16 +96,18 @@ namespace LionFire.Assets
 
         #endregion
 
-        #region Methods
+#region Methods
 
+#if TODO
         public override async Task RefreshHandles()
         {
             handles.SetToMatch((await AssetProvider.FindHandles<TAsset>()).ToDictionary<string, AssetHandle<TAsset>>());
         }
+#endif
         
-        #endregion
+#endregion
 
-        #region INotifyPropertyChanged Implementation
+#region INotifyPropertyChanged Implementation
 
         public event PropertyChangedEventHandler PropertyChanged;
 
@@ -114,7 +116,7 @@ namespace LionFire.Assets
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
 
-        #endregion
+#endregion
 
     }
 }

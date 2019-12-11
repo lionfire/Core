@@ -1,4 +1,5 @@
-﻿using System;
+﻿#nullable disable
+using System;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
@@ -51,10 +52,11 @@ namespace LionFire.Persistence.Handles
 
         #region 
 
+
         /// <summary>
         /// True if internal Value field is not default.  If default is a valid value, use DefaultableValue&lt;TValue&gt; as TValue type
         /// </summary>
-        public bool HasValue => ProtectedValue != default;
+        public bool HasValue => !EqualityComparer<TValue>.Default.Equals(ProtectedValue, default);
 
         // DUPLICATE from Resolves
         protected TValue ProtectedValue

@@ -27,11 +27,11 @@ namespace LionFire.ObjectBus
         //where HandleInterfaceType : IHandle
     {
         public abstract IOBus OBus { get; }
-        public IPersister<TReference> GetPersister<TReference>()
-    where TReference : IReference
-        {
-            throw new NotImplementedException();
-        }
+    //    public IPersister<TReference2> GetPersister<TReference2>()
+    //where TReference2 : IReference
+    //    {
+    //        throw new NotImplementedException();
+    //    }
 
 
         #region Uri

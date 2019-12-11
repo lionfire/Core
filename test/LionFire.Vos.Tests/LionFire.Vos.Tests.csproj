@@ -23,7 +23,6 @@
     <ProjectReference Include="..\..\src\LionFire.Applications\LionFire.Applications.csproj" />
     <ProjectReference Include="..\..\src\LionFire.Framework\LionFire.Framework.csproj" />
     <ProjectReference Include="..\..\src\LionFire.Hosting\LionFire.Hosting.csproj" />
-    <ProjectReference Include="..\..\src\LionFire.Vos.Application\LionFire.Vos.VosApp.csproj" />
     <ProjectReference Include="..\..\src\LionFire.Vos\LionFire.Vos.csproj" />
   </ItemGroup>
 

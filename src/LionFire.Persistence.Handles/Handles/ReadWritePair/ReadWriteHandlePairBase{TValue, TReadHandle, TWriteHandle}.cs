@@ -23,9 +23,10 @@ namespace LionFire.Persistence
     /// <typeparam name="T"></typeparam>
     /// <seealso cref="ReadWriteHandle"/>
     /// <seealso cref="ReadWriteHandlePairEx"/>
-    public class ReadWriteHandlePairBase<TValue, TReadHandle, TWriteHandle> : DisposableKeyed<IReference>
+    public class ReadWriteHandlePairBase<TReference, TValue, TReadHandle, TWriteHandle> : DisposableKeyed<TReference>
         , IResolveCommitPair<TValue>
         , IReadWriteHandlePairBase<TValue, TReadHandle, TWriteHandle>
+        where TReference : IReference
         where TReadHandle : class, IReadHandleBase<TValue>
         where TWriteHandle : class, IWriteHandleBase<TValue>
         //where TValue : class
@@ -34,14 +35,15 @@ namespace LionFire.Persistence
         #region Reference
 
         [SetOnce]
-        public IReference Reference { get => Key; set => Key = value; }
+        public TReference Reference { get => Key; set => Key = value; }
+        IReference IReferencable.Reference { get => Key; }
 
         #endregion
 
         #region Construction
 
         public ReadWriteHandlePairBase() { }
-        public ReadWriteHandlePairBase(IReference reference) : base(reference) { }
+        public ReadWriteHandlePairBase(TReference reference) : base(reference) { }
 
         #endregion
 

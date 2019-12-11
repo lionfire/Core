@@ -1,7 +1,8 @@
-﻿using LionFire.Dependencies;
+﻿#if UNUSED
+using LionFire.Dependencies;
 using LionFire.Referencing;
 
-namespace LionFire.Persistence.Handles
+namespace LionFire.Persistence.Persisters
 {
     public class PersisterSingletonReadHandle<TReference, TValue, TPersister> : PersisterReadHandle<TReference, TValue>, IPersisterHandle<TReference, TPersister>
         where TReference : IReference
@@ -46,3 +47,4 @@ namespace LionFire.Persistence.Handles
     }
 
 }
+#endif
