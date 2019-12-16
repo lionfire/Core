@@ -37,8 +37,9 @@ namespace LionFire.Vos
 
         #region Ontology
 
-        public Vob Root => VosOBus.Instance.DefaultVBase.Root;
-        public VBase VBase => VosOBus.Instance.DefaultVBase;
+        public RootVob Root { get; }
+            // => VosOBus.Instance.DefaultVBase.Root;
+        //public VBase VBase => VosOBus.Instance.DefaultVBase;
 
         #endregion
 
@@ -56,8 +57,9 @@ namespace LionFire.Vos
 
         #region Construction
 
-        public VosApp(VosAppOptions options = null)
+        public VosApp(RootVob root,  VosAppOptions options = null)
         {
+            this.Root = root;
             this.options = options ?? new VosAppOptions();
         }
 
@@ -657,7 +659,7 @@ namespace LionFire.Vos
                 l.Info("Default VOS Mounts: ");
                 foreach (var m in vosMounts)
                 {
-                    l.Info("[mount] " + m.Vob + " ==> " + m.Root.ToString() + " [R: " + m.MountOptions.ReadPriority + ", W: " + m.MountOptions.WritePriority + "]");
+                    l.Info("[mount] " + m.Vob + " ==> " + m.Target.ToString() + " [R: " + m.MountOptions.ReadPriority + ", W: " + m.MountOptions.WritePriority + "]");
                     //sb.Append(" - ");
                     //sb.Append(m.Vob);
                     //sb.Append(" - ");

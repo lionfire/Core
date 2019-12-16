@@ -18,7 +18,7 @@ namespace LionFire.Instantiating
     }
 
     public interface ITemplate<T> : ITemplate, IForInstancesOf<T>
-        where T : new()
+        //where T : new()
     {
     }
 

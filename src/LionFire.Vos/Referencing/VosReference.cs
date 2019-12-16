@@ -7,12 +7,23 @@ using LionFire.Referencing;
 
 namespace LionFire.Vos
 {
+    /// <summary>
+    /// </summary>
+    /// <remarks>
+    /// Persister corresponds to RootVob.RootName
+    /// </remarks>
     public class VosReference : ReferenceBase<VosReference>, IVosReference
     {
         #region Ontology
 
-        IOBase IHas<IOBase>.Object => VosOBus.Instance.DefaultOBase;
-        IOBus IHas<IOBus>.Object => VosOBus.Instance;
+        //IOBase IHas<IOBase>.Object => VosOBus.Instance.DefaultOBase;
+        //IOBus IHas<IOBus>.Object => VosOBus.Instance;
+
+        #endregion
+
+        #region Properties
+
+
 
         #endregion
 
@@ -26,20 +37,22 @@ namespace LionFire.Vos
         }
         public VosReference(params string[] pathComponents)
         {
-            string path;
-            for (int i = 0; i < pathComponents.Length; i++)
-            {
-                string chunk = pathComponents[i];
-                pathComponents[i] = String.Concat(LionPath.SeparatorChar, chunk.TrimStart(LionPath.SeparatorChar));
+            Path = LionPath.Combine(pathComponents);
 
-                //if (i == pathComponents.Length - 1)
-                //{
-                //    // TODO: Clean trailing 2 slashes? probably don't need this.
-                //}
-            }
+            //string path;
+            //for (int i = 0; i < pathComponents.Length; i++)
+            //{
+            //    string chunk = pathComponents[i];
+            //    pathComponents[i] = String.Concat(LionPath.SeparatorChar, chunk.TrimStart(LionPath.SeparatorChar));
 
-            path = string.Concat(pathComponents);
-            Path = path;
+            //    //if (i == pathComponents.Length - 1)
+            //    //{
+            //    //    // TODO: Clean trailing 2 slashes? probably don't need this.
+            //    //}
+            //}
+
+            //path = string.Concat(pathComponents);
+            //Path = path;
         }
 
         public static implicit operator VosReference(string path) => new VosReference(path);
@@ -56,19 +69,21 @@ namespace LionFire.Vos
 
         #endregion
 
-        #region GetHandle
+        //#region GetHandle
 
-        // Better/direct versions of the ObjectBus ToHandle
+        //// Better/direct versions of the ObjectBus ToHandle
 
-        public VobHandle<object> GetHandle(/*object obj = null*/) => new VobHandle<object>(this);
-        public VobHandle<T> GetHandle<T>(/*T obj = default(T)*/) => new VobHandle<T>(this);
-        //public VobHandle<T> ToHandle<T>(this T obj) => throw new NotImplementedException("FUTURE: if obj != null, create a NamedObjectHandle and assign a random key");
+        //public VobHandle<object> GetHandle(/*object obj = null*/) => new VobHandle<object>(this);
+        //public VobHandle<T> GetHandle<T>(/*T obj = default(T)*/) => new VobHandle<T>(this);
+        ////public VobHandle<T> ToHandle<T>(this T obj) => throw new NotImplementedException("FUTURE: if obj != null, create a NamedObjectHandle and assign a random key");
 
-        public VobReadHandle<object> GetReadHandle(/*object obj = null*/) => new VobReadHandle<object>(this);
-        public VobReadHandle<T> GetReadHandle<T>(/*T obj = default(T)*/) => new VobReadHandle<T>(this);
-        //public VobReadOnlyHandle<T> ObjectToReadHandle<T>(this T obj) => throw new NotImplementedException("FUTURE: if obj != null, create a NamedObjectHandle and assign a random key");
+        //public VobReadHandle<object> GetReadHandle(/*object obj = null*/) => new VobReadHandle<object>(this);
+        //public VobReadHandle<T> GetReadHandle<T>(/*T obj = default(T)*/) => new VobReadHandle<T>(this);
+        ////public VobReadOnlyHandle<T> ObjectToReadHandle<T>(this T obj) => throw new NotImplementedException("FUTURE: if obj != null, create a NamedObjectHandle and assign a random key");
 
-        #endregion
+        //#endregion
+
+        #region IReference Implementation
 
         #region Scheme
 
@@ -172,9 +187,32 @@ namespace LionFire.Vos
 
         public override string Host { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
         public override string Port { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
-        public override string Path { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
-        public string Package { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
-        public string Location { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
+
+        #region Path
+
+        [SetOnce]
+        public override string Path
+        {
+            get => path;
+            set
+            {
+                if (path == value) return;
+                if (path != default) throw new AlreadySetException();
+                path = value;
+            }
+        }
+        private string path;
+
+        #endregion
+
+        #endregion
+
+        public string Package { get; set; }
+
+        /// <summary>
+        /// Mount name
+        /// </summary>
+        public string Location { get; set; }
 
         #region ProviderName
 

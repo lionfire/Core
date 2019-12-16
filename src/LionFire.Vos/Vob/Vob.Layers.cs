@@ -38,6 +38,8 @@ namespace LionFire.Vos
         public async Task<IEnumerable<T>> AllLayersOfType<T>()
             where T : class
         {
+            throw new NotImplementedException();
+#if TODO
             var results = new List<T>();
 
             foreach (var handle in ReadHandles)
@@ -66,6 +68,7 @@ namespace LionFire.Vos
                 }
             }
             return results;
+#endif
         }
         
         [AotReplacement]

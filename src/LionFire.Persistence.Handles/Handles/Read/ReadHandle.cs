@@ -27,12 +27,13 @@ namespace LionFire.Persistence.Handles
     ///  - ObjectChanged 
     /// </remarks>
     /// <typeparam name="TValue"></typeparam>
-    public abstract partial class ReadHandle<TValue> : ReadHandleBase<TValue>, IReadHandle<TValue>,
+    public abstract partial class ReadHandle<TReference, TValue> : ReadHandleBase<TReference, TValue>, IReadHandle<TValue>,
         //IReadHandleInvariantEx<TValue>, 
         INotifyPersists<TValue>,
         INotifyPropertyChanged,
         INotifyPersistsInternal<TValue>
         //, IRetrievableImpl<T>
+        where TReference : IReference
     {
         #region Identity
 
@@ -45,12 +46,12 @@ namespace LionFire.Persistence.Handles
         protected ReadHandle() { }
 
         /// <param name="reference">Can be null</param>
-        protected ReadHandle(IReference reference) => Reference = reference ?? throw new ArgumentNullException(nameof(reference));
+        protected ReadHandle(TReference reference) => Reference = reference ?? throw new ArgumentNullException(nameof(reference));
 
         /// <param name="reference">Must not be null</param>
         ///// <param name="reference">If null, it should be set before the reference is used.</param>
         /// <param name="value">Starting value for Object</param>
-        protected ReadHandle(IReference reference, TValue value = default) : this(reference)
+        protected ReadHandle(TReference reference, TValue value) : this(reference)
         {
             SetValueFromConstructor(value);
         }

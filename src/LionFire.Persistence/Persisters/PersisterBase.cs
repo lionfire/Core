@@ -2,7 +2,7 @@
 using System;
 using System.IO;
 
-namespace LionFire.Persistence // MOVE
+namespace LionFire.Persistence.Persisters
 {
     public class PersisterBase<TOptions>
     {

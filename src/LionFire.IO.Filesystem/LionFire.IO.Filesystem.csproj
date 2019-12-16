@@ -10,4 +10,10 @@
     <ProjectReference Include="..\LionFire.Referencing\LionFire.Referencing.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Reference Include="LionFire.Persistence.Filesystem">
+      <HintPath>..\..\bin\LionFire.Persistence.Filesystem\Debug\netstandard2.0\LionFire.Persistence.Filesystem.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+
 </Project>

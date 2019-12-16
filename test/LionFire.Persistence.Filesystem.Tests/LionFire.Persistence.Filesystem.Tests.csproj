@@ -9,13 +9,9 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Compile Include="..\LionFire.ObjectBus.Filesystem.Tests\FsTestUtils.cs" Link="FsTestUtils.cs" />
-  </ItemGroup>
-
-  <ItemGroup>
     <PackageReference Include="DeepEqual" Version="2.0.0" />
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="16.4.0" />
-    <PackageReference Include="Microsoft.Extensions.Hosting" Version="3.0.1" />
+    <PackageReference Include="Microsoft.Extensions.Hosting" Version="3.1.0" />
     <PackageReference Include="xunit" Version="2.4.1" />
     <PackageReference Include="xunit.runner.visualstudio" Version="2.4.1">
       <PrivateAssets>all</PrivateAssets>
@@ -30,8 +26,9 @@
   <ItemGroup>
     <ProjectReference Include="..\..\src\LionFire.Applications\LionFire.Applications.csproj" />
     <ProjectReference Include="..\..\src\LionFire.Base\LionFire.Base.csproj" />
-    <ProjectReference Include="..\..\src\LionFire.ObjectBus.Filesystem\LionFire.Persistence.Filesystem.csproj" />
-    <ProjectReference Include="..\..\src\LionFire.ObjectBus.Testing\LionFire.ObjectBus.Testing.csproj" />
+    <ProjectReference Include="..\..\src\LionFire.Hosting\LionFire.Hosting.csproj" />
+    <ProjectReference Include="..\..\src\LionFire.Persistence.Filesystem\LionFire.Persistence.Filesystem.csproj" />
+    <ProjectReference Include="..\LionFire.Persistence.Testing\LionFire.Persistence.Testing.csproj" />
   </ItemGroup>
 
 </Project>

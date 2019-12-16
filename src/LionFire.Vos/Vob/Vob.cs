@@ -130,40 +130,14 @@ namespace LionFire.Vos
 #endif
         , IVob
     {
-
-        #region Ontology
-
-        #region Vos
-
-        public VBase Vos => vos;
-        private readonly VBase vos;
-
-        #endregion
-
-        #region IParented
-
-#if AOT
-        object IParented.Parent { get { return this.Parent; } set { throw new NotSupportedException(); } }
-#endif
-
-        #region Parent
-
-        public Vob Parent
-        {
-            get => parent;
-            set => throw new NotSupportedException();
-        }
-        private readonly Vob parent;
-
-        #endregion
-
-        #endregion
+        #region Identity
 
         public string Name => name;
         private readonly string name;
 
-        public string Path => path;
-        private readonly string path;
+        #region Path
+
+        public string Path { get; }
 
         public IEnumerable<string> PathElements
         {
@@ -213,57 +187,149 @@ namespace LionFire.Vos
         }
 
         #endregion
-        
+
+        #endregion
+
+        #region Relationships
+
+        #region Parent
+
+#if AOT
+        object IParented.Parent { get { return this.Parent; } set { throw new NotSupportedException(); } }
+#endif
+
+        #region Parent
+
+        public Vob Parent
+        {
+            get => parent;
+            set => throw new NotSupportedException();
+        }
+        private readonly Vob parent;
+
+        #endregion
+
+        #endregion
+
+        #region Root
+
+        public RootVob Root
+        {
+            get
+            {
+                if (root == null)
+                {
+                    var vob = this;
+                    while (vob.Parent != null) { vob = vob.Parent; }
+                    root = vob as RootVob;
+                }
+                return root;
+            }
+        }
+        private RootVob root;
+
+        #endregion
+
+        #endregion
+
+        #region Composition
+
+        #region VobNode
+
+        protected VobNode GetVobNode()
+        {
+            if (vobNode == null)
+            {
+                vobNode = new VobNode(this);
+            }
+            return vobNode;
+        }
+        public VobNode VobNode => vobNode;
+        protected VobNode vobNode;
+
+
+        public IEnumerable<VobNode> ChildVobNodes
+        {
+            get
+            {
+                foreach (var child in Children.Select(kvp => kvp.Value))
+                {
+                    if (child.VobNode != null) yield return child.VobNode;
+
+                    foreach (var childVobNode in child.ChildVobNodes)
+                    {
+                        yield return childVobNode;
+                    }
+                }
+            }
+        }
+
+        public VobNode NextVobNode
+        {
+            get
+            {
+                var vob = this;
+                while (vob != null)
+                {
+                    if (vob.VobNode != null) return vob.VobNode;
+                    vob = vob.Parent;
+                }
+                throw new VosException("Missing NextVobNode"); // Should not happen - RootVob should always have a VobNode.
+            }
+        }
+
+        #endregion
+
+        #endregion
+
         #region Construction
 
-        public Vob(VBase vos, Vob parent, string name)
+        public Vob(Vob parent, string name)
         {
-            if (vos == null)
+            if (this is RootVob rootVob)
             {
-                throw new ArgumentNullException("vos");
-            }
-
-            if (GetType() == typeof(RootVob))
-            {
-                if (!String.IsNullOrEmpty(name))
-                {
-                    throw new ArgumentException("name must be null or empty for root");
-                }
+#if DEBUG
+                if (!string.IsNullOrWhiteSpace(name)) throw new ArgumentNullException("Name must be null or empty for RootVobs."); // Redundant check
+#endif
             }
             else
             {
                 if (parent == null)
                 {
-                    throw new ArgumentNullException("parent must be set for all non-RootVob Vobs.");
+                    throw new ArgumentNullException($"'{nameof(parent)}' must be set for all non-RootVob Vobs.");
                 }
 
-                if (name == null)
+                if (string.IsNullOrEmpty(name))
                 {
-                    throw new ArgumentNullException("name must not be null for non-root");
+                    throw new ArgumentNullException($"'{nameof(name)}' must not be null or empty for a non-root Vob");
                 }
             }
 
-            //if (string.IsNullOrWhiteSpace(name) && this.GetType() != typeof(RootVob)) throw new ArgumentNullException("Name must be set for all non-RootVob Vobs.");
-
-            this.vos = vos;
             this.parent = parent;
             this.name = name;
 
-            path = LionPath.CleanAbsolutePathEnds(LionPath.Combine((parent == null ? "" : parent.Path), name));
-            VobDepth = LionPath.GetAbsolutePathDepth(path);
+            Path = LionPath.GetTrimmedAbsolutePath(LionPath.Combine((parent == null ? "" : parent.Path), name));
 
-            InitializeEffectiveMounts();
-            //MountStateVersion = -1;
+
         }
 
-#endregion
+        //public Vob(VBase vos, Vob parent, string name) : this(parent,name)
+        //{
+        //    if (vos == null)
+        //    {
+        //        throw new ArgumentNullException("vos");
+        //    }
+        //    this.vbase = vos;
+        //}
+
+        #endregion
 
         #region Referencing
 
         #region GetReference<T>
 
         // FUTURE MEMOPTIMIZE - consider caching/reusing these references to save memory?
-        public VosReference GetReference<T>() => new VosReference(Path) { Type = typeof(T) };
+        public VosReference GetReference<T>() => new VosReference(Path) { Type = typeof(T), Persister = Root.RootName };
 
         #endregion
 
@@ -274,8 +340,8 @@ namespace LionFire.Vos
         #region Get Handle
 
         public VobReadHandle<T> GetReadHandle<T>() => (VobReadHandle<T>)readHandles.GetOrAdd(typeof(T), t => CreateReadHandle(t));
+        //public VobWriteHandle<T> GetWriteHandle<T>() => (VobWriteHandle<T>)writeHandles.GetOrAdd(typeof(T), t => CreateWriteHandle(t));
 
-        
         /// <seealso cref="CreateHandle(Type)"/>
         public VobHandle<T> GetHandle<T>() => (VobHandle<T>)handles.GetOrAdd(typeof(T), t => CreateHandle(t));
         public IVobHandle GetHandle(Type type) => (IVobHandle)handles.GetOrAdd(type, t => CreateHandle(t));
@@ -290,14 +356,14 @@ namespace LionFire.Vos
             Type vhType = typeof(VobReadHandle<>).MakeGenericType(type);
             return (IVobReadHandle)Activator.CreateInstance(vhType, this);
         }
-        
+
         private ConcurrentDictionary<Type, object> handles = new ConcurrentDictionary<Type, object>();
         private readonly ConcurrentDictionary<Type, object> readHandles = new ConcurrentDictionary<Type, object>();
 
         #endregion
 
         #endregion
-        
+
         #region IReferencable
 
         #region Reference
@@ -310,7 +376,7 @@ namespace LionFire.Vos
             {
                 if (vosReference == null)
                 {
-                    vosReference = new VosReference(path);
+                    vosReference = new VosReference(Path);
                 }
                 return vosReference;
             }

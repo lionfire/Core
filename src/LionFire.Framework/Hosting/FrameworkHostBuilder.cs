@@ -9,18 +9,23 @@ using LionFire.Hosting;
 using LionFire.ObjectBus;
 using LionFire.Persistence.Filesystem;
 using LionFire.Hosting.ExtensionMethods;
+using LionFire.Serialization;
+using LionFire.Dependencies;
+using LionFire.Vos;
+using LionFire.DependencyInjection.ExtensionMethods;
 
 namespace LionFire.Hosting
 {
 
     public static class FrameworkHostBuilder
     {
-        public static void AddDefaultSerializers(this IServiceCollection services)
+        public static IServiceCollection AddDefaultSerializers(this IServiceCollection services)
         {
-            //services.AddJson();
+            services.AddBuiltInSerializers();
             services.AddNewtonsoftJson();
-            services.AddTextSerializer();
+            return services;
         }
+        private static void DefaultAddDefaultSerializers(this IServiceCollection services) => services.AddDefaultSerializers();
 
 #if TODO // TOVOSAPP
         public static IHostBuilder CreateVos(string[] args = null, Action<IServiceCollection> serializers = null)
@@ -51,6 +56,8 @@ namespace LionFire.Hosting
         /// <returns></returns>
         public static IHostBuilder Create(string[] args = null, bool defaultBuilder = true, Action<IServiceCollection> serializers = null)
         {
+            // TODO: Base on VosHost or VosAppHost?
+
             IHostBuilder hostBuilder = defaultBuilder ? Host.CreateDefaultBuilder(args) : new HostBuilder();
 
             return hostBuilder
@@ -62,10 +69,9 @@ namespace LionFire.Hosting
                 {
                     services
                     .AddSerialization()
-
                     .AddFilesystem();
 
-                    (serializers ?? AddDefaultSerializers)(services);
+                    (serializers ?? DefaultAddDefaultSerializers)(services);
 
                     services
                     .AddSingleton<IReferenceToHandleService, ReferenceToHandleService>()
@@ -86,6 +92,35 @@ namespace LionFire.Hosting
                 //    //context.HostingEnvironment.
                 //})
                 ;
+        }
+
+        public static IHostBuilder CreateDefault(string[] args = null, bool defaultBuilder = true, Action<IServiceCollection> serializers = null)
+        {
+            IHostBuilder hostBuilder = CreateDefaultVosHost(args, defaultBuilder, serializers);
+            return hostBuilder;
+        }
+
+        public static IHostBuilder CreateDefaultPersisterHost(string[] args = null, bool defaultBuilder = true, Action<IServiceCollection> serializers = null)
+        {
+            return Create(args, defaultBuilder)
+                .ConfigureServices((context, services) =>
+                {
+                    (serializers ?? DefaultAddDefaultSerializers)(services);
+                    services
+                        .AddFilesystem()
+                    ;
+                });
+        }
+
+        public static IHostBuilder CreateDefaultVosHost(string[] args = null, bool defaultBuilder = true, Action<IServiceCollection> serializers = null)
+        {
+            return FrameworkHostBuilder.CreateDefaultPersisterHost(args, defaultBuilder: defaultBuilder, serializers: serializers)
+                .ConfigureServices((_, services) =>
+                {
+                    services
+                        .TryAddEnumerableSingleton<VosRootRegistration>("")
+                    ;
+                });
         }
     }
 }

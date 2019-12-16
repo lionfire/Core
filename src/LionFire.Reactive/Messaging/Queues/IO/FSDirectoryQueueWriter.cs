@@ -1,6 +1,7 @@
 ﻿using System;
 using System.IO;
 using System.Linq;
+using LionFire.Dependencies;
 using LionFire.DependencyInjection;
 using LionFire.Serialization;
 using LionFire.Serialization.Contexts;

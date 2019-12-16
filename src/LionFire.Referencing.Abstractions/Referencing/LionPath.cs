@@ -24,7 +24,7 @@ namespace LionFire.Referencing
         public static char[] Delimiters { get { return new char[] { '/', ':', '@', '|', '\\' }; } }
 
         #endregion
-        
+
         // Field arrays can't be made readonly
         public static char[] SeparatorChars { get { return new char[] { PathDelimiter, PathDelimiterAlt }; } }
 
@@ -39,12 +39,37 @@ namespace LionFire.Referencing
         {
             get { yield return LionPath.Separator; }
         }
+
+        private const bool preserveEndSeparator = true;
         public static string Combine(params string[] paths)
         {
             // UNTESTED
             if (paths.Length == 0) return String.Empty;
 
-            return (paths[0].StartsWith(Separator) ? Separator : "") + String.Concat(paths.Zip(PathSeparatorRepeater, (x, y) => x.Trim(SeparatorChar) + y)).TrimEnd(SeparatorChar);
+            var sb = new StringBuilder();
+
+            if (SeparatorChars.Contains(paths[0][0])) sb.Append(Separator);
+
+            bool isFirst = true;
+            foreach (var chunk in paths)
+            {
+                if (isFirst) isFirst = false;
+                else sb.Append(Separator);
+                sb.Append(chunk.Trim(SeparatorChars));
+            }
+
+            if (preserveEndSeparator)
+            {
+                var lastChunk = paths.Last();
+                var lastChar = lastChunk.Last();
+                if(SeparatorChars.Contains(lastChar))
+                {
+                    sb.Append(Separator);
+                }
+            }
+
+            return sb.ToString();
+            //return (paths[0].StartsWith(Separator) ? Separator : "") + String.Concat(PathSeparatorRepeater.Zip(paths, (separator, chunk) => x.Trim(SeparatorChar) + y)).TrimEnd(SeparatorChar);
         }
 
         public static string GetDirectoryName(string path)
@@ -99,8 +124,10 @@ namespace LionFire.Referencing
         //    return chunks.ToArray();
         //}
 
-        public static string CleanAbsolutePathEnds(string p)
+        public static string GetTrimmedAbsolutePath(string p)
         {
+            // TODO: Remove superfluous separators inside path?
+            // TODO: Replace non-primary separators in path?
             return String.Concat(SeparatorChar, p.TrimStart(SeparatorChars).TrimEnd(SeparatorChars));
         }
 

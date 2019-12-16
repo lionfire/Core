@@ -2,10 +2,12 @@
 using System.Collections;
 using System.Collections.Generic;
 using LionFire.Collections;
+using LionFire.Referencing;
 
 namespace LionFire.Persistence.Handles
 {
-    public abstract class RCollectionBase<TCollection, TItem> : ReadHandle<TCollection>, IReadOnlyCollection<TItem>
+    public abstract class RCollectionBase<TReference, TCollection, TItem> : ReadHandle<TReference, TCollection>, IReadOnlyCollection<TItem>
+        where TReference : IReference
         where TCollection : class, IEnumerable<TItem>
     {
         public abstract int Count { get; }

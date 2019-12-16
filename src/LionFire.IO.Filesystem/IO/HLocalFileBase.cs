@@ -1,4 +1,5 @@
-﻿using LionFire.Persistence.Handles;
+﻿using LionFire.Persistence.Filesystem;
+using LionFire.Persistence.Handles;
 using LionFire.Referencing;
 using System;
 using System.Threading.Tasks;
@@ -6,7 +7,7 @@ using System.Threading.Tasks;
 namespace LionFire.IO
 {
 
-    public abstract class HLocalFileBase<T> : ReadWriteHandleBaseEx<T>
+    public abstract class HLocalFileBase<T> : ReadWriteHandle<FileReference, T>
         where T : class
     {
         //public override string Key { get => Path; set => Path = Key; }

@@ -6,7 +6,6 @@
 
   <ItemGroup>
     <ProjectReference Include="..\LionFire.IO.Filesystem\LionFire.IO.Filesystem.csproj" />
-    <ProjectReference Include="..\LionFire.ObjectBus.Filesystem\LionFire.Persistence.Filesystem.csproj" />
     <ProjectReference Include="..\LionFire.Persistence\LionFire.Persistence.csproj" />
   </ItemGroup>
 

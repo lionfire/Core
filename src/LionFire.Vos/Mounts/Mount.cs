@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using LionFire.Collections;
+using LionFire.Instantiating;
 using LionFire.ObjectBus;
 using LionFire.Persistence;
 using LionFire.Referencing;
@@ -18,33 +19,56 @@ namespace LionFire.Vos
 #else
         IKeyed<string>
 #endif
+        , ITemplateInstance<TMount>
     {
+        public TMount Template { get; set; }
+
+        #region Identity
+
+        public readonly Vob Vob;
+
+        #endregion
+
         #region Construction
 
-        public Mount(Vob vob, IReference reference, string package = null, string store = null, bool enable = false, MountOptions mountOptions = null)
-            : this(vob, reference.ToReadWriteHandle<MountHandleObject>(), package, store, enable, mountOptions)
+        // REVIEW: streamline constructors around Vob, IReference, MountOptions parameters?  Make a TMount constructor?
+
+        public Mount(RootVob root, TMount template)
+            : this(root[template.Reference.Path], template.Reference, template.Options)
         {
-            Root = reference;
+            Target = template.Reference;
         }
 
-        public Mount(Vob vob, Vob target, string package = null, string store = null, bool enable = false, MountOptions mountOptions = null)
-            : this(vob, target.GetHandle<MountHandleObject>(), package, store, enable, mountOptions)
+        public Mount(Vob vob, IReference targetReference, MountOptions mountOptions = null) : this(vob, targetReference.ToReadWriteHandle<MountHandleObject>(), mountOptions)
+        {
+            Target = targetReference;
+        }
+
+        //public Mount(Vob vob, IReference reference, MountOptions mountOptions = null)
+        //    : this(vob, reference.ToReadWriteHandle<MountHandleObject>(), mountOptions)
+        //{
+        //    Root = reference;
+        //}
+
+        public Mount(Vob vob, Vob target, MountOptions mountOptions = null)
+            : this(vob, target.GetHandle<MountHandleObject>(), mountOptions)
         {
         }
 
-        private Mount(Vob vob, IReadWriteHandle<MountHandleObject> rootHandle, string package = null, string store = null, bool enable = false, MountOptions mountOptions = null)
+        private Mount(Vob vob, IReadWriteHandle<MountHandleObject> rootHandle,  MountOptions mountOptions = null)
         {
+            bool enable = false;
             if (vob == null)
             {
                 throw new ArgumentNullException($"{nameof(vob)}");
             }
 
             Vob = vob;
-            VobDepth = vob.VobDepth;
-            Root = rootHandle.Reference;
+            VobDepth = vob.VobNode.VobDepth;
+            Target = rootHandle.Reference;
             this.rootHandle = rootHandle;
-            Package = package;
-            Store = store;
+            Package = mountOptions?.Package;
+            Store = mountOptions?.Store;
             //this.MountName =GetMountName(packageName, layerName);
             MountOptions = mountOptions;//.HasValue ? mountOptions.Value : MountOptions.Default;
 
@@ -53,9 +77,11 @@ namespace LionFire.Vos
 
         #endregion
 
-        internal readonly int VobDepth;
+        #region Derived
 
-        public readonly Vob Vob;
+        internal readonly int VobDepth;
+        
+        #endregion
 
         public readonly string Package;
         public readonly string Store;
@@ -66,7 +92,7 @@ namespace LionFire.Vos
 #if AOT
         string IROStringKeyed.Key { get { return this.Root.Key; } }
 #else
-        string IKeyed<string>.Key => Root.Key;
+        string IKeyed<string>.Key => Target.Key;
 #endif
 
 
@@ -77,7 +103,7 @@ namespace LionFire.Vos
         }
 
         /// <summary>
-        /// MountHandleObject
+        /// Target Handle MountHandleObject
         /// </summary>
         public IReadHandle<MountHandleObject> RootHandle
         {
@@ -85,14 +111,14 @@ namespace LionFire.Vos
             {
                 if (rootHandle == null)
                 {
-                    rootHandle = Root.ToReadHandle<MountHandleObject>();
+                    rootHandle = Target.ToReadHandle<MountHandleObject>();
                 }
                 return rootHandle;
             }
         }
         private IReadHandle<MountHandleObject> rootHandle;
 
-        public readonly IReference Root;
+        public readonly IReference Target;
 
         public readonly MountOptions MountOptions;
 
@@ -124,7 +150,7 @@ namespace LionFire.Vos
 
         #endregion
 
-        public override string ToString() => "{Mount " + Vob + " ==> " + Root + "}";
+        public override string ToString() => $"{{Mount {Vob} ==> {Target}}}";
 
         #region Misc
 

@@ -10,12 +10,12 @@ namespace LionFire.IO
         #region Construction
 
         public HTextFile() { }
-        public HTextFile(string path, string initialObject) : base(path, initialObject)
+        public HTextFile(string path) : base(path)
         {
         }
 
         #endregion
-
+         
         protected override async Task<IPersistenceResult> WriteObject()
         {
             await Task.Run(() =>

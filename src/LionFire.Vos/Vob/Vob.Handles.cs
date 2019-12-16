@@ -9,23 +9,23 @@ namespace LionFire.Vos
 {
     public partial class Vob
     {
-        public IEnumerable<IReadHandle<MountHandleObject>> ReadHandles
-        {
-            get
-            {
-                if (!InitializeEffectiveMounts())
-                {
-                    yield break;
-                }
-                //if (HasMounts)
-                {
-                    foreach (Mount mount in effectiveMountsByReadPriority.Values.SelectMany(x => x))
-                    {
-                        yield return GetMountHandle(mount);
-                    }
-                }
-            }
-        }
+        //public IEnumerable<IReadHandle<MountHandleObject>> ReadHandles
+        //{
+        //    get
+        //    {
+        //        if (!InitializeEffectiveMounts())
+        //        {
+        //            yield break;
+        //        }
+        //        //if (HasMounts)
+        //        {
+        //            foreach (Mount mount in effectiveMountsByReadPriority.Values.SelectMany(x => x))
+        //            {
+        //                yield return GetMountHandle(mount);
+        //            }
+        //        }
+        //    }
+        //}
 
         //private IEnumerable<KeyValuePair<H, Mount>> ReadHandlesWithMounts
         //{
@@ -42,41 +42,44 @@ namespace LionFire.Vos
         //    }
         //}
 
-        private IEnumerable<Mount> ReadHandleMounts
+        public IEnumerable<Mount> ReadHandleMounts
         {
             get
             {
-                if (!InitializeEffectiveMounts())
-                {
-                    yield break;
-                }
-                //if (HasMounts)
-                {
-                    foreach (Mount mount in effectiveMountsByReadPriority.Values.SelectMany(x => x))
-                    {
-                        yield return mount;
-                    }
-                }
+                throw new NotImplementedException();
+                //if (!InitializeEffectiveMounts())
+                //{
+                //    yield break;
+                //}
+                ////if (HasMounts)
+                //{
+                //    foreach (Mount mount in effectiveMountsByReadPriority.Values.SelectMany(x => x))
+                //    {
+                //        yield return mount;
+                //    }
+                //}
 
             }
         }
 
-        public bool CanWrite => WriteHandleMounts.Where(m => !m.MountOptions.IsReadOnly).Any();
+        public bool CanWrite => WriteHandleMounts.Where(m => !m.MountOptions.IsReadOnly()).Any();
 
         public IEnumerable<IReadHandleBase<MountHandleObject>> WriteHandles
         {
             get
             {
-                if (!InitializeEffectiveMounts())
-                {
-                    yield break;
-                }
+                //NextVobNode.WriteMounts
+                throw new NotImplementedException();
+                //if (!InitializeEffectiveMounts())
+                //{
+                //    yield break;
+                //}
 
-                //if (!HasMounts) yield break;
-                foreach (Mount mount in effectiveMountsByWritePriority.Values.SelectMany(x => x))
-                {
-                    yield return GetMountHandle(mount);
-                }
+                ////if (!HasMounts) yield break;
+                //foreach (Mount mount in effectiveMountsByWritePriority.Values.SelectMany(x => x))
+                //{
+                //    yield return GetMountHandle(mount);
+                //}
             }
         }
 
@@ -99,17 +102,18 @@ namespace LionFire.Vos
         {
             get
             {
-                if (!InitializeEffectiveMounts())
-                {
-                    yield break;
-                }
-                //if (HasMounts)
-                {
-                    foreach (Mount mount in effectiveMountsByWritePriority.Values.SelectMany(x => x))
-                    {
-                        yield return mount;
-                    }
-                }
+                throw new NotImplementedException();
+                //if (!InitializeEffectiveMounts())
+                //{
+                //    yield break;
+                //}
+                ////if (HasMounts)
+                //{
+                //    foreach (Mount mount in effectiveMountsByWritePriority.Values.SelectMany(x => x))
+                //    {
+                //        yield return mount;
+                //    }
+                //}
 
             }
         }
@@ -118,52 +122,55 @@ namespace LionFire.Vos
         {
             get
             {
-                if (effectiveMountsByWritePriority == null) { InitializeEffectiveMounts(); }
-                if (effectiveMountsByWritePriority == null) { return Enumerable.Empty<Mount>(); }
-                return effectiveMountsByWritePriority.Values.SelectMany(x => x);
+                throw new NotImplementedException();
+                //if (effectiveMountsByWritePriority == null) { InitializeEffectiveMounts(); }
+                //if (effectiveMountsByWritePriority == null) { return Enumerable.Empty<Mount>(); }
+                //return effectiveMountsByWritePriority.Values.SelectMany(x => x);
             }
         }
         private IReadHandleBase<MountHandleObject> FirstWriteHandle // REVIEW Don't use this?
         {
             get
             {
-                //if (!HasMounts) return null;
-                foreach (Mount mount in
-#if AOT
-                        (IEnumerable)
-#endif
- EffectiveWriteMounts)
-                {
-                    if (mount.MountOptions.IsReadOnly && !VosContext.Current.IgnoreReadonly)
-                    {
-                        continue;
-                    }
+                throw new NotImplementedException();
+//                //if (!HasMounts) return null;
+//                foreach (Mount mount in
+//#if AOT
+//                        (IEnumerable)
+//#endif
+// EffectiveWriteMounts)
+//                {
+//                    if (mount.MountOptions.IsReadOnly && !VosContext.Current.IgnoreReadonly)
+//                    {
+//                        continue;
+//                    }
 
-                    return GetMountHandle(mount);
-                }
-                return null;
+//                    return GetMountHandle(mount);
+//                }
+//                return null;
             }
         }
         private IReadWriteHandleBase<T> GetFirstWriteHandle<T>()
         {
-            //get
-            {
-                //if (!HasMounts) return null;
-                foreach (Mount mount in
-#if AOT
-                        (IEnumerable)
-#endif
- EffectiveWriteMounts)
-                {
-                    if (mount.MountOptions.IsReadOnly && !VosContext.Current.IgnoreReadonly)
-                    {
-                        continue;
-                    }
+            throw new NotImplementedException();
+//            //get
+//            {
+//                //if (!HasMounts) return null;
+//                foreach (Mount mount in
+//#if AOT
+//                        (IEnumerable)
+//#endif
+// EffectiveWriteMounts)
+//                {
+//                    if (mount.MountOptions.IsReadOnly && !VosContext.Current.IgnoreReadonly)
+//                    {
+//                        continue;
+//                    }
 
-                    return GetHandleFromMount<T>(mount);
-                }
-                return null;
-            }
+//                    return GetReadWriteHandleFromMount<T>(mount);
+//                }
+//                return null;
+//            }
         }
 
         //private VobHandle<T> GetFirstWriteHandle<T>()
@@ -175,44 +182,45 @@ namespace LionFire.Vos
 
         private IReadHandleBase<MountHandleObject> GetFirstWriteHandle()
         {
-            IReadHandleBase<MountHandleObject> objectHandle;
+            throw new NotImplementedException();
+            //IReadHandleBase<MountHandleObject> objectHandle;
 
-            //if (package == null && layer == null)
-            {
-                objectHandle = FirstWriteHandle;
-                return objectHandle;
-            }
-            //            else
-            //            {
-            //                if (package != null && layer != null)
-            //                {
-            //                    string mountName = LionFire.Vos.Mount.GetMountName(package, layer);
-            //                    Mount mount = effectiveMountsByName.TryGetValue(mountName);
-            //                    if (mount.MountOptions.IsReadOnly)
-            //                    {
-            //                        l.Trace("GetFirstWriteHandle found mount by name but it IsReadOnly");
-            //                        return null;
-            //                    }
-            //                    else
-            //                    {
-            //                        return GetMountHandle(mount);
-            //                    }
-            //                }
-            //                else
-            //                {
-            //                    if (package != null)
-            //                    {
-            //                        return GetMountHandle(EffectiveWriteMounts.Where(m => m.PackageName == package).FirstOrDefault());
-            //                    }
-            //                    else // layer != null
-            //                    {
-            //#if SanityChecks
-            //                        if (layer == null) throw new UnreachableCodeException("layer != null");
-            //#endif
-            //                        return GetMountHandle(EffectiveWriteMounts.Where(m => m.LayerName == layer).FirstOrDefault());
-            //                    }
-            //                }
-            //            }
+            ////if (package == null && layer == null)
+            //{
+            //    objectHandle = FirstWriteHandle;
+            //    return objectHandle;
+            //}
+            ////            else
+            ////            {
+            ////                if (package != null && layer != null)
+            ////                {
+            ////                    string mountName = LionFire.Vos.Mount.GetMountName(package, layer);
+            ////                    Mount mount = effectiveMountsByName.TryGetValue(mountName);
+            ////                    if (mount.MountOptions.IsReadOnly)
+            ////                    {
+            ////                        l.Trace("GetFirstWriteHandle found mount by name but it IsReadOnly");
+            ////                        return null;
+            ////                    }
+            ////                    else
+            ////                    {
+            ////                        return GetMountHandle(mount);
+            ////                    }
+            ////                }
+            ////                else
+            ////                {
+            ////                    if (package != null)
+            ////                    {
+            ////                        return GetMountHandle(EffectiveWriteMounts.Where(m => m.PackageName == package).FirstOrDefault());
+            ////                    }
+            ////                    else // layer != null
+            ////                    {
+            ////#if SanityChecks
+            ////                        if (layer == null) throw new UnreachableCodeException("layer != null");
+            ////#endif
+            ////                        return GetMountHandle(EffectiveWriteMounts.Where(m => m.LayerName == layer).FirstOrDefault());
+            ////                    }
+            ////                }
+            ////            }
         }
 
     }

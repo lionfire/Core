@@ -6,46 +6,16 @@ using LionFire.Collections;
 using LionFire.ObjectBus;
 using LionFire.Persistence;
 using LionFire.Persistence.Handles;
+using LionFire.Persistence.Persisters.Vos;
 using LionFire.Referencing;
 
 namespace LionFire.Vos
 {
     public partial class Vob
     {
-
         #region Mounts
 
         #region Mounts Collection
-
-        #region HasMounts
-
-        public bool HasMounts
-        {
-            get => hasMounts;
-            private set
-            {
-                if (hasMounts == value)
-                {
-                    return;
-                }
-
-                hasMounts = value;
-                if (hasMounts)
-                {
-                    vos.VobsWithMounts.Add(this);
-                }
-                else
-                {
-                    vos.VobsWithMounts.Remove(this);
-                }
-                InitializeEffectiveMounts();
-            }
-        }
-        private bool hasMounts;
-
-        private void UpdateHasMounts() => HasMounts = mounts != null && mounts.Count > 0;
-
-        #endregion
 
         public MultiBindableDictionary<string, Mount> Mounts
         {
@@ -55,7 +25,7 @@ namespace LionFire.Vos
                 if (mounts == null)
                 {
                     mounts = new MultiBindableDictionary<string, Mount>();
-                    mounts.CollectionChanged += new NotifyCollectionChangedHandler<Mount>(OnMountsCollectionChanged);
+                    //mounts.CollectionChanged += new NotifyCollectionChangedHandler<Mount>(OnMountsCollectionChanged);
                     // MEMOPTIMIZE: Attach events.  Dispose dictionary when all are unmounted
                 }
                 return mounts;
@@ -69,37 +39,41 @@ namespace LionFire.Vos
 
         #region (internal) Mount method
 
+        internal void Mount(TMount tMount) => Mount(new Mount(this.Root, tMount));
+
         /// <summary>
         /// To mount create a new instance of Mount and set IsEnabled to true.
         /// </summary>
         /// <param name="mount"></param>
         internal void Mount(Mount mount)
         {
-            {
-                var ev = Mounting;
-                if (ev != null)
-                {
-                    var args = new CancelableEventArgs<Mount>(mount);
-                    ev(this, args);
-                    if (args.IsCanceled)
-                    {
-                        return;
-                    }
-                }
-            }
+            GetVobNode().Mount(mount);
+            // OLD TOTRIAGE
+            //{
+            //    var ev = Mounting;
+            //    if (ev != null)
+            //    {
+            //        var args = new CancelableEventArgs<Mount>(mount);
+            //        ev(this, args);
+            //        if (args.IsCanceled)
+            //        {
+            //            return;
+            //        }
+            //    }
+            //}
 
-            lock (mountsLock)
-            {
-                // TODO EVENTS: mounting/mounted
-                try
-                {
-                    Mounts.Add(mount);
-                }
-                catch (Exception ex)
-                {
-                    l.Info("Failed to mount with key " + Mounts.GetKey(mount) + " for " + mount + " " + ex);
-                }
-            }
+            //lock (mountsLock)
+            //{
+            //    // TODO EVENTS: mounting/mounted
+            //    try
+            //    {
+            //        Mounts.Add(mount);
+            //    }
+            //    catch (Exception ex)
+            //    {
+            //        l.Info("Failed to mount with key " + Mounts.GetKey(mount) + " for " + mount + " " + ex);
+            //    }
+            //}
         }
 
         #endregion
@@ -108,7 +82,7 @@ namespace LionFire.Vos
 
         private void _unmount(string mountKey, Mount mount)
         {
-            if (mountKey != mount.Root.Key)
+            if (mountKey != mount.Target.Key)
             {
                 throw new ArgumentException("mountName mismatch for mount");
             }
@@ -147,13 +121,13 @@ namespace LionFire.Vos
 
         internal void Unmount(Mount mount)
         {
-            Mount knownMount = Mounts.TryGetValue(mount.Root.Key);
+            Mount knownMount = Mounts.TryGetValue(mount.Target.Key);
             if (!System.Object.ReferenceEquals(knownMount, mount))
             {
                 return;
             }
 
-            _unmount(mount.Root.Key, knownMount);
+            _unmount(mount.Target.Key, knownMount);
         }
 
         public void UnmountAll()
@@ -173,151 +147,96 @@ namespace LionFire.Vos
         public event Action<Vob, Mount> Mounted;
         public event Action<Vob, Mount> Unmounted;
 
-        private void OnMountsCollectionChanged(INotifyCollectionChangedEventArgs<Mount> e)
-        {
-            InitializeEffectiveMounts(); // OPTIMIZE TEMP - overkill
+        //private void OnMountsCollectionChanged(INotifyCollectionChangedEventArgs<Mount> e)
+        //{
+        //    NextVobNode.InitializeEffectiveMounts(); // OPTIMIZE TEMP - overkill
 
-            UpdateHasMounts();
-            vos.OnMountsChangedFor(this, e);
+        //    UpdateHasMounts();
+        //    NextVobNode.OnMountsChangedFor(this, e);
 
-            if (e.Action == System.Collections.Specialized.NotifyCollectionChangedAction.Reset)
-            {
-                l.Warn("[MOUNT] Mounts collection reset (TODO: Handle)");
-            }
-            else
-            {
-                if (e.NewItems != null)
-                {
-                    foreach (var item in e.NewItems)
-                    {
-                        //                        l.Info("[MOUNT] " + this + " ==> " + item.RootHandle);
-                        var ev = Mounted;
-                        if (ev != null)
-                        {
-                            ev(this, item);
-                        }
-                    }
-                }
-                if (e.OldItems != null)
-                {
-                    foreach (var item in e.OldItems)
-                    {
-                        l.Info("[UNMOUNT] " + this + " ==> " + item.Root);
-                        var ev = Unmounted;
-                        if (ev != null)
-                        {
-                            ev(this, item);
-                        }
-                    }
-                }
-            }
-        }
-
-        #endregion
+        //    if (e.Action == System.Collections.Specialized.NotifyCollectionChangedAction.Reset)
+        //    {
+        //        l.Warn("[MOUNT] Mounts collection reset (TODO: Handle)");
+        //    }
+        //    else
+        //    {
+        //        if (e.NewItems != null)
+        //        {
+        //            foreach (var item in e.NewItems)
+        //            {
+        //                //                        l.Info("[MOUNT] " + this + " ==> " + item.RootHandle);
+        //                var ev = Mounted;
+        //                if (ev != null)
+        //                {
+        //                    ev(this, item);
+        //                }
+        //            }
+        //        }
+        //        if (e.OldItems != null)
+        //        {
+        //            foreach (var item in e.OldItems)
+        //            {
+        //                l.Info("[UNMOUNT] " + this + " ==> " + item.Target);
+        //                var ev = Unmounted;
+        //                if (ev != null)
+        //                {
+        //                    ev(this, item);
+        //                }
+        //            }
+        //        }
+        //    }
+        //}
 
         #endregion
-
-        #region EffectiveMounts
-
-        internal readonly int VobDepth; // REVIEW - needed only for mounts?
-
-        internal MultiValueSortedList<int, Mount> effectiveMountsByReadPriority;
-        internal MultiValueSortedList<int, Mount> effectiveMountsByWritePriority;
-        private Dictionary<string, Mount> effectiveMountsByName;
-        private bool AreEffectiveMountsInitialized => effectiveMountsByReadPriority != null;
-        //private Vob FirstAncestorWithMounts;
-        //private int FirstAncestorWithMountsRelativeDepth;
-        //private IEnumerable<string> FirstAncestorToThisSubPath;
-
-        private bool InitializeEffectiveMounts(bool reset = false)
-        {
-            if (AreEffectiveMountsInitialized && !reset)
-            {
-                return true;
-            }
-
-            //// TODO: OPTIMIZE: To save memory, pass the buck to the first ancestor that has a mount.
-            //if (!HasMounts)
-            //{
-            ////    effectiveMountsByReadPriority = null;
-            ////    effectiveMountsByWritePriority = null;
-            ////    effectiveMountsByName = null;
-
-            ////    Vob firstAncestorWithMounts = null;
-            ////    IEnumerable<string> firstAncestorToThisSubPath = null;
-            ////    for (Vob ancestor = this.Parent; ancestor != null; ancestor = ancestor.Parent)
-            ////    {
-            ////        if (ancestor.HasMounts)
-            ////        {
-            ////            firstAncestorWithMounts = ancestor;
-            ////            firstAncestorToThisSubPath = this.PathElements.Skip(ancestor.VobDepth);
-            ////            break;
-            ////        }
-            ////    }
-            ////    this.FirstAncestorWithMounts = firstAncestorWithMounts;
-            ////    this.FirstAncestorToThisSubPath = firstAncestorToThisSubPath;
-            ////    return;
-            //}
-            ////else
-            ////{
-            ////    this.FirstAncestorWithMounts = this;
-            ////    this.FirstAncestorToThisSubPath = new string[] { };
-            ////}
-
-            effectiveMountsByReadPriority = new MultiValueSortedList<int, Mount>(
-#if AOT
-				Singleton<IntComparer>.Instance
-#endif
-);
-            effectiveMountsByWritePriority = new MultiValueSortedList<int, Mount>(
-#if AOT
-				Singleton<IntComparer>.Instance
-#endif
-);
-            effectiveMountsByName = new Dictionary<string, Mount>(); // FUTURE: If this is rarely used, create on demand
-
-            bool gotSomething = false;
-            for (Vob vob = this; vob != null; vob = vob.Parent)
-            {
-                foreach (KeyValuePair<string, Mount> kvp in
-#if AOT
-                        (IEnumerable)
-#endif
- vob.Mounts)
-                {
-                    Mount mount = kvp.Value;
-                    effectiveMountsByReadPriority.Add(mount.MountOptions.ReadPriority, mount);
-                    gotSomething = true;
-
-                    if (VosConfiguration.AllowIsReadonlyOverride || !mount.MountOptions.IsReadOnly)
-                    {
-                        effectiveMountsByWritePriority.Add(mount.MountOptions.WritePriority, mount);
-                    }
-                    effectiveMountsByName.Add(mount.Root.Key, mount);
-                }
-            }
-            if (!gotSomething)
-            {
-                effectiveMountsByWritePriority = null;
-                effectiveMountsByReadPriority = null;
-                effectiveMountsByName = null;
-                //l.Trace("Got no mounts for " + this.ToString());
-                return false;
-            }
-            return true;
-        }
-
-
-        public void OnAncestorMountsChanged(Vob ancestor, INotifyCollectionChangedEventArgs<Mount> e)
-        {
-            // TODO: Adapt changes
-            InitializeEffectiveMounts(reset: true);
-        }
 
         #endregion
 
         #region Mounts
 
+        private THandle _GetHandleFromMount<T, TSubpathHandleProvider, THandle>(Mount mount, Func<TSubpathHandleProvider, IEnumerable<string>, THandle> subpathHandleProviderAction, Func<IReference, THandle> referenceToHandleAction)
+        {
+            THandle result;
+
+            // TODO TO_ASSERT mount path is a parent of this.Path
+
+            //int mountDepthDelta = this.VobDepth - mount.VobDepth; // MICROOPTIMIZE - move to mount
+
+
+            if (mount.RootHandle is TSubpathHandleProvider subpathHandleProvider)
+            {
+                // (All that's needed here is IProvidesHandleOfDifferentType, but there is no interface for that yet.)
+
+                // Some Handle types will be able to be smarter about providing handles....
+                var parameter = ReferenceEquals(mount.Vob, this) ? Enumerable.Empty<string>() : PathElements.Skip(mount.VobDepth);
+                result = subpathHandleProviderAction(subpathHandleProvider, parameter); // subpathHandleProvider.GetReadWriteHandleFromSubPath<T>(parameter);
+            }
+            else // ... otherwise, we have to get the handle from the reference.
+            {
+                var reference = ReferenceEquals(mount.Vob, this) ? mount.RootHandle.Reference : mount.RootHandle.Reference.GetChildSubpath(PathElements.Skip(mount.VobDepth));
+                result = referenceToHandleAction(reference);
+                //result = reference.ToReadWriteHandle<T>();
+            }
+            return result;
+        }
+
+        internal IReadWriteHandleBase<T> GetReadWriteHandleFromMount<T>(Mount mount)
+        {
+            return _GetHandleFromMount<T, ISubpathHandleProvider, IReadWriteHandleBase<T>>(mount,
+                (shp, chunks) => shp.GetReadWriteHandleFromSubPath<T>(chunks), r => r.ToReadWriteHandle<T>());
+        }
+        internal IReadHandleBase<T> GetReadHandleFromMount<T>(Mount mount)
+        {
+            return _GetHandleFromMount<T, ISubpathHandleProvider, IReadHandleBase<T>>(mount,
+                (shp, chunks) => shp.GetReadHandleFromSubPath<T>(chunks), r => r.ToReadHandle<T>());
+        }
+        internal IWriteHandleBase<T> GetWriteHandleFromMount<T>(Mount mount)
+        {
+            throw new NotImplementedException();
+            //return _GetHandleFromMount<T, ISubpathHandleProvider, IWriteHandleBase<T>>(mount,
+            //(shp, chunks) => shp.GetWriteHandleFromSubPath<T>(chunks), r => r.ToWriteHandle<T>());
+        }
+
+#if OLD
         /// <summary>
         /// Get the handle from the underlying mount (specified) representing this Vob's path and the specified type
         /// TOTEST
@@ -325,7 +244,7 @@ namespace LionFire.Vos
         /// <typeparam name="T"></typeparam>
         /// <param name="mount"></param>
         /// <returns></returns>
-        private IReadWriteHandleBase<T> GetHandleFromMount<T>(Mount mount)
+        private IReadWriteHandleBase<T> GetReadWriteHandleFromMount<T>(Mount mount)
         {
             IReadWriteHandleBase<T> result;
 
@@ -334,13 +253,13 @@ namespace LionFire.Vos
             //int mountDepthDelta = this.VobDepth - mount.VobDepth; // MICROOPTIMIZE - move to mount
 
 #if true
-            if (mount.RootHandle is IProvidesHandleFromSubPath hp)
+            if (mount.RootHandle is ISubpathHandleProvider hp)
             {
                 // (All that's needed here is IProvidesHandleOfDifferentType, but there is no interface for that yet.)
 
                 // Some Handle types will be able to be smarter about providing handles....
                 var parameter = Object.ReferenceEquals(mount.Vob, this) ? Enumerable.Empty<string>() : PathElements.Skip(mount.VobDepth);
-                result = hp.GetHandleFromSubPath<T>(parameter);
+                result = hp.GetReadWriteHandleFromSubPath<T>(parameter);
             }
             else
             {
@@ -387,7 +306,7 @@ namespace LionFire.Vos
             //result.Mount = mount;
             return result;
         }
-
+#endif
 
         /// <summary>
         /// The MountHandleObject itself is not significant -- it is just representing a handle to the root referene of the target Mount point
@@ -423,12 +342,12 @@ namespace LionFire.Vos
 
             if (System.Object.ReferenceEquals(mount.Vob, this))
             {
-                result = mount.Root.Path;
+                result = mount.Target.Path;
                 l.Trace("UNTESTED: (alt) MountPath: " + result);
             }
             else
             {
-                result = LionPath.Combine(mount.Root.Path, PathElements.Skip(mount.VobDepth)); // OPTIMIZE: cache this enumerable alongside the mount
+                result = LionPath.Combine(mount.Target.Path, PathElements.Skip(mount.VobDepth)); // OPTIMIZE: cache this enumerable alongside the mount
                 l.Trace("UNTESTED: MountPath: " + result);
             }
 

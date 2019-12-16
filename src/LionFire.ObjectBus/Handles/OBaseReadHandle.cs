@@ -16,7 +16,7 @@ namespace LionFire.ObjectBus.Handles
     /// Handles can act as gatekeeper logic
     /// </remarks>
     /// <typeparam name="T"></typeparam>
-    public class OBaseReadHandle<T> : ReadHandle<T> // TODO: Inherit from or replace with PersisterReadHandle
+    public class OBaseReadHandle<T> : ReadHandle<IReference, T> // TODO: Inherit from or replace with PersisterReadHandle
     {
         public IOBase OBase { get; }
 

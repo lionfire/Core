@@ -150,10 +150,7 @@ namespace LionFire
             /// </summary>
             /// <param name="namedDataDir"></param>
             /// <returns></returns>
-            public static string GetProgramDataDir(string namedDataDir)
-            {
-                return Path.Combine(ProgramData, CompanyName, namedDataDir);
-            }
+            public static string GetProgramDataDir(string namedDataDir) => Path.Combine(ProgramData, CompanyName, namedDataDir);
 
             #endregion
 
@@ -167,10 +164,7 @@ namespace LionFire
             /// </summary>
             public static string AppDataDirName
             {
-                get
-                {
-                    return MainAppInfo?.CustomAppDataDirName ?? ProgramName;
-                }
+                get => MainAppInfo?.CustomAppDataDirName ?? ProgramName;
                 set { appDataDirName = value; }
             }
             private static string appDataDirName;

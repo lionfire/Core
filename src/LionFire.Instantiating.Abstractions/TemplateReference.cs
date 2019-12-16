@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
+#if NewtonsoftJson
 using Newtonsoft.Json;
+#endif
+using System.Threading.Tasks;
 
 namespace LionFire.Instantiating
 {
@@ -17,7 +19,9 @@ namespace LionFire.Instantiating
         }
         public ITemplate Template { get; set; }
 
+#if NewtonsoftJson
         [JsonIgnore] // TODO - use custom attribute from LionFire.Core
+#endif
         public Type Type { get; set; }
         public string TypeName { get; set; }
         public string Assembly { get; set; }

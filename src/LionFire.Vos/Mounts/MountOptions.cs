@@ -7,10 +7,11 @@ using System.Text;
 
 namespace LionFire.Vos
 {
-    public class MountOptions
+
+    public class MountOptions : IMountOptions
     {
         #region (Static)
-        
+
         //internal static readonly MountOptions Default;
 
         //static MountOptions()
@@ -41,18 +42,33 @@ namespace LionFire.Vos
 		}
 #endif
 
+        public string RootName { get; set; }
+
+        public string Name { get; set; }
+
+        public string Package { get; set; }
+        public string Store { get; set; }
+        public bool Enable { get; set; }
+
+
         /// <summary>
         /// Physical mounts should be mounted Exclusive.  That means
         ///  no other mounts can be mounted at or below the mount point (TODO - Not enforced yet)
         ///  TODO - automate for file and physical references
         /// </summary>
-        public bool IsExclusive { get; set; }
-        public bool IsReadOnly { get; set; }
+        public bool IsExclusive { get; set; } = true;
+
+        public bool IsExclusiveWithReadAndWrite { get; set; } = true;
+        /// <summary>
+        /// Means no other mounts can be mounted below this Vob
+        /// </summary>
+        public bool IsSealed { get; set; } = true;
+        public bool IsWritable { get; set; } = false;
 
         public bool TryCreateIfMissing { get; set; }
 
-        public int ReadPriority;
-        public int WritePriority;
+        public int? ReadPriority { get; set; }
+        public int? WritePriority { get; set; }
 
         #region MountAtStartup
 
@@ -61,7 +77,8 @@ namespace LionFire.Vos
         {
             get { return mountAtStartup; }
             set { mountAtStartup = value; }
-        } private bool mountAtStartup = true;
+        }
+        private bool mountAtStartup = true;
 
         #endregion
 
@@ -72,7 +89,8 @@ namespace LionFire.Vos
         {
             get { return mountOnDemand; }
             set { mountOnDemand = value; }
-        } private bool mountOnDemand = true;
+        }
+        private bool mountOnDemand = true;
 
         #endregion
 
@@ -85,5 +103,10 @@ namespace LionFire.Vos
         //   - Common object merge: this, other, merge based on priority
         //   - Common node merge: this, other, merge based on priority
 
+    }
+
+    public static class MountOptionsExtensions
+    {
+        public static bool IsReadOnly(this MountOptions mountOptions) => !mountOptions.IsWritable;
     }
 }

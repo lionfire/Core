@@ -1,5 +1,7 @@
 ﻿using LionFire.Applications.Hosting;
+using LionFire.Dependencies;
 using LionFire.Validation;
+using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.Linq;
 
@@ -7,26 +9,28 @@ namespace LionFire.Instantiating
 {
     public static class ITemplateExtensions
     {
-        public static TInstance Create<TInstance>(this ITemplate<TInstance> template)
+        public static TInstance Create<TInstance>(this ITemplate<TInstance> template, bool inject = true)
             where TInstance : new()
         {
-            var validates = template as IValidatesCreate;
-            if (validates != null)
-            {
-                validates.Validate().ValidateCreate().EnsureValid();
-            }
-            var instance = Create((ITemplate)template, typeof(TInstance));
-            return (TInstance) instance;
+            if (template is IValidatesCreate validates) { validates.Validate().ValidateCreate().EnsureValid(); }
+
+            return (TInstance)ITemplateExtensions.Create((ITemplate)template, typeof(TInstance), inject);
         }
 
-        public static object Create(this ITemplate template, Type instanceType = null)
+        public static TInstance CreateWithoutValidate<TInstance>(this ITemplate<TInstance> template, bool inject = true)
+            where TInstance : new()
+            => (TInstance)ITemplateExtensions.Create((ITemplate)template, typeof(TInstance), inject);
+
+
+        public static object Create(this ITemplate template, Type instanceType = null, bool inject = true)
         {
             if (instanceType == null)
             {
                 var interfaceType = template.GetType().GetInterfaces().Where(t => t.Name == typeof(ITemplate).Name + "`1").FirstOrDefault();
                 instanceType = interfaceType.GenericTypeArguments[0];
             }
-            var inst = Activator.CreateInstance(instanceType);
+
+            var inst = inject ? ActivatorUtilities.CreateInstance(DependencyContext.Current.ServiceProvider, instanceType) : Activator.CreateInstance(instanceType);
 
             var templateInstance = inst as ITemplateInstance;
             if (templateInstance != null)

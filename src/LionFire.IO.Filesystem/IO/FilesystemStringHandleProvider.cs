@@ -9,7 +9,7 @@ namespace LionFire.IO.Filesystem
     {
         public override string Scheme => "file(string)";
 
-        public IReadWriteHandleBase<T> GetReadWriteHandle<T>(IReference reference, T initialObject = default)
+        public IReadWriteHandle<T> GetReadWriteHandle<T>(IReference reference)
         {
             if (typeof(T) != typeof(string))
             {
@@ -17,10 +17,10 @@ namespace LionFire.IO.Filesystem
             }
 
             ValidateReference(reference);
-            return (IReadWriteHandleBase<T>)new HTextFile(reference.Path, (string)(object)initialObject); // HARDCAST
+            return (IReadWriteHandle<T>)new HTextFile(reference.Path); // HARDCAST
         }
 
-        public IReadHandleBase<T> GetReadHandle<T>(IReference reference)
+        public IReadHandle<T> GetReadHandle<T>(IReference reference)
         {
             if (typeof(T) != typeof(string))
             {
@@ -28,7 +28,7 @@ namespace LionFire.IO.Filesystem
             }
 
             ValidateReference(reference);
-            return (IReadHandleBase<T>)new RTextFile(reference.Path);
+            return (IReadHandle<T>)new RTextFile(reference.Path);
         }
     }
 

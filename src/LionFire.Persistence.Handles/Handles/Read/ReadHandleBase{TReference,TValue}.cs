@@ -63,41 +63,42 @@ namespace LionFire.Persistence.Handles
     }
 #endif
 
-    public abstract class ReadHandleBase<TReference, TValue> : ReadHandleBase<TValue>
-        , IReferencable<IReference>
-        where TReference : IReference
-        //where TValue : class
-    {
-        protected override bool IsAllowedReferenceType(Type type) => type == typeof(TReference);
+    // MOVED to base class, moved both generic type parameters there too
+//    public abstract class ReadHandleBase<TReference, TValue> : ReadHandleBase<TValue>
+//        , IReferencable<IReference>
+//        where TReference : IReference
+//        //where TValue : class
+//    {
+//        protected override bool IsAllowedReferenceType(Type type) => type == typeof(TReference);
 
-        // Skips the reference type check
-        public new TReference Reference
-        {
-            get => (TReference)base.Reference; // TODO FIXME: Use TReference in the base class instead of casting here
-            set
-            {
-                if (ReferenceEquals(reference, value)) { return; }
-                if (reference != default(IReference)) { throw new AlreadySetException(); }
-                reference = value;
-            }
-        }
+//        // Skips the reference type check
+//        public new TReference Reference
+//        {
+//            get => (TReference)base.Reference; // TODO FIXME: Use TReference in the base class instead of casting here
+//            set
+//            {
+//                if (ReferenceEquals(reference, value)) { return; }
+//                if (reference != default(IReference)) { throw new AlreadySetException(); }
+//                reference = value;
+//            }
+//        }
 
-        IReference IReferencable<IReference>.Reference => base.Reference;
+//        IReference IReferencable<IReference>.Reference => base.Reference;
 
-        #region Construction
+//        #region Construction
 
-        protected ReadHandleBase() { }
+//        protected ReadHandleBase() { }
 
-        protected ReadHandleBase(TReference reference) : base(reference) { }
+//        protected ReadHandleBase(TReference reference) : base(reference) { }
 
-        ///// <summary>
-        ///// Do not use this in derived classes that are purely resolve-only and not intended to set an initial value.
-        ///// </summary>
-        ///// <param name="input"></param>
-        ///// <param name="initialValue"></param>
-        //protected ReadHandleBase(IReference input, TValue initialValue) : base(input, initialValue) { }
+//        ///// <summary>
+//        ///// Do not use this in derived classes that are purely resolve-only and not intended to set an initial value.
+//        ///// </summary>
+//        ///// <param name="input"></param>
+//        ///// <param name="initialValue"></param>
+//        //protected ReadHandleBase(IReference input, TValue initialValue) : base(input, initialValue) { }
 
-#endregion
+//#endregion
 
-    }
+//    }
 }

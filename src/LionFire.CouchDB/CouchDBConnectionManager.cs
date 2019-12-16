@@ -16,5 +16,7 @@ namespace LionFire.CouchDB
         public CouchDBConnectionManager(IConfiguration configuration, ILogger<CouchDBConnectionManager> logger, IServiceProvider serviceProvider) : base(configuration, logger, serviceProvider)
         {
         }
+
+        
     }
 }

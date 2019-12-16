@@ -183,8 +183,9 @@ namespace LionFire.Applications.Hosting
         }
         public static IServiceCollection AddInit(this IServiceCollection services, Action<IAppHost> initialize)
         {
-            services.TryAddEnumerableSingleton(new AppInitializer(initialize));
-            return services;
+            throw new NotImplementedException();
+            //services.TryAddEnumerableSingleton(new AppInitializer(initialize));
+            //return services;
         }
 
 

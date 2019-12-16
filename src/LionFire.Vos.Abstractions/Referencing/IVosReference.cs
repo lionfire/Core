@@ -6,7 +6,10 @@ using System.Collections.Generic;
 
 namespace LionFire.Vos
 {
-    public interface IVosReference : IReference, IHas<IOBase>, IHas<IOBus>, ITypedReference
+    public interface IVosReference : IReference
+        //, IHas<IOBase>
+        //, IHas<IOBus>
+        , ITypedReference
     {
         IEnumerable<string> AllowedSchemes { get; }
         //string Key { get; }

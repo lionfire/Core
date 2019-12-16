@@ -1,6 +1,9 @@
 ﻿using System;
+using System.Collections.Generic;
 using LionFire.Referencing;
 using LionFire.Resolves;
+using LionFire.Structures;
+using MorseCode.ITask;
 
 namespace LionFire.Persistence.Handles
 {
@@ -9,40 +12,48 @@ namespace LionFire.Persistence.Handles
     /// </summary>
     /// <typeparam name="TValue"></typeparam>
     /// <seealso cref="ReadHandle{TValue}"/>
-    public abstract class ReadHandleBase<TValue> : Resolves<IReference, TValue>, IReadHandleBase<TValue>
+    public abstract class ReadHandleBase<TReference, TValue> : Resolves<TReference, TValue>, IReadHandleBase<TValue>
+        , IReferencable<IReference>
+        where TReference : IReference
         //, IReadHandleInvariant<TValue>
     {
 
         #region Reference
 
-        protected virtual bool IsAllowedReferenceType(Type type) => true;
+        //protected virtual bool IsAllowedReferenceType(Type type) => true;
+
+        IReference IReferencable<IReference>.Reference => Reference;
+
+        IReference IReferencable.Reference => Reference;
 
         [SetOnce]
-        public IReference Reference
+        public TReference Reference
         {
             get => reference;
             protected set
             {
-                if (reference == value)
+                if(EqualityComparer<TReference>.Default.Equals(value,reference))
+                //if (reference == value)
                 {
                     return;
                 }
 
-                if (reference != default(IReference))
+                if(!EqualityComparer<TReference>.Default.Equals(default,reference))
+                //if (reference != default(TReference))
                 {
                     throw new AlreadySetException();
                 }
 
                 // OLD: art != null && value != null && !art.Where(type => type.IsAssignableFrom(value.GetType())).Any()
-                if (!IsAllowedReferenceType(value.GetType()))
-                {
-                    throw new ArgumentException("This type does not support IReference types of that type.  See protected IsAllowedReferenceType implementation for allowed types.");
-                }
+                //if (!IsAllowedReferenceType(value.GetType()))
+                //{
+                //    throw new ArgumentException("This type does not support TReference types of that type.  See protected IsAllowedReferenceType implementation for allowed types.");
+                //}
 
                 reference = value;
             }
         }
-        protected IReference reference;
+        protected TReference reference;
 
         #endregion
 
@@ -138,18 +149,62 @@ namespace LionFire.Persistence.Handles
 
         protected ReadHandleBase() { }
 
-        protected ReadHandleBase(IReference input) : base(input) { }
+        protected ReadHandleBase(TReference input) : base(input) { }
 
         ///// <summary>
         ///// Do not use this in derived classes that are purely resolve-only and not intended to set an initial value.
         ///// </summary>
         ///// <param name="input"></param>
         ///// <param name="initialValue"></param>
-        //protected ReadHandleBase(IReference input, TValue initialValue) : base(input, initialValue)
+        //protected ReadHandleBase(TReference input, TValue initialValue) : base(input, initialValue)
         //{
         //}
 
         #endregion
+
+
+        #region REORGANIZE
+
+        //protected override bool IsAllowedReferenceType(Type type) => type == typeof(TReference);
+        ITask<IResolveResult<TValue>> IResolves<TValue>.Resolve() => throw new NotImplementedException();
+
+        // Skips the reference type check
+        //public new TReference Reference
+        //{
+        //    get => (TReference)base.Reference; // TODO FIXME: Use TReference in the base class instead of casting here
+        //    set
+        //    {
+        //        if (ReferenceEquals(reference, value)) { return; }
+        //        if (reference != default(IReference)) { throw new AlreadySetException(); }
+        //        reference = value;
+        //    }
+        //}
+
+
+        PersistenceFlags IPersists.Flags => throw new NotImplementedException();
+
+        TValue IReadWrapper<TValue>.Value => throw new NotImplementedException();
+
+        bool IDefaultable.HasValue => throw new NotImplementedException();
+
+        #region Construction
+
+        //protected ReadHandleBase() { }
+
+        //protected ReadHandleBase(TReference reference) : base(reference) { }
+
+        ///// <summary>
+        ///// Do not use this in derived classes that are purely resolve-only and not intended to set an initial value.
+        ///// </summary>
+        ///// <param name="input"></param>
+        ///// <param name="initialValue"></param>
+        //protected ReadHandleBase(IReference input, TValue initialValue) : base(input, initialValue) { }
+
+        #endregion
+
+
+        #endregion
+
     }
 
 

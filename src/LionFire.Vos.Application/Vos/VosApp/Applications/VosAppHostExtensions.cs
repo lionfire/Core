@@ -53,7 +53,7 @@ namespace LionFire.Hosting.ExtensionMethods
 
         public static IHostBuilder AddVosApp(this IHostBuilder app, VosAppOptions options = null)
         {
-            app.AddObjectBus<VosOBus>();
+            //app.AddObjectBus<VosOBus>();  // OLD
 
             //var va = new VosApp(options);
             //app.Add(va);

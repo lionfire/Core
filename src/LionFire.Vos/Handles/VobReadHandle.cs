@@ -26,7 +26,7 @@ namespace LionFire.Vos
     [ReadOnlyEditionFor(typeof(VobHandle<>))]
     public class VobReadHandle<T> : ReadHandleBase<IVosReference, T>
         , IVobReadHandle<T> // Has T because it is contravariantt
-        , IProvidesHandleFromSubPath
+        , ISubpathHandleProvider
       //, IReadWriteHandleProvider -- FUTURE: get relative paths? Maybe a stretch.
     {
         public virtual bool IsReadOnly => true;
@@ -41,7 +41,7 @@ namespace LionFire.Vos
 
         #endregion
 
-        private static VBase VBase => DependencyContext.Current.GetService<VosOBus>().DefaultVBase;
+        //private static VBase VBase => DependencyContext.Current.GetService<VosOBus>().DefaultVBase;
         public Type Type => Reference.Type ?? typeof(T);
         public string Path => Reference.Path;
 
@@ -71,39 +71,43 @@ namespace LionFire.Vos
             this.Vob = vob;
         }
 
-        /// <summary>
-        /// Finds Vob using default available VBase.  Uses VosReference from that Vob, typed to T.
-        /// </summary>
-        /// <param name="vosReference"></param>
-        public VobReadHandle(VosReference vosReference)
-        {
-            SetFromVosReference(vosReference);
-        }
+        ///// <summary>
+        ///// Finds Vob using default available VBase.  Uses VosReference from that Vob, typed to T.
+        ///// </summary>
+        ///// <param name="vosReference"></param>
+        //public VobReadHandle(VosReference vosReference)
+        //{
+        //    SetFromVosReference(vosReference);
+        //}
 
-        /// <summary>
-        /// Finds Vob using default available VBase.  Uses VosReference from that Vob, typed to T.
-        /// </summary>
-        /// <param name="reference">Currently must be of type VosReference.  (FUTURE: Allow reference types compatible with / convertible to VosReference)</param>
-        public VobReadHandle(IReference reference) : this((VosReference)reference)
-        {
-            SetFromVosReference(reference.ToVosReference());
-        }
+        ///// <summary>
+        ///// Finds Vob using default available VBase.  Uses VosReference from that Vob, typed to T.
+        ///// </summary>
+        ///// <param name="reference">Currently must be of type VosReference.  (FUTURE: Allow reference types compatible with / convertible to VosReference)</param>
+        //public VobReadHandle(IReference reference) : this((VosReference)reference)
+        //{
+        //    SetFromVosReference(reference.ToVosReference());
+        //}
 
-        private void SetFromVosReference(VosReference vosReference)
-        {
-            vosReference.ValidateReference<T>();
-            // TODO: Verify host and any sort of Vos root tree id??
-            Vob = VBase[vosReference.Path];
-        }
+        //private void SetFromVosReference(VosReference vosReference)
+        //{
+        //    vosReference.ValidateReference<T>();
+        //    // TODO: Verify host and any sort of Vos root tree id??
+        //    Vob = VBase[vosReference.Path];
+        //}
 
         #endregion
 
         #region IProvidesHandleFromSubPath
 
-        public IReadWriteHandleBase<THandle> GetHandleFromSubPath<THandle>(params string[] subpathChunks) => Vob[subpathChunks].GetHandle<THandle>();
-        public IReadWriteHandleBase<THandle> GetHandleFromSubPath<THandle>(IEnumerable<string> subpathChunks) => Vob[subpathChunks].GetHandle<THandle>();
         public IReadHandleBase<THandle> GetReadHandleFromSubPath<THandle>(params string[] subpathChunks) => Vob[subpathChunks].GetReadHandle<THandle>();
         public IReadHandleBase<THandle> GetReadHandleFromSubPath<THandle>(IEnumerable<string> subpathChunks) => Vob[subpathChunks].GetReadHandle<THandle>();
+        
+
+        public IReadWriteHandleBase<THandle> GetReadWriteHandleFromSubPath<THandle>(params string[] subpathChunks) => Vob[subpathChunks].GetHandle<THandle>();
+        public IReadWriteHandleBase<THandle> GetReadWriteHandleFromSubPath<THandle>(IEnumerable<string> subpathChunks) => Vob[subpathChunks].GetHandle<THandle>();
+        
+        //public IWriteHandleBase<THandle> GetWriteHandleFromSubPath<THandle>(IEnumerable<string> subpathChunks) => Vob[subpathChunks].GetWriteHandle<THandle>();
 
         //// Move this to IReferencable extensions?
 

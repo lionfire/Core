@@ -8,18 +8,18 @@ namespace LionFire.IO.Filesystem
     {
         public override string Scheme => "file(byte[])";
 
-        public IReadWriteHandleBase<T> GetReadWriteHandle<T>(IReference reference, T obj = default)
+        public IReadWriteHandle<T> GetReadWriteHandle<T>(IReference reference)
         {
             ValidateReference(reference);
-            return (IReadWriteHandleBase<T>)(object)new HBinaryFile(reference.Path);
+            return (IReadWriteHandle<T>)(object)new HBinaryFile(reference.Path);
         }
 
-        public IReadHandleBase<T> GetReadHandle<T>(IReference reference, T obj = default)
+        public IReadHandle<T> GetReadHandle<T>(IReference reference)
         {
             ValidateReference(reference);
-            return (IReadHandleBase<T>)(object)new RBinaryFile(reference.Path);
+            return (IReadHandle<T>)(object)new RBinaryFile(reference.Path);
         }
+
     }
-
 
 }

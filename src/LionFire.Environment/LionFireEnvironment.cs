@@ -4,12 +4,14 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
+using LionFire.Structures;
 using Microsoft.Extensions.PlatformAbstractions;
 
 namespace LionFire
 {
     public class AppInfo
     {
+        internal static AppInfo Default = new AppInfo();
         public string CompanyName { get; set; } = "LionFireUser";
         public string ProgramName { get; set; } = "ProgramName";
         public string ProgramDisplayName { get; set; } = "Program Name";
@@ -27,14 +29,7 @@ namespace LionFire
 
         public static AppInfo MainAppInfo
         {
-            get
-            {
-                if (mainAppInfo != null)
-                {
-                    return mainAppInfo;
-                }
-                return null;
-            }
+            get => mainAppInfo ?? AppInfo.Default;
             set
             {
                 if (mainAppInfo == value)
@@ -50,7 +45,8 @@ namespace LionFire
                 mainAppInfo = value;
             }
         }
-        private static AppInfo mainAppInfo = new AppInfo();
+        private static AppInfo mainAppInfo;
+        public static bool IsMainAppInfoSet => mainAppInfo != null;
 
         #endregion
 

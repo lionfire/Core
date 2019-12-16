@@ -1,4 +1,6 @@
-﻿using System;
+﻿#if OLD
+
+using System;
 using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
@@ -11,42 +13,42 @@ namespace LionFire.Vos
 {
     public class VBase : OBase<VosReference>, IVBase
     {
-        #region Ontology
+#region Ontology
 
-        #region Root
+#region Root
 
         public Vob Root => root;
         private readonly RootVob root;
 
-        #endregion
+#endregion
 
         public override IOBus OBus => VosOBus.Instance;
 
-        #endregion
+#endregion
 
-        #region Construction
+#region Construction
 
         public VBase()
         {
             root = new RootVob(this);
         }
 
-        #endregion
+#endregion
 
-        #region Scheme
+#region Scheme
 
         public override IEnumerable<string> UriSchemes => VosReference.UriSchemes;
 
-        #endregion
+#endregion
 
-        #region Handles
+#region Handles
 
         //public override IReadWriteHandleBase<T> GetHandle<T>(IReference reference) => new VobHandle<T>(reference);
         //public override IReadHandleBase<T> GetReadHandle<T>(IReference reference) => new VobReadHandle<T>(this[reference.Path]);
 
-        #endregion
+#endregion
 
-        #region Get
+#region Get
 
         /// <summary>
         /// For Vos, the main get logic is in the VobHandles&lt;T&gt;, so this is largely a pass-through to that
@@ -84,42 +86,42 @@ namespace LionFire.Vos
             return result;
         }
 
-        #endregion
+#endregion
 
-        #region Set
+#region Set
 
         protected override Task<IPersistenceResult> SetImpl<T>(VosReference reference, T obj, bool allowOverwrite = true) => throw new NotImplementedException();
 
-        #endregion
+#endregion
 
-        #region Delete
+#region Delete
 
         public override Task<IPersistenceResult> CanDelete<T>(VosReference reference) => throw new NotImplementedException();
         public override Task<IPersistenceResult> TryDelete<T>(VosReference reference) => throw new NotImplementedException();
 
-        #endregion
+#endregion
 
-        #region List
+#region List
 
         public override Task<IEnumerable<string>> List<T>(VosReference parent) => throw new NotImplementedException();
 
-        #endregion
+#endregion
 
 
-        #region (Public) Vos-specific
+#region (Public) Vos-specific
 
-        #region Vos-style Accessors
+#region Vos-style Accessors
 
         public Vob this[string path] => Root[path];
         public Vob this[VosReference reference] => Root[reference.Path]; // TODO: Verify VosReference refers to this VBase
 
-        #endregion
+#endregion
 
-        #endregion
+#endregion
 
-        #region (Internal) Vos implementation
+#region (Internal) Vos implementation
 
-        #region Vos Mounts
+#region Vos Mounts  MOVED to BaseVob
 
         // RECENTCHANGE - was SynchronizedObservableCollection
         internal MultiBindableCollection<Vob> VobsWithMounts
@@ -142,10 +144,11 @@ namespace LionFire.Vos
             }
         }
 
-        #endregion
+#endregion
 
-        #endregion
+#endregion
 
         
     }
 }
+#endif

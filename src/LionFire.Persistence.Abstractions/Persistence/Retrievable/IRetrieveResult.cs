@@ -7,6 +7,7 @@ using System.IO;
 
 namespace LionFire.Persistence
 {
+    
     /// <summary>
     /// Returned for Retrieve or ResolveReference operations (which may do a Retrieve).
     /// </summary>

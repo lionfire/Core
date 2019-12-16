@@ -11,6 +11,7 @@ using LionFire.DependencyInjection;
 using LionFire.Serialization;
 using System.Linq;
 using LionFire.Threading;
+using LionFire.Dependencies;
 
 namespace LionFire.Messaging.Queues.IO
 {

@@ -1,6 +1,7 @@
 ﻿using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+//using MorseCode.ITask;
 using System;
 using System.Collections.Concurrent;
 using System.Threading;
@@ -8,7 +9,14 @@ using System.Threading.Tasks;
 
 namespace LionFire.Data
 {
-    public abstract class ConnectionManagerBase<TConnection>
+    //public interface IConnectionManager
+    //{
+    //    ITask<IConnection> GetConnection(string connectionStringConfigurationKey = null, bool autoConnect = true, CancellationToken cancellationToken = default(CancellationToken))
+    //    {
+    //    }
+    //}
+
+    public abstract class ConnectionManagerBase<TConnection> // : IConnectionManager
     where TConnection : class, IConnection
     {
         #region Dependencies
@@ -77,19 +85,28 @@ namespace LionFire.Data
                 return connection;
             }
 
-            return await ConnectionsByConnectionStringKey.GetOrAdd(connectionString,
-                async n =>
-                {
-                    var result2 = ActivatorUtilities.CreateInstance<TConnection>(serviceProvider);
-                    result2.ConnectionString = connectionString;
-                    //result.Logger = (ILogger<TConnection>)serviceProvider.GetService(typeof(ILogger<TConnection>));
+            return await ConnectionsByConnectionStringKey.GetOrAdd(connectionString, n => CreateConnection(serviceProvider, connectionString, autoConnect, cancellationToken));
+        }
 
-                    if (autoConnect)
-                    {
-                        await result2.StartAsync(cancellationToken);
-                    }
-                    return result2;
-                });
+        /// <summary>
+        /// Default implementation creates an instance of TConnection with constructor injection.
+        /// </summary>
+        /// <param name="serviceProvider"></param>
+        /// <param name="connectionString"></param>
+        /// <param name="autoConnect"></param>
+        /// <param name="cancellationToken"></param>
+        /// <returns></returns>
+        protected async Task<TConnection> CreateConnection(IServiceProvider serviceProvider, string connectionString, bool autoConnect = true, CancellationToken cancellationToken = default)
+        {
+            var result = ActivatorUtilities.CreateInstance<TConnection>(serviceProvider);
+            result.ConnectionString = connectionString;
+            //result.Logger = (ILogger<TConnection>)serviceProvider.GetService(typeof(ILogger<TConnection>));
+
+            if (autoConnect)
+            {
+                await result.StartAsync(cancellationToken);
+            }
+            return result;
         }
 
         #endregion

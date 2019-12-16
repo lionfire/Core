@@ -46,9 +46,9 @@ namespace LionFire.Persistence
         PreviewIndeterminate = 1 << 22,
 
         //PreviewNotFound = 1 << 23, // Not used yet. Should it be?
-
+        MountNotAvailable = 1 << 28,
+        SerializerNotAvailable = 1 << 29,
         ProviderNotAvailable = 1 << 30,
-        SerializerNotAvailable = 1 << 31,
 
         Noop = 1 << 31,
     }

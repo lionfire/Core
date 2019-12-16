@@ -6,11 +6,13 @@ using System.Collections.Generic;
 using LionFire.Persistence;
 using System.Threading.Tasks;
 using System;
+using LionFire.Resolves;
+using LionFire.Results;
 
 namespace LionFire.UI.Workspaces
 {
     // MOVE? Split Caliburn.Micro app stuff into its own DLL?
-    public class Workspace<TTemplate, TChild> : InitializableExecutableBase, ITemplateInstance<TTemplate>, IComposition, IWorkspace, ICommits
+    public class Workspace<TTemplate, TChild> : InitializableExecutableBase, ITemplateInstance<TTemplate>, IComposition, IWorkspace, IPuts
         where TTemplate : class, ITemplate
     {
         IEnumerable<object> IComposition.Children => Children;
@@ -34,7 +36,7 @@ namespace LionFire.UI.Workspaces
 
         protected virtual void OnTemplateChanged(TTemplate oldValue, TTemplate newValue) { }
 
-        public virtual Task Commit()
+        public virtual Task<ISuccessResult> Put()
         {
             throw new NotImplementedException();
         }

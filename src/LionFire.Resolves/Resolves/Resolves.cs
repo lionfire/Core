@@ -13,7 +13,7 @@ namespace LionFire.Resolves
     /// Only requires one method to be implemented: ResolveImpl.
     /// </summary>
     public abstract class Resolves<TKey, TValue> : DisposableKeyed<TKey>
-         where TKey : class
+         //where TKey : class
     {
         #region Construction
 

@@ -12,6 +12,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\..\StateMachines\src\LionFire.StateMachines\LionFire.StateMachines.csproj" />
+    <ProjectReference Include="..\LionFire.Structures\LionFire.Structures.csproj" />
   </ItemGroup>
 
 </Project>

@@ -13,6 +13,19 @@ namespace LionFire.Vos
         #region Vob child fields
 
         // TODO: Change to a new MultiBindable ConcurrentDictionary?
+        public IEnumerable<KeyValuePair<string, Vob>> Children
+        {
+            get
+            {
+                bool gotNonAlive = false;
+                foreach(var kvp in children)
+                {
+                    if (!kvp.Value.IsAlive || kvp.Value.Target == null) { gotNonAlive = true; continue; }
+                    yield return new KeyValuePair<string, Vob>(kvp.Key, kvp.Value.Target);
+                }
+                if (gotNonAlive) { CleanDeadChildReferences(); }
+            }
+        }
         [Ignore]
         protected MultiBindableDictionary<string, WeakReferenceX<Vob>> children = new MultiBindableDictionary<string, WeakReferenceX<Vob>>();
         public readonly object childrenLock = new object();
@@ -25,7 +38,7 @@ namespace LionFire.Vos
 
             foreach (var kvp in ce.ToArray())
             {
-                if (!kvp.Value.IsAlive)
+                if (!kvp.Value.IsAlive || kvp.Value.Target == null)
                 {
                     children.Remove(kvp.Key);
                 }
@@ -48,7 +61,7 @@ namespace LionFire.Vos
             return GetChild(subpathChunks.GetEnumerator());
         }
 
-        protected Vob CreateChild(string childName) => new Vob(vos, this, childName);
+        protected Vob CreateChild(string childName) => new Vob(this, childName);
 
         // SIMILAR logic: GetChild and QueryChild
         private Vob GetChild(IEnumerator<string> subpathChunks)

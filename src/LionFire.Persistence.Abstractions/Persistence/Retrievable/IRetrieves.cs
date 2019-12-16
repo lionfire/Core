@@ -27,7 +27,7 @@ namespace LionFire.Persistence
 
     //public interface IRetrievesCovariant<out T> : IRetrieves, IResolves<T>, IReadWrapper<T>, IWrapper { }
 
-    
+
     public static class IRetrievesExtensions
     {
         /////// <summary>
@@ -44,7 +44,24 @@ namespace LionFire.Persistence
         ///// <remarks>Can't return a generic IRetrieveResult due to limitation of the language.</remarks>
         ///// <returns>true if an object was retrieved.  False if object was not found at location of the Reference.  Throws if could not resolve the Reference to a valid source.</returns>
         [Casts("retrieves.ResolveAsync must return IRetrieveResult<T>", typeof(IRetrieveResult<>))]
-        public static async Task<IRetrieveResult<T>> Retrieve<T>(this IRetrieves<T> retrieves) => (IRetrieveResult<T>) await retrieves.Resolve().ConfigureAwait(false); // CAST
+        [Obsolete("TODO - use ToRetrieveResult instead")]
+        public static async Task<IRetrieveResult<T>> Retrieve<T>(this IRetrieves<T> retrieves) => (IRetrieveResult<T>)await retrieves.Resolve().ConfigureAwait(false); // CAST
+
+        public static IRetrieveResult<T> ToRetrieveResult<T>(this IResolveResult<T> resolveResult)
+        {
+            if (resolveResult is IRetrieveResult<T> rr) return rr;
+
+            PersistenceResultFlags flags = PersistenceResultFlags.None;
+
+            if (resolveResult.IsSuccess.HasValue)
+            {
+                flags |= resolveResult.IsSuccess.Value ? PersistenceResultFlags.Success : PersistenceResultFlags.Fail;
+            }
+            if (resolveResult.HasValue) flags |= PersistenceResultFlags.Found;
+            else if (resolveResult.IsSuccess == true) flags |= PersistenceResultFlags.NotFound;
+
+            return new RetrieveResult<T>(resolveResult.Value, flags);
+        }
 
         public static async Task<bool> Exists<T>(this ILazilyResolves<T> resolves)
         {

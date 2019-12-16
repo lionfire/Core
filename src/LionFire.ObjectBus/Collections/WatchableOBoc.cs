@@ -5,13 +5,14 @@ namespace LionFire.ObjectBus.Handles
 {
     // TODO: Make this extrinsic?
 
-    public abstract class SyncableOBoc : ROBoc<object, OBaseCollectionEntry>
+    public abstract class SyncableOBoc : ROBoc<IReference, object, OBaseCollectionEntry>
     {
         public SyncableOBoc() { }
         public SyncableOBoc(IReference reference) : base(reference) { }
     }
 
-    public abstract class WatchableOBoc<T, TListEntry> : ROBoc<T, TListEntry>, IWatchableRC<T, TListEntry>
+    public abstract class WatchableOBoc<TReference, T, TListEntry> : ROBoc<TReference, T, TListEntry>, IWatchableRC<T, TListEntry>
+        where TReference : IReference
         where TListEntry : OBaseCollectionEntry
     {
 
@@ -19,7 +20,7 @@ namespace LionFire.ObjectBus.Handles
 
         public WatchableOBoc() { }
 
-        public WatchableOBoc(IReference reference) : base(reference)
+        public WatchableOBoc(TReference reference) : base(reference)
         {
         }
 
