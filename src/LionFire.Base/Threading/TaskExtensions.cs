@@ -65,5 +65,31 @@ namespace LionFire.Threading
 
             return;
         }
+
+
+        #region Timeout
+
+        // TODO: Add more for single and multiple tasks
+
+        // Based on https://stackoverflow.com/a/22865384/208304
+        // See that question for examples with multiple tasks
+        //public async static Task<TResult> WithTimeout<TResult>(this Task<TResult> task, TimeSpan timeout)
+        //{
+        //    if (await (Task.WhenAny(task, Task.Delay(timeout))) != task) throw new TimeoutException();
+        //    return await task;
+        //}
+        //public async static Task WithTimeout(this Task task, TimeSpan timeout)
+        //{
+        //    if (await (Task.WhenAny(task, Task.Delay(timeout))) != task) throw new TimeoutException();
+        //}
+        public async static Task WithTimeout(this Task task, int? milliseconds, Action onException = null)
+        {
+            if (!milliseconds.HasValue || milliseconds <= 0) return;
+
+            if (await (Task.WhenAny(task, Task.Delay(TimeSpan.FromMilliseconds(milliseconds.Value)))) != task) (onException ?? DefaultTimeoutException)();
+        }
+        private static void DefaultTimeoutException() => throw new TimeoutException();
+        
+        #endregion
     }
 }
