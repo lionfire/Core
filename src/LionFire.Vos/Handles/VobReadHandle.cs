@@ -21,16 +21,16 @@ namespace LionFire.Vos
     //    public static H<T1> ToHandle<T1>(this IReferencable r, IEnumerable<string> subpathChunks) where T1 : class => r.Reference.GetChildSubpath(subpathChunks).ToHandle<T1>();
     //}
 
-   // OPTIMIZE - (Here and VobHandle)  Create Reference on demand?  Store the reference path in Vob, instead of VosReference?  Generate VosReference on demand?  or is this an app specific thing?
+    // OPTIMIZE - (Here and VobHandle)  Create Reference on demand?  Store the reference path in Vob, instead of VosReference?  Generate VosReference on demand?  or is this an app specific thing?
 
     [ReadOnlyEditionFor(typeof(VobHandle<>))]
     public class VobReadHandle<T> : ReadHandleBase<IVosReference, T>
         , IVobReadHandle<T> // Has T because it is contravariantt
         , ISubpathHandleProvider
-      //, IReadWriteHandleProvider -- FUTURE: get relative paths? Maybe a stretch.
+    //, IReadWriteHandleProvider -- FUTURE: get relative paths? Maybe a stretch.
     {
         public virtual bool IsReadOnly => true;
-        
+
         #region Ontology
 
         public new IVosReference Reference
@@ -102,11 +102,11 @@ namespace LionFire.Vos
 
         public IReadHandleBase<THandle> GetReadHandleFromSubPath<THandle>(params string[] subpathChunks) => Vob[subpathChunks].GetReadHandle<THandle>();
         public IReadHandleBase<THandle> GetReadHandleFromSubPath<THandle>(IEnumerable<string> subpathChunks) => Vob[subpathChunks].GetReadHandle<THandle>();
-        
+
 
         public IReadWriteHandleBase<THandle> GetReadWriteHandleFromSubPath<THandle>(params string[] subpathChunks) => Vob[subpathChunks].GetHandle<THandle>();
         public IReadWriteHandleBase<THandle> GetReadWriteHandleFromSubPath<THandle>(IEnumerable<string> subpathChunks) => Vob[subpathChunks].GetHandle<THandle>();
-        
+
         //public IWriteHandleBase<THandle> GetWriteHandleFromSubPath<THandle>(IEnumerable<string> subpathChunks) => Vob[subpathChunks].GetWriteHandle<THandle>();
 
         //// Move this to IReferencable extensions?
@@ -131,26 +131,30 @@ namespace LionFire.Vos
 
         #region Mount
 
-        protected IReference MountReference {
-            get {
-                var path = MountPath;
-                if (path == null) return null;
-                return new VosReference(path);
-            }
-        }
+        // UNUSED
+        //protected IReference MountReference {
+        //    get {
+        //        var path = MountPath;
+        //        if (path == null) return null;
+        //        return new VosReference(path);
+        //    }
+        //}
 
-        public string MountPath {
-            get {
-                if (Mount == null || Vob == null) return null;
-                var result = Vob.GetMountPath(Mount);
-                return result;
-            }
-        }
+        // UNUSED
+        //public string MountPath {
+        //    get {
+        //        if (Mount == null || Vob == null) return null;
+        //        var result = Vob.GetMountPath(Mount);
+        //        return result;
+        //    }
+        //}
 
         [Assignment(AssignmentMode.Assign)]
-        public Mount Mount {
+        public Mount Mount
+        {
             get => mount;
-            set {
+            set
+            {
                 if (mount == value) return;
                 if (value != null && mount != default(Mount)) throw new NotSupportedException("Mount can only be set once, unless it is set back to null.");
                 mount = value;
@@ -162,18 +166,23 @@ namespace LionFire.Vos
 
         #region Package
 
-        public string EffectivePackage {
-            get {
+        public string EffectivePackage
+        {
+            get
+            {
                 if (Mount != null && Mount.Package != null) return Mount.Package;
                 return Package;
             }
         }
-        public string Package {
-            get {
+        public string Package
+        {
+            get
+            {
                 //if (Mount != null && Mount.Package != null) return Mount.Package;
                 return package;
             }
-            set {
+            set
+            {
                 if (package == value) return;
                 if (package != default(string)) throw new NotSupportedException("Package can only be set once.");
                 package = value;
@@ -185,18 +194,23 @@ namespace LionFire.Vos
 
         #region Store
 
-        public string EffectiveStore {
-            get {
+        public string EffectiveStore
+        {
+            get
+            {
                 if (Mount != null && Mount.Store != null) return Mount.Store;
                 return Store;
             }
         }
-        public string Store {
-            get {
+        public string Store
+        {
+            get
+            {
                 if (Mount != null && Mount.Store != null) return Mount.Store;
                 return store;
             }
-            set {
+            set
+            {
                 if (store == value) return;
                 if (store != default(string)) throw new NotSupportedException("Store can only be set once.");
                 store = value;

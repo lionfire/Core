@@ -5,7 +5,7 @@ using LionFire.Dependencies;
 using Microsoft.Extensions.Hosting;
 using LionFire.Serialization.Json.System;
 
-namespace LionFire.Hosting.ExtensionMethods
+namespace LionFire.Services
 {
     public static class SystemJsonHostBuilderExtensions
     {

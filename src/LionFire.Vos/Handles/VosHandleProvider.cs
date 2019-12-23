@@ -7,33 +7,6 @@ using System.Text;
 
 namespace LionFire.Vos.Handles
 {
-    public class HandleProviderBase<TReference>
-        where TReference : IReference
-    {
-        protected IPersister<TReference> persister;
-
-    }
-
-    public class PersisterHandleProviderBase<TReference>
-        where TReference : IReference
-    {
-        protected IPersister<TReference> persister;
-
-        public PersisterHandleProviderBase(IPersisterProvider<TReference> persisterProvider
-            //, IPersisterProvider<ProviderVosReference> providerFilePersisterProvider
-            )
-        {
-            persister = persisterProvider.GetPersister();
-            //this.providerFilePersisterProvider = providerFilePersisterProvider;
-        }
-
-        public IReadHandle<T> GetReadHandle<T>(TReference reference)
-            => new PersisterReadWriteHandle<TReference, T, IPersister<TReference>>(persister, reference);
-
-        public IReadWriteHandle<T> GetReadWriteHandle<T>(TReference reference)
-            => new PersisterReadWriteHandle<TReference, T, IPersister<TReference>>(persister, reference);
-
-    }
 
     public class VosHandleProvider : PersisterHandleProviderBase<VosReference>
         , IReadHandleProvider<VosReference>

@@ -25,7 +25,7 @@ namespace LionFire.Vos
 
         #region Identity
 
-        public readonly Vob Vob;
+        public  Vob Vob { get; }
 
         #endregion
 
@@ -33,16 +33,18 @@ namespace LionFire.Vos
 
         // REVIEW: streamline constructors around Vob, IReference, MountOptions parameters?  Make a TMount constructor?
 
-        public Mount(RootVob root, TMount template)
-            : this(root[template.Reference.Path], template.Reference, template.Options)
+        public Mount(Vob mountPointVob, TMount template)
+            : this(mountPointVob, template.Reference, template.Options)
         {
             Target = template.Reference;
         }
 
-        public Mount(Vob vob, IReference targetReference, MountOptions mountOptions = null) : this(vob, targetReference.ToReadWriteHandle<MountHandleObject>(), mountOptions)
-        {
-            Target = targetReference;
-        }
+        //public Mount(Vob vob, IReference targetReference, MountOptions mountOptions = null) : this(vob, null, mountOptions)
+        //    //targetReference.ToReadWriteHandle<MountHandleObject>()
+        //{
+        //    Target = targetReference;
+        //    this.MountOptions = mountOptions ?? MountOptions.Default;
+        //}
 
         //public Mount(Vob vob, IReference reference, MountOptions mountOptions = null)
         //    : this(vob, reference.ToReadWriteHandle<MountHandleObject>(), mountOptions)
@@ -51,36 +53,42 @@ namespace LionFire.Vos
         //}
 
         public Mount(Vob vob, Vob target, MountOptions mountOptions = null)
-            : this(vob, target.GetHandle<MountHandleObject>(), mountOptions)
+            : this(vob, target.Reference, mountOptions)
         {
         }
 
-        private Mount(Vob vob, IReadWriteHandle<MountHandleObject> rootHandle,  MountOptions mountOptions = null)
+        public Mount(Vob vob, IReference targetReference,  MountOptions mountOptions = null)
         {
-            bool enable = false;
+            Target = targetReference;
+            this.MountOptions = mountOptions ?? MountOptions.Default;
+            //bool enable = false;
             if (vob == null)
             {
                 throw new ArgumentNullException($"{nameof(vob)}");
             }
 
             Vob = vob;
-            VobDepth = vob.VobNode.VobDepth;
-            Target = rootHandle.Reference;
-            this.rootHandle = rootHandle;
+            //this.rootHandle = rootHandle;
+
+            //Vob.Mount(this);
+
+            //var vobNode = vob.GetVobNode
+            //VobDepth = vob.VobNode.VobDepth;
+            //Target = rootHandle.Reference;
             Package = mountOptions?.Package;
             Store = mountOptions?.Store;
             //this.MountName =GetMountName(packageName, layerName);
-            MountOptions = mountOptions;//.HasValue ? mountOptions.Value : MountOptions.Default;
 
-            IsEnabled = enable; // Do this last, as it triggers a mount
+            //IsEnabled = enable; // Do this last, as it triggers a mount
         }
 
         #endregion
 
         #region Derived
 
-        internal readonly int VobDepth;
-        
+        //internal readonly int VobDepth;
+        internal int VobDepth => LionPath.GetAbsolutePathDepth(Vob.Path);
+
         #endregion
 
         public readonly string Package;
@@ -102,21 +110,24 @@ namespace LionFire.Vos
             return string.IsNullOrWhiteSpace(mountName) ? null : mountName;
         }
 
-        /// <summary>
-        /// Target Handle MountHandleObject
-        /// </summary>
-        public IReadHandle<MountHandleObject> RootHandle
-        {
-            get
-            {
-                if (rootHandle == null)
-                {
-                    rootHandle = Target.ToReadHandle<MountHandleObject>();
-                }
-                return rootHandle;
-            }
-        }
-        private IReadHandle<MountHandleObject> rootHandle;
+        ///// <summary>
+        ///// Target Handle MountHandleObject
+        ///// </summary>
+        //public IReadHandle<MountHandleObject> RootHandle
+        //{
+        //    get
+        //    {
+        //        if (rootHandle == null)
+        //        {
+        //            rootHandle = Target.ToReadHandle<MountHandleObject>();
+        //        }
+        //        return rootHandle;
+        //    }
+        //}
+
+        public bool IsEnabled { get { throw new NotImplementedException(); } set { throw new NotImplementedException(); } }
+
+        //private IReadHandle<MountHandleObject> rootHandle;
 
         public readonly IReference Target;
 
@@ -124,29 +135,29 @@ namespace LionFire.Vos
 
         #region State
 
-        public bool IsEnabled
-        {
-            get => isEnabled;
-            set
-            {
-                if (isEnabled == value)
-                {
-                    return;
-                }
+        //public bool IsEnabled
+        //{
+        //    get => isEnabled;
+        //    set
+        //    {
+        //        if (isEnabled == value)
+        //        {
+        //            return;
+        //        }
 
-                isEnabled = value;
+        //        isEnabled = value;
 
-                if (value)
-                {
-                    Vob.Mount(this);
-                }
-                else
-                {
-                    Vob.Unmount(this);
-                }
-            }
-        }
-        private bool isEnabled;
+        //        if (value)
+        //        {
+        //            Vob.Mount(this);
+        //        }
+        //        else
+        //        {
+        //            Vob.Unmount(this);
+        //        }
+        //    }
+        //}
+        //private bool isEnabled;
 
         #endregion
 

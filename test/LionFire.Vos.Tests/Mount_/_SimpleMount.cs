@@ -4,7 +4,7 @@ using System.Threading.Tasks;
 using LionFire.Applications.Hosting;
 using Xunit;
 using LionFire.Hosting;
-using LionFire.Hosting.ExtensionMethods;
+using LionFire.Services;
 using LionFire.Dependencies;
 using LionFire.Persistence.Filesystem;
 using System.IO;
@@ -15,8 +15,6 @@ using LionFire.Referencing;
 
 namespace Mount_
 {
-
-
     public class _SimpleMount
     {
         [Fact]
@@ -39,7 +37,6 @@ namespace Mount_
                     {
                         IsReadOnly = true,
                         IsExclusive = true,
-                        Enable
                     })
                 //.TryAddEnumerableSingleton(new TMount("testDir", new FileReference(FsTestUtils.DataDir))
                 ;

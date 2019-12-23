@@ -12,12 +12,10 @@ namespace LionFire.Vos
     {
         #region (Static)
 
-        //internal static readonly MountOptions Default;
-
-        //static MountOptions()
-        //{
-        //    Default = new MountOptions();
-        //}
+        public static  MountOptions Default { get; } = new MountOptions();
+        public static readonly MountOptions DefaultRead = new MountOptions() { ReadPriority = 1 };
+        public static readonly MountOptions DefaultReadWrite = new MountOptions() { ReadPriority = 1, WritePriority = 1 };
+        public static readonly MountOptions DefaultWrite = new MountOptions() { WritePriority = 1 };
 
         #endregion
 
@@ -48,7 +46,7 @@ namespace LionFire.Vos
 
         public string Package { get; set; }
         public string Store { get; set; }
-        public bool Enable { get; set; }
+        public bool IsDisabled { get; set; }
 
 
         /// <summary>
@@ -67,6 +65,27 @@ namespace LionFire.Vos
 
         public bool TryCreateIfMissing { get; set; }
 
+        /// <summary>
+        /// Returns true if ReadPriority is null.
+        /// Setting to true: will set to null.  Setting to false: will set to 0 if currently null, otherwise current value is kept.
+        /// </summary>
+        public bool IsReadOnly
+        {
+            get => !ReadPriority.HasValue;
+            
+            set {
+                if(value)
+                {
+                    if (!ReadPriority.HasValue) ReadPriority = 1;
+                    WritePriority = null;
+                }
+                else
+                {
+                    if (!WritePriority.HasValue) WritePriority = 1;
+                    // else - keep existing value
+                }
+            }
+        }
         public int? ReadPriority { get; set; }
         public int? WritePriority { get; set; }
 

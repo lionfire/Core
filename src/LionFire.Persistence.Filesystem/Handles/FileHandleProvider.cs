@@ -5,7 +5,7 @@ using LionFire.Referencing;
 namespace LionFire.Persistence.Filesystem
 {
 
-    public class FileHandleProvider : 
+    public class FileHandleProvider :
         IReadHandleProvider<FileReference>
         , IReadWriteHandleProvider<FileReference>
         , IReadWriteHandleProvider // REVIEW
@@ -22,9 +22,9 @@ namespace LionFire.Persistence.Filesystem
             this.providerFilePersisterProvider = providerFilePersisterProvider;
         }
 
-        public IReadHandle<T> GetReadHandle<T>(FileReference reference) 
+        public IReadHandle<T> GetReadHandle<T>(FileReference reference)
             => new PersisterReadWriteHandle<FileReference, T, IPersister<FileReference>>(persister, reference);
-        public IReadWriteHandle<T> GetReadWriteHandle<T>(FileReference reference) 
+        public IReadWriteHandle<T> GetReadWriteHandle<T>(FileReference reference)
             => new PersisterReadWriteHandle<FileReference, T, IPersister<FileReference>>(persister, reference);
 
         public IReadHandle<T> GetReadHandle<T>(ProviderFileReference reference)

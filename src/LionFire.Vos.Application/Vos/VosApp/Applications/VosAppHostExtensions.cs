@@ -13,7 +13,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Hosting.Internal;
 
-namespace LionFire.Hosting.ExtensionMethods
+namespace LionFire.Services
 {
     public class InitializingLifetimeWrapper<T> : IHostLifetime
         where T : IHostLifetime

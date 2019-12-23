@@ -1,5 +1,5 @@
 ﻿using LionFire.Dependencies;
-using LionFire.Hosting.ExtensionMethods;
+using LionFire.Services;
 using LionFire.Persistence;
 using LionFire.Persistence.Filesystem;
 using LionFire.Persistence.Filesystem.Tests;

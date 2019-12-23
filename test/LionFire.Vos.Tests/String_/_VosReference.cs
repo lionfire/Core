@@ -5,7 +5,7 @@ using LionFire.ObjectBus;
 using Xunit;
 using LionFire.Hosting;
 using LionFire.Vos;
-using LionFire.Hosting.ExtensionMethods;
+using LionFire.Services;
 
 namespace LionFire.Vos.Tests
 {

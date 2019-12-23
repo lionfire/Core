@@ -1,6 +1,7 @@
 ﻿using LionFire.Collections;
 using LionFire.Referencing;
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -22,9 +23,9 @@ namespace LionFire.Vos
 
         #region Relationships
 
-        #region ParentBaseVob
+        #region ParentVobNode
 
-        public VobNode ParentBaseVob
+        public VobNode ParentVobNode
         {
             get
             {
@@ -34,6 +35,7 @@ namespace LionFire.Vos
                 return ancestor?.VobNode;
             }
         }
+        protected event Action<VobNode, VobNode, VobNode> ParentVobNodeChangedForFromTo;
 
         #endregion
 
@@ -61,6 +63,31 @@ namespace LionFire.Vos
 
         #endregion
 
+        #region OLD - from Vob
+
+        //#region Mounts Collection
+
+        //public MultiBindableDictionary<string, Mount> Mounts
+        //{
+        //    get
+        //    {
+
+        //        if (mounts == null)
+        //        {
+        //            mounts = new MultiBindableDictionary<string, Mount>();
+        //            //mounts.CollectionChanged += new NotifyCollectionChangedHandler<Mount>(OnMountsCollectionChanged);
+        //            // MEMOPTIMIZE: Attach events.  Dispose dictionary when all are unmounted
+        //        }
+        //        return mounts;
+        //    }
+        //}
+        //private MultiBindableDictionary<string, Mount> mounts;
+
+        //private readonly object mountsLock = new object();
+
+        //#endregion
+
+        #endregion
 
         #region OLD / REVIEW - VobsWithMounts
 
@@ -132,12 +159,45 @@ namespace LionFire.Vos
         /// Does not force:
         ///  - Overriding sealed on parent
         /// </param>
-        public void Mount(Mount mount, bool force = false)
+        public Mount Mount(Mount mount, bool force = false)
         {
             bool changedState = false;
+            if(!mount.MountOptions.ReadPriority.HasValue && !mount.MountOptions.WritePriority.HasValue)
+            {
+                throw new ArgumentException("Either ReadPriority or WritePriority must have a value");
+            }
             if (mount.MountOptions.ReadPriority.HasValue && MountRead(mount, force)) changedState = true;
             if (mount.MountOptions.WritePriority.HasValue && MountWrite(mount, force)) changedState = true;
             if (changedState) OnMountStateChanged();
+
+            return mount;
+
+            // OLD TOTRIAGE
+            //{
+            //    var ev = Mounting;
+            //    if (ev != null)
+            //    {
+            //        var args = new CancelableEventArgs<Mount>(mount);
+            //        ev(this, args);
+            //        if (args.IsCanceled)
+            //        {
+            //            return;
+            //        }
+            //    }
+            //}
+
+            //lock (mountsLock)
+            //{
+            //    // TODO EVENTS: mounting/mounted
+            //    try
+            //    {
+            //        Mounts.Add(mount);
+            //    }
+            //    catch (Exception ex)
+            //    {
+            //        l.Info("Failed to mount with key " + Mounts.GetKey(mount) + " for " + mount + " " + ex);
+            //    }
+            //}
         }
         protected virtual void OnMountStateChanged()
         {
@@ -177,22 +237,166 @@ namespace LionFire.Vos
 
             if (localReadMount == null)
             {
-                if (localReadMounts == null || !localReadMounts.Any())
+                if (localReadMounts == null)
                 {
-                    localReadMounts = null;
                     localReadMount = mount;
                 }
+                else
+                {
+                    localReadMounts.Add(mount);
+                }
+            }
+            else
+            {
+                var existingMount = localReadMount;
+                localReadMounts = new List<Mount>
+                {
+                    existingMount,
+                    mount
+                };
+                localReadMount = null;
             }
 
-            throw new NotImplementedException();
+            return true;
         }
+
+
+        private struct MountEnumerable : IEnumerable<Mount>
+        {
+            private PersistenceDirection direction;
+            private VobNode vobNode;
+            public MountEnumerable(VobNode vobNode, PersistenceDirection read)
+            {
+                this.vobNode = vobNode;
+                this.direction = read;
+            }
+
+            public IEnumerator<Mount> GetEnumerator() => new MountEnumerator(vobNode, direction);
+            IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
+
+            internal class MountEnumerator : IEnumerator<Mount>
+            {
+                int localIndex = 0;
+                int parentIndex = 0;
+
+                VobNode local;
+                VobNode parent;
+                PersistenceDirection direction;
+
+                public MountEnumerator(VobNode local, PersistenceDirection direction)
+                {
+                    this.local = local;
+                    parent = local.ParentVobNode;
+                    this.direction = direction;
+                }
+
+                public Mount Current { get; private set; }
+
+                object IEnumerator.Current => Current;
+
+                public void Dispose()
+                {
+                    local = null;
+                    parent = null;
+                }
+
+                private void OnInvalid()
+                {
+
+                }
+                public bool MoveNext()
+                {
+                    if (!ReferenceEquals(local.ParentVobNode, parent))
+                    {
+                        Current = null;
+                        OnInvalid();
+                        return true;
+                    }
+                    return direction switch
+                    {
+                        PersistenceDirection.Read => _MoveNext(firstIsPriority_Read),
+                        PersistenceDirection.Write => _MoveNext(firstIsPriority_Write),
+                        _ => throw new ArgumentException(nameof(direction)),
+                    };
+                }
+
+
+                private bool firstIsPriority_Read(Mount local, Mount parent) => local.MountOptions.ReadPriority > parent.MountOptions.ReadPriority;
+                private bool firstIsPriority_Write(Mount local, Mount parent) => local.MountOptions.WritePriority > parent.MountOptions.WritePriority;
+                private bool _MoveNext(Func<Mount, Mount, bool> firstIsPriority)
+                {
+                    var nextLocal = NextLocal;
+                    var nextParent = NextParent;
+
+                    if (nextLocal == null && nextParent == null) return false;
+
+                    if (nextLocal == null)
+                    {
+                        Current = nextParent;
+                        parentIndex++;
+                    }
+                    else if (nextParent == null)
+                    {
+                        Current = nextLocal;
+                        localIndex++;
+                    }
+                    else
+                    {
+                        if (firstIsPriority(nextLocal, nextParent))
+                        {
+                            Current = nextLocal;
+                            localIndex++;
+                        }
+                        else
+                        {
+                            Current = nextParent;
+                            parentIndex++;
+                        }
+                    }
+
+                    return true;
+                }
+
+                Mount GetIndex(int index, Mount singleMount, List<Mount> mounts)
+                {
+                    if (index == 0)
+                    {
+                        if (singleMount != null) { return singleMount; }
+                        else return mounts?.FirstOrDefault();
+                    }
+                    else return mounts[index];
+                }
+
+                Mount NextLocal
+                 => direction == PersistenceDirection.Read
+                            ? GetIndex(localIndex, local.localReadMount, local.localReadMounts)
+                            : GetIndex(localIndex, local.localWriteMount, local.localWriteMounts);
+
+                Mount NextParent
+                  => direction == PersistenceDirection.Read
+                    ? GetIndex(parentIndex, parent.localReadMount, parent.localReadMounts)
+                    : GetIndex(parentIndex, parent.localWriteMount, parent.localWriteMounts);
+
+                public void Reset()
+                {
+                    localIndex = 0;
+                    parentIndex = 0;
+                }
+            }
+        }
+
+
+        public IEnumerable<Mount> RankedEffectiveReadMounts => new MountEnumerable(this, PersistenceDirection.Read);
+        public IEnumerable<Mount> RankedEffectiveWriteMounts => new MountEnumerable(this, PersistenceDirection.Write);
 
         protected IEnumerable<Mount> AllEffectiveReadMounts
         {
             get
             {
+
                 if (localReadMount != null) yield return localReadMount;
-                if (localReadMounts != null) foreach(var m in localReadMounts) yield return m;
+                if (localReadMounts != null) foreach (var m in localReadMounts) yield return m;
+
             }
         }
         protected IEnumerable<Mount> AllEffectiveWriteMounts
@@ -250,7 +454,7 @@ namespace LionFire.Vos
                 return readMountsCache.Mounts;
             }
         }
-        IMountResolutionCache ReadMountsCache => (readMountsCache != null && (ParentBaseVob == null || readMountsCache.Version == ParentBaseVob.MountStateVersion)) ? readMountsCache : null;
+        IMountResolutionCache ReadMountsCache => (readMountsCache != null && (ParentVobNode == null || readMountsCache.Version == ParentVobNode.MountStateVersion)) ? readMountsCache : null;
         IMountResolutionCache readMountsCache;
 
         #endregion
@@ -272,10 +476,12 @@ namespace LionFire.Vos
                 //return writeMountsCache;
             }
         }
+
         //IMountResolutionCache writeMountsCache;
 
         #endregion
 
+        public override string ToString() => $"{{VobNode {Vob.Path}}}";
     }
 
 }

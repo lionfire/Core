@@ -4,7 +4,7 @@ using System.Threading.Tasks;
 using LionFire.Applications.Hosting;
 using Xunit;
 using LionFire.Hosting;
-using LionFire.Hosting.ExtensionMethods;
+using LionFire.Services;
 using LionFire.Dependencies;
 using LionFire.Persistence.Filesystem;
 using System.IO;

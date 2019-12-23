@@ -3,6 +3,7 @@ using LionFire.Threading;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using MyCouch;
+using System;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -15,95 +16,60 @@ namespace LionFire.CouchDB
     ///   E.g. "server1:6379,server2:6379"
     ///   Order not important; master is automatically identified
     /// </summary>
-    public class CouchDBConnection : ConnectionBase
+    public sealed class CouchDBConnection : ConnectionBase<CouchDBConnectionOptions>
     {
-        //public IDatabase Db => redis.GetDatabase();
-        //public ConnectionMultiplexer CouchDB => redis;
-        //private ConnectionMultiplexer redis;
+        /// <summary>
+        /// Gets or sets the number of milliseconds after which an active System.Net.ServicePoint connection is closed.
+        /// </summary>
+        public static int ConnectionLeaseTimeout { get; set; } = 60 * 1000; // 1 minute
 
-        public CouchDBConnection(ILogger<CouchDBConnection> logger) : base(logger)
+        public MyCouchClient MyCouchClient { get; private set; }
+        MyCouchClient NewCouchClient => new MyCouchClient($"{Options.DatabaseUrl}", Options.Database);
+
+        public CouchDBConnection(CouchDBConnectionOptions options, ILogger<CouchDBConnection> logger) : base(options, logger)
         {
+            ConnectionState = ConnectionState.NotConnected;
         }
 
-        //public CouchDBConnection(string connectionString, ILogger<CouchDBConnection> logger) : base(logger)
+        //public bool IsConnectionDesired
         //{
-        //    ConnectionString = connectionString;
+        //    get => isConnectionDesired;
+        //    set
+        //    {
+        //        if (value)
+        //        {
+        //            Connect().FireAndForget();
+        //        }
+        //        else
+        //        {
+        //            Disconnect().FireAndForget();
+        //        }
+        //    }
         //}
+        //private bool isConnectionDesired;
+        ////private Task<ConnectionMultiplexer> connectingTask;
 
-        public bool IsConnectionDesired
+        public override Task Connect(CancellationToken cancellationToken = default)
         {
-            get => isConnectionDesired;
-            set
+            var sp = System.Net.ServicePointManager.FindServicePoint(new Uri(Options.WebUrl));
+            sp.ConnectionLeaseTimeout = ConnectionLeaseTimeout;
+
+            if (MyCouchClient != null)
             {
-                if (value)
-                {
-                    Connect().FireAndForget();
-                }
-                else
-                {
-                    Disconnect().FireAndForget();
-                }
+                this.MyCouchClient = NewCouchClient;
             }
-        }
-        private bool isConnectionDesired;
-        //private Task<ConnectionMultiplexer> connectingTask;
+            ConnectionState = ConnectionState.Ready;
 
-        public override async Task Connect(CancellationToken cancellationToken = default(CancellationToken))
-        {
-#if TODO
-        start:
-#region Detect already done or in progress REVIEW
-
-            if (redis != null)
-            {
-                return;
-            }
-
-            if (connectingTask != null)
-            {
-                var copy = connectingTask;
-                if (copy != null)
-                {
-                    await copy;
-                    return;
-                }
-                else
-                {
-                    goto start;
-                }
-            }
-
-#endregion
-
-            isConnectionDesired = true;
-            logger.LogDebug($"[CONNECTING] Connecting to redis at {ConnectionString}...");
-            connectingTask = ConnectionMultiplexer.ConnectAsync(ConnectionString);
-            redis = connectingTask.Result;
-            connectingTask = null;
-            logger.LogInformation($"[connected] ...connected to redis at {ConnectionString}");
-#endif
+            return Task.CompletedTask;
         }
 
-        public override async Task Disconnect(CancellationToken cancellationToken = default(CancellationToken))
+        public override Task Disconnect(CancellationToken cancellationToken = default)
         {
-#if TODO
-            isConnectionDesired = false;
-            if (redis != null)
-            {
-                var redisCopy = redis;
-                redis = null;
-                try
-                {
-                    logger.LogDebug($"[DISCONNECTING] Disconnecting from redis at {ConnectionString}...");
-                    await redisCopy.CloseAsync(true);
-                    logger.LogInformation($"[disconnected] ...disconnected from redis at {ConnectionString}");
-                }
-                finally
-                {
-                    redisCopy.Dispose();
-                }
-            }
-#endif
+            ConnectionState = ConnectionState.NotConnected;
+
+            MyCouchClient?.Dispose();
+            MyCouchClient = null;
+            return Task.CompletedTask;
         }
     }
 }

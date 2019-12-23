@@ -3,9 +3,9 @@ using LionFire.Persistence.Filesystem;
 using LionFire.Persistence.Handles;
 using LionFire.Persistence.Persisters;
 
-namespace LionFire.Hosting.ExtensionMethods
+namespace LionFire.Services
 {
-    public static class FilesystemHostingExtensions
+    public static class FilesystemServiceCollectionExtensions
     {
       
         public static IServiceCollection AddFilesystem(this IServiceCollection services)

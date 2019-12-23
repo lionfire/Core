@@ -46,7 +46,7 @@ namespace LionFire.Assets
     [LionSerializable(SerializeMethod.ByValue)]
     //[JsonConvert(typeof(HAssetSerializationConverter))] TOPORT
     public class HAsset<AssetType>
-        : ReadHandle<AssetType>,
+        : ReadHandle<IReference, AssetType>,
         //VobHandle<AssetType>,
         //			HAssetBaseTest<AssetType>,
         //#if !AOT

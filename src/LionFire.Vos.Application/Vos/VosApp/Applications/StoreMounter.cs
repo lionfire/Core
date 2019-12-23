@@ -3,7 +3,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using LionFire.ObjectBus.Filesystem;
+using LionFire.Persistence.Filesystem;
 using LionFire.Referencing;
 using Microsoft.Extensions.Logging;
 

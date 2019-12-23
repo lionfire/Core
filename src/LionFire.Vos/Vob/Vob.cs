@@ -138,6 +138,7 @@ namespace LionFire.Vos
         #region Path
 
         public string Path { get; }
+        internal int Depth => LionPath.GetAbsolutePathDepth(Path);
 
         public IEnumerable<string> PathElements
         {
@@ -273,6 +274,21 @@ namespace LionFire.Vos
                 {
                     if (vob.VobNode != null) return vob.VobNode;
                     vob = vob.Parent;
+                }
+                throw new VosException("Missing NextVobNode"); // Should not happen - RootVob should always have a VobNode.
+            }
+        }
+        public int NextVobNodeDepth
+        {
+            get
+            {
+                int i = 0;
+                var vob = this;
+                while (vob != null)
+                {
+                    if (vob.VobNode != null) return i;
+                    vob = vob.Parent;
+                    i--;
                 }
                 throw new VosException("Missing NextVobNode"); // Should not happen - RootVob should always have a VobNode.
             }

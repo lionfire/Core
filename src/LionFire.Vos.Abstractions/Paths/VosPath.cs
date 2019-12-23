@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 
 namespace LionFire.Vos
 {
@@ -40,6 +41,8 @@ namespace LionFire.Vos
         public static string MachineSubpathWithSeparators { get { return "/Machine/" + LionFireEnvironment.MachineName + "/"; } }
 
         #endregion
+
+
 
         #region Type Encoding 
         // MOvE this to a separate encoding class?

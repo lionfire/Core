@@ -62,7 +62,7 @@ namespace LionFire.Referencing
             {
                 var lastChunk = paths.Last();
                 var lastChar = lastChunk.Last();
-                if(SeparatorChars.Contains(lastChar))
+                if (SeparatorChars.Contains(lastChar))
                 {
                     sb.Append(Separator);
                 }
@@ -157,5 +157,18 @@ namespace LionFire.Referencing
             return arg.StartsWith(PathDelimiter.ToString());
         }
         public static bool IsRelative(string arg) { return !IsAbsolute(arg); }
+
+        public static bool IsSameOrDescendantOf(string parentPath, string childPath)
+        {
+            var parentChunks = LionPath.ToPathArray(parentPath);
+            var childChunks = LionPath.ToPathArray(childPath);
+            int i = 0;
+            foreach (var parentChunk in parentChunks)
+            {
+                if (childChunks[0] != parentChunk) return false;
+            }
+            return true;
+        }
+
     }
 }

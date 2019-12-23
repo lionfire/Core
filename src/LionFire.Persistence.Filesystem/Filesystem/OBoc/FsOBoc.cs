@@ -4,6 +4,7 @@ using LionFire.Persistence;
 using LionFire.Persistence.Filesystem;
 using LionFire.Resolves;
 using MorseCode.ITask;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Text;
@@ -25,7 +26,7 @@ namespace LionFire.ObjectBus.Filesystem
 
     }
 
-    public class FsOBoc<TObject> : WatchableOBoc<TObject, FsListEntry>
+    public class FsOBoc<TObject> : WatchableOBoc<FileReference, TObject, FsListEntry>
     {
 
         #region Construction
@@ -37,7 +38,7 @@ namespace LionFire.ObjectBus.Filesystem
 
         #endregion
 
-        public override bool IsReadSyncEnabled { get => throw new System.NotImplementedException(); set => throw new System.NotImplementedException(); }
+        public override bool IsReadSyncEnabled { get => throw new System.NotImplementedException(); set => throw new NotImplementedException(); }
 
         public override IEnumerator<TObject> GetEnumerator() => throw new System.NotImplementedException();
 

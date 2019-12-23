@@ -13,130 +13,85 @@ namespace LionFire.Vos
 {
     public partial class Vob
     {
-        #region Mounts
-
-        #region Mounts Collection
-
-        public MultiBindableDictionary<string, Mount> Mounts
-        {
-            get
-            {
-
-                if (mounts == null)
-                {
-                    mounts = new MultiBindableDictionary<string, Mount>();
-                    //mounts.CollectionChanged += new NotifyCollectionChangedHandler<Mount>(OnMountsCollectionChanged);
-                    // MEMOPTIMIZE: Attach events.  Dispose dictionary when all are unmounted
-                }
-                return mounts;
-            }
-        }
-        private MultiBindableDictionary<string, Mount> mounts;
-
-        private readonly object mountsLock = new object();
-
-        #endregion
-
         #region (internal) Mount method
 
-        internal void Mount(TMount tMount) => Mount(new Mount(this.Root, tMount));
-
-        /// <summary>
-        /// To mount create a new instance of Mount and set IsEnabled to true.
-        /// </summary>
-        /// <param name="mount"></param>
-        internal void Mount(Mount mount)
+        public Mount Mount(TMount tMount)
         {
-            GetVobNode().Mount(mount);
-            // OLD TOTRIAGE
-            //{
-            //    var ev = Mounting;
-            //    if (ev != null)
-            //    {
-            //        var args = new CancelableEventArgs<Mount>(mount);
-            //        ev(this, args);
-            //        if (args.IsCanceled)
-            //        {
-            //            return;
-            //        }
-            //    }
-            //}
+            if (tMount.VobPath != this.Path)
+            {
+                if (!LionPath.IsSameOrDescendantOf(this.Path, tMount.VobPath))
+                {
+                    throw new VosException("Mount point must be this Vob or a descendant");
+                }
+                return Root[tMount.VobPath].Mount(tMount);
+            }
 
-            //lock (mountsLock)
-            //{
-            //    // TODO EVENTS: mounting/mounted
-            //    try
-            //    {
-            //        Mounts.Add(mount);
-            //    }
-            //    catch (Exception ex)
-            //    {
-            //        l.Info("Failed to mount with key " + Mounts.GetKey(mount) + " for " + mount + " " + ex);
-            //    }
-            //}
+            return GetVobNode().Mount(new Mount(this, tMount));
         }
 
         #endregion
 
         #region Unmount methods
 
-        private void _unmount(string mountKey, Mount mount)
-        {
-            if (mountKey != mount.Target.Key)
-            {
-                throw new ArgumentException("mountName mismatch for mount");
-            }
+        // TODO
 
-            {
-                var ev = Unmounting;
-                if (ev != null)
-                {
-                    var args = new CancelableEventArgs<Mount>(mount);
-                    ev(this, args);
-                    if (args.IsCanceled)
-                    {
-                        return;
-                    }
-                }
-            }
+        //private void _unmount(string mountKey, Mount mount)
+        //{
+        //    if (mountKey != mount.Target.Key)
+        //    {
+        //        throw new ArgumentException("mountName mismatch for mount");
+        //    }
 
-            lock (mountsLock)
-            {
-                // Fires mounts changed event. 
-                // REVIEW: Fire events outside the lock?  Fire unmounting/mounting event outside the lock?
-                Mounts.Remove(mountKey);
-            }
-        }
+        //    {
+        //        var ev = Unmounting;
+        //        if (ev != null)
+        //        {
+        //            var args = new CancelableEventArgs<Mount>(mount);
+        //            ev(this, args);
+        //            if (args.IsCanceled)
+        //            {
+        //                return;
+        //            }
+        //        }
+        //    }
 
-        internal void Unmount(string mountKey)
-        {
-            Mount knownMount = Mounts.TryGetValue(mountKey);
-            if (knownMount == null)
-            {
-                // Already unmounted, if it ever was
-                return;
-            }
-            _unmount(mountKey, knownMount);
-        }
+        //    lock (mountsLock)
+        //    {
+        //        // Fires mounts changed event. 
+        //        // REVIEW: Fire events outside the lock?  Fire unmounting/mounting event outside the lock?
+        //        Mounts.Remove(mountKey);
+        //    }
+        //}
 
-        internal void Unmount(Mount mount)
-        {
-            Mount knownMount = Mounts.TryGetValue(mount.Target.Key);
-            if (!System.Object.ReferenceEquals(knownMount, mount))
-            {
-                return;
-            }
+        //internal void Unmount(string mountKey)
+        //{
+        //    Mount knownMount = Mounts.TryGetValue(mountKey);
+        //    if (knownMount == null)
+        //    {
+        //        // Already unmounted, if it ever was
+        //        return;
+        //    }
+        //    _unmount(mountKey, knownMount);
+        //}
 
-            _unmount(mount.Target.Key, knownMount);
-        }
+        //internal void Unmount(Mount mount)
+        //{
+        //    Mount knownMount = Mounts.TryGetValue(mount.Target.Key);
+        //    if (!System.Object.ReferenceEquals(knownMount, mount))
+        //    {
+        //        return;
+        //    }
 
-        public void UnmountAll()
-        {
-            foreach (var mount in Mounts.Values.ToArray())
-            {
-                mount.IsEnabled = false;
-            }
-        }
+        //    _unmount(mount.Target.Key, knownMount);
+        //}
+
+        //public void UnmountAll()
+        //{
+        //    foreach (var mount in Mounts.Values.ToArray())
+        //    {
+        //        mount.IsEnabled = false;
+        //    }
+        //}
 
         #endregion
 
@@ -189,12 +144,11 @@ namespace LionFire.Vos
 
         #endregion
 
-        #endregion
-
-        #region Mounts
 
         private THandle _GetHandleFromMount<T, TSubpathHandleProvider, THandle>(Mount mount, Func<TSubpathHandleProvider, IEnumerable<string>, THandle> subpathHandleProviderAction, Func<IReference, THandle> referenceToHandleAction)
         {
+            throw new NotImplementedException("_GetHandleFromMount");
+#if TODO
             THandle result;
 
             // TODO TO_ASSERT mount path is a parent of this.Path
@@ -217,6 +171,7 @@ namespace LionFire.Vos
                 //result = reference.ToReadWriteHandle<T>();
             }
             return result;
+#endif
         }
 
         internal IReadWriteHandleBase<T> GetReadWriteHandleFromMount<T>(Mount mount)
@@ -308,53 +263,53 @@ namespace LionFire.Vos
         }
 #endif
 
-        /// <summary>
-        /// The MountHandleObject itself is not significant -- it is just representing a handle to the root referene of the target Mount point
-        /// </summary>
-        /// <param name="mount"></param>
-        /// <returns></returns>
-        private IReadHandle<MountHandleObject> GetMountHandle(Mount mount)
-        {
-            IReadHandle<MountHandleObject> result;
+        // UNUSED
+        ///// <summary>
+        ///// The MountHandleObject itself is not significant -- it is just representing a handle to the root referene of the target Mount point
+        ///// </summary>
+        ///// <param name="mount"></param>
+        ///// <returns></returns>
+        //private IReadHandle<MountHandleObject> GetMountHandle(Mount mount)
+        //{
+        //    IReadHandle<MountHandleObject> result;
 
-            // TODO TO_ASSERT mount path is a parent of this.Path
+        //    // TODO TO_ASSERT mount path is a parent of this.Path
 
-            //int mountDepthDelta = this.VobDepth - mount.VobDepth; // MICROOPTIMIZE - move to mount
+        //    //int mountDepthDelta = this.VobDepth - mount.VobDepth; // MICROOPTIMIZE - move to mount
 
-            //if (mountDepthDelta == 0)
+        //    //if (mountDepthDelta == 0)
 
-            if (System.Object.ReferenceEquals(mount.Vob, this))
-            {
-                result = mount.RootHandle;
-            }
-            else
-            {
-                result = mount.RootHandle.Reference.GetChildSubpath(PathElements.Skip(mount.VobDepth)).ToReadHandle<MountHandleObject>(); // OPTIMIZE: cache this enumerable alongside the mount
-            }
+        //    if (System.Object.ReferenceEquals(mount.Vob, this))
+        //    {
+        //        result = mount.RootHandle;
+        //    }
+        //    else
+        //    {
+        //        result = mount.RootHandle.Reference.GetChildSubpath(PathElements.Skip(mount.VobDepth)).ToReadHandle<MountHandleObject>(); // OPTIMIZE: cache this enumerable alongside the mount
+        //    }
 
-            //result.Mount = mount;
-            return result;
-        }
+        //    //result.Mount = mount;
+        //    return result;
+        //}
 
-        internal string GetMountPath(Mount mount)
-        {
-            string result;
+        // UNUSED
+        //internal string GetMountPath(Mount mount)
+        //{
+        //    string result;
 
-            if (System.Object.ReferenceEquals(mount.Vob, this))
-            {
-                result = mount.Target.Path;
-                l.Trace("UNTESTED: (alt) MountPath: " + result);
-            }
-            else
-            {
-                result = LionPath.Combine(mount.Target.Path, PathElements.Skip(mount.VobDepth)); // OPTIMIZE: cache this enumerable alongside the mount
-                l.Trace("UNTESTED: MountPath: " + result);
-            }
+        //    if (System.Object.ReferenceEquals(mount.Vob, this))
+        //    {
+        //        result = mount.Target.Path;
+        //        l.Trace("UNTESTED: (alt) MountPath: " + result);
+        //    }
+        //    else
+        //    {
+        //        result = LionPath.Combine(mount.Target.Path, PathElements.Skip(mount.VobDepth)); // OPTIMIZE: cache this enumerable alongside the mount
+        //        l.Trace("UNTESTED: MountPath: " + result);
+        //    }
 
-            return result;
-        }
-
-        #endregion
+        //    return result;
+        //}
 
     }
 }

@@ -1,5 +1,6 @@
 ﻿using LionFire.Referencing;
 using LionFire.Vos;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace LionFire.Persistence.Persisters.Vos
@@ -54,11 +55,19 @@ namespace LionFire.Persistence.Persisters.Vos
             var result = new VosRetrieveResult<TValue>();
 
             bool anyMounts = false;
-            foreach(var mount in vob.ReadHandleMounts)
+            foreach(var mount in vob.NextVobNode.RankedEffectiveReadMounts)
             {
-                anyMounts = true;
-                var rh = vob.GetReadHandleFromMount<TValue>(mount);
-                if (rh == null) continue;
+                //var relativeDepth = vob.Depth - mount.VobDepth;
+
+                var relativePathChunks = vob.PathElements.Skip(mount.VobDepth);
+
+                var effectiveReference = !relativePathChunks.Any() ? mount.Target : mount.Target.GetChildSubpath(relativePathChunks);
+
+                var rh = effectiveReference.GetReadHandle<TValue>();
+
+                //anyMounts = true;
+                //var rh = vob.GetReadHandleFromMount<TValue>(mount);
+                //if (rh == null) continue;
 
                 //var childResult = await rh.Retrieve().ConfigureAwait(false);
                 var childResult = (await rh.Resolve().ConfigureAwait(false)).ToRetrieveResult();

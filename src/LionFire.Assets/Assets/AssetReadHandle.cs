@@ -24,7 +24,7 @@ namespace LionFire.Persistence.Assets
 
     // Reads via Injection.GetService<IAssetProvider>
     // OPTIMIZE: Change the base class to an H base class that stores a string (key) instead of a IReference
-    public class AssetReadHandle<T> : ReadHandle<T>
+    public class AssetReadHandle<T> : ReadHandle<IReference, T>
         where T : class
     {
 
@@ -39,6 +39,7 @@ namespace LionFire.Persistence.Assets
         public AssetReadHandle(IReference reference, T obj = null) : base(reference, obj)
         {
         }
+
 
         #endregion
 
@@ -57,23 +58,25 @@ namespace LionFire.Persistence.Assets
             return new AssetReadHandle<T>(assetSubPath);
         }
 
-        protected override ITask<IResolveResult<T>> ResolveImpl()
-        {
-            
-            throw new NotImplementedException("TODO: Convert Assets to an OBus");
-            //// TODO: Use async/await here once IAssetProvider supports it
-            //var ap = Dependencies.GetServiceOrSingleton<IAssetProvider>(createIfMissing: true);
-            //var result = await ap.Load<T>(this.Key);
-            //if (result != null)
-            //{
-            //    this.Object = result;
-            //    return Task.FromResult(true);
-            //}
-            //else
-            //{
-            //    return Task.FromResult(false);
-            //}
-        }
+        protected override ITask<IResolveResult<T>> ResolveImpl() => throw new NotImplementedException();
+
+        //protected override ITask<IResolveResult<T>> ResolveImpl()
+        //{
+
+        //    throw new NotImplementedException("TODO: Convert Assets to an OBus");
+        //    //// TODO: Use async/await here once IAssetProvider supports it
+        //    //var ap = Dependencies.GetServiceOrSingleton<IAssetProvider>(createIfMissing: true);
+        //    //var result = await ap.Load<T>(this.Key);
+        //    //if (result != null)
+        //    //{
+        //    //    this.Object = result;
+        //    //    return Task.FromResult(true);
+        //    //}
+        //    //else
+        //    //{
+        //    //    return Task.FromResult(false);
+        //    //}
+        //}
     }
 
     //public class AssetReadHandle<T> : IReadHandle<T>

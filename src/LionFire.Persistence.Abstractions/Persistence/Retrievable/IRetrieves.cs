@@ -63,15 +63,18 @@ namespace LionFire.Persistence
             return new RetrieveResult<T>(resolveResult.Value, flags);
         }
 
-        public static async Task<bool> Exists<T>(this ILazilyResolves<T> resolves)
-        {
-            if (resolves is IDetects d) return await d.Exists();
-
-            return (await resolves.GetValue()).HasValue;
-        }
+        //public static async Task<bool> Exists<T>(this ILazilyResolves<T> resolves)
+        //{
+        //}
         public static async Task<bool> Exists<T>(this IResolves<T> resolves)
         {
-            if (resolves is ILazilyResolves<T> lazilyResolves) return await lazilyResolves.Exists();
+            if (resolves is ILazilyResolves<T> lazilyResolves)
+            {
+                if (lazilyResolves is IDetects d) return await d.Exists();
+
+                return (await lazilyResolves.GetValue()).HasValue;
+                //return await lazilyResolves.Exists();
+            }
 
             return (await resolves.Resolve()).HasValue;
         }

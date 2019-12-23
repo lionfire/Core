@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using LionFire.Referencing;
 using LionFire.Resolves;
 using LionFire.Structures;
@@ -165,8 +166,9 @@ namespace LionFire.Persistence.Handles
 
         #region REORGANIZE
 
+        ITask<IResolveResult<TValue>> IResolves<TValue>.Resolve() => Resolve();
+
         //protected override bool IsAllowedReferenceType(Type type) => type == typeof(TReference);
-        ITask<IResolveResult<TValue>> IResolves<TValue>.Resolve() => throw new NotImplementedException();
 
         // Skips the reference type check
         //public new TReference Reference
@@ -181,11 +183,11 @@ namespace LionFire.Persistence.Handles
         //}
 
 
-        PersistenceFlags IPersists.Flags => throw new NotImplementedException();
+        PersistenceFlags IPersists.Flags => Flags;
 
-        TValue IReadWrapper<TValue>.Value => throw new NotImplementedException();
+        TValue IReadWrapper<TValue>.Value => Value;
 
-        bool IDefaultable.HasValue => throw new NotImplementedException();
+        bool IDefaultable.HasValue => HasValue;
 
         #region Construction
 
