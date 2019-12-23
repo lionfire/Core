@@ -2,6 +2,7 @@
 using Microsoft.Extensions.Logging;
 using System;
 using LionFire.Data;
+using Microsoft.Extensions.Options;
 
 namespace LionFire.Redis
 {
@@ -9,10 +10,10 @@ namespace LionFire.Redis
     /// Returns a RedisConnection (wraps ConnectionMultiplexer) based on a Configuration key for a connection string.  Will reuse connections that match the same
     /// connection string.
     /// </summary>
-    public class RedisConnectionManager : ConnectionManagerBase<RedisConnection>
+    public class RedisConnectionManager : ConnectionManager<RedisConnection, RedisConnectionOptions>
     {
         
-        public RedisConnectionManager(IConfiguration configuration, ILogger<RedisConnectionManager> logger, IServiceProvider serviceProvider) : base(configuration, logger, serviceProvider)
+        public RedisConnectionManager(IOptionsMonitor<NamedConnectionOptions<RedisConnectionOptions>> options, ILogger<RedisConnectionManager> logger, IServiceProvider serviceProvider) : base(options, logger, serviceProvider)
         {
         }
     }

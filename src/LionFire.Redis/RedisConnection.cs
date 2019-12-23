@@ -2,13 +2,13 @@
 using LionFire.Threading;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using StackExchange.Redis;
 using System.Threading;
 using System.Threading.Tasks;
 
 namespace LionFire.Redis
 {
-
     // FUTURE - state machine?
     //public enum ConnectionStates
     //{
@@ -27,19 +27,16 @@ namespace LionFire.Redis
     ///   E.g. "server1:6379,server2:6379"
     ///   Order not important; master is automatically identified
     /// </summary>
-    public class RedisConnection : ConnectionBase
+    public class RedisConnection : OptionsConnectionBase<RedisConnectionOptions, RedisConnection>
     {
+
         public IDatabase Db => redis.GetDatabase();
         public ConnectionMultiplexer Redis => redis;
         private ConnectionMultiplexer redis;
 
-        public RedisConnection(ILogger<RedisConnection> logger) : base(logger)
+        public RedisConnection(string name, IOptionsMonitor<NamedConnectionOptions<RedisConnectionOptions>> options, ILogger<RedisConnection> logger) : base(name, options, logger)
         {
         }
-        //public RedisConnection(string connectionString, ILogger<RedisConnection> logger) : base(logger)
-        //{
-        //    ConnectionString = connectionString;
-        //}
 
         public bool IsConnectionDesired
         {
@@ -48,18 +45,18 @@ namespace LionFire.Redis
             {
                 if (value)
                 {
-                    Connect().FireAndForget();
+                    ConnectImpl().FireAndForget();
                 }
                 else
                 {
-                    Disconnect().FireAndForget();
+                    DisconnectImpl().FireAndForget();
                 }
             }
         }
         private bool isConnectionDesired;
         private Task<ConnectionMultiplexer> connectingTask;
 
-        public override async Task Connect(CancellationToken cancellationToken = default(CancellationToken))
+        public override async Task ConnectImpl(CancellationToken cancellationToken = default(CancellationToken))
         {
         start:
             #region Detect already done or in progress REVIEW
@@ -93,7 +90,7 @@ namespace LionFire.Redis
             logger.LogInformation($"[connected] ...connected to redis at {ConnectionString}");
         }
 
-        public override async Task Disconnect(CancellationToken cancellationToken = default(CancellationToken))
+        public override async Task DisconnectImpl(CancellationToken cancellationToken = default(CancellationToken))
         {
             isConnectionDesired = false;
             if (redis != null)
