@@ -6,6 +6,7 @@ using LionFire.Applications.Hosting;
 
 namespace LionFire.Applications
 {
+
     public static class App
     {
         public static T GetComponent<T>()
@@ -24,11 +25,13 @@ namespace LionFire.Applications
         {
             return DependencyContext.Current.GetServices<T>();
         }
+        
         public static T Get<T>()
             where T : class
         {
             return GetService<T>() ?? GetComponent<T>();
         }
+
         public static IEnumerable<T> GetAll<T>()
         {
             return GetServices<T>().Concat(GetComponents<T>());

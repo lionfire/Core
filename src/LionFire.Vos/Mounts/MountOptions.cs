@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 //using LionFire.Extensions.AssignFrom;
 
-namespace LionFire.Vos
+namespace LionFire.Vos.Mounts
 {
 
     public class MountOptions : IMountOptions
@@ -44,8 +44,8 @@ namespace LionFire.Vos
 
         public string Name { get; set; }
 
-        public string Package { get; set; }
-        public string Store { get; set; }
+        //public string Package { get; set; }
+        //public string Store { get; set; }
         public bool IsDisabled { get; set; }
 
 

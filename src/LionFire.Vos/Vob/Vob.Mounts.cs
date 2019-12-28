@@ -8,28 +8,12 @@ using LionFire.Persistence;
 using LionFire.Persistence.Handles;
 using LionFire.Persistence.Persisters.Vos;
 using LionFire.Referencing;
+using LionFire.Vos.Mounts;
 
 namespace LionFire.Vos
 {
     public partial class Vob
     {
-        #region (internal) Mount method
-
-        public Mount Mount(TMount tMount)
-        {
-            if (tMount.VobPath != this.Path)
-            {
-                if (!LionPath.IsSameOrDescendantOf(this.Path, tMount.VobPath))
-                {
-                    throw new VosException("Mount point must be this Vob or a descendant");
-                }
-                return Root[tMount.VobPath].Mount(tMount);
-            }
-
-            return GetVobNode().Mount(new Mount(this, tMount));
-        }
-
-        #endregion
 
         #region Unmount methods
 

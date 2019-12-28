@@ -10,7 +10,7 @@ using LionFire.Referencing;
 using LionFire.Structures;
 using Microsoft.Extensions.Logging;
 
-namespace LionFire.Vos
+namespace LionFire.Vos.Mounts
 {
 
     public class Mount :
@@ -75,8 +75,8 @@ namespace LionFire.Vos
             //var vobNode = vob.GetVobNode
             //VobDepth = vob.VobNode.VobDepth;
             //Target = rootHandle.Reference;
-            Package = mountOptions?.Package;
-            Store = mountOptions?.Store;
+            //Package = mountOptions?.Package;
+            //Store = mountOptions?.Store;
             //this.MountName =GetMountName(packageName, layerName);
 
             //IsEnabled = enable; // Do this last, as it triggers a mount

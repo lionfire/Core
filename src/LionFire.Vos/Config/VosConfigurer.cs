@@ -3,15 +3,16 @@ using Microsoft.Extensions.Options;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using LionFire.Vos.Mounts;
 using System.Text;
 
 namespace LionFire.Vos
 {
-
     public class VosOptions
     {
         public List<TMount> Mounts { get; set; } = new List<TMount>();
 
+        public IEnumerable<string> RootNames { get; set; } = new List<string>() { "" };
 
     }
 

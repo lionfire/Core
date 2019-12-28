@@ -1,5 +1,6 @@
 ﻿using LionFire.Referencing;
 using LionFire.Vos;
+using LionFire.Vos.Mounts;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -55,7 +56,7 @@ namespace LionFire.Persistence.Persisters.Vos
             var result = new VosRetrieveResult<TValue>();
 
             bool anyMounts = false;
-            foreach(var mount in vob.NextVobNode.RankedEffectiveReadMounts)
+            foreach(var mount in vob.GetNext<VobMounts>().RankedEffectiveReadMounts)
             {
                 //var relativeDepth = vob.Depth - mount.VobDepth;
 

@@ -3,7 +3,7 @@ using LionFire.Referencing;
 using System;
 using System.Collections.Generic;
 
-namespace LionFire.Vos
+namespace LionFire.Vos.Mounts
 {
     public struct MultiMountResolutionCache : IMountResolutionCache
     {

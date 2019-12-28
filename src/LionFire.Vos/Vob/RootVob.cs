@@ -1,4 +1,5 @@
 ﻿using LionFire.Structures;
+using LionFire.Vos.Mounts;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -32,7 +33,7 @@ namespace LionFire.Vos
             }
             this.RootName = "";
             
-            vobNode = new VobNode(this);
+            GetOrAddVobNode<VobMounts>();
 
             foreach (var tMount in vosOptions.MountsForRootName(RootName))
             {
@@ -47,5 +48,7 @@ namespace LionFire.Vos
         {
             this.RootName = rootName;
         }
+
+        
     }
 }

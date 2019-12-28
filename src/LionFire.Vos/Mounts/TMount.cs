@@ -1,7 +1,7 @@
 ﻿using LionFire.Referencing;
 using LionFire.Instantiating;
 
-namespace LionFire.Vos
+namespace LionFire.Vos.Mounts
 {
     // REVIEW - Consider renaming this to Mount, and Mount to MountState
 

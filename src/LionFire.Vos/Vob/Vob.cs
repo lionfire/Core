@@ -19,11 +19,50 @@ using LionFire.Referencing;
 using LionFire.Structures;
 using LionFire.Types;
 using LionFire.Vos;
+using LionFire.Vos.Mounts;
 using Microsoft.Extensions.Logging;
-using static LionFire.Vos.Mount;
 
 namespace LionFire.Vos
 {
+
+    public class LionFireVob : Vob
+    {
+        public LionFireVob(Vob parent, string name) : base(parent, name)
+        {
+            Path = LionPath.GetTrimmedAbsolutePath(LionPath.Combine((parent == null ? "" : parent.Path), name));
+
+        }
+
+        public VobMounts Mounts { get; set; }
+
+        #region Caches
+
+        public override string Path { get; }
+
+        #region Root
+
+        public override RootVob Root
+        {
+            get
+            {
+                if (root == null)
+                {
+                    var vob = this;
+                    while (vob.Parent != null) { vob = vob.Parent; }
+                    root = vob as RootVob;
+                }
+                return root;
+            }
+        }
+        private RootVob root;
+
+        #endregion
+
+        public VobMountCache MountCache { get; } = new VobMountCache();
+
+        #endregion
+
+    }
 
     // ----- Mount notes -----
     //        //public INotifyingReadOnlyCollection<Mount> Mounts { get { return mounts; } }
@@ -117,27 +156,96 @@ namespace LionFire.Vos
     ///    - get_Object - for Vob{T} this will return the object as T, if any.  Otherwise, it may return a single object, or a MultiType object
     ///    - set_Object - depending on the situation, it may assign into a MultiType object
     /// </remarks>
-    public partial class Vob :
-        //CachingHandleBase<Vob, Vob>,
-        //CachingChildren<Vob>,
-        //IHasHandle,
-        //H, // TODO - make this a smarter handle.  The object might be a dynamically created MultiType for complex scenarios
-        IReferencable,
+    public partial class Vob : // RENAME - MinimalVob?
+                               //CachingHandleBase<Vob, Vob>,
+                               //CachingChildren<Vob>,
+                               //IHasHandle,
+                               //H, // TODO - make this a smarter handle.  The object might be a dynamically created MultiType for complex scenarios
+        IReferencable
 #if AOT
 		IParented
 #else
-        IParented<Vob>
+        , IParented<IVob>
 #endif
         , IVob
+        , IVobInternals
+    //, SReadOnlyMultiTyped // FUTURE?
     {
+
         #region Identity
 
         public string Name => name;
         private readonly string name;
 
+        #region Relationships
+
+        #region Parent
+
+#if AOT
+        object IParented.Parent { get { return this.Parent; } set { throw new NotSupportedException(); } }
+#endif
+
+        #region Parent
+
+        public IVob Parent
+        {
+            get => parent;
+            set => throw new NotSupportedException();
+        }
+        private readonly IVob parent;
+
+        #endregion
+
+        #endregion
+
+        #endregion
+
+        #endregion
+
+        #region Construction
+
+        public Vob(IVob parent, string name)
+        {
+            if (this is RootVob rootVob)
+            {
+#if DEBUG
+                if (!string.IsNullOrWhiteSpace(name)) throw new ArgumentNullException("Name must be null or empty for RootVobs."); // Redundant check
+#endif
+            }
+            else
+            {
+                if (parent == null)
+                {
+                    throw new ArgumentNullException($"'{nameof(parent)}' must be set for all non-RootVob Vobs.");
+                }
+
+                if (string.IsNullOrEmpty(name))
+                {
+                    throw new ArgumentNullException($"'{nameof(name)}' must not be null or empty for a non-root Vob");
+                }
+            }
+
+            this.parent = parent;
+            this.name = name;
+        }
+
+        //public Vob(VBase vos, Vob parent, string name) : this(parent,name)
+        //{
+        //    if (vos == null)
+        //    {
+        //        throw new ArgumentNullException("vos");
+        //    }
+        //    this.vbase = vos;
+        //}
+
+        #endregion
+
+        #region Derived
+
         #region Path
 
-        public string Path { get; }
+        public virtual string Path => LionPath.GetTrimmedAbsolutePath(LionPath.Combine(parent == null ? "" : parent.Path, name));
+
         internal int Depth => LionPath.GetAbsolutePathDepth(Path);
 
         public IEnumerable<string> PathElements
@@ -186,57 +294,105 @@ namespace LionFire.Vos
                 }
             }
         }
-
         #endregion
 
-        #endregion
-
-        #region Relationships
-
-        #region Parent
-
-#if AOT
-        object IParented.Parent { get { return this.Parent; } set { throw new NotSupportedException(); } }
-#endif
-
-        #region Parent
-
-        public Vob Parent
-        {
-            get => parent;
-            set => throw new NotSupportedException();
-        }
-        private readonly Vob parent;
-
-        #endregion
-
-        #endregion
-
-        #region Root
-
-        public RootVob Root
+        public virtual RootVob Root
         {
             get
             {
-                if (root == null)
-                {
-                    var vob = this;
-                    while (vob.Parent != null) { vob = vob.Parent; }
-                    root = vob as RootVob;
-                }
-                return root;
+                Vob vob;
+                for (vob = this; vob.Parent != null; vob = vob.Parent) ;
+                return vob as RootVob;
             }
         }
-        private RootVob root;
 
         #endregion
 
+        #region Decorators
+
+        protected ConcurrentDictionary<Type, IVobNode> vobNodesByType;
+
+        VobNode<T> IVobInternals.TryGetOwnVobNode<T>()
+           where T : class
+        {
+            var collection = vobNodesByType;
+            if (collection == null) return null;
+            if (collection.TryGetValue(typeof(T), out IVobNode v)) return (VobNode<T>)v;
+            return null;
+        }
+
+
+        VobNode<TInterface> IVobInternals.GetOrAddVobNode<TInterface, TImplementation>(Func<IVobNode, TInterface> factory = null)
+        {
+            if (vobNodesByType == null) vobNodesByType = new ConcurrentDictionary<Type, IVobNode>();
+            return (VobNode<TInterface>)vobNodesByType.GetOrAdd(typeof(TInterface),
+                t => (IVobNode)Activator.CreateInstance(typeof(VobNode<>).MakeGenericType(t),
+                this, factory ?? (Func<IVobNode, TInterface>)(vobNode => (TInterface)Activator.CreateInstance(typeof(TImplementation), vobNode))));
+        }
+
+        public T GetOwn<T>()
+            where T : class
+        {
+            var node = ((IVobInternals)this).TryGetOwnVobNode<T>();
+            if (node != null) return node.Value;
+            return default;
+        }
+
         #endregion
 
-        #region Composition
+        #region Inheritance
+
+        VobNode<T> IVobInternals.TryGetNextVobNode<T>(bool skipOwn)
+            where T : class
+        {
+            var vob = skipOwn ? Parent : this;
+            while (vob != null)
+            {
+                var vobNode = ((IVobInternals)vob).TryGetOwnVobNode<T>();
+                if (vobNode != null) return vobNode;
+                vob = vob.Parent;
+            }
+            return null;
+        }
+
+        /// <param name="addAtRoot">True: if missing, will add at root. False: if missing, add at local Vob</param>
+        /// <returns></returns>
+        public VobNode<TInterface> GetOrAddNextVobNode<TInterface, TImplementation>(Func<IVobNode, TInterface> factory = null, bool addAtRoot = true)
+            where TImplementation : TInterface
+            where TInterface : class
+        {
+            IVob vob;
+            for (vob = this; vob != null; vob = vob.Parent)
+            {
+                var vobNode = vob.TryGetVobNode<TInterface>();
+                if (vobNode != null) return vobNode;
+            }
+            return (addAtRoot ? vob : this).GetOrAddVobNode<TInterface, TImplementation>(factory);
+        }
+
+        public T GetNext<T>(bool skipOwn = false)
+        {
+            var node = TryGetNextVobNode<T>(skipOwn);
+            if (node != null) return node.Value;
+            return default;
+        }
+
+        #endregion
+
+        #region ToSort
+
+        #region VobNode by Type
+
+        // REVIEW - should this be GetRequiredNextVobNode?  Or should it attempt to create T if it is not an interface and not abstract?
+        //public VobNode<T> GetNextVobNode<T>()
+        //{
+        //    return TryGetNextVobNode<T>() ?? throw new VosException("Missing NextVobNode"); // Should not happen - RootVob should always have a VobNode.
+        //}
+
+        #endregion
 
         #region VobNode
-
+#if VobNode
         protected VobNode GetVobNode()
         {
             if (vobNode == null)
@@ -293,52 +449,13 @@ namespace LionFire.Vos
                 throw new VosException("Missing NextVobNode"); // Should not happen - RootVob should always have a VobNode.
             }
         }
-
-        #endregion
-
-        #endregion
-
-        #region Construction
-
-        public Vob(Vob parent, string name)
-        {
-            if (this is RootVob rootVob)
-            {
-#if DEBUG
-                if (!string.IsNullOrWhiteSpace(name)) throw new ArgumentNullException("Name must be null or empty for RootVobs."); // Redundant check
 #endif
-            }
-            else
-            {
-                if (parent == null)
-                {
-                    throw new ArgumentNullException($"'{nameof(parent)}' must be set for all non-RootVob Vobs.");
-                }
-
-                if (string.IsNullOrEmpty(name))
-                {
-                    throw new ArgumentNullException($"'{nameof(name)}' must not be null or empty for a non-root Vob");
-                }
-            }
-
-            this.parent = parent;
-            this.name = name;
-
-            Path = LionPath.GetTrimmedAbsolutePath(LionPath.Combine((parent == null ? "" : parent.Path), name));
-
-
-        }
-
-        //public Vob(VBase vos, Vob parent, string name) : this(parent,name)
-        //{
-        //    if (vos == null)
-        //    {
-        //        throw new ArgumentNullException("vos");
-        //    }
-        //    this.vbase = vos;
-        //}
 
         #endregion
+
+        #endregion
+
+
 
         #region Referencing
 
@@ -454,13 +571,23 @@ namespace LionFire.Vos
 
         public override int GetHashCode() => Path.GetHashCode();
 
-        public override string ToString() => Path;
+        // public override string ToString() => Path;
+        public override string ToString() => Reference.ToString();
 
-        private static ILogger l = Log.Get();
+        private static readonly ILogger l = Log.Get();
         //private static ILogger lSave = Log.Get("LionFire.Vos.Vob.Save");
         //private static ILogger lLoad = Log.Get("LionFire.Vos.Vob.Load");
 
         #endregion
 
     }
+
+    public static class IVobInternalsExtensions
+    {
+
+        public static VobNode<TImplementation> GetOrAddVobNode<TImplementation>(this IVobInternals vobI, Func<IVobNode, TImplementation> factory = null)
+                where TImplementation : class
+            => vobI.GetOrAddVobNode<TImplementation, TImplementation>(factory);
+    }
+
 }

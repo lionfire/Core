@@ -2,6 +2,7 @@
 using Microsoft.Extensions.Options;
 using System.Collections.Concurrent;
 using System.Diagnostics;
+using System.Linq;
 
 namespace LionFire.Vos
 {
@@ -10,17 +11,27 @@ namespace LionFire.Vos
         readonly RootVob? namelessRootVob;
 
         readonly VosOptions vosOptions;
+        //readonly IOptionsMonitor<VosOptions> vosOptionsMonitor;
         ConcurrentDictionary<string, RootVob> roots = new ConcurrentDictionary<string, RootVob>();
 
-        public VosRootManager(IOptionsMonitor<VosOptions> vosOptions)
+        public VosRootManager(IOptionsMonitor<VosOptions> vosOptionsMonitor)
         {
-            this.vosOptions = vosOptions.CurrentValue;
+            this.vosOptions = vosOptionsMonitor.CurrentValue;
+
+            foreach (var rootName in vosOptionsMonitor.CurrentValue.RootNames.Distinct())
+            {
+                var rootVob = new RootVob(rootName, this.vosOptions);
+                if (rootName == "")
+                {
+                    namelessRootVob = rootVob;
+                }
+                else
+                {
+                    roots.TryAdd(rootName, rootVob);
+                }
+            }
         }
 
-        public VosRootManager(RootVob rootVob, IOptionsMonitor<VosOptions> vosOptions) : this(vosOptions)
-        {
-            this.namelessRootVob = rootVob;
-        }
 
         public RootVob? Get(string? rootName = null)
         {
@@ -31,7 +42,7 @@ namespace LionFire.Vos
 
             if (roots == null) roots = new ConcurrentDictionary<string, RootVob>();
 
-            return roots.GetOrAdd(rootName, n => new RootVob(vosOptions));
+            return roots.GetOrAdd(rootName, n => new RootVob(n, vosOptions));
         }
     }
 }

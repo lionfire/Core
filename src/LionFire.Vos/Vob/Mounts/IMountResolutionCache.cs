@@ -1,7 +1,7 @@
 ﻿using LionFire.Referencing;
 using System.Collections.Generic;
 
-namespace LionFire.Vos
+namespace LionFire.Vos.Mounts
 {
     public interface IMountResolutionCache
     {
