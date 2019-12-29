@@ -13,7 +13,9 @@ namespace LionFire.Vos.Internals
 
         // REVIEW - do I want both a nodeFactory and a valueFactory?  I think so.
         // TODO: Is this Own or at Root?  Specify via parameter?
-        VobNode<TInterface> GetOrAddVobNode<TInterface, TImplementation>(Func<IVobNode, TInterface> factory = null) where TInterface : class;
+        VobNode<TInterface> GetOrAddVobNode<TInterface, TImplementation>(Func<IVobNode, TInterface> factory = null) 
+            where TInterface : class 
+            where TImplementation : TInterface;
 
     }
 
@@ -42,7 +44,9 @@ namespace LionFire.Vos.Internals
         public static VobNode<T> TryGetOwnVobNode<T>(this IVob vob) where T : class
             => (vob as IVobInternals)?.TryGetOwnVobNode<T>();
 
-        public static VobNode<TInterface> GetOrAddVobNode<TInterface, TImplementation>(this IVob vob, Func<IVobNode, TInterface> factory = null) where TInterface : class
+        public static VobNode<TInterface> GetOrAddVobNode<TInterface, TImplementation>(this IVob vob, Func<IVobNode, TInterface> factory = null) 
+            where TInterface : class
+            where TImplementation : TInterface
             => (vob as IVobInternals)?.GetOrAddVobNode<TInterface, TImplementation>(factory);
 
         public static VobNode<TImplementation> GetOrAddVobNode<TImplementation>(this IVob vob, Func<IVobNode, TImplementation> factory = null) where TImplementation : class

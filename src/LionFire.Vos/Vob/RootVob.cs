@@ -18,35 +18,45 @@ namespace LionFire.Vos
         /// </summary>
         public string RootName { get; }
 
-        public RootVob(VosOptions vosOptions) : base(null, String.Empty)
+        public RootVob(VosOptions vosOptions) : this(VosConstants.DefaultRootName, vosOptions)
         {
-            if (!AllowMultipleDefaultRoots)
+        }
+
+        public RootVob(string rootName, VosOptions vosOptions) : base(null, null)
+        {
+            VosOptions = vosOptions ?? new VosOptions();
+            if (rootName == VosConstants.DefaultRootName)
             {
-                if (ManualSingleton<RootVob>.Instance != null)
+                if (!AllowMultipleDefaultRoots)
                 {
-                    throw new AlreadySetException("A default RootVob has already been created.  There can only be one default.  If you wish to create another, provide a rootName.  Set AllowMultipleDefaultRoots to true to allow multiple default RootVobs (only recommended for unit testing or special cases.)");
-                }
-                else
-                {
-                    ManualSingleton<RootVob>.Instance = this;
+                    if (ManualSingleton<RootVob>.Instance != null)
+                    {
+                        throw new AlreadySetException("A default RootVob has already been created.  There can only be one default.  If you wish to create another, provide a rootName.  Set AllowMultipleDefaultRoots to true to allow multiple default RootVobs (only recommended for unit testing or special cases.)");
+                    }
+                    else
+                    {
+                        ManualSingleton<RootVob>.Instance = this;
+                    }
                 }
             }
-            this.RootName = "";
+            this.RootName = rootName;
 
-            foreach (var tMount in vosOptions.MountsForRootName(RootName))
+        }
+
+        public IVob Initialize()
+        {
+            foreach (var tMount in VosOptions.MountsForRootName(RootName))
             {
                 this.Mount(tMount);
                 ////var mount = new Mount(Vob[tMount.Reference.Path], tMount.Reference, tMount.Options?.Package, tMount.Options?.Store, tMount.Options?.Enable ?? true, tMount.Options);
                 //var mount = new Mount(Vob[tMount.Reference.Path], tMount.Reference, tMount.Options);
                 //Mount(mount);
             }
+            return this;
         }
 
-        public RootVob(string rootName, VosOptions vosOptions) : this(vosOptions)
-        {
-            this.RootName = rootName;
-        }
 
-        
+
+
     }
 }

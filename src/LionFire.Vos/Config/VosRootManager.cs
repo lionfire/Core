@@ -6,19 +6,41 @@ using System.Linq;
 
 namespace LionFire.Vos
 {
+    
+    /// <remarks>
+    /// Philosophy:
+    ///  - All RootVobs are initialized once at the construction of VosRootManager
+    ///  - This could be moved to on-demand initialization of RootVobs (and tracking whether RootVobs are initialized) if they grow large or numerous and sparsely needed.
+    /// </remarks>
     public class VosRootManager
     {
-        readonly RootVob? namelessRootVob;
+        #region Dependencies
 
+        VosInitializer VosInitializer { get; }
         readonly VosOptions vosOptions;
-        //readonly IOptionsMonitor<VosOptions> vosOptionsMonitor;
+
+        #endregion
+
+        #region State
+
+        RootVob? namelessRootVob;
         ConcurrentDictionary<string, RootVob> roots = new ConcurrentDictionary<string, RootVob>();
 
-        public VosRootManager(IOptionsMonitor<VosOptions> vosOptionsMonitor)
+        #endregion
+
+        #region Construction
+
+        public VosRootManager(IOptionsMonitor<VosOptions> vosOptionsMonitor, VosInitializer vosInitializer)
         {
             this.vosOptions = vosOptionsMonitor.CurrentValue;
+            VosInitializer = vosInitializer;
 
-            foreach (var rootName in vosOptionsMonitor.CurrentValue.RootNames.Distinct())
+            InitializeAll();
+        }
+
+        private void InitializeAll()
+        {
+            foreach (var rootName in vosOptions.RootNames.Distinct())
             {
                 var rootVob = new RootVob(rootName, this.vosOptions);
                 if (rootName == "")
@@ -29,9 +51,14 @@ namespace LionFire.Vos
                 {
                     roots.TryAdd(rootName, rootVob);
                 }
+                VosInitializer.Initialize(rootVob);
+                rootVob.Initialize();
             }
         }
 
+        #endregion
+
+        #region Methods
 
         public RootVob? Get(string? rootName = null)
         {
@@ -44,5 +71,8 @@ namespace LionFire.Vos
 
             return roots.GetOrAdd(rootName, n => new RootVob(n, vosOptions));
         }
+
+        #endregion
+
     }
 }

@@ -6,8 +6,10 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace LionFire.DependencyInjection
 {
+
     public class DynamicServiceProvider : IServiceCollection, IServiceProvider
     {
+
         public object GetService(Type serviceType)
         {
             if (singletonInstances.ContainsKey(serviceType))
@@ -20,7 +22,7 @@ namespace LionFire.DependencyInjection
                 singletonInstanceFactories.Remove(serviceType);
                 if (singletonInstances.TryAdd(serviceType, instance))
                 {
-                    return serviceType;
+                    return instance;
                 }
                 else
                 {
@@ -30,11 +32,13 @@ namespace LionFire.DependencyInjection
             return null;
         }
 
+
         ConcurrentDictionary<Type, object> singletonInstances = new ConcurrentDictionary<Type, object>();
         Dictionary<Type, Func<IServiceProvider, object>> singletonInstanceFactories = new Dictionary<Type, Func<IServiceProvider, object>>();
 
         #region IServiceCollection
 
+        void ICollection<ServiceDescriptor>.Add(ServiceDescriptor item) => Add(item);
         public void Add(ServiceDescriptor item)
         {
 
@@ -62,7 +66,7 @@ namespace LionFire.DependencyInjection
                     throw new NotImplementedException("TODO");
             }
         }
-        
+
         #endregion
 
         #region IServiceCollection (not implemented)
@@ -76,7 +80,6 @@ namespace LionFire.DependencyInjection
         int IList<ServiceDescriptor>.IndexOf(ServiceDescriptor item) => throw new NotImplementedException();
         void IList<ServiceDescriptor>.Insert(int index, ServiceDescriptor item) => throw new NotImplementedException();
         void IList<ServiceDescriptor>.RemoveAt(int index) => throw new NotImplementedException();
-        void ICollection<ServiceDescriptor>.Add(ServiceDescriptor item) => throw new NotImplementedException();
         void ICollection<ServiceDescriptor>.Clear() => throw new NotImplementedException();
         bool ICollection<ServiceDescriptor>.Contains(ServiceDescriptor item) => throw new NotImplementedException();
         void ICollection<ServiceDescriptor>.CopyTo(ServiceDescriptor[] array, int arrayIndex) => throw new NotImplementedException();

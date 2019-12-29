@@ -135,11 +135,12 @@ namespace LionFire.Vos
             }
             protected set
             {
-                if (string.IsNullOrWhiteSpace(value))
-                {
-                    Reset();
-                    return;
-                }
+                if (Path != null || Host != null || Port != null) throw new AlreadySetException();
+                //if (string.IsNullOrWhiteSpace(value))
+                //{
+                //    Reset();
+                //    return;
+                //}
                 int index = 0;
                 if (value.StartsWith(LionPath.HostDelimiter))
                 {
@@ -185,8 +186,8 @@ namespace LionFire.Vos
 
         #endregion
 
-        public override string Host { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
-        public override string Port { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
+        public override string Host { get => null; set=>throw new NotImplementedException(); }
+        public override string Port { get  => null; set => throw new NotImplementedException(); }
 
         #region Path
 
@@ -234,15 +235,16 @@ namespace LionFire.Vos
 
         #endregion
 
-        private void Reset()
-        {
-            throw new NotImplementedException("Don't allow this anymore?");
-            ////this.Host = null;
-            ////this.Port = null;
-            //Path = null;
-            //Package = null;
-            //this.TypeName = null;
-        }
+        // OLD
+        //private void Reset()
+        //{
+        //    throw new NotImplementedException("Don't allow this anymore?");
+        //    ////this.Host = null;
+        //    ////this.Port = null;
+        //    //Path = null;
+        //    //Package = null;
+        //    //this.TypeName = null;
+        //}
 
 #if TOPORT
 

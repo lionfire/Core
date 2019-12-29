@@ -2,7 +2,7 @@
 {
     public static class VosConstants
     {
-        public const string DefaultRoot = "";
+        public const string DefaultRootName = "";
     }
 }
 

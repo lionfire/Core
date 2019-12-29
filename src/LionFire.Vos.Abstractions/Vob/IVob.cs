@@ -16,6 +16,7 @@ namespace LionFire.Vos
 
         #region Cache
 
+        IVob Root { get; }
         string Path { get; }
         IEnumerable<string> PathElements { get; }
         IEnumerable<string> PathElementsReverse { get; }

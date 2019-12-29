@@ -10,6 +10,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using LionFire.Collections;
+using LionFire.DependencyInjection;
 using LionFire.Extensions.ObjectBus;
 using LionFire.Instantiating;
 using LionFire.MultiTyping;
@@ -22,6 +23,7 @@ using LionFire.Vos;
 using LionFire.Vos.Internals;
 using LionFire.Vos.Mounts;
 using LionFire.Vos.Services;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 
 namespace LionFire.Vos
@@ -228,7 +230,7 @@ namespace LionFire.Vos
             }
 
             this.parent = parent;
-            this.name = name;
+            this.name = name ?? "";
         }
 
         //public Vob(VBase vos, Vob parent, string name) : this(parent,name)
@@ -298,6 +300,7 @@ namespace LionFire.Vos
         }
         #endregion
 
+        IVob IVob.Root => Root;
         public virtual RootVob Root
         {
             get
@@ -348,6 +351,19 @@ namespace LionFire.Vos
             return (T)Activator.CreateInstance(typeof(T), parameters);
         }
 
+        IDictionary<Type, object> factoryServices(IVobNode vobNode)
+        {
+                return new Dictionary<Type, object>
+                {
+                    [typeof(Vob)] = vobNode.Vob,
+                    [typeof(IVobNode)] = vobNode
+                };
+        }
+        TInterface DefaultVobNodeValueFactory<TInterface, TImplementation>(IVobNode vobNode)
+            where TImplementation : TInterface
+            => ActivatorUtilities.CreateInstance<TImplementation>(new ServiceProviderWrapper(this.GetServiceProvider(), factoryServices(vobNode)));
+        //  (Func<IVobNode, TInterface>)(vobNode => (TInterface)Activator.CreateInstance(typeof(TImplementation), vobNode)))
+
         // FUTURE: If just TInterface is provided, maybe use an Interface to Implementation factory (like Transient in Microsoft DI?)
         //VobNode<TInterface> IVobInternals.GetOrAddVobNode<TInterface >(Func<IVobNode, TInterface> factory = null)
         //{
@@ -361,16 +377,14 @@ namespace LionFire.Vos
         //    var factory = this.GetService<IFactory<TInterface>>();
         //    if(factory != null)
         //    })
-
         //}
-
 
         VobNode<TInterface> IVobInternals.GetOrAddVobNode<TInterface, TImplementation>(Func<IVobNode, TInterface> factory)
         {
             if (vobNodesByType == null) vobNodesByType = new ConcurrentDictionary<Type, IVobNode>();
             return (VobNode<TInterface>)vobNodesByType.GetOrAdd(typeof(TInterface),
                 t => (IVobNode)Activator.CreateInstance(typeof(VobNode<>).MakeGenericType(t),
-                this, factory ?? (Func<IVobNode, TInterface>)(vobNode => (TInterface)Activator.CreateInstance(typeof(TImplementation), vobNode))));
+                this, factory ?? DefaultVobNodeValueFactory<TInterface, TImplementation>));
         }
 
         public T GetOwn<T>()
@@ -632,6 +646,11 @@ namespace LionFire.Vos
         public static VobNode<TImplementation> GetOrAddVobNode<TImplementation>(this IVobInternals vobI, Func<IVobNode, TImplementation> factory = null)
                 where TImplementation : class
             => vobI.GetOrAddVobNode<TImplementation, TImplementation>(factory);
+
+
+        public static VobNode<TImplementation> GetOrAddVobNode<TImplementation>(this IVobInternals vobI, TImplementation singletonInstance)
+            where TImplementation : class
+            => vobI.GetOrAddVobNode<TImplementation, TImplementation>(_ => singletonInstance);
     }
 
 }

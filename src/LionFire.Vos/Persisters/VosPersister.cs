@@ -58,6 +58,7 @@ namespace LionFire.Persistence.Persisters.Vos
             bool anyMounts = false;
             foreach(var mount in vob.GetNext<VobMounts>().RankedEffectiveReadMounts)
             {
+
                 //var relativeDepth = vob.Depth - mount.VobDepth;
 
                 var relativePathChunks = vob.PathElements.Skip(mount.VobDepth);

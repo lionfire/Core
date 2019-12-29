@@ -2,6 +2,7 @@
 using LionFire.DependencyInjection;
 using LionFire.Vos;
 using LionFire.Vos.Internals;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace LionFire.Services
 {
@@ -10,7 +11,11 @@ namespace LionFire.Services
         public static IVob AddServiceProvider(this IVob vob)
         {
             var vobI = vob as IVobInternals;
-            var node = vobI.GetOrAddVobNode<IServiceProvider, DynamicServiceProvider>();
+
+            var dsp = new DynamicServiceProvider();
+
+            vobI.GetOrAddVobNode<IServiceProvider>(dsp);
+            vobI.GetOrAddVobNode<IServiceCollection>(dsp);
 
             //vob.GetOrAddNextVobNode<IServiceProvider, VobServiceProvider>(addAtRoot: false);
             return vob;

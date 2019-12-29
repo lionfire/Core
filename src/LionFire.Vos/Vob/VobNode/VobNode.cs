@@ -13,10 +13,10 @@ namespace LionFire.Vos
 
         public Vob Vob { get; }
 
-        public VobNode(Vob vob, Func<TInterface> factory)
+        public VobNode(Vob vob, Func<IVobNode, TInterface> factory)
         {
             Vob = vob;
-            Value = factory();
+            Value = factory(this);
         }
 
         public TInterface Value { get; }

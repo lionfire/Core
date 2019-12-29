@@ -5,9 +5,13 @@ using System.Threading.Tasks;
 
 namespace LionFire.Dependencies
 {
+
+    // TODO: Where is this used?  What does GetRequiredService throw on missing dependencies?  Maybe I should use that where I am also doing the same sort of thing.
+
     public class HasUnresolvedDependenciesException : Exception
     {
         public HasUnresolvedDependenciesException() { }
+        public HasUnresolvedDependenciesException(Type type) : this($"Missing instance of type '{type.FullName}'") { }
         public HasUnresolvedDependenciesException(object obj, UnsatisfiedDependencies unresolvedDependencies)
         {
             var msg = " Missing dependencies: ";

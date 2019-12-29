@@ -162,13 +162,25 @@ namespace LionFire.Referencing
         {
             var parentChunks = LionPath.ToPathArray(parentPath);
             var childChunks = LionPath.ToPathArray(childPath);
+            if (childChunks.Length < parentChunks.Length) return false;
             int i = 0;
             foreach (var parentChunk in parentChunks)
             {
-                if (childChunks[0] != parentChunk) return false;
+                if (childChunks[i++] != parentChunk) return false;
             }
             return true;
         }
-
+        public static bool IsDescendantOf(string parentPath, string childPath)
+        {
+            var parentChunks = LionPath.ToPathArray(parentPath);
+            var childChunks = LionPath.ToPathArray(childPath);
+            if (childChunks.Length < parentChunks.Length) return false;
+            int i = 0;
+            foreach (var parentChunk in parentChunks)
+            {
+                if (childChunks[i++] != parentChunk) return false;
+            }
+            return childChunks.Length > parentChunks.Length; 
+        }
     }
 }

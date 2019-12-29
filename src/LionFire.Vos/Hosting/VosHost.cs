@@ -52,24 +52,23 @@ namespace LionFire.Services
                         })
 
                         // TEMP - MOVE this.  Work in progress:
-                        .InitializeRootVob(vob =>
+                        .InitializeRootVob2(vob =>
                         {
                             vob
                             .AddServiceProvider()
-                            .GetService<IServiceCollection>()
+                            .GetNextRequired<IServiceCollection>()
                                 .AddSingleton<VobMounter>()
                             ;
-
                         })
-                          .InitializeVob("InitializeVobTest", vob =>
-                          {
-                              vob.AddServiceProvider();
-                          })
-                        .InitializeVob("TestAltRoot", "/", vob =>
-                        {
-                            vob.AddServiceProvider();
-                        })
-                    ;
+                              .InitializeVob2("InitializeVobTest", vob =>
+                              {
+                                  vob.AddServiceProvider();
+                              })
+                            .InitializeVob2("TestAltRoot", "/", vob =>
+                            {
+                                vob.AddServiceProvider();
+                            })
+                            ;
                 })
             ;
 

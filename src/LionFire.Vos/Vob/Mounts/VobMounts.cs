@@ -194,13 +194,16 @@ namespace LionFire.Vos.Mounts
                     if (parent == null)
                     {
                         Current = null;
-                        return true;
+                        return false;
+                        //return true;
                     }
                     if (!ReferenceEquals(local.ParentVobNode, parent))
                     {
                         Current = null;
-                        OnInvalid();
-                        return true;
+                        throw new Exception("!ReferenceEquals(local.ParentVobNode, parent)");
+                        //OnInvalid();
+                        //return true;
+                        return false;
                     }
                     return direction switch
                     {

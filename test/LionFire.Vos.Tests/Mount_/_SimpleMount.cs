@@ -26,7 +26,6 @@ namespace Mount_
             //    {
             //        await Task.Delay(1);
             //    });
-#error NEXT: TODO: run Vos unit tests
             await VosHost.Create()
             .ConfigureServices((context, services) =>
             {
@@ -59,6 +58,7 @@ namespace Mount_
                     //Assert.Equal("UnitTestRoot", reference.Persister);
 
                     var readHandle = reference.ToReadHandle<string>();
+#error NEXT: Debug this MountNotAvailable:
                     var persistenceResult = await readHandle.Resolve();
 
                     //Assert.True(persistenceResult.Flags.HasFlag(PersistenceResultFlags.Success)); // TODO - switch to Retrieve?

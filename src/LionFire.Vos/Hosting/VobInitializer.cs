@@ -5,7 +5,7 @@ namespace LionFire.Services
 {
     public class VobInitializer
     {
-        public string VobRootName { get; set; } = VosConstants.DefaultRoot;
+        public string VobRootName { get; set; } = VosConstants.DefaultRootName;
 
         public string VobPath { get; set; }
 
