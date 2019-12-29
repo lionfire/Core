@@ -727,7 +727,7 @@ namespace LionFire.Vos
 #if SanityChecks
             if (VosRetrieveInfo?.Mount?.MountOptions == null) throw new UnreachableCodeException();
 #endif
-            if (VosRetrieveInfo.Mount.MountOptions.IsReadOnly) return false;
+            if (VosRetrieveInfo.Mount.Options.IsReadOnly) return false;
 
             var childVH = VosRetrieveInfo.ReadHandle as IVobHandle;
             if (childVH != null) return childVH.CanWriteToReadSource(); // FUTURE REVIEW: Put CanWriteToReadSource on IHandle and implement elsewhere?

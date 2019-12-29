@@ -6,7 +6,7 @@ namespace LionFire.Vos
     {
         public static bool IsAncestorOf(this Vob potentialAncestor, Vob potentialChild)
         {
-            for (Vob vobParent = potentialChild.Parent; vobParent != null; vobParent = vobParent.Parent)
+            for (IVob vobParent = potentialChild.Parent; vobParent != null; vobParent = vobParent.Parent)
             {
                 if (Object.ReferenceEquals(vobParent, potentialAncestor))
                 {

@@ -1,4 +1,5 @@
-﻿using System;
+﻿#if DISABLED
+using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using LionFire.Dependencies;
@@ -165,3 +166,4 @@ namespace LionFire.Vos
         #endregion
     }
 }
+#endif

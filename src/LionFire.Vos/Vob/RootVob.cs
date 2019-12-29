@@ -32,12 +32,10 @@ namespace LionFire.Vos
                 }
             }
             this.RootName = "";
-            
-            GetOrAddVobNode<VobMounts>();
 
             foreach (var tMount in vosOptions.MountsForRootName(RootName))
             {
-                Mount(tMount);
+                this.Mount(tMount);
                 ////var mount = new Mount(Vob[tMount.Reference.Path], tMount.Reference, tMount.Options?.Package, tMount.Options?.Store, tMount.Options?.Enable ?? true, tMount.Options);
                 //var mount = new Mount(Vob[tMount.Reference.Path], tMount.Reference, tMount.Options);
                 //Mount(mount);

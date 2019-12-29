@@ -1,6 +1,6 @@
-﻿namespace LionFire.Vos
+﻿namespace LionFire.Vos.Mounts
 {
-    public class VobNodeOptions
+    public class VobMountOptions
     {
         public bool AllowMultiMounts { get; set; }
 

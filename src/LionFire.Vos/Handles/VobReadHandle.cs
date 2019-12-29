@@ -1,4 +1,5 @@
-﻿using System;
+﻿#if DISABLED
+using System;
 using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
@@ -171,7 +172,8 @@ namespace LionFire.Vos
         {
             get
             {
-                if (Mount != null && Mount.Package != null) return Mount.Package;
+                throw new NotImplementedException();
+                //if (Mount != null && Mount.Package != null) return Mount.Package;
                 return Package;
             }
         }
@@ -199,7 +201,8 @@ namespace LionFire.Vos
         {
             get
             {
-                if (Mount != null && Mount.Store != null) return Mount.Store;
+                throw new NotImplementedException();
+                //if (Mount != null && Mount.Store != null) return Mount.Store;
                 return Store;
             }
         }
@@ -207,7 +210,8 @@ namespace LionFire.Vos
         {
             get
             {
-                if (Mount != null && Mount.Store != null) return Mount.Store;
+                throw new NotImplementedException();
+                //if (Mount != null && Mount.Store != null) return Mount.Store;
                 return store;
             }
             set
@@ -305,3 +309,4 @@ namespace LionFire.Vos
 
     }
 }
+#endif

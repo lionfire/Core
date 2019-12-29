@@ -9,5 +9,7 @@ namespace LionFire.Vos.Mounts
         IReference Target { get; }
 
         IMountOptions Options { get; }
+
+        int VobDepth { get; }
     }
 }

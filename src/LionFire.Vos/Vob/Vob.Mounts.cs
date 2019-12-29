@@ -158,6 +158,8 @@ namespace LionFire.Vos
 #endif
         }
 
+#if DISABLED
+
         internal IReadWriteHandleBase<T> GetReadWriteHandleFromMount<T>(Mount mount)
         {
             return _GetHandleFromMount<T, ISubpathHandleProvider, IReadWriteHandleBase<T>>(mount,
@@ -175,6 +177,7 @@ namespace LionFire.Vos
             //(shp, chunks) => shp.GetWriteHandleFromSubPath<T>(chunks), r => r.ToWriteHandle<T>());
         }
 
+#endif
 #if OLD
         /// <summary>
         /// Get the handle from the underlying mount (specified) representing this Vob's path and the specified type

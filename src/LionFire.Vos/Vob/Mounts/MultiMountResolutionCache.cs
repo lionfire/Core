@@ -8,7 +8,7 @@ namespace LionFire.Vos.Mounts
     public struct MultiMountResolutionCache : IMountResolutionCache
     {
         public Vob Vob { get; }
-        public MultiMountResolutionCache(Vob vob, int version, IEnumerable<Mount> mounts, PersistenceDirection persistenceDirection)
+        public MultiMountResolutionCache(Vob vob, int version, IEnumerable<IMount> mounts, PersistenceDirection persistenceDirection)
         {
             Vob = vob;
             Version = version;
@@ -17,12 +17,12 @@ namespace LionFire.Vos.Mounts
 
         public int Version { get; }
 
-        public IEnumerable<KeyValuePair<int, Mount>> Mounts => (IEnumerable<KeyValuePair<int, Mount>>)sortedMounts;
-        MultiValueSortedList<int, Mount> sortedMounts;
+        public IEnumerable<KeyValuePair<int, IMount>> Mounts => (IEnumerable<KeyValuePair<int, IMount>>)sortedMounts;
+        MultiValueSortedList<int, IMount> sortedMounts;
 
-        private static MultiValueSortedList<int, Mount> Import(IEnumerable<Mount> mountsToImport, PersistenceDirection persistenceDirection, bool autoResolveDuplicatePriorities = false)
+        private static MultiValueSortedList<int, IMount> Import(IEnumerable<IMount> mountsToImport, PersistenceDirection persistenceDirection, bool autoResolveDuplicatePriorities = false)
         {
-            var list = new MultiValueSortedList<int, Mount>();
+            var list = new MultiValueSortedList<int, IMount>();
             foreach (var mountToImport in mountsToImport)
             {
                 Import(list, mountToImport, persistenceDirection, autoResolveDuplicatePriorities);
@@ -30,19 +30,19 @@ namespace LionFire.Vos.Mounts
             return list;
         }
 
-        public static MultiValueSortedList<int, Mount> Import(MultiValueSortedList<int, Mount> list, Mount mountToImport, PersistenceDirection persistenceDirection, bool autoResolveDuplicatePriorities = false)
+        public static MultiValueSortedList<int, IMount> Import(MultiValueSortedList<int, IMount> list, IMount mountToImport, PersistenceDirection persistenceDirection, bool autoResolveDuplicatePriorities = false)
         {
             //if (mount.MountOptions.NoSubdirectories && )
             int key;
             switch (persistenceDirection)
             {
                 case PersistenceDirection.Read:
-                    key = mountToImport.MountOptions.ReadPriority ?? 0;
+                    key = mountToImport.Options.ReadPriority ?? 0;
                     while (autoResolveDuplicatePriorities && list.ContainsKey(key)) key++;
                     list.Add(key, mountToImport);
                     break;
                 case PersistenceDirection.Write:
-                    key = mountToImport.MountOptions.WritePriority ?? 0;
+                    key = mountToImport.Options.WritePriority ?? 0;
                     while (autoResolveDuplicatePriorities && list.ContainsKey(key)) key++;
                     list.Add(key, mountToImport);
                     break;

@@ -8,5 +8,11 @@
         bool MountAtStartup { get; set; }
         bool MountOnDemand { get; set; }
         bool TryCreateIfMissing { get; set; }
+
+        int? ReadPriority { get; set; }
+        int? WritePriority { get; set; }
+
+        bool IsExclusiveWithReadAndWrite { get; set; }
+        string RootName { get; set; }
     }
 }

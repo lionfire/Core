@@ -1,7 +1,7 @@
 ﻿using LionFire.Dependencies;
 using System;
 
-namespace LionFire.Vos.ExtensionMethods
+namespace LionFire.Vos.Services
 {
     public static class IVobServiceExtensions
     {

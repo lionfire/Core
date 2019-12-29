@@ -43,7 +43,7 @@ namespace LionFire.DependencyInjection
                 case ServiceLifetime.Singleton:
                     if (item.ImplementationInstance != null)
                     {
-                        singletonInstances.AddOrUpdate(item.ServiceType, item.ImplementationInstance, (_, _) => throw new AlreadyException());
+                        singletonInstances.AddOrUpdate(item.ServiceType, item.ImplementationInstance, (t, o) => throw new AlreadyException());
                     }
                     else if (item.ImplementationType != null)
                     {

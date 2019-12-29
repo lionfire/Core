@@ -6,13 +6,12 @@ using System.Text;
 
 namespace LionFire.Vos.Mounts
 {
-
     public static class IVobMountExtensions
     {
-        public static Mount Mount(this IVob vob, IReference target, MountOptions mountOptions = null)
-        {
-            vob.GetRequiredService<VobMounter>().Mount(vob, target, mountOptions);
-            
-        }
+        public static IMount Mount(this IVob vob, IReference target, MountOptions options = null)
+          => vob.GetRequiredService<VobMounter>().Mount(vob, target, options);
+
+        public static IMount Mount(this IVob vob, TMount tMount)
+            => vob.GetRequiredService<VobMounter>().Mount(vob, tMount);
     }
 }

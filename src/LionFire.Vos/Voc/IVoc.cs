@@ -8,12 +8,14 @@ using LionFire.Referencing;
 
 namespace LionFire.Vos
 {
+#if DISABLED
     /// <remarks>
     /// "Vob Handle Collection" - maybe change the name or combine with IVoc
     /// Maybe make this a Dictionary&lt;name,VobReadHandle`T&gt;
     /// </remarks>
     /// <typeparam name="T"></typeparam>
-    public interface IVohac<T> : INotifyingList<VobReadHandle<T>>
+    public interface IVohac<T>
+        : INotifyingList<VobReadHandle<T>>
         where T : class, new()
     {
         VobReadHandle<T> this[string name] { get; }
@@ -25,6 +27,7 @@ namespace LionFire.Vos
 
         
     }
+#endif
 
     public interface IVoc
     {
@@ -33,13 +36,13 @@ namespace LionFire.Vos
         bool? AutoLoad { get; set; }
         bool? AutoSave { get; set; }
 
-        #region Move / Delete Methods
+#region Move / Delete Methods
 
         void Move(Vob vobDestination);
         void Rename(string newName);
         void Delete();
 
-        #endregion
+#endregion
 
     }
 

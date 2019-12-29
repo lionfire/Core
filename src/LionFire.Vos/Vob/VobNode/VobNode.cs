@@ -1,5 +1,6 @@
 ﻿using LionFire.Collections;
 using LionFire.Referencing;
+using LionFire.Vos.Internals;
 using System;
 using System.Text;
 
@@ -38,7 +39,7 @@ namespace LionFire.Vos
             {
                 IVob ancestor = Vob.Parent;
                 VobNode<TInterface> parentVobNode = null;
-                while (ancestor != null && (parentVobNode = ancestor.GetOwnRequired<TInterface>()).Value == null) ancestor = ancestor.Parent;
+                while (ancestor != null && (parentVobNode = ancestor.TryGetOwnVobNode<TInterface>()) == null) ancestor = ancestor.Parent;
 
                 return parentVobNode;
             }

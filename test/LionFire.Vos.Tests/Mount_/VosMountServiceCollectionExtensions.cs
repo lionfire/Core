@@ -2,6 +2,7 @@
 using LionFire.Vos;
 using LionFire.Dependencies;
 using LionFire.Referencing;
+using LionFire.Vos.Mounts;
 
 namespace LionFire.Vos
 {
@@ -10,7 +11,7 @@ namespace LionFire.Vos
         /// <summary>
         /// Defaults to Read mount if no options specified
         /// </summary>
-        public static IServiceCollection VosMount(this IServiceCollection services, string vosPath, IReference reference, MountOptions options = null) 
+        public static IServiceCollection VosMount(this IServiceCollection services, string vosPath, IReference reference, IMountOptions options = null) 
             => services.Configure<VosOptions>(o => o.Mounts.Add(new TMount(vosPath, reference, options ?? MountOptions.DefaultRead)));
 
 

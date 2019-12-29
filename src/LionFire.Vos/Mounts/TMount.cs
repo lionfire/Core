@@ -8,7 +8,7 @@ namespace LionFire.Vos.Mounts
     public class TMount : ITemplate<Mount>
     {
         public TMount() { }
-        public TMount(string vobPath, IReference reference, MountOptions options = null)
+        public TMount(string vobPath, IReference reference, IMountOptions options = null)
         {
             VobPath = vobPath;
             Reference = reference;
@@ -19,6 +19,6 @@ namespace LionFire.Vos.Mounts
 
         public IReference Reference { get; set; }
 
-        public MountOptions Options { get; set; }
+        public IMountOptions Options { get; set; }
     }
 }

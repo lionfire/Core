@@ -7,7 +7,7 @@ namespace LionFire.Instantiating
 {
     public class FactoryInstantiator : IInstantiator
     {
-        public IFactory Factory { get; set; }
+        public IInstantiationFactory Factory { get; set; }
 
         public object Affect(object obj, InstantiationContext context = null)
         {

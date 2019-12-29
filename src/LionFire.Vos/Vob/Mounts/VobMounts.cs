@@ -7,15 +7,19 @@ using System.Linq;
 namespace LionFire.Vos.Mounts
 {
 
-    public class VobMountCache : VobDecoratorBase<VobMountCache>
-    {
-
-    }
-
     public class VobMounts : VobNodeBase<VobMounts>
     {
+        #region Options
 
-        public VobMounts(Vob vob ) : base(vob) { }
+        public VobMountOptions Options { get; set; }
+
+        #endregion
+
+        #region Construction
+
+        public VobMounts(Vob vob) : base(vob) { }
+
+        #endregion
 
         #region Mounts
 
@@ -26,35 +30,8 @@ namespace LionFire.Vos.Mounts
 
         public bool HasLocalMounts => HasLocalReadMounts || HasLocalWriteMounts;
 
-        //public bool HasMounts
-        //{
-        //    get => hasMounts;
-        //    private set
-        //    {
-        //        if (hasMounts == value)
-        //        {
-        //            return;
-        //        }
-
-        //        hasMounts = value;
-
-        //        if (hasMounts)
-        //        {
-        //            NextVobNode.VobsWithMounts.Add(this);
-        //        }
-        //        else
-        //        {
-        //            NextVobNode.VobsWithMounts.Remove(this);
-        //        }
-        //        InitializeEffectiveMounts();
-        //    }
-        //}
-        //private bool hasMounts;
-
-        //private void UpdateHasMounts() => HasMounts = mounts != null && mounts.Count > 0;
-
         #endregion
-
+        
         /// <summary>
         /// 
         /// </summary>
@@ -64,15 +41,15 @@ namespace LionFire.Vos.Mounts
         /// Does not force:
         ///  - Overriding sealed on parent
         /// </param>
-        public Mount Mount(Mount mount, bool force = false)
+        public IMount Mount(IMount mount, bool force = false)
         {
             bool changedState = false;
-            if (!mount.MountOptions.ReadPriority.HasValue && !mount.MountOptions.WritePriority.HasValue)
+            if (!mount.Options.ReadPriority.HasValue && !mount.Options.WritePriority.HasValue)
             {
                 throw new ArgumentException("Either ReadPriority or WritePriority must have a value");
             }
-            if (mount.MountOptions.ReadPriority.HasValue && MountRead(mount, force)) changedState = true;
-            if (mount.MountOptions.WritePriority.HasValue && MountWrite(mount, force)) changedState = true;
+            if (mount.Options.ReadPriority.HasValue && MountRead(mount, force)) changedState = true;
+            if (mount.Options.WritePriority.HasValue && MountWrite(mount, force)) changedState = true;
             if (changedState) OnMountStateChanged();
 
             return mount;
@@ -112,7 +89,7 @@ namespace LionFire.Vos.Mounts
         public bool CanHaveMultiReadMounts { get { throw new NotImplementedException(); } }
         public bool CanHaveMultiWriteMounts { get { throw new NotImplementedException(); } }
 
-        private bool MountRead(Mount mount, bool force = false)
+        private bool MountRead(IMount mount, bool force = false)
         {
             #region Validation
 
@@ -121,7 +98,7 @@ namespace LionFire.Vos.Mounts
                 localReadMount = mount;
                 return true;
             }
-            if (localWriteMount != null && (localWriteMount.MountOptions.IsExclusiveWithReadAndWrite || mount.MountOptions.IsExclusiveWithReadAndWrite))
+            if (localWriteMount != null && (localWriteMount.Options.IsExclusiveWithReadAndWrite || mount.Options.IsExclusiveWithReadAndWrite))
             {
                 throw new VosException("Already has write mount, but either this mount or existing write mount has IsExclusiveWithReadAndWrite == true.");
             }
@@ -131,7 +108,7 @@ namespace LionFire.Vos.Mounts
                 {
                     throw new VosException("Already has read mount, but not allowed to have multiple read mounts.  First unmount the existing read mount.");
                 }
-                if (localReadMount.MountOptions.IsExclusive || mount.MountOptions.IsExclusive)
+                if (localReadMount.Options.IsExclusive || mount.Options.IsExclusive)
                 {
                     throw new VosException("Already has read mount, but one or both mounts has IsExclusive == true.  First unmount one of the mounts, or disable the IsExclusive flag(s) before mounting.");
                 }
@@ -154,7 +131,7 @@ namespace LionFire.Vos.Mounts
             else
             {
                 var existingMount = localReadMount;
-                localReadMounts = new List<Mount>
+                localReadMounts = new List<IMount>
                 {
                     existingMount,
                     mount
@@ -169,7 +146,7 @@ namespace LionFire.Vos.Mounts
         /// <summary>
         /// Returns null on error or end (REVIEW)
         /// </summary>
-        private struct MountEnumerable : IEnumerable<Mount>
+        private struct MountEnumerable : IEnumerable<IMount>
         {
             private PersistenceDirection direction;
             private IVobNode<VobMounts> vobNode;
@@ -179,10 +156,10 @@ namespace LionFire.Vos.Mounts
                 this.direction = read;
             }
 
-            public IEnumerator<Mount> GetEnumerator() => new MountEnumerator(vobNode, direction);
+            public IEnumerator<IMount> GetEnumerator() => new MountEnumerator(vobNode, direction);
             IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
 
-            internal class MountEnumerator : IEnumerator<Mount>
+            internal class MountEnumerator : IEnumerator<IMount>
             {
                 int localIndex = 0;
                 int parentIndex = 0;
@@ -198,7 +175,7 @@ namespace LionFire.Vos.Mounts
                     this.direction = direction;
                 }
 
-                public Mount Current { get; private set; }
+                public IMount Current { get; private set; }
 
                 object IEnumerator.Current => Current;
 
@@ -214,7 +191,7 @@ namespace LionFire.Vos.Mounts
                 }
                 public bool MoveNext()
                 {
-                    if(parent == null)
+                    if (parent == null)
                     {
                         Current = null;
                         return true;
@@ -234,9 +211,9 @@ namespace LionFire.Vos.Mounts
                 }
 
 
-                private bool firstIsPriority_Read(Mount local, Mount parent) => local.MountOptions.ReadPriority > parent.MountOptions.ReadPriority;
-                private bool firstIsPriority_Write(Mount local, Mount parent) => local.MountOptions.WritePriority > parent.MountOptions.WritePriority;
-                private bool _MoveNext(Func<Mount, Mount, bool> firstIsPriority)
+                private bool firstIsPriority_Read(IMount local, IMount parent) => local.Options.ReadPriority > parent.Options.ReadPriority;
+                private bool firstIsPriority_Write(IMount local, IMount parent) => local.Options.WritePriority > parent.Options.WritePriority;
+                private bool _MoveNext(Func<IMount, IMount, bool> firstIsPriority)
                 {
                     var nextLocal = NextLocal;
                     var nextParent = NextParent;
@@ -270,7 +247,7 @@ namespace LionFire.Vos.Mounts
                     return true;
                 }
 
-                Mount GetIndex(int index, Mount singleMount, List<Mount> mounts)
+                IMount GetIndex(int index, IMount singleMount, List<IMount> mounts)
                 {
                     if (index == 0)
                     {
@@ -280,12 +257,12 @@ namespace LionFire.Vos.Mounts
                     else return mounts[index];
                 }
 
-                Mount NextLocal
+                IMount NextLocal
                  => direction == PersistenceDirection.Read
                             ? GetIndex(localIndex, local.Value.localReadMount, local.Value.localReadMounts)
                             : GetIndex(localIndex, local.Value.localWriteMount, local.Value.localWriteMounts);
 
-                Mount NextParent
+                IMount NextParent
                   => direction == PersistenceDirection.Read
                     ? GetIndex(parentIndex, parent.Value.localReadMount, parent.Value.localReadMounts)
                     : GetIndex(parentIndex, parent.Value.localWriteMount, parent.Value.localWriteMounts);
@@ -298,10 +275,10 @@ namespace LionFire.Vos.Mounts
             }
         }
 
-        public IEnumerable<Mount> RankedEffectiveReadMounts => new MountEnumerable(this, PersistenceDirection.Read);
-        public IEnumerable<Mount> RankedEffectiveWriteMounts => new MountEnumerable(this, PersistenceDirection.Write);
+        public IEnumerable<IMount> RankedEffectiveReadMounts => new MountEnumerable(this, PersistenceDirection.Read);
+        public IEnumerable<IMount> RankedEffectiveWriteMounts => new MountEnumerable(this, PersistenceDirection.Write);
 
-        protected IEnumerable<Mount> AllEffectiveReadMounts
+        protected IEnumerable<IMount> AllEffectiveReadMounts
         {
             get
             {
@@ -310,7 +287,7 @@ namespace LionFire.Vos.Mounts
             }
         }
 
-        protected IEnumerable<Mount> AllEffectiveWriteMounts
+        protected IEnumerable<IMount> AllEffectiveWriteMounts
         {
             get
             {
@@ -319,7 +296,7 @@ namespace LionFire.Vos.Mounts
             }
         }
 
-        private bool MountWrite(Mount mount, bool force = false)
+        private bool MountWrite(IMount mount, bool force = false)
         {
             throw new NotImplementedException();
         }
@@ -330,18 +307,18 @@ namespace LionFire.Vos.Mounts
         }
         public int MountStateVersion { get; protected set; }
 
-        public Mount localReadMount;
-        public List<Mount> localReadMounts;
+        public IMount localReadMount;
+        public List<IMount> localReadMounts;
 
-        public Mount localWriteMount;
-        public List<Mount> localWriteMounts;
+        public IMount localWriteMount;
+        public List<IMount> localWriteMounts;
 
         #endregion
 
         #region ReadMountsCache
 
         public int ReadMountsVersion { get; set; } = 0;
-        public IEnumerable<KeyValuePair<int, Mount>> ReadMounts
+        public IEnumerable<KeyValuePair<int, IMount>> ReadMounts
         {
             get
             {
@@ -374,7 +351,7 @@ namespace LionFire.Vos.Mounts
 
         public int WriteMountsVersion { get; set; } = 0;
 
-        public IEnumerable<KeyValuePair<int, Mount>> WriteMounts
+        public IEnumerable<KeyValuePair<int, IMount>> WriteMounts
         {
             get
             {
@@ -404,5 +381,32 @@ namespace LionFire.Vos.Mounts
         //    //}
         //}
 
+        // OLD
+        //public bool HasMounts
+        //{
+        //    get => hasMounts;
+        //    private set
+        //    {
+        //        if (hasMounts == value)
+        //        {
+        //            return;
+        //        }
+
+        //        hasMounts = value;
+
+        //        if (hasMounts)
+        //        {
+        //            NextVobNode.VobsWithMounts.Add(this);
+        //        }
+        //        else
+        //        {
+        //            NextVobNode.VobsWithMounts.Remove(this);
+        //        }
+        //        InitializeEffectiveMounts();
+        //    }
+        //}
+        //private bool hasMounts;
+
+        //private void UpdateHasMounts() => HasMounts = mounts != null && mounts.Count > 0;
     }
 }

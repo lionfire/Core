@@ -63,7 +63,7 @@ namespace LionFire.Vos
             }
         }
 
-        public bool CanWrite => WriteHandleMounts.Where(m => !m.MountOptions.IsReadOnly()).Any();
+        public bool CanWrite => WriteHandleMounts.Where(m => !m.Options.IsReadOnly()).Any();
 
         public IEnumerable<IReadHandleBase<MountHandleObject>> WriteHandles
         {

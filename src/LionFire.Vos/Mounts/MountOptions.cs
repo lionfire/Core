@@ -126,6 +126,6 @@ namespace LionFire.Vos.Mounts
 
     public static class MountOptionsExtensions
     {
-        public static bool IsReadOnly(this MountOptions mountOptions) => !mountOptions.IsWritable;
+        public static bool IsReadOnly(this IMountOptions mountOptions) => !mountOptions.IsWritable;
     }
 }

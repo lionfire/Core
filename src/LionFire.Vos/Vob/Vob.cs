@@ -19,7 +19,9 @@ using LionFire.Referencing;
 using LionFire.Structures;
 using LionFire.Types;
 using LionFire.Vos;
+using LionFire.Vos.Internals;
 using LionFire.Vos.Mounts;
+using LionFire.Vos.Services;
 using Microsoft.Extensions.Logging;
 
 namespace LionFire.Vos
@@ -47,7 +49,7 @@ namespace LionFire.Vos
             {
                 if (root == null)
                 {
-                    var vob = this;
+                    IVob vob = this;
                     while (vob.Parent != null) { vob = vob.Parent; }
                     root = vob as RootVob;
                 }
@@ -300,7 +302,7 @@ namespace LionFire.Vos
         {
             get
             {
-                Vob vob;
+                IVob vob;
                 for (vob = this; vob.Parent != null; vob = vob.Parent) ;
                 return vob as RootVob;
             }
@@ -321,8 +323,49 @@ namespace LionFire.Vos
             return null;
         }
 
+        T DefaultFactory<T>(params object[] parameters)
+        {
+            var serviceProvider = this.GetService<IServiceProvider>();
 
-        VobNode<TInterface> IVobInternals.GetOrAddVobNode<TInterface, TImplementation>(Func<IVobNode, TInterface> factory = null)
+            if (serviceProvider != null)
+            {
+                {
+                    var factory = this.GetService<IInjectingFactory<T>>();
+                    if (factory != null)
+                    {
+                        return factory.Create(serviceProvider, parameters);
+                    }
+                }
+                {
+                    var factory = this.GetService<IFactory<T>>();
+                    if (factory != null)
+                    {
+                        return factory.Create(parameters);
+                    }
+                }
+            }
+
+            return (T)Activator.CreateInstance(typeof(T), parameters);
+        }
+
+        // FUTURE: If just TInterface is provided, maybe use an Interface to Implementation factory (like Transient in Microsoft DI?)
+        //VobNode<TInterface> IVobInternals.GetOrAddVobNode<TInterface >(Func<IVobNode, TInterface> factory = null)
+        //{
+        //    if (vobNodesByType == null) vobNodesByType = new ConcurrentDictionary<Type, IVobNode>();
+
+        //    return vobNodesByType.GetOrAdd(typeof(TInterface), t =>
+        //    {
+        //        var node = new VobNode<TInterface>(this, factory ?? )
+        //    TInterface result;
+        //    if(factory != null) result = factory()
+        //    var factory = this.GetService<IFactory<TInterface>>();
+        //    if(factory != null)
+        //    })
+
+        //}
+
+
+        VobNode<TInterface> IVobInternals.GetOrAddVobNode<TInterface, TImplementation>(Func<IVobNode, TInterface> factory)
         {
             if (vobNodesByType == null) vobNodesByType = new ConcurrentDictionary<Type, IVobNode>();
             return (VobNode<TInterface>)vobNodesByType.GetOrAdd(typeof(TInterface),
@@ -364,15 +407,16 @@ namespace LionFire.Vos
             IVob vob;
             for (vob = this; vob != null; vob = vob.Parent)
             {
-                var vobNode = vob.TryGetVobNode<TInterface>();
+                var vobNode = vob.TryGetOwnVobNode<TInterface>();
                 if (vobNode != null) return vobNode;
             }
             return (addAtRoot ? vob : this).GetOrAddVobNode<TInterface, TImplementation>(factory);
         }
 
         public T GetNext<T>(bool skipOwn = false)
+            where T : class
         {
-            var node = TryGetNextVobNode<T>(skipOwn);
+            var node = this.TryGetNextVobNode<T>(skipOwn);
             if (node != null) return node.Value;
             return default;
         }
@@ -471,12 +515,12 @@ namespace LionFire.Vos
         #region Handles
 
         #region Get Handle
-
-        public VobReadHandle<T> GetReadHandle<T>() => (VobReadHandle<T>)readHandles.GetOrAdd(typeof(T), t => CreateReadHandle(t));
+#if DISABLED
+        //public VobReadHandle<T> GetReadHandle<T>() => (VobReadHandle<T>)readHandles.GetOrAdd(typeof(T), t => CreateReadHandle(t));
         //public VobWriteHandle<T> GetWriteHandle<T>() => (VobWriteHandle<T>)writeHandles.GetOrAdd(typeof(T), t => CreateWriteHandle(t));
 
         /// <seealso cref="CreateHandle(Type)"/>
-        public VobHandle<T> GetHandle<T>() => (VobHandle<T>)handles.GetOrAdd(typeof(T), t => CreateHandle(t));
+        //public VobHandle<T> GetHandle<T>() => (VobHandle<T>)handles.GetOrAdd(typeof(T), t => CreateHandle(t));
         public IVobHandle GetHandle(Type type) => (IVobHandle)handles.GetOrAdd(type, t => CreateHandle(t));
 
         public IVobHandle CreateHandle(Type type)
@@ -492,7 +536,7 @@ namespace LionFire.Vos
 
         private ConcurrentDictionary<Type, object> handles = new ConcurrentDictionary<Type, object>();
         private readonly ConcurrentDictionary<Type, object> readHandles = new ConcurrentDictionary<Type, object>();
-
+#endif
         #endregion
 
         #endregion

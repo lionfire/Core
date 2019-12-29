@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 
 namespace LionFire.Instantiating
 {
-    public interface IFactory
+    public interface IInstantiationFactory
     {
         object Create(InstantiationContext context = null);
     }

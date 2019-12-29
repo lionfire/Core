@@ -17,11 +17,23 @@ namespace LionFire.Vos
         #region Cache
 
         string Path { get; }
+        IEnumerable<string> PathElements { get; }
+        IEnumerable<string> PathElementsReverse { get; }
 
         #endregion
 
-        T GetNext<T>(bool skipOwn = false);
+        T GetNext<T>(bool skipOwn = false) where T : class;
         T GetOwn<T>() where T : class;
 
+        #region Children
+
+        IVob QueryChild(string[] subpathChunks, int index); // Replace with Span?
+        //IVob GetChild(IEnumerable<string> subpathChunks); // Does this exist? If so, Replace with Span?
+        IVob GetChild(IEnumerator<string> subpathChunks);
+
+        #endregion
+
+        IVob this[int index, string[] subpathChunks] { get; }
+        IVob this[string subpath] { get; }
     }
 }

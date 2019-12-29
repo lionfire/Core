@@ -12,6 +12,7 @@ using LionFire.Persistence.Filesystem.Tests;
 using LionFire.Vos;
 using Microsoft.Extensions.DependencyInjection;
 using LionFire.Referencing;
+using LionFire.Vos.Mounts;
 
 namespace Mount_
 {
@@ -25,7 +26,7 @@ namespace Mount_
             //    {
             //        await Task.Delay(1);
             //    });
-
+#error NEXT: TODO: run Vos unit tests
             await VosHost.Create()
             .ConfigureServices((context, services) =>
             {

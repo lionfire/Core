@@ -6,7 +6,7 @@ namespace LionFire.Vos.Mounts
     public interface IMountResolutionCache
     {
         Vob Vob { get; }
-        IEnumerable<KeyValuePair<int, Mount>> Mounts { get; }
+        IEnumerable<KeyValuePair<int, IMount>> Mounts { get; }
         int Version { get; }
 
         //Import(IEnumerable<Mount> mounts, PersistenceDirection persistenceDirection, bool autoResolveDuplicatePriorities = false);

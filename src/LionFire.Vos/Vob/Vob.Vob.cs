@@ -13,7 +13,7 @@ namespace LionFire.Vos
         #region Vob child fields
 
         // TODO: Change to a new MultiBindable ConcurrentDictionary?
-        public IEnumerable<KeyValuePair<string, Vob>> Children
+        public IEnumerable<KeyValuePair<string, IVob>> Children
         {
             get
             {
@@ -21,13 +21,13 @@ namespace LionFire.Vos
                 foreach(var kvp in children)
                 {
                     if (!kvp.Value.IsAlive || kvp.Value.Target == null) { gotNonAlive = true; continue; }
-                    yield return new KeyValuePair<string, Vob>(kvp.Key, kvp.Value.Target);
+                    yield return new KeyValuePair<string, IVob>(kvp.Key, kvp.Value.Target);
                 }
                 if (gotNonAlive) { CleanDeadChildReferences(); }
             }
         }
         [Ignore]
-        protected MultiBindableDictionary<string, WeakReferenceX<Vob>> children = new MultiBindableDictionary<string, WeakReferenceX<Vob>>();
+        protected MultiBindableDictionary<string, WeakReferenceX<IVob>> children = new MultiBindableDictionary<string, WeakReferenceX<IVob>>();
         public readonly object childrenLock = new object();
 
         #region (Private) Cleanup
@@ -51,7 +51,7 @@ namespace LionFire.Vos
 
         #region Get / Query Logic
 
-        private Vob GetChild(IEnumerable<string> subpathChunks)
+        private IVob GetChild(IEnumerable<string> subpathChunks) // TODO: Use span?
         {
             if (subpathChunks == null || !subpathChunks.Any())
             {
@@ -61,17 +61,17 @@ namespace LionFire.Vos
             return GetChild(subpathChunks.GetEnumerator());
         }
 
-        protected Vob CreateChild(string childName) => new Vob(this, childName);
+        protected IVob CreateChild(string childName) => new Vob(this, childName);
 
         // SIMILAR logic: GetChild and QueryChild
-        private Vob GetChild(IEnumerator<string> subpathChunks)
+        public IVob GetChild(IEnumerator<string> subpathChunks)
         {
             if (subpathChunks == null)
             {
                 return this;
             }
 
-            Vob child;
+            IVob child;
 
             if (!subpathChunks.MoveNext() || string.IsNullOrWhiteSpace(subpathChunks.Current))
             {
@@ -111,7 +111,7 @@ namespace LionFire.Vos
                     else
                     {
                         child = CreateChild(childName);
-                        children.Add(childName, new WeakReferenceX<Vob>(child));
+                        children.Add(childName, new WeakReferenceX<IVob>(child));
                     }
                 }
             }
@@ -125,11 +125,11 @@ namespace LionFire.Vos
         /// <param name="subpathChunks"></param>
         /// <param name="index"></param>
         /// <returns></returns>
-        internal Vob GetChild(string[] subpathChunks, int index)
+        internal IVob GetChild(string[] subpathChunks, int index)
         {
             // SIMILAR logic: GetChild and QueryChild
 
-            Vob intermediateChild;
+            IVob intermediateChild;
 
             if (subpathChunks == null || subpathChunks.Length == 0)
             {
@@ -169,7 +169,7 @@ namespace LionFire.Vos
                     else
                     {
                         intermediateChild = CreateChild(childName);
-                        children.Add(childName, new WeakReferenceX<Vob>(intermediateChild));
+                        children.Add(childName, new WeakReferenceX<IVob>(intermediateChild));
                     }
                 }
             }
@@ -185,14 +185,14 @@ namespace LionFire.Vos
         }
 
         // DUPLICATED - Similar logic as GetChild
-        public Vob QueryChild(string[] subpathChunks, int index)
+        public IVob QueryChild(string[] subpathChunks, int index)
         {
             if (subpathChunks == null || subpathChunks.Length == 0)
             {
                 return this;
             }
 
-            Vob intermediateChild;
+            IVob intermediateChild;
 
             string childName = subpathChunks[index];
 
@@ -240,7 +240,7 @@ namespace LionFire.Vos
 
         #region (Derived) Index accessors (to GetChild)
 
-        public Vob this[string subpath]
+        public IVob this[string subpath]
         {
             get
             {
@@ -253,23 +253,23 @@ namespace LionFire.Vos
             }
         }
 
-        public Vob this[IEnumerator<string> subpathChunks] => GetChild(subpathChunks);
+        public IVob this[IEnumerator<string> subpathChunks] => GetChild(subpathChunks);
 
-        public Vob this[IEnumerable<string> subpathChunks] => GetChild(subpathChunks);
+        public IVob this[IEnumerable<string> subpathChunks] => GetChild(subpathChunks);
 
-        public Vob this[int index, string[] subpathChunks] => GetChild(subpathChunks, index);
+        public IVob this[int index, string[] subpathChunks] => GetChild(subpathChunks, index);
 
-        public Vob this[params string[] subpathChunks] => GetChild(subpathChunks);
+        public IVob this[params string[] subpathChunks] => GetChild(subpathChunks);
 
         #endregion
 
         #region (Derived) VosReference child getters
 
-        public Vob this[VosReference reference] => this[reference.Path];
+        public IVob this[VosReference reference] => this[reference.Path];
 
-        public Vob GetChild(VosReference reference) => GetChild(reference.Path.ToPathArray(), 0);
+        public IVob GetChild(VosReference reference) => GetChild(reference.Path.ToPathArray(), 0);
 
-        public Vob QueryChild(VosReference reference) => QueryChild(reference.Path.ToPathArray(), 0);
+        public IVob QueryChild(VosReference reference) => QueryChild(reference.Path.ToPathArray(), 0);
 
         #endregion
     }
