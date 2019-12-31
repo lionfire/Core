@@ -12,9 +12,9 @@ namespace LionFire.MultiTyping
         T AsType<T>() where T : class; // REVIEW - is the class constraint required?
         //IEnumerable<T> OfType<T>() where T : class;
 #else
-        //object AsType(Type T);
         //IEnumerable<object> OfType(Type T);
 #endif
+        object AsType(Type T);
     }
 
     public static class SReadOnlyMultiTypedExtensions

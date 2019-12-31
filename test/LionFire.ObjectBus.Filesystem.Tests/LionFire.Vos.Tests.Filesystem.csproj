@@ -26,7 +26,6 @@
     <ProjectReference Include="..\..\src\LionFire.Applications\LionFire.Applications.csproj" />
     <ProjectReference Include="..\..\src\LionFire.Framework\LionFire.Framework.csproj" />
     <ProjectReference Include="..\..\src\LionFire.Persistence.Handles.Abstractions\LionFire.Persistence.Handles.Abstractions.csproj" />
-    <ProjectReference Include="..\..\src\LionFire.ObjectBus.ExtensionlessFs\LionFire.ObjectBus.ExtensionlessFs.csproj" />
     <ProjectReference Include="..\..\src\LionFire.Persistence\LionFire.Persistence.csproj" />
     <ProjectReference Include="..\..\src\LionFire.Referencing\LionFire.Referencing.csproj" />
     <ProjectReference Include="..\..\src\LionFire.Serialization.Json.System\LionFire.Serialization.Json.System.csproj" />

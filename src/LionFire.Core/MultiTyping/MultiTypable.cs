@@ -15,19 +15,19 @@ namespace LionFire.MultiTyping
     /// </remarks>
     public class MultiTypable : IMultiTypable
     {
-        public MultiType MultiTyped
+        public IMultiTyped MultiTyped
         {
             get
             {
                 if (multiTyped == null)
                 {
-                //LazyInitializer.EnsureInitialized(ref multiTyped);
+                    //LazyInitializer.EnsureInitialized(ref multiTyped);
                     Interlocked.CompareExchange(ref multiTyped, new MultiType(), null);
                 }
                 return multiTyped;
             }
-            protected set { multiTyped = value; }
+            protected set => multiTyped = value;
         }
-        public MultiType multiTyped;
+        public IMultiTyped multiTyped;
     }
 }

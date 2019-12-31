@@ -1,4 +1,6 @@
 ﻿using LionFire.Dependencies;
+using LionFire.Structures;
+using Microsoft.Extensions.DependencyInjection;
 using System;
 
 namespace LionFire.Vos.Services
@@ -7,6 +9,11 @@ namespace LionFire.Vos.Services
     {
         public static IServiceProvider GetServiceProvider(this IVob vob)
             => vob.GetNext<IServiceProvider>();
+        public static IServiceProvider ServiceProvider(this IVob vob)
+            => vob.GetNextRequired<IServiceProvider>();
+        public static IServiceCollection ServiceCollection(this IVob vob)
+            => vob.GetNextRequired<IServiceCollection>();
+     
         
         public static T GetService<T>(this IVob vob) where T : class 
             => (T)vob.GetNext<IServiceProvider>()?.GetService(typeof(T));

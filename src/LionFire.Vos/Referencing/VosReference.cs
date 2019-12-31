@@ -7,6 +7,22 @@ using LionFire.Referencing;
 
 namespace LionFire.Vos
 {
+#if TOOPTIMIZE // OPTIMIZE ideas:
+    //  - VosPathChunksReference
+    //  - IVosReference
+    // TODO: Create this from VosReference
+    public class VosChunksReference : VosReferenceBase, IVosReference
+    {
+        public IVosReference ParentReference { get; }
+        public ArraySegment<string> PathChunks { get; set; }
+    }
+
+    public class VosReferenceBase<TConcrete> : ReferenceBase<TConcrete>, IVosReference
+    {
+        // TODO: Get most of this from VosReference
+    }
+#endif
+
     /// <summary>
     /// </summary>
     /// <remarks>
@@ -14,20 +30,20 @@ namespace LionFire.Vos
     /// </remarks>
     public class VosReference : ReferenceBase<VosReference>, IVosReference
     {
-        #region Ontology
+#region Ontology
 
         //IOBase IHas<IOBase>.Object => VosOBus.Instance.DefaultOBase;
         //IOBus IHas<IOBus>.Object => VosOBus.Instance;
 
-        #endregion
+#endregion
 
-        #region Properties
+#region Properties
 
 
 
-        #endregion
+#endregion
 
-        #region Construction and Implicit Construction
+#region Construction and Implicit Construction
 
         public VosReference() { }
 
@@ -67,7 +83,7 @@ namespace LionFire.Vos
             return new VosReference(referenceString);
         }
 
-        #endregion
+#endregion
 
         //#region GetHandle
 
@@ -83,9 +99,9 @@ namespace LionFire.Vos
 
         //#endregion
 
-        #region IReference Implementation
+#region IReference Implementation
 
-        #region Scheme
+#region Scheme
 
         public const string UriSchemeDefault = "vos";
         public const string UriPrefixDefault = "vos:";
@@ -98,9 +114,9 @@ namespace LionFire.Vos
         public override string Scheme => UriSchemeDefault;
         public static readonly string[] UriSchemes = new string[] { UriSchemeDefault };
 
-        #endregion
+#endregion
 
-        #region Key
+#region Key
 
         public override string Key
         {
@@ -166,11 +182,11 @@ namespace LionFire.Vos
                 }
             }
         }
-        
-        #endregion
+
+#endregion
 
 
-        #region Type
+#region Type
 
         public Type Type
         {
@@ -184,12 +200,12 @@ namespace LionFire.Vos
         }
         private Type type;
 
-        #endregion
+#endregion
 
-        public override string Host { get => null; set=>throw new NotImplementedException(); }
-        public override string Port { get  => null; set => throw new NotImplementedException(); }
+        public override string Host { get => null; set => throw new NotImplementedException(); }
+        public override string Port { get => null; set => throw new NotImplementedException(); }
 
-        #region Path
+#region Path
 
         [SetOnce]
         public override string Path
@@ -204,9 +220,9 @@ namespace LionFire.Vos
         }
         private string path;
 
-        #endregion
+#endregion
 
-        #endregion
+#endregion
 
         public string Package { get; set; }
 
@@ -215,7 +231,7 @@ namespace LionFire.Vos
         /// </summary>
         public string Location { get; set; }
 
-        #region ProviderName
+#region ProviderName
 
         /// <summary>
         /// Leave blank to base the reference off of the default provider
@@ -233,7 +249,7 @@ namespace LionFire.Vos
         }
         private string providerName;
 
-        #endregion
+#endregion
 
         // OLD
         //private void Reset()
@@ -248,7 +264,7 @@ namespace LionFire.Vos
 
 #if TOPORT
 
-        #region Convenience
+#region Convenience
 
     public VBase Vos { get { return VosOBaseProvider.Instance.DefaultVos; } }
 
@@ -282,12 +298,12 @@ namespace LionFire.Vos
         return this.Vob.GetHandle<T>();
     }
 
-        #endregion
+#endregion
 
     
 #endif
 
-        #region Misc
+#region Misc
 
         public override string ToString()
         {
@@ -313,7 +329,7 @@ namespace LionFire.Vos
 
         public override int GetHashCode() => Key.GetHashCode();
 
-        #endregion
+#endregion
 
         //public static class VosReferenceExtensions
         //{

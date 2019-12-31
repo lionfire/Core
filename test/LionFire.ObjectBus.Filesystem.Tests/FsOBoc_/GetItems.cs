@@ -8,6 +8,8 @@ using System.IO;
 using LionFire.Hosting;
 using LionFire.ObjectBus;
 using System.Threading.Tasks;
+using LionFire.Persistence;
+using LionFire.Persistence.Filesystem;
 
 namespace FsOBoc_
 {
@@ -18,7 +20,8 @@ namespace FsOBoc_
         public async Task Pass()
         {
             Assert.True(true);
-            await FrameworkHostBuilder.Create()
+            await PersistersHost.Create()
+                
                 .AddObjectBus<FSOBus>()
                 .Run(() =>
                 {

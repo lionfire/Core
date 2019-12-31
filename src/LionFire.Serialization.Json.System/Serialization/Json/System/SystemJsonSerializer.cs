@@ -7,7 +7,7 @@ using System.Text.Json.Serialization;
 
 namespace LionFire.Serialization.Json.System
 {
-    
+
     public class SystemJsonSerializer : SerializerBase<SystemJsonSerializer>
     {
         public override SerializationFlags SupportedCapabilities =>
@@ -82,7 +82,8 @@ namespace LionFire.Serialization.Json.System
 
         #region Deserialize
 
-        public override (T Object, SerializationResult Result) ToObject<T>(string str, Lazy<PersistenceOperation> operation = null, PersistenceContext context = null) => (JsonSerializer.Deserialize<T>(str, DeserializeSettings), SerializationResult.Success);
+        public override DeserializationResult<T> ToObject<T>(string str, Lazy<PersistenceOperation> operation = null, PersistenceContext context = null) 
+            => new DeserializationResult<T>(JsonSerializer.Deserialize<T>(str, DeserializeSettings));
 
         #endregion
 

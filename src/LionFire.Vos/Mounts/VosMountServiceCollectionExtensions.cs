@@ -4,7 +4,7 @@ using LionFire.Dependencies;
 using LionFire.Referencing;
 using LionFire.Vos.Mounts;
 
-namespace LionFire.Vos
+namespace LionFire.Services
 {
     public static class VosMountServiceCollectionExtensions
     {

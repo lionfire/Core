@@ -56,34 +56,38 @@ namespace LionFire.Persistence.Persisters.Vos
             var result = new VosRetrieveResult<TValue>();
 
             bool anyMounts = false;
-            foreach(var mount in vob.GetNext<VobMounts>().RankedEffectiveReadMounts)
+            var vobMounts = vob.GetNext<VobMounts>();
+            if (vobMounts != null)
             {
-
-                //var relativeDepth = vob.Depth - mount.VobDepth;
-
-                var relativePathChunks = vob.PathElements.Skip(mount.VobDepth);
-
-                var effectiveReference = !relativePathChunks.Any() ? mount.Target : mount.Target.GetChildSubpath(relativePathChunks);
-
-                var rh = effectiveReference.GetReadHandle<TValue>();
-
-                //anyMounts = true;
-                //var rh = vob.GetReadHandleFromMount<TValue>(mount);
-                //if (rh == null) continue;
-
-                //var childResult = await rh.Retrieve().ConfigureAwait(false);
-                var childResult = (await rh.Resolve().ConfigureAwait(false)).ToRetrieveResult();
-
-                if (childResult.IsFail()) result.Flags |= PersistenceResultFlags.Fail; // Indicates that at least one underlying persister failed
-
-                if (childResult.IsSuccess == true)
+                foreach (var mount in vobMounts.RankedEffectiveReadMounts)
                 {
-                    result.Flags |= PersistenceResultFlags.Success; // Indicates that at least one underlying persister failed
 
-                    if (childResult.Flags.HasFlag(PersistenceResultFlags.Found))
+                    //var relativeDepth = vob.Depth - mount.VobDepth;
+
+                    var relativePathChunks = vob.PathElements.Skip(mount.VobDepth);
+
+                    var effectiveReference = !relativePathChunks.Any() ? mount.Target : mount.Target.GetChildSubpath(relativePathChunks);
+
+                    var rh = effectiveReference.GetReadHandle<TValue>();
+
+                    //anyMounts = true;
+                    //var rh = vob.GetReadHandleFromMount<TValue>(mount);
+                    //if (rh == null) continue;
+
+                    //var childResult = await rh.Retrieve().ConfigureAwait(false);
+                    var childResult = (await rh.Resolve().ConfigureAwait(false)).ToRetrieveResult();
+
+                    if (childResult.IsFail()) result.Flags |= PersistenceResultFlags.Fail; // Indicates that at least one underlying persister failed
+
+                    if (childResult.IsSuccess == true)
                     {
-                        result.Value = childResult.Value;
-                        return childResult;
+                        result.Flags |= PersistenceResultFlags.Success; // Indicates that at least one underlying persister failed
+
+                        if (childResult.Flags.HasFlag(PersistenceResultFlags.Found))
+                        {
+                            result.Value = childResult.Value;
+                            return childResult;
+                        }
                     }
                 }
             }

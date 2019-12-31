@@ -9,6 +9,13 @@ namespace LionFire.DependencyInjection
 
     public class DynamicServiceProvider : IServiceCollection, IServiceProvider
     {
+        ConcurrentDictionary<Type, object> singletonInstances = new ConcurrentDictionary<Type, object>();
+        Dictionary<Type, Func<IServiceProvider, object>> singletonFactories = new Dictionary<Type, Func<IServiceProvider, object>>();
+        //ConcurrentDictionary<Type, Type> implementationTypes = new ConcurrentDictionary<Type, Type>();
+
+        Dictionary<Type, Type> transientImplementationTypes = new Dictionary<Type, Type>();
+        Dictionary<Type, Func<IServiceProvider, object>> transientFactories = new Dictionary<Type, Func<IServiceProvider, object>>();
+
 
         public object GetService(Type serviceType)
         {
@@ -16,10 +23,10 @@ namespace LionFire.DependencyInjection
             {
                 return singletonInstances[serviceType];
             }
-            else if (singletonInstanceFactories.ContainsKey(serviceType))
+            else if (singletonFactories.ContainsKey(serviceType))
             {
-                var instance = singletonInstanceFactories[serviceType](this);
-                singletonInstanceFactories.Remove(serviceType);
+                var instance = singletonFactories[serviceType](this);
+                singletonFactories.Remove(serviceType);
                 if (singletonInstances.TryAdd(serviceType, instance))
                 {
                     return instance;
@@ -29,41 +36,66 @@ namespace LionFire.DependencyInjection
                     return singletonInstances[serviceType];
                 }
             }
+            else if (transientFactories.ContainsKey(serviceType))
+            {
+                // UNTESTED
+                var factory = transientFactories[serviceType];
+                return factory(this);
+            }
+            else if (transientImplementationTypes.ContainsKey(serviceType))
+            {
+                // UNTESTED
+                return ActivatorUtilities.CreateInstance(this, transientImplementationTypes[serviceType]);
+            }
             return null;
         }
 
 
-        ConcurrentDictionary<Type, object> singletonInstances = new ConcurrentDictionary<Type, object>();
-        Dictionary<Type, Func<IServiceProvider, object>> singletonInstanceFactories = new Dictionary<Type, Func<IServiceProvider, object>>();
 
+        private object _lock = new object();
         #region IServiceCollection
 
         void ICollection<ServiceDescriptor>.Add(ServiceDescriptor item) => Add(item);
         public void Add(ServiceDescriptor item)
         {
-
-            switch (item.Lifetime)
+            lock (_lock)
             {
-                case ServiceLifetime.Singleton:
-                    if (item.ImplementationInstance != null)
-                    {
-                        singletonInstances.AddOrUpdate(item.ServiceType, item.ImplementationInstance, (t, o) => throw new AlreadyException());
-                    }
-                    else if (item.ImplementationType != null)
-                    {
-                        singletonInstanceFactories.Add(item.ServiceType, sp => ActivatorUtilities.CreateInstance(sp, item.ImplementationType));
-                    }
-                    else if (item.ImplementationFactory != null)
-                    {
-                        singletonInstanceFactories.Add(item.ServiceType, item.ImplementationFactory);
-                    }
-                    break;
-                //case ServiceLifetime.Scoped:
-                //    break;
-                //case ServiceLifetime.Transient:
-                //    break;
-                default:
-                    throw new NotImplementedException("TODO");
+                if (singletonFactories.ContainsKey(item.ServiceType)) throw new AlreadySetException();
+                //if (implementationTypes.ContainsKey(item.ServiceType)) throw new AlreadySetException();
+                if (transientImplementationTypes.ContainsKey(item.ServiceType)) throw new AlreadySetException();
+
+                switch (item.Lifetime)
+                {
+                    case ServiceLifetime.Singleton:
+                        if (item.ImplementationInstance != null)
+                        {
+                            singletonInstances.AddOrUpdate(item.ServiceType, item.ImplementationInstance, (t, o) => throw new AlreadyException());
+                        }
+                        else if (item.ImplementationFactory != null)
+                        {
+                            singletonFactories.Add(item.ServiceType, item.ImplementationFactory);
+                        }
+                        else if (item.ImplementationType != null)
+                        {
+                            singletonFactories.Add(item.ServiceType, sp => ActivatorUtilities.CreateInstance(sp, item.ImplementationType));
+                        }
+                        break;
+                    //case ServiceLifetime.Scoped:
+                    //    break;
+                    case ServiceLifetime.Transient:
+                        if (item.ImplementationType != null)
+                        {
+                            transientImplementationTypes.Add(item.ServiceType, item.ImplementationType);
+                        }
+                        else if (item.ImplementationFactory != null)
+                        {
+                            transientFactories.Add(item.ServiceType, item.ImplementationFactory);
+                        }
+                        else throw new ArgumentException("Transient descriptor must have factory or implementation type.");
+                        break;
+                    default:
+                        throw new NotImplementedException("TODO");
+                }
             }
         }
 

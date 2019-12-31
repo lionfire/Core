@@ -426,6 +426,12 @@ namespace LionFire.MultiTyping.Overlaying
             }
         }
 
+        public T AsTypeOrCreateDefault<T>(Type slotType = null) where T : class
+        {
+            throw new NotImplementedException();
+            //return ((IMultiTyped)DefaultLayer).AsTypeOrCreateDefault<T>(slotType);
+        }
+
         #endregion
 
         #endregion

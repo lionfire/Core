@@ -92,6 +92,13 @@ namespace LionFire.Serialization
         public new static readonly DeserializationResult<T> NotSupported = new DeserializationResult<T> { Flags = SerializationResultKind.NotSupported };
         public new static readonly DeserializationResult<T> Success = new DeserializationResult<T> { Flags = SerializationResultKind.Success };
 
+        public DeserializationResult() { }
+        public DeserializationResult(T successResultObject)
+        {
+            Object = successResultObject;
+            Flags = SerializationResultKind.Success;
+        }
+
         //public SerializationAwaiter GetAwaiter() => new SerializationAwaiter();
 
         public T Object { get; set; }

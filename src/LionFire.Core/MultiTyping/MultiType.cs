@@ -7,11 +7,8 @@ using System.Threading.Tasks;
 
 namespace LionFire.MultiTyping
 {
-
-
-    public class MultiType : IMultiTyped, IMultiTypable // RENAME to MultiTyped
+    public class MultiType : IMultiTyped,  IMultiTypable // RENAME to MultiTyped
     {
-
         private object _lock = new object();
 
         #region Construction
@@ -35,7 +32,7 @@ namespace LionFire.MultiTyping
 
         public IEnumerable<object> SubTypes => TypeDict?.Values ?? Enumerable.Empty<object>();
 
-        public MultiType MultiTyped => this;
+        public IMultiTyped MultiTyped => this;
 
         public object this[Type type] { get => AsType(type); set => this.SetType(value, type); }
 
@@ -50,9 +47,12 @@ namespace LionFire.MultiTyping
         [AotReplacement]
         public object AsType(Type type)
         {
-            Type slotType = GetSlotType(type);
-            object obj = this[slotType];
-            return obj;
+            if (typeDict == null) return null;
+            if (!typeDict.ContainsKey(type)) return null;
+            return typeDict[type];
+            //Type slotType = GetSlotType(type);
+            //object obj = this[slotType];
+            //return obj;
         }
 
         #region OfType

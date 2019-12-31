@@ -11,8 +11,4 @@
     <ProjectReference Include="..\LionFire.Vos\LionFire.Vos.csproj" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="Vos\Packages\" />
-  </ItemGroup>
-
 </Project>

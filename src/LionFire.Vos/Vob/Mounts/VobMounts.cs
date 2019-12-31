@@ -191,12 +191,12 @@ namespace LionFire.Vos.Mounts
                 }
                 public bool MoveNext()
                 {
-                    if (parent == null)
-                    {
-                        Current = null;
-                        return false;
-                        //return true;
-                    }
+                    //if (parent == null)
+                    //{
+                    //    Current = null;
+                    //    return false;
+                    //    //return true;
+                    //}
                     if (!ReferenceEquals(local.ParentVobNode, parent))
                     {
                         Current = null;
@@ -262,13 +262,13 @@ namespace LionFire.Vos.Mounts
 
                 IMount NextLocal
                  => direction == PersistenceDirection.Read
-                            ? GetIndex(localIndex, local.Value.localReadMount, local.Value.localReadMounts)
-                            : GetIndex(localIndex, local.Value.localWriteMount, local.Value.localWriteMounts);
+                            ? GetIndex(localIndex, local?.Value.localReadMount, local?.Value.localReadMounts)
+                            : GetIndex(localIndex, local?.Value.localWriteMount, local?.Value.localWriteMounts);
 
                 IMount NextParent
                   => direction == PersistenceDirection.Read
-                    ? GetIndex(parentIndex, parent.Value.localReadMount, parent.Value.localReadMounts)
-                    : GetIndex(parentIndex, parent.Value.localWriteMount, parent.Value.localWriteMounts);
+                    ? GetIndex(parentIndex, parent?.Value.localReadMount, parent?.Value.localReadMounts)
+                    : GetIndex(parentIndex, parent?.Value.localWriteMount, parent?.Value.localWriteMounts);
 
                 public void Reset()
                 {

@@ -25,6 +25,17 @@ namespace LionFire.Referencing
 
         #endregion
 
+        public static string FromPathArray(IEnumerable<string> chunks)
+        {
+            var sb = new StringBuilder();
+            foreach(var chunk in chunks)
+            {
+                sb.Append(Separator);
+                sb.Append(chunk);
+            }
+            if (sb.Length == 0) sb.Append(Separator);
+            return sb.ToString();
+        }
         // Field arrays can't be made readonly
         public static char[] SeparatorChars { get { return new char[] { PathDelimiter, PathDelimiterAlt }; } }
 

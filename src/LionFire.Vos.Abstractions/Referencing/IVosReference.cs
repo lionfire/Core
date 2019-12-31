@@ -13,8 +13,14 @@ namespace LionFire.Vos
     {
         IEnumerable<string> AllowedSchemes { get; }
         //string Key { get; }
+
+        #region REVIEW - maybe eliminate these, or eliminate Package and replace Location with MountName
+
         string Location { get; set; }
         string Package { get; set; }
+
+        #endregion
+
         //string Path { get; set; }
         //string Scheme { get; }
         //Type Type { get; set; }

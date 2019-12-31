@@ -27,7 +27,7 @@ namespace LionFire.Vos.Mounts
             return DoMount(mount);
         }
 
-        private IMount DoMount(Mount mount)
+        protected IMount DoMount(Mount mount)
         {
             IVob mountPoint = mount.MountPoint;
             var args = new CancelableReasonEventArgs<Mount>(mount);

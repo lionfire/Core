@@ -7,6 +7,7 @@ using LionFire.Types;
 
 namespace LionFire.Vos
 {
+
     public interface IVob :
         //IReadOnlyMultiTyped, 
         IReferencable
@@ -36,5 +37,6 @@ namespace LionFire.Vos
 
         IVob this[int index, string[] subpathChunks] { get; }
         IVob this[string subpath] { get; }
+
     }
 }

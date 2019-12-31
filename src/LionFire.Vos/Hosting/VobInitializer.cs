@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections.Generic;
+using LionFire.Referencing;
 using LionFire.Vos;
 
 namespace LionFire.Services
@@ -8,6 +10,8 @@ namespace LionFire.Services
         public string VobRootName { get; set; } = VosConstants.DefaultRootName;
 
         public string VobPath { get; set; }
+
+        public IEnumerable<string> VobPathChunks { get => LionPath.ToPathArray(VobPath); set => VobPath = LionPath.FromPathArray(value); }
 
         /// <summary>
         /// Targets Root Vob of default Root

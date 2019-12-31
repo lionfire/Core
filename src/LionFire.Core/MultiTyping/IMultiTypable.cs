@@ -12,7 +12,7 @@ namespace LionFire.MultiTyping
 {
     public interface IMultiTypable
     {
-        MultiType MultiTyped { get; }
+        IMultiTyped MultiTyped { get; }
     }
 
     public class MultiTypeTypeCollection<T> : ConcurrentList<T>
@@ -20,7 +20,7 @@ namespace LionFire.MultiTyping
     {
     }
 
-    public static class IContainsMultiTypedExtensions
+    public static class IMultiTypableExtensions
     {
         public static T AsType<T>(this IMultiTypable cmt)
             where T : class

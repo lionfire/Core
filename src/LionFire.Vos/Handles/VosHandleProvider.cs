@@ -2,12 +2,9 @@
 using LionFire.Persistence.Handles;
 using LionFire.Persistence.Persisters;
 using LionFire.Referencing;
-using System.Collections.Generic;
-using System.Text;
 
 namespace LionFire.Vos.Handles
 {
-
     public class VosHandleProvider : PersisterHandleProviderBase<VosReference>
         , IReadHandleProvider<VosReference>
         , IReadWriteHandleProvider<VosReference>

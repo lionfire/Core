@@ -103,7 +103,6 @@ Singleton<IntComparer>.Instance
             return null;
         }
 
-
         /// <summary>
         /// Aggregates all subtypes of the specified type
         /// </summary>

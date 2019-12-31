@@ -173,6 +173,7 @@ namespace LionFire.Vos
 #endif
         , IVob
         , IVobInternals
+        
     //, SReadOnlyMultiTyped // FUTURE?
     {
 
@@ -246,6 +247,8 @@ namespace LionFire.Vos
 
         #region Derived
 
+        public string Key => VosReference.Key;
+
         #region Path
 
         public virtual string Path => LionPath.GetTrimmedAbsolutePath(LionPath.Combine(parent == null ? "" : parent.Path, name));
@@ -300,6 +303,57 @@ namespace LionFire.Vos
         }
         #endregion
 
+        #region Reference
+
+        public VosReference VosReference
+        {
+            get
+            {
+                if (vosReference == null)
+                {
+                    vosReference = new VosReference(Path);
+                }
+                return vosReference;
+            }
+            set
+            {
+                if (vosReference == value)
+                {
+                    return;
+                }
+
+                if (vosReference != default(IReference))
+                {
+                    throw new NotSupportedException("Reference can only be set once.  To relocate, use the Move() method.");
+                }
+
+                vosReference = value;
+            }
+        }
+        private VosReference vosReference;
+
+
+        public IReference Reference // TODO MEMORYOPTIMIZE: I think a base class has an IReference field
+        {
+            get => VosReference;
+            set
+            {
+                if (value == null) { VosReference = null; return; }
+                VosReference vr = value as VosReference;
+                if (vr != null)
+                {
+                    VosReference = vr; return;
+                }
+                else
+                {
+                    //new VosReference(value); // FUTURE: Try converting
+                    throw new ArgumentException("Reference for a Vob must be VosReference");
+                }
+            }
+        }
+
+        #endregion
+
         IVob IVob.Root => Root;
         public virtual RootVob Root
         {
@@ -313,7 +367,28 @@ namespace LionFire.Vos
 
         #endregion
 
-        #region Decorators
+        #region MultiTyped
+
+        // Non-inhereted extensions
+
+        public IMultiTyped MultiTyped
+        {
+            get
+            {
+                if (multiTyped == null)
+                {
+                    multiTyped = new MultiType();
+                }
+                return multiTyped;
+            }
+        }
+        protected MultiType multiTyped;
+
+        #endregion
+
+        #region VobNodes
+
+        #region Vob Nodes: Own data
 
         protected ConcurrentDictionary<Type, IVobNode> vobNodesByType;
 
@@ -351,42 +426,79 @@ namespace LionFire.Vos
             return (T)Activator.CreateInstance(typeof(T), parameters);
         }
 
-        IDictionary<Type, object> factoryServices(IVobNode vobNode)
+        #region VobNode Value Factory
+
+        TInterface DefaultVobNodeValueFactory<TInterface>(IVobNode vobNode)
         {
-                return new Dictionary<Type, object>
+            {
+                var factory = this.GetService<IFactory<TInterface>>();
+                if (factory != null)
                 {
-                    [typeof(Vob)] = vobNode.Vob,
-                    [typeof(IVobNode)] = vobNode
-                };
+                    return factory.Create();
+                }
+            }
+            {
+                var func = this.GetService<Func<Vob, TInterface>>();
+                if (func != null)
+                {
+                    return func(this);
+                }
+            }
+            {
+                var func = this.GetService<Func<TInterface>>();
+                if (func != null)
+                {
+                    return func();
+                }
+            }
+
+            if (!typeof(TInterface).IsAbstract && !typeof(TInterface).IsInterface)
+            {
+                return ActivatorUtilities.CreateInstance<TInterface>(ServiceProviderForVobNode(vobNode));
+            }
+
+            throw new NotSupportedException($"No IFactory<TInterface> or Func<IVob, TInterface> or Func<TInterface> service registered and type is abstract or interface -- cannot create TInterface of type: {typeof(TInterface).Name}");
         }
+
         TInterface DefaultVobNodeValueFactory<TInterface, TImplementation>(IVobNode vobNode)
             where TImplementation : TInterface
-            => ActivatorUtilities.CreateInstance<TImplementation>(new ServiceProviderWrapper(this.GetServiceProvider(), factoryServices(vobNode)));
-        //  (Func<IVobNode, TInterface>)(vobNode => (TInterface)Activator.CreateInstance(typeof(TImplementation), vobNode)))
+            => ActivatorUtilities.CreateInstance<TImplementation>(ServiceProviderForVobNode(vobNode));
 
-        // FUTURE: If just TInterface is provided, maybe use an Interface to Implementation factory (like Transient in Microsoft DI?)
-        //VobNode<TInterface> IVobInternals.GetOrAddVobNode<TInterface >(Func<IVobNode, TInterface> factory = null)
-        //{
-        //    if (vobNodesByType == null) vobNodesByType = new ConcurrentDictionary<Type, IVobNode>();
+        IServiceProvider ServiceProviderForVobNode(IVobNode vobNode) => new ServiceProviderWrapper(this.GetServiceProvider(), factoryServices(vobNode));
+        IDictionary<Type, object> factoryServices(IVobNode vobNode)
+        {
+            return new Dictionary<Type, object>
+            {
+                [typeof(Vob)] = vobNode.Vob,
+                [typeof(IVobNode)] = vobNode
+            };
+        }
 
-        //    return vobNodesByType.GetOrAdd(typeof(TInterface), t =>
-        //    {
-        //        var node = new VobNode<TInterface>(this, factory ?? )
-        //    TInterface result;
-        //    if(factory != null) result = factory()
-        //    var factory = this.GetService<IFactory<TInterface>>();
-        //    if(factory != null)
-        //    })
-        //}
+        #endregion
 
-        VobNode<TInterface> IVobInternals.GetOrAddVobNode<TInterface, TImplementation>(Func<IVobNode, TInterface> factory)
+        VobNode<TInterface> IVobInternals.GetOrAddOwnVobNode<TInterface>(Func<IVobNode, TInterface> valueFactory)
         {
             if (vobNodesByType == null) vobNodesByType = new ConcurrentDictionary<Type, IVobNode>();
             return (VobNode<TInterface>)vobNodesByType.GetOrAdd(typeof(TInterface),
                 t => (IVobNode)Activator.CreateInstance(typeof(VobNode<>).MakeGenericType(t),
-                this, factory ?? DefaultVobNodeValueFactory<TInterface, TImplementation>));
+                this, valueFactory ?? DefaultVobNodeValueFactory<TInterface>));
         }
 
+        VobNode<TInterface> IVobInternals.GetOrAddOwnVobNode<TInterface, TImplementation>(Func<IVobNode, TInterface> valueFactory)
+        //where TInterface : class
+        //where TImplementation : TInterface
+        {
+            if (vobNodesByType == null) vobNodesByType = new ConcurrentDictionary<Type, IVobNode>();
+            return (VobNode<TInterface>)vobNodesByType.GetOrAdd(typeof(TInterface),
+                t => (IVobNode)Activator.CreateInstance(typeof(VobNode<>).MakeGenericType(t),
+                this, valueFactory ?? DefaultVobNodeValueFactory<TInterface, TImplementation>));
+        }
+
+        /// <summary>
+        /// Get Value from own VobNode
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <returns></returns>
         public T GetOwn<T>()
             where T : class
         {
@@ -397,7 +509,7 @@ namespace LionFire.Vos
 
         #endregion
 
-        #region Inheritance
+        #region Vob Nodes: Inheritance
 
         VobNode<T> IVobInternals.TryGetNextVobNode<T>(bool skipOwn)
             where T : class
@@ -424,7 +536,7 @@ namespace LionFire.Vos
                 var vobNode = vob.TryGetOwnVobNode<TInterface>();
                 if (vobNode != null) return vobNode;
             }
-            return (addAtRoot ? vob : this).GetOrAddVobNode<TInterface, TImplementation>(factory);
+            return (addAtRoot ? vob : this).GetOrAddOwnVobNode<TInterface, TImplementation>(factory);
         }
 
         public T GetNext<T>(bool skipOwn = false)
@@ -435,64 +547,8 @@ namespace LionFire.Vos
             return default;
         }
 
-        #endregion
-
-        #region ToSort
-
-        #region VobNode by Type
-
-        // REVIEW - should this be GetRequiredNextVobNode?  Or should it attempt to create T if it is not an interface and not abstract?
-        //public VobNode<T> GetNextVobNode<T>()
-        //{
-        //    return TryGetNextVobNode<T>() ?? throw new VosException("Missing NextVobNode"); // Should not happen - RootVob should always have a VobNode.
-        //}
-
-        #endregion
-
-        #region VobNode
-#if VobNode
-        protected VobNode GetVobNode()
-        {
-            if (vobNode == null)
-            {
-                vobNode = new VobNode(this);
-            }
-            return vobNode;
-        }
-        public VobNode VobNode => vobNode;
-        protected VobNode vobNode;
-
-
-        public IEnumerable<VobNode> ChildVobNodes
-        {
-            get
-            {
-                foreach (var child in Children.Select(kvp => kvp.Value))
-                {
-                    if (child.VobNode != null) yield return child.VobNode;
-
-                    foreach (var childVobNode in child.ChildVobNodes)
-                    {
-                        yield return childVobNode;
-                    }
-                }
-            }
-        }
-
-        public VobNode NextVobNode
-        {
-            get
-            {
-                var vob = this;
-                while (vob != null)
-                {
-                    if (vob.VobNode != null) return vob.VobNode;
-                    vob = vob.Parent;
-                }
-                throw new VosException("Missing NextVobNode"); // Should not happen - RootVob should always have a VobNode.
-            }
-        }
-        public int NextVobNodeDepth
+#if TODO // If needed
+        public int NextVobNodeRelativeDepth
         {
             get
             {
@@ -511,101 +567,42 @@ namespace LionFire.Vos
 
         #endregion
 
+        #region Vob Nodes: Descendants
+
+#if TODO // Maybe
+        public IEnumerable<VobNode> ChildVobNodes
+        {
+            get
+            {
+                foreach (var child in Children.Select(kvp => kvp.Value))
+                {
+                    if (child.VobNode != null) yield return child.VobNode;
+
+                    foreach (var childVobNode in child.ChildVobNodes)
+                    {
+                        yield return childVobNode;
+                    }
+                }
+            }
+        }
+#endif
+
         #endregion
 
-
+        #endregion
 
         #region Referencing
 
         #region GetReference<T>
 
+        // TODO: Move to extension method?
         // FUTURE MEMOPTIMIZE - consider caching/reusing these references to save memory?
-        public VosReference GetReference<T>() => new VosReference(Path) { Type = typeof(T), Persister = Root.RootName };
-
-        #endregion
-
-        #endregion
-
-        #region Handles
-
-        #region Get Handle
-#if DISABLED
-        //public VobReadHandle<T> GetReadHandle<T>() => (VobReadHandle<T>)readHandles.GetOrAdd(typeof(T), t => CreateReadHandle(t));
-        //public VobWriteHandle<T> GetWriteHandle<T>() => (VobWriteHandle<T>)writeHandles.GetOrAdd(typeof(T), t => CreateWriteHandle(t));
-
-        /// <seealso cref="CreateHandle(Type)"/>
-        //public VobHandle<T> GetHandle<T>() => (VobHandle<T>)handles.GetOrAdd(typeof(T), t => CreateHandle(t));
-        public IVobHandle GetHandle(Type type) => (IVobHandle)handles.GetOrAdd(type, t => CreateHandle(t));
-
-        public IVobHandle CreateHandle(Type type)
-        {
-            Type vhType = typeof(VobHandle<>).MakeGenericType(type);
-            return (IVobHandle)Activator.CreateInstance(vhType, this);
-        }
-        internal IVobReadHandle CreateReadHandle(Type type)
-        {
-            Type vhType = typeof(VobReadHandle<>).MakeGenericType(type);
-            return (IVobReadHandle)Activator.CreateInstance(vhType, this);
-        }
-
-        private ConcurrentDictionary<Type, object> handles = new ConcurrentDictionary<Type, object>();
-        private readonly ConcurrentDictionary<Type, object> readHandles = new ConcurrentDictionary<Type, object>();
-#endif
-        #endregion
-
-        #endregion
-
-        #region IReferencable
-
-        #region Reference
-
-        public string Key => VosReference.Key;
-
-        public VosReference VosReference
-        {
-            get
-            {
-                if (vosReference == null)
-                {
-                    vosReference = new VosReference(Path);
-                }
-                return vosReference;
-            }
-            set
-            {
-                if (vosReference == value)
-                {
-                    return;
-                }
-
-                if (vosReference != default(IReference))
-                {
-                    throw new NotSupportedException("Reference can only be set once.  To relocate, use the Move() method.");
-                }
-
-                vosReference = value;
-            }
-        }
-        private VosReference vosReference;
-
-        public IReference Reference // TODO MEMORYOPTIMIZE: I think a base class has an IReference field
-        {
-            get => VosReference;
-            set
-            {
-                if (value == null) { VosReference = null; return; }
-                VosReference vr = value as VosReference;
-                if (vr != null)
-                {
-                    VosReference = vr; return;
-                }
-                else
-                {
-                    //new VosReference(value); // FUTURE: Try converting
-                    throw new ArgumentException("Reference for a Vob must be VosReference");
-                }
-            }
-        }
+        /// <summary>
+        /// Get typed reference
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <returns></returns>
+        public IVosReference GetReference<T>() => new VosReference(Path) { Type = typeof(T), Persister = Root.RootName }; // OPTIMIZE: new VosRelativeReference(this)
 
         #endregion
 
@@ -629,28 +626,12 @@ namespace LionFire.Vos
 
         public override int GetHashCode() => Path.GetHashCode();
 
-        // public override string ToString() => Path;
-        public override string ToString() => Reference.ToString();
+        public override string ToString() => Reference?.ToString();
 
         private static readonly ILogger l = Log.Get();
-        //private static ILogger lSave = Log.Get("LionFire.Vos.Vob.Save");
-        //private static ILogger lLoad = Log.Get("LionFire.Vos.Vob.Load");
 
         #endregion
 
-    }
-
-    public static class IVobInternalsExtensions
-    {
-
-        public static VobNode<TImplementation> GetOrAddVobNode<TImplementation>(this IVobInternals vobI, Func<IVobNode, TImplementation> factory = null)
-                where TImplementation : class
-            => vobI.GetOrAddVobNode<TImplementation, TImplementation>(factory);
-
-
-        public static VobNode<TImplementation> GetOrAddVobNode<TImplementation>(this IVobInternals vobI, TImplementation singletonInstance)
-            where TImplementation : class
-            => vobI.GetOrAddVobNode<TImplementation, TImplementation>(_ => singletonInstance);
     }
 
 }
