@@ -9,12 +9,12 @@ namespace LionFire.Data
 {
 
     // REVIEW - can this be abstracted into a generalized DI Factory class?
-//    public class DependencyInjectionFactory<TItem>
-//    {
-//        private readonly IServiceProvider serviceProvider;
-//        protected ConcurrentDictionary<string, TItem> Items { get; } = new ConcurrentDictionary<string, TItem>();
-//// ...
-//    }
+    //    public class DependencyInjectionFactory<TItem>
+    //    {
+    //        private readonly IServiceProvider serviceProvider;
+    //        protected ConcurrentDictionary<string, TItem> Items { get; } = new ConcurrentDictionary<string, TItem>();
+    //// ...
+    //    }
 
     public class ConnectionManager<TConnection, TConnectionOptions> : IConnectionManager<TConnection>
         where TConnection : class, IConnection
@@ -23,11 +23,20 @@ namespace LionFire.Data
         #region Dependencies
 
         private readonly IServiceProvider serviceProvider;
+        private ILogger Logger { get; }
+        private IOptionsMonitor<NamedConnectionOptions<TConnectionOptions>> OptionsMonitor { get; }
 
         #endregion
 
         public ConnectionManager(IServiceProvider serviceProvider)
         {
+            this.serviceProvider = serviceProvider;
+        }
+
+        public ConnectionManager(IOptionsMonitor<NamedConnectionOptions<TConnectionOptions>> options, ILogger logger, IServiceProvider serviceProvider)
+        {
+            Logger = logger;
+            OptionsMonitor = options;
             this.serviceProvider = serviceProvider;
         }
 

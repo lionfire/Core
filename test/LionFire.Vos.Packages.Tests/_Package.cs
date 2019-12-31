@@ -50,9 +50,10 @@ namespace LionFire.Vos.Packages.Tests
                 Assert.False(File.Exists(path));
                         File.WriteAllText(path, testContents);
                         Assert.True(File.Exists(path));
-                #endregion
+                        #endregion
 
-                {
+#error NEXT: this unit test?
+                        {
 
 // TODO ----------------------------------- below is copied from another test.
 
