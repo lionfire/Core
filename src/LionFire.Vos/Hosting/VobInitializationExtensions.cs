@@ -24,6 +24,11 @@ namespace LionFire.Services
         //    return services;
         //}
 
+        public static IServiceCollection InitializeRootVob(this IServiceCollection services, Action<IServiceProvider, IVob> action)
+        {
+            services.Configure<List<VobInitializer>>(list => list.Add(new VobInitializer(action)));
+            return services;
+        }
         public static IServiceCollection InitializeRootVob(this IServiceCollection services, Action<IVob> action)
         {
             services.Configure<List<VobInitializer>>(list => list.Add(new VobInitializer(action)));

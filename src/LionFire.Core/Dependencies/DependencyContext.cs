@@ -156,11 +156,15 @@ namespace LionFire.Dependencies
 
 
         //public TInterface GetServiceOrSingleton<TInterface>(IServiceProvider serviceProvider = null, bool createIfMissing = DefaultCreateIfMissing, Func<TInterface> singletonFactory = null)
-            //=> (TInterface)GetServiceOrSingleton(typeof(TInterface), serviceProvider, createIfMissing, singletonFactory: singletonFactory);
+        //=> (TInterface)GetServiceOrSingleton(typeof(TInterface), serviceProvider, createIfMissing, singletonFactory: singletonFactory);
 
         public TInterface GetServiceOrSingleton<TInterface, TConcrete>(IServiceProvider serviceProvider = null, bool createIfMissing = DefaultCreateIfMissing, Func<TInterface> singletonFactory = null)
-            => (TInterface)GetServiceOrSingleton(typeof(TInterface), serviceProvider, createIfMissing, typeof(TConcrete), 
-                singletonFactory: (singletonFactory != null ? () => singletonFactory() : (Func<object>) null));
+            => (TInterface)GetServiceOrSingleton(typeof(TInterface), serviceProvider, createIfMissing, typeof(TConcrete),
+                singletonFactory: (singletonFactory != null ? () => singletonFactory() : (Func<object>)null));
+
+        public TInterface GetServiceOrSingleton<TInterface>(IServiceProvider serviceProvider = null, bool createIfMissing = DefaultCreateIfMissing, Func<TInterface> singletonFactory = null)
+            => (TInterface)GetServiceOrSingleton(typeof(TInterface), serviceProvider, createIfMissing, concreteType: null,
+                singletonFactory: (singletonFactory != null ? () => singletonFactory() : (Func<object>)null));
 
         //private readonly bool UseManualSingletonServiceProvider = false;
 
@@ -228,7 +232,7 @@ namespace LionFire.Dependencies
 
             //#endregion
 
-            #region Try ManualSingleton<>'s GuaranteedInstance (if createIfMissing is true), or else Instance
+            // Try ManualSingleton<>'s GuaranteedInstance (if createIfMissing is true), or else Instance
 
             if (concreteType != null)
             {
@@ -239,17 +243,14 @@ namespace LionFire.Dependencies
                 if (result != null) { return result; }
             }
 
-            if (!interfaceType.GetTypeInfo().IsInterface)
+            var canCreate = !interfaceType.IsInterface && !interfaceType.IsAbstract;
+
+            // BREAKINGCHANGE TODO: store the instance with this object, rather than the global ManualSingleton<>.Instance
             {
-                // BREAKINGCHANGE TODO: store the instance with this object, rather than the global ManualSingleton<>.Instance
-
-                var pi = typeof(ManualSingleton<>).MakeGenericType(interfaceType).GetProperty(createIfMissing ? "GuaranteedInstance" : "Instance", BindingFlags.Static | BindingFlags.Public);
+                var pi = typeof(ManualSingleton<>).MakeGenericType(interfaceType).GetProperty(createIfMissing && canCreate ? "GuaranteedInstance" : "Instance", BindingFlags.Static | BindingFlags.Public);
                 result = pi.GetValue(null); // Might be null for ManualSingleton<>.Instance
-                if (result != null) { return result; }
+                return result;
             }
-            #endregion
-
-            return null;
         }
 
 

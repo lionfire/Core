@@ -29,5 +29,6 @@ namespace LionFire.Vos
             if (reference.Scheme != VosReference.UriSchemeDefault) throw new ArgumentException("Invalid scheme");
             throw new NotImplementedException();
         }
+        public static VosReference ToVosReference(this string path) => new VosReference(path);
     }
 }

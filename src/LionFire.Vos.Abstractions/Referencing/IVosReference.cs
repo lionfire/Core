@@ -21,6 +21,7 @@ namespace LionFire.Vos
 
         #endregion
 
+        string[] PathChunks { get; }
         //string Path { get; set; }
         //string Scheme { get; }
         //Type Type { get; set; }

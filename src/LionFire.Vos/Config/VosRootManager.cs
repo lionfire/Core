@@ -6,7 +6,7 @@ using System.Linq;
 
 namespace LionFire.Vos
 {
-    
+
     /// <remarks>
     /// Philosophy:
     ///  - All RootVobs are initialized once at the construction of VosRootManager

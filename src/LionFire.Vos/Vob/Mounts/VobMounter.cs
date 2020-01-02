@@ -13,7 +13,8 @@ namespace LionFire.Vos.Mounts
             IVob mountPoint = mountPointOrParent;
             if (mountPointOrParent.Path != tMount.VobPath)
             {
-                if (!LionPath.IsDescendantOf(mountPointOrParent.Path, tMount.VobPath)) {
+                if (!LionPath.IsDescendantOf(mountPointOrParent.Path, tMount.VobPath))
+                {
                     throw new ArgumentException($"{nameof(tMount)}.{nameof(tMount.VobPath)} must be same or a descendant of {nameof(mountPointOrParent)}.{nameof(mountPointOrParent.Path)}");
                 }
                 mountPoint = mountPointOrParent.Root[tMount.VobPath];
@@ -50,5 +51,10 @@ namespace LionFire.Vos.Mounts
 
         public event Action<CancelableReasonEventArgs<IMount>> Mounting;
         public event Action<IMount> Mounted;
+
+        public IMount Unmount(IVob mountPoint, IReference target)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

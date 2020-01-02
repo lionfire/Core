@@ -17,9 +17,13 @@ namespace LionFire.Services
         /// Targets Root Vob of default Root
         /// </summary>
         /// <param name="initializationAction"></param>
-        public VobInitializer(Action<IVob> initializationAction)
+        public VobInitializer(Action<IServiceProvider, IVob> initializationAction)
         {
             InitializationAction = initializationAction;
+        }
+        public VobInitializer(Action<IVob> initializationAction)
+        {
+            InitializationAction = (_, v) => initializationAction(v);
         }
 
         /// <summary>
@@ -27,12 +31,12 @@ namespace LionFire.Services
         /// </summary>
         /// <param name="path"></param>
         /// <param name="initializationAction"></param>
-        public VobInitializer(string path, Action<IVob> initializationAction)
+        public VobInitializer(string path, Action<IServiceProvider, IVob> initializationAction)
         {
             VobPath = path;
             InitializationAction = initializationAction;
         }
-        public Action<IVob> InitializationAction { get; set; }
+        public Action<IServiceProvider, IVob> InitializationAction { get; set; }
     }
 }
 

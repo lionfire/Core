@@ -13,14 +13,14 @@ namespace LionFire.Services
 {
     public static class VosPackageServiceExtensions
     {
-        public static IVob AddPackageManager(this IVob vob, VobPackageManagerOptions options = null)
+        public static IVob AddPackageManager(this IVob vob, VosPackageManagerOptions options = null)
         {
             var mt = vob as IMultiTypable;
-            mt.AsTypeOrCreate<VobPackageManager>(() => new VobPackageManager(vob, options));
+            mt.AsTypeOrCreate<VosPackageManager>(() => new VosPackageManager(vob, options));
 
-            //vob.MultiTyped().AsTypeOrCreate<VobPackageManager>()
+            //vob.MultiTyped().AsTypeOrCreate<VosPackageManager>()
             //vob.GetOrAddOwn<IServiceCollection>()
-            //    .AddSingleton<VobPackageManager>(new VobPackageManager(vob, options))
+            //    .AddSingleton<VosPackageManager>(new VosPackageManager(vob, options))
             //    ;
             return vob;
         }
