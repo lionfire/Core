@@ -17,11 +17,11 @@ using LionFire.Dependencies;
 using Microsoft.Extensions.DependencyInjection;
 using LionFire.Persistence.Filesystem.Tests;
 using LionFire.Persistence.Filesystem;
+using LionFire.Services;
 
 namespace FilesystemPersister_
 {
-    
-    namespace NewtonsoftJson
+    namespace NewtonsoftJson 
     {
         public class _Create
         {
@@ -135,13 +135,14 @@ namespace FilesystemPersister_
             public async void F_TestObj_Already()
             {
                 await PersistersHost.Create()
-                    //.ConfigureServices(s =>
-                    //{
-                    //    s.AddSingleton<FilesystemPersistenceOptions>(new FilesystemPersistenceOptions
-                    //    {
-                            
-                    //    });
-                    //})
+                    .ConfigureServices(s =>
+                    {
+                        s.AddNewtonsoftJson();
+                        s.AddFilesystem();
+                        //    s.AddSingleton<FilesystemPersistenceOptions>(new FilesystemPersistenceOptions
+                        //    {
+                        //    });
+                    })
                     .Run(async () =>
                 {
                     var path = FsTestUtils.TestFile + ".json";

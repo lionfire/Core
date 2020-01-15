@@ -2,6 +2,7 @@
 
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
+    <RootNamespace>LionFire.Vos</RootNamespace>
   </PropertyGroup>
 
   <ItemGroup>
@@ -14,7 +15,12 @@
     <ProjectReference Include="..\LionFire.Applications\LionFire.Applications.csproj" />
     <ProjectReference Include="..\LionFire.Core.Extras\LionFire.Core.Extras.csproj" />
     <ProjectReference Include="..\LionFire.Persistence.Filesystem\LionFire.Persistence.Filesystem.csproj" />
+    <ProjectReference Include="..\LionFire.Vos.Packages\LionFire.Vos.Packages.csproj" />
     <ProjectReference Include="..\LionFire.Vos\LionFire.Vos.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="VosApp\Services\" />
   </ItemGroup>
 
 </Project>

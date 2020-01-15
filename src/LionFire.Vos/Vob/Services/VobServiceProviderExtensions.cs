@@ -8,7 +8,7 @@ namespace LionFire.Services
 {
     public static class VobServiceProviderExtensions
     {
-        public static IVob AddServiceProvider(this IVob vob)
+        public static IVob AddServiceProvider(this IVob vob, Action<IServiceCollection> configurator = null)
         {
             var vobI = vob as IVobInternals;
 
@@ -16,6 +16,8 @@ namespace LionFire.Services
 
             vobI.GetOrAddVobNode<IServiceProvider>(dsp);
             vobI.GetOrAddVobNode<IServiceCollection>(dsp);
+
+            configurator?.Invoke(dsp);
 
             //vob.GetOrAddNextVobNode<IServiceProvider, VobServiceProvider>(addAtRoot: false);
             return vob;

@@ -18,7 +18,7 @@ namespace LionFire.Vos
             get
             {
                 bool gotNonAlive = false;
-                foreach(var kvp in children)
+                foreach (var kvp in children)
                 {
                     if (!kvp.Value.IsAlive || kvp.Value.Target == null) { gotNonAlive = true; continue; }
                     yield return new KeyValuePair<string, IVob>(kvp.Key, kvp.Value.Target);
@@ -66,10 +66,7 @@ namespace LionFire.Vos
         // SIMILAR logic: GetChild and QueryChild
         public IVob GetChild(IEnumerator<string> subpathChunks)
         {
-            if (subpathChunks == null)
-            {
-                return this;
-            }
+            if (subpathChunks == null) { return this; }
 
             IVob child;
 
@@ -125,7 +122,7 @@ namespace LionFire.Vos
         /// <param name="subpathChunks"></param>
         /// <param name="index"></param>
         /// <returns></returns>
-        internal IVob GetChild(string[] subpathChunks, int index)
+        internal IVob GetChild(string[] subpathChunks, int index = 0)
         {
             // SIMILAR logic: GetChild and QueryChild
 
@@ -180,17 +177,18 @@ namespace LionFire.Vos
             }
             else
             {
-                return intermediateChild[index + 1, subpathChunks];
+                return intermediateChild[subpathChunks, index + 1];
             }
         }
 
+        public bool DisallowDotDot { get; set; } // TODO: Implement in all relevant methods
+
+        #endregion
+
         // DUPLICATED - Similar logic as GetChild
-        public IVob QueryChild(string[] subpathChunks, int index)
+        public IVob QueryChild(string[] subpathChunks, int index = 0)
         {
-            if (subpathChunks == null || subpathChunks.Length == 0)
-            {
-                return this;
-            }
+            if (subpathChunks == null || subpathChunks.Length == 0) { return this; }
 
             IVob intermediateChild;
 
@@ -198,6 +196,7 @@ namespace LionFire.Vos
 
             if (childName == "..")
             {
+                if (DisallowDotDot) throw new NotSupportedException("DisallowDotDot is true.  '..' not allowed in path.");
                 intermediateChild = Parent;
             }
             else if (childName == ".")
@@ -236,7 +235,6 @@ namespace LionFire.Vos
             }
         }
 
-        #endregion
 
         #region (Derived) Index accessors (to GetChild)
 
@@ -249,7 +247,7 @@ namespace LionFire.Vos
                     return this;
                 }
 
-                return this[0, subpath.ToPathArray()];
+                return this[subpath.ToPathArray()];
             }
         }
 
@@ -257,7 +255,7 @@ namespace LionFire.Vos
 
         public IVob this[IEnumerable<string> subpathChunks] => GetChild(subpathChunks);
 
-        public IVob this[int index, string[] subpathChunks] => GetChild(subpathChunks, index);
+        public IVob this[string[] subpathChunks, int index] => GetChild(subpathChunks, index);
 
         public IVob this[params string[] subpathChunks] => GetChild(subpathChunks);
 

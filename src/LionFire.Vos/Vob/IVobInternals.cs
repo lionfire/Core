@@ -17,13 +17,27 @@ namespace LionFire.Vos.Internals
         //    where TInterface : class
         //    where TImplementation : TInterface;
 
+        VobNode<TInterface> TryAddOwnVobNode<TInterface>(Func<IVobNode, TInterface> valueFactory = null)
+            where TInterface : class;
+
         VobNode<TInterface> GetOrAddOwnVobNode<TInterface>(Func<IVobNode, TInterface> valueFactory = null)
             where TInterface : class;
+
         VobNode<TInterface> GetOrAddOwnVobNode<TInterface, TImplementation>(Func<IVobNode, TInterface> valueFactory = null)
             where TInterface : class
             where TImplementation : TInterface;
-
         
     }
 
+    public static class IVobInternalsExtensions
+    {
+        public static IVobInternals Internals(this IVob vob) => vob as IVobInternals;
+        public static VobNode<TInterface> AddOwnVobNode<TInterface>(this IVobInternals vobI, Func<IVobNode, TInterface> valueFactory = null)
+            where TInterface : class
+        {
+            var result = vobI.TryAddOwnVobNode(valueFactory);
+            if (result == null) throw new AlreadyException();
+            return result;
+        }
+    }
 }

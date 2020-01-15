@@ -42,6 +42,17 @@ namespace LionFire.ExtensionMethods
             }
             return result;
         }
+        public static TValue GetOrAdd<TKey, TValue>(this IDictionary<TKey, TValue> dict, TKey key)
+            where TValue : class, new()
+        {
+            var result = dict.TryGetValue(key);
+            if (result == null)
+            {
+                result = new TValue();
+                dict.Add(key, result);
+            }
+            return result;
+        }
 
         public static void AddOrUpdate<TKey, TValue>(this IDictionary<TKey, TValue> dict, TKey key, TValue value)
             where TValue : class

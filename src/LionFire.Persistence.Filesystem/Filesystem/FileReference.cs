@@ -76,6 +76,7 @@ namespace LionFire.Persistence.Filesystem
         }
 
         #endregion
+
     }
 
     public static class FileReferenceExtensions

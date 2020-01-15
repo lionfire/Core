@@ -80,6 +80,17 @@ namespace LionFire.MultiTyping.Overlaying
 
         public IEnumerable<object> SubTypes => overlayStack.SubTypes;
 
+        public bool IsEmpty
+        {
+            get
+            {
+                // UNTESTED
+                if (false == ((IMultiTyped)defaultLayer).IsEmpty) return false;
+                if (overlayStack.Objects.Any()) return false;
+                return true;
+            }
+        }
+
         public object this[Type type]
         {
             get => overlayStack[type];
@@ -431,6 +442,8 @@ namespace LionFire.MultiTyping.Overlaying
             throw new NotImplementedException();
             //return ((IMultiTyped)DefaultLayer).AsTypeOrCreateDefault<T>(slotType);
         }
+
+        public void AddType<T>(T obj, bool allowMultiple = false) where T : class => ((IMultiTyped)DefaultLayer).AddType(obj, allowMultiple);
 
         #endregion
 

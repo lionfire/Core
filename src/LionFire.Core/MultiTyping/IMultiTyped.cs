@@ -10,6 +10,10 @@ namespace LionFire.MultiTyping
         //void SetType<T>(T obj) where T : class;
         new object this[Type type] { get; set; }
         T AsTypeOrCreateDefault<T>(Type slotType = null) where T : class;
+        void AddType<T>(T obj, bool allowMultiple = false) where T : class; 
+
+        bool IsEmpty { get; }
+
     }
 
 

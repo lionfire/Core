@@ -27,6 +27,13 @@ namespace LionFire.Vos
 
         #region Values
 
+        public static T AddOwn<T>(this IVob vob, Func<IVob, T> valueFactory = null)
+            where T : class
+            => (vob as IVobInternals).AddOwnVobNode<T>(vobNode => valueFactory(vobNode.Vob)).Value;
+        public static T TryAddOwn<T>(this IVob vob, Func<IVob, T> valueFactory = null)
+            where T : class
+            => (vob as IVobInternals).TryAddOwnVobNode<T>(vobNode => valueFactory(vobNode.Vob)).Value;
+
         public static T GetOrAddOwn<T>(this IVob vob, Func<IVobNode, T> valueFactory = null)
             where T : class
             => (vob as IVobInternals).GetOrAddOwnVobNode<T>(valueFactory).Value;

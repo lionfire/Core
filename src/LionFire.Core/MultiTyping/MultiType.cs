@@ -7,7 +7,54 @@ using System.Threading.Tasks;
 
 namespace LionFire.MultiTyping
 {
-    public class MultiType : IMultiTyped,  IMultiTypable // RENAME to MultiTyped
+    public interface IMultiTypableVisitor
+    {
+        Type InterfaceType { get; }
+        object Value { get; }
+
+        bool AllowMultiple { get; }
+
+        void Enter(IMultiTypable multitypable);
+        void Leave();
+    }
+    public class MultiTypableVisitor<T, TFactory> : IMultiTypableVisitor
+        where T : class
+        where TFactory : System.Delegate
+    {
+        public Type InterfaceType => typeof(T);
+        public T Value { get; set; }
+        object IMultiTypableVisitor.Value => Value;
+        public bool AllowMultiple { get; set; }
+        TFactory Factory { get; }
+        IMultiTypable Multitypable { get; }
+        public MultiTypableVisitor(IMultiTypable multitypable, TFactory factory)
+        {
+            Multitypable = multitypable;
+            Factory = factory;
+        }
+
+        private IMultiTyped multiTyped { get; set; }
+        private bool IsDisposed { get; set; }
+
+        public void Enter(IMultiTypable owner)
+        {
+            if (Value == null)
+            {
+                Value = (T)Factory.DynamicInvoke(owner);
+            }
+            if (Value == null) throw new InvalidOperationException("Factory created null object");
+            Multitypable.MultiTyped.AddType<T>(Value, AllowMultiple);
+        }
+        public void Leave()
+        {
+            throw new NotImplementedException();
+            //multiTyped.Remove<T>(Value); // TODO
+            IsDisposed = true;
+            multiTyped = null;
+        }
+    }
+
+    public class MultiType : IMultiTyped, IMultiTypable // RENAME to MultiTyped
     {
         private object _lock = new object();
 
@@ -22,6 +69,14 @@ namespace LionFire.MultiTyping
             }
         }
 
+        public MultiType(params IMultiTypableVisitor[] items)
+        {
+            foreach (var item in items)
+            {
+                this.AddType(item.InterfaceType, item.Value, item.AllowMultiple);
+            }
+        }
+
         #endregion
 
         // TODO: Switch to ConcurrentDictionary?
@@ -33,6 +88,15 @@ namespace LionFire.MultiTyping
         public IEnumerable<object> SubTypes => TypeDict?.Values ?? Enumerable.Empty<object>();
 
         public IMultiTyped MultiTyped => this;
+
+        public bool IsEmpty
+        {
+            get
+            {
+                if (typeDict != null && typeDict.Any()) return false;
+                return true;
+            }
+        }
 
         public object this[Type type] { get => AsType(type); set => this.SetType(value, type); }
 
@@ -93,7 +157,7 @@ namespace LionFire.MultiTyping
 
         #endregion
 
-        public void AddType<T>(T obj)
+        public void AddType<T>(T obj, bool allowMultiple = false)
             where T : class
         {
             //if (obj == default(T)) { UnsetType<T>(); return; }
@@ -106,10 +170,12 @@ namespace LionFire.MultiTyping
                 }
                 if (typeDict.ContainsKey(typeof(List<T>)))
                 {
+                    if (!allowMultiple) throw new AlreadyException($"Already contains one or more {typeof(T).FullName} and allowMultiple parameter is false.");
                     ((List<T>)typeDict[typeof(T)]).Add(obj);
                 }
                 else if (typeDict.ContainsKey(typeof(T)))
                 {
+                    if (!allowMultiple) throw new AlreadyException($"Already contains a {typeof(T).FullName} and allowMultiple parameter is false.");
                     var list = new List<T>();
                     list.Add((T)typeDict[typeof(T)]);
                     list.Add(obj);
@@ -122,6 +188,10 @@ namespace LionFire.MultiTyping
                 }
             }
         }
+        public void AddType(Type T, object obj, bool allowMultiple = false)
+            => typeof(MultiType).GetMethods()
+            .Where(m => m.Name == nameof(AddType) && !m.ContainsGenericParameters).First().MakeGenericMethod(T)
+            .Invoke(this, new object[] { obj, allowMultiple });
 
         public void SetType<T>(T obj)
             where T : class

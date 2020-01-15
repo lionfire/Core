@@ -28,7 +28,7 @@ namespace LionFire.Referencing
         public static string FromPathArray(IEnumerable<string> chunks)
         {
             var sb = new StringBuilder();
-            foreach(var chunk in chunks)
+            foreach (var chunk in chunks)
             {
                 sb.Append(Separator);
                 sb.Append(chunk);
@@ -52,14 +52,15 @@ namespace LionFire.Referencing
         }
 
         private const bool preserveEndSeparator = true;
-        public static string Combine(params string[] paths)
+        public static string Combine(params string[] paths) => Combine((IEnumerable<string>)paths);
+        public static string Combine(IEnumerable<string> paths)
         {
             // UNTESTED
-            if (paths.Length == 0) return String.Empty;
+            if (!paths.Any()) return String.Empty;
 
             var sb = new StringBuilder();
 
-            if (SeparatorChars.Contains(paths[0][0])) sb.Append(Separator);
+            if (SeparatorChars.Contains(paths.First()[0])) sb.Append(Separator);
 
             bool isFirst = true;
             foreach (var chunk in paths)
@@ -191,7 +192,7 @@ namespace LionFire.Referencing
             {
                 if (childChunks[i++] != parentChunk) return false;
             }
-            return childChunks.Length > parentChunks.Length; 
+            return childChunks.Length > parentChunks.Length;
         }
     }
 }

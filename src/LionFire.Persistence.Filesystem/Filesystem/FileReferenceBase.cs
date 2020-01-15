@@ -91,6 +91,10 @@ namespace LionFire.Persistence.Filesystem
                 Path = value;
             }
         }
+
+
+        public override string ToString() => $"{{{this.GetType().Name} {Path}}}";
+
     }
 
 }

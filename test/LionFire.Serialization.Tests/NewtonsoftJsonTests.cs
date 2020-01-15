@@ -1,7 +1,8 @@
 using System;
 using System.Threading.Tasks;
 using LionFire.Applications.Hosting;
-using LionFire.Serialization.Json.Newtonsoft;
+using LionFire.Dependencies;
+using LionFire.Services;
 using Xunit;
 using Xunit.Abstractions;
 

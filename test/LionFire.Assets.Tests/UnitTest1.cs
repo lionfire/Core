@@ -5,7 +5,7 @@ using Xunit;
 
 namespace LionFire.Assets.Tests
 {
-
+#if false
     public class UnitTest1
     {
         public IHostBuilder CreateHostBuilder()
@@ -22,4 +22,5 @@ namespace LionFire.Assets.Tests
             });
         }
     }
+#endif
 }

@@ -1,5 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using LionFire.MultiTyping;
+using System;
 using System.ComponentModel;
 using System.Linq;
 using System.Text;
@@ -8,18 +8,34 @@ using System.Text;
 namespace LionFire.Vos.Mounts
 {
 
-    public class MountOptions : IMountOptions
+    public class MountOptions : IMountOptions, IMultiTypable
     {
         #region (Static)
 
-        public static  MountOptions Default { get; } = new MountOptions();
-        public static readonly MountOptions DefaultRead = new MountOptions() { ReadPriority = 1 };
-        public static readonly MountOptions DefaultReadWrite = new MountOptions() { ReadPriority = 1, WritePriority = 1 };
-        public static readonly MountOptions DefaultWrite = new MountOptions() { WritePriority = 1 };
+        public static MountOptions Default { get; } = new MountOptions();
+        /// <summary>
+        /// Default priority for when Read access is requested (implicitly or explicitly) but no priority integer is provided.  If read access is not specified, the default priority should be regarded as null.
+        /// </summary>
+        public static int DefaultReadPriority = 0;
+        /// <summary>
+        /// Default priority for when Write access is requested (implicitly or explicitly) but no priority integer is provided.  If write access is not specified, the default priority should be regarded as null.
+        /// </summary>
+        public static int DefaultWritePriority = 0;
+        public static readonly MountOptions DefaultRead = new MountOptions() { ReadPriority = DefaultReadPriority };
+        public static readonly MountOptions DefaultReadWrite = new MountOptions() { ReadPriority = DefaultReadPriority, WritePriority = DefaultWritePriority };
+        public static readonly MountOptions DefaultWrite = new MountOptions() { WritePriority = DefaultWritePriority };
 
         #endregion
 
-        public MountOptions() { }
+        #region Construction
+
+        public MountOptions(int? readPriority = null, int? writePriority = null, string name = null, IMultiTyped decorators = null)
+        {
+            ReadPriority = readPriority; 
+            WritePriority = writePriority; 
+            Name = name; 
+            MultiTyped = decorators;
+        }
 
         public MountOptions(MountOptions other)
         {
@@ -40,14 +56,51 @@ namespace LionFire.Vos.Mounts
 		}
 #endif
 
-        public string RootName { get; set; }
+        #endregion
+
+        #region MultiTyping
+
+        public IMultiTyped MultiTyped
+        {
+            get
+            {
+                if (multiTyped == null)
+                {
+                    multiTyped = new MultiType();
+                }
+                return multiTyped;
+            }
+            private set
+            {
+                if (multiTyped != null && !multiTyped.IsEmpty)
+                {
+                    throw new AlreadySetException("MultiTyped is already set and is not empty.  Consider merging in additional values.");
+                }
+            }
+        }
+        private IMultiTyped multiTyped;
+
+
+
+        #endregion
+
+        #region Identity
+
+        public string RootName { get; set; } // TODO: Avoid this in favor of /../<rootName> syntax?
+
+        #endregion
+
+        #region Description
 
         public string Name { get; set; }
 
+        #endregion
+
+        #region Settings
+
         //public string Package { get; set; }
         //public string Store { get; set; }
-        public bool IsDisabled { get; set; }
-
+        public bool IsManuallyEnabled { get; set; }
 
         /// <summary>
         /// Physical mounts should be mounted Exclusive.  That means
@@ -65,6 +118,36 @@ namespace LionFire.Vos.Mounts
 
         public bool TryCreateIfMissing { get; set; }
 
+        public int? ReadPriority { get; set; }
+        public int? WritePriority { get; set; }
+
+
+        //#region MountAtStartup
+
+        //[DefaultValue(true)]
+        //public bool MountAtStartup
+        //{
+        //    get { return mountAtStartup; }
+        //    set { mountAtStartup = value; }
+        //}
+        //private bool mountAtStartup = true;
+
+        //#endregion
+
+        //#region MountOnDemand
+
+        //[DefaultValue(true)]
+        //public bool MountOnDemand
+        //{
+        //    get { return mountOnDemand; }
+        //    set { mountOnDemand = value; }
+        //}
+        //private bool mountOnDemand = true;
+
+        //#endregion
+
+        #region Derived
+
         /// <summary>
         /// Returns true if ReadPriority is null.
         /// Setting to true: will set to null.  Setting to false: will set to 0 if currently null, otherwise current value is kept.
@@ -72,9 +155,10 @@ namespace LionFire.Vos.Mounts
         public bool IsReadOnly
         {
             get => !ReadPriority.HasValue;
-            
-            set {
-                if(value)
+
+            set
+            {
+                if (value)
                 {
                     if (!ReadPriority.HasValue) ReadPriority = 1;
                     WritePriority = null;
@@ -86,30 +170,7 @@ namespace LionFire.Vos.Mounts
                 }
             }
         }
-        public int? ReadPriority { get; set; }
-        public int? WritePriority { get; set; }
-
-        #region MountAtStartup
-
-        [DefaultValue(true)]
-        public bool MountAtStartup
-        {
-            get { return mountAtStartup; }
-            set { mountAtStartup = value; }
-        }
-        private bool mountAtStartup = true;
-
         #endregion
-
-        #region MountOnDemand
-
-        [DefaultValue(true)]
-        public bool MountOnDemand
-        {
-            get { return mountOnDemand; }
-            set { mountOnDemand = value; }
-        }
-        private bool mountOnDemand = true;
 
         #endregion
 

@@ -12,9 +12,10 @@ namespace LionFire.Vos
 
     public static class IMultiTypedVobExtensions
     {
-        public static IMultiTypedVob GetMultiTyped(this IVob vob)
+        public static IMultiTyped GetMultiTyped(this IVob vob)
         {
             if (vob is IMultiTypedVob mtv) return mtv;
+            if (vob is IMultiTypable mt) return mt.MultiTyped;
 
             if(vob is IReplaceable<IVob> replaceable)
             {

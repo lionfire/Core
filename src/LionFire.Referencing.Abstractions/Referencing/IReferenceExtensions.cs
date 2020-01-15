@@ -14,11 +14,12 @@ namespace LionFire.Referencing
 
         #region GetChild
 
-        public static IReference GetChild(this IReference reference, string subPath)
+        public static T GetChild<T>(this T reference, string subPath)
+            where T : IReference
         {
             if (reference is ICloneableReference cr)
             {
-                return cr.CloneWithPath(LionPath.Combine(reference.Path, subPath));
+                return (T) cr.CloneWithPath(LionPath.Combine(reference.Path, subPath));
             }
 
             var uri = new Uri(reference.Key);
@@ -27,7 +28,7 @@ namespace LionFire.Referencing
             var mi = FromUriMethods[reference.GetType()];
             if (mi != null)
             {
-                return (IReference)mi.Invoke(null, new object[] { newUri });
+                return (T)mi.Invoke(null, new object[] { newUri });
             }
 
             throw ThrowUnsupported(reference, nameof(GetChild));
@@ -37,14 +38,17 @@ namespace LionFire.Referencing
 
         #region GetChildSubpath
 
-        public static IReference GetChildSubpath(this IReference reference, params string[] subPath) => reference.GetChildSubpath((IEnumerable<string>)subPath);
+        public static TReference GetChildSubpath<TReference>(this TReference reference, params string[] subPath)
+            where TReference : IReference
+            => reference.GetChildSubpath((IEnumerable<string>)subPath);
 
         //[Untested]
-        public static IReference GetChildSubpath(this IReference reference, IEnumerable<string> subPath)
+        public static TReference GetChildSubpath<TReference>(this TReference reference, IEnumerable<string> subPath)
+            where TReference : IReference
         {
             if (reference is ICloneableReference cr)
             {
-                return cr.CloneWithPath(LionPath.Combine(reference.Path, subPath));
+                return (TReference) cr.CloneWithPath(LionPath.Combine(reference.Path, subPath));
             }
 
             var uri = new Uri(reference.Key);
@@ -53,7 +57,7 @@ namespace LionFire.Referencing
             var mi = FromUriMethods[reference.GetType()];
             if (mi != null)
             {
-                return (IReference)mi.Invoke(null, new object[] { newUri });
+                return (TReference)mi.Invoke(null, new object[] { newUri });
             }
 
             throw ThrowUnsupported(reference, nameof(GetChildSubpath));

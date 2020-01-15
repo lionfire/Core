@@ -24,7 +24,9 @@ namespace LionFire.Vos.Mounts
         #region Identity
 
         public IVob MountPoint { get; }
+
         public IReference Target { get; }
+        string IKeyed<string>.Key => Target.Key;
 
         #endregion
 
@@ -51,7 +53,7 @@ namespace LionFire.Vos.Mounts
         public Mount(IVob mountPointVob, TMount tMount)
             : this(mountPointVob, tMount.Reference, tMount.Options)
         {
-            if (tMount.VobPath != mountPointVob.Path) throw new ArgumentException("mountPointVob.Path does not match tMount.VobPath");
+            if (!tMount.MountPoint.Equals(mountPointVob.Reference)) throw new ArgumentException("mountPointVob.Reference does not match tMount.MountPoint");
         }
 
         #endregion
@@ -62,7 +64,28 @@ namespace LionFire.Vos.Mounts
 
         #endregion
 
-        string IKeyed<string>.Key => Target.Key;
+        #region State
+
+        #region IsEnabled
+
+        public bool IsEnabled
+        {
+            get => isEnabled || Options?.IsManuallyEnabled != true;
+            set
+            {
+                if (isEnabled == value) return;
+                isEnabled = value;
+                IsEnabledChanged?.Invoke(value);
+            }
+        }
+        private bool isEnabled;
+
+        public event Action<bool> IsEnabledChanged;
+
+        #endregion
+
+        #endregion
+
 
         #region REVIEW
 
@@ -77,8 +100,6 @@ namespace LionFire.Vos.Mounts
 
         //, ITemplateInstance<TMount>
         //public TMount Template { get; set; }
-
-
 
         //public Mount(Vob vob, IReference targetReference, MountOptions mountOptions = null) : this(vob, null, mountOptions)
         //    //targetReference.ToReadWriteHandle<MountHandleObject>()
@@ -125,7 +146,7 @@ namespace LionFire.Vos.Mounts
 
         #region Misc
 
-        public override string ToString() => $"{{Mount {MountPoint} ==> {Target}}}";
+        public override string ToString() => $"{{Mount {MountPoint} ==> {Target}{(IsEnabled ? "" : " (disabled)")}}}";
         private static readonly ILogger l = Log.Get();
 
         #endregion

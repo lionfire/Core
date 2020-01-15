@@ -43,20 +43,13 @@ namespace LionFire.Vos
 
         }
 
-        public IVob Initialize()
+        public IVob InitializeMounts()
         {
-            foreach (var tMount in VosOptions.MountsForRootName(RootName))
+            foreach (var tMount in VosOptions[RootName].Mounts)
             {
                 this.Mount(tMount);
-                ////var mount = new Mount(Vob[tMount.Reference.Path], tMount.Reference, tMount.Options?.Package, tMount.Options?.Store, tMount.Options?.Enable ?? true, tMount.Options);
-                //var mount = new Mount(Vob[tMount.Reference.Path], tMount.Reference, tMount.Options);
-                //Mount(mount);
             }
             return this;
         }
-
-
-
-
     }
 }

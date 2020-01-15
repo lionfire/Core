@@ -3,6 +3,7 @@ using Xunit;
 
 namespace LionFire.Instantiating2.Tests
 {
+#if false
     public class UnitTest1
     {
         [Fact]
@@ -11,4 +12,5 @@ namespace LionFire.Instantiating2.Tests
 
         }
     }
+#endif
 }

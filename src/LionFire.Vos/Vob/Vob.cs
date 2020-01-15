@@ -173,7 +173,7 @@ namespace LionFire.Vos
 #endif
         , IVob
         , IVobInternals
-        
+       , IMultiTypable
     //, SReadOnlyMultiTyped // FUTURE?
     {
 
@@ -333,23 +333,25 @@ namespace LionFire.Vos
         private VosReference vosReference;
 
 
-        public IReference Reference // TODO MEMORYOPTIMIZE: I think a base class has an IReference field
+        public IVosReference Reference => VosReference;
+        IReference IReferencable.Reference // TODO MEMORYOPTIMIZE: I think a base class has an IReference field
         {
             get => VosReference;
-            set
-            {
-                if (value == null) { VosReference = null; return; }
-                VosReference vr = value as VosReference;
-                if (vr != null)
-                {
-                    VosReference = vr; return;
-                }
-                else
-                {
-                    //new VosReference(value); // FUTURE: Try converting
-                    throw new ArgumentException("Reference for a Vob must be VosReference");
-                }
-            }
+            //set
+            //{
+            //    if (value == null) { VosReference = null; return; }
+            //    VosReference vr = value as VosReference;
+            //    if (vr != null)
+            //    {
+            //        VosReference = vr;
+            //        return;
+            //    }
+            //    else
+            //    {
+            //        //new VosReference(value); // FUTURE: Try converting
+            //        throw new ArgumentException("Reference for a Vob must be VosReference");
+            //    }
+            //}
         }
 
         #endregion
@@ -366,6 +368,8 @@ namespace LionFire.Vos
         }
 
         #endregion
+
+        public object Value { get; set; }
 
         #region MultiTyped
 
@@ -475,6 +479,21 @@ namespace LionFire.Vos
         }
 
         #endregion
+
+        VobNode<TInterface> IVobInternals.TryAddOwnVobNode<TInterface>(Func<IVobNode, TInterface> valueFactory)
+        {
+            if (vobNodesByType == null) vobNodesByType = new ConcurrentDictionary<Type, IVobNode>();
+            var already = vobNodesByType.ContainsKey(typeof(TInterface));
+            VobNode<TInterface> result = null;
+            if (!already)
+            {
+                already = !vobNodesByType.TryAdd(typeof(TInterface),
+                     result = (VobNode<TInterface>)Activator.CreateInstance(typeof(VobNode<>).MakeGenericType(typeof(TInterface)),
+                    this, valueFactory ?? DefaultVobNodeValueFactory<TInterface>));
+            }
+            // if (already) throw new AlreadyException($"Already contains {typeof(TInterface).Name}"); // ENH: Create a separate AddOwnVobNode extension method to throw this
+            return already ? null : result;
+        }
 
         VobNode<TInterface> IVobInternals.GetOrAddOwnVobNode<TInterface>(Func<IVobNode, TInterface> valueFactory)
         {

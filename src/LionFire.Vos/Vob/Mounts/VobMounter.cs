@@ -11,13 +11,13 @@ namespace LionFire.Vos.Mounts
         public IMount Mount(IVob mountPointOrParent, TMount tMount)
         {
             IVob mountPoint = mountPointOrParent;
-            if (mountPointOrParent.Path != tMount.VobPath)
+            if (mountPointOrParent.Reference != tMount.MountPoint)
             {
-                if (!LionPath.IsDescendantOf(mountPointOrParent.Path, tMount.VobPath))
+                if (!LionPath.IsDescendantOf(mountPointOrParent.Path, tMount.MountPoint.Path))
                 {
-                    throw new ArgumentException($"{nameof(tMount)}.{nameof(tMount.VobPath)} must be same or a descendant of {nameof(mountPointOrParent)}.{nameof(mountPointOrParent.Path)}");
+                    throw new ArgumentException($"{nameof(tMount)}.{nameof(tMount.MountPoint)} must be same or a descendant of {nameof(mountPointOrParent)}.{nameof(mountPointOrParent.Path)}");
                 }
-                mountPoint = mountPointOrParent.Root[tMount.VobPath];
+                mountPoint = mountPointOrParent.Root[tMount.MountPoint.Path]; // TODO: Add VosReference overload to Vob[] accessor?
             }
             var mount = new Mount(mountPoint, tMount);
             return DoMount(mount);
@@ -52,9 +52,7 @@ namespace LionFire.Vos.Mounts
         public event Action<CancelableReasonEventArgs<IMount>> Mounting;
         public event Action<IMount> Mounted;
 
-        public IMount Unmount(IVob mountPoint, IReference target)
-        {
-            throw new NotImplementedException();
-        }
+        public int Unmount(IVob mountPoint, IReference target)
+            => mountPoint.GetOrAddOwn<VobMounts>().Unmount(target);
     }
 }

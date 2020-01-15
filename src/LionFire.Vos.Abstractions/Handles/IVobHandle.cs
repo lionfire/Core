@@ -12,8 +12,6 @@ namespace LionFire.Vos
 
     //#error When retrieve vh.Object, check option to register Object in ConditionalWeakTable
     //#error When retrieve vh.Object, set ReadMount
-
-
     
 
     public interface IVobHandle<T> : IReadWriteHandleBase<T> {

@@ -7,6 +7,7 @@ namespace LionFire.Vos.Mounts
 
         IVob MountPoint { get; }
         IReference Target { get; }
+        bool IsEnabled { get; set; }
 
         IMountOptions Options { get; }
 

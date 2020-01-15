@@ -67,6 +67,7 @@ namespace LionFire.Hosting
                              catch (Exception ex)
                              {
                                  exception = ex;
+                                 throw;
                              }
                              //Debug.WriteLine("Run done");
                          }))

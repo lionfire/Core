@@ -21,6 +21,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\..\test\LionFire.Persistence.Testing\LionFire.Persistence.Testing.csproj" />
     <ProjectReference Include="..\LionFire.Applications\LionFire.Applications.csproj" />
     <ProjectReference Include="..\LionFire.Framework\LionFire.Framework.csproj" />
     <ProjectReference Include="..\LionFire.ObjectBus.Redis\LionFire.ObjectBus.Redis.csproj" />

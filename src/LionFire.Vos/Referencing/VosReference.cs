@@ -48,6 +48,10 @@ namespace LionFire.Vos
         {
             Path = path;
         }
+        public VosReference(IEnumerable<string> pathComponents)
+        {
+            Path = LionPath.Combine(pathComponents);
+        }
         public VosReference(params string[] pathComponents)
         {
             Path = LionPath.Combine(pathComponents);
@@ -69,6 +73,7 @@ namespace LionFire.Vos
         }
 
         public static implicit operator VosReference(string path) => new VosReference(path);
+        public static implicit operator VosReference(Vob vob) => (VosReference)vob.Reference;
 
         public static IReference TryGetFromString(string referenceString)
         {
@@ -79,6 +84,9 @@ namespace LionFire.Vos
             }
             return new VosReference(referenceString);
         }
+
+        public static VosReference FromRootName(string rootName = VosConstants.DefaultRootName)
+            => rootName == VosConstants.DefaultRootName ? new VosReference("/") : new VosReference("/../" + rootName);
 
         #endregion
 
@@ -222,10 +230,18 @@ namespace LionFire.Vos
             get => Path.ToPathArray();
             set => Path = LionPath.FromPathArray(value);
         }
+        protected override void InternalSetPath(string path) => Path = path;
 
         #endregion
 
         #endregion
+
+        public override VosReference CloneWithPath(string newPath)
+        {
+            var result = this.Clone();
+            result.path = newPath;
+            return result;
+        }
 
         public string Package { get; set; }
 
@@ -307,7 +323,22 @@ namespace LionFire.Vos
 #endif
 
         #region Misc
-
+        public static bool operator ==(VosReference left, IVosReference right)
+        {
+            return left?.Key == right?.Key;
+        }
+        public static bool operator ==(VosReference left, VosReference right)
+        {
+            return left?.Key == right?.Key;
+        }
+        public static bool operator !=(VosReference left, IVosReference right)
+        {
+            return left?.Key != right?.Key;
+        }
+        public static bool operator !=(VosReference left, VosReference right)
+        {
+            return left?.Key != right?.Key;
+        }
         public override string ToString()
         {
             //return String.Concat(UriPrefixDefault, Path);

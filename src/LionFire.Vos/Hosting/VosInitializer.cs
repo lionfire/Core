@@ -25,14 +25,13 @@ namespace LionFire.Vos
 
         public void Initialize(RootVob rootVob)
         {
-            foreach (var initializer in VobInitializers.Where(vi => vi.VobRootName == rootVob.RootName))
+            foreach (var initializer in VobInitializers.Where(vi => vi.Reference.RootName() == rootVob.RootName))
             {
                 IVob vob = rootVob;
-                if (!string.IsNullOrEmpty(initializer.VobPath)) vob = vob[initializer.VobPath];
+                if (!string.IsNullOrEmpty(initializer.Reference?.Path)) vob = vob[initializer.Reference.Path];
                 initializer.InitializationAction(ServiceProvider, vob);
             }
         }
     }
 }
-
 

@@ -6,8 +6,11 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="Assets\**" />
     <Compile Remove="Context\**" />
+    <EmbeddedResource Remove="Assets\**" />
     <EmbeddedResource Remove="Context\**" />
+    <None Remove="Assets\**" />
     <None Remove="Context\**" />
   </ItemGroup>
 
@@ -25,7 +28,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Assets\" />
     <Folder Include="Extras\" />
   </ItemGroup>
 

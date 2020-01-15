@@ -6,11 +6,15 @@ using System.Collections.Generic;
 
 namespace LionFire.Vos
 {
+  
     public interface IVosReference : IReference
         //, IHas<IOBase>
         //, IHas<IOBus>
         , ITypedReference
     {
+
+        //string RootName => Persister; // FUTURE?
+
         IEnumerable<string> AllowedSchemes { get; }
         //string Key { get; }
 
@@ -33,4 +37,11 @@ namespace LionFire.Vos
         //VobReadHandle<object> GetReadHandle();
         //VobReadHandle<T> GetReadHandle<T>();
     }
+
+    public static class IVosReferenceExtensions
+    {
+        public static string RootName(this IVosReference vr) => vr.Persister ?? "";
+
+    }
+    
 }

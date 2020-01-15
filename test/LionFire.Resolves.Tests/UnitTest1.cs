@@ -3,6 +3,7 @@ using Xunit;
 
 namespace Defaultable_
 {
+#if false
     public class UnitTest1
     {
         [Fact]
@@ -11,4 +12,5 @@ namespace Defaultable_
 
         }
     }
+#endif
 }

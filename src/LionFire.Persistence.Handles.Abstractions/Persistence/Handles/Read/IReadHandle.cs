@@ -13,10 +13,17 @@ using System.Threading.Tasks;
 namespace LionFire.Persistence
 {
     /// <summary>
+    /// Limited interface for when generic interface type is not available
+    /// </summary>
+    public interface IReadHandle : IHandleEx, IPersists, ILazilyResolves, IDefaultable, IRetrieves 
+    {
+    }
+
+    /// <summary>
     /// Lazy Read Persistence Handle
     /// </summary>
     /// <typeparam name="T"></typeparam>
-    public interface IReadHandle<out T> : IReadHandleBase<T>, IHandleEx, IPersists, ILazilyResolves<T>
+    public interface IReadHandle<out T> : IReadHandleBase<T>, IReadHandle, ILazilyResolves<T>
     // , INotifyChanged<T>
     //, INotifyingWrapper<T>
     //IReadHandleEvents<T>,

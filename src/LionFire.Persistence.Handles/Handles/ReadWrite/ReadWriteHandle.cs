@@ -33,6 +33,7 @@ namespace LionFire.Persistence.Handles
         : ReadWriteHandleBase<TReference, TValue>
         , IReadWriteHandle<TValue>
         , IReferencable<TReference>
+        , IReadWriteHandle // RECENTCHANGE - added, okay?
         where TReference : IReference
         //where TValue : class
     {

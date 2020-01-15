@@ -52,7 +52,7 @@ namespace LionFire.Vos
                     roots.TryAdd(rootName, rootVob);
                 }
                 VosInitializer.Initialize(rootVob);
-                rootVob.Initialize();
+                rootVob.InitializeMounts();
             }
         }
 

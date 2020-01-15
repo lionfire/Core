@@ -18,6 +18,7 @@ namespace LionFire.Referencing
         public static IReadHandle<TValue> GetReadHandle<TValue, TReference>(this TReference reference)
             where TReference : IReference
             => reference.GetReadHandleProvider<TReference>().GetReadHandle<TValue>(reference);
+
         public static IReadHandle<TValue> GetReadHandle<TValue>(this IReference reference)
         {
             // REVIEW - this seems crazy.  Is it slow?  Should an [Obsolete] tell the user to use the <TValue, TReference> overload instead?
@@ -29,19 +30,22 @@ namespace LionFire.Referencing
 
         public static IReadHandle<TValue> ToReadHandle<TValue>(this IReference reference) => reference.ToReadHandleProvider().GetReadHandle<TValue>(reference) ?? throw new HasUnresolvedDependenciesException($"Could not get {nameof(IReadHandle<TValue>)} type for reference of type {reference.GetType().FullName}");
 
+        public static IReadHandle<TValue> CreateReadHandle<TValue>(this IReference reference) => throw new NotImplementedException(); // FUTURE
+
         #endregion
 
         #region Write Handle
 
         public static IWriteHandle<T> GetWriteHandle<T>(this IReference reference) => reference.ToWriteHandleProvider().GetWriteHandle<T>(reference);
-        public static IWriteHandle<T> ToWriteHandle<T>(this IReference reference) => reference.ToWriteHandleProvider().GetWriteHandle<T>(reference) ?? throw new HasUnresolvedDependenciesException($"Could not get {nameof(Persistence.IWriteHandle<T>)} type for reference of type {reference.GetType().FullName}");
 
+        public static IWriteHandle<T> ToWriteHandle<T>(this IReference reference) => reference.ToWriteHandleProvider().GetWriteHandle<T>(reference) ?? throw new HasUnresolvedDependenciesException($"Could not get {nameof(Persistence.IWriteHandle<T>)} type for reference of type {reference.GetType().FullName}");
 
         #endregion
 
         #region Handles
 
         public static IReadWriteHandle<T> GetReadWriteHandle<T>(this IReference reference) => reference.ToReadWriteHandleProvider().GetReadWriteHandle<T>(reference);
+       
         public static IReadWriteHandle<T> ToReadWriteHandle<T>(this IReference reference) => reference.ToReadWriteHandleProvider().GetReadWriteHandle<T>(reference) ?? throw new HasUnresolvedDependenciesException($"Could not get {nameof(IReadWriteHandle<T>)} type for reference of type {reference.GetType().FullName}");
 
         #endregion
@@ -49,10 +53,12 @@ namespace LionFire.Referencing
         #region Collections
 
         public static HC<T> GetCollectionHandle<T>(this IReference reference) => reference.GetCollectionHandleProvider().GetCollectionHandle<T>(reference);
+        
         public static HC<T> ToCollectionHandle<T>(this IReference reference) => reference.ToCollectionHandleProvider().GetCollectionHandle<T>(reference) ?? throw new HasUnresolvedDependenciesException($"Could not get {nameof(HC<T>)} type for reference of type {reference.GetType().FullName}");
         ////public static C<object> GetCollectionHandle<T>(this IReference reference) => reference.GetCollectionHandleProvider().GetCollectionHandle<object>(reference);
 
         public static RC<T> GetReadCollectionHandle<T>(this IReference reference) => reference.GetCollectionHandleProvider().GetReadCollectionHandle<T>(reference);
+    
         public static RC<T> ToReadCollectionHandle<T>(this IReference reference) => reference.ToCollectionHandleProvider().GetReadCollectionHandle<T>(reference) ?? throw new HasUnresolvedDependenciesException($"Could not get {nameof(RC<T>)} type for reference of type {reference.GetType().FullName}");
 
         #endregion

@@ -20,8 +20,10 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\..\src\LionFire.Core\LionFire.Core.csproj" />
     <ProjectReference Include="..\..\src\LionFire.Hosting\LionFire.Hosting.csproj" />
     <ProjectReference Include="..\..\src\LionFire.Persistence.Filesystem\LionFire.Persistence.Filesystem.csproj" />
+    <ProjectReference Include="..\..\src\LionFire.Vos.Application\LionFire.Vos.VosApp.csproj" />
     <ProjectReference Include="..\..\src\LionFire.Vos.Packages\LionFire.Vos.Packages.csproj" />
     <ProjectReference Include="..\LionFire.Persistence.Testing\LionFire.Persistence.Testing.csproj" />
   </ItemGroup>

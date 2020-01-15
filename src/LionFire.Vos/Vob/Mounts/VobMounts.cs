@@ -23,6 +23,15 @@ namespace LionFire.Vos.Mounts
 
         #region Mounts
 
+        public IEnumerable<IMount> AllMounts
+        {
+            get
+            {
+                if (ReadMounts != null) foreach (var m in ReadMounts?.Select(kvp => kvp.Value) ?? Enumerable.Empty<IMount>()) yield return m;
+                if (WriteMounts != null) foreach (var m in WriteMounts?.Select(kvp => kvp.Value) ?? Enumerable.Empty<IMount>()) yield return m;
+            }
+        }
+
         #region HasMounts
 
         public bool HasLocalReadMounts => localReadMount != null || localReadMounts?.Any() == true;
@@ -31,7 +40,7 @@ namespace LionFire.Vos.Mounts
         public bool HasLocalMounts => HasLocalReadMounts || HasLocalWriteMounts;
 
         #endregion
-        
+
         /// <summary>
         /// 
         /// </summary>
@@ -86,8 +95,8 @@ namespace LionFire.Vos.Mounts
             MountStateVersion++;
             // FUTURE: Proactively invalidate and recalculate (at low thread priority) mount resolutions for child VobNodes.
         }
-        public bool CanHaveMultiReadMounts { get { throw new NotImplementedException(); } }
-        public bool CanHaveMultiWriteMounts { get { throw new NotImplementedException(); } }
+        public bool CanHaveMultiReadMounts { get; set; }
+        public bool CanHaveMultiWriteMounts { get; set; }
 
         private bool MountRead(IMount mount, bool force = false)
         {
@@ -254,10 +263,10 @@ namespace LionFire.Vos.Mounts
                 {
                     if (index == 0)
                     {
-                        if (singleMount != null) { return singleMount; }
-                        else return mounts?.FirstOrDefault();
+                        if (singleMount != null && singleMount.IsEnabled) { return singleMount; }
+                        else return mounts?.Where(m => m.IsEnabled).FirstOrDefault();
                     }
-                    else return mounts[index];
+                    else return mounts?.Where(m => m.IsEnabled).ElementAtOrDefault(index);
                 }
 
                 IMount NextLocal
@@ -304,9 +313,46 @@ namespace LionFire.Vos.Mounts
             throw new NotImplementedException();
         }
 
-        public void Unmount(string mountKey)
+        public int Unmount(IReference mountTarget)
         {
-            throw new NotImplementedException();
+            return Unmount(mountTarget.Key);
+        }
+        public int Unmount(string mountKey)
+        {
+            int unmountCount = 0;
+
+            if (localReadMount?.Target.Key == mountKey)
+            {
+                localReadMount = null;
+                unmountCount++;
+            }
+
+            if (localReadMounts != null)
+            {
+                var mount = localReadMounts.FirstOrDefault(m => m.Target.Key == mountKey);
+                if (mount != null)
+                {
+                    localReadMounts.Remove(mount);
+                    unmountCount++;
+                }
+            }
+
+            if (localWriteMount?.Target.Key == mountKey)
+            {
+                localWriteMount = null;
+                unmountCount++;
+            }
+
+            if (localWriteMounts != null)
+            {
+                var mount = localWriteMounts.FirstOrDefault(m => m.Target.Key == mountKey);
+                if (mount != null)
+                {
+                    localWriteMounts.Remove(mount);
+                    unmountCount++;
+                }
+            }
+            return unmountCount;
         }
         public int MountStateVersion { get; protected set; }
 
@@ -329,20 +375,14 @@ namespace LionFire.Vos.Mounts
                 if (cache == null)
                 {
                     var list = AllEffectiveReadMounts.ToList();
-                    switch (list.Count)
+                    readMountsCache = list.Count switch
                     {
-                        case 1:
-                            readMountsCache = new SingleMountResolutionCache(Vob, ReadMountsVersion++, list[0]);
-                            break;
-                        case 0:
-                            readMountsCache = null;
-                            break;
-                        default:
-                            readMountsCache = new MultiMountResolutionCache(Vob, ReadMountsVersion++, AllEffectiveReadMounts, PersistenceDirection.Read);
-                            break;
-                    }
+                        1 => new SingleMountResolutionCache(Vob, ReadMountsVersion++, list[0]),
+                        0 => null,
+                        _ => new MultiMountResolutionCache(Vob, ReadMountsVersion++, AllEffectiveReadMounts, PersistenceDirection.Read),
+                    };
                 }
-                return readMountsCache.Mounts;
+                return readMountsCache?.Mounts;
             }
         }
         IMountResolutionCache ReadMountsCache => (readMountsCache != null && (ParentVobNode == null || readMountsCache.Version == ParentValue.MountStateVersion)) ? readMountsCache : null;
@@ -358,16 +398,23 @@ namespace LionFire.Vos.Mounts
         {
             get
             {
-                throw new NotImplementedException();
-                //if (writeMountsCache == null)
-                //{
-
-                //}
-                //return writeMountsCache;
+                var cache = WriteMountsCache;
+                if (cache == null)
+                {
+                    var list = AllEffectiveWriteMounts.ToList();
+                    writeMountsCache = list.Count switch
+                    {
+                        1 => new SingleMountResolutionCache(Vob, WriteMountsVersion++, list[0]),
+                        0 => null,
+                        _ => new MultiMountResolutionCache(Vob, WriteMountsVersion++, AllEffectiveWriteMounts, PersistenceDirection.Write),
+                    };
+                }
+                return writeMountsCache?.Mounts;
             }
         }
 
-        //IMountResolutionCache writeMountsCache;
+        IMountResolutionCache WriteMountsCache => (writeMountsCache != null && (ParentVobNode == null || writeMountsCache.Version == ParentValue.MountStateVersion)) ? writeMountsCache : null;
+        IMountResolutionCache writeMountsCache;
 
         #endregion
 

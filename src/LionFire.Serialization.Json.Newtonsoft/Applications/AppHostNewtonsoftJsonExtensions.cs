@@ -4,8 +4,9 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using LionFire.Dependencies;
 using Microsoft.Extensions.Hosting;
+using LionFire.Applications.Hosting;
 
-namespace LionFire.Applications.Hosting
+namespace LionFire.Services
 {
     public static class NewtonsoftJsonAppHostExtensions
     {

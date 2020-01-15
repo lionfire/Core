@@ -8,17 +8,19 @@ namespace LionFire.Vos.Mounts
     public class TMount : ITemplate<Mount>
     {
         public TMount() { }
-        public TMount(string vobPath, IReference reference, IMountOptions options = null)
+        public TMount(IVosReference vobReference, IReference reference, IMountOptions options = null)
         {
-            VobPath = vobPath;
+            MountPoint = vobReference;
             Reference = reference;
             Options = options;
         }
 
-        public string VobPath { get; set; }
+        public IVosReference MountPoint { get; set; }
 
         public IReference Reference { get; set; }
 
         public IMountOptions Options { get; set; }
+
+        public override string ToString() => $"{{TMount {MountPoint} --> {Reference}}}";
     }
 }

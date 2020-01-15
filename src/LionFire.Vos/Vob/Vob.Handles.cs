@@ -5,11 +5,72 @@ using System.Text;
 using LionFire.Persistence;
 using LionFire.Vos.Mounts;
 using LionFire.Referencing;
+using LionFire.Persistence.Persisters;
+using LionFire.Persistence.Persisters.Vos;
+using LionFire.Vos.Services;
+using System.Collections.Concurrent;
 
 namespace LionFire.Vos
 {
     public partial class Vob
     {
+        #region Handles: Create and Get shared
+
+        #region Read
+
+        private ConcurrentDictionary<Type, IReadHandle> SharedReadHandles
+        {
+            get { if (sharedReadHandles == null) sharedReadHandles = new ConcurrentDictionary<Type, IReadHandle>(); return sharedReadHandles; }
+        }
+        private ConcurrentDictionary<Type, IReadHandle> sharedReadHandles;
+
+        public IReadHandle<T> GetReadHandle<T>()
+            => (IReadHandle<T>)SharedReadHandles.GetOrAdd(typeof(T), t => CreateReadHandle<T>());
+
+        public IReadHandle<T> CreateReadHandle<T>()
+            => new PersisterReadHandle<VosReference, T, VosPersister>(this.GetService<VosPersister>(), VosReference);
+
+        #endregion
+
+        #region ReadWrite
+
+        private ConcurrentDictionary<Type, IReadWriteHandle> SharedReadWriteHandles
+        {
+            get { if (sharedReadWriteHandles == null) sharedReadWriteHandles = new ConcurrentDictionary<Type, IReadWriteHandle>(); return sharedReadWriteHandles; }
+        }
+        private ConcurrentDictionary<Type, IReadWriteHandle> sharedReadWriteHandles = new ConcurrentDictionary<Type, IReadWriteHandle>();
+
+        public IReadWriteHandle<T> GetReadWriteHandle<T>()
+            => (IReadWriteHandle<T>)SharedReadWriteHandles.GetOrAdd(typeof(T), t => CreateReadWriteHandle<T>());
+
+        public IReadWriteHandle<T> CreateReadWriteHandle<T>()
+            => new PersisterReadWriteHandle<VosReference, T, VosPersister>(this.GetService<VosPersister>(), VosReference);
+
+        #endregion
+
+        #region Write
+
+        private ConcurrentDictionary<Type, IWriteHandle> SharedWriteHandles
+        {
+            get { if (sharedWriteHandles == null) sharedWriteHandles = new ConcurrentDictionary<Type, IWriteHandle>(); return sharedWriteHandles; }
+        }
+        private ConcurrentDictionary<Type, IWriteHandle> sharedWriteHandles = new ConcurrentDictionary<Type, IWriteHandle>();
+
+        public IWriteHandle<T> GetWriteHandle<T>()
+            => throw new NotImplementedException();
+            //=> (IWriteHandle<T>)WriteHandles.GetOrAdd(typeof(T), t => new PersisterWriteHandle<VosReference, T, VosPersister>(this.GetService<VosPersister>(), VosReference));
+        public IReadWriteHandle<T> CreateWriteHandle<T>()
+            => throw new NotImplementedException();
+        //=> new PersisterWriteHandle<VosReference, T, VosPersister>(this.GetService<VosPersister>(), VosReference);
+
+        #endregion
+
+        #region Collection
+
+        #endregion
+
+        #endregion
+
         //public IEnumerable<IReadHandle<MountHandleObject>> ReadHandles
         //{
         //    get
@@ -134,44 +195,44 @@ namespace LionFire.Vos
             get
             {
                 throw new NotImplementedException();
-//                //if (!HasMounts) return null;
-//                foreach (Mount mount in
-//#if AOT
-//                        (IEnumerable)
-//#endif
-// EffectiveWriteMounts)
-//                {
-//                    if (mount.MountOptions.IsReadOnly && !VosContext.Current.IgnoreReadonly)
-//                    {
-//                        continue;
-//                    }
+                //                //if (!HasMounts) return null;
+                //                foreach (Mount mount in
+                //#if AOT
+                //                        (IEnumerable)
+                //#endif
+                // EffectiveWriteMounts)
+                //                {
+                //                    if (mount.MountOptions.IsReadOnly && !VosContext.Current.IgnoreReadonly)
+                //                    {
+                //                        continue;
+                //                    }
 
-//                    return GetMountHandle(mount);
-//                }
-//                return null;
+                //                    return GetMountHandle(mount);
+                //                }
+                //                return null;
             }
         }
         private IReadWriteHandleBase<T> GetFirstWriteHandle<T>()
         {
             throw new NotImplementedException();
-//            //get
-//            {
-//                //if (!HasMounts) return null;
-//                foreach (Mount mount in
-//#if AOT
-//                        (IEnumerable)
-//#endif
-// EffectiveWriteMounts)
-//                {
-//                    if (mount.MountOptions.IsReadOnly && !VosContext.Current.IgnoreReadonly)
-//                    {
-//                        continue;
-//                    }
+            //            //get
+            //            {
+            //                //if (!HasMounts) return null;
+            //                foreach (Mount mount in
+            //#if AOT
+            //                        (IEnumerable)
+            //#endif
+            // EffectiveWriteMounts)
+            //                {
+            //                    if (mount.MountOptions.IsReadOnly && !VosContext.Current.IgnoreReadonly)
+            //                    {
+            //                        continue;
+            //                    }
 
-//                    return GetReadWriteHandleFromMount<T>(mount);
-//                }
-//                return null;
-//            }
+            //                    return GetReadWriteHandleFromMount<T>(mount);
+            //                }
+            //                return null;
+            //            }
         }
 
         //private VobHandle<T> GetFirstWriteHandle<T>()

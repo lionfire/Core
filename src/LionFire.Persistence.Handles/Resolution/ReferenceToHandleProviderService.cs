@@ -74,6 +74,15 @@ namespace LionFire.Persistence.Handles
         public ICollectionHandleProvider GetCollectionHandleProvider(IReference input)
             => DependencyLocator.Get<ICollectionHandleProvider>(typeof(ICollectionHandleProvider<>).MakeGenericType(input.GetType()));
 
+        public IReadHandleCreator GetReadHandleCreator(IReference input) => throw new NotImplementedException();
+        public IReadHandleCreator<TReference> GetReadHandleCreator<TReference>(TReference input) where TReference : IReference => throw new NotImplementedException();
+        public IReadWriteHandleProvider<TReference> GetReadWriteHandleProvider<TReference>(TReference input) where TReference : IReference => throw new NotImplementedException();
+        public IReadWriteHandleCreator GetReadWriteHandleCreator(IReference input) => throw new NotImplementedException();
+        public IReadWriteHandleCreator<TReference> GetReadWriteHandleCreator<TReference>(TReference input) where TReference : IReference => throw new NotImplementedException();
+        public IWriteHandleProvider<TReference> GetWriteHandleProvider<TReference>(TReference input) where TReference : IReference => throw new NotImplementedException();
+        public IWriteHandleCreator GetWriteHandleCreator(IReference input) => throw new NotImplementedException();
+        public IWriteHandleCreator<TReference> GetWriteHandleCreator<TReference>(TReference input) where TReference : IReference => throw new NotImplementedException();
+
         /// ///////////////////
 
 

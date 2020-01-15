@@ -2,8 +2,25 @@
 
 namespace LionFire.Persistence.Handles
 {
+    // TODO
+    public interface IReadHandleCreator
+    {
+        IReadHandle<T> CreateReadHandle<T>(IReference reference);
+    }
+    public interface IReadHandleCreator<TReference>
+        where TReference : IReference
+    {
+        IReadHandle<T> CreateReadHandle<T>(TReference reference);
+    }
+
     public interface IReadHandleProvider
     {
+        /// <summary>
+        /// Get a read handle.  It may be a shared handle.  To ensure a new handle, use IReadHandleCreator.CreateReadHandle instead.
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="reference"></param>
+        /// <returns></returns>
         IReadHandle<T> GetReadHandle<T>(IReference reference);
     }
 
