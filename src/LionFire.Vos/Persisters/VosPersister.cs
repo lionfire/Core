@@ -41,7 +41,7 @@ namespace LionFire.Persistence.Persisters.Vos
 
         #endregion
 
-        public VosPersister(VosRootManager vosRootManager, string rootName, VosPersisterOptions options)
+        public VosPersister(RootManager vosRootManager, string rootName, VosPersisterOptions options)
         {
             this.RootName = rootName;
             root = vosRootManager.Get(rootName);

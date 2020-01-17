@@ -16,6 +16,17 @@ namespace LionFire.Extensions.DefaultValues
     /// </remarks>
     public static class DefaultValueUtils
     {
+
+        #region Object comparison
+
+        public static bool GenericEquals<T>(this T o1, T o2) => EqualityComparer<T>.Default.Equals(o1, o2);
+        public static bool IsDefault<T>(this T o1) => EqualityComparer<T>.Default.Equals(o1, default);
+
+        #endregion
+
+
+        #region Member Defaults
+
         public static object GetDefaultValue(this PropertyInfo mi)
         {
             var attr = mi.GetCustomAttribute<DefaultValueAttribute>();
@@ -45,6 +56,29 @@ namespace LionFire.Extensions.DefaultValues
                 return null; // Default for reference types
             }
         }
+
+        #region IsDefaultValue
+
+        public static bool IsDefaultValue(this PropertyInfo mi, object instance = null)
+        {
+            var def = mi.GetDefaultValue();
+            var cur = mi.GetValue(instance, null);
+            if (def == null) return cur == null;
+            return def.Equals(cur);
+        }
+        public static bool IsDefaultValue(this FieldInfo mi, object instance = null)
+        {
+            var def = mi.GetDefaultValue();
+            var cur = mi.GetValue(instance);
+            if (def == null) return cur == null;
+            return def.Equals(cur);
+        }
+
+        #endregion
+
+        #endregion
+
+        #region Class defaults
 
         /// <summary>
         /// Apply the default values set in DefaultValueAttributes to public and non-public properties and fields in this instance.
@@ -98,7 +132,7 @@ namespace LionFire.Extensions.DefaultValues
             }
         }
 
-        #region IsDefaultValue
+        #endregion
 
         public static bool IsDefaultValue(this MemberInfo memberInfo, object instance = null)
         {
@@ -111,22 +145,7 @@ namespace LionFire.Extensions.DefaultValues
             throw new ArgumentException("memberInfo must be PropertyInfo or FieldInfo");
         }
 
-        public static bool IsDefaultValue(this PropertyInfo mi, object instance = null)
-        {
-            var def = mi.GetDefaultValue();
-            var cur = mi.GetValue(instance, null);
-            if (def == null) return cur == null;
-            return def.Equals(cur);
-        }
-        public static bool IsDefaultValue(this FieldInfo mi, object instance = null)
-        {
-            var def = mi.GetDefaultValue();
-            var cur = mi.GetValue(instance);
-            if (def == null) return cur == null;
-            return def.Equals(cur);
-        }
-
-        #endregion
+     
 
     }
 }

@@ -7,14 +7,15 @@ namespace LionFire.Resolves.ChainResolving
         public Type InstanceType { get; set; }
         //public Type[] ParameterTypes 
 
-        public Func<object, object> Func { get; set; }
+        //public Func<object, object> Func { get; set; }
         public Delegate Delegate { get; set; }
 
 
         public ChainResolverWorker(Type instanceType, Func<object, object> func)
         {
             InstanceType = instanceType;
-            Func = func;
+            //Func = func;
+            Delegate = func;
         }
 
         public ChainResolverWorker(Type instanceType, Delegate del)

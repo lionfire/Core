@@ -17,6 +17,7 @@ namespace LionFire.Resolves.ChainResolving
 
         /// <summary>
         /// If true, replace the stored value with the resolved value
+        /// If missing, defaults to true
         /// </summary>
         public Func<object, object, bool> ReplaceValueCondition { get; set; }
 

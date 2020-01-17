@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using LionFire.FlexObjects;
 using LionFire.MultiTyping;
 using LionFire.Persistence;
 using LionFire.Referencing;
@@ -11,7 +12,8 @@ namespace LionFire.Vos
 
     public interface IVob :
         //IReadOnlyMultiTyped, 
-        IReferencable
+        IReferencable,
+        IFlex
     {
         new IVosReference Reference { get; }
         string Name { get; }
@@ -23,7 +25,6 @@ namespace LionFire.Vos
         string Path { get; }
         IEnumerable<string> PathElements { get; }
         IEnumerable<string> PathElementsReverse { get; }
-        object Value { get; set; }
 
         #endregion
 

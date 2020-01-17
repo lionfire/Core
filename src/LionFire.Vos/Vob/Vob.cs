@@ -52,7 +52,7 @@ namespace LionFire.Vos
                 if (root == null)
                 {
                     IVob vob = this;
-                    while (vob.Parent != null) { vob = vob.Parent; }
+                    while (vob.Parent != null && vob.Parent.Path != VosConstants.VobRootsRoot ) { vob = vob.Parent; }
                     root = vob as RootVob;
                 }
                 return root;

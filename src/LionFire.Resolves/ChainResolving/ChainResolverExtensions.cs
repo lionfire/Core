@@ -1,10 +1,16 @@
 ﻿using LionFire.Dependencies;
+using LionFire.Structures;
 using System;
 using System.Text;
 using System.Threading.Tasks;
 
 namespace LionFire.Resolves.ChainResolving
 {
+    //public interface IHasValue : IWrapper<object> // REVIEW: MOVE / eliminate, is this same as IWrapper<object>?
+    //{
+    //    //object Value { get; set; }
+    //}
+
     /// <summary>
     /// Iteratively resolve an object until it is the expected type
     /// Potential subsystems:
@@ -17,11 +23,20 @@ namespace LionFire.Resolves.ChainResolving
     /// </summary>
     public static class ChainResolverExtensions
     {
+        public static T ResolveTo<T>(this IWrapper<object> hasObject, ChainResolveOptions options = null, params object[] parameters)
+        {
+            var result = hasObject.Value.ChainResolveAsync<T>(options, parameters).Result;
+            if (result.HasNewSourceValue)
+            {
+                hasObject.Value = result.NewSourceValue;
+            }
+            return result.ResolvedValue;
+        }
 
-        public static Task<ChainResolveResult<T>> ChainResolveAsync<T>(this object obj, params object[] parameters)
-            => ChainResolveAsync<T>(obj, parameters, null);
+        //public static Task<ChainResolveResult<T>> ChainResolveAsync<T>(this object obj, params object[] parameters)
+        //    => ChainResolveAsync<T>(obj, parameters, null);
 
-        public static async Task<ChainResolveResult<T>> ChainResolveAsync<T>(this object obj, object[] parameters = null, ChainResolveOptions options = null)
+        public static async Task<ChainResolveResult<T>> ChainResolveAsync<T>(this object obj, ChainResolveOptions options = null, params object[] parameters)
         {
             if (options == null) options = DependencyContext.Current.GetService<ChainResolveOptions>() ?? ChainResolveOptions.Default;
 
@@ -30,7 +45,7 @@ namespace LionFire.Resolves.ChainResolving
             int usedParameters = 0;
             foreach (var resolver in options.AllResolvers)
             {
-                if (!options.ContinueResolveCondition(obj)) { return result; }
+                if (options.ContinueResolveCondition?.Invoke(obj) == false) { return result; }
 
                 Delegate d = resolver.Delegate;
                 var methodParameters = d.Method.GetParameters();
@@ -38,9 +53,9 @@ namespace LionFire.Resolves.ChainResolving
                 if (!methodParameters[0].ParameterType.IsAssignableFrom(obj.GetType())) continue;
 
                 object[] parametersToUse;
-                if (parameters != null)
+                int numParametersToUse = 0;
+                if (parameters != null && parameters.Length > 0)
                 {
-                    int numParametersToUse = 0;
                     for (int methodIndex = 1, parametersIndex = usedParameters; (1 + methodIndex) < methodParameters.Length &&
                         parametersIndex < parameters.Length; methodIndex++, parametersIndex++)
                     {
@@ -65,12 +80,9 @@ namespace LionFire.Resolves.ChainResolving
                         Array.Copy(parameters, usedParameters - numParametersToUse, parametersToUse, 1, numParametersToUse);
                     }
                 }
-                else
-                {
-                    parametersToUse = new object[1];
-                }
 
-                if (parametersToUse.Length != methodParameters.Length) continue;
+                if (numParametersToUse + 1 != methodParameters.Length) continue;
+                parametersToUse = new object[numParametersToUse + 1];
                 parametersToUse[0] = obj;
                 var invokeResult = resolver.Delegate.DynamicInvoke(parametersToUse);
 
@@ -92,15 +104,17 @@ namespace LionFire.Resolves.ChainResolving
                 }
                 else
                 {
-                    if (options.ReplaceValueCondition(obj, invokeResult))
+                    if (options.ReplaceValueCondition?.Invoke(obj, invokeResult) != false)
                     {
                         result.NewSourceValue = invokeResult;
+                        result.HasNewSourceValue = true;
                     }
                     obj = invokeResult;
                 }
 
-                if (typeof(T).IsAssignableFrom(result.GetType()))
+                if (typeof(T).IsAssignableFrom(obj?.GetType()))
                 {
+                    result.ResolvedValue = (T)obj;
                     result.IsSuccess = true;
                     break;
                 }

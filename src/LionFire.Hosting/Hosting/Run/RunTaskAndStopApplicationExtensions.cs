@@ -25,13 +25,14 @@ namespace LionFire.Hosting
             });
         }
 
-        public static Task Run(this IHostBuilder hostBuilder, Action<IServiceProvider> action)
+        public static void Run(this IHostBuilder hostBuilder, Action<IServiceProvider> action)
         {
-            return hostBuilder.Run(services =>
+            // TODO: a pure synchronous version?
+            hostBuilder.Run(services =>
             {
                 action(services);
                 return Task.CompletedTask;
-            });
+            }).Wait();
         }
 
         public static IHost InitializeDependencyContext(this IHost host)

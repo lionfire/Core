@@ -118,7 +118,7 @@ namespace LionFire.Hosting
                 .ConfigureServices((_, services) =>
                 {
                     services
-                        .TryAddEnumerableSingleton<VosRootRegistration>("")
+                        .TryAddEnumerableSingleton<RootRegistration>("")
                     ;
                 });
         }

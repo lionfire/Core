@@ -23,7 +23,7 @@ namespace LionFire.Services
                 .ConfigureServices((_, services) =>
                 {
                     services
-                        .AddSingleton<VosRootManager>()
+                        .AddSingleton<RootManager>()
                         .AddSingleton<VosInitializer>()
 
                         .AddSingleton(serviceProvider => serviceProvider.GetService<IOptionsMonitor<VosOptions>>().CurrentValue)

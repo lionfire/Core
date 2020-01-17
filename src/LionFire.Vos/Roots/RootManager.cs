@@ -12,7 +12,7 @@ namespace LionFire.Vos
     ///  - All RootVobs are initialized once at the construction of VosRootManager
     ///  - This could be moved to on-demand initialization of RootVobs (and tracking whether RootVobs are initialized) if they grow large or numerous and sparsely needed.
     /// </remarks>
-    public class VosRootManager
+    public class RootManager
     {
         #region Dependencies
 
@@ -30,7 +30,7 @@ namespace LionFire.Vos
 
         #region Construction
 
-        public VosRootManager(IOptionsMonitor<VosOptions> vosOptionsMonitor, VosInitializer vosInitializer)
+        public RootManager(IOptionsMonitor<VosOptions> vosOptionsMonitor, VosInitializer vosInitializer)
         {
             this.vosOptions = vosOptionsMonitor.CurrentValue;
             VosInitializer = vosInitializer;

@@ -38,8 +38,10 @@ namespace LionFire.Services
             return services;
         }
 
+        #region InitializeVob
+
         //public static IServiceCollection InitializeVob(this IServiceCollection services, string vobPath, Action<IServiceProvider, IVob> action) 
-            //=> services.InitializeVob(vobPath.ToVosReference(), action);
+        //=> services.InitializeVob(vobPath.ToVosReference(), action);
 
         public static IServiceCollection InitializeVob(this IServiceCollection services, IVosReference vob, Action<IServiceProvider, IVob> action)
         {
@@ -47,7 +49,7 @@ namespace LionFire.Services
             return services;
         }
 
-        public static IServiceCollection InitializeVob(this IServiceCollection services, string vobPath, Action<IVob> action)
+        public static IServiceCollection InitializeVob(this IServiceCollection services, VosReference vobPath, Action<IVob> action)
         {
             services.Configure<List<VobInitializer>>(list => list.Add(new VobInitializer(vobPath.ToVosReference(), action)));
             return services;
@@ -63,6 +65,9 @@ namespace LionFire.Services
             services.Configure<List<VobInitializer>>(list => list.Add(new VobInitializer(new VosReference(vobPath), action)));
             return services;
         }
+
+        #endregion
+
     }
 }
 

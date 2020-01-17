@@ -15,6 +15,7 @@ namespace LionFire.Vos
 
         public static VosReference ToVosReference(this IReference reference)
         {
+            if (reference is VosReference vr) return vr;
             if (reference.Scheme != VosReference.UriSchemeDefault) throw new ArgumentException("Invalid scheme");
             throw new NotImplementedException();
         }
