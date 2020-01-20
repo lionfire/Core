@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.Logging;
+﻿using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using System;
 
@@ -14,8 +15,9 @@ namespace LionFire.Data
         where TConcrete : OptionsConnectionBase<TConnectionOptions, TConcrete>
     {
         //IDisposable changeListener;
-        public OptionsConnectionBase(string connectionName, IOptionsMonitor<NamedConnectionOptions<TConnectionOptions>> options, ILogger<TConcrete> logger) : base(options.CurrentValue.Connections[connectionName], logger)
+        public OptionsConnectionBase(string connectionName, IOptionsMonitor<NamedConnectionOptions<TConnectionOptions>> options, ILogger<TConcrete> logger) : base(options.CurrentValue.GetOptionsOrDefault(connectionName), logger)
         {
+           
             //changeListener = options.OnChange((newOptions, nameOfNamedConnectionOptions) =>
             //{
             //    // Unfortunately, nameOfNamedConnectionOptions doesn't correspond to connectionName.

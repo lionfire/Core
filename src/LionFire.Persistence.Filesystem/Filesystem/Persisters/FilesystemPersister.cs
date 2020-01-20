@@ -26,7 +26,6 @@ namespace LionFire.Persistence.Filesystem
 
     public class FilesystemIO
     {
-
     }
 
     public class FilesystemPersister : FilesystemPersister<FileReference, FilesystemPersisterOptions>, IPersister<FileReference>
@@ -88,8 +87,6 @@ namespace LionFire.Persistence.Filesystem
         #endregion
 
         #endregion
-
-
 
         #region Directories
 

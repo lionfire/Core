@@ -24,7 +24,7 @@ namespace LionFire.Services
         public static IServiceCollection AddVosStores(this IServiceCollection services) 
             => services.AddVosStores(VosAppDefaults.Default.VosStoresOptions);
 
-        public static IServiceCollection ConfigureAllStores(this IServiceCollection services, VosAppOptions options = null)
+        public static IServiceCollection AddDefaultStores(this IServiceCollection services, VosAppOptions options = null)
         {
             if (options == null) options = new VosAppOptions();
 

@@ -1,16 +1,12 @@
 ﻿using LionFire.Dependencies;
 using LionFire.Structures;
+using Microsoft.Extensions.Options;
 using System;
 using System.Text;
 using System.Threading.Tasks;
 
 namespace LionFire.Resolves.ChainResolving
 {
-    //public interface IHasValue : IWrapper<object> // REVIEW: MOVE / eliminate, is this same as IWrapper<object>?
-    //{
-    //    //object Value { get; set; }
-    //}
-
     /// <summary>
     /// Iteratively resolve an object until it is the expected type
     /// Potential subsystems:
@@ -23,6 +19,12 @@ namespace LionFire.Resolves.ChainResolving
     /// </summary>
     public static class ChainResolverExtensions
     {
+
+        // TODO: Two different versions of ResolveTo that do in-place replace or not.  But should it be encouraged to configure this on the producer end?
+        //public static T ResolveTo<T>(this IWrapper<object> hasObject, ChainResolveOptions options = null, params object[] parameters)
+        //{
+        //}
+
         public static T ResolveTo<T>(this IWrapper<object> hasObject, ChainResolveOptions options = null, params object[] parameters)
         {
             var result = hasObject.Value.ChainResolveAsync<T>(options, parameters).Result;
@@ -36,9 +38,12 @@ namespace LionFire.Resolves.ChainResolving
         //public static Task<ChainResolveResult<T>> ChainResolveAsync<T>(this object obj, params object[] parameters)
         //    => ChainResolveAsync<T>(obj, parameters, null);
 
+        public static ChainResolveOptions CurrentOptions => DependencyContext.Current.GetService<IOptionsMonitor<ChainResolveOptions>>()?.CurrentValue
+                ?? ChainResolveOptions.Default;
+
         public static async Task<ChainResolveResult<T>> ChainResolveAsync<T>(this object obj, ChainResolveOptions options = null, params object[] parameters)
         {
-            if (options == null) options = DependencyContext.Current.GetService<ChainResolveOptions>() ?? ChainResolveOptions.Default;
+            if (options == null) options = CurrentOptions;
 
             var result = new ChainResolveResult<T>();
 

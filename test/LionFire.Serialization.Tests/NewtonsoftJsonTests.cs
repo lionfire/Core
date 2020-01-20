@@ -11,7 +11,7 @@ namespace LionFire.Serialization.Tests
 
     public class AppTest : IDisposable
     {
-        public void Dispose() => AppHost.Reset();
+        public void OnDisposing() => AppHost.Reset();
     }
 
     public class MissingSerializationProviderAppResetTests : AppTest

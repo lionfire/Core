@@ -4,11 +4,32 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.DependencyInjection;
 using LionFire.Dependencies;
+using System.Threading;
 
 namespace LionFire.Hosting
 {
+    
     public static class RunTaskAndStopApplicationExtensions
     {
+        public static async Task Run(this IHostBuilder hostBuilder, INotifyDisposing disposable)
+        {
+            var mre = new ManualResetEvent(false);
+            INotifyDisposing x;
+
+            disposable.Disposing += Disposable_Disposing;
+            await hostBuilder.Run(() =>
+            {
+                mre.WaitOne();
+                disposable.Disposing -= Disposable_Disposing;
+            });
+
+
+            void Disposable_Disposing(object obj)
+            {
+                mre.Set();
+            }
+        }
+
         public static Task Run(this IHostBuilder hostBuilder, Action action)
         {
             return hostBuilder.Run(services =>

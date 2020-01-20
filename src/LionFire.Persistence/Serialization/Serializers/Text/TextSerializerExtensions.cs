@@ -1,5 +1,6 @@
 ﻿using LionFire.Dependencies;
 using LionFire.Serialization;
+using LionFire.Services;
 
 namespace Microsoft.Extensions.DependencyInjection
 {

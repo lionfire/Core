@@ -3,9 +3,10 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
-using LionFire.ObjectBus.FsFacade;
+using LionFire.Dependencies;
 using LionFire.ObjectBus.Typing;
 using LionFire.Persistence;
+using LionFire.Persistence.FilesystemFacade;
 using LionFire.Referencing;
 using LionFire.Serialization;
 using LionFire.Structures;
@@ -71,7 +72,7 @@ namespace LionFire.ObjectBus.Redis
 
         public override IOBus OBus => ManualSingleton<RedisOBus>.GuaranteedInstance;
 
-        public override ISimpleFsFacade FsFacade => redisFsFacade;
+        public override ISimpleFilesystemFacade FsFacade => redisFsFacade;
 
         private RedisFsFacade redisFsFacade;
 
@@ -329,8 +330,8 @@ namespace LionFire.ObjectBus.Redis
         //    return Assets.AssetPath.GetDefaultDirectory(typeof(T));
         //}
 
-        public override IReadWriteHandleBase<T> GetHandle<T>(IReference reference) => throw new NotImplementedException();
-        public override IReadHandleBase<T> GetReadHandle<T>(IReference reference) => throw new NotImplementedException();
+        //public override IReadWriteHandleBase<T> GetHandle<T>(IReference reference) => throw new NotImplementedException();
+        //public override IReadHandleBase<T> GetReadHandle<T>(IReference reference) => throw new NotImplementedException();
         
 
 #if TOPORT

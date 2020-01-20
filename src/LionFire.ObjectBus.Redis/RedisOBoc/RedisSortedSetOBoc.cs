@@ -3,6 +3,8 @@ using LionFire.ObjectBus.Handles;
 using LionFire.ObjectBus.RedisPub;
 using LionFire.Persistence;
 using LionFire.Referencing;
+using LionFire.Resolves;
+using MorseCode.ITask;
 using StackExchange.Redis;
 using System;
 using System.Collections.Generic;
@@ -15,7 +17,7 @@ namespace LionFire.ObjectBus.Redis
     /// H
     /// </summary>
     /// <typeparam name="T"></typeparam>
-    public class RedisSortedSetOBoc<T> : WatchableOBoc<T, RedisEntry>
+    public class RedisSortedSetOBoc<T> : WatchableOBoc<RedisReference, T, RedisEntry>
     {
         #region Relationships
 
@@ -52,7 +54,7 @@ namespace LionFire.ObjectBus.Redis
         #region Construction
 
         public RedisSortedSetOBoc() { }
-        public RedisSortedSetOBoc(IReference reference) : base(reference) { }
+        public RedisSortedSetOBoc(RedisReference reference) : base(reference) { }
 
         #endregion
 
@@ -123,8 +125,7 @@ namespace LionFire.ObjectBus.Redis
 
         public int PageSize = 5;
 
-
-        public override async Task<IRetrieveResult<INotifyingReadOnlyCollection<RedisEntry>>> RetrieveImpl()
+        protected override ITask<IResolveResult<INotifyingReadOnlyCollection<RedisEntry>>> ResolveImpl()
         {
             throw new NotImplementedException("NEXT");
             //return await Task.Run(() =>
@@ -175,10 +176,10 @@ namespace LionFire.ObjectBus.Redis
 
         public override IEnumerator<T> GetEnumerator()
         {
-            foreach(var entry in Redis.GetDatabase().SortedSetScan(RedisKey))
+            foreach (var entry in Redis.GetDatabase().SortedSetScan(RedisKey))
             {
                 Console.WriteLine($"[{this.GetType().Name}] retrieved {entry.Score}: {entry.Element}");
-                if(typeof(T) == typeof(string))
+                if (typeof(T) == typeof(string))
                 {
                     yield return (T)(object)entry.Element.ToString();
                 }
@@ -186,6 +187,7 @@ namespace LionFire.ObjectBus.Redis
 
             //throw new NotImplementedException();
         }
+
 
 
 

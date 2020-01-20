@@ -1,5 +1,5 @@
-﻿using LionFire.ObjectBus.FsFacade;
-using LionFire.Persistence;
+﻿using LionFire.Persistence;
+using LionFire.Persistence.FilesystemFacade;
 using LionFire.Referencing;
 using StackExchange.Redis;
 using System.Collections.Generic;
@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 namespace LionFire.ObjectBus.Redis
 {
 
-    public class RedisFsFacade : ISimpleFsFacade
+    public class RedisFsFacade : ISimpleFilesystemFacade
     {
         #region Relationships
 

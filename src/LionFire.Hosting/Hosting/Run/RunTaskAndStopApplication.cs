@@ -11,9 +11,9 @@ namespace LionFire.Hosting
     {
         readonly IServiceProvider serviceProvider;
         private readonly RunOptions options;
-        readonly IApplicationLifetime hostApplicationLifetime;
+        readonly IHostApplicationLifetime hostApplicationLifetime;
 
-        public RunTaskAndStopApplication(IServiceProvider serviceProvider, RunOptions options, IApplicationLifetime hostApplicationLifetime) // TODO NETCORE3 - IHostApplicationLifetime
+        public RunTaskAndStopApplication(IServiceProvider serviceProvider, RunOptions options, IHostApplicationLifetime hostApplicationLifetime) // TODO NETCORE3 - IHostApplicationLifetime
         {
 
             // OLD - now use DependencyContextServiceProviderFactoryWrapper

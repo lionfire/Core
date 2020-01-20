@@ -10,6 +10,7 @@ using LionFire.Persistence;
 using LionFire.ObjectBus.Handles;
 using System.Reflection;
 using LionFire.ObjectBus.Resolution;
+using LionFire.Services;
 
 namespace LionFire.ObjectBus
 {

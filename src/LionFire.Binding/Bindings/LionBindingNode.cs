@@ -1823,7 +1823,7 @@ namespace LionFire.Bindings
 
                         foreach (var handler in collectionChangedHandlers.ToArray())
                         {
-                            handler.Dispose();
+                            handler.OnDisposing();
                         }
                         collectionChangedHandlers.Clear();
 

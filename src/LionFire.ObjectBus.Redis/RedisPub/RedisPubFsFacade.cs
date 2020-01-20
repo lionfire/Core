@@ -1,8 +1,8 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using LionFire.ObjectBus.FsFacade;
 using LionFire.Persistence;
+using LionFire.Persistence.FilesystemFacade;
 using LionFire.Referencing;
 using StackExchange.Redis;
 
@@ -12,7 +12,7 @@ namespace LionFire.ObjectBus.RedisPub
     public partial class RedisPubOBase
     {
 
-        public class RedisPubFsFacade : ISimpleFsFacade
+        public class RedisPubFsFacade : ISimpleFilesystemFacade
         {
             #region Relationships
 
@@ -89,10 +89,6 @@ namespace LionFire.ObjectBus.RedisPub
 
             #endregion
 
-
         }
-
     }
-
-
 }

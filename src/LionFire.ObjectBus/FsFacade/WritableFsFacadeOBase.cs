@@ -1,4 +1,4 @@
-﻿#if TODO // Redo, looking at FSPersister
+﻿//#if TODO // Redo, looking at FSPersister
 using LionFire.Persistence;
 using LionFire.Persistence.FilesystemFacade;
 using LionFire.Referencing;
@@ -37,7 +37,7 @@ namespace LionFire.ObjectBus
         {
             var existsResult = await Exists(reference);
             // FUTURE: Check filesystem permissions
-            return new PersistenceResult { Flags = (existsResult.Flags.HasFlag(PersistenceResultFlags.Found) ? PersistenceResultFlags.PreviewSuccess | PersistenceResultFlags.Found : PersistenceResultFlags.PreviewFail | PersistenceResultFlags.NotFound) }; 
+            return new PersistenceResult { Flags = (existsResult.result.Flags.HasFlag(PersistenceResultFlags.Found) ? PersistenceResultFlags.PreviewSuccess | PersistenceResultFlags.Found : PersistenceResultFlags.PreviewFail | PersistenceResultFlags.NotFound) }; 
 
             //return existsResult.Object;
             //return new RetrieveResult<bool?>
@@ -72,4 +72,4 @@ namespace LionFire.ObjectBus
 
     }
 }
-#endif
+//#endif

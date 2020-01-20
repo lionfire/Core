@@ -4,16 +4,16 @@ namespace LionFire.Resolves.ChainResolving
 {
     public class ChainResolverWorker
     {
-        public Type InstanceType { get; set; }
-        //public Type[] ParameterTypes 
+        public Type FromType { get; set; }
+        public Type ToType => Delegate?.Method.ReturnType;
 
-        //public Func<object, object> Func { get; set; }
         public Delegate Delegate { get; set; }
 
+        #region Constrution
 
         public ChainResolverWorker(Type instanceType, Func<object, object> func)
         {
-            InstanceType = instanceType;
+            FromType = instanceType;
             //Func = func;
             Delegate = func;
         }
@@ -22,8 +22,10 @@ namespace LionFire.Resolves.ChainResolving
         {
             if (del.Method.GetParameters().Length < 1) throw new ArgumentException($"{nameof(del)} must have at least one parameter.");
 
-            InstanceType = instanceType;
+            FromType = instanceType;
             Delegate = del;
         }
+        
+        #endregion
     }
 }

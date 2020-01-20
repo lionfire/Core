@@ -13,7 +13,7 @@ namespace LionFire.Services
     {
         public static IServiceCollection AddVosStores(this IServiceCollection services, VosStoresOptions options, Action<IVosStoresBuilder> configurator = null)
         {
-            var vsc = new VosStoresBuilder(services, options);
+            var builder = new VosStoresBuilder(services, options);
 
             services.InitializeVob(options.StoresLocation, (s, v) =>
             {
@@ -25,7 +25,7 @@ namespace LionFire.Services
                 root.AddOwn(_ => options); // REVIEW - Register with ServiceDirectory instead?
             });
 
-            configurator?.Invoke(vsc);
+            configurator?.Invoke(builder);
 
             return services;
         }

@@ -6,7 +6,7 @@ namespace LionFire.Resolves.ChainResolving
 {
     public class ChainResolveOptions : IParented<ChainResolveOptions>
     {
-        public ChainResolveOptions Parent { get; set; }
+        public ChainResolveOptions Parent { get; set; } = ChainResolveOptions.Default;
 
         public int? MaxResolveCount { get; set; }
 
@@ -24,14 +24,14 @@ namespace LionFire.Resolves.ChainResolving
         /// <summary>
         /// List of things to try
         /// </summary>
-        public List<ChainResolverWorker> Resolvers { get; set; }
+        public List<ChainResolverWorker> Resolvers { get; set; } = new List<ChainResolverWorker>();
 
         public IEnumerable<ChainResolverWorker> AllResolvers
         {
             get
             {
-                foreach (var r in Resolvers) yield return r;
-                if (Parent != null) foreach (var r in Parent.Resolvers) yield return r;
+                if(Resolvers != null) foreach (var r in Resolvers) yield return r;
+                if (Parent != null && ReferenceEquals(Parent, this)) foreach (var r in Parent.Resolvers) yield return r;
             }
         }
 
@@ -39,8 +39,8 @@ namespace LionFire.Resolves.ChainResolving
         {
             Resolvers = new List<ChainResolverWorker>
             {
-                new ChainResolverWorker(typeof(ILazilyResolves<object>), o => ((ILazilyResolves<object>)o).GetValue()),
-                new ChainResolverWorker(typeof(IResolves<object>), o => ((IResolves<object>)o).Resolve()),
+                new ChainResolverWorker(typeof(ILazilyResolves<object>), o => ((ILazilyResolves<object>)o).GetValue()), // Put this first, because it caches results
+                new ChainResolverWorker(typeof(IResolves<object>), o => ((IResolves<object>)o).Resolve()), // Re-evaluates every time -- may be a long I/O operation
             }
         };
     }

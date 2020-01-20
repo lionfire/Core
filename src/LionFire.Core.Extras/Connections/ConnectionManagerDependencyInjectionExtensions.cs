@@ -26,5 +26,23 @@ namespace LionFire.Data
                             section.Bind(o);
                         });
                 });
+
+        public static IServiceCollection AddConnectionManager<TConnection, TConnectionOptions>(this IServiceCollection services, IConfiguration configuration)
+            where TConnection : class, IConnection
+            where TConnectionOptions : ConnectionOptions<TConnectionOptions>
+                => services.AddConnectionManager<TConnection, TConnectionOptions, ConnectionManager<TConnection, TConnectionOptions>>(configuration);
+
+        public static IServiceCollection AddConnectionManager<TConnection, TConnectionOptions, TConnectionManager>(this IServiceCollection services, IConfiguration configuration)
+            where TConnection : IConnection
+            where TConnectionManager : class, IConnectionManager<TConnection>
+            where TConnectionOptions : ConnectionOptions<TConnectionOptions>
+            =>
+                services
+                            .AddSingleton<IConnectionManager<TConnection>, TConnectionManager>()
+                            .Configure<NamedConnectionOptions<TConnectionOptions>>(o =>
+                        {
+                            var section = configuration.GetSection(typeof(TConnectionOptions).GetConfigurationKey());
+                            section.Bind(o);
+                        });
     }
 }

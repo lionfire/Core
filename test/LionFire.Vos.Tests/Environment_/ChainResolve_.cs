@@ -21,14 +21,7 @@ namespace Environment_
                 .ConfigureServices((_, s) =>
                 {
                     s
-                    //.AddChainResolver<string, VosReference>(s=>new VosReference(s)) // ENH: look for ctor or static implicit operator on target type with source type
-
-                    .AddSingleton(new ChainResolveOptions  // TODO: AddChainResolver
-                    {
-                        Resolvers = new List<ChainResolverWorker> {
-                            new ChainResolverWorker(typeof(VosReference), new Func<string, VosReference>(s=>new VosReference(s))),
-                        }
-                    })
+                    .AddChainResolver<string, VosReference>(s => new VosReference(s)) // ENH: look for ctor or static implicit operator on target type with source type
                     .VobEnvironment("key2", "value2")
                     ;
                 })
@@ -42,6 +35,33 @@ namespace Environment_
                     Assert.IsType<VosReference>(env.FlexDictionary.Values["key2"].SingleValueOrDefault());
                 });
         }
+
+#if TODO
+        [Fact]
+        public void P_FallThroughToDefault()
+        {
+            VosHost.Create()
+                .ConfigureServices((_, s) =>
+                {
+                    s
+                    .AddChainResolver<string, VosReference>(s => new VosReference(s)) // ENH: look for ctor or static implicit operator on target type with source type
+                    .VobEnvironment("key2", "value2")
+                    ;
+                })
+                .Run(serviceProvider =>
+                {
+                    var root = serviceProvider.GetRootVob();
+                    var env = root.Environment();
+
+                    var r = env.FlexDictionary.Values["key2"].ResolveTo<VosReference>();
+                    Assert.IsType<VosReference>(r);
+                    Assert.IsType<VosReference>(env.FlexDictionary.Values["key2"].SingleValueOrDefault());
+
+                    // TODO use this from Default:                 new ChainResolverWorker(typeof(ILazilyResolves<object>), o => ((ILazilyResolves<object>)o).GetValue()),
+                    Assert.True(false);
+                });
+        }
+#endif
     }
 }
 

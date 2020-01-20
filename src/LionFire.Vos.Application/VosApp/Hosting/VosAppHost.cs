@@ -3,6 +3,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using LionFire.Services;
 using LionFire.Vos.VosApp;
+using LionFire.Vos;
 
 namespace LionFire.Hosting // REVIEW - consider changing this to LionFire.Services to make it easier to remember how to create a new app
 {
@@ -14,8 +15,11 @@ namespace LionFire.Hosting // REVIEW - consider changing this to LionFire.Servic
                      .ConfigureServices(services =>
                      {
                          services
-                             .VobEnvironment("AppRoot", "/app")
-                             .VobAlias("/`", "/app")
+                             .VobEnvironment("AppRoot", "/app".ToVosReference())
+                             .VobEnvironment("internal", "/_".ToVosReference())
+                             .VobEnvironment("stores", "/_/stores".ToVosReference()) // TODO: "$internal/stores"
+                             .AddVosStores(b => b.Add)
+                             .VobAlias("/`", "/app") // TODO, TOTEST
                              //.AddVosAppDefaultMounts(options) // TODO
                              //.VobAlias("/`", "$AppRoot") // FUTURE?  Once environment variables are ready
                              ;

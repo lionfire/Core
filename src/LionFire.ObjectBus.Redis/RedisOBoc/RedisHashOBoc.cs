@@ -7,6 +7,8 @@ using LionFire.ObjectBus.Handles;
 using LionFire.ObjectBus.RedisPub;
 using LionFire.Persistence;
 using LionFire.Referencing;
+using LionFire.Resolves;
+using MorseCode.ITask;
 
 namespace LionFire.ObjectBus.Redis
 {
@@ -14,7 +16,7 @@ namespace LionFire.ObjectBus.Redis
     /// 
     /// </summary>
     /// <typeparam name="T"></typeparam>
-    public class RedisHashOBoc<T> : WatchableOBoc<T, RedisEntry>
+    public class RedisHashOBoc<T> : WatchableOBoc<RedisReference, T, RedisEntry>
     {
         RedisOBase obase;
         RedisPubOBase pubOBase;
@@ -22,7 +24,7 @@ namespace LionFire.ObjectBus.Redis
         #region Construction
 
         public RedisHashOBoc() { }
-        public RedisHashOBoc(IReference reference) : base(reference) { }
+        public RedisHashOBoc(RedisReference reference) : base(reference) { }
 
         #endregion
 
@@ -51,6 +53,7 @@ namespace LionFire.ObjectBus.Redis
         }
         
         public override IEnumerator<T> GetEnumerator() => throw new NotImplementedException();
-        public override Task<IRetrieveResult<INotifyingReadOnlyCollection<RedisEntry>>> RetrieveImpl() => throw new NotImplementedException();
+        //public override Task<IRetrieveResult<INotifyingReadOnlyCollection<RedisEntry>>> RetrieveImpl() => throw new NotImplementedException();
+        protected override ITask<IResolveResult<INotifyingReadOnlyCollection<RedisEntry>>> ResolveImpl() => throw new NotImplementedException();
     }
 }

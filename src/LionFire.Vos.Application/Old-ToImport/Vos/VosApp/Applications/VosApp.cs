@@ -1,4 +1,4 @@
-﻿#if OLD
+﻿//#if OLD
 //#define ASSETS_SUBPATH // Prefer this off?  TODO - make sure this works for packages
 
 using System;
