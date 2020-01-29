@@ -9,52 +9,9 @@ using Microsoft.Extensions.PlatformAbstractions;
 
 namespace LionFire
 {
-    public class AppInfo
-    {
-        internal static AppInfo Default = new AppInfo();
-        public string CompanyName { get; set; } = "LionFireUser";
-        public string ProgramName { get; set; } = "ProgramName";
-        public string ProgramDisplayName { get; set; } = "Program Name";
-
-        public string CustomAppDataDirName { get; set; }
-
-        public string ProgramVersion { get; set; } = "0.0.0";
-    }
-
     public partial class LionFireEnvironment
     {
-        #region App-definable settings
 
-        #region MainAppInfo
-
-        public static AppInfo MainAppInfo
-        {
-            get => mainAppInfo ?? AppInfo.Default;
-            set
-            {
-                if (mainAppInfo == value)
-                {
-                    return;
-                }
-
-                /*if (mainAppInfo != default(AppInfo))
-                {
-                    throw new Exception("Already set");
-                }*/
-
-                mainAppInfo = value;
-            }
-        }
-        private static AppInfo mainAppInfo;
-        public static bool IsMainAppInfoSet => mainAppInfo != null;
-
-        #endregion
-
-        public static string CompanyName => MainAppInfo?.CompanyName;
-        public static string ProgramName => MainAppInfo?.ProgramName;
-        public static string ProgramDisplayName => MainAppInfo?.ProgramDisplayName;
-
-        #endregion
 
         #region Compile Environment
 
@@ -94,7 +51,57 @@ namespace LionFire
 
         //PlatformServices.Default.Application.RuntimeFramework
 
+        public static HashSet<string> UnitTestProducts => unitTestProducts ??= new HashSet<string>
+        {
+            "Microsoft.TestHost",
+            "Microsoft.TestHost.x86",
+        };
+        private static HashSet<string> unitTestProducts;
+
+        public static bool IsUnitTest
+        {
+            get
+            {
+                if (isUnitTest.HasValue) return isUnitTest.Value;
+
+                var entryAssembly = Assembly.GetEntryAssembly();
+                return Assembly.GetEntryAssembly().CustomAttributes.OfType<CustomAttributeData>().Where(cad => cad.AttributeType.Name == "AssemblyProductAttribute" && UnitTestProducts.Contains(cad.ConstructorArguments.Select(arg => arg.Value as string).FirstOrDefault())).Any() == true;
+            }
+            set => isUnitTest = value;
+        }
+        private static bool? isUnitTest;
+
         #endregion
+
+        #region Application(s) Environment
+
+        /// <summary>
+        /// True if multiple applications are present within this AppDomain, where an "application" might 
+        /// correspond to a Microsoft.Extensions.Hosting host, and ASP.NET application, or a unit test, or a 
+        /// scripting engine where each script should be treated as its own application.
+        /// If true, statics should be avoided where it would lead to conflicts or improper data sharing between applications.
+        /// 
+        /// Defaults to true if IsUnitTest is true.
+        /// </summary>
+        public static bool IsMultiApplicationEnvironment
+        {
+            get
+            {
+                if (isMultiApplicationEnvironment.HasValue) return isMultiApplicationEnvironment.Value;
+
+                return IsUnitTest;
+            }
+            set => isMultiApplicationEnvironment = value;
+        }
+        private static bool? isMultiApplicationEnvironment;
+
+        #endregion
+
+        /// <summary>
+        /// If true, defaults will prefer security over convenience.  Recommended to be true for publically published applications unless you are ok with the implications.
+        /// Default: false.
+        /// </summary>
+        public static bool IsHardenedEnvironment { get; set; }
 
         #region Streams
 
@@ -128,42 +135,6 @@ namespace LionFire
 
         #endregion
 
-        #region MachineGuid
 
-        public static Guid MachineGuid
-        {
-            get
-            {
-                if (machineGuid == null)
-                {
-                    var path = Path.Combine(Directories.CompanyProgramData, "machineid.txt");
-                    string guidString;
-                    Guid guid;
-                    bool parsed;
-                    if (File.Exists(path))
-                    {
-                        guidString = File.ReadAllText(path);
-                        if (parsed = Guid.TryParse(guidString, out guid))
-                        {
-                            machineGuid = guid;
-                        }
-                        else
-                        {
-                            throw new Exception("Machine GUID file is corrupt.  Please delete or restore it: " + path);
-                        }
-                    }
-                    else
-                    {
-                        guid = Guid.NewGuid();
-                        File.WriteAllText(path, guid.ToString());
-                        machineGuid = guid;
-                    }
-                }
-                return machineGuid;
-            }
-        }
-        private static Guid machineGuid;
-
-        #endregion
     }
 }

@@ -47,10 +47,8 @@ namespace LionFire.DependencyInjection
                 // UNTESTED
                 return ActivatorUtilities.CreateInstance(this, transientImplementationTypes[serviceType]);
             }
-            return null;
+            return Parent?.GetService(serviceType);
         }
-
-
 
         private object _lock = new object();
         #region IServiceCollection
@@ -106,6 +104,8 @@ namespace LionFire.DependencyInjection
         int ICollection<ServiceDescriptor>.Count => throw new NotImplementedException();
 
         bool ICollection<ServiceDescriptor>.IsReadOnly => throw new NotImplementedException();
+
+        public IServiceProvider Parent { get; set; }
 
         ServiceDescriptor IList<ServiceDescriptor>.this[int index] { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
 

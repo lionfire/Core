@@ -12,6 +12,7 @@ using LionFire.Vos.Services;
 using LionFire.Vos.Mounts;
 using LionFire.DependencyInjection;
 using System;
+using LionFire.Ontology;
 
 namespace LionFire.Services
 {
@@ -27,14 +28,15 @@ namespace LionFire.Services
                         .AddSingleton<VosInitializer>()
 
                         .AddSingleton(serviceProvider => serviceProvider.GetService<IOptionsMonitor<VosOptions>>().CurrentValue)
+
                         .AddSingleton<IPersisterProvider<VosReference>, VosPersisterProvider>()
                         .AddSingleton<IReadHandleProvider<VosReference>, VosHandleProvider>()
                         .AddSingleton<IReadWriteHandleProvider<VosReference>, VosHandleProvider>()
                         .Configure<VosOptions>(vo =>
                         {
-                            vo.RootNames = new string[] { "", "TestAltRoot" }; // TEMP TEST Alt root
+                            //vo.RootNames = new string[] { "", "TestAltRoot" }; // TEMP TEST Alt root
 
-                            Debug.WriteLine("Configure VosOptions - defaults");
+                            //Debug.WriteLine("Configure VosOptions - defaults");
                         })
                         //.PostConfigure<VosOptions>(o =>
                         //{
@@ -45,21 +47,25 @@ namespace LionFire.Services
                         //    //}
                         //})
 
-                        .InitializeRootVob(root =>
+                        .InitializeRootVob((serviceProvider, root) =>
                         {
                             root
                             .AddServiceProvider(s =>
                             {
                                 s
-                                //.AddSingleton<Func<IServiceProvider>>(() => new DynamicServiceProvider()) // REVIEW - what is this for?  UNUSED ?
-                                .AddSingleton<ServiceDirectory>(_ => new ServiceDirectory((RootVob)root))
+                                .AddSingleton(_ => new ServiceDirectory((RootVob)root))
+                                .AddSingleton(root)
+                                .AddSingleton(root.RootManager)
+                                .AddSingleton<VosPersister>()
                                 .AddSingleton<VobMounter>()
                                 ;
-                            })
+                            }, serviceProvider)
                             //.GetNextRequired<IServiceCollection>()
                             //.AddTransient<IServiceProvider, DynamicServiceProvider>() // Don't want this.  DELETE
                             ;
                         })
+
+                       //.AddVosStores()
                        ;
 
                     // TOTEST - initializing vobs for alternate roots.  MOVE 

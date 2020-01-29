@@ -1,10 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using LionFire.Collections;
 using LionFire.Referencing;
 using LionFire.Structures;
+using LionFire.Vos.Environment;
 
 namespace LionFire.Vos
 {
@@ -49,6 +51,8 @@ namespace LionFire.Vos
 
         #endregion
 
+        // TODO: enable non-nullable for GetChild and CreateChild
+
         #region Get / Query Logic
 
         private IVob GetChild(IEnumerable<string> subpathChunks) // TODO: Use span?
@@ -63,25 +67,79 @@ namespace LionFire.Vos
 
         protected IVob CreateChild(string childName) => new Vob(this, childName);
 
+        #region Parsing
+
+        // TODO: Use these in GetChild and QueryChild.  
+        // MOVE to another file
+
+        public static string ParseNameFromEnvironmentVariable(string environmentReference) => environmentReference.Substring(1);
+        public static bool IsEnvironmentVariableReference(string environmentReference) => environmentReference.StartsWith("$");
+
+        public (string StringChunk, VosReference ReferenceChunk) TryResolvePathChunk(string chunk)
+        {
+            if (IsEnvironmentVariableReference(chunk))
+            {
+                var envValue = this.Environment()[ParseNameFromEnvironmentVariable(chunk)];
+                var envValueString = envValue as string;
+                var envValueReference = envValue as VosReference;
+                if (!string.IsNullOrEmpty(envValueString))
+                {
+                    return (envValueString, null);
+                }
+                else if (envValueReference != null)
+                {
+                    return (null, envValueReference);
+                }
+                else
+                {
+                    if (ThrowOnMissingEnvironmentVariables) throw new Exception($"[Vob child traverse] environment variable not found: ${chunk}");
+                    else
+                    {
+                        Debug.WriteLine($"[Vob child traverse] environment variable not found: ${chunk}");
+                        return (string.Empty, null);
+                    }
+                }
+            }
+            return (null, null);
+        }
+        #endregion
+
+        public static bool ThrowOnMissingEnvironmentVariables = true;
+
         // SIMILAR logic: GetChild and QueryChild
         public IVob GetChild(IEnumerator<string> subpathChunks)
         {
             if (subpathChunks == null) { return this; }
 
+        start:
+            if (!subpathChunks.MoveNext() || string.IsNullOrWhiteSpace(subpathChunks.Current)) { return this; }
+
+            string chunk = subpathChunks.Current;
+
+            var x = TryProcessEnvironmentChunk(chunk);
+            if (x.Vob != null) return x.Vob.GetChild(subpathChunks);
+            else if (x.goToNext) goto start;
+
+            //if (IsEnvironmentVariableReference(childName))
+            //{
+            //    var envValue = this.Environment()[ParseNameFromEnvironmentVariable(childName)] as string;
+            //    if (!string.IsNullOrEmpty(envValue))
+            //    {
+            //        // TOTEST
+            //        return GetChild(envValue.ToPathElements()).GetChild(subpathChunks);
+            //    }
+            //    else
+            //    {
+            //        goto start;
+            //    }
+            //}
+
             IVob child;
-
-            if (!subpathChunks.MoveNext() || string.IsNullOrWhiteSpace(subpathChunks.Current))
-            {
-                return this;
-            }
-
-            string childName = subpathChunks.Current;
-
-            if (childName == "..")
+            if (chunk == "..")
             {
                 child = Parent;
             }
-            else if (childName == ".")
+            else if (chunk == ".")
             {
                 child = this;
             }
@@ -89,7 +147,7 @@ namespace LionFire.Vos
             {
                 lock (childrenLock)
                 {
-                    var weakRef = children.TryGetValue(childName);
+                    var weakRef = children.TryGetValue(chunk);
                     if (weakRef != null)
                     {
                         var weakRefTarget = weakRef.Target;
@@ -100,15 +158,15 @@ namespace LionFire.Vos
                         }
                         else
                         {
-                            child = CreateChild(childName);
+                            child = CreateChild(chunk);
                             // TOTEST - TODO FIXME - can the weak reference be reused with a new value? or do I need to create a new WeakReference?
                             weakRef.Target = child;
                         }
                     }
                     else
                     {
-                        child = CreateChild(childName);
-                        children.Add(childName, new WeakReferenceX<IVob>(child));
+                        child = CreateChild(chunk);
+                        children.Add(chunk, new WeakReferenceX<IVob>(child));
                     }
                 }
             }
@@ -116,22 +174,64 @@ namespace LionFire.Vos
             return child.GetChild(subpathChunks);
         }
 
+        private (bool goToNext, IVob Vob) TryProcessEnvironmentChunk(string chunk)
+        {
+            var resolvedChunks = TryResolvePathChunk(chunk);
+
+            if (resolvedChunks.StringChunk != null)
+            {
+                if (resolvedChunks.StringChunk.Length > 0) return (false, GetChild(resolvedChunks.StringChunk.ToPathElements()));
+                else { return (true, null); }
+            }
+            else if (resolvedChunks.ReferenceChunk != null)
+            {
+                if (resolvedChunks.ReferenceChunk.IsAbsolute && !this.IsRoot()) throw new ArgumentException($"Cannot traverse absolute {typeof(VosReference).Name} from a non-root Vob.");
+                var referencePathChunks = resolvedChunks.ReferenceChunk.PathChunks;
+                if (referencePathChunks.Length == 0) { return (true, null); }
+                else { return (false, GetChild(referencePathChunks)); }
+            }
+            return (false, null);
+        }
+
+
+        public IVob GetChild(string subpath) => GetChild(subpath.ToPathElements());
+        public IVob QueryChild(string subpath) => QueryChild(subpath.ToPathArray()); // TODO: to path elements?
+
         /// <summary>
         /// Get the child with the specified name.  The name is the string within subpathChunks found at index 
         /// </summary>
         /// <param name="subpathChunks"></param>
         /// <param name="index"></param>
         /// <returns></returns>
-        internal IVob GetChild(string[] subpathChunks, int index = 0)
+        public IVob GetChild(string[] subpathChunks, int index = 0)
         {
             // SIMILAR logic: GetChild and QueryChild
-
             IVob intermediateChild;
 
-            if (subpathChunks == null || subpathChunks.Length == 0)
-            {
-                return this;
-            }
+        start:
+            if (subpathChunks == null || index == subpathChunks.Length) { return this; }
+            if (index > subpathChunks.Length) throw new ArgumentException("index must be within range of subpathChunks, or equal to subpathChunks.Length");
+
+            string chunk = subpathChunks[index];
+
+            var x = TryProcessEnvironmentChunk(chunk);
+            if (x.Vob != null) return x.Vob.GetChild(subpathChunks, index + 1);
+            else if (x.goToNext) { index++; goto start; }
+
+            //var resolvedChunks = TryResolvePathChunk(chunk);
+
+            //if (resolvedChunks.StringChunk != null)
+            //{
+            //    if (resolvedChunks.StringChunk.Length > 0) return GetChild(resolvedChunks.StringChunk.ToPathElements()).GetChild(subpathChunks, index + 1);
+            //    else { index++; goto start; }
+            //}
+            //else if (resolvedChunks.ReferenceChunk != null)
+            //{
+            //    if (resolvedChunks.ReferenceChunk.IsAbsolute && !this.IsRoot()) throw new ArgumentException($"Cannot traverse absolute {typeof(VosReference).Name} from a non-root Vob.");
+            //    var referencePathChunks = resolvedChunks.ReferenceChunk.PathChunks;
+            //    if (referencePathChunks.Length == 0) { index++; goto start; }
+            //    else { return GetChild(referencePathChunks).GetChild(subpathChunks, index + 1); }
+            //}
 
             string childName = subpathChunks[index];
 
@@ -188,7 +288,30 @@ namespace LionFire.Vos
         // DUPLICATED - Similar logic as GetChild
         public IVob QueryChild(string[] subpathChunks, int index = 0)
         {
-            if (subpathChunks == null || subpathChunks.Length == 0) { return this; }
+        start:
+            if (subpathChunks == null || index == subpathChunks.Length) { return this; }
+            if (index > subpathChunks.Length) throw new ArgumentException("index must be within range of subpathChunks, or equal to subpathChunks.Length");
+
+            string chunk = subpathChunks[index];
+
+            var x = TryProcessEnvironmentChunk(chunk);
+            if (x.Vob != null) return x.Vob.GetChild(subpathChunks, index + 1);
+            else if (x.goToNext) { index++; goto start; }
+
+
+            //if (chunk.StartsWith("$"))
+            //{
+            //    var envValue = this.Environment()[chunk.Substring(1)] as string;
+            //    if (!string.IsNullOrEmpty(envValue))
+            //    {
+            //        return QueryChild(envValue.ToPathArray())?.QueryChild(subpathChunks, index + 1);
+            //    }
+            //    else
+            //    {
+            //        index++;
+            //        goto start;
+            //    }
+            //}
 
             IVob intermediateChild;
 
@@ -263,13 +386,35 @@ namespace LionFire.Vos
 
         #region (Derived) VosReference child getters
 
-        public IVob this[VosReference reference] => this[reference.Path];
+        public IVob this[IVosReference reference] => this[reference.Path];
 
         public IVob GetChild(VosReference reference) => GetChild(reference.Path.ToPathArray(), 0);
 
-        public IVob QueryChild(VosReference reference) => QueryChild(reference.Path.ToPathArray(), 0);
+        public IVob QueryChild(IVosReference reference) => QueryChild(reference.Path.ToPathArray(), 0);
 
         #endregion
+
+
+        public string DumpTree(bool traverseMounts = false)
+        {
+            return _DumpTree().ToString();
+        }
+
+        public StringBuilder _DumpTree(StringBuilder sb = null, string indent = "", bool traverseMounts = false)
+        {
+            if (sb == null) sb = new StringBuilder();
+
+            foreach (var child in this.Children)
+            {
+                sb.Append(indent);
+                sb.Append("/");
+                sb.Append(child.Key);
+                sb.AppendLine();
+                var childIndent = indent + "  ";
+                ((Vob)child.Value)._DumpTree(sb, childIndent, traverseMounts);
+            }
+            return sb;
+        }
     }
 }
 

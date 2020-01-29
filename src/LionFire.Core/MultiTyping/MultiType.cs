@@ -48,9 +48,11 @@ namespace LionFire.MultiTyping
         public void Leave()
         {
             throw new NotImplementedException();
+#if TODO
             //multiTyped.Remove<T>(Value); // TODO
             IsDisposed = true;
             multiTyped = null;
+#endif
         }
     }
 
@@ -58,7 +60,7 @@ namespace LionFire.MultiTyping
     {
         private object _lock = new object();
 
-        #region Construction
+#region Construction
 
         public MultiType() { }
         public MultiType(IEnumerable<object> objects)
@@ -77,7 +79,7 @@ namespace LionFire.MultiTyping
             }
         }
 
-        #endregion
+#endregion
 
         // TODO: Switch to ConcurrentDictionary?
         protected Dictionary<Type, object> TypeDict { get { return typeDict; } }
@@ -119,7 +121,7 @@ namespace LionFire.MultiTyping
             //return obj;
         }
 
-        #region OfType
+#region OfType
 
         public IEnumerable<T> OfType<T>() // TODO: Make IEnumerable once LionRpc supports it.
          where T : class
@@ -155,7 +157,7 @@ namespace LionFire.MultiTyping
             return matches;
         }
 
-        #endregion
+#endregion
 
         public void AddType<T>(T obj, bool allowMultiple = false)
             where T : class
@@ -253,7 +255,7 @@ namespace LionFire.MultiTyping
         }
 
 
-        #region Type Change Events
+#region Type Change Events
 
         private Dictionary<Type, Action<IReadOnlyMultiTyped, Type>> handlers = new Dictionary<Type, Action<IReadOnlyMultiTyped, Type>>();
         private object handlersLock = new object();
@@ -338,9 +340,9 @@ namespace LionFire.MultiTyping
             }
         }
 
-        #endregion
+#endregion
 
-        #region Clear
+#region Clear
 
         public void ClearSubTypes()
         {
@@ -361,9 +363,9 @@ namespace LionFire.MultiTyping
             typeDict = null;
         }
 
-        #endregion
+#endregion
 
-        #region AsTypeOrCreateDefault
+#region AsTypeOrCreateDefault
 
 
 #if !NoGenericMethods
@@ -438,9 +440,9 @@ namespace LionFire.MultiTyping
                 slotType, type);
         }
 
-        #endregion
+#endregion
 
-        #region Slot / Concrete Type Resolution
+#region Slot / Concrete Type Resolution
 
         // REVIEW From Legacy
 
@@ -483,9 +485,9 @@ namespace LionFire.MultiTyping
             }
         }
 
-        #endregion
+#endregion
 
-        #region REVIEW - Imported from Legacy
+#region REVIEW - Imported from Legacy
 
         private void _Set(object obj, Type slotType, bool allowReplace = false)
         {
@@ -523,9 +525,9 @@ namespace LionFire.MultiTyping
             OnChildChanged(slotType, obj);
         }
 
-        #endregion
+#endregion
 
-        #region Dispose
+#region Dispose
 
         /// <summary>
         /// Warning: Object can be reused after disposing.
@@ -536,7 +538,7 @@ namespace LionFire.MultiTyping
             ClearSubTypes(true, false);
         }
 
-        #endregion
+#endregion
     }
 
 }

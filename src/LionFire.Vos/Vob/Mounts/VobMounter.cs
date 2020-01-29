@@ -22,6 +22,11 @@ namespace LionFire.Vos.Mounts
             var mount = new Mount(mountPoint, tMount);
             return DoMount(mount);
         }
+        public IMount Mount(IVob mountPoint, IVob target, IMountOptions options = null)
+        {
+            var mount = new Mount(mountPoint, target, options);
+            return DoMount(mount);
+        }
         public IMount Mount(IVob mountPoint, IReference target, IMountOptions options = null)
         {
             var mount = new Mount(mountPoint, target, options);

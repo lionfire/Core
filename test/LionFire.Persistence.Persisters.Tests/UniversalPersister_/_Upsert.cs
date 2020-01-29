@@ -74,7 +74,7 @@ namespace UniversalPersister_
                         initializer.AddServicesForTest(services);
 
                     })
-                    .Run(async () =>
+                    .RunAsync(async () =>
                 {
 
                     var testPath = $"UnitTest - {Guid.NewGuid().ToString()}";

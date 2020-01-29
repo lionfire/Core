@@ -21,7 +21,7 @@ namespace LionFire.Persistence
         }
 
         public static IHostBuilder AddPersisters(this IHostBuilder hostBuilder)
-            => hostBuilder.AllowAsync()
+            => hostBuilder
                 .ConfigureServices((context, services) =>
                 {
                     services

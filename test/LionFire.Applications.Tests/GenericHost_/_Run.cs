@@ -20,7 +20,7 @@ namespace GenericHost_
         public async void Pass_Action_Services()
         {
             await FrameworkHostBuilder.Create()
-                .Run(services =>
+                .RunAsync(services =>
                 {
                     services.GetService<ILogger<_RunAndExit>>().LogInformation("test log");
                     //Thread.Sleep(10);
@@ -31,7 +31,7 @@ namespace GenericHost_
         [Fact]
         public async void Pass_Action()
         {
-            await FrameworkHostBuilder.Create().Run(() => {
+            await FrameworkHostBuilder.Create().RunAsync(() => {
                 //Thread.Sleep(40);
                 Debug.WriteLine("Pass_Action"); });
         }
@@ -40,7 +40,7 @@ namespace GenericHost_
         public async void Pass_Task()
         {
             await FrameworkHostBuilder.Create()
-                .Run(services => Task.Run(async () =>
+                .RunAsync(services => Task.Run(async () =>
                 {
                     Debug.WriteLine("test run options action 1 ");
                     services.GetService<ILogger<_RunAndExit>>().LogInformation("test log");
@@ -53,7 +53,7 @@ namespace GenericHost_
         public async void Fail_Action_Services()
         {
             await FrameworkHostBuilder.Create()
-                .Run(services =>
+                .RunAsync(services =>
                 {
                     services.GetService<ILogger<_RunAndExit>>().LogInformation("test log");
                     //Thread.Sleep(10);
@@ -64,7 +64,7 @@ namespace GenericHost_
         [Fact]
         public async void Fail_Action()
         {
-            await FrameworkHostBuilder.Create().Run(() => {
+            await FrameworkHostBuilder.Create().RunAsync(() => {
                 //Thread.Sleep(40);
                 Assert.ThrowsAsync<Exception>(()=> throw new Exception("test fail"));
             });
@@ -74,7 +74,7 @@ namespace GenericHost_
         public async void Fail_Task()
         {
             await FrameworkHostBuilder.Create()
-                .Run(services => Task.Run(async () =>
+                .RunAsync(services => Task.Run(async () =>
                 {
                     Debug.WriteLine("test run options action 1 ");
                     services.GetService<ILogger<_RunAndExit>>().LogInformation("test log");

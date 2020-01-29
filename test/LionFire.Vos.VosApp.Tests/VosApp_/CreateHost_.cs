@@ -9,10 +9,9 @@ namespace VosApp_
     public class CreateHost_
     {
         [Fact]
-        public void Pass()
+        public async void Pass()
         {
-
-            VosAppHost.Create(options: new VosAppOptions
+            await VosAppHost.Create(options: new VosAppOptions
             {
 
             })
@@ -20,7 +19,7 @@ namespace VosApp_
                 {
 
                 })
-                .Run(() =>
+                .RunAsync(() =>
                 {
                     Assert.True(true);
                 });

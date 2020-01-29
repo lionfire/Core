@@ -9,7 +9,6 @@ using LionFire.Types;
 
 namespace LionFire.Vos
 {
-
     public interface IVob :
         //IReadOnlyMultiTyped, 
         IReferencable,
@@ -21,7 +20,7 @@ namespace LionFire.Vos
 
         #region Cache
 
-        IVob Root { get; }
+        IRootVob Root { get; }
         string Path { get; }
         IEnumerable<string> PathElements { get; }
         IEnumerable<string> PathElementsReverse { get; }
@@ -33,15 +32,19 @@ namespace LionFire.Vos
 
         #region Children
 
-        IVob QueryChild(string[] subpathChunks, int index); // Replace with Span?
+        IVob QueryChild(string subpath); 
+        IVob QueryChild(string[] subpathChunks, int index = 0); // Replace with Span?
+        IVob QueryChild(IVosReference reference); 
         //IVob GetChild(IEnumerable<string> subpathChunks); // Use IVobExtensions Extension method instead.  
+        IVob GetChild(string subpath); 
         IVob GetChild(IEnumerator<string> subpathChunks);
+        IVob GetChild(string[] subpathChunks, int index = 0);
 
         #endregion
 
         IVob this[string[] subpathChunks, int index = 0] { get; }
         IVob this[string subpath] { get; }
-
+        IVob this[IVosReference reference] { get; }
 
         IReadHandle<T> GetReadHandle<T>();
         IReadWriteHandle<T> GetReadWriteHandle<T>();

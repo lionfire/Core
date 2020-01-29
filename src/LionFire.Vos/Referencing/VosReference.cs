@@ -54,7 +54,7 @@ namespace LionFire.Vos
         }
         public VosReference(params string[] pathComponents)
         {
-            Path = LionPath.Combine(pathComponents);
+            Path = LionPath.Separator + LionPath.Combine(pathComponents);
 
             //string path;
             //for (int i = 0; i < pathComponents.Length; i++)
@@ -210,6 +210,13 @@ namespace LionFire.Vos
         public override string Host { get => null; set => throw new NotImplementedException(); }
         public override string Port { get => null; set => throw new NotImplementedException(); }
 
+        [SetOnce]
+        public bool IsAbsolute
+        {
+            get => true; // TODO - support relative references?
+            set { } // TODO
+        }
+
         #region Path
 
         [SetOnce]
@@ -256,7 +263,7 @@ namespace LionFire.Vos
         /// Leave blank to base the reference off of the default provider
         /// </summary>
         [SetOnce]
-        public string Persister
+        public override string Persister
         {
             get => providerName;
             set

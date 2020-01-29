@@ -6,14 +6,20 @@
 
   <ItemGroup>
     <PackageReference Include="CommandLineParser" Version="2.6.0" />
-    <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="3.1.0" />
-    <PackageReference Include="Microsoft.Extensions.Hosting.Abstractions" Version="3.1.0" />
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="3.1.1" />
+    <PackageReference Include="Microsoft.Extensions.Hosting.Abstractions" Version="3.1.1" />
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\..\..\StateMachines\src\LionFire.StateMachines\LionFire.StateMachines.csproj" />
+    <ProjectReference Include="..\LionFire.Applications\LionFire.Applications.csproj" />
     <ProjectReference Include="..\LionFire.Core\LionFire.Core.csproj" />
+    <ProjectReference Include="..\LionFire.Environment\LionFire.Environment.csproj" />
     <ProjectReference Include="..\LionFire.Structures\LionFire.Structures.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Applications\" />
   </ItemGroup>
 
 </Project>

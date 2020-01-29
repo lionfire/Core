@@ -50,7 +50,7 @@ namespace LionFire.Hosting
             var hostBuilder = CreateHostBuilder();
             ConfigureHostBuilder?.Invoke(hostBuilder);
             task = hostBuilder
-                .Run(async () =>
+                .RunAsync(async () =>
                 {
                     await hostFinished.Token.WaitHandle.WaitOneAsync();
                     //hostFinished.Token.WaitHandle.WaitOne();

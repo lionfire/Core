@@ -17,7 +17,7 @@ namespace LionFire.Persistence.Persisters
             this.BaseReference = baseReference;
         }
 
-        public Task<IPersistenceResult> Exists(IReferencable<TReference> referencable) => Persister.Exists(BaseReference.AddRight(referencable.Reference));
+        public Task<IPersistenceResult> Exists<TValue>(IReferencable<TReference> referencable) => Persister.Exists<TValue>(BaseReference.AddRight(referencable.Reference));
         public Task<IRetrieveResult<TValue>> Retrieve<TValue>(IReferencable<TReference> referencable) => Persister.Retrieve<TValue>(BaseReference.AddRight(referencable.Reference));
         public Task<IPersistenceResult> Create<TValue>(IReferencable<TReference> referencable, TValue value) => Persister.Create(BaseReference.AddRight(referencable.Reference), value);
         public Task<IPersistenceResult> Update<TValue>(IReferencable<TReference> referencable, TValue value) => Persister.Update(BaseReference.AddRight(referencable.Reference), value);

@@ -10,7 +10,7 @@ namespace LionFire.Services
     public class InitializingLifetimeWrapper<T> : IHostLifetime
         where T : IHostLifetime
     {
-        IServiceProvider serviceProvider;
+        //IServiceProvider serviceProvider;
         T WrappedLifetime;
         IEnumerable<IInitializable3> initializers;
         //public IHostLifetime WrappedLifetime { get; set; }

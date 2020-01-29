@@ -32,7 +32,7 @@ namespace Named_
                     .Configure<FilesystemPersisterOptions>("UnitTestRoot", c => c.RootDirectory = FsTestUtils.DataDir)
                 ;
             })
-            .Run(async () =>
+            .RunAsync(async () =>
             {
                 var path = FsTestUtils.TestFile + ".txt";
                 Assert.False(File.Exists(path));
@@ -81,7 +81,7 @@ namespace Named_
                     .Configure<FilesystemPersisterOptions>("UnitTestDir", c => c.RootDirectory = FsTestUtils.DataDir)
                 ;
             })
-            .Run(async () =>
+            .RunAsync(async () =>
             {
                 var subdir = "UnitTestSubdir-" + testDirGuid;
                 var dir = Path.Combine(FsTestUtils.DataDir, subdir);
@@ -130,7 +130,7 @@ namespace Named_
                     .Configure<FilesystemPersisterOptions>("UnitTestRoot", c => c.RootDirectory = FsTestUtils.DataDir)
                 ;
             })
-            .Run(async () =>
+            .RunAsync(async () =>
             {
                 var path = FsTestUtils.TestFile + ".txt";
 

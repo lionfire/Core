@@ -23,7 +23,7 @@ namespace FsOBoc_
             await PersistersHost.Create()
                 
                 .AddObjectBus<FSOBus>()
-                .Run(() =>
+                .RunAsync(() =>
                 {
 
                     #region Constants

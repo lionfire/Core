@@ -50,7 +50,7 @@ namespace string_
         {
             await FrameworkHostBuilder.Create()
                 .AddObjectBus<FSOBus>()
-                .Run(() =>
+                .RunAsync(() =>
                 {
                     var path = @"c:\Temp\Path\Test\" + Guid.NewGuid().ToString();
 
@@ -63,7 +63,7 @@ namespace string_
         {
             await FrameworkHostBuilder.Create()
             .AddObjectBus<FSOBus>()
-            .Run(() =>
+            .RunAsync(() =>
             {
                 var path = @"c:\Temp\Path\Test\" + Guid.NewGuid().ToString();
 

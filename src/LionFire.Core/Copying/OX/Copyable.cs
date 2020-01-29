@@ -77,7 +77,7 @@ namespace OX.Copyable
 
         #region Settings // Jared
 
-        public const bool AllowFallback = false;
+        public static readonly bool AllowFallback = false;
         
         #endregion
     }

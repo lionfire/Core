@@ -38,7 +38,7 @@ namespace UniversalPersister_
                             o.SerializeExtensionScoring = FileExtensionScoring.RewardMatch;
                         });
                     })
-                    .Run(async () =>
+                    .RunAsync(async () =>
                 {
                     var path = FsTestUtils.TestFile + ".json";
 
@@ -63,7 +63,7 @@ namespace UniversalPersister_
             [Fact]
             public async void P_string()
             {
-                await PersistersHost.Create().Run(async () =>
+                await PersistersHost.Create().RunAsync(async () =>
                 {
                     var path = FsTestUtils.TestFile + ".txt";
                     Assert.False(File.Exists(path));
@@ -84,7 +84,7 @@ namespace UniversalPersister_
             [Fact]
             public async void P_bytes()
             {
-                await PersistersHost.Create().Run(async () =>
+                await PersistersHost.Create().RunAsync(async () =>
                 {
                     var path = FsTestUtils.TestFile + ".bin";
                     Assert.False(File.Exists(path));
@@ -106,7 +106,7 @@ namespace UniversalPersister_
             [Fact]
             public async void P_Stream()
             {
-                await PersistersHost.Create().Run(async () =>
+                await PersistersHost.Create().RunAsync(async () =>
                 {
                     var path = FsTestUtils.TestFile + ".bin";
                     Assert.False(File.Exists(path));
@@ -142,7 +142,7 @@ namespace UniversalPersister_
                             
                     //    });
                     //})
-                    .Run(async () =>
+                    .RunAsync(async () =>
                 {
                     var path = FsTestUtils.TestFile + ".json";
                     Assert.False(File.Exists(path));
@@ -169,7 +169,7 @@ namespace UniversalPersister_
             [Fact]
             public async void F_string_Already()
             {
-                await PersistersHost.Create().Run(async () =>
+                await PersistersHost.Create().RunAsync(async () =>
                 {
                     var path = FsTestUtils.TestFile + ".txt";
                     Assert.False(File.Exists(path));
@@ -192,7 +192,7 @@ namespace UniversalPersister_
             [Fact]
             public async void F_bytes_Already()
             {
-                await PersistersHost.Create().Run(async () =>
+                await PersistersHost.Create().RunAsync(async () =>
                 {
 
                     var path = FsTestUtils.TestFile + ".bin";

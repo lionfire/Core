@@ -1,8 +1,9 @@
-﻿using System;
+﻿using LionFire.Dependencies;
+using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace LionFire.Dependencies
+namespace LionFire.ExtensionMethods.Dependencies
 {
 
     public static class ServiceProviderProvider

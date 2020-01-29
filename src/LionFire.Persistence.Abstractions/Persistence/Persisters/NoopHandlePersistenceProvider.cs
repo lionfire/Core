@@ -12,7 +12,7 @@ namespace LionFire.Persistence.Persisters
             => Task.FromResult<IPersistenceResult>(NoopPutPersistenceResult.Instance);
 
 
-        public Task<IPersistenceResult> Exists(TReference reference) => Task.FromResult<IPersistenceResult>(PersistenceResult.NotFound);
+        public Task<IPersistenceResult> Exists<TValue>(TReference reference) => Task.FromResult<IPersistenceResult>(PersistenceResult.NotFound);
 
         public Task<IPersistenceResult> Put<TValue>(TReference reference, TValue value) 
             => Task.FromResult<IPersistenceResult>(NoopPutPersistenceResult.Instance);

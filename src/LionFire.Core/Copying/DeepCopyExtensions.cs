@@ -290,7 +290,6 @@ namespace LionFire.Copying
                     throw new ArgumentException("No mode specified");
                 case AssignmentMode.Ignore:
                     throw new ArgumentException("Ignore mode should be ignored before passing it to this method");
-                    break;
                 case AssignmentMode.Assign:
                     return obj;
                 case AssignmentMode.CloneIfCloneable:

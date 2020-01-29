@@ -1,5 +1,6 @@
 ﻿using LionFire.Dependencies;
 using LionFire.Persistence.Handles;
+using System;
 
 namespace LionFire.Referencing.Ex
 {
@@ -7,15 +8,17 @@ namespace LionFire.Referencing.Ex
     {
         #region IReadHandleProvider
 
-        public static IReadHandleProvider GetReadHandleProvider(this IReference reference)
-            => DependencyLocator.Get<IReferenceToHandleService>().GetReadHandleProvider(reference);
+//#error NEXT: Debug _SimpleMount.Pass, then add IServiceProvider parameters to other methods here
 
-        public static IReadHandleProvider<TReference> GetReadHandleProvider<TReference>(this TReference reference)
+        public static IReadHandleProvider GetReadHandleProvider(this IReference reference, IServiceProvider serviceProvider = null)
+            => DependencyLocator.Get<IReferenceToHandleService>(serviceProvider).GetReadHandleProvider(reference);
+
+        public static IReadHandleProvider<TReference> GetReadHandleProvider<TReference>(this TReference reference, IServiceProvider serviceProvider = null)
             where TReference: IReference
-            => DependencyLocator.Get<IReferenceToHandleService>().GetReadHandleProvider<TReference>(reference);
+            => DependencyLocator.Get<IReferenceToHandleService>(serviceProvider).GetReadHandleProvider<TReference>(reference);
 
-        public static IReadHandleProvider ToReadHandleProvider(this IReference reference) 
-            => GetReadHandleProvider(reference) ?? throw new HasUnresolvedDependenciesException($"No {nameof(IReadHandleProvider)} could be found for reference of type {reference?.GetType().FullName}");
+        public static IReadHandleProvider ToReadHandleProvider(this IReference reference, IServiceProvider serviceProvider = null) 
+            => GetReadHandleProvider(reference, serviceProvider) ?? throw new HasUnresolvedDependenciesException($"No {nameof(IReadHandleProvider)} could be found for reference of type {reference?.GetType().FullName}");
 
         #endregion
 

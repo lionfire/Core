@@ -1,5 +1,4 @@
-﻿using LionFire.Vos.Packages;
-using LionFire.Vos.Stores;
+﻿using LionFire.Vos.Overlays;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -10,10 +9,12 @@ namespace LionFire.Vos.VosApp
     {
         public static VosAppDefaults Default { get; } = new VosAppDefaults();
 
-        public VosStoresOptions VosStoresOptions { get; } = new VosStoresOptions("/stores", 
-            new PackageManagerOptions
-            {
-                DataLocation = "/~",
-            });
+
+        // TODELETE
+        //public VosStoresOptions VosStoresOptions { get; } = new VosStoresOptions("/stores", 
+        //    new PackageManagerOptions
+        //    {
+        //        DataLocation = "/~",
+        //    });
     }
 }

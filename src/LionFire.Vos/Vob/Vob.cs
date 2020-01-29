@@ -356,7 +356,7 @@ namespace LionFire.Vos
 
         #endregion
 
-        IVob IVob.Root => Root;
+        IRootVob IVob.Root => Root;
         public virtual RootVob Root
         {
             get

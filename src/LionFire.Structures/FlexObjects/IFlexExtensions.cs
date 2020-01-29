@@ -198,6 +198,7 @@ namespace LionFire.FlexObjects
             flex.Set(obj, allowReplace: false, throwOnFail: true);
 
             throw new NotImplementedException("tODO: triage old code");
+#if OLD
             // OLD
             object effectiveObject = EffectiveSingleValue(obj);
 
@@ -218,6 +219,7 @@ namespace LionFire.FlexObjects
                     flex.Value = new FlexTypeDictionary(flex.Value, effectiveObject);
                 }
             }
+#endif
         }
 
         //public static void GetOrAdd<T>(this ConcurrentDictionary<string, object> dict, string key, T value)
@@ -225,9 +227,9 @@ namespace LionFire.FlexObjects
         //    dict.GetOrAdd()
         //}
 
-        #endregion
+#endregion
 
-        #endregion
+#endregion
 
         //#region Options
 

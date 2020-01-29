@@ -26,7 +26,7 @@ namespace LionFire.Referencing
     //    public static T ShallowClone<T>(this T obj) => CloneUtil<T>.ShallowClone(obj);
     //}
 
-    public abstract class ReferenceBaseBase<ConcreteType> 
+    public abstract class ReferenceBaseBase<ConcreteType>
         : ICloneableReference
         , IReferencable<ConcreteType>
         where ConcreteType : ReferenceBaseBase<ConcreteType>, IReference
@@ -58,7 +58,7 @@ namespace LionFire.Referencing
         {
             this.Key = other.Key;
         }
-        protected virtual void InternalSetPath(string path)=> throw new NotSupportedException();
+        protected virtual void InternalSetPath(string path) => throw new NotSupportedException();
 
         #region Children
 
@@ -90,5 +90,17 @@ namespace LionFire.Referencing
 
         #endregion
 
+
+        public override bool Equals(object obj)
+        {
+            if (obj == null) return false;
+            //if (obj.GetType() != this.GetType()) return false; // REVIEW 
+
+            if (obj is IReference reference)
+            {
+                return Key == reference.Key;
+            }
+            return false;
+        }
     }
 }

@@ -13,7 +13,7 @@ namespace LionFire.Persistence.Persisters
     {
         protected PersisterReadHandle() { }
         protected PersisterReadHandle(TReference reference) : base(reference) { }
-        public PersisterReadHandle(TPersister persister, TReference reference) : base(reference) => Persister = persister;
+        public PersisterReadHandle(TPersister persister, TReference reference) : base(reference) => Persister = persister ?? throw new ArgumentNullException(nameof(persister));
 
         public IPersister<TReference> Persister { get; protected set; }
 

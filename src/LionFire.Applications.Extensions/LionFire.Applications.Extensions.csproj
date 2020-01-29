@@ -1,0 +1,61 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netstandard2.0</TargetFramework>
+    <AssemblyName>LionFire.Applications.Extensions</AssemblyName>
+    <PackageId>LionFire.Applications.Extensions</PackageId>
+    <GeneratePackageOnBuild>false</GeneratePackageOnBuild>
+    <Description>Fluent application builder, inspired by ASP.NET Core but can be used to quickly build any type of application.  
+
+Reference this package in your main executable, and the related LionFire.Applications.Abstractions package in DLLs that can help build applications.</Description>
+    <Copyright>2017-2019 Jared Thirsk</Copyright>
+    <PackageLicense>https://github.com/jaredthirsk/Core/blob/master/LICENSE</PackageLicense>
+    <PackageProjectUrl>http://open.lionfire.software/</PackageProjectUrl>
+    <PackageIconUrl>https://avatars3.githubusercontent.com/u/19334699?v=3&amp;s=200</PackageIconUrl>
+    <RepositoryUrl>https://github.com/jaredthirsk/Core</RepositoryUrl>
+    <PackageTags>DependencyInjection AppBuilder</PackageTags>
+    <NeutralLanguage>en-US</NeutralLanguage>
+    <Authors>Jared Thirsk</Authors>
+    <Version>2.0.1</Version>
+    <PackageLicenseUrl />
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\LionFire.Applications.Abstractions\LionFire.Applications.Abstractions.csproj" />
+    <ProjectReference Include="..\LionFire.Applications\LionFire.Applications.csproj" />
+    <ProjectReference Include="..\LionFire.Base\LionFire.Base.csproj" />
+    <ProjectReference Include="..\LionFire.Environment\LionFire.Environment.csproj" />
+    <ProjectReference Include="..\LionFire.Execution\LionFire.Execution.csproj" />
+    <ProjectReference Include="..\LionFire.Persistence.Handles\LionFire.Persistence.Handles.csproj" />
+    <ProjectReference Include="..\LionFire.Instantiating.Abstractions\LionFire.Instantiating.Abstractions.csproj" />
+    <ProjectReference Include="..\LionFire.Plugins\LionFire.Plugins.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.Extensions.Configuration" Version="3.1.1" />
+    <PackageReference Include="Microsoft.Extensions.Configuration.CommandLine" Version="3.1.1" />
+    <PackageReference Include="Microsoft.Extensions.Configuration.EnvironmentVariables" Version="3.1.1" />
+    <PackageReference Include="Microsoft.Extensions.Configuration.FileExtensions" Version="3.1.1" />
+    <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="3.1.1" />
+    <PackageReference Include="Microsoft.Extensions.Configuration.UserSecrets" Version="3.1.1" />
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="3.1.1" />
+    <PackageReference Include="Microsoft.Extensions.Hosting" Version="3.1.1" />
+    <PackageReference Include="Microsoft.Extensions.Hosting.Abstractions" Version="3.1.1" />
+    <PackageReference Include="Microsoft.Extensions.Logging" Version="3.1.1" />
+    <PackageReference Include="Microsoft.Extensions.Logging.Console" Version="3.1.1" />
+    <PackageReference Include="Microsoft.Extensions.Logging.Debug" Version="3.1.1" />
+    <PackageReference Include="Microsoft.Extensions.Logging.EventLog" Version="3.1.1" />
+    <PackageReference Include="Microsoft.Extensions.Logging.EventSource" Version="3.1.1" />
+    <PackageReference Include="Microsoft.Extensions.Options.ConfigurationExtensions" Version="3.1.1" />
+    <PackageReference Include="System.Threading.Tasks.Parallel" Version="4.3.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Core\" />
+  </ItemGroup>
+
+  <Target Name="PostBuild" AfterTargets="PostBuildEvent">
+    <Exec Command="rem xcopy $(TargetDir)*.nupkg c:\st\lionfire-nuget" />
+  </Target>
+
+</Project>

@@ -13,6 +13,7 @@ using LionFire.Vos;
 using Microsoft.Extensions.DependencyInjection;
 using LionFire.Referencing;
 using LionFire.Vos.Mounts;
+using LionFire;
 
 namespace Mount_
 {
@@ -21,11 +22,8 @@ namespace Mount_
         [Fact]
         public async void Pass()
         {
-            //await FrameworkHostBuilder.Create()
-            //    .Run(async () =>
-            //    {
-            //        await Task.Delay(1);
-            //    });
+            //LionFireEnvironment.IsMultiApplicationEnvironment = false; // FIXME
+
             await VosHost.Create()
             .ConfigureServices((context, services) =>
             {
@@ -41,7 +39,7 @@ namespace Mount_
                 //.TryAddEnumerableSingleton(new TMount("testDir", new FileReference(FsTestUtils.DataDir))
                 ;
             })
-            .Run(async () =>
+            .RunAsync(async services =>
             {
                 var path = FsTestUtils.TestFile + ".txt";
                 var testContents = "B9E72769-E1DA-4648-B766-FAE37D2317E5";
@@ -54,10 +52,11 @@ namespace Mount_
 
                 {
                     var reference = new VosReference("testDir", Path.GetFileName(path));
-                    Assert.Equal("testDir/" + Path.GetFileName(path), reference.Path);
+                    Assert.Equal("/testDir/" + Path.GetFileName(path), reference.Path);
                     //Assert.Equal("UnitTestRoot", reference.Persister);
 
-                    var readHandle = reference.ToReadHandle<string>();
+                    //var readHandle = reference.ToReadHandle<string>();
+                    var readHandle = reference.ToVob(services).GetReadHandle<string>();
                     var persistenceResult = await readHandle.Resolve();
 
                     //Assert.True(persistenceResult.Flags.HasFlag(PersistenceResultFlags.Success)); // TODO - switch to Retrieve?

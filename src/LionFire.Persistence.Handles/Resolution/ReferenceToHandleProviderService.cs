@@ -26,13 +26,18 @@ namespace LionFire.Persistence.Handles
         public static IReferenceToHandleService Current => DependencyLocator.Get<IReferenceToHandleService>();
 
         //IOptionsFactory<NamedHandleProviderConfig> optionsFactory;
+        IServiceProvider ServiceProvider { get; }
+        public ReferenceToHandleService(IServiceProvider serviceProvider)
+        {
+            ServiceProvider = serviceProvider;
+        }
 
         //public ReferenceToHandleService(IOptionsFactory<NamedHandleProviderConfig> optionsFactory)
         //{
         //    this.optionsFactory = optionsFactory;
         //}
 #warning TODO: If this method is okay, do the same generic parameter for the others
-        public IReadHandleProvider<TReference> GetReadHandleProvider<TReference>(TReference input)
+        public IReadHandleProvider<TReference> GetReadHandleProvider<TReference>(TReference input) //, IServiceProvider serviceProvider = null)
             where TReference : IReference
         {
             // REVIEW - is this IReference check needed? What is performance?
@@ -43,17 +48,17 @@ namespace LionFire.Persistence.Handles
             //}
             //else
             {
-                return DependencyLocator.Get<IReadHandleProvider<TReference>>(typeof(IReadHandleProvider<TReference>));
+                return DependencyLocator.Get<IReadHandleProvider<TReference>>(typeof(IReadHandleProvider<TReference>), ServiceProvider);
 
             }
         }
         public IReadHandleProvider GetReadHandleProvider(IReference input)
         {
-                // Question: Handle named providers here, or let each provider type do it?
-                return DependencyLocator.Get<IReadHandleProvider>(typeof(IReadHandleProvider<>).MakeGenericType(input.GetType()));
+            // Question: Handle named providers here, or let each provider type do it?
+            return DependencyLocator.Get<IReadHandleProvider>(typeof(IReadHandleProvider<>).MakeGenericType(input.GetType()));
         }
 
-        public IReadWriteHandleProvider GetReadWriteHandleProvider(IReference input) 
+        public IReadWriteHandleProvider GetReadWriteHandleProvider(IReference input)
             => DependencyLocator.Get<IReadWriteHandleProvider>(typeof(IReadWriteHandleProvider<>).MakeGenericType(input.GetType()));
 
         //if (handleProviders.TryGetValue(input.GetType(), out IReadWriteHandleProvider result))
@@ -111,5 +116,5 @@ namespace LionFire.Persistence.Handles
 
     }
 
-    
+
 }

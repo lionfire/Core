@@ -25,7 +25,7 @@ namespace Environment_
                     .VobEnvironment("key2", "value2")
                     ;
                 })
-                .Run(serviceProvider =>
+                .RunAsync(serviceProvider =>
                 {
                     var root = serviceProvider.GetRootVob();
                     var env = root.Environment();

@@ -5,15 +5,10 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\LionFire.Persistence.Filesystem\LionFire.Persistence.Filesystem.csproj" />
     <ProjectReference Include="..\LionFire.Persistence.Handles\LionFire.Persistence.Handles.csproj" />
     <ProjectReference Include="..\LionFire.Referencing.Abstractions\LionFire.Referencing.Abstractions.csproj" />
     <ProjectReference Include="..\LionFire.Referencing\LionFire.Referencing.csproj" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Reference Include="LionFire.Persistence.Filesystem">
-      <HintPath>..\..\bin\LionFire.Persistence.Filesystem\Debug\netstandard2.0\LionFire.Persistence.Filesystem.dll</HintPath>
-    </Reference>
   </ItemGroup>
 
 </Project>

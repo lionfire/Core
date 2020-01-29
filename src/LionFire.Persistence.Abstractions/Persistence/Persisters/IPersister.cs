@@ -35,10 +35,8 @@ namespace LionFire.Persistence.Persisters
     public interface IReadPersister<in TReference>
         where TReference : IReference
     {
-        Task<IPersistenceResult> Exists(IReferencable<TReference> referencable);
-        //where TReference : IReference;
+        Task<IPersistenceResult> Exists<TValue>(IReferencable<TReference> referencable);
         Task<IRetrieveResult<TValue>> Retrieve<TValue>(IReferencable<TReference> referencable);
-        //where TReference : IReference;
     }
 
 

@@ -1,8 +1,10 @@
-﻿using LionFire.Services;
+﻿using LionFire.Execution;
+using LionFire.Services;
 using Microsoft.Extensions.Options;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 
 namespace LionFire.Vos
 {
@@ -25,12 +27,15 @@ namespace LionFire.Vos
 
         public void Initialize(RootVob rootVob)
         {
-            foreach (var initializer in VobInitializers.Where(vi => vi.Reference.RootName() == rootVob.RootName))
-            {
-                IVob vob = rootVob;
-                if (!string.IsNullOrEmpty(initializer.Reference?.Path)) vob = vob[initializer.Reference.Path];
-                initializer.InitializationAction(ServiceProvider, vob);
-            }
+            VobInitializers.Where(vi => vi.Reference.RootName() == rootVob.RootName).RepeatAllUntilNull(initializer => 
+            () => Task.FromResult(initializer.InitializationAction(ServiceProvider, string.IsNullOrEmpty(initializer.Reference?.Path) ? rootVob : rootVob[initializer.Reference.Path])));
+
+            //foreach (var initializer in VobInitializers.Where(vi => vi.Reference.RootName() == rootVob.RootName))
+            //{
+            //    IVob vob = rootVob;
+            //    if (!string.IsNullOrEmpty(initializer.Reference?.Path)) vob = vob[initializer.Reference.Path];
+            //    initializer.InitializationAction(ServiceProvider, vob);
+            //}
         }
     }
 }

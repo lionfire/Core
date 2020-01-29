@@ -28,7 +28,7 @@ namespace LionFire.Vos
             => (IReadHandle<T>)SharedReadHandles.GetOrAdd(typeof(T), t => CreateReadHandle<T>());
 
         public IReadHandle<T> CreateReadHandle<T>()
-            => new PersisterReadHandle<VosReference, T, VosPersister>(this.GetService<VosPersister>(), VosReference);
+            => new PersisterReadHandle<VosReference, T, VosPersister>(this.GetRequiredService<VosPersister>(), VosReference);
 
         #endregion
 

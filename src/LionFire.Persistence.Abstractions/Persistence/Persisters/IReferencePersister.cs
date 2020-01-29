@@ -8,7 +8,7 @@ namespace LionFire.Persistence.Persisters
     {
         Task<IPersistenceResult> Create<TValue>(TReference reference, TValue value);
 
-        Task<IPersistenceResult> Exists(TReference reference);
+        Task<IPersistenceResult> Exists<TValue>(TReference reference);
 
         Task<IRetrieveResult<TValue>> Retrieve<TValue>(TReference reference);
 
@@ -17,4 +17,5 @@ namespace LionFire.Persistence.Persisters
 
         Task<IPersistenceResult> Delete(TReference reference);
     }
+
 }

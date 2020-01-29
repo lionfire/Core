@@ -52,6 +52,9 @@ namespace LionFire.Referencing
         }
 
         private const bool preserveEndSeparator = true;
+
+        public static string Normalize(string path) => path?.Replace(@"\", "/");
+
         public static string Combine(params string[] paths) => Combine((IEnumerable<string>)paths);
         public static string Combine(IEnumerable<string> paths)
         {

@@ -8,7 +8,7 @@ namespace LionFire.Hosting
 {
     public static class VosHost
     {
-        public static IHostBuilder Create(string[] args = null, bool defaultBuilder = true, Action<IServiceCollection> serializers = null)
+        public static IHostBuilder Create(string[] args = null, bool defaultBuilder = true)
         {
             return PersistersHost.Create(args, defaultBuilder: defaultBuilder)
                 .AddVos();

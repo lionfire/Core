@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.IO;
+using LionFire.Applications;
 
 namespace LionFire.Vos.VosApp
 {
@@ -17,12 +18,10 @@ namespace LionFire.Vos.VosApp
 
         #region AppDir
 
-        public static string AppRoot { get { return LionFireEnvironment.Directories.AppProgramDataDir; } }
+        public static string AppRoot => ApplicationDirectories.AppProgramDataDir; // REVIEW
 
-        public static string AppBase
-        {
-            get { return Path.Combine(AppRoot, VosDiskPaths.Base); }
-        }
+        public static string AppBase => Path.Combine(AppRoot, VosDiskPaths.Base);
+
         //public static string AppBasePacks
         //{
         //    get { return Path.Combine(AppRoot, VosDiskPaths.BasePacks); }
@@ -71,18 +70,18 @@ namespace LionFire.Vos.VosApp
         #region Shared
 
 #if !UNITY
-        public static string GlobalSharedDataRoot { get { return Path.Combine(LionFireEnvironment.Directories.CompanyProgramData, "Data"); } }
-        public static string GlobalSharedStoresRoot { get { return Path.Combine(LionFireEnvironment.Directories.CompanyProgramData, "Stores"); } }
+        public static string GlobalSharedDataRoot { get { return Path.Combine(ApplicationDirectories.CompanyProgramData, "Data"); } }
+        public static string GlobalSharedStoresRoot { get { return Path.Combine(ApplicationDirectories.CompanyProgramData, "Stores"); } }
 #endif
 
-        public static string UserSharedDataRoot { get { return Path.Combine(LionFireEnvironment.Directories.CompanyLocalAppDataPath, "Data"); } }
-        public static string UserSharedStoresRoot { get { return Path.Combine(LionFireEnvironment.Directories.CompanyLocalAppDataPath, "Stores"); } }
+        public static string UserSharedDataRoot { get { return Path.Combine(ApplicationDirectories.CompanyLocalAppDataPath, "Data"); } }
+        public static string UserSharedStoresRoot { get { return Path.Combine(ApplicationDirectories.CompanyLocalAppDataPath, "Stores"); } }
 
         #endregion
 
         #region Var (CommonAppData aka Var aka ProgramData)
 
-        public static string VarRoot { get { return LionFireEnvironment.Directories.AppProgramDataDir; } } // c:\ProgramData\{CompanyFolder}\{applicationFolder}
+        public static string VarRoot { get { return ApplicationDirectories.AppProgramDataDir; } } // c:\ProgramData\{CompanyFolder}\{applicationFolder}
 
         public static string VarBase
         {
@@ -113,21 +112,21 @@ namespace LionFire.Vos.VosApp
 
         public static string CompanyVarDir(string companyName = null)
         {
-            if (companyName == null) { companyName = LionFireEnvironment.CompanyName; }
+            if (companyName == null) { companyName = ApplicationEnvironment.CompanyName; }
             return Path.Combine(VarRoot, companyName);
         }
 
         public static string AppVarDir(string appName = null, string companyName = null)
         {
-            if (appName == null) { appName = LionFireEnvironment.Directories.AppDataDirName;  }
-            if (companyName == null) { companyName = LionFireEnvironment.CompanyName; }
+            if (appName == null) { appName = ApplicationDirectories.AppDataDirName;  }
+            if (companyName == null) { companyName = ApplicationEnvironment.CompanyName; }
 
             return Path.Combine(CompanyVarDir(companyName), appName);
         }
         public static string AppVarDataDir(string appName = null, string companyName = null)
         {
-            if (appName == null) { appName = LionFireEnvironment.Directories.AppDataDirName; }
-            if (companyName == null) { companyName = LionFireEnvironment.MainAppInfo.CompanyName; }
+            if (appName == null) { appName = ApplicationDirectories.AppDataDirName; }
+            if (companyName == null) { companyName = ApplicationEnvironment.CompanyName; }
             return Path.Combine(AppVarDir(appName, companyName), VosDiskPaths.Data);
         }
 
@@ -138,20 +137,14 @@ namespace LionFire.Vos.VosApp
         /// </summary>
         public static string CustomRoot { get; set; }
 
-        public static string CustomBase
-        {
-            get { return Path.Combine(CustomRoot, VosDiskPaths.Base); }
-        }
+        public static string CustomBase => Path.Combine(CustomRoot, VosDiskPaths.Base);
 
         //public static string CustomBasePacks
         //{
         //    get { return Path.Combine(CustomRoot, VosDiskPaths.BasePacks); }
         //}
 
-        public static string CustomData
-        {
-            get { return Path.Combine(CustomRoot, VosDiskPaths.Data); }
-        }
+        public static string CustomData => Path.Combine(CustomRoot, VosDiskPaths.Data);
 
         //public static string CustomDataPacks
         //{

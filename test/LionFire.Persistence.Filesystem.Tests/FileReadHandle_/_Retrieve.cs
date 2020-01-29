@@ -24,7 +24,7 @@ namespace FileReadHandle_
             {
                 services.AddFilesystem();
             })
-            .Run(async () =>
+            .RunAsync(async () =>
             {
                 var path = FsTestUtils.TestFile + ".txt";
                 Assert.False(File.Exists(path));

@@ -30,7 +30,7 @@ namespace UniversalPersister_
             [Fact]
             public async void P_TestObj_Typed()
             {
-                await PersistersHost.Create().Run(async () =>
+                await PersistersHost.Create().RunAsync(async () =>
                 {
                     var path = FsTestUtils.TestFile + ".json";
                     Assert.False(File.Exists(path));
@@ -50,7 +50,7 @@ namespace UniversalPersister_
             [Fact]
             public async void F_TestObj_Typed()
             {
-                await PersistersHost.Create().Run(async () =>
+                await PersistersHost.Create().RunAsync(async () =>
                 {
                     var path = FsTestUtils.TestFile + ".json";
                     Assert.False(File.Exists(path));
@@ -70,7 +70,7 @@ namespace UniversalPersister_
             [Fact]
             public async void P_TestObj()
             {
-                await PersistersHost.Create().Run(async () =>
+                await PersistersHost.Create().RunAsync(async () =>
                 {
                     var path = FsTestUtils.TestFile + ".json";
                     Assert.False(File.Exists(path));
@@ -90,7 +90,7 @@ namespace UniversalPersister_
             [Fact]
             public async void F_TestObj_Missing()
             {
-                await PersistersHost.Create().Run(async () =>
+                await PersistersHost.Create().RunAsync(async () =>
                 {
                     var path = FsTestUtils.TestFile + ".json";
                     Assert.False(File.Exists(path));

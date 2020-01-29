@@ -1,4 +1,5 @@
-﻿using LionFire.Structures;
+﻿using LionFire.Ontology;
+using LionFire.Structures;
 using LionFire.Vos.Mounts;
 using System;
 using System.Collections.Generic;
@@ -7,23 +8,32 @@ using System.Text;
 
 namespace LionFire.Vos
 {
-    public class RootVob : Vob
+
+    public class RootVob : Vob, IRootVob, IHas<IRootManager>
     {
+        public IRootManager RootManager { get; private set; }
+        IRootManager IHas<IRootManager>.Object => RootManager;
+
         public VosOptions VosOptions { get; }
 
-        public static bool AllowMultipleDefaultRoots { get; set; } = false;
+        public static bool AllowMultipleDefaultRoots => LionFireEnvironment.IsMultiApplicationEnvironment;
 
         /// <summary>
         /// Empty for default Root
         /// </summary>
         public string RootName { get; }
 
-        public RootVob(VosOptions vosOptions) : this(VosConstants.DefaultRootName, vosOptions)
+        public RootVob(IRootManager rootManager, VosOptions vosOptions) : this(rootManager, VosConstants.DefaultRootName, vosOptions)
         {
         }
 
-        public RootVob(string rootName, VosOptions vosOptions) : base(null, null)
+        //public static RootVob Create(IRootManager rootManager, string rootName, VosOptions vosOptions)
+        //{
+        //}
+
+        public RootVob(IRootManager rootManager, string rootName, VosOptions vosOptions) : base(null, null)
         {
+            RootManager = rootManager;
             VosOptions = vosOptions ?? new VosOptions();
             if (rootName == VosConstants.DefaultRootName)
             {
@@ -51,5 +61,6 @@ namespace LionFire.Vos
             }
             return this;
         }
+
     }
 }

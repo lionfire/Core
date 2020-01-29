@@ -19,12 +19,12 @@ namespace LionFire.Referencing
             where TReference : IReference
             => reference.GetReadHandleProvider<TReference>().GetReadHandle<TValue>(reference);
 
-        public static IReadHandle<TValue> GetReadHandle<TValue>(this IReference reference)
+        public static IReadHandle<TValue> GetReadHandle<TValue>(this IReference reference, IServiceProvider serviceProvider = null)
         {
             // REVIEW - this seems crazy.  Is it slow?  Should an [Obsolete] tell the user to use the <TValue, TReference> overload instead?
             var TReference = reference.GetType();
             return (IReadHandle<TValue>) (typeof(IReadHandleProvider<>).MakeGenericType(TReference).GetMethod ("GetReadHandle").MakeGenericMethod(typeof(TValue)).Invoke(
-                (typeof(ReferenceToHandleProviderExtensions).GetMethods(BindingFlags.Public | BindingFlags.Static).Where(mi => mi.Name == "GetReadHandleProvider" && mi.ContainsGenericParameters).First().MakeGenericMethod (TReference).Invoke(null, new object[] { /* Upcast */ reference }))
+                (typeof(ReferenceToHandleProviderExtensions).GetMethods(BindingFlags.Public | BindingFlags.Static).Where(mi => mi.Name == "GetReadHandleProvider" && mi.ContainsGenericParameters).First().MakeGenericMethod (TReference).Invoke(null, new object[] { /* Upcast */ reference, serviceProvider }))
                 , new object[] { reference }));
         }
 

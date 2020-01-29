@@ -16,7 +16,7 @@ namespace LionFire.Persistence.Persisters
 
         public static Task<IPersistenceResult> Exists<TReference, TValue>(this IPersister<TReference> persister, TReference reference) 
             where TReference : IReference
-            => persister.Exists(new ReferenceWrapper<TReference>(reference));
+            => persister.Exists<TValue>(new ReferenceWrapper<TReference>(reference));
 
 
         public static Task<IRetrieveResult<TValue>> Retrieve<TReference, TValue>(this IPersister<TReference> persister, TReference reference) 

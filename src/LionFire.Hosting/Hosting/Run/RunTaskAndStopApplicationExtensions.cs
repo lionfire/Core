@@ -5,19 +5,20 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.DependencyInjection;
 using LionFire.Dependencies;
 using System.Threading;
+using System.Reflection;
+using System.Linq;
 
 namespace LionFire.Hosting
 {
-    
+
     public static class RunTaskAndStopApplicationExtensions
     {
-        public static async Task Run(this IHostBuilder hostBuilder, INotifyDisposing disposable)
+        public static async Task RunAsync(this IHostBuilder hostBuilder, INotifyDisposing disposable)
         {
             var mre = new ManualResetEvent(false);
-            INotifyDisposing x;
 
             disposable.Disposing += Disposable_Disposing;
-            await hostBuilder.Run(() =>
+            await hostBuilder.RunAsync(() =>
             {
                 mre.WaitOne();
                 disposable.Disposing -= Disposable_Disposing;
@@ -30,47 +31,74 @@ namespace LionFire.Hosting
             }
         }
 
-        public static Task Run(this IHostBuilder hostBuilder, Action action)
+        public static Task RunAsync(this IHostBuilder hostBuilder, Action action)
         {
-            return hostBuilder.Run(services =>
+            return hostBuilder.RunAsync(services =>
             {
                 action();
                 return Task.CompletedTask;
             });
         }
-        public static Task Run(this IHostBuilder hostBuilder, Func<Task> taskFactory)
+        public static Task RunAsync(this IHostBuilder hostBuilder, Func<Task> taskFactory)
         {
-            return hostBuilder.Run(async _ =>
+            return hostBuilder.RunAsync(async _ =>
             {
                 await taskFactory();
             });
         }
 
-        public static void Run(this IHostBuilder hostBuilder, Action<IServiceProvider> action)
+        public static Task RunAsync(this IHostBuilder hostBuilder, Action<IServiceProvider> action)
         {
             // TODO: a pure synchronous version?
-            hostBuilder.Run(services =>
+            return hostBuilder.RunAsync(services =>
             {
                 action(services);
                 return Task.CompletedTask;
-            }).Wait();
+            });
+        }
+
+        public static void DeinitializeDependencyContext()
+        {
+            DependencyContext.AsyncLocal = null;
+
+            if (DependencyContext.Current != null)
+            {
+                DependencyContext.Current.ServiceProvider = null;
+            }
         }
 
         public static IHost InitializeDependencyContext(this IHost host)
         {
-            if (DependencyContext.Current == null)
-            {
-                DependencyContext.Current = new DependencyContext();
-            }
 
-            if (DependencyContext.Current.ServiceProvider == null)
+            if (LionFireEnvironment.IsMultiApplicationEnvironment)
             {
+                DependencyLocatorConfiguration.UseServiceProviderToActivateSingletons = false;
+                DependencyLocatorConfiguration.UseSingletons = false;
+
+                if (DependencyContext.AsyncLocal != null) throw new AlreadyException("UNEXPECTED: LionFireEnvironment.IsMultiApplicationEnvironment == true && DependencyContext.AsyncLocal != null "); // FUTURE - deinit on Run complete?  Unit tests running in series?
+
+                DependencyContext.AsyncLocal = new DependencyContext();
                 DependencyContext.Current.ServiceProvider = host.Services;
+
+                return host; // Don't set static Current
+            }
+            else
+            {
+                if (DependencyContext.Current == null)
+                {
+                    DependencyContext.Current = new DependencyContext();
+                }
+
+                if (DependencyContext.Current.ServiceProvider == null)
+                {
+                    DependencyContext.Current.ServiceProvider = host.Services;
+                }
             }
             return host;
         }
 
-        public static async Task Run(this IHostBuilder hostBuilder, Func<IServiceProvider, Task> taskFactory)
+
+        public static async Task RunAsync(this IHostBuilder hostBuilder, Func<IServiceProvider, Task> taskFactory)
         {
             var tcs = new TaskCompletionSource<object>();
 
@@ -101,10 +129,8 @@ namespace LionFire.Hosting
             .RunAsync()
             .ContinueWith(t =>
             {
-                if (DependencyContext.Current != null)
-                {
-                    DependencyContext.Current.ServiceProvider = null;
-                }
+                DeinitializeDependencyContext();
+
                 if (exception != null)
                 {
                     tcs.SetException(exception);

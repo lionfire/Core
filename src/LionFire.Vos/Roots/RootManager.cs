@@ -1,4 +1,5 @@
 ﻿#nullable enable
+using LionFire.Ontology;
 using Microsoft.Extensions.Options;
 using System.Collections.Concurrent;
 using System.Diagnostics;
@@ -7,19 +8,23 @@ using System.Linq;
 namespace LionFire.Vos
 {
 
+
     /// <remarks>
     /// Philosophy:
     ///  - All RootVobs are initialized once at the construction of VosRootManager
     ///  - This could be moved to on-demand initialization of RootVobs (and tracking whether RootVobs are initialized) if they grow large or numerous and sparsely needed.
     /// </remarks>
-    public class RootManager
+    public class RootManager : IRootManager 
     {
         #region Dependencies
 
         VosInitializer VosInitializer { get; }
+
         readonly VosOptions vosOptions;
 
         #endregion
+
+        IRootManager IHas<IRootManager>.Object => this;
 
         #region State
 
@@ -42,7 +47,7 @@ namespace LionFire.Vos
         {
             foreach (var rootName in vosOptions.RootNames.Distinct())
             {
-                var rootVob = new RootVob(rootName, this.vosOptions);
+                var rootVob = new RootVob(this, rootName, this.vosOptions);
                 if (rootName == "")
                 {
                     namelessRootVob = rootVob;
@@ -60,6 +65,7 @@ namespace LionFire.Vos
 
         #region Methods
 
+        IRootVob? IRootManager.Get(string? rootName) => Get(rootName);
         public RootVob? Get(string? rootName = null)
         {
             if (rootName == null || rootName == "")
@@ -69,7 +75,7 @@ namespace LionFire.Vos
 
             if (roots == null) roots = new ConcurrentDictionary<string, RootVob>();
 
-            return roots.GetOrAdd(rootName, n => new RootVob(n, vosOptions));
+            return roots.GetOrAdd(rootName, n => new RootVob(this, n, vosOptions));
         }
 
         #endregion

@@ -53,7 +53,8 @@ namespace LionFire.Vos.Mounts
         public Mount(IVob mountPointVob, TMount tMount)
             : this(mountPointVob, tMount.Reference, tMount.Options)
         {
-            if (!tMount.MountPoint.Equals(mountPointVob.Reference)) throw new ArgumentException("mountPointVob.Reference does not match tMount.MountPoint");
+
+            if (true != tMount.MountPoint.ToVob(mountPointVob.Root.RootManager)?.Path?.Equals(mountPointVob.Reference.Path)) throw new ArgumentException("mountPointVob.Reference does not match tMount.MountPoint");
         }
 
         #endregion

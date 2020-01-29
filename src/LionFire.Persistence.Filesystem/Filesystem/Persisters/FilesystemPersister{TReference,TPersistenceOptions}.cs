@@ -233,9 +233,9 @@ namespace LionFire.Persistence.Filesystem
 
         #region Exists
 
-        public async Task<IPersistenceResult> Exists(IReferencable<TReference> referencable)
+        public async Task<IPersistenceResult> Exists<TValue>(IReferencable<TReference> referencable)
             => await Exists(referencable.Reference.Path) ? ExistsResult.Found : ExistsResult.NotFound;
-        public async Task<IPersistenceResult> Exists(TReference reference)
+        public async Task<IPersistenceResult> Exists<TValue>(TReference reference)
             => await Exists(reference.Path) ? ExistsResult.Found : ExistsResult.NotFound;
 
         #endregion

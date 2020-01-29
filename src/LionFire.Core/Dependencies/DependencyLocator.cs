@@ -9,6 +9,8 @@ using System.Threading.Tasks;
 
 namespace LionFire.Dependencies
 {
+    // TODO - make more consistent with IServiceProvider?  Have an internal default IServiceProvider
+
     /// <summary>
     /// Provides a simple and potentially complex implementation of a service locator (anti-)pattern.
     /// 
@@ -52,14 +54,24 @@ namespace LionFire.Dependencies
             }
             return result;
         }
-        public static TInterface Get<TInterface>(Func<TInterface> singletonFactory = null)
-            where TInterface : class
-            => Get<TInterface, TInterface>(singletonFactory: singletonFactory);
+        //public static TInterface Get<TInterface>()
+        //    where TInterface : class
+        //    => Get<TInterface, TInterface>();
+        public static TInterface Get<TInterface>(IServiceProvider serviceProvider = null)
+           where TInterface : class
+           => serviceProvider != null ? serviceProvider.GetService<TInterface>() : Get<TInterface, TInterface>();
 
-        public static TReturnValue Get<TReturnValue>(Type interfaceType)
+        public static TInterface Get<TInterface>(Func<TInterface> singletonFactory)
+                  where TInterface : class
+                  => Get<TInterface, TInterface>(singletonFactory: singletonFactory);
+
+        public static TReturnValue Get<TReturnValue>(Type interfaceType, IServiceProvider serviceProvider = null)
             where TReturnValue : class
-            => (TReturnValue)Get_TInterface_Func.MakeGenericMethod(interfaceType).Invoke(null, new object[] { null });
-            //=> (TInterface)GetMethodEx.GetMethodExt(typeof(DependencyLocator), nameof(Get), BindingFlags.Static | BindingFlags.Public, typeof(Func<>)).Invoke(null,  new object[] { singletonFactory });
+            => serviceProvider != null 
+            ? (TReturnValue)serviceProvider.GetService(interfaceType) 
+            : (TReturnValue)Get_TInterface_Func.MakeGenericMethod(interfaceType).Invoke(null, new object[] { serviceProvider });
+
+        //=> (TInterface)GetMethodEx.GetMethodExt(typeof(DependencyLocator), nameof(Get), BindingFlags.Static | BindingFlags.Public, typeof(Func<>)).Invoke(null,  new object[] { singletonFactory });
         //=> (TInterface)GetMethodEx.GetMethodExt(typeof(DependencyLocator), nameof(Get), BindingFlags.Static | BindingFlags.Public, typeof(Func<TInterface>)).Invoke(null,  new object[] { singletonFactory });
         //=> typeof(DependencyLocator).GetMethod(nameof(Get), Get<TInterface, TInterface>(singletonFactory: singletonFactory);
 
@@ -67,7 +79,7 @@ namespace LionFire.Dependencies
 
         static DependencyLocator()
         {
-            Get_TInterface_Func = typeof(DependencyLocator).GetMethods(BindingFlags.Public | BindingFlags.Static).Where(mi => mi.ContainsGenericParameters && mi.GetGenericArguments().Length == 1).First();
+            Get_TInterface_Func = typeof(DependencyLocator).GetMethods(BindingFlags.Public | BindingFlags.Static).Where(mi => mi.Name == "Get" && mi.ContainsGenericParameters && mi.GetGenericArguments().Length == 1 && mi.GetParameters().FirstOrDefault()?.ParameterType.IsGenericType == true && mi.GetParameters().FirstOrDefault()?.ParameterType.GetGenericTypeDefinition() == typeof(Func<>)).First();
         }
 
         #endregion

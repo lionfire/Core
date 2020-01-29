@@ -1,6 +1,9 @@
-﻿using LionFire.Referencing;
+﻿using LionFire.Persistence.Handles;
+using LionFire.Referencing;
 using LionFire.Vos;
 using LionFire.Vos.Mounts;
+using LionFire.Vos.Services;
+using System;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -14,44 +17,47 @@ namespace LionFire.Persistence.Persisters.Vos
     //, IReader<string> // FUTURE?
     {
 
-        #region RootName
+        //#region RootName
 
-        [SetOnce]
-        public string RootName
-        {
-            get => rootName;
-            set
-            {
-                if (rootName == value) return;
-                if (rootName != default) throw new AlreadySetException();
-                rootName = value;
-            }
-        }
-        private string rootName;
+        //[SetOnce]
+        //public string RootName
+        //{
+        //    get => rootName;
+        //    set
+        //    {
+        //        if (rootName == value) return;
+        //        if (rootName != default) throw new AlreadySetException();
+        //        rootName = value;
+        //    }
+        //}
+        //private string rootName;
 
-        #endregion
+        //#endregion
 
         #region Root
 
-        public Vob Root
-        {
-            get { return root; }
-        }
-        private Vob root;
+        public IRootVob Root { get; private set; }
 
         #endregion
 
-        public VosPersister(RootManager vosRootManager, string rootName, VosPersisterOptions options)
-        {
-            this.RootName = rootName;
-            root = vosRootManager.Get(rootName);
-        }
+        IServiceProvider ServiceProvider => Root?.GetServiceProvider();
 
-        public Task<IPersistenceResult> Exists(IReferencable<VosReference> referencable) => throw new System.NotImplementedException();
+        public VosPersister(IRootVob root)
+        {
+            Root = root;
+        }
+        //public VosPersister(IRootManager vosRootManager, string rootName, VosPersisterOptions options) : this(vosRootManager)
+        //{
+        //    this.RootName = rootName;
+        //    root = vosRootManager.Get(rootName);
+        //}
+
+
+        public Task<IPersistenceResult> Exists<TValue>(IReferencable<VosReference> referencable) => throw new System.NotImplementedException();
 
         public async Task<IRetrieveResult<TValue>> Retrieve<TValue>(IReferencable<VosReference> referencable)
         {
-            var vob = root[referencable.Reference.Path];
+            var vob = Root[referencable.Reference.Path];
 
             var result = new VosRetrieveResult<TValue>();
 
@@ -67,8 +73,8 @@ namespace LionFire.Persistence.Persisters.Vos
                     var relativePathChunks = vob.PathElements.Skip(mount.VobDepth);
 
                     var effectiveReference = !relativePathChunks.Any() ? mount.Target : mount.Target.GetChildSubpath(relativePathChunks);
-
-                    var rh = effectiveReference.GetReadHandle<TValue>();
+                    
+                    var rh = effectiveReference.GetReadHandle<TValue>(ServiceProvider);
 
                     //anyMounts = true;
                     //var rh = vob.GetReadHandleFromMount<TValue>(mount);

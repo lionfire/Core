@@ -21,7 +21,7 @@ namespace LionFire.AccessPanel.Api
 
             FrameworkHostBuilder.Create()
                 .AddObjectBus<FSOBus>()
-                .Run(() =>
+                .RunAsync(() =>
                 {                    
                     CreateWebHostBuilder(args).Build().Run();
                 }).Wait();

@@ -19,7 +19,7 @@ namespace Environment_
         {
             VosHost.Create()
                 .ConfigureServices((_, s) => s.VobEnvironment("key1", "value1"))
-                .Run(serviceProvider =>
+                .RunAsync(serviceProvider =>
                 {
                     var root = serviceProvider.GetRootVob();
                     var env = root.Environment();

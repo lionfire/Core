@@ -7,13 +7,15 @@ using LionFire.Dependencies;
 namespace LionFire.Hosting
 {
 
+    // TODO: Alternate version that doesn't stop application?
+
     public class RunTaskAndStopApplication : BackgroundService
     {
         readonly IServiceProvider serviceProvider;
         private readonly RunOptions options;
         readonly IHostApplicationLifetime hostApplicationLifetime;
 
-        public RunTaskAndStopApplication(IServiceProvider serviceProvider, RunOptions options, IHostApplicationLifetime hostApplicationLifetime) // TODO NETCORE3 - IHostApplicationLifetime
+        public RunTaskAndStopApplication(IServiceProvider serviceProvider, RunOptions options, IHostApplicationLifetime hostApplicationLifetime)
         {
 
             // OLD - now use DependencyContextServiceProviderFactoryWrapper

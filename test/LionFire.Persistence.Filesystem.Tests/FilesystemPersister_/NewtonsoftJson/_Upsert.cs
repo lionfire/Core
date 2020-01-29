@@ -27,7 +27,7 @@ namespace FilesystemPersister_
             [Fact]
             public async void P_TestObj()
             {
-                await PersistersHost.Create().Run(async () =>
+                await PersistersHost.Create().RunAsync(async () =>
                 {
                     var path = FsTestUtils.TestFile + ".json";
                     Assert.False(File.Exists(path));
@@ -54,7 +54,7 @@ namespace FilesystemPersister_
             [Fact]
             public async void P_string()
             {
-                await PersistersHost.Create().Run(async () =>
+                await PersistersHost.Create().RunAsync(async () =>
                 {
                     var path = FsTestUtils.TestFile + ".txt";
                     Assert.False(File.Exists(path));
@@ -77,7 +77,7 @@ namespace FilesystemPersister_
             [Fact]
             public async void P_bytes()
             {
-                await PersistersHost.Create().Run(async () =>
+                await PersistersHost.Create().RunAsync(async () =>
                 {
 
                     var path = FsTestUtils.TestFile + ".bin";

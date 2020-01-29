@@ -12,6 +12,7 @@ namespace LionFire.Vos.VosApp
     {
         public const string App = "/App"; // TODO: I am going with `.  Alias it?
         public const string ActiveDataPath = App + "/$";
+        public const string Settings = App + "/.settings";
 
         #region AppInternals
 
