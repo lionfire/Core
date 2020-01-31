@@ -52,17 +52,17 @@ namespace LionFire.Persistence.Handles
 
         #region Value
 
-        public override TValue Value
-        {
-            [Blocking(Alternative = nameof(GetValue))]
-            get => ProtectedValue ?? GetValue().Result.Value;
-            [PublicOnly]
-            set
-            {
-                if (EqualityComparer<TValue>.Default.Equals(protectedValue, value)) return;
-                ProtectedValue = value; // REVIEW TOTEST
-            }
-        }
+        //public override TValue Value
+        //{
+        //    [Blocking(Alternative = nameof(GetValue))]
+        //    get => ProtectedValue ?? GetValue().Result.Value;
+        //    [PublicOnly]
+        //    set
+        //    {
+        //        if (EqualityComparer<TValue>.Default.Equals(protectedValue, value)) return;
+        //        ProtectedValue = value; // REVIEW TOTEST
+        //    }
+        //}
 
         public PersistenceSnapshot<TValue> PersistenceState => new PersistenceSnapshot<TValue>(Flags, ProtectedValue, HasValue);
         public object PersistenceLock { get; } = new object();

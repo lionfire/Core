@@ -12,49 +12,12 @@ using LionFire.Hosting;
 using Microsoft.Extensions.Hosting;
 using LionFire.Applications.Hosting;
 using LionFire.Persistence;
-using LionFire.ObjectBus.Testing;
 using LionFire.Serialization.Json.Newtonsoft;
 using LionFire.Dependencies;
-using LionFire.Persistence.Filesystem.Tests;
-using LionFire.Persistence.Filesystem;
-using LionFire.Persistence.CouchDB;
-using Microsoft.Extensions.DependencyInjection;
-using LionFire.CouchDB;
-using LionFire.Services;
 using LionFire.Referencing;
 
 namespace UniversalPersister_
 {
-    public class CouchDBTests : IPersisterTestInitializer
-    {
-        public string Scheme => "couch";
-
-        public IServiceCollection AddServicesForTest(IServiceCollection services)
-        {
-            services.AddCouchDB(MyCouchMode.Entity);
-            //services.Configure<CouchDBConnectionOptions>(o => o.ConnectionString = "http://unitTest:unitTestPassword@localhost");
-            //services.ConfigureConnection<CouchDBConnectionOptions>(new Uri("http://unitTest:unitTestPassword@localhost"));
-            services.ConfigureConnection<CouchDBConnectionOptions>("http://unitTest:unitTestPassword@localhost");
-            return services;
-        }
-        public string GetPathForTestPath(string testPath) => Path.Combine(FsTestUtils.DataDir, testPath);
-        public IReference GetReferenceForTestPath(string testPath) => new CouchDBReference(GetPathForTestPath(testPath));
-    }
-    public class FileTests : IPersisterTestInitializer
-    {
-        public string Scheme => "file";
-
-        public IServiceCollection AddServicesForTest(IServiceCollection services)
-        {
-            return services
-                              .AddFilesystem()
-                              ;
-        }
-
-        public string GetPathForTestPath(string testPath) => Path.Combine(FsTestUtils.DataDir, testPath);
-        public IReference GetReferenceForTestPath(string testPath) => new FileReference(GetPathForTestPath(testPath));
-
-    }
 
     namespace NewtonsoftJson
     {
@@ -62,13 +25,12 @@ namespace UniversalPersister_
         {
             // ENH: pass IServiceCollection initializer in parameters
 
-
             [Theory]
             [ClassData(typeof(UniversalPersistersGenerator))]
             public async void P_TestObj(IPersisterTestInitializer initializer)
             {
 
-                await PersistersHost.Create()
+                await TestHostBuilders.CreateFileNewtonsoftHost()
                     .ConfigureServices(services =>
                     {
                         initializer.AddServicesForTest(services);
@@ -77,7 +39,7 @@ namespace UniversalPersister_
                     .RunAsync(async () =>
                 {
 
-                    var testPath = $"UnitTest - {Guid.NewGuid().ToString()}";
+                    var testPath = $"UnitTest - {Guid.NewGuid().ToString()}.json"; // REVIEW: avoid putting json on there and use a default serializer?
                     IReference reference = initializer.GetReferenceForTestPath(testPath);
 
                     var testData = "Test data: " + Guid.NewGuid().ToString();
@@ -93,9 +55,10 @@ namespace UniversalPersister_
 
                     // TODO: Try other types of data
                     {
-                        var rwh = reference.GetReadWriteHandle<string>();
+                        var rwh = reference.TryGetReadWriteHandle<string>();
                         rwh.Value = testData;
-                        await rwh.Put();
+                        var result = await rwh.Put();
+                        Assert.True(result.IsSuccess);
                     }
                     #endregion
 
@@ -115,7 +78,7 @@ namespace UniversalPersister_
 
                     #region Delete
                     {
-                        var rwh = reference.GetReadWriteHandle<string>();
+                        var rwh = reference.TryGetReadWriteHandle<string>();
                         var deleteResult = await rwh.Delete();
                         Assert.True(deleteResult != false);
                     }
@@ -157,7 +120,7 @@ namespace UniversalPersister_
             [Fact]
             public async void P_string()
             {
-                await PersistersHost.Create().Run(async () =>
+                await TestHostBuilders.CreateFileHost().Run(async () =>
                 {
                     var path = FsTestUtils.TestFile + ".txt";
                     Assert.False(File.Exists(path));
@@ -180,7 +143,7 @@ namespace UniversalPersister_
             [Fact]
             public async void P_bytes()
             {
-                await PersistersHost.Create().Run(async () =>
+                await TestHostBuilders.CreateFileHost().Run(async () =>
                 {
 
                     var path = FsTestUtils.TestFile + ".bin";

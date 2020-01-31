@@ -14,19 +14,19 @@ namespace LionFire.Vos.VosApp
     {
         #region Accessor
 
-        public static VosApp VosApp
+        public static VosDirs VosApp
         {
             get => vosApp ?? VosAppGetter();
             set => vosApp = value;
         }
-        private static VosApp vosApp;
+        private static VosDirs vosApp;
 
         /// <summary>
         /// Default implementation saves the value to the static VosApp property (if LionFireEnvironment.IsMultiApplicationEnvironment is false).  Set VosApp = null to clear to reset, and change VosAppGetter to avoid this.
         /// </summary>
-        public static Func<VosApp> VosAppGetter => () =>
+        public static Func<VosDirs> VosAppGetter => () =>
         {
-            var result = new VosApp(DependencyContext.Current.GetService<RootManager>()?.Get());
+            var result = new VosDirs(DependencyContext.Current.GetService<RootManager>()?.Get());
             if (!LionFireEnvironment.IsMultiApplicationEnvironment)
             {
                 vosApp = result;

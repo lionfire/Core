@@ -19,6 +19,7 @@ using DeepEqual.Syntax;
 using LionFire.Persistence.Filesystem.Tests;
 using LionFire.Persistence.Filesystem;
 using Newtonsoft.Json;
+using LionFire.Persistence.Testing;
 
 namespace FilesystemPersister_
 {

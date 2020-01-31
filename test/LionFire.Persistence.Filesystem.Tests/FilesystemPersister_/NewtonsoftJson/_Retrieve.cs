@@ -18,6 +18,7 @@ using LionFire.Dependencies;
 using DeepEqual.Syntax;
 using LionFire.Persistence.Filesystem.Tests;
 using LionFire.Persistence.Filesystem;
+using LionFire.Persistence.Testing;
 
 namespace FilesystemPersister_
 {

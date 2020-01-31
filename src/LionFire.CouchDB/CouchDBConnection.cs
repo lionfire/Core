@@ -16,7 +16,7 @@ namespace LionFire.CouchDB
     ///   E.g. "server1:6379,server2:6379"
     ///   Order not important; master is automatically identified
     /// </summary>
-    public sealed class CouchDBConnection : ConnectionBase<CouchDBConnectionOptions>
+    public sealed class CouchDBConnection : ConnectionBase<CouchDBConnectionOptions, CouchDBConnection>
     {
         /// <summary>
         /// Gets or sets the number of milliseconds after which an active System.Net.ServicePoint connection is closed.
@@ -49,7 +49,7 @@ namespace LionFire.CouchDB
         //private bool isConnectionDesired;
         ////private Task<ConnectionMultiplexer> connectingTask;
 
-        public override Task Connect(CancellationToken cancellationToken = default)
+        public override Task ConnectImpl(CancellationToken cancellationToken = default)
         {
             var sp = System.Net.ServicePointManager.FindServicePoint(new Uri(Options.WebUrl));
             sp.ConnectionLeaseTimeout = ConnectionLeaseTimeout;
@@ -62,8 +62,7 @@ namespace LionFire.CouchDB
 
             return Task.CompletedTask;
         }
-
-        public override Task Disconnect(CancellationToken cancellationToken = default)
+        public override Task DisconnectImpl(CancellationToken cancellationToken = default)
         {
             ConnectionState = ConnectionState.NotConnected;
 

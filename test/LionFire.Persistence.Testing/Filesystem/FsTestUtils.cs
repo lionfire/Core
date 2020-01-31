@@ -1,6 +1,6 @@
 ﻿using System;
 using System.IO;
-using LionFire.ObjectBus.Testing;
+using LionFire.Persistence.Testing;
 using Xunit;
 
 namespace LionFire.Persistence.Filesystem.Tests

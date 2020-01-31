@@ -64,7 +64,7 @@ namespace LionFire.Persistence.CouchDB
 
         #region Read
 
-        public Task<IPersistenceResult> Exists(IReferencable<ICouchDBReference> referencable) => throw new NotImplementedException();
+        public Task<IPersistenceResult> Exists<TValue>(IReferencable<ICouchDBReference> referencable) => throw new NotImplementedException();
         public Task<IRetrieveResult<TValue>> Retrieve<TValue>(IReferencable<ICouchDBReference> referencable) => throw new NotImplementedException();
 
         #endregion

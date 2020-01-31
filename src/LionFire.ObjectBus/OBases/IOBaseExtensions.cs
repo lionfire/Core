@@ -11,7 +11,7 @@ namespace LionFire.ObjectBus
     public static class IOBaseExtensions
     {
         public static IOBase TryGetOBase(this IReference reference) => 
-            (reference.ToReadHandle<object>() as IHas<IOBase>)?.Object ?? 
+            (reference.GetReadHandle<object>() as IHas<IOBase>)?.Object ?? 
             (reference.ToReadWriteHandle<object>() as IHas<IOBase>)?.Object;
 
         public static Task<IEnumerable<string>> List(this IOBase obase, IReference parent, Type type) 

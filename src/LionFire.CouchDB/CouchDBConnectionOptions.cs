@@ -5,7 +5,7 @@ using System.Linq;
 namespace LionFire.CouchDB
 {
 
-    public class CouchDBConnectionOptions : IHasConnectionString, IHasConnectionUri
+    public class CouchDBConnectionOptions : ConnectionOptions<CouchDBConnectionOptions>, IHasConnectionString, IHasConnectionUri
     {
 
         //public string Key

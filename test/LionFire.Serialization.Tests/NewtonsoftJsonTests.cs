@@ -9,7 +9,7 @@ using Xunit.Abstractions;
 namespace LionFire.Serialization.Tests
 {
 
-    public class AppTest : IDisposable
+    public class AppTest : INotifyDisposing
     {
         public void OnDisposing() => AppHost.Reset();
     }

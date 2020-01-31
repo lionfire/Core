@@ -121,11 +121,12 @@ namespace LionFire.Persistence.Filesystem
         #endregion
 
         #region Construction
-        
-        public FilesystemPersister(ISerializationProvider serializationProvider, TPersistenceOptions persistenceOptions, IOptionsMonitor<FilesystemPersisterOptions> optionsMonitor)
+
+        public FilesystemPersister(ISerializationProvider serializationProvider, string name, IOptionsMonitor<TPersistenceOptions> optionsMonitor)
         {
             this.serializationProvider = serializationProvider;
-            this.PersistenceOptions = persistenceOptions;
+            //this.PersistenceOptions = persistenceOptions;
+            this.PersistenceOptions = string.IsNullOrEmpty(name) ? optionsMonitor.CurrentValue : optionsMonitor.Get(name);
             this.optionsMonitor = optionsMonitor;
         }
 
@@ -254,7 +255,7 @@ namespace LionFire.Persistence.Filesystem
             if (!string.IsNullOrEmpty(reference.Persister))
             {
                 var providerOptions = optionsMonitor.Get(reference.Persister);
-                if(providerOptions.RootDirectory == null) throw new UnknownPersisterException($"Provider '{reference.Persister}' is not known."); // REVIEW - better way to determine uninitialized/missing?
+                if (providerOptions.RootDirectory == null) throw new UnknownPersisterException($"Provider '{reference.Persister}' is not known."); // REVIEW - better way to determine uninitialized/missing?
                 path = LionPath.Combine(providerOptions.RootDirectory, path);
             }
 
@@ -327,7 +328,7 @@ namespace LionFire.Persistence.Filesystem
 
                 if (throwOnFail && PersistenceOptions.ThrowOnDeserializationFailure)
                 {
-                    throw new SerializationException(SerializationOperationType.FromBytes, operation, context, failures);
+                    throw new SerializationException(SerializationOperationType.FromBytes, operation, context, failures, noSerializerAvailable: !foundOne);
                 }
             }
 

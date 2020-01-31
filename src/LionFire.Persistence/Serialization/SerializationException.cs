@@ -27,13 +27,13 @@ namespace LionFire.Serialization
 
         public bool NoSerializerAvailable { get; set; }
 
-        public SerializationException(SerializationOperationType type, PersistenceOperation operation = null, PersistenceContext context = null, IEnumerable<KeyValuePair<ISerializationStrategy, SerializationResult>> failReasons = null, bool noSerializerAvailable = false) : base(noSerializerAvailable?"No serializer available":null)
+        public SerializationException(SerializationOperationType type, PersistenceOperation operation = null, PersistenceContext context = null, IEnumerable<KeyValuePair<ISerializationStrategy, SerializationResult>> failReasons = null, bool noSerializerAvailable = false) : base(noSerializerAvailable ? "No serializer available" : null)
         {
             Type = type;
             Operation = operation;
             Context = context;
             FailReasons = failReasons;
-            NoSerializerAvailable =noSerializerAvailable;
+            NoSerializerAvailable = noSerializerAvailable;
         }
         //public SerializationException(SerializationOperationType type, Lazy<PersistenceOperation> operation = null, PersistenceContext context = null, IEnumerable<KeyValuePair<ISerializationStrategy, SerializationResult>> failReasons = null)
         //{
@@ -42,6 +42,6 @@ namespace LionFire.Serialization
         //    FailReasons = failReasons;
         //}
 
-        
+
     }
 }

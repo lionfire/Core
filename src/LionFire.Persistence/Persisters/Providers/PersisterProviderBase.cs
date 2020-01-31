@@ -26,17 +26,25 @@ namespace LionFire.Persistence.Persisters
 
         public TPersister DefaultFactoryMethod(string? name)
         {
-            if (string.IsNullOrEmpty(name))
-            {
-                return ActivatorUtilities.CreateInstance<TPersister>(serviceProvider, name, options.CurrentValue);
-                //return Activator.CreateInstance<TPersister>(options.CurrentValue);
-                //return (TPersister)Activator.CreateInstance(typeof(TPersister), name, options.CurrentValue);
+            //if (string.IsNullOrEmpty(name))
+            //{
+            //    return (TPersister)Activator.CreateInstance(typeof(TPersister));
+            //}
+            //else
+            //{
+                try
+                {
+                    return ActivatorUtilities.CreateInstance<TPersister>(serviceProvider, name);
+                }
+                catch (InvalidOperationException ioe)
+                    when (ioe.Message.Contains("A suitable constructor") && ioe.Message.Contains("could not be located."))
+                {
+                    // REVIEW: Require all Persisters to always have a name parameter?
+                    //throw new Exception("Persister constructor not found.  Since name of persister is not null or empty, persister must provide a constructor accepting a string parameter.", ioe);
+                    throw new Exception("Persister constructor not found.  Persister must provide a constructor accepting a string parameter representing the name of the persister.", ioe);
             }
-            else
-            {
-                return ActivatorUtilities.CreateInstance<TPersister>(serviceProvider, name, options.Get(name));
-                //return (TPersister)Activator.CreateInstance(typeof(TPersister), name, options.Get(name));
-            }
+            //return (TPersister)Activator.CreateInstance(typeof(TPersister), name, options.Get(name));
+            //}
         }
         IPersister<TReference> IPersisterProvider<TReference>.GetPersister(string? name) => GetPersister(name);
         public abstract TPersister GetPersister(string? name = null);

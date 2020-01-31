@@ -94,7 +94,7 @@ namespace LionFire.Vos
             set => rootContext.Store = value;
         }
 
-        public static Vob DefaultRoot
+        public static IVob DefaultRoot
         {
             get => defaultRoot;//return rootContext.Root; -
             set
@@ -103,7 +103,7 @@ namespace LionFire.Vos
                 defaultRoot = value;
             }
         }
-        private static Vob defaultRoot;
+        private static IVob defaultRoot;
 
         #endregion
 

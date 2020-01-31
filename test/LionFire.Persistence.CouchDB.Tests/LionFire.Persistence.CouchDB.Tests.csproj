@@ -1,0 +1,15 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netstandard2.0</TargetFramework>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\src\LionFire.Core.Extras\LionFire.Core.Extras.csproj" />
+    <ProjectReference Include="..\..\src\LionFire.Hosting\LionFire.Hosting.csproj" />
+    <ProjectReference Include="..\..\src\LionFire.Persistence.CouchDB\LionFire.Persistence.CouchDB.csproj" />
+    <ProjectReference Include="..\..\src\LionFire.Persistence.Handles\LionFire.Persistence.Handles.csproj" />
+    <ProjectReference Include="..\LionFire.Persistence.Testing\LionFire.Persistence.Testing.csproj" />
+  </ItemGroup>
+
+</Project>

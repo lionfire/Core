@@ -11,12 +11,12 @@ using LionFire.Hosting;
 using Microsoft.Extensions.Hosting;
 using LionFire.Applications.Hosting;
 using LionFire.Persistence;
-using LionFire.ObjectBus.Testing;
 using LionFire.Serialization.Json.Newtonsoft;
 using LionFire.Dependencies;
 using Microsoft.Extensions.DependencyInjection;
 using LionFire.Persistence.Filesystem.Tests;
 using LionFire.Persistence.Filesystem;
+using LionFire.Persistence.Testing;
 
 namespace UniversalPersister_
 {
@@ -30,7 +30,7 @@ namespace UniversalPersister_
             [Fact]
             public async void P_TestObj()
             {
-                await PersistersHost.Create()
+                await TestHostBuilders.CreateFileNewtonsoftHost()
                     .ConfigureServices(services =>
                     {
                         services.Configure<SerializationOptions>(o =>
@@ -63,7 +63,7 @@ namespace UniversalPersister_
             [Fact]
             public async void P_string()
             {
-                await PersistersHost.Create().RunAsync(async () =>
+                await TestHostBuilders.CreateFileHost().RunAsync(async () =>
                 {
                     var path = FsTestUtils.TestFile + ".txt";
                     Assert.False(File.Exists(path));
@@ -84,7 +84,7 @@ namespace UniversalPersister_
             [Fact]
             public async void P_bytes()
             {
-                await PersistersHost.Create().RunAsync(async () =>
+                await TestHostBuilders.CreateFileHost().RunAsync(async () =>
                 {
                     var path = FsTestUtils.TestFile + ".bin";
                     Assert.False(File.Exists(path));
@@ -106,7 +106,7 @@ namespace UniversalPersister_
             [Fact]
             public async void P_Stream()
             {
-                await PersistersHost.Create().RunAsync(async () =>
+                await TestHostBuilders.CreateFileHost().RunAsync(async () =>
                 {
                     var path = FsTestUtils.TestFile + ".bin";
                     Assert.False(File.Exists(path));
@@ -134,7 +134,7 @@ namespace UniversalPersister_
             [Fact]
             public async void F_TestObj_Already()
             {
-                await PersistersHost.Create()
+                await TestHostBuilders.CreateFileNewtonsoftHost()
                     //.ConfigureServices(s =>
                     //{
                     //    s.AddSingleton<FilesystemPersistenceOptions>(new FilesystemPersistenceOptions
@@ -169,7 +169,7 @@ namespace UniversalPersister_
             [Fact]
             public async void F_string_Already()
             {
-                await PersistersHost.Create().RunAsync(async () =>
+                await TestHostBuilders.CreateFileHost().RunAsync(async () =>
                 {
                     var path = FsTestUtils.TestFile + ".txt";
                     Assert.False(File.Exists(path));
@@ -192,7 +192,7 @@ namespace UniversalPersister_
             [Fact]
             public async void F_bytes_Already()
             {
-                await PersistersHost.Create().RunAsync(async () =>
+                await TestHostBuilders.CreateFileHost().RunAsync(async () =>
                 {
 
                     var path = FsTestUtils.TestFile + ".bin";

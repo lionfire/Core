@@ -27,5 +27,7 @@ namespace LionFire.Persistence.Persisters
         protected override async Task<IResolveResult<TValue>> ResolveImpl() => await Persister.Retrieve<TReference, TValue>(Reference).ConfigureAwait(false);
 
         protected override async Task<IPersistenceResult> UpsertImpl() => await Persister.Upsert(this, ProtectedValue);
+
+        protected override async Task<IPersistenceResult> DeleteImpl() => await Persister.Delete(this);
     }
 }

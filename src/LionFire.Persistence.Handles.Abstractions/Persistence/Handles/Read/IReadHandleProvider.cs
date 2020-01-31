@@ -25,7 +25,7 @@ namespace LionFire.Persistence.Handles
     }
 
     //[AutoRegister]
-    public interface IReadHandleProvider<TReference>
+    public interface IReadHandleProvider<TReference> : IReadHandleProvider
         where TReference : IReference
     {
         IReadHandle<T> GetReadHandle<T>(TReference reference);

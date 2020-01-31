@@ -17,6 +17,7 @@ using LionFire.Serialization.Json.Newtonsoft;
 using LionFire.Dependencies;
 using LionFire.Persistence.Filesystem.Tests;
 using LionFire.Persistence.Filesystem;
+using LionFire.Persistence.Testing;
 
 namespace FilesystemPersister_
 {    

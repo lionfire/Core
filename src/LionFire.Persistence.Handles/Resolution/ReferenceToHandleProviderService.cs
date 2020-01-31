@@ -1,5 +1,7 @@
 ﻿using LionFire.Dependencies;
+using LionFire.ExtensionMethods;
 using LionFire.Referencing;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 using System;
 using System.Collections.Concurrent;
@@ -23,7 +25,7 @@ namespace LionFire.Persistence.Handles
     /// </design>
     public class ReferenceToHandleService : IReferenceToHandleService
     {
-        public static IReferenceToHandleService Current => DependencyLocator.Get<IReferenceToHandleService>();
+        //public static IReferenceToHandleService Current => DependencyLocator.TryGet<IReferenceToHandleService>();
 
         //IOptionsFactory<NamedHandleProviderConfig> optionsFactory;
         IServiceProvider ServiceProvider { get; }
@@ -44,22 +46,22 @@ namespace LionFire.Persistence.Handles
             //if (typeof(TReference) == typeof(IReference))
             //{
             //// Question: Handle named providers here, or let each provider type do it?
-            //return DependencyLocator.Get<IReadHandleProvider>(typeof(IReadHandleProvider<>).MakeGenericType(input.GetType()));
+            //return ServiceProvider.GetRequiredService<IReadHandleProvider>(typeof(IReadHandleProvider<>).MakeGenericType(input.GetType()));
             //}
             //else
             {
-                return DependencyLocator.Get<IReadHandleProvider<TReference>>(typeof(IReadHandleProvider<TReference>), ServiceProvider);
+                return ServiceProvider.GetRequiredService<IReadHandleProvider<TReference>>(typeof(IReadHandleProvider<TReference>));
 
             }
         }
         public IReadHandleProvider GetReadHandleProvider(IReference input)
         {
             // Question: Handle named providers here, or let each provider type do it?
-            return DependencyLocator.Get<IReadHandleProvider>(typeof(IReadHandleProvider<>).MakeGenericType(input.GetType()));
+            return ServiceProvider.GetRequiredService<IReadHandleProvider>(typeof(IReadHandleProvider<>).MakeGenericType(input.GetType()));
         }
 
         public IReadWriteHandleProvider GetReadWriteHandleProvider(IReference input)
-            => DependencyLocator.Get<IReadWriteHandleProvider>(typeof(IReadWriteHandleProvider<>).MakeGenericType(input.GetType()));
+            => ServiceProvider.GetRequiredService<IReadWriteHandleProvider>(typeof(IReadWriteHandleProvider<>).MakeGenericType(input.GetType()));
 
         //if (handleProviders.TryGetValue(input.GetType(), out IReadWriteHandleProvider result))
         //{
@@ -70,14 +72,14 @@ namespace LionFire.Persistence.Handles
         //public IReadHandleProvider GetReadHandleProvider<TReference>(TReference input)
         //    where TReference: IReference
         //{
-        //    DependencyLocator.Get<IReadHandleProvider<TReference>>(typeof(IReadHandleProvider<TReference>));
+        //    ServiceProvider.GetRequiredService<IReadHandleProvider<TReference>>(typeof(IReadHandleProvider<TReference>));
         //}
 
         public IWriteHandleProvider GetWriteHandleProvider(IReference input)
-                    => DependencyLocator.Get<IWriteHandleProvider>(typeof(IWriteHandleProvider<>).MakeGenericType(input.GetType()));
+                    => ServiceProvider.GetRequiredService<IWriteHandleProvider>(typeof(IWriteHandleProvider<>).MakeGenericType(input.GetType()));
 
         public ICollectionHandleProvider GetCollectionHandleProvider(IReference input)
-            => DependencyLocator.Get<ICollectionHandleProvider>(typeof(ICollectionHandleProvider<>).MakeGenericType(input.GetType()));
+            => ServiceProvider.GetRequiredService<ICollectionHandleProvider>(typeof(ICollectionHandleProvider<>).MakeGenericType(input.GetType()));
 
         public IReadHandleCreator GetReadHandleCreator(IReference input) => throw new NotImplementedException();
         public IReadHandleCreator<TReference> GetReadHandleCreator<TReference>(TReference input) where TReference : IReference => throw new NotImplementedException();
@@ -105,7 +107,7 @@ namespace LionFire.Persistence.Handles
 
         //public IReferenceToHandleProviderProvider HPP(IReference input)
         //{
-        //    DependencyLocator.Get<><>()
+        //    ServiceProvider.GetRequiredService<><>()
         //}
 
 

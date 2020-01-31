@@ -10,26 +10,31 @@ using LionFire;
 using LionFire.Serialization;
 using LionFire.Hosting;
 using Microsoft.Extensions.Hosting;
-using LionFire.Applications.Hosting;
-using LionFire.Persistence;
-using LionFire.ObjectBus.Testing;
 using LionFire.Serialization.Json.Newtonsoft;
 using LionFire.Dependencies;
 using LionFire.Persistence.Filesystem.Tests;
 using LionFire.Persistence.Filesystem;
+using System.Threading.Tasks;
+using LionFire.Persistence.Persisters;
+using LionFire.Persistence.Testing;
 
 namespace UniversalPersister_
-{    
+{
+    // TODO: Prefer Run argument injection over DependencyLocator here and in other unit tests?  DependencyLocator relies on ambient IServiceProvider
+
     namespace NewtonsoftJson
     {
+        // TODO MOVE: These are Filesystem-specific tests.  
         public class _Update
         {
+      
+
             #region Fail - Missing
 
             [Fact]
             public async void F_TestObj_Missing()
             {
-                await PersistersHost.Create().RunAsync(async () =>
+                await TestHostBuilders.CreateFileNewtonsoftHost().RunAsync(async () =>
                 {
                     var path = FsTestUtils.TestFile + ".json";
                     Assert.False(File.Exists(path));
@@ -44,7 +49,7 @@ namespace UniversalPersister_
                     var serializedTestContents2 = DependencyLocator.Get<NewtonsoftJsonSerializer>().ToString(testContents2).String;
 
                     await Assert.ThrowsAsync<NotFoundException>(() => DependencyLocator.Get<FilesystemPersister>().Update(path.ToFileReference(), testContents2));
-                    
+
                     Assert.False(File.Exists(path));
                 });
             }
@@ -56,7 +61,7 @@ namespace UniversalPersister_
             [Fact]
             public async void P_TestObj()
             {
-                await PersistersHost.Create().RunAsync(async () =>
+                await TestHostBuilders.CreateFileNewtonsoftHost().RunAsync(async () =>
                 {
                     var path = FsTestUtils.TestFile + ".json";
                     Assert.False(File.Exists(path));
@@ -84,7 +89,7 @@ namespace UniversalPersister_
             [Fact]
             public async void P_string()
             {
-                await PersistersHost.Create().RunAsync(async () =>
+                await TestHostBuilders.CreateFileNewtonsoftHost().RunAsync(async () =>
                 {
                     var path = FsTestUtils.TestFile + ".txt";
                     Assert.False(File.Exists(path));
@@ -104,33 +109,37 @@ namespace UniversalPersister_
                 });
             }
 
+            //[Theory]
+            //[ClassData(typeof(UniversalPersistersGenerator))]
             [Fact]
             public async void P_bytes()
             {
-                await PersistersHost.Create().RunAsync(async () =>
-                {
+                await TestHostBuilders.CreateFileNewtonsoftHost()
+                    .RunAsync(async (FilesystemPersister persister) =>
+                  {
+                      var path = FsTestUtils.TestFile + ".bin";
+                      Assert.False(File.Exists(path));
 
-                    var path = FsTestUtils.TestFile + ".bin";
-                    Assert.False(File.Exists(path));
+                      var testContents = new byte[] { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 32, 33, 34, 35, 64, 65, 66, 67, 68 };
 
-                    var testContents = new byte[] { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 32, 33, 34, 35, 64, 65, 66, 67, 68 };
+                      File.WriteAllBytes(path, testContents);
+                      Assert.True(File.Exists(path));
 
-                    File.WriteAllBytes(path, testContents);
-                    Assert.True(File.Exists(path));
+                      var testContents2 = new byte[] { 100, 200, 30, 40, 50, 60, 70, 80, 90, 100, 132, 133, 134, 135, 1, 2, 0, 0 };
 
-                    var testContents2 = new byte[] { 100, 200, 30, 40, 50, 60, 70, 80, 90, 100, 132, 133, 134, 135, 1, 2, 0, 0 };
+                      //var persister = (IPersister)sp.GetService(initializer.PersisterType); // REVIEW - Not going to work.  IPersister requires generic parameter.
 
-                    await DependencyLocator.Get<FilesystemPersister>().Update(path.ToFileReference(), testContents2);
-                    Assert.True(File.Exists(path));
+                      await persister.Update(path.ToFileReference(), testContents2);
+                      Assert.True(File.Exists(path));
 
-                    var fromFile = File.ReadAllBytes(path);
-                    Assert.Equal(testContents2, fromFile);
+                      var fromFile = File.ReadAllBytes(path);
+                      Assert.Equal(testContents2, fromFile);
 
-                    File.Delete(path);
-                    Assert.False(File.Exists(path));
-                });
+                      File.Delete(path);
+                      Assert.False(File.Exists(path));
+                  });
             }
-            
+
             #endregion
         }
     }

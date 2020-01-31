@@ -23,14 +23,22 @@ namespace LionFire.Persistence.Filesystem
         }
 
         public IReadHandle<T> GetReadHandle<T>(FileReference reference)
-            => new PersisterReadWriteHandle<FileReference, T, IPersister<FileReference>>(persister, reference);
+            => new PersisterReadHandle<FileReference, T, IPersister<FileReference>>(persister, reference);
+        IReadHandle<T> IReadHandleProvider.GetReadHandle<T>(IReference reference) => (reference is FileReference fileReference) ? GetReadHandle<T>(fileReference) : null;
+
         public IReadWriteHandle<T> GetReadWriteHandle<T>(FileReference reference)
             => new PersisterReadWriteHandle<FileReference, T, IPersister<FileReference>>(persister, reference);
+        IReadWriteHandle<T> IReadWriteHandleProvider.GetReadWriteHandle<T>(IReference reference) => (reference is FileReference fileReference) ? GetReadWriteHandle<T>(fileReference) : null;
 
         public IReadHandle<T> GetReadHandle<T>(ProviderFileReference reference)
             => new PersisterReadWriteHandle<ProviderFileReference, T, IPersister<ProviderFileReference>>(providerFilePersisterProvider.GetPersister(reference.Persister), reference);
-        IReadWriteHandle<T> IReadWriteHandleProvider.GetReadWriteHandle<T>(IReference reference) => GetReadWriteHandle<T>((FileReference)reference);
+        //public IReadHandle<T> GetReadWriteHandle<T>(ProviderFileReference reference)
+        //        => new PersisterReadWriteHandle<ProviderFileReference, T, IPersister<ProviderFileReference>>(providerFilePersisterProvider.GetPersister(reference.Persister), reference);
+
+        //IReadHandle<T> IReadHandleProvider<FileReference>.GetReadHandle<T>(FileReference reference) => throw new System.NotImplementedException();
+
 #warning TODO: ReadWrite handle
+
 
     }
 }

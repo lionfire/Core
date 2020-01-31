@@ -1,4 +1,4 @@
-﻿namespace LionFire.ObjectBus.Testing
+﻿namespace LionFire.Persistence.Testing
 {
     public class TestClass1
     {
@@ -18,7 +18,7 @@
             }
         };
         
-        public static string ExpectedNewtonsoftJson = @"{""$type"":""LionFire.ObjectBus.Testing.TestClass1, LionFire.ObjectBus.Testing"",""StringProp"":""string1"",""IntProp"":1,""Object"":{""StringProp2"":""string2"",""IntProp2"":2}}";
+        public static string ExpectedNewtonsoftJson = @"{""$type"":""LionFire.Persistence.Testing.TestClass1, LionFire.Persistence.Testing"",""StringProp"":""string1"",""IntProp"":1,""Object"":{""StringProp2"":""string2"",""IntProp2"":2}}";
 
     }
 }

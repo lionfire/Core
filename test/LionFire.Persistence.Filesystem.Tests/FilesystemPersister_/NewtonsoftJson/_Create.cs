@@ -18,6 +18,7 @@ using Microsoft.Extensions.DependencyInjection;
 using LionFire.Persistence.Filesystem.Tests;
 using LionFire.Persistence.Filesystem;
 using LionFire.Services;
+using LionFire.Persistence.Testing;
 
 namespace FilesystemPersister_
 {
@@ -143,7 +144,7 @@ namespace FilesystemPersister_
                         //    {
                         //    });
                     })
-                    .RunAsync(async () =>
+                    .RunAsync(async serviceProvider =>
                 {
                     var path = FsTestUtils.TestFile + ".json";
                     Assert.False(File.Exists(path));
@@ -156,7 +157,7 @@ namespace FilesystemPersister_
                     testContents2.IntProp++;
                     var serializedTestContents2 = DependencyLocator.Get<NewtonsoftJsonSerializer>().ToString(testContents2).String;
 
-                    await Assert.ThrowsAsync<AlreadySetException>(async () => await DependencyLocator.Get<FilesystemPersister>().Create(path.ToFileReference(), testContents2));
+                    await Assert.ThrowsAsync<AlreadySetException>(async () => await DependencyLocator.Get<FilesystemPersisterProvider>(serviceProvider).GetPersister().Create(path.ToFileReference(), testContents2));
                     Assert.True(File.Exists(path));
 
                     var fromFile = File.ReadAllText(path);

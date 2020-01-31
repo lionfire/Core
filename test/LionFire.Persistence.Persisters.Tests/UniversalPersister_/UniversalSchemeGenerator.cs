@@ -14,24 +14,26 @@ namespace UniversalPersister_
 
     public class UniversalPersistersGenerator : IEnumerable<object[]>
     {
-        public IEnumerable<object> Objects
-        {
-            get
-            {
-                yield return new CouchDBTests();
-                yield return new FileTests();
-            }
-        }
         public UniversalPersistersGenerator()
         {
             _data = new List<object[]>(Objects.Select(o => new object[] { o }));
         }
 
+        public IEnumerable<object> Objects
+        {
+            get
+            {
+                //yield return new CouchDBTests(); // Do any work yet?
+                yield return new FileTests();
+            }
+        }
         private readonly List<object[]> _data;
 
-        //public IEnumerator<string> GetEnumerator() => _data.GetEnumerator();
+        #region IEnumerable
 
         IEnumerator IEnumerable.GetEnumerator() => _data.GetEnumerator();
         IEnumerator<object[]> IEnumerable<object[]>.GetEnumerator() => _data.GetEnumerator();
+        
+        #endregion
     }
 }

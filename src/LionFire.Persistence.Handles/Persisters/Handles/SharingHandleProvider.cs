@@ -21,5 +21,8 @@ namespace LionFire.Persistence.Persisters
         {
             throw new System.NotImplementedException();
         }
+
+        public IReadHandle<T> GetReadHandle<T>(IReference reference) => reference is TReference tReference ? GetReadHandle<T>(tReference) : null;
+
     }
 }

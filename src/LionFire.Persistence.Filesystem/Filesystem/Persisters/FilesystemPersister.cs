@@ -42,7 +42,7 @@ namespace LionFire.Persistence.Filesystem
 
                 //return (TPersister)Activator.CreateInstance(typeof(TPersister), name, options.Get(name));
 
-        public FilesystemPersister(string name, ISerializationProvider serializationProvider, FilesystemPersisterOptions persisterOptions, IOptionsMonitor<FilesystemPersisterOptions> optionsMonitor) : base(serializationProvider, persisterOptions, optionsMonitor) {
+        public FilesystemPersister(ISerializationProvider serializationProvider, string name, /*FilesystemPersisterOptions persisterOptions, */IOptionsMonitor<FilesystemPersisterOptions> optionsMonitor) : base(serializationProvider, name, /* persisterOptions, */optionsMonitor) {
         }
         //public FilesystemPersister(ISerializationProvider serializationProvider, FilesystemPersistenceOptions persistenceOptions) : base(serializationProvider, persistenceOptions)
         //{

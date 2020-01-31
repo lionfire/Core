@@ -1,4 +1,4 @@
-﻿namespace LionFire.ObjectBus.Testing
+﻿namespace LionFire.Persistence.Testing
 {
     public class TestClass2
     {

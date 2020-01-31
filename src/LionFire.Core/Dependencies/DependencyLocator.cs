@@ -54,9 +54,11 @@ namespace LionFire.Dependencies
             }
             return result;
         }
+
         //public static TInterface Get<TInterface>()
         //    where TInterface : class
         //    => Get<TInterface, TInterface>();
+
         public static TInterface Get<TInterface>(IServiceProvider serviceProvider = null)
            where TInterface : class
            => serviceProvider != null ? serviceProvider.GetService<TInterface>() : Get<TInterface, TInterface>();
