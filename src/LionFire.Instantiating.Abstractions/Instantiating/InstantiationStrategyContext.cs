@@ -29,7 +29,7 @@ namespace LionFire.Instantiating
 
         #region Static
 
-        public static InstantiationStrategyContext Default => DependencyLocator.Get<InstantiationStrategyContext>();
+        public static InstantiationStrategyContext Default => ServiceLocator.Get<InstantiationStrategyContext>();
 
         #endregion
     }

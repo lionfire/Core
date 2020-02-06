@@ -3,45 +3,58 @@ using LionFire.Ontology;
 using LionFire.Referencing;
 using System;
 using System.Collections.Generic;
+using System.Collections.Immutable;
+using System.Linq;
+using System.Text;
 
 namespace LionFire.Vos
 {
-  
-    public interface IVosReference : IReference
-        //, IHas<IOBase>
-        //, IHas<IOBus>
-        , ITypedReference
+    public interface IVosReference : IReference, ITypedReference
     {
-
-        //string RootName => Persister; // FUTURE?
-
         IEnumerable<string> AllowedSchemes { get; }
-        //string Key { get; }
 
         #region REVIEW - maybe eliminate these, or eliminate Package and replace Location with MountName
 
-        string Location { get; set; }
-        string Package { get; set; }
+        //string Location { get; set; }
+        //string Package { get; set; }
 
         #endregion
 
         string[] PathChunks { get; }
-        //string Path { get; set; }
-        //string Scheme { get; }
-        //Type Type { get; set; }
 
-        bool Equals(object obj);
-        //VobHandle<object> GetHandle();
-        //VobHandle<T> GetHandle<T>();
-        int GetHashCode();
-        //VobReadHandle<object> GetReadHandle();
-        //VobReadHandle<T> GetReadHandle<T>();
+        // OLD 
+        //bool Equals(object obj);
+        //int GetHashCode();
+        ImmutableList<KeyValuePair<string, string>> Filters { get; set; }
     }
 
     public static class IVosReferenceExtensions
     {
-        public static string RootName(this IVosReference vr) => vr.Persister ?? "";
+        public static string RootName(this IVosReference vosReference) => vosReference.Persister ?? "";
+
+        public static string Filter(this IVosReference vosReference, string filterName)
+            => vosReference.Filters?.Where(f => f.Key == filterName).Select(kvp => kvp.Value).Aggregate((x, y) => $"{x},{y}");
+
+        public static IEnumerable<string> Filters(this IVosReference vosReference, string filterName)
+            => vosReference.Filters?.Where(f => f.Key == filterName).Select(kvp => kvp.Value) ?? Enumerable.Empty<string>();
+
+        public static void AppendFilterKey(this IVosReference vosReference, string filterName, string prefix, StringBuilder sb)
+        {
+            bool isFirst = true;
+            foreach (var kvp in vosReference.Filters)
+            {
+                if (kvp.Key == filterName)
+                {
+                    if (isFirst)
+                    {
+                        sb.Append(prefix);
+                        isFirst = false;
+                    }
+                    else sb.Append(",");
+                    sb.Append(kvp.Value);
+                }
+            }
+        }
 
     }
-    
 }

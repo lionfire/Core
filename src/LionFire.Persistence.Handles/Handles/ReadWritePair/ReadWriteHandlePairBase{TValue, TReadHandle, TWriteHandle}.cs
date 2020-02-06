@@ -31,12 +31,13 @@ namespace LionFire.Persistence
         where TWriteHandle : class, IWriteHandleBase<TValue>
         //where TValue : class
     {
+        public Type Type => typeof(TValue);
 
         #region Reference
 
         [SetOnce]
         public TReference Reference { get => Key; set => Key = value; }
-        IReference IReferencable.Reference { get => Key; }
+        IReference IReferencable.Reference => Key;
 
         #endregion
 

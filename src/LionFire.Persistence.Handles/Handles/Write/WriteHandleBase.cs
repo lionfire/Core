@@ -23,6 +23,7 @@ namespace LionFire.Persistence.Handles
         , IReferencable<IReference>
         where TReference : IReference
     {
+        public Type Type => typeof(TValue);
         public IReference Reference => Key;
         IReference IReferencable<IReference>.Reference => Key;
 

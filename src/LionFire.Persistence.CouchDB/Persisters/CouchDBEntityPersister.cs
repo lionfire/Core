@@ -5,6 +5,7 @@ using LionFire.Persistence.Persisters;
 using LionFire.Referencing;
 using LionFire.Vos.Handles;
 using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace LionFire.Persistence.CouchDB
@@ -122,5 +123,7 @@ namespace LionFire.Persistence.CouchDB
         }
 
         #endregion
+
+        public Task<IRetrieveResult<IEnumerable<string>>> List(IReferencable<ICouchDBReference> referencable, ListFilter filter = null) => throw new NotImplementedException();
     }
 }

@@ -54,7 +54,7 @@ namespace LionFire.Serialization
                 //var serializationService = persistenceContext.ObjectAsType<ISerializationService>();
                 //if (serializationService == null) { serializationService = DependencyContext.Current.GetService<ISerializationService>(); }
                 //var serializationService = DependencyContext.Current.GetService<ISerializationService>();
-                var serializationService = DependencyLocator.TryGet<ISerializationProvider>();
+                var serializationService = ServiceLocator.TryGet<ISerializationProvider>();
 
                 if (serializationService == null)
                 {

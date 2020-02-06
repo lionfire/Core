@@ -12,11 +12,12 @@ namespace LionFire.Persistence.Handles
 {
 
 #pragma warning disable CS8603 // Possible null reference return. // TODO - uncomment this and use nullable types
-    public class NullReadHandle<T> : IReadHandle<T>
-        where T : class
+    public class NullReadHandle<TValue> : IReadHandle<TValue>
+        where TValue : class
     {
+        public Type Type => typeof(TValue);
 
-        public T Value => default;
+        public TValue Value => default;
         public bool HasValue => false;
 
         public string Key => null;
@@ -36,18 +37,18 @@ namespace LionFire.Persistence.Handles
 
         //event Action<INotifyingWrapper<T>, T, T> INotifyingWrapper<T>.ObjectChanged { add { } remove { } }
 
-        public event Action<IReadHandleBase<T>> ObjectChanged { add { } remove { } }
+        public event Action<IReadHandleBase<TValue>> ObjectChanged { add { } remove { } }
 
         public void DiscardValue() { }
         public Task<bool> Exists(bool forceCheck = false) => Task.FromResult(true);
 
 
-        public ITask<ILazyResolveResult<T>> GetValue() => Task.FromResult<ILazyResolveResult<T>>(ResolveResultNoop<T>.Instance).AsITask();
-        public ITask<IResolveResult<T>> Resolve() => Task.FromResult<IResolveResult<T>>(NoopRetrieveResult).AsITask();
+        public ITask<ILazyResolveResult<TValue>> GetValue() => Task.FromResult<ILazyResolveResult<TValue>>(ResolveResultNoop<TValue>.Instance).AsITask();
+        public ITask<IResolveResult<TValue>> Resolve() => Task.FromResult<IResolveResult<TValue>>(NoopRetrieveResult).AsITask();
         public Task<bool> TryResolveObject() => Task.FromResult(true);
-        public ILazyResolveResult<T> QueryValue() => ResolveResultNoop<T>.Instance;
+        public ILazyResolveResult<TValue> QueryValue() => ResolveResultNoop<TValue>.Instance;
 
-        public static readonly RetrieveResult<T> NoopRetrieveResult = new RetrieveResult<T>()
+        public static readonly RetrieveResult<TValue> NoopRetrieveResult = new RetrieveResult<TValue>()
         {
             Value = default,
             Flags = PersistenceResultFlags.Success | PersistenceResultFlags.Noop,

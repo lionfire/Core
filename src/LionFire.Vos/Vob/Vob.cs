@@ -621,7 +621,7 @@ namespace LionFire.Vos
         /// </summary>
         /// <typeparam name="T"></typeparam>
         /// <returns></returns>
-        public IVosReference GetReference<T>() => new VosReference(Path) { Type = typeof(T), Persister = Root.RootName }; // OPTIMIZE: new VosRelativeReference(this)
+        public IVosReference GetReference<T>() => new VosReference(typeof(T), Path) { Persister = Root.RootName }; // OPTIMIZE: new VosRelativeReference(this)
 
         #endregion
 

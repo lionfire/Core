@@ -36,7 +36,7 @@ namespace LionFire.Instantiating
 
             //ManualSingleton<InstantiationStrategyContext>.Instance = defaultInstantiationStrategyContext;
 
-            DependencyLocator.Set(defaultInstantiationStrategyContext);
+            ServiceLocator.Set(defaultInstantiationStrategyContext);
             return defaultInstantiationStrategyContext;
         }
     }

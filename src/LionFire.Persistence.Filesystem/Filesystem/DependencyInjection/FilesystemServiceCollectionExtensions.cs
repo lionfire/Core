@@ -15,11 +15,15 @@ namespace LionFire.Services
                 .Configure<FilesystemPersisterOptions>(o => { })
                 .AddSingleton(s => s.GetService<IOptionsMonitor<FilesystemPersisterOptions>>()?.CurrentValue)
                 .AddSingleton<FilesystemPersister>()
-                .AddSingleton<IReadHandleProvider<FileReference>, FileHandleProvider>()
-                .AddSingleton<IReadWriteHandleProvider<FileReference>, FileHandleProvider>()
-                .AddSingleton<IReadHandleProvider<ProviderFileReference>, FileHandleProvider>()
-                .AddSingleton<IPersisterProvider<FileReference>, FilesystemPersisterProvider>()
-                .AddSingleton<IPersisterProvider<ProviderFileReference>, FilesystemPersisterProvider>()
+
+                .AddSingleton<FileHandleProvider>()
+                .AddSingleton<IReadHandleProvider<FileReference>, FileHandleProvider>(s => s.GetRequiredService<FileHandleProvider>())
+                .AddSingleton<IReadWriteHandleProvider<FileReference>, FileHandleProvider>(s => s.GetRequiredService<FileHandleProvider>())
+                .AddSingleton<IReadHandleProvider<ProviderFileReference>, FileHandleProvider>(s => s.GetRequiredService<FileHandleProvider>())
+
+                .AddSingleton<FilesystemPersisterProvider>()
+                .AddSingleton<IPersisterProvider<FileReference>, FilesystemPersisterProvider>(s => s.GetRequiredService<FilesystemPersisterProvider>())
+                .AddSingleton<IPersisterProvider<ProviderFileReference>, FilesystemPersisterProvider>(s => s.GetRequiredService<FilesystemPersisterProvider>())
                 ;
 
             //IReadHandleProvider<ProviderFileReference> a;

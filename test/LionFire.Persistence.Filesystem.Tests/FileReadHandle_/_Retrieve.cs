@@ -32,9 +32,15 @@ namespace FileReadHandle_
                 FileReference reference = path;
                 Assert.Equal(reference.Path, path.Replace('\\', '/'));
 
+                #region Write Test Contents
+
                 var testContents = "testing123";
                 File.WriteAllText(path, testContents);
                 Assert.True(File.Exists(path));
+
+                #endregion
+
+                #region Retrieve (Primary assertion)
 
                 var readHandle = reference.GetReadHandle<string>();
                 //var persistenceResult = await readHandle.Retrieve();
@@ -43,8 +49,14 @@ namespace FileReadHandle_
                 Assert.True(persistenceResult.Flags.HasFlag(PersistenceResultFlags.Success));
                 Assert.Equal(testContents, readHandle.Value);
 
+                #endregion
+
+                #region Cleanup
+
                 File.Delete(path);
                 Assert.False(File.Exists(path));
+
+                #endregion
             });
         }
     }

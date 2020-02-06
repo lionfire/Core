@@ -18,6 +18,7 @@ namespace LionFire.Persistence.Handles
         where TReference : IReference
         //, IReadHandleInvariant<TValue>
     {
+        public Type Type => typeof(TValue);
 
         #region Reference
 

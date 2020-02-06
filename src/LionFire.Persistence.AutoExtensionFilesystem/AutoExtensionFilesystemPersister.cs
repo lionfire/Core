@@ -8,30 +8,54 @@ using LionFire.Serialization;
 using System.IO;
 using LionFire.Execution;
 using System.Linq;
+using Microsoft.Extensions.Options;
+using LionFire.Persistence.Persisters;
 
 namespace LionFire.Persistence.AutoExtensionFilesystem
 {
-    public abstract partial class AutoExtensionFilesystemPersister<TReference, TPersistenceOptions>
-        : FilesystemPersister<TReference, TPersistenceOptions>
+#warning NEXT: determining candidate paths should be an async.  But I am not sure I want to unwrap a Task.FromResult(singlePath) for the simple case.
+
+    public class PersisterOverlay<TReference, TOptions, TUnderlyingPersister> : PersisterBase<TOptions>
         where TReference : IReference
-        where TPersistenceOptions : FilesystemPersisterOptions
+        where TOptions : PersistenceOptions
+    {
+
+    }
+
+    public class AutoExtensionFilesystemPersister
+        : PersisterOverlay<AutoExtensionFileReference, AutoExtensionFilesystemPersisterOptions, FilesystemPersister>
     {
 
         #region Construction
 
-        public AutoExtensionFilesystemPersister(FilesystemPersisterOptions persistenceOptions) : base(persistenceOptions)
+        public AutoExtensionFilesystemPersister(string name, ISerializationProvider serializationProvider, IOptionsMonitor<AutoExtensionFilesystemPersisterOptions> options, IPersistenceConventions itemKindIdentifier) : base(name, serializationProvider, options, itemKindIdentifier)
         {
-
         }
 
         #endregion
 
+        #region List
+
+        public List<string> List(string path)
+        {
+            throw new NotImplementedException("Implement based on FilesystemPersister");
+            //var children = new List<string>();
+
+            //if (Directory.Exists(path))
+            //{
+            //    children.AddRange(Directory.GetFiles(path).Select(GetNameFromFileName)); 
+            //    children.TryAddRange(Directory.GetDirectories(path).Select(GetNameFromFileName));
+            //}
+            //return children;
+        }
+
+        #endregion
         #region Retrieve
 
         /// <remarks>
         /// Override implementation: use default paths.  Auto-retry.
         /// </remarks>
-        public override async Task<IRetrieveResult<TValue>> Retrieve<TValue>(TReference reference)
+        public override async Task<IRetrieveResult<TValue>> Retrieve<TValue>(AutoExtensionFileReference reference)
         {
             return await new Func<Task<IRetrieveResult<TValue>>>(()
                 => RetrieveUsingCandidatePaths<TValue>(reference))

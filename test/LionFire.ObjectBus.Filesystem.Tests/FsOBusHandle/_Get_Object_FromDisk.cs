@@ -15,6 +15,7 @@ using LionFire.Referencing;
 using Xunit;
 using LionFire.Serialization;
 using LionFire.Persistence.Filesystem.Tests;
+using LionFire;
 
 namespace Handle
 {
@@ -27,13 +28,13 @@ namespace Handle
 
         private async Task _Pass(bool withExtension)
         {
-            var host = FrameworkHostBuilder.Create(
+            var host = FilesystemTestHost.Create(
                 //serializers: s => s.AddJson()
                 );
 
             if(!withExtension)
             {
-                host.AddObjectBus<ExtensionlessFSOBus>();
+                host.ConfigureServices(services=> services.AddExtensionlessFSOBus();
             }
 
             await host

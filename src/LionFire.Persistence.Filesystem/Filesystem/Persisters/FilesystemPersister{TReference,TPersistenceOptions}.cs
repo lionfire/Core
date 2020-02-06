@@ -20,47 +20,7 @@ using Microsoft.Extensions.Options;
 
 namespace LionFire.Persistence.Filesystem
 {
-#warning NEXT: determining candidate paths should be an async.  But I am not sure I want to unwrap a Task.FromResult(singlePath) for the simple case.
 
-#warning NEXT: What should the flow be for Persistence.Retrieve, and Persistence.Write?  Create an op, and then iterate over Serializers until it succeeds? Do Retrieve/Write just create an op, and then the op can run on its own?  Is it like a blackboard object with its own configurable pipeline?  Is there a hidden IPersisterOperationsProvider interface for CreateRetrieveOperation and CreateWriteOperation?
-
-    //public class RetrieveOperation
-    //{
-    //}
-
-
-    //public class Pipeline
-    //{
-    //    protected List<Action<Pipeline>> pipeline;
-
-    //    public void Next();
-    //}
-
-    //public delegate object RetrieveProcessor(object x);
-
-    //public interface IFilesystemWritePersister
-    //{
-    //    Stream CreateWriteStream(string fsPath, ReplaceMode replaceMode);
-
-    //    Task BytesToPath(string fsPath, byte[] bytes, ReplaceMode replaceMode);
-    //    Task StringToPath(string fsPath, string str, ReplaceMode replaceMode);
-
-    //    //Func<T, string, ISerializationStrategy, ReplaceMode, PersistenceOperation, PersistenceContext, SerializationResult> SerializeToString<T>(T obj, string fsPath, ISerializationStrategy strategy, ReplaceMode replaceMode, PersistenceOperation operation, PersistenceContext context) { get;}
-
-    //    // Task<SerializationResult> SerializeToBytes<T>(T obj, string fsPath, ISerializationStrategy strategy, ReplaceMode replaceMode, PersistenceOperation operation, PersistenceContext context)
-
-    //    //Task<SerializationResult> SerializeToStream<T>(T obj, string fsPath, ISerializationStrategy strategy, ReplaceMode replaceMode, PersistenceOperation operation, PersistenceContext context)
-    //}
-
-    public static class FilesystemPersisterExtensions
-    {
-        public static async Task<IPersistenceResult> DeleteResultToPersistenceResult(this Task<bool?> deleteTask)
-        {
-            var deleteResult = await deleteTask.ConfigureAwait(false);
-            if (!deleteResult.HasValue) return PersistenceResult.Indeterminate;
-            return deleteResult.Value ? PersistenceResult.SuccessAndFound : PersistenceResult.SuccessNotFound;
-        }
-    }
 
     /// <summary>
     /// IPersister return IPersistenceResult and IFSPersistence returns simpler results closer to the underlying filesystem (or similar store)
@@ -80,7 +40,9 @@ namespace LionFire.Persistence.Filesystem
 
         public abstract TReference PathToReference(string fsPath);
 
-        IOptionsMonitor<FilesystemPersisterOptions> optionsMonitor;
+        public IPersistenceConventions ItemKindIdentifier { get; }
+
+        readonly IOptionsMonitor<FilesystemPersisterOptions> optionsMonitor;
 
         #region Dependencies
 
@@ -122,16 +84,79 @@ namespace LionFire.Persistence.Filesystem
 
         #region Construction
 
-        public FilesystemPersister(ISerializationProvider serializationProvider, string name, IOptionsMonitor<TPersistenceOptions> optionsMonitor)
+        public FilesystemPersister(string name, ISerializationProvider serializationProvider, IOptionsMonitor<TPersistenceOptions> options, IPersistenceConventions itemKindIdentifier)
         {
             this.serializationProvider = serializationProvider;
             //this.PersistenceOptions = persistenceOptions;
-            this.PersistenceOptions = string.IsNullOrEmpty(name) ? optionsMonitor.CurrentValue : optionsMonitor.Get(name);
-            this.optionsMonitor = optionsMonitor;
+            this.PersistenceOptions = string.IsNullOrEmpty(name) ? options.CurrentValue : options.Get(name);
+            this.optionsMonitor = options;
+            ItemKindIdentifier = itemKindIdentifier;
         }
 
         #endregion
 
+        #region List
+
+        public async Task<IRetrieveResult<IEnumerable<string>>> List(IReferencable<TReference> referencable, ListFilter? filter = null)
+        {
+            var listResult = await List(referencable.Reference.Path, filter);
+            if (listResult == null) return RetrieveResult<IEnumerable<string>>.SuccessNotFound;
+            return (IRetrieveResult<IEnumerable<string>>)RetrieveResult<IEnumerable<string>>.Success(listResult);
+        }
+
+        /// <summary>
+        /// Returns null if directory not found
+        /// </summary>
+        /// <param name="path"></param>
+        /// <returns></returns>
+        public async Task<IEnumerable<string>> List(string path, ListFilter? filter = null)
+        {
+            return await Task.Run(() =>
+            {
+                List<string>? children = null;
+                if (Directory.Exists(path))
+                {
+                    children = new List<string>();
+
+                    bool showFile = filter == null || filter.Flags == ItemFlags.None || filter.Flags.HasFlag(ItemFlags.File) || !filter.Flags.HasFlag(ItemFlags.Directory);
+                    bool showDir = filter == null || filter.Flags == ItemFlags.None || filter.Flags.HasFlag(ItemFlags.Directory) || !filter.Flags.HasFlag(ItemFlags.File);
+                    //bool showHidden = filter != null && filter.Flags.HasFlag(ItemFlags.Hidden);
+                    //bool showMeta = filter != null && filter.Flags.HasFlag(ItemFlags.Meta);
+                    //bool showSpecial = filter != null && filter.Flags.HasFlag(ItemFlags.Special);
+
+                    if (showFile)
+                    {
+                        foreach (var file in Directory.GetFiles(path).Select(p => Path.GetFileName(p)))
+                        {
+                            var kind = ItemKindIdentifier.ResolveItemFlags(file);
+
+                            //if (kind.HasFlag(ItemFlags.File) && !showFile) continue;
+                            //if (kind.HasFlag(ItemFlags.Hidden) && !showHidden) continue;
+                            //if (kind.HasFlag(ItemFlags.Special) && !showSpecial) continue;
+                            //if (kind.HasFlag(ItemFlags.Meta) && !showMeta) continue;
+
+                            children.Add(file);
+                        }
+                    }
+                    if (showDir)
+                    {
+                        foreach (var dir in Directory.GetDirectories(path).Select(p => Path.GetFileName(p) + LionPath.Separator))
+                        {
+                            //var kind = ItemKindIdentifier.Identify(dir);
+
+                            //if (kind.HasFlag(ItemFlags.File) && !showFile) continue;
+                            //if (kind.HasFlag(ItemFlags.Hidden) && !showHidden) continue;
+                            //if (kind.HasFlag(ItemFlags.Special) && !showSpecial) continue;
+                            //if (kind.HasFlag(ItemFlags.Meta) && !showMeta) continue;
+
+                            children.Add(dir);
+                        }
+                    }
+                }
+                return children;
+            }).ConfigureAwait(false);
+        }
+        #endregion
 
         #region Read: Deserialize
 
@@ -272,6 +297,7 @@ namespace LionFire.Persistence.Filesystem
         //public virtual Task<IRetrieveResult<T>> ReadAndDeserializeExactPath<T>(TReference reference, Lazy<PersistenceOperation> operation = null, PersistenceContext context = null)
         //    => ReadAndDeserializeExactPath<T>(reference.Path, operation, context);
 
+        // RENAME to eliminate "ExactPath" since it's no longer needed to distinguish in this class
         public virtual async Task<IRetrieveResult<T>> ReadAndDeserializeExactPath<T>(string path, Lazy<PersistenceOperation>? operation = null, PersistenceContext? context = null, bool throwOnFail = true)
         {
             // NEXT: how to invoke these?  Latest idea: persist/depersist pipelines
@@ -517,29 +543,6 @@ namespace LionFire.Persistence.Filesystem
         }
 
 
-
-        #region RecentSaves
-#if RecentSaves
-        // REVIEW - what is the point of this?
-        // TODO: Move this to some sort of monitoring service
-
-        public ConcurrentDictionary<string, DateTime> RecentSaves => recentSaves;
-        private readonly ConcurrentDictionary<string, DateTime> recentSaves = new ConcurrentDictionary<string, DateTime>();
-
-        public void CleanRecentSaves()
-        {
-            foreach (var kvp in RecentSaves)
-            {
-                if (DateTime.UtcNow - kvp.Value > TimeSpan.FromMinutes(3))
-                {
-                    RecentSaves.TryRemove(kvp.Key, out DateTime dt);
-                }
-            }
-        }
-#endif
-        #endregion
-
-
         public Task<IPersistenceResult> Upsert<TValue>(string diskPath, TValue value, Type? type = null, PersistenceContext? context = null)
             => Write(diskPath, value, ReplaceMode.Upsert, context: context, type: type);
 
@@ -637,6 +640,7 @@ namespace LionFire.Persistence.Filesystem
 
         #endregion
     }
+// REVIEW What should the flow be for Persistence.Retrieve, and Persistence.Write?  Create an op, and then iterate over Serializers until it succeeds? Do Retrieve/Write just create an op, and then the op can run on its own?  Is it like a blackboard object with its own configurable pipeline?  Is there a hidden IPersisterOperationsProvider interface for CreateRetrieveOperation and CreateWriteOperation?
 
     // REVIEW - is there a way to do this?
     //public static class PersisterBaseExtensions
@@ -644,4 +648,50 @@ namespace LionFire.Persistence.Filesystem
     //    public static Task<IRetrieveResult<TValue>> Retrieve<TValue, TReference>(this IPersister<TReference> persister, TReference reference)
     //        => persister.Retrieve<TValue>((TReference)reference.Path);
     //}
+
+    #region ENH - RecentSaves
+#if RecentSaves
+        // REVIEW - what is the point of this?
+        // TODO: Move this to some sort of monitoring service
+
+        public ConcurrentDictionary<string, DateTime> RecentSaves => recentSaves;
+        private readonly ConcurrentDictionary<string, DateTime> recentSaves = new ConcurrentDictionary<string, DateTime>();
+
+        public void CleanRecentSaves()
+        {
+            foreach (var kvp in RecentSaves)
+            {
+                if (DateTime.UtcNow - kvp.Value > TimeSpan.FromMinutes(3))
+                {
+                    RecentSaves.TryRemove(kvp.Key, out DateTime dt);
+                }
+            }
+        }
+#endif
+    #endregion
+
+    #region Scraps
+
+    //public class Pipeline
+    //{
+    //    protected List<Action<Pipeline>> pipeline;
+    //    public void Next();
+    //}
+
+    //public delegate object RetrieveProcessor(object x);
+
+    //public interface IFilesystemWritePersister
+    //{
+    //    Stream CreateWriteStream(string fsPath, ReplaceMode replaceMode);
+    //    Task BytesToPath(string fsPath, byte[] bytes, ReplaceMode replaceMode);
+    //    Task StringToPath(string fsPath, string str, ReplaceMode replaceMode);
+
+    //    //Func<T, string, ISerializationStrategy, ReplaceMode, PersistenceOperation, PersistenceContext, SerializationResult> SerializeToString<T>(T obj, string fsPath, ISerializationStrategy strategy, ReplaceMode replaceMode, PersistenceOperation operation, PersistenceContext context) { get;}
+
+    //    // Task<SerializationResult> SerializeToBytes<T>(T obj, string fsPath, ISerializationStrategy strategy, ReplaceMode replaceMode, PersistenceOperation operation, PersistenceContext context)
+
+    //    //Task<SerializationResult> SerializeToStream<T>(T obj, string fsPath, ISerializationStrategy strategy, ReplaceMode replaceMode, PersistenceOperation operation, PersistenceContext context)
+    //}
+
+    #endregion
 }

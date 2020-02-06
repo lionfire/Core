@@ -1,4 +1,6 @@
-﻿using LionFire.Referencing;
+﻿#nullable enable
+using LionFire.Referencing;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace LionFire.Persistence.Persisters
@@ -16,6 +18,7 @@ namespace LionFire.Persistence.Persisters
         Task<IPersistenceResult> Upsert<TValue>(TReference reference, TValue value);
 
         Task<IPersistenceResult> Delete(TReference reference);
-    }
 
+        Task<IRetrieveResult<IEnumerable<string>>> List(TReference reference, ListFilter? filter = null);
+    }
 }

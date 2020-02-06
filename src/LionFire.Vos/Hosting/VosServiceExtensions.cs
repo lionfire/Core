@@ -24,7 +24,7 @@ namespace LionFire.Services
                 .ConfigureServices((_, services) =>
                 {
                     services
-                        .AddSingleton<RootManager>()
+                        .AddSingleton<IRootManager, RootManager>()
                         .AddSingleton<VosInitializer>()
 
                         .AddSingleton(serviceProvider => serviceProvider.GetService<IOptionsMonitor<VosOptions>>().CurrentValue)
@@ -32,6 +32,8 @@ namespace LionFire.Services
                         .AddSingleton<IPersisterProvider<VosReference>, VosPersisterProvider>()
                         .AddSingleton<IReadHandleProvider<VosReference>, VosHandleProvider>()
                         .AddSingleton<IReadWriteHandleProvider<VosReference>, VosHandleProvider>()
+                        .AddSingleton<VosPersisterOptions>(s => s.GetRequiredService<IOptionsMonitor<VosPersisterOptions>>().CurrentValue) // REVIEW - force usage via IOptionsMonitor?
+                        .Configure<VosPersisterOptions>(vpo => { })
                         .Configure<VosOptions>(vo =>
                         {
                             //vo.RootNames = new string[] { "", "TestAltRoot" }; // TEMP TEST Alt root

@@ -30,7 +30,7 @@ namespace FilesystemPersister_
             [Fact]
             public async void F_TestObj_Missing()
             {
-                await PersistersHost.Create().RunAsync(async () =>
+                await NewtonsoftJsonFilesystemTestHost.Create().RunAsync(async () =>
                 {
                     var path = FsTestUtils.TestFile + ".json";
                     Assert.False(File.Exists(path));
@@ -42,9 +42,9 @@ namespace FilesystemPersister_
                     var testContents2 = TestClass1.Create;
                     testContents2.StringProp = "Contents #2";
                     testContents2.IntProp++;
-                    var serializedTestContents2 = DependencyLocator.Get<NewtonsoftJsonSerializer>().ToString(testContents2).String;
+                    var serializedTestContents2 = ServiceLocator.Get<NewtonsoftJsonSerializer>().ToString(testContents2).String;
 
-                    await Assert.ThrowsAsync<NotFoundException>(() => DependencyLocator.Get<FilesystemPersister>().Update(path.ToFileReference(), testContents2));
+                    await Assert.ThrowsAsync<NotFoundException>(() => ServiceLocator.Get<FilesystemPersister>().Update(path.ToFileReference(), testContents2));
                     
                     Assert.False(File.Exists(path));
                 });
@@ -57,7 +57,7 @@ namespace FilesystemPersister_
             [Fact]
             public async void P_TestObj()
             {
-                await PersistersHost.Create().RunAsync(async () =>
+                await NewtonsoftJsonFilesystemTestHost.Create().RunAsync(async () =>
                 {
                     var path = FsTestUtils.TestFile + ".json";
                     Assert.False(File.Exists(path));
@@ -68,10 +68,10 @@ namespace FilesystemPersister_
                     var testContents2 = TestClass1.Create;
                     testContents2.StringProp = "Contents #2";
                     testContents2.IntProp++;
-                    var serializedTestContents2 = DependencyLocator.Get<NewtonsoftJsonSerializer>().ToString(testContents2).String;
+                    var serializedTestContents2 = ServiceLocator.Get<NewtonsoftJsonSerializer>().ToString(testContents2).String;
 
 
-                    await DependencyLocator.Get<FilesystemPersister>().Update(path.ToFileReference(), testContents2);
+                    await ServiceLocator.Get<FilesystemPersister>().Update(path.ToFileReference(), testContents2);
                     Assert.True(File.Exists(path));
 
                     var fromFile = File.ReadAllText(path);
@@ -85,7 +85,7 @@ namespace FilesystemPersister_
             [Fact]
             public async void P_string()
             {
-                await PersistersHost.Create().RunAsync(async () =>
+                await FilesystemTestHost.Create().RunAsync(async () =>
                 {
                     var path = FsTestUtils.TestFile + ".txt";
                     Assert.False(File.Exists(path));
@@ -94,7 +94,7 @@ namespace FilesystemPersister_
                     File.WriteAllText(path, testContents);
 
                     var testContents2 = "test456";
-                    await DependencyLocator.Get<FilesystemPersister>().Update(path.ToFileReference(), testContents2);
+                    await ServiceLocator.Get<FilesystemPersister>().Update(path.ToFileReference(), testContents2);
                     Assert.True(File.Exists(path));
 
                     var fromFile = File.ReadAllText(path);
@@ -108,7 +108,7 @@ namespace FilesystemPersister_
             [Fact]
             public async void P_bytes()
             {
-                await PersistersHost.Create().RunAsync(async () =>
+                await FilesystemTestHost.Create().RunAsync(async () =>
                 {
 
                     var path = FsTestUtils.TestFile + ".bin";
@@ -121,7 +121,7 @@ namespace FilesystemPersister_
 
                     var testContents2 = new byte[] { 100, 200, 30, 40, 50, 60, 70, 80, 90, 100, 132, 133, 134, 135, 1, 2, 0, 0 };
 
-                    await DependencyLocator.Get<FilesystemPersister>().Update(path.ToFileReference(), testContents2);
+                    await ServiceLocator.Get<FilesystemPersister>().Update(path.ToFileReference(), testContents2);
                     Assert.True(File.Exists(path));
 
                     var fromFile = File.ReadAllBytes(path);

@@ -4,6 +4,7 @@ using LionFire.Persistence.Persisters;
 using LionFire.Referencing;
 using LionFire.Serialization;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -99,5 +100,7 @@ namespace LionFire.Persistence.CouchDB
         public Task<IPersistenceResult> Delete(IReferencable<ICouchDBReference> referencable) => throw new NotImplementedException();
 
         #endregion
+
+        public Task<IRetrieveResult<IEnumerable<string>>> List(IReferencable<ICouchDBReference> referencable, ListFilter filter = null) => throw new NotImplementedException();
     }
 }

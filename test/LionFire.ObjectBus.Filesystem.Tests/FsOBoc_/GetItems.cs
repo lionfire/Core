@@ -10,6 +10,7 @@ using LionFire.ObjectBus;
 using System.Threading.Tasks;
 using LionFire.Persistence;
 using LionFire.Persistence.Filesystem;
+using LionFire;
 
 namespace FsOBoc_
 {
@@ -19,13 +20,9 @@ namespace FsOBoc_
         [Fact]
         public async Task Pass()
         {
-            Assert.True(true);
-            await PersistersHost.Create()
-                
-                .AddObjectBus<FSOBus>()
+            await FilesystemTestHost.Create()
                 .RunAsync(() =>
                 {
-
                     #region Constants
 
                     string path = null;

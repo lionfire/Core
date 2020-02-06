@@ -75,16 +75,16 @@ namespace Stores_
                 Assert.Contains((System.Collections.Generic.IEnumerable<string>)storesManager.EnabledPackages, s => s == "ExeDir");
                 Assert.Single((System.Collections.Generic.IEnumerable<string>)storesManager.EnabledPackages);
 
-                var readHandle = dataReference1.ToReadHandle<string>();
+                var readHandle = dataReference1.GetReadHandle<string>();
                 var persistenceResult = await readHandle.Resolve();
 
-#error NEXT: this fails for P_Normal.  Verify in Enable that it is getting mounted.
+//#error NEXT: this fails for P_Normal.  Verify in Enable that it is getting mounted.
                 Assert.True(persistenceResult.ToRetrieveResult().Flags.HasFlag(PersistenceResultFlags.Success));
                 Assert.True(persistenceResult.IsSuccess);
                 Assert.Equal(testContents1, readHandle.Value);
             }
             {
-                var readHandle = directReference1.ToReadHandle<string>();
+                var readHandle = directReference1.GetReadHandle<string>();
                 var persistenceResult = await readHandle.Resolve();
                 Assert.True(persistenceResult.IsSuccess);
                 Assert.Equal(testContents1, readHandle.Value);
@@ -98,7 +98,7 @@ namespace Stores_
                 Assert.Contains((System.Collections.Generic.IEnumerable<string>)storesManager.EnabledPackages, s => s == "DataDir");
                 Assert.Equal(2, Enumerable.Count<string>(storesManager.EnabledPackages));
 
-                var readHandle = dataReference2.ToReadHandle<string>();
+                var readHandle = dataReference2.GetReadHandle<string>();
                 var persistenceResult = await readHandle.Resolve();
 
                 Assert.True(persistenceResult.IsSuccess);
@@ -106,7 +106,7 @@ namespace Stores_
 
             }
             {
-                var readHandle = directReference2.ToReadHandle<string>();
+                var readHandle = directReference2.GetReadHandle<string>();
                 var persistenceResult = await readHandle.Resolve();
                 Assert.True(persistenceResult.IsSuccess);
                 Assert.Equal(testContents2, readHandle.Value);
@@ -124,13 +124,13 @@ namespace Stores_
             #region Files no longer available
 
             {
-                var readHandle = dataReference1.ToReadHandle<string>();
+                var readHandle = dataReference1.GetReadHandle<string>();
                 var persistenceResult = await readHandle.Resolve();
                 Assert.True(((IPersistenceResult)persistenceResult).Flags.HasFlag(PersistenceResultFlags.MountNotAvailable));
                 Assert.Null(persistenceResult.IsSuccess);
             }
             {
-                var readHandle = dataReference2.ToReadHandle<string>();
+                var readHandle = dataReference2.GetReadHandle<string>();
                 var persistenceResult = await readHandle.Resolve();
                 Assert.True(((IPersistenceResult)persistenceResult).Flags.HasFlag(PersistenceResultFlags.MountNotAvailable));
                 Assert.Null(persistenceResult.IsSuccess);

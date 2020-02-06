@@ -31,7 +31,7 @@ namespace FilesystemPersister_
             [Fact]
             public async void P_TestObj_Typed()
             {
-                await PersistersHost.Create().RunAsync(async () =>
+                await NewtonsoftJsonFilesystemTestHost.Create().RunAsync(async () =>
                 {
                     var path = FsTestUtils.TestFile + ".json";
                     Assert.False(File.Exists(path));
@@ -39,7 +39,7 @@ namespace FilesystemPersister_
                     File.WriteAllText(path, TestClass1.ExpectedNewtonsoftJson);
                     Assert.True(File.Exists(path));
 
-                    var persistenceResult = await DependencyLocator.Get<FilesystemPersister>().Delete<TestClass1>(path.ToFileReference());
+                    var persistenceResult = await ServiceLocator.Get<FilesystemPersister>().Delete<TestClass1>(path.ToFileReference());
 
                     Assert.True(persistenceResult.IsSuccess());
                     Assert.True(persistenceResult.IsFound());
@@ -51,7 +51,7 @@ namespace FilesystemPersister_
             [Fact]
             public async void F_TestObj_Typed()
             {
-                await PersistersHost.Create().RunAsync(async () =>
+                await NewtonsoftJsonFilesystemTestHost.Create().RunAsync(async () =>
                 {
                     var path = FsTestUtils.TestFile + ".json";
                     Assert.False(File.Exists(path));
@@ -61,7 +61,7 @@ namespace FilesystemPersister_
 
                     // Fail: try deleting TestClass2 instead
                     // TODO ENH: Catch and rethrow a serialization exception?
-                    await Assert.ThrowsAsync<JsonSerializationException>(() => DependencyLocator.Get<FilesystemPersister>().Delete<TestClass2>(path.ToFileReference()));
+                    await Assert.ThrowsAsync<JsonSerializationException>(() => ServiceLocator.Get<FilesystemPersister>().Delete<TestClass2>(path.ToFileReference()));
 
                     File.Delete(path);
                     Assert.False(File.Exists(path));
@@ -71,7 +71,7 @@ namespace FilesystemPersister_
             [Fact]
             public async void P_TestObj()
             {
-                await PersistersHost.Create().RunAsync(async () =>
+                await FilesystemTestHost.Create().RunAsync(async () =>
                 {
                     var path = FsTestUtils.TestFile + ".json";
                     Assert.False(File.Exists(path));
@@ -79,7 +79,7 @@ namespace FilesystemPersister_
                     File.WriteAllText(path, TestClass1.ExpectedNewtonsoftJson);
                     Assert.True(File.Exists(path));
 
-                    var persistenceResult = await DependencyLocator.Get<FilesystemPersister>().Delete(path.ToFileReference());
+                    var persistenceResult = await ServiceLocator.Get<FilesystemPersister>().Delete(path.ToFileReference());
 
                     Assert.True(persistenceResult.IsSuccess());
                     Assert.True(persistenceResult.IsFound());
@@ -91,12 +91,12 @@ namespace FilesystemPersister_
             [Fact]
             public async void F_TestObj_Missing()
             {
-                await PersistersHost.Create().RunAsync(async () =>
+                await FilesystemTestHost.Create().RunAsync(async () =>
                 {
                     var path = FsTestUtils.TestFile + ".json";
                     Assert.False(File.Exists(path));
 
-                    var persistenceResult = await DependencyLocator.Get<FilesystemPersister>().Delete(path.ToFileReference());
+                    var persistenceResult = await ServiceLocator.Get<FilesystemPersister>().Delete(path.ToFileReference());
 
                     Assert.False(persistenceResult.IsFound());
                     Assert.True(persistenceResult.Flags.HasFlag(PersistenceResultFlags.NotFound));

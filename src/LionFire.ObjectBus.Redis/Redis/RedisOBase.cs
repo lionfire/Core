@@ -209,7 +209,7 @@ namespace LionFire.ObjectBus.Redis
             {
                 if (defaultSerializationProvider == null)
                 {
-                    defaultSerializationProvider = (/*context?.SerializationProvider ??*/ DependencyLocator.TryGet<ISerializationProvider>());
+                    defaultSerializationProvider = (/*context?.SerializationProvider ??*/ ServiceLocator.TryGet<ISerializationProvider>());
                 }
                 return defaultSerializationProvider;
             }

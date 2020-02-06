@@ -32,7 +32,7 @@ namespace LionFire.Dependencies
     ///  - For concrete types you don't add to your DI container, a singleton will be instantiated upon demand.  
     ///    - (To disable, set DependencyLocatorConfiguration.AllowDefaultSingletonActivatorOnDemand to false)
     /// </summary>
-    public static class DependencyLocator
+    public static class ServiceLocator
     {
         public static TInterface Initialize<TInterface, TImplementation>()
             where TInterface : class
@@ -58,6 +58,9 @@ namespace LionFire.Dependencies
         //public static TInterface Get<TInterface>()
         //    where TInterface : class
         //    => Get<TInterface, TInterface>();
+        public static TInterface GetRequired<TInterface>(IServiceProvider serviceProvider = null)
+           where TInterface : class
+           => Get<TInterface>(serviceProvider) ?? throw new DependencyMissingException($"{typeof(TInterface).FullName}");
 
         public static TInterface Get<TInterface>(IServiceProvider serviceProvider = null)
            where TInterface : class
@@ -79,9 +82,9 @@ namespace LionFire.Dependencies
 
         private static MethodInfo Get_TInterface_Func;
 
-        static DependencyLocator()
+        static ServiceLocator()
         {
-            Get_TInterface_Func = typeof(DependencyLocator).GetMethods(BindingFlags.Public | BindingFlags.Static).Where(mi => mi.Name == "Get" && mi.ContainsGenericParameters && mi.GetGenericArguments().Length == 1 && mi.GetParameters().FirstOrDefault()?.ParameterType.IsGenericType == true && mi.GetParameters().FirstOrDefault()?.ParameterType.GetGenericTypeDefinition() == typeof(Func<>)).First();
+            Get_TInterface_Func = typeof(ServiceLocator).GetMethods(BindingFlags.Public | BindingFlags.Static).Where(mi => mi.Name == "Get" && mi.ContainsGenericParameters && mi.GetGenericArguments().Length == 1 && mi.GetParameters().FirstOrDefault()?.ParameterType.IsGenericType == true && mi.GetParameters().FirstOrDefault()?.ParameterType.GetGenericTypeDefinition() == typeof(Func<>)).First();
         }
 
         #endregion

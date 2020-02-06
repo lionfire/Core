@@ -9,6 +9,12 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="RoundTrip\**" />
+    <EmbeddedResource Remove="RoundTrip\**" />
+    <None Remove="RoundTrip\**" />
+  </ItemGroup>
+
+  <ItemGroup>
     <Compile Include="..\XunitDisableParallelization.cs" Link="XunitDisableParallelization.cs" />
   </ItemGroup>
 
@@ -33,7 +39,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="RoundTrip\" />
     <Folder Include="_OBusHandle\" />
   </ItemGroup>
 

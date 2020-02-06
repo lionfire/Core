@@ -12,7 +12,7 @@ namespace LionFire.ObjectBus.ExtensionlessFs
 
         public string Persister => OverlayTarget.Persister;
 
-        public RelativeReferenceBase(IReference reference) 
+        public RelativeReferenceBase(IReference reference)
         {
             this.OverlayTarget = reference;
         }
@@ -36,9 +36,9 @@ namespace LionFire.ObjectBus.ExtensionlessFs
 
         public virtual string Scheme => OverlayTarget.Scheme;
 
-        public virtual string Host => OverlayTarget.Host;
+        public virtual string Host => (OverlayTarget as IHostReference)?.Host;
 
-        public virtual string Port => OverlayTarget.Port;
+        public virtual string Port => (OverlayTarget as IHostReference)?.Port;
         public virtual string Path => OverlayTarget.Path;
 
         public IReference GetChild(string subPath) => throw new NotImplementedException();

@@ -13,7 +13,7 @@ namespace LionFire
     // TODO: move this to LionFire.Logging?
     public static class Log
     {
-        public static ILogger Get([CallerMemberName] string categoryName = null) => DependencyLocator.TryGet<ILoggerFactory>(() => NullLoggerFactory.Instance, tryCreateIfMissing: true)?.CreateLogger(categoryName);
+        public static ILogger Get([CallerMemberName] string categoryName = null) => ServiceLocator.TryGet<ILoggerFactory>(() => NullLoggerFactory.Instance, tryCreateIfMissing: true)?.CreateLogger(categoryName);
         
     }
 }

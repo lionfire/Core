@@ -2,6 +2,7 @@ using System;
 using System.Threading.Tasks;
 using LionFire.Applications.Hosting;
 using LionFire.Dependencies;
+using LionFire.Persistence;
 using LionFire.Services;
 using Xunit;
 using Xunit.Abstractions;
@@ -9,12 +10,12 @@ using Xunit.Abstractions;
 namespace LionFire.Serialization.Tests
 {
 
-    public class AppTest : INotifyDisposing
-    {
-        public void OnDisposing() => AppHost.Reset();
-    }
+    //public class AppTest : INotifyDisposing
+    //{
+    //    public void OnDisposing() => AppHost.Reset();
+    //}
 
-    public class MissingSerializationProviderAppResetTests : AppTest
+    public class MissingSerializationProviderAppResetTests // : AppTest
     {
         [Fact]
         public async void MissingAddSerialization()
@@ -27,11 +28,11 @@ namespace LionFire.Serialization.Tests
 
             async Task _MissingAddSerialization(bool first)
             {
-                await new AppHost()
+                await PersistersHost.Create()
                     .AddNewtonsoftJson()
                     .RunNowAndWait(() =>
                     {
-                        var ser = DependencyLocator.TryGet<ISerializationProvider>();
+                        var ser = ServiceLocator.TryGet<ISerializationProvider>();
                         Assert.Null(ser);
                     });
             }
@@ -44,7 +45,7 @@ namespace LionFire.Serialization.Tests
                 .AddNewtonsoftJson()
                 .RunNowAndWait(() =>
                 {
-                    var ser = DependencyLocator.TryGet<ISerializationProvider>();
+                    var ser = ServiceLocator.TryGet<ISerializationProvider>();
                     var obj = TestClass1.Create;
 
                     var json = ser.ToString(obj);
@@ -78,7 +79,7 @@ namespace LionFire.Serialization.Tests
                 .AddNewtonsoftJson()
                 .RunNowAndWait(() =>
                 {
-                    var ser = DependencyLocator.TryGet<ISerializationProvider>();
+                    var ser = ServiceLocator.TryGet<ISerializationProvider>();
                     var obj = TestClass1.Create;
 
                     var json = ser.ToString(obj);
@@ -102,7 +103,7 @@ namespace LionFire.Serialization.Tests
                 .AddNewtonsoftJson()
                 .RunNowAndWait(() =>
                 {
-                    var ser = DependencyLocator.TryGet<ISerializationProvider>();
+                    var ser = ServiceLocator.TryGet<ISerializationProvider>();
                     var obj = TestClass1.Create;
                     var json = ser.ToString(obj);
 

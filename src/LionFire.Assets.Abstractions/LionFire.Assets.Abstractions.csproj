@@ -11,11 +11,8 @@
 
   <ItemGroup>
     <Compile Remove="Handles\**" />
-    <Compile Remove="Referencing\**" />
     <EmbeddedResource Remove="Handles\**" />
-    <EmbeddedResource Remove="Referencing\**" />
     <None Remove="Handles\**" />
-    <None Remove="Referencing\**" />
   </ItemGroup>
 
   <ItemGroup>

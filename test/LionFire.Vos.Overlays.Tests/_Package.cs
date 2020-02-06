@@ -101,7 +101,7 @@ namespace Packages_
                             Assert.Contains(pluginManager.EnabledPackages, s => s == "plugin1");
                             Assert.Single(pluginManager.EnabledPackages);
 
-                            var readHandle = dataReference1.ToReadHandle<string>();
+                            var readHandle = dataReference1.GetReadHandle<string>();
                             var persistenceResult = await readHandle.Resolve();
 
                             //Assert.True(persistenceResult.Flags.HasFlag(PersistenceResultFlags.Success)); // TODO - switch to Retrieve?
@@ -109,7 +109,7 @@ namespace Packages_
                             Assert.Equal(testContents1, readHandle.Value);
                         }
                         {
-                            var readHandle = pluginDataReference1.ToReadHandle<string>();
+                            var readHandle = pluginDataReference1.GetReadHandle<string>();
                             var persistenceResult = await readHandle.Resolve();
                             Assert.True(persistenceResult.IsSuccess);
                             Assert.Equal(testContents1, readHandle.Value);
@@ -123,7 +123,7 @@ namespace Packages_
                             Assert.Contains(pluginManager.EnabledPackages, s => s == "plugin2");
                             Assert.Equal(2, pluginManager.EnabledPackages.Count());
 
-                            var readHandle = dataReference2.ToReadHandle<string>();
+                            var readHandle = dataReference2.GetReadHandle<string>();
                             var persistenceResult = await readHandle.Resolve();
 
                             Assert.True(persistenceResult.IsSuccess);
@@ -131,7 +131,7 @@ namespace Packages_
 
                         }
                         {
-                            var readHandle = pluginDataReference2.ToReadHandle<string>();
+                            var readHandle = pluginDataReference2.GetReadHandle<string>();
                             var persistenceResult = await readHandle.Resolve();
                             Assert.True(persistenceResult.IsSuccess);
                             Assert.Equal(testContents2, readHandle.Value);
@@ -149,13 +149,13 @@ namespace Packages_
                         #region Files no longer available
 
                         {
-                            var readHandle = dataReference1.ToReadHandle<string>();
+                            var readHandle = dataReference1.GetReadHandle<string>();
                             var persistenceResult = await readHandle.Resolve();
                             Assert.True(((IPersistenceResult)persistenceResult).Flags.HasFlag(PersistenceResultFlags.MountNotAvailable));
                             Assert.Null(persistenceResult.IsSuccess);
                         }
                         {
-                            var readHandle = dataReference2.ToReadHandle<string>();
+                            var readHandle = dataReference2.GetReadHandle<string>();
                             var persistenceResult = await readHandle.Resolve();
                             Assert.True(((IPersistenceResult)persistenceResult).Flags.HasFlag(PersistenceResultFlags.MountNotAvailable));
                             Assert.Null(persistenceResult.IsSuccess);

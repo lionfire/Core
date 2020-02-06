@@ -27,6 +27,7 @@ namespace LionFire.Persistence
                     services
                         .AddSerialization()
                         .AddBuiltInSerializers()
+                        .AddSingleton<IPersistenceConventions, PersistenceConventions>()
                         .AddSingleton<IReferenceToHandleService, ReferenceToHandleService>()
                         .AddSingleton<IReferenceProviderService, ReferenceProviderService>()
                     ;

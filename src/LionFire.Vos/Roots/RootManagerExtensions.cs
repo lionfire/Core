@@ -9,7 +9,7 @@ namespace LionFire.Vos
     public static class RootManagerExtensions
     {
         private static IRootManager GetRootManagerOrThrow(IHas<IRootManager>? hasRootManager = null)
-            => hasRootManager?.Object ?? DependencyContext.Current.GetServiceOrSingleton<RootManager>(createIfMissing: false)
+            => hasRootManager?.Object ?? DependencyContext.Current.GetServiceOrSingleton<IRootManager>(createIfMissing: false)
             ?? throw new System.Exception("Could not find RootManager.  Global DependencyContext may be disabled.  Please specify a IHas<IRootManager> as a parameter.");
 
         public static IVob? ToVob(this string vosPath, IHas<IRootManager>? hasRootManager = null) => GetRootManagerOrThrow(hasRootManager).Get(VosConstants.DefaultRootName)?[vosPath.ToVosReference()];

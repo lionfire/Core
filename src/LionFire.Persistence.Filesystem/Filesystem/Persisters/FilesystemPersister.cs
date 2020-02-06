@@ -3,6 +3,7 @@ using LionFire.ExtensionMethods.Collections;
 using LionFire.ExtensionMethods.Persistence.Filesystem;
 using LionFire.IO;
 using LionFire.Persistence.Persisters;
+using LionFire.Referencing;
 using LionFire.Serialization;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
@@ -16,7 +17,6 @@ using System.Threading.Tasks;
 
 namespace LionFire.Persistence.Filesystem
 {
-
     // REVIEW - is there a way to do this?
     //public static class PersisterBaseExtensions
     //{
@@ -24,29 +24,23 @@ namespace LionFire.Persistence.Filesystem
     //        => persister.Retrieve<TValue>((TReference)reference.Path);
     //}
 
-    public class FilesystemIO
-    {
-    }
-
     public class FilesystemPersister : FilesystemPersister<FileReference, FilesystemPersisterOptions>, IPersister<FileReference>
     {
 
-
         #region Static
 
-        public static FilesystemPersister Current { get; } = DependencyLocator.Get<FilesystemPersister>();
+        public static FilesystemPersister Current { get; } = ServiceLocator.Get<FilesystemPersister>();
 
         #endregion
 
         #region Construction
 
-                //return (TPersister)Activator.CreateInstance(typeof(TPersister), name, options.Get(name));
-
-        public FilesystemPersister(ISerializationProvider serializationProvider, string name, /*FilesystemPersisterOptions persisterOptions, */IOptionsMonitor<FilesystemPersisterOptions> optionsMonitor) : base(serializationProvider, name, /* persisterOptions, */optionsMonitor) {
+        public FilesystemPersister(ISerializationProvider serializationProvider, IOptionsMonitor<FilesystemPersisterOptions> optionsMonitor, IPersistenceConventions itemKindIdentifier) : this(serializationProvider, null, optionsMonitor, itemKindIdentifier)
+        {
         }
-        //public FilesystemPersister(ISerializationProvider serializationProvider, FilesystemPersistenceOptions persistenceOptions) : base(serializationProvider, persistenceOptions)
-        //{
-        //}
+        public FilesystemPersister(ISerializationProvider serializationProvider, string name, IOptionsMonitor<FilesystemPersisterOptions> options, IPersistenceConventions itemKindIdentifier) : base(name, serializationProvider, options, itemKindIdentifier)
+        {
+        }
 
         #endregion
 
@@ -83,6 +77,20 @@ namespace LionFire.Persistence.Filesystem
 
         public override Task WriteBytes(string path, byte[] bytes, ReplaceMode replaceMode) => Task.Run(() => File.WriteAllBytes(path, bytes));
         public override Task WriteString(string path, string str, ReplaceMode replaceMode) => Task.Run(() => File.WriteAllText(path, str));
+
+        #endregion
+
+        #region ReadMeta
+
+        // TODO
+        // Simple meta: Get File size, mod date
+        // Full meta: permissions, NTFS attributes
+
+        #endregion
+
+        #region List
+
+
 
         #endregion
 
@@ -156,7 +164,6 @@ namespace LionFire.Persistence.Filesystem
             return paths;
         }
 
-
         public string GetNameFromFileName(string filename) // MOVE to VOS
         {
             string name = System.IO.Path.GetFileNameWithoutExtension(filename);
@@ -185,19 +192,7 @@ namespace LionFire.Persistence.Filesystem
             return name;
         }
 
-        public List<string> List(string path)
-        {
-            List<string> children = new List<string>();
-            if (Directory.Exists(path))
-            {
-                #region TODO: MOVE this GetNameFromFileName stuff to VOS
-                children.AddRange(Directory.GetFiles(path).Select(GetNameFromFileName));
-                children.TryAddRange(Directory.GetDirectories(path).Select(GetNameFromFileName));
-                throw new NotImplementedException();
-                #endregion
-            }
-            return children;
-        }
+
 
         #region Metadata
 
@@ -220,6 +215,7 @@ namespace LionFire.Persistence.Filesystem
             public Type DefaultType = null;
         }
 
+        // MOVE to Vos (or VosApp?)
         private static Type GetDefaultChildTypeForPath(string path) => throw new NotImplementedException("TOPORT");//#if AOT // TOPORT//            var metadata = VFSMetadata[path].AsType(typeof(FSMetaData)) as FSMetaData;//#else//            var metadata = VFSMetadata[path].AsType<FSMetaData>();//#endif//            if (metadata == null) return null;//            return metadata.DefaultType;
 
         #endregion

@@ -27,45 +27,47 @@ namespace FilesystemPersister_
             [Fact]
             public async void P_string()
             {
-                await PersistersHost.Create()
-                .ConfigureServices(services =>
-                {
-                    services.Configure<SerializationOptions>(o =>
-                    {
-                        //o.SerializeExtensionScoring = FileExtensionScoring.MustMatch;
-                        //o.DeerializeExtensionScoring = FileExtensionScoring.RewardMatch;
-                    });
-                })
-                .RunAsync(async () =>
+                await FilesystemTestHost.Create().RunAsync(async () =>
                 {
                     var path = FsTestUtils.TestFile + ".txt";
                     Assert.False(File.Exists(path));
 
-                    var testContents = "testing123";
-                    var persistenceResult = await DependencyLocator.Get<FilesystemPersister>().Create(path.ToFileReference(), testContents);
+                    #region Primary operation
 
+                    var testContents = "testing123";
+                    var persistenceResult = await ServiceLocator.Get<FilesystemPersister>().Create(path.ToFileReference(), testContents);
                     Assert.True(persistenceResult.Flags.HasFlag(PersistenceResultFlags.Success));
+
+                    #endregion
+
+                    #region Verify
 
                     Assert.True(File.Exists(path));
                     var fromFile = File.ReadAllText(path);
                     Assert.Equal(testContents, fromFile);
 
+                    #endregion
+
+                    #region Cleanup
+
                     File.Delete(path);
                     Assert.False(File.Exists(path));
+
+                    #endregion
                 });
             }
 
             [Fact]
             public async void P_bytes()
             {
-                await PersistersHost.Create().RunAsync(async () =>
+                await FilesystemTestHost.Create().RunAsync(async () =>
                 {
                     var path = FsTestUtils.TestFile + ".bin";
                     Assert.False(File.Exists(path));
-                    
+
                     var testContents = new byte[] { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 32, 33, 34, 35, 64, 65, 66, 67, 68 };
-                    var persistenceResult = await DependencyLocator.Get<FilesystemPersister>().Create(path.ToFileReference(), testContents);
-                    
+                    var persistenceResult = await ServiceLocator.Get<FilesystemPersister>().Create(path.ToFileReference(), testContents);
+
                     Assert.True(persistenceResult.Flags.HasFlag(PersistenceResultFlags.Success), "!PersistenceResultFlags.Success");
 
                     Assert.True(File.Exists(path));

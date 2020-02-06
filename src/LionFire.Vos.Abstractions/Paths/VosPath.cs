@@ -11,7 +11,9 @@ namespace LionFire.Vos
 
         public const string CachePrefix = "_#"; // FUTURE: Make this a configurable convention
         public const char LayerDelimiter = '|';
+        public const string LayerDelimiterString = "|";
         public const char LocationDelimiter = '^';
+        public const string LocationDelimiterString = "^";
 
         #endregion        
 

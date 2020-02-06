@@ -1,5 +1,7 @@
-﻿using LionFire.Persistence;
+﻿#nullable enable
+using LionFire.Persistence;
 using LionFire.Referencing;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace LionFire.Persistence.Persisters
@@ -23,5 +25,6 @@ namespace LionFire.Persistence.Persisters
         public Task<IPersistenceResult> Update<TValue>(IReferencable<TReference> referencable, TValue value) => Persister.Update(BaseReference.AddRight(referencable.Reference), value);
         public Task<IPersistenceResult> Upsert<TValue>(IReferencable<TReference> referencable, TValue value) => Persister.Upsert(BaseReference.AddRight(referencable.Reference), value);
         public Task<IPersistenceResult> Delete(IReferencable<TReference> referencable) => Persister.Delete(BaseReference.AddRight(referencable.Reference));
+        public Task<IRetrieveResult<IEnumerable<string>>> List(IReferencable<TReference> referencable, ListFilter? filter = null) => Persister.List(referencable, filter);
     }
 }

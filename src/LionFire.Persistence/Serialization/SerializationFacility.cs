@@ -8,7 +8,7 @@ namespace LionFire.Serialization
         {
             get
             {
-                IResolvesSerializationStrategies serializationResolver = DependencyLocator.TryGet<ISerializationProvider>();
+                IResolvesSerializationStrategies serializationResolver = ServiceLocator.TryGet<ISerializationProvider>();
 
                 if (serializationResolver == null)
                 {

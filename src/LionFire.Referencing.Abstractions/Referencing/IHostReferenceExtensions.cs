@@ -1,8 +1,8 @@
 ﻿namespace LionFire.Referencing
 {
-    public static class IMachineReferenceExtensions
+    public static class IHostReferenceExtensions
     {
-        public static bool IsLocalhost(IMachineReference reference)
+        public static bool IsLocalhost(IHostReference reference)
         {
             return ReferenceConstants.IsLocalhost(reference.Host);
         }

@@ -33,8 +33,8 @@ namespace LionFire.Referencing
 
         #endregion
 
-        public abstract string Host { get; set; }
-        public abstract string Port { get; set; }
+        //public abstract string Host { get; set; }
+        //public abstract string Port { get; set; }
 
         // OLD
         //#region Construction

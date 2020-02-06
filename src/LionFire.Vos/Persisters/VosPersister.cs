@@ -4,6 +4,7 @@ using LionFire.Vos;
 using LionFire.Vos.Mounts;
 using LionFire.Vos.Services;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -46,11 +47,11 @@ namespace LionFire.Persistence.Persisters.Vos
         {
             Root = root;
         }
-        //public VosPersister(IRootManager vosRootManager, string rootName, VosPersisterOptions options) : this(vosRootManager)
-        //{
-        //    this.RootName = rootName;
-        //    root = vosRootManager.Get(rootName);
-        //}
+        public VosPersister(IRootManager vosRootManager, string rootName, VosPersisterOptions options) : this(vosRootManager.Get(rootName))
+        {
+            //this.RootName = rootName;
+            //root = vosRootManager.Get(rootName);
+        }
 
 
         public Task<IPersistenceResult> Exists<TValue>(IReferencable<VosReference> referencable) => throw new System.NotImplementedException();
@@ -87,7 +88,7 @@ namespace LionFire.Persistence.Persisters.Vos
 
                     if (childResult.IsSuccess == true)
                     {
-                        result.Flags |= PersistenceResultFlags.Success; // Indicates that at least one underlying persister failed
+                        result.Flags |= PersistenceResultFlags.Success; // Indicates that at least one underlying persister succeeded
 
                         if (childResult.Flags.HasFlag(PersistenceResultFlags.Found))
                         {
@@ -105,5 +106,6 @@ namespace LionFire.Persistence.Persisters.Vos
         public Task<IPersistenceResult> Update<TValue>(IReferencable<VosReference> referencable, TValue value) => throw new System.NotImplementedException();
         public Task<IPersistenceResult> Upsert<TValue>(IReferencable<VosReference> referencable, TValue value) => throw new System.NotImplementedException();
         public Task<IPersistenceResult> Delete(IReferencable<VosReference> referencable) => throw new System.NotImplementedException();
+        public Task<IRetrieveResult<IEnumerable<string>>> List(IReferencable<VosReference> referencable, ListFilter filter = null) => throw new NotImplementedException();
     }
 }

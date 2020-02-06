@@ -15,7 +15,7 @@ namespace LionFire.Execution.Jobs
     {
         #region Static
 
-        public static JobManager Default => DependencyLocator.Get<JobManager>();
+        public static JobManager Default => ServiceLocator.Get<JobManager>();
 
         #endregion
 

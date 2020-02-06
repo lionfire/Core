@@ -107,9 +107,12 @@ namespace LionFire.Vos.Overlays
                     if (unmountedSomething)
                     {
                         var vobMounts = reference.ToVob().GetOwn<VobMounts>();
-                        foreach (var mount in vobMounts.AllMounts.Where(m => m.Options?.IsManuallyEnabled == true))
+                        if (vobMounts != null)
                         {
-                            mount.IsEnabled = false;
+                            foreach (var mount in vobMounts.AllMounts.Where(m => m.Options?.IsManuallyEnabled == true))
+                            {
+                                mount.IsEnabled = false;
+                            }
                         }
                     }
                     return unmountedSomething;

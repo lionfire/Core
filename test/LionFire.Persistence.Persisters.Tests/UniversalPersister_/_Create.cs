@@ -1,5 +1,4 @@
-﻿//using LionFire.ObjectBus.Filesystem.Persisters;
-using LionFire.Structures;
+﻿using LionFire.Structures;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -43,11 +42,11 @@ namespace UniversalPersister_
                     var path = FsTestUtils.TestFile + ".json";
 
                     var testContents = TestClass1.Create;
-                    var serializedTestContents = DependencyLocator.Get<NewtonsoftJsonSerializer>().ToString(testContents).String;
+                    var serializedTestContents = ServiceLocator.Get<NewtonsoftJsonSerializer>().ToString(testContents).String;
 
                     Assert.False(File.Exists(path));
 
-                    await DependencyLocator.Get<FilesystemPersister>().Create(path.ToFileReference(), testContents);
+                    await ServiceLocator.Get<FilesystemPersister>().Create(path.ToFileReference(), testContents);
 
                     Assert.True(File.Exists(path));
 
@@ -69,7 +68,7 @@ namespace UniversalPersister_
                     Assert.False(File.Exists(path));
 
                     var testContents = "testing123";
-                    await DependencyLocator.Get<FilesystemPersister>().Create(path.ToFileReference(), testContents);
+                    await ServiceLocator.Get<FilesystemPersister>().Create(path.ToFileReference(), testContents);
 
                     Assert.True(File.Exists(path));
 
@@ -90,7 +89,7 @@ namespace UniversalPersister_
                     Assert.False(File.Exists(path));
 
                     var testContents = new byte[] { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 32, 33, 34, 35, 64, 65, 66, 67, 68 };
-                    await DependencyLocator.Get<FilesystemPersister>().Create(path.ToFileReference(), testContents);
+                    await ServiceLocator.Get<FilesystemPersister>().Create(path.ToFileReference(), testContents);
                     Assert.True(File.Exists(path));
 
                     var fromFile = File.ReadAllBytes(path);
@@ -116,7 +115,7 @@ namespace UniversalPersister_
                     ms.Write(new ReadOnlySpan<byte>(testContents));
                     ms.Seek(0, SeekOrigin.Begin);
 
-                    await DependencyLocator.Get<FilesystemPersister>().Create(path.ToFileReference(), ms.StreamToBytes());
+                    await ServiceLocator.Get<FilesystemPersister>().Create(path.ToFileReference(), ms.StreamToBytes());
                     Assert.True(File.Exists(path));
 
                     var fromFile = File.ReadAllBytes(path);
@@ -153,9 +152,9 @@ namespace UniversalPersister_
                     var testContents2 = TestClass1.Create;
                     testContents2.StringProp = "Contents #2";
                     testContents2.IntProp++;
-                    var serializedTestContents2 = DependencyLocator.Get<NewtonsoftJsonSerializer>().ToString(testContents2).String;
+                    var serializedTestContents2 = ServiceLocator.Get<NewtonsoftJsonSerializer>().ToString(testContents2).String;
 
-                    await Assert.ThrowsAsync<AlreadySetException>(async () => await DependencyLocator.Get<FilesystemPersister>().Create(path.ToFileReference(), testContents2));
+                    await Assert.ThrowsAsync<AlreadySetException>(async () => await ServiceLocator.Get<FilesystemPersister>().Create(path.ToFileReference(), testContents2));
                     Assert.True(File.Exists(path));
 
                     var fromFile = File.ReadAllText(path);
@@ -178,7 +177,7 @@ namespace UniversalPersister_
                     File.WriteAllText(path, testContents);
 
                     var testContents2 = "test456";
-                    await Assert.ThrowsAsync<AlreadySetException>(async () => await DependencyLocator.Get<FilesystemPersister>().Create(path.ToFileReference(), testContents2));
+                    await Assert.ThrowsAsync<AlreadySetException>(async () => await ServiceLocator.Get<FilesystemPersister>().Create(path.ToFileReference(), testContents2));
                     Assert.True(File.Exists(path));
 
                     var fromFile = File.ReadAllText(path);
@@ -205,7 +204,7 @@ namespace UniversalPersister_
 
                     var testContents2 = new byte[] { 100, 200, 30, 40, 50, 60, 70, 80, 90, 100, 132, 133, 134, 135, 1, 2, 0, 0 };
 
-                    await Assert.ThrowsAsync<AlreadySetException>(async () => await DependencyLocator.Get<FilesystemPersister>().Create(path.ToFileReference(), testContents2));
+                    await Assert.ThrowsAsync<AlreadySetException>(async () => await ServiceLocator.Get<FilesystemPersister>().Create(path.ToFileReference(), testContents2));
                     Assert.True(File.Exists(path));
 
                     var fromFile = File.ReadAllBytes(path);
