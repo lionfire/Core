@@ -15,6 +15,8 @@
   <ItemGroup>
     <ProjectReference Include="..\LionFire.Applications\LionFire.Applications.csproj" />
     <ProjectReference Include="..\LionFire.Core.Extras\LionFire.Core.Extras.csproj" />
+    <ProjectReference Include="..\LionFire.Persistence.Assets.Abstractions\LionFire.Assets.Abstractions2.csproj" />
+    <ProjectReference Include="..\LionFire.Persistence.Assets\LionFire.Vos.Assets.csproj" />
     <ProjectReference Include="..\LionFire.Persistence.Filesystem\LionFire.Persistence.Filesystem.csproj" />
     <ProjectReference Include="..\LionFire.Vos.Overlays\LionFire.Vos.Overlays.csproj" />
     <ProjectReference Include="..\LionFire.Vos\LionFire.Vos.csproj" />

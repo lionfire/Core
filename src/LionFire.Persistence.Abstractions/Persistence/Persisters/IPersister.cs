@@ -1,49 +1,14 @@
 ﻿#nullable enable
 using LionFire.Referencing;
-using System.Collections.Generic;
-using System.Threading.Tasks;
 
 namespace LionFire.Persistence.Persisters
 {
-
-
-    public interface IReadPersister<in TReference>
-        where TReference : IReference
-    {
-        Task<IPersistenceResult> Exists<TValue>(IReferencable<TReference> referencable);
-        Task<IRetrieveResult<TValue>> Retrieve<TValue>(IReferencable<TReference> referencable);
-
-        Task<IRetrieveResult<IEnumerable<string>>> List(IReferencable<TReference> referencable, ListFilter? filter = null);
-
-        ///// <summary>
-        ///// Retrieve a list of names of child items
-        ///// </summary>
-        ///// <param name="path"></param>
-        ///// <param name="filter"></param>
-        ///// <returns></returns>
-        //Task<IEnumerable<string>> List(string path, ListFilter? filter = null);
-    }
-
-
     //public interface IPersister : IPersister<IReference>
     //{
     //}
     public interface IPersister<in TReference> : IReadPersister<TReference>, IWritePersister<TReference>
         where TReference : IReference
     {
-    }
-
-
-    public interface ICollectionPersister
-    {
-        //    Task<IPersistenceResult> List<TReference, TValue>(IReferencable<TReference> reference, TValue value)
-        //        where TReference : IReference;
-        //    Task<IPersistenceResult> Add<TReference, TValue>(IReferencable<TReference> reference, TValue value)
-        //where TReference : IReference;
-
-        //    Task<IPersistenceResult> Remove<TReference, TValue>(IReferencable<TReference> reference, TValue value)
-        //where TReference : IReference;
-
     }
 
     //public enum PersisterOptionFlags

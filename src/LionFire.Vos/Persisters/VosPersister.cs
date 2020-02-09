@@ -12,7 +12,7 @@ namespace LionFire.Persistence.Persisters.Vos
 {
     public class VosPersister :
         PersisterBase<VosPersisterOptions>
-        , IPersister<VosReference>
+        , IPersister<IVosReference>
     //, IFilesystemPersistence<TReference, TPersistenceOptions>
     //, IWriter<string> // FUTURE?
     //, IReader<string> // FUTURE?
@@ -54,9 +54,9 @@ namespace LionFire.Persistence.Persisters.Vos
         }
 
 
-        public Task<IPersistenceResult> Exists<TValue>(IReferencable<VosReference> referencable) => throw new System.NotImplementedException();
+        public Task<IPersistenceResult> Exists<TValue>(IReferencable<IVosReference> referencable) => throw new System.NotImplementedException();
 
-        public async Task<IRetrieveResult<TValue>> Retrieve<TValue>(IReferencable<VosReference> referencable)
+        public async Task<IRetrieveResult<TValue>> Retrieve<TValue>(IReferencable<IVosReference> referencable)
         {
             var vob = Root[referencable.Reference.Path];
 
@@ -102,10 +102,10 @@ namespace LionFire.Persistence.Persisters.Vos
             return result;
         }
 
-        public Task<IPersistenceResult> Create<TValue>(IReferencable<VosReference> referencable, TValue value) => throw new System.NotImplementedException();
-        public Task<IPersistenceResult> Update<TValue>(IReferencable<VosReference> referencable, TValue value) => throw new System.NotImplementedException();
-        public Task<IPersistenceResult> Upsert<TValue>(IReferencable<VosReference> referencable, TValue value) => throw new System.NotImplementedException();
-        public Task<IPersistenceResult> Delete(IReferencable<VosReference> referencable) => throw new System.NotImplementedException();
-        public Task<IRetrieveResult<IEnumerable<string>>> List(IReferencable<VosReference> referencable, ListFilter filter = null) => throw new NotImplementedException();
+        public Task<IPersistenceResult> Create<TValue>(IReferencable<IVosReference> referencable, TValue value) => throw new System.NotImplementedException();
+        public Task<IPersistenceResult> Update<TValue>(IReferencable<IVosReference> referencable, TValue value) => throw new System.NotImplementedException();
+        public Task<IPersistenceResult> Upsert<TValue>(IReferencable<IVosReference> referencable, TValue value) => throw new System.NotImplementedException();
+        public Task<IPersistenceResult> Delete(IReferencable<IVosReference> referencable) => throw new System.NotImplementedException();
+        public Task<IRetrieveResult<IEnumerable<string>>> List(IReferencable<IVosReference> referencable, ListFilter filter = null) => throw new NotImplementedException();
     }
 }

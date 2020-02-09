@@ -10,7 +10,7 @@ namespace LionFire.Referencing
     {
         public static string Name(this IReference reference) => LionPath.GetName(reference.Path);
 
-        public static IReference<T> OfType<T>(this IReference reference) => new TypedReference<T>(reference);
+        public static ITypedReference<T> OfType<T>(this IReference reference) => new TypedReference<T>(reference); // TODO: return IReference instead of this simplistic wrapper
 
         #region GetChild
 

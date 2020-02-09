@@ -9,21 +9,12 @@ using System.IO;
 using LionFire.Execution;
 using System.Linq;
 using Microsoft.Extensions.Options;
-using LionFire.Persistence.Persisters;
 
 namespace LionFire.Persistence.AutoExtensionFilesystem
 {
-#warning NEXT: determining candidate paths should be an async.  But I am not sure I want to unwrap a Task.FromResult(singlePath) for the simple case.
-
-    public class PersisterOverlay<TReference, TOptions, TUnderlyingPersister> : PersisterBase<TOptions>
-        where TReference : IReference
-        where TOptions : PersistenceOptions
-    {
-
-    }
 
     public class AutoExtensionFilesystemPersister
-        : PersisterOverlay<AutoExtensionFileReference, AutoExtensionFilesystemPersisterOptions, FilesystemPersister>
+        : OverlayPersister<AutoExtensionFileReference, AutoExtensionFilesystemPersisterOptions, FilesystemPersister>
     {
 
         #region Construction

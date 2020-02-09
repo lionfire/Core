@@ -1,6 +1,8 @@
-﻿using System.Collections.Generic;
+﻿using LionFire.Assets;
+using LionFire.Referencing;
+using System.Collections.Generic;
 
-namespace LionFire.Vos
+namespace LionFire.Vos.Assets
 {
 #if TOOPTIMIZE // OPTIMIZE ideas:
     //  - VosPathChunksReference
@@ -19,7 +21,9 @@ namespace LionFire.Vos
 #endif
 
     // Persister: VobRootName or ::VobRootName#AssetCollectionName or #AssetCollectionName
-    public class AssetReference<TValue> : VosReferenceBase<TValue, AssetReference<TValue>>
+
+ 
+    public class VobAssetReference<TValue> : VosReferenceBase<TValue, VobAssetReference<TValue>>, IAssetReference
     {
         #region Scheme
 

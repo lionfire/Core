@@ -6,9 +6,10 @@ using LionFire.Referencing;
 
 namespace LionFire.Vos
 {
-    public abstract class VosReferenceBase<TValue, TConcrete> : VosReferenceBase<TConcrete>, IVosReference
+    public abstract class VosReferenceBase<TValue, TConcrete> : VosReferenceBase<TConcrete>, IVosReference, ITypedReference
      where TConcrete : VosReferenceBase<TValue, TConcrete>
     {
+        public override Type Type => typeof(TValue);
     }
 
     public abstract class VosReferenceBase<TConcrete> : ReferenceBase<TConcrete>, IVosReference
@@ -22,7 +23,6 @@ namespace LionFire.Vos
         #region Constructors
 
         public VosReferenceBase() { }
-
 
         public VosReferenceBase(string path, ImmutableList<KeyValuePair<string, string>> filters = null)
         {
@@ -115,8 +115,8 @@ namespace LionFire.Vos
                     sb.Append(Path);
                 }
 
-                this.AppendFilterKey(VosFilters.Layer.ToString(), "|", sb);
-                this.AppendFilterKey(VosFilters.Location.ToString(), "^", sb);
+                (this).AppendFilterKey(VosFilters.Layer.ToString(), "|", sb);
+                (this).AppendFilterKey(VosFilters.Location.ToString(), "^", sb);
 
                 return sb.ToString();
             }
@@ -214,6 +214,8 @@ namespace LionFire.Vos
         //public string Location { get; set; }
 
         #endregion
+
+        public IVosReference Reference => this;
 
         #region Misc
 

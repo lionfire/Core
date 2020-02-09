@@ -22,9 +22,7 @@ namespace LionFire.Referencing
         string Path { get; }
     }
 
-    public interface IReference<T> // REVIEW - is this type helpful?  If so, document what T is for here
+    public interface IReference<TValue> : IReference
     {
-        IReference Reference { get; }
     }
-
 }
