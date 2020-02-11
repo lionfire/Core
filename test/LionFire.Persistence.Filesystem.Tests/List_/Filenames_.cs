@@ -85,8 +85,8 @@ namespace List_
         public async void P_Files() => await P_Common(ExpectedFiles, new ListFilter { Flags = ItemFlags.File });
         [Fact]
         public async void P_Dirs() => await P_Common(ExpectedDirs, new ListFilter { Flags = ItemFlags.Directory });
-        [Fact]
-        public async void P_Hidden() => await P_Common(ExpectedHidden, new ListFilter { Flags = ItemFlags.Hidden });
+        //[Fact]
+        //public async void P_Hidden() => await P_Common(ExpectedHidden, new ListFilter { Flags = ItemFlags.Hidden });
         //[Fact]
         //public async void P_Meta() => await P_Common(ExpectedMeta, new ListFilter { Flags = ItemFlags.Meta });
         //[Fact]

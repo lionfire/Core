@@ -24,22 +24,15 @@ namespace LionFire.Persistence.Assets.Tests
         [Fact]
         public async void P_GetReadHandle()
         {
-
+#error NEXT
             await AssetTestBuilder.Create()
-
                 .ConfigureServices((context, services) =>
                 {
                     services
-                        .AddAssetPersister()
+                        .AddAssets()
+                        .AddAssetPersister() // Default location: root of default vob tree
                         ;
-                    //services
-                    //.InitializeRootVob(root =>
-                    //{
-                    //    root
-                    //})
-                    //;
                 })
-                //.Build()
                 .RunAsync( () =>
                {
                    var path = FsTestUtils.TestFile + ".json";

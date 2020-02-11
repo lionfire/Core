@@ -1,11 +1,13 @@
 ﻿using LionFire.Dependencies;
 using LionFire.ExtensionMethods;
+using LionFire.Ontology;
 using LionFire.Referencing;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.Reflection;
 
 namespace LionFire.Persistence.Handles
 {
@@ -25,6 +27,12 @@ namespace LionFire.Persistence.Handles
     /// </design>
     public class ReferenceToHandleService : IReferenceToHandleService
     {
+
+        ConcurrentDictionary<Type, Type> LookupTypes { get; } = new ConcurrentDictionary<Type, Type>();
+
+        private Type GetLookupType(Type type) => LookupTypes.GetOrAdd(type, t => type.GetCustomAttribute<TreatAsAttribute>()?.Type ?? type);
+
+
         //public static IReferenceToHandleService Current => DependencyLocator.TryGet<IReferenceToHandleService>();
 
         //IOptionsFactory<NamedHandleProviderConfig> optionsFactory;
@@ -51,17 +59,16 @@ namespace LionFire.Persistence.Handles
             //else
             {
                 return ServiceProvider.GetRequiredService<IReadHandleProvider<TReference>>(typeof(IReadHandleProvider<TReference>));
-
             }
         }
         public IReadHandleProvider GetReadHandleProvider(IReference input)
         {
             // Question: Handle named providers here, or let each provider type do it?
-            return ServiceProvider.GetRequiredService<IReadHandleProvider>(typeof(IReadHandleProvider<>).MakeGenericType(input.GetType()));
+            return ServiceProvider.GetRequiredService<IReadHandleProvider>(typeof(IReadHandleProvider<>).MakeGenericType(GetLookupType(input.GetType())));
         }
 
         public IReadWriteHandleProvider GetReadWriteHandleProvider(IReference input)
-            => ServiceProvider.GetRequiredService<IReadWriteHandleProvider>(typeof(IReadWriteHandleProvider<>).MakeGenericType(input.GetType()));
+            => ServiceProvider.GetRequiredService<IReadWriteHandleProvider>(typeof(IReadWriteHandleProvider<>).MakeGenericType(GetLookupType(input.GetType())));
 
         //if (handleProviders.TryGetValue(input.GetType(), out IReadWriteHandleProvider result))
         //{
@@ -76,10 +83,10 @@ namespace LionFire.Persistence.Handles
         //}
 
         public IWriteHandleProvider GetWriteHandleProvider(IReference input)
-                    => ServiceProvider.GetRequiredService<IWriteHandleProvider>(typeof(IWriteHandleProvider<>).MakeGenericType(input.GetType()));
+                    => ServiceProvider.GetRequiredService<IWriteHandleProvider>(typeof(IWriteHandleProvider<>).MakeGenericType(GetLookupType(input.GetType())));
 
         public ICollectionHandleProvider GetCollectionHandleProvider(IReference input)
-            => ServiceProvider.GetRequiredService<ICollectionHandleProvider>(typeof(ICollectionHandleProvider<>).MakeGenericType(input.GetType()));
+            => ServiceProvider.GetRequiredService<ICollectionHandleProvider>(typeof(ICollectionHandleProvider<>).MakeGenericType(GetLookupType(input.GetType())));
 
         public IReadHandleCreator GetReadHandleCreator(IReference input) => throw new NotImplementedException();
         public IReadHandleCreator<TReference> GetReadHandleCreator<TReference>(TReference input) where TReference : IReference => throw new NotImplementedException();

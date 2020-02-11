@@ -1,0 +1,46 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netstandard2.0</TargetFramework>
+    <AssemblyName>LionFire.Assets</AssemblyName>
+    <PackageId>LionFire.Assets</PackageId>
+    <GenerateAssemblyConfigurationAttribute>false</GenerateAssemblyConfigurationAttribute>
+    <GenerateAssemblyCompanyAttribute>false</GenerateAssemblyCompanyAttribute>
+    <GenerateAssemblyProductAttribute>false</GenerateAssemblyProductAttribute>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\..\StateMachines\src\LionFire.StateMachines\LionFire.StateMachines.csproj" />
+    <ProjectReference Include="..\LionFire.Applications.Abstractions\LionFire.Applications.Abstractions.csproj" />
+    <ProjectReference Include="..\LionFire.Base\LionFire.Base.csproj" />
+    <ProjectReference Include="..\LionFire.Core.Extras.Abstractions\LionFire.Core.Extras.Abstractions.csproj" />
+    <ProjectReference Include="..\LionFire.Core\LionFire.Core.csproj" />
+    <ProjectReference Include="..\LionFire.Environment\LionFire.Environment.csproj" />
+    <ProjectReference Include="..\LionFire.Persistence.Filesystem\LionFire.Persistence.Filesystem.csproj" />
+    <ProjectReference Include="..\LionFire.Persistence.Handles\LionFire.Persistence.Handles.csproj" />
+    <ProjectReference Include="..\LionFire.Instantiating.Abstractions\LionFire.Instantiating.Abstractions.csproj" />
+    <ProjectReference Include="..\LionFire.Assets.Abstractions\LionFire.Assets.AbstractionsOld.csproj" />
+    <ProjectReference Include="..\LionFire.Instantiating\LionFire.Instantiating.csproj" />
+    <ProjectReference Include="..\LionFire.Referencing.Abstractions\LionFire.Referencing.Abstractions.csproj" />
+    <ProjectReference Include="..\LionFire.Referencing\LionFire.Referencing.csproj" />
+    <ProjectReference Include="..\LionFire.Structures\LionFire.Structures.csproj" />
+    <ProjectReference Include="..\LionFire.Vos.Abstractions\LionFire.Vos.Abstractions.csproj" />
+    <ProjectReference Include="..\LionFire.Vos\LionFire.Vos.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Newtonsoft.Json" Version="12.0.2" />
+    <PackageReference Include="System.IO.FileSystem" Version="4.3.0" />
+    <PackageReference Include="System.IO.FileSystem.Watcher" Version="4.3.0" />
+    <PackageReference Include="System.Reflection" Version="4.3.0" />
+    <PackageReference Include="System.Reflection.Extensions" Version="4.3.0" />
+    <PackageReference Include="System.Reflection.TypeExtensions" Version="4.6.0" />
+    <PackageReference Include="System.Threading.Thread" Version="4.3.0" />
+  </ItemGroup>
+
+
+  <ItemGroup>
+    <Folder Include="FileSystem\Providers\" />
+  </ItemGroup>
+
+</Project>

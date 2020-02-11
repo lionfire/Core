@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.Extensions.Logging;
+using System;
 using System.Windows.Threading;
 
 namespace LionFire.Bindings.Windows
@@ -51,7 +52,7 @@ namespace LionFire.Bindings.Windows
                     }
                     catch (Exception ex)
                     {
-                        l.Error(node.ToString() + ": SetMethod threw exception: " + ex);
+                        l.LogError(node.ToString() + ": SetMethod threw exception: " + ex);
                     }
                 }
                       ));
@@ -64,9 +65,11 @@ namespace LionFire.Bindings.Windows
                 }
                 catch (Exception ex)
                 {
-                    l.Error(node.ToString() + ": SetMethod threw exception: " + ex);
+                    l.LogError(node.ToString() + ": SetMethod threw exception: " + ex);
                 }
             }
         }
+
+        public static ILogger l = Log.Get();
     }
 }

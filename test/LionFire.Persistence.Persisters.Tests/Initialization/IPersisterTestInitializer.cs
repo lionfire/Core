@@ -5,7 +5,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using System;
 
-namespace UniversalPersister_
+namespace LionFire.Persistence
 {
     public interface IPersisterTestInitializer
     {

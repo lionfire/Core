@@ -22,8 +22,9 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\src\LionFire.Assets2\LionFire.Assets2.csproj" />
-    <ProjectReference Include="..\..\src\LionFire.Persistence.Assets\LionFire.Vos.Assets.csproj" />
+    <ProjectReference Include="..\..\src\LionFire.Assets.Abstractions\LionFire.Assets.Abstractions.csproj" />
+    <ProjectReference Include="..\..\src\LionFire.Assets\LionFire.Assets.csproj" />
+    <ProjectReference Include="..\..\src\LionFire.Vos.Assets\LionFire.Vos.Assets.csproj" />
     <ProjectReference Include="..\..\src\LionFire.Vos\LionFire.Vos.csproj" />
     <ProjectReference Include="..\LionFire.Persistence.Testing\LionFire.Persistence.Testing.csproj" />
   </ItemGroup>

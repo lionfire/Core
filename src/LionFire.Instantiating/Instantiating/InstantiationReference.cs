@@ -19,8 +19,8 @@ namespace LionFire.Instantiating
 
         public override string Scheme => throw new NotImplementedException();
 
-        public override string Host { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
-        public override string Port { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
+        //public override string Host { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
+        //public override string Port { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
         public override string Key { get => throw new NotImplementedException(); protected set => throw new NotImplementedException(); }
         public override string Path { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
     }

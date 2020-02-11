@@ -20,36 +20,37 @@ namespace LionFire.Applications.Hosting
         public static IAppHost Add<T,TInstance>(this IAppHost host, string assetSubpath, Action<TInstance> initializer)
             where T : class, ITemplate
         {
-            var sp = ManualSingleton<IServiceProvider>.Instance;
-            if (sp == null)
-            {
-                throw new InvalidOperationException("ManualSingleton<IServiceProvider>.Instance must be set.  Application must be bootstrapped or initialized before invoking this method.");
-            }
+            throw new NotImplementedException("TODO: IAssetProvider");
+            //var sp = ManualSingleton<IServiceProvider>.Instance;
+            //if (sp == null)
+            //{
+            //    throw new InvalidOperationException("ManualSingleton<IServiceProvider>.Instance must be set.  Application must be bootstrapped or initialized before invoking this method.");
+            //}
 
-            var ap = (IAssetProvider)sp.GetService(typeof(IAssetProvider));
-            if (ap == null)
-            {
-                throw new InvalidOperationException("No IAssetProvider is registered.  One must be registered in order to retrieve the asset using this method.");
-            }
+            //var ap = (IAssetProvider)sp.GetService(typeof(IAssetProvider));
+            //if (ap == null)
+            //{
+            //    throw new InvalidOperationException("No IAssetProvider is registered.  One must be registered in order to retrieve the asset using this method.");
+            //}
 
-            var template = ap.Load<T>(assetSubpath).Result;
+            //var template = ap.Load<T>(assetSubpath).Result;
 
-            if (template == null) throw new ArgumentException($"Failed to load: \"{assetSubpath}\" of type '{typeof(T).FullName}'");
+            //if (template == null) throw new ArgumentException($"Failed to load: \"{assetSubpath}\" of type '{typeof(T).FullName}'");
 
-            var templateInstance = template.Create();
+            //var templateInstance = template.Create();
 
-            if (initializer != null) { initializer((TInstance)templateInstance); }
+            //if (initializer != null) { initializer((TInstance)templateInstance); }
 
-            //var appComponent = templateInstance as IAppComponent;
+            ////var appComponent = templateInstance as IAppComponent;
 
-                //if (appComponent == null)
-                //{
-                //    throw new ArgumentException($"Created object of type '{templateInstance.GetType().FullName}' does not implement IAppComponent.  There is no implementation available for adding it to the IAppHost.");
-                //}
+            //    //if (appComponent == null)
+            //    //{
+            //    //    throw new ArgumentException($"Created object of type '{templateInstance.GetType().FullName}' does not implement IAppComponent.  There is no implementation available for adding it to the IAppHost.");
+            //    //}
 
-                host.Add(templateInstance);
+            //    host.Add(templateInstance);
 
-            return host;
+            //return host;
         }
 
     }

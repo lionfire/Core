@@ -2,7 +2,7 @@
 
 namespace LionFire.ObjectBus.RethinkDB
 {
-    public class RethinkOBase : 
-    {
-    }
+    //public class RethinkOBase : 
+    //{
+    //}
 }

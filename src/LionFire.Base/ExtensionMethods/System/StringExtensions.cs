@@ -26,5 +26,7 @@ namespace LionFire.ExtensionMethods
             }
             return str;
         }
+
+        public static bool IsNullOrWhiteSpace(this string str) => string.IsNullOrWhiteSpace(str);
     }
 }

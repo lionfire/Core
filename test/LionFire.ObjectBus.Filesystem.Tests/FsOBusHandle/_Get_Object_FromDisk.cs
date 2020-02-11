@@ -21,51 +21,53 @@ namespace Handle
 {
     public class _Get_Object_FromDisk
     {
-        [Fact]
-        public async void Pass_WithoutExtension() => await _Pass(withExtension: false);
-        [Fact]
-        public async void Pass_WithExtension() => await _Pass(withExtension: true);
+            // TODO
 
-        private async Task _Pass(bool withExtension)
-        {
-            var host = FilesystemTestHost.Create(
-                //serializers: s => s.AddJson()
-                );
+        //[Fact]
+        //public async void Pass_WithoutExtension() => await _Pass(withExtension: false);
+        //[Fact]
+        //public async void Pass_WithExtension() => await _Pass(withExtension: true);
 
-            if(!withExtension)
-            {
-                host.ConfigureServices(services=> services.AddExtensionlessFSOBus();
-            }
+        //private async Task _Pass(bool withExtension)
+        //{
+        //    var host = FilesystemTestHost.Create(
+        //        //serializers: s => s.AddJson()
+        //        );
 
-            await host
-                    .AddObjectBus<FSOBus>()                    
-                    .Run(() =>
-                    {
-                        var pathWithoutExtension = FsTestUtils.TestFile;
-                        var path = pathWithoutExtension + ".json";
+        //    if(!withExtension)
+        //    {
+        //        host.ConfigureServices(services=> services.AddExtensionlessFSOBus());
+        //    }
 
-                        File.WriteAllText(path, PersistenceTestUtils.TestClass1Json);
+        //    await host
+        //            .AddObjectBus<FSOBus>()                    
+        //            .Run(() =>
+        //            {
+        //                var pathWithoutExtension = FsTestUtils.TestFile;
+        //                var path = pathWithoutExtension + ".json";
 
-                        IReference reference;
-                        if (withExtension)
-                        {
-                            reference = new FileReference(path);
-                        }
-                        else
-                        {                            
-                            reference = new ExtensionlessFileReference(pathWithoutExtension); 
-                        }
+        //                File.WriteAllText(path, PersistenceTestUtils.TestClass1Json);
 
-                        var h = reference.ToHandle<TestClass1>();
+        //                IReference reference;
+        //                if (withExtension)
+        //                {
+        //                    reference = new FileReference(path);
+        //                }
+        //                else
+        //                {                            
+        //                    reference = new ExtensionlessFileReference(pathWithoutExtension); 
+        //                }
 
-                        var obj = h.Value; // --------------- Object
+        //                var h = reference.ToHandle<TestClass1>();
 
-                        Assert.NotNull(obj);
-                        Assert.IsType<TestClass1>(obj);
-                        FsTestUtils.AssertEqual(TestClass1.Create, obj);
+        //                var obj = h.Value; // --------------- Object
 
-                        FsTestUtils.CleanPath(path);
-                    });
-        }
+        //                Assert.NotNull(obj);
+        //                Assert.IsType<TestClass1>(obj);
+        //                FsTestUtils.AssertEqual(TestClass1.Create, obj);
+
+        //                FsTestUtils.CleanPath(path);
+        //            });
+        //}
     }
 }

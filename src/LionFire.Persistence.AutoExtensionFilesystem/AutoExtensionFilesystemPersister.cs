@@ -9,6 +9,7 @@ using System.IO;
 using LionFire.Execution;
 using System.Linq;
 using Microsoft.Extensions.Options;
+using LionFire.Persistence.Persisters;
 
 namespace LionFire.Persistence.AutoExtensionFilesystem
 {
@@ -54,7 +55,10 @@ namespace LionFire.Persistence.AutoExtensionFilesystem
                           millisecondsBetweenAttempts: PersistenceOptions.MillisecondsBetweenGetRetries).ConfigureAwait(false);
         }
 
-        public virtual async Task<IRetrieveResult<TValue>> RetrieveUsingCandidatePaths<TValue>(TReference reference, Lazy<PersistenceOperation> operation = null, PersistenceContext context = null)
+        
+
+
+        public virtual async Task<IRetrieveResult<TValue>> RetrieveUsingCandidatePaths<TValue>(AutoExtensionFileReference reference, Lazy<PersistenceOperation> operation = null, PersistenceContext context = null)
         {
             var type = reference.ReferenceType() ?? typeof(TValue);
             var fsPath = reference.Path;

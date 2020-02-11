@@ -21,6 +21,10 @@ namespace LionFire.Persistence.Handles
         /// <typeparam name="T"></typeparam>
         /// <param name="reference"></param>
         /// <returns></returns>
+        /// <remarks>
+        /// Example implementation:
+        ///   IReadHandle<T> IReadHandleProvider.GetReadHandle<T>(IReference reference) => (reference is FileReference fileReference) ? GetReadHandle<T>(fileReference) : null;
+        /// </remarks>
         IReadHandle<T> GetReadHandle<T>(IReference reference);
     }
 

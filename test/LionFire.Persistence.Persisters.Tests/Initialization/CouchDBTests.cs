@@ -7,8 +7,9 @@ using LionFire.CouchDB;
 using LionFire.Services;
 using LionFire.Referencing;
 using System;
+using LionFire.Persistence;
 
-namespace UniversalPersister_
+namespace LionFire
 {
     public class CouchDBTests : IPersisterTestInitializer
     {

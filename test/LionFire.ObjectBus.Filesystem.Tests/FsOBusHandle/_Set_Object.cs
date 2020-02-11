@@ -15,6 +15,8 @@ using LionFire.Persistence;
 using LionFire.Persistence.Filesystem.Tests;
 using LionFire.Referencing;
 using Xunit;
+using LionFire;
+using LionFire.Persistence.Filesystem;
 
 namespace Handle
 {
@@ -60,9 +62,8 @@ namespace Handle
                 host.AddObjectBus<ExtensionlessFSOBus>();
             }
 
-            await host
-                .AddObjectBus<FSOBus>()
-                .Run(async () =>
+            await FilesystemTestHost.Create()
+                .RunAsync(async () =>
                 {
                     var extension = ".json";
                     var pathWithoutExtension = FsTestUtils.TestFile;
@@ -77,7 +78,7 @@ namespace Handle
                     }
                     else
                     {
-                        reference = new ExtensionlessFileReference(savePath);
+                        reference = new AutoExtensionFileReference(savePath);
                     }
 
                     var h = reference.ToHandle<TestClass1>();

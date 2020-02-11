@@ -41,4 +41,11 @@ namespace LionFire.Persistence.Filesystem
 
 
     }
+
+    public static class IReadHandleProviderExtensions
+    {
+        public static IReadHandle<TValue> GetReadHandle<TValue, TReference>(this IReadHandleProvider<TReference> readHandleProvider, IReference reference)
+            where TReference : IReference
+            => (reference is TReference concreteReference) ? readHandleProvider.GetReadHandle<TValue>(concreteReference) : null;
+    }
 }

@@ -11,6 +11,7 @@ namespace LionFire.Persistence.Persisters
         }
 
         IReadHandle<T> IReadHandleProvider<TReference>.GetReadHandle<T>(TReference reference) => throw new System.NotImplementedException();
-        IReadHandle<T> IReadHandleProvider.GetReadHandle<T>(IReference reference) => throw new System.NotImplementedException();
+        IReadHandle<T> IReadHandleProvider.GetReadHandle<T>(IReference reference) => (reference is TReference tReference) ? GetReadHandle<T>(tReference) : null;
+
     }
 }

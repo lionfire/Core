@@ -6,8 +6,9 @@ using Microsoft.Extensions.DependencyInjection;
 using LionFire.Services;
 using LionFire.Referencing;
 using System;
+using LionFire.Persistence;
 
-namespace UniversalPersister_
+namespace LionFire
 {
     public class FileTests : IPersisterTestInitializer
     {
