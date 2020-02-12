@@ -1,4 +1,5 @@
-﻿using LionFire.Persistence.Handles;
+﻿#nullable enable
+using LionFire.Persistence.Handles;
 using LionFire.Persistence.Persisters;
 using LionFire.Referencing;
 
@@ -24,11 +25,11 @@ namespace LionFire.Persistence.Filesystem
 
         public IReadHandle<T> GetReadHandle<T>(FileReference reference)
             => new PersisterReadHandle<FileReference, T, IPersister<FileReference>>(persister, reference);
-        IReadHandle<T> IReadHandleProvider.GetReadHandle<T>(IReference reference) => (reference is FileReference fileReference) ? GetReadHandle<T>(fileReference) : null;
+        IReadHandle<T>? IReadHandleProvider.GetReadHandle<T>(IReference reference) => (reference is FileReference fileReference) ? GetReadHandle<T>(fileReference) : null;
 
         public IReadWriteHandle<T> GetReadWriteHandle<T>(FileReference reference)
             => new PersisterReadWriteHandle<FileReference, T, IPersister<FileReference>>(persister, reference);
-        IReadWriteHandle<T> IReadWriteHandleProvider.GetReadWriteHandle<T>(IReference reference) => (reference is FileReference fileReference) ? GetReadWriteHandle<T>(fileReference) : null;
+        IReadWriteHandle<T>? IReadWriteHandleProvider.GetReadWriteHandle<T>(IReference reference) => (reference is FileReference fileReference) ? GetReadWriteHandle<T>(fileReference) : null;
 
         public IReadHandle<T> GetReadHandle<T>(ProviderFileReference reference)
             => new PersisterReadWriteHandle<ProviderFileReference, T, IPersister<ProviderFileReference>>(providerFilePersisterProvider.GetPersister(reference.Persister), reference);

@@ -40,6 +40,7 @@ namespace LionFire.Vos
 
         public static void AppendFilterKey(this IVosReference vosReference, string filterName, string prefix, StringBuilder sb)
         {
+            if (vosReference.Filters == null) return;
             bool isFirst = true;
             foreach (var kvp in vosReference.Filters)
             {

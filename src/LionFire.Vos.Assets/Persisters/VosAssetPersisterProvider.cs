@@ -32,10 +32,4 @@ namespace LionFire.Vos.Assets.Persisters
         /// <returns></returns>
         public IPersister<IAssetReference> GetPersister(string name = null) => RootManager.GetVob(name).GetOwn<VosAssetPersister>();
     }
-
-    //public class VAssetPersister
-    //{
-    //    public Vob AssetRoot { get; private set; }
-    //    public IPersister<ITypedReference> Persister { get; private set; }
-    //}
 }

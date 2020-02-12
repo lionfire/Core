@@ -1,4 +1,5 @@
-﻿using LionFire.Referencing;
+﻿#nullable enable
+using LionFire.Referencing;
 
 namespace LionFire.Persistence.Handles
 {
@@ -15,7 +16,7 @@ namespace LionFire.Persistence.Handles
 
     public interface IReadWriteHandleProvider
     {
-        IReadWriteHandle<T> GetReadWriteHandle<T>(IReference reference);
+        IReadWriteHandle<T>? GetReadWriteHandle<T>(IReference reference);
     }
 
     public interface IReadWriteHandleProvider<TReference>

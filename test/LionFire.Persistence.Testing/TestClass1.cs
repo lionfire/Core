@@ -1,5 +1,6 @@
 ﻿namespace LionFire.Persistence.Testing
 {
+ 
     public class TestClass1
     {
 

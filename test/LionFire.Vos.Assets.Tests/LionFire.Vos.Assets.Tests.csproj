@@ -11,6 +11,7 @@
     <PackageReference Include="Microsoft.Extensions.Hosting.Abstractions" Version="3.1.1" />
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="16.5.0" />
     <PackageReference Include="xunit" Version="2.4.1" />
+    <PackageReference Include="DeepEqual" Version="2.0.0" />
     <PackageReference Include="xunit.runner.visualstudio" Version="2.4.1">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
@@ -24,6 +25,7 @@
   <ItemGroup>
     <ProjectReference Include="..\..\src\LionFire.Assets.Abstractions\LionFire.Assets.Abstractions.csproj" />
     <ProjectReference Include="..\..\src\LionFire.Assets\LionFire.Assets.csproj" />
+    <ProjectReference Include="..\..\src\LionFire.Persistence.Filesystem\LionFire.Persistence.Filesystem.csproj" />
     <ProjectReference Include="..\..\src\LionFire.Vos.Assets\LionFire.Vos.Assets.csproj" />
     <ProjectReference Include="..\..\src\LionFire.Vos\LionFire.Vos.csproj" />
     <ProjectReference Include="..\LionFire.Persistence.Testing\LionFire.Persistence.Testing.csproj" />

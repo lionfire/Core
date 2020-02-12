@@ -19,7 +19,12 @@ namespace LionFire.Vos.Assets.Handles
         }
 
         public IReadHandle<T> GetReadHandle<T>(IAssetReference reference)
-            => new PersisterReadHandle<IAssetReference, T, VosAssetPersister>((VosAssetPersister)PersisterProvider.GetPersister(reference.Persister), reference);
+        {
+            var persister = (VosAssetPersister)PersisterProvider.GetPersister(reference.Persister);
+            if (persister == null) throw new NotFoundException($"Could not find AssetPersister at '{reference.Persister}'");
+
+            return new PersisterReadHandle<IAssetReference, T, VosAssetPersister>(persister, reference);
+        }
         public IReadHandle<T> GetReadHandle<T>(IReference reference)
             => reference is IAssetReference iar ? GetReadHandle<T>(iar) : null;
 

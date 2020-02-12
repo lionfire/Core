@@ -1,4 +1,5 @@
-﻿using System;
+﻿#nullable enable
+using System;
 using System.Collections.Generic;
 using LionFire.Referencing;
 using LionFire.Vos;
@@ -9,10 +10,10 @@ namespace LionFire.Services
     public class VobInitializer
     {
         public IVosReference Reference { get; }
-        public Func<IServiceProvider, IVob, object> InitializationAction { get; set; }
+        public Func<IServiceProvider, IVob, object?> InitializationAction { get; set; }
 
-        public IEnumerable<string> Prerequisites { get; set; }
-        public IEnumerable<string> Provides { get; set; }
+        public IEnumerable<string>? Prerequisites { get; set; }
+        public IEnumerable<string>? Provides { get; set; }
         #region Construction
 
         #region IVob
@@ -23,7 +24,7 @@ namespace LionFire.Services
         /// Targets Root Vob of default Root
         /// </summary>
         /// <param name="initializationAction"></param>
-        public VobInitializer(IVosReference reference, Func<IServiceProvider, IVob, object> initializationAction)
+        public VobInitializer(IVosReference reference, Func<IServiceProvider, IVob, object?> initializationAction)
         {
             Reference = reference;
             InitializationAction = initializationAction;

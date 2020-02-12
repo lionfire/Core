@@ -28,8 +28,8 @@ namespace LionFire.Vos
 
         #region State
 
-        RootVob? namelessRootVob;
-        ConcurrentDictionary<string, RootVob> roots = new ConcurrentDictionary<string, RootVob>();
+        //RootVob? namelessRootVob;
+        ConcurrentDictionary<string, RootVob?> roots = new ConcurrentDictionary<string, RootVob?>();
 
         #endregion
 
@@ -40,25 +40,31 @@ namespace LionFire.Vos
             this.vosOptions = vosOptionsMonitor.CurrentValue;
             VosInitializer = vosInitializer;
 
-            InitializeAll();
+            //InitializeAll();
         }
 
-        private void InitializeAll()
+        //private void InitializeAll()
+        //{
+        //    foreach (var rootName in vosOptions.RootNames.Distinct())
+        //    {
+        //        var rootVob = new RootVob(this, rootName, this.vosOptions);
+        //        if (rootName == "")
+        //        {
+        //            namelessRootVob = rootVob;
+        //        }
+        //        else
+        //        {
+        //            roots.TryAdd(rootName, rootVob);
+        //        }
+        //        VosInitializer.Initialize(rootVob);
+        //        rootVob.InitializeMounts();
+        //    }
+        //}
+
+        private void Initialize(RootVob rootVob)
         {
-            foreach (var rootName in vosOptions.RootNames.Distinct())
-            {
-                var rootVob = new RootVob(this, rootName, this.vosOptions);
-                if (rootName == "")
-                {
-                    namelessRootVob = rootVob;
-                }
-                else
-                {
-                    roots.TryAdd(rootName, rootVob);
-                }
-                VosInitializer.Initialize(rootVob);
-                rootVob.InitializeMounts();
-            }
+            VosInitializer.Initialize(rootVob);
+            rootVob.InitializeMounts();
         }
 
         #endregion
@@ -68,14 +74,21 @@ namespace LionFire.Vos
         IRootVob? IRootManager.Get(string? rootName) => Get(rootName);
         public RootVob? Get(string? rootName = null)
         {
-            if (rootName == null || rootName == "")
+            //if (rootName == null || rootName == "")
+            //{
+            //    return namelessRootVob; // Might be null
+            //}
+            if (rootName == null) rootName = "";
+
+            if (roots == null) roots = new ConcurrentDictionary<string, RootVob?>();
+
+            return roots.GetOrAdd(rootName, n =>
             {
-                return namelessRootVob; // Might be null
-            }
-
-            if (roots == null) roots = new ConcurrentDictionary<string, RootVob>();
-
-            return roots.GetOrAdd(rootName, n => new RootVob(this, n, vosOptions));
+                if (!vosOptions.RootNames.Contains(n)) return null;
+                var root = new RootVob(this, n, vosOptions);
+                Initialize(root);
+                return root;
+            });
         }
 
         #endregion

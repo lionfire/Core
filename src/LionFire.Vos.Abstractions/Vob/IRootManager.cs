@@ -13,7 +13,7 @@ namespace LionFire.Vos
         IRootVob? Get(string? rootName = null);
     }
 
-    public static class IRootManageExtensions
+    public static class IRootManagerExtensions
     {
         // OPTIMIZE - make this a method in IRootManager to avoid traversing to the unnamed IRootVob (which may not exist) and then back to the root manager using the /../rootName/... syntax.
         public static IVob? GetVob(this IRootManager rootManager, string vobPath) => rootManager.Get(null)?[vobPath];

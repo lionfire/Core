@@ -21,6 +21,7 @@ namespace LionFire.Services
             services
                 .AddSingleton<IReadHandleProvider<IAssetReference>, VosAssetHandleProvider>()
                 .AddSingleton<IReadWriteHandleProvider<IAssetReference>, VosAssetHandleProvider>()
+                .VobEnvironment("assets", "assets")
 
                 .Configure<VosAssetOptions>(o => { })
                 .AddSingleton(s => s.GetService<IOptionsMonitor<VosAssetOptions>>()?.CurrentValue)
@@ -34,14 +35,14 @@ namespace LionFire.Services
             ;
             return services;
         }
-      
+
         public static IServiceCollection AddAssetPersister(this IServiceCollection services, VosAssetOptions options = null, IVosReference contextVob = null)
         {
-            services.InitializeVob(contextVob, (serviceProvider, vob) =>
+            services.InitializeVob(contextVob ?? "".ToVosReference(), (serviceProvider, vob) =>
             {
-                vob.AddOwn<IPersister<IAssetReference>>(v =>
+                vob.AddOwn<VosAssetPersister>(v =>
                 {
-                    return (VosAssetPersister)ActivatorUtilities.CreateInstance(serviceProvider, typeof(VosAssetPersister), options);
+                    return (VosAssetPersister)ActivatorUtilities.CreateInstance(serviceProvider, typeof(VosAssetPersister), options ?? new VosAssetOptions());
                 });
             });
             return services;

@@ -1,4 +1,5 @@
-﻿using LionFire.Referencing;
+﻿#nullable enable
+using LionFire.Referencing;
 
 namespace LionFire.Persistence.Handles
 {
@@ -25,7 +26,7 @@ namespace LionFire.Persistence.Handles
         /// Example implementation:
         ///   IReadHandle<T> IReadHandleProvider.GetReadHandle<T>(IReference reference) => (reference is FileReference fileReference) ? GetReadHandle<T>(fileReference) : null;
         /// </remarks>
-        IReadHandle<T> GetReadHandle<T>(IReference reference);
+        IReadHandle<T>? GetReadHandle<T>(IReference reference);
     }
 
     //[AutoRegister]

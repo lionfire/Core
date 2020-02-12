@@ -15,7 +15,7 @@ namespace LionFire.Persistence.Handles
 
     public interface IWriteHandleProvider
     {
-        IWriteHandle<T> GetWriteHandle<T>(IReference reference, T handleObject = default);
+        IWriteHandle<T>? GetWriteHandle<T>(IReference reference, T handleObject = default);
     }
 
     public interface IWriteHandleProvider<TReference>

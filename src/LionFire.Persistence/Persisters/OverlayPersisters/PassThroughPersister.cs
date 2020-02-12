@@ -16,7 +16,20 @@ namespace LionFire.Persistence.Persisters
         public abstract TUnderlyingReference TranslateReference(TReference reference);
         public virtual TReference ReverseTranslateReference(TUnderlyingReference reference) => throw new NotSupportedException();
 
-        public TUnderlyingPersister UnderlyingPersister { get; protected set; }
+        public TUnderlyingPersister UnderlyingPersister
+        {
+            get
+            {
+                if (underlyingPersister == null)
+                {
+                    underlyingPersister = GetUnderlyingPersister;
+                }
+                return underlyingPersister;
+            }
+            protected set { underlyingPersister = value; }
+        }
+        private TUnderlyingPersister underlyingPersister;
+        protected abstract TUnderlyingPersister GetUnderlyingPersister { get; }
 
 
         public Task<IPersistenceResult> Create<TValue>(IReferencable<TReference> referencable, TValue value)

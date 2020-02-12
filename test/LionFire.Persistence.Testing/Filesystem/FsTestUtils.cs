@@ -23,6 +23,7 @@ namespace LionFire.Persistence.Filesystem.Tests
         }
 
         public static string TestFile => Path.Combine(DataDir, "UnitTest " + Guid.NewGuid().ToString());
+        public static string TestFileName => "UnitTest " + Guid.NewGuid().ToString();
         public static string TestFileForDir(string dir) => Path.Combine(dir, "UnitTest " + Guid.NewGuid().ToString());
 
         public static void CleanPath(string path)
