@@ -302,7 +302,7 @@ namespace LionFire
             get { return Path.Combine(StatsDir, "timings.csv"); }
         }
 
-        private static ILogger l = Log.Get();
+        private static readonly ILogger l = Log.Get();
 
     }
     public class TimingColumn

@@ -1,4 +1,5 @@
-﻿using System;
+﻿
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -31,6 +32,8 @@ namespace LionFire.ExtensionMethods
             if (!dict.ContainsKey(key)) return defaultValue;
             return dict[key];
         }
+       
+
         public static TValue GetOrAdd<TKey, TValue>(this IDictionary<TKey, TValue> dict, TKey key, Func<TKey, TValue> factory)
             where TValue : class
         {

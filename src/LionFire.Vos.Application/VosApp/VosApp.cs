@@ -833,7 +833,7 @@ namespace LionFire.Vos.VosApp
 
     #region Misc
 
-        private static ILogger l = Log.Get();
+        private static readonly ILogger l = Log.Get();
 
     #endregion
 

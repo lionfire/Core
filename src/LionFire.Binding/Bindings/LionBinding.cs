@@ -1413,7 +1413,7 @@ namespace LionFire.Bindings
 
         #endregion
 
-        private static ILogger l = Log.Get();
+        private static readonly ILogger l = Log.Get();
         private static ILogger lError = Log.Get("LinFire.Bindings.Errors");
         public int AsyncRetries = 5;
 

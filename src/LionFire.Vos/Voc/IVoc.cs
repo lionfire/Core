@@ -8,26 +8,7 @@ using LionFire.Referencing;
 
 namespace LionFire.Vos
 {
-#if DISABLED
-    /// <remarks>
-    /// "Vob Handle Collection" - maybe change the name or combine with IVoc
-    /// Maybe make this a Dictionary&lt;name,VobReadHandle`T&gt;
-    /// </remarks>
-    /// <typeparam name="T"></typeparam>
-    public interface IVohac<T>
-        : INotifyingList<VobReadHandle<T>>
-        where T : class, new()
-    {
-        VobReadHandle<T> this[string name] { get; }
-        void RefreshCollection();
-
-        //IEnumerable<string> ChildPaths { get; } // OLD Seems redundant. Why did I have this?
-        IEnumerable<string> Names { get; } // RENAME Keys?
-        IEnumerable<VobReadHandle<T>> Handles { get; } // RENAME Values?
-
-        
-    }
-#endif
+    // TODO: Rethink this interface
 
     public interface IVoc
     {

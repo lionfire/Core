@@ -21,6 +21,7 @@ using System.Diagnostics;
 using Microsoft.Extensions.Logging;
 using LionFire.MultiTyping;
 using LionFire.Structures;
+using LionFire.Dependencies;
 
 namespace LionFire.Bindings
 {
@@ -63,7 +64,8 @@ namespace LionFire.Bindings
                 string typeName = MultiTypeTypeName;
                 if (typeName == null) return null;
 
-                Type type = TypeResolver.Resolve(typeName);
+                Type type = ServiceLocator.GetRequired<Types.ITypeResolver>().Resolve(typeName);
+                //Type type = TypeResolver.Resolve(typeName);
 
                 //Type type = Type.GetType(typeName);
                 //l.Trace("UNTESTED - MultiTypeType: " + (type == null ? "null" : type.FullName));
@@ -1718,7 +1720,7 @@ namespace LionFire.Bindings
             }
         }
 
-        private static ILogger l = Log.Get();
+        private static readonly ILogger l = Log.Get();
 
         #region Collection Support
 

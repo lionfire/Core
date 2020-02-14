@@ -310,7 +310,7 @@ namespace LionFire.Serialization
                     }
                 }
             }
-            throw new SerializationException("Failed to find file: " + path);
+            throw new SerializationException(SerializationOperationType.FromStream, message: "Failed to find file: " + path);
 
         gotResult:
             INotifyDeserialized notifyDeserialized = result as INotifyDeserialized;
@@ -328,7 +328,7 @@ namespace LionFire.Serialization
 
         #region Misc
 
-        private static ILogger l = Log.Get();
+        private static readonly ILogger l = Log.Get();
 
         #endregion
     }

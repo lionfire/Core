@@ -100,7 +100,7 @@ namespace LionFire.Structures
             }
         }
 
-        private static ILogger l = Log.Get();
+        private static readonly ILogger l = Log.Get();
 
     }
 
@@ -190,7 +190,7 @@ namespace LionFire.Structures
             }
         }
 
-        private static ILogger l = Log.Get();
+        private static readonly ILogger l = Log.Get();
 
     }
 
@@ -315,7 +315,7 @@ namespace LionFire.Structures
             }
         }
 
-        private static ILogger l = Log.Get();
+        private static readonly ILogger l = Log.Get();
 
     }
 #endif
@@ -415,7 +415,7 @@ namespace LionFire.Structures
             }
         }
 
-        private static ILogger l = Log.Get();
+        private static readonly ILogger l = Log.Get();
 
 
         public void ReserveKey(short key)

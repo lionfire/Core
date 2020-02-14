@@ -1,6 +1,5 @@
 ﻿#nullable enable
 using LionFire.Referencing;
-using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace LionFire.Persistence.Persisters
@@ -11,7 +10,6 @@ namespace LionFire.Persistence.Persisters
         Task<IPersistenceResult> Exists<TValue>(IReferencable<TReference> referencable);
         Task<IRetrieveResult<TValue>> Retrieve<TValue>(IReferencable<TReference> referencable);
 
-        Task<IRetrieveResult<IEnumerable<string>>> List(IReferencable<TReference> referencable, ListFilter? filter = null);
 
         ///// <summary>
         ///// Retrieve a list of names of child items

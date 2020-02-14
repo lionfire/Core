@@ -16,10 +16,11 @@
             return null;
         }
 
-        public static void ThrowIfUnsuccessful(this IPersistenceResult result)
+        public static T ThrowIfUnsuccessful<T>(this T result)
+            where T : IPersistenceResult
         {
             if (!result.IsSuccess()) throw new PersistenceException(result);
+            return result;
         }
     }
-
 }

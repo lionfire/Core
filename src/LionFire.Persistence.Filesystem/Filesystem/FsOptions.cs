@@ -56,7 +56,7 @@ namespace LionFire.ObjectBus.Filesystem
 			yield break;
 		}
 		
-//		private static ILogger l = Log.Get();
+//		private static readonly ILogger l = Log.Get();
 		
 	}
 #else

@@ -26,10 +26,12 @@ namespace LionFire
             logger.LogInformation(msg);
         }
 
+        [Conditional("DEBUG")]
         public static void Debug(this MSLogger logger, string msg)
         {
             logger.LogDebug(msg);
         }
+        [Conditional("TRACE")]
         public static void Trace(this MSLogger logger, string msg)
         {
             logger.LogTrace(msg);

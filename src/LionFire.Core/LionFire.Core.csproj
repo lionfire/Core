@@ -2,6 +2,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
+    <LangVersion>latest</LangVersion>
     <!--<VersionPrefix>1.0.2</VersionPrefix>-->
    
     <TargetFramework>netstandard2.0</TargetFramework>
@@ -59,6 +60,7 @@ This package is typically not added on its own, but is a dependency required by 
     <Folder Include="MultiTyping\Overlaying\" />
     <Folder Include="MultiTyping\Validation\" />
     <Folder Include="Persistence\" />
+    <Folder Include="Reflection\" />
     <Folder Include="Structures\Resolvable\" />
     <Folder Include="Threading\" />
   </ItemGroup>

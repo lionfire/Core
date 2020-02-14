@@ -28,10 +28,10 @@ namespace LionFire.Instantiating
             get { return this.AsTypeOrCreate<SavingContext>(); }
         }
 
-        public TypeNamingContext TypeNaming
+        public TypeResolver TypeNaming
         {
-            get { return this.AsTypeOrInject<TypeNamingContext>(); }
-            set { this.SetType<TypeNamingContext>(value); }
+            get { return this.AsTypeOrInject<TypeResolver>(); }
+            set { this.SetType<TypeResolver>(value); }
         }
 
         public static InstantiationContext Default => ManualSingleton<InstantiationContext>.GuaranteedInstance;

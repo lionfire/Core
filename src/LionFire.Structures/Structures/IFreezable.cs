@@ -7,14 +7,15 @@ namespace LionFire
 {
     public interface IFreezable
     {
-        bool IsFrozen { get; set; }
+        bool IsFrozen { get;  }
+        void Freeze();
     }
 
-    public static class FreezableExtensions
-    {
-        public static void Freeze(this IFreezable freezable)
-        {
-            freezable.IsFrozen = true;
-        }
-    }
+    //public static class FreezableExtensions
+    //{
+    //    public static void Freeze(this IFreezable freezable)
+    //    {
+    //        freezable.IsFrozen = true;
+    //    }
+    //}
 }

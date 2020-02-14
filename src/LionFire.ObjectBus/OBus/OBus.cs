@@ -553,7 +553,7 @@ namespace LionFire.ObjectBus
 #endregion
 
         private static ILogger lNotFound = Log.Get("LionFire.OBus.NotFound");
-        private static ILogger l = Log.Get();
+        private static readonly ILogger l = Log.Get();
 
         public static IEnumerable<string> Roots
         {

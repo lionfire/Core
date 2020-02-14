@@ -332,7 +332,7 @@ namespace LionFire.ObjectBus.Filesystem
 #endif
 
 
-        private static ILogger l = Log.Get();
+        private static readonly ILogger l = Log.Get();
 
 #if UNUSED
         #region Options

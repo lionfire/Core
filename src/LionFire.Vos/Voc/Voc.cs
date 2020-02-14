@@ -1,5 +1,6 @@
-﻿#if VOC
-using LionFire.Collections;
+﻿using LionFire.Collections;
+using LionFire.Persistence;
+using LionFire.Persistence.Collections;
 using LionFire.Referencing;
 using LionFire.Structures;
 using Microsoft.Extensions.Logging;
@@ -11,39 +12,37 @@ using System.Threading.Tasks;
 
 namespace LionFire.Vos
 {
-    
-    public abstract class OBaseNameList<T> : RCollectionBase<INotifyingList<string>, string>
-    {
-    }
+
+    //public abstract class OBaseNameList<T> : RCollectionBase<INotifyingList<string>, string>
+    //{
+    //}
 
     //public class OBaseCollection<T> : OBaseNameList<T>
     //{
     //}
 
-    
+    //public class VosChildList<T> : OBaseNameList<T>
+    //{
+    //    #region Change events
 
-    public class VosChildList<T> : OBaseNameList<T>
-    {
-        #region Change events
+    //    #endregion
+    //    public IObserver<T> Removed { get; private set; }
+    //    public IObserver<T> Added { get; private set; }
 
-        #endregion
-        public IObserver<T> Removed { get; private set; }
-        public IObserver<T> Added { get; private set; }
+    //    public override int Count => throw new NotImplementedException();
 
-        public override int Count => throw new NotImplementedException();
-
-        public override IEnumerator<string> GetEnumerator() => throw new NotImplementedException();
-        public override void OnCollectionChangedEvent(INotifyCollectionChangedEventArgs<string> a) => throw new NotImplementedException();
-        public override Task<bool> TryRetrieveObject() => throw new NotImplementedException();
-    }
+    //    public override IEnumerator<string> GetEnumerator() => throw new NotImplementedException();
+    //    public override void OnCollectionChangedEvent(INotifyCollectionChangedEventArgs<string> a) => throw new NotImplementedException();
+    //    public override Task<bool> TryRetrieveObject() => throw new NotImplementedException();
+    //}
 
     // how fat do i want this to be?  should I keep it to strings?  
-    public class OBaseChild
-    {
-        public string Name { get; set; }
-        public object Handle { get; set; }
-        public Type Type { get; set; }
-    }
+    //public class OBaseChild
+    //{
+    //    public string Name { get; set; }
+    //    public object Handle { get; set; }
+    //    public Type Type { get; set; }
+    //}
 
     /// <summary>
     /// A collection class designed for ease of use with manipulating a set of Vobs.
@@ -55,7 +54,7 @@ namespace LionFire.Vos
     /// </summary>
     /// <typeparam name="ChildType"></typeparam>
     public class Voc<ChildType> : INotifyingList<ChildType>, IVoc
-        , IVohac<ChildType>
+        , IReadHandleCollection<ChildType>
         , INotifyCollectionChanged
         //, ICollection<ChildType>
         where ChildType : class, new()
@@ -100,7 +99,8 @@ namespace LionFire.Vos
 
         public IEnumerable<string> ChildPaths => this.Select(vh => vh.Path);
         public IEnumerable<string> Names => this.Select(vh => LionPath.GetName(vh.Path));
-        public IEnumerable<VobReadHandle<T>> Handles => this;
+        public IEnumerable<IReadHandle<ChildType>> Handles => this;
+        //public IReadHandleCollection<ChildType> Handles => this;
 
         #region Parameters
 
@@ -146,7 +146,7 @@ namespace LionFire.Vos
 
         #region Fields
 
-        protected MultiBindableDictionary<string, VobHandle<ChildType>> Dict {
+        protected MultiBindableDictionary<string, IReadHandle<ChildType>> Dict {
             get => _dict;
             set {
                 if (_dict == value) return;
@@ -161,9 +161,9 @@ namespace LionFire.Vos
                 }
             }
         }
-        private MultiBindableDictionary<string, VobHandle<ChildType>> _dict;
+        private MultiBindableDictionary<string, IReadHandle<ChildType>> _dict;
 
-        //protected MultiBindableCollection<VobHandle<ChildType>> list = new MultiBindableCollection<VobHandle<ChildType>>();
+        //protected MultiBindableCollection<IReadHandle<ChildType>> list = new MultiBindableCollection<IReadHandle<ChildType>>();
 
         protected IEnumerable<ChildType> Objects {
             get {
@@ -204,15 +204,13 @@ namespace LionFire.Vos
 
         public void RefreshCollection() => TryRetrieve();
 
-        public override bool TryRetrieve()
+        public bool TryRetrieve()
         {
             //if (!Vob.Exists) return false; // FUTURE - test whether directory exists?  Only valid for directory-based filesystems?  
 
-            var children = Vob.GetVobChildrenOfType<ChildType>();
+            var removals = new Dictionary<string, IReadHandle<ChildType>>();
 
-            var removals = new Dictionary<string, VobHandle<ChildType>>();
-
-            if (Dict == null) Dict = new MultiBindableDictionary<string, VobHandle<ChildType>>();
+            if (Dict == null) Dict = new MultiBindableDictionary<string, IReadHandle<ChildType>>();
             else { Dict.Clear(); }
 
             foreach (var kvp in Dict)
@@ -220,7 +218,8 @@ namespace LionFire.Vos
                 removals.Add(kvp.Key, kvp.Value);
             }
 
-            foreach (var vh in Vob.GetVobChildrenOfType<ChildType>())
+            var children = Vob.GetVobChildrenOfType<ChildType>();
+            foreach (var vh in children)
             {
                 if (removals.ContainsKey(vh.Key))
                 {
@@ -268,12 +267,12 @@ namespace LionFire.Vos
                 if (e.Action == System.Collections.Specialized.NotifyCollectionChangedAction.Reset)
                 {
                     // TODO: Use weak events
-                    l.TraceWarn("Voc: Got reset.  Not detaching/attaching to old VobHandles.");
+                    l.TraceWarn("Voc: Got reset.  Not detaching/attaching to old IReadHandles.");
                     if (this.Dict.Count > 0)
                     {
                         foreach (var item in this.Dict.Values)
                         {
-                            var inpc = item as IVobHandle;
+                            var inpc = item as IIReadHandle;
                             if (inpc != null) { inpc.ObjectChanged += OnChildObjectChanged; }
                             //if (inpc != null) { inpc.ObjectPropertyChanged += OnChildObjectPropertyChanged; }
                         }
@@ -285,7 +284,7 @@ namespace LionFire.Vos
                     {
                         foreach (var item in e.NewItems)
                         {
-                            var inpc = item as IVobHandle;
+                            var inpc = item as IIReadHandle;
                             if (inpc != null) { inpc.ObjectChanged += OnChildObjectChanged; }
                             //if (inpc != null) { inpc.ObjectPropertyChanged += OnChildObjectPropertyChanged; }
                         }
@@ -294,7 +293,7 @@ namespace LionFire.Vos
                     {
                         foreach (var item in e.OldItems)
                         {
-                            var inpc = item as IVobHandle;
+                            var inpc = item as IIReadHandle;
                             if (inpc != null) { inpc.ObjectChanged -= OnChildObjectChanged; }
                             //if (inpc != null) { inpc.ObjectPropertyChanged -= OnChildObjectPropertyChanged; }
                         }
@@ -307,11 +306,10 @@ namespace LionFire.Vos
             MultiBindableEvents.RaiseCollectionChangedEventNonGeneric(collectionChangedNG, this, e);
         }
 
-        private void OnChildObjectChanged(IHandle handle, string propertyName)
+        private void OnChildObjectChanged(IReadHandle handle, string propertyName)
         {
             l.Debug("Voc got child object changed: " + propertyName + " for " + handle);
-            var ev = childPropertyChanged;
-            if (ev != null) ev(handle, propertyName);
+            childPropertyChanged?.Invoke(handle, propertyName);
         }
         //void OnChildObjectPropertyChanged(object sender, PropertyChangedEventArgs e)
         //{
@@ -333,7 +331,7 @@ namespace LionFire.Vos
                 {
                     foreach (var item in this.Dict.Values)
                     {
-                        var inpc = item as IVobHandle;
+                        var inpc = item as IIReadHandle;
                         if (inpc != null) { inpc.ObjectChanged += OnChildObjectChanged; }
                         //if (inpc != null) { inpc.PropertyChanged -= OnChildObjectPropertyChanged; }
                     }
@@ -346,7 +344,7 @@ namespace LionFire.Vos
                 {
                     foreach (var item in this.Dict.Values)
                     {
-                        var inpc = item as IVobHandle;
+                        var inpc = item as IIReadHandle;
                         if (inpc != null) { inpc.ObjectChanged -= OnChildObjectChanged; }
                         //if (inpc != null) { inpc.PropertyChanged -= OnChildObjectPropertyChanged; }
                     }
@@ -365,7 +363,7 @@ namespace LionFire.Vos
         public ChildType[] ToArray() => Objects.ToArray();
 
         void ICollection<ChildType>.Add(ChildType item) => Add(item);
-        public VobHandle<ChildType> Add(ChildType item)
+        public IReadHandle<ChildType> Add(ChildType item)
         {
             var vh = Vob.CreateChild(item);
 
@@ -389,7 +387,7 @@ namespace LionFire.Vos
 
         public bool Remove(ChildType item)
         {
-            IEnumerable<KeyValuePair<string, VobHandle<ChildType>>> e = Dict;
+            IEnumerable<KeyValuePair<string, IReadHandle<ChildType>>> e = Dict;
 
             foreach (var kvp in e.ToArray())
             {
@@ -467,61 +465,52 @@ namespace LionFire.Vos
         }
         private static string defaultSubpath;
 
-        #region IVohac<ChildType>, INotifyingList<VobHandle<ChildType>>
+        #region IReadHandleCollection<ChildType>, INotifyingList<IReadHandle<ChildType>>
 
-        public IVohac<ChildType> Handles => this;
 
-        INotifyingList<FilterType> INotifyingList<VobHandle<ChildType>>.Filter<FilterType>() => throw new NotImplementedException();
+        INotifyingList<FilterType> INotifyingList<IReadHandle<ChildType>>.Filter<FilterType>() => throw new NotImplementedException();
 
-        VobHandle<ChildType>[] INotifyingCollection<VobHandle<ChildType>>.ToArray() => this.Dict.Values.ToArray();
+        IReadHandle<ChildType>[] INotifyingCollection<IReadHandle<ChildType>>.ToArray() => this.Dict.Values.ToArray();
 
-        void ICollection<VobHandle<ChildType>>.Add(VobHandle<ChildType> item) => throw new NotSupportedException();
+        void ICollection<IReadHandle<ChildType>>.Add(IReadHandle<ChildType> item) => throw new NotSupportedException();
 
-        void ICollection<VobHandle<ChildType>>.Clear() => throw new NotSupportedException();
+        void ICollection<IReadHandle<ChildType>>.Clear() => throw new NotSupportedException();
 
-        bool ICollection<VobHandle<ChildType>>.Contains(VobHandle<ChildType> item) => Dict.Values.Contains(item);
+        bool ICollection<IReadHandle<ChildType>>.Contains(IReadHandle<ChildType> item) => Dict.Values.Contains(item);
 
-        void ICollection<VobHandle<ChildType>>.CopyTo(VobHandle<ChildType>[] array, int arrayIndex) => Dict.Values.CopyTo(array, arrayIndex);
+        void ICollection<IReadHandle<ChildType>>.CopyTo(IReadHandle<ChildType>[] array, int arrayIndex) => Dict.Values.CopyTo(array, arrayIndex);
 
-        int ICollection<VobHandle<ChildType>>.Count => Dict.Count;
+        int ICollection<IReadHandle<ChildType>>.Count => Dict.Count;
 
-        bool ICollection<VobHandle<ChildType>>.IsReadOnly => Dict.IsReadOnly;
+        bool ICollection<IReadHandle<ChildType>>.IsReadOnly => Dict.IsReadOnly;
 
-        bool ICollection<VobHandle<ChildType>>.Remove(VobHandle<ChildType> item) => throw new NotSupportedException();
+        bool ICollection<IReadHandle<ChildType>>.Remove(IReadHandle<ChildType> item) => throw new NotSupportedException();
 
-        IEnumerator<VobHandle<ChildType>> IEnumerable<VobHandle<ChildType>>.GetEnumerator() => Dict.Values.GetEnumerator();
+        IEnumerator<IReadHandle<ChildType>> IEnumerable<IReadHandle<ChildType>>.GetEnumerator() => Dict.Values.GetEnumerator();
 
-        event NotifyCollectionChangedHandler<VobHandle<ChildType>> INotifyCollectionChanged<VobHandle<ChildType>>.CollectionChanged {
+        event NotifyCollectionChangedHandler<IReadHandle<ChildType>> INotifyCollectionChanged<IReadHandle<ChildType>>.CollectionChanged {
             add { vhCollectionChanged += value; }
             remove { vhCollectionChanged -= value; }
         }
 
-        event NotifyCollectionChangedHandler<VobReadHandle<ChildType>> INotifyCollectionChanged<VobReadHandle<ChildType>>.CollectionChanged {
-            add {
-                throw new NotImplementedException();
-            }
+       
 
-            remove {
-                throw new NotImplementedException();
-            }
-        }
+        private NotifyCollectionChangedHandler<IReadHandle<ChildType>> vhCollectionChanged;
 
-        private NotifyCollectionChangedHandler<VobHandle<ChildType>> vhCollectionChanged;
+        int IList<IReadHandle<ChildType>>.IndexOf(IReadHandle<ChildType> item) => throw new NotImplementedException();//return Dict.Values.Find(item);
 
-        int IList<VobHandle<ChildType>>.IndexOf(VobHandle<ChildType> item) => throw new NotImplementedException();//return Dict.Values.Find(item);
+        void IList<IReadHandle<ChildType>>.Insert(int index, IReadHandle<ChildType> item) => throw new NotImplementedException();
 
-        void IList<VobHandle<ChildType>>.Insert(int index, VobHandle<ChildType> item) => throw new NotImplementedException();
+        void IList<IReadHandle<ChildType>>.RemoveAt(int index) => throw new NotImplementedException();
 
-        void IList<VobHandle<ChildType>>.RemoveAt(int index) => throw new NotImplementedException();
-
-        VobHandle<ChildType> IList<VobHandle<ChildType>>.this[int index] {
+        IReadHandle<ChildType> IList<IReadHandle<ChildType>>.this[int index] {
             get => throw new NotImplementedException();
             set => throw new NotImplementedException();
         }
 
         #endregion
 
-        public VobHandle<ChildType> this[string name] => this.Vob[name].GetHandle<ChildType>();
+        public IReadHandle<ChildType> this[string name] => this.Vob[name].GetHandle<ChildType>();
 
 
         #region Filtering - TODO: Move this to a VocView, like WPF's CollectionView
@@ -549,11 +538,9 @@ namespace LionFire.Vos
             set => hasFlags = value; // Set to true manually if only certain derived classes of ChildType have flags.
         }
 
-        IEnumerable<VobReadHandle<ChildType>> IVohac<ChildType>.Handles => throw new NotImplementedException();
+        IEnumerable<IReadHandle<ChildType>> IReadHandleCollection<ChildType>.Handles => throw new NotImplementedException();
 
-        VobReadHandle<ChildType> IList<VobReadHandle<ChildType>>.this[int index] { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
-
-        VobReadHandle<ChildType> IVohac<ChildType>.this[string name] => throw new NotImplementedException();
+        IReadHandle<ChildType> IReadHandleCollection<ChildType>.this[string name] => throw new NotImplementedException();
 
         private static bool? hasFlags;
         private static bool DefaultFilter(ChildType child, FlagCollection filter)
@@ -566,14 +553,12 @@ namespace LionFire.Vos
             return true;
         }
 
-        VobReadHandle<ChildType>[] INotifyingCollection<VobReadHandle<ChildType>>.ToArray() => throw new NotImplementedException();
-        public int IndexOf(VobReadHandle<ChildType> item) => throw new NotImplementedException();
-        public void Insert(int index, VobReadHandle<ChildType> item) => throw new NotImplementedException();
-        public void Add(VobReadHandle<ChildType> item) => throw new NotImplementedException();
-        public bool Contains(VobReadHandle<ChildType> item) => throw new NotImplementedException();
-        public void CopyTo(VobReadHandle<ChildType>[] array, int arrayIndex) => throw new NotImplementedException();
-        public bool Remove(VobReadHandle<ChildType> item) => throw new NotImplementedException();
-        IEnumerator<VobReadHandle<ChildType>> IEnumerable<VobReadHandle<ChildType>>.GetEnumerator() => throw new NotImplementedException();
+        public int IndexOf(IReadHandle<ChildType> item) => throw new NotImplementedException();
+        public void Insert(int index, IReadHandle<ChildType> item) => throw new NotImplementedException();
+        public void Add(IReadHandle<ChildType> item) => throw new NotImplementedException();
+        public bool Contains(IReadHandle<ChildType> item) => throw new NotImplementedException();
+        public void CopyTo(IReadHandle<ChildType>[] array, int arrayIndex) => throw new NotImplementedException();
+        public bool Remove(IReadHandle<ChildType> item) => throw new NotImplementedException();
 
         #endregion
 
@@ -726,6 +711,4 @@ namespace LionFire.Vos
         #endregion
 
     }
-
 }
-#endif

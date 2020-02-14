@@ -53,6 +53,6 @@ namespace LionFire.Vos.VosApp
         //public static IVob Archives => VosApp.PackageStores;
         //public static IVob Stores => VosApp.Stores;
 
-        private static ILogger l = Log.Get();
+        private static readonly ILogger l = Log.Get();
     }
 }

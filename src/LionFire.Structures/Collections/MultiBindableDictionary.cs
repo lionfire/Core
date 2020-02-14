@@ -168,7 +168,7 @@ namespace LionFire.Collections
 
         public static bool AutoDetachThrowingHandlers = true;
         public static bool TraceDetachThrowingHandlers = true;
-        // private static ILogger l = Log.Get();
+        // private static readonly ILogger l = Log.Get();
 
         public static event Action<object, Exception> CollectionChangedException;
 

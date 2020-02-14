@@ -8,8 +8,8 @@
 
   <ItemGroup>
     <Folder Include="FlexObjects\NewFolder\" />
-    <Folder Include="Persistence\" />
     <Folder Include="Types\" />
+    <Folder Include="Persistence\" />
     <Folder Include="Validation\" />
   </ItemGroup>
 

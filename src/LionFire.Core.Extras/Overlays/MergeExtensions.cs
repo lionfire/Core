@@ -25,7 +25,7 @@ namespace LionFire.Extensions.Merging
 
     public static class MergeExtensions
     {
-        private static ILogger l = Log.Get();
+        private static readonly ILogger l = Log.Get();
 
         public static bool IsMergeable(this Type type)
         {

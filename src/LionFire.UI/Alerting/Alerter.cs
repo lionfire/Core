@@ -86,7 +86,7 @@ namespace LionFire.Alerting
             Alert(alert);
 
         }
-        private static ILogger l = Log.Get();
+        private static readonly ILogger l = Log.Get();
 
 #if !NET35
         public static async Task<bool> Ask(string message)

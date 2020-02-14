@@ -11,7 +11,7 @@ namespace LionFire.Overlays
 {
     public class OverlayInterceptor : IInterceptor
     {
-        private static ILogger l = Log.Get();
+        private static readonly ILogger l = Log.Get();
 
         internal PropertyInfo GetProperty(Type type, string methodName)
         {

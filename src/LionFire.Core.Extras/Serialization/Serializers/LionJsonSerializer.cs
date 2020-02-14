@@ -111,7 +111,7 @@ namespace LionFire.Serialization
 #endif
         }
 
-        private static ILogger l = Log.Get();
+        private static readonly ILogger l = Log.Get();
 		
     }
 #endif
@@ -255,7 +255,7 @@ namespace LionFire.Serialization
 
 #region Misc
 
-        private static ILogger l = Log.Get();
+        private static readonly ILogger l = Log.Get();
 
 #endregion
 #endif

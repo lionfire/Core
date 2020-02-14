@@ -194,7 +194,7 @@ namespace LionFire.ObjectBus.Filesystem
 
         #region Misc
 
-        private static ILogger l = Log.Get();
+        private static readonly ILogger l = Log.Get();
 
         #endregion
     }

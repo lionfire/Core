@@ -124,7 +124,7 @@ namespace LionFire.Collections
     public class SynchronizedObservableCollection<T> : IList<T>, ICollection<T>, IEnumerable<T>,
         IList, ICollection, IEnumerable, INotifyPropertyChanged, INotifyCollectionChanged, INotifyingCollection<T>
     {
-        //private static ILogger l = Log.Get();
+        //private static readonly ILogger l = Log.Get();
 
         private ObservableList<T> items;
         private Object sync;
