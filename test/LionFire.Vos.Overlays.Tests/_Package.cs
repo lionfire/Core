@@ -142,7 +142,7 @@ namespace Packages_
                         Assert.True(pluginManager.Disable("plugin2"));
                         Assert.Empty(pluginManager.EnabledPackages);
 
-                        var vobMounts = new VosReference("/`/TestPlugins/data").ToVob().GetOwn<VobMounts>();
+                        var vobMounts = new VosReference("/`/TestPlugins/data").ToVob().AcquireOwn<VobMounts>();
                         Assert.False(vobMounts.HasLocalReadMounts);
                         Assert.False(vobMounts.HasLocalWriteMounts);
 

@@ -4,6 +4,7 @@ using LionFire.Persistence.Handles;
 using LionFire.Persistence.Persisters;
 using LionFire.Referencing;
 using LionFire.Vos.Assets.Persisters;
+using LionFire.Vos.Collections.ByType;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -30,5 +31,15 @@ namespace LionFire.Vos.Assets.Handles
 
         public Persistence.IReadWriteHandle<T> GetReadWriteHandle<T>(IAssetReference reference)
             => new PersisterReadWriteHandle<IAssetReference, T, VosAssetPersister>((VosAssetPersister)PersisterProvider.GetPersister(reference.Persister), reference);
+    }
+
+    public class AssetCollectionTypeProvider : ICollectionTypeProvider<VosReference>
+    {
+        public Type GetCollectionType(VosReference reference)
+        {
+            var vob = reference.ToVob();
+            var type = vob.Parent.AcquireOwn<CollectionsByTypeManager>()?.GetCollectionType(vob);
+            return type;
+        }
     }
 }

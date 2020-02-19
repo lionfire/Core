@@ -63,7 +63,7 @@ namespace LionFire.Persistence.Persisters.Vos
             var result = new VosRetrieveResult<TValue>();
 
             bool anyMounts = false;
-            var vobMounts = vob.GetNext<VobMounts>();
+            var vobMounts = vob.AcquireNext<VobMounts>();
             if (vobMounts != null)
             {
                 foreach (var mount in vobMounts.RankedEffectiveReadMounts)

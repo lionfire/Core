@@ -19,7 +19,7 @@ namespace LionFire.Services
 
             configurator?.Invoke(dsp);
 
-            //vob.GetOrAddNextVobNode<IServiceProvider, VobServiceProvider>(addAtRoot: false);
+            //vob.AcquireOrAddNextVobNode<IServiceProvider, VobServiceProvider>(addAtRoot: false);
             dsp.Parent = parentServiceProvider;
             return vob;
         }

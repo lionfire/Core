@@ -1,4 +1,5 @@
-﻿using LionFire.Collections;
+﻿#if TODO
+using LionFire.Collections;
 using LionFire.Persistence;
 using LionFire.Persistence.Collections;
 using LionFire.Referencing;
@@ -97,7 +98,7 @@ namespace LionFire.Vos
         #endregion
 
 
-        public IEnumerable<string> ChildPaths => this.Select(vh => vh.Path);
+        public IEnumerable<string> ChildPaths => ((IEnumerable<ChildType>)this).Select(vh => vh.Path);
         public IEnumerable<string> Names => this.Select(vh => LionPath.GetName(vh.Path));
         public IEnumerable<IReadHandle<ChildType>> Handles => this;
         //public IReadHandleCollection<ChildType> Handles => this;
@@ -173,7 +174,7 @@ namespace LionFire.Vos
                 }
                 if (Dict != null)
                 {
-                    return Dict.Values.Select(vh => vh.Object);
+                    return Dict.Values.Select(vh => vh.Value);
                 }
                 else
                 {
@@ -191,12 +192,12 @@ namespace LionFire.Vos
 
         #region Move / Delete Methods
 
-        public override void Move(Vob vobDestination) => throw new NotImplementedException();
+        public  void Move(Vob vobDestination) => throw new NotImplementedException();
 
-        public override void Rename(string newName) => throw new NotImplementedException();
+        public  void Rename(string newName) => throw new NotImplementedException();
 
-        public override void Delete() // Does not delete keyKeeper?
-=> throw new NotImplementedException("TOPORT");//var children = Vob.GetVobChildrenOfType<ChildType>();//foreach (var child in children)//{//    child.TryDelete();//}
+        public  void Delete() // Does not delete keyKeeper?
+        => throw new NotImplementedException("TOPORT");//var children = Vob.GetVobChildrenOfType<ChildType>();//foreach (var child in children)//{//    child.TryDelete();//}
 
         #endregion
 
@@ -272,7 +273,7 @@ namespace LionFire.Vos
                     {
                         foreach (var item in this.Dict.Values)
                         {
-                            var inpc = item as IIReadHandle;
+                            var inpc = item as IReadHandle;
                             if (inpc != null) { inpc.ObjectChanged += OnChildObjectChanged; }
                             //if (inpc != null) { inpc.ObjectPropertyChanged += OnChildObjectPropertyChanged; }
                         }
@@ -284,7 +285,7 @@ namespace LionFire.Vos
                     {
                         foreach (var item in e.NewItems)
                         {
-                            var inpc = item as IIReadHandle;
+                            var inpc = item as IReadHandle;
                             if (inpc != null) { inpc.ObjectChanged += OnChildObjectChanged; }
                             //if (inpc != null) { inpc.ObjectPropertyChanged += OnChildObjectPropertyChanged; }
                         }
@@ -293,7 +294,7 @@ namespace LionFire.Vos
                     {
                         foreach (var item in e.OldItems)
                         {
-                            var inpc = item as IIReadHandle;
+                            var inpc = item as IReadHandle;
                             if (inpc != null) { inpc.ObjectChanged -= OnChildObjectChanged; }
                             //if (inpc != null) { inpc.ObjectPropertyChanged -= OnChildObjectPropertyChanged; }
                         }
@@ -331,7 +332,7 @@ namespace LionFire.Vos
                 {
                     foreach (var item in this.Dict.Values)
                     {
-                        var inpc = item as IIReadHandle;
+                        var inpc = item as IReadHandle;
                         if (inpc != null) { inpc.ObjectChanged += OnChildObjectChanged; }
                         //if (inpc != null) { inpc.PropertyChanged -= OnChildObjectPropertyChanged; }
                     }
@@ -344,7 +345,7 @@ namespace LionFire.Vos
                 {
                     foreach (var item in this.Dict.Values)
                     {
-                        var inpc = item as IIReadHandle;
+                        var inpc = item as IReadHandle;
                         if (inpc != null) { inpc.ObjectChanged -= OnChildObjectChanged; }
                         //if (inpc != null) { inpc.PropertyChanged -= OnChildObjectPropertyChanged; }
                     }
@@ -381,7 +382,7 @@ namespace LionFire.Vos
 
         public void CopyTo(ChildType[] array, int arrayIndex) => Objects.ToArray().CopyTo(array, arrayIndex);
 
-        public override int Count => Dict.Count;
+        public  int Count => Dict.Count;
 
         public bool IsReadOnly => false;
 
@@ -712,3 +713,4 @@ namespace LionFire.Vos
 
     }
 }
+#endif

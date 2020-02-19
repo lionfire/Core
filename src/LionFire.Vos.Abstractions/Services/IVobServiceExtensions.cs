@@ -8,7 +8,7 @@ namespace LionFire.Vos.Services
     public static class IVobServiceExtensions
     {
         public static IServiceProvider GetServiceProvider(this IVob vob)
-            => vob.GetNext<IServiceProvider>();
+            => vob.AcquireNext<IServiceProvider>();
         public static IServiceProvider ServiceProvider(this IVob vob)
             => vob.GetNextRequired<IServiceProvider>();
         public static IServiceCollection ServiceCollection(this IVob vob)
@@ -16,7 +16,7 @@ namespace LionFire.Vos.Services
      
         
         public static T GetService<T>(this IVob vob) where T : class 
-            => (T)vob.GetNext<IServiceProvider>()?.GetService(typeof(T));
+            => (T)vob.AcquireNext<IServiceProvider>()?.GetService(typeof(T));
 
         public static T GetRequiredService<T>(this IVob vob)
         {

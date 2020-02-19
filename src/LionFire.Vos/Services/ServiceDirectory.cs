@@ -38,7 +38,7 @@
             if (path == null) return default;
             var vob = Root[path];
 
-            var service = vob.GetOwn<TService>();
+            var service = vob.AcquireOwn<TService>();
             if (service != default) return service;
 
             service = vob.GetMultiTyped().AsType<TService>();

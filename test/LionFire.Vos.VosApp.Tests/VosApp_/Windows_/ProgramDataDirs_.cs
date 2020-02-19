@@ -42,7 +42,7 @@ namespace VosApp_.Windows_
                     Assert.Equal(Path.Combine(programDataDir, TestOrgName, TestAppName).ToFileReference(),
                         serviceProvider.GetRequiredService<RootManager>().Get()
                         .QueryChild("/_/stores").QueryChild("ProgramDataAppDir")
-                        .GetOwn<VobMounts>().ReadMounts.Single().Value.Target);
+                        .AcquireOwn<VobMounts>().ReadMounts.Single().Value.Target);
                 });
         }
 
@@ -58,7 +58,7 @@ namespace VosApp_.Windows_
                     Assert.Equal(Path.Combine(programDataDir, TestOrgName).ToFileReference(),
                         serviceProvider.GetRequiredService<RootManager>().Get()
                         .QueryChild("/_/stores").QueryChild("ProgramDataOrgDir")
-                        .GetOwn<VobMounts>().ReadMounts.Single().Value.Target);
+                        .AcquireOwn<VobMounts>().ReadMounts.Single().Value.Target);
                 });
         }
 
@@ -84,7 +84,7 @@ namespace VosApp_.Windows_
                     Assert.Equal(Path.Combine(programDataDir, TestOrgName, TestDataDir).ToFileReference(),
                         serviceProvider.GetRequiredService<RootManager>().Get()
                         .QueryChild("/_/stores").QueryChild("ProgramDataDataDir")
-                        .GetOwn<VobMounts>().ReadMounts.Single().Value.Target);
+                        .AcquireOwn<VobMounts>().ReadMounts.Single().Value.Target);
                 });
         }
     }

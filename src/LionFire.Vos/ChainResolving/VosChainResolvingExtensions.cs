@@ -20,7 +20,7 @@ namespace LionFire.Vos.ChainResolving
         /// <returns></returns>
         public static Task<ChainResolveResult<T>> ChainResolve<T>(this IVob vob, object obj, ChainResolveOptions options = null)
         {
-            return obj.ChainResolveAsync<T>(vob.GetNext<ChainResolveOptions>() ?? Default);
+            return obj.ChainResolveAsync<T>(vob.AcquireNext<ChainResolveOptions>() ?? Default);
         }
 
         public static ChainResolveOptions Default = new ChainResolveOptions

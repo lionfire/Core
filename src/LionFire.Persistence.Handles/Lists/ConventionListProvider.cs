@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 
 namespace LionFire.Persistence.Persisters
 {
+  
 
     public class ConventionListProvider<TReference> : IListProvider<TReference>
          where TReference : IReference
@@ -22,11 +23,11 @@ namespace LionFire.Persistence.Persisters
         public async Task<IEnumerable<string>> List(Type itemType, IPersister<TReference> persister, IReferencable<TReference> referencable, ListFilter? filter = null)
         {
             //var result = (await persister.List(referencable, filter).ConfigureAwait(false)).ThrowIfUnsuccessful().Value;
-#error NEXT - how to do all this?
-            persister.List(referencable, filter)
+            throw new NotImplementedException("NEXT - how to do all this?");
+            //persister.List(referencable, filter)
         }
 
-        public async Task<IEnumerable<string>> List(IPersister<TReference> persister, IReferencable<TReference> referencable, ListFilter? filter = null)
+        public  Task<IEnumerable<string>> List(IPersister<TReference> persister, IReferencable<TReference> referencable, ListFilter? filter = null)
         {
             // Alternate ideas:
             // - Get all "..collection *", to look for "..collection Type=MyType" or "..CollectionType=MyType"
@@ -36,12 +37,12 @@ namespace LionFire.Persistence.Persisters
 
             Type? type = TypeResolver.TryResolve(typeName);
 
-            if (type == null) { throw new Exception($"Failed to resolve collection type: '{typeName}'")); }
+            if (type == null) { throw new Exception($"Failed to resolve collection type: '{typeName}'"); }
 
             return List(type, persister, referencable, filter);
         }
 
-        public async Task<IEnumerable<string>> List(IPersister<TReference> persister, IReferencable<TReference> referencable, ListFilter? filter = null)
+        //public async Task<IEnumerable<string>> List(IPersister<TReference> persister, IReferencable<TReference> referencable, ListFilter? filter = null)
     }
 }
 

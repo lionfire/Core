@@ -9,8 +9,11 @@ namespace LionFire.Vos.Internals
 
         //IEnumerable<IVobNode> VobNodes { get; } // TODO - for introspection
 
-        VobNode<T> TryGetNextVobNode<T>(bool skipOwn = false) where T : class;
-        VobNode<T> TryGetOwnVobNode<T>() where T : class;
+        VobNode<T> TryAcquireNextVobNode<T>(int minDepth = 0, int maxDepth = -1) where T : class;
+
+        ContextedVobNode<T> TryGetNextContextedVobNode<T>(int minDepth = 0) where T : class;
+
+        VobNode<T> TryAcquireOwnVobNode<T>() where T : class;
 
         // REVIEW - do I want both a nodeFactory and a valueFactory?  I think so.
         //VobNode<TInterface> GetOrAddOwnVobNode<TInterface, TImplementation>(Func<IVobNode, TInterface> factory = null)
@@ -20,10 +23,10 @@ namespace LionFire.Vos.Internals
         VobNode<TInterface> TryAddOwnVobNode<TInterface>(Func<IVobNode, TInterface> valueFactory = null)
             where TInterface : class;
 
-        VobNode<TInterface> GetOrAddOwnVobNode<TInterface>(Func<IVobNode, TInterface> valueFactory = null)
+        VobNode<TInterface> AcquireOrAddOwnVobNode<TInterface>(Func<IVobNode, TInterface> valueFactory = null)
             where TInterface : class;
 
-        VobNode<TInterface> GetOrAddOwnVobNode<TInterface, TImplementation>(Func<IVobNode, TInterface> valueFactory = null)
+        VobNode<TInterface> AcquireOrAddOwnVobNode<TInterface, TImplementation>(Func<IVobNode, TInterface> valueFactory = null)
             where TInterface : class
             where TImplementation : TInterface;
         

@@ -1,6 +1,7 @@
 ﻿#nullable enable
 using LionFire.Dependencies;
 using LionFire.Ontology;
+using LionFire.Referencing;
 using Microsoft.Extensions.DependencyInjection;
 using System;
 
@@ -14,8 +15,12 @@ namespace LionFire.Vos
 
         public static IVob? ToVob(this string vosPath, IHas<IRootManager>? hasRootManager = null) => GetRootManagerOrThrow(hasRootManager).Get(VosConstants.DefaultRootName)?[vosPath.ToVosReference()];
 
+
         public static IVob? ToVob(this IVosReference vosReference, IHas<IRootManager>? hasRootManager = null) 
             => GetRootManagerOrThrow(hasRootManager).Get(vosReference.Persister)?[vosReference.PathChunks];
+
+        public static IVob? ReferencableToVob(this IReferencable<VosReference> vosReferencable, IHas<IRootManager>? hasRootManager = null) 
+            => GetRootManagerOrThrow(hasRootManager).Get(vosReferencable.Reference.Persister)?[vosReferencable.Reference.PathChunks];
 
         /// <summary>
         /// 

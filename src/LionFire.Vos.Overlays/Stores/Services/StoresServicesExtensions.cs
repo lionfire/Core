@@ -41,7 +41,7 @@ namespace LionFire.Services
         //        //var rootOptions = vosOptions[vob.Root.RootName]
 
         //        //var mounter = vob.GetRequiredService<StoreMounter>();
-        //        ////vob.GetOwn < VobMounts >()
+        //        ////vob.AcquireOwn < VobMounts >()
         //        //foreach (var store in vob["$Internals/stores"])
         //        //{
         //        //    mounter.Mount(store);

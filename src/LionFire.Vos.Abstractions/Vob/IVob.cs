@@ -27,8 +27,9 @@ namespace LionFire.Vos
 
         #endregion
 
-        T GetNext<T>(bool skipOwn = false) where T : class;
-        T GetOwn<T>() where T : class;
+        T AcquireNext<T>(int minDepth = 0, int maxDepth = -1) where T : class;
+        T AcquireOwn<T>() where T : class; 
+        IEnumerable<T> Acquire<T>(int minDepth = 0, int maxDepth = -1) where T : class;
 
         #region Children
 

@@ -35,7 +35,7 @@ namespace LionFire.Vos.Overlays
             overlayStackOptions ??= new OverlayStackOptions();
             mountOptions ??= overlayStackOptions?.DefaultMountOptions;
 
-            foreach (var mount in root["$stores"].GetOwn<VobMounts>().ReadMounts.Select(kvp => kvp.Value))
+            foreach (var mount in root["$stores"].AcquireOwn<VobMounts>().ReadMounts.Select(kvp => kvp.Value))
             {
                 var storeName = mount.MountPoint.Name;
 

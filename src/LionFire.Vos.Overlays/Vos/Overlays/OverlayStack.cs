@@ -65,18 +65,18 @@ namespace LionFire.Vos.Overlays
                     // effectiveReadPriority.Value is MountOptions
                     // OverlayValues.For(AvailableRoot).Layers = ...
 
-                    var mount = AvailableRoot.QueryChild(packageName)?.GetOwn<MountOptions>();
+                    var mount = AvailableRoot.QueryChild(packageName)?.AcquireOwn<MountOptions>();
 
                     if (readPriority == null) readPriority = mount?.ReadPriority ?? Options?.DefaultMountOptions?.ReadPriority;
                     if (writePriority == null) writePriority = mount?.WritePriority ?? Options?.DefaultMountOptions?.WritePriority;
 
-                    if (readPriority == null && writePriority == null) throw new ArgumentException("Read and write priority could not be found.  Tried: 1) arguments to Enable, 2) AvailableRoot[packageName].GetOwn<MountOptions>(), and VosPackageManager.Options.DefaultMountOptions.");
+                    if (readPriority == null && writePriority == null) throw new ArgumentException("Read and write priority could not be found.  Tried: 1) arguments to Enable, 2) AvailableRoot[packageName].AcquireOwn<MountOptions>(), and VosPackageManager.Options.DefaultMountOptions.");
 
                     DataRoot.Mount(reference, new MountOptions { ReadPriority = readPriority, WritePriority = writePriority, IsExclusive = false });
                 }
                 {
                     var reference = Vob.Reference.GetChildSubpath(Options.AvailableSubPath, packageName);
-                    var vobMounts = reference.ToVob().GetOwn<VobMounts>();
+                    var vobMounts = reference.ToVob().AcquireOwn<VobMounts>();
                     if (vobMounts != null)
                     {
                         foreach (var mount in vobMounts.AllMounts.Where(m => m.Options?.IsManuallyEnabled == true))
@@ -106,7 +106,7 @@ namespace LionFire.Vos.Overlays
 
                     if (unmountedSomething)
                     {
-                        var vobMounts = reference.ToVob().GetOwn<VobMounts>();
+                        var vobMounts = reference.ToVob().AcquireOwn<VobMounts>();
                         if (vobMounts != null)
                         {
                             foreach (var mount in vobMounts.AllMounts.Where(m => m.Options?.IsManuallyEnabled == true))

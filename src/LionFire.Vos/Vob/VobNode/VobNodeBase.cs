@@ -13,8 +13,8 @@ namespace LionFire.Vos
         public TConcrete Value => (TConcrete)this;
         object IVobNode.Value => Value;
 
-        public IVobNode<TConcrete> ParentVobNode => Vob.Parent?.TryGetNextVobNode<TConcrete>(skipOwn: true);
-        public TConcrete ParentValue => Vob.Parent?.GetNext<TConcrete>(skipOwn: true);
+        public IVobNode<TConcrete> ParentVobNode => Vob.Parent?.TryGetNextVobNode<TConcrete>(minDepth: 1);
+        public TConcrete ParentValue => Vob.Parent?.AcquireNext<TConcrete>(minDepth: 1);
     }
 }
 

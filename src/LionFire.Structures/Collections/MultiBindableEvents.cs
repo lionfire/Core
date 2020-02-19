@@ -1,6 +1,6 @@
 ﻿#define SanityChecks
 // Retrieved from http://karlhulme.wordpress.com/2007/03/04/synchronizedobservablecollection-and-bindablecollection/ on Feb 7, 2010
-// License: If anyone can make use of the above classes then you’re very welcome to use them, although you do so at your own risk! using System;
+// License: If anyone can make use of the above classes then you’re very welcome to use them, although you do so at your own risk! 
 using System.Collections.Specialized;
 using System;
 using LionFire.Threading;
@@ -11,13 +11,13 @@ using LionFire.Backports;
 
 namespace LionFire.Collections
 {
-    internal static class MultiBindableEvents
+    public static class MultiBindableEvents
     {
         public static bool AutoDetachThrowingHandlers = true;
         public static bool TraceDetachThrowingHandlers = true;
         public static bool RaiseResetOnThrow = true;
 
-        internal static void RaiseCollectionChangedEventNonGeneric(this NotifyCollectionChangedEventHandler ev, object sender, NotifyCollectionChangedEventArgs e)
+        public static void RaiseCollectionChangedEventNonGeneric(this NotifyCollectionChangedEventHandler ev, object sender, NotifyCollectionChangedEventArgs e)
         {
             if (ev == null)
             {
@@ -83,7 +83,7 @@ namespace LionFire.Collections
             }
         }
 
-        internal static void RaiseCollectionChanged<ItemType>(NotifyCollectionChangedHandler<ItemType> ev, NotifyCollectionChangedEventArgs eventArgs)
+        public static void RaiseCollectionChanged<ItemType>(NotifyCollectionChangedHandler<ItemType> ev, NotifyCollectionChangedEventArgs eventArgs)
         {
             // COPY See also: corresponding method in MultiBindableDictionary
             if (ev == null)

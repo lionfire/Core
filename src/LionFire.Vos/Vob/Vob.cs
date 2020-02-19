@@ -52,7 +52,7 @@ namespace LionFire.Vos
                 if (root == null)
                 {
                     IVob vob = this;
-                    while (vob.Parent != null && vob.Parent.Path != VosConstants.VobRootsRoot ) { vob = vob.Parent; }
+                    while (vob.Parent != null && vob.Parent.Path != VosConstants.VobRootsRoot) { vob = vob.Parent; }
                     root = vob as RootVob;
                 }
                 return root;
@@ -396,7 +396,7 @@ namespace LionFire.Vos
 
         protected ConcurrentDictionary<Type, IVobNode> vobNodesByType;
 
-        VobNode<T> IVobInternals.TryGetOwnVobNode<T>()
+        VobNode<T> IVobInternals.TryAcquireOwnVobNode<T>()
            where T : class
         {
             var collection = vobNodesByType;
@@ -495,7 +495,7 @@ namespace LionFire.Vos
             return already ? null : result;
         }
 
-        VobNode<TInterface> IVobInternals.GetOrAddOwnVobNode<TInterface>(Func<IVobNode, TInterface> valueFactory)
+        VobNode<TInterface> IVobInternals.AcquireOrAddOwnVobNode<TInterface>(Func<IVobNode, TInterface> valueFactory)
         {
             if (vobNodesByType == null) vobNodesByType = new ConcurrentDictionary<Type, IVobNode>();
             return (VobNode<TInterface>)vobNodesByType.GetOrAdd(typeof(TInterface),
@@ -503,7 +503,7 @@ namespace LionFire.Vos
                 this, valueFactory ?? DefaultVobNodeValueFactory<TInterface>));
         }
 
-        VobNode<TInterface> IVobInternals.GetOrAddOwnVobNode<TInterface, TImplementation>(Func<IVobNode, TInterface> valueFactory)
+        VobNode<TInterface> IVobInternals.AcquireOrAddOwnVobNode<TInterface, TImplementation>(Func<IVobNode, TInterface> valueFactory)
         //where TInterface : class
         //where TImplementation : TInterface
         {
@@ -518,34 +518,83 @@ namespace LionFire.Vos
         /// </summary>
         /// <typeparam name="T"></typeparam>
         /// <returns></returns>
-        public T GetOwn<T>()
+        public T AcquireOwn<T>() where T : class => Acquire<T>(maxDepth: 0).Take(1).FirstOrDefault();
+        //{
+        //    var node = ((IVobInternals)this).TryAcquireOwnVobNode<T>();
+        //    if (node != null) return node.Value;
+        //    return default;
+        //}
+
+        public IEnumerable<T> Acquire<T>(int minDepth = 0, int maxDepth = -1)
             where T : class
         {
-            var node = ((IVobInternals)this).TryGetOwnVobNode<T>();
-            if (node != null) return node.Value;
-            return default;
+            IVob vob = this;
+            int depth = 0;
+            for (int skip = minDepth; skip > 0 && vob != null; skip--)
+            {
+                vob = vob.Parent;
+                depth++;
+            }
+
+            for (IVobNode<T> node = vob.TryGetOwnVobNode<T>(); node != null && maxDepth < 0 || depth <= maxDepth;)
+            {
+                if (node?.Value != null) yield return node.Value;
+
+                if (node?.ParentVobNode != null)
+                {
+                    depth += node.Vob.Depth - node.ParentVobNode.Vob.Depth;
+                    node = node.ParentVobNode;
+                }
+            }
         }
+
+        public IEnumerable<T> AcquireMany<T>() where T : class => Acquire<IEnumerable<T>>().SelectMany(e => e);
 
         #endregion
 
         #region Vob Nodes: Inheritance
 
-        VobNode<T> IVobInternals.TryGetNextVobNode<T>(bool skipOwn)
+        public IEnumerable<IVob> ParentEnumerable
+        {
+            get
+            {
+                yield return this;
+                for (var vob = Parent; Parent != null; vob = vob.Parent) yield return vob;
+            }
+        }
+
+        VobNode<T> IVobInternals.TryAcquireNextVobNode<T>(int minDepth, int maxDepth)
             where T : class
         {
-            var vob = skipOwn ? Parent : this;
-            while (vob != null)
+            var depth = 0;
+            var vobEnumerable = ParentEnumerable;
+
+            vobEnumerable.Skip(minDepth);
+            depth += minDepth;
+
+            foreach (var vob in vobEnumerable)
             {
-                var vobNode = ((IVobInternals)vob).TryGetOwnVobNode<T>();
+                if (maxDepth >= 0 && depth > maxDepth) break;
+                var vobNode = ((IVobInternals)vob).TryAcquireOwnVobNode<T>();
                 if (vobNode != null) return vobNode;
-                vob = vob.Parent;
             }
+
+            //var vob = ParentEnumerable.ElementAt(skipOwn ? 1 : 0);
+            //while (vob != null)
+            //{
+            //    var vobNode = ((IVobInternals)vob).TryGetOwnVobNode<T>();
+            //    if (vobNode != null) return vobNode;
+            //    vob = vob.Parent;
+            //}
             return null;
         }
 
+        ContextedVobNode<T> IVobInternals.TryGetNextContextedVobNode<T>(int minDepth) where T : class
+            => new ContextedVobNode<T>(this, ((IVobInternals)this).TryAcquireNextVobNode<T>(minDepth));
+
         /// <param name="addAtRoot">True: if missing, will add at root. False: if missing, add at local Vob</param>
         /// <returns></returns>
-        public VobNode<TInterface> GetOrAddNextVobNode<TInterface, TImplementation>(Func<IVobNode, TInterface> factory = null, bool addAtRoot = true)
+        public VobNode<TInterface> AcquireOrAddNextVobNode<TInterface, TImplementation>(Func<IVobNode, TInterface> factory = null, bool addAtRoot = true)
             where TImplementation : TInterface
             where TInterface : class
         {
@@ -558,13 +607,9 @@ namespace LionFire.Vos
             return (addAtRoot ? vob : this).GetOrAddOwnVobNode<TInterface, TImplementation>(factory);
         }
 
-        public T GetNext<T>(bool skipOwn = false)
+        public T AcquireNext<T>(int minDepth = 0, int maxDepth = -1)
             where T : class
-        {
-            var node = this.TryGetNextVobNode<T>(skipOwn);
-            if (node != null) return node.Value;
-            return default;
-        }
+            => this.TryGetNextVobNode<T>(minDepth: minDepth, maxDepth: maxDepth)?.Value ?? default;
 
 #if TODO // If needed
         public int NextVobNodeRelativeDepth

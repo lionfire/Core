@@ -30,6 +30,6 @@ namespace LionFire.Vos.Assets.Persisters
         ///  - /../otherRootVob/location/to/vob
         /// </param>
         /// <returns></returns>
-        public IPersister<IAssetReference> GetPersister(string name = null) => RootManager.GetVob(name).GetOwn<VosAssetPersister>();
+        public IPersister<IAssetReference> GetPersister(string name = null) => RootManager.GetVob(name).AcquireOwn<VosAssetPersister>();
     }
 }

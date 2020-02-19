@@ -33,7 +33,7 @@ namespace LionFire.Services
     //    //{
     //    //    //Services.InitializeRootVob((serviceProvider, root) =>
     //    //    //{
-    //    //    //    var vosStoreOptions = root.GetOwn<VosStoresOptions>();
+    //    //    //    var vosStoreOptions = root.AcquireOwn<VosStoresOptions>();
     //    //    //    var mountPoint = vosStoreOptions.StoresLocation.ToVob(); // Note: might be in another rootName!
 
     //    //    //}, rootName: rootName);

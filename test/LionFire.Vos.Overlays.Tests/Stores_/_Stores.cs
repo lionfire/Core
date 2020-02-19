@@ -117,7 +117,7 @@ namespace Stores_
             Assert.True((bool)storesManager.Disable("DataDir"));
             Assert.Empty((System.Collections.IEnumerable)storesManager.EnabledPackages);
 
-            var vobMounts = new VosReference("/stores/data").ToVob().GetOwn<VobMounts>();
+            var vobMounts = new VosReference("/stores/data").ToVob().AcquireOwn<VobMounts>();
             Assert.False(vobMounts.HasLocalReadMounts);
             Assert.False(vobMounts.HasLocalWriteMounts);
 

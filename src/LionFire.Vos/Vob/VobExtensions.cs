@@ -45,7 +45,7 @@ namespace LionFire.Vos
         }
 
         public static T GetNextOrCreateAtRoot<T>(this IVob vob, Func<IVobNode, T> valueFactory = null, bool skipOwn = false) where T : class
-            => vob.GetNext<T>() ?? vob.Root.GetOrAddOwn<T>(valueFactory);
+            => vob.AcquireNext<T>() ?? vob.Root.GetOrAddOwn<T>(valueFactory);
 
     }
 }

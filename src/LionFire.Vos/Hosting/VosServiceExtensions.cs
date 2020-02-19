@@ -13,9 +13,18 @@ using LionFire.Vos.Mounts;
 using LionFire.DependencyInjection;
 using System;
 using LionFire.Ontology;
+using LionFire.Vos.Collections;
 
 namespace LionFire.Services
 {
+    public class CollectionTypeFromProperty : ICollectionTypeProvider<VosReference>
+    {
+        public Type GetCollectionType(VosReference reference)
+        {
+            return reference.ToVob().AcquireOwn<CollectionType>()?.Type;
+        }
+    }
+
     public static class VosServiceExtensions
     {
         public static IHostBuilder AddVos(this IHostBuilder hostBuilder)
@@ -26,6 +35,8 @@ namespace LionFire.Services
                     services
                         .AddSingleton<IRootManager, RootManager>()
                         .AddSingleton<VosInitializer>()
+
+                        .TryAddEnumerableSingleton<ICollectionTypeProvider<VosReference>, CollectionTypeFromProperty>()
 
                         .AddSingleton(serviceProvider => serviceProvider.GetService<IOptionsMonitor<VosOptions>>().CurrentValue)
 
