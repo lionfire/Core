@@ -78,7 +78,7 @@ namespace TypeNameRegistry_
                 .ConfigureServices(services =>
                 {
                     services
-                        .RegisterTypeNames(typeof(TypeResolver).Assembly, t => t.Name != "TypeResolver")
+                        .RegisterTypeNames(typeof(TypeResolver).Assembly, filter: t => t.Name != "TypeResolver")
                     ;
                 })
                 .RunAsync(serviceProvider =>

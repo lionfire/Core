@@ -536,14 +536,13 @@ namespace LionFire.Vos
                 depth++;
             }
 
-            for (IVobNode<T> node = vob.TryGetOwnVobNode<T>(); node != null && maxDepth < 0 || depth <= maxDepth;)
+            for (IVobNode<T> node = vob.TryGetOwnVobNode<T>(); node != null && (maxDepth < 0 || depth <= maxDepth); node = node.ParentVobNode)
             {
                 if (node?.Value != null) yield return node.Value;
 
                 if (node?.ParentVobNode != null)
                 {
                     depth += node.Vob.Depth - node.ParentVobNode.Vob.Depth;
-                    node = node.ParentVobNode;
                 }
             }
         }
@@ -559,7 +558,7 @@ namespace LionFire.Vos
             get
             {
                 yield return this;
-                for (var vob = Parent; Parent != null; vob = vob.Parent) yield return vob;
+                for (var vob = Parent; vob != null; vob = vob.Parent) yield return vob;
             }
         }
 

@@ -4,15 +4,14 @@ using System.Text;
 
 namespace LionFire.Vos.Collections
 {
-    public class CollectionTypeName
-    {
-        public string TypeName { get; set; }
-    }
+    //public class CollectionTypeName
+    //{
+    //    public string TypeName { get; set; }
+    //}
+
     public class CollectionType
     {
-        
         public Type Type { get; set; }
-
     }
 
     public static class CollectionTypeExtensions
@@ -22,10 +21,10 @@ namespace LionFire.Vos.Collections
             var type = vob.TryGetOwnVobNode<CollectionType>()?.Value?.Type;
             if(type != null) { return type; }
 
+            var ctm = vob.AcquireNext<ICollectionTypeProvider>(1, 1);
+            if (ctm != null) { type = ctm.GetCollectionType(vob);  }
+            
             //type = vob.Reference.GetCollectionType();
-
-            //var ctm = vob.AcquireNext<CollectionsByTypeManager>(1, 1);
-            //if(ctm != null) { type = ctm.}
 
             return type;
         }

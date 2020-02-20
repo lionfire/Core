@@ -7,6 +7,7 @@
   <ItemGroup>
     <ProjectReference Include="..\LionFire.Assets.Abstractions\LionFire.Assets.Abstractions.csproj" />
     <ProjectReference Include="..\LionFire.Assets\LionFire.Assets.csproj" />
+    <ProjectReference Include="..\LionFire.Base\LionFire.Base.csproj" />
     <ProjectReference Include="..\LionFire.Persistence\LionFire.Persistence.csproj" />
     <ProjectReference Include="..\LionFire.Referencing\LionFire.Referencing.csproj" />
     <ProjectReference Include="..\LionFire.Vos.Abstractions\LionFire.Vos.Abstractions.csproj" />

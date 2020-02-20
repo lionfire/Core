@@ -13,6 +13,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 using LionFire.Vos.Collections;
+using LionFire.Types;
 
 namespace LionFire.Services
 {
@@ -27,9 +28,10 @@ namespace LionFire.Services
                 .AddSingleton<IReadHandleProvider<IAssetReference>, VosAssetHandleProvider>()
                 .AddSingleton<IReadWriteHandleProvider<IAssetReference>, VosAssetHandleProvider>()
                 .VobEnvironment("assets", assetsRoot)
+                .AddSingleton(serviceProvider => serviceProvider.GetRequiredService<IOptionsMonitor<TypeNameRegistry>>().CurrentValue)
                 .InitializeVob("$assets".ToVosReference(), (serviceProvider, vob) =>
                 {
-                    vob.AddOwn(v => new CollectionsByTypeManager(v));
+                    vob.AddOwn<ICollectionTypeProvider>(v => new CollectionsByTypeManager(v, serviceProvider.GetRequiredService<TypeNameRegistry>()));
                 })
 
                 .Configure<VosAssetOptions>(o => { })
