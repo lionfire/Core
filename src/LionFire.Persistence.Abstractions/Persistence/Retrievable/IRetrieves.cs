@@ -1,6 +1,7 @@
 ﻿using LionFire.Ontology;
 using LionFire.Resolvables;
 using LionFire.Resolves;
+using LionFire.Results;
 using LionFire.Structures;
 using System;
 using System.Threading.Tasks;
@@ -61,6 +62,20 @@ namespace LionFire.Persistence
             else if (resolveResult.IsSuccess == true) flags |= PersistenceResultFlags.NotFound;
 
             return new RetrieveResult<T>(resolveResult.Value, flags);
+        }
+
+        public static IPersistenceResult ToPersistenceResult(this ISuccessResult successResult)
+        {
+            if (successResult is IPersistenceResult pr) return pr;
+
+            PersistenceResultFlags flags = PersistenceResultFlags.None;
+
+            if (successResult.IsSuccess.HasValue)
+            {
+                flags |= successResult.IsSuccess.Value ? PersistenceResultFlags.Success : PersistenceResultFlags.Fail;
+            }
+
+            return new PersistenceResult() { Flags = flags };
         }
 
         //public static async Task<bool> Exists<T>(this ILazilyResolves<T> resolves)

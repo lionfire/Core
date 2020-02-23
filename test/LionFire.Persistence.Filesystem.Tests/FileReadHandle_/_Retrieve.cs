@@ -26,7 +26,7 @@ namespace FileReadHandle_
             })
             .RunAsync(async () =>
             {
-                var path = FsTestUtils.TestFile + ".txt";
+                var path = FsTestSetup.TestFile + ".txt";
                 Assert.False(File.Exists(path));
 
                 FileReference reference = path;

@@ -1,4 +1,5 @@
-﻿using LionFire.Structures;
+﻿using LionFire.Resolves;
+using LionFire.Structures;
 
 namespace LionFire.Persistence
 {

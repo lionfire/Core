@@ -220,8 +220,6 @@ namespace LionFire.Persistence.Filesystem
     
         #endregion
 
-
-
         private static readonly ILogger l = Log.Get();
 
         #endregion

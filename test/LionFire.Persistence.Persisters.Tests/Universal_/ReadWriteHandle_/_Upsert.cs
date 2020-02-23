@@ -43,7 +43,7 @@ namespace Universal_.ReadWriteHandle_
 
                 // TODO: Try other types of data
                 {
-                    var rwh = reference.TryGetReadWriteHandle<string>();
+                    var rwh = reference.GetReadWriteHandle<string>();
                     rwh.Value = testData;
                     var result = await rwh.Put();
                     Assert.True(result.IsSuccess);
@@ -66,7 +66,7 @@ namespace Universal_.ReadWriteHandle_
 
                 #region Delete
                 {
-                    var rwh = reference.TryGetReadWriteHandle<string>();
+                    var rwh = reference.GetReadWriteHandle<string>();
                     var deleteResult = await rwh.Delete();
                     Assert.True(deleteResult != false);
                 }
@@ -82,7 +82,7 @@ namespace Universal_.ReadWriteHandle_
                 // TODO: Assert existing handles get deletion event
 
                 // OLD - review and delete
-                //var path = FsTestUtils.TestFile;
+                //var path = FsTestSetup.TestFile;
                 //Assert.False(File.Exists(path));
 
                 //File.WriteAllText(path, TestClass1.ExpectedNewtonsoftJson);

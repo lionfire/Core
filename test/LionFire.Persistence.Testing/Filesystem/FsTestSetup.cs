@@ -5,7 +5,7 @@ using Xunit;
 
 namespace LionFire.Persistence.Filesystem.Tests
 {
-    public class FsTestUtils
+    public class FsTestSetup
     {
         public static bool EnableFileCleanup = true;
         

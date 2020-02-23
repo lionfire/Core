@@ -9,6 +9,7 @@ namespace LionFire.Vos.Handles
         , IReadHandleProvider<VosReference>
         , IReadHandleProvider // REVIEW
         , IReadWriteHandleProvider<VosReference>
+        , IReadWriteHandleProvider // REVIEW
     //, IReadHandleProvider<ProviderVosReference>
     {
         //IPersisterProvider<ProviderVosReference> providerFilePersisterProvider;
@@ -21,10 +22,12 @@ namespace LionFire.Vos.Handles
             //this.providerFilePersisterProvider = providerFilePersisterProvider;
         }
 
-        IReadHandle<T> IReadHandleProvider.GetReadHandle<T>(IReference reference) => GetReadHandle<T>((VosReference)reference);  // REVIEW
 
         public override IReadHandle<T> GetReadHandle<T>(VosReference reference) 
             => reference.ToVob().GetReadHandle<T>();
+
+        IReadHandle<T> IReadHandleProvider.GetReadHandle<T>(IReference reference) => GetReadHandle<T>((VosReference)reference);  // REVIEW
+        IReadWriteHandle<T> IReadWriteHandleProvider.GetReadWriteHandle<T>(IReference reference) => GetReadWriteHandle<T>((VosReference)reference);  // REVIEW
 
         //public IReadHandle<T> GetReadHandle<T>(ProviderVosReference reference)
         //    => new PersisterReadWriteHandle<ProviderVosReference, T, IPersister<ProviderVosReference>>(providerFilePersisterProvider.GetPersister(reference.Persister), reference);

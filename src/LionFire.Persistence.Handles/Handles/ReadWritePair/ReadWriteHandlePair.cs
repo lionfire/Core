@@ -62,6 +62,10 @@ namespace LionFire.Persistence
         public abstract void MarkDeleted();
         public abstract Task<ISuccessResult> Put();
         public abstract Task<ISuccessResult> Put(TValue value);
+
+        //public Task<bool?> Delete() => WriteHandle.Delete();
+        //public void MarkDeleted() => WriteHandle.MarkDeleted();
+        //public Task<ISuccessResult> Put(TValue value) => WriteHandle.Put(value);
     }
 
     /// <summary>
@@ -124,7 +128,7 @@ namespace LionFire.Persistence
                 {
                     if (Reference != null)
                     {
-                        writeHandle = UpCast<IWriteHandleBase<TValue>, IWriteHandle<TValue>>(Reference.GetWriteHandle<TValue>());
+                        writeHandle = UpCast<IWriteHandleBase<TValue>, IWriteHandle<TValue>>(Reference.TryGetWriteHandle<TValue>());
                         if (readHandle != null)
                         {
                             var getResult = readHandle.GetValueWithoutRetrieve();
@@ -149,7 +153,7 @@ namespace LionFire.Persistence
             {
                 if (Reference != null)
                 {
-                    writeHandle = Reference.GetWriteHandle<TValue>();
+                    writeHandle = Reference.TryGetWriteHandle<TValue>();
                 }
             }
             writeHandle.Value = value;
@@ -184,21 +188,23 @@ namespace LionFire.Persistence
             writeHandle?.DiscardValue();
         }
 
-        #endregion
 
-        #region R<T>
+        #region IReadHandle<T>
 
         TValue IReadWrapper<TValue>.Value => ReadHandle.Value;
 
         #endregion
 
-        #region WO<T>
+        #region IWriteHandle<T>
 
         public bool GetLocalValueFromRemote => throw new NotImplementedException();
 
         TValue IWriteWrapper<TValue>.Value { set => WriteHandle.Value = value; }
 
         Task<ISuccessResult> IPuts.Put() => WriteHandle.Put();
+        
+
+        #endregion
 
         #endregion
 

@@ -46,7 +46,7 @@ namespace List_
                        .RunAsync(async () =>
                        {
                            var guid = Guid.NewGuid();
-                           var dir = Path.Combine(FsTestUtils.DataDir, "UnitTest - " + guid.ToString());
+                           var dir = Path.Combine(FsTestSetup.DataDir, "UnitTest - " + guid.ToString());
                            var dirRef = dir.ToFileReference();
 
                            Assert.False(Directory.Exists(dir));

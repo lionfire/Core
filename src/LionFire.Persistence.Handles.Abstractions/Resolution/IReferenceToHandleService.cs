@@ -2,6 +2,8 @@
 using System;
 using System.Collections.Generic;
 
+// TODO: enable nullable, make Get methods non-nullable, and add TryGet methods that are nullable in return type.
+
 namespace LionFire.Persistence.Handles
 {
     public interface IReferenceToHandleService //: IReferenceToHandleProvider<IReference>

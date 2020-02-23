@@ -19,7 +19,7 @@
     /// IReadWriteHandleEx
     /// </summary>
     /// <typeparam name="T"></typeparam>
-    public interface IReadWriteHandle<T> : IReadHandle<T>, IReadWriteHandleBase<T>, IReadWriteHandle { }
+    public interface IReadWriteHandle<T> : IReadHandle<T>, IWriteHandle<T>, IReadWriteHandleBase<T>, IReadWriteHandle { }
 
     // REVIEW: Notifying interfaces
 

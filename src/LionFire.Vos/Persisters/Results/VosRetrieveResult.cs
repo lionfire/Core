@@ -1,4 +1,6 @@
-﻿using System;
+﻿using LionFire.Referencing;
+using LionFire.Vos.Mounts;
+using System;
 using System.Collections.Generic;
 
 namespace LionFire.Persistence.Persisters.Vos
@@ -30,6 +32,8 @@ namespace LionFire.Persistence.Persisters.Vos
 
         public PersistenceResultFlags Flags { get; set; }
         public bool? IsSuccess => Flags.IsSuccessTernary();
+
+        public IReference ResolvedVia { get; set; }
 
         #region Static
 

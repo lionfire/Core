@@ -11,6 +11,8 @@ namespace LionFire.Persistence.Filesystem
         , IReadWriteHandleProvider<FileReference>
         , IReadWriteHandleProvider // REVIEW
         , IReadHandleProvider<ProviderFileReference>
+        , IWriteHandleProvider<FileReference>
+        , IWriteHandleProvider
     {
         IPersister<FileReference> persister;
         IPersisterProvider<ProviderFileReference> providerFilePersisterProvider;
@@ -40,13 +42,14 @@ namespace LionFire.Persistence.Filesystem
 
 #warning TODO: ReadWrite handle
 
-
+        public IWriteHandle<T> GetWriteHandle<T>(FileReference reference, T handleObject = default) => GetReadWriteHandle<T>(reference); // REVIEW - 
+        IWriteHandle<T>? IWriteHandleProvider.GetWriteHandle<T>(IReference reference, T handleObject) => (reference is FileReference fileReference) ? GetWriteHandle<T>(fileReference) : null;
     }
 
-    public static class IReadHandleProviderExtensions
-    {
-        public static IReadHandle<TValue> GetReadHandle<TValue, TReference>(this IReadHandleProvider<TReference> readHandleProvider, IReference reference)
-            where TReference : IReference
-            => (reference is TReference concreteReference) ? readHandleProvider.GetReadHandle<TValue>(concreteReference) : null;
-    }
+    //public static class IReadHandleProviderExtensions
+    //{
+    //    public static IReadHandle<TValue> GetReadHandle<TValue, TReference>(this IReadHandleProvider<TReference> readHandleProvider, IReference reference)
+    //        where TReference : IReference
+    //        => (reference is TReference concreteReference) ? readHandleProvider.GetReadHandle<TValue>(concreteReference) : null;
+    //}
 }

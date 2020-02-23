@@ -27,7 +27,7 @@ namespace LionFire.Persistence.Assets.Tests
         public async void P_GetReadHandle()
         {
 
-            var diskAssetsDir = Path.Combine(FsTestUtils.DataDir, "UnitTestAssets-" + Guid.NewGuid().ToString());
+            var diskAssetsDir = Path.Combine(FsTestSetup.DataDir, "UnitTestAssets-" + Guid.NewGuid().ToString());
 
             await AssetTestBuilder.Create()
                  .AddVos()
@@ -43,7 +43,7 @@ namespace LionFire.Persistence.Assets.Tests
                 })
                 .RunAsync(async () =>
               {
-                  var path = Path.Combine(diskAssetsDir, "TestClass1", FsTestUtils.TestFileName + ".json");
+                  var path = Path.Combine(diskAssetsDir, "TestClass1", FsTestSetup.TestFileName + ".json");
                   try
                   {
 

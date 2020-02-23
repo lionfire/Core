@@ -68,20 +68,13 @@ namespace LionFire.Persistence.Persisters.Vos
             {
                 foreach (var mount in vobMounts.RankedEffectiveReadMounts)
                 {
-
-                    //var relativeDepth = vob.Depth - mount.VobDepth;
-
                     var relativePathChunks = vob.PathElements.Skip(mount.VobDepth);
-
                     var effectiveReference = !relativePathChunks.Any() ? mount.Target : mount.Target.GetChildSubpath(relativePathChunks);
-                    
                     var rh = effectiveReference.GetReadHandle<TValue>(ServiceProvider);
 
-                    //anyMounts = true;
                     //var rh = vob.GetReadHandleFromMount<TValue>(mount);
                     //if (rh == null) continue;
 
-                    //var childResult = await rh.Retrieve().ConfigureAwait(false);
                     var childResult = (await rh.Resolve().ConfigureAwait(false)).ToRetrieveResult();
 
                     if (childResult.IsFail()) result.Flags |= PersistenceResultFlags.Fail; // Indicates that at least one underlying persister failed
@@ -93,7 +86,8 @@ namespace LionFire.Persistence.Persisters.Vos
                         if (childResult.Flags.HasFlag(PersistenceResultFlags.Found))
                         {
                             result.Value = childResult.Value;
-                            return childResult;
+                            result.ResolvedVia = mount.Target;
+                            return result;
                         }
                     }
                 }
@@ -104,8 +98,53 @@ namespace LionFire.Persistence.Persisters.Vos
 
         public Task<IPersistenceResult> Create<TValue>(IReferencable<IVosReference> referencable, TValue value) => throw new System.NotImplementedException();
         public Task<IPersistenceResult> Update<TValue>(IReferencable<IVosReference> referencable, TValue value) => throw new System.NotImplementedException();
-        public Task<IPersistenceResult> Upsert<TValue>(IReferencable<IVosReference> referencable, TValue value) => throw new System.NotImplementedException();
+        public async Task<IPersistenceResult> Upsert<TValue>(IReferencable<IVosReference> referencable, TValue value)
+        {
+            var vob = Root[referencable.Reference.Path];
+
+            var result = new VosPersistenceResult();
+
+            bool anyMounts = false;
+            var vobMounts = vob.AcquireNext<VobMounts>();
+            if (vobMounts != null)
+            {
+                foreach (var mount in vobMounts.RankedEffectiveWriteMounts)
+                {
+                    var relativePathChunks = vob.PathElements.Skip(mount.VobDepth);
+                    var effectiveReference = !relativePathChunks.Any() ? mount.Target : mount.Target.GetChildSubpath(relativePathChunks);
+
+                    var wh = effectiveReference.GetWriteHandle<TValue>(ServiceProvider);
+
+                    //anyMounts = true;
+                    //var rh = vob.GetReadHandleFromMount<TValue>(mount);
+                    //if (rh == null) continue;
+
+                    wh.Value = value;
+                    var childResult = (await wh.Put().ConfigureAwait(false)).ToPersistenceResult();
+
+                    if (childResult.IsFail()) result.Flags |= PersistenceResultFlags.Fail; // Indicates that at least one underlying persister failed
+
+                    if (childResult.IsSuccess == true)
+                    {
+                        result.Flags |= PersistenceResultFlags.Success; // Indicates that at least one underlying persister succeeded
+                        result.ResolvedVia = mount.Target;
+
+                        return result;
+                    }
+                }
+            }
+            if (!anyMounts) result.Flags |= PersistenceResultFlags.MountNotAvailable;
+            return result;
+        }
         public Task<IPersistenceResult> Delete(IReferencable<IVosReference> referencable) => throw new System.NotImplementedException();
-        public Task<IRetrieveResult<IEnumerable<string>>> List(IReferencable<IVosReference> referencable, ListFilter filter = null) => throw new NotImplementedException();
+        public Task<IRetrieveResult<IEnumerable<string>>> List(IReferencable<IVosReference> referencable, ListFilter filter = null)
+        {
+            throw new NotImplementedException();
+        }
+    }
+
+    public class VosPersistenceResult : PersistenceResult
+    {
+        public IReference ResolvedVia { get; set; }
     }
 }

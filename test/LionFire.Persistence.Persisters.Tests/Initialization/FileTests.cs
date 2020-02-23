@@ -22,7 +22,7 @@ namespace LionFire
                               ;
         }
 
-        public string GetPathForTestPath(string testPath) => Path.Combine(FsTestUtils.DataDir, testPath);
+        public string GetPathForTestPath(string testPath) => Path.Combine(FsTestSetup.DataDir, testPath);
         public IReference GetReferenceForTestPath(string testPath) => new FileReference(GetPathForTestPath(testPath));
 
     }

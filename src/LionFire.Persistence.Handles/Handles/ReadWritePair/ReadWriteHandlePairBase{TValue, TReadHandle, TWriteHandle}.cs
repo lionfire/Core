@@ -96,7 +96,7 @@ namespace LionFire.Persistence
                 {
                     if (Reference != null)
                     {
-                        writeHandle = (TWriteHandle) Reference.GetWriteHandle<TValue>(); // CAST
+                        writeHandle = (TWriteHandle) Reference.TryGetWriteHandle<TValue>(); // CAST
                     }
                 }
                 return writeHandle;

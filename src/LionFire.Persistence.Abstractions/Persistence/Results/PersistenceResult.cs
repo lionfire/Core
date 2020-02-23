@@ -5,8 +5,9 @@ using LionFire.Referencing;
 
 namespace LionFire.Persistence
 {
-    public struct PersistenceResult : IPersistenceResult
+    public class PersistenceResult : IPersistenceResult
     {
+        public PersistenceResult() { }
 
         public PersistenceResult(PersistenceResultFlags flags)
         {
@@ -15,8 +16,6 @@ namespace LionFire.Persistence
         }
 
         public object Error { get; set; }
-
-
 
         public PersistenceResultFlags Flags { get; set; }
 
@@ -33,21 +32,6 @@ namespace LionFire.Persistence
         public static readonly PersistenceResult PreviewSuccess = new PersistenceResult { Flags = PersistenceResultFlags.PreviewSuccess };
     }
 
-    public struct ExistsResult : IPersistenceResult
-    {
-        public object Error { get; set; }
-
-        public PersistenceResultFlags Flags { get; set; }
-
-        public bool? IsSuccess => Flags.IsSuccessTernary();
-
-        public static readonly PersistenceResult Success = new PersistenceResult { Flags = PersistenceResultFlags.Success };
-        public static readonly PersistenceResult Found = new PersistenceResult { Flags = PersistenceResultFlags.Found };
-        public static readonly PersistenceResult NotFound = new PersistenceResult { Flags = PersistenceResultFlags.NotFound };
-        public static readonly PersistenceResult PreviewFail = new PersistenceResult { Flags = PersistenceResultFlags.PreviewFail };
-        public static readonly PersistenceResult PreviewSuccess = new PersistenceResult { Flags = PersistenceResultFlags.PreviewSuccess };
-    }
-
     //public struct PersistenceResult<TObject>
     //{
     //    public TObject Object { get; set; }
@@ -58,20 +42,7 @@ namespace LionFire.Persistence
 
     //}
 
-    //public struct OBusPersistenceResult<TObject, TResolutionInfo>
-    //{
-    //    public TResolutionInfo ResolutionInfo { get; set; }
-    //}
 
-    //public class VosResolutionInfo
-    //{
-    //    public IReference UnderlyingReference { get; set; }
-    //}
-
-    //public struct VosPersistenceResult<TObject>
-    //{
-
-    //}
 }
 
 

@@ -29,7 +29,7 @@ namespace FilesystemPersister_
             {
                 await FilesystemTestHost.Create().RunAsync(async () =>
                 {
-                    var path = FsTestUtils.TestFile + ".txt";
+                    var path = FsTestSetup.TestFile + ".txt";
                     Assert.False(File.Exists(path));
 
                     #region Primary operation
@@ -62,7 +62,7 @@ namespace FilesystemPersister_
             {
                 await FilesystemTestHost.Create().RunAsync(async () =>
                 {
-                    var path = FsTestUtils.TestFile + ".bin";
+                    var path = FsTestSetup.TestFile + ".bin";
                     Assert.False(File.Exists(path));
 
                     var testContents = new byte[] { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 32, 33, 34, 35, 64, 65, 66, 67, 68 };

@@ -6,7 +6,7 @@ using LionFire.Ontology;
 
 namespace LionFire.Vos
 {
- 
+
 
     public class VosReference<TValue> : VosReferenceBase<VosReference<TValue>>
     {
@@ -45,7 +45,7 @@ namespace LionFire.Vos
     /// </remarks>
     public class VosReference : VosReferenceBase<VosReference>
     {
-        
+
 
         #region Constructors
 
@@ -70,6 +70,13 @@ namespace LionFire.Vos
             Type = type;
             Path = path;
             Filters = filters;
+        }
+
+        public VosReference(VosReference cloneSource, string newPath)
+        {
+            Type = cloneSource.Type;
+            Path = newPath;
+            Filters = cloneSource.Filters;
         }
 
         #endregion

@@ -37,7 +37,7 @@ namespace Persister_.Filesystem_
                 })
                 .RunAsync(async () =>
             {
-                var path = FsTestUtils.TestFile + ".json";
+                var path = FsTestSetup.TestFile + ".json";
 
                 var testContents = TestClass1.Create;
                 var serializedTestContents = ServiceLocator.Get<NewtonsoftJsonSerializer>().ToString(testContents).String;
@@ -62,7 +62,7 @@ namespace Persister_.Filesystem_
         {
             await TestHostBuilders.CreateFileHost().RunAsync(async () =>
             {
-                var path = FsTestUtils.TestFile + ".txt";
+                var path = FsTestSetup.TestFile + ".txt";
                 Assert.False(File.Exists(path));
 
                 var testContents = "testing123";
@@ -83,7 +83,7 @@ namespace Persister_.Filesystem_
         {
             await TestHostBuilders.CreateFileHost().RunAsync(async () =>
             {
-                var path = FsTestUtils.TestFile + ".bin";
+                var path = FsTestSetup.TestFile + ".bin";
                 Assert.False(File.Exists(path));
 
                 var testContents = new byte[] { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 32, 33, 34, 35, 64, 65, 66, 67, 68 };
@@ -105,7 +105,7 @@ namespace Persister_.Filesystem_
         {
             await TestHostBuilders.CreateFileHost().RunAsync(async () =>
             {
-                var path = FsTestUtils.TestFile + ".bin";
+                var path = FsTestSetup.TestFile + ".bin";
                 Assert.False(File.Exists(path));
 
                 var testContents = new byte[] { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 32, 33, 34, 35, 64, 65, 66, 67, 68 };
@@ -141,7 +141,7 @@ namespace Persister_.Filesystem_
                 //})
                 .RunAsync(async () =>
             {
-                var path = FsTestUtils.TestFile + ".json";
+                var path = FsTestSetup.TestFile + ".json";
                 Assert.False(File.Exists(path));
 
                 File.WriteAllText(path, TestClass1.ExpectedNewtonsoftJson);
@@ -168,7 +168,7 @@ namespace Persister_.Filesystem_
         {
             await TestHostBuilders.CreateFileHost().RunAsync(async () =>
             {
-                var path = FsTestUtils.TestFile + ".txt";
+                var path = FsTestSetup.TestFile + ".txt";
                 Assert.False(File.Exists(path));
 
                 var testContents = "testing123";
@@ -192,7 +192,7 @@ namespace Persister_.Filesystem_
             await TestHostBuilders.CreateFileHost().RunAsync(async () =>
             {
 
-                var path = FsTestUtils.TestFile + ".bin";
+                var path = FsTestSetup.TestFile + ".bin";
                 Assert.False(File.Exists(path));
 
                 var testContents = new byte[] { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 32, 33, 34, 35, 64, 65, 66, 67, 68 };

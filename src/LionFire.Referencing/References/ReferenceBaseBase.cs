@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
+using System.Reflection;
 using System.Text;
 
 namespace LionFire.Referencing
@@ -41,8 +43,30 @@ namespace LionFire.Referencing
         }
 
         IReference ICloneableReference.CloneWithPath(string newPath) => CloneWithPath(newPath);
+
+        private static ConstructorInfo Ctor_ConcreteType_NewPath => ctor_ConcreteType_NewPath 
+            ??= typeof(ConcreteType).GetConstructors().Where(c =>
+                {
+                    var p = c.GetParameters();
+                    if (p.Length != 2) return false;
+                    if (p[0].ParameterType != typeof(ConcreteType)) return false;
+                    if (p[1].ParameterType != typeof(string)) return false;
+                    if (!p[1].Name.ToLowerInvariant().Contains("path")) return false;
+                    return true;
+                }).FirstOrDefault();
+        private static ConstructorInfo ctor_ConcreteType_NewPath;
+
+        /// <summary>
+        /// Default implementation:
+        ///  - Looks for a constructor with the parameter types (ConcreteType cloneSource, string newPath) (2nd parameter must have "path" in its name, case ignored), and invokes it if present, else
+        ///  - invokes Clone() and InternalSetPath(newPath)
+        /// </summary>
+        /// <param name="newPath"></param>
+        /// <returns></returns>
         public virtual ConcreteType CloneWithPath(string newPath)
         {
+            if (Ctor_ConcreteType_NewPath != null) return (ConcreteType)Ctor_ConcreteType_NewPath.Invoke(new object[] { this, newPath });
+
             var result = Clone();
             result.InternalSetPath(newPath);
             return result;

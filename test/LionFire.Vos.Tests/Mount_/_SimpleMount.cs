@@ -29,19 +29,19 @@ namespace Mount_
             {
                 services
                     .AddFilesystem()
-                    .VosMount("/testDir", FsTestUtils.DataDir.ToFileReference())
-                    .VosMount("/testDir2", FsTestUtils.DataDir.ToFileReference())
+                    .VosMount("/testDir", FsTestSetup.DataDir.ToFileReference())
+                    .VosMount("/testDir2", FsTestSetup.DataDir.ToFileReference())
                     .VosMount("/_/vos", new VosReference("/") { Persister = "vos" }, new MountOptions
                     {
                         IsReadOnly = true,
                         IsExclusive = true,
                     })
-                //.TryAddEnumerableSingleton(new TMount("testDir", new FileReference(FsTestUtils.DataDir))
+                //.TryAddEnumerableSingleton(new TMount("testDir", new FileReference(FsTestSetup.DataDir))
                 ;
             })
             .RunAsync(async services =>
             {
-                var path = FsTestUtils.TestFile + ".txt";
+                var path = FsTestSetup.TestFile + ".txt";
                 var testContents = "B9E72769-E1DA-4648-B766-FAE37D2317E5";
 
                 #region Create Test File

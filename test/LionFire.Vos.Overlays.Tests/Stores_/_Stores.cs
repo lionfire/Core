@@ -163,7 +163,7 @@ namespace Stores_
         [Fact]
         public async void P_ManualSetup()
         {
-            var dataDir = Path.Combine(FsTestUtils.DataDir, "UnitTest " + Guid.NewGuid().ToString(), "TestPluginsDiskDir");
+            var dataDir = Path.Combine(FsTestSetup.DataDir, "UnitTest " + Guid.NewGuid().ToString(), "TestPluginsDiskDir");
 
             await VosHost.Create()
                     .ConfigureServices((context, services) =>

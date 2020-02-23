@@ -29,12 +29,12 @@ namespace Named_
             {
                 services
                     .AddFilesystem()
-                    .Configure<FilesystemPersisterOptions>("UnitTestRoot", c => c.RootDirectory = FsTestUtils.DataDir)
+                    .Configure<FilesystemPersisterOptions>("UnitTestRoot", c => c.RootDirectory = FsTestSetup.DataDir)
                 ;
             })
             .RunAsync(async () =>
             {
-                var path = FsTestUtils.TestFile + ".txt";
+                var path = FsTestSetup.TestFile + ".txt";
                 Assert.False(File.Exists(path));
 
                 var testContents = "F70625BC-A050-4F36-9710-9DC4AB8C40B6";
@@ -78,19 +78,19 @@ namespace Named_
             {
                 services
                     .AddFilesystem()
-                    .Configure<FilesystemPersisterOptions>("UnitTestDir", c => c.RootDirectory = FsTestUtils.DataDir)
+                    .Configure<FilesystemPersisterOptions>("UnitTestDir", c => c.RootDirectory = FsTestSetup.DataDir)
                 ;
             })
             .RunAsync(async () =>
             {
                 var subdir = "UnitTestSubdir-" + testDirGuid;
-                var dir = Path.Combine(FsTestUtils.DataDir, subdir);
+                var dir = Path.Combine(FsTestSetup.DataDir, subdir);
                 Assert.False(Directory.Exists(dir));
                 Directory.CreateDirectory(dir);
                 Assert.True(Directory.Exists(dir));
 
 
-                var path = FsTestUtils.TestFileForDir(dir) + ".txt";
+                var path = FsTestSetup.TestFileForDir(dir) + ".txt";
                 Assert.False(File.Exists(path));
 
                 var testContents = "12341234-A050-4F36-9710-9DC4AB8C40B6";
@@ -127,12 +127,12 @@ namespace Named_
             {
                 services
                     .AddFilesystem()
-                    .Configure<FilesystemPersisterOptions>("UnitTestRoot", c => c.RootDirectory = FsTestUtils.DataDir)
+                    .Configure<FilesystemPersisterOptions>("UnitTestRoot", c => c.RootDirectory = FsTestSetup.DataDir)
                 ;
             })
             .RunAsync(async () =>
             {
-                var path = FsTestUtils.TestFile + ".txt";
+                var path = FsTestSetup.TestFile + ".txt";
 
                 var reference = new ProviderFileReference("UnitTestRoot-Unknown1234567890", Path.GetFileName(path));
                 Assert.Equal("UnitTestRoot-Unknown1234567890", reference.Persister);

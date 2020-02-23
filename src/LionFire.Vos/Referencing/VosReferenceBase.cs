@@ -58,12 +58,13 @@ namespace LionFire.Vos
         public static VosReference FromRootName(string rootName = VosConstants.DefaultRootName)
             => rootName == VosConstants.DefaultRootName ? new VosReference("/") : new VosReference("/../" + rootName);
 
-        public override TConcrete CloneWithPath(string newPath)
-        {
-            var result = this.Clone();
-            result.path = newPath;
-            return result;
-        }
+        //public override TConcrete CloneWithPath(string newPath)
+        //{
+        //    base.CloneWithPath
+        //    var result = this.Clone();
+        //    result.path = newPath;
+        //    return result;
+        //}
 
         #endregion
 

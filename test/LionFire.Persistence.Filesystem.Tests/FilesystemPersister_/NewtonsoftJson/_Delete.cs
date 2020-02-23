@@ -33,7 +33,7 @@ namespace FilesystemPersister_
             {
                 await NewtonsoftJsonFilesystemTestHost.Create().RunAsync(async () =>
                 {
-                    var path = FsTestUtils.TestFile + ".json";
+                    var path = FsTestSetup.TestFile + ".json";
                     Assert.False(File.Exists(path));
 
                     File.WriteAllText(path, TestClass1.ExpectedNewtonsoftJson);
@@ -53,7 +53,7 @@ namespace FilesystemPersister_
             {
                 await NewtonsoftJsonFilesystemTestHost.Create().RunAsync(async () =>
                 {
-                    var path = FsTestUtils.TestFile + ".json";
+                    var path = FsTestSetup.TestFile + ".json";
                     Assert.False(File.Exists(path));
 
                     File.WriteAllText(path, TestClass1.ExpectedNewtonsoftJson);
@@ -73,7 +73,7 @@ namespace FilesystemPersister_
             {
                 await FilesystemTestHost.Create().RunAsync(async () =>
                 {
-                    var path = FsTestUtils.TestFile + ".json";
+                    var path = FsTestSetup.TestFile + ".json";
                     Assert.False(File.Exists(path));
 
                     File.WriteAllText(path, TestClass1.ExpectedNewtonsoftJson);
@@ -93,7 +93,7 @@ namespace FilesystemPersister_
             {
                 await FilesystemTestHost.Create().RunAsync(async () =>
                 {
-                    var path = FsTestUtils.TestFile + ".json";
+                    var path = FsTestSetup.TestFile + ".json";
                     Assert.False(File.Exists(path));
 
                     var persistenceResult = await ServiceLocator.Get<FilesystemPersister>().Delete(path.ToFileReference());

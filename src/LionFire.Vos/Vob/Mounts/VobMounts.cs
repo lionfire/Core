@@ -115,7 +115,7 @@ namespace LionFire.Vos.Mounts
             {
                 if (!CanHaveMultiReadMounts)
                 {
-                    throw new VosException("Already has read mount, but not allowed to have multiple read mounts.  First unmount the existing read mount.");
+                    throw new VosException("Already has read mount, but not allowed to have multiple read mounts because CanHaveMultiReadMounts is false.  First unmount the existing read mount.");
                 }
                 if (localReadMount.Options.IsExclusive || mount.Options.IsExclusive)
                 {
@@ -308,9 +308,56 @@ namespace LionFire.Vos.Mounts
             }
         }
 
-        private bool MountWrite(IMount mount, bool force = false)
+        private bool MountWrite(IMount mount, bool force = false) // DUPLICATE of MountRead
         {
-            throw new NotImplementedException();
+            #region Validation
+
+            if (localWriteMounts == null && localWriteMount == null)
+            {
+                localWriteMount = mount;
+                return true;
+            }
+            if (localReadMount != null && (localWriteMount.Options.IsExclusiveWithReadAndWrite || mount.Options.IsExclusiveWithReadAndWrite))
+            {
+                throw new VosException("Already has read mount, but either this mount or existing write mount has IsExclusiveWithReadAndWrite == true.");
+            }
+            if (localWriteMount != null)
+            {
+                if (!CanHaveMultiWriteMounts)
+                {
+                    throw new VosException("Already has write mount, but not allowed to have multiple write mounts because CanHaveMultiWriteMounts is false.  First unmount the existing read mount.");
+                }
+                if (localWriteMount.Options.IsExclusive || mount.Options.IsExclusive)
+                {
+                    throw new VosException("Already has read mount, but one or both mounts has IsExclusive == true.  First unmount one of the mounts, or disable the IsExclusive flag(s) before mounting.");
+                }
+            }
+
+            #endregion
+
+            if (localWriteMount == null)
+            {
+                if (localWriteMounts == null)
+                {
+                    localWriteMount = mount;
+                }
+                else
+                {
+                    localWriteMounts.Add(mount);
+                }
+            }
+            else
+            {
+                var existingMount = localWriteMount;
+                localWriteMounts = new List<IMount>
+                {
+                    existingMount,
+                    mount
+                };
+                localWriteMount = null;
+            }
+
+            return true;
         }
 
         public int Unmount(IReference mountTarget)

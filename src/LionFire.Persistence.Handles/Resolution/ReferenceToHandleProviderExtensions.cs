@@ -8,17 +8,17 @@ namespace LionFire.Referencing.Ex
     {
         #region IReadHandleProvider
 
-//#error NEXT: Debug _SimpleMount.Pass, then add IServiceProvider parameters to other methods here
+        //#error NEXT: Debug _SimpleMount.Pass, then add IServiceProvider parameters to other methods here
 
         public static IReadHandleProvider TryGetReadHandleProvider(this IReference reference, IServiceProvider serviceProvider = null)
             => ServiceLocator.Get<IReferenceToHandleService>(serviceProvider).GetReadHandleProvider(reference);
 
-        public static IReadHandleProvider<TReference> GetReadHandleProvider<TReference>(this TReference reference, IServiceProvider serviceProvider = null)
-            where TReference: IReference
+        public static IReadHandleProvider<TReference> TryGetReadHandleProvider<TReference>(this TReference reference, IServiceProvider serviceProvider = null)
+            where TReference : IReference
             => ServiceLocator.Get<IReferenceToHandleService>(serviceProvider).GetReadHandleProvider<TReference>(reference);
 
-        public static IReadHandleProvider GetReadHandleProvider(this IReference reference, IServiceProvider serviceProvider = null) 
-            => TryGetReadHandleProvider(reference, serviceProvider) 
+        public static IReadHandleProvider GetReadHandleProvider(this IReference reference, IServiceProvider serviceProvider = null)
+            => TryGetReadHandleProvider(reference, serviceProvider)
                   ?? throw new HasUnresolvedDependenciesException($"No {nameof(IReadHandleProvider)} could be found for reference of type {reference?.GetType().FullName}");
 
         #endregion
@@ -36,19 +36,19 @@ namespace LionFire.Referencing.Ex
             => GetReadHandleCreator(reference) ?? throw new HasUnresolvedDependenciesException($"No {nameof(IReadHandleCreator)} could be found for reference of type {reference?.GetType().FullName}");
 
         #endregion
-        
+
 
         #region IReadWriteHandleProvider
 
-        public static IReadWriteHandleProvider GetReadWriteHandleProvider(this IReference reference)
-            => ServiceLocator.Get<IReferenceToHandleService>().GetReadWriteHandleProvider(reference);
+        public static IReadWriteHandleProvider TryGetReadWriteHandleProvider(this IReference reference, IServiceProvider serviceProvider = null)
+            => ServiceLocator.Get<IReferenceToHandleService>(serviceProvider).GetReadWriteHandleProvider(reference);
 
-        public static IReadWriteHandleProvider<TReference> GetReadWriteHandleProvider<TReference>(this TReference reference)
+        public static IReadWriteHandleProvider<TReference> TryGetReadWriteHandleProvider<TReference>(this TReference reference, IServiceProvider serviceProvider = null)
                     where TReference : IReference
-             => ServiceLocator.Get<IReferenceToHandleService>().GetReadWriteHandleProvider<TReference>(reference);
+             => ServiceLocator.Get<IReferenceToHandleService>(serviceProvider).GetReadWriteHandleProvider<TReference>(reference);
 
-        public static IReadWriteHandleProvider ToReadWriteHandleProvider(this IReference reference) 
-            => GetReadWriteHandleProvider(reference) ?? throw new HasUnresolvedDependenciesException($"No {nameof(IReadWriteHandleProvider)} could be found for reference of type {reference?.GetType().FullName}");
+        public static IReadWriteHandleProvider GetReadWriteHandleProvider(this IReference reference, IServiceProvider serviceProvider = null)
+            => TryGetReadWriteHandleProvider(reference, serviceProvider) ?? throw new HasUnresolvedDependenciesException($"No {nameof(IReadWriteHandleProvider)} could be found for reference of type {reference?.GetType().FullName}");
 
         #endregion
 
@@ -68,18 +68,18 @@ namespace LionFire.Referencing.Ex
 
         #region IWriteOnlyHandleProvider
 
-        public static IWriteHandleProvider GetWriteHandleProvider(this IReference reference)
-            => ServiceLocator.Get<IReferenceToHandleService>().GetWriteHandleProvider(reference);
+        public static IWriteHandleProvider TryGetWriteHandleProvider(this IReference reference, IServiceProvider serviceProvider = null)
+            => ServiceLocator.Get<IReferenceToHandleService>(serviceProvider).GetWriteHandleProvider(reference);
 
-        public static IWriteHandleProvider<TReference> GetWriteHandleProvider<TReference>(this TReference reference)
+        public static IWriteHandleProvider<TReference> TryGetWriteHandleProvider<TReference>(this TReference reference, IServiceProvider serviceProvider = null)
             where TReference : IReference
-            => ServiceLocator.Get<IReferenceToHandleService>().GetWriteHandleProvider<TReference>(reference);
+            => ServiceLocator.Get<IReferenceToHandleService>(serviceProvider).GetWriteHandleProvider<TReference>(reference);
 
-        public static IWriteHandleProvider ToWriteHandleProvider(this IReference reference)
-            => GetWriteHandleProvider(reference) ?? throw new HasUnresolvedDependenciesException($"No {nameof(IWriteHandleProvider)} could be found for reference of type {reference?.GetType().FullName}");
+        public static IWriteHandleProvider GetWriteHandleProvider(this IReference reference, IServiceProvider serviceProvider = null)
+            => TryGetWriteHandleProvider(reference, serviceProvider) ?? throw new HasUnresolvedDependenciesException($"No {nameof(IWriteHandleProvider)} could be found for reference of type {reference?.GetType().FullName}");
 
         #endregion
-        
+
         #region ICollectionHandleProvider
 
         public static ICollectionHandleProvider GetCollectionHandleProvider(this IReference reference)

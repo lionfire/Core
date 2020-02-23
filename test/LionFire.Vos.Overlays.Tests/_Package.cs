@@ -22,7 +22,7 @@ namespace Packages_
         [Fact]
         public async void Pass()
         {
-            var pluginsDir = Path.Combine(FsTestUtils.DataDir, "UnitTest " + Guid.NewGuid().ToString(), "TestPluginsDiskDir");
+            var pluginsDir = Path.Combine(FsTestSetup.DataDir, "UnitTest " + Guid.NewGuid().ToString(), "TestPluginsDiskDir");
 
             //await VosAppHost.Create() // FUTURE: Also test this with VosApp?  Pass in IHostBuilder to a method?
             await VosHost.Create()
