@@ -20,14 +20,14 @@ namespace LionFire.Persistence.Persisters
             TypeResolver = typeResolver;
         }
 
-        public async Task<IEnumerable<string>> List(Type itemType, IPersister<TReference> persister, IReferencable<TReference> referencable, ListFilter? filter = null)
+        public async Task<IEnumerable<Listing>> List(Type itemType, IPersister<TReference> persister, IReferencable<TReference> referencable, ListFilter? filter = null)
         {
             //var result = (await persister.List(referencable, filter).ConfigureAwait(false)).ThrowIfUnsuccessful().Value;
             throw new NotImplementedException("NEXT - how to do all this?");
             //persister.List(referencable, filter)
         }
 
-        public  Task<IEnumerable<string>> List(IPersister<TReference> persister, IReferencable<TReference> referencable, ListFilter? filter = null)
+        public  Task<IEnumerable<Listing>> List(IPersister<TReference> persister, IReferencable<TReference> referencable, ListFilter? filter = null)
         {
             // Alternate ideas:
             // - Get all "..collection *", to look for "..collection Type=MyType" or "..CollectionType=MyType"

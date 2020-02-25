@@ -10,7 +10,7 @@ using System.Collections.Generic;
 
 namespace LionFire.Referencing
 {
-    public static class ReferenceToHandleExtensions
+    public static partial class ReferenceToHandleExtensions
     {
 
         #region ReadHandle
@@ -47,8 +47,8 @@ namespace LionFire.Referencing
             => reference.GetReadHandleProvider().GetReadHandle<TValue>(reference)
             ?? throw new HasUnresolvedDependenciesException($"Could not get {nameof(IReadHandle<TValue>)} type for reference of type {reference.GetType().FullName}");
 
-        public static IReadHandle<IEnumerable<Listing>> GetListHandle(this IReference reference)
-            => reference.GetReadHandle<IEnumerable<Listing>>();
+        public static IReadHandle<Metadata<IEnumerable<Listing>>> GetListHandle(this IReference reference)
+            => reference.GetReadHandle<Metadata<IEnumerable<Listing>>>();
 
         public static IReadHandle<TValue> CreateReadHandle<TValue>(this IReference reference) => throw new NotImplementedException(); // FUTURE
 

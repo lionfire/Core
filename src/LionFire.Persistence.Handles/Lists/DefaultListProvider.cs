@@ -14,15 +14,18 @@ namespace LionFire.Persistence.Persisters
     public class DefaultListProvider<TReference> : IListProvider<TReference>
         where TReference : IReference
     {
-        public async Task<IEnumerable<string>> List<TChildValue>(IPersister<TReference> persister, IReferencable<TReference> referencable, ListFilter? filter = null)
+#nullable disable
+        public async Task<IEnumerable<Listing>> List<TChildValue>(IPersister<TReference> persister, IReferencable<TReference> referencable, ListFilter? filter = null)
            => (await Task.WhenAll(
-               (await persister.List(referencable, filter).ConfigureAwait(false)).ThrowIfUnsuccessful<IRetrieveResult<IEnumerable<string>>>().Value
-                .Select(async n => new { name = n, hasValue = (await referencable.Reference.GetChild(n).GetReadHandle<TChildValue>().Resolve()).HasValue })
+              (await persister.List(referencable, filter).ConfigureAwait(false)).ThrowIfUnsuccessful().Value
+                .Select(async listing => new { Listing = listing, hasValue = (await referencable.Reference.GetChild(listing.Name).GetReadHandle<TChildValue>().Resolve()).HasValue })
                 ).ConfigureAwait(false))
-                .Where(t => t.hasValue).Select(t => t.name)
+                //.Where(t => t.hasValue).Select(t => new Metadata<Listing>(t.Listing))
+                .Where(t => t.hasValue).Select(t => t.Listing)
                 ;
-        public Task<IEnumerable<string>> List(Type childType, IPersister<TReference> persister, IReferencable<TReference> referencable, ListFilter? filter = null) => throw new NotImplementedException();
-        public Task<IEnumerable<string>> List(IPersister<TReference> persister, IReferencable<TReference> referencable, ListFilter? filter = null) => throw new NotImplementedException();
+#nullable enable
+        public Task<IEnumerable<Listing>> List(Type childType, IPersister<TReference> persister, IReferencable<TReference> referencable, ListFilter? filter = null) => throw new NotImplementedException();
+        public Task<IEnumerable<Listing>> List(IPersister<TReference> persister, IReferencable<TReference> referencable, ListFilter? filter = null) => throw new NotImplementedException();
     }
 }
 

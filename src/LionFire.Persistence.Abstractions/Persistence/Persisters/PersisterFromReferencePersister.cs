@@ -33,7 +33,7 @@ namespace LionFire.Persistence.Persisters
         public Task<IPersistenceResult> Delete(IReferencable<TReference> referencable)
             => Persister.Delete(referencable.Reference);
 
-        public Task<IRetrieveResult<IEnumerable<string>>> List(IReferencable<TReference> referencable, ListFilter? filter = null)
+        public Task<IRetrieveResult<IEnumerable<Listing>>> List(IReferencable<TReference> referencable, ListFilter? filter = null)
             => Persister.List(referencable.Reference, filter);
         //public Task<IEnumerable<string>> List(string path, ListFilter? filter = null) => Persister.List(path, filter);
     }

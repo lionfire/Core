@@ -6,6 +6,13 @@ using System.Threading.Tasks;
 namespace LionFire.Persistence.Persisters
 {
 
+    /// <summary>
+    /// Maps one reference system to another, but otherwise passes through persistence methods to an underlying Persister.
+    /// </summary>
+    /// <typeparam name="TReference"></typeparam>
+    /// <typeparam name="TOptions"></typeparam>
+    /// <typeparam name="TUnderlyingReference"></typeparam>
+    /// <typeparam name="TUnderlyingPersister"></typeparam>
     public abstract class PassThroughPersister<TReference, TOptions, TUnderlyingReference, TUnderlyingPersister> : PersisterBase<TOptions>, IPersister<TReference>
         where TReference : IReference
         where TOptions : PersistenceOptions
@@ -39,7 +46,7 @@ namespace LionFire.Persistence.Persisters
            => UnderlyingPersister.Delete(TranslateReference(referencable.Reference));
         public Task<IPersistenceResult> Exists<TValue>(IReferencable<TReference> referencable)
           => UnderlyingPersister.Exists<TValue>(TranslateReference(referencable.Reference));
-        public Task<IRetrieveResult<IEnumerable<string>>> List(IReferencable<TReference> referencable, ListFilter filter = null)
+        public Task<IRetrieveResult<IEnumerable<Listing>>> List(IReferencable<TReference> referencable, ListFilter filter = null)
           => UnderlyingPersister.List(TranslateReference(referencable.Reference), filter);
 
         public Task<IRetrieveResult<TValue>> Retrieve<TValue>(IReferencable<TReference> referencable)

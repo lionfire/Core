@@ -97,11 +97,15 @@ namespace LionFire.Persistence.Filesystem
 
         #region List
 
-        public async Task<IRetrieveResult<IEnumerable<string>>> List(IReferencable<TReference> referencable, ListFilter? filter = null)
+        public Task<IRetrieveResult<IEnumerable<Listing>>> List(IReferencable<TReference> referencable, ListFilter? filter = null)
+            => List(referencable.Reference, filter);
+
+        public async Task<IRetrieveResult<IEnumerable<Listing>>> List(TReference reference, ListFilter? filter = null)
         {
-            var listResult = await List(referencable.Reference.Path, filter);
-            if (listResult == null) return RetrieveResult<IEnumerable<string>>.SuccessNotFound;
-            return (IRetrieveResult<IEnumerable<string>>)RetrieveResult<IEnumerable<string>>.Success(listResult);
+            var listResult = await List(reference.Path, filter);
+            return listResult == null
+                ? RetrieveResult<IEnumerable<Listing>>.SuccessNotFound
+                : (IRetrieveResult<IEnumerable<Listing>>)RetrieveResult<IEnumerable<Listing>>.Found(listResult);
         }
 
         /// <summary>
@@ -109,14 +113,14 @@ namespace LionFire.Persistence.Filesystem
         /// </summary>
         /// <param name="path"></param>
         /// <returns></returns>
-        public async Task<IEnumerable<string>> List(string path, ListFilter? filter = null)
+        public async Task<IEnumerable<Listing>> List(string path, ListFilter? filter = null)
         {
             return await Task.Run(() =>
             {
-                List<string>? children = null;
+                List<Listing>? children = null;
                 if (Directory.Exists(path))
                 {
-                    children = new List<string>();
+                    children = new List<Listing>();
 
                     bool showFile = filter == null || filter.Flags == ItemFlags.None || filter.Flags.HasFlag(ItemFlags.File) || !filter.Flags.HasFlag(ItemFlags.Directory);
                     bool showDir = filter == null || filter.Flags == ItemFlags.None || filter.Flags.HasFlag(ItemFlags.Directory) || !filter.Flags.HasFlag(ItemFlags.File);
@@ -126,21 +130,21 @@ namespace LionFire.Persistence.Filesystem
 
                     if (showFile)
                     {
-                        foreach (var file in Directory.GetFiles(path).Select(p => Path.GetFileName(p)))
+                        foreach (var fileName in Directory.GetFiles(path).Select(p => Path.GetFileName(p)))
                         {
-                            var kind = ItemKindIdentifier.ResolveItemFlags(file);
+                            var kind = ItemKindIdentifier.ResolveItemFlags(fileName);
 
                             //if (kind.HasFlag(ItemFlags.File) && !showFile) continue;
                             //if (kind.HasFlag(ItemFlags.Hidden) && !showHidden) continue;
                             //if (kind.HasFlag(ItemFlags.Special) && !showSpecial) continue;
                             //if (kind.HasFlag(ItemFlags.Meta) && !showMeta) continue;
 
-                            children.Add(file);
+                            children.Add(fileName);
                         }
                     }
                     if (showDir)
                     {
-                        foreach (var dir in Directory.GetDirectories(path).Select(p => Path.GetFileName(p) + LionPath.Separator))
+                        foreach (var dirName in Directory.GetDirectories(path).Select(p => Path.GetFileName(p) + LionPath.Separator))
                         {
                             //var kind = ItemKindIdentifier.Identify(dir);
 
@@ -149,7 +153,7 @@ namespace LionFire.Persistence.Filesystem
                             //if (kind.HasFlag(ItemFlags.Special) && !showSpecial) continue;
                             //if (kind.HasFlag(ItemFlags.Meta) && !showMeta) continue;
 
-                            children.Add(dir);
+                            children.Add(new Listing(dirName, directory: true));
                         }
                     }
                 }
@@ -276,6 +280,16 @@ namespace LionFire.Persistence.Filesystem
         /// </remarks>
         public virtual async Task<IRetrieveResult<TValue>> Retrieve<TValue>(TReference reference)
         {
+            if (typeof(TValue) == typeof(Metadata<IEnumerable<Listing>>))
+            {
+
+                var listResult = await List(reference).ConfigureAwait(false);
+                return (IRetrieveResult<TValue>)(object)new RetrieveResult<Metadata<IEnumerable<Listing>>>(new Metadata<IEnumerable<Listing>>(listResult.Value), listResult.Flags) // HARDCAST
+                {
+                    Error = listResult.Error,
+                };
+            }
+
             var path = reference.Path;
             if (!string.IsNullOrEmpty(reference.Persister))
             {
@@ -640,7 +654,7 @@ namespace LionFire.Persistence.Filesystem
 
         #endregion
     }
-// REVIEW What should the flow be for Persistence.Retrieve, and Persistence.Write?  Create an op, and then iterate over Serializers until it succeeds? Do Retrieve/Write just create an op, and then the op can run on its own?  Is it like a blackboard object with its own configurable pipeline?  Is there a hidden IPersisterOperationsProvider interface for CreateRetrieveOperation and CreateWriteOperation?
+    // REVIEW What should the flow be for Persistence.Retrieve, and Persistence.Write?  Create an op, and then iterate over Serializers until it succeeds? Do Retrieve/Write just create an op, and then the op can run on its own?  Is it like a blackboard object with its own configurable pipeline?  Is there a hidden IPersisterOperationsProvider interface for CreateRetrieveOperation and CreateWriteOperation?
 
     // REVIEW - is there a way to do this?
     //public static class PersisterBaseExtensions

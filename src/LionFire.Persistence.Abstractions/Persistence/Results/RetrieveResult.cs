@@ -30,7 +30,7 @@ namespace LionFire.Persistence
         public T Value { get; set; }
         public bool HasValue =>
             !EqualityComparer<T>.Default.Equals(default, Value);
-            //Value != default;
+        //Value != default;
 
         public PersistenceResultFlags Flags { get; set; }
         public bool? IsSuccess => Flags.IsSuccessTernary();
@@ -59,10 +59,16 @@ namespace LionFire.Persistence
             Flags = PersistenceResultFlags.Success | PersistenceResultFlags.NotFound, // Success but did not find
             Value = default,
         };
-        public static readonly RetrieveResult<T> Found = new RetrieveResult<T>()
+        public static RetrieveResult<T> Found() => found;
+        private static readonly RetrieveResult<T> found = new RetrieveResult<T>()
         {
             Flags = PersistenceResultFlags.Success | PersistenceResultFlags.Found, // Success and did find, but did not retrieve Value
             Value = default,
+        };
+        public static RetrieveResult<T> Found(T obj) => new RetrieveResult<T>(obj)
+        {
+            Flags = PersistenceResultFlags.Success | PersistenceResultFlags.Found, // Success and did find, but did not retrieve Value
+            Value = obj,
         };
 
         public static readonly RetrieveResult<T> InvalidReferenceType = new RetrieveResult<T>()

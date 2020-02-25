@@ -21,7 +21,7 @@ namespace LionFire.ObjectBus
 
             bool existsResult = await FsFacade.Exists(reference.Path).ConfigureAwait(false);
 
-            return existsResult ? (true, RetrieveResult<object>.Found) : (false, RetrieveResult<object>.NotFound);
+            return existsResult ? (true, RetrieveResult<object>.Found()) : (false, RetrieveResult<object>.NotFound);
 
             //result.Flags |= PersistenceResultFlags.Success | (existsResult ? PersistenceResultFlags.Found : PersistenceResultFlags.NotFound);
             //return (existsResult, result);

@@ -6,6 +6,13 @@ using System.Threading.Tasks;
 
 namespace LionFire.Persistence.Persisters
 {
+    /// <summary>
+    /// Partially pre-populate references used by this persister.  Can be used to provide a sort of sandbox or chroot environment
+    /// TOTEST
+    /// (TOSECURITY: verify users can't break out of it.)
+    /// </summary>
+    /// <typeparam name="TReference"></typeparam>
+    /// <typeparam name="TOverlayableReference"></typeparam>
     public class CurriedPersister<TReference, TOverlayableReference> : IPersister<TReference>
         where TReference : IReference
     {
@@ -25,6 +32,6 @@ namespace LionFire.Persistence.Persisters
         public Task<IPersistenceResult> Update<TValue>(IReferencable<TReference> referencable, TValue value) => Persister.Update(BaseReference.AddRight(referencable.Reference), value);
         public Task<IPersistenceResult> Upsert<TValue>(IReferencable<TReference> referencable, TValue value) => Persister.Upsert(BaseReference.AddRight(referencable.Reference), value);
         public Task<IPersistenceResult> Delete(IReferencable<TReference> referencable) => Persister.Delete(BaseReference.AddRight(referencable.Reference));
-        public Task<IRetrieveResult<IEnumerable<string>>> List(IReferencable<TReference> referencable, ListFilter? filter = null) => Persister.List(referencable, filter);
+        public Task<IRetrieveResult<IEnumerable<Listing>>> List(IReferencable<TReference> referencable, ListFilter? filter = null) => Persister.List(referencable, filter);
     }
 }

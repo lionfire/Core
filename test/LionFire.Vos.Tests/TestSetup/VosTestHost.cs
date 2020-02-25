@@ -12,6 +12,7 @@ namespace LionFire.Services
                 => services
                         .AddTestFileMount()
                         .AddFilesystem()
+                        .AddNewtonsoftJson()
                         .VobEnvironment("test", "test")
                 );
         }

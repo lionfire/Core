@@ -60,7 +60,7 @@ namespace List_
                            var results = await persister.List(dirRef, filter);
 
                            foreach (var child in results.Value) { Debug.WriteLine($" - {child}"); }
-                           Assert.Equal(expected.OrderBy(x => x), results.Value.OrderBy(x => x)); // Primary assertion
+                           Assert.Equal(expected.OrderBy(x => x), results.Value.Select(l => l.Name).OrderBy(x => x)); // Primary assertion
 
                            #region Cleanup
 

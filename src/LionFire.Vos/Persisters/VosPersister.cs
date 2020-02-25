@@ -58,6 +58,8 @@ namespace LionFire.Persistence.Persisters.Vos
 
         public async Task<IRetrieveResult<TValue>> Retrieve<TValue>(IReferencable<IVosReference> referencable)
         {
+            //if (typeof(TValue) == typeof(Metadata<IEnumerable<Listing>>)) return (IRetrieveResult<TValue>)await List(referencable).ConfigureAwait(false);
+
             var vob = Root[referencable.Reference.Path];
 
             var result = new VosRetrieveResult<TValue>();
@@ -66,14 +68,13 @@ namespace LionFire.Persistence.Persisters.Vos
             var vobMounts = vob.AcquireNext<VobMounts>();
             if (vobMounts != null)
             {
+                // TODO: If TValue is IEnumerable, make a way (perhaps optional) to aggregate values from multiple ReadMounts.
+
                 foreach (var mount in vobMounts.RankedEffectiveReadMounts)
                 {
                     var relativePathChunks = vob.PathElements.Skip(mount.VobDepth);
                     var effectiveReference = !relativePathChunks.Any() ? mount.Target : mount.Target.GetChildSubpath(relativePathChunks);
                     var rh = effectiveReference.GetReadHandle<TValue>(ServiceProvider);
-
-                    //var rh = vob.GetReadHandleFromMount<TValue>(mount);
-                    //if (rh == null) continue;
 
                     var childResult = (await rh.Resolve().ConfigureAwait(false)).ToRetrieveResult();
 
@@ -115,10 +116,6 @@ namespace LionFire.Persistence.Persisters.Vos
 
                     var wh = effectiveReference.GetWriteHandle<TValue>(ServiceProvider);
 
-                    //anyMounts = true;
-                    //var rh = vob.GetReadHandleFromMount<TValue>(mount);
-                    //if (rh == null) continue;
-
                     wh.Value = value;
                     var childResult = (await wh.Put().ConfigureAwait(false)).ToPersistenceResult();
 
@@ -137,9 +134,47 @@ namespace LionFire.Persistence.Persisters.Vos
             return result;
         }
         public Task<IPersistenceResult> Delete(IReferencable<IVosReference> referencable) => throw new System.NotImplementedException();
-        public Task<IRetrieveResult<IEnumerable<string>>> List(IReferencable<IVosReference> referencable, ListFilter filter = null)
+        public async Task<IRetrieveResult<IEnumerable<Listing>>> List(IReferencable<IVosReference> referencable, ListFilter filter = null)
         {
-            throw new NotImplementedException();
+            var result = await Retrieve<Metadata<IEnumerable<Listing>>>(referencable).ConfigureAwait(false);
+            if (result.IsSuccess())
+            {
+                return RetrieveResult<IEnumerable<Listing>>.Success(result.Value.Value);
+            }
+            return new RetrieveResult<IEnumerable<Listing>> { Flags = result.Flags, Error = result.Error };
+            //    var vob = Root[referencable.Reference.Path];
+
+            //    var result = new VosRetrieveResult<Metadata<IEnumerable<Listing>>>();
+
+            //    bool anyMounts = false;
+            //    var vobMounts = vob.AcquireNext<VobMounts>();
+            //    if (vobMounts != null)
+            //    {
+            //        foreach (var mount in vobMounts.RankedEffectiveReadMounts)
+            //        {
+            //            var relativePathChunks = vob.PathElements.Skip(mount.VobDepth);
+            //            var effectiveReference = !relativePathChunks.Any() ? mount.Target : mount.Target.GetChildSubpath(relativePathChunks);
+            //            var rh = effectiveReference.GetReadHandle<Metadata<IEnumerable<Listing>>>(ServiceProvider);
+
+            //            var childResult = (await rh.Resolve().ConfigureAwait(false)).ToRetrieveResult();
+
+            //            if (childResult.IsFail()) result.Flags |= PersistenceResultFlags.Fail; // Indicates that at least one underlying persister failed
+
+            //            if (childResult.IsSuccess == true)
+            //            {
+            //                result.Flags |= PersistenceResultFlags.Success; // Indicates that at least one underlying persister succeeded
+
+            //                if (childResult.Flags.HasFlag(PersistenceResultFlags.Found))
+            //                {
+            //                    result.Value = childResult.Value;
+            //                    result.ResolvedVia = mount.Target;
+            //                    return result;
+            //                }
+            //            }
+            //        }
+            //    }
+            //    if (!anyMounts) result.Flags |= PersistenceResultFlags.MountNotAvailable;
+            //    return result;
         }
     }
 

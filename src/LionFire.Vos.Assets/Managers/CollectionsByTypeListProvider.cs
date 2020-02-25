@@ -17,7 +17,7 @@ namespace LionFire.Vos.Collections.ByType
         /// <param name="referencable"></param>
         /// <param name="filter"></param>
         /// <returns></returns>
-        public Task<IEnumerable<string>> List(Type childType, IPersister<VosReference> persister, IReferencable<VosReference> referencable, ListFilter filter = null)
+        public Task<IEnumerable<Listing>> List(Type childType, IPersister<VosReference> persister, IReferencable<VosReference> referencable, ListFilter filter = null)
         {
             var vob = referencable.ReferencableToVob();
 
@@ -33,7 +33,7 @@ namespace LionFire.Vos.Collections.ByType
 
         }
 
-        public Task<IEnumerable<string>> List(IPersister<VosReference> persister, IReferencable<VosReference> referencable, ListFilter filter = null) => throw new NotImplementedException();
+        public Task<IEnumerable<Listing>> List(IPersister<VosReference> persister, IReferencable<VosReference> referencable, ListFilter filter = null) => throw new NotImplementedException();
     }
 
 }

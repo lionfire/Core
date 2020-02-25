@@ -29,18 +29,17 @@ namespace Write_
         [Fact]
         public async void P_Write()
         {
-            await VosTestHost.Create()
-                .RunAsync(async serviceProvider =>
+            await VosTestHost.Create().RunAsync(async serviceProvider =>
                 {
                     var root = serviceProvider.GetRootVob();
                     var test = "$test".ToVosReference();
 
-                    var child1 = test.GetChild("child1").GetReadWriteHandle<TestClass1>();
-                    var child2 = test.GetChild("child2").GetReadWriteHandle<TestClass2>();
+                    var child1 = test.GetChild("child1.json").GetReadWriteHandle<TestClass1>();
+                    var child2 = test.GetChild("child2.json").GetReadWriteHandle<TestClass2>();
 
-                    child1.Value = new TestClass1();
+                    child1.Value = TestClass1.Create;
                     await child1.Put();
-                    child2.Value = new TestClass2();
+                    child2.Value = new TestClass2() { IntProp2 = 123, StringProp2 = "4S6" };
                     await child2.Put();
 
                     //Assert.NotNull(result.Value);

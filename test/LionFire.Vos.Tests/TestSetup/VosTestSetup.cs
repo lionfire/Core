@@ -13,7 +13,7 @@ namespace LionFire.Services
     public static class VosTestSetup
     {
 
-        public static Func<string> VosTestDir { get; set; } = () => Path.Combine(VosTestDirParent(), "UnitTest " + Guid.NewGuid());
+        public static Func<string> VosTestDir { get; set; } = () => Path.Combine(VosTestDirParent(), "_UnitTest " + Guid.NewGuid());
         public static Func<string> VosTestDirParent { get; set; } = () => Path.GetTempPath();
 
         public static IServiceCollection AddTestFileMount(this IServiceCollection services)
@@ -22,7 +22,10 @@ namespace LionFire.Services
             Assert.False(Directory.Exists(dir), "Unique test dir already exists: " + dir);
             Directory.CreateDirectory(dir);
 
-            services.VosMountReadWrite("/test".ToVosReference(), dir.ToFileReference());
+            services
+                .VosMountReadWrite("/test".ToVosReference(), dir.ToFileReference())
+                .AddHostedService(serviceProvider => new TestDirectoryCleaner(dir, serviceProvider.GetRequiredService<IHostApplicationLifetime>()))
+                ;
 
             return services;
         }
@@ -35,28 +38,10 @@ namespace LionFire.Services
 
             services
                 .VosMountRead("/test".ToVosReference(), dir.ToFileReference())
-                .AddSingleton(serviceProvider => new VosTestDeinitializer(dir, serviceProvider.GetRequiredService<IHostApplicationLifetime>()))
+                .AddSingleton(serviceProvider => new TestDirectoryCleaner(dir, serviceProvider.GetRequiredService<IHostApplicationLifetime>()))
                 ;
 
             return services;
-        }
-    }
-
-    public class VosTestDeinitializer
-    {
-        public VosTestDeinitializer(string dirToDelete, IHostApplicationLifetime al)
-        {
-            al.ApplicationStopping.Register(() =>
-            {
-                try
-                {
-                    Directory.Delete(dirToDelete, true);
-                }
-                catch (Exception ex)
-                {
-                    throw new Exception("Failed to clean up test directory: " + dirToDelete, ex);
-                }
-            });
         }
     }
 }
