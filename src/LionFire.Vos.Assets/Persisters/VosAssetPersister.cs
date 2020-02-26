@@ -16,7 +16,7 @@ namespace LionFire.Vos.Assets.Persisters
         //public IVosReference ContextVob { get; set; }
     }
 
-    public class VosAssetPersister : PassThroughPersister<IAssetReference, VosAssetOptions, IVosReference, VosPersister>, IPersister<IAssetReference>
+    public class VosAssetPersister : PassthroughPersister<IAssetReference, VosAssetOptions, IVosReference, VosPersister>, IPersister<IAssetReference>
     {
         VosAssetOptions Options { get; }
         public IVosReference AssetRoot { get; }

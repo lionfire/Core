@@ -50,18 +50,16 @@ namespace LionFire.Vos
 
         #region Write
 
-        private ConcurrentDictionary<Type, IWriteHandle> SharedWriteHandles
-        {
-            get { if (sharedWriteHandles == null) sharedWriteHandles = new ConcurrentDictionary<Type, IWriteHandle>(); return sharedWriteHandles; }
-        }
-        private ConcurrentDictionary<Type, IWriteHandle> sharedWriteHandles = new ConcurrentDictionary<Type, IWriteHandle>();
+        private ConcurrentDictionary<Type, IWriteHandle> SharedWriteHandles => sharedWriteHandles ??= new ConcurrentDictionary<Type, IWriteHandle>();
+        private ConcurrentDictionary<Type, IWriteHandle> sharedWriteHandles;
 
         public IWriteHandle<T> GetWriteHandle<T>()
-            => throw new NotImplementedException();
-            //=> (IWriteHandle<T>)WriteHandles.GetOrAdd(typeof(T), t => new PersisterWriteHandle<VosReference, T, VosPersister>(this.GetService<VosPersister>(), VosReference));
-        public IReadWriteHandle<T> CreateWriteHandle<T>()
-            => throw new NotImplementedException();
-        //=> new PersisterWriteHandle<VosReference, T, VosPersister>(this.GetService<VosPersister>(), VosReference);
+            => (IWriteHandle<T>)SharedWriteHandles.GetOrAdd(typeof(T), t => CreateReadWriteHandle<T>());
+        
+        //=> (IWriteHandle<T>)WriteHandles.GetOrAdd(typeof(T), t => new PersisterWriteHandle<VosReference, T, VosPersister>(this.GetService<VosPersister>(), VosReference));
+        public IWriteHandle<T> CreateWriteHandle<T>()
+            //=> throw new NotImplementedException();
+            => new PersisterWriteHandle<VosReference, T, VosPersister>(this.GetService<VosPersister>(), VosReference);
 
         #endregion
 

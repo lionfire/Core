@@ -1,6 +1,7 @@
 ﻿#nullable enable
 using LionFire.Persistence;
 using LionFire.Referencing;
+using LionFire.Serialization;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
@@ -19,6 +20,8 @@ namespace LionFire.Persistence.Persisters
         public IOverlayableReference<TReference> BaseReference { get; }
 
         public IPersister<TReference> Persister { get; }
+
+        public ISerializationProvider SerializationProvider => Persister.SerializationProvider;
 
         public CurriedPersister(IPersister<TReference> persister, IOverlayableReference<TReference> baseReference)
         {

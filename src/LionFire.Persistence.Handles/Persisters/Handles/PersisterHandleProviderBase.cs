@@ -25,8 +25,8 @@ namespace LionFire.Persistence.Persisters
         public virtual IReadWriteHandle<T> GetReadWriteHandle<T>(TReference reference)
             => new PersisterReadWriteHandle<TReference, T, IPersister<TReference>>(persister, reference);
 
-        //public IWriteHandle<T> GetWriteHandle<T>(TReference reference)
-                   //=> new PersisterWriteHandle<TReference, T, IPersister<TReference>>(persister, reference);
+        public virtual IWriteHandle<T> GetWriteHandle<T>(TReference reference)
+            => new PersisterWriteHandle<TReference, T, IPersister<TReference>>(persister, reference);
 
     }
 }

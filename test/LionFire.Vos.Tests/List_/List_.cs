@@ -5,7 +5,6 @@ using LionFire.Services;
 using System.Collections.Generic;
 using System.Text;
 using Xunit;
-using LionFire.Services;
 using LionFire.Vos;
 using LionFire.Vos.Environment;
 using LionFire.Resolves.ChainResolving;
@@ -71,7 +70,7 @@ namespace List_
         public async void P_GetList_GetEnumerableHandle_Same()
         {
             await VosTestHost.Create()
-                .RunAsync(async serviceProvider =>
+                .RunAsync(serviceProvider =>
                 {
                     var root = serviceProvider.GetRootVob();
                     var test = "$test".ToVosReference();

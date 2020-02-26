@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace LionFire.Serialization
 {
@@ -10,6 +11,10 @@ namespace LionFire.Serialization
 
     public static class IHasSerializationStrategiesExtensions
     {
+//        public static IEnumerable<ISerializationStrategy> DeserializeStrategies(this IHasSerializationStrategies has)
+//        {
+//            return has.Strategies.Where(     s=>s.SupportsCapability()))
+//        }
         public static List<(string extension, ISerializationStrategy strategy, SerializationFormat format)> GetDistinctRankedStrategiesByExtension(this IHasSerializationStrategies hss, Predicate<ISerializationStrategy> filter = null)
         {
             var list = new List<(string, ISerializationStrategy, SerializationFormat)>();

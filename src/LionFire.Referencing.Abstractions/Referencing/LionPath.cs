@@ -19,6 +19,24 @@ namespace LionFire.Referencing
         // REFACTOR: Use ReferenceConstants or VReferenceConstants
         public const string HostDelimiter = "//"; // Use @?
         public const char PortDelimiter = ':';
+
+        public static string GetAncestor(string path, int depth, bool nullIfBeyondRoot = false)
+        {
+            bool isAbsolute = IsAbsolute(path);
+            while (depth > 0)
+            {
+                var lastIndex = path.LastIndexOf(LionPath.SeparatorChar);
+
+                if (lastIndex < 0)
+                {
+                    if (nullIfBeyondRoot) return null;
+                    else return isAbsolute ? LionPath.Separator : "";
+                }
+                path = path.Substring(0, lastIndex);
+            }
+            return path;
+        }
+
         public const char PathDelimiter = '/'; // Redundant to separator?
         public const char PathDelimiterAlt = '\\'; // Redundant to separator?
         public static char[] Delimiters { get { return new char[] { '/', ':', '@', '|', '\\' }; } }
@@ -168,10 +186,7 @@ namespace LionFire.Referencing
             return path.Substring(lastIndex + 1);
         }
 
-        public static bool IsAbsolute(string arg)
-        {
-            return arg.StartsWith(PathDelimiter.ToString());
-        }
+        public static bool IsAbsolute(string arg) => arg.StartsWith(PathDelimiter.ToString());
         public static bool IsRelative(string arg) { return !IsAbsolute(arg); }
 
         public static bool IsSameOrDescendantOf(string parentPath, string childPath)

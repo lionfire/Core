@@ -12,6 +12,37 @@ namespace LionFire.Referencing
 
         public static ITypedReference<T> OfType<T>(this IReference reference) => new TypedReference<T>(reference); // TODO: return IReference instead of this simplistic wrapper
 
+        public static TReference WithPath<TReference>(this TReference reference, string newPath)
+            where TReference : IReference
+        {
+            if (reference is ICloneableReference cr) { return (TReference)cr.CloneWithPath(newPath); }
+
+            var ub = new UriBuilder(reference.Key)
+            {
+                Path = newPath
+            };
+
+            var mi = FromUriMethods[reference.GetType()];
+            if (mi != null) { return (TReference)mi.Invoke(null, new object[] { ub.Uri }); }
+
+            throw ThrowUnsupported(reference, nameof(WithPath));
+        }
+
+        #region Parent / Ancestor
+
+        public static T GetParent<T>(this T reference, bool nullIfBeyondRoot = false)
+            where T : IReference
+            => reference.GetAncestor(depth: 1, nullIfBeyondRoot: nullIfBeyondRoot);
+
+        public static T GetAncestor<T>(this T reference, int depth = 1, bool nullIfBeyondRoot = false)
+          where T : IReference
+        {
+            var newPath = LionPath.GetAncestor(reference.Path, depth, nullIfBeyondRoot);
+            return reference.WithPath<T>(newPath);
+        }
+
+        #endregion
+
         #region GetChild
 
         public static T GetChild<T>(this T reference, string subPath)
@@ -19,7 +50,7 @@ namespace LionFire.Referencing
         {
             if (reference is ICloneableReference cr)
             {
-                return (T) cr.CloneWithPath(LionPath.Combine(reference.Path, subPath));
+                return (T)cr.CloneWithPath(LionPath.Combine(reference.Path, subPath));
             }
 
             var uri = new Uri(reference.Key);
@@ -48,7 +79,7 @@ namespace LionFire.Referencing
         {
             if (reference is ICloneableReference cr)
             {
-                return (TReference) cr.CloneWithPath(LionPath.Combine(reference.Path, subPath));
+                return (TReference)cr.CloneWithPath(LionPath.Combine(reference.Path, subPath));
             }
 
             var uri = new Uri(reference.Key);

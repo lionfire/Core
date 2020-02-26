@@ -1,4 +1,5 @@
-﻿using LionFire.Referencing;
+﻿#nullable enable
+using LionFire.Referencing;
 
 namespace LionFire.Persistence.Handles
 {
@@ -15,12 +16,12 @@ namespace LionFire.Persistence.Handles
 
     public interface IWriteHandleProvider
     {
-        IWriteHandle<T>? GetWriteHandle<T>(IReference reference, T handleObject = default);
+        IWriteHandle<T>? GetWriteHandle<T>(IReference reference);
     }
 
     public interface IWriteHandleProvider<TReference>
         where TReference : IReference
     {
-        IWriteHandle<T> GetWriteHandle<T>(TReference reference, T handleObject = default);
+        IWriteHandle<T> GetWriteHandle<T>(TReference reference);
     }
 }

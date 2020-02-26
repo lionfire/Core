@@ -33,7 +33,7 @@ namespace LionFire.Serialization
 
             Type serviceType;
             IEnumerable<ISerializerScorerBase> strategyScorers;
-            switch (op == null ? IODirection.Unspecified : op.Direction)
+            switch (op == null ? (direction ?? IODirection.Unspecified) : op.Direction)
             {
                 default:
                 case IODirection.Unspecified:

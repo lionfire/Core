@@ -10,9 +10,13 @@ namespace LionFire.Persistence.Handles
         , INotifyPersists<TValue>
         , INotifyingHandleInternal<TValue>
         , INotifyPersistsInternal<TValue>
-        where TReference : class, IReference
-        where TValue : class
+        where TReference : IReference
+        //where TValue : class
     {
+        protected WriteHandle() { }
+        protected WriteHandle(TReference reference) : base(reference) { }
+
+
         protected override Task<IResolveResult<TValue>> ResolveImpl() => throw new NotImplementedException();
 
         PersistenceSnapshot<TValue> IPersists<TValue>.PersistenceState

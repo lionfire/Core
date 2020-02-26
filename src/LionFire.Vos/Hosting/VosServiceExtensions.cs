@@ -43,7 +43,8 @@ namespace LionFire.Services
                         .AddSingleton<IPersisterProvider<VosReference>, VosPersisterProvider>()
                         .AddSingleton<IReadHandleProvider<VosReference>, VosHandleProvider>()
                         .AddSingleton<IReadWriteHandleProvider<VosReference>, VosHandleProvider>()
-                        .AddSingleton<VosPersisterOptions>(s => s.GetRequiredService<IOptionsMonitor<VosPersisterOptions>>().CurrentValue) // REVIEW - force usage via IOptionsMonitor?
+                        .AddSingleton<IWriteHandleProvider<VosReference>, VosHandleProvider>()
+                        .AddSingleton(s => s.GetRequiredService<IOptionsMonitor<VosPersisterOptions>>().CurrentValue) // REVIEW - force usage via IOptionsMonitor?
                         .Configure<VosPersisterOptions>(vpo => { })
                         .Configure<VosOptions>(vo =>
                         {

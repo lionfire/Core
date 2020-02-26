@@ -1,5 +1,6 @@
 ﻿#nullable enable
 using LionFire.Referencing;
+using LionFire.Serialization;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
@@ -9,6 +10,8 @@ namespace LionFire.Persistence.Persisters
         where TReference : IReference
     {
         public IReferencePersister<TReference> Persister { get; }
+
+        public ISerializationProvider SerializationProvider { get; set; }
 
         public PersisterFromReferencePersister(IReferencePersister<TReference> persister)
         {

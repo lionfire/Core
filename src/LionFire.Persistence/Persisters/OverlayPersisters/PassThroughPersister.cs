@@ -5,7 +5,6 @@ using System.Threading.Tasks;
 
 namespace LionFire.Persistence.Persisters
 {
-
     /// <summary>
     /// Maps one reference system to another, but otherwise passes through persistence methods to an underlying Persister.
     /// </summary>
@@ -13,10 +12,10 @@ namespace LionFire.Persistence.Persisters
     /// <typeparam name="TOptions"></typeparam>
     /// <typeparam name="TUnderlyingReference"></typeparam>
     /// <typeparam name="TUnderlyingPersister"></typeparam>
-    public abstract class PassThroughPersister<TReference, TOptions, TUnderlyingReference, TUnderlyingPersister> : PersisterBase<TOptions>, IPersister<TReference>
+    public abstract class PassthroughPersister<TReference, TOptions, TUnderlyingReference, TUnderlyingPersister> : PersisterBase<TOptions>, IPersister<TReference>
         where TReference : IReference
         where TOptions : PersistenceOptions
-        where TUnderlyingPersister : IPersister<TUnderlyingReference>
+        where TUnderlyingPersister : class, IPersister<TUnderlyingReference>
         where TUnderlyingReference : IReference, IReferencable<TUnderlyingReference>
     {
 
@@ -36,7 +35,7 @@ namespace LionFire.Persistence.Persisters
             protected set { underlyingPersister = value; }
         }
         private TUnderlyingPersister underlyingPersister;
-        protected abstract TUnderlyingPersister GetUnderlyingPersister { get; }
+        protected virtual TUnderlyingPersister GetUnderlyingPersister => default;
 
 
         public Task<IPersistenceResult> Create<TValue>(IReferencable<TReference> referencable, TValue value)

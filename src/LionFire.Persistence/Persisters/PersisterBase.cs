@@ -6,6 +6,8 @@ namespace LionFire.Persistence.Persisters
 {
     public class PersisterBase<TOptions>
     {
+        public ISerializationProvider SerializationProvider { get; set; }
+
         #region PersistenceOptions
 
         public TOptions PersistenceOptions

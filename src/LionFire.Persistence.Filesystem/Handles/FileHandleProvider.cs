@@ -42,8 +42,8 @@ namespace LionFire.Persistence.Filesystem
 
 #warning TODO: ReadWrite handle
 
-        public IWriteHandle<T> GetWriteHandle<T>(FileReference reference, T handleObject = default) => GetReadWriteHandle<T>(reference); // REVIEW - 
-        IWriteHandle<T>? IWriteHandleProvider.GetWriteHandle<T>(IReference reference, T handleObject) => (reference is FileReference fileReference) ? GetWriteHandle<T>(fileReference) : null;
+        public IWriteHandle<T> GetWriteHandle<T>(FileReference reference) => GetReadWriteHandle<T>(reference); // REVIEW - 
+        IWriteHandle<T>? IWriteHandleProvider.GetWriteHandle<T>(IReference reference) => (reference is FileReference fileReference) ? GetWriteHandle<T>(fileReference) : null;
     }
 
     //public static class IReadHandleProviderExtensions

@@ -20,17 +20,17 @@ namespace LionFire.Persistence.Handles
         , IHandleInternal<TValue>
         , IDeletable
         , IPuts<TValue>
-        , IReferencable<IReference>
+        , IReferencable<TReference>
         where TReference : IReference
     {
         public Type Type => typeof(TValue);
         public IReference Reference => Key;
-        IReference IReferencable<IReference>.Reference => Key;
+        TReference IReferencable<TReference>.Reference => Key;
 
         #region Construction
 
-        public WriteHandleBase() { }
-        public WriteHandleBase(TReference reference) : base(reference) { }
+        protected WriteHandleBase() { }
+        protected WriteHandleBase(TReference reference) : base(reference) { }
 
         #endregion
 
