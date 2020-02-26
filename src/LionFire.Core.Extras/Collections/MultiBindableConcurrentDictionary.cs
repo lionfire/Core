@@ -1,10 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Collections.Specialized;
 using System.Collections;
 using System.Collections.Concurrent;
+using Microsoft.Extensions.Logging;
+using LionFire.Structures;
+//using SystemIReadOnlyDictionary = System.Collections.Generic.IReadOnlyDictionary<, >;
 
 namespace LionFire.Collections
 {
@@ -21,6 +23,7 @@ namespace LionFire.Collections
     /// <typeparam name="TValue"></typeparam>
     public class MultiBindableConcurrentDictionary<TKey, TValue> : ICollection<TValue>, IEnumerable<TValue>,
         INotifyingDictionary<TKey, TValue>,
+        IReadOnlyDictionary<TKey, TValue>,
         IEnumerable<KeyValuePair<TKey, TValue>>, IEnumerable, // redundant?
         INotifyingCollection<TValue>,
         INotifyingReadOnlyCollection<TValue>,
@@ -34,16 +37,7 @@ namespace LionFire.Collections
         public Func<TKey, TValue> AutoCreate;
 
 #if !AOT
-
-        public static TKey GetKeyFromKeyed(TValue val)
-        {
-            IROKeyed<TKey> keyed = val as IROKeyed<TKey>;
-            if (keyed != null)
-            {
-                return keyed.Key;
-            }
-            return default(TKey);
-        }
+        public static TKey GetKeyFromKeyed(TValue val) => val is IKeyed<TKey> keyed ? keyed.Key : default;
 #else
         
         public static TKey GetKeyFromStringKeyed(TValue val)
@@ -60,14 +54,17 @@ namespace LionFire.Collections
 
         private void ctor(IEqualityComparer<TKey> equalityComparer = null)
         {
-            if(equalityComparer == null) {
+            if (equalityComparer == null)
+            {
                 dictionary = new ConcurrentDictionary<TKey, TValue>();
-            } else {
+            }
+            else
+            {
                 dictionary = new ConcurrentDictionary<TKey, TValue>(equalityComparer);
             }
-            
+
 #if !AOT
-            if (typeof(IROKeyed<TKey>).IsAssignableFrom(typeof(TValue)))
+            if (typeof(IKeyed<TKey>).IsAssignableFrom(typeof(TValue)))
             {
                 GetKey = GetKeyFromKeyed;
             }
@@ -83,7 +80,7 @@ namespace LionFire.Collections
         {
             ctor();
         }
-        public MultiBindableConcurrentDictionary(IEqualityComparer<TKey> equalityComparer) 
+        public MultiBindableConcurrentDictionary(IEqualityComparer<TKey> equalityComparer)
         {
             ctor(equalityComparer);
         }
@@ -105,7 +102,9 @@ namespace LionFire.Collections
         {
             add { collectionChangedNonGeneric += value; }
             remove { collectionChangedNonGeneric -= value; }
-        }  private event NotifyCollectionChangedEventHandler collectionChangedNonGeneric;
+        }
+
+        private event NotifyCollectionChangedEventHandler collectionChangedNonGeneric;
 
         //event NotifyCollectionChangedHandler INotifyCollectionChanged.CollectionChanged;
         //event NotifyCollectionChangedHandler<KeyValuePair<TKey, TValue>> INotifyCollectionChanged<KeyValuePair<TKey, TValue>>.CollectionChanged
@@ -121,14 +120,14 @@ namespace LionFire.Collections
         public static bool AutoDetachThrowingHandlers = true;
         public static bool TraceDetachThrowingHandlers = true;
         private static ILogger l = Log.Get();
-        
+
         private void RaiseCollectionChanged(NotifyCollectionChangedEventArgs args)
         {
             try
             {
-//				l.Warn("BWJI - Pre MultiBindableEvents.RaiseCollectionChanged<TValue>");
+                //				l.Warn("BWJI - Pre MultiBindableEvents.RaiseCollectionChanged<TValue>");
                 MultiBindableEvents.RaiseCollectionChanged<TValue>(this.CollectionChanged, args); // GENERICMETHOD - works in AOT
-//				l.Warn("BWJI - Post MultiBindableEvents.RaiseCollectionChanged<TValue>");
+                                                                                                  //				l.Warn("BWJI - Post MultiBindableEvents.RaiseCollectionChanged<TValue>");
                 MultiBindableEvents.RaiseCollectionChangedEventNonGeneric(this.collectionChangedNonGeneric, this, args);
             }
             catch (Exception ex)
@@ -203,42 +202,31 @@ namespace LionFire.Collections
             //RaiseCollectionChanged(NotifyCollectionChangedAction.Add, value);
         }
 
-        public bool ContainsKey(TKey key)
-        {
-            return dictionary.ContainsKey(key);
-        }
+        public bool ContainsKey(TKey key) => dictionary.ContainsKey(key);
 
-        public ICollection<TKey> Keys
-        {
-            get { return dictionary.Keys; }
-        }
-        #if !AOT
-        IEnumerable<TKey> IReadOnlyDictionary<TKey, TValue>.Keys
-        {
-            get { return dictionary.Keys; }
-        }
+        public ICollection<TKey> Keys => dictionary.Keys;
+
+#if !AOT
+        ICollection<TKey> IDictionary<TKey, TValue>.Keys => dictionary.Keys;
+        IEnumerable<TKey> System.Collections.Generic.IReadOnlyDictionary<TKey, TValue>.Keys => dictionary.Keys;
+        IEnumerable<TKey> IReadOnlyDictionary<TKey, TValue>.Keys => dictionary.Keys;
 #endif
         public bool Remove(TKey key)
         {
-            TValue val;
-            bool result = dictionary.TryRemove(key, out val);
-            if (result)
-            {
-                RaiseCollectionChanged(new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Remove, val));
-            }
+            bool result = dictionary.TryRemove(key, out TValue val);
+            if (result) { RaiseCollectionChanged(new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Remove, val)); }
             return result;
         }
 
         public TValue TryGetValue(TKey key)
         {
-            TValue val;
-            if (dictionary.TryGetValue(key, out val))
+            if (dictionary.TryGetValue(key, out TValue val))
             {
                 return val;
             }
             else
             {
-                return default(TValue);
+                return default;
             }
         }
 
@@ -247,15 +235,10 @@ namespace LionFire.Collections
             return dictionary.TryGetValue(key, out value);
         }
 
-        public ICollection<TValue> Values
-        {
-            get { return dictionary.Values; }
-        }
-        #if !AOT
-        IEnumerable<TValue> IReadOnlyDictionary<TKey, TValue>.Values
-        {
-            get { return dictionary.Values; }
-        }
+        public ICollection<TValue> Values => dictionary.Values;
+#if !AOT
+        IEnumerable<TValue> System.Collections.Generic.IReadOnlyDictionary<TKey, TValue>.Values => dictionary.Values;
+        IEnumerable<TValue> IReadOnlyDictionary<TKey, TValue>.Values => dictionary.Values;
 #endif
 
         public TValue this[TKey key]
@@ -322,10 +305,7 @@ namespace LionFire.Collections
 #endif
         }
 
-        public int Count
-        {
-            get { return dictionary.Count; }
-        }
+        public int Count => dictionary.Count;
 
         public bool IsReadOnly
         {
@@ -334,10 +314,16 @@ namespace LionFire.Collections
 #if AOT
                 throw new NotSupportedException("AOT");
 #else
-                return ((IDictionary<TKey, TValue>)dictionary).IsReadOnly; 
+                return ((IDictionary<TKey, TValue>)dictionary).IsReadOnly;
 #endif
             }
         }
+
+        int ICollection<KeyValuePair<TKey, TValue>>.Count => throw new NotImplementedException();
+
+        bool ICollection<KeyValuePair<TKey, TValue>>.IsReadOnly => throw new NotImplementedException();
+
+        TValue System.Collections.Generic.IReadOnlyDictionary<TKey, TValue>.this[TKey key] => throw new NotImplementedException();
 
         public bool Remove(KeyValuePair<TKey, TValue> item)
         {
@@ -345,7 +331,7 @@ namespace LionFire.Collections
             throw new NotSupportedException("AOT");
 #else
             return ((IDictionary<TKey, TValue>)dictionary).Remove(item.Key);
-            #endif
+#endif
         }
 
         public IEnumerator<KeyValuePair<TKey, TValue>> GetEnumerator()
@@ -391,14 +377,14 @@ namespace LionFire.Collections
             return dictionary.Values.Contains(item);
 #endif
         }
-        bool IReadOnlyCollection<TValue>.Contains(TValue item)
-        {
-#if AOT
-            throw new NotSupportedException("AOT");
-#else
-            return dictionary.Values.Contains(item);
-#endif
-        }
+//        bool IReadOnlyCollection<TValue>.Contains(TValue item)
+//        {
+//#if AOT
+//            throw new NotSupportedException("AOT");
+//#else
+//            return dictionary.Values.Contains(item);
+//#endif
+//        }
 
         void ICollection<TValue>.CopyTo(TValue[] array, int arrayIndex)
         {
@@ -408,23 +394,17 @@ namespace LionFire.Collections
             dictionary.Values.CopyTo(array, arrayIndex);
 #endif
         }
-        void IReadOnlyCollection<TValue>.CopyTo(TValue[] array, int arrayIndex)
-        {
-#if AOT
-            throw new NotSupportedException("AOT");
-#else
-            dictionary.Values.CopyTo(array, arrayIndex);
-#endif
-        }
+//        void System.Collections.Generic.IReadOnlyCollection<TValue>.CopyTo(TValue[] array, int arrayIndex)
+//        {
+//#if AOT
+//            throw new NotSupportedException("AOT");
+//#else
+//            dictionary.Values.CopyTo(array, arrayIndex);
+//#endif
+//        }
 
-        TValue[] INotifyingCollection<TValue>.ToArray()
-        {
-            return Values.ToArray();
-        }
-        TValue[] IReadOnlyCollection<TValue>.ToArray()
-        {
-            return Values.ToArray();
-        }
+        TValue[] INotifyingCollection<TValue>.ToArray() => Values.ToArray();
+        //TValue[] System.Collections.Generic.IReadOnlyCollection<TValue>.ToArray() => Values.ToArray();
 
 #if !AOT
         public INotifyingDictionary<BaseKey, BaseValue> Filter<BaseKey, BaseValue>()
@@ -453,6 +433,23 @@ namespace LionFire.Collections
 
             return dictionary.AddOrUpdate(key, val, (k, v) => val);
         }
+
+        INotifyingDictionary<FilterKey, FilterValue> INotifyingDictionary<TKey, TValue>.Filter<FilterKey, FilterValue>() => throw new NotImplementedException();
+        void IDictionary<TKey, TValue>.Add(TKey key, TValue value) => throw new NotImplementedException();
+        bool IDictionary<TKey, TValue>.ContainsKey(TKey key) => throw new NotImplementedException();
+        bool IDictionary<TKey, TValue>.Remove(TKey key) => throw new NotImplementedException();
+        bool IDictionary<TKey, TValue>.TryGetValue(TKey key, out TValue value) => throw new NotImplementedException();
+        void ICollection<KeyValuePair<TKey, TValue>>.Add(KeyValuePair<TKey, TValue> item) => throw new NotImplementedException();
+        void ICollection<KeyValuePair<TKey, TValue>>.Clear() => throw new NotImplementedException();
+        bool ICollection<KeyValuePair<TKey, TValue>>.Contains(KeyValuePair<TKey, TValue> item) => throw new NotImplementedException();
+        void ICollection<KeyValuePair<TKey, TValue>>.CopyTo(KeyValuePair<TKey, TValue>[] array, int arrayIndex) => throw new NotImplementedException();
+        bool ICollection<KeyValuePair<TKey, TValue>>.Remove(KeyValuePair<TKey, TValue> item) => throw new NotImplementedException();
+        bool System.Collections.Generic.IReadOnlyDictionary<TKey, TValue>.ContainsKey(TKey key) => throw new NotImplementedException();
+        bool System.Collections.Generic.IReadOnlyDictionary<TKey, TValue>.TryGetValue(TKey key, out TValue value) => throw new NotImplementedException();
+        IEnumerator<KeyValuePair<TKey, TValue>> IEnumerable<KeyValuePair<TKey, TValue>>.GetEnumerator() => throw new NotImplementedException();
+        void ICollection<TValue>.Add(TValue item) => throw new NotImplementedException();
+        void ICollection<TValue>.Clear() => throw new NotImplementedException();
+        bool ICollection<TValue>.Remove(TValue item) => throw new NotImplementedException();
     }
 
 #if !AOT
@@ -486,7 +483,7 @@ namespace LionFire.Collections
         }
 
         #region Filter
-        #if !AOT
+#if !AOT
         INotifyingDictionary<Key, Value> INotifyingDictionary<BaseKey, BaseValue>.Filter<Key, Value>()
         {
             return target.Filter<Key, Value>();
@@ -509,8 +506,8 @@ namespace LionFire.Collections
         {
             get { throw new NotImplementedException(); }
         }
-        #if !AOT
-        IEnumerable<BaseKey> IReadOnlyDictionary<BaseKey, BaseValue>.Keys
+#if !AOT
+        IEnumerable<BaseKey> System.Collections.Generic.IReadOnlyDictionary<BaseKey, BaseValue>.Keys
         {
             get { throw new NotImplementedException(); }
         }
@@ -526,33 +523,18 @@ namespace LionFire.Collections
             throw new NotImplementedException();
         }
 
-        public ICollection<BaseValue> Values
-        {
-            get { throw new NotImplementedException(); }
-        }
-        #if !AOT
-        IEnumerable<BaseValue> IReadOnlyDictionary<BaseKey,BaseValue>.Values
-        {
-            get { throw new NotImplementedException(); }
-        }
+        public ICollection<BaseValue> Values => throw new NotImplementedException();
+#if !AOT
+        IEnumerable<BaseValue> System.Collections.Generic.IReadOnlyDictionary<BaseKey, BaseValue>.Values => throw new NotImplementedException();
 #endif
 
         public BaseValue this[BaseKey key]
         {
-            get
-            {
-                throw new NotImplementedException();
-            }
-            set
-            {
-                throw new NotImplementedException();
-            }
+            get => throw new NotImplementedException();
+            set => throw new NotImplementedException();
         }
 
-        public void Add(KeyValuePair<BaseKey, BaseValue> item)
-        {
-            throw new NotImplementedException();
-        }
+        public void Add(KeyValuePair<BaseKey, BaseValue> item) => throw new NotImplementedException();
 
         public void Clear()
         {
@@ -643,7 +625,7 @@ namespace LionFire.Collections
             remove
             {
                 l.Warn("INotifyCollectionChanged not implemented");
-                ((INotifyCollectionChanged)target).CollectionChanged -= value; 
+                ((INotifyCollectionChanged)target).CollectionChanged -= value;
             }
         }
 
@@ -662,7 +644,7 @@ namespace LionFire.Collections
             add
             {
                 if (derivedCollectionChanged == null)
-            
+
                 {
                     ((INotifyCollectionChanged<DerivedValue>)target).CollectionChanged += new NotifyCollectionChangedHandler<DerivedValue>(target_CollectionChanged);
                 }
@@ -681,7 +663,7 @@ namespace LionFire.Collections
 
         event NotifyCollectionChangedHandler<BaseValue> collectionChanged;
 
-        void target_CollectionChanged(NotifyCollectionChangedEventArgs<DerivedValue> e)
+        void target_CollectionChanged(INotifyCollectionChangedEventArgs<DerivedValue> e)
         {
             var ev = collectionChanged;
             if (ev == null) { return; }

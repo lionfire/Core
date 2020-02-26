@@ -50,7 +50,6 @@ namespace List_
 
                     #endregion
 
-                    //Thread.Sleep(3000);
                     var hList = test.GetListHandle();
 
                     var result = await hList.Resolve();

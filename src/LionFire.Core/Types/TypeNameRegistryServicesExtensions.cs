@@ -10,6 +10,14 @@ namespace LionFire.Services
 {
     public static class TypeNameRegistryServicesExtensions
     {
+        public static IServiceCollection AddTypeNameRegistry(this IServiceCollection services)
+        {
+            return services
+                            .AddSingleton<ITypeResolver, TypeResolver>()
+                            .AddSingleton(serviceProvider => serviceProvider.GetService<IOptionsMonitor<TypeNameRegistry>>().CurrentValue)
+                        ;
+        }
+
         //public static IServiceCollection RegisterTypeNames(this IServiceCollection services, Assembly assembly, Predicate<Type> filter = null, bool registerShortNames = true, bool publicTypesOnly = true, bool concreteTypesOnly = true)
         //{
         //    services

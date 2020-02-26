@@ -92,7 +92,7 @@ namespace VosApp_
                 .RunAsync(serviceProvider =>
                 {
                     // Assert list of stores from the Org and App names
-                    var root = serviceProvider.GetRequiredService<RootManager>().Get();
+                    var root = serviceProvider.GetRequiredService<IRootManager>().Get();
                     Assert.NotNull(root);
 
                     var stores = root.QueryChild("/_/stores");

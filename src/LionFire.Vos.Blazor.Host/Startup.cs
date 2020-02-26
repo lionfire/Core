@@ -10,6 +10,9 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using LionFire.Vos.Blazor.Data;
+using LionFire.Services;
+using LionFire.Persistence.Filesystem;
+using LionFire.Hosting;
 
 namespace LionFire.Vos.Blazor
 {
@@ -29,11 +32,19 @@ namespace LionFire.Vos.Blazor
             services.AddRazorPages();
             services.AddServerSideBlazor();
             services.AddSingleton<WeatherForecastService>();
+
+            services
+                .AddPersisters()
+                .AddFilesystem()
+                .VosMount("/temp".ToVosReference(), @"c:\temp".ToFileReference());
+                ;
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
+            app.ApplicationServices.InitializeDependencyContext();
+
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();

@@ -86,6 +86,7 @@ namespace LionFire.Persistence.Persisters.Vos
 
                         if (childResult.Flags.HasFlag(PersistenceResultFlags.Found))
                         {
+                            result.Flags |= PersistenceResultFlags.Found;
                             result.Value = childResult.Value;
                             result.ResolvedVia = mount.Target;
                             return result;

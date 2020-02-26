@@ -9,8 +9,9 @@ using Microsoft.Extensions.DependencyInjection.Extensions;
 using LionFire.Dependencies;
 using LionFire.Hosting;
 using LionFire.DependencyInjection.ExtensionMethods;
+using LionFire.Persistence;
 
-namespace LionFire.Persistence
+namespace LionFire.Services
 {
     public static class PersistersHost
     {
@@ -20,18 +21,15 @@ namespace LionFire.Persistence
             return hostBuilder.AddPersisters();
         }
 
-        public static IHostBuilder AddPersisters(this IHostBuilder hostBuilder)
-            => hostBuilder
-                .ConfigureServices((context, services) =>
-                {
-                    services
-                        .AddSerialization()
-                        .AddBuiltInSerializers()
-                        .AddSingleton<IPersistenceConventions, PersistenceConventions>()
-                        .AddSingleton<IReferenceToHandleService, ReferenceToHandleService>()
-                        .AddSingleton<IReferenceProviderService, ReferenceProviderService>()
-                    ;
-                });
+        public static IHostBuilder AddPersisters(this IHostBuilder hostBuilder) => hostBuilder.ConfigureServices((context, services) => services.AddPersisters());
 
+        public static IServiceCollection AddPersisters(this IServiceCollection services)
+                  => services
+                              .AddSerialization()
+                              .AddBuiltInSerializers()
+                              .AddSingleton<IPersistenceConventions, PersistenceConventions>()
+                              .AddSingleton<IReferenceToHandleService, ReferenceToHandleService>()
+                              .AddSingleton<IReferenceProviderService, ReferenceProviderService>()
+                          ;
     }
 }

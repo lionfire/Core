@@ -16,13 +16,12 @@ using LionFire.Vos.Overlays;
 
 namespace Packages_
 {
-
     public class _Package
     {
         [Fact]
         public async void Pass()
         {
-            var pluginsDir = Path.Combine(FsTestSetup.DataDir, "UnitTest " + Guid.NewGuid().ToString(), "TestPluginsDiskDir");
+            var pluginsDir = Path.Combine(FsTestSetup.DataDir, "_UnitTest " + Guid.NewGuid().ToString(), "TestPluginsDiskDir");
 
             //await VosAppHost.Create() // FUTURE: Also test this with VosApp?  Pass in IHostBuilder to a method?
             await VosHost.Create()
@@ -89,17 +88,17 @@ namespace Packages_
                         Assert.False(await dataReference2.GetReadHandle<string>().Exists());
 
                         // How to get a Vob?  VosReference.ToVob() might be nice.  How about VosReference.ToVob().AsType<PackageManager>()
-                        var pluginManager = "/`/TestPlugins".ToVob().GetMultiTyped().AsType<OverlayStack>();
+                        var overlayStack = "/`/TestPlugins".ToVob().GetMultiTyped().AsType<OverlayStack>();
 
                         //Assert.True(pluginManager.AvailablePackages.Contains("plugin1")); // TODO
                         //Assert.True(pluginManager.AvailablePackages.Contains("plugin2"));
-                        Assert.False(pluginManager.EnabledPackages.Any());
+                        Assert.False(overlayStack.EnabledPackages.Any());
 
                         #region Plugin1
                         {
-                            pluginManager.Enable("plugin1");
-                            Assert.Contains(pluginManager.EnabledPackages, s => s == "plugin1");
-                            Assert.Single(pluginManager.EnabledPackages);
+                            overlayStack.Enable("plugin1");
+                            Assert.Contains(overlayStack.EnabledPackages, s => s == "plugin1");
+                            Assert.Single(overlayStack.EnabledPackages);
 
                             var readHandle = dataReference1.GetReadHandle<string>();
                             var persistenceResult = await readHandle.Resolve();
@@ -118,10 +117,10 @@ namespace Packages_
 
                         #region Plugin2
                         {
-                            pluginManager.Enable("plugin2");
-                            Assert.Contains(pluginManager.EnabledPackages, s => s == "plugin1");
-                            Assert.Contains(pluginManager.EnabledPackages, s => s == "plugin2");
-                            Assert.Equal(2, pluginManager.EnabledPackages.Count());
+                            overlayStack.Enable("plugin2");
+                            Assert.Contains(overlayStack.EnabledPackages, s => s == "plugin1");
+                            Assert.Contains(overlayStack.EnabledPackages, s => s == "plugin2");
+                            Assert.Equal(2, overlayStack.EnabledPackages.Count());
 
                             var readHandle = dataReference2.GetReadHandle<string>();
                             var persistenceResult = await readHandle.Resolve();
@@ -138,9 +137,9 @@ namespace Packages_
                         }
                         #endregion
 
-                        Assert.True(pluginManager.Disable("plugin1"));
-                        Assert.True(pluginManager.Disable("plugin2"));
-                        Assert.Empty(pluginManager.EnabledPackages);
+                        Assert.True(overlayStack.Disable("plugin1"));
+                        Assert.True(overlayStack.Disable("plugin2"));
+                        Assert.Empty(overlayStack.EnabledPackages);
 
                         var vobMounts = new VosReference("/`/TestPlugins/data").ToVob().AcquireOwn<VobMounts>();
                         Assert.False(vobMounts.HasLocalReadMounts);

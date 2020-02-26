@@ -2,9 +2,10 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
+using LionFire.Structures;
 using System.Collections.Specialized;
 using System.Collections;
+using Microsoft.Extensions.Logging;
 
 namespace LionFire.Collections
 {
@@ -47,22 +48,14 @@ namespace LionFire.Collections
             return default(TKey);
         }
 #else
-        public static TKey GetKeyFromKeyed(TValue val)
-        {
-            IROKeyed<TKey> keyed = val as IROKeyed<TKey>;
-            if (keyed != null)
-            {
-                return keyed.Key;
-            }
-            return default(TKey);
-        }
+        public static TKey GetKeyFromKeyed(TValue val) => val is IKeyed<TKey> keyed ? keyed.Key : default(TKey);
 #endif
         #region Constructors
 
         public MultiBindableSortedList()
         {
 #if !AOT
-            if (typeof(IROKeyed<TKey>).IsAssignableFrom(typeof(TValue)))
+            if (typeof(IKeyed<TKey>).IsAssignableFrom(typeof(TValue)))
             {
                 GetKey = GetKeyFromKeyed;
             }
@@ -144,7 +137,7 @@ namespace LionFire.Collections
             }
             catch (Exception ex)
             {
-                Log.Warn(ex.ToString());
+                Log.Get().Warn(ex.ToString());
             }
         }
         private void RemoveCollectionChanged(NotifyCollectionChangedEventHandler value)
@@ -257,7 +250,7 @@ namespace LionFire.Collections
         }
 
 #if !AOT
-        IEnumerable<TKey> IReadOnlyDictionary<TKey, TValue>.Keys
+        IEnumerable<TKey> System.Collections.Generic.IReadOnlyDictionary<TKey, TValue>.Keys
         {
             get { return sortedList.Keys; }
         }
@@ -299,15 +292,9 @@ namespace LionFire.Collections
             return false;
         }
 #if !AOT
-        IEnumerable<TValue> IReadOnlyDictionary<TKey, TValue>.Values
-        {
-            get { return sortedList.Values; }
-        }
+        IEnumerable<TValue> System.Collections.Generic.IReadOnlyDictionary<TKey, TValue>.Values => sortedList.Values;
 #endif
-        public ICollection<TValue> Values
-        {
-            get { return sortedList.Values; }
-        }
+        public ICollection<TValue> Values => sortedList.Values;
 
         public TValue this[TKey key]
         {
@@ -432,31 +419,16 @@ namespace LionFire.Collections
         {
             return sortedList.Values.Contains(item);
         }
-        bool IReadOnlyCollection<TValue>.Contains(TValue item)
-        {
-            return sortedList.Values.Contains(item);
-        }
+        //bool System.Collections.Generic.IReadOnlyCollection<TValue>.Contains(TValue item) => sortedList.Values.Contains(item);
 
-        void ICollection<TValue>.CopyTo(TValue[] array, int arrayIndex)
-        {
-            sortedList.Values.CopyTo(array, arrayIndex);
-        }
-        void IReadOnlyCollection<TValue>.CopyTo(TValue[] array, int arrayIndex)
-        {
-            sortedList.Values.CopyTo(array, arrayIndex);
-        }
+        void ICollection<TValue>.CopyTo(TValue[] array, int arrayIndex) => sortedList.Values.CopyTo(array, arrayIndex);
+        //void IReadOnlyCollection<TValue>.CopyTo(TValue[] array, int arrayIndex) => sortedList.Values.CopyTo(array, arrayIndex);
 
-        TValue[] INotifyingCollection<TValue>.ToArray()
-        {
-            return Values.ToArray();
-        }
-        TValue[] IReadOnlyCollection<TValue>.ToArray()
-        {
-            return Values.ToArray();
-        }
+        TValue[] INotifyingCollection<TValue>.ToArray() => Values.ToArray();
+        //TValue[] IReadOnlyCollection<TValue>.ToArray() => Values.ToArray();
 
 #if !AOT
-               
+
         public INotifyingDictionary<BaseKey, BaseValue> Filter<BaseKey, BaseValue>()
         {
             if (!typeof(BaseKey).IsAssignableFrom(typeof(TKey)))
@@ -481,61 +453,31 @@ namespace LionFire.Collections
         //    remove { throw new NotImplementedException(); }
         //}
 
-        void IDictionary.Add(object key, object value)
-        {
-            this.Add((TKey)key, (TValue)value);
-        }
+        void IDictionary.Add(object key, object value) => Add((TKey)key, (TValue)value);
 
-        void IDictionary.Clear()
-        {
-            this.Clear();
-        }
+        void IDictionary.Clear() => Clear();
 
-        bool IDictionary.Contains(object key)
-        {
-            return this.ContainsKey((TKey)key);
-        }
+        bool IDictionary.Contains(object key) => ContainsKey((TKey)key);
 
-        IDictionaryEnumerator IDictionary.GetEnumerator()
-        {
-            throw new NotImplementedException();
-        }
+        IDictionaryEnumerator IDictionary.GetEnumerator() => throw new NotImplementedException();
 
-        bool IDictionary.IsFixedSize
-        {
-            get { return false; }
-        }
+        bool IDictionary.IsFixedSize => false;
 
-        bool IDictionary.IsReadOnly
-        {
-            get { return this.IsReadOnly; }
-        }
+        bool IDictionary.IsReadOnly => this.IsReadOnly;
 
-        ICollection IDictionary.Keys
-        {
-            get { throw new NotImplementedException(); }
-        }
+        ICollection IDictionary.Keys => throw new NotImplementedException();
 
         void IDictionary.Remove(object key)
         {
             this.Remove((TKey)key);
         }
 
-        ICollection IDictionary.Values
-        {
-            get { throw new NotImplementedException(); }
-        }
+        ICollection IDictionary.Values => throw new NotImplementedException();
 
         object IDictionary.this[object key]
         {
-            get
-            {
-                return this[(TKey)key];
-            }
-            set
-            {
-                this[(TKey)key] = (TValue)value;
-            }
+            get => this[(TKey)key];
+            set => this[(TKey)key] = (TValue)value;
         }
 
         void ICollection.CopyTo(Array array, int index)
@@ -547,20 +489,11 @@ namespace LionFire.Collections
             }
         }
 
-        int ICollection.Count
-        {
-            get { return this.Count; }
-        }
+        int ICollection.Count => this.Count;
 
-        bool ICollection.IsSynchronized
-        {
-            get { return false; }
-        }
+        bool ICollection.IsSynchronized => false;
 
-        object ICollection.SyncRoot
-        {
-            get { throw new NotImplementedException(); }
-        }
+        object ICollection.SyncRoot => throw new NotImplementedException();
     }
 
 #if !AOT
@@ -619,7 +552,7 @@ namespace LionFire.Collections
             get { throw new NotImplementedException(); }
         }
 #if !AOT
-        IEnumerable<BaseKey> IReadOnlyDictionary<BaseKey, BaseValue>.Keys
+        IEnumerable<BaseKey> System.Collections.Generic.IReadOnlyDictionary<BaseKey, BaseValue>.Keys
         {
             get { throw new NotImplementedException(); }
         }
@@ -640,7 +573,7 @@ namespace LionFire.Collections
             get { throw new NotImplementedException(); }
         }
 #if !AOT
-		IEnumerable<BaseValue> IReadOnlyDictionary<BaseKey, BaseValue>.Values
+		IEnumerable<BaseValue> System.Collections.Generic.IReadOnlyDictionary<BaseKey, BaseValue>.Values
         {
             get { throw new NotImplementedException(); }
         }
@@ -779,7 +712,7 @@ namespace LionFire.Collections
 
         event NotifyCollectionChangedHandler<BaseValue> collectionChanged;
 
-        void target_CollectionChanged(NotifyCollectionChangedEventArgs<DerivedValue> e)
+        void target_CollectionChanged(INotifyCollectionChangedEventArgs<DerivedValue> e)
         {
             var ev = collectionChanged;
             if (ev == null) { return; }

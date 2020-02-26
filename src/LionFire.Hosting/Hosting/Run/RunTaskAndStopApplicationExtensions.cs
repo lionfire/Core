@@ -112,10 +112,13 @@ namespace LionFire.Hosting
                 DependencyContext.Current.ServiceProvider = null;
             }
         }
-
         public static IHost InitializeDependencyContext(this IHost host)
         {
-
+            InitializeDependencyContext(host.Services);
+            return host;
+        }
+        public static IServiceProvider InitializeDependencyContext(this IServiceProvider serviceProvider)
+        {
             if (LionFireEnvironment.IsMultiApplicationEnvironment)
             {
                 DependencyLocatorConfiguration.UseServiceProviderToActivateSingletons = false;
@@ -124,9 +127,7 @@ namespace LionFire.Hosting
                 if (DependencyContext.AsyncLocal != null) throw new AlreadyException("UNEXPECTED: LionFireEnvironment.IsMultiApplicationEnvironment == true && DependencyContext.AsyncLocal != null "); // FUTURE - deinit on Run complete?  Unit tests running in series?
 
                 DependencyContext.AsyncLocal = new DependencyContext();
-                DependencyContext.Current.ServiceProvider = host.Services;
-
-                return host; // Don't set static Current
+                DependencyContext.Current.ServiceProvider = serviceProvider;
             }
             else
             {
@@ -137,12 +138,11 @@ namespace LionFire.Hosting
 
                 if (DependencyContext.Current.ServiceProvider == null)
                 {
-                    DependencyContext.Current.ServiceProvider = host.Services;
+                    DependencyContext.Current.ServiceProvider = serviceProvider;
                 }
             }
-            return host;
+            return serviceProvider;
         }
-
 
         public static async Task RunAsync(this IHostBuilder hostBuilder, Func<IServiceProvider, Task> taskFactory)
         {

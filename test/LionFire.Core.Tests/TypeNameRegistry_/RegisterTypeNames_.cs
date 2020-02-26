@@ -21,6 +21,7 @@ namespace TypeNameRegistry_
                 {
                     services
                         .RegisterTypeNames(typeof(TypeResolver).Assembly, concreteTypesOnly: true)
+                        .AddTypeNameRegistry()
                     ;
                 })
                 .RunAsync(serviceProvider =>
@@ -50,6 +51,7 @@ namespace TypeNameRegistry_
                 {
                     services
                         .RegisterTypeNames(typeof(TypeResolver).Assembly, concreteTypesOnly: true)
+                        .AddTypeNameRegistry()
                     ;
                 })
                 .RunAsync(serviceProvider =>
@@ -79,6 +81,7 @@ namespace TypeNameRegistry_
                 {
                     services
                         .RegisterTypeNames(typeof(TypeResolver).Assembly, filter: t => t.Name != "TypeResolver")
+                        .AddTypeNameRegistry()
                     ;
                 })
                 .RunAsync(serviceProvider =>
@@ -103,6 +106,7 @@ namespace TypeNameRegistry_
                 {
                     services
                         .RegisterTypeNames(typeof(TypeResolver).Assembly, concreteTypesOnly: true)
+                        .AddTypeNameRegistry()
                     ;
                 })
                 .RunAsync(serviceProvider =>
