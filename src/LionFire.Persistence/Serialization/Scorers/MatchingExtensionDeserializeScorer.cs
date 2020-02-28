@@ -7,7 +7,14 @@ using Microsoft.Extensions.Options;
 
 namespace LionFire.Serialization
 {
-    
+
+    //public class DefaultExtensionDeserializeScorer : IDeserializeScorer
+    //{
+    //    public float ScoreForStrategy(SerializationStrategyPreference preference, Lazy<PersistenceOperation> operation = null, PersistenceContext context = null)
+    //    {
+    //    }
+    //}
+
     public class MatchingExtensionDeserializeScorer : IDeserializeScorer
     {
         IOptions<SerializationOptions> Options { get; set; }

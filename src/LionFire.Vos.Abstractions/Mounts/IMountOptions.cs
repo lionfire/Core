@@ -15,5 +15,7 @@
 
         bool IsExclusiveWithReadAndWrite { get; set; }
         string RootName { get; set; }
+
+        //IFlex Flex { get; set; }
     }
 }

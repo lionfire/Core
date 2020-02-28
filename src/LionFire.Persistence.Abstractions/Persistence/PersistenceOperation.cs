@@ -2,7 +2,7 @@
 using System.Linq;
 using LionFire.IO;
 using LionFire.Referencing;
-using LionFire.Structures;
+using LionFire.Serialization;
 
 namespace LionFire.Persistence
 {
@@ -53,22 +53,7 @@ namespace LionFire.Persistence
         {
             this.Deserialization = deserialization;
         }
-
-        public static Lazy<PersistenceOperation> Serialize<T>(IReference reference, object obj, ReplaceMode replaceMode, Action<PersistenceOperation> initializer = null)
-            => ((Func<PersistenceOperation>)(() =>
-            {
-                var result = new PersistenceOperation(reference, new SerializePersistenceOperation()
-                {
-                    Object = obj,
-                    ReplaceMode = replaceMode,
-                })
-                {
-                    Type = typeof(T),
-                };
-                initializer?.Invoke(result);
-                return result;
-            })).ToLazy();
-
+     
         #endregion
 
         public IODirection Direction
@@ -168,6 +153,9 @@ namespace LionFire.Persistence
 
         public SerializePersistenceOperation Serialization { get; set; }
         public DeserializePersistenceOperation Deserialization { get; set; }
+
+        public SerializationOptions SerializationOptions => Deserialization?.SerializationOptions ?? Serialization?.SerializationOptions;
+
         //private PersistenceOperation persistenceOperation; // REVIEW - Use one backing field for both?
 
         #region Options
@@ -179,19 +167,21 @@ namespace LionFire.Persistence
 
         public string FileExtension
         {
-            get => fileExtension ?? System.IO.Path.GetExtension(Reference?.Path);
+            get => fileExtension ?? LionPath.GetExtension(Reference?.Path) ?? SerializationOptions?.TreatExtensionlessAsExtension;
             set => fileExtension = value;
         }
-        private string fileExtension;
+        protected string fileExtension;
 
         #endregion
-
+        
 
         #endregion
+        
     }
 
     //public class MimeSerializationContext
     //{
     //    public string MimeType { get; set; }
     //}
+
 }

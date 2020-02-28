@@ -11,11 +11,13 @@ namespace LionFire.Services
     public static class NewtonsoftJsonAppHostExtensions
     {
         public static IAppHost AddNewtonsoftJson(this IAppHost app) => app.TryAddEnumerableSingleton<ISerializationStrategy, NewtonsoftJsonSerializer>();
+
         public static IHostBuilder AddNewtonsoftJson(this IHostBuilder hostBuilder)
         {
-            hostBuilder.ConfigureServices((context, services) => services.TryAddEnumerableSingleton<ISerializationStrategy, NewtonsoftJsonSerializer>());
+            hostBuilder.ConfigureServices((context, services) => services.AddNewtonsoftJson());
             return hostBuilder;
         }
+
         public static IServiceCollection AddNewtonsoftJson(this IServiceCollection services)
         {
             services.TryAddEnumerableSingleton<ISerializationStrategy, NewtonsoftJsonSerializer>();

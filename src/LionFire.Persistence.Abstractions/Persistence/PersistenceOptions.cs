@@ -9,6 +9,8 @@ namespace LionFire.Persistence
     {
         public bool ThrowOnMissingSerializer = true;
 
+        public SerializationOptions SerializationOptions { get; set; }
+
         /// <summary>
         /// Recommended to have this on.  Otherwise, deserialization may fail and you may not know why.
         /// </summary>

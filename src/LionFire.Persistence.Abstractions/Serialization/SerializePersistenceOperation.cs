@@ -1,4 +1,5 @@
 ﻿using LionFire.IO;
+using LionFire.Serialization;
 using System.IO;
 
 namespace LionFire.Persistence
@@ -19,6 +20,9 @@ namespace LionFire.Persistence
         public bool AllowOverwrite { get; set; }
 
         public ReplaceMode ReplaceMode { get; set; }
+
+        public SerializationOptions SerializationOptions { get; set; }
+
     }
 
     //public class MimeSerializationContext

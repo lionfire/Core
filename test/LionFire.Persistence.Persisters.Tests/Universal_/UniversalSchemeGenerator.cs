@@ -7,11 +7,11 @@ using System.Linq;
 
 namespace Universal_
 {
-    public class UniversalSchemeGenerator : StringClassDataGenerator
-    {
-        public UniversalSchemeGenerator() : base("couch", "file") { }
+    //public class UniversalSchemeGenerator : StringClassDataGenerator
+    //{
+    //    public UniversalSchemeGenerator() : base("couch", "file") { }
 
-    }
+    //}
 
     public class UniversalPersistersGenerator : IEnumerable<object[]>
     {

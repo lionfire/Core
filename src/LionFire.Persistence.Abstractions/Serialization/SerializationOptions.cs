@@ -3,21 +3,14 @@ using LionFire.Serialization;
 
 namespace LionFire.Serialization
 {
-    public enum FileExtensionScoring
-    {
-        Unspecified,
-
-        /// <summary>
-        /// Recommended if you can use the proper file extensions
-        /// </summary>
-        MustMatch,
-
-        RewardMatch,
-        IgnoreExtension,
-    }
 
     public class SerializationOptions
     {
+        public SerializationOptions()
+        {
+
+            System.Diagnostics.Debug.WriteLine("TEMP");
+        }
         public SerializationFlags SerializationFlags { get; set; } = SerializationFlags.HumanReadable | SerializationFlags.Text;
 
 
@@ -33,5 +26,7 @@ namespace LionFire.Serialization
         public FileExtensionScoring DeserializeExtensionScoring { get; set; } = FileExtensionScoring.MustMatch;
 
         public bool RequireMimeTypes { get; set; }
+
+        public string TreatExtensionlessAsExtension { get; set; }
     }
 }

@@ -1,12 +1,14 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Text;
 using Xunit;
 using LionFire.Persistence.Filesystem;
 using LionFire.Vos;
 using Microsoft.Extensions.Hosting;
+using LionFire.FlexObjects;
+using LionFire.Vos.Mounts;
+using LionFire.Persistence.Persisters;
 
 namespace LionFire.Services
 {
@@ -23,11 +25,22 @@ namespace LionFire.Services
         }
     }
 
+    public enum ExtensionExclusivityMode
+    {
+        Unspecified,
+        Single,
+        Multi,
+    }
+    public class ExtensionOptions
+    {
+        public ExtensionExclusivityMode ExtensionExclusivityMode { get; set; }
+    }
+
     public static class VosTestSetup
     {
 
 
-        public static IServiceCollection AddTestFileMount(this IServiceCollection services)
+        public static IServiceCollection AddTestFileMount(this IServiceCollection services, bool autoExtension)
         {
             var vosTest = new VosTest();
             services.AddSingleton(vosTest);
@@ -36,8 +49,21 @@ namespace LionFire.Services
             Assert.False(Directory.Exists(dir), "Unique test dir already exists: " + dir);
             Directory.CreateDirectory(dir);
 
+            //var decorators = Flex.Create(
+            //new ExtensionOptions
+            //{
+            //    ExtensionExclusivityMode = ExtensionExclusivityMode.Single,
+            //})
+            //    );
+            //decorators.Add<INameTranslator>()
+
             services
-                .VosMountReadWrite("/test".ToVosReference(), dir.ToFileReference())
+                .VosMount("/test".ToVosReference(), dir.ToFileReference(), new MountOptions()
+                {
+                    ReadPriority = MountOptions.DefaultReadPriority,
+                    WritePriority = MountOptions.DefaultWritePriority,
+                    //Flex = decorators,
+                })
                 .AddHostedService(serviceProvider => new TestDirectoryCleaner(dir, serviceProvider.GetRequiredService<IHostApplicationLifetime>()))
                 ;
 

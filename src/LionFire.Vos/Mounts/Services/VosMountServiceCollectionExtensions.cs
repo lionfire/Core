@@ -3,6 +3,7 @@ using LionFire.Vos;
 using LionFire.Dependencies;
 using LionFire.Referencing;
 using LionFire.Vos.Mounts;
+using LionFire.FlexObjects;
 
 namespace LionFire.Services
 {
@@ -25,7 +26,7 @@ namespace LionFire.Services
                 options.ReadPriority = MountOptions.DefaultReadPriority;
             }
 
-            return services.Configure<VosOptions>(o => o[options?.RootName ?? VosConstants.DefaultRootName].Mounts.Add(new TMount(vosReference, reference, options )));
+            return services.Configure<VosOptions>(o => o[options?.RootName ?? VosConstants.DefaultRootName].Mounts.Add(new TMount(vosReference, reference, options)));
         }
 
 

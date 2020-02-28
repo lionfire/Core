@@ -7,6 +7,7 @@ using System.Text;
 using System.Threading.Tasks;
 using LionFire.Persistence.Persisters.Vos;
 using LionFire.Assets;
+using LionFire.Serialization;
 
 namespace LionFire.Vos.Assets.Persisters
 {
@@ -27,7 +28,7 @@ namespace LionFire.Vos.Assets.Persisters
 
         protected override VosPersister GetUnderlyingPersister => (VosPersister)PersisterProvider.GetPersister(AssetRoot.Persister);
 
-        public VosAssetPersister(VosAssetOptions options, IPersisterProvider<VosReference> persisterProvider)
+        public VosAssetPersister(VosAssetOptions options, IPersisterProvider<VosReference> persisterProvider, SerializationOptions serializationOptions) : base(options?.SerializationOptions ?? serializationOptions)
         {
             PersisterProvider = persisterProvider;
             Options = options;

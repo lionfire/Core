@@ -35,10 +35,10 @@ namespace LionFire.Persistence.Filesystem
 
         #region Construction
 
-        public FilesystemPersister(ISerializationProvider serializationProvider, IOptionsMonitor<FilesystemPersisterOptions> optionsMonitor, IPersistenceConventions itemKindIdentifier) : this(serializationProvider, null, optionsMonitor, itemKindIdentifier)
+        public FilesystemPersister(ISerializationProvider serializationProvider, IOptionsMonitor<FilesystemPersisterOptions> optionsMonitor, IPersistenceConventions itemKindIdentifier, SerializationOptions serializationOptions) : this(serializationProvider, null, optionsMonitor, itemKindIdentifier, serializationOptions)
         {
         }
-        public FilesystemPersister(ISerializationProvider serializationProvider, string name, IOptionsMonitor<FilesystemPersisterOptions> options, IPersistenceConventions itemKindIdentifier) : base(name, serializationProvider, options, itemKindIdentifier)
+        public FilesystemPersister(ISerializationProvider serializationProvider, string name, IOptionsMonitor<FilesystemPersisterOptions> options, IPersistenceConventions itemKindIdentifier, SerializationOptions serializationOptions) : base(name, serializationProvider, options, itemKindIdentifier, serializationOptions)
         {
         }
 
@@ -217,7 +217,7 @@ namespace LionFire.Persistence.Filesystem
         private static Type GetDefaultChildTypeForPath(string path) => throw new NotImplementedException("TOPORT");//#if AOT // TOPORT//            var metadata = VFSMetadata[path].AsType(typeof(FSMetaData)) as FSMetaData;//#else//            var metadata = VFSMetadata[path].AsType<FSMetaData>();//#endif//            if (metadata == null) return null;//            return metadata.DefaultType;
 
         #endregion
-    
+
         #endregion
 
         private static readonly ILogger l = Log.Get();

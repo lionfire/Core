@@ -3,14 +3,19 @@ using LionFire.Applications.Hosting;
 using LionFire.Serialization;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Options;
 
 namespace LionFire.Applications.Hosting
 {
     public static class AppHostSerializationExtensions
     {
-        public static IServiceCollection AddSerialization(this IServiceCollection app, bool useDefaultSettings = true)
+        public static IServiceCollection AddSerialization(this IServiceCollection services, bool useDefaultSettings = true)
         {
-            app.AddSingleton<ISerializationProvider, SerializationProvider>();
+            services
+                .AddSingleton<ISerializationProvider, SerializationProvider>()
+                .AddSingleton(serviceProvider => serviceProvider.GetRequiredService<IOptionsMonitor<SerializationOptions>>().CurrentValue)
+                ;
+
             //app.AddSingleton<ISerializationProvider, SerializationProvider>(serviceProvider =>
             //{
             //    var result = new SerializationProvider();
@@ -22,10 +27,10 @@ namespace LionFire.Applications.Hosting
 
             if (useDefaultSettings)
             {
-                foreach (var type in DefaultScorers.DefaultDeserializerScorers) app.AddSingleton(typeof(IDeserializeScorer), type);
-                foreach (var type in DefaultScorers.DefaultSerializerScorers) app.AddSingleton(typeof(ISerializeScorer), type);
+                foreach (var type in DefaultScorers.DefaultDeserializerScorers) services.AddSingleton(typeof(IDeserializeScorer), type);
+                foreach (var type in DefaultScorers.DefaultSerializerScorers) services.AddSingleton(typeof(ISerializeScorer), type);
             }
-            return app;
+            return services;
         }
 
         /// <summary>
@@ -55,28 +60,8 @@ namespace LionFire.Applications.Hosting
             //}
             return app;
         }
-        public static IHostBuilder AddSerialization(this IHostBuilder hostBuilder, bool useDefaultSettings = true)
-        {
-            hostBuilder.ConfigureServices((context, services) =>
-            {
-                services.AddSingleton<ISerializationProvider, SerializationProvider>();
-                //app.AddSingleton<ISerializationProvider, SerializationProvider>(serviceProvider =>
-                //{
-                //    var result = new SerializationProvider();
-                //    if (useDefaultSettings)
-                //    {
-                //        result.DeserializationScorers = 
-                //    }
-                //});
-
-                if (useDefaultSettings)
-                {
-                    foreach (var type in DefaultScorers.DefaultDeserializerScorers) services.AddSingleton(typeof(IDeserializeScorer), type);
-                    foreach (var type in DefaultScorers.DefaultSerializerScorers) services.AddSingleton(typeof(ISerializeScorer), type);
-                }
-            });
-            return hostBuilder;
-        }
+        public static IHostBuilder AddSerialization(this IHostBuilder hostBuilder, bool useDefaultSettings = true) 
+            => hostBuilder.ConfigureServices((context, services) => services.AddSerialization());
 
         /// <summary>
         /// Registers ISerializationService and/or ISerializationStrategy types in the app's IServicesCollection

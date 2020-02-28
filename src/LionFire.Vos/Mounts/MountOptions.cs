@@ -1,4 +1,5 @@
-﻿using LionFire.MultiTyping;
+﻿using LionFire.FlexObjects;
+using LionFire.MultiTyping;
 using System;
 using System.ComponentModel;
 using System.Linq;
@@ -37,12 +38,13 @@ namespace LionFire.Vos.Mounts
             MultiTyped = decorators;
         }
 
-        public MountOptions(MountOptions other)
-        {
-            throw new NotImplementedException("TODO");
-            //using LionFire.Extensions.AssignFrom;
-            //this.ShallowAssignFrom(other);
-        }
+        //public MountOptions(MountOptions other)
+        //{
+        //    throw new NotImplementedException("TODO");
+        //    //using LionFire.Extensions.AssignFrom;
+        //    //this.ShallowAssignFrom(other);
+        //}
+        
 #if AOT
 		public void AssignFrom(MountOptions o)
 		{

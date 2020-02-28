@@ -1,8 +1,10 @@
 ﻿using LionFire.Persistence.Handles;
 using LionFire.Referencing;
+using LionFire.Serialization;
 using LionFire.Vos;
 using LionFire.Vos.Mounts;
 using LionFire.Vos.Services;
+using Microsoft.Extensions.Options;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -43,11 +45,11 @@ namespace LionFire.Persistence.Persisters.Vos
 
         IServiceProvider ServiceProvider => Root?.GetServiceProvider();
 
-        public VosPersister(IRootVob root)
+        public VosPersister(IRootVob root, SerializationOptions serializationOptions) : base(serializationOptions)
         {
             Root = root;
         }
-        public VosPersister(IRootManager vosRootManager, string rootName, VosPersisterOptions options) : this(vosRootManager.Get(rootName))
+        public VosPersister(IRootManager vosRootManager, string rootName, VosPersisterOptions options, SerializationOptions serializationOptions) : this(vosRootManager.Get(rootName), options?.SerializationOptions ?? serializationOptions)
         {
             //this.RootName = rootName;
             //root = vosRootManager.Get(rootName);

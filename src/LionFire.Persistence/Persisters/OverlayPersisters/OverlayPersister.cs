@@ -1,4 +1,6 @@
 ﻿using LionFire.Referencing;
+using LionFire.Serialization;
+using Microsoft.Extensions.Options;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
@@ -20,6 +22,10 @@ namespace LionFire.Persistence.Persisters
         where TReference : IReference
         where TOptions : PersistenceOptions
     {
+        public OverlayPersister(SerializationOptions serializationOptions) : base(serializationOptions)
+        {
+        }
+
         public Task<IPersistenceResult> Create<TValue>(IReferencable<TReference> referencable, TValue value) => throw new System.NotImplementedException();
         public Task<IPersistenceResult> Delete(IReferencable<TReference> referencable) => throw new System.NotImplementedException();
         public Task<IPersistenceResult> Exists<TValue>(IReferencable<TReference> referencable) => throw new System.NotImplementedException();

@@ -1,4 +1,6 @@
 ﻿using LionFire.Referencing;
+using LionFire.Serialization;
+using Microsoft.Extensions.Options;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
@@ -35,6 +37,11 @@ namespace LionFire.Persistence.Persisters
             protected set { underlyingPersister = value; }
         }
         private TUnderlyingPersister underlyingPersister;
+
+        public PassthroughPersister(SerializationOptions serializationOptions) : base(serializationOptions)
+        {
+        }
+
         protected virtual TUnderlyingPersister GetUnderlyingPersister => default;
 
 

@@ -99,5 +99,10 @@ namespace LionFire.Serialization
         /// </summary>
         public float DeserializePreference { get; set; }
 
+        public override string ToString()
+        {
+            if (Strategy != null) return $"{{SerializationStrategyPreference Strategy={{{Strategy.GetType().Name}}}}}";
+            return base.ToString();
+        }
     }
 }

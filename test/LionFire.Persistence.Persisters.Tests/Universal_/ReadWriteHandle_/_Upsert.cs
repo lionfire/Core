@@ -15,11 +15,16 @@ using LionFire.Persistence;
 using LionFire.Serialization.Json.Newtonsoft;
 using LionFire.Dependencies;
 using LionFire.Referencing;
+using LionFire.Services;
+using LionFire.IO;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace Universal_.ReadWriteHandle_
 {
     public class _Upsert_Already
     {
+
+
         [Theory]
         [ClassData(typeof(UniversalPersistersGenerator))]
         public async void P_TestObj(IPersisterTestInitializer initializer)
@@ -27,7 +32,7 @@ namespace Universal_.ReadWriteHandle_
             await TestHostBuilders.CreateFileNewtonsoftHost(initializer)
                 .RunAsync(async () =>
             {
-                var testPath = $"UnitTest - {Guid.NewGuid().ToString()}.json"; // REVIEW: avoid putting json on there and use a default serializer?
+                var testPath = $"UnitTest - {Guid.NewGuid().ToString()}.json";
                 IReference reference = initializer.GetReferenceForTestPath(testPath);
 
                 var testData = "Test data: " + Guid.NewGuid().ToString();
@@ -105,6 +110,104 @@ namespace Universal_.ReadWriteHandle_
                 //Assert.False(File.Exists(path));
             });
         }
+
+
+        // TODO: Combine with P_TestObj via ClassData?
+        [Theory]
+        [ClassData(typeof(UniversalPersistersGenerator))]
+        public async void P_DefaultExtension(IPersisterTestInitializer initializer)
+        {
+            await TestHostBuilders.CreateFileNewtonsoftHost(initializer)
+                .ConfigureServices((context, services) =>
+                {
+                    services
+                        .Configure<SerializationOptions>(so => so.TreatExtensionlessAsExtension = "json")
+                        ;
+                    //services.TryAddEnumerableSingleton<ISerializeScorer>(new DefaultExtensionScorer("json", IODirection.ReadWrite));
+                })
+                .RunAsync(async () =>
+                {
+                    var testPath = $"UnitTest - {Guid.NewGuid().ToString()}";
+                    IReference reference = initializer.GetReferenceForTestPath(testPath);
+
+                    var testData = "Test data: " + Guid.NewGuid().ToString();
+
+                    #region !Exists
+                    {
+                        var rh = reference.GetReadHandle<string>();
+                        Assert.False(await rh.Exists(), "Unexpected: exists before creation.");
+                    }
+                    #endregion
+
+                    #region Create
+
+                    // TODO: Try other types of data
+                    {
+                        var rwh = reference.GetReadWriteHandle<string>();
+                        rwh.Value = testData;
+                        var result = await rwh.Put();
+                        Assert.True(result.IsSuccess);
+                    }
+                    #endregion
+
+                    #region Exists
+
+                    #endregion
+
+                    #region Retrieve
+                    {
+                        var rh = reference.GetReadHandle<string>();
+                        var retrieveResult = (await rh.Resolve()).ToRetrieveResult();
+                        Assert.True(retrieveResult.IsSuccess());
+                        Assert.True(retrieveResult.IsFound());
+                        Assert.Equal(testData, rh.Value);
+                    }
+                    #endregion
+
+                    #region Delete
+                    {
+                        var rwh = reference.GetReadWriteHandle<string>();
+                        var deleteResult = await rwh.Delete();
+                        Assert.True(deleteResult != false);
+                    }
+                    #endregion
+
+                    #region !Exists
+                    {
+                        var rh = reference.GetReadHandle<string>();
+                        Assert.False(await rh.Exists(), "Still exists after deletion");
+                    }
+                    #endregion
+
+                    // TODO: Assert existing handles get deletion event
+
+                    // OLD - review and delete
+                    //var path = FsTestSetup.TestFile;
+                    //Assert.False(File.Exists(path));
+
+                    //File.WriteAllText(path, TestClass1.ExpectedNewtonsoftJson);
+                    //Assert.True(File.Exists(path));
+
+                    //var testContents2 = TestClass1.Create;
+                    //testContents2.StringProp = "Contents #2";
+                    //testContents2.IntProp++;
+                    //var serializedTestContents2 = DependencyLocator.Get<NewtonsoftJsonSerializer>().ToString(testContents2).String;
+
+                    //var reference = new CouchDBReference(path);
+
+                    //await DependencyLocator.Get<FilesystemPersister>().Upsert(path.ToFileReference(), testContents2);
+                    //Assert.True(File.Exists(path));
+
+                    //var fromFile = File.ReadAllText(path);
+                    //Assert.Equal(serializedTestContents2, fromFile);
+
+                    //File.Delete(path);
+                    //Assert.False(File.Exists(path));
+                });
+        }
+
+
+
 #if TOPORT
 
             [Fact]

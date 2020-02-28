@@ -106,18 +106,8 @@ namespace LionFire.Referencing
             //return (paths[0].StartsWith(Separator) ? Separator : "") + String.Concat(PathSeparatorRepeater.Zip(paths, (separator, chunk) => x.Trim(SeparatorChar) + y)).TrimEnd(SeparatorChar);
         }
 
-        public static string GetDirectoryName(string path)
-        {
-            return System.IO.Path.GetDirectoryName(path).Replace('\\', '/'); // TODO
-        }
-        public static string GetFileName(string path)
-        {
-            return System.IO.Path.GetFileName(path); // TODO
-        }
-        public static string GetExtension(string path)
-        {
-            return System.IO.Path.GetExtension(path); // TODO
-        }
+        public static string GetDirectoryName(string path) => System.IO.Path.GetDirectoryName(StripSpecifiers(path)).Replace('\\', '/');
+        public static string GetFileName(string path) => System.IO.Path.GetFileName(StripSpecifiers(path));
 
         public static string Combine(string path1, IEnumerable<string> path2)
         {
@@ -212,6 +202,37 @@ namespace LionFire.Referencing
                 if (childChunks[i++] != parentChunk) return false;
             }
             return childChunks.Length > parentChunks.Length;
+        }
+
+
+        /// <summary>
+        /// Indicates that if there is an extension (due to an auto-extension feature)), it hasn't appeared yet in the string
+        /// </summary>
+        public static string ExplicitNoExtensionSuffix { get; set; } = ":...";
+
+        /// <summary>
+        /// Indicates that this suffix should be stripped, and then whatever appears after a . (if exists) should be treated as an extension.  If there is no ., the extension is null.
+        /// </summary>
+        public static string ExplicitHasExtension { get; set; } = ":.";
+
+        public static string StripSpecifiers(string lionPath) => lionPath.TrimEnd(ExplicitNoExtensionSuffix).TrimEnd(ExplicitHasExtension);
+
+        public static string GetExtension(string path)
+        {
+            if (path.EndsWith(ExplicitNoExtensionSuffix)) return null;
+            if (path.EndsWith(ExplicitHasExtension)) path = path.Substring(0, path.Length - ExplicitHasExtension.Length);
+
+            var result = System.IO.Path.GetExtension(path);
+            return result.Length == 0 ? null : result;
+        }
+    }
+
+    public static class LionPathStringExtensions
+    {
+        public static string TrimEnd(this string str, string trimString)
+        {
+            if (str.EndsWith(trimString)) return str.Substring(0, str.Length - trimString.Length);
+            return str;
         }
     }
 }

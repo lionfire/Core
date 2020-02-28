@@ -44,27 +44,6 @@ namespace LionFire.Persistence.Filesystem
 
         readonly IOptionsMonitor<FilesystemPersisterOptions> optionsMonitor;
 
-        #region Dependencies
-
-        #region SerializationProvider
-
-        [SetOnce]
-        public ISerializationProvider SerializationProvider
-        {
-            get => serializationProvider;
-            set
-            {
-                if (serializationProvider == value) return;
-                if (serializationProvider != default) throw new AlreadySetException();
-                serializationProvider = value;
-            }
-        }
-        private ISerializationProvider serializationProvider;
-
-        #endregion
-
-        #endregion
-
         #region Static Defaults
 
         private static TPersistenceOptions DefaultOptions
@@ -84,9 +63,9 @@ namespace LionFire.Persistence.Filesystem
 
         #region Construction
 
-        public FilesystemPersister(string name, ISerializationProvider serializationProvider, IOptionsMonitor<TPersistenceOptions> options, IPersistenceConventions itemKindIdentifier)
+        public FilesystemPersister(string name, ISerializationProvider serializationProvider, IOptionsMonitor<TPersistenceOptions> options, IPersistenceConventions itemKindIdentifier, SerializationOptions serializationOptions) : base(serializationOptions)
         {
-            this.serializationProvider = serializationProvider;
+            this.SerializationProvider = serializationProvider; // MOVE to base ctor, maybe others as well
             //this.PersistenceOptions = persistenceOptions;
             this.PersistenceOptions = string.IsNullOrEmpty(name) ? options.CurrentValue : options.Get(name);
             this.optionsMonitor = options;
@@ -298,12 +277,22 @@ namespace LionFire.Persistence.Filesystem
                 path = LionPath.Combine(providerOptions.RootDirectory, path);
             }
 
+            var operation = PersistenceOperationFactory.Deserialize<TValue>(reference, SerializationOptions
+    //    , o =>
+    //{
+    //    o.AutoAppendExtension = PersistenceOptions.AutoAppendExtension;
+    //}
+    );
+
+            //((Func<PersistenceOperation>)(() =>
+            //       new PersistenceOperation(reference)
+            //       {
+            //           Direction = IODirection.Read,
+            //       })).ToLazy()
+
+
             return await new Func<Task<IRetrieveResult<TValue>>>(()
-                => ReadAndDeserializeExactPath<TValue>(path, ((Func<PersistenceOperation>)(() =>
-                    new PersistenceOperation(reference)
-                    {
-                        Direction = IODirection.Read,
-                    })).ToLazy()))
+                => ReadAndDeserializeExactPath<TValue>(path, operation))
                 .AutoRetry(maxRetries: PersistenceOptions.MaxGetRetries,
                 millisecondsBetweenAttempts: PersistenceOptions.MillisecondsBetweenGetRetries, allowException: AllowAutoRetryForThisException).ConfigureAwait(false);
         }
@@ -321,6 +310,7 @@ namespace LionFire.Persistence.Filesystem
             List<KeyValuePair<ISerializationStrategy, SerializationResult>>? failures = null;
 
             PersistenceResultFlags flags = PersistenceResultFlags.None;
+        
 
             byte[]? bytes;
 
@@ -386,10 +376,10 @@ namespace LionFire.Persistence.Filesystem
 
         #region Put
 
-        public Task<IPersistenceResult> Write<T>(string fsPath, T obj, ReplaceMode replaceMode = ReplaceMode.Upsert, PersistenceContext? context = null, Type? type = null)
+        public Task<IPersistenceResult> Write<TValue>(string fsPath, TValue obj, ReplaceMode replaceMode = ReplaceMode.Upsert, PersistenceContext? context = null, Type? type = null)
             => Write(PathToReference(fsPath), obj, replaceMode, context, type);
 
-        public Task<IPersistenceResult> Write<T>(TReference fsReference, T obj, ReplaceMode replaceMode = ReplaceMode.Upsert, PersistenceContext? context = null, Type? type = null)
+        public Task<IPersistenceResult> Write<TValue>(TReference fsReference, TValue obj, ReplaceMode replaceMode = ReplaceMode.Upsert, PersistenceContext? context = null, Type? type = null)
         {
             TReference effectiveReference;
             bool allowOverwrite = replaceMode.HasFlag(ReplaceMode.Update);
@@ -436,7 +426,7 @@ namespace LionFire.Persistence.Filesystem
 
                 #region PersistenceOperation
 
-                var operation = PersistenceOperation.Serialize<T>(fsReference, obj, replaceMode
+                var operation = PersistenceOperationFactory.Serialize<TValue>(fsReference, obj, replaceMode, SerializationOptions
                 //    , o =>
                 //{
                 //    o.AutoAppendExtension = PersistenceOptions.AutoAppendExtension;
@@ -515,7 +505,7 @@ namespace LionFire.Persistence.Filesystem
 
                     #region SerializeToOutput
 
-                    var serializationResult = await SerializeToOutput(obj, effectiveFSPath, strategy, replaceMode, operation, context);
+                    var serializationResult = await SerializeToOutput(obj, effectiveFSPath, strategy, replaceMode, operation, context).ConfigureAwait(false);
 
                     if (!serializationResult.IsSuccess)
                     {

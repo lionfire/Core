@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using LionFire.Serialization;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 
@@ -31,6 +32,9 @@ namespace LionFire.Persistence
             }
             set => candidateFileNames = value;
         }
+
+        public SerializationOptions SerializationOptions { get; set; }
+
         private IEnumerable<string> candidateFileNames;
         //public string Directory { get; set; }
     }

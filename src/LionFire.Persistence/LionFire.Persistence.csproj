@@ -7,6 +7,12 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="Persistence\Resolvables\**" />
+    <EmbeddedResource Remove="Persistence\Resolvables\**" />
+    <None Remove="Persistence\Resolvables\**" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="Microsoft.Bcl.AsyncInterfaces" Version="1.1.0" />
     <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="3.1.1" />
     <PackageReference Include="System.IO.FileSystem.Watcher" Version="4.3.0" />
@@ -26,7 +32,6 @@
 
   <ItemGroup>
     <Folder Include="Collections\" />
-    <Folder Include="Persistence\Resolvables\" />
     <Folder Include="Providers\" />
   </ItemGroup>
 
