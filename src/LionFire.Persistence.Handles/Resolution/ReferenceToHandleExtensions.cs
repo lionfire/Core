@@ -23,9 +23,9 @@ namespace LionFire.Referencing
             where TReference : IReference
             => reference.TryGetReadHandleProvider<TReference>().GetReadHandle<TValue>(reference);
 
-        public static IReadHandle<TValue> GetReadHandle<TValue>(this IReference reference, IServiceProvider serviceProvider = null)
+        public static IReadHandle<TValue> GetReadHandle<TValue>(this IReference reference, TValue preresolvedValue = default, IServiceProvider serviceProvider = null)
         {
-            return reference.GetReadHandleProvider(serviceProvider).GetReadHandle<TValue>(reference);
+            return reference.GetReadHandleProvider(serviceProvider).GetReadHandle<TValue>(reference, preresolvedValue);
 #if Alternative
 #else
             ////throw new NotImplementedException("FIXME - I don't think this even works");
@@ -38,7 +38,7 @@ namespace LionFire.Referencing
                         .Invoke((typeof(ReferenceToHandleProviderExtensions).GetMethods(BindingFlags.Public | BindingFlags.Static)
                         .Where(mi => mi.Name == nameof(IReferenceToHandleService.GetReadHandleProvider) && mi.ContainsGenericParameters).First()
                         .MakeGenericMethod(TReference)
-                        .Invoke(null, new object[] { /* Upcast */ reference, serviceProvider }))
+                        .Invoke(null, new object[] { /* Upcast */ reference, default(TValue), serviceProvider }))
                 , new object[] { reference }));
 #endif
         }

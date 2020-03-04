@@ -1,0 +1,14 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netstandard2.0</TargetFramework>
+    <LangVersion>latest</LangVersion>
+    <RootNamespace>LionFire</RootNamespace>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\LionFire.Assets\LionFire.Assets.csproj" />
+    <ProjectReference Include="..\LionFire.Instantiating\LionFire.Instantiating.csproj" />
+  </ItemGroup>
+
+</Project>

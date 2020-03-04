@@ -140,7 +140,7 @@ namespace LionFire // RENAME LionFire.ExtensionMethods
             ValueType val = new ValueType();
 
             // TODO - eliminate this, have it only in Keyed version
-            if (val is IKeyedW<KeyType> keyed) { keyed.Key = key; }
+            if (val is IKeyable<KeyType> keyed) { keyed.Key = key; }
 
             dictionary.Add(key, val);
             return val;
@@ -161,7 +161,7 @@ namespace LionFire // RENAME LionFire.ExtensionMethods
             if (dictionary.ContainsKey(key)) return dictionary[key];
             ValueType val = new ValueType();
 
-            if (val is IKeyedW<KeyType> keyed) { keyed.Key = key; }
+            if (val is IKeyable<KeyType> keyed) { keyed.Key = key; }
 
             dictionary.Add(key, val);
             return val;
@@ -176,7 +176,7 @@ namespace LionFire // RENAME LionFire.ExtensionMethods
             if (dictionary.ContainsKey(key)) return dictionary[key];
             ValueType val = defaultValue.Invoke();
 
-            if (val is IKeyedW<KeyType> keyed) { keyed.Key = key; }
+            if (val is IKeyable<KeyType> keyed) { keyed.Key = key; }
 
             dictionary.Add(key, val);
             return val;

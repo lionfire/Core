@@ -33,13 +33,14 @@ namespace LionFire.Vos.Assets.Handles
             => new PersisterReadWriteHandle<IAssetReference, T, VosAssetPersister>((VosAssetPersister)PersisterProvider.GetPersister(reference.Persister), reference);
     }
 
-    public class AssetCollectionTypeProvider : ICollectionTypeProvider<VosReference>
-    {
-        public Type GetCollectionType(VosReference reference)
-        {
-            var vob = reference.ToVob();
-            var type = vob.Parent.AcquireOwn<CollectionsByTypeManager>()?.GetCollectionType(vob);
-            return type;
-        }
-    }
+    // UNUSED
+    //public class AssetCollectionTypeProvider : ICollectionTypeProvider<VosReference>
+    //{
+    //    public Type GetCollectionType(VosReference reference)
+    //    {
+    //        var vob = reference.ToVob();
+    //        var type = vob.Parent.AcquireOwn<CollectionsByTypeManager>()?.GetCollectionType(vob);
+    //        return type;
+    //    }
+    //}
 }

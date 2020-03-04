@@ -58,14 +58,14 @@ namespace LionFire.Persistence.Assets.Tests
                       //var assetName = Path.GetFileNameWithoutExtension(path);
                       var assetName = Path.GetFileName(path);
 
-                      AssetReference<TestClass1> mc = assetName;
+                      AssetReference<TestClass1> assetReference = assetName;
 
-                      var rh = mc.GetReadHandle<TestClass1>();
+                      var readHandle = assetReference.GetReadHandle<TestClass1>();
 
-                      var result = (await rh.Resolve()).ToRetrieveResult();
+                      var result = (await readHandle.Resolve()).ToRetrieveResult();
                       Assert.True(result.IsSuccess);
 
-                      var value = rh.Value;
+                      var value = readHandle.Value;
 
                       TestClass1.Create.ShouldDeepEqual(value);
                   }

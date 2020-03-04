@@ -6,16 +6,19 @@ using System.Threading.Tasks;
 
 namespace LionFire.Instantiating
 {
+    /// <summary>
+    /// REVIEW: REFACTOR - If this is just a marker interface, drop it as a constraint on generic Template classes
+    /// </summary>
     public interface ITemplateInstance
     {
         // Overkill?  If you want to get the template, search for ITemplateInstance<>'s -- there should only be one, or at least one that has a null value in Template.
         //ITemplate Template { get; set; }
     }
 
-    public interface ITemplateInstance<T> : ITemplateInstance, IInstanceFor<T>
-        where T : ITemplate
+    public interface ITemplateInstance<TTemplate> : ITemplateInstance, IInstanceFor<TTemplate>
+        where TTemplate : ITemplate
     {
-         new T Template { get; set; }
+         new TTemplate Template { get; set; }
     }
 
     public static class ITemplateInstanceExtensions

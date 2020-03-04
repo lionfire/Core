@@ -9,19 +9,21 @@ namespace LionFire.Instantiating
     {
         //ParameterOverlayMode OverlayMode { get; }
         //object OverlayParent { get; set; }
-        IReadHandleBase<ITemplate> Template { get; set; }
+        IReadHandleBase<ITemplate> Template { get;  }
         //IReadHandle<ITemplateAsset> TemplateAsset { get; set; }
     }
 
     public interface ITemplateParameters<TemplateType> : ITemplateParameters
-       where TemplateType : class
+       where TemplateType : ITemplate
     {
+        new IReadHandleBase<TemplateType> Template { get; set; }
     }
 
-    public interface ITemplateParameters<TemplateType, ParametersType>
+    public interface ITemplateParameters<TemplateType, TInstance>
         : IInstantiation<TemplateType>
-        where TemplateType : ITemplate
-        where ParametersType : class, ITemplateParameters, ITemplateInstance, new()
+        , ITemplateParameters
+        where TemplateType : ITemplate<TInstance>
+        //where ParametersType : ITemplateParameters //, new()
     {
     }
 }

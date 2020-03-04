@@ -76,7 +76,7 @@ namespace LionFire.Persistence.Persisters.Vos
                 {
                     var relativePathChunks = vob.PathElements.Skip(mount.VobDepth);
                     var effectiveReference = !relativePathChunks.Any() ? mount.Target : mount.Target.GetChildSubpath(relativePathChunks);
-                    var rh = effectiveReference.GetReadHandle<TValue>(ServiceProvider);
+                    var rh = effectiveReference.GetReadHandle<TValue>(serviceProvider: ServiceProvider);
 
                     var childResult = (await rh.Resolve().ConfigureAwait(false)).ToRetrieveResult();
 

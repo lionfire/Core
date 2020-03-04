@@ -17,12 +17,12 @@ namespace LionFire.Persistence.Persisters
     {
         public IReadHandleProvider<TReference> InnerReadHandleProvider { get; }
 
-        public IReadHandle<T> GetReadHandle<T>(TReference reference)
+        public IReadHandle<T> GetReadHandle<T>(TReference reference, T preresolvedValue = default)
         {
             throw new System.NotImplementedException();
         }
 
-        public IReadHandle<T> GetReadHandle<T>(IReference reference) => reference is TReference tReference ? GetReadHandle<T>(tReference) : null;
+        public IReadHandle<T> GetReadHandle<T>(IReference reference, T preresolvedValue = default) => reference is TReference tReference ? GetReadHandle<T>(tReference, preresolvedValue) : null;
 
     }
 }

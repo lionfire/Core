@@ -6,5 +6,4 @@ using System.Text;
 namespace LionFire.Assets
 {
     public interface IAssetReference : ITypedReference { }
-   
 }

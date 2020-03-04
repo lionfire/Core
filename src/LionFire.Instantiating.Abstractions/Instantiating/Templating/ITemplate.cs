@@ -5,14 +5,15 @@ using System.Threading.Tasks;
 
 namespace LionFire.Instantiating
 {
-    public interface ITemplate { } // RENAME: IGenerator
+    public interface ITemplate { } 
 
     public interface ITemplateEx
     {
         Type InstantiationType { get; }
     }
 
-    public interface IInstantiatingTemplate
+    // UNUSED. REVIEW - avoid this?
+    public interface IInstantiatingTemplate // RENAME: IGenerator
     {
         object Instantiate();
     }

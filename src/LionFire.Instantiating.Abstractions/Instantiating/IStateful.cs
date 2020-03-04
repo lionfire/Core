@@ -5,15 +5,13 @@ using System.Text;
 
 namespace LionFire.Instantiating
 {
-    public interface IStateful<StateType> : IStateful
+    public interface IStateful<TState> : IStateful
     {
-        new StateType State { get; set; }
+        new TState State { get; set; }
     }
 
     public interface IStateful
     {
         object State { get; set; }
     }
-
-
 }

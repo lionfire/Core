@@ -26,14 +26,14 @@ namespace LionFire.Persistence.Handles
         /// Example implementation:
         ///   IReadHandle<T> IReadHandleProvider.GetReadHandle<T>(IReference reference) => (reference is FileReference fileReference) ? GetReadHandle<T>(fileReference) : null;
         /// </remarks>
-        IReadHandle<T>? GetReadHandle<T>(IReference reference);
+        IReadHandle<T>? GetReadHandle<T>(IReference reference, T preresolvedValue = default);
     }
 
     //[AutoRegister]
     public interface IReadHandleProvider<TReference> : IReadHandleProvider
         where TReference : IReference
     {
-        IReadHandle<T> GetReadHandle<T>(TReference reference);
+        IReadHandle<T> GetReadHandle<T>(TReference reference, T preresolvedValue = default);
     }
 
 }

@@ -2,10 +2,12 @@
 
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
+    <LangVersion>latest</LangVersion>
   </PropertyGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\LionFire.Assets.Abstractions\LionFire.Assets.Abstractions.csproj" />
+    <ProjectReference Include="..\LionFire.Persistence.Handles\LionFire.Persistence.Handles.csproj" />
     <ProjectReference Include="..\LionFire.Referencing\LionFire.Referencing.csproj" />
   </ItemGroup>
 
