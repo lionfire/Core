@@ -4,9 +4,16 @@
 
     public class AssetBase<TValue> : AssetBaseBase<TValue>
     {
+
+        public AssetBase() { }
+        public AssetBase(AssetReference<TValue> reference) : base(reference) {  }
+
         #region Key
 
-        public override string Key
+        /// <summary>
+        /// This is where AssetPath is stored.  Reference creates an AssetReference from this via AssetPath.
+        /// </summary>
+        public override string Key 
         {
             get => key;
             set
@@ -20,7 +27,5 @@
         private string key;
 
         #endregion
-
-     
     }
 }

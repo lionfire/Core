@@ -2,8 +2,8 @@
 
 namespace LionFire.Assets.Instantiating
 {
-    public abstract class TemplateAssetBase<TTemplate, TInstance, TParameters> : AssetBase<TTemplate>, ITemplate<TInstance>
-        where TTemplate : ITemplate<TInstance>
+    public abstract class TemplateAssetBase<TTemplate, TInstance, TParameters> : AssetBase<TTemplate>, ITemplateAsset<TTemplate, TInstance>
+        where TTemplate : ITemplateAsset<TTemplate, TInstance>
         where TParameters : ITemplateParameters<TTemplate, TInstance>, ITemplateParameters
     {
         //private RWAsset<TTemplate> asset;
@@ -18,9 +18,16 @@ namespace LionFire.Assets.Instantiating
 #endif
     }
 
-    public class TemplateAssetBase<TTemplate, TInstance> : ITemplate<TInstance>
-        where TTemplate : ITemplate<TInstance>
+#if true
+    public class TemplateAssetBase<TTemplate, TInstance> : AssetBase<TTemplate>, ITemplate<TInstance>, ITemplateAsset<TTemplate, TInstance>
+        where TTemplate : ITemplateAsset<TTemplate, TInstance>
     {
     }
+#else // Another idea:
+    public class TemplateAssetBase<TTemplate, TInstance> : TemplateAssetBase<TTemplate, TInstance, Instantiation<TTransferCapability, TransferCapability>>
+    {
+    }
+#endif
+
 
 }

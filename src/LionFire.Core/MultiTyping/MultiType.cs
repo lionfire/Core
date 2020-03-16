@@ -70,7 +70,13 @@ namespace LionFire.MultiTyping
                 this.AddType(obj);
             }
         }
-
+        public MultiType(params object[] objects)
+        {
+            foreach (var obj in objects)
+            {
+                this.AddType(obj);
+            }
+        }
         public MultiType(params IMultiTypableVisitor[] items)
         {
             foreach (var item in items)

@@ -20,18 +20,18 @@ namespace LionFire.Vos.Handles
         }
 
 
-        public override IReadHandle<T> GetReadHandle<T>(VosReference reference)
-            => reference.ToVob().GetReadHandle<T>();
-        public override IReadWriteHandle<T> GetReadWriteHandle<T>(VosReference reference)
-                  => reference.ToVob().GetReadWriteHandle<T>();
-        public override IWriteHandle<T> GetWriteHandle<T>(VosReference reference)
-           => reference.ToVob().GetWriteHandle<T>();
+        public override IReadHandle<T> GetReadHandle<T>(VosReference reference, T preresolvedValue = default)
+            => reference.ToVob().GetReadHandle<T>(preresolvedValue);
+        public override IReadWriteHandle<T> GetReadWriteHandle<T>(VosReference reference, T preresolvedValue = default)
+                  => reference.ToVob().GetReadWriteHandle<T>(preresolvedValue);
+        public override IWriteHandle<T> GetWriteHandle<T>(VosReference reference, T prestagedValue = default)
+           => reference.ToVob().GetWriteHandle<T>(prestagedValue);
         //IWriteHandle<T> GetWriteHandle<T>(VosReference reference) 
         //=> reference.ToVob().GetWriteHandle<T>();
 
-        IReadHandle<T> IReadHandleProvider.GetReadHandle<T>(IReference reference) => GetReadHandle<T>((VosReference)reference);  // REVIEW
-        IReadWriteHandle<T> IReadWriteHandleProvider.GetReadWriteHandle<T>(IReference reference) => GetReadWriteHandle<T>((VosReference)reference);  // REVIEW
-        IWriteHandle<T> IWriteHandleProvider.GetWriteHandle<T>(IReference reference) => GetWriteHandle<T>((VosReference)reference); // REVIEW
+        IReadHandle<T> IReadHandleProvider.GetReadHandle<T>(IReference reference, T preresolvedValue) => GetReadHandle<T>((VosReference)reference, preresolvedValue);  // REVIEW
+        IReadWriteHandle<T> IReadWriteHandleProvider.GetReadWriteHandle<T>(IReference reference, T preresolvedValue) => GetReadWriteHandle<T>((VosReference)reference, preresolvedValue);  // REVIEW
+        IWriteHandle<T> IWriteHandleProvider.GetWriteHandle<T>(IReference reference, T prestagedValue) => GetWriteHandle<T>((VosReference)reference, prestagedValue); // REVIEW
 
 
         //public IReadHandle<T> GetReadHandle<T>(ProviderVosReference reference)

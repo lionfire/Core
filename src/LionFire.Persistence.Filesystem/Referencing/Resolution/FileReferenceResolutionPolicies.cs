@@ -1,4 +1,5 @@
-﻿using LionFire.ObjectBus.Filesystem;
+﻿#if TOPORT
+using LionFire.ObjectBus.Filesystem;
 using LionFire.Persistence.Resolution;
 using LionFire.Structures;
 using System.Collections.Generic;
@@ -28,3 +29,4 @@ namespace LionFire.Referencing.Filesystem
     }
 
 }
+#endif

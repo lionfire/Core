@@ -2,7 +2,8 @@
 
 namespace LionFire.Resolves
 {
-    public interface IResolves<out TValue>
+    public interface IResolves { }
+    public interface IResolves<out TValue> : IResolves
     {
         /// <summary>
         /// Resolve the value for this instance.  If the value was already resolved or provided, this re-resolves the value.  (Use ILazilyResolves to avoid unwanted re-resolving.)

@@ -2,6 +2,7 @@
 using LionFire.Assets;
 using System.ComponentModel;
 using System;
+using LionFire.Referencing;
 
 namespace LionFire.Assets
 {
@@ -15,6 +16,12 @@ namespace LionFire.Assets
         /// Implementors should invoke OnKeyChanged
         /// </summary>
         public abstract string Key { get; set; }
+
+        /// <summary>
+        /// The "file name" portion of the AssetPath (omit the directory)
+        /// </summary>
+        public string Name => LionPath.GetName(Key);
+
         protected virtual void OnKeyChanged() => reference = null;
 
         public IAssetReference Reference
@@ -29,6 +36,13 @@ namespace LionFire.Assets
             }
         }
         protected AssetReference<TValue> reference;
+
+        #region Construction
+
+        protected AssetBaseBase() { }
+        protected AssetBaseBase(AssetReference<TValue> reference) { this.reference = reference; }
+
+        #endregion
 
         #region INotifyPropertyChanged Implementation
 

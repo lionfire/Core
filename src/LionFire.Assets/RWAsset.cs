@@ -14,7 +14,7 @@ namespace LionFire.Assets
     } // TEMP TOPORT
 
 
-    public class RWAsset<TValue> : ReadWriteHandlePassthrough<TValue, IAssetReference>
+    public class RWAsset<TValue> : ReadWriteHandlePassthrough<TValue, IAssetReference>, IAssetReadWriteHandle
     {
         public static implicit operator RWAsset<TValue>(string assetPath) => new RWAsset<TValue> { Reference = new AssetReference<TValue>(assetPath) };
     }

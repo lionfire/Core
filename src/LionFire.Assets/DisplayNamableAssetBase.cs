@@ -11,5 +11,8 @@ namespace LionFire.Assets
         }
         private string displayName; 
         public virtual string DefaultDisplayName => null;
+
+        public DisplayNamableAssetBase() { }
+        public DisplayNamableAssetBase(AssetReference<TValue> reference) : base(reference) { }
     }
 }

@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿#if TOPORT
+using System.Collections.Generic;
 using LionFire.Persistence.Resolution;
 using LionFire.Referencing;
 using LionFire.Structures;
@@ -77,3 +78,4 @@ namespace LionFire.ObjectBus.Filesystem
     }
 #endif
 }
+#endif

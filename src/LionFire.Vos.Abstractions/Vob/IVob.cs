@@ -47,9 +47,9 @@ namespace LionFire.Vos
         IVob this[string subpath] { get; }
         IVob this[IVosReference reference] { get; }
 
-        IReadHandle<T> GetReadHandle<T>();
-        IReadWriteHandle<T> GetReadWriteHandle<T>();
-        IWriteHandle<T> GetWriteHandle<T>();
+        IReadHandle<T> GetReadHandle<T>(T preresolvedValue = default);
+        IReadWriteHandle<T> GetReadWriteHandle<T>(T preresolvedValue = default);
+        IWriteHandle<T> GetWriteHandle<T>(T prestagedValue = default);
     }
 
 }

@@ -58,9 +58,7 @@ namespace LionFire.Shell
 
 
         #region Info
-#if TOPORT
         LionFireAppCapabilities Capabilities { get; }
-#endif
         bool ProvidesRunLoop { get; }
 
         #endregion

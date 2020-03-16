@@ -6,6 +6,7 @@ using System.Linq;
 using LionFire.Copying;
 using LionFire.Ontology;
 using LionFire.Persistence;
+using LionFire.Persistence.Handles;
 using LionFire.Serialization;
 using LionFire.Structures;
 
@@ -17,7 +18,19 @@ namespace LionFire.Instantiating
     /// REVIEW - should this have anything to do with IInstantiation?  If so, maybe rename to Instantiation
     /// </summary>
     [LionSerializable(SerializeMethod.ByValue)] // REVIEW
-    public abstract class InstantiationBase : IInstantiation, IParentedTemplateParameters, IParented
+    public abstract class InstantiationBase<TTemplate> : InstantiationBase<TTemplate, object>
+        where TTemplate : ITemplate
+    {
+    }
+
+    /// <summary>
+    /// Represents the intent to instantiate an object from a template, and optionally template parameters and
+    /// optionally state as understood by the instance.
+    /// REVIEW - should this have anything to do with IInstantiation?  If so, maybe rename to Instantiation
+    /// </summary>
+    [LionSerializable(SerializeMethod.ByValue)] // REVIEW
+    public abstract class InstantiationBase<TTemplate, TState> : IInstantiation<TTemplate>, IParentedTemplateParameters<TTemplate>, IParented
+    where TTemplate : ITemplate
     {
 
         #region Ontology - TODO - both Key and Pid???
@@ -95,6 +108,13 @@ namespace LionFire.Instantiating
 
         #endregion
 
+        #region Construction
+
+        protected InstantiationBase() { }
+        protected InstantiationBase(IReadHandleBase<TTemplate> template) { RTemplate = template; }
+
+        #endregion
+
         /// <summary>
         /// OverlayTargets: by default, the template's IInstantiation tree
         /// </summary>
@@ -133,7 +153,8 @@ namespace LionFire.Instantiating
 
         #region Template
 
-        ITemplate IHasTemplate.Template { get => Template?.Value; set => throw new NotImplementedException(); }
+        [Blocking]
+        ITemplate IHasTemplate.Template { get => RTemplate != null ? RTemplate.Value : (ITemplate)null; set => throw new NotImplementedException(); }
 
 
         //public ITemplate TemplateObject
@@ -174,21 +195,15 @@ namespace LionFire.Instantiating
 
         #region Template
 
-        public object TemplateObj
-        {
-            get
-            {
-                if (template != null && template.GetType() == typeof(string))
-                    throw new UnreachableCodeException("get_TemplateObj - got string: " + (string)(object)template);
-
-                return template;
-            }
-        }
-
+        [Blocking]
+        public TTemplate Template => rTemplate.Value;
 
         //#if !AOT && !UNITY // Unity crashes with contravariant IReadHandle -- commented out the generic part of RH<>
+        IReadHandleBase<ITemplate> IHasRTemplate.RTemplate => (IReadHandleBase<ITemplate>)RTemplate;
+
         [Assignment(AssignmentMode.Assign)]
-        public IReadHandleBase<ITemplate> Template
+        public IReadHandleBase<TTemplate> RTemplate
+        //public R<TTemplate> Template
         {
             get
             {
@@ -196,20 +211,20 @@ namespace LionFire.Instantiating
                 if (template != null && template.GetType() == typeof(string))
                     throw new UnreachableCodeException("get_Template - got string: " + (string)(object)template);
 #endif
-                if (template == null && !object.ReferenceEquals(Parameters, this))
+                if (rTemplate == null && !object.ReferenceEquals(Parameters, this))
                 {
-                    return Parameters.Template;
+                    return Parameters.RTemplate;
                 }
-                return template;
+                return rTemplate;
             }
             set
             {
-                if ((template == null && value == null) || (template != null && value != null && template.Equals(value))) return;
+                if ((rTemplate == null && value == null) || (rTemplate != null && value != null && rTemplate.Equals(value))) return;
                 //if (template != null) throw new NotSupportedException("Can only be set once.");
-                if (template != null && value != null) throw new AlreadySetException();
-                if (value != null && value.GetType() == typeof(string))
-                    throw new UnreachableCodeException("set_Template - got string: " + (string)(object)value);
-                template = value;
+                if (rTemplate != null && value != null) throw new AlreadySetException();
+                //if (value != null && value.GetType() == typeof(string))
+                    //throw new UnreachableCodeException("set_Template - got string: " + (string)(object)value);
+                rTemplate = value;
 
                 //if (template != null && this.Key != null)
                 //{
@@ -217,7 +232,9 @@ namespace LionFire.Instantiating
                 //}
             }
         }
-        protected IReadHandleBase<ITemplate> template;
+        //protected R<TTemplate> template;
+        //protected IReadHandleBase<ITemplate> template;
+        protected IReadHandleBase<TTemplate> rTemplate;
 
         #endregion
 
@@ -236,7 +253,7 @@ namespace LionFire.Instantiating
         #endregion
 
         [SerializeDefaultValue(false)]
-        public virtual ITemplateParameters Parameters { get; set; }
+        public virtual ITemplateParameters<TTemplate> Parameters { get; set; }
 
         #region Overlaying
 
@@ -299,7 +316,7 @@ namespace LionFire.Instantiating
 
                 if (ins.Parameters is IDefaultInstanceKeyProvider provider) { return provider.DefaultKey; }
 
-                provider = ins.Template as IDefaultInstanceKeyProvider;
+                provider = ins.RTemplate as IDefaultInstanceKeyProvider;
                 if (provider != null) { return provider.DefaultKey; }
 
                 return null;
@@ -307,7 +324,7 @@ namespace LionFire.Instantiating
 
         //[Ignore]
         [SerializeDefaultValue(false)]
-        public virtual object State { get; set; }
+        public virtual TState State { get; set; }
 
         /// <summary>
         /// REVIEW - A way to avoid this is to break up Create into Construct and InitializeState
@@ -371,11 +388,7 @@ namespace LionFire.Instantiating
 
         #region AllChildren
 
-        public IEnumerable
-#if !AOT
-            <IInstantiation>
-#endif
-                AllChildren
+        public IEnumerable<IInstantiation> AllChildren
         {
             get
             {
@@ -396,7 +409,7 @@ namespace LionFire.Instantiating
             }
         }
 
-        IInstantiationCollection IInstantiation.Children { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
+        //IInstantiationCollection IInstantiation<TTemplate>.Children { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
         string IInstantiationBase.Key { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
         ICloneable IInstantiationBase.Prototype { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
 

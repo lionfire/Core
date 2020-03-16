@@ -42,6 +42,8 @@ namespace LionFire.Persistence
         //        IEnumerable<CollectionOperation> UncommittedChanges { get; }
 
         //        IPersistenceResult Put();
+
+        IReadWriteHandle<T> this[string subpath] { get; }
     }
 
 
@@ -55,6 +57,7 @@ namespace LionFire.Persistence
         //        ///// Direct data object
         //        ///// </summary>
         //        //INotifyingReadOnlyCollection<TListEntry> Entries { get; }
+        IReadHandle<T> this[string subpath] { get; }
 
     }
 

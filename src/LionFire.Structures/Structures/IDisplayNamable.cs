@@ -4,8 +4,13 @@ using System.Text;
 
 namespace LionFire.Structures
 {
-    public interface IDisplayNamable
+    public interface IDisplayNamable : IDisplayNamed
     {
-        string DisplayName { get; set; }
+        new string DisplayName { get; set; } 
+    }
+
+    public interface IDisplayNamed
+    {
+        string DisplayName { get; }
     }
 }

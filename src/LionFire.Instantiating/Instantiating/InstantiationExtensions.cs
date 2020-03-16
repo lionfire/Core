@@ -6,6 +6,9 @@ namespace LionFire.Instantiating
     public static class InstantiationExtensions
     {
         public static Instantiation CreateInstantiation(this ITemplate template) => new Instantiation(template);
+        public static Instantiation<TTemplate> CreateInstantiation<TTemplate>(this TTemplate template)
+            where TTemplate : ITemplate
+            => new Instantiation<TTemplate>(template);
 
         public static IEnumerable<IInstantiation> AllChildren(this Instantiation instantiation)
         {

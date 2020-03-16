@@ -13,11 +13,13 @@ namespace LionFire.Persistence.Persisters
        where TPersister : IPersister<TReference>
     {
         protected PersisterReadHandle() { }
-        protected PersisterReadHandle(TReference reference) : base(reference) { }
-        public PersisterReadHandle(TPersister persister, TReference reference) : base(reference) 
-            => Persister = persister ?? throw new ArgumentNullException(nameof(persister));
+        protected PersisterReadHandle(TReference reference, TValue preresolvedValue) : base(reference, preresolvedValue) { }
+        public PersisterReadHandle(TPersister persister, TReference reference, TValue preresolvedValue = default) : base(reference, preresolvedValue)
+        {
+            Persister = persister ?? throw new ArgumentNullException(nameof(persister));
+        }
 
-        public IPersister<TReference> Persister { get; protected set; }
+        public IPersister<TReference>? Persister { get; protected set; }
 
 
         protected override async ITask<IResolveResult<TValue>> ResolveImpl() => await Persister.Retrieve<TReference, TValue>(Reference).ConfigureAwait(false);

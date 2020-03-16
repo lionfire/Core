@@ -20,9 +20,14 @@ namespace LionFire.Instantiating
         IInstantiationCollection Children { get; set; }
     }
 
-    public interface IInstantiation<TemplateType> : IStateful
-    where TemplateType : ITemplate
+    //public interface IInstantiation<TTemplate> : IStateful
+    //where TTemplate : ITemplate
+    //{
+    //    IReadHandleBase<TTemplate> Template { get; set; }
+    //}
+    public interface IInstantiation<TTemplate> : IStateful, IInstantiation
+         where TTemplate : ITemplate
     {
-        IReadHandleBase<TemplateType> Template { get; set; }
+        //IReadHandleBase<TTemplate> RTemplate { get;  }
     }
 }

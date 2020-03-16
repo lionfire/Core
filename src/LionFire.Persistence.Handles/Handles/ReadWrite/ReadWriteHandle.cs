@@ -40,9 +40,13 @@ namespace LionFire.Persistence.Handles
         public new TReference Reference => Key;
         string IKeyed<string>.Key => Key?.ToString();
 
+        #region Construction
 
         protected ReadWriteHandle() { }
-        protected ReadWriteHandle(TReference reference) : base(reference) { }
+        protected ReadWriteHandle(TReference reference) : base(reference){ }
+        protected ReadWriteHandle(TReference reference, TValue preresolvedValue) : base(reference, preresolvedValue) { }
+
+        #endregion
 
         public abstract ILazyResolveResult<TValue> QueryValue();
         ITask<ILazyResolveResult<TValue>> ILazilyResolves<TValue>.GetValue() => throw new NotImplementedException();

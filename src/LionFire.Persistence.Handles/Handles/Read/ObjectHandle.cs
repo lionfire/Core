@@ -16,7 +16,6 @@ namespace LionFire.Persistence.Handles
     /// </summary>
     /// <typeparam name="TValue"></typeparam>
     public class ObjectHandle<TValue> : ReadHandleBase<NamedReference, TValue>
-        where TValue : class
     {
         protected override ITask<IResolveResult<TValue>> ResolveImpl()
         {
@@ -38,13 +37,14 @@ namespace LionFire.Persistence.Handles
 
         public ObjectHandle() { }
 
-        public ObjectHandle(TValue initialValue) {
+        public ObjectHandle(TValue initialValue)
+        {
             ProtectedValue = initialValue;
         }
 
-        public ObjectHandle(NamedReference reference, TValue initialValue = null) : base(reference)
+        public ObjectHandle(NamedReference reference, TValue initialValue = default) : base(reference)
         {
-            if (initialValue != default)
+            if (!EqualityComparer<TValue>.Default.Equals(initialValue, default))
             {
                 ProtectedValue = initialValue;
             }

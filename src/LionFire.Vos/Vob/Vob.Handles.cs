@@ -12,6 +12,7 @@ using System.Collections.Concurrent;
 
 namespace LionFire.Vos
 {
+    
     public partial class Vob
     {
         #region Handles: Create and Get shared
@@ -24,11 +25,11 @@ namespace LionFire.Vos
         }
         private ConcurrentDictionary<Type, IReadHandle> sharedReadHandles;
 
-        public IReadHandle<T> GetReadHandle<T>()
-            => (IReadHandle<T>)SharedReadHandles.GetOrAdd(typeof(T), t => CreateReadHandle<T>());
+        public IReadHandle<T> GetReadHandle<T>(T preresolvedValue = default)
+            => (IReadHandle<T>)SharedReadHandles.GetOrAdd(typeof(T), t => CreateReadHandle<T>(preresolvedValue));
 
-        public IReadHandle<T> CreateReadHandle<T>()
-            => new PersisterReadHandle<VosReference, T, VosPersister>(this.GetRequiredService<VosPersister>(), VosReference);
+        public IReadHandle<T> CreateReadHandle<T>(T preresolvedValue = default)
+            => new PersisterReadHandle<VosReference, T, VosPersister>(this.GetRequiredService<VosPersister>(), VosReference, preresolvedValue);
 
         #endregion
 
@@ -40,11 +41,11 @@ namespace LionFire.Vos
         }
         private ConcurrentDictionary<Type, IReadWriteHandle> sharedReadWriteHandles = new ConcurrentDictionary<Type, IReadWriteHandle>();
 
-        public IReadWriteHandle<T> GetReadWriteHandle<T>()
-            => (IReadWriteHandle<T>)SharedReadWriteHandles.GetOrAdd(typeof(T), t => CreateReadWriteHandle<T>());
+        public IReadWriteHandle<TValue> GetReadWriteHandle<TValue>(TValue preresolvedValue = default)
+            => (IReadWriteHandle<TValue>)SharedReadWriteHandles.GetOrAdd(typeof(TValue), t => CreateReadWriteHandle<TValue>(preresolvedValue));
 
-        public IReadWriteHandle<T> CreateReadWriteHandle<T>()
-            => new PersisterReadWriteHandle<VosReference, T, VosPersister>(this.GetService<VosPersister>(), VosReference);
+        public IReadWriteHandle<TValue> CreateReadWriteHandle<TValue>(TValue preresolvedValue = default)
+            => new PersisterReadWriteHandle<VosReference, TValue, VosPersister>(this.GetService<VosPersister>(), VosReference, preresolvedValue);
 
         #endregion
 
@@ -53,13 +54,12 @@ namespace LionFire.Vos
         private ConcurrentDictionary<Type, IWriteHandle> SharedWriteHandles => sharedWriteHandles ??= new ConcurrentDictionary<Type, IWriteHandle>();
         private ConcurrentDictionary<Type, IWriteHandle> sharedWriteHandles;
 
-        public IWriteHandle<T> GetWriteHandle<T>()
-            => (IWriteHandle<T>)SharedWriteHandles.GetOrAdd(typeof(T), t => CreateReadWriteHandle<T>());
+        public IWriteHandle<TValue> GetWriteHandle<TValue>(TValue prestagedValue = default)
+            => (IWriteHandle<TValue>)SharedWriteHandles.GetOrAdd(typeof(TValue), t => CreateReadWriteHandle<TValue>(prestagedValue));
         
         //=> (IWriteHandle<T>)WriteHandles.GetOrAdd(typeof(T), t => new PersisterWriteHandle<VosReference, T, VosPersister>(this.GetService<VosPersister>(), VosReference));
-        public IWriteHandle<T> CreateWriteHandle<T>()
-            //=> throw new NotImplementedException();
-            => new PersisterWriteHandle<VosReference, T, VosPersister>(this.GetService<VosPersister>(), VosReference);
+        public IWriteHandle<T> CreateWriteHandle<T>(T prestagedValue = default)
+            => new PersisterWriteHandle<VosReference, T, VosPersister>(this.GetService<VosPersister>(), VosReference, prestagedValue);
 
         #endregion
 

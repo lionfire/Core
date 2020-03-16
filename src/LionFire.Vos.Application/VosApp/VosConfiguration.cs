@@ -1,4 +1,4 @@
-﻿#if TOPORT
+﻿#if OLD // MOVED to VosAppOptions
 using System;
 using System.Collections.Generic;
 using System.Linq;

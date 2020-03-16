@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 
 namespace LionFire.ExtensionMethods
 {
@@ -14,6 +15,20 @@ namespace LionFire.ExtensionMethods
         public static IEnumerable<T> Yield<T>(this T item) // RENAME to ToEnumerable?
         {
             yield return item;
+        }
+
+        /// <summary>
+        /// Perform the action for each item in the enumerable
+        /// </summary>
+        /// <typeparam name="T">Type of the IEnumerable</typeparam>
+        /// <param name="enumerable">Enumerable to apply action to</param>
+        /// <param name="action">Action to perform on each item of enumerable</param>
+        public static void Apply<T>(this IEnumerable<T> enumerable, Action<T> action)
+        {
+            foreach (var item in enumerable)
+            {
+                action(item);
+            }
         }
     }
 }

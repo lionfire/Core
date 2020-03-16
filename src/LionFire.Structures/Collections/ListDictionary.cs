@@ -236,6 +236,13 @@ keyed.Key);
                 Add(item);
             }
         }
+        public void AddRange(params TValue[] items)
+        {
+            foreach (TValue item in (IEnumerable)items)
+            {
+                Add(item);
+            }
+        }
 
         #endregion
 

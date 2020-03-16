@@ -7,7 +7,7 @@ namespace LionFire.Referencing
 {
     public interface IReferenceProvider : ISupportsUriSchemes
     {
-        IReference TryGetReference(string uri);
+        TReference TryGetReference<TReference>(string uri) where TReference : IReference;
 
         IEnumerable<Type> ReferenceTypes { get; }
 
@@ -15,9 +15,9 @@ namespace LionFire.Referencing
 
     public static class IReferenceProviderExtensions
     {
-        public static IReference GetReference(this IReferenceProvider referenceProvider, string uri) => 
-            referenceProvider.TryGetReference(uri) ?? throw new NotFoundException();
-
+        public static TReference GetReference<TReference>(this IReferenceProvider referenceProvider, string uri)
+            where TReference : IReference
+            => referenceProvider.TryGetReference<TReference>(uri) ?? throw new NotFoundException();
         
     }
 

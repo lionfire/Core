@@ -34,13 +34,13 @@ namespace LionFire.Persistence.Handles
             get => reference;
             protected set
             {
-                if(EqualityComparer<TReference>.Default.Equals(value,reference))
+                if (EqualityComparer<TReference>.Default.Equals(value, reference))
                 //if (reference == value)
                 {
                     return;
                 }
 
-                if(!EqualityComparer<TReference>.Default.Equals(default,reference))
+                if (!EqualityComparer<TReference>.Default.Equals(default, reference))
                 //if (reference != default(TReference))
                 {
                     throw new AlreadySetException();
@@ -151,16 +151,23 @@ namespace LionFire.Persistence.Handles
 
         protected ReadHandleBase() { }
 
-        protected ReadHandleBase(TReference input) : base(input) { }
-
-        ///// <summary>
-        ///// Do not use this in derived classes that are purely resolve-only and not intended to set an initial value.
-        ///// </summary>
-        ///// <param name="input"></param>
-        ///// <param name="initialValue"></param>
-        //protected ReadHandleBase(TReference input, TValue initialValue) : base(input, initialValue)
-        //{
-        //}
+        protected ReadHandleBase(TReference input) : base(input)
+        {
+        }
+        protected ReadHandleBase(TReference input, TValue preresolvedValue) : base(input)
+        {
+            SetValueFromConstructor(preresolvedValue);
+        }
+      
+        /// <summary>
+        /// Override this to disallow setting presresolved values in a constructor, or to take some other action
+        /// </summary>
+        /// <param name="initialValue"></param>
+        protected virtual void SetValueFromConstructor(TValue initialValue)
+        {
+            ProtectedValue = initialValue;
+            // FUTURE: In the future, we may want to do something special here, like set something along the lines of PersistenceFlags.SetByUser
+        }
 
         #endregion
 

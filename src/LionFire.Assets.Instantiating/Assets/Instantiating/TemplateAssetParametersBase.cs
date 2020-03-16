@@ -6,23 +6,42 @@ using System.Linq;
 
 namespace LionFire.Assets
 {
-
-    public abstract class TemplateAssetParametersBase<TTemplate> : InstantiationBase, ITemplateParameters<TTemplate>, IAssetInstantiation
-        where TTemplate : ITemplate // REVIEW - remove class constraint?
+    public abstract class TemplateAssetParametersBase<TTemplate> : TemplateParametersBase<TTemplate>
+        //, IAssetInstantiation
+        where TTemplate : ITemplateAsset
     {
-        // REVIEW - all this casting
-        IReadHandleBase<ITemplate> ITemplateParameters.Template => (IReadHandleBase<ITemplate>)Template;
-        public IReadHandleBase<TTemplate> Template { get; set; }
-        public IReadHandle<ITemplateAsset> TemplateAsset { get => (IReadHandle<ITemplateAsset>)Template; set => Template = (IReadHandleBase<TTemplate>)value; }
+        protected TemplateAssetParametersBase() { }
+        protected TemplateAssetParametersBase(IReadHandleBase<TTemplate> template) : base(template) { }
 
-        public override string Key { get => Template?.Reference.Key; set => throw new NotSupportedException(); }
-
-        public IEnumerable<IAssetInstantiation> AllChildren => base.Children.OfType<IAssetInstantiation>();
+        //public new IEnumerable<IAssetInstantiation> AllChildren => base.Children.OfType<IAssetInstantiation>(); // REVIEW - new
+        //public IReadHandle<ITemplateAsset> TemplateAsset { get => (IReadHandle<ITemplateAsset>)Template; set => Template = (IReadHandleBase<TTemplate>)value; }
 
     }
 
+    //    public abstract class TemplateAssetParametersBase<TTemplate> : InstantiationBase<TTemplate>, ITemplateParameters<TTemplate>
+    //    //, IAssetInstantiation
+    //    where TTemplate : ITemplateAsset
+    //{
+    //    // REVIEW - all this casting
+    //    IReadHandleBase<ITemplate> ITemplateParameters.Template => (IReadHandleBase<ITemplate>)Template;
+
+    //    //public new IReadHandleBase<TTemplate> Template { get; set; } // REVIEW - new
+    //    //public new R<TTemplate> Template { get; set; } // REVIEW - new
+    //    //public TTemplate OTemplate => Template.Value; // REVIEW
+
+    //    public IReadHandle<ITemplateAsset> TemplateAsset { get => (IReadHandle<ITemplateAsset>)Template; set => Template = (IReadHandleBase<TTemplate>)value; }
+
+    //    public override string Key { get => Template?.Reference.Key; set => throw new NotSupportedException(); }
+
+    //    public new IEnumerable<IAssetInstantiation> AllChildren => base.Children.OfType<IAssetInstantiation>(); // REVIEW - new
+
+
+    //    protected TemplateAssetParametersBase() { }
+    //    protected TemplateAssetParametersBase(IReadHandleBase<TTemplate> template) { Template = template; }
+    //}
+
     public abstract class TemplateAssetParametersBase<TTemplate, TInstance> : TemplateAssetParametersBase<TTemplate>, ITemplateParameters<TTemplate, TInstance>
-        where TTemplate : ITemplate<TInstance> // REVIEW - remove class constraint?
+        where TTemplate : ITemplateAsset<TTemplate, TInstance>
 
     {
         //IReadHandleBase<ITemplate> ITemplateParameters.Template => (IReadHandleBase<ITemplate>)Template;

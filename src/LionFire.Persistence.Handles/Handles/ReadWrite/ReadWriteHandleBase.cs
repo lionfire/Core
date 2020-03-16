@@ -14,6 +14,7 @@ namespace LionFire.Persistence.Handles
     {
         public ReadWriteHandleBase() { }
         public ReadWriteHandleBase(TReference reference) : base(reference) { }
+        public ReadWriteHandleBase(TReference reference, TValue preresolvedValue) : base(reference, preresolvedValue) { }
 
         #region Value
 

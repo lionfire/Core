@@ -15,7 +15,7 @@ namespace LionFire.Persistence.Handles
     {
         protected WriteHandle() { }
         protected WriteHandle(TReference reference) : base(reference) { }
-
+        protected WriteHandle(TReference reference, TValue prestagedValue = default) : base(reference, prestagedValue) { }
 
         protected override Task<IResolveResult<TValue>> ResolveImpl() => throw new NotImplementedException();
 

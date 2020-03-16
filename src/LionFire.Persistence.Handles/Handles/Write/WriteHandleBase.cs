@@ -30,7 +30,23 @@ namespace LionFire.Persistence.Handles
         #region Construction
 
         protected WriteHandleBase() { }
-        protected WriteHandleBase(TReference reference) : base(reference) { }
+        protected WriteHandleBase(TReference reference) : base(reference)
+        {
+        }
+        protected WriteHandleBase(TReference reference, TValue prestagedValue) : base(reference)
+        {
+            SetValueFromConstructor(prestagedValue);
+        }
+
+        /// <summary>
+        /// Override this to disallow setting presresolved values in a constructor, or to take some other action
+        /// </summary>
+        /// <param name="initialValue"></param>
+        protected virtual void SetValueFromConstructor(TValue initialValue)
+        {
+            ProtectedValue = initialValue;
+            // FUTURE: In the future, we may want to do something special here, like set something along the lines of PersistenceFlags.SetByUser
+        }
 
         #endregion
 
@@ -46,7 +62,7 @@ namespace LionFire.Persistence.Handles
             set
             {
                 if (EqualityComparer<TValue>.Default.Equals(protectedValue, value)) return; // Should use Equality instead of Compare?
-                //if (value == ProtectedValue) return;
+                                                                                            //if (value == ProtectedValue) return;
                 HandleUtils.OnUserChangedValue_Write(this, value);
             }
         }
@@ -66,7 +82,7 @@ namespace LionFire.Persistence.Handles
             set
             {
                 if (System.Collections.Generic.Comparer<TValue>.Default.Compare(protectedValue, value) == 0) return; // Should use Equality instead of Compare?
-                //if (value == protectedValue) { return; }
+                                                                                                                     //if (value == protectedValue) { return; }
                 var oldValue = protectedValue;
                 protectedValue = value;
                 OnValueChanged(value, oldValue);

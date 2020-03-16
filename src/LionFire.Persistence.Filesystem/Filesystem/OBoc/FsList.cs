@@ -1,4 +1,5 @@
-﻿using System;
+﻿#if TOPORT
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Threading.Tasks;
@@ -69,3 +70,4 @@ namespace LionFire.ObjectBus.Filesystem
         }
     }
 }
+#endif

@@ -19,18 +19,18 @@ namespace LionFire.Vos.Assets.Handles
             PersisterProvider = persisterProvider;
         }
 
-        public IReadHandle<T> GetReadHandle<T>(IAssetReference reference)
+        public IReadHandle<T> GetReadHandle<T>(IAssetReference reference, T preresolvedValue = default)
         {
             var persister = (VosAssetPersister)PersisterProvider.GetPersister(reference.Persister);
             if (persister == null) throw new NotFoundException($"Could not find AssetPersister at '{reference.Persister}'");
 
-            return new PersisterReadHandle<IAssetReference, T, VosAssetPersister>(persister, reference);
+            return new PersisterReadHandle<IAssetReference, T, VosAssetPersister>(persister, reference, preresolvedValue);
         }
-        public IReadHandle<T> GetReadHandle<T>(IReference reference)
-            => reference is IAssetReference iar ? GetReadHandle<T>(iar) : null;
+        public IReadHandle<T> GetReadHandle<T>(IReference reference, T preresolvedValue = default)
+            => reference is IAssetReference iar ? GetReadHandle<T>(iar, preresolvedValue) : null;
 
-        public Persistence.IReadWriteHandle<T> GetReadWriteHandle<T>(IAssetReference reference)
-            => new PersisterReadWriteHandle<IAssetReference, T, VosAssetPersister>((VosAssetPersister)PersisterProvider.GetPersister(reference.Persister), reference);
+        public Persistence.IReadWriteHandle<T> GetReadWriteHandle<T>(IAssetReference reference, T preresolvedValue = default)
+            => new PersisterReadWriteHandle<IAssetReference, T, VosAssetPersister>((VosAssetPersister)PersisterProvider.GetPersister(reference.Persister), reference, preresolvedValue);
     }
 
     // UNUSED

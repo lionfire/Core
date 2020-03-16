@@ -1,6 +1,6 @@
 ﻿namespace LionFire.Instantiating
 {
-    public interface IForInstancesOf<T>
+    public interface IForInstancesOf<TInstance>
     {
 
     }

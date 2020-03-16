@@ -10,9 +10,9 @@ namespace LionFire.Assets.Instantiating
     // PORTINGGUIDE - HierarchicalTemplateBase > HierarchicalTemplateAssetBase
     public abstract class HierarchicalTemplateAssetBase<TTemplate, TInstance, TInstantiation> : TemplateAssetBase<TTemplate, TInstance, TInstantiation>, IHierarchicalTemplate
          , IParented
-         where TTemplate : class, ITemplateAsset, ITemplate<TInstance>
+         where TTemplate : class, ITemplateAsset<TTemplate, TInstance>
          where TInstance : class, ITemplateAssetInstance, new()
-         where TInstantiation : Instantiation, ITemplateParameters<TTemplate, TInstance>, new()
+         where TInstantiation : IInstantiation, ITemplateParameters<TTemplate, TInstance>, new()
     {
         #region Parent
 

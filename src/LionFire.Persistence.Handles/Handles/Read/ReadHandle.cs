@@ -46,20 +46,13 @@ namespace LionFire.Persistence.Handles
         protected ReadHandle() { }
 
         /// <param name="reference">Can be null</param>
-        protected ReadHandle(TReference reference) => Reference = reference ?? throw new ArgumentNullException(nameof(reference));
+        protected ReadHandle(TReference reference) : base(reference) { }
 
         /// <param name="reference">Must not be null</param>
         ///// <param name="reference">If null, it should be set before the reference is used.</param>
-        /// <param name="value">Starting value for Object</param>
-        protected ReadHandle(TReference reference, TValue value) : this(reference)
+        /// <param name="preresolvedValue">Starting value for Object</param>
+        protected ReadHandle(TReference reference, TValue preresolvedValue) : base(reference, preresolvedValue)
         {
-            SetValueFromConstructor(value);
-        }
-
-        protected virtual void SetValueFromConstructor(TValue initialValue)
-        {
-            ProtectedValue = initialValue;
-            // FUTURE: In the future, we may want to do something special here, like set something along the lines of PersistenceFlags.SetByUser
         }
 
         #endregion
@@ -281,7 +274,7 @@ namespace LionFire.Persistence.Handles
                 return true;
             }
 #if true
-                throw new NotImplementedException("Figure out the logic on this");
+            throw new NotImplementedException("Figure out the logic on this");
 #else
             else
             {
@@ -291,21 +284,21 @@ namespace LionFire.Persistence.Handles
 #endif
         }
 
-#endregion
+        #endregion
 
-#region Misc
+        #region Misc
 
 
-#region INotifyPropertyChanged Implementation
+        #region INotifyPropertyChanged Implementation
 
         public event PropertyChangedEventHandler? PropertyChanged;
 
         protected void OnPropertyChanged(string propertyName) => PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
 
-#endregion
+        #endregion
 
         private static bool IsDefaultValue(TValue value) => EqualityComparer<TValue>.Default.Equals(value, default);
 
-#endregion
+        #endregion
     }
 }

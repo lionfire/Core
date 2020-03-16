@@ -1,9 +1,12 @@
 ﻿using LionFire.Applications;
+using LionFire.Dependencies;
 
 namespace LionFire.Vos.VosApp
 {
     public class VosAppOptions
     {
+
+        public static VosAppOptions Current { get; } = DependencyContext.Current.GetService<VosAppOptions>();
         public static VosAppOptions Default { get; } = new VosAppOptions();
 
 
@@ -62,5 +65,7 @@ namespace LionFire.Vos.VosApp
         //public VosAppOptions VosStoresOptions { get; set; }
 
         //public bool UsePackages { get; set; }
+
+
     }
 }

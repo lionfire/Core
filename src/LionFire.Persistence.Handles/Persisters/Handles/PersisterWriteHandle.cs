@@ -14,7 +14,9 @@ namespace LionFire.Persistence.Persisters
         protected PersisterWriteHandle() { }
 
         protected PersisterWriteHandle(TReference reference) : base(reference) { }
+        protected PersisterWriteHandle(TReference reference, TValue prestagedValue) : base(reference, prestagedValue) { }
         public PersisterWriteHandle(TPersister persister, TReference reference) : base(reference) => Persister = persister;
+        public PersisterWriteHandle(TPersister persister, TReference reference, TValue prestagedValue) : base(reference, prestagedValue) => Persister = persister;
 
         public  TPersister Persister { get; protected set; }
 

@@ -12,6 +12,7 @@ namespace LionFire.Instantiating
     , IHasPid
     , IParented
     , IHasTemplate
+    , IHasRTemplate
     {
 
         //AssetReference<ITemplate> Template { get; set; }

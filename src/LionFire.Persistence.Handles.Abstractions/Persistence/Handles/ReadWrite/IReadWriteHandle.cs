@@ -3,6 +3,7 @@
     using LionFire.Persistence.Handles;
     using LionFire.Resolves;
     using LionFire.Structures;
+    using System;
 
     /// <summary>
     /// IReadWriteHandle
@@ -14,6 +15,11 @@
     /// Limited interface for when generic interface type is not available
     /// </summary>
     public interface IReadWriteHandle : IReadHandle, IWriteHandle { }
+
+    public interface IReadWriteHandleAware<T>
+    {
+        IReadWriteHandle<T> ReadWriteHandle { get; set; }
+    }
 
     /// <summary>
     /// IReadWriteHandleEx
@@ -32,5 +38,13 @@
     public interface INotifyingReadWriteHandleEx<T> : IReadHandle<T>, INotifyingReadWriteHandle<T>
         //where T : class
     {
+    }
+
+    public static class IReadWriteHandleAutoSaveExtensions
+    {
+        public static IReadWriteHandle<T> AutoSave<T>(this IReadWriteHandle<T> handle, bool? autoSave = true)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

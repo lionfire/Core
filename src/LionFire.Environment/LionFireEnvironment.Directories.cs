@@ -20,6 +20,12 @@ namespace LionFire
 
         public static class Directories
         {
+
+            /// <summary>
+            /// TOPORT  Either folder the exe is in, or a parent, if exe is for example nested in a bin folder.
+            /// </summary>
+            public static string AppDir => throw new NotImplementedException();
+
             #region Construction
 
             static Directories()
@@ -139,9 +145,11 @@ namespace LionFire
                 }
             }
 
+            public static string ReleaseNotesDir { get; set; } // TODO
+
             #endregion
 
-      
+
             #region (Private) Utility Methods
 
             internal static void EnsureAllDirectoriesExist()

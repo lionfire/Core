@@ -1,4 +1,6 @@
-﻿using System;
+﻿// OLD?
+
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -85,13 +87,12 @@ namespace LionFire.Serialization
 //    }
 //}
 
-#if JsonEx
     public static class LionJsonSerializerExtensions
     {
         public static void InitializeAliases(this JsonExSerializer.Serializer serializer, Assembly a)
         {
 #if !AOT
-            var timing = Timing.StartNow("InitializeAliases");
+            //var timing = Timing.StartNow("InitializeAliases");
             foreach (var type in a.GetTypes())
             {
                 if (type.IsInterface) continue;
@@ -107,57 +108,47 @@ namespace LionFire.Serialization
                     l.Warn("Failed to add type alias for: " + type.FullName + ".  Exception: " + ex);
                 }
             }
-            timing.StopAndRecord();
+            //timing.StopAndRecord();
 #endif
         }
 
         private static readonly ILogger l = Log.Get();
 		
     }
-#endif
 
     public class LionJsonSerializer : LionSerializer, IStringLionSerializer
     {
-        public override string Name
-        {
-            get { return "LionJson"; }
-        }
+        public override string Name => "LionJson";
 
-        public override string DefaultFileExtension { get { return "lson"; } }
+        public override string DefaultFileExtension => "lson";
 
-        public override byte[][] IdentifyingHeaders => throw new NotImplementedException();
+        public override byte[][] IdentifyingHeaders => new byte[][] { UTF8Encoding.UTF8.GetBytes("("), UTF8Encoding.UTF8.GetBytes("{") };
 
-        public override T Deserialize<T>(Stream stream)
-        {
-            throw new NotImplementedException();
-        }
+        //public override T Deserialize<T>(Stream stream)
+        //{
+        //    throw new NotImplementedException();
+        //}
 
-        public override object Deserialize(Stream stream, Type type)
-        {
-            throw new NotImplementedException();
-        }
+        //public override object Deserialize(Stream stream, Type type)
+        //{
+        //    throw new NotImplementedException();
+        //}
 
-        public override void Serialize(Stream stream, object graph)
-        {
-            throw new NotImplementedException();
-        }
+        //public override void Serialize(Stream stream, object graph)
+        //{
+        //    throw new NotImplementedException();
+        //}
 
-#if TODO
-        public override byte[][] IdentifyingHeaders
-        {
-            get { return new byte[][] { UTF8Encoding.UTF8.GetBytes("("), UTF8Encoding.UTF8.GetBytes("{") }; }
-        }
 
 
         public override T Deserialize<T>(Stream stream)
         {
-            JsonExSerializer.Serializer serializer = new JsonExSerializer.Serializer(typeof(T));
+            var serializer = new JsonExSerializer.Serializer(typeof(T));
 
             Configure(serializer);
             T obj = (T)serializer.Deserialize(stream);
             return obj;
         }
-
         public override object Deserialize(Stream stream, Type type)
         {
             if (stream.Length == 0) throw new Exception("Empty stream");
@@ -175,6 +166,8 @@ namespace LionFire.Serialization
 
         private static void Configure(JsonExSerializer.Serializer objectSerializer)
         {
+            throw new NotImplementedException("TODO");
+#if TODO
 #if AOTWARNING // TOAOT
             l.Warn("AOTWARNING LionJsonSerializer.Configure, ICollection<>.Add x3.  TODO: Cast to concrete type before calling add. ");
 #endif
@@ -208,16 +201,11 @@ namespace LionFire.Serialization
             //objectSerializer.Config.ExpressionHandlers.Add(
             //serializer.Config.RegisterTypeConverter(typeof(Type), new LionFire.Assets.AssetReferenceSerializationConverter());
             //serializer.Config.RegisterTypeConverter(typeof(Type), new LionFire.Assets.AssetIDSerializationConverter());
-            var ev = Configuring;
-            if (ev != null) ev(objectSerializer);
+#endif
+            Configuring?.Invoke(objectSerializer);
         }
 
-#if UNITY
-		public delegate void  ConfiguringHandler(JsonExSerializer.Serializer s);
-		public static event ConfiguringHandler Configuring;
-#else
-        public static event Action<JsonExSerializer.Serializer> Configuring;
-#endif
+
         private static JsonExSerializer.Serializer ObjectSerializer
         {
             get
@@ -247,18 +235,27 @@ namespace LionFire.Serialization
             }
         }
 
+#if TODO
+
+
+#endif
+
+#if UNITY
+		public delegate void  ConfiguringHandler(JsonExSerializer.Serializer s);
+		public static event ConfiguringHandler Configuring;
+#else
+        public static event Action<JsonExSerializer.Serializer> Configuring;
+#endif
+
         public static void EnableAliases(Assembly assembly)
         {
-            LionJsonSerializer.Configuring += serializer => serializer.InitializeAliases(assembly);
+            Configuring += serializer => serializer.InitializeAliases(assembly);
         }
-
-
 #region Misc
 
         private static readonly ILogger l = Log.Get();
 
 #endregion
-#endif
 
 
     }

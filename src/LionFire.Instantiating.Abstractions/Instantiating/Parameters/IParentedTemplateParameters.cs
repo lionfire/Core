@@ -6,6 +6,10 @@ namespace LionFire.Instantiating
     //    //public abstract AssetReference<ITemplate> Template { get; set; }
     //}
 
+    public interface IParentedTemplateParameters<TTemplate> : ITemplateParameters<TTemplate>, IParentedTemplateParameters
+    where TTemplate : ITemplate
+    { }
+
     public interface IParentedTemplateParameters : ITemplateParameters
     {
         string ParentKey { get; }

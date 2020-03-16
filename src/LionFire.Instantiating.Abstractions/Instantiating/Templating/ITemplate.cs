@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 
 namespace LionFire.Instantiating
 {
-    public interface ITemplate { } 
+    public interface ITemplate { }
 
     public interface ITemplateEx
     {
@@ -18,9 +18,14 @@ namespace LionFire.Instantiating
         object Instantiate();
     }
 
-    public interface ITemplate<T> : ITemplate, IForInstancesOf<T>
-        //where T : new()
+    public interface ITemplate<TInstance> : ITemplate, IForInstancesOf<TInstance>
+    //where T : new()
     {
     }
 
+    public interface ITemplate<TTemplate, TInstance, TParameters> : ITemplate, IForInstancesOf<TInstance>
+        where TTemplate : ITemplate
+        where TParameters : ITemplateParameters<TTemplate>
+    {
+    }
 }

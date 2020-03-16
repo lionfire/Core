@@ -4,19 +4,19 @@ using LionFire.Structures;
 
 namespace LionFire.Instantiating
 {
-    public interface ITemplateParameters : IKeyed<string>
+    public interface ITemplateParameters : IKeyed<string>, IHasRTemplate
         //, ITemplateOverlayable // This breaks AssetInstantiation
     {
         //ParameterOverlayMode OverlayMode { get; }
         //object OverlayParent { get; set; }
-        IReadHandleBase<ITemplate> Template { get;  }
+        //IReadHandleBase<ITemplate> RTemplate { get;  }
         //IReadHandle<ITemplateAsset> TemplateAsset { get; set; }
     }
 
-    public interface ITemplateParameters<TemplateType> : ITemplateParameters
-       where TemplateType : ITemplate
+    public interface ITemplateParameters<TTemplate> : ITemplateParameters
+       where TTemplate : ITemplate
     {
-        new IReadHandleBase<TemplateType> Template { get; set; }
+        new IReadHandleBase<TTemplate> RTemplate { get; set; }
     }
 
     public interface ITemplateParameters<TemplateType, TInstance>

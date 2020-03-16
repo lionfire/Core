@@ -6,6 +6,10 @@ namespace LionFire.Assets
     {
         //IAssetInstantiation CreateAssetInstantiation();
     }
+    public interface ITemplateAsset<TTemplate, TInstance> : ITemplate<TInstance>, IAsset<TTemplate>, ITemplateAsset
+        where TTemplate : ITemplate<TInstance>, IAsset<TTemplate>, ITemplateAsset
+    {
+    }
 
     // OLD Dupe - REVIEW:
 

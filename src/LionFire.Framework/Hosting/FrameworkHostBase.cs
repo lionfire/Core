@@ -6,28 +6,20 @@ using LionFire.Threading;
 
 namespace LionFire.Hosting
 {
-#if TOVOSAPP
-    public class VosHost : FrameworkHostBase
-    {
-        public override IHostBuilder CreateHostBuilder() => FrameworkHostBaseBuilder.CreateVos(args);
-
-        public VosHost(Action<IHostBuilder> configure = null) : base(configure) { }
-    }
-#endif
+    // OLD?
 
 #pragma warning disable CA1063 // Implement IDisposable Correctly
     public class FrameworkHostBase : IDisposable
 #pragma warning restore CA1063 // Implement IDisposable Correctly
     {
-
         protected readonly string[] args;
 
-#region State
+        #region State
 
         readonly CancellationTokenSource hostFinished = new CancellationTokenSource();
         Task task;
 
-#endregion
+        #endregion
 
         //public FrameworkHostBase(string[] args = null)
         //{

@@ -3,6 +3,7 @@ using LionFire.Referencing;
 using LionFire.Resolves;
 using MorseCode.ITask;
 using System;
+using System.Collections.Generic;
 
 namespace LionFire.Persistence.Handles
 {
@@ -15,7 +16,27 @@ namespace LionFire.Persistence.Handles
     public class ReadHandlePassthrough<TValue, TReference> : IReadHandle<TValue>, IReferencable<TReference>
         where TReference : IReference
     {
-        public TReference Reference { get; set; }
+        public ReadHandlePassthrough() { }
+        public ReadHandlePassthrough(IReadHandle<TValue> handle) { this.handle = handle; Reference = (TReference) handle?.Reference; }
+
+
+        #region Reference
+
+        [SetOnce]
+        public TReference Reference
+        {
+            get => reference;
+            set
+            {
+                
+                if (EqualityComparer<TReference>.Default.Equals(reference, value)) return;
+                if (!EqualityComparer<TReference>.Default.Equals(reference, default)) throw new AlreadySetException();
+                reference = value;
+            }
+        }
+        private TReference reference;
+
+        #endregion
 
         public IReadHandle<TValue> ReadHandle => handle ??= Reference?.GetReadHandle<TValue>();
         protected IReadHandle<TValue> handle;

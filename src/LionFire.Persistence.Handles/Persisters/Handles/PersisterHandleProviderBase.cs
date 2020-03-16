@@ -19,14 +19,14 @@ namespace LionFire.Persistence.Persisters
             //this.providerFilePersisterProvider = providerFilePersisterProvider;
         }
 
-        public virtual IReadHandle<T> GetReadHandle<T>(TReference reference)
-            => new PersisterReadHandle<TReference, T, IPersister<TReference>>(persister, reference);
+        public virtual IReadHandle<T> GetReadHandle<T>(TReference reference, T preresolvedValue = default)
+            => new PersisterReadHandle<TReference, T, IPersister<TReference>>(persister, reference, preresolvedValue);
 
-        public virtual IReadWriteHandle<T> GetReadWriteHandle<T>(TReference reference)
-            => new PersisterReadWriteHandle<TReference, T, IPersister<TReference>>(persister, reference);
+        public virtual IReadWriteHandle<T> GetReadWriteHandle<T>(TReference reference, T preresolvedValue = default)
+            => new PersisterReadWriteHandle<TReference, T, IPersister<TReference>>(persister, reference, preresolvedValue);
 
-        public virtual IWriteHandle<T> GetWriteHandle<T>(TReference reference)
-            => new PersisterWriteHandle<TReference, T, IPersister<TReference>>(persister, reference);
+        public virtual IWriteHandle<T> GetWriteHandle<T>(TReference reference, T preresolvedValue = default)
+            => new PersisterWriteHandle<TReference, T, IPersister<TReference>>(persister, reference, preresolvedValue);
 
     }
 }

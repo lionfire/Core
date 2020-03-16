@@ -3,7 +3,9 @@ using LionFire.Resolvables;
 using LionFire.Resolves;
 using LionFire.Results;
 using LionFire.Structures;
+using MorseCode.ITask;
 using System;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace LionFire.Persistence
@@ -18,7 +20,7 @@ namespace LionFire.Persistence
     /// 
     /// Common peer interfaces: IDetects, ILazilyRetrieves&lt;T&gt;
     /// </summary>
-    public interface IRetrieves //, IResolvesCovariant<object> // IResolves
+    public interface IRetrieves : IResolves //, IResolvesCovariant<object>
     {
         // For a Retrieve method, see IRetrievesExtensions.Retrieve
     }
@@ -31,6 +33,24 @@ namespace LionFire.Persistence
 
     public static class IRetrievesExtensions
     {
+
+        public static Type GetRetrieveType(this IRetrieves retrieves)
+        {
+            var retrievesInterface = retrieves.GetType().GetInterfaces().Where(t => t.IsGenericType && t.GetGenericTypeDefinition() == typeof(IRetrieves<>)).Single();
+            return retrievesInterface.GetGenericArguments()[0];
+        }
+
+        /// <summary>
+        /// (Uses reflection)
+        /// </summary>
+        /// <param name="retrieves"></param>
+        /// <returns></returns>
+        public static async Task<IRetrieveResult<object>> Retrieve(this IRetrieves retrieves)
+        {
+            var retrievesInterface = retrieves.GetType().GetInterfaces().Where(t => t.IsGenericType && t.GetGenericTypeDefinition() == typeof(IResolves<>)).Single();
+            return (await ((ITask<IResolveResult<object>>)retrievesInterface.GetMethod(nameof(IResolves<object>.Resolve)).Invoke(retrieves, null)).ConfigureAwait(false)).ToRetrieveResult();
+        }
+
         /////// <summary>
         /////// Force a retrieve of the reference from the source.  Replace the Object.
         /////// </summary>

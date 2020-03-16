@@ -42,7 +42,7 @@ namespace LionFire.ObjectBus.ExtensionlessFs
         public virtual string Path => OverlayTarget.Path;
 
         public IReference GetChild(string subPath) => throw new NotImplementedException();
-        public IReference GetChildSubpath(IEnumerable<string> subpath) => throw new NotImplementedException();
+        //public IReference GetChildSubpath(IEnumerable<string> subpath) => throw new NotImplementedException();
         public bool IsCompatibleWith(string obj) => throw new NotImplementedException();
     }
 
@@ -62,7 +62,6 @@ namespace LionFire.ObjectBus.ExtensionlessFs
 
     //    public Task<bool> Exists<T>(IReference r)
     //    {
-
     //    }
 
 

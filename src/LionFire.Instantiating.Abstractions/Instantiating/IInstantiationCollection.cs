@@ -7,9 +7,36 @@ using LionFire.Referencing;
 
 namespace LionFire.Instantiating
 {
+
+    public interface IInstantiationCollection<TTemplate> :
+        IEnumerable<IInstantiation<TTemplate>>,
+             //, IParented<InstantiationCollection>
+             IParented
+#if !AOT
+                , INotifyCollectionChanged<IInstantiation<TTemplate>>
+#endif
+        where TTemplate : ITemplate
+    {
+
+        event Action<IInstantiation<TTemplate>, int> ChildCountChanged;
+        new event NotifyCollectionChangedHandler<IInstantiation<TTemplate>> CollectionChanged;
+
+        IEnumerable<IInstantiation<TTemplate>> Values { get; }
+        int Count { get; }
+        void Add(IInstantiation<TTemplate> instantiation);
+        void Add(IReadHandleBase<TTemplate> hTemplate);
+        void Add(TTemplate template);
+        string CreateKey(TTemplate template);
+        string GetDefaultKey(TTemplate template);
+        string GetNextValidKeyIncrementForKey(string key);
+        void OnChildCountChanged(IInstantiation<TTemplate> child, int oldCount);
+        void RaiseAdded(IInstantiation<TTemplate> child, int oldCount);
+        void RaiseRemoved(IInstantiation<TTemplate> child, int oldCount);
+    }
+
     public interface IInstantiationCollection :
         IEnumerable<IInstantiation>,
-        //, IParented<InstantiationCollection>
+             //, IParented<InstantiationCollection>
              IParented
 #if !AOT
                 , INotifyCollectionChanged<IInstantiation>
@@ -21,6 +48,8 @@ namespace LionFire.Instantiating
 
         IEnumerable<IInstantiation> Values { get; }
         int Count { get; }
+
+        bool ContainsKey(string key);
         void Add(IInstantiation instantiation);
         void Add(IReadHandleBase<ITemplate> hTemplate);
         void Add(ITemplate template);

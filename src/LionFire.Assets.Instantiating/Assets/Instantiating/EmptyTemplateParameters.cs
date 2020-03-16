@@ -23,6 +23,6 @@ namespace LionFire.Instantiating
 
         public IEnumerable<IEnumerable<IAssetInstantiation>> OverlayTargets => Enumerable.Empty<IEnumerable<IAssetInstantiation>>();
 
-        public IReadHandleBase<ITemplate> Template => throw new NotImplementedException();
+        public IReadHandleBase<ITemplate> RTemplate => throw new NotImplementedException();
     }
 }

@@ -1,4 +1,5 @@
-﻿using LionFire.ObjectBus.Filesystem;
+﻿#if TOPORT
+using LionFire.ObjectBus.Filesystem;
 using LionFire.Persistence.Handles;
 using LionFire.Persistence.Persisters;
 using System;
@@ -14,3 +15,4 @@ namespace LionFire.Persistence.Filesystem
         }
     }
 }
+#endif

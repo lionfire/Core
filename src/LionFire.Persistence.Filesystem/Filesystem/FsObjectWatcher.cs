@@ -1,4 +1,5 @@
-﻿using LionFire.ObjectBus.Filesystem;
+﻿#if TOPORT
+using LionFire.ObjectBus.Filesystem;
 using LionFire.Persistence.Filesystem;
 using LionFire.Referencing;
 using Microsoft.Extensions.Logging;
@@ -14,7 +15,7 @@ namespace LionFire.ObjectBus.Filesystem
     
     public class FsObjectWatcher : IObjectWatcher
     {
-        #region FileSystemWatcher
+#region FileSystemWatcher
 
         public FileSystemWatcher FSW
         {
@@ -30,9 +31,9 @@ namespace LionFire.ObjectBus.Filesystem
         }
         private FileSystemWatcher fsw;
 
-        #endregion
+#endregion
 
-        #region Identity
+#region Identity
 
         public IReference Reference
         {
@@ -48,7 +49,7 @@ namespace LionFire.ObjectBus.Filesystem
             }
         } private FileReference reference;
 
-        #region Path
+#region Path
 
         public string Path
         {
@@ -78,13 +79,13 @@ namespace LionFire.ObjectBus.Filesystem
             }
         } private string path;
 
-        #endregion
+#endregion
 
-        #endregion
+#endregion
 
-        #region History
+#region History
 
-        #region PreviousPaths
+#region PreviousPaths
 
         public IEnumerable<string> PreviousPaths
         {
@@ -101,11 +102,11 @@ namespace LionFire.ObjectBus.Filesystem
             previousPaths.Add(Path);
         }
 
-        #endregion
+#endregion
 
-        #endregion
+#endregion
                
-        #region Construction and Destruction
+#region Construction and Destruction
 
         public FsObjectWatcher()
         {
@@ -116,9 +117,9 @@ namespace LionFire.ObjectBus.Filesystem
             FSW = null; // Disposes
         }
 
-        #endregion
+#endregion
         
-        #region Events
+#region Events
 
         /// <summary>
         /// TODO: Eliminate 2nd parameter?
@@ -190,13 +191,14 @@ namespace LionFire.ObjectBus.Filesystem
             fsw.EnableRaisingEvents = x;
         }
 
-        #endregion
+#endregion
 
-        #region Misc
+#region Misc
 
         private static readonly ILogger l = Log.Get();
 
-        #endregion
+#endregion
     }
 
 }
+#endif

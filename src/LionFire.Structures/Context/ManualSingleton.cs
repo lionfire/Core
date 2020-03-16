@@ -34,12 +34,16 @@ namespace LionFire.Structures
         }
         private static readonly Lazy<T> lazyGuaranteedInstance = new Lazy<T>(() => (T)ManualSingletonProvider.GuaranteedInstanceProvider(typeof(T)), ManualSingletonConfig.GetLazyThreadSafetyMode(typeof(T)));
 
-        public static void SetIfMissing(T obj)
+        /// <param name="obj"></param>
+        /// <returns>True if object was missing, and was set to obj.  False otherwise.</returns>
+        public static bool SetIfMissing(T obj)
         {
             if (Instance == null)
             {
                 Instance = obj;
+                return true;
             }
+            return false;
         }
 
         public static T GetGuaranteedInstance<CreateType>()
