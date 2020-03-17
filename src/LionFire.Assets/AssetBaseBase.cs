@@ -3,10 +3,11 @@ using LionFire.Assets;
 using System.ComponentModel;
 using System;
 using LionFire.Referencing;
+using LionFire.Types;
 
 namespace LionFire.Assets
 {
-    public abstract class AssetBaseBase<TValue> : IKeyable, INotifyPropertyChanged, IAsset<TValue>
+    public abstract class AssetBaseBase<TValue> : IKeyable, INotifyPropertyChanged, IAsset<TValue>, IReferencable
     {
         public Type TreatAsType => typeof(TValue);
 
@@ -36,6 +37,9 @@ namespace LionFire.Assets
             }
         }
         protected AssetReference<TValue> reference;
+
+        IReference IReferencable.Reference => Reference;
+
 
         #region Construction
 

@@ -196,7 +196,16 @@ namespace LionFire.Instantiating
         #region Template
 
         [Blocking]
-        public TTemplate Template => rTemplate.Value;
+        public TTemplate Template
+        {
+            get => rTemplate.Value;
+            set
+            {
+                if (rTemplate != null) throw new AlreadySetException();
+                rTemplate = value.GetReadHandle();
+            }
+        }
+
 
         //#if !AOT && !UNITY // Unity crashes with contravariant IReadHandle -- commented out the generic part of RH<>
         IReadHandleBase<ITemplate> IHasRTemplate.RTemplate => (IReadHandleBase<ITemplate>)RTemplate;

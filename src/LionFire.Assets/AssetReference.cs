@@ -50,6 +50,10 @@ namespace LionFire.Assets
 
         #region Construction
 
+        public AssetReference()
+        {
+            this.Path = string.Empty;
+        }
         public AssetReference(string assetPath)
         {
             this.Path = assetPath;

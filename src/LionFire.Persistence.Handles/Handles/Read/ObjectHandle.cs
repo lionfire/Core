@@ -6,6 +6,7 @@ using LionFire.Structures;
 using LionFire.Referencing;
 using LionFire.Resolves;
 using MorseCode.ITask;
+using LionFire.Results;
 
 namespace LionFire.Persistence.Handles
 {
@@ -15,8 +16,23 @@ namespace LionFire.Persistence.Handles
     /// Read-only Handles to .NET object references (can be null) -- can be named and then retrieved by the handle registry system.
     /// </summary>
     /// <typeparam name="TValue"></typeparam>
-    public class ObjectHandle<TValue> : ReadHandleBase<NamedReference, TValue>
+    public class ObjectHandle<TValue> : ReadHandleBase<NamedReference, TValue>, IReadHandle<TValue>, IReadWriteHandle<TValue>
     {
+        string IKeyed<string>.Key => Reference.Key;
+
+        void ThrowCannotSet() => throw new InvalidOperationException("Cannot set the value on an ObjectHandle after creation");
+
+        TValue IWrapper<TValue>.Value
+        {
+            get
+            {
+                if (isDisposed) throw new ObjectDisposedException("");
+                return ProtectedValue;
+            }
+            set => ThrowCannotSet();
+        }
+        TValue IWriteWrapper<TValue>.Value { set => ThrowCannotSet(); }
+
         protected override ITask<IResolveResult<TValue>> ResolveImpl()
         {
             if (HasValue)
@@ -32,6 +48,35 @@ namespace LionFire.Persistence.Handles
                 return Task.FromResult<IResolveResult<TValue>>(RetrieveResult<TValue>.NotFound).AsITask();
             }
         }
+
+        public Task<ISuccessResult> Put(TValue value)
+        {
+            if (!ReferenceEquals(value, ProtectedValue))
+            {
+                ThrowCannotSet();
+            }
+            return Task.FromResult(NoopSuccessResult.Instance);
+        }
+
+        public Task<ISuccessResult> Put()
+        {
+            if (isDeletePending)
+            {
+                Delete();
+                return Task.FromResult(SuccessResult.Success);
+            }
+            else
+            {
+                return Task.FromResult(NoopSuccessResult.Instance);
+            }
+        }
+        public Task<bool?> Delete()
+        {
+            Dispose();
+            return Task.FromResult<bool?>(true);
+        }
+        public void MarkDeleted() => isDeletePending = true;
+        bool isDeletePending = false;
 
         #region Construction
 
