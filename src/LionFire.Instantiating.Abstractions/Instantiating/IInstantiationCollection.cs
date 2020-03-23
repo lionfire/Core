@@ -8,31 +8,31 @@ using LionFire.Referencing;
 namespace LionFire.Instantiating
 {
 
-    public interface IInstantiationCollection<TTemplate> :
-        IEnumerable<IInstantiation<TTemplate>>,
-             //, IParented<InstantiationCollection>
-             IParented
-#if !AOT
-                , INotifyCollectionChanged<IInstantiation<TTemplate>>
-#endif
-        where TTemplate : ITemplate
-    {
+//    public interface IInstantiationCollection<TTemplate> :
+//        IEnumerable<IInstantiation<TTemplate>>,
+//             //, IParented<InstantiationCollection>
+//             IParented
+//#if !AOT
+//                , INotifyCollectionChanged<IInstantiation<TTemplate>>
+//#endif
+//        where TTemplate : ITemplate
+//    {
 
-        event Action<IInstantiation<TTemplate>, int> ChildCountChanged;
-        new event NotifyCollectionChangedHandler<IInstantiation<TTemplate>> CollectionChanged;
+//        event Action<IInstantiation<TTemplate>, int> ChildCountChanged;
+//        new event NotifyCollectionChangedHandler<IInstantiation<TTemplate>> CollectionChanged;
 
-        IEnumerable<IInstantiation<TTemplate>> Values { get; }
-        int Count { get; }
-        void Add(IInstantiation<TTemplate> instantiation);
-        void Add(IReadHandleBase<TTemplate> hTemplate);
-        void Add(TTemplate template);
-        string CreateKey(TTemplate template);
-        string GetDefaultKey(TTemplate template);
-        string GetNextValidKeyIncrementForKey(string key);
-        void OnChildCountChanged(IInstantiation<TTemplate> child, int oldCount);
-        void RaiseAdded(IInstantiation<TTemplate> child, int oldCount);
-        void RaiseRemoved(IInstantiation<TTemplate> child, int oldCount);
-    }
+//        IEnumerable<IInstantiation<TTemplate>> Values { get; }
+//        int Count { get; }
+//        void Add(IInstantiation<TTemplate> instantiation);
+//        void Add(IReadHandleBase<TTemplate> hTemplate);
+//        void Add(TTemplate template);
+//        string CreateKey(TTemplate template);
+//        string GetDefaultKey(TTemplate template);
+//        string GetNextValidKeyIncrementForKey(string key);
+//        void OnChildCountChanged(IInstantiation<TTemplate> child, int oldCount);
+//        void RaiseAdded(IInstantiation<TTemplate> child, int oldCount);
+//        void RaiseRemoved(IInstantiation<TTemplate> child, int oldCount);
+//    }
 
     public interface IInstantiationCollection :
         IEnumerable<IInstantiation>,
@@ -53,11 +53,15 @@ namespace LionFire.Instantiating
         void Add(IInstantiation instantiation);
         void Add(IReadHandleBase<ITemplate> hTemplate);
         void Add(ITemplate template);
+        void AddRange(params IInstantiation[] items);
         string CreateKey(ITemplate template);
         string GetDefaultKey(ITemplate template);
         string GetNextValidKeyIncrementForKey(string key);
         void OnChildCountChanged(IInstantiation child, int oldCount);
         void RaiseAdded(IInstantiation child, int oldCount);
         void RaiseRemoved(IInstantiation child, int oldCount);
+
+        bool Remove(IInstantiation keyed);
+        bool Remove(string key);
     }
 }

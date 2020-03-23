@@ -34,6 +34,7 @@ namespace LionFire.Persistence.Persisters.Vos
         public bool? IsSuccess => Flags.IsSuccessTernary();
 
         public IReference ResolvedVia { get; set; }
+        public bool IsNoop => Flags.HasFlag(PersistenceResultFlags.Noop);
 
         #region Static
 

@@ -131,10 +131,14 @@ namespace LionFire
             get => machineName ?? System.Environment.MachineName;
             set => machineName = value;
         }
+
         private static string machineName;
 
         #endregion
 
-
+        public static class Compilation
+        {
+            public static string BuildType { get{ throw new NotImplementedException(); } set { } }
+        }
     }
 }

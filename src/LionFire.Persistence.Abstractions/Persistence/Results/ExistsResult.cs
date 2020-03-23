@@ -7,6 +7,7 @@
         public PersistenceResultFlags Flags { get; set; }
 
         public bool? IsSuccess => Flags.IsSuccessTernary();
+        public bool IsNoop => Flags.HasFlag(PersistenceResultFlags.Noop);
 
         public static readonly PersistenceResult Success = new PersistenceResult { Flags = PersistenceResultFlags.Success };
         public static readonly PersistenceResult Found = new PersistenceResult { Flags = PersistenceResultFlags.Found };

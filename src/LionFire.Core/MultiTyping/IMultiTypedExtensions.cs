@@ -19,3 +19,15 @@ namespace LionFire.MultiTyping
         }
     }
 }
+namespace LionFire
+{
+    using LionFire.MultiTyping;
+    public static class IMultiTypedExtensions2
+    {
+
+        public static T AsTypeOrCreateDefault<T>(this IMultiTyped mt, Func<T> valueFactory)
+            where T : class
+             => mt.AsTypeOrCreateDefault(valueFactory: valueFactory);
+
+    }
+}

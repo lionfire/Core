@@ -273,6 +273,9 @@ namespace LionFire.Applications
 
         #endregion
 
+        #endregion
+#endif
+
 
         #region Derived
 
@@ -280,6 +283,7 @@ namespace LionFire.Applications
 
         #region Make DEBUG / TRACE define constants visible to application
 
+        [Obsolete("MOVE to LionFireEnvironment.Compilation")]
         public const bool IsDebug =
 #if DEBUG
  true;
@@ -287,6 +291,7 @@ namespace LionFire.Applications
  false;
 #endif
 
+        [Obsolete("MOVE to LionFireEnvironment.Compilation")]
         public const bool IsTrace =
 #if TRACE
  true;
@@ -297,6 +302,12 @@ namespace LionFire.Applications
         #endregion
 
         #endregion
+
+        #endregion
+
+#if TOPORT // maybe
+
+        #region Configuration Extras (2)
 
         /// <summary>
         /// A summary of app configuration in one property
@@ -339,7 +350,7 @@ namespace LionFire.Applications
         }
         #endregion
 
-        #endregion
+//#endregion
 
         #region Bug Reporting
 

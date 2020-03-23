@@ -15,6 +15,8 @@ namespace LionFire.Persistence.AutoExtensionFilesystem
         where TUnderlyingReference : IReference, IReferencable<TUnderlyingReference>
     {
 
+        public AutoExtensionPersister(SerializationOptions serializationOptions) : base(serializationOptions) { }
+
         protected virtual TUnderlyingReference ConvertReferenceWithPath(TReference reference, string path) => throw new NotImplementedException();
 
         public virtual async IAsyncEnumerable<string> CandidateReadPaths(TReference reference)

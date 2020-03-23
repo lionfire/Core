@@ -10,6 +10,7 @@ using LionFire.Dependencies;
 using LionFire.Hosting;
 using LionFire.DependencyInjection.ExtensionMethods;
 using LionFire.Persistence;
+using Microsoft.Extensions.Options;
 
 namespace LionFire.Services
 {
@@ -30,6 +31,14 @@ namespace LionFire.Services
                               .AddSingleton<IPersistenceConventions, PersistenceConventions>()
                               .AddSingleton<IReferenceToHandleService, ReferenceToHandleService>()
                               .AddSingleton<IReferenceProviderService, ReferenceProviderService>()
+                              .Configure<ObjectHandleProviderOptions>(c =>
+                              {
+                                  c.AutoRegister = true;
+                                  c.CheckIReferencable = true;
+                                  c.ReuseHandles = true;
+                              })
+                              .AddSingleton(serviceProvider => serviceProvider.GetRequiredService<IOptionsMonitor<ObjectHandleProviderOptions>>().CurrentValue)
+                              .AddSingleton<IObjectHandleProvider, ObjectHandleProvider>()
                           ;
     }
 }

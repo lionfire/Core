@@ -11,5 +11,8 @@ namespace LionFire.Assets
         public DisplayNamableTemplateAssetBase(AssetReference<TTemplate> template) : base(template)
         {
         }
+        public DisplayNamableTemplateAssetBase(RAsset<TTemplate> template) : base(template)
+        {
+        }
     }
 }

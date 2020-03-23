@@ -35,6 +35,8 @@ namespace LionFire.Persistence
         public PersistenceResultFlags Flags { get; set; }
         public bool? IsSuccess => Flags.IsSuccessTernary();
 
+        public bool IsNoop => Flags.HasFlag(PersistenceResultFlags.Noop);
+
         #region Static
 
         public static RetrieveResult<T> Success(T obj) => new RetrieveResult<T>()
@@ -89,7 +91,11 @@ namespace LionFire.Persistence
             Flags = PersistenceResultFlags.Success | PersistenceResultFlags.Found | PersistenceResultFlags.RetrievedNullOrDefault,
             Value = default,
         };
-
+        public static RetrieveResult<T> NotFoundButInstantiated(T obj) => new RetrieveResult<T>()
+        {
+            Flags = PersistenceResultFlags.Success | PersistenceResultFlags.NotFound | PersistenceResultFlags.Instantiated,
+            Value = obj,
+        };
         #endregion
 
         public override bool Equals(object obj)

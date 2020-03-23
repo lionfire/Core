@@ -1,8 +1,9 @@
 ﻿using System;
+using System.Threading.Tasks;
 using LionFire.Persistence;
 using LionFire.Resolves;
 
-namespace LionFire.Persistence
+namespace LionFire
 {
 
     // REVIEW - if this is good, move it up out of the Gen2 directory
@@ -36,6 +37,12 @@ namespace LionFire.Persistence
 
         public static bool IsWritable<T>(this IReadHandleBase<T> readHandle) => readHandle as IPuts != null;
 
+        public static async Task<bool> IsValueAvailable<T>(this IReadHandleBase<T> readHandle)
+        {
+            if (readHandle is ILazilyResolves<T> lr && lr.HasValue) return true;
+            if (readHandle is ISupportsExist<T> ec) return await ec.Exists().ConfigureAwait(false);
+            _ = await readHandle.Resolve().ConfigureAwait(false);
+            return readHandle.HasValue;
+        }
     }
-
 }

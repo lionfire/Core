@@ -60,7 +60,7 @@ namespace LionFire.MultiTyping
     {
         private object _lock = new object();
 
-#region Construction
+        #region Construction
 
         public MultiType() { }
         public MultiType(IEnumerable<object> objects)
@@ -85,7 +85,7 @@ namespace LionFire.MultiTyping
             }
         }
 
-#endregion
+        #endregion
 
         // TODO: Switch to ConcurrentDictionary?
         protected Dictionary<Type, object> TypeDict { get { return typeDict; } }
@@ -127,7 +127,7 @@ namespace LionFire.MultiTyping
             //return obj;
         }
 
-#region OfType
+        #region OfType
 
         public IEnumerable<T> OfType<T>() // TODO: Make IEnumerable once LionRpc supports it.
          where T : class
@@ -163,7 +163,7 @@ namespace LionFire.MultiTyping
             return matches;
         }
 
-#endregion
+        #endregion
 
         public void AddType<T>(T obj, bool allowMultiple = false)
             where T : class
@@ -261,7 +261,7 @@ namespace LionFire.MultiTyping
         }
 
 
-#region Type Change Events
+        #region Type Change Events
 
         private Dictionary<Type, Action<IReadOnlyMultiTyped, Type>> handlers = new Dictionary<Type, Action<IReadOnlyMultiTyped, Type>>();
         private object handlersLock = new object();
@@ -346,9 +346,9 @@ namespace LionFire.MultiTyping
             }
         }
 
-#endregion
+        #endregion
 
-#region Clear
+        #region Clear
 
         public void ClearSubTypes()
         {
@@ -369,14 +369,16 @@ namespace LionFire.MultiTyping
             typeDict = null;
         }
 
-#endregion
+        #endregion
 
-#region AsTypeOrCreateDefault
+        #region AsTypeOrCreateDefault
 
 
 #if !NoGenericMethods
-        public T AsTypeOrCreateDefault<T>(Type slotType = null)
-            where T : class
+        //public T AsTypeOrCreateDefault<T>(Func<T> defaultFactory) where T : class => AsTypeOrCreateDefault<T>(defaultFactory: defaultFactory); // MOVED to extension method
+
+        public T AsTypeOrCreateDefault<T>(Type slotType = null, Func<T> defaultFactory = null)
+        where T : class
             //, new()
         {
             if (slotType == null) { slotType = GetSlotType(typeof(T)); }
@@ -392,8 +394,9 @@ namespace LionFire.MultiTyping
                 throw new ArgumentException("Could not determine concrete type for " + typeof(T).FullName + ".  Try adding a DefaultCooncreteTypeAttribute to this non-concrete type.");
             }
 
-            T defaultValue = (T)Activator.CreateInstance(concreteType);
-
+            T defaultValue;
+            if (defaultFactory != null) defaultValue = defaultFactory();
+            else defaultValue = (T)Activator.CreateInstance(concreteType);
 
             _Set(defaultValue, slotType);
             //SetType<T>(defaultValue);
@@ -433,7 +436,7 @@ namespace LionFire.MultiTyping
         [AotReplacement]
         public object AsTypeOrCreateDefault(Type type /* = null */, Type slotType = null)
         {
-            if (type == null) throw new ArgumentNullException("type");
+            if (type == null) throw new ArgumentNullException(nameof(type));
 
             if (slotType == null) { slotType = GetSlotType(type); }
 
@@ -446,9 +449,9 @@ namespace LionFire.MultiTyping
                 slotType, type);
         }
 
-#endregion
+        #endregion
 
-#region Slot / Concrete Type Resolution
+        #region Slot / Concrete Type Resolution
 
         // REVIEW From Legacy
 
@@ -491,9 +494,9 @@ namespace LionFire.MultiTyping
             }
         }
 
-#endregion
+        #endregion
 
-#region REVIEW - Imported from Legacy
+        #region REVIEW - Imported from Legacy
 
         private void _Set(object obj, Type slotType, bool allowReplace = false)
         {
@@ -531,9 +534,9 @@ namespace LionFire.MultiTyping
             OnChildChanged(slotType, obj);
         }
 
-#endregion
+        #endregion
 
-#region Dispose
+        #region Dispose
 
         /// <summary>
         /// Warning: Object can be reused after disposing.
@@ -544,7 +547,7 @@ namespace LionFire.MultiTyping
             ClearSubTypes(true, false);
         }
 
-#endregion
+        #endregion
     }
 
 }

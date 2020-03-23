@@ -44,6 +44,7 @@ else
         var temp = root["/temp"];
 
         var hList = temp.Reference.GetListHandle();
+#error hList appears to not have Key and Reference be the same thing.  Reference is null.
         var result = await hList.Resolve();
         listings = result.Value.Value.ToArray();
     }

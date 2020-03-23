@@ -12,6 +12,8 @@ namespace LionFire.Resolves
         ITask<IResolveResult<TValue>> Resolve();
     }
 
+
+
     //public interface IResolvesNongeneric // OLD
     //{
     //    /// <summary>

@@ -10,6 +10,7 @@ namespace LionFire.Persistence
 
         public TValue Value => default;
         public bool HasValue => false;
+        public bool IsNoop => true;
 
         public PersistenceResultFlags Flags { get => PersistenceResultFlags.Noop | PersistenceResultFlags.Fail; set { } }
 

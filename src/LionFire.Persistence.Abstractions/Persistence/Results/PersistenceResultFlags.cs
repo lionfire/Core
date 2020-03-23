@@ -34,6 +34,16 @@ namespace LionFire.Persistence
         Indeterminate = 1 << 6,
 
         /// <summary>
+        /// For operations that result in instantiating a value in memory
+        /// </summary>
+        Instantiated = 1 << 10,
+
+        /// <summary>
+        /// Indicatse a value was created in the underlying data storea (REVIEW)
+        /// </summary>
+        Created = 1 << 11,
+
+        /// <summary>
         /// When checking for whether an operation is possible, this is set if the operation is expected to succeed.
         /// </summary>
         PreviewSuccess = 1 << 20,

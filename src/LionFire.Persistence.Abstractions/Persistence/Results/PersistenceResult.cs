@@ -16,6 +16,7 @@ namespace LionFire.Persistence
         }
 
         public object Error { get; set; }
+        public bool IsNoop => Flags.HasFlag(PersistenceResultFlags.Noop);
 
         public PersistenceResultFlags Flags { get; set; }
 

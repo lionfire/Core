@@ -76,6 +76,14 @@ namespace LionFire.Persistence.Handles
             return Task.FromResult<bool?>(true);
         }
         public void MarkDeleted() => isDeletePending = true;
+
+        public ITask<IResolveResult<TValue>> GetOrInstantiateValue()
+        {
+            if (HasValue) return Task.FromResult((IResolveResult<TValue>)RetrieveResult<TValue>.Noop(Value)).AsITask();
+            ProtectedValue = Activator.CreateInstance<TValue>();
+            return Task.FromResult((IResolveResult<TValue>)new RetrieveResult<TValue>(Value, PersistenceResultFlags.Success | PersistenceResultFlags.Instantiated)).AsITask();
+        }
+
         bool isDeletePending = false;
 
         #region Construction

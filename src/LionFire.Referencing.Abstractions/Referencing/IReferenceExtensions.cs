@@ -10,6 +10,21 @@ namespace LionFire.Referencing
     {
         public static string Name(this IReference reference) => LionPath.GetName(reference.Path);
 
+        public static string PathRelativeTo(this IReference reference, IReference otherReference, bool allowAncestors = false, bool allowAncestorDecendants = false)
+        {
+            var isAncestor = !reference.Path.StartsWith(otherReference.Path);
+
+            if (isAncestor)
+            {
+                if (allowAncestors) { throw new NotImplementedException(); }
+                else throw new ArgumentException("reference.Path must start with otherReference.Path when allowAncestors is false.");
+            }
+            else
+            {
+                return reference.Path.Substring(otherReference.Path.Length);
+            }
+        }
+
         public static ITypedReference<T> OfType<T>(this IReference reference) => new TypedReference<T>(reference); // TODO: return IReference instead of this simplistic wrapper
 
         public static TReference WithPath<TReference>(this TReference reference, string newPath)

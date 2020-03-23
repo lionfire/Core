@@ -1,4 +1,6 @@
-﻿namespace LionFire.Resolves
+﻿using LionFire.Results;
+
+namespace LionFire.Resolves
 {
     public interface IHasDefaultableValueResult<TValue> : IHasValueResult, IValueResult<TValue>
     {

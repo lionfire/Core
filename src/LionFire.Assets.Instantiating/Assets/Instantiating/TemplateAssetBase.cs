@@ -8,7 +8,8 @@ namespace LionFire.Assets.Instantiating
     {
         //private RWAsset<TTemplate> asset;
 
-        //public TemplateAssetBase() { }
+        public TemplateAssetBase() { }
+        public TemplateAssetBase(AssetReference<TTemplate> reference) : base(reference) { }
 
 #if IRWAssetAware
         //public TemplateAssetBase(RWAsset<TTemplate> asset)

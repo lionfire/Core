@@ -29,6 +29,9 @@ namespace LionFire.Assets.Instantiating
             : base()
         {
         }
+        protected HierarchicalTemplateAssetBase(AssetReference<TTemplate> reference) : base(reference)
+        {
+        }
         //		public HierarchicalTemplateAssetBase(HAsset asset)
         //			: base(asset)
         //		{
@@ -49,7 +52,7 @@ namespace LionFire.Assets.Instantiating
 
         public bool HasChildren { get { return children != null && children.Count > 0; } }
         [SerializeDefaultValue(false)]
-        public InstantiationCollection Children
+        public IInstantiationCollection Children
         {
             get
             {
@@ -66,9 +69,9 @@ namespace LionFire.Assets.Instantiating
             }
         }
 
-        IEnumerable<IInstantiation> IHierarchicalTemplate.Children => Children;
+        //IEnumerable<IInstantiation> IHierarchicalTemplate.Children => Children;
 
-        private InstantiationCollection children;
+        private IInstantiationCollection children;
 
         #endregion
 

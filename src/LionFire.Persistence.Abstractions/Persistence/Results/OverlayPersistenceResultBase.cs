@@ -28,6 +28,7 @@ namespace LionFire.Persistence
         IEnumerable<IPersistenceResult> _underlyingEnumerable;
 
         public int RelevantUnderlyingCount { get; set; }
+        public bool IsNoop => underlyingResult.IsNoop;
 
         public IEnumerable<IPersistenceResult> Successes { get => underlyingResult.IsSuccess() ? underlyingEnumerable : null; set => throw new NotImplementedException(); }
         public IEnumerable<IPersistenceResult> Failures { get => underlyingResult.IsSuccess() ? null : underlyingEnumerable; set => throw new NotImplementedException(); }

@@ -11,8 +11,11 @@ namespace LionFire.Resolves
         public bool? IsSuccess => true;
         public bool HasValue => true;
         public TValue Value { get; set; }
-        public bool IsNoop => false;
+        public bool IsNoop => true;
 
+        /// <summary>
+        ///  For default values only
+        /// </summary>
         public static ResolveResultNoop<TValue> Instance { get; } = new ResolveResultNoop<TValue>();
     }
     

@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 
 namespace LionFire.Persistence
 {
@@ -10,6 +11,7 @@ namespace LionFire.Persistence
         public int RelevantUnderlyingCount { get; set; }
         public IEnumerable<IPersistenceResult> Successes { get; set; }
         public IEnumerable<IPersistenceResult> Failures { get; set; }
+        public bool IsNoop => Flags.HasFlag(PersistenceResultFlags.Noop);
 
         public object Error { get; set; }
 
@@ -35,6 +37,17 @@ namespace LionFire.Persistence
 
         #endregion
 
+        public bool IsNoop
+        {
+            get
+            {
+                foreach(var child in Successes.Concat(Failures))
+                {
+                    if (!child.IsNoop) return false;
+                }
+                return true;
+            }
+        }
 
         public bool HasValue => value != default;
 

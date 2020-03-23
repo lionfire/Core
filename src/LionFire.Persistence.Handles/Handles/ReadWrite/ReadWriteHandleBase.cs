@@ -40,17 +40,17 @@ namespace LionFire.Persistence.Handles
         /// </summary>
         /// <returns>A guaranteed Value, that may have been preexisting, lazily loaded, or just instantiated.</returns>
         [ThreadSafe]
-        public async Task<TValue> GetOrInstantiate()
+        public async ITask<IResolveResult<TValue>> GetOrInstantiateValue()
         {
             var getResult = await GetValue().ConfigureAwait(false);
-            if (getResult.HasValue) return getResult.Value;
+            if (getResult.HasValue) return getResult;
 
             //TrySetProtectedValueIfDefault(InstantiateDefault());
             //ProtectedValue = InstantiateDefault();
             var newValue = InstantiateDefault();
             this.OnUserChangedValue_Write(newValue);
 
-            return newValue;
+            return RetrieveResult<TValue>.NotFoundButInstantiated(newValue);
 
             // Consider .NET's LazyInitializer
             //lock (objectLock)

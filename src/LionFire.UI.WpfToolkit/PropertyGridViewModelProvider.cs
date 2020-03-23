@@ -6,8 +6,8 @@ namespace LionFire.UI.Wpf.WpfToolkit
     {
         public object ProvideViewModelFor(object model, object context = null)
         {
-            var rh = model as RH<object>;
-            if (rh != null) model = rh.Object ?? rh;
+            var rh = model as IReadHandle<object>;
+            if (rh != null) model = rh.Value ?? rh;
             return new PropertyGridViewModel { Model = model };
         }
     }

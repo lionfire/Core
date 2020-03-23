@@ -1,20 +1,11 @@
-﻿using System.Runtime.CompilerServices;
+﻿using System;
+using System.Runtime.CompilerServices;
 
 namespace LionFire.Persistence.Handles
 {
-#if TODO // OPTIMIZATION - prevent creating unnecessary ObjectHandles, and also provide a gateway to get references and in turn proper handles
 
-    public interface IHandleRegistrar : IObjectHandleProvider
-    {
-
-        bool TryRegisterReadHandle<T>(T obj, IReadHandle<T> handle);
-        bool TryRegisterWriteHandle<T>(T obj, IReadHandle<T> handle);
-        bool TryRegisterReadWriteHandle<T>(T obj, IReadHandle<T> handle);
-    }
-
-#endif
-
-    public abstract class HandleRegistrar // : IHandleRegistrar
+    public abstract class HandleRegistrar<TOptions> // : IHandleRegistrar
+        where TOptions : HandleRegistrarOptions
     {
         #region Fields
 
@@ -24,23 +15,42 @@ namespace LionFire.Persistence.Handles
 
         #endregion
 
+        public TOptions Options { get; protected set; }
+
+        public HandleRegistrar(TOptions options)
+        {
+            Options = options;
+            if (Options.AutoRegister) throw new NotImplementedException("Cannot set AutoRegister ");
+        }
+
+        public void RegisterReadHandle<TValue>(IReadHandleBase<TValue> handle) => throw new NotImplementedException();
+        public void RegisterReadWriteHandle<TValue>(IReadWriteHandleBase<TValue> handle) => throw new System.NotImplementedException();
+        public void RegisterWriteHandle<TValue>(IWriteHandleBase<TValue> handle) => throw new System.NotImplementedException();
+
         #region TryRegister
 
-        public bool TryRegisterReadHandle<T>(T obj, IReadHandle<T> handle) => TryRegister(readHandles, obj, handle);
-        public void TryRegisterReadWriteHandle<T>(T obj, IReadWriteHandle<T> handle) => TryRegister(readWriteHandles, obj, handle);
-        public void TryRegisterWriteHandle<T>(T obj, IWriteHandle<T> handle) => TryRegister(writeHandles, obj, handle);
+        public bool TryRegisterReadHandle<T>(T obj, IReadHandle<T> handle) => TryRegister<T>(readHandles, obj, handle);
+        public void TryRegisterReadWriteHandle<T>(T obj, IReadWriteHandle<T> handle) => TryRegister<T>(readWriteHandles, obj, handle);
+        public void TryRegisterWriteHandle<T>(T obj, IWriteHandle<T> handle) => TryRegister<T>(writeHandles, obj, handle);
 
-        public IReadHandle<T> TryRegisterOrGetReadHandle<T>(T obj, IReadHandle<T> handle) => (IReadHandle<T>)TryRegisterOrGet(readHandles, obj, handle);
-        public IReadWriteHandle<T> TryRegisterOrGetReadWriteHandle<T>(T obj, IReadWriteHandle<T> handle) => (IReadWriteHandle<T>)TryRegisterOrGet(readWriteHandles, obj, handle);
-        public IWriteHandle<T> TryRegisterOrGetWriteHandle<T>(T obj, IWriteHandle<T> handle) => (IWriteHandle<T>)TryRegisterOrGet(writeHandles, obj, handle);
+        public IReadHandle<T> TryRegisterOrGetReadHandle<T>(T obj, Func<T, IHandleBase> handleFactory) => (IReadHandle<T>)TryRegisterOrGet<T>(readHandles, obj, handleFactory);
+        public IReadWriteHandle<T> TryRegisterOrGetReadWriteHandle<T>(T obj, Func<T, IHandleBase> handleFactory) => (IReadWriteHandle<T>)TryRegisterOrGet<T>(readWriteHandles, obj, handleFactory);
+        public IWriteHandle<T> TryRegisterOrGetWriteHandle<T>(T obj, Func<T, IHandleBase> handleFactory) => (IWriteHandle<T>)TryRegisterOrGet<T>(writeHandles, obj, handleFactory);
 
-        private bool TryRegister(ConditionalWeakTable<object, IHandleBase> t, object obj, IHandleBase handle)
+        private bool TryRegister<T>(ConditionalWeakTable<object, IHandleBase> t, T obj, IHandleBase handle)
         {
-            var result = TryRegisterOrGet(t, obj, handle);
+            var result = TryRegisterOrGet<T>(t, obj, _ => handle);
             return ReferenceEquals(result, handle);
         }
-        private IHandleBase TryRegisterOrGet(ConditionalWeakTable<object, IHandleBase> t, object obj, IHandleBase handle)
-            => t.GetValue(obj, new ConditionalWeakTable<object, IHandleBase>.CreateValueCallback(o => handle));
+        private IHandleBase TryRegisterOrGet<T>(ConditionalWeakTable<object, IHandleBase> t, T obj, Func<T, IHandleBase> handleFactory)
+            => Options.AutoRegister
+            ? t.GetValue(obj, new ConditionalWeakTable<object, IHandleBase>.CreateValueCallback(o => handleFactory((T)o)))
+            : TryGetOrCreate(t, obj, handleFactory)
+            ;
+        private IHandleBase TryGetOrCreate<T>(ConditionalWeakTable<object, IHandleBase> t, T obj, Func<T, IHandleBase> handleFactory)
+        {
+            return t.TryGetValue(obj, out IHandleBase v) ? v : handleFactory(obj);
+        }
 
         #endregion
 
@@ -56,19 +66,25 @@ namespace LionFire.Persistence.Handles
         // - fall back to ObjectHandle
         //   - optional register ObjectHandle 
         public IReadHandle<TValue> GetReadHandle<TValue>(TValue value)
-            => readHandles.TryGetValue(value, out IHandleBase handle)
+            => Options.ReuseHandles
+            ? (readHandles.TryGetValue(value, out IHandleBase handle)
                     ? (IReadHandle<TValue>)handle
-                    : TryRegisterOrGetReadHandle(value, CreateReadHandle<TValue>(value));
+                    : TryRegisterOrGetReadHandle<TValue>(value, o => CreateReadHandle<TValue>((TValue)o)))
+            : CreateReadHandle<TValue>(value);
 
         public IReadWriteHandle<TValue> GetReadWriteHandle<TValue>(TValue value)
-            => readWriteHandles.TryGetValue(value, out IHandleBase handle)
+            => Options.ReuseHandles
+            ? (readWriteHandles.TryGetValue(value, out IHandleBase handle)
                     ? (IReadWriteHandle<TValue>)handle
-                    : TryRegisterOrGetReadWriteHandle(value, CreateReadWriteHandle<TValue>(value));
+                    : TryRegisterOrGetReadWriteHandle<TValue>(value, o => CreateReadWriteHandle<TValue>((TValue)o)))
+            : CreateReadWriteHandle<TValue>(value);
 
         public IWriteHandle<TValue> GetWriteHandle<TValue>(TValue value)
-                => readWriteHandles.TryGetValue(value, out IHandleBase handle)
+                => Options.ReuseHandles
+            ? (readWriteHandles.TryGetValue(value, out IHandleBase handle)
                         ? (IWriteHandle<TValue>)handle
-                        : TryRegisterOrGetWriteHandle(value, CreateWriteHandle<TValue>(value));
+                        : TryRegisterOrGetWriteHandle<TValue>(value, o => CreateWriteHandle<TValue>((TValue)o)))
+            : CreateWriteHandle<TValue>(value);
 
     }
 

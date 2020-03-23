@@ -7,10 +7,17 @@ namespace LionFire.MultiTyping
 {
     public interface IMultiTyped : IReadOnlyMultiTyped
     {
-        //void SetType<T>(T obj) where T : class;
         new object this[Type type] { get; set; }
-        T AsTypeOrCreateDefault<T>(Type slotType = null) where T : class;
-        void AddType<T>(T obj, bool allowMultiple = false) where T : class; 
+        T AsTypeOrCreateDefault<T>(Type slotType = null, Func<T> valueFactory = null) where T : class;
+
+        void AddType<T>(T obj, bool allowMultiple = false) where T : class;
+
+        /// <summary>
+        /// Replace a single type (if any) with the provided object
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="obj"></param>
+        void SetType<T>(T obj) where T : class;
 
         bool IsEmpty { get; }
 

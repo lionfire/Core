@@ -10,6 +10,11 @@ using System.Threading.Tasks;
 namespace LionFire.Dependencies
 {
     // TODO - make more consistent with IServiceProvider?  Have an internal default IServiceProvider
+    
+    // OPTIMIZE - if this is a potential lightweight option for simple applications, consider:
+    // - a way to skip DependencyContext
+    // - ServiceLocator<T>.Get instead, and maybe ServiceFactory<T>.Get for transients.
+
 
     /// <summary>
     /// Provides a simple and potentially complex implementation of a service locator (anti-)pattern.

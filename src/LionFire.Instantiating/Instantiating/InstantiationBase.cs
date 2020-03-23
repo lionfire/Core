@@ -232,7 +232,7 @@ namespace LionFire.Instantiating
                 //if (template != null) throw new NotSupportedException("Can only be set once.");
                 if (rTemplate != null && value != null) throw new AlreadySetException();
                 //if (value != null && value.GetType() == typeof(string))
-                    //throw new UnreachableCodeException("set_Template - got string: " + (string)(object)value);
+                //throw new UnreachableCodeException("set_Template - got string: " + (string)(object)value);
                 rTemplate = value;
 
                 //if (template != null && this.Key != null)

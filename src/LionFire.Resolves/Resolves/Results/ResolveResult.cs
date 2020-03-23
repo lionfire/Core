@@ -29,8 +29,6 @@ namespace LionFire.Resolves
 
         #endregion
 
-        
-
     }
     public struct NoopFailResolveResult<TValue> : ISuccessResult, ILazyResolveResult<TValue>
     {

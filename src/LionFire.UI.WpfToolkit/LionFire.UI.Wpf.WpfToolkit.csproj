@@ -106,6 +106,14 @@
       <Project>{7be7447a-5990-4a38-94e7-5237451b4bf2}</Project>
       <Name>LionFire.Referencing.Abstractions</Name>
     </ProjectReference>
+    <ProjectReference Include="..\LionFire.Resolves.Abstractions\LionFire.Resolves.Abstractions.csproj">
+      <Project>{5440b461-c5e2-41c6-bd28-b145cf92e9ac}</Project>
+      <Name>LionFire.Resolves.Abstractions</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\LionFire.Structures\LionFire.Structures.csproj">
+      <Project>{0d31fb85-51e2-4e8a-96bf-7f5d904ec7d0}</Project>
+      <Name>LionFire.Structures</Name>
+    </ProjectReference>
     <ProjectReference Include="..\LionFire.UI\LionFire.UI.csproj">
       <Project>{9cce0f03-f678-42aa-87a4-cb1b681a64e2}</Project>
       <Name>LionFire.UI</Name>

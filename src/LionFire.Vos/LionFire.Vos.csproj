@@ -20,7 +20,6 @@
     <ProjectReference Include="..\LionFire.Execution.Abstractions\LionFire.Execution.Abstractions.csproj" />
     <ProjectReference Include="..\LionFire.Execution\LionFire.Execution.csproj" />
     <ProjectReference Include="..\LionFire.Instantiating.Abstractions\LionFire.Instantiating.Abstractions.csproj" />
-    <ProjectReference Include="..\LionFire.ObjectBus\LionFire.ObjectBus.csproj" />
     <ProjectReference Include="..\LionFire.Persistence.Handles.Abstractions\LionFire.Persistence.Handles.Abstractions.csproj" />
     <ProjectReference Include="..\LionFire.Persistence.Handles\LionFire.Persistence.Handles.csproj" />
     <ProjectReference Include="..\LionFire.Structures\LionFire.Structures.csproj" />

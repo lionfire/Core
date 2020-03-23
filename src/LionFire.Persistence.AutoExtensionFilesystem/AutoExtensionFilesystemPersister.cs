@@ -11,7 +11,8 @@ namespace LionFire.Persistence.AutoExtensionFilesystem
     public class AutoExtensionFilesystemPersister : AutoExtensionPersister<AutoExtensionFileReference, AutoExtensionFilesystemPersisterOptions, FileReference, FilesystemPersister>
     {
 
-        public AutoExtensionFilesystemPersister(FilesystemPersister filesystemPersister, AutoExtensionFilesystemPersisterOptions options)
+
+        public AutoExtensionFilesystemPersister(FilesystemPersister filesystemPersister, AutoExtensionFilesystemPersisterOptions options, SerializationOptions serializationOptions) : base(serializationOptions)
         {
             UnderlyingPersister = filesystemPersister;
             PersistenceOptions = options;

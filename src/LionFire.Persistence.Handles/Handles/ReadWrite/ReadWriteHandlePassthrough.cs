@@ -37,9 +37,11 @@ namespace LionFire.Persistence.Handles
 
         public PersistenceFlags Flags => ReadWriteHandle.Flags;
 
+
         protected IReadWriteHandle<TValue> handle;
 
         public ITask<ILazyResolveResult<TValue>> GetValue() => ReadWriteHandle.GetValue();
+        public ITask<IResolveResult<TValue>> GetOrInstantiateValue() => ReadWriteHandle.GetOrInstantiateValue();
         public ILazyResolveResult<TValue> QueryValue() => ReadWriteHandle.QueryValue();
         public Task<ISuccessResult> Put(TValue value) => ReadWriteHandle.Put(value);
         public ITask<IResolveResult<TValue>> Resolve() => ReadWriteHandle.Resolve();

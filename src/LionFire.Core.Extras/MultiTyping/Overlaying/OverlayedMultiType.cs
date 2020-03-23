@@ -437,13 +437,14 @@ namespace LionFire.MultiTyping.Overlaying
             }
         }
 
-        public T AsTypeOrCreateDefault<T>(Type slotType = null) where T : class
+        public T AsTypeOrCreateDefault<T>(Type slotType = null, Func<T> valueFactory = null) where T : class
         {
             throw new NotImplementedException();
             //return ((IMultiTyped)DefaultLayer).AsTypeOrCreateDefault<T>(slotType);
         }
+        public void SetType<T>(T obj) where T : class => DefaultLayer.SetType<T>(obj);
 
-        public void AddType<T>(T obj, bool allowMultiple = false) where T : class => ((IMultiTyped)DefaultLayer).AddType(obj, allowMultiple);
+        public void AddType<T>(T obj, bool allowMultiple = false) where T : class => DefaultLayer.AddType(obj, allowMultiple);
 
         #endregion
 

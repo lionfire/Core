@@ -16,6 +16,8 @@
             set { }
         }
         public object Error => null;
+
+        public bool IsNoop => true;
     }
 
 }
