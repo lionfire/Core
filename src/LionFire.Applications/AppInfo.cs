@@ -1,22 +1,66 @@
-﻿namespace LionFire.Applications
+﻿using LionFire.Dependencies;
+using LionFire.Structures;
+using System;
+
+namespace LionFire.Applications
 {
     public class AppInfo
     {
+        #region Static
+
         internal static AppInfo Default = new AppInfo();
+
+        /// <summary>
+        /// See also: ServiceLocator.Get&lt;AppInfo&gt;()
+        /// </summary>
+        public static AppInfo Instance
+        {
+            get => ManualSingleton<AppInfo>.Instance;
+            set
+            {
+                if (Instance != null) throw new AlreadySetException();
+                if (LionFireEnvironment.IsMultiApplicationEnvironment)
+                {
+                    throw new NotSupportedException("Cannot set AppInfo.Instance when LionFireEnvironment.IsMultiApplicationEnvironment is true.  Use RootInstance instead.");
+                }
+                ManualSingleton<AppInfo>.Instance = value;
+            }
+        }
+
+        public static AppInfo RootInstance
+        {
+            get => rootInstance;
+            set
+            {
+                if (rootInstance != null) throw new AlreadySetException();
+                rootInstance = value;
+            }
+        }
+        private static AppInfo rootInstance;
+
+        #endregion
+
+        #region Construction
 
         public AppInfo()
         {
         }
-        public AppInfo(string appName, string orgName = null)
+        public AppInfo(string appName, string orgName = null, string orgDir = null)
         {
             OrgName = orgName;
             AppName = appName;
+            this.orgDir = orgDir;
         }
+
+        #endregion
 
         /// <summary>
         /// Recommendation: no spaces
         /// </summary>
         public string OrgName { get; set; } = "MyOrganization";
+
+        public string OrgDir => orgDir ?? OrgName;
+        private string orgDir;
 
         /// <summary>
         /// Recommended: Globally unique, having your organization in the name.
@@ -54,7 +98,16 @@
 
         // FUTURE: Allow multiple data dirs
         public string DataDirName { get; set; }
+        public string EffectiveDataDirName => DataDirName ?? AppName;
 
         public string ProgramVersion { get; set; } = "0.0.0";
+
+
+        public AppDirectories Directories { get; set; }
+
+        /// <summary>
+        /// Custom directory name for the application.  Example: c:\ProgramData\{OrgDir}\{CustomAppDir}
+        /// </summary>
+        public string CustomAppDir { get; set; }
     }
 }

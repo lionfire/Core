@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Reflection;
@@ -70,6 +71,36 @@ namespace LionFire
             set => isUnitTest = value;
         }
         private static bool? isUnitTest;
+
+        // REFACTOR: Merge VosAppHost ExeDir finding logic into here
+        public static string AppBinDir
+        {
+            get
+            {
+#if UNITY
+                //				return UnityEngine.Application.dataPath;
+                return PersistentDataPath;
+#else
+
+#if OLD // Doesn't work with obfuscators
+                var assembly = System.Reflection.Assembly.GetEntryAssembly();
+                if(assembly == null) return "\"";
+                
+                return System.IO.Path.GetDirectoryName(assembly.Location); 
+#else
+                var p = Process.GetCurrentProcess();
+                var result = p.MainModule.FileName;
+
+                //l.Debug("Process.GetCurrentProcess().MainModule.ModuleName - " + p.MainModule.ModuleName);
+                //l.Debug("Process.GetCurrentProcess().MainModule.FileName - " + p.MainModule.FileName);
+                //l.Debug("Process.GetCurrentProcess().StartInfo.FileName - " + p.StartInfo.FileName); // Usually empty
+                //l.Debug("SEnvironment.CommandLine - " + SEnvironment.CommandLine);
+
+                return System.IO.Path.GetDirectoryName(result);
+#endif
+#endif
+            }
+        }
 
         #endregion
 

@@ -23,6 +23,7 @@ namespace LionFire
 
             /// <summary>
             /// TOPORT  Either folder the exe is in, or a parent, if exe is for example nested in a bin folder.
+            /// MOVE to AppInfo
             /// </summary>
             public static string AppDir => throw new NotImplementedException();
 
@@ -37,10 +38,32 @@ namespace LionFire
 
             public static Dictionary<string, string> Other { get; } = new Dictionary<string, string>();
 
+            /// <summary>
+            /// C:\ProgramData:
+            ///  - Windows 10
+            ///  - Windows 7 (64-bit)
+            ///  - Windows Vista
+            ///  
+            /// C:\Documents and Settings\All Users\Application Data
+            ///  - Windows XP
+            ///  - Windows Server 2003
+            ///  
+            /// /usr/share:
+            ///  - Ubuntu 16.04 using dotnet core (3.0.100)
+            ///  - Output on Ubuntu 16.04 with mono 4.2.1
+            ///  - Android 6 using Xamarin 7.2
+            ///  - iOS Simulator 10.3 using Xamarin 7.2
+            /// 
+            /// ?:
+            ///  - ipad 10.3 using Xamarin 7.2
+            ///  - ipad 13.3 using Xamarin 16.4
+            /// </summary>
+            //private static readonly string programData = Environment.GetFolderPath(Environment.SpecialFolder.CommonApplicationData);
+
             #region OS-specific
 
             #region Windows
-            
+
             /// <summary>
             /// C:\ProgramData
             /// </summary>
@@ -59,7 +82,7 @@ namespace LionFire
                     }
                     return programData;
                 }
-                set { programData = value; }
+                set => programData = value;
             }
             private static string programData;
 

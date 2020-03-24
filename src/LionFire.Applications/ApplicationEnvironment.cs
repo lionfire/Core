@@ -34,7 +34,7 @@ namespace LionFire.Applications
 
         #region Convenience
 
-        public static string CompanyName => AppInfo?.OrgName; // RENAME OrgName
+        public static string OrgName => AppInfo?.OrgName; 
         public static string ProgramName => AppInfo?.AppName;
         public static string ProgramDisplayName => AppInfo?.ProgramDisplayName;
 
@@ -48,14 +48,13 @@ namespace LionFire.Applications
             {
                 if (machineGuid == null)
                 {
-                    var path = Path.Combine(ApplicationDirectories.CompanyProgramData, "machineid.txt");
+                    var path = Path.Combine(AppInfo.Directories.CompanyProgramData, "machineid.txt");
                     string guidString;
                     Guid guid;
-                    bool parsed;
                     if (File.Exists(path))
                     {
                         guidString = File.ReadAllText(path);
-                        if (parsed = Guid.TryParse(guidString, out guid))
+                        if (Guid.TryParse(guidString, out guid))
                         {
                             machineGuid = guid;
                         }

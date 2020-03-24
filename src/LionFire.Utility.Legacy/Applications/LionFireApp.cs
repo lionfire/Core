@@ -249,6 +249,7 @@ namespace LionFire.Applications
 
         #endregion
 
+#endif
         #region Configuration Extras
 
         public virtual bool IsVosEnabled => true;
@@ -274,7 +275,6 @@ namespace LionFire.Applications
         #endregion
 
         #endregion
-#endif
 
 
         #region Derived
