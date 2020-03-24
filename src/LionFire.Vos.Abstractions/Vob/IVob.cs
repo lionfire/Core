@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Threading.Tasks;
 using LionFire.FlexObjects;
 using LionFire.MultiTyping;
 using LionFire.Persistence;
@@ -50,6 +51,8 @@ namespace LionFire.Vos
         IReadHandle<T> GetReadHandle<T>(T preresolvedValue = default);
         IReadWriteHandle<T> GetReadWriteHandle<T>(T preresolvedValue = default);
         IWriteHandle<T> GetWriteHandle<T>(T prestagedValue = default);
+
+        Task<IEnumerable<T>> AllLayersOfType<T>();
     }
 
 }

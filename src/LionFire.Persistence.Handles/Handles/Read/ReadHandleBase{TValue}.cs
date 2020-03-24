@@ -31,16 +31,16 @@ namespace LionFire.Persistence.Handles
         [SetOnce]
         public TReference Reference
         {
-            get => reference;
+            get => Key;
             protected set
             {
-                if (EqualityComparer<TReference>.Default.Equals(value, reference))
+                if (EqualityComparer<TReference>.Default.Equals(value, Key))
                 //if (reference == value)
                 {
                     return;
                 }
 
-                if (!EqualityComparer<TReference>.Default.Equals(default, reference))
+                if (!EqualityComparer<TReference>.Default.Equals(default, Key))
                 //if (reference != default(TReference))
                 {
                     throw new AlreadySetException();
@@ -52,10 +52,9 @@ namespace LionFire.Persistence.Handles
                 //    throw new ArgumentException("This type does not support TReference types of that type.  See protected IsAllowedReferenceType implementation for allowed types.");
                 //}
 
-                reference = value;
+                this.Key = value;
             }
         }
-        protected TReference reference;
 
         #endregion
 

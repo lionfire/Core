@@ -11,6 +11,7 @@ namespace LionFire.Validation
         ValidationContext Validate(ValidationContext validationContext);
     }
 
+
     // ENH Ideas:
     // Validate(ExecutionState.Starting)
     // Looks on class for [RequiredForState(ExecutionState.Starting)]

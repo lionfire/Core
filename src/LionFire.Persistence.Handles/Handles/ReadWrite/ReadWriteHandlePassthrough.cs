@@ -17,6 +17,18 @@ namespace LionFire.Persistence.Handles
     public class ReadWriteHandlePassthrough<TValue, TReference> : IReadWriteHandle<TValue>, IReferencable<TReference>
         where TReference : IReference
     {
+        #region Construction
+
+        public ReadWriteHandlePassthrough() { }
+        public ReadWriteHandlePassthrough(IReadWriteHandle<TValue> handle)
+        {
+            this.handle = handle; 
+            Reference = (TReference)handle?.Reference;
+        }
+
+        #endregion
+
+
         public TReference Reference { get; set; }
 
         public IReadWriteHandle<TValue> ReadWriteHandle => handle ??= Reference?.GetReadWriteHandle<TValue>();

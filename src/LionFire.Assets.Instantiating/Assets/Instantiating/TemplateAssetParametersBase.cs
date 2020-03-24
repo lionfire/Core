@@ -44,6 +44,9 @@ namespace LionFire.Assets
         where TTemplate : ITemplateAsset<TTemplate, TInstance>
 
     {
+        public TemplateAssetParametersBase() { }
+        public TemplateAssetParametersBase(IReadHandleBase<TTemplate> template) : base(template) { }
+
         //IReadHandleBase<ITemplate> ITemplateParameters.Template => (IReadHandleBase<ITemplate>)Template;
         //public IReadHandleBase<TTemplate> Template { get; set; }
 

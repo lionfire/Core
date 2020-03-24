@@ -1,5 +1,6 @@
 ﻿using LionFire.Structures;
 using MorseCode.ITask;
+using System;
 using System.Threading.Tasks;
 
 namespace LionFire.Resolves
@@ -9,6 +10,16 @@ namespace LionFire.Resolves
         ITask<ILazyResolveResult<T>> GetValue();
 
         ILazyResolveResult<T> QueryValue();
+    }
+
+    public static class ILazilyResolvesExtensions
+    {
+        public static async Task EnsureHasValue<T>(this ILazilyResolves<T> lazilyResolves)
+        {
+            if (!(await lazilyResolves.GetValue().ConfigureAwait(false)).HasValue) throw new Exception("EnsureHasValue: could not get value");
+        }
+        public static async Task<bool> TryEnsureHasValue<T>(this ILazilyResolves<T> lazilyResolves) 
+            => !(await lazilyResolves.GetValue().ConfigureAwait(false)).HasValue;
     }
 
 

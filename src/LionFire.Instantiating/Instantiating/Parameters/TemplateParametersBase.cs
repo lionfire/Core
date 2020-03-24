@@ -10,7 +10,7 @@ namespace LionFire.Assets
     {
         protected TemplateParametersBase() { }
         protected TemplateParametersBase(IReadHandleBase<TTemplate> template) : base(template) { }
-        
+
     }
 
     public abstract class TemplateParametersBase<TTemplate, TInstance> : TemplateParametersBase<TTemplate, TInstance, object>
@@ -27,5 +27,13 @@ namespace LionFire.Assets
 
         protected TemplateParametersBase() { }
         protected TemplateParametersBase(IReadHandleBase<TTemplate> template) { RTemplate = template; }
+    }
+
+    public abstract class ParentedTemplateParametersBase<TTemplate> : TemplateParametersBase<TTemplate>, IParentedTemplateParameters<TTemplate>
+        where TTemplate : ITemplate
+    {
+        protected ParentedTemplateParametersBase() { }
+        protected ParentedTemplateParametersBase(IReadHandleBase<TTemplate> template, string parentKey) { RTemplate = template; ParentKey = parentKey; }
+
     }
 }

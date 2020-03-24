@@ -8,6 +8,7 @@ namespace LionFire.Validation
 
         public ValidationIssue() { }
         public ValidationIssue(string message) { this.Message = message; }
+        public ValidationIssue(string message, object data) { this.Message = message; this.Data = data; }
         public ValidationIssue(object data)
         {
             if (data is string s) { Message = s; }

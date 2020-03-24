@@ -23,6 +23,9 @@ namespace LionFire.Assets.Instantiating
     public class TemplateAssetBase<TTemplate, TInstance> : AssetBase<TTemplate>, ITemplate<TInstance>, ITemplateAsset<TTemplate, TInstance>
         where TTemplate : ITemplateAsset<TTemplate, TInstance>
     {
+        public TemplateAssetBase() { }
+        public TemplateAssetBase(AssetReference<TTemplate> reference) : base(reference) { }
+
     }
 #else // Another idea:
     public class TemplateAssetBase<TTemplate, TInstance> : TemplateAssetBase<TTemplate, TInstance, Instantiation<TTransferCapability, TransferCapability>>

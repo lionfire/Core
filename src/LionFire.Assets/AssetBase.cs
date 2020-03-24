@@ -6,7 +6,7 @@
     {
 
         public AssetBase() { }
-        public AssetBase(AssetReference<TValue> reference) : base(reference) {  }
+        public AssetBase(AssetReference<TValue> reference) : base(reference) { }
 
         #region Key
 

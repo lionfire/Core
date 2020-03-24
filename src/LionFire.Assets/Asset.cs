@@ -14,10 +14,14 @@ namespace LionFire.Assets
 
         #region Construction
 
-        public Asset(AssetType assetObject)
-        {
+        //public Asset(AssetType assetObject)
+        //{
+        //    this.assetObject = assetObject;
+        //}
+        public Asset(AssetType assetObject, AssetReference<AssetType> reference = null) : base(reference) { 
             this.assetObject = assetObject;
         }
+
 
         #endregion
 

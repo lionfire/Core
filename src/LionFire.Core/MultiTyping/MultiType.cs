@@ -246,6 +246,7 @@ namespace LionFire.MultiTyping
             return foundItem;
         }
 
+        // FUTURE? UnsetType(object obj) => UnsetType(obj.GetType()) but only if that value matches the obj.
         public bool UnsetType(Type type)
         {
             if (typeDict == null) return false;

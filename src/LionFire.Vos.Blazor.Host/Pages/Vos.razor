@@ -2,10 +2,8 @@
 
 @using LionFire.Vos.Blazor.Data
 @using LionFire.Referencing
-@inject WeatherForecastService ForecastService
 @inject IRootManager  rootManager
 
-<h1>Vos Tree</h1>
 
 @if (listings==null)
 {
@@ -16,18 +14,18 @@ else
     <table class="table">
         <thead>
             <tr>
+                <th></th>
                 <th>Name</th>
-                <th>Temp. (C)</th>
-                <th>Temp. (F)</th>
-                <th>Summary</th>
+                <th>Type</th>
             </tr>
         </thead>
         <tbody>
             @foreach (var listing in listings)
             {
                 <tr>
+                    <td></td>
                     <td>@listing.Name</td>
-                    @*<td>@forecast.Summary</td>*@
+                    <td>@listing.Type</td>
                 </tr>
             }
 
@@ -42,10 +40,11 @@ else
     {
         var root = rootManager.Get();
         var temp = root["/temp"];
+        //var temp = root; // TODO: Ability to get list of vob children from a Vob
 
         var hList = temp.Reference.GetListHandle();
-#error hList appears to not have Key and Reference be the same thing.  Reference is null.
         var result = await hList.Resolve();
-        listings = result.Value.Value.ToArray();
+        listings = result.Value.Value?.ToArray() ?? Array.Empty<Listing>();
+
     }
 }
