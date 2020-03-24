@@ -10,15 +10,17 @@ namespace LionFire.Vos.VosApp
 
     public static class VosDiskPaths
     {
-        public static string Base { get { return @"Base"; } }
+        private static AppInfo AppInfo => AppInfo.Instance;
+
+        public static string Base => @"Base";
         //public static string BasePacks { get { return @"Static\BasePacks"; } }
-        public static string Data { get { return "Data"; } }
+        public static string Data => "Data";
         //public static string Packs { get { return "Packs"; } }
         public static string Database { get { return "DBs"; } }
 
         #region AppDir
 
-        public static string AppRoot => ApplicationDirectories.AppProgramDataDir; // REVIEW
+        public static string AppRoot => AppInfo.Directories.AppDir;
 
         public static string AppBase => Path.Combine(AppRoot, VosDiskPaths.Base);
 
@@ -70,18 +72,18 @@ namespace LionFire.Vos.VosApp
         #region Shared
 
 #if !UNITY
-        public static string GlobalSharedDataRoot { get { return Path.Combine(ApplicationDirectories.CompanyProgramData, "Data"); } }
-        public static string GlobalSharedStoresRoot { get { return Path.Combine(ApplicationDirectories.CompanyProgramData, "Stores"); } }
+        public static string GlobalSharedDataRoot => Path.Combine(AppInfo.Directories.CompanyProgramData, "Data");
+        public static string GlobalSharedStoresRoot => Path.Combine(AppInfo.Directories.CompanyProgramData, "Stores");
 #endif
 
-        public static string UserSharedDataRoot { get { return Path.Combine(ApplicationDirectories.CompanyLocalAppDataPath, "Data"); } }
-        public static string UserSharedStoresRoot { get { return Path.Combine(ApplicationDirectories.CompanyLocalAppDataPath, "Stores"); } }
+        public static string UserSharedDataRoot => Path.Combine(AppInfo.Directories.CompanyLocalAppDataPath, "Data");
+        public static string UserSharedStoresRoot => Path.Combine(AppInfo.Directories.CompanyLocalAppDataPath, "Stores");
 
         #endregion
 
         #region Var (CommonAppData aka Var aka ProgramData)
 
-        public static string VarRoot { get { return ApplicationDirectories.AppProgramDataDir; } } // c:\ProgramData\{CompanyFolder}\{applicationFolder}
+        public static string VarRoot { get { return AppInfo.Directories.AppProgramDataDir; } } // c:\ProgramData\{CompanyFolder}\{applicationFolder}
 
         public static string VarBase
         {
@@ -112,21 +114,21 @@ namespace LionFire.Vos.VosApp
 
         public static string CompanyVarDir(string companyName = null)
         {
-            if (companyName == null) { companyName = ApplicationEnvironment.CompanyName; }
+            if (companyName == null) { companyName = ApplicationEnvironment.OrgName; }
             return Path.Combine(VarRoot, companyName);
         }
 
         public static string AppVarDir(string appName = null, string companyName = null)
         {
-            if (appName == null) { appName = ApplicationDirectories.AppDataDirName;  }
-            if (companyName == null) { companyName = ApplicationEnvironment.CompanyName; }
+            if (appName == null) { appName = AppInfo.EffectiveDataDirName;  }
+            if (companyName == null) { companyName = ApplicationEnvironment.OrgName; }
 
             return Path.Combine(CompanyVarDir(companyName), appName);
         }
         public static string AppVarDataDir(string appName = null, string companyName = null)
         {
-            if (appName == null) { appName = ApplicationDirectories.AppDataDirName; }
-            if (companyName == null) { companyName = ApplicationEnvironment.CompanyName; }
+            if (appName == null) { appName = AppInfo.EffectiveDataDirName; }
+            if (companyName == null) { companyName = ApplicationEnvironment.OrgName; }
             return Path.Combine(AppVarDir(appName, companyName), VosDiskPaths.Data);
         }
 
