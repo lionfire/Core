@@ -7,7 +7,7 @@ using LionFire.ObjectBus;
 namespace LionFire.Vos
 {
     [Serializable]
-    public class VosException : OBusException
+    public class VosException : Exception
     {
         public VosException() { }
         public VosException(string message) : base(message) { }

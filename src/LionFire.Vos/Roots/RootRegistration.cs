@@ -2,7 +2,11 @@
 
 namespace LionFire.Vos
 {
-    public class RootRegistration
+    public interface IRootRegistration
+    {
+        string Name { get; }
+    }
+    public class RootRegistration : IRootRegistration
     {
         public string Name { get; set; }
 

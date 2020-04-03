@@ -26,4 +26,4 @@ namespace LionFire.Vos.Blazor
                     webBuilder.UseStartup<Startup>();
                 });
     }
-}
+

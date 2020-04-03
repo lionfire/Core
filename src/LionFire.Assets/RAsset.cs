@@ -32,8 +32,16 @@ namespace LionFire.Assets
         
         public string AssetPath => Reference.Path;
         public new AssetReference<TValue> Reference { get => (AssetReference<TValue>)base.Reference; set => base.Reference = value; }
+
+        public static RAsset<TValue> Get(string assetPath)
+            => assetPath;
     }
 
+    public static class RAsset
+    {
+        public static RAsset<TValue> Get<TValue>(string assetPath)
+            where TValue : IAsset<TValue> => assetPath;
+    }
 
 
     public static class RAssetExtensions
@@ -42,5 +50,9 @@ namespace LionFire.Assets
         public static RAsset<TValue> ToRAsset<TValue>(this IReadHandle<TValue> readHandle)
             where TValue : IAsset<TValue>
             => new RAsset<TValue>(readHandle);
+
+        public static RAsset<TValue> ToRAsset<TValue>(this string assetPath)
+         where TValue : IAsset<TValue>
+         => assetPath;
     }
 }

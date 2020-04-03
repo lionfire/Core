@@ -20,19 +20,28 @@ namespace LionFire.Referencing
         public const string HostDelimiter = "//"; // Use @?
         public const char PortDelimiter = ':';
 
+        public static string GetParent(string path, bool nullIfBeyondRoot = false) => GetAncestor(path, 1, nullIfBeyondRoot);
         public static string GetAncestor(string path, int depth, bool nullIfBeyondRoot = false)
         {
+            bool endsWithSeparator = path.EndsWith(LionPath.PathDelimiter.ToString());
+            path = path.TrimEnd(PathDelimiter);
+
             bool isAbsolute = IsAbsolute(path);
-            while (depth > 0)
+            for (; depth > 0;depth--)
             {
-                var lastIndex = path.LastIndexOf(LionPath.SeparatorChar);
+                var lastIndex = path.LastIndexOf(SeparatorChar);
 
                 if (lastIndex < 0)
                 {
                     if (nullIfBeyondRoot) return null;
-                    else return isAbsolute ? LionPath.Separator : "";
+                    else return isAbsolute ? Separator : "";
                 }
                 path = path.Substring(0, lastIndex);
+            }
+
+            if (endsWithSeparator)
+            {
+                path += PathDelimiter;
             }
             return path;
         }

@@ -1,0 +1,74 @@
+﻿@page "/"
+@*@page "/vos/{path}"
+    @page "/vos/{path}/{path2}"
+    @page "/vos/{path}/{path2}/{path3}"*@
+
+@using LionFire.Referencing
+@using LionFire.Threading
+@inject IRootManager  rootManager
+
+
+@if (listings == null)
+{
+    <p><em>Loading...</em></p>
+}
+else
+{
+    <h3>af</h3>
+    <button @onclick="@(e=> GoToPath(".."))"><span class="oi oi-arrow-top"/></button>
+    <div>@Path</div>
+
+    <table class="table">
+        <thead>
+            <tr>
+                <th></th>
+                <th>Name</th>
+                <th>Type</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var listing in listings)
+            {
+                <tr>
+                    <td><span @onclick="@(e => GoToPath(listing.Name))" class="oi oi-chevron-right" aria-hidden="true"></span></td>
+                    <td>@listing.Name</td>
+                    <td>@listing.Type</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+
+@code {
+    public string Path { get; set; } = "/temp";
+
+    private Listing[] listings;
+
+    protected override Task OnInitializedAsync()
+    {
+        return Refresh();
+    }
+
+    public Task GoToPath(string child)
+    {
+        if (child == "..")
+        {
+            Path = LionPath.GetParent(Path);
+        }
+        else
+        {
+            Path = LionPath.Combine(Path, child);
+        }
+        return Refresh();
+    }
+    public async Task Refresh()
+    {
+        var root = rootManager.Get();
+
+        var hList = root[Path].Reference.GetListHandle();
+        var result = await hList.Resolve();
+        listings = result.Value.Value?.ToArray() ?? Array.Empty<Listing>();
+
+    }
+
+}

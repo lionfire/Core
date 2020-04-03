@@ -13,23 +13,36 @@ using LionFire.Vos.Blazor.Data;
 using LionFire.Services;
 using LionFire.Persistence.Filesystem;
 using LionFire.Hosting;
+//using RazorComponentsPreview;
 
 namespace LionFire.Vos.Blazor
 {
     public class Startup
     {
-        public Startup(IConfiguration configuration)
+        public IWebHostEnvironment Env { get; set; }
+
+        public Startup(IConfiguration configuration, IWebHostEnvironment env)
         {
             Configuration = configuration;
+            Env = env;
         }
-
+ 
         public IConfiguration Configuration { get; }
 
         // This method gets called by the runtime. Use this method to add services to the container.
         // For more information on how to configure your application, visit https://go.microsoft.com/fwlink/?LinkID=398940
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddRazorPages();
+            var mvcBuilder = services.AddRazorPages();
+#if DEBUG
+            
+            if (Env.IsDevelopment())
+            {
+                mvcBuilder.AddRazorRuntimeCompilation();
+            }
+            //services.AddRazorComponentsRuntimeCompilation();
+#endif
+
             services.AddServerSideBlazor();
             services.AddSingleton<WeatherForecastService>();
 
@@ -43,6 +56,7 @@ namespace LionFire.Vos.Blazor
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
+            //app.UseRazorComponentsRuntimeCompilation();
             app.ApplicationServices.InitializeDependencyContext();
 
             if (env.IsDevelopment())

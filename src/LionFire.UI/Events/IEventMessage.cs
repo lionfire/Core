@@ -19,17 +19,22 @@ namespace LionFire
         public static Task Publish(this IEventMessage msg)
         {
             //LionFireApp.Instance.EventAggregator.Publish(msg); // LEGACY
-            return DependencyContext.Current.GetService<IEventAggregator>().PublishOnBackgroundThreadAsync(msg);
+#if TOPORT
+    return DependencyContext.Current.GetService<IEventAggregator>().PublishOnBackgroundThreadAsync(msg);
+#endif
+            throw new NotImplementedException();
         }
 
         public static Task Publish(this Type messageType) // TOPROFILE
         {
             var tSing = typeof(ManualSingleton<>).MakeGenericType(messageType);
             throw new Exception("TOTEST: nameof(ManualSingleton<object>.GuaranteedInstance) is \"GuaranteedInstance\": " + nameof(ManualSingleton<object>.GuaranteedInstance));
+#if TOPORT
             var mi = tSing.GetProperty(nameof(ManualSingleton<object>.GuaranteedInstance), System.Reflection.BindingFlags.Static | System.Reflection.BindingFlags.Public);
             var obj = mi.GetValue(null);
             //LionFireApp.Instance.EventAggregator.Publish(obj); // LEGACY
             return DependencyContext.Current.GetService<IEventAggregator>().PublishOnBackgroundThreadAsync(obj);
+#endif
         }
     }
 }
