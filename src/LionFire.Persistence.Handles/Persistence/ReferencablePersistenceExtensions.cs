@@ -16,5 +16,11 @@ namespace LionFire.ExtensionMethods.Persistence
             handle.Value = referencable;
             return (IPersistenceResult)await handle.Put().ConfigureAwait(false);
         }
+        public static async Task<T> Saved<T>(this T referencable)
+           where T : IReferencable
+        {
+            await referencable.Save().ConfigureAwait(false);
+            return referencable;
+        }
     }
 }

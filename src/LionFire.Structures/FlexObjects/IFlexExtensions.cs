@@ -21,8 +21,14 @@ namespace LionFire.FlexObjects
 
         #region Meta
 
-        static ConditionalWeakTable<object, Flex> globalFlexMetaDictionary = new ConditionalWeakTable<object, Flex>();
-        public static IFlex Meta(this IFlex flex) => flex is IFlexWithMeta fwm ? fwm.Meta : globalFlexMetaDictionary.GetOrCreateValue(flex);
+        /// <summary>
+        /// Any IFlex can have meta accessible via this method.  If the IFlex object implements IFlexWithMeta, the metadata will be stored with the object; otherwise,
+        /// it will be stored in a private ConditionalWeakTable GlobalFlexMetaDictionary.
+        /// </summary>
+        /// <param name="flex"></param>
+        /// <returns></returns>
+        public static IFlex Meta(this IFlex flex) => flex is IFlexWithMeta fwm ? fwm.Meta : GlobalFlexMetaDictionary.GetOrCreateValue(flex);
+        static ConditionalWeakTable<object, Flex> GlobalFlexMetaDictionary = new ConditionalWeakTable<object, Flex>();
 
         #endregion
 
@@ -111,8 +117,10 @@ namespace LionFire.FlexObjects
 
         #region Add // TODO: change to Set
 
-        
+
         #endregion
+
+        public static bool IsEmpty(this IFlex flex) => flex.Value == null; // TODO: Detect if child collections are empty
 
         #region Get
 

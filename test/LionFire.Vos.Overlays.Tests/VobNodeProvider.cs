@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace LionFire.Vos.Overlays.Tests
+namespace LionFire.Vos.Packages.Tests
 {
     public class VobNodeProvider<T> : IVobNodeProvider
         where T : class

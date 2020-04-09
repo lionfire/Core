@@ -58,6 +58,7 @@ namespace LionFire.Vos.VosApp
         }
 
         public bool UseExeDirAsAppDirIfMissing { get; set; }
+        public bool AddDefaultStores { get; set; }
 
         private string userSaveLocation;
 

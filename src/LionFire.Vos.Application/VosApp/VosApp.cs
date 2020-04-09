@@ -8,11 +8,12 @@ using LionFire.Dependencies;
 using LionFire.Execution;
 using LionFire.Structures;
 using LionFire.Vos.Mounts;
-using LionFire.Vos.Overlays;
+using LionFire.Vos.Packages;
 
 namespace LionFire.Vos.VosApp
 {
-#if false
+#if trueX // Probably won't go with this approach -- rethinking things
+
     public class VosApp
     //: IInitializable3
     {
@@ -264,7 +265,6 @@ namespace LionFire.Vos.VosApp
 
     #endregion
 
-#if OLD
     #region (Static) Instance Accessor
 
         public static VosApp Instance => ManualSingleton<VosApp>.GuaranteedInstance;
@@ -352,6 +352,7 @@ namespace LionFire.Vos.VosApp
 
             return vosMounts;
         }
+#if OLD
 
         public virtual List<Mount> GetDefaultMounts()
         {

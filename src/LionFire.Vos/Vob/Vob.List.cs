@@ -1,5 +1,4 @@
-﻿#if TOPORT
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -10,6 +9,7 @@ namespace LionFire.Vos
 {
     public partial class Vob
     {
+#if TOPORT
         #region Children List Accessor
 
         ///// <summary>
@@ -209,6 +209,6 @@ namespace LionFire.Vos
 
         #endregion
 
+#endif
     }
 }
-#endif

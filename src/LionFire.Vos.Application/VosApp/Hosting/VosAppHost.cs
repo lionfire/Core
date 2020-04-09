@@ -5,7 +5,7 @@ using LionFire.Services;
 using LionFire.Vos.VosApp;
 using LionFire.Vos;
 using LionFire.Applications;
-using LionFire.Vos.Overlays;
+using LionFire.Vos.Packages;
 using System.Collections.Generic;
 
 namespace LionFire.Hosting // REVIEW - consider changing this to LionFire.Services to make it easier to remember how to create a new app
@@ -29,18 +29,15 @@ namespace LionFire.Hosting // REVIEW - consider changing this to LionFire.Servic
                      {
                          services
                              .VobEnvironment("app", "/app".ToVosReference())
-                             .VobEnvironment("overlays", "/overlays".ToVosReference())
+                             .VobEnvironment("packageProviders", "/packages".ToVosReference())
                              .VobEnvironment("internal", "/_".ToVosReference())
 
                              .VobEnvironment("stores", "/_/stores".ToVosReference())
                              //.VobEnvironment("stores", "/$internal/stores".ToVosReference()) // TODO
 
-                             .AddAppDirStore(appInfo: options.AppInfo ?? context.Properties["AppInfo"] as AppInfo, useExeDirAsAppDirIfMissing: options.UseExeDirAsAppDirIfMissing)
-                             .AddExeDirStore()
-                             .AddPlatformSpecificStores(context.Configuration)
 
-                             .AddOverlayStack("core") // TEMP - let apps choose their own
-                             .AddOverlayStack("data") // TEMP - let apps choose their own
+                             //.AddPackageProvider("core") // TEMP - let apps choose their own
+                             //.AddPackageProvider("data") // TEMP - let apps choose their own
 
                              //.AddVosAppStores(options?.VosStoresOptions) 
 
@@ -49,6 +46,14 @@ namespace LionFire.Hosting // REVIEW - consider changing this to LionFire.Servic
                                                      //.AddVosAppDefaultMounts(options) // TODO
                                                      //.VobAlias("/`", "$AppRoot") // FUTURE?  Once environment variables are ready
                              ;
+
+                         if (options.AddDefaultStores)
+                         {
+                             services
+                                 .AddAppDirStore(appInfo: options.AppInfo ?? context.Properties["AppInfo"] as AppInfo, useExeDirAsAppDirIfMissing: options.UseExeDirAsAppDirIfMissing)
+                                 .AddExeDirStore()
+                                 .AddPlatformSpecificStores(context.Configuration);
+                         }
                      })
                 ;
         }

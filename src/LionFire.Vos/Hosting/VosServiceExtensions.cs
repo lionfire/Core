@@ -21,7 +21,7 @@ namespace LionFire.Services
     {
         public Type GetCollectionType(VosReference reference)
         {
-            return reference.ToVob().AcquireOwn<CollectionType>()?.Type;
+            return reference.GetVob().AcquireOwn<CollectionType>()?.Type;
         }
     }
 
@@ -34,7 +34,7 @@ namespace LionFire.Services
                 {
                     services
                         .AddSingleton<IRootManager, RootManager>()
-                        .AddSingleton<VosInitializer>()
+                        //.AddSingleton<VosInitializer>() // Now created internally by RootManager
 
                         .TryAddEnumerableSingleton<ICollectionTypeProvider<VosReference>, CollectionTypeFromProperty>()
 

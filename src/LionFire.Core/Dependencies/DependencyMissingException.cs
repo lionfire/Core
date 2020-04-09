@@ -4,7 +4,7 @@ using System.Runtime.Serialization;
 namespace LionFire.Dependencies
 {
     [Serializable]
-    internal class DependencyMissingException : Exception
+    public class DependencyMissingException : Exception
     {
         public DependencyMissingException()
         {

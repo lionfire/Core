@@ -56,7 +56,7 @@ namespace Mount_
                     //Assert.Equal("UnitTestRoot", reference.Persister);
 
                     //var readHandle = reference.ToReadHandle<string>();
-                    var readHandle = reference.ToVob(services).GetReadHandle<string>();
+                    var readHandle = reference.GetVob(services).GetReadHandle<string>();
                     var persistenceResult = await readHandle.Resolve();
 
                     //Assert.True(persistenceResult.Flags.HasFlag(PersistenceResultFlags.Success)); // TODO - switch to Retrieve?

@@ -21,11 +21,11 @@ namespace LionFire.Vos.Handles
 
 
         public override IReadHandle<T> GetReadHandle<T>(VosReference reference, T preresolvedValue = default)
-            => reference.ToVob().GetReadHandle<T>(preresolvedValue);
+            => reference.GetVob().GetReadHandle<T>(preresolvedValue);
         public override IReadWriteHandle<T> GetReadWriteHandle<T>(VosReference reference, T preresolvedValue = default)
-                  => reference.ToVob().GetReadWriteHandle<T>(preresolvedValue);
+                  => reference.GetVob().GetReadWriteHandle<T>(preresolvedValue);
         public override IWriteHandle<T> GetWriteHandle<T>(VosReference reference, T prestagedValue = default)
-           => reference.ToVob().GetWriteHandle<T>(prestagedValue);
+           => reference.GetVob().GetWriteHandle<T>(prestagedValue);
         //IWriteHandle<T> GetWriteHandle<T>(VosReference reference) 
         //=> reference.ToVob().GetWriteHandle<T>();
 

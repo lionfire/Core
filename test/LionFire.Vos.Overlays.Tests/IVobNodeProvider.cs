@@ -1,4 +1,4 @@
-﻿namespace LionFire.Vos.Overlays.Tests
+﻿namespace LionFire.Vos.Packages.Tests
 {
     public interface IVobNodeProvider
     {

@@ -6,6 +6,8 @@ using LionFire.Identity;
 
 namespace LionFire.Identity
 {
+    // TODO: Wire up to a real Identity service
+
     /// <summary>
     /// The login session.  Acquires and holds credentials for as long as the client
     /// is logged into the network.

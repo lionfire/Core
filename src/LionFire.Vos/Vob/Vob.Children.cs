@@ -1,4 +1,13 @@
-﻿using System;
+﻿//#define FUTURE_WeakChildReferences 
+// FUTURE:  a way to query children as weak references.  For now, use strong references
+// How to do this?  Idea:
+//  - WeakReference by default
+//  - VobValueChanged fires if data changes, specifically IFlex.Value.  (VobNode, and Non-weak children will hold reference to Parent and block removal)
+//    - If IFlex.IsEmpty() becomes false, then promote from weak to strong child reference.
+//    - If IFlex.IsEmpty() becomes true, then demote from strong to weak child reference.
+using System;
+using System.Collections;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
@@ -7,10 +16,11 @@ using LionFire.Collections;
 using LionFire.Referencing;
 using LionFire.Structures;
 using LionFire.Vos.Environment;
+using LionFire.Vos.Internals;
 
 namespace LionFire.Vos
 {
-    public partial class Vob
+    public partial class Vob : IEnumerable<IVob>
     {
         #region Vob child fields
 
@@ -19,31 +29,51 @@ namespace LionFire.Vos
         {
             get
             {
-                bool gotNonAlive = false;
                 foreach (var kvp in children)
+                {
+                    yield return new KeyValuePair<string, IVob>(kvp.Key, kvp.Value);
+                }
+#if FUTURE_WeakChildReferences
+                bool gotNonAlive = false;
+                foreach (var kvp in weakChildren)
                 {
                     if (!kvp.Value.IsAlive || kvp.Value.Target == null) { gotNonAlive = true; continue; }
                     yield return new KeyValuePair<string, IVob>(kvp.Key, kvp.Value.Target);
                 }
-                if (gotNonAlive) { CleanDeadChildReferences(); }
+                if (gotNonAlive) { CleanChildrenDeadWeakReferences(); }
+#endif
             }
         }
-        [Ignore]
-        protected MultiBindableDictionary<string, WeakReferenceX<IVob>> children = new MultiBindableDictionary<string, WeakReferenceX<IVob>>();
-        public readonly object childrenLock = new object();
+#if FUTURE_WeakChildReferences
+        //[Ignore]
+        //protected MultiBindableDictionary<string, WeakReferenceX<IVob>> weakChildren = new MultiBindableDictionary<string, WeakReferenceX<IVob>>();
+        //public readonly object childrenLock = new object();
+#endif
+        protected ConcurrentDictionary<string, IVob> children = new ConcurrentDictionary<string, IVob>();
 
-        #region (Private) Cleanup
+        #region (Internal) Cleanup
 
-        private void CleanDeadChildReferences()
+#if FUTURE_WeakChildReferences
+        private void CleanChildrenDeadWeakReferences()
         {
-            var ce = (IEnumerable<KeyValuePair<string, WeakReferenceX<Vob>>>)children;
+            var ce = (IEnumerable<KeyValuePair<string, WeakReferenceX<Vob>>>)weakChildren;
 
             foreach (var kvp in ce.ToArray())
             {
                 if (!kvp.Value.IsAlive || kvp.Value.Target == null)
                 {
-                    children.Remove(kvp.Key);
+                    weakChildren.Remove(kvp.Key);
                 }
+            }
+        }
+#endif
+
+        public void CleanEmptyChildren(bool recurse = false)
+        {
+            foreach (var child in Children)
+            {
+                if (child.Value.IsEmpty()) { children.TryRemove(child.Key, out _); }
+                else if (recurse) { ((IVobInternals)child.Value).CleanEmptyChildren(true); }
             }
         }
 
@@ -51,10 +81,16 @@ namespace LionFire.Vos
 
         #endregion
 
-        // TODO: enable non-nullable for GetChild and CreateChild
+        #region IEnumerable
+
+        public IEnumerator<IVob> GetEnumerator() => children.Values.GetEnumerator();
+        IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
+
+        #endregion
 
         #region Get / Query Logic
 
+        // TODO: enable non-nullable for GetChild and CreateChild
         private IVob GetChild(IEnumerable<string> subpathChunks) // TODO: Use span?
         {
             if (subpathChunks == null || !subpathChunks.Any())
@@ -145,9 +181,12 @@ namespace LionFire.Vos
             }
             else
             {
+
+                child = children.GetOrAdd(chunk, key => CreateChild(key));
+#if FUTURE_WeakChildReferences
                 lock (childrenLock)
                 {
-                    var weakRef = children.TryGetValue(chunk);
+                    var weakRef = weakChildren.TryGetValue(chunk);
                     if (weakRef != null)
                     {
                         var weakRefTarget = weakRef.Target;
@@ -166,9 +205,10 @@ namespace LionFire.Vos
                     else
                     {
                         child = CreateChild(chunk);
-                        children.Add(chunk, new WeakReferenceX<IVob>(child));
+                        weakChildren.Add(chunk, new WeakReferenceX<IVob>(child));
                     }
                 }
+#endif
             }
 
             return child.GetChild(subpathChunks);
@@ -185,7 +225,7 @@ namespace LionFire.Vos
             }
             else if (resolvedChunks.ReferenceChunk != null)
             {
-                if (resolvedChunks.ReferenceChunk.IsAbsolute && !this.IsRoot()) throw new ArgumentException($"Cannot traverse absolute {typeof(VosReference).Name} from a non-root Vob.");
+                if (resolvedChunks.ReferenceChunk.IsAbsolute && !(this).IsRoot()) throw new ArgumentException($"Cannot traverse absolute {typeof(VosReference).Name} from a non-root Vob.");
                 var referencePathChunks = resolvedChunks.ReferenceChunk.PathChunks;
                 if (referencePathChunks.Length == 0) { return (true, null); }
                 else { return (false, GetChild(referencePathChunks)); }
@@ -202,7 +242,7 @@ namespace LionFire.Vos
         /// </summary>
         /// <param name="subpathChunks"></param>
         /// <param name="index"></param>
-        /// <returns></returns>
+        /// <returns>Null if any items in subpathChunks are null</returns>
         public IVob GetChild(string[] subpathChunks, int index = 0)
         {
             // SIMILAR logic: GetChild and QueryChild
@@ -213,6 +253,8 @@ namespace LionFire.Vos
             if (index > subpathChunks.Length) throw new ArgumentException("index must be within range of subpathChunks, or equal to subpathChunks.Length");
 
             string chunk = subpathChunks[index];
+
+            if (chunk == null) return null;
 
             var x = TryProcessEnvironmentChunk(chunk);
             if (x.Vob != null) return x.Vob.GetChild(subpathChunks, index + 1);
@@ -245,9 +287,12 @@ namespace LionFire.Vos
             }
             else
             {
+                intermediateChild = children.GetOrAdd(chunk, key => CreateChild(key));
+#if FUTURE_WeakChildReferences
+ 
                 lock (childrenLock)
                 {
-                    var weakRef = children.TryGetValue(childName);
+                    var weakRef = weakChildren.TryGetValue(childName);
                     if (weakRef != null)
                     {
                         var weakRefTarget = weakRef.Target;
@@ -266,9 +311,10 @@ namespace LionFire.Vos
                     else
                     {
                         intermediateChild = CreateChild(childName);
-                        children.Add(childName, new WeakReferenceX<IVob>(intermediateChild));
+                        weakChildren.Add(childName, new WeakReferenceX<IVob>(intermediateChild));
                     }
                 }
+#endif
             }
 
             if (index == subpathChunks.Length - 1)
@@ -328,7 +374,9 @@ namespace LionFire.Vos
             }
             else
             {
-                var weakRef = children.TryGetValue(childName);
+                if (!children.TryGetValue(chunk, out intermediateChild)) { return null; }
+#if FUTURE_WeakChildReferences
+                var weakRef = weakChildren.TryGetValue(childName);
                 if (weakRef != null)
                 {
                     var weakRefTarget = weakRef.Target;
@@ -346,16 +394,10 @@ namespace LionFire.Vos
                 {
                     return null;
                 }
+#endif
             }
 
-            if (index == subpathChunks.Length - 1)
-            {
-                return intermediateChild;
-            }
-            else
-            {
-                return intermediateChild.QueryChild(subpathChunks, index + 1);
-            }
+            return index == subpathChunks.Length - 1 ? intermediateChild : intermediateChild.QueryChild(subpathChunks, index + 1);
         }
 
 
@@ -415,6 +457,8 @@ namespace LionFire.Vos
             }
             return sb;
         }
+
+
     }
 }
 

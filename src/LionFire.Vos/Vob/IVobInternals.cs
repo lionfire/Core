@@ -6,8 +6,8 @@ namespace LionFire.Vos.Internals
 {
     public interface IVobInternals : IMultiTypable
     {
+        IEnumerable<KeyValuePair<Type, IVobNode>> VobNodesByType { get; }
 
-        //IEnumerable<IVobNode> VobNodes { get; } // TODO - for introspection
 
         VobNode<T> TryAcquireNextVobNode<T>(int minDepth = 0, int maxDepth = -1) where T : class;
 
@@ -29,6 +29,6 @@ namespace LionFire.Vos.Internals
         VobNode<TInterface> AcquireOrAddOwnVobNode<TInterface, TImplementation>(Func<IVobNode, TInterface> valueFactory = null)
             where TInterface : class
             where TImplementation : TInterface;
-        
+        void CleanEmptyChildren(bool recurse = false);
     }
 }

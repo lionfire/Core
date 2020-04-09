@@ -12,7 +12,7 @@ using LionFire.Persistence;
 using System.Linq;
 using LionFire.MultiTyping;
 using LionFire.Vos;
-using LionFire.Vos.Overlays;
+using LionFire.Vos.Packages;
 using System.Threading.Tasks;
 using LionFire.Vos.Services;
 
@@ -61,7 +61,7 @@ namespace Stores_
             Assert.False(await dataReference2.GetReadHandle<string>().Exists());
 
             // How to get a Vob?  VosReference.ToVob() might be nice.  How about VosReference.ToVob().AsType<PackageManager>()
-            var storesManager = "/".ToVob().GetService<ServiceDirectory>().FindService<OverlayStack>();
+            var storesManager = "/".GetVob().GetService<ServiceDirectory>().GetRequiredService<PackageActivator>();
             //var storesManager = storesManagerPath.ToVob().GetMultiTyped().AsType<PackageManager>();
             Assert.NotNull(storesManager);
 
@@ -117,7 +117,7 @@ namespace Stores_
             Assert.True((bool)storesManager.Disable("DataDir"));
             Assert.Empty((System.Collections.IEnumerable)storesManager.EnabledPackages);
 
-            var vobMounts = new VosReference("/stores/data").ToVob().AcquireOwn<VobMounts>();
+            var vobMounts = new VosReference("/stores/data").GetVob().AcquireOwn<VobMounts>();
             Assert.False(vobMounts.HasLocalReadMounts);
             Assert.False(vobMounts.HasLocalWriteMounts);
 
@@ -171,7 +171,7 @@ namespace Stores_
                         services
                         .AddFilesystem()
 
-                        .VosOverlayStack("/stores")
+                        .VosPackageProvider("/stores")
 
                         .VosMount("/stores/available/ExeDir", Path.GetDirectoryName(this.GetType().Assembly.Location).ToFileReference(), new MountOptions { IsManuallyEnabled = true })
                         .InitializeVob("/stores/available/ExeDir", v => v.AddOwn(v => new MountOptions
@@ -217,7 +217,7 @@ namespace Stores_
 
 #if ENV
                         .VosEnvironment("stores", "/.stores-fromEnv")
-                        .AddVosStores("$stores") // TODO - once environment is available
+                        .AddVosStores("$stores") 
 #endif
 
 #if VosApp

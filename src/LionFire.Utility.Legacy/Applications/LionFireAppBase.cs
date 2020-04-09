@@ -88,17 +88,15 @@ namespace LionFire.Applications
         /// </summary>
         public ILionFireShell Shell
         {
-            get
-            {
-                return shell;
-            }
+            get => shell;
             set
             {
                 if (shell == value) return;
                 if (shell != null) throw new AlreadySetException();
                 shell = value;
             }
-        } private ILionFireShell shell;
+        }
+        private ILionFireShell shell;
 
         #endregion
 

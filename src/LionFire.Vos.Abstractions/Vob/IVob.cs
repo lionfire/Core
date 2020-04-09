@@ -13,6 +13,7 @@ namespace LionFire.Vos
     public interface IVob :
         //IReadOnlyMultiTyped, 
         IReferencable,
+        IEnumerable<IVob>, // Does not trigger a Retrieve (IO) operation -- it is just the child Vobs currently tracked
         IFlex
     {
         new IVosReference Reference { get; }
@@ -28,12 +29,17 @@ namespace LionFire.Vos
 
         #endregion
 
+        #region Nodes
+
         T AcquireNext<T>(int minDepth = 0, int maxDepth = -1) where T : class;
         T AcquireOwn<T>() where T : class; 
         IEnumerable<T> Acquire<T>(int minDepth = 0, int maxDepth = -1) where T : class;
 
+        #endregion
+
         #region Children
 
+        IEnumerable<KeyValuePair<string, IVob>> Children { get; }
         IVob QueryChild(string subpath); 
         IVob QueryChild(string[] subpathChunks, int index = 0); // Replace with Span?
         IVob QueryChild(IVosReference reference); 
@@ -42,17 +48,26 @@ namespace LionFire.Vos
         IVob GetChild(IEnumerator<string> subpathChunks);
         IVob GetChild(string[] subpathChunks, int index = 0);
 
-        #endregion
 
         IVob this[string[] subpathChunks, int index = 0] { get; }
         IVob this[string subpath] { get; }
         IVob this[IVosReference reference] { get; }
 
+        #endregion
+
+        #region Handles
+
         IReadHandle<T> GetReadHandle<T>(T preresolvedValue = default);
         IReadWriteHandle<T> GetReadWriteHandle<T>(T preresolvedValue = default);
         IWriteHandle<T> GetWriteHandle<T>(T prestagedValue = default);
 
+        #endregion
+
+        #region Layers
+
         Task<IEnumerable<T>> AllLayersOfType<T>();
+        
+        #endregion
     }
 
 }

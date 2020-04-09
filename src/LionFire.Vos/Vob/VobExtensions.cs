@@ -1,4 +1,6 @@
-﻿using LionFire.Referencing;
+﻿using LionFire.FlexObjects;
+using LionFire.Referencing;
+using LionFire.Vos.Internals;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -7,6 +9,22 @@ namespace LionFire.Vos
 {
     public static class VobExtensions
     {
+        /// <summary>
+        /// Returns true if no information would be lost if the IVob was forgotten about.
+        ///  - No Value
+        ///  - Nothing in MultiType
+        ///  - No VobNodes
+        /// </summary>
+        /// <param name="vob"></param>
+        /// <returns></returns>
+        public static bool IsEmpty(this IVob vob)
+        {
+            if (((IFlex)vob).IsEmpty()) return false;
+            if (!vob.GetMultiTyped().IsEmpty) return false;
+            if (((IVobInternals)vob).VobNodesByType.Any()) return false;
+            return true;
+        }
+
         public static bool IsAncestorOf(this Vob potentialAncestor, Vob potentialChild)
         {
             for (IVob vobParent = potentialChild.Parent; vobParent != null; vobParent = vobParent.Parent)

@@ -11,6 +11,7 @@ namespace LionFire.Referencing
         public abstract ReferenceOverlayMode OverlayMode { get; }
 
         public abstract TReference Reference { get; }
+        IReference IReferencable.Reference => Reference;
 
         public abstract int Count { get; }
 

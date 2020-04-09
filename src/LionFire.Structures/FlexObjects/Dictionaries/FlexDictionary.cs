@@ -5,6 +5,10 @@ using System.Collections.Concurrent;
 namespace LionFire.FlexObjects
 {
 
+    /// <summary>
+    /// A dictionary of IFlex objects
+    /// </summary>
+    /// <typeparam name="TKey"></typeparam>
     public class FlexDictionary<TKey> : IHasFlexDictionary<TKey>
     {
         public ConcurrentDictionary<TKey, IFlex> Values { get; } = new ConcurrentDictionary<TKey, IFlex>();

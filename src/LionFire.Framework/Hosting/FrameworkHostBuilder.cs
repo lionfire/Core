@@ -13,6 +13,7 @@ using LionFire.Serialization;
 using LionFire.Dependencies;
 using LionFire.Vos;
 using LionFire.DependencyInjection.ExtensionMethods;
+using LionFire.FlexObjects;
 
 namespace LionFire.Hosting
 {
@@ -94,27 +95,35 @@ namespace LionFire.Hosting
                 ;
         }
 
-        public static IHostBuilder CreateDefault(string[] args = null, bool defaultBuilder = true, Action<IServiceCollection> serializers = null)
+        public static IHostBuilder CreateDefault(string[] args = null, bool defaultBuilder = true, IFlex options = null
+            //, Action<IServiceCollection> serializers = null
+            )
         {
-            IHostBuilder hostBuilder = CreateDefaultVosHost(args, defaultBuilder, serializers);
+            IHostBuilder hostBuilder = CreateDefaultVosHost(args, defaultBuilder, options);
             return hostBuilder;
         }
 
-        public static IHostBuilder CreateDefaultPersisterHost(string[] args = null, bool defaultBuilder = true, Action<IServiceCollection> serializers = null)
+        public class FrameworkHostBuilderOptions
+        {
+            public Action<IServiceCollection> Serializers { get; set; }
+        }
+        public static IHostBuilder CreateDefaultPersisterHost(string[] args = null, bool defaultBuilder = true, IFlex options = null)
         {
             return Create(args, defaultBuilder)
                 .ConfigureServices((context, services) =>
                 {
-                    (serializers ?? DefaultAddDefaultSerializers)(services);
+                    (options.Get<FrameworkHostBuilderOptions>()?.Serializers ?? DefaultAddDefaultSerializers)(services);
                     services
                         .AddFilesystem()
                     ;
                 });
         }
 
-        public static IHostBuilder CreateDefaultVosHost(string[] args = null, bool defaultBuilder = true, Action<IServiceCollection> serializers = null)
+        public static IHostBuilder CreateDefaultVosHost(string[] args = null, bool defaultBuilder = true, IFlex options = null
+            ,Action<IServiceCollection> serializers = null
+            )
         {
-            return FrameworkHostBuilder.CreateDefaultPersisterHost(args, defaultBuilder: defaultBuilder, serializers: serializers)
+            return FrameworkHostBuilder.CreateDefaultPersisterHost(args, defaultBuilder: defaultBuilder, options)
                 .ConfigureServices((_, services) =>
                 {
                     services

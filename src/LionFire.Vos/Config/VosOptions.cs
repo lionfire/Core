@@ -3,16 +3,11 @@ using Microsoft.Extensions.Options;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using LionFire.Vos.Mounts;
 using System.Text;
 using LionFire.ExtensionMethods;
 
 namespace LionFire.Vos
 {
-    public class RootVobOptions
-    {
-        public List<TMount> Mounts { get; set; } = new List<TMount>();
-    }
 
     public class VosOptions
     {
@@ -41,6 +36,10 @@ namespace LionFire.Vos
 
         public IEnumerable<string> RootNames { get; set; } = new List<string>() { "" };
 
+        ///// <summary>
+        ///// REVIEW: This used to be the default, but now I'd like to defer it until a startup is complete and it can be invoked explicitly via .
+        ///// </summary>
+        //public bool AutoInitRootVobs { get; set; }
     }
 
     //public static class VosOptionsExtensions

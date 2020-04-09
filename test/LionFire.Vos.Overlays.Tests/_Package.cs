@@ -1,4 +1,5 @@
 using LionFire.Persistence.Filesystem.Tests;
+using LionFire.FlexObjects;
 using LionFire.Persistence.Filesystem;
 using LionFire.Services;
 using System;
@@ -12,7 +13,8 @@ using LionFire.Persistence;
 using System.Linq;
 using LionFire.MultiTyping;
 using LionFire.Vos;
-using LionFire.Vos.Overlays;
+using LionFire.Vos.Packages;
+using LionFire.Vos.Packages;
 
 namespace Packages_
 {
@@ -30,7 +32,7 @@ namespace Packages_
                         services
                         .AddFilesystem()
 
-                        .VosOverlayStack("/`/TestPlugins")
+                        .VosPackageProvider("/`/TestPlugins")
                         .VosMount("/`/TestPlugins/available", pluginsDir.ToFileReference(), new MountOptions
                         {
                             Name = "UnitTestPluginsDir",
@@ -88,17 +90,17 @@ namespace Packages_
                         Assert.False(await dataReference2.GetReadHandle<string>().Exists());
 
                         // How to get a Vob?  VosReference.ToVob() might be nice.  How about VosReference.ToVob().AsType<PackageManager>()
-                        var overlayStack = "/`/TestPlugins".ToVob().GetMultiTyped().AsType<OverlayStack>();
+                        var packageProvider = "/`/TestPlugins".GetVob().Get<PackageProvider>();
 
                         //Assert.True(pluginManager.AvailablePackages.Contains("plugin1")); // TODO
                         //Assert.True(pluginManager.AvailablePackages.Contains("plugin2"));
-                        Assert.False(overlayStack.EnabledPackages.Any());
+                        Assert.False(packageProvider.EnabledPackages.Any());
 
                         #region Plugin1
                         {
-                            overlayStack.Enable("plugin1");
-                            Assert.Contains(overlayStack.EnabledPackages, s => s == "plugin1");
-                            Assert.Single(overlayStack.EnabledPackages);
+                            packageProvider.Enable("plugin1");
+                            Assert.Contains(packageProvider.EnabledPackages, s => s == "plugin1");
+                            Assert.Single(packageProvider.EnabledPackages);
 
                             var readHandle = dataReference1.GetReadHandle<string>();
                             var persistenceResult = await readHandle.Resolve();
@@ -117,10 +119,10 @@ namespace Packages_
 
                         #region Plugin2
                         {
-                            overlayStack.Enable("plugin2");
-                            Assert.Contains(overlayStack.EnabledPackages, s => s == "plugin1");
-                            Assert.Contains(overlayStack.EnabledPackages, s => s == "plugin2");
-                            Assert.Equal(2, overlayStack.EnabledPackages.Count());
+                            packageProvider.Enable("plugin2");
+                            Assert.Contains(packageProvider.EnabledPackages, s => s == "plugin1");
+                            Assert.Contains(packageProvider.EnabledPackages, s => s == "plugin2");
+                            Assert.Equal(2, packageProvider.EnabledPackages.Count());
 
                             var readHandle = dataReference2.GetReadHandle<string>();
                             var persistenceResult = await readHandle.Resolve();
@@ -137,11 +139,11 @@ namespace Packages_
                         }
                         #endregion
 
-                        Assert.True(overlayStack.Disable("plugin1"));
-                        Assert.True(overlayStack.Disable("plugin2"));
-                        Assert.Empty(overlayStack.EnabledPackages);
+                        Assert.True(packageProvider.Disable("plugin1"));
+                        Assert.True(packageProvider.Disable("plugin2"));
+                        Assert.Empty(packageProvider.EnabledPackages);
 
-                        var vobMounts = new VosReference("/`/TestPlugins/data").ToVob().AcquireOwn<VobMounts>();
+                        var vobMounts = new VosReference("/`/TestPlugins/data").GetVob().AcquireOwn<VobMounts>();
                         Assert.False(vobMounts.HasLocalReadMounts);
                         Assert.False(vobMounts.HasLocalWriteMounts);
 

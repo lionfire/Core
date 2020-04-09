@@ -76,7 +76,7 @@ namespace CollectionsByTypeManager_
                     Assert.Equal(typeof(int), assets["num"].GetVobCollectionType());
                     Assert.Equal(typeof(double), assets["num2"].GetVobCollectionType());
 
-                    Assert.Null("/testvob/not/in/assets/TestClass1".ToVob().GetVobCollectionType());
+                    Assert.Null("/testvob/not/in/assets/TestClass1".GetVob().GetVobCollectionType());
                 });
         }
 

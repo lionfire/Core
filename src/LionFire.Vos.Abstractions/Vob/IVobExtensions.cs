@@ -19,7 +19,7 @@ namespace LionFire.Vos
         public static IVob GetChild(this IVob vob, IEnumerable<string> subpathChunks) => vob.GetChild(subpathChunks.GetEnumerator());
 
         public static IVob GetRelativeOrAbsolutePath(this IVob vob, string path)
-            => path.StartsWith(LionPath.Separator) ? vob.Root[path] : vob[path];
+            => path == null ? null : (path.StartsWith(LionPath.Separator) ? vob.Root[path] : vob[path]);
 
         public static IVob GetOrQueryChild(this IVob vob, string subPath, bool createIfMissing = false)
             => createIfMissing ? vob[subPath] : vob.QueryChild(LionPath.ToPathArray(subPath));

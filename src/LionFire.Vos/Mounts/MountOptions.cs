@@ -62,6 +62,8 @@ namespace LionFire.Vos.Mounts
 
         #region MultiTyping
 
+            // TODO: Replace with Flex?
+
         public IMultiTyped MultiTyped
         {
             get
@@ -123,6 +125,27 @@ namespace LionFire.Vos.Mounts
         public int? ReadPriority { get; set; }
         public int? WritePriority { get; set; }
 
+        /// <summary>
+        /// True for locations such as:
+        ///  - c:\Users\*\* (Except Public/All Users type users)
+        ///  - /home/*
+        /// False:
+        ///  - other locations
+        /// </summary>
+        public bool? IsOwnedByOperatingSystemUser { get; set; } // True for folders under 
+
+        /// <summary>
+        /// True for locations such as:
+        ///  - /var/*
+        ///  - c:\ProgramData\*
+        ///  - c:\Users\*\AppData\*
+        ///  
+        /// False for locations such as:
+        ///  - c:\Program Files\*
+        ///  - /usr/lib/*
+        ///  - /home/{user}/.packages/*
+        /// </summary>
+        public bool? IsVariableDataLocation { get; set; } 
 
         //#region MountAtStartup
 

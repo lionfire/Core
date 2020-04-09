@@ -13,13 +13,84 @@ namespace LionFire
 {
     public partial class LionFireEnvironment
     {
+        public static class Platform
+        {
+            // TODO.  Use Platform enum 
+            public static bool IsWindows => true;
+            public static bool IsLinux => true;
+            public static bool IsMac => true;
+            public static bool IsAndroid => true;
+            public static bool IsUnix => IsLinux || IsMac || IsAndroid;
+        }
+
         // .NET Framework Special Folders:
         //  - http://stackoverflow.com/questions/895723/environment-getfolderpath-commonapplicationdata-is-still-returning-c-docum
 
         public static bool AutoCreateDirectories = true;
 
+
         public static class Directories
         {
+            //public static Func<string, bool?> IsTempDirectory = path => // TODO?
+            // TOSECURITY - Hardening - if IsHardened mode, default these Is__Directory to null to force explicit initialization.
+            public static Func<string, bool?> IsVariableDirectory = path =>
+            {
+                // REVIEW: Move to platform-specific DLLs?
+                if (LionFireEnvironment.Platform.IsWindows)
+                {
+                    if (path.Length > 1 && path[1] == ':')
+                    {
+                        path = path.Substring(2);
+                    }
+
+                    if (path.PathEqualsOrIsDescendant(@"\Program Files") || path.PathEqualsOrIsDescendant(@"\Program Files (x86)")) { return false; }
+                    if (path.PathEqualsOrIsDescendant(@"\ProgramData") { return true; }
+
+                    // Note: executables may be installed to \Users\user\LocalAppData -- these are considered Variable, though an application may wish to treat it as not.
+
+                    return false; 
+                }
+                if (LionFireEnvironment.Platform.IsUnix)
+                {
+                    if (path.PathEqualsOrIsDescendant("/var")) { return true; }
+                    if (path.PathEqualsOrIsDescendant("/tmp")) { return true; }
+                    if (path.PathEqualsOrIsDescendant("/usr")) { return false; }
+
+                }
+                return null;
+            };
+            public static Func<string, bool?> IsUserDirectory = path =>
+            {
+                if (LionFireEnvironment.Platform.IsWindows)
+                {
+                    if (path.Length > 1 && path[1] == ':')
+                    {
+                        path = path.Substring(2);
+                    }
+                    if (path.StartsWith(@"\Users\"))
+                    {
+                        var split = path.Split('\\');
+                        if (split.Length == 1) return false;
+                        if (split[1] == "Public" || split[1] == "All Users" || split[1] == "inetpub") { return false; }
+
+                        return true;
+                    }
+                }
+                if (LionFireEnvironment.Platform.IsUnix)
+                {
+                    if (path.StartsWith("/home"))
+                    {
+                        var split = path.Split('/');
+                        return split.Length > 1;
+                    }
+                    else if (path.StartsWith("/var/home"))
+                    {
+                        var split = path.Split('/');
+                        return split.Length > 2;
+                    }
+                }
+                return null;
+            };
 
             /// <summary>
             /// TOPORT  Either folder the exe is in, or a parent, if exe is for example nested in a bin folder.

@@ -21,52 +21,12 @@ using LionFire.Structures;
 using LionFire.Types;
 using LionFire.Vos;
 using LionFire.Vos.Internals;
-using LionFire.Vos.Mounts;
 using LionFire.Vos.Services;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 
 namespace LionFire.Vos
 {
-
-    public class LionFireVob : Vob
-    {
-        public LionFireVob(Vob parent, string name) : base(parent, name)
-        {
-            Path = LionPath.GetTrimmedAbsolutePath(LionPath.Combine((parent == null ? "" : parent.Path), name));
-
-        }
-
-        public VobMounts Mounts { get; set; }
-
-        #region Caches
-
-        public override string Path { get; }
-
-        #region Root
-
-        public override RootVob Root
-        {
-            get
-            {
-                if (root == null)
-                {
-                    IVob vob = this;
-                    while (vob.Parent != null && vob.Parent.Path != VosConstants.VobRootsRoot) { vob = vob.Parent; }
-                    root = vob as RootVob;
-                }
-                return root;
-            }
-        }
-        private RootVob root;
-
-        #endregion
-
-        public VobMountCache MountCache { get; } = new VobMountCache();
-
-        #endregion
-
-    }
 
     // ----- Mount notes -----
     //        //public INotifyingReadOnlyCollection<Mount> Mounts { get { return mounts; } }
@@ -394,6 +354,7 @@ namespace LionFire.Vos
 
         #region Vob Nodes: Own data
 
+        IEnumerable<KeyValuePair<Type, IVobNode>> IVobInternals.VobNodesByType => vobNodesByType;
         protected ConcurrentDictionary<Type, IVobNode> vobNodesByType;
 
         VobNode<T> IVobInternals.TryAcquireOwnVobNode<T>()

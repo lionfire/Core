@@ -3,13 +3,14 @@ using LionFire.Vos.VosApp;
 using Microsoft.Extensions.DependencyInjection;
 using LionFire.Persistence.Filesystem;
 using LionFire.Vos;
-using LionFire.Vos.Overlays;
+using LionFire.Vos.Packages;
 using System.IO;
 using System.Reflection;
 using LionFire.Environment.AutoDetect;
 using LionFire.Applications;
 using Microsoft.Extensions.Configuration;
 using System;
+using LionFire.FlexObjects;
 
 namespace LionFire.Services
 {
@@ -19,6 +20,8 @@ namespace LionFire.Services
         public const string OrgName = nameof(AppInfo.OrgName);
         public const string AppName = nameof(AppInfo.AppName);
         public const string DataDirName = nameof(AppInfo.DataDirName);
+
+        #region MOVE to LionFireEnvironment?
 
         // REVIEW these -- better way to get them?
         public static string ProgramDataDir => System.Environment.GetEnvironmentVariable("ProgramData"); // Or ALLUSERSPROFILE?
@@ -30,6 +33,8 @@ namespace LionFire.Services
 
         public static string RoamingAppDataDir => Path.Combine(System.Environment.GetEnvironmentVariable("USERPROFILE"), "AppData\\Roaming");
         //public static string RoamingAppDataDir => System.Environment.GetEnvironmentVariable("APPDATA");
+
+        #endregion
 
         // DELETE
         ///// <summary>
@@ -81,7 +86,7 @@ namespace LionFire.Services
         //    return services.VosMount("$stores/" + storeName, customApplicationDir.ToFileReference(), new MountOptions { });
         //}
 
-        public static MountOptions DefaultOptions(string storeName)
+        public static MountOptions DefaultOptions(string storeName, string path)
         {
             var result = new MountOptions();
 
@@ -91,16 +96,49 @@ namespace LionFire.Services
                 _ => true,
             };
 
+            if (path != null)
+            {
+                if (LionFireEnvironment.Directories.IsVariableDirectory != null)
+                {
+                    var isVar = LionFireEnvironment.Directories.IsVariableDirectory(path);
+                    if (isVar.HasValue) result.IsVariableDataLocation = isVar.Value;
+                }
+
+                if (LionFireEnvironment.Directories.IsUserDirectory != null)
+                {
+                    var isUser = LionFireEnvironment.Directories.IsUserDirectory(path);
+                    if (isUser.HasValue) result.IsOwnedByOperatingSystemUser = isUser.Value;
+                }
+            }
+
             return result;
         }
 
         public static IServiceCollection AddPlatformSpecificStores(this IServiceCollection services, IConfiguration configuration)
         {
             services.AddWindowsStores(configuration);
+#if TODO
+            services.AddLinuxStores(configuration);
+            services.AddMacStores(configuration);
+#endif
             return services;
         }
 
         #region Linux
+
+        public static IServiceCollection AddLinuxStores(this IServiceCollection services, IConfiguration configuration)
+        {
+            return services;
+        }
+
+        #endregion
+
+        #region Mac
+
+        public static IServiceCollection AddMacStores(this IServiceCollection services, IConfiguration configuration)
+        {
+            return services;
+        }
 
         #endregion
 
@@ -133,24 +171,49 @@ namespace LionFire.Services
         #region RoamingAppData
 
         public static IServiceCollection AddRoamingAppDataDataDirStore(this IServiceCollection services, IConfiguration configuration, MountOptions options = null)
-           => configuration[DataDirName] == null
+        {
+            var path = Path.Combine(RoamingAppDataDir, configuration[OrgName] ?? throw new ArgumentNullException(nameof(OrgName)), configuration[DataDirName] ?? throw new ArgumentNullException(DataDirName));
+
+            options ??= DefaultOptions(StoreNames.RoamingAppDataDataDir, path);
+            options.IsOwnedByOperatingSystemUser = false;
+            options.IsVariableDataLocation = true;
+
+            return configuration[DataDirName] == null
                 ? services
                 : services.VosMount("$stores/" + StoreNames.RoamingAppDataDataDir,
-               Path.Combine(RoamingAppDataDir, configuration[OrgName] ?? throw new ArgumentNullException(nameof(OrgName)), configuration[DataDirName] ?? throw new ArgumentNullException(DataDirName)).ToFileReference(),
-               options ?? DefaultOptions(StoreNames.RoamingAppDataDataDir));
+               path.ToFileReference(),
+               options);
+        }
 
         public static IServiceCollection AddRoamingAppDataAppStore(this IServiceCollection services, IConfiguration configuration, MountOptions options = null)
-                => services.VosMount("$stores/" + StoreNames.RoamingAppDataAppDir,
-                    Path.Combine(RoamingAppDataDir, configuration[OrgName] ?? throw new ArgumentNullException(nameof(OrgName)), configuration[AppName] ?? throw new ArgumentNullException(AppName)).ToFileReference(),
-                    options ?? DefaultOptions(StoreNames.RoamingAppDataAppDir));
+        {
+            var path = Path.Combine(RoamingAppDataDir, configuration[OrgName] ?? throw new ArgumentNullException(nameof(OrgName)), configuration[AppName] ?? throw new ArgumentNullException(AppName));
+
+            options ??= DefaultOptions(StoreNames.RoamingAppDataDataDir, path);
+            options.IsOwnedByOperatingSystemUser = false;
+            options.IsVariableDataLocation = true;
+
+            return services.VosMount("$stores/" + StoreNames.RoamingAppDataAppDir,
+                 path.ToFileReference(),
+                 options);
+        }
 
         public static IServiceCollection AddRoamingAppDataOrgStore(this IServiceCollection services, IConfiguration configuration, MountOptions options = null)
-            => services.VosMount("$stores/" + StoreNames.RoamingAppDataOrgDir,
-                Path.Combine(RoamingAppDataDir, configuration[OrgName] ?? throw new ArgumentNullException(OrgName)).ToFileReference(),
-                options ?? DefaultOptions(StoreNames.RoamingAppDataOrgDir));
+        {
+            var path = Path.Combine(RoamingAppDataDir, configuration[OrgName] ?? throw new ArgumentNullException(OrgName));
+
+            options ??= DefaultOptions(StoreNames.RoamingAppDataDataDir, path);
+            options.IsOwnedByOperatingSystemUser = false;
+            options.IsVariableDataLocation = true;
+
+            return services.VosMount("$stores/" + StoreNames.RoamingAppDataOrgDir,
+                path.ToFileReference(),
+                options);
+        }
 
         #endregion
 
+#error NEXT: Make below like the above.  Split out path and options, initialize DefaultOptions with path, and also explicitly  set Is flags on options.
 
         #region LocalLowAppData
 
@@ -224,7 +287,8 @@ namespace LionFire.Services
             if (appDirPath == null) return services;
             if (onlyIfNotExeDir && appDirPath == ExeDirPath) return services;
 
-            return services.VosMount("$stores/" + storeName, appDirPath.ToFileReference(), options ?? DefaultOptions(storeName));
+            options ??= DefaultOptions(storeName, appDirPath);
+            return services.VosMount("$stores/" + storeName, appDirPath.ToFileReference(), options);
         }
 
         #region Default Stores
@@ -276,7 +340,7 @@ namespace LionFire.Services
             {
                 var packageManagerVob = packageManager.QueryVob();
                 if (packageManagerVob == null) return; // TOLOG
-                var packageManagerObj = packageManagerVob.AsOverlayStack();
+                var packageManagerObj = packageManagerVob.Get<PackageProvider>();
                 if (packageManagerObj == null) return; // TOLOG
 
                 var targetVob = target.QueryVob();

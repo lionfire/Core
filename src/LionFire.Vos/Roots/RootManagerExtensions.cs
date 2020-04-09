@@ -13,10 +13,10 @@ namespace LionFire.Vos
             => hasRootManager?.Object ?? DependencyContext.Current.GetServiceOrSingleton<IRootManager>(createIfMissing: false)
             ?? throw new System.Exception("Could not find RootManager.  Global DependencyContext may be disabled.  Please specify a IHas<IRootManager> as a parameter.");
 
-        public static IVob? ToVob(this string vosPath, IHas<IRootManager>? hasRootManager = null) => GetRootManagerOrThrow(hasRootManager).Get(VosConstants.DefaultRootName)?[vosPath.ToVosReference()];
+        public static IVob? GetVob(this string vosPath, IHas<IRootManager>? hasRootManager = null) => GetRootManagerOrThrow(hasRootManager).Get(VosConstants.DefaultRootName)?[vosPath.ToVosReference()];
 
 
-        public static IVob? ToVob(this IVosReference vosReference, IHas<IRootManager>? hasRootManager = null) 
+        public static IVob? GetVob(this IVosReference vosReference, IHas<IRootManager>? hasRootManager = null) 
             => GetRootManagerOrThrow(hasRootManager).Get(vosReference.Persister)?[vosReference.PathChunks];
 
         public static IVob? ReferencableToVob(this IReferencable<VosReference> vosReferencable, IHas<IRootManager>? hasRootManager = null) 
@@ -28,7 +28,7 @@ namespace LionFire.Vos
         /// <param name="vosReference"></param>
         /// <param name="referenceRootVob">If referenceRootVob.RootName matches vosReference.Persister, it will be used as the root vob for finding the path.  Otherwise, referenceRootVob.RootManager.Get(vosReference.Persister) will be used.</param>
         /// <returns></returns>
-        public static IVob? ToVob(this IVosReference vosReference, IRootVob referenceRootVob)
+        public static IVob? GetVob(this IVosReference vosReference, IRootVob referenceRootVob)
         {
             IRootVob? targetRootVob;
             var targetRootName = vosReference.Persister ?? "";
@@ -39,7 +39,7 @@ namespace LionFire.Vos
             return targetRootVob?[vosReference.PathChunks];
         }
 
-        public static IVob? ToVob(this IVosReference vosReference, IServiceProvider serviceProvider) => vosReference.ToVob(serviceProvider.GetService<RootManager>());
+        public static IVob? GetVob(this IVosReference vosReference, IServiceProvider serviceProvider) => vosReference.GetVob(serviceProvider.GetService<RootManager>());
 
         public static IVob? QueryVob(this string vosPath, IHas<IRootManager>? hasRootManager = null) => GetRootManagerOrThrow(hasRootManager).Get(VosConstants.DefaultRootName)?.QueryChild(vosPath.ToVosReference());
 

@@ -19,7 +19,7 @@ namespace LionFire.Vos.Environment
 
 
     /// <summary>
-    /// VobEnvironment is a dictionary of IFlex objects inherited by child Vobs
+    /// VobEnvironment is a dictionary of IFlex objects acquired by descendant Vobs
     /// </summary>
     public class VobEnvironment : VobNodeBase<VobEnvironment>, IHasFlexDictionary<string>, IFlexOwner, IFlexOverlayOwner
     {
@@ -44,10 +44,7 @@ namespace LionFire.Vos.Environment
         
         #endregion
 
-
         IFlexOwner IFlexOverlayOwner.ParentFlex => Inherit ? ParentVobNode?.Value : null;
-
-
 
         public T TryGet<T>(string key) => FlexDictionary.QueryFlex(key).Get<T>();
         

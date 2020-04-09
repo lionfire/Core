@@ -1,6 +1,8 @@
 ﻿#nullable enable
 using LionFire.Ontology;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
+using System;
 using System.Collections.Concurrent;
 using System.Diagnostics;
 using System.Linq;
@@ -18,7 +20,7 @@ namespace LionFire.Vos
     {
         #region Dependencies
 
-        VosInitializer VosInitializer { get; }
+        RootManagerVobInitializer VosInitializer { get; }
 
         readonly VosOptions vosOptions;
 
@@ -35,10 +37,10 @@ namespace LionFire.Vos
 
         #region Construction
 
-        public RootManager(IOptionsMonitor<VosOptions> vosOptionsMonitor, VosInitializer vosInitializer)
+        public RootManager(IOptionsMonitor<VosOptions> vosOptionsMonitor, IServiceProvider provider)
         {
             this.vosOptions = vosOptionsMonitor.CurrentValue;
-            VosInitializer = vosInitializer;
+            VosInitializer = ActivatorUtilities.CreateInstance<RootManagerVobInitializer>(provider);
 
             //InitializeAll();
         }
@@ -86,7 +88,11 @@ namespace LionFire.Vos
             {
                 if (!vosOptions.RootNames.Contains(n)) return null;
                 var root = new RootVob(this, n, vosOptions);
-                Initialize(root);
+                //root.InitializeMounts();
+                //if (vosOptions.AutoInitRootVobs)
+                //{
+                    Initialize(root);
+                //}
                 return root;
             });
         }

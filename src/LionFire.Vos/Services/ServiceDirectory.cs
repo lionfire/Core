@@ -1,49 +1,91 @@
-﻿namespace LionFire.Vos.Services
-{
+﻿using LionFire.Dependencies;
+using LionFire.FlexObjects;
 
+namespace LionFire.Vos.Services
+{
     /// <summary>
-    /// REVIEW - new idea, minimalist implementation
+    /// A way to register services of arbitrary type in a Vos tree.  
+    /// Primary keys: service type name (uses Name from type if unspecified), 
+    /// and optional name (empty if unspecified.)
+    /// There can only be one service registered per type+name combo.
     /// </summary>
+    /// <remarks>
+    /// Services by convention are registered at StatePath = /_/services/<serviceType>[/serviceInstanceName]
+    ///  - Service object referenced are attached via IVob.Value
+    /// </remarks>
     public class ServiceDirectory
     {
-        public Vob Root { get; }
+        #region Conventions
+
+        public static string StatePath = $"/_/services/";
+
+        #endregion
+
+        #region Construction
 
         public ServiceDirectory(RootVob root)
         {
-            Root = root;
+            ServiceDirectoryRoot = root;
+            State = ServiceDirectoryRoot[StatePath];
         }
 
-        public static string ServiceDirectoryRoot = $"/_/services/";
+        #endregion
 
-        public static string ServiceDirectoryLocation<TService>(string name = null, string serviceName = null)
+        #region State
+
+        public Vob ServiceDirectoryRoot { get; }
+        public IVob State { get; }
+
+        #endregion
+
+        #region (Static)
+
+        public static string ServiceStateRelativePath<TService>(string name = null, string serviceType = null)
         {
-            serviceName = serviceName ?? typeof(TService).Name;
-            var path = ServiceDirectoryRoot + serviceName;
+            serviceType ??= typeof(TService).Name;
+            var path = serviceType;
             if (name != null) path += "/" + name;
             return path;
         }
-        public IVob ServiceDirectoryVob<TService>(string name = null, string serviceName = null, bool createIfMissing = true)
-            => Root.Root.GetOrQueryChild(ServiceDirectoryLocation<TService>(name, serviceName), createIfMissing: createIfMissing);
 
-        public void RegisterService<TService, TValue>(TValue value, string name = null, string serviceName = null)
-            => ServiceDirectoryVob<TService>(name, serviceName).Value = value;
+        public static TService GetServiceFromStateVob<TService>(IVob vob)
+            where TService : class 
+            => vob?.Value as TService;
 
-        public TValue FindServiceEntry<TService, TValue>(string name = null, string serviceName = null) where TValue : class
-            => ServiceDirectoryVob<TService>(name, serviceName, createIfMissing: false)?.Value as TValue;
+        #endregion
 
-        public TService FindService<TService>(string name = null, string serviceName = null)
+        #region (Public)
+
+        public void Register<TService>(TService value, string name = null, string serviceType = null)
+            => ServiceStateVob<TService>(name, serviceType).Add(value);
+
+        public TService GetService<TService>(string name = null, string serviceType = null) where TService : class 
+            => ServiceStateVob<TService>(name, serviceType, createIfMissing: false).Value as TService;
+
+        //public TService FindService<TService>(string name = null, string serviceType = null)
+        //    where TService : class
+        //{
+        //    var path = ServiceStateVob<TService>(name, serviceType, createIfMissing: false)?.Value as string;
+        //    if (path == null) return default;
+        //    var vob = Root[path];
+        //    var service = vob.AcquireOwn<TService>();
+        //    if (service != default) return service;
+        //    service = vob.GetMultiTyped().AsType<TService>();
+        //    return service;
+        //}
+
+        public TService GetRequiredService<TService>(string name = null, string serviceType = null) 
             where TService : class
-        {
-            var path = ServiceDirectoryVob<TService>(name, serviceName, createIfMissing: false)?.Value as string;
-            if (path == null) return default;
-            var vob = Root[path];
+            => GetService<TService>(name, serviceType) 
+            ?? throw new DependencyMissingException($"Service not registered: type = '{serviceType}', name = '{name}'");
 
-            var service = vob.AcquireOwn<TService>();
-            if (service != default) return service;
+        #endregion
 
-            service = vob.GetMultiTyped().AsType<TService>();
+        #region (Protected)
 
-            return service;
-        }
+        protected IVob ServiceStateVob<TService>(string name = null, string serviceType = null, bool createIfMissing = true)
+            => ServiceDirectoryRoot.GetOrQueryChild(ServiceStateRelativePath<TService>(name, serviceType), createIfMissing: createIfMissing);
+
+        #endregion
     }
 }

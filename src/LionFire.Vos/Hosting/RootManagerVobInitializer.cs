@@ -14,12 +14,13 @@ namespace LionFire.Vos
     /// <summary>
     /// Used by VosRootManager to initialize RootVobs and their children
     /// </summary>
-    public class VosInitializer
+    public class RootManagerVobInitializer
     {
         List<VobInitializer> VobInitializers { get; }
 
         IServiceProvider ServiceProvider { get; }
-        public VosInitializer(IServiceProvider serviceProvider, IOptionsMonitor<List<VobInitializer>> vobInitializers)
+
+        public RootManagerVobInitializer(IServiceProvider serviceProvider, IOptionsMonitor<List<VobInitializer>> vobInitializers)
         {
             ServiceProvider = serviceProvider;
             VobInitializers = vobInitializers.CurrentValue;
@@ -27,8 +28,9 @@ namespace LionFire.Vos
 
         public void Initialize(RootVob rootVob)
         {
-            VobInitializers.Where(vi => vi.Reference.RootName() == rootVob.RootName).RepeatAllUntilNull(initializer => 
-            () => Task.FromResult(initializer.InitializationAction(ServiceProvider, string.IsNullOrEmpty(initializer.Reference?.Path) ? rootVob : rootVob[initializer.Reference.Path])));
+            VobInitializers.Where(vi => vi.Reference.RootName() == rootVob.RootName)
+                .RepeatAllUntilNull(initializer => 
+                    () => Task.FromResult(initializer.InitializationAction(ServiceProvider, string.IsNullOrEmpty(initializer.Reference?.Path) ? rootVob : rootVob[initializer.Reference.Path])));
 
             //foreach (var initializer in VobInitializers.Where(vi => vi.Reference.RootName() == rootVob.RootName))
             //{

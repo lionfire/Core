@@ -6,6 +6,7 @@ namespace LionFire.Referencing
         where TReference : IReference
     {
         public TReference Reference { get; }
+        IReference IReferencable.Reference => Reference;
         //IReference IReferencable<IReference>.Reference => Reference;
 
         public ReferenceWrapper(TReference reference) { Reference = reference; }
