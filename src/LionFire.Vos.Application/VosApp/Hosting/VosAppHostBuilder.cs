@@ -11,7 +11,7 @@ using System.Collections.Generic;
 namespace LionFire.Hosting // REVIEW - consider changing this to LionFire.Services to make it easier to remember how to create a new app
 {
 
-    public static class VosAppHost
+    public static class VosAppHostBuilder
     {
 
         // TODO: move serializers and maybe defaultBuilder away from here
@@ -45,6 +45,7 @@ namespace LionFire.Hosting // REVIEW - consider changing this to LionFire.Servic
                              .VobAlias("/`", "/app") // TODO, TOTEST
                                                      //.AddVosAppDefaultMounts(options) // TODO
                                                      //.VobAlias("/`", "$AppRoot") // FUTURE?  Once environment variables are ready
+                             .AddVosAppOptions(options)
                              ;
 
                          if (options.AddDefaultStores)

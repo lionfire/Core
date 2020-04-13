@@ -1,23 +1,36 @@
 ﻿using LionFire.Applications;
 using LionFire.Dependencies;
+using LionFire.Vos.Packages;
+using System.Collections.Generic;
 
 namespace LionFire.Vos.VosApp
 {
     public class VosAppOptions
     {
 
+        #region (static)
+
         public static VosAppOptions Current { get; } = DependencyContext.Current.GetService<VosAppOptions>();
         public static VosAppOptions Default { get; } = new VosAppOptions();
 
+        #endregion
+
+        #region AppInfo
 
         public AppInfo AppInfo { get; set; }
 
+        #endregion
 
         #region Package Managers
 
-        public bool UseDataPackageMangaer = true;
-        public bool UseBasePackageMangaer = true;
+        public Dictionary<string, PackageProviderOptions> PackageProviders = new Dictionary<string, PackageProviderOptions>
+        {
+            [VosAppPackageProviderNames.Core] = new PackageProviderOptions { },
+            [VosAppPackageProviderNames.Dynamic] = new PackageProviderOptions { },
+            [VosAppPackageProviderNames.UserData] = new PackageProviderOptions { },
+        };
 
+        
         #endregion
 
         public bool DefaultMountAppBase = true;

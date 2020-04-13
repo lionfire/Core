@@ -25,7 +25,7 @@ namespace VosApp_
         [Fact]
         public void Pass()
         {
-            VosAppHost.Create(options: new VosAppOptions
+            VosAppHostBuilder.Create(options: new VosAppOptions
             {
                 AppInfo = new AppInfo(TestGlobals.TestApplicationId)
             })
@@ -84,7 +84,7 @@ namespace VosApp_
         {
             Assert.True(LionFireEnvironment.IsUnitTest); // MOVE
 
-             await VosAppHost.Create(options: new VosAppOptions
+             await VosAppHostBuilder.Create(options: new VosAppOptions
             {
                 //AppInfo = null,
                 UseExeDirAsAppDirIfMissing = useExeDirAsAppDirIfMissing

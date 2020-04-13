@@ -17,6 +17,8 @@ using System.IO;
 using LionFire.Execution;
 using LionFire.Persistence.Persisters;
 using Microsoft.Extensions.Options;
+using System.Reflection;
+using MorseCode.ITask;
 
 namespace LionFire.Persistence.Filesystem
 {
@@ -76,30 +78,46 @@ namespace LionFire.Persistence.Filesystem
 
         #region List
 
-        public Task<IRetrieveResult<IEnumerable<Listing>>> List(IReferencable<TReference> referencable, ListFilter? filter = null)
-            => List(referencable.Reference, filter);
+        public Task<IRetrieveResult<IEnumerable<Listing<object>>>> List(IReferencable<TReference> referencable, ListFilter? filter = null)
+            => List<object>(referencable.Reference, filter);
+        public Task<IRetrieveResult<IEnumerable<Listing<T>>>> List<T>(IReferencable<TReference> referencable, ListFilter? filter = null)
+                    => List<T>(referencable.Reference, filter);
 
-        public async Task<IRetrieveResult<IEnumerable<Listing>>> List(TReference reference, ListFilter? filter = null)
+        private object List(Type type, TReference reference, ListFilter? filter = null)
         {
-            var listResult = await List(reference.Path, filter);
-            return listResult == null
-                ? RetrieveResult<IEnumerable<Listing>>.SuccessNotFound
-                : (IRetrieveResult<IEnumerable<Listing>>)RetrieveResult<IEnumerable<Listing>>.Found(listResult);
+            return listMethodInfo.MakeGenericMethod(type).Invoke(this, new object?[] { reference, filter });
         }
+        private static MethodInfo listMethodInfo = typeof(FilesystemPersister<,>).MakeGenericType(typeof(TReference), typeof(TPersistenceOptions)).GetMethods().Where(m =>
+        {
+            if (m.Name != "List") return false;
+            var p = m.GetParameters();
+            if (p.Length != 2) return false;
+            return p[0].ParameterType == typeof(TReference) && p[1].ParameterType == typeof(ListFilter);
+        }).FirstOrDefault();
+
+        public async Task<IRetrieveResult<IEnumerable<Listing<T>>>> List<T>(TReference reference, ListFilter? filter = null)
+        {
+            var listResult = await List<T>(reference.Path, filter);
+            return listResult == null
+                ? RetrieveResult<IEnumerable<Listing<T>>>.SuccessNotFound
+                : (IRetrieveResult<IEnumerable<Listing<T>>>)RetrieveResult<IEnumerable<Listing<T>>>.Found(listResult);
+        }
+
+        public Task<IEnumerable<Listing<object>>?> List(string path, ListFilter? filter = null) => List<object>(path, filter);
 
         /// <summary>
         /// Returns null if directory not found
         /// </summary>
         /// <param name="path"></param>
         /// <returns></returns>
-        public async Task<IEnumerable<Listing>> List(string path, ListFilter? filter = null)
+        public async Task<IEnumerable<Listing<T>>?> List<T>(string path, ListFilter? filter = null)
         {
             return await Task.Run(() =>
             {
-                List<Listing>? children = null;
+                List<Listing<T>>? children = null;
                 if (Directory.Exists(path))
                 {
-                    children = new List<Listing>();
+                    children = new List<Listing<T>>();
 
                     bool showFile = filter == null || filter.Flags == ItemFlags.None || filter.Flags.HasFlag(ItemFlags.File) || !filter.Flags.HasFlag(ItemFlags.Directory);
                     bool showDir = filter == null || filter.Flags == ItemFlags.None || filter.Flags.HasFlag(ItemFlags.Directory) || !filter.Flags.HasFlag(ItemFlags.File);
@@ -132,7 +150,7 @@ namespace LionFire.Persistence.Filesystem
                             //if (kind.HasFlag(ItemFlags.Special) && !showSpecial) continue;
                             //if (kind.HasFlag(ItemFlags.Meta) && !showMeta) continue;
 
-                            children.Add(new Listing(dirName, directory: true));
+                            children.Add(new Listing<T>(dirName, directory: true));
                         }
                     }
                 }
@@ -254,19 +272,53 @@ namespace LionFire.Persistence.Filesystem
         public Task<IRetrieveResult<TValue>> Retrieve<TValue>(IReferencable<TReference> referencable)  // Unwrap IReferencable
             => Retrieve<TValue>(referencable.Reference);
 
+        // REVIEW - Yikes this is ugly.  OPTIMIZE?  Use non-generic methods?
+        private async Task<IRetrieveResult<TValue>> RetrieveMetadata<TValue, TMetadata>(TReference reference)
+        {
+            var metadataType = typeof(TValue).GetGenericArguments()[0];
+
+            if (metadataType.IsGenericType && metadataType.GetGenericTypeDefinition() == typeof(IEnumerable<>))
+            {
+                var enumerableType = metadataType.GetGenericArguments()[0];
+
+                var listingGenericType = enumerableType.GetGenericTypeDefinition();
+                if (enumerableType.IsGenericType && listingGenericType == typeof(Listing<>))
+                {
+                    var listingType = enumerableType.GetGenericArguments()[0];
+                    var resultEnumerableType = typeof(IEnumerable<>).MakeGenericType(typeof(Listing<>).MakeGenericType(listingType));
+                    //var resultEnumerableTaskType = typeof(Task<>).MakeGenericType(resultEnumerableType);
+
+                    var listResult = await ((Task<IRetrieveResult<TMetadata>>)List(listingType, reference)).ConfigureAwait(false);
+
+                    //var resultType = typeof(Metadata<>).MakeGenericType(typeof(IEnumerable<>).MakeGenericType(typeof(Listing<>).MakeGenericType(listingType)));
+
+                    //return (IRetrieveResult<TValue>) await List(listResult, reference, filter).ConfigureAwait(false);
+
+                    return (IRetrieveResult<TValue>)Activator.CreateInstance(typeof(RetrieveResult<>).MakeGenericType(typeof(TValue)),
+                        Activator.CreateInstance(typeof(TValue), listResult.Value),
+                        listResult.Flags,
+                        listResult.Error);
+
+                    //return (IRetrieveResult<TValue>)(object)new RetrieveResult<Metadata<IEnumerable<Listing<>>>>(new Metadata<IEnumerable<Listing<TValue>>>(listResult.Value), listResult.Flags) // HARDCAST
+                    //{
+                    //    Error = listResult.Error,
+                    //};
+                }
+            }
+
+            throw new NotSupportedException($"Don't know how to retrieve Metadata of type '{metadataType}'");
+        }
+        private static MethodInfo RetrieveMetadataMethodInfo = typeof(FilesystemPersister<,>).MakeGenericType(typeof(TReference), typeof(TPersistenceOptions)).GetMethod("RetrieveMetadata", BindingFlags.Instance | BindingFlags.NonPublic);
+
         /// <remarks>
         /// Default implementation: pass-through to ReadAndDeserializeExactPath, with AutoRetry
         /// </remarks>
         public virtual async Task<IRetrieveResult<TValue>> Retrieve<TValue>(TReference reference)
         {
-            if (typeof(TValue) == typeof(Metadata<IEnumerable<Listing>>))
+            if (typeof(TValue).IsGenericType && typeof(TValue).GetGenericTypeDefinition() == typeof(Metadata<>))
             {
-
-                var listResult = await List(reference).ConfigureAwait(false);
-                return (IRetrieveResult<TValue>)(object)new RetrieveResult<Metadata<IEnumerable<Listing>>>(new Metadata<IEnumerable<Listing>>(listResult.Value), listResult.Flags) // HARDCAST
-                {
-                    Error = listResult.Error,
-                };
+                return await ((Task<IRetrieveResult<TValue>>)RetrieveMetadataMethodInfo.MakeGenericMethod(typeof(TValue), typeof(TValue).GetGenericArguments()[0]).Invoke(this, new object[] { reference })).ConfigureAwait(false);
+                //return await RetrieveMetadata<TValue>(reference).ConfigureAwait(false);
             }
 
             var path = reference.Path;
@@ -310,7 +362,7 @@ namespace LionFire.Persistence.Filesystem
             List<KeyValuePair<ISerializationStrategy, SerializationResult>>? failures = null;
 
             PersistenceResultFlags flags = PersistenceResultFlags.None;
-        
+
 
             byte[]? bytes;
 

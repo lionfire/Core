@@ -17,23 +17,20 @@ namespace LionFire.Vos.Collections.ByType
         /// <param name="referencable"></param>
         /// <param name="filter"></param>
         /// <returns></returns>
-        public Task<IEnumerable<Listing>> List(Type childType, IPersister<VosReference> persister, IReferencable<VosReference> referencable, ListFilter filter = null)
+        public Task<IEnumerable<Listing<T>>> List<T>(IPersister<VosReference> persister, IReferencable<VosReference> referencable, ListFilter filter = null)
         {
             var vob = referencable.ReferencableToVob();
 
             var manager = vob.TryGetNextVobNode<ICollectionsByTypeManager>(minDepth: 1, maxDepth: 1)?.Value;
 
-            if(manager == null) { return null; }
+            if (manager == null) { return null; }
 
-            var childTypeName = manager.ToTypeName(childType);
+            var childTypeName = manager.ToTypeName(typeof(T));
 
-            if(childTypeName == null) { return null; }
+            if (childTypeName == null) { return null; }
 
             throw new NotImplementedException();
 
         }
-
-        public Task<IEnumerable<Listing>> List(IPersister<VosReference> persister, IReferencable<VosReference> referencable, ListFilter filter = null) => throw new NotImplementedException();
     }
-
 }

@@ -144,6 +144,7 @@ namespace LionFire.Services
 
         #region Windows
 
+
         public static IServiceCollection AddWindowsStores(this IServiceCollection services, IConfiguration configuration)
         {
             // FUTURE ENH: Only mount if they exist and are used.  If installed to later, mount them later.
@@ -168,128 +169,304 @@ namespace LionFire.Services
 
         #endregion
 
-        #region RoamingAppData
+        #region (Private) Utilities
 
-        public static IServiceCollection AddRoamingAppDataDataDirStore(this IServiceCollection services, IConfiguration configuration, MountOptions options = null)
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="services"></param>
+        /// <param name="options"></param>
+        /// <param name="storeName"></param>
+        /// <param name="basePath">If null, dirName is treated as full path</param>
+        /// <param name="dirName">Combined with basePath if basePath is non-null.  If this is null, this method becomes a no-op.</param>
+        /// <param name="isOwnedByOperatingSystemUser"></param>
+        /// <param name="isVariableDataLocation"></param>
+        /// <returns></returns>
+        private static IServiceCollection _AddStore(this IServiceCollection services, MountOptions options, string storeName, string basePath, string dirName, bool isOwnedByOperatingSystemUser, bool isVariableDataLocation)
         {
-            var path = Path.Combine(RoamingAppDataDir, configuration[OrgName] ?? throw new ArgumentNullException(nameof(OrgName)), configuration[DataDirName] ?? throw new ArgumentNullException(DataDirName));
+            if (dirName == null) return services;
 
-            options ??= DefaultOptions(StoreNames.RoamingAppDataDataDir, path);
-            options.IsOwnedByOperatingSystemUser = false;
-            options.IsVariableDataLocation = true;
+            var path = basePath != null ? Path.Combine(basePath, dirName) : dirName;
 
-            return configuration[DataDirName] == null
-                ? services
-                : services.VosMount("$stores/" + StoreNames.RoamingAppDataDataDir,
-               path.ToFileReference(),
-               options);
-        }
+            options ??= DefaultOptions(storeName, path);
+            options.Name ??= storeName;
+            options.IsOwnedByOperatingSystemUser = isOwnedByOperatingSystemUser;
+            options.IsVariableDataLocation = isVariableDataLocation;
 
-        public static IServiceCollection AddRoamingAppDataAppStore(this IServiceCollection services, IConfiguration configuration, MountOptions options = null)
-        {
-            var path = Path.Combine(RoamingAppDataDir, configuration[OrgName] ?? throw new ArgumentNullException(nameof(OrgName)), configuration[AppName] ?? throw new ArgumentNullException(AppName));
-
-            options ??= DefaultOptions(StoreNames.RoamingAppDataDataDir, path);
-            options.IsOwnedByOperatingSystemUser = false;
-            options.IsVariableDataLocation = true;
-
-            return services.VosMount("$stores/" + StoreNames.RoamingAppDataAppDir,
-                 path.ToFileReference(),
-                 options);
-        }
-
-        public static IServiceCollection AddRoamingAppDataOrgStore(this IServiceCollection services, IConfiguration configuration, MountOptions options = null)
-        {
-            var path = Path.Combine(RoamingAppDataDir, configuration[OrgName] ?? throw new ArgumentNullException(OrgName));
-
-            options ??= DefaultOptions(StoreNames.RoamingAppDataDataDir, path);
-            options.IsOwnedByOperatingSystemUser = false;
-            options.IsVariableDataLocation = true;
-
-            return services.VosMount("$stores/" + StoreNames.RoamingAppDataOrgDir,
-                path.ToFileReference(),
-                options);
+            return services.VosMount("$stores/" + storeName, path.ToFileReference(), options);
         }
 
         #endregion
 
-#error NEXT: Make below like the above.  Split out path and options, initialize DefaultOptions with path, and also explicitly  set Is flags on options.
+        #region RoamingAppData
+
+        public static IServiceCollection AddRoamingAppDataDataDirStore(this IServiceCollection services, IConfiguration configuration, MountOptions options = null)
+                 => _AddStore(services,
+                   options,
+                   StoreNames.RoamingAppDataDataDir,
+                   Path.Combine(RoamingAppDataDir, configuration[OrgName] ?? throw new ArgumentNullException(nameof(OrgName))),
+                   configuration[DataDirName],
+                   isOwnedByOperatingSystemUser: true,
+                   isVariableDataLocation: true);
+
+        //{
+        //    var path = Path.Combine(RoamingAppDataDir, configuration[OrgName] ?? throw new ArgumentNullException(nameof(OrgName)), configuration[DataDirName] ?? throw new ArgumentNullException(DataDirName));
+
+        //    options ??= DefaultOptions(StoreNames.RoamingAppDataDataDir, path);
+        //    options.IsOwnedByOperatingSystemUser = true;
+        //    options.IsVariableDataLocation = true;
+
+        //    return configuration[DataDirName] == null
+        //        ? services
+        //        : services.VosMount("$stores/" + StoreNames.RoamingAppDataDataDir,
+        //       path.ToFileReference(),
+        //       options);
+        //}
+
+        public static IServiceCollection AddRoamingAppDataAppStore(this IServiceCollection services, IConfiguration configuration, MountOptions options = null)
+                 => _AddStore(services,
+                   options,
+                   StoreNames.RoamingAppDataAppDir,
+                   Path.Combine(RoamingAppDataDir, configuration[OrgName] ?? throw new ArgumentNullException(nameof(OrgName))),
+                   configuration[AppName],
+                   isOwnedByOperatingSystemUser: true,
+                   isVariableDataLocation: true);
+        //{
+        //    var path = Path.Combine(RoamingAppDataDir, configuration[OrgName] ?? throw new ArgumentNullException(nameof(OrgName)), configuration[AppName] ?? throw new ArgumentNullException(AppName));
+
+        //    options ??= DefaultOptions(StoreNames.RoamingAppDataDataDir, path);
+        //    options.IsOwnedByOperatingSystemUser = true;
+        //    options.IsVariableDataLocation = true;
+
+        //    return services.VosMount("$stores/" + StoreNames.RoamingAppDataAppDir,
+        //         path.ToFileReference(),
+        //         options);
+        //}
+
+        public static IServiceCollection AddRoamingAppDataOrgStore(this IServiceCollection services, IConfiguration configuration, MountOptions options = null)
+                 => _AddStore(services,
+                   options,
+                   StoreNames.RoamingAppDataOrgDir,
+                   RoamingAppDataDir,
+                   configuration[OrgName],
+                   isOwnedByOperatingSystemUser: true,
+                   isVariableDataLocation: true);
+        //{
+        //    var path = Path.Combine(RoamingAppDataDir, configuration[OrgName] ?? throw new ArgumentNullException(OrgName));
+
+        //    options ??= DefaultOptions(StoreNames.RoamingAppDataDataDir, path);
+        //    options.IsOwnedByOperatingSystemUser = true;
+        //    options.IsVariableDataLocation = true;
+
+        //    return services.VosMount("$stores/" + StoreNames.RoamingAppDataOrgDir,
+        //        path.ToFileReference(),
+        //        options);
+        //}
+
+        #endregion
 
         #region LocalLowAppData
 
         public static IServiceCollection AddLocalLowAppDataDataDirStore(this IServiceCollection services, IConfiguration configuration, MountOptions options = null)
-           => configuration[DataDirName] == null
-                ? services
-                : services.VosMount("$stores/" + StoreNames.LocalLowAppDataDataDir,
-               Path.Combine(LocalLowAppDataDir, configuration[OrgName] ?? throw new ArgumentNullException(nameof(OrgName)), configuration[DataDirName] ?? throw new ArgumentNullException(DataDirName)).ToFileReference(),
-               options ?? DefaultOptions(StoreNames.LocalLowAppDataDataDir));
+                => _AddStore(services,
+                   options,
+                   StoreNames.LocalLowAppDataDataDir,
+                   Path.Combine(LocalLowAppDataDir, configuration[OrgName] ?? throw new ArgumentNullException(nameof(OrgName))),
+                   configuration[DataDirName],
+                   isOwnedByOperatingSystemUser: true,
+                   isVariableDataLocation: true);
+
+        //{
+        //    if (configuration[DataDirName] == null) return services;
+
+        //    var path = Path.Combine(LocalLowAppDataDir, configuration[OrgName] ?? throw new ArgumentNullException(nameof(OrgName)), configuration[DataDirName] ?? throw new ArgumentNullException(DataDirName));
+
+        //    options ??= DefaultOptions(StoreNames.LocalLowAppDataDataDir, path);
+        //    options.IsOwnedByOperatingSystemUser = false;
+        //    options.IsVariableDataLocation = true;
+
+        //    return services.VosMount("$stores/" + StoreNames.LocalLowAppDataDataDir,
+        //    path.ToFileReference(),
+        //    options));
+        //}
 
         public static IServiceCollection AddLocalLowAppDataAppStore(this IServiceCollection services, IConfiguration configuration, MountOptions options = null)
-                => services.VosMount("$stores/" + StoreNames.LocalLowAppDataAppDir,
-                    Path.Combine(LocalLowAppDataDir, configuration[OrgName] ?? throw new ArgumentNullException(nameof(OrgName)), configuration[AppName] ?? throw new ArgumentNullException(AppName)).ToFileReference(),
-                    options ?? DefaultOptions(StoreNames.LocalLowAppDataAppDir));
+                => _AddStore(services,
+                   options,
+                   StoreNames.LocalLowAppDataAppDir,
+                   Path.Combine(LocalLowAppDataDir, configuration[OrgName] ?? throw new ArgumentNullException(nameof(OrgName))),
+                   configuration[AppName],
+                   isOwnedByOperatingSystemUser: true,
+                   isVariableDataLocation: true);
+        //{
+        //    var path =
+
+        //    options ??= DefaultOptions(StoreNames., path);
+        //    options.IsOwnedByOperatingSystemUser = false;
+        //    options.IsVariableDataLocation = true;
+
+        //    return services.VosMount("$stores/" + StoreNames.LocalLowAppDataAppDir,
+        //            Path.Combine(LocalLowAppDataDir, configuration[OrgName] ?? throw new ArgumentNullException(nameof(OrgName)), configuration[AppName] ?? throw new ArgumentNullException(AppName)).ToFileReference(),
+        //            options ?? DefaultOptions(StoreNames.LocalLowAppDataAppDir));
+        //}
 
         public static IServiceCollection AddLocalLowAppDataOrgStore(this IServiceCollection services, IConfiguration configuration, MountOptions options = null)
-            => services.VosMount("$stores/" + StoreNames.LocalLowAppDataOrgDir,
-                Path.Combine(LocalLowAppDataDir, configuration[OrgName] ?? throw new ArgumentNullException(OrgName)).ToFileReference(),
-                options ?? DefaultOptions(StoreNames.LocalLowAppDataOrgDir));
+                => _AddStore(services,
+                   options,
+                   StoreNames.LocalLowAppDataOrgDir,
+                   LocalLowAppDataDir,
+                   configuration[OrgName],
+                   isOwnedByOperatingSystemUser: true,
+                   isVariableDataLocation: true);
+        //{
+        //    var path = Path.Combine(LocalLowAppDataDir, configuration[OrgName] ?? throw new ArgumentNullException(OrgName));
+
+        //    options ??= DefaultOptions(StoreNames., path);
+        //    options.IsOwnedByOperatingSystemUser = false;
+        //    options.IsVariableDataLocation = true;
+        //    return services.VosMount("$stores/" + StoreNames.LocalLowAppDataOrgDir,
+        //       path.ToFileReference(),
+        //        options ?? DefaultOptions(StoreNames.LocalLowAppDataOrgDir));
+        //}
 
         #endregion
 
         #region LocalAppData
 
         public static IServiceCollection AddLocalAppDataDataDirStore(this IServiceCollection services, IConfiguration configuration, MountOptions options = null)
-           => configuration[DataDirName] == null
-                ? services
-                : services.VosMount("$stores/" + StoreNames.LocalAppDataDataDir,
-               Path.Combine(LocalAppDataDir, configuration[OrgName] ?? throw new ArgumentNullException(nameof(OrgName)), configuration[DataDirName] ?? throw new ArgumentNullException(DataDirName)).ToFileReference(),
-               options ?? DefaultOptions(StoreNames.LocalAppDataDataDir));
+                => _AddStore(services,
+                   options,
+                   StoreNames.LocalAppDataDataDir,
+                   Path.Combine(LocalAppDataDir, configuration[OrgName] ?? throw new ArgumentNullException(nameof(OrgName))),
+                   configuration[DataDirName],
+                   isOwnedByOperatingSystemUser: true,
+                   isVariableDataLocation: true);
+        //{
+        //    if (configuration[DataDirName] == null) return services;
+        //    var path = Path.Combine(LocalAppDataDir, configuration[OrgName] ?? throw new ArgumentNullException(nameof(OrgName)), configuration[DataDirName] ?? throw new ArgumentNullException(DataDirName));
+
+        //    options ??= DefaultOptions(StoreNames., path);
+        //    options.IsOwnedByOperatingSystemUser = false;
+        //    options.IsVariableDataLocation = true;
+        //    return services.VosMount("$stores/" + StoreNames.LocalAppDataDataDir,
+        //        path.ToFileReference(),
+        //        options ?? DefaultOptions(StoreNames.LocalAppDataDataDir));
+        //}
 
         public static IServiceCollection AddLocalAppDataAppStore(this IServiceCollection services, IConfiguration configuration, MountOptions options = null)
-                => services.VosMount("$stores/" + StoreNames.LocalAppDataAppDir,
-                    Path.Combine(LocalAppDataDir, configuration[OrgName] ?? throw new ArgumentNullException(nameof(OrgName)), configuration[AppName] ?? throw new ArgumentNullException(AppName)).ToFileReference(),
-                    options ?? DefaultOptions(StoreNames.LocalAppDataAppDir));
+                => _AddStore(services,
+                   options,
+                   StoreNames.LocalAppDataAppDir,
+                   Path.Combine(LocalAppDataDir, configuration[OrgName] ?? throw new ArgumentNullException(nameof(OrgName))),
+                   configuration[AppName],
+                   isOwnedByOperatingSystemUser: true,
+                   isVariableDataLocation: true);
+        //{
+        //    var path = Path.Combine(LocalAppDataDir, configuration[OrgName] ?? throw new ArgumentNullException(nameof(OrgName)), configuration[AppName] ?? throw new ArgumentNullException(AppName));
+
+        //    options ??= DefaultOptions(StoreNames., path);
+        //    options.IsOwnedByOperatingSystemUser = false;
+        //    options.IsVariableDataLocation = true;
+        //    return services.VosMount("$stores/" + StoreNames.LocalAppDataAppDir,
+        //            path.ToFileReference(),
+        //            options ?? DefaultOptions(StoreNames.LocalAppDataAppDir));
+        //}
 
         public static IServiceCollection AddLocalAppDataOrgStore(this IServiceCollection services, IConfiguration configuration, MountOptions options = null)
-            => services.VosMount("$stores/" + StoreNames.LocalAppDataOrgDir,
-                Path.Combine(LocalAppDataDir, configuration[OrgName] ?? throw new ArgumentNullException(OrgName)).ToFileReference(),
-                options ?? DefaultOptions(StoreNames.LocalAppDataOrgDir));
+                => _AddStore(services,
+                   options,
+                   StoreNames.LocalAppDataOrgDir,
+                   LocalAppDataDir,
+                   configuration[OrgName],
+                   isOwnedByOperatingSystemUser: true,
+                   isVariableDataLocation: true);
+        //{
+        //    var path = Path.Combine(LocalAppDataDir, configuration[OrgName] ?? throw new ArgumentNullException(OrgName));
+
+        //    options ??= DefaultOptions(StoreNames., path);
+        //    options.IsOwnedByOperatingSystemUser = false;
+        //    options.IsVariableDataLocation = true;
+        //    return services.VosMount("$stores/" + StoreNames.LocalAppDataOrgDir,
+        //        path.ToFileReference(),
+        //        options ?? DefaultOptions(StoreNames.LocalAppDataOrgDir));
+        //}
 
         #endregion
 
         #region ProgramData
 
+       
+
         public static IServiceCollection AddProgramDataDataDirStore(this IServiceCollection services, IConfiguration configuration, MountOptions options = null)
-         =>
-            configuration[DataDirName] == null
-                ? services
-                : services.VosMount("$stores/" + StoreNames.ProgramDataDataDir,
-                   Path.Combine(ProgramDataDir, configuration[OrgName] ?? throw new ArgumentNullException(nameof(OrgName)), configuration[DataDirName] ?? throw new ArgumentNullException(DataDirName)).ToFileReference(),
-                   options ?? DefaultOptions(StoreNames.ProgramDataDataDir));
+            => _AddStore(services,
+                options,
+                StoreNames.ProgramDataDataDir,
+                Path.Combine(ProgramDataDir, configuration[OrgName] ?? throw new ArgumentNullException(nameof(OrgName))),
+                configuration[DataDirName],
+                isOwnedByOperatingSystemUser: false,
+                isVariableDataLocation: true);
+
+        //{
+        //    configuration[DataDirName] == null
+        //            ? services
+        //            : services.VosMount("$stores/" + StoreNames.ProgramDataDataDir,
+        //               Path.Combine(ProgramDataDir, configuration[OrgName] ?? throw new ArgumentNullException(nameof(OrgName)), configuration[DataDirName] ?? throw new ArgumentNullException(DataDirName)).ToFileReference(),
+        //               options ?? DefaultOptions(StoreNames.ProgramDataDataDir));
+        //}
 
 
         public static IServiceCollection AddProgramDataAppStore(this IServiceCollection services, IConfiguration configuration, MountOptions options = null)
-                => services.VosMount("$stores/" + StoreNames.ProgramDataAppDir,
-                    Path.Combine(ProgramDataDir, configuration[OrgName] ?? throw new ArgumentNullException(nameof(OrgName)), configuration[AppName] ?? throw new ArgumentNullException(AppName)).ToFileReference(),
-                    options ?? DefaultOptions(StoreNames.ProgramDataAppDir));
+               => _AddStore(services,
+                   options,
+                   StoreNames.ProgramDataAppDir,
+                   Path.Combine(ProgramDataDir, configuration[OrgName] ?? throw new ArgumentNullException(nameof(OrgName))),
+                   configuration[AppName],
+                   isOwnedByOperatingSystemUser: false,
+                   isVariableDataLocation: true);
+
+        //{
+        //    services.VosMount("$stores/" + StoreNames.ProgramDataAppDir,
+        //                Path.Combine(ProgramDataDir, configuration[OrgName] ?? throw new ArgumentNullException(nameof(OrgName)), configuration[AppName] ?? throw new ArgumentNullException(AppName)).ToFileReference(),
+        //                options ?? DefaultOptions(StoreNames.ProgramDataAppDir));
+        //}
 
         public static IServiceCollection AddProgramDataOrgStore(this IServiceCollection services, IConfiguration configuration, MountOptions options = null)
-            => services.VosMount("$stores/" + StoreNames.ProgramDataOrgDir,
-                Path.Combine(ProgramDataDir, configuration[OrgName] ?? throw new ArgumentNullException(OrgName)).ToFileReference(),
-                options ?? DefaultOptions(StoreNames.ProgramDataOrgDir));
+               => _AddStore(services,
+                   options,
+                   StoreNames.ProgramDataOrgDir,
+                   ProgramDataDir,
+                   configuration[OrgName],
+                   isOwnedByOperatingSystemUser: false,
+                   isVariableDataLocation: true);
+
+        //{
+        //    services.VosMount("$stores/" + StoreNames.ProgramDataOrgDir,
+        //            Path.Combine(ProgramDataDir, configuration[OrgName] ?? throw new ArgumentNullException(OrgName)).ToFileReference(),
+        //            options ?? DefaultOptions(StoreNames.ProgramDataOrgDir));
+        //}
 
         #endregion
 
         public static IServiceCollection AddAppDirStore(this IServiceCollection services, string storeName = StoreNames.AppDir, AppInfo appInfo = null, bool onlyIfNotExeDir = false, MountOptions options = null, string appDirPath = null, bool useExeDirAsAppDirIfMissing = true)
-        {
-            if (appDirPath == null) appDirPath = ApplicationAutoDetection.FindCustomAppRoot(appInfo?.AppId);
-            if (appDirPath == null && useExeDirAsAppDirIfMissing) appDirPath = ExeDirPath;
-            if (appDirPath == null) return services;
-            if (onlyIfNotExeDir && appDirPath == ExeDirPath) return services;
+            => _AddStore(services,
+                   options,
+                   StoreNames.AppDir,
+                   null,
+                   appDirPath
+                       ?? ApplicationAutoDetection.FindCustomAppRoot(appInfo?.AppId)
+                       ?? (useExeDirAsAppDirIfMissing && !onlyIfNotExeDir ? ExeDirPath : null),
+                   isOwnedByOperatingSystemUser: LionFireEnvironment.Directories.IsUserDirectory(appDirPath) == true,
+                   isVariableDataLocation: LionFireEnvironment.Directories.IsVariableDirectory(appDirPath) == true);
 
-            options ??= DefaultOptions(storeName, appDirPath);
-            return services.VosMount("$stores/" + storeName, appDirPath.ToFileReference(), options);
-        }
+        //{
+        //    if (appDirPath == null) appDirPath = ApplicationAutoDetection.FindCustomAppRoot(appInfo?.AppId);
+        //    if (appDirPath == null && useExeDirAsAppDirIfMissing) appDirPath = ExeDirPath;
+        //    if (appDirPath == null) return services;
+        //    if (onlyIfNotExeDir && appDirPath == ExeDirPath) return services;
+
+        //options ??= DefaultOptions(storeName, appDirPath);
+        //return services.VosMount("$stores/" + storeName, appDirPath.ToFileReference(), options);
+        //}
 
         #region Default Stores
 
@@ -306,49 +483,26 @@ namespace LionFire.Services
             }
         }
 
-        // REVIEW - move to LionFire.Vos.Overlays?  Can't now because can't create FileReferences from strings yet.
-        public static IServiceCollection AddExeDirStore(this IServiceCollection services, string name = StoreNames.ExeDir)
-        {
-            var exeDirPath = ExeDirPath;
-            if (exeDirPath != null)
-            {
-                services.VosMount("$stores/" + name, exeDirPath.ToFileReference(), new MountOptions { });
-            }
-            return services;
-        }
+        // REVIEW - move to LionFire.Vos.Packages?  Can't now because can't create FileReferences from strings yet.
+        public static IServiceCollection AddExeDirStore(this IServiceCollection services, string name = StoreNames.ExeDir, MountOptions options = null)
+                => _AddStore(services,
+                   options,
+                   StoreNames.ExeDir,
+                   null,
+                   ExeDirPath,
+                   isOwnedByOperatingSystemUser: LionFireEnvironment.Directories.IsUserDirectory(ExeDirPath) == true,
+                   isVariableDataLocation: LionFireEnvironment.Directories.IsVariableDirectory(ExeDirPath) == true);
 
-        public static IServiceCollection AddExeDirBasePackage(this IServiceCollection services, string storeName = StoreNames.ExeDir)
-        {
-            return services.TryAddAvailablePackage("$DataPackageManager", $"$stores/{storeName}", new MountOptions(100, null));
-            //return services.InitializeRootVob((serviceProvider, root) =>
-            //{
-            //    var packageManagerVob = "$DataPackageManager".QueryVob();
-            //    if (packageManagerVob == null) return;
-            //    var packageManager = packageManagerVob.AsPackageManager();
-            //    if (packageManager == null) return;
+        //{
+        //    var exeDirPath = ExeDirPath;
+        //    if (exeDirPath != null)
+        //    {
+        //        services.VosMount("$stores/" + name, exeDirPath.ToFileReference(), new MountOptions { });
+        //    }
+        //    return services;
+        //}
 
-            //    var target = $"$stores/{name}".QueryVob();
-            //    if (target == null) return;
-
-            //    packageManager?.AvailableRoot.Mount(target, new MountOptions(100, null));
-            //});
-        }
-
-        public static IServiceCollection TryAddAvailablePackage(this IServiceCollection services, VosReference packageManager, VosReference target, MountOptions options = null)
-        {
-            return services.InitializeRootVob((serviceProvider, root) =>
-            {
-                var packageManagerVob = packageManager.QueryVob();
-                if (packageManagerVob == null) return; // TOLOG
-                var packageManagerObj = packageManagerVob.Get<PackageProvider>();
-                if (packageManagerObj == null) return; // TOLOG
-
-                var targetVob = target.QueryVob();
-                if (targetVob == null) return; // TOLOG
-
-                packageManagerObj?.AvailableRoot.Mount(targetVob, options);
-            });
-        }
+     
 
         #endregion
 

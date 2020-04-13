@@ -1,4 +1,5 @@
-﻿//#define ASSETS_SUBPATH // Prefer this off?  TODO - make sure this works for packages
+﻿#if trueX // Probably won't go with this approach -- rethinking things
+//#define ASSETS_SUBPATH // Prefer this off?  TODO - make sure this works for packages
 
 using System;
 using System.Collections.Generic;
@@ -12,12 +13,11 @@ using LionFire.Vos.Packages;
 
 namespace LionFire.Vos.VosApp
 {
-#if trueX // Probably won't go with this approach -- rethinking things
 
     public class VosApp
     //: IInitializable3
     {
-    #region Construction
+#region Construction
 
         private bool isInitialized;
         public async Task<object> Initialize()
@@ -64,7 +64,7 @@ namespace LionFire.Vos.VosApp
             }
         }
 
-    #endregion
+#endregion
 
 
         //VosMountManager.Instance.Mount(new MountOptions
@@ -73,12 +73,12 @@ namespace LionFire.Vos.VosApp
         //    ConnectionString = "",
         //});
 
-    #region Members
+#region Members
 
         //public PackageMounter PackageMounter { get; protected set; } = new PackageMounter(); // OLD
 
-    #endregion
-    #region Packages
+#endregion
+#region Packages
 
         public virtual void InitPackageDirectories()
         {
@@ -88,7 +88,7 @@ namespace LionFire.Vos.VosApp
 
             var packageDirectories = PackageMounter.PackageDirectories;
 
-    #region BasePacks
+#region BasePacks
 
             packagePaths.Add(VosDiskPaths.AppBase);
             {
@@ -141,9 +141,9 @@ namespace LionFire.Vos.VosApp
             });
 #endif
 
-    #endregion
+#endregion
 
-    #region UserPacks
+#region UserPacks
 
             packagePaths.Add(VosDiskPaths.AppData);
             packageDirectories.Add(new PackageDirectory()
@@ -195,9 +195,9 @@ namespace LionFire.Vos.VosApp
             });
 #endif
 
-    #endregion
+#endregion
 
-    #region Default Dir (changeable)
+#region Default Dir (changeable)
 
             if (!string.IsNullOrWhiteSpace(VosConfiguration.CustomBaseDir))
             {
@@ -251,7 +251,7 @@ namespace LionFire.Vos.VosApp
                 }
             }
 
-    #endregion
+#endregion
 
             var sb = new StringBuilder();
 
@@ -263,15 +263,15 @@ namespace LionFire.Vos.VosApp
             l.Debug(sb.ToString());
         }
 
-    #endregion
+#endregion
 
-    #region (Static) Instance Accessor
+#region (Static) Instance Accessor
 
         public static VosApp Instance => ManualSingleton<VosApp>.GuaranteedInstance;
 
-    #endregion
+#endregion
 
-    #region Mounts
+#region Mounts
 
         public static bool DefaultMountAppBase = true;
         public static bool DefaultMountActiveDataAtAppBase = true;
@@ -357,7 +357,7 @@ namespace LionFire.Vos.VosApp
         public virtual List<Mount> GetDefaultMounts()
         {
             List<Mount> vosMounts = new List<Mount>();
-    #region OLD
+#region OLD
 
             //#region User Packs
 
@@ -406,11 +406,11 @@ namespace LionFire.Vos.VosApp
             //});
 
             //#endregion
-    #endregion
+#endregion
 
-    #region Base Data
+#region Base Data
 
-    #region AppBase
+#region AppBase
 
             if (DefaultMountAppBase)
             {
@@ -432,9 +432,9 @@ namespace LionFire.Vos.VosApp
                     WritePriority = -100,
                 }));
             }
-    #endregion
+#endregion
 
-    #region VarBase
+#region VarBase
 
             if (DefaultMountVarBase)
             {
@@ -457,7 +457,7 @@ namespace LionFire.Vos.VosApp
                 }));
             }
 
-    #endregion
+#endregion
 
 #if ENABLE_APPDATA_FALLBACK
             vosMounts.Add(new Mount(VosApp.Instance.Base, VosDiskPaths.BaseDataPath_AppData.AsFileReference(), DefaultMountOptions.AppDataLayerName, false, new MountOptions()
@@ -467,11 +467,11 @@ namespace LionFire.Vos.VosApp
                 WritePriority = -1000,
             }));
 #endif
-    #endregion
+#endregion
 
-    #region Data
+#region Data
 
-    #region AppData
+#region AppData
 
             if (DefaultMountAppData)
             {
@@ -494,9 +494,9 @@ namespace LionFire.Vos.VosApp
                 }));
             }
 
-    #endregion
+#endregion
 
-    #region VarData
+#region VarData
 
             if (DefaultMountVarData)
             {
@@ -518,17 +518,17 @@ namespace LionFire.Vos.VosApp
                     WritePriority = -20000, // Preferred write location
                 }));
             }
-    #endregion
+#endregion
 
-    #endregion
+#endregion
 
-    #region Custom Path
+#region Custom Path
 
             if (!string.IsNullOrWhiteSpace(VosConfiguration.CustomBaseDir))
             {
             }
 
-    #region Data
+#region Data
 
             if (!string.IsNullOrWhiteSpace(VosConfiguration.CustomDataDir))
             {
@@ -539,12 +539,12 @@ namespace LionFire.Vos.VosApp
                 }
 
             }
-    #endregion
+#endregion
 
 
-    #endregion
+#endregion
 
-    #region Local
+#region Local
 
             //vosMounts.Add(new Mount(VosApp.Instance.Local, VosDiskPaths.VarData.AsFileReference(), null, VosLocationNames.VarData, false, new MountOptions()
             //{
@@ -564,9 +564,9 @@ namespace LionFire.Vos.VosApp
             }));
 #endif
 
-    #endregion
+#endregion
 
-    #region Experimental
+#region Experimental
 
 #if RKV
                 string dbName = "Rkv";
@@ -581,7 +581,7 @@ namespace LionFire.Vos.VosApp
                     ConnectionReference = VosDiskPaths.Default.Databases.AsFileReference().GetChild(dbName),
                 }));
 #endif
-    #endregion
+#endregion
 
             //#region OLD Mount Package dirs: NO!, just Data dirs.
 
@@ -646,11 +646,11 @@ namespace LionFire.Vos.VosApp
             return vosMounts;
         }
 
-    #endregion
+//#endregion
 
 
 
-    #region Assets
+#region Assets
 
         public IVob Assets
         {
@@ -724,7 +724,7 @@ namespace LionFire.Vos.VosApp
 
 
 
-    #endregion
+#endregion
 
         public IVob PackageStores
         {
@@ -752,7 +752,7 @@ namespace LionFire.Vos.VosApp
         }
         private IVob stores;
 
-    #region Packages
+#region Packages
 
         public IVob Packages
         {
@@ -780,7 +780,7 @@ namespace LionFire.Vos.VosApp
         }
         private IVob packageMounts;
 
-    #endregion
+#endregion
 
         //#region Base Data Storage
 
@@ -798,7 +798,7 @@ namespace LionFire.Vos.VosApp
 
         //#endregion
 
-    #region Local Data Storage
+#region Local Data Storage
 
         public IVob Local
         {
@@ -813,9 +813,9 @@ namespace LionFire.Vos.VosApp
         }
         private IVob local;
 
-    #endregion
+#endregion
 
-    #region Local Data Storage
+#region Local Data Storage
 
         public IVob Accounts
         {
@@ -830,15 +830,17 @@ namespace LionFire.Vos.VosApp
         }
         private IVob accounts;
 
-    #endregion
+#endregion
 
-    #region Misc
+#region Misc
 
         private static readonly ILogger l = Log.Get();
 
-    #endregion
+#endregion
 
 #endif
+#endregion
+
     }
-#endif
 }
+#endif

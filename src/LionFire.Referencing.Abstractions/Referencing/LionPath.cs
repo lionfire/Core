@@ -232,6 +232,7 @@ namespace LionFire.Referencing
             if (path.EndsWith(ExplicitHasExtension)) path = path.Substring(0, path.Length - ExplicitHasExtension.Length);
 
             var result = System.IO.Path.GetExtension(path);
+            if (result != null && result.Length == System.IO.Path.GetFileName(path).Length) return null; // Treat treat ".filename" as having no extension.
             return result.Length == 0 ? null : result;
         }
     }

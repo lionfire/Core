@@ -15,17 +15,15 @@ namespace LionFire.Persistence.Persisters
         where TReference : IReference
     {
 #nullable disable
-        public async Task<IEnumerable<Listing>> List<TChildValue>(IPersister<TReference> persister, IReferencable<TReference> referencable, ListFilter? filter = null)
+        public async Task<IEnumerable<Listing<TChildValue>>> List<TChildValue>(IPersister<TReference> persister, IReferencable<TReference> referencable, ListFilter? filter = null)
            => (await Task.WhenAll(
-              (await persister.List(referencable, filter).ConfigureAwait(false)).ThrowIfUnsuccessful().Value
+              (await persister.List<TChildValue>(referencable, filter).ConfigureAwait(false)).ThrowIfUnsuccessful().Value
                 .Select(async listing => new { Listing = listing, hasValue = (await referencable.Reference.GetChild(listing.Name).GetReadHandle<TChildValue>().Resolve()).HasValue })
                 ).ConfigureAwait(false))
                 //.Where(t => t.hasValue).Select(t => new Metadata<Listing>(t.Listing))
                 .Where(t => t.hasValue).Select(t => t.Listing)
                 ;
 #nullable enable
-        public Task<IEnumerable<Listing>> List(Type childType, IPersister<TReference> persister, IReferencable<TReference> referencable, ListFilter? filter = null) => throw new NotImplementedException();
-        public Task<IEnumerable<Listing>> List(IPersister<TReference> persister, IReferencable<TReference> referencable, ListFilter? filter = null) => throw new NotImplementedException();
-    }
+      }
 }
 

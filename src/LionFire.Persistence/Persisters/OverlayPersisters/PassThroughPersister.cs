@@ -52,8 +52,8 @@ namespace LionFire.Persistence.Persisters
            => UnderlyingPersister.Delete(TranslateReference(referencable.Reference));
         public Task<IPersistenceResult> Exists<TValue>(IReferencable<TReference> referencable)
           => UnderlyingPersister.Exists<TValue>(TranslateReference(referencable.Reference));
-        public Task<IRetrieveResult<IEnumerable<Listing>>> List(IReferencable<TReference> referencable, ListFilter filter = null)
-          => UnderlyingPersister.List(TranslateReference(referencable.Reference), filter);
+        public Task<IRetrieveResult<IEnumerable<Listing<T>>>> List<T>(IReferencable<TReference> referencable, ListFilter filter = null)
+          => UnderlyingPersister.List<T>(TranslateReference(referencable.Reference), filter);
 
         public Task<IRetrieveResult<TValue>> Retrieve<TValue>(IReferencable<TReference> referencable)
             => UnderlyingPersister.Retrieve<TValue>(TranslateReference(referencable.Reference));

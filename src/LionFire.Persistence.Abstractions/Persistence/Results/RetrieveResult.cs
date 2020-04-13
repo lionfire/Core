@@ -22,7 +22,7 @@ namespace LionFire.Persistence
         //    Flags = default;
         //}
         public RetrieveResult(T value) : this() { this.Value = value; }
-        public RetrieveResult(T value, PersistenceResultFlags flags) : this(value) { Flags = flags; }
+        public RetrieveResult(T value, PersistenceResultFlags flags, object error = null) : this(value) { Flags = flags; Error = error; }
 
         #endregion
 

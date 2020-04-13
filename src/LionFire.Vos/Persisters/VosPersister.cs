@@ -137,14 +137,14 @@ namespace LionFire.Persistence.Persisters.Vos
             return result;
         }
         public Task<IPersistenceResult> Delete(IReferencable<IVosReference> referencable) => throw new System.NotImplementedException();
-        public async Task<IRetrieveResult<IEnumerable<Listing>>> List(IReferencable<IVosReference> referencable, ListFilter filter = null)
+        public async Task<IRetrieveResult<IEnumerable<Listing<T>>>> List<T>(IReferencable<IVosReference> referencable, ListFilter filter = null)
         {
-            var result = await Retrieve<Metadata<IEnumerable<Listing>>>(referencable).ConfigureAwait(false);
+            var result = await Retrieve<Metadata<IEnumerable<Listing<T>>>>(referencable).ConfigureAwait(false);
             if (result.IsSuccess())
             {
-                return RetrieveResult<IEnumerable<Listing>>.Success(result.Value.Value);
+                return RetrieveResult<IEnumerable<Listing<T>>>.Success(result.Value.Value);
             }
-            return new RetrieveResult<IEnumerable<Listing>> { Flags = result.Flags, Error = result.Error };
+            return new RetrieveResult<IEnumerable<Listing<T>>> { Flags = result.Flags, Error = result.Error };
             //    var vob = Root[referencable.Reference.Path];
 
             //    var result = new VosRetrieveResult<Metadata<IEnumerable<Listing>>>();

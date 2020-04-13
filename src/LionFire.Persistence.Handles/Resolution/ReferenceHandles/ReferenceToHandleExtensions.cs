@@ -47,10 +47,10 @@ namespace LionFire.Referencing
             => reference.GetReadHandleProvider().GetReadHandle<TValue>(reference)
             ?? throw new HasUnresolvedDependenciesException($"Could not get {nameof(IReadHandle<TValue>)} type for reference of type {reference.GetType().FullName}");
 
-        public static IReadHandle<Metadata<IEnumerable<Listing>>> GetListHandle(this IReference reference)
-            => reference.GetReadHandle<Metadata<IEnumerable<Listing>>>();
-        public static IReadHandle<Metadata<IEnumerable<Listing>>> GetListHandle(this IReferencable referencable)
-            => referencable.Reference.GetReadHandle<Metadata<IEnumerable<Listing>>>();
+        public static IReadHandle<Metadata<IEnumerable<Listing<object>>>> GetListHandle(this IReference reference)
+            => reference.GetReadHandle<Metadata<IEnumerable<Listing<object>>>>();
+        public static IReadHandle<Metadata<IEnumerable<Listing<object>>>> GetListHandle(this IReferencable referencable)
+            => referencable.Reference.GetReadHandle<Metadata<IEnumerable<Listing<object>>>>();
 
         public static IReadHandle<TValue> CreateReadHandle<TValue>(this IReference reference) => throw new NotImplementedException(); // FUTURE
 

@@ -20,8 +20,4 @@
     <ProjectReference Include="..\LionFire.Vos\LionFire.Vos.csproj" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="VosApp\Services\" />
-  </ItemGroup>
-
 </Project>

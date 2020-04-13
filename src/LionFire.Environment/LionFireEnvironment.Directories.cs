@@ -44,7 +44,7 @@ namespace LionFire
                     }
 
                     if (path.PathEqualsOrIsDescendant(@"\Program Files") || path.PathEqualsOrIsDescendant(@"\Program Files (x86)")) { return false; }
-                    if (path.PathEqualsOrIsDescendant(@"\ProgramData") { return true; }
+                    if (path.PathEqualsOrIsDescendant(@"\ProgramData")) { return true; }
 
                     // Note: executables may be installed to \Users\user\LocalAppData -- these are considered Variable, though an application may wish to treat it as not.
 

@@ -1,6 +1,6 @@
 ﻿namespace LionFire.Referencing
 {
-    public class Listing
+    public class Listing<T>
     {
         #region Construction
 
@@ -12,7 +12,7 @@
             MimeType = mimeType;
             IsDirectory = directory;
         }
-        public static implicit operator Listing(string name) => new Listing { Name = name };
+        public static implicit operator Listing<T>(string name) => new Listing<T> { Name = name };
 
         #endregion
 
@@ -26,5 +26,6 @@
 
 
         public override string ToString() => this.ToXamlAttribute();
+
     }
 }
