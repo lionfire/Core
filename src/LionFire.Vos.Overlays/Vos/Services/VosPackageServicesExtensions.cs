@@ -11,8 +11,6 @@ namespace LionFire.Services
     {
         #region Package Providers
 
-     
-
         public static IServiceCollection VosPackageProvider(this IServiceCollection services, IVosReference vosReference, PackageProviderOptions options = null)
         {
             services.InitializeVob(vosReference, (serviceProvider, v) =>
@@ -25,7 +23,6 @@ namespace LionFire.Services
             => services.VosPackageProvider(vosPath.ToVosReference(), options);
 
         #endregion
-
      
     }
 }

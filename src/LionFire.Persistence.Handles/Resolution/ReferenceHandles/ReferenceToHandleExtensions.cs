@@ -51,6 +51,10 @@ namespace LionFire.Referencing
             => reference.GetReadHandle<Metadata<IEnumerable<Listing<object>>>>();
         public static IReadHandle<Metadata<IEnumerable<Listing<object>>>> GetListHandle(this IReferencable referencable)
             => referencable.Reference.GetReadHandle<Metadata<IEnumerable<Listing<object>>>>();
+        public static IReadHandle<Metadata<IEnumerable<Listing<T>>>> GetListHandle<T>(this IReference reference)
+                  => reference.GetReadHandle<Metadata<IEnumerable<Listing<T>>>>();
+        public static IReadHandle<Metadata<IEnumerable<Listing<T>>>> GetListHandle<T>(this IReferencable referencable)
+            => referencable.Reference.GetReadHandle<Metadata<IEnumerable<Listing<T>>>>();
 
         public static IReadHandle<TValue> CreateReadHandle<TValue>(this IReference reference) => throw new NotImplementedException(); // FUTURE
 

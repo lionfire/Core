@@ -26,7 +26,11 @@ namespace LionFire.Services
         //}
 
 
-
+        public static IServiceCollection InitializeRootVob(this IServiceCollection services, Func<IServiceProvider, IRootVob, object> action, string rootName = VosConstants.DefaultRootName, IEnumerable<string>? prerequisites = null, IEnumerable<string>? provides = null)
+        {
+            services.Configure<List<VobInitializer>>(list => list.Add(new VobInitializer(VosReference.FromRootName(rootName), action) { Prerequisites = prerequisites, Provides = provides }));
+            return services;
+        }
         public static IServiceCollection InitializeRootVob(this IServiceCollection services, Action<IServiceProvider, IRootVob> action, string rootName = VosConstants.DefaultRootName, IEnumerable<string>? prerequisites = null, IEnumerable<string>? provides = null)
         {
             services.Configure<List<VobInitializer>>(list => list.Add(new VobInitializer(VosReference.FromRootName(rootName), action) { Prerequisites = prerequisites, Provides = provides }));

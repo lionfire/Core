@@ -5,6 +5,13 @@ namespace LionFire.Vos
 {
     public static class VosReferenceExtensions
     {
+        /// <summary>
+        /// Shortened form of .ToVosReference, for convenience.
+        /// </summary>
+        /// <param name="path"></param>
+        /// <returns></returns>
+        public static VosReference V(this string path) => path.ToVosReference();
+
         public static VosReference ToVosReference(this string path) => new VosReference(path);
         public static VosReference ToVosReference(this string[] pathChunks) => new VosReference(pathChunks);
         //    public static Vob GetVob(this VosReference vosReference)
