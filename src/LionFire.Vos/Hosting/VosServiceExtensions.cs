@@ -14,6 +14,7 @@ using LionFire.DependencyInjection;
 using System;
 using LionFire.Ontology;
 using LionFire.Vos.Collections;
+using LionFire.DependencyMachine;
 
 namespace LionFire.Services
 {
@@ -33,8 +34,9 @@ namespace LionFire.Services
                 .ConfigureServices((_, services) =>
                 {
                     services
+                        .AddSingleton<IDependencyStateMachine, DependencyStateMachine>()
                         .AddSingleton<IRootManager, RootManager>()
-                        //.AddSingleton<VosInitializer>() // Now created internally by RootManager
+                        .AddHostedService<VosInitializationService>()
 
                         .TryAddEnumerableSingleton<ICollectionTypeProvider<VosReference>, CollectionTypeFromProperty>()
 
@@ -61,6 +63,7 @@ namespace LionFire.Services
                         //    //}
                         //})
 
+                    
                         .InitializeRootVob((serviceProvider, root) =>
                         {
                             root

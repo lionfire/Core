@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace LionFire.Execution
@@ -120,7 +121,7 @@ namespace LionFire.Execution
         }
 
 
-        public static async Task Restart(this IExecutableEx e, Action actionDuringShutdown = null, StopMode stopMode = StopMode.ImminentRestart | StopMode.GracefulShutdown, StopOptions stopOptions = StopOptions.StopChildren)
+        public static async Task Restart(this IExecutableEx e, Action actionDuringShutdown = null, StopMode stopMode = StopMode.ImminentRestart | StopMode.GracefulShutdown, StopOptions stopOptions = StopOptions.StopChildren, CancellationToken? cancellationToken = null)
         {
             var exFlags = e as IAcceptsExecutionStateFlags;
 
@@ -129,7 +130,7 @@ namespace LionFire.Execution
             if (e is IStoppableEx stoppableEx) { await stoppableEx.Stop(stopMode, stopOptions).ConfigureAwait(false); }
             else if (e is IStoppable stoppable)
             {
-                await stoppable.Stop().ConfigureAwait(false);
+                await stoppable.Stop(cancellationToken).ConfigureAwait(false);
             }
 
             if (actionDuringShutdown != null) actionDuringShutdown();

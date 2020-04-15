@@ -16,6 +16,7 @@ namespace LionFire.Services
     {
         public static IServiceCollection AddStoreAsPackageSource(this IServiceCollection services, string storeName, string packageProviderName, MountOptions mountOptions = null)
         {
+
             return services.InitializeRootVob(root =>
             {
                 var availableVob = root[VosPackageLocations.GetPackageProviderPath(packageProviderName)].AsPackageProvider()?.AvailableRoot;

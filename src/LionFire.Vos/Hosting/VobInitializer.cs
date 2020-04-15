@@ -1,6 +1,7 @@
 ﻿#nullable enable
 using System;
 using System.Collections.Generic;
+using LionFire.DependencyMachine;
 using LionFire.Referencing;
 using LionFire.Vos;
 
@@ -12,8 +13,7 @@ namespace LionFire.Services
         public IVosReference Reference { get; }
         public Func<IServiceProvider, IVob, object?> InitializationAction { get; set; }
 
-        public IEnumerable<string>? Prerequisites { get; set; }
-        public IEnumerable<string>? Provides { get; set; }
+        public IReactor Reactor { get; set; }
 
         #region Construction
 

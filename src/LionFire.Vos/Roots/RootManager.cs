@@ -6,6 +6,8 @@ using System;
 using System.Collections.Concurrent;
 using System.Diagnostics;
 using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace LionFire.Vos
 {
@@ -20,7 +22,7 @@ namespace LionFire.Vos
     {
         #region Dependencies
 
-        RootManagerVobInitializer VosInitializer { get; }
+        VosInitializationService RootManagerVobInitializer { get; }
 
         readonly VosOptions vosOptions;
 
@@ -40,7 +42,7 @@ namespace LionFire.Vos
         public RootManager(IOptionsMonitor<VosOptions> vosOptionsMonitor, IServiceProvider provider)
         {
             this.vosOptions = vosOptionsMonitor.CurrentValue;
-            VosInitializer = ActivatorUtilities.CreateInstance<RootManagerVobInitializer>(provider);
+            RootManagerVobInitializer = ActivatorUtilities.CreateInstance<VosInitializationService>(provider);
 
             //InitializeAll();
         }
@@ -63,9 +65,9 @@ namespace LionFire.Vos
         //    }
         //}
 
-        private void Initialize(RootVob rootVob)
+        private async Task Initialize(RootVob rootVob, CancellationToken cancellationToken = default)
         {
-            VosInitializer.Initialize(rootVob);
+            await RootManagerVobInitializer.Initialize(rootVob, cancellationToken).ConfigureAwait(false);
             rootVob.InitializeMounts();
         }
 
@@ -91,7 +93,7 @@ namespace LionFire.Vos
                 //root.InitializeMounts();
                 //if (vosOptions.AutoInitRootVobs)
                 //{
-                    Initialize(root);
+                    Initialize(root).Wait();
                 //}
                 return root;
             });
