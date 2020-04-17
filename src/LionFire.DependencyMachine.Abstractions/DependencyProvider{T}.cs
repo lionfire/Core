@@ -8,6 +8,7 @@ namespace LionFire.DependencyMachine
         public override string Key => typeof(T).FullName;
 
         public T Value { get; protected set; }
+
     }
 
     public class HostedServiceDependencyProvider<T> : ResolvableDependency

@@ -27,18 +27,18 @@ namespace LionFire.Services
         //}
 
 
-        public static IServiceCollection InitializeRootVob(this IServiceCollection services, Func<IServiceProvider, IRootVob, object> action, string rootName = VosConstants.DefaultRootName, IReactor? reactor = null)
+        public static IServiceCollection InitializeRootVob(this IServiceCollection services, Func<IServiceProvider, IRootVob, object> action, string rootName = VosConstants.DefaultRootName, IDependencyMachineParticipant? reactor = null)
         {
             services.Configure<List<VobInitializer>>(list => list.Add(new VobInitializer(VosReference.FromRootName(rootName), action) { Reactor = reactor }));
             return services;
         }
-        public static IServiceCollection InitializeRootVob(this IServiceCollection services, Action<IServiceProvider, IRootVob> action, string rootName = VosConstants.DefaultRootName, IReactor? reactor = null)
+        public static IServiceCollection InitializeRootVob(this IServiceCollection services, Action<IServiceProvider, IRootVob> action, string rootName = VosConstants.DefaultRootName, IDependencyMachineParticipant? reactor = null)
         {
             services.Configure<List<VobInitializer>>(list => list.Add(new VobInitializer(VosReference.FromRootName(rootName), action) { Reactor = reactor }));
             return services;
         }
 
-        public static IServiceCollection InitializeRootVob(this IServiceCollection services, Action<IRootVob> action, string rootName = VosConstants.DefaultRootName, IReactor? reactor = null, IEnumerable<string>? contributes = null)
+        public static IServiceCollection InitializeRootVob(this IServiceCollection services, Action<IRootVob> action, string rootName = VosConstants.DefaultRootName, IDependencyMachineParticipant? reactor = null, IEnumerable<string>? contributes = null)
         {
             services.Configure<List<VobInitializer>>(list => list.Add(new VobInitializer(VosReference.FromRootName(rootName), action) { Reactor = reactor }));
             return services;
@@ -49,13 +49,13 @@ namespace LionFire.Services
         //public static IServiceCollection InitializeVob(this IServiceCollection services, string vobPath, Action<IServiceProvider, IVob> action) 
         //=> services.InitializeVob(vobPath.ToVosReference(), action);
 
-        public static IServiceCollection InitializeVob(this IServiceCollection services, IVosReference vob, Action<IServiceProvider, IVob> action, IReactor? reactor = null)
+        public static IServiceCollection InitializeVob(this IServiceCollection services, IVosReference vob, Action<IServiceProvider, IVob> action, IDependencyMachineParticipant? reactor = null)
         {
             services.Configure<List<VobInitializer>>(list => list.Add(new VobInitializer(vob, action) { Reactor = reactor }));
             return services;
         }
 
-        public static IServiceCollection InitializeVob(this IServiceCollection services, VosReference vobPath, Action<IVob> action, IReactor? reactor = null)
+        public static IServiceCollection InitializeVob(this IServiceCollection services, VosReference vobPath, Action<IVob> action, IDependencyMachineParticipant? reactor = null)
         {
             services.Configure<List<VobInitializer>>(list => list.Add(new VobInitializer(vobPath.ToVosReference(), action) { Reactor = reactor }));
             return services;
@@ -66,7 +66,7 @@ namespace LionFire.Services
         //    return services;
         //}
 
-        public static IServiceCollection InitializeVob(this IServiceCollection services, IEnumerable<string> vobPath, Action<IVob> action, IReactor? reactor = null)
+        public static IServiceCollection InitializeVob(this IServiceCollection services, IEnumerable<string> vobPath, Action<IVob> action, IDependencyMachineParticipant? reactor = null)
         {
             services.Configure<List<VobInitializer>>(list => list.Add(new VobInitializer(new VosReference(vobPath), action) { Reactor = reactor }));
             return services;
@@ -79,7 +79,7 @@ namespace LionFire.Services
         /// <param name="vobPath"></param>
         /// <param name="action">Return true if completed successfully, false if the action should be invoked again after trying other initializers.</param>
         /// <returns></returns>
-        public static IServiceCollection InitializeVob(this IServiceCollection services, VosReference vobPath, Func<IServiceProvider, IVob, object> action, IReactor? reactor = null)
+        public static IServiceCollection InitializeVob(this IServiceCollection services, VosReference vobPath, Func<IServiceProvider, IVob, object> action, IDependencyMachineParticipant? reactor = null)
         {
             services.Configure<List<VobInitializer>>(list => list.Add(new VobInitializer(vobPath.ToVosReference(), action) { Reactor = reactor }));
             return services;

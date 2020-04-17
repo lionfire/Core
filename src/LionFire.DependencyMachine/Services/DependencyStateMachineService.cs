@@ -14,7 +14,7 @@ namespace LionFire.DependencyMachine
     /// </summary>
     public class DependencyStateMachineService : IHostedService
     {
-        public DependencyStateMachineService(IDependencyStateMachine dependencyStateMachine, IEnumerable<IReactor> reactors)
+        public DependencyStateMachineService(IDependencyStateMachine dependencyStateMachine, IEnumerable<IDependencyMachineParticipant> participants)
         {
             DependencyStateMachine = (IDependencyStateMachineInternal)dependencyStateMachine;
         }

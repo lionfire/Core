@@ -16,10 +16,10 @@ namespace LionFire.DependencyMachine
             return services.AddSingleton<DependencyStateMachine>();
         }
 
-        //public static IServiceCollection AddHostedDependencyService<T>(this IServiceCollection services, IReactor service)
+        //public static IServiceCollection AddHostedDependencyService<T>(this IServiceCollection services, IDependencyMachineParticipant service)
         //{
-        //    //return services.TryAddEnumerableSingleton<IEnumerable<IReactor>>();
-        //    return services.TryAddEnumerableSingleton<IEnumerable<IReactor>>();
+        //    //return services.TryAddEnumerableSingleton<IEnumerable<IDependencyMachineParticipant>>();
+        //    return services.TryAddEnumerableSingleton<IEnumerable<IDependencyMachineParticipant>>();
         //}
 
         private static ConditionalWeakTable<IServiceCollection, DependencyStateMachine> machines = new ConditionalWeakTable<IServiceCollection, DependencyStateMachine>();

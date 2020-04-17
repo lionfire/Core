@@ -1,4 +1,5 @@
 ﻿using Nito.AsyncEx;
+using System.Diagnostics;
 
 namespace LionFire.DependencyMachine
 {
@@ -15,7 +16,9 @@ namespace LionFire.DependencyMachine
                 StartResetEvent = new AsyncManualResetEvent();
                 StartAction = async (_, cancellationToken) =>
                 {
+                    Debug.WriteLine($"{this} waiting for StartResetEvent...");
                     await StartResetEvent.WaitAsync(cancellationToken).ConfigureAwait(false);
+                    Debug.WriteLine($"{this} waiting for StartResetEvent...done.");
                     return null;
                 };
             }
@@ -24,7 +27,9 @@ namespace LionFire.DependencyMachine
                 StopResetEvent = new AsyncManualResetEvent();
                 StopAction = async (_, cancellationToken) =>
                 {
+                    Debug.WriteLine($"{this} waiting for StopResetEvent...");
                     await StartResetEvent.WaitAsync(cancellationToken).ConfigureAwait(false);
+                    Debug.WriteLine($"{this} waiting for StopResetEvent...done.");
                     return null;
                 };
             }

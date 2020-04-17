@@ -1,47 +1,20 @@
-﻿using LionFire.Structures;
+﻿using LionFire.ExtensionMethods;
 using Microsoft.Extensions.Hosting;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
-using System.ComponentModel;
 using System.Diagnostics;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 
 namespace LionFire.DependencyMachine
 {
-    public class DependenyMachineDefinition : IFreezable, INotifyPropertyChanged
-    {
-
-        #region IFreezable
-
-        public bool IsFrozen { get; private set; }
-        public void Freeze() => IsFrozen = true;
-
-        #endregion
-
-        public IEnumerable<IReactor> Members => reactors.Values;
-        ConcurrentDictionary<string, IReactor> reactors { get; } = new ConcurrentDictionary<string, IReactor>();
-
-        public Dictionary<object, object> Dependencies = new Dictionary<object, object>();
-        public void AddDependency(object dependant, object dependency)
-        {
-            if (IsFrozen) throw new ObjectFrozenException();
-            Dependencies.Add(dependant, dependency);
-            OnPropertyChanged(nameof(Dependencies));
-        }
-        public void AddDependency<TDependency>(object dependant) => AddDependency(dependant, typeof(TDependency));
-
-
-        #region INotifyPropertyChanged Implementation
-
-        public event PropertyChangedEventHandler PropertyChanged;
-
-        protected void OnPropertyChanged(string propertyName) => PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
-
-        #endregion
-
-    }
+    // ENH: Add events
+    // ENH: Pause/unpause
+    // ENH: Reactive: detect started/stopped/faulted/paused states on members
+    // ENH: Max one Placeholder per stage
+    // ENH: Don't bother starting placeholder if there are other items in the stage.  It's only a noop placeholder.  Use stage events if you need to know if a stage is starting/stopping/stopped/started.
 
     public class DependencyStateMachine : IDependencyStateMachine
     {
@@ -49,37 +22,105 @@ namespace LionFire.DependencyMachine
 
         public IServiceProvider ServiceProvider { get; set; }
 
-        public DependenyMachineDefinition Definition { get; set; }
+        public DependenyMachineDefinition Definition { get; } = new DependenyMachineDefinition();
+
+        #region IsLoggingEnabled
+
+        public bool IsLoggingEnabled
+        {
+            get => isLoggingEnabled;
+            set
+            {
+                isLoggingEnabled = value;
+                if (!isLoggingEnabled)
+                {
+                    startStageLog = null;
+                    stopStageLog = null;
+                    startLog = null;
+                    stopLog = null;
+                }
+            }
+        }
+        private bool isLoggingEnabled;
+
+        #endregion
+
+
+        #endregion
+
+        #region Convenience
+
+        public IEnumerable<IDependencyMachineParticipant> Participants => Definition.Participants;
 
         #endregion
 
         #region State
 
-        // TODO: State machine: Started Stopped / Starting Stopping
+        // TODO: State machine / some sort of IExecutor interface: Started Stopped / Starting Stopping
         public bool IsStarted { get; private set; }
         public bool IsStarting { get; private set; }
-        
-        public IEnumerable<IReactor> Started => startedReactors.Values;
-        ConcurrentDictionary<string, IReactor> stoppedReactors { get; } = new ConcurrentDictionary<string, IReactor>();
-        public IEnumerable<IReactor> Stopped => stoppedReactors.Values;
-        ConcurrentDictionary<string, IReactor> startedReactors { get; } = new ConcurrentDictionary<string, IReactor>();
+
+        public IEnumerable<IDependencyMachineParticipant> Started => startedParticipants.Values;
+        ConcurrentDictionary<string, IDependencyMachineParticipant> startedParticipants { get; } = new ConcurrentDictionary<string, IDependencyMachineParticipant>();
+        public IEnumerable<IDependencyMachineParticipant> Stopped => stoppedParticipants.Values;
+        ConcurrentDictionary<string, IDependencyMachineParticipant> stoppedParticipants { get; } = new ConcurrentDictionary<string, IDependencyMachineParticipant>();
 
         #region Dependency Logic State
 
+        CompiledDependencyMachine compiled;
         protected void CalculateStages()
         {
-            var stages = new Dictionary<string, DependencyStage>();
-
-            Stages = stages;
+            compiled = new CompiledDependencyMachine(Definition);
         }
 
-        protected Dictionary<string, DependencyStage> Stages { get; protected set; }
+        protected IEnumerable<DependencyStage> Stages => compiled.Stages;
 
         #endregion
 
         #endregion
 
         #region (Public) Methods
+
+        #region Parameters
+
+        public void Register(IEnumerable<IDependencyMachineParticipant> participants)
+        {
+            foreach (var participant in participants) { Register(participant); }
+        }
+
+        public void Register(IDependencyMachineParticipant participant, bool isAlreadyStarted = false)
+        {
+            if (Definition.IsFrozen)
+                if (IsStarted || IsStarting) { throw new NotImplementedException("Not implemented: registering new members after started."); }
+
+            // TODO: LionFire.Execution integration - detect if already started
+
+            //if (participant.StartAction == null && participant.StopAction == null) return;
+            //if (isAlreadyStarted && participant.StopAction == null) return;
+
+            if (!Definition.participants.TryAdd(participant.Key, participant)) throw new AlreadyException($"Participant with key '{participant.Key}' is already registered.");
+
+            if (isAlreadyStarted) { OnStarted(participant, initialRegistration: true); }
+            else { OnStopped(participant, initialRegistration: true); }
+        }
+
+        public bool Unregister(IDependencyMachineParticipant participant)
+        {
+            stoppedParticipants.TryRemove(participant.Key, out _);
+            startedParticipants.TryRemove(participant.Key, out _);
+            return Definition.participants.TryRemove(participant.Key, out _);
+        }
+
+        #endregion
+
+        public IEnumerable<string> StartLog => startLog;
+        private List<string> startLog;
+        public IEnumerable<string> StopLog => stopLog;
+        private List<string> stopLog;
+        public IEnumerable<int> StartStageLog => startStageLog;
+        private List<int> startStageLog;
+        public IEnumerable<int> StopStageLog => stopStageLog;
+        private List<int> stopStageLog;
 
         #region IHostedService
 
@@ -89,24 +130,26 @@ namespace LionFire.DependencyMachine
             IsStarting = false;
             IsStarted = true;
 
-            CalculateStages();
-
-#error NEXT: Make an ordered list of stages, not dictionary.
-            foreach (var stage in Stages) {
-                foreach(var member in stage.Members)
-                {
-                    if(stoppedReactors.ContainsKey(member.Key))
-                    {
-#error - try to start
-                    }
-                }
+            if (IsLoggingEnabled)
+            {
+                startLog = new List<string>();
+                startStageLog = new List<int>();
             }
 
-            foreach (var item in stoppedReactors)
+            CalculateStages();
+
+            foreach (var stage in Stages)
             {
-                Debug.WriteLine($"Starting '{item.Key}' ({item.Value})");
-                await item.Value.StartAsync(cancellationToken).ConfigureAwait(false);
-                OnStarted(item.Value);
+                foreach (var item in stage.Members)
+                {
+                    if (stoppedParticipants.ContainsKey(item.Key))
+                    {
+                        Debug.WriteLine($"Starting '{item}'");
+                        await item.StartAsync(cancellationToken).ConfigureAwait(false);
+                        OnStarted(item);
+                    }
+                }
+                OnStartedStage(stage);
             }
         }
 
@@ -114,56 +157,61 @@ namespace LionFire.DependencyMachine
         {
             IsStarted = false;
 
-            foreach (var item in startedReactors)
+            if (IsLoggingEnabled)
             {
-                Debug.WriteLine($"Stopping '{item.Key}' ({item.Value})");
-                await item.Value.StopAsync(cancellationToken).ConfigureAwait(false);
-                OnStopped(item.Value);
+                stopLog = new List<string>();
+                stopStageLog = new List<int>();
+            }
+
+            foreach (var stage in Stages.Reverse())
+            {
+                foreach (var item in stage.Members)
+                {
+                    if (startedParticipants.ContainsKey(item.Key))
+                    {
+                        Debug.WriteLine($"Stopping '{item.Key}'");
+                        await item.StopAsync(cancellationToken).ConfigureAwait(false);
+                        OnStopped(item);
+                        //Debug.WriteLine($"Starting '{item}'");
+                        //await item.StartAsync(cancellationToken).ConfigureAwait(false);
+                        //OnStarted(item);
+                    }
+                }
+                OnStoppedStage(stage);
             }
         }
 
         #endregion
-
-        public void Register(IReactor reactor, bool isAlreadyStarted = false)
-        {
-            if(IsStarted || IsStarting) { throw new NotImplementedException("Not implemented: registering new members after started."); }
-
-            // TODO: LionFire.Execution integration - detect if already started
-
-            if (reactor.StartAction == null && reactor.StopAction == null) return;
-            if (isAlreadyStarted && reactor.StopAction == null) return;
-
-            if (!reactors.TryAdd(reactor.Key, reactor)) throw new AlreadyException($"Reactor with key '{reactor.Key}' is already registered.");
-
-            if (isAlreadyStarted) { OnStarted(reactor, initialRegistration: true); }
-            else { OnStopped(reactor, initialRegistration: true); }
-        }
-        public bool Unregister(IReactor reactor)
-        {
-            stoppedReactors.TryRemove(reactor.Key, out _);
-            startedReactors.TryRemove(reactor.Key, out _);
-            return reactors.TryRemove(reactor.Key, out _);
-        }
-
         #endregion
 
         #region (Private) Methods
 
-        public void OnStarted(IReactor reactor, bool initialRegistration = false)
+        public void OnStarted(IDependencyMachineParticipant participant, bool initialRegistration = false)
         {
-            if (!initialRegistration) { stoppedReactors.TryRemove(reactor.Key, out _); }
-            startedReactors.AddOrUpdate(reactor.Key, reactor, (k, v) => reactor);
+            if (!initialRegistration) { stoppedParticipants.TryRemove(participant.Key, out _); }
+            startedParticipants.AddOrUpdate(participant.Key, participant, (k, v) => participant);
+            if (startLog != null) { startLog.Add(participant.Key); }
         }
 
-        protected void OnStopped(IReactor reactor, bool initialRegistration = false)
+        protected void OnStopped(IDependencyMachineParticipant participant, bool initialRegistration = false)
         {
-            if (!initialRegistration) { startedReactors.TryRemove(reactor.Key, out _); }
-            stoppedReactors.AddOrUpdate(reactor.Key, reactor, (k, v) => reactor);
+            if (!initialRegistration) { startedParticipants.TryRemove(participant.Key, out _); }
+            stoppedParticipants.AddOrUpdate(participant.Key, participant, (k, v) => participant);
+            if (stopLog != null) { stopLog.Add(participant.Key); }
+        }
 
+        public void OnStartedStage(DependencyStage stage)
+        {
+            if (startStageLog != null) { startStageLog.Add(stage.Id); }
+            Debug.WriteLine($"[stage {stage.Id}] started");
+        }
+        public void OnStoppedStage(DependencyStage stage)
+        {
+            if (stopStageLog != null) { stopStageLog.Add(stage.Id); }
+            Debug.WriteLine($"[stage {stage.Id}] stopped");
         }
 
         #endregion
-
 
     }
 }

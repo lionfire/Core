@@ -13,7 +13,7 @@ namespace LionFire.Services
         public IVosReference Reference { get; }
         public Func<IServiceProvider, IVob, object?> InitializationAction { get; set; }
 
-        public IReactor Reactor { get; set; }
+        public IDependencyMachineParticipant Reactor { get; set; }
 
         #region Construction
 

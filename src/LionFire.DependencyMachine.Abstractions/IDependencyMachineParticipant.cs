@@ -1,4 +1,5 @@
-﻿using LionFire.Structures;
+﻿#nullable enable
+using LionFire.Structures;
 using Microsoft.Extensions.Hosting;
 using System;
 using System.Collections.Generic;
@@ -8,9 +9,9 @@ using System.Threading.Tasks;
 namespace LionFire.DependencyMachine
 {
 
-    public interface IReactor : IKeyed, IHostedService
+    public interface IDependencyMachineParticipant : IKeyed, IHostedService
     {
-        IEnumerable<object> Conditions { get; }
+        IEnumerable<object> Dependencies { get; }
         IEnumerable<object> Provides { get; }
         IEnumerable<object> Contributes { get; }
 
