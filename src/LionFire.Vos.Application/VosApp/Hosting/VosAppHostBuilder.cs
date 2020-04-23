@@ -7,7 +7,7 @@ using LionFire.Vos;
 using LionFire.Applications;
 using LionFire.Vos.Packages;
 using System.Collections.Generic;
-using LionFire.DependencyMachine;
+using LionFire.DependencyMachines;
 
 namespace LionFire.Hosting // REVIEW - consider changing this to LionFire.Services to make it easier to remember how to create a new app
 {
@@ -29,6 +29,11 @@ namespace LionFire.Hosting // REVIEW - consider changing this to LionFire.Servic
                      .ConfigureServices((context, services) =>
                      {
                          services
+                             .ConfigureDependencyMachine(dm=>
+                             {
+                                 dm.Register(DependencyStages.CreateStageChain("mounts", "packages"));
+                             })
+                             .AddSingleton<IDependencyStateMachine, IDependencyStateMachine>()
                              .VobEnvironment("app", "/app".ToVosReference())
                              .VobEnvironment("packageProviders", "/packages".ToVosReference())
                              .VobEnvironment("internal", "/_".ToVosReference())

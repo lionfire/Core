@@ -13,7 +13,7 @@ using System.Threading.Tasks;
 namespace LionFire.Persistence.Persisters.Vos
 {
     public class VosPersister :
-        PersisterBase<VosPersisterOptions>
+        SerializingPersisterBase<VosPersisterOptions>
         , IPersister<IVosReference>
     //, IFilesystemPersistence<TReference, TPersistenceOptions>
     //, IWriter<string> // FUTURE?

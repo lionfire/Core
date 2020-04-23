@@ -18,7 +18,7 @@ namespace LionFire.Persistence.Persisters
     /// <remarks>
     /// Examples: AutoExtensionPersister, (perhaps Vos itself if it can be genericized enough.)
     /// </remarks>
-    public class OverlayPersister<TReference, TOptions, TUnderlyingPersister> : PersisterBase<TOptions>, IPersister<TReference>
+    public class OverlayPersister<TReference, TOptions, TUnderlyingPersister> : SerializingPersisterBase<TOptions>, IPersister<TReference>
         where TReference : IReference
         where TOptions : PersistenceOptions
     {

@@ -1,15 +1,21 @@
-﻿using LionFire.Ontology;
+﻿using LionFire.DependencyMachines;
+using LionFire.Ontology;
+using LionFire.Services;
 using LionFire.Structures;
 using LionFire.Vos.Mounts;
+using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Options;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace LionFire.Vos
 {
 
-    public class RootVob : Vob, IRootVob, IHas<IRootManager>
+    public class RootVob : Vob, IRootVob, IHas<IRootManager>, IHostedService, IHasMany<IParticipant>
     {
         public IRootManager RootManager { get; private set; }
         IRootManager IHas<IRootManager>.Object => RootManager;
@@ -23,6 +29,7 @@ namespace LionFire.Vos
         /// </summary>
         public string RootName { get; }
 
+
         public RootVob(IRootManager rootManager, VosOptions vosOptions) : this(rootManager, VosConstants.DefaultRootName, vosOptions)
         {
         }
@@ -31,10 +38,13 @@ namespace LionFire.Vos
         //{
         //}
 
-        public RootVob(IRootManager rootManager, string rootName, VosOptions vosOptions) : base(null, null)
+        public RootVob(IRootManager rootManager, string rootName, VosOptions vosOptions, IOptionsMonitor<List<VobInitializer>> vobInitializers) : base(null, null)
         {
             RootManager = rootManager;
             VosOptions = vosOptions ?? new VosOptions();
+
+            #region Set to ManualSingleton<RootVob>.Instance to this if applicable
+
             if (rootName == VosConstants.DefaultRootName)
             {
                 if (!AllowMultipleDefaultRoots)
@@ -49,8 +59,22 @@ namespace LionFire.Vos
                     }
                 }
             }
+
+            #endregion
+            
             this.RootName = rootName;
 
+            participants = new List<IParticipant>
+            {
+                new Contributor("mounts", $"{this} mounts")
+                {
+                    StartAction = (c,ct) =>
+                    {
+                        InitializeMounts();
+                        return Task.FromResult<object>(null);
+                    },
+                },
+            };
         }
 
         public IVob InitializeMounts()
@@ -62,5 +86,19 @@ namespace LionFire.Vos
             return this;
         }
 
+
+        IEnumerable<IParticipant> IHasMany<IParticipant>.Objects => participants;
+        private List<IParticipant> participants;
+
+        public Task StartAsync(CancellationToken cancellationToken)
+        {
+            throw new NotImplementedException("NEXT");
+
+        }
+
+        public Task StopAsync(CancellationToken cancellationToken)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

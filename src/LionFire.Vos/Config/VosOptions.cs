@@ -36,6 +36,12 @@ namespace LionFire.Vos
 
         public IEnumerable<string> RootNames { get; set; } = new List<string>() { "" };
 
+        /// <summary>
+        /// If false, requesting a Root of a name not in RootNames will throw an exception.
+        /// If true,  requesting a Root of a name not in RootNames will work, but take note that it may not be initialized in the way that pre-known RootNames are.
+        /// </summary>
+        public bool AllowAdditionalRootNames { get; set; } 
+
         ///// <summary>
         ///// REVIEW: This used to be the default, but now I'd like to defer it until a startup is complete and it can be invoked explicitly via .
         ///// </summary>

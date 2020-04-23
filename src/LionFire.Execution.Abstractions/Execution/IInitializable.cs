@@ -1,6 +1,7 @@
 ﻿using System.Threading.Tasks;
 using System.Runtime.CompilerServices;
 using LionFire.Validation;
+using System.Threading;
 
 namespace LionFire.Execution
 {
@@ -51,7 +52,7 @@ namespace LionFire.Execution
         /// Attempt to initialize, returning true on success, false if initialization can be attempted again.
         /// </summary>
         /// <returns>True if successful, false if not, such as the case when dependencies are not available yet.  See IHasDependencies to indicate missing dependencies.</returns>
-        Task<bool> Initialize();
+        Task<bool> Initialize(/*CancellationToken cancellationToken = default) TODO*/);
     }
 
     public interface IInitializerFor<T>

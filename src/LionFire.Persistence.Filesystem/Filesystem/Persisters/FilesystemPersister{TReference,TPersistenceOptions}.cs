@@ -30,7 +30,7 @@ namespace LionFire.Persistence.Filesystem
     /// <typeparam name="TReference"></typeparam>
     /// <typeparam name="TPersistenceOptions"></typeparam>
     public abstract partial class FilesystemPersister<TReference, TPersistenceOptions>
-        : PersisterBase<TPersistenceOptions>
+        : SerializingPersisterBase<TPersistenceOptions>
         , IPersister<TReference>
         , IFilesystemPersistence<TReference, TPersistenceOptions>
         , IWriter<string>

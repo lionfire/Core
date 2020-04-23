@@ -29,6 +29,7 @@ namespace LionFire.Persistence
         public static readonly PersistenceResult NotFound = new PersistenceResult { Flags = PersistenceResultFlags.NotFound };
         public static readonly PersistenceResult SuccessNotFound = new PersistenceResult { Flags = PersistenceResultFlags.Success | PersistenceResultFlags.NotFound };
         public static readonly PersistenceResult FailAndNotFound = new PersistenceResult { Flags = PersistenceResultFlags.Fail | PersistenceResultFlags.NotFound };
+        public static readonly PersistenceResult FailAndFound = new PersistenceResult { Flags = PersistenceResultFlags.Fail | PersistenceResultFlags.Found };
         public static readonly PersistenceResult PreviewFail = new PersistenceResult { Flags = PersistenceResultFlags.PreviewFail };
         public static readonly PersistenceResult PreviewSuccess = new PersistenceResult { Flags = PersistenceResultFlags.PreviewSuccess };
     }

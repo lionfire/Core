@@ -26,12 +26,12 @@ namespace LionFire.Execution.Jobs
         public BlockerCollection StartBlockers { get; private set; }
 
         public Task RunTask { get; protected set; }
-        public async Task Start()
+        public async Task Start(CancellationToken cancellationToken = default)
         {
             // TODO: If initializable and hasn't initialized, do that
             if (this is IInitializable initializable)
             {
-                if (!await initializable.Initialize().ConfigureAwait(false)) return;
+                if (!await initializable.Initialize(/*cancellationToken*/).ConfigureAwait(false)) return;
             }
             else
             {

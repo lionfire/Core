@@ -1,9 +1,12 @@
 ﻿#nullable enable
+using LionFire.DependencyMachines;
+using LionFire.ExtensionMethods;
 using LionFire.Ontology;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 using System;
 using System.Collections.Concurrent;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Threading;
@@ -11,40 +14,36 @@ using System.Threading.Tasks;
 
 namespace LionFire.Vos
 {
-
-
-    /// <remarks>
-    /// Philosophy:
-    ///  - All RootVobs are initialized once at the construction of VosRootManager
-    ///  - This could be moved to on-demand initialization of RootVobs (and tracking whether RootVobs are initialized) if they grow large or numerous and sparsely needed.
-    /// </remarks>
-    public class RootManager : IRootManager 
+    /// <summary>
+    /// A registry of RootVobs.
+    ///  - Creates RootVobs
+    ///  - Exposes RootVob's IParticipants
+    ///  - (optional) Restricts RootVob names to those listed in VosOptions.
+    /// </summary>
+    public class RootManager : IRootManager, IHasMany<IParticipant>
     {
         #region Dependencies
 
-        VosInitializationService RootManagerVobInitializer { get; }
+        public IServiceProvider ServiceProvider { get; }
 
         readonly VosOptions vosOptions;
 
         #endregion
 
-        IRootManager IHas<IRootManager>.Object => this;
+        IRootManager IHas<IRootManager>.Object => this; // REVIEW - is this needed?
 
         #region State
 
-        //RootVob? namelessRootVob;
-        ConcurrentDictionary<string, RootVob?> roots = new ConcurrentDictionary<string, RootVob?>();
+        ConcurrentDictionary<string, RootVob> roots = new ConcurrentDictionary<string, RootVob>();
 
         #endregion
 
         #region Construction
 
-        public RootManager(IOptionsMonitor<VosOptions> vosOptionsMonitor, IServiceProvider provider)
+        public RootManager(IServiceProvider serviceProvider, IOptionsMonitor<VosOptions> vosOptionsMonitor)
         {
             this.vosOptions = vosOptionsMonitor.CurrentValue;
-            RootManagerVobInitializer = ActivatorUtilities.CreateInstance<VosInitializationService>(provider);
-
-            //InitializeAll();
+            ServiceProvider = serviceProvider;
         }
 
         //private void InitializeAll()
@@ -65,41 +64,53 @@ namespace LionFire.Vos
         //    }
         //}
 
-        private async Task Initialize(RootVob rootVob, CancellationToken cancellationToken = default)
-        {
-            await RootManagerVobInitializer.Initialize(rootVob, cancellationToken).ConfigureAwait(false);
-            rootVob.InitializeMounts();
-        }
+        //private async Task Initialize(RootVob rootVob, CancellationToken cancellationToken = default)
+        //{
+        //    await RootManagerVobInitializer.Initialize(rootVob, cancellationToken).ConfigureAwait(false);
+        //    rootVob.InitializeMounts();
+        //}
 
         #endregion
 
         #region Methods
 
         IRootVob? IRootManager.Get(string? rootName) => Get(rootName);
-        public RootVob? Get(string? rootName = null)
+        public RootVob Get(string? rootName = "")
         {
-            //if (rootName == null || rootName == "")
-            //{
-            //    return namelessRootVob; // Might be null
-            //}
-            if (rootName == null) rootName = "";
+            rootName ??= "";
+            if (roots == null) roots = new ConcurrentDictionary<string, RootVob>();
 
-            if (roots == null) roots = new ConcurrentDictionary<string, RootVob?>();
-
-            return roots.GetOrAdd(rootName, n =>
+            var result = roots.GetOrAdd(rootName, n =>
             {
-                if (!vosOptions.RootNames.Contains(n)) return null;
-                var root = new RootVob(this, n, vosOptions);
-                //root.InitializeMounts();
-                //if (vosOptions.AutoInitRootVobs)
-                //{
-                    Initialize(root).Wait();
-                //}
-                return root;
+                if (!vosOptions.RootNames.Contains(n) && !vosOptions.AllowAdditionalRootNames) throw new KeyNotFoundException($"VosOptions.AllowAdditionalRootNames is false and the requested rootName '{n}' was not listed in VosOptions.RootNames.");
+                //var root = new RootVob(this, n, vosOptions);
+                return ActivatorUtilities.CreateInstance<RootVob>(ServiceProvider, this, n);
             });
+
+            // ENH - if result is LazyInit and is not initialized, initialize it.
+
+            return result;
         }
 
         #endregion
+
+        IEnumerable<IParticipant> IHasMany<IParticipant>.Objects
+        {
+            get
+            {
+                foreach (var rootName in vosOptions.RootNames)
+                {
+                    //var rootOptions = vosOptions.NamedRootOptions.TryGetValue(rootName); ENH
+                    //if (rootOptions != null && rootOptions.LazyInit)
+                    //{
+                    //    continue;
+                    //}
+                    var rootVob = Get(rootName);
+
+                    foreach (var p in rootVob.GetParticipants()) { yield return p; }
+                }
+            }
+        }
 
     }
 }

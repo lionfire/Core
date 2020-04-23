@@ -14,7 +14,7 @@ namespace LionFire.Persistence.Persisters
     /// <typeparam name="TOptions"></typeparam>
     /// <typeparam name="TUnderlyingReference"></typeparam>
     /// <typeparam name="TUnderlyingPersister"></typeparam>
-    public abstract class PassthroughPersister<TReference, TOptions, TUnderlyingReference, TUnderlyingPersister> : PersisterBase<TOptions>, IPersister<TReference>
+    public abstract class PassthroughPersister<TReference, TOptions, TUnderlyingReference, TUnderlyingPersister> : SerializingPersisterBase<TOptions>, IPersister<TReference>
         where TReference : IReference
         where TOptions : PersistenceOptions
         where TUnderlyingPersister : class, IPersister<TUnderlyingReference>

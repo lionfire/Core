@@ -1,4 +1,5 @@
-﻿using LionFire.Persistence.Persisters;
+﻿#if UNUSED
+using LionFire.Persistence.Persisters;
 using LionFire.Referencing;
 using System;
 
@@ -12,3 +13,4 @@ namespace LionFire.Persistence.RegisteredObjects
         public IPersister<RegisteredObjectReference> GetPersister(string name = null) => throw new NotImplementedException();
     }
 }
+#endif

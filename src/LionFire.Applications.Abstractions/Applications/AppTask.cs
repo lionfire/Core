@@ -61,7 +61,7 @@ namespace LionFire.Applications
 
         #region Initialization
 
-        public virtual Task<bool> Initialize()
+        public virtual Task<bool> Initialize(/*CancellationToken cancellationToken = default*/)
         {
             return Task.FromResult(TryInitializeAction());
         }
@@ -85,9 +85,9 @@ namespace LionFire.Applications
         //        this.RunTask = Task.Run(RunAction);
         //    }
         //}
-        public virtual async Task Start(/*System.Threading.CancellationToken? cancellationToken = null*/)
+        public virtual async Task Start(CancellationToken cancellationToken = default)
         {
-            if (await Initialize().ConfigureAwait(false) == false) { throw new Exception($"{this} failed to initialize.  Cannot start it."); }
+            if (await Initialize(/*cancellationToken*/).ConfigureAwait(false) == false) { throw new Exception($"{this} failed to initialize.  Cannot start it."); }
 
             //if (cancellationToken.HasValue) { this.CancellationToken = cancellationToken; }
 

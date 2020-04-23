@@ -7,6 +7,12 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="Strategies\**" />
+    <EmbeddedResource Remove="Strategies\**" />
+    <None Remove="Strategies\**" />
+  </ItemGroup>
+
+  <ItemGroup>
     <ProjectReference Include="..\LionFire.Applications.Abstractions\LionFire.Applications.Abstractions.csproj" />
     <ProjectReference Include="..\LionFire.Persistence.Handles\LionFire.Persistence.Handles.csproj" />
     <ProjectReference Include="..\LionFire.Serialization.Json.Newtonsoft\LionFire.Serialization.Json.Newtonsoft.csproj" />
@@ -14,7 +20,6 @@
 
   <ItemGroup>
     <Folder Include="Filesystem\Persisters\Providers\" />
-    <Folder Include="Strategies\" />
   </ItemGroup>
 
   <ItemGroup>

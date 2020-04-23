@@ -16,7 +16,7 @@ namespace LionFire.Persistence.Handles
     /// Read-only Handles to .NET object references (can be null) -- can be named and then retrieved by the handle registry system.
     /// </summary>
     /// <typeparam name="TValue"></typeparam>
-    public class ObjectHandle<TValue> : ReadHandleBase<NamedReference, TValue>, IReadHandle<TValue>, IReadWriteHandle<TValue>
+    public class ObjectHandle<TValue> : ReadHandleBase<NamedReference<TValue>, TValue>, IReadWriteHandle<TValue>
     {
         string IKeyed<string>.Key => Reference.Key;
 
@@ -95,7 +95,7 @@ namespace LionFire.Persistence.Handles
             ProtectedValue = initialValue;
         }
 
-        public ObjectHandle(NamedReference reference, TValue initialValue = default) : base(reference)
+        public ObjectHandle(NamedReference<TValue> reference, TValue initialValue = default) : base(reference)
         {
             if (!EqualityComparer<TValue>.Default.Equals(initialValue, default))
             {

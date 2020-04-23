@@ -14,11 +14,14 @@ using LionFire.DependencyInjection;
 using System;
 using LionFire.Ontology;
 using LionFire.Vos.Collections;
-using LionFire.DependencyMachine;
+using LionFire.DependencyMachines;
+using System.Collections.Generic;
+using System.Threading.Tasks;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 
 namespace LionFire.Services
 {
-    public class CollectionTypeFromProperty : ICollectionTypeProvider<VosReference>
+    public class CollectionTypeFromVobNode : ICollectionTypeProvider<VosReference>
     {
         public Type GetCollectionType(VosReference reference)
         {
@@ -28,32 +31,46 @@ namespace LionFire.Services
 
     public static class VosServiceExtensions
     {
+        public static IServiceCollection AddRootManager(this IServiceCollection services)
+        {
+            return services
+                .AddSingleton<IRootManager, RootManager>()
+                .Configure<DependencyMachineConfig>(c =>
+                {
+                    c.AutoRegisterFromServiceTypes.Add(typeof(IRootManager));
+                });
+        }
+
         public static IHostBuilder AddVos(this IHostBuilder hostBuilder)
             => hostBuilder
                 .AddPersisters()
                 .ConfigureServices((_, services) =>
                 {
                     services
-                        .AddSingleton<IDependencyStateMachine, DependencyStateMachine>()
-                        .AddSingleton<IRootManager, RootManager>()
-                        .AddHostedService<VosInitializationService>()
+                        .AddDependencyMachine()
 
-                        .TryAddEnumerableSingleton<ICollectionTypeProvider<VosReference>, CollectionTypeFromProperty>()
-
-                        .AddSingleton(serviceProvider => serviceProvider.GetService<IOptionsMonitor<VosOptions>>().CurrentValue)
-
-                        .AddSingleton<IPersisterProvider<VosReference>, VosPersisterProvider>()
-                        .AddSingleton<IReadHandleProvider<VosReference>, VosHandleProvider>()
-                        .AddSingleton<IReadWriteHandleProvider<VosReference>, VosHandleProvider>()
-                        .AddSingleton<IWriteHandleProvider<VosReference>, VosHandleProvider>()
-                        .AddSingleton(s => s.GetRequiredService<IOptionsMonitor<VosPersisterOptions>>().CurrentValue) // REVIEW - force usage via IOptionsMonitor?
-                        .Configure<VosPersisterOptions>(vpo => { })
                         .Configure<VosOptions>(vo =>
                         {
                             //vo.RootNames = new string[] { "", "TestAltRoot" }; // TEMP TEST Alt root
 
                             //Debug.WriteLine("Configure VosOptions - defaults");
                         })
+                        .AddSingleton(serviceProvider => serviceProvider.GetService<IOptionsMonitor<VosOptions>>().CurrentValue)
+
+                        .AddRootManager()
+                        //.AddHostedService<VosInitializationService>()
+
+
+                        .TryAddEnumerableSingleton<ICollectionTypeProvider<VosReference>, CollectionTypeFromVobNode>()
+
+                        .AddSingleton<IPersisterProvider<VosReference>, VosPersisterProvider>()
+                        .Configure<VosPersisterOptions>(vpo => { })
+                        .AddSingleton(s => s.GetRequiredService<IOptionsMonitor<VosPersisterOptions>>().CurrentValue) // REVIEW - force usage via IOptionsMonitor?
+
+                        .AddSingleton<IReadHandleProvider<VosReference>, VosHandleProvider>()
+                        .AddSingleton<IReadWriteHandleProvider<VosReference>, VosHandleProvider>()
+                        .AddSingleton<IWriteHandleProvider<VosReference>, VosHandleProvider>()
+
                         //.PostConfigure<VosOptions>(o =>
                         //{
                         //    //Debug.WriteLine("Mounts:");
@@ -63,16 +80,28 @@ namespace LionFire.Services
                         //    //}
                         //})
 
-                    
-                        .InitializeRootVob((serviceProvider, root) =>
+                        .TryAddEnumerable(new ServiceDescriptor(typeof(IParticipant), ))
+                        .TryAddEnumerable(new ServiceDescriptor(typeof(VobInitializer), ))
+
+                        .AddNamedSingleton<VobInitializer>("RootInitializer", new VobInitializer()
                         {
-                            root
+                            Contributes = new List<object> { "RootVobs" },
+                            StartAction = async (ctx, ct) =>
+                            {
+                                await Task.Delay(0);
+                                return null;
+                            },
+                        })
+                        .InitializeVob("/".ToVosReference(), (serviceProvider, vob) =>
+                        //.InitializeRootVob((serviceProvider, root) =>
+                        {
+                            vob
                             .AddServiceProvider(s =>
                             {
                                 s
-                                .AddSingleton(_ => new ServiceDirectory((RootVob)root))
-                                .AddSingleton(root)
-                                .AddSingleton(root.RootManager)
+                                .AddSingleton(_ => new ServiceDirectory((RootVob)vob))
+                                .AddSingleton(vob)
+                                .AddSingleton(vob.Root.RootManager)
                                 .AddSingleton<VosPersister>()
                                 .AddSingleton<VobMounter>()
                                 ;

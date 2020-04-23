@@ -1,4 +1,5 @@
-﻿using LionFire.DependencyMachine;
+﻿#if UNUSED
+using LionFire.DependencyMachines;
 using LionFire.Execution;
 using LionFire.Services;
 using Microsoft.Extensions.Hosting;
@@ -33,20 +34,17 @@ namespace LionFire.Vos
             VobInitializers = vobInitializers.CurrentValue;
             DependencyStateMachine = dependencyStateMachine;
             RootManager = rootManager;
-
             
 
-            foreach (var vi in VobInitializers.Where(v=>v.Reactor != null))
+            foreach (var vi in VobInitializers.Where(v=>v.Participant != null))
             {
-                DependencyStateMachine.Register(vi.Reactor);
+                DependencyStateMachine.Register(vi.Participant);
             }
         }
 
-#error TODO: multi-dependency: RootNames.  VosOption: AutoInitRoots (otherwise, initted on first retrieve)
-
         public async Task Initialize(RootVob rootVob, CancellationToken cancellationToken = default)
         {
-            await VobInitializers.Where(vi => vi.Reference.RootName() == rootVob.RootName && vi.Reactor != null)
+            await VobInitializers.Where(vi => vi.Reference.RootName() == rootVob.RootName && vi.Participant != null)
                 .RepeatAllUntilNull(initializer => 
                     () => Task.FromResult(initializer.InitializationAction(ServiceProvider, string.IsNullOrEmpty(initializer.Reference?.Path) ? rootVob : rootVob[initializer.Reference.Path]))).ConfigureAwait(false);
 
@@ -60,8 +58,7 @@ namespace LionFire.Vos
             //    initializer.InitializationAction(ServiceProvider, vob);
             //}
         }
-
-    
     }
 }
 
+#endif

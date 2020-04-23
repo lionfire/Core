@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace LionFire.ExtensionMethods
 {
@@ -25,10 +26,10 @@ namespace LionFire.ExtensionMethods
         /// <param name="action">Action to perform on each item of enumerable</param>
         public static void Apply<T>(this IEnumerable<T> enumerable, Action<T> action)
         {
-            foreach (var item in enumerable)
-            {
-                action(item);
-            }
+            foreach (var item in enumerable) { action(item); }
         }
+
+        public static IEnumerable<T> OrEmpty<T>(this IEnumerable<T> enumerable) => enumerable ?? Enumerable.Empty<T>();
+
     }
 }
