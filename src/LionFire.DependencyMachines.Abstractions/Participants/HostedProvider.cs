@@ -2,23 +2,26 @@
 
 namespace LionFire.DependencyMachines
 {
-    public class HostedProvider<T> : Participant
+    /// <summary>
+    /// Wrapper for IHostedService to start/stop within a DependencyMachine.
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
+    public class HostedProvider<T> : Participant<HostedProvider<T>>
         where T : IHostedService
     {
         IHostedService HostedService { get; }
-        public override string Key => typeof(T).FullName;
 
-        public T Value { get; protected set; }
+        public override string? DefaultKey => $"{{HostedProvider {typeof(T).FullName}}}";
 
         public HostedProvider(IHostedService hostedService)
         {
             HostedService = hostedService;
-            StartAction = async (_, cancellationToken) =>
+            StartTask = async (_, cancellationToken) =>
             {
                 await HostedService.StartAsync(cancellationToken);
                 return null;
             };
-            StopAction = async (_, cancellationToken) =>
+            StopTask = async (_, cancellationToken) =>
             {
                 await HostedService.StopAsync(cancellationToken);
                 return null;

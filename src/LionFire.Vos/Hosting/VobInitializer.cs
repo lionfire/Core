@@ -1,4 +1,5 @@
-﻿#nullable enable
+﻿#if OLD
+#nullable enable
 using System;
 using System.Collections.Generic;
 using System.Threading;
@@ -12,11 +13,10 @@ namespace LionFire.Services
 {
 
 
-    public class VobInitializer : Participant, IKeyed
+    public class VobInitializer : StartableParticipant<VobInitializer>, IKeyed
     {
-        public override string Key => Vob.Reference.Key;
+        public override string DefaultKey => Vob.Reference.Key;
         private IVob Vob { get; }
-        //public Func<IServiceProvider, CancellationToken, IVob, Task<object?>> InitializationAction { get; set; }
 
         #region Construction
 
@@ -28,7 +28,7 @@ namespace LionFire.Services
         /// Targets Root Vob of default Root
         /// </summary>
         /// <param name="initializationAction"></param>
-        public VobInitializer(IServiceProvider serviceProvider, IVosReference reference, IRootManager rootManager, Func<IServiceProvider, IVob, object?> initializationAction)
+        public VobInitializer(IServiceProvider serviceProvider, IVosReference reference, IVos rootManager, Func<IServiceProvider, IVob, object?> initializationAction)
         {
             Vob = rootManager.GetVob(reference) ?? throw new Exception("Failed to get Vob '" + reference +"'.  Is the root name specified in VosOptions?");
 
@@ -71,7 +71,7 @@ namespace LionFire.Services
         #region Primary
 
         public VobInitializer(IVosReference reference, Func<IServiceProvider, IRootVob, object> initializationAction)
-     : this(reference, (serviceProvider, vob) => initializationAction(serviceProvider, (IRootVob)vob))
+            : this(reference, (serviceProvider, vob) => initializationAction(serviceProvider, (IRootVob)vob))
         {
         }
 
@@ -111,3 +111,4 @@ namespace LionFire.Services
 }
 
 
+#endif

@@ -13,7 +13,7 @@ namespace LionFire.Vos.Mounts
         public static IMount Mount(this IVob vob, IVob target, MountOptions options = null)
           => vob.GetRequiredService<VobMounter>().Mount(vob, target, options);
 
-        public static IMount Mount(this IVob vob, TMount tMount)
+        public static IMount Mount(this IVob vob, ITMount tMount)
             => vob.GetRequiredService<VobMounter>().Mount(vob, tMount);
 
         public static int Unmount(this IVob vob, IReference target)

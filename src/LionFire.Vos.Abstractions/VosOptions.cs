@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using LionFire.ExtensionMethods;
+using LionFire.DependencyMachines;
 
 namespace LionFire.Vos
 {
@@ -40,12 +41,23 @@ namespace LionFire.Vos
         /// If false, requesting a Root of a name not in RootNames will throw an exception.
         /// If true,  requesting a Root of a name not in RootNames will work, but take note that it may not be initialized in the way that pre-known RootNames are.
         /// </summary>
-        public bool AllowAdditionalRootNames { get; set; } 
+        public bool AllowAdditionalRootNames { get; set; }
 
         ///// <summary>
         ///// REVIEW: This used to be the default, but now I'd like to defer it until a startup is complete and it can be invoked explicitly via .
         ///// </summary>
         //public bool AutoInitRootVobs { get; set; }
+
+        /// <summary>
+        /// Used if there VobRootOptions.ParticipantsFactory is null
+        /// </summary>
+        public Func<IRootVob, IEnumerable<IParticipant>> DefaultParticipantsFactory { get; set; }
+
+        /// <summary>
+        /// Used for all RootVobs
+        /// </summary>
+        public Func<IRootVob, IEnumerable<IParticipant>> ParticipantsFactory { get; set; }
+
     }
 
     //public static class VosOptionsExtensions

@@ -6,24 +6,16 @@ using System.Linq;
 
 namespace LionFire.DependencyMachines
 {
-
-    public class Contributor : Participant
+    public class Contributor : Participant<Contributor>
     {
-        public override string Key => key;
-        private readonly string key;
-
-
-        public Contributor(string contributesTo, string name = null, params string[] dependsOn)
+        public Contributor(string contributesTo, string? name = null, params string[] dependsOn)
         {
-            Contributes = new object[] { contributesTo };
-            this.key = name ?? (contributesTo + $" ({Guid.NewGuid()})");
+            Contributes = new List<object> { contributesTo };
+            this.Key = name ?? (contributesTo + $" ({Guid.NewGuid()})");
             if (dependsOn.Any())
             {
                 Dependencies = new List<object>(dependsOn);
             } 
         }
-
-        public override string ToString() => Key;
     }
-
 }

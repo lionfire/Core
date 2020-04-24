@@ -10,9 +10,9 @@ namespace LionFire.Vos.Assets.Persisters
 {
     public class VosAssetPersisterProvider : IPersisterProvider<IAssetReference>
     {
-        IRootManager RootManager { get; }
+        IVos RootManager { get; }
 
-        public VosAssetPersisterProvider(IRootManager rootManager)
+        public VosAssetPersisterProvider(IVos rootManager)
         {
             RootManager = rootManager;
         }

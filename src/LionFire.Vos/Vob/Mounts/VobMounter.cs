@@ -8,7 +8,7 @@ namespace LionFire.Vos.Mounts
 {
     public class VobMounter : IVobMounter
     {
-        public IMount Mount(IVob mountPointOrParent, TMount tMount)
+        public IMount Mount(IVob mountPointOrParent, ITMount tMount)
         {
             IVob mountPoint = mountPointOrParent;
             if (mountPointOrParent.Reference != tMount.MountPoint)

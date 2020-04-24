@@ -148,15 +148,28 @@ namespace LionFire.DependencyMachines
 
             var endOfStage = new List<IParticipant>();
 
-            async Task start(IParticipant item)
+            async Task<object?> start(IParticipant item, CancellationToken cancellationToken2)
             {
                 if (stoppedParticipants.ContainsKey(item.Key))
                 {
                     OnStarting(item);
-                    await item.StartAsync(cancellationToken).ConfigureAwait(false);
+                    if (item is ITryStartable ts)
+                    {
+                        try
+                        {
+                            var result = await ts.TryStartAsync(cancellationToken2).ConfigureAwait(false);
+                            if (result != null) return result;
+                        }
+                        catch (Exception ex)
+                        {
+                            return ex;
+                        }
+                    }
                     OnStarted(item);
                 }
+                return null;
             }
+
             foreach (var stage in Stages)
             {
                 endOfStage.Clear();
@@ -178,9 +191,9 @@ namespace LionFire.DependencyMachines
                             throw new DependencyMissingException($"Participant '{item}' has missing dependencies: " + item.DependencyHandles.Where(h => !h.HasValue).Select(h=>h.Key).Aggregate((x, y) => $"{x}, {y}"));
                         }
                     }
-                    await start(item).ConfigureAwait(false);
+                    await start(item, cancellationToken).ConfigureAwait(false);
                 }
-                foreach (var item in endOfStage) { await start(item).ConfigureAwait(false); }
+                foreach (var item in endOfStage) { await start(item, cancellationToken).ConfigureAwait(false); }
                 OnStartedStage(stage);
             }
         }
@@ -212,6 +225,27 @@ namespace LionFire.DependencyMachines
                 stopStageLog = new List<int>();
             }
 
+            async Task<object?> stop(IParticipant item, CancellationToken cancellationToken2)
+            {
+                if (stoppedParticipants.ContainsKey(item.Key))
+                {
+                    OnStopping(item);
+                    if (item is ITryStoppable ts)
+                    {
+                        try
+                        {
+                            var result = await ts.TryStopAsync(cancellationToken2).ConfigureAwait(false);
+                            if (result != null) return result;
+                        }
+                        catch (Exception ex)
+                        {
+                            return ex;
+                        }
+                    }
+                    OnStopped(item);
+                }
+                return null;
+            }
             foreach (var stage in Stages.Reverse())
             {
                 foreach (var item in stage.Members)
@@ -219,7 +253,7 @@ namespace LionFire.DependencyMachines
                     if (startedParticipants.ContainsKey(item.Key))
                     {
                         OnStopping(item);
-                        await item.StopAsync(cancellationToken).ConfigureAwait(false);
+                        await stop(item, cancellationToken).ConfigureAwait(false);
                         OnStopped(item);
                     }
                 }

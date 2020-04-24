@@ -20,17 +20,19 @@ namespace LionFire.Vos
     ///  - Exposes RootVob's IParticipants
     ///  - (optional) Restricts RootVob names to those listed in VosOptions.
     /// </summary>
-    public class RootManager : IRootManager, IHasMany<IParticipant>
+    public class RootManager : IVos, IHasMany<IParticipant>, IHas<IServiceProvider>
     {
         #region Dependencies
 
+        IServiceProvider IHas<IServiceProvider>.Object => ServiceProvider;
         public IServiceProvider ServiceProvider { get; }
 
+        public VosOptions Options => vosOptions;
         readonly VosOptions vosOptions;
 
         #endregion
 
-        IRootManager IHas<IRootManager>.Object => this; // REVIEW - is this needed?
+        IVos IHas<IVos>.Object => this; // REVIEW - is this needed?
 
         #region State
 
@@ -74,7 +76,7 @@ namespace LionFire.Vos
 
         #region Methods
 
-        IRootVob? IRootManager.Get(string? rootName) => Get(rootName);
+        IRootVob? IVos.Get(string? rootName) => Get(rootName);
         public RootVob Get(string? rootName = "")
         {
             rootName ??= "";

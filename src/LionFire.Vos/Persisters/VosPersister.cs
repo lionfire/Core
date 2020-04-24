@@ -49,7 +49,7 @@ namespace LionFire.Persistence.Persisters.Vos
         {
             Root = root;
         }
-        public VosPersister(IRootManager vosRootManager, string rootName, VosPersisterOptions options, SerializationOptions serializationOptions) : this(vosRootManager.Get(rootName), options?.SerializationOptions ?? serializationOptions)
+        public VosPersister(IVos vosRootManager, string rootName, VosPersisterOptions options, SerializationOptions serializationOptions) : this(vosRootManager.Get(rootName), options?.SerializationOptions ?? serializationOptions)
         {
             //this.RootName = rootName;
             //root = vosRootManager.Get(rootName);

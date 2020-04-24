@@ -1,17 +1,15 @@
-﻿namespace LionFire.DependencyMachines
+﻿using System.Collections.Generic;
+
+namespace LionFire.DependencyMachines
 {
-    public class Placeholder : Participant
+    public class Placeholder : StartableParticipant<Placeholder>
     {
         public Placeholder(string name, params string[] dependencies)
         {
             Key = name;
-            Contributes = new string[] { name };
-            Dependencies = dependencies;
+            this.Contributes(name);
+            this.DependsOn(dependencies);
             Flags |= ParticipantFlags.StageEnder;
         }
-
-        public override string Key { get; }
-
-
     }
 }

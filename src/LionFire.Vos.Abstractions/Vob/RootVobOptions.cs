@@ -5,7 +5,7 @@ namespace LionFire.Vos
 {
     public class RootVobOptions
     {
-        public List<TMount> Mounts { get; set; } = new List<TMount>();
+        public List<ITMount> Mounts { get; set; } = new List<ITMount>();
     }
 
     //public static class VosOptionsExtensions

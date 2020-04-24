@@ -14,11 +14,11 @@ using System.Threading.Tasks;
 
 namespace LionFire.Services
 {
-    public static class VobInitializerListExtensions
-    {
-        public static void Add(this ConcurrentDictionary<string, List<VobInitializer>> dict, VobInitializer i)
-            => dict.GetOrAdd(i.Key, k => new List<VobInitializer>()).Add(i);
-    }
+    //public static class VobInitializerListExtensions
+    //{
+    //    public static void Add(this ConcurrentDictionary<string, List<VobInitializer>> dict, VobInitializer i)
+    //        => dict.GetOrAdd(i.Key, k => new List<VobInitializer>()).Add(i);
+    //}
 
     //public class VobInitializerParticipant : Participant
     //{
@@ -62,57 +62,47 @@ namespace LionFire.Services
         //    return services;
         //}
 
-        #region Configure VobInitializer
+        //#region Configure VobInitializer
 
-        // Configure action
-        public static IServiceCollection InitializeVob(this IServiceCollection services, VosReference vosReference, Action<VobInitializer> configure)
-            => services.AddParticipant(configure, vosReference);
+        //// Configure action
+        //public static IServiceCollection InitializeVob(this IServiceCollection services, VosReference vosReference, Action<VobInitializer> configure)
+        //    => services.AddParticipant(configure, vosReference);
 
-        // Configure action, with custom VobInitializer type
-        public static IServiceCollection InitializeVob<TInitializer>(this IServiceCollection services, VosReference vosReference, Action<TInitializer> configure)
-            where TInitializer : VobInitializer
-            => services.AddParticipant(configure, vosReference);
-        
-        #endregion
+        //// Configure action, with custom VobInitializer type
+        //public static IServiceCollection InitializeVob<TInitializer>(this IServiceCollection services, VosReference vosReference, Action<TInitializer> configure)
+        //    where TInitializer : VobInitializer
+        //    => services.AddParticipant(configure, vosReference);
+
+        //#endregion
 
         #region Action
 
-        // Simplest case: perform a synchronous action on a Vob, no IServiceProvider
-        public static IServiceCollection InitializeVob(this IServiceCollection services, VosReference vosReference, Action<IVob> action)
-            => services.AddParticipant<VobInitializer>(vi=>
-            {
-                vi.StartAction = 
-            }, vosReference);
-        {
-            services.InitializeVob(vosReference, vi =>
-            {
-                vi.StartAction =  initializationAction,
-            }, stage: stage);
-
-            services.TryAddEnumerable(new ServiceDescriptor(typeof(VobInitializer), serviceProvider =>
-            {
-                ActivatorUtilities.CreateInstance<VobInitializer>(serviceProvider, vosReference
-                return factory(serviceProvider);
-            }, ServiceLifetime.Transient));
-            return services;
-        }
+        // Simplest case: perform a synchronous action on a Vob
+        public static IServiceCollection InitializeVob(this IServiceCollection services, VosReference vosReference, Action<IVob> action, Action<IParticipant>? configure = null)
+            => services.AddInitializer((Action<IVos>)(v => action(v.GetVob(vosReference))), configure);
+        public static IServiceCollection InitializeVob(this IServiceCollection services, VosReference vosReference, Func<IVob, object?> func, Action<IParticipant>? configure = null)
+            => services.AddInitializer((Func<IVos, object?>)(v => func(v.GetVob(vosReference))), configure);
+        public static IServiceCollection InitializeVob(this IServiceCollection services, VosReference vosReference, Func<IVob, Task<object?>> func, Action<IParticipant>? configure = null)
+            => services.AddInitializer((Func<IVos, Task<object?>>)(v => func(v.GetVob(vosReference))), configure);
 
         #endregion
 
-        public static IServiceCollection InitializeVob(this IServiceCollection services, VosReference vosReference, Func<IServiceProvider, IVob, CancellationToken, Task<object?>> initializationAction)
-        {
-            services.InitializeVob(vosReference, vi =>
-            {
-                vi.InitializationAction = initializationAction,
-            }, stage: stage);
+        //public static IServiceCollection InitializeVob(this IServiceCollection services, VosReference vosReference, Func<IServiceProvider, IVob, CancellationToken, Task<object?>> initializationAction)
+        //{
+        //    services.InitializeVob(vosReference, vi =>
+        //    {
+        //        vi.InitializationAction = initializationAction,
+        //    }, stage: stage);
 
-            services.TryAddEnumerable(new ServiceDescriptor(typeof(VobInitializer), serviceProvider =>
-            {
-                ActivatorUtilities.CreateInstance<VobInitializer>(serviceProvider, vosReference
-                return factory(serviceProvider);
-            }, ServiceLifetime.Transient));
-            return services;
-        }
+        //    services.TryAddEnumerable(new ServiceDescriptor(typeof(VobInitializer), serviceProvider =>
+        //    {
+        //        ActivatorUtilities.CreateInstance<VobInitializer>(serviceProvider, vosReference
+
+
+        //        return factory(serviceProvider);
+        //    }, ServiceLifetime.Transient));
+        //    return services;
+        //}
         #endregion
 
         //public static IServiceCollection InitializeRootVob(this IServiceCollection services, Action<IVob> action)
@@ -133,7 +123,7 @@ namespace LionFire.Services
 
         //#error NEXT: How should VobInitializers work?  I think I should have action, or participant, not both.  If action, then create a participant.  If stage undeclared, use "RootVobs", "AlternateRootVobs", or "Vobs".  Maybe each child Vob should depend on its ancestors?  Maybe that means having an ordering within Vobs, if the IParticipants are IComparable.  Use alphabetical order for Vobs not in same lineage.  Instead of those 3 stages, just use "VobTree".
 
-
+#if false
 
         public static IServiceCollection InitializeRootVob(this IServiceCollection services, Func<IServiceProvider, IRootVob, object> action, string rootName = VosConstants.DefaultRootName)
         {
@@ -194,6 +184,7 @@ namespace LionFire.Services
         }
 
         #endregion
+#endif
 
     }
 }

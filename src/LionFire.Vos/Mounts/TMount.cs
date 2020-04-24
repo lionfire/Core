@@ -5,7 +5,7 @@ namespace LionFire.Vos.Mounts
 {
     // REVIEW - Consider renaming this to Mount, and Mount to MountState
 
-    public class TMount : ITemplate<Mount>
+    public class TMount : ITemplate<Mount>, ITMount
     {
         public TMount() { }
         public TMount(IVosReference vobReference, IReference reference, IMountOptions options = null)

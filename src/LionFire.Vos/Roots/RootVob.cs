@@ -1,8 +1,11 @@
 ﻿using LionFire.DependencyMachines;
 using LionFire.Ontology;
+using LionFire.Persistence.Persisters.Vos;
 using LionFire.Services;
 using LionFire.Structures;
 using LionFire.Vos.Mounts;
+using LionFire.Vos.Services;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Options;
 using System;
@@ -15,12 +18,30 @@ using System.Threading.Tasks;
 namespace LionFire.Vos
 {
 
-    public class RootVob : Vob, IRootVob, IHas<IRootManager>, IHostedService, IHasMany<IParticipant>
+    [Flags]
+    public enum ServiceProviderMode
     {
-        public IRootManager RootManager { get; private set; }
-        IRootManager IHas<IRootManager>.Object => RootManager;
+        None = 1 << 0,
+        UseRootManager = 1 << 1,
+    }
+
+    public class VobRootOptions
+    {
+        public ServiceProviderMode ServiceProviderMode { get; set; } = ServiceProviderMode.UseRootManager;
+
+        public Func<IRootVob, IEnumerable<IParticipant>> ParticipantsFactory { get; set; }
+    }
+
+    public class RootVob : Vob, IRootVob, IHas<IVos>, IHostedService, IHasMany<IParticipant>
+    {
+        public IVos RootManager { get; private set; }
+        IServiceProvider RootManagerServiceProvider => (RootManager as IHas<IServiceProvider>)?.Object;
+
+
+        IVos IHas<IVos>.Object => RootManager;
 
         public VosOptions VosOptions { get; }
+        public RootVobOptions Options => VosOptions[RootName];
 
         public static bool AllowMultipleDefaultRoots => LionFireEnvironment.IsMultiApplicationEnvironment;
 
@@ -29,17 +50,19 @@ namespace LionFire.Vos
         /// </summary>
         public string RootName { get; }
 
-
-        public RootVob(IRootManager rootManager, VosOptions vosOptions) : this(rootManager, VosConstants.DefaultRootName, vosOptions)
+        public RootVob(IVos rootManager, VosOptions vosOptions, IOptionsMonitor<VobRootOptions> vobRootOptionsMonitor) : this(rootManager, VosConstants.DefaultRootName, vosOptions, vobRootOptionsMonitor)
         {
         }
 
-        //public static RootVob Create(IRootManager rootManager, string rootName, VosOptions vosOptions)
-        //{
-        //}
-
-        public RootVob(IRootManager rootManager, string rootName, VosOptions vosOptions, IOptionsMonitor<List<VobInitializer>> vobInitializers) : base(null, null)
+        public RootVob(IVos rootManager, string rootName, VosOptions vosOptions, IOptionsMonitor<VobRootOptions> vobRootOptionsMonitor) : base(parent: null, name: null) // Note: Use null parent and null name even for named Roots
         {
+            var vobRootOptions = vobRootOptionsMonitor.Get(rootName);
+            if (vobRootOptions.ServiceProviderMode == ServiceProviderMode.UseRootManager)
+            {
+                var r = RootManagerServiceProvider;
+                if (r != null) { this.AddOwn(r); }
+            }
+
             RootManager = rootManager;
             VosOptions = vosOptions ?? new VosOptions();
 
@@ -61,31 +84,51 @@ namespace LionFire.Vos
             }
 
             #endregion
-            
+
             this.RootName = rootName;
 
-            participants = new List<IParticipant>
+            var participants = new List<IParticipant>
             {
-                new Contributor("mounts", $"{this} mounts")
-                {
-                    StartAction = (c,ct) =>
-                    {
-                        InitializeMounts();
-                        return Task.FromResult<object>(null);
-                    },
-                },
+                //new Contributor("mounts", $"{this} mounts") { StartAction = () => InitializeMounts(), },
+                //new Participant()
+                //{
+                //    StartAction = () =>{
+                //        var vob = this;
+                //            vob
+                //            .AddServiceProvider(s =>
+                //            {
+                //                s
+                //                .AddSingleton(_ => new ServiceDirectory((RootVob)vob))
+                //                .AddSingleton(vob)
+                //                .AddSingleton(vob.Root.RootManager)
+                //                .AddSingleton<VosPersister>()
+                //                .AddSingleton<VobMounter>()
+                //                ;
+                //            }, serviceProvider);
+                //            //.AddTransient<IServiceProvider, DynamicServiceProvider>() // Don't want this.  DELETE
+                //        },
+                //        Key = "RootInitializer",
+                //        Contributes("RootVobs"),
+                //},
             };
+
+            if (vosOptions.ParticipantsFactory != null) participants.AddRange(vosOptions.ParticipantsFactory(this));
+
+            // Do one of these two, if they exist:
+            if (vobRootOptions.ParticipantsFactory != null) participants.AddRange(vobRootOptions.ParticipantsFactory(this));
+            else if (vosOptions.DefaultParticipantsFactory != null) participants.AddRange(vosOptions.DefaultParticipantsFactory(this));
+
         }
+
 
         public IVob InitializeMounts()
         {
-            foreach (var tMount in VosOptions[RootName].Mounts)
+            foreach (var tMount in Options.Mounts)
             {
                 this.Mount(tMount);
             }
             return this;
         }
-
 
         IEnumerable<IParticipant> IHasMany<IParticipant>.Objects => participants;
         private List<IParticipant> participants;
@@ -93,12 +136,24 @@ namespace LionFire.Vos
         public Task StartAsync(CancellationToken cancellationToken)
         {
             throw new NotImplementedException("NEXT");
-
         }
 
         public Task StopAsync(CancellationToken cancellationToken)
         {
             throw new NotImplementedException();
+        }
+
+    }
+
+    public static class VobRootExtensions
+    {
+        public static IRootVob InitializeMounts(this IRootVob root)
+        {
+            foreach (var tMount in root.Options.Mounts)
+            {
+                root.Mount(tMount);
+            }
+            return root;
         }
     }
 }

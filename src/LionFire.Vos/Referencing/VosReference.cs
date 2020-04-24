@@ -84,8 +84,9 @@ namespace LionFire.Vos
         #region Implicit construction
 
         public static implicit operator VosReference(string path) => new VosReference(path);
-        public static implicit operator VosReference(Vob vob) => (VosReference)vob.Reference;
-
+        public static implicit  operator VosReference(Vob vob) => (VosReference)vob.Reference;
+        public static implicit  operator VosReference(ArraySegment<string> segments) => new VosReference(segments);
+        
         #endregion
 
         #region Type

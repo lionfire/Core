@@ -50,7 +50,7 @@ namespace LionFire.Vos.Mounts
         {
         }
 
-        public Mount(IVob mountPointVob, TMount tMount)
+        public Mount(IVob mountPointVob, ITMount tMount)
             : this(mountPointVob, tMount.Reference, tMount.Options)
         {
 

@@ -38,5 +38,14 @@ namespace LionFire.Services
             services.TryAddEnumerable(ServiceDescriptor.Describe(typeof(TService), typeof(TImplementation), ServiceLifetime.Singleton));
             return services;
         }
+
+        public static IServiceCollection If(this IServiceCollection services, bool condition, Action<IServiceCollection> action)
+        {
+            if (condition)
+            {
+                action(services);
+            }
+            return services;
+        }
     }
 }

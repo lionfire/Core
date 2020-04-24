@@ -11,15 +11,23 @@ using System.Threading.Tasks;
 namespace LionFire.DependencyMachines
 {
 
-   
-    public interface IParticipant : IKeyed, IHostedService
+    public interface ITryStartable
     {
-        IEnumerable<object> Dependencies { get; }
+        Task<object?> TryStartAsync(CancellationToken cancellationToken);
+    }
+    public interface ITryStoppable
+    {
+        Task<object?> TryStopAsync(CancellationToken cancellationToken);
+    }
+
+    public interface IParticipant : IKeyable 
+    {
+        List<object>? Dependencies { get; }
 
         IEnumerable<IReadWriteHandle> DependencyHandles { get;  }
 
         IEnumerable<object> Provides { get; }
-        IEnumerable<object> Contributes { get; }
+        List<object>? Contributes { get; }
 
         ParticipantFlags Flags { get; }
 
