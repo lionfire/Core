@@ -22,7 +22,7 @@ namespace LionFire.Vos.Assets.Handles
         public IReadHandle<T> GetReadHandle<T>(IAssetReference reference, T preresolvedValue = default)
         {
             var persister = (VosAssetPersister)PersisterProvider.GetPersister(reference.Persister);
-            if (persister == null) throw new NotFoundException($"Could not find AssetPersister at '{reference.Persister}'");
+            if (persister == null) throw new NotFoundException($"Could not find AssetPersister for '{reference}'");
 
             return new PersisterReadHandle<IAssetReference, T, VosAssetPersister>(persister, reference, preresolvedValue);
         }

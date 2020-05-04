@@ -11,6 +11,7 @@ using Microsoft.Extensions.Options;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using System.Threading;
 using System.Threading.Tasks;
+using LionFire.Services.DependencyMachines;
 
 namespace LionFire.Services
 {
@@ -77,6 +78,7 @@ namespace LionFire.Services
 
         #region Action
 
+
         // Simplest case: perform a synchronous action on a Vob
         public static IServiceCollection InitializeVob(this IServiceCollection services, VosReference vosReference, Action<IVob> action, Action<IParticipant>? configure = null)
             => services.AddInitializer((Action<IVos>)(v => action(v.GetVob(vosReference))), configure);
@@ -84,6 +86,47 @@ namespace LionFire.Services
             => services.AddInitializer((Func<IVos, object?>)(v => func(v.GetVob(vosReference))), configure);
         public static IServiceCollection InitializeVob(this IServiceCollection services, VosReference vosReference, Func<IVob, Task<object?>> func, Action<IParticipant>? configure = null)
             => services.AddInitializer((Func<IVos, Task<object?>>)(v => func(v.GetVob(vosReference))), configure);
+
+        #endregion
+
+        #region Method Injection
+
+        // Function injection, with manual insertion of IVob
+        public static IServiceCollection InitializeVob(this IServiceCollection services, 
+            VosReference vosReference, 
+            Delegate del, 
+            Action<IParticipant>? configure = null)
+            => services.AddInitializer(
+                (Func<StartableParticipant, CancellationToken, Task<object?>>)
+                (DependencyMachineDelegateHelpers.CreateInvoker<StartableParticipant>(
+                        del,
+                        (typeof(IVob), sp => sp.GetRequiredService<IVos>().GetVob(vosReference)))
+                ),
+                configure);
+
+        public static IServiceCollection InitializeVob<TParameter1>(this IServiceCollection services,
+                VosReference vosReference,
+                Action<IVob, TParameter1> action,
+                Action<IParticipant>? configure = null)
+                => services.AddInitializer(
+                    (Func<StartableParticipant, CancellationToken, Task<object?>>)
+                    (DependencyMachineDelegateHelpers.CreateInvoker<StartableParticipant>(
+                            action,
+                            (typeof(IVob), sp => sp.GetRequiredService<IVos>().GetVob(vosReference)))
+                    ),
+                    configure);
+
+        public static IServiceCollection InitializeVob<TParameter1, TParameter2>(this IServiceCollection services,
+                VosReference vosReference,
+                Action<IVob, TParameter1, TParameter2> action,
+                Action<IParticipant>? configure = null)
+                => services.AddInitializer(
+                    (Func<StartableParticipant, CancellationToken, Task<object?>>)
+                    (DependencyMachineDelegateHelpers.CreateInvoker<StartableParticipant>(
+                            action,
+                            (typeof(IVob), sp => sp.GetRequiredService<IVos>().GetVob(vosReference)))
+                    ),
+                    configure);
 
         #endregion
 

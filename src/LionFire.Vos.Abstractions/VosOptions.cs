@@ -51,12 +51,13 @@ namespace LionFire.Vos
         /// <summary>
         /// Used if there VobRootOptions.ParticipantsFactory is null
         /// </summary>
-        public Func<IRootVob, IEnumerable<IParticipant>> DefaultParticipantsFactory { get; set; }
+        public List<Func<IRootVob, IEnumerable<IParticipant>>> DefaultRootInitializers { get; } = new List<Func<IRootVob, IEnumerable<IParticipant>>>();
+        public List<Func<IRootVob, IEnumerable<IParticipant>>> PrimaryRootInitializers { get; } = new List<Func<IRootVob, IEnumerable<IParticipant>>>();
 
         /// <summary>
         /// Used for all RootVobs
         /// </summary>
-        public Func<IRootVob, IEnumerable<IParticipant>> ParticipantsFactory { get; set; }
+        public List<Func<IRootVob, IEnumerable<IParticipant>>> GlobalRootInitializers { get; } = new List<Func<IRootVob, IEnumerable<IParticipant>>>();
 
     }
 

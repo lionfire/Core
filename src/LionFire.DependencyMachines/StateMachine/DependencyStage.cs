@@ -1,6 +1,7 @@
 ﻿using LionFire.Structures;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace LionFire.DependencyMachines
 {
@@ -8,23 +9,27 @@ namespace LionFire.DependencyMachines
     {
         internal DependencyStage() { }
 
-        public string Key { get; set; }
+        public string? Key { get; set; }
 
-        public HashSet<string> Provides { get; set; }
+        public IEnumerable<string>? Provides => provides;
+        private HashSet<string>? provides;
 
-        //public IEnumerable<object> Provides { get; set; }
-        public IEnumerable<object> Requries { get; set; }
+        public IEnumerable<object>? Dependencies => Members.SelectMany(m => m.Dependencies);
 
         public List<IParticipant> Members { get; } = new List<IParticipant>();
         public int Id { get; internal set; }
+        
 
         public void Add(IParticipant member)
         {
             foreach(var provided in member.Provides)
             {
-                Provides.Add(provided.KeyForContributed());
+                provides ??= new HashSet<string>();
+                provides.Add(provided.KeyForContributed());
             }
             Members.Add(member);
         }
+
+        public override string ToString() => Key ?? $"{{DependencyStage Id={Id}}}";
     }
 }

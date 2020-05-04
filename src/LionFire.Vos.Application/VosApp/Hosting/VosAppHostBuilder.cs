@@ -23,7 +23,7 @@ namespace LionFire.Hosting // REVIEW - consider changing this to LionFire.Servic
         public static IHostBuilder Create(string[] args = null, VosAppOptions options = null, bool defaultBuilder = true, IDependencyStateMachine dependencies = null)
         {
             if (options == null) options = VosAppOptions.Default;
-
+                             
             return VosHost.Create(args, defaultBuilder: defaultBuilder)
                      .SetAppInfo(options?.AppInfo)
                      .ConfigureServices((context, services) =>
@@ -31,11 +31,14 @@ namespace LionFire.Hosting // REVIEW - consider changing this to LionFire.Servic
                          services
                              .ConfigureDependencyMachine(dm=>
                              {
-                                 dm.Register(DependencyStages.CreateStageChain("mounts", "packages"));
+                                 dm.Register(DependencyStages.CreateStageChain(
+                                     VosAppInitStage.Stores, 
+                                     VosAppInitStage.PackageProviders, 
+                                     VosAppInitStage.PackageSources));
                              })
                              .AddSingleton<IDependencyStateMachine, IDependencyStateMachine>()
-                             .VobEnvironment("app", "/app".ToVosReference())
-                             .VobEnvironment("packageProviders", "/packages".ToVosReference())
+                             .VobEnvironment("app", "/app".ToVosReference()) // TODO: VosAppLocations.App = "$app"
+                             .VobEnvironment(VosPackageLocations.Packages, "/packages".ToVosReference())
                              .VobEnvironment("internal", "/_".ToVosReference())
 
                              .VobEnvironment("stores", "/_/stores".ToVosReference()) //.VobEnvironment("stores", "/$internal/stores".ToVosReference()) // TODO

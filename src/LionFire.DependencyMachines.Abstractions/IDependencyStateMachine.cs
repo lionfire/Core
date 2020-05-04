@@ -23,5 +23,9 @@ namespace LionFire.DependencyMachines
     public static class IDependencyStateMachineExtensions
     {
         public static void Start(this IDependencyStateMachine dsm) => dsm.StartAsync(default).Wait();
+
+
+        
+
     }
 }

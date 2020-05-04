@@ -1,4 +1,5 @@
-﻿using System;
+﻿#nullable enable
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -13,6 +14,19 @@ namespace LionFire.Vos.VosApp
         public const string App = "/App"; // TODO: I am going with `.  Alias it?
         public const string ActiveDataPath = App + "/$";
         public const string Settings = App + "/.settings";
+
+        public const string RootPath = "/";
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="name"></param>
+        /// <returns>Path to named or primary root, with trailing slash.</returns>
+        public static string GetRootPath(string? name)
+        {
+            if(string.IsNullOrEmpty(name)) { return RootPath; }
+            return $"/../{name}/";
+        }
 
         #region AppInternals
 

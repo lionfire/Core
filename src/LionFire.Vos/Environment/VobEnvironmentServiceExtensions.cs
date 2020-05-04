@@ -12,7 +12,7 @@ namespace LionFire.Services
                    (addEnvironmentNodeAtVobIfMissing
                    ? v.GetOrAddOwn<VobEnvironment>()
                    : v.GetNextOrCreateAtRoot<VobEnvironment>())
-                   [key] = value);
+                   [key.StartsWith("$") ? key.Substring(1) : key] = value);
 
         /// <summary>
         /// Set environment on root Vob

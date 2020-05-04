@@ -22,7 +22,7 @@ namespace LionFire.DependencyMachines
         IServiceProvider IHas<IServiceProvider>.Object => ServiceProvider;
     }
 
-    public abstract class StartableParticipant<TConcrete> : IParticipant, ITryStartable 
+    public abstract class StartableParticipant<TConcrete> : IParticipant<TConcrete>, ITryStartable 
         where TConcrete : StartableParticipant<TConcrete>
     {
         #region Key
@@ -58,9 +58,7 @@ namespace LionFire.DependencyMachines
         }
         private List<object>? dependencies;
 
-        public IEnumerable<IReadWriteHandle> DependencyHandles => dependencyHandles ?? Enumerable.Empty<IReadWriteHandle>();
-        private List<IReadWriteHandle>? dependencyHandles;
-
+        public IEnumerable<IReadWriteHandle>? DependencyHandles { get; set; }
         public IEnumerable<IReadWriteHandle> UnsatisfiedDependencies => DependencyHandles.Where(h => !h.HasValue);
         public IEnumerable<IReadWriteHandle> SatisfiedDependencies => DependencyHandles.Where(h => h.HasValue);
 
@@ -79,14 +77,10 @@ namespace LionFire.DependencyMachines
 
         #region Contributes
 
-        public List<object>? Contributes
-        {
-            get => contributes;
-            set => contributes = value;
-        }
-        private List<object>? contributes;
+        public List<object>? Contributes { get; set; }
 
         #endregion
+        public List<object>? PrerequisiteFor { get; set; }
 
 
         #region StartTask

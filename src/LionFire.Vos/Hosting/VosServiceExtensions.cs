@@ -19,6 +19,9 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using System.Linq;
+using LionFire.Services.DependencyMachines;
+using System.Runtime.CompilerServices;
+using LionFire.Hosting;
 
 namespace LionFire.Services
 {
@@ -51,15 +54,15 @@ namespace LionFire.Services
                         .AddDependencyMachine()
                         .AddRootManager() // Provides IVos
 
-                    #region TEMP
+                    //#region TEMP
 
-                        .AddInitializer((Action<IVos>)(vos =>
-                        {
-                            vos.GetVob("/asdf").Value = "123";
-                        }), c => c.Contributes("testAsdf").DependsOn("RootVobs"))
-                        .InitializeVob("", null)
+                    //    .AddInitializer((Action<IVos>)(vos =>
+                    //    {
+                    //        vos.GetVob("/asdf").Value = "123";
+                    //    }), c => c.Contributes("testAsdf").DependsOn("RootVobs"))
+                    //    .InitializeVob("", null)
 
-                    #endregion
+                    //#endregion
 
                         .TryAddEnumerableSingleton<ICollectionTypeProvider<VosReference>, CollectionTypeFromVobNode>() // Allows Vobs to provide Collection Type for themselves
 
@@ -79,34 +82,36 @@ namespace LionFire.Services
 
                       .Configure<VosOptions>(vo =>
                       {
+
                           //vo.RootNames = new string[] { "", "TestAltRoot" }; // TEMP TEST Alt root
                           //Debug.WriteLine("Configure VosOptions - defaults");
-                          vo.ParticipantsFactory = vob =>
+
+                          vo.PrimaryRootInitializers.Add(vobRoot => // Initializers for the Primary root
                           {
                               return new List<IParticipant>
                                 {
-                                new Contributor("mounts", $"{vob} mounts") { StartAction = () => vob.InitializeMounts(), },
+                                new Dependency(VosInitStages.RootMountStage(vobRoot.Name), $"{vobRoot} mounts") { StartAction = () => vobRoot.InitializeMounts(), },
                                 new Participant()
                                 {
+                                    Key = "RootInitializer",
                                     StartAction = () =>
-                                {
-                                            vob
+                                    {
+                                            vobRoot
                                             .AddServiceProvider(s =>
                                             {
                                                 s
-                                                .AddSingleton(_ => new ServiceDirectory((RootVob)vob))
-                                                .AddSingleton(vob)
-                                                .AddSingleton(vob.Root.RootManager)
+                                                .AddSingleton(_ => new ServiceDirectory((RootVob)vobRoot))
+                                                .AddSingleton(vobRoot)
+                                                .AddSingleton(vobRoot.Root.RootManager)
                                                 .AddSingleton<VobMounter>()
                                                 .If(persistence, s2=> s2.AddSingleton<VosPersister>())
                                                 ;
-                                            }, (vob as IHas<IServiceProvider>)?.Object);
+                                            }, (vobRoot as IHas<IServiceProvider>)?.Object);
                                         //.AddTransient<IServiceProvider, DynamicServiceProvider>() // Don't want this.  DELETE
                                     },
-                                    Key = "RootInitializer",
                                 }.Contributes("RootVobs"),
                             };
-                          };
+                          });
                       })
                       .AddSingleton(serviceProvider => serviceProvider.GetService<IOptionsMonitor<VosOptions>>().CurrentValue)
 
@@ -153,7 +158,6 @@ namespace LionFire.Services
             ;
 
     }
-
 
 }
 

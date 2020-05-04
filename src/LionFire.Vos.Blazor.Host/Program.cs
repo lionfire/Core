@@ -1,3 +1,4 @@
+using LionFire.Hosting;
 using LionFire.Services;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Hosting;
@@ -12,9 +13,9 @@ namespace LionFire.Vos.Blazor
         }
 
         public static IHostBuilder CreateHostBuilder(string[] args) =>
-            Host.CreateDefaultBuilder(args)
+            VosHost.Create(args, defaultBuilder: true)
+            //Host.CreateDefaultBuilder(args)
                 //.AddPersisters()
-                .AddVos()
             .ConfigureServices(services =>
             {
                 services

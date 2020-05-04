@@ -3,6 +3,7 @@ using LionFire.ExtensionMethods;
 using LionFire.Persistence;
 using LionFire.Structures;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Options;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
@@ -16,12 +17,18 @@ namespace LionFire.DependencyMachines
     // ENH: Pause/unpause
     // ENH: Reactive: detect started/stopped/faulted/paused states on members
 
-    public class DependencyStateMachine : IDependencyStateMachine 
+    public class DependencyStateMachine : IDependencyStateMachine
     {
-        #region Parameters
-        public bool AllowRoundRobinWithinStageWhenMissingDependencies { get; set; } = false; // true not implemented
+        #region Dependencies
 
+        public IOptionsMonitor<DependencyMachineConfig> OptionsMonitor { get; }
         public IServiceProvider ServiceProvider { get; set; }
+
+        #endregion
+
+        #region Parameters
+
+        public bool AllowRoundRobinWithinStageWhenMissingDependencies { get; set; } = false; // true not implemented
 
         public DependenyMachineDefinition Definition { get; } = new DependenyMachineDefinition();
 
@@ -46,8 +53,13 @@ namespace LionFire.DependencyMachines
 
         #endregion
 
-
         #endregion
+
+        public DependencyStateMachine(IServiceProvider serviceProvider, IOptionsMonitor<DependencyMachineConfig> optionsMonitor)
+        {
+            ServiceProvider = serviceProvider;
+            OptionsMonitor = optionsMonitor;
+        }
 
         NamedObjectsByType ObjectRegistry = new NamedObjectsByType();
 
@@ -73,6 +85,7 @@ namespace LionFire.DependencyMachines
         CompiledDependencyMachine compiled;
         protected void CalculateStages()
         {
+            Definition.Config = OptionsMonitor.CurrentValue;
             compiled = new CompiledDependencyMachine(Definition);
         }
 

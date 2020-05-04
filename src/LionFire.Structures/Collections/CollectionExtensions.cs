@@ -37,6 +37,8 @@ namespace LionFire.ExtensionMethods.Collections
 
         public static void TryAddRange<CollectionType>(this ICollection<CollectionType> collection, IEnumerable<CollectionType> value)
         {
+            if (value == null) return;
+
             foreach (CollectionType child in
 #if AOT
  (IEnumerable)

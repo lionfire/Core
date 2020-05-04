@@ -30,14 +30,13 @@ namespace LionFire.Persistence.Assets.Tests
             var diskAssetsDir = Path.Combine(FsTestSetup.DataDir, "UnitTestAssets-" + Guid.NewGuid().ToString());
 
             await AssetTestBuilder.Create()
-                 .AddVos()
                 .ConfigureServices((context, services) =>
                 {
                     services
                         .AddAssets()
                         .AddFilesystem()
                         .AddNewtonsoftJson()
-                        .AddAssetPersister() // Default location: root of default vob tree
+                        //.AddAssetPersister() // Default location: root of default vob tree
                         .VosMountRead("/assets", diskAssetsDir.ToFileReference())
                         ;
                 })

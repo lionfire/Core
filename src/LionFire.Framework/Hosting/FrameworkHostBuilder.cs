@@ -95,41 +95,47 @@ namespace LionFire.Hosting
                 ;
         }
 
-        public static IHostBuilder CreateDefault(string[] args = null, bool defaultBuilder = true, IFlex options = null
+        public static IHostBuilder CreateDefault(string[] args = null, bool defaultBuilder = true, FrameworkHostBuilderOptions frameworkOptions = null, IFlex options = null
             //, Action<IServiceCollection> serializers = null
             )
-        {
-            IHostBuilder hostBuilder = CreateDefaultVosHost(args, defaultBuilder, options);
-            return hostBuilder;
-        }
+            => CreateDefaultVosHost(args, defaultBuilder, frameworkOptions, options);
 
         public class FrameworkHostBuilderOptions
         {
             public Action<IServiceCollection> Serializers { get; set; }
         }
-        public static IHostBuilder CreateDefaultPersisterHost(string[] args = null, bool defaultBuilder = true, IFlex options = null)
+        public static IHostBuilder CreateDefaultPersisterHost(string[] args = null, bool defaultBuilder = true, FrameworkHostBuilderOptions frameworkOptions = null, IFlex options = null)
         {
             return Create(args, defaultBuilder)
+                .AugmentWithFramework(frameworkOptions ?? options?.Get<FrameworkHostBuilderOptions>())
+                ;
+        }
+
+        private static IHostBuilder AugmentWithFramework(this IHostBuilder hostBuilder, FrameworkHostBuilderOptions options = null)
+        {
+            return hostBuilder
                 .ConfigureServices((context, services) =>
                 {
-                    (options.Get<FrameworkHostBuilderOptions>()?.Serializers ?? DefaultAddDefaultSerializers)(services);
+                    (options?.Serializers ?? DefaultAddDefaultSerializers)(services);
                     services
                         .AddFilesystem()
+                        .AddAssets()
+                        //.AddAssetPersister()
                     ;
                 });
         }
 
-        public static IHostBuilder CreateDefaultVosHost(string[] args = null, bool defaultBuilder = true, IFlex options = null
-            ,Action<IServiceCollection> serializers = null
-            )
+        public static IHostBuilder CreateDefaultVosHost(string[] args = null, bool defaultBuilder = true, FrameworkHostBuilderOptions frameworkOptions = null, IFlex options = null)
         {
-            return FrameworkHostBuilder.CreateDefaultPersisterHost(args, defaultBuilder: defaultBuilder, options)
-                .ConfigureServices((_, services) =>
-                {
-                    services
-                        .TryAddEnumerableSingleton<IRootRegistration, RootRegistration>("")
-                    ;
-                });
+            return VosHost.Create(args, defaultBuilder: defaultBuilder, options)
+                .AugmentWithFramework(frameworkOptions ?? options?.Get<FrameworkHostBuilderOptions>())
+                //.ConfigureServices((_, services) =>
+                //{
+                //    services
+                //        //.TryAddEnumerableSingleton<IRootRegistration, RootRegistration>("")
+                //    ;
+                //})
+                ;
         }
     }
 }

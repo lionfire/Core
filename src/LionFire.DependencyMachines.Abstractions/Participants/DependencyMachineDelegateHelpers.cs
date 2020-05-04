@@ -10,7 +10,7 @@ namespace LionFire.Services
 {
     public static class DependencyMachineDelegateHelpers
     {
-        public static Func<TParticipant, CancellationToken, Task<object?>> Invoke<TParticipant>(Delegate d)
+        public static Func<TParticipant, CancellationToken, Task<object?>> CreateInvoker<TParticipant>(Delegate d, params (Type, Func<IServiceProvider, object>)[] additionalServices)
             where TParticipant : IParticipant, IHas<IServiceProvider>
         {
             var returnType = d.GetType().GetMethod("Invoke").ReturnType;
@@ -19,7 +19,8 @@ namespace LionFire.Services
             {
                 return (participant, ct) =>
                 {
-                    var result = InvokationUtilities.TryInvoke(participant.Object, d);
+
+                    var result = InvokationUtilities.TryInvoke(((IHas<IServiceProvider>)participant).Object, d, additionalServices);
                     return result.missingDependency != null ? Task.FromResult<object?>(result.missingDependency) : (Task<object?>)result.result!;
                 };
             }
@@ -27,7 +28,7 @@ namespace LionFire.Services
             {
                 return (participant, ct) =>
                 {
-                    var result = InvokationUtilities.TryInvoke(participant.Object, d);
+                    var result = InvokationUtilities.TryInvoke(((IHas<IServiceProvider>)participant).Object, d, additionalServices);
                     return Task.FromResult<object?>(result.missingDependency != null ? result.missingDependency : result.result!);
                 };
             }
@@ -35,7 +36,7 @@ namespace LionFire.Services
             {
                 return (participant, ct) =>
                 {
-                    var result = InvokationUtilities.TryInvoke(participant.Object, d);
+                    var result = InvokationUtilities.TryInvoke(((IHas<IServiceProvider>)participant).Object, d, additionalServices);
                     return Task.FromResult<object?>(result.missingDependency != null ? result.missingDependency : null);
                 };
             }

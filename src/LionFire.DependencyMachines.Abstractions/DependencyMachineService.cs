@@ -30,7 +30,9 @@ namespace LionFire.DependencyMachines
         public IDependencyStateMachine DependencyMachine { get; }
         public IOptionsMonitor<DependencyMachineConfig> Config { get; }
 
-        bool isStarted = false;
+        // TODO: Use ClassStateMachine to track state?
+        bool isStarted = false; 
+        bool isStopped = false;
 
         public void AddFromObject(object obj)
         {
@@ -66,7 +68,15 @@ namespace LionFire.DependencyMachines
             }
 
             await DependencyMachine.StartAsync(cancellationToken);
+            isStopped = false;
         }
-        public Task StopAsync(CancellationToken cancellationToken) => throw new System.NotImplementedException();
+        public async Task StopAsync(CancellationToken cancellationToken)
+        {
+            if (isStopped) throw new AlreadyException();
+            isStopped = true;
+
+            await DependencyMachine.StopAsync(cancellationToken);
+            isStarted = false;
+        }
     }
 }

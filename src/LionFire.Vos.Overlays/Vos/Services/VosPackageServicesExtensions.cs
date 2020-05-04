@@ -11,9 +11,9 @@ namespace LionFire.Services
     {
         #region Package Providers
 
-        public static IServiceCollection VosPackageProvider(this IServiceCollection services, IVosReference vosReference, PackageProviderOptions options = null)
+        public static IServiceCollection VosPackageProvider(this IServiceCollection services, VosReference vosReference, PackageProviderOptions options = null)
         {
-            services.InitializeVob(vosReference, (serviceProvider, v) =>
+            services.InitializeVob<IServiceProvider>(vosReference, (v, serviceProvider) =>
              {
                  v.AddPackageProvider(options);
              });

@@ -17,6 +17,10 @@ namespace LionFire.Vos
 
         #endregion        
 
+        public static string GetRoot(string rootName = null)
+            => "/" + (rootName == null ? "" : "../" + rootName);
+        public const string Root = "/";
+
         #region Packages
 
         public const string PackagePrefix = "[";

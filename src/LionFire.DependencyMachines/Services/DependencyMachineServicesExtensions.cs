@@ -14,7 +14,7 @@ namespace LionFire.DependencyMachines
     {
         public static IServiceCollection AddDependencyMachine(this IServiceCollection services, bool addHostedService = true)
         {
-            services.AddSingleton<IDependencyStateMachine>(_=> machines.GetOrCreateValue(services));
+            services.AddSingleton<IDependencyStateMachine>(serviceProvider => machines.GetValue(services, _ => ActivatorUtilities.CreateInstance<DependencyStateMachine>(serviceProvider)));
             if (addHostedService) { services.AddHostedService<DependencyMachineService>(); }
             return services;
         }

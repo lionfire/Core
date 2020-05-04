@@ -21,6 +21,8 @@
 
         StageEnder = 1 << 4,
 
+        Noop = 1 << 5,
+
         // ENH: Option for exclusive ender/starter per stage. 
 
 

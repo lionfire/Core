@@ -18,20 +18,6 @@ using System.Threading.Tasks;
 namespace LionFire.Vos
 {
 
-    [Flags]
-    public enum ServiceProviderMode
-    {
-        None = 1 << 0,
-        UseRootManager = 1 << 1,
-    }
-
-    public class VobRootOptions
-    {
-        public ServiceProviderMode ServiceProviderMode { get; set; } = ServiceProviderMode.UseRootManager;
-
-        public Func<IRootVob, IEnumerable<IParticipant>> ParticipantsFactory { get; set; }
-    }
-
     public class RootVob : Vob, IRootVob, IHas<IVos>, IHostedService, IHasMany<IParticipant>
     {
         public IVos RootManager { get; private set; }
@@ -87,7 +73,9 @@ namespace LionFire.Vos
 
             this.RootName = rootName;
 
-            var participants = new List<IParticipant>
+            #region Participants
+
+            participants = new List<IParticipant>
             {
                 //new Contributor("mounts", $"{this} mounts") { StartAction = () => InitializeMounts(), },
                 //new Participant()
@@ -112,11 +100,22 @@ namespace LionFire.Vos
                 //},
             };
 
-            if (vosOptions.ParticipantsFactory != null) participants.AddRange(vosOptions.ParticipantsFactory(this));
+            if (vosOptions.GlobalRootInitializers != null) participants.AddRange(vosOptions.GlobalRootInitializers.SelectMany(i => i(this)));
 
-            // Do one of these two, if they exist:
-            if (vobRootOptions.ParticipantsFactory != null) participants.AddRange(vobRootOptions.ParticipantsFactory(this));
-            else if (vosOptions.DefaultParticipantsFactory != null) participants.AddRange(vosOptions.DefaultParticipantsFactory(this));
+            if (vobRootOptions.ParticipantsFactory != null) participants.AddRange(vobRootOptions.ParticipantsFactory.SelectMany(i => i(this)));
+            else
+            {
+                if (RootName == VosConstants.DefaultRootName)
+                {
+                    if (vosOptions.PrimaryRootInitializers != null) participants.AddRange(vosOptions.PrimaryRootInitializers.SelectMany(i => i(this)));
+                }
+                else
+                {
+                    if (vosOptions.DefaultRootInitializers != null) participants.AddRange(vosOptions.DefaultRootInitializers.SelectMany(i => i(this)));
+                }
+            }
+            
+            #endregion
 
         }
 

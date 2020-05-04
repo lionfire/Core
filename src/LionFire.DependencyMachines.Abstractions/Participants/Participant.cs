@@ -4,7 +4,7 @@ using System;
 
 namespace LionFire.DependencyMachines
 {
-    public sealed class Participant : Participant<Participant>, IHas<IServiceProvider>
+    public sealed class Participant : Participant<Participant>, IHas<IServiceProvider>, IParticipant
     {
         public Participant(IServiceProvider? serviceProvider = null, string? key = null)
         {

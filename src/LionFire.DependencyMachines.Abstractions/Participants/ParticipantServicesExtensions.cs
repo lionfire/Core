@@ -1,7 +1,9 @@
 ﻿#nullable enable
 using LionFire.DependencyMachines;
+using LionFire.Ontology;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
+using Microsoft.Extensions.Hosting;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
@@ -10,66 +12,200 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace LionFire.Services
+namespace LionFire.Services.DependencyMachines
 {
     public static class ParticipantServicesExtensions
     {
+
         #region Configure
 
+        #region Custom Participant type
+
         public static IServiceCollection AddParticipant<T>(this IServiceCollection services, Action<T> configure, params object[] constructorParameters)
+            where T : IParticipant
+            => services.AddParticipant(null, configure, constructorParameters);
+
+        public static IServiceCollection AddParticipant<T>(this IServiceCollection services, string? name, Action<T> configure, params object[] constructorParameters)
             where T : IParticipant
         {
             services.TryAdd(new ServiceDescriptor(typeof(IParticipant),
                 serviceProvider =>
                 {
                     var obj = ActivatorUtilities.CreateInstance<T>(serviceProvider, constructorParameters);
+                    obj.Key = name;
                     configure(obj);
                     return obj;
                 },
                 ServiceLifetime.Transient));
             return services;
         }
-        public static IServiceCollection AddParticipant(this IServiceCollection services, Action<StartableParticipant> configure, params object[] constructorParameters)
-           => services.AddParticipant<StartableParticipant>(configure, constructorParameters);
 
         #endregion
 
-        #region Just an Action/Func
+        #region IHostedService
 
-        // TODO: Add StopTask
+        public static IServiceCollection AddHostedServiceDependency<T>(this IServiceCollection services, Action<IParticipant> configure, params object[] constructorParameters)
+            where T : IHostedService
+            => services.AddHostedServiceDependency<T>(null, configure, constructorParameters);
 
-        public static IServiceCollection AddParticipant(this IServiceCollection services, Action startAction, params object[] constructorParameters)
-                   => services.AddParticipant<StartableParticipant>(p => p.StartAction = startAction, constructorParameters);
-        public static IServiceCollection AddParticipant(this IServiceCollection services, Func<StartableParticipant, CancellationToken, object?> startFunc, params object[] constructorParameters)
-                           => services.AddParticipant<StartableParticipant>(p => p.StartFunc = startFunc, constructorParameters);
-        public static IServiceCollection AddParticipant(this IServiceCollection services, Func<object?> startFunc, params object[] constructorParameters)
-                           => services.AddParticipant<StartableParticipant>(p => p.StartFunc = (p,ct) => startFunc(), constructorParameters);
+        public static IServiceCollection AddHostedServiceDependency<T>(this IServiceCollection services, string? name, Action<IParticipant> configure, params object[] constructorParameters)
+            where T : IHostedService
+        {
+            services.TryAdd(new ServiceDescriptor(typeof(IParticipant),
+                serviceProvider =>
+                {
+                    var obj = ActivatorUtilities.CreateInstance<T>(serviceProvider, constructorParameters);
+                    var participant = new HostedServiceParticipant<T>(obj)
+                    {
+                        Key = name ?? "type:" + typeof(T).FullName,
+                    };
+                    configure(participant);
+                    return participant;
+                },
+                ServiceLifetime.Transient));
+            return services;
+        }
 
-        public static IServiceCollection AddParticipant(this IServiceCollection services, Func<IServiceProvider, CancellationToken, Task<object?>> startFunc, params object[] constructorParameters)
-                           => services.AddParticipant<StartableParticipant>(
-                               p => p.StartTask = (p, ct) => startFunc(p.ServiceProvider, ct), constructorParameters);
+        #endregion
+
+        #region Default Participant type
+
+        // Uses default IParticipant type: Participant
+        public static IServiceCollection AddParticipant(this IServiceCollection services, Action<Participant> configure)
+           => services.AddParticipant(null, configure);
+        public static IServiceCollection AddParticipant(this IServiceCollection services, string? name, Action<Participant> configure)
+                   => services.AddParticipant<Participant>(configure, name);
+
+        #endregion
+
+        #endregion
+
+        #region Initializers (StartTask only)
+
+        // Uses default IParticipant type: StartableParticipant
+        public static IServiceCollection AddInitializer(this IServiceCollection services, Action<StartableParticipant> configure)
+           => services.AddParticipant<StartableParticipant>(configure);
+        public static IServiceCollection AddInitializer(this IServiceCollection services, string? name, Action<StartableParticipant> configure)
+           => services.AddParticipant<StartableParticipant>(name, configure);
+
+        #region StartTask
+
+        /// <summary>
+        /// Custom IParticipant type, with custom constructorParameters (any unspecified constructor parameters will be injected from IServiceProvider)
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="services"></param>
+        /// <param name="startTask"></param>
+        /// <param name="configure"></param>
+        /// <param name="constructorParameters">Parameters used to construct T, with unset parameters injected from IServiceProvider</param>
+        /// <returns></returns>
+        public static IServiceCollection AddInitializer<T>(
+                 this IServiceCollection services,
+                 Func<T, CancellationToken, Task<object?>> startTask,
+                 Action<T>? configure = null,
+                 params object[] constructorParameters
+                 )
+            where T : IParticipant<T>, IHas<IServiceProvider>
+                => services.AddParticipant<T>(
+                    p => { p.StartTask = startTask; configure?.Invoke(p); },
+                    constructorParameters
+                    );
+
+        // Default type (StartableParticipant)
+        public static IServiceCollection AddInitializer(
+            this IServiceCollection services,
+            Func<IParticipant, CancellationToken, Task<object?>> startTask,
+            Action<StartableParticipant>? configure = null
+            )
+               => services.AddParticipant<StartableParticipant>(
+                   participant =>
+                   {
+                       participant.StartTask = startTask;
+                       configure?.Invoke(participant);
+                   });
+
+        #endregion
+
+        #region Simplifications from StartTask: Action / Func / Func<IServiceProvider, ...>
+
+        // Action
+        public static IServiceCollection AddInitializer(this IServiceCollection services, Action startAction, Action<StartableParticipant>? configure = null)
+                   => services.AddParticipant<StartableParticipant>(p => { p.StartAction = startAction; configure?.Invoke(p); });
+
+        // Func
+        public static IServiceCollection AddInitializer(this IServiceCollection services, Func<object?> startFunc, Action<StartableParticipant>? configure = null)
+               => services.AddParticipant<StartableParticipant>(p => { p.StartFunc = (p, ct) => startFunc(); configure?.Invoke(p); });
+
+        #region Func with IServiceProvider and CancellationToken
+
+        // Default type (StartableParticipant)
+        public static IServiceCollection AddInitializer(this IServiceCollection services, Func<IServiceProvider, CancellationToken, Task<object?>> startFunc, Action<StartableParticipant>? configure = null)
+               => services.AddParticipant<StartableParticipant>(
+                   p => { p.StartTask = (p, ct) => startFunc(p.ServiceProvider, ct); configure?.Invoke(p); });
+        public static IServiceCollection AddInitializer(this IServiceCollection services, string name, Func<IServiceProvider, CancellationToken, Task<object?>> startFunc, Action<StartableParticipant>? configure = null)
+               => services.AddParticipant<StartableParticipant>(name,
+                   p => { p.StartTask = (p, ct) => startFunc(p.ServiceProvider, ct); configure?.Invoke(p); });
+
+        //public static IServiceCollection AddParticipant(this IServiceCollection services, Func<StartableParticipant, CancellationToken, object?> startFunc, params object[] constructorParameters)
+        //=> services.AddParticipant<StartableParticipant>(p => p.StartFunc = startFunc, constructorParameters);
+
+        // Custom type
+        public static IServiceCollection AddInitializer<T>(this IServiceCollection services, Func<IServiceProvider, CancellationToken, Task<object?>> startFunc, Action<T>? configure = null)
+            where T : IParticipant<T>, IHas<IServiceProvider>
+               => services.AddParticipant<T>(
+                   p => { p.StartTask = (p, ct) => startFunc(p.Object, ct); configure?.Invoke(p); });
+        public static IServiceCollection AddInitializer<T>(this IServiceCollection services, string name, Func<IServiceProvider, CancellationToken, Task<object?>> startFunc, Action<T>? configure = null)
+            where T : IParticipant<T>, IHas<IServiceProvider>
+               => services.AddParticipant<T>(name,
+                   p => { p.StartTask = (p, ct) => startFunc(p.Object, ct); configure?.Invoke(p); });
+
+        #endregion 
 
         #endregion
 
         #region Method injection
 
         /// <summary>
-        /// 
+        /// Provide a delegate, and the method parameters will be injected.
         /// </summary>
         /// <param name="services"></param>
         /// <param name="startDelegate">Parameters will be injected from the Participant's ServiceProvider.  
         /// Must return Task&lt;object?&gt;, object?, or void.  Return null on success, otherwise an object representing why 
         /// the method failed.  For void return values, throw an exception if the method fails.</param>
-        /// <param name="constructorParameters"></param>
         /// <returns></returns>
-        public static IServiceCollection AddInitializer(this IServiceCollection services, Delegate startDelegate, Action<StartableParticipant>? configure = null, params object[] constructorParameters)
+        public static IServiceCollection AddInitializer(this IServiceCollection services, Delegate startDelegate, Action<StartableParticipant>? configure = null)
                 => services.AddParticipant<StartableParticipant>(
                       p =>
                       {
-                          p.StartTask = DependencyMachineDelegateHelpers.Invoke<StartableParticipant>(startDelegate);
+                          p.StartTask = DependencyMachineDelegateHelpers.CreateInvoker<StartableParticipant>(startDelegate);
+                          configure?.Invoke(p);
+                      });
+
+        public static IServiceCollection AddInitializer<T>(this IServiceCollection services, Delegate startDelegate, Action<T>? configure = null, params object[] constructorParameters)
+            where T : IParticipant<T>, IHas<IServiceProvider>
+                => services.AddParticipant<T>(
+                      p =>
+                      {
+                          p.StartTask = DependencyMachineDelegateHelpers.CreateInvoker<T>(startDelegate);
                           configure?.Invoke(p);
                       }
                       , constructorParameters);
+
+        #endregion
+
+        #endregion
+
+        #region FUTURE: Deinitializers (StopTask only)
+
+        // FUTURE: AddDeinitializer, AddDependencyService (with start and stop)
+        //public static IServiceCollection AddDeinitializer(this IServiceCollection services, Action stopAction, Action<StoppableParticipant>? configure = null)
+        //=> services.AddParticipant<StoppableParticipant>(p => { p.StopAction = stopAction; configure?.Invoke(p); });
+
+        #endregion
+
+        #region FUTURE: AddDependencyService (StartTask and StopTask)
+
+        //public static IServiceCollection AddDependencyService(this IServiceCollection services, Action startAction, Action stopAction, Action<Participant>? configure = null)
 
         #endregion
 

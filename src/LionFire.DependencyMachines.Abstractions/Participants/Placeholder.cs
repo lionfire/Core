@@ -4,12 +4,11 @@ namespace LionFire.DependencyMachines
 {
     public class Placeholder : StartableParticipant<Placeholder>
     {
-        public Placeholder(string name, params string[] dependencies)
+        public Placeholder(string name)
         {
             Key = name;
             this.Contributes(name);
-            this.DependsOn(dependencies);
-            Flags |= ParticipantFlags.StageEnder;
+            Flags |= ParticipantFlags.Noop;
         }
     }
 }

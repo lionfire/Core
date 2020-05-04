@@ -22,29 +22,23 @@ namespace LionFire.DependencyMachines
 
     public interface IParticipant : IKeyable 
     {
-        List<object>? Dependencies { get; }
+        List<object>? Dependencies { get; set; }
 
-        IEnumerable<IReadWriteHandle> DependencyHandles { get;  }
+        IEnumerable<IReadWriteHandle>? DependencyHandles { get;  }
 
         IEnumerable<object> Provides { get; }
-        List<object>? Contributes { get; }
+        List<object>? Contributes { get; set; }
+        List<object>? PrerequisiteFor { get; set; }
 
         ParticipantFlags Flags { get; }
 
+
     }
 
-    public static class IParticipantExtensions
+    public interface IParticipant<TConcrete> : IParticipant
+        where TConcrete : IParticipant
     {
-        public static IEnumerable<IParticipant> GetParticipants(this object obj)
-        {
-            if (obj is IHas<IParticipant> hasParticipant)
-            {
-                yield return hasParticipant.Object;
-            }
-            if (obj is IHasMany<IParticipant> hasParticipants)
-            {
-                foreach (var p in hasParticipants.Objects) { yield return p; }
-            }
-        }
+        Func<TConcrete, CancellationToken, Task<object?>>? StartTask { get; set; }
     }
+
 }

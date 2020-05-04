@@ -17,6 +17,7 @@ namespace LionFire.DependencyMachines
 
         public IEnumerable<IParticipant> Participants => participants.Values;
         internal ConcurrentDictionary<string, IParticipant> participants { get; } = new ConcurrentDictionary<string, IParticipant>();
+        public DependencyMachineConfig? Config { get; set; }
 
         public Dictionary<object, object> Dependencies = new Dictionary<object, object>();
         public void AddDependency(object dependant, object dependency)
