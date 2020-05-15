@@ -18,17 +18,23 @@ namespace LionFire.DependencyMachines
     public class DependencyMachineService : IHostedService
     {
 
-        public DependencyMachineService(IServiceProvider serviceProvider, IDependencyStateMachine dependencyMachine, IOptionsMonitor<DependencyMachineConfig> config)
+        //public DependencyMachineConfig CurrentConfig => Name == null ? OptionsMonitor.CurrentValue : OptionsMonitor.Get(Name);
+        public DependencyMachineConfig ManualConfig { get; private set; }
+
+        public DependencyMachineService(IServiceProvider serviceProvider, IDependencyStateMachine dependencyMachine, IOptionsMonitor<DependencyMachineConfig> optionsMonitor, string? name = null)
         {
             ServiceProvider = serviceProvider;
             DependencyMachine = dependencyMachine;
-            Config = config;
-            //config.OnChange((c, name) => { });
+            OptionsMonitor = optionsMonitor;
+
+            Name = name;
+            //config.OnChange((c, name) => { if(name == this.Name) { Reconfigure(); } });
         }
 
         protected IServiceProvider ServiceProvider { get; }
         public IDependencyStateMachine DependencyMachine { get; }
-        public IOptionsMonitor<DependencyMachineConfig> Config { get; }
+        public IOptionsMonitor<DependencyMachineConfig> OptionsMonitor { get; }
+        public string? Name { get; }
 
         // TODO: Use ClassStateMachine to track state?
         bool isStarted = false; 
@@ -38,34 +44,41 @@ namespace LionFire.DependencyMachines
         {
             if (obj is IHas<IParticipant> hasParticipant)
             {
-                DependencyMachine.Register(hasParticipant.Object);
+                ManualConfig.Register(hasParticipant.Object);
             }
             if (obj is IHasMany<IParticipant> hasParticipants)
             {
-                DependencyMachine.Register(hasParticipants.Objects);
+                ManualConfig.Register(hasParticipants.Objects);
             }
         }
 
         public async Task StartAsync(CancellationToken cancellationToken)
         {
+            ManualConfig = Name == null ? OptionsMonitor.CurrentValue : OptionsMonitor.Get(Name);
+
             if (isStarted) throw new AlreadyException();
             isStarted = true;
 
-            foreach(var item in Config.CurrentValue.AutoRegisterFromServiceTypes.OrEmpty())
+            //foreach(var item in ManualConfig.AutoRegisterFromServiceTypes.OrEmpty())
+            //{
+            //    var service = ServiceProvider.GetService(item);
+            //    AddFromObject(service);
+            //}
+            
+            foreach (var item in ManualConfig.AutoRegisterParticipants.OrEmpty())
             {
-                var service = ServiceProvider.GetService(item);
-                AddFromObject(service);
-            }
-            foreach (var item in Config.CurrentValue.AutoRegisterParticipants.OrEmpty())
-            {
+                throw new Exception("FIXME: Move these to CompiledDependencyMachine");
                 var participant = item(ServiceProvider);
-                if (participant != null) { DependencyMachine.Register(participant); }
+                if (participant != null) { ManualConfig.Register(participant); }
             }
-            foreach (var item in Config.CurrentValue.AutoRegisterManyParticipants.OrEmpty())
+            foreach (var item in ManualConfig.AutoRegisterManyParticipants.OrEmpty())
             {
+                throw new Exception("FIXME: Move these to CompiledDependencyMachine");
                 var participants = item(ServiceProvider);
-                if (participants != null) { DependencyMachine.Register(participants); }
+                if (participants != null) { ManualConfig.Register(participants); }
             }
+
+            //DependencyMachine.Config = ManualConfig;
 
             await DependencyMachine.StartAsync(cancellationToken);
             isStopped = false;

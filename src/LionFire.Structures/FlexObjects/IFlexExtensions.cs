@@ -147,7 +147,7 @@ namespace LionFire.FlexObjects
         #region Convenience / Backporting
 
         public static T AsTypeOrCreateDefault<T>(this IFlex flex, Func<T> factory = null) => flex.Get(createIfMissing: true, createFactory: factory, throwIfMissing: true);
-        
+
         #endregion
 
         #endregion
@@ -201,6 +201,20 @@ namespace LionFire.FlexObjects
             }
         }
 
+        public static void AddRange<T>(this IFlex flex, IEnumerable<T> objects)
+        {
+            if (objects == null) return;
+            foreach (var obj in objects)
+            {
+                flex.Add(obj);
+            }
+        }
+
+        public static void Add(this IFlex flex, Type type, object obj)
+        {
+            flex.Set(obj, allowReplace: false, throwOnFail: true);
+        }
+
         public static void Add<T>(this IFlex flex, T obj)
         {
             flex.Set(obj, allowReplace: false, throwOnFail: true);
@@ -235,9 +249,9 @@ namespace LionFire.FlexObjects
         //    dict.GetOrAdd()
         //}
 
-#endregion
+        #endregion
 
-#endregion
+        #endregion
 
         //#region Options
 
@@ -280,6 +294,16 @@ namespace LionFire.FlexObjects
 
         //public static T AsType<T>(this IFlex flex) => flex.FlexDictionary.TryGetValue(GetTypeKey<T>(), out var v) ? (T)v : default;
         //public static T AsTypeOrCreateDefault<T>(this IFlex flex, Func<T> factory = null) => (T)flex.FlexDictionary.GetOrAdd(GetTypeKey<T>(), (factory ?? DefaultFactory<T>())());
+
+        public static IFlex ToFlex(this object obj, params object[] additionalObjects)
+        {
+            var result = new FlexObject(obj);
+            if (additionalObjects != null)
+            {
+                result.AddRange(additionalObjects);
+            }
+            return result;
+        }
     }
 
 }

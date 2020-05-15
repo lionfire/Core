@@ -11,10 +11,7 @@ namespace VosApp_
         [Fact]
         public async void Pass()
         {
-            await VosAppHostBuilder.Create(options: new VosAppOptions
-            {
-
-            })
+            await VosAppHostBuilder.Create()
                 .ConfigureServices((context, services) =>
                 {
 

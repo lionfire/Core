@@ -48,7 +48,7 @@ namespace LionFire
 
                     // Note: executables may be installed to \Users\user\LocalAppData -- these are considered Variable, though an application may wish to treat it as not.
 
-                    return false; 
+                    return false;
                 }
                 if (LionFireEnvironment.Platform.IsUnix)
                 {
@@ -92,17 +92,17 @@ namespace LionFire
                 return null;
             };
 
-            /// <summary>
-            /// TOPORT  Either folder the exe is in, or a parent, if exe is for example nested in a bin folder.
-            /// MOVE to AppInfo
-            /// </summary>
-            public static string AppDir => throw new NotImplementedException();
+            ///// <summary>
+            ///// TOPORT  Either folder the exe is in, or a parent, if exe is for example nested in a bin folder.
+            ///// MOVE to AppInfo
+            ///// </summary>
+            //public static string AppDir => throw new NotImplementedException();
 
             #region Construction
 
             static Directories()
             {
-                if (AutoCreateDirectories) { EnsureAllDirectoriesExist(); }
+                if (AutoCreateDirectories) { DirectoryUtils.EnsureAllDirectoriesExist(typeof(Directories)); }
             }
 
             #endregion
@@ -166,8 +166,8 @@ namespace LionFire
                 {
                     if (appData == null)
                     {
-                        var result = SEnvironment.ExpandEnvironmentVariables("%APPDATA%");
-                        if (String.IsNullOrWhiteSpace(result))
+                        appData = SEnvironment.ExpandEnvironmentVariables("%APPDATA%");
+                        if (String.IsNullOrWhiteSpace(appData))
                         {
                             throw new Exception("%APPDATA% is not set");
                         }
@@ -187,8 +187,8 @@ namespace LionFire
                 {
                     if (localAppData == null)
                     {
-                        var result = SEnvironment.ExpandEnvironmentVariables("%LOCALAPPDATA%");
-                        if (String.IsNullOrWhiteSpace(result))
+                        localAppData = SEnvironment.ExpandEnvironmentVariables("%LOCALAPPDATA%");
+                        if (String.IsNullOrWhiteSpace(localAppData))
                         {
                             throw new Exception("%LOCALAPPDATA% is not set");
                         }
@@ -242,28 +242,33 @@ namespace LionFire
             public static string ReleaseNotesDir { get; set; } // TODO
 
             #endregion
+        }
+    }
 
-
-            #region (Private) Utility Methods
-
-            internal static void EnsureAllDirectoriesExist()
+    public static class DirectoryUtils
+    {
+        public static void EnsureAllDirectoriesExist(Type type, bool throwIfNull = false)
+        {
+            foreach (var pi in type.GetProperties(BindingFlags.Static | BindingFlags.Public))
             {
-                foreach (var pi in typeof(LionFireEnvironment.Directories).GetProperties(BindingFlags.Static | BindingFlags.Public))
+                if (pi.PropertyType != typeof(string)) continue;
+                var dir = (pi.GetValue(pi) as string);
+                if (dir == null)
                 {
-                    try
-                    {
-                        var dir = (pi.GetValue(pi) as string);
-                        dir.EnsureDirectoryExists();
-                    }
-                    catch
-                    {
-                        // EMPTYCATCH TODO
-                    }
+                    if (throwIfNull) throw new Exception($"Directory '{pi.Name}' does not exist.");
+                    else continue;
+                }
+                try
+                {
+                    dir.EnsureDirectoryExists();
+                }
+                catch (Exception ex)
+                {
+                    Debug.WriteLine($"Exception when ensuring directory exists: " + ex.ToString());
+                    // EMPTYCATCH TODO
                 }
             }
-
-            #endregion
-
         }
+
     }
 }

@@ -4,9 +4,9 @@ using System.Text;
 
 namespace LionFire.Vos.Persisters.Results
 {
-    public class VosPersistenceResult
-    {
-    }
+    //public class VosPersistenceResult
+    //{
+    //}
 
     //public struct OBusPersistenceResult<TObject, TResolutionInfo>
     //{

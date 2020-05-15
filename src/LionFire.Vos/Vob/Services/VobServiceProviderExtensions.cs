@@ -23,7 +23,7 @@ namespace LionFire.Services
             configurator?.Invoke(dsp);
 
             //vob.AcquireOrAddNextVobNode<IServiceProvider, VobServiceProvider>(addAtRoot: false);
-            if(parentServiceProvider != null && existingServiceProvider != null && !allowDiscardExistingServiceProvider)
+            if(parentServiceProvider != null && existingServiceProvider != null && !ReferenceEquals(parentServiceProvider, existingServiceProvider) && !allowDiscardExistingServiceProvider)
             {
                 throw new ArgumentException($"{nameof(parentServiceProvider)} != null && {nameof(vob)}.TryAcquireOwnVobNode<IServiceProvider>()?.Value != null && !{nameof(allowDiscardExistingServiceProvider)}");
             }

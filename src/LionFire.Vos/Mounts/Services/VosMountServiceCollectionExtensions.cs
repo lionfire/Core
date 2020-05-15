@@ -26,9 +26,8 @@ namespace LionFire.Services
                 options.ReadPriority = MountOptions.DefaultReadPriority;
             }
 
-            return services.Configure<VosOptions>(o => o[options?.RootName ?? VosConstants.DefaultRootName].Mounts.Add(new TMount(vosReference, reference, options)));
+            return services.Configure<VobRootOptions>(options?.RootName ?? VosConstants.DefaultRootName, o => o.Mounts.Add(new TMount(vosReference, reference, options)));
         }
-
 
         /// <summary>
         /// Defaults to Read mount if no options specified

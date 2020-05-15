@@ -3,6 +3,7 @@ using LionFire.DependencyMachines;
 using LionFire.ExtensionMethods;
 using LionFire.Ontology;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using System;
 using System.Collections.Concurrent;
@@ -26,6 +27,7 @@ namespace LionFire.Vos
 
         IServiceProvider IHas<IServiceProvider>.Object => ServiceProvider;
         public IServiceProvider ServiceProvider { get; }
+        public ILogger<IVos> Logger { get; }
 
         public VosOptions Options => vosOptions;
         readonly VosOptions vosOptions;
@@ -42,10 +44,11 @@ namespace LionFire.Vos
 
         #region Construction
 
-        public RootManager(IServiceProvider serviceProvider, IOptionsMonitor<VosOptions> vosOptionsMonitor)
+        public RootManager(IServiceProvider serviceProvider, IOptionsMonitor<VosOptions> vosOptionsMonitor, ILogger<IVos> logger)
         {
             this.vosOptions = vosOptionsMonitor.CurrentValue;
             ServiceProvider = serviceProvider;
+            Logger = logger;
         }
 
         //private void InitializeAll()
@@ -100,6 +103,13 @@ namespace LionFire.Vos
         {
             get
             {
+                yield return new StartableParticipant(ServiceProvider)
+                {
+                    StartAction = () => Logger.LogInformation("Vos initialized"),
+                }
+                .Provides("vos:")
+                .RootDependency();
+
                 foreach (var rootName in vosOptions.RootNames)
                 {
                     //var rootOptions = vosOptions.NamedRootOptions.TryGetValue(rootName); ENH

@@ -22,7 +22,7 @@ namespace LionFire.Vos.Services
         {
             var serviceProvider = vob.GetNextRequired<IServiceProvider>();
             var result = (T)serviceProvider.GetService(typeof(T));
-            if (result == null) throw new HasUnresolvedDependenciesException($"{typeof(T).FullName} not service not available for vob '{vob}'");
+            if (result == null) throw new HasUnresolvedDependenciesException($"{typeof(T).FullName} service not available for vob '{vob}'");
             return result;
         }
     }

@@ -5,4 +5,5 @@ using System.Text;
 class TestGlobals
 {
     public const string TestApplicationId = "Test-LionFire.Vos.VosApp.Tests";
+    public const string TestOrgName = "LionFire-Test";
 }

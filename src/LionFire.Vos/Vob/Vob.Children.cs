@@ -128,10 +128,10 @@ namespace LionFire.Vos
                 }
                 else
                 {
-                    if (ThrowOnMissingEnvironmentVariables) throw new Exception($"[Vob child traverse] environment variable not found: ${chunk}");
+                    if (ThrowOnMissingEnvironmentVariables) throw new Exception($"[Vob child traverse] environment variable not found: {chunk}");
                     else
                     {
-                        Debug.WriteLine($"[Vob child traverse] environment variable not found: ${chunk}");
+                        Debug.WriteLine($"[Vob child traverse] environment variable not found: {chunk}");
                         return (string.Empty, null);
                     }
                 }

@@ -16,7 +16,7 @@ namespace LionFire.Services
             services.InitializeVob<IServiceProvider>(vosReference, (v, serviceProvider) =>
              {
                  v.AddPackageProvider(options);
-             });
+             }, key: $"{vosReference} PackageProvider");
             return services;
         }
         public static IServiceCollection VosPackageProvider(this IServiceCollection services, string vosPath, PackageProviderOptions options = null)

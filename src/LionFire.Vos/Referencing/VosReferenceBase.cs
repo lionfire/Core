@@ -218,6 +218,8 @@ namespace LionFire.Vos
 
         public IVosReference Reference => this;
 
+        public VosReference GetRoot() => new VosReference(VosPath.GetRootOfPath(this.Path));
+
         #region Misc
 
         public static bool operator ==(VosReferenceBase<TConcrete> left, IVosReference right) => left?.Key == right?.Key;

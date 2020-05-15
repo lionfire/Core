@@ -9,7 +9,7 @@ namespace LionFire.Services
 
         public static string RootStage(string rootName = null) => "vos:" + VosPath.GetRoot(rootName);
 
-        public static string RootMountStage(string rootName ) => NamedRootStage("Mounts", rootName);
+        public static string RootMountStage(string rootName) => NamedRootStage("Mounts", rootName);
     }
 
 }

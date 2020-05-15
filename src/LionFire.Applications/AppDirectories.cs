@@ -1,4 +1,5 @@
-﻿using LionFire.Ontology;
+﻿using LionFire.Dependencies;
+using LionFire.Ontology;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -14,9 +15,13 @@ namespace LionFire.Applications
         public AppDirectories(AppInfo appInfo)
         {
             AppInfo = appInfo;
-            appDir = appInfo.CustomAppDir;
-
+        }
+        
+        public void Initialize()
+        {
+            appDir = AppInfo.CustomAppDirName;
             CreateProgramDataFolders(AppInfo);
+
         }
 
         private string CompanyName => AppInfo.OrgName;
@@ -41,13 +46,14 @@ namespace LionFire.Applications
         {
             get
             {
-#if UNITY
-                // TOUNITY TODO: Inject this from UnityHost
-                return UnityEngine.Application.dataPath;
-                //				return UnityEngine.Application.persistentDataPath;
-#else
-                return appDir ??= DetectAppDir();
-#endif
+                return ServiceLocator.GetRequired<AppInfo>().AppDir;
+//#if UNITY
+//                // TOUNITY TODO: Inject this from UnityHost
+//                return UnityEngine.Application.dataPath;
+//                //				return UnityEngine.Application.persistentDataPath;
+//#else
+//                return appDir ??= AppInfo.DetectAppDir();
+//#endif
             }
         }
         private string appDir;
@@ -55,51 +61,6 @@ namespace LionFire.Applications
         #endregion
 
         #region Methods
-
-        public string DetectAppDir()
-        {
-            var result = LionFireEnvironment.AppBinDir;
-
-            string releaseEnding = @"bin\release";
-            string debugEnding = @"bin\debug";
-            string debugEnding2 = @"dbin";
-            string binEnding = @"bin";
-
-            string releaseProjectEnding = @"bin\" + AppInfo.AppName.ToLowerInvariant() + @"\release";
-            string debugProjectEnding = @"bin\" + AppInfo.AppName.ToLowerInvariant() + @"\debug";
-
-            if (result.ToLower().EndsWith(releaseEnding))
-            {
-                result = result.Substring(0, result.Length - releaseEnding.Length);
-            }
-            else if (result.ToLower().EndsWith(debugEnding))
-            {
-                result = result.Substring(0, result.Length - debugEnding.Length);
-            }
-            else if (result.ToLower().EndsWith(debugEnding2))
-            {
-                result = result.Substring(0, result.Length - debugEnding2.Length);
-            }
-            else if (result.ToLower().EndsWith(binEnding))
-            {
-                result = result.Substring(0, result.Length - binEnding.Length);
-            }
-            else if (result.ToLower().EndsWith(releaseProjectEnding))
-            {
-                result = Path.Combine(result.Substring(0, result.Length - releaseProjectEnding.Length), AppInfo.AppName);
-            }
-            else if (result.ToLower().EndsWith(debugProjectEnding))
-            {
-                result = Path.Combine(result.Substring(0, result.Length - debugProjectEnding.Length), AppInfo.AppName);
-            }
-            else
-            {
-                Debug.WriteLine("Could not determine AppDir.  Using AppDir = AppBinDir: " + LionFireEnvironment.AppBinDir);
-                result = LionFireEnvironment.AppBinDir;
-            }
-            //l.Info("AppDir: " + appDir);
-            return result;
-        }
 
         /// <summary>
         /// c:\ProgramData\{CompanyName}\{AppDataDirName}
@@ -128,15 +89,14 @@ namespace LionFire.Applications
         /// Creates a new instance of this class creating the specified company and application folders
         /// if they don't already exist and optionally allows write/modify to all users.
         /// </summary>
-        /// <param name="companyFolder">The name of the company's folder (normally the company name).</param>
-        /// <param name="applicationFolder">The name of the application's folder (normally the application name).</param>
+        ///// <param name="allUsers"></param>
         /// <remarks>If the application folder already exists then permissions if requested are NOT altered.
         /// </remarks>
         // TODO: Verify permissions, if already exists
-        public static void CreateProgramDataFolders(AppInfo appInfo, bool allUsers = false)
+        public static void CreateProgramDataFolders(AppInfo appInfo/*, bool allUsers = false*/)
         {
             string companyFolder = appInfo.OrgDir;
-            string applicationFolder = appInfo.CustomAppDir;
+            string applicationFolder = appInfo.CustomAppDirName;
 
             // Gets the path of the company's data folder.
             // c:\ProgramData\{CompanyFolder}

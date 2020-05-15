@@ -8,35 +8,29 @@ using LionFire.Applications;
 using LionFire.Vos.Packages;
 using System.Collections.Generic;
 using LionFire.DependencyMachines;
+using Microsoft.Extensions.Configuration;
 
 namespace LionFire.Hosting // REVIEW - consider changing this to LionFire.Services to make it easier to remember how to create a new app
 {
-
     public static class VosAppHostBuilder
     {
-
-        // TODO: move serializers and maybe defaultBuilder away from here
-
-        public static IHostBuilder Create(string appName = null, string orgName = null, bool defaultBuilder = true, string[] args = null)
-            => Create(args: args, options: new VosAppOptions { AppInfo = new AppInfo { AppName = appName, OrgName = orgName } }, defaultBuilder: defaultBuilder);
-
-        public static IHostBuilder Create(string[] args = null, VosAppOptions options = null, bool defaultBuilder = true, IDependencyStateMachine dependencies = null)
+        public static IHostBuilder Create(string[] args = null, VosAppOptions options = null, bool defaultBuilder = true)
         {
             if (options == null) options = VosAppOptions.Default;
-                             
+
             return VosHost.Create(args, defaultBuilder: defaultBuilder)
-                     .SetAppInfo(options?.AppInfo)
                      .ConfigureServices((context, services) =>
                      {
                          services
-                             .ConfigureDependencyMachine(dm=>
+                             .AddDependencyMachine()
+                             .ConfigureDependencyMachine(dm =>
                              {
                                  dm.Register(DependencyStages.CreateStageChain(
-                                     VosAppInitStage.Stores, 
-                                     VosAppInitStage.PackageProviders, 
+                                     null,
+                                     VosAppInitStage.Stores,
+                                     VosAppInitStage.PackageProviders,
                                      VosAppInitStage.PackageSources));
                              })
-                             .AddSingleton<IDependencyStateMachine, IDependencyStateMachine>()
                              .VobEnvironment("app", "/app".ToVosReference()) // TODO: VosAppLocations.App = "$app"
                              .VobEnvironment(VosPackageLocations.Packages, "/packages".ToVosReference())
                              .VobEnvironment("internal", "/_".ToVosReference())
@@ -49,18 +43,22 @@ namespace LionFire.Hosting // REVIEW - consider changing this to LionFire.Servic
                                                      //.AddVosAppDefaultMounts(options) // TODO
                                                      //.VobAlias("/`", "$AppRoot") // FUTURE?  Once environment variables are ready
 
-                             .AddVosAppOptions(options)
+                             //.AddVosAppOptions(options)
                              ;
 
-                         if (options.AddDefaultStores)
-                         {
-                             services
-                                 .AddAppDirStore(appInfo: options.AppInfo ?? context.Properties["AppInfo"] as AppInfo, useExeDirAsAppDirIfMissing: options.UseExeDirAsAppDirIfMissing)
-                                 .AddExeDirStore()
-                                 .AddPlatformSpecificStores(context.Configuration);
-                         }
                      })
                 ;
         }
+
+        public static AppInfo AppInfo(this IHostBuilder hostBuilder)
+            => hostBuilder.Properties[typeof(AppInfo)] as AppInfo ?? throw new ArgumentException("IHostBuilder needs to have AddAppInfo() invoked on it.");
+
+        public static IHostBuilder AddDefaultVosAppStores(this IHostBuilder hostBuilder, bool useExeDirAsAppDirIfMissing = false)
+            => hostBuilder.ConfigureServices(services =>
+                services
+                     .AddAppDirStore(appInfo: hostBuilder.AppInfo(), useExeDirAsAppDirIfMissing: useExeDirAsAppDirIfMissing)
+                     .AddExeDirStore()
+                     .AddPlatformSpecificStores(hostBuilder.AppInfo()));
+
     }
 }

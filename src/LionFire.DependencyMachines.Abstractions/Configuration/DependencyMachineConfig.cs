@@ -18,25 +18,19 @@ namespace LionFire.DependencyMachines
         /// <summary>
         /// Default: Throw.  Recommend changing to Disable in application initialization frameworks once the implications are understood.
         /// </summary>
-        public OrphanedStagePolicy OrphanedStagePolicy { get; set; } = OrphanedStagePolicy.Throw;
+        public OrphanedStagePolicy OrphanedStagePolicy { get; set; }
+            //= OrphanedStagePolicy.Execute;
+            = OrphanedStagePolicy.Throw;
 
         public List<Type> AutoRegisterFromServiceTypes { get; } = new List<Type>();
 
         public List<Func<IServiceProvider, IEnumerable<IParticipant>>> AutoRegisterManyParticipants { get; } = new List<Func<IServiceProvider, IEnumerable<IParticipant>>>();
         public List<Func<IServiceProvider, IParticipant>> AutoRegisterParticipants { get; } = new List<Func<IServiceProvider, IParticipant>>();
 
-        public List<IParticipant> Participants { get; } = new List<IParticipant>();
-    }
+        public List<Func<IServiceProvider, IParticipant>> InjectedParticipants { get; } = new List<Func<IServiceProvider, IParticipant>>();
+        public List<IParticipant> ParticipantInstances { get; } = new List<IParticipant>();
 
-    public static class DependencyMachineConfigExtensions
-    {
-        public static DependencyMachineConfig Register(this DependencyMachineConfig config, IParticipant participant)
-        {
-            config.Participants.Add(participant);
-            return config;
-        }
-        public static DependencyMachineConfig StageDependsOn(this DependencyMachineConfig config, string dependantStage, string prerequisiteStage)
-            => config.Register(new Placeholder(dependantStage).DependsOn(prerequisiteStage));
         
+        public bool EnableLogging { get; set; }
     }
 }

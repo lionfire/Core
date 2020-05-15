@@ -4,10 +4,10 @@ namespace LionFire.DependencyMachines
 {
     public class Placeholder : StartableParticipant<Placeholder>
     {
-        public Placeholder(string name)
+        public Placeholder(string key)
         {
-            Key = name;
-            this.Contributes(name);
+            Key = key;
+            this.Contributes(key);
             Flags |= ParticipantFlags.Noop;
         }
     }

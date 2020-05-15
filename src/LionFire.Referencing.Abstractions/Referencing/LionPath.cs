@@ -23,6 +23,11 @@ namespace LionFire.Referencing
         public static string GetParent(string path, bool nullIfBeyondRoot = false) => GetAncestor(path, 1, nullIfBeyondRoot);
         public static string GetAncestor(string path, int depth, bool nullIfBeyondRoot = false)
         {
+            if(path == "/")
+            {
+                return depth == 0 ? "/" : (nullIfBeyondRoot ? null : "/");
+            }
+
             bool endsWithSeparator = path.EndsWith(LionPath.PathDelimiter.ToString());
             path = path.TrimEnd(PathDelimiter);
 

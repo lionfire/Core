@@ -8,7 +8,7 @@ namespace LionFire.Vos
         string RootName { get; }
         IVos RootManager { get; }
 
-        RootVobOptions Options { get; }
+        VobRootOptions Options { get; }
 
 
     }

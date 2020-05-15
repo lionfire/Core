@@ -62,5 +62,7 @@ namespace LionFire.Assets
         #endregion
 
         public static implicit operator AssetReference<TValue>(string assetPath) => new AssetReference<TValue>(assetPath);
+
+        public override string ToString() => $"{UriPrefixDefault}({typeof(TValue)}){Path}";
     }
 }

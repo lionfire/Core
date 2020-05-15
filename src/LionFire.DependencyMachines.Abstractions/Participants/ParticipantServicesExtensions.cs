@@ -21,24 +21,68 @@ namespace LionFire.Services.DependencyMachines
 
         #region Custom Participant type
 
+        //public static IServiceCollection AddParticipant<T>(this IServiceCollection services, Action<T> configure, params object[] constructorParameters)
+        //    where T : IParticipant
+        //    => services.AddParticipant(null, configure, constructorParameters);
+
         public static IServiceCollection AddParticipant<T>(this IServiceCollection services, Action<T> configure, params object[] constructorParameters)
             where T : IParticipant
-            => services.AddParticipant(null, configure, constructorParameters);
-
-        public static IServiceCollection AddParticipant<T>(this IServiceCollection services, string? name, Action<T> configure, params object[] constructorParameters)
-            where T : IParticipant
         {
-            services.TryAdd(new ServiceDescriptor(typeof(IParticipant),
-                serviceProvider =>
-                {
-                    var obj = ActivatorUtilities.CreateInstance<T>(serviceProvider, constructorParameters);
-                    obj.Key = name;
-                    configure(obj);
-                    return obj;
-                },
-                ServiceLifetime.Transient));
+            services.Configure<DependencyMachineConfig>(c => c.InjectedParticipants.Add(serviceProvider =>
+            {
+                var obj = ActivatorUtilities.CreateInstance<T>(serviceProvider, constructorParameters);
+                obj.Key = null;
+                configure(obj);
+                return obj;
+            }));
+
+            //services.TryAdd(new ServiceDescriptor(typeof(IParticipant),
+            //    serviceProvider =>
+            //    {
+            //        var obj = ActivatorUtilities.CreateInstance<T>(serviceProvider, constructorParameters);
+            //        obj.Key = name;
+            //        configure(obj);
+            //        return obj;
+            //    },
+            //    ServiceLifetime.Transient));
             return services;
         }
+        public static IServiceCollection AddParticipant<T>(this IServiceCollection services, string participantName, Action<T> configure, params object[] constructorParameters)
+              where T : IParticipant
+        {
+            services.Configure<DependencyMachineConfig>(c => c.InjectedParticipants.Add(serviceProvider =>
+            {
+                var obj = ActivatorUtilities.CreateInstance<T>(serviceProvider, constructorParameters);
+                obj.Key = participantName;
+                configure(obj);
+                return obj;
+            }));
+            return services;
+        }
+
+        public static IServiceCollection AddParticipant<T>(this IServiceCollection services, string dependencyMachineName, string participantName, Action<T> configure, params object[] constructorParameters)
+           where T : IParticipant
+        {
+            services.Configure<DependencyMachineConfig>(dependencyMachineName, c => c.InjectedParticipants.Add(serviceProvider =>
+            {
+                var obj = ActivatorUtilities.CreateInstance<T>(serviceProvider, constructorParameters);
+                obj.Key = participantName;
+                configure(obj);
+                return obj;
+            }));
+
+            //services.TryAdd(new ServiceDescriptor(typeof(IParticipant),
+            //    serviceProvider =>
+            //    {
+            //        var obj = ActivatorUtilities.CreateInstance<T>(serviceProvider, constructorParameters);
+            //        obj.Key = name;
+            //        configure(obj);
+            //        return obj;
+            //    },
+            //    ServiceLifetime.Transient));
+            return services;
+        }
+
 
         #endregion
 
@@ -51,30 +95,48 @@ namespace LionFire.Services.DependencyMachines
         public static IServiceCollection AddHostedServiceDependency<T>(this IServiceCollection services, string? name, Action<IParticipant> configure, params object[] constructorParameters)
             where T : IHostedService
         {
-            services.TryAdd(new ServiceDescriptor(typeof(IParticipant),
-                serviceProvider =>
+            services.Configure<DependencyMachineConfig>(c => c.InjectedParticipants.Add(serviceProvider =>
+            {
+                var obj = ActivatorUtilities.CreateInstance<T>(serviceProvider, constructorParameters);
+                var participant = new HostedServiceParticipant<T>(obj)
                 {
-                    var obj = ActivatorUtilities.CreateInstance<T>(serviceProvider, constructorParameters);
-                    var participant = new HostedServiceParticipant<T>(obj)
-                    {
-                        Key = name ?? "type:" + typeof(T).FullName,
-                    };
-                    configure(participant);
-                    return participant;
-                },
-                ServiceLifetime.Transient));
+                    Key = name ?? "type:" + typeof(T).FullName,
+                };
+                configure(participant);
+                return participant;
+            }));
+
+            //services.TryAddEnumerable(
+            //    ServiceDescriptor.Describe(typeof(IParticipant), typeof(HostedServiceParticipant<T>), ServiceLifetime.Transient);
+
+            //new ServiceDescriptor(typeof(IParticipant), typeof(HostedServiceParticipant<T>)
+            //    ,
+            //    ServiceLifetime.Transient
+            //    )
+            //{
+            //    ImplementationFactory = serviceProvider =>
+            //    {
+            //        var obj = ActivatorUtilities.CreateInstance<T>(serviceProvider, constructorParameters);
+            //        var participant = new HostedServiceParticipant<T>(obj)
+            //        {
+            //            Key = name ?? "type:" + typeof(T).FullName,
+            //        };
+            //        configure(participant);
+            //        return participant;
+            //    }
+            //});
             return services;
         }
 
         #endregion
 
-        #region Default Participant type
+        #region Default IParticipant type: Participant
 
-        // Uses default IParticipant type: Participant
         public static IServiceCollection AddParticipant(this IServiceCollection services, Action<Participant> configure)
-           => services.AddParticipant(null, configure);
-        public static IServiceCollection AddParticipant(this IServiceCollection services, string? name, Action<Participant> configure)
-                   => services.AddParticipant<Participant>(configure, name);
+           => services.AddParticipant(configure);
+
+        public static IServiceCollection AddParticipant(this IServiceCollection services, string dependencyMachineName, Action<Participant> configure)
+                   => services.AddParticipant(configure, dependencyMachineName);
 
         #endregion
 
@@ -85,8 +147,8 @@ namespace LionFire.Services.DependencyMachines
         // Uses default IParticipant type: StartableParticipant
         public static IServiceCollection AddInitializer(this IServiceCollection services, Action<StartableParticipant> configure)
            => services.AddParticipant<StartableParticipant>(configure);
-        public static IServiceCollection AddInitializer(this IServiceCollection services, string? name, Action<StartableParticipant> configure)
-           => services.AddParticipant<StartableParticipant>(name, configure);
+        public static IServiceCollection AddInitializer(this IServiceCollection services, string participantName, Action<StartableParticipant> configure)
+           => services.AddParticipant<StartableParticipant>(participantName, configure);
 
         #region StartTask
 
@@ -142,8 +204,8 @@ namespace LionFire.Services.DependencyMachines
         public static IServiceCollection AddInitializer(this IServiceCollection services, Func<IServiceProvider, CancellationToken, Task<object?>> startFunc, Action<StartableParticipant>? configure = null)
                => services.AddParticipant<StartableParticipant>(
                    p => { p.StartTask = (p, ct) => startFunc(p.ServiceProvider, ct); configure?.Invoke(p); });
-        public static IServiceCollection AddInitializer(this IServiceCollection services, string name, Func<IServiceProvider, CancellationToken, Task<object?>> startFunc, Action<StartableParticipant>? configure = null)
-               => services.AddParticipant<StartableParticipant>(name,
+        public static IServiceCollection AddInitializer(this IServiceCollection services, string participantName, Func<IServiceProvider, CancellationToken, Task<object?>> startFunc, Action<StartableParticipant>? configure = null)
+               => services.AddParticipant<StartableParticipant>(participantName,
                    p => { p.StartTask = (p, ct) => startFunc(p.ServiceProvider, ct); configure?.Invoke(p); });
 
         //public static IServiceCollection AddParticipant(this IServiceCollection services, Func<StartableParticipant, CancellationToken, object?> startFunc, params object[] constructorParameters)
@@ -154,9 +216,9 @@ namespace LionFire.Services.DependencyMachines
             where T : IParticipant<T>, IHas<IServiceProvider>
                => services.AddParticipant<T>(
                    p => { p.StartTask = (p, ct) => startFunc(p.Object, ct); configure?.Invoke(p); });
-        public static IServiceCollection AddInitializer<T>(this IServiceCollection services, string name, Func<IServiceProvider, CancellationToken, Task<object?>> startFunc, Action<T>? configure = null)
+        public static IServiceCollection AddInitializer<T>(this IServiceCollection services, string participantName, Func<IServiceProvider, CancellationToken, Task<object?>> startFunc, Action<T>? configure = null)
             where T : IParticipant<T>, IHas<IServiceProvider>
-               => services.AddParticipant<T>(name,
+               => services.AddParticipant<T>(participantName,
                    p => { p.StartTask = (p, ct) => startFunc(p.Object, ct); configure?.Invoke(p); });
 
         #endregion 

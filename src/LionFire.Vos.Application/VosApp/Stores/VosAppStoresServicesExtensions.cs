@@ -114,19 +114,19 @@ namespace LionFire.Services
             return result;
         }
 
-        public static IServiceCollection AddPlatformSpecificStores(this IServiceCollection services, IConfiguration configuration)
+        public static IServiceCollection AddPlatformSpecificStores(this IServiceCollection services, AppInfo appInfo)
         {
-            services.AddWindowsStores(configuration);
+            services.AddWindowsStores(appInfo);
 #if TODO
-            services.AddLinuxStores(configuration);
-            services.AddMacStores(configuration);
+            services.AddLinuxStores(appInfo);
+            services.AddMacStores(appInfo);
 #endif
             return services;
         }
 
         #region Linux
 
-        public static IServiceCollection AddLinuxStores(this IServiceCollection services, IConfiguration configuration)
+        public static IServiceCollection AddLinuxStores(this IServiceCollection services, AppInfo appInfo)
         {
             return services;
         }
@@ -135,7 +135,7 @@ namespace LionFire.Services
 
         #region Mac
 
-        public static IServiceCollection AddMacStores(this IServiceCollection services, IConfiguration configuration)
+        public static IServiceCollection AddMacStores(this IServiceCollection services, AppInfo appInfo)
         {
             return services;
         }
@@ -145,26 +145,26 @@ namespace LionFire.Services
         #region Windows
 
 
-        public static IServiceCollection AddWindowsStores(this IServiceCollection services, IConfiguration configuration)
+        public static IServiceCollection AddWindowsStores(this IServiceCollection services, AppInfo appInfo)
         {
             // FUTURE ENH: Only mount if they exist and are used.  If installed to later, mount them later.
 
             return services
-                .AddProgramDataOrgStore(configuration)
-                .AddProgramDataAppStore(configuration)
-                .AddProgramDataDataDirStore(configuration)
+                .AddProgramDataOrgStore(appInfo)
+                .AddProgramDataAppStore(appInfo)
+                .AddProgramDataDataDirStore(appInfo)
 
-                .AddLocalAppDataOrgStore(configuration)
-                .AddLocalAppDataAppStore(configuration)
-                .AddLocalAppDataDataDirStore(configuration)
+                .AddLocalAppDataOrgStore(appInfo)
+                .AddLocalAppDataAppStore(appInfo)
+                .AddLocalAppDataDataDirStore(appInfo)
 
-                .AddLocalLowAppDataOrgStore(configuration)
-                .AddLocalLowAppDataAppStore(configuration)
-                .AddLocalLowAppDataDataDirStore(configuration)
+                .AddLocalLowAppDataOrgStore(appInfo)
+                .AddLocalLowAppDataAppStore(appInfo)
+                .AddLocalLowAppDataDataDirStore(appInfo)
 
-                .AddRoamingAppDataOrgStore(configuration)
-                .AddRoamingAppDataAppStore(configuration)
-                .AddRoamingAppDataDataDirStore(configuration);
+                .AddRoamingAppDataOrgStore(appInfo)
+                .AddRoamingAppDataAppStore(appInfo)
+                .AddRoamingAppDataDataDirStore(appInfo);
         }
 
         #endregion
@@ -200,39 +200,39 @@ namespace LionFire.Services
 
         #region RoamingAppData
 
-        public static IServiceCollection AddRoamingAppDataDataDirStore(this IServiceCollection services, IConfiguration configuration, MountOptions options = null)
+        public static IServiceCollection AddRoamingAppDataDataDirStore(this IServiceCollection services, AppInfo appInfo, MountOptions options = null)
                  => _AddStore(services,
                    options,
                    StoreNames.RoamingAppDataDataDir,
-                   Path.Combine(RoamingAppDataDir, configuration[OrgName] ?? throw new ArgumentNullException(nameof(OrgName))),
-                   configuration[DataDirName],
+                   Path.Combine(RoamingAppDataDir, appInfo.OrgName ?? throw new ArgumentNullException(nameof(OrgName))),
+                   appInfo.DataDirName,
                    isOwnedByOperatingSystemUser: true,
                    isVariableDataLocation: true);
 
         //{
-        //    var path = Path.Combine(RoamingAppDataDir, configuration[OrgName] ?? throw new ArgumentNullException(nameof(OrgName)), configuration[DataDirName] ?? throw new ArgumentNullException(DataDirName));
+        //    var path = Path.Combine(RoamingAppDataDir, appInfo.OrgName ?? throw new ArgumentNullException(nameof(OrgName)), appInfo.DataDirName ?? throw new ArgumentNullException(DataDirName));
 
         //    options ??= DefaultOptions(StoreNames.RoamingAppDataDataDir, path);
         //    options.IsOwnedByOperatingSystemUser = true;
         //    options.IsVariableDataLocation = true;
 
-        //    return configuration[DataDirName] == null
+        //    return appInfo.DataDirName == null
         //        ? services
         //        : services.VosMount("$stores/" + StoreNames.RoamingAppDataDataDir,
         //       path.ToFileReference(),
         //       options);
         //}
 
-        public static IServiceCollection AddRoamingAppDataAppStore(this IServiceCollection services, IConfiguration configuration, MountOptions options = null)
+        public static IServiceCollection AddRoamingAppDataAppStore(this IServiceCollection services, AppInfo appInfo, MountOptions options = null)
                  => _AddStore(services,
                    options,
                    StoreNames.RoamingAppDataAppDir,
-                   Path.Combine(RoamingAppDataDir, configuration[OrgName] ?? throw new ArgumentNullException(nameof(OrgName))),
-                   configuration[AppName],
+                   Path.Combine(RoamingAppDataDir, appInfo.OrgName ?? throw new ArgumentNullException(nameof(OrgName))),
+                   appInfo.AppName,
                    isOwnedByOperatingSystemUser: true,
                    isVariableDataLocation: true);
         //{
-        //    var path = Path.Combine(RoamingAppDataDir, configuration[OrgName] ?? throw new ArgumentNullException(nameof(OrgName)), configuration[AppName] ?? throw new ArgumentNullException(AppName));
+        //    var path = Path.Combine(RoamingAppDataDir, appInfo.OrgName ?? throw new ArgumentNullException(nameof(OrgName)), appInfo.AppName ?? throw new ArgumentNullException(AppName));
 
         //    options ??= DefaultOptions(StoreNames.RoamingAppDataDataDir, path);
         //    options.IsOwnedByOperatingSystemUser = true;
@@ -243,16 +243,16 @@ namespace LionFire.Services
         //         options);
         //}
 
-        public static IServiceCollection AddRoamingAppDataOrgStore(this IServiceCollection services, IConfiguration configuration, MountOptions options = null)
+        public static IServiceCollection AddRoamingAppDataOrgStore(this IServiceCollection services, AppInfo appInfo, MountOptions options = null)
                  => _AddStore(services,
                    options,
                    StoreNames.RoamingAppDataOrgDir,
                    RoamingAppDataDir,
-                   configuration[OrgName],
+                   appInfo.OrgName,
                    isOwnedByOperatingSystemUser: true,
                    isVariableDataLocation: true);
         //{
-        //    var path = Path.Combine(RoamingAppDataDir, configuration[OrgName] ?? throw new ArgumentNullException(OrgName));
+        //    var path = Path.Combine(RoamingAppDataDir, appInfo.OrgName ?? throw new ArgumentNullException(OrgName));
 
         //    options ??= DefaultOptions(StoreNames.RoamingAppDataDataDir, path);
         //    options.IsOwnedByOperatingSystemUser = true;
@@ -267,19 +267,19 @@ namespace LionFire.Services
 
         #region LocalLowAppData
 
-        public static IServiceCollection AddLocalLowAppDataDataDirStore(this IServiceCollection services, IConfiguration configuration, MountOptions options = null)
+        public static IServiceCollection AddLocalLowAppDataDataDirStore(this IServiceCollection services, AppInfo appInfo, MountOptions options = null)
                 => _AddStore(services,
                    options,
                    StoreNames.LocalLowAppDataDataDir,
-                   Path.Combine(LocalLowAppDataDir, configuration[OrgName] ?? throw new ArgumentNullException(nameof(OrgName))),
-                   configuration[DataDirName],
+                   Path.Combine(LocalLowAppDataDir, appInfo.OrgName ?? throw new ArgumentNullException(nameof(OrgName))),
+                   appInfo.DataDirName,
                    isOwnedByOperatingSystemUser: true,
                    isVariableDataLocation: true);
 
         //{
-        //    if (configuration[DataDirName] == null) return services;
+        //    if (appInfo.DataDirName == null) return services;
 
-        //    var path = Path.Combine(LocalLowAppDataDir, configuration[OrgName] ?? throw new ArgumentNullException(nameof(OrgName)), configuration[DataDirName] ?? throw new ArgumentNullException(DataDirName));
+        //    var path = Path.Combine(LocalLowAppDataDir, appInfo.OrgName ?? throw new ArgumentNullException(nameof(OrgName)), appInfo.DataDirName ?? throw new ArgumentNullException(DataDirName));
 
         //    options ??= DefaultOptions(StoreNames.LocalLowAppDataDataDir, path);
         //    options.IsOwnedByOperatingSystemUser = false;
@@ -290,12 +290,12 @@ namespace LionFire.Services
         //    options));
         //}
 
-        public static IServiceCollection AddLocalLowAppDataAppStore(this IServiceCollection services, IConfiguration configuration, MountOptions options = null)
+        public static IServiceCollection AddLocalLowAppDataAppStore(this IServiceCollection services, AppInfo appInfo, MountOptions options = null)
                 => _AddStore(services,
                    options,
                    StoreNames.LocalLowAppDataAppDir,
-                   Path.Combine(LocalLowAppDataDir, configuration[OrgName] ?? throw new ArgumentNullException(nameof(OrgName))),
-                   configuration[AppName],
+                   Path.Combine(LocalLowAppDataDir, appInfo.OrgName ?? throw new ArgumentNullException(nameof(OrgName))),
+                   appInfo.AppName,
                    isOwnedByOperatingSystemUser: true,
                    isVariableDataLocation: true);
         //{
@@ -306,20 +306,20 @@ namespace LionFire.Services
         //    options.IsVariableDataLocation = true;
 
         //    return services.VosMount("$stores/" + StoreNames.LocalLowAppDataAppDir,
-        //            Path.Combine(LocalLowAppDataDir, configuration[OrgName] ?? throw new ArgumentNullException(nameof(OrgName)), configuration[AppName] ?? throw new ArgumentNullException(AppName)).ToFileReference(),
+        //            Path.Combine(LocalLowAppDataDir, appInfo.OrgName ?? throw new ArgumentNullException(nameof(OrgName)), appInfo.AppName ?? throw new ArgumentNullException(AppName)).ToFileReference(),
         //            options ?? DefaultOptions(StoreNames.LocalLowAppDataAppDir));
         //}
 
-        public static IServiceCollection AddLocalLowAppDataOrgStore(this IServiceCollection services, IConfiguration configuration, MountOptions options = null)
+        public static IServiceCollection AddLocalLowAppDataOrgStore(this IServiceCollection services, AppInfo appInfo, MountOptions options = null)
                 => _AddStore(services,
                    options,
                    StoreNames.LocalLowAppDataOrgDir,
                    LocalLowAppDataDir,
-                   configuration[OrgName],
+                   appInfo.OrgName,
                    isOwnedByOperatingSystemUser: true,
                    isVariableDataLocation: true);
         //{
-        //    var path = Path.Combine(LocalLowAppDataDir, configuration[OrgName] ?? throw new ArgumentNullException(OrgName));
+        //    var path = Path.Combine(LocalLowAppDataDir, appInfo.OrgName ?? throw new ArgumentNullException(OrgName));
 
         //    options ??= DefaultOptions(StoreNames., path);
         //    options.IsOwnedByOperatingSystemUser = false;
@@ -333,17 +333,17 @@ namespace LionFire.Services
 
         #region LocalAppData
 
-        public static IServiceCollection AddLocalAppDataDataDirStore(this IServiceCollection services, IConfiguration configuration, MountOptions options = null)
+        public static IServiceCollection AddLocalAppDataDataDirStore(this IServiceCollection services, AppInfo appInfo, MountOptions options = null)
                 => _AddStore(services,
                    options,
                    StoreNames.LocalAppDataDataDir,
-                   Path.Combine(LocalAppDataDir, configuration[OrgName] ?? throw new ArgumentNullException(nameof(OrgName))),
-                   configuration[DataDirName],
+                   Path.Combine(LocalAppDataDir, appInfo.OrgName ?? throw new ArgumentNullException(nameof(OrgName))),
+                   appInfo.DataDirName,
                    isOwnedByOperatingSystemUser: true,
                    isVariableDataLocation: true);
         //{
-        //    if (configuration[DataDirName] == null) return services;
-        //    var path = Path.Combine(LocalAppDataDir, configuration[OrgName] ?? throw new ArgumentNullException(nameof(OrgName)), configuration[DataDirName] ?? throw new ArgumentNullException(DataDirName));
+        //    if (appInfo.DataDirName == null) return services;
+        //    var path = Path.Combine(LocalAppDataDir, appInfo.OrgName ?? throw new ArgumentNullException(nameof(OrgName)), appInfo.DataDirName ?? throw new ArgumentNullException(DataDirName));
 
         //    options ??= DefaultOptions(StoreNames., path);
         //    options.IsOwnedByOperatingSystemUser = false;
@@ -353,16 +353,16 @@ namespace LionFire.Services
         //        options ?? DefaultOptions(StoreNames.LocalAppDataDataDir));
         //}
 
-        public static IServiceCollection AddLocalAppDataAppStore(this IServiceCollection services, IConfiguration configuration, MountOptions options = null)
+        public static IServiceCollection AddLocalAppDataAppStore(this IServiceCollection services, AppInfo appInfo, MountOptions options = null)
                 => _AddStore(services,
                    options,
                    StoreNames.LocalAppDataAppDir,
-                   Path.Combine(LocalAppDataDir, configuration[OrgName] ?? throw new ArgumentNullException(nameof(OrgName))),
-                   configuration[AppName],
+                   Path.Combine(LocalAppDataDir, appInfo.OrgName ?? throw new ArgumentNullException(nameof(OrgName))),
+                   appInfo.AppName,
                    isOwnedByOperatingSystemUser: true,
                    isVariableDataLocation: true);
         //{
-        //    var path = Path.Combine(LocalAppDataDir, configuration[OrgName] ?? throw new ArgumentNullException(nameof(OrgName)), configuration[AppName] ?? throw new ArgumentNullException(AppName));
+        //    var path = Path.Combine(LocalAppDataDir, appInfo.OrgName ?? throw new ArgumentNullException(nameof(OrgName)), appInfo.AppName ?? throw new ArgumentNullException(AppName));
 
         //    options ??= DefaultOptions(StoreNames., path);
         //    options.IsOwnedByOperatingSystemUser = false;
@@ -372,16 +372,16 @@ namespace LionFire.Services
         //            options ?? DefaultOptions(StoreNames.LocalAppDataAppDir));
         //}
 
-        public static IServiceCollection AddLocalAppDataOrgStore(this IServiceCollection services, IConfiguration configuration, MountOptions options = null)
+        public static IServiceCollection AddLocalAppDataOrgStore(this IServiceCollection services, AppInfo appInfo, MountOptions options = null)
                 => _AddStore(services,
                    options,
                    StoreNames.LocalAppDataOrgDir,
                    LocalAppDataDir,
-                   configuration[OrgName],
+                   appInfo.OrgName,
                    isOwnedByOperatingSystemUser: true,
                    isVariableDataLocation: true);
         //{
-        //    var path = Path.Combine(LocalAppDataDir, configuration[OrgName] ?? throw new ArgumentNullException(OrgName));
+        //    var path = Path.Combine(LocalAppDataDir, appInfo.OrgName ?? throw new ArgumentNullException(OrgName));
 
         //    options ??= DefaultOptions(StoreNames., path);
         //    options.IsOwnedByOperatingSystemUser = false;
@@ -395,68 +395,71 @@ namespace LionFire.Services
 
         #region ProgramData
 
-       
 
-        public static IServiceCollection AddProgramDataDataDirStore(this IServiceCollection services, IConfiguration configuration, MountOptions options = null)
+
+        public static IServiceCollection AddProgramDataDataDirStore(this IServiceCollection services, AppInfo appInfo, MountOptions options = null)
             => _AddStore(services,
                 options,
                 StoreNames.ProgramDataDataDir,
-                Path.Combine(ProgramDataDir, configuration[OrgName] ?? throw new ArgumentNullException(nameof(OrgName))),
-                configuration[DataDirName],
+                Path.Combine(ProgramDataDir, appInfo.OrgName ?? throw new ArgumentNullException(nameof(OrgName))),
+                appInfo.DataDirName,
                 isOwnedByOperatingSystemUser: false,
                 isVariableDataLocation: true);
 
         //{
-        //    configuration[DataDirName] == null
+        //    appInfo.DataDirName == null
         //            ? services
         //            : services.VosMount("$stores/" + StoreNames.ProgramDataDataDir,
-        //               Path.Combine(ProgramDataDir, configuration[OrgName] ?? throw new ArgumentNullException(nameof(OrgName)), configuration[DataDirName] ?? throw new ArgumentNullException(DataDirName)).ToFileReference(),
+        //               Path.Combine(ProgramDataDir, appInfo.OrgName ?? throw new ArgumentNullException(nameof(OrgName)), appInfo.DataDirName ?? throw new ArgumentNullException(DataDirName)).ToFileReference(),
         //               options ?? DefaultOptions(StoreNames.ProgramDataDataDir));
         //}
 
 
-        public static IServiceCollection AddProgramDataAppStore(this IServiceCollection services, IConfiguration configuration, MountOptions options = null)
+        public static IServiceCollection AddProgramDataAppStore(this IServiceCollection services, AppInfo appInfo, MountOptions options = null)
                => _AddStore(services,
                    options,
                    StoreNames.ProgramDataAppDir,
-                   Path.Combine(ProgramDataDir, configuration[OrgName] ?? throw new ArgumentNullException(nameof(OrgName))),
-                   configuration[AppName],
+                   Path.Combine(ProgramDataDir, appInfo.OrgName ?? throw new ArgumentNullException(nameof(OrgName))),
+                   appInfo.AppName,
                    isOwnedByOperatingSystemUser: false,
                    isVariableDataLocation: true);
 
         //{
         //    services.VosMount("$stores/" + StoreNames.ProgramDataAppDir,
-        //                Path.Combine(ProgramDataDir, configuration[OrgName] ?? throw new ArgumentNullException(nameof(OrgName)), configuration[AppName] ?? throw new ArgumentNullException(AppName)).ToFileReference(),
+        //                Path.Combine(ProgramDataDir, appInfo.OrgName ?? throw new ArgumentNullException(nameof(OrgName)), appInfo.AppName ?? throw new ArgumentNullException(AppName)).ToFileReference(),
         //                options ?? DefaultOptions(StoreNames.ProgramDataAppDir));
         //}
 
-        public static IServiceCollection AddProgramDataOrgStore(this IServiceCollection services, IConfiguration configuration, MountOptions options = null)
+        public static IServiceCollection AddProgramDataOrgStore(this IServiceCollection services, AppInfo appInfo, MountOptions options = null)
                => _AddStore(services,
                    options,
                    StoreNames.ProgramDataOrgDir,
                    ProgramDataDir,
-                   configuration[OrgName],
+                   appInfo.OrgName,
                    isOwnedByOperatingSystemUser: false,
                    isVariableDataLocation: true);
 
         //{
         //    services.VosMount("$stores/" + StoreNames.ProgramDataOrgDir,
-        //            Path.Combine(ProgramDataDir, configuration[OrgName] ?? throw new ArgumentNullException(OrgName)).ToFileReference(),
+        //            Path.Combine(ProgramDataDir, appInfo.OrgName ?? throw new ArgumentNullException(OrgName)).ToFileReference(),
         //            options ?? DefaultOptions(StoreNames.ProgramDataOrgDir));
         //}
 
         #endregion
 
         public static IServiceCollection AddAppDirStore(this IServiceCollection services, string storeName = StoreNames.AppDir, AppInfo appInfo = null, bool onlyIfNotExeDir = false, MountOptions options = null, string appDirPath = null, bool useExeDirAsAppDirIfMissing = true)
-            => _AddStore(services,
+        {
+            appDirPath ??= ApplicationAutoDetection.FindCustomAppRoot(appInfo?.AppId)
+                                ?? (useExeDirAsAppDirIfMissing && !onlyIfNotExeDir ? ExeDirPath : null);
+
+            return _AddStore(services,
                    options,
                    StoreNames.AppDir,
                    null,
-                   appDirPath
-                       ?? ApplicationAutoDetection.FindCustomAppRoot(appInfo?.AppId)
-                       ?? (useExeDirAsAppDirIfMissing && !onlyIfNotExeDir ? ExeDirPath : null),
+                  appDirPath,
                    isOwnedByOperatingSystemUser: LionFireEnvironment.Directories.IsUserDirectory(appDirPath) == true,
                    isVariableDataLocation: LionFireEnvironment.Directories.IsVariableDirectory(appDirPath) == true);
+        }
 
         //{
         //    if (appDirPath == null) appDirPath = ApplicationAutoDetection.FindCustomAppRoot(appInfo?.AppId);
@@ -502,7 +505,7 @@ namespace LionFire.Services
         //    return services;
         //}
 
-     
+
 
         #endregion
 

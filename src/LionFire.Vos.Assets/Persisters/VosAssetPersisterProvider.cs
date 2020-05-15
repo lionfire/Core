@@ -1,4 +1,6 @@
-﻿using LionFire.Assets;
+﻿#nullable enable
+using LionFire.Assets;
+using LionFire.Dependencies;
 using LionFire.Persistence.Persisters;
 using LionFire.Referencing;
 using LionFire.Vos.Services;
@@ -30,6 +32,7 @@ namespace LionFire.Vos.Assets.Persisters
         ///  - /../otherRootVob/location/to/vob
         /// </param>
         /// <returns></returns>
-        public IPersister<IAssetReference> GetPersister(string name = null) => RootManager.GetVob(name).AcquireOwn<VosAssetPersister>();
+        public IPersister<IAssetReference> GetPersister(string? name = null) 
+            => RootManager.Get(name)?.AcquireOwn<VosAssetPersister>() ?? throw new DependencyMissingException($"Missing VosAssetPersister on {(name == null ? "primary VobRoot" : $"VobRoot '{name}'")}");
     }
 }

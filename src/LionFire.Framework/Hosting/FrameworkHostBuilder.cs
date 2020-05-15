@@ -14,6 +14,8 @@ using LionFire.Dependencies;
 using LionFire.Vos;
 using LionFire.DependencyInjection.ExtensionMethods;
 using LionFire.FlexObjects;
+using LionFire.Vos.VosApp;
+using LionFire.Vos.Assets.Persisters;
 
 namespace LionFire.Hosting
 {
@@ -98,7 +100,7 @@ namespace LionFire.Hosting
         public static IHostBuilder CreateDefault(string[] args = null, bool defaultBuilder = true, FrameworkHostBuilderOptions frameworkOptions = null, IFlex options = null
             //, Action<IServiceCollection> serializers = null
             )
-            => CreateDefaultVosHost(args, defaultBuilder, frameworkOptions, options);
+            => CreateDefaultVosAppHost(args, defaultBuilder, frameworkOptions, options);
 
         public class FrameworkHostBuilderOptions
         {
@@ -120,7 +122,8 @@ namespace LionFire.Hosting
                     services
                         .AddFilesystem()
                         .AddAssets()
-                        //.AddAssetPersister()
+                    //.InitializeVob("/", v => v.AddOwn<VosAssetPersister>(), p => p.Key = $"/<VosAssetPersister>")
+                    //.AddAssetPersister()
                     ;
                 });
         }
@@ -129,12 +132,12 @@ namespace LionFire.Hosting
         {
             return VosHost.Create(args, defaultBuilder: defaultBuilder, options)
                 .AugmentWithFramework(frameworkOptions ?? options?.Get<FrameworkHostBuilderOptions>())
-                //.ConfigureServices((_, services) =>
-                //{
-                //    services
-                //        //.TryAddEnumerableSingleton<IRootRegistration, RootRegistration>("")
-                //    ;
-                //})
+                ;
+        }
+        public static IHostBuilder CreateDefaultVosAppHost(string[] args = null, bool defaultBuilder = true, FrameworkHostBuilderOptions frameworkOptions = null, IFlex options = null)
+        {
+            return VosAppHostBuilder.Create(args, defaultBuilder: defaultBuilder, options: options?.Get<VosAppOptions>())
+                .AugmentWithFramework(frameworkOptions ?? options?.Get<FrameworkHostBuilderOptions>())
                 ;
         }
     }

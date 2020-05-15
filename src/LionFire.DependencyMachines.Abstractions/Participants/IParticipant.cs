@@ -23,16 +23,17 @@ namespace LionFire.DependencyMachines
     public interface IParticipant : IKeyable 
     {
         List<object>? Dependencies { get; set; }
+        List<object>? After { get; set; }
 
         IEnumerable<IReadWriteHandle>? DependencyHandles { get;  }
 
-        IEnumerable<object> Provides { get; }
+        List<object>? Provides { get; set; }
         List<object>? Contributes { get; set; }
         List<object>? PrerequisiteFor { get; set; }
 
         ParticipantFlags Flags { get; }
 
-
+        bool HasKey { get; }
     }
 
     public interface IParticipant<TConcrete> : IParticipant

@@ -12,6 +12,8 @@ using System.Text;
 namespace LionFire.Vos.Assets.Handles
 {
     public class VosAssetHandleProvider : IReadHandleProvider<IAssetReference>, IReadWriteHandleProvider<IAssetReference>
+        , IReadHandleProvider
+        , IReadWriteHandleProvider
     {
         IPersisterProvider<IAssetReference> PersisterProvider { get; }
         public VosAssetHandleProvider(IPersisterProvider<IAssetReference> persisterProvider)
@@ -31,6 +33,9 @@ namespace LionFire.Vos.Assets.Handles
 
         public Persistence.IReadWriteHandle<T> GetReadWriteHandle<T>(IAssetReference reference, T preresolvedValue = default)
             => new PersisterReadWriteHandle<IAssetReference, T, VosAssetPersister>((VosAssetPersister)PersisterProvider.GetPersister(reference.Persister), reference, preresolvedValue);
+
+        public IReadWriteHandle<T> GetReadWriteHandle<T>(IReference reference, T preresolvedValue = default)
+            => GetReadWriteHandle((IAssetReference)reference, preresolvedValue);
     }
 
     // UNUSED

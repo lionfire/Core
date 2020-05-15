@@ -1,5 +1,7 @@
 ﻿using System;
+using LionFire.ExtensionMethods.Dependencies;
 using LionFire.Vos.Internals;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace LionFire.Vos
 {
@@ -30,15 +32,18 @@ namespace LionFire.Vos
         public static T AddOwn<T>(this IVob vob, T value)
             where T : class
             => (vob as IVobInternals).AddOwnVobNode<T>(vobNode => value).Value;
-        public static T AddOwn<T>(this IVob vob, Func<IVob, T> valueFactory = null)
+        public static T AddOwn<T>(this IVob vob, Func<IVob, T> valueFactory)
             where T : class
             => (vob as IVobInternals).AddOwnVobNode<T>(vobNode => valueFactory(vobNode.Vob)).Value;
+        public static T AddOwn<T>(this IVob vob)
+            where T : class
+            => (vob as IVobInternals).AddOwnVobNode<T>(vobNode => ActivatorUtilities.CreateInstance<T>(vob.GetNextRequired<IServiceProvider>())).Value;
         public static T TryAddOwn<T>(this IVob vob, Func<IVob, T> valueFactory = null)
             where T : class
             => (vob as IVobInternals).TryAddOwnVobNode<T>(vobNode => valueFactory(vobNode.Vob)).Value;
 
         public static T GetOrAddOwn<T>(this IVob vob, Func<IVobNode, T> valueFactory = null)
-            where T : class 
+            where T : class
             => (vob as IVobInternals).AcquireOrAddOwnVobNode<T>(valueFactory).Value;
 
         #endregion

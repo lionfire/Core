@@ -73,7 +73,7 @@ namespace LionFire
         private static bool? isUnitTest;
 
         // REFACTOR: Merge VosAppHost ExeDir finding logic into here
-        public static string AppBinDir
+        public static string ExeDir
         {
             get
             {

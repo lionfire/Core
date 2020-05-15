@@ -53,7 +53,7 @@ namespace LionFire.Referencing
           where T : IReference
         {
             var newPath = LionPath.GetAncestor(reference.Path, depth, nullIfBeyondRoot);
-            return reference.WithPath<T>(newPath);
+            return newPath == null ? (T)default : reference.WithPath<T>(newPath);
         }
 
         #endregion

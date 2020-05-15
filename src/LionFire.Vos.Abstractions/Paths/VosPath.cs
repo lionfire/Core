@@ -1,5 +1,7 @@
-﻿using System;
+﻿using LionFire.Referencing;
+using System;
 using System.Collections;
+using System.IO;
 
 namespace LionFire.Vos
 {
@@ -81,6 +83,19 @@ namespace LionFire.Vos
             int index = path.IndexOf(VosPath.TypeDelimiter);
             if (index == -1) return null;
             return path.Substring(index, path.IndexOf(VosPath.TypeEndDelimiter, index) - index);
+        }
+
+        public static string GetRootOfPath(string path)
+        {
+            if(path.StartsWith("/../"))
+            {
+                var split = path.Split(new char[] { LionPath.SeparatorChar }, 3, StringSplitOptions.RemoveEmptyEntries);
+                if(split.Length >= 3)
+                {
+                    return "/../" + split[1];
+                }
+            }
+            return "/";
         }
     }
 }

@@ -1,4 +1,5 @@
-﻿using LionFire.MultiTyping;
+﻿using LionFire.Dependencies;
+using LionFire.MultiTyping;
 using LionFire.ObjectBus;
 using LionFire.Persistence;
 using LionFire.Shell;
@@ -63,7 +64,8 @@ namespace LionFire.Applications
             {
                 if (!isDevMode.HasValue)
                 {
-                    isDevMode = File.Exists(Path.Combine(LionFireEnvironment.Directories.AppDir, "Dev.txt"));
+                    var appDir = ServiceLocator.Get<AppInfo>()?.AppDir;
+                    isDevMode = appDir != null && File.Exists(Path.Combine(appDir, "Dev.txt"));
                     //l.Info("Dev mode: " + isDevMode.Value);
                 }
                 return isDevMode.Value;

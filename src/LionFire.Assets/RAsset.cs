@@ -35,6 +35,8 @@ namespace LionFire.Assets
 
         public static RAsset<TValue> Get(string assetPath)
             => assetPath;
+
+        public override string ToString() => Reference.ToString();
     }
 
     public static class RAsset

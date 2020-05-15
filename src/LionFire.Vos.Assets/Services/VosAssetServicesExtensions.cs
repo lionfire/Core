@@ -29,10 +29,10 @@ namespace LionFire.Services
                 .AddSingleton<IReadWriteHandleProvider<IAssetReference>, VosAssetHandleProvider>()
                 .VobEnvironment("assets", assetsRoot)
                 .AddSingleton(serviceProvider => serviceProvider.GetRequiredService<IOptionsMonitor<TypeNameRegistry>>().CurrentValue)
-                .InitializeVob<IServiceProvider>("$assets", ((vob, serviceProvider) =>
+                .InitializeVob<IServiceProvider>("$assets", (vob, serviceProvider) =>
                 {
                     vob.AddOwn<ICollectionTypeProvider>(v => new CollectionsByTypeManager(v, serviceProvider.GetRequiredService<TypeNameRegistry>()));
-                }))
+                }, key: "$assets<ICollectionTypeProvider>")
 
                 .Configure<VosAssetOptions>(o => { })
                 .AddSingleton(s => s.GetService<IOptionsMonitor<VosAssetOptions>>()?.CurrentValue)
@@ -53,14 +53,17 @@ namespace LionFire.Services
 
         public static IServiceCollection AddAssetPersister(this IServiceCollection services, VosAssetOptions options = null, VosReference contextVob = null)
         {
-            services.InitializeVob<IServiceProvider>(contextVob ?? "".ToVosReference(), (vob, serviceProvider) =>
+            //.InitializeVob("/", v => v.AddOwn<VosAssetPersister>(), p => p.Key = $"/<VosAssetPersister>")
+
+            var vob = contextVob ?? "/".ToVosReference();
+            services.InitializeVob<IServiceProvider>(vob, (vob, serviceProvider) =>
             {
                 vob.AddOwn<VosAssetPersister>(v =>
                 {
                     return (VosAssetPersister)ActivatorUtilities.CreateInstance(serviceProvider, typeof(VosAssetPersister), options ?? new VosAssetOptions());
                 });
                 return;
-            });
+            }, c=>c.Key = $"{vob}<VosAssetPersister>");
             return services;
         }
     }

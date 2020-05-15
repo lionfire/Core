@@ -17,36 +17,46 @@ using System.Threading.Tasks;
 
 namespace LionFire.Vos
 {
+    public static class VosStatic
+    {
+        public static bool AllowMultipleDefaultRoots => LionFireEnvironment.IsMultiApplicationEnvironment;
 
-    public class RootVob : Vob, IRootVob, IHas<IVos>, IHostedService, IHasMany<IParticipant>
+    }
+
+    public class RootVob : Vob, IRootVob, IHas<IVos>, IHostedService, IHasMany<IParticipant>, IHas<IServiceProvider>
     {
         public IVos RootManager { get; private set; }
         IServiceProvider RootManagerServiceProvider => (RootManager as IHas<IServiceProvider>)?.Object;
 
+        IServiceProvider IHas<IServiceProvider>.Object => this.TryGetOwnVobNode<IServiceProvider>()?.Value ?? RootManagerServiceProvider;
 
         IVos IHas<IVos>.Object => RootManager;
 
         public VosOptions VosOptions { get; }
-        public RootVobOptions Options => VosOptions[RootName];
+        public VobRootOptions Options { get; }
 
-        public static bool AllowMultipleDefaultRoots => LionFireEnvironment.IsMultiApplicationEnvironment;
 
         /// <summary>
         /// Empty for default Root
         /// </summary>
         public string RootName { get; }
 
-        public RootVob(IVos rootManager, VosOptions vosOptions, IOptionsMonitor<VobRootOptions> vobRootOptionsMonitor) : this(rootManager, VosConstants.DefaultRootName, vosOptions, vobRootOptionsMonitor)
+        public RootVob(IVos rootManager, string rootName, VosOptions vosOptions, IOptionsMonitor<VobRootOptions> OptionsMonitor)
+            : base(parent: null, name: null) // Note: Use null parent and null name even for named Roots
         {
-        }
+            this.RootName = rootName;
 
-        public RootVob(IVos rootManager, string rootName, VosOptions vosOptions, IOptionsMonitor<VobRootOptions> vobRootOptionsMonitor) : base(parent: null, name: null) // Note: Use null parent and null name even for named Roots
-        {
-            var vobRootOptions = vobRootOptionsMonitor.Get(rootName);
-            if (vobRootOptions.ServiceProviderMode == ServiceProviderMode.UseRootManager)
+            //ServiceProvider = ((IHas<IServiceProvider>)rootManager).Object;
+            //this.AddOwn(ServiceProvider);
+
+            Options = OptionsMonitor.Get(rootName);
+            if (Options.ServiceProviderMode == ServiceProviderMode.UseRootManager)
             {
                 var r = RootManagerServiceProvider;
-                if (r != null) { this.AddOwn(r); }
+                if (r != null)
+                {
+                    this.AddOwn(r);
+                }
             }
 
             RootManager = rootManager;
@@ -56,7 +66,7 @@ namespace LionFire.Vos
 
             if (rootName == VosConstants.DefaultRootName)
             {
-                if (!AllowMultipleDefaultRoots)
+                if (!VosStatic.AllowMultipleDefaultRoots)
                 {
                     if (ManualSingleton<RootVob>.Instance != null)
                     {
@@ -70,67 +80,73 @@ namespace LionFire.Vos
             }
 
             #endregion
-
-            this.RootName = rootName;
-
-            #region Participants
-
-            participants = new List<IParticipant>
-            {
-                //new Contributor("mounts", $"{this} mounts") { StartAction = () => InitializeMounts(), },
-                //new Participant()
-                //{
-                //    StartAction = () =>{
-                //        var vob = this;
-                //            vob
-                //            .AddServiceProvider(s =>
-                //            {
-                //                s
-                //                .AddSingleton(_ => new ServiceDirectory((RootVob)vob))
-                //                .AddSingleton(vob)
-                //                .AddSingleton(vob.Root.RootManager)
-                //                .AddSingleton<VosPersister>()
-                //                .AddSingleton<VobMounter>()
-                //                ;
-                //            }, serviceProvider);
-                //            //.AddTransient<IServiceProvider, DynamicServiceProvider>() // Don't want this.  DELETE
-                //        },
-                //        Key = "RootInitializer",
-                //        Contributes("RootVobs"),
-                //},
-            };
-
-            if (vosOptions.GlobalRootInitializers != null) participants.AddRange(vosOptions.GlobalRootInitializers.SelectMany(i => i(this)));
-
-            if (vobRootOptions.ParticipantsFactory != null) participants.AddRange(vobRootOptions.ParticipantsFactory.SelectMany(i => i(this)));
-            else
-            {
-                if (RootName == VosConstants.DefaultRootName)
-                {
-                    if (vosOptions.PrimaryRootInitializers != null) participants.AddRange(vosOptions.PrimaryRootInitializers.SelectMany(i => i(this)));
-                }
-                else
-                {
-                    if (vosOptions.DefaultRootInitializers != null) participants.AddRange(vosOptions.DefaultRootInitializers.SelectMany(i => i(this)));
-                }
-            }
-            
-            #endregion
-
         }
 
-
-        public IVob InitializeMounts()
+        public RootVob(IVos rootManager, VosOptions vosOptions, IOptionsMonitor<VobRootOptions> OptionsMonitor)
+        : this(rootManager, VosConstants.DefaultRootName, vosOptions, OptionsMonitor)
         {
-            foreach (var tMount in Options.Mounts)
-            {
-                this.Mount(tMount);
-            }
-            return this;
+
         }
 
-        IEnumerable<IParticipant> IHasMany<IParticipant>.Objects => participants;
-        private List<IParticipant> participants;
+
+
+        //public IVob InitializeMounts()
+        //{
+        //    foreach (var tMount in Options.Mounts)
+        //    {
+        //        this.Mount(tMount);
+        //    }
+        //    return this;
+        //}
+
+        IEnumerable<IParticipant> IHasMany<IParticipant>.Objects
+        {
+            get
+            {
+                var participants = new List<IParticipant>
+                {
+                    //new Contributor("mounts", $"{this} mounts") { StartAction = () => InitializeMounts(), },
+                    //new Participant()
+                    //{
+                    //    StartAction = () =>{
+                    //        var vob = this;
+                    //            vob
+                    //            .AddServiceProvider(s =>
+                    //            {
+                    //                s
+                    //                .AddSingleton(_ => new ServiceDirectory((RootVob)vob))
+                    //                .AddSingleton(vob)
+                    //                .AddSingleton(vob.Root.RootManager)
+                    //                .AddSingleton<VosPersister>()
+                    //                .AddSingleton<VobMounter>()
+                    //                ;
+                    //            }, serviceProvider);
+                    //            //.AddTransient<IServiceProvider, DynamicServiceProvider>() // Don't want this.  DELETE
+                    //        },
+                    //        Key = "RootInitializer",
+                    //        Contributes("RootVobs"),
+                    //},
+                };
+
+                if (VosOptions.GlobalRootInitializers != null) participants.AddRange(VosOptions.GlobalRootInitializers.SelectMany(i => i(this)));
+
+                if (Options.ParticipantsFactory != null) participants.AddRange(Options.ParticipantsFactory.SelectMany(i => i(this)));
+
+                if (Options.UseVosOptionsInitializer)
+                {
+                    if (RootName == VosConstants.DefaultRootName)
+                    {
+                        if (VosOptions.PrimaryRootInitializers != null) participants.AddRange(VosOptions.PrimaryRootInitializers.SelectMany(i => i(this)));
+                    }
+                    else
+                    {
+                        if (VosOptions.DefaultRootInitializers != null) participants.AddRange(VosOptions.DefaultRootInitializers.SelectMany(i => i(this)));
+                    }
+                }
+                return participants;
+            }
+        }
+        //private List<IParticipant> participants;
 
         public Task StartAsync(CancellationToken cancellationToken)
         {

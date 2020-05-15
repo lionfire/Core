@@ -1,5 +1,6 @@
 ﻿#nullable enable
 using LionFire.Dependencies;
+using LionFire.ExtensionMethods;
 using LionFire.Instantiating;
 using Microsoft.Extensions.DependencyInjection;
 using System;
@@ -27,9 +28,10 @@ namespace LionFire.DependencyInjection
             var parameters = new object[p.Length];
 
             Dictionary<Type, Func<IServiceProvider, object>>? dict = null;
+            //dict.Add(typeof(IServiceProvider), p => p);
             if (additionalServices.Length > 0)
             {
-                dict = new Dictionary<Type, Func<IServiceProvider, object>> ();
+                dict = new Dictionary<Type, Func<IServiceProvider, object>>();
                 foreach (var item in additionalServices)
                 {
                     dict.Add(item.Item1, item.Item2);
@@ -39,10 +41,10 @@ namespace LionFire.DependencyInjection
             for (int i = 0; i < parameters.Length; i++)
             {
                 Type parameterType = p[i].ParameterType;
-                parameters[i] = dict?[parameterType]?.Invoke(serviceProvider) ?? serviceProvider.GetService(parameterType) ?? p[i].DefaultValue;
+                parameters[i] = dict?.TryGetValue(parameterType)?.Invoke(serviceProvider) ?? serviceProvider.GetService(parameterType) ?? p[i].DefaultValue;
                 if (parameters[i] == null) { return (parameterType, null); }
             }
-            return (null, mi.Invoke(null, parameters));
+            return (null, mi.Invoke(del, parameters));
         }
     }
 }

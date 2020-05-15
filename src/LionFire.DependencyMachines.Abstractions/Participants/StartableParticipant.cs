@@ -12,17 +12,17 @@ namespace LionFire.DependencyMachines
 {
     public sealed class StartableParticipant : StartableParticipant<StartableParticipant>, IHas<IServiceProvider>
     {
-        public StartableParticipant(IServiceProvider serviceProvider, string? key = null)
+        public StartableParticipant(IServiceProvider serviceProvider)
         {
             ServiceProvider = serviceProvider;
-            Key = key; // ?? Guid.NewGuid().ToString();
+            //Key = key; // ?? Guid.NewGuid().ToString();
         }
 
         public IServiceProvider ServiceProvider { get; }
         IServiceProvider IHas<IServiceProvider>.Object => ServiceProvider;
     }
 
-    public abstract class StartableParticipant<TConcrete> : IParticipant<TConcrete>, ITryStartable 
+    public abstract class StartableParticipant<TConcrete> : IParticipant<TConcrete>, ITryStartable
         where TConcrete : StartableParticipant<TConcrete>
     {
         #region Key
@@ -39,7 +39,8 @@ namespace LionFire.DependencyMachines
             }
         }
         private string? key;
-        public virtual string? DefaultKey => $"{{{this.GetType().Name} {Guid.NewGuid()}}}";
+        public bool HasKey => key != null;
+        public virtual string? DefaultKey => this.Provides?.SingleOrDefault()?.ToDependencyKey() ?? $"{{{this.GetType().Name} {Guid.NewGuid()}}}";
 
         #endregion
 
@@ -48,6 +49,13 @@ namespace LionFire.DependencyMachines
         public override string ToString() => Key ?? "{Participant Key=null}";
 
         public ParticipantFlags Flags { get; set; }
+
+        public List<object>? After
+        {
+            get => after;
+            set => after = value;
+        }
+        private List<object>? after;
 
         #region Dependencies
 
@@ -66,12 +74,12 @@ namespace LionFire.DependencyMachines
 
         #region Provides
 
-        public IEnumerable<object> Provides
+        public List<object>? Provides
         {
-            get => provides ?? Enumerable.Empty<object>();
+            get => provides;
             set => provides = value;
         }
-        private IEnumerable<object> provides;
+        private List<object>? provides;
 
         #endregion
 
@@ -98,6 +106,7 @@ namespace LionFire.DependencyMachines
         }
         private Func<TConcrete, CancellationToken, Task<object?>>? startTask;
 
+#error NEXT: Figure out why "vos:/ $stores (environment)" is happening in same stage as servies:vos:/.  Have a better Dump showing everything each participant contributes or provides.
         public Action StartAction
         {
             set
@@ -129,7 +138,7 @@ namespace LionFire.DependencyMachines
             if (StartTask != null) return StartTask.Invoke((TConcrete)this, cancellationToken);
             return Task.FromResult<object?>(null);
         }
-     
+
 
 
     }

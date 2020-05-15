@@ -3,13 +3,23 @@ using System.Collections.Generic;
 using System.Text;
 using LionFire.Referencing;
 using LionFire.Vos.Internals;
+using LionFire.Vos.Services;
+using Microsoft.Extensions.Logging;
 
 namespace LionFire.Vos.Mounts
 {
     public class VobMounter : IVobMounter
     {
+        public ILogger<VobMounter> Logger { get; }
+
+        public VobMounter(ILogger<VobMounter> logger)
+        {
+            Logger = logger;
+        }
+
         public IMount Mount(IVob mountPointOrParent, ITMount tMount)
         {
+            Logger.LogInformation($"[mount] {tMount} ");
             IVob mountPoint = mountPointOrParent;
             if (mountPointOrParent.Reference != tMount.MountPoint)
             {

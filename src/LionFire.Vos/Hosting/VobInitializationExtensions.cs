@@ -12,9 +12,11 @@ using Microsoft.Extensions.DependencyInjection.Extensions;
 using System.Threading;
 using System.Threading.Tasks;
 using LionFire.Services.DependencyMachines;
+using LionFire.Referencing;
 
 namespace LionFire.Services
 {
+
     //public static class VobInitializerListExtensions
     //{
     //    public static void Add(this ConcurrentDictionary<string, List<VobInitializer>> dict, VobInitializer i)
@@ -78,55 +80,124 @@ namespace LionFire.Services
 
         #region Action
 
-
         // Simplest case: perform a synchronous action on a Vob
-        public static IServiceCollection InitializeVob(this IServiceCollection services, VosReference vosReference, Action<IVob> action, Action<IParticipant>? configure = null)
-            => services.AddInitializer((Action<IVos>)(v => action(v.GetVob(vosReference))), configure);
-        public static IServiceCollection InitializeVob(this IServiceCollection services, VosReference vosReference, Func<IVob, object?> func, Action<IParticipant>? configure = null)
-            => services.AddInitializer((Func<IVos, object?>)(v => func(v.GetVob(vosReference))), configure);
-        public static IServiceCollection InitializeVob(this IServiceCollection services, VosReference vosReference, Func<IVob, Task<object?>> func, Action<IParticipant>? configure = null)
-            => services.AddInitializer((Func<IVos, Task<object?>>)(v => func(v.GetVob(vosReference))), configure);
+        public static IServiceCollection InitializeVob(this IServiceCollection services, VosReference vosReference, Action<IVob> init, Action<IParticipant>? configure = null, VobInitializerFlags flags = VobInitializerFlags.Default)
+            => services.AddInitializer((Action<IVos>)(v => init(v.GetVob(vosReference))), configureWrapper(vosReference, configure, flags));
+
+        /// <summary>
+        /// Initialize synchronously, with an opportunity to return a validation failure explanation (rather than throwing an exception.)
+        /// </summary>
+        /// <param name="services"></param>
+        /// <param name="vosReference"></param>
+        /// <param name="initAndValidate">Must return null on success, otherwise something to indicate why the initialization failed.</param>
+        /// <param name="configure"></param>
+        /// <param name="flags"></param>
+        /// <returns></returns>
+        public static IServiceCollection InitializeVobWithValidation(this IServiceCollection services, VosReference vosReference, Func<IVob, object?> initAndValidate, Action<IParticipant>? configure = null, VobInitializerFlags flags = VobInitializerFlags.Default)
+            => services.AddInitializer((Func<IVos, object?>)(v => initAndValidate(v.GetVob(vosReference))), configureWrapper(vosReference, configure, flags));
+        //c =>
+        //{
+        //    c.Contributes(vosReference.ToString());
+        //    if (defaultDependency)
+        //    {
+        //        if (vosReference.Path == "/") c.DependsOn("vos:");
+        //        else c.DependsOn(vosReference.GetParent().ToString());
+        //    }
+        //    configure?.Invoke(c);
+        //});
+
+        /// <summary>
+        /// Initialize asynchronously, with an opportunity to return a validation failure explanation (rather than throwing an exception.)
+        /// </summary>
+        /// <param name="services"></param>
+        /// <param name="vosReference"></param>
+        /// <param name="initAndValidate"></param>
+        /// <param name="configure"></param>
+        /// <param name="flags"></param>
+        /// <returns></returns>
+        public static IServiceCollection InitializeVobWithValidation(this IServiceCollection services, VosReference vosReference, Func<IVob, Task<object?>> initAndValidate, Action<IParticipant>? configure = null, VobInitializerFlags flags = VobInitializerFlags.Default)
+            => services.AddInitializer((Func<IVos, Task<object?>>)(v => initAndValidate(v.GetVob(vosReference))), configureWrapper(vosReference, configure, flags));
 
         #endregion
+
+        private static Action<IParticipant> configureWrapper(VosReference vosReference, Action<IParticipant>? configure, VobInitializerFlags flags = VobInitializerFlags.Default, string key = null)
+        {
+            return c =>
+            {
+                string automaticKey = "";
+                if (flags.HasFlag(VobInitializerFlags.Contributes)) { c.Contributes(vosReference.ToString()); automaticKey += $"{vosReference} contributor"; }
+                if (flags.HasFlag(VobInitializerFlags.AfterParent))
+                {
+                    if (automaticKey == "") { automaticKey += $"After {vosReference}"; }
+                
+                    if (vosReference.ToString() != "vos:")
+                    {
+                        VosReference? ancestor = vosReference.GetParent(nullIfBeyondRoot: true);
+                        do
+                        {
+                            // OPTIMIZE - Though this gets inefficient - may want to build hierarchical After/DependsOn into DependencyStateMachine
+                            if (ancestor == null) c.After("vos:");
+                            else
+                            {
+                                c.After(ancestor.ToString());
+                                ancestor = ancestor.GetParent(nullIfBeyondRoot: true);
+                            }
+                        }
+                        while (ancestor != null);
+                    }
+                }
+
+                if (flags.HasFlag(VobInitializerFlags.DependsOnParent))
+                {
+                    throw new NotImplementedException(); // Do same logic as AfterParent 
+                }
+                automaticKey += " " + Guid.NewGuid().ToString();
+                configure?.Invoke(c);
+                if (!c.HasKey)
+                {
+                    c.Key(key ?? automaticKey);
+                }
+            };
+        }
 
         #region Method Injection
 
         // Function injection, with manual insertion of IVob
-        public static IServiceCollection InitializeVob(this IServiceCollection services, 
-            VosReference vosReference, 
-            Delegate del, 
-            Action<IParticipant>? configure = null)
+        public static IServiceCollection InitializeVob(this IServiceCollection services,
+            VosReference vosReference,
+            Delegate del,
+            Action<IParticipant>? configure = null, VobInitializerFlags flags = VobInitializerFlags.Default)
             => services.AddInitializer(
                 (Func<StartableParticipant, CancellationToken, Task<object?>>)
                 (DependencyMachineDelegateHelpers.CreateInvoker<StartableParticipant>(
                         del,
                         (typeof(IVob), sp => sp.GetRequiredService<IVos>().GetVob(vosReference)))
                 ),
-                configure);
+                configureWrapper(vosReference, configure, flags));
 
         public static IServiceCollection InitializeVob<TParameter1>(this IServiceCollection services,
                 VosReference vosReference,
                 Action<IVob, TParameter1> action,
-                Action<IParticipant>? configure = null)
+                Action<IParticipant>? configure = null, VobInitializerFlags flags = VobInitializerFlags.Default, string key = null)
                 => services.AddInitializer(
                     (Func<StartableParticipant, CancellationToken, Task<object?>>)
                     (DependencyMachineDelegateHelpers.CreateInvoker<StartableParticipant>(
                             action,
                             (typeof(IVob), sp => sp.GetRequiredService<IVos>().GetVob(vosReference)))
                     ),
-                    configure);
+                    configureWrapper(vosReference, configure, flags, key));
 
         public static IServiceCollection InitializeVob<TParameter1, TParameter2>(this IServiceCollection services,
                 VosReference vosReference,
                 Action<IVob, TParameter1, TParameter2> action,
-                Action<IParticipant>? configure = null)
+                Action<IParticipant>? configure = null, VobInitializerFlags flags = VobInitializerFlags.Default)
                 => services.AddInitializer(
                     (Func<StartableParticipant, CancellationToken, Task<object?>>)
                     (DependencyMachineDelegateHelpers.CreateInvoker<StartableParticipant>(
                             action,
                             (typeof(IVob), sp => sp.GetRequiredService<IVos>().GetVob(vosReference)))
                     ),
-                    configure);
+                    configureWrapper(vosReference, configure, flags));
 
         #endregion
 

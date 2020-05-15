@@ -7,7 +7,7 @@ namespace LionFire.Vos
     /// <summary>
     /// Provides access to the root Vob (or named root Vobs).
     /// </summary>
-    public interface IVos : IHas<IVos>
+    public interface IVos : IHas<IVos>, IHas<IServiceProvider>
     {
         /// <summary>
         /// 

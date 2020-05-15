@@ -24,9 +24,7 @@ namespace VosApp_
         [Fact]
         public async void Pass()
         {
-            await VosAppHostBuilder.Create(options: new VosAppOptions
-            {
-            })
+            await VosAppHostBuilder.Create()
                 .RunAsync(serviceProvider =>
                 {
                     // Assert list of stores from the Org and App names

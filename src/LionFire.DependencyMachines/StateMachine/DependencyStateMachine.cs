@@ -1,14 +1,20 @@
 ﻿using LionFire.Dependencies;
+using LionFire.DependencyMachines.Abstractions;
 using LionFire.ExtensionMethods;
+using LionFire.ExtensionMethods.Collections;
 using LionFire.Persistence;
+using LionFire.Services.DependencyMachines;
 using LionFire.Structures;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -21,7 +27,10 @@ namespace LionFire.DependencyMachines
     {
         #region Dependencies
 
+        public DependencyMachineConfig InjectedConfig => Name == null ? OptionsMonitor.CurrentValue : OptionsMonitor.Get(Name);
         public IOptionsMonitor<DependencyMachineConfig> OptionsMonitor { get; }
+        public string Name { get; }
+        public ILogger<DependencyStateMachine> Logger { get; }
         public IServiceProvider ServiceProvider { get; set; }
 
         #endregion
@@ -30,7 +39,24 @@ namespace LionFire.DependencyMachines
 
         public bool AllowRoundRobinWithinStageWhenMissingDependencies { get; set; } = false; // true not implemented
 
-        public DependenyMachineDefinition Definition { get; } = new DependenyMachineDefinition();
+        public DependencyMachineConfig EffectiveConfig => Config ?? InjectedConfig;
+
+        public DependencyMachineConfig? Config
+        {
+            get => config;
+            set
+            {
+                if (ReferenceEquals(config, value)) return;
+                if (IsStarting || IsStarted)
+                {
+                    throw new Exception("Cannot change config after start");
+                }
+                config = value;
+            }
+        }
+        private DependencyMachineConfig? config;
+
+        public DependencyMachineConfig? ActiveConfig => compiled?.Config;
 
         #region IsLoggingEnabled
 
@@ -55,17 +81,27 @@ namespace LionFire.DependencyMachines
 
         #endregion
 
-        public DependencyStateMachine(IServiceProvider serviceProvider, IOptionsMonitor<DependencyMachineConfig> optionsMonitor)
+        #region Construction
+
+        public DependencyStateMachine(IServiceProvider serviceProvider, IOptionsMonitor<DependencyMachineConfig> optionsMonitor, ILogger<DependencyStateMachine> logger, string name = null)
         {
             ServiceProvider = serviceProvider;
             OptionsMonitor = optionsMonitor;
+            Name = name;
+            Logger = logger;
+            if (InjectedConfig.EnableLogging)
+            {
+                ActivatorUtilities.CreateInstance<DependencyMachineLogger>(serviceProvider, this);
+            }
         }
+
+        #endregion
 
         NamedObjectsByType ObjectRegistry = new NamedObjectsByType();
 
         #region Convenience
 
-        public IEnumerable<IParticipant> Participants => Definition.Participants;
+        public IEnumerable<IParticipant> Participants => compiled.Participants;
 
         #endregion
 
@@ -82,11 +118,11 @@ namespace LionFire.DependencyMachines
 
         #region Dependency Logic State
 
-        CompiledDependencyMachine compiled;
+        CompiledDependencyMachine? compiled;
         protected void CalculateStages()
         {
-            Definition.Config = OptionsMonitor.CurrentValue;
-            compiled = new CompiledDependencyMachine(Definition);
+            compiled = new CompiledDependencyMachine(ServiceProvider, EffectiveConfig);
+            IsLoggingEnabled = ActiveConfig!.EnableLogging;
         }
 
         protected IEnumerable<DependencyStage> Stages => compiled.Stages;
@@ -99,49 +135,69 @@ namespace LionFire.DependencyMachines
 
         #region Parameters
 
-        public IDependencyStateMachine Register(IEnumerable<IParticipant> participants)
-        {
-            foreach (var participant in participants) { Register(participant); }
-            return this;
-        }
+        //public IDependencyStateMachine Register(IEnumerable<IParticipant> participants)
+        //{
+        //    foreach (var participant in participants) { Register(participant); }
+        //    return this;
+        //}
 
-        public IDependencyStateMachine Register(IParticipant participant, bool isAlreadyStarted = false)
-        {
-            if (Definition.IsFrozen)
-                if (IsStarted || IsStarting) { throw new NotImplementedException("Not implemented: registering new members after started."); }
+        //public IDependencyStateMachine Register(IParticipant participant, bool isAlreadyStarted = false)
+        //{
+        //    //if (ActiveConfig.IsFrozen)
+        //        //if (IsStarted || IsStarting) { throw new NotImplementedException("Not implemented: registering new members after started."); }
 
-            // TODO: LionFire.Execution integration - detect if already started
+        //    // TODO: LionFire.Execution integration - detect if already started
 
-            //if (participant.StartAction == null && participant.StopAction == null) return;
-            //if (isAlreadyStarted && participant.StopAction == null) return;
+        //    //if (participant.StartAction == null && participant.StopAction == null) return;
+        //    //if (isAlreadyStarted && participant.StopAction == null) return;
 
-            if (!Definition.participants.TryAdd(participant.Key, participant)) throw new AlreadyException($"Participant with key '{participant.Key}' is already registered.");
+        //    if (!ActiveConfig.participants.TryAdd(participant.Key, participant)) throw new AlreadyException($"Participant with key '{participant.Key}' is already registered.");
 
-            if (isAlreadyStarted) { OnStarted(participant, initialRegistration: true); }
-            else { OnStopped(participant, initialRegistration: true); }
+        //    if (isAlreadyStarted) { OnStarted(participant, initialRegistration: true); }
+        //    else { OnStopped(participant, initialRegistration: true); }
 
-            return this;
-        }
+        //    return this;
+        //}
 
-        public bool Unregister(IParticipant participant)
-        {
-            stoppedParticipants.TryRemove(participant.Key, out _);
-            startedParticipants.TryRemove(participant.Key, out _);
-            return Definition.participants.TryRemove(participant.Key, out _);
-        }
+        //public bool Unregister(IParticipant participant)
+        //{
+        //    stoppedParticipants.TryRemove(participant.Key, out _);
+        //    startedParticipants.TryRemove(participant.Key, out _);
+        //    return ActiveConfig.participants.TryRemove(participant.Key, out _);
+        //}
 
         #endregion
 
-        public IEnumerable<string> StartLog => startLog;
-        private List<string> startLog;
-        public IEnumerable<string> StopLog => stopLog;
-        private List<string> stopLog;
-        public IEnumerable<int> StartStageLog => startStageLog;
-        private List<int> startStageLog;
-        public IEnumerable<int> StopStageLog => stopStageLog;
+        public IEnumerable<string> StartLog => startLog ?? Enumerable.Empty<string>();
+        private List<string>? startLog;
+        public IEnumerable<string> StopLog => stopLog ?? Enumerable.Empty<string>();
+        private List<string>? stopLog;
+        public IEnumerable<int> StartStageLog => startStageLog ?? Enumerable.Empty<int>();
+        private List<int>? startStageLog;
+        public IEnumerable<int> StopStageLog => stopStageLog ?? Enumerable.Empty<int>();
 
 
         private List<int> stopStageLog; // TODO DEPRECATE this - let people do it via events if they want it.
+
+        public void Dump()
+        {
+            //var sb = new StringBuilder();
+
+            Logger.LogInformation("Dependency plan:");
+            foreach (var stage in this.Stages)
+            {
+
+                Logger.LogInformation($" - [{stage.ToString()}]");
+                //sb.AppendLine($"- [{stage.ToString()}]");
+                foreach (var member in stage.Members)
+                {
+                    Logger.LogInformation($"   - {member.ToString()}");
+                    //sb.AppendLine($"  - {member.ToString()}");
+                }
+            }
+
+            //return sb.ToString();
+        }
 
         #region IHostedService
 
@@ -158,6 +214,11 @@ namespace LionFire.DependencyMachines
             }
 
             CalculateStages();
+            stoppedParticipants.TryAddRange(Participants.Where(p => !startedParticipants.ContainsKey(p.Key)).Select(p => new KeyValuePair<string, IParticipant>(p.Key, p)));
+
+            //Logger.LogInformation(
+            Dump();
+                //);
 
             var endOfStage = new List<IParticipant>();
 
@@ -183,6 +244,16 @@ namespace LionFire.DependencyMachines
                 return null;
             }
 
+            void startOrAddToList(IParticipant item, object? startResult, ref Dictionary<IParticipant, object>? list)
+            {
+                if (startResult != null)
+                {
+                    if (list == null) { list = new Dictionary<IParticipant, object>(); }
+                    list.Add(item, startResult);
+                }
+            }
+
+            Dictionary<IParticipant, object>? tryAgain = null;
             foreach (var stage in Stages)
             {
                 endOfStage.Clear();
@@ -194,39 +265,81 @@ namespace LionFire.DependencyMachines
                         endOfStage.Add(item);
                         continue;
                     }
-                    if (!InjectMissingDependencies(item))
-                    {
-                        if(AllowRoundRobinWithinStageWhenMissingDependencies)
-                        {
-                            throw new NotImplementedException();
-                        } else
-                        {
-                            throw new DependencyMissingException($"Participant '{item}' has missing dependencies: " + item.DependencyHandles.Where(h => !h.HasValue).Select(h=>h.Key).Aggregate((x, y) => $"{x}, {y}"));
-                        }
-                    }
-                    await start(item, cancellationToken).ConfigureAwait(false);
+                    //if (InjectMissingDependencies(item)) // FUTURE
+                    //{
+                    //    if (AllowRoundRobinWithinStageWhenMissingDependencies)
+                    //    {
+                    //        throw new NotImplementedException();
+                    //    }
+                    //    else
+                    //    {
+                    //        throw new DependencyMissingException($"Participant '{item}' has missing dependencies: " + item.DependencyHandles.Where(h => !h.HasValue).Select(h => h.Key).Aggregate((x, y) => $"{x}, {y}"));
+                    //    }
+                    //}
+
+                    startOrAddToList(item, await start(item, cancellationToken).ConfigureAwait(false), ref tryAgain);
+                    //var startResult = await start(item, cancellationToken).ConfigureAwait(false);
+                    //if (startResult != null)
+                    //{
+                    //    if (tryAgain == null) { tryAgain = new List<IParticipant>(); }
+                    //    tryAgain.Add(item);
+                    //}
                 }
-                foreach (var item in endOfStage) { await start(item, cancellationToken).ConfigureAwait(false); }
+                int lastTryAgainCount = -1;
+                while (tryAgain.NullableAny() && lastTryAgainCount != tryAgain.Count)
+                {
+                    Dictionary<IParticipant, object>? newTryAgain = null;
+                    foreach (var item in tryAgain.Keys!)
+                    {
+                        startOrAddToList(item, await start(item, cancellationToken).ConfigureAwait(false), ref newTryAgain);
+                    }
+
+                    //var startResult = await start(item, cancellationToken).ConfigureAwait(false);
+                    //if (startResult != null)
+                    //{
+                    //    if (tryAgain == null) { tryAgain = new List<IParticipant>(); }
+                    //    tryAgain.Add(item);
+                    //}
+
+                    lastTryAgainCount = tryAgain.Count;
+                    tryAgain = newTryAgain;
+                }
+                if (tryAgain.NullableAny())
+                {
+                    throw new DependenciesUnresolvableException("Failed to start participants due to validation errors.  See Data for details. ", tryAgain!);
+                }
+                foreach (var item in endOfStage) { 
+                    var startResult = await start(item, cancellationToken).ConfigureAwait(false); 
+                    if(startResult != null)
+                    {
+                        throw new NotImplementedException("Stage-ender returned an error result.  Retry mechanism not implemented.");
+                    }
+                }
                 OnStartedStage(stage);
             }
         }
 
-        protected bool InjectMissingDependencies(IParticipant participant)
-        {
-            var hasUnresolved = false;
-            foreach(var handle in participant.DependencyHandles.Where(h => !h.HasValue))
-            {
-                var obj = ObjectRegistry.Get(handle.Type, handle.Reference.Path);
-                if (obj != null)
-                {
-                    handle.SetValue(obj);
-                }
-                else {
-                    hasUnresolved = true;
-                }
-            }
-            return hasUnresolved;
-        }
+        // FUTURE
+        //protected bool InjectMissingDependencies(IParticipant participant)
+        //{
+        //    var hasUnresolved = false;
+        //    if (participant.DependencyHandles != null)
+        //    {
+        //        foreach (var handle in participant.DependencyHandles.Where(h => !h.HasValue))
+        //        {
+        //            var obj = ObjectRegistry.Get(handle.Type, handle.Reference.Path);
+        //            if (obj != null)
+        //            {
+        //                handle.SetValue(obj);
+        //            }
+        //            else
+        //            {
+        //                hasUnresolved = true;
+        //            }
+        //        }
+        //    }
+        //    return hasUnresolved;
+        //}
 
         public async Task StopAsync(CancellationToken cancellationToken = default)
         {
@@ -316,12 +429,12 @@ namespace LionFire.DependencyMachines
         public void OnStartedStage(DependencyStage stage)
         {
             if (startStageLog != null) { startStageLog.Add(stage.Id); }
-            StartedStage?.Invoke(stage.Key);
+            StartedStage?.Invoke(stage.ToLongString());
         }
         public void OnStoppedStage(DependencyStage stage)
         {
             if (stopStageLog != null) { stopStageLog.Add(stage.Id); }
-            StoppedStage?.Invoke(stage.Key);
+            StoppedStage?.Invoke(stage.ToLongString());
         }
 
         #endregion

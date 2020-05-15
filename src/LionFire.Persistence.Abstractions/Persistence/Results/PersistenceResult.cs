@@ -32,6 +32,8 @@ namespace LionFire.Persistence
         public static readonly PersistenceResult FailAndFound = new PersistenceResult { Flags = PersistenceResultFlags.Fail | PersistenceResultFlags.Found };
         public static readonly PersistenceResult PreviewFail = new PersistenceResult { Flags = PersistenceResultFlags.PreviewFail };
         public static readonly PersistenceResult PreviewSuccess = new PersistenceResult { Flags = PersistenceResultFlags.PreviewSuccess };
+
+        public override string ToString() => $"{{{this.GetType().Name} {Flags}}}";
     }
 
     //public struct PersistenceResult<TObject>

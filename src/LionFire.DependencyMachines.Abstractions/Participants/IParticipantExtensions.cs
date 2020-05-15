@@ -8,6 +8,12 @@ namespace LionFire.DependencyMachines
 {
     public static class IParticipantExtensions
     {
+
+        //public static bool IsNoop(this IParticipant participant) // FUTURE?
+        //{
+        //    return participant.StartTask == null && participant.StopTask == null;
+        //}
+
         public static IEnumerable<IParticipant> GetParticipants(this object obj)
         {
             if (obj is IHas<IParticipant> hasParticipant)
@@ -18,6 +24,12 @@ namespace LionFire.DependencyMachines
             {
                 foreach (var p in hasParticipants.Objects) { yield return p; }
             }
+        }
+
+        public static IParticipant Key(this IParticipant participant, string key)
+        {
+            participant.Key = key;
+            return participant;
         }
 
         #region Contributes
@@ -33,12 +45,28 @@ namespace LionFire.DependencyMachines
 
         #endregion
 
+        #region Provides
+
+        public static IParticipant Provides(this IParticipant participant, params string[] keys)
+        {
+            participant.Provides ??= new List<object>();
+            participant.Provides.AddRange(keys);
+            return participant;
+        }
+        public static IParticipant Provides(this IParticipant participant, params Enum[] keys)
+               => participant.Provides(keys.Select(s => s.ToString()).ToArray());
+
+        #endregion
+
         #region DependsOn
+
+        public static IParticipant RootDependency(this IParticipant participant)
+            => participant.DependsOn(new string?[] { null });
 
         public static IParticipant DependsOn(this IParticipant participant, params string?[] stages)
         {
             participant.Dependencies ??= new List<object>();
-            participant.Dependencies.AddRange(stages.Cast<object>().Where(s=> s != null));
+            participant.Dependencies.AddRange(stages.Cast<object>());
             return participant;
         }
 
@@ -47,11 +75,39 @@ namespace LionFire.DependencyMachines
 
         #endregion
 
+        #region Before
+
+        public static IParticipant Before(this IParticipant participant, params string?[] stages)
+        {
+            participant.PrerequisiteFor ??= new List<object>();
+            participant.PrerequisiteFor.AddRange(stages.Cast<object>());
+            return participant;
+        }
+
+        public static IParticipant Before(this IParticipant participant, params Enum[] stages)
+            => participant.Before(stages.Select(s => s.ToString()).ToArray());
+
+        #endregion
+
+        #region After
+
+        public static IParticipant After(this IParticipant participant, params string?[] stages)
+        {
+            participant.After ??= new List<object>();
+            participant.After.AddRange(stages.Cast<object>());
+            return participant;
+        }
+
+        public static IParticipant After(this IParticipant participant, params Enum[] stages)
+            => participant.After(stages.Select(s => s.ToString()).ToArray());
+
+        #endregion
+
         #region RequirementFor
 
         //public static IParticipant RequirementFor(this IParticipant participant, params string[] stage)
         //{
-            
+
         //    participant.PrerequisiteFor ??= new List<object>();
         //    participant.PrerequisiteFor.AddRange(stage);
         //    return participant;

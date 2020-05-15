@@ -45,7 +45,7 @@ namespace LionFire.Services
                 });
         }
 
-        public static IHostBuilder AddVos(this IHostBuilder hostBuilder, bool persistence = true)
+        public static IHostBuilder AddVos(this IHostBuilder hostBuilder, bool persistence = true, bool enableLogging = true)
             => hostBuilder
                 .AddPersisters()
                 .ConfigureServices((_, services) =>
@@ -54,15 +54,15 @@ namespace LionFire.Services
                         .AddDependencyMachine()
                         .AddRootManager() // Provides IVos
 
-                    //#region TEMP
+                        //#region TEMP
 
-                    //    .AddInitializer((Action<IVos>)(vos =>
-                    //    {
-                    //        vos.GetVob("/asdf").Value = "123";
-                    //    }), c => c.Contributes("testAsdf").DependsOn("RootVobs"))
-                    //    .InitializeVob("", null)
+                        //    .AddInitializer((Action<IVos>)(vos =>
+                        //    {
+                        //        vos.GetVob("/asdf").Value = "123";
+                        //    }), c => c.Contributes("testAsdf").DependsOn("RootVobs"))
+                        //    .InitializeVob("", null)
 
-                    //#endregion
+                        //#endregion
 
                         .TryAddEnumerableSingleton<ICollectionTypeProvider<VosReference>, CollectionTypeFromVobNode>() // Allows Vobs to provide Collection Type for themselves
 
@@ -82,35 +82,47 @@ namespace LionFire.Services
 
                       .Configure<VosOptions>(vo =>
                       {
+                          // FIXME: PrimaryRootInitializers should be a collection of Func<IServiceProvider, IParticipant> ??
 
                           //vo.RootNames = new string[] { "", "TestAltRoot" }; // TEMP TEST Alt root
                           //Debug.WriteLine("Configure VosOptions - defaults");
 
                           vo.PrimaryRootInitializers.Add(vobRoot => // Initializers for the Primary root
                           {
-                              return new List<IParticipant>
-                                {
-                                new Dependency(VosInitStages.RootMountStage(vobRoot.Name), $"{vobRoot} mounts") { StartAction = () => vobRoot.InitializeMounts(), },
-                                new Participant()
-                                {
-                                    Key = "RootInitializer",
-                                    StartAction = () =>
-                                    {
-                                            vobRoot
-                                            .AddServiceProvider(s =>
-                                            {
-                                                s
-                                                .AddSingleton(_ => new ServiceDirectory((RootVob)vobRoot))
-                                                .AddSingleton(vobRoot)
-                                                .AddSingleton(vobRoot.Root.RootManager)
-                                                .AddSingleton<VobMounter>()
-                                                .If(persistence, s2=> s2.AddSingleton<VosPersister>())
-                                                ;
-                                            }, (vobRoot as IHas<IServiceProvider>)?.Object);
-                                        //.AddTransient<IServiceProvider, DynamicServiceProvider>() // Don't want this.  DELETE
-                                    },
-                                }.Contributes("RootVobs"),
-                            };
+                              var vobRootChain = new List<string>
+                              {
+                                  "services:",
+                                  "environment:",
+                                  "mounts:",
+                                  "", // Vob itself
+                              };
+                              var list = new List<IParticipant>();
+
+                              list.AddRange(DependencyStages.CreateStageChain(new string[] { "vos:" }.Concat(vobRootChain.Select(c => c + vobRoot.Reference)).ToArray()));
+
+                              list.Add(new Participant()
+                              {
+                                  Key = "RootInitializer",
+                                  StartAction = () =>
+                                  {
+                                      vobRoot
+                                        .AddServiceProvider(s =>
+                                        {
+                                            s
+                                            .AddSingleton(_ => new ServiceDirectory((RootVob)vobRoot))
+                                            .AddSingleton(vobRoot)
+                                            .AddSingleton(vobRoot.Root.RootManager)
+                                            .AddSingleton<VobMounter>()
+                                            .If(persistence, s2 => s2.AddSingleton<VosPersister>())
+                                            ;
+                                        }, (vobRoot as IHas<IServiceProvider>)?.Object);
+                                      //.AddTransient<IServiceProvider, DynamicServiceProvider>() // Don't want this.  DELETE
+                                  },
+                              }.Contributes("services:" + vobRoot.Reference /* vos:/ */)); // "RootVobs"),
+
+                              //new Dependency(VosInitStages.RootMountStage(vobRoot.Name), $"{vobRoot} mounts") { StartAction = () => vobRoot.InitializeMounts(), }.DependsOn("vos:"),
+                              list.Add(new Participant(key: VosInitStages.RootMountStage(vobRoot.Name)) { StartAction = () => vobRoot.InitializeMounts(), }.Contributes("mounts:" + vobRoot.Reference.ToString())); // Should it contribute to the vob itself?  $"vos:{vobRoot.AbsolutePath}"
+                              return list;
                           });
                       })
                       .AddSingleton(serviceProvider => serviceProvider.GetService<IOptionsMonitor<VosOptions>>().CurrentValue)

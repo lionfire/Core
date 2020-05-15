@@ -12,11 +12,12 @@ namespace LionFire.Vos
 
     public class VosOptions
     {
-        public Dictionary<string, RootVobOptions> NamedRootOptions { get; set; } = new Dictionary<string, RootVobOptions>();
+        // OLD - move to named  VobRootOptions?  Consolidate VobRootOptions and RootVobOptions
+        //public Dictionary<string, RootVobOptions> NamedRootOptions { get; set; } = new Dictionary<string, RootVobOptions>();
 
-        public RootVobOptions this[string rootName] => NamedRootOptions.GetOrAdd(rootName);
+        //public RootVobOptions this[string rootName] => NamedRootOptions.GetOrAdd(rootName);
 
-        public RootVobOptions DefaultRoot => NamedRootOptions.GetOrAdd(VosConstants.DefaultRootName);
+        //public RootVobOptions DefaultRoot => NamedRootOptions.GetOrAdd(VosConstants.DefaultRootName);
         //{
         //    get
         //    {

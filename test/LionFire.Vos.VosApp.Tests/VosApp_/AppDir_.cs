@@ -3,6 +3,7 @@ using LionFire.Applications;
 using LionFire.Environment;
 using LionFire.Hosting;
 using LionFire.Referencing;
+using LionFire.Services;
 using LionFire.Vos;
 using LionFire.Vos.Mounts;
 using LionFire.Vos.VosApp;
@@ -25,10 +26,8 @@ namespace VosApp_
         [Fact]
         public void Pass()
         {
-            VosAppHostBuilder.Create(options: new VosAppOptions
-            {
-                AppInfo = new AppInfo(TestGlobals.TestApplicationId)
-            })
+            VosAppHostBuilder.Create()
+                .AddAppInfo(new AppInfo(TestGlobals.TestApplicationId, TestGlobals.TestOrgName))
                 .RunAsync(serviceProvider =>
                 {
                     var root = serviceProvider.GetRequiredService<RootManager>().Get();
@@ -84,11 +83,8 @@ namespace VosApp_
         {
             Assert.True(LionFireEnvironment.IsUnitTest); // MOVE
 
-             await VosAppHostBuilder.Create(options: new VosAppOptions
-            {
-                //AppInfo = null,
-                UseExeDirAsAppDirIfMissing = useExeDirAsAppDirIfMissing
-            })
+             await VosAppHostBuilder.Create()
+                .AddDefaultVosAppStores(useExeDirAsAppDirIfMissing: useExeDirAsAppDirIfMissing)
                 .RunAsync(serviceProvider =>
                 {
                     // Assert list of stores from the Org and App names

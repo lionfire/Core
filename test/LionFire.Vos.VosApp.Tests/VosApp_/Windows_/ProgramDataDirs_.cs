@@ -32,7 +32,8 @@ namespace VosApp_.Windows_
         [Fact]
         public void P_AppDir()
         {
-            VosAppHostBuilder.Create(TestAppName, TestOrgName)
+            VosAppHostBuilder.Create()
+                .AddAppInfo(new AppInfo(TestAppName, TestOrgName))
                 .RunAsync(serviceProvider =>
                 {
                     var programDataDir = Environment.GetEnvironmentVariable("ProgramData");
@@ -49,7 +50,8 @@ namespace VosApp_.Windows_
         [Fact]
         public void P_OrgDir()
         {
-            VosAppHostBuilder.Create(TestAppName, TestOrgName)
+            VosAppHostBuilder.Create()
+                .AddAppInfo(new AppInfo(TestAppName, TestOrgName))
                 .RunAsync(serviceProvider =>
                 {
                     var programDataDir = Environment.GetEnvironmentVariable("ProgramData");
@@ -65,15 +67,13 @@ namespace VosApp_.Windows_
         [Fact]
         public void P_CustomDir()
         {
-            VosAppHostBuilder.Create(options: new VosAppOptions
-            {
-                AppInfo = new AppInfo
+            VosAppHostBuilder.Create()
+                .AddAppInfo(new AppInfo
                 {
                     DataDirName = TestDataDir,
                     OrgName = TestOrgName,
                     AppName = TestAppName,
-                }
-            })
+                })
                 .RunAsync(serviceProvider =>
                 {
                     var programDataDir = Environment.GetEnvironmentVariable("ProgramData");

@@ -28,7 +28,7 @@ namespace LionFire.Vos
         {
             get
             {
-                var s = contextStack;
+                var s = ContextStack;
 #if SanityChecks
                 if (s == null)
                 {
@@ -36,20 +36,20 @@ namespace LionFire.Vos
                 }
                 //if (rootContext == null) throw new UnreachableCodeException("rootContext == null");
 #endif
-                return contextStack.Count > 0 ? contextStack.Peek() : rootContext;
+                return ContextStack.Count > 0 ? ContextStack.Peek() : rootContext;
             }
         }
 
-        private static AsyncLocal<Stack<VosContext>> contextStackThreadLocal = new AsyncLocal<Stack<VosContext>>();
-        private static Stack<VosContext> contextStack
+        private static AsyncLocal<Stack<VosContext>> contextStack = new AsyncLocal<Stack<VosContext>>();
+        private static Stack<VosContext> ContextStack
         {
             get
             {
-                if (contextStackThreadLocal.Value == null)
+                if (contextStack.Value == null)
                 {
-                    contextStackThreadLocal.Value = new Stack<VosContext>();
+                    contextStack.Value = new Stack<VosContext>();
                 }
-                return contextStackThreadLocal.Value;
+                return contextStack.Value;
             }
         }
                 
@@ -61,7 +61,7 @@ namespace LionFire.Vos
                           
         static VosContext()
         {
-            contextStackThreadLocal = new AsyncLocal<Stack<VosContext>>();
+            contextStack = new AsyncLocal<Stack<VosContext>>();
 
 #if AOT
 //			System.Collections.Generic.Dictionary<int, System.Collections.Generic.Stack<LionFire.Vos.VosContext>> d4 = null;
@@ -121,7 +121,7 @@ namespace LionFire.Vos
             Package = package;
             Store = location;
 
-            contextStack.Push(this);
+            ContextStack.Push(this);
         }
 
 #if AOT
@@ -144,10 +144,10 @@ namespace LionFire.Vos
                 throw new InvalidOperationException("Disposing root context is not allowed.");
             }
 
-            var vosContext = contextStack.Peek();
+            var vosContext = ContextStack.Peek();
             if (Object.ReferenceEquals(vosContext, this))
             {
-                contextStack.Pop();
+                ContextStack.Pop();
             }
             else
             {
@@ -157,7 +157,7 @@ namespace LionFire.Vos
 
         #endregion
 
-        private void UpdateRoot() => Root = Resolver.GetVobRoot(null, this);
+        private void UpdateRoot() => Root = Resolver?.GetVobRoot(null, this);
 
         #region Resolver
 

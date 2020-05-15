@@ -1,7 +1,9 @@
 ﻿using LionFire.Applications;
+using LionFire.Extensions.Logging;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 
@@ -9,9 +11,7 @@ namespace LionFire.Services
 {
     public static class ApplicationInfoServicesExtensions
     {
-
-
-        public static IHostBuilder SetAppInfo(this IHostBuilder hostBuilder, AppInfo appInfo = null, bool autoDetect = true)
+        public static IHostBuilder AddAppInfo(this IHostBuilder hostBuilder, AppInfo appInfo = null, bool autoDetect = true, bool autoCreateDirectories = false)
         {
             if (appInfo == null) appInfo = new AppInfo();
 
@@ -20,6 +20,8 @@ namespace LionFire.Services
                 if (appInfo.OrgName == null) appInfo.OrgName = ApplicationAutoDetection.AutoDetectOrganizationName(null);
                 if (appInfo.AppName == null) appInfo.AppName = ApplicationAutoDetection.AutoDetectApplicationName(null);
             }
+
+            hostBuilder.Properties[typeof(AppInfo)] = appInfo;
 
             hostBuilder.ConfigureHostConfiguration(c =>
             {
@@ -32,8 +34,27 @@ namespace LionFire.Services
             });
             hostBuilder.ConfigureServices((context, services) => services.AddSingleton(appInfo));
 
-            hostBuilder.Properties.Add("AppInfo", appInfo);
+            if(!LionFireEnvironment.IsMultiApplicationEnvironment)
+            {
+                AppInfo.Instance = appInfo;
+            }
+            else
+            {
+                if (AppInfo.RootInstance == null)
+                {
+                    AppInfo.RootInstance = appInfo;
+                }
+            }
 
+            appInfo.AppDir = appInfo.AutodetectedAppDir;
+            hostBuilder.GetLogger(typeof(AppInfo).FullName).LogInformation($"AppDir: {appInfo.AutodetectedAppDir}");
+
+            if(autoCreateDirectories)
+            {
+                DirectoryUtils.EnsureAllDirectoriesExist(typeof(LionFireEnvironment.Directories));
+                //DirectoryUtils.EnsureAllDirectoriesExist<AppDirectories>();
+                AppDirectories.CreateProgramDataFolders(appInfo);
+            }
             return hostBuilder;
         }
     }

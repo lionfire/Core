@@ -1,4 +1,5 @@
 ﻿#nullable enable
+using LionFire.DependencyMachines.Abstractions;
 using LionFire.Services;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -12,10 +13,30 @@ namespace LionFire.DependencyMachines
 
     public static class DependencyMachineServicesExtensions
     {
-        public static IServiceCollection AddDependencyMachine(this IServiceCollection services, bool addHostedService = true)
+        public static IServiceCollection AddDependencyMachine(this IServiceCollection services, string? name = null, bool addHostedService = true)
         {
-            services.AddSingleton<IDependencyStateMachine>(serviceProvider => machines.GetValue(services, _ => ActivatorUtilities.CreateInstance<DependencyStateMachine>(serviceProvider)));
-            if (addHostedService) { services.AddHostedService<DependencyMachineService>(); }
+            if (name == null)
+            {
+                services.AddSingleton<IDependencyStateMachine>(serviceProvider =>
+                     machines.GetValue(services, _ =>
+                         ActivatorUtilities.CreateInstance<DependencyStateMachine>(serviceProvider,
+                            name == null ? Array.Empty<object>() : new object[] { name })
+                ));
+                if (addHostedService) { 
+                    services.AddHostedService<DependencyMachineService>(); 
+                }
+            }
+            else
+            {
+                // register as named singleton  FUTURE
+               // services.AddNamedSingleton<IDependencyStateMachine>(serviceProvider =>
+               //     machines.GetValue(services, _ =>
+               //         ActivatorUtilities.CreateInstance<DependencyStateMachine>(serviceProvider,
+               //            name == null ? Array.Empty<object>() : new object[] { name })
+               //));
+                throw new NotImplementedException();
+            }
+            
             return services;
         }
 
@@ -32,13 +53,20 @@ namespace LionFire.DependencyMachines
         // TODO: Return the DependencyMachineDefinition, which (typically) gets frozen after it gets started.
         public static IDependencyStateMachine? TryGetDependencyMachine(this IServiceCollection services)
             => machines.TryGetValue(services, out DependencyStateMachine result) ? result : null;
-        public static IDependencyStateMachine GetDependencyMachine(this IServiceCollection services) 
-            => services.TryGetDependencyMachine() 
+        public static IDependencyStateMachine GetDependencyMachine(this IServiceCollection services)
+            => services.TryGetDependencyMachine()
             ?? throw new Exception("Missing IDependencyStateMachine.  Please invoke services.AddDependencyMachine() before invoking this.");
 
-        public static IServiceCollection ConfigureDependencyMachine(this IServiceCollection services, Action<IDependencyStateMachine> action)
+        public static IServiceCollection ConfigureDependencyMachine(this IServiceCollection services, Action<DependencyMachineConfig> action, string? name = null)
         {
-            action(services.GetDependencyMachine());
+            if (name != null)
+            {
+                services.Configure<DependencyMachineConfig>(name, action);
+            }
+            else
+            {
+                services.Configure<DependencyMachineConfig>(action);
+            }
             return services;
         }
 
