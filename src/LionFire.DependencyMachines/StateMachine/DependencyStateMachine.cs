@@ -187,11 +187,27 @@ namespace LionFire.DependencyMachines
             foreach (var stage in this.Stages)
             {
 
-                Logger.LogInformation($" - [{stage.ToString()}]");
+                Logger.LogInformation($" === [{stage.ToString()}] ---");
                 //sb.AppendLine($"- [{stage.ToString()}]");
                 foreach (var member in stage.Members)
                 {
                     Logger.LogInformation($"   - {member.ToString()}");
+                    foreach (var contributes in member.Dependencies ?? Enumerable.Empty<object>())
+                    {
+                        Logger.LogInformation($"     o {contributes}");
+                    }
+                    foreach (var after in member.After ?? Enumerable.Empty<object>())
+                    {
+                        Logger.LogInformation($"     >> {after}");
+                    }
+                    foreach (var provides in member.Provides ?? Enumerable.Empty<object>())
+                    {
+                        Logger.LogInformation($"     = {provides}");
+                    }
+                    foreach(var contributes in member.Contributes ?? Enumerable.Empty<object>())
+                    {
+                        Logger.LogInformation($"     + {contributes}");
+                    }
                     //sb.AppendLine($"  - {member.ToString()}");
                 }
             }

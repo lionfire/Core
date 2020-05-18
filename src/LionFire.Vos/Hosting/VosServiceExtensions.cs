@@ -121,7 +121,7 @@ namespace LionFire.Services
                               }.Contributes("services:" + vobRoot.Reference /* vos:/ */)); // "RootVobs"),
 
                               //new Dependency(VosInitStages.RootMountStage(vobRoot.Name), $"{vobRoot} mounts") { StartAction = () => vobRoot.InitializeMounts(), }.DependsOn("vos:"),
-                              list.Add(new Participant(key: VosInitStages.RootMountStage(vobRoot.Name)) { StartAction = () => vobRoot.InitializeMounts(), }.Contributes("mounts:" + vobRoot.Reference.ToString())); // Should it contribute to the vob itself?  $"vos:{vobRoot.AbsolutePath}"
+                              list.Add(new Participant(key: VosInitStages.RootMountStage(vobRoot.Name)) { StartAction = () => vobRoot.InitializeMounts(), }.After("environment:" + vobRoot.Reference.ToString()).Contributes("mounts:" + vobRoot.Reference.ToString())); // Should it contribute to the vob itself?  $"vos:{vobRoot.AbsolutePath}"
                               return list;
                           });
                       })

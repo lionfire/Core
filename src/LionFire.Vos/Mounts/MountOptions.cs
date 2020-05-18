@@ -30,6 +30,10 @@ namespace LionFire.Vos.Mounts
 
         #region Construction
 
+        // TODO: Fluent API for:
+        // .AugmentWithDefaults
+        // .ExclusiveRead
+        // .ExclusiveWrite
         public MountOptions(int? readPriority = null, int? writePriority = null, string name = null, IMultiTyped decorators = null)
         {
             ReadPriority = readPriority; 

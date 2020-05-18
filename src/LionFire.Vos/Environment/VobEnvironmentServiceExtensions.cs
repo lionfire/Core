@@ -23,6 +23,7 @@ namespace LionFire.Services
                     .Key($"{vob} ${key}")
                     .Provides($"{vob} ${key}")
                     .Contributes($"environment:{vob}")
+                    .After($"services:{vob}")
                     .Before(vob.ToString()) // Should be redundnat to Contributes environment:{vob} if vob is root and environment:{vob} is part of a stage chain
              // Contributes may be wrong here, if GetNext finds a VobEnvironment not at root. 
              // REVIEW - Also, it leads to a duplicate contributes item.  Maybe .Contributes should be a no-op for duplicates.

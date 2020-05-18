@@ -2,6 +2,7 @@
 using LionFire.FlexObjects.Implementation;
 using System;
 using System.Collections.Generic;
+using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Text;
 
@@ -163,7 +164,7 @@ namespace LionFire.FlexObjects
         /// <param name="allowReplace"></param>
         /// <param name="throwOnFail">Set to true to ensure Set always succeeds in setting the value, otherwise an Exception is thrown.</param>
         /// <param name="onlyReplaceSameType"></param>
-        /// <returns></returns>
+        /// <returns>True if an existing value was replaced, false if not.</returns>
         public static bool Set<T>(this IFlex flex, T value, bool allowReplace = true, bool throwOnFail = false, bool onlyReplaceSameType = true)
         {
             var valueType = typeof(T) != typeof(object) ? typeof(T) : value?.GetType();
@@ -212,16 +213,16 @@ namespace LionFire.FlexObjects
 
         public static void Add(this IFlex flex, Type type, object obj)
         {
-            flex.Set(obj, allowReplace: false, throwOnFail: true);
+            throw new NotImplementedException("TODO: Call generic method");
+            ////flex.Set(obj, allowReplace: false, throwOnFail: true);
+            //flex.Add
         }
+        //private static MethodInfo addMethod;
 
         public static void Add<T>(this IFlex flex, T obj)
         {
-            flex.Set(obj, allowReplace: false, throwOnFail: true);
+            // REVIEW - are all the corner cases covered?  Can this be refactored?
 
-            throw new NotImplementedException("tODO: triage old code");
-#if OLD
-            // OLD
             object effectiveObject = EffectiveSingleValue(obj);
 
             if (flex.Value == null)
@@ -230,18 +231,47 @@ namespace LionFire.FlexObjects
             }
             else
             {
-                // Collection -- TODO: Collections need to be fleshed out
-                Type existingType = flex.Value is ITypedObject to ? to.Type : flex.Value.GetType();
-                if (existingType == typeof(T))
+                if (flex.Value is List<T> existingList)
                 {
-                    flex.Value = new List<T> { (T)flex.Value, obj };
+                    // 3rd (or later) item of list
+                    existingList.Add(obj);
+                }
+                else if (flex.Value is T existingItem)
+                {
+                    // Convert a single existing value into a list and add the parameter
+                    var list = new List<T> { existingItem, obj };
+                    flex.Value = list;
+                }
+                else if (flex.Value is FlexTypeDictionary ftd)
+                {
+                    if (ftd.Types.ContainsKey(typeof(List<T>)))
+                    {
+                        ((List<T>)ftd.Types[typeof(List<T>)]).Add(obj);
+                    }
+                    if (ftd.Types.ContainsKey(typeof(T)))
+                    {
+                        var list = new List<T> { (T)ftd.Types[typeof(T)], obj };
+                        ftd.Types.TryRemove(typeof(T), out _);
+                        ftd.Add(list);
+                    }
+                    else
+                    {
+                        ftd.Add(obj);
+                    }
                 }
                 else
                 {
-                    flex.Value = new FlexTypeDictionary(flex.Value, effectiveObject);
+                    throw new UnreachableCodeException();
+                    //// Something else is in the Flex, so allow for both
+
+                    //Type collectionType = flex.Value is ITypedObject to ? to.Type : flex.Value.GetType();
+
+                    //var dict = new FlexTypeDictionary(flex.Value, effectiveObject);
+                    //dict.Add(list);
+                    //dict.Add(flex.Value);
+                    //flex.Value = dict;
                 }
             }
-#endif
         }
 
         //public static void GetOrAdd<T>(this ConcurrentDictionary<string, object> dict, string key, T value)

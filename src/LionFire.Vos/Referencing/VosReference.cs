@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Collections.Immutable;
 using LionFire.ObjectBus;
 using LionFire.Ontology;
+using LionFire.Referencing;
 
 namespace LionFire.Vos
 {
@@ -106,6 +107,9 @@ namespace LionFire.Vos
         //private Type type;
 
         #endregion
+
+
+        public VosReference this[string subPath] => this.GetChild(subPath);
     }
 
 }

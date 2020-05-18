@@ -106,7 +106,6 @@ namespace LionFire.DependencyMachines
         }
         private Func<TConcrete, CancellationToken, Task<object?>>? startTask;
 
-#error NEXT: Figure out why "vos:/ $stores (environment)" is happening in same stage as servies:vos:/.  Have a better Dump showing everything each participant contributes or provides.
         public Action StartAction
         {
             set

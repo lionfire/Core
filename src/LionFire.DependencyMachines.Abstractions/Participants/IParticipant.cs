@@ -29,6 +29,12 @@ namespace LionFire.DependencyMachines
 
         List<object>? Provides { get; set; }
         List<object>? Contributes { get; set; }
+
+        /// <summary>
+        /// Execute in the same stage as these.  Will fail if there is more than one and they are in different stages
+        /// </summary>
+        //List<object>? ExecuteWith { get; set; } // FUTURE
+
         List<object>? PrerequisiteFor { get; set; }
 
         ParticipantFlags Flags { get; }

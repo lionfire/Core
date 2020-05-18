@@ -9,7 +9,7 @@ namespace LionFire.Serialization
         public SerializationOptions()
         {
 
-            System.Diagnostics.Debug.WriteLine("TEMP");
+            //System.Diagnostics.Debug.WriteLine("TEMP");
         }
         public SerializationFlags SerializationFlags { get; set; } = SerializationFlags.HumanReadable | SerializationFlags.Text;
 

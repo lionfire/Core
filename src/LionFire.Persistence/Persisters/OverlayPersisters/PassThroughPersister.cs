@@ -21,7 +21,8 @@ namespace LionFire.Persistence.Persisters
         where TUnderlyingReference : IReference, IReferencable<TUnderlyingReference>
     {
 
-        public abstract TUnderlyingReference TranslateReference(TReference reference);
+        public abstract TUnderlyingReference TranslateReferenceForRead(TReference reference);
+        public abstract TUnderlyingReference TranslateReferenceForWrite(TReference reference);
         public virtual TReference ReverseTranslateReference(TUnderlyingReference reference) => throw new NotSupportedException();
 
         public TUnderlyingPersister UnderlyingPersister
@@ -46,21 +47,21 @@ namespace LionFire.Persistence.Persisters
 
 
         public Task<IPersistenceResult> Create<TValue>(IReferencable<TReference> referencable, TValue value)
-            => UnderlyingPersister.Create(TranslateReference(referencable.Reference), value);
+            => UnderlyingPersister.Create(TranslateReferenceForWrite(referencable.Reference), value);
 
         public Task<IPersistenceResult> Delete(IReferencable<TReference> referencable)
-           => UnderlyingPersister.Delete(TranslateReference(referencable.Reference));
+           => UnderlyingPersister.Delete(TranslateReferenceForWrite(referencable.Reference));
         public Task<IPersistenceResult> Exists<TValue>(IReferencable<TReference> referencable)
-          => UnderlyingPersister.Exists<TValue>(TranslateReference(referencable.Reference));
+          => UnderlyingPersister.Exists<TValue>(TranslateReferenceForRead(referencable.Reference));
         public Task<IRetrieveResult<IEnumerable<Listing<T>>>> List<T>(IReferencable<TReference> referencable, ListFilter filter = null)
-          => UnderlyingPersister.List<T>(TranslateReference(referencable.Reference), filter);
+          => UnderlyingPersister.List<T>(TranslateReferenceForRead(referencable.Reference), filter);
 
         public Task<IRetrieveResult<TValue>> Retrieve<TValue>(IReferencable<TReference> referencable)
-            => UnderlyingPersister.Retrieve<TValue>(TranslateReference(referencable.Reference));
+            => UnderlyingPersister.Retrieve<TValue>(TranslateReferenceForRead(referencable.Reference));
 
         public Task<IPersistenceResult> Update<TValue>(IReferencable<TReference> referencable, TValue value)
-        => UnderlyingPersister.Update(TranslateReference(referencable.Reference), value);
+        => UnderlyingPersister.Update(TranslateReferenceForWrite(referencable.Reference), value);
         public Task<IPersistenceResult> Upsert<TValue>(IReferencable<TReference> referencable, TValue value)
-         => UnderlyingPersister.Upsert(TranslateReference(referencable.Reference), value);
+         => UnderlyingPersister.Upsert(TranslateReferenceForWrite(referencable.Reference), value);
     }
 }

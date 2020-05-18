@@ -10,8 +10,6 @@ namespace LionFire.Persistence.AutoExtensionFilesystem
 {
     public class AutoExtensionFilesystemPersister : AutoExtensionPersister<AutoExtensionFileReference, AutoExtensionFilesystemPersisterOptions, FileReference, FilesystemPersister>
     {
-
-
         public AutoExtensionFilesystemPersister(FilesystemPersister filesystemPersister, AutoExtensionFilesystemPersisterOptions options, SerializationOptions serializationOptions) : base(serializationOptions)
         {
             UnderlyingPersister = filesystemPersister;
@@ -20,7 +18,7 @@ namespace LionFire.Persistence.AutoExtensionFilesystem
 
         protected override FileReference ConvertReferenceWithPath(AutoExtensionFileReference reference, string path) => new FileReference(path);
 
-        public override FileReference TranslateReference(AutoExtensionFileReference reference)
+        public override FileReference TranslateReferenceForRead(AutoExtensionFileReference reference)
         {
             var parent = reference.GetParent();
 

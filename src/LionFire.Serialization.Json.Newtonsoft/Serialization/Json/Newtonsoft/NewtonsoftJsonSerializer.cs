@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using LionFire.Dependencies;
 using LionFire.Persistence;
+using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
 
 namespace LionFire.Serialization.Json.Newtonsoft
@@ -25,18 +26,24 @@ namespace LionFire.Serialization.Json.Newtonsoft
             | SerializationFlags.Serialize
             ;
 
-        #region (Static) Default Settings
+        //#region (Static) Default Settings
 
-        public static JsonSerializerSettings DefaultSettings = new JsonSerializerSettings
+        //public static JsonSerializerSettings DefaultSettings = new JsonSerializerSettings
+        //{
+        //    TypeNameHandling = TypeNameHandling.Auto,
+        //    //Converters = ,
+        //    DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate,
+        //    //NullValueHandling = 
+        //    TypeNameAssemblyFormatHandling = TypeNameAssemblyFormatHandling.Simple,
+        //};
+
+        //#endregion
+
+        public NewtonsoftJsonSerializer(IOptionsMonitor<JsonSerializerSettings> optionsMonitor)
         {
-            TypeNameHandling = TypeNameHandling.Auto,
-            //Converters = ,
-            DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate,
-            //NullValueHandling = 
-            TypeNameAssemblyFormatHandling = TypeNameAssemblyFormatHandling.Simple,
-        };
-
-        #endregion
+            PersistenceSettings = optionsMonitor.Get(LionSerializeContext.Persistence.ToString());
+            NetworkSettings = optionsMonitor.Get(LionSerializeContext.Network.ToString());
+        }
 
         public override SerializationFormat DefaultFormat => defaultFormat;
         private static readonly SerializationFormat defaultFormat = new SerializationFormat("json", "JSON", "application/json")
@@ -46,26 +53,39 @@ namespace LionFire.Serialization.Json.Newtonsoft
 
         #region Settings
 
-        [TryInject]
-        public JsonSerializerSettings Settings
-        {
-            get => settings ?? DefaultSettings;
-            set => settings = value;
-        }
-        private JsonSerializerSettings settings;
+        public JsonSerializerSettings PersistenceSettings { get; }
+        public JsonSerializerSettings NetworkSettings { get; }
 
+        public JsonSerializerSettings SettingsForContext(PersistenceOperation op)
+        {
+            LionSerializeContext lionSerializeContext = op.SerializeContext;
+
+            Exception ThrowMultiple() => new ArgumentException("LionSerializeContext can only be a single flag");
+
+            return lionSerializeContext switch
+            {
+                LionSerializeContext.Persistence => PersistenceSettings,
+                LionSerializeContext.Network => NetworkSettings,
+                LionSerializeContext.Copy => NetworkSettings,
+
+                LionSerializeContext.AllSerialization => throw ThrowMultiple(),
+                LionSerializeContext.All => throw ThrowMultiple(),
+                //LionSerializeContext.None => throw new NotImplementedException(),
+                _ => throw new ArgumentException("LionSerializeContext is not set"),
+            };
+        }
         #endregion
 
         #region Serialize
 
-        public override (string String, SerializationResult Result) ToString(object obj, Lazy<PersistenceOperation> operation = null, PersistenceContext context = null) => (JsonConvert.SerializeObject(obj, typeof(object), Settings), SerializationResult.Success);
+        public override (string String, SerializationResult Result) ToString(object obj, Lazy<PersistenceOperation> operation = null, PersistenceContext context = null) => (JsonConvert.SerializeObject(obj, typeof(object), SettingsForContext(operation)), SerializationResult.Success);
 
         #endregion
 
         #region Deserialize
 
-        public override DeserializationResult<T> ToObject<T>(string str, Lazy<PersistenceOperation> operation = null, PersistenceContext context = null) 
-            => JsonConvert.DeserializeObject<T>(str, Settings);
+        public override DeserializationResult<T> ToObject<T>(string str, Lazy<PersistenceOperation> operation = null, PersistenceContext context = null)
+            => JsonConvert.DeserializeObject<T>(str, SettingsForContext(operation));
 
         #endregion
 

@@ -10,9 +10,9 @@ namespace LionFire.Vos.VosApp
     public static class VosAppPackageProviderNames
     {
         /// <summary>
-        /// Core data that is considered trusted and part of the essential set of data needed for the application to run
+        /// Base layer of data that is considered trusted and part of the essential set of data needed for the application to run
         /// </summary>
-        public const string Core = "core";
+        public const string Base = "base";
         
         /// <summary>
         /// Expansions to the core that are typically loaded at startup if present.

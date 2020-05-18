@@ -38,6 +38,7 @@ namespace LionFire.Persistence.Handles
 
         #endregion
 
+        [Ignore(LionSerializeContext.AllSerialization)]
         public IReadHandle<TValue> ReadHandle => handle ??= Reference?.GetReadHandle<TValue>();
         protected IReadHandle<TValue> handle;
 

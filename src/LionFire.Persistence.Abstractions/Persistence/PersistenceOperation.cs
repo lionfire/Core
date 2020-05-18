@@ -53,7 +53,7 @@ namespace LionFire.Persistence
         {
             this.Deserialization = deserialization;
         }
-     
+
         #endregion
 
         public IODirection Direction
@@ -94,6 +94,17 @@ namespace LionFire.Persistence
         public string MimeType { get; set; }
 
         #endregion
+
+        public LionSerializeContext SerializeContext
+        {
+            get
+            {
+                if (serializeContext.HasValue) return serializeContext.Value;
+                //if (Reference.Host.IsRemote()) { return LionSerializeContext.Network; } // FUTURE
+                return LionSerializeContext.Persistence;
+            }
+        }
+        private LionSerializeContext? serializeContext;
 
         #region Reference / Path
 
@@ -173,10 +184,10 @@ namespace LionFire.Persistence
         protected string fileExtension;
 
         #endregion
-        
+
 
         #endregion
-        
+
     }
 
     //public class MimeSerializationContext

@@ -6,7 +6,7 @@ using System.Linq;
 using System.Text;
 using System.Runtime.Serialization;
 using System.IO;
-using LionFire.Serialization.Newtonsoft.Json;
+//using LionFire.Serialization.Newtonsoft.Json;
 
 //using JsonExSerializer.TypeConversion; OLD
 //using JsonExSerializer.Collections;

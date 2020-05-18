@@ -86,11 +86,9 @@ namespace LionFire.Services
         //    return services.VosMount("$stores/" + storeName, customApplicationDir.ToFileReference(), new MountOptions { });
         //}
 
-        public static MountOptions DefaultOptions(string storeName, string path)
+        public static MountOptions AugmentWithDefaults(this MountOptions mountOptions, string storeName, string path)
         {
-            var result = new MountOptions();
-
-            result.TryCreateIfMissing = storeName switch
+            mountOptions.TryCreateIfMissing = storeName switch
             {
                 StoreNames.ProgramDataOrgDir => false,
                 _ => true,
@@ -101,18 +99,21 @@ namespace LionFire.Services
                 if (LionFireEnvironment.Directories.IsVariableDirectory != null)
                 {
                     var isVar = LionFireEnvironment.Directories.IsVariableDirectory(path);
-                    if (isVar.HasValue) result.IsVariableDataLocation = isVar.Value;
+                    if (isVar.HasValue) mountOptions.IsVariableDataLocation = isVar.Value;
                 }
 
                 if (LionFireEnvironment.Directories.IsUserDirectory != null)
                 {
                     var isUser = LionFireEnvironment.Directories.IsUserDirectory(path);
-                    if (isUser.HasValue) result.IsOwnedByOperatingSystemUser = isUser.Value;
+                    if (isUser.HasValue) mountOptions.IsOwnedByOperatingSystemUser = isUser.Value;
                 }
             }
 
-            return result;
+            return mountOptions;
         }
+
+        public static MountOptions DefaultOptions(string storeName, string path)
+            => new MountOptions().AugmentWithDefaults(storeName, path);
 
         public static IServiceCollection AddPlatformSpecificStores(this IServiceCollection services, AppInfo appInfo)
         {
@@ -453,7 +454,7 @@ namespace LionFire.Services
                                 ?? (useExeDirAsAppDirIfMissing && !onlyIfNotExeDir ? ExeDirPath : null);
 
             return _AddStore(services,
-                   options,
+                   new MountOptions(1, 1) { IsExclusiveWithReadAndWrite = true }.AugmentWithDefaults(StoreNames.AppDir, appDirPath),
                    StoreNames.AppDir,
                    null,
                   appDirPath,

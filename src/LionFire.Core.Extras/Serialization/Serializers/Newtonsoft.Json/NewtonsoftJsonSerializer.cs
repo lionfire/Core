@@ -1,4 +1,5 @@
 ﻿// DEPRECTED - see LionFire.Serialization.Json.Newtonsoft
+#if UNUSED
 using System;
 using System.Text;
 using System.IO;
@@ -128,3 +129,4 @@ namespace LionFire.Serialization.Newtonsoft.Json
 
 
 }
+#endif

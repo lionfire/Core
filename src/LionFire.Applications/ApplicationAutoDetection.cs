@@ -48,7 +48,8 @@ namespace LionFire.Applications
 
             var dir = Path.GetDirectoryName(assembly.Location);
 
-            for (; dir != null; dir = Directory.GetParent(dir)?.FullName)
+            bool foundIt = false;
+            for (; dir != null ; dir = Directory.GetParent(dir)?.FullName)
             {
                 var path = Path.Combine(dir, "application.json");
                 if (File.Exists(path))
@@ -59,7 +60,12 @@ namespace LionFire.Applications
                         if (appInfo != null)
                         {
                             if (appInfo.AppId != null && appInfo.AppId != appId) continue;
-                            if (appInfo.AppId == null || appInfo.AppId == appId) { return dir; }
+                            foundIt = true;
+                            //if (appInfo.AppId == null || appInfo.AppId == appId) { return dir; }
+                        }
+                        if (appInfo.Dir != null)
+                        {
+                            dir = Path.Combine(dir, appInfo.Dir);
                         }
                     }
                     catch
@@ -68,9 +74,15 @@ namespace LionFire.Applications
                         // EMPTYCATCH
                     }
                 }
+                if (foundIt) break;
             }
 
             if (dir != null && Path.GetFileName(dir).ToLowerInvariant().Contains(appId.ToLowerInvariant()))
+            {
+                foundIt = true;
+            }
+
+            if (foundIt)
             {
                 return dir;
             }

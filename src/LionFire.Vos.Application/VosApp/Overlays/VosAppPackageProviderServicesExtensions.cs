@@ -46,7 +46,7 @@ namespace LionFire.Services
         public static IServiceCollection DefaultStoresAvailableToCore(this IServiceCollection services)
         {
             return services
-                .AddExeDirToCorePackages()
+                .AddExeDirToBasePackages()
                 ;
         }
         public static IServiceCollection DefaultStoresAvailableToData(this IServiceCollection services)
@@ -58,8 +58,10 @@ namespace LionFire.Services
 
         #region Individual Defaults
 
-        public static IServiceCollection AddExeDirToCorePackages(this IServiceCollection services, MountOptions? mountOptions = null)
-            => services.AddPackageSourceFromStore(StoreNames.ExeDir, VosAppPackageProviderNames.Core, mountOptions ?? new MountOptions(100, null));
+        public static IServiceCollection AddExeDirToBasePackages(this IServiceCollection services, MountOptions? mountOptions = null)
+            => services
+            .AddPackageSourceFromStore(StoreNames.ExeDir, VosAppPackageProviderNames.Base, mountOptions ?? new MountOptions(100, null))
+            ;
 
         #endregion
 

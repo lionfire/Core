@@ -19,6 +19,7 @@ namespace LionFire.Persistence.Persisters
             Persister = persister ?? throw new ArgumentNullException(nameof(persister));
         }
 
+        [Ignore(LionSerializeContext.AllSerialization)]
         public IPersister<TReference>? Persister { get; protected set; }
 
 

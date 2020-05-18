@@ -43,8 +43,13 @@ namespace LionFire.Vos.Assets.Persisters
 
         public string GetTypeKey(Type type) => type.Name;
 
-        public override IVosReference TranslateReference(IAssetReference reference)
+        public override IVosReference TranslateReferenceForRead(IAssetReference reference)
             => this.AssetRoot.GetVob()[GetTypeKey(reference.Type)][reference.Path].Reference;
+
+        public override IVosReference TranslateReferenceForWrite(IAssetReference reference)
+            => AssetWriteContext.Current?.WriteLocation[GetTypeKey(reference.Type)][reference.Path] 
+            ?? this.AssetRoot.GetVob()[GetTypeKey(reference.Type)][reference.Path].Reference;
+
 
     }
 }
