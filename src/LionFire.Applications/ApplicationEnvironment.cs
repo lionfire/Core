@@ -36,7 +36,7 @@ namespace LionFire.Applications
 
         public static string OrgName => AppInfo?.OrgName; 
         public static string ProgramName => AppInfo?.AppName;
-        public static string ProgramDisplayName => AppInfo?.ProgramDisplayName;
+        public static string ProgramDisplayName => AppInfo?.AppDisplayName;
 
         #endregion
 

@@ -64,28 +64,30 @@ namespace LionFire.Hosting
             IHostBuilder hostBuilder = defaultBuilder ? Host.CreateDefaultBuilder(args) : new HostBuilder();
 
             return hostBuilder
-                .UseDependencyContext()
+                .AugmentWithFramework()
                 //.ConfigureLogging(loggingBuilder =>
                 //{
                 //})
-                .ConfigureServices((context, services) =>
-                {
-                    services
-                    .AddSerialization()
-                    .AddFilesystem();
+                //.ConfigureServices((context, services) =>
+                //{
+                //    //services
+                //    //.AddSerialization()
+                //    //.AddPersisters()
+                //    //.AddFilesystem()
+                //    //;
 
-                    (serializers ?? DefaultAddDefaultSerializers)(services);
+                //    //(serializers ?? DefaultAddDefaultSerializers)(services);
 
-                    services
-                    .AddSingleton<IReferenceToHandleService, ReferenceToHandleService>()
-                    .AddSingleton<IReferenceProviderService, ReferenceProviderService>()
-                    ;
-                    //services.Configure<ObjectBusOptions>(option => // Allows injection of IOptions<ObjectBusOptions>
-                    //{
-                    //    option.SampleOption = 123;
-                    //});
+                //    //services
+                //    //.AddSingleton<IReferenceToHandleService, ReferenceToHandleService>()
+                //    //.AddSingleton<IReferenceProviderService, ReferenceProviderService>()
+                //    //;
+                //    //services.Configure<ObjectBusOptions>(option => // Allows injection of IOptions<ObjectBusOptions>
+                //    //{
+                //    //    option.SampleOption = 123;
+                //    //});
 
-                })
+                //})
                 //.ConfigureHostConfiguration(config =>
                 //{
 
@@ -116,10 +118,13 @@ namespace LionFire.Hosting
         private static IHostBuilder AugmentWithFramework(this IHostBuilder hostBuilder, FrameworkHostBuilderOptions options = null)
         {
             return hostBuilder
+                .UseDependencyContext()
                 .ConfigureServices((context, services) =>
                 {
                     (options?.Serializers ?? DefaultAddDefaultSerializers)(services);
                     services
+                        .AddSerialization()
+                        .AddPersisters()
                         .AddFilesystem()
                         .AddAssets()
                     //.InitializeVob("/", v => v.AddOwn<VosAssetPersister>(), p => p.Key = $"/<VosAssetPersister>")

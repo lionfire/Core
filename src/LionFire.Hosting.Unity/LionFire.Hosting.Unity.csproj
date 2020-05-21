@@ -11,6 +11,11 @@
     <PackageReference Include="Unity3D" Version="1.3.1" />
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\LionFire.Hosting\LionFire.Hosting.csproj" />
+    <ProjectReference Include="..\LionFire.Platform.Unity\LionFire.Platform.Unity.csproj" />
+  </ItemGroup>
+
   <Target Name="PostBuild" AfterTargets="PostBuildEvent">
     <Exec Command="xcopy /y $(TargetPath) &quot;D:\exp\unity\LionFire.Hosting.Unity.Sample\Assets\lib&quot;&#xD;&#xA;xcopy /y $(TargetPath) &quot;C:\src\valor\Unity\Assets\bin\Debug\netstandard2.0&quot;" />
   </Target>

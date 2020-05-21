@@ -1,4 +1,4 @@
-﻿// Based on https://blog.rsuter.com/advanced-newtonsoft-json-dynamically-rename-or-ignore-properties-without-changing-the-serialized-class/
+﻿// Based on https://blog.rsuter.com/advanced-newtonsoft-json-dynamically-rename-or-ignore-properties-without-changing-the-serialized-class/ which says to be based on an NSwag implementation, license MIT  https://github.com/RicoSuter/NSwag/blob/master/LICENSE.md
 using Microsoft.Extensions.Configuration;
 using LionFire.FlexObjects;
 using LionFire.Applications.Hosting;

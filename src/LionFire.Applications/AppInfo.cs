@@ -58,6 +58,8 @@ namespace LionFire.Applications
 
         #endregion
 
+        public string FullAppId => OrgDomain.Split('.').Reverse().Concat(AppId.Split('.')).Aggregate((x, y) => $"{x}.{y}");
+
         #region Identity Properties
 
         /// <summary>
@@ -128,12 +130,19 @@ namespace LionFire.Applications
         }
         private string devProjectName;
 
-        public string ProgramDisplayName
+        public string AppDisplayName
         {
             get => appDisplayName ?? AppName;
             set => appDisplayName = value;
         }
+
         private string appDisplayName;
+        public string AppLongDisplayName
+        {
+            get => appLongDisplayName ?? AppName;
+            set => appLongDisplayName = value;
+        }
+        private string appLongDisplayName;
 
 
         // FUTURE: Allow multiple data dirs

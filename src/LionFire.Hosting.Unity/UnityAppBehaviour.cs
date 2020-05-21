@@ -1,4 +1,5 @@
 ﻿using Microsoft.Extensions.Configuration;
+using LionFire.Services;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Hosting.Internal;
@@ -70,6 +71,7 @@ namespace LionFire.Hosting.Unity
                 Config = CreateConfigurationBuilder().Build();
 
                 var hostBuilder = CreateHostBuilder()
+                    .AddUnityRuntime(this)
                     .ConfigureServices((ctx, services) =>
                     {
                         services

@@ -5,4 +5,12 @@
     <UseWPF>true</UseWPF>
   </PropertyGroup>
 
+  <ItemGroup>
+    <Compile Include="..\..\..\valor\Dycen\LionFire.Avalon\Geometry\CogwheelShape.cs" Link="Geometry\CogwheelShape.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Geometry\" />
+  </ItemGroup>
+
 </Project>
