@@ -13,4 +13,44 @@
     <Folder Include="Geometry\" />
   </ItemGroup>
 
+  <ItemGroup>
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="3.1.4" />
+    <PackageReference Include="WPFTransitionals" Version="1.0.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\LionFire.Applications.Extensions\LionFire.Applications.Extensions.csproj" />
+    <ProjectReference Include="..\LionFire.UI\LionFire.UI.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Update="Presenter\ShellContentPresenter.xaml.cs">
+      <DependentUpon>ShellContentPresenter.xaml</DependentUpon>
+    </Compile>
+    <Compile Update="SplashScreen\SplashWindow.xaml.cs">
+      <DependentUpon>SplashWindow.xaml</DependentUpon>
+    </Compile>
+    <Compile Update="Windowing\FullScreenShellWindow.xaml.cs">
+      <DependentUpon>FullScreenShellWindow.xaml</DependentUpon>
+    </Compile>
+    <Compile Update="Windowing\ShellWindow.xaml.cs">
+      <DependentUpon>ShellWindow.xaml</DependentUpon>
+    </Compile>
+  </ItemGroup>
+
+  <ItemGroup>
+    <Page Update="Presenter\ShellContentPresenter.xaml">
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Update="SplashScreen\SplashWindow.xaml">
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Update="Windowing\FullScreenShellWindow.xaml">
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Update="Windowing\ShellWindow.xaml">
+      <SubType>Designer</SubType>
+    </Page>
+  </ItemGroup>
+
 </Project>

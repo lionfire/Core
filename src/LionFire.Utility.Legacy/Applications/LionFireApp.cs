@@ -51,6 +51,7 @@ namespace LionFire.Applications
     {
         #region (Static) Current
 
+        // TODO: Use DependencyContext like LionFireShell?
         public static LionFireApp Instance => Current;  // Prefer this one over Current?
         public static LionFireApp Current
         {
@@ -70,11 +71,13 @@ namespace LionFire.Applications
 
         #endregion
 
+     
+
 #if TOPORT // maybe
         //public static int TraceStackDepth { get; set; } // UNUSED
         IService IHasService.Service => this;
 
-        #region EventAggregator
+    #region EventAggregator
 
         public IEventAggregator EventAggregator
         {
@@ -88,16 +91,16 @@ namespace LionFire.Applications
         }
         private IEventAggregator eventAggregator;
 
-        #endregion
+    #endregion
 
-        #region Registration Codes
+    #region Registration Codes
 
         public virtual string TryRegister(string key) => null;
 
-        #endregion
+    #endregion
 
 
-        #region Dispatcher
+    #region Dispatcher
 
         public static Dispatcher DefaultDispatcher
         {
@@ -121,9 +124,9 @@ namespace LionFire.Applications
         }
         private Dispatcher dispatcher;
 
-        #endregion
+    #endregion
 
-        #region Configuration
+    #region Configuration
 
         public virtual string DefaultAppName
         {
@@ -164,11 +167,11 @@ namespace LionFire.Applications
             }
         }
 
-        #endregion
+    #endregion
 
-        #region AutoUpdate
+    #region AutoUpdate
 
-        #region Configuration
+    #region Configuration
 
         // TODO: Get from user config, allow user to change somehow
         public string CurrentReleaseChannel = "Prealpha";
@@ -230,7 +233,7 @@ namespace LionFire.Applications
             }
         }
 
-        #region URLs
+    #region URLs
 
         //public string UpdateUrl = "http://lionfire.ca/files/test/feed.xml";
 
@@ -243,16 +246,16 @@ namespace LionFire.Applications
             //"http://files.lionfire.ca/files/V/",
         };
 
-        #endregion
+    #endregion
 
-        #endregion
+    #endregion
 
-        #endregion
+    #endregion
 
 #endif
-        #region Configuration Extras
+    #region Configuration Extras
 
-        public virtual bool IsVosEnabled => true;
+    public virtual bool IsVosEnabled => true;
         public virtual bool IsPackagesEnabled => true;
         public virtual bool IsBugReporterEnabled => true;
 

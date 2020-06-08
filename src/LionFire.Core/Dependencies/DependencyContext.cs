@@ -146,13 +146,17 @@ namespace LionFire.Dependencies
 
         #endregion
 
-        public T GetService<T>(IServiceProvider serviceProvider = null) => (T)GetService(typeof(T), serviceProvider);
+#nullable enable
+        public T? GetService<T>(IServiceProvider? serviceProvider = null) where T : class => (T)GetService(typeof(T), serviceProvider);
+        public T GetRequiredService<T>(IServiceProvider? serviceProvider = null) => (T)GetService(typeof(T), serviceProvider) ?? throw new DependencyMissingException(typeof(T).FullName);
 
-        public IEnumerable<T> GetServices<T>(IServiceProvider serviceProvider = null)
+        public IEnumerable<T>? GetServices<T>(IServiceProvider? serviceProvider = null)
+            where T : class
         {
-            var singleResult = GetService<T>();
+            var singleResult = GetService<T>(serviceProvider);
             return singleResult != null ? (new T[] { singleResult }) : GetService<IEnumerable<T>>();
         }
+#nullable disable
 
 
         //public TInterface GetServiceOrSingleton<TInterface>(IServiceProvider serviceProvider = null, bool createIfMissing = DefaultCreateIfMissing, Func<TInterface> singletonFactory = null)

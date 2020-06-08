@@ -45,6 +45,24 @@ namespace LionFire
                 throw new NotImplementedException("TODO: Implement - https://docs.microsoft.com/en-us/dotnet/core/tutorials/libraries");
 #endif
 
+        #region Make DEBUG / TRACE define constants visible to application
+
+        // This only applies to LionFireEnvironment.  FUTURE: try to determine for each DLL somehow
+//        public const bool IsDebug =
+//#if DEBUG
+// true;
+//#else
+// false;
+//#endif
+
+//        public const bool IsTrace =
+//#if TRACE
+// true;
+//#else
+// false;
+//#endif
+
+        #endregion
 
         #endregion
 
@@ -169,7 +187,7 @@ namespace LionFire
 
         public static class Compilation
         {
-            public static string BuildType { get{ throw new NotImplementedException(); } set { } }
+            public static string BuildType { get { throw new NotImplementedException(); } set { } }
         }
     }
 }

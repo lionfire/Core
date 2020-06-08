@@ -21,6 +21,7 @@ namespace LionFire
         #region Static Accessor
 
         //public static InstanceStackRegistrar Instance => ManualSingleton<InstanceStackRegistrar>.Instance;
+        public static InstanceStackRegistrar Instance => Default;
         public static InstanceStackRegistrar Default => ServiceLocator.Get<InstanceStackRegistrar>();
 
         #endregion

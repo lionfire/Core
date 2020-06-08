@@ -23,7 +23,7 @@ namespace LionFire.Applications
         , IMultiTyped
          , IHasService
     {
-        LionFireAppCapabilities Capabilities { get; }
+        //LionFireAppCapabilities Capabilities { get; }
 
         ILionFireShell Shell { get; set; }
 

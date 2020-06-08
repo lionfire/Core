@@ -1,4 +1,5 @@
-﻿using LionFire.Applications.Hosting;
+﻿#if OLD
+using LionFire.Applications.Hosting;
 using LionFire.Structures;
 using System;
 using System.Collections.Generic;
@@ -14,3 +15,5 @@ namespace LionFire.Applications
         public AppConfigurer(Action<IAppHost> configMethod) : base(configMethod) { }
     }
 }
+
+#endif

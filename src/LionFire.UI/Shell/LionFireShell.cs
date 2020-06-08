@@ -9,12 +9,11 @@ using UnityEngine;
 #endif
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace LionFire
 {
-
-
 
 #if UNITY
     public class AppWaiter : MonoBehaviour
@@ -52,13 +51,11 @@ namespace LionFire
                 yield break;
             }
         }
-
     }
 #endif
 
     public static class LionFireShell
     {
-
         #region Instance
 
         public static ILionFireShell Instance
@@ -118,95 +115,21 @@ namespace LionFire
 
             if (onAppReady != null) { onAppReady(); }
 #else
-        if (onAppReady != null) { onAppReady(); }
+            if (onAppReady != null) { onAppReady(); }
 #endif
 
         }
-
-
-
     }
 }
+
 namespace LionFire.Shell
 {
-
-
-    public abstract class LionFireShellMinimalBase
+    public class LionFireShell : ILionFireShell
     {
-        #region Info
+        public virtual IShellContentPresenter MainPresenter => null;
 
-        public virtual LionFireAppCapabilities Capabilities
-        {
-            get { return LionFireAppCapabilities.Shell; }
-        }
-        public virtual bool ProvidesRunLoop { get { return false; } }
-
-        #endregion
-
-        #region Ontology
-
-        // LEGACY - Don't use this, use DependencyContext instead 
-        //public virtual ILionFireApp App
-        //{
-        //    get { return LionFireApp.Instance; }
-        //}
-
-        #endregion
-
-        public LionFireShellMinimalBase()
-        {
-            LionFireShell.Instance = (ILionFireShell)this;
-        }
-
-        #region Self-Updating
-
-        /// <summary>
-        /// If returns false, suspend App initialization.  Shell must call LionFireApp.ResumeInit()
-        /// </summary>
-        /// <returns>false if the updater needs to restart.  In this case, the app initialization
-        /// should cease.</returns>
-        public virtual bool AskUserToUpdate() // MOVE to separate interface?
-        {
-            return true; // Continue with app initialization
-        }
-
-        #endregion
-
-        #region Invoke
-
-        public virtual void Invoke(Action action)
-        {
-            action();
-        }
-        public virtual object Invoke(Func<object> func)
-        {
-            return func();
-        }
-
-        public virtual void BeginInvoke(Action action)
-        {
-            System.Threading.ThreadPool.QueueUserWorkItem(new System.Threading.WaitCallback(x => action()));
-        }
-
-        #endregion
-
-        #region Presenter
-
-        public virtual IShellContentPresenter MainPresenter
-        {
-            get { return null; }
-        }
-
-        #endregion
-
-        #region Exception Handling
-
-        public virtual bool AskUserToContinueOnException(Exception exception)
-        {
-            return true;
-        }
-
-        #endregion
+        public event Action Closing;
+        public event Action Closed;
 
         public virtual void Close()
         {
@@ -214,27 +137,34 @@ namespace LionFire.Shell
             {
                 MainPresenter.Close();
             }
-            else {
+            else
+            {
                 System.Diagnostics.Process.GetCurrentProcess().CloseMainWindow();
             }
         }
+
+        public Task StartAsync(CancellationToken cancellationToken) => throw new NotImplementedException();
+        public Task StopAsync(CancellationToken cancellationToken) => throw new NotImplementedException();
+        public bool AskUserToUpdate() => throw new NotImplementedException();
+        public bool AskUserToContinueOnException(Exception exception) => throw new NotImplementedException();
+        public Task Stop(CancellationToken? cancellationToken = null) => throw new NotImplementedException();
+
         public bool IsEditingText { get; set; }
-        public abstract IEventAggregator EventAggregator { get; set; }
+        //public abstract IEventAggregator EventAggregator { get; set; }
+
+        //    #region Events
+
+        //    public override IEventAggregator EventAggregator
+        //    {
+        //        get { return eventAggregator; }
+        //        set { eventAggregator = value; }
+        //    }
+        //    private IEventAggregator eventAggregator = new EventAggregator();
+
+        //    #endregion
+
+        //    public event Action Closing;
+        //    public event Action Closed;
+        //}
     }
-    public class LionFireShellBase : LionFireShellMinimalBase, ILionFireShell
-    {
-
-        #region Events
-
-        public override IEventAggregator EventAggregator
-        {
-            get { return eventAggregator; }
-            set { eventAggregator = value; }
-        }
-        private IEventAggregator eventAggregator = new EventAggregator();
-
-        #endregion
-
-    }
-
 }

@@ -15,7 +15,8 @@ namespace LionFire.Vos.Blazor
         public static IHostBuilder CreateHostBuilder(string[] args) =>
             VosHost.Create(args, defaultBuilder: true)
             //Host.CreateDefaultBuilder(args)
-                //.AddPersisters()
+            //.AddPersisters()
+                .UseDependencyContext()
             .ConfigureServices(services =>
             {
                 services
@@ -27,4 +28,4 @@ namespace LionFire.Vos.Blazor
                     webBuilder.UseStartup<Startup>();
                 });
     }
-
+}

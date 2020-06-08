@@ -225,7 +225,8 @@ namespace LionFire.Collections
                     IDispatcher dispatcher = del.Target.TryGetDispatcher();
                     if (dispatcher != null && dispatcher.IsInvokeRequired)
                     {
-                        dispatcher.Invoke(del, new object[] { this, e });
+                        dispatcher.Invoke(() => del(this, e));
+                        //dispatcher.Invoke(del, new object[] { this, e });  // OLD
                         continue;
                     }
 

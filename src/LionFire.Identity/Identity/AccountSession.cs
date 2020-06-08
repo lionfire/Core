@@ -14,6 +14,19 @@ namespace LionFire.Identity
     /// </summary>
     public class AccountSession
     {
+        //public static Vob AccountVob
+        //{
+        //    get
+        //    {
+        //        throw new NotImplementedException("Use another way");
+        //        //if (ValorApp.Current.AccountSession == null) return null;
+        //        //if (!ValorApp.Current.AccountSession.IsLoggedIn) return null;
+
+        //        //// OPTIMIZE ?
+        //        //return VosApp.Instance.Accounts[ValorApp.Current.AccountSession.Name];
+        //    }
+        //} //private static Vob accountData;
+
         //public DateTime SessionConfirmed { get; set; }
 
         #region Login State

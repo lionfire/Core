@@ -5,6 +5,7 @@ using LionFire.Persistence;
 using LionFire.Shell;
 using LionFire.Types;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -16,8 +17,19 @@ using System.Threading.Tasks;
 namespace LionFire.Applications
 {
 
-    public class LionFireAppBase : MultiType
+    public class LionFireAppBase //: MultiType
     {
+        protected AppOptions Options => optionsMonitor.CurrentValue;
+        IOptionsMonitor<AppOptions> optionsMonitor;
+
+        public void NewInit() // TOPORT
+        {
+            if (Options.PerformanceMode == PerformanceMode.HighPerformance)
+            {
+                System.Runtime.GCSettings.LatencyMode = System.Runtime.GCLatencyMode.SustainedLowLatency;
+            }
+        }
+
         // REFACTOR - move this to a decorator
 
         #region StartTime

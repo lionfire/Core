@@ -8,9 +8,12 @@ using ManualResetEventSlim = System.Threading.ManualResetEvent; // REVIEW
 #endif
 using System.Threading.Tasks;
 using LionFire.Shell;
+using LionFire.Threading;
 
 namespace LionFire.Alerting
 {
+    // TODO: Use DI instead of static
+
     public static class Alerter
     {
         public static bool ShowExceptionMessage = true;
@@ -97,7 +100,7 @@ namespace LionFire.Alerting
             ManualResetEventSlim ev = new ManualResetEventSlim();
             bool result = false;
 
-            DependencyContext.Current.GetService<ILionFireShell>().BeginInvoke(new Action(() =>
+            DependencyContext.Current.GetService<IDispatcher>().BeginInvoke(new Action(() =>
             //var x = LionFire.Applications.LionFireApp.DefaultDispatcher.BeginInvoke(new Action(() =>
             {
 
@@ -112,7 +115,7 @@ namespace LionFire.Alerting
                     Buttons = new AlertButton[] { new AlertButton("Yes", () => { result = true; ev.Set(); }), new AlertButton("No", () => ev.Set()) },
                 };
                 Alert(alert);
-            }));
+            })).FireAndForget();
 
             await Task.Run(() =>
                 {
@@ -145,7 +148,7 @@ namespace LionFire.Alerting
             //bool result = false;
             string result = null;
 
-           DependencyContext.Current.GetService<ILionFireShell>().BeginInvoke(new Action(() =>
+           DependencyContext.Current.GetService<IDispatcher>().BeginInvoke(new Action(() =>
            {
                DialogResult dialogResult = new DialogResult()
                {
@@ -164,7 +167,9 @@ namespace LionFire.Alerting
                    Buttons = new AlertButton[] { new AlertButton(okButtonText, () => { result = dialogResult.TextEntry; ev.Set(); }), new AlertButton("Cancel", () => ev.Set()) },
                };
                Alert(alert);
-           }));
+           })).FireAndForget();
+
+            // REVIEW - FireAndForget then wait for response?  Does that actually work?
 
             await Task.Run(() =>
             {

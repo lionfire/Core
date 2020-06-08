@@ -1,11 +1,23 @@
-﻿using System;
+﻿using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Logging;
+using System;
 using System.Collections.Generic;
+using System.ComponentModel;
+using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace LionFire.Applications.Splash
 {
-    public class SplashService : ISplashService
+
+    public class SplashService : ISplashService, IHostedService
     {
         Stack<SplashDisposable> stack = new Stack<SplashDisposable>();
+
+        public SplashService(IEnumerable<ISplashView> splashViews)
+        {
+            SplashViews = splashViews;
+        }
 
         #region ISplashService
 
@@ -17,7 +29,22 @@ namespace LionFire.Applications.Splash
             return d;
         }
 
-        public string Message { get; private set; }
+        #endregion
+
+        #region Message
+
+        public string Message
+        {
+            get => message;
+            set
+            {
+                if (message == value) return;
+                message = value;
+                OnPropertyChanged(nameof(Message));
+                MessageChanged?.Invoke(message);
+            }
+        }
+        private string message;
         public event Action<string> MessageChanged;
 
         #endregion
@@ -38,6 +65,25 @@ namespace LionFire.Applications.Splash
                 Message = "";
             }
             if (oldMessage != Message) MessageChanged?.Invoke(Message);
+        }
+
+        public Task StartAsync(CancellationToken cancellationToken)
+            => Task.WhenAll(SplashViews.Select(async view =>
+            {
+                view.SplashService = this;
+                await view.StartAsync(cancellationToken).ConfigureAwait(false);
+            }));
+
+        public IEnumerable<ISplashView> SplashViews { get; }
+
+        public Task StopAsync(CancellationToken cancellationToken)
+        {
+            foreach(var view in SplashViews)
+            {
+                view.SplashService = null;
+                view.Dispose();
+            }
+            return Task.CompletedTask;
         }
 
         #region Internal class
@@ -62,7 +108,60 @@ namespace LionFire.Applications.Splash
         }
 
         #endregion
+
+        // TOPORT
+        //#region Splash
+
+        //#region SplashMessage
+
+        //public string SplashMessage
+        //{
+        //    get { return splashMessage; }
+        //    set
+        //    {
+        //        if (splashMessage == value) return;
+        //        splashMessage = value;
+        //        lSplash.Debug("[splash] " + splashMessage);
+        //        OnPropertyChanged("SplashMessage");
+        //    }
+        //}
+        //private string splashMessage;
+
+        //#endregion
+
+        //#region SplashProgress
+
+        //public double SplashProgress
+        //{
+        //    get { return splashProgress; }
+        //    set
+        //    {
+        //        if (splashProgress == value) return;
+        //        splashProgress = value;
+        //        //lSplash.Trace("[splash %] " + splashProgress.ToString());
+        //        OnPropertyChanged("SplashProgress");
+        //    }
+        //}
+        //private double splashProgress;
+
+        //#endregion
+
+        //private static ILogger lSplash { get; } = Log.Get("LionFire.Applications.LionFireApp.Splash");
+
+        #region Misc
+
+
+        #region INotifyPropertyChanged Implementation
+
+        public event PropertyChangedEventHandler PropertyChanged;
+
+        protected void OnPropertyChanged(string propertyName) => PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+
+        #endregion
+
+        #endregion
     }
+
 
 
 }

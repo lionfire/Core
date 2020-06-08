@@ -7,20 +7,15 @@ namespace LionFire.Threading
     public interface IDispatcher
     {
         bool IsInvokeRequired { get; }
-        void Invoke(Delegate p, params object[] args);
-        Task BeginInvoke(Delegate p, params object[] args);
-    }
+        //void Invoke(Delegate p, params object[] args); // From where?
+        //Task BeginInvoke(Delegate p, params object[] args);
 
+        // From ILionFireShell - TODO
+        void Invoke(Action action);
+        object Invoke(Func<object> func);
+        Task BeginInvoke(Action action);
+        Task<object> BeginInvoke(Func<object> func);
 
-    public static class IDispatcherExtensions
-    {
-        public static void Invoke(this IDispatcher dispatcher, Action a)
-        {
-            dispatcher.Invoke(new Action(a));
-        }
-        public static bool CheckAccess(this IDispatcher dispatcher)
-        {
-            return dispatcher.IsInvokeRequired;
-        }
+        event EventHandler<DispatcherUnhandledExceptionEventArgs> UnhandledException;
     }
 }

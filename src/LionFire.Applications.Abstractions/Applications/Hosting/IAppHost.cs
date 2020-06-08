@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
 using LionFire.Applications.Hosting;
 using LionFire.Execution;
-using LionFire.MultiTyping;
+//using LionFire.MultiTyping;
 using LionFire.Execution.Composition;
 using LionFire.Structures;
 using LionFire.Composables;
@@ -20,7 +20,7 @@ namespace LionFire.Applications.Hosting
     // - IComposable (children & multitype)
     // Can
     //  - Init/Run/Query result/Cleanup
-    [MultiTypeFromProperties]
+    //[MultiTypeFromProperties]
     public interface IAppHost : 
         //IInitializable,
         IComposable<IAppHost>

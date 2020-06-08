@@ -40,7 +40,8 @@ namespace LionFire.Collections
 
                     if (dispatcher != null && dispatcher.IsInvokeRequired)
                     {
-                        dispatcher.Invoke(del, new object[] { sender, e });
+                        dispatcher.Invoke(() => del(sender, e));
+                        //dispatcher.Invoke(del, new object[] { sender, e }); // OLD
                         continue;
                     }
 
@@ -107,7 +108,8 @@ namespace LionFire.Collections
 
                     if (dispatcher != null && dispatcher.IsInvokeRequired)
                     {
-                        dispatcher.BeginInvoke(del, new object[] { args });
+                        dispatcher.BeginInvoke(() => del(args));
+                        //dispatcher.BeginInvoke(del, new object[] { args }); // OLD
                         continue;
                     }
 

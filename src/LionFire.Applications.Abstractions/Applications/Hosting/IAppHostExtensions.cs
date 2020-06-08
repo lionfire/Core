@@ -86,7 +86,6 @@ namespace LionFire.Applications.Hosting
             return host;
         }
 
-
         public static IAppHost AddSingleton<TService, TImplementation>(this IAppHost host, Func<IServiceProvider, TImplementation> implementationFactory)
             where TService : class
             where TImplementation : class, TService
@@ -187,7 +186,6 @@ namespace LionFire.Applications.Hosting
             //services.TryAddEnumerableSingleton(new AppInitializer(initialize));
             //return services;
         }
-
 
         #endregion
 

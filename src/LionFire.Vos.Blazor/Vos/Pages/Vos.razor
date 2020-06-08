@@ -1,11 +1,12 @@
 ﻿@page "/"
+@*@page "/vos"*@
 @*@page "/vos/{path}"
     @page "/vos/{path}/{path2}"
     @page "/vos/{path}/{path2}/{path3}"*@
 
 @using LionFire.Referencing
 @using LionFire.Threading
-@inject IRootManager  rootManager
+@inject IVos  rootManager
 
 
 @if (listings == null)
@@ -15,7 +16,7 @@
 else
 {
     <h3>af</h3>
-    <button @onclick="@(e=> GoToPath(".."))"><span class="oi oi-arrow-top"/></button>
+    <button @onclick="@(e=> GoToPath(".."))"><span class="oi oi-arrow-top" /></button>
     <div>@Path</div>
 
     <table class="table">
@@ -42,7 +43,7 @@ else
 @code {
     public string Path { get; set; } = "/temp";
 
-    private Listing[] listings;
+    private Listing<object>[] listings;
 
     protected override Task OnInitializedAsync()
     {
@@ -65,9 +66,9 @@ else
     {
         var root = rootManager.Get();
 
-        var hList = root[Path].Reference.GetListHandle();
+        var hList = ((IReference)root[Path].Reference).GetListHandle();
         var result = await hList.Resolve();
-        listings = result.Value.Value?.ToArray() ?? Array.Empty<Listing>();
+        listings = result.Value.Value?.ToArray() ?? Array.Empty<Listing<object>>();
 
     }
 
