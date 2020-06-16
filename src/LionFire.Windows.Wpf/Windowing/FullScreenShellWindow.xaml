@@ -14,10 +14,10 @@
     <ls:ShellWindowBase.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
-                <!--<lfa:SharedResourceDictionary Source="pack://application:,,,/LionFire.Avalon;component/Resources/GlassButton.xaml"/>-->
+                <!--<lfa:SharedResourceDictionary Source="pack://application:,,,/LionFire.Windows.Wpf;component/Resources/GlassButton.xaml"/>-->
                 <!--<lfa:SharedResourceDictionary Source="../Resources/GlassButton.xaml"/>-->
-                <lfaL:SharedResourceDictionary Source="pack://application:,,,/LionFire.Avalon;component/Resources/Colours.xaml"/>
-                <lfaL:SharedResourceDictionary Source="pack://application:,,,/LionFire.Avalon;component/Resources/Windowing.xaml"/>
+                <lfaL:SharedResourceDictionary Source="pack://application:,,,/LionFire.Windows.Wpf;component/Resources/Colours.xaml"/>
+                <lfaL:SharedResourceDictionary Source="pack://application:,,,/LionFire.Windows.Wpf;component/Resources/Windowing.xaml"/>
             </ResourceDictionary.MergedDictionaries>
 
             <lfaL:BoolToVisibilityConverter x:Key="BVC"/>

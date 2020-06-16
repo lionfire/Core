@@ -17,9 +17,14 @@ namespace LionFire.Shell
         void Close();
         bool DoCloseTab();
         bool IsActive { get; }
+        bool HasTabs { get; }
+        object TopControl { get; }
+
+        event Action<bool> TopmostChanged;
 
         event Action CurrentTabNameChanged;
 
         bool HideModalControl(string controlName);
+        void BringToFront();
     }
 }

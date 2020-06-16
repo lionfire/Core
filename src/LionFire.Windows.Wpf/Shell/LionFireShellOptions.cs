@@ -3,6 +3,11 @@
     
     public class LionFireShellOptions
     {
+        /// <summary>
+        /// If true, Shell will invoke its own StartAsync method after IHostApplicationLifetime.ApplicationStarted fires.
+        /// </summary>
+        public bool AutoStart { get; set; } = false;
+
         public bool MinimizeAllOnFullScreen { get; set; } = true; 
         public bool UndoMinimizeAllOnRestore { get; set; } = true;
 

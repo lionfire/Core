@@ -2,7 +2,20 @@
 
 namespace LionFire.Applications
 {
-    public class DevShell
+    public interface IDevShell
+    {
+        bool DebugUIVisible { get; set; }
+        event Action DebugUIVisibleChanged;
+    }
+
+    public class DisabledDevShell : IDevShell
+    {
+        public bool DebugUIVisible { get => false; set { } }
+
+        public event Action DebugUIVisibleChanged;
+    }
+
+    public class DevShell : IDevShell
     {
         #region DebugUIVisible
 

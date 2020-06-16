@@ -24,7 +24,7 @@ namespace LionFire.Shell
 
         #region Derived
 
-        protected LionFireShellOptions ShellOptions => shellContentPresenter.Shell.ShellOptions;
+        protected LionFireShellOptions ShellOptions => shellContentPresenter.ShellPresenter.Shell.ShellOptions;
 
         #endregion
 
@@ -42,7 +42,7 @@ namespace LionFire.Shell
         {
             this.shellContentPresenter = shellContentPresenter;
 
-            WpfShell.Instance.TopmostChanged += new Action<bool>(Instance_TopmostChanged);
+            WpfShell.Instance.ShellPresenter.MainPresenter.TopmostChanged += new Action<bool>(Instance_TopmostChanged);
             this.Loaded += new RoutedEventHandler(ShellWindowBase_Loaded);
 
             this.Closing += ShellWindowBase_Closing;
@@ -54,16 +54,15 @@ namespace LionFire.Shell
 
         void ShellWindowBase_ContentRendered(object sender, EventArgs e)
         {
-            this.Topmost = WpfShell.Instance.Topmost;
+            this.Topmost = shellContentPresenter.Topmost;
             this.Activate();
         }
 
         void ShellWindowBase_Initialized(object sender, EventArgs e)
         {
-            this.Topmost = true;
+            //this.Topmost = true; // REVIEW - why was this here?
             MoveToForeground.DoOnProcess(Process.GetCurrentProcess());
         }
-
         
         void ShellWindowBase_Closing(object sender, System.ComponentModel.CancelEventArgs e)
         {
@@ -86,14 +85,10 @@ namespace LionFire.Shell
             //Topmost = true;  
             //Topmost = false; 
             //Focus();         
-            
         }
-
-        
 
         protected void restoreButton_Click(object sender, RoutedEventArgs e)
         {
-
             Restore();
         }
 
@@ -101,8 +96,7 @@ namespace LionFire.Shell
 
         protected void topmostButton_Click(object sender, RoutedEventArgs e)
         {
-            WpfShell.Instance.Topmost ^= true;
-
+            this.shellContentPresenter.Topmost ^= true;
         }
 
         private void minimizeButton_Click(object sender, RoutedEventArgs e)
@@ -124,7 +118,8 @@ namespace LionFire.Shell
 
         protected void debugButton_Click(object sender, RoutedEventArgs e)
         {
-            WpfShell.Instance.IsDebugWindowVisible ^= true;
+            // TODO
+            //WpfShell.Instance.IsDebugWindowVisible ^= true;
         }
         protected void menuButton_Click(object sender, RoutedEventArgs e)
         {
@@ -147,8 +142,8 @@ namespace LionFire.Shell
                     TopmostEllipse1 = (Ellipse)this.FindName("TopmostEllipse1");
                 }
 
-                if (TopmostEllipse2 != null) TopmostEllipse2.Fill = WpfShell.Instance.Topmost ? topmostBrush1 : topmostBrush2;
-                if (TopmostEllipse1 != null) TopmostEllipse1.Fill = !WpfShell.Instance.Topmost ? topmostBrush1 : topmostBrush2;
+                if (TopmostEllipse2 != null) TopmostEllipse2.Fill = shellContentPresenter.Topmost ? topmostBrush1 : topmostBrush2;
+                if (TopmostEllipse1 != null) TopmostEllipse1.Fill = !shellContentPresenter.Topmost ? topmostBrush1 : topmostBrush2;
 
                 //  MOVE to XAML?
                 //topmostButton.Background = LionFireShell.Instance.Topmost

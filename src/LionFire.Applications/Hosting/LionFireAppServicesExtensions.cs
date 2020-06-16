@@ -12,6 +12,7 @@ namespace LionFire.Services
         {
             services
                 .AddSingleton<ILionFireApp, LionFireApp>()
+                .AddHostedService(p => p.GetRequiredService<ILionFireApp>())
                 .AddHostedService<ApplicationTelemetry>()
                 ;
 

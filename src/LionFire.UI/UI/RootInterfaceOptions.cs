@@ -1,9 +1,12 @@
 ﻿using System;
+using System.Collections.Generic;
 
 namespace LionFire.UI
 {
-    public class RootInterfaceOptions
+
+    public class UIReference
     {
+
         /// <summary>
         /// Must be a UI type that the ILionFireShell is capable of showing, or else a IHostedService
         /// </summary>
@@ -19,5 +22,10 @@ namespace LionFire.UI
         public Type RootViewModelType { get; set; }
 
         public object RootViewModel { get; set; }
+    }
+
+    public class RootInterfaceOptions
+    {
+        public List<UIReference> RootInterfaces { get; } = new List<UIReference>();
     }
 }

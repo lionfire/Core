@@ -188,6 +188,9 @@ namespace LionFire
         public static class Compilation
         {
             public static string BuildType { get { throw new NotImplementedException(); } set { } }
+
+            public static bool IsDebug => BuildType == "DEBUG";
+            public static bool IsTrace { get { throw new NotImplementedException(); } set { } }
         }
     }
 }

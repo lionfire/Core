@@ -146,7 +146,7 @@ namespace LionFire.Shell
             this.Loaded += new RoutedEventHandler(ShellWindow_Loaded);
             DependencyPropertyDescriptor.FromProperty(Window.WindowStateProperty, typeof(Window)).AddValueChanged(this, OnWindowStateChanged);
 
-            WpfShell.Instance.TopmostChanged += new Action<bool>(Instance_TopmostChanged);
+            WpfShell.Instance.ShellPresenter.MainPresenter.TopmostChanged += new Action<bool>(Instance_TopmostChanged);
 
             this.Title = DefaultTitle;
         }
@@ -331,7 +331,7 @@ namespace LionFire.Shell
 
                     MoveToForeground.DoOnProcess(Process.GetCurrentProcess().ProcessName);
 
-                    WpfShell.Instance.BringToFront();
+                    WpfShell.Instance.ShellPresenter.MainPresenter.BringToFront();
                 }));
             });
             

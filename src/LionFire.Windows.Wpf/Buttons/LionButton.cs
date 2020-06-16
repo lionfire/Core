@@ -38,10 +38,7 @@ namespace LionFire.Avalon
 
         public override void OnApplyTemplate()
         {
-            try
-            {
-                base.OnApplyTemplate();
-            }
+            try { base.OnApplyTemplate(); }
             catch { }
 
             try

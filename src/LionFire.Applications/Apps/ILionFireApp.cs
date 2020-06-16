@@ -18,7 +18,7 @@ namespace LionFire.Applications
     ///  - Auto-update
     ///  
     /// </summary>
-    public interface ILionFireApp : 
+    public interface ILionFireApp : IHostedService, 
         //INotifyClosing, 
         INotifyPropertyChanged
         //, IMultiTyped

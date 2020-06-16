@@ -22,8 +22,7 @@ namespace LionFire.Shell
     /// </summary>
     public interface ILionFireShell : IHostedService
         , IKeyboardShell
-        , IPresenterShell
-        , IRecoverableErrorShell
+        //, IRecoverableErrorShell
         //, INotifiesClosing
         //, IStoppable
         // TODO: Closing/Closed event interface? 

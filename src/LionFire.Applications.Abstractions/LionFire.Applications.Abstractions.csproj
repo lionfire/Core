@@ -15,7 +15,7 @@
     <PackageIconUrl>https://avatars3.githubusercontent.com/u/19334699?v=3&amp;s=200</PackageIconUrl>
     <RepositoryUrl>https://github.com/jaredthirsk/Core</RepositoryUrl>
     <PackageTags>DependencyInjection AppBuilder</PackageTags>
-    <NeutralLanguage>English (United States)</NeutralLanguage>
+    <NeutralLanguage>en-US</NeutralLanguage>
     <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
     <Authors>Jared Thirsk</Authors>
     <PackageReleaseNotes></PackageReleaseNotes>

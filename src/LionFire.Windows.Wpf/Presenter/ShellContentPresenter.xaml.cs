@@ -25,6 +25,8 @@ using Microsoft.Extensions.Logging;
 using System.Reflection;
 using LionFire.Ontology;
 using LionFire.UI;
+using System.Diagnostics;
+using LionFire.Shell.Wpf;
 
 namespace LionFire.Shell
 {
@@ -44,15 +46,17 @@ namespace LionFire.Shell
 
         #region Dependencies
 
-        public WpfShell Shell { get; }
+        public WpfShellPresenter ShellPresenter { get; }
+        ShellContentPresenter MainPresenter => ShellPresenter.MainPresenter;
 
         #endregion
 
-        public ShellContentPresenter(WpfShell shell)
+        public ShellContentPresenter(WpfShellPresenter shell, string name = null)
         {
+            if (name != null) { Name = name; }
             //ApartmentState ap = Thread.CurrentThread.GetApartmentState();
             InitializeComponent();
-            Shell = shell;
+            ShellPresenter = shell;
 
             //if (LionFireShellApp.Instance != null && !LionFireShellApp.Instance.GetType().IsAbstract)
             //{
@@ -67,13 +71,15 @@ namespace LionFire.Shell
             //}
         }
 
-#region Properties
+        #region Properties
 
-#region ShowMenuButton
+        #region ShowMenuButton
 
-        public bool ShowMenuButton {
+        public bool ShowMenuButton
+        {
             get { return showMenuButton; }
-            set {
+            set
+            {
                 if (showMenuButton == value) return;
                 showMenuButton = value;
                 OnPropertyChanged(nameof(ShowMenuButton));
@@ -87,6 +93,7 @@ namespace LionFire.Shell
 
         #endregion
 
+        object IShellContentPresenter.TopControl => topControl;
         public Panel TopControl => topControl;
 
         //public object MainContent
@@ -116,11 +123,76 @@ namespace LionFire.Shell
             }
         }
 
-#endregion
+        #endregion
 
-#region Window Management
+        #region Window Management
 
-#region Owning Window
+        #region IsTopmost
+
+        public bool Topmost
+        {
+            get => topmost;
+            set
+            {
+                if (topmost == value) return;
+                topmost = value;
+                OnTopmostChanged();
+                TopmostChanged?.Invoke(topmost);
+            }
+        }
+        private bool topmost = false;
+
+        public event Action<bool> TopmostChanged;
+
+        protected virtual void OnTopmostChanged()
+        {
+            if (!Dispatcher.CheckAccess()) Dispatcher.BeginInvoke(new Action(() => OnTopmostChanged()));
+            else
+            {
+                //this.MainWindow.Topmost = IsTopmost;
+                if (MainPresenter.HasFullScreenShellWindow)
+                {
+                    MainPresenter.FullScreenShellWindow.Topmost = this.topmost;
+                }
+                if (MainPresenter.HasShellWindow)
+                {
+                    MainPresenter.ShellWindow.Topmost = this.topmost;
+                }
+            }
+        }
+
+        #endregion
+
+        public void BringToFront()
+        {
+            if (!Dispatcher.CheckAccess()) Dispatcher.BeginInvoke(new Action(() => BringToFront()));
+            else
+            {
+                if (HasFullScreenShellWindow)
+                {
+                    FullScreenShellWindow.BringIntoView();
+                }
+                if (HasShellWindow)
+                {
+                    Window Window = ShellWindow;
+                    if (!Window.IsVisible) { Window.Show(); }
+
+                    if (Window.WindowState == WindowState.Minimized) { Window.WindowState = WindowState.Normal; }
+
+                    Window.Activate();
+                    Window.Topmost = true;  // important
+                    Window.Topmost = false; // important
+                    Window.Focus();         // important
+
+                    MoveToForeground.DoOnProcess(Process.GetCurrentProcess().ProcessName);
+
+                    ShellWindow.WindowState = WindowState.Normal;
+                    ShellWindow.BringIntoView();
+                }
+            }
+        }
+
+        #region Owning Window
 
         public bool IsFullScreen { get; internal set; }
 
@@ -132,12 +204,14 @@ namespace LionFire.Shell
                 if (shellWindow == null && !isClosing)
                 {
                     shellWindow = new ShellWindow(this);
-                    shellWindow.Topmost = WpfShell.Instance.Topmost;
+                    shellWindow.Topmost = MainPresenter?.Topmost ?? false;
                     shellWindow.Closed += new EventHandler(shellWindow_Closed);
                 }
                 return shellWindow;
             }
-        } public bool HasShellWindow { get { return shellWindow != null; } }
+        }
+
+        public bool HasShellWindow { get { return shellWindow != null; } }
 
         private FullScreenShellWindow fullScreenShellWindow;
         public FullScreenShellWindow FullScreenShellWindow
@@ -147,7 +221,7 @@ namespace LionFire.Shell
                 if (fullScreenShellWindow == null && !isClosing)
                 {
                     fullScreenShellWindow = new FullScreenShellWindow(this);
-                    fullScreenShellWindow.Topmost = WpfShell.Instance.Topmost;
+                    fullScreenShellWindow.Topmost = MainPresenter?.Topmost ?? false;
                     fullScreenShellWindow.Closed += new EventHandler(fullScreenShellWindow_Closed);
                 }
                 return fullScreenShellWindow;
@@ -183,10 +257,10 @@ namespace LionFire.Shell
             }
         }
 
-#endregion
+        #endregion
 
 
-#region Show / Hide
+        #region Show / Hide
         public bool IsPresenterEnabled = true;
 
         public void Show()
@@ -210,9 +284,9 @@ namespace LionFire.Shell
             }
         }
 
-#endregion
+        #endregion
 
-#region Close
+        #region Close
 
         public event Action<ShellContentPresenter> Closed;
         //public event Action<ShellContentPresenter> Closing;
@@ -274,9 +348,9 @@ namespace LionFire.Shell
                         if (sw != windowIsClosing)
                         {
                             sw.Close();
-                        }                        
+                        }
                     }
-                    
+
                 }
                 catch { }
             }
@@ -285,7 +359,7 @@ namespace LionFire.Shell
                 try
                 {
                     var fsw = fullScreenShellWindow;
-                    
+
                     if (fsw != null)
                     {
                         fullScreenShellWindow = null;
@@ -293,15 +367,15 @@ namespace LionFire.Shell
                         {
                             fsw.Close();
                         }
-                        
+
                     }
-                    
+
                 }
                 catch { }
             }
         }
 
-#endregion
+        #endregion
 
         public bool IsActive
         {
@@ -314,11 +388,11 @@ namespace LionFire.Shell
         }
 
 
-#endregion
+        #endregion
 
-#region Tab Management
+        #region Tab Management
 
-#region CurrentTabName
+        #region CurrentTabName
 
         public string CurrentTabName
         {
@@ -331,7 +405,8 @@ namespace LionFire.Shell
                 var ev = CurrentTabNameChanged;
                 if (ev != null) ev();
             }
-        } private string currentTabName;
+        }
+        private string currentTabName;
 
         public event Action CurrentTabNameChanged;
 
@@ -361,7 +436,7 @@ namespace LionFire.Shell
 
 
 
-#endregion
+        #endregion
 
         public bool Contains(string name)
         {
@@ -403,11 +478,11 @@ namespace LionFire.Shell
 
         public FrameworkElement ShowTab(string tabKey)
         {
-            
+
             this.ShellTabControl.SelectedItem = GetTabItem(tabKey);
 
             this.CurrentTabName = tabKey;
-            
+
             // MEMOPTIMIZE - Delete deselected tab, if marked transient
             var result = this.ShellTabControl.SelectedItem as FrameworkElement;
 
@@ -417,7 +492,7 @@ namespace LionFire.Shell
         }
 
 
-#region Current ViewName
+        #region Current ViewName
 
         public string CurrentTabViewName
         {
@@ -438,12 +513,12 @@ namespace LionFire.Shell
             return attr.Key;
         }
 
-#endregion
+        #endregion
 
 
-#endregion
+        #endregion
 
-#region Background Tab Methods
+        #region Background Tab Methods
 
         public bool ContainsBackground(string tabName)
         {
@@ -488,9 +563,9 @@ namespace LionFire.Shell
             // MEMOPTIMIZE - Delete deselected tab, if marked transient
         }
 
-#endregion
+        #endregion
 
-#region Routed Events
+        #region Routed Events
 
         private void OnBack(object sender, RoutedEventArgs args)
         {
@@ -498,7 +573,7 @@ namespace LionFire.Shell
             CloseTab();
         }
 
-      
+
         DocumentManager DocumentManager;
 
         private void OnSave(object sender, RoutedEventArgs args)
@@ -507,9 +582,9 @@ namespace LionFire.Shell
             DocumentManager?.Save();
         }
 
-#endregion
+        #endregion
 
-        
+
         public void SetDock(FrameworkElement fe, bool isVisible = true)
         {
 
@@ -550,19 +625,20 @@ namespace LionFire.Shell
         }
 
 
-#region ShowInTaskbar
+        #region ShowInTaskbar
 
         public bool ShowInTaskbar
         {
             get { return showInTaskbar; }
             set { showInTaskbar = value; }
-        } private bool showInTaskbar = true;
+        }
+        private bool showInTaskbar = true;
 
-#endregion
+        #endregion
 
         public string StackTopTabName { get; set; }
 
-#region Navigation Stack
+        #region Navigation Stack
 
         public bool HasTabs { get { return NavStack.Count > 0; } }
 
@@ -595,15 +671,15 @@ namespace LionFire.Shell
             if (docTab != null)
             {
                 var hasOptions = docTab as IHasDocumentTabOptions;
-                
+
                 DocumentTabOptions options = null;
-                if(hasOptions != null)
+                if (hasOptions != null)
                 {
                     options = hasOptions.DocumentTabOptions;
                 }
-                if(options == null)
+                if (options == null)
                 {
-                    options = DocumentTabOptions.Default; 
+                    options = DocumentTabOptions.Default;
                 }
 
                 if (options.SaveOnClose)
@@ -647,11 +723,11 @@ namespace LionFire.Shell
             return GetControl<T>(tabName, showControl: true);
         }
 
-#endregion
+        #endregion
 
-        
 
-#region Tab Management
+
+        #region Tab Management
 
         public T GetControl<T>(string tabName = null
             //, T frameworkElement = null
@@ -742,7 +818,7 @@ namespace LionFire.Shell
         //    this.AddTabItem(tabName, controlInstance);
         //}
 
-            
+
         public bool HideModalControl(string viewName)
         {
             var control = this.ModalControl.Content;
@@ -760,7 +836,7 @@ namespace LionFire.Shell
 
             return false;
         }
-        
+
 
         public void HideModalControl<T>() where T : FrameworkElement
         {
@@ -783,7 +859,7 @@ namespace LionFire.Shell
         //}
 
         // TODO: What happens 
-        
+
         public T ShowModalControl<T>(string tabName = null) where T : FrameworkElement
         {
             tabName = tabName ?? TabManager.GetTabNameFromType<T>();
@@ -872,7 +948,7 @@ namespace LionFire.Shell
             this.AddBackgroundTabItem(tabName, controlInstance);
         }
 
-#region OLD
+        #region OLD
 
         //public void ShowPresenterType(string presenterType)
         //{
@@ -890,24 +966,24 @@ namespace LionFire.Shell
         //    }
         //}
 
-#endregion
+        #endregion
 
-#endregion
+        #endregion
 
-#region Misc
+        #region Misc
 
         private static readonly ILogger l = Log.Get();
 
-#region INotifyPropertyChanged Implementation
+        #region INotifyPropertyChanged Implementation
 
         public event PropertyChangedEventHandler PropertyChanged;
 
         private void OnPropertyChanged(string propertyName) => PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
 
-#endregion
+        #endregion
 
-#endregion
+        #endregion
     }
 
-  
+
 }
