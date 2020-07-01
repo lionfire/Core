@@ -1,0 +1,94 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netcoreapp3.1</TargetFramework>
+    <!--<UseWPF>true</UseWPF>-->
+    <NeutralLanguage>en-US</NeutralLanguage>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+    <DefineConstants>TRACE;NOESIS</DefineConstants>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    <DefineConstants>TRACE;NOESIS</DefineConstants>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Remove="Alerting\**" />
+    <Compile Remove="Buttons\**" />
+    <Compile Remove="Commands\**" />
+    <Compile Remove="Controls\**" />
+    <Compile Remove="Converters\**" />
+    <Compile Remove="Geometry\**" />
+    <Compile Remove="Hosting\**" />
+    <Compile Remove="Licensing\**" />
+    <Compile Remove="Lists\**" />
+    <Compile Remove="Presenter\**" />
+    <Compile Remove="ResourceDictionaries\**" />
+    <Compile Remove="Resources\**" />
+    <Compile Remove="Shell\**" />
+    <Compile Remove="SplashScreen\**" />
+    <Compile Remove="Themes\**" />
+    <Compile Remove="ViewModels\**" />
+    <Compile Remove="Windowing\**" />
+    <Compile Remove="Zap\**" />
+    <EmbeddedResource Remove="Alerting\**" />
+    <EmbeddedResource Remove="Buttons\**" />
+    <EmbeddedResource Remove="Commands\**" />
+    <EmbeddedResource Remove="Controls\**" />
+    <EmbeddedResource Remove="Converters\**" />
+    <EmbeddedResource Remove="Geometry\**" />
+    <EmbeddedResource Remove="Hosting\**" />
+    <EmbeddedResource Remove="Licensing\**" />
+    <EmbeddedResource Remove="Lists\**" />
+    <EmbeddedResource Remove="Presenter\**" />
+    <EmbeddedResource Remove="ResourceDictionaries\**" />
+    <EmbeddedResource Remove="Resources\**" />
+    <EmbeddedResource Remove="Shell\**" />
+    <EmbeddedResource Remove="SplashScreen\**" />
+    <EmbeddedResource Remove="Themes\**" />
+    <EmbeddedResource Remove="ViewModels\**" />
+    <EmbeddedResource Remove="Windowing\**" />
+    <EmbeddedResource Remove="Zap\**" />
+    <None Remove="Alerting\**" />
+    <None Remove="Buttons\**" />
+    <None Remove="Commands\**" />
+    <None Remove="Controls\**" />
+    <None Remove="Converters\**" />
+    <None Remove="Geometry\**" />
+    <None Remove="Hosting\**" />
+    <None Remove="Licensing\**" />
+    <None Remove="Lists\**" />
+    <None Remove="Presenter\**" />
+    <None Remove="ResourceDictionaries\**" />
+    <None Remove="Resources\**" />
+    <None Remove="Shell\**" />
+    <None Remove="SplashScreen\**" />
+    <None Remove="Themes\**" />
+    <None Remove="ViewModels\**" />
+    <None Remove="Windowing\**" />
+    <None Remove="Zap\**" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Remove="AssemblyInfo.cs" />
+    <Compile Remove="InverseBooleanToVisibilityConverter.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="3.1.4" />
+    <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="3.1.4" />
+    <PackageReference Include="Noesis.GUI" Version="3.0.2" />
+    <PackageReference Include="PixelLab.Core" Version="6.0.2" />
+    <PackageReference Include="WPFTransitionals" Version="1.0.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\LionFire.Applications.Extensions\LionFire.Applications.Extensions.csproj" />
+    <ProjectReference Include="..\LionFire.Base\LionFire.Base.csproj" />
+    <ProjectReference Include="..\LionFire.Core.Extras\LionFire.Core.Extras.csproj" />
+    <ProjectReference Include="..\LionFire.UI\LionFire.UI.csproj" />
+  </ItemGroup>
+
+</Project>

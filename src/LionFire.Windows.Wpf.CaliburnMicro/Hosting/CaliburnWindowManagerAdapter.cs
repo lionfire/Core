@@ -3,7 +3,7 @@
 //using System.Collections.Generic;
 //using System.Threading.Tasks;
 
-//namespace LionFire.Windows.Wpf.CaliburnMicro.Hosting
+//namespace LionFire.UI.Wpf.Controls.CaliburnMicro.Hosting
 //{
 
 //    //public class CaliburnWindowManagerAdapter : LionFire.UI.IWindowManager

@@ -2,8 +2,19 @@
 
 namespace LionFire.Applications
 {
+    public interface IDevApp
+    {
+        bool IsDevMode { get; set; }
+    }
+    public class DevApp : IDevApp
+    {
+        public bool IsDevMode { get; set; }
+
+    }
+
     public interface IDevShell
     {
+
         bool DebugUIVisible { get; set; }
         event Action DebugUIVisibleChanged;
     }

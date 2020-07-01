@@ -12,7 +12,7 @@ namespace LionFire.Assets
     public interface IAsset : IAssetPathAware, IReferencable<IAssetReference>, ITreatAsType { }
 
     /// <summary>
-    /// An IAsset&lt;TValue&gt; is a type of object that is aware of its own AssetPath and TValue, and therefore has all the info it needs
+    /// An IAsset&lt;TValue&gt; is a type of object that is aware of its own AssetPath and TValue type, and therefore has all the info it needs
     /// to provide its own IAssetReference.
     /// </summary>
     public interface IAsset<out TValue> : IAsset

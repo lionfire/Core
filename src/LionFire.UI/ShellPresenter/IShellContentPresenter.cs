@@ -9,6 +9,8 @@ namespace LionFire.Shell
     {
         bool ShowMenuButton { get; set; }
         string CurrentTabViewName { get; }
+
+        void Show();
         void ShowTab(string tabKey);
         void ShowBackgroundTab(string tabKey);
 

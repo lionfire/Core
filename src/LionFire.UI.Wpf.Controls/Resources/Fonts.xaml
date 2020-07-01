@@ -1,0 +1,37 @@
+﻿<ResourceDictionary 
+  xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+  xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" 
+    xmlns:sys="clr-namespace:System;assembly=mscorlib"
+    xmlns:lfaL="clr-namespace:LionFire.Avalon"
+    xmlns:lfa="clr-namespace:LionFire.Avalon;assembly=LionFire.UI.Wpf.Controls"
+    >
+    <!--Fonts-->
+    
+    
+    <FontFamily x:Key="TitleFont">Arial Black</FontFamily>
+    <FontFamily x:Key="SmallTitleFont">Arial Black</FontFamily>
+    <FontFamily x:Key="LargeFont">Arial Black</FontFamily>
+    <FontFamily x:Key="MediumFont">Impact</FontFamily>
+    <FontFamily x:Key="SmallFont">Modern</FontFamily>
+    <FontFamily x:Key="FontFamily">Arial</FontFamily>
+
+    <!--Buttons-->
+    <FontFamily x:Key="LargeButtonFont" >Impact</FontFamily>
+
+    <FontFamily x:Key="HeavyButtonFont" >Moire ExtraBold</FontFamily>
+    <FontFamily x:Key="ButtonFont" >Moire</FontFamily>
+    <FontFamily x:Key="SubtleButtonFont" >Moire Light</FontFamily>
+
+    <FontFamily x:Key="SmallButtonFont" >Moire ExtraBold</FontFamily>
+
+    <sys:Double x:Key="ButtonFontSize">12</sys:Double>
+    <FontWeight x:Key="ButtonFontWeight">Light</FontWeight>
+    <!--<TextBlock FontWeight="" />-->
+    
+    <!--ListItems-->
+    <FontFamily x:Key="ListItemFont" >/LionFire.Valor.Avalon.Fonts;component/#Good Times Rg</FontFamily>
+    <sys:Double x:Key="ListItemFontSize" >16</sys:Double>
+
+    
+    <!--<FontFamily x:Key="SmallHeaderFont">Novecento Wide</FontFamily>-->
+</ResourceDictionary>

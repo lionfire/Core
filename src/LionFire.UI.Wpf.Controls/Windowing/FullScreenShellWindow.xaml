@@ -1,0 +1,96 @@
+﻿<ls:ShellWindowBase x:Class="LionFire.Shell.FullScreenShellWindow"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:lfaL="clr-namespace:LionFire.Avalon"
+                    xmlns:ls="clr-namespace:LionFire.Shell"
+        Title="Full Screen Window" 
+        Height="800" Width="600" Topmost="True" 
+        WindowStyle="None"
+        Visibility="Collapsed"
+        WindowState="Normal" 
+        ResizeMode="NoResize"
+        Background="Black">
+    <!--WindowStartupLocation="Manual"-->
+    <ls:ShellWindowBase.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <!--<lfa:SharedResourceDictionary Source="pack://application:,,,/LionFire.UI.Wpf.Controls;component/Resources/GlassButton.xaml"/>-->
+                <!--<lfa:SharedResourceDictionary Source="../Resources/GlassButton.xaml"/>-->
+                <lfaL:SharedResourceDictionary Source="pack://application:,,,/LionFire.UI.Wpf.Controls;component/Resources/Colours.xaml"/>
+                <lfaL:SharedResourceDictionary Source="pack://application:,,,/LionFire.UI.Wpf.Controls;component/Resources/Windowing.xaml"/>
+            </ResourceDictionary.MergedDictionaries>
+
+            <lfaL:BoolToVisibilityConverter x:Key="BVC"/>
+
+        </ResourceDictionary>
+    </ls:ShellWindowBase.Resources>
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="25"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+
+        <Grid x:Name="ShellContentPresenterGrid" Grid.Row="0" Grid.RowSpan="2" ></Grid>
+
+        <!--<StackPanel Orientation="Horizontal" HorizontalAlignment="Right" ClipToBounds="False">
+            <Button x:Name="restoreButton" Background="MidnightBlue" Style="{DynamicResource GlassButton}" Click="restoreButton_Click" Width="20" Height="20" Padding="4" VerticalAlignment="Top" HorizontalAlignment="Right" Margin="0,5,5,0" >[ ]</Button>
+            <Button x:Name="closeButton" HoverBackground="Red" Style="{DynamicResource GlassButton}" Click="closeButton_Click" Width="20" Height="20" Padding="4" VerticalAlignment="Top" HorizontalAlignment="Right" Margin="0,5,5,0" >X</Button>
+        </StackPanel>-->
+
+        <!--<Border Grid.RowSpan="2" IsHitTestVisible="True"
+            BorderThickness="{DynamicResource WindowBorderThickness}" CornerRadius="0" 
+                BorderBrush="{DynamicResource WindowBorderBrush}">-->
+
+        <Grid  Grid.Row="0" Grid.RowSpan="1" VerticalAlignment="Top">
+                <Grid.Resources>
+                    <Style TargetType="Path">
+                        <Setter Property="Stroke" Value="{DynamicResource WindowTitleBrush}"/>
+                        <Setter Property="StrokeThickness" Value="2"/>
+                        <Setter Property="StrokeEndLineCap" Value="Round"/>
+                        <Setter Property="StrokeStartLineCap" Value="Round"/>
+                        <Setter Property="StrokeLineJoin" Value="Round"/>
+                        <Setter Property="Margin" Value="3"/>
+                    </Style>                    
+                </Grid.Resources>
+
+                <Rectangle x:Name="TitleBar" MouseLeftButtonDown="TitleBar_MouseLeftButtonDown" Margin="0" MaxHeight="100" >
+                    <Rectangle.Fill>
+                        <LinearGradientBrush StartPoint="0,0" EndPoint="0,0.9">
+                            <GradientStop Color="#1FFFFFFF" Offset="0"/>
+                            <GradientStop Color="#00000000" Offset="1.3"/>
+                        </LinearGradientBrush>
+                    </Rectangle.Fill>
+                </Rectangle>
+                
+                <StackPanel Orientation="Horizontal" HorizontalAlignment="Left" Margin="5,0,0,0"
+                            Visibility="{Binding ShowMenuButton, Converter={StaticResource BVC}}">
+                    <lfaL:LionButton x:Name="MenuButton"  Style="{DynamicResource WindowButton}" Click="menuButton_Click" ToolTip="Menu">
+                        <Path Data="M0,6 L6,6Z M0,3 L6,3 M0,0 L6,0Z"/>
+                    </lfaL:LionButton>
+                </StackPanel>
+
+                <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,0,5,0">
+
+                    <lfaL:LionButton x:Name="debugButton"  Click="debugButton_Click" Style="{DynamicResource WindowButton}" Visibility="Collapsed">
+                        <Path Data="M1,4 L4,1 L7,4 L4,7 L1,4" />
+                        <!--<Path Data="{StaticResource Diamond}" />-->
+                    </lfaL:LionButton>
+
+                    <lfaL:LionButton x:Name="minimizeButton"  Click="minimizeButton_Click" Style="{DynamicResource WindowButton}" >
+                        <Path Data="M0,6 L6,6"/>
+                    </lfaL:LionButton>
+
+                    <lfaL:LionButton x:Name="maximizeButton"  Click="restoreButton_Click" Style="{DynamicResource WindowButton}">
+                        <Path Data="M0,0 L6,0 L6,6 L0,6 L0,0" 
+                              Fill="{DynamicResource WindowTitleBrush-Light}" />
+                    </lfaL:LionButton>
+
+                    <lfaL:LionButton x:Name="closeButton" Click="closeButton_Click" Style="{DynamicResource WindowButton}" 
+                                    Background="Red" >
+                        <Path Data="M0,0 L6,6 M6,0 L0,6"/>
+                    </lfaL:LionButton>
+                </StackPanel>
+
+            </Grid>
+    </Grid>
+</ls:ShellWindowBase>

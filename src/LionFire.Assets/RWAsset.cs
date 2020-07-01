@@ -22,9 +22,10 @@ namespace LionFire.Assets
 
         public RWAsset() { }
         public RWAsset(IReadWriteHandle<TValue> handle) : base(handle) { }
+        public RWAsset(TValue asset) { Reference = (AssetReference<TValue>)asset.Reference; Value = asset;   }
 
         public static implicit operator RWAsset<TValue>(string assetPath) => new RWAsset<TValue> { Reference = new AssetReference<TValue>(assetPath) };
-        public static implicit operator RWAsset<TValue>(TValue asset) => new RWAsset<TValue> { Reference = (AssetReference<TValue>)asset.Reference, Value = asset };
+        public static implicit operator RWAsset<TValue>(TValue asset) => new RWAsset<TValue>(asset);
         public static implicit operator AssetReference<TValue>(RWAsset<TValue> asset) => asset.Reference;
         public static implicit operator TValue(RWAsset<TValue> rAsset) => rAsset.Value;
 

@@ -9,7 +9,7 @@ namespace LionFire.Shell
 
         void Show(UIReference reference);
 
-        void ShowRootViews();
+        void ShowStartupInterfaces();
 
         void Close();
     }

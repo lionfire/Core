@@ -25,7 +25,7 @@ namespace LionFire.Input
     /// </summary>
     [TypeDescriptionProvider(typeof(CommandMapDescriptionProvider))]
     public class CommandMap
-        //: IEnumerable<string, ICommand>
+    //: IEnumerable<string, ICommand>
     {
         // IEnumerator IEnumerable.GetEnumerator() { return this.GetEnumerator(); }
         //public IEnumerator<KeyValuePair<string, ICommand>> GetEnumerator()
@@ -143,8 +143,8 @@ namespace LionFire.Input
 
             public event EventHandler CanExecuteChanged
             {
-                add { LionFire.Events.CommandManager.RequerySuggested += value; }
-                remove { LionFire.Events.CommandManager.RequerySuggested -= value; }
+                add { LionFire.Events.ApplicationCommandManager.RequerySuggested += value; throw new NotImplementedException("TODO: Switch to LionFire.UI's' LionFireCommandManager "); }
+                remove { LionFire.Events.ApplicationCommandManager.RequerySuggested -= value; throw new NotImplementedException("TODO: Switch to LionFire.UI's' LionFireCommandManager "); }
             }
 
             public void Execute(object parameter)
@@ -156,7 +156,7 @@ namespace LionFire.Input
             private Action<object> _executeMethod;
 
 
-            
+
         }
 
 
@@ -330,6 +330,6 @@ namespace LionFire.Input
             private ICommand _command;
         }
 
-        
+
     }
 }

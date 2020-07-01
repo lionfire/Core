@@ -1,0 +1,568 @@
+﻿<ResourceDictionary 
+  xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+  xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" 
+    xmlns:sys="clr-namespace:System;assembly=mscorlib"
+    
+    xmlns:lfaL="clr-namespace:LionFire.Avalon"
+    xmlns:lfa="clr-namespace:LionFire.Avalon;assembly=LionFire.UI.Wpf.Controls"
+    xmlns:black="clr-namespace:Blacklight.Controls;assembly=Blacklight.WPFControls"
+    >
+    
+<!--xmlns:lfa="clr-namespace:LionFire.Avalon"-->
+    <ResourceDictionary.MergedDictionaries>
+        <lfa:SharedResourceDictionary Source="pack://application:,,,/LionFire.UI.Wpf.Controls;component/Resources/Text.xaml"/>
+        <lfa:SharedResourceDictionary Source="pack://application:,,,/LionFire.UI.Wpf.Controls;component/Resources/Fonts.xaml"/>
+        <lfa:SharedResourceDictionary Source="pack://application:,,,/LionFire.UI.Wpf.Controls;component/Resources/Palette.xaml"/>
+        <!--<lfa:SharedResourceDictionary Source="pack://application:,,,/LionFire.UI.Wpf.Controls;component/Themes/LionButtons.Generic.xaml"/>-->
+    </ResourceDictionary.MergedDictionaries>
+    
+
+    <!--=== BEGIN THEME ===-->
+
+    <Thickness x:Key="ButtonPadding">18,14</Thickness>
+    <Thickness x:Key="ButtonMargin">5</Thickness>
+    <CornerRadius x:Key="ButtonCornerRadius" >3,17,3,17</CornerRadius>
+    <Thickness x:Key="ButtonBorderThickness">1.5</Thickness>
+
+    <SolidColorBrush x:Key="ButtonBorderBrush">White</SolidColorBrush>
+
+    <Color x:Key="ButtonGlassColor">#8fffffff</Color>
+    <sys:Double x:Key="ButtonGlassOpacity">0.4</sys:Double>
+
+    <!--<DropShadowEffect x:Key="ButtonContentEffect" Color="Black" ShadowDepth="1.5"/>-->
+
+    <sys:Double x:Key="ButtonHoverBackgroundOpacity">0.1</sys:Double>
+
+    <ControlTemplate x:Key="LionButtonTemplate" TargetType="{x:Type lfa:LionButton}">
+        <ControlTemplate.Resources>
+
+            <!--<sys:Double x:Key="TemplateTopOpacity">0</sys:Double>-->
+            <!--<sys:Double x:Key="HoverBGOpacity">0.0</sys:Double>-->
+
+            <!--<Storyboard x:Key="mouseDown">-->
+            <!--<DoubleAnimation Storyboard.TargetName="HoverBG" Storyboard.TargetProperty="Opacity" To="{TemplateBinding MouseDownHoverBackgroundOpacity}" Duration="0:0:0.05" />-->
+            <!--TODO: Not working!-->
+            <!--<DoubleAnimation Storyboard.Target="{StaticResource HoverBGOpacity}" To="0.8" Duration="0:0:0.02" />-->
+            <!--</Storyboard>-->
+            <!--Storyboard.TargetName="HoverBG"-->
+            <!--<Storyboard x:Key="mouseUp" Storyboard.Target="{StaticResource HoverBGOpacity}" >-->
+            <!--<DoubleAnimation  To="0" Duration="0:0:0.08" />-->
+            <!--Storyboard.TargetProperty="Opacity"-->
+            <!--</Storyboard>-->
+
+            <Storyboard x:Key="mouseEnter">
+                <DoubleAnimation Storyboard.TargetName="TemplateTop" Storyboard.TargetProperty="Opacity" To="1" Duration="0:0:0.1" />
+                <!--<DoubleAnimation Storyboard.TargetName="HoverBG" Storyboard.TargetProperty="Opacity" To="{TemplateBinding HoverBackgroundOpacity}" Duration="0:0:0.10" />-->
+                <!--<DoubleAnimation Storyboard.TargetName="HoverBG" Storyboard.TargetProperty="Opacity" To="{DynamicResource ButtonHoverBackgroundOpacity}" Duration="0:0:0.10" />-->
+                <!--<DoubleAnimation Storyboard.TargetName="HoverBG" Storyboard.TargetProperty="Opacity" To="0.1" Duration="0:0:0.1" />-->
+                <!--<DoubleAnimation Storyboard.TargetName="HoverBG" Storyboard.TargetProperty="Opacity" To="1" Duration="0:0:0.1" />-->
+            </Storyboard>
+            <Storyboard x:Key="mouseEnterOff" >
+                <DoubleAnimation Storyboard.TargetName="TemplateTop" Storyboard.TargetProperty="Opacity" To="{TemplateBinding RestingOpacity}" Duration="0:0:0.15" />
+                <!--<DoubleAnimation Storyboard.TargetName="HoverBG" Storyboard.TargetProperty="Opacity" To="0" Duration="0:0:0.25" />-->
+            </Storyboard>
+
+        </ControlTemplate.Resources>
+
+        <lfa:ClippingBorder x:Name="TemplateTop" Opacity="{TemplateBinding RestingOpacity}"
+                        Background="{TemplateBinding Background}" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}"
+                        CornerRadius="{TemplateBinding CornerRadius}" 
+                        Margin="{TemplateBinding Margin}"
+                        >
+
+            <!--<VisualStateManager.VisualStateGroups>
+                            <VisualStateGroup x:Name="CommonStateGroup">
+                                <VisualState x:Name="MouseOverState">
+                                    <Storyboard>
+                                        <DoubleAnimation Storyboard.TargetName="TemplateTop" 
+                                       Storyboard.TargetProperty="Opacity" 
+                                       To="1"
+                                       Duration="00:00:00.2" >
+                                        </DoubleAnimation>
+                                    </Storyboard>
+                                </VisualState>
+                            </VisualStateGroup>
+                        </VisualStateManager.VisualStateGroups>-->
+
+            <lfa:ClippingBorder.Triggers>
+                <!--<EventTrigger RoutedEvent="Button.MouseDown">
+                    <BeginStoryboard Storyboard="{StaticResource mouseDown}" />
+                </EventTrigger>
+                <EventTrigger RoutedEvent="Button.MouseUp">
+                    <BeginStoryboard Storyboard="{StaticResource mouseUp}" />
+                </EventTrigger>-->
+                <EventTrigger RoutedEvent="Button.MouseEnter">
+                    <!--<BeginStoryboard Storyboard="{StaticResource mouseEnter}" />-->
+                    <BeginStoryboard>
+                        <Storyboard>
+                            <DoubleAnimation Storyboard.TargetProperty="Opacity" To="1" Duration="0:0:0.1" />
+                            <!--<DoubleAnimation Storyboard.TargetName="HoverBG" Storyboard.TargetProperty="Opacity" To="{DynamicResource ButtonHoverBackgroundOpacity}" Duration="0:0:0.10" />-->
+                        </Storyboard>
+                    </BeginStoryboard>
+                </EventTrigger>
+                <EventTrigger RoutedEvent="Button.MouseLeave">
+                    <!--<BeginStoryboard Storyboard="{StaticResource mouseEnterOff}"  />-->
+                    <BeginStoryboard>
+                        <Storyboard  >
+                            <DoubleAnimation 
+                                Storyboard.TargetProperty="Opacity" To="{TemplateBinding RestingOpacity}" Duration="0:0:0.15" />
+                            <!--<DoubleAnimation Storyboard.TargetName="HoverBG" Storyboard.TargetProperty="Opacity" To="0" Duration="0:0:0.25" />-->
+                        </Storyboard>
+                    </BeginStoryboard>
+                </EventTrigger>
+            </lfa:ClippingBorder.Triggers>
+
+            <Grid>
+                <Grid.Triggers>
+                    <EventTrigger RoutedEvent="Button.MouseEnter">
+                        <!--<BeginStoryboard Storyboard="{StaticResource mouseEnter}" />-->
+                        <BeginStoryboard>
+                            <Storyboard Storyboard.Target="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=lfa:LionButton}, TargetNullValue={x:Null}, FallbackValue={x:Null}}">
+                                <!--<DoubleAnimation Storyboard.TargetProperty="Opacity" To="1" Duration="0:0:0.1" />-->
+                                <!--<DoubleAnimation Storyboard.TargetName="HoverBG" Storyboard.TargetProperty="Opacity" To="{DynamicResource ButtonHoverBackgroundOpacity}" Duration="0:0:0.10" />-->
+                                <DoubleAnimation Storyboard.TargetProperty="HoverBackgroundCurrentOpacity"  To="{DynamicResource ButtonHoverBackgroundOpacity}" Duration="0:0:0.10" />
+
+                            </Storyboard>
+                        </BeginStoryboard>
+                    </EventTrigger>
+                    <EventTrigger RoutedEvent="Button.MouseLeave">
+                        <!--<BeginStoryboard Storyboard="{StaticResource mouseEnterOff}"  />-->
+                        <BeginStoryboard>
+                            <Storyboard  Storyboard.Target="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=lfa:LionButton}, TargetNullValue={x:Null}, FallbackValue={x:Null}}">
+                                <!--<DoubleAnimation 
+                                Storyboard.TargetProperty="Opacity" To="{TemplateBinding RestingOpacity}" Duration="0:0:0.25" />-->
+                                <!--<DoubleAnimation Storyboard.TargetName="HoverBG" Storyboard.TargetProperty="Opacity" To="0" Duration="0:0:0.25" />-->
+                                <DoubleAnimation Storyboard.TargetProperty="HoverBackgroundCurrentOpacity"  To="0" Duration="0:0:0.15" />
+                                <!--Storyboard.TargetName="HoverBackgroundCurrentOpacity"-->
+                                <!--<ColorAnimation To="#0FFF" Duration="0:0:0.25" Storyboard.Tar-->
+                            </Storyboard>
+                        </BeginStoryboard>
+                    </EventTrigger>
+                </Grid.Triggers>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="0.8*"/>
+                    <RowDefinition Height="*"/>
+                </Grid.RowDefinitions>
+
+                <Grid Grid.RowSpan="2" x:Name="AltBG" Background="{TemplateBinding AltBackground}" Opacity="{TemplateBinding AltBackgroundCurrentOpacity}"/>
+                <Grid Grid.RowSpan="2" x:Name="HoverBG" Background="{TemplateBinding HoverBackground}" Opacity="{TemplateBinding HoverBackgroundCurrentOpacity}"/>
+                <!--<Grid Grid.RowSpan="2" x:Name="HoverBG" Background="White" Opacity="0.0"/>-->
+
+                <ContentPresenter  Grid.RowSpan="2"
+                                    Margin="{TemplateBinding Padding}"
+                                    HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}" VerticalAlignment="{TemplateBinding VerticalContentAlignment}" 
+                                    RecognizesAccessKey="True" Effect="{TemplateBinding ContentEffect}">
+                </ContentPresenter>
+
+                <Border x:Name="Glass" Opacity="{TemplateBinding GlassOpacity}"
+                                    >
+                    <Border.Background>
+                        <LinearGradientBrush StartPoint="0 0" EndPoint="0 1">
+                            <GradientStop  x:Name="GlassGradientStop2" Color="{TemplateBinding GlassColor2}" Offset="1"/>
+                            <GradientStop x:Name="GlassGradientStop" Color="{TemplateBinding GlassColor}" Offset="-0.2"/>
+                        </LinearGradientBrush>
+                    </Border.Background>
+
+                </Border>
+
+            </Grid>
+
+        </lfa:ClippingBorder>
+    </ControlTemplate>
+
+
+
+
+    <Style TargetType="{x:Type lfa:LionButton}">
+        <Setter Property="Template" Value="{StaticResource LionButtonTemplate}"/>
+
+        <Setter Property="AltBackground" Value="Yellow"/>
+        <Setter Property="Background" Value="{DynamicResource ButtonBackground}"/>
+        <Setter Property="HoverBackground" Value="{DynamicResource ButtonHoverBackground}"/>
+        <Setter Property="HoverBackgroundOpacity" Value="{DynamicResource ButtonHoverBackgroundOpacity}"/>
+
+        <Setter Property="FontFamily" Value="{DynamicResource ButtonFont}"/>
+        <Setter Property="FontSize" Value="{DynamicResource ButtonFontSize}"/>
+        <Setter Property="FontWeight" Value="{DynamicResource ButtonFontWeight}"/>
+        <Setter Property="Foreground" Value="White"/>
+
+        <Setter Property="GlassColor" Value="{DynamicResource ButtonGlassColor}"/>
+        <Setter Property="GlassOpacity" Value="{DynamicResource ButtonGlassOpacity}"/>
+
+        <!--<Setter Property="ContentEffect" Value="{DynamicResource ButtonContentEffect}"/>-->
+
+        <Setter Property="BorderThickness" Value="{DynamicResource ButtonBorderThickness}"/>
+        <Setter Property="BorderBrush" Value="{DynamicResource ButtonBorderBrush}"/>
+
+        <Setter Property="CornerRadius" Value="{DynamicResource ButtonCornerRadius}"/>
+        <Setter Property="Padding" Value="{DynamicResource ButtonPadding}"/>
+        <Setter Property="Margin" Value="{DynamicResource ButtonMargin}"/>
+
+        <Setter Property="HorizontalContentAlignment" Value="Center"/>
+        <Setter Property="VerticalContentAlignment" Value="Center"/>
+    </Style>
+
+
+    <Style x:Key="TestLionButtonStyle" TargetType="{x:Type lfa:LionButton}">
+
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="{x:Type lfa:LionButton}">
+                    <ControlTemplate.Resources>
+
+                        <Storyboard x:Key="mouseDown">
+                            <!--<DoubleAnimation Storyboard.TargetName="HoverBG" Storyboard.TargetProperty="Opacity" To="{TemplateBinding MouseDownHoverBackgroundOpacity}" Duration="0:0:0.05" />-->
+                            <!--TODO: Not working!-->
+                            <DoubleAnimation Storyboard.TargetName="HoverBG" Storyboard.TargetProperty="Opacity" To="1.0" Duration="0:0:0.02" />
+                        </Storyboard>
+                        <Storyboard x:Key="mouseUp">
+                            <!--<DoubleAnimation Storyboard.TargetName="HoverBG" Storyboard.TargetProperty="Opacity" To="0" Duration="0:0:0.08" />-->
+                        </Storyboard>
+
+                        <Storyboard x:Key="mouseEnter">
+                            <DoubleAnimation Storyboard.TargetName="TemplateTop" Storyboard.TargetProperty="Opacity" To="1" Duration="0:0:0.1" />
+                            <!--<DoubleAnimation Storyboard.TargetName="HoverBG" Storyboard.TargetProperty="Opacity" To="{TemplateBinding HoverBackgroundOpacity}" Duration="0:0:0.10" />-->
+                            <DoubleAnimation Storyboard.TargetName="HoverBG" Storyboard.TargetProperty="Opacity" To="0.8" Duration="0:0:0.1" />
+                        </Storyboard>
+                        <Storyboard x:Key="mouseEnterOff">
+                            <!--<DoubleAnimation Storyboard.TargetName="TemplateTop" Storyboard.TargetProperty="Opacity" To="{TemplateBinding RestingOpacity}" Duration="0:0:0.25" />-->
+                            <DoubleAnimation Storyboard.TargetName="HoverBG" Storyboard.TargetProperty="Opacity" To="0" Duration="0:0:0.25" />
+                        </Storyboard>
+
+                    </ControlTemplate.Resources>
+
+                    <lfa:ClippingBorder x:Name="TemplateTop" Opacity="{TemplateBinding RestingOpacity}"
+                        Background="{TemplateBinding Background}" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}"
+                        CornerRadius="{TemplateBinding CornerRadius}" 
+                        Margin="{TemplateBinding Margin}"
+                        >
+                        <lfa:ClippingBorder.Triggers>
+                            <!--<EventTrigger RoutedEvent="Button.MouseDown">
+                                <BeginStoryboard Storyboard="{StaticResource mouseDown}" >
+                                    
+                                </BeginStoryboard>
+                            </EventTrigger>
+                            <EventTrigger RoutedEvent="Button.MouseUp">
+                                <BeginStoryboard Storyboard="{StaticResource mouseUp}" />
+                            </EventTrigger>-->
+                            <EventTrigger RoutedEvent="Button.MouseEnter">
+                                <BeginStoryboard>
+                                    <BeginStoryboard.Storyboard>
+                                        <Storyboard>
+                                            <DoubleAnimation Storyboard.TargetName="TemplateTop" Storyboard.TargetProperty="Opacity" To="1" Duration="0:0:0.1" />
+                                        </Storyboard>
+                                    </BeginStoryboard.Storyboard>
+                                </BeginStoryboard>
+                            </EventTrigger>
+                            <EventTrigger RoutedEvent="Button.MouseLeave">
+                                <BeginStoryboard>
+                                    <BeginStoryboard.Storyboard>
+                                        <Storyboard>
+                                            <DoubleAnimation Storyboard.TargetName="TemplateTop" Storyboard.TargetProperty="Opacity" To="{TemplateBinding RestingOpacity}" Duration="0:0:0.25" />
+                                        </Storyboard>
+                                    </BeginStoryboard.Storyboard>
+                                </BeginStoryboard>
+                            </EventTrigger>
+                        </lfa:ClippingBorder.Triggers>
+                        <!--<VisualStateManager.VisualStateGroups>
+                            <VisualStateGroup x:Name="CommonStateGroup">
+                                <VisualState x:Name="MouseOverState">
+                                    <Storyboard>
+                                        <DoubleAnimation Storyboard.TargetName="TemplateTop" 
+                                       Storyboard.TargetProperty="Opacity" 
+                                       To="1"
+                                       Duration="00:00:00.2" >
+                                        </DoubleAnimation>
+                                    </Storyboard>
+                                </VisualState>
+                            </VisualStateGroup>
+                        </VisualStateManager.VisualStateGroups>-->
+
+
+
+                        <Grid>
+                            <Grid.Triggers>
+                                <EventTrigger RoutedEvent="Button.MouseDown">
+                                    <BeginStoryboard Storyboard="{StaticResource mouseDown}" />
+                                </EventTrigger>
+                                <EventTrigger RoutedEvent="Button.MouseUp">
+                                    <BeginStoryboard Storyboard="{StaticResource mouseUp}" />
+                                </EventTrigger>
+                                <EventTrigger RoutedEvent="Button.MouseEnter">
+                                    <BeginStoryboard Storyboard="{StaticResource mouseEnter}" />
+                                </EventTrigger>
+                                <EventTrigger RoutedEvent="Button.MouseLeave">
+                                    <BeginStoryboard Storyboard="{StaticResource mouseEnterOff}" />
+                                </EventTrigger>
+                            </Grid.Triggers>
+
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="0.8*"/>
+                                <RowDefinition Height="*"/>
+                            </Grid.RowDefinitions>
+
+                            <Grid Grid.RowSpan="2" x:Name="HoverBG" Background="{TemplateBinding HoverBackground}" Opacity="0.0"/>
+                            <!--<Grid Grid.RowSpan="2" x:Name="HoverBG" Background="White" Opacity="0.0"/>-->
+
+                            <ContentPresenter  Grid.RowSpan="2"
+                                    Margin="{TemplateBinding Padding}"
+                                    HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}" VerticalAlignment="{TemplateBinding VerticalContentAlignment}" 
+                                    RecognizesAccessKey="True" Effect="{TemplateBinding ContentEffect}">
+                            </ContentPresenter>
+
+                            <Border x:Name="Glass" Opacity="{TemplateBinding GlassOpacity}"
+                                    >
+                                <Border.Background>
+                                    <LinearGradientBrush StartPoint="0 0" EndPoint="0 1">
+                                        <GradientStop  x:Name="GlassGradientStop2" Color="{TemplateBinding GlassColor2}" Offset="1"/>
+                                        <GradientStop x:Name="GlassGradientStop" Color="{TemplateBinding GlassColor}" Offset="-0.2"/>
+                                    </LinearGradientBrush>
+                                </Border.Background>
+
+                            </Border>
+
+                        </Grid>
+
+                    </lfa:ClippingBorder>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+
+
+        <Setter Property="Background" Value="{DynamicResource ButtonBackground}"/>
+        <Setter Property="HoverBackground" Value="{DynamicResource ButtonHoverBackground}"/>
+        <Setter Property="HoverBackgroundOpacity" Value="{DynamicResource ButtonHoverBackgroundOpacity}"/>
+
+        <Setter Property="FontFamily" Value="{DynamicResource ButtonFont}"/>
+        <Setter Property="FontSize" Value="{DynamicResource ButtonFontSize}"/>
+        <Setter Property="FontWeight" Value="{DynamicResource ButtonFontWeight}"/>
+        <Setter Property="Foreground" Value="White"/>
+
+        <Setter Property="GlassColor" Value="{DynamicResource ButtonGlassColor}"/>
+        <Setter Property="GlassOpacity" Value="{DynamicResource ButtonGlassOpacity}"/>
+
+        <!--<Setter Property="ContentEffect" Value="{DynamicResource ButtonContentEffect}"/>-->
+
+        <!--<Setter Property="BorderThickness" Value="{DynamicResource ButtonBorderThickness}"/>-->
+        <!--<Setter Property="BorderBrush" Value="{DynamicResource ButtonBorderBrush}"/>-->
+
+        <Setter Property="CornerRadius" Value="{DynamicResource ButtonCornerRadius}"/>
+        <Setter Property="Padding" Value="{DynamicResource ButtonPadding}"/>
+        <Setter Property="Margin" Value="{DynamicResource ButtonMargin}"/>
+
+        <Setter Property="HorizontalContentAlignment" Value="Center"/>
+        <Setter Property="VerticalContentAlignment" Value="Center"/>
+    </Style>
+
+
+
+    <Style TargetType="{x:Type lfa:LionToggleButton}">
+
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="{x:Type lfa:LionToggleButton}">
+                    <ControlTemplate.Resources>
+
+                        <Storyboard x:Key="mouseEnter">
+                            <DoubleAnimation Storyboard.TargetName="TemplateTop" Storyboard.TargetProperty="Opacity" To="1" Duration="0:0:0.25" />
+                        </Storyboard>
+                        <Storyboard x:Key="mouseEnterOff">
+                            <DoubleAnimation Storyboard.TargetName="TemplateTop" Storyboard.TargetProperty="Opacity" To="{TemplateBinding RestingOpacity}" Duration="0:0:0.4" />
+                        </Storyboard>
+
+                        <!--<Storyboard x:Key="Checked">
+                            <DoubleAnimation Storyboard.TargetName="TemplateTop" Storyboard.TargetProperty="Opacity" To="1" Duration="0:0:0.25" />
+                        </Storyboard>
+                        <Storyboard x:Key="Unchecked">
+                            <DoubleAnimation Storyboard.TargetName="TemplateTop" Storyboard.TargetProperty="Opacity" To="{TemplateBinding RestingOpacity}" Duration="0:0:0.4" />
+                        </Storyboard>-->
+
+                    </ControlTemplate.Resources>
+
+                    <lfa:ClippingBorder x:Name="TemplateTop" Opacity="{TemplateBinding RestingOpacity}"
+                        Background="{TemplateBinding Background}" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}"
+                        CornerRadius="{TemplateBinding CornerRadius}" 
+                        Margin="{TemplateBinding Margin}"
+                        >
+
+                        <!--<VisualStateManager.VisualStateGroups>
+                            <VisualStateGroup x:Name="CommonStateGroup">
+                                <VisualState x:Name="MouseOverState">
+                                    <Storyboard>
+                                        <DoubleAnimation Storyboard.TargetName="TemplateTop" 
+                                       Storyboard.TargetProperty="Opacity" 
+                                       To="1"
+                                       Duration="00:00:00.2" >
+                                        </DoubleAnimation>
+                                    </Storyboard>
+                                </VisualState>
+                            </VisualStateGroup>
+                        </VisualStateManager.VisualStateGroups>-->
+
+                        <lfa:ClippingBorder.Triggers>
+                            <EventTrigger RoutedEvent="Button.MouseEnter">
+                                <BeginStoryboard Storyboard="{StaticResource mouseEnter}" />
+                            </EventTrigger>
+                            <EventTrigger RoutedEvent="Button.MouseLeave">
+                                <BeginStoryboard Storyboard="{StaticResource mouseEnterOff}" />
+                            </EventTrigger>
+                        </lfa:ClippingBorder.Triggers>
+
+                        <Grid>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="0.8*"/>
+                                <RowDefinition Height="*"/>
+                            </Grid.RowDefinitions>
+
+                            <ContentPresenter  Grid.RowSpan="2"
+                                    Margin="{TemplateBinding Padding}"
+                                    HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}" VerticalAlignment="{TemplateBinding VerticalContentAlignment}" 
+                                    RecognizesAccessKey="True" Effect="{TemplateBinding ContentEffect}">
+
+                            </ContentPresenter>
+
+                            <Border x:Name="Glass" Opacity="{TemplateBinding GlassOpacity}"
+                                    >
+                                <Border.Background>
+                                    <LinearGradientBrush StartPoint="0 0" EndPoint="0 1">
+                                        <GradientStop  x:Name="GlassGradientStop2" Color="{TemplateBinding GlassColor2}" Offset="1"/>
+                                        <GradientStop x:Name="GlassGradientStop" Color="{TemplateBinding GlassColor}" Offset="-0.2"/>
+                                    </LinearGradientBrush>
+                                </Border.Background>
+
+                            </Border>
+
+                        </Grid>
+
+                    </lfa:ClippingBorder>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+
+
+        <Setter Property="Background" Value="{DynamicResource ButtonBackground}"/>
+
+        <Setter Property="FontFamily" Value="{DynamicResource ButtonFont}"/>
+        <Setter Property="FontSize" Value="{DynamicResource ButtonFontSize}"/>
+        <Setter Property="FontWeight" Value="{DynamicResource ButtonFontWeight}"/>
+        <Setter Property="Foreground" Value="White"/>
+
+        <Setter Property="GlassColor" Value="{DynamicResource ButtonGlassColor}"/>
+        <Setter Property="GlassOpacity" Value="{DynamicResource ButtonGlassOpacity}"/>
+
+        <!--<Setter Property="ContentEffect" Value="{DynamicResource ButtonContentEffect}"/>-->
+
+        <Setter Property="BorderThickness" Value="{DynamicResource ButtonBorderThickness}"/>
+        <Setter Property="BorderBrush" Value="{DynamicResource ButtonBorderBrush}"/>
+
+        <Setter Property="CornerRadius" Value="{DynamicResource ButtonCornerRadius}"/>
+        <Setter Property="Padding" Value="{DynamicResource ButtonPadding}"/>
+        <Setter Property="Margin" Value="{DynamicResource ButtonMargin}"/>
+
+        <Setter Property="HorizontalContentAlignment" Value="Center"/>
+        <Setter Property="VerticalContentAlignment" Value="Center"/>
+    </Style>
+
+    
+    <!--=== END THEME ===-->
+    
+    <!--<sys:Double x:Key="The42">42</sys:Double>-->
+
+
+
+    <!--<Style TargetType="{x:Type lfa:LionButton}">
+
+        <Setter Property="Background" Value="{DynamicResource ButtonBackground}"/>
+
+        <Setter Property="FontFamily" Value="{DynamicResource ButtonFont}"/>
+        <Setter Property="FontSize" Value="{DynamicResource ButtonFontSize}"/>
+        <Setter Property="FontWeight" Value="{DynamicResource ButtonFontWeight}"/>
+        <Setter Property="Foreground" Value="White"/>
+
+        <Setter Property="GlassColor" Value="{DynamicResource ButtonGlassColor}"/>
+        <Setter Property="GlassOpacity" Value="{DynamicResource ButtonGlassOpacity}"/>
+
+        <Setter Property="ContentEffect" Value="{DynamicResource ButtonContentEffect}"/>
+
+        <Setter Property="BorderThickness" Value="{DynamicResource ButtonBorderThickness}"/>
+        <Setter Property="BorderBrush" Value="{DynamicResource ButtonBorderBrush}"/>
+
+        <Setter Property="CornerRadius" Value="{DynamicResource ButtonCornerRadius}"/>
+        <Setter Property="Padding" Value="{DynamicResource ButtonPadding}"/>
+        <Setter Property="Margin" Value="{DynamicResource ButtonMargin}"/>
+
+        <Setter Property="HorizontalContentAlignment" Value="Center"/>
+        <Setter Property="VerticalContentAlignment" Value="Center"/>
+    </Style>-->
+
+    <Style x:Key="LionButton" TargetType="lfa:LionButton" BasedOn="{StaticResource {x:Type lfa:LionButton}}" >
+        <Setter Property="BorderBrush" Value="White"/>
+    </Style>
+
+    <SolidColorBrush x:Key="SubtleBackground" Color="#33EEEEEE"/>
+    <Color x:Key="SubtleBorderColor">#20EEEEEE</Color>
+
+    <Color x:Key="Color-Cancel-BG">#FF833333</Color>
+    <SolidColorBrush x:Key="Cancel-BG" Color="{DynamicResource Color-Cancel-BG}"/>
+    <Color x:Key="Color-Cancel-BG-Subtle">#33833333</Color>
+    <SolidColorBrush x:Key="Cancel-BG-Subtle" Color="{DynamicResource Color-Cancel-BG}"/>
+    <Color x:Key="CancelBorderColor">#93833333</Color>
+
+    <Color x:Key="Ok-BGC">#3F006400</Color>
+    <SolidColorBrush x:Key="Ok-BG" Color="{DynamicResource Ok-BGC}"/>
+    <Color x:Key="Ok-BGHC">#FF309430</Color>
+    <SolidColorBrush x:Key="Ok-BGH" Color="{DynamicResource Ok-BGHC}"/>
+    <Color x:Key="OkBorderColor">#FF086F08</Color>
+
+    <Style x:Key="OkLionButton" TargetType="lfa:LionButton" BasedOn="{StaticResource {x:Type lfa:LionButton}}">
+        <Setter Property="Background" Value="{DynamicResource Ok-BG}"/>
+        <Setter Property="HoverBackground" Value="{DynamicResource Ok-BGH}"/>
+        <Setter Property="FontFamily" Value="{DynamicResource HeavyButtonFont}"/>
+
+        <Setter Property="BorderBrush">
+            <Setter.Value>
+                <SolidColorBrush Color="{DynamicResource OkBorderColor}"/>
+            </Setter.Value>
+        </Setter>
+
+        <Setter Property="BorderThickness" Value="1.5"/>
+        <Setter Property="CornerRadius" Value="14 14 04 04"/>
+
+    </Style>
+
+    <Style x:Key="CancelLionButton" TargetType="{x:Type lfa:LionButton}" BasedOn="{StaticResource {x:Type lfa:LionButton}}">
+        <Setter Property="BorderBrush">
+            <Setter.Value>
+                <SolidColorBrush Color="{DynamicResource SubtleBorderColor}"/>
+            </Setter.Value>
+        </Setter>
+        <Setter Property="Background" Value="{DynamicResource Cancel-BG-Subtle}"/>
+        <Setter Property="FontFamily" Value="{DynamicResource ButtonFont}"/>
+    </Style>
+
+
+    <Style x:Key="SubtleLionButton" TargetType="{x:Type lfa:LionButton}" BasedOn="{StaticResource {x:Type lfa:LionButton}}">
+        <Setter Property="BorderBrush">
+            <Setter.Value>
+                <SolidColorBrush Color="{DynamicResource SubtleBorderColor}"/>
+            </Setter.Value>
+        </Setter>
+        <Setter Property="Background" Value="{DynamicResource SubtleBackground}"/>
+        <Setter Property="FontFamily" Value="{DynamicResource SubtleButtonFont}"/>
+        <Setter Property="CornerRadius" Value="14 14 14 14"/>
+        <Setter Property="GlassOpacity" Value="0"/>
+    </Style>
+
+    
+<Style x:Key="StealthLionButton" TargetType="lfa:LionButton" BasedOn="{StaticResource {x:Type lfa:LionButton}}">
+        <Setter Property="Padding" Value="0"/>
+        <Setter Property="Margin" Value="0"/>
+        <Setter Property="GlassOpacity" Value="0"/>
+        <Setter Property="Background" Value="Transparent"/>
+        <Setter Property="BorderThickness" Value="0"/>
+        <Setter Property="CornerRadius" Value="4"/>
+        <Setter Property="HoverBackgroundOpacity" Value="0"/>
+        <Setter Property="HoverBackground" Value="Transparent"/>
+    </Style>
+    
+</ResourceDictionary>

@@ -1,0 +1,198 @@
+﻿<Project Sdk="Microsoft.NET.Sdk.WindowsDesktop">
+
+  <PropertyGroup>
+    <TargetFramework>netcoreapp3.1</TargetFramework>
+    <UseWPF>true</UseWPF>
+    <NeutralLanguage>en-US</NeutralLanguage>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+    <DefineConstants>TRACE;WINDOWS;CONTRACTS_FULL</DefineConstants>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    <DefineConstants>TRACE;WINDOWS;CONTRACTS_FULL</DefineConstants>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Remove="Imported\PixelLab\Core\**" />
+    <EmbeddedResource Remove="Imported\PixelLab\Core\**" />
+    <None Remove="Imported\PixelLab\Core\**" />
+    <Page Remove="Imported\PixelLab\Core\**" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Page Remove="Resources\Buttons.xaml" />
+    <Page Remove="Resources\Colours.xaml" />
+    <Page Remove="Resources\DateTime.xaml" />
+    <Page Remove="Resources\default-lfa.xaml" />
+    <Page Remove="Resources\Expanders.xaml" />
+    <Page Remove="Resources\GelButton.xaml" />
+    <Page Remove="Resources\GlassButton.xaml" />
+    <Page Remove="Resources\JButton.xaml" />
+    <Page Remove="Resources\LionButtons.xaml" />
+    <Page Remove="Resources\LionListBox.xaml" />
+    <Page Remove="Resources\ListBox.Blend.xaml" />
+    <Page Remove="Resources\Palette.xaml" />
+    <Page Remove="Resources\RoundedButton.xaml" />
+    <Page Remove="Resources\Scrollbar.xaml" />
+    <Page Remove="Resources\Text.xaml" />
+    <Page Remove="Resources\Windowing.xaml" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Include="..\..\..\valor\Dycen\LionFire.Avalon\Geometry\CogwheelShape.cs" Link="Geometry\CogwheelShape.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Geometry\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="DotNetProjects.Extended.Wpf.Toolkit" Version="4.6.82" />
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="3.1.4" />
+    <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="3.1.4" />
+    <PackageReference Include="Microsoft.Xaml.Behaviors.Wpf" Version="1.1.19" />
+    <PackageReference Include="PixelLab.Core" Version="6.0.2" />
+    <PackageReference Include="System.Diagnostics.Contracts" Version="4.3.0" />
+    <PackageReference Include="WPFTransitionals" Version="1.0.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\LionFire.Applications.Extensions\LionFire.Applications.Extensions.csproj" />
+    <ProjectReference Include="..\LionFire.Base\LionFire.Base.csproj" />
+    <ProjectReference Include="..\LionFire.Core.Extras\LionFire.Core.Extras.csproj" />
+    <ProjectReference Include="..\LionFire.UI\LionFire.UI.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Resource Include="Resources\Buttons.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Resource>
+    <Resource Include="Resources\Colours.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Resource>
+    <Resource Include="Resources\DateTime.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Resource>
+    <Resource Include="Resources\default-lfa.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Resource>
+    <Resource Include="Resources\Expanders.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Resource>
+    <Resource Include="Resources\GelButton.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Resource>
+    <Resource Include="Resources\GlassButton.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Resource>
+    <Resource Include="Resources\JButton.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Resource>
+    <Resource Include="Resources\LionButtons.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Resource>
+    <Resource Include="Resources\LionListBox.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Resource>
+    <Resource Include="Resources\ListBox.Blend.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Resource>
+    <Resource Include="Resources\Palette.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Resource>
+    <Resource Include="Resources\RoundedButton.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Resource>
+    <Resource Include="Resources\Scrollbar.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Resource>
+    <Resource Include="Resources\Text.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Resource>
+    <Resource Include="Resources\Windowing.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Resource>
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Update="Lists\LionListBox.xaml.cs">
+      <DependentUpon>LionListBox.xaml</DependentUpon>
+    </Compile>
+    <Compile Update="Presenter\ShellContentPresenter.xaml.cs">
+      <DependentUpon>ShellContentPresenter.xaml</DependentUpon>
+    </Compile>
+    <Compile Update="Shell\AlertAdorner.xaml.cs">
+      <DependentUpon>AlertAdorner.xaml</DependentUpon>
+    </Compile>
+    <Compile Update="SplashScreen\SplashWindow.xaml.cs">
+      <DependentUpon>SplashWindow.xaml</DependentUpon>
+    </Compile>
+    <Compile Update="Windowing\FullScreenShellWindow.xaml.cs">
+      <DependentUpon>FullScreenShellWindow.xaml</DependentUpon>
+    </Compile>
+    <Compile Update="Windowing\ShellWindow.xaml.cs">
+      <DependentUpon>ShellWindow.xaml</DependentUpon>
+    </Compile>
+    <Compile Update="Zap\LionZapScroller.xaml.cs">
+      <DependentUpon>LionZapScroller.xaml</DependentUpon>
+    </Compile>
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Update="Licensing\Caliburn.Micro.txt">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="Licensing\PixelLab.txt">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+
+  <ItemGroup>
+    <Page Update="Lists\LionListBox.xaml">
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Update="Presenter\ShellContentPresenter.xaml">
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Update="Resources\Fonts.xaml">
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Update="Resources\PathShapes.xaml">
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Update="Shell\AlertAdorner.xaml">
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Update="SplashScreen\SplashWindow.xaml">
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Update="Themes\generic.xaml">
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Update="Windowing\FullScreenShellWindow.xaml">
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Update="Windowing\ShellWindow.xaml">
+      <SubType>Designer</SubType>
+    </Page>
+  </ItemGroup>
+
+</Project>

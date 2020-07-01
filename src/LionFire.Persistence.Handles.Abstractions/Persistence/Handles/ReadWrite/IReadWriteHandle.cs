@@ -16,11 +16,6 @@
     /// </summary>
     public interface IReadWriteHandle : IReadHandle, IWriteHandle { }
 
-    public interface IReadWriteHandleAware<T>
-    {
-        IReadWriteHandle<T> ReadWriteHandle { get; set; }
-    }
-
     /// <summary>
     /// IReadWriteHandleEx
     /// </summary>

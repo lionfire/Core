@@ -6,8 +6,10 @@ using System.Threading.Tasks;
 
 namespace LionFire.Events
 {
+    // OLD - Replaced with LionFire.UI's LionFireCommandManager.  Or should that one be replaced with this one?  Or LionFire.Commands?
+
     // REVIEW - what is the purpose, and should it be DI-oriented rather than static?
-    public static class CommandManager
+    public static class ApplicationCommandManager
     {
         //public static void RaiseRequerySuggested(object sender, EventArgs e)
         //{

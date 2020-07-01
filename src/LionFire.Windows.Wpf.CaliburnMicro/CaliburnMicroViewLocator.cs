@@ -2,7 +2,7 @@
 using System;
 using System.Windows;
 
-namespace LionFire.Windows.Wpf.CaliburnMicro
+namespace LionFire.UI.Wpf.Controls.CaliburnMicro
 {
     public class CaliburnMicroViewLocator : IViewLocator
     {

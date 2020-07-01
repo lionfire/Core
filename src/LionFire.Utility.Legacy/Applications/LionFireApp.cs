@@ -333,6 +333,16 @@ namespace LionFire.Applications
             }
         }
 
+        //public LionFireAppCapabilities Capabilities
+        //{
+        //    get
+        //    {
+        //        var c = LionFireAppCapabilities.Unspecified;
+        //        if (SplashScreenType != null) { c |= LionFireAppCapabilities.SplashScreen; }
+        //        return c;
+        //    }
+        //}
+
         //public Type SplashScreenType
         //{
         //    get

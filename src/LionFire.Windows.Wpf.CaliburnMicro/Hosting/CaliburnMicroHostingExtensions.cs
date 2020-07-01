@@ -2,7 +2,7 @@
 using System;
 using System.Text;
 
-namespace LionFire.Windows.Wpf.CaliburnMicro.Hosting
+namespace LionFire.UI.Wpf.Controls.CaliburnMicro.Hosting
 {
     public static class CaliburnMicroHostingExtensions
     {
