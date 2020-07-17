@@ -23,8 +23,8 @@ namespace LionFire.DependencyMachines.Abstractions
             DependencyStateMachine.Stopping += p => Logger.LogDebug($"  - [stopping] {p}");
             DependencyStateMachine.Stopped += (p,_) => Logger.LogInformation($"  - [STOPPED] {p}");
 
-            DependencyStateMachine.StartedStage += p => Logger.LogInformation($"[[STARTED]] Stage {p}");
-            DependencyStateMachine.StoppedStage += p => Logger.LogInformation($"[[STOPPED]] Stage {p}");
+            DependencyStateMachine.StartedStage += p => Logger.LogInformation($"=====!   [[STARTED]] Stage {p}   !=====");
+            DependencyStateMachine.StoppedStage += p => Logger.LogInformation($"=====!x   [[STOPPED]] Stage {p}   x!=====");
         }
 
         public ILogger<IDependencyStateMachine> Logger { get; }

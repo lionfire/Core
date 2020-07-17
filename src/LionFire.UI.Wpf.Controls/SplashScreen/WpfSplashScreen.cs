@@ -87,7 +87,7 @@ namespace LionFire.Shell
                 }
             }
         }
-
+      
         protected bool IsWindowCreated
         {
             set

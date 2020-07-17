@@ -21,7 +21,7 @@ namespace LionFire.Shell
         public int DefaultWindowWidth { get; set; } = 850;
         public int DefaultWindowHeight { get; set; } = 600;
 
-        //public bool IsFullScreenDefault => !LionFire.Applications.LionFireApp.IsDevMode; // TODO: Different default based on DevMode
+        //public bool IsFullScreenDefault => !DevMode.IsDevMode; // TODO: Different default based on DevMode
 
 
         // FUTURE: Default sizes for different modes: PC/Tablet/etc.

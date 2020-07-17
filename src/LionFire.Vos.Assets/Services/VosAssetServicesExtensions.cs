@@ -14,25 +14,25 @@ using System.Collections.Generic;
 using System.Text;
 using LionFire.Vos.Collections;
 using LionFire.Types;
+using LionFire.DependencyMachines;
 
 namespace LionFire.Services
 {
-
-
     public static class VosAssetServicesExtensions
     {
-        public static IServiceCollection AddAssets(this IServiceCollection services, VosAssetOptions options = null, VosReference contextVob = null)
+        public static IServiceCollection AddAssets(this IServiceCollection services, VosAssetOptions options = null, VobReference contextVob = null)
         {
             var assetsRoot = contextVob?.Path ?? "assets";
             services
-                .AddSingleton<IReadHandleProvider<IAssetReference>, VosAssetHandleProvider>()
-                .AddSingleton<IReadWriteHandleProvider<IAssetReference>, VosAssetHandleProvider>()
+                .AddSingleton<VosAssetHandleProvider>() 
+                .AddSingleton<IReadHandleProvider<IAssetReference>>(sp=>sp.GetRequiredService<VosAssetHandleProvider>())
+                .AddSingleton<IReadWriteHandleProvider<IAssetReference>>(sp => sp.GetRequiredService<VosAssetHandleProvider>())
                 .VobEnvironment("assets", assetsRoot)
                 .AddSingleton(serviceProvider => serviceProvider.GetRequiredService<IOptionsMonitor<TypeNameRegistry>>().CurrentValue)
                 .InitializeVob<IServiceProvider>("$assets", (vob, serviceProvider) =>
                 {
                     vob.AddOwn<ICollectionTypeProvider>(v => new CollectionsByTypeManager(v, serviceProvider.GetRequiredService<TypeNameRegistry>()));
-                }, key: "$assets<ICollectionTypeProvider>")
+                }, key: "vos:$assets<ICollectionTypeProvider>", configure: c => c.DependsOn("vos:/<VobEnvironment>/*"))
 
                 .Configure<VosAssetOptions>(o => { })
                 .AddSingleton(s => s.GetService<IOptionsMonitor<VosAssetOptions>>()?.CurrentValue)
@@ -51,11 +51,11 @@ namespace LionFire.Services
             return services;
         }
 
-        public static IServiceCollection AddAssetPersister(this IServiceCollection services, VosAssetOptions options = null, VosReference contextVob = null)
+        public static IServiceCollection AddAssetPersister(this IServiceCollection services, VosAssetOptions options = null, VobReference contextVob = null)
         {
             //.InitializeVob("/", v => v.AddOwn<VosAssetPersister>(), p => p.Key = $"/<VosAssetPersister>")
 
-            var vob = contextVob ?? "/".ToVosReference();
+            var vob = contextVob ?? "/".ToVobReference();
             services.InitializeVob<IServiceProvider>(vob, (vob, serviceProvider) =>
             {
                 vob.AddOwn<VosAssetPersister>(v =>

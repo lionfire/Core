@@ -4,7 +4,7 @@ using LionFire.Referencing;
 
 namespace LionFire.Assets
 {
-    public interface IAssetReadWriteHandle : IReferencable<IAssetReference>, IReadWriteHandle
+    public interface IAssetReadWriteHandle : IReferencable<IAssetReference>, IReadWriteHandle, IAssetReadHandle
     {
     }
 

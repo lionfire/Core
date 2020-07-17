@@ -37,7 +37,7 @@ namespace LionFire.Vos
         //}
 
         //REVIEW TODO: Provide this ctor?  also in base?
-        //public Vob(VosReference reference) : base(vos, parent, name) { this.Reference = reference; }
+        //public Vob(VobReference reference) : base(vos, parent, name) { this.Reference = reference; }
 
 #endregion
 

@@ -7,7 +7,7 @@ namespace LionFire.Assets
 {
     public static class AssetHandleExtensions
     {
-        public static IReadWriteHandle<TAsset> GetReadWriteHandle<TAsset>(this TAsset asset)
+        public static IReadWriteHandle<TAsset> GetReadWriteAssetHandle<TAsset>(this TAsset asset)
             where TAsset : IAsset<TAsset>
         {
             if (asset is IReadWriteHandleAware<TAsset> aware && aware.ReadWriteHandle != null) return aware.ReadWriteHandle;
@@ -16,7 +16,7 @@ namespace LionFire.Assets
             return handle;
         }
 
-        public static IReadHandle<TAsset> GetReadHandle<TAsset>(this TAsset asset)
+        public static IReadHandle<TAsset> GetReadAssetHandle<TAsset>(this TAsset asset)
          where TAsset : IAsset<TAsset>
         {
             if (asset is IReadHandleAware<TAsset> aware && aware.ReadHandle != null) return aware.ReadHandle;

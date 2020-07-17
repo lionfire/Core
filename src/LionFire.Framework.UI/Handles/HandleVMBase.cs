@@ -15,6 +15,7 @@ namespace LionFire.UI
     {
         //IHAsset IAssetVM.HAsset { get { return HAsset; } }
 
+        public IReadWriteHandle<AssetType> Handle => HAsset;
         public IReadWriteHandle<AssetType> HAsset
         {
             get => hAsset;

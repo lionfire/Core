@@ -2,6 +2,7 @@
 
 namespace LionFire.Threading
 {
+    // TODO: Make this more like the WPF event args
     public sealed class DispatcherUnhandledExceptionEventArgs : EventArgs
     {
         public DispatcherUnhandledExceptionEventArgs() { }

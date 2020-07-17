@@ -107,7 +107,7 @@ namespace LionFire.Vos
                 {
                     StartAction = () => Logger.LogInformation("Vos initialized"),
                 }
-                .Provides("vos:")
+                .Provide("vos:")
                 .RootDependency();
 
                 foreach (var rootName in vosOptions.RootNames)

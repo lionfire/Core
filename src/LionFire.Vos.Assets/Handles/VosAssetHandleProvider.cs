@@ -39,9 +39,9 @@ namespace LionFire.Vos.Assets.Handles
     }
 
     // UNUSED
-    //public class AssetCollectionTypeProvider : ICollectionTypeProvider<VosReference>
+    //public class AssetCollectionTypeProvider : ICollectionTypeProvider<VobReference>
     //{
-    //    public Type GetCollectionType(VosReference reference)
+    //    public Type GetCollectionType(VobReference reference)
     //    {
     //        var vob = reference.ToVob();
     //        var type = vob.Parent.AcquireOwn<CollectionsByTypeManager>()?.GetCollectionType(vob);

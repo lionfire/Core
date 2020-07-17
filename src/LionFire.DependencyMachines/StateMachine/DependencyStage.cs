@@ -26,7 +26,7 @@ namespace LionFire.DependencyMachines
         {
             if (member.Provides != null)
             {
-                foreach (var provided in member.Provides)
+                foreach (var provided in member.EffectiveProvides())
                 {
                     provides ??= new HashSet<string>();
                     provides.Add(provided.ToDependencyKey());

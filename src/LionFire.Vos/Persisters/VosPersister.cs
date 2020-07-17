@@ -4,9 +4,11 @@ using LionFire.Serialization;
 using LionFire.Vos;
 using LionFire.Vos.Mounts;
 using LionFire.Vos.Services;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -14,7 +16,7 @@ namespace LionFire.Persistence.Persisters.Vos
 {
     public class VosPersister :
         SerializingPersisterBase<VosPersisterOptions>
-        , IPersister<IVosReference>
+        , IPersister<IVobReference>
     //, IFilesystemPersistence<TReference, TPersistenceOptions>
     //, IWriter<string> // FUTURE?
     //, IReader<string> // FUTURE?
@@ -56,9 +58,9 @@ namespace LionFire.Persistence.Persisters.Vos
         }
 
 
-        public Task<IPersistenceResult> Exists<TValue>(IReferencable<IVosReference> referencable) => throw new System.NotImplementedException();
+        public Task<IPersistenceResult> Exists<TValue>(IReferencable<IVobReference> referencable) => throw new System.NotImplementedException();
 
-        public async Task<IRetrieveResult<TValue>> Retrieve<TValue>(IReferencable<IVosReference> referencable)
+        public async Task<IRetrieveResult<TValue>> Retrieve<TValue>(IReferencable<IVobReference> referencable)
         {
             //if (typeof(TValue) == typeof(Metadata<IEnumerable<Listing>>)) return (IRetrieveResult<TValue>)await List(referencable).ConfigureAwait(false);
 
@@ -91,18 +93,20 @@ namespace LionFire.Persistence.Persisters.Vos
                             result.Flags |= PersistenceResultFlags.Found;
                             result.Value = childResult.Value;
                             result.ResolvedVia = mount.Target;
+                            l.Trace(result.ToString());
                             return result;
                         }
                     }
                 }
             }
             if (!anyMounts) result.Flags |= PersistenceResultFlags.MountNotAvailable;
+            l.Trace(result.ToString());
             return result;
         }
 
-        public Task<IPersistenceResult> Create<TValue>(IReferencable<IVosReference> referencable, TValue value) => throw new System.NotImplementedException();
-        public Task<IPersistenceResult> Update<TValue>(IReferencable<IVosReference> referencable, TValue value) => throw new System.NotImplementedException();
-        public async Task<IPersistenceResult> Upsert<TValue>(IReferencable<IVosReference> referencable, TValue value)
+        public Task<IPersistenceResult> Create<TValue>(IReferencable<IVobReference> referencable, TValue value) => throw new System.NotImplementedException();
+        public Task<IPersistenceResult> Update<TValue>(IReferencable<IVobReference> referencable, TValue value) => throw new System.NotImplementedException();
+        public async Task<IPersistenceResult> Upsert<TValue>(IReferencable<IVobReference> referencable, TValue value)
         {
             var vob = Root[referencable.Reference.Path];
 
@@ -129,22 +133,28 @@ namespace LionFire.Persistence.Persisters.Vos
                         result.Flags |= PersistenceResultFlags.Success; // Indicates that at least one underlying persister succeeded
                         result.ResolvedVia = mount.Target;
 
+                        l.Trace(result.ToString());
                         return result;
                     }
                 }
             }
-            if (!anyMounts) result.Flags |= PersistenceResultFlags.MountNotAvailable;
+            if (!anyMounts)
+            {
+                result.Flags |= PersistenceResultFlags.MountNotAvailable;
+                result.ResolvedVia = referencable?.Reference;
+            }
+            l.Trace(result.ToString());
             return result;
         }
-        public Task<IPersistenceResult> Delete(IReferencable<IVosReference> referencable) => throw new System.NotImplementedException();
-        public async Task<IRetrieveResult<IEnumerable<Listing<T>>>> List<T>(IReferencable<IVosReference> referencable, ListFilter filter = null)
+        public Task<IPersistenceResult> Delete(IReferencable<IVobReference> referencable) => throw new System.NotImplementedException();
+        public async Task<IRetrieveResult<IEnumerable<Listing<T>>>> List<T>(IReferencable<IVobReference> referencable, ListFilter filter = null)
         {
-            var result = await Retrieve<Metadata<IEnumerable<Listing<T>>>>(referencable).ConfigureAwait(false);
-            if (result.IsSuccess())
-            {
-                return RetrieveResult<IEnumerable<Listing<T>>>.Success(result.Value.Value);
-            }
-            return new RetrieveResult<IEnumerable<Listing<T>>> { Flags = result.Flags, Error = result.Error };
+            var retrieveResult = await Retrieve<Metadata<IEnumerable<Listing<T>>>>(referencable).ConfigureAwait(false);
+            var result = retrieveResult.IsSuccess() 
+                ? RetrieveResult<IEnumerable<Listing<T>>>.Success(retrieveResult.Value.Value)
+                : new RetrieveResult<IEnumerable<Listing<T>>> { Flags = retrieveResult.Flags, Error = retrieveResult.Error };
+            l.Trace(result.ToString());
+            return result;
             //    var vob = Root[referencable.Reference.Path];
 
             //    var result = new VosRetrieveResult<Metadata<IEnumerable<Listing>>>();
@@ -179,6 +189,9 @@ namespace LionFire.Persistence.Persisters.Vos
             //    if (!anyMounts) result.Flags |= PersistenceResultFlags.MountNotAvailable;
             //    return result;
         }
+
+        private static readonly ILogger l = Log.Get();
+
     }
 
     public class VosPersistenceResult : PersistenceResult

@@ -15,7 +15,7 @@ namespace LionFire.ExtensionMethods.Persistence
             var result = await TrySave(referencable).ConfigureAwait(false);
             if (result.IsSuccess() != true)
             {
-                throw new Exception($"Save of '{referencable}' failed: {result}");
+                throw new PersistenceException(result, $"Save of '{referencable}' failed: {result}");
             }
             return result;
         }

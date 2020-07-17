@@ -6,7 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
 
-namespace LionFire.Wpf
+namespace LionFire.UI.Wpf
 {
     public static class WindowUtils
     {
@@ -15,11 +15,7 @@ namespace LionFire.Wpf
             get
             {
                 int w = 0;
-                foreach (var s in System.Windows.Forms.Screen.AllScreens)
-                {
-                    w += s.Bounds.Width;
-                }
-
+                foreach (var s in System.Windows.Forms.Screen.AllScreens) { w += s.Bounds.Width; }
                 return w;
             }
         }
@@ -28,36 +24,31 @@ namespace LionFire.Wpf
             get
             {
                 int h = 0;
-                foreach (var s in System.Windows.Forms.Screen.AllScreens)
-                {
-                    h += s.Bounds.Height;
-                }
-
+                foreach (var s in System.Windows.Forms.Screen.AllScreens) { h += s.Bounds.Height; }
                 return h;
             }
         }
 
         public static WindowProfile GetCurrentProfile(this WindowSettings windowSettings)
-        {
-            return windowSettings.GetProfile(DesktopWidth, DesktopHeight);
-        }
+            => windowSettings.GetProfile(DesktopWidth, DesktopHeight);
 
         public static void UpdateWindowProfile(WindowSettings windowSettings, System.Windows.Window window, Dictionary<string, Window> otherWindows = null)
         {
             var profile = GetCurrentProfile(windowSettings);
-
-            if (profile.MainWindow == null)
             {
-                profile.MainWindow = new WindowLayout();
+                if (profile.MainWindow == null)
+                {
+                    profile.MainWindow = new WindowLayout();
+                }
+                UpdateWindowLayout(profile.MainWindow, window);
             }
-            UpdateWindowLayout(profile.MainWindow, window);
 
             if (otherWindows != null)
             {
                 foreach (var kvp in otherWindows)
                 {
-                    throw new NotImplementedException();
-                    //UpdateWindow(profile.GetWindow(kvp.Key), kvp.Value);
+                    var layout = profile.OtherWindows.GetOrAddNew(kvp.Key);
+                    UpdateWindowLayout(layout, kvp.Value);
                 }
             }
         }
@@ -72,9 +63,9 @@ namespace LionFire.Wpf
 
         public static void RestoreWindowLayout(WindowLayout windowLayout, Window window)
         {
-            if(windowLayout.X > 0) window.Left = windowLayout.X;
-            if (windowLayout.Y> 0) window.Top = windowLayout.Y;
-            if (windowLayout.Width > 0) window.Width= windowLayout.Width;
+            if (windowLayout.X > 0) window.Left = windowLayout.X;
+            if (windowLayout.Y > 0) window.Top = windowLayout.Y;
+            if (windowLayout.Width > 0) window.Width = windowLayout.Width;
             if (windowLayout.Height > 0) window.Height = windowLayout.Height;
         }
 

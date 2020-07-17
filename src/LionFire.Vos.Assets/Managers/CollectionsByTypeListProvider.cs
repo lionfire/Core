@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace LionFire.Vos.Collections.ByType
 {
-    public class CollectionsByTypeListProvider : IListProvider<VosReference>
+    public class CollectionsByTypeListProvider : IListProvider<VobReference>
     {
         /// <summary>
         /// Scenarios covered by this:
@@ -17,7 +17,7 @@ namespace LionFire.Vos.Collections.ByType
         /// <param name="referencable"></param>
         /// <param name="filter"></param>
         /// <returns></returns>
-        public Task<IEnumerable<Listing<T>>> List<T>(IPersister<VosReference> persister, IReferencable<VosReference> referencable, ListFilter filter = null)
+        public Task<IEnumerable<Listing<T>>> List<T>(IPersister<VobReference> persister, IReferencable<VobReference> referencable, ListFilter filter = null)
         {
             var vob = referencable.ReferencableToVob();
 

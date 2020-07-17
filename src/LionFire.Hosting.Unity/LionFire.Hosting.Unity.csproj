@@ -16,8 +16,8 @@
     <ProjectReference Include="..\LionFire.Platform.Unity\LionFire.Platform.Unity.csproj" />
   </ItemGroup>
 
-  <Target Name="PostBuild" AfterTargets="PostBuildEvent">
+  <!--<Target Name="PostBuild" AfterTargets="PostBuildEvent">
     <Exec Command="xcopy /y $(TargetPath) &quot;D:\exp\unity\LionFire.Hosting.Unity.Sample\Assets\lib&quot;&#xD;&#xA;xcopy /y $(TargetPath) &quot;C:\src\valor\Unity\Assets\bin\Debug\netstandard2.0&quot;" />
-  </Target>
+  </Target>-->
 
 </Project>

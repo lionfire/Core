@@ -30,9 +30,9 @@ namespace Environment_
                     root.Environment("key1", "value1-changed");
                     Assert.Equal("value1-changed", root.Environment("key1"));
 
-                    root.Environment("key1", new VosReference("/value1-changed-to-VosReference"));
-                    Assert.IsType<VosReference>(root.Environment("key1"));
-                    Assert.Equal("/value1-changed-to-VosReference", ((VosReference)root.Environment("key1")).Path);
+                    root.Environment("key1", new VobReference("/value1-changed-to-VobReference"));
+                    Assert.IsType<VobReference>(root.Environment("key1"));
+                    Assert.Equal("/value1-changed-to-VobReference", ((VobReference)root.Environment("key1")).Path);
                 });
         }
     }

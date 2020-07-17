@@ -22,7 +22,6 @@ namespace LionFire.Assets
             this.assetObject = assetObject;
         }
 
-
         #endregion
 
         internal AssetType AssetObject => assetObject;

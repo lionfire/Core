@@ -27,12 +27,16 @@ using LionFire.Ontology;
 using LionFire.UI;
 using System.Diagnostics;
 using LionFire.Shell.Wpf;
+using Microsoft.Extensions.Options;
+using LionFire.UI.Windowing;
+using LionFire.UI.Wpf;
 
 namespace LionFire.Shell
 {
 
     /// <summary>
     /// Intelligent content host for the main content area of the LionFire Shell.
+    /// RENAME to WindowPresenter
     /// </summary>
     public partial class ShellContentPresenter : UserControl, /*IControllable, UNUSED*/ IShellContentPresenter, INotifyPropertyChanged
     {
@@ -47,16 +51,22 @@ namespace LionFire.Shell
         #region Dependencies
 
         public WpfShellPresenter ShellPresenter { get; }
+        public IOptionsMonitor<WindowSettings> WindowSettingsOptions { get; }
+        public WindowSettings WindowSettings => WindowSettingsOptions?.CurrentValue;
+        public WindowLayout WindowLayout => WindowSettings?.GetCurrentProfile().GetWindow(Name ?? WindowSettings.DefaultWindowName);
+
         ShellContentPresenter MainPresenter => ShellPresenter.MainPresenter;
 
         #endregion
 
-        public ShellContentPresenter(WpfShellPresenter shell, string name = null)
+        public ShellContentPresenter(WpfShellPresenter shell, IOptionsMonitor<WindowSettings> windowSettingsOptions, string name = null)
         {
             if (name != null) { Name = name; }
+           
             //ApartmentState ap = Thread.CurrentThread.GetApartmentState();
             InitializeComponent();
             ShellPresenter = shell;
+            WindowSettingsOptions = windowSettingsOptions;
 
             //if (LionFireShellApp.Instance != null && !LionFireShellApp.Instance.GetType().IsAbstract)
             //{
@@ -77,7 +87,7 @@ namespace LionFire.Shell
 
         public bool ShowMenuButton
         {
-            get { return showMenuButton; }
+            get => showMenuButton;
             set
             {
                 if (showMenuButton == value) return;
@@ -88,8 +98,6 @@ namespace LionFire.Shell
         private bool showMenuButton;
 
         #endregion
-
-
 
         #endregion
 
@@ -203,8 +211,11 @@ namespace LionFire.Shell
             {
                 if (shellWindow == null && !isClosing)
                 {
-                    shellWindow = new ShellWindow(this);
-                    shellWindow.Topmost = MainPresenter?.Topmost ?? false;
+                    shellWindow = new ShellWindow(this)
+                    {
+                        Topmost = MainPresenter?.Topmost ?? false,
+                        WindowLayout = WindowLayout,
+                    };
                     shellWindow.Closed += new EventHandler(shellWindow_Closed);
                 }
                 return shellWindow;
@@ -220,8 +231,10 @@ namespace LionFire.Shell
             {
                 if (fullScreenShellWindow == null && !isClosing)
                 {
-                    fullScreenShellWindow = new FullScreenShellWindow(this);
-                    fullScreenShellWindow.Topmost = MainPresenter?.Topmost ?? false;
+                    fullScreenShellWindow = new FullScreenShellWindow(this)
+                    {
+                        Topmost = MainPresenter?.Topmost ?? false
+                    };
                     fullScreenShellWindow.Closed += new EventHandler(fullScreenShellWindow_Closed);
                 }
                 return fullScreenShellWindow;
@@ -241,26 +254,15 @@ namespace LionFire.Shell
             this.Close();
         }
 
-        public System.Windows.Threading.Dispatcher CurrentDispatcher
-        {
-            get
-            {
-                var w = CurrentWindow;
-                return w == null ? null : w.Dispatcher;
-            }
-        }
-        public Window CurrentWindow
-        {
-            get
-            {
-                return IsFullScreen ? fullScreenShellWindow : (Window)shellWindow;
-            }
-        }
+        //public System.Windows.Threading.Dispatcher CurrentDispatcher => CurrentWindow?.Dispatcher;
+
+        object IShellContentPresenter.CurrentWindow => CurrentWindow;
+        public Window CurrentWindow => IsFullScreen ? fullScreenShellWindow : (Window)shellWindow;
 
         #endregion
 
-
         #region Show / Hide
+
         public bool IsPresenterEnabled = true;
 
         public void Show()
@@ -396,14 +398,13 @@ namespace LionFire.Shell
 
         public string CurrentTabName
         {
-            get { return currentTabName; }
+            get => currentTabName;
             private set
             {
                 if (currentTabName == value) return;
                 currentTabName = value;
 
-                var ev = CurrentTabNameChanged;
-                if (ev != null) ev();
+                CurrentTabNameChanged?.Invoke();
             }
         }
         private string currentTabName;
@@ -416,32 +417,16 @@ namespace LionFire.Shell
             {
                 if (ShellTabControl == null) return null;
                 var tabItem = ShellTabControl.SelectedItem as TabItem;
-                if (tabItem != null)
-                {
-                    return tabItem.Content;
-                }
-                else
-                {
-                    return ShellTabControl.SelectedItem;
-                }
+                if (tabItem != null) { return tabItem.Content; }
+                else { return ShellTabControl.SelectedItem; }
             }
         }
-        public IDocumentTab CurrentDocumentTab
-        {
-            get
-            {
-                return CurrentTabContents as IDocumentTab;
-            }
-        }
-
-
+        public IDocumentTab CurrentDocumentTab => CurrentTabContents as IDocumentTab;
 
         #endregion
 
-        public bool Contains(string name)
-        {
-            return GetTabItem(name) != null;
-        }
+        public bool Contains(string name) => GetTabItem(name) != null;
+
         public TabItem GetTabItem(string name)
         {
             foreach (TabItem ti in ShellTabControl.Items.OfType<TabItem>())
@@ -467,7 +452,6 @@ namespace LionFire.Shell
             ti.Content = control;
 
             ShellTabControl.Items.Add(ti);
-
             return ti;
         }
 
@@ -478,7 +462,6 @@ namespace LionFire.Shell
 
         public FrameworkElement ShowTab(string tabKey)
         {
-
             this.ShellTabControl.SelectedItem = GetTabItem(tabKey);
 
             this.CurrentTabName = tabKey;
@@ -537,15 +520,16 @@ namespace LionFire.Shell
             return null;
         }
 
-        public TabItem AddBackgroundTabItem(string name, FrameworkElement control)
+        public TabItem AddBackgroundTabItem(string name, object control)
         {
             if (GetBackgroundTabItem(name) != null) throw new ArgumentException("TabItem with the given name already exists.");
 
-            TabItem ti = new TabItem();
-            ti.Tag = name;
-            ti.Header = name;
-
-            ti.Content = control;
+            TabItem ti = new TabItem
+            {
+                Tag = name,
+                Header = name,
+                Content = control
+            };
 
             BackgroundShellTabControl.Items.Add(ti);
 
@@ -717,7 +701,7 @@ namespace LionFire.Shell
         }
 
         public T PushTab<T>(string tabName = null)
-            where T : FrameworkElement
+            where T : class
         {
             NavStack.Push(CurrentTabName);
             return GetControl<T>(tabName, showControl: true);
@@ -728,12 +712,18 @@ namespace LionFire.Shell
 
 
         #region Tab Management
+        public T ShowControl<T>(string tabName = null)
+            where T : class
+        {
+            var control = GetControl<T>(tabName) ;
+            return control; // REVIEW
+        }
 
         public T GetControl<T>(string tabName = null
             //, T frameworkElement = null
             , bool showControl = false
             //, bool pushToNavStackOnShow = true FUTURE?
-            ) where T : FrameworkElement
+            ) where T : class
         {
             l.Debug("ShowControl: " + typeof(T).Name + " showControl = " + showControl);
 
@@ -756,7 +746,7 @@ namespace LionFire.Shell
                 {
                     this.AddTabItem(tabName,
                         //frameworkElement ?? 
-                        frameworkElement = Activator.CreateInstance<T>());
+                        frameworkElement = (FrameworkElement)(object)Activator.CreateInstance<T>());
 
                     var parented = frameworkElement as IParented<IShellContentPresenter>;
                     if (parented != null)
@@ -838,7 +828,7 @@ namespace LionFire.Shell
         }
 
 
-        public void HideModalControl<T>() where T : FrameworkElement
+        public void HideModalControl<T>() where T : class
         {
             this.ModalControl.Visibility = System.Windows.Visibility.Collapsed;
             var fe = this.ModalControl.Content as FrameworkElement;
@@ -860,7 +850,8 @@ namespace LionFire.Shell
 
         // TODO: What happens 
 
-        public T ShowModalControl<T>(string tabName = null) where T : FrameworkElement
+        public T ShowModalControl<T>(string tabName = null)
+            where T : class
         {
             tabName = tabName ?? TabManager.GetTabNameFromType<T>();
 
@@ -904,7 +895,7 @@ namespace LionFire.Shell
             return controlInstance;
         }
 
-        public T ShowBackgroundControl<T>(string tabName = null) where T : FrameworkElement
+        public T ShowBackgroundControl<T>(string tabName = null) where T : class
         {
             tabName = tabName ?? TabManager.GetTabNameFromType<T>();
 

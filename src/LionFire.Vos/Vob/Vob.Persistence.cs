@@ -57,7 +57,7 @@ namespace LionFire.Vos
         //    return false;
         //}
 
-        //public object TryRetrieve(VosReference reference)
+        //public object TryRetrieve(VobReference reference)
         //{
         //    if (reference.Path != this.Path)
         //    {
@@ -940,7 +940,7 @@ namespace LionFire.Vos
         }
 #endif
 
-        //public object TryRetrieve(VosReference reference, string[] pathChunks, int pathIndex)
+        //public object TryRetrieve(VobReference reference, string[] pathChunks, int pathIndex)
         //{
         //    List<Mount> mounts = new List<Mount>();
 
@@ -1321,7 +1321,7 @@ namespace LionFire.Vos
                     saveHandle.Object = obj;
                 }
 
-                MBus.Current.Publish(new VobSaveEvent(VosReference, saveHandle.Reference));
+                MBus.Current.Publish(new VobSaveEvent(VobReference, saveHandle.Reference));
 
 
 #if INFO_VOB

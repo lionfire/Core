@@ -20,7 +20,7 @@ namespace Compilation_
 
                     var root = serviceProvider.GetRequiredService<VosRootManager>().Get();
 
-                    var rwH = "/TestScript".ToVosReference().ToReadWriteHandle<string>();
+                    var rwH = "/TestScript".ToVobReference().ToReadWriteHandle<string>();
                     Assert.NotNull(rwH); 
 
                     var code = @"using System;

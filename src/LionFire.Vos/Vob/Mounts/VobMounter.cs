@@ -27,7 +27,7 @@ namespace LionFire.Vos.Mounts
                 {
                     throw new ArgumentException($"{nameof(tMount)}.{nameof(tMount.MountPoint)} must be same or a descendant of {nameof(mountPointOrParent)}.{nameof(mountPointOrParent.Path)}");
                 }
-                mountPoint = mountPointOrParent.Root[tMount.MountPoint.Path]; // TODO: Add VosReference overload to Vob[] accessor?
+                mountPoint = mountPointOrParent.Root[tMount.MountPoint.Path]; // TODO: Add VobReference overload to Vob[] accessor?
             }
             var mount = new Mount(mountPoint, tMount);
             return DoMount(mount);

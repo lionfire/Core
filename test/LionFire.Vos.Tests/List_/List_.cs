@@ -35,7 +35,7 @@ namespace List_
                 .RunAsync(async serviceProvider =>
                 {
                     var root = serviceProvider.GetRootVob();
-                    var test = "$test".ToVosReference();
+                    var test = "$test".ToVobReference();
 
                     #region Setup
 
@@ -73,7 +73,7 @@ namespace List_
                 .RunAsync(serviceProvider =>
                 {
                     var root = serviceProvider.GetRootVob();
-                    var test = "$test".ToVosReference();
+                    var test = "$test".ToVobReference();
                     
                     var hList1 = test.GetReadHandle<Metadata<IEnumerable<Listing>>>();
                     var hList2 = test.GetListHandle();

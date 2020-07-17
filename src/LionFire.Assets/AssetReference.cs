@@ -18,10 +18,7 @@ namespace LionFire.Assets
         public const string UriSchemeDefault = "asset";
         public const string UriPrefixDefault = "asset:";
 
-        public override IEnumerable<string> AllowedSchemes
-        {
-            get { yield return UriSchemeDefault; }
-        }
+        public override IEnumerable<string> AllowedSchemes { get { yield return UriSchemeDefault; } }
 
         public override string Scheme => UriSchemeDefault;
 
@@ -54,10 +51,18 @@ namespace LionFire.Assets
         {
             this.Path = string.Empty;
         }
-        public AssetReference(string assetPath)
+        public AssetReference(string assetPath = "")
         {
             this.Path = assetPath;
         }
+        public AssetReference(string assetPath, string assetChannel)
+        {
+            this.Path = assetPath;
+            this.Persister = assetChannel;
+        }
+
+        public static AssetReference<TValue> Channel(string assetChannel, string assetPath = "") 
+            => new AssetReference<TValue>(assetPath, assetChannel);
 
         #endregion
 

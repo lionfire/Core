@@ -13,26 +13,40 @@ namespace LionFire.Vos.Assets.Persisters
 {
     public class VosAssetOptions : PersistenceOptions
     {
-        public IVosReference AssetRoot { get; set; } 
-        //public IVosReference ContextVob { get; set; }
+        /// <summary>
+        /// Location of default AssetRoot used to resolve AssetReferences when the Persister property is null.
+        /// Defaults to "$assets" if unset.
+        /// </summary>
+        public IVobReference DefaultAssetRoot { get; set; } = DefaultAssetRootDefault;
+        //public IVobReference ContextVob { get; set; }
+
+        public static readonly IVobReference DefaultAssetRootDefault = new VobReference("$assets");
+
     }
 
-    public class VosAssetPersister : PassthroughPersister<IAssetReference, VosAssetOptions, IVosReference, VosPersister>, IPersister<IAssetReference>
+    public class VosAssetPersister : PassthroughPersister<IAssetReference, VosAssetOptions, IVobReference, VosPersister>, IPersister<IAssetReference>
     {
-        VosAssetOptions Options { get; }
-        public IVosReference AssetRoot { get; }
+        #region Dependencies
 
-        public VosReference DefaultAssetRoot = "$assets";
-        IPersisterProvider<VosReference> PersisterProvider { get; }
+        VosAssetOptions Options { get; }
+        IPersisterProvider<VobReference> VosPersisterProvider { get; }
+
+        #endregion
+
+        #region Cache
+
+        public IVobReference DefaultAssetRoot { get; }
+        
+        #endregion
+
         #region Construction
 
-        protected override VosPersister GetUnderlyingPersister => (VosPersister)PersisterProvider.GetPersister(AssetRoot.Persister);
 
-        public VosAssetPersister(VosAssetOptions options, IPersisterProvider<VosReference> persisterProvider, SerializationOptions serializationOptions) : base(options?.SerializationOptions ?? serializationOptions)
+        public VosAssetPersister(VosAssetOptions options, IPersisterProvider<VobReference> persisterProvider, SerializationOptions serializationOptions) : base(options?.SerializationOptions ?? serializationOptions)
         {
-            PersisterProvider = persisterProvider;
+            VosPersisterProvider = persisterProvider;
             Options = options;
-            AssetRoot = Options.AssetRoot ?? DefaultAssetRoot;
+            DefaultAssetRoot = Options.DefaultAssetRoot;
             //UnderlyingPersister = (VosPersister)persisterProvider.GetPersister(AssetRoot.Persister);
 
             //var contextVob = options?.ContextVob?.ToVob() ?? "".ToVob();
@@ -41,14 +55,20 @@ namespace LionFire.Vos.Assets.Persisters
 
         #endregion
 
-        public string GetTypeKey(Type type) => type.Name;
+        //protected override VosPersister GetUnderlyingPersister => (VosPersister)VosPersisterProvider.GetPersister(DefaultAssetRoot.Persister);
+        protected override VosPersister GetUnderlyingPersister(IAssetReference reference) => (VosPersister)VosPersisterProvider.GetPersister(GetAssetRootForAssetChannel(reference.Persister).Persister);
 
-        public override IVosReference TranslateReferenceForRead(IAssetReference reference)
-            => this.AssetRoot.GetVob()[GetTypeKey(reference.Type)][reference.Path].Reference;
+        public string GetTypeKey(Type type) => AssetPaths.GetTypeKey(type);
 
-        public override IVosReference TranslateReferenceForWrite(IAssetReference reference)
+        private IVobReference GetAssetRootForAssetChannel(string assetChannel) 
+            => assetChannel == null ? DefaultAssetRoot : new VobReference(assetChannel);
+
+        public override IVobReference TranslateReferenceForRead(IAssetReference reference)
+            => GetAssetRootForAssetChannel(reference.Persister).GetVob()[GetTypeKey(reference.Type)][reference.Path].Reference;
+
+        public override IVobReference TranslateReferenceForWrite(IAssetReference reference)
             => AssetWriteContext.Current?.WriteLocation[GetTypeKey(reference.Type)][reference.Path] 
-            ?? this.AssetRoot.GetVob()[GetTypeKey(reference.Type)][reference.Path].Reference;
+            ?? GetAssetRootForAssetChannel(reference.Persister).GetVob()[GetTypeKey(reference.Type)][reference.Path].Reference;
 
 
     }

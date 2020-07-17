@@ -11,5 +11,7 @@ namespace LionFire.Applications.Splash
         IDisposable SetMessage(string message);
 
         event Action<string> MessageChanged;
+
+        double Progress{get;set;}
     }
 }

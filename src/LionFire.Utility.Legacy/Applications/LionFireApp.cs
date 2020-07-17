@@ -1,4 +1,5 @@
-﻿// TODO: IOC
+﻿#if false // MOVED to LionFiire.Applications
+// TODO: IOC
 //#define SPLASH_TEST
 #if !UNITY 
 //#define NAppUpdater
@@ -1499,20 +1500,6 @@ namespace LionFire.Applications
 
         #endregion
 
-        #region Settings
-
-        //public virtual void LoadSettings()
-        //{
-
-        //}
-
-        //protected virtual void OnLoadedSettings()
-        //{
-
-        //}
-
-        #endregion
-
         #region (Private) Exception Event Handling
 
         void CurrentDomain_UnhandledException(object sender, UnhandledExceptionEventArgs e)
@@ -1605,3 +1592,5 @@ namespace LionFire.Applications
 
     }
 }
+
+#endif

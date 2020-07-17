@@ -24,7 +24,7 @@ namespace LionFire.Shell
 
         #region Derived
 
-        protected LionFireShellOptions ShellOptions => shellContentPresenter.ShellPresenter.Shell.ShellOptions;
+        protected ShellOptions ShellOptions => shellContentPresenter.ShellPresenter.Shell.ShellOptions;
 
         #endregion
 

@@ -12,6 +12,8 @@ namespace LionFire.Serialization
         TypeError = 1 << 2,
         Unrecognized = 1 << 3,
         NotSupported = 1 << 4,
+        SharingViolation = 1 << 5,
+        Exception = 1 << 6,
     }
 
     public class SerializationResult
@@ -19,6 +21,10 @@ namespace LionFire.Serialization
         public static readonly SerializationResult NotSupported = new SerializationResult { Flags = SerializationResultKind.NotSupported };
         public static readonly SerializationResult Success = new SerializationResult { Flags = SerializationResultKind.Success };
 
+        public static readonly SerializationResult SharingViolation = new SerializationResult { Flags = SerializationResultKind.SharingViolation };
+        public static SerializationResult FromException(Exception ex) 
+            => new SerializationResult { Flags = SerializationResultKind.Exception, Exception = ex};
+        
         public bool IsSuccess => Flags == SerializationResultKind.Success;
 
         public SerializationResultKind Flags { get; set; }
@@ -28,6 +34,7 @@ namespace LionFire.Serialization
         public int ErrorLineLocation { get; set; }
         public int ErrorLineNumber { get; set; }
 
+        public Exception Exception { get; set; }
         public IEnumerable<KeyValuePair<ISerializationStrategy, SerializationResult>> AggregateResults { get; set; }
     }
 

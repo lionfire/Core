@@ -1,4 +1,5 @@
-﻿using System;
+﻿using LionFire.Dependencies;
+using System;
 
 namespace LionFire.Applications
 {
@@ -28,6 +29,8 @@ namespace LionFire.Applications
 
     public class DevShell : IDevShell
     {
+        public static DevShell Instance => DependencyContext.Current.GetService<DevShell>();
+
         #region DebugUIVisible
 
         public bool DebugUIVisible

@@ -9,22 +9,22 @@
 //        #region Construction
 
 //        public VosStoresOptions() { }
-//        public VosStoresOptions(VosReference storesLocation, PackageManagerOptions packageManagerOptions = null)
+//        public VosStoresOptions(VobReference storesLocation, PackageManagerOptions packageManagerOptions = null)
 //        {
 //            StoresLocation = storesLocation;
 //            PackageManagerOptions = packageManagerOptions;
 //        }
 
-//        public static implicit operator VosStoresOptions(string vosPath) => new VosStoresOptions(vosPath.ToVosReference());
-//        public static implicit operator VosStoresOptions(VosReference vosReference) => new VosStoresOptions(vosReference);
+//        public static implicit operator VosStoresOptions(string vosPath) => new VosStoresOptions(vosPath.ToVobReference());
+//        public static implicit operator VosStoresOptions(VobReference vobReference) => new VosStoresOptions(vobReference);
 
 //        #endregion
 
-//        public VosReference StoresLocation { get; set; }
+//        public VobReference StoresLocation { get; set; }
 
 //        public PackageManagerOptions PackageManagerOptions { get; set; }
 //        public PackageManagerOptions EffectivePackageManagerOptions => PackageManagerOptions ?? PackageManagerOptions.Default;
 
-//        public IVosReference AvailableLocation => StoresLocation?.GetRelativeOrAbsolutePath(EffectivePackageManagerOptions?.AvailableSubPath); 
+//        public IVobReference AvailableLocation => StoresLocation?.GetRelativeOrAbsolutePath(EffectivePackageManagerOptions?.AvailableSubPath); 
 //    }
 //}

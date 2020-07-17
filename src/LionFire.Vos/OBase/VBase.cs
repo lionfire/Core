@@ -11,7 +11,7 @@ using LionFire.Referencing;
 
 namespace LionFire.Vos
 {
-    public class VBase : OBase<VosReference>, IVBase
+    public class VBase : OBase<VobReference>, IVBase
     {
 #region Ontology
 
@@ -37,7 +37,7 @@ namespace LionFire.Vos
 
 #region Scheme
 
-        public override IEnumerable<string> UriSchemes => VosReference.UriSchemes;
+        public override IEnumerable<string> UriSchemes => VobReference.UriSchemes;
 
 #endregion
 
@@ -56,7 +56,7 @@ namespace LionFire.Vos
         /// <typeparam name="T"></typeparam>
         /// <param name="reference"></param>
         /// <returns></returns>
-        public override async Task<IRetrieveResult<T>> TryGet<T>(VosReference reference)
+        public override async Task<IRetrieveResult<T>> TryGet<T>(VobReference reference)
         {
             var result = new RetrieveResult<T>();
 
@@ -90,20 +90,20 @@ namespace LionFire.Vos
 
 #region Set
 
-        protected override Task<IPersistenceResult> SetImpl<T>(VosReference reference, T obj, bool allowOverwrite = true) => throw new NotImplementedException();
+        protected override Task<IPersistenceResult> SetImpl<T>(VobReference reference, T obj, bool allowOverwrite = true) => throw new NotImplementedException();
 
 #endregion
 
 #region Delete
 
-        public override Task<IPersistenceResult> CanDelete<T>(VosReference reference) => throw new NotImplementedException();
-        public override Task<IPersistenceResult> TryDelete<T>(VosReference reference) => throw new NotImplementedException();
+        public override Task<IPersistenceResult> CanDelete<T>(VobReference reference) => throw new NotImplementedException();
+        public override Task<IPersistenceResult> TryDelete<T>(VobReference reference) => throw new NotImplementedException();
 
 #endregion
 
 #region List
 
-        public override Task<IEnumerable<string>> List<T>(VosReference parent) => throw new NotImplementedException();
+        public override Task<IEnumerable<string>> List<T>(VobReference parent) => throw new NotImplementedException();
 
 #endregion
 
@@ -113,7 +113,7 @@ namespace LionFire.Vos
 #region Vos-style Accessors
 
         public Vob this[string path] => Root[path];
-        public Vob this[VosReference reference] => Root[reference.Path]; // TODO: Verify VosReference refers to this VBase
+        public Vob this[VobReference reference] => Root[reference.Path]; // TODO: Verify VobReference refers to this VBase
 
 #endregion
 

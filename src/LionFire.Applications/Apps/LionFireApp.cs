@@ -19,6 +19,7 @@ using LionFire.Collections.Concurrent;
 using Microsoft.Extensions.Options;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.DependencyInjection;
+using LionFire.DependencyMachines;
 
 namespace LionFire.Applications
 {
@@ -53,7 +54,12 @@ namespace LionFire.Applications
 
         #region IHostedService
 
-        public async Task StartAsync(CancellationToken cancellationToken)
+        //protected void ConfigureParticipant(IParticipant participant)
+        //{
+        //    //participant.Provides()
+        //}
+
+        public Task StartAsync(CancellationToken cancellationToken)
         {
             if (Options.UpdatePolicy.HasFlag(UpdatePolicy.CheckBeforeStart))
             {
@@ -64,10 +70,14 @@ namespace LionFire.Applications
                 // - prompt user to update now or after shutdown
             }
 
+#if OLD // Use DepMach
             var startingServices = await StartAllTypes(Options.StartingServices, cancellationToken).ConfigureAwait(false);
             await StartAllTypes(Options.HostedServices, cancellationToken).ConfigureAwait(false);
             await StopAll(startingServices, cancellationToken).ConfigureAwait(false);
+#endif
+            return Task.CompletedTask;
         }
+#if OLD // Use DepMach
 
         private async Task<IEnumerable<IHostedService>> StartAllTypes(IEnumerable<Type>? types, CancellationToken cancellationToken)
         {
@@ -85,7 +95,9 @@ namespace LionFire.Applications
 
             return services;
         }
+#endif
 
+#if OLD // Use DepMach
         private static async Task StopAll(IEnumerable<IHostedService> services, CancellationToken cancellationToken)
         {
             var tasks = new List<Task>();
@@ -95,9 +107,11 @@ namespace LionFire.Applications
             }
             await Task.WhenAll(tasks).ConfigureAwait(false);
         }
+#endif
 
-        public async Task StopAsync(CancellationToken cancellationToken)
+        public Task StopAsync(CancellationToken cancellationToken)
         {
+#if OLD // Use DepMach
             if (Options.HostedServices.Any())
             {
                 var tasks = new List<Task>();
@@ -106,7 +120,9 @@ namespace LionFire.Applications
                     tasks.Add(((IHostedService)ServiceProvider.GetRequiredService(hostedService)).StopAsync(cancellationToken));
                 }
                 await Task.WhenAll(tasks).ConfigureAwait(false);
-            }
+        }
+#endif
+            return Task.CompletedTask;
         }
 
         #endregion
@@ -1083,20 +1099,7 @@ namespace LionFire.Applications
 
         #endregion
 
-        #region Settings
-
-        //public virtual void LoadSettings()
-        //{
-
-        //}
-
-        //protected virtual void OnLoadedSettings()
-        //{
-
-        //}
-
-        #endregion
-
+    
         #region (Private) Exception Event Handling
 
         void CurrentDomain_UnhandledException(object sender, UnhandledExceptionEventArgs e)
@@ -1152,7 +1155,7 @@ namespace LionFire.Applications
 
         #region INotifyPropertyChanged Implementation
 
-        public event PropertyChangedEventHandler PropertyChanged;
+        public event PropertyChangedEventHandler? PropertyChanged;
 
         private void OnPropertyChanged(string propertyName) => PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
 

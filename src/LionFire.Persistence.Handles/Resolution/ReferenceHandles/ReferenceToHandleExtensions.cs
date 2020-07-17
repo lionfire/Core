@@ -53,7 +53,7 @@ namespace LionFire.Referencing
             => referencable.Reference.GetReadHandle<Metadata<IEnumerable<Listing<object>>>>();
         public static IReadHandle<Metadata<IEnumerable<Listing<T>>>> GetListHandle<T>(this IReference reference)
                   => reference.GetReadHandle<Metadata<IEnumerable<Listing<T>>>>();
-        public static IReadHandle<Metadata<IEnumerable<Listing<T>>>> GetListHandle<T>(this IReferencable referencable)
+        public static IReadHandle<Metadata<IEnumerable<Listing<T>>>> ReferenceGetListHandle<T>(this IReferencable referencable)
             => referencable.Reference.GetReadHandle<Metadata<IEnumerable<Listing<T>>>>();
 
         public static IReadHandle<TValue> CreateReadHandle<TValue>(this IReference reference) => throw new NotImplementedException(); // FUTURE
@@ -71,6 +71,9 @@ namespace LionFire.Referencing
         #region Handles
 
         public static IReadWriteHandle<T> GetReadWriteHandle<T>(this IReference reference) => reference.GetReadWriteHandleProvider().GetReadWriteHandle<T>(reference);
+        public static IReadWriteHandle<TValue> GetReadWriteHandle<TValue, TReference>(this TReference reference)
+              where TReference : IReference
+              => reference.TryGetReadWriteHandleProvider<TReference>().GetReadWriteHandle<TValue>(reference);
 
         public static IReadWriteHandle<T> ToReadWriteHandle<T>(this IReference reference) => reference.GetReadWriteHandleProvider().GetReadWriteHandle<T>(reference)
             ?? throw new HasUnresolvedDependenciesException($"Could not get {nameof(IReadWriteHandle<T>)} type for reference of type {reference.GetType().FullName}");

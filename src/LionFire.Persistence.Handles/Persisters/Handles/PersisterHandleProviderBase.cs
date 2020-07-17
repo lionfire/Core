@@ -12,7 +12,7 @@ namespace LionFire.Persistence.Persisters
         protected IPersister<TReference> persister;
 
         public PersisterHandleProviderBase(IPersisterProvider<TReference> persisterProvider
-            //, IPersisterProvider<ProviderVosReference> providerFilePersisterProvider
+            //, IPersisterProvider<ProviderVobReference> providerFilePersisterProvider
             )
         {
             persister = persisterProvider.GetPersister();

@@ -16,7 +16,7 @@ namespace LionFire.Vos
         IEnumerable<IVob>, // Does not trigger a Retrieve (IO) operation -- it is just the child Vobs currently tracked
         IFlex
     {
-        new IVosReference Reference { get; }
+        new IVobReference Reference { get; }
         string Name { get; }
         IVob Parent { get; }
 
@@ -42,7 +42,7 @@ namespace LionFire.Vos
         IEnumerable<KeyValuePair<string, IVob>> Children { get; }
         IVob QueryChild(string subpath); 
         IVob QueryChild(string[] subpathChunks, int index = 0); // Replace with Span?
-        IVob QueryChild(IVosReference reference); 
+        IVob QueryChild(IVobReference reference); 
         //IVob GetChild(IEnumerable<string> subpathChunks); // Use IVobExtensions Extension method instead.  
         IVob GetChild(string subpath); 
         IVob GetChild(IEnumerator<string> subpathChunks);
@@ -51,7 +51,7 @@ namespace LionFire.Vos
 
         IVob this[string[] subpathChunks, int index = 0] { get; }
         IVob this[string subpath] { get; }
-        IVob this[IVosReference reference] { get; }
+        IVob this[IVobReference reference] { get; }
 
         #endregion
 

@@ -32,7 +32,7 @@ namespace LionFire.Shell
 
             // TODO: Hide the UpdateManager reference in the Application framework?
             var dr = MessageBox.Show(
-                    "An unhandled exception occurred.  Do you wish to continue?  If no, the application will be aborted.  Exception: " + Environment.NewLine + ex.ToString().Substring(0, Math.Min(500, ex.ToString().Length)),
+                    "An unhandled exception occurred.  Do you wish to continue?  If no, the application will be aborted.  Exception: " + System.Environment.NewLine + ex.ToString().Substring(0, Math.Min(500, ex.ToString().Length)),
                     "Unhandled exception",
                      MessageBoxButton.YesNo);
 

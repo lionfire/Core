@@ -60,7 +60,7 @@ namespace LionFire.DependencyMachines
 
         #region Parameters
 
-        public bool TryToKeepContributorsTogether { get; set; } = false;
+        public bool TryToKeepContributorsTogether { get; set; } = false; // FIXME: true causes infinite loop for vos -- is Fallback not working?
         public bool FallbackToEarlyContributorsIfNeeded { get; set; } = true; // Only used if TryToKeepContributorsTogether is true  
 
         #endregion
@@ -85,9 +85,10 @@ namespace LionFire.DependencyMachines
             Dictionary<string, List<string>> beforeRequirements = new Dictionary<string, List<string>>();
             foreach (var member in participants)
             {
-                if (member.Provides != null)
+                var provides = member.EffectiveProvides();
+                if (provides.Any())
                 {
-                    foreach (var provided in member.Provides.Select(p => p.ToDependencyKey()))
+                    foreach (var provided in provides.Select(p => p.ToDependencyKey()))
                     {
                         if (providedObjects.ContainsKey(provided))
                         {
@@ -162,23 +163,11 @@ namespace LionFire.DependencyMachines
 
                 stage = new DependencyStage() { AllowNoDependencies = true };
 
-                var cannotContributeYet = new HashSet<string>();
-
-                void StillUnsolved(IParticipant member)
-                {
-                    if (!allowEarlyContributors && member.Contributes != null)
-                    {
-                        foreach (var contribution in member.Contributes)
-                        {
-                            cannotContributeYet.Add(contribution.ToDependencyKey());
-                            //potentialContributors.Remove(contribution.ToDependencyKey());
-                        }
-                    }
-                }
+                //var cannotContributeYet = new HashSet<string>();
+                var contributionHasUnsolvedMembers = new HashSet<string>();
 
                 foreach (var member in unsolved.Values.ToArray())
                 {
-
                     #region Skip if beforeRequirements not satisfied
 
                     if (beforeRequirements.ContainsKey(member.Key))
@@ -261,17 +250,18 @@ namespace LionFire.DependencyMachines
                     {
                         #region Skip if saving a set of contributions to the same contribution key for later
 
-                        if (member.Contributes.Where(c => cannotContributeYet.Contains(c)).Any()) continue;
+                        if (!allowEarlyContributors && member.Contributes.Where(c => contributionHasUnsolvedMembers.Contains(c)).Any()) continue;
 
                         #endregion
 
-
                         #region Maybe mark this as solved in the next step
+
                         foreach (var contribution in member.Contributes)
                         {
                             potentiallyContributedKeys.GetOrAdd(contribution.ToDependencyKey()).Add(member);
                         }
                         continue;
+
                         #endregion
                     }
 
@@ -294,7 +284,7 @@ namespace LionFire.DependencyMachines
                             var contributedKey = contributed.ToDependencyKey();
                             if (!contributorsRemaining.ContainsKey(contributedKey))
                             {
-                                Debug.WriteLine("Unexpected: !contributors.ContainsKey(contributedKey)"); // TOASSERT
+                                Debug.WriteLine("Unexpected error: !contributors.ContainsKey(contributedKey)"); // TOASSERT
                                 continue;
                             }
 
@@ -315,23 +305,61 @@ namespace LionFire.DependencyMachines
                     }
                 }
 
-                foreach (var kvp in potentiallyContributedKeys)
+                void StillUnsolved(IParticipant member)
                 {
-                    if (cannotContributeYet.Contains(kvp.Key))
+                    if (member.Contributes != null)
                     {
-                        foreach (var member in kvp.Value)
+                        foreach (var contribution in member.Contributes)
                         {
-                            Debug.WriteLine($"[unsolved] '{member.Key}' cannot contribute '{kvp.Key}' yet");
-                            StillUnsolved(member);
+                            contributionHasUnsolvedMembers.Add(contribution.ToDependencyKey());
+
+                            //if (!allowEarlyContributors && potentiallyContributedKeys.ContainsKey(contribution.ToDependencyKey()))
+                            //{
+                            //    //potentialContributors.Remove(contribution.ToDependencyKey());
+
+                            //    foreach (var potentiallyContributingMember in potentiallyContributedKeys[contribution.ToDependencyKey()])
+                            //    {
+                            //        //if (contributionHasUnsolvedMembers.Contains(kvp.Key))
+                            //        //{
+                            //        //foreach (var potentiallyContributingMember in kvp.Value)
+                            //        //{
+                            //        Debug.WriteLine($"[unsolved] Early contribution is not allowed, so '{potentiallyContributingMember.Key}' cannot contribute '{contribution.ToDependencyKey()}' yet");
+                            //        StillUnsolved(member);
+                            //        //}
+                            //        //continue;
+                            //        //}
+                            //    }
+                            //}
+                            //potentiallyContributedKeys.Remove(contribution.ToDependencyKey());
+                            //cannotContributeYet.Add(contribution.ToDependencyKey());
+                        }
+                    }
+                }
+
+                #region Completed Contributions: register as available
+
+                foreach (var contributionMembers in potentiallyContributedKeys)
+                {
+                    if (contributionHasUnsolvedMembers.Contains(contributionMembers.Key))
+                    {
+                        if (!allowEarlyContributors)
+                        {
+                            foreach (var member in contributionMembers.Value)
+                            {
+                                Debug.WriteLine($"[unsolved] Early contribution is not allowed, so '{member.Key}' cannot contribute '{contributionMembers.Key}' yet");
+                                StillUnsolved(member);
+                            }
                         }
                         continue;
                     }
-                    foreach (var member in kvp.Value)
+                    foreach (var member in contributionMembers.Value)
                     {
                         OnSolved(stage, member);
                     }
-                    availableDependencies.Add(kvp.Key);
+                    availableDependencies.Add(contributionMembers.Key);
                 }
+
+                #endregion
 
                 if (!stage.IsUseless)
                 {

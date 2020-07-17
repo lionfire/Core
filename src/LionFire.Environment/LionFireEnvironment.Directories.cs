@@ -240,6 +240,7 @@ namespace LionFire
             }
 
             public static string ReleaseNotesDir { get; set; } // TODO
+            public static string RunFileDirectory { get; set; }
 
             #endregion
         }

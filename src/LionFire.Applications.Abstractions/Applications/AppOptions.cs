@@ -18,6 +18,7 @@ namespace LionFire.Applications
 
         #region StartingServices
 
+#if OLD // Use DependencyMachine
         public IEnumerable<Type> StartingServices => startingServices;
         private List<Type> startingServices { get; } = new List<Type>();
 
@@ -27,22 +28,48 @@ namespace LionFire.Applications
             startingServices.Add(typeof(T));
             return this;
         }
+#endif
 
-        #endregion
+#endregion
 
-        #region HostedServices
+#region HostedServices
+        // Use DependencyMachine.AddHostedServiceDependency instead
 
-        public IEnumerable<Type> HostedServices => hostedServices;
+#if OLD
+        /// <summary>
+        /// A list of IHostedServices that will be started (and stopped) in order
+        /// </summary>
+        public List<Type> HostedServices => hostedServices;
+
         private List<Type> hostedServices { get; } = new List<Type>();
 
-        public AppOptions AddHostedService<T>()
-            where T : IHostedService
+        //public AppOptions AddHostedService<T>()
+        //    where T : IHostedService
+        //{
+        //    hostedServices.Add(typeof(T));
+        //    return this;
+        //}
+        public AppOptions SetHostedServices(params Type[] types)
         {
-            hostedServices.Add(typeof(T));
+            hostedServices.Clear();
+            foreach (var s in types)
+            {
+                if (!typeof(IHostedService).IsAssignableFrom(s)) throw new ArgumentException($"{nameof(types)} must be assignable to {typeof(IHostedService)}");
+                hostedServices.Add(s);
+            }
             return this;
         }
+        public AppOptions SetHostedServicesIfEmpty(params Type[] types)
+        {
+            if(hostedServices.Count == 0)
+            {
+                SetHostedServices(types);
+            }
+            return this;
+        }
+#endif
 
-        #endregion
+#endregion
 
         //#region StartAction
 

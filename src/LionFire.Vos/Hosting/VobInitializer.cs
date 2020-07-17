@@ -28,7 +28,7 @@ namespace LionFire.Services
         /// Targets Root Vob of default Root
         /// </summary>
         /// <param name="initializationAction"></param>
-        public VobInitializer(IServiceProvider serviceProvider, IVosReference reference, IVos rootManager, Func<IServiceProvider, IVob, object?> initializationAction)
+        public VobInitializer(IServiceProvider serviceProvider, IVobReference reference, IVos rootManager, Func<IServiceProvider, IVob, object?> initializationAction)
         {
             Vob = rootManager.GetVob(reference) ?? throw new Exception("Failed to get Vob '" + reference +"'.  Is the root name specified in VosOptions?");
 
@@ -47,7 +47,7 @@ namespace LionFire.Services
         /// Targets Root Vob of default Root
         /// </summary>
         /// <param name="initializationAction"></param>
-        public VobInitializer(IVosReference reference, Action<IServiceProvider, IVob> initializationAction)
+        public VobInitializer(IVobReference reference, Action<IServiceProvider, IVob> initializationAction)
             : this(reference, (serviceProvider, vob) =>
             {
                 initializationAction(serviceProvider, vob);
@@ -56,7 +56,7 @@ namespace LionFire.Services
         {
         }
 
-        public VobInitializer(IVosReference reference, Action<IVob> initializationAction) : this(reference, (_, vob) =>
+        public VobInitializer(IVobReference reference, Action<IVob> initializationAction) : this(reference, (_, vob) =>
         {
             initializationAction(vob);
             return null;
@@ -70,14 +70,14 @@ namespace LionFire.Services
 
         #region Primary
 
-        public VobInitializer(IVosReference reference, Func<IServiceProvider, IRootVob, object> initializationAction)
+        public VobInitializer(IVobReference reference, Func<IServiceProvider, IRootVob, object> initializationAction)
             : this(reference, (serviceProvider, vob) => initializationAction(serviceProvider, (IRootVob)vob))
         {
         }
 
         #endregion
 
-        public VobInitializer(IVosReference reference, Action<IServiceProvider, IRootVob> initializationAction)
+        public VobInitializer(IVobReference reference, Action<IServiceProvider, IRootVob> initializationAction)
                  : this(reference, (serviceProvider, vob) =>
                  {
                      initializationAction(serviceProvider, (IRootVob)vob);
@@ -85,7 +85,7 @@ namespace LionFire.Services
                  })
         {
         }
-        public VobInitializer(IVosReference reference, Action<IRootVob> initializationAction) : this(reference, (_, vob) =>
+        public VobInitializer(IVobReference reference, Action<IRootVob> initializationAction) : this(reference, (_, vob) =>
         {
             initializationAction((IRootVob)vob);
             return null;
@@ -102,7 +102,7 @@ namespace LionFire.Services
         ///// <param name="initializationAction"></param>
         //public VobInitializer(string path, Action<IServiceProvider, IVob> initializationAction)
         //{
-        //    Reference = new VosReference(path);
+        //    Reference = new VobReference(path);
         //    InitializationAction = initializationAction;
         //}
 

@@ -9,7 +9,7 @@ using LionFire.Services;
 
 namespace LionFire.Vos.Tests
 {
-    public class _VosReference
+    public class _VobReference
     {
         [Fact]
         public async void String_to_Reference()
@@ -21,7 +21,7 @@ namespace LionFire.Vos.Tests
                     var str = "vos:/path/to/vob";
                     var reference = str.GetReference();
 
-                    Assert.IsType<VosReference>(reference);
+                    Assert.IsType<VobReference>(reference);
 
                 });
 

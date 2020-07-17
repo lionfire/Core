@@ -58,7 +58,7 @@ namespace LionFire.Services
             //decorators.Add<INameTranslator>()
 
             services
-                .VosMount("/test".ToVosReference(), dir.ToFileReference(), new MountOptions()
+                .VosMount("/test".ToVobReference(), dir.ToFileReference(), new MountOptions()
                 {
                     ReadPriority = MountOptions.DefaultReadPriority,
                     WritePriority = MountOptions.DefaultWritePriority,
@@ -79,7 +79,7 @@ namespace LionFire.Services
             Directory.CreateDirectory(dir);
 
             services
-                .VosMountRead("/test".ToVosReference(), dir.ToFileReference())
+                .VosMountRead("/test".ToVobReference(), dir.ToFileReference())
                 .AddSingleton(serviceProvider => new TestDirectoryCleaner(dir, serviceProvider.GetRequiredService<IHostApplicationLifetime>()))
                 ;
 

@@ -16,6 +16,10 @@ using LionFire.Avalon;
 using System.Diagnostics;
 using LionFire.Applications;
 using LionFire.Dependencies;
+using System.Threading.Tasks;
+using LionFire.Persistence;
+using LionFire.Bindings;
+using LionFire.UI.Windowing;
 
 namespace LionFire.Shell
 {
@@ -25,7 +29,7 @@ namespace LionFire.Shell
     /// theme of rounded corners and custom dragmove caption bar.
     /// The ShellContentPresenter can be reparented between this window and the FullScreenShellWindow.
     /// </summary>    
-    public partial class ShellWindow : ShellWindowBase
+    public partial class ShellWindow : ShellWindowBase, INotifyPropertyChanged
     {
         #region Configuration
 
@@ -36,7 +40,7 @@ namespace LionFire.Shell
         #region Ontology
 
         public Grid BGGrid { get { return bgGrid; } }
-        private FullScreenShellWindow FullScreenShellWindow { get { return shellContentPresenter.FullScreenShellWindow; } }
+        private FullScreenShellWindow FullScreenShellWindow => shellContentPresenter.FullScreenShellWindow;
 
         #endregion
 
@@ -110,6 +114,9 @@ namespace LionFire.Shell
 
         #region Construction
 
+
+        public ShellWindow() { }
+
         public ShellWindow(ShellContentPresenter shellContentPresenter)
             : base(shellContentPresenter)
         {
@@ -130,12 +137,10 @@ namespace LionFire.Shell
             TitleBarExpander.IsExpanded = true; // TOCONFIG  per app
 
             //#if DEV
-#if TOPORT
-            if (LionFire.Applications.LionFireApp.IsDevMode)
+            if (DevMode.IsDevMode)
             {
-                debugButton.Visibility = System.Windows.Visibility.Visible;
+                debugButton.Visibility = Visibility.Visible;
             }
-#endif
             //#endif
 
             this.Width = WpfShell.Instance.ShellOptions.DefaultWindowWidth;
@@ -159,6 +164,24 @@ namespace LionFire.Shell
                 return appInfo?.AppDisplayName ?? appInfo?.AppName ?? appInfo?.AppId ?? "Unnamed Application";
             }
         }
+
+
+        #region WindowLayout 
+
+        public WindowLayout WindowLayout 
+        {
+            get => windowLayout;
+            set
+            {
+                if (windowLayout == value) return;
+                windowLayout = value;
+                //new LionBinding(windowLayout, )
+                OnPropertyChanged(nameof(WindowLayout));
+            }
+        }
+        private WindowLayout windowLayout = WindowLayout.CreateDefault;
+
+        #endregion
 
         void ShellWindow_Loaded(object sender, RoutedEventArgs e)
         {
@@ -354,6 +377,19 @@ namespace LionFire.Shell
             MoveToForeground.DoOnProcess(Process.GetCurrentProcess().ProcessName);
         }
 
-#endregion
+        #endregion
+
+        #region Misc
+
+
+        #region INotifyPropertyChanged Implementation
+
+        public event PropertyChangedEventHandler PropertyChanged;
+
+        protected void OnPropertyChanged(string propertyName) => PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+
+        #endregion
+
+        #endregion
     }
 }

@@ -210,9 +210,9 @@ namespace LionFire.Vos
 
         #endregion
 
-        #region Children by VosReference
+        #region Children by VobReference
 
-        public NodeType this[VosReference reference]
+        public NodeType this[VobReference reference]
         {
             get
             {
@@ -222,12 +222,12 @@ namespace LionFire.Vos
             }
         }
 
-        public NodeType GetChild(VosReference reference)
+        public NodeType GetChild(VobReference reference)
         {
             return this.GetChild(reference.Path.ToPathArray(), 0);
         }
 
-        public NodeType QueryChild(VosReference reference)
+        public NodeType QueryChild(VobReference reference)
         {
             return this.QueryChild(reference.Path.ToPathArray(), 0);
         }

@@ -50,17 +50,17 @@ namespace Stores_
             }
             #endregion
 
-            var directReference1 = new VosReference(storesManagerPath + "/available/ExeDir/file1.txt");
-            var directReference2 = new VosReference(storesManagerPath + "/available/DataDir/file2.txt");
-            var dataReference1 = new VosReference(storesManagerPath + "/data/file1.txt");
-            var dataReference2 = new VosReference(storesManagerPath + "/data/file2.txt");
+            var directReference1 = new VobReference(storesManagerPath + "/available/ExeDir/file1.txt");
+            var directReference2 = new VobReference(storesManagerPath + "/available/DataDir/file2.txt");
+            var dataReference1 = new VobReference(storesManagerPath + "/data/file1.txt");
+            var dataReference2 = new VobReference(storesManagerPath + "/data/file2.txt");
 
             Assert.False(await directReference1.GetReadHandle<string>().Exists()); // False due to MountOptions.IsManuallyMounted = true
             Assert.False(await directReference2.GetReadHandle<string>().Exists());
             Assert.False(await dataReference1.GetReadHandle<string>().Exists());
             Assert.False(await dataReference2.GetReadHandle<string>().Exists());
 
-            // How to get a Vob?  VosReference.ToVob() might be nice.  How about VosReference.ToVob().AsType<PackageManager>()
+            // How to get a Vob?  VobReference.ToVob() might be nice.  How about VobReference.ToVob().AsType<PackageManager>()
             var storesManager = "/".GetVob().GetService<ServiceDirectory>().GetRequiredService<PackageActivator>();
             //var storesManager = storesManagerPath.ToVob().GetMultiTyped().AsType<PackageManager>();
             Assert.NotNull(storesManager);
@@ -117,7 +117,7 @@ namespace Stores_
             Assert.True((bool)storesManager.Disable("DataDir"));
             Assert.Empty((System.Collections.IEnumerable)storesManager.EnabledPackages);
 
-            var vobMounts = new VosReference("/stores/data").GetVob().AcquireOwn<VobMounts>();
+            var vobMounts = new VobReference("/stores/data").GetVob().AcquireOwn<VobMounts>();
             Assert.False(vobMounts.HasLocalReadMounts);
             Assert.False(vobMounts.HasLocalWriteMounts);
 
@@ -252,10 +252,10 @@ namespace Stores_
                         //    Name = "UnitTestPluginsDir"
                         //})
 
-                        //.VosMount("/`/PluginData", "/`/TestPlugins/data".ToVosReference()) // Custom data dir for app
+                        //.VosMount("/`/PluginData", "/`/TestPlugins/data".ToVobReference()) // Custom data dir for app
 
                         // MOVE - FUTURE: Vos metadata
-                        //.VosMount("/_/vos", new VosReference("/") { Persister = "vos" }, new MountOptions
+                        //.VosMount("/_/vos", new VobReference("/") { Persister = "vos" }, new MountOptions
                         //{
                         //    IsReadOnly = true,
                         //    IsExclusive = true,

@@ -455,7 +455,7 @@ namespace LionFire.Avalon
                 if (!CanSelectNone)
                 {
                     // StackOverflow here?
-                    l.Debug("SelectedIndex < 0 && Items.Count > 0 " + Environment.StackTrace);
+                    l.Debug("SelectedIndex < 0 && Items.Count > 0 " + System.Environment.StackTrace);
                     SelectedIndex = 0;
                     //InvalidateHighlight(); - occurs after changing selectedindex?
                     return;

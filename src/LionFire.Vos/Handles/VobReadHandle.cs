@@ -23,10 +23,10 @@ namespace LionFire.Vos
     //    public static H<T1> ToHandle<T1>(this IReferencable r, IEnumerable<string> subpathChunks) where T1 : class => r.Reference.GetChildSubpath(subpathChunks).ToHandle<T1>();
     //}
 
-    // OPTIMIZE - (Here and VobHandle)  Create Reference on demand?  Store the reference path in Vob, instead of VosReference?  Generate VosReference on demand?  or is this an app specific thing?
+    // OPTIMIZE - (Here and VobHandle)  Create Reference on demand?  Store the reference path in Vob, instead of VobReference?  Generate VobReference on demand?  or is this an app specific thing?
 
     [ReadOnlyEditionFor(typeof(VobHandle<>))]
-    public class VobReadHandle<T> : ReadHandleBase<IVosReference, T>
+    public class VobReadHandle<T> : ReadHandleBase<IVobReference, T>
         , IVobReadHandle<T> // Has T because it is contravariantt
         , ISubpathHandleProvider
     //, IReadWriteHandleProvider -- FUTURE: get relative paths? Maybe a stretch.
@@ -35,9 +35,9 @@ namespace LionFire.Vos
 
         #region Ontology
 
-        public new IVosReference Reference
+        public new IVobReference Reference
         {
-            get => (VosReference)base.Reference;
+            get => (VobReference)base.Reference;
             set => base.Reference = value;
         }
 
@@ -74,28 +74,28 @@ namespace LionFire.Vos
         }
 
         ///// <summary>
-        ///// Finds Vob using default available VBase.  Uses VosReference from that Vob, typed to T.
+        ///// Finds Vob using default available VBase.  Uses VobReference from that Vob, typed to T.
         ///// </summary>
-        ///// <param name="vosReference"></param>
-        //public VobReadHandle(VosReference vosReference)
+        ///// <param name="vobReference"></param>
+        //public VobReadHandle(VobReference vobReference)
         //{
-        //    SetFromVosReference(vosReference);
+        //    SetFromVobReference(vobReference);
         //}
 
         ///// <summary>
-        ///// Finds Vob using default available VBase.  Uses VosReference from that Vob, typed to T.
+        ///// Finds Vob using default available VBase.  Uses VobReference from that Vob, typed to T.
         ///// </summary>
-        ///// <param name="reference">Currently must be of type VosReference.  (FUTURE: Allow reference types compatible with / convertible to VosReference)</param>
-        //public VobReadHandle(IReference reference) : this((VosReference)reference)
+        ///// <param name="reference">Currently must be of type VobReference.  (FUTURE: Allow reference types compatible with / convertible to VobReference)</param>
+        //public VobReadHandle(IReference reference) : this((VobReference)reference)
         //{
-        //    SetFromVosReference(reference.ToVosReference());
+        //    SetFromVobReference(reference.ToVobReference());
         //}
 
-        //private void SetFromVosReference(VosReference vosReference)
+        //private void SetFromVobReference(VobReference vobReference)
         //{
-        //    vosReference.ValidateReference<T>();
+        //    vobReference.ValidateReference<T>();
         //    // TODO: Verify host and any sort of Vos root tree id??
-        //    Vob = VBase[vosReference.Path];
+        //    Vob = VBase[vobReference.Path];
         //}
 
         #endregion
@@ -138,7 +138,7 @@ namespace LionFire.Vos
         //    get {
         //        var path = MountPath;
         //        if (path == null) return null;
-        //        return new VosReference(path);
+        //        return new VobReference(path);
         //    }
         //}
 

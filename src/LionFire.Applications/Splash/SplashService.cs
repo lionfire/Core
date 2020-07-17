@@ -12,12 +12,21 @@ namespace LionFire.Applications.Splash
 
     public class SplashService : ISplashService, IHostedService
     {
-        Stack<SplashDisposable> stack = new Stack<SplashDisposable>();
+
+        #region Contruction
 
         public SplashService(IEnumerable<ISplashView> splashViews)
         {
             SplashViews = splashViews;
         }
+
+        #endregion
+
+        #region State
+
+        Stack<SplashDisposable> stack = new Stack<SplashDisposable>();
+
+        #endregion
 
         #region ISplashService
 
@@ -129,22 +138,22 @@ namespace LionFire.Applications.Splash
 
         //#endregion
 
-        //#region SplashProgress
+        #region Progress
 
-        //public double SplashProgress
-        //{
-        //    get { return splashProgress; }
-        //    set
-        //    {
-        //        if (splashProgress == value) return;
-        //        splashProgress = value;
-        //        //lSplash.Trace("[splash %] " + splashProgress.ToString());
-        //        OnPropertyChanged("SplashProgress");
-        //    }
-        //}
-        //private double splashProgress;
+        public double Progress
+        {
+            get { return progress; }
+            set
+            {
+                if (progress == value) return;
+                progress = value;
+                //lSplash.Trace("[splash %] " + splashProgress.ToString());
+                OnPropertyChanged(nameof(Progress));
+            }
+        }
+        private double progress;
 
-        //#endregion
+        #endregion
 
         //private static ILogger lSplash { get; } = Log.Get("LionFire.Applications.LionFireApp.Splash");
 

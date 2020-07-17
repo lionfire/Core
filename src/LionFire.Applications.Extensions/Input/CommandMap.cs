@@ -1,4 +1,7 @@
-﻿// Retrieved from http://blogs.msdn.com/b/morgan/archive/2010/06/24/simplifying-commands-in-mvvm-and-wpf.aspx
+﻿// REVIEW - drop dependency on System.Windows.Input?  (ICommand)
+// REVIEW - Why is this in an .Extensions dll?
+
+// Retrieved from http://blogs.msdn.com/b/morgan/archive/2010/06/24/simplifying-commands-in-mvvm-and-wpf.aspx
 // on May 3, 2012
 
 // THIS SOFTWARE COMES "AS IS", WITH NO WARRANTIES.  THIS
@@ -17,8 +20,6 @@ using System;
 using System.Windows.Input;
 using System.Collections.Generic;
 using System.ComponentModel;
-using System.Collections;
-
 
 namespace LionFire.Input
 {
@@ -145,13 +146,8 @@ namespace LionFire.Input
 
             public event EventHandler CanExecuteChanged
             {
-                add { throw new NotImplementedException(); }
-                remove { throw new NotImplementedException(); }
-#if TOMIGRATE
-                add { LionFire.Events.CommandManager.RequerySuggested += value; }
-                remove { LionFire.Events.CommandManager.RequerySuggested -= value; }
-#endif
-                
+                add { LionFire.Events.ApplicationCommandManager.RequerySuggested += value; throw new NotImplementedException("TODO: Switch to LionFire.UI's' LionFireCommandManager "); }
+                remove { LionFire.Events.ApplicationCommandManager.RequerySuggested -= value; throw new NotImplementedException("TODO: Switch to LionFire.UI's' LionFireCommandManager "); }
             }
 
             public void Execute(object parameter)
@@ -161,6 +157,8 @@ namespace LionFire.Input
 
             private Predicate<object> _canExecuteMethod;
             private Action<object> _executeMethod;
+
+
 
         }
 

@@ -1,7 +1,11 @@
-﻿using LionFire.Referencing;
+﻿using LionFire.ExtensionMethods;
+using LionFire.Referencing;
 using System;
 using System.Collections;
+using System.Collections.Generic;
 using System.IO;
+using System.Linq;
+using System.Text;
 
 namespace LionFire.Vos
 {
@@ -20,7 +24,7 @@ namespace LionFire.Vos
         #endregion        
 
         public static string GetRoot(string rootName = null)
-            => "/" + (rootName == null ? "" : "../" + rootName);
+            => "/" + (string.IsNullOrEmpty(rootName) || rootName == "/" ? "" : "../" + rootName);
         public const string Root = "/";
 
         #region Packages
@@ -96,6 +100,49 @@ namespace LionFire.Vos
                 }
             }
             return "/";
+        }
+        public static string GetRootNameForPath(string path)
+        {
+            if (path == null) return null;
+            if (path.StartsWith("/../"))
+            {
+                var split = path.Split(new char[] { LionPath.SeparatorChar }, 3, StringSplitOptions.RemoveEmptyEntries);
+                if (split.Length >= 2)
+                {
+                    return split[1];
+                }
+            }
+            return null;
+        }
+
+        public static string ChunksToString(IEnumerable<string> chunks, bool? absolute = null)
+        {
+            if (chunks?.Any() != true) return string.Empty;
+
+            var sb = new StringBuilder();
+            var first = chunks.First();
+
+            switch (absolute)
+            {
+                case true:
+                    if(!first.StartsWith(LionPath.Separator)) { sb.Append(LionPath.SeparatorChar); }
+                    sb.Append(first);
+                    break;
+                case false:
+                    if (first.StartsWith(LionPath.Separator)) { sb.Append(first.TrimStart(LionPath.SeparatorChar)); }
+                    else sb.Append(first);
+                    break;
+                case null:
+                    sb.Append(first);
+                    break;
+            }
+
+            foreach(var chunk in chunks.Skip(1))
+            {
+                sb.Append(LionPath.SeparatorChar);
+                sb.Append(chunk);
+            }
+            return sb.ToString();
         }
     }
 }

@@ -207,7 +207,7 @@ namespace LionFire.Vos
 
         #region Derived
 
-        public string Key => VosReference.Key;
+        public string Key => VobReference.Key;
 
         #region Path
 
@@ -265,51 +265,51 @@ namespace LionFire.Vos
 
         #region Reference
 
-        public VosReference VosReference
+        public VobReference VobReference
         {
             get
             {
-                if (vosReference == null)
+                if (vobReference == null)
                 {
-                    vosReference = new VosReference(Path);
+                    vobReference = new VobReference(Path);
                 }
-                return vosReference;
+                return vobReference;
             }
             set
             {
-                if (vosReference == value)
+                if (vobReference == value)
                 {
                     return;
                 }
 
-                if (vosReference != default(IReference))
+                if (vobReference != default(IReference))
                 {
                     throw new NotSupportedException("Reference can only be set once.  To relocate, use the Move() method.");
                 }
 
-                vosReference = value;
+                vobReference = value;
             }
         }
-        private VosReference vosReference;
+        private VobReference vobReference;
 
 
-        public IVosReference Reference => VosReference;
+        public IVobReference Reference => VobReference;
         IReference IReferencable.Reference // TODO MEMORYOPTIMIZE: I think a base class has an IReference field
         {
-            get => VosReference;
+            get => VobReference;
             //set
             //{
-            //    if (value == null) { VosReference = null; return; }
-            //    VosReference vr = value as VosReference;
+            //    if (value == null) { VobReference = null; return; }
+            //    VobReference vr = value as VobReference;
             //    if (vr != null)
             //    {
-            //        VosReference = vr;
+            //        VobReference = vr;
             //        return;
             //    }
             //    else
             //    {
-            //        //new VosReference(value); // FUTURE: Try converting
-            //        throw new ArgumentException("Reference for a Vob must be VosReference");
+            //        //new VobReference(value); // FUTURE: Try converting
+            //        throw new ArgumentException("Reference for a Vob must be VobReference");
             //    }
             //}
         }
@@ -626,7 +626,7 @@ namespace LionFire.Vos
         /// </summary>
         /// <typeparam name="T"></typeparam>
         /// <returns></returns>
-        public IVosReference GetReference<T>() => new VosReference(typeof(T), Path) { Persister = Root.RootName }; // OPTIMIZE: new VosRelativeReference(this)
+        public IVobReference GetReference<T>() => new VobReference(typeof(T), Path) { Persister = Root.RootName }; // OPTIMIZE: new VosRelativeReference(this)
 
         #endregion
 

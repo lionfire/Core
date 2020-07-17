@@ -26,8 +26,8 @@ namespace LionFire.Vos
 
         // OPTIMIZE - make this a method in IRootManager to avoid traversing to the unnamed IRootVob (which may not exist) and then back to the root manager using the /../rootName/... syntax.
         public static IVob GetVob(this IVos rootManager, string vobPath) => rootManager.Get(null)?[vobPath] ?? ThrowVobNotAvailableException(vobPath);
-        public static IVob GetVob(this IVos rootManager, IVosReference vobReference) => rootManager.Get(null)?[vobReference] ?? ThrowVobNotAvailableException(vobReference.Path);
+        public static IVob GetVob(this IVos rootManager, IVobReference vobReference) => rootManager.Get(null)?[vobReference] ?? ThrowVobNotAvailableException(vobReference.Path);
         public static IVob? TryGetVob(this IVos rootManager, string vobPath) => rootManager.Get(null)?[vobPath];
-        public static IVob? TryGetVob(this IVos rootManager, IVosReference vobReference) => rootManager.Get(null)?[vobReference];
+        public static IVob? TryGetVob(this IVos rootManager, IVobReference vobReference) => rootManager.Get(null)?[vobReference];
     }
 }

@@ -9,7 +9,7 @@ namespace LionFire.Vos
         // TODO: Move these to IVob and make IVBase inherit IVob
 
         Vob this[string path] { get; }
-        Vob this[VosReference reference] { get; }
+        Vob this[VobReference reference] { get; }
 
 #if TOPORT
         //Vob this[params string[] pathChunks] { get; }

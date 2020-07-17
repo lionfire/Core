@@ -150,6 +150,8 @@ namespace LionFire.Applications
         public string EffectiveDataDirName => DataDirName ?? AppName;
 
         public string ProgramVersion { get; set; } = "0.0.0";
+        [Obsolete]
+        public string VersionString => ProgramVersion; 
 
         #region Directories
 
@@ -233,5 +235,6 @@ namespace LionFire.Applications
         /// Custom directory name for the application.  Example: c:\ProgramData\{OrgDir}\{CustomAppDir}
         /// </summary>
         public string CustomAppDirName { get; set; }
+
     }
 }

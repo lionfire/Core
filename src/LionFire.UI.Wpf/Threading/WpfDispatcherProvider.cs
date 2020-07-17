@@ -1,4 +1,5 @@
-﻿using System.Windows.Threading;
+﻿#if TODO // Needed?
+using System.Windows.Threading;
 
 namespace LionFire.Threading
 {
@@ -13,3 +14,4 @@ namespace LionFire.Threading
     }
 
 }
+#endif

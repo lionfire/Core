@@ -9,7 +9,7 @@ using System.Text;
 
 namespace LionFire.Vos
 {
-    public interface IVosReference : IReference, ITypedReference, IReferencable<IVosReference>
+    public interface IVobReference : IReference, ITypedReference, IReferencable<IVobReference>
     {
         IEnumerable<string> AllowedSchemes { get; }
 
@@ -28,21 +28,21 @@ namespace LionFire.Vos
         ImmutableList<KeyValuePair<string, string>> Filters { get; set; }
     }
 
-    public static class IVosReferenceExtensions
+    public static class IVobReferenceExtensions
     {
-        public static string RootName(this IVosReference vosReference) => vosReference.Persister ?? "";
+        public static string RootName(this IVobReference vobReference) => vobReference.Persister ?? "";
 
-        public static string Filter(this IVosReference vosReference, string filterName)
-            => vosReference.Filters?.Where(f => f.Key == filterName).Select(kvp => kvp.Value).Aggregate((x, y) => $"{x},{y}");
+        public static string Filter(this IVobReference vobReference, string filterName)
+            => vobReference.Filters?.Where(f => f.Key == filterName).Select(kvp => kvp.Value).Aggregate((x, y) => $"{x},{y}");
 
-        public static IEnumerable<string> Filters(this IVosReference vosReference, string filterName)
-            => vosReference.Filters?.Where(f => f.Key == filterName).Select(kvp => kvp.Value) ?? Enumerable.Empty<string>();
+        public static IEnumerable<string> Filters(this IVobReference vobReference, string filterName)
+            => vobReference.Filters?.Where(f => f.Key == filterName).Select(kvp => kvp.Value) ?? Enumerable.Empty<string>();
 
-        public static void AppendFilterKey(this IVosReference vosReference, string filterName, string prefix, StringBuilder sb)
+        public static void AppendFilterKey(this IVobReference vobReference, string filterName, string prefix, StringBuilder sb)
         {
-            if (vosReference.Filters == null) return;
+            if (vobReference.Filters == null) return;
             bool isFirst = true;
-            foreach (var kvp in vosReference.Filters)
+            foreach (var kvp in vobReference.Filters)
             {
                 if (kvp.Key == filterName)
                 {

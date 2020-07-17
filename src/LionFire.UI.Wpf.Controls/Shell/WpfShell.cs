@@ -26,10 +26,11 @@ using LionFire.Alerting;
 using LionFire.UI.Wpf;
 using LionFire.Threading;
 using LionFire.Shell.Wpf;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace LionFire.Shell
 {
-    public interface IWpfShell : IHostedService, IKeyboardShell { }
+    //public interface IWpfShell : IHostedService, IKeyboardShell { }
 
     /// <summary>
     /// Manages several Presenters (ShellContentPresenters), which are typically windows
@@ -41,28 +42,38 @@ namespace LionFire.Shell
     ///  
     /// TODO - Refactor bg and fg code to parameterized layers.
     /// </remarks>
-    public class WpfShell : IWpfShell, INotifyClosing, INotifyPropertyChanged
+    public class WpfShell : /*IWpfShell,*/ INotifyClosing, INotifyPropertyChanged, IHostedService, IKeyboardShell
     {
         #region (Static) Instance
 
         public static WpfShell Instance => DependencyContext.Default.GetService<WpfShell>();
 
+
         #endregion
 
         #region Dependencies
 
+        public IServiceProvider ServiceProvider { get; }
         public IHostApplicationLifetime HostApplicationLifetime { get; }
 
-        public WpfRuntime WpfRuntime { get; }
+        public Application Application { get; }
+        public WpfDispatcherAdapter WpfDispatcherAdapter { get; set; }
 
-        public Dispatcher Dispatcher => WpfRuntime.Application.Dispatcher;
+        public Dispatcher Dispatcher => WpfDispatcherAdapter.Dispatcher;
 
         #region EventAggregator
 
         public IEventAggregator EventAggregator
         {
             get => eventAggregator ??= new EventAggregator();
-            set => eventAggregator = value;
+            set
+            {
+                eventAggregator = value;
+                if (eventAggregator != null)
+                {
+                    eventAggregator.PublicationThreadMarshaller = a => { if (!Dispatcher.CheckAccess()) { Dispatcher.BeginInvoke(a); return; } else { a(); } };
+                }
+            }
         }
         private IEventAggregator eventAggregator;
 
@@ -72,8 +83,8 @@ namespace LionFire.Shell
 
         #region Options
 
-        public LionFireShellOptions ShellOptions => shellOptionsMonitor.CurrentValue;
-        public IOptionsMonitor<LionFireShellOptions> shellOptionsMonitor { get; }
+        public ShellOptions ShellOptions => shellOptionsMonitor.CurrentValue;
+        public IOptionsMonitor<ShellOptions> shellOptionsMonitor { get; }
 
         public StartupInterfaceOptions InterfaceOptions => InterfaceOptionsMonitor.CurrentValue;
         protected IOptionsMonitor<StartupInterfaceOptions> InterfaceOptionsMonitor { get; }
@@ -99,6 +110,18 @@ namespace LionFire.Shell
         }
         private IShellPresenter shellPresenter;
 
+        #region Derived
+
+        public Window MainWindow => ShellPresenter?.MainPresenter?.CurrentWindow as Window;
+
+        #endregion
+
+        #endregion
+
+        #region Optional: SplashView
+
+        public ISplashView SplashView { get; }
+
         #endregion
 
         #endregion
@@ -107,11 +130,13 @@ namespace LionFire.Shell
 
         #region Debug
 
+#if OLD // Use StartupInterfaceOptions
 #if DEBUG
         public static Type AutostartControl;
-        public static bool IsAutostartControlMode { get { return AutostartControl != null; } }
+        public static bool IsAutostartControlMode => AutostartControl != null;
 #else
         public const bool IsAutostartControlMode = false;
+#endif
 #endif
 
         #endregion
@@ -124,8 +149,8 @@ namespace LionFire.Shell
         {
             get
             {
-                if (Args.Contains("fullscreen")) return true;
-                if (Args.Contains("windowed")) return false;
+                if (Args.Contains("--full-screen")) return true;
+                if (Args.Contains("--windowed")) return false;
 
                 return ShellOptions.StartMaximizedToFullScreen;
             }
@@ -135,11 +160,18 @@ namespace LionFire.Shell
 
         #endregion
 
-        #region Parameters: Command line args // TOPORT
+        #region Parameters: Command line args
 
         public IList<string> Args
         {
-            get { return args; }
+            get
+            {
+                if(args == null)
+                {
+                    args = new List<string>((/*e?.Args ??*/ System.Environment.GetCommandLineArgs()).Select(x => x.ToLower())); // Make args lowercase?!
+                }
+               return args;
+            }
             set
             {
                 if (args == value) return;
@@ -151,45 +183,48 @@ namespace LionFire.Shell
 
         #endregion
 
-        public bool StopOnMainPresenterClose { get; set; } = true; // TODO: Make this a settable option in UIReference.StopShellOnClose
-
-        #endregion
-
-        #region TEMP
-
-        // Temp notes:
-        object RootWindow { get; set; }
-        object RootView { get; set; }
-        object RootViewModel { get; set; }
-        bool ShutdownOnRootWindowsClose { get; set; }
-        List<Window> RootWindows { get; set; }
-
         #endregion
 
         #region Construction and Initialization
 
-        public WpfShell(IHostApplicationLifetime hostApplicationLifetime, IOptionsMonitor<StartupInterfaceOptions> interfaceOptionsMonitor, IViewLocator viewLocator, IShellPresenter shellPresenter, IOptionsMonitor<LionFireShellOptions> shellOptionsMonitor, WpfRuntime wpfRuntime)
+        public WpfShell(IServiceProvider serviceProvider, IHostApplicationLifetime hostApplicationLifetime, Application application, IOptionsMonitor<StartupInterfaceOptions> interfaceOptionsMonitor, IViewLocator viewLocator, IShellPresenter shellPresenter, IOptionsMonitor<ShellOptions> shellOptionsMonitor)
         {
+            #region Dependencies
+
+            Application = application;
+            ServiceProvider = serviceProvider;
             HostApplicationLifetime = hostApplicationLifetime;
             InterfaceOptionsMonitor = interfaceOptionsMonitor;
             ViewLocator = viewLocator;
             ShellPresenter = shellPresenter;
             this.shellOptionsMonitor = shellOptionsMonitor;
-            WpfRuntime = wpfRuntime;
+
+            #region Optional
+
+            SplashView = ServiceProvider.GetService<ISplashView>();
+
+            #endregion
+
+            #region Derived
+
+            WpfDispatcherAdapter = new WpfDispatcherAdapter(Application);
+
+            #endregion
+
+            #endregion
+
             HostApplicationLifetime.ApplicationStarted.Register(OnApplicationStarted);
             HostApplicationLifetime.ApplicationStarted.Register(OnApplicationStopping);
 
             // TODO: Get Args from DI registered service somewhere?  
             // TODO: Should args be parsed into Shell Options at a higher level, in the App?
-            Args = new List<string>((/*e?.Args ??*/ System.Environment.GetCommandLineArgs()).Select(x => x.ToLower())); // Make args lowercase?!
-
-            EventAggregator.PublicationThreadMarshaller = a => { if (!Dispatcher.CheckAccess()) { Dispatcher.BeginInvoke(a); return; } else { a(); } };
+            
 
 #if DEBUG
             System.Diagnostics.PresentationTraceSources.DataBindingSource.Switch.Level = ShellOptions.DataBindingSourceLevel;
 #endif
 
-            System.Windows.Media.Animation.Timeline.DesiredFrameRateProperty.OverrideMetadata(
+            System.Windows.Media.Animation.Timeline.DesiredFrameRateProperty.OverrideMetadata( // MOVE?
                 typeof(System.Windows.Media.Animation.Timeline),
                 new FrameworkPropertyMetadata { DefaultValue = 120 }
                 );
@@ -199,7 +234,7 @@ namespace LionFire.Shell
 
 
             // Doesn't look like this can be here for all derived classes, unless they inherit from this??
-            WpfRuntime.Application.Resources.Source = new Uri("pack://application:,,,/LionFire.Windows.wpf;component/Resources/default-lfa.xaml");
+            Application.Resources.Source = new Uri("pack://application:,,,/LionFire.UI.Wpf.Controls;component/Resources/default-lfa.xaml");
             //Application.Startup += Application_Startup;
 
             InstanceStackRegistrar.Instance.Register<LionFire.Alerting.IAlerter>(new WpfAlerter()); // Fallback
@@ -225,44 +260,10 @@ namespace LionFire.Shell
 
         #endregion
 
-        #region ISplashShell
-
-        // REFACTOR - DI
-        protected bool IsSplashVisible
-        {
-            get { return splash != null && splash.Visibility == Visibility.Visible; }
-            set
-            {
-                if (!Dispatcher.CheckAccess()) { Dispatcher.BeginInvoke(new Action(() => IsSplashVisible = value)); return; }
-
-                if (value && SplashScreenType != null)
-                {
-                    splash = Activator.CreateInstance(this.SplashScreenType) as Window;
-                    if (splash != null)
-                    {
-                        splash.Show();
-                        this.MainWindow = null;
-                    }
-                    // else SILENTFAIL
-                }
-                else
-                {
-                    if (splash != null)
-                    {
-                        //splash.Hide();
-                        splash.Close();
-                        splash = null;
-                    }
-                }
-            }
-        }
-        private Window splash;
-
-        #endregion
-
         #region IKeyboardShell
 
         public bool IsEditingText { get; set; }
+        public bool IsActive { get; set; } // TOPORT - what does this refer to?
 
         #endregion
 
@@ -302,7 +303,7 @@ namespace LionFire.Shell
             //IsDebugWindowVisible = false; // TOPORT
             ShellPresenter.Close();
 
-            WpfRuntime.Application?.Shutdown();
+            Application?.Shutdown();
 
             HostApplicationLifetime.StopApplication();
         }
@@ -322,7 +323,7 @@ namespace LionFire.Shell
             // else: Still need to wait for hosting application to tell us to StartAsync.
         }
 
-        void OnApplicationStopping() => StopAsync(default);
+        async void OnApplicationStopping() => await StopAsync(default).ConfigureAwait(false);
 
         #endregion
 

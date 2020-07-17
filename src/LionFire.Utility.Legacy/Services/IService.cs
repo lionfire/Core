@@ -32,10 +32,7 @@ namespace LionFire.Services
         }
 
         event Action<IService> StateChanged;
-
-        
     }
-
 }
 namespace LionFire.Applications
 {

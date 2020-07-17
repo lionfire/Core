@@ -29,7 +29,7 @@ namespace LionFire.Vos
             => (IReadHandle<T>)SharedReadHandles.GetOrAdd(typeof(T), t => CreateReadHandle<T>(preresolvedValue));
 
         public IReadHandle<T> CreateReadHandle<T>(T preresolvedValue = default)
-            => new PersisterReadHandle<VosReference, T, VosPersister>(this.GetRequiredService<VosPersister>(), VosReference, preresolvedValue);
+            => new PersisterReadHandle<VobReference, T, VosPersister>(this.GetRequiredService<VosPersister>(), VobReference, preresolvedValue);
 
         #endregion
 
@@ -45,7 +45,7 @@ namespace LionFire.Vos
             => (IReadWriteHandle<TValue>)SharedReadWriteHandles.GetOrAdd(typeof(TValue), t => CreateReadWriteHandle<TValue>(preresolvedValue));
 
         public IReadWriteHandle<TValue> CreateReadWriteHandle<TValue>(TValue preresolvedValue = default)
-            => new PersisterReadWriteHandle<VosReference, TValue, VosPersister>(this.GetService<VosPersister>(), VosReference, preresolvedValue);
+            => new PersisterReadWriteHandle<VobReference, TValue, VosPersister>(this.GetService<VosPersister>(), VobReference, preresolvedValue);
 
         #endregion
 
@@ -57,9 +57,9 @@ namespace LionFire.Vos
         public IWriteHandle<TValue> GetWriteHandle<TValue>(TValue prestagedValue = default)
             => (IWriteHandle<TValue>)SharedWriteHandles.GetOrAdd(typeof(TValue), t => CreateReadWriteHandle<TValue>(prestagedValue));
         
-        //=> (IWriteHandle<T>)WriteHandles.GetOrAdd(typeof(T), t => new PersisterWriteHandle<VosReference, T, VosPersister>(this.GetService<VosPersister>(), VosReference));
+        //=> (IWriteHandle<T>)WriteHandles.GetOrAdd(typeof(T), t => new PersisterWriteHandle<VobReference, T, VosPersister>(this.GetService<VosPersister>(), VobReference));
         public IWriteHandle<T> CreateWriteHandle<T>(T prestagedValue = default)
-            => new PersisterWriteHandle<VosReference, T, VosPersister>(this.GetService<VosPersister>(), VosReference, prestagedValue);
+            => new PersisterWriteHandle<VobReference, T, VosPersister>(this.GetService<VosPersister>(), VobReference, prestagedValue);
 
         #endregion
 

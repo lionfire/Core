@@ -11,6 +11,8 @@ namespace LionFire.Alerting
 
     public interface IAlerter
     {
+        bool IsAlertOpen { get; }
+
         //void Alert(string message, LogLevel level = LogLevel.Message, Exception ex = null, string detail = null, string title = null, AlertFlags flags = AlertFlags.None);
 
         void Alert(Alert alert);

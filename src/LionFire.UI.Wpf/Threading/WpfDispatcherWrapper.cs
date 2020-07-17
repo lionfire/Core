@@ -1,4 +1,4 @@
-﻿
+﻿#if TODO // If needed. Already done in WpfDispatcherAdapter?
 using System;
 using System.Threading.Tasks;
 using System.Windows.Threading;
@@ -26,3 +26,4 @@ namespace LionFire.Threading
         }
     }
 }
+#endif

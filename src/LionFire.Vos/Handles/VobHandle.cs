@@ -13,7 +13,7 @@ namespace LionFire.Vos
 {
 
     [ReadOnlyEditionIs(typeof(VobReadHandle<>))]
-    public class VobHandle<T> : ReadWriteHandle<VosReference, T>
+    public class VobHandle<T> : ReadWriteHandle<VobReference, T>
         , IVobHandle<T>
     //, ITreeHandle
     {
@@ -43,23 +43,23 @@ namespace LionFire.Vos
 
         // Pass-through to base class
 
-        public VobHandle(Vob vob) : base(vob.VosReference)
+        public VobHandle(Vob vob) : base(vob.VobReference)
         {
         }
 
         /// <summary>
-        /// Finds Vob using default available VBase.  Uses VosReference from that Vob, typed to T.
+        /// Finds Vob using default available VBase.  Uses VobReference from that Vob, typed to T.
         /// </summary>
-        /// <param name="vosReference"></param>
-        public VobHandle(VosReference vosReference) : base(vosReference)
+        /// <param name="vobReference"></param>
+        public VobHandle(VobReference vobReference) : base(vobReference)
         {
         }
 
         ///// <summary>
-        ///// Finds Vob using default available VBase.  Uses VosReference from that Vob, typed to T.
+        ///// Finds Vob using default available VBase.  Uses VobReference from that Vob, typed to T.
         ///// </summary>
-        ///// <param name="reference">Currently must be of type VosReference.  (FUTURE: Allow reference types compatible with / convertible to VosReference)</param>
-        //public VobHandle(IReference reference) : base((VosReference)reference)
+        ///// <param name="reference">Currently must be of type VobReference.  (FUTURE: Allow reference types compatible with / convertible to VobReference)</param>
+        //public VobHandle(IReference reference) : base((VobReference)reference)
         //{
         //}
 

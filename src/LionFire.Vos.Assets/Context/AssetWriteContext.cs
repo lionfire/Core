@@ -55,7 +55,7 @@ namespace LionFire.Vos.Assets
         }
         #endregion
 
-        public AssetWriteContext(VosReference writeLocation)
+        public AssetWriteContext(VobReference writeLocation)
         {
             WriteLocation = writeLocation;
             ContextStack.Push(this);
@@ -81,7 +81,7 @@ namespace LionFire.Vos.Assets
 
         #region (Public) Properties
 
-        public VosReference WriteLocation { get; }
+        public VobReference WriteLocation { get; }
 
         #endregion
     }

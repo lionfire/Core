@@ -42,17 +42,17 @@ namespace LionFire.Vos
         {
             get
             {
-                yield return typeof(VosReference);
+                yield return typeof(VobReference);
             }
         }
 
-        public override IEnumerable<string> UriSchemes => VosReference.UriSchemes;
+        public override IEnumerable<string> UriSchemes => VobReference.UriSchemes;
 
         public override IOBase TryGetOBase(IReference reference) => ManualSingleton<VBase>.GuaranteedInstance;
 
         public override IReference TryGetReference(string referenceString)
         {
-            return VosReference.TryGetFromString(referenceString);
+            return VobReference.TryGetFromString(referenceString);
         }
 
         //public H<T> ToHandle<T>(IReference reference, T handleObject = default(T)) => throw new NotImplementedException();
@@ -68,12 +68,12 @@ namespace LionFire.Vos
 
         //public string[] UriSchemes
         //{
-        //    get { return VosReference.UriSchemes; }
+        //    get { return VobReference.UriSchemes; }
         //}
 
         //public string DefaultUriScheme
         //{
-        //    get { return VosReference.UriSchemeDefault; }
+        //    get { return VobReference.UriSchemeDefault; }
         //}
 
         //#endregion
@@ -110,7 +110,7 @@ namespace LionFire.Vos
 
         //public IEnumerable<IOBase> GetOBases(IReference reference)
         //{
-        //    VosReference vref = reference as VosReference;
+        //    VobReference vref = reference as VobReference;
         //    if (vref == null) yield break;
 
         //    yield return DefaultOBase;
@@ -129,10 +129,10 @@ namespace LionFire.Vos
         //    }
 
         //    #region // TODO: Verify scheme is supported!
-        //    if (!uri.StartsWith(VosReference.UriSchemeDefault)) throw new ArgumentException("Unsupported scheme");
+        //    if (!uri.StartsWith(VobReference.UriSchemeDefault)) throw new ArgumentException("Unsupported scheme");
         //    #endregion
 
-        //    int slashIndex = VosReference.UriSchemeDefault.Length;
+        //    int slashIndex = VobReference.UriSchemeDefault.Length;
         //    for (int i = 3; i > 0; i--)
         //    {
         //        slashIndex = uri.IndexOf('/', slashIndex);
@@ -140,7 +140,7 @@ namespace LionFire.Vos
         //    }
 
         //    string path = uri.Substring(slashIndex); // UNTESTED
-        //    return new VosReference(path);
+        //    return new VobReference(path);
         //}
 
         //#endregion
@@ -149,7 +149,7 @@ namespace LionFire.Vos
 
         //public void Set(IReference reference, object obj)
         //{
-        //    VosReference vref = (VosReference)reference;
+        //    VobReference vref = (VobReference)reference;
 
         //    //DefaultOBase.Set(reference, obj); - why was this here? duplicates!
 

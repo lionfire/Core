@@ -6,14 +6,14 @@ using LionFire.Referencing;
 
 namespace LionFire.Vos
 {
-    public abstract class VosReferenceBase<TValue, TConcrete> : VosReferenceBase<TConcrete>, IVosReference, ITypedReference
-     where TConcrete : VosReferenceBase<TValue, TConcrete>
+    public abstract class VobReferenceBase<TValue, TConcrete> : VobReferenceBase<TConcrete>, IVobReference, ITypedReference
+     where TConcrete : VobReferenceBase<TValue, TConcrete>
     {
         public override Type Type => typeof(TValue);
     }
 
-    public abstract class VosReferenceBase<TConcrete> : ReferenceBase<TConcrete>, IVosReference
-        where TConcrete : VosReferenceBase<TConcrete>
+    public abstract class VobReferenceBase<TConcrete> : ReferenceBase<TConcrete>, IVobReference
+        where TConcrete : VobReferenceBase<TConcrete>
     {
         // FUTURE: Vob reference inside here as a cache.
         //internal Vob Vob { get; set; }
@@ -22,28 +22,27 @@ namespace LionFire.Vos
 
         #region Constructors
 
-        public VosReferenceBase() { }
+        public VobReferenceBase() { }
 
-        public VosReferenceBase(string path, ImmutableList<KeyValuePair<string, string>> filters = null)
+        public VobReferenceBase(string path, ImmutableList<KeyValuePair<string, string>> filters = null)
         {
             Path = path;
             Filters = filters;
         }
-        public VosReferenceBase(IEnumerable<string> pathComponents, ImmutableList<KeyValuePair<string, string>> filters = null)
-            : this(LionPath.Combine(pathComponents), filters)
+        public VobReferenceBase(IEnumerable<string> pathComponents, ImmutableList<KeyValuePair<string, string>> filters = null, bool? absolute = null)
+            : this(VosPath.ChunksToString(pathComponents, absolute), filters)
         {
         }
-        public VosReferenceBase(params string[] pathComponents)
-            : this(LionPath.Separator + LionPath.Combine(pathComponents))
+        public VobReferenceBase(params string[] pathComponents)
+            : this(VosPath.ChunksToString(pathComponents))
         {
         }
-        public VosReferenceBase(ImmutableList<KeyValuePair<string, string>> filters = null, params string[] pathComponents)
-            : this(LionPath.Separator + LionPath.Combine(pathComponents), filters)
+        public VobReferenceBase(ImmutableList<KeyValuePair<string, string>> filters = null, params string[] pathComponents)
+            : this(VosPath.ChunksToString(pathComponents), filters)
         {
         }
 
         #endregion
-
 
         public static IReference TryGetFromString(string referenceString)
         {
@@ -52,11 +51,11 @@ namespace LionFire.Vos
             {
                 return null;
             }
-            return new VosReference(referenceString);
+            return new VobReference(referenceString);
         }
 
-        public static VosReference FromRootName(string rootName = VosConstants.DefaultRootName)
-            => rootName == VosConstants.DefaultRootName ? new VosReference("/") : new VosReference("/../" + rootName);
+        public static VobReference FromRootName(string rootName = VosConstants.DefaultRootName)
+            => rootName == VosConstants.DefaultRootName ? new VobReference("/") : new VobReference("/../" + rootName);
 
         //public override TConcrete CloneWithPath(string newPath)
         //{
@@ -148,23 +147,24 @@ namespace LionFire.Vos
 
         #endregion
 
-        #region ProviderName
+        #region Persister
 
         /// <summary>
         /// Leave blank to base the reference off of the default provider
         /// </summary>
         [SetOnce]
-        public override string Persister
+        public override string Persister // Set by Path
         {
-            get => providerName;
-            set
-            {
-                if (providerName == value) return;
-                if (providerName != default) throw new AlreadySetException();
-                providerName = value;
-            }
+            get =>  persister ;
+             
+            //set
+            //{
+            //    if (persister == value) return;
+            //    if (persister != default) throw new AlreadySetException();
+            //    persister = value;
+            //}
         }
-        private string providerName;
+        private string persister;
 
         #endregion
 
@@ -185,7 +185,7 @@ namespace LionFire.Vos
             {
                 if (path == value) return;
                 if (path != default) throw new AlreadySetException();
-                path = value;
+                DoSetPath(value);
             }
         }
         private string path;
@@ -195,7 +195,13 @@ namespace LionFire.Vos
             get => Path.ToPathArray();
             set => Path = LionPath.FromPathArray(value);
         }
-        protected override void InternalSetPath(string path) => Path = path;
+        protected override void InternalSetPath(string path) => DoSetPath(path);
+
+        private void DoSetPath(string path)
+        {
+            this.path = path;
+            persister = VosPath.GetRootNameForPath(path);
+        }
 
         #endregion
 
@@ -216,22 +222,22 @@ namespace LionFire.Vos
 
         #endregion
 
-        public IVosReference Reference => this;
+        public IVobReference Reference => this;
 
-        public VosReference GetRoot() => new VosReference(VosPath.GetRootOfPath(this.Path));
+        public VobReference GetRoot() => new VobReference(VosPath.GetRootOfPath(this.Path));
 
         #region Misc
 
-        public static bool operator ==(VosReferenceBase<TConcrete> left, IVosReference right) => left?.Key == right?.Key;
-        public static bool operator ==(VosReferenceBase<TConcrete> left, VosReferenceBase<TConcrete> right) => left?.Key == right?.Key;
-        public static bool operator !=(VosReferenceBase<TConcrete> left, IVosReference right) => left?.Key != right?.Key;
-        public static bool operator !=(VosReferenceBase<TConcrete> left, VosReferenceBase<TConcrete> right) => left?.Key != right?.Key;
+        public static bool operator ==(VobReferenceBase<TConcrete> left, IVobReference right) => left?.Key == right?.Key;
+        public static bool operator ==(VobReferenceBase<TConcrete> left, VobReferenceBase<TConcrete> right) => left?.Key == right?.Key;
+        public static bool operator !=(VobReferenceBase<TConcrete> left, IVobReference right) => left?.Key != right?.Key;
+        public static bool operator !=(VobReferenceBase<TConcrete> left, VobReferenceBase<TConcrete> right) => left?.Key != right?.Key;
 
         public override string ToString() => String.Concat(UriPrefixDefault, Key);
 
         public override bool Equals(object obj)
         {
-            VosReference other = obj as VosReference;
+            VobReference other = obj as VobReference;
             if (other == null)
             {
                 return false;

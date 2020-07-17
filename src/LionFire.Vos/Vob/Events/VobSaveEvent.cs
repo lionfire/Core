@@ -10,7 +10,7 @@ namespace LionFire.Vos
     
     public class VobSaveEvent : EventBase
     {
-        public VobSaveEvent(VosReference logicalReference, IReference targetReference)
+        public VobSaveEvent(VobReference logicalReference, IReference targetReference)
         {
             //VobEventType eventType = VobEventType.Save;
             this.LogicalReference = logicalReference;
@@ -30,15 +30,15 @@ namespace LionFire.Vos
 
         #region Reference
 
-        public VosReference LogicalReference {
+        public VobReference LogicalReference {
             get { return logicalReference; }
             set {
                 if (logicalReference == value) return;
-                if (logicalReference != default(VosReference)) throw new AlreadySetException();
+                if (logicalReference != default(VobReference)) throw new AlreadySetException();
                 logicalReference = value;
             }
         }
-        private VosReference logicalReference;
+        private VobReference logicalReference;
 
         #endregion
 

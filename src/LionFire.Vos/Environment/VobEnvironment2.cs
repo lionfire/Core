@@ -7,7 +7,7 @@ namespace LionFire.Vos
     public interface IVobEnvironment
     {
         string GetEnvironmentString(string key);
-        IVosReference GetEnvironmentReference(string key);
+        IVobReference GetEnvironmentReference(string key);
         T GetEnvironment<T>(string key);
     }
 
@@ -40,14 +40,14 @@ namespace LionFire.Vos
                 _ => throw new InvalidCastException($"Conversion from type {obj.GetType().FullName} to string not supported."),
             };
         }
-        public IVosReference GetEnvironmentReference(string key)
+        public IVobReference GetEnvironmentReference(string key)
         {
             var obj = Vob.QueryChild("_", "env", key)?.Value;
             return obj switch
             {
                 null => null,
-                IVosReference r => r,
-                _ => throw new InvalidCastException($"Conversion from type {obj.GetType().FullName} to IVosReference not supported."),
+                IVobReference r => r,
+                _ => throw new InvalidCastException($"Conversion from type {obj.GetType().FullName} to IVobReference not supported."),
             };
         }
         public T GetEnvironment<T>(string key)

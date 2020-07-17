@@ -13,11 +13,6 @@ namespace LionFire.Persistence
     //    //public interface IItem { }
     //    //public interface IItem<T> : IItem { }
 
-
-  
-
-
-
     public interface RC<T, TListEntry> : IReadOnlyCollection<T>
         where TListEntry : ICollectionEntry
     {
@@ -28,7 +23,6 @@ namespace LionFire.Persistence
         //        ///// </summary>
         //        //INotifyingReadOnlyCollection<TListEntry> Entries { get; }
         IReadHandle<T> this[string subpath] { get; }
-
     }
 
     ///// <summary>

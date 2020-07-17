@@ -1,4 +1,5 @@
-﻿using System;
+﻿#if TODO // if needed. WpfDispatcherAdapter already implements?
+using System;
 using System.Threading.Tasks;
 using System.Windows.Threading;
 using LionFire.Threading;
@@ -33,3 +34,4 @@ namespace LionFire.UI.Wpf
         }
     }
 }
+#endif

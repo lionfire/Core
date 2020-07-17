@@ -61,8 +61,18 @@
   <ItemGroup>
     <ProjectReference Include="..\LionFire.Applications.Extensions\LionFire.Applications.Extensions.csproj" />
     <ProjectReference Include="..\LionFire.Base\LionFire.Base.csproj" />
+    <ProjectReference Include="..\LionFire.Binding\LionFire.Binding.csproj" />
     <ProjectReference Include="..\LionFire.Core.Extras\LionFire.Core.Extras.csproj" />
+    <ProjectReference Include="..\LionFire.UI.Wpf\LionFire.UI.Wpf.csproj" />
     <ProjectReference Include="..\LionFire.UI\LionFire.UI.csproj" />
+    <ProjectReference Include="..\LionFire.Vos.Application\LionFire.Vos.VosApp.csproj" />
+    <ProjectReference Include="..\LionFire.Vos\LionFire.Vos.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Reference Include="System.Windows.Controls.WpfPropertyGrid">
+      <HintPath>..\..\..\valor\Lib\WPF\WPG\denkhaus\.NET 4.8\System.Windows.Controls.WpfPropertyGrid.dll</HintPath>
+    </Reference>
   </ItemGroup>
 
   <ItemGroup>

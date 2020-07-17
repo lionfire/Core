@@ -32,7 +32,7 @@ namespace Write_
             await VosTestHost.Create().RunAsync(async serviceProvider =>
                 {
                     var root = serviceProvider.GetRootVob();
-                    var test = "$test".ToVosReference();
+                    var test = "$test".ToVobReference();
 
                     var child1 = test.GetChild("child1.json").GetReadWriteHandle<TestClass1>();
                     var child2 = test.GetChild("child2.json").GetReadWriteHandle<TestClass2>();

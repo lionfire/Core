@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Threading.Tasks;
 using LionFire.Identity;
 
 namespace LionFire.Identity
@@ -19,11 +20,11 @@ namespace LionFire.Identity
         //    get
         //    {
         //        throw new NotImplementedException("Use another way");
-        //        //if (ValorApp.Current.AccountSession == null) return null;
-        //        //if (!ValorApp.Current.AccountSession.IsLoggedIn) return null;
+        //        //if (AccountService.Current.AccountSession == null) return null;
+        //        //if (!AccountService.Current.AccountSession.IsLoggedIn) return null;
 
         //        //// OPTIMIZE ?
-        //        //return VosApp.Instance.Accounts[ValorApp.Current.AccountSession.Name];
+        //        //return VosApp.Instance.Accounts[AccountService.Current.AccountSession.Name];
         //    }
         //} //private static Vob accountData;
 
@@ -68,8 +69,9 @@ namespace LionFire.Identity
         public event EventHandler LoggedIn;
         public event EventHandler LoggedOut;
 
-        public bool Login()
+        public async Task<bool> Login()
         {
+            await Task.Delay(0).ConfigureAwait(false);
             try
             {
                 if (IsLoggedIn) return true;

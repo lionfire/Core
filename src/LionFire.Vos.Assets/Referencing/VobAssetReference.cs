@@ -4,7 +4,7 @@ using System.Collections.Generic;
 namespace LionFire.Vos.Assets
 {
 
-    public class VobAssetReference<TValue> : VosReferenceBase<TValue, VobAssetReference<TValue>>, IVobAssetReference
+    public class VobAssetReference<TValue> : VobReferenceBase<TValue, VobAssetReference<TValue>>, IVobAssetReference
     {
         #region Scheme
 
@@ -24,17 +24,17 @@ namespace LionFire.Vos.Assets
 
 #if TOOPTIMIZE // OPTIMIZE ideas:
     //  - VosPathChunksReference
-    //  - IVosReference
-    // TODO: Create this from VosReference
-    public class VosChunksReference : VosReferenceBase, IVosReference
+    //  - IVobReference
+    // TODO: Create this from VobReference
+    public class VosChunksReference : VobReferenceBase, IVobReference
     {
-        public IVosReference ParentReference { get; }
+        public IVobReference ParentReference { get; }
         public ArraySegment<string> PathChunks { get; set; }
     }
 
-    public class VosReferenceBase<TConcrete> : ReferenceBase<TConcrete>, IVosReference
+    public class VobReferenceBase<TConcrete> : ReferenceBase<TConcrete>, IVobReference
     {
-        // TODO: Get most of this from VosReference
+        // TODO: Get most of this from VobReference
     }
 #endif
 

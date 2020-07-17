@@ -11,8 +11,8 @@
     <UserControl.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
-                <lfaL:SharedResourceDictionary Source="pack://application:,,,/LionFire.Avalon;component/Resources/default-lfa.xaml"/>
-                <!--<lfaL:SharedResourceDictionary Source="pack://application:,,,/LionFire.Avalon;component/Resources/Text.xaml"/>-->
+                <lfaL:SharedResourceDictionary Source="pack://application:,,,/LionFire.UI.Wpf.Controls;component/Resources/default-lfa.xaml"/>
+                <!--<lfaL:SharedResourceDictionary Source="pack://application:,,,/LionFire.UI.Wpf.Controls;component/Resources/Text.xaml"/>-->
             </ResourceDictionary.MergedDictionaries>
         </ResourceDictionary>
 

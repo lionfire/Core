@@ -5,12 +5,12 @@ using LionFire.Referencing;
 namespace LionFire.Vos
 {
     // TODO - finish and test and refactor.  This may be half-baked
-    public abstract class HostVosReferenceBase<TConcrete> : VosReferenceBase<TConcrete>, IHostReference
-        where TConcrete : HostVosReferenceBase<TConcrete>
+    public abstract class HostVobReferenceBase<TConcrete> : VobReferenceBase<TConcrete>, IHostReference
+        where TConcrete : HostVobReferenceBase<TConcrete>
     {
         #region Key
 
-        // DUPLICATE logic with VosReferenceBase
+        // DUPLICATE logic with VobReferenceBase
         public override string Key
         {
             get

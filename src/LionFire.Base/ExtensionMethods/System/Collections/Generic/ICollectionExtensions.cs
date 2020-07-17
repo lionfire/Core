@@ -34,5 +34,16 @@ namespace LionFire.ExtensionMethods
                 me.Remove(item);
             }
         }
+
+        public static void AddIfEmpty<T>(this ICollection<T> list, T item)
+        {
+            if (list.Count == 0) list.Add(item);
+        }
+
+        public static void Set<T>(this ICollection<T> list, params T[] items)
+        {
+            list.Clear();
+            foreach (var item in items) { list.Add(item); }
+        }
     }
 }

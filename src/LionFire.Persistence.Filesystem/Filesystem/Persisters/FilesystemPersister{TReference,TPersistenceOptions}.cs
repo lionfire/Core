@@ -19,6 +19,7 @@ using LionFire.Persistence.Persisters;
 using Microsoft.Extensions.Options;
 using System.Reflection;
 using MorseCode.ITask;
+using Microsoft.Extensions.Logging;
 
 namespace LionFire.Persistence.Filesystem
 {
@@ -557,10 +558,24 @@ namespace LionFire.Persistence.Filesystem
 
                     #region SerializeToOutput
 
-                    var serializationResult = await SerializeToOutput(obj, effectiveFSPath, strategy, replaceMode, operation, context).ConfigureAwait(false);
+                    SerializationResult? serializationResult;
+                    try
+                    {
+                        serializationResult = await SerializeToOutput(obj, effectiveFSPath, strategy, replaceMode, operation, context).ConfigureAwait(false);
+                    }
+                    catch (IOException ex) when (ex.Message.Contains("used by another process"))
+                    {
+                        serializationResult = SerializationResult.SharingViolation;
+                    }
+                    catch (Exception ex)
+                    {
+                        serializationResult = SerializationResult.FromException(ex);
+                    }
 
                     if (!serializationResult.IsSuccess)
                     {
+                        l.TraceWarn($"{this.GetType().Name} - Write attempt to '{fsReference}' failed: " +  serializationResult);
+
                         if (failedSerializationResults == null) failedSerializationResults = new List<KeyValuePair<ISerializationStrategy, SerializationResult>>();
                         failedSerializationResults.Add(new KeyValuePair<ISerializationStrategy, SerializationResult>(strategyResult.Strategy, serializationResult));
                         continue;
@@ -695,6 +710,10 @@ namespace LionFire.Persistence.Filesystem
         }
 
         #endregion
+
+
+        private static ILogger l = Log.Get();
+
     }
     // REVIEW What should the flow be for Persistence.Retrieve, and Persistence.Write?  Create an op, and then iterate over Serializers until it succeeds? Do Retrieve/Write just create an op, and then the op can run on its own?  Is it like a blackboard object with its own configurable pipeline?  Is there a hidden IPersisterOperationsProvider interface for CreateRetrieveOperation and CreateWriteOperation?
 

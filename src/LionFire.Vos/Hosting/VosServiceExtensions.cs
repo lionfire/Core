@@ -25,12 +25,9 @@ using LionFire.Hosting;
 
 namespace LionFire.Services
 {
-    public class CollectionTypeFromVobNode : ICollectionTypeProvider<VosReference>
+    public class CollectionTypeFromVobNode : ICollectionTypeProvider<VobReference>
     {
-        public Type GetCollectionType(VosReference reference)
-        {
-            return reference.GetVob().AcquireOwn<CollectionType>()?.Type;
-        }
+        public Type GetCollectionType(VobReference reference) => reference.GetVob().AcquireOwn<CollectionType>()?.Type;
     }
 
     public static class VosServiceExtensions
@@ -64,18 +61,18 @@ namespace LionFire.Services
 
                         //#endregion
 
-                        .TryAddEnumerableSingleton<ICollectionTypeProvider<VosReference>, CollectionTypeFromVobNode>() // Allows Vobs to provide Collection Type for themselves
+                        .TryAddEnumerableSingleton<ICollectionTypeProvider<VobReference>, CollectionTypeFromVobNode>() // Allows Vobs to provide Collection Type for themselves
 
                     #region Persistence
                         .If(persistence, s =>
                         {
-                            s.AddSingleton<IPersisterProvider<VosReference>, VosPersisterProvider>()
+                            s.AddSingleton<IPersisterProvider<VobReference>, VosPersisterProvider>()
                             .Configure<VosPersisterOptions>(vpo => { })
                             .AddSingleton(s => s.GetRequiredService<IOptionsMonitor<VosPersisterOptions>>().CurrentValue) // REVIEW - force usage via IOptionsMonitor?
 
-                            .AddSingleton<IReadHandleProvider<VosReference>, VosHandleProvider>()
-                            .AddSingleton<IReadWriteHandleProvider<VosReference>, VosHandleProvider>()
-                            .AddSingleton<IWriteHandleProvider<VosReference>, VosHandleProvider>()
+                            .AddSingleton<IReadHandleProvider<VobReference>, VosHandleProvider>()
+                            .AddSingleton<IReadWriteHandleProvider<VobReference>, VosHandleProvider>()
+                            .AddSingleton<IWriteHandleProvider<VobReference>, VosHandleProvider>()
                             ;
                         })
                     #endregion
@@ -121,7 +118,7 @@ namespace LionFire.Services
                               }.Contributes("services:" + vobRoot.Reference /* vos:/ */)); // "RootVobs"),
 
                               //new Dependency(VosInitStages.RootMountStage(vobRoot.Name), $"{vobRoot} mounts") { StartAction = () => vobRoot.InitializeMounts(), }.DependsOn("vos:"),
-                              list.Add(new Participant(key: VosInitStages.RootMountStage(vobRoot.Name)) { StartAction = () => vobRoot.InitializeMounts(), }.After("environment:" + vobRoot.Reference.ToString()).Contributes("mounts:" + vobRoot.Reference.ToString())); // Should it contribute to the vob itself?  $"vos:{vobRoot.AbsolutePath}"
+                              list.Add(new Participant(key: VosInitStages.RootMountStage(vobRoot.Name)) { StartAction = () => vobRoot.InitializeMounts(), }.After("environment:" + vobRoot.Reference.ToString()).Contributes(vobRoot.Reference.ToString())); 
                               return list;
                           });
                       })

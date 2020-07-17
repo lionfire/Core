@@ -111,13 +111,13 @@ namespace LionFire.Vos
         public static string ParseNameFromEnvironmentVariable(string environmentReference) => environmentReference.Substring(1);
         public static bool IsEnvironmentVariableReference(string environmentReference) => environmentReference.StartsWith("$");
 
-        public (string StringChunk, VosReference ReferenceChunk) TryResolvePathChunk(string chunk)
+        public (string StringChunk, VobReference ReferenceChunk) TryResolvePathChunk(string chunk)
         {
             if (IsEnvironmentVariableReference(chunk))
             {
                 var envValue = this.Environment()[ParseNameFromEnvironmentVariable(chunk)];
                 var envValueString = envValue as string;
-                var envValueReference = envValue as VosReference;
+                var envValueReference = envValue as VobReference;
                 if (!string.IsNullOrEmpty(envValueString))
                 {
                     return (envValueString, null);
@@ -225,7 +225,7 @@ namespace LionFire.Vos
             }
             else if (resolvedChunks.ReferenceChunk != null)
             {
-                if (resolvedChunks.ReferenceChunk.IsAbsolute && !(this).IsRoot()) throw new ArgumentException($"Cannot traverse absolute {typeof(VosReference).Name} from a non-root Vob.");
+                if (resolvedChunks.ReferenceChunk.IsAbsolute && !(this).IsRoot()) throw new ArgumentException($"Cannot traverse absolute {typeof(VobReference).Name} from a non-root Vob.");
                 var referencePathChunks = resolvedChunks.ReferenceChunk.PathChunks;
                 if (referencePathChunks.Length == 0) { return (true, null); }
                 else { return (false, GetChild(referencePathChunks)); }
@@ -269,7 +269,7 @@ namespace LionFire.Vos
             //}
             //else if (resolvedChunks.ReferenceChunk != null)
             //{
-            //    if (resolvedChunks.ReferenceChunk.IsAbsolute && !this.IsRoot()) throw new ArgumentException($"Cannot traverse absolute {typeof(VosReference).Name} from a non-root Vob.");
+            //    if (resolvedChunks.ReferenceChunk.IsAbsolute && !this.IsRoot()) throw new ArgumentException($"Cannot traverse absolute {typeof(VobReference).Name} from a non-root Vob.");
             //    var referencePathChunks = resolvedChunks.ReferenceChunk.PathChunks;
             //    if (referencePathChunks.Length == 0) { index++; goto start; }
             //    else { return GetChild(referencePathChunks).GetChild(subpathChunks, index + 1); }
@@ -426,13 +426,13 @@ namespace LionFire.Vos
 
         #endregion
 
-        #region (Derived) VosReference child getters
+        #region (Derived) VobReference child getters
 
-        public IVob this[IVosReference reference] => this[reference.Path];
+        public IVob this[IVobReference reference] => this[reference.Path];
 
-        public IVob GetChild(VosReference reference) => GetChild(reference.Path.ToPathArray(), 0);
+        public IVob GetChild(VobReference reference) => GetChild(reference.Path.ToPathArray(), 0);
 
-        public IVob QueryChild(IVosReference reference) => QueryChild(reference.Path.ToPathArray(), 0);
+        public IVob QueryChild(IVobReference reference) => QueryChild(reference.Path.ToPathArray(), 0);
 
         #endregion
 

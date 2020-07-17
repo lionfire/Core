@@ -1,4 +1,8 @@
-﻿using LionFire.Structures;
+﻿using LionFire.Results;
+using LionFire.Structures;
+using MorseCode.ITask;
+using System;
+using System.Linq;
 
 namespace LionFire.Resolves
 {
@@ -7,6 +11,9 @@ namespace LionFire.Resolves
         , IDiscardableValue // REVIEW - is this excessive / superfluous / unnecessary for this interface?  Change to IResets? TODO - try without this
     //: IHasPersistenceState
     {
+
+     
+
         /// <summary>
         /// Lazily gets the Object, meaning if the Object is not known yet and a retrieve has not been performed, it will be retrieved via the IRetrieves interface.  If the Object is already known, it avoids a Retrieve.  (For writable objects, the Object might be known because the user set the Object.)
         /// 
@@ -35,6 +42,7 @@ namespace LionFire.Resolves
         //new bool HasValue { get; }
 
     }
+ 
 
     //public interface INotifyingLazilyResolves // Use Persistence instead?
     //{

@@ -1,5 +1,7 @@
 ﻿using LionFire.Collections;
 using LionFire.UI;
+using LionFire.UI.Windowing;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using System;
@@ -28,18 +30,21 @@ namespace LionFire.Shell.Wpf
         }
         private WpfShell shell;
 
+
         #endregion
 
         #region Dependencies
 
+        public IServiceProvider ServiceProvider { get; }
         public IOptionsMonitor<StartupInterfaceOptions> RootInterface { get; }
 
         #endregion
 
         #region Construction
 
-        public WpfShellPresenter(IOptionsMonitor<StartupInterfaceOptions> rootInterface)
+        public WpfShellPresenter(IServiceProvider serviceProvider, IOptionsMonitor<StartupInterfaceOptions> rootInterface)
         {
+            ServiceProvider = serviceProvider;
             RootInterface = rootInterface;
         }
 
@@ -198,7 +203,7 @@ namespace LionFire.Shell.Wpf
             return mi.Invoke(this, new object[] { tabName });
         }
 
-        public T ShowControl<T>(string tabName = null) where T : FrameworkElement => MainPresenter.PushTab<T>(tabName);
+        public T ShowControl<T>(string tabName = null) where T : class => MainPresenter.PushTab<T>(tabName);
 
         //public T GetControl<T>(string tabName = null OLD
         //    //, T frameworkElement = null
@@ -231,7 +236,7 @@ namespace LionFire.Shell.Wpf
             {
                 if (mainPresenter == null)
                 {
-                    mainPresenter = new ShellContentPresenter(this, MainPresenterName);
+                    mainPresenter = new ShellContentPresenter(this, ServiceProvider.GetService<IOptionsMonitor<WindowSettings>>(), MainPresenterName);
                     //t.SetApartmentState(ApartmentState.STA); // OLD - is this needed for some reason?
 
                     Presenters.Add(mainPresenter.Name, mainPresenter);
@@ -252,7 +257,7 @@ namespace LionFire.Shell.Wpf
         {
             Presenters.Remove(obj.Name);
 
-            if (Shell.StopOnMainPresenterClose) // TODO - move
+            if (WpfShell.Instance.ShellOptions.StopOnMainPresenterClose) // TODO - move
             {
                 await Shell.StopAsync(default).ConfigureAwait(false);
             }

@@ -29,7 +29,7 @@ namespace LionFire.Services
     //    ///// <param name="availablePackageMountOptions">This is the MountOptions for the store being mounted under the PackageManager's available location.  It is recommended to leave this as null.  Default will have IsManuallyEnabled = true.</param>
     //    ///// <param name="rootName">Specify a non-default RootVob here.</param>
     //    ///// <returns></returns>
-    //    //public IVosStoresBuilder AddStore(VosReference mountPoint, IReference target, MountOptions dataMountOptions = null, MountOptions availablePackageMountOptions = null, string rootName = VosConstants.DefaultRootName)
+    //    //public IVosStoresBuilder AddStore(VobReference mountPoint, IReference target, MountOptions dataMountOptions = null, MountOptions availablePackageMountOptions = null, string rootName = VosConstants.DefaultRootName)
     //    //{
     //    //    //Services.InitializeRootVob((serviceProvider, root) =>
     //    //    //{

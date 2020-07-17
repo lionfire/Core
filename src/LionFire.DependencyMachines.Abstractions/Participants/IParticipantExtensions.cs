@@ -1,5 +1,6 @@
 ﻿#nullable enable
 using LionFire.Ontology;
+using Microsoft.Extensions.Hosting;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -47,15 +48,24 @@ namespace LionFire.DependencyMachines
 
         #region Provides
 
-        public static IParticipant Provides(this IParticipant participant, params string[] keys)
+        public static IParticipant Provide(this IParticipant participant, params string[] keys)
         {
             participant.Provides ??= new List<object>();
             participant.Provides.AddRange(keys);
             return participant;
         }
-        public static IParticipant Provides(this IParticipant participant, params Enum[] keys)
-               => participant.Provides(keys.Select(s => s.ToString()).ToArray());
+        public static IParticipant Provide(this IParticipant participant, params Enum[] keys)
+               => participant.Provide(keys.Select(s => s.ToString()).ToArray());
 
+        public static IEnumerable<object> EffectiveProvides(this IParticipant participant)
+        {
+            IEnumerable<object> result = new object[] { participant.Key };
+            if (participant.Provides != null)
+            {
+                result = result.Concat(participant.Provides).Distinct();
+            }
+            return result;
+        }
         #endregion
 
         #region DependsOn
@@ -70,8 +80,19 @@ namespace LionFire.DependencyMachines
             return participant;
         }
 
-        public static IParticipant DependsOn(this IParticipant participant, params Enum[] stages) 
+        public static IParticipant DependsOn(this IParticipant participant, params Enum[] stages)
             => participant.DependsOn(stages.Select(s => s.ToString()).ToArray());
+
+        #endregion
+
+        #region HostedService
+
+        public static IParticipant DependsOnHostedService<T>(this IParticipant participant)
+            where T : IHostedService
+            => participant.DependsOn(HostedServiceParticipant<T>.KeyForType);
+        public static IParticipant DependsOnHostedService<T>(this IParticipant participant, string machineName)
+                   where T : IHostedService
+                   => participant.DependsOn(HostedServiceParticipant<T>.KeyForType);
 
         #endregion
 

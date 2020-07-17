@@ -12,6 +12,10 @@ namespace LionFire.Vos.VosApp
     /// </summary>
     public static class V
     {
+        // TODO: Cache values of properties
+
+        public static IRootVob Root => DependencyContext.Current.GetService<IVos>().Get();
+
         #region Accessor
 
         public static VosDirs VosApp
@@ -36,11 +40,10 @@ namespace LionFire.Vos.VosApp
 
         #endregion
 
-
         //public static bool HasActiveData { get { return VosApp != null && VosApp.HasActiveData; } }
         public static IVob ActiveData => VosApp.ActiveData;
-        //public static IVob Assets => VosApp.Assets;
-        
+        public static IVob Assets => Root["$assets"];
+
         public static IVob Settings => VosApp.Settings;
 
         ///// <summary>
@@ -49,7 +52,8 @@ namespace LionFire.Vos.VosApp
         ///// </summary>
         //public static IVob AppData => VosApp.AppData;
 
-        //public static IVob Packages => VosApp.Packages;
+        public static IVob Packages => Root[VosPackageLocations.Packages];
+
         //public static IVob Archives => VosApp.PackageStores;
         //public static IVob Stores => VosApp.Stores;
 

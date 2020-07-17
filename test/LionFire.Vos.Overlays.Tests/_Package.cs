@@ -45,14 +45,14 @@ namespace Packages_
                         //        Name = "UnitTestPluginsDir"
                         //    })
 
-                        .VosMount("/`/PluginData", "/`/TestPlugins/data".ToVosReference()) // Custom data dir for app
+                        .VosMount("/`/PluginData", "/`/TestPlugins/data".ToVobReference()) // Custom data dir for app
                         //.InitializeVob("/`/TestPlugins/available/" + Path.GetFileName(pluginsDir), v =>
                         //{
                         //    v.TryAddOwn(M)
                         //})
 
                         // MOVE - FUTURE: Vos metadata
-                        //.VosMount("/_/vos", new VosReference("/") { Persister = "vos" }, new MountOptions
+                        //.VosMount("/_/vos", new VobReference("/") { Persister = "vos" }, new MountOptions
                         //{
                         //    IsReadOnly = true,
                         //    IsExclusive = true,
@@ -79,17 +79,17 @@ namespace Packages_
                         }
                         #endregion
 
-                        var pluginDataReference1 = new VosReference("/`/PluginData/file1.txt");
-                        var pluginDataReference2 = new VosReference("/`/PluginData/file2.txt");
-                        var dataReference1 = new VosReference("/`/TestPlugins/data/file1.txt");
-                        var dataReference2 = new VosReference("/`/TestPlugins/data/file2.txt");
+                        var pluginDataReference1 = new VobReference("/`/PluginData/file1.txt");
+                        var pluginDataReference2 = new VobReference("/`/PluginData/file2.txt");
+                        var dataReference1 = new VobReference("/`/TestPlugins/data/file1.txt");
+                        var dataReference2 = new VobReference("/`/TestPlugins/data/file2.txt");
 
                         Assert.False(await pluginDataReference1.GetReadHandle<string>().Exists());
                         Assert.False(await pluginDataReference2.GetReadHandle<string>().Exists());
                         Assert.False(await dataReference1.GetReadHandle<string>().Exists());
                         Assert.False(await dataReference2.GetReadHandle<string>().Exists());
 
-                        // How to get a Vob?  VosReference.ToVob() might be nice.  How about VosReference.ToVob().AsType<PackageManager>()
+                        // How to get a Vob?  VobReference.ToVob() might be nice.  How about VobReference.ToVob().AsType<PackageManager>()
                         var packageProvider = "/`/TestPlugins".GetVob().Get<PackageProvider>();
 
                         //Assert.True(pluginManager.AvailablePackages.Contains("plugin1")); // TODO
@@ -143,7 +143,7 @@ namespace Packages_
                         Assert.True(packageProvider.Disable("plugin2"));
                         Assert.Empty(packageProvider.EnabledPackages);
 
-                        var vobMounts = new VosReference("/`/TestPlugins/data").GetVob().AcquireOwn<VobMounts>();
+                        var vobMounts = new VobReference("/`/TestPlugins/data").GetVob().AcquireOwn<VobMounts>();
                         Assert.False(vobMounts.HasLocalReadMounts);
                         Assert.False(vobMounts.HasLocalWriteMounts);
 

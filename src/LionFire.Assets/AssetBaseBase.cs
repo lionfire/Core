@@ -7,6 +7,10 @@ using LionFire.Types;
 
 namespace LionFire.Assets
 {
+    /// <remarks>
+    /// AssetPath (Key), TreatAsType, Reference
+    /// </remarks>
+    /// <typeparam name="TValue"></typeparam>
     public abstract class AssetBaseBase<TValue> : IKeyable, INotifyPropertyChanged, IAsset<TValue>, IReferencable
     {
         public Type TreatAsType => typeof(TValue);
@@ -39,7 +43,6 @@ namespace LionFire.Assets
         protected AssetReference<TValue> reference;
 
         IReference IReferencable.Reference => Reference;
-
 
         #region Construction
 

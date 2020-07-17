@@ -31,17 +31,17 @@ namespace LionFire.Hosting // REVIEW - consider changing this to LionFire.Servic
                                      VosAppInitStage.PackageProviders,
                                      VosAppInitStage.PackageSources));
                              })
-                             .VobEnvironment("app", "/app".ToVosReference()) // TODO: VosAppLocations.App = "$app"
-                             .VobEnvironment(VosPackageLocations.Packages, "/packages".ToVosReference())
-                             .VobEnvironment("internal", "/_".ToVosReference())
+                             .VobEnvironment("app", "/app".ToVobReference()) // TODO: VosAppLocations.App = "$app"
+                             .VobEnvironment(VosPackageLocations.Packages, "/packages".ToVobReference())
+                             .VobEnvironment("internal", "/_".ToVobReference())
 
-                             .VobEnvironment("stores", "/_/stores".ToVosReference()) //.VobEnvironment("stores", "/$internal/stores".ToVosReference()) // TODO
+                             .VobEnvironment("stores", "/_/stores".ToVobReference()) //.VobEnvironment("stores", "/$internal/stores".ToVobReference()) // TODO
 
                              //.AddVosAppStores(options?.VosStoresOptions) 
 
                              .VobAlias("/`", "/app") // TODO, TOTEST
                                                      //.AddVosAppDefaultMounts(options) // TODO
-                                                     //.VobAlias("/`", "$AppRoot") // FUTURE?  Once environment variables are ready
+                                                                                      //.VobAlias("/`", "$AppRoot") // FUTURE?  Once environment variables are ready
 
                              //.AddVosAppOptions(options)
                              ;

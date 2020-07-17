@@ -49,7 +49,7 @@ namespace LionFire.Vos.Blazor
             services
                 .AddPersisters()
                 .AddFilesystem()
-                .VosMount("/temp".ToVosReference(), @"c:\temp".ToFileReference());
+                .VosMount("/temp".ToVobReference(), @"c:\temp".ToFileReference());
                 ;
         }
 

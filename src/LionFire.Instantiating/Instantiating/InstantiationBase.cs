@@ -202,7 +202,7 @@ namespace LionFire.Instantiating
             set
             {
                 if (rTemplate != null) throw new AlreadySetException();
-                rTemplate = value.GetReadHandle();
+                rTemplate = value.GetObjectReadHandle();
             }
         }
 

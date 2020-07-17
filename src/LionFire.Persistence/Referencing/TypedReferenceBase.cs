@@ -36,11 +36,11 @@ namespace LionFire.Referencing
     }
 
 #if TOPORT
-    public class AssetPathToVosReferenceResolver : IResolver<IResolvingReference, IReference>
+    public class AssetPathToVobReferenceResolver : IResolver<IResolvingReference, IReference>
     {
         public IReference Resolve<T>(T r) where T : IResolvingReference
         {
-            new VosReference();
+            new VobReference();
         }
     }
 #endif

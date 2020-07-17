@@ -21,7 +21,7 @@ namespace Environment_
                 .ConfigureServices((_, s) =>
                 {
                     s
-                    .AddChainResolver<string, VosReference>(s => new VosReference(s)) // ENH: look for ctor or static implicit operator on target type with source type
+                    .AddChainResolver<string, VobReference>(s => new VobReference(s)) // ENH: look for ctor or static implicit operator on target type with source type
                     .VobEnvironment("key2", "value2")
                     ;
                 })
@@ -30,9 +30,9 @@ namespace Environment_
                     var root = serviceProvider.GetRootVob();
                     var env = root.Environment();
 
-                    var r = env.FlexDictionary.Values["key2"].ResolveTo<VosReference>();
-                    Assert.IsType<VosReference>(r);
-                    Assert.IsType<VosReference>(env.FlexDictionary.Values["key2"].SingleValueOrDefault());
+                    var r = env.FlexDictionary.Values["key2"].ResolveTo<VobReference>();
+                    Assert.IsType<VobReference>(r);
+                    Assert.IsType<VobReference>(env.FlexDictionary.Values["key2"].SingleValueOrDefault());
                 });
         }
 
@@ -44,7 +44,7 @@ namespace Environment_
                 .ConfigureServices((_, s) =>
                 {
                     s
-                    .AddChainResolver<string, VosReference>(s => new VosReference(s)) // ENH: look for ctor or static implicit operator on target type with source type
+                    .AddChainResolver<string, VobReference>(s => new VobReference(s)) // ENH: look for ctor or static implicit operator on target type with source type
                     .VobEnvironment("key2", "value2")
                     ;
                 })
@@ -53,9 +53,9 @@ namespace Environment_
                     var root = serviceProvider.GetRootVob();
                     var env = root.Environment();
 
-                    var r = env.FlexDictionary.Values["key2"].ResolveTo<VosReference>();
-                    Assert.IsType<VosReference>(r);
-                    Assert.IsType<VosReference>(env.FlexDictionary.Values["key2"].SingleValueOrDefault());
+                    var r = env.FlexDictionary.Values["key2"].ResolveTo<VobReference>();
+                    Assert.IsType<VobReference>(r);
+                    Assert.IsType<VobReference>(env.FlexDictionary.Values["key2"].SingleValueOrDefault());
 
                     // TODO use this from Default:                 new ChainResolverWorker(typeof(ILazilyResolves<object>), o => ((ILazilyResolves<object>)o).GetValue()),
                     Assert.True(false);

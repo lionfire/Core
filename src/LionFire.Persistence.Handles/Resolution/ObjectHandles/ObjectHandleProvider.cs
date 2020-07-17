@@ -46,9 +46,9 @@ namespace LionFire.Persistence.Handles
 
     public static class ObjectHandleProviderExtensions
     {
-        public static IReadHandle<TValue> GetReadHandle<TValue>(this TValue value) => DependencyContext.Current.GetService<ObjectHandleProvider>().GetReadHandle(value);
-        public static IReadWriteHandle<TValue> GetReadWriteHandle<TValue>(this TValue value) => DependencyContext.Current.GetService<ObjectHandleProvider>().GetReadWriteHandle(value);
-        public static IWriteHandle<TValue> GetWriteHandle<TValue>(this TValue value) => DependencyContext.Current.GetService<ObjectHandleProvider>().GetWriteHandle(value);
+        public static IReadHandle<TValue> GetObjectReadHandle<TValue>(this TValue value) => DependencyContext.Current.GetService<ObjectHandleProvider>().GetReadHandle(value);
+        public static IReadWriteHandle<TValue> GetObjectReadWriteHandle<TValue>(this TValue value) => DependencyContext.Current.GetService<ObjectHandleProvider>().GetReadWriteHandle(value);
+        public static IWriteHandle<TValue> GetObjectWriteHandle<TValue>(this TValue value) => DependencyContext.Current.GetService<ObjectHandleProvider>().GetWriteHandle(value);
     }
 
     //public enum GetHandleFlags

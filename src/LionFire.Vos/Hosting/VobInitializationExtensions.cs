@@ -13,6 +13,8 @@ using System.Threading;
 using System.Threading.Tasks;
 using LionFire.Services.DependencyMachines;
 using LionFire.Referencing;
+using System.Runtime.CompilerServices;
+using System.Linq;
 
 namespace LionFire.Services
 {
@@ -52,56 +54,56 @@ namespace LionFire.Services
 
         #region IParticipant
 
-        //public static IServiceCollection InitializeVob(this IServiceCollection services, Action<IServiceProvider, IVob> action, IVosReference vosReference)
+        //public static IServiceCollection InitializeVob(this IServiceCollection services, Action<IServiceProvider, IVob> action, IVobReference vobReference)
         //{
 
         //    services.TryAddEnumerable(new ServiceDescriptor(typeof(VobInitializer), serviceProvider =>
         //    {
-        //        return new VobInitializer(vosReference, action);
+        //        return new VobInitializer(vobReference, action);
         //    }, ServiceLifetime.Transient));
 
         //    //services.Configure<ConcurrentDictionary<string, List<VobInitializer>>>(dict =>
-        //        //dict.Add(new VobInitializer(VosReference.FromRootName(rootName), action)));
+        //        //dict.Add(new VobInitializer(VobReference.FromRootName(rootName), action)));
         //    return services;
         //}
 
         //#region Configure VobInitializer
 
         //// Configure action
-        //public static IServiceCollection InitializeVob(this IServiceCollection services, VosReference vosReference, Action<VobInitializer> configure)
-        //    => services.AddParticipant(configure, vosReference);
+        //public static IServiceCollection InitializeVob(this IServiceCollection services, VobReference vobReference, Action<VobInitializer> configure)
+        //    => services.AddParticipant(configure, vobReference);
 
         //// Configure action, with custom VobInitializer type
-        //public static IServiceCollection InitializeVob<TInitializer>(this IServiceCollection services, VosReference vosReference, Action<TInitializer> configure)
+        //public static IServiceCollection InitializeVob<TInitializer>(this IServiceCollection services, VobReference vobReference, Action<TInitializer> configure)
         //    where TInitializer : VobInitializer
-        //    => services.AddParticipant(configure, vosReference);
+        //    => services.AddParticipant(configure, vobReference);
 
         //#endregion
 
         #region Action
 
         // Simplest case: perform a synchronous action on a Vob
-        public static IServiceCollection InitializeVob(this IServiceCollection services, VosReference vosReference, Action<IVob> init, Action<IParticipant>? configure = null, VobInitializerFlags flags = VobInitializerFlags.Default)
-            => services.AddInitializer((Action<IVos>)(v => init(v.GetVob(vosReference))), configureWrapper(vosReference, configure, flags));
+        public static IServiceCollection InitializeVob(this IServiceCollection services, VobReference vobReference, Action<IVob> init, Action<IParticipant>? configure = null, VobInitializerFlags flags = VobInitializerFlags.Default)
+            => services.AddInitializer((Action<IVos>)(v => init(v.GetVob(vobReference))), configureWrapper(vobReference, configure, flags));
 
         /// <summary>
         /// Initialize synchronously, with an opportunity to return a validation failure explanation (rather than throwing an exception.)
         /// </summary>
         /// <param name="services"></param>
-        /// <param name="vosReference"></param>
+        /// <param name="vobReference"></param>
         /// <param name="initAndValidate">Must return null on success, otherwise something to indicate why the initialization failed.</param>
         /// <param name="configure"></param>
         /// <param name="flags"></param>
         /// <returns></returns>
-        public static IServiceCollection InitializeVobWithValidation(this IServiceCollection services, VosReference vosReference, Func<IVob, object?> initAndValidate, Action<IParticipant>? configure = null, VobInitializerFlags flags = VobInitializerFlags.Default)
-            => services.AddInitializer((Func<IVos, object?>)(v => initAndValidate(v.GetVob(vosReference))), configureWrapper(vosReference, configure, flags));
+        public static IServiceCollection InitializeVobWithValidation(this IServiceCollection services, VobReference vobReference, Func<IVob, object?> initAndValidate, Action<IParticipant>? configure = null, VobInitializerFlags flags = VobInitializerFlags.Default)
+            => services.AddInitializer((Func<IVos, object?>)(v => initAndValidate(v.GetVob(vobReference))), configureWrapper(vobReference, configure, flags));
         //c =>
         //{
-        //    c.Contributes(vosReference.ToString());
+        //    c.Contributes(vobReference.ToString());
         //    if (defaultDependency)
         //    {
-        //        if (vosReference.Path == "/") c.DependsOn("vos:");
-        //        else c.DependsOn(vosReference.GetParent().ToString());
+        //        if (vobReference.Path == "/") c.DependsOn("vos:");
+        //        else c.DependsOn(vobReference.GetParent().ToString());
         //    }
         //    configure?.Invoke(c);
         //});
@@ -110,29 +112,37 @@ namespace LionFire.Services
         /// Initialize asynchronously, with an opportunity to return a validation failure explanation (rather than throwing an exception.)
         /// </summary>
         /// <param name="services"></param>
-        /// <param name="vosReference"></param>
+        /// <param name="vobReference"></param>
         /// <param name="initAndValidate"></param>
         /// <param name="configure"></param>
         /// <param name="flags"></param>
         /// <returns></returns>
-        public static IServiceCollection InitializeVobWithValidation(this IServiceCollection services, VosReference vosReference, Func<IVob, Task<object?>> initAndValidate, Action<IParticipant>? configure = null, VobInitializerFlags flags = VobInitializerFlags.Default)
-            => services.AddInitializer((Func<IVos, Task<object?>>)(v => initAndValidate(v.GetVob(vosReference))), configureWrapper(vosReference, configure, flags));
+        public static IServiceCollection InitializeVobWithValidation(this IServiceCollection services, VobReference vobReference, Func<IVob, Task<object?>> initAndValidate, Action<IParticipant>? configure = null, VobInitializerFlags flags = VobInitializerFlags.Default)
+            => services.AddInitializer((Func<IVos, Task<object?>>)(v => initAndValidate(v.GetVob(vobReference))), configureWrapper(vobReference, configure, flags));
 
         #endregion
 
-        private static Action<IParticipant> configureWrapper(VosReference vosReference, Action<IParticipant>? configure, VobInitializerFlags flags = VobInitializerFlags.Default, string key = null)
+
+
+        private static Action<IParticipant> configureWrapper(VobReference vobReference, Action<IParticipant>? configure, VobInitializerFlags flags = VobInitializerFlags.Default, string key = null)
         {
+
             return c =>
             {
+                foreach (var env in vobReference.ExtractEnvironmentVariables())
+                {
+                    //.DependsOn("vos:/<VobEnvironment>/*")
+                    c.DependsOn("vos:/ " + env);
+                }
                 string automaticKey = "";
-                if (flags.HasFlag(VobInitializerFlags.Contributes)) { c.Contributes(vosReference.ToString()); automaticKey += $"{vosReference} contributor"; }
+                if (flags.HasFlag(VobInitializerFlags.Contributes)) { c.Contributes(vobReference.ToString()); automaticKey += $"{vobReference} contributor"; }
                 if (flags.HasFlag(VobInitializerFlags.AfterParent))
                 {
-                    if (automaticKey == "") { automaticKey += $"After {vosReference}"; }
-                
-                    if (vosReference.ToString() != "vos:")
+                    if (automaticKey == "") { automaticKey += $"After {vobReference}"; }
+
+                    if (vobReference.ToString() != "vos:")
                     {
-                        VosReference? ancestor = vosReference.GetParent(nullIfBeyondRoot: true);
+                        VobReference? ancestor = vobReference.GetParent(nullIfBeyondRoot: true);
                         do
                         {
                             // OPTIMIZE - Though this gets inefficient - may want to build hierarchical After/DependsOn into DependencyStateMachine
@@ -164,53 +174,53 @@ namespace LionFire.Services
 
         // Function injection, with manual insertion of IVob
         public static IServiceCollection InitializeVob(this IServiceCollection services,
-            VosReference vosReference,
+            VobReference vobReference,
             Delegate del,
             Action<IParticipant>? configure = null, VobInitializerFlags flags = VobInitializerFlags.Default)
             => services.AddInitializer(
                 (Func<StartableParticipant, CancellationToken, Task<object?>>)
                 (DependencyMachineDelegateHelpers.CreateInvoker<StartableParticipant>(
                         del,
-                        (typeof(IVob), sp => sp.GetRequiredService<IVos>().GetVob(vosReference)))
+                        (typeof(IVob), sp => sp.GetRequiredService<IVos>().GetVob(vobReference)))
                 ),
-                configureWrapper(vosReference, configure, flags));
+                configureWrapper(vobReference, configure, flags));
 
         public static IServiceCollection InitializeVob<TParameter1>(this IServiceCollection services,
-                VosReference vosReference,
+                VobReference vobReference,
                 Action<IVob, TParameter1> action,
                 Action<IParticipant>? configure = null, VobInitializerFlags flags = VobInitializerFlags.Default, string key = null)
                 => services.AddInitializer(
                     (Func<StartableParticipant, CancellationToken, Task<object?>>)
                     (DependencyMachineDelegateHelpers.CreateInvoker<StartableParticipant>(
                             action,
-                            (typeof(IVob), sp => sp.GetRequiredService<IVos>().GetVob(vosReference)))
+                            (typeof(IVob), sp => sp.GetRequiredService<IVos>().GetVob(vobReference)))
                     ),
-                    configureWrapper(vosReference, configure, flags, key));
+                    configureWrapper(vobReference, configure, flags, key));
 
         public static IServiceCollection InitializeVob<TParameter1, TParameter2>(this IServiceCollection services,
-                VosReference vosReference,
+                VobReference vobReference,
                 Action<IVob, TParameter1, TParameter2> action,
                 Action<IParticipant>? configure = null, VobInitializerFlags flags = VobInitializerFlags.Default)
                 => services.AddInitializer(
                     (Func<StartableParticipant, CancellationToken, Task<object?>>)
                     (DependencyMachineDelegateHelpers.CreateInvoker<StartableParticipant>(
                             action,
-                            (typeof(IVob), sp => sp.GetRequiredService<IVos>().GetVob(vosReference)))
+                            (typeof(IVob), sp => sp.GetRequiredService<IVos>().GetVob(vobReference)))
                     ),
-                    configureWrapper(vosReference, configure, flags));
+                    configureWrapper(vobReference, configure, flags));
 
         #endregion
 
-        //public static IServiceCollection InitializeVob(this IServiceCollection services, VosReference vosReference, Func<IServiceProvider, IVob, CancellationToken, Task<object?>> initializationAction)
+        //public static IServiceCollection InitializeVob(this IServiceCollection services, VobReference vobReference, Func<IServiceProvider, IVob, CancellationToken, Task<object?>> initializationAction)
         //{
-        //    services.InitializeVob(vosReference, vi =>
+        //    services.InitializeVob(vobReference, vi =>
         //    {
         //        vi.InitializationAction = initializationAction,
         //    }, stage: stage);
 
         //    services.TryAddEnumerable(new ServiceDescriptor(typeof(VobInitializer), serviceProvider =>
         //    {
-        //        ActivatorUtilities.CreateInstance<VobInitializer>(serviceProvider, vosReference
+        //        ActivatorUtilities.CreateInstance<VobInitializer>(serviceProvider, vobReference
 
 
         //        return factory(serviceProvider);
@@ -241,46 +251,46 @@ namespace LionFire.Services
 
         public static IServiceCollection InitializeRootVob(this IServiceCollection services, Func<IServiceProvider, IRootVob, object> action, string rootName = VosConstants.DefaultRootName)
         {
-            services.Configure<ConcurrentDictionary<string, List<VobInitializer>>>(dict => dict.Add(new VobInitializer(VosReference.FromRootName(rootName), action)));
+            services.Configure<ConcurrentDictionary<string, List<VobInitializer>>>(dict => dict.Add(new VobInitializer(VobReference.FromRootName(rootName), action)));
             return services;
         }
         public static IServiceCollection InitializeRootVob(this IServiceCollection services, Action<IServiceProvider, IRootVob> action, string rootName = VosConstants.DefaultRootName)
         {
-            services.Configure<ConcurrentDictionary<string, List<VobInitializer>>>(dict => dict.Add(new VobInitializer(VosReference.FromRootName(rootName), action)));
+            services.Configure<ConcurrentDictionary<string, List<VobInitializer>>>(dict => dict.Add(new VobInitializer(VobReference.FromRootName(rootName), action)));
             return services;
         }
 
         public static IServiceCollection InitializeRootVob(this IServiceCollection services, Action<IRootVob> action, string rootName = VosConstants.DefaultRootName, IEnumerable<string>? contributes = null)
         {
-            services.Configure<ConcurrentDictionary<string, List<VobInitializer>>>(dict => dict.Add(new VobInitializer(VosReference.FromRootName(rootName), action)));
+            services.Configure<ConcurrentDictionary<string, List<VobInitializer>>>(dict => dict.Add(new VobInitializer(VobReference.FromRootName(rootName), action)));
             return services;
         }
 
         #region InitializeVob
 
         //public static IServiceCollection InitializeVob(this IServiceCollection services, string vobPath, Action<IServiceProvider, IVob> action) 
-        //=> services.InitializeVob(vobPath.ToVosReference(), action);
+        //=> services.InitializeVob(vobPath.ToVobReference(), action);
 
-        public static IServiceCollection InitializeVob(this IServiceCollection services, IVosReference vob, Action<IServiceProvider, IVob> action)
+        public static IServiceCollection InitializeVob(this IServiceCollection services, IVobReference vob, Action<IServiceProvider, IVob> action)
         {
             services.Configure<ConcurrentDictionary<string, List<VobInitializer>>>(dict => dict.Add(new VobInitializer(vob, action)));
             return services;
         }
 
-        public static IServiceCollection InitializeVob(this IServiceCollection services, VosReference vobPath, Action<IVob> action)
+        public static IServiceCollection InitializeVob(this IServiceCollection services, VobReference vobPath, Action<IVob> action)
         {
-            services.Configure<ConcurrentDictionary<string, List<VobInitializer>>>(dict => dict.Add(new VobInitializer(vobPath.ToVosReference(), action)));
+            services.Configure<ConcurrentDictionary<string, List<VobInitializer>>>(dict => dict.Add(new VobInitializer(vobPath.ToVobReference(), action)));
             return services;
         }
         //public static IServiceCollection InitializeVob(this IServiceCollection services, string vobRootName, string vobPath, Action<IVob> action)
         //{
-        //    services.Configure<ConcurrentDictionary<string, List<VobInitializer>>>(dict => dict.Add(new VobInitializer(vobPath.ToVosReference(), action) { VobPath = vobPath, VobRootName = vobRootName }));
+        //    services.Configure<ConcurrentDictionary<string, List<VobInitializer>>>(dict => dict.Add(new VobInitializer(vobPath.ToVobReference(), action) { VobPath = vobPath, VobRootName = vobRootName }));
         //    return services;
         //}
 
         public static IServiceCollection InitializeVob(this IServiceCollection services, IEnumerable<string> vobPath, Action<IVob> action)
         {
-            services.Configure<ConcurrentDictionary<string, List<VobInitializer>>>(dict => dict.Add(new VobInitializer(new VosReference(vobPath), action)));
+            services.Configure<ConcurrentDictionary<string, List<VobInitializer>>>(dict => dict.Add(new VobInitializer(new VobReference(vobPath), action)));
             return services;
         }
 
@@ -291,9 +301,9 @@ namespace LionFire.Services
         /// <param name="vobPath"></param>
         /// <param name="action">Return true if completed successfully, false if the action should be invoked again after trying other initializers.</param>
         /// <returns></returns>
-        public static IServiceCollection InitializeVob(this IServiceCollection services, VosReference vobPath, Func<IServiceProvider, IVob, object> action)
+        public static IServiceCollection InitializeVob(this IServiceCollection services, VobReference vobPath, Func<IServiceProvider, IVob, object> action)
         {
-            services.Configure<ConcurrentDictionary<string, List<VobInitializer>>>(dict => dict.Add(new VobInitializer(vobPath.ToVosReference(), action)));
+            services.Configure<ConcurrentDictionary<string, List<VobInitializer>>>(dict => dict.Add(new VobInitializer(vobPath.ToVobReference(), action)));
             return services;
         }
 

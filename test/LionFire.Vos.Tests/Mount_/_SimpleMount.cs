@@ -31,7 +31,7 @@ namespace Mount_
                     .AddFilesystem()
                     .VosMount("/testDir", FsTestSetup.DataDir.ToFileReference())
                     .VosMount("/testDir2", FsTestSetup.DataDir.ToFileReference())
-                    .VosMount("/_/vos", new VosReference("/") { Persister = "vos" }, new MountOptions
+                    .VosMount("/_/vos", new VobReference("/") { Persister = "vos" }, new MountOptions
                     {
                         IsReadOnly = true,
                         IsExclusive = true,
@@ -51,7 +51,7 @@ namespace Mount_
                 #endregion
 
                 {
-                    var reference = new VosReference("testDir", Path.GetFileName(path));
+                    var reference = new VobReference("testDir", Path.GetFileName(path));
                     Assert.Equal("/testDir/" + Path.GetFileName(path), reference.Path);
                     //Assert.Equal("UnitTestRoot", reference.Persister);
 

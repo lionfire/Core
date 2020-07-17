@@ -11,7 +11,8 @@ namespace LionFire.DependencyMachines
     {
         IHostedService HostedService { get; }
 
-        public override string? DefaultKey => $"{{HostedProvider {typeof(T).FullName}}}";
+        public override string? DefaultKey => KeyForType;
+        public static string KeyForType => $"{{HostedService {typeof(T).FullName}}}";
 
         public HostedServiceParticipant(T hostedService)
         {

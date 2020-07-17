@@ -22,6 +22,7 @@ namespace LionFire.Assets
 
         public static implicit operator RAsset<TValue>(string assetPath) => new RAsset<TValue> { Reference = new AssetReference<TValue>(assetPath) };
         public static implicit operator RAsset<TValue>(TValue asset) => new RAsset<TValue> { Reference = (AssetReference<TValue>)asset.Reference, Value = asset };
+        public static implicit operator RAsset<TValue>(RWAsset<TValue> asset) => new RAsset<TValue>(asset.ReadWriteHandle); // TOFLYWEIGHT
         public static implicit operator AssetReference<TValue>(RAsset<TValue> asset) => asset.Reference; 
         public static implicit operator TValue(RAsset<TValue> rAsset) => rAsset.Value;
 
