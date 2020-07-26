@@ -6,6 +6,14 @@
     <LangVersion>latest</LangVersion>
   </PropertyGroup>
 
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    <DefineConstants>TRACE;Rx</DefineConstants>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+    <DefineConstants>TRACE;Rx</DefineConstants>
+  </PropertyGroup>
+
   <ItemGroup>
     <Compile Remove="Persistence\Resolvables\**" />
     <EmbeddedResource Remove="Persistence\Resolvables\**" />

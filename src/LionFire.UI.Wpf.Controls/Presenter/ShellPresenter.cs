@@ -1,7 +1,9 @@
 ﻿using LionFire.Collections;
+using LionFire.Settings;
 using LionFire.UI;
 using LionFire.UI.Windowing;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using System;
@@ -9,11 +11,13 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using System.Text;
+using System.Threading;
+using System.Threading.Tasks;
 using System.Windows;
 
 namespace LionFire.Shell.Wpf
 {
-    public class WpfShellPresenter : IShellPresenter
+    public class WpfShellPresenter : IShellPresenter, IHostedService
     {
         #region Shell
 
@@ -30,23 +34,46 @@ namespace LionFire.Shell.Wpf
         }
         private WpfShell shell;
 
-
         #endregion
 
         #region Dependencies
 
         public IServiceProvider ServiceProvider { get; }
         public IOptionsMonitor<StartupInterfaceOptions> RootInterface { get; }
+        public DesktopProfileManager WindowLayoutManager { get; }
 
         #endregion
 
+        public WindowSettings WindowSettings { get; set; }
+
+        Task startup;
+
         #region Construction
 
-        public WpfShellPresenter(IServiceProvider serviceProvider, IOptionsMonitor<StartupInterfaceOptions> rootInterface)
+        public WpfShellPresenter(IServiceProvider serviceProvider, IOptionsMonitor<StartupInterfaceOptions> rootInterface, DesktopProfileManager windowLayoutManager
+            , IUserLocalSettings<WindowSettings> windowSettings
+            )
         {
             ServiceProvider = serviceProvider;
             RootInterface = rootInterface;
+            WindowLayoutManager = windowLayoutManager;
+            startup = Task.Run(async () =>
+            {
+                WindowSettings = (await windowSettings.GetValueAsync().ConfigureAwait(false));
+            });
         }
+
+        #endregion
+
+        #region IHostedService
+
+        public async Task StartAsync(CancellationToken cancellationToken)
+        {
+            await startup.ConfigureAwait(false);
+            startup = null;
+        }
+
+        public Task StopAsync(CancellationToken cancellationToken) => Task.CompletedTask;
 
         #endregion
 
@@ -227,7 +254,7 @@ namespace LionFire.Shell.Wpf
 
         // ENH - eliminate the concept of MainPresenter, and instead use options for special behavior for "main" presenters, or let application name a particular presenter as "main"
 
-        private const string MainPresenterName = "_Main";
+        private const string MainPresenterName = WindowProfile.MainName;
 
         IShellContentPresenter IShellPresenter.MainPresenter => this.MainPresenter;
         public ShellContentPresenter MainPresenter
@@ -236,7 +263,7 @@ namespace LionFire.Shell.Wpf
             {
                 if (mainPresenter == null)
                 {
-                    mainPresenter = new ShellContentPresenter(this, ServiceProvider.GetService<IOptionsMonitor<WindowSettings>>(), MainPresenterName);
+                    mainPresenter = new ShellContentPresenter(this, MainPresenterName);
                     //t.SetApartmentState(ApartmentState.STA); // OLD - is this needed for some reason?
 
                     Presenters.Add(mainPresenter.Name, mainPresenter);
@@ -290,9 +317,8 @@ namespace LionFire.Shell.Wpf
             }
             return null;
         }
-
+        
         #endregion
-
 
         private static ILogger l = Log.Get();
 

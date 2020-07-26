@@ -9,7 +9,7 @@
         public static bool? IsSuccessTernary(this PersistenceResultFlags flags)
         {
             if (flags.HasFlag(PersistenceResultFlags.Success) || flags.HasFlag(PersistenceResultFlags.PreviewSuccess)) return true;
-            if (flags.HasFlag(PersistenceResultFlags.Fail) || flags.HasFlag(PersistenceResultFlags.PreviewFail)) return true;
+            if (flags.HasFlag(PersistenceResultFlags.Fail) || flags.HasFlag(PersistenceResultFlags.PreviewFail)) return false;
             /// if (flags.HasFlag(PersistenceResultFlags.PreviewIndeterminate)) return null; // Redundant
             return null;
         }

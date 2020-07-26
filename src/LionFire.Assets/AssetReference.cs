@@ -22,7 +22,10 @@ namespace LionFire.Assets
 
         public override string Scheme => UriSchemeDefault;
 
-        public override string Key { get => Path; protected set => Path = value; }
+        public override string Key { 
+            get => $"{UriPrefixDefault}({(Channel == null ? "$assets/" : Channel + "/")}{typeof(TValue)}){Path}"; 
+            protected set => throw new NotImplementedException();/* Path = value;*/ 
+        }
 
         #region Path
 
@@ -58,16 +61,33 @@ namespace LionFire.Assets
         public AssetReference(string assetPath, string assetChannel)
         {
             this.Path = assetPath;
-            this.Persister = assetChannel;
+            this.Channel = assetChannel;
         }
 
-        public static AssetReference<TValue> Channel(string assetChannel, string assetPath = "") 
+        public static AssetReference<TValue> ForChannel(string assetChannel, string assetPath = "")
             => new AssetReference<TValue>(assetPath, assetChannel);
 
         #endregion
 
         public static implicit operator AssetReference<TValue>(string assetPath) => new AssetReference<TValue>(assetPath);
 
-        public override string ToString() => $"{UriPrefixDefault}({typeof(TValue)}){Path}";
+        #region Channel
+
+        [SetOnce]
+        public string Channel
+        {
+            get => channel;
+            set
+            {
+                if (channel == value) return;
+                if (channel != default) throw new AlreadySetException();
+                channel = value;
+            }
+        }
+        private string channel;
+
+        #endregion
+
+        public override string ToString() => Key;
     }
 }

@@ -1,6 +1,7 @@
 ﻿#nullable disable
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Threading;
 using System.Threading.Tasks;
 using LionFire.Activation;
@@ -13,6 +14,10 @@ using LionFire.Threading;
 
 namespace LionFire.Persistence.Handles
 {
+    internal static class DllInternals // Move to LionFire.Resolves and 
+    {
+        internal static ValueChangedPropagation ValueChangedPropagation = new ValueChangedPropagation();
+    }
     public abstract class WriteHandleBase<TReference, TValue>
         : DisposableKeyed<TReference>
         , IWriteHandleBase<TValue>
@@ -21,8 +26,11 @@ namespace LionFire.Persistence.Handles
         , IDeletable
         , IPuts<TValue>
         , IReferencable<TReference>
+        , INotifyWrappedValueChanged
+        , INotifyWrappedValueReplaced
         where TReference : IReference
     {
+
         public Type Type => typeof(TValue);
         public IReference Reference => Key;
         TReference IReferencable<TReference>.Reference => Key;
@@ -63,9 +71,19 @@ namespace LionFire.Persistence.Handles
             {
                 if (EqualityComparer<TValue>.Default.Equals(protectedValue, value)) return; // Should use Equality instead of Compare?
                                                                                             //if (value == ProtectedValue) return;
+
                 HandleUtils.OnUserChangedValue_Write(this, value);
+
             }
         }
+        public event Action<INotifyWrappedValueReplaced, object, object> WrappedValueForFromTo;
+        //public event Action<INotifyWrappedValueChanged> WrappedValueChanged;
+        public event Action<INotifyWrappedValueChanged> WrappedValueChanged
+        {
+            add { Debug.WriteLine("WrappedValueChanged+=");  wrappedValueChanged += value; }
+            remove { wrappedValueChanged -= value; }
+        }
+        private event Action<INotifyWrappedValueChanged> wrappedValueChanged;
 
         #region 
 
@@ -99,13 +117,24 @@ namespace LionFire.Persistence.Handles
         /// </summary>
         /// <param name="newValue"></param>
         /// <param name="oldValue"></param>
-        protected virtual void OnValueChanged(TValue newValue, TValue oldValue) { }
+        protected virtual void OnValueChanged(TValue newValue, TValue oldValue)
+        {
+            //if (WrappedValueChanged != null || WrappedValueForFromTo != null) // FUTURE: Only do this if someone is attached to one or more of these events.  Would need to VCP.Attach upon initial attaching to one of these events.
+            {
+                DllInternals.ValueChangedPropagation.Detach(this, oldValue);
+                DllInternals.ValueChangedPropagation.Attach(this, newValue, o => wrappedValueChanged?.Invoke(this));
+                WrappedValueForFromTo?.Invoke(this, oldValue, newValue);
+                wrappedValueChanged?.Invoke(this); // Assume that there was a change
+            }
+        }
 
         #endregion
 
         #endregion
 
         #region GetValue
+
+        // REVIEW - why is there GetValue in WriteHandleBase?
 
         // DUPLICATE of Resolves, almost.  Returns Task instead of ITask.
         public async Task<ILazyResolveResult<TValue>> GetValue()

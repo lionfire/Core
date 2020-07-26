@@ -21,6 +21,12 @@ namespace LionFire.Copying
     /// </summary>
     public static class DeepCopyObjectExtensions
     {
+        #region Configuration // MOVE
+
+        public static Predicate<Assembly> ShouldInspectAssembly { get; set; } = a => false;
+
+        #endregion
+
         #region (Public) Extension Methods
 
         public static T DeepCopy<T>(this T instance, CopyFlags copyFlags = CopyFlagsSettings.Default)
@@ -82,6 +88,7 @@ namespace LionFire.Copying
         private static Dictionary<Type, IInstanceProvider> ProvidersByType;
         private static Dictionary<Type, ICloneProvider> CloneProvidersByType;
 
+
         /// <summary>
         /// Updates the list of instance providers with any found in the newly loaded assembly.
         /// </summary>
@@ -118,18 +125,26 @@ namespace LionFire.Copying
         /// <param name="assembly">The assembly with which the list of instance providers will be updated.</param>
         private static void UpdateInstanceProviders(Assembly assembly, List<IInstanceProvider> providerList)
         {
-            var dict = ProvidersByType;
-            var providers = GetInstanceProviders(assembly);
-            providerList.AddRange(providers);
-            foreach (var provider in providers)
+            if (!ShouldInspectAssembly(assembly)) return;
+            try
             {
-                foreach (var type in provider.TypesSupported)
+                var dict = ProvidersByType;
+                var providers = GetInstanceProviders(assembly);
+                providerList.AddRange(providers);
+                foreach (var provider in providers)
                 {
-                    if (!dict.TryAdd(type, provider))
+                    foreach (var type in provider.TypesSupported)
                     {
-                        l.Warn("DeepCopy instance provider alreay provided for type '" + type.FullName + "'.  Using: " + dict[type].GetType().FullName + " and ignoring " + provider.GetType().FullName);
+                        if (!dict.TryAdd(type, provider))
+                        {
+                            l.Warn("DeepCopy instance provider alreay provided for type '" + type.FullName + "'.  Using: " + dict[type].GetType().FullName + " and ignoring " + provider.GetType().FullName);
+                        }
                     }
                 }
+            }
+            catch (Exception ex)
+            {
+                l.Error($"DeepCopy - UpdateInstanceProviders failed for assembly '{assembly.FullName}'", ex);
             }
         }
         /// <summary>
@@ -138,18 +153,25 @@ namespace LionFire.Copying
         /// <param name="assembly">The assembly with which the list of clone providers will be updated.</param>
         private static void UpdateCloneProviders(Assembly assembly)
         {
-            var dict = CloneProvidersByType;
-            var providers = GetCloneProviders(assembly);
-            //providerList.AddRange(providers);
-            foreach (var provider in providers)
+            try
             {
-                foreach (var type in provider.TypesSupported)
+                var dict = CloneProvidersByType;
+                var providers = GetCloneProviders(assembly);
+                //providerList.AddRange(providers);
+                foreach (var provider in providers)
                 {
-                    if (!dict.TryAdd(type, provider))
+                    foreach (var type in provider.TypesSupported)
                     {
-                        l.Warn("DeepCopy clone provider alreay provided for type '" + type.FullName + "'.  Using: " + dict[type].GetType().FullName + " and ignoring " + provider.GetType().FullName);
+                        if (!dict.TryAdd(type, provider))
+                        {
+                            l.Warn("DeepCopy clone provider alreay provided for type '" + type.FullName + "'.  Using: " + dict[type].GetType().FullName + " and ignoring " + provider.GetType().FullName);
+                        }
                     }
                 }
+            }
+            catch (Exception ex)
+            {
+                l.Error($"DeepCopy - UpdateInstanceProviders failed for assembly '{assembly.FullName}'", ex);
             }
         }
 
@@ -614,7 +636,7 @@ namespace LionFire.Copying
 
         #region Misc
 
-        private static readonly ILogger l = Log.Get();
+        private static readonly ILogger l = Log.GetNonNull(typeof(DeepCopyObjectExtensions).FullName);
 
         #endregion
     }

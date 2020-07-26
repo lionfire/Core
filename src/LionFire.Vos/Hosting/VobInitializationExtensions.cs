@@ -124,7 +124,7 @@ namespace LionFire.Services
 
 
 
-        private static Action<IParticipant> configureWrapper(VobReference vobReference, Action<IParticipant>? configure, VobInitializerFlags flags = VobInitializerFlags.Default, string key = null)
+        private static Action<IParticipant> configureWrapper(VobReference vobReference, Action<IParticipant>? configure, VobInitializerFlags flags = VobInitializerFlags.Default, string? key = null)
         {
 
             return c =>

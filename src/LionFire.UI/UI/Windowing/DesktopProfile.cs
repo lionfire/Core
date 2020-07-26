@@ -6,6 +6,11 @@ namespace LionFire.UI.Windowing
     {
         // ENH: Don't just use desktop width and height, but get sizes of all monitors
 
+        public DesktopProfile(double desktopWidth, double desktopHeight)
+        {
+            this.DesktopWidth = (int)desktopWidth;
+            this.DesktopHeight = (int)desktopHeight;
+        }
         public DesktopProfile(int desktopWidth, int desktopHeight)
         {
             this.DesktopWidth = desktopWidth;
@@ -18,8 +23,8 @@ namespace LionFire.UI.Windowing
             this.DesktopHeight = Convert.ToInt32(chunks[1]);
         }
 
-        public int DesktopWidth { get; set; }
-        public int DesktopHeight { get; set; }
+        public int DesktopWidth { get;/*init;*/  }
+        public int DesktopHeight { get;/* init;*/ }
 
         public string Key => $"{DesktopWidth}x{DesktopHeight}";
     }

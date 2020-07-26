@@ -1,4 +1,5 @@
-﻿using LionFire.Persistence.Handles;
+﻿using LionFire.IO;
+using LionFire.Persistence.Handles;
 using LionFire.Referencing;
 using LionFire.Serialization;
 using LionFire.Vos;
@@ -47,12 +48,18 @@ namespace LionFire.Persistence.Persisters.Vos
 
         IServiceProvider ServiceProvider => Root?.GetServiceProvider();
 
-        public VosPersister(IRootVob root, SerializationOptions serializationOptions) : base(serializationOptions)
+        //public VosPersister(IRootVob root, SerializationOptions serializationOptions) : base(serializationOptions)
+        //{
+        //}
+        public VosPersister(ILogger<VosPersister> logger, IVos vosRootManager, VosPersisterOptions options, SerializationOptions serializationOptions) : this(logger, vosRootManager, null, options, serializationOptions)
         {
-            Root = root;
         }
-        public VosPersister(IVos vosRootManager, string rootName, VosPersisterOptions options, SerializationOptions serializationOptions) : this(vosRootManager.Get(rootName), options?.SerializationOptions ?? serializationOptions)
+        public VosPersister(ILogger<VosPersister> logger, IVos vosRootManager, string rootName, VosPersisterOptions options, SerializationOptions serializationOptions)
+            //: this(vosRootManager.Get(rootName), options?.SerializationOptions ?? serializationOptions)
+            : base(options?.SerializationOptions ?? serializationOptions)
         {
+            l = logger;
+            Root = vosRootManager.Get(rootName);
             //this.RootName = rootName;
             //root = vosRootManager.Get(rootName);
         }
@@ -62,6 +69,8 @@ namespace LionFire.Persistence.Persisters.Vos
 
         public async Task<IRetrieveResult<TValue>> Retrieve<TValue>(IReferencable<IVobReference> referencable)
         {
+            //l.Trace($"{replaceMode.DescriptionString()} {obj?.GetType().Name} {replaceMode.ToArrow()} {fsReference}");
+
             //if (typeof(TValue) == typeof(Metadata<IEnumerable<Listing>>)) return (IRetrieveResult<TValue>)await List(referencable).ConfigureAwait(false);
 
             var vob = Root[referencable.Reference.Path];
@@ -108,6 +117,8 @@ namespace LionFire.Persistence.Persisters.Vos
         public Task<IPersistenceResult> Update<TValue>(IReferencable<IVobReference> referencable, TValue value) => throw new System.NotImplementedException();
         public async Task<IPersistenceResult> Upsert<TValue>(IReferencable<IVobReference> referencable, TValue value)
         {
+            l.Trace($"{ReplaceMode.Upsert.DescriptionString()} {value?.GetType().Name} {ReplaceMode.Upsert.ToArrow()} {referencable.Reference}");
+
             var vob = Root[referencable.Reference.Path];
 
             var result = new VosPersistenceResult();
@@ -146,11 +157,17 @@ namespace LionFire.Persistence.Persisters.Vos
             l.Trace(result.ToString());
             return result;
         }
-        public Task<IPersistenceResult> Delete(IReferencable<IVobReference> referencable) => throw new System.NotImplementedException();
+        public Task<IPersistenceResult> Delete(IReferencable<IVobReference> referencable)
+        {
+            l.Trace($"Delete xx> {referencable.Reference}");
+            throw new System.NotImplementedException();
+        }
         public async Task<IRetrieveResult<IEnumerable<Listing<T>>>> List<T>(IReferencable<IVobReference> referencable, ListFilter filter = null)
         {
+            l.Trace($"List ...> {referencable.Reference}");
+
             var retrieveResult = await Retrieve<Metadata<IEnumerable<Listing<T>>>>(referencable).ConfigureAwait(false);
-            var result = retrieveResult.IsSuccess() 
+            var result = retrieveResult.IsSuccess()
                 ? RetrieveResult<IEnumerable<Listing<T>>>.Success(retrieveResult.Value.Value)
                 : new RetrieveResult<IEnumerable<Listing<T>>> { Flags = retrieveResult.Flags, Error = retrieveResult.Error };
             l.Trace(result.ToString());
@@ -190,12 +207,6 @@ namespace LionFire.Persistence.Persisters.Vos
             //    return result;
         }
 
-        private static readonly ILogger l = Log.Get();
-
-    }
-
-    public class VosPersistenceResult : PersistenceResult
-    {
-        public IReference ResolvedVia { get; set; }
+        private readonly ILogger l;
     }
 }

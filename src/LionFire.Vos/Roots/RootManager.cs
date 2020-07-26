@@ -2,6 +2,7 @@
 using LionFire.DependencyMachines;
 using LionFire.ExtensionMethods;
 using LionFire.Ontology;
+using LionFire.Structures;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
@@ -43,9 +44,25 @@ namespace LionFire.Vos
         #endregion
 
         #region Construction
+        private static object rootLock = new object();
 
         public RootManager(IServiceProvider serviceProvider, IOptionsMonitor<VosOptions> vosOptionsMonitor, ILogger<IVos> logger)
         {
+            if (!VosStatic.AllowMultipleDefaultRoots)
+            {
+                lock (rootLock) // REVIEW
+                {
+                    if (ManualSingleton<RootManager>.Instance != null)
+                    {
+                        throw new AlreadySetException("A default RootManager has already been created.  There can only be one when VosStatic.AllowMultipleDefaultRoots is true.");
+                    }
+                    else
+                    {
+                        ManualSingleton<RootManager>.Instance = this;
+                    }
+                }
+            }
+
             this.vosOptions = vosOptionsMonitor.CurrentValue;
             ServiceProvider = serviceProvider;
             Logger = logger;
@@ -89,7 +106,21 @@ namespace LionFire.Vos
             {
                 if (!vosOptions.RootNames.Contains(n) && !vosOptions.AllowAdditionalRootNames) throw new KeyNotFoundException($"VosOptions.AllowAdditionalRootNames is false and the requested rootName '{n}' was not listed in VosOptions.RootNames.");
                 //var root = new RootVob(this, n, vosOptions);
-                return ActivatorUtilities.CreateInstance<RootVob>(ServiceProvider, this, n);
+
+                // REVIEW - I am not sure why there are multiple initializations attempted.
+
+                if (rootName == VosConstants.DefaultRootName && !VosStatic.AllowMultipleDefaultRoots && ManualSingleton<RootVob>.Instance != null)
+                {
+                    return ManualSingleton<RootVob>.Instance;
+                }
+                try
+                {
+                    return ActivatorUtilities.CreateInstance<RootVob>(ServiceProvider, this, n);
+                }
+                catch (AlreadySetException) when (rootName == VosConstants.DefaultRootName)
+                {
+                    return ManualSingleton<RootVob>.Instance ?? throw new Exception("RootVob ctor returned AlreadySetException but ManualSingleton<RootVob>.Instance  is not set");
+                }
             });
 
             // ENH - if result is LazyInit and is not initialized, initialize it.

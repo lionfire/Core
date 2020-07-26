@@ -4,6 +4,7 @@ using System;
 
 namespace LionFire.Referencing.Ex
 {
+
     public static class ReferenceToHandleProviderExtensions
     {
         #region IReadHandleProvider

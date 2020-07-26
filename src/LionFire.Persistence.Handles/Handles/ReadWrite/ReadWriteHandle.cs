@@ -49,7 +49,7 @@ namespace LionFire.Persistence.Handles
         #endregion
 
         public abstract ILazyResolveResult<TValue> QueryValue();
-        ITask<ILazyResolveResult<TValue>> ILazilyResolves<TValue>.GetValue() => throw new NotImplementedException();
+        ITask<ILazyResolveResult<TValue>> ILazilyResolves<TValue>.GetValue() => this.GetValue().AsITask();
         public abstract void RaisePersistenceEvent(PersistenceEvent<TValue> ev);
 
         //public abstract ITask<ILazyResolveResult<TValue>> GetValue();

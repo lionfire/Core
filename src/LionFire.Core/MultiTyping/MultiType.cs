@@ -95,6 +95,7 @@ namespace LionFire.MultiTyping
 
         public IEnumerable<object> SubTypes => TypeDict?.Values ?? Enumerable.Empty<object>();
 
+        [Ignore]
         public IMultiTyped MultiTyped => this;
 
         public bool IsEmpty

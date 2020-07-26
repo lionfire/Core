@@ -1,8 +1,6 @@
-﻿using System;
-
-namespace LionFire.Structures
+﻿namespace LionFire.Structures
 {
-    
+
     public interface IWrapper<T> : IReadWrapper<T>, IWriteWrapper<T>
     {
         new T Value { get; set; }

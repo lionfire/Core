@@ -11,10 +11,10 @@
         ResizeMode="CanResize" SnapsToDevicePixels="True"   
         xmlns:lfaL="clr-namespace:LionFire.Avalon"
         MinHeight="80" MinWidth="200" 
-        Top="{Binding WindowLayout.Y, RelativeSource={RelativeSource Self}}"
-        Left="{Binding WindowLayout.X, RelativeSource={RelativeSource Self}}"
-        Width="{Binding WindowLayout.Width, RelativeSource={RelativeSource Self}}"
-        Height="{Binding WindowLayout.Height, RelativeSource={RelativeSource Self}}"
+        Top="{Binding WindowLayout.Y, RelativeSource={RelativeSource Self}, Mode=TwoWay}"
+        Left="{Binding WindowLayout.X, RelativeSource={RelativeSource Self}, Mode=TwoWay}"
+        Width="{Binding WindowLayout.Width, RelativeSource={RelativeSource Self}, Mode=TwoWay}"
+        Height="{Binding WindowLayout.Height, RelativeSource={RelativeSource Self}, Mode=TwoWay}"
         d:DesignHeight="300" d:DesignWidth="500"
         >
     <!--WindowStartupLocation="CenterScreen"-->

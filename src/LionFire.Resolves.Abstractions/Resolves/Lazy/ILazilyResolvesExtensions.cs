@@ -23,7 +23,8 @@ namespace LionFire.Resolves
         public static Type GetLazilyResolvesType(this ILazilyResolves lazilyResolves)
         {
             var genericInterface = lazilyResolves.GetType().GetInterfaces().Where(t => t.IsGenericType && t.GetGenericTypeDefinition() == typeof(ILazilyResolves<>)).Single();
-            return genericInterface.GetGenericArguments()[0];
+            return genericInterface;
+            //return genericInterface.GetGenericArguments()[0];
         }
 
         public static async ITask<ILazyResolveResult<object>> GetValue(this ILazilyResolves lazilyResolves)

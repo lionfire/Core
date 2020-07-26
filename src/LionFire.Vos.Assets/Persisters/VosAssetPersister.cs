@@ -56,7 +56,7 @@ namespace LionFire.Vos.Assets.Persisters
         #endregion
 
         //protected override VosPersister GetUnderlyingPersister => (VosPersister)VosPersisterProvider.GetPersister(DefaultAssetRoot.Persister);
-        protected override VosPersister GetUnderlyingPersister(IAssetReference reference) => (VosPersister)VosPersisterProvider.GetPersister(GetAssetRootForAssetChannel(reference.Persister).Persister);
+        protected override VosPersister GetUnderlyingPersister(IAssetReference reference) => (VosPersister)VosPersisterProvider.GetPersister(GetAssetRootForAssetChannel(reference.Channel).Persister);
 
         public string GetTypeKey(Type type) => AssetPaths.GetTypeKey(type);
 
@@ -64,11 +64,21 @@ namespace LionFire.Vos.Assets.Persisters
             => assetChannel == null ? DefaultAssetRoot : new VobReference(assetChannel);
 
         public override IVobReference TranslateReferenceForRead(IAssetReference reference)
-            => GetAssetRootForAssetChannel(reference.Persister).GetVob()[GetTypeKey(reference.Type)][reference.Path].Reference;
+            => GetAssetRootForAssetChannel(reference.Channel).GetVob()[GetTypeKey(reference.Type)][reference.Path].Reference;
 
         public override IVobReference TranslateReferenceForWrite(IAssetReference reference)
-            => AssetWriteContext.Current?.WriteLocation[GetTypeKey(reference.Type)][reference.Path] 
-            ?? GetAssetRootForAssetChannel(reference.Persister).GetVob()[GetTypeKey(reference.Type)][reference.Path].Reference;
+        {
+            IVobReference result = null;
+            if (reference.Channel == null)
+            {
+                result = AssetWriteContext.Current?.WriteLocation[GetTypeKey(reference.Type)][reference.Path];
+            }
+            if (result == null)
+            {
+                result = GetAssetRootForAssetChannel(reference.Channel).GetVob()[GetTypeKey(reference.Type)][reference.Path].Reference;
+            }
+            return result;
+        }
 
 
     }

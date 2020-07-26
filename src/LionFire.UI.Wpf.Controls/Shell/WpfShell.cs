@@ -27,6 +27,8 @@ using LionFire.UI.Wpf;
 using LionFire.Threading;
 using LionFire.Shell.Wpf;
 using Microsoft.Extensions.DependencyInjection;
+using LionFire.Vos.VosApp;
+using LionFire.UI.Windowing;
 
 namespace LionFire.Shell
 {
@@ -166,11 +168,11 @@ namespace LionFire.Shell
         {
             get
             {
-                if(args == null)
+                if (args == null)
                 {
                     args = new List<string>((/*e?.Args ??*/ System.Environment.GetCommandLineArgs()).Select(x => x.ToLower())); // Make args lowercase?!
                 }
-               return args;
+                return args;
             }
             set
             {
@@ -218,7 +220,7 @@ namespace LionFire.Shell
 
             // TODO: Get Args from DI registered service somewhere?  
             // TODO: Should args be parsed into Shell Options at a higher level, in the App?
-            
+
 
 #if DEBUG
             System.Diagnostics.PresentationTraceSources.DataBindingSource.Switch.Level = ShellOptions.DataBindingSourceLevel;
@@ -342,8 +344,16 @@ namespace LionFire.Shell
             // Do it in a separate thread so that the splash screen is alive
             //AppTask = Task.Factory.StartNew(LionFireApp.Current.Start); // Raises AppStarted
 
-            await Dispatcher.BeginInvoke(() =>
+            // TODO: Inject this via constructor injection
+            //ShellPresenter.WindowSettings = (await VosAppSettings.UserLocal<WindowSettings>.H.GetOrInstantiateValue().ConfigureAwait(false)).Value;
+
+            if (ShellPresenter is IHostedService hs)
             {
+                await hs.StartAsync(cancellationToken).ConfigureAwait(false);
+            }
+
+            await Dispatcher.BeginInvoke(() =>
+           {
 #if TOPORT
             if (deferredAskUserToUpdate)
             {
@@ -390,10 +400,9 @@ namespace LionFire.Shell
                 //}
 
                 if (!isAppFinished && !ShellPresenter.MainPresenter.HasTabs && ShowDefaultUI)
-                {
-                    ShellPresenter.ShowStartupInterfaces();
-
-                }
+               {
+                   ShellPresenter.ShowStartupInterfaces();
+               }
 
                 //IsSplashVisible = false;
 

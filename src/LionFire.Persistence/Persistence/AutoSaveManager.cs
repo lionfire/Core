@@ -11,35 +11,47 @@ using System.Diagnostics;
 using System.Reflection;
 using System.Collections.Specialized;
 using LionFire.Resolves;
+using LionFire.Results;
 
 namespace LionFire.Persistence
 {
+    public class AutoSaveOptions
+    {
+        public int AutoSaveThrottleMilliseconds { get; set; } = 3000;
+
+        public bool AutoCreate { get; set; }
+    }
+
     public class AutoSaveManager
     {
-        public static AutoSaveManager Instance { get { return Singleton<AutoSaveManager>.Instance; } }
+        public static AutoSaveManager Instance => Singleton<AutoSaveManager>.Instance;
+
+        public AutoSaveOptions Options { get; set; } = new AutoSaveOptions();
 
         internal ConcurrentDictionary<IPuts, ThrottledChangeHandler> handlers = new ConcurrentDictionary<IPuts, ThrottledChangeHandler>();
     }
 
     public static class AutoSaveManagerExtensions
     {
-        public static readonly int AutoSaveThrottleMilliseconds = 2000;
         public static void QueueAutoSave(this IPuts saveable)
         {
-            //Debug.WriteLine($"Queued autosave for {saveable.GetType().Name}");
+            Trace.WriteLine($"Queued autosave for {saveable.GetType().Name}: {saveable}");
             var handler = GetHandler(saveable);
             handler.Queue();
         }
 
-        private static ThrottledChangeHandler GetHandler(IPuts asset, Action<object> saveAction = null)
+        private static ThrottledChangeHandler GetHandler(IPuts asset, Func<object, Task<ISuccessResult>> saveAction = null)
         {
             if (asset == null) return null;
             if (saveAction == null) saveAction = o => ((IPuts)o).Put();
             return AutoSaveManager.Instance.handlers.GetOrAdd(asset, a =>
             {
-                var inpc = a as INotifyPropertyChanged ?? ((a as IReadWrapper<object>)?.Value as INotifyPropertyChanged);
-                if (inpc == null) { throw new ArgumentException("asset must implement INotifyPropertyChanged, or wrap an object via IWrapper that does."); }
-                return new ThrottledChangeHandler(inpc, saveAction, TimeSpan.FromMilliseconds(2000));
+                var wrappedChanged = a as INotifyWrappedValueChanged;
+                if (wrappedChanged == null) { throw new ArgumentException("AutoSaved object must implement INotifyWrappedValueChanged."); }
+
+                //var inpc = a as INotifyPropertyChanged ?? ((a as IReadWrapper<object>)?.Value as INotifyPropertyChanged);
+                //if (inpc == null) { throw new ArgumentException("asset must implement INotifyPropertyChanged, or wrap an object via IWrapper that does."); }
+                return new ThrottledChangeHandler(wrappedChanged, saveAction, TimeSpan.FromMilliseconds(AutoSaveManager.Instance.Options.AutoSaveThrottleMilliseconds));
             }
             );
         }
@@ -55,63 +67,63 @@ namespace LionFire.Persistence
         /// </summary>
         /// <param name="saveable"></param>
         /// <param name="enable"></param>
-        public static void EnableAutoSave(this IPuts saveable, bool enable = true, Action<object> saveAction=null)
+        public static void EnableAutoSave(this IPuts saveable, bool enable = true, Func<object, Task<ISuccessResult>> saveAction = null)
         {
 
-            bool attachedToSomething = false;
-            var handler = GetHandler(saveable, saveAction);
+            //bool attachedToSomething = false;
+            var handler = GetHandler(saveable, saveAction ?? ((_) => saveable.Put()));
 
-            var ic = saveable as IChanged;
-            if (ic != null) // TO C#7
-            {
-                if (enable)
-                {
-                    ic.Changed += OnChangeQueueHandler;
-                }
-                else
-                {
-                    ic.Changed -= OnChangeQueueHandler;
-                }
-                attachedToSomething = true;
-                return; // If this one is available, skip other options.
-            }
+            //var ic = saveable as IChanged;
+            //if (ic != null) // TO C#7
+            //{
+            //    if (enable)
+            //    {
+            //        ic.Changed += OnChangeQueueHandler;
+            //    }
+            //    else
+            //    {
+            //        ic.Changed -= OnChangeQueueHandler;
+            //    }
+            //    attachedToSomething = true;
+            //    return; // If this one is available, skip other options.
+            //}
 
-            var inpc = saveable as INotifyPropertyChanged;
-            if (inpc == null)
-            {
-                inpc = (saveable as IReadWrapper<object>)?.Value as INotifyPropertyChanged;
-            }
-            if (inpc != null)
-            {
-                if (enable)
-                {
-                    // Already attached in GetHandler
-                    attachedToSomething = true;
-                }
-                else
-                {
-                    ThrottledChangeHandler removedHandler;
-                    if (AutoSaveManager.Instance.handlers.TryRemove(saveable, out removedHandler))
-                    {
-                        removedHandler.Dispose();
-                    }
-                }
-            }
+            //var inpc = saveable as INotifyPropertyChanged;
+            //if (inpc == null)
+            //{
+            //    inpc = (saveable as IReadWrapper<object>)?.Value as INotifyPropertyChanged;
+            //}
+            //if (inpc != null)
+            //{
+            //    if (enable)
+            //    {
+            //        // Already attached in GetHandler
+            //        attachedToSomething = true;
+            //    }
+            //    else
+            //    {
+            //        ThrottledChangeHandler removedHandler;
+            //        if (AutoSaveManager.Instance.handlers.TryRemove(saveable, out removedHandler))
+            //        {
+            //            removedHandler.Dispose();
+            //        }
+            //    }
+            //}
 
-            foreach (var pi in saveable.GetType().GetProperties(BindingFlags.Public | BindingFlags.Instance))
-            {
-                if (typeof(INotifyCollectionChanged).IsAssignableFrom(pi.PropertyType))
-                {
-                    var incc = pi.GetValue(saveable) as INotifyCollectionChanged;
-                    incc.CollectionChanged += (s, e) => handler.Queue();
-                    attachedToSomething = true;
-                }
-            }
+            //foreach (var pi in saveable.GetType().GetProperties(BindingFlags.Public | BindingFlags.Instance))
+            //{
+            //    if (typeof(INotifyCollectionChanged).IsAssignableFrom(pi.PropertyType))
+            //    {
+            //        var incc = pi.GetValue(saveable) as INotifyCollectionChanged;
+            //        incc.CollectionChanged += (s, e) => handler.Queue();
+            //        attachedToSomething = true;
+            //    }
+            //}
 
-            if (!attachedToSomething)
-            {
-                throw new ArgumentException("Does not implement INotifyPropertyChanged, and no other change interfaces are currently supported.", nameof(saveable));
-            }
+            //if (!attachedToSomething)
+            //{
+            //    throw new ArgumentException("Does not implement INotifyPropertyChanged, and no other change interfaces are currently supported.", nameof(saveable));
+            //}
 
         }
 

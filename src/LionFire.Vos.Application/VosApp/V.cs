@@ -30,7 +30,7 @@ namespace LionFire.Vos.VosApp
         /// </summary>
         public static Func<VosDirs> VosAppGetter => () =>
         {
-            var result = new VosDirs(DependencyContext.Current.GetService<RootManager>()?.Get());
+            var result = new VosDirs(DependencyContext.Current.GetService<IVos>()?.Get());
             if (!LionFireEnvironment.IsMultiApplicationEnvironment)
             {
                 vosApp = result;

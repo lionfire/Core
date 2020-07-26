@@ -165,7 +165,6 @@ namespace LionFire.Shell
             }
         }
 
-
         #region WindowLayout 
 
         public WindowLayout WindowLayout 
@@ -175,7 +174,6 @@ namespace LionFire.Shell
             {
                 if (windowLayout == value) return;
                 windowLayout = value;
-                //new LionBinding(windowLayout, )
                 OnPropertyChanged(nameof(WindowLayout));
             }
         }

@@ -94,11 +94,22 @@ namespace LionFire.Services.DependencyMachines
 
         #region IHostedService
 
+        private static Action<IParticipant> ConfigureSingletonHostedService<T>(Action<IParticipant>? configure)
+            where T : class, IHostedService
+        {
+            return p =>
+            {
+                //p.Provide($"type:{typeof(T).FullName}");
+                p.Provide(HostedServiceParticipant<T>.KeyForHostedServiceType);
+                configure?.Invoke(p);
+            };
+        }
+
         public static IServiceCollection AddSingletonHostedServiceDependency<T>(this IServiceCollection services, Action<IParticipant>? configure = null)
             where T : class, IHostedService
             => services
             .AddSingleton<T>()
-            .AddHostedServiceDependency<T>(null, configure)
+            .AddHostedServiceDependency<T>(null, ConfigureSingletonHostedService<T>(configure))
             ;
 
         public static IServiceCollection AddSingletonHostedServiceDependency<TInterface, T>(this IServiceCollection services)
@@ -106,7 +117,7 @@ namespace LionFire.Services.DependencyMachines
                  where T : class, TInterface, IHostedService
                  => services
                  .AddSingleton<T>()
-                 .AddSingleton<TInterface, T>(serviceProvider=> serviceProvider.GetRequiredService<T>())
+                 .AddSingleton<TInterface, T>(serviceProvider => serviceProvider.GetRequiredService<T>())
                  .AddHostedServiceDependency<T>(null, null)
                  ;
 
@@ -135,7 +146,7 @@ namespace LionFire.Services.DependencyMachines
                 {
                     //Key = name ?? "type:" + typeof(T).FullName,
                 };
-                    
+
                 participant.Provide(participant.DefaultKey!);
                 configure?.Invoke(participant);
 

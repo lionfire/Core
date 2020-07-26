@@ -1,4 +1,5 @@
 ﻿using LionFire.Applications;
+using LionFire.Persistence;
 using LionFire.Resolves;
 using LionFire.Settings;
 using Microsoft.Extensions.Hosting;
@@ -69,10 +70,26 @@ namespace LionFire.Settings
         public async Task StartAsync(CancellationToken cancellationToken)
         {
             await Load().ConfigureAwait(false);
+
+            if (Options.AutoSave)
+            {
+                foreach(var handle in Options.Handles)
+                {
+                    handle.EnableAutoSave();
+                }
+            }
         }
 
         public Task StopAsync(CancellationToken cancellationToken)
         {
+            if (Options.AutoSave)
+            {
+                foreach (var handle in Options.Handles)
+                {
+                    handle.EnableAutoSave(enable: false);
+                }
+            }
+
             if (Options.SaveOnExit)
             {
                 Save();

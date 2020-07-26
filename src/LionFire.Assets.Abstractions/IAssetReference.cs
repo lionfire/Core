@@ -5,5 +5,8 @@ using System.Text;
 
 namespace LionFire.Assets
 {
-    public interface IAssetReference : ITypedReference { }
+    public interface IAssetReference : ITypedReference
+    {
+        string Channel { get; }
+    }
 }

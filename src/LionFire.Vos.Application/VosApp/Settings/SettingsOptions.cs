@@ -7,9 +7,9 @@ namespace LionFire.Settings
 {
     public class SettingsOptions
     {
-        public bool AutoSave { get; set; }
+        public bool AutoSave { get; set; } 
         public bool SaveOnExit { get; set; }
-        public List<IReadWriteHandle> Handles { get; internal set; }
-        public List<Type> Types { get; set; } = new List<Type>();
+        public List<IReadWriteHandle> Handles { get;  } = new List<IReadWriteHandle>();
+        public List<Type> Types { get; } = new List<Type>();
     }
 }

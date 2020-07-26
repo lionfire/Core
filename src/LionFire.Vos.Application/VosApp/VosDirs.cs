@@ -10,7 +10,7 @@ namespace LionFire.Vos.VosApp
     {
         #region Ontology
 
-        public RootVob Root { get; }
+        public IRootVob Root { get; }
 
         #endregion
 
@@ -19,7 +19,7 @@ namespace LionFire.Vos.VosApp
 
         #region Construction
 
-        public VosDirs(RootVob root)
+        public VosDirs(IRootVob root)
         {
             this.Root = root;
         }

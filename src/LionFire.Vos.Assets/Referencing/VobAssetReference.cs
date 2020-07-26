@@ -20,6 +20,27 @@ namespace LionFire.Vos.Assets
         public new static readonly string[] UriSchemes = new string[] { UriSchemeDefault };
 
         #endregion
+
+
+
+        #region Channel
+
+        [SetOnce]
+        public string Channel
+        {
+            get => channel;
+            set
+            {
+                if (channel == value) return;
+                if (channel != default) throw new AlreadySetException();
+                channel = value;
+            }
+        }
+        private string channel;
+
+        #endregion
+
+
     }
 
 #if TOOPTIMIZE // OPTIMIZE ideas:

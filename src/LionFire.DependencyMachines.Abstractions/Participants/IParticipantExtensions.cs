@@ -89,10 +89,10 @@ namespace LionFire.DependencyMachines
 
         public static IParticipant DependsOnHostedService<T>(this IParticipant participant)
             where T : IHostedService
-            => participant.DependsOn(HostedServiceParticipant<T>.KeyForType);
+            => participant.DependsOn(HostedServiceParticipant<T>.KeyForHostedServiceType);
         public static IParticipant DependsOnHostedService<T>(this IParticipant participant, string machineName)
                    where T : IHostedService
-                   => participant.DependsOn(HostedServiceParticipant<T>.KeyForType);
+                   => participant.DependsOn(HostedServiceParticipant<T>.KeyForHostedServiceType);
 
         #endregion
 

@@ -1,5 +1,9 @@
-﻿using MorseCode.ITask;
+﻿using LionFire.Structures;
+using MorseCode.ITask;
+using System;
 using System.Collections.Generic;
+using System.ComponentModel;
+using System.Runtime.CompilerServices;
 using System.Threading;
 
 namespace LionFire.Resolves
@@ -8,13 +12,88 @@ namespace LionFire.Resolves
     //public abstract class Resolves<TKey, TValue, TValueReturned> : DisposableKeyed<TKey>
     //    where TValueReturned : TValue
 
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <remarks>
+    /// Owner only has one attached at a time
+    /// </remarks>
+    public class ValueChangedPropagation
+    {
+        object tabLock = new object();
+        ConditionalWeakTable<object, PropertyChangedEventHandler> tab = new ConditionalWeakTable<object, PropertyChangedEventHandler>();
+
+        public void Attach(object owner, object o, Action<object> fire)
+        {
+            if (o is INotifyPropertyChanged inpc)
+            {
+                lock (tabLock)
+                {
+                    _detach(owner, inpc);
+                    var x = new PropertyChangedEventHandler((o, e) => fire(o));
+                    inpc.PropertyChanged += x;
+                    tab.Add(owner, x);
+                }
+            }
+        }
+        private void _detach(object owner, INotifyPropertyChanged inpc)
+        {
+            if (tab.TryGetValue(owner, out var existing))
+            {
+                inpc.PropertyChanged -= existing;
+                tab.Remove(owner);
+            }
+        }
+        public void Detach(object owner, object o)
+        {
+            if (o == null) return;
+            if (o is INotifyPropertyChanged inpc)
+            {
+                lock (tabLock)
+                {
+                    _detach(owner, inpc);
+                }
+            }
+        }
+    }
+
+    //public class SmartWrappedValue<TValue>
+    //{
+    //    public TValue ProtectedValue
+    //    {
+    //        get => protectedValue;
+    //        set
+    //        {
+    //            if (EqualityComparer<TValue>.Default.Equals(protectedValue, value)) return;
+    //            var oldValue = protectedValue;
+
+    //            ValueChangedPropagation.Detach(protectedValue);
+    //            protectedValue = value;
+    //            WrappedValueForFromTo?.Invoke(this, oldValue, protectedValue);
+    //            ValueChangedPropagation.Attach(protectedValue, o => WrappedValueChanged?.Invoke(this));
+
+    //            WrappedValueChanged?.Invoke(this); // Assume that there was a change
+
+    //            OnValueChanged(value, oldValue);
+    //        }
+    //    }
+    //    /// <summary>
+    //    /// Raw field for protectedValue.  Should typically call OnValueChanged(TValue newValue, TValue oldValue) after this field changes.
+    //    /// </summary>
+    //    protected TValue protectedValue;
+
+    //    public event Action<INotifyWrappedValueReplaced, object, object> WrappedValueForFromTo;
+    //    public event Action<INotifyWrappedValueChanged> WrappedValueChanged;
+    //}
 
     /// <summary>
     /// Only requires one method to be implemented: ResolveImpl.
     /// </summary>
-    public abstract class Resolves<TKey, TValue> : DisposableKeyed<TKey>
-         //where TKey : class
+    public abstract class Resolves<TKey, TValue> : DisposableKeyed<TKey>, INotifyWrappedValueChanged, INotifyWrappedValueReplaced
+    //where TKey : class
     {
+        static ValueChangedPropagation ValueChangedPropagation = new ValueChangedPropagation();
+
         #region Construction
 
         protected Resolves() { }
@@ -48,6 +127,9 @@ namespace LionFire.Resolves
             get => ProtectedValue ?? GetValue().Result.Value;
         }
 
+        //SmartWrappedValue SmartWrappedValue = new SmartWrappedValue();
+        //protected TValue ProtectedValue { get=>SmartWrappedValue.Prote}
+
         protected TValue ProtectedValue
         {
             get => protectedValue;
@@ -55,7 +137,13 @@ namespace LionFire.Resolves
             {
                 if (EqualityComparer<TValue>.Default.Equals(protectedValue, value)) return;
                 var oldValue = protectedValue;
+
+                ValueChangedPropagation.Detach(this, protectedValue);
                 protectedValue = value;
+                ValueChangedPropagation.Attach(this, protectedValue, o => WrappedValueChanged?.Invoke(this));
+                WrappedValueForFromTo?.Invoke(this, oldValue, protectedValue);
+                WrappedValueChanged?.Invoke(this); // Assume that there was a change
+
                 OnValueChanged(value, oldValue);
             }
         }
@@ -63,6 +151,9 @@ namespace LionFire.Resolves
         /// Raw field for protectedValue.  Should typically call OnValueChanged(TValue newValue, TValue oldValue) after this field changes.
         /// </summary>
         protected TValue protectedValue;
+
+        public event Action<INotifyWrappedValueReplaced, object, object> WrappedValueForFromTo;
+        public event Action<INotifyWrappedValueChanged> WrappedValueChanged;
 
         /// <summary>
         /// Raised when ProtectedValue changes

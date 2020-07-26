@@ -31,6 +31,29 @@ namespace LionFire.IO
                     throw new ArgumentException(nameof(replaceMode));
             }
         }
+
+        public static string DescriptionString(this ReplaceMode replaceMode)
+        {
+            switch (replaceMode)
+            {
+                case ReplaceMode.Create:
+                case ReplaceMode.Update:
+                    return replaceMode.ToString();
+                case ReplaceMode.Upsert:
+                    return "Upsert";
+                default:
+                    return "(Unknown ReplaceMode)";
+            }
+        }
+
+        public static string ToArrow(this ReplaceMode replaceMode)
+            => replaceMode switch
+            {
+                ReplaceMode.Create => "+>",
+                ReplaceMode.Update => "=>",
+                ReplaceMode.Upsert => "+=>",
+                _ => "(Unknown ReplaceMode)",
+            };
     }
     
 }

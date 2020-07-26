@@ -14,6 +14,7 @@ namespace LionFire
     public static class Log
     {
         public static ILogger Get([CallerMemberName] string categoryName = null) => ServiceLocator.TryGet<ILoggerFactory>(() => NullLoggerFactory.Instance, tryCreateIfMissing: true)?.CreateLogger(categoryName);
+        public static ILogger GetNonNull([CallerMemberName] string categoryName = null) => ServiceLocator.TryGet<ILoggerFactory>(tryCreateIfMissing: true)?.CreateLogger(categoryName);
         
     }
 }

@@ -12,7 +12,7 @@ namespace LionFire.Vos.VosApp
     public static class VosPaths
     {
         public const string App = "/App"; // TODO: I am going with `.  Alias it?
-        public const string ActiveDataPath = App + "/$";
+        public const string ActiveDataPath = App + "/~";
         public const string Settings = App + "/.settings";
 
         public const string RootPath = "/";

@@ -30,9 +30,12 @@ using LionFire.Shell.Wpf;
 using Microsoft.Extensions.Options;
 using LionFire.UI.Windowing;
 using LionFire.UI.Wpf;
+using LionFire.Dependencies;
+using LionFire.Vos.VosApp;
 
 namespace LionFire.Shell
 {
+
 
     /// <summary>
     /// Intelligent content host for the main content area of the LionFire Shell.
@@ -51,22 +54,27 @@ namespace LionFire.Shell
         #region Dependencies
 
         public WpfShellPresenter ShellPresenter { get; }
-        public IOptionsMonitor<WindowSettings> WindowSettingsOptions { get; }
-        public WindowSettings WindowSettings => WindowSettingsOptions?.CurrentValue;
-        public WindowLayout WindowLayout => WindowSettings?.GetCurrentProfile().GetWindow(Name ?? WindowSettings.DefaultWindowName);
+        //public IOptionsMonitor<WindowSettings> WindowSettingsOptions { get; }
+        public WindowSettings WindowSettings => ShellPresenter.WindowSettings;
+        
+        //WindowSettingsOptions?.CurrentValue;
+
+        // TODO: Bind this to the current desktop profile
+        // TODO: Change detection on profile change
+        public WindowLayout WindowLayout
+            => WindowSettings?.GetCurrentProfile().GetWindow(Name ?? WindowSettings.DefaultWindowName);
 
         ShellContentPresenter MainPresenter => ShellPresenter.MainPresenter;
 
         #endregion
 
-        public ShellContentPresenter(WpfShellPresenter shell, IOptionsMonitor<WindowSettings> windowSettingsOptions, string name = null)
+        public ShellContentPresenter(WpfShellPresenter shell,  string name = null)
         {
             if (name != null) { Name = name; }
-           
+
             //ApartmentState ap = Thread.CurrentThread.GetApartmentState();
             InitializeComponent();
             ShellPresenter = shell;
-            WindowSettingsOptions = windowSettingsOptions;
 
             //if (LionFireShellApp.Instance != null && !LionFireShellApp.Instance.GetType().IsAbstract)
             //{
@@ -715,7 +723,7 @@ namespace LionFire.Shell
         public T ShowControl<T>(string tabName = null)
             where T : class
         {
-            var control = GetControl<T>(tabName) ;
+            var control = GetControl<T>(tabName);
             return control; // REVIEW
         }
 

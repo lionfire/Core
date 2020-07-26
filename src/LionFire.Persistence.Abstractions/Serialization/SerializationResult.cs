@@ -36,6 +36,10 @@ namespace LionFire.Serialization
 
         public Exception Exception { get; set; }
         public IEnumerable<KeyValuePair<ISerializationStrategy, SerializationResult>> AggregateResults { get; set; }
+
+
+        public override string ToString() 
+            => $"{{SerialiazationResult IsSuccess={IsSuccess}, Flags={Flags}, Message='{Message}', ExceptionType={Exception?.GetType()}, ExceptionMessage={Exception?.Message} }}";
     }
 
     public class SerializationAwaiter : INotifyCompletion

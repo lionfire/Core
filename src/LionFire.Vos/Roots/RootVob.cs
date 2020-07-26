@@ -41,6 +41,8 @@ namespace LionFire.Vos
         /// </summary>
         public string RootName { get; }
 
+        private static object rootLock = new object();
+
         public RootVob(IVos rootManager, string rootName, VosOptions vosOptions, IOptionsMonitor<VobRootOptions> OptionsMonitor)
             : base(parent: null, name: null) // Note: Use null parent and null name even for named Roots
         {
@@ -68,13 +70,16 @@ namespace LionFire.Vos
             {
                 if (!VosStatic.AllowMultipleDefaultRoots)
                 {
-                    if (ManualSingleton<RootVob>.Instance != null)
+                    lock (rootLock) // REVIEW
                     {
-                        throw new AlreadySetException("A default RootVob has already been created.  There can only be one default.  If you wish to create another, provide a rootName.  Set AllowMultipleDefaultRoots to true to allow multiple default RootVobs (only recommended for unit testing or special cases.)");
-                    }
-                    else
-                    {
-                        ManualSingleton<RootVob>.Instance = this;
+                        if (ManualSingleton<RootVob>.Instance != null)
+                        {
+                            throw new AlreadySetException("A default RootVob has already been created.  There can only be one default.  If you wish to create another, provide a rootName.  Set AllowMultipleDefaultRoots to true to allow multiple default RootVobs (only recommended for unit testing or special cases.)");
+                        }
+                        else
+                        {
+                            ManualSingleton<RootVob>.Instance = this;
+                        }
                     }
                 }
             }

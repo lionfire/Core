@@ -17,15 +17,15 @@ namespace LionFire.Referencing
 
         public static IReadHandle<TValue> GetReadHandle<TValue, TReference>(this ITypedReference<TValue, TReference> reference)
             where TReference : IReference
-            => reference.Reference.TryGetReadHandleProvider().GetReadHandle<TValue>(reference.Reference);
+            => HandleRegistry.GetOrAddRead<IReadHandle<TValue>>(reference.Reference.Key, _ => reference.Reference.TryGetReadHandleProvider().GetReadHandle<TValue>(reference.Reference));
 
         public static IReadHandle<TValue> GetReadHandle<TValue, TReference>(this TReference reference)
             where TReference : IReference
-            => reference.TryGetReadHandleProvider<TReference>().GetReadHandle<TValue>(reference);
+            => HandleRegistry.GetOrAddRead<IReadHandle<TValue>>(reference.Key, _ => reference.TryGetReadHandleProvider<TReference>().GetReadHandle<TValue>(reference));
 
         public static IReadHandle<TValue> GetReadHandle<TValue>(this IReference reference, TValue preresolvedValue = default, IServiceProvider serviceProvider = null)
         {
-            return reference.GetReadHandleProvider(serviceProvider).GetReadHandle<TValue>(reference, preresolvedValue);
+            return HandleRegistry.GetOrAddRead<IReadHandle<TValue>>(reference.Key, _ => reference.GetReadHandleProvider(serviceProvider).GetReadHandle<TValue>(reference, preresolvedValue));
 #if Alternative
 #else
             ////throw new NotImplementedException("FIXME - I don't think this even works");
@@ -62,18 +62,19 @@ namespace LionFire.Referencing
 
         #region Write Handle
 
-        public static IWriteHandle<T> TryGetWriteHandle<T>(this IReference reference) => reference.GetWriteHandleProvider().GetWriteHandle<T>(reference);
+        public static IWriteHandle<T> TryGetWriteHandle<T>(this IReference reference) => HandleRegistry.GetOrAddWrite<IWriteHandle<T>>(reference.Key, _ => reference.GetWriteHandleProvider().GetWriteHandle<T>(reference));
 
-        public static IWriteHandle<T> GetWriteHandle<T>(this IReference reference, IServiceProvider serviceProvider = null) => reference.GetWriteHandleProvider(serviceProvider).GetWriteHandle<T>(reference) ?? throw new HasUnresolvedDependenciesException($"Could not get {nameof(Persistence.IWriteHandle<T>)} type for reference of type {reference.GetType().FullName}");
+        public static IWriteHandle<T> GetWriteHandle<T>(this IReference reference, IServiceProvider serviceProvider = null) => HandleRegistry.GetOrAddWrite<IWriteHandle<T>>(reference.Key, _ => reference.GetWriteHandleProvider(serviceProvider).GetWriteHandle<T>(reference) ?? throw new HasUnresolvedDependenciesException($"Could not get {nameof(Persistence.IWriteHandle<T>)} type for reference of type {reference.GetType().FullName}"));
 
         #endregion
 
-        #region Handles
+        #region ReadWrite Handle
 
-        public static IReadWriteHandle<T> GetReadWriteHandle<T>(this IReference reference) => reference.GetReadWriteHandleProvider().GetReadWriteHandle<T>(reference);
-        public static IReadWriteHandle<TValue> GetReadWriteHandle<TValue, TReference>(this TReference reference)
+        public static IReadWriteHandle<T> GetReadWriteHandle<T>(this IReference reference)
+            => HandleRegistry.GetOrAddReadWrite<IReadWriteHandle<T>>(reference.Key, _ => reference.GetReadWriteHandleProvider().GetReadWriteHandle<T>(reference));
+        public static IReadWriteHandle<T> GetReadWriteHandle<T, TReference>(this TReference reference)
               where TReference : IReference
-              => reference.TryGetReadWriteHandleProvider<TReference>().GetReadWriteHandle<TValue>(reference);
+              => HandleRegistry.GetOrAddReadWrite<IReadWriteHandle<T>>(reference.Key, _ => reference.TryGetReadWriteHandleProvider<TReference>().GetReadWriteHandle<T>(reference));
 
         public static IReadWriteHandle<T> ToReadWriteHandle<T>(this IReference reference) => reference.GetReadWriteHandleProvider().GetReadWriteHandle<T>(reference)
             ?? throw new HasUnresolvedDependenciesException($"Could not get {nameof(IReadWriteHandle<T>)} type for reference of type {reference.GetType().FullName}");

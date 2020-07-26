@@ -86,8 +86,12 @@ namespace LionFire.Services
         //    return services.VosMount("$stores/" + storeName, customApplicationDir.ToFileReference(), new MountOptions { });
         //}
 
-        public static MountOptions AugmentWithDefaults(this MountOptions mountOptions, string storeName, string path)
+        public static MountOptions AugmentWithDefaults(this MountOptions mountOptions, string storeName, string path, bool writable = false)
         {
+            mountOptions.ReadPriority = MountOptions.DefaultReadPriority;
+
+            mountOptions.IsExclusiveWithReadAndWrite = true;
+
             mountOptions.TryCreateIfMissing = storeName switch
             {
                 StoreNames.ProgramDataOrgDir => false,
@@ -108,12 +112,15 @@ namespace LionFire.Services
                     if (isUser.HasValue) mountOptions.IsOwnedByOperatingSystemUser = isUser.Value;
                 }
             }
-
+            if (writable || mountOptions.IsVariableDataLocation == true)
+            {
+                mountOptions.WritePriority = MountOptions.DefaultWritePriority;
+            }
             return mountOptions;
         }
 
-        public static MountOptions DefaultOptions(string storeName, string path)
-            => new MountOptions().AugmentWithDefaults(storeName, path);
+        public static MountOptions DefaultOptions(string storeName, string path, bool writable = false)
+            => new MountOptions().AugmentWithDefaults(storeName, path, writable);
 
         public static IServiceCollection AddPlatformSpecificStores(this IServiceCollection services, AppInfo appInfo)
         {
@@ -189,7 +196,7 @@ namespace LionFire.Services
 
             var path = basePath != null ? Path.Combine(basePath, dirName) : dirName;
 
-            options ??= DefaultOptions(storeName, path);
+            options ??= DefaultOptions(storeName, path, writable: isVariableDataLocation);
             options.Name ??= storeName;
             options.IsOwnedByOperatingSystemUser = isOwnedByOperatingSystemUser;
             options.IsVariableDataLocation = isVariableDataLocation;

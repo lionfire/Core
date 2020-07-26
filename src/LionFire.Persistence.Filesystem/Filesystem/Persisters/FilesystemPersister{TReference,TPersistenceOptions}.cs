@@ -438,6 +438,8 @@ namespace LionFire.Persistence.Filesystem
             bool allowOverwrite = replaceMode.HasFlag(ReplaceMode.Update);
             bool requireOverwrite = !replaceMode.HasFlag(ReplaceMode.Create);
 
+            l.Trace($"{replaceMode.DescriptionString()} {obj?.GetType().Name} {replaceMode.ToArrow()} {fsReference}");
+
             return Task.Run<IPersistenceResult>(async () =>
             {
                 var fsPath = fsReference.Path;
@@ -517,6 +519,9 @@ namespace LionFire.Persistence.Filesystem
                         break;
                 }
 
+                int retries = 8; // MOVE config, and think about whether retry mechanism belongs here or up or down a level
+                var msDelay = 500;
+
                 foreach (var strategyResult in strategyResults)
                 {
                     var strategy = strategyResult.Strategy;
@@ -559,6 +564,7 @@ namespace LionFire.Persistence.Filesystem
                     #region SerializeToOutput
 
                     SerializationResult? serializationResult;
+                    retry:
                     try
                     {
                         serializationResult = await SerializeToOutput(obj, effectiveFSPath, strategy, replaceMode, operation, context).ConfigureAwait(false);
@@ -566,6 +572,12 @@ namespace LionFire.Persistence.Filesystem
                     catch (IOException ex) when (ex.Message.Contains("used by another process"))
                     {
                         serializationResult = SerializationResult.SharingViolation;
+                        if (retries-- > 0)
+                        {
+                            l.Warn($"Sharing violation when writing to {effectiveFSPath}.  Trying again in {msDelay}ms.");
+                            await Task.Delay(msDelay);
+                            goto retry;
+                        }
                     }
                     catch (Exception ex)
                     {
