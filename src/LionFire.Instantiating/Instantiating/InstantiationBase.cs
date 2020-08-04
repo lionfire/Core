@@ -205,6 +205,7 @@ namespace LionFire.Instantiating
                 rTemplate = value.GetObjectReadHandle();
             }
         }
+         object  IInstantiationBase.TemplateObj => Template;
 
 
         //#if !AOT && !UNITY // Unity crashes with contravariant IReadHandle -- commented out the generic part of RH<>
@@ -263,6 +264,7 @@ namespace LionFire.Instantiating
 
         [SerializeDefaultValue(false)]
         public virtual ITemplateParameters<TTemplate> Parameters { get; set; }
+        ITemplateParameters IInstantiationBase.Parameters { get => Parameters; set => Parameters = (ITemplateParameters<TTemplate>)value; }
 
         #region Overlaying
 
@@ -334,6 +336,8 @@ namespace LionFire.Instantiating
         //[Ignore]
         [SerializeDefaultValue(false)]
         public virtual TState State { get; set; }
+        object IStateful.State { get => State; set => State = (TState)value; }
+
 
         /// <summary>
         /// REVIEW - A way to avoid this is to break up Create into Construct and InitializeState
@@ -388,8 +392,8 @@ namespace LionFire.Instantiating
                 }
             }
         }
+        IEnumerator IEnumerable.GetEnumerator() => this.GetEnumerator();
 
-        IEnumerator IEnumerable.GetEnumerator() => throw new NotImplementedException();
         bool IHasPid.TryEnsureHasPid() => throw new NotImplementedException();
         void IHasPid.EnsureHasPid() => throw new NotImplementedException();
 
@@ -417,33 +421,7 @@ namespace LionFire.Instantiating
                 }
             }
         }
-
-        //IInstantiationCollection IInstantiation<TTemplate>.Children { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
-        string IInstantiationBase.Key { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
-        ICloneable IInstantiationBase.Prototype { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
-
-        object IInstantiationBase.TemplateObj => throw new NotImplementedException();
-
-        ITemplateParameters IInstantiationBase.Parameters { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
-        Action<object> IInstantiationBase.InitializationMethod { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
-
-        bool IInstantiationBase.HasChildren => throw new NotImplementedException();
-
-        object IStateful.State { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
-
-        string IKeyed<string>.Key => throw new NotImplementedException();
-
-        short IHasPid.Pid { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
-
-        bool IHasPid.HasPid => throw new NotImplementedException();
-
-        object ITemplateOverlayable.OverlayParent { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
-        ParameterOverlayMode ITemplateOverlayable.OverlayMode { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
-
-        IEnumerable<IEnumerable<IInstantiation>> ITemplateOverlayable.OverlayTargets => throw new NotImplementedException();
-
-        object IParented.Parent { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
-
+        
         #endregion
 
     }

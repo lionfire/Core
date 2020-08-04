@@ -16,4 +16,9 @@
     <PackageReference Include="coverlet.collector" Version="1.2.0" />
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\..\src\LionFire.DependencyMachines.Abstractions\LionFire.DependencyMachines.Abstractions.csproj" />
+    <ProjectReference Include="..\..\src\LionFire.DependencyMachines\LionFire.DependencyMachines.csproj" />
+  </ItemGroup>
+
 </Project>

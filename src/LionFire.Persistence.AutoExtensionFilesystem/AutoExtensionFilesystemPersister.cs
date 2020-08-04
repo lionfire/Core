@@ -1,4 +1,5 @@
-﻿using LionFire.IO;
+﻿#if false
+using LionFire.IO;
 using LionFire.Persistence.Filesystem;
 using LionFire.Referencing;
 using LionFire.Serialization;
@@ -53,3 +54,4 @@ namespace LionFire.Persistence.AutoExtensionFilesystem
         //}
     }
 }
+#endif

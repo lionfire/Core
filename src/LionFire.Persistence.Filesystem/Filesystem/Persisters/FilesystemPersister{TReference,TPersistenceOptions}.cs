@@ -20,6 +20,7 @@ using Microsoft.Extensions.Options;
 using System.Reflection;
 using MorseCode.ITask;
 using Microsoft.Extensions.Logging;
+using System.Net.Http.Headers;
 
 namespace LionFire.Persistence.Filesystem
 {
@@ -345,7 +346,7 @@ namespace LionFire.Persistence.Filesystem
 
 
             return await new Func<Task<IRetrieveResult<TValue>>>(()
-                => ReadAndDeserializeExactPath<TValue>(path, operation))
+                => ReadAndDeserializeAutoPath<TValue>(path, operation))
                 .AutoRetry(maxRetries: PersistenceOptions.MaxGetRetries,
                 millisecondsBetweenAttempts: PersistenceOptions.MillisecondsBetweenGetRetries, allowException: AllowAutoRetryForThisException).ConfigureAwait(false);
         }
@@ -354,6 +355,170 @@ namespace LionFire.Persistence.Filesystem
         //    => ReadAndDeserializeExactPath<T>(reference.Path, operation, context);
 
         // RENAME to eliminate "ExactPath" since it's no longer needed to distinguish in this class
+        public virtual async Task<IRetrieveResult<T>> ReadAndDeserializeAutoPath<T>(string path, Lazy<PersistenceOperation> operation, PersistenceContext? context = null, bool throwOnFail = true)
+        {
+            // TOTEST:
+            // - paths ending in /
+            // - paths ending in .
+            // - paths starting with .
+            // - paths with multiple .'s
+
+            // NEXT: how to invoke these?  Latest idea: persist/depersist pipelines
+            //var obj = await persistenceOperation.ToObject<T>(effectiveContext).ConfigureAwait(false);
+            //var obj = await (persistenceOperation.Context?.SerializationProvider ?? DependencyLocator.TryGet<ISerializationProvider>()).ToObject<T>(op);
+
+            List<KeyValuePair<ISerializationStrategy, SerializationResult>>? failures = null;
+
+            PersistenceResultFlags flags = PersistenceResultFlags.None;
+
+            var autoAppendExtension = PersistenceOptions.AppendExtensionOnRead;
+            //bool fileHasAnyExtension;
+            string? fileExtension = null;
+            //var potentialFiles = new List<string>();
+            IEnumerable<string>? potentialExtensions = null;
+
+            var dir = Path.GetDirectoryName(path) ?? Path.GetPathRoot(path);
+
+            IEnumerable<string> GetPotentialExtensions(string p)
+            {
+                IEnumerable<string> result = System.IO.Directory.GetFiles(dir, $"{Path.GetFileName(p)}.*")
+                    .Select(p => 
+                    Path.GetExtension(p)
+                    .Substring(1) // trim the leading .
+                    );
+
+                if (File.Exists(path))
+                {
+                    result = result.Concat(new string[] { "" });
+                }
+                return result;
+            }
+        
+            switch (autoAppendExtension)
+            {
+                case AppendExtensionOnRead.Never:
+                default:
+                    //fileHasAnyExtension = false; // Value ignored later
+                    potentialExtensions = File.Exists(path) ? new string[] { "" } : Enumerable.Empty<string>();
+                    break;
+                case AppendExtensionOnRead.IfNoExtensions:
+                    fileExtension = LionPath.GetExtension(path);
+                    if (fileExtension == null)
+                    {
+                        potentialExtensions = GetPotentialExtensions(path);
+                    }
+                    if (File.Exists(path))
+                    {
+                        potentialExtensions = potentialExtensions == null ? new string[] { "" } : potentialExtensions.Concat(new string[] { "" });
+                    }
+                    break;
+                case AppendExtensionOnRead.Always:
+                    potentialExtensions = GetPotentialExtensions(path);
+                    // Doesn't check for File.Exists(path)
+                    break;
+            }
+
+            if (!potentialExtensions.Any())
+            {
+                l.Trace($"NotFound: {path}[.*]");
+                return RetrieveResult<T>.NotFound;
+            }
+
+            bool foundOne = false;
+            //TReference effectiveReference;
+
+            if(potentialExtensions.Count() >= 2 && PersistenceOptions.ValidateOneFilePerPath.HasFlag(ValidateOneFilePerPath.OnRead))
+            {
+                throw new PersistenceException($"ValidateOneFilePerPath has flag OnRead and there is more than one possible file extension found for path '{path}'");
+            }
+
+            operation.Value.PotentialExtensions = potentialExtensions;
+
+            foreach (var attempt in SerializationProvider.ResolveStrategies(operation, context, IODirection.Read))
+            {
+                var strategy = attempt.Strategy;
+                string effectiveFSPath = string.IsNullOrEmpty(attempt.ScoringAttempt.Extension) ? path : $"{path}.{attempt.ScoringAttempt.Extension}";
+
+                //switch (autoAppendExtension)
+                //{
+                //    case AutoAppendExtension.Disabled:
+                //        break;
+                //    case AutoAppendExtension.IfNoExtensions:
+                //        if (!fileHasAnyExtension)
+                //        {
+                //            effectiveFSPath += "." + strategy.DefaultFormat.DefaultFileExtension;
+                //            effectiveReference = PathToReference(effectiveFSPath);
+                //        }
+                //        break;
+                //    case AutoAppendExtension.IfIncorrectExtension:
+                //        var fsExtension = LionPath.GetExtension(fsReference.Path);
+                //        if (!fileHasAnyExtension || fsExtension != strategy.DefaultFormat.DefaultFileExtension)
+                //        {
+                //            effectiveFSPath += "." + strategy.DefaultFormat.DefaultFileExtension;
+                //            effectiveReference = PathToReference(effectiveFSPath);
+                //        }
+                //        break;
+                //    default:
+                //        throw new ArgumentException(nameof(PersistenceOptions.AutoAppendExtensionOnWrite));
+                //}
+
+                byte[]? bytes;
+
+                //if (!await Exists(effectiveFSPath).ConfigureAwait(false)) continue;
+                
+                //try
+                //{
+                bytes = await ReadBytes(effectiveFSPath).ConfigureAwait(false);
+                flags |= PersistenceResultFlags.Found; // Found something.  REVIEW: what if this is some unrelated metadata or OOB file?
+
+                //}
+                //catch (FileNotFoundException)
+                //{
+                //    bytes = null;
+                //}
+
+                //if (bytes == null)
+                //{
+                //    flags |= PersistenceResultFlags.NotFound | PersistenceResultFlags.Fail;
+                //}
+                //else
+                {
+                    foundOne = true;
+                    var result = strategy.ToObject<T>(bytes, operation, context);
+                    if (result.IsSuccess)
+                    {
+                        flags |= PersistenceResultFlags.Success;
+                        OnDeserialized(result.Object);
+                        return new RetrieveResult<T>(result.Object, flags);
+                    }
+                    else if (PersistenceOptions.ThrowDeserializationFailureWithReasons)
+                    {
+                        if (failures == null)
+                        {
+                            failures = new List<KeyValuePair<ISerializationStrategy, SerializationResult>>();
+                        }
+                        failures.Add(new KeyValuePair<ISerializationStrategy, SerializationResult>(strategy, result));
+                    }
+                    // else don't initialize failures and throw
+                }
+            }
+            if (!foundOne) flags |= PersistenceResultFlags.SerializerNotAvailable;
+            flags |= PersistenceResultFlags.Fail;
+
+            if (throwOnFail && PersistenceOptions.ThrowOnDeserializationFailure)
+            {
+                throw new SerializationException(SerializationOperationType.FromBytes, operation, context, failures, noSerializerAvailable: !foundOne);
+            }
+
+
+#nullable disable
+            return new RetrieveResult<T>(default, flags)
+            {
+                Error = failures,
+            };
+#nullable enable
+        }
+
         public virtual async Task<IRetrieveResult<T>> ReadAndDeserializeExactPath<T>(string path, Lazy<PersistenceOperation>? operation = null, PersistenceContext? context = null, bool throwOnFail = true)
         {
             // NEXT: how to invoke these?  Latest idea: persist/depersist pipelines
@@ -363,7 +528,6 @@ namespace LionFire.Persistence.Filesystem
             List<KeyValuePair<ISerializationStrategy, SerializationResult>>? failures = null;
 
             PersistenceResultFlags flags = PersistenceResultFlags.None;
-
 
             byte[]? bytes;
 
@@ -387,6 +551,7 @@ namespace LionFire.Persistence.Filesystem
             {
                 flags |= PersistenceResultFlags.Found;
                 bool foundOne = false;
+
                 foreach (var strategy in SerializationProvider.ResolveStrategies(operation, context, IODirection.Read).Select(r => r.Strategy))
                 {
                     foundOne = true;
@@ -504,7 +669,7 @@ namespace LionFire.Persistence.Filesystem
                 SerializationResult? successfulSerializationResult = null;
 
                 //AutoAppendExtension autoAppendExtension = operation.Value.AutoAppendExtension ?? AutoAppendExtension.Disabled;
-                AutoAppendExtension autoAppendExtension = PersistenceOptions.AutoAppendExtension;
+                AutoAppendExtension autoAppendExtension = PersistenceOptions.AutoAppendExtensionOnWrite;
                 bool fileHasAnyExtension;
 
                 switch (autoAppendExtension)
@@ -550,7 +715,7 @@ namespace LionFire.Persistence.Filesystem
                             }
                             break;
                         default:
-                            throw new ArgumentException();
+                            throw new ArgumentException(nameof(PersistenceOptions.AutoAppendExtensionOnWrite));
                     }
 
 #if MONO
@@ -564,7 +729,7 @@ namespace LionFire.Persistence.Filesystem
                     #region SerializeToOutput
 
                     SerializationResult? serializationResult;
-                    retry:
+                retry:
                     try
                     {
                         serializationResult = await SerializeToOutput(obj, effectiveFSPath, strategy, replaceMode, operation, context).ConfigureAwait(false);
@@ -586,7 +751,7 @@ namespace LionFire.Persistence.Filesystem
 
                     if (!serializationResult.IsSuccess)
                     {
-                        l.TraceWarn($"{this.GetType().Name} - Write attempt to '{fsReference}' failed: " +  serializationResult);
+                        l.TraceWarn($"{this.GetType().Name} - Write attempt to '{fsReference}' failed: " + serializationResult);
 
                         if (failedSerializationResults == null) failedSerializationResults = new List<KeyValuePair<ISerializationStrategy, SerializationResult>>();
                         failedSerializationResults.Add(new KeyValuePair<ISerializationStrategy, SerializationResult>(strategyResult.Strategy, serializationResult));

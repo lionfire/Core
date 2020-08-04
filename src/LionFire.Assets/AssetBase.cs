@@ -1,4 +1,6 @@
-﻿namespace LionFire.Assets
+﻿using System;
+
+namespace LionFire.Assets
 {
     public class AssetBase : AssetBase<object> { }
 
@@ -10,21 +12,27 @@
 
         #region Key
 
-        /// <summary>
-        /// This is where AssetPath is stored.  Reference creates an AssetReference from this via AssetPath.
-        /// </summary>
-        public override string Key 
+        public override string Key
         {
-            get => key;
-            set
-            {
-                if (key == value) return;
-                key = value;
-                OnKeyChanged();
-                OnPropertyChanged(nameof(Key));
-            }
+            get => Reference?.ToString();
+            //set => Reference = value;
+            //set => Reference = AssetReference<TValue>.FromKey(value);
         }
-        private string key;
+        ///// <summary>
+        ///// This is where AssetPath is stored.  Reference creates an AssetReference from this via AssetPath.
+        ///// </summary>
+        //public override string Key 
+        //{
+        //    get => key;
+        //    set
+        //    {
+        //        if (key == value) return;
+        //        key = value;
+        //        OnKeyChanged();
+        //        OnPropertyChanged(nameof(Key));
+        //    }
+        //}
+        //private string key;
 
         #endregion
     }

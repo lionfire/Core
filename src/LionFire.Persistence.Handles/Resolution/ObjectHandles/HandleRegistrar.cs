@@ -20,7 +20,8 @@ namespace LionFire.Persistence.Handles
         public HandleRegistrar(TOptions options)
         {
             Options = options;
-            if (Options.AutoRegister) throw new NotImplementedException("Cannot set AutoRegister ");
+            // TOTEST - verify AutoRegister is working
+            //if (Options.AutoRegister) throw new NotImplementedException("Cannot set AutoRegister ");
         }
 
         public void RegisterReadHandle<TValue>(IReadHandleBase<TValue> handle) => throw new NotImplementedException();

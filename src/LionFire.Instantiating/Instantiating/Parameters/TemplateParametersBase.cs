@@ -1,4 +1,5 @@
 ﻿using LionFire.Instantiating;
+using LionFire.Ontology;
 using LionFire.Persistence;
 using System;
 using System.Collections.Generic;
@@ -49,10 +50,32 @@ namespace LionFire.Assets
     }
 
     public abstract class ParentedTemplateParametersBase<TTemplate> : TemplateParametersBase<TTemplate>, IParentedTemplateParameters<TTemplate>
+        //, IParented
         where TTemplate : ITemplate
     {
         protected ParentedTemplateParametersBase() { }
         protected ParentedTemplateParametersBase(IReadHandleBase<TTemplate> template, string parentKey) { RTemplate = template; ParentKey = parentKey; }
+
+
+
+        //#region Parent
+
+        //[SetOnce]
+        //public object Parent
+        //{
+        //    get => parent;
+        //    set
+        //    {
+        //        if (parent == value) return;
+        //        if (parent != default) throw new AlreadySetException();
+        //        parent = value;
+        //    }
+        //}
+        //private object parent;
+
+        //#endregion
+
+
 
     }
 }

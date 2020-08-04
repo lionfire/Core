@@ -71,10 +71,10 @@ namespace LionFire.Referencing
         #region ReadWrite Handle
 
         public static IReadWriteHandle<T> GetReadWriteHandle<T>(this IReference reference)
-            => HandleRegistry.GetOrAddReadWrite<IReadWriteHandle<T>>(reference.Key, _ => reference.GetReadWriteHandleProvider().GetReadWriteHandle<T>(reference));
+            => HandleRegistry.GetOrAddReadWrite<IReadWriteHandle<T>>(reference?.Key ?? throw new ArgumentNullException(nameof(reference)), _ => reference.GetReadWriteHandleProvider().GetReadWriteHandle<T>(reference));
         public static IReadWriteHandle<T> GetReadWriteHandle<T, TReference>(this TReference reference)
               where TReference : IReference
-              => HandleRegistry.GetOrAddReadWrite<IReadWriteHandle<T>>(reference.Key, _ => reference.TryGetReadWriteHandleProvider<TReference>().GetReadWriteHandle<T>(reference));
+              => HandleRegistry.GetOrAddReadWrite<IReadWriteHandle<T>>(reference?.Key ?? throw new ArgumentNullException(nameof(reference)), _ => reference.TryGetReadWriteHandleProvider<TReference>().GetReadWriteHandle<T>(reference));
 
         public static IReadWriteHandle<T> ToReadWriteHandle<T>(this IReference reference) => reference.GetReadWriteHandleProvider().GetReadWriteHandle<T>(reference)
             ?? throw new HasUnresolvedDependenciesException($"Could not get {nameof(IReadWriteHandle<T>)} type for reference of type {reference.GetType().FullName}");

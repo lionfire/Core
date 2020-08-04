@@ -62,14 +62,14 @@ namespace LionFire.Serialization
         //    }
         //    return 0;
         //}
-        public float ScoreForStrategy(SerializationStrategyPreference preference, Lazy<PersistenceOperation> operation = null, PersistenceContext context = null)
+        public float ScoreForStrategy(SerializationStrategyPreference preference, Lazy<PersistenceOperation> operation = null, PersistenceContext context = null, ScoringAttempt scoringAttempt = null)
         {
             switch (SerializationOptions.DeserializeExtensionScoring)
             {
                 case FileExtensionScoring.MustMatch:
-                    return preference.Strategy.SupportsExtension(operation.Value.FileExtension) ? PassScore : float.NaN;
+                    return preference.Strategy.SupportsExtension(operation.Value.DetectedOrEffectiveFileExtension) ? PassScore : float.NaN;
                 case FileExtensionScoring.RewardMatch:
-                    return preference.Strategy.SupportsExtension(operation.Value.FileExtension) ? PassScore : FailScore;
+                    return preference.Strategy.SupportsExtension(operation.Value.DetectedOrEffectiveFileExtension) ? PassScore : FailScore;
                 case FileExtensionScoring.IgnoreExtension:
                     return 0;
                 default:

@@ -25,7 +25,8 @@ namespace LionFire.Persistence.Handles
             [PublicOnly]
             set
             {
-                if (System.Collections.Generic.Comparer<TValue>.Default.Compare(protectedValue, value) == 0) return; // Should use Equality instead of Compare?
+                if (object.Equals(value, protectedValue)) return;
+                //if (System.Collections.Generic.Comparer<TValue>.Default.Compare(protectedValue, value) == 0) return; // Should use Equality instead of Compare?
                 //if (value == ProtectedValue) return;
                 HandleUtils.OnUserChangedValue_ReadWrite(this, value);
             }

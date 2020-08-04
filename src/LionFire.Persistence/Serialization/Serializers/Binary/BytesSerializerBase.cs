@@ -52,7 +52,7 @@ namespace LionFire.Serialization
         public float PassScore { get; set; } = 10f;
         public float FailScore { get; set; } = -10f;
 
-        public float ScoreForStrategy(SerializationStrategyPreference preference, Lazy<PersistenceOperation> operation = null, PersistenceContext context = null)
+        public float ScoreForStrategy(SerializationStrategyPreference preference, Lazy<PersistenceOperation> operation = null, PersistenceContext context = null, ScoringAttempt scoringAttempt = null)
             => operation.Value.Type == typeof(byte[]) ? PassScore : FailScore;
     }
 }

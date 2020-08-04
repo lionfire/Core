@@ -1,4 +1,6 @@
-﻿using System;
+﻿#nullable enable
+using System;
+using System.Collections.Generic;
 using System.Linq;
 using LionFire.IO;
 using LionFire.Referencing;
@@ -81,7 +83,7 @@ namespace LionFire.Persistence
         }
         private IODirection? direction;
 
-        public PersistenceContext Context { get; set; }
+        public PersistenceContext? Context { get; set; }
 
         #region Type
 
@@ -89,9 +91,9 @@ namespace LionFire.Persistence
         /// Deserialization: deserialize to this type.
         /// Serialization: use this type as a hint or guidance for serialization.
         /// </summary>
-        public Type Type { get; set; }
+        public Type? Type { get; set; }
 
-        public string MimeType { get; set; }
+        public string? MimeType { get; set; }
 
         #endregion
 
@@ -108,7 +110,7 @@ namespace LionFire.Persistence
 
         #region Reference / Path
 
-        public IReference Reference { get; set; }
+        public IReference? Reference { get; set; }
 
         #region Path
 
@@ -119,13 +121,13 @@ namespace LionFire.Persistence
         }
         //public bool? PathIsMissingExtension { get; set; } // TODO REVIEW - is this still needed now that there is AutoAppendExtension?
 
-        public AutoAppendExtension? AutoAppendExtension { get; set; }
+        //public AutoAppendExtension? AutoAppendExtension { get; set; }
 
         #endregion
 
         #region Extension
 
-        public string Extension
+        public string? Extension
         {
             get
             {
@@ -135,13 +137,14 @@ namespace LionFire.Persistence
                 }
                 else if (Path != null)
                 {
-                    return System.IO.Path.GetExtension(Path);
+                    return LionPath.GetExtension(Path);
+                    //return System.IO.Path.GetExtension(Path);
                 }
                 return null;
             }
             set => extension = value;
         }
-        private string extension;
+        private string? extension;
 
         #endregion
 
@@ -162,10 +165,10 @@ namespace LionFire.Persistence
 
         #endregion
 
-        public SerializePersistenceOperation Serialization { get; set; }
-        public DeserializePersistenceOperation Deserialization { get; set; }
+        public SerializePersistenceOperation? Serialization { get; set; }
+        public DeserializePersistenceOperation? Deserialization { get; set; }
 
-        public SerializationOptions SerializationOptions => Deserialization?.SerializationOptions ?? Serialization?.SerializationOptions;
+        public SerializationOptions? SerializationOptions => Deserialization?.SerializationOptions ?? Serialization?.SerializationOptions;
 
         //private PersistenceOperation persistenceOperation; // REVIEW - Use one backing field for both?
 
@@ -176,17 +179,22 @@ namespace LionFire.Persistence
 
         #region FileExtension
 
-        public string FileExtension
+        public string? DetectedOrEffectiveFileExtension
         {
-            get => fileExtension ?? LionPath.GetExtension(Reference?.Path) ?? SerializationOptions?.TreatExtensionlessAsExtension;
-            set => fileExtension = value;
+            get => fileExtension ??= LionPath.GetExtension(Reference?.Path) ?? SerializationOptions?.TreatExtensionlessAsExtension;
+            //set => fileExtension = value;
         }
-        protected string fileExtension;
+        public IEnumerable<string>? PotentialExtensions { get; set; }
+
+        protected string? fileExtension;
 
         #endregion
 
-
         #endregion
+
+        public IEnumerable<string?> EffectiveReadExtensions 
+            => PotentialExtensions 
+            ?? new string?[] { Extension ?? DetectedOrEffectiveFileExtension /* may be null */ };
 
     }
 

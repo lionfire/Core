@@ -3,6 +3,11 @@ using LionFire.Persistence;
 
 namespace LionFire.Serialization
 {
+    public class ScoringAttempt
+    {
+        public string Extension { get; set; }
+    }
+
     //public interface ISerializerScorerBase<TOp, TContext> OLD
     //    where TContext : class
     //{
@@ -10,7 +15,7 @@ namespace LionFire.Serialization
     //}
     public interface ISerializerScorerBase //: ISerializerScorerBase<SerializePersistenceOperation, SerializePersistenceContext>
     {
-        float ScoreForStrategy(SerializationStrategyPreference preference, Lazy<PersistenceOperation> operation = null, PersistenceContext context = null);
+        float ScoreForStrategy(SerializationStrategyPreference preference, Lazy<PersistenceOperation> operation = null, PersistenceContext context = null, ScoringAttempt scoringAttempt = null);
     }
     public interface ISerializeScorer : ISerializerScorerBase { }
     public interface IDeserializeScorer : ISerializerScorerBase { }

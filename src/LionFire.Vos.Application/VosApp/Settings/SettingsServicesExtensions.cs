@@ -30,7 +30,6 @@ namespace LionFire.Settings
         {
             if (value == default)
             {
-#error NEXT: Threadsave concurrent getoradd // https://andrewlock.net/making-getoradd-on-concurrentdictionary-thread-safe-using-lazy/
                 value = (await VosAppSettings.UserLocal<T>.H.GetOrInstantiateValue().ConfigureAwait(false)).Value;
             }
             return value;

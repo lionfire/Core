@@ -76,6 +76,8 @@ namespace LionFire.Instantiating
 
         #endregion
 
+        #region Events
+
         protected override void OnAdded(IInstantiation keyed)
         {
             base.OnAdded(keyed);
@@ -96,6 +98,22 @@ namespace LionFire.Instantiating
 
         public event NotifyCollectionChangedHandler<IInstantiation> CollectionChanged;
 
+        public void OnChildCountChanged(IInstantiation child, int oldCount)
+        {
+            var ev = ChildCountChanged;
+            if (ev != null) ev(child, oldCount);
+        }
+
+#if AOT
+        public event Action_IInstantiation_int ChildCountChanged;
+#else
+        public event Action<IInstantiation, int> ChildCountChanged;
+#endif
+
+        #endregion
+
+        #region Add
+
         public void Add(ITemplate template)
         {
             var instantiation = template.CreateInstantiation();
@@ -114,30 +132,19 @@ namespace LionFire.Instantiating
         //    base.Add(new Instantiation(templatePath));
         //}
 
+//        public void Add(IInstantiation instantiation)
+//        {
+//#if SanityChecks
+//            if (instantiation.Parameters != null && instantiation.Parameters != instantiation)
+//            {
+//                l.Warn("InstantiationCollection.Add: instantiation.Parameters != null && instantiation.Parameters != instantiation.  instantiation: " +
+//                    instantiation.ToString() + " of type " + instantiation.GetType().Name + ", Parameters: " + (instantiation.Parameters == null ? "null" : instantiation.Parameters.GetType().Name));
+//            }
+//#endif
+//            base.Add((IInstantiation)instantiation);
+//        }
 
-        public void Add(IInstantiation instantiation)
-        {
-#if SanityChecks
-            if (instantiation.Parameters != null && instantiation.Parameters != instantiation)
-            {
-                l.Warn("InstantiationCollection.Add: instantiation.Parameters != null && instantiation.Parameters != instantiation.  instantiation: " +
-                    instantiation.ToString() + " of type " + instantiation.GetType().Name + ", Parameters: " + (instantiation.Parameters == null ? "null" : instantiation.Parameters.GetType().Name));
-            }
-#endif
-            Add((IInstantiation)instantiation);
-        }
-
-        public void OnChildCountChanged(IInstantiation child, int oldCount)
-        {
-            var ev = ChildCountChanged;
-            if (ev != null) ev(child, oldCount);
-        }
-
-#if AOT
-        public event Action_IInstantiation_int ChildCountChanged;
-#else
-        public event Action<IInstantiation, int> ChildCountChanged;
-#endif
+        #endregion
 
         #region Misc
 

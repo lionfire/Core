@@ -117,7 +117,7 @@ namespace LionFire.Persistence.Persisters.Vos
         public Task<IPersistenceResult> Update<TValue>(IReferencable<IVobReference> referencable, TValue value) => throw new System.NotImplementedException();
         public async Task<IPersistenceResult> Upsert<TValue>(IReferencable<IVobReference> referencable, TValue value)
         {
-            l.Trace($"{ReplaceMode.Upsert.DescriptionString()} {value?.GetType().Name} {ReplaceMode.Upsert.ToArrow()} {referencable.Reference}");
+            //l.Trace($"{ReplaceMode.Upsert.DescriptionString()} {value?.GetType().Name} {ReplaceMode.Upsert.ToArrow()} {referencable.Reference}");
 
             var vob = Root[referencable.Reference.Path];
 
@@ -154,7 +154,7 @@ namespace LionFire.Persistence.Persisters.Vos
                 result.Flags |= PersistenceResultFlags.MountNotAvailable;
                 result.ResolvedVia = referencable?.Reference;
             }
-            l.Trace(result.ToString());
+            l.Trace($"{result.Flags}: {ReplaceMode.Upsert.DescriptionString()} {value?.GetType().Name} {ReplaceMode.Upsert.ToArrow()} {referencable.Reference} via {result.ResolvedVia}");
             return result;
         }
         public Task<IPersistenceResult> Delete(IReferencable<IVobReference> referencable)

@@ -80,7 +80,7 @@ namespace LionFire.Settings
             }
         }
 
-        public Task StopAsync(CancellationToken cancellationToken)
+        public async Task StopAsync(CancellationToken cancellationToken)
         {
             if (Options.AutoSave)
             {
@@ -92,9 +92,8 @@ namespace LionFire.Settings
 
             if (Options.SaveOnExit)
             {
-                Save();
+                await Save().ConfigureAwait(false);
             }
-            return Task.CompletedTask;
         }
     }
 }

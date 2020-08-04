@@ -1,4 +1,5 @@
-﻿using LionFire.Ontology;
+﻿using LionFire.Copying;
+using LionFire.Ontology;
 using LionFire.Referencing;
 using System;
 using System.Collections.Generic;
@@ -22,6 +23,7 @@ namespace LionFire.Assets
 
         public override string Scheme => UriSchemeDefault;
 
+        [Ignore]
         public override string Key { 
             get => $"{UriPrefixDefault}({(Channel == null ? "$assets/" : Channel + "/")}{typeof(TValue)}){Path}"; 
             protected set => throw new NotImplementedException();/* Path = value;*/ 
@@ -29,7 +31,11 @@ namespace LionFire.Assets
 
         #region Path
 
+        /// <summary>
+        /// Can be null if object is not intended to be persisted (perhaps because it is contained by a parent object that itself will be persisted.)
+        /// </summary>
         [SetOnce]
+        [Assignment(AssignmentMode.Ignore)]
         public override string Path
         {
             get => path;
@@ -52,10 +58,12 @@ namespace LionFire.Assets
 
         public AssetReference()
         {
-            this.Path = string.Empty;
+            //this.Path = string.Empty;
+            this.Path = default;
         }
         public AssetReference(string assetPath = "")
         {
+            if (assetPath?.Contains(":") == true) throw new ArgumentException($"{nameof(assetPath)} may not contain :");
             this.Path = assetPath;
         }
         public AssetReference(string assetPath, string assetChannel)
@@ -69,7 +77,15 @@ namespace LionFire.Assets
 
         #endregion
 
-        public static implicit operator AssetReference<TValue>(string assetPath) => new AssetReference<TValue>(assetPath);
+        public static implicit operator AssetReference<TValue>(string str) => ParseKey(str) ?? new AssetReference<TValue>(str);
+
+        public static AssetReference<TValue> ParseKey(string referenceKey)
+        {
+            if (referenceKey == null) return null;
+            if (!referenceKey.StartsWith(UriSchemeDefault)) return null;
+
+            throw new NotImplementedException();
+        }
 
         #region Channel
 

@@ -38,14 +38,16 @@ namespace LionFire.Serialization
 
         #endregion
 
-        public float ScoreForStrategy(SerializationStrategyPreference preference, Lazy<PersistenceOperation> operation = null, PersistenceContext context = null)
+        public float ScoreForStrategy(SerializationStrategyPreference preference, Lazy<PersistenceOperation> operation = null, PersistenceContext context = null, ScoringAttempt scoringAttempt = null)
         {
+            var ext = scoringAttempt.Extension;
+            //var ext = operation.Value.DetectedOrEffectiveFileExtension;
             switch (SerializationOptions.SerializeExtensionScoring)
             {
                 case FileExtensionScoring.MustMatch:
-                    return preference.Strategy.SupportsExtension(operation.Value.FileExtension) ? PassScore : float.NaN;
+                    return preference.Strategy.SupportsExtension(ext) ? PassScore : float.NaN;
                 case FileExtensionScoring.RewardMatch:
-                    return preference.Strategy.SupportsExtension(operation.Value.FileExtension) ? PassScore : FailScore;
+                    return preference.Strategy.SupportsExtension(ext) ? PassScore : FailScore;
                 case FileExtensionScoring.IgnoreExtension:
                     return 0;
                 default:

@@ -324,6 +324,11 @@ namespace LionFire.DependencyMachines
                 }
                 if (tryAgain.NullableAny())
                 {
+                    Logger.LogError($"{tryAgain.Count()} initialization failure(s):");
+                    foreach (var fail in tryAgain!)
+                    {
+                        Logger.LogError($" - {fail.Key} failure: {fail.Value}");
+                    }
                     throw new DependenciesUnresolvableException("Failed to start participants due to validation errors.  See Data for details. ", tryAgain!);
                 }
                 foreach (var item in endOfStage) { 

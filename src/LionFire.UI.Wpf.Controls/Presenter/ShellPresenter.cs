@@ -46,7 +46,7 @@ namespace LionFire.Shell.Wpf
 
         public WindowSettings WindowSettings { get; set; }
 
-        Task startup;
+        Func<Task> startup;
 
         #region Construction
 
@@ -57,7 +57,7 @@ namespace LionFire.Shell.Wpf
             ServiceProvider = serviceProvider;
             RootInterface = rootInterface;
             WindowLayoutManager = windowLayoutManager;
-            startup = Task.Run(async () =>
+            startup = () => Task.Run(async () =>
             {
                 WindowSettings = (await windowSettings.GetValueAsync().ConfigureAwait(false));
             });
@@ -69,7 +69,7 @@ namespace LionFire.Shell.Wpf
 
         public async Task StartAsync(CancellationToken cancellationToken)
         {
-            await startup.ConfigureAwait(false);
+            await startup().ConfigureAwait(false);
             startup = null;
         }
 

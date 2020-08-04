@@ -1,9 +1,9 @@
-﻿using LionFire.Resources;
+﻿//using LionFire.Resources;
 
-namespace LionFire.Assets.Tests
-{
-    public class TestResource : TestResourcePoco, IResource
-    {
+//namespace LionFire.Assets.Tests
+//{
+//    public class TestResource : TestResourcePoco, IResource
+//    {
         
-    }
-}
+//    }
+//}

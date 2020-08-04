@@ -4,6 +4,7 @@ using System.ComponentModel;
 using System;
 using LionFire.Referencing;
 using LionFire.Types;
+using LionFire.Copying;
 
 namespace LionFire.Assets
 {
@@ -11,16 +12,17 @@ namespace LionFire.Assets
     /// AssetPath (Key), TreatAsType, Reference
     /// </remarks>
     /// <typeparam name="TValue"></typeparam>
-    public abstract class AssetBaseBase<TValue> : IKeyable, INotifyPropertyChanged, IAsset<TValue>, IReferencable
+    public abstract class AssetBaseBase<TValue> : IKeyed, INotifyPropertyChanged, IAsset<TValue>, IReferencable
     {
         public Type TreatAsType => typeof(TValue);
 
-        public string AssetPath { get => Key; set => Key = value; }
+        //public string AssetPath { get => Key; set => Key = value; }
+        public string AssetPath { get => reference?.Path; set => Reference = value; }
 
         /// <summary>
         /// Implementors should invoke OnKeyChanged
         /// </summary>
-        public abstract string Key { get; set; }
+        public abstract string Key { get; /*set;*/ }
 
         /// <summary>
         /// The "file name" portion of the AssetPath (omit the directory)
@@ -29,18 +31,20 @@ namespace LionFire.Assets
 
         protected virtual void OnKeyChanged() => reference = null;
 
-        public IAssetReference Reference
+        // REVIEW - should only set back to null after a clone.  Is there a good way to enforce/avoid this? 
+        // IOnCloned.Cloned interface to set back to null?
+        [Assignment(AssignmentMode.Ignore)]
+        public AssetReference<TValue> Reference
         {
-            get
+            get => reference;
+            set
             {
-                if (reference == null)
-                {
-                    reference = new AssetReference<TValue>(AssetPath);
-                }
-                return reference;
+                if (value != null && reference != null && !value.Equals(reference)) throw new AlreadySetException(); 
+                reference = (AssetReference<TValue>)value;
             }
         }
         protected AssetReference<TValue> reference;
+        IAssetReference IReferencable<IAssetReference>.Reference => reference;
 
         IReference IReferencable.Reference => Reference;
 

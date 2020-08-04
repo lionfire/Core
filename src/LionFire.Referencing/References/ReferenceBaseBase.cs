@@ -1,4 +1,5 @@
-﻿using System;
+﻿using LionFire.Copying;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
@@ -74,10 +75,13 @@ namespace LionFire.Referencing
             return result;
         }
 
+        [Assignment(AssignmentMode.Ignore)]
         public virtual string Persister { get => null; set => throw new NotSupportedException(); }
 
+        [Assignment(AssignmentMode.Ignore)]
         public abstract string Key { get; protected set; }
 
+        [Assignment(AssignmentMode.Ignore)]
         public abstract string Path { get; set; } // TODO BREAKINGCHANGE: Make set protected, use constructors/factories to set Path and other properties
 
         protected virtual void CopyFrom(ConcreteType other)

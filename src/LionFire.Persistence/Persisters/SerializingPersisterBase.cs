@@ -60,5 +60,6 @@ namespace LionFire.Persistence.Persisters
                 );
         }
 
+        protected virtual void OnDeserialized(object obj) => (obj as INotifyDeserialized)?.OnDeserialized();
     }
 }

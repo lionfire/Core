@@ -16,7 +16,22 @@ namespace LionFire.Structures
             ManualSingletonRegistrar.List.Add(typeof(T));
         }
 
-        public static T Instance { get; set; }
+        #region Instance
+
+        public static T Instance
+        {
+            get => instance;
+            set
+            {
+                if (instance == value) return;
+                if (value != null && instance != default(T)) throw new NotSupportedException("Instance can only be set once or back to null.");
+                instance = value;
+            }
+        }
+        private static T instance;
+
+        #endregion
+
 
         // See  http://csharpindepth.com/Articles/General/Singleton.aspx implementation #6
 

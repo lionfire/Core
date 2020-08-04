@@ -23,7 +23,7 @@ namespace LionFire.Serialization
     public class SerializeHelpers
     //: ResolvesSerializationStrategiesHelpersBase<ISerializerScorer, PersistenceOperation, PersistenceContext>
     {
-        public static float ScoreForStrategy(SerializationStrategyPreference preference, Lazy<PersistenceOperation> operation = null, PersistenceContext context = null, IODirection? direction = null)
+        public static float ScoreForStrategy(SerializationStrategyPreference preference, Lazy<PersistenceOperation> operation = null, PersistenceContext context = null, IODirection? direction = null, ScoringAttempt scoringAttempt = null)
         {
             if (!direction.HasValue) direction = operation?.Value.Direction;
 
@@ -56,7 +56,7 @@ namespace LionFire.Serialization
                 {
                     break;
                 }
-                sum += scorer.ScoreForStrategy(preference, operation, context);
+                sum += scorer.ScoreForStrategy(preference, operation, context, scoringAttempt);
             }
 
             return sum;
@@ -75,21 +75,25 @@ namespace LionFire.Serialization
 
             foreach (var preference in preferences)
             {
-                var result = new SerializationSelectionResult(preference);
 
-                var score = ScoreForStrategy(preference, operation, context, direction: direction);
-                if (float.IsNaN(score))
+                foreach (var extension in operation?.Value.EffectiveReadExtensions)
                 {
-                    continue;
-                }
+                    var scoringAttempt = new ScoringAttempt { Extension = extension };
+                    var result = new SerializationSelectionResult(preference, scoringAttempt);
+                    var score = ScoreForStrategy(preference, operation, context, direction: direction, scoringAttempt);
+                    if (float.IsNaN(score))
+                    {
+                        continue;
+                    }
 
-                while (results.ContainsKey(-score))
-                {
-                    score += 0.0001f;
-                }
+                    while (results.ContainsKey(-score))
+                    {
+                        score += 0.0001f;
+                    }
 
-                result.Score = score;
-                results.Add(-score, result);
+                    result.Score = score;
+                    results.Add(-score, result);
+                }
             }
             return results.Values;
         }

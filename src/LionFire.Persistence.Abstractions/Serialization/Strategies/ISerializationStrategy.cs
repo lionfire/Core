@@ -42,6 +42,7 @@ namespace LionFire.Serialization
         bool ImplementsFromString { get; }
         bool ImplementsFromStream { get; }
         bool ImplementsFromBytes { get; }
+        
     }
 
     public static class ISerializationStrategyExtensions

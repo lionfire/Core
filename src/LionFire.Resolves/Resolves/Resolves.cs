@@ -30,7 +30,7 @@ namespace LionFire.Resolves
                 lock (tabLock)
                 {
                     _detach(owner, inpc);
-                    var x = new PropertyChangedEventHandler((o, e) => fire(o));
+                    var x = new PropertyChangedEventHandler((sender, evt) => fire(sender));
                     inpc.PropertyChanged += x;
                     tab.Add(owner, x);
                 }

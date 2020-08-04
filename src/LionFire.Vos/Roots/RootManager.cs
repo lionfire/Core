@@ -39,15 +39,20 @@ namespace LionFire.Vos
 
         #region State
 
-        ConcurrentDictionary<string, RootVob> roots = new ConcurrentDictionary<string, RootVob>();
+        // Use Lazy<> so that value factories are only invoked once, as we do not want to create multiple RootVobs.
+        ConcurrentDictionary<string, Lazy<RootVob>> roots = new ConcurrentDictionary<string, Lazy<RootVob>>();
 
         #endregion
 
         #region Construction
+
+#if DEBUG // REVIEW - shouldn't be needed
         private static object rootLock = new object();
+#endif
 
         public RootManager(IServiceProvider serviceProvider, IOptionsMonitor<VosOptions> vosOptionsMonitor, ILogger<IVos> logger)
         {
+#if DEBUG // REVIEW - shouldn't be needed
             if (!VosStatic.AllowMultipleDefaultRoots)
             {
                 lock (rootLock) // REVIEW
@@ -58,10 +63,13 @@ namespace LionFire.Vos
                     }
                     else
                     {
+#endif
                         ManualSingleton<RootManager>.Instance = this;
+#if DEBUG
                     }
                 }
             }
+#endif
 
             this.vosOptions = vosOptionsMonitor.CurrentValue;
             ServiceProvider = serviceProvider;
@@ -100,7 +108,7 @@ namespace LionFire.Vos
         public RootVob Get(string? rootName = "")
         {
             rootName ??= "";
-            if (roots == null) roots = new ConcurrentDictionary<string, RootVob>();
+            if (roots == null) roots = new ConcurrentDictionary<string, Lazy<RootVob>>();
 
             var result = roots.GetOrAdd(rootName, n =>
             {
@@ -109,23 +117,23 @@ namespace LionFire.Vos
 
                 // REVIEW - I am not sure why there are multiple initializations attempted.
 
-                if (rootName == VosConstants.DefaultRootName && !VosStatic.AllowMultipleDefaultRoots && ManualSingleton<RootVob>.Instance != null)
-                {
-                    return ManualSingleton<RootVob>.Instance;
-                }
-                try
-                {
-                    return ActivatorUtilities.CreateInstance<RootVob>(ServiceProvider, this, n);
-                }
-                catch (AlreadySetException) when (rootName == VosConstants.DefaultRootName)
-                {
-                    return ManualSingleton<RootVob>.Instance ?? throw new Exception("RootVob ctor returned AlreadySetException but ManualSingleton<RootVob>.Instance  is not set");
-                }
+                //if (rootName == VosConstants.DefaultRootName && !VosStatic.AllowMultipleDefaultRoots && ManualSingleton<RootVob>.Instance != null)
+                //{
+                //    return ManualSingleton<RootVob>.Instance;
+                //}
+                //try
+                //{
+                    return new Lazy<RootVob>(() => ActivatorUtilities.CreateInstance<RootVob>(ServiceProvider, this, n), LazyThreadSafetyMode.ExecutionAndPublication); 
+                //}
+                //catch (AlreadySetException) when (rootName == VosConstants.DefaultRootName)
+                //{
+                //    return ManualSingleton<RootVob>.Instance ?? throw new Exception("RootVob ctor returned AlreadySetException but ManualSingleton<RootVob>.Instance  is not set");
+                //}
             });
 
             // ENH - if result is LazyInit and is not initialized, initialize it.
 
-            return result;
+            return result.Value;
         }
 
         #endregion

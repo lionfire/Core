@@ -59,9 +59,13 @@ namespace LionFire.Hosting
                    // .AddSingleton<IWpfShell>(p => p.GetRequiredService<WpfShell>()) 
                    // .AddHostedServiceDependency<WpfShell>()
                    .AddSingleton<DesktopProfileManager>()
-                   .AddSingletonHostedServiceDependency<WpfDesktopProfileDetector>(p => p.After("vos:$Settings"))
+                   .AddSingletonHostedServiceDependency<WpfDesktopProfileDetector>(p => p.DependsOn("vos:$Settings"))
                    .AddSingletonHostedServiceDependency<WpfShell>(p
-                    => p.After(HostedServiceParticipant<WpfDesktopProfileDetector>.KeyForHostedServiceType))
+                    => p
+                    .After(HostedServiceParticipant<WpfDesktopProfileDetector>.KeyForHostedServiceType)
+                    .DependsOn("vos:/")  
+                    //.DependsOn("vos:$UserLocalSettings")
+                    )
 
                   //.AddSingleton<IWindowManager, LionFireWindowManager>()
 

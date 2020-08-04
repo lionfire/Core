@@ -17,6 +17,9 @@ namespace LionFire.Persistence.Filesystem
         public int MillisecondsBetweenGetRetries { get; set; } = 500;
         public int MillisecondsBetweenDeleteRetries { get; set; } = 500;
 
-        public AutoAppendExtension AutoAppendExtension { get; set; } = AutoAppendExtension.Disabled;
+        public AutoAppendExtension AutoAppendExtensionOnWrite { get; set; } = AutoAppendExtension.Disabled;
+        public AppendExtensionOnRead AppendExtensionOnRead { get; set; } = AppendExtensionOnRead.Never;
+
+        public ValidateOneFilePerPath ValidateOneFilePerPath { get; set; } = ValidateOneFilePerPath.None;
     }
 }

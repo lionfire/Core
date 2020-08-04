@@ -99,7 +99,8 @@ namespace LionFire.Persistence.Handles
             get => protectedValue;
             set
             {
-                if (System.Collections.Generic.Comparer<TValue>.Default.Compare(protectedValue, value) == 0) return; // Should use Equality instead of Compare?
+                if (object.Equals(value, protectedValue)) return;
+                //if (System.Collections.Generic.Comparer<TValue>.Default.Compare(protectedValue, value) == 0) return; // Should use Equality instead of Compare?
                                                                                                                      //if (value == protectedValue) { return; }
                 var oldValue = protectedValue;
                 protectedValue = value;
@@ -122,7 +123,12 @@ namespace LionFire.Persistence.Handles
             //if (WrappedValueChanged != null || WrappedValueForFromTo != null) // FUTURE: Only do this if someone is attached to one or more of these events.  Would need to VCP.Attach upon initial attaching to one of these events.
             {
                 DllInternals.ValueChangedPropagation.Detach(this, oldValue);
-                DllInternals.ValueChangedPropagation.Attach(this, newValue, o => wrappedValueChanged?.Invoke(this));
+                DllInternals.ValueChangedPropagation.Attach(this, newValue, o =>
+                {
+                    wrappedValueChanged?.Invoke(this);
+                    //this.OnUserChangedValue_ReadWrite(((WriteHandleBase<TReference, TValue>)o).protectedValue);
+                    this.OnUserChangedValue_ReadWrite((TValue)o);
+                });
                 WrappedValueForFromTo?.Invoke(this, oldValue, newValue);
                 wrappedValueChanged?.Invoke(this); // Assume that there was a change
             }

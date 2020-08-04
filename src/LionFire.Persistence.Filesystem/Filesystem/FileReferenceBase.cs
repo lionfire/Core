@@ -93,7 +93,8 @@ namespace LionFire.Persistence.Filesystem
         }
 
 
-        public override string ToString() => $"{{{this.GetType().Name} {Path}}}";
+        public  string ToXamlString() => $"{{{this.GetType().Name} {Path}}}";
+        public override string ToString() => Key; 
 
     }
 
