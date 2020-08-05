@@ -6,9 +6,13 @@
   
   <PropertyGroup>
     <Authors>Jared Thirsk</Authors>
+    <Authors>Jared Thirsk</Authors>
+    <Copyright>2010-2020 Jared Thirsk</Copyright>
     <Company>LionFire Games</Company>
     <PackageProjectUrl>https://github.com/lionfire/core</PackageProjectUrl>
-    <PackageLicenseUrl>https://github.com/lionfire/Core/blob/master/LICENSE</PackageLicenseUrl>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    <PackageIcon>https://avatars3.githubusercontent.com/u/19334699?v=3&amp;s=200</PackageIcon>
+
   </PropertyGroup>
  
 </Project>
