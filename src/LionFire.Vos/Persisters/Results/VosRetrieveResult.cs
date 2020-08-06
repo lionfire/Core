@@ -95,6 +95,7 @@ namespace LionFire.Persistence.Persisters.Vos
 
         public static bool operator !=(VosRetrieveResult<T> left, VosRetrieveResult<T> right) => !(left == right);
 
-        public override string ToString() => $"{{VosRetrieveResult {Flags.ToString()}}}";
+        public string ToXamlString() => $"{{VosRetrieveResult {Flags}}}";
+        public override string ToString() => Flags.ToString();
     }
 }

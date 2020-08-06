@@ -102,14 +102,14 @@ namespace LionFire.Persistence.Persisters.Vos
                             result.Flags |= PersistenceResultFlags.Found;
                             result.Value = childResult.Value;
                             result.ResolvedVia = mount.Target;
-                            l.Trace(result.ToString());
+                            l.Trace($"{result}: {vob.Path}");
                             return result;
                         }
                     }
                 }
             }
             if (!anyMounts) result.Flags |= PersistenceResultFlags.MountNotAvailable;
-            l.Trace(result.ToString());
+            l.Trace($"{result}: {vob.Path}");
             return result;
         }
 

@@ -13,7 +13,7 @@ namespace LionFire.Persistence.Handles
     /// </summary>
     /// <typeparam name="TValue"></typeparam>
     /// <typeparam name="TReference"></typeparam>
-    public class ReadHandlePassthrough<TValue, TReference> : IReadHandle<TValue>, IReferencable<TReference>
+    public class ReadHandlePassthrough<TValue, TReference> : IReadHandle<TValue>, IReferencable<TReference>, IHasReadHandle<TValue>
         where TReference : IReference
     {
         public ReadHandlePassthrough() { }
@@ -61,6 +61,8 @@ namespace LionFire.Persistence.Handles
         }
 
         public bool HasValue => ReadHandle.HasValue;
+
+        IReadHandle<TValue> IHasReadHandle<TValue>.ReadHandle => ReadHandle;
 
         public ITask<IResolveResult<TValue>> Resolve() => ReadHandle.Resolve();
         public ITask<ILazyResolveResult<TValue>> GetValue() => ReadHandle.GetValue();

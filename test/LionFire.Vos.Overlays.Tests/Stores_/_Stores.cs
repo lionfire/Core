@@ -171,7 +171,7 @@ namespace Stores_
                         services
                         .AddFilesystem()
 
-                        .VosPackageProvider("/stores")
+                        .VosPackageProvider("/stores".ToVobReference())
 
                         .VosMount("/stores/available/ExeDir", Path.GetDirectoryName(this.GetType().Assembly.Location).ToFileReference(), new MountOptions { IsManuallyEnabled = true })
                         .InitializeVob("/stores/available/ExeDir", v => v.AddOwn(v => new MountOptions

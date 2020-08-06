@@ -39,6 +39,7 @@ namespace LionFire.Services
 
                 .TryAddEnumerableSingleton<ICollectionTypeProvider, CollectionsByTypeManager>()
 
+                
                 .AddSingleton<VosAssetHandleProvider>()
                 .AddSingleton<IReadHandleProvider<IAssetReference>, VosAssetHandleProvider>(s => s.GetRequiredService<VosAssetHandleProvider>())
                 .AddSingleton<IReadWriteHandleProvider<IAssetReference>, VosAssetHandleProvider>(s => s.GetRequiredService<VosAssetHandleProvider>())

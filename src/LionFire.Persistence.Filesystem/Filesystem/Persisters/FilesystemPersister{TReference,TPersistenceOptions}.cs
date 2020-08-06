@@ -381,6 +381,7 @@ namespace LionFire.Persistence.Filesystem
 
             IEnumerable<string> GetPotentialExtensions(string p)
             {
+                if (!Directory.Exists(dir)) { return Array.Empty<string>(); }
                 IEnumerable<string> result = System.IO.Directory.GetFiles(dir, $"{Path.GetFileName(p)}.*")
                     .Select(p => 
                     Path.GetExtension(p)

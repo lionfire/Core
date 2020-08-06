@@ -32,7 +32,7 @@ namespace Packages_
                         services
                         .AddFilesystem()
 
-                        .VosPackageProvider("/`/TestPlugins")
+                        .VosPackageProvider("/`/TestPlugins".ToVobReference())
                         .VosMount("/`/TestPlugins/available", pluginsDir.ToFileReference(), new MountOptions
                         {
                             Name = "UnitTestPluginsDir",

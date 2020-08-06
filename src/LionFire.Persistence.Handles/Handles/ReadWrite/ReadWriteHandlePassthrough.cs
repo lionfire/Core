@@ -14,7 +14,7 @@ namespace LionFire.Persistence.Handles
     /// </summary>
     /// <typeparam name="TValue"></typeparam>
     /// <typeparam name="TReference"></typeparam>
-    public class ReadWriteHandlePassthrough<TValue, TReference> : IReadWriteHandle<TValue>, IReferencable<TReference>
+    public class ReadWriteHandlePassthrough<TValue, TReference> : IReadWriteHandle<TValue>, IReferencable<TReference>, IHasReadWriteHandle<TValue>
         where TReference : IReference
     {
         #region Construction

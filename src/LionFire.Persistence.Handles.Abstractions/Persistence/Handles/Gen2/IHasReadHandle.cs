@@ -5,10 +5,10 @@ namespace LionFire.Persistence.Handles
 #if !AOT
     public interface IHasReadHandle<out T> 
         //: IHasReadHandle - needed?
-        where T : class
+        //where T : class
     {
         //new
-            IReadHandleBase<T> ReadHandle { get; }
+            IReadHandle<T> ReadHandle { get; }
     }
 #endif
 
