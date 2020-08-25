@@ -33,6 +33,7 @@ namespace LionFire.Services
 
         public static JsonSerializerSettings SetDefaults(this JsonSerializerSettings settings, LionSerializeContext context)
         {
+            settings.TypeNameAssemblyFormatHandling = TypeNameAssemblyFormatHandling.Simple;
             settings.TypeNameHandling = TypeNameHandling.Auto;
             //Converters = ;
             settings.DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate;

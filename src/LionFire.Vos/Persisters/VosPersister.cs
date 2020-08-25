@@ -132,7 +132,7 @@ namespace LionFire.Persistence.Persisters.Vos
                     var relativePathChunks = vob.PathElements.Skip(mount.VobDepth);
                     var effectiveReference = !relativePathChunks.Any() ? mount.Target : mount.Target.GetChildSubpath(relativePathChunks);
 
-                    var wh = effectiveReference.GetWriteHandle<TValue>(ServiceProvider);
+                    var wh = effectiveReference.GetWriteHandle<TValue>(serviceProvider: ServiceProvider);
 
                     wh.Value = value;
                     var childResult = (await wh.Put().ConfigureAwait(false)).ToPersistenceResult();
@@ -144,7 +144,7 @@ namespace LionFire.Persistence.Persisters.Vos
                         result.Flags |= PersistenceResultFlags.Success; // Indicates that at least one underlying persister succeeded
                         result.ResolvedVia = mount.Target;
 
-                        l.Trace(result.ToString());
+                        l.Trace(result.ToString() + " " + wh.Reference);
                         return result;
                     }
                 }

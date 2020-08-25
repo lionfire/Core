@@ -1,5 +1,8 @@
 ﻿using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.Threading;
+using JsonKnownTypes;
 using LionFire.Dependencies;
 using LionFire.Persistence;
 using Microsoft.Extensions.Options;
@@ -15,6 +18,8 @@ namespace LionFire.Serialization.Json.Newtonsoft
     //}
 
     // UPSTREAM - Concurrency issue: https://github.com/JamesNK/Newtonsoft.Json/issues/1452
+
+    // OPTIMIZE - keep AsyncLocal serializers for each possibility of SettingsForContext()?
 
     public class NewtonsoftJsonSerializer : SerializerBase<NewtonsoftJsonSerializer>
     {
@@ -76,8 +81,31 @@ namespace LionFire.Serialization.Json.Newtonsoft
         }
         #endregion
 
+        #region Serializers
+
+#if Experimental
+        ConcurrentDictionary<LionSerializeContext, AsyncLocal<JsonConverter>> converters = new ConcurrentDictionary<LionSerializeContext, AsyncLocal<JsonSerializer>>();
+        public JsonConverter GetConverter(object obj, Lazy<PersistenceOperation> operation = null, PersistenceContext context = null)
+        {
+            var sc = operation?.Value?.SerializeContext;
+            var local = serializers.GetOrAdd(operation.Value.SerializeContext, _ => new AsyncLocal<JsonConverter>());
+            return local.Value ??= new LionFireJsonConverter();
+        }
+
+#endif
+        //ConcurrentDictionary<LionSerializeContext, AsyncLocal<JsonSerializer>> serializers = new ConcurrentDictionary<LionSerializeContext, AsyncLocal<JsonSerializer>>();
+        //public JsonSerializer GetSerializer(object obj, Lazy<PersistenceOperation> operation = null, PersistenceContext context = null)
+        //{
+        //    var sc = operation?.Value?.SerializeContext;
+        //    var local = serializers.GetOrAdd(operation.Value.SerializeContext, _ => new AsyncLocal<JsonSerializer>());
+        //    return local.Value ??= JsonSerializer.Create(SettingsForContext(operation));
+        //}
+
+        #endregion
+
         #region Serialize
 
+        //public override (string String, SerializationResult Result) ToString(object obj, Lazy<PersistenceOperation> operation = null, PersistenceContext context = null) => GetSerializer().Serialize(JsonConvert.SerializeObject(obj, typeof(object), SettingsForContext(operation)), SerializationResult.Success);
         public override (string String, SerializationResult Result) ToString(object obj, Lazy<PersistenceOperation> operation = null, PersistenceContext context = null) => (JsonConvert.SerializeObject(obj, typeof(object), SettingsForContext(operation)), SerializationResult.Success);
 
         #endregion
@@ -87,8 +115,7 @@ namespace LionFire.Serialization.Json.Newtonsoft
         public override DeserializationResult<T> ToObject<T>(string str, Lazy<PersistenceOperation> operation = null, PersistenceContext context = null)
             => JsonConvert.DeserializeObject<T>(str, SettingsForContext(operation));
 
-        #endregion
-
+#endregion
 
     }
 }

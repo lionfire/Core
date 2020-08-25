@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 
 namespace LionFire.Persistence.Persisters
 {
+    [Ignore] // REVIEW
     public class PersisterReadHandle<TReference, TValue, TPersister> : ReadHandle<TReference, TValue>, IPersisterHandle<TReference>
        where TReference : IReference
        where TPersister : IPersister<TReference>

@@ -36,7 +36,14 @@ namespace LionFire.Instantiating
 
     // FUTURE: INotiry
     //[JsonExSerializer.JsonConvert(typeof(ListDictionarySerializationConverter))]
-    public class ListDictionary<TKey, TValue> : IEnumerable<TValue>
+
+
+    /// <summary>
+    /// Hybrid dictionary that allows items of type IKeyed{TKey} either with a unique Key, or a null Key.  Multiple null Key values are supported.
+    /// </summary>
+    /// <typeparam name="TKey"></typeparam>
+    /// <typeparam name="TValue"></typeparam>
+    public class ListDictionary<TKey, TValue> : IEnumerable<TValue>, ICollection<TValue>
     #region FUTURE: Notification support?
         //, INotifyCollectionChanged<TValue> 
         //, INotifyingDictionary<TKey, TValue>
@@ -227,7 +234,9 @@ keyed.Key);
             // Remove this?  (if so, first rename to more easily refactor)
         public IEnumerable<TValue> Values => this;
 
-        public bool ContainsKey(TKey key) { return dictionary != null && dictionary.ContainsKey(key); }
+        public bool IsReadOnly => false;
+
+        public bool ContainsKey(TKey key) => true == dictionary?.ContainsKey(key);
 
         public void AddRange(IEnumerable<TValue> items)
         {
@@ -255,5 +264,7 @@ keyed.Key);
 
         #endregion
 
+        public bool Contains(TValue item) => KeyedItems.ContainsKey(item.Key) || UnkeyedItems.Contains(item);
+        public void CopyTo(TValue[] array, int arrayIndex) => throw new NotImplementedException();
     }
 }

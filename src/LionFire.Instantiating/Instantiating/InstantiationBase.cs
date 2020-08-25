@@ -3,12 +3,14 @@ using System.Collections;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
+using LionFire.Assets;
 using LionFire.Copying;
 using LionFire.Ontology;
 using LionFire.Persistence;
 using LionFire.Persistence.Handles;
 using LionFire.Serialization;
 using LionFire.Structures;
+using Newtonsoft.Json;
 
 namespace LionFire.Instantiating
 {
@@ -23,13 +25,19 @@ namespace LionFire.Instantiating
     {
     }
 
+    public interface IInstantiationEx : IInstantiation
+    {
+        string GetDefaultKey(IInstantiation instantiation);
+    }
+
     /// <summary>
     /// Represents the intent to instantiate an object from a template, and optionally template parameters and
     /// optionally state as understood by the instance.
     /// REVIEW - should this have anything to do with IInstantiation?  If so, maybe rename to Instantiation
     /// </summary>
     [LionSerializable(SerializeMethod.ByValue)] // REVIEW
-    public abstract class InstantiationBase<TTemplate, TState> : IInstantiation<TTemplate>, IParentedTemplateParameters<TTemplate>, IParented
+    [JsonObject]
+    public abstract class InstantiationBase<TTemplate, TState> : IInstantiation<TTemplate>, IParentedTemplateParameters<TTemplate>, IParented, IInstantiationEx
     where TTemplate : ITemplate
     {
 
@@ -154,7 +162,8 @@ namespace LionFire.Instantiating
         #region Template
 
         [Blocking]
-        ITemplate IHasTemplate.Template { get => RTemplate != null ? RTemplate.Value : (ITemplate)null; set => throw new NotImplementedException(); }
+        ITemplate IHasTemplate.Template { get => Template; set => Template= (TTemplate)value; }
+        //ITemplate IHasTemplate.Template { get => RTemplate != null ? RTemplate.Value : (ITemplate)null; set => throw new NotImplementedException(); }
 
 
         //public ITemplate TemplateObject
@@ -195,21 +204,32 @@ namespace LionFire.Instantiating
 
         #region Template
 
+        public bool ShouldSerializeTemplate() => template != null && rTemplate == null;
+
+        //[Ignore]
         [Blocking]
         public TTemplate Template
         {
-            get => rTemplate.Value;
+            get => template ?? (rTemplate == default ? default : rTemplate.Value);
             set
             {
-                if (rTemplate != null) throw new AlreadySetException();
-                rTemplate = value.GetObjectReadHandle();
+                if (EqualityComparer<TTemplate>.Default.Equals(template, value)) { return; } // REVIEW Equality comparison
+                if (value != null && rTemplate != null) throw new NotSupportedException($"Cannot set both {nameof(RTemplate)} and {nameof(Template)}");
+
+                template = value;
+                //if (rTemplate != null) throw new AlreadySetException();
+                //rTemplate = value.GetObjectReadHandle();
             }
         }
+        protected TTemplate template;
+
          object  IInstantiationBase.TemplateObj => Template;
 
 
         //#if !AOT && !UNITY // Unity crashes with contravariant IReadHandle -- commented out the generic part of RH<>
         IReadHandleBase<ITemplate> IHasRTemplate.RTemplate => (IReadHandleBase<ITemplate>)RTemplate;
+
+        public bool ShouldSerializeRTemplate() => rTemplate != null;
 
         [Assignment(AssignmentMode.Assign)]
         public IReadHandleBase<TTemplate> RTemplate
@@ -221,9 +241,10 @@ namespace LionFire.Instantiating
                 if (template != null && template.GetType() == typeof(string))
                     throw new UnreachableCodeException("get_Template - got string: " + (string)(object)template);
 #endif
+                if(template != null) { return template.GetObjectReadHandle(); }
                 if (rTemplate == null && !object.ReferenceEquals(Parameters, this))
                 {
-                    return Parameters.RTemplate;
+                    return Parameters?.RTemplate;
                 }
                 return rTemplate;
             }
@@ -234,6 +255,7 @@ namespace LionFire.Instantiating
                 if (rTemplate != null && value != null) throw new AlreadySetException();
                 //if (value != null && value.GetType() == typeof(string))
                 //throw new UnreachableCodeException("set_Template - got string: " + (string)(object)value);
+                if (value != null && template != null) throw new NotSupportedException($"Cannot set both {nameof(RTemplate)} and {nameof(Template)}");
                 rTemplate = value;
 
                 //if (template != null && this.Key != null)
@@ -318,16 +340,17 @@ namespace LionFire.Instantiating
 
         #endregion
 
+        public string GetDefaultKey(IInstantiation instantiation) => GetDefaultKeyFunc(instantiation);
         [Ignore]
-        public Func<Instantiation, string> GetDefaultKey = GetDefaultKeyMethodDefault;
+        public Func<IInstantiation, string> GetDefaultKeyFunc { get; set; } = GetDefaultKeyMethodDefault;
 
-        public static Func<Instantiation, string> GetDefaultKeyMethodDefault = ins =>
+        public static Func<IInstantiation, string> GetDefaultKeyMethodDefault = ins =>
             {
                 if (ins == null) return null;
 
                 if (ins.Parameters is IDefaultInstanceKeyProvider provider) { return provider.DefaultKey; }
 
-                provider = ins.RTemplate as IDefaultInstanceKeyProvider;
+                provider = ins.Template as IDefaultInstanceKeyProvider;
                 if (provider != null) { return provider.DefaultKey; }
 
                 return null;
@@ -372,6 +395,8 @@ namespace LionFire.Instantiating
             }
         }
         private IInstantiationCollection children;
+
+        public bool ShouldSerializeChildren() => children?.Count > 0;
 
         #endregion
 

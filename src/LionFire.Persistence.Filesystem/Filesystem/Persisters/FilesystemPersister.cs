@@ -2,6 +2,7 @@
 using LionFire.ExtensionMethods.Collections;
 using LionFire.ExtensionMethods.Persistence.Filesystem;
 using LionFire.IO;
+using LionFire.Persistence.Filesystemlike;
 using LionFire.Persistence.Persisters;
 using LionFire.Referencing;
 using LionFire.Serialization;
@@ -24,7 +25,7 @@ namespace LionFire.Persistence.Filesystem
     //        => persister.Retrieve<TValue>((TReference)reference.Path);
     //}
 
-    public class FilesystemPersister : FilesystemPersister<FileReference, FilesystemPersisterOptions>, IPersister<FileReference>
+    public class FilesystemPersister : FilesystemlikePersistence<FileReference, FilesystemPersisterOptions>, IPersister<FileReference>
     {
 
         #region Static

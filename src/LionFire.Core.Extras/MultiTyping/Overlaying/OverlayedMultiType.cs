@@ -37,7 +37,9 @@ namespace LionFire.MultiTyping.Overlaying
         }
         private int defaultLayerPriority = 1000;
 
-#endregion
+        #endregion
+
+        MultiType DefaultLayerOrCreate => defaultLayer ??= new MultiType();
 
         public MultiType DefaultLayer
         {
@@ -443,9 +445,9 @@ namespace LionFire.MultiTyping.Overlaying
             throw new NotImplementedException();
             //return ((IMultiTyped)DefaultLayer).AsTypeOrCreateDefault<T>(slotType);
         }
-        public void SetType<T>(T obj) where T : class => DefaultLayer.SetType<T>(obj);
+        public void SetType<T>(T obj) where T : class => DefaultLayerOrCreate.SetType<T>(obj);
 
-        public void AddType<T>(T obj, bool allowMultiple = false) where T : class => DefaultLayer.AddType(obj, allowMultiple);
+        public void AddType<T>(T obj, bool allowMultiple = false) where T : class => DefaultLayerOrCreate.AddType(obj, allowMultiple);
 
 #endregion
 

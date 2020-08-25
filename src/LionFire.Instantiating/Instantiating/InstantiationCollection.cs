@@ -9,6 +9,7 @@ using LionFire.Ontology;
 using Microsoft.Extensions.Logging;
 using LionFire.Referencing;
 using LionFire.Persistence;
+using System.Collections.Generic;
 
 namespace LionFire.Instantiating
 {
@@ -28,6 +29,12 @@ namespace LionFire.Instantiating
         public object Parent { get; set; }
         //object IParented.Parent { get{return this.Parent;} set{this.Parent = (InstantiationCollection)value;} }
         //public InstantiationCollection Parent { get; set; }
+
+        #endregion
+
+        #region Templates
+
+        public List<ITemplate> Templates { get; set; }
 
         #endregion
 
@@ -116,6 +123,15 @@ namespace LionFire.Instantiating
 
         public void Add(ITemplate template)
         {
+            // REVIEW - EXPERIMENTAL, 
+            // TODO FIXME - need to read from this list at instantiation time
+            var referencable = template as IReferencable;
+            if (referencable == null || referencable.Reference == null) {
+                Templates ??= new List<ITemplate>();
+                Templates.Add(template);
+                return;
+            }
+
             var instantiation = template.CreateInstantiation();
             instantiation.Key = CreateKey(template);
 #if SanityChecks // TEMP
@@ -144,13 +160,13 @@ namespace LionFire.Instantiating
 //            base.Add((IInstantiation)instantiation);
 //        }
 
-        #endregion
+#endregion
 
-        #region Misc
+#region Misc
 
         private static readonly ILogger l = Log.Get();
 
-        #endregion
+#endregion
 
     }
 
@@ -165,14 +181,14 @@ namespace LionFire.Instantiating
     where TTemplate : ITemplate
     {
 
-    #region Parent
+#region Parent
 
         [Ignore]
         public object Parent { get; set; }
         //object IParented.Parent { get{return this.Parent;} set{this.Parent = (InstantiationCollection)value;} }
         //public InstantiationCollection Parent { get; set; }
 
-    #endregion
+#endregion
 
         //public IEnumerator<IInstantiation<TTemplate>> GetEnumerator()  base
         //{
@@ -187,7 +203,7 @@ namespace LionFire.Instantiating
         //    }
         //}
 
-    #region Keys
+#region Keys
 
         public string GetDefaultKey(TTemplate template)
         {
@@ -217,7 +233,7 @@ namespace LionFire.Instantiating
             return result;
         }
 
-    #endregion
+#endregion
 
         protected override void OnAdded(IInstantiation<TTemplate> keyed)
         {
@@ -282,11 +298,11 @@ namespace LionFire.Instantiating
         public event Action<IInstantiation<TTemplate>, int> ChildCountChanged;
 #endif
 
-    #region Misc
+#region Misc
 
         private static readonly ILogger l = Log.Get();
 
-    #endregion
+#endregion
 
     }
 #endif

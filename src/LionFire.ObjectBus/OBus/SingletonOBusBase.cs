@@ -4,6 +4,7 @@ using LionFire.Structures;
 using System;
 using Microsoft.Extensions.DependencyInjection;
 using LionFire.Dependencies;
+using LionFire.Persistence;
 
 namespace LionFire.ObjectBus
 {
@@ -16,6 +17,11 @@ namespace LionFire.ObjectBus
         private readonly Lazy<IOBase> singleOBase;
 
         public override IOBase TryGetOBase(IReference reference) => reference is TReference ? this.DefaultOBase : null;
+        public override IReadWriteHandle<T> GetReadWriteHandle<T>(TReference reference, T preresolvedValue = default) => throw new NotImplementedException();
+        public override IReadHandle<T> GetReadHandle<T>(TReference reference, T preresolvedValue = default) => throw new NotImplementedException();
+        public override IReadWriteHandle<T> GetReadWriteHandle<T>(IReference reference, T preresolvedValue = default) => throw new NotImplementedException();
+        public override IReadHandle<T> GetReadHandle<T>(IReference reference, T preresolvedValue = default) => throw new NotImplementedException();
+        public override TReference1 TryGetReference<TReference1>(string uri) => throw new NotImplementedException();
 
         public SingletonOBusBase()
         {

@@ -47,7 +47,12 @@ namespace LionFire.DependencyInjection
                 // UNTESTED
                 return ActivatorUtilities.CreateInstance(this, transientImplementationTypes[serviceType]);
             }
-            return Parent?.GetService(serviceType);
+            try
+            {
+                return Parent?.GetService(serviceType);
+            }
+            catch (ObjectDisposedException) { } // EMPTYCATCH
+            return null;
         }
 
         private object _lock = new object();

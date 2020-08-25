@@ -10,7 +10,7 @@ namespace LionFire.ObjectBus.ExtensionlessFs
     {
         public IReference OverlayTarget { get; }
 
-        public string Persister => OverlayTarget.Persister;
+        public string Persister => (OverlayTarget as IPersisterReference)?.Persister;
 
         public RelativeReferenceBase(IReference reference)
         {

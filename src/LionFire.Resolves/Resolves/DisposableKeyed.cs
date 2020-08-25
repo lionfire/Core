@@ -21,7 +21,8 @@ namespace LionFire.Resolves
             get => isDisposed ? throw new ObjectDisposedException(nameof(DisposableKeyed<TKey>)) : key;
             set
             {
-                if (ReferenceEquals(key, value)) return;
+                //if (ReferenceEquals(key, value)) return;
+                if (EqualityComparer<TKey>.Default.Equals(key, value)) return;
                 if (!EqualityComparer<TKey>.Default.Equals(key, default)) throw new AlreadySetException();
                 //if (key != default) throw new AlreadySetException();
                 key = value;

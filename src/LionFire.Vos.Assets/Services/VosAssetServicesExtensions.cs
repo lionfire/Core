@@ -20,15 +20,18 @@ namespace LionFire.Services
 {
     public static class VosAssetServicesExtensions
     {
-        public static IServiceCollection AddAssets(this IServiceCollection services, VosAssetOptions options = null, VobReference contextVob = null)
+        
+
+            public static IServiceCollection AddAssets(this IServiceCollection services, VosAssetOptions options = null, VobReference contextVob = null)
         {
             var assetsRoot = contextVob?.Path ?? "assets";
             services
+                .AddTypeNameRegistry()
+
                 .AddSingleton<VosAssetHandleProvider>() 
                 .AddSingleton<IReadHandleProvider<IAssetReference>>(sp=>sp.GetRequiredService<VosAssetHandleProvider>())
                 .AddSingleton<IReadWriteHandleProvider<IAssetReference>>(sp => sp.GetRequiredService<VosAssetHandleProvider>())
                 .VobEnvironment("assets", assetsRoot)
-                .AddSingleton(serviceProvider => serviceProvider.GetRequiredService<IOptionsMonitor<TypeNameRegistry>>().CurrentValue)
                 .InitializeVob<IServiceProvider>("$assets", (vob, serviceProvider) =>
                 {
                     vob.AddOwn<ICollectionTypeProvider>(v => new CollectionsByTypeManager(v, serviceProvider.GetRequiredService<TypeNameRegistry>()));
@@ -64,7 +67,7 @@ namespace LionFire.Services
                     return (VosAssetPersister)ActivatorUtilities.CreateInstance(serviceProvider, typeof(VosAssetPersister), options ?? new VosAssetOptions());
                 });
                 return;
-            }, c=>c.Key = $"{vob}<VosAssetPersister>");
+            }, c=>c.Key = $"{vob}<{typeof(VosAssetPersister).Name}> ");
             return services;
         }
     }

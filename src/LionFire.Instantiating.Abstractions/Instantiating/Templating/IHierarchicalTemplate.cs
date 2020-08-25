@@ -25,7 +25,7 @@ namespace LionFire.Instantiating
         {
             if (includeSelf && template is T t) yield return t;
 
-            if(template is IHierarchicalTemplate h)
+            if(template is IHierarchicalTemplate h && h.Children != null)
             {
                 foreach(var result in h.Children.SelectMany(c=> c.Template.GetTemplatesOfType<T>(includeSelf: true)))
                 {

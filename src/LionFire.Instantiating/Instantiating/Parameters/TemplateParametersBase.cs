@@ -47,6 +47,7 @@ namespace LionFire.Assets
 
         protected TemplateParametersBase() { }
         protected TemplateParametersBase(IReadHandleBase<TTemplate> template) { RTemplate = template; }
+        protected TemplateParametersBase(TTemplate template) { Template = template; }
     }
 
     public abstract class ParentedTemplateParametersBase<TTemplate> : TemplateParametersBase<TTemplate>, IParentedTemplateParameters<TTemplate>

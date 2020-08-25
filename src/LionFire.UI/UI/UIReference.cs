@@ -1,4 +1,6 @@
-﻿using System;
+﻿using LionFire.Resolvables;
+using LionFire.Resolves;
+using System;
 
 namespace LionFire.UI
 {
@@ -12,6 +14,8 @@ namespace LionFire.UI
         /// (TODO) Null: auto-generate presenter names, starting with MainPresenter
         /// </summary>
         public string PresenterName { get; set; }
+
+        public string TabName { get; set; }
 
         /// <summary>
         /// Must be a UI type that the ILionFireShell is capable of showing, or else a IHostedService
@@ -28,5 +32,14 @@ namespace LionFire.UI
         public Type ViewModelType { get; set; }
 
         public object ViewModel { get; set; }
+
+        public IResolves<object> DataContextHandle { get; set; }
+        public object DataContext
+        {
+            get => dataContext ??= DataContextHandle?.Resolve();
+            set => dataContext = value;
+        }
+        private object dataContext;
+
     }
 }

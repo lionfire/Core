@@ -41,6 +41,7 @@ namespace LionFire.Persistence.Handles
         [Ignore(LionSerializeContext.AllSerialization)]
         public IReadHandle<TValue> ReadHandle => handle ??= Reference?.GetReadHandle<TValue>();
         protected IReadHandle<TValue> handle;
+        IReadHandleBase<object> IHasReadHandle.ReadHandle => (IReadHandle<object>)ReadHandle;
 
         public Type Type => ReadHandle.Type;
 
@@ -52,15 +53,21 @@ namespace LionFire.Persistence.Handles
 
         public TValue Value
         {
-            get => ReadHandle.Value;
+            get => ReadHandle == null ? default : ReadHandle.Value;
             protected set
             {
                 if (handle != null) throw new AlreadySetException($"{nameof(ReadHandle)} is already set");
-                handle = Reference?.GetReadHandle<TValue>(value);
+                if(Reference != null)
+                {
+                handle = Reference.GetReadHandle<TValue>(value);
+                } else
+                {
+                    handle = value.ToObjectHandle();
+                }
             }
         }
 
-        public bool HasValue => ReadHandle.HasValue;
+        public bool HasValue => ReadHandle?.HasValue == true;
 
         IReadHandle<TValue> IHasReadHandle<TValue>.ReadHandle => ReadHandle;
 

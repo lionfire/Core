@@ -111,6 +111,9 @@ namespace LionFire.ObjectBus.Redis
                 isReadSyncEnabled = value;
             }
         }
+
+        public override IReadHandle<T> this[string subpath] => throw new NotImplementedException();
+
         private bool isReadSyncEnabled;
 
         #endregion

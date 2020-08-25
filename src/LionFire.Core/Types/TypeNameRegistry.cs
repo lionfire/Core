@@ -24,6 +24,7 @@ namespace LionFire.Types
     public class TypeNameRegistry
     {
         public Dictionary<string, Type> Types { get; } = new Dictionary<string, Type>();
+        public Dictionary<Type, string> TypeNames { get; } = new Dictionary<Type, string>();
 
         //public TypeNameRegistry(IEnumerable<TypeNameRegistryInitializer> initializers)
         //{

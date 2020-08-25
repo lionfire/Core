@@ -1,4 +1,5 @@
-﻿using System;
+﻿using LionFire.Exceptions;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
@@ -34,6 +35,7 @@ namespace LionFire.Execution
         private const bool ThrowLastExceptionOnFail = true;
         private const int DefaultMillisecondsBetweenAttempts = 150;
 
+        // DUPLICATE - similar logic in 3 methods
 
 #if !AOT
         public static async Task<TResult> AutoRetry<TResult>(this Func<Task<TResult>> taskGenerator, int maxRetries = DefaultMaxRetries, bool throwLastExceptionOnFail = ThrowLastExceptionOnFail, int millisecondsBetweenAttempts = DefaultMillisecondsBetweenAttempts, Predicate<Exception> allowException = null)
@@ -43,6 +45,7 @@ namespace LionFire.Execution
 #endif
         {
             if (maxRetries == 0) { return await taskGenerator().ConfigureAwait(false); }
+            //if (millisecondsBetweenAttempts == int.MinValue) { millisecondsBetweenAttempts = DefaultMillisecondsBetweenAttempts; } // UNUSED
 
             List<Exception> exceptions = null;
             for (int retriesRemaining = maxRetries; retriesRemaining >= 0; retriesRemaining--)
@@ -55,6 +58,11 @@ namespace LionFire.Execution
                 {
                     if (allowException != null && !allowException(ex)) throw;
 
+                    if (ex is IPotentiallyTemporaryError pte && pte.IsTemporaryError == PotentiallyTemporaryErrorKind.KnownPermanent)
+                    {
+                        throw;
+                    }
+
                     if (exceptions == null) exceptions = new List<Exception>();
                     exceptions.Add(ex);
 
@@ -62,6 +70,7 @@ namespace LionFire.Execution
                     {
                         await Task.Delay(millisecondsBetweenAttempts).ConfigureAwait(false);
                     }
+                    Trace.WriteLine($"[autoretry] {retriesRemaining} retries remain after exception {ex.GetType().FullName}");
                 }
             }
             if (throwLastExceptionOnFail)
@@ -92,6 +101,11 @@ namespace LionFire.Execution
                 {
                     if (allowException != null && !allowException(ex)) throw;
 
+                    if(ex is IPotentiallyTemporaryError pte && pte.IsTemporaryError == PotentiallyTemporaryErrorKind.KnownPermanent)
+                    {
+                        throw;
+                    }
+
                     if (exceptions == null) exceptions = new List<Exception>();
                     exceptions.Add(ex);
 
@@ -99,6 +113,7 @@ namespace LionFire.Execution
                     {
                         await Task.Delay(millisecondsBetweenAttempts).ConfigureAwait(false);
                     }
+                    Trace.WriteLine($"[autoretry] {retriesRemaining} retries remain after exception {ex.GetType().FullName}");
                 }
             }
             if (throwLastExceptionOnFail)
@@ -132,6 +147,11 @@ namespace LionFire.Execution
                 {
                     if (allowException != null && !allowException(ex)) throw;
 
+                    if (ex is IPotentiallyTemporaryError pte && pte.IsTemporaryError == PotentiallyTemporaryErrorKind.KnownPermanent)
+                    {
+                        throw;
+                    }
+
                     if (exceptions == null) exceptions = new List<Exception>();
                     exceptions.Add(ex);
 
@@ -140,6 +160,7 @@ namespace LionFire.Execution
                     {
                         await Task.Delay(millisecondsBetweenAttempts).ConfigureAwait(false);
                     }
+                    Trace.WriteLine($"[autoretry] {retriesRemaining} retries remain after exception {ex.GetType().FullName}");
                 }
             }
             if (throwLastExceptionOnFail)

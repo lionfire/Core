@@ -47,7 +47,7 @@ namespace LionFire.Referencing
 
         IReference ICloneableReference.CloneWithPath(string newPath) => CloneWithPath(newPath);
 
-        private static ConstructorInfo Ctor_ConcreteType_NewPath => ctor_ConcreteType_NewPath 
+        private static ConstructorInfo Ctor_ConcreteType_NewPath => ctor_ConcreteType_NewPath
             ??= typeof(ConcreteType).GetConstructors().Where(c =>
                 {
                     var p = c.GetParameters();
@@ -76,7 +76,10 @@ namespace LionFire.Referencing
         }
 
         [Assignment(AssignmentMode.Ignore)]
-        public virtual string Persister { get => null; set => throw new NotSupportedException(); }
+        public virtual string Persister
+        {
+            get => null; set { if (value != null) throw new NotSupportedException(); }
+        }
 
         [Assignment(AssignmentMode.Ignore)]
         public abstract string Key { get; protected set; }

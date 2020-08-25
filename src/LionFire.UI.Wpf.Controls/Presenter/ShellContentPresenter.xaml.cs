@@ -714,18 +714,29 @@ namespace LionFire.Shell
             NavStack.Push(CurrentTabName);
             return GetControl<T>(tabName, showControl: true);
         }
+        public object PushTab(Type type, string tabName = null)
+        {
+            NavStack.Push(CurrentTabName);
+            return GetControl(type, tabName, showControl: true);
+        }
 
         #endregion
 
-
-
         #region Tab Management
+
         public T ShowControl<T>(string tabName = null)
             where T : class
         {
             var control = GetControl<T>(tabName);
             return control; // REVIEW
         }
+
+        public object GetControl(Type type, string tabName = null, bool showControl = false) 
+        {
+            GetControlGenericMethodInfo ??= this.GetType().GetMethods().Where(mi => mi.Name == nameof(GetControl) && mi.ContainsGenericParameters).First();
+            return GetControlGenericMethodInfo.MakeGenericMethod(type).Invoke(this, new object[] { tabName, showControl });
+        }
+        private static MethodInfo GetControlGenericMethodInfo;
 
         public T GetControl<T>(string tabName = null
             //, T frameworkElement = null

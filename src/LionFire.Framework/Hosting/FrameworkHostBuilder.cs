@@ -25,7 +25,7 @@ namespace LionFire.Hosting
         public static IServiceCollection AddDefaultSerializers(this IServiceCollection services)
         {
             services.AddBuiltInSerializers();
-            services.AddNewtonsoftJson();
+            //services.AddNewtonsoftJson();
             return services;
         }
         private static void DefaultAddDefaultSerializers(this IServiceCollection services) => services.AddDefaultSerializers();
@@ -119,18 +119,20 @@ namespace LionFire.Hosting
         {
             return hostBuilder
                 .UseDependencyContext()
-                .ConfigureServices((context, services) =>
+                .ConfigureServices((Action<HostBuilderContext, IServiceCollection>)((context, services) =>
                 {
                     (options?.Serializers ?? DefaultAddDefaultSerializers)(services);
                     services
                         .AddSerialization()
                         .AddPersisters()
                         .AddFilesystem()
-                        .AddAssets()
+                        //.AddIdPersister()
+                        //.AddAssets()
+
                     //.InitializeVob("/", v => v.AddOwn<VosAssetPersister>(), p => p.Key = $"/<VosAssetPersister>")
                     //.AddAssetPersister()
                     ;
-                });
+                }));
         }
 
         public static IHostBuilder CreateDefaultVosHost(string[] args = null, bool defaultBuilder = true, FrameworkHostBuilderOptions frameworkOptions = null, IFlex options = null)

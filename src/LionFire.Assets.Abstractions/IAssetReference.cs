@@ -5,8 +5,9 @@ using System.Text;
 
 namespace LionFire.Assets
 {
-    public interface IAssetReference : ITypedReference
+    public interface IAssetReference : ITypedReference, IPersisterReference
     {
-        string Channel { get; }
+        // REVIEW: Is this necessary when there is Persister?
+        string Channel { get; } 
     }
 }

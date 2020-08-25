@@ -1,4 +1,5 @@
-﻿using System;
+﻿#if UNUSED
+using System;
 using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
@@ -57,3 +58,4 @@ namespace LionFire.ObjectBus.Redis
         protected override ITask<IResolveResult<INotifyingReadOnlyCollection<RedisEntry>>> ResolveImpl() => throw new NotImplementedException();
     }
 }
+#endif

@@ -3,6 +3,7 @@ using LionFire.Referencing;
 using LionFire.Resolves;
 using LionFire.Results;
 using LionFire.Structures;
+using Microsoft.Extensions.Logging.EventSource;
 using MorseCode.ITask;
 using System;
 using System.Threading.Tasks;
@@ -22,7 +23,7 @@ namespace LionFire.Persistence.Handles
         public ReadWriteHandlePassthrough() { }
         public ReadWriteHandlePassthrough(IReadWriteHandle<TValue> handle)
         {
-            this.handle = handle; 
+            this.readWriteHandle = handle;
             Reference = (TReference)handle?.Reference;
         }
 
@@ -31,9 +32,36 @@ namespace LionFire.Persistence.Handles
 
         public TReference Reference { get; set; }
 
-        public IReadWriteHandle<TValue> ReadWriteHandle => handle ??= Reference?.GetReadWriteHandle<TValue>();
+        public IReadWriteHandle<TValue> ReadWriteHandle => readWriteHandle ??= Reference?.GetReadWriteHandle<TValue>();
+        protected IReadWriteHandle<TValue> readWriteHandle;
 
-        public TValue Value { get => ReadWriteHandle.Value; set => ReadWriteHandle.Value = value; }
+
+        public TValue Value
+        {
+            get => ReadWriteHandle.Value; set
+            {
+                if (ReadWriteHandle != null)
+                {
+                    ReadWriteHandle.Value = value;
+                }
+                else
+                {
+                    if (Reference != null)
+                    {
+                        readWriteHandle = Reference.GetReadWriteHandle<TValue>(value);
+                    }
+                    else
+                    {
+                        // ENH - optional ability to detect missing Reference at set-time?
+                        //if (IsReferenceRequired)
+                        //{
+                        //    throw new Exception();
+                        //}
+                        readWriteHandle = value.GetObjectReadWriteHandle();
+                    }
+                }
+            }
+        }
 
         TValue IReadWrapper<TValue>.Value => ReadWriteHandle.Value;
 
@@ -50,7 +78,6 @@ namespace LionFire.Persistence.Handles
         public PersistenceFlags Flags => ReadWriteHandle.Flags;
 
 
-        protected IReadWriteHandle<TValue> handle;
 
         public ITask<ILazyResolveResult<TValue>> GetValue() => ReadWriteHandle.GetValue();
         public ITask<IResolveResult<TValue>> GetOrInstantiateValue() => ReadWriteHandle.GetOrInstantiateValue();

@@ -8,6 +8,9 @@ using System;
 using System.Collections.Generic;
 using System.Reflection;
 using System.Linq;
+using System.Collections;
+using LionFire.ExtensionMethods;
+using System.Diagnostics;
 
 namespace LionFire.Serialization.Json.Newtonsoft
 {
@@ -58,10 +61,18 @@ namespace LionFire.Serialization.Json.Newtonsoft
             {
                 property.ShouldSerialize = i => false;
                 property.Ignored = true;
+                return property;
+            }
+
+            if (typeof(IEnumerable).IsAssignableFrom(property.PropertyType) || property.PropertyType.GetProperty("Count") != null)
+            {
+                property.ShouldSerialize = o => !IsEmptyOrNullCollection(property, o);
             }
 
             if (IsRenamed(property.DeclaringType, property.PropertyName, out var newJsonPropertyName))
+            {
                 property.PropertyName = newJsonPropertyName;
+            }
 
             return property;
         }
@@ -97,7 +108,28 @@ namespace LionFire.Serialization.Json.Newtonsoft
             return true;
         }
 
-        #endregion
 
+        private bool IsEmptyOrNullCollection(JsonProperty property, object target)
+        {
+            if (target == null) return false;
+            var value = property.ValueProvider.GetValue(target);
+
+            if (value == null) return true;
+            if (value is ICollection c) return c.Count == 0;
+            if (value is IEnumerable e) return !e.Any();
+
+
+            var countProp = property.PropertyType.GetProperty("Count");
+            if (countProp != null)
+            {
+                return 0 == (int)countProp.GetValue(value, null);
+            }
+
+            Debug.WriteLine($"[warning] IsEmptyOrNullCollection: don't know how to determine if property {target.GetType().FullName}.{property.PropertyName} of type {value.GetType().FullName} is an empty collection.");
+
+            return false;
+        }
+        #endregion
     }
+
 }

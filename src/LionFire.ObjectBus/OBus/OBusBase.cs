@@ -105,6 +105,8 @@ namespace LionFire.ObjectBus
         public IReadWriteHandle<T> GetReadWriteHandle<T>(TReference reference) => (IReadWriteHandle<T>)handleCtor.Invoke(new object[] { reference, TryGetOBase(reference) });
         //new OBaseHandle<T>(reference, DefaultOBase, handleObject);
         public IReadHandle<T> GetReadHandle<T>(TReference reference) => new OBaseReadHandle<T>(reference, DefaultOBase);
+        public abstract IReadWriteHandle<T> GetReadWriteHandle<T>(TReference reference, T preresolvedValue = default);
+        public abstract IReadHandle<T> GetReadHandle<T>(TReference reference, T preresolvedValue = default);
     }
 
     /// <summary>
@@ -258,6 +260,10 @@ namespace LionFire.ObjectBus
         {
             throw new NotImplementedException();
         }
+
+        public abstract IReadWriteHandle<T> GetReadWriteHandle<T>(IReference reference, T preresolvedValue = default);
+        public abstract IReadHandle<T> GetReadHandle<T>(IReference reference, T preresolvedValue = default);
+        public abstract TReference TryGetReference<TReference>(string uri) where TReference : IReference;
     }
     
 }

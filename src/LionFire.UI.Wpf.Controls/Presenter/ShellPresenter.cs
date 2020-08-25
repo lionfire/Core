@@ -1,7 +1,10 @@
 ﻿using LionFire.Collections;
+using LionFire.Dependencies;
+using LionFire.Resolves;
 using LionFire.Settings;
 using LionFire.UI;
 using LionFire.UI.Windowing;
+using LionFire.UI.Wpf;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
@@ -61,6 +64,7 @@ namespace LionFire.Shell.Wpf
             {
                 WindowSettings = (await windowSettings.GetValueAsync().ConfigureAwait(false));
             });
+            
         }
 
         #endregion
@@ -197,6 +201,8 @@ namespace LionFire.Shell.Wpf
 
         public void Show(UIReference reference)
         {
+            string tabName = reference.TabName ?? WpfShellTabNames.DefaultTabName;
+
             if (reference.ViewAction != null)
             {
                 reference.ViewAction();
@@ -207,12 +213,13 @@ namespace LionFire.Shell.Wpf
             }
             else if (reference.ViewType != null)
             {
-                ShowControl(reference.ViewType, WpfShellTabNames.DefaultTabName);
+                ShowControl(reference.ViewType, tabName, reference.DataContext);
             }
             else if (reference.ViewModelType != null)
             {
-                throw new NotImplementedException("NEXT: View resolver");
-                //ShowControl(reference.RootViewType, WpfShellTabNames.DefaultTabName);
+                var viewType = DependencyContext.Current.GetRequiredService<IViewLocator>().LocateTypeForModelType(reference.ViewModelType, null, null);
+                if(viewType == null) { throw new Exception("Could not locate type for model type:" + reference.ViewModelType.FullName); }
+                ShowControl(viewType, tabName, reference.DataContext);
             }
             else
             {
@@ -224,13 +231,18 @@ namespace LionFire.Shell.Wpf
 
         #region Views
 
-        public object ShowControl(Type type, string tabName = null)
+        public object ShowControl(Type type, string tabName = null, object dataContext = null)
         {
-            MethodInfo mi = this.GetType().GetMethod("ShowControl", new Type[] { typeof(string) }).MakeGenericMethod(type);
+            
+            ShowControlGenericMethodInfo ??= this.GetType().GetMethods().Where(mi => mi.Name == "ShowControl" && mi.ContainsGenericParameters).First();
+            
+            MethodInfo mi = ShowControlGenericMethodInfo.MakeGenericMethod(type ?? throw new ArgumentNullException(nameof(type)));
             return mi.Invoke(this, new object[] { tabName });
         }
+        private static MethodInfo ShowControlGenericMethodInfo;
 
         public T ShowControl<T>(string tabName = null) where T : class => MainPresenter.PushTab<T>(tabName);
+        public object ShowControl(Type type, string tabName = null) => MainPresenter.PushTab(type, tabName);
 
         //public T GetControl<T>(string tabName = null OLD
         //    //, T frameworkElement = null
@@ -317,7 +329,7 @@ namespace LionFire.Shell.Wpf
             }
             return null;
         }
-        
+
         #endregion
 
         private static ILogger l = Log.Get();

@@ -1,5 +1,6 @@
 ﻿using LionFire.Referencing;
 using LionFire.Instantiating;
+using Microsoft.Extensions.Options;
 
 namespace LionFire.Vos.Mounts
 {
@@ -21,6 +22,39 @@ namespace LionFire.Vos.Mounts
 
         public IMountOptions Options { get; set; }
 
-        public override string ToString() => $"{{TMount {MountPoint} --> {Reference}}}";
+        public string ArrowSymbol
+        {
+            get
+            {
+                if (Options != null)
+                {
+                    if (Options.WritePriority.HasValue)
+                    {
+                        if (Options.IsExclusive)
+                        {
+                            return "==>>";
+                        }
+                        else
+                        {
+                            return "-->>";
+                        }
+                    }
+                    else
+                    {
+                        if (Options.IsExclusive)
+                        {
+                            return "==>";
+                        }
+                        else
+                        {
+                            return "-->";
+                        }
+                    }
+                }
+                return "->";
+            }
+        }
+
+        public override string ToString() => $"{{TMount {MountPoint} {ArrowSymbol} {Reference}}}";
     }
 }

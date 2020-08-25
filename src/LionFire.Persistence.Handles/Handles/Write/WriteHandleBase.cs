@@ -132,6 +132,7 @@ namespace LionFire.Persistence.Handles
                 WrappedValueForFromTo?.Invoke(this, oldValue, newValue);
                 wrappedValueChanged?.Invoke(this); // Assume that there was a change
             }
+            this.OnUserChangedValue_ReadWrite(newValue);
         }
 
         #endregion

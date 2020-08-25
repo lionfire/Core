@@ -9,7 +9,7 @@ using System.Text;
 
 namespace LionFire.Vos
 {
-    public interface IVobReference : IReference, ITypedReference, IReferencable<IVobReference>
+    public interface IVobReference : IReference, ITypedReference, IReferencable<IVobReference>, IPersisterReference
     {
         IEnumerable<string> AllowedSchemes { get; }
 

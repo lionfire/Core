@@ -1,6 +1,8 @@
 ﻿using LionFire.Persistence;
 using LionFire.Persistence.Handles;
 using LionFire.Referencing;
+using LionFire.Resolves;
+using LionFire.Structures;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -20,6 +22,7 @@ namespace LionFire.ExtensionMethods.Persistence
             }
             return result;
         }
+
         public static async Task<IPersistenceResult> TrySave<T>(this T referencable)
             where T : IReferencable
         {
@@ -28,17 +31,38 @@ namespace LionFire.ExtensionMethods.Persistence
                 return await ((Task<IPersistenceResult>)typeof(ReferencableSaveExtensions).GetMethod(nameof(TrySave)).MakeGenericMethod(referencable.GetType()).Invoke(null, new object[] { referencable })).ConfigureAwait(false);
             }
 
-            if (referencable is IHasReadWriteHandle<T> hrwh)
+            IPuts puts = referencable.GetExistingReadWriteHandle();
+            if (puts == null)
             {
-                return await hrwh.ReadWriteHandle.TrySave().ConfigureAwait(false);
+                IReadHandle readHandle = referencable as IReadHandle;
+
+                IReadHandle<object> r = (IReadHandle<object>)referencable.GetExistingReadHandle();
+
+                var value = r.Value; // Potentially BLOCKING
+
+                Type type = (readHandle?.Type) 
+                    ?? (referencable.Reference as ITypedReference)?.Type 
+                    ?? value?.GetType()
+                    ?? throw new ArgumentException($"{nameof(referencable)} must be of type {typeof(ITypedReference).Name} or resolve to a non-default value via IReadHandle<object>.Value.");
+
+                object initialValue;
+                if(referencable is IReadWrapper<object> rw)
+                {
+                    initialValue = rw.Value;
+                }
+                else if (readHandle != null)
+                {
+                    initialValue = (T) typeof(IReadWrapper<>).MakeGenericType(readHandle.Type).GetMethod("Value").Invoke(referencable, null);
+                }
+                else
+                {
+                    initialValue = referencable;
+                }
+                var handle2 = referencable.Reference.GetReadWriteHandle(type, initialValue);
+                puts = handle2;
             }
-            if (referencable is IHasReadHandle<T> hrh)
-            {
-                return await hrh.ReadHandle.TrySave().ConfigureAwait(false);
-            }
-            var handle = referencable.Reference.GetReadWriteHandle<T>();
-            handle.Value = referencable;
-            return (IPersistenceResult)await handle.Put().ConfigureAwait(false);
+
+            return (IPersistenceResult)await puts.Put().ConfigureAwait(false);
         }
 
         public static async Task<T> Saved<T>(this T referencable)

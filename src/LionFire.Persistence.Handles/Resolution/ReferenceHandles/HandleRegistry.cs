@@ -31,4 +31,15 @@ namespace LionFire.Referencing.Ex
         public static T GetOrAddWrite<T>(string key, Func<string, object> factory) => (T)WriteHandles.GetOrAdd(key, factory);
         public static T GetOrAddRead<T>(string key, Func<string, object> factory) => (T)ReadHandles.GetOrAdd(key, factory);
     }
+
+    public static class ObjectHandleRegistry
+    {
+        public static ConcurrentDictionary<object, object> ReadHandles { get; } = new ConcurrentDictionary<object, object>();
+        public static ConcurrentDictionary<object, object> WriteHandles { get; } = new ConcurrentDictionary<object, object>();
+        public static ConcurrentDictionary<object, object> ReadWriteHandles { get; } = new ConcurrentDictionary<object, object>();
+
+        public static T GetOrAddReadWrite<T>(string key, Func<object, object> factory) => (T)ReadWriteHandles.GetOrAdd(key, factory);
+        public static T GetOrAddWrite<T>(string key, Func<object, object> factory) => (T)WriteHandles.GetOrAdd(key, factory);
+        public static T GetOrAddRead<T>(string key, Func<object, object> factory) => (T)ReadHandles.GetOrAdd(key, factory);
+    }
 }

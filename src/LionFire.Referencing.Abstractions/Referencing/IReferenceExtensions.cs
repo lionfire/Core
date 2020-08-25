@@ -8,7 +8,7 @@ namespace LionFire.Referencing
 {
     public static class IReferenceExtensions
     {
-        public static string Name(this IReference reference) => LionPath.GetName(reference.Path);
+        public static string Name(this IReference reference) => LionPath.GetName(reference?.Path);
 
         public static string PathRelativeTo(this IReference reference, IReference otherReference, bool allowAncestors = false, bool allowAncestorDecendants = false)
         {

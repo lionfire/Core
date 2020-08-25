@@ -43,6 +43,8 @@ namespace LionFire.ObjectBus.Handles
 
         public int Count => Entries.Count;
 
+        public abstract IReadHandle<T> this[string subpath] { get; }
+
         IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
         public abstract IEnumerator<T> GetEnumerator();
 

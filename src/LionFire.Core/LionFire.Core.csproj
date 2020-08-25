@@ -38,9 +38,9 @@ This package is typically not added on its own, but is a dependency required by 
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
-    <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="3.1.6" />
-    <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="3.1.6" />
-    <PackageReference Include="Microsoft.Extensions.Hosting" Version="3.1.6" />
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="3.1.7" />
+    <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="3.1.7" />
+    <PackageReference Include="Microsoft.Extensions.Hosting" Version="3.1.7" />
     <PackageReference Include="System.Collections.Immutable" Version="1.7.0" />
 <PackageReference Include="System.Reactive" Version="4.3.2" />  </ItemGroup>
 
