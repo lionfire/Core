@@ -45,7 +45,7 @@ namespace LionFire.Vos
             => (IReadWriteHandle<TValue>)SharedReadWriteHandles.GetOrAdd(typeof(TValue), t => CreateReadWriteHandle<TValue>(preresolvedValue));
 
         public IReadWriteHandle<TValue> CreateReadWriteHandle<TValue>(TValue preresolvedValue = default)
-            => new PersisterReadWriteHandle<VobReference, TValue, VosPersister>(this.GetService<VosPersister>(), VobReference, preresolvedValue);
+            => new PersisterReadWriteHandle<IVobReference, TValue, VosPersister>(this.GetService<VosPersister>(), GetReference<TValue>(), preresolvedValue);
 
         #endregion
 

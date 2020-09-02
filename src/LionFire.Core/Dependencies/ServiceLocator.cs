@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 namespace LionFire.Dependencies
 {
     // TODO - make more consistent with IServiceProvider?  Have an internal default IServiceProvider
-    
+
     // OPTIMIZE - if this is a potential lightweight option for simple applications, consider:
     // - a way to skip DependencyContext
     // - ServiceLocator<T>.Get instead, and maybe ServiceFactory<T>.Get for transients.
@@ -77,8 +77,8 @@ namespace LionFire.Dependencies
 
         public static TReturnValue Get<TReturnValue>(Type interfaceType, IServiceProvider serviceProvider = null)
             where TReturnValue : class
-            => serviceProvider != null 
-            ? (TReturnValue)serviceProvider.GetService(interfaceType) 
+            => serviceProvider != null
+            ? (TReturnValue)serviceProvider.GetService(interfaceType)
             : (TReturnValue)Get_TInterface_Func.MakeGenericMethod(interfaceType).Invoke(null, new object[] { serviceProvider });
 
         //=> (TInterface)GetMethodEx.GetMethodExt(typeof(DependencyLocator), nameof(Get), BindingFlags.Static | BindingFlags.Public, typeof(Func<>)).Invoke(null,  new object[] { singletonFactory });
@@ -101,6 +101,60 @@ namespace LionFire.Dependencies
             => TryGet<TInterface, TInterface>(singletonFactory: singletonFactory, tryCreateIfMissing: tryCreateIfMissing);
 
         /// <summary>
+        /// Get service of requested type from DependencyContext.GetService() or else ManualSingleton.Instance or GuaranteedInstance.
+        /// </summary>
+        /// <param name="interfaceType">The registered type of the servcie</param>
+        /// <param name="serviceProvider"></param>
+        /// <param name="createIfMissing"></param>
+        /// <param name="concreteType">The type used for creating an instance of type interfaceType</param>
+        /// <param name="singletonFactory"></param>
+        /// <param name="dependencyContext">Defaults to DependencyContext.Current</param>
+        /// <returns></returns>
+        public static object GetServiceOrSingleton(Type interfaceType, IServiceProvider serviceProvider = null, bool createIfMissing = true, Type concreteType = null, Func<object> singletonFactory = null, DependencyContext dependencyContext = null, bool useDependencyContextServiceProviderForCreate = true)
+        {
+            dependencyContext ??= DependencyContext.Current;
+
+            object result = dependencyContext?.GetService(interfaceType, serviceProvider);
+            if (result != null) return result;
+
+            var interfaceSingletonType = typeof(ManualSingleton<>).MakeGenericType(interfaceType);
+            var pi = interfaceSingletonType.GetProperty("Instance", BindingFlags.Static | BindingFlags.Public);
+            result = pi.GetValue(null);
+
+            if (result == null)
+            {
+                if (createIfMissing)
+                {
+                    if (singletonFactory != null)
+                    {
+                        var mi = interfaceSingletonType.GetMethod("GetGuaranteedInstance", new Type[] { typeof(Func<object>) });
+                        result = mi.Invoke(null, new object[] { singletonFactory });
+                    }
+                    else
+                    {
+                        var createType = concreteType ?? interfaceType;
+                        if (!createType.IsInterface && !createType.IsAbstract)
+                        {
+                            Func<object> factory =
+                                (useDependencyContextServiceProviderForCreate && dependencyContext != null)
+                                ? (Func<object>)(() => ActivatorUtilities.CreateInstance(dependencyContext.ServiceProvider, createType))
+                                : (() => Activator.CreateInstance(createType));
+
+                            var mi = interfaceSingletonType.GetMethod("GetGuaranteedInstance", new Type[] { typeof(Func<object>) });
+                            result = mi.Invoke(null, new object[] { factory });
+                        }
+                        else
+                        {
+                            throw new ArgumentException($"{nameof(createIfMissing)} is true but neither {nameof(concreteType)} nor {nameof(interfaceType)} are concrete types and no {nameof(singletonFactory)} was specified");
+                        }
+                    }
+                }
+            }
+
+            return result;
+        }
+
+        /// <summary>
         /// 
         /// </summary>
         /// <typeparam name="TInterface"></typeparam>
@@ -108,8 +162,8 @@ namespace LionFire.Dependencies
         /// <param name="tryCreateIfMissing">Will only be attempted if DependencyLocatorConfiguration.UseSingletons is true</param>
         /// <returns></returns>
         public static TInterface TryGet<TInterface, TImplementation>(Func<TInterface> singletonFactory = null, bool tryCreateIfMissing = false)
-            where TInterface : class
-            where TImplementation : class, TInterface
+        where TInterface : class
+        where TImplementation : class, TInterface
         {
             TInterface result = default;
 

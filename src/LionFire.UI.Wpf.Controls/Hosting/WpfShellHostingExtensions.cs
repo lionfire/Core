@@ -42,6 +42,9 @@ namespace LionFire.Hosting
                 .AddSingleton<WpfDispatcherAdapter>(serviceProvider => new WpfDispatcherAdapter(application))
                 .AddSingleton<IDispatcher, WpfDispatcherAdapter>(serviceProvider => serviceProvider.GetRequiredService<WpfDispatcherAdapter>());
 
+        public static IServiceCollection AddWpfAlerter(this IServiceCollection services, Application application)
+            => services
+                .AddSingleton<WpfAlerter>();
 
         public static IServiceCollection AddWpfShell(this IServiceCollection services)
         {

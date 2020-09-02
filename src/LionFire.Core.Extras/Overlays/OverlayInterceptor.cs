@@ -1,6 +1,4 @@
-﻿#if TOPORT // switch to linfu proxy?
-
-#if !NET35
+﻿#if !NET35
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -53,5 +51,4 @@ namespace LionFire.Overlays
         }
     }
 }
-#endif
 #endif

@@ -53,7 +53,7 @@ namespace LionFire.Persistence.Handles
         protected virtual void SetValueFromConstructor(TValue initialValue)
         {
             ProtectedValue = initialValue;
-            // FUTURE: In the future, we may want to do something special here, like set something along the lines of PersistenceFlags.SetByUser
+            Flags |= PersistenceFlags.OutgoingUpsertPending;  // REVIEW: In the future, we may want to do something more specific here, like set something along the lines of PersistenceFlags.SetByUser
         }
 
         #endregion

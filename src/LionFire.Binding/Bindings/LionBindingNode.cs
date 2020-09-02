@@ -325,28 +325,29 @@ namespace LionFire.Bindings
 
         private void UpdateAccessorWrapperMethods()
         {
-            throw new NotImplementedException("TODO: fix depObj");
-            //if (TryUpdateAccessorWrapperMethods != null)
-            //{
-            //    var result = TryUpdateAccessorWrapperMethods(depObj);
-            //    if (result.succeeded)
-            //    {
-            //        GetMethodWrapper = (p1) => result.GetMethodWrapper(this,p1);
-            //        SetMethodWrapper = (p1, p2) => result.SetMethodWrapper(this, p1, p2);
-            //        return;
-            //    }
-            //}
+            
+            if (TryUpdateAccessorWrapperMethods != null)
+            {
+                var result = TryUpdateAccessorWrapperMethods(this.BindingObject);
+                throw new NotImplementedException("TODO: confirm parameter to TryUpdateAccessorWrapperMethods");
+                if (result.succeeded)
+                {
+                    GetMethodWrapper = (p1) => result.GetMethodWrapper(this, p1);
+                    SetMethodWrapper = (p1, p2) => result.SetMethodWrapper(this, p1, p2);
+                    return;
+                }
+            }
 
-            //if (isAsync)
-            //{
-            //    GetMethodWrapper = AllowAsyncGet ? GetWrapperForAsync : new Func<object, object>((o) => GetMethod(o));
-            //    SetMethodWrapper = SetWrapperForAsync;
-            //    return;
-            //}
+            if (isAsync)
+            {
+                GetMethodWrapper = AllowAsyncGet ? GetWrapperForAsync : new Func<object, object>((o) => GetMethod(o));
+                SetMethodWrapper = SetWrapperForAsync;
+                return;
+            }
 
-            //GetMethodWrapper = (o) => GetMethod(o);
-            //SetMethodWrapper = (o, value) => SetMethod(o, value);
-            //return;
+            GetMethodWrapper = (o) => GetMethod(o);
+            SetMethodWrapper = (o, value) => SetMethod(o, value);
+            return;
 
         }
 
@@ -375,7 +376,7 @@ namespace LionFire.Bindings
                     {
                         exception = ex;
                         l.Warn("Binding: Async get exception: " + ex.ToString());
-                        var ev = this.ExceptionThrown; if (ev != null) ev(this, ex);
+                        this.ExceptionThrown?.Invoke(this, ex);
                     }
                 } while (asyncRetries-- > 0);
 

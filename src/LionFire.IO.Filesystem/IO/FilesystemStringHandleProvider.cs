@@ -20,7 +20,7 @@ namespace LionFire.IO.Filesystem
             return (IReadWriteHandle<T>)new HTextFile(reference.Path); // HARDCAST
         }
 
-        public IReadHandle<T> GetReadHandle<T>(IReference reference)
+        public IReadHandle<T> GetReadHandle<T>(IReference reference, T preresolvedValue = default)
         {
             if (typeof(T) != typeof(string))
             {
@@ -31,6 +31,4 @@ namespace LionFire.IO.Filesystem
             return (IReadHandle<T>)new RTextFile(reference.Path);
         }
     }
-
-
 }

@@ -105,6 +105,7 @@ namespace LionFire.Referencing
                         return (IReadWriteHandle)type.GetProperty(nameof(IHasReadWriteHandle<object>.ReadWriteHandle)).GetValue(referencable);
                     }
                 }
+                if(tr.Type == null) { throw new ArgumentNullException($"{typeof(ITypedReference).Name}.{nameof(tr.Type)}"); }
                 return (IReadWriteHandle)typeof(ReferenceToHandleExtensions).GetMethods(BindingFlags.Public | BindingFlags.Static).Where(mi => mi.Name == nameof(GetExistingReadWriteHandle) && mi.GetGenericArguments().Length == 1).First().MakeGenericMethod(tr.Type).Invoke(null, new object[] { referencable.Reference });
                 //return (IReadWriteHandle)typeof(ReferenceToHandleExtensions).GetMethod(nameof(GetExistingReadWriteHandle)).MakeGenericMethod(tr.Type).Invoke(null, new object[] { referencable });
             }

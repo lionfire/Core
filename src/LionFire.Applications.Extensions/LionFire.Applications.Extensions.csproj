@@ -53,6 +53,7 @@ Reference this package in your main executable, and the related LionFire.Applica
 
   <ItemGroup>
     <Folder Include="Core\" />
+    <Folder Include="Input\" />
   </ItemGroup>
 
   <Target Name="PostBuild" AfterTargets="PostBuildEvent">

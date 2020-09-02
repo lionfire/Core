@@ -19,7 +19,8 @@ namespace LionFire.Alerting
         public static bool ShowExceptionMessage = true;
         public static bool ShowExceptionDetail = true;
 
-        public static IAlerter Instance => InstanceStackRegistrar.Default.TryResolve<IAlerter>();
+        //public static IAlerter Instance => InstanceStackRegistrar.Default.TryResolve<IAlerter>();
+        public static IAlerter Instance => DependencyContext.Current.GetService<IAlerter>();
 
         public static void Alert(Alert alert)
         {

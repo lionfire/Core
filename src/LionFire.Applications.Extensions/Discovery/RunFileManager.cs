@@ -17,7 +17,8 @@ namespace LionFire.Services
             {
                 if (runFileDirectory == null)
                 {
-                    runFileDirectory = LionFireEnvironment.Directories.Other["LionRun"];
+                    runFileDirectory = LionFireEnvironment.Directories.RunFileDirectory;
+                    //runFileDirectory = LionFireEnvironment.Directories.Other["LionRun"];
                 }
                 return runFileDirectory;
             }

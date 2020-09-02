@@ -51,7 +51,7 @@ namespace LionFire.Data.Id
         /// </summary>
         [SetOnce]
         [Assignment(AssignmentMode.Ignore)]
-        public override string Path
+        public override string? Path
         {
             get => path;
             set
@@ -61,7 +61,7 @@ namespace LionFire.Data.Id
                 path = value;
             }
         }
-        private string path;
+        private string? path;
 
         #endregion
 
@@ -71,7 +71,7 @@ namespace LionFire.Data.Id
         //{
         //    this.Path = default;
         //}
-        public IdReference(string id)
+        public IdReference(string? id = null)
         {
             if (id?.Contains(":") == true) throw new ArgumentException($"{nameof(id)} may not contain :");
             this.path = id;

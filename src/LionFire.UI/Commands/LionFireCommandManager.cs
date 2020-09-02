@@ -18,6 +18,4 @@ namespace LionFire.UI.Commands
         public static Action<EventHandler> AddRequerySuggested { get; set; }
         public static Action<EventHandler> RemoveRequerySuggested { get; set; }
     }
- 
-
 }

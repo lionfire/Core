@@ -35,6 +35,24 @@ namespace LionFire.Vos
 
         #endregion
 
+
+        #region Persister
+
+        [SetOnce]
+        public override string Persister
+        {
+            get => persister;
+            set
+            {
+                if (persister == value) return;
+                if (persister != default) throw new AlreadySetException();
+                persister = value;
+            }
+        }
+        private string persister;
+
+        #endregion
+
         public override Type Type => typeof(TValue);
 
     }
@@ -92,6 +110,7 @@ namespace LionFire.Vos
         #region Type
 
         public override Type Type { get; }
+        //public override Type Type { get; }
         //[SetOnce]
         //public Type Type
         //{

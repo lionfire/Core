@@ -3,6 +3,7 @@ using Microsoft.Extensions.Hosting;
 using LionFire.Applications.Hosting;
 using LionFire.Persistence;
 using LionFire.Services;
+using LionFire.Hosting;
 
 namespace LionFire
 {

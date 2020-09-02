@@ -93,7 +93,7 @@ namespace LionFire.Processes
             lastUpdate = DateTime.UtcNow;
         }
 
-        public bool isStarted =false;
+        public bool isStarted = false;
 
         public Task StartAsync(CancellationToken cancellationToken = default)
         {
@@ -113,6 +113,7 @@ namespace LionFire.Processes
                         fsw = new FileSystemWatcher();
                     }
 
+                    if (!Directory.Exists(RunFileManager.RunFileDirectory)) { Directory.CreateDirectory(RunFileManager.RunFileDirectory); }
                     fsw.Path = RunFileManager.RunFileDirectory;
                     fsw.Created += new FileSystemEventHandler(fsw_Created);
                     fsw.Deleted += new FileSystemEventHandler(fsw_Deleted);

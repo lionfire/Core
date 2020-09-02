@@ -1,6 +1,4 @@
-﻿#if TOPORT // switch to linfu proxy?
-
-using System;
+﻿using System;
 #if !NET35
 using Castle.DynamicProxy;
 #endif
@@ -43,5 +41,3 @@ namespace LionFire.Overlays
 
 #endif
 }
-
-#endif

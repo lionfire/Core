@@ -30,7 +30,7 @@ namespace LionFire.Dependencies
         public static T AsTypeInPath<T>(this string path, DependencyContext context = null)
             where T : class
         {
-            if (context == null) context = DependencyContext.Current;
+            context ??= DependencyContext.Current;
 
             T result;
             while (true)
@@ -40,7 +40,7 @@ namespace LionFire.Dependencies
                 if (result != null) return result;
 
                 if (!path.Contains(PathSeparator)) break;
-                path = path.Substring(0, path.LastIndexOf(PathSeparator));
+                path = path.Substring(0, path.LastIndexOf(PathSeparator)); // MICROOPTIMIZE - split this one time
             }
             return default;
         }

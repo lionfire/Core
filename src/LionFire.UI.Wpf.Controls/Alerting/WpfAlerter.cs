@@ -1,16 +1,24 @@
 ﻿using System;
+using System.Windows.Controls;
+using System.Windows.Threading;
 using LionFire.Alerting;
-//using AppUpdate;
-//using AppUpdate.Common;
+using LionFire.Avalon;
+using Microsoft.Extensions.Logging;
 
 namespace LionFire.Shell
 {
     public class WpfAlerter : IAlerter
     {
 
-        public WpfAlerter()
-        {
+        public IShellPresenter ShellPresenter { get; }
+        public WpfDispatcherAdapter WpfDispatcherAdapter { get; }
 
+        public Dispatcher Dispatcher => WpfDispatcherAdapter.Dispatcher;
+
+        public WpfAlerter(WpfDispatcherAdapter wpfDispatcherAdapter, IShellPresenter shellPresenter)
+        {
+            WpfDispatcherAdapter = wpfDispatcherAdapter;
+            ShellPresenter = shellPresenter;
         }
 
         #region IsAlertOpen
@@ -22,13 +30,9 @@ namespace LionFire.Shell
             {
                 if (isAlertOpen == value) return;
                 isAlertOpen = value;
-
-                var ev = IsAlertOpenChanged;
-                if (ev != null) ev();
+                IsAlertOpenChanged?.Invoke();
             }
         }
-
-
         private bool isAlertOpen;
 
         public event Action IsAlertOpenChanged;
@@ -37,10 +41,8 @@ namespace LionFire.Shell
 
         public virtual void Alert(Alert alert)
         {
-            throw new NotImplementedException("TOPORT");
-#if TOPORT
             if (!Dispatcher.CheckAccess()) { Dispatcher.BeginInvoke(new Action(() => Alert(alert))); return; }
-            var layer = MainPresenter.TopControl;
+            var layer = (Panel) ShellPresenter.MainPresenter.TopControl;
 
             if (layer == null)
             {
@@ -50,11 +52,11 @@ namespace LionFire.Shell
             }
 
             var a = new AlertAdorner() { DataContext = alert, Layer = layer };
-            a.SetValue(Grid.ZIndexProperty, 99);
+            a.SetValue(Panel.ZIndexProperty, 99);
             layer.Children.Add(a);
             IsAlertOpen = true;
-#endif
         }
 
+        private static ILogger l = Log.Get();
     }
 }

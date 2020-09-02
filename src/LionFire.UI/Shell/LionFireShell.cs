@@ -54,9 +54,10 @@ namespace LionFire
     }
 #endif
 
+#if UNUSED
     public static class LionFireShell
     {
-        #region Instance
+#region Instance
 
         public static ILionFireShell Instance
         {
@@ -70,7 +71,7 @@ namespace LionFire
         }
         private static ILionFireShell instance;
 
-        #endregion
+#endregion
 
 #if UNITY
         public static Type ShellBehaviorType { get; set; }
@@ -120,6 +121,7 @@ namespace LionFire
 
         }
     }
+#endif
 }
 
 namespace LionFire.Shell

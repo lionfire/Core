@@ -47,13 +47,25 @@ namespace LionFire.Services
 
         public static IServiceCollection RegisterTypeName(this IServiceCollection services, Type type, string name = null)
             => services
-                    .Configure((TypeNameRegistry r) => r.Types.Add(name ?? type.Name, type));
+                    .Configure((TypeNameRegistry r) =>
+                    {
+                        var key = name ?? type.Name;
+                        if (r.Types.ContainsKey(key))
+                        {
+                            if (r.Types[key] != type) throw new AlreadyException($"Type name {key} is already registered with a different type: {r.Types[key].FullName}.  Cannot register as {type.FullName}");
+                        }
+                        else
+                        {
+                            r.Types.Add(key, type);
+                        }
 
-                //=> services
-                //          .AddSingleton(new TypeNameRegistryInitializer(new Dictionary<string, Type>
-                //          {
-                //              [name ?? type.Name] = type,
-                //          }));
+                    });
+
+        //=> services
+        //          .AddSingleton(new TypeNameRegistryInitializer(new Dictionary<string, Type>
+        //          {
+        //              [name ?? type.Name] = type,
+        //          }));
 
         public static IServiceCollection RegisterTypeNames(this IServiceCollection services, Assembly assembly, bool exportedTypesOnly = true, Func<Type, string> selector = null, Func<Type, bool> filter = null, bool concreteTypesOnly = true)
         {
@@ -69,10 +81,10 @@ namespace LionFire.Services
         }
 
         public static IServiceCollection RegisterTypesNamesWithAttribute<T>(this IServiceCollection services,
-            Assembly assembly, 
-            bool exportedTypesOnly = true, 
-            Func<Type, string> selector = null, 
-            Func<Type, bool> filter = null, 
+            Assembly assembly,
+            bool exportedTypesOnly = true,
+            Func<Type, string> selector = null,
+            Func<Type, bool> filter = null,
             bool inheritAttribute = false)
             where T : Attribute
             => services.RegisterTypeNames(assembly, exportedTypesOnly: exportedTypesOnly, selector: selector, filter: t => t.GetCustomAttribute<T>(inheritAttribute) != null);

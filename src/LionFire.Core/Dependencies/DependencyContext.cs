@@ -6,10 +6,7 @@ using LionFire.Structures;
 
 namespace LionFire.Dependencies
 {
-
-    public static class DependencyContextExtensions
-    {
-    }
+    // TODO FIXME - figure out how to initialize Default and Current and when to use each
 
     /// <summary>
     /// Wraps a IServiceProvider, with potential fallback to other IServiceProviders
@@ -79,23 +76,8 @@ namespace LionFire.Dependencies
                 ManualSingleton<DependencyContext>.Instance = value;
             }
         }
-
-        //public static void UseDefaultServiceProvider()
-        //{
-        //    if (ManualSingleton<IServiceProvider>.Instance != null)
-        //    {
-        //        throw new Exception("ManualSingleton<IServiceProvider>.Instance is already set");
-        //    }
-        //    ManualSingleton<IServiceProvider>.Instance = Current;
-        //}
-
+        
         #endregion
-
-        //public void UseSingletonInstance<T>(T singletonInstance)
-        //    where T : class
-        //{
-        //    ManualSingleton<T>.Instance = singletonInstance;
-        //}
 
         #region ServiceProvider
 
@@ -158,20 +140,6 @@ namespace LionFire.Dependencies
         }
 #nullable disable
 
-
-        //public TInterface GetServiceOrSingleton<TInterface>(IServiceProvider serviceProvider = null, bool createIfMissing = DefaultCreateIfMissing, Func<TInterface> singletonFactory = null)
-        //=> (TInterface)GetServiceOrSingleton(typeof(TInterface), serviceProvider, createIfMissing, singletonFactory: singletonFactory);
-
-        public TInterface GetServiceOrSingleton<TInterface, TConcrete>(IServiceProvider serviceProvider = null, bool createIfMissing = DefaultCreateIfMissing, Func<TInterface> singletonFactory = null)
-            => (TInterface)GetServiceOrSingleton(typeof(TInterface), serviceProvider, createIfMissing, typeof(TConcrete),
-                singletonFactory: (singletonFactory != null ? () => singletonFactory() : (Func<object>)null));
-
-        public TInterface GetServiceOrSingleton<TInterface>(IServiceProvider serviceProvider = null, bool createIfMissing = DefaultCreateIfMissing, Func<TInterface> singletonFactory = null)
-            => (TInterface)GetServiceOrSingleton(typeof(TInterface), serviceProvider, createIfMissing, concreteType: null,
-                singletonFactory: (singletonFactory != null ? () => singletonFactory() : (Func<object>)null));
-
-        //private readonly bool UseManualSingletonServiceProvider = false;
-
         public virtual object GetService(Type serviceType, IServiceProvider serviceProvider = null)
         {
             object result = null;
@@ -199,6 +167,22 @@ namespace LionFire.Dependencies
 
             return result;
         }
+
+#if UNUSED // DEPCRECATED - use ServiceLocator.GetServiceOrSingleton instead
+
+        //public TInterface GetServiceOrSingleton<TInterface>(IServiceProvider serviceProvider = null, bool createIfMissing = DefaultCreateIfMissing, Func<TInterface> singletonFactory = null)
+        //=> (TInterface)GetServiceOrSingleton(typeof(TInterface), serviceProvider, createIfMissing, singletonFactory: singletonFactory);
+
+        //public TInterface GetServiceOrSingleton<TInterface, TConcrete>(IServiceProvider serviceProvider = null, bool createIfMissing = DefaultCreateIfMissing, Func<TInterface> singletonFactory = null)
+        //    => (TInterface)GetServiceOrSingleton(typeof(TInterface), serviceProvider, createIfMissing, typeof(TConcrete),
+        //        singletonFactory: (singletonFactory != null ? () => singletonFactory() : (Func<object>)null));
+
+        //public TInterface GetServiceOrSingleton<TInterface>(IServiceProvider serviceProvider = null, bool createIfMissing = DefaultCreateIfMissing, Func<TInterface> singletonFactory = null)
+        //    => (TInterface)GetServiceOrSingleton(typeof(TInterface), serviceProvider, createIfMissing, concreteType: null,
+        //        singletonFactory: (singletonFactory != null ? () => singletonFactory() : (Func<object>)null));
+
+        //private readonly bool UseManualSingletonServiceProvider = false;
+        //public object GetServiceOrSingleton(Type serviceType) => GetServiceOrSingleton(serviceType, null, DefaultCreateIfMissing);
 
         /// <summary>
         /// Locate the service for the specified type.
@@ -257,6 +241,9 @@ namespace LionFire.Dependencies
             }
         }
 
+#endif
+
+#if COMMENTED // REVIEW
 
         //public IEnumerable<T> GetServices<T>(IServiceProvider serviceProvider = null, bool createIfMissing = DefaultCreateIfMissing)
         //{
@@ -310,8 +297,10 @@ namespace LionFire.Dependencies
         //    ManualSingleton<T>.Instance = obj;
         //}
 
+#endif
+
         object IServiceProvider.GetService(Type serviceType) => GetService(serviceType, null);
-        public object GetServiceOrSingleton(Type serviceType) => GetServiceOrSingleton(serviceType, null, DefaultCreateIfMissing);
+
         private const bool DefaultCreateIfMissing = true;
 
     }

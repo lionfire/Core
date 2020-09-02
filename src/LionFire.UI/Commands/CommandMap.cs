@@ -1,5 +1,4 @@
 ﻿// REVIEW - drop dependency on System.Windows.Input?  (ICommand)
-// REVIEW - Why is this in an .Extensions dll?
 
 // Retrieved from http://blogs.msdn.com/b/morgan/archive/2010/06/24/simplifying-commands-in-mvvm-and-wpf.aspx
 // on May 3, 2012
@@ -20,6 +19,7 @@ using System;
 using System.Windows.Input;
 using System.Collections.Generic;
 using System.ComponentModel;
+using LionFire.UI.Commands;
 
 namespace LionFire.Input
 {
@@ -46,10 +46,8 @@ namespace LionFire.Input
         /// </summary>
         /// <param name="commandName">The name of the command</param>
         /// <param name="executeMethod">The method to execute</param>
-        public void AddCommand(string commandName, Action<object> executeMethod)
-        {
-            Commands[commandName] = new DelegateCommand(executeMethod);
-        }
+        public void AddCommand(string commandName, Action<object> executeMethod) 
+            => Commands[commandName] = new DelegateCommand(executeMethod);
 
         /// <summary>
         /// Add a named command to the command map
@@ -57,19 +55,14 @@ namespace LionFire.Input
         /// <param name="commandName">The name of the command</param>
         /// <param name="executeMethod">The method to execute</param>
         /// <param name="canExecuteMethod">The method to execute to check if the command can be executed</param>
-        public void AddCommand(string commandName, Action<object> executeMethod, Predicate<object> canExecuteMethod)
-        {
-            Commands[commandName] = new DelegateCommand(executeMethod, canExecuteMethod);
-        }
+        public void AddCommand(string commandName, Action<object> executeMethod, Predicate<object> canExecuteMethod) 
+            => Commands[commandName] = new DelegateCommand(executeMethod, canExecuteMethod);
 
         /// <summary>
         /// Remove a command from the command map
         /// </summary>
         /// <param name="commandName">The name of the command</param>
-        public void RemoveCommand(string commandName)
-        {
-            Commands.Remove(commandName);
-        }
+        public void RemoveCommand(string commandName) => Commands.Remove(commandName);
 
         /// <summary>
         /// Expose the dictionary of commands
@@ -85,13 +78,7 @@ namespace LionFire.Input
             }
         }
 
-        public ICommand this[string commandName]
-        {
-            get
-            {
-                return Commands[commandName];
-            }
-        }
+        public ICommand this[string commandName] => Commands[commandName];
 
         /// <summary>
         /// Store the commands
@@ -146,22 +133,24 @@ namespace LionFire.Input
 
             public event EventHandler CanExecuteChanged
             {
-                add { LionFire.Events.ApplicationCommandManager.RequerySuggested += value; throw new NotImplementedException("TODO: Switch to LionFire.UI's' LionFireCommandManager "); }
-                remove { LionFire.Events.ApplicationCommandManager.RequerySuggested -= value; throw new NotImplementedException("TODO: Switch to LionFire.UI's' LionFireCommandManager "); }
+                add
+                {
+                    LionFireCommandManager.RequerySuggested += value;
+                    //LionFire.Events.ApplicationCommandManager.RequerySuggested += value; 
+                    //throw new NotImplementedException("TODO: Switch to LionFire.UI's' LionFireCommandManager "); 
+                }
+                remove
+                {
+                    LionFireCommandManager.RequerySuggested -= value;
+                    //LionFire.Events.ApplicationCommandManager.RequerySuggested -= value; 
+                }
             }
 
-            public void Execute(object parameter)
-            {
-                _executeMethod(parameter);
-            }
+            public void Execute(object parameter) => _executeMethod(parameter);
 
             private Predicate<object> _canExecuteMethod;
             private Action<object> _executeMethod;
-
-
-
         }
-
 
         /// <summary>
         /// Expose the dictionary entries of a CommandMap as properties
@@ -252,28 +241,19 @@ namespace LionFire.Input
             /// <summary>
             /// Always read only in this case
             /// </summary>
-            public override bool IsReadOnly
-            {
-                get { return true; }
-            }
+            public override bool IsReadOnly => true;
 
             /// <summary>
             /// Nope, it's read only
             /// </summary>
             /// <param name="component"></param>
             /// <returns></returns>
-            public override bool CanResetValue(object component)
-            {
-                return false;
-            }
+            public override bool CanResetValue(object component) => false;
 
             /// <summary>
             /// Not needed
             /// </summary>
-            public override Type ComponentType
-            {
-                get { throw new NotImplementedException(); }
-            }
+            public override Type ComponentType => throw new NotImplementedException();
 
             /// <summary>
             /// Get the ICommand from the parent command map
@@ -293,46 +273,32 @@ namespace LionFire.Input
             /// <summary>
             /// Get the type of the property
             /// </summary>
-            public override Type PropertyType
-            {
-                get { return typeof(ICommand); }
-            }
+            public override Type PropertyType => typeof(ICommand);
 
             /// <summary>
             /// Not needed
             /// </summary>
             /// <param name="component"></param>
-            public override void ResetValue(object component)
-            {
-                throw new NotImplementedException();
-            }
+            public override void ResetValue(object component) => throw new NotImplementedException();
 
             /// <summary>
             /// Not needed
             /// </summary>
             /// <param name="component"></param>
             /// <param name="value"></param>
-            public override void SetValue(object component, object value)
-            {
-                throw new NotImplementedException();
-            }
+            public override void SetValue(object component, object value) => throw new NotImplementedException();
 
             /// <summary>
             /// Not needed
             /// </summary>
             /// <param name="component"></param>
             /// <returns></returns>
-            public override bool ShouldSerializeValue(object component)
-            {
-                return false;
-            }
+            public override bool ShouldSerializeValue(object component) => false;
 
             /// <summary>
             /// Store the command which will be executed
             /// </summary>
             private ICommand _command;
         }
-
-
     }
 }

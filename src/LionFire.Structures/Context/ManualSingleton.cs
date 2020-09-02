@@ -70,12 +70,20 @@ namespace LionFire.Structures
             }
             return Instance;
         }
-        public static T GetGuaranteedInstance<CreateType>(Func<T> createFunc)
-            where CreateType : class, T
+        public static T GetGuaranteedInstance<CreateType>(Func<CreateType> createFunc)
+            where CreateType : T
         {
             if (Instance == null)
             {
                 Instance = createFunc();
+            }
+            return Instance;
+        }
+        public static T GetGuaranteedInstance(Func<object> createFunc)
+        {
+            if (Instance == null)
+            {
+                Instance = (T)createFunc(); // CAST
             }
             return Instance;
         }

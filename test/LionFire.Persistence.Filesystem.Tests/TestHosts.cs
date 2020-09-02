@@ -1,4 +1,5 @@
-﻿using LionFire.Persistence;
+﻿using LionFire.Hosting;
+using LionFire.Persistence;
 using LionFire.Services;
 using Microsoft.Extensions.Hosting;
 using System;

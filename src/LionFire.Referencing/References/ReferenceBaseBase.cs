@@ -34,6 +34,8 @@ namespace LionFire.Referencing
         , IReferencable<ConcreteType>
         where ConcreteType : ReferenceBaseBase<ConcreteType>, IReference
     {
+        
+
         IReference IReferencable.Reference => (ConcreteType)this;
 
         ConcreteType IReferencable<ConcreteType>.Reference => (ConcreteType)this;

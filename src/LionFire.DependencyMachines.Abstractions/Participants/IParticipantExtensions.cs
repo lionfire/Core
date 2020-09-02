@@ -79,6 +79,12 @@ namespace LionFire.DependencyMachines
             participant.Dependencies.AddRange(stages.Cast<object>());
             return participant;
         }
+        public static IParticipant DependsOn<T>(this IParticipant participant)
+        {
+            participant.Dependencies ??= new List<object>();
+            participant.Dependencies.Add("type:" + typeof(T).FullName);
+            return participant;
+        }
 
         public static IParticipant DependsOn(this IParticipant participant, params Enum[] stages)
             => participant.DependsOn(stages.Select(s => s.ToString()).ToArray());

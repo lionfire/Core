@@ -18,7 +18,7 @@ namespace LionFire.ExtensionMethods.Persistence
             var result = await TrySave(referencable).ConfigureAwait(false);
             if (result.IsSuccess() != true)
             {
-                throw new PersistenceException(result, $"Save of '{referencable}' failed: {result}");
+                throw new PersistenceException(result, $"Save of '{referencable.Reference}' failed: {result}");
             }
             return result;
         }
@@ -61,7 +61,7 @@ namespace LionFire.ExtensionMethods.Persistence
                 var handle2 = referencable.Reference.GetReadWriteHandle(type, initialValue);
                 puts = handle2;
             }
-
+            
             return (IPersistenceResult)await puts.Put().ConfigureAwait(false);
         }
 

@@ -32,6 +32,7 @@ using LionFire.UI.Windowing;
 using LionFire.UI.Wpf;
 using LionFire.Dependencies;
 using LionFire.Vos.VosApp;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace LionFire.Shell
 {
@@ -763,9 +764,8 @@ namespace LionFire.Shell
 
                 if (!this.Contains(tabName))
                 {
-                    this.AddTabItem(tabName,
-                        //frameworkElement ?? 
-                        frameworkElement = (FrameworkElement)(object)Activator.CreateInstance<T>());
+                    frameworkElement = (FrameworkElement)(object)ActivatorUtilities.CreateInstance<T>(ShellPresenter.ServiceProvider);
+                    this.AddTabItem(tabName, frameworkElement);
 
                     var parented = frameworkElement as IParented<IShellContentPresenter>;
                     if (parented != null)

@@ -27,6 +27,7 @@
     <ProjectReference Include="..\..\src\LionFire.Base\LionFire.Base.csproj" />
     <ProjectReference Include="..\..\src\LionFire.Hosting\LionFire.Hosting.csproj" />
     <ProjectReference Include="..\..\src\LionFire.Persistence.Filesystem\LionFire.Persistence.Filesystem.csproj" />
+    <ProjectReference Include="..\..\src\LionFire.Persistence.Handles\LionFire.Persistence.Handles.csproj" />
     <ProjectReference Include="..\LionFire.Persistence.Testing\LionFire.Persistence.Testing.csproj" />
   </ItemGroup>
 
