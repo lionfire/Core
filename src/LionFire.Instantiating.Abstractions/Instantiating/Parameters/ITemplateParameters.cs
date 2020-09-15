@@ -18,6 +18,11 @@ namespace LionFire.Instantiating
     {
         new IReadHandleBase<TTemplate> RTemplate { get; set; }
     }
+    public interface ITemplateHandleParameters<TTemplate, TTemplateHandle> : ITemplateParameters
+      where TTemplate : ITemplate
+    {
+        new TTemplateHandle RTemplate { get; set; }
+    }
 
     public interface ITemplateParameters<TemplateType, TInstance>
         : IInstantiation<TemplateType>

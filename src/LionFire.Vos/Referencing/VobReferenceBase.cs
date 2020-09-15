@@ -181,7 +181,7 @@ namespace LionFire.Vos
         public override string Path
         {
             get => path;
-            set
+            protected set
             {
                 if (path == value) return;
                 if (path != default) throw new AlreadySetException();

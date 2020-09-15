@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace LionFire.Persistence
 {
-    public interface HC<out T, TListEntry> : IReadOnlyCollection<T>
+    public interface HC<T, TListEntry> : HC<T>, IReadOnlyCollection<T>, IAsyncEnumerable<T>
          where TListEntry : ICollectionEntry
     {
         //        RH<INotifyingReadOnlyCollection<T>> Handle { get; }

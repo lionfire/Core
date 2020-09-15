@@ -27,9 +27,9 @@ namespace LionFire.Referencing.Ex
         //    return default;
         //}
 
-        public static T GetOrAddReadWrite<T>(string key, Func<string, object> factory) => (T)ReadWriteHandles.GetOrAdd(key, factory);
-        public static T GetOrAddWrite<T>(string key, Func<string, object> factory) => (T)WriteHandles.GetOrAdd(key, factory);
-        public static T GetOrAddRead<T>(string key, Func<string, object> factory) => (T)ReadHandles.GetOrAdd(key, factory);
+        public static T GetOrAddReadWrite<T>(string key, Func<string, object> factory) => (T)ReadWriteHandles.GetOrAdd(typeof(T).FullName + ":" + key, factory);
+        public static T GetOrAddWrite<T>(string key, Func<string, object> factory) => (T)WriteHandles.GetOrAdd(typeof(T).FullName + ":" + key, factory);
+        public static T GetOrAddRead<T>(string key, Func<string, object> factory) => (T)ReadHandles.GetOrAdd(typeof(T).FullName + ":" + key, factory);
     }
 
     public static class ObjectHandleRegistry

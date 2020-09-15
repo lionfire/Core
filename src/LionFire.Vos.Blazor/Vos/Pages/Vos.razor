@@ -64,11 +64,12 @@ else
     }
     public async Task Refresh()
     {
-        var root = rootManager.Get();
+        throw new NotImplementedException();
+        //var root = rootManager.Get();
 
-        var hList = ((IReference)root[Path].Reference).GetListHandle();
-        var result = await hList.Resolve();
-        listings = result.Value.Value?.ToArray() ?? Array.Empty<Listing<object>>();
+        //var hList = ((IReference)root[Path].Reference).GetListHandle(); // TODO
+        //var result = await hList.Resolve();
+        //listings = result.Value.Value?.ToArray() ?? Array.Empty<Listing<object>>();
 
     }
 

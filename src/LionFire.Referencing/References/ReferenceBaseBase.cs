@@ -1,4 +1,5 @@
 ﻿using LionFire.Copying;
+using LionFire.Structures;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -87,13 +88,18 @@ namespace LionFire.Referencing
         public abstract string Key { get; protected set; }
 
         [Assignment(AssignmentMode.Ignore)]
-        public abstract string Path { get; set; } // TODO BREAKINGCHANGE: Make set protected, use constructors/factories to set Path and other properties
+        public virtual string Url { get => Scheme + ":" + Key; protected set => throw new NotImplementedException(); }
+
+        public abstract string Scheme { get; }
+
+        [Assignment(AssignmentMode.Ignore)]
+        public abstract string Path { get; protected set; } // TODO BREAKINGCHANGE: Make set protected, use constructors/factories to set Path and other properties
 
         protected virtual void CopyFrom(ConcreteType other)
         {
             this.Key = other.Key;
         }
-        protected virtual void InternalSetPath(string path) => throw new NotSupportedException();
+        protected virtual void InternalSetPath(string path) => Path = path;
 
         #region Children
 
@@ -131,9 +137,13 @@ namespace LionFire.Referencing
             if (obj == null) return false;
             //if (obj.GetType() != this.GetType()) return false; // REVIEW 
 
+            if (obj is IKeyed<string> keyed && obj.GetType() == this.GetType())
+            {
+                return Key == keyed.Key;
+            }
             if (obj is IReference reference)
             {
-                return Key == reference.Key;
+                return Url == reference.Url;
             }
             return false;
         }

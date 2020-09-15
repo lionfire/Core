@@ -107,7 +107,7 @@ namespace Universal_.ListHandle_
 
                 #region List (Primary assertion)
 
-                var listHandle = parentReference.GetListHandle();
+                var listHandle = parentReference.GetListingsHandle();
 
                 await listHandle.Resolve().ConfigureAwait(false);
 

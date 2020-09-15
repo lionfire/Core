@@ -201,7 +201,7 @@ namespace LionFire.Shell.Wpf
 
         public void Show(UIReference reference)
         {
-            string tabName = reference.TabName ?? WpfShellTabNames.DefaultTabName;
+            string tabName = reference.TabName ?? reference.EffectiveName ?? WpfShellTabNames.DefaultTabName;
 
             if (reference.ViewAction != null)
             {

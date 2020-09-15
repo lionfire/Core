@@ -23,10 +23,22 @@ namespace LionFire.Persistence
             throw new NotImplementedException("TODO: Create");
         }
 
+        // ENH: Return Put task separately and don't await it
         public static async Task<T> TryGetOrCreate<T>(this IReadWriteHandle<T> handle)  // REVIEW - return PersistenceResult<T>?  Generic doesn't exist yet.
         {
-            var result = (await handle.Resolve().ConfigureAwait(false)).ToRetrieveResult();
-            if (result.IsFound() == true) return result.Value;
+            if (handle is ILazilyResolves<T> lr)
+            {
+                var result = await lr.GetValue().ConfigureAwait(false);
+                if (result.HasValue)
+                {
+                    return lr.Value;
+                }
+            }
+            else
+            {
+                var result = (await handle.Resolve().ConfigureAwait(false)).ToRetrieveResult();
+                if (result.IsFound() == true) return result.Value;
+            }
 
             handle.Value = Activator.CreateInstance<T>();
             var putResult = await handle.Put().ConfigureAwait(false);

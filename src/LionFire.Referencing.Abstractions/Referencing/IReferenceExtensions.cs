@@ -32,7 +32,7 @@ namespace LionFire.Referencing
         {
             if (reference is ICloneableReference cr) { return (TReference)cr.CloneWithPath(newPath); }
 
-            var ub = new UriBuilder(reference.Key)
+            var ub = new UriBuilder(reference.Url)
             {
                 Path = newPath
             };
@@ -68,7 +68,7 @@ namespace LionFire.Referencing
                 return (T)cr.CloneWithPath(LionPath.Combine(reference.Path, subPath));
             }
 
-            var uri = new Uri(reference.Key);
+            var uri = new Uri(reference.Url);
             var newUri = new Uri(uri, subPath);
 
             var mi = FromUriMethods[reference.GetType()];
@@ -97,7 +97,7 @@ namespace LionFire.Referencing
                 return (TReference)cr.CloneWithPath(LionPath.Combine(reference.Path, subPath));
             }
 
-            var uri = new Uri(reference.Key);
+            var uri = new Uri(reference.Url);
             var newUri = new Uri(uri, subPath.Aggregate((x, y) => x + "/" + y));
 
             var mi = FromUriMethods[reference.GetType()];

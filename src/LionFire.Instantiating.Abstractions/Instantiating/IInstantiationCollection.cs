@@ -52,7 +52,8 @@ namespace LionFire.Instantiating
         bool ContainsKey(string key);
         void Add(IInstantiation instantiation);
         void Add(IReadHandleBase<ITemplate> hTemplate);
-        void Add(ITemplate template);
+        //void Add(ITemplate template);
+        void Add<TTemplate>(TTemplate template) where TTemplate : ITemplate;
         void AddRange(params IInstantiation[] items);
         string CreateKey(ITemplate template);
         string GetDefaultKey(ITemplate template);

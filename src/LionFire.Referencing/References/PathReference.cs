@@ -1,4 +1,6 @@
-﻿namespace LionFire.Referencing
+﻿using System;
+
+namespace LionFire.Referencing
 {
     /// <summary>
     /// Just a Path
@@ -13,7 +15,8 @@
         
         #endregion
 
-        public string Scheme => null;
+        public override string Scheme => "path";
+        public const string SchemePrefix = "path:";
 
 
         #region Path
@@ -22,7 +25,7 @@
         public override string Path
         {
             get => path;
-            set
+            protected set
             {
                 if (path == value) return;
                 if (path != default) throw new AlreadySetException();
@@ -34,6 +37,7 @@
         #endregion
 
         public override string Key { get => Path; protected set => Path = value; }
+        public override string Url { get => SchemePrefix + Key; protected set => throw new NotImplementedException(); }
 
         public string Host => null;
 

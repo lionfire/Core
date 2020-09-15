@@ -37,7 +37,7 @@ namespace LionFire.Shell
             this.Dispatcher = dispatcher;
         }
 
-        public bool IsInvokeRequired => throw new NotImplementedException();
+        public bool IsInvokeRequired => !Dispatcher.CheckAccess();
 
 
         public Task BeginInvoke(Action action) => Dispatcher.BeginInvoke(action).Task;

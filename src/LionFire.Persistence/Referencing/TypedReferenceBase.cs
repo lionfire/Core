@@ -81,6 +81,6 @@ namespace LionFire.Referencing
         //public override string Host { get => resolvedReference.Host; set => throw new NotSupportedException(); }
         //public override string Port { get => resolvedReference.Port; set => throw new NotSupportedException(); }
         public override string Key { get => resolvedReference.Key; protected set => throw new NotSupportedException(); }
-        public override string Path { get => resolvedReference.Path; set => throw new NotSupportedException(); }
+        public override string Path { get => resolvedReference.Path; protected set => throw new NotSupportedException(); }
     }
 }

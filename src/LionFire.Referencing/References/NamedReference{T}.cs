@@ -8,6 +8,7 @@ namespace LionFire.Referencing
         public override IEnumerable<string> AllowedSchemes => UriSchemes;
         public static string[] UriSchemes = new string[] { TypeNameForScheme(typeof(TValue)) };
         public override string Scheme =>  TypeNameForScheme(typeof(TValue));
+        public string SchemePrefix => Scheme + ":";
 
         // FUTURE: Use FullName or a type alias directory to prevent conflicts
         //public static Func<Type, string> TypeNameForScheme = t => "object-" + t.Name; 
@@ -39,7 +40,9 @@ namespace LionFire.Referencing
 
         private string key;
 
+        public override string Url { get => SchemePrefix + Key; protected set => throw new NotImplementedException(); }
+
         [SetOnce]
-        public override string Path { get => Key; set => Key = value; }
+        public override string Path { get => Key; protected set => Key = value; }
     }
 }

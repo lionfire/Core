@@ -57,13 +57,7 @@ namespace LionFire.Avalon
 
         public ICommand LastCommand => m_lastCommand;
 
-        public ReadOnlyObservableCollection<ZapCommandItem> Commands
-        {
-            get
-            {
-                return m_commandItems.ReadOnly;
-            }
-        }
+        public ReadOnlyObservableCollection<ZapCommandItem> Commands => m_commandItems.ReadOnly;
 
         public static readonly DependencyProperty CommandItemTemplateProperty =
             DependencyProperty.Register("CommandItemTemplate", typeof(DataTemplate), typeof(ZapScroller));
@@ -89,10 +83,7 @@ namespace LionFire.Avalon
 
         public static readonly DependencyProperty ItemCountProperty = ItemCountPropertyKey.DependencyProperty;
 
-        public int ItemCount
-        {
-            get { return (int)GetValue(ItemCountProperty); }
-        }
+        public int ItemCount => (int)GetValue(ItemCountProperty);
 
         public static readonly DependencyProperty CurrentItemIndexProperty =
             DependencyProperty.Register("CurrentItemIndex", typeof(int), typeof(ZapScroller),

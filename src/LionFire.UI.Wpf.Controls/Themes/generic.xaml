@@ -336,9 +336,73 @@ Padding="{DynamicResource LionListItemPadding}" Margin="{DynamicResource LionLis
     
         -->
 
-    <!--TOPORT - ZAP Stuff from LFA generic.xaml-->
-    
-    
+    <Style TargetType="{x:Type lfaL:ZapScroller}">
+        <!--<Setter Property="CommandItemTemplate" Value="{StaticResource DefaultZapCommandItemTemplate}"/>-->
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="{x:Type lfaL:ZapScroller}">
+                    <!--<DockPanel  LastChildFill="True">-->
+
+                    <!--<lfaL:LionListBox DockPanel.Dock="{TemplateBinding SelectorDock}" Orientation="Horizontal"
+                                       ItemsSource="{Binding RelativeSource={RelativeSource TemplatedParent}, Path=Commands}"  DisplayMemberPath="Content.Caption"/>-->
+
+                    <lfaL:ZapDecorator x:Name="PART_ZapDecorator">
+                        <lfaL:ZapPanel IsItemsHost="true" 
+                                          Orientation="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type lfa:ZapScroller}}, Path=Orientation}"
+                                          />
+                    </lfaL:ZapDecorator>
+
+                    <!--</DockPanel>-->
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <lfaL:OrientationInverter x:Key="OrientationInverter"/>
+
+    <Style TargetType="{x:Type lfaL:ZapTabControl}">
+        <Setter Property="CommandItemTemplate" Value="{StaticResource DefaultZapCommandItemTemplate}"/>
+
+
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="{x:Type lfaL:ZapTabControl}">
+                    <DockPanel  LastChildFill="True">
+
+                        <!--<TextBlock MinWidth="30" MinHeight="30" Background="LightGreen" Foreground="Black" Text="Asdf" DockPanel.Dock="Top"/>-->
+
+                        <!--DisplayMemberPath="Content.Caption"-->
+
+                        <lfaL:LionListBox x:Name="llb" DockPanel.Dock="{TemplateBinding HeaderDock}" Orientation="{TemplateBinding Orientation}"
+                                         ItemsSource="{Binding RelativeSource={RelativeSource TemplatedParent}, Path=Commands}"  
+                                      SelectedIndex="{Binding RelativeSource={RelativeSource TemplatedParent}, Path=CurrentItemIndex}"        
+                                          ItemTemplate="{Binding RelativeSource={RelativeSource TemplatedParent}, Path=CommandItemTemplate}"
+                                          DisplayMemberPath="Content"
+MinWidth="50" MinHeight="50"
+                                              Style="{TemplateBinding ListBoxStyle}"
+                                          />
+
+                        <lfaL:ZapDecorator x:Name="PART_ZapDecorator">
+                            <ItemsControl ItemsSource="{Binding RelativeSource={RelativeSource TemplatedParent}, Path=Items}" ItemTemplate="{Binding RelativeSource={RelativeSource TemplatedParent}, Path=ItemTemplate}">
+                                <ItemsControl.ItemsPanel>
+                                    <ItemsPanelTemplate>
+                                        <lfaL:ZapPanel IsItemsHost="true"  
+                                           MinWidth="50" MinHeight="50" 
+                                          Orientation="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type lfa:ZapTabControl}}, Path=Orientation}"/>
+                                        <!--, Converter={StaticResource OrientationInverter}-->
+                                    </ItemsPanelTemplate>
+                                </ItemsControl.ItemsPanel>
+                            </ItemsControl>
+
+                        </lfaL:ZapDecorator>
+
+                    </DockPanel>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+
     <!--=== TreeListView ===-->
     <Style x:Key="ExpandCollapseToggleStyle" TargetType="{x:Type ToggleButton}">
         <Setter Property="Focusable" Value="False"/>

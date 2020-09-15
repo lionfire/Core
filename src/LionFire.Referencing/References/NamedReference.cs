@@ -23,6 +23,7 @@ namespace LionFire.Referencing
         public override IEnumerable<string> AllowedSchemes => UriSchemes;
         public static string[] UriSchemes => new string[] { "object" };
         public override string Scheme => "object";
+        public const string SchemePrefix = "object:";
 
         public static Func<Type, string> TypeNameForType = t => t.FullName;
 
@@ -53,6 +54,7 @@ namespace LionFire.Referencing
                 if(split.Length > 1) TypeName = split[1];
             }
         }
+        public override string Url { get => SchemePrefix + Key; protected set => throw new NotImplementedException(); }
 
         #region TypeName
 

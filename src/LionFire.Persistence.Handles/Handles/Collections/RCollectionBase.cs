@@ -6,6 +6,7 @@ using LionFire.Referencing;
 
 namespace LionFire.Persistence.Handles
 {
+
     public abstract class RCollectionBase<TReference, TCollection, TItem> : ReadHandle<TReference, TCollection>, IReadOnlyCollection<TItem>
         where TReference : IReference
         where TCollection : class, IEnumerable<TItem>

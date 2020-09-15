@@ -14,10 +14,10 @@ namespace LionFire.Referencing
         public string Host => "";
         public string Port => "";
 
-        public abstract string Scheme
-        {
-            get;
-        }
+        //public abstract string Scheme
+        //{
+        //    get;
+        //}
 
         #region Path
 
@@ -25,7 +25,7 @@ namespace LionFire.Referencing
         public override string Path
         {
             get => path;
-            set
+            protected set
             {
                 if (path != default) throw new AlreadySetException();
                 InternalSetPath(value);

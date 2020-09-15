@@ -82,7 +82,7 @@
                 <!--ContentTemplate="{StaticResource TabTemplate}"-->
                 <TabControl.Resources>
                     <Style TargetType="TabItem">
-                        <Setter Property="Visibility" Value="Collapsed"/>
+                        <Setter Property="Visibility" Value="Visible"/>
                     </Style>
                 </TabControl.Resources>
             </TabControl>

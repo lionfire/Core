@@ -12,6 +12,12 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="Applications\**" />
+    <EmbeddedResource Remove="Applications\**" />
+    <None Remove="Applications\**" />
+  </ItemGroup>
+
+  <ItemGroup>
     <ProjectReference Include="..\LionFire.Applications.Abstractions\LionFire.Applications.Abstractions.csproj" />
     <ProjectReference Include="..\LionFire.Assets.Abstractions\LionFire.Assets.Abstractions.csproj" />
     <ProjectReference Include="..\LionFire.Assets\LionFire.Assets.csproj" />
@@ -25,10 +31,7 @@
 
   <ItemGroup>
     <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="3.1.7" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="Applications\" />
+    <PackageReference Include="Newtonsoft.Json" Version="12.0.3" />
   </ItemGroup>
 
 

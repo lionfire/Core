@@ -728,7 +728,7 @@ namespace LionFire.Shell
         public T ShowControl<T>(string tabName = null)
             where T : class
         {
-            var control = GetControl<T>(tabName);
+            var control = GetControl<T>(tabName, showControl: true);
             return control; // REVIEW
         }
 
@@ -916,6 +916,8 @@ namespace LionFire.Shell
 
         public T ShowBackgroundControl<T>(string tabName = null) where T : class
         {
+            if (!Dispatcher.CheckAccess()) { return Dispatcher.Invoke(new Func<T>(() => ShowBackgroundControl<T>(tabName))); }
+
             tabName = tabName ?? TabManager.GetTabNameFromType<T>();
 
             T controlInstance = null;

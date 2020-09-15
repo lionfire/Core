@@ -42,6 +42,8 @@ namespace LionFire.Referencing
 
         #endregion
 
+        
+
         [SetOnce]
         public override string Key
         {
@@ -58,14 +60,14 @@ namespace LionFire.Referencing
         }
         private string key;
 
-        public string Scheme => Uri.Scheme;
+        public override string Scheme => Uri.Scheme;
         public string Host => Uri.Host;
         public string Port => Uri.Port.ToString();
 
         [SetOnce]
         public override string Path {
             get => Uri.AbsolutePath;
-            set => throw new Exception("Use set_Uri or set_Key instead");
+            protected set => throw new Exception("Use set_Uri or set_Key instead");
         }
         
     }

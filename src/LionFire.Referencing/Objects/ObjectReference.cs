@@ -11,6 +11,9 @@ namespace LionFire.Referencing
     /// </summary>
     public class ObjectReference : IReference, ITypedReference
     {
+        public const string SchemePrefix = "object:";
+        public string Scheme => "object";
+
         #region Construction
 
         public ObjectReference() { }
@@ -21,13 +24,13 @@ namespace LionFire.Referencing
 
         #endregion
 
-        public string Scheme => "object";
 
         public string Persister => null;
 
         public string Path => Key;
 
         public string Key => (obj as IKeyed).Key;
+        public string Url => SchemePrefix + Key;
 
         #region Object
 

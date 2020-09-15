@@ -56,10 +56,10 @@ namespace LionFire.Referencing
 
         public override string Key { get => Uri.ToString(); protected set => Uri = new Uri(value); }
 
-        public string Scheme => Uri.Scheme;
+        public override string Scheme => Uri.Scheme;
         public string Host => Uri.Host;
         public string Port => Uri.Port.ToString();
-        public override string Path { get => Uri.AbsolutePath; set => throw new Exception("Use set_Uri"); }
+        public override string Path { get => Uri.AbsolutePath; protected set => throw new Exception("Use set_Uri"); }
 
         
     }

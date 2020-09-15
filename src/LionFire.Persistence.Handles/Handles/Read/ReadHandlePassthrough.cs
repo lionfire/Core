@@ -1,4 +1,5 @@
-﻿using LionFire.Persistence;
+﻿#nullable enable
+using LionFire.Persistence;
 using LionFire.Referencing;
 using LionFire.Resolves;
 using MorseCode.ITask;
@@ -39,15 +40,16 @@ namespace LionFire.Persistence.Handles
         #endregion
 
         [Ignore(LionSerializeContext.AllSerialization)]
-        public IReadHandle<TValue> ReadHandle => handle ??= Reference?.GetReadHandle<TValue>();
-        protected IReadHandle<TValue> handle;
+        public IReadHandle<TValue>? ReadHandle => handle ??= Reference?.GetReadHandle<TValue>();
+        protected IReadHandle<TValue>? handle;
         IReadHandleBase<object> IHasReadHandle.ReadHandle => (IReadHandle<object>)ReadHandle;
 
-        public Type Type => ReadHandle.Type;
+
+        public Type? Type => ReadHandle?.Type;
 
         IReference IReferencable.Reference => ReadHandle.Reference;
 
-        public string Key => ReadHandle.Key;
+        public string? Key => ReadHandle?.Key;
 
         public PersistenceFlags Flags => ReadHandle.Flags;
 

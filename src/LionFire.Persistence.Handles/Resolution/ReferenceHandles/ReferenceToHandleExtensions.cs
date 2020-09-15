@@ -7,6 +7,7 @@ using System.Reflection;
 using System.Linq;
 using System.Collections.Generic;
 using LionFire.ExtensionMethods;
+using System.Collections.ObjectModel;
 
 namespace LionFire.Referencing
 {
@@ -18,15 +19,15 @@ namespace LionFire.Referencing
 
         public static IReadHandle<TValue> GetReadHandle<TValue, TReference>(this ITypedReference<TValue, TReference> reference)
             where TReference : IReference
-            => HandleRegistry.GetOrAddRead<IReadHandle<TValue>>(reference.Reference.Key, _ => reference.Reference.TryGetReadHandleProvider().GetReadHandle<TValue>(reference.Reference));
+            => HandleRegistry.GetOrAddRead<IReadHandle<TValue>>(reference.Reference.Url, _ => reference.Reference.TryGetReadHandleProvider().GetReadHandle<TValue>(reference.Reference));
 
         public static IReadHandle<TValue> GetReadHandle<TValue, TReference>(this TReference reference)
             where TReference : IReference
-            => HandleRegistry.GetOrAddRead<IReadHandle<TValue>>(reference.Key, _ => reference.TryGetReadHandleProvider<TReference>().GetReadHandle<TValue>(reference));
+            => HandleRegistry.GetOrAddRead<IReadHandle<TValue>>(reference.Url, _ => reference.TryGetReadHandleProvider<TReference>().GetReadHandle<TValue>(reference));
 
         public static IReadHandle<TValue> GetReadHandle<TValue>(this IReference reference, TValue preresolvedValue = default, IServiceProvider serviceProvider = null)
         {
-            return HandleRegistry.GetOrAddRead<IReadHandle<TValue>>(reference.Key, _ => reference.GetReadHandleProvider(serviceProvider).GetReadHandle<TValue>(reference, preresolvedValue));
+            return HandleRegistry.GetOrAddRead<IReadHandle<TValue>>(reference.Url, _ => reference.GetReadHandleProvider(serviceProvider).GetReadHandle<TValue>(reference, preresolvedValue));
 #if Alternative
 #else
             ////throw new NotImplementedException("FIXME - I don't think this even works");
@@ -48,15 +49,6 @@ namespace LionFire.Referencing
             => reference.GetReadHandleProvider().GetReadHandle<TValue>(reference)
             ?? throw new HasUnresolvedDependenciesException($"Could not get {nameof(IReadHandle<TValue>)} type for reference of type {reference.GetType().FullName}");
 
-        public static IReadHandle<Metadata<IEnumerable<Listing<object>>>> GetListHandle(this IReference reference)
-            => reference.GetReadHandle<Metadata<IEnumerable<Listing<object>>>>();
-        public static IReadHandle<Metadata<IEnumerable<Listing<object>>>> GetListHandle(this IReferencable referencable)
-            => referencable.Reference.GetReadHandle<Metadata<IEnumerable<Listing<object>>>>();
-        public static IReadHandle<Metadata<IEnumerable<Listing<T>>>> GetListHandle<T>(this IReference reference)
-                  => reference.GetReadHandle<Metadata<IEnumerable<Listing<T>>>>();
-        public static IReadHandle<Metadata<IEnumerable<Listing<T>>>> ReferenceGetListHandle<T>(this IReferencable referencable)
-            => referencable.Reference.GetReadHandle<Metadata<IEnumerable<Listing<T>>>>();
-
         public static IReadHandle<TValue> CreateReadHandle<TValue>(this IReference reference) => throw new NotImplementedException(); // FUTURE
 
         public static IReadHandle GetExistingReadHandle(this IReferencable referencable)
@@ -77,15 +69,15 @@ namespace LionFire.Referencing
             throw new ArgumentException($"{nameof(referencable)} must implement ITypedReference. (TODO: scan the object for IReadHandle<T>)");
         }
         public static IReadHandle<T> GetExistingReadHandle<T>(this IReference reference)
-            => (IReadHandle<T>)HandleRegistry.ReadHandles.TryGetValue(reference?.Key ?? throw new ArgumentNullException(nameof(reference)));
+            => (IReadHandle<T>)HandleRegistry.ReadHandles.TryGetValue(reference?.Url ?? throw new ArgumentNullException(nameof(reference)));
 
         #endregion
 
         #region Write Handle
 
-        public static IWriteHandle<T> TryGetWriteHandle<T>(this IReference reference) => HandleRegistry.GetOrAddWrite<IWriteHandle<T>>(reference.Key, _ => reference.GetWriteHandleProvider().GetWriteHandle<T>(reference));
+        public static IWriteHandle<T> TryGetWriteHandle<T>(this IReference reference) => HandleRegistry.GetOrAddWrite<IWriteHandle<T>>(reference.Url, _ => reference.GetWriteHandleProvider().GetWriteHandle<T>(reference));
 
-        public static IWriteHandle<T> GetWriteHandle<T>(this IReference reference, T prestagedValue = default, IServiceProvider serviceProvider = null) => HandleRegistry.GetOrAddWrite<IWriteHandle<T>>(reference.Key, _ => reference.GetWriteHandleProvider(serviceProvider).GetWriteHandle<T>(reference, prestagedValue: prestagedValue) ?? throw new HasUnresolvedDependenciesException($"Could not get {nameof(Persistence.IWriteHandle<T>)} type for reference of type {reference.GetType().FullName}"));
+        public static IWriteHandle<T> GetWriteHandle<T>(this IReference reference, T prestagedValue = default, IServiceProvider serviceProvider = null) => HandleRegistry.GetOrAddWrite<IWriteHandle<T>>(reference.Url, _ => reference.GetWriteHandleProvider(serviceProvider).GetWriteHandle<T>(reference, prestagedValue: prestagedValue) ?? throw new HasUnresolvedDependenciesException($"Could not get {nameof(Persistence.IWriteHandle<T>)} type for reference of type {reference.GetType().FullName}"));
 
         #endregion
 
@@ -113,7 +105,7 @@ namespace LionFire.Referencing
         }
 
         public static IReadWriteHandle<T> GetExistingReadWriteHandle<T>(this IReference reference)
-            => (IReadWriteHandle<T>)HandleRegistry.ReadWriteHandles.TryGetValue(reference?.Key ?? throw new ArgumentNullException(nameof(reference)));
+            => (IReadWriteHandle<T>)HandleRegistry.ReadWriteHandles.TryGetValue(reference?.Url ?? throw new ArgumentNullException(nameof(reference)));
         
         #endregion
 
@@ -123,13 +115,13 @@ namespace LionFire.Referencing
 
         // Generic
         public static IReadWriteHandle<T> GetReadWriteHandle<T>(this IReference reference, T preresolvedValue = default)
-            => HandleRegistry.GetOrAddReadWrite<IReadWriteHandle<T>>(reference?.Key ?? throw new ArgumentNullException(nameof(reference)),
+            => HandleRegistry.GetOrAddReadWrite<IReadWriteHandle<T>>(reference?.Url ?? throw new ArgumentNullException(nameof(reference)),
                 _ => reference.GetReadWriteHandleProvider().GetReadWriteHandle<T>(reference, preresolvedValue));
 
         // Generic, typed Reference
         public static IReadWriteHandle<T> GetReadWriteHandle<T, TReference>(this TReference reference, T preresolvedValue = default)
               where TReference : IReference
-              => HandleRegistry.GetOrAddReadWrite<IReadWriteHandle<T>>(reference?.Key ?? throw new ArgumentNullException(nameof(reference)), _ => reference.TryGetReadWriteHandleProvider<TReference>().GetReadWriteHandle<T>(reference, preresolvedValue));
+              => HandleRegistry.GetOrAddReadWrite<IReadWriteHandle<T>>(reference?.Url ?? throw new ArgumentNullException(nameof(reference)), _ => reference.TryGetReadWriteHandleProvider<TReference>().GetReadWriteHandle<T>(reference, preresolvedValue));
 
         // Always create
         public static IReadWriteHandle<T> ToReadWriteHandle<T>(this IReference reference) => reference.GetReadWriteHandleProvider().GetReadWriteHandle<T>(reference)
@@ -138,6 +130,34 @@ namespace LionFire.Referencing
         #endregion
 
         #region Collections
+
+        #region Listings
+
+        public static IReadHandle<Metadata<IEnumerable<Listing<object>>>> GetListingsHandle(this IReference reference)
+            => reference.GetReadHandle<Metadata<IEnumerable<Listing<object>>>>();
+        public static IReadHandle<Metadata<IEnumerable<Listing<object>>>> GetListingsHandle(this IReferencable referencable)
+            => referencable.Reference.GetReadHandle<Metadata<IEnumerable<Listing<object>>>>();
+        public static IReadHandle<Metadata<IEnumerable<Listing<T>>>> GetListingsHandle<T>(this IReference reference)
+                  => reference.GetReadHandle<Metadata<IEnumerable<Listing<T>>>>();
+        public static IReadHandle<Metadata<IEnumerable<Listing<T>>>> ReferenceGetListingsHandle<T>(this IReferencable referencable)
+            => referencable.Reference.GetReadHandle<Metadata<IEnumerable<Listing<T>>>>();
+
+        #endregion
+
+        #region ReadHandles
+
+        //public static IReadHandle<Metadata<IEnumerable<Listing<object>>>> GetListingsHandle(this IReference reference)
+        //    => reference.GetReadHandle<Metadata<IEnumerable<Listing<object>>>>();
+        //public static IReadHandle<Metadata<IEnumerable<Listing<object>>>> GetListingsHandle(this IReferencable referencable)
+        //    => referencable.Reference.GetReadHandle<Metadata<IEnumerable<Listing<object>>>>();
+        public static ListingValues<T> GetListingValues<T>(this IReference reference)
+                  => new ListingValues<T>(reference.GetListingsHandle<T>());
+        //public static IReadHandle<Metadata<IEnumerable<Listing<T>>>> ReferenceGetListiandle<T>(this IReferencable referencable)
+            //=> referencable.Reference.GetReadHandle<Metadata<IEnumerable<Listing<T>>>>();
+
+
+        #endregion
+        
 
         public static HC<T> GetCollectionHandle<T>(this IReference reference) => reference.GetCollectionHandleProvider().GetCollectionHandle<T>(reference);
 

@@ -44,10 +44,16 @@ namespace LionFire.Serialization.Json.Newtonsoft
 
         //#endregion
 
-        public NewtonsoftJsonSerializer(IOptionsMonitor<JsonSerializerSettings> optionsMonitor)
+        public NewtonsoftJsonSerializer(IOptionsMonitor<JsonSerializerSettings> optionsMonitor, IServiceProvider serviceProvider)
         {
             PersistenceSettings = optionsMonitor.Get(LionSerializeContext.Persistence.ToString());
             NetworkSettings = optionsMonitor.Get(LionSerializeContext.Network.ToString());
+
+            if (serviceProvider.GetService(typeof(KnownTypesBinder)) is KnownTypesBinder knownTypesBinder)
+            {
+                PersistenceSettings.SerializationBinder = knownTypesBinder;
+                NetworkSettings.SerializationBinder = knownTypesBinder;
+            }
         }
 
         public override SerializationFormat DefaultFormat => defaultFormat;
@@ -115,7 +121,7 @@ namespace LionFire.Serialization.Json.Newtonsoft
         public override DeserializationResult<T> ToObject<T>(string str, Lazy<PersistenceOperation> operation = null, PersistenceContext context = null)
             => JsonConvert.DeserializeObject<T>(str, SettingsForContext(operation));
 
-#endregion
+        #endregion
 
     }
 }

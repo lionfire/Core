@@ -15,5 +15,6 @@ namespace LionFire.Persistence
         public T Value { get; set; }
 
         public static implicit operator Metadata<T>(T value) => new Metadata<T>(value);
+        public static implicit operator T(Metadata<T> value) => value.Value;
     }
 }

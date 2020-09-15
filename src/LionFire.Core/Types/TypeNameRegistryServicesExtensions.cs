@@ -54,11 +54,15 @@ namespace LionFire.Services
                         {
                             if (r.Types[key] != type) throw new AlreadyException($"Type name {key} is already registered with a different type: {r.Types[key].FullName}.  Cannot register as {type.FullName}");
                         }
+                        else if (r.TypeNames.ContainsKey(type))
+                        {
+                            if (r.TypeNames[type] != key) throw new AlreadyException($"Type {type} is already registered with a different key: {r.TypeNames[type]}.  Cannot register as {key}");
+                        }
                         else
                         {
                             r.Types.Add(key, type);
+                            r.TypeNames.Add(type, key);
                         }
-
                     });
 
         //=> services
@@ -67,14 +71,16 @@ namespace LionFire.Services
         //              [name ?? type.Name] = type,
         //          }));
 
-        public static IServiceCollection RegisterTypeNames(this IServiceCollection services, Assembly assembly, bool exportedTypesOnly = true, Func<Type, string> selector = null, Func<Type, bool> filter = null, bool concreteTypesOnly = true)
+        public static IServiceCollection RegisterTypeNames(this IServiceCollection services, Assembly assembly, bool exportedTypesOnly = true, Func<Type, string> selector = null, Func<Type, bool> filter = null,  bool abstractTypes = false, bool genericTypes = false, bool interfaceTypes = false)
         {
             if (selector == null) selector = t => null; // Uses a default in RegisterTypeName
             if (filter == null) filter = t => true;
 
             foreach (var type in (exportedTypesOnly ? assembly.GetExportedTypes() : assembly.GetTypes()).Where(filter))
             {
-                if (concreteTypesOnly && (type.GetTypeInfo().IsAbstract || type.GetTypeInfo().IsInterface)) continue;
+                if (!abstractTypes && type.IsAbstract && !type.IsInterface) continue;
+                if (!genericTypes && type.ContainsGenericParameters) continue;
+                if (!interfaceTypes && type.IsInterface) continue;
                 services.RegisterTypeName(type, selector(type));
             }
             return services;

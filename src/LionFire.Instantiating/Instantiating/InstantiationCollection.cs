@@ -16,11 +16,11 @@ namespace LionFire.Instantiating
 
     public class InstantiationCollection : ListDictionary<string, IInstantiation>
  , IInstantiationCollection
- //, INotifyingDictionary<string, IInstantiation>
- //, INestedNotifyingCollection
- //: Dictionary<string, IInstantiation>
- //, IEnumerable<IInstantiation>
- //where ITemplate : ITemplate
+    //, INotifyingDictionary<string, IInstantiation>
+    //, INestedNotifyingCollection
+    //: Dictionary<string, IInstantiation>
+    //, IEnumerable<IInstantiation>
+    //where ITemplate : ITemplate
     {
 
         #region Parent
@@ -121,12 +121,14 @@ namespace LionFire.Instantiating
 
         #region Add
 
-        public void Add(ITemplate template)
+        public void Add<TTemplate>(TTemplate template)
+            where TTemplate : ITemplate
         {
             // REVIEW - EXPERIMENTAL, 
             // TODO FIXME - need to read from this list at instantiation time
             var referencable = template as IReferencable;
-            if (referencable == null || referencable.Reference == null) {
+            if (referencable == null || referencable.Reference == null)
+            {
                 Templates ??= new List<ITemplate>();
                 Templates.Add(template);
                 return;
@@ -137,10 +139,13 @@ namespace LionFire.Instantiating
 #if SanityChecks // TEMP
             if (instantiation.Template == null) throw new UnreachableCodeException("instantiation.Template==null");
 #endif
-            this.Add(instantiation);
+            base.Add(instantiation);
         }
 #if !AOT
-        public void Add(IReadHandleBase<ITemplate> hTemplate) => Add(new Instantiation<ITemplate>(hTemplate));
+        //public void Add(IReadHandleBase<ITemplate> hTemplate) => Add(new Instantiation<ITemplate>(hTemplate));
+        //public void Add(IReadHandleBase<ITemplate> hTemplate) => Add(new Instantiation<ITemplate>(hTemplate));
+        public void Add(IReadHandleBase<ITemplate> hTemplate) 
+            => base.Add((IInstantiation)Activator.CreateInstance(typeof(Instantiation<,>).MakeGenericType(hTemplate.Type, typeof(LionFire.Assets.RAsset<>).MakeGenericType(hTemplate.Type)), hTemplate));
 #endif
 
         //public void Add(string templatePath)
@@ -148,25 +153,26 @@ namespace LionFire.Instantiating
         //    base.Add(new Instantiation(templatePath));
         //}
 
-//        public void Add(IInstantiation instantiation)
-//        {
-//#if SanityChecks
-//            if (instantiation.Parameters != null && instantiation.Parameters != instantiation)
-//            {
-//                l.Warn("InstantiationCollection.Add: instantiation.Parameters != null && instantiation.Parameters != instantiation.  instantiation: " +
-//                    instantiation.ToString() + " of type " + instantiation.GetType().Name + ", Parameters: " + (instantiation.Parameters == null ? "null" : instantiation.Parameters.GetType().Name));
-//            }
-//#endif
-//            base.Add((IInstantiation)instantiation);
-//        }
+        public new void Add(IInstantiation instantiation)
+        {
+            //#if SanityChecks
+            //            if (instantiation.Parameters != null && instantiation.Parameters != instantiation)
+            //            {
+            //                l.Warn("InstantiationCollection.Add: instantiation.Parameters != null && instantiation.Parameters != instantiation.  instantiation: " +
+            //                    instantiation.ToString() + " of type " + instantiation.GetType().Name + ", Parameters: " + (instantiation.Parameters == null ? "null" : instantiation.Parameters.GetType().Name));
+            //            }
+            //#endif
+            //base.Add((IInstantiation)instantiation);
+            base.Add(instantiation);
+        }
 
-#endregion
+        #endregion
 
-#region Misc
+        #region Misc
 
         private static readonly ILogger l = Log.Get();
 
-#endregion
+        #endregion
 
     }
 
@@ -181,14 +187,14 @@ namespace LionFire.Instantiating
     where TTemplate : ITemplate
     {
 
-#region Parent
+    #region Parent
 
         [Ignore]
         public object Parent { get; set; }
         //object IParented.Parent { get{return this.Parent;} set{this.Parent = (InstantiationCollection)value;} }
         //public InstantiationCollection Parent { get; set; }
 
-#endregion
+    #endregion
 
         //public IEnumerator<IInstantiation<TTemplate>> GetEnumerator()  base
         //{
@@ -203,7 +209,7 @@ namespace LionFire.Instantiating
         //    }
         //}
 
-#region Keys
+    #region Keys
 
         public string GetDefaultKey(TTemplate template)
         {
@@ -233,7 +239,7 @@ namespace LionFire.Instantiating
             return result;
         }
 
-#endregion
+    #endregion
 
         protected override void OnAdded(IInstantiation<TTemplate> keyed)
         {
@@ -298,11 +304,11 @@ namespace LionFire.Instantiating
         public event Action<IInstantiation<TTemplate>, int> ChildCountChanged;
 #endif
 
-#region Misc
+    #region Misc
 
         private static readonly ILogger l = Log.Get();
 
-#endregion
+    #endregion
 
     }
 #endif

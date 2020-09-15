@@ -149,8 +149,8 @@ namespace LionFire.Persistence.Handles
             var currentValue = ProtectedValue;
             if (currentValue != null) return new ResolveResultNoop<TValue>(ProtectedValue);
 
-            var resolveResult = await Resolve();
-            return new ResolveResult<TValue>(resolveResult.HasValue, resolveResult.Value);
+            var resolveResult = await Resolve().ConfigureAwait(false);
+            return new LazyResolveResult<TValue>(resolveResult.HasValue, resolveResult.Value);
         }
 
         #endregion

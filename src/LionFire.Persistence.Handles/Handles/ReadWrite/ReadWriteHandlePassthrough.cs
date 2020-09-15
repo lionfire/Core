@@ -35,7 +35,7 @@ namespace LionFire.Persistence.Handles
         public IReadWriteHandle<TValue> ReadWriteHandle => readWriteHandle ??= Reference?.GetReadWriteHandle<TValue>();
         protected IReadWriteHandle<TValue> readWriteHandle;
 
-
+        [Ignore]
         public TValue Value
         {
             get => ReadWriteHandle.Value; set

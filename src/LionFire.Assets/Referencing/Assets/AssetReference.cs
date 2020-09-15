@@ -1,17 +1,19 @@
 ﻿using LionFire.Copying;
 using LionFire.Ontology;
 using LionFire.Referencing;
+using LionFire.Structures;
 using System;
 using System.Collections.Generic;
 using System.Text;
 
 namespace LionFire.Assets
 {
+    
     // REVIEW - RENAME this DLL to just LionFire.Assets?  Or move this AssetReference<T> to that DLL?
 
     [TreatAs(typeof(IAssetReference))]
-    public class AssetReference<TValue> : ReferenceBase<AssetReference<TValue>>, IAssetReference
-        //, ITypedReference<TValue, AssetReference<TValue>>
+    public class AssetReference<TValue> : ReferenceBase<AssetReference<TValue>>, IAssetReference, IUrled, IKeyable
+    //, ITypedReference<TValue, AssetReference<TValue>>
     {
         public Type Type => typeof(TValue);
 
@@ -26,10 +28,30 @@ namespace LionFire.Assets
         public override string Scheme => UriSchemeDefault;
 
         [Ignore]
+        public override string Url
+        {
+            //get => $"{UriPrefixDefault}({(Channel == null ? "$assets/" : Channel + "/")}{typeof(TValue)}){Path}";
+            get => $"{UriPrefixDefault}({(Channel == null ? "" : $"{Channel}/")}{typeof(TValue)}){Path}";
+            protected set => throw new NotImplementedException();/* Path = value;*/
+        }
+
+        [Ignore]
         public override string Key
         {
-            get => $"{UriPrefixDefault}({(Channel == null ? "$assets/" : Channel + "/")}{typeof(TValue)}){Path}";
-            protected set => throw new NotImplementedException();/* Path = value;*/
+            get => string.IsNullOrEmpty(Channel) ? Path :  $"({Channel})/{Path}";
+            protected set => throw new NotImplementedException();/* Path = value; parse out channel*/
+        }
+
+        string IKeyable<string>.Key
+        {
+            get => Key;
+            set => Key = value;
+        }
+
+        protected override void CopyFrom(AssetReference<TValue> other)
+        {
+            this.Path = other.Path;
+            this.Channel = other.Channel;
         }
 
         #region Path
@@ -42,7 +64,7 @@ namespace LionFire.Assets
         public override string Path
         {
             get => path;
-            set
+            protected set
             {
                 if (path == value) return;
                 if (path != default) throw new AlreadySetException();
@@ -54,6 +76,9 @@ namespace LionFire.Assets
         #endregion
 
         #endregion
+
+        public static AssetReference<TValue> Root => root ??= new AssetReference<TValue>();
+        private static AssetReference<TValue> root;
 
         #region Construction
 

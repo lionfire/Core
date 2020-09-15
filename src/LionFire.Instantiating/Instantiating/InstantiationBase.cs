@@ -20,7 +20,7 @@ namespace LionFire.Instantiating
     /// REVIEW - should this have anything to do with IInstantiation?  If so, maybe rename to Instantiation
     /// </summary>
     [LionSerializable(SerializeMethod.ByValue)] // REVIEW
-    public abstract class InstantiationBase<TTemplate> : InstantiationBase<TTemplate, object>
+    public abstract class InstantiationBase<TTemplate> : InstantiationBase<TTemplate, IReadHandleBase<TTemplate>, object>
         where TTemplate : ITemplate
     {
     }
@@ -37,8 +37,15 @@ namespace LionFire.Instantiating
     /// </summary>
     [LionSerializable(SerializeMethod.ByValue)] // REVIEW
     [JsonObject]
-    public abstract class InstantiationBase<TTemplate, TState> : IInstantiation<TTemplate>, IParentedTemplateParameters<TTemplate>, IParented, IInstantiationEx
-    where TTemplate : ITemplate
+    public abstract class InstantiationBase<TTemplate, TTemplateHandle, TState> 
+        : IInstantiation<TTemplate>, 
+        IParentedTemplateHandleParameters<TTemplate, TTemplateHandle>,
+        ITemplateParameters<TTemplate>,
+        IParented, 
+        IInstantiationEx
+        where TTemplate : ITemplate
+        where TTemplateHandle : class, IReadHandleBase<TTemplate>
+        //where TParameters : ITemplateHandleParameters<TTemplate, TTemplateHandle>
     {
 
         #region Ontology - TODO - both Key and Pid???
@@ -119,7 +126,7 @@ namespace LionFire.Instantiating
         #region Construction
 
         protected InstantiationBase() { }
-        protected InstantiationBase(IReadHandleBase<TTemplate> template) { RTemplate = template; }
+        protected InstantiationBase(TTemplateHandle template) { RTemplate = template; }
 
         #endregion
 
@@ -231,8 +238,10 @@ namespace LionFire.Instantiating
 
         public bool ShouldSerializeRTemplate() => rTemplate != null;
 
+        IReadHandleBase<TTemplate> ITemplateParameters<TTemplate>.RTemplate { get => RTemplate; set => RTemplate = (TTemplateHandle)value; }
+
         [Assignment(AssignmentMode.Assign)]
-        public IReadHandleBase<TTemplate> RTemplate
+        public TTemplateHandle RTemplate
         //public R<TTemplate> Template
         {
             get
@@ -241,7 +250,9 @@ namespace LionFire.Instantiating
                 if (template != null && template.GetType() == typeof(string))
                     throw new UnreachableCodeException("get_Template - got string: " + (string)(object)template);
 #endif
-                if(template != null) { return template.GetObjectReadHandle(); }
+                if (rTemplate != null) return rTemplate;
+
+                //if(template != null) { return template.GetObjectReadHandle(); }
                 if (rTemplate == null && !object.ReferenceEquals(Parameters, this))
                 {
                     return Parameters?.RTemplate;
@@ -266,7 +277,7 @@ namespace LionFire.Instantiating
         }
         //protected R<TTemplate> template;
         //protected IReadHandleBase<ITemplate> template;
-        protected IReadHandleBase<TTemplate> rTemplate;
+        protected TTemplateHandle rTemplate;
 
         #endregion
 
@@ -285,8 +296,8 @@ namespace LionFire.Instantiating
         #endregion
 
         [SerializeDefaultValue(false)]
-        public virtual ITemplateParameters<TTemplate> Parameters { get; set; }
-        ITemplateParameters IInstantiationBase.Parameters { get => Parameters; set => Parameters = (ITemplateParameters<TTemplate>)value; }
+        public virtual ITemplateHandleParameters<TTemplate, TTemplateHandle> Parameters { get; set; }
+        ITemplateParameters IInstantiationBase.Parameters { get => Parameters; set => Parameters = (ITemplateHandleParameters<TTemplate, TTemplateHandle>)value; }
 
         #region Overlaying
 
@@ -446,7 +457,7 @@ namespace LionFire.Instantiating
                 }
             }
         }
-        
+
         #endregion
 
     }

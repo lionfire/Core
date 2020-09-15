@@ -299,8 +299,8 @@ namespace LionFire.Avalon
         /// </summary>
         public IEnumerable ItemsSource
         {
-            get { return (IEnumerable)GetValue(ItemsSourceProperty); }
-            set { SetValue(ItemsSourceProperty, value); }
+            get => (IEnumerable)GetValue(ItemsSourceProperty);
+            set => SetValue(ItemsSourceProperty, value);
         }
 
         /// <summary>
@@ -338,9 +338,7 @@ namespace LionFire.Avalon
                 }
             }
 
-            //l.Trace(this.Name + " new ItemsSource: " + oldItemsSource + " => " + newItemsSource);
-
-            OnPropertyChanged("ItemsSource"); // Populates ZapScroller
+            l.Trace(this.Name + " new ItemsSource: " + oldItemsSource + " => " + newItemsSource);
 
             OnItemsCollectionChanged(new NotifyCollectionChangedEventArgs<UIElement>(System.Collections.Specialized.NotifyCollectionChangedAction.Reset));
         }
@@ -348,7 +346,7 @@ namespace LionFire.Avalon
         void OnItemsCollectionChanged(INotifyCollectionChangedEventArgs<UIElement> e)
         {
             // REVIEW - would this help?
-            //OnPropertyChanged("ItemsSource"); // Do this first to inform ZapScroller
+            OnPropertyChanged("ItemsSource"); // Do this first to inform ZapScroller
 
             UpdateListBoxVisibility();
         }

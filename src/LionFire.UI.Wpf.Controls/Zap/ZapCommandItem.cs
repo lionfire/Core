@@ -17,8 +17,8 @@ namespace LionFire.Avalon
     {
         protected internal ZapCommandItem(IZapScroller zapScroller, int index)
         {
-            Contract.Requires<ArgumentNullException>(zapScroller != null);
-            Contract.Requires<ArgumentOutOfRangeException>(index >= 0);
+            //Contract.Requires<ArgumentNullException>(zapScroller != null);
+            //Contract.Requires<ArgumentOutOfRangeException>(index >= 0);
 
             m_zapScroller = zapScroller;
 
@@ -40,7 +40,7 @@ namespace LionFire.Avalon
                 if (m_content != value)
                 {
                     m_content = value;
-                    OnPropertyChanged(new PropertyChangedEventArgs("Content"));
+                    OnPropertyChanged(new PropertyChangedEventArgs(nameof(Content)));
                 }
             }
         }

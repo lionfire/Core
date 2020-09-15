@@ -169,10 +169,10 @@ namespace LionFire.Resolves
         public async ITask<ILazyResolveResult<TValue>> GetValue()
         {
             var currentValue = ProtectedValue;
-            if (currentValue != null) return new ResolveResultNoop<TValue>(ProtectedValue);
+            if (!EqualityComparer<TValue>.Default.Equals(currentValue, default)) return new ResolveResultNoop<TValue>(ProtectedValue);
 
             var resolveResult = await Resolve();
-            return new ResolveResult<TValue>(resolveResult.HasValue, resolveResult.Value);
+            return new LazyResolveResult<TValue>(resolveResult.HasValue, resolveResult.Value);
         }
 
         #endregion
@@ -182,7 +182,7 @@ namespace LionFire.Resolves
         public ILazyResolveResult<TValue> QueryValue()
         {
             var currentValue = ProtectedValue;
-            return currentValue != null ? new ResolveResultNoop<TValue>(ProtectedValue) : (ILazyResolveResult<TValue>)ResolveResultNotResolved<TValue>.Instance;
+            return !EqualityComparer<TValue>.Default.Equals(currentValue, default) ? new ResolveResultNoop<TValue>(ProtectedValue) : (ILazyResolveResult<TValue>)ResolveResultNotResolved<TValue>.Instance;
         }
 
         #endregion

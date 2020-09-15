@@ -1,20 +1,37 @@
 ﻿using System;
 using System.Text;
+using LionFire.Assets;
 using LionFire.Collections;
 using LionFire.Persistence;
 using LionFire.Persistence.Handles;
 using LionFire.Referencing;
+using Newtonsoft.Json;
 
 namespace LionFire.Instantiating
 {
+#if UNUSED // If want to use, put in TTemplateHandle?
     public class Instantiation<TTemplate, TInstance> : Instantiation<TTemplate>, ITemplateParameters<TTemplate, TInstance>
        where TTemplate : ITemplate<TInstance>
     {
     }
+#endif
 
     public class Instantiation<TTemplate> : InstantiationBase<TTemplate>, ITemplateParameters<TTemplate>
        where TTemplate : ITemplate
     {
+        public Instantiation() { }
+
+        public Instantiation(IReadHandleBase<TTemplate> hTemplate)
+        {
+            this.RTemplate = hTemplate;
+        }
+
+        public Instantiation(TTemplate template)
+        //       : this()
+        {
+            RTemplate = new ObjectHandle<TTemplate>(template);
+        }
+
         #region Key
 
         [SetOnce]
@@ -32,14 +49,39 @@ namespace LionFire.Instantiating
         private string key;
 
         #endregion
+    }
+
+    // REVIEW - document what this adds to the base class
+    public class Instantiation<TTemplate, TTemplateHandle> : InstantiationBase<TTemplate, TTemplateHandle, object>, ITemplateHandleParameters<TTemplate, TTemplateHandle>
+        where TTemplate : ITemplate
+        where TTemplateHandle : class, IReadHandleBase<TTemplate>
+    {
+#region Key
+
+        [SetOnce]
+        [SerializeDefaultValue(false)]
+        public override string Key
+        {
+            get => key;
+            set
+            {
+                if (key == value) return;
+                if (key != default) throw new AlreadySetException("Key can only be set once.");
+                key = value;
+            }
+        }
+        private string key;
+
+#endregion
 
         public Instantiation() { }
 
-        public Instantiation(IReadHandleBase<TTemplate> hTemplate)
+        public Instantiation(TTemplateHandle hTemplate)
         {
             this.RTemplate = hTemplate;
         }
 
+#if UNUSED
         public Instantiation(TTemplate template)
         //       : this()
         {
@@ -78,11 +120,21 @@ namespace LionFire.Instantiating
         {
             this.State = state;
         }
+#endif
     }
 
+    //public class InstantiationConverter : JsonConverter
+    //{
+    //    public override bool CanConvert(Type objectType) => objectType == typeof(Instantiation);
+
+    //    public override object ReadJson(JsonReader reader, Type objectType, object existingValue, JsonSerializer serializer) => throw new NotImplementedException();
+    //    public override void WriteJson(JsonWriter writer, object value, JsonSerializer serializer) => throw new NotImplementedException();
+    //}
+
+    //[JsonConverter(typeof(InstantiationConverter))]
     public class Instantiation : InstantiationBase<ITemplate> // REFACTOR - change base to Instantiation<ITemplate>
     {
-        #region Key
+#region Key
 
         [SetOnce]
         [SerializeDefaultValue(false)]
@@ -98,9 +150,9 @@ namespace LionFire.Instantiating
         }
         private string key;
 
-        #endregion
+#endregion
 
-        #region Construction
+#region Construction
 
         public Instantiation()
         {
@@ -128,6 +180,8 @@ namespace LionFire.Instantiating
 
         }
 
+        public Type Type => RTemplate?.Type;
+
         public Instantiation(ITemplate template)
         //       : this()
         {
@@ -136,6 +190,7 @@ namespace LionFire.Instantiating
         }
 
 
+#if UNUSED
         // REVIEW - Make sure H with interface types is documented somewhere and I understand it
         public Instantiation(string template, IParentedTemplateParameters parameters = null)
         //: this((H<ITemplate>)template)
@@ -154,7 +209,6 @@ namespace LionFire.Instantiating
         {
             this.Parameters = parameters;
         }
-
         //#if !AOT && !UNITY // Unity crashes with contravariant IReadHandle
         public Instantiation(IReadHandleBase<ITemplate> assetPath, IParentedTemplateParameters<ITemplate> parameters = null, object state = null)
             : this(assetPath, parameters)
@@ -167,7 +221,7 @@ namespace LionFire.Instantiating
         {
             this.State = state;
         }
-
+#endif
 
         #region Implicit Construction
 

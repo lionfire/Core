@@ -2,12 +2,18 @@
 
 namespace LionFire.Resolves
 {
-    public struct ResolveResult<TValue> : ISuccessResult, ILazyResolveResult<TValue>
+    public static class IResolveResultExtensions
+    {
+        public static ILazyResolveResult<TValue> ToLazyResolveResult<TValue>(this IResolveResult<TValue> input) 
+            => input is ILazyResolveResult<TValue> lrr ? lrr 
+            : new LazyResolveResult<TValue>(input.HasValue, input.Value);
+    }
+    public struct LazyResolveResult<TValue> : ISuccessResult, ILazyResolveResult<TValue>
     {
         public bool HasValue { get; set; }
         public TValue Value { get; set; }
         public bool IsNoop => false;
-        public ResolveResult(bool hasValue, TValue value) { HasValue = hasValue; Value = value;  }
+        public LazyResolveResult(bool hasValue, TValue value) { HasValue = hasValue; Value = value; }
 
         //public static implicit operator LazyResolveResult<T>((bool HasValue, T Value) values) => new LazyResolveResult<T>(values.HasValue, values.Value);
 
@@ -17,15 +23,15 @@ namespace LionFire.Resolves
 
         public override bool Equals(object obj)
         {
-            if (!(obj is ResolveResult<TValue> mys)) return false;
+            if (!(obj is LazyResolveResult<TValue> mys)) return false;
             return this.HasValue == mys.HasValue && ReferenceEquals(this.Value, mys.Value);
         }
 
         public override int GetHashCode() => Value.GetHashCode() + HasValue.GetHashCode();
 
-        public static bool operator ==(ResolveResult<TValue> left, ResolveResult<TValue> right) => left.Equals(right);
+        public static bool operator ==(LazyResolveResult<TValue> left, LazyResolveResult<TValue> right) => left.Equals(right);
 
-        public static bool operator !=(ResolveResult<TValue> left, ResolveResult<TValue> right) => !(left == right);
+        public static bool operator !=(LazyResolveResult<TValue> left, LazyResolveResult<TValue> right) => !(left == right);
 
         #endregion
 
@@ -37,8 +43,8 @@ namespace LionFire.Resolves
         public TValue Value => default;
         public bool IsNoop => true;
 
-        public static readonly ResolveResult<TValue> Instance = new ResolveResult<TValue>();
-        
+        public static readonly LazyResolveResult<TValue> Instance = new LazyResolveResult<TValue>();
+
     }
 
     //public interface INotifyingLazilyResolves // Use Persistence instead?

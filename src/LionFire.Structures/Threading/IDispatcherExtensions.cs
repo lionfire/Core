@@ -12,7 +12,7 @@ namespace LionFire.Threading
         }
         public static bool CheckAccess(this IDispatcher dispatcher)
         {
-            return dispatcher.IsInvokeRequired;
+            return !dispatcher.IsInvokeRequired;
         }
     }
 }

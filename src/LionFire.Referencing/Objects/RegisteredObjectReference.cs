@@ -37,6 +37,7 @@ namespace LionFire.Referencing
         #endregion
 
         public string Scheme => "object";
+        public const string SchemePrefix = "object:";
 
         public string Persister => null;
 
@@ -45,6 +46,7 @@ namespace LionFire.Referencing
         public long Id { get; set; }
 
         public string Key => Path;
+        public string Url => SchemePrefix + Path;
 
         public bool IsCompatibleWith(string obj) => throw new NotImplementedException();
     }

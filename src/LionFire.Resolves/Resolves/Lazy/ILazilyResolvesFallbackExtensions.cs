@@ -29,7 +29,7 @@ namespace LionFire.ExtensionMethods.Resolves
         private static ITask<IResolveResult<TValue>> DefaultableReadWrapper_GetValue<TValue>(IDefaultableReadWrapper<TValue> readWrapper)
         {
             var value = readWrapper.Value;
-            return Task.FromResult((IResolveResult<TValue>)new ResolveResult<TValue>(!EqualityComparer<TValue>.Default.Equals(value, default), value)).AsITask();
+            return Task.FromResult((IResolveResult<TValue>)new LazyResolveResult<TValue>(!EqualityComparer<TValue>.Default.Equals(value, default), value)).AsITask();
         }
 
         /// <summary>
@@ -46,7 +46,7 @@ namespace LionFire.ExtensionMethods.Resolves
             // Otherwise, assume it doesn't lazily load.
 
             var value = readWrapper.Value;
-            return Task.FromResult((IResolveResult<TValue>)new ResolveResult<TValue>(!EqualityComparer<TValue>.Default.Equals(value, default), value)).AsITask();
+            return Task.FromResult((IResolveResult<TValue>)new LazyResolveResult<TValue>(!EqualityComparer<TValue>.Default.Equals(value, default), value)).AsITask();
         }
 
         /// <summary>
@@ -65,7 +65,7 @@ namespace LionFire.ExtensionMethods.Resolves
             return Task.Run(() =>
             {
                 var value = readWrapper.Value;
-                return (IResolveResult<TValue>)new ResolveResult<TValue>(!EqualityComparer<TValue>.Default.Equals(value, default), value);
+                return (IResolveResult<TValue>)new LazyResolveResult<TValue>(!EqualityComparer<TValue>.Default.Equals(value, default), value);
             }).AsITask();
         }
 
@@ -79,7 +79,7 @@ namespace LionFire.ExtensionMethods.Resolves
 
             // Only try accessing the Value if HasValue is true
             var hasValue = readWrapper.HasValue;
-            return new ResolveResult<TValue>(hasValue, hasValue ? readWrapper.Value : default);
+            return new LazyResolveResult<TValue>(hasValue, hasValue ? readWrapper.Value : default);
         }
 
         /// <summary>
@@ -93,7 +93,7 @@ namespace LionFire.ExtensionMethods.Resolves
             if (readWrapper is ILazilyResolves<TValue> lr) return lr.QueryValue<TValue>();
 
             var value = readWrapper.Value;
-            return new ResolveResult<TValue>(!EqualityComparer<TValue>.Default.Equals(value, default), value);
+            return new LazyResolveResult<TValue>(!EqualityComparer<TValue>.Default.Equals(value, default), value);
         }
 
         #endregion

@@ -13,11 +13,6 @@ namespace LionFire.Referencing
 
         #region Scheme
 
-        public abstract string Scheme
-        {
-            get;
-        }
-
         public virtual bool CanSetScheme { get { return false; } }
 
         public static bool VerifyScheme = true;
@@ -66,7 +61,7 @@ namespace LionFire.Referencing
                 return false;
             }
 
-            return this.Key == other.Key;
+            return this.Url == other.Url;
         }
 
         public override int GetHashCode()

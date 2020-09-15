@@ -6,12 +6,12 @@ using System.Linq;
 
 namespace LionFire.Assets
 {
-    public abstract class TemplateAssetParametersBase<TTemplate> : TemplateParametersBase<TTemplate>
+    public abstract class TemplateAssetParametersBase<TTemplate> : TemplateHandleParametersBase<TTemplate, RAsset<TTemplate>, object>
         //, IAssetInstantiation
-        where TTemplate : ITemplateAsset
+        where TTemplate : ITemplateAsset, IAsset<TTemplate>
     {
         protected TemplateAssetParametersBase() { }
-        protected TemplateAssetParametersBase(IReadHandleBase<TTemplate> template) : base(template) { }
+        protected TemplateAssetParametersBase(RAsset<TTemplate> template) : base(template) { }
 
         //public new IEnumerable<IAssetInstantiation> AllChildren => base.Children.OfType<IAssetInstantiation>(); // REVIEW - new
         //public IReadHandle<ITemplateAsset> TemplateAsset { get => (IReadHandle<ITemplateAsset>)Template; set => Template = (IReadHandleBase<TTemplate>)value; }
@@ -45,7 +45,7 @@ namespace LionFire.Assets
 
     {
         public TemplateAssetParametersBase() { }
-        public TemplateAssetParametersBase(IReadHandleBase<TTemplate> template) : base(template) { }
+        public TemplateAssetParametersBase(RAsset<TTemplate> template) : base(template) { }
 
         //IReadHandleBase<ITemplate> ITemplateParameters.Template => (IReadHandleBase<ITemplate>)Template;
         //public IReadHandleBase<TTemplate> Template { get; set; }

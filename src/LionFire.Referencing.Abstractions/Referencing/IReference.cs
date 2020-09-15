@@ -8,9 +8,11 @@ namespace LionFire.Referencing
     /// Reference interface for all references: OBase, Vos, Handles.
     /// References should be round-trip convertible to and from a string key (from IKeyed)
     /// </summary>
-    public interface IReference : IKeyed<string>
-        //, IHostReference // RECENTCHANGE: Don't depend on IHostReference
-        //, ICompatibleWithSome<string>
+    public interface IReference :
+        IUrled
+       , IKeyed<string>// - old - is a bonus now.
+    //, IHostReference // RECENTCHANGE: Don't depend on IHostReference
+    //, ICompatibleWithSome<string>
     {
         string Scheme { get; }
 

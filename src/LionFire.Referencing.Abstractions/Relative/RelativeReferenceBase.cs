@@ -17,6 +17,12 @@ namespace LionFire.ObjectBus.ExtensionlessFs
             this.OverlayTarget = reference;
         }
 
+        public string Url
+        {
+            get => Scheme + ":" + Key;
+            protected set => throw new NotImplementedException();
+        }
+
         public string Key
         {
             get
@@ -29,7 +35,7 @@ namespace LionFire.ObjectBus.ExtensionlessFs
                 {
                     // REVIEW - may want to further document and/or warn about this fallback:
                     Debug.WriteLine($"WARNING - {OverlayTarget.GetType().FullName} does not implement IKeyGenerator<string, IReference>.  Falling back to path replacement method in RelativeReferenceBase.Key");
-                    return OverlayTarget.Key.Replace(OverlayTarget.Path, Path);
+                    return OverlayTarget.Url.Replace(OverlayTarget.Path, Path);
                 }
             }
         }
