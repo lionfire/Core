@@ -1,9 +1,10 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>netcoreapp3.1</TargetFramework>
+    <TargetFramework>netstandard2.0</TargetFramework>
     <!--<UseWPF>true</UseWPF>-->
     <NeutralLanguage>en-US</NeutralLanguage>
+  <LangVersion>latest</LangVersion>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
@@ -24,7 +25,6 @@
     <Compile Remove="Hosting\**" />
     <Compile Remove="Licensing\**" />
     <Compile Remove="Lists\**" />
-    <Compile Remove="Presenter\**" />
     <Compile Remove="ResourceDictionaries\**" />
     <Compile Remove="Resources\**" />
     <Compile Remove="Shell\**" />
@@ -42,7 +42,6 @@
     <EmbeddedResource Remove="Hosting\**" />
     <EmbeddedResource Remove="Licensing\**" />
     <EmbeddedResource Remove="Lists\**" />
-    <EmbeddedResource Remove="Presenter\**" />
     <EmbeddedResource Remove="ResourceDictionaries\**" />
     <EmbeddedResource Remove="Resources\**" />
     <EmbeddedResource Remove="Shell\**" />
@@ -77,18 +76,29 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Compile Include="Shell\NoesisUnityShell.cs" />
+    <Compile Include="Shell\ShellOptions.cs" />
+    <Compile Include="Shell\WpfShellBase.cs" />
+    <Compile Include="ViewModels\IViewLocator.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="3.1.7" />
     <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="3.1.7" />
-    <PackageReference Include="Noesis.GUI" Version="3.0.2" />
+    <PackageReference Include="Noesis.GUI" Version="3.0.5" />
     <PackageReference Include="PixelLab.Core" Version="6.0.2" />
     <PackageReference Include="WPFTransitionals" Version="1.0.0" />
   </ItemGroup>
+
+  
 
   <ItemGroup>
     <ProjectReference Include="..\LionFire.Applications.Extensions\LionFire.Applications.Extensions.csproj" />
     <ProjectReference Include="..\LionFire.Base\LionFire.Base.csproj" />
     <ProjectReference Include="..\LionFire.Core.Extras\LionFire.Core.Extras.csproj" />
+    <ProjectReference Include="..\LionFire.Hosting.Unity\LionFire.Hosting.Unity.csproj" />
     <ProjectReference Include="..\LionFire.UI\LionFire.UI.csproj" />
+    <ProjectReference Include="..\LionFire.Vos.Application\LionFire.Vos.VosApp.csproj" />
   </ItemGroup>
 
 </Project>

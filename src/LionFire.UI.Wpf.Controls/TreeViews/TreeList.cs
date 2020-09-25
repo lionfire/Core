@@ -2,15 +2,21 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+#if NOESIS
+using Noesis;
+using EventArgs = Noesis.EventArgs;
+using EventHandler = Noesis.EventHandler;
+#else
 using System.Windows.Controls;
-using System.Windows;
 using System.Windows.Data;
+using System.Windows.Controls.Primitives;
+#endif
+using System.Windows;
 using System.Collections.ObjectModel;
 using System.Collections;
 using System.ComponentModel;
 using System.Collections.Specialized;
 using System.Windows.Input;
-using System.Windows.Controls.Primitives;
 using LionFire.Structures;
 using LionFire.Collections;
 using RowsType = LionFire.Collections.SynchronizedObservableCollection<LionFire.Avalon.Tree.TreeNode>;
@@ -19,11 +25,11 @@ using Microsoft.Extensions.Logging;
 
 namespace LionFire.Avalon.Tree
 {
-	public class TreeList: ListView
+	public class TreeList : ListView
 	{
         private static readonly ILogger l = Log.Get();
 		
-		#region Properties
+#region Properties
 
 		/// <summary>
 		/// Internal collection of rows representing visible nodes, actually displayed in the ListView
@@ -106,7 +112,7 @@ namespace LionFire.Avalon.Tree
 					return null;
 			}
 		}
-		#endregion
+#endregion
 
 		public TreeList()
 		{
@@ -128,6 +134,7 @@ namespace LionFire.Avalon.Tree
 			}
 		}
 
+#if !NOESIS // TOPORT
 		protected override DependencyObject GetContainerForItemOverride()
 		{
 			return new TreeListItem();
@@ -148,6 +155,7 @@ namespace LionFire.Avalon.Tree
 				base.PrepareContainerForItemOverride(element, node.Tag);
 			}
 		}
+#endif
 
 		internal void SetIsExpanded(TreeNode node, bool value)
 		{

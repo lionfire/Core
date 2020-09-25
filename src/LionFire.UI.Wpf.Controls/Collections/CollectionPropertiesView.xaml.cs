@@ -1,16 +1,21 @@
-﻿using System;
+﻿#if !NOESIS
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Windows;
+#if NOESIS
+using Noesis;
+#else
 using System.Windows.Controls;
 using System.Windows.Data;
 using System.Windows.Documents;
-using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+#endif
+using System.Windows.Input;
 //using LionFire.Processes;
 //using LionFire.Services;
 using LionFire.Collections;
@@ -27,7 +32,7 @@ namespace LionFire.Avalon
         public Func<object, object> GetDetailObject = null;
         public Func<object, object> GetDisplayName = null;
 
-        #region DetailObject
+#region DetailObject
 
         /// <summary>
         /// DetailObject Dependency Property
@@ -46,9 +51,9 @@ namespace LionFire.Avalon
             set { SetValue(DetailObjectProperty, value); }
         }
 
-        #endregion
+#endregion
 
-        #region ListLocation
+#region ListLocation
 
         /// <summary>
         /// ListLocation Dependency Property
@@ -67,7 +72,7 @@ namespace LionFire.Avalon
             set { SetValue(ListLocationProperty, value); }
         }
 
-        #endregion
+#endregion
 
         public CollectionPropertiesView()
         {
@@ -147,3 +152,4 @@ namespace LionFire.Avalon
 
     }
 }
+#endif

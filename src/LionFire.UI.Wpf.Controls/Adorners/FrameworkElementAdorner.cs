@@ -1,12 +1,13 @@
-﻿// Retrieved under CPOL License from:
+﻿#if !NOESIS
+// Retrieved under CPOL License from:
 // http://www.codeproject.com/Articles/54472/Defining-WPF-Adorners-in-XAML
 
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using System.Windows.Documents;
 using System.Windows;
+using System.Windows.Documents;
 using System.Windows.Media;
 using System.Collections;
 
@@ -344,3 +345,4 @@ namespace LionFire.Avalon
         }
     }
 }
+#endif

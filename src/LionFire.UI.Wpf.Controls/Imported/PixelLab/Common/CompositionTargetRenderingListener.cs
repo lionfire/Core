@@ -1,24 +1,40 @@
 ﻿#define _FRAME_RATE
 
-using System;
-using System.Diagnostics;
+#if NOESIS
+using Noesis;
+using EventHandler = Noesis.EventHandler;
+using EventArgs = Noesis.EventArgs;
+#else
+using System.Windows.Media;
+using System.Windows;
+#endif
 #if CONTRACTS_FULL
 using System.Diagnostics.Contracts;
 #else
 using PixelLab.Contracts;
 #endif
-using System.Windows;
-using System.Windows.Media;
+using System;
+using System.Diagnostics;
 
 namespace PixelLab.Common
 {
+    public class CompositionTargetNoesisStub
+    {
+        public event EventHandler Rendering;
+    }
+
     public class CompositionTargetRenderingListener :
-#if !SILVERLIGHT
+#if !NOESIS
  System.Windows.Threading.DispatcherObject,
 #endif
  IDisposable
     {
         public CompositionTargetRenderingListener() { }
+
+
+#if NOESIS
+        CompositionTargetNoesisStub CompositionTarget = new CompositionTargetNoesisStub();
+#endif
 
         public void StartListening()
         {
@@ -34,6 +50,7 @@ namespace PixelLab.Common
 #endif
             }
         }
+        
 
         public void StopListening()
         {
@@ -86,7 +103,7 @@ namespace PixelLab.Common
         {
             get
             {
-#if !SILVERLIGHT
+#if !NOESIS
                 VerifyAccess();
 #endif
                 return m_disposed;
@@ -121,20 +138,19 @@ namespace PixelLab.Common
         {
             requireAccessAndNotDisposed();
             StopListening();
-
+            
             Rendering
               .GetInvocationList()
               .ForEach(d => Rendering -= (EventHandler)d);
-
             m_disposed = true;
         }
 
-        #region Implementation
+#region Implementation
 
         [DebuggerStepThrough]
         private void requireAccessAndNotDisposed()
         {
-#if !SILVERLIGHT
+#if !NOESIS
             VerifyAccess();
 #endif
             Util.ThrowUnless<ObjectDisposedException>(!m_disposed, "This object has been disposed");
@@ -156,6 +172,6 @@ namespace PixelLab.Common
     private int m_startTicks;
 #endif
 
-        #endregion
+#endregion
     }
 }

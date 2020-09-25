@@ -2,7 +2,11 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+#if NOESIS
+using Noesis;
+#else
 using System.Windows.Controls;
+#endif
 using System.Windows.Input;
 using System.ComponentModel;
 using System.Windows;
@@ -11,7 +15,7 @@ namespace LionFire.Avalon.Tree
 {
 	public class TreeListItem : ListViewItem, INotifyPropertyChanged
 	{
-		#region Properties
+#region Properties
 
 		private TreeNode _node;
 		public TreeNode Node
@@ -24,12 +28,13 @@ namespace LionFire.Avalon.Tree
 			}
 		}
 
-		#endregion
+#endregion
 
 		public TreeListItem()
 		{
 		}
 
+#if !NOESIS // TOPORT
 		protected override void OnKeyDown(KeyEventArgs e)
 		{
 			if (Node != null)
@@ -76,6 +81,7 @@ namespace LionFire.Avalon.Tree
 			if (!e.Handled)
 				base.OnKeyDown(e);
 		}
+#endif
 
 		private void ChangeFocus(TreeNode node)
 		{
@@ -90,7 +96,7 @@ namespace LionFire.Avalon.Tree
 			}
 		}
 
-		#region INotifyPropertyChanged Members
+#region INotifyPropertyChanged Members
 
 		public event PropertyChangedEventHandler PropertyChanged;
 
@@ -100,6 +106,6 @@ namespace LionFire.Avalon.Tree
 				PropertyChanged(this, new PropertyChangedEventArgs(name));
 		}
 
-		#endregion
+#endregion
 	}
 }

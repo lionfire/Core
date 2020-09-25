@@ -1,10 +1,15 @@
-﻿using System;
+﻿#if !NOESIS
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
+#if NOESIS
+using Noesis;
+#else
 using System.Windows;
 using System.Windows.Input;
+#endif
+using System.Threading.Tasks;
 
 namespace LionFire.Avalon
 {
@@ -31,3 +36,4 @@ namespace LionFire.Avalon
         }
     }
 }
+#endif

@@ -1,10 +1,9 @@
 ﻿using LionFire.Collections;
 using LionFire.Dependencies;
 using LionFire.Resolves;
-using LionFire.Settings;
 using LionFire.UI;
 using LionFire.UI.Windowing;
-using LionFire.UI.Wpf;
+using LionFire.Settings;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
@@ -17,46 +16,85 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
+using LionFire.Alerting;
+using LionFire.UI.Wpf;
 
 namespace LionFire.Shell.Wpf
 {
-    public class WpfShellPresenter : IShellPresenter, IHostedService
+#if !NOESIS
+    public class WpfShellPresenter : ShellPresenterBase<WpfShell>
     {
-        #region Shell
-
-        [SetOnce]
-        public WpfShell Shell
+        public WpfShellPresenter(IServiceProvider serviceProvider, WpfShell shell, IOptionsMonitor<StartupInterfaceOptions> rootInterface, DesktopProfileManager windowLayoutManager
+         , IUserLocalSettings<WindowSettings> windowSettings, IOptionsMonitor<ShellOptions> shellOptionsMonitor
+         ) : base(serviceProvider, shell, rootInterface, windowLayoutManager, windowSettings, shellOptionsMonitor)
         {
-            get => shell;
-            set
-            {
-                if (shell == value) return;
-                if (shell != default) throw new AlreadySetException();
-                shell = value;
-            }
+
         }
-        private WpfShell shell;
+    }
+#else
+    public class NoesisUnityShellPresenter : ShellPresenterBase<NoesisUnityShell>
+    {
+        public NoesisUnityShellPresenter(IServiceProvider serviceProvider, NoesisUnityShell shell,  IOptionsMonitor<StartupInterfaceOptions> rootInterface, DesktopProfileManager windowLayoutManager, IUserLocalSettings<WindowSettings> windowSettings, IOptionsMonitor<ShellOptions> shellOptionsMonitor
+         ) : base(serviceProvider, shell, rootInterface, windowLayoutManager, windowSettings, shellOptionsMonitor)
+        {
 
-        #endregion
+        }
+    }
+#endif
 
-        #region Dependencies
+    
+
+    /// <summary>
+    /// For WPF and Noesis
+    /// </summary>
+    /// <typeparam name="TShell"></typeparam>
+    public class ShellPresenterBase<TShell> : IShellPresenter, IHostedService
+        where TShell : class, ILionFireShell
+#if WPF
+            , IWpfShell
+#endif
+    {
+
+#region Dependencies
 
         public IServiceProvider ServiceProvider { get; }
         public IOptionsMonitor<StartupInterfaceOptions> RootInterface { get; }
         public DesktopProfileManager WindowLayoutManager { get; }
 
-        #endregion
+#region Shell
+
+        //[SetOnce]
+        //public TShell Shell
+        //{
+        //    get => shell;
+        //    set
+        //    {
+        //        if (shell == value) return;
+        //        if (shell != default) throw new AlreadySetException();
+        //        shell = value;
+        //    }
+        //}
+        //private TShell shell;
+        public TShell Shell { get; }
+        ILionFireShell IShellPresenter.Shell { get => Shell; }
+
+        public ShellOptions Options => ShellOptionsMonitor.CurrentValue;
+        IOptionsMonitor<ShellOptions> ShellOptionsMonitor;
+
+#endregion
+
+#endregion
 
         public WindowSettings WindowSettings { get; set; }
 
         Func<Task> startup;
 
-        #region Construction
+#region Construction
 
-        public WpfShellPresenter(IServiceProvider serviceProvider, IOptionsMonitor<StartupInterfaceOptions> rootInterface, DesktopProfileManager windowLayoutManager
-            , IUserLocalSettings<WindowSettings> windowSettings
-            )
+        public ShellPresenterBase(IServiceProvider serviceProvider, TShell shell, IOptionsMonitor<StartupInterfaceOptions> rootInterface, DesktopProfileManager windowLayoutManager, IUserLocalSettings<WindowSettings> windowSettings, IOptionsMonitor<ShellOptions> shellOptionsMonitor)
         {
+            ShellOptionsMonitor = shellOptionsMonitor;
+            Shell = shell;
             ServiceProvider = serviceProvider;
             RootInterface = rootInterface;
             WindowLayoutManager = windowLayoutManager;
@@ -64,12 +102,12 @@ namespace LionFire.Shell.Wpf
             {
                 WindowSettings = (await windowSettings.GetValueAsync().ConfigureAwait(false));
             });
-            
+
         }
 
-        #endregion
+#endregion
 
-        #region IHostedService
+#region IHostedService
 
         public async Task StartAsync(CancellationToken cancellationToken)
         {
@@ -79,21 +117,21 @@ namespace LionFire.Shell.Wpf
 
         public Task StopAsync(CancellationToken cancellationToken) => Task.CompletedTask;
 
-        #endregion
+#endregion
 
-        #region State
+#region State
 
-        #region Presenters
+#region Presenters
 
         public MultiBindableDictionary<string, ShellContentPresenter> Presenters = new MultiBindableDictionary<string, ShellContentPresenter>();
 
-        #endregion
+#endregion
 
-        #endregion
+#endregion
 
-        #region Properties
+#region Properties
 
-        #region Derived
+#region Derived
 
         public bool AnyActive
         {
@@ -107,11 +145,11 @@ namespace LionFire.Shell.Wpf
             }
         }
 
-        #endregion
+#endregion
 
-        #endregion
+#endregion
 
-        #region (Public) Methods
+#region (Public) Methods
 
 
         public void BringToFront()
@@ -172,7 +210,7 @@ namespace LionFire.Shell.Wpf
             //MainPresenter.Close();
         }
 
-        #region Root Views
+#region Root Views
 
         /// <summary>
         /// Invoked once at startup to bring up primary views
@@ -188,16 +226,18 @@ namespace LionFire.Shell.Wpf
             }
             catch (Exception ex)
             {
-                MessageBox.Show(ex.Message);
+                Alerter.Alert("Failed to show startup interface", ex);
             }
 
-            MainPresenter.Show();
+#if Windowing && WPF
+            MainPresenter.Show(); // Show the window
             this.Shell.Application.MainWindow = MainPresenter.CurrentWindow;
+#endif
         }
 
-        #endregion
+#endregion
 
-        #region UIReference
+#region UIReference
 
         public void Show(UIReference reference)
         {
@@ -218,7 +258,7 @@ namespace LionFire.Shell.Wpf
             else if (reference.ViewModelType != null)
             {
                 var viewType = DependencyContext.Current.GetRequiredService<IViewLocator>().LocateTypeForModelType(reference.ViewModelType, null, null);
-                if(viewType == null) { throw new Exception("Could not locate type for model type:" + reference.ViewModelType.FullName); }
+                if (viewType == null) { throw new Exception("Could not locate type for model type:" + reference.ViewModelType.FullName); }
                 ShowControl(viewType, tabName, reference.DataContext);
             }
             else
@@ -227,15 +267,15 @@ namespace LionFire.Shell.Wpf
             }
         }
 
-        #endregion
+#endregion
 
-        #region Views
+#region Views
 
         public object ShowControl(Type type, string tabName = null, object dataContext = null)
         {
-            
+
             ShowControlGenericMethodInfo ??= this.GetType().GetMethods().Where(mi => mi.Name == "ShowControl" && mi.ContainsGenericParameters).First();
-            
+
             MethodInfo mi = ShowControlGenericMethodInfo.MakeGenericMethod(type ?? throw new ArgumentNullException(nameof(type)));
             return mi.Invoke(this, new object[] { tabName });
         }
@@ -258,11 +298,11 @@ namespace LionFire.Shell.Wpf
         //    mainPresenter.AddControl(controlInstance, tabName);
         //}
 
-        #endregion
+#endregion
 
-        #endregion
+#endregion
 
-        #region MainPresenter
+#region MainPresenter
 
         // ENH - eliminate the concept of MainPresenter, and instead use options for special behavior for "main" presenters, or let application name a particular presenter as "main"
 
@@ -295,19 +335,19 @@ namespace LionFire.Shell.Wpf
         async void mainPresenter_Closed(ShellContentPresenter obj)
         {
             Presenters.Remove(obj.Name);
-
-            if (WpfShell.Instance.ShellOptions.StopOnMainPresenterClose) // TODO - move
+            
+            if (Options.StopOnMainPresenterClose) // TODO - move
             {
                 await Shell.StopAsync(default).ConfigureAwait(false);
             }
         }
 
-        #endregion
+#endregion
 
         // REVIEW
         public Dictionary<string, Type> PresenterTypes = new Dictionary<string, Type>();
 
-        #region Presenters Collection
+#region Presenters Collection
 
         // Tag of the the TabItem in a ShellContentPresent is the key.
         // ShellContentPresenters's contain tabItems
@@ -330,7 +370,7 @@ namespace LionFire.Shell.Wpf
             return null;
         }
 
-        #endregion
+#endregion
 
         private static ILogger l = Log.Get();
 

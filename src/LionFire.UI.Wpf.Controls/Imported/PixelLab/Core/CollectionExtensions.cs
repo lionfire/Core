@@ -37,6 +37,7 @@ namespace PixelLab.Common
             }
         }
 
+#if !NOESIS
         /// <summary>
         ///     Returns true if all items in the list are unique using
         ///     <see cref="EqualityComparer{T}.Default">EqualityComparer&lt;T&gt;.Default</see>.
@@ -51,6 +52,7 @@ namespace PixelLab.Common
 
             return source.TrueForAllPairs((a, b) => !comparer.Equals(a, b));
         }
+#endif
 
         /// <summary>
         ///     Returns true if <paramref name="compare"/> returns
@@ -100,6 +102,7 @@ namespace PixelLab.Common
             return source.SelectAdjacentPairs().All(t => compare(t.Item1, t.Item2));
         }
 
+#if !NOESIS
         public static IEnumerable<Tuple<T, T>> SelectAdjacentPairs<T>(this IEnumerable<T> source)
         {
             Contract.Requires(source != null);
@@ -120,6 +123,7 @@ namespace PixelLab.Common
                 }
             }
         }
+#endif
 
         /// <summary>
         ///     Returns true if all of the items in <paramref name="source"/> are not
@@ -180,6 +184,7 @@ namespace PixelLab.Common
             }
         }
 
+#if !NOESIS
         /// <summary>
         ///     Returns the index of the first item in <paramref name="source"/>
         ///     for which <paramref name="predicate"/> returns true. If none, -1.
@@ -203,6 +208,7 @@ namespace PixelLab.Common
             }
             return -1;
         }
+#endif
 
         /// <summary>
         ///     Returns a new <see cref="ReadOnlyCollection{TSource}"/> using the
@@ -220,6 +226,7 @@ namespace PixelLab.Common
             return new ReadOnlyCollection<TSource>(source.ToArray());
         }
 
+#if !NOESIS // REVIEW - what is this ambiguous with?
         /// <summary>
         ///     Performs the specified <paramref name="action"/>
         ///     on each element of the specified <paramref name="source"/>.
@@ -313,6 +320,7 @@ namespace PixelLab.Common
                 }
             }
         } //*** SelectRecursive
+#endif
 
         public static IList<TTo> ToCastList<TFrom, TTo>(this IList<TFrom> source) where TFrom : TTo
         {

@@ -1,4 +1,5 @@
-﻿// Retrieved from http://stackoverflow.com/questions/634069/redefine-alias-a-resource-in-wpf
+﻿#if !NOESIS
+// Retrieved from http://stackoverflow.com/questions/634069/redefine-alias-a-resource-in-wpf
 // on May 20, 2012
 
 using System;
@@ -30,3 +31,4 @@ namespace LionFire.Avalon
         public object ResourceKey { get; set; }
     }
 }
+#endif

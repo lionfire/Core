@@ -2,7 +2,11 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+#if NOESIS
+using Noesis;
+#else
 using System.Windows.Media;
+#endif
 
 namespace LionFire.Extensions.Colors
 {
@@ -24,7 +28,7 @@ namespace LionFire.Extensions.Colors
             return (byte)(v1 * progress + v2 * (1.0 - progress));
         }
 
-        #region Brightness
+#region Brightness
 
         public static Color ToValue(this Color color, double val, double weight = 1.0)
         {
@@ -57,9 +61,9 @@ namespace LionFire.Extensions.Colors
             };
         }
 
-        #endregion
+#endregion
 
-        #region Alpha
+#region Alpha
 
         public static Color ToAlpha(this Color color, double val, double weight = 1.0)
         {
@@ -77,7 +81,7 @@ namespace LionFire.Extensions.Colors
             };
         }
 
-        #endregion
+#endregion
 
     }
 

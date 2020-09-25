@@ -2,11 +2,13 @@
 
 namespace LionFire.Shell
 {
-    
-    public class LionFireShellOptions
+    // FUTURE: Split out Windowing shell options
+
+    public class ShellOptions
     {
         /// <summary>
         /// If true, Shell will invoke its own StartAsync method after IHostApplicationLifetime.ApplicationStarted fires.
+        /// If false, start another way such as IServicesCollection.AddSingletonHostedServiceDependency<WpfShell>()
         /// </summary>
         public bool AutoStart { get; set; } = false;
 
@@ -31,5 +33,7 @@ namespace LionFire.Shell
 
         public SourceLevels DataBindingSourceLevel { get; set; } = System.Diagnostics.SourceLevels.Verbose;
 
+        public bool StopOnMainPresenterClose { get; set; } = true; // ENH: Also make this a settable option for each UIReference in UIReference.StopShellOnClose
     }
+
 }

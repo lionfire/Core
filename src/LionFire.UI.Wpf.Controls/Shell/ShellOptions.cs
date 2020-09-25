@@ -1,4 +1,5 @@
-﻿using System.Diagnostics;
+﻿#if MOVED // LionFire.UI
+using System.Diagnostics;
 
 namespace LionFire.Shell
 {
@@ -36,3 +37,4 @@ namespace LionFire.Shell
 
     }
 }
+#endif

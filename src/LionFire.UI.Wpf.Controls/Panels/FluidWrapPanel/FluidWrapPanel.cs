@@ -1,4 +1,5 @@
-﻿// Retrieved on January 8, 2013 under Ms-PL from Codeplex
+﻿#if !NOESIS
+// Retrieved on January 8, 2013 under Ms-PL from Codeplex
 
 #region File Header
 
@@ -19,10 +20,16 @@ using System.Linq;
 using System.Collections;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.Windows;
+#if NOESIS
+using Noesis;
+using FloatType = System.Single;
+#else
+using FloatType = System.Double;
 using System.Windows.Controls;
 using System.Windows.Media.Animation;
 using System.Windows.Media;
+#endif
+using System.Windows;
 
 namespace LionFire.Avalon
 {
@@ -31,7 +38,7 @@ namespace LionFire.Avalon
     /// </summary>
     public class FluidWrapPanel : Panel
     {
-        #region Constants
+#region Constants
 
         private const double NORMAL_SCALE = 1.0d;
         private const double DRAG_SCALE_DEFAULT = 1.3d;
@@ -45,9 +52,9 @@ namespace LionFire.Avalon
         private static TimeSpan DEFAULT_ANIMATION_TIME_WITH_EASING = TimeSpan.FromMilliseconds(400);
         private static TimeSpan FIRST_TIME_ANIMATION_DURATION = TimeSpan.FromMilliseconds(320);
 
-        #endregion
+#endregion
 
-        #region Fields
+#region Fields
 
         Point dragStartPoint = new Point();
         UIElement dragElement = null;
@@ -56,11 +63,11 @@ namespace LionFire.Avalon
         FluidLayoutManager layoutManager = null;
         bool isInitializeArrangeRequired = false;
 
-        #endregion
+#endregion
 
-        #region Dependency Properties
+#region Dependency Properties
 
-        #region DragEasing
+#region DragEasing
 
         /// <summary>
         /// DragEasing Dependency Property
@@ -102,9 +109,9 @@ namespace LionFire.Avalon
 
         }
 
-        #endregion
+#endregion
 
-        #region DragOpacity
+#region DragOpacity
 
         /// <summary>
         /// DragOpacity Dependency Property
@@ -171,9 +178,9 @@ namespace LionFire.Avalon
 
         }
 
-        #endregion
+#endregion
 
-        #region DragScale
+#region DragScale
 
         /// <summary>
         /// DragScale Dependency Property
@@ -215,9 +222,9 @@ namespace LionFire.Avalon
 
         }
 
-        #endregion
+#endregion
 
-        #region ElementEasing
+#region ElementEasing
 
         /// <summary>
         /// ElementEasing Dependency Property
@@ -260,9 +267,9 @@ namespace LionFire.Avalon
 
         }
 
-        #endregion
+#endregion
 
-        #region IsComposing
+#region IsComposing
 
         /// <summary>
         /// IsComposing Dependency Property
@@ -304,9 +311,9 @@ namespace LionFire.Avalon
 
         }
 
-        #endregion
+#endregion
 
-        #region ItemHeight
+#region ItemHeight
 
         /// <summary>
         /// ItemHeight Dependency Property
@@ -349,9 +356,9 @@ namespace LionFire.Avalon
 
         }
 
-        #endregion
+#endregion
 
-        #region ItemWidth
+#region ItemWidth
 
         /// <summary>
         /// ItemWidth Dependency Property
@@ -394,9 +401,9 @@ namespace LionFire.Avalon
 
         }
 
-        #endregion
+#endregion
 
-        #region ItemsSource
+#region ItemsSource
 
         /// <summary>
         /// ItemsSource Dependency Property
@@ -453,9 +460,9 @@ namespace LionFire.Avalon
             InvalidateVisual();
         }
 
-        #endregion
+#endregion
 
-        #region Orientation
+#region Orientation
 
         /// <summary>
         /// Orientation Dependency Property
@@ -497,9 +504,9 @@ namespace LionFire.Avalon
             InvalidateVisual();
         }
 
-        #endregion
+#endregion
 
-        #region AllowReorder
+#region AllowReorder
 
         /// <summary>
         /// AllowReorder Dependency Property
@@ -519,11 +526,11 @@ namespace LionFire.Avalon
             set { SetValue(AllowReorderProperty, value); }
         }
 
-        #endregion
+#endregion
 
-        #endregion
+#endregion
 
-        #region Overrides
+#region Overrides
 
         /// <summary>
         /// Override for the Measure Layout Phase
@@ -532,7 +539,7 @@ namespace LionFire.Avalon
         /// <returns>Size required by the panel</returns>
         protected override Size MeasureOverride(Size availableSize)
         {
-            Size availableItemSize = new Size(Double.PositiveInfinity, Double.PositiveInfinity);
+            Size availableItemSize = new Size(FloatType.PositiveInfinity, FloatType.PositiveInfinity);
             double rowWidth = 0.0;
             double maxRowHeight = 0.0;
             double colHeight = 0.0;
@@ -652,9 +659,9 @@ namespace LionFire.Avalon
             return layoutManager.GetArrangedSize(fluidElements.Count, finalSize);
         }
 
-        #endregion
+#endregion
 
-        #region Construction / Initialization
+#region Construction / Initialization
 
         /// <summary>
         /// Ctor
@@ -666,9 +673,9 @@ namespace LionFire.Avalon
             isInitializeArrangeRequired = true;
         }
 
-        #endregion
+#endregion
 
-        #region Helpers
+#region Helpers
 
         /// <summary>
         /// Adds the child to the fluidElements collection and initializes its RenderTransform.
@@ -824,9 +831,9 @@ namespace LionFire.Avalon
             Children.Clear();
         }
 
-        #endregion
+#endregion
 
-        #region FluidDrag Event Handlers
+#region FluidDrag Event Handlers
 
         /// <summary>
         /// Handler for the event when the user starts dragging the dragElement.
@@ -932,6 +939,8 @@ namespace LionFire.Avalon
             }));
         }
 
-        #endregion
+#endregion
     }
 }
+
+#endif

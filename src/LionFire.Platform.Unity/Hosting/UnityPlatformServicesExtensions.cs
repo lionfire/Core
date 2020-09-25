@@ -8,19 +8,22 @@ namespace LionFire.Services
 {
     public static class UnityPlatformServicesExtensions
     {
-        public static IServiceCollection AddUnityEngineServices(this IServiceCollection services)
-        {
-            services
-                .AddSingleton<IRandomProvider, UnityRandomProvider>()
-                ;
-            return services;
-        }
+        //public static IServiceCollection AddUnityEngineServices(this IServiceCollection services)
+        //{
+        //    services
+        //        .AddSingleton<IRandomProvider, UnityRandomProvider>()
+        //        ;
+        //    return services;
+        //}
 
-        public static IHostBuilder AddUnityEngine(this IHostBuilder hostBuilder)
-                   => hostBuilder.ConfigureServices((_, services) => services.AddUnityEngine());
+        //public static IHostBuilder AddUnityEngine(this IHostBuilder hostBuilder)
+        //           => hostBuilder.ConfigureServices((_, services) => services.AddUnityEngine());
+
 
         public static IServiceCollection AddUnityEngine(this IServiceCollection services)
-            => services.AddUnityEngineServices();
+            => services
+            .AddSingleton<IRandomProvider, UnityRandomProvider>()
+            ;
     }
 
 }

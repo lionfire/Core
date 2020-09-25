@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk.WindowsDesktop">
+﻿<Project Sdk="Microsoft.NET.Sdk.WindowsDesktop">
 
   <PropertyGroup>
     <TargetFramework>netcoreapp3.1</TargetFramework>
@@ -7,11 +7,12 @@
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
-    <DefineConstants>TRACE;WINDOWS;CONTRACTS_FULL</DefineConstants>
+    <DefineConstants>TRACE;WINDOWS;CONTRACTS_FULL;WPF;Windowing</DefineConstants>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
-    <DefineConstants>TRACE;WINDOWS;CONTRACTS_FULL</DefineConstants>
+    <DefineConstants>TRACE;WINDOWS;CONTRACTS_FULL;WPF;Windowing</DefineConstants>
+    <DocumentationFile></DocumentationFile>
   </PropertyGroup>
 
   <ItemGroup>

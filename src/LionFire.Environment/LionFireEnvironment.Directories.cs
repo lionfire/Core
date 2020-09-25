@@ -35,6 +35,7 @@ namespace LionFire
             // TOSECURITY - Hardening - if IsHardened mode, default these Is__Directory to null to force explicit initialization.
             public static Func<string, bool?> IsVariableDirectory = path =>
             {
+                if (path == null) return null;
                 // REVIEW: Move to platform-specific DLLs?
                 if (LionFireEnvironment.Platform.IsWindows)
                 {
@@ -61,6 +62,7 @@ namespace LionFire
             };
             public static Func<string, bool?> IsUserDirectory = path =>
             {
+                if (path == null) return null;
                 if (LionFireEnvironment.Platform.IsWindows)
                 {
                     if (path.Length > 1 && path[1] == ':')

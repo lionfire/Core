@@ -126,6 +126,7 @@ namespace LionFire
 
 namespace LionFire.Shell
 {
+#if UNUSED  // See WpfShell
     public class LionFireShell : ILionFireShell
     {
         public virtual IShellContentPresenter MainPresenter => null;
@@ -144,6 +145,7 @@ namespace LionFire.Shell
                 System.Diagnostics.Process.GetCurrentProcess().CloseMainWindow();
             }
         }
+        public virtual bool OnClosing() { return true; }
 
         public Task StartAsync(CancellationToken cancellationToken) => throw new NotImplementedException();
         public Task StopAsync(CancellationToken cancellationToken) => throw new NotImplementedException();
@@ -169,4 +171,5 @@ namespace LionFire.Shell
         //    public event Action Closed;
         //}
     }
+#endif
 }

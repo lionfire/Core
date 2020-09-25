@@ -18,6 +18,7 @@ namespace PixelLab.Common
     /// </summary>
     public static class Extensions
     {
+#if !NOESIS
         public static IEqualityComparer<T> ToEqualityComparer<T>(this Func<T, T, bool> func)
         {
             Contract.Requires(func != null);
@@ -29,6 +30,7 @@ namespace PixelLab.Common
             Contract.Requires(compareFunction != null);
             return new FuncComparer<T>(compareFunction);
         }
+#endif
 
         public static IComparer<T> ToComparer<T>(this Comparison<T> compareFunction)
         {
@@ -42,11 +44,13 @@ namespace PixelLab.Common
             return new FuncComparer<string>(compareInfo.Compare);
         }
 
+#if false
         [Pure]
         public static bool IsNullOrWhiteSpace(this string str)
         {
             return str == null || str.Trim().Length == 0;
         }
+#endif
 
         /// <summary>
         /// Verifies that a property name exists in this ViewModel. This method
@@ -77,6 +81,7 @@ namespace PixelLab.Common
             }
         }
 
+#if !NOESIS
         public static string DoFormat(this string source, params object[] args)
         {
             Contract.Requires(source != null);
@@ -84,7 +89,6 @@ namespace PixelLab.Common
             return string.Format(source, args);
         }
 
-#if SILVERLIGHT
         public static void VerifyAccess(this System.Windows.DependencyObject dependencyObj)
         {
             Contract.Requires(dependencyObj != null);
@@ -109,11 +113,13 @@ namespace PixelLab.Common
             return (float)rnd.NextDouble() * delta + min;
         }
 
+#if !NOESIS
         public static IEnumerable<T> GetCustomAttributes<T>(this ICustomAttributeProvider attributeProvider, bool inherit) where T : Attribute
         {
             Contract.Requires(attributeProvider != null);
             return attributeProvider.GetCustomAttributes(typeof(T), inherit).Cast<T>();
         }
+
 
         [Pure]
         public static bool HasPublicInstanceProperty(this IReflect type, string name)
@@ -121,6 +127,7 @@ namespace PixelLab.Common
             Contract.Requires(type != null);
             return type.GetProperty(name, BindingFlags.Public | BindingFlags.Instance) != null;
         }
+#endif
 
         public static PropertyChangeWatcher AddWatcher(this INotifyPropertyChanged source, string propertyName, Action handler)
         {
@@ -144,7 +151,7 @@ namespace PixelLab.Common
             return func.ToComparer();
         }
 
-        #region impl
+#region impl
         private class FuncComparer<T> : IComparer<T>
         {
             public FuncComparer(Func<T, T, int> func)
@@ -202,6 +209,6 @@ namespace PixelLab.Common
 
             private readonly Func<T, T, bool> m_func;
         }
-        #endregion
+#endregion
     }
 } //*** namespace PixelLab.Common

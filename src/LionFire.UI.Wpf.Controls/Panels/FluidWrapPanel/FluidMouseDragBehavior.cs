@@ -1,4 +1,5 @@
-﻿// Retrieved on January 8, 2013 under Ms-PL from Codeplex
+﻿#if !NOESIS
+// Retrieved on January 8, 2013 under Ms-PL from Codeplex
 
 #region File Header
 
@@ -14,12 +15,16 @@
 
 #endregion
 
+#if NOESIS
+using Noesis;
+#else
 using Microsoft.Xaml.Behaviors;
-using System.Windows;
+using System.Windows.Media;
 using System.Windows.Controls;
+#endif
+using System.Windows;
 using System.Windows.Input;
 //using System.Windows.Interactivity;
-using System.Windows.Media;
 
 namespace LionFire.Avalon
 {
@@ -28,7 +33,7 @@ namespace LionFire.Avalon
     /// </summary>
     public class FluidMouseDragBehavior : Behavior<UIElement>
     {
-        #region Fields
+#region Fields
 
         FluidWrapPanel parentFWPanel = null;
         ListBoxItem parentLBItem = null;
@@ -37,11 +42,11 @@ namespace LionFire.Avalon
 
         FrameworkElement ParentContentControl { get { return parentLBItem ?? (FrameworkElement)parentContentPresenter; } }
 
-        #endregion
+#endregion
 
-        #region Dependency Properties
+#region Dependency Properties
 
-        #region DragButton
+#region DragButton
 
         /// <summary>
         /// DragButton Dependency Property
@@ -60,11 +65,11 @@ namespace LionFire.Avalon
             set { SetValue(DragButtonProperty, value); }
         }
 
-        #endregion
+#endregion
 
-        #endregion
+#endregion
 
-        #region Overrides
+#region Overrides
 
         /// <summary>
         /// 
@@ -148,9 +153,9 @@ namespace LionFire.Avalon
             }
         }
 
-        #endregion
+#endregion
 
-        #region Event Handlers
+#region Event Handlers
 
         void OnPreviewMouseDown(object sender, MouseButtonEventArgs e)
         {
@@ -249,6 +254,7 @@ namespace LionFire.Avalon
             }
         }
 
-        #endregion
+#endregion
     }
 }
+#endif

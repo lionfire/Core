@@ -1,39 +1,37 @@
-﻿using System;
+﻿
+#if NOESIS
+using Noesis;
+using FloatType = System.Single;
+#else
+using FloatType = System.Double;
+using System.Windows;
+#endif
+using System;
 using System.Diagnostics;
 #if CONTRACTS_FULL
 using System.Diagnostics.Contracts;
 #else
 using PixelLab.Contracts;
 #endif
-using System.Windows;
 
 namespace PixelLab.Common
 {
     public static class GeoHelper
     {
         [Pure]
-        public static bool IsValid(this double value)
-        {
-            return !double.IsInfinity(value) && !double.IsNaN(value);
-        }
+        public static bool IsValid(this double value) => !double.IsInfinity(value) && !double.IsNaN(value);
 
         [Pure]
-        public static bool IsValid(this Point value)
-        {
-            return value.X.IsValid() && value.Y.IsValid();
-        }
+        public static bool IsValid(this float value) => !double.IsInfinity(value) && !double.IsNaN(value);
 
         [Pure]
-        public static bool IsValid(this Size value)
-        {
-            return value.Width.IsValid() && value.Height.IsValid();
-        }
+        public static bool IsValid(this Point value) => value.X.IsValid() && value.Y.IsValid();
 
         [Pure]
-        public static bool IsValid(this Vector value)
-        {
-            return value.X.IsValid() && value.Y.IsValid();
-        }
+        public static bool IsValid(this Size value) => value.Width.IsValid() && value.Height.IsValid();
+
+        [Pure]
+        public static bool IsValid(this Vector value) => value.X.IsValid() && value.Y.IsValid();
 
         /// <summary>
         ///     Returns the scale factor by which an object of size <paramref name="source"/>
@@ -105,10 +103,11 @@ namespace PixelLab.Common
             }
         }
 
+
         public static bool Animate(
         Point currentValue, Vector currentVelocity, Point targetValue,
-        double attractionFator, double dampening,
-        double terminalVelocity, double minValueDelta, double minVelocityDelta,
+        FloatType attractionFator, FloatType dampening,
+        FloatType terminalVelocity, double minValueDelta, double minVelocityDelta,
         out Point newValue, out Vector newVelocity)
         {
             Debug.Assert(currentValue.IsValid());
@@ -149,6 +148,7 @@ namespace PixelLab.Common
             }
         }
 
+
         public static Vector Subtract(this Point point, Point other)
         {
             Contract.Requires(point.IsValid());
@@ -177,7 +177,7 @@ namespace PixelLab.Common
             return new Point(value.X + value.Width / 2, value.Y + value.Height / 2);
         }
 
-        public static Rect Expand(this Rect target, double amount)
+        public static Rect Expand(this Rect target, FloatType amount)
         {
             Contract.Requires(amount >= 0);
             Contract.Requires(!target.IsEmpty);
@@ -228,7 +228,7 @@ namespace PixelLab.Common
 
         public static Vector CenterVector(this Size size)
         {
-            return ((Vector)size) * .5;
+            return ((Vector)size) * (FloatType).5;
         }
 
         public static double AngleRad(Point point1, Point point2, Point point3)
@@ -276,17 +276,17 @@ namespace PixelLab.Common
             return acos;
         }
 
-        public static Vector GetVectorFromAngle(double angleRadians, double length)
+        public static Vector GetVectorFromAngle(double angleRadians, FloatType length)
         {
             Contract.Requires(angleRadians.IsValid());
             Contract.Requires(length.IsValid());
 
-            double x = Math.Cos(angleRadians) * length;
-            double y = -Math.Sin(angleRadians) * length;
+            FloatType x = (FloatType) Math.Cos(angleRadians) * length;
+            FloatType y = (FloatType) (-Math.Sin(angleRadians) * length);
 
             return new Vector(x, y);
         }
 
-        public static readonly Size SizeInfinite = new Size(double.PositiveInfinity, double.PositiveInfinity);
+        public static readonly Size SizeInfinite = new Size(FloatType.PositiveInfinity, FloatType.PositiveInfinity);
     }
 }

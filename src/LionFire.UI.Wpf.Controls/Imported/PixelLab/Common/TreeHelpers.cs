@@ -6,8 +6,13 @@ using PixelLab.Contracts;
 #endif
 using System.Linq;
 using System.Windows;
+#if NOESIS
+using Noesis;
+#else
 using System.Windows.Controls;
 using System.Windows.Media;
+#endif
+using System.Collections.Concurrent;
 
 namespace PixelLab.Common
 {

@@ -1,6 +1,10 @@
 ﻿using Caliburn.Micro;
-using System;
+#if NOESIS
+using Noesis;
+#else
 using System.Windows;
+#endif
+using System;
 
 namespace LionFire.UI.Wpf
 {

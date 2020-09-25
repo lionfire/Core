@@ -46,4 +46,8 @@
     <ProjectReference Include="..\LionFire.Vos\LionFire.Vos.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Threading\" />
+  </ItemGroup>
+
 </Project>

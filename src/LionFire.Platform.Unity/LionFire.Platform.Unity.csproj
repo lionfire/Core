@@ -2,7 +2,7 @@
 
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
-    <UnityVersion>2019.4.1f1</UnityVersion>
+    <UnityVersion>2020.1.6f1</UnityVersion>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
@@ -21,6 +21,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\LionFire.Base\LionFire.Base.csproj" />
+    <ProjectReference Include="..\LionFire.Hosting\LionFire.Hosting.csproj" />
   </ItemGroup>
 
 </Project>

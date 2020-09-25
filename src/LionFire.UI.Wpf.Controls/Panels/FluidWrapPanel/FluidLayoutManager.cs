@@ -14,11 +14,17 @@
 
 #endregion
 
-using System;
-using System.Windows;
+#if NOESIS
+using Noesis;
+using FloatType = System.Single;
+#else
+using FloatType = System.Double;
 using System.Windows.Controls;
 using System.Windows.Media;
 using System.Windows.Media.Animation;
+#endif
+using System;
+using System.Windows;
 
 namespace LionFire.Avalon
 {
@@ -27,16 +33,16 @@ namespace LionFire.Avalon
     /// </summary>
     internal sealed class FluidLayoutManager
     {
-        #region Fields
+#region Fields
 
         private Size panelSize;
         private Size cellSize;
         private Orientation panelOrientation;
         private Int32 cellsPerLine;
 
-        #endregion
+#endregion
 
-        #region APIs
+#region APIs
 
         /// <summary>
         /// Calculates the initial location of the child in the FluidWrapPanel
@@ -107,8 +113,8 @@ namespace LionFire.Avalon
 
             if (isCenterHeight && isCenterWidth)
             {
-                double posX = (halfCols) * cellSize.Width;
-                double posY = (halfRows + 2) * cellSize.Height;
+                FloatType posX = (halfCols) * cellSize.Width;
+                FloatType posY = (halfRows + 2) * cellSize.Height;
 
                 return new Point(posX, posY);
             }
@@ -117,15 +123,15 @@ namespace LionFire.Avalon
             {
                 if (isLeft)
                 {
-                    double posX = ((halfCols - column) + 1) * cellSize.Width;
-                    double posY = (halfRows) * cellSize.Height;
+                    FloatType posX = ((halfCols - column) + 1) * cellSize.Width;
+                    FloatType posY = (halfRows) * cellSize.Height;
 
                     result = new Point(-posX, posY);
                 }
                 else
                 {
-                    double posX = ((column - halfCols) + 1) * cellSize.Width;
-                    double posY = (halfRows) * cellSize.Height;
+                    FloatType posX = ((column - halfCols) + 1) * cellSize.Width;
+                    FloatType posY = (halfRows) * cellSize.Height;
 
                     result = new Point(panelSize.Width + posX, posY);
                 }
@@ -137,15 +143,15 @@ namespace LionFire.Avalon
             {
                 if (isTop)
                 {
-                    double posX = (halfCols) * cellSize.Width;
-                    double posY = ((halfRows - row) + 1) * cellSize.Height;
+                    FloatType posX = (halfCols) * cellSize.Width;
+                    FloatType posY = ((halfRows - row) + 1) * cellSize.Height;
 
                     result = new Point(posX, -posY);
                 }
                 else
                 {
-                    double posX = (halfCols) * cellSize.Width;
-                    double posY = ((row - halfRows) + 1) * cellSize.Height;
+                    FloatType posX = (halfCols) * cellSize.Width;
+                    FloatType posY = ((row - halfRows) + 1) * cellSize.Height;
 
                     result = new Point(posX, panelSize.Height + posY);
                 }
@@ -157,15 +163,15 @@ namespace LionFire.Avalon
             {
                 if (isLeft)
                 {
-                    double posX = ((halfCols - column) + 1) * cellSize.Width;
-                    double posY = ((halfRows - row) + 1) * cellSize.Height;
+                    FloatType posX = ((halfCols - column) + 1) * cellSize.Width;
+                    FloatType posY = ((halfRows - row) + 1) * cellSize.Height;
 
                     result = new Point(-posX, -posY);
                 }
                 else
                 {
-                    double posX = ((column - halfCols) + 1) * cellSize.Width;
-                    double posY = ((halfRows - row) + 1) * cellSize.Height;
+                    FloatType posX = ((column - halfCols) + 1) * cellSize.Width;
+                    FloatType posY = ((halfRows - row) + 1) * cellSize.Height;
 
                     result = new Point(posX + panelSize.Width, -posY);
                 }
@@ -174,15 +180,15 @@ namespace LionFire.Avalon
             {
                 if (isLeft)
                 {
-                    double posX = ((halfCols - column) + 1) * cellSize.Width;
-                    double posY = ((row - halfRows) + 1) * cellSize.Height;
+                    FloatType posX = ((halfCols - column) + 1) * cellSize.Width;
+                    FloatType posY = ((row - halfRows) + 1) * cellSize.Height;
 
                     result = new Point(-posX, panelSize.Height + posY);
                 }
                 else
                 {
-                    double posX = ((column - halfCols) + 1) * cellSize.Width;
-                    double posY = ((row - halfRows) + 1) * cellSize.Height;
+                    FloatType posX = ((column - halfCols) + 1) * cellSize.Width;
+                    FloatType posY = ((row - halfRows) + 1) * cellSize.Height;
 
                     result = new Point(posX + panelSize.Width, panelSize.Height + posY);
                 }
@@ -199,7 +205,7 @@ namespace LionFire.Avalon
         /// <param name="cellWidth">Width of each child in the FluidWrapPanel</param>
         /// <param name="cellHeight">Height of each child in the FluidWrapPanel</param>
         /// <param name="orientation">Orientation of the panel - Horizontal or Vertical</param>
-        internal void Initialize(double panelWidth, double panelHeight, double cellWidth, double cellHeight, Orientation orientation)
+        internal void Initialize(FloatType panelWidth, FloatType panelHeight, FloatType cellWidth, FloatType cellHeight, Orientation orientation)
         {
             if (panelWidth <= 0.0d)
                 panelWidth = cellWidth;
@@ -374,7 +380,7 @@ namespace LionFire.Avalon
         /// <param name="scaleY">Scale factor in the Y-axis</param>
         /// <param name="rotAngle">Rotation</param>
         /// <returns>TransformGroup</returns>
-        internal TransformGroup CreateTransform(double transX, double transY, double scaleX, double scaleY, double rotAngle = 0.0D)
+        internal TransformGroup CreateTransform(FloatType transX, FloatType transY, FloatType scaleX, FloatType scaleY, double rotAngle = 0.0D)
         {
             TranslateTransform translation = new TranslateTransform();
             translation.X = transX;
@@ -434,7 +440,13 @@ namespace LionFire.Avalon
 
             // Animate ScaleX
             DoubleAnimation scaleAnimationX = new DoubleAnimation();
+
+#if NOESIS
+            scaleAnimationX.To = 1.0f;
+#else
             scaleAnimationX.To = 1.0D;
+#endif
+
             scaleAnimationX.Duration = duration;
             if (easing != null)
                 scaleAnimationX.EasingFunction = easing;
@@ -445,7 +457,11 @@ namespace LionFire.Avalon
 
             // Animate ScaleY
             DoubleAnimation scaleAnimationY = new DoubleAnimation();
+#if NOESIS
+            scaleAnimationY.To = 1.0f;
+#else
             scaleAnimationY.To = 1.0D;
+#endif
             scaleAnimationY.Duration = duration;
             if (easing != null)
                 scaleAnimationY.EasingFunction = easing;
@@ -488,9 +504,9 @@ namespace LionFire.Avalon
             return new Size(numLines * cellSize.Width, cellsPerLine * cellSize.Height);
         }
 
-        #endregion
+#endregion
 
-        #region Helpers
+#region Helpers
 
         /// <summary>
         /// Calculates the number of child items that can be accommodated in a single line
@@ -504,6 +520,6 @@ namespace LionFire.Avalon
                 cellsPerLine++;
         }
 
-        #endregion
+#endregion
     }
 }

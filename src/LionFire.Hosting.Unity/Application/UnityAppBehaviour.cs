@@ -48,15 +48,17 @@ namespace LionFire.Hosting.Unity
 
         protected IConfiguration Config { get; private set; }
 
+        /// <summary>
+        /// Recommend to override this as desired
+        /// </summary>
+        /// <returns></returns>
         protected virtual IHostBuilder CreateHostBuilder()
-        {
-            //return Host.CreateDefaultBuilder();
-            //if(CreateHost != null)
-            //{
-            //    return CreateHost(this);
-            //}
-            return new HostBuilder();
-        }
+            => new HostBuilder()
+                .ConfigureServices(services =>
+                    services
+                        .AddUnityEngine()
+                        .AddUnityRuntime(this, logStartStop: true))
+                    ;
 
         private IHost host;
 
@@ -71,10 +73,10 @@ namespace LionFire.Hosting.Unity
                 Config = CreateConfigurationBuilder().Build();
 
                 var hostBuilder = CreateHostBuilder()
-                    .AddUnityRuntime(this)
                     .ConfigureServices((ctx, services) =>
                     {
                         services
+                            .AddUnityRuntime(this)
                             .AddSingleton<IHostApplicationLifetime>(serviceProvider => ApplicationLifetime = new ApplicationLifetime(serviceProvider.GetService<ILogger<ApplicationLifetime>>()))
                             .AddHostedService<UnityStartStopLogger>()
                             ;

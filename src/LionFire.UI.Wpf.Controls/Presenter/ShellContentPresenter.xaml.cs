@@ -1,16 +1,22 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Windows;
+﻿#if NOESIS
+using Noesis;
+#else
+#define Windowing
 using System.Windows.Controls;
 using System.Windows.Data;
 using System.Windows.Documents;
-using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using LionFire.UI.Wpf;
+#endif
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Windows;
+using System.Windows.Input;
 using LionFire;
 using LionFire.Shell;
 using System.Threading;
@@ -29,20 +35,37 @@ using System.Diagnostics;
 using LionFire.Shell.Wpf;
 using Microsoft.Extensions.Options;
 using LionFire.UI.Windowing;
-using LionFire.UI.Wpf;
 using LionFire.Dependencies;
-using LionFire.Vos.VosApp;
+//using LionFire.Vos.VosApp;
 using Microsoft.Extensions.DependencyInjection;
+using LionFire.ExtensionMethods;
+
+namespace LionFire.ExtensionMethods
+{
+    public static class NoesisExtensions
+    {
+        public static T GetCustomAttribute2<T>(this MemberInfo type)
+            where T : Attribute
+            => System.Reflection.CustomAttributeExtensions.GetCustomAttribute<T>(type);
+
+#if NOESIS
+
+#endif
+    }
+}
+
 
 namespace LionFire.Shell
 {
-
 
     /// <summary>
     /// Intelligent content host for the main content area of the LionFire Shell.
     /// RENAME to WindowPresenter
     /// </summary>
     public partial class ShellContentPresenter : UserControl, /*IControllable, UNUSED*/ IShellContentPresenter, INotifyPropertyChanged
+#if Windowing
+    , IWpfWindowedPresenter
+#endif
     {
 
         #region Window Parameters
@@ -54,22 +77,44 @@ namespace LionFire.Shell
 
         #region Dependencies
 
-        public WpfShellPresenter ShellPresenter { get; }
+        public IShellPresenter ShellPresenter { get; }
         //public IOptionsMonitor<WindowSettings> WindowSettingsOptions { get; }
         public WindowSettings WindowSettings => ShellPresenter.WindowSettings;
-        
+
         //WindowSettingsOptions?.CurrentValue;
 
+#if Windowing
         // TODO: Bind this to the current desktop profile
         // TODO: Change detection on profile change
         public WindowLayout WindowLayout
             => WindowSettings?.GetCurrentProfile().GetWindow(Name ?? WindowSettings.DefaultWindowName);
+#endif
 
-        ShellContentPresenter MainPresenter => ShellPresenter.MainPresenter;
+#if WPF
+        IWpfShellContentPresenter MainPresenter => (IWpfShellContentPresenter)ShellPresenter.MainPresenter;
+#else
+        IShellContentPresenter MainPresenter => ShellPresenter.MainPresenter;
+#endif
 
         #endregion
 
-        public ShellContentPresenter(WpfShellPresenter shell,  string name = null)
+
+#if NOESIS
+
+        Panel topControl;
+        TabControl ShellTabControl;
+        TabControl BackgroundShellTabControl;
+        DockPanel ContentDock;
+        ContentControl ModalControl;
+
+        private void InitializeComponent()
+        {
+
+            Noesis.GUI.LoadComponent(this, "ShellContentPresenter.xaml");
+        }
+#endif
+
+        public ShellContentPresenter(IShellPresenter shell, string name = null)
         {
             if (name != null) { Name = name; }
 
@@ -90,9 +135,9 @@ namespace LionFire.Shell
             //}
         }
 
-        #region Properties
+#region Properties
 
-        #region ShowMenuButton
+#region ShowMenuButton
 
         public bool ShowMenuButton
         {
@@ -106,9 +151,9 @@ namespace LionFire.Shell
         }
         private bool showMenuButton;
 
-        #endregion
+#endregion
 
-        #endregion
+#endregion
 
         object IShellContentPresenter.TopControl => topControl;
         public Panel TopControl => topControl;
@@ -119,7 +164,7 @@ namespace LionFire.Shell
         //    set { MainContentTab.Content = value; }
         //}
 
-        #region IControllable Members
+#region IControllable Members
 
         public object masterController;
         public object MasterController
@@ -140,11 +185,16 @@ namespace LionFire.Shell
             }
         }
 
-        #endregion
+#endregion
 
-        #region Window Management
+#if NOESIS
+        //public IWindow UnityWindow { get; set; } // FUTURE - stub/support for Unity main window (and potentially secondary windows.)
+        public bool IsActive => true; // STUB
 
-        #region IsTopmost
+#else
+#region Window Management
+
+#region IsTopmost
 
         public bool Topmost
         {
@@ -166,19 +216,24 @@ namespace LionFire.Shell
             if (!Dispatcher.CheckAccess()) Dispatcher.BeginInvoke(new Action(() => OnTopmostChanged()));
             else
             {
-                //this.MainWindow.Topmost = IsTopmost;
-                if (MainPresenter.HasFullScreenShellWindow)
+#if Windowing
+                if (MainPresenter is IWpfWindowedPresenter wp)
                 {
-                    MainPresenter.FullScreenShellWindow.Topmost = this.topmost;
+                    //this.MainWindow.Topmost = IsTopmost;
+                    if (wp.HasFullScreenShellWindow)
+                    {
+                        wp.FullScreenShellWindow.Topmost = this.topmost;
+                    }
+                    if (wp.HasShellWindow)
+                    {
+                        wp.ShellWindow.Topmost = this.topmost;
+                    }
                 }
-                if (MainPresenter.HasShellWindow)
-                {
-                    MainPresenter.ShellWindow.Topmost = this.topmost;
-                }
+#endif
             }
         }
 
-        #endregion
+#endregion
 
         public void BringToFront()
         {
@@ -209,9 +264,12 @@ namespace LionFire.Shell
             }
         }
 
-        #region Owning Window
+
+#region Owning Window
 
         public bool IsFullScreen { get; internal set; }
+
+#if Windowing
 
         private ShellWindow shellWindow;
         public ShellWindow ShellWindow
@@ -263,14 +321,16 @@ namespace LionFire.Shell
             this.Close();
         }
 
+#endif
+
         //public System.Windows.Threading.Dispatcher CurrentDispatcher => CurrentWindow?.Dispatcher;
 
-        object IShellContentPresenter.CurrentWindow => CurrentWindow;
+        object IWindowedPresenter.CurrentWindow => CurrentWindow;
         public Window CurrentWindow => IsFullScreen ? fullScreenShellWindow : (Window)shellWindow;
 
-        #endregion
+#endregion
 
-        #region Show / Hide
+#region Show / Hide
 
         public bool IsPresenterEnabled = true;
 
@@ -295,9 +355,23 @@ namespace LionFire.Shell
             }
         }
 
-        #endregion
+#endregion
 
-        #region Close
+        public bool IsActive
+        {
+            get
+            {
+                if (HasFullScreenShellWindow && FullScreenShellWindow.IsActive) return true;
+                if (HasShellWindow && ShellWindow.IsActive) return true;
+                return false;
+            }
+        }
+
+
+#endregion
+#endif
+
+#region Close
 
         public event Action<ShellContentPresenter> Closed;
         //public event Action<ShellContentPresenter> Closing;
@@ -320,10 +394,12 @@ namespace LionFire.Shell
         {
             //{ var ev = Closing; if (ev != null) ev(this); }
 
+#if Windowing
             if (fullScreenShellWindow != null) fullScreenShellWindow.DoClose();
             if (shellWindow != null) shellWindow.DoClose();
+#endif
 
-            { var ev = Closed; if (ev != null) ev(this); }
+            Closed?.Invoke(this);
             //if (IsFullScreen)
             //{
             //    FullScreenShellWindow.Close();
@@ -335,6 +411,8 @@ namespace LionFire.Shell
         }
 
         private bool isClosing = false;
+
+#if Windowing
         internal void CloseWindows(Window windowIsClosing = null)
         {
             if (isClosing) return;
@@ -348,6 +426,7 @@ namespace LionFire.Shell
             LionFire.Avalon.WindowsSettings.Save(); // FUTURE - move to shellContentPresenter closing event?
 #endif
 
+#if Windowing
             if (this.shellWindow != null)
             {
                 try
@@ -384,26 +463,15 @@ namespace LionFire.Shell
                 }
                 catch { }
             }
+#endif
         }
+#endif
 
-        #endregion
+#endregion
 
-        public bool IsActive
-        {
-            get
-            {
-                if (HasFullScreenShellWindow && FullScreenShellWindow.IsActive) return true;
-                if (HasShellWindow && ShellWindow.IsActive) return true;
-                return false;
-            }
-        }
+#region Tab Management
 
-
-        #endregion
-
-        #region Tab Management
-
-        #region CurrentTabName
+#region CurrentTabName
 
         public string CurrentTabName
         {
@@ -432,7 +500,7 @@ namespace LionFire.Shell
         }
         public IDocumentTab CurrentDocumentTab => CurrentTabContents as IDocumentTab;
 
-        #endregion
+#endregion
 
         public bool Contains(string name) => GetTabItem(name) != null;
 
@@ -484,7 +552,7 @@ namespace LionFire.Shell
         }
 
 
-        #region Current ViewName
+#region Current ViewName
 
         public string CurrentTabViewName
         {
@@ -500,17 +568,22 @@ namespace LionFire.Shell
             if (ti == null) return null;
             if (ti.Content == null) return null;
 
+#if NOESIS
+            // TODO: Use another extension method that avoids ambiguity with Noesis?
+            var attr = System.Reflection.CustomAttributeExtensions.GetCustomAttribute<UIEntityAttribute>(ti.Content.GetType());
+#else
             var attr = ti.Content.GetType().GetCustomAttribute<UIEntityAttribute>();
+#endif
             if (attr == null) return null;
             return attr.Key;
         }
 
-        #endregion
+#endregion
 
 
-        #endregion
+#endregion
 
-        #region Background Tab Methods
+#region Background Tab Methods
 
         public bool ContainsBackground(string tabName)
         {
@@ -556,9 +629,9 @@ namespace LionFire.Shell
             // MEMOPTIMIZE - Delete deselected tab, if marked transient
         }
 
-        #endregion
+#endregion
 
-        #region Routed Events
+#region Routed Events
 
         private void OnBack(object sender, RoutedEventArgs args)
         {
@@ -575,7 +648,7 @@ namespace LionFire.Shell
             DocumentManager?.Save();
         }
 
-        #endregion
+#endregion
 
 
         public void SetDock(FrameworkElement fe, bool isVisible = true)
@@ -618,7 +691,7 @@ namespace LionFire.Shell
         }
 
 
-        #region ShowInTaskbar
+#region ShowInTaskbar
 
         public bool ShowInTaskbar
         {
@@ -627,11 +700,11 @@ namespace LionFire.Shell
         }
         private bool showInTaskbar = true;
 
-        #endregion
+#endregion
 
         public string StackTopTabName { get; set; }
 
-        #region Navigation Stack
+#region Navigation Stack
 
         public bool HasTabs { get { return NavStack.Count > 0; } }
 
@@ -721,9 +794,9 @@ namespace LionFire.Shell
             return GetControl(type, tabName, showControl: true);
         }
 
-        #endregion
+#endregion
 
-        #region Tab Management
+#region Tab Management
 
         public T ShowControl<T>(string tabName = null)
             where T : class
@@ -732,7 +805,7 @@ namespace LionFire.Shell
             return control; // REVIEW
         }
 
-        public object GetControl(Type type, string tabName = null, bool showControl = false) 
+        public object GetControl(Type type, string tabName = null, bool showControl = false)
         {
             GetControlGenericMethodInfo ??= this.GetType().GetMethods().Where(mi => mi.Name == nameof(GetControl) && mi.ContainsGenericParameters).First();
             return GetControlGenericMethodInfo.MakeGenericMethod(type).Invoke(this, new object[] { tabName, showControl });
@@ -747,11 +820,13 @@ namespace LionFire.Shell
         {
             l.Debug("ShowControl: " + typeof(T).Name + " showControl = " + showControl);
 
+#if !NOESIS // FIXME?
             if (!this.Dispatcher.CheckAccess()) return (T)this.Dispatcher.Invoke(new Func<T>(() => GetControl<T>(tabName
                 //, frameworkElement
                 , showControl
                 )));
             else
+#endif
             {
                 if (tabName == null)
                 {
@@ -833,10 +908,10 @@ namespace LionFire.Shell
             var control = this.ModalControl.Content;
             if (control == null) return true;
 
-            var attr = control.GetType().GetCustomAttribute<UIEntityAttribute>();
+            var attr = control.GetType().GetCustomAttribute2<UIEntityAttribute>();
             if (attr.Key == viewName)
             {
-                this.ModalControl.Visibility = System.Windows.Visibility.Collapsed;
+                this.ModalControl.Visibility = Visibility.Collapsed;
                 var fe = this.ModalControl.Content as FrameworkElement;
                 if (fe != null) fe.DataContext = null;
                 this.ModalControl.Content = null;
@@ -849,7 +924,7 @@ namespace LionFire.Shell
 
         public void HideModalControl<T>() where T : class
         {
-            this.ModalControl.Visibility = System.Windows.Visibility.Collapsed;
+            this.ModalControl.Visibility = Visibility.Collapsed;
             var fe = this.ModalControl.Content as FrameworkElement;
             if (fe != null) fe.DataContext = null;
             this.ModalControl.Content = null;
@@ -907,7 +982,7 @@ namespace LionFire.Shell
             //    }
             //}
             this.ModalControl.Content = controlInstance;
-            this.ModalControl.Visibility = System.Windows.Visibility.Visible;
+            this.ModalControl.Visibility = Visibility.Visible;
 
             //this.ShowModalTab(tabName);
 
@@ -916,7 +991,9 @@ namespace LionFire.Shell
 
         public T ShowBackgroundControl<T>(string tabName = null) where T : class
         {
+#if !NOESIS
             if (!Dispatcher.CheckAccess()) { return Dispatcher.Invoke(new Func<T>(() => ShowBackgroundControl<T>(tabName))); }
+#endif
 
             tabName = tabName ?? TabManager.GetTabNameFromType<T>();
 
@@ -960,7 +1037,7 @@ namespace LionFire.Shell
             this.AddBackgroundTabItem(tabName, controlInstance);
         }
 
-        #region OLD
+#region OLD
 
         //public void ShowPresenterType(string presenterType)
         //{
@@ -978,23 +1055,23 @@ namespace LionFire.Shell
         //    }
         //}
 
-        #endregion
+#endregion
 
-        #endregion
+#endregion
 
-        #region Misc
+#region Misc
 
         private static readonly ILogger l = Log.Get();
 
-        #region INotifyPropertyChanged Implementation
+#region INotifyPropertyChanged Implementation
 
         public event PropertyChangedEventHandler PropertyChanged;
 
         private void OnPropertyChanged(string propertyName) => PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
 
-        #endregion
+#endregion
 
-        #endregion
+#endregion
     }
 
 

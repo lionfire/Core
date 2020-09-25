@@ -10,7 +10,7 @@ namespace PixelLab.Common
 {
     public abstract class Changeable : INotifyPropertyChanged
     {
-#if DEBUG
+#if DEBUG && !NOESIS
         public Changeable()
         {
             this.VerifyPropertyNamesOnChange();

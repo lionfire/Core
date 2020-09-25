@@ -1,7 +1,11 @@
 ﻿using System;
 using System.Diagnostics;
 using System.Reflection;
+#if NOESIS
+using Noesis;
+#else
 using System.Windows;
+#endif
 using System.Windows.Input;
 
 namespace LionFire.Avalon
@@ -9,7 +13,7 @@ namespace LionFire.Avalon
 
     public static class MouseWheelIncrementer
     {
-        #region Property
+#region Property
 
         /// <summary>
         /// Property Attached Dependency Property
@@ -64,9 +68,9 @@ namespace LionFire.Avalon
             }
         }
 
-        #endregion
+#endregion
 
-        #region Target
+#region Target
 
         /// <summary>
         /// Target Attached Dependency Property
@@ -93,9 +97,9 @@ namespace LionFire.Avalon
             d.SetValue(TargetProperty, value);
         }
 
-        #endregion
+#endregion
 
-        #region MinValue
+#region MinValue
 
         /// <summary>
         /// MinValue Attached Dependency Property
@@ -122,9 +126,9 @@ namespace LionFire.Avalon
             d.SetValue(MinValueProperty, value);
         }
 
-        #endregion
+#endregion
 
-        #region Command
+#region Command
 
         /// <summary>
         /// Command Attached Dependency Property
@@ -179,9 +183,9 @@ namespace LionFire.Avalon
             }
         }
 
-        #endregion
+#endregion
 
-        #region Event Handling
+#region Event Handling
 
         private static int GetDelta(int mouseWheelDelta)
         {
@@ -203,8 +207,10 @@ namespace LionFire.Avalon
             }
 
             if (Invert) delta *= -1;
+#if !NOESIS // TOPORT
             if ((Keyboard.Modifiers & ModifierKeys.Shift) != ModifierKeys.None) delta *= ShiftMultiplier;
             if ((Keyboard.Modifiers & ModifierKeys.Control) != ModifierKeys.None) delta *= ControlMultiplier;
+#endif
 
             return delta;
         }
@@ -295,9 +301,9 @@ namespace LionFire.Avalon
             }
         }
 
-        #endregion
+#endregion
 
-        #region Options (TODO: Attached Properties)
+#region Options (TODO: Attached Properties)
 
         public static int MaxMouseWheelIncrement = 1;
         public static int ShiftMultiplier = 10;
@@ -307,7 +313,7 @@ namespace LionFire.Avalon
         public static bool Invert = false;
 
 
-        #region StringFormat
+#region StringFormat
 
         public static string StringFormat
         {
@@ -317,9 +323,9 @@ namespace LionFire.Avalon
         //private static string stringFormat = "+#;-#;0";
         private static string stringFormat = null;
 
-        #endregion
+#endregion
 
-        #endregion
+#endregion
 
     }
 

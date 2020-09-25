@@ -84,7 +84,7 @@ namespace LionFire
                 if (isUnitTest.HasValue) return isUnitTest.Value;
 
                 var entryAssembly = Assembly.GetEntryAssembly();
-                return Assembly.GetEntryAssembly().CustomAttributes.OfType<CustomAttributeData>().Where(cad => cad.AttributeType.Name == "AssemblyProductAttribute" && UnitTestProducts.Contains(cad.ConstructorArguments.Select(arg => arg.Value as string).FirstOrDefault())).Any() == true;
+                return entryAssembly?.CustomAttributes.OfType<CustomAttributeData>().Where(cad => cad.AttributeType.Name == "AssemblyProductAttribute" && UnitTestProducts.Contains(cad.ConstructorArguments.Select(arg => arg.Value as string).FirstOrDefault())).Any() == true;
             }
             set => isUnitTest = value;
         }
