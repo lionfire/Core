@@ -20,10 +20,10 @@ using System.Threading.Tasks;
 using LionFire.Persistence;
 using LionFire.Bindings;
 using LionFire.UI.Windowing;
+using Microsoft.Extensions.Options;
 
 namespace LionFire.Shell
 {
-
     /// <summary>
     /// ShellWindow is the windowed window for LionFire apps.  It provides an AllowsTransparency window with a default 
     /// theme of rounded corners and custom dragmove caption bar.
@@ -31,6 +31,13 @@ namespace LionFire.Shell
     /// </summary>    
     public partial class ShellWindow : ShellWindowBase, INotifyPropertyChanged
     {
+        #region Dependencies
+
+        public IOptionsMonitor<ShellWindowOptions> ShellWindowOptionsMonitor { get; }
+        public ShellWindowOptions ShellWindowOptions => ShellWindowOptionsMonitor.CurrentValue;
+
+        #endregion
+
         #region Configuration
 
         //public bool TransparentWindow { get { this.shellContentPresenter.TransparentWindowedWindow; } }
@@ -44,15 +51,13 @@ namespace LionFire.Shell
 
         #endregion
 
-        #region Settings Properties
+        #region State
 
         #region UseCustomTitleBar
 
-        public bool UseCustomTitleBar => WpfShell.Instance.ShellOptions.UseCustomTitleBar;
-
-        private bool _UseCustomTitleBar
+        private bool UseCustomTitleBar
         {
-            get { return useCustomTitleBar; }
+            get => useCustomTitleBar;
             set
             {
                 if (useCustomTitleBar == value) return;
@@ -73,17 +78,20 @@ namespace LionFire.Shell
                 TopGridTitleHeight.Height = value ? new GridLength(25) : new GridLength(0);
 
             }
-        } private bool useCustomTitleBar = true;
+        }
+        private bool useCustomTitleBar = true;
 
         #endregion
+
+        #endregion
+
+        #region Settings Properties
 
         #region ShowWindowButtons
 
         public bool ShowWindowButtons
         {
-            get {
-                return TitleBarExpander.Visibility == Visibility.Visible;
-            }
+            get => TitleBarExpander.Visibility == Visibility.Visible;
             set
             {
                 TitleBarExpander.Visibility = value ? Visibility.Visible : Visibility.Collapsed;
@@ -100,9 +108,11 @@ namespace LionFire.Shell
         //private GridLength TitleBarRowHeight;
         #endregion
 
-        public bool FullWidthTitleBar {
-            get { return WindowTitleText.Visibility == Visibility.Visible; }
-            set {
+        public bool FullWidthTitleBar
+        {
+            get => WindowTitleText.Visibility == Visibility.Visible;
+            set
+            {
                 WindowTitleText.Visibility = value ? Visibility.Visible : Visibility.Hidden;
                 DragWindowButton.Visibility = value ? Visibility.Collapsed : Visibility.Visible;
                 UpdatePresenterMargin();
@@ -114,16 +124,27 @@ namespace LionFire.Shell
 
         #region Construction
 
-
         public ShellWindow() { }
 
-        public ShellWindow(ShellContentPresenter shellContentPresenter)
+        public ShellWindow(TabbedWindowPresenter shellContentPresenter, IOptionsMonitor<ShellWindowOptions> shellWindowOptionsMonitor)
             : base(shellContentPresenter)
         {
-            Visibility = Visibility.Collapsed;
             InitializeComponent();
+
+            ShellWindowOptionsMonitor = shellWindowOptionsMonitor;
+
+            #region Set state from options
+
+            this.Width = ShellWindowOptions.DefaultWindowWidth;
+            this.Height = ShellWindowOptions.DefaultWindowHeight;
+            UseCustomTitleBar = ShellWindowOptions.UseCustomTitleBar;
+
+            if (DevMode.IsDevMode) { debugButton.Visibility = Visibility.Visible; }
+
+            #endregion
+
+            Visibility = Visibility.Collapsed;
             FullWidthTitleBar = true; // TOCONFIG  per app
-            _UseCustomTitleBar = UseCustomTitleBar;
 
             //if (TransparentWindow)
             //{
@@ -136,19 +157,10 @@ namespace LionFire.Shell
             TitleBarExpander.SizeChanged += TitleBarExpander_SizeChanged;
             TitleBarExpander.IsExpanded = true; // TOCONFIG  per app
 
-            //#if DEV
-            if (DevMode.IsDevMode)
-            {
-                debugButton.Visibility = Visibility.Visible;
-            }
-            //#endif
-
-            this.Width = WpfShell.Instance.ShellOptions.DefaultWindowWidth;
-            this.Height = WpfShell.Instance.ShellOptions.DefaultWindowHeight;
-
             //WindowsSettings.Load(); // Consider moving to more appropriate places TOPORT
 
             this.Loaded += new RoutedEventHandler(ShellWindow_Loaded);
+
             DependencyPropertyDescriptor.FromProperty(Window.WindowStateProperty, typeof(Window)).AddValueChanged(this, OnWindowStateChanged);
 
             WpfShell.Instance.ShellPresenter.MainPresenter.TopmostChanged += new Action<bool>(Instance_TopmostChanged);
@@ -167,7 +179,7 @@ namespace LionFire.Shell
 
         #region WindowLayout 
 
-        public WindowLayout WindowLayout 
+        public WindowLayout WindowLayout
         {
             get => windowLayout;
             set
@@ -202,10 +214,10 @@ namespace LionFire.Shell
             }
         }
 
-#endregion
+        #endregion
 
-#region Event Handlers
-        
+        #region Event Handlers
+
         private void TitleBarExpander_SizeChanged(object sender, SizeChangedEventArgs e)
         {
             UpdatePresenterMargin();
@@ -237,11 +249,9 @@ namespace LionFire.Shell
             DragMove();
         }
 
-#endregion
+        #endregion
 
-        
-
-#region Methods
+        #region Methods
 
         bool maximizing = false;
         private void _Maximize()
@@ -301,7 +311,7 @@ namespace LionFire.Shell
 
                 Window Window = this;
                 Window.WindowState = System.Windows.WindowState.Minimized;
-                
+
                 if (!Window.IsVisible)
                 {
                     Window.Show();
@@ -331,7 +341,7 @@ namespace LionFire.Shell
                 Dispatcher.BeginInvoke(new Action(() =>
                 {
                     Window Window = this;
-                    
+
                     Window.WindowState = System.Windows.WindowState.Minimized;
 
                     if (!Window.IsVisible)
@@ -350,12 +360,12 @@ namespace LionFire.Shell
                     Window.Topmost = false; // important
                     Window.Focus();         // important
 
-                    MoveToForeground.DoOnProcess(Process.GetCurrentProcess().ProcessName);
+                    MoveWindowToForeground.DoOnProcess(Process.GetCurrentProcess().ProcessName);
 
                     WpfShell.Instance.ShellPresenter.MainPresenter.BringToFront();
                 }));
             });
-            
+
             Window w = this;
             if (!w.IsVisible)
             {
@@ -372,13 +382,12 @@ namespace LionFire.Shell
             w.Topmost = false; // important
             w.Focus();         // important
 
-            MoveToForeground.DoOnProcess(Process.GetCurrentProcess().ProcessName);
+            MoveWindowToForeground.DoOnProcess(Process.GetCurrentProcess().ProcessName);
         }
 
         #endregion
 
         #region Misc
-
 
         #region INotifyPropertyChanged Implementation
 

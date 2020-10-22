@@ -5,7 +5,7 @@ namespace LionFire.Vos
 {
     public static class VobTreeLastModifiedExtensions
     {
-        public static  Task UpdateTreeLastModified(this Vob vob)
+        public static  Task UpdateTreeLastModified(this IVob vob)
         {
             throw new NotImplementedException();
 #if DISABLED
@@ -18,7 +18,7 @@ namespace LionFire.Vos
 #if DISABLED
         public static VobHandle<TimeStamp> GetVHTreeLastModified(this Vob vob) => vob[VosPaths.MetaDataSubPath]["TreeLastModified"].GetHandle<TimeStamp>();
 #endif
-        public static DateTime? GetTreeLastModified(this Vob vob)
+        public static DateTime? GetTreeLastModified(this IVob vob)
         {
             throw new NotImplementedException();
 #if DISABLED

@@ -9,32 +9,14 @@ using System.Collections.Generic;
 using System.Text;
 using LionFire.DependencyMachines;
 using System.Threading.Tasks;
-using LionFire.Vos.VosApp;
+using System.Runtime.CompilerServices;
+using System.Diagnostics;
+using LionFire.Extensions.DefaultValues;
+using Microsoft.Extensions.Hosting;
+using System.Threading;
 
 namespace LionFire.Settings
 {
-    public interface IUserLocalSettings<T>
-        where T : class
-    {
-        T Value { get; }
-        Task<T> GetValueAsync();
-    }
-
-    public class UserLocalSettingsProvider<T> : IUserLocalSettings<T>
-        where T : class
-    {
-        private T value;
-
-        public T Value => GetValueAsync().Result;
-        public async Task<T> GetValueAsync()
-        {
-            if (value == default)
-            {
-                value = (await VosAppSettings.UserLocal<T>.H.GetOrInstantiateValue().ConfigureAwait(false)).Value;
-            }
-            return value;
-        }
-    }
 
     public static class SettingsServicesExtensions
     {
@@ -79,7 +61,6 @@ namespace LionFire.Settings
            })
 
             .AddSingleton(typeof(IUserLocalSettings<>), typeof(UserLocalSettingsProvider<>))
-
             ;
 
         public static IServiceCollection MountUserSettings(this IServiceCollection services)

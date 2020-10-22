@@ -22,4 +22,8 @@
     <ProjectReference Include="..\LionFire.Instantiating\LionFire.Instantiating.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Shell\Presenters\" />
+  </ItemGroup>
+
 </Project>

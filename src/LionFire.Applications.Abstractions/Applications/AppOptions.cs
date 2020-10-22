@@ -12,9 +12,7 @@ namespace LionFire.Applications
 
     public class AppOptions
     {
-        public PerformanceMode PerformanceMode { get; set; } = PerformanceMode.HighPerformance;
-
-        public UpdatePolicy UpdatePolicy { get; set; }
+        //public PerformanceMode PerformanceMode { get; set; } = PerformanceMode.HighPerformance;
 
         #region StartingServices
 

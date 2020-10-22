@@ -15,7 +15,8 @@ namespace LionFire
         }
         public static void Error(this MSLogger logger, string msg, Exception ex)
         {
-            logger.Log<object>(Microsoft.Extensions.Logging.LogLevel.Error, new EventId(), null, ex, null);
+            //logger.Log<object>(Microsoft.Extensions.Logging.LogLevel.Error, new EventId(), null, ex, null);
+            logger.LogError(ex, msg);
         }
         public static void Warn(this MSLogger logger, string msg)
         {

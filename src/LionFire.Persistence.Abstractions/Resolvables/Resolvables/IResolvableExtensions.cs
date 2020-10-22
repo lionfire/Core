@@ -1,6 +1,8 @@
-﻿using LionFire.Resolves;
+﻿using LionFire.Persistence;
+using LionFire.Resolves;
 using LionFire.Structures;
 using System;
+using System.Threading.Tasks;
 
 namespace LionFire.Resolvables
 {
@@ -35,6 +37,13 @@ namespace LionFire.Resolvables
                 return ar.IsResolutionExpensive();
             }
             return false;
+        }
+
+        public static async Task<T> GetValueAsync<T>(this IResolves<T> resolves)
+        {
+            var result = await resolves.Resolve().ConfigureAwait(false);
+            if (result.IsSuccess != true) throw new PersistenceException("Resolve failed: " + result.ToString());
+            return result.Value;
         }
     }
 }

@@ -17,13 +17,14 @@
         #endregion
 
         public string Name { get; private set; }
-        public string Type { get; }
+
         public string MimeType { get; }
         public bool IsDirectory { get; }
 
         public IReference UnderlyingReference { get; set; }
         public string RawName { get; set; }
 
+        public string Type { get; set; }
 
         public override string ToString() => this.ToXamlAttribute();
 

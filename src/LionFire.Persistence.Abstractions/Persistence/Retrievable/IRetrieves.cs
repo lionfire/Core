@@ -66,7 +66,7 @@ namespace LionFire.Persistence
         ///// <returns>true if an object was retrieved.  False if object was not found at location of the Reference.  Throws if could not resolve the Reference to a valid source.</returns>
         [Casts("retrieves.ResolveAsync must return IRetrieveResult<T>", typeof(IRetrieveResult<>))]
         [Obsolete("TODO - use ToRetrieveResult instead")]
-        public static async Task<IRetrieveResult<T>> Retrieve<T>(this IRetrieves<T> retrieves) => (IRetrieveResult<T>)await retrieves.Resolve().ConfigureAwait(false); // CAST
+        public static async Task<IRetrieveResult<T>> Retrieve<T>(this IRetrieves<T> retrieves) => (IRetrieveResult<T>)await IResolvesExtensions.Resolve(retrieves).ConfigureAwait(false); // CAST
 
         public static IRetrieveResult<T> ToRetrieveResult<T>(this IResolveResult<T> resolveResult)
         {
@@ -107,11 +107,11 @@ namespace LionFire.Persistence
             {
                 if (lazilyResolves is IDetects d) return await d.Exists();
 
-                return (await lazilyResolves.GetValue()).HasValue;
+                return (await lazilyResolves.TryGetValue()).HasValue;
                 //return await lazilyResolves.Exists();
             }
 
-            return (await resolves.Resolve()).HasValue;
+            return (await IResolvesExtensions.Resolve(resolves)).HasValue;
         }
     }
 }

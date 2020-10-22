@@ -173,7 +173,7 @@ namespace LionFire.Persistence.Handles
 
         #region REORGANIZE
 
-        ITask<IResolveResult<TValue>> IResolves<TValue>.Resolve() => Resolve();
+        ITask<IResolveResult<TValue>> IResolves<TValue>.Resolve() => ResolveImpl();
 
         //protected override bool IsAllowedReferenceType(Type type) => type == typeof(TReference);
 

@@ -14,18 +14,16 @@ using LionFire.ExtensionMethods;
 
 namespace LionFire.Copying
 {
-
+    public static class DeepCopyConfiguration
+    {
+        public static Predicate<Assembly> ShouldInspectAssembly { get; set; } = a => false;
+    }
     /// <summary>
     /// This class defines all the extension methods provided by the Copyable framework 
     /// on the <see cref="System.Object"/> type.
     /// </summary>
     public static class DeepCopyObjectExtensions
-    {
-        #region Configuration // MOVE
-
-        public static Predicate<Assembly> ShouldInspectAssembly { get; set; } = a => false;
-
-        #endregion
+    {       
 
         #region (Public) Extension Methods
 
@@ -78,12 +76,18 @@ namespace LionFire.Copying
 
         #endregion
 
+        static DeepCopyObjectExtensions()
+        {
+            InitializeInstanceProviders();
+        }
+
         #region (Private)
 
         /// <summary>
         /// A list of instance providers that are available.
         /// </summary>
-        private static List<IInstanceProvider> Providers = IntializeInstanceProviders();
+        private static List<IInstanceProvider> Providers => providers ??= InitializeInstanceProviders();
+        private static List<IInstanceProvider> providers;
 
         private static Dictionary<Type, IInstanceProvider> ProvidersByType;
         private static Dictionary<Type, ICloneProvider> CloneProvidersByType;
@@ -103,7 +107,7 @@ namespace LionFire.Copying
         /// Initializes the list of instance providers.
         /// </summary>
         /// <returns>A list of instance providers that are used by the Copyable framework.</returns>
-        private static List<IInstanceProvider> IntializeInstanceProviders()
+        private static List<IInstanceProvider> InitializeInstanceProviders()
         {
             ProvidersByType = new Dictionary<Type, IInstanceProvider>();
             CloneProvidersByType = new Dictionary<Type, ICloneProvider>();
@@ -125,7 +129,7 @@ namespace LionFire.Copying
         /// <param name="assembly">The assembly with which the list of instance providers will be updated.</param>
         private static void UpdateInstanceProviders(Assembly assembly, List<IInstanceProvider> providerList)
         {
-            if (!ShouldInspectAssembly(assembly)) return;
+            if (!DeepCopyConfiguration.ShouldInspectAssembly(assembly)) return;
             try
             {
                 var dict = ProvidersByType;

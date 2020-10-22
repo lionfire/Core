@@ -130,13 +130,13 @@ namespace LionFire.Execution
             if (e is IStoppableEx stoppableEx) { await stoppableEx.Stop(stopMode, stopOptions).ConfigureAwait(false); }
             else if (e is IStoppable stoppable)
             {
-                await stoppable.Stop(cancellationToken).ConfigureAwait(false);
+                await stoppable.StopAsync(cancellationToken).ConfigureAwait(false);
             }
 
             if (actionDuringShutdown != null) actionDuringShutdown();
 
             var startable = e as IStartable;
-            if (startable != null) { await startable.Start().ConfigureAwait(false); }
+            if (startable != null) { await startable.StartAsync().ConfigureAwait(false); }
 
             if (exFlags != null) { exFlags.ExecutionStateFlags &= ~ExecutionStateFlags.Restarting; }
 

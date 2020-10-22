@@ -23,31 +23,49 @@ using LionFire.DependencyMachines;
 
 namespace LionFire.Applications
 {
+    /// <summary>
+    /// Wrapper around IHostApplicationLifetime: handles events and provides interface to stop the application
+    /// </summary>
     public class LionFireApp : ILionFireApp, IHostedService
     {
-        #region Dependencies
+        #region OLD
 
-        AppOptions Options => optionsMonitor.CurrentValue;
-        IOptionsMonitor<AppOptions> optionsMonitor;
+        //AppOptions Options => appOptionsMonitor.CurrentValue;
+        //IOptionsMonitor<AppOptions> appOptionsMonitor;
+
+        // , IOptionsMonitor<AppOptions> appOptions
+        //appOptionsMonitor = appOptions;
+
+        #endregion
+
+        #region Dependencies
 
         public IServiceProvider ServiceProvider { get; }
         public IHostApplicationLifetime HostApplicationLifetime { get; }
+        public ILogger<LionFireApp> Logger { get; }
+        public IDependencyStateMachine DependencyStateMachine { get; }
 
         #endregion
 
         #region Construction
 
-        public LionFireApp(IServiceProvider serviceProvider, IHostApplicationLifetime hostApplicationLifetime, IOptionsMonitor<AppOptions> appOptions)
+        public LionFireApp(IServiceProvider serviceProvider, IHostApplicationLifetime hostApplicationLifetime, ILogger<LionFireApp> logger, IDependencyStateMachine dependencyStateMachine)
         {
             ServiceProvider = serviceProvider;
             HostApplicationLifetime = hostApplicationLifetime;
+            Logger = logger;
+            DependencyStateMachine = dependencyStateMachine;
+            HostApplicationLifetime.ApplicationStarted.Register(OnApplicationStarted);
+        }
 
-            optionsMonitor = appOptions;
+        #endregion
 
-            if (Options.PerformanceMode == PerformanceMode.HighPerformance)
-            {
-                System.Runtime.GCSettings.LatencyMode = System.Runtime.GCLatencyMode.SustainedLowLatency;
-            }
+        #region IHostApplicationLifetime: Event Handling
+
+        public void OnApplicationStarted()
+        {
+            Logger.LogInformation("HostApplicationLifetime: ApplicationStarted");
+            DependencyStateMachine.Set("IHostApplicationLifetime.ApplicationStarted", true);
         }
 
         #endregion
@@ -61,14 +79,14 @@ namespace LionFire.Applications
 
         public Task StartAsync(CancellationToken cancellationToken)
         {
-            if (Options.UpdatePolicy.HasFlag(UpdatePolicy.CheckBeforeStart))
-            {
-                throw new NotImplementedException("TODO: check for updates before starting main application");
-                // If update available, do one of following, depending on UpdatePolicy:
-                // - auto-download and auto-update
-                // - prompt user to download
-                // - prompt user to update now or after shutdown
-            }
+            //if (Options.UpdatePolicy.HasFlag(UpdatePolicy.CheckBeforeStart))
+            //{
+            //    throw new NotImplementedException("TODO: check for updates before starting main application");
+            //    // If update available, do one of following, depending on UpdatePolicy:
+            //    // - auto-download and auto-update
+            //    // - prompt user to download
+            //    // - prompt user to update now or after shutdown
+            //}
 
 #if OLD // Use DepMach
             var startingServices = await StartAllTypes(Options.StartingServices, cancellationToken).ConfigureAwait(false);

@@ -14,6 +14,8 @@ namespace LionFire.Referencing
         // REFACTOR: Use ReferenceConstants.PathSeparatorChar
         public const char SeparatorChar = '/';
 
+        public static string[] GetChunks(string path) => path.Split(SeparatorChar);
+
         #region Delimiters
 
         // REFACTOR: Use ReferenceConstants or VReferenceConstants

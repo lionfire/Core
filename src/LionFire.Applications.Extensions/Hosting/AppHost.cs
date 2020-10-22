@@ -368,7 +368,7 @@ namespace LionFire.Applications.Hosting
             foreach (var component in children.OfType<IStartable>())
             {
                 // Parallel start
-                startTasks.Add(component.Start(tokenSource.Token));
+                startTasks.Add(component.StartAsync(tokenSource.Token));
             }
 
             Task.WaitAll(startTasks.ToArray());

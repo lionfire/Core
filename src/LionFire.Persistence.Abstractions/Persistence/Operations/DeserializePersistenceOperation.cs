@@ -37,5 +37,10 @@ namespace LionFire.Persistence
 
         private IEnumerable<string> candidateFileNames;
         //public string Directory { get; set; }
+
+        /// <summary>
+        /// FUTURE: deserialize into this existing object, by assigning into members.
+        /// </summary>
+        public object ExistingObject { get; set; }
     }
 }

@@ -13,6 +13,8 @@ using LionFire.Settings;
 using LionFire.UI.Windowing;
 using LionFire.Vos;
 using LionFire.Vos.VosApp;
+using Microsoft.Extensions.Hosting;
+using LionFire.Resolves;
 
 namespace LionFire.Hosting
 {
@@ -30,6 +32,7 @@ namespace LionFire.Hosting
           => services
               .SetWpfApplication(application)
               .AddDispatcher(application)
+              .AddEventAggregator() // Uses IDispatcher
               ;
 
         public static IServiceCollection SetWpfApplication(this IServiceCollection services, Application application)
@@ -51,29 +54,44 @@ namespace LionFire.Hosting
             WpfCommandManager.Initialize();
 
             return services
+
+            #region Settings
+
+                    // REVIEW - registering both IUserLocalSettings<WindowSettings> and IUserLocalSettings<>?  Maybe just register as UserLocalSettingsProvider<WindowSettings>
+
+                    .AddSingletonHostedServiceDependency<ILazilyResolves<WindowSettings>, UserLocalSettingsProvider<WindowSettings>>(p => p.Contributes(DependencyConventionsForUI.CanStartShell))
+                    //.AddSingletonHostedServiceDependency<IUserLocalSettings<WindowSettings>, UserLocalSettingsProvider<WindowSettings>>(p => p.Contributes(DependencyConventionsForUI.CanStartShell))
+
                     .Configure<SettingsOptions>(o =>
                     {
-                        //o.Handles.Add(new VobReference<WindowSettings>("$AppSettings/WindowSettings").GetReadWriteHandle<WindowSettings>());
-                        //o.Handles.Add(new AssetReference<WindowSettings>.Channel("$AppSettings").GetReadWriteHandle<WindowSettings>());
                         o.Handles.Add(VosAppSettings.UserLocal<WindowSettings>.H);
                     })
-                   //// REVIEW - a way to merge these 3 lines?
-                   // .AddSingleton<WpfShell>()
-                   // .AddSingleton<IWpfShell>(p => p.GetRequiredService<WpfShell>()) 
-                   // .AddHostedServiceDependency<WpfShell>()
+
+            #endregion
+
                    .AddSingleton<DesktopProfileManager>()
                    .AddSingletonHostedServiceDependency<WpfDesktopProfileDetector>(p => p.DependsOn("vos:$Settings"))
-                   .AddSingletonHostedServiceDependency<WpfShell>(p
-                    => p
-                    .After(HostedServiceParticipant<WpfDesktopProfileDetector>.KeyForHostedServiceType)
-                    .After("WPF.Services")
-                    .DependsOn("vos:/")  
-                    //.DependsOn("vos:$UserLocalSettings")
-                    )
+
+                   .AddSingletonHostedServiceDependency<IShellConductor, ShellConductor>(p => p.After(DependencyConventionsForUI.CanStartShell))
+
+                   .Configure<ShellPresenterOptions>(o =>
+                   {
+                       // ENH: Replace with TTabbedWindowPresenter template with options (such as TabsVisibility, TabsLocation, etc.)
+                       o.MainWindowPresenterType = typeof(TabbedWindowPresenter);
+                       o.AuxiliaryWindowPresenterType = typeof(TabbedWindowPresenter);
+                   })
+
+                   .AddTransient<IPresenter, WpfPresenter>()
+
+                  //.AddNavigator<WpfNavigator>(p =>
+                  //    p.After(HostedServiceParticipant<WpfDesktopProfileDetector>.KeyForHostedServiceType)
+                  //     .After("WPF.Services")
+                  //     .DependsOn("vos:/")
+                  //   //.DependsOn("vos:$UserLocalSettings")
+                  //   )
 
                   //.AddSingleton<IWindowManager, LionFireWindowManager>()
 
-                  .AddTransient<IShellPresenter, WpfShellPresenter>()
                   //.AddSingleton<IShellPresenter>(s=>s.GetRequiredService<WpfShellPresenter>())
                   //.AddSingleton<WpfShellPresenter>()
 
@@ -81,5 +99,6 @@ namespace LionFire.Hosting
                   //.Configure<AppOptions>(o => o.SetHostedServicesIfEmpty(typeof(WpfShell)))
                   ;
         }
+
     }
 }

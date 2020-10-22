@@ -7,12 +7,12 @@ namespace LionFire.Hosting
 {
     public interface IPopupManager
     {
-        void LaunchPopupWindow(UIReference ui);
+        void LaunchPopupWindow(ViewReference ui);
     }
 
     public class LionFireWpfPopupManager : IPopupManager
     {
-        public void LaunchPopupWindow(UIReference ui)
+        public void LaunchPopupWindow(ViewReference ui)
         {
             //        var fe = (FrameworkElement)Activator.CreateInstance(type);
 

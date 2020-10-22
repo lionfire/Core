@@ -18,4 +18,5 @@ namespace LionFire.Threading
 
         event EventHandler<DispatcherUnhandledExceptionEventArgs> UnhandledException;
     }
+    
 }

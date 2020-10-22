@@ -102,7 +102,7 @@ namespace LionFire.Persistence.Handles
 
                 getcol = query.HasValue ? new ValueTask<TUnderlyingCollection>(AsyncMapper<TItem, TUnderlying, TUnderlyingCollection, TResolvedUnderlyingCollection>.UnwrapUnderlyingCollection(query.Value)) : new ValueTask<TUnderlyingCollection>(Task.Run(async () =>
                    {
-                       var p = await parent.GetValue();
+                       var p = await parent.TryGetValue();
                        return AsyncMapper<TItem, TUnderlying, TUnderlyingCollection, TResolvedUnderlyingCollection>.UnwrapUnderlyingCollection(p.Value);
                    }));
             }
@@ -154,12 +154,12 @@ namespace LionFire.Persistence.Handles
 
         #region ILazilyResolves
 
-        public async ITask<ILazyResolveResult<TResolvedUnderlyingCollection>> GetValue()
+        public async ITask<ILazyResolveResult<TResolvedUnderlyingCollection>> TryGetValue()
         {
             var ulr = UnderlyingLazilyResolves;
             if (ulr != null)
             {
-                return await ulr.GetValue().ConfigureAwait(false);
+                return await ulr.TryGetValue().ConfigureAwait(false);
             }
             else
             {

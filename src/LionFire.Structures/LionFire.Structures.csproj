@@ -8,6 +8,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Folder Include="Collections\Pathing\" />
     <Folder Include="FlexObjects\NewFolder\" />
     <Folder Include="Persistence\" />
     <Folder Include="Validation\" />

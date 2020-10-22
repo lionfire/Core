@@ -8,9 +8,47 @@ using System;
 
 namespace LionFire.UI.Wpf
 {
+    public interface IWpfViewLocator
+    {
+
+        // Summary:
+        //     Locates the view type based on the specified model type.
+        //
+        // Returns:
+        //     The view.
+        //
+        // Remarks:
+        //     Pass the model type, display location (or null) and the context instance (or
+        //     null) as parameters and receive a view type.
+        Type LocateTypeForModelType(Type type, DependencyObject dependencyObject, object context);
+
+        // Summary:
+        //     Locates the view for the specified model type.
+        //
+        // Returns:
+        //     The view.
+        //
+        // Remarks:
+        //     Pass the model type, display location (or null) and the context instance (or
+        //     null) as parameters and receive a view instance.
+        UIElement LocateForModelType(Type type, DependencyObject dependencyObject, object context);
+
+        // Summary:
+        //     Locates the view for the specified model instance.
+        //
+        // Returns:
+        //     The view.
+        //
+        // Remarks:
+        //     Pass the model instance, display location (or null) and the context (or null)
+        //     as parameters and receive a view instance.
+        UIElement LocateForModel(object model, DependencyObject dependencyObject, object context);
+
+    }
+
     public interface IViewLocator
     {
-#if false
+#if  false
         // Summary:
         //     Used to transform names.
         NameTransformer NameTransformer;
@@ -39,38 +77,6 @@ namespace LionFire.UI.Wpf
         Func<string, object, IEnumerable<string>> TransformName;
 #endif
 
-        // Summary:
-        //     Locates the view type based on the specified model type.
-        //
-        // Returns:
-        //     The view.
-        //
-        // Remarks:
-        //     Pass the model type, display location (or null) and the context instance (or
-        //     null) as parameters and receive a view type.
-        Type LocateTypeForModelType(Type type, DependencyObject dependencyObject, object context);
-
-        // Summary:
-        //     Locates the view for the specified model type.
-        //
-        // Returns:
-        //     The view.
-        //
-        // Remarks:
-        //     Pass the model type, display location (or null) and the context instance (or
-        //     null) as parameters and receive a view instance.
-         UIElement LocateForModelType(Type type, DependencyObject dependencyObject, object context);
-
-        // Summary:
-        //     Locates the view for the specified model instance.
-        //
-        // Returns:
-        //     The view.
-        //
-        // Remarks:
-        //     Pass the model instance, display location (or null) and the context (or null)
-        //     as parameters and receive a view instance.
-         UIElement LocateForModel(object model, DependencyObject dependencyObject, object context);
 
 #if false
         //// Summary:

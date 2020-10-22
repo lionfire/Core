@@ -17,14 +17,14 @@ namespace LionFire.Shell
 {
     /// <summary>
     /// FullScrenShellWindow is the fullscreen window for LionFire apps.  It provides an AllowsTransparency=false window 
-    /// that by default shows the ShellContentPresenter
+    /// that by default shows the TabbedWindowPresenter
     /// The ShellContentPresenter can be reparented between this window and the FullScreenShellWindow.
     /// </summary>
     public partial class FullScreenShellWindow : ShellWindowBase
     {
-        private UIElement ShellContent { get { return shellContentPresenter; } }
+        private UIElement ShellContent => shellContentPresenter;
 
-        public FullScreenShellWindow(ShellContentPresenter scp)
+        public FullScreenShellWindow(TabbedWindowPresenter scp)
             : base(scp)
         {
             InitializeComponent();

@@ -1,10 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
+using System.Runtime.InteropServices.WindowsRuntime;
 using LionFire.Referencing;
 using LionFire.Serialization;
 
 namespace LionFire.Persistence.Filesystem
 {
+
     [LionSerializable(SerializeMethod.ByValue)]
     public class FileReference : FileReferenceBase<FileReference>
     {
@@ -56,7 +57,7 @@ namespace LionFire.Persistence.Filesystem
 
         public static void ValidateCanConvertFrom(IReference reference)
         {
-            
+
             if (reference.Scheme != Constants.UriScheme)
             {
                 throw new ReferenceException("UriScheme not supported");

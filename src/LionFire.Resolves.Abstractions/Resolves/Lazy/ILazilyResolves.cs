@@ -5,7 +5,7 @@ namespace LionFire.Resolves
 {
     public interface ILazilyResolves<out T> : ILazilyResolves, IDefaultableReadWrapper<T>
     {
-        ITask<ILazyResolveResult<T>> GetValue();
+        ITask<ILazyResolveResult<T>> TryGetValue();
 
         ILazyResolveResult<T> QueryValue();
     }

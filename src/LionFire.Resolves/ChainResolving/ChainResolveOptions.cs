@@ -39,7 +39,7 @@ namespace LionFire.Resolves.ChainResolving
         {
             Resolvers = new List<ChainResolverWorker>
             {
-                new ChainResolverWorker(typeof(ILazilyResolves<object>), o => ((ILazilyResolves<object>)o).GetValue()), // Put this first, because it caches results
+                new ChainResolverWorker(typeof(ILazilyResolves<object>), o => ((ILazilyResolves<object>)o).TryGetValue()), // Put this first, because it caches results
                 new ChainResolverWorker(typeof(IResolves<object>), o => ((IResolves<object>)o).Resolve()), // Re-evaluates every time -- may be a long I/O operation
             }
         };

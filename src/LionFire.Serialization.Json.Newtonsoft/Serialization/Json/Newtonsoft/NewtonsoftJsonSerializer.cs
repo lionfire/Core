@@ -5,6 +5,7 @@ using System.Threading;
 using JsonKnownTypes;
 using LionFire.Dependencies;
 using LionFire.Persistence;
+using LionFire.Types;
 using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
 
@@ -49,7 +50,7 @@ namespace LionFire.Serialization.Json.Newtonsoft
             PersistenceSettings = optionsMonitor.Get(LionSerializeContext.Persistence.ToString());
             NetworkSettings = optionsMonitor.Get(LionSerializeContext.Network.ToString());
 
-            if (serviceProvider.GetService(typeof(KnownTypesBinder)) is KnownTypesBinder knownTypesBinder)
+            if (serviceProvider.GetService(typeof(TypeNameRegistry)) != null && serviceProvider.GetService(typeof(KnownTypesBinder)) is KnownTypesBinder knownTypesBinder)
             {
                 PersistenceSettings.SerializationBinder = knownTypesBinder;
                 NetworkSettings.SerializationBinder = knownTypesBinder;

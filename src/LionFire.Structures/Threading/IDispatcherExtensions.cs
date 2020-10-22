@@ -1,5 +1,6 @@
 ﻿
 using System;
+using System.Threading.Tasks;
 
 namespace LionFire.Threading
 {
@@ -13,6 +14,21 @@ namespace LionFire.Threading
         public static bool CheckAccess(this IDispatcher dispatcher)
         {
             return !dispatcher.IsInvokeRequired;
+        }
+
+        public static Task InvokeAsync(this IDispatcher dispatcher, Action action)
+        {
+            if (!dispatcher.IsInvokeRequired) { action(); return Task.CompletedTask; }
+
+            var tcs = new TaskCompletionSource<object>();
+
+            dispatcher.BeginInvoke(() =>
+            {
+                action();
+                tcs.SetResult(null);
+            }).FireAndForget();
+
+            return tcs.Task;
         }
     }
 }

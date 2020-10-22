@@ -10,12 +10,12 @@ namespace LionFire.Shell
     public class WpfAlerter : IAlerter
     {
 
-        public IShellPresenter ShellPresenter { get; }
+        public IShellConductor ShellPresenter { get; }
         public WpfDispatcherAdapter WpfDispatcherAdapter { get; }
 
         public Dispatcher Dispatcher => WpfDispatcherAdapter.Dispatcher;
 
-        public WpfAlerter(WpfDispatcherAdapter wpfDispatcherAdapter, IShellPresenter shellPresenter)
+        public WpfAlerter(WpfDispatcherAdapter wpfDispatcherAdapter, IShellConductor shellPresenter)
         {
             WpfDispatcherAdapter = wpfDispatcherAdapter;
             ShellPresenter = shellPresenter;

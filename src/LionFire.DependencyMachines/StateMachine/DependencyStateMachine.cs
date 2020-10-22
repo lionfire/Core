@@ -1,5 +1,6 @@
 ﻿using LionFire.Dependencies;
 using LionFire.DependencyMachines.Abstractions;
+using LionFire.Execution;
 using LionFire.ExtensionMethods;
 using LionFire.ExtensionMethods.Collections;
 using LionFire.Persistence;
@@ -411,6 +412,22 @@ namespace LionFire.DependencyMachines
         }
 
         #endregion
+
+        #region Runtime Signals
+
+        IReadOnlyDictionary<string, object> State => state;
+        Dictionary<string, object> state = new Dictionary<string, object>();
+
+        public void Set(string key) => Set(key, true);
+        public void Set(string key, object value)
+        {
+            if(value == null) { Unset(key); return; }
+            state[key] = value;
+        }
+        public bool Unset(string key) => state.Remove(key);
+
+        #endregion
+
         #endregion
 
         #region Events

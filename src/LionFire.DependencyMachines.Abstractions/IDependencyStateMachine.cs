@@ -40,6 +40,14 @@ namespace LionFire.DependencyMachines
         event Action<IParticipant> Stopping;
         event Action<IParticipant, bool /* initialRegistration */> Stopped;
 
+
+        #endregion
+
+        #region Runtime signals
+
+        void Set(string key);
+        void Set(string key, object value);
+
         #endregion
     }
 

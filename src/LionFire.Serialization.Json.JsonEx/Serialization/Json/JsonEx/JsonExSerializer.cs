@@ -4,6 +4,9 @@ using LionFire.Dependencies;
 using LionFire.Persistence;
 using JsonExSerializer;
 using JsonExSerializationContext = JsonExSerializer.SerializationContext;
+using LionFire.Types;
+using Microsoft.Extensions.Options;
+using JsonExSerializer.MetaData;
 
 namespace LionFire.Serialization.Json.JsonEx
 {
@@ -26,15 +29,32 @@ namespace LionFire.Serialization.Json.JsonEx
 
         #region (Static) Default Settings
 
-        public static JsonExSerializationContext DefaultSettings = new JsonExSerializationContext
+        public JsonExSerializationContext DefaultSettings => new JsonExSerializationContext
         {
             IsCompact = false,
             ReferenceWritingType = JsonExSerializationContext.ReferenceOption.ErrorCircularReferences,
-            //TypeAliases = ,
+            TypeAliases = GetTypeAliases(),
             //TypeHandlerFactory = ,
         };
 
         #endregion
+
+        private TypeAliasCollection GetTypeAliases()
+        {
+            var result = new TypeAliasCollection();
+            foreach (var r in TypeNameRegistry.CurrentValue.Types)
+            {
+                result.Add(r.Value, r.Key);
+            }
+            return result;
+        }
+
+        IOptionsMonitor<TypeNameRegistry> TypeNameRegistry;
+
+        public JsonExLionFireSerializer(IOptionsMonitor<TypeNameRegistry> typeNameRegistry)
+        {
+            TypeNameRegistry = typeNameRegistry;
+        }
 
         public override SerializationFormat DefaultFormat => defaultFormat;
         private static readonly SerializationFormat defaultFormat = new SerializationFormat("jsx", "JSON Ex", "application/x-json-ex")
@@ -65,7 +85,22 @@ namespace LionFire.Serialization.Json.JsonEx
         #region Deserialize
 
         public override DeserializationResult<T> ToObject<T>(string str, Lazy<PersistenceOperation> operation = null, PersistenceContext context = null)
-            => (T)new global::JsonExSerializer.Serializer(typeof(T), DefaultSettings).Deserialize(str);
+        {
+            string typeName = null;
+            if (str.StartsWith("("))
+            {
+                typeName = str.Substring(1, str.IndexOf(")") - 1);
+            }
+            if (typeof(T) == typeof(object))
+            {
+                if (TypeNameRegistry.CurrentValue.Types.TryGetValue(typeName, out Type type))
+                {
+                    var newJson = str.Substring(str.IndexOf(")") + 1);
+                    return (T)new global::JsonExSerializer.Serializer(type, DefaultSettings).Deserialize(newJson);
+                }
+            }
+            return (T)new global::JsonExSerializer.Serializer(typeof(T), DefaultSettings).Deserialize(str);
+        }
         //=> JsonConvert.DeserializeObject<T>(str, Settings);
 
         #endregion

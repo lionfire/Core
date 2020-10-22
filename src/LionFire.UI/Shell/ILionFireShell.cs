@@ -8,20 +8,21 @@ using LionFire.Execution;
 
 namespace LionFire.Shell
 {
+    // OLD.  See IShellLifetime and IShellConductor
 
-    /// <summary>
-    /// Responsible for showing the primary user interface.
-    /// Started/Stopped by ILionFireApp, (or with the main DI provider via AddHostedService<>() directly)
-    /// </summary>
-    public interface ILionFireShell : IHostedService
-        , IKeyboardShell
-        , INotifyClosing
-    //, INotifiesClosing
-    //, IRecoverableErrorShell
-    //, IStoppable
-    // TODO: Closing/Closed event interface? 
-    {
-        ShellOptions ShellOptions { get; }
-    }
+    ///// <summary>
+    ///// Responsible for showing the primary user interface.
+    ///// Started/Stopped by ILionFireApp, (or with the main DI provider via AddHostedService<>() directly)
+    ///// </summary>
+    //public interface ILionFireShell 
+    //    //INotifyClosing
+    ////, INotifiesClosing
+    ////, IRecoverableErrorShell
+    ////, IStoppable
+    //// TODO: Closing/Closed event interface? 
+    //{
+    //    //ShellOptions ShellOptions { get; }
 
+    //    void Close();
+    //}
 }

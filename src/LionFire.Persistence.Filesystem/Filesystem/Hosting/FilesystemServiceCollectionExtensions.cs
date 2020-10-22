@@ -3,6 +3,7 @@ using LionFire.Persistence.Filesystem;
 using LionFire.Persistence.Handles;
 using LionFire.Persistence.Persisters;
 using Microsoft.Extensions.Options;
+using LionFire.Referencing;
 
 namespace LionFire.Services
 {
@@ -12,6 +13,7 @@ namespace LionFire.Services
         public static IServiceCollection AddFilesystem(this IServiceCollection services)
         {
             services
+                .TryAddEnumerableSingleton<IReferenceProvider, FileReferenceProvider>()
                 .Configure<FilesystemPersisterOptions>(o => { })
                 .AddSingleton(s => s.GetService<IOptionsMonitor<FilesystemPersisterOptions>>()?.CurrentValue)
                 .AddSingleton<FilesystemPersister>()

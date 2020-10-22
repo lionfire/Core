@@ -1,9 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace LionFire.Services
-{
-}
 namespace LionFire.Types
 {
     //public class TypeNameRegistryInitializer

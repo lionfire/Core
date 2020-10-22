@@ -32,7 +32,7 @@ namespace LionFire.Instantiating
 
                 foreach (var overlayTarget in top.OverlayTargets)
                 {
-                    object overlayParent = overlayTarget.SelectRecursive<IInstantiation>().Where(pm => pm.Key == i.Key)
+                    object overlayParent = overlayTarget.SelectRecursive<IInstantiation>().Where(pm => pm.Key == i.Key) // FIXME - Review SelectRecursive implementation
 #if DEBUG
                         .SingleOrDefault();
 #else

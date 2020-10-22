@@ -123,8 +123,8 @@ namespace LionFire.Resolves
 
         public TValue Value
         {
-            [Blocking(Alternative = nameof(GetValue))]
-            get => ProtectedValue ?? GetValue().Result.Value;
+            [Blocking(Alternative = nameof(TryGetValue))]
+            get => ProtectedValue ?? TryGetValue().Result.Value;
         }
 
         //SmartWrappedValue SmartWrappedValue = new SmartWrappedValue();
@@ -166,7 +166,7 @@ namespace LionFire.Resolves
 
         #region GetValue
 
-        public async ITask<ILazyResolveResult<TValue>> GetValue()
+        public async ITask<ILazyResolveResult<TValue>> TryGetValue()
         {
             var currentValue = ProtectedValue;
             if (!EqualityComparer<TValue>.Default.Equals(currentValue, default)) return new ResolveResultNoop<TValue>(ProtectedValue);

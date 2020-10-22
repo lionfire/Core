@@ -34,9 +34,9 @@ namespace LionFire.Avalon
         static ShellCommands()
         {
             //Back = new DelegateCommand<object>((x) => { LionFireShell.Instance.MainPresenter.CloseTab(); });
-            Save = new RoutedUICommand("Save", "Save", typeof(ShellContentPresenter));
-            Back = new RoutedUICommand("Back", "Back", typeof(ShellContentPresenter));
-            Menu = new RoutedUICommand("Menu", "Menu", typeof(ShellContentPresenter));
+            Save = new RoutedUICommand("Save", "Save", typeof(TabbedWindowPresenter));
+            Back = new RoutedUICommand("Back", "Back", typeof(TabbedWindowPresenter));
+            Menu = new RoutedUICommand("Menu", "Menu", typeof(TabbedWindowPresenter));
         }
 
         //private class SaveAssetCommand : RoutedUICommand

@@ -198,7 +198,7 @@ namespace LionFire.Execution.Jobs
                             }
                             else if (job is IStartable startable)
                             {
-                                startable.Start();
+                                startable.StartAsync();
                             }
                             else
                             {

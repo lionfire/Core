@@ -22,6 +22,7 @@ using System.Linq;
 using LionFire.Services.DependencyMachines;
 using System.Runtime.CompilerServices;
 using LionFire.Hosting;
+using LionFire.Referencing;
 
 namespace LionFire.Services
 {
@@ -62,6 +63,11 @@ namespace LionFire.Services
                         //#endregion
 
                         .TryAddEnumerableSingleton<ICollectionTypeProvider<VobReference>, CollectionTypeFromVobNode>() // Allows Vobs to provide Collection Type for themselves
+                    #region Referencing
+
+                        .TryAddEnumerableSingleton<IReferenceProvider, VobReferenceProvider>()
+
+                    #endregion
 
                     #region Persistence
                         .If(persistence, s =>
@@ -118,7 +124,7 @@ namespace LionFire.Services
                               }.Contributes("services:" + vobRoot.Reference /* vos:/ */)); // "RootVobs"),
 
                               //new Dependency(VosInitStages.RootMountStage(vobRoot.Name), $"{vobRoot} mounts") { StartAction = () => vobRoot.InitializeMounts(), }.DependsOn("vos:"),
-                              list.Add(new Participant(key: VosInitStages.RootMountStage(vobRoot.Name)) { StartAction = () => vobRoot.InitializeMounts(), }.After("environment:" + vobRoot.Reference.ToString()).Contributes(vobRoot.Reference.ToString())); 
+                              list.Add(new Participant(key: VosInitStages.RootMountStage(vobRoot.Name)) { StartAction = () => vobRoot.InitializeMounts(), }.After("environment:" + vobRoot.Reference.ToString()).Contributes(vobRoot.Reference.ToString()));
                               return list;
                           });
                       })

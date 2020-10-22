@@ -6,6 +6,16 @@ using System.Threading.Tasks;
 
 namespace LionFire.Shell
 {
+    //public class CancelableEventArgs<T>
+    //{
+    //    public bool CancellationRequested { get; set; }
+    //    public T Context { get; set; }
+    //}
+    //public class CancelableEventArgs
+    //{
+    //    public bool CancellationRequested { get; set; }
+    //}
+
     public interface INotifyClosing
     {
         /// <summary>
@@ -13,6 +23,8 @@ namespace LionFire.Shell
         /// </summary>
         /// <returns></returns>
         bool OnClosing();
+
+        //void OnClosing(CancelableEventArgs<object> cancelableEventArgs); // ENH?
     }
 
     

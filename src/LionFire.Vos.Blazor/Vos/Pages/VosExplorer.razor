@@ -1,0 +1,234 @@
+﻿@page "/"
+@*@page "/vos"*@
+@*@page "/vos/{path}"
+    @page "/vos/{path}/{path2}"
+    @page "/vos/{path}/{path2}/{path3}"*@
+
+@using LionFire.Referencing
+@using LionFire.Threading
+@inject IVos  rootManager
+@inject NavigationManager navManager
+@inject Microsoft.Extensions.Logging.ILogger<string> logger
+@using Microsoft.AspNetCore.WebUtilities
+@using Microsoft.Extensions.Logging
+@using LionFire.Persistence
+@using System.Reflection
+
+@if (listings == null)
+{
+    <p><em>Loading...</em></p>
+}
+else
+{
+    <h3>@Root</h3>
+    <button @onclick="@(e=> GoToPath(".."))"><span class="oi oi-arrow-top" /></button>
+    <div>@Path</div>
+
+    <table class="table">
+        <thead>
+            <tr>
+                <th></th>
+                <th>Name</th>
+                <th>Type</th>
+                @*<th>Dir</th>*@
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var listing in listings)
+            {
+                <tr>
+                    <td>
+                        <span @onclick="@(e => GoToPath(listing.Name))" class="@IconClasses(listing)" aria-hidden="true"></span>
+                    </td>
+                    <td>@listing.Name</td>
+                    <td>@listing.Type</td>
+                    <td></td>
+                </tr>
+            }
+        </tbody>
+    </table>
+
+    @if (Value != null)
+    {
+        <table class="table">
+            <thead>
+                <tr>
+                    <th></th>
+                    <th>Property</th>
+                    <th>Value</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var pi in Value.GetType().GetProperties(BindingFlags.Instance | BindingFlags.Public))
+                {
+                    <tr>
+                        <td>
+                            @*<span @onclick="@(e => GoToPath(listing.Name))" class="@IconClasses(listing)" aria-hidden="true"></span>*@
+                        </td>
+                        <td>@pi.Name</td>
+                        <td>@pi.GetValue(Value)</td>
+                        @*<td></td>*@
+                    </tr>
+                }
+            </tbody>
+        </table>
+    }
+}
+
+@code {
+
+    public object Value { get; set; }
+
+
+    #region Parameters
+
+    [Parameter]
+    public string Root { get; set; }
+    public string Path { get; set; } = "/";
+
+    #endregion
+
+    #region State
+
+    private Listing<object>[] listings;
+
+    //private List<IReadHandle<object>> readHandles;
+
+    #endregion
+
+    #region Initialization
+
+    protected override async Task OnInitializedAsync()
+    {
+        navManager.LocationChanged += OnLocationChanged;
+        await UpdateRoot();
+        await Refresh();
+    }
+
+    #endregion
+
+    #region Refresh
+
+    private async Task UpdateRoot()
+    {
+        logger.LogInformation("OnInitializedAsync " + uri);
+        System.Diagnostics.Debug.WriteLine("Uri: " + uri);
+        if (QueryHelpers.ParseQuery(uri.Query).TryGetValue("Root", out var param))
+        {
+            System.Diagnostics.Debug.WriteLine("Root: " + param);
+            Root = param.First();
+        }
+        else
+        {
+            System.Diagnostics.Debug.WriteLine("Uri could not find root: " + uri);
+        }
+        this.Path = Root;
+        await Refresh();
+        StateHasChanged();
+    }
+
+    private async void OnLocationChanged(object sender, LocationChangedEventArgs args)
+    {
+        logger.LogInformation("OnLocationChanged " + uri);
+        await UpdateRoot();
+    }
+
+    public Task GoToPath(string child)
+    {
+        if (child == "..")
+        {
+            Path = LionPath.GetParent(Path);
+        }
+        else
+        {
+            Path = LionPath.Combine(Path, child);
+        }
+        return Refresh();
+    }
+
+    public async Task RetrieveValue()
+    {
+        object newValue = null;
+        try
+        {
+            var rh = Path?.ToReference()?.GetReadHandle<object>(); // TODO - get available types
+            if (rh != null)
+            {
+                newValue = (await rh.GetValue().ConfigureAwait(false)).Value;
+            }
+        }
+        catch { } // EMPTYCATCH
+        Value = newValue;
+    }
+    public async Task Refresh()
+    {
+        var root = rootManager.Get();
+
+        var path = Path;
+        if (path != null)
+        {
+            if (LionUri.TryGetUriScheme(path) == null)
+            {
+                path = "vos:" + path;
+            }
+
+            //if (path.StartsWith("file:"))
+            //{
+            //    path = "/file";
+            //}
+        }
+
+#if OLD
+//var hList = ((IReference)root[path].Reference).GetListingsHandle();
+#else
+        var reference = path?.ToReference();
+        var hList = reference?.GetListingsHandle();
+#endif
+
+        if (hList == null)
+        {
+            listings = null;
+            return;
+        }
+
+        var result = await hList.Resolve();
+        listings = result?.Value.Value?.ToArray() ?? Array.Empty<Listing<object>>();
+
+        //var newReadHandles = new List<IReadHandle<object>>();
+
+        foreach (var listing in listings)
+        {
+            try
+            {
+                var childPath = LionPath.Combine(path, listing.Name);
+                var handle = childPath.ToReference<IReference>().GetReadHandle<object>();
+
+                //newReadHandles.Add(handle);
+                listing.Type = (await handle.GetValue().ConfigureAwait(false)).Value?.GetType().Name;
+            }
+            catch
+            {
+                listing.Type = "?";
+            }
+        }
+        //readHandles = newReadHandles;
+        RetrieveValue();
+    }
+
+    #endregion
+
+    #region (Private) Utility methods
+
+    private Uri uri => navManager.ToAbsoluteUri(navManager.Uri);
+
+    public string IconClasses(Listing<object> listing)
+    {
+        if (listing.IsDirectory)
+        {
+            return "oi oi-folder";
+        }
+        return "oi oi-chevron-right";
+    }
+
+    #endregion
+}

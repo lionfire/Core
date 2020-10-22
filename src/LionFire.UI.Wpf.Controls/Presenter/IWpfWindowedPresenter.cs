@@ -10,7 +10,7 @@ namespace LionFire.Shell
         bool Topmost { get; }
     }
 
-    public interface IWpfShellContentPresenter : IShellContentPresenter, IWpfWindowedPresenter
+    public interface IWpfShellContentPresenter : IWindowPresenter, IWpfWindowedPresenter
     {
         
     }

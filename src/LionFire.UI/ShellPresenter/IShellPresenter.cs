@@ -1,23 +1,30 @@
-﻿
-using LionFire.UI;
-using LionFire.UI.Windowing;
+﻿using LionFire.Threading;
 using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
 
 namespace LionFire.Shell
 {
-    public interface IShellPresenter 
+    public interface IWindowedPresenter
     {
-        ILionFireShell Shell { get; }
-        IShellContentPresenter MainPresenter { get; }
-        WindowSettings WindowSettings { get; set; }
-        IServiceProvider ServiceProvider { get; }
+        void Show();
+        void BringToFront();
+        object CurrentWindow { get; }
+        event Action<bool> TopmostChanged;
 
-        void Show(UIReference reference);
+        bool HasFullScreenShellWindow { get; }
+        bool HasShellWindow { get; }
+    }
 
-        void ShowStartupInterfaces();
 
-        void Close();
+    
 
-        ShellOptions Options { get; }
+    public interface ISingleViewShellPresenter
+    {
+    }
+
+    public interface IDockPaneShellPresenter
+    {
     }
 }

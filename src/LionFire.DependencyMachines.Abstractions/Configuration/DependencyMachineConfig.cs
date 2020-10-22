@@ -32,5 +32,7 @@ namespace LionFire.DependencyMachines
 
         
         public bool EnableLogging { get; set; }
+
+        public bool RequireFlagsToBeDeclared { get; set; } = true;
     }
 }

@@ -8,10 +8,10 @@ using System.Windows.Shapes;
 using System.Windows.Media;
 using System.Windows.Input;
 using LionFire.Avalon;
-using System.Runtime.InteropServices;
 using System.Diagnostics;
 using Microsoft.Extensions.Logging;
 using LionFire.Structures;
+using Microsoft.Extensions.Options;
 
 namespace LionFire.Shell
 {
@@ -19,29 +19,27 @@ namespace LionFire.Shell
     {
         #region Dependencies
 
-        protected readonly ShellContentPresenter shellContentPresenter;
-        protected ShellWindow ShellWindow { get { return shellContentPresenter.ShellWindow; } }
+        protected readonly TabbedWindowPresenter shellContentPresenter;
+
+        public IOptionsMonitor<ShellOptions> ShellOptionsMonitor { get; }
 
         #region Derived
 
-        protected ShellOptions ShellOptions => shellContentPresenter.ShellPresenter.Shell.ShellOptions;
+        protected ShellWindow ShellWindow => shellContentPresenter.ShellWindow;
+        protected ShellOptions ShellOptions => ShellOptionsMonitor.CurrentValue;
 
         #endregion
 
         #endregion
 
-        private Brush topmostBrush1 = new SolidColorBrush(Color.FromArgb(255, 255, 255, 255));
-        private Brush topmostBrush2 = new SolidColorBrush(Color.FromArgb(255, 0, 0, 0));
-
-        Ellipse TopmostEllipse2;
-        Ellipse TopmostEllipse1;
+        #region Construction and Destruction
 
         public ShellWindowBase() { }
 
-        public ShellWindowBase(ShellContentPresenter shellContentPresenter)
+        public ShellWindowBase(TabbedWindowPresenter shellContentPresenter, IOptionsMonitor<ShellOptions> shellOptionsMonitor)
         {
             this.shellContentPresenter = shellContentPresenter;
-
+            ShellOptionsMonitor = shellOptionsMonitor;
             WpfShell.Instance.ShellPresenter.MainPresenter.TopmostChanged += new Action<bool>(Instance_TopmostChanged);
             this.Loaded += new RoutedEventHandler(ShellWindowBase_Loaded);
 
@@ -61,9 +59,9 @@ namespace LionFire.Shell
         void ShellWindowBase_Initialized(object sender, EventArgs e)
         {
             //this.Topmost = true; // REVIEW - why was this here?
-            MoveToForeground.DoOnProcess(Process.GetCurrentProcess());
+            MoveWindowToForeground.DoOnProcess(Process.GetCurrentProcess());
         }
-        
+
         void ShellWindowBase_Closing(object sender, System.ComponentModel.CancelEventArgs e)
         {
             this.Closing -= ShellWindowBase_Closing;
@@ -87,28 +85,47 @@ namespace LionFire.Shell
             //Focus();         
         }
 
-        protected void restoreButton_Click(object sender, RoutedEventArgs e)
+        #endregion
+
+        #region Graphics
+
+        private Brush topmostBrush1 = new SolidColorBrush(Color.FromArgb(255, 255, 255, 255));
+        private Brush topmostBrush2 = new SolidColorBrush(Color.FromArgb(255, 0, 0, 0));
+
+        Ellipse TopmostEllipse2;
+        Ellipse TopmostEllipse1;
+
+        #endregion
+
+
+        #region Event Handlers
+
+        protected void restoreButton_Click(object sender, RoutedEventArgs e) => Restore();
+
+        protected void topmostButton_Click(object sender, RoutedEventArgs e) => this.shellContentPresenter.Topmost ^= true;
+
+        private void minimizeButton_Click(object sender, RoutedEventArgs e) => WindowState = WindowState.Minimized;
+
+        protected void closeButton_Click(object sender, RoutedEventArgs e) => DoClose();
+        protected void debugButton_Click(object sender, RoutedEventArgs e)
         {
-            Restore();
+            // TODO
+            //WpfShell.Instance.IsDebugWindowVisible ^= true;
         }
+        protected void menuButton_Click(object sender, RoutedEventArgs e) => WpfShell.Instance.EventAggregator.Publish(ManualSingleton<MToggleAppMenu>.GuaranteedInstance);
+
+        protected virtual void TitleBar_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
+        {
+            // FUTURE: Allow dragging full-screen window to another screen
+        }
+
+        #endregion
+
+        #region (Public) Methods
 
         public abstract void Restore();
 
-        protected void topmostButton_Click(object sender, RoutedEventArgs e)
-        {
-            this.shellContentPresenter.Topmost ^= true;
-        }
-
-        private void minimizeButton_Click(object sender, RoutedEventArgs e)
-        {
-            WindowState = WindowState.Minimized;
-        }
-
-        protected void closeButton_Click(object sender, RoutedEventArgs e)
-        {
-            DoClose();
-        }
-        public void DoClose(Window isClosing=null)
+        public void DoClose(Window isClosing = null)
         {
             if (shellContentPresenter != null)
             {
@@ -116,20 +133,9 @@ namespace LionFire.Shell
             }
         }
 
-        protected void debugButton_Click(object sender, RoutedEventArgs e)
-        {
-            // TODO
-            //WpfShell.Instance.IsDebugWindowVisible ^= true;
-        }
-        protected void menuButton_Click(object sender, RoutedEventArgs e)
-        {
-            WpfShell.Instance.EventAggregator.Publish(ManualSingleton<MToggleAppMenu>.GuaranteedInstance);
-        }
+        #endregion
 
-        protected virtual void TitleBar_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
-        {
-            // FUTURE: Allow dragging full-screen window to another screen
-        }
+        #region (Protected) Methods
 
         protected void UpdateTopmost()
         {
@@ -160,50 +166,14 @@ namespace LionFire.Shell
         {
             UpdateTopmost();
         }
+
+        #endregion
+
+        #region Misc
+
         private static readonly ILogger l = Log.Get();
 
-    }
-
-    public class MoveToForeground
-    {
-        [DllImportAttribute("User32.dll")]
-        private static extern int FindWindow(String ClassName, String WindowName);
-
-        const int SWP_NOMOVE = 0x0002;
-        const int SWP_NOSIZE = 0x0001;
-        const int SWP_SHOWWINDOW = 0x0040;
-        const int SWP_NOACTIVATE = 0x0010;
-        [DllImport("user32.dll", EntryPoint = "SetWindowPos")]
-        public static extern IntPtr SetWindowPos(IntPtr hWnd, int hWndInsertAfter, int x, int Y, int cx, int cy, int wFlags);
-
-        public static void DoOnProcess(string processName)
-        {
-            var allProcs = Process.GetProcessesByName(processName);
-            if (allProcs.Length ==1 )
-            {
-                Process proc = allProcs[0];
-                DoOnProcess(proc);
-            }
-            else if (allProcs.Length > 1)
-            {
-                foreach (var p in allProcs)
-                {
-                    DoOnProcess(p);
-                }
-            }
-            else
-            {
-                throw new Exception("Proc not found: " + processName);
-            }
-        }
-        public static void DoOnProcess(Process proc)
-        {
-            
-                int hWnd = FindWindow(null, proc.MainWindowTitle.ToString());
-                // Change behavior by settings the wFlags params. See http://msdn.microsoft.com/en-us/library/ms633545(VS.85).aspx
-                SetWindowPos(new IntPtr(hWnd), 0, 0, 0, 0, 0, SWP_NOMOVE | SWP_NOSIZE | SWP_SHOWWINDOW | SWP_NOACTIVATE);
-            
-        }
+        #endregion
     }
 }
 

@@ -166,35 +166,35 @@ namespace LionFire.Persistence.Filesystemlike
         /// </summary>
         /// <param name="fsPath"></param>
         /// <returns></returns>
-        public virtual Task<DeserializationResult<T>> DeserializeFromOutput<T>(string fsPath, T obj, ISerializationStrategy strategy, PersistenceOperation operation, PersistenceContext context)
+        public virtual Task<DeserializationResult<T>> Deserialize<T>(string fsPath, ISerializationStrategy strategy, PersistenceOperation operation, PersistenceContext context)
         {
             bool stream = PersistenceOptions.PreferStreamReading == true && Capabilities.HasFlag(IOCapabilities.ReadStream) && strategy.ImplementsFromStream;
             if (stream)
             {
-                return DeserializeFromStream<T>(fsPath, obj, strategy, operation, context);
+                return DeserializeFromStream<T>(fsPath, strategy, operation, context);
             }
             else
             {
                 if (strategy.ImplementsFromBytes)
                 {
-                    return DeserializeFromBytes<T>(fsPath, obj, strategy, operation, context); // Will fall back to String if it is a textual serializer
+                    return DeserializeFromBytes<T>(fsPath, strategy, operation, context); // Will fall back to String if it is a textual serializer
                 }
                 else
                 {
-                    return DeserializeFromString<T>(fsPath, obj, strategy, operation, context); // Will fall back to Stream if it is a stream-only serializer
+                    return DeserializeFromString<T>(fsPath, strategy, operation, context); // Will fall back to Stream if it is a stream-only serializer
                 }
             }
         }
 
-        public virtual async Task<DeserializationResult<T>> DeserializeFromStream<T>(string fsPath, T obj, ISerializationStrategy strategy, PersistenceOperation operation, PersistenceContext context)
+        public virtual async Task<DeserializationResult<T>> DeserializeFromStream<T>(string fsPath, ISerializationStrategy strategy, PersistenceOperation operation, PersistenceContext context)
         {
             using var fs = await ReadStream(fsPath).ConfigureAwait(false);
             return await Task.Run(() => strategy.ToObject<T>(fs, operation, context)).ConfigureAwait(false);
         }
 
-        public virtual async Task<DeserializationResult<T>> DeserializeFromBytes<T>(string fsPath, T obj, ISerializationStrategy strategy, PersistenceOperation operation, PersistenceContext context)
+        public virtual async Task<DeserializationResult<T>> DeserializeFromBytes<T>(string fsPath, ISerializationStrategy strategy, PersistenceOperation operation, PersistenceContext context)
             => strategy.ToObject<T>(await ReadBytes(fsPath).ConfigureAwait(false), operation, context);
-        public virtual async Task<DeserializationResult<T>> DeserializeFromString<T>(string fsPath, T obj, ISerializationStrategy strategy, PersistenceOperation operation, PersistenceContext context)
+        public virtual async Task<DeserializationResult<T>> DeserializeFromString<T>(string fsPath, ISerializationStrategy strategy, PersistenceOperation operation, PersistenceContext context)
             => strategy.ToObject<T>(await ReadString(fsPath).ConfigureAwait(false), operation, context);
 
         #endregion

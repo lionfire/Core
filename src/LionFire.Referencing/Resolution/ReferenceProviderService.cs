@@ -114,10 +114,12 @@ namespace LionFire.Referencing
             throw new KeyNotFoundException();
         }
 
-        public TReference TryGetReference<TReference>(string uri) where TReference : IReference
+        public (TReference result, string error) TryGetReference<TReference>(string uri) where TReference : IReference
         {
             var provider = TryGetReferenceProvider(uri);
-            return provider == null ? (default) : provider.TryGetReference<TReference>(uri);
+            if(provider == null) { return (default, $"No provider available for scheme: '{LionUri.TryGetUriScheme(uri)}'"); }
+
+            return provider.TryGetReference<TReference>(uri);
         }
         public TReference GetReference<TReference>(string uri) where TReference : IReference => GetReferenceProvider(uri).GetReference<TReference>(uri);
     }
@@ -125,7 +127,7 @@ namespace LionFire.Referencing
     public static class IReferenceProviderServiceExtensions
     {
         public static IReference GetReference(this IReferenceProviderService referenceProviderService, string uri) => referenceProviderService.GetReference<IReference>(uri);
-        public static IReference TryGetReference(this IReferenceProviderService referenceProviderService, string uri) => referenceProviderService.TryGetReference<IReference>(uri);
+        public static (IReference reference, string error) TryGetReference(this IReferenceProviderService referenceProviderService, string uri) => referenceProviderService.TryGetReference<IReference>(uri);
 
     }
 }

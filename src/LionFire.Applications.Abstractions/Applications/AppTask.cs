@@ -85,7 +85,7 @@ namespace LionFire.Applications
         //        this.RunTask = Task.Run(RunAction);
         //    }
         //}
-        public virtual async Task Start(CancellationToken cancellationToken = default)
+        public virtual async Task StartAsync(CancellationToken cancellationToken = default)
         {
             if (await Initialize(/*cancellationToken*/).ConfigureAwait(false) == false) { throw new Exception($"{this} failed to initialize.  Cannot start it."); }
 

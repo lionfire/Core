@@ -79,7 +79,7 @@ namespace LionFire.Persistence.Handles
 
 
 
-        public ITask<ILazyResolveResult<TValue>> GetValue() => ReadWriteHandle.GetValue();
+        public ITask<ILazyResolveResult<TValue>> TryGetValue() => ReadWriteHandle.TryGetValue();
         public ITask<IResolveResult<TValue>> GetOrInstantiateValue() => ReadWriteHandle.GetOrInstantiateValue();
         public ILazyResolveResult<TValue> QueryValue() => ReadWriteHandle.QueryValue();
         public Task<ISuccessResult> Put(TValue value) => ReadWriteHandle.Put(value);

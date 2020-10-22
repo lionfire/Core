@@ -28,7 +28,7 @@ namespace LionFire.Persistence
         {
             if (handle is ILazilyResolves<T> lr)
             {
-                var result = await lr.GetValue().ConfigureAwait(false);
+                var result = await lr.TryGetValue().ConfigureAwait(false);
                 if (result.HasValue)
                 {
                     return lr.Value;

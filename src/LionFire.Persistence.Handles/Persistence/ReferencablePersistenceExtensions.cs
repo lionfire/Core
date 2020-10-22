@@ -11,10 +11,16 @@ using System.Threading.Tasks;
 namespace LionFire.ExtensionMethods.Persistence
 {
     public static class ReferencableSaveExtensions
-    {
+    {        
         public static async Task<IPersistenceResult> Save<T>(this T referencable)
           where T : IReferencable
         {
+            if(referencable is IReadWriteHandle rwh)
+            {
+                // UNTESTED
+                return (IPersistenceResult)await rwh.Put().ConfigureAwait(false);
+            }
+
             var result = await TrySave(referencable).ConfigureAwait(false);
             if (result.IsSuccess() != true)
             {

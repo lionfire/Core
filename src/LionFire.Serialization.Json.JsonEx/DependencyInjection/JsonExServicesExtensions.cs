@@ -9,8 +9,10 @@ namespace LionFire.Services
     {
         public static IServiceCollection AddJsonEx(this IServiceCollection services)
         {
-            services.TryAddEnumerableSingleton<ISerializationStrategy, JsonExLionFireSerializer>();
-            services.AddSingleton<JsonExLionFireSerializer>();
+            services
+                .AddSingleton<JsonExLionFireSerializer>()
+                .TryAddEnumerableSingleton<ISerializationStrategy, JsonExLionFireSerializer>()
+                ;
             return services;
         }
     }

@@ -22,7 +22,7 @@ namespace LionFire.ExtensionMethods.Resolves
         public static ITask<IResolveResult<TValue>> GetValue<TValue>(this IDefaultableReadWrapper<TValue> readWrapper)
         {
             //if (readWrapper == null) return Task.FromResult((IResolveResult<TValue>)NoopFailResolveResult<TValue>.Instance).AsITask();
-            if (readWrapper is ILazilyResolves<TValue> lr) return lr.GetValue();
+            if (readWrapper is ILazilyResolves<TValue> lr) return lr.TryGetValue();
             return DefaultableReadWrapper_GetValue(readWrapper);
         }
 
@@ -40,7 +40,7 @@ namespace LionFire.ExtensionMethods.Resolves
         /// <returns></returns>
         public static ITask<IResolveResult<TValue>> GetValue<TValue>(this IReadWrapper<TValue> readWrapper)
         {
-            if (readWrapper is ILazilyResolves<TValue> lr) return lr.GetValue();
+            if (readWrapper is ILazilyResolves<TValue> lr) return lr.TryGetValue();
             if (readWrapper is IDefaultableReadWrapper<TValue> wrapper) return DefaultableReadWrapper_GetValue(wrapper);
 
             // Otherwise, assume it doesn't lazily load.
@@ -57,7 +57,7 @@ namespace LionFire.ExtensionMethods.Resolves
         /// <returns></returns>
         public static ITask<IResolveResult<TValue>> GetValueExpensive<TValue>(this IReadWrapper<TValue> readWrapper)
         {
-            if (readWrapper is ILazilyResolves<TValue> lr) return lr.GetValue();
+            if (readWrapper is ILazilyResolves<TValue> lr) return lr.TryGetValue();
             if (readWrapper is IDefaultableReadWrapper<TValue> wrapper) return DefaultableReadWrapper_GetValue(wrapper);
 
             // Otherwise, assume it lazily loads even without the ILazilyResolves<> interface.

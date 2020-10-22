@@ -16,8 +16,10 @@ namespace LionFire.Hosting.Unity
         //    => hostBuilder.ConfigureServices(services => services.AddUnityRuntime(monoBehaviour));
 
         public static IServiceCollection AddUnityRuntime(this IServiceCollection services, MonoBehaviour monoBehaviour, bool logStartStop = false)
-            => services
-                //.AddUnityEngine()
+        {
+            System.Runtime.GCSettings.LatencyMode = System.Runtime.GCLatencyMode.SustainedLowLatency;
+
+            return services
                 .AddSingleton<IDispatcher>(_ => new UnityThreadDispatcherWrapper())
                 .If(logStartStop, s => s.AddHostedService<UnityStartStopLogger>())
                 .If(monoBehaviour != null, s =>
@@ -26,5 +28,6 @@ namespace LionFire.Hosting.Unity
                     s.AddSingleton<MonoBehaviour>(monoBehaviour);
                 }) // Useful for registering coroutines/repeating methods?
                 ;
+        }
     }
 }

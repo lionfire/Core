@@ -74,7 +74,7 @@ namespace LionFire.Persistence.Handles
         IReadHandle<TValue> IHasReadHandle<TValue>.ReadHandle => ReadHandle;
 
         public ITask<IResolveResult<TValue>> Resolve() => ReadHandle.Resolve();
-        public ITask<ILazyResolveResult<TValue>> GetValue() => ReadHandle.GetValue();
+        public ITask<ILazyResolveResult<TValue>> TryGetValue() => ReadHandle.TryGetValue();
         public ILazyResolveResult<TValue> QueryValue() => ReadHandle.QueryValue();
         public void DiscardValue() => ReadHandle.DiscardValue();
 

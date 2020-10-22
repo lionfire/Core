@@ -94,47 +94,16 @@ namespace LionFire.Services.DependencyMachines
 
         #region IHostedService
 
-        private static Action<IParticipant> ConfigureSingletonHostedService<T>(Action<IParticipant>? configure)
-            where T : class, IHostedService
-        {
-            return p =>
-            {
-                //p.Provide($"type:{typeof(T).FullName}");
-                p.Provide(HostedServiceParticipant<T>.KeyForHostedServiceType);
-                configure?.Invoke(p);
-            };
-        }
-
-        public static IServiceCollection AddSingletonHostedServiceDependency<T>(this IServiceCollection services, Action<IParticipant>? configure = null)
-            where T : class, IHostedService
-            => services
-            .AddSingleton<T>()
-            .AddHostedServiceDependency<T>(null, ConfigureSingletonHostedService<T>(configure))
-            ;
-
-        public static IServiceCollection AddSingletonHostedServiceDependency<TInterface, T>(this IServiceCollection services)
-                 where TInterface : class
-                 where T : class, TInterface, IHostedService
-                 => services
-                 .AddSingleton<T>()
-                 .AddSingleton<TInterface, T>(serviceProvider => serviceProvider.GetRequiredService<T>())
-                 .AddHostedServiceDependency<T>(null, null)
-                 ;
+        #region HostedService
 
         public static IServiceCollection AddHostedServiceDependency<T>(this IServiceCollection services)
               where T : IHostedService
               => services.AddHostedServiceDependency<T>(null, null);
 
-        public static IServiceCollection AddLateHostedServiceDependency<T>(this IServiceCollection services)
-                 where T : IHostedService
-                 => services.AddLateHostedServiceDependency<T>(null, null, Array.Empty<object>());
 
         public static IServiceCollection AddHostedServiceDependency<T>(this IServiceCollection services, Action<IParticipant>? configure)
             where T : IHostedService
             => services.AddHostedServiceDependency<T>(null, configure);
-        public static IServiceCollection AddLateHostedServiceDependency<T>(this IServiceCollection services, Action<IParticipant>? configure, params object[] constructorParameters)
-                 where T : IHostedService
-                 => services.AddLateHostedServiceDependency<T>(null, configure, constructorParameters);
 
         public static IServiceCollection AddHostedServiceDependency<T>(this IServiceCollection services, string? name, Action<IParticipant>? configure)
           where T : IHostedService
@@ -156,6 +125,50 @@ namespace LionFire.Services.DependencyMachines
             }));
             return services;
         }
+
+        #endregion
+
+        #region Singleton
+
+        private static Action<IParticipant> ConfigureSingletonHostedService<T>(Action<IParticipant>? configure)
+            where T : class, IHostedService
+        {
+            return p =>
+            {
+                //p.Provide($"type:{typeof(T).FullName}");
+                p.Provide(HostedServiceParticipant<T>.KeyForHostedServiceType);
+                configure?.Invoke(p);
+            };
+        }
+
+
+        public static IServiceCollection AddSingletonHostedServiceDependency<T>(this IServiceCollection services, Action<IParticipant>? configure = null)
+            where T : class, IHostedService
+            => services
+            .AddSingleton<T>()
+            .AddHostedServiceDependency<T>(null, ConfigureSingletonHostedService<T>(configure))
+            ;
+
+        public static IServiceCollection AddSingletonHostedServiceDependency<TInterface, T>(this IServiceCollection services, Action<IParticipant>? configure = null)
+                 where TInterface : class
+                 where T : class, TInterface, IHostedService
+                 => services
+                 .AddSingleton<T>()
+                 .AddSingleton<TInterface, T>(serviceProvider => serviceProvider.GetRequiredService<T>())
+                 .AddHostedServiceDependency<T>(null, configure)
+                 ;
+
+        #endregion
+
+        #region Late
+        
+        public static IServiceCollection AddLateHostedServiceDependency<T>(this IServiceCollection services, Action<IParticipant>? configure, params object[] constructorParameters)
+                 where T : IHostedService
+                 => services.AddLateHostedServiceDependency<T>(null, configure, constructorParameters);
+        public static IServiceCollection AddLateHostedServiceDependency<T>(this IServiceCollection services)
+                 where T : IHostedService
+                 => services.AddLateHostedServiceDependency<T>(null, null, Array.Empty<object>());
+
         public static IServiceCollection AddLateHostedServiceDependency<T>(this IServiceCollection services, string? name, Action<IParticipant>? configure, params object[] constructorParameters)
             where T : IHostedService
         {
@@ -194,6 +207,8 @@ namespace LionFire.Services.DependencyMachines
             //});
             return services;
         }
+        
+        #endregion
 
         #endregion
 

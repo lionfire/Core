@@ -12,7 +12,7 @@ namespace LionFire.Execution
             if (composition == null) return;
             foreach (var child in composition.Children.OfType<IStartable>())
             {
-                await child.Start();
+                await child.StartAsync();
             }
 
         }

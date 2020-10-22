@@ -128,6 +128,9 @@ namespace LionFire.DependencyMachines
         public static IParticipant After(this IParticipant participant, params Enum[] stages)
             => participant.After(stages.Select(s => s.ToString()).ToArray());
 
+        public static IParticipant After<T>(this IParticipant participant) // UNTESTED
+            => participant.After(typeof(T).FullName);
+
         #endregion
 
         #region RequirementFor

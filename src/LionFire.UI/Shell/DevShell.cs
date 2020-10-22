@@ -1,8 +1,22 @@
 ﻿using LionFire.Dependencies;
 using System;
 
-namespace LionFire.Applications
+namespace LionFire.Applications // MOVE to LionFire.Dev
 {
+    public class DevTools
+    {
+        public static bool IsDevMode
+        {
+            get => DependencyContext.Current.GetService<IDevApp>()?.IsDevMode == true;
+            set
+            {
+                var devApp = DependencyContext.Current.GetService<IDevApp>();
+                if (devApp != null) { devApp.IsDevMode = value; }
+                // else no-op SILENTFAIL
+            }
+        }
+    }
+
     public interface IDevApp
     {
         bool IsDevMode { get; set; }

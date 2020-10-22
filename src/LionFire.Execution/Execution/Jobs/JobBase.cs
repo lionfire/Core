@@ -26,7 +26,7 @@ namespace LionFire.Execution.Jobs
         public BlockerCollection StartBlockers { get; private set; }
 
         public Task RunTask { get; protected set; }
-        public async Task Start(CancellationToken cancellationToken = default)
+        public async Task StartAsync(CancellationToken cancellationToken = default)
         {
             // TODO: If initializable and hasn't initialized, do that
             if (this is IInitializable initializable)

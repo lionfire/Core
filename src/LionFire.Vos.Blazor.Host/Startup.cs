@@ -9,10 +9,10 @@ using Microsoft.AspNetCore.HttpsPolicy;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using LionFire.Vos.Blazor.Data;
 using LionFire.Services;
 using LionFire.Persistence.Filesystem;
 using LionFire.Hosting;
+using LionFire.Serialization.Json.JsonEx;
 //using RazorComponentsPreview;
 
 namespace LionFire.Vos.Blazor
@@ -44,13 +44,23 @@ namespace LionFire.Vos.Blazor
 #endif
 
             services.AddServerSideBlazor();
-            services.AddSingleton<WeatherForecastService>();
 
             services
+                .AddTypeNameRegistry() // REVIEW - move this somewhere?  Needed by KnownTypes
+                //.RegisterTypesNamesWithAttribute(typeof(TimeTrackingItem).Assembly)
+                .RegisterTypeName(typeof(LionFire.Scheduling.TimeTrackingItem))
+
+                .AddReferenceProvider()
                 .AddPersisters()
                 .AddFilesystem()
-                .VosMount("/temp".ToVobReference(), @"c:\temp".ToFileReference());
+
+                .AddJsonEx()
+                .AddNewtonsoftJson()
+
+                .VosMount("/temp".ToVobReference(), @"c:\temp".ToFileReference())
+                .VosMount("/TimeTracker".ToVobReference(), @"C:\st\jvos\LionFire\TimeTracker".ToFileReference())
                 ;
+            ;
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

@@ -8,7 +8,6 @@ using LionFire.Referencing;
 namespace LionFire.Vos
 {
 
-
     public class VobReference<TValue> : VobReferenceBase<VobReference<TValue>>
     {
         #region Constructors

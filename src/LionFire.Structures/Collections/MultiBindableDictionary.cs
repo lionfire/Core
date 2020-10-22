@@ -21,6 +21,7 @@ namespace LionFire.Collections
     public class MultiBindableDictionary<TKey, TValue> : ICollection<TValue>, IEnumerable<TValue>,
         INotifyingDictionary<TKey, TValue>,
         //INotifyingReadOnlyDictionary<TKey, TValue>,
+        IReadOnlyDictionary<TKey, TValue>,
         IEnumerable<KeyValuePair<TKey, TValue>>, IEnumerable, // redundant?
         INotifyingCollection<TValue>,
         INotifyingReadOnlyCollection<TValue>

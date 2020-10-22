@@ -19,16 +19,16 @@ namespace LionFire.Applications
 
     public class LionFireAppBase //: MultiType
     {
-        protected AppOptions Options => optionsMonitor.CurrentValue;
-        IOptionsMonitor<AppOptions> optionsMonitor;
+        //protected AppOptions Options => optionsMonitor.CurrentValue;
+        //IOptionsMonitor<AppOptions> optionsMonitor;
 
-        public void NewInit() // TOPORT
-        {
-            if (Options.PerformanceMode == PerformanceMode.HighPerformance)
-            {
-                System.Runtime.GCSettings.LatencyMode = System.Runtime.GCLatencyMode.SustainedLowLatency;
-            }
-        }
+        //public void NewInit() // TOPORT
+        //{
+        //    //if (Options.PerformanceMode == PerformanceMode.HighPerformance)
+        //    //{
+        //    //    System.Runtime.GCSettings.LatencyMode = System.Runtime.GCLatencyMode.SustainedLowLatency;
+        //    //}
+        //}
 
         // REFACTOR - move this to a decorator
 
@@ -47,19 +47,7 @@ namespace LionFire.Applications
 
         #endregion
 
-
-
-        public int UpdatesAvailable
-        {
-            get
-            {
-#if NAppUpdater
-                return UpdateManager.Instance.UpdatesAvailable;
-#else
-                return 0;
-#endif
-            }
-        }
+        
 
         #region Settings
 

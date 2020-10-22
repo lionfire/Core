@@ -88,7 +88,7 @@ namespace LionFire.Hosting.Unity
                 ApplicationLifetime.ApplicationStopped.Register(() => Debug.Log("ApplicationLifetime.ApplicationStopped"));
 
                 var startTask = host.StartAsync();
-                //ApplicationLifetime.NotifyStarted();
+                ApplicationLifetime.NotifyStarted();
                 Debug.Log("UnityLifetimeBehavior: OnEnable()...done.  Start task complete: " + startTask.IsCompleted); // REVIEW - block until start is complete?
             }
             catch (Exception )

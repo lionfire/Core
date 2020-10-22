@@ -1,4 +1,4 @@
-﻿// REVIEW - drop dependency on System.Windows.Input?  (ICommand)
+﻿// NOTE: ICommand is a dependency provided by netstandard 
 
 // Retrieved from http://blogs.msdn.com/b/morgan/archive/2010/06/24/simplifying-commands-in-mvvm-and-wpf.aspx
 // on May 3, 2012

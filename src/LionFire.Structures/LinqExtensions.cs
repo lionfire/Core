@@ -15,6 +15,9 @@ namespace LionFire
     {
         public static IEnumerable<T> Append<T>(this IEnumerable<T> enumerable, T item) => enumerable.Concat(new T[] { item });
 
+        // See SelectRecursive in Linq 
+
+        // FIXME - actually recurse using SelectRecursive
         public static IEnumerable SelectRecursive(this IEnumerable source)
         {
             foreach (var directChild in source)
@@ -30,6 +33,7 @@ namespace LionFire
             }
         }
 
+        // FIXME - actually recurse using SelectRecursive
         public static IEnumerable<T> SelectRecursive<T>(this IEnumerable<T> source)
         {
             foreach (T directChild in source)
@@ -44,6 +48,35 @@ namespace LionFire
                 }
             }
         }
+
+        // REVIEW - SelectMany
+
+
+
+        //public static IEnumerable<T> SelectRecursive<T>(this T source, bool yieldTopItem = true)
+        //    where T : IEnumerable<T>
+        //{
+        //    if (yieldTopItem) { yield return source; }
+        //    foreach (T directChild in source)
+        //    {
+        //        foreach (var recurseChild in directChild.SelectRecursive())
+        //        {
+        //            yield return recurseChild;
+        //        }
+        //    }
+        //}
+
+        //public static IEnumerable<T> SelectRecursive<T>(this T source, Func<T, IEnumerable<T>> getChildren, bool yieldTopItem = true)
+        //{
+        //    if (yieldTopItem) { yield return source; }
+        //    foreach (T directChild in getChildren(source))
+        //    {
+        //        foreach (var recurseChild in directChild.SelectRecursive(getChildren))
+        //        {
+        //            yield return recurseChild;
+        //        }
+        //    }
+        //}
 
         #region SelectRecursive
 
