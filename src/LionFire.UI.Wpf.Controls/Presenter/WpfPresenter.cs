@@ -16,24 +16,32 @@ using System.Windows;
 using LionFire.UI;
 using LionFire.Ontology;
 using LionFire.Referencing;
+using System.Windows.Threading;
 
 namespace LionFire.Shell
 {
 
-    public class LayersWpfPresenter : WpfPresenter
+    [ViewType(typeof(WpfTabsView))]
+    public class WpfTabs : WpfPresenter
     {
+        Type ViewType { get; set; }
 
+        public WpfTabs() : base()
+        {
+
+        }
     }
 
-    public class TabsWpfPresenter : WpfPresenter
-    {
-    }
+    //public class LayersWpfPresenter : WpfPresenter
+    //{
+    //}
 
     public class PresenterBase
     {
         #region Ontology
 
-        public IPresenter Parent { get; set; }
+        public IPresenter Parent { get; }
+
 
         public string Path => LionPath.Combine(Parent.Path, Key);
 
@@ -58,10 +66,11 @@ namespace LionFire.Shell
 
         #endregion
 
-        public bool KeepsApplicationAlive { get; set; }
+        public bool PreventAutoClose { get; set; }
 
         #endregion
     }
+
 
     public class WpfPresenter : PresenterBase, IPresenter, IKeyable, IParented
     {
@@ -73,9 +82,8 @@ namespace LionFire.Shell
 
         #region Construction
 
-        public WpfPresenter(WpfWindowManager wpfWindowManager)
+        public WpfPresenter(IPresenter parent)
         {
-            WpfWindowManager = wpfWindowManager;
         }
 
         #endregion
@@ -89,7 +97,7 @@ namespace LionFire.Shell
         {
             get => parentView;
             set
-            {                
+            {
                 if (parentView == value) return;
                 if (parentView != default) throw new AlreadySetException();
                 parentView = value;
@@ -143,22 +151,37 @@ namespace LionFire.Shell
         [UIThread]
         protected UIElement GetParentView()
         {
-            if(PresenterView != null) { return PresenterView; }
+            if (PresenterView != null) { return PresenterView; }
 
-            if(ParentView == null)
+            if (ParentView == null)
             {
                 Window w;
                 ParentView = w = WpfWindowManager.GetOrCreateWindow(this.Key);
             }
-
-
         }
 
         #region Show
 
-        public Task Show(ViewInstantiation instantiation)
+        public async Task Show(ViewInstantiation instantiation)
         {
-            string tabName = instantiation.ViewName ?? instantiation.EffectiveName ?? ShellTabNames.DefaultTabName;
+
+            var existing = this.QueryPath(instantiation.Parameters.Path);
+
+            if(existing != null)
+            {
+                await Dispatcher.InvokeAsync(() =>
+                {
+                    existing.Visible = true;
+
+                }).ConfigureAwait(false);
+                return;
+            }
+            
+                IWpfViewLocator vl;
+            
+            
+            ViewNameResolver.GetViewName(instantiation.Template.Type)
+            string viewName = instantiation.Parameters.ViewName ?? instantiation.EffectiveName ?? ViewNameConventions.DefaultViewName;
 
             if (instantiation.ViewAction != null)
             {
@@ -170,13 +193,13 @@ namespace LionFire.Shell
             }
             else if (instantiation.ViewType != null)
             {
-                ShowControl(instantiation.ViewType, tabName, instantiation.DataContext);
+                ShowControl(instantiation.ViewType, viewName, instantiation.DataContext);
             }
             else if (instantiation.ViewModelType != null)
             {
                 var viewType = DependencyContext.Current.GetRequiredService<IViewLocator>().LocateTypeForModelType(instantiation.ViewModelType, null, null);
                 if (viewType == null) { throw new Exception("Could not locate type for model type:" + instantiation.ViewModelType.FullName); }
-                ShowControl(viewType, tabName, instantiation.DataContext);
+                ShowControl(viewType, viewName, instantiation.DataContext);
             }
             else
             {

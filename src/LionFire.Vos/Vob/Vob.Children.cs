@@ -13,6 +13,8 @@ using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using LionFire.Collections;
+using LionFire.Instantiating;
+using LionFire.Ontology;
 using LionFire.Referencing;
 using LionFire.Structures;
 using LionFire.Vos.Environment;
@@ -50,6 +52,7 @@ namespace LionFire.Vos
         //public readonly object childrenLock = new object();
 #endif
         protected ConcurrentDictionary<string, IVob> children = new ConcurrentDictionary<string, IVob>();
+        IReadOnlyDictionary<string, IVob>  IHas<IReadOnlyDictionary<string, IVob>>.Object => children;
 
         #region (Internal) Cleanup
 
@@ -234,7 +237,7 @@ namespace LionFire.Vos
         }
 
 
-        public IVob GetChild(string subpath) => GetChild(subpath.ToPathElements());
+        public IVob GetChild(string subpath) => GetChild(subpath.ToPathElements()); // RENAME to GetSubPath?  To match IHierarchicalOnDemand
         public IVob QueryChild(string subpath) => QueryChild(subpath.ToPathArray()); // TODO: to path elements?
 
         /// <summary>

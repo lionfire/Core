@@ -1,4 +1,4 @@
-﻿<UserControl x:Class="LionFire.Shell.TabbedWindowPresenter"
+﻿<UserControl x:Class="LionFire.UI.WpfTabsView"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:lfa="clr-namespace:LionFire.Avalon"

@@ -14,7 +14,7 @@ using System;
 using System.Windows;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace LionFire.Shell
+namespace LionFire.UI
 {
     public static class WpfApplicationExtensions
     {

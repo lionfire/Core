@@ -151,8 +151,8 @@
     <Compile Update="Lists\LionListBox.xaml.cs">
       <DependentUpon>LionListBox.xaml</DependentUpon>
     </Compile>
-    <Compile Update="Presenter\TabbedPresenterView.xaml.cs">
-      <DependentUpon>TabbedPresenterView.xaml</DependentUpon>
+    <Compile Update="Presenter\WpfTabsView.xaml.cs">
+      <DependentUpon>WpfTabsView.xaml</DependentUpon>
     </Compile>
     <Compile Update="Shell\AlertAdorner.xaml.cs">
       <DependentUpon>AlertAdorner.xaml</DependentUpon>
@@ -184,7 +184,7 @@
     <Page Update="Lists\LionListBox.xaml">
       <SubType>Designer</SubType>
     </Page>
-    <Page Update="Presenter\TabbedPresenterView.xaml">
+    <Page Update="Presenter\WpfTabsView.xaml">
       <SubType>Designer</SubType>
     </Page>
     <Page Update="Resources\Fonts.xaml">

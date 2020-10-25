@@ -21,25 +21,27 @@ using LionFire.Structures;
 
 namespace LionFire.Shell.Wpf
 {
+    // TODO:
+    // - what makes this different than 
+
     /// <summary>
     /// Top-level conductor
     /// </summary>
-    public class ShellConductor : Conductor, IShellConductor, IHostedService
+    public class ShellConductor : Conductor, IShellConductor
     {
         #region Dependencies
 
         public DesktopProfileManager WindowLayoutManager { get; }
 
-        #region Shell
+        #region Options
 
         public ShellOptions Options => ShellOptionsMonitor.CurrentValue;
         IOptionsMonitor<ShellOptions> ShellOptionsMonitor;
 
-        #endregion
-
         protected ShellPresenterOptions ShellPresenterOptions;
-
         public WindowSettings WindowSettings { get; private set; }
+
+        #endregion
 
         #endregion
 
@@ -53,25 +55,10 @@ namespace LionFire.Shell.Wpf
             WindowSettings = windowSettings.QueryNonDefaultValue(); // WindowSettings should already be resolved as a Hosted Participant that contributes CanStartShell 
         }
 
-        #region IHostedService
-
-        public virtual Task StartAsync(CancellationToken cancellationToken)
-            => Dispatcher.InvokeAsync(() =>
-            {
-                MainPresenter = CreatePresenter(ShellPresenterOptions.MainWindowPresenterType, MainPresenterName);
-                ShowStartupInterfaces();
-            });
-
-        public virtual Task StopAsync(CancellationToken cancellationToken) => Close(skipPrompt: true);
-
-        #endregion
-
         #endregion
 
         public string DefaultPresenterName { get; set; }
         public IPresenter DefaultPresenter => Presenters.TryGetValue(DefaultPresenterName);
-
-
 
 
         #region (Public) Methods
@@ -121,7 +108,7 @@ namespace LionFire.Shell.Wpf
             {
                 var presenter = ServiceProvider.GetRequiredService<IPresenter>();
                 if (presenter is IKeyable<string> k) { k.Key = key; }
-                return presenter
+                return presenter;
             });
 
         public Task Show(ViewInstantiation instantiation)
@@ -170,7 +157,7 @@ namespace LionFire.Shell.Wpf
             {
                 if (p is IPresenterContainer pc) { return pc.Presenters.Values; }
                 return Enumerable.Empty<IPresenter>();
-            }).Where(p => p.Item.KeepsApplicationAlive).Any())
+            }).Where(p => p.Item.PreventAutoClose).Any())
             {
                 OnSelfInitiatedClose();
             }

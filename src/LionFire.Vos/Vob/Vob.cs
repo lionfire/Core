@@ -134,6 +134,7 @@ namespace LionFire.Vos
         , IVob
         , IVobInternals
        , IMultiTypable
+        , IHierarchicalOnDemand<IVob> // TODO
     //, SReadOnlyMultiTyped // FUTURE?
     {
 

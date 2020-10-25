@@ -35,7 +35,7 @@ namespace LionFire.Shell.Wpf
         #region Events
 
         public event Action<CancelableEventArgs> Closing;
-        public event Action<IConductor> Closed;
+        public event Action<object> Closed;
 
         #endregion
 
@@ -43,7 +43,7 @@ namespace LionFire.Shell.Wpf
 
         #region Presenters
 
-        System.Collections.Generic.IReadOnlyDictionary<string, IPresenter> IConductor.Presenters => Presenters;
+        System.Collections.Generic.IReadOnlyDictionary<string, IPresenter> IPresenterContainer.Presenters => Presenters;
         protected MultiBindableDictionary<string, IPresenter> Presenters { get; } = new MultiBindableDictionary<string, IPresenter>();
 
         #region MainPresenter

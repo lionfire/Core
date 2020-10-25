@@ -8,6 +8,7 @@ using System;
 
 namespace LionFire.UI.Wpf
 {
+
     public interface IWpfViewLocator
     {
 

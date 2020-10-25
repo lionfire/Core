@@ -13,9 +13,8 @@ namespace LionFire.Instantiating
     //{
     //    IInstantiationCollection<TChild> Children { get; set; }
     //}
-    public interface IInstantiation : IInstantiationBase
+    public interface IInstantiation : IInstantiationBase // RENAME IHierarchicalInstantiation
             , ITemplateOverlayable
-
     {
         IInstantiationCollection Children { get; set; }
     }
@@ -25,7 +24,7 @@ namespace LionFire.Instantiating
     //{
     //    IReadHandleBase<TTemplate> Template { get; set; }
     //}
-    public interface IInstantiation<TTemplate> : IStateful, IInstantiation
+    public interface IInstantiation<TTemplate> : IStateful, IInstantiation // RENAME IHierarchicalInstantiation
          where TTemplate : ITemplate
     {
         //IReadHandleBase<TTemplate> RTemplate { get;  }

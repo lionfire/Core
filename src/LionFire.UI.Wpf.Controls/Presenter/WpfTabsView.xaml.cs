@@ -34,40 +34,23 @@ using LionFire.UI;
 using System.Diagnostics;
 using Microsoft.Extensions.Options;
 using LionFire.UI.Windowing;
-//using LionFire.Vos.VosApp;
 using Microsoft.Extensions.DependencyInjection;
 using LionFire.ExtensionMethods;
 using LionFire.Settings;
 
-namespace LionFire.ExtensionMethods
-{
-    public static class NoesisExtensions
-    {
-        public static T GetCustomAttribute2<T>(this MemberInfo type)
-            where T : Attribute
-            => System.Reflection.CustomAttributeExtensions.GetCustomAttribute<T>(type);
-
-#if NOESIS
-
-#endif
-    }
-}
-
-namespace LionFire.Shell
+namespace LionFire.UI
 {
 
     /// <summary>
     /// Intelligent content host for the main content area of the LionFire Shell.
     /// RENAME to WindowPresenter
     /// </summary>
-    public partial class TabbedWindowPresenter : UserControl, /*IControllable, UNUSED*/ IWindowPresenter, INotifyPropertyChanged
+    public partial class WpfTabsView : UserControl, /*IControllable, UNUSED*/ IPresenter, INotifyPropertyChanged
 #if Windowing
     //, IWpfWindowedPresenter
     , IWpfShellContentPresenter
 #endif
     {
-
-
         #region Key
 
         [SetOnce]
@@ -131,7 +114,7 @@ namespace LionFire.Shell
         }
 #endif
 
-        public TabbedWindowPresenter(IShellConductor shell, UserLocalSettingsProvider<WindowSettings> windowSettings, string key = null)
+        public WpfTabsView(IShellConductor shell, UserLocalSettingsProvider<WindowSettings> windowSettings, string key = null)
         {
             if (key != null)
             {
@@ -177,7 +160,7 @@ namespace LionFire.Shell
 
         #endregion
 
-        object IWindowPresenter.TopControl => topControl;
+        object IOldPresenter.TopControl => topControl;
         public Panel TopControl => topControl;
 
         //public object MainContent
@@ -395,7 +378,7 @@ namespace LionFire.Shell
 
         #region Close
 
-        public event Action<TabbedWindowPresenter> Closed;
+        public event Action<WpfTabsView> Closed;
         //public event Action<TabbedWindowPresenter> Closing;
 
         private void Close_NotifyTabs()
@@ -554,7 +537,7 @@ namespace LionFire.Shell
             return ti;
         }
 
-        void IWindowPresenter.ShowView(string tabKey)
+        void IOldPresenter.ShowView(string tabKey)
         {
             ShowTab(tabKey);
         }
@@ -848,7 +831,7 @@ namespace LionFire.Shell
             {
                 if (tabName == null)
                 {
-                    tabName = TabManager.GetTabNameFromType<T>(
+                    tabName = ViewNameResolver.GetViewName<T>(
                         //frameworkElement
                         );
                 }
@@ -860,7 +843,7 @@ namespace LionFire.Shell
                     frameworkElement = (FrameworkElement)(object)ActivatorUtilities.CreateInstance<T>(ServiceProvider);
                     this.AddTabItem(tabName, frameworkElement);
 
-                    var parented = frameworkElement as IParented<IWindowPresenter>;
+                    var parented = frameworkElement as IParented<IOldPresenter>;
                     if (parented != null)
                     {
                         parented.Parent = this;
@@ -896,9 +879,9 @@ namespace LionFire.Shell
         //    if (tabName == null)
         //    {
         //        var attr = typeof(T).GetCustomAttribute<ShellPresenterAttribute>();
-        //        if (attr != null && !String.IsNullOrEmpty(attr.DefaultTabName))
+        //        if (attr != null && !String.IsNullOrEmpty(attr.DefaultViewName))
         //        {
-        //            tabName = attr.DefaultTabName;
+        //            tabName = attr.DefaultViewName;
         //        }
         //        else
         //        {
@@ -965,7 +948,7 @@ namespace LionFire.Shell
         public T ShowModalControl<T>(string tabName = null)
             where T : class
         {
-            tabName = tabName ?? TabManager.GetTabNameFromType<T>();
+            tabName = tabName ?? ViewNameResolver.GetViewName<T>();
 
             if (ModalControl.Content != null)
             {
@@ -1013,7 +996,7 @@ namespace LionFire.Shell
             if (!Dispatcher.CheckAccess()) { return Dispatcher.Invoke(new Func<T>(() => ShowBackgroundControl<T>(tabName))); }
 #endif
 
-            tabName = tabName ?? TabManager.GetTabNameFromType<T>();
+            tabName = tabName ?? ViewNameResolver.GetViewName<T>();
 
             T controlInstance = null;
 
@@ -1043,7 +1026,7 @@ namespace LionFire.Shell
 
         public void AddBackgroundControl<T>(T controlInstance, string tabName = null) where T : FrameworkElement
         {
-            tabName = tabName ?? TabManager.GetTabNameFromType<T>();
+            tabName = tabName ?? ViewNameResolver.GetViewName<T>();
 
             if (this.ContainsBackground(tabName)) { throw new AlreadyException(); }
 

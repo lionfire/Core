@@ -1,6 +1,6 @@
 ﻿#nullable enable
 
-namespace LionFire.Shell
+namespace LionFire.UI
 {
     public enum NavigateHistoryMode
     {

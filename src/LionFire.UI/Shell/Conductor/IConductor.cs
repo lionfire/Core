@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using LionFire.UI;
+using System.Threading.Tasks;
 
 namespace LionFire.Shell
 {

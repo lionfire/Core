@@ -5,7 +5,7 @@ using System.Windows.Threading;
 using LionFire.Threading;
 using Microsoft.Extensions.Logging;
 
-namespace LionFire.Shell
+namespace LionFire.UI
 {
     public class WpfDispatcherAdapter : IDispatcher
     {

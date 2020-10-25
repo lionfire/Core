@@ -26,10 +26,11 @@ namespace LionFire // RENAME LionFire.ExtensionMethods
             list.Add(new KeyValuePair<TK, TV>(key, val));
         }
     }
-#if !AOT
 
+#if !AOT
 #if !NET45
-    public interface IReadOnlyDictionary<TKey, TValue> : ICollection<KeyValuePair<TKey, TValue>>, IEnumerable<KeyValuePair<TKey, TValue>>, System.Collections.IEnumerable
+
+    public interface IReadOnlyDictionary<TKey,  TValue> : ICollection<KeyValuePair<TKey, TValue>>, IEnumerable<KeyValuePair<TKey, TValue>>, System.Collections.IEnumerable
     {
         IEnumerable<TKey> Keys { get; }
         IEnumerable<TValue> Values { get; }
@@ -299,4 +300,5 @@ namespace LionFire // RENAME LionFire.ExtensionMethods
 	}
 #endif
 #endif
+
 }

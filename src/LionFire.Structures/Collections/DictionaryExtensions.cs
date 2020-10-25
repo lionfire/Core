@@ -237,51 +237,6 @@ namespace LionFire
 #endif
     }
 
-#if UNITY
-#if !AOT
-	public static class DictEx2<KeyType,ValueType>
-		where ValueType : class, new()
-	{
-		public static ValueType GetOrAddNew(IDictionary<KeyType, ValueType> dictionary,
-		                                    KeyType key)
-		{
-			if (dictionary.ContainsKey(key)) return dictionary[key];
-			ValueType val = new ValueType();
-			
-			var keyed = val as IKeyed<KeyType>;
-			if (keyed != null) { keyed.Key = key; }
-			
-			dictionary.Add(key, val);
-			return val;
-		}
-	}
-	public static class DictEx<KeyType,ValueType>
-			where ValueType : class //, new()
-	{
-
-		public static ValueType GetOrAddDefault( IDictionary<KeyType, ValueType> dictionary,
-		                                                            KeyType key, Func<ValueType> defaultValue)
-		{
-			if (dictionary.ContainsKey(key)) return dictionary[key];
-			ValueType val = defaultValue.Invoke();
-			
-			var keyed = defaultValue as IKeyed<KeyType>;
-			if (keyed != null) { keyed.Key = key; }
-			
-			dictionary.Add(key, val);
-			return val;
-		}
-		
-#if NET35
-		public static ValueType GetOrAddDefault( ConcurrentDictionary<KeyType, ValueType> dictionary,
-		                                                            KeyType key, Func<ValueType> defaultValue)
-		{
-			return dictionary.GetOrAdd(key, defaultValue); 
-		}
-#endif
-	}
-#endif
-#endif
 }
 
 #endif

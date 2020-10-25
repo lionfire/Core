@@ -1,15 +1,9 @@
-﻿namespace LionFire.Shell
+﻿namespace LionFire.UI
 {
-    public class ViewInstantiation : ViewReference
+    public class ViewInstantiation 
     {
-        /// <summary>
-        /// (TODO) Null: auto-generate presenter names, starting with MainPresenter
-        /// </summary>
-        public string PresenterName { get; set; }
+        public ViewReference Template { get; set; }
 
-        public string ViewName { get; set; }
-
-
-        public bool KeepsApplicationAlive { get; set; }
+        public ViewParameters Parameters { get; set; }
     }
 }

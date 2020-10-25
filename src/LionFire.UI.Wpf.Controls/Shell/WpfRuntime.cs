@@ -7,23 +7,25 @@ using Dispatcher = LionFire.Dispatching.UnityThreadDispatcherWrapper;
 #endif
 using LionFire.ErrorReporting;
 using LionFire.Ontology;
+using LionFire.Shell;
 using LionFire.Threading;
 using System;
 using System.Windows;
 
-namespace LionFire.Shell
+namespace LionFire.UI
 {
     /// <summary>
     /// Responsible for:
     ///  - Creating LionFire IDispatcher from WPF Application Dispatcher
     ///  - Integrating Application UnhandledExceptions to IErrorReporter
     /// </summary>
-    public class WpfRuntime : IHas<IDispatcher>
+    public class WpfRuntime : IHas<IDispatcher>, IUIPlatform
     {
         public Application Application { get; }
 
         public WpfDispatcherAdapter WpfDispatcherAdapter { get; }
         IDispatcher IHas<IDispatcher>.Object => WpfDispatcherAdapter;
+        public IDispatcher Dispatcher => WpfDispatcherAdapter;
 
         public WpfRuntime(IServiceProvider serviceProvider)
         {

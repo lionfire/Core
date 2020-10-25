@@ -3,15 +3,15 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace LionFire.Shell
+namespace LionFire.UI
 {
     [AttributeUsage(AttributeTargets.Class, Inherited = false, AllowMultiple = false)]
-    public sealed class ShellPresenterAttribute : Attribute
+    public sealed class ViewAttribute : Attribute
     {
-        public ShellPresenterAttribute()
+        public ViewAttribute()
         {
         }
 
-        public string DefaultTabName { get; set; }
+        public string DefaultViewName { get; set; }
     }
 }

@@ -2,7 +2,7 @@
 using LionFire.Resolves;
 using System;
 
-namespace LionFire.Shell
+namespace LionFire.UI
 {
 
     // REVIEW - what should this class be???

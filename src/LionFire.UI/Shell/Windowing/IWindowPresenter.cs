@@ -1,43 +1,27 @@
-﻿using LionFire.Structures;
-using System;
+﻿using System;
 
-namespace LionFire.Shell
+namespace LionFire.UI
 {
-    public interface INamedViewsPresenter
-    {
-        /// <summary>
-        /// Show existing view, referenced by its name
-        /// </summary>
-        /// <param name="viewName"></param>
-        void ShowView(string viewName);
 
-    }
+    //public interface INamedViewsPresenter
+    //{
+    //    /// <summary>
+    //    /// Show existing view, referenced by its name
+    //    /// </summary>
+    //    /// <param name="viewName"></param>
+    //    void ShowView(string viewName);
 
-    public interface IPresenterContainer
-    {
-        System.Collections.Generic.IReadOnlyDictionary<string, IPresenter> Presenters { get; }
-    }
-
-    public interface IPresenter : INavigator, IKeyed
-    {
-        string Path { get; }
-        bool KeepsApplicationAlive { get; }
-
-        bool IsActive { get; }
-    }
-
-    public interface ISingleViewPresenter
-    {
-        string CurrentViewName { get; }
-    }
+    //}
 
     public interface ITabbedPresenter
     {
+        bool TabsVisible { get; set; }
+        // Dock TabsLocation {get;set;}
     }
 
     public interface IHasBackgroundPresenter
     {
-        IWindowPresenter BackgroundPresenter { get; }
+        IPresenter BackgroundPresenter { get; }
     }
 
     //public class WindowPresenter: IWindowPresenter, ITabbedShellPresenter, ISingleViewPresenter, IHasBackgroundPresenter, INamedViewsPresenter, IHasMenuButton
@@ -59,13 +43,12 @@ namespace LionFire.Shell
     /// <summary>
     /// Controls the contents of a window
     /// </summary>
-    public interface IWindowPresenter : INavigator
+    public interface IOldPresenter : IPresenter
     {
         // TODO: Reduce this to INavigator?
                 
         T PushTab<T>(string tabName = null)
             where T : class;
-
 
         void ShowBackgroundTab(string tabKey);
         T ShowControl<T>(string tabName = null) where T : class;
