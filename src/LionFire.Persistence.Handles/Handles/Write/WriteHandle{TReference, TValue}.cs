@@ -3,6 +3,7 @@ using System;
 using System.Threading.Tasks;
 using LionFire.Referencing;
 using LionFire.Resolves;
+using MorseCode.ITask;
 
 namespace LionFire.Persistence.Handles
 {
@@ -17,7 +18,7 @@ namespace LionFire.Persistence.Handles
         protected WriteHandle(TReference reference) : base(reference) { }
         protected WriteHandle(TReference reference, TValue prestagedValue = default) : base(reference, prestagedValue) { }
 
-        protected override Task<IResolveResult<TValue>> ResolveImpl() => throw new NotImplementedException();
+        protected override ITask<IResolveResult<TValue>> ResolveImpl() => throw new NotImplementedException();
 
         PersistenceSnapshot<TValue> IPersists<TValue>.PersistenceState
              => new PersistenceSnapshot<TValue>

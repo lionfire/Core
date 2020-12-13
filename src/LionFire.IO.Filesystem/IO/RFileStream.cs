@@ -1,4 +1,6 @@
 ﻿using LionFire.Persistence;
+using LionFire.Resolves;
+using MorseCode.ITask;
 using System;
 using System.IO;
 using System.Threading.Tasks;
@@ -8,12 +10,6 @@ namespace LionFire.IO
     // REVIEW
     public class RFileStream : RLocalFileBase<Stream>, IDisposable
     {
-        public override Task<IRetrieveResult<Stream>> RetrieveImpl()
-        {
-            var stream = new FileStream(Path, FileMode.Open, FileAccess.Read, FileShare.Read);
-            return Task.FromResult((IRetrieveResult<Stream>)RetrieveResult<Stream>.Success(OnRetrievedObject(stream)));
-        }
-
         #region Construction
 
         public RFileStream() { }
@@ -23,14 +19,22 @@ namespace LionFire.IO
 
         #endregion
 
-        public void Dispose()
+        protected override ITask<IResolveResult<Stream>> ResolveImpl()
         {
-            var obj = base._value;
-            if (_value != null)
+            var stream = new FileStream(Path, FileMode.Open, FileAccess.Read, FileShare.Read);
+            return Task.FromResult((IResolveResult<Stream>)RetrieveResult<Stream>.Success(stream)).AsITask();
+        }
+
+        public override void Dispose()
+        {
+            var obj = base.ProtectedValue;
+            if (obj != null)
             {
                 DiscardValue();
-                _value.Dispose();
+                obj.Dispose();
             }
+
+            base.Dispose();
         }
     }
 }

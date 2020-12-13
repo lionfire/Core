@@ -7,35 +7,40 @@ using System.Collections.Generic;
 
 namespace LionFire.Persistence.Handles
 {
-    public abstract class NotifyingReadWriteHandle<TReference, TValue> : ReadWriteHandle<TReference, TValue>
-        , INotifyPersists<TValue>
-        , INotifyingHandleInternal<TValue>
-                where TReference : IReference
+    //public abstract class NotifyingReadWriteHandle<TReference, TValue> : ReadWriteHandle<TReference, TValue>
+    //    , INotifyPersists<TValue>
+    //    , INotifyingHandleInternal<TValue>
+    //            where TReference : IReference
 
-    {
-        public abstract event Action<PersistenceEvent<TValue>> PersistenceStateChanged;
+    //{
+    //    public abstract event Action<PersistenceEvent<TValue>> PersistenceStateChanged;
 
-        public override TValue Value
-        {
-            [Blocking(Alternative = nameof(GetValue))]
-            get => ProtectedValue ?? GetValue().Result.Value;
-            [PublicOnly]
-            set
-            {
-                if (EqualityComparer<TValue>.Default.Equals(protectedValue, value)) return;
-                this.MutatePersistenceStateAndNotify(() => HandleUtils.OnUserChangedValue_ReadWrite(this, value));
-            }
-        }
+    //    public override TValue Value
+    //    {
+    //        [Blocking(Alternative = nameof(GetValue))]
+    //        get => ProtectedValue ?? GetValue().Result.Value;
+    //        [PublicOnly]
+    //        set
+    //        {
+    //            if (EqualityComparer<TValue>.Default.Equals(protectedValue, value)) return;
+    //            this.MutatePersistenceStateAndNotify(() => HandleUtils.OnUserChangedValue_ReadWrite(this, value));
+    //        }
+    //    }
 
-    }
+    //}
 
+    /// <summary>
+    /// TODO: Document here how this is different from ReadWriteHandleBase (and NotifyingReadWriteHandle if it exists).  Should parallel ReadHandle.
+    /// </summary>
+    /// <typeparam name="TReference"></typeparam>
+    /// <typeparam name="TValue"></typeparam>
     public abstract class ReadWriteHandle<TReference, TValue>
         : ReadWriteHandleBase<TReference, TValue>
         , IReadWriteHandle<TValue>
         , IReferencable<TReference>
         , IReadWriteHandle // RECENTCHANGE - added, okay?
+        , INotifyingHandleInternal<TValue>
         where TReference : IReference
-        //where TValue : class
     {
         public new TReference Reference => Key;
         string IKeyed<string>.Key => Key?.ToString();
@@ -48,11 +53,13 @@ namespace LionFire.Persistence.Handles
 
         #endregion
 
-        public abstract ILazyResolveResult<TValue> QueryValue();
-        ITask<ILazyResolveResult<TValue>> ILazilyResolves<TValue>.TryGetValue() => this.GetValue().AsITask();
-        public abstract void RaisePersistenceEvent(PersistenceEvent<TValue> ev);
+        #region OLD (Resolves)
 
+        //public abstract ILazyResolveResult<TValue> QueryValue();
         //public abstract ITask<ILazyResolveResult<TValue>> GetValue();
+        //ITask<ILazyResolveResult<TValue>> ILazilyResolves<TValue>.TryGetValue() => this.GetValue().AsITask();
+
+        #endregion
 
         #region Value
 
@@ -73,6 +80,37 @@ namespace LionFire.Persistence.Handles
 
         #endregion
 
+        #region Event Raising
+
+        //public abstract void RaisePersistenceEvent(PersistenceEvent<TValue> ev);
+
+        public event Action<PersistenceEvent<TValue>>? PersistenceStateChanged;
+        void INotifyPersistsInternal<TValue>.RaisePersistenceEvent(PersistenceEvent<TValue> ev) => PersistenceStateChanged?.Invoke(ev);
+
+        protected TValue OnRetrievedObject(TValue obj)
+        {
+            throw new NotImplementedException();
+            
+            // From ReadHandle:
+            //using var _ = new PersistenceEventTransaction<TValue>(this);
+
+            ////var old = PersistenceSnapshot;
+
+            //ProtectedValue = obj;
+            //this.Flags |= PersistenceFlags.UpToDate;
+
+            ////this.PersistenceStateChanged?.Invoke(new PersistenceEvent<TValue>
+            ////{
+            ////    Sender = this,
+            ////    Old = old,
+            ////    New = PersistenceSnapshot
+            ////}); 
+
+            ////RaiseRetrievedObject();
+            //return obj;
+        }
+
+        #endregion
     }
 
 #if OLD

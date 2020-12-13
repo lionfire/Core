@@ -1,4 +1,6 @@
 ﻿using LionFire.Persistence;
+using LionFire.Resolves;
+using MorseCode.ITask;
 using System.IO;
 using System.Threading.Tasks;
 
@@ -15,7 +17,7 @@ namespace LionFire.IO
 
         #endregion
         
-        public override async Task<IRetrieveResult<string>> RetrieveImpl()
+        protected override async ITask<IResolveResult<string>> ResolveImpl()
         {
             return await Task.Run(() =>
             {
@@ -24,7 +26,7 @@ namespace LionFire.IO
                     return RetrieveResult<string>.NotFound;
                 }
                 
-                return RetrieveResult<string>.Success(OnRetrievedObject(File.ReadAllText(Path)));
+                return RetrieveResult<string>.Success(File.ReadAllText(Path));
             }).ConfigureAwait(false);
         }
     }

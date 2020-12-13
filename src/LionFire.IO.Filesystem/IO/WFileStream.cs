@@ -1,4 +1,6 @@
 ﻿using LionFire.Persistence;
+using LionFire.Resolves;
+using MorseCode.ITask;
 using System;
 using System.IO;
 using System.Threading.Tasks;
@@ -9,10 +11,19 @@ namespace LionFire.IO
     public class WFileStream : WLocalFileBase<Stream>, IDisposable
     {
 
-        public override Task<IRetrieveResult<Stream>> RetrieveImpl()
+        #region Construction
+
+        public WFileStream() { }
+        public WFileStream(string path, Stream initialData = default) : base(path,initialData)
         {
-            var stream = new FileStream(Path, FileMode.Open, FileAccess.Read, FileShare.Read);
-            return Task.FromResult((IRetrieveResult<Stream>)RetrieveResult<Stream>.Success(OnRetrievedObject(stream)));
+        }
+
+        #endregion
+
+        protected override ITask<IResolveResult<Stream>> ResolveImpl()
+        {
+            var stream = new FileStream(Path, FileMode.Open, FileAccess.Write, FileShare.Write);
+            return Task.FromResult((IResolveResult<Stream>)RetrieveResult<Stream>.Success(stream)).AsITask();
         }
 
         // OLD
@@ -25,21 +36,12 @@ namespace LionFire.IO
         //    return Task.FromResult((IRetrieveResult<Stream>)RetrieveResult<Stream>.Success(stream));
         //}
 
-        #region Construction
-
-        public WFileStream() { }
-        public WFileStream(string path, Stream initialData = default) : base(path,initialData)
-        {
-        }
-
-        #endregion
-
         /// <summary>
         /// Flushes the stream.  (Note: this may be largely irrelevant.)
         /// </summary>
         /// <param name="persistenceContext"></param>
         /// <returns></returns>
-        protected override async Task<IPersistenceResult> WriteObject()
+        protected override async Task<IPersistenceResult> UpsertImpl()
         {
             if (HasValue)
             {
@@ -55,14 +57,15 @@ namespace LionFire.IO
             //    return Task.CompletedTask;
         }
 
-        public void Dispose()
+        public override void Dispose()
         {
-            var obj = base._value;
-            if (_value != null)
+            var obj = base.ProtectedValue;
+            if (obj != null)
             {
                 DiscardValue();
-                _value.Dispose();
+                obj.Dispose();
             }
+            base.Dispose();
         }
     }
 }

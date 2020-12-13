@@ -33,14 +33,14 @@ namespace LionFire.Persistence.Handles
     public class ReadHandleDictionary<TKey, THandle, T> : ReadHandleDictionaryBase<TKey, THandle, T>
     where THandle : IReadHandleBase<T>
     {
-        #region Construction
+#region Construction
 
         public ReadHandleDictionary()
         {
             handlesReadOnly = new ReadOnlyObservableDictionary<TKey, THandle>(handles);
         }
 
-        #endregion
+#endregion
     }
 
     public class ObservableReadDictionaryHandle<TReference, THandle, TValue> : ObservableReadDictionary<TReference, THandle, TValue> : IResolves<IEnumerable<T>>, IReferencable<TReference>
@@ -49,7 +49,7 @@ namespace LionFire.Persistence.Handles
     {
         public abstract Task RefreshHandles();
 
-        #region Reference
+#region Reference
 
         public TReference Reference
         {
@@ -63,9 +63,9 @@ namespace LionFire.Persistence.Handles
         }
         protected TReference reference;
 
-        #endregion
+#endregion
 
-        #region Persistence State
+#region Persistence State
 
         public PersistenceFlags Flags
         {
@@ -84,7 +84,7 @@ namespace LionFire.Persistence.Handles
 
         //protected virtual void OnStateChanged(PersistenceFlags newValue, PersistenceFlags oldValue) { }
 
-        #endregion
+#endregion
 
     }
 
@@ -98,7 +98,7 @@ namespace LionFire.Persistence.Handles
         , IReadOnlyObservableDictionary<TKey, TValu>
     where THandle : IReadHandle<TValue>, INotifyPersists<TValue>
     {
-        #region Construction
+#region Construction
 
         public ObservableReadDictionary()
         {
@@ -108,22 +108,22 @@ namespace LionFire.Persistence.Handles
             Handles.CollectionChanged += Handles_CollectionChanged;
         }
 
-        #endregion
+#endregion
 
-        #region Properties
+#region Properties
 
-        #region Handles
+#region Handles
 
         public IReadOnlyObservableDictionary<TKey, THandle> Handles => handlesReadOnly;
         ReadOnlyObservableDictionary<TKey, THandle> handlesReadOnly;
 
         protected readonly ObservableDictionary<TKey, THandle> handles = new ObservableDictionary<TKey, THandle>(); // TODO: don't rely on this class -- do own implementation
 
-        #endregion
+#endregion
 
-        #endregion
+#endregion
 
-        #region Handles collection events
+#region Handles collection events
 
         private void Handles_CollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
         {
@@ -179,9 +179,9 @@ namespace LionFire.Persistence.Handles
             }
         }
 
-        #endregion
+#endregion
 
-        #region ChildPersistenceStateChanged - Pass thru for PersistenceStateChanged 
+#region ChildPersistenceStateChanged - Pass thru for PersistenceStateChanged 
 
         public event Action<PersistenceEvent<TValue>> ChildPersistenceStateChanged
         {
@@ -213,11 +213,11 @@ namespace LionFire.Persistence.Handles
         // TODO: Make a simpler Object changed event off this?  Leave that to a derived Ex class?
         private void OnHandlePersistenceStateChanged(PersistenceEvent<TValue> ev) => childPersistenceStateChanged?.Invoke(ev);
 
-        #endregion
+#endregion
 
         public bool ContainsKey(TKey key) => handles.ContainsKey(key);
 
-        #region AutoResolveObjects 
+#region AutoResolveObjects 
 
         // MOVE to Ex class?
 
@@ -240,11 +240,11 @@ namespace LionFire.Persistence.Handles
         private bool autoResolveObjects;
 #endif
 
-        #endregion
+#endregion
 
-        #region Objects
+#region Objects
 
-        #region IsObjectsEnabled
+#region IsObjectsEnabled
 
         //public bool IsObjectsEnabled
         //{
@@ -272,7 +272,7 @@ namespace LionFire.Persistence.Handles
         //}
         //private bool isObjectsEnabled;
 
-        #endregion
+#endregion
 
         //public ReadOnlyObservableCollection<T> Objects
         //{
@@ -309,7 +309,7 @@ namespace LionFire.Persistence.Handles
         //    }
         //}
 
-        #endregion
+#endregion
 
         //public event Action<IReadHandleBase<T>> ObjectChanged
         //{
@@ -394,13 +394,13 @@ namespace LionFire.Persistence.Handles
     public class ObservableReadDictionaryEx<TKey, THandle, TValue> : ObservableReadDictionary<TKey, THandle, TValue>, IEnumerable<TValue>
         where THandle : IReadHandle<TValue>, INotifyPersists<TValue>
     {
-        #region IEnumerable<T>
+#region IEnumerable<T>
 
         public IEnumerator<TValue> GetEnumerator() => ((IEnumerable<TValue>)Handles.Values).GetEnumerator();
 
         IEnumerator IEnumerable.GetEnumerator() => ((IEnumerable<TValue>)Objects).GetEnumerator();
 
-        #endregion
+#endregion
     }
 
 }

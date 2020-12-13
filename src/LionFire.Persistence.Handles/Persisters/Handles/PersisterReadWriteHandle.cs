@@ -1,6 +1,7 @@
 ﻿using LionFire.Persistence.Handles;
 using LionFire.Referencing;
 using LionFire.Resolves;
+using MorseCode.ITask;
 using System;
 using System.Threading.Tasks;
 
@@ -25,12 +26,13 @@ namespace LionFire.Persistence.Persisters
 
         //public override event Action<PersistenceEvent<TValue>> PersistenceStateChanged;
 
-        public override ILazyResolveResult<TValue> QueryValue() => throw new NotImplementedException();
-        public override void RaisePersistenceEvent(PersistenceEvent<TValue> ev) => throw new NotImplementedException();
-        protected override async Task<IResolveResult<TValue>> ResolveImpl() => await Persister.Retrieve<TReference, TValue>(Reference).ConfigureAwait(false);
+        //public override ILazyResolveResult<TValue> QueryValue() => throw new NotImplementedException();
+        //public override void RaisePersistenceEvent(PersistenceEvent<TValue> ev) => throw new NotImplementedException();
+        protected override async ITask<IResolveResult<TValue>> ResolveImpl() => await Persister.Retrieve<TReference, TValue>(Reference).ConfigureAwait(false);
 
         protected override async Task<IPersistenceResult> UpsertImpl() => await Persister.Upsert(this, ProtectedValue);
 
         protected override async Task<IPersistenceResult> DeleteImpl() => await Persister.Delete(this);
+
     }
 }

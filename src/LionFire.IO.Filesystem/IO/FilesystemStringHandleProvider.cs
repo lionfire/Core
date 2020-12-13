@@ -30,5 +30,7 @@ namespace LionFire.IO.Filesystem
             ValidateReference(reference);
             return (IReadHandle<T>)new RTextFile(reference.Path);
         }
+
+        public IReadWriteHandle<T> GetReadWriteHandle<T>(IReference reference, T preresolvedValue = default) => throw new NotImplementedException();
     }
 }

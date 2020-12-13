@@ -7,21 +7,17 @@ using System.Threading.Tasks;
 
 namespace LionFire.Persistence.Handles
 {
-    public abstract class ObservableHandleDictionary<TKey, THandle, TValue> 
-        //: ObservableReadDictionary<TKey, THandle, TValue>
+    public abstract class ObservableHandleDictionary<TKey, THandle, TValue>
+        //: ObservableReadDictionary<TKey, THandle, TValue> // TODO - broken until ObservableReadDictionary is available
         where THandle : class, IReadHandle<TValue>, INotifyPersists<TValue>
         where TValue : class
     {
-#if TODO
 
         #region Key translation
 
         // REVIEW - come up with a clearer name for these methods
-        public virtual string KeyToHandleKey(string key)
-        {
-            return key;
-        }
-        public virtual string HandleKeyToKey(string key) { return key; }
+        public virtual string KeyToHandleKey(string key) => key;
+        public virtual string HandleKeyToKey(string key) => key;
 
         #endregion
 
@@ -31,11 +27,11 @@ namespace LionFire.Persistence.Handles
             await Set((TValue)null, key);
         }
 
-        [Obsolete]
-        public Task<THandle> Add(TValue obj, string key = null)
-        {
-            throw new NotSupportedException("Use Set instead");
-        }
+        //[Obsolete]
+        //public Task<THandle> Add(TValue obj, string key = null)
+        //{
+        //    throw new NotSupportedException("Use Set instead");
+        //}
 
         /// <summary>
         /// Immediately writes directly to underlying data store.  Does not write to internal collection. 
@@ -68,6 +64,5 @@ namespace LionFire.Persistence.Handles
             return handle;
         }
         //public object PersistenceContext { get; set; }
-#endif
     }
 }

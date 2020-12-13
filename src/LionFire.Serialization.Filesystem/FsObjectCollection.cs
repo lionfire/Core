@@ -1,4 +1,5 @@
-﻿using System;
+﻿#if TODO // Waiting on ObservableReadDictionary
+using System;
 using System.Threading.Tasks;
 using System.Collections.ObjectModel;
 using LionFire.Execution;
@@ -174,21 +175,11 @@ namespace LionFire.Serialization
             return Task.CompletedTask;
         }
 
-        public override string KeyToHandleKey(string key)
-        {
-            return Path.Combine(this.RootPath, key);
-        }
-        public override string HandleKeyToKey(string key)
-        {
-            if (key.StartsWith(RootPath))
-            {
-                return key.Substring(RootPath.Length);
-            }
-            else
-            {
-                throw new ArgumentException("Key does not start with RootPath");
-            }
-        }
+        public override string KeyToHandleKey(string key) => Path.Combine(this.RootPath, key);
+        public override string HandleKeyToKey(string key) 
+            => !key.StartsWith(RootPath) 
+            ? throw new ArgumentException("Key does not start with RootPath") 
+            : key.Substring(RootPath.Length);
 
         private void OnError(object sender, ErrorEventArgs e)
         {
@@ -244,3 +235,4 @@ namespace LionFire.Serialization
     }
 
 }
+#endif

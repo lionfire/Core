@@ -1,12 +1,13 @@
 ﻿using System.IO;
 using System.Threading.Tasks;
 using LionFire.Persistence;
+using LionFire.Persistence.Filesystem;
 using LionFire.Persistence.Handles;
 using LionFire.Referencing;
 
 namespace LionFire.IO
 {
-    public abstract class WLocalFileBase<T> : ReadWriteHandleBaseEx<T>
+    public abstract class WLocalFileBase<T> : ReadWriteHandleBase<FileReference, T>
         where T : class
     {
         #region Path
@@ -45,7 +46,7 @@ namespace LionFire.IO
 
         #endregion
 
-        protected override async Task<IPersistenceResult> DeleteObject()
+        protected override async Task<IPersistenceResult> DeleteImpl()
         {
             return await Task.Run(() =>
             {

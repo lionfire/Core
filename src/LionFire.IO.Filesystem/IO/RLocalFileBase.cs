@@ -1,9 +1,11 @@
-﻿using LionFire.Persistence.Handles;
+﻿using LionFire.Persistence;
+using LionFire.Persistence.Filesystem;
+using LionFire.Persistence.Handles;
 using LionFire.Referencing;
 
 namespace LionFire.IO
 {
-    public abstract class RLocalFileBase<T> : ReadHandle<T>
+    public abstract class RLocalFileBase<T> : ReadHandleBase<FileReference, T>
         where T : class
     {
         #region Path
@@ -11,23 +13,9 @@ namespace LionFire.IO
         [SetOnce]
         public string Path
         {
-            get => path;
-            set
-            {
-                if (path == value)
-                {
-                    return;
-                }
-
-                if (path != default(string))
-                {
-                    throw new AlreadySetException();
-                }
-
-                path = value;
-            }
+            get => Reference?.Path;
+            set { Reference = value; }
         }
-        private string path;
 
         #endregion
 

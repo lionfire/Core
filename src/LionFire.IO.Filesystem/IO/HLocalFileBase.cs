@@ -35,23 +35,9 @@ namespace LionFire.IO
         [SetOnce]
         public string Path
         {
-            get { return path; }
-            set
-            {
-                if (path == value)
-                {
-                    return;
-                }
-
-                if (path != default)
-                {
-                    throw new AlreadySetException();
-                }
-
-                path = value;
-            }
+            get => Reference?.Path; // REVIEW - should it be Key?
+            set => Key = value;
         }
-        private string path;
 
         #endregion
 

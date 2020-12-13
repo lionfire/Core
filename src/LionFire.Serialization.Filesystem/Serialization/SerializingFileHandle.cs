@@ -6,7 +6,10 @@ using LionFire.Execution;
 using LionFire.IO;
 using LionFire.ObjectBus.Filesystem;
 using LionFire.Persistence;
+using LionFire.Persistence.Filesystem;
+using LionFire.Resolves;
 using LionFire.Serialization.Contexts;
+using MorseCode.ITask;
 
 namespace LionFire.Serialization
 {
@@ -106,7 +109,7 @@ namespace LionFire.Serialization
         //    return persistenceContext;
         //}
 
-        public override async Task<IRetrieveResult<T>> RetrieveImpl()
+        protected override async ITask<IResolveResult<T>> ResolveImpl()
         {
             // TODO: Change TryRetrieveObject() to TryRetrieveObject(Func<PersistenceContext>) which contains SerializationOperation?
 
@@ -141,7 +144,7 @@ namespace LionFire.Serialization
 
         #region Delete
 
-        protected override async Task<IPersistenceResult> DeleteObject()
+        protected override async Task<IPersistenceResult> DeleteImpl()
         {
             Action deleteAction = () => File.Delete(Path);
             await deleteAction.AutoRetry(); // TODO: Use File IO parameters registered in DI.
@@ -152,7 +155,7 @@ namespace LionFire.Serialization
 
         #region Save
 
-        protected override async Task<IPersistenceResult> WriteObject()
+        protected override async Task<IPersistenceResult> UpsertImpl()
         {
             await Task.Run(() =>
             {

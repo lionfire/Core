@@ -1,4 +1,6 @@
 ﻿using LionFire.Persistence;
+using LionFire.Resolves;
+using MorseCode.ITask;
 using System.IO;
 using System.Threading.Tasks;
 
@@ -15,8 +17,8 @@ namespace LionFire.IO
         }
 
         #endregion
-                
-        protected override async Task<IPersistenceResult> WriteObject()
+
+        protected override async Task<IPersistenceResult> UpsertImpl()
         {
             await Task.Run(() =>
             {
@@ -25,7 +27,7 @@ namespace LionFire.IO
             return PersistenceResult.Success;
         }
 
-        protected override async Task<IPersistenceResult> DeleteObject()
+        protected override async Task<IPersistenceResult> DeleteImpl()
         {
             return await Task.Run(() =>
             {
@@ -36,14 +38,11 @@ namespace LionFire.IO
             }).ConfigureAwait(false);
         }
 
-        public override async Task<IRetrieveResult<byte[]>> RetrieveImpl()
+        protected override async ITask<IResolveResult<byte[]>> ResolveImpl()
         {
             return await Task.Run(() =>
             {
-                if (!File.Exists(Path))
-                {
-                    return RetrieveResult<byte[]>.NotFound;
-                }
+                if (!File.Exists(Path)) { return RetrieveResult<byte[]>.NotFound; }
 
                 return RetrieveResult<byte[]>.Success(OnRetrievedObject(File.ReadAllBytes(Path)));
             }).ConfigureAwait(false);

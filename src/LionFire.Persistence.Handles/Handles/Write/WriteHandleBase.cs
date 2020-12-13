@@ -18,8 +18,13 @@ namespace LionFire.Persistence.Handles
     {
         internal static ValueChangedPropagation ValueChangedPropagation = new ValueChangedPropagation();
     }
-    public abstract class WriteHandleBase<TReference, TValue>
-        : DisposableKeyed<TReference>
+
+
+    // REVIEW - why is there GetValue in WriteHandleBase? - should this inherit from Resolves<> and have NotSupported if truly write only?
+
+    public abstract class WriteHandleBase<TReference, TValue> 
+        //: DisposableKeyed<TReference>
+        : Resolves<TReference, TValue>
         , IWriteHandleBase<TValue>
         , IWrapper<TValue>
         , IHandleInternal<TValue>
@@ -141,8 +146,6 @@ namespace LionFire.Persistence.Handles
 
         #region GetValue
 
-        // REVIEW - why is there GetValue in WriteHandleBase?
-
         // DUPLICATE of Resolves, almost.  Returns Task instead of ITask.
         public async Task<ILazyResolveResult<TValue>> GetValue()
         {
@@ -170,15 +173,16 @@ namespace LionFire.Persistence.Handles
         #region Abstract
 
         // DUPLICATE of Resolves, almost.  Returns Task instead of ITask.
-        protected abstract Task<IResolveResult<TValue>> ResolveImpl();
+        //protected abstract ITask<IResolveResult<TValue>> ResolveImpl();
 
         #endregion
 
         public PersistenceFlags Flags { get; protected set; }
         PersistenceFlags IHandleInternal<TValue>.Flags { set => Flags = value; }
 
-        public void DiscardValue()
+        public override void DiscardValue()
         {
+            base.DiscardValue();
             Flags &= ~(
                 PersistenceFlags.OutgoingCreatePending
                 | PersistenceFlags.OutgoingDeletePending

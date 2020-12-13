@@ -9,12 +9,19 @@ using System.Threading.Tasks;
 
 namespace LionFire.Persistence.Handles
 {
-    public abstract class ReadWriteHandleBase<TReference, TValue> : WriteHandleBase<TReference, TValue>, IReadWriteHandleBase<TValue>, IHandleInternal<TValue>
+    public abstract class ReadWriteHandleBase<TReference, TValue> 
+        : WriteHandleBase<TReference, TValue>
+        , IReadWriteHandleBase<TValue>
+        , IHandleInternal<TValue>
         where TReference : IReference
     {
+        #region Construction
+
         public ReadWriteHandleBase() { }
         public ReadWriteHandleBase(TReference reference) : base(reference) { }
         public ReadWriteHandleBase(TReference reference, TValue preresolvedValue) : base(reference, preresolvedValue) { }
+
+        #endregion
 
         #region Value
 
