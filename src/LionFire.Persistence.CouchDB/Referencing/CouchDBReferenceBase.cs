@@ -14,7 +14,7 @@ namespace LionFire.Persistence.CouchDB
 
         public string UriScheme => "couch";
 
-        public string Scheme => "couch";
+        public override string Scheme => "couch";
 
         #region Database
 
@@ -50,7 +50,7 @@ namespace LionFire.Persistence.CouchDB
                 if (database != null) return $"/{database}/{Id}";
                 else return Id;
             }
-            set => throw new NotImplementedException("TODO: parse");
+            protected set => throw new NotImplementedException("TODO: parse");
         }
 
         public bool IsCompatibleWith(string obj) => throw new NotImplementedException();

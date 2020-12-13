@@ -3,6 +3,7 @@ using LionFire.Data;
 using LionFire.Persistence.Filesystem;
 using LionFire.Persistence.Persisters;
 using LionFire.Referencing;
+using LionFire.Serialization;
 using LionFire.Vos.Handles;
 using System;
 using System.Collections.Generic;
@@ -10,35 +11,20 @@ using System.Threading.Tasks;
 
 namespace LionFire.Persistence.CouchDB
 {
-
-    public class CouchDBPersisterBase : PersisterBase<CouchDBPersisterOptions>
-    //, IFilesystemPersistence<TReference, TPersistenceOptions>
-    //, IWriter<string>
-    //, IReader<string>
+    internal interface ICouchDBPersisterInternal
     {
-        #region Dependencies
+        ConnectionManager<CouchDBConnection, CouchDBConnectionOptions> ConnectionManager { get; }
 
-        protected ConnectionManager<CouchDBConnection, CouchDBConnectionOptions> ConnectionManager { get; }
+    }
 
-        #endregion
-
-        #region Construction
-
-        public CouchDBPersisterBase(ConnectionManager<CouchDBConnection, CouchDBConnectionOptions> connectionManager)
-        {
-            ConnectionManager = connectionManager;
-        }
-
-        #endregion
-
-        #region Connections
-
-        protected CouchDBConnection connectionForReference(ICouchDBReference r)
+    internal static class CouchDBPersisterCommon
+    {
+        internal static CouchDBConnection connectionForReference(this ICouchDBPersisterInternal persister, ICouchDBReference r)
         {
             switch (r)
             {
                 case CouchDBReference d:
-                    return ConnectionManager[d.Persister];
+                    return persister.ConnectionManager[d.Persister];
                 case CouchDBDirectReference d:
                     break;
                 default:
@@ -46,19 +32,47 @@ namespace LionFire.Persistence.CouchDB
             }
             throw new NotImplementedException("TODO");
         }
-
-        #endregion
     }
+
+    //public class CouchDBPersisterBase : PersisterBase<CouchDBPersisterOptions>
+    ////, IFilesystemPersistence<TReference, TPersistenceOptions>
+    ////, IWriter<string>
+    ////, IReader<string>
+    //{
+        
+
+    //    #region Construction
+
+    //    public CouchDBPersisterBase(ConnectionManager<CouchDBConnection, CouchDBConnectionOptions> connectionManager, SerializationOptions serializationOptions) : base ()
+    //    {
+    //        ConnectionManager = connectionManager;
+    //    }
+
+    //    #endregion
+
+    //    #region Connections
+
+
+
+    //    #endregion
+    //}
 
     /// <summary>
     /// Uses MyCouchDB in Entity mode to persist/depersist .NET objects
     /// </summary>
-    public class CouchDBEntityPersister : CouchDBPersisterBase, IPersister<ICouchDBReference>
+    public class CouchDBEntityPersister : PersisterBase<CouchDBPersisterOptions>, IPersister<ICouchDBReference>, ICouchDBPersisterInternal
     {
+        #region Dependencies
+
+        public ConnectionManager<CouchDBConnection, CouchDBConnectionOptions> ConnectionManager { get; }
+
+        #endregion
+
         #region Construction
 
-        public CouchDBEntityPersister(ConnectionManager<CouchDBConnection, CouchDBConnectionOptions> connectionManager) : base(connectionManager)
+        public CouchDBEntityPersister(ConnectionManager<CouchDBConnection, CouchDBConnectionOptions> connectionManager)
         {
+            ConnectionManager = connectionManager;
         }
 
         #endregion
@@ -75,7 +89,7 @@ namespace LionFire.Persistence.CouchDB
         public async Task<IPersistenceResult> Create<TValue>(IReferencable<ICouchDBReference> referencable, TValue value)
         {
             var r = referencable.Reference;
-            var client = connectionForReference(r).MyCouchClient;
+            var client = this.connectionForReference(r).MyCouchClient;
 
             //POST with server generated id
             await client.Documents.PostAsync(@"{""name"":""Daniel""}");
@@ -85,13 +99,13 @@ namespace LionFire.Persistence.CouchDB
         public Task<IPersistenceResult> Update<TValue>(IReferencable<ICouchDBReference> referencable, TValue value)
         {
             var r = referencable.Reference;
-            var client = connectionForReference(r).MyCouchClient;
+            var client = this.connectionForReference(r).MyCouchClient;
             throw new NotImplementedException();
         }
         public async Task<IPersistenceResult> Upsert<TValue>(IReferencable<ICouchDBReference> referencable, TValue value)
         {
             var r = referencable.Reference;
-            var client = connectionForReference(r).MyCouchClient;
+            var client = this.connectionForReference(r).MyCouchClient;
 
             await client.Documents.PutAsync(r.Id, @"{""name"":""Daniel""}"); //PUT for client generated id
             //await client.Documents.PostAsync(@$"{{""_id"":""{r.Id}"", ""name"":""Daniel""}}"); // POST with client generated id - possible but wrong
@@ -117,7 +131,7 @@ namespace LionFire.Persistence.CouchDB
         public Task<IPersistenceResult> Delete(IReferencable<ICouchDBReference> referencable)
         {
             var r = referencable.Reference;
-            var client = connectionForReference(r).MyCouchClient;
+            var client = this.connectionForReference(r).MyCouchClient;
 
             throw new NotImplementedException();
         }
@@ -125,5 +139,6 @@ namespace LionFire.Persistence.CouchDB
         #endregion
 
         public Task<IRetrieveResult<IEnumerable<string>>> List(IReferencable<ICouchDBReference> referencable, ListFilter filter = null) => throw new NotImplementedException();
+        public Task<IRetrieveResult<IEnumerable<Listing<T>>>> List<T>(IReferencable<ICouchDBReference> referencable, ListFilter filter = null) => throw new NotImplementedException();
     }
 }

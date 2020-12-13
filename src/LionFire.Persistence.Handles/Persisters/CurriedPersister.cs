@@ -21,7 +21,7 @@ namespace LionFire.Persistence.Persisters
 
         public IPersister<TReference> Persister { get; }
 
-        public ISerializationProvider SerializationProvider => Persister.SerializationProvider;
+        public ISerializationProvider? SerializationProvider => (Persister as ISerializingPersister)?.SerializationProvider;
 
         public CurriedPersister(IPersister<TReference> persister, IOverlayableReference<TReference> baseReference)
         {

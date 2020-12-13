@@ -4,6 +4,9 @@ namespace LionFire.Persistence.CouchDB
 {
     public class CouchDBDirectReference : CouchDBReferenceBase<CouchDBDirectReference>, IReference, ICouchDBReference
     {
+        //public override string Scheme => base.Scheme "couch";
+
+
         #region Construction
 
         public CouchDBDirectReference() { }
@@ -43,7 +46,6 @@ namespace LionFire.Persistence.CouchDB
                 id = value;
             }
         }
-
         private string id;
 
         #endregion

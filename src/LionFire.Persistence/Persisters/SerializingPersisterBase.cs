@@ -1,12 +1,17 @@
 ﻿using LionFire.Serialization;
 using Microsoft.Extensions.Options;
-using System;
-using System.IO;
 
 namespace LionFire.Persistence.Persisters
 {
-    public class SerializingPersisterBase<TOptions>
+    /// <summary>
+    /// Base for Persisters that must serialize .NET objects before writing them to storage.  Uses a ISerializationProvider.
+    /// Object databases and storage mechanisms that can themselves persist .NET objects should not use this, but rather PersisterBase.
+    /// </summary>
+    /// <typeparam name="TOptions"></typeparam>
+    public class SerializingPersisterBase<TOptions> : PersisterBase<TOptions>, ISerializingPersister
     {
+        // SetOnce?
+        public SerializationOptions SerializationOptions { get; set; }
 
         #region Construction
 
@@ -33,33 +38,5 @@ namespace LionFire.Persistence.Persisters
         private ISerializationProvider serializationProvider;
 
         #endregion
-
-        // SetOnce?
-        public SerializationOptions SerializationOptions { get; set; }
-
-        #region PersistenceOptions
-
-        public TOptions PersistenceOptions
-        {
-            get => persistenceOptions;
-            set
-            {
-                if (persistenceOptions != null) throw new AlreadySetException();
-                persistenceOptions = value;
-            }
-        }
-        private TOptions persistenceOptions;
-
-        #endregion
-
-        public virtual bool AllowAutoRetryForThisException(Exception e)
-        {
-            return !(
-                e is SerializationException
-                || e is FileNotFoundException
-                );
-        }
-
-        protected virtual void OnDeserialized(object obj) => (obj as INotifyDeserialized)?.OnDeserialized();
     }
 }

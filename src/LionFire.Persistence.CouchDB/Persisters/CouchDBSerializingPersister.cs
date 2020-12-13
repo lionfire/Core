@@ -13,32 +13,17 @@ namespace LionFire.Persistence.CouchDB
     /// <summary>
     /// Use LionFire JSON serialization to serialize/deserialize .NET objects to JSON which then gets persisted to MyCouchDB in document mode.
     /// </summary>
-    public class CouchDBSerializingPersister : CouchDBPersisterBase, IPersister<ICouchDBReference>
+    public class CouchDBSerializingPersister : SerializingPersisterBase<CouchDBPersisterOptions>, IPersister<ICouchDBReference>, ICouchDBPersisterInternal
     {
         #region Dependencies
 
-        #region SerializationProvider
-
-        [SetOnce]
-        public ISerializationProvider SerializationProvider
-        {
-            get => serializationProvider;
-            set
-            {
-                if (serializationProvider == value) return;
-                if (serializationProvider != default) throw new AlreadySetException();
-                serializationProvider = value;
-            }
-        }
-        private ISerializationProvider serializationProvider;
-
-        #endregion
+        public ConnectionManager<CouchDBConnection, CouchDBConnectionOptions> ConnectionManager { get; }
 
         #endregion
 
         #region Construction
 
-        public CouchDBSerializingPersister(ConnectionManager<CouchDBConnection, CouchDBConnectionOptions> connectionManager, ISerializationProvider serializationProvider) : base(connectionManager)
+        public CouchDBSerializingPersister(ConnectionManager<CouchDBConnection, CouchDBConnectionOptions> connectionManager, ISerializationProvider serializationProvider, SerializationOptions serializationOptions) : base(serializationOptions)
         {
             SerializationProvider = serializationProvider;
         }
@@ -56,9 +41,9 @@ namespace LionFire.Persistence.CouchDB
 
         public async Task<IPersistenceResult> Create<TValue>(IReferencable<ICouchDBReference> referencable, TValue value)
         {        var r = referencable.Reference;
-            var client = connectionForReference(r).MyCouchClient;
+            var client = this.connectionForReference(r).MyCouchClient;
 
-            var jsonStrategies = serializationProvider.Strategies.Where(s => s.Formats.Where(f => f.FileExtensions.Contains("json")).Any());
+            var jsonStrategies = SerializationProvider.Strategies.Where(s => s.Formats.Where(f => f.FileExtensions.Contains("json")).Any());
 
             throw new NotImplementedException("NEXT: get serializationProvider to serialize using json file extension or application/json format.");
 
@@ -75,7 +60,7 @@ namespace LionFire.Persistence.CouchDB
         public async Task<IPersistenceResult> Upsert<TValue>(IReferencable<ICouchDBReference> referencable, TValue value)
         {
             var r = referencable.Reference;
-            var client = connectionForReference(r).MyCouchClient;
+            var client = this.connectionForReference(r).MyCouchClient;
 
             await client.Documents.PutAsync(r.Id, @"{""name"":""Daniel""}"); //PUT for client generated id
             //await client.Documents.PostAsync(@$"{{""_id"":""{r.Id}"", ""name"":""Daniel""}}"); // POST with client generated id - possible but wrong
@@ -102,5 +87,6 @@ namespace LionFire.Persistence.CouchDB
         #endregion
 
         public Task<IRetrieveResult<IEnumerable<string>>> List(IReferencable<ICouchDBReference> referencable, ListFilter filter = null) => throw new NotImplementedException();
+        public Task<IRetrieveResult<IEnumerable<Listing<T>>>> List<T>(IReferencable<ICouchDBReference> referencable, ListFilter filter = null) => throw new NotImplementedException();
     }
 }

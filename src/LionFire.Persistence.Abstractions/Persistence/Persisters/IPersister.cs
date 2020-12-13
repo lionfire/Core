@@ -10,6 +10,10 @@ namespace LionFire.Persistence.Persisters
     public interface IPersister<in TReference> : IReadPersister<TReference>, IWritePersister<TReference>, IListPersister<TReference>
         where TReference : IReference
     {
+    }
+
+    public interface ISerializingPersister
+    {
         ISerializationProvider SerializationProvider { get; }
     }
 
