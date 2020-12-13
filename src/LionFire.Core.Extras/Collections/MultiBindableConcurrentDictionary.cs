@@ -209,7 +209,6 @@ namespace LionFire.Collections
 #if !AOT
         ICollection<TKey> IDictionary<TKey, TValue>.Keys => dictionary.Keys;
         IEnumerable<TKey> System.Collections.Generic.IReadOnlyDictionary<TKey, TValue>.Keys => dictionary.Keys;
-        IEnumerable<TKey> IReadOnlyDictionary<TKey, TValue>.Keys => dictionary.Keys;
 #endif
         public bool Remove(TKey key)
         {
@@ -238,7 +237,6 @@ namespace LionFire.Collections
         public ICollection<TValue> Values => dictionary.Values;
 #if !AOT
         IEnumerable<TValue> System.Collections.Generic.IReadOnlyDictionary<TKey, TValue>.Values => dictionary.Values;
-        IEnumerable<TValue> IReadOnlyDictionary<TKey, TValue>.Values => dictionary.Values;
 #endif
 
         public TValue this[TKey key]

@@ -3,7 +3,9 @@ using System.Collections.Concurrent;
 
 namespace LionFire.Collections
 {
-    public class ConcurrentDictionaryCache<TKey, TValue>
+
+    public class ConcurrentDictionaryCache<TKey, TValue> : IDictionaryCache<TKey, TValue>
+        where TValue : class
     {
         private ConcurrentDictionary<TKey, TValue> dict = new ConcurrentDictionary<TKey, TValue>();
 
@@ -14,6 +16,21 @@ namespace LionFire.Collections
             Getter = getter;
         }
 
-        public TValue this[TKey key] => dict.GetOrAdd(key, Getter);
+        public TValue this[TKey key]
+        {
+            get
+            {
+                if (dict.TryGetValue(key, out TValue value))
+                {
+                    return value;
+                }
+                var retrieved = Getter(key);
+                if (retrieved != default(TValue))
+                {
+                    dict.GetOrAdd(key, _ => retrieved);
+                }
+                return retrieved;
+            }
+        }
     }
 }

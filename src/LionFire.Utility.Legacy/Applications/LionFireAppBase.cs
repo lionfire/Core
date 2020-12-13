@@ -85,20 +85,20 @@ namespace LionFire.Applications
 
         #region Shell
 
-        /// <summary>
-        /// Be sure to set this in the constructor or shortly after. (Unless the app is headless)
-        /// </summary>
-        public ILionFireShell Shell
-        {
-            get => shell;
-            set
-            {
-                if (shell == value) return;
-                if (shell != null) throw new AlreadySetException();
-                shell = value;
-            }
-        }
-        private ILionFireShell shell;
+        ///// <summary>
+        ///// Be sure to set this in the constructor or shortly after. (Unless the app is headless)
+        ///// </summary>
+        //public ILionFireShell Shell
+        //{
+        //    get => shell;
+        //    set
+        //    {
+        //        if (shell == value) return;
+        //        if (shell != null) throw new AlreadySetException();
+        //        shell = value;
+        //    }
+        //}
+        //private ILionFireShell shell;
 
         #endregion
 

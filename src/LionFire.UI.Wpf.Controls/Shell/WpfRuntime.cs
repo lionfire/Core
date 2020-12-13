@@ -5,12 +5,14 @@ using Dispatcher = LionFire.Dispatching.UnityThreadDispatcherWrapper;
 #endif
 #else
 #endif
+using Caliburn.Micro;
 using LionFire.ErrorReporting;
 using LionFire.Ontology;
 using LionFire.Shell;
 using LionFire.Threading;
 using System;
 using System.Windows;
+using System.Windows.Media;
 
 namespace LionFire.UI
 {
@@ -27,6 +29,8 @@ namespace LionFire.UI
         IDispatcher IHas<IDispatcher>.Object => WpfDispatcherAdapter;
         public IDispatcher Dispatcher => WpfDispatcherAdapter;
 
+        public IEventAggregator EventAggregator => throw new NotImplementedException();
+
         public WpfRuntime(IServiceProvider serviceProvider)
         {
             Application = Application.Current;
@@ -40,5 +44,7 @@ namespace LionFire.UI
         }
 
         protected virtual Application CreateApplication() => new Application();
+        public bool IsViewType(Type type) => typeof(FrameworkElement).IsAssignableFrom(type); // Potential alternatives: Visual, DependencyObject, DispatcherObject
+        public bool IsPlatformType(Type type) => typeof(System.Windows.Threading.DispatcherObject).IsAssignableFrom(type);
     }
 }

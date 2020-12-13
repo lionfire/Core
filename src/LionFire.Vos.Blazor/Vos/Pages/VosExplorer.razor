@@ -13,7 +13,8 @@
 @using Microsoft.Extensions.Logging
 @using LionFire.Persistence
 @using System.Reflection
-
+@using LionFire.Resolves
+ 
 @if (listings == null)
 {
     <p><em>Loading...</em></p>
@@ -154,7 +155,7 @@ else
             var rh = Path?.ToReference()?.GetReadHandle<object>(); // TODO - get available types
             if (rh != null)
             {
-                newValue = (await rh.GetValue().ConfigureAwait(false)).Value;
+                newValue = (await rh.GetValue().ConfigureAwait(false));
             }
         }
         catch { } // EMPTYCATCH
@@ -204,7 +205,7 @@ else
                 var handle = childPath.ToReference<IReference>().GetReadHandle<object>();
 
                 //newReadHandles.Add(handle);
-                listing.Type = (await handle.GetValue().ConfigureAwait(false)).Value?.GetType().Name;
+                listing.Type = (await handle.GetValue().ConfigureAwait(false))?.GetType().Name;
             }
             catch
             {
@@ -212,7 +213,7 @@ else
             }
         }
         //readHandles = newReadHandles;
-        RetrieveValue();
+        await RetrieveValue().ConfigureAwait(false);
     }
 
     #endregion

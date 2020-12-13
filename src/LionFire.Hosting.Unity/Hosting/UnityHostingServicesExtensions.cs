@@ -1,4 +1,5 @@
 ﻿using LionFire.Dispatching;
+using LionFire.Hosting.Unity;
 using LionFire.Services;
 using LionFire.Threading;
 using Microsoft.Extensions.DependencyInjection;
@@ -8,7 +9,7 @@ using System.Collections.Generic;
 using System.Text;
 using UnityEngine;
 
-namespace LionFire.Hosting.Unity
+namespace LionFire.Services
 {
     public static class UnityHostingServicesExtensions
     {

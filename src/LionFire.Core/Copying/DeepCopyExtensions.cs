@@ -115,6 +115,7 @@ namespace LionFire.Copying
             List<IInstanceProvider> providers = new List<IInstanceProvider>();
             foreach (Assembly assembly in AppDomain.CurrentDomain.GetAssemblies())
             {
+                if (!DeepCopyConfiguration.ShouldInspectAssembly(assembly)) continue;
                 UpdateInstanceProviders(assembly, providers);
                 UpdateCloneProviders(assembly);
             }

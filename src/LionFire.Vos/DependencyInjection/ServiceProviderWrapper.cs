@@ -30,7 +30,7 @@ namespace LionFire.DependencyInjection
         }
 
         public object GetService(Type serviceType) => Singletons.ContainsKey(serviceType) ? Singletons[serviceType] : UnderlyingServiceProvider.GetService(serviceType);
-        public object GetRequiredService(Type serviceType) => Singletons.ContainsKey(serviceType) ? (Singletons[serviceType] ?? throw new HasUnresolvedDependenciesException(serviceType)) 
+        public object GetRequiredService(Type serviceType) => Singletons.ContainsKey(serviceType) ? (Singletons[serviceType] ?? throw new HasUnresolvedDependenciesException(serviceType))
             : (UnderlyingServiceProvider?.GetService(serviceType) ?? throw new HasUnresolvedDependenciesException(serviceType));
     }
 }

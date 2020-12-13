@@ -62,6 +62,7 @@ namespace LionFire.Collections
         INotifyPropertyChanged
     {
     }
+
     public class ReadOnlyObservableDictionary<TKey, TValue> :
         IReadOnlyObservableDictionary<TKey, TValue>
     {

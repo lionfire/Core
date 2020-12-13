@@ -27,7 +27,7 @@ namespace LionFire.Instantiating
 
         [Ignore]
         public object Parent { get; set; }
-        //object IParented.Parent { get{return this.Parent;} set{this.Parent = (InstantiationCollection)value;} }
+        //object IParentable.Parent { get{return this.Parent;} set{this.Parent = (InstantiationCollection)value;} }
         //public InstantiationCollection Parent { get; set; }
 
         #endregion

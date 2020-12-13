@@ -131,7 +131,7 @@ namespace LionFire.Avalon
             }
 
             Layer.Children.Remove(this);
-            WpfShellAlerter.Instance.IsAlertOpen = false;
+            ((IAlerterInternal)Alerter.Instance).CloseAlert();
         }
 
         private void CloseButton_Click(object sender, RoutedEventArgs e)

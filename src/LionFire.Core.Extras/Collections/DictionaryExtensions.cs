@@ -11,38 +11,7 @@ using System.Collections.Concurrent;
 
 namespace LionFire // RENAME LionFire.ExtensionMethods
 {
-    public static class HashSetExtensions
-    {
-        public static void TryAdd<T>(this HashSet<T> set, T val)
-        {
-            if (set.Contains(val)) return;
-            set.Add(val);
-        }
-    }
-    public static class ListExtensions
-    {
-        public static void Add<TK, TV>(this List<KeyValuePair<TK, TV>> list, TK key, TV val)
-        {
-            list.Add(new KeyValuePair<TK, TV>(key, val));
-        }
-    }
 
-#if !AOT
-#if !NET45
-
-    public interface IReadOnlyDictionary<TKey,  TValue> : ICollection<KeyValuePair<TKey, TValue>>, IEnumerable<KeyValuePair<TKey, TValue>>, System.Collections.IEnumerable
-    {
-        IEnumerable<TKey> Keys { get; }
-        IEnumerable<TValue> Values { get; }
-
-        TValue this[TKey key] { get; }
-
-        bool ContainsKey(TKey key);
-
-        bool TryGetValue(TKey key, out TValue value);
-    }
-#endif
-#endif
     public static class DictionaryExtensions
     {
 

@@ -1,7 +1,6 @@
 ﻿using LionFire.Applications.ErrorReporting;
 using LionFire.ErrorReporting;
 using LionFire.Logging;
-using LionFire.Services.DependencyMachines;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using System;

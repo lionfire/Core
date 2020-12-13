@@ -68,6 +68,10 @@ namespace LionFire.Alerting
             instance.Alert(alert);
         }
 
+        public static void Alert(string message, string title)
+        {
+            Alert(new Alert { Message = message, Title = title });
+        }
         public static void Alert(string title, Exception ex)
         {
             Alert(ShowExceptionMessage ? ex.Message : ""
@@ -149,26 +153,26 @@ namespace LionFire.Alerting
             //bool result = false;
             string result = null;
 
-           DependencyContext.Current.GetService<IDispatcher>().BeginInvoke(new Action(() =>
-           {
-               DialogResult dialogResult = new DialogResult()
-               {
-                   TextEntry = startingText,
-               };
+            DependencyContext.Current.GetService<IDispatcher>().BeginInvoke(new Action(() =>
+            {
+                DialogResult dialogResult = new DialogResult()
+                {
+                    TextEntry = startingText,
+                };
 
-               Alert alert = new Alert()
-               {
-                   DialogResult = dialogResult,
-                   Message = message,
-                   LogLevel = LogLevel.Information,
-                    //Exception = exception,
-                    //Detail = detail,
-                    //Title = title,
-                    Flags = AlertFlags.Modal | AlertFlags.MustAcknowledge | AlertFlags.TextEntry,
-                   Buttons = new AlertButton[] { new AlertButton(okButtonText, () => { result = dialogResult.TextEntry; ev.Set(); }), new AlertButton("Cancel", () => ev.Set()) },
-               };
-               Alert(alert);
-           })).FireAndForget();
+                Alert alert = new Alert()
+                {
+                    DialogResult = dialogResult,
+                    Message = message,
+                    LogLevel = LogLevel.Information,
+                   //Exception = exception,
+                   //Detail = detail,
+                   //Title = title,
+                   Flags = AlertFlags.Modal | AlertFlags.MustAcknowledge | AlertFlags.TextEntry,
+                    Buttons = new AlertButton[] { new AlertButton(okButtonText, () => { result = dialogResult.TextEntry; ev.Set(); }), new AlertButton("Cancel", () => ev.Set()) },
+                };
+                Alert(alert);
+            })).FireAndForget();
 
             // REVIEW - FireAndForget then wait for response?  Does that actually work?
 

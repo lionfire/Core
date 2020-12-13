@@ -11,7 +11,7 @@ using Microsoft.Extensions.Options;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using System.Threading;
 using System.Threading.Tasks;
-using LionFire.Services.DependencyMachines;
+using LionFire.Hosting;
 using LionFire.Referencing;
 using System.Runtime.CompilerServices;
 using System.Linq;
@@ -121,8 +121,6 @@ namespace LionFire.Services
             => services.AddInitializer((Func<IVos, Task<object?>>)(v => initAndValidate(v.GetVob(vobReference))), configureWrapper(vobReference, configure, flags));
 
         #endregion
-
-
 
         private static Action<IParticipant> configureWrapper(VobReference vobReference, Action<IParticipant>? configure, VobInitializerFlags flags = VobInitializerFlags.Default, string? key = null)
         {

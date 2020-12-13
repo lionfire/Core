@@ -19,7 +19,7 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using System.Linq;
-using LionFire.Services.DependencyMachines;
+using LionFire.Hosting;
 using System.Runtime.CompilerServices;
 using LionFire.Hosting;
 using LionFire.Referencing;

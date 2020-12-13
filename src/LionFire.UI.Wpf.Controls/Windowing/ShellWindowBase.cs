@@ -17,16 +17,17 @@ namespace LionFire.Shell
 {
     public abstract class ShellWindowBase : Window
     {
+#if TOPORT
         #region Dependencies
 
         protected readonly TabbedWindowPresenter shellContentPresenter;
 
-        public IOptionsMonitor<ShellOptions> ShellOptionsMonitor { get; }
+        //public IOptionsMonitor<ShellOptions> ShellOptionsMonitor { get; }
 
         #region Derived
 
         protected ShellWindow ShellWindow => shellContentPresenter.ShellWindow;
-        protected ShellOptions ShellOptions => ShellOptionsMonitor.CurrentValue;
+        //protected ShellOptions ShellOptions => ShellOptionsMonitor.CurrentValue;
 
         #endregion
 
@@ -36,10 +37,12 @@ namespace LionFire.Shell
 
         public ShellWindowBase() { }
 
-        public ShellWindowBase(TabbedWindowPresenter shellContentPresenter, IOptionsMonitor<ShellOptions> shellOptionsMonitor)
+        public ShellWindowBase(TabbedWindowPresenter shellContentPresenter
+            //, IOptionsMonitor<ShellOptions> shellOptionsMonitor
+            )
         {
             this.shellContentPresenter = shellContentPresenter;
-            ShellOptionsMonitor = shellOptionsMonitor;
+            //ShellOptionsMonitor = shellOptionsMonitor;
             WpfShell.Instance.ShellPresenter.MainPresenter.TopmostChanged += new Action<bool>(Instance_TopmostChanged);
             this.Loaded += new RoutedEventHandler(ShellWindowBase_Loaded);
 
@@ -113,15 +116,16 @@ namespace LionFire.Shell
             //WpfShell.Instance.IsDebugWindowVisible ^= true;
         }
         protected void menuButton_Click(object sender, RoutedEventArgs e) => WpfShell.Instance.EventAggregator.Publish(ManualSingleton<MToggleAppMenu>.GuaranteedInstance);
+        #endregion
+#endif
 
         protected virtual void TitleBar_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
         {
             // FUTURE: Allow dragging full-screen window to another screen
         }
+#if TOPORT
 
-        #endregion
-
-        #region (Public) Methods
+#region (Public) Methods
 
         public abstract void Restore();
 
@@ -133,9 +137,9 @@ namespace LionFire.Shell
             }
         }
 
-        #endregion
+#endregion
 
-        #region (Protected) Methods
+#region (Protected) Methods
 
         protected void UpdateTopmost()
         {
@@ -167,13 +171,14 @@ namespace LionFire.Shell
             UpdateTopmost();
         }
 
-        #endregion
+#endregion
 
-        #region Misc
+#endif
+#region Misc
 
         private static readonly ILogger l = Log.Get();
 
-        #endregion
+#endregion
     }
 }
 

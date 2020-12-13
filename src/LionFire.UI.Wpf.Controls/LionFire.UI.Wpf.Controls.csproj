@@ -55,8 +55,8 @@
 
   <ItemGroup>
     <PackageReference Include="DotNetProjects.Extended.Wpf.Toolkit" Version="4.6.82" />
-    <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="3.1.7" />
-    <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="3.1.7" />
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="3.1.10" />
+    <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="3.1.10" />
     <PackageReference Include="Microsoft.Xaml.Behaviors.Wpf" Version="1.1.19" />
     <PackageReference Include="PixelLab.Core" Version="6.0.2" />
     <PackageReference Include="System.Diagnostics.Contracts" Version="4.3.0" />
@@ -68,6 +68,7 @@
     <ProjectReference Include="..\LionFire.Base\LionFire.Base.csproj" />
     <ProjectReference Include="..\LionFire.Binding\LionFire.Binding.csproj" />
     <ProjectReference Include="..\LionFire.Core.Extras\LionFire.Core.Extras.csproj" />
+    <ProjectReference Include="..\LionFire.UI.Entities\LionFire.UI.Entities.csproj" />
     <ProjectReference Include="..\LionFire.UI.Wpf\LionFire.UI.Wpf.csproj" />
     <ProjectReference Include="..\LionFire.UI\LionFire.UI.csproj" />
     <ProjectReference Include="..\LionFire.Vos.Application\LionFire.Vos.VosApp.csproj" />
@@ -151,7 +152,7 @@
     <Compile Update="Lists\LionListBox.xaml.cs">
       <DependentUpon>LionListBox.xaml</DependentUpon>
     </Compile>
-    <Compile Update="Presenter\WpfTabsView.xaml.cs">
+    <Compile Update="Tabs\WpfTabsView.xaml.cs">
       <DependentUpon>WpfTabsView.xaml</DependentUpon>
     </Compile>
     <Compile Update="Shell\AlertAdorner.xaml.cs">
@@ -160,11 +161,11 @@
     <Compile Update="SplashScreen\SplashWindow.xaml.cs">
       <DependentUpon>SplashWindow.xaml</DependentUpon>
     </Compile>
-    <Compile Update="Windowing\FullScreenShellWindow.xaml.cs">
-      <DependentUpon>FullScreenShellWindow.xaml</DependentUpon>
+    <Compile Update="Windowing\FullScreenWindowView.xaml.cs">
+      <DependentUpon>FullScreenWindowView.xaml</DependentUpon>
     </Compile>
-    <Compile Update="Windowing\ShellWindow.xaml.cs">
-      <DependentUpon>ShellWindow.xaml</DependentUpon>
+    <Compile Update="Windowing\WindowedWindowView.xaml.cs">
+      <DependentUpon>WindowedWindowView.xaml</DependentUpon>
     </Compile>
     <Compile Update="Zap\LionZapScroller.xaml.cs">
       <DependentUpon>LionZapScroller.xaml</DependentUpon>
@@ -184,7 +185,7 @@
     <Page Update="Lists\LionListBox.xaml">
       <SubType>Designer</SubType>
     </Page>
-    <Page Update="Presenter\WpfTabsView.xaml">
+    <Page Update="Tabs\WpfTabsView.xaml">
       <SubType>Designer</SubType>
     </Page>
     <Page Update="Resources\Fonts.xaml">
@@ -202,10 +203,10 @@
     <Page Update="Themes\generic.xaml">
       <SubType>Designer</SubType>
     </Page>
-    <Page Update="Windowing\FullScreenShellWindow.xaml">
+    <Page Update="Windowing\FullScreenWindowView.xaml">
       <SubType>Designer</SubType>
     </Page>
-    <Page Update="Windowing\ShellWindow.xaml">
+    <Page Update="Windowing\WindowedWindowView.xaml">
       <SubType>Designer</SubType>
     </Page>
   </ItemGroup>

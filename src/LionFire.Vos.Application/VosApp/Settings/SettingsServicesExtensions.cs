@@ -1,6 +1,6 @@
 ﻿using LionFire.Applications;
 using LionFire.Services;
-using LionFire.Services.DependencyMachines;
+using LionFire.Hosting;
 using LionFire.Vos;
 using LionFire.Settings;
 using Microsoft.Extensions.DependencyInjection;

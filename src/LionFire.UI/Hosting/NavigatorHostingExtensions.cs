@@ -1,5 +1,5 @@
 ﻿using LionFire.DependencyMachines;
-using LionFire.Services.DependencyMachines;
+using LionFire.Hosting;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using System;

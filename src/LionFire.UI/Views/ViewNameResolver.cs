@@ -19,7 +19,7 @@ namespace LionFire.UI
         public static string GetViewName(Type type, object obj = null)
         {
             string viewName;
-            var attr = typeof(T).GetCustomAttribute<ViewAttribute>();
+            var attr = type.GetCustomAttribute<ViewAttribute>();
             if (attr != null && !string.IsNullOrEmpty(attr.DefaultViewName))
             {
                 viewName = attr.DefaultViewName;

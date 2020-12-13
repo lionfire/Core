@@ -19,9 +19,9 @@ namespace LionFire.UI
         // Dock TabsLocation {get;set;}
     }
 
-    public interface IHasBackgroundPresenter
+    public interface IHasBackgroundUI
     {
-        IPresenter BackgroundPresenter { get; }
+        //IUIKeyed Background { get; } // TODO ?
     }
 
     //public class WindowPresenter: IWindowPresenter, ITabbedShellPresenter, ISingleViewPresenter, IHasBackgroundPresenter, INamedViewsPresenter, IHasMenuButton
@@ -31,7 +31,6 @@ namespace LionFire.UI
     public interface IHasMenuButton
     {
         bool ShowMenuButton { get; set; }
-
     }
 
     public interface IWindowPresenterEx
@@ -43,7 +42,7 @@ namespace LionFire.UI
     /// <summary>
     /// Controls the contents of a window
     /// </summary>
-    public interface IOldPresenter : IPresenter
+    public interface IOldPresenter //: IPresenter
     {
         // TODO: Reduce this to INavigator?
                 
@@ -71,7 +70,7 @@ namespace LionFire.UI
 
 
         //IDispatcher CurrentDispatcher { get; }
-        IDocumentTab CurrentDocumentTab { get; }
+        //IDocumentTab CurrentDocumentTab { get; }
 
         void Close();
 

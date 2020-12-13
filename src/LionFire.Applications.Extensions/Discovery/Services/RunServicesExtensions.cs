@@ -1,13 +1,12 @@
 ﻿using LionFire.Applications;
 using LionFire.DependencyMachines;
-using LionFire.Services.DependencyMachines;
 using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Text;
 
-namespace LionFire.Services
+namespace LionFire.Hosting
 {
     public static class RunServicesExtensions
     {

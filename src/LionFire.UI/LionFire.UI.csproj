@@ -23,9 +23,9 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="UINode\" />
+    <Folder Include="Nodes\" />
     <Folder Include="Shell\Presenters\" />
-    <Folder Include="UI\Tabs\" />
+    <Folder Include="Shell\Views\" />
   </ItemGroup>
 
 </Project>

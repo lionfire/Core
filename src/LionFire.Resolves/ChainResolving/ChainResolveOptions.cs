@@ -4,7 +4,7 @@ using System.Collections.Generic;
 
 namespace LionFire.Resolves.ChainResolving
 {
-    public class ChainResolveOptions : IParented<ChainResolveOptions>
+    public class ChainResolveOptions : IParentable<ChainResolveOptions>
     {
         public ChainResolveOptions Parent { get; set; } = ChainResolveOptions.Default;
 

@@ -14,7 +14,7 @@ namespace LionFire
             new SystemRandom(Interlocked.Increment(ref seed))
         );
 
-        private static ThreadLocal<UnityRandom> randomFloatWrapper = new ThreadLocal<UnityRandom>(() => new UnityRandom());
+        //private static ThreadLocal<UnityRandom> randomFloatWrapper = new ThreadLocal<UnityRandom>(() => new UnityRandom());
         //public static FloatRandom ThreadRandomFloat => randomFloatWrapper.Value;
         public float NextFloat() => UnityEngine.Random.value; 
 

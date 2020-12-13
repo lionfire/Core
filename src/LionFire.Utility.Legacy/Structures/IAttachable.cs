@@ -6,7 +6,7 @@ using System.Text;
 namespace LionFire.Structures
 {
     /// <summary>
-    /// Typical use: on IParented classes, implement OnParentChanged and invoke IsAttached = false/true when the parent is being changed.
+    /// Typical use: on IParentable classes, implement OnParentChanged and invoke IsAttached = false/true when the parent is being changed.
     /// </summary>
     public interface IAttachable
     {        

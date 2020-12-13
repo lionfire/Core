@@ -1,4 +1,5 @@
-﻿using System;
+﻿#if OLD
+using System;
 using System.Windows.Controls;
 using LionFire.Avalon;
 //using AppUpdate;
@@ -64,3 +65,4 @@ namespace LionFire.Shell
 
     }
 }
+#endif

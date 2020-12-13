@@ -6,7 +6,7 @@ using System;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace LionFire.Services
+namespace LionFire.Hosting
 {
     public static class DependencyMachineDelegateHelpers
     {

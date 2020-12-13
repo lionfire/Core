@@ -77,7 +77,7 @@ namespace LionFire.Assets
     }
 
     public abstract class ParentedTemplateParametersBase<TTemplate> : ParentedTemplateParametersBase<TTemplate, IReadHandleBase<TTemplate>>, IParentedTemplateParameters<TTemplate>
-        //, IParented
+        //, IParentable
         where TTemplate : ITemplate
     {
         protected ParentedTemplateParametersBase() { }
@@ -86,7 +86,7 @@ namespace LionFire.Assets
 
 
     public abstract class ParentedTemplateParametersBase<TTemplate, TTemplateHandle> : TemplateHandleParametersBase<TTemplate,TTemplateHandle, object>, IParentedTemplateParameters<TTemplate>
-        //, IParented
+        //, IParentable
         where TTemplate : ITemplate
             where TTemplateHandle : class, IReadHandleBase<TTemplate>
     {

@@ -52,7 +52,7 @@ namespace LionFire.Vos
         //public readonly object childrenLock = new object();
 #endif
         protected ConcurrentDictionary<string, IVob> children = new ConcurrentDictionary<string, IVob>();
-        IReadOnlyDictionary<string, IVob>  IHas<IReadOnlyDictionary<string, IVob>>.Object => children;
+        IReadOnlyDictionary<string, IVob> IHierarchyOfKeyed<IVob>.Children => children;
 
         #region (Internal) Cleanup
 

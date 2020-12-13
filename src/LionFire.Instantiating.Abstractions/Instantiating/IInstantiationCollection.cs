@@ -10,8 +10,8 @@ namespace LionFire.Instantiating
 
 //    public interface IInstantiationCollection<TTemplate> :
 //        IEnumerable<IInstantiation<TTemplate>>,
-//             //, IParented<InstantiationCollection>
-//             IParented
+//             //, IParentable<InstantiationCollection>
+//             IParentable
 //#if !AOT
 //                , INotifyCollectionChanged<IInstantiation<TTemplate>>
 //#endif
@@ -36,7 +36,7 @@ namespace LionFire.Instantiating
 
     public interface IInstantiationCollection :
         IEnumerable<IInstantiation>,
-             //, IParented<InstantiationCollection>
+             //, IParentable<InstantiationCollection>
              IParented
 #if !AOT
                 , INotifyCollectionChanged<IInstantiation>

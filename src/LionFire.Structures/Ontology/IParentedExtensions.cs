@@ -53,7 +53,7 @@ namespace LionFire
             return null;
         }
 
-        //public static T FindParent<T>(this IParented parent)  OLD
+        //public static T FindParent<T>(this IParentable parent)  OLD
         //    where T : class
         //{
         //    if (parent.Parent == null)
@@ -64,7 +64,7 @@ namespace LionFire
         //    {
         //        return (T)parent.Parent;
         //    }
-        //    IParented parentAsParented = parent.Parent as IParented;
+        //    IParentable parentAsParented = parent.Parent as IParentable;
         //    if (parentAsParented == null) return null;
         //    return parentAsParented.FindParent<T>();
         //}
@@ -74,13 +74,13 @@ namespace LionFire
 namespace LionFire.Ontology
 {
 
-    //    public interface IParented
+    //    public interface IParentable
     //    {
     //        object Parent { get; set; }
     //    }
 
     //#if !AOT
-    //    public interface IParented<ParentType> : IParented
+    //    public interface IParentable<ParentType> : IParentable
     //    {
     //        new ParentType Parent { get; set; }
     //    }

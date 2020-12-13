@@ -24,7 +24,7 @@ using Dispatcher = LionFire.Dispatching.UnityThreadDispatcherWrapper;
 #if WPF
 //using System.Windows.Documents;
 //using System.Windows.Threading;
-using TPresenter = LionFire.Shell.Wpf.WpfShellConductor;
+//using TPresenter = LionFire.Shell.Wpf.WpfShellConductor;
 #endif
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
@@ -43,19 +43,6 @@ using System.Net.Http.Headers;
 
 namespace LionFire.Shell
 {
-    //public interface IWpfShell : ILionFireShell // , IHostedService, IKeyboardShell
-    //{
-    //    Application Application { get; }
-    //}
-
-    ///// <summary>
-    /////  - IDispatcher
-    ///// </summary>
-    //public abstract class ShellBase : ILionFireShell
-    //{
-    //}
-
-
     /// <summary>
     /// Base class for WpfShell and NoesisUnityShell
     /// 
@@ -69,10 +56,11 @@ namespace LionFire.Shell
     ///  - Application
     ///  
     /// </remarks>
-    public abstract class WpfShell : 
+    public abstract class WpfShell :
         //LionFireShell, IWpfShell,
         INotifyPropertyChanged
     {
+#if TOPORT
         #region IMPORTED
 
         #region (Static) Instance
@@ -116,8 +104,6 @@ namespace LionFire.Shell
         public IHostApplicationLifetime HostApplicationLifetime { get; }
         public IDispatcher Dispatcher { get; }
 
-
-
         #region EventAggregator
 
         public IEventAggregator EventAggregator { get; }
@@ -132,8 +118,8 @@ namespace LionFire.Shell
         public ShellOptions ShellOptions => ShellOptionsMonitor.CurrentValue;
         public IOptionsMonitor<ShellOptions> ShellOptionsMonitor { get; }
 
-        public ShellStartupOptions InterfaceOptions => InterfaceOptionsMonitor.CurrentValue;
-        protected IOptionsMonitor<ShellStartupOptions> InterfaceOptionsMonitor { get; }
+        public UIStartupOptions InterfaceOptions => InterfaceOptionsMonitor.CurrentValue;
+        protected IOptionsMonitor<UIStartupOptions> InterfaceOptionsMonitor { get; }
 
         #endregion
 
@@ -164,11 +150,11 @@ namespace LionFire.Shell
 
         #region Construction and Initialization
 
-        public WpfShell(IServiceProvider serviceProvider, IEventAggregator eventAggregator, IDispatcher dispatcher, IHostApplicationLifetime hostApplicationLifetime, Application application, IOptionsMonitor<ShellStartupOptions> interfaceOptionsMonitor, IViewLocator viewLocator, IOptionsMonitor<ShellOptions> shellOptionsMonitor)
+        public WpfShell(IServiceProvider serviceProvider, IEventAggregator eventAggregator, IDispatcher dispatcher, IHostApplicationLifetime hostApplicationLifetime, Application application, IOptionsMonitor<UIStartupOptions> interfaceOptionsMonitor, IViewLocator viewLocator, IOptionsMonitor<ShellOptions> shellOptionsMonitor)
         {
             Dispatcher = dispatcher;
 
-            #region Derived
+        #region Derived
 
             Application = application;
             // Doesn't look like this can be here for all derived classes, unless they inherit from this??
@@ -177,14 +163,14 @@ namespace LionFire.Shell
 
             WpfDispatcherAdapter = new WpfDispatcherAdapter(Application);
 
-            #endregion
+        #endregion
 
             System.Windows.Media.Animation.Timeline.DesiredFrameRateProperty.OverrideMetadata( // MOVE?
                 typeof(System.Windows.Media.Animation.Timeline),
                 new FrameworkPropertyMetadata { DefaultValue = 120 }
                 );
 
-            #region Dependencies
+        #region Dependencies
 
             ServiceProvider = serviceProvider;
             EventAggregator = eventAggregator;
@@ -195,13 +181,13 @@ namespace LionFire.Shell
             //ShellConductor.Shell = this;
             this.ShellOptionsMonitor = shellOptionsMonitor;
 
-            #region Optional
+        #region Optional
 
             SplashView = ServiceProvider.GetService<ISplashView>();
 
-            #endregion
+        #endregion
 
-            #endregion
+        #endregion
 
             HostApplicationLifetime.ApplicationStarted.Register(OnApplicationStarted);
             HostApplicationLifetime.ApplicationStarted.Register(OnApplicationStopping);
@@ -209,10 +195,6 @@ namespace LionFire.Shell
             // TODO: Get Args from DI registered service somewhere?  
             // TODO: Should args be parsed into Shell Options at a higher level, in the App?
 
-
-#if DEBUG && !NOESIS
-            System.Diagnostics.PresentationTraceSources.DataBindingSource.Switch.Level = ShellOptions.DataBindingSourceLevel;
-#endif
 
             //if (instance != null) throw new AlreadyException("A LionFireShell has already been created.  Only one can exist per application.");
             //instance = this;
@@ -314,10 +296,11 @@ namespace LionFire.Shell
 
         void OnApplicationStarted()
         {
-            if (ShellOptions.AutoStart)
-            {
-                StartAsync(default).FireAndForget();
-            }
+            // OLD
+            //if (ShellOptions.AutoStart)
+            //{
+            //    StartAsync(default).FireAndForget();
+            //}
             // else: Still need to wait for hosting application to tell us to StartAsync.
         }
 
@@ -372,7 +355,7 @@ namespace LionFire.Shell
             }
 #endif
 
-            #region OLD - delete - FullScreen vs Windowed  DEADCODE - always start windowed (ShellWindow) and let that window maximize itself
+        #region OLD - delete - FullScreen vs Windowed  DEADCODE - always start windowed (ShellWindow) and let that window maximize itself
 
             //bool isFullScreen = App.IsFullScreenDefault;
 
@@ -391,7 +374,7 @@ namespace LionFire.Shell
             ////}
             //this.StartupUri = new Uri("ShellWindow.xaml", UriKind.Relative);
 
-            #endregion
+        #endregion
 
             // TODO TOPORT - REVIEW - move this blocking/modal user update out of Shell into parent App
             //if (deferredAskUserToUpdate)
@@ -427,6 +410,7 @@ namespace LionFire.Shell
 
         #endregion
 
+#endif
         #region Misc
 
         #region INotifyPropertyChanged Implementation

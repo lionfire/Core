@@ -15,6 +15,7 @@ using LionFire.Types;
 using Caliburn.Micro;
 using LionFire.MultiTyping;
 using LionFire.Persistence;
+using LionFire.UI;
 
 namespace LionFire.Applications
 {
@@ -25,7 +26,7 @@ namespace LionFire.Applications
     {
         //LionFireAppCapabilities Capabilities { get; }
 
-        ILionFireShell Shell { get; set; }
+        //ILionFireShell Shell { get; set; }
 
         IEnumerable<IReadWriteHandle> SettingsObjects { get; }
 

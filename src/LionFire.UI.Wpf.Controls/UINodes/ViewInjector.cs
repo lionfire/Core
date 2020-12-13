@@ -15,7 +15,7 @@ namespace LionFire.UI.Wpf
         }
 
 
-        public void Show(IUINode node, object viewModel)
+        public void Show(IUIObject node, object viewModel)
         {
 
         }

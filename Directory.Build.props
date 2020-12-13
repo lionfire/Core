@@ -2,10 +2,12 @@
 
   <PropertyGroup>
     <LangVersion>latest</LangVersion>
+    <BaseIntermediateOutputPath>z:\build\obj\$(MSBuildProjectName)\</BaseIntermediateOutputPath>
+    <BaseOutputPath>z:\build\bin\$(MSBuildProjectName)\</BaseOutputPath>
+
   </PropertyGroup>
   
   <PropertyGroup>
-    <Authors>Jared Thirsk</Authors>
     <Authors>Jared Thirsk</Authors>
     <Copyright>2010-2020 Jared Thirsk</Copyright>
     <Company>LionFire Games</Company>

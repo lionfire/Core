@@ -18,6 +18,11 @@ namespace LionFire.Alerting
         void Alert(Alert alert);
     }
 
+    public interface IAlerterInternal
+    {
+        void CloseAlert();
+    }
+
     public static class IAlerterExtensions
     {
         public static void Alert(this IAlerter alerter, string message, LogLevel level = LogLevel.Information, Exception ex = null, string detail = null, string title = null, AlertFlags flags = AlertFlags.None)

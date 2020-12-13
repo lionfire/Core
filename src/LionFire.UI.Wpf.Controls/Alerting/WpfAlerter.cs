@@ -3,22 +3,25 @@ using System.Windows.Controls;
 using System.Windows.Threading;
 using LionFire.Alerting;
 using LionFire.Avalon;
+using LionFire.UI.Entities;
 using Microsoft.Extensions.Logging;
+using LionFire.UI.Entities.Conventions;
+using LionFire.Collections;
 
-namespace LionFire.Shell
+namespace LionFire.UI.Entities.Wpf
 {
     public class WpfAlerter : IAlerter
     {
 
-        public IShellConductor ShellPresenter { get; }
+        public IUIRoot UIRoot { get; }
         public WpfDispatcherAdapter WpfDispatcherAdapter { get; }
 
         public Dispatcher Dispatcher => WpfDispatcherAdapter.Dispatcher;
 
-        public WpfAlerter(WpfDispatcherAdapter wpfDispatcherAdapter, IShellConductor shellPresenter)
+        public WpfAlerter(WpfDispatcherAdapter wpfDispatcherAdapter, IUIRoot uiRoot)
         {
             WpfDispatcherAdapter = wpfDispatcherAdapter;
-            ShellPresenter = shellPresenter;
+            UIRoot = uiRoot;
         }
 
         #region IsAlertOpen
@@ -42,7 +45,8 @@ namespace LionFire.Shell
         public virtual void Alert(Alert alert)
         {
             if (!Dispatcher.CheckAccess()) { Dispatcher.BeginInvoke(new Action(() => Alert(alert))); return; }
-            var layer = (Panel) ShellPresenter.MainPresenter.TopControl;
+
+            var layer = (Panel) ((IHierarchyOfKeyed<IUIKeyed>)UIRoot.MainWindow()) .QuerySubPath(UIConventions.Keys.Layers, UIConventions.Keys.TopLayer);
 
             if (layer == null)
             {

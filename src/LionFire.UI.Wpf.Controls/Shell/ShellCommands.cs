@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Input;
 using LionFire.Shell;
+using LionFire.UI;
 //using Microsoft.Practices.Prism.Commands;
 
 namespace LionFire.Avalon
@@ -34,9 +35,9 @@ namespace LionFire.Avalon
         static ShellCommands()
         {
             //Back = new DelegateCommand<object>((x) => { LionFireShell.Instance.MainPresenter.CloseTab(); });
-            Save = new RoutedUICommand("Save", "Save", typeof(TabbedWindowPresenter));
-            Back = new RoutedUICommand("Back", "Back", typeof(TabbedWindowPresenter));
-            Menu = new RoutedUICommand("Menu", "Menu", typeof(TabbedWindowPresenter));
+            Save = new RoutedUICommand("Save", "Save", typeof(WpfTabsView));
+            Back = new RoutedUICommand("Back", "Back", typeof(WpfTabsView));
+            Menu = new RoutedUICommand("Menu", "Menu", typeof(WpfTabsView));
         }
 
         //private class SaveAssetCommand : RoutedUICommand

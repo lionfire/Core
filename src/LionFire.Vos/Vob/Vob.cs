@@ -129,12 +129,12 @@ namespace LionFire.Vos
 #if AOT
 		IParented
 #else
-        , IParented<IVob>
+        , IParentable<IVob>
 #endif
         , IVob
         , IVobInternals
        , IMultiTypable
-        , IHierarchicalOnDemand<IVob> // TODO
+        , IHierarchyOfKeyedOnDemand<IVob> // TODO
     //, SReadOnlyMultiTyped // FUTURE?
     {
 

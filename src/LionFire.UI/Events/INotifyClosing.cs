@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace LionFire.Shell
+namespace LionFire.UI
 {
     //public class CancelableEventArgs<T>
     //{
