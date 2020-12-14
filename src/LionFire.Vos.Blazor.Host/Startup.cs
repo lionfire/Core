@@ -13,6 +13,9 @@ using LionFire.Services;
 using LionFire.Persistence.Filesystem;
 using LionFire.Hosting;
 using LionFire.Serialization.Json.JsonEx;
+using Blazorise;
+using Blazorise.Bootstrap;
+using Blazorise.Icons.FontAwesome;
 //using RazorComponentsPreview;
 
 namespace LionFire.Vos.Blazor
@@ -61,6 +64,15 @@ namespace LionFire.Vos.Blazor
                 .VosMount("/TimeTracker".ToVobReference(), @"C:\st\jvos\LionFire\TimeTracker".ToFileReference())
                 ;
             ;
+
+            services
+               .AddBlazorise(options =>
+               {
+                   options.ChangeTextOnKeyPress = true; // optional
+                  })
+               .AddBootstrapProviders()
+               .AddFontAwesomeIcons();
+
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -84,6 +96,10 @@ namespace LionFire.Vos.Blazor
             app.UseStaticFiles();
 
             app.UseRouting();
+
+            app.ApplicationServices
+              .UseBootstrapProviders()
+              .UseFontAwesomeIcons();
 
             app.UseEndpoints(endpoints =>
             {

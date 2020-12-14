@@ -1,0 +1,13 @@
+{
+  "version": "1.0",
+  "defaultProvider": "unpkg",
+  "libraries": [
+    {
+      "library": "bootswatch@4.5.3",
+      "destination": "wwwroot/lib/bootswatch/",
+      "files": [
+        "dist/cyborg/bootstrap.min.css"
+      ]
+    }
+  ]
+}

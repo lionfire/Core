@@ -1,8 +1,5 @@
-﻿@page "/"
-@*@page "/vos"*@
-@*@page "/vos/{path}"
-    @page "/vos/{path}/{path2}"
-    @page "/vos/{path}/{path2}/{path3}"*@
+﻿@page "/vos/{*path}"
+@page "/vos"
 
 @using LionFire.Referencing
 @using LionFire.Threading
@@ -14,10 +11,12 @@
 @using LionFire.Persistence
 @using System.Reflection
 @using LionFire.Resolves
- 
+
+<i class="fas fa-angle-double-down"></i>
+<div>@Path</div>
 @if (listings == null)
 {
-    <p><em>Loading...</em></p>
+    <p><em>Loading... @Path</em></p>
 }
 else
 {
@@ -76,6 +75,9 @@ else
     }
 }
 
+<Check TValue="bool">Check me out</Check>
+<Slider TValue="decimal" Value="25m" Max="100m" />
+
 @code {
 
     public object Value { get; set; }
@@ -85,6 +87,8 @@ else
 
     [Parameter]
     public string Root { get; set; }
+
+    [Parameter]
     public string Path { get; set; } = "/";
 
     #endregion
@@ -123,7 +127,7 @@ else
         {
             System.Diagnostics.Debug.WriteLine("Uri could not find root: " + uri);
         }
-        this.Path = Root;
+        //this.Path = Root;
         await Refresh();
         StateHasChanged();
     }
