@@ -8,7 +8,7 @@ using Microsoft.Extensions.Logging;
 using NLog.Extensions.Logging;
 using System.IO;
 
-namespace LionFire.Vos.Blazor
+namespace LionFire.Vos.Blazor.Host
 {
     public class Program
     {

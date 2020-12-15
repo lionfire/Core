@@ -1,5 +1,5 @@
 ﻿@page "/"
-@namespace LionFire.Vos.Blazor.Pages
+@namespace LionFire.Vos.Blazor.Host.Pages
 @addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
 
 <!DOCTYPE html>
@@ -7,23 +7,23 @@
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>LionFire.Vos.Blazor</title>
+    <title>Vos</title>
     <base href="~/" />
 
     @*<link rel="stylesheet" href="css/bootstrap/bootstrap.min.css" />*@
     @*<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css" integrity="sha384-9aIt2nRpC12Uk9gS9baDl411NQApFmC26EwAOH8WgZl5MYYxFfc+NcPb1dKGj7Sk" crossorigin="anonymous">*@
     <link href="~/lib/bootswatch/dist/cyborg/bootstrap.min.css" rel="stylesheet" />
-    @*<link href="~/lib/bootswatch/dist/darkly/bootstrap.min.css" rel="stylesheet" />*@
     <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.12.0/css/all.css">
 
     <link href="_content/Blazorise/blazorise.css" rel="stylesheet" />
     <link href="_content/Blazorise.Bootstrap/blazorise.bootstrap.css" rel="stylesheet" />
     <link href="LionFire.Vos.Blazor.Host.styles.css" rel="stylesheet" />
+    <link href="LionFire.Vos.Blazor.styles.css" rel="stylesheet" />
     <link href="css/site.css" rel="stylesheet" />
 </head>
 <body>
     <app>
-        <component type="typeof(App)" render-mode="ServerPrerendered" />
+        <component type="typeof(VosRouter)" render-mode="ServerPrerendered" />
     </app>
 
     <div id="blazor-error-ui">

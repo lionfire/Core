@@ -1,5 +1,5 @@
-﻿@page "/vos/{*path}"
-@page "/vos"
+﻿@page "/v/{*path}"
+@page "/v"
 
 @using LionFire.Referencing
 @using LionFire.Threading
@@ -88,8 +88,26 @@ else
     [Parameter]
     public string Root { get; set; }
 
+    #region Path
+
     [Parameter]
-    public string Path { get; set; } = "/";
+    public string Path
+    {
+        get => path;
+        set
+        {
+            if(value == null) { value = ""; }
+            if (!value.Contains(":"))
+            {
+                if(!value.StartsWith("/") && !value.StartsWith("\\")) { value = "/" + value; }
+                value = $"vos:{value}";
+            }
+            path = value;
+        }
+    }
+    private string path;
+
+    #endregion
 
     #endregion
 
@@ -116,17 +134,18 @@ else
 
     private async Task UpdateRoot()
     {
-        logger.LogInformation("OnInitializedAsync " + uri);
-        System.Diagnostics.Debug.WriteLine("Uri: " + uri);
-        if (QueryHelpers.ParseQuery(uri.Query).TryGetValue("Root", out var param))
-        {
-            System.Diagnostics.Debug.WriteLine("Root: " + param);
-            Root = param.First();
-        }
-        else
-        {
-            System.Diagnostics.Debug.WriteLine("Uri could not find root: " + uri);
-        }
+        //logger.LogInformation("OnInitializedAsync " + uri);
+        //System.Diagnostics.Debug.WriteLine("Uri: " + uri);
+        //if (QueryHelpers.ParseQuery(uri.Query).TryGetValue("Root", out var param))
+        //{
+        //    System.Diagnostics.Debug.WriteLine("Root: " + param);
+        //    Root = param.First();
+        //}
+        //else
+        //{
+        //    System.Diagnostics.Debug.WriteLine("Uri could not find root: " + uri);
+        //}
+        Root = this.Path;
         //this.Path = Root;
         await Refresh();
         StateHasChanged();

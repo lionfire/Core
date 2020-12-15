@@ -18,7 +18,7 @@ using Blazorise.Bootstrap;
 using Blazorise.Icons.FontAwesome;
 //using RazorComponentsPreview;
 
-namespace LionFire.Vos.Blazor
+namespace LionFire.Vos.Blazor.Host
 {
     public class Startup
     {
@@ -104,7 +104,7 @@ namespace LionFire.Vos.Blazor
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapBlazorHub();
-                endpoints.MapFallbackToPage("/_Host");
+                endpoints.MapFallbackToPage("/_VosHost");
             });
         }
     }
