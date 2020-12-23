@@ -4,6 +4,7 @@ using LionFire.Dependencies;
 using LionFire.ExtensionMethods;
 using LionFire.Referencing;
 using LionFire.UI.Entities;
+using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -11,6 +12,7 @@ using System.Threading.Tasks;
 
 namespace LionFire.UI.Entities
 {
+
     // OLD
     ///// <summary>
     ///// Navigate to the context
@@ -136,9 +138,8 @@ namespace LionFire.UI.Entities
 
         private IUIObject Instantiate_UIEntity(UIInstantiation instantiation)
         {
-            var entity = (IUIKeyed) Activator.CreateInstance(instantiation.Template.EntityType);
-            throw new NotImplementedException(); // NEXT
-            return entity;
+            var uiObject = (IUIObject)ActivatorUtilities.CreateInstance(ServiceProvider, instantiation.Template.EntityType);
+            return uiObject;
         }
         private IUIObject Instantiate_ViewModel(UIInstantiation instantiation)
         {
@@ -146,21 +147,26 @@ namespace LionFire.UI.Entities
         }
         public IUIObject Instantiate(UIInstantiation instantiation)
         {
+            if (instantiation.Template.EntityType != null)
+            {
+                return Instantiate_UIEntity(instantiation);
+            }
+
             var type = instantiation.Template?.ViewType;
             if (type != null)
             {
-                if(instantiation.Template.EntityType != null)
-                {
-                    return Instantiate_UIEntity(instantiation);
-                }
-                else if (Platform.IsViewType(type))
+                if (Platform.IsViewType(type))
                 {
                     return Instantiate_ViewType(instantiation);
                 }
-                else if(instantiation.Template.ViewModel != null)
+                else
                 {
-                    return Instantiate_ViewModel(instantiation);
+                    throw new ArgumentException($"ViewType {type} is not supported by IuiPlatform ({Platform.GetType().FullName}.IsViewType())");
                 }
+            }
+            if (instantiation.Template.ViewModel != null)
+            {
+                return Instantiate_ViewModel(instantiation);
             }
             throw new ArgumentException($"{nameof(instantiation)} is missing information for creation, or the information is not supported.");
         }

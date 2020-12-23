@@ -20,7 +20,11 @@ namespace LionFire.Hosting
         //        ;
         //}
 
-        private static Action<IParticipant> defaultUIEntitiesServiceConfigurer = p => p.After(DependencyConventionsForUI.CanStartShell);
+        private static Action<IParticipant> defaultUIEntitiesServiceConfigurer = 
+            p => p
+            //.After("vos:")
+            .After(DependencyConventionsForUI.CanStartShell)
+            ;
 
         /// <summary>
         /// Registers UIEntitiesService with global DependencyMachine.
@@ -37,8 +41,11 @@ namespace LionFire.Hosting
                 .AddSingleton<IUIFactory, UIFactory>()
                 .AddSingleton<IUIRoot, UIRoot>()
                 .AddSingleton<IUIFactory, UIFactory>()
-                .AddSingletonHostedServiceDependency<UIEntitiesService>(configure ?? defaultUIEntitiesServiceConfigurer)
-                ;
+                .AddSingletonHostedServiceDependency<UIEntitiesService>(c =>
+                {
+                    defaultUIEntitiesServiceConfigurer(c);
+                    configure?.Invoke(c);
+                });
         }
     }
 }

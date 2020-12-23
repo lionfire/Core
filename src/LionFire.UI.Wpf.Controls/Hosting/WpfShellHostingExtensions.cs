@@ -33,24 +33,30 @@ namespace LionFire.Hosting
         /// <param name="services"></param>
         /// <param name="application"></param>
         /// <returns></returns>
-        public static IServiceCollection AddWpfRuntime(this IServiceCollection services, Application application)
+        public static IServiceCollection AddWpfRuntime(this IServiceCollection services, Application application = null)
           => services
-              .SetWpfApplication(application)
-              .AddDispatcher(application)
+              .SetWpfApplication(application ?? Application.Current ?? new Application())
+              .AddSingleton<IUIPlatform, WpfRuntime>()
+              .AddWpfDispatcher(application)
               //.AddHostedService<WpfDiagnostics>(_ => new WpfDiagnostics { DataBindingSourceLevel = System.Diagnostics.SourceLevels.All })  // OPTIONAL
               .AddEventAggregator() // Uses IDispatcher
               ;
 
-        public static IServiceCollection SetWpfApplication(this IServiceCollection services, Application application)
+        #region (Private)
+
+        private static IServiceCollection SetWpfApplication(this IServiceCollection services, Application application)
             => services
                 .AddSingleton(application ?? throw new ArgumentNullException(nameof(application)))
+                .AddSingleton(application.Dispatcher)
                 ;
 
-        public static IServiceCollection AddDispatcher(this IServiceCollection services, Application application)
+        private static IServiceCollection AddWpfDispatcher(this IServiceCollection services, Application application)
             => services
-                .AddSingleton<WpfDispatcherAdapter>(serviceProvider => new WpfDispatcherAdapter(application))
+                //.AddSingleton<WpfDispatcherAdapter>(serviceProvider => new WpfDispatcherAdapter(application))
+                .AddSingleton<WpfDispatcherAdapter>()
                 .AddSingleton<IDispatcher, WpfDispatcherAdapter>(serviceProvider => serviceProvider.GetRequiredService<WpfDispatcherAdapter>());
 
+        #endregion
 
 
         public static IServiceCollection AddWpfControls(this IServiceCollection services)
@@ -66,7 +72,11 @@ namespace LionFire.Hosting
 
             return services
                 // REVIEW - registering both IUserLocalSettings<WindowSettings> and IUserLocalSettings<>?  Maybe just register as UserLocalSettingsProvider<WindowSettings>
-                .AddSingletonHostedServiceDependency<ILazilyResolves<WindowSettings>, UserLocalSettingsProvider<WindowSettings>>(p => p.Contributes(DependencyConventionsForUI.CanStartShell))
+                .AddSingletonHostedServiceDependency<ILazilyResolves<WindowSettings>, UserLocalSettingsProvider<WindowSettings>>(p 
+                => p
+                    .Contributes(DependencyConventionsForUI.CanStartShell)
+                    .After("vos:/") // TODO - what should this be?
+                )
 
                 //.AddSingletonHostedServiceDependency<IUserLocalSettings<WindowSettings>, UserLocalSettingsProvider<WindowSettings>>(p => p.Contributes(DependencyConventionsForUI.CanStartShell))
 

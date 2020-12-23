@@ -8,7 +8,7 @@ namespace LionFire.Services
 {
     public static class LionFireAppServicesExtensions
     {
-        public static IServiceCollection AddApplication(this IServiceCollection services)
+        public static IServiceCollection AddLionFireApp(this IServiceCollection services)
         {
             services
                 .AddSingleton<ILionFireApp, LionFireApp>()

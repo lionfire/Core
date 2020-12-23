@@ -16,7 +16,8 @@ namespace LionFire.UI.Entities
         public UIRoot(IOptionsMonitor<UIOptions> uiOptionsMonitor)
         {
             key = "";
-            PathCache = new Collections.ConcurrentDictionaryCache<string, IUIKeyed>(p => this.QuerySubPath(p));
+            Children = new ObservableDictionary<string, IUIKeyed>();
+            PathCache = new Collections.ConcurrentDictionaryCache<string, IUIKeyed>(p => Children.QuerySubPath(p));
 
             UIOptionsMonitor = uiOptionsMonitor;
         }

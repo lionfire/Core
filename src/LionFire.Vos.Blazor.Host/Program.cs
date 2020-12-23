@@ -47,7 +47,7 @@ namespace LionFire.Vos.Blazor.Host
                 })
                 .ConfigureWebHostDefaults(webBuilder =>
                 {
-                    webBuilder.UseStartup<Startup>();
+                    webBuilder.UseStartup<VosBlazorHostStartup>();
                 });
     }
 }

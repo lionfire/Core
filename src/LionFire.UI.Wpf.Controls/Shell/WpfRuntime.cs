@@ -31,6 +31,13 @@ namespace LionFire.UI
 
         public IEventAggregator EventAggregator => throw new NotImplementedException();
 
+        public WpfRuntime(Application application, WpfDispatcherAdapter wpfDispatcherAdapter)
+        {
+            Application = application;
+            WpfDispatcherAdapter = wpfDispatcherAdapter;
+        }
+
+#if AlternateCtor // Allows not providing Application, in which case it will be auto-created.
         public WpfRuntime(IServiceProvider serviceProvider)
         {
             Application = Application.Current;
@@ -42,6 +49,7 @@ namespace LionFire.UI
 
             Application.TryInitErrorReporter(serviceProvider);
         }
+#endif
 
         protected virtual Application CreateApplication() => new Application();
         public bool IsViewType(Type type) => typeof(FrameworkElement).IsAssignableFrom(type); // Potential alternatives: Visual, DependencyObject, DispatcherObject

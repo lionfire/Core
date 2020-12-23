@@ -4,41 +4,67 @@ using System.Threading.Tasks;
 using System.Windows.Threading;
 using LionFire.Threading;
 using Microsoft.Extensions.Logging;
+using LionFire.ErrorReporting;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace LionFire.UI
 {
     public class WpfDispatcherAdapter : IDispatcher
     {
 
-        public Dispatcher Dispatcher { get; }
+        #region Dependencies
 
-        public WpfDispatcherAdapter(Application application)
+        public Dispatcher Dispatcher { get; }
+        public ILogger<WpfDispatcherAdapter> Logger { get; }
+        public IErrorReporter ErrorReporter { get; }
+
+        #endregion
+
+        // TODO: register application.Dispatcher with IServiceProvider, and depend on it here?
+        public WpfDispatcherAdapter(Dispatcher dispatcher, ILogger<WpfDispatcherAdapter> logger, IServiceProvider serviceProvider)
         {
-            Dispatcher = application.Dispatcher;
+            //Dispatcher = application.Dispatcher;
+            Dispatcher = dispatcher;
+            Logger = logger;
+            ErrorReporter = serviceProvider.GetService<IErrorReporter>();
 
             Dispatcher.UnhandledException += Dispatcher_UnhandledException;
         }
 
-        private void Dispatcher_UnhandledException(object sender, System.Windows.Threading.DispatcherUnhandledExceptionEventArgs e) 
-            => throw new NotImplementedException();
+        #region Event Handling
 
+        private void Dispatcher_UnhandledException(object sender, System.Windows.Threading.DispatcherUnhandledExceptionEventArgs e)
+        {
+            UnhandledException?.Invoke(sender, new LionFire.Threading.DispatcherUnhandledExceptionEventArgs(Dispatcher, e.Exception));
+            Logger.LogCritical(e.Exception, "Unhandled exception");
+            ErrorReporter?.HandleException(e.Exception);
+        }
+
+
+#if UNUSED
         void Current_DispatcherUnhandledException(object sender, System.Windows.Threading.DispatcherUnhandledExceptionEventArgs e)
         {
             l.LogCritical("DispatcherUnhandledException: " + e.Exception.ToString());
             //LionFireApp.Current.OnApplicationDispatcherException(sender, e);
             UnhandledException?.Invoke(sender, new Threading.DispatcherUnhandledExceptionEventArgs(Dispatcher, e.Exception)); // TODO: make the parameters more like the WPF args
         }
+#endif
 
-        //public event EventHandler<System.Windows.Threading.DispatcherUnhandledExceptionEventArgs> UnhandledException;
-        public event EventHandler<Threading.DispatcherUnhandledExceptionEventArgs> UnhandledException;
+        #endregion
 
-        public WpfDispatcherAdapter(Dispatcher dispatcher)
-        {
-            this.Dispatcher = dispatcher;
-        }
+        #region Events
+
+        public event EventHandler<LionFire.Threading.DispatcherUnhandledExceptionEventArgs> UnhandledException; // LionFire event
+        
+        #endregion
+
+        #region Queries
 
         public bool IsInvokeRequired => !Dispatcher.CheckAccess();
 
+        #endregion
+
+        #region Methods
 
         public Task BeginInvoke(Action action) => Dispatcher.BeginInvoke(action).Task;
         public async Task<object> BeginInvoke(Func<object> func)
@@ -52,8 +78,10 @@ namespace LionFire.UI
 
         public object Invoke(Func<object> func) => Dispatcher.Invoke(func);
 
+        #endregion
+
 #if OLD
-        #region Dispatcher
+#region Dispatcher
 
         //public static Dispatcher DefaultDispatcher
         //{
@@ -76,9 +104,9 @@ namespace LionFire.UI
         //            set { dispatcher = value; }
         //        }
 
-        #endregion
+#endregion
 
-        #region IDispatcher
+#region IDispatcher
 
         public void Invoke(Action action) { Dispatcher.Invoke(action); }
 
@@ -112,7 +140,7 @@ namespace LionFire.UI
             //LionFireApp.Current.OnApplicationDispatcherException(sender, e); // TOPORT 
         }
 
-        #endregion
+#endregion
 
 #endif
 

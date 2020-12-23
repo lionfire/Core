@@ -9,23 +9,6 @@ using System.Threading.Tasks;
 
 namespace LionFire.UI.Entities
 {
-    public interface IWindowingRoot
-    {
-        WindowSettings WindowSettings { get; }
-    }
-
-    public interface IChildCreator<TChild> // add instantiation type?
-        where TChild : IUIObject
-    {
-        TChild Create();
-    }
-
-    public interface IChildCreator<TChild, TInstantiation>
-        where TChild : IUIObject
-    {
-        TChild Create(TInstantiation parameters);
-    }
-
     public class WindowingRoot : WindowCollection, IWindowingRoot
         //, IFactory<>
     {
@@ -35,27 +18,28 @@ namespace LionFire.UI.Entities
 
         //System.Collections.Generic.IReadOnlyDictionary<string, IPresenter> IWindowCollection.Windows => Windows;
 
-        #region Dependencies
+#region Dependencies
 
         public WindowSettings WindowSettings { get; }
 
-        #endregion
+#endregion
 
-        #region Construction
+#region Construction
 
         public WindowingRoot(ILazilyResolves<WindowSettings> windowSettings, IOptionsMonitor<UIOptions> uiOptionsMonitor, IWindowFactory windowFactory)
         {
+            Key = "(windowing)";
             WindowSettings = windowSettings.QueryNonDefaultValue(); // WindowSettings should already be resolved as a Hosted Participant that contributes CanStartShell 
             WindowFactory = windowFactory;
         }
 
-        #endregion
+#endregion
 
-        #region IRootPresenter
+#region IRootPresenter
 
         //public IPresenter MainPresenter { get; protected set; }
 
-        #endregion
+#endregion
         
     }
 
@@ -70,4 +54,19 @@ namespace LionFire.UI.Entities
         }
         //Task<IWindow> IWindowCollection.Create(string windowName, object context, IDictionary<string, object> settings) => throw new System.NotImplementedException();
     }
+
+#if FUTURE
+    public interface IChildCreator<TChild> // add instantiation type?
+        where TChild : IUIObject
+    {
+        TChild Create();
+    }
+
+    public interface IChildCreator<TChild, TInstantiation>
+        where TChild : IUIObject
+    {
+        TChild Create(TInstantiation parameters);
+    }
+#endif
+
 }

@@ -20,11 +20,11 @@ using Blazorise.Icons.FontAwesome;
 
 namespace LionFire.Vos.Blazor.Host
 {
-    public class Startup
+    public class VosBlazorHostStartup
     {
         public IWebHostEnvironment Env { get; set; }
 
-        public Startup(IConfiguration configuration, IWebHostEnvironment env)
+        public VosBlazorHostStartup(IConfiguration configuration, IWebHostEnvironment env)
         {
             Configuration = configuration;
             Env = env;

@@ -1,4 +1,5 @@
-﻿/* Copyright (c) 2007, Dr. WPF
+﻿// Modified by Jared
+/* Copyright (c) 2007, Dr. WPF
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -42,6 +43,7 @@ namespace LionFire.Collections
 {
     public class ObservableDictionary<TKey, TValue> :
         IDictionary<TKey, TValue>,
+        IReadOnlyDictionary<TKey, TValue>,
         ICollection<KeyValuePair<TKey, TValue>>,
         IEnumerable<KeyValuePair<TKey, TValue>>,
         IDictionary,
@@ -127,6 +129,8 @@ dictionary)
         {
             get { return TrueDictionary.Keys; }
         }
+         IEnumerable<TKey> IReadOnlyDictionary<TKey, TValue>.Keys => TrueDictionary.Keys;
+         IEnumerable<TValue> IReadOnlyDictionary<TKey, TValue>.Values => TrueDictionary.Values;
 
         public TValue this[TKey key]
         {

@@ -11,7 +11,7 @@ namespace LionFire.Collections
     public static class IHierarchicalExtensions
     {
         public static T QuerySubPath<T>(this IHierarchyOfKeyed<T> hierarchical, params string[] pathChunks)
-            where T : class 
+            where T : class
             => hierarchical.QuerySubPath<T>(pathChunks, 0);
 
         public static T QuerySubPath<T>(this IHierarchyOfKeyed<T> hierarchical, string[] pathChunks, int index = 0)
@@ -19,8 +19,26 @@ namespace LionFire.Collections
         {
             if (hierarchical is IHasPathCache<string, T> hpc) { return hpc.PathCache[LionPath.FromPathArray(pathChunks, absolute: false)]; }
 
-            if (!hierarchical.Children.ContainsKey(pathChunks[index])) return default;
-            var next = hierarchical.Children[pathChunks[index]];
+            return QuerySubPath(hierarchical.Children, pathChunks, index);
+        }
+
+
+        #region IReadOnlyDictionary<string,T> overloads
+
+        // REVIEW
+        public static T QuerySubPath<T>(this IReadOnlyDictionary<string, T> dict, string path)
+            where T : class
+            => dict.QuerySubPath(LionPath.ToPathArray(path));
+
+        public static T QuerySubPath<T>(this IReadOnlyDictionary<string, T> dict, params string[] pathChunks)
+            where T : class
+            => dict.QuerySubPath(pathChunks, 0);
+
+        public static T QuerySubPath<T>(this IReadOnlyDictionary<string, T> dict, string[] pathChunks, int index = 0)
+            where T : class
+        {
+            if (!dict.ContainsKey(pathChunks[index])) return default;
+            var next = dict[pathChunks[index]];
             if (index == pathChunks.Length - 1)
             {
                 return next;
@@ -29,12 +47,18 @@ namespace LionFire.Collections
             {
                 return h.QuerySubPath(pathChunks, index + 1);
             }
+            else if (next is IReadOnlyDictionary<string, T> childDict)
+            {
+                return childDict.QuerySubPath(pathChunks, index + 1);
+            }
             else
             {
                 return default;
                 //throw new ArgumentException($"Cannot traverse path beyond chunk {index} because child does not implement IHierarchical<T>");
             }
         }
+
+        #endregion
 
         public static T GetSubPath<T>(this IHierarchyOfKeyedOnDemand<T> hierarchical, string[] pathChunks, int index = 0)
             where T : class

@@ -10,8 +10,18 @@ namespace LionFire.UI.Entities
 
         public UIParameters Parameters { get; set; }
 
-        public UIInstantiation(Type viewType, string path = null, string key = null)
+        public UIInstantiation(Type viewOrEntityType, string path = null, string key = null)
         {
+            Type entityType = null;
+            Type viewType = null;
+            if (typeof(IUIObject).IsAssignableFrom(viewOrEntityType))
+            {
+                entityType = viewOrEntityType;
+            }
+            else
+            {
+                viewType = viewOrEntityType;
+            }
             Parameters = new UIParameters
             {
                 Path = path,
@@ -19,6 +29,7 @@ namespace LionFire.UI.Entities
             };
             Template = new UIReference
             {
+                EntityType = entityType,
                 ViewType = viewType,
             };
         }
