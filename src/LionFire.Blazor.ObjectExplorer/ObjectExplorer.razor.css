@@ -1,0 +1,9 @@
+﻿
+.CanOpen {
+    text-decoration: underline;
+    text-decoration-style: dotted;
+}
+
+.CanOpen:hover {
+    text-decoration-style: solid;
+}
