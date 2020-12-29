@@ -6,8 +6,13 @@ using System.Threading.Tasks;
 
 namespace LionFire.Blazor.ObjectExplorer
 {
-    public interface IObjectExplorerRoot
+    public interface IObjectExplorerRoots
     {
-        object Object { get; }
+        IReadOnlyDictionary<string, object> Roots { get; } 
     }
+
+    //public class ObjectExplorerRoots
+    //{
+    //    public Dictionary<string, object> Roots { get; } = new Dictionary<string, object>();
+    //}
 }

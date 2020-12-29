@@ -7,3 +7,7 @@
 .CanOpen:hover {
     text-decoration-style: solid;
 }
+
+table.PropertyGrid td:first-child > div {
+    margin-right: 10px;
+}

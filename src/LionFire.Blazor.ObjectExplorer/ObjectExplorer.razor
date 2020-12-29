@@ -1,7 +1,9 @@
 ﻿@page "/explorer"
+@page "/explorer/{*RootName}"
 @inject IServiceProvider serviceProvider
+@inject IObjectExplorerRoots roots
 @using System.Reflection;
-
+ 
 <MudIconButton Icon="@Icons.Material.ArrowBackIos" Style="@("opacity:" + (History.Count == 0 ? "0.2" : "1"))" @onclick=@Back></MudIconButton>
 <MudIconButton Icon="@Icons.Material.ArrowForwardIos" Style="@("opacity:" + (ForwardHistory.Count == 0 ? "0.2" : "1"))" @onclick=@Forward></MudIconButton>
 <MudIconButton Icon="@Icons.Material.Refresh" @onclick=@Refresh></MudIconButton>
@@ -33,10 +35,42 @@ else if (!CurrentObject.GetType().GetProperties().Any())
 }
 else
 {
-    <table>
+    <table class="PropertyGrid">
+        @foreach (var mi in CurrentObject.GetType().GetMethods(BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance))
+        {
+            if (!CanRun(mi)) { continue; }
+            Color color = mi.IsPublic ? Color.Default : Color.Default;
+            Variant variant = mi.IsPublic ? Variant.Outlined : Variant.Filled;
+
+            <tr>
+                <td>
+                    <div>
+                        @*<div style="margin-right: 10px;">*@
+                        @*<MudAvatar Size="Size.Small" Color="color">M</MudAvatar>*@
+                        <MudChip Size="Size.Small" Color="color" Variant="variant">M</MudChip>
+
+                    </div>
+                </td>
+                <td>
+                    @mi.Name
+                </td>
+                <td style="width: 10px;"></td>
+                <td>
+                    <MudTooltip Text="@(mi.ReturnType.GetType().Name)">
+                        @if (CanRun(mi))
+                        {
+                            <MudButton class="Method" @onclick="@(e => mi.Invoke(CurrentObject, null))">Execute</MudButton>
+                        }
+                    </MudTooltip>
+                </td>
+                <td>
+                </td>
+            </tr>
+        }
+
         @foreach (var mi in CurrentObject.GetType().GetProperties(BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic).Cast<MemberInfo>()
- .Concat(CurrentObject.GetType().GetFields(BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic))
- )
+   .Concat(CurrentObject.GetType().GetFields(BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic))
+   )
         {
             if (!CanShow(mi)) { continue; }
             var pi = mi as PropertyInfo;
@@ -88,6 +122,41 @@ else
                 </td>
             </tr>
         }
+
+        @if (CurrentObject is System.Collections.IEnumerable e)
+        {
+            int count = 0;
+            foreach (var item in e)
+            {
+                Color color = Color.Default;
+                Variant variant = Variant.Outlined;
+
+                <tr>
+                    <td>
+                        <div>
+                            @*<MudAvatar Size="Size.Small" Color="color">M</MudAvatar>*@
+                            <MudChip Size="Size.Small" Color="color" Variant="variant">-</MudChip>
+
+                        </div>
+                    </td>
+                    <td>
+                        @count
+                    </td>
+                    <td style="width: 10px;"></td>
+                    <td>
+                        <MudTooltip Text="@(item.GetType().Name)">
+                            @if (CanOpen(item))
+                            {
+                                 <a href="#" class="Method" @onclick="@(e => Push(item, count.ToString()))">@item</a>
+                            }
+                        </MudTooltip>
+                    </td>
+                    <td>
+                    </td>
+                </tr>
+                count++;
+            }
+        }
     </table>
 }
 
@@ -96,18 +165,25 @@ else
     [Parameter]
     public object CurrentObject { get; set; }
 
+    [Parameter]
+    public string RootName { get; set; }
+
     Stack<object> History = new Stack<object>();
     Stack<string> BreadCrumbPath = new Stack<string>();
     Stack<(object, string)> ForwardHistory = new Stack<(object, string)>();
 
     protected override Task OnInitializedAsync()
     {
+        if (CurrentObject == null && RootName != null && roots.Roots.ContainsKey(RootName))
+        {
+            CurrentObject = roots.Roots[RootName];
+        }
+
         if (CurrentObject == null)
         {
-            var objectExplorerRoot = (IObjectExplorerRoot)serviceProvider.GetService(typeof(IObjectExplorerRoot));
-            if (objectExplorerRoot != null)
+            if (roots.Roots.Any())
             {
-                CurrentObject = objectExplorerRoot.Object;
+                CurrentObject = roots.Roots;
             }
         }
 
@@ -177,5 +253,13 @@ else
         var old = CurrentObject;
         CurrentObject = string.Empty;
         CurrentObject = old;
+    }
+
+    bool CanRun(MethodInfo mi)
+    {
+
+        if (mi.GetCustomAttribute<System.ComponentModel.BrowsableAttribute>()?.Browsable != true) return false;
+        if (mi.GetParameters().Any()) return false;
+        return true;
     }
 }
