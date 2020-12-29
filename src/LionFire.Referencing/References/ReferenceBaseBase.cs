@@ -99,7 +99,12 @@ namespace LionFire.Referencing
         {
             this.Key = other.Key;
         }
-        protected virtual void InternalSetPath(string path) => Path = path;
+
+        /// <summary>
+        /// Set path without usual checks for already set
+        /// </summary>
+        /// <param name="path"></param>
+        protected abstract void InternalSetPath(string path);
 
         #region Children
 

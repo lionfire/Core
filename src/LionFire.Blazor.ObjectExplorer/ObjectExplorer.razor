@@ -1,4 +1,5 @@
 ﻿@page "/explorer"
+@inject IServiceProvider serviceProvider
 @using System.Reflection;
 
 <MudIconButton Icon="@Icons.Material.ArrowBackIos" Style="@("opacity:" + (History.Count == 0 ? "0.2" : "1"))" @onclick=@Back></MudIconButton>
@@ -34,13 +35,13 @@ else
 {
     <table>
         @foreach (var mi in CurrentObject.GetType().GetProperties(BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic).Cast<MemberInfo>()
-    .Concat(CurrentObject.GetType().GetFields(BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic))
-    )
+ .Concat(CurrentObject.GetType().GetFields(BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic))
+ )
         {
-            if(!CanShow(mi)) { continue; }
+            if (!CanShow(mi)) { continue; }
             var pi = mi as PropertyInfo;
             var fi = mi as FieldInfo;
-            
+
 
             object val;
             if (pi != null) val = pi.GetValue(CurrentObject);
@@ -49,16 +50,22 @@ else
             var miType = pi != null ? pi.PropertyType : fi.FieldType;
 
             bool isPublic = pi != null ? pi.GetGetMethod().IsPublic : fi.IsPublic;
-            Color color = isPublic ? Color.Default : Color.Dark;
+            Color color = isPublic ? Color.Default : Color.Default;
             Variant variant = isPublic ? Variant.Outlined : Variant.Filled;
 
             <tr>
                 <td>
                     <div style="margin-right: 10px;">
                         @if (pi != null)
-                        {<MudChip Size="Size.Small" Color="color" Variant="variant">P</MudChip> }
+                        {
+                            @*<MudAvatar Size="Size.Small" Color="color">P</MudAvatar>*@
+                            <MudChip Size="Size.Small" Color="color" Variant="variant">P</MudChip>
+                        }
                         else
-                        { <MudChip Size="Size.Small" Color="color" Variant="variant">F</MudChip>}
+                        {
+                            @*<MudAvatar Size="Size.Small" Color="color">F</MudAvatar>*@
+                            <MudChip Size="Size.Small" Color="color" Variant="variant">F</MudChip>
+                        }
                     </div>
                 </td>
                 <td>
@@ -91,25 +98,32 @@ else
 
     Stack<object> History = new Stack<object>();
     Stack<string> BreadCrumbPath = new Stack<string>();
-    Stack<KeyValuePair<object, string>> ForwardHistory2 = new Stack<KeyValuePair<object, string>>();
-    Stack<object> ForwardHistory = new Stack<object>();
-    Stack<string> ForwardBreadCrumbHistory = new Stack<string>();
+    Stack<(object, string)> ForwardHistory = new Stack<(object, string)>();
 
     protected override Task OnInitializedAsync()
     {
-        CurrentObject ??= Assembly.GetEntryAssembly().GetTypes();
-        BreadCrumbPath.Push(CurrentObject.GetType().FullName);
+        if (CurrentObject == null)
+        {
+            var objectExplorerRoot = (IObjectExplorerRoot)serviceProvider.GetService(typeof(IObjectExplorerRoot));
+            if (objectExplorerRoot != null)
+            {
+                CurrentObject = objectExplorerRoot.Object;
+            }
+        }
+
+        BreadCrumbPath.Push(CurrentObject?.GetType().FullName ?? "(null)");
         return base.OnInitializedAsync();
     }
 
     bool CanShow(MemberInfo mi)
     {
-        if(mi.Name.EndsWith("__BackingField")) { return false; }
+        if (mi.Name.EndsWith("__BackingField")) { return false; }
         var pi = mi as PropertyInfo;
         if (pi != null && (!pi.CanRead || pi.GetIndexParameters().Any() || pi.GetGetMethod() == null)) { return false; }
 
         return true;
     }
+
     bool CanOpen(object obj)
     {
         return obj != null && obj.GetType() != typeof(string) && !obj.GetType().IsPrimitive && (obj.GetType().GetProperties().Any() || obj.GetType().GetFields().Any());
@@ -117,26 +131,29 @@ else
 
     void Pop()
     {
-        BreadCrumbPath.Pop();
+        ForwardHistory.Push((CurrentObject, BreadCrumbPath.Pop()));
         CurrentObject = History.Pop();
     }
 
-    void Push(object val, string name)
+    void Push(object val, string name, bool fromForward = false)
     {
         if (val == null) return;
-        if (ForwardHistory.Any() && Object.ReferenceEquals(ForwardHistory.Peek(), val))
+        if (!fromForward && ForwardHistory.Any() && Object.ReferenceEquals(ForwardHistory.Peek().Item1, val))
         {
             Forward();
             return;
         }
 
         History.Push(CurrentObject);
-        BreadCrumbPath.Push(name);
-        ForwardHistory.Clear();
-        ForwardBreadCrumbHistory.Clear();
-        CurrentObject = val;
-    }
 
+        BreadCrumbPath.Push(name);
+        CurrentObject = val;
+
+        if (!fromForward)
+        {
+            ForwardHistory.Clear();
+        }
+    }
 
     void Back()
     {
@@ -145,17 +162,20 @@ else
             Pop();
         }
     }
+
     void Forward()
     {
         if (ForwardHistory.Count == 0) { return; }
 
-        Push(ForwardHistory.Pop(), ForwardBreadCrumbHistory.Pop());
+        var next = ForwardHistory.Pop();
+        Push(next.Item1, next.Item2, fromForward: true);
     }
+
     void Refresh()
     {
+        // UNTESTED
         var old = CurrentObject;
         CurrentObject = string.Empty;
-        StateHasChanged();
         CurrentObject = old;
     }
 }

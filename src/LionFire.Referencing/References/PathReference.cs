@@ -33,6 +33,7 @@ namespace LionFire.Referencing
             }
         }
         private string path;
+        protected override void InternalSetPath(string path) => this.path = path;
 
         #endregion
 

@@ -69,6 +69,8 @@ namespace LionFire.Referencing
             get => Uri.AbsolutePath;
             protected set => throw new Exception("Use set_Uri or set_Key instead");
         }
-        
+        protected override void InternalSetPath(string path) => throw new Exception("Use set_Uri or set_Key instead");
+
+
     }
 }
