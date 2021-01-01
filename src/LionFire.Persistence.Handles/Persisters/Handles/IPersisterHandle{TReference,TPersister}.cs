@@ -1,4 +1,5 @@
-﻿using LionFire.Referencing;
+﻿#nullable enable
+using LionFire.Referencing;
 
 namespace LionFire.Persistence.Persisters
 {
@@ -6,9 +7,6 @@ namespace LionFire.Persistence.Persisters
         where TReference : IReference
         where TPersister : IPersister<TReference>
     {
-        new TPersister Persister { get; }
+        new TPersister? Persister { get; }
     }
-
-    
-
 }

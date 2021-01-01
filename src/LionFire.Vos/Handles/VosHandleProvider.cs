@@ -5,33 +5,33 @@ using LionFire.Referencing;
 
 namespace LionFire.Vos.Handles
 {
-    public class VosHandleProvider : PersisterHandleProviderBase<VobReference>
-        , IReadHandleProvider<VobReference>
+    public class VosHandleProvider : PersisterHandleProviderBase<IVobReference>
+        , IReadHandleProvider<IVobReference>
         , IReadHandleProvider // REVIEW
-        , IReadWriteHandleProvider<VobReference>
+        , IReadWriteHandleProvider<IVobReference>
         , IReadWriteHandleProvider // REVIEW
-        , IWriteHandleProvider<VobReference>
+        , IWriteHandleProvider<IVobReference>
         , IWriteHandleProvider // REVIEW
     //, IReadHandleProvider<ProviderVobReference>
     {
 
-        public VosHandleProvider(IPersisterProvider<VobReference> persisterProvider) : base(persisterProvider)
+        public VosHandleProvider(IPersisterProvider<IVobReference> persisterProvider) : base(persisterProvider)
         {
         }
 
 
-        public override IReadHandle<T> GetReadHandle<T>(VobReference reference, T preresolvedValue = default)
+        public override IReadHandle<T> GetReadHandle<T>(IVobReference reference, T preresolvedValue = default)
             => reference.GetVob().GetReadHandle<T>(preresolvedValue);
-        public override IReadWriteHandle<T> GetReadWriteHandle<T>(VobReference reference, T preresolvedValue = default)
+        public override IReadWriteHandle<T> GetReadWriteHandle<T>(IVobReference reference, T preresolvedValue = default)
                   => reference.GetVob().GetReadWriteHandle<T>(preresolvedValue);
-        public override IWriteHandle<T> GetWriteHandle<T>(VobReference reference, T prestagedValue = default)
+        public override IWriteHandle<T> GetWriteHandle<T>(IVobReference reference, T prestagedValue = default)
            => reference.GetVob().GetWriteHandle<T>(prestagedValue);
-        //IWriteHandle<T> GetWriteHandle<T>(VobReference reference) 
+        //IWriteHandle<T> GetWriteHandle<T>(IVobReference reference) 
         //=> reference.ToVob().GetWriteHandle<T>();
 
-        IReadHandle<T> IReadHandleProvider.GetReadHandle<T>(IReference reference, T preresolvedValue) => GetReadHandle<T>((VobReference)reference, preresolvedValue);  // REVIEW
-        IReadWriteHandle<T> IReadWriteHandleProvider.GetReadWriteHandle<T>(IReference reference, T preresolvedValue) => GetReadWriteHandle<T>((VobReference)reference, preresolvedValue);  // REVIEW
-        IWriteHandle<T> IWriteHandleProvider.GetWriteHandle<T>(IReference reference, T prestagedValue) => GetWriteHandle<T>((VobReference)reference, prestagedValue); // REVIEW
+        IReadHandle<T> IReadHandleProvider.GetReadHandle<T>(IReference reference, T preresolvedValue) => GetReadHandle<T>((IVobReference)reference, preresolvedValue);  // REVIEW
+        IReadWriteHandle<T> IReadWriteHandleProvider.GetReadWriteHandle<T>(IReference reference, T preresolvedValue) => GetReadWriteHandle<T>((IVobReference)reference, preresolvedValue);  // REVIEW
+        IWriteHandle<T> IWriteHandleProvider.GetWriteHandle<T>(IReference reference, T prestagedValue) => GetWriteHandle<T>((IVobReference)reference, prestagedValue); // REVIEW
 
 
         //public IReadHandle<T> GetReadHandle<T>(ProviderVobReference reference)

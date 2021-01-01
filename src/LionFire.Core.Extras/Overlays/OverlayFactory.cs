@@ -2,10 +2,10 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-
-#if !NET35
-using Castle.DynamicProxy;
 using Microsoft.Extensions.Logging;
+
+#if OverlayProxies
+using Castle.DynamicProxy;
 #endif
 
 namespace LionFire.Overlays
@@ -41,7 +41,8 @@ namespace LionFire.Overlays
             }
 
             T proxy;
-#if !NET35
+
+#if OverlayProxies
 
             var options = new ProxyGenerationOptions(new OverlayProxyGenerator())
             {
@@ -52,7 +53,7 @@ namespace LionFire.Overlays
             proxy = generator.CreateClassProxy<T>(options, new OverlayInterceptor());
 
 #else
-			if (defaultInstance != null)
+            if (defaultInstance != null)
 			{
 				l.Warn("STUB - OverlayFactory.Create - default " + typeof(T).Name);
 				proxy = defaultInstance;

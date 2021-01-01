@@ -40,7 +40,7 @@ namespace LionFire.Persistence.Handles
         , IReferencable<TReference>
         , IReadWriteHandle // RECENTCHANGE - added, okay?
         , INotifyingHandleInternal<TValue>
-        where TReference : IReference
+        where TReference : IReference<TValue>
     {
         public new TReference Reference => Key;
         string IKeyed<string>.Key => Key?.ToString();
@@ -48,7 +48,8 @@ namespace LionFire.Persistence.Handles
         #region Construction
 
         protected ReadWriteHandle() { }
-        protected ReadWriteHandle(TReference reference) : base(reference){ }
+        protected ReadWriteHandle(TReference reference) : base(reference) { }
+        //protected ReadWriteHandle(IReference reference) : base(reference) { }
         protected ReadWriteHandle(TReference reference, TValue preresolvedValue) : base(reference, preresolvedValue) { }
 
         #endregion

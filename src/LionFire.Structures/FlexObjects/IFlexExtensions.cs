@@ -125,8 +125,8 @@ namespace LionFire.FlexObjects
 
         #region Get
 
+        /// See also: GetMany which returns an IEnumerable<T> of 0 or 1 or more (TODO)
         /// <summary>
-        /// 
         /// </summary>
         /// <typeparam name="T"></typeparam>
         /// <param name="flex"></param>
@@ -156,7 +156,7 @@ namespace LionFire.FlexObjects
         #region Set
 
         /// <summary>
-        /// 
+        /// Set the IFlex to a particular value.  Only allows one value at a time.  For multiple values, use Add instead.
         /// </summary>
         /// <typeparam name="T"></typeparam>
         /// <param name="flex"></param>
@@ -219,7 +219,9 @@ namespace LionFire.FlexObjects
         }
         //private static MethodInfo addMethod;
 
-        public static void Add<T>(this IFlex flex, T obj)
+        public static void SetType<T>(this IFlex flex, T obj) => Add(flex, obj, allowMultipleOfSameType: false); // TODO: allow replace
+
+        public static void Add<T>(this IFlex flex, T obj, bool allowMultipleOfSameType = true)
         {
             // REVIEW - are all the corner cases covered?  Can this be refactored?
 
@@ -233,11 +235,13 @@ namespace LionFire.FlexObjects
             {
                 if (flex.Value is List<T> existingList)
                 {
+                    if(!allowMultipleOfSameType) { throw new ArgumentException($"{nameof(allowMultipleOfSameType)} is false but there is already a list of type '{typeof(T).FullName}'"); }
                     // 3rd (or later) item of list
                     existingList.Add(obj);
                 }
                 else if (flex.Value is T existingItem)
                 {
+                    if (!allowMultipleOfSameType) { throw new ArgumentException($"{nameof(allowMultipleOfSameType)} is false but there is already a '{typeof(T).FullName}'"); }
                     // Convert a single existing value into a list and add the parameter
                     var list = new List<T> { existingItem, obj };
                     flex.Value = list;
@@ -246,10 +250,12 @@ namespace LionFire.FlexObjects
                 {
                     if (ftd.Types.ContainsKey(typeof(List<T>)))
                     {
+                        if (!allowMultipleOfSameType) { throw new ArgumentException($"{nameof(allowMultipleOfSameType)} is false but there is already a list of type '{typeof(T).FullName}'"); }
                         ((List<T>)ftd.Types[typeof(List<T>)]).Add(obj);
                     }
                     if (ftd.Types.ContainsKey(typeof(T)))
                     {
+                        if (!allowMultipleOfSameType) { throw new ArgumentException($"{nameof(allowMultipleOfSameType)} is false but there is already a '{typeof(T).FullName}'"); }
                         var list = new List<T> { (T)ftd.Types[typeof(T)], obj };
                         ftd.Types.TryRemove(typeof(T), out _);
                         ftd.Add(list);

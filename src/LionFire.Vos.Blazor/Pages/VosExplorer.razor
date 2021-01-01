@@ -225,7 +225,7 @@ else
             try
             {
                 var childPath = LionPath.Combine(path, listing.Name);
-                var handle = childPath.ToReference<IReference>().GetReadHandle<object>();
+                var handle = childPath.ToReference<object>().GetReadHandle<object>();
 
                 //newReadHandles.Add(handle);
                 listing.Type = (await handle.GetValue().ConfigureAwait(false))?.GetType().Name;

@@ -5,9 +5,16 @@ using System.Text;
 
 namespace LionFire.Assets
 {
-    public interface IAssetReference : ITypedReference, IPersisterReference
+    public interface IAssetReference<TValue> : IAssetReference, IReference<TValue> { }
+    public interface IAssetReference : ITypedReference
+        , IPersisterReference // Persister refers to RootVob name (typically null for default Vob root.)
     {
         // REVIEW: Is this necessary when there is Persister?
-        string Channel { get; } 
+        /// <summary>
+        /// UNTESTED
+        /// </summary>
+        string Channel { get; }
+
+        IAssetReference<T> ForType<T>();
     }
 }

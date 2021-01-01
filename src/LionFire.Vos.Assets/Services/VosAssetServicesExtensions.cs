@@ -15,24 +15,29 @@ using System.Text;
 using LionFire.Vos.Collections;
 using LionFire.Types;
 using LionFire.DependencyMachines;
+using LionFire.Services;
 
-namespace LionFire.Services
+namespace LionFire.Hosting
 {
+
     public static class VosAssetServicesExtensions
     {
-        
-
-            public static IServiceCollection AddAssets(this IServiceCollection services, VosAssetOptions options = null, VobReference contextVob = null)
+        public static IServiceCollection AddAssets(this IServiceCollection services, VosAssetOptions options = null)
         {
-            var assetsRoot = contextVob?.Path ?? "assets";
+            options ??= VosAssetOptions.Default;
+            var assetsRoot = options.AssetsRootEnvironmentVariable 
+                ?? throw new ArgumentException($"{nameof(options)}.{nameof(options.AssetsRootEnvironmentVariable)}");
+            
+
             services
                 .AddTypeNameRegistry()
 
-                .AddSingleton<VosAssetHandleProvider>() 
-                .AddSingleton<IReadHandleProvider<IAssetReference>>(sp=>sp.GetRequiredService<VosAssetHandleProvider>())
+                .VobEnvironment(options.AssetsRootEnvironmentVariable, options.AssetsRootEnvironmentVariableValue)
+
+                .AddSingleton<VosAssetHandleProvider>()
+                .AddSingleton<IReadHandleProvider<IAssetReference>>(sp => sp.GetRequiredService<VosAssetHandleProvider>())
                 .AddSingleton<IReadWriteHandleProvider<IAssetReference>>(sp => sp.GetRequiredService<VosAssetHandleProvider>())
-                .VobEnvironment("assets", assetsRoot)
-                .InitializeVob<IServiceProvider>("$assets", (vob, serviceProvider) =>
+                .InitializeVob<IServiceProvider>(options.AssetsRootEnvironmentVariableReference, (vob, serviceProvider) =>
                 {
                     vob.AddOwn<ICollectionTypeProvider>(v => new CollectionsByTypeManager(v, serviceProvider.GetRequiredService<TypeNameRegistry>()));
                 }, key: "vos:$assets<ICollectionTypeProvider>", configure: c => c.DependsOn("vos:/<VobEnvironment>/*"))
@@ -42,7 +47,6 @@ namespace LionFire.Services
 
                 .TryAddEnumerableSingleton<ICollectionTypeProvider, CollectionsByTypeManager>()
 
-                
                 .AddSingleton<VosAssetHandleProvider>()
                 .AddSingleton<IReadHandleProvider<IAssetReference>, VosAssetHandleProvider>(s => s.GetRequiredService<VosAssetHandleProvider>())
                 .AddSingleton<IReadWriteHandleProvider<IAssetReference>, VosAssetHandleProvider>(s => s.GetRequiredService<VosAssetHandleProvider>())
@@ -50,16 +54,18 @@ namespace LionFire.Services
                 .AddSingleton<VosAssetPersisterProvider>()
                 .AddSingleton<IPersisterProvider<IAssetReference>, VosAssetPersisterProvider>(s => s.GetRequiredService<VosAssetPersisterProvider>())
 
-                .AddAssetPersister(options, contextVob)
+                .AddVosAssetPersister(options)
+
+                .AddSingleton<IReferenceTranslator<IAssetReference, IVobReference>, VosAssetsReferenceTranslator>()
             ;
             return services;
         }
 
-        public static IServiceCollection AddAssetPersister(this IServiceCollection services, VosAssetOptions options = null, VobReference contextVob = null)
+        public static IServiceCollection AddVosAssetPersister(this IServiceCollection services, VosAssetOptions options = null)
         {
-            //.InitializeVob("/", v => v.AddOwn<VosAssetPersister>(), p => p.Key = $"/<VosAssetPersister>")
+            options ??= VosAssetOptions.Default;
 
-            var vob = contextVob ?? "/".ToVobReference();
+            var vob = options.PersisterLocation.ToVobReference();
             services.InitializeVob<IServiceProvider>(vob, (vob, serviceProvider) =>
             {
                 vob.AddOwn<VosAssetPersister>(v =>
@@ -67,7 +73,7 @@ namespace LionFire.Services
                     return (VosAssetPersister)ActivatorUtilities.CreateInstance(serviceProvider, typeof(VosAssetPersister), options ?? new VosAssetOptions());
                 });
                 return;
-            }, c=>c.Key = $"{vob}<{typeof(VosAssetPersister).Name}> ");
+            }, c => c.Key = $"{vob}<{typeof(VosAssetPersister).Name}> ");
             return services;
         }
     }

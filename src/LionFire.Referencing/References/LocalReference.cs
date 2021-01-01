@@ -1,7 +1,7 @@
 ﻿namespace LionFire.Referencing
 {
-    public abstract class LocalReference<ConcreteType> : LocalReferenceBase<ConcreteType>
-        where ConcreteType : ReferenceBaseBase<ConcreteType>, IReference
+    public abstract class LocalReference<ConcreteType, TValue> : LocalReferenceBase<ConcreteType, TValue>
+        where ConcreteType : ReferenceBaseBase<ConcreteType>, IReference<TValue>
     {
         public LocalReference(string path) { this.Path = path; }
 

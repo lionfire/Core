@@ -11,7 +11,7 @@ namespace LionFire.Persistence.Handles
         , INotifyPersists<TValue>
         , INotifyingHandleInternal<TValue>
         , INotifyPersistsInternal<TValue>
-        where TReference : IReference
+        where TReference : IReference<TValue>
         //where TValue : class
     {
         protected WriteHandle() { }

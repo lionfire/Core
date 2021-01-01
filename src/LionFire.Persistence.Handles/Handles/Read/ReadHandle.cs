@@ -33,7 +33,7 @@ namespace LionFire.Persistence.Handles
         INotifyPropertyChanged,
         INotifyPersistsInternal<TValue>
         //, IRetrievableImpl<T>
-        where TReference : IReference
+        where TReference : IReference<TValue>
     {
         #region Identity
 
@@ -48,12 +48,14 @@ namespace LionFire.Persistence.Handles
         /// <param name="reference">Can be null</param>
         protected ReadHandle(TReference reference) : base(reference) { }
 
+#nullable enable
         /// <param name="reference">Must not be null</param>
         ///// <param name="reference">If null, it should be set before the reference is used.</param>
         /// <param name="preresolvedValue">Starting value for Object</param>
-        protected ReadHandle(TReference reference, TValue preresolvedValue) : base(reference, preresolvedValue)
+        protected ReadHandle(TReference reference, TValue? preresolvedValue) : base(reference, preresolvedValue)
         {
         }
+#nullable disable
 
         #endregion
 

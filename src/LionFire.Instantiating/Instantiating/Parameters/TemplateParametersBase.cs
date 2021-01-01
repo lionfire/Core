@@ -6,7 +6,8 @@ using System.Collections.Generic;
 
 namespace LionFire.Assets
 {
-    public abstract class TemplateHandleParametersBase<TTemplate, TTemplateHandle, TState> : InstantiationBase<TTemplate, TTemplateHandle, TState>
+    public abstract class TemplateHandleParametersBase<TTemplate, TTemplateHandle, TState> 
+        : InstantiationBase<TTemplate, TTemplateHandle, TState>
         , ITemplateParameters<TTemplate>
         where TTemplate : ITemplate
         where TTemplateHandle : class, IReadHandleBase<TTemplate>
@@ -33,21 +34,21 @@ namespace LionFire.Assets
 
     }
 
-    public abstract class TemplateParametersBase<TTemplate, TInstance, TState> : InstantiationBase<TTemplate, IReadHandleBase<TTemplate>, TState>
-        , ITemplateParameters<TTemplate, TInstance>
-        where TTemplate : ITemplate<TInstance>
-    {
-        protected TemplateParametersBase() { }
-        protected TemplateParametersBase(IReadHandleBase<TTemplate> template) : base(template) { }
+    //public abstract class TemplateParametersBase<TTemplate, TInstance, TState> : InstantiationBase<TTemplate, IReadHandle<TTemplate>, TState>
+    //    , ITemplateParameters<TTemplate, TInstance>
+    //    where TTemplate : ITemplate<TInstance>
+    //{
+    //    protected TemplateParametersBase() { }
+    //    protected TemplateParametersBase(IReadHandleBase<TTemplate> template) : base(template) { }
 
-    }
+    //}
 
-    public abstract class TemplateParametersBase<TTemplate, TInstance> : TemplateParametersBase<TTemplate, TInstance, object>
-        where TTemplate : ITemplate<TInstance>
-    {
-        protected TemplateParametersBase() { }
-        protected TemplateParametersBase(IReadHandleBase<TTemplate> template) : base(template) { }
-    }
+    //public abstract class TemplateParametersBase<TTemplate, TInstance> : TemplateParametersBase<TTemplate, TInstance, object>
+    //    where TTemplate : ITemplate<TInstance>
+    //{
+    //    protected TemplateParametersBase() { }
+    //    protected TemplateParametersBase(IReadHandleBase<TTemplate> template) : base(template) { }
+    //}
 
     public abstract class TemplateParametersBase<TTemplate> : InstantiationBase<TTemplate>, ITemplateParameters<TTemplate>
           where TTemplate : ITemplate

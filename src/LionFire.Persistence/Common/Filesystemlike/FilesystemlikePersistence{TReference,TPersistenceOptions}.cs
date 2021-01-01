@@ -704,8 +704,8 @@ namespace LionFire.Persistence.Filesystemlike
                         break;
                 }
 
-                int retries = 8; // MOVE config, and think about whether retry mechanism belongs here or up or down a level
-                var msDelay = 500;
+                int retries = 80; // MOVE config, and think about whether retry mechanism belongs here or up or down a level
+                var msDelay = 50;
 
                 foreach (var strategyResult in strategyResults)
                 {

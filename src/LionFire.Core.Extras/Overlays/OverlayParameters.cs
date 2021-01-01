@@ -1,6 +1,4 @@
-﻿#if !NET35
-#endif
-
+﻿
 namespace LionFire.Overlays
 {
     public class OverlayParameters
@@ -37,13 +35,7 @@ namespace LionFire.Overlays
         ///// </summary>
         //public bool ThrowOnNoDefaultOrNull;
 
-        public static OverlayParameters UnlockedTopDown
-        {
-            get
-            {
-                return unlockedTopDown;
-            }
-        }
+        public static OverlayParameters UnlockedTopDown => unlockedTopDown;
 
         private static readonly OverlayParameters unlockedTopDown = new OverlayParameters()
         {
@@ -54,13 +46,7 @@ namespace LionFire.Overlays
             Precedence = OverlayPrecedence.Top,
         };
 
-        public static OverlayParameters LockedBottomUp
-        {
-            get
-            {
-                return lockedBottomUp;
-            }
-        }
+        public static OverlayParameters LockedBottomUp => lockedBottomUp;
         private static readonly OverlayParameters lockedBottomUp = new OverlayParameters()
         {
             AutoCreateDefaultObject = true,

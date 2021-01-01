@@ -4,7 +4,7 @@ using LionFire.Referencing;
 namespace LionFire.Persistence.Persisters
 {
     public abstract class PersisterReadWriteHandleBase<TReference, TValue> : ReadWriteHandleBase<TReference, TValue>, IPersisterHandle<TReference>
-        where TReference : IReference
+        where TReference : IReference<TValue>
     {
         public IPersister<TReference> Persister { get; protected set; }
 

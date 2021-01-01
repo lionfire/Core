@@ -12,10 +12,14 @@ namespace LionFire.Assets
     // REVIEW - RENAME this DLL to just LionFire.Assets?  Or move this AssetReference<T> to that DLL?
 
     [TreatAs(typeof(IAssetReference))]
-    public class AssetReference<TValue> : ReferenceBase<AssetReference<TValue>>, IAssetReference, IUrled, IKeyable
+    public class AssetReference<TValue> : ReferenceBase<AssetReference<TValue>>, IAssetReference<TValue>, IUrled, IKeyable
     //, ITypedReference<TValue, AssetReference<TValue>>
     {
-        public Type Type => typeof(TValue);
+        public IAssetReference<T> ForType<T>() =>
+            typeof(TValue) == typeof(T) ? (AssetReference<T>)(object)this // HARDCAST
+            : new AssetReference<T>(Path, Channel);
+
+        public override Type Type => typeof(TValue);
 
         #region Scheme
 

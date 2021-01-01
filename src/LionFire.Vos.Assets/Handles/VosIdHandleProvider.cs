@@ -26,13 +26,13 @@ namespace LionFire.Vos.Id.Handles
             var persister = (VosIdPersister)PersisterProvider.GetPersister((reference as IPersisterReference)?.Persister);
             if (persister == null) throw new NotFoundException($"Could not find IdedPersister for '{reference}'");
 
-            return new PersisterReadHandle<IIdReference, T, VosIdPersister>(persister, reference, preresolvedValue);
+            return new PersisterReadHandle<IIdReference, T, VosIdPersister>(persister, reference.ForType<T>(), preresolvedValue);
         }
         public IReadHandle<T> GetReadHandle<T>(IReference reference, T preresolvedValue = default)
             => reference is IIdReference iar ? GetReadHandle<T>(iar, preresolvedValue) : null;
 
         public Persistence.IReadWriteHandle<T> GetReadWriteHandle<T>(IIdReference reference, T preresolvedValue = default)
-            => new PersisterReadWriteHandle<IIdReference, T, VosIdPersister>((VosIdPersister)PersisterProvider.GetPersister((reference as IPersisterReference)?.Persister), reference, preresolvedValue);
+            => new PersisterReadWriteHandle<IIdReference, T, VosIdPersister>((VosIdPersister)PersisterProvider.GetPersister((reference as IPersisterReference)?.Persister), reference.ForType<T>(), preresolvedValue);
 
         public IReadWriteHandle<T> GetReadWriteHandle<T>(IReference reference, T preresolvedValue = default)
             => GetReadWriteHandle((IIdReference)reference, preresolvedValue);

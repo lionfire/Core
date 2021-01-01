@@ -2,9 +2,9 @@
 
 namespace LionFire.FlexObjects
 {
-    public interface IFlex : IWrapper<object>
+    public interface IFlex //: IWrapper<object>
     {
-        //object Value { get; set; }
+        object Value { get; set; } // RENAME - FlexData
     }
 
     public interface IFlexWithMeta : IFlex

@@ -26,9 +26,11 @@ namespace LionFire.Persistence.Handles
 
 
         public IReference Reference => default;
+        IReference<TValue> IReferencableAsValueType<TValue>.Reference => default;
 
 
         public PersistenceFlags Flags => PersistenceFlags.UpToDate;
+
 
         //public event Action<RH<T>, HandleEvents> HandleEvents;
         //public event Action<RH<T>, T, T> ObjectReferenceChanged;

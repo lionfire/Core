@@ -42,10 +42,7 @@ namespace LionFire.Overlays
             this.precedence = precedence;
         }
 
-        public OverlayPrecedence Precedence
-        {
-            get { return precedence; }
-        }
+        public OverlayPrecedence Precedence => precedence;
 
         public OverlaySetTarget PropertySetTarget
         {

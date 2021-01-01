@@ -18,6 +18,9 @@ namespace LionFire.Persistence.Handles
     /// <typeparam name="TValue"></typeparam>
     public class ObjectHandle<TValue> : ReadHandleBase<NamedReference<TValue>, TValue>, IReadWriteHandle<TValue>
     {
+
+        IReference<TValue> IReferencableAsValueType<TValue>.Reference => Reference;
+
         string IKeyed<string>.Key => Reference?.Key;
 
         void ThrowCannotSet() => throw new InvalidOperationException("Cannot set the value on an ObjectHandle after creation");

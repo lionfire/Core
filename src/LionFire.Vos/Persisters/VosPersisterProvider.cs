@@ -5,7 +5,7 @@ using System;
 
 namespace LionFire.Persistence.Persisters.Vos
 {
-    public class VosPersisterProvider : OptionallyNamedPersisterProvider<VobReference, VosPersister, VosPersisterOptions>
+    public class VosPersisterProvider : OptionallyNamedPersisterProvider<IVobReference, VosPersister, VosPersisterOptions>
     //, IPersisterProvider<ProviderFileReference>
     {
         public VosPersisterProvider(IServiceProvider serviceProvider, IOptionsMonitor<VosPersisterOptions> options) : base(serviceProvider, options)

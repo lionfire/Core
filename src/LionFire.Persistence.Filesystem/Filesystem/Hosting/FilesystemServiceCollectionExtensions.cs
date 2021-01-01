@@ -24,7 +24,7 @@ namespace LionFire.Services
                 .AddSingleton<IReadHandleProvider<ProviderFileReference>, FileHandleProvider>(s => s.GetRequiredService<FileHandleProvider>())
 
                 .AddSingleton<FilesystemPersisterProvider>()
-                .AddSingleton<IPersisterProvider<FileReference>, FilesystemPersisterProvider>(s => s.GetRequiredService<FilesystemPersisterProvider>())
+                .AddSingleton<IPersisterProvider<IFileReference>, FilesystemPersisterProvider>(s => s.GetRequiredService<FilesystemPersisterProvider>())
                 .AddSingleton<IPersisterProvider<ProviderFileReference>, FilesystemPersisterProvider>(s => s.GetRequiredService<FilesystemPersisterProvider>())
 
                 .AddSingleton<IWriteHandleProvider<FileReference>, FileHandleProvider>(s => s.GetRequiredService<FileHandleProvider>())

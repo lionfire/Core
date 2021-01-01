@@ -122,7 +122,7 @@ namespace LionFire.Services
 
         #endregion
 
-        private static Action<IParticipant> configureWrapper(VobReference vobReference, Action<IParticipant>? configure, VobInitializerFlags flags = VobInitializerFlags.Default, string? key = null)
+        private static Action<IParticipant> configureWrapper(IVobReference vobReference, Action<IParticipant>? configure, VobInitializerFlags flags = VobInitializerFlags.Default, string? key = null)
         {
 
             return c =>
@@ -130,7 +130,7 @@ namespace LionFire.Services
                 foreach (var env in vobReference.ExtractEnvironmentVariables())
                 {
                     //.DependsOn("vos:/<VobEnvironment>/*")
-                    c.DependsOn("vos:/ " + env);
+                    c.DependsOn("vos:/ " + env); // FIXME - I think this should be $"vos:/<VobEnvironment>/{env}"
                 }
                 string automaticKey = "";
                 if (flags.HasFlag(VobInitializerFlags.Contributes)) { c.Contributes(vobReference.ToString()); automaticKey += $"{vobReference} contributor"; }
@@ -140,7 +140,7 @@ namespace LionFire.Services
 
                     if (vobReference.ToString() != "vos:")
                     {
-                        VobReference? ancestor = vobReference.GetParent(nullIfBeyondRoot: true);
+                        IVobReference? ancestor = vobReference.GetParent(nullIfBeyondRoot: true);
                         do
                         {
                             // OPTIMIZE - Though this gets inefficient - may want to build hierarchical After/DependsOn into DependencyStateMachine
@@ -183,10 +183,17 @@ namespace LionFire.Services
                 ),
                 configureWrapper(vobReference, configure, flags));
 
+        // Overload passthrough: Converts VobReference to IVobReference.  Allows implicit string operator to be used for VobReference.
         public static IServiceCollection InitializeVob<TParameter1>(this IServiceCollection services,
                 VobReference vobReference,
                 Action<IVob, TParameter1> action,
-                Action<IParticipant>? configure = null, VobInitializerFlags flags = VobInitializerFlags.Default, string key = null)
+                Action<IParticipant>? configure = null, VobInitializerFlags flags = VobInitializerFlags.Default, string? key = null)
+                => InitializeVob<TParameter1>(services, (IVobReference)vobReference, action, configure, flags, key);
+
+        public static IServiceCollection InitializeVob<TParameter1>(this IServiceCollection services,
+                IVobReference vobReference,
+                Action<IVob, TParameter1> action,
+                Action<IParticipant>? configure = null, VobInitializerFlags flags = VobInitializerFlags.Default, string? key = null)
                 => services.AddInitializer(
                     (Func<StartableParticipant, CancellationToken, Task<object?>>)
                     (DependencyMachineDelegateHelpers.CreateInvoker<StartableParticipant>(

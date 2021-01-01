@@ -50,9 +50,7 @@ namespace LionFire.Bindings
 
         #region IMultiType support
 
-        public bool IsMultiTypeAccessor {
-            get { return isMultiTypeAccessor; }
-        }
+        public bool IsMultiTypeAccessor => isMultiTypeAccessor;
         private readonly bool isMultiTypeAccessor;
 
         public string MultiTypeTypeName {
@@ -778,16 +776,14 @@ namespace LionFire.Bindings
             {
                 var multiTyped = bindingObject as IReadOnlyMultiTyped;
                 var extendableMultiTyped = bindingObject as IMultiTyped;
-                var notifyMultiTypeChanged = bindingObject as INotifyMultiTypeChanged;
-                var sNotifyMultiTypeChanged = bindingObject as SNotifyMultiTypeChanged;
 
-                if (notifyMultiTypeChanged != null)
+                if (bindingObject is INotifyMultiTypeChanged notifyMultiTypeChanged)
                 {
                     notifyMultiTypeChanged.AddTypeHandler(MultiTypeType, MultiTypeObjectChanged);
                     isBoundToMultiTypeMethod = true;
                     isBound = true;
                 }
-                else if (sNotifyMultiTypeChanged != null)
+                else if (bindingObject is SNotifyMultiTypeChanged sNotifyMultiTypeChanged)
                 {
                     sNotifyMultiTypeChanged.AddTypeHandler(MultiTypeType, SMultiTypeObjectChanged);
                     isBoundToSMultiTypeMethod = true;
@@ -801,7 +797,7 @@ namespace LionFire.Bindings
                     }
                     if (bindingObject != null && !isBound)
                     {
-                        l.Warn("Did not bind to MultiType object due to lack of event support: " + bindingObject.GetType().Name);
+                        l.Warn($"Did not bind to MultiType object  due to lack of event support: {bindingObject.GetType().Name}.  Implement INotifyMultiTypeChanged or SNotifyMultiTypeChanged to avoid this warning.");
                     }
                 }
             }

@@ -5,10 +5,36 @@ using LionFire.Serialization;
 
 namespace LionFire.Persistence.Filesystem
 {
+    public interface IFileReference : IReference { }
+    public interface IFileReference<out TValue> : IFileReference
+    {
+    }
+
+    public class FileReference : FileReference<object>, IReferencable<FileReference>
+    {
+        public FileReference Reference => this;
+
+        public FileReference<T> ForType<T>() => new FileReference<T>(Path);
+
+        public FileReference() { }
+
+        /// <summary>
+        /// (Does not support URIs (TODO))
+        /// </summary>
+        /// <param name="path"></param>
+        public FileReference(string path) : base(path)
+        {
+        }
+
+        public static implicit operator FileReference(string path) => ToReference(path);
+        public static new FileReference ToReference(string path) => new FileReference(path);
+
+    }
 
     [LionSerializable(SerializeMethod.ByValue)]
-    public class FileReference : FileReferenceBase<FileReference>
+    public class FileReference<TValue> : FileReferenceBase<FileReference<TValue>, TValue>, IFileReference<TValue>
     {
+        
         #region Scheme
 
         public static class Constants
@@ -43,11 +69,11 @@ namespace LionFire.Persistence.Filesystem
         //    CopyFrom(reference);
         //}
 
-        public static implicit operator FileReference(string path) => ToReference(path);
+        public static implicit operator FileReference<TValue>(string path) => ToReference(path);
 
-        public static FileReference ToReference(string path) => new FileReference(path);
+        public static FileReference<TValue> ToReference(string path) => new FileReference<TValue>(path);
 
-        public static FileReference ReferenceFromKey(string path) => ToReference(path);
+        public static FileReference<TValue> ReferenceFromKey(string path) => ToReference(path);
 
         public static string ToReferenceKey(string path) => path;
 

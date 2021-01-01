@@ -15,7 +15,8 @@ namespace LionFire.Persistence.Handles
     /// <seealso cref="ReadHandle{TValue}"/>
     public abstract class ReadHandleBase<TReference, TValue> : Resolves<TReference, TValue>, IReadHandleBase<TValue>
         , IReferencable<IReference>
-        where TReference : IReference
+        , IReferencableAsValueType<TValue>
+        where TReference : IReference<TValue>
         //, IReadHandleInvariant<TValue>
     {
         public Type Type => typeof(TValue);
@@ -25,6 +26,7 @@ namespace LionFire.Persistence.Handles
         //protected virtual bool IsAllowedReferenceType(Type type) => true;
 
         IReference IReferencable<IReference>.Reference => Reference;
+        IReference<TValue> IReferencableAsValueType<TValue>.Reference => Reference;
 
         IReference IReferencable.Reference => Reference;
 

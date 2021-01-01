@@ -29,7 +29,7 @@ namespace LionFire.Vos
             => (IReadHandle<T>)SharedReadHandles.GetOrAdd(typeof(T), t => CreateReadHandle<T>(preresolvedValue));
 
         public IReadHandle<T> CreateReadHandle<T>(T preresolvedValue = default)
-            => new PersisterReadHandle<VobReference, T, VosPersister>(this.GetRequiredService<VosPersister>(), VobReference, preresolvedValue);
+            => new PersisterReadHandle<IVobReference, T, VosPersister>(this.GetRequiredService<VosPersister>(), VobReference.ForType<T>(), preresolvedValue);
 
         #endregion
 
@@ -45,7 +45,7 @@ namespace LionFire.Vos
             => (IReadWriteHandle<TValue>)SharedReadWriteHandles.GetOrAdd(typeof(TValue), t => CreateReadWriteHandle<TValue>(preresolvedValue));
 
         public IReadWriteHandle<TValue> CreateReadWriteHandle<TValue>(TValue preresolvedValue = default)
-            => new PersisterReadWriteHandle<IVobReference, TValue, VosPersister>(this.GetService<VosPersister>(), GetReference<TValue>(), preresolvedValue);
+            => new PersisterReadWriteHandle<IVobReference, TValue, VosPersister>(this.GetService<VosPersister>(), GetReference<TValue>().ForType<TValue>(), preresolvedValue);
 
         #endregion
 
@@ -59,7 +59,7 @@ namespace LionFire.Vos
         
         //=> (IWriteHandle<T>)WriteHandles.GetOrAdd(typeof(T), t => new PersisterWriteHandle<VobReference, T, VosPersister>(this.GetService<VosPersister>(), VobReference));
         public IWriteHandle<T> CreateWriteHandle<T>(T prestagedValue = default)
-            => new PersisterWriteHandle<VobReference, T, VosPersister>(this.GetService<VosPersister>(), VobReference, prestagedValue);
+            => new PersisterWriteHandle<IVobReference, T, VosPersister>(this.GetService<VosPersister>(), VobReference.ForType<T>(), prestagedValue);
 
         #endregion
 

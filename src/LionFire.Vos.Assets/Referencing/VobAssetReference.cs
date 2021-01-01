@@ -1,11 +1,27 @@
-﻿using LionFire.Referencing;
+﻿using LionFire.Assets;
+using LionFire.Referencing;
 using System.Collections.Generic;
 
 namespace LionFire.Vos.Assets
 {
 
-    public class VobAssetReference<TValue> : VobReferenceBase<TValue, VobAssetReference<TValue>>, IVobAssetReference
+    public class VobAssetReference<TValue> : VobReferenceBase<TValue, VobAssetReference<TValue>>, IVobAssetReference<TValue>
     {
+        public override IVobReference<T> ForType<T>() =>
+            typeof(T) == typeof(TValue) ? (IVobReference<T>)this
+            : new VobAssetReference<T>
+            {
+                Path = this.Path,
+                Channel = this.Channel
+            };
+        IAssetReference<T> IAssetReference.ForType<T>() =>
+            typeof(T) == typeof(TValue) ? (IAssetReference<T>)this
+            : new VobAssetReference<T>
+            {
+                Path = this.Path,
+                Channel = this.Channel
+            };
+
         #region Scheme
 
         public new const string UriSchemeDefault = "asset";

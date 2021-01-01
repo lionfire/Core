@@ -6,6 +6,7 @@ using System.Collections.Concurrent;
 using LionFire.Collections;
 using LionFire.Structures;
 using Microsoft.Extensions.Logging;
+using LionFire.Dependencies;
 
 namespace LionFire
 {
@@ -55,19 +56,12 @@ namespace LionFire
             }
         }
 
-        public Type TryResolve<InterfaceType>()
-        {
-            return (Type)TryResolve(typeof(InterfaceType));
-        }
+        public Type TryResolve<InterfaceType>() => TryResolve(typeof(InterfaceType));
+
         public Type TryResolve(Type interfaceType)
         {
             var result = interfaceToConcreteType.TryGetValue(interfaceType);
-
-            if (result == null)
-            {
-                l.Warn("Failed to resolve " + interfaceType.FullName);
-            }
-
+            if (result == null) { l.Warn("Failed to resolve " + interfaceType.FullName);}
             return result;
         }
 
@@ -80,16 +74,15 @@ namespace LionFire
             if (interfaceType == null) throw new ArgumentNullException();
 
             Type concreteType = TryResolve(interfaceType);
-            if (concreteType == null) throw new ArgumentException("No type registered for Interface: " + interfaceType.FullName);
-            return Activator.CreateInstance(concreteType);
-
+            return concreteType == null
+                ? throw new ArgumentException("No type registered for Interface: " + interfaceType.FullName)
+                : Activator.CreateInstance(concreteType);
         }
 
         #region Misc
 
-        private static ILogger l = Log.Get();
+        private static readonly ILogger l = Log.Get();
 
         #endregion
     }
-
 }

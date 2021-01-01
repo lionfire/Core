@@ -33,12 +33,14 @@ namespace LionFire.Persistence.Handles
         , IReferencable<TReference>
         , INotifyWrappedValueChanged
         , INotifyWrappedValueReplaced
-        where TReference : IReference
+        , IReferencableAsValueType<TValue>
+        where TReference : IReference<TValue>
     {
 
         public Type Type => typeof(TValue);
         public IReference Reference => Key;
         TReference IReferencable<TReference>.Reference => Key;
+        IReference<TValue> IReferencableAsValueType<TValue>.Reference => Key;
 
         #region Construction
 
@@ -46,6 +48,9 @@ namespace LionFire.Persistence.Handles
         protected WriteHandleBase(TReference reference) : base(reference)
         {
         }
+        //protected WriteHandleBase(IReference reference) : base(reference)
+        //{
+        //}
         protected WriteHandleBase(TReference reference, TValue prestagedValue) : base(reference)
         {
             SetValueFromConstructor(prestagedValue);

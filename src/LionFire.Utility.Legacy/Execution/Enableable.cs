@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.ComponentModel;
+using System.Diagnostics;
 
 namespace LionFire.Structures
 {
@@ -68,7 +69,7 @@ namespace LionFire.Structures
         [Ignore]
         public bool Enabled
         {
-            get { return enabled; }
+            get => enabled;
             set
             {
                 if (enabled == value) return;
@@ -78,11 +79,10 @@ namespace LionFire.Structures
                     UpdateCanEnable(true);
                     if (!CanEnable) throw new LionFireException("CanEnable is false: " + CannotEnableMessage);
                 }
-
                 _SetEnabled(value);
-
             }
-        } protected bool enabled = false;
+        }
+        protected bool enabled = false;
 
         private void _SetEnabled(bool value)
         {
@@ -99,34 +99,24 @@ namespace LionFire.Structures
             {
                 OnDisabled();
             }
-            var ev2 = EnabledChanged;
-            if (ev2 != null) ev2(this, enabled);
+            EnabledChanged?.Invoke(this, enabled);
         }
 
         #endregion
 
         protected virtual void OnEnabled()
         {
-
+            Debug.WriteLine($"{this}: OnEnabled() - TEMP");
         }
 
         protected virtual void OnDisabled()
         {
         }
 
-        public bool CanEnable
-        {
-            get
-            {
-                return canEnable;
-            }
-        }
-        public bool canEnable { get { return !CannotEnableReasons.ToArray().Any(); } }
+        public bool CanEnable => canEnable;
+        public bool canEnable => !CannotEnableReasons.ToArray().Any();
 
-        public virtual bool DeferEnable
-        {
-            get { return false; }
-        }
+        public virtual bool DeferEnable => false;
 
         public IEnumerable<RuleError> CannotEnableReasons
         {

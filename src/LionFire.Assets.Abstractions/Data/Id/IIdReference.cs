@@ -5,11 +5,12 @@ using System.Text;
 
 namespace LionFire.Data.Id
 {
+    public interface IIdReference<TValue> : IReference<TValue>, IIdReference
+    {
+    }
     public interface IIdReference : ITypedReference
     {
+        IIdReference<TValue> ForType<TValue>();
     }
 
-    public interface IIdReference<TValue> : ITypedReference, IReference<TValue>
-    {
-    }
 }

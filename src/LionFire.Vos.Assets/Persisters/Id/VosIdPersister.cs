@@ -16,7 +16,7 @@ namespace LionFire.Vos.Id.Persisters
         #region Dependencies
 
         VosIdPersisterOptions Options { get; }
-        IPersisterProvider<VobReference> VosPersisterProvider { get; }
+        IPersisterProvider<IVobReference> VosPersisterProvider { get; }
 
         #endregion
 
@@ -28,7 +28,7 @@ namespace LionFire.Vos.Id.Persisters
 
         #region Construction
 
-        public VosIdPersister(VosIdPersisterOptions options, IPersisterProvider<VobReference> persisterProvider, SerializationOptions serializationOptions) : base(options?.SerializationOptions ?? serializationOptions)
+        public VosIdPersister(VosIdPersisterOptions options, IPersisterProvider<IVobReference> persisterProvider, SerializationOptions serializationOptions) : base(options?.SerializationOptions ?? serializationOptions)
         {
             VosPersisterProvider = persisterProvider;
             Options = options;

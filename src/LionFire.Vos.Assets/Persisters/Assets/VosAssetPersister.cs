@@ -8,45 +8,74 @@ using System.Threading.Tasks;
 using LionFire.Persistence.Persisters.Vos;
 using LionFire.Assets;
 using LionFire.Serialization;
+using System.Diagnostics;
 
 namespace LionFire.Vos.Assets.Persisters
 {
+    /// <summary>
+    /// Options for composing IServiceCollection via AddAssets()
+    /// </summary>
     public class VosAssetOptions : PersistenceOptions
     {
+        #region (Static) Defaults
+
+        public static VosAssetOptions Default => new VosAssetOptions();
+
+        // Default: $assets points to /assets
+
+        public static readonly string DefaultAssetsRootEnvironmentVariable = "assets"; // $assets
+        public static readonly IVobReference DefaultAssetsRootEnvironmentVariableValue = new VobReference("/assets");
+        public static readonly string DefaultPersisterLocation = "/";
+
+        #endregion
+
+        //public VosAssetOptions()
+        //{
+        //    Debug.WriteLine($"VAO: ${AssetsRootEnvironmentVariable} = {AssetsRootEnvironmentVariableValue}");
+        //}
+
         /// <summary>
         /// Location of default AssetRoot used to resolve AssetReferences when the Persister property is null.
-        /// Defaults to "$assets" if unset.
         /// </summary>
-        public IVobReference DefaultAssetRoot { get; set; } = DefaultAssetRootDefault;
-        //public IVobReference ContextVob { get; set; }
+        public string AssetsRootEnvironmentVariable { get; set; } = DefaultAssetsRootEnvironmentVariable;
 
-        public static readonly IVobReference DefaultAssetRootDefault = new VobReference("$assets");
+        public IVobReference AssetsRootEnvironmentVariableReference => new VobReference($"${AssetsRootEnvironmentVariable}");
 
+        public IVobReference AssetsRootEnvironmentVariableValue { get; set; } = DefaultAssetsRootEnvironmentVariableValue;
+
+        /// <summary>
+        /// Should typically be a root.
+        /// </summary>
+        public string PersisterLocation { get; set; } = DefaultPersisterLocation;
     }
 
-    public class VosAssetPersister : PassthroughPersister<IAssetReference, VosAssetOptions, IVobReference, VosPersister>, IPersister<IAssetReference>
+    public class VosAssetPersisterOptions : PersistenceOptions
+    {
+        //public bool UseAssetWriteContext { get; set; } = true;
+    }
+
+    // Default assetChannel's root: $assets
+    public class VosAssetPersister : PassthroughPersister<IAssetReference, VosAssetPersisterOptions, IVobReference, VosPersister>, IPersister<IAssetReference>
     {
         #region Dependencies
 
         VosAssetOptions Options { get; }
-        IPersisterProvider<VobReference> VosPersisterProvider { get; }
+        IPersisterProvider<IVobReference> VosPersisterProvider { get; }
 
         #endregion
 
         #region Cache
 
-        public IVobReference DefaultAssetRoot { get; }
+        public IVobReference DefaultAssetRoot => Options.AssetsRootEnvironmentVariableReference;
         
         #endregion
 
         #region Construction
 
-
-        public VosAssetPersister(VosAssetOptions options, IPersisterProvider<VobReference> persisterProvider, SerializationOptions serializationOptions) : base(options?.SerializationOptions ?? serializationOptions)
+        public VosAssetPersister(VosAssetOptions options, IPersisterProvider<IVobReference> persisterProvider, SerializationOptions serializationOptions) : base(options?.SerializationOptions ?? serializationOptions)
         {
             VosPersisterProvider = persisterProvider;
-            Options = options;
-            DefaultAssetRoot = Options.DefaultAssetRoot;
+            Options = options ?? VosAssetOptions.Default;
             //UnderlyingPersister = (VosPersister)persisterProvider.GetPersister(AssetRoot.Persister);
 
             //var contextVob = options?.ContextVob?.ToVob() ?? "".ToVob();
@@ -66,6 +95,11 @@ namespace LionFire.Vos.Assets.Persisters
         public override IVobReference TranslateReferenceForRead(IAssetReference reference)
             => GetAssetRootForAssetChannel(reference.Channel).GetVob()[GetTypeKey(reference.Type)][reference.Path].Reference;
 
+        /// <summary>
+        /// If reference.Channel is null, will try AssetWriteContext.Current?.WriteLocation (REVIEW)
+        /// </summary>
+        /// <param name="reference"></param>
+        /// <returns></returns>
         public override IVobReference TranslateReferenceForWrite(IAssetReference reference)
         {
             IVobReference result = null;

@@ -16,7 +16,7 @@ namespace LionFire.Persistence.Handles
     /// <typeparam name="TValue"></typeparam>
     /// <typeparam name="TReference"></typeparam>
     public class ReadWriteHandlePassthrough<TValue, TReference> : IReadWriteHandle<TValue>, IReferencable<TReference>, IHasReadWriteHandle<TValue>
-        where TReference : IReference
+        where TReference : IReference<TValue>
     {
         #region Construction
 
@@ -31,6 +31,7 @@ namespace LionFire.Persistence.Handles
 
 
         public TReference Reference { get; set; }
+        IReference<TValue> IReferencableAsValueType<TValue>.Reference => Reference;
 
         public IReadWriteHandle<TValue> ReadWriteHandle => readWriteHandle ??= Reference?.GetReadWriteHandle<TValue>();
         protected IReadWriteHandle<TValue> readWriteHandle;

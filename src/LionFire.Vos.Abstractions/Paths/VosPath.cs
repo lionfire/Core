@@ -23,7 +23,7 @@ namespace LionFire.Vos
 
         #endregion        
 
-        public static string GetRoot(string rootName = null)
+        public static string GetPathForRoot(string rootName = null)
             => "/" + (string.IsNullOrEmpty(rootName) || rootName == "/" ? "" : "../" + rootName);
         public const string Root = "/";
 
@@ -40,10 +40,7 @@ namespace LionFire.Vos
 
         #region Children
 
-        public static bool IsHidden(string childName)
-        {
-            return childName.StartsWith(PackagePrefix);
-        }
+        public static bool IsHidden(string childName) => childName.StartsWith(PackagePrefix);
 
         #endregion
 

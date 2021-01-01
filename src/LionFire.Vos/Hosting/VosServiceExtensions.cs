@@ -72,13 +72,13 @@ namespace LionFire.Services
                     #region Persistence
                         .If(persistence, s =>
                         {
-                            s.AddSingleton<IPersisterProvider<VobReference>, VosPersisterProvider>()
+                            s.AddSingleton<IPersisterProvider<IVobReference>, VosPersisterProvider>()
                             .Configure<VosPersisterOptions>(vpo => { })
                             .AddSingleton(s => s.GetRequiredService<IOptionsMonitor<VosPersisterOptions>>().CurrentValue) // REVIEW - force usage via IOptionsMonitor?
 
-                            .AddSingleton<IReadHandleProvider<VobReference>, VosHandleProvider>()
-                            .AddSingleton<IReadWriteHandleProvider<VobReference>, VosHandleProvider>()
-                            .AddSingleton<IWriteHandleProvider<VobReference>, VosHandleProvider>()
+                            .AddSingleton<IReadHandleProvider<IVobReference>, VosHandleProvider>()
+                            .AddSingleton<IReadWriteHandleProvider<IVobReference>, VosHandleProvider>()
+                            .AddSingleton<IWriteHandleProvider<IVobReference>, VosHandleProvider>()
                             ;
                         })
                     #endregion

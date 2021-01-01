@@ -18,7 +18,7 @@ namespace LionFire.Referencing
     //    #endregion
     //}
 
-    public class NamedObjectReference : LocalReferenceBase<NamedObjectReference>
+    public class NamedObjectReference : LocalReferenceBase<NamedObjectReference, object>
     {
         public override IEnumerable<string> AllowedSchemes => UriSchemes;
         public static string[] UriSchemes => new string[] { "object" };

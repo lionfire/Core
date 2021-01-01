@@ -10,5 +10,4 @@ namespace LionFire.Referencing
     {
         new TReference Reference { get; }
     }
-    
 }

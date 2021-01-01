@@ -9,8 +9,14 @@ using System.Text;
 
 namespace LionFire.Vos
 {
+    public interface IVobReference<out TValue> : IVobReference, IReference<TValue>
+    {
+
+    }
     public interface IVobReference : IReference, ITypedReference, IReferencable<IVobReference>, IPersisterReference
     {
+        IVobReference<T> ForType<T>();
+
         IEnumerable<string> AllowedSchemes { get; }
 
         #region REVIEW - maybe eliminate these, or eliminate Package and replace Location with MountName
@@ -26,6 +32,11 @@ namespace LionFire.Vos
         //bool Equals(object obj);
         //int GetHashCode();
         ImmutableList<KeyValuePair<string, string>> Filters { get; set; }
+
+        IVobReference this[string childPath]
+        {
+            get;
+        }
     }
 
     public static class IVobReferenceExtensions

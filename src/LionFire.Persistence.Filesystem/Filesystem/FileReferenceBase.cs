@@ -10,10 +10,10 @@ using LionFire.Structures;
 namespace LionFire.Persistence.Filesystem
 {
     [LionSerializable(SerializeMethod.ByValue)]
-    public abstract class FileReferenceBase<ConcreteType> : LocalReferenceBase<ConcreteType>
+    public abstract class FileReferenceBase<ConcreteType, TValue> : LocalReferenceBase<ConcreteType, TValue>
         //, IHas<IOBase>, IHas<IOBus>
         //, IOBaseReference
-        where ConcreteType : FileReferenceBase<ConcreteType>
+        where ConcreteType : FileReferenceBase<ConcreteType, TValue>
     {
         public abstract string UriPrefixDefault { get; }
         public abstract string UriSchemeColon { get; }

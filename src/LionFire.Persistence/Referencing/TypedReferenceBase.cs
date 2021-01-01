@@ -7,24 +7,24 @@ using System.Threading.Tasks;
 
 namespace LionFire.Referencing
 {
+    /// <summary>
+    /// Can set Type as a member Property via SetType
+    /// </summary>
+    /// <typeparam name="TConcrete"></typeparam>
     public abstract class TypedReferenceBase<TConcrete> : ReferenceBase<TConcrete>, ITypedReference
         where TConcrete : ReferenceBase<TConcrete>
     {
-
         #region Type
 
-        [SetOnce]
-        public Type Type
-        {
-            get => type;
-            set
-            {
-                if (type == value) return;
-                if (type != default) throw new AlreadySetException();
-                type = value;
-            }
-        }
+        public override Type Type => type;
         private Type type;
+
+        public void SetType(Type type)
+        {
+            if (this.type == type) return;
+            if (type != default) throw new AlreadySetException();
+            this.type = type;
+        }
 
         #endregion
     }
@@ -32,7 +32,7 @@ namespace LionFire.Referencing
     public abstract class TypedReferenceBase<TConcrete, TReferenced> : ReferenceBase<TConcrete>, ITypedReference
         where TConcrete : ReferenceBase<TConcrete>
     {
-        public Type Type => typeof(TReferenced);
+        public override Type Type => typeof(TReferenced);
     }
 
 #if TOPORT
@@ -46,17 +46,17 @@ namespace LionFire.Referencing
 #endif
 
     // TODO: Document, maybe rename generic type names
-    public abstract class ResolvingTypedReferenceBase<TConcrete, TReferenced> : ReferenceBase<TConcrete>, ITypedReference, IResolvable
+    public abstract class ResolvingTypedReferenceBase<TConcrete, TValue> : ReferenceBase<TConcrete>, ITypedReference, IResolvable
         where TConcrete : ReferenceBase<TConcrete>
     {
-        public Type Type => typeof(TReferenced);
+        public override Type Type => typeof(TValue);
 
         [Blocking(Alternative = nameof(ResolveReference))]
         public IReference ResolvedReference
         {
             get
             {
-                if(resolvedReference == null)
+                if (resolvedReference == null)
                 {
                     ResolveReference().Wait();
                 }

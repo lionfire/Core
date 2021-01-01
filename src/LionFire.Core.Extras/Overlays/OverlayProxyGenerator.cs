@@ -1,12 +1,12 @@
 ﻿using System;
-#if !NET35
+using System.Reflection;
+#if OverlayProxies
 using Castle.DynamicProxy;
 #endif
-using System.Reflection;
 
 namespace LionFire.Overlays
 {
-#if !NET35
+#if OverlayProxies
     internal class OverlayProxyGenerator : IProxyGenerationHook
     {
         public void MethodsInspected()
@@ -37,6 +37,9 @@ namespace LionFire.Overlays
             }
             return false;
         }
+
+        public override bool Equals(object obj) => Object.ReferenceEquals(this, obj);
+        public override int GetHashCode() => base.GetHashCode();
     }
 
 #endif

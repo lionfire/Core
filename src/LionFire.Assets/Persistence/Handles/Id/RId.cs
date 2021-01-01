@@ -8,6 +8,9 @@ using System.Text;
 
 namespace LionFire.Persistence
 {
+    public interface IIdReadHandle<TValue> : IIdReadHandle, IReferencable<IIdReference<TValue>>
+    {
+    }
     public interface IIdReadHandle : IReferencable<IIdReference>, IReadHandle
     {
     }
@@ -17,7 +20,7 @@ namespace LionFire.Persistence
         // PORTINGGUIDE - Type > TreatAsType
     } // TEMP TOPORT
 
-    public class RId<TValue> : ReadHandlePassthrough<TValue, IIdReference>, IIdReadHandle
+    public class RId<TValue> : ReadHandlePassthrough<TValue, IIdReference<TValue>>, IIdReadHandle<TValue>
         where TValue : IIded<string>
     {
 
@@ -36,6 +39,8 @@ namespace LionFire.Persistence
         
         public string IdPath => Reference.Path;
         public new IdReference<TValue> Reference { get => (IdReference<TValue>)base.Reference; set => base.Reference = value; }
+
+        IIdReference IReferencable<IIdReference>.Reference => Reference;
 
         public static RId<TValue> Get(string assetPath)
             => assetPath;

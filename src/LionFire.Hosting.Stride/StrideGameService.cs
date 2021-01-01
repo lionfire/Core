@@ -14,6 +14,23 @@ namespace LionFire.Hosting
         public Game Game => game;
         private Game game;
 
+
+        #region DataContext
+
+        public object DataContext
+        {
+            get => dataContext;
+            set
+            {
+                if (dataContext == value) return;
+                if (dataContext != null && value != null) throw new AlreadySetException("Must first set back to null");
+                dataContext = value;
+            }
+        }
+        private object dataContext;
+
+        #endregion
+
         public IHostApplicationLifetime HostApplicationLifetime { get; }
         public ILogger<StrideGameService> Logger { get; }
 

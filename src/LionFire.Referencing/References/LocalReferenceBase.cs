@@ -5,8 +5,8 @@ using System;
 namespace LionFire.Referencing
 {
     
-    public abstract class LocalReferenceBase<ConcreteType> : ReferenceBaseBase<ConcreteType>, IReference
-        where ConcreteType : ReferenceBaseBase<ConcreteType>, IReference
+    public abstract class LocalReferenceBase<ConcreteType, TValue> : ReferenceBaseBase<ConcreteType>, IReference<TValue>
+        where ConcreteType : ReferenceBaseBase<ConcreteType>, IReference<TValue>
     {
         public bool IsCompatibleWith(string stringUrl) => AllowedSchemes.Contains(stringUrl.GetUriScheme());
         public abstract IEnumerable<string> AllowedSchemes { get; }

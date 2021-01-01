@@ -21,11 +21,11 @@ namespace LionFire.Persistence.Filesystem
     // REVIEW - is there a way to do this?
     //public static class PersisterBaseExtensions
     //{
-    //    public static Task<IRetrieveResult<TValue>> Retrieve<TValue, TReference>(this IPersister<FileReference> persister, FileReference reference)
+    //    public static Task<IRetrieveResult<TValue>> Retrieve<TValue, TReference>(this IPersister<IFileReference> persister, FileReference reference)
     //        => persister.Retrieve<TValue>((TReference)reference.Path);
     //}
 
-    public class FilesystemPersister : FilesystemlikePersistence<FileReference, FilesystemPersisterOptions>, IPersister<FileReference>
+    public class FilesystemPersister : FilesystemlikePersistence<IFileReference, FilesystemPersisterOptions>, IPersister<IFileReference>
     {
 
         #region Static
@@ -45,7 +45,7 @@ namespace LionFire.Persistence.Filesystem
 
         #endregion
 
-        public override FileReference PathToReference(string fsPath) => fsPath;
+        public override IFileReference PathToReference(string fsPath) =>  (FileReference<object>)fsPath;
 
         //protected override PersistenceContext DeserializingContext => deserializingContext;
         //private readonly PersistenceContext deserializingContext = new PersistenceContext
@@ -230,7 +230,7 @@ namespace LionFire.Persistence.Filesystem
     // REVIEW - is there a way to do this?
     //public static class PersisterBaseExtensions
     //{
-    //    public static Task<IRetrieveResult<TValue>> Retrieve<TValue, TReference>(this IPersister<FileReference> persister, FileReference reference)
+    //    public static Task<IRetrieveResult<TValue>> Retrieve<TValue, TReference>(this IPersister<IFileReference> persister, FileReference reference)
     //        => persister.Retrieve<TValue>((TReference)reference.Path);
     //}
 }

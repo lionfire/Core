@@ -1,9 +1,6 @@
-﻿
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-#if !NET35
-#endif
 using System.Reflection;
 using System.Diagnostics.Contracts;
 

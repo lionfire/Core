@@ -627,7 +627,7 @@ namespace LionFire.Vos
         /// </summary>
         /// <typeparam name="T"></typeparam>
         /// <returns></returns>
-        public IVobReference GetReference<T>() => new VobReference(typeof(T), Path) { Persister = string.IsNullOrEmpty(Root.RootName) ? null : Root.RootName };
+        public IVobReference<T> GetReference<T>() => new VobReference<T>(Path) { Persister = string.IsNullOrEmpty(Root.RootName) ? null : Root.RootName };
         // OPTIMIZE: new VosRelativeReference(this)
         // TODO: Use VobReference<T>?  Providers need to be wired up to DI
 

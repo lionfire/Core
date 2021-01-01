@@ -24,6 +24,7 @@ namespace LionFire.Persistence
     /// </summary>
     /// <typeparam name="T"></typeparam>
     public interface IReadHandle<out T> : IReadHandleBase<T>, IReadHandle, ILazilyResolves<T>
+        , IReferencableAsValueType<T>
     // , INotifyChanged<T>
     //, INotifyingWrapper<T>
     //IReadHandleEvents<T>,

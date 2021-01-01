@@ -28,10 +28,26 @@ namespace LionFire.Persistence.Handles
     public class ReferenceToHandleService : IReferenceToHandleService
     {
 
+        #region Lookup types
+
+        /// <summary>
+        /// For types of type Key, Use the Value type when looking for IReadHandleProvider&lt;T&gt;
+        /// </summary>
         ConcurrentDictionary<Type, Type> LookupTypes { get; } = new ConcurrentDictionary<Type, Type>();
 
-        private Type GetLookupType(Type type) => LookupTypes.GetOrAdd(type, t => type.GetCustomAttribute<TreatAsAttribute>()?.Type ?? type);
+        private Type GetLookupType(Type type) 
+            => LookupTypes.GetOrAdd(type, t => type.GetCustomAttribute<TreatAsAttribute>()?.Type ?? GetNonGenericType(type));
 
+        private static Type GetNonGenericType(Type type)
+        {
+            while (type.IsGenericType)
+            {
+                type = type.GetGenericTypeDefinition();
+            }
+            return type;
+        }
+
+        #endregion
 
         //public static IReferenceToHandleService Current => DependencyLocator.TryGet<IReferenceToHandleService>();
 
@@ -58,9 +74,17 @@ namespace LionFire.Persistence.Handles
             //}
             //else
             {
+                if (typeof(TReference).IsGenericType)
+                {
+                    throw new ArgumentException("Cannot be invoked when TReference is generic.  Use non-generic overload of this method instead.");
+                }
+                //else
+                //{
                 return ServiceProvider.GetRequiredService<IReadHandleProvider<TReference>>(typeof(IReadHandleProvider<TReference>));
+                //}
             }
         }
+
         public IReadHandleProvider GetReadHandleProvider(IReference input)
         {
             // Question: Handle named providers here, or let each provider type do it?
@@ -74,7 +98,6 @@ namespace LionFire.Persistence.Handles
         //{
         //    return result;
         //}
-
 
         //public IReadHandleProvider GetReadHandleProvider<TReference>(TReference input)
         //    where TReference: IReference

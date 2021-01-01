@@ -32,7 +32,7 @@ namespace LionFire.Vos
         public static VobReference GetRelativeOrAbsolutePath(this IVobReference reference, string path)
                  => path.StartsWith(LionPath.Separator) ? new VobReference(path) : (VobReference)reference.GetChild(path); // TODO FIXME .. and alternate root name handling
 
-        public static IEnumerable<string> ExtractEnvironmentVariables(this VobReference vobReference) 
+        public static IEnumerable<string> ExtractEnvironmentVariables(this IVobReference vobReference) 
             => vobReference.PathChunks.Where(c => c.StartsWith("$"));
     }
 }

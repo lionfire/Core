@@ -10,6 +10,9 @@ using System.Text;
 
 namespace LionFire.Vos.Assets.Persisters
 {
+    /// <summary>
+    /// Provides an accessor for VosAssetPersister, which is stored as a Node on IRootVobs, accessible via AcquireOwn&lt;VosAssetPersister&gt;.
+    /// </summary>
     public class VosAssetPersisterProvider : IPersisterProvider<IAssetReference>
     {
         IVos RootManager { get; }
@@ -23,7 +26,7 @@ namespace LionFire.Vos.Assets.Persisters
 
         /// <summary>
         /// </summary>
-        /// <param name="name">
+        /// <param name="rootName">
         /// Vob path from which to locate the next available AssetManager.
         ///
         /// Examples:
@@ -32,8 +35,11 @@ namespace LionFire.Vos.Assets.Persisters
         ///  - /../otherRootVob/location/to/vob
         /// </param>
         /// <returns></returns>
-        public IPersister<IAssetReference> GetPersister(string? name = null) 
-            => RootManager.Get(name)?.AcquireOwn<VosAssetPersister>() 
-                ?? throw new DependencyMissingException($"Missing VosAssetPersister on {(name == null ? "primary VobRoot" : $"VobRoot '{name}'")}");
+        public VosAssetPersister GetPersister(string? rootName = null) 
+            => RootManager.Get(rootName)?.AcquireOwn<VosAssetPersister>() 
+                ?? throw new DependencyMissingException($"Missing VosAssetPersister on {(rootName == null ? "primary VobRoot" : $"VobRoot '{rootName}'")}");
+
+        IPersister<IAssetReference> IPersisterProvider<IAssetReference>.GetPersister(string? rootName) => GetPersister(rootName);
     }
+
 }

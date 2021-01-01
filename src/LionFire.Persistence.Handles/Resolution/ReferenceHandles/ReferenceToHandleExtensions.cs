@@ -53,20 +53,31 @@ namespace LionFire.Referencing
 
         public static IReadHandle GetExistingReadHandle(this IReferencable referencable)
         {
-            if (referencable.Reference is ITypedReference tr)
+            if (referencable.Reference == null) { return null; }
+
+            Type referenceValueType = null;
+
             {
-                if (referencable is IHasReadHandle ihrh)
+                if (referencable.Reference is IReferencableValueType rvt) { referenceValueType = rvt.ReferenceValueType ?? throw new ArgumentNullException($"{typeof(IReferencableValueType).Name}.{nameof(rvt.ReferenceValueType)}"); }
+
+                if (referencable.Reference is ITypedReference tr)
                 {
-                    var type = typeof(IHasReadHandle<>).MakeGenericType(tr.Type);
-                    if (type.IsAssignableFrom(referencable.GetType()))
-                    {
-                        return (IReadHandle)type.GetProperty(nameof(IHasReadHandle<object>.ReadHandle)).GetValue(referencable);
-                    }
+                    referenceValueType = tr.Type ?? throw new ArgumentNullException($"{typeof(ITypedReference).Name}.{nameof(tr.Type)}");
                 }
-                return (IReadHandle)typeof(ReferenceToHandleExtensions).GetMethods(BindingFlags.Public | BindingFlags.Static).Where(mi => mi.Name == nameof(GetReadHandle) && mi.GetGenericArguments().Length == 1 & mi.GetParameters().Length == 1).Single().MakeGenericMethod(tr.Type).Invoke(null, new object[] { referencable.Reference });
-                //return (IReadHandle)typeof(ReferenceToHandleExtensions).GetMethod(nameof(GetExistingReadHandle)).MakeGenericMethod(tr.Type).Invoke(null, new object[] { referencable });
             }
-            throw new ArgumentException($"{nameof(referencable)} must implement ITypedReference. (TODO: scan the object for IReadHandle<T>)");
+
+            if (referenceValueType == null) { throw new ArgumentException($"{nameof(referencable)} must implement IReferencableValueType, or its Reference must implement ITypedReference."); } // ENH: scan the object for IReadHandle<T>
+
+            if (referencable is IHasReadHandle ihrh)
+            {
+                var type = typeof(IHasReadHandle<>).MakeGenericType(referenceValueType);
+                if (type.IsAssignableFrom(referencable.GetType()))
+                {
+                    return (IReadHandle)type.GetProperty(nameof(IHasReadHandle<object>.ReadHandle)).GetValue(referencable);
+                }
+            }
+            return (IReadHandle)typeof(ReferenceToHandleExtensions).GetMethods(BindingFlags.Public | BindingFlags.Static).Where(mi => mi.Name == nameof(GetReadHandle) && mi.GetGenericArguments().Length == 1 & mi.GetParameters().Length == 1).Single().MakeGenericMethod(referenceValueType).Invoke(null, new object[] { referencable.Reference });
+
         }
         public static IReadHandle<T> GetExistingReadHandle<T>(this IReference reference)
             => (IReadHandle<T>)HandleRegistry.ReadHandles.TryGetValue(reference?.Url ?? throw new ArgumentNullException(nameof(reference)));
@@ -87,26 +98,35 @@ namespace LionFire.Referencing
 
         public static IReadWriteHandle GetExistingReadWriteHandle(this IReferencable referencable)
         {
-            if (referencable.Reference is ITypedReference tr)
+            if(referencable.Reference == null) { return null; }
+            Type referenceValueType = null;
+
             {
-                if (referencable is IHasReadWriteHandle ihrwh)
+                if (referencable is IReferencableValueType rvt) { referenceValueType = rvt.ReferenceValueType ?? throw new ArgumentNullException($"{typeof(IReferencableValueType).Name}.{nameof(rvt.ReferenceValueType)}"); }
+
+                if (referencable.Reference is ITypedReference tr)
                 {
-                    var type = typeof(IHasReadWriteHandle<>).MakeGenericType(tr.Type);
-                    if (type.IsAssignableFrom(referencable.GetType()))
-                    {
-                        return (IReadWriteHandle)type.GetProperty(nameof(IHasReadWriteHandle<object>.ReadWriteHandle)).GetValue(referencable);
-                    }
+                    referenceValueType = tr.Type ?? throw new ArgumentNullException($"{typeof(ITypedReference).Name}.{nameof(tr.Type)}");
                 }
-                if(tr.Type == null) { throw new ArgumentNullException($"{typeof(ITypedReference).Name}.{nameof(tr.Type)}"); }
-                return (IReadWriteHandle)typeof(ReferenceToHandleExtensions).GetMethods(BindingFlags.Public | BindingFlags.Static).Where(mi => mi.Name == nameof(GetExistingReadWriteHandle) && mi.GetGenericArguments().Length == 1).First().MakeGenericMethod(tr.Type).Invoke(null, new object[] { referencable.Reference });
-                //return (IReadWriteHandle)typeof(ReferenceToHandleExtensions).GetMethod(nameof(GetExistingReadWriteHandle)).MakeGenericMethod(tr.Type).Invoke(null, new object[] { referencable });
             }
-            throw new ArgumentException($"{nameof(referencable)} must implement ITypedReference. (TODO: scan the object for IReadWriteHandle<T>)");
+
+            if (referenceValueType == null) { throw new ArgumentException($"{nameof(referencable)} must implement IReferencableValueType, or its Reference must implement ITypedReference."); } // ENH: scan the object for IReadWriteHandle<T>
+
+            if (referencable is IHasReadWriteHandle ihrwh)
+            {
+                var type = typeof(IHasReadWriteHandle<>).MakeGenericType(referenceValueType);
+                if (type.IsAssignableFrom(referencable.GetType()))
+                {
+                    return (IReadWriteHandle)type.GetProperty(nameof(IHasReadWriteHandle<object>.ReadWriteHandle)).GetValue(referencable);
+                }
+            }
+
+            return (IReadWriteHandle)typeof(ReferenceToHandleExtensions).GetMethods(BindingFlags.Public | BindingFlags.Static).Where(mi => mi.Name == nameof(GetExistingReadWriteHandle) && mi.GetGenericArguments().Length == 1).First().MakeGenericMethod(referenceValueType).Invoke(null, new object[] { referencable.Reference });
         }
 
         public static IReadWriteHandle<T> GetExistingReadWriteHandle<T>(this IReference reference)
             => (IReadWriteHandle<T>)HandleRegistry.ReadWriteHandles.TryGetValue(reference?.Url ?? throw new ArgumentNullException(nameof(reference)));
-        
+
         #endregion
 
         // Non-generic
@@ -153,11 +173,11 @@ namespace LionFire.Referencing
         public static ListingValues<T> GetListingValues<T>(this IReference reference)
                   => new ListingValues<T>(reference.GetListingsHandle<T>());
         //public static IReadHandle<Metadata<IEnumerable<Listing<T>>>> ReferenceGetListiandle<T>(this IReferencable referencable)
-            //=> referencable.Reference.GetReadHandle<Metadata<IEnumerable<Listing<T>>>>();
+        //=> referencable.Reference.GetReadHandle<Metadata<IEnumerable<Listing<T>>>>();
 
 
         #endregion
-        
+
 
         public static HC<T> GetCollectionHandle<T>(this IReference reference) => reference.GetCollectionHandleProvider().GetCollectionHandle<T>(reference);
 

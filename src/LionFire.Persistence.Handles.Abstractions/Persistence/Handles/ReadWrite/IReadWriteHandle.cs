@@ -1,6 +1,7 @@
 ﻿namespace LionFire.Persistence
 {
     using LionFire.Persistence.Handles;
+    using LionFire.Referencing;
     using LionFire.Resolves;
     using LionFire.Structures;
     using System;
@@ -20,7 +21,8 @@
     /// IReadWriteHandleEx
     /// </summary>
     /// <typeparam name="T"></typeparam>
-    public interface IReadWriteHandle<T> : IReadHandle<T>, IWriteHandle<T>, IReadWriteHandleBase<T>, IReadWriteHandle, IWritableLazilyResolves<T> { }
+    public interface IReadWriteHandle<T> : IReadHandle<T>, IWriteHandle<T>, IReadWriteHandleBase<T>, IReadWriteHandle, IWritableLazilyResolves<T> , IReferencableAsValueType<T>
+    { }
 
     // REVIEW: Notifying interfaces
 

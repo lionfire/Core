@@ -7,12 +7,12 @@ using Newtonsoft.Json;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Reflection;
 using System.Text;
 
 namespace LionFire.Assets
 {
+
     public interface IAssetReadHandle : IReferencable<IAssetReference>, IReadHandle
     {
     }
@@ -37,36 +37,8 @@ namespace LionFire.Assets
     //    }
     //}
 
-    public class KeyableConverter : JsonConverter
-    {
-        public override bool CanConvert(Type objectType)
-            => typeof(IKeyable<string>).IsAssignableFrom(objectType) && !objectType.IsInterface && !objectType.IsAbstract;
-
-        //static ConcurrentDictionary<Type, MethodInfo> FromKeyMethods { get; } = new ConcurrentDictionary<Type, MethodInfo>();
-
-        public override object ReadJson(JsonReader reader, Type objectType, object existingValue, JsonSerializer serializer)
-        {
-            var result = (IKeyable<string>)existingValue;
-#if DEBUG
-            if (result != null && result.Key != reader.Value as string)
-            {
-                Debug.WriteLine($"[deserialize] {this.GetType().Name} overwriting existing object of type {existingValue.GetType().Name}: {result.Key} => {reader.Value}");
-            }
-#endif
-
-            //result ??= (IKeyable<string>)Activator.CreateInstance(objectType);
-            result = (IKeyable<string>)Activator.CreateInstance(objectType);
-
-            result.Key = reader.Value as string;
-            return result;
-        }
-        public override void WriteJson(JsonWriter writer, object value, JsonSerializer serializer)
-        {
-            writer.WriteValue(((IKeyed<string>)value).Key);
-        }
-    }
     [JsonConverter(typeof(KeyableConverter))]
-    public class RAsset<TValue> : ReadHandlePassthrough<TValue, IAssetReference>, IAssetReadHandle, IKeyable, IEquatable<RAsset<TValue>> where TValue : IAsset<TValue>
+    public class RAsset<TValue> : ReadHandlePassthrough<TValue, IAssetReference<TValue>>, IAssetReadHandle, IKeyable, IEquatable<RAsset<TValue>> where TValue : IAsset<TValue>
     {
         public new string Key
         {
@@ -93,8 +65,9 @@ namespace LionFire.Assets
 
         #endregion
 
-        public string AssetPath => Reference.Path;
+        public string AssetPath => Reference?.Path;
         public new AssetReference<TValue> Reference { get => (AssetReference<TValue>)base.Reference; set => base.Reference = value; }
+        IAssetReference IReferencable<IAssetReference>.Reference => Reference;
 
         public static RAsset<TValue> Get(string assetPath)
             => assetPath;

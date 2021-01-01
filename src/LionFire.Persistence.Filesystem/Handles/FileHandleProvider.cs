@@ -14,10 +14,10 @@ namespace LionFire.Persistence.Filesystem
         , IWriteHandleProvider<FileReference>
         , IWriteHandleProvider
     {
-        IPersister<FileReference> persister;
+        IPersister<IFileReference> persister;
         IPersisterProvider<ProviderFileReference> providerFilePersisterProvider;
         public FileHandleProvider(
-            IPersisterProvider<FileReference> filePersisterProvider,
+            IPersisterProvider<IFileReference> filePersisterProvider,
             IPersisterProvider<ProviderFileReference> providerFilePersisterProvider
             )
         {
@@ -25,16 +25,16 @@ namespace LionFire.Persistence.Filesystem
             this.providerFilePersisterProvider = providerFilePersisterProvider;
         }
 
-        public IReadHandle<T> GetReadHandle<T>(FileReference reference, T preresolvedValue = default)
-            => new PersisterReadHandle<FileReference, T, IPersister<FileReference>>(persister, reference, preresolvedValue);
+        public IReadHandle<T> GetReadHandle<T>(FileReference reference, T? preresolvedValue = default)
+            => new PersisterReadHandle<IFileReference, T, IPersister<IFileReference>>(persister, reference.ForType<T>(), preresolvedValue);
         IReadHandle<T>? IReadHandleProvider.GetReadHandle<T>(IReference reference, T preresolvedValue) => (reference is FileReference fileReference) ? GetReadHandle<T>(fileReference, preresolvedValue) : null;
 
-        public IReadWriteHandle<T> GetReadWriteHandle<T>(FileReference reference, T preresolvedValue = default)
-            => new PersisterReadWriteHandle<FileReference, T, IPersister<FileReference>>(persister, reference, preresolvedValue);
+        public IReadWriteHandle<T> GetReadWriteHandle<T>(FileReference reference, T? preresolvedValue = default)
+            => new PersisterReadWriteHandle<IFileReference, T, IPersister<IFileReference>>(persister, reference.ForType<T>(), preresolvedValue);
         IReadWriteHandle<T>? IReadWriteHandleProvider.GetReadWriteHandle<T>(IReference reference, T preresolvedValue) => (reference is FileReference fileReference) ? GetReadWriteHandle<T>(fileReference, preresolvedValue) : null;
 
         public IReadHandle<T> GetReadHandle<T>(ProviderFileReference reference, T preresolvedValue = default)
-            => new PersisterReadWriteHandle<ProviderFileReference, T, IPersister<ProviderFileReference>>(providerFilePersisterProvider.GetPersister(reference.Persister), reference, preresolvedValue);
+            => new PersisterReadWriteHandle<ProviderFileReference, T, IPersister<ProviderFileReference>>(providerFilePersisterProvider.GetPersister(reference.Persister), reference.ForType<T>(), preresolvedValue);
         //public IReadHandle<T> GetReadWriteHandle<T>(ProviderFileReference reference)
         //        => new PersisterReadWriteHandle<ProviderFileReference, T, IPersister<ProviderFileReference>>(providerFilePersisterProvider.GetPersister(reference.Persister), reference);
 

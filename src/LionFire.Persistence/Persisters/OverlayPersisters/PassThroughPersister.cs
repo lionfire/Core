@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 
 namespace LionFire.Persistence.Persisters
 {
+
     /// <summary>
     /// Maps one reference system to another, but otherwise passes through persistence methods to an underlying Persister.
     /// </summary>
@@ -14,7 +15,10 @@ namespace LionFire.Persistence.Persisters
     /// <typeparam name="TOptions"></typeparam>
     /// <typeparam name="TUnderlyingReference"></typeparam>
     /// <typeparam name="TUnderlyingPersister"></typeparam>
-    public abstract class PassthroughPersister<TReference, TOptions, TUnderlyingReference, TUnderlyingPersister> : SerializingPersisterBase<TOptions>, IPersister<TReference>
+    public abstract class PassthroughPersister<TReference, TOptions, TUnderlyingReference, TUnderlyingPersister> 
+        : SerializingPersisterBase<TOptions>
+        , IPersister<TReference>
+        , IReferenceTranslator<TReference, TUnderlyingReference>
         where TReference : IReference
         where TOptions : PersistenceOptions
         where TUnderlyingPersister : class, IPersister<TUnderlyingReference>

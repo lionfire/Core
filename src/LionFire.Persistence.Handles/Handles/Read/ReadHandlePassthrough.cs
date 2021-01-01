@@ -15,16 +15,16 @@ namespace LionFire.Persistence.Handles
     /// <typeparam name="TValue"></typeparam>
     /// <typeparam name="TReference"></typeparam>
     public class ReadHandlePassthrough<TValue, TReference> : IReadHandle<TValue>, IReferencable<TReference>, IHasReadHandle<TValue>
-        where TReference : IReference
+        where TReference : IReference<TValue>
     {
         public ReadHandlePassthrough() { }
-        public ReadHandlePassthrough(IReadHandle<TValue> handle) { this.handle = handle; Reference = (TReference) handle?.Reference; }
+        public ReadHandlePassthrough(IReadHandle<TValue> handle) { this.handle = handle; Reference = (TReference?) handle?.Reference; }
 
 
         #region Reference
 
         [SetOnce]
-        public TReference Reference
+        public TReference? Reference
         {
             get => reference;
             set
@@ -35,7 +35,9 @@ namespace LionFire.Persistence.Handles
                 reference = value;
             }
         }
-        private TReference reference;
+        private TReference? reference;
+
+        IReference<TValue> IReferencableAsValueType<TValue>.Reference => Reference;
 
         #endregion
 

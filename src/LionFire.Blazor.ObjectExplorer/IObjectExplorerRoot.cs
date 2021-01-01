@@ -10,9 +10,5 @@ namespace LionFire.Blazor.ObjectExplorer
     {
         IReadOnlyDictionary<string, object> Roots { get; } 
     }
-
-    //public class ObjectExplorerRoots
-    //{
-    //    public Dictionary<string, object> Roots { get; } = new Dictionary<string, object>();
-    //}
+    
 }

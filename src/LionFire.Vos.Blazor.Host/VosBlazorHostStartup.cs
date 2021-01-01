@@ -66,10 +66,10 @@ namespace LionFire.Vos.Blazor.Host
             ;
 
             services
-               .AddBlazorise(options =>
-               {
-                   options.ChangeTextOnKeyPress = true; // optional
-                  })
+               //.AddBlazorise(options =>
+               //{
+               //    options.ChangeTextOnKeyPress = true; // optional
+               //   })
                .AddBootstrapProviders()
                .AddFontAwesomeIcons();
 

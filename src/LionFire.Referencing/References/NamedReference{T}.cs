@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace LionFire.Referencing
 {
-    public class NamedReference<TValue> : LocalReferenceBase<NamedReference<TValue>>
+    public class NamedReference<TValue> : LocalReferenceBase<NamedReference<TValue>, TValue>
     {
         public override IEnumerable<string> AllowedSchemes => UriSchemes;
         public static string[] UriSchemes = new string[] { TypeNameForScheme(typeof(TValue)) };

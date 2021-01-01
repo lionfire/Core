@@ -14,7 +14,7 @@ namespace LionFire.Assets
     } // TEMP TOPORT
 
 
-    public class RWAsset<TValue> : ReadWriteHandlePassthrough<TValue, IAssetReference>, IAssetReadWriteHandle
+    public class RWAsset<TValue> : ReadWriteHandlePassthrough<TValue, IAssetReference<TValue>>, IAssetReadWriteHandle
         where TValue : IAsset<TValue>
     {
 
@@ -33,6 +33,7 @@ namespace LionFire.Assets
 
         public string AssetPath => Reference.Path;
         public new AssetReference<TValue> Reference { get => (AssetReference<TValue>)base.Reference; set => base.Reference = value; }
+        IAssetReference IReferencable<IAssetReference>.Reference => Reference;
 
 
     }

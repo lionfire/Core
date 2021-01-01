@@ -11,9 +11,9 @@ namespace LionFire.MultiTyping.Overlaying
 {
     public class OverlayedMultiType : IMultiTyped
     {
-#region Default Layer
+        #region Default Layer
 
-#region DefaultLayerPriority
+        #region DefaultLayerPriority
 
         public int DefaultLayerPriority
         {
@@ -62,9 +62,9 @@ namespace LionFire.MultiTyping.Overlaying
         }
         private MultiType defaultLayer;
 
-#endregion
+        #endregion
 
-#region MultiType Pass-through to Stack
+        #region MultiType Pass-through to Stack
 
         private readonly object overlayStackLock = new object();
         private MultiTypeOverlayStack overlayStack
@@ -166,13 +166,13 @@ namespace LionFire.MultiTyping.Overlaying
         //}
 #endif
         //object IMultiTyped.AsTypeOrCreateDefault(Type slotType, Type type) { throw new NotImplementedException(); }
-#endregion
+        #endregion
 
-#region Overlay Objects
+        #region Overlay Objects
 
         private readonly object overlayObjectsLock = new object();
 
-#if !NET35
+#if OverlayProxies
         private Dictionary<Type, IOverlay> overlayObjects;
 
         public T GetOverlayObject<T>()
@@ -221,9 +221,9 @@ namespace LionFire.MultiTyping.Overlaying
             throw new NotImplementedException();
         }
 
-#endregion
+        #endregion
 
-#region Collection methods
+        #region Collection methods
 
         /// <summary>
         /// TODO REFACTOR: Use this method for all modification options
@@ -381,9 +381,9 @@ namespace LionFire.MultiTyping.Overlaying
         {
         }
 
-#endregion
+        #endregion
 
-#region INotifyMultiTypeChanged
+        #region INotifyMultiTypeChanged
 
         private void OnSubTypesRemoved(IEnumerable<object> oldSubTypes)
         {
@@ -400,7 +400,7 @@ namespace LionFire.MultiTyping.Overlaying
             }
         }
 
-#region Implementation
+        #region Implementation
 
         private readonly Dictionary<Type, Action<IReadOnlyMultiTyped, Type>> handlers = new Dictionary<Type, Action<IReadOnlyMultiTyped, Type>>();
         private readonly object handlersLock = new object();
@@ -449,9 +449,9 @@ namespace LionFire.MultiTyping.Overlaying
 
         public void AddType<T>(T obj, bool allowMultiple = false) where T : class => DefaultLayerOrCreate.AddType(obj, allowMultiple);
 
-#endregion
+        #endregion
 
-#endregion
+        #endregion
 
         private static readonly ILogger l = Log.Get();
     }

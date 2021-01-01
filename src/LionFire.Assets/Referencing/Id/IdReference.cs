@@ -16,10 +16,14 @@ namespace LionFire.Data.Id
     /// </summary>
     /// <typeparam name="TValue"></typeparam>
     [TreatAs(typeof(IIdReference))]
-    public class IdReference<TValue> : ReferenceBase<IdReference<TValue>>, ITypedReference<TValue, IdReference<TValue>>, IIdReference
+    public class IdReference<TValue> : ReferenceBase<IdReference<TValue>>, ITypedReference<TValue, IdReference<TValue>>, IIdReference<TValue>
     {
+        public IIdReference<T> ForType<T>() =>
+            typeof(TValue) == typeof(T) ? (IIdReference<T>)this
+            : new IdReference<T>(Id);
+
         IdReference<TValue> ITypedReference<TValue, IdReference<TValue>>.Reference => this;
-        public Type Type => typeof(TValue);
+        public override Type Type => typeof(TValue);
 
         #region Scheme
 
@@ -40,7 +44,7 @@ namespace LionFire.Data.Id
             protected set => throw new NotImplementedException();/* Path = value;*/
         }
 
-        public string Id => Path;
+        public string? Id => Path;
 
         #region Path
 

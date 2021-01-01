@@ -6,7 +6,7 @@ using LionFire.Referencing;
 
 namespace LionFire.Vos
 {
-    public abstract class VobReferenceBase<TValue, TConcrete> : VobReferenceBase<TConcrete>, IVobReference, ITypedReference
+    public abstract class VobReferenceBase<TValue, TConcrete> : VobReferenceBase<TConcrete>, IVobReference<TValue>, ITypedReference, IReference<TValue>
      where TConcrete : VobReferenceBase<TValue, TConcrete>
     {
         public override Type Type => typeof(TValue);
@@ -15,6 +15,8 @@ namespace LionFire.Vos
     public abstract class VobReferenceBase<TConcrete> : ReferenceBase<TConcrete>, IVobReference
         where TConcrete : VobReferenceBase<TConcrete>
     {
+        abstract public IVobReference<T> ForType<T>();
+        
         // FUTURE: Vob reference inside here as a cache.
         //internal Vob Vob { get; set; }
 
@@ -155,7 +157,7 @@ namespace LionFire.Vos
         [SetOnce]
         public override string Persister // Set by Path
         {
-            get =>  persister ;
+            get => persister ;
              
             //set
             //{
@@ -207,8 +209,6 @@ namespace LionFire.Vos
 
         #endregion
 
-        public abstract Type Type { get; }
-
         #region VosFilters
 
         public ImmutableList<KeyValuePair<string, string>> Filters { get; set; }
@@ -255,6 +255,7 @@ namespace LionFire.Vos
 
         #endregion
 
+        public IVobReference this[string subPath] => this.GetChild(subPath);
     }
 
 }

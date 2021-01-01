@@ -26,13 +26,13 @@ namespace LionFire.Vos.Assets.Handles
             var persister = (VosAssetPersister)PersisterProvider.GetPersister(reference.Persister);
             if (persister == null) throw new NotFoundException($"Could not find AssetPersister for '{reference}'");
 
-            return new PersisterReadHandle<IAssetReference, T, VosAssetPersister>(persister, reference, preresolvedValue);
+            return new PersisterReadHandle<IAssetReference, T, VosAssetPersister>(persister, reference.ForType<T>(), preresolvedValue);
         }
         public IReadHandle<T> GetReadHandle<T>(IReference reference, T preresolvedValue = default)
             => reference is IAssetReference iar ? GetReadHandle<T>(iar, preresolvedValue) : null;
 
         public Persistence.IReadWriteHandle<T> GetReadWriteHandle<T>(IAssetReference reference, T preresolvedValue = default)
-            => new PersisterReadWriteHandle<IAssetReference, T, VosAssetPersister>((VosAssetPersister)PersisterProvider.GetPersister(reference.Persister), reference, preresolvedValue);
+            => new PersisterReadWriteHandle<IAssetReference, T, VosAssetPersister>((VosAssetPersister)PersisterProvider.GetPersister(reference.Persister), reference.ForType<T>(), preresolvedValue);
 
         public IReadWriteHandle<T> GetReadWriteHandle<T>(IReference reference, T preresolvedValue = default)
             => GetReadWriteHandle((IAssetReference)reference, preresolvedValue);

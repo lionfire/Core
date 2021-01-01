@@ -7,7 +7,7 @@ namespace LionFire.Referencing
     public abstract class ReferenceBase<ConcreteType> : ReferenceBaseBase<ConcreteType>, IReference, ITypedReference
         where ConcreteType : ReferenceBase<ConcreteType>
     {
-        public Type Type => typeof(ConcreteType);
+        public abstract Type Type { get; }// => throw new NotImplementedException();// typeof(ConcreteType); // REVIEW - this should be TValue!!
         public bool IsCompatibleWith(string stringUrl) => AllowedSchemes.Contains(stringUrl.GetUriScheme());
         public abstract IEnumerable<string> AllowedSchemes { get; }
 

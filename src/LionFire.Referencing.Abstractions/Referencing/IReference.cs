@@ -19,7 +19,7 @@ namespace LionFire.Referencing
         string Path { get; }
     }
 
-    public interface IReference<TValue> : IReference
+    public interface IReference<out TValue> : IReference
     {
     }
 }

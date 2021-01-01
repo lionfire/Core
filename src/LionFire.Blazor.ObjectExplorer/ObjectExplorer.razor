@@ -191,9 +191,12 @@ else
         return base.OnInitializedAsync();
     }
 
+    public static Func<MemberInfo, bool> MemberInfoFilter = null;
+
     bool CanShow(MemberInfo mi)
     {
         if (mi.Name.EndsWith("__BackingField")) { return false; }
+        if(MemberInfoFilter != null && !MemberInfoFilter(mi)) { return false; }
         var pi = mi as PropertyInfo;
         if (pi != null && (!pi.CanRead || pi.GetIndexParameters().Any() || pi.GetGetMethod() == null)) { return false; }
 
