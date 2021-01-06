@@ -3,7 +3,7 @@
 @inject IServiceProvider serviceProvider
 @inject IObjectExplorerRoots roots
 @using System.Reflection;
- 
+
 <MudIconButton Icon="@Icons.Material.ArrowBackIos" Style="@("opacity:" + (History.Count == 0 ? "0.2" : "1"))" @onclick=@Back></MudIconButton>
 <MudIconButton Icon="@Icons.Material.ArrowForwardIos" Style="@("opacity:" + (ForwardHistory.Count == 0 ? "0.2" : "1"))" @onclick=@Forward></MudIconButton>
 <MudIconButton Icon="@Icons.Material.Refresh" @onclick=@Refresh></MudIconButton>
@@ -69,8 +69,8 @@ else
         }
 
         @foreach (var mi in CurrentObject.GetType().GetProperties(BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic).Cast<MemberInfo>()
-   .Concat(CurrentObject.GetType().GetFields(BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic))
-   )
+.Concat(CurrentObject.GetType().GetFields(BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic))
+)
         {
             if (!CanShow(mi)) { continue; }
             var pi = mi as PropertyInfo;
@@ -147,7 +147,7 @@ else
                         <MudTooltip Text="@(item.GetType().Name)">
                             @if (CanOpen(item))
                             {
-                                 <a href="#" class="Method" @onclick:preventDefault="true" @onclick="@(e => Push(item, count.ToString()))">@item</a>
+                                <a href="#" class="Method" @onclick:preventDefault="true" @onclick="@(e => Push(item, count.ToString()))">@item</a>
                             }
                         </MudTooltip>
                     </td>
@@ -161,12 +161,42 @@ else
 }
 
 @code {
+#nullable enable
+
+
+    #region CurrentObject
 
     [Parameter]
-    public object CurrentObject { get; set; }
+    public object CurrentObject
+    {
+        get => currentObject;
+        set
+        {
+            if (currentObject == value) return;
+            if (currentObject != null && currentObject is System.ComponentModel.INotifyPropertyChanged inpcDisabling)
+            {
+                inpcDisabling.PropertyChanged -= OnCurrentObjectPropertyChanged;
+            }
+            currentObject = value;
+            if (currentObject != null && currentObject is System.ComponentModel.INotifyPropertyChanged inpcEnabling)
+            {
+                inpcEnabling.PropertyChanged += OnCurrentObjectPropertyChanged;
+            }
+        }
+    }
+    private object? currentObject;
+
+    #endregion
+
+    private void OnCurrentObjectPropertyChanged(object? sender, System.ComponentModel.PropertyChangedEventArgs e)
+    {
+        Refresh();
+        StateHasChanged();
+    }
+
 
     [Parameter]
-    public string RootName { get; set; }
+    public string? RootName { get; set; }
 
     Stack<object> History = new Stack<object>();
     Stack<string> BreadCrumbPath = new Stack<string>();
@@ -196,7 +226,7 @@ else
     bool CanShow(MemberInfo mi)
     {
         if (mi.Name.EndsWith("__BackingField")) { return false; }
-        if(MemberInfoFilter != null && !MemberInfoFilter(mi)) { return false; }
+        if (MemberInfoFilter != null && !MemberInfoFilter(mi)) { return false; }
         var pi = mi as PropertyInfo;
         if (pi != null && (!pi.CanRead || pi.GetIndexParameters().Any() || pi.GetGetMethod() == null)) { return false; }
 

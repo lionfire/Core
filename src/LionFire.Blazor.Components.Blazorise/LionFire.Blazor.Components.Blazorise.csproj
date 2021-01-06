@@ -10,9 +10,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="LiveSharp" Version="1.6.33" />
     <PackageReference Include="Microsoft.AspNetCore.Components.Web" Version="5.0.1" />
-    <PackageReference Include="MudBlazor" Version="1.2.1" />
   </ItemGroup>
 
 </Project>

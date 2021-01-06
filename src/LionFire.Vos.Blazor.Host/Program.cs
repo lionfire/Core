@@ -1,3 +1,4 @@
+using Blazorise;
 using LionFire.Hosting;
 using LionFire.Services;
 using Microsoft.AspNetCore.Hosting;
@@ -14,40 +15,42 @@ namespace LionFire.Vos.Blazor.Host
     {
 
         // REFACTOR - also in ValorPacksHost
-        public static IConfigurationBuilder CreateConfigurationBuilder(string basePath = null)
+        public static IConfiguration CreateConfigurationBuilder(string basePath = null)
             => new ConfigurationBuilder()
                  .SetBasePath(basePath ?? Path.GetDirectoryName(typeof(Program).Assembly.Location))
-                 .AddJsonFile("appsettings.json", optional: true, reloadOnChange: true);
+                 .AddJsonFile("appsettings.json", optional: true, reloadOnChange: true).Build();
 
-        static IConfigurationRoot config;
+        //static IConfigurationRoot config;
         public static void Main(string[] args)
         {
-            config = CreateConfigurationBuilder().Build();
-            NLog.LogManager.Configuration = new NLogLoggingConfiguration(config.GetSection("NLog"));
-
-            CreateHostBuilder(args).Build().Run();
-        }
-
-        public static IHostBuilder CreateHostBuilder(string[] args) =>
-            VosHost.Create(args, defaultBuilder: true)
-            //Host.CreateDefaultBuilder(args)
-            //.AddPersisters()
+            //config = CreateConfigurationBuilder().Build();
+            //NLog.LogManager.Configuration = new NLogLoggingConfiguration(config.GetSection("NLog"));
+                
+            VosHost.Create(config: CreateConfigurationBuilder(), args: args)
                 .UseDependencyContext()
                 .ConfigureServices(services =>
                 {
                     services
                     .AddPersisters()
-                    .AddLogging(loggingBuilder =>
-                    {
-                        loggingBuilder
-                            .ClearProviders()
-                            .SetMinimumLevel(LogLevel.Trace)
-                            .AddNLog(config);
-                    });
+                    //.AddLogging(loggingBuilder =>
+                    //{
+                    //    loggingBuilder
+                    //        .ClearProviders()
+                    //        .SetMinimumLevel(LogLevel.Trace)
+                    //        .AddNLog(config);
+                    //})
+                        //.AddBlazorise(options =>
+                        //{
+                        //    options.ChangeTextOnKeyPress = true;
+                        //})
+                    ;
                 })
                 .ConfigureWebHostDefaults(webBuilder =>
                 {
                     webBuilder.UseStartup<VosBlazorHostStartup>();
-                });
+                })
+                .Build()
+                .Run();
+        }
     }
 }

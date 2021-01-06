@@ -11,13 +11,14 @@ using LionFire.Hosting;
 using LionFire.DependencyInjection.ExtensionMethods;
 using LionFire.Persistence;
 using Microsoft.Extensions.Options;
+using Microsoft.Extensions.Configuration;
 
 namespace LionFire.Hosting
 {
     public static class PersistersHost
     {
-        public static IHostBuilder Create(string[] args = null, bool defaultBuilder = true)
-         => LionFireHost.Create(args, defaultBuilder)
+        public static IHostBuilder Create(IConfiguration config = null, string[] args = null, bool defaultBuilder = true)
+         => LionFireHost.Create(config, args, defaultBuilder)
                 .AddPersisters();
 
         public static IHostBuilder AddPersisters(this IHostBuilder hostBuilder)

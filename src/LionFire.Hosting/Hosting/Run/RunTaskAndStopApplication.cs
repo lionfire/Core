@@ -6,8 +6,7 @@ using LionFire.Dependencies;
 
 namespace LionFire.Hosting
 {
-
-    // TODO: Alternate version that doesn't stop application?
+    // ENH: Support multiple run actions, in serial or parallel
 
     public class RunTaskAndStopApplication : BackgroundService
     {
@@ -39,7 +38,10 @@ namespace LionFire.Hosting
                     }
                     finally
                     {
-                        hostApplicationLifetime.StopApplication();
+                        if (options.StopApplicationAfterRun)
+                        {
+                            hostApplicationLifetime.StopApplication();
+                        }
                     }
                 }, TaskCreationOptions.AttachedToParent);
             }

@@ -49,13 +49,47 @@ namespace LionFire.Hosting
 
         #region Function injection
 
+        public static Task RunAsync<T1>(this IHostBuilder hostBuilder, Action<T1> action)
+            => RunAsync<T1>(hostBuilder, (Func<T1, Task>)(async t1 => await Task.Run(() => action(t1))));
+
         public static Task RunAsync<T1>(this IHostBuilder hostBuilder, Func<T1, Task> taskFactory)
         {
-            return hostBuilder.RunAsync(new Func<IServiceProvider, Task>(async s =>
-           {
-               var p1 = s.GetRequiredService<T1>();
-               await taskFactory(p1);
-           }));
+            return hostBuilder.RunAsync(new Func<IServiceProvider, Task>(s =>
+                {
+                    return taskFactory(s.GetRequiredService<T1>());
+                }));
+        }
+
+        public static void Run(this IHostBuilder hostBuilder, Func<IServiceProvider, Task> taskFactory)
+        {
+            hostBuilder.RunAsync(new Func<IServiceProvider, Task>(s =>
+            {
+                return taskFactory(s.GetRequiredService<IServiceProvider>());
+            })).Wait();
+        }
+
+        public static void Run(this IHostBuilder hostBuilder, Func<Task> taskFactory)
+        {
+            hostBuilder.RunAsync(new Func<IServiceProvider, Task>(_ => // REFACTOR: unnecessary IServiceProvider
+            {
+                return taskFactory();
+            })).Wait();
+        }
+        public static void Run(this IHostBuilder hostBuilder, Action action)
+        {
+            hostBuilder.RunAsync(new Func<IServiceProvider, Task>(_ => // REFACTOR: unnecessary IServiceProvider
+            {
+                return Task.Run(action);
+            })).Wait();
+        }
+
+
+        public static void Run<T1>(this IHostBuilder hostBuilder, Func<T1, Task> taskFactory)
+        {
+            hostBuilder.RunAsync(new Func<IServiceProvider, Task>(s =>
+            {
+                return taskFactory(s.GetRequiredService<T1>());
+            })).Wait();
         }
 
         public static Task RunAsync<T1, T2>(this IHostBuilder hostBuilder, Func<T1, T2, Task> taskFactory)

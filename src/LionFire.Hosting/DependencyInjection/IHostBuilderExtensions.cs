@@ -1,5 +1,6 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using System;
 
 namespace LionFire.Hosting
 {
@@ -25,6 +26,15 @@ namespace LionFire.Hosting
         {
             hostBuilder.ConfigureServices((c, sc) => sc.AddSingleton<TService, TImplementation>());
             return hostBuilder;
+        }
+
+        public static IHostBuilder If(this IHostBuilder builder, bool condition, Action<IHostBuilder> action)
+        {
+            if (condition)
+            {
+                action(builder);
+            }
+            return builder;
         }
     }
 }

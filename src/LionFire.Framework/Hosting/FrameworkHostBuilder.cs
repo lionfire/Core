@@ -16,6 +16,7 @@ using LionFire.DependencyInjection.ExtensionMethods;
 using LionFire.FlexObjects;
 using LionFire.Vos.VosApp;
 using LionFire.Vos.Assets.Persisters;
+using Microsoft.Extensions.Configuration;
 
 namespace LionFire.Hosting
 {
@@ -99,10 +100,10 @@ namespace LionFire.Hosting
                 ;
         }
 
-        public static IHostBuilder CreateDefault(string[] args = null, bool defaultBuilder = true, FrameworkHostBuilderOptions frameworkOptions = null, IFlex options = null
+        public static IHostBuilder CreateDefault(IConfiguration config = null, string[] args = null, bool defaultBuilder = true, FrameworkHostBuilderOptions frameworkOptions = null, IFlex options = null
             //, Action<IServiceCollection> serializers = null
             )
-            => CreateDefaultVosAppHost(args, defaultBuilder, frameworkOptions, options);
+            => CreateDefaultVosAppHost(config, args, defaultBuilder, frameworkOptions, options);
 
         public class FrameworkHostBuilderOptions
         {
@@ -135,15 +136,15 @@ namespace LionFire.Hosting
                 }));
         }
 
-        public static IHostBuilder CreateDefaultVosHost(string[] args = null, bool defaultBuilder = true, FrameworkHostBuilderOptions frameworkOptions = null, IFlex options = null)
+        public static IHostBuilder CreateDefaultVosHost(IConfiguration config = null, string[] args = null, bool defaultBuilder = true, FrameworkHostBuilderOptions frameworkOptions = null, IFlex options = null)
         {
-            return VosHost.Create(args, defaultBuilder: defaultBuilder, options)
+            return VosHost.Create(config, args, defaultBuilder: defaultBuilder, options)
                 .AugmentWithFramework(frameworkOptions ?? options?.Get<FrameworkHostBuilderOptions>())
                 ;
         }
-        public static IHostBuilder CreateDefaultVosAppHost(string[] args = null, bool defaultBuilder = true, FrameworkHostBuilderOptions frameworkOptions = null, IFlex options = null)
+        public static IHostBuilder CreateDefaultVosAppHost(IConfiguration config = null, string[] args = null, bool defaultBuilder = true, FrameworkHostBuilderOptions frameworkOptions = null, IFlex options = null)
         {
-            return VosAppHostBuilder.Create(args, defaultBuilder: defaultBuilder, options: options?.Get<VosAppOptions>())
+            return VosAppHostBuilder.Create(config, args, defaultBuilder: defaultBuilder, options: options?.Get<VosAppOptions>())
                 .AugmentWithFramework(frameworkOptions ?? options?.Get<FrameworkHostBuilderOptions>())
                 ;
         }

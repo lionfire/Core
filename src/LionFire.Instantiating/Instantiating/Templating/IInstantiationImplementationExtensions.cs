@@ -9,13 +9,13 @@ namespace LionFire.Instantiating
         public static object Create(this IInstantiation template, Type instanceType = null)
         {
             var result = template.Template.Create(instanceType);
-            
+
             //var hasTemplateParameters  = result as ITemplateParameters
 
-            throw new NotImplementedException("Does this implementation exist somewhere?");
+            // REVIEW - Where did this code go?  //throw new NotImplementedException("Does this implementation exist somewhere?");  
+            template.InitializationMethod?.Invoke(result);
 
             return result;
         }
     }
-
 }

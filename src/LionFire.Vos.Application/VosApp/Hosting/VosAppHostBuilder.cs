@@ -15,11 +15,11 @@ namespace LionFire.Hosting // REVIEW - consider changing this to LionFire.Servic
 {
     public static class VosAppHostBuilder
     {
-        public static IHostBuilder Create(string[] args = null, VosAppOptions options = null, bool defaultBuilder = true)
+        public static IHostBuilder Create(IConfiguration config = null, string[] args = null, VosAppOptions options = null, bool defaultBuilder = true)
         {
             if (options == null) options = VosAppOptions.Default;
 
-            return VosHost.Create(args, defaultBuilder: defaultBuilder)
+            return VosHost.Create(config, args, defaultBuilder: defaultBuilder)
                      .ConfigureServices((context, services) => services.AddVosApp())
                 ;
         }

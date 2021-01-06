@@ -7,7 +7,7 @@ using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 
-namespace LionFire.Services
+namespace LionFire.Hosting
 {
     public static class ApplicationInfoServicesExtensions
     {

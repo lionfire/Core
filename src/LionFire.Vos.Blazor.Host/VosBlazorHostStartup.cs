@@ -24,6 +24,8 @@ namespace LionFire.Vos.Blazor.Host
     {
         public IWebHostEnvironment Env { get; set; }
 
+        public bool Blazorise { get; set; } = true;
+
         public VosBlazorHostStartup(IConfiguration configuration, IWebHostEnvironment env)
         {
             Configuration = configuration;
@@ -65,13 +67,16 @@ namespace LionFire.Vos.Blazor.Host
                 ;
             ;
 
-            services
-               //.AddBlazorise(options =>
-               //{
-               //    options.ChangeTextOnKeyPress = true; // optional
-               //   })
-               .AddBootstrapProviders()
-               .AddFontAwesomeIcons();
+            if (Blazorise)
+            {
+                services
+                   .AddBlazorise(options =>
+                   {
+                       options.ChangeTextOnKeyPress = true; // optional
+                   })
+                   .AddBootstrapProviders()
+                   .AddFontAwesomeIcons();
+            }
 
         }
 
@@ -97,9 +102,12 @@ namespace LionFire.Vos.Blazor.Host
 
             app.UseRouting();
 
-            app.ApplicationServices
-              .UseBootstrapProviders()
-              .UseFontAwesomeIcons();
+            if (Blazorise)
+            {
+                app.ApplicationServices
+                  .UseBootstrapProviders()
+                  .UseFontAwesomeIcons();
+            }
 
             app.UseEndpoints(endpoints =>
             {

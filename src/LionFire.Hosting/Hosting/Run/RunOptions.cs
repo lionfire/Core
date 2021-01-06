@@ -11,5 +11,7 @@ namespace LionFire.Hosting
         public RunOptions(Func<Task> action) { this.Action = (services, stopping) => action(); }
         public RunOptions(Func<IServiceProvider, Task> action) { this.Action = (services, stopping) => action(services); }
         public Func<IServiceProvider, CancellationToken, Task> Action { get; set; }
+
+        public bool StopApplicationAfterRun { get; set; } = true;
     }
 }
