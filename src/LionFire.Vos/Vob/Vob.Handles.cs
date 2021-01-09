@@ -12,7 +12,7 @@ using System.Collections.Concurrent;
 
 namespace LionFire.Vos
 {
-    
+
     public partial class Vob
     {
         #region Handles: Create and Get shared
@@ -56,7 +56,7 @@ namespace LionFire.Vos
 
         public IWriteHandle<TValue> GetWriteHandle<TValue>(TValue prestagedValue = default)
             => (IWriteHandle<TValue>)SharedWriteHandles.GetOrAdd(typeof(TValue), t => CreateReadWriteHandle<TValue>(prestagedValue));
-        
+
         //=> (IWriteHandle<T>)WriteHandles.GetOrAdd(typeof(T), t => new PersisterWriteHandle<VobReference, T, VosPersister>(this.GetService<VosPersister>(), VobReference));
         public IWriteHandle<T> CreateWriteHandle<T>(T prestagedValue = default)
             => new PersisterWriteHandle<IVobReference, T, VosPersister>(this.GetService<VosPersister>(), VobReference.ForType<T>(), prestagedValue);
@@ -106,7 +106,8 @@ namespace LionFire.Vos
         {
             get
             {
-                throw new NotImplementedException();
+                l.Warn($"{nameof(ReadHandleMounts)} Not Implemented");
+                yield break;
                 //if (!InitializeEffectiveMounts())
                 //{
                 //    yield break;
@@ -128,8 +129,9 @@ namespace LionFire.Vos
         {
             get
             {
+                l.Warn($"{nameof(WriteHandles)} Not Implemented");
+                yield break;
                 //NextVobNode.WriteMounts
-                throw new NotImplementedException();
                 //if (!InitializeEffectiveMounts())
                 //{
                 //    yield break;
@@ -162,7 +164,8 @@ namespace LionFire.Vos
         {
             get
             {
-                throw new NotImplementedException();
+                l.Warn($"{nameof(WriteHandleMounts)} Not Implemented");
+                yield break;
                 //if (!InitializeEffectiveMounts())
                 //{
                 //    yield break;
@@ -182,7 +185,8 @@ namespace LionFire.Vos
         {
             get
             {
-                throw new NotImplementedException();
+                l.Warn($"{nameof(EffectiveWriteMounts)} Not Implemented");
+                yield break;
                 //if (effectiveMountsByWritePriority == null) { InitializeEffectiveMounts(); }
                 //if (effectiveMountsByWritePriority == null) { return Enumerable.Empty<Mount>(); }
                 //return effectiveMountsByWritePriority.Values.SelectMany(x => x);
@@ -192,7 +196,8 @@ namespace LionFire.Vos
         {
             get
             {
-                throw new NotImplementedException();
+                l.Warn($"{nameof(FirstWriteHandle)} Not Implemented");
+                return null;
                 //                //if (!HasMounts) return null;
                 //                foreach (Mount mount in
                 //#if AOT

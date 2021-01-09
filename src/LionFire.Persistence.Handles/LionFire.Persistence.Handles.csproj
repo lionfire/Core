@@ -7,8 +7,8 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="AnyClone" Version="1.0.34" />
-    <PackageReference Include="AnyDiff" Version="1.0.61" />
+    <PackageReference Include="AnyClone" Version="1.0.39" />
+    <PackageReference Include="AnyDiff" Version="1.0.83" />
     <PackageReference Include="Microsoft.Extensions.Hosting" Version="5.0.0" />
   </ItemGroup>
 

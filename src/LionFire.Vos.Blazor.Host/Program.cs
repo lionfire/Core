@@ -38,11 +38,12 @@ namespace LionFire.Vos.Blazor.Host
                     //        .ClearProviders()
                     //        .SetMinimumLevel(LogLevel.Trace)
                     //        .AddNLog(config);
+                    //.AddNLogWeb()
                     //})
-                        //.AddBlazorise(options =>
-                        //{
-                        //    options.ChangeTextOnKeyPress = true;
-                        //})
+                    //.AddBlazorise(options =>
+                    //{
+                    //    options.ChangeTextOnKeyPress = true;
+                    //})
                     ;
                 })
                 .ConfigureWebHostDefaults(webBuilder =>

@@ -96,10 +96,10 @@ else
         get => path;
         set
         {
-            if(value == null) { value = ""; }
+            if (value == null) { value = ""; }
             if (!value.Contains(":"))
             {
-                if(!value.StartsWith("/") && !value.StartsWith("\\")) { value = "/" + value; }
+                if (!value.StartsWith("/") && !value.StartsWith("\\")) { value = "/" + value; }
                 value = $"vos:{value}";
             }
             path = value;
@@ -178,10 +178,18 @@ else
             var rh = Path?.ToReference()?.GetReadHandle<object>(); // TODO - get available types
             if (rh != null)
             {
-                newValue = (await rh.GetValue().ConfigureAwait(false));
+                var result = (await rh.TryGetValue().ConfigureAwait(false));
+                newValue = result.Value;
+                if (result.IsSuccess != true)
+                {
+                    logger.Debug($"Failed to retrieve {Path}: {result}");
+                }
             }
         }
-        catch { } // EMPTYCATCH
+        catch (Exception ex)
+        {
+            logger.LogError(ex, "Exception when retrieving handle or value");
+        }
         Value = newValue;
     }
     public async Task Refresh()
