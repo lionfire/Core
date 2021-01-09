@@ -1,7 +1,8 @@
 // Based on https://github.com/makotech222/Ultralight-Stride3d_Integration
 //  - See that repo's Readme for instructions
 
-//#define TRACE_TouchEvents
+#define TRACE_Touch
+#define TRACE_Keyboard
 #if Ultralight
 using System;
 using System.IO;
@@ -14,21 +15,38 @@ using Stride.Graphics;
 using Stride.Rendering.Sprites;
 using Stride.UI.Controls;
 using LogLevel = Microsoft.Extensions.Logging.LogLevel;
-using System.Threading.Tasks;
 using System.Collections.Concurrent;
 using System.Reflection;
 using Microsoft.Extensions.Hosting;
-using LionFire.Threading;
-
 using ImpromptuNinjas.UltralightSharp.Safe;
 using MouseButton = ImpromptuNinjas.UltralightSharp.Enums.MouseButton;
 using MouseEventType = ImpromptuNinjas.UltralightSharp.Enums.MouseEventType;
-using System.Runtime.InteropServices;
 using ImpromptuString = ImpromptuNinjas.UltralightSharp.String;
 using LionFire.Stride3D.Input;
+using System.Diagnostics;
+using Keys = Stride.Input.Keys;
+using LiveSharp;
+using MediatR;
+using System.Threading.Tasks;
+using System.Threading;
+using LionFire.Livesharp;
+using LionFire.Threading;
+using LionFire.Dispatching;
 
 namespace LionFire.Stride3D.UI
 {
+    // TODO: Analyze for threadsafety.
+    // Docs:
+    // The Ultralight API is not thread-safe at this time-- calling the API from multiple threads is not supported and will lead 
+    // to subtle issues / application instability. The library does not need to run on the main thread though-- you can create 
+    // the Renderer on another thread and make all calls to the API on that thread.
+
+    public class UltralightUIScriptDispatcher : INotificationHandler<UpdatedMethodNotification>
+    {
+        Task INotificationHandler<UpdatedMethodNotification>.Handle(UpdatedMethodNotification notification, CancellationToken cancellationToken) 
+            => UltralightUIScript.Instance?.OnUpdatedMethodNotification(notification);
+    }
+
     /// <remarks>
     /// Sets up Ultralight to draws to Grid > Image "img"
     /// Override Start() and Update() and call the base methods
@@ -36,6 +54,8 @@ namespace LionFire.Stride3D.UI
     public class UltralightUIScript : SyncScript
     {
         #region (Static)
+
+        internal static UltralightUIScript Instance { get; set;  } // TODO - avoid the static
 
         /// <summary>
         /// Should be only one renderer per Game.
@@ -47,7 +67,18 @@ namespace LionFire.Stride3D.UI
         #region Parameters
 
         [DataMemberIgnore]
-        public Stride.Input.Keys? ToggleKey { get; set; } = Stride.Input.Keys.F10;
+        public Keys? ToggleKey { get; set; } = Keys.F10;
+        public Keys? ExternalBrowserKey { get; set; } = Keys.F9;
+        public Keys? RefreshBrowserKey { get; set; } = Keys.F5;
+
+        public bool ShouldPassToBrowser(Keys key)
+            => key switch
+            {
+                Keys.F5 => false,
+                Keys.F9 => false,
+                Keys.F10 => false,
+                _ => true
+            };
 
         /// <summary>
         /// Full path to directory containing html files.
@@ -62,8 +93,8 @@ namespace LionFire.Stride3D.UI
         public string LoadingUrl { get; set; } = "http://google.com"; // file:///index.html
 
         [DataMemberIgnore]
-        public string StartUrl { get; set; } = "http://google.com";
-        //public string StartUrl { get; set; } = "http://localhost:5000/";
+        //public string StartUrl { get; set; } = "http://google.com";
+        public string StartUrl { get; set; } = "http://localhost:5000/";
 
         #endregion
 
@@ -72,6 +103,10 @@ namespace LionFire.Stride3D.UI
         private ILogger Logger { get; set; }
 
         private IHostApplicationLifetime HostApplicationLifetime { get; }
+
+        private IDispatcher Dispatcher => StrideDispatcher.Instance;
+        //private IDispatcher Dispatcher => dispatcher ??= DependencyContext.Current?.GetService<IDispatcher>();
+        //private IDispatcher dispatcher ;
 
         #endregion
 
@@ -86,6 +121,8 @@ namespace LionFire.Stride3D.UI
         protected SpriteFromTexture sprite;
 
         #region ImageElement
+
+        private UIComponent UIComponent => Entity.Get<UIComponent>();
 
         private ImageElement ImageElement
         {
@@ -103,7 +140,14 @@ namespace LionFire.Stride3D.UI
             if (imageElement != null)
             {
                 imageElement.Visibility = visible ? Stride.UI.Visibility.Visible : Stride.UI.Visibility.Hidden;
-                //imageElement.CanBeHitByUser = visible; // REVIEW - is this needed?
+                imageElement.CanBeHitByUser = visible;
+            }
+            if (UIComponent?.Page?.RootElement != null)
+            {
+                if (UIComponent.Page.RootElement is Stride.UI.Panels.Grid grid)
+                {
+                    grid.CanBeHitByUser = visible;
+                }
             }
         }
 
@@ -115,6 +159,7 @@ namespace LionFire.Stride3D.UI
 
         public UltralightUIScript()
         {
+            Instance ??= this;
             Logger = DependencyContext.Current?.GetService<ILogger<UltralightUIScript>>() ?? (ILogger)Logging.Null.NullLogger.Instance;
             HostApplicationLifetime = DependencyContext.Current?.GetService<IHostApplicationLifetime>();
         }
@@ -150,6 +195,12 @@ namespace LionFire.Stride3D.UI
 
         #region State
 
+        #region Settings
+
+        public bool AutoReload { get; set; } = true;
+
+        #endregion
+
         protected uint width;
         protected uint height;
 
@@ -170,7 +221,7 @@ namespace LionFire.Stride3D.UI
                 UpdateImageVisibility();
             }
         }
-        private bool visible;
+        private bool visible = true;
 
         #endregion
 
@@ -179,6 +230,32 @@ namespace LionFire.Stride3D.UI
         #endregion
 
         #region Event Handlers
+
+        #region MediatR
+
+        public bool IsWebUI(Type type) => type.FullName.Contains("Blazor");
+
+        internal Task OnUpdatedMethodNotification(UpdatedMethodNotification notification)
+        {
+            if (AutoReload)
+            {
+                if (IsWebUI(notification.UpdatedMethod.DeclaringType))
+                {
+                    Logger.LogInformation($"AutoReloading due to method change: {notification.UpdatedMethod.DeclaringType.FullName}.{notification.UpdatedMethod.MethodIdentifier}");
+                    return Dispatcher.BeginInvoke(() =>
+                    {
+                        View.Reload();
+                    });
+                }
+                else
+                {
+                    Logger.LogDebug($"Ignorning non-web UI code change in {notification.UpdatedMethod.DeclaringType}");
+                }
+            }
+            return Task.CompletedTask;
+        }
+        
+        #endregion
 
         private void OnPrivateWebServerStarted()
         {
@@ -205,16 +282,16 @@ namespace LionFire.Stride3D.UI
 
         private void ImageElement_TouchDown(object sender, Stride.UI.TouchEventArgs e)
         {
-#if TRACE_TouchEvents
+#if TRACE_Touch
             Logger.LogTrace($"TouchDown {e.ScreenPosition} ({(int)(e.ScreenPosition.X * width)},{(int)(e.ScreenPosition.Y * height)}) {(Input.Mouse.DownButtons.Any() ? Input.Mouse.DownButtons.Select(m => m.ToString()).Aggregate((x, y) => $"{x},{y}") : "")}");
 #endif
-
             pendingInputEvents.MouseEvents.Enqueue(new MouseEvent(MouseEventType.MouseDown, (int)(e.ScreenPosition.X * width), (int)(e.ScreenPosition.Y * height), MouseButton.Left));
+            e.Handled = false;
         }
 
         private void ImageElement_TouchUp(object sender, Stride.UI.TouchEventArgs e)
         {
-#if TRACE_TouchEvents
+#if TRACE_Touch
             Logger.LogTrace($"TouchUp {e.ScreenPosition} ({(int)(e.ScreenPosition.X * width)},{(int)(e.ScreenPosition.Y * height)})");
 #endif
             pendingInputEvents.MouseEvents.Enqueue(new MouseEvent(MouseEventType.MouseUp, (int)(e.ScreenPosition.X * width), (int)(e.ScreenPosition.Y * height), MouseButton.Left));
@@ -229,52 +306,52 @@ namespace LionFire.Stride3D.UI
 
             foreach (var key in Input.PressedKeys)
             {
-                if (key == ToggleKey) continue;
+                if (!ShouldPassToBrowser(key)) continue;
 
                 // DEPRECATE the char approach, if virtual key-code works
 
                 string keyString = null;
                 switch (key)
                 {
-                    case Stride.Input.Keys.D0:
-                    case Stride.Input.Keys.D1:
-                    case Stride.Input.Keys.D2:
-                    case Stride.Input.Keys.D3:
-                    case Stride.Input.Keys.D4:
-                    case Stride.Input.Keys.D5:
-                    case Stride.Input.Keys.D6:
-                    case Stride.Input.Keys.D7:
-                    case Stride.Input.Keys.D8:
-                    case Stride.Input.Keys.D9:
+                    case Keys.D0:
+                    case Keys.D1:
+                    case Keys.D2:
+                    case Keys.D3:
+                    case Keys.D4:
+                    case Keys.D5:
+                    case Keys.D6:
+                    case Keys.D7:
+                    case Keys.D8:
+                    case Keys.D9:
                         keyString = key.ToString()[1].ToString();
                         break;
 
-                    case Stride.Input.Keys.A:
-                    case Stride.Input.Keys.B:
-                    case Stride.Input.Keys.C:
-                    case Stride.Input.Keys.D:
-                    case Stride.Input.Keys.E:
-                    case Stride.Input.Keys.F:
-                    case Stride.Input.Keys.G:
-                    case Stride.Input.Keys.H:
-                    case Stride.Input.Keys.I:
-                    case Stride.Input.Keys.J:
-                    case Stride.Input.Keys.K:
-                    case Stride.Input.Keys.L:
-                    case Stride.Input.Keys.M:
-                    case Stride.Input.Keys.N:
-                    case Stride.Input.Keys.O:
-                    case Stride.Input.Keys.P:
-                    case Stride.Input.Keys.Q:
-                    case Stride.Input.Keys.R:
-                    case Stride.Input.Keys.S:
-                    case Stride.Input.Keys.T:
-                    case Stride.Input.Keys.U:
-                    case Stride.Input.Keys.V:
-                    case Stride.Input.Keys.W:
-                    case Stride.Input.Keys.X:
-                    case Stride.Input.Keys.Y:
-                    case Stride.Input.Keys.Z:
+                    case Keys.A:
+                    case Keys.B:
+                    case Keys.C:
+                    case Keys.D:
+                    case Keys.E:
+                    case Keys.F:
+                    case Keys.G:
+                    case Keys.H:
+                    case Keys.I:
+                    case Keys.J:
+                    case Keys.K:
+                    case Keys.L:
+                    case Keys.M:
+                    case Keys.N:
+                    case Keys.O:
+                    case Keys.P:
+                    case Keys.Q:
+                    case Keys.R:
+                    case Keys.S:
+                    case Keys.T:
+                    case Keys.U:
+                    case Keys.V:
+                    case Keys.W:
+                    case Keys.X:
+                    case Keys.Y:
+                    case Keys.Z:
                         keyString = key.ToString().ToLowerInvariant();
                         break;
                     default:
@@ -286,9 +363,9 @@ namespace LionFire.Stride3D.UI
                     unsafe
                     {
 #if TRACE_Keyboard
-                            Logger.LogTrace($"Key pressed: {key}");
+                        Logger.LogTrace($"Key pressed: {key}");
 #endif
-                        
+
                         pendingInputEvents.KeyboardEvents.Enqueue(
                             new KeyEvent(ImpromptuNinjas.UltralightSharp.Enums.KeyEventType.Char, 0, 0, 0, ImpromptuString.Create(keyString), ImpromptuString.Create(keyString), false, false, false));
                     }
@@ -341,7 +418,7 @@ namespace LionFire.Stride3D.UI
 
             #region UIComponent
 
-            var uiComponent = Entity.Get<UIComponent>();
+            var uiComponent = UIComponent;
             if (uiComponent == null) { Logger.LogError($"{this.GetType().FullName} script must be installed on the same Entity as UIComponent"); return; }
 
             #endregion
@@ -433,7 +510,32 @@ namespace LionFire.Stride3D.UI
 
             FireInputs(pendingInputEvents);
 
+            if (RefreshBrowserKey.HasValue && Input.PressedKeys.Contains(RefreshBrowserKey.Value))
+            {
+                Logger.LogInformation("Refreshing");
+                View.Reload();
+            }
             if (ToggleKey.HasValue && Input.PressedKeys.Contains(ToggleKey.Value)) { Visible ^= true; }
+            if (ExternalBrowserKey.HasValue && Input.PressedKeys.Contains(ExternalBrowserKey.Value))
+            {
+                try
+                {
+                    var psi = new ProcessStartInfo
+                    {
+                        FileName = StartUrl,
+                        UseShellExecute = true
+                    };
+                    Process.Start(psi);
+                }
+                catch (System.ComponentModel.Win32Exception noBrowser)
+                {
+                    if (noBrowser.ErrorCode == -2147467259) { Logger.LogError(noBrowser.Message); }
+                }
+                catch (System.Exception other)
+                {
+                    Logger.LogError(other.Message);
+                }
+            }
 
             if (Input.HasPressedKeys) { OnKeysPressed(); }
 
