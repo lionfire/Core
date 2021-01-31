@@ -29,9 +29,12 @@ using LiveSharp;
 using MediatR;
 using System.Threading.Tasks;
 using System.Threading;
-using LionFire.Livesharp;
+#if LiveSharp
+using LionFire.LiveSharp;
+#endif
 using LionFire.Threading;
 using LionFire.Dispatching;
+using Stride.Audio;
 
 namespace LionFire.Stride3D.UI
 {
@@ -41,10 +44,20 @@ namespace LionFire.Stride3D.UI
     // to subtle issues / application instability. The library does not need to run on the main thread though-- you can create 
     // the Renderer on another thread and make all calls to the API on that thread.
 
-    public class UltralightUIScriptDispatcher : INotificationHandler<UpdatedMethodNotification>
+    public class UltralightUIScriptDispatcher
+#if LiveSharp
+        : INotificationHandler<UpdatedMethodNotification>
+        , INotificationHandler<UpdatedResourceNotification>
+#endif
     {
-        Task INotificationHandler<UpdatedMethodNotification>.Handle(UpdatedMethodNotification notification, CancellationToken cancellationToken) 
-            => UltralightUIScript.Instance?.OnUpdatedMethodNotification(notification);
+#if LiveSharp
+        Task INotificationHandler<UpdatedMethodNotification>.Handle(UpdatedMethodNotification notification, CancellationToken cancellationToken)
+            => UltralightUIScript.Instance?.OnUpdatedMethodNotification(notification);  
+
+        Task INotificationHandler<UpdatedResourceNotification>.Handle(UpdatedResourceNotification notification, CancellationToken cancellationToken)
+            => UltralightUIScript.Instance?.OnUpdatedResourceNotification(notification);
+#endif
+
     }
 
     /// <remarks>
@@ -53,18 +66,18 @@ namespace LionFire.Stride3D.UI
     /// </remarks>
     public class UltralightUIScript : SyncScript
     {
-        #region (Static)
+#region (Static)
 
-        internal static UltralightUIScript Instance { get; set;  } // TODO - avoid the static
+        internal static UltralightUIScript Instance { get; set; } // TODO - avoid the static
 
         /// <summary>
         /// Should be only one renderer per Game.
         /// </summary>
         protected static ImpromptuNinjas.UltralightSharp.Safe.Renderer renderer;
 
-        #endregion
+#endregion
 
-        #region Parameters
+#region Parameters
 
         [DataMemberIgnore]
         public Keys? ToggleKey { get; set; } = Keys.F10;
@@ -96,9 +109,9 @@ namespace LionFire.Stride3D.UI
         //public string StartUrl { get; set; } = "http://google.com";
         public string StartUrl { get; set; } = "http://localhost:5000/";
 
-        #endregion
+#endregion
 
-        #region Dependencies
+#region Dependencies
 
         private ILogger Logger { get; set; }
 
@@ -108,9 +121,9 @@ namespace LionFire.Stride3D.UI
         //private IDispatcher Dispatcher => dispatcher ??= DependencyContext.Current?.GetService<IDispatcher>();
         //private IDispatcher dispatcher ;
 
-        #endregion
+#endregion
 
-        #region Relationships
+#region Relationships
 
         /// <summary>
         /// View created by Ultralight.
@@ -120,7 +133,7 @@ namespace LionFire.Stride3D.UI
         protected Texture texture;
         protected SpriteFromTexture sprite;
 
-        #region ImageElement
+#region ImageElement
 
         private UIComponent UIComponent => Entity.Get<UIComponent>();
 
@@ -151,18 +164,37 @@ namespace LionFire.Stride3D.UI
             }
         }
 
-        #endregion
+#endregion
 
-        #endregion
+#endregion
 
-        #region Construction and Destruction
+        //Sound tReloadSound;
+        //SoundInstance reloadSound;
+
+#region Construction and Destruction
 
         public UltralightUIScript()
         {
             Instance ??= this;
             Logger = DependencyContext.Current?.GetService<ILogger<UltralightUIScript>>() ?? (ILogger)Logging.Null.NullLogger.Instance;
             HostApplicationLifetime = DependencyContext.Current?.GetService<IHostApplicationLifetime>();
+
         }
+
+        //void InitSound()
+        //{
+        //    try
+        //    {
+        //        Sound tReloadSound = Content.Load<Sound>("Audio/Tiny Button Push-SoundBible.com-513260752 [notification]");
+        //        reloadSound = tReloadSound.CreateInstance();
+        //        reloadSound.Volume = 0.25f;
+        //        reloadSound.Play();
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        Logger.LogError(ex, "Failed to init sound");
+        //    }
+        //}
 
         protected void InitUltralight()
         {
@@ -191,15 +223,15 @@ namespace LionFire.Stride3D.UI
             renderer?.Dispose();
         }
 
-        #endregion
+#endregion
 
-        #region State
+#region State
 
-        #region Settings
+#region Settings
 
         public bool AutoReload { get; set; } = true;
 
-        #endregion
+#endregion
 
         protected uint width;
         protected uint height;
@@ -209,7 +241,7 @@ namespace LionFire.Stride3D.UI
         private bool startedLoadingStartUrl = false;
         private bool javascriptTestComplete = false;
 
-        #region Visible
+#region Visible
 
         [DataMemberIgnore]
         public bool Visible
@@ -223,20 +255,22 @@ namespace LionFire.Stride3D.UI
         }
         private bool visible = true;
 
-        #endregion
+#endregion
 
         ComponentUI pendingInputEvents = new ComponentUI();
 
-        #endregion
+#endregion
 
-        #region Event Handlers
+#region Event Handlers
 
-        #region MediatR
+#region MediatR
 
-        public bool IsWebUI(Type type) => type.FullName.Contains("Blazor");
+        public bool IsWebUI(Type type) => type.FullName.Contains("Blazor") || type.BaseType == typeof(Microsoft.AspNetCore.Components.ComponentBase);
 
+#if LiveSharp
         internal Task OnUpdatedMethodNotification(UpdatedMethodNotification notification)
         {
+            Logger.LogInformation($"OnUpdatedMethodNotification -- TEMP " + notification.UpdatedMethod.DeclaringType.BaseType.BaseType.FullName);
             if (AutoReload)
             {
                 if (IsWebUI(notification.UpdatedMethod.DeclaringType))
@@ -244,6 +278,14 @@ namespace LionFire.Stride3D.UI
                     Logger.LogInformation($"AutoReloading due to method change: {notification.UpdatedMethod.DeclaringType.FullName}.{notification.UpdatedMethod.MethodIdentifier}");
                     return Dispatcher.BeginInvoke(() =>
                     {
+                        //try
+                        //{
+                        //    reloadSound.Play();
+                        //}
+                        //catch (Exception ex)
+                        //{
+                        //    Logger.LogError(ex, "Error playing sound");
+                        //}
                         View.Reload();
                     });
                 }
@@ -254,7 +296,23 @@ namespace LionFire.Stride3D.UI
             }
             return Task.CompletedTask;
         }
-        
+
+        internal Task OnUpdatedResourceNotification(UpdatedResourceNotification notification) {
+            var path = notification?.Path;
+            if(path!= null && 
+                (path.EndsWith(".css"))
+                )
+            {
+                Dispatcher.BeginInvoke(() =>
+                {
+                    View?.Reload();
+                });
+            }
+            return Task.CompletedTask;
+
+        }
+#endif
+
         #endregion
 
         private void OnPrivateWebServerStarted()
@@ -266,9 +324,9 @@ namespace LionFire.Stride3D.UI
             View.LoadUrl(StartUrl);
         }
 
-        #region Event Handlers: Stride UI
+#region Event Handlers: Stride UI
 
-        #region Mouse / Touch
+#region Mouse / Touch
 
         private void ImageElement_MouseOverStateChanged(object sender, Stride.UI.PropertyChangedArgs<Stride.UI.MouseOverState> e)
         {
@@ -297,9 +355,9 @@ namespace LionFire.Stride3D.UI
             pendingInputEvents.MouseEvents.Enqueue(new MouseEvent(MouseEventType.MouseUp, (int)(e.ScreenPosition.X * width), (int)(e.ScreenPosition.Y * height), MouseButton.Left));
         }
 
-        #endregion
+#endregion
 
-        #region Keyboard
+#region Keyboard
 
         private void OnKeysPressed()
         {
@@ -404,49 +462,51 @@ namespace LionFire.Stride3D.UI
             }
         }
 
-        #endregion
+#endregion
 
-        #endregion
+#endregion
 
-        #endregion
+#endregion
 
-        #region Stride Component Overrides
+#region Stride Component Overrides
 
         public override void Start()
         {
             base.Start();
 
-            #region UIComponent
+            //InitSound();
+
+#region UIComponent
 
             var uiComponent = UIComponent;
             if (uiComponent == null) { Logger.LogError($"{this.GetType().FullName} script must be installed on the same Entity as UIComponent"); return; }
 
-            #endregion
+#endregion
 
-            #region ImageElement
+#region ImageElement
 
             //var gridElement = uiComponent.Page.RootElement.VisualChildren.FirstOrDefault() as Stride.UI.Panels.Grid;
 
             imageElement = uiComponent.Page.RootElement.VisualChildren.OfType<ImageElement>().FirstOrDefault() as ImageElement;
             if (imageElement == null) { Logger.LogError($"Failed to find image element.  The first ImageElement in VisualChildren will be used."); return; }
 
-            #region Events
+#region Events
 
             imageElement.TouchUp += ImageElement_TouchUp;
             imageElement.TouchDown += ImageElement_TouchDown;
             imageElement.TouchEnter += ImageElement_TouchEnter;
             imageElement.MouseOverStateChanged += ImageElement_MouseOverStateChanged;
 
-            #endregion
+#endregion
 
             Logger.LogDebug($"Drawing to image: {imageElement.Name}");
 
-            #endregion
+#endregion
 
             width = (uint)uiComponent.Resolution.X;
             height = (uint)uiComponent.Resolution.Y;
 
-            #region Ultralight setup
+#region Ultralight setup
 
             texture = Texture.New2D(this.GraphicsDevice, (int)width, (int)height, Stride.Graphics.PixelFormat.B8G8R8A8_UNorm_SRgb, TextureFlags.ShaderResource | TextureFlags.RenderTarget);
             sprite = new SpriteFromTexture();
@@ -461,9 +521,9 @@ namespace LionFire.Stride3D.UI
                 Logger.LogInformation($"Finished loading: {url}");
             }, default);
 
-            #endregion
+#endregion
 
-            #region LoadUrl
+#region LoadUrl
 
             if (!IsWebServerAvailable)
             {
@@ -488,7 +548,7 @@ namespace LionFire.Stride3D.UI
                 OnPrivateWebServerStarted();
             }
 
-            #endregion
+#endregion
 
         }
 
@@ -579,9 +639,9 @@ namespace LionFire.Stride3D.UI
             }
         }
 
-        #endregion Methods
+#endregion Methods
 
-        #region Classes
+#region Classes
 
         public class ComponentUI
         {
@@ -590,9 +650,9 @@ namespace LionFire.Stride3D.UI
             public ConcurrentQueue<ScrollEvent> ScrollEvents { get; set; } = new ConcurrentQueue<ScrollEvent>();
         }
 
-        #endregion
+#endregion
 
-        #region Logging
+#region Logging
 
         private LoggerLogMessageCallback LoggerCallback
             => new LoggerLogMessageCallback((logLevel, msg) =>
@@ -607,7 +667,7 @@ namespace LionFire.Stride3D.UI
                 Logger.Log(microsoftLogLevel, msg);
             });
 
-        #endregion
+#endregion
     }
 }
 

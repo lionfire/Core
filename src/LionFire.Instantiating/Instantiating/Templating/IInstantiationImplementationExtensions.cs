@@ -1,4 +1,5 @@
-﻿using System;
+﻿#nullable enable
+using System;
 
 namespace LionFire.Instantiating
 {
@@ -8,9 +9,13 @@ namespace LionFire.Instantiating
 
         public static object Create(this IInstantiation template, Type instanceType = null)
         {
+            if (template.Template == null) throw new ArgumentNullException($"Missing template.  Reference: {template.RTemplate?.Reference?.ToString() ?? "null"}");
             var result = template.Template.Create(instanceType);
 
-            //var hasTemplateParameters  = result as ITemplateParameters
+            if (result  is IParameterizedTemplateInstance pti)
+            {
+                pti.Parameters = (template as ITemplateParameters) ?? template.Parameters;
+            }
 
             // REVIEW - Where did this code go?  //throw new NotImplementedException("Does this implementation exist somewhere?");  
             template.InitializationMethod?.Invoke(result);

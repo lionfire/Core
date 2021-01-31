@@ -15,6 +15,11 @@ namespace LionFire.Instantiating
         //ITemplate Template { get; set; }
     }
 
+    public interface IParameterizedTemplateInstance
+    {
+        ITemplateParameters Parameters { get; set; }
+    }
+
     public interface ITemplateInstance<TTemplate> : ITemplateInstance, IInstanceFor<TTemplate>
         where TTemplate : ITemplate
     {

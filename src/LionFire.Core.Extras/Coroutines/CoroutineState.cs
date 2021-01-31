@@ -16,7 +16,8 @@ namespace LionFire.Coroutines
     {
         #region Parameters
 
-        public IEnumerator Enumerator { get; private set; }
+        //public IEnumerator Enumerator { get; private set; }
+        public IEnumerator<object> Enumerator { get; private set; }
 
         #region RecurranceParameters
 
@@ -26,13 +27,14 @@ namespace LionFire.Coroutines
         /// </summary>
         public RecurranceParameters RecurranceParameters
         {
-            get { return recurranceParameters; }
+            get => recurranceParameters;
             set
             {
                 recurranceParameters = value;
                 OnRecurranceParametersIntervalEnabledChanged();
             }
-        } private RecurranceParameters recurranceParameters;
+        }
+        private RecurranceParameters recurranceParameters;
 
         public void OnRecurranceParametersIntervalEnabledChanged()
         {
@@ -62,9 +64,9 @@ namespace LionFire.Coroutines
 
         #region Construction and Destruction
 
-        public CoroutineState(IEnumerator enumerator, RecurranceParameters rp = null)
+        public CoroutineState(IEnumerator<object> enumerator, RecurranceParameters rp = null)
         {
-            if (enumerator == null) throw new ArgumentNullException("enumerator");
+            if (enumerator == null) throw new ArgumentNullException(nameof(enumerator));
             this.Enumerator = enumerator;
 
             RecurranceParameters = rp;

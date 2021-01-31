@@ -13,7 +13,7 @@ namespace LionFire.Instantiating
     {
         #region Parameters
 
-        ITemplateParameters ITemplateInstance<TTemplate, TParameters>.Parameters { get => parameters; set => parameters = (TParameters)value; }
+        ITemplateParameters IParameterizedTemplateInstance.Parameters { get => parameters; set => parameters = (TParameters)value; }
 
         [SetOnce]
         public TParameters Parameters

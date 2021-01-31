@@ -6,7 +6,7 @@ using LionFire.Referencing;
 
 namespace LionFire.Persistence.Handles
 {
-
+    // TODO: Deprecate IReadOnlyCollection in favor of IReadOnlyList
     public abstract class RCollectionBase<TReference, TCollection, TItem> : ReadHandle<TReference, TCollection>, IReadOnlyCollection<TItem>
         where TReference : IReference<TCollection>
         where TCollection : class, IEnumerable<TItem>

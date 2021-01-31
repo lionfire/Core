@@ -1,0 +1,28 @@
+﻿@page "/w/{WorkspaceKey}/{WorkspaceItemKey}"
+@inject IWorkspaceProvider WorkspaceProvider
+
+<h3>WorkspaceItemContent</h3>
+<p>workspace: @Workspace?.GetType().FullName</p>
+<p>item: @WorkspaceItem?.GetType().FullName</p>
+
+
+@code {
+    // FUTURE: Create a new WorkspaceItemView for self (or load an existing one, to recover state), instead of accessing WorkspaceItem directly
+
+    [Parameter]
+    public string WorkspaceKey { get; set; }
+    [Parameter]
+    public string WorkspaceItemKey { get; set; }
+
+    public IWorkspace Workspace { get; private set; }
+    public object WorkspaceItem { get; private set; }
+
+    protected override Task OnParametersSetAsync()
+    {
+        base.OnParametersSetAsync();
+        Workspace = WorkspaceProvider.Query(WorkspaceKey);
+        WorkspaceItem = Workspace?.Items.Where(i => i.Key == WorkspaceItemKey).FirstOrDefault();
+
+        return Task.CompletedTask;
+    }
+}

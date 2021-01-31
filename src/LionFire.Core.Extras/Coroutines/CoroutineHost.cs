@@ -201,7 +201,7 @@ namespace LionFire.Coroutines
         //            activeQueue.Enqueue(cs);
         //        }
 
-        internal CoroutineState EnqueueCoroutine(IEnumerator coroutine, RecurranceParameters rp = null, long initialDelay = -1)
+        internal CoroutineState EnqueueCoroutine(IEnumerator<object> coroutine, RecurranceParameters rp = null, long initialDelay = -1)
         {
 #if CoroutineEnumeratorHasRecurranceParameters
             if (rp == null)
@@ -238,7 +238,7 @@ namespace LionFire.Coroutines
         /// </summary>
         /// <param name="result"></param>
         /// <param name="rp"></param>
-        internal CoroutineState RunCoroutine(IEnumerator result, RecurranceParameters rp = null)
+        internal CoroutineState RunCoroutine(IEnumerator<object> result, RecurranceParameters rp = null)
         {
             if (SingleThread) VerifyThread();
             try

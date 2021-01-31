@@ -13,8 +13,14 @@ namespace LionFire.Resolves
         {
             if (!(await lazilyResolves.TryGetValue().ConfigureAwait(false)).HasValue) throw new Exception("EnsureHasValue: could not get value");
         }
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="lazilyResolves"></param>
+        /// <returns>HasValue</returns>
         public static async Task<bool> TryEnsureHasValue<T>(this ILazilyResolves<T> lazilyResolves)
-            => !(await lazilyResolves.TryGetValue().ConfigureAwait(false)).HasValue;
+            => (await lazilyResolves.TryGetValue().ConfigureAwait(false)).HasValue;
 
         public static async Task<T> GetValue<T>(this ILazilyResolves<T> lazilyResolves)
         {

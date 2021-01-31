@@ -5,6 +5,8 @@ using LionFire.Structures;
 
 namespace LionFire.Instantiating
 {
+    // REVIEW - make this interface more minimal and opt-in?
+
     public interface IInstantiationBase :
     IStateful
     , IEnumerable

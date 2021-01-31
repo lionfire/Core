@@ -61,7 +61,7 @@ namespace LionFire.Coroutines
         //    this.RecurranceParameters = recurranceParameters;
         //}
 
-        public static Coroutine Start(IEnumerator coroutine, object owner = null, RecurranceParameters recurranceParameters = null)
+        public static Coroutine Start(IEnumerator<object> coroutine, object owner = null, RecurranceParameters recurranceParameters = null)
         {
             var host = GetCoroutineHost(owner);
 
@@ -77,7 +77,7 @@ namespace LionFire.Coroutines
         /// <param name="coroutine"></param>
         /// <param name="recurranceParameters"></param>
         /// <returns></returns>
-        public static Coroutine StartImmediately(IEnumerator coroutine, object owner = null, RecurranceParameters recurranceParameters = null)
+        public static Coroutine StartImmediately(IEnumerator<object> coroutine, object owner = null, RecurranceParameters recurranceParameters = null)
         {
             var host = GetCoroutineHost(owner);
 

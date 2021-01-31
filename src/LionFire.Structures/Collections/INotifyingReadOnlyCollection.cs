@@ -7,6 +7,7 @@ namespace LionFire.Collections
     //    event NotifyListChangedHandler<ChildType> CollectionChanged;
     //}
 
+    // TODO: Deprecate IReadOnlyCollection in favor of IReadOnlyList
     public interface INotifyingReadOnlyCollection<out T> : IReadOnlyCollection<T>, INotifyCollectionChanged<T>
     {
     }

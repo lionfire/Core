@@ -19,12 +19,7 @@ namespace LionFire.Collections
     #endregion
 
     #region List Interfaces
-
-    public interface IReadOnlyList<T> : IReadOnlyCollection<T>
-    {
-        T this[int index] { get; }
-    }
-
+    
     public interface INotifyingReadOnlyList<ChildType> :
         IReadOnlyList<ChildType>,
         INotifyCollectionChanged<ChildType>

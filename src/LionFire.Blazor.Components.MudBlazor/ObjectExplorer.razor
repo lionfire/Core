@@ -2,6 +2,8 @@
 @page "/explorer/{*RootName}"
 @inject IServiceProvider serviceProvider
 @inject IObjectExplorerRoots roots
+@using Microsoft.Extensions.Logging 
+@inject ILogger<ObjectExplorer> Logger
 @using System.Reflection;
 
 <MudIconButton Icon="@Icons.Material.ArrowBackIos" Style="@("opacity:" + (History.Count == 0 ? "0.2" : "1"))" @onclick=@Back></MudIconButton>
@@ -190,8 +192,12 @@ else
 
     private void OnCurrentObjectPropertyChanged(object? sender, System.ComponentModel.PropertyChangedEventArgs e)
     {
-        Refresh();
-        StateHasChanged();
+        InvokeAsync(() =>
+        {
+            Logger.LogTrace("OnCurrentObjectPropertyChanged");
+            Refresh();
+            StateHasChanged();
+        });
     }
 
 

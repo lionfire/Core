@@ -247,10 +247,7 @@ namespace LionFire.Collections
 
         #region IReadOnlyCollection<KeyValuePair<TKey, TValue>>
 
-        int IReadOnlyCollection<KeyValuePair<TKey, TValue>>.Count
-        {
-            get { return UnderlyingDictionary.Count; }
-        }
+        int IReadOnlyCollection<KeyValuePair<TKey, TValue>>.Count => UnderlyingDictionary.Count;
 
         public bool IsReadOnly => throw new NotImplementedException();
 

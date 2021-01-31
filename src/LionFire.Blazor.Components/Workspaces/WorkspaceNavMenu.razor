@@ -1,0 +1,104 @@
+﻿@using LionFire.UI.Workspaces
+@using System.Diagnostics 
+@*@inject IWorkspaceViewProvider  WorkspaceViewProvider*@
+@inject IWorkspaceProvider WorkspaceProvider
+@inject ILogger<WorkspaceNavMenu> Logger
+@using System.Collections.Specialized
+@inject LionFire.Referencing.IUrlProvider UrlProvider
+@implements INotificationHandler<LionFire.LiveSharp.UpdatedMethodNotification>
+@using System.Threading
+@using MediatR 
+@using LionFire.LiveSharp 
+@inject LiveSharpNotifier LiveSharpNotifier
+
+<h2>test 9      </h2>
+@*<li>*@
+    @*<small>(Workspace @WorkspaceKey)</small>*@
+
+    @if (Workspace == null)
+    {
+        <span>(No workspace)</span>
+    }
+    else
+    {
+        @*<ul>*@  
+            @foreach (var item in Workspace.Items)
+            {
+                <li class="nav-item px-3" @key="item.Key">
+                    <NavLink class="nav-link" href="@UrlProvider.GetUrl(item.Value)" Match="NavLinkMatch.All">
+                        @*<span class="oi oi-list-rich" aria-hidden="true"></span>*@ @((item.Value as IDisplayNamed)?.DisplayName ?? item.Key)
+                    </NavLink>
+                </li>
+            }
+        @*</ul>*@
+    }
+@*</li>*@
+
+@code {
+#nullable enable
+
+    // FUTURE: Create a new WorkspaceView for self (or load an existing one, to recover state), instead of accessing Workspace directly
+
+    //public WorkspaceView WorkspaceView { get; set; }
+
+
+
+    //, INotificationHandler<UpdatedResourceNotification>
+
+    //Task INotificationHandler<UpdatedMethodNotification>.Handle(UpdatedMethodNotification notification, CancellationToken cancellationToken)
+    //    => UltralightUIScript.Instance?.OnUpdatedMethodNotification(notification);
+
+    Task INotificationHandler<UpdatedMethodNotification>.Handle(UpdatedMethodNotification notification, CancellationToken cancellationToken)
+    {
+        try
+        {
+            Logger.LogWarning("TODO - Workspace UpdatedMethodNotification");
+        }
+        catch(Exception ex)
+        {
+            Debug.WriteLine("xxx LOG FAIL - Workspace UpdatedMethodNotification " + ex.ToString());
+        }
+        //UltralightUIScript.Instance?.OnUpdatedResourceNotification(notification);
+        //return InvokeAsync(StateHasChanged);
+        return InvokeAsync(async () =>
+        {
+            int retries = 5;
+            while (retries > 0)
+            {
+                try
+                {
+                    StateHasChanged();
+                    return;
+                }
+                catch
+                {
+                    await Task.Delay(250);
+                }
+            }
+        });
+        //return Task.CompletedTask;
+
+    }
+
+    protected override Task OnInitializedAsync() {
+        LiveSharpNotifier.MethodChanged += _ => StateHasChanged();
+        return Task.CompletedTask;
+    }
+
+    [Parameter]
+    public string? WorkspaceKey { get; set; }
+
+    public IWorkspace? Workspace { get; private set; }
+
+    protected override Task OnParametersSetAsync()
+    {
+        Workspace = WorkspaceProvider.Get(WorkspaceKey);
+        Workspace!.Items.CollectionChanged += OnCollectionChanged;
+        return Task.CompletedTask;
+    }
+
+    void OnCollectionChanged(object? sender, NotifyCollectionChangedEventArgs e){
+        Logger.LogDebug($"OnCollectionChanged {e.Action}");
+        InvokeAsync(StateHasChanged);
+    }
+}

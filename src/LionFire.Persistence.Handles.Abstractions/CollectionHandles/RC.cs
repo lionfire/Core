@@ -13,6 +13,7 @@ namespace LionFire.Persistence
     //    //public interface IItem { }
     //    //public interface IItem<T> : IItem { }
 
+    // TODO: Deprecate IReadOnlyCollection in favor of IReadOnlyList
     public interface RC<T, TListEntry> : IReadOnlyCollection<T>
         where TListEntry : ICollectionEntry
     {

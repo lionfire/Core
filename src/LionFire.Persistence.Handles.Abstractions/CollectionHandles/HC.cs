@@ -3,6 +3,7 @@ using System.Collections.Generic;
 
 namespace LionFire.Persistence
 {
+    // TODO: Deprecate IReadOnlyCollection in favor of IReadOnlyList
     public interface HC<T, TListEntry> : HC<T>, IReadOnlyCollection<T>, IAsyncEnumerable<T>
          where TListEntry : ICollectionEntry
     {

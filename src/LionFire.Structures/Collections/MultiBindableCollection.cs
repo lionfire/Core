@@ -23,6 +23,7 @@ namespace LionFire.Collections
     /// <summary>
     /// Some intelligent handling of attached event handlers: IDispatcher will be detected and used if present, and throwing handlers will be detached.
     /// 
+    /// TODO: Rename to List, support this[int index]
     /// TODO - Finish implementing.  Some methods will throw exception.  Some event raising needs review.
     /// THREADSAFETY - make threadsafe?
     /// </summary>

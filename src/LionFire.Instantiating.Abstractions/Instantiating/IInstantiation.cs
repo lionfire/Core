@@ -14,7 +14,7 @@ namespace LionFire.Instantiating
     //    IInstantiationCollection<TChild> Children { get; set; }
     //}
     public interface IInstantiation : IInstantiationBase // RENAME IHierarchicalInstantiation
-            , ITemplateOverlayable
+            , ITemplateOverlayable // REVIEW - can this be removed?
     {
         IInstantiationCollection Children { get; set; }
     }
@@ -24,7 +24,7 @@ namespace LionFire.Instantiating
     //{
     //    IReadHandleBase<TTemplate> Template { get; set; }
     //}
-    public interface IInstantiation<TTemplate> : IStateful, IInstantiation // RENAME IHierarchicalInstantiation
+    public interface IInstantiation<TTemplate> : IInstantiation // RENAME IHierarchicalInstantiation
          where TTemplate : ITemplate
     {
         //IReadHandleBase<TTemplate> RTemplate { get;  }

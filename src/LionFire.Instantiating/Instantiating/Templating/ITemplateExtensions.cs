@@ -45,7 +45,7 @@ namespace LionFire.Instantiating
                 var hInstance = inst as IHierarchicalTemplateInstance;
                 if (hInstance == null)
                 {
-                    throw new Exception($"Template of type {template.GetType().Name} is a hierarchical template, but the instance type does not implement {typeof(IHierarchicalTemplateInstance).Name}");
+                    throw new Exception($"Template of type '{template.GetType().Name}' is a hierarchical template, but the instance type '{inst.GetType().Name}' does not implement {typeof(IHierarchicalTemplateInstance).Name}");
                 }
                 foreach (var tChild in hierarchicalTemplate.Children)
                 {

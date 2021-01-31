@@ -10,7 +10,19 @@
   </ItemGroup>
 
   <ItemGroup>
+    <PackageReference Include="LiveSharp" Version="1.6.52" />
     <PackageReference Include="Microsoft.AspNetCore.Components.Web" Version="5.0.1" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\LionFire.LiveSharp\LionFire.LiveSharp.csproj" />
+    <ProjectReference Include="..\LionFire.UI.Entities\LionFire.UI.Entities.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Reference Include="MediatR">
+      <HintPath>..\..\..\valor\Unity\Assets\Valor\bin\Debug\netstandard2.0\MediatR.dll</HintPath>
+    </Reference>
   </ItemGroup>
 
 </Project>

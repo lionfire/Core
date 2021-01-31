@@ -19,7 +19,7 @@ namespace LionFire.Assets.Instantiating
     {
         #region Parameters
 
-        ITemplateParameters ITemplateInstance<TTemplate, EmptyTemplateParameters>.Parameters { get => null; set => throw new NotSupportedException(); }
+        ITemplateParameters IParameterizedTemplateInstance.Parameters { get => null; set => throw new NotSupportedException(); }
         public EmptyTemplateParameters Parameters
         {
             get => Singleton<EmptyTemplateParameters>.Instance;

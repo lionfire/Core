@@ -28,6 +28,7 @@ namespace LionFire.FlexObjects
         /// </summary>
         /// <param name="flex"></param>
         /// <returns></returns>
+        // REVIEW: better idea: just add a class FlexMetaData { object Flex; } to the Flex object
         public static IFlex Meta(this IFlex flex) => flex is IFlexWithMeta fwm ? fwm.Meta : GlobalFlexMetaDictionary.GetOrCreateValue(flex);
         static ConditionalWeakTable<object, Flex> GlobalFlexMetaDictionary = new ConditionalWeakTable<object, Flex>();
 
