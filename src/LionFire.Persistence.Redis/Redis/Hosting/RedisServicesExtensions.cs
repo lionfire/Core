@@ -9,21 +9,29 @@ namespace LionFire.Hosting
 {
     public static class RedisServicesExtensions
     {
-        public static IServiceCollection AddRedis(this IServiceCollection services)
+        public static IServiceCollection AddRedis(this IServiceCollection services) // RENAME to AddRedisPersistence, and also have AddRedisConnections which is just LionFire.Redis
             => services
                  .Configure<RedisPersisterOptions>(o => { })
                  .AddSingleton(s => s.GetService<IOptionsMonitor<RedisPersisterOptions>>()?.CurrentValue)
-                 .AddSingleton<RedisPersister>()
+
+        #region Handles
 
                  .AddSingleton<RedisHandleProvider>()
-                 .AddSingleton<IReadHandleProvider<RedisReference>, RedisHandleProvider>(s => s.GetRequiredService<RedisHandleProvider>())
-                 .AddSingleton<IReadWriteHandleProvider<RedisReference>, RedisHandleProvider>(s => s.GetRequiredService<RedisHandleProvider>())
 
+                 .AddSingleton<IReadHandleProvider<IRedisReference>, RedisHandleProvider>(s => s.GetRequiredService<RedisHandleProvider>())
+                 .AddSingleton<IReadWriteHandleProvider<IRedisReference>, RedisHandleProvider>(s => s.GetRequiredService<RedisHandleProvider>())
+                 .AddSingleton<IWriteHandleProvider<IRedisReference>, RedisHandleProvider>(s => s.GetRequiredService<RedisHandleProvider>())
+
+        #endregion
+
+        #region Persister
+
+                 .AddSingleton<RedisPersister>()
                  .AddSingleton<RedisPersisterProvider>()
-                 .AddSingleton<IPersisterProvider<RedisReference>, RedisPersisterProvider>(s => s.GetRequiredService<RedisPersisterProvider>())
-                 .AddSingleton<IPersisterProvider<RedisReference>, RedisPersisterProvider>(s => s.GetRequiredService<RedisPersisterProvider>())
+                 .AddSingleton<IPersisterProvider<IRedisReference>, RedisPersisterProvider>(s => s.GetRequiredService<RedisPersisterProvider>())
 
-                 .AddSingleton<IWriteHandleProvider<RedisReference>, RedisPersisterProvider>(s => s.GetRequiredService<RedisHandleProvider>())
+        #endregion
+
                  //.AddSingleton<IReadWriteHandleProvider<RedisReference>, RedisHandleProvider>(s => s.GetRequiredService<RedisHandleProvider>())
                  //.AddSingleton<IWriteHandleProvider<ProviderRedisReference>, RedisHandleProvider>(s => s.GetRequiredService<RedisHandleProvider>())
                  ;

@@ -2,6 +2,7 @@
 using LionFire.ObjectBus.Handles;
 using LionFire.ObjectBus.RedisPub;
 using LionFire.Persistence;
+using LionFire.Persistence.Handles;
 using LionFire.Referencing;
 using LionFire.Resolves;
 using MorseCode.ITask;
@@ -11,13 +12,17 @@ using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
 
+
 namespace LionFire.ObjectBus.Redis
 {
-    /// <summary>
-    /// H
-    /// </summary>
-    /// <typeparam name="T"></typeparam>
-    public class RedisSortedSetOBoc<T> : WatchableOBoc<RedisReference, T, RedisEntry>
+    
+        /// <summary>
+        /// H
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        public class RedisSortedSetOBoc<T>
+        : WatchableOBoc<RedisReference, T, RedisEntry>
+        where  T : class
     {
         #region Relationships
 

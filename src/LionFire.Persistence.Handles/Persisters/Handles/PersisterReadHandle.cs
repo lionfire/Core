@@ -21,6 +21,7 @@ namespace LionFire.Persistence.Persisters
 
         public PersisterReadHandle(TPersister persister, IReference<TValue> reference, TValue? preresolvedValue = default) 
             : base(persister, reference, preresolvedValue) { }
+        
     }
 
     [Ignore] // REVIEW - if good, put on other Persister*Handle classes.
@@ -38,6 +39,7 @@ namespace LionFire.Persistence.Persisters
         {
             Persister = persister ?? throw new ArgumentNullException(nameof(persister));
         }
+        
 
         [Ignore(LionSerializeContext.AllSerialization)]
         public TPersister? Persister { get; protected set; }

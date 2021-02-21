@@ -38,7 +38,8 @@ namespace LionFire.Assets
     //}
 
     [JsonConverter(typeof(KeyableConverter))]
-    public class RAsset<TValue> : ReadHandlePassthrough<TValue, IAssetReference<TValue>>, IAssetReadHandle, IKeyable, IEquatable<RAsset<TValue>> where TValue : IAsset<TValue>
+    public class RAsset<TValue> : ReadHandlePassthrough<TValue, IAssetReference<TValue>>, IAssetReadHandle, IKeyable, IEquatable<RAsset<TValue>> 
+        //where TValue : IAsset<TValue>
     {
         public new string Key
         {
@@ -54,8 +55,10 @@ namespace LionFire.Assets
 
         #region Construction and Implicit Operators
 
+        private static AssetReference<TValue> ThrowNoAssetReference() => throw new ArgumentException($"Could not get AssetReference<{typeof(TValue).FullName}> from asset");
+
         public static implicit operator RAsset<TValue>(string assetPath) => assetPath == default ? default : new RAsset<TValue> { Reference = new AssetReference<TValue>(assetPath) };
-        public static implicit operator RAsset<TValue>(TValue asset) => Object.Equals(asset, default(TValue)) ? default : new RAsset<TValue> { Reference = (AssetReference<TValue>)asset.Reference, Value = asset };
+        public static implicit operator RAsset<TValue>(TValue asset) => Object.Equals(asset, default(TValue)) ? default : new RAsset<TValue> { Reference = (asset as IReferencable)?.Reference as AssetReference<TValue> ?? ThrowNoAssetReference(), Value = asset };
         public static implicit operator RAsset<TValue>(RWAsset<TValue> asset) => asset == null ? null : new RAsset<TValue>(asset.ReadWriteHandle); // TOFLYWEIGHT
         public static implicit operator AssetReference<TValue>(RAsset<TValue> asset) => asset == null ? null : asset.Reference;
         public static implicit operator TValue(RAsset<TValue> rAsset) => rAsset == null ? default : rAsset.Value;

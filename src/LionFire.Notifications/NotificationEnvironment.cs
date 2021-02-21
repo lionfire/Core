@@ -1,4 +1,5 @@
-﻿using System.IO;
+﻿using System;
+using System.IO;
 
 namespace LionFire.Notifications.Wpf
 {
@@ -12,12 +13,13 @@ namespace LionFire.Notifications.Wpf
         {
             get
             {
-                return Path.GetFullPath(Path.Combine(
-                    LionFireEnvironment.Directories.CompanyProgramData,
-                    NotificationsSubPath,
-                    "localhost",
-                    DesktopNotificationQueue
-                    ));
+                throw new NotImplementedException();
+                //return Path.GetFullPath(Path.Combine(
+                //    LionFireEnvironment.Directories.CompanyProgramData,
+                //    NotificationsSubPath,
+                //    "localhost",
+                //    DesktopNotificationQueue
+                //    ));
             }
         }
     }

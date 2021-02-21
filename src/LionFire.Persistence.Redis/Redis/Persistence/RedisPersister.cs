@@ -1,6 +1,7 @@
 ﻿using LionFire.Dependencies;
 using LionFire.ExtensionMethods.Collections;
 using LionFire.IO;
+using LionFire.Persistence.Filesystemlike;
 using LionFire.Persistence.Persisters;
 using LionFire.Referencing;
 using LionFire.Serialization;
@@ -23,7 +24,7 @@ namespace LionFire.Persistence.Redis
     //        => persister.Retrieve<TValue>((TReference)reference.Path);
     //}
 
-    public class RedisPersister : FilesystemlikePersister<RedisReference, RedisPersisterOptions>, IPersister<RedisReference>
+    public class RedisPersister : FilesystemlikePersistence<IRedisReference, RedisPersisterOptions>, IPersister<IRedisReference>
     {
 
         #region Static
@@ -43,7 +44,7 @@ namespace LionFire.Persistence.Redis
 
         #endregion
 
-        public override RedisReference PathToReference(string fsPath) => fsPath;
+        public override IRedisReference PathToReference(string fsPath) => (RedisReference) fsPath;
 
         //protected override PersistenceContext DeserializingContext => deserializingContext;
         //private readonly PersistenceContext deserializingContext = new PersistenceContext

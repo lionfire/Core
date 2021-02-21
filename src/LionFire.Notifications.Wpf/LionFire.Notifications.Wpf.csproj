@@ -100,10 +100,6 @@
       <Project>{f2bc6b88-b29a-4086-b8b9-0649360f4581}</Project>
       <Name>LionFire.Notifications.UI</Name>
     </ProjectReference>
-    <ProjectReference Include="..\LionFire.Notifications\LionFire.Notifications.csproj">
-      <Project>{574f06b4-514b-46df-b3a6-3dc97e4e1e32}</Project>
-      <Name>LionFire.Notifications</Name>
-    </ProjectReference>
     <ProjectReference Include="..\LionFire.Reactive\LionFire.Reactive.csproj">
       <Project>{d3d5c710-d20b-41e3-b5c1-fe1609c2465d}</Project>
       <Name>LionFire.Reactive</Name>

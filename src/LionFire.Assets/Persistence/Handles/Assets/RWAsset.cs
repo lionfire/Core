@@ -1,6 +1,7 @@
 ﻿using LionFire.Persistence;
 using LionFire.Persistence.Handles;
 using LionFire.Referencing;
+using System;
 
 namespace LionFire.Assets
 {
@@ -15,14 +16,15 @@ namespace LionFire.Assets
 
 
     public class RWAsset<TValue> : ReadWriteHandlePassthrough<TValue, IAssetReference<TValue>>, IAssetReadWriteHandle
-        where TValue : IAsset<TValue>
+        //where TValue : IAsset<TValue>
     {
+        private static AssetReference<TValue> ThrowNoAssetReference() => throw new ArgumentException($"Could not get AssetReference<{typeof(TValue).FullName}> from asset");
 
         #region Construction and Implicit Operators
 
         public RWAsset() { }
         public RWAsset(IReadWriteHandle<TValue> handle) : base(handle) { }
-        public RWAsset(TValue asset) { Reference = (AssetReference<TValue>)asset.Reference; Value = asset;   }
+        public RWAsset(TValue asset) { Reference = (asset as IReferencable)?.Reference as AssetReference<TValue> ?? ThrowNoAssetReference(); Value = asset;   }
 
         public static implicit operator RWAsset<TValue>(string assetPath) => new RWAsset<TValue> { Reference = new AssetReference<TValue>(assetPath) };
         public static implicit operator RWAsset<TValue>(TValue asset) => new RWAsset<TValue>(asset);

@@ -11,11 +11,6 @@ namespace LionFire.Notifications
     {
     }
 
-    public interface INotifierHost
-    {
-        //ReadOnlyObservableCollection<Notifier> Notifiers { get; }
-    }
-
     public class NotifierHost : ExecutableBase, INotifierHost
     {
 

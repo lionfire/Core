@@ -6,7 +6,7 @@ using System.Text;
 namespace LionFire
 {
     public interface INotifyDisposing<T>
-        where T : class, INotifyDisposing<T>
+        where T : class//, INotifyDisposing<T>
     {
 #if AOT
 		event EventHandler Disposing;

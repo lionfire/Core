@@ -21,7 +21,7 @@ namespace LionFire.ObjectBus
         public override IReadHandle<T> GetReadHandle<T>(TReference reference, T preresolvedValue = default) => throw new NotImplementedException();
         public override IReadWriteHandle<T> GetReadWriteHandle<T>(IReference reference, T preresolvedValue = default) => throw new NotImplementedException();
         public override IReadHandle<T> GetReadHandle<T>(IReference reference, T preresolvedValue = default) => throw new NotImplementedException();
-        public override TReference1 TryGetReference<TReference1>(string uri) => throw new NotImplementedException();
+        public override (TReference1, string) TryGetReference<TReference1>(string uri) => throw new NotImplementedException();
 
         public SingletonOBusBase()
         {

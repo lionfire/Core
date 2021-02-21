@@ -1,18 +1,21 @@
 ﻿using System;
 using System.Collections.Generic;
-using LionFire.Persistence.Filesystem;
 using LionFire.Referencing;
 using LionFire.Serialization;
 
 namespace LionFire.Persistence.Redis
 {
-//#error NEXT: create a reference class for Redis.  How can we avoid making it 
-
     // REVIEW - Refactor this and other classes with Fs LionFire.Persistence.Filesystem
-    // TODO: move base classes to LionFire.Persistence or LionFire.Persistence.Common
+
+    public interface IRedisReference : IReference { }
+
+    public class RedisReference : RedisReference<object>
+    {
+
+    }
 
     [LionSerializable(SerializeMethod.ByValue)]
-    public class RedisReference : LocalReferenceBase<RedisReference>
+    public class RedisReference<T> : LocalReferenceBase<RedisReference<T>, T>, IRedisReference
     {
         #region Scheme
 
@@ -20,15 +23,20 @@ namespace LionFire.Persistence.Redis
         {
             public const string UriScheme = "redis";
         }
-        public override string UriScheme => Constants.UriScheme;
-        public override string UriPrefixDefault => "redis:///";
-        public override string UriSchemeColon => "redis:";
+
+        public string UriScheme => Constants.UriScheme;
+        //public override string UriPrefixDefault => "redis:///";
+        //public override string UriSchemeColon => "redis:";
 
         public static readonly IEnumerable<string> UriSchemes = new string[] { Constants.UriScheme };
 
         public override string Scheme => UriScheme;
 
+        public override IEnumerable<string> AllowedSchemes => UriSchemes;
+
         #endregion
+
+        public override string Key { get =>path; protected set => base.Path = value; }
 
         #region Construction and Implicit Construction
 
@@ -48,11 +56,11 @@ namespace LionFire.Persistence.Redis
         //    CopyFrom(reference);
         //}
 
-        public static implicit operator RedisReference(string path) => ToReference(path);
+        public static implicit operator RedisReference<T>(string path) => ToReference(path);
 
-        public static RedisReference ToReference(string path) => new RedisReference(path);
+        public static RedisReference<T> ToReference(string path) => new RedisReference<T>(path);
 
-        public static RedisReference ReferenceFromKey(string path) => ToReference(path);
+        public static RedisReference<T> ReferenceFromKey(string path) => ToReference(path);
 
         public static string ToReferenceKey(string path) => path;
 
@@ -62,20 +70,20 @@ namespace LionFire.Persistence.Redis
 
         public static void ValidateCanConvertFrom(IReference reference)
         {
-            
+
             if (reference.Scheme != Constants.UriScheme)
             {
                 throw new ReferenceException("UriScheme not supported");
             }
         }
 
-        public static RedisReference ConvertFrom(IReference parent)
+        public static RedisReference<T> ConvertFrom(IReference parent)
         {
-            var fileRef = parent as RedisReference;
+            var fileRef = parent as RedisReference<T>;
 
             if (fileRef == null && parent.Scheme == Constants.UriScheme)
             {
-                fileRef = new RedisReference(parent.Path);
+                fileRef = new RedisReference<T>(parent.Path);
             }
 
             return fileRef;
@@ -87,7 +95,7 @@ namespace LionFire.Persistence.Redis
 
     public static class RedisReferenceExtensions
     {
-        public static RedisReference ToRedisReference(this string path) => new RedisReference(path);
+        public static RedisReference<T> ToRedisReference<T>(this string path) => new RedisReference<T>(path);
     }
 
 }

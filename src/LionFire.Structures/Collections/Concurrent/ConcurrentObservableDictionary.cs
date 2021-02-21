@@ -12,7 +12,7 @@ using System.Threading.Tasks;
 
 namespace LionFire.Structures
 {
-    public class ConcurrentObservableDictionary<TKey, TValue> : ConcurrentDictionary<TKey, TValue>
+    public class LionFireConcurrentObservableDictionary<TKey, TValue> : ConcurrentDictionary<TKey, TValue>
     {
         public event EventHandler<DictionaryChangedEventArgs<TKey, TValue>> CollectionChanged;
 
@@ -53,42 +53,42 @@ namespace LionFire.Structures
         }
 
         #region Ctors
-        public ConcurrentObservableDictionary()
+        public LionFireConcurrentObservableDictionary()
         {
 
         }
 
-        public ConcurrentObservableDictionary(IEnumerable<KeyValuePair<TKey, TValue>> collection)
+        public LionFireConcurrentObservableDictionary(IEnumerable<KeyValuePair<TKey, TValue>> collection)
             : base(collection)
         {
 
         }
 
-        public ConcurrentObservableDictionary(IEqualityComparer<TKey> comparer)
+        public LionFireConcurrentObservableDictionary(IEqualityComparer<TKey> comparer)
             : base(comparer)
         {
 
         }
 
-        public ConcurrentObservableDictionary(int concurrencyLevel, int capacity)
+        public LionFireConcurrentObservableDictionary(int concurrencyLevel, int capacity)
             : base(concurrencyLevel, capacity)
         {
 
         }
 
-        public ConcurrentObservableDictionary(IEnumerable<KeyValuePair<TKey, TValue>> collection, IEqualityComparer<TKey> comparer)
+        public LionFireConcurrentObservableDictionary(IEnumerable<KeyValuePair<TKey, TValue>> collection, IEqualityComparer<TKey> comparer)
             : base(collection, comparer)
         {
 
         }
 
-        public ConcurrentObservableDictionary(int concurrencyLevel, int capacity, IEqualityComparer<TKey> comparer)
+        public LionFireConcurrentObservableDictionary(int concurrencyLevel, int capacity, IEqualityComparer<TKey> comparer)
             : base(concurrencyLevel, capacity, comparer)
         {
 
         }
 
-        public ConcurrentObservableDictionary(int concurrencyLevel, IEnumerable<KeyValuePair<TKey, TValue>> collection, IEqualityComparer<TKey> comparer)
+        public LionFireConcurrentObservableDictionary(int concurrencyLevel, IEnumerable<KeyValuePair<TKey, TValue>> collection, IEqualityComparer<TKey> comparer)
             : base(concurrencyLevel, collection, comparer)
         {
 

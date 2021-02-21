@@ -19,6 +19,9 @@ namespace LionFire.Referencing
         //    get;
         //}
 
+        protected LocalReferenceBase() { }
+        protected LocalReferenceBase(string path) { InternalSetPath(path); }
+
         #region Path
 
         [SetOnce]

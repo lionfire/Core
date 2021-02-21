@@ -117,10 +117,10 @@ namespace LionFire.Services
         ///  - 
         /// LionChat.ClientID.PID.run
         ///  - User account
-        /// ValorClient.ClientID.PID.run
+        /// ValorNetClient.ClientID.PID.run
         ///  - User account
         ///  - Theatre
-        /// ValorClient.ClientID.PID.run
+        /// ValorNetClient.ClientID.PID.run
         ///  - User account
         ///  
         /// </summary>

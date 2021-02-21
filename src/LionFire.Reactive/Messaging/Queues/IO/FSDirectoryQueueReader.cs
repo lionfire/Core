@@ -320,7 +320,7 @@ namespace LionFire.Messaging.Queues.IO
 
         #region Start / Stop
 
-        public async Task Start(CancellationToken cancellationToken = default)
+        public async Task StartAsync(CancellationToken cancellationToken = default)
         {
             await Initialize();
             if (Template.PollMillisecondsInterval > 0)
@@ -329,11 +329,13 @@ namespace LionFire.Messaging.Queues.IO
             }
         }
 
-        public Task Stop(CancellationToken cancellationToken = default)
+        public Task StopAsync(CancellationToken? cancellationToken = default)
         {
             IsPolling = false;
             return Task.CompletedTask;
         }
+
+        
 
         #endregion
 

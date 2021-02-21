@@ -6,14 +6,14 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 
-namespace LionFire.Services
+namespace LionFire.Hosting
 {
     public static class RedisDependencyInjectionExtensions
     {
-        public static IHostBuilder AddRedis(this IHostBuilder hostBuilder, IConfiguration configuration = null) 
+        public static IHostBuilder AddRedisConnectionManager(this IHostBuilder hostBuilder, IConfiguration configuration = null) 
             => hostBuilder.AddConnectionManager<RedisConnection, RedisConnectionOptions>(configuration);
 
-        public static IServiceCollection AddRedis(this IServiceCollection services, IConfiguration configuration)
+        public static IServiceCollection AddRedisConnectionManager(this IServiceCollection services, IConfiguration configuration)
             => services.AddConnectionManager<RedisConnection, RedisConnectionOptions>(configuration);
     }
 }

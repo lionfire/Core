@@ -6,45 +6,30 @@ using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
-
-// Inspired by FrostyFeet https://forums.stride3d.net/t/entity-system-in-2-0/1021/2
 
 namespace LionFire.Dispatching
 {
-
-    // ENH: Allow queuing actions before this instance is available -- buffer them in another class and hold them until StrideDispatcher arrives
-    //public class StrideDispatcherGateway, IDispatcher
-    //{
-
-    //}
-
-    public class ExceptionDispatcher : IDispatcher
-    {
-
-        public bool IsInvokeRequired => throw new DependencyMissingException();
-
-        public event EventHandler<DispatcherUnhandledExceptionEventArgs> UnhandledException;
-
-        public Task BeginInvoke(Action action) => throw new DependencyMissingException();
-        public Task<object> BeginInvoke(Func<object> func) => throw new DependencyMissingException();
-        public void Invoke(Action action) => throw new DependencyMissingException();
-        public object Invoke(Func<object> func) => throw new DependencyMissingException();
-    }
+    // Inspired by FrostyFeet https://forums.stride3d.net/t/entity-system-in-2-0/1021/2
 
     public class StrideDispatcher : AsyncScript, IDispatcher
     {
         #region (Static)
 
-        public static IDispatcher Instance => instance ?? (IDispatcher) new ExceptionDispatcher();
+        public static StrideDispatcher Instance => instance ?? throw new DependencyMissingException(typeof(StrideDispatcher).Name);
         private static StrideDispatcher instance;
 
         #endregion
 
         #region Construction
 
+        int threadId;
+
         public StrideDispatcher()
         {
+            threadId = Thread.CurrentThread.ManagedThreadId;
+
             // TODO: Guard against multiple?
             instance = this;
         }
@@ -52,7 +37,6 @@ namespace LionFire.Dispatching
         #endregion
 
         #region State
-
 
         private ConcurrentQueue<Action> queue = new ConcurrentQueue<Action>();
 
@@ -64,13 +48,13 @@ namespace LionFire.Dispatching
         {
             while (Game.IsRunning)
             {
-                while(queue.TryDequeue(out Action action))
+                while (queue.TryDequeue(out Action action))
                 {
                     try
                     {
                         action.Invoke();
                     }
-                    catch(Exception ex)
+                    catch (Exception ex)
                     {
                         UnhandledException?.Invoke(this, new DispatcherUnhandledExceptionEventArgs(this, ex));
                     }
@@ -86,19 +70,42 @@ namespace LionFire.Dispatching
         // TODO: Implement
         // ENH: more advanced scheduling (time quota, prioritization)
 
-        public bool IsInvokeRequired => throw new NotImplementedException();
+        public bool IsInvokeRequired => Thread.CurrentThread.ManagedThreadId == threadId;
 
         public event EventHandler<DispatcherUnhandledExceptionEventArgs> UnhandledException;
 
         public Task BeginInvoke(Action action)
         {
-            queue.Enqueue(action);
+            if (IsInvokeRequired)
+            {
+                queue.Enqueue(action);
+            }
+            else
+            {
+                action();
+            }
             return Task.CompletedTask;
         }
-        public Task<object> BeginInvoke(Func<object> func) => throw new NotImplementedException();
+        public void Invoke(Action action) => BeginInvoke(action);
 
-        public void Invoke(Action action) => throw new NotImplementedException();
-        public object Invoke(Func<object> func) => throw new NotImplementedException();
+        #region STUB
+
+        // TODO: Request/response to return a value from the stride game thread
+        public Task<object> BeginInvoke(Func<object> func)
+        {
+            if (IsInvokeRequired)
+            {
+                queue.Enqueue(() => func());
+                return Task.FromResult<object>(null);
+            }
+            else
+            {
+                return Task.FromResult(func());
+            }
+        }
+        public object Invoke(Func<object> func) => BeginInvoke(func);
+
+        #endregion
 
         #endregion
 

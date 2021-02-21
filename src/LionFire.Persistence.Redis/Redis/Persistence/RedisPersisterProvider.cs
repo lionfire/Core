@@ -6,7 +6,7 @@ using System.Text;
 
 namespace LionFire.Persistence.Redis
 {
-    public class RedisPersisterProvider : OptionallyNamedPersisterProvider<RedisReference, RedisPersister, RedisPersisterOptions>
+    public class RedisPersisterProvider : OptionallyNamedPersisterProvider<IRedisReference, RedisPersister, RedisPersisterOptions>
     {
         public RedisPersisterProvider(IServiceProvider serviceProvider, IOptionsMonitor<RedisPersisterOptions> options)
             : base(serviceProvider, options)

@@ -23,8 +23,11 @@ namespace LionFire.ObjectBus.Handles
     /// (Examples: filesystem directory, database table.)
     /// </summary>
     /// <typeparam name="TListEntry"></typeparam>
-    public abstract class ROBoc<TReference, T, TListEntry> : ReadHandle<TReference, INotifyingReadOnlyCollection<TListEntry>>, RC<T, TListEntry>
-        where TReference : IReference
+    public abstract class ROBoc<TReference, T, TListEntry> 
+        : ReadHandle<TReference, T>
+        , RC<T, TListEntry>
+        where TReference : IReference<T>, IReference<INotifyingReadOnlyCollection<TListEntry>>
+        where T : INotifyingReadOnlyCollection<TListEntry>
         where TListEntry : ICollectionEntry
     {
         #region Construction

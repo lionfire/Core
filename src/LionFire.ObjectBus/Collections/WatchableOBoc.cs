@@ -1,18 +1,22 @@
 ﻿using LionFire.Referencing;
 using LionFire.Persistence.Handles;
+using LionFire.Collections;
 
 namespace LionFire.ObjectBus.Handles
 {
     // TODO: Make this extrinsic?
 
-    public abstract class SyncableOBoc : ROBoc<IReference, object, OBaseCollectionEntry>
+#if UNUSED
+    public abstract class SyncableOBoc : ROBoc<IReference<object>, object, OBaseCollectionEntry>
     {
         public SyncableOBoc() { }
         public SyncableOBoc(IReference reference) : base(reference) { }
     }
+#endif
 
     public abstract class WatchableOBoc<TReference, T, TListEntry> : ROBoc<TReference, T, TListEntry>, IWatchableRC<T, TListEntry>
-        where TReference : IReference
+        where TReference :  IReference<T>, IReference<INotifyingReadOnlyCollection<TListEntry>>
+        where T : INotifyingReadOnlyCollection<TListEntry>
         where TListEntry : OBaseCollectionEntry
     {
 

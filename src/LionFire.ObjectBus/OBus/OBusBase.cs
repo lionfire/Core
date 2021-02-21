@@ -104,7 +104,7 @@ namespace LionFire.ObjectBus
         
         public IReadWriteHandle<T> GetReadWriteHandle<T>(TReference reference) => (IReadWriteHandle<T>)handleCtor.Invoke(new object[] { reference, TryGetOBase(reference) });
         //new OBaseHandle<T>(reference, DefaultOBase, handleObject);
-        public IReadHandle<T> GetReadHandle<T>(TReference reference) => new OBaseReadHandle<T>(reference, DefaultOBase);
+        public IReadHandle<T> GetReadHandle<T>(TReference reference) => new OBaseReadHandle<T>((IReference<T>)reference, DefaultOBase);
         public abstract IReadWriteHandle<T> GetReadWriteHandle<T>(TReference reference, T preresolvedValue = default);
         public abstract IReadHandle<T> GetReadHandle<T>(TReference reference, T preresolvedValue = default);
     }
@@ -114,7 +114,7 @@ namespace LionFire.ObjectBus
     /// </summary>
     /// <typeparam name="TConcrete"></typeparam>
     public abstract class OBusBase<TConcrete> : IOBus
-    where TConcrete : IOBus
+        where TConcrete : IOBus
     {
 
         public virtual IOBase SingleOBase => null;
@@ -239,7 +239,7 @@ namespace LionFire.ObjectBus
 #endif
         }
 
-        public virtual IReadHandle<T> GetReadHandle<T>(IReference reference)
+        public virtual IReadHandle<T> GetReadHandle<T>(IReference<T> reference)
         {
             // TODO: If handle reuse is on, try to find existing handle.
 
@@ -263,7 +263,7 @@ namespace LionFire.ObjectBus
 
         public abstract IReadWriteHandle<T> GetReadWriteHandle<T>(IReference reference, T preresolvedValue = default);
         public abstract IReadHandle<T> GetReadHandle<T>(IReference reference, T preresolvedValue = default);
-        public abstract TReference TryGetReference<TReference>(string uri) where TReference : IReference;
+        public abstract (TReference, string) TryGetReference<TReference>(string uri) where TReference : IReference;
     }
     
 }

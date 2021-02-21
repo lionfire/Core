@@ -700,21 +700,21 @@ namespace LionFire.Vos.VosApp
         public static Vob GetAssetFolder<AssetType>()
         {
             // TODO: Filtered Vob
-            return V.Assets[AssetPaths.GetAssetTypeFolder(typeof(AssetType))];
+            return V.Assets[Assets.GetAssetTypeFolder(typeof(AssetType))];
         }
 
         public static Vob GetAssetFolder(Type assetType)
         {
             // TODO: Filtered Vob
-            return V.Assets[AssetPaths.GetAssetTypeFolder(assetType)];
+            return V.Assets[Assets.GetAssetTypeFolder(assetType)];
         }
 
         public static IReadHandle<AssetType> GetAsset<AssetType>(string name)
-            where AssetType : class, new() => V.Assets[AssetPaths.GetAssetTypeFolder(typeof(AssetType)), name];
+            where AssetType : class, new() => V.Assets[Assets.GetAssetTypeFolder(typeof(AssetType)), name];
 
-        public static Vob GetAsset(Type assetType, string name) => V.Assets[AssetPaths.GetAssetTypeFolder(assetType), name];
+        public static Vob GetAsset(Type assetType, string name) => V.Assets[Assets.GetAssetTypeFolder(assetType), name];
 
-        public static string GetAssetPath(string name, Type assetType) => V.Assets[AssetPaths.GetAssetTypeFolder(assetType), name].Path;
+        public static string GetAssetPath(string name, Type assetType) => V.Assets[Assets.GetAssetTypeFolder(assetType), name].Path;
 
         public static string NameToPathForType(string name, Type type) // 
         {

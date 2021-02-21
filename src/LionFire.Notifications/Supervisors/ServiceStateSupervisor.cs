@@ -1,22 +1,19 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
 using System.Threading.Tasks;
 using LionFire.Execution;
 using System.ComponentModel;
 using LionFire.Instantiating;
 using LionFire.Notifications;
-using LionFire.Assets;
 using System.Threading;
 using System.Diagnostics;
-using LionFire.Persistence.Assets;
+using LionFire.Assets;
 
 namespace LionFire.Supervisors
 {
     public class TServiceStateSupervisorBase
     {
-        public AssetReadHandle<Notifier> ServiceNotStarted { get; set; } = "ServiceNotStarted";
-        public AssetReadHandle<Notifier> ServiceFaulted { get; set; } = "ServiceFaulted";
+        public RAsset<Notifier> ServiceNotStarted { get; set; } = "ServiceNotStarted";
+        public RAsset<Notifier> ServiceFaulted { get; set; } = "ServiceFaulted";
     }
 
     public class TServiceStateSupervisor : TServiceStateSupervisorBase, ITemplate<ServiceStateSupervisor>
@@ -51,20 +48,17 @@ namespace LionFire.Supervisors
         #endregion
 
         private Timer timer;
-
-        public Task Start()
+        public Task StartAsync(CancellationToken cancellationToken = default)
         {
             timer = new Timer(new TimerCallback((x) => { Debug.WriteLine("OnTimer - TODO");  }), null, 1000, 1000);
             return Task.CompletedTask;
         }
-        public Task Stop()
+        public Task StopAsync(CancellationToken? cancellationToken = default)
         {
             timer?.Dispose();
             timer = null;
             return Task.CompletedTask;
         }
-
-
 
         #region INotifyPropertyChanged Implementation
 
