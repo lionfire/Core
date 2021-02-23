@@ -5,7 +5,7 @@ using LionFire.Referencing;
 
 namespace LionFire.IO
 {
-    public abstract class RLocalFileBase<T> : ReadHandleBase<FileReference, T>
+    public abstract class RLocalFileBase<T> : ReadHandleBase<FileReference<T>, T>
         where T : class
     {
         #region Path

@@ -7,7 +7,7 @@ using LionFire.Referencing;
 
 namespace LionFire.IO
 {
-    public abstract class WLocalFileBase<T> : ReadWriteHandleBase<FileReference, T>
+    public abstract class WLocalFileBase<T> : ReadWriteHandleBase<FileReference<T>, T>
         where T : class
     {
         #region Path

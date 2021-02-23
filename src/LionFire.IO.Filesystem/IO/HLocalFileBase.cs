@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 namespace LionFire.IO
 {
 
-    public abstract class HLocalFileBase<T> : ReadWriteHandle<FileReference, T>
+    public abstract class HLocalFileBase<T> : ReadWriteHandle<FileReference<T>, T>
         where T : class
     {
         //public override string Key { get => Path; set => Path = Key; }
