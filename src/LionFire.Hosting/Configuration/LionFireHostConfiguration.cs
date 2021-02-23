@@ -1,22 +1,24 @@
-﻿using Microsoft.Extensions.Configuration;
+﻿#nullable enable
+using Microsoft.Extensions.Configuration;
 using System.IO;
 using System.Reflection;
 
 namespace LionFire.Hosting
 {
-    // REVIEW - better name for this class and GetConfiguration method?
-
     public static class HostConfiguration
     {
+        public static IConfigurationRoot CreateDefault(string? basePath = null)
+            => CreateDefaultBuilder(basePath).Build();
+
         /// <summary>
         /// Get a typical configuration from appsettings.json and environment variables
         /// </summary>
         /// <returns></returns>
-        public static IConfigurationRoot GetConfiguration() 
+        public static IConfigurationBuilder CreateDefaultBuilder(string? basePath = null)
             => new ConfigurationBuilder()
-               .SetBasePath(Path.GetDirectoryName(Assembly.GetEntryAssembly()?.Location) ?? System.IO.Directory.GetCurrentDirectory())
+               .SetBasePath(basePath ?? Path.GetDirectoryName(Assembly.GetEntryAssembly()?.Location) ?? System.IO.Directory.GetCurrentDirectory())
                .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
-               .AddEnvironmentVariables()
-               .Build();
+               .AddEnvironmentVariables();
+        
     }
 }

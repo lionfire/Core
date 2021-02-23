@@ -11,7 +11,7 @@ namespace LionFire.Hosting
         {
             if(config == null && defaultBuilder)
             {
-                config = HostConfiguration.GetConfiguration();
+                config = HostConfiguration.CreateDefault();
             }
 
             return (defaultBuilder ? Host.CreateDefaultBuilder(args) : new HostBuilder())
