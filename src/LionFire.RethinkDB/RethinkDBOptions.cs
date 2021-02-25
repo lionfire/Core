@@ -1,8 +1,9 @@
-﻿using System;
+﻿using LionFire.Data;
+using System;
 
 namespace LionFire.RethinkDB
 {
-    public class RethinkDBOptions
+    public class RethinkDBOptions : ConnectionOptions<RethinkDBOptions>
     {
         public string Host { get; set; }
         public int Port { get; set; } = 28015;

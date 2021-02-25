@@ -63,7 +63,8 @@ namespace LionFire.Data
 
         protected int connectionCount = 0;
 
-        public ConnectionBase(TConnectionOptions options, ILogger<TConcrete> logger)
+
+        public ConnectionBase(/* TODO: IOptionsMonitor */TConnectionOptions options, ILogger<TConcrete> logger)
         {
             this.logger = logger;
             Options = options;

@@ -4,6 +4,9 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using StackExchange.Redis;
+using System;
+using System.Linq;
+using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -21,6 +24,16 @@ namespace LionFire.Redis
     //    Disconnected,
     //}
 
+    public static class AsyncEnumerable
+    {
+#pragma warning disable CS1998
+        public static async IAsyncEnumerable<T> Empty<T>()
+#pragma warning restore CS1998
+        {
+            yield break;
+        }
+    }
+
     /// <summary>
     /// Connection string:
     ///   Comma separated host:port
@@ -33,6 +46,45 @@ namespace LionFire.Redis
         public IDatabase Db => redis.GetDatabase();
         public ConnectionMultiplexer Redis => redis;
         private ConnectionMultiplexer redis;
+
+        public void BatchesExecute<T>(IEnumerable<T> source, int batchSize, Action<List<T>> action)
+        {
+            List<T> batch = new List<T>();
+            foreach (var item in source)
+            {
+                batch.Add(item);
+                if (batch.Count == batchSize)
+                {
+                    action(batch);
+                    batch = new List<T>();
+                }
+            }
+            if (batch.Count != 0)
+            {
+                action(batch);
+            }
+        }
+
+        public IAsyncEnumerable<RedisKey> Keys(int database = -1, RedisValue pattern = default, int pageSize = 250)
+        {
+            foreach (var endpoint in redis.GetEndPoints().OfType<System.Net.DnsEndPoint>())
+            {
+                var server = redis.GetServer(endpoint.Host + ":" + endpoint.Port);
+                return server.KeysAsync(database, pattern, pageSize);
+            }
+
+            return AsyncEnumerable.Empty<RedisKey>();
+
+            //if (pattern == null)
+            //{
+            //    var result = redis.GetDatabase(0).Execute("scan", 0, "match", pattern);
+            //    throw new NotImplementedException();
+            //} else
+            //{
+            //    var result = redis.GetDatabase(0).Execute("scan", 0, "match", pattern);
+            //    return result.Select(key => (string)key);
+            //}
+        }
 
         public RedisConnection(string name, IOptionsMonitor<NamedConnectionOptions<RedisConnectionOptions>> options, ILogger<RedisConnection> logger) : base(name, options, logger)
         {

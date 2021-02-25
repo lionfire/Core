@@ -10,19 +10,18 @@ using static RethinkDb.Driver.RethinkDB;
 
 namespace LionFire.RethinkDB
 {
-    public class RethinkDBConnection : ConnectionBase
+    public class RethinkDBConnection : ConnectionBase<RethinkDBOptions, RethinkDBConnection>
     {
-        public RethinkDBOptions Options => options.CurrentValue;
-        IOptionsMonitor<RethinkDBOptions> options;
+        //public RethinkDBOptions Options => options.CurrentValue;
+        //IOptionsMonitor<RethinkDBOptions> options;
 
-        public RethinkDBConnection(ILogger<RethinkDBConnection> logger, IOptionsMonitor<RethinkDBOptions> options) : base(logger) {
-            this.options = options;
+        public RethinkDBConnection(ILogger<RethinkDBConnection> logger, IOptionsMonitor<RethinkDBOptions> options) : base(options.CurrentValue, logger) {
         }
 
         public Connection Connection => connection;
         private Connection connection;
 
-        public override async Task Connect(CancellationToken cancellationToken = default(CancellationToken))
+        public override async Task ConnectImpl(CancellationToken cancellationToken = default(CancellationToken))
         {
             await Task.Run(() =>
             {
@@ -35,7 +34,7 @@ namespace LionFire.RethinkDB
                                          .Connect();
             }, cancellationToken);
         }
-        public override async Task Disconnect(CancellationToken cancellationToken = default(CancellationToken))
+        public override async Task DisconnectImpl(CancellationToken cancellationToken = default(CancellationToken))
         {
             if (connection != null)
             {

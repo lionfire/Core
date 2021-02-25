@@ -13,9 +13,10 @@ namespace LionFire.RethinkDB
     /// Returns a RethinkConnection (wraps ConnectionMultiplexer) based on a Configuration key for a connection string.  Will reuse connections that match the same
     /// connection string.
     /// </summary>
-    public class RethinkDBConnectionManager : ConnectionManagerBase<RethinkDBConnection>
+    public class RethinkDBConnectionManager : ConnectionManager<RethinkDBConnection, RethinkDBOptions>
     {
-        public RethinkDBConnectionManager(IConfiguration configuration, ILogger<RethinkDBConnectionManager> logger, IServiceProvider serviceProvider) : base(configuration, logger, serviceProvider)
+        public RethinkDBConnectionManager(IOptionsMonitor<NamedConnectionOptions<RethinkDBOptions>> optionsMonitor, ILogger<RethinkDBConnectionManager> logger, IServiceProvider serviceProvider) 
+            : base(optionsMonitor, logger, serviceProvider)
         {
         }
     }
