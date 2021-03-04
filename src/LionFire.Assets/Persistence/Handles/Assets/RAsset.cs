@@ -47,24 +47,29 @@ namespace LionFire.Assets
             set => Reference = new AssetReference<TValue>(value);
         }
 
+
+
+        #region Construction and Implicit Operators
+
         public static RAsset<TValue> FromKey(string key)
         {
             throw new NotImplementedException();
         }
 
+        public RAsset() { }
+        public RAsset(IReadHandle<TValue> handle) : base(handle) { }
 
-        #region Construction and Implicit Operators
 
         private static AssetReference<TValue> ThrowNoAssetReference() => throw new ArgumentException($"Could not get AssetReference<{typeof(TValue).FullName}> from asset");
 
         public static implicit operator RAsset<TValue>(string assetPath) => assetPath == default ? default : new RAsset<TValue> { Reference = new AssetReference<TValue>(assetPath) };
-        public static implicit operator RAsset<TValue>(TValue asset) => Object.Equals(asset, default(TValue)) ? default : new RAsset<TValue> { Reference = (asset as IReferencable)?.Reference as AssetReference<TValue> ?? ThrowNoAssetReference(), Value = asset };
+        public static implicit operator RAsset<TValue>(TValue asset) => Object.Equals(asset, default(TValue)) ? default : new RAsset<TValue> { Reference = (asset as IReferencable)?.Reference as AssetReference<TValue> /*?? ThrowNoAssetReference()*/, Value = asset }; // TODO: Serialize object if AssetReference is null?
+        
         public static implicit operator RAsset<TValue>(RWAsset<TValue> asset) => asset == null ? null : new RAsset<TValue>(asset.ReadWriteHandle); // TOFLYWEIGHT
         public static implicit operator AssetReference<TValue>(RAsset<TValue> asset) => asset == null ? null : asset.Reference;
         public static implicit operator TValue(RAsset<TValue> rAsset) => rAsset == null ? default : rAsset.Value;
 
-        public RAsset() { }
-        public RAsset(IReadHandle<TValue> handle) : base(handle) { }
+        
 
         #endregion
 

@@ -10,7 +10,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="LiveSharp" Version="1.6.52" />
+    <PackageReference Include="LiveSharp" Version="1.6.54" />
     <PackageReference Include="Microsoft.AspNetCore.Components.Web" Version="5.0.1" />
   </ItemGroup>
 
