@@ -151,7 +151,7 @@ namespace LionFire.ExtensionMethods.Copying
             Type otherType = other.GetType();
             bool sameType = myType == otherType;
 
-            if (!otherPropertyInfo.CanRead || !otherPropertyInfo.CanWrite)
+            if (!otherPropertyInfo.CanRead)
             {
                 return;
             }
@@ -178,6 +178,10 @@ namespace LionFire.ExtensionMethods.Copying
             var myPi = sameType ? otherPropertyInfo : myType.GetProperty(otherPropertyInfo.Name);
 
             if (myPi == null || myPi.PropertyType != otherPropertyInfo.PropertyType)
+            {
+                return;
+            }
+            if (!myPi.CanWrite)
             {
                 return;
             }

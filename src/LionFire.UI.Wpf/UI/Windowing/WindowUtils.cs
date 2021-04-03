@@ -10,22 +10,26 @@ namespace LionFire.UI.Wpf
 {
     public static class WindowUtils
     {
-        public static int DesktopWidth
+        // See also: https://github.com/micdenny/WpfScreenHelper
+
+        public static double DesktopWidth
         {
             get
             {
-                int w = 0;
-                foreach (var s in System.Windows.Forms.Screen.AllScreens) { w += s.Bounds.Width; }
-                return w;
+                return System.Windows.SystemParameters.VirtualScreenWidth;
+                //int w = 0;
+                //foreach (var s in System.Windows.Forms.Screen.AllScreens) { w += s.Bounds.Width; }
+                //return w;
             }
         }
-        public static int DesktopHeight
+        public static double DesktopHeight
         {
             get
             {
-                int h = 0;
-                foreach (var s in System.Windows.Forms.Screen.AllScreens) { h += s.Bounds.Height; }
-                return h;
+                return System.Windows.SystemParameters.VirtualScreenHeight;
+                //int h = 0;
+                //foreach (var s in System.Windows.Forms.Screen.AllScreens) { h += s.Bounds.Height; }
+                //return h;
             }
         }
 

@@ -17,6 +17,29 @@ namespace LionFire.Dependencies
     /// </remarks>
     public class DependencyContext : IServiceProvider // RENAME to AmbientContext?
     {
+        /// <summary>
+        /// Initializes DependencyContext.Current, or the DependencyContext.AsyncLocal  if LionFireEnvironment.IsMultiApplicationEnvironment is true
+        /// </summary>
+        public static void InitializeCurrent()
+        {
+            if (LionFireEnvironment.IsMultiApplicationEnvironment)
+            {
+                DependencyLocatorConfiguration.UseServiceProviderToActivateSingletons = false;
+                DependencyLocatorConfiguration.UseSingletons = false;
+
+                if (DependencyContext.AsyncLocal != null) throw new AlreadyException("UNEXPECTED: LionFireEnvironment.IsMultiApplicationEnvironment == true && DependencyContext.AsyncLocal != null "); // FUTURE - deinit on Run complete?  Unit tests running in series?
+
+                DependencyContext.AsyncLocal = new DependencyContext();
+            }
+            else
+            {
+                if (DependencyContext.Current == null)
+                {
+                    DependencyContext.Current = new DependencyContext();
+                }
+            }
+        }
+
         public static void Reset()
         {
             current = null;

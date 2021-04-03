@@ -146,21 +146,17 @@ namespace LionFire.Hosting
                 DependencyContext.Current.ServiceProvider = null;
             }
         }
-        public static IHost InitializeDependencyContext(this IHost host)
+        public static IHost InitializeDependencyContextServiceProvider(this IHost host)
         {
-            InitializeDependencyContext(host.Services);
+            InitializeDependencyContextServiceProvider(host.Services);
             return host;
         }
-        public static IServiceProvider InitializeDependencyContext(this IServiceProvider serviceProvider)
+
+        public static IServiceProvider InitializeDependencyContextServiceProvider(this IServiceProvider serviceProvider)
         {
             if (LionFireEnvironment.IsMultiApplicationEnvironment)
             {
-                DependencyLocatorConfiguration.UseServiceProviderToActivateSingletons = false;
-                DependencyLocatorConfiguration.UseSingletons = false;
-
-                if (DependencyContext.AsyncLocal != null) throw new AlreadyException("UNEXPECTED: LionFireEnvironment.IsMultiApplicationEnvironment == true && DependencyContext.AsyncLocal != null "); // FUTURE - deinit on Run complete?  Unit tests running in series?
-
-                DependencyContext.AsyncLocal = new DependencyContext();
+                if (DependencyContext.AsyncLocal == null) throw new Exception("IsMultiApplicationEnvironment but DependencyContext.AsyncLocal == null");
                 DependencyContext.Current.ServiceProvider = serviceProvider;
             }
             else
@@ -178,8 +174,37 @@ namespace LionFire.Hosting
             return serviceProvider;
         }
 
+        //public static IServiceProvider InitializeDependencyContext_Old(this IServiceProvider serviceProvider)
+        //{
+        //    if (LionFireEnvironment.IsMultiApplicationEnvironment)
+        //    {
+        //        DependencyLocatorConfiguration.UseServiceProviderToActivateSingletons = false;
+        //        DependencyLocatorConfiguration.UseSingletons = false;
+
+        //        if (DependencyContext.AsyncLocal != null) throw new AlreadyException("UNEXPECTED: LionFireEnvironment.IsMultiApplicationEnvironment == true && DependencyContext.AsyncLocal != null "); // FUTURE - deinit on Run complete?  Unit tests running in series?
+
+        //        DependencyContext.AsyncLocal = new DependencyContext();
+        //        DependencyContext.Current.ServiceProvider = serviceProvider;
+        //    }
+        //    else
+        //    {
+        //        if (DependencyContext.Current == null)
+        //        {
+        //            DependencyContext.Current = new DependencyContext();
+        //        }
+
+        //        if (DependencyContext.Current.ServiceProvider == null)
+        //        {
+        //            DependencyContext.Current.ServiceProvider = serviceProvider;
+        //        }
+        //    }
+        //    return serviceProvider;
+        //}
+
         public static async Task RunAsync(this IHostBuilder hostBuilder, Func<IServiceProvider, Task> taskFactory)
         {
+            DependencyContext.InitializeCurrent();
+
             var tcs = new TaskCompletionSource<object>();
 
             Exception exception = null;
@@ -205,7 +230,7 @@ namespace LionFire.Hosting
                         ;
                  })
             .Build()
-            .InitializeDependencyContext()
+            .InitializeDependencyContextServiceProvider()
             .RunAsync()
             .ContinueWith(t =>
             {
@@ -222,7 +247,6 @@ namespace LionFire.Hosting
             });
 
             await tcs.Task;
-            //return tcs.Task;
         }
     }
 }

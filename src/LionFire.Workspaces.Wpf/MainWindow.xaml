@@ -1,0 +1,18 @@
+﻿<Window x:Class="LionFire.Workspaces.Wpf.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:LionFire.Workspaces.Wpf"
+        mc:Ignorable="d"
+        Title="Workspace" Height="450" Width="800"
+        Topmost="True"
+        Background="Blue"
+        xmlns:wv2="clr-namespace:Microsoft.Web.WebView2.Wpf;assembly=Microsoft.Web.WebView2.Wpf"
+        >
+    <DockPanel>
+        <wv2:WebView2 Name="webView" 
+                  Source="http://firelynx.local:9900/scanner/mini"
+    />
+    </DockPanel>
+</Window>

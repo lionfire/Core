@@ -41,13 +41,11 @@ namespace LionFire.Persistence.Filesystem
         {
             public const string UriScheme = "file";
         }
-        public override string UriScheme => Constants.UriScheme;
+        public override string Scheme => Constants.UriScheme;
         public override string UriPrefixDefault => "file:///";
         public override string UriSchemeColon => "file:";
 
         public static readonly IEnumerable<string> UriSchemes = new string[] { Constants.UriScheme };
-
-        public override string Scheme => UriScheme;
 
         #endregion
 

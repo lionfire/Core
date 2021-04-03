@@ -10,6 +10,7 @@ using System.Reactive.Subjects;
 using LionFire.Reactive;
 using LionFire.Reactive.Subjects;
 using LionFire.Execution.Executables;
+using System.Threading;
 
 namespace LionFire.Execution
 {
@@ -97,7 +98,7 @@ namespace LionFire.Execution
         }
 
 
-        public async Task Start(/*params string[] args*/)
+        public async Task StartAsync(CancellationToken cancellationToken = default)
         {
             Host.Register(ExecutionContext);
 
@@ -111,7 +112,7 @@ namespace LionFire.Execution
             if (IsStartable)
             {
                 var execObj = ExecutionContext.ExecutionObject as IStartable;
-                await execObj.Start().ConfigureAwait(false);
+                await execObj.StartAsync().ConfigureAwait(false);
                 ExecutionContext.Status = ExecutionHostState.Running;
             }
             else if (IsIDisposable)
@@ -133,9 +134,10 @@ namespace LionFire.Execution
             }
         }
 
-        public async Task Stop(StopMode mode = StopMode.GracefulShutdown, StopOptions options = StopOptions.StopChildren)
+        public Task StopAsync(CancellationToken cancellationToken = default) => Stop(cancellationToken: cancellationToken);
+
+        public async Task Stop(StopMode mode = StopMode.GracefulShutdown, StopOptions options = StopOptions.StopChildren, CancellationToken cancellationToken = default)
         {
-            
             ExecutionContext.Status = ExecutionHostState.Stopping;
             if (ExecutionContext.ExecutionObject as IStoppableEx != null)
             {
@@ -146,7 +148,7 @@ namespace LionFire.Execution
             else if (ExecutionContext.ExecutionObject as IStoppable != null)
             {
                 var execObj = ExecutionContext.ExecutionObject as IStoppable;
-                await execObj.Stop().ConfigureAwait(false);
+                await execObj.StopAsync().ConfigureAwait(false);
                 ExecutionContext.Status = ExecutionHostState.Stopped;
             }
             else if (IsIDisposable)

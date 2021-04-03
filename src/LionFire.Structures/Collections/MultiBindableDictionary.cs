@@ -254,21 +254,12 @@ namespace LionFire.Collections
             //RaiseCollectionChanged(NotifyCollectionChangedAction.Add, value);
         }
 
-        public bool ContainsKey(TKey key)
-        {
-            return dictionary.ContainsKey(key);
-        }
+        public bool ContainsKey(TKey key) => dictionary.ContainsKey(key);
 
 #if !AOT
-        IEnumerable<TKey> IReadOnlyDictionary<TKey, TValue>.Keys
-        {
-            get { return dictionary.Keys; }
-        }
+        IEnumerable<TKey> IReadOnlyDictionary<TKey, TValue>.Keys => dictionary.Keys;
 #endif
-        public ICollection<TKey> Keys
-        {
-            get { return dictionary.Keys; }
-        }
+        public ICollection<TKey> Keys => dictionary.Keys;
 
         public bool Remove(TKey key)
         {
@@ -288,7 +279,7 @@ namespace LionFire.Collections
             {
                 return dictionary[key];
             }
-            return default(TValue);
+            return default;
         }
 
         public bool TryGetValue(TKey key, out TValue value)
@@ -298,19 +289,13 @@ namespace LionFire.Collections
                 value = dictionary[key];
                 return true;
             }
-            value = default(TValue);
+            value = default;
             return false;
         }
 #if !AOT
-        IEnumerable<TValue> IReadOnlyDictionary<TKey, TValue>.Values
-        {
-            get { return dictionary.Values; }
-        }
+        IEnumerable<TValue> IReadOnlyDictionary<TKey, TValue>.Values => dictionary.Values;
 #endif
-        public ICollection<TValue> Values
-        {
-            get { return dictionary.Values; }
-        }
+        public ICollection<TValue> Values => dictionary.Values;
 
         public TValue this[TKey key]
         {
@@ -345,9 +330,14 @@ namespace LionFire.Collections
             }
         }
 
-        public void Add(KeyValuePair<TKey, TValue> item)
+        public void Add(KeyValuePair<TKey, TValue> item) => Add(item.Key, item.Value);
+
+        public void AddRange(IEnumerable<KeyValuePair<TKey, TValue>> items)
         {
-            this.Add(item.Key, item.Value);
+            if(items != null)
+            {
+                foreach(var item in items) this.Add(item.Key, item.Value);
+            }
         }
 
         public void Clear()

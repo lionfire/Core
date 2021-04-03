@@ -24,7 +24,9 @@ namespace LionFire.Execution
             //return false;
         }
 
-        public Task Start() { return Task.CompletedTask; }
+
+        public Task StartAsync(System.Threading.CancellationToken cancellationToken = default) => Task.CompletedTask;
+
         public Task Stop(StopMode mode = StopMode.GracefulShutdown, StopOptions options = StopOptions.StopChildren) { return Task.CompletedTask; }
 
     

@@ -12,10 +12,10 @@
   </ItemGroup>
   
   <ItemGroup>    
-    <PackageReference Include="Blazorise.Bootstrap" Version="0.9.2.4" />    
-    <PackageReference Include="Microsoft.AspNetCore.Components.Web" Version="5.0.1" />
+    <PackageReference Include="Blazorise.Bootstrap" Version="0.9.3" />    
+    <PackageReference Include="Microsoft.AspNetCore.Components.Web" Version="5.0.3" />
     <PackageReference Include="Microsoft.AspNetCore.WebUtilities" Version="2.2.0" />
-    <PackageReference Include="Microsoft.AspNetCore.Mvc.Razor.RuntimeCompilation" Version="5.0.1" />
+    <PackageReference Include="Microsoft.AspNetCore.Mvc.Razor.RuntimeCompilation" Version="5.0.3" />
 
   </ItemGroup>
   

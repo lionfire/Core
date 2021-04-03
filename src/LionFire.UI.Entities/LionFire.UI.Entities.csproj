@@ -11,7 +11,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Swordfish.NET.CollectionsV3" Version="3.3.1" />
+    <PackageReference Include="Swordfish.NET.CollectionsV3" Version="3.3.6" />
   </ItemGroup>
 
   <ItemGroup>

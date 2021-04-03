@@ -3,7 +3,7 @@ using Noesis;
 #else
 using System.ComponentModel;
 using System.Windows;
-using System.Windows.Forms.VisualStyles;
+//using System.Windows.Forms.VisualStyles;
 #endif
 
 namespace LionFire.UI.Entities.Wpf

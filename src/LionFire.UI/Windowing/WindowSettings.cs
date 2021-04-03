@@ -19,6 +19,9 @@ namespace LionFire.UI.Windowing
             System.Diagnostics.Debug.WriteLine("WindowSettings ctor");
         }
 
+        public WindowProfile GetProfile(double desktopWidth, double desktopHeight) => GetProfile((int)desktopWidth, (int)desktopHeight);
+        
+
         public WindowProfile GetProfile(int desktopWidth, int desktopHeight)
         {
             var key = new DesktopProfile(desktopWidth, desktopHeight).Key;
@@ -38,7 +41,9 @@ namespace LionFire.UI.Windowing
         #region INotifyPropertyChanged Implementation
 
         //public event PropertyChangedEventHandler PropertyChanged;
-        public event PropertyChangedEventHandler PropertyChanged { add
+        public event PropertyChangedEventHandler PropertyChanged
+        {
+            add
             {
                 propertyChanged += value;
             }

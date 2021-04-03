@@ -62,5 +62,15 @@ namespace LionFire.Services
             }
             return services;
         }
+
+        #region IHostedService
+
+        public static IServiceCollection AddSingletonHostedService<T>(this IServiceCollection services)
+            where T : class, IHostedService
+            => services
+                .AddSingleton<T>()
+                .AddHostedService<T>(sp => sp.GetRequiredService<T>());
+
+        #endregion
     }
 }

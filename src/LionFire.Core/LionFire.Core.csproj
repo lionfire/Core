@@ -17,7 +17,6 @@
 This package is typically not added on its own, but is a dependency required by many LionFire packages.</Description>
     <Authors>Jared Thirsk</Authors>
     <Copyright>2017 Jared Thirsk</Copyright>
-    <PackageLicenseUrl>https://github.com/jaredthirsk/Core/blob/master/LICENSE</PackageLicenseUrl>
     <PackageProjectUrl>http://open.lionfire.software/</PackageProjectUrl>
     <PackageIconUrl>https://avatars3.githubusercontent.com/u/19334699?v=3&amp;s=200</PackageIconUrl>
     <RepositoryUrl>https://github.com/lionfire/core</RepositoryUrl>
@@ -42,10 +41,11 @@ This package is typically not added on its own, but is a dependency required by 
     <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="5.0.0" />
     <PackageReference Include="Microsoft.Extensions.Hosting" Version="5.0.0" />
     <PackageReference Include="System.Collections.Immutable" Version="5.0.0" />
-<PackageReference Include="System.Reactive" Version="4.3.2" />  </ItemGroup>
+<PackageReference Include="System.Reactive" Version="5.0.0" />  </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\LionFire.Base\LionFire.Base.csproj" />
+    <ProjectReference Include="..\LionFire.Environment\LionFire.Environment.csproj" />
     <ProjectReference Include="..\LionFire.MultiTyping.Abstractions\LionFire.MultiTyping.Abstractions.csproj" />
     <ProjectReference Include="..\LionFire.Referencing.Abstractions\LionFire.Referencing.Abstractions.csproj" />
     <ProjectReference Include="..\LionFire.Structures\LionFire.Structures.csproj" />
@@ -68,7 +68,6 @@ This package is typically not added on its own, but is a dependency required by 
     <Folder Include="MultiTyping\Overlaying\" />
     <Folder Include="MultiTyping\Validation\" />
     <Folder Include="Persistence\" />
-    <Folder Include="Reflection\" />
     <Folder Include="Structures\Resolvable\" />
     <Folder Include="Threading\" />
   </ItemGroup>

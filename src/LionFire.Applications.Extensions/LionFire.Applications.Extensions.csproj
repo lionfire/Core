@@ -17,7 +17,6 @@ Reference this package in your main executable, and the related LionFire.Applica
     <NeutralLanguage>en-US</NeutralLanguage>
     <Authors>Jared Thirsk</Authors>
     <Version>2.0.1</Version>
-    <PackageLicenseUrl />
   </PropertyGroup>
 
   <ItemGroup>
@@ -42,7 +41,7 @@ Reference this package in your main executable, and the related LionFire.Applica
     <PackageReference Include="Microsoft.Extensions.Configuration.FileExtensions" Version="5.0.0" />
     <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="5.0.0" />
     <PackageReference Include="Microsoft.Extensions.Configuration.UserSecrets" Version="5.0.0" />
-    <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="5.0.0" />
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="5.0.1" />
     <PackageReference Include="Microsoft.Extensions.Hosting" Version="5.0.0" />
     <PackageReference Include="Microsoft.Extensions.Hosting.Abstractions" Version="5.0.0" />
     <PackageReference Include="Microsoft.Extensions.Logging.Console" Version="5.0.0" />

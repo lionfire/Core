@@ -17,7 +17,7 @@ namespace LionFire.Hosting
         public static IConfigurationBuilder CreateDefaultBuilder(string? basePath = null)
             => new ConfigurationBuilder()
                .SetBasePath(basePath ?? Path.GetDirectoryName(Assembly.GetEntryAssembly()?.Location) ?? System.IO.Directory.GetCurrentDirectory())
-               .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
+               .AddJsonFile("appsettings.json", optional: true, reloadOnChange: true)
                .AddEnvironmentVariables();
         
     }

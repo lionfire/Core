@@ -1,20 +1,40 @@
 <Project>
 
   <PropertyGroup>
+    <Configurations>Debug;Release</Configurations>
+
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+
+    <!--<BaseIntermediateOutputPath>$(MSBuildThisFileDirectory)..\bin\$(MSBuildProjectName)\</BaseIntermediateOutputPath>
+    <BaseOutputPath Condition=" '$(BaseOutputPath)' == '' ">$(MSBuildThisFileDirectory)..\bin\$(MSBuildProjectName)\</BaseOutputPath>-->
+    
+    <BaseIntermediateOutputPath>..\..\build\obj\$(MSBuildProjectName)\</BaseIntermediateOutputPath>
+    <BaseOutputPath>..\..\build\bin\$(MSBuildProjectName)\</BaseOutputPath>
+    <MSBuildProjectExtensionsPath>..\..\build\obj\$(MSBuildProjectName)\</MSBuildProjectExtensionsPath>
+
+    <!-- <NeutralLanguage>English (United States)</NeutralLanguage> -->
     <LangVersion>latest</LangVersion>
-    <BaseIntermediateOutputPath>z:\build\obj\$(MSBuildProjectName)\</BaseIntermediateOutputPath>
-    <BaseOutputPath>z:\build\bin\$(MSBuildProjectName)\</BaseOutputPath>
 
   </PropertyGroup>
-  
+
   <PropertyGroup>
     <Authors>Jared Thirsk</Authors>
-    <Copyright>2010-2020 Jared Thirsk</Copyright>
+    <Copyright>2010-2021 Jared Thirsk</Copyright>
     <Company>LionFire Games</Company>
-    <PackageProjectUrl>https://github.com/lionfire/core</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/lionfire/Core</RepositoryUrl>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
-    <PackageIcon>https://avatars3.githubusercontent.com/u/19334699?v=3&amp;s=200</PackageIcon>
+    <!-- <PackageIcon>19334699.png</PackageIcon> -->
 
   </PropertyGroup>
- 
+
+  <ItemGroup>
+    <Compile Remove="obj\**" />
+    <EmbeddedResource Remove="obj\**" />
+    <None Remove="obj\**" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Remove="bin\**" />
+    <EmbeddedResource Remove="bin\**" />
+    <None Remove="bin\**" />
+  </ItemGroup>
 </Project>

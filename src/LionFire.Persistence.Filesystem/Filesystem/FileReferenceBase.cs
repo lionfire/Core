@@ -15,10 +15,12 @@ namespace LionFire.Persistence.Filesystem
         //, IOBaseReference
         where ConcreteType : FileReferenceBase<ConcreteType, TValue>
     {
-        public abstract string UriPrefixDefault { get; }
-        public abstract string UriSchemeColon { get; }
-        public abstract string UriScheme { get; }
-        public override IEnumerable<string> AllowedSchemes { get { yield return UriScheme; } }
+        public virtual string UriPrefixDefault => UriSchemeColon;
+        public virtual string UriSchemeColon => Scheme + ":";
+        //public abstract string UriScheme { get; }
+        //public override string Scheme => UriScheme;
+
+        public override IEnumerable<string> AllowedSchemes { get { yield return Scheme; } }
 
 
         //IOBus IHas<IOBus>.Object => ManualSingleton<FSOBus>.GuaranteedInstance;

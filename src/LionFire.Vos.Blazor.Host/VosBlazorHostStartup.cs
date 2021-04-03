@@ -84,7 +84,7 @@ namespace LionFire.Vos.Blazor.Host
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
             //app.UseRazorComponentsRuntimeCompilation();
-            app.ApplicationServices.InitializeDependencyContext();
+            app.ApplicationServices.InitializeDependencyContextServiceProvider();
 
             if (env.IsDevelopment())
             {

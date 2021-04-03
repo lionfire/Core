@@ -25,7 +25,7 @@ namespace LionFire.Execution
             {
                 throw new Exception("Failed to initialize ExecutionContextState");
             }
-            await executionContext.Controller.Start();
+            await executionContext.Controller.StartAsync();
             return;
         }
 

@@ -6,9 +6,9 @@
 @inject ILogger<ObjectExplorer> Logger
 @using System.Reflection;
 
-<MudIconButton Icon="@Icons.Material.ArrowBackIos" Style="@("opacity:" + (History.Count == 0 ? "0.2" : "1"))" @onclick=@Back></MudIconButton>
-<MudIconButton Icon="@Icons.Material.ArrowForwardIos" Style="@("opacity:" + (ForwardHistory.Count == 0 ? "0.2" : "1"))" @onclick=@Forward></MudIconButton>
-<MudIconButton Icon="@Icons.Material.Refresh" @onclick=@Refresh></MudIconButton>
+<MudIconButton Icon="@Icons.Material.Filled.ArrowBackIos" Style="@("opacity:" + (History.Count == 0 ? "0.2" : "1"))" @onclick=@Back></MudIconButton>
+<MudIconButton Icon="@Icons.Material.Filled.ArrowForwardIos" Style="@("opacity:" + (ForwardHistory.Count == 0 ? "0.2" : "1"))" @onclick=@Forward></MudIconButton>
+<MudIconButton Icon="@Icons.Material.Filled.Refresh" @onclick=@Refresh></MudIconButton>
 
 @{
     bool isFirst = false;

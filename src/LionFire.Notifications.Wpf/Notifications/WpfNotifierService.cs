@@ -45,7 +45,7 @@ namespace LionFire.Notifications.Wpf
             };
             taskbarIcon.ShowBalloonTip("Lino", "Active", BalloonIcon.Info);
 
-            await queue.Start().ConfigureAwait(false);
+            await queue.StartAsync().ConfigureAwait(false);
         }
 
         public string FindPathForFile(string subpath, IEnumerable<string> candidatePaths)

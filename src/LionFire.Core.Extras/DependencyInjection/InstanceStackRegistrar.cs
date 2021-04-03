@@ -4,6 +4,7 @@
 //#define TRACE_RESOLVE_CREATED
 
 using LionFire.Dependencies;
+using LionFire.ExtensionMethods;
 using LionFire.Structures;
 using Microsoft.Extensions.Logging;
 using System;

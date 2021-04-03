@@ -14,7 +14,7 @@ namespace LocalFileReference_
         public void F_Throws() => Assert.Throws<NotFoundException>(() => bogusSchemeUri.ToReference());
 
         [Fact]
-        public void F_Null() => Assert.Null(bogusSchemeUri.TryToReference().result);
+        public void F_Null() => Assert.Null(bogusSchemeUri.TryToReference());
         
     }
 }
