@@ -1,7 +1,8 @@
 ﻿using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using LionFire.Data.ExtensionMethods;
+using LionFire.Data.Connections;
+using LionFire.Data.Connections.ExtensionMethods;
 
 namespace LionFire.Data
 {

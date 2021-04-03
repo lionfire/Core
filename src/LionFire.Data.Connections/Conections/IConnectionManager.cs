@@ -3,7 +3,7 @@
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace LionFire.Data
+namespace LionFire.Data.Connections
 {
     public interface IConnectionManager
     {
@@ -15,13 +15,15 @@ namespace LionFire.Data
         TConnection this[string connectionName] { get; }
     }
 
+}
+namespace LionFire
+{
+    using LionFire.Data.Connections;
+
+    // TO.NET5 - move this to an interface default method
     public static class IConnectionManagerExtensions
     {
-        public static TConnection GetConnection<TConnection>(this IConnectionManager<TConnection> connectionManager, string name)
-            where TConnection : IConnection
-            => connectionManager[name];
-
-        public static async Task<TConnection> StartConnection<TConnection>(this IConnectionManager<TConnection> connectionManager, string name, CancellationToken cancellationToken = default)
+        public static async Task<TConnection> GetConnection<TConnection>(this IConnectionManager<TConnection> connectionManager, string name, CancellationToken cancellationToken = default)
             where TConnection : IConnection
         {
             var connection = connectionManager[name];

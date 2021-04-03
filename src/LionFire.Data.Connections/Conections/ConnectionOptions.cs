@@ -1,12 +1,12 @@
-﻿namespace LionFire.Data
+﻿namespace LionFire.Data.Connections
 {
-    public class ConnectionOptions<TConcrete>
+    public abstract class ConnectionOptions<TConcrete>
         where TConcrete : ConnectionOptions<TConcrete>
     {
         public int TimeoutMilliseconds { get; set; }
 
         protected static string ConfigurationKey => typeof(TConcrete).Name.Replace("ConnectionOptions", "");
 
-        public string ConnectionString { get; set; }
+        public abstract string ConnectionString { get; }
     }
 }

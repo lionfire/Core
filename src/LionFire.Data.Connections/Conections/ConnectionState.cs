@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace LionFire.Data
+namespace LionFire.Data.Connections
 {
     [Flags]
     public enum ConnectionState

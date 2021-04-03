@@ -3,7 +3,7 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using System;
 
-namespace LionFire.Data
+namespace LionFire.Data.Connections
 {
     /// <summary>
     /// Like ConnectionBase but has a dependency on IOptionsMonitor to get the options from the connection name.

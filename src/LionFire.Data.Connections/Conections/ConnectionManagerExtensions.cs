@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Reflection;
 
-namespace LionFire.Data.ExtensionMethods
+namespace LionFire.Data.Connections.ExtensionMethods
 {
     public static class ConnectionManagerExtensionMethods
     {

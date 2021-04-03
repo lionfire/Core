@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
+using LionFire.ExtensionMethods;
 
-namespace LionFire.Data
+namespace LionFire.Data.Connections
 {
     public class ConnectionOptions
     {

@@ -3,9 +3,8 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using System;
 using System.Collections.Concurrent;
-using LionFire.Data.ExtensionMethods;
 
-namespace LionFire.Data
+namespace LionFire.Data.Connections
 {
 
     // REVIEW - can this be abstracted into a generalized DI Factory class?

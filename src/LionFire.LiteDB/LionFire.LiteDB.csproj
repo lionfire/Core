@@ -1,0 +1,16 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net5.0</TargetFramework>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="LiteDB" Version="5.0.10" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\LionFire.Data.Connections\LionFire.Data.Connections.csproj" />
+    <ProjectReference Include="..\LionFire.Hosting\LionFire.Hosting.csproj" />
+  </ItemGroup>
+
+</Project>
