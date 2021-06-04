@@ -25,6 +25,7 @@ namespace LionFire.Data.LiteDB.Connections
 
             return Task.Run(() =>
             {
+                if (Options == null) throw new ArgumentNullException(nameof(Options));
                 db = new LiteDatabase(Options.ConnectionString);
             }, cancellationToken);
         }

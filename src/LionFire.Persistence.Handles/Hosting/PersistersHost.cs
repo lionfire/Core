@@ -30,7 +30,7 @@ namespace LionFire.Hosting
                               .AddBuiltInSerializers()
                               .AddSingleton<IPersistenceConventions, PersistenceConventions>()
                               .AddSingleton<IReferenceToHandleService, ReferenceToHandleService>()
-                              .AddSingleton<IReferenceProviderService, ReferenceProviderService>()
+                              .AddReferenceProvider()
                               .Configure<ObjectHandleProviderOptions>(c =>
                               {
                                   c.AutoRegister = true;

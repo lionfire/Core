@@ -15,7 +15,7 @@
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
-    <PackageReference Include="Microsoft.AspNetCore.Components.Web" Version="5.0.3" />
+    <PackageReference Include="Microsoft.AspNetCore.Components.Web" Version="5.0.6" />
     <PackageReference Include="Microsoft.AspNetCore.Mvc.Razor.RuntimeCompilation" Version="5.0.3" />
     <PackageReference Include="Microsoft.AspNetCore.WebUtilities" Version="2.2.0" />
     <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="5.0.0" />
@@ -24,6 +24,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\..\..\Internal\src\LionFire.Life.Tracking\LionFire.Life.Tracking.csproj" />
     <ProjectReference Include="..\LionFire.Applications.Extensions\LionFire.Applications.Extensions.csproj" />
     <ProjectReference Include="..\LionFire.Persistence.Filesystem\LionFire.Persistence.Filesystem.csproj" />
     <ProjectReference Include="..\LionFire.Persistence.Handles\LionFire.Persistence.Handles.csproj" />

@@ -27,10 +27,11 @@ namespace Raw_
         {
 
             await PersistersHost.Create()
-            .ConfigureServices((_, services) =>
-            {
-                services.AddLiteFs();
-            })
+                .AddLiteFs()
+            //.ConfigureServices((_, services) =>
+            //{
+            //    services
+            //})
             .RunAsync(() =>
            {
                if (connectionOptions.Path != null)

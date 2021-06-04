@@ -74,3 +74,7 @@ namespace LionFire.Services
         #endregion
     }
 }
+namespace LionFire.Hosting
+{
+    // RENAME
+}

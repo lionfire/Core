@@ -7,6 +7,6 @@
 
         protected static string ConfigurationKey => typeof(TConcrete).Name.Replace("ConnectionOptions", "");
 
-        public abstract string ConnectionString { get; }
+        //public abstract string ConnectionString { get; }
     }
 }

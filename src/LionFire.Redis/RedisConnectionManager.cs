@@ -3,6 +3,7 @@ using Microsoft.Extensions.Logging;
 using System;
 using LionFire.Data;
 using Microsoft.Extensions.Options;
+using LionFire.Data.Connections;
 
 namespace LionFire.Redis
 {

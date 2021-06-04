@@ -59,10 +59,10 @@ namespace LionFire.UI.Entities
 
         #region Construction
 
-        public UIFactory(IServiceProvider serviceProvider, IUIPlatform uIPlatform, IUIRoot root)
+        public UIFactory(IServiceProvider serviceProvider, IUIRoot root)
         {
             ServiceProvider = serviceProvider;
-            Platform = uIPlatform;
+            Platform = serviceProvider.GetService<IUIPlatform>();
             Root = root;
         }
 
@@ -155,7 +155,7 @@ namespace LionFire.UI.Entities
             var type = instantiation.Template?.ViewType;
             if (type != null)
             {
-                if (Platform.IsViewType(type))
+                if (true == Platform?.IsViewType(type))
                 {
                     return Instantiate_ViewType(instantiation);
                 }

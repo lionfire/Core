@@ -60,9 +60,9 @@ namespace LionFire.Hosting
         /// <returns></returns>
         public static IHostBuilder Create(string[] args = null, bool defaultBuilder = true, Action<IServiceCollection> serializers = null)
         {
-            // TODO: Base on VosHost or VosAppHost?
+            //IHostBuilder hostBuilder = defaultBuilder ? Host.CreateDefaultBuilder(args) : new HostBuilder();
 
-            IHostBuilder hostBuilder = defaultBuilder ? Host.CreateDefaultBuilder(args) : new HostBuilder();
+            IHostBuilder hostBuilder = VosAppHostBuilder.Create(args: args, defaultBuilder: defaultBuilder);
 
             return hostBuilder
                 .AugmentWithFramework()
@@ -119,13 +119,14 @@ namespace LionFire.Hosting
         private static IHostBuilder AugmentWithFramework(this IHostBuilder hostBuilder, FrameworkHostBuilderOptions options = null)
         {
             return hostBuilder
-                .UseDependencyContext()
+                .UseDependencyContext() // REV
                 .ConfigureServices((Action<HostBuilderContext, IServiceCollection>)((context, services) =>
                 {
                     (options?.Serializers ?? DefaultAddDefaultSerializers)(services);
                     services
-                        .AddSerialization()
-                        .AddPersisters()
+                        //.AddSerialization()
+                        //.AddPersisters()
+                        .AddReferenceProvider()
                         .AddFilesystem()
                         //.AddIdPersister()
                         //.AddAssets()

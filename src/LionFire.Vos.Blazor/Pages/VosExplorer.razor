@@ -3,14 +3,23 @@
 
 @using LionFire.Referencing
 @using LionFire.Threading
+@inject IServiceProvider ServiceProvider
 @inject IVos  rootManager
 @inject NavigationManager navManager
-@inject Microsoft.Extensions.Logging.ILogger<string> logger
+@*@inject Microsoft.Extensions.Logging.ILogger<string> logger*@
+@inject ILogger<VosExplorer> Logger
+
 @using Microsoft.AspNetCore.WebUtilities
 @using Microsoft.Extensions.Logging
 @using LionFire.Persistence
 @using System.Reflection
 @using LionFire.Resolves
+@using MudBlazor 
+
+<MudIconButton Icon="@Icons.Material.Filled.ArrowBackIos" Style="@("opacity:" + (History.Count == 0 ? "0.2" : "1"))" @onclick=@Back></MudIconButton>
+<MudIconButton Icon="@Icons.Material.Filled.ArrowForwardIos" Style="@("opacity:" + (ForwardHistory.Count == 0 ? "0.2" : "1"))" @onclick=@Forward></MudIconButton>
+<MudIconButton Icon="@Icons.Material.Filled.Refresh" @onclick=@Refresh></MudIconButton>
+
 
 <i class="fas fa-angle-double-down"></i>
 <div>@Path</div>
@@ -22,6 +31,7 @@ else
 {
     <h3>@Root</h3>
     <button @onclick="@(e=> GoToPath(".."))"><span class="oi oi-arrow-top" /></button>
+    <button @onclick="@(e=> Refresh())"><span class="oi oi-reload" /></button>
     <div>@Path</div>
 
     <table class="table">
@@ -38,7 +48,7 @@ else
             {
                 <tr>
                     <td>
-                        <span @onclick="@(e => GoToPath(listing.Name))" class="@IconClasses(listing)" aria-hidden="true"></span>
+                        <span @onclick="@(e => GoToPath(listing.Name))" class="@IconClasses(listing)" aria-hidden="true" data-glyph="battery-empty"></span>
                     </td>
                     <td>@listing.Name</td>
                     <td>@listing.Type</td>
@@ -48,7 +58,7 @@ else
         </tbody>
     </table>
 
-    @if (Value != null)
+    @if (CurrentObject != null)
     {
         <table class="table">
             <thead>
@@ -59,14 +69,14 @@ else
                 </tr>
             </thead>
             <tbody>
-                @foreach (var pi in Value.GetType().GetProperties(BindingFlags.Instance | BindingFlags.Public))
+                @foreach (var pi in CurrentObject.GetType().GetProperties(BindingFlags.Instance | BindingFlags.Public))
                 {
                     <tr>
                         <td>
                             @*<span @onclick="@(e => GoToPath(listing.Name))" class="@IconClasses(listing)" aria-hidden="true"></span>*@
                         </td>
                         <td>@pi.Name</td>
-                        <td>@pi.GetValue(Value)</td>
+                        <td>@pi.GetValue(CurrentObject)</td>
                         @*<td></td>*@
                     </tr>
                 }
@@ -75,13 +85,41 @@ else
     }
 }
 
-<Check TValue="bool">Check me out</Check>
-<Slider TValue="decimal" Value="25m" Max="100m" />
-
 @code {
 
-    public object Value { get; set; }
+    #region CurrentObject
 
+    [Parameter]
+    public object CurrentObject
+    {
+        get => currentObject;
+        set
+        {
+            if (currentObject == value) return;
+            if (currentObject != null && currentObject is System.ComponentModel.INotifyPropertyChanged inpcDisabling)
+            {
+                inpcDisabling.PropertyChanged -= OnCurrentObjectPropertyChanged;
+            }
+            currentObject = value;
+            if (currentObject != null && currentObject is System.ComponentModel.INotifyPropertyChanged inpcEnabling)
+            {
+                inpcEnabling.PropertyChanged += OnCurrentObjectPropertyChanged;
+            }
+        }
+    }
+    private object? currentObject;
+
+    #endregion
+
+    private void OnCurrentObjectPropertyChanged(object? sender, System.ComponentModel.PropertyChangedEventArgs e)
+    {
+        InvokeAsync(async () =>
+        {
+            Logger.LogTrace("OnCurrentObjectPropertyChanged");
+            await Refresh();
+            StateHasChanged();
+        });
+    }
 
     #region Parameters
 
@@ -113,6 +151,12 @@ else
 
     #region State
 
+    Stack<object> History = new Stack<object>();
+    Stack<(object, string)> ForwardHistory = new Stack<(object, string)>();
+    Stack<string> BreadCrumbPath = new Stack<string>();
+
+
+
     private Listing<object>[] listings;
 
     //private List<IReadHandle<object>> readHandles;
@@ -123,6 +167,7 @@ else
 
     protected override async Task OnInitializedAsync()
     {
+        var x = ServiceProvider.GetService(typeof(IReferenceProviderService));
         navManager.LocationChanged += OnLocationChanged;
         await UpdateRoot();
         await Refresh();
@@ -153,7 +198,7 @@ else
 
     private async void OnLocationChanged(object sender, LocationChangedEventArgs args)
     {
-        logger.LogInformation("OnLocationChanged " + uri);
+        Logger.LogInformation("OnLocationChanged " + uri);
         await UpdateRoot();
     }
 
@@ -182,15 +227,15 @@ else
                 newValue = result.Value;
                 if (result.IsSuccess != true)
                 {
-                    logger.Debug($"Failed to retrieve {Path}: {result}");
+                    Logger.Debug($"Failed to retrieve {Path}: {result}");
                 }
             }
         }
         catch (Exception ex)
         {
-            logger.LogError(ex, "Exception when retrieving handle or value");
+            Logger.LogError(ex, "Exception when retrieving handle or value");
         }
-        Value = newValue;
+        CurrentObject = newValue;
     }
     public async Task Refresh()
     {
@@ -223,8 +268,22 @@ else
             return;
         }
 
+
         var result = await hList.Resolve();
         listings = result?.Value.Value?.ToArray() ?? Array.Empty<Listing<object>>();
+
+        if (listings.Length == 0)
+        {
+            // FIXME - why is hList empty?????????
+            var list = new List<Listing<object>>();
+            var vob = root[reference.Path];
+            foreach (var x in vob)
+            {
+                list.Add(new Listing<object>(x.Name));
+            }
+            listings = list.ToArray();
+        }
+
 
         //var newReadHandles = new List<IReadHandle<object>>();
 
@@ -248,6 +307,50 @@ else
     }
 
     #endregion
+
+    void Pop()
+    {
+        ForwardHistory.Push((CurrentObject, BreadCrumbPath.Pop()));
+        CurrentObject = History.Pop();
+    }
+
+    void Push(object val, string name, bool fromForward = false)
+    {
+        if (val == null) return;
+        if (!fromForward && ForwardHistory.Any() && Object.ReferenceEquals(ForwardHistory.Peek().Item1, val))
+        {
+            Forward();
+            return;
+        }
+
+        History.Push(CurrentObject);
+
+        BreadCrumbPath.Push(name);
+        CurrentObject = val;
+
+        if (!fromForward)
+        {
+            ForwardHistory.Clear();
+        }
+    }
+
+
+    void Back()
+    {
+        if (History.Count > 0)
+        {
+            Pop();
+        }
+    }
+
+    void Forward()
+    {
+        if (ForwardHistory.Count == 0) { return; }
+
+        var next = ForwardHistory.Pop();
+        Push(next.Item1, next.Item2, fromForward: true);
+    }
+
 
     #region (Private) Utility methods
 

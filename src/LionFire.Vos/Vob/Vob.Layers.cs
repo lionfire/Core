@@ -110,7 +110,8 @@ namespace LionFire.Vos
 
         public IEnumerable<object> AllLayers()
         {
-            throw new NotImplementedException("TOPORT");
+            return Enumerable.Empty<object>();
+            //throw new NotImplementedException("TOPORT");
 #if PORT
             foreach (var handle in ReadHandles)
             {

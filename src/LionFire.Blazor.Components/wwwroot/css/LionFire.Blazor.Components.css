@@ -18,6 +18,15 @@
     top: -2px;
 }
 
+html:not(.ultralight) {
+    background: rgb(0,0,56);
+    background: radial-gradient(circle at 100% 100%, rgba(0,0,56,1) 0%, rgba(1,0,10,1) 82%, rgba(0,0,0,1) 100%);
+}
+
+body.dark {
+    color: white;
+}
+
 .nav-item {
     font-size: 0.9rem;
     padding-bottom: 0.5rem;
@@ -39,18 +48,27 @@
     align-items: center;
     line-height: 3rem;
     background: #00000080;
-    padding: 0 1px;
+    padding: 0 3px;
+    font-family: 'Novecento';
+    font-weight: 700;
+    padding: 2px 4px;
 }
 
 .nav-item a.active {
     background-color: rgba(255,255,255,0.25);
-    color: white;
+    /*color: white;*/
 }
 
 .nav-item a:hover {
     background-color: rgba(255,255,255,0.1);
-    color: white;
+    /*color: white;*/
 }
+/*
+.NavMenu .nav-link {
+    color: white;
+}*/
+    /*padding: 2px 0 !important;*/
+    /*border-radius: 0;*/
 
 @media (min-width: 768px) {
     .navbar-toggler {
@@ -61,4 +79,9 @@
         /* Never collapse the sidebar for wide screens */
         display: block !important;
     }
+}
+
+
+table.PropertyGrid td:first-child > div {
+    margin-right: 10px;
 }

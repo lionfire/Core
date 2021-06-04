@@ -7,6 +7,7 @@ using LionFire.Collections;
 using LionFire.Structures;
 using Microsoft.Extensions.Logging;
 using LionFire.Dependencies;
+using LionFire.ExtensionMethods;
 
 namespace LionFire
 {

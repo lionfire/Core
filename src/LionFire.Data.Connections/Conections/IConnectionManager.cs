@@ -1,9 +1,10 @@
 ﻿//using MorseCode.ITask;
 
+using LionFire.Data.Connections;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace LionFire.Data.Connections
+namespace LionFire.Data
 {
     public interface IConnectionManager
     {
@@ -18,6 +19,7 @@ namespace LionFire.Data.Connections
 }
 namespace LionFire
 {
+    using LionFire.Data;
     using LionFire.Data.Connections;
 
     // TO.NET5 - move this to an interface default method

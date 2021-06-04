@@ -19,6 +19,7 @@ namespace LionFire.Dispatching
 
         public static StrideDispatcher Instance => instance ?? throw new DependencyMissingException(typeof(StrideDispatcher).Name);
         private static StrideDispatcher instance;
+        public bool HasInstance => instance != null;
 
         #endregion
 
@@ -52,6 +53,7 @@ namespace LionFire.Dispatching
                 {
                     try
                     {
+                        var context = SynchronizationContext.Current;
                         action.Invoke();
                     }
                     catch (Exception ex)
@@ -70,7 +72,8 @@ namespace LionFire.Dispatching
         // TODO: Implement
         // ENH: more advanced scheduling (time quota, prioritization)
 
-        public bool IsInvokeRequired => Thread.CurrentThread.ManagedThreadId == threadId;
+        //public bool IsInvokeRequired => Thread.CurrentThread.ManagedThreadId == threadId;
+        public bool IsInvokeRequired => true; // TODO: How to detect if invoke is required
 
         public event EventHandler<DispatcherUnhandledExceptionEventArgs> UnhandledException;
 

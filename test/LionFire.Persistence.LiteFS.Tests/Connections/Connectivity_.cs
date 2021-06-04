@@ -10,8 +10,11 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Xunit;
+using LionFire;
+using LionFire.Data;
+using LionFire.Persistence.LiteFs.Tests;
 
-namespace LionFire.Persistence.LiteFs.Tests.Connections
+namespace ConnectionManager_
 {
     public class Connectivity_
     {
@@ -24,18 +27,26 @@ namespace LionFire.Persistence.LiteFs.Tests.Connections
             var testGuid = Guid.NewGuid();
 
             await PersistersHost.Create()
-            .ConfigureServices((_, services) =>
-            {
-                services.AddLiteFs();
-            })
+                .AddLiteFs()
+            //.ConfigureServices((_, services) =>
+            //{
+            //    services
+            //})
+            //.ConfigureHostConfiguration(config =>
+            //{
+            //    config.AddInMemoryCollection(new Dictionary<string, string>()
+            //    {
+            //        { "LiteDb:ConnectionStrings:" + testGuid, connectionOptions.ConnectionString }
+            //    });
+            //})
             .ConfigureAppConfiguration((context, config) =>
             {
                 config.AddInMemoryCollection(new Dictionary<string, string>()
                 {
-                    { "LiteDb:Connections:" + testGuid, connectionOptions.ConnectionString }
+                    { "LiteDb:ConnectionStrings:" + testGuid, connectionOptions.ConnectionString }
                 });
             })
-            .RunAsync(() =>
+            .RunAsync(async () =>
             {
                 if (connectionOptions.Path != null)
                 {
@@ -44,7 +55,9 @@ namespace LionFire.Persistence.LiteFs.Tests.Connections
 
                 var cleanup = true;
 
-                var db = DependencyContext.Current.GetService<LiteDbConnectionManager>().GetConnection(testGuid);
+                var connectionManager = DependencyContext.Current.GetService<LiteDbConnectionManager>();
+
+                var db = (await connectionManager.GetConnection(testGuid.ToString())).DB;
 
                 var col = db.GetCollection<Customer>(typeof(Customer).Name);
 
@@ -75,7 +88,6 @@ namespace LionFire.Persistence.LiteFs.Tests.Connections
 
                 Assert.NotNull(r);
 
-#endregion
 
                 //FileReference reference = dbPath;
                 //Assert.Equal(reference.Path, dbPath.Replace('\\', '/'));

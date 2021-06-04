@@ -856,7 +856,7 @@ namespace LionFire.Persistence.Filesystemlike
 
         // REVIEW: Should this be moved to an outside mechanism?
 
-        public virtual Task<IPersistenceResult> Delete<T>(IReferencable<TReference> referencable) // Unwrap IReferencable
+        public virtual Task<IPersistenceResult> DeleteReferencable<T>(IReferencable<TReference> referencable) // Unwrap IReferencable
             => (PersistenceOptions.VerifyExistsAsTypeBeforeDelete
                 ? VerifyExistsAsTypeAndDelete<T>(referencable.Reference.Path)
                 : Delete(referencable.Reference.Path).DeleteResultToPersistenceResult());

@@ -9,6 +9,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\LionFire.LiteDB\LionFire.LiteDB.csproj" />
     <ProjectReference Include="..\LionFire.Persistence.Filesystem\LionFire.Persistence.Filesystem.csproj" />
     <ProjectReference Include="..\LionFire.Referencing\LionFire.Referencing.csproj" />
   </ItemGroup>

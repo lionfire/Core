@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace LionFire.ExtensionMethods
+namespace LionFire
 {
     public static class DictionaryExtensions
     {

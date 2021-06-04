@@ -59,9 +59,10 @@ namespace LionFire.Vos.Blazor.Host
                 .AddPersisters()
                 .AddFilesystem()
 
-                .AddJsonEx()
                 .AddNewtonsoftJson()
 
+
+                .AddJsonEx() // OLD?
                 .VosMount("/temp".ToVobReference(), @"c:\temp".ToFileReference())
                 .VosMount("/TimeTracker".ToVobReference(), @"C:\st\jvos\LionFire\TimeTracker".ToFileReference())
                 ;

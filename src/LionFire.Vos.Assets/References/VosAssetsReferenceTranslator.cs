@@ -2,6 +2,7 @@
 using LionFire.Persistence.Persisters;
 using LionFire.Vos;
 using LionFire.Vos.Assets.Persisters;
+using System;
 
 namespace LionFire.Hosting
 {
@@ -17,18 +18,20 @@ namespace LionFire.Hosting
 
         public VosAssetsReferenceTranslator(VosAssetPersisterProvider vosAssetPersisterProvider)
         {
-            VosAssetPersisterProvider = vosAssetPersisterProvider;
+            VosAssetPersisterProvider = vosAssetPersisterProvider ?? throw new ArgumentNullException(nameof(vosAssetPersisterProvider));
         }
 
         #endregion
 
         #region IReferenceTranslator
 
-        public IAssetReference ReverseTranslateReference(IVobReference reference) => VosAssetPersisterProvider.GetPersister(reference.RootName()).ReverseTranslateReference(reference);
+        public IAssetReference ReverseTranslateReference(IVobReference reference) => (VosAssetPersisterProvider.GetPersister(reference.RootName()) ?? MissingPersister(reference)).ReverseTranslateReference(reference);
 
-        public IVobReference TranslateReferenceForRead(IAssetReference reference) => VosAssetPersisterProvider.GetPersister(reference.Persister).TranslateReferenceForRead(reference);
-        public IVobReference TranslateReferenceForWrite(IAssetReference reference) => VosAssetPersisterProvider.GetPersister(reference.Persister).TranslateReferenceForWrite(reference);
+        public IVobReference TranslateReferenceForRead(IAssetReference reference) => (VosAssetPersisterProvider.GetPersister(reference.Persister) ?? MissingPersister(reference)).TranslateReferenceForRead(reference);
+        public IVobReference TranslateReferenceForWrite(IAssetReference reference) => (VosAssetPersisterProvider.GetPersister(reference.Persister) ?? MissingPersister(reference)).TranslateReferenceForWrite(reference);
 
         #endregion
+
+        public VosAssetPersister MissingPersister(object r) => throw new System.Exception($"{this.GetType().FullName} did not find Persister for {r} of type {r.GetType().Name}");
     }
 }

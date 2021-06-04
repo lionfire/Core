@@ -1,10 +1,13 @@
-﻿@page "/explorer"
+﻿@page "/objects"
+@page "/explorer"
 @page "/explorer/{*RootName}"
 @inject IServiceProvider serviceProvider
 @inject IObjectExplorerRoots roots
-@using Microsoft.Extensions.Logging 
 @inject ILogger<ObjectExplorer> Logger
+@using Microsoft.Extensions.Logging
 @using System.Reflection;
+@using MudBlazor
+@using global::MudBlazor.Dialog
 
 <MudIconButton Icon="@Icons.Material.Filled.ArrowBackIos" Style="@("opacity:" + (History.Count == 0 ? "0.2" : "1"))" @onclick=@Back></MudIconButton>
 <MudIconButton Icon="@Icons.Material.Filled.ArrowForwardIos" Style="@("opacity:" + (ForwardHistory.Count == 0 ? "0.2" : "1"))" @onclick=@Forward></MudIconButton>
@@ -127,6 +130,7 @@ else
 
         @if (CurrentObject is System.Collections.IEnumerable e)
         {
+            <h6>Items:</h6>
             int count = 0;
             foreach (var item in e)
             {
@@ -161,6 +165,8 @@ else
         }
     </table>
 }
+
+
 
 @code {
 #nullable enable
@@ -210,16 +216,23 @@ else
 
     protected override Task OnInitializedAsync()
     {
-        if (CurrentObject == null && RootName != null && roots.Roots.ContainsKey(RootName))
-        {
-            CurrentObject = roots.Roots[RootName];
-        }
-
         if (CurrentObject == null)
         {
-            if (roots.Roots.Any())
+            if (RootName != null && roots.Roots.ContainsKey(RootName))
             {
-                CurrentObject = roots.Roots;
+                CurrentObject = roots.Roots[RootName];
+            }
+            if (roots.Roots.Count == 1)
+            {
+                CurrentObject = roots.Roots.Values.First();
+            }
+
+            if (CurrentObject == null)
+            {
+                if (roots.Roots.Any())
+                {
+                    CurrentObject = roots.Roots;
+                }
             }
         }
 

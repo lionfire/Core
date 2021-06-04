@@ -108,7 +108,7 @@ namespace LionFire.Vos
         public RootVob Get(string? rootName = "")
         {
             rootName ??= "";
-            if (roots == null) roots = new ConcurrentDictionary<string, Lazy<RootVob>>();
+            roots ??= new ConcurrentDictionary<string, Lazy<RootVob>>();
 
             var result = roots.GetOrAdd(rootName, n =>
             {

@@ -1,5 +1,4 @@
 ﻿using Microsoft.Extensions.Hosting;
-using LionFire.Hosting;
 using System.ComponentModel.Design;
 using Microsoft.Extensions.Configuration;
 
@@ -15,7 +14,12 @@ namespace LionFire.Hosting
             }
 
             return (defaultBuilder ? Host.CreateDefaultBuilder(args) : new HostBuilder())
-                .If(defaultBuilder, b => b.AddLionFireLogging(config))
+                .If(defaultBuilder, b => 
+                b
+                    .AddLionFireLogging(config)
+                    .SetAsDefaultServiceProvider()
+                )
+                
                 //.ConfigureContainer<LionFireDefaultServiceProviderFactory>(f => { })
                 .UseServiceProviderFactory(new LionFireDefaultServiceProviderFactory())
                 .ConfigureServices(services =>

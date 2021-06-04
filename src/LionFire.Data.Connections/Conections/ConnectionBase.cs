@@ -39,9 +39,10 @@ namespace LionFire.Data.Connections
         private void OnOptionsChanged(TConnectionOptions options, TConnectionOptions oldValue)
         {
             Debug.WriteLine("TODO: Options changed");
-            if (oldValue != null)
+            
+            if (oldValue != null && oldValue is IHasConnectionString hcs)
             {
-                if (oldValue.ConnectionString != options.ConnectionString)
+                if (hcs.ConnectionString != ((IHasConnectionString)options).ConnectionString)
                 {
                     Debug.WriteLine("TODO: Connection string changed.  If connected, disconnect to the old and connect to the new connection string.");
                 }
@@ -57,7 +58,7 @@ namespace LionFire.Data.Connections
         /// <summary>
         /// Set by connection manager when creating the connection
         /// </summary>
-        public string ConnectionString => Options.ConnectionString;
+        public string ConnectionString => (Options as IHasConnectionString)?.ConnectionString;
 
         #endregion
 

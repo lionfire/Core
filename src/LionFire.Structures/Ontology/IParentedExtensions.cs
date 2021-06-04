@@ -11,8 +11,7 @@ namespace LionFire
             object topParent = obj;
             while (topParent != null)
             {
-                var parented = topParent as IParented;
-                if (parented != null && parented.Parent != null)
+                if (topParent is IParented parented && parented.Parent != null)
                 {
                     if (topParent == parented.Parent)
                     {
@@ -31,10 +30,8 @@ namespace LionFire
         {
             while (obj != null)
             {
-                var result = obj as T;
-                if (result != null) return result;
-                var parented = obj as IParented;
-                if (parented == null) return null;
+                if (obj is T result) return result;
+                if (obj is not IParented parented) return null;
                 obj = parented.Parent as IParented;
             }
             return null;

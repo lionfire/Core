@@ -24,5 +24,12 @@ namespace LionFire.UI
         protected string key;
 
         #endregion
+
+        #region Construction
+
+        public UIKeyed() { }
+        public UIKeyed(string key) { Key = key; }
+        
+        #endregion
     }
 }

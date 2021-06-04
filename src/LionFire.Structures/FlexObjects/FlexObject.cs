@@ -9,5 +9,7 @@
         {
             Value = value;
         }
+
+        public override string ToString() => Value == null ? "(null)" : Value.ToString();
     }
 }

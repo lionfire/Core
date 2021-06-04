@@ -1,12 +1,16 @@
-﻿using Microsoft.Extensions.Hosting;
+﻿using LionFire.Stride3D;
+using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Stride.Engine;
 using System;
+using System.Collections.Concurrent;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace LionFire.Hosting
+namespace LionFire.Stride3D
 {
+
+
     public class StrideGameService : IHostedService
     {
         Task runTask;
@@ -33,6 +37,21 @@ namespace LionFire.Hosting
 
         public IHostApplicationLifetime HostApplicationLifetime { get; }
         public ILogger<StrideGameService> Logger { get; }
+
+        ConcurrentDictionary<SceneInstance, StrideServiceRegistry> sceneRegistries = new ConcurrentDictionary<SceneInstance, StrideServiceRegistry>();
+
+        //public IServiceProvider GetServiceProvider(SceneInstance sceneInstance = null)
+        //{
+        //    if (sceneInstance != null)
+        //    {
+        //        // FUTURE: different IServiceProvider for non-default sceneInstance
+        //        throw new NotImplementedException();
+        //    }
+
+        //    sceneRegistries.GetOrAdd(sceneInstance, s => new StrideSceneRegistry(s));
+        //    Game.SceneSystem.SceneInstance.Services
+
+        //}
 
         public StrideGameService(IHostApplicationLifetime hostApplicationLifetime, ILogger<StrideGameService> logger)
         {

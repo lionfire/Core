@@ -103,11 +103,12 @@ namespace LionFire.Stride3D.UI
         /// File path to main html file. Should be inside the AssetDirectory folder.
         /// </summary>
         [DataMemberIgnore]
-        public string LoadingUrl { get; set; } = "http://google.com"; // file:///index.html
+        //public string LoadingUrl { get; set; } = "http://google.com"; // file:///index.html
+        public string LoadingUrl { get; set; } = "file:///loading.html";
 
         [DataMemberIgnore]
         //public string StartUrl { get; set; } = "http://google.com";
-        public string StartUrl { get; set; } = "http://localhost:5000/";
+        public string StartUrl { get; set; } = "http://localhost:7150/";
 
         #endregion
 

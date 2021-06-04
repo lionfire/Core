@@ -12,7 +12,9 @@ namespace LionFire.Persistence.LiteFs.Tests
     {
         public static IEnumerable<object[]> AllForXUnit => All.Select(x => new object[] { x });
 
-        public static string NewDbPath => Path.Combine(Path.GetTempPath(), "UnitTestData-" + Guid.NewGuid() + ".lite");
+
+        public static int Counter = new Random().Next(1, 999999);
+        public static string NewDbPath => Path.Combine(Path.GetTempPath(), $"UnitTestData-{Counter++}-{Guid.NewGuid()}.lite");
         public static IEnumerable<LiteDbConnectionOptions> All
         {
             get

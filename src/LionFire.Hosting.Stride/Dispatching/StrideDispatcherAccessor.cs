@@ -5,7 +5,6 @@ using System.Threading.Tasks;
 
 namespace LionFire.Dispatching
 {
-
     // ENH: Allow queuing actions before this instance is available -- buffer them in another class and hold them until StrideDispatcher arrives
     public class StrideDispatcherAccessor : IDispatcher
     {
