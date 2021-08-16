@@ -1,4 +1,5 @@
-﻿@using LionFire.UI.Workspaces
+﻿@using LionFire.Blazor.Components.Menus
+@using LionFire.UI.Workspaces
 @using System.Diagnostics 
 @*@inject IWorkspaceViewProvider  WorkspaceViewProvider*@
 @inject IWorkspaceProvider WorkspaceProvider
@@ -11,7 +12,6 @@
 @using LionFire.LiveSharp 
 @inject LiveSharpNotifier LiveSharpNotifier
 
-@*<h2>test 9      </h2>*@
 @*<li>*@
     @*<small>(Workspace @WorkspaceKey)</small>*@
 
@@ -24,11 +24,9 @@
         @*<ul>*@  
             @foreach (var item in Workspace.Items)
             {
-                <li class="nav-item px-3" @key="item.Key">
-                    <NavLink class="nav-link" href="@UrlProvider.GetUrl(item.Value)" Match="NavLinkMatch.All">
-                        @*<span class="oi oi-list-rich" aria-hidden="true"></span>*@ @((item.Value as IDisplayNamed)?.DisplayName ?? item.Key)
-                    </NavLink>
-                </li>
+                <NavMenuItem Href="@item.Value" >
+                    @((item.Value as IDisplayNamed)?.DisplayName ?? item.Key)
+                </NavMenuItem>
             }
         @*</ul>*@
     }
@@ -40,8 +38,6 @@
     // FUTURE: Create a new WorkspaceView for self (or load an existing one, to recover state), instead of accessing Workspace directly
 
     //public WorkspaceView WorkspaceView { get; set; }
-
-
 
     //, INotificationHandler<UpdatedResourceNotification>
 

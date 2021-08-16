@@ -106,7 +106,7 @@ namespace LionFire.Structures
 
         protected virtual void OnEnabled()
         {
-            Debug.WriteLine($"{this}: OnEnabled() - TEMP");
+            Debug.WriteLine($"{this}: OnEnabled()");
         }
 
         protected virtual void OnDisabled()
