@@ -18,9 +18,6 @@ using Microsoft.Extensions.Logging;
 
 namespace LionFire.Orleans_.AspNetCore_
 {
-
-
-
     public class OrleansHealthCheckHostedService : IHostedService
     {
         private readonly IWebHost host;
@@ -40,9 +37,13 @@ namespace LionFire.Orleans_.AspNetCore_
                     services.AddSingleton<IHealthCheckPublisher, LoggingHealthCheckPublisher>()
                          .Configure<HealthCheckPublisherOptions>(options =>
                          {
-                             options.Period = TimeSpan.FromSeconds(1);
+                             options.Period = TimeSpan.FromSeconds(60);
                          });
 
+                    if (healthCheckParticipants != null)
+                    {
+                        services.AddSingleton(healthCheckParticipants);
+                    }
                     services.AddSingleton(client);
 
 
@@ -52,8 +53,6 @@ namespace LionFire.Orleans_.AspNetCore_
                     app.UseHealthChecks(myOptions.Value.PathString);
                 })
                 .Build();
-
-
         }
 
         public Task StartAsync(CancellationToken cancellationToken) => host.StartAsync(cancellationToken);
