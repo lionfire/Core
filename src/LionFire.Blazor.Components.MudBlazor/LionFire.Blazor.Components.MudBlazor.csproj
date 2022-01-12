@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk.Razor">
 
   <PropertyGroup>
-    <TargetFramework>net5.0</TargetFramework>
+    <TargetFramework>net6.0</TargetFramework>
     <RootNamespace>LionFire.Blazor.Components.MudBlazor_</RootNamespace>
   </PropertyGroup>
 
@@ -11,9 +11,11 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="LiveSharp" Version="2.0.20" />
-    <PackageReference Include="Microsoft.AspNetCore.Components.Web" Version="5.0.7" />
-    <PackageReference Include="MudBlazor" Version="5.0.13" />
+    <PackageReference Include="LiveSharp" Version="2.0.24" />
+    <PackageReference Include="Microsoft.AspNetCore.Components.Web" Version="6.0.0" />
+    <PackageReference Include="MudBlazor" Version="6.0.2" />
+    <PackageReference Include="System.ComponentModel" Version="4.3.0" />
+    <PackageReference Include="System.ComponentModel.Annotations" Version="5.0.0" />
   </ItemGroup>
 
   <ItemGroup>

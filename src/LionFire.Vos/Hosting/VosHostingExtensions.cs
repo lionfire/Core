@@ -19,20 +19,33 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using System.Linq;
-using LionFire.Hosting;
 using System.Runtime.CompilerServices;
-using LionFire.Hosting;
+using LionFire.Services;
 using LionFire.Referencing;
 
-namespace LionFire.Services
+namespace LionFire.Hosting
 {
     public class CollectionTypeFromVobNode : ICollectionTypeProvider<VobReference>
     {
         public Type GetCollectionType(VobReference reference) => reference.GetVob().AcquireOwn<CollectionType>()?.Type;
     }
 
-    public static class VosServiceExtensions
+    public static class VosHostingExtensions
     {
+        #region LionFireHostBuilder
+
+        public static LionFireHostBuilder Vos(this LionFireHostBuilder hostBuilder, bool persistence = true, bool enableLogging = true)
+        {
+            hostBuilder
+                .Persisters()
+                .HostBuilder
+                    .AddVos(persistence, enableLogging)
+            ;
+            return hostBuilder;
+        }
+
+        #endregion
+
         public static IServiceCollection AddRootManager(this IServiceCollection services)
         {
             return services
@@ -42,7 +55,7 @@ namespace LionFire.Services
                     c.AutoRegisterFromServiceTypes.Add(typeof(IVos));
                 });
         }
-
+        
         public static IHostBuilder AddVos(this IHostBuilder hostBuilder, bool persistence = true, bool enableLogging = true)
             => hostBuilder
                 .AddPersisters()

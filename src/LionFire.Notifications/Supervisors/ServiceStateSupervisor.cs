@@ -53,7 +53,7 @@ namespace LionFire.Supervisors
             timer = new Timer(new TimerCallback((x) => { Debug.WriteLine("OnTimer - TODO");  }), null, 1000, 1000);
             return Task.CompletedTask;
         }
-        public Task StopAsync(CancellationToken? cancellationToken = default)
+        public Task StopAsync(CancellationToken cancellationToken = default)
         {
             timer?.Dispose();
             timer = null;

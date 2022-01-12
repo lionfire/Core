@@ -2,7 +2,7 @@
 
   <PropertyGroup>
     <VersionPrefix>0.1.0</VersionPrefix>
-    <TargetFramework>netstandard2.0</TargetFramework>
+    <TargetFrameworks>netstandard2.0;netstandard2.1</TargetFrameworks>
     <AssemblyName>LionFire.Environment.CommandLine</AssemblyName>
     <PackageId>LionFire.Environment.CommandLine</PackageId>
     <GenerateAssemblyConfigurationAttribute>false</GenerateAssemblyConfigurationAttribute>

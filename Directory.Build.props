@@ -7,13 +7,16 @@
 
     <!--<BaseIntermediateOutputPath>$(MSBuildThisFileDirectory)..\bin\$(MSBuildProjectName)\</BaseIntermediateOutputPath>
     <BaseOutputPath Condition=" '$(BaseOutputPath)' == '' ">$(MSBuildThisFileDirectory)..\bin\$(MSBuildProjectName)\</BaseOutputPath>-->
-    
+
     <BaseIntermediateOutputPath>..\..\build\obj\$(MSBuildProjectName)\</BaseIntermediateOutputPath>
     <BaseOutputPath>..\..\build\bin\$(MSBuildProjectName)\</BaseOutputPath>
     <MSBuildProjectExtensionsPath>..\..\build\obj\$(MSBuildProjectName)\</MSBuildProjectExtensionsPath>
+    <PackageOutputDir>z:\nuget</PackageOutputDir>
 
     <!-- <NeutralLanguage>English (United States)</NeutralLanguage> -->
     <LangVersion>latest</LangVersion>
+
+    <UseFullSemVerForNuGet>false</UseFullSemVerForNuGet>
 
   </PropertyGroup>
 
@@ -37,4 +40,28 @@
     <EmbeddedResource Remove="bin\**" />
     <None Remove="bin\**" />
   </ItemGroup>
+
+
+  <PropertyGroup Condition=" '$(Configuration)'=='Debug'">
+    <BumpLabel>dev</BumpLabel>
+    <BumpLabelDigits>4</BumpLabelDigits>
+    <!-- <GeneratePackageOnBuild>True</GeneratePackageOnBuild> -->
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)'=='Release'">
+    <BumpRevision>True</BumpRevision>
+    <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
+  </PropertyGroup>
+
+
+  <!-- <Target Name="CopyPackage" AfterTargets="Pack">
+    <Copy SourceFiles="$(OutputPath)..\$(PackageId).$(PackageVersion).nupkg" DestinationFolder="c:\\src\packages\\" />
+  </Target> -->
+  <!-- <Target Name="CopyPackage" AfterTargets="Pack">
+    <Copy SourceFiles="$(OutputPath)\..\$(PackageId).$(PackageVersion).nupkg" DestinationFolder="c:\\src\packages\\" />
+  </Target> -->
+<Target Name="CopyPackage" AfterTargets="Pack">
+	<Copy SourceFiles="$(OutputPath)\..\$(PackageId).$(PackageVersion).nupkg" DestinationFolder="c:\\src\packages\\" ContinueOnError="true"/>
+  <Copy SourceFiles="$(OutputPath)\$(PackageId).$(PackageVersion).nupkg" DestinationFolder="c:\\src\packages\\" ContinueOnError="true"/>
+</Target>
+
 </Project>

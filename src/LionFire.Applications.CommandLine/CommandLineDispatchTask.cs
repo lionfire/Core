@@ -44,7 +44,7 @@ namespace LionFire.Applications.Hosting
 
         public Task Start()
         {
-            //CancellationToken? cancellationToken = null;
+            //CancellationToken cancellationToken = default;
             this.RunTask = Task.Factory.StartNew(() => CliDispatcher.Dispatch(Args, DispatcherObject, DispatcherType, Context, Options));
             return Task.CompletedTask;
         }

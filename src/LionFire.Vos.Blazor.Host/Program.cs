@@ -1,6 +1,7 @@
 using Blazorise;
 using LionFire.Hosting;
 using LionFire.Services;
+using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -9,49 +10,74 @@ using Microsoft.Extensions.Logging;
 using NLog.Extensions.Logging;
 using System.IO;
 
-namespace LionFire.Vos.Blazor.Host
+namespace LionFire.Vos.Blazor.Host;
+
+
+public class Program
 {
-    public class Program
+    //static IConfigurationRoot config;
+    public static void Main(string[] args)
     {
+        //NLog.LogManager.Configuration = new NLogLoggingConfiguration(config.GetSection("NLog"));
 
-        // REFACTOR - also in ValorPacksHost
-        public static IConfiguration CreateConfigurationBuilder(string basePath = null)
-            => new ConfigurationBuilder()
-                 .SetBasePath(basePath ?? Path.GetDirectoryName(typeof(Program).Assembly.Location))
-                 .AddJsonFile("appsettings.json", optional: true, reloadOnChange: true).Build();
+        //NEW in .NET 6
+        //var builder = WebApplication.CreateBuilder();
+        ////var builder = Microsoft.Extensions.Hosting.Host.CreateDefaultBuilder(args);
 
-        //static IConfigurationRoot config;
-        public static void Main(string[] args)
-        {
-            //config = CreateConfigurationBuilder().Build();
-            //NLog.LogManager.Configuration = new NLogLoggingConfiguration(config.GetSection("NLog"));
+        //builder.Services
+        //    .AddSingleton<string>("asdf")
+        //    .AddSingleton<object>()
+        //;
+        //builder.Configuration
+        //    .AddUserSecrets<Program>()
+        //    ;
+        ////builder.ConfigureWebHostDefaults(webBuilder=>
+        ////{
+        ////});
+        //builder.Build().Run();
+        
+
+        VosHost.Create(args: args)
+            .ConfigureHostConfiguration(config =>
+                config
+                    .SetBasePath(basePath ?? Path.GetDirectoryName(typeof(Program).Assembly.Location))
+                    .AddJsonFile("appsettings.json", optional: true, reloadOnChange: true).Build()
+            )
+            .LionFire(b => 
+            {
                 
-            VosHost.Create(config: CreateConfigurationBuilder(), args: args)
-                .UseDependencyContext()
-                .ConfigureServices(services =>
-                {
-                    services
-                    .AddPersisters()
-                    //.AddLogging(loggingBuilder =>
-                    //{
-                    //    loggingBuilder
-                    //        .ClearProviders()
-                    //        .SetMinimumLevel(LogLevel.Trace)
-                    //        .AddNLog(config);
-                    //.AddNLogWeb()
-                    //})
-                    //.AddBlazorise(options =>
-                    //{
-                    //    options.ChangeTextOnKeyPress = true;
-                    //})
+            })
+            .ConfigureAppConfiguration(appConfiguration =>
+            {
+                appConfiguration
+                    .SetBasePath(basePath ?? Path.GetDirectoryName(typeof(Program).Assembly.Location))
+                    .AddJsonFile("appsettings.json", optional: true, reloadOnChange: true)
                     ;
-                })
-                .ConfigureWebHostDefaults(webBuilder =>
-                {
-                    webBuilder.UseStartup<VosBlazorHostStartup>();
-                })
-                .Build()
-                .Run();
-        }
+            })
+            .UseDependencyContext()
+            .ConfigureServices(services =>
+            {
+                services
+                .AddPersisters()
+                //.AddLogging(loggingBuilder =>
+                //{
+                //    loggingBuilder
+                //        .ClearProviders()
+                //        .SetMinimumLevel(LogLevel.Trace)
+                //        .AddNLog(config);
+                //.AddNLogWeb()
+                //})
+                //.AddBlazorise(options =>
+                //{
+                //    options.ChangeTextOnKeyPress = true;
+                //})
+                ;
+            })
+            .ConfigureWebHostDefaults(webBuilder =>
+            {
+                webBuilder.UseStartup<VosBlazorHostStartup>();
+            })
+            .Build()
+            .Run();
     }
 }

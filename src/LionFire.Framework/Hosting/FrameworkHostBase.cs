@@ -6,9 +6,11 @@ using LionFire.Threading;
 
 namespace LionFire.Hosting
 {
-    // OLD?
-
+    
 #pragma warning disable CA1063 // Implement IDisposable Correctly
+    /// <summary>
+    /// Convenience for testing 
+    /// </summary>
     public class FrameworkHostBase : IDisposable
 #pragma warning restore CA1063 // Implement IDisposable Correctly
     {
@@ -21,10 +23,6 @@ namespace LionFire.Hosting
 
         #endregion
 
-        //public FrameworkHostBase(string[] args = null)
-        //{
-        //    this.args = args;
-        //}
         public FrameworkHostBase(Action<IHostBuilder> configure = null, string[] args = null)
         {
             if (configure != null) ConfigureHostBuilder = configure;
@@ -33,13 +31,13 @@ namespace LionFire.Hosting
             Run();
         }
 
-        public virtual IHostBuilder CreateHostBuilder() => FrameworkHostBuilder.Create(args);
+        public virtual IHostBuilder CreateHostBuilder() => Host.CreateDefaultBuilder(args).LionFire(b => b.Framework());
 
         public Action<IHostBuilder> ConfigureHostBuilder { get; set; } //= h => { };
 
         protected void Run()
         {
-            var hostBuilder = CreateHostBuilder();
+            var hostBuilder = CreateHostBuilder() ;
             ConfigureHostBuilder?.Invoke(hostBuilder);
             task = hostBuilder
                 .RunAsync(async () =>
@@ -48,7 +46,6 @@ namespace LionFire.Hosting
                     //hostFinished.Token.WaitHandle.WaitOne();
                 });
         }
-
 
 
 #pragma warning disable CA1063 // Implement IDisposable Correctly

@@ -99,7 +99,7 @@ namespace LionFire.Dependencies
                 ManualSingleton<DependencyContext>.Instance = value;
             }
         }
-        
+
         #endregion
 
         #region ServiceProvider
@@ -147,6 +147,33 @@ namespace LionFire.Dependencies
                 threadLocal.Value = value;
             }
         }
+
+        /// <summary>
+        /// For simple/typical programs that have one root IServiceProvider, it is held here.  It is discarded upon an attempt to set it to a subsequent different value.
+        /// </summary>
+        public static IServiceProvider SingleRootServiceProvider
+        {
+            get => primaryServiceProvider; set
+            {
+                if (noPrimaryServiceProviderBecauseThereAreMultiple) { return; }
+
+                if(primaryServiceProvider != null)
+                {
+                    if (Object.ReferenceEquals(value, primaryServiceProvider)) { return; }
+
+                    primaryServiceProvider = null;
+                    noPrimaryServiceProviderBecauseThereAreMultiple = true;
+                    return;
+                }
+
+                primaryServiceProvider = value;
+            }
+        }
+        private static IServiceProvider primaryServiceProvider;
+
+        private static bool noPrimaryServiceProviderBecauseThereAreMultiple;
+
+
         private static ThreadLocal<DependencyContext> threadLocal;
 
         #endregion

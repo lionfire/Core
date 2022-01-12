@@ -17,8 +17,22 @@ namespace LionFire.Hosting
 {
     public static class PersistersHost
     {
-        public static IHostBuilder Create(IConfiguration config = null, string[] args = null, bool defaultBuilder = true, IHostBuilder hostBuilder = null)
-         => LionFireHost.Create(config, args, defaultBuilder, hostBuilder)
+        #region LionFireHostBuilder
+
+        public static LionFireHostBuilder Persisters(this LionFireHostBuilder hostBuilder)
+        {
+            hostBuilder.HostBuilder
+                .AddPersisters()
+                ;
+            return hostBuilder;
+        }
+
+        #endregion
+
+        [Obsolete]
+        public static IHostBuilder Create(string[] args = null)
+         => Host.CreateDefaultBuilder(args)
+                .AddLionFire()
                 .AddPersisters();
 
         public static IHostBuilder AddPersisters(this IHostBuilder hostBuilder)

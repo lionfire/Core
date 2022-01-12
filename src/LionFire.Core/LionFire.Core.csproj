@@ -4,8 +4,8 @@
   <PropertyGroup>
     <LangVersion>latest</LangVersion>
     <!--<VersionPrefix>1.0.2</VersionPrefix>-->
-   
-    <TargetFramework>netstandard2.0</TargetFramework>
+
+    <TargetFrameworks>netstandard2.0;netstandard2.1</TargetFrameworks>
     <AssemblyName>LionFire.Core</AssemblyName>
     <PackageId>LionFire.Core</PackageId>
     <GenerateAssemblyConfigurationAttribute>false</GenerateAssemblyConfigurationAttribute>
@@ -16,7 +16,7 @@
 
 This package is typically not added on its own, but is a dependency required by many LionFire packages.</Description>
     <Authors>Jared Thirsk</Authors>
-    <Copyright>2017 Jared Thirsk</Copyright>
+    <Copyright>2017-2021 Jared Thirsk</Copyright>
     <PackageProjectUrl>http://open.lionfire.software/</PackageProjectUrl>
     <PackageIconUrl>https://avatars3.githubusercontent.com/u/19334699?v=3&amp;s=200</PackageIconUrl>
     <RepositoryUrl>https://github.com/lionfire/core</RepositoryUrl>
@@ -33,14 +33,13 @@ This package is typically not added on its own, but is a dependency required by 
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="GitVersionTask" Version="5.5.1">
-      <PrivateAssets>all</PrivateAssets>
-      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    <PackageReference Include="GitVersion.MsBuild" Version="5.8.1">
+      <PrivateAssets>All</PrivateAssets>
     </PackageReference>
-    <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="5.0.0" />
-    <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="5.0.0" />
-    <PackageReference Include="Microsoft.Extensions.Hosting" Version="5.0.0" />
-    <PackageReference Include="System.Collections.Immutable" Version="5.0.0" />
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="6.0.0" />
+    <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="6.0.0" />
+    <PackageReference Include="Microsoft.Extensions.Hosting" Version="6.0.0" />
+    <PackageReference Include="System.Collections.Immutable" Version="6.0.0" />
 <PackageReference Include="System.Reactive" Version="5.0.0" />  </ItemGroup>
 
   <ItemGroup>
@@ -52,15 +51,11 @@ This package is typically not added on its own, but is a dependency required by 
     <ProjectReference Include="..\LionFire.Validation\LionFire.Validation.csproj" />
   </ItemGroup>
 
- 
-
   <ItemGroup>
     <None Update="Licensing\DrWPF.txt">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
   </ItemGroup>
-
- 
 
   <ItemGroup>
     <Folder Include="Execution\" />
@@ -71,17 +66,6 @@ This package is typically not added on its own, but is a dependency required by 
     <Folder Include="Structures\Resolvable\" />
     <Folder Include="Threading\" />
   </ItemGroup>
-
-  <PropertyGroup Condition=" '$(Configuration)'=='Release'">
-    <BumpRevision>True</BumpRevision>
-    <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
-  </PropertyGroup>
-
-  <PropertyGroup Condition=" '$(Configuration)'=='Debug'">
-    <BumpLabel>dev</BumpLabel>
-    <BumpLabelDigits>4</BumpLabelDigits>
-    <GeneratePackageOnBuild>False</GeneratePackageOnBuild>
-  </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
     <DefineConstants>TRACE;DEBUG;Rx;NETSTANDARD;NETSTANDARD2_0</DefineConstants>

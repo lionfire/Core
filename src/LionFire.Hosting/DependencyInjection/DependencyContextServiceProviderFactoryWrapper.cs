@@ -9,18 +9,32 @@ namespace LionFire.Hosting
     /// </summary>
     public class DependencyContextServiceProviderFactoryWrapper : IServiceProviderFactory<IServiceCollection>
     {
-        IServiceProviderFactory<IServiceCollection> child;
-
-        public DependencyContextServiceProviderFactoryWrapper(IServiceProviderFactory<IServiceCollection> child)
+        public bool AllowMultiple { get; }
+        private IServiceProviderFactory<IServiceCollection> child;
+        
+        /// <param name="child"></param>
+        /// <param name="allowMultiple">If true, assign to DependencyContext.Current.ServiceProvider.  
+        /// If false, assign to DependencyContext.Current.SingleRootServiceProvider.</param>
+        public DependencyContextServiceProviderFactoryWrapper(IServiceProviderFactory<IServiceCollection> child, bool allowMultiple = false)
         {
             this.child = child;
+            AllowMultiple = allowMultiple;
         }
 
         public IServiceCollection CreateBuilder(IServiceCollection services) => child.CreateBuilder(services);
         public IServiceProvider CreateServiceProvider(IServiceCollection containerBuilder)
         {
             var result = child.CreateServiceProvider(containerBuilder);
-            DependencyContext.Current.ServiceProvider = result;
+
+            if (AllowMultiple)
+            {
+                DependencyContext.Current.ServiceProvider = result;
+            }
+            else
+            {
+                DependencyContext.SingleRootServiceProvider = result;
+            }
+
             return result;
         }
     }

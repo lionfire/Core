@@ -329,7 +329,7 @@ namespace LionFire.Messaging.Queues.IO
             }
         }
 
-        public Task StopAsync(CancellationToken? cancellationToken = default)
+        public Task StopAsync(CancellationToken cancellationToken = default)
         {
             IsPolling = false;
             return Task.CompletedTask;

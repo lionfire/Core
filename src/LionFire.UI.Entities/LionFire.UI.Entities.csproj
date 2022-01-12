@@ -1,7 +1,7 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>netstandard2.0</TargetFramework>
+    <TargetFrameworks>netstandard2.0;netstandard2.1</TargetFrameworks>
     <RootNamespace>LionFire.UI</RootNamespace>
     <LangVersion>latest</LangVersion>
   </PropertyGroup>
@@ -11,7 +11,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Swordfish.NET.CollectionsV3" Version="3.3.6" />
+    <PackageReference Include="Swordfish.NET.CollectionsV3" Version="3.3.8" />
   </ItemGroup>
 
   <ItemGroup>

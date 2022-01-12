@@ -48,11 +48,15 @@ namespace LionFire.UI.Workspaces
 
     // UNUSED REVIEW - What is this?  Not sure I want templated.  Maybe it is useful in some situations.  Not sure I want TTemplate in here.
     // MOVE? Split Caliburn.Micro app stuff into its own DLL?
-#if FUTURE
+//#if FUTURE
 
 // Features:
 // - Executable initialization
-    public class Workspace<TTemplate, TChild> : InitializableExecutableBase, ITemplateInstance<TTemplate>, IComposition, IWorkspace, IPuts
+    public abstract class WorkspaceOld<TTemplate, TChild> : InitializableExecutableBase, ITemplateInstance<TTemplate>, IComposition, 
+        //IWorkspace, 
+        IPuts,
+        IFlex
+
         where TTemplate : class, ITemplate
     {
         IEnumerable<object> IComposition.Children => Children;
@@ -84,7 +88,7 @@ namespace LionFire.UI.Workspaces
     }
     // TODO: Children Executable Visitor: attach to object, then on onstarting/onstopping, crawl thru the hierarchy
     // TODO: Init call a global executablemanager to say that an executable is intializing, to give it a chance to add state listeners
-#endif
+//#endif
 
 
 }

@@ -4,7 +4,7 @@ using System.Collections.Concurrent;
 using System.Collections.Generic;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace LionFire.DependencyInjection
+namespace LionFire.DependencyInjection  // MOVE file to LionFire.DependencyInjection.dll ?  (Has nothing to do with VOS?)
 {
 
     public class DynamicServiceProvider : IServiceCollection, IServiceProvider

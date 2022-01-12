@@ -18,7 +18,7 @@
     "LionFire.Vos.Blazor.Host": {
       "commandName": "Project",
       "launchBrowser": true,
-      "applicationUrl": "https://localhost:7124;http://localhost:7123",
+      "applicationUrl": "http://localhost:7123",
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development"
       }

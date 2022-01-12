@@ -1,51 +1,64 @@
-﻿using Microsoft.Extensions.Hosting;
+﻿#nullable enable
+using Microsoft.Extensions.Hosting;
 using System.ComponentModel.Design;
 using Microsoft.Extensions.Configuration;
 using System.Reflection;
+using System;
 
 namespace LionFire.Hosting
 {
     public static class LionFireHost
     {
+
         /// <summary>
-        /// 
+        /// Fluent builder for LionFire's initialization of IHostBuilder
         /// </summary>
-        /// <param name="config"></param>
-        /// <param name="args"></param>
-        /// <param name="defaultBuilder">If true, and hostBuilder is null, initializes IHostBuilder from Host.CreateDefaultBuilder(args).  
-        /// Also, if true, adds default LionFire services:
-        ///  - AddLionFireLogging(config)
-        ///  - SetAsDefaultServiceProvider()
-        /// </param>
         /// <param name="hostBuilder"></param>
+        /// <param name="action"></param>
+        /// <param name="useDefaults"></param>
         /// <returns></returns>
-        public static IHostBuilder Create(IConfiguration config = null, string[] args = null, bool defaultBuilder = true, IHostBuilder hostBuilder = null)
+        public static IHostBuilder LionFire(this IHostBuilder hostBuilder, Action<LionFireHostBuilder>? action = null, bool useDefaults = true)
         {
-            if (config == null && defaultBuilder)
-            {
-                config = HostConfiguration.CreateDefault();
-            }
-            if (hostBuilder == null)
-            {
-                hostBuilder = defaultBuilder ? Host.CreateDefaultBuilder(args) : new HostBuilder();
-            }
+            var lf = new LionFireHostBuilder(hostBuilder);
 
-            return (hostBuilder)
-                .If(defaultBuilder, b =>
-                b
-                    .AddLionFireLogging(config)
-                    .SetAsDefaultServiceProvider()
-                )
+            if (useDefaults) { lf.Defaults(); }
 
-                //.ConfigureContainer<LionFireDefaultServiceProviderFactory>(f => { })
-                .UseServiceProviderFactory(new LionFireDefaultServiceProviderFactory())
-                .ConfigureServices(services =>
-                {
-                    //services.AddSingleton<IServiceProviderFactory<>>
-                });
+            action?.Invoke(lf);
+
+            return hostBuilder;
         }
 
+        ///// <summary>
+        ///// 
+        ///// </summary>
+        ///// <param name="config"></param>
+        ///// <param name="args"></param>
+        ///// <param name="defaultBuilder">If true, and hostBuilder is null, initializes IHostBuilder from Host.CreateDefaultBuilder(args).  
+        ///// Also, if true, adds default LionFire services:
+        /////  - AddLionFireLogging(config)
+        /////  - SetAsDefaultServiceProvider()
+        ///// </param>
+        ///// <param name="hostBuilder"></param>
+        ///// <returns></returns>
+        //[Obsolete]
+        //public static IHostBuilder Create(string[] args = null, bool defaultBuilder = true)
+        //{
+        //    return (defaultBuilder ? Host.CreateDefaultBuilder(args) : new HostBuilder())
+        //        .AddLionFire();
+        //}
 
+        [Obsolete("Use .LionFire()")]
+        public static IHostBuilder AddLionFire(this IHostBuilder hostBuilder)
+            => hostBuilder
+                .AddLionFireLogging()
+                .SetAsDefaultServiceProvider()
+                //.ConfigureContainer<LionFireDefaultServiceProviderFactory>(f => { })
+                .UseServiceProviderFactory(new LionFireDefaultServiceProviderFactory())
+                ;
+        
+
+
+#if FUTURE // Is this really needed?
         // REVIEW - adapted from Microsoft
         public static IHostBuilder AddDefaultBuilderForMaui(this IHostBuilder hostBuilder, string[] args = null)
         {
@@ -74,5 +87,6 @@ namespace LionFire.Hosting
             });
             return hostBuilder;
         }
+#endif
     }
 }

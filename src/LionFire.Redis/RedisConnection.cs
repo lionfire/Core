@@ -136,7 +136,15 @@ namespace LionFire.Redis
             #endregion
 
             isConnectionDesired = true;
-            logger.LogDebug($"[CONNECTING] Connecting to redis at {ConnectionString}...");
+            var msg = $"[CONNECTING] Connecting to redis at {ConnectionString ?? "null"}...";
+            if (ConnectionString == null)
+            {
+                logger.LogError(msg);
+            }
+            else
+            {
+                logger.LogDebug(msg);
+            }
             connectingTask = ConnectionMultiplexer.ConnectAsync(ConnectionString);
             redis = connectingTask.Result;
             connectingTask = null;

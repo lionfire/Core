@@ -19,6 +19,7 @@ using System.Linq;
 using System.Reflection;
 using System.Text.Json.Serialization;
 using Xunit;
+using Microsoft.Extensions.Hosting;
 
 namespace VosApp_.Windows_
 {
@@ -33,7 +34,7 @@ namespace VosApp_.Windows_
         [Fact]
         public void P_AppDir()
         {
-            VosAppHostBuilder.Create()
+            Host.CreateDefaultBuilder().LionFire(b => b.VosApp())
                 .AddAppInfo(new AppInfo(TestAppName, TestOrgName))
                 .RunAsync(serviceProvider =>
                 {
@@ -51,7 +52,7 @@ namespace VosApp_.Windows_
         [Fact]
         public void P_OrgDir()
         {
-            VosAppHostBuilder.Create()
+            Host.CreateDefaultBuilder().LionFire(b => b.VosApp())
                 .AddAppInfo(new AppInfo(TestAppName, TestOrgName))
                 .RunAsync(serviceProvider =>
                 {
@@ -68,7 +69,7 @@ namespace VosApp_.Windows_
         [Fact]
         public void P_CustomDir()
         {
-            VosAppHostBuilder.Create()
+            Host.CreateDefaultBuilder().LionFire(b => b.VosApp())
                 .AddAppInfo(new AppInfo
                 {
                     DataDirName = TestDataDir,

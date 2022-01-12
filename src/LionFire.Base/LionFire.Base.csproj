@@ -1,23 +1,19 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>netstandard2.0</TargetFramework>
+    <TargetFrameworks>netstandard2.0</TargetFrameworks>
+    <Version>2.0.52</Version>
     <LangVersion>latest</LangVersion>
+	  
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <RepositoryUrl>https://github.com/lionfire/Core</RepositoryUrl>
-    <Version>2.0.51</Version>
-    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <PackageTags>BCL extensions utility</PackageTags>
-    <Authors>Jared Thirsk</Authors>
-    <Company>LionFire Games</Company>
     <Description>Simple extensions and additions to .NET Base Class Library (BCL) classes.</Description>
-    <Copyright>2010-2020 Jared Thirsk</Copyright>
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="GitVersionTask" Version="5.5.1">
-      <PrivateAssets>all</PrivateAssets>
-      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    <PackageReference Include="GitVersion.MsBuild" Version="5.8.1">
+      <PrivateAssets>All</PrivateAssets>
     </PackageReference>
   </ItemGroup>
 
@@ -27,5 +23,11 @@
       <PackagePath>\</PackagePath>
     </Content>
   </ItemGroup>
-  
+
+	<PropertyGroup Condition=" '$(Configuration)'=='Release'">
+		<!--<BumpRevision>True</BumpRevision>-->
+		<GeneratePackageOnBuild>True</GeneratePackageOnBuild>
+	</PropertyGroup>
+
+
 </Project>

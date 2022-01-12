@@ -1,0 +1,31 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netstandard2.0</TargetFramework>
+    <LangVersion>latest</LangVersion>
+    <AssemblyName>LionFire.UI</AssemblyName>
+    <PackageId>LionFire.UI</PackageId>
+    <GenerateAssemblyConfigurationAttribute>false</GenerateAssemblyConfigurationAttribute>
+    <GenerateAssemblyCompanyAttribute>false</GenerateAssemblyCompanyAttribute>
+    <GenerateAssemblyProductAttribute>false</GenerateAssemblyProductAttribute>
+    <RootNamespace>LionFire</RootNamespace>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\LionFire.Applications.Abstractions\LionFire.Applications.Abstractions.csproj" />
+    <ProjectReference Include="..\LionFire.Core.Extras.Abstractions\LionFire.Core.Extras.Abstractions.csproj" />
+    <ProjectReference Include="..\LionFire.Core.Extras\LionFire.Core.Extras.csproj" />
+    <ProjectReference Include="..\LionFire.Core\LionFire.Core.csproj" />
+    <ProjectReference Include="..\LionFire.Execution.Abstractions\LionFire.Execution.Abstractions.csproj" />
+    <ProjectReference Include="..\LionFire.Execution\LionFire.Execution.csproj" />
+    <ProjectReference Include="..\LionFire.Instantiating.Abstractions\LionFire.Instantiating.Abstractions.csproj" />
+    <ProjectReference Include="..\LionFire.Instantiating\LionFire.Instantiating.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Nodes\" />
+    <Folder Include="Shell\Presenters\" />
+    <Folder Include="Shell\Views\" />
+  </ItemGroup>
+
+</Project>

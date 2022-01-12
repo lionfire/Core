@@ -7,9 +7,9 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="AnyClone" Version="1.0.39" />
-    <PackageReference Include="AnyDiff" Version="1.0.83" />
-    <PackageReference Include="Microsoft.Extensions.Hosting" Version="5.0.0" />
+    <PackageReference Include="AnyDiff" Version="1.0.88" />
+    <PackageReference Include="Microsoft.Extensions.Hosting" Version="6.0.0" />
+    <PackageReference Include="UltraMapper" Version="0.2.59" />
   </ItemGroup>
 
   <ItemGroup>

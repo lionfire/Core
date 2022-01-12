@@ -68,7 +68,7 @@ namespace LionFire.Applications
 
         protected virtual Task Run() { return Task.CompletedTask; }
 
-        //public virtual async Task StartOld(/*System.Threading.CancellationToken? cancellationToken = null*/)
+        //public virtual async Task StartOld(/*System.Threading.CancellationToken cancellationToken = default*/)
         //{
         //    if (await Initialize().ConfigureAwait(false) == false) { throw new Exception($"{this} failed to initialize.  Cannot start it."); }
 

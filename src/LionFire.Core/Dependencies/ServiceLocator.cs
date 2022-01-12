@@ -1,4 +1,5 @@
-﻿using LionFire.Reflection;
+﻿// Obligatory: https://blog.ploeh.dk/2010/02/03/ServiceLocatorisanAnti-Pattern/
+using LionFire.Reflection;
 using LionFire.Structures;
 using Microsoft.Extensions.DependencyInjection;
 using System;

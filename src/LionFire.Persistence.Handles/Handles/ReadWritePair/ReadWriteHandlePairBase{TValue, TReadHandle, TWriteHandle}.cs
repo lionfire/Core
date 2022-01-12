@@ -6,6 +6,7 @@ using LionFire.Resolves;
 using LionFire.Threading;
 using System;
 using System.Threading.Tasks;
+using UltraMapper;
 
 namespace LionFire.Persistence
 {
@@ -29,7 +30,7 @@ namespace LionFire.Persistence
         where TReference : IReference
         where TReadHandle : class, IReadHandleBase<TValue>
         where TWriteHandle : class, IWriteHandleBase<TValue>
-        //where TValue : class
+        where TValue : class // Needed by UltraMapper.  Maybe another mapper like ExpressMapper or AutoMapper doesn't have this restriction
     {
         public Type Type => typeof(TValue);
 
@@ -96,7 +97,7 @@ namespace LionFire.Persistence
                 {
                     if (Reference != null)
                     {
-                        writeHandle = (TWriteHandle) Reference.TryGetWriteHandle<TValue>(); // CAST
+                        writeHandle = (TWriteHandle)Reference.TryGetWriteHandle<TValue>(); // CAST
                     }
                 }
                 return writeHandle;
@@ -203,7 +204,10 @@ namespace LionFire.Persistence
 
         public virtual TValue CloneValueToWriteHandleValue(TValue value)
         {
-            var clonedValue = AnyClone.Cloner.Clone(value);
+
+            var clonedValue = Activator.CreateInstance<TValue>();
+            value.MapTo(clonedValue);
+            //var clonedValue = value.Clone(); // REVIEW - which cloning approach
             WriteHandle.Value = clonedValue;
             return clonedValue;
         }
@@ -227,7 +231,7 @@ namespace LionFire.Persistence
         }
 
         #endregion
-        
+
 
         #region Dispose
 

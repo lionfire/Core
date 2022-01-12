@@ -28,7 +28,19 @@ namespace LionFire.Hosting
             return hostBuilder;
         }
 
-        public static IHostBuilder If(this IHostBuilder builder, bool condition, Action<IHostBuilder> action)
+        //public static IHostBuilder If(this IHostBuilder builder, bool condition, Action<IHostBuilder> action)
+        //{
+        //    if (condition)
+        //    {
+        //        action(builder);
+        //    }
+        //    return builder;
+        //}
+    }
+
+    public static class FluentExtensions
+    {
+        public static T If<T>(this T builder, bool condition, Action<T> action)
         {
             if (condition)
             {
@@ -36,7 +48,5 @@ namespace LionFire.Hosting
             }
             return builder;
         }
-
-        
     }
 }

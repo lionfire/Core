@@ -26,7 +26,8 @@ namespace LionFire.Persistence
     //}
 
     public class NoopReadWriteHandlePair<TReference, TValue> : ReadWriteHandlePair<TReference, TValue>
-        where TReference  :IReference
+        where TReference : IReference
+        where TValue : class // Required by UltraMapper
     {
         public override TValue Value { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
 
@@ -46,7 +47,7 @@ namespace LionFire.Persistence
         , IReadWriteHandlePair<TValue>
         , IWriteHandle<TValue>
         where TReference : IReference
-        //where TValue : class
+        where TValue : class // Required by UltraMapper
     {
 
         public abstract TValue Value { get; set; }
@@ -78,7 +79,7 @@ namespace LionFire.Persistence
         , IReadWrapper<TValue>
         , IWriteWrapper<TValue>
         where TReference : IReference
-    //where TValue : class
+        where TValue : class // Required by UltraMapper
     {
 
         #region ReadHandle

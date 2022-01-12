@@ -9,6 +9,7 @@ using LionFire.Vos.Mounts;
 using LionFire.Vos.VosApp;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -26,7 +27,7 @@ namespace VosApp_
         [Fact]
         public void Pass()
         {
-            VosAppHostBuilder.Create()
+            Host.CreateDefaultBuilder().LionFire(b => b.VosApp())
                 .AddAppInfo(new AppInfo(TestGlobals.TestApplicationId, TestGlobals.TestOrgName))
                 .RunAsync(serviceProvider =>
                 {
@@ -83,7 +84,7 @@ namespace VosApp_
         {
             Assert.True(LionFireEnvironment.IsUnitTest); // MOVE
 
-             await VosAppHostBuilder.Create()
+             await Host.CreateDefaultBuilder().LionFire(b => b.VosApp())
                 .AddDefaultVosAppStores(useExeDirAsAppDirIfMissing: useExeDirAsAppDirIfMissing)
                 .RunAsync(serviceProvider =>
                 {

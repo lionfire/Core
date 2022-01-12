@@ -121,7 +121,7 @@ namespace LionFire.Execution
         }
 
 
-        public static async Task Restart(this IExecutableEx e, Action actionDuringShutdown = null, StopMode stopMode = StopMode.ImminentRestart | StopMode.GracefulShutdown, StopOptions stopOptions = StopOptions.StopChildren, CancellationToken? cancellationToken = null)
+        public static async Task Restart(this IExecutableEx e, Action actionDuringShutdown = null, StopMode stopMode = StopMode.ImminentRestart | StopMode.GracefulShutdown, StopOptions stopOptions = StopOptions.StopChildren, CancellationToken cancellationToken = default)
         {
             var exFlags = e as IAcceptsExecutionStateFlags;
 

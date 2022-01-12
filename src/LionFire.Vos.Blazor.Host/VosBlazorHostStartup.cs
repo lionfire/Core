@@ -16,6 +16,7 @@ using LionFire.Serialization.Json.JsonEx;
 using Blazorise;
 using Blazorise.Bootstrap;
 using Blazorise.Icons.FontAwesome;
+using MudBlazor.Services;
 //using RazorComponentsPreview;
 
 namespace LionFire.Vos.Blazor.Host
@@ -79,6 +80,7 @@ namespace LionFire.Vos.Blazor.Host
                    .AddFontAwesomeIcons();
             }
 
+            services.AddMudServices();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -103,12 +105,13 @@ namespace LionFire.Vos.Blazor.Host
 
             app.UseRouting();
 
-            if (Blazorise)
-            {
-                app.ApplicationServices
-                  .UseBootstrapProviders()
-                  .UseFontAwesomeIcons();
-            }
+            //if (Blazorise)
+            //{
+            //    app.ApplicationServices
+            //      .UseBootstrapProviders()
+            //      .UseFontAwesomeIcons()
+            //      ;
+            //}
 
             app.UseEndpoints(endpoints =>
             {
