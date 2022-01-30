@@ -11,7 +11,8 @@
 
   <ItemGroup>
     <PackageReference Include="LiveSharp" Version="2.0.24" />
-    <PackageReference Include="Microsoft.AspNetCore.Components.Web" Version="6.0.0" />
+	  <PackageReference Include="MediatR" Version="9.0.0" />
+    <PackageReference Include="Microsoft.AspNetCore.Components.Web" Version="6.0.1" />
     <PackageReference Include="Swordfish.NET.CollectionsV3" Version="3.3.8" />
 	  <PackageReference Include="System.ComponentModel" Version="4.3.0" />
 	  <PackageReference Include="System.ComponentModel.Annotations" Version="5.0.0" />
@@ -23,10 +24,6 @@
     <ProjectReference Include="..\LionFire.UI.Entities\LionFire.UI.Entities.csproj" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Reference Include="MediatR">
-      <HintPath>..\..\..\valor\Unity\Assets\Valor\bin\Debug\netstandard2.0\MediatR.dll</HintPath>
-    </Reference>
-  </ItemGroup>
+  
 
 </Project>

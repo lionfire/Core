@@ -34,6 +34,8 @@ namespace LionFire.UI.Workspaces
 
         #endregion
 
+        public object? FlexData { get; set; }
+
         public Func<object, string> KeyProvider { get; set; } = item => $"{(item ?? throw new ArgumentNullException()).GetType().FullName}:{(item as IKeyed<string>)?.Key ?? Guid.NewGuid().ToString()}";
 
         public ConcurrentObservableSortedDictionary<string, object> Items { get; private set; } = new ConcurrentObservableSortedDictionary<string, object>();
@@ -77,7 +79,7 @@ namespace LionFire.UI.Workspaces
         }
         private TTemplate template;
 
-        object IFlex.Value { get; set; }
+        object IFlex.FlexData { get; set; }
 
         protected virtual void OnTemplateChanged(TTemplate oldValue, TTemplate newValue) { }
 

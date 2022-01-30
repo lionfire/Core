@@ -1,10 +1,10 @@
-﻿using LionFire.Structures;
+﻿#nullable enable
 
 namespace LionFire.FlexObjects
 {
     public interface IFlex //: IWrapper<object>
     {
-        object Value { get; set; } // RENAME - FlexData
+        object? FlexData { get; set; }
     }
 
     public interface IFlexWithMeta : IFlex

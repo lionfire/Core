@@ -28,8 +28,14 @@ namespace LionFire.Hosting
 
             builder.UseContentRoot(AppContext.BaseDirectory);
             builder.ConfigureAppConfiguration((context, config) => config
-                .SetBasePath(AppContext.BaseDirectory)
+                //.SetBasePath(AppContext.BaseDirectory)
+                //.SetBasePath(Environment.CurrentDirectory)
+                .AddJsonFile(Path.Combine(Environment.CurrentDirectory, "appsettings.json"), true, true)
            );
+
+            Console.WriteLine($"Current Directory: {Environment.CurrentDirectory}");
+            Console.WriteLine($"{Path.Combine(Environment.CurrentDirectory, "appsettings.json")} exists? {File.Exists(Path.Combine(Environment.CurrentDirectory, "appsettings.json"))}");
+            Console.WriteLine($"{Path.Combine(AppContext.BaseDirectory, "appsettings.json")} exists? {File.Exists(Path.Combine(AppContext.BaseDirectory, "appsettings.json"))}");
 
             // ----------------
 

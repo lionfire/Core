@@ -34,9 +34,8 @@ namespace LionFire.Hosting
         /// <param name="services"></param>
         /// <param name="configure"></param>
         /// <returns></returns>
-        public static IServiceCollection AddUIEntities(this IServiceCollection services, Action<IParticipant> configure = null)
-        {
-            return services
+        public static LionFireHostBuilder UIEntities(this LionFireHostBuilder lf, Action<IParticipant> configure = null)
+            => lf.ForHostBuilder(builder => builder.ConfigureServices((context, services) => services
                 .AddSingleton<UIStarter>()
                 .AddSingleton<IUIFactory, UIFactory>()
                 .AddSingleton<IUIRoot, UIRoot>()
@@ -45,7 +44,6 @@ namespace LionFire.Hosting
                 {
                     defaultUIEntitiesServiceConfigurer(c);
                     configure?.Invoke(c);
-                });
-        }
+                })));
     }
 }

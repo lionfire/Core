@@ -54,7 +54,7 @@
     --hue4: 135;
     --alert-hue: 31;
     --error-hue: 0;
-    --warn-hue: 297;
+    --warning-hue: 297;
     --info-hue: 183;
     --detail-hue: 200;
     --comment-hue: 121;
@@ -81,6 +81,17 @@
     --info-hue: 183;
     --detail-hue: 200;
     --comment-hue: 121;
+}
+
+.error {
+    background: hsla(var(--error-hue), 100%, 100%, 100%);
+    color: white;
+    font-weight: 900;
+}
+.warning {
+    background: hsla(var(--warn-hue), 100%, 100%, 100%);
+    color: white;
+    font-weight: 900;
 }
 
 .navbar-toggler {
@@ -195,10 +206,45 @@ body.dark {
 }
 
 
+/* Transparency */
+
+.transparent-unless-hover {
+    opacity: 0.5;
+}
+
+.transparent-unless-hover:hover {
+    opacity: 1;
+}
+
+/* table */
 table.PropertyGrid td:first-child > div {
     margin-right: 10px;
 }
 
+/* Quasar */
+/* Quasar: Flex (consider simply importing quasar/src/css/flex-addon.sass) */
+
+.justify-content {
+    justify-content: center;
+}
+
+.row {
+    margin: 0; /* Radzen sets this to -15 for some reason */
+    display: flex;
+    flex-direction: row;
+}
+.column {
+    display: flex;
+    flex-direction: column;
+}
+
+.items-center {
+    align-items: center;
+}
+
+.self-start {
+    align-self: self-start;
+}
 
 /* Adapted from default MainLayout.razor.css */
 .page {
@@ -289,8 +335,18 @@ tr {
     background: none;
 }
 
-/* Radzen */
 
+.toolbar {
+    border: 1px solid hsla(var(--hue), 50%, 50%, 50%);
+}
+
+/* MudBlazor */
+body.dark .mud-tabs-toolbar {
+    background: black;
+}
+
+
+/* Radzen */
 /* Radzen: Datatable */
 body.dark .rz-datatable-data td .rz-cell-data, body.dark .rz-grid-table td .rz-cell-data {
     color: var(--color);
@@ -385,15 +441,73 @@ ul.rz-profile-menu, ul.rz-profile-menu .rz-navigation-menu {
     background-color: hsla(var(--hue), 40%, 33%, 90%);
 }
 
+.rz-chkbox-label {
+    color: hsla(var(--hue), 70%, 80%, 90%);
+}
+
 /* Hover */
 .HoverParent:hover .HideOnHover {
-    display: none;
+    visibility: hidden;
 }
 
 .HoverParent .ShowOnHover {
-    display: none;
+    visibility: hidden;
 }
 
 .HoverParent:hover .ShowOnHover {
-    display: inline-block;
+    visibility: visible;
 }
+
+/* MudBlazor */
+
+.mud-button-group-root.mud-button-group-override-styles .mud-button-root.mud-button.selected {
+    background-color: hsl(var(--hue), 56%, 30%);
+}
+
+body.dark .mud-input-label-outlined {
+    background: black;
+}
+
+/* Indicators */
+.Indicators {
+    border: 1px solid hsla(var(--hue), 50%, 40%, 50%);
+    display: flex;
+    align-items: stretch;
+}
+
+.Indicators > *:hover {
+    border: 1px solid hsla(var(--hue), 80%, 80%, 80%);
+}
+
+.Indicators > * {
+    border: 1px solid black;
+    display: inline-block;
+    padding: 0 2px;
+    /*border: 1px solid #00000040;*/
+    vertical-align: middle;
+    color: var(--color);
+    background-color: var(--background);
+    /*border-radius: 2px;*/
+}
+
+.Indicators *.inverse {
+    color: var(--background);
+    background-color: var(--color);
+}
+
+.Indicators div.Missing {
+    background: var(--background-a);
+}
+
+.Indicators div.Off {
+    background: #4a4a4a;
+}
+
+.Indicators div.Alert {
+    background: var(--background-alert);
+}
+
+.Indicators div.On {
+    background: #babaf9;
+}
+

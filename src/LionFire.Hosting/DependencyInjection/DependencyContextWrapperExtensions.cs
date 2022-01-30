@@ -12,7 +12,7 @@ namespace LionFire.Hosting
             {
                 DependencyContext.Default.UseAsGuaranteedSingletonProvider();
             }
-
+            
             hostBuilder.RegisterServiceProviderWithDependencyContext(allowMultipleRootServiceProviders);
 
             return hostBuilder;

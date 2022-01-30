@@ -72,8 +72,8 @@ namespace LionFire.FlexObjects
 
         public static Type SingleValueType(this IFlex flex /*, FUTURE? bool considerCollections = false */)
         {
-            if (flex.Value == null) return null;
-            if (flex.Value is ITypedObject to) return to.Type;
+            if (flex.FlexData == null) return null;
+            if (flex.FlexData is ITypedObject to) return to.Type;
 
             if (flex.IsFlexImplementationType())
             {
@@ -81,7 +81,7 @@ namespace LionFire.FlexObjects
                 return typeof(IFlexImplementation);
             }
 
-            return flex.Value.GetType();
+            return flex.FlexData.GetType();
         }
 
         public static bool IsSingleValue(this IFlex flex /*, FUTURE? bool considerCollections = false */)
@@ -91,9 +91,9 @@ namespace LionFire.FlexObjects
 
         public static object SingleValueOrDefault(this IFlex flex)
         {
-            if (flex.Value is ITypedObject to) return to.Object;
-            if (IsFlexImplementationType(flex.Value?.GetType())) return null;
-            return flex.Value;
+            if (flex.FlexData is ITypedObject to) return to.Object;
+            if (IsFlexImplementationType(flex.FlexData?.GetType())) return null;
+            return flex.FlexData;
         }
 
         public static bool IsSingleTyped(this IFlex flex)
@@ -103,7 +103,7 @@ namespace LionFire.FlexObjects
 
         #region Implementation
 
-        public static bool IsFlexImplementationType(this IFlex flex) => flex.Value.GetType().IsFlexImplementationType();
+        public static bool IsFlexImplementationType(this IFlex flex) => flex.FlexData.GetType().IsFlexImplementationType();
         public static bool IsFlexImplementationType(this object obj) => obj.GetType().IsFlexImplementationType();
         public static bool IsFlexImplementationType(this Type t)
         {
@@ -122,12 +122,12 @@ namespace LionFire.FlexObjects
 
         #endregion
 
-        public static bool IsEmpty(this IFlex flex) => flex.Value == null; // TODO: Detect if child collections are empty
+        public static bool IsEmpty(this IFlex flex) => flex.FlexData == null; // TODO: Detect if child collections are empty
 
         #region Get
 
-        /// See also: GetMany which returns an IEnumerable<T> of 0 or 1 or more (TODO)
         /// <summary>
+        /// See also: GetMany which returns an IEnumerable<T> of 0 or 1 or more (TODO)
         /// </summary>
         /// <typeparam name="T"></typeparam>
         /// <param name="flex"></param>
@@ -135,20 +135,42 @@ namespace LionFire.FlexObjects
         /// <param name="createIfMissing"></param>
         /// <param name="createFactory"></param>
         /// <param name="throwIfMissing">Use this to guarantee the return value won't be nulll.  If createIfMissing is true, an attempt will be made to create via the createFactory, and if that result is default(T), a CreationFailureException will be thrown.</param>
+        /// <param name="createArgs">Ignored if createFactory is specified</param>
         /// <returns></returns>
-        public static T Get<T>(this IFlex flex, string name = null, bool createIfMissing = false, Func<T> createFactory = null, bool throwIfMissing = true)
+        public static T Get<T>(this IFlex flex, string name = null, Func<T> createFactory = null, bool throwIfMissing = true, object[] createArgs = null)
         {
-            if (flex.Value is T match) return match;
-            if (flex.Value is FlexTypeDictionary d)
+            var result = Query<T>(flex, name);
+            if(!EqualityComparer<T>.Default.Equals(result, default)) { return result; }
+
+            result = createFactory != null ? createFactory()
+                : createArgs != null ? (T)FlexGlobalOptions.DefaultCreateWithOptionsFactory(typeof(T), createArgs)
+                    : (T)FlexGlobalOptions.DefaultCreateFactory(typeof(T));
+            Set<T>(flex, result, allowReplace: false, throwOnFail: true);
+
+            return result;
+        }
+
+        public static T Query<T>(this IFlex flex, string name = null)
+        {
+            if (name == null)
             {
-                return (T)d.Types[typeof(T)];
+                if (flex.FlexData is T match) return match;
+                if (flex.FlexData is FlexTypeDictionary d)
+                {
+                    return (T)d.Types[typeof(T)];
+                }
+            }
+            else
+            {
+                throw new NotImplementedException("Query with name");
             }
             return default;
         }
 
+
         #region Convenience / Backporting
 
-        public static T AsTypeOrCreateDefault<T>(this IFlex flex, Func<T> factory = null) => flex.Get(createIfMissing: true, createFactory: factory, throwIfMissing: true);
+        public static T AsTypeOrCreateDefault<T>(this IFlex flex, Func<T> factory = null) => flex.Get(createFactory: factory, throwIfMissing: true);
 
         #endregion
 
@@ -166,14 +188,15 @@ namespace LionFire.FlexObjects
         /// <param name="throwOnFail">Set to true to ensure Set always succeeds in setting the value, otherwise an Exception is thrown.</param>
         /// <param name="onlyReplaceSameType"></param>
         /// <returns>True if an existing value was replaced, false if not.</returns>
-        public static bool Set<T>(this IFlex flex, T value, bool allowReplace = true, bool throwOnFail = false, bool onlyReplaceSameType = true)
+        public static bool Set<T>(this IFlex flex, T value, string name = null, bool allowReplace = true, bool throwOnFail = false, bool onlyReplaceSameType = true)
         {
+            if (name != null) throw new NotImplementedException(nameof(name));
             var valueType = typeof(T) != typeof(object) ? typeof(T) : value?.GetType();
             //Type existingType = flex.Value is ITypedObject to ? to.Type : flex.Value?.GetType();
 
-            if (flex.Value == null)
+            if (flex.FlexData == null)
             {
-                flex.Value = EffectiveSingleValue<T>(value);
+                flex.FlexData = EffectiveSingleValue<T>(value);
                 return false;
             }
             else if (!allowReplace)
@@ -186,7 +209,7 @@ namespace LionFire.FlexObjects
             }
             else
             {
-                flex.Value = EffectiveSingleValue<T>(value);
+                flex.FlexData = EffectiveSingleValue<T>(value);
                 return true; // ENH: Return replaced value
             }
         }
@@ -228,26 +251,26 @@ namespace LionFire.FlexObjects
 
             object effectiveObject = EffectiveSingleValue(obj);
 
-            if (flex.Value == null)
+            if (flex.FlexData == null)
             {
-                flex.Value = effectiveObject;
+                flex.FlexData = effectiveObject;
             }
             else
             {
-                if (flex.Value is List<T> existingList)
+                if (flex.FlexData is List<T> existingList)
                 {
-                    if(!allowMultipleOfSameType) { throw new ArgumentException($"{nameof(allowMultipleOfSameType)} is false but there is already a list of type '{typeof(T).FullName}'"); }
+                    if (!allowMultipleOfSameType) { throw new ArgumentException($"{nameof(allowMultipleOfSameType)} is false but there is already a list of type '{typeof(T).FullName}'"); }
                     // 3rd (or later) item of list
                     existingList.Add(obj);
                 }
-                else if (flex.Value is T existingItem)
+                else if (flex.FlexData is T existingItem)
                 {
                     if (!allowMultipleOfSameType) { throw new ArgumentException($"{nameof(allowMultipleOfSameType)} is false but there is already a '{typeof(T).FullName}'"); }
                     // Convert a single existing value into a list and add the parameter
                     var list = new List<T> { existingItem, obj };
-                    flex.Value = list;
+                    flex.FlexData = list;
                 }
-                else if (flex.Value is FlexTypeDictionary ftd)
+                else if (flex.FlexData is FlexTypeDictionary ftd)
                 {
                     if (ftd.Types.ContainsKey(typeof(List<T>)))
                     {

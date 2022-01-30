@@ -1,6 +1,9 @@
 ﻿#nullable enable
 using LionFire.Collections.Concurrent;
 using LionFire.ExtensionMethods.Poco.Resolvables;
+using LionFire.Structures;
+using MediatR;
+using Microsoft.Extensions.Logging;
 using MorseCode.ITask;
 using Newtonsoft.Json.Linq;
 using System;
@@ -8,24 +11,23 @@ using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
+using System.Net.NetworkInformation;
 using System.Threading.Tasks;
 
 namespace LionFire.Activities
 {
-    public enum ActivityBucket
-    {
-        InProgress,
-        Finished,
-        Archived,
-        Purged
-    }
-
 
     /// <summary>
     /// Tracks a collection of Activities, which are anything from short-lived async Tasks to long-running distributed Jobs
     /// </summary>
     public class ActivitiesTracker : INotifyPropertyChanged
     {
+        #region Dependencies
+
+        public ILogger<ActivitiesTracker> Logger { get; }
+
+        #endregion
+
         #region Parameters
 
         public ActivitiesTrackerOptions? Options { get; set; }
@@ -35,6 +37,15 @@ namespace LionFire.Activities
         public ActivitiesTrackerOptions EffectiveOptions => Options ?? ActivitiesTrackerOptions.Default;
 
         #endregion
+
+        #endregion
+
+        #region Construction
+
+        public ActivitiesTracker(ILogger<ActivitiesTracker> logger)
+        {
+            Logger = logger;
+        }
 
         #endregion
 
@@ -132,17 +143,68 @@ namespace LionFire.Activities
 
         #endregion
 
+        public IEnumerable<IActivity> ActivitiesOutstanding => Activities?.Values.Where(j => !j.IsCompleted) ?? Enumerable.Empty<IActivity>();
 
-        public IEnumerable<IActivity> ActivitiesOutstanding => Activities?.Values.Where(j => !j.Finished) ?? Enumerable.Empty<IActivity>();
+        public void Add(IActivity activity)
+        {
+            if (activity == null)
+            {
+                Logger.LogWarning($"Add got null activity");
+                return;
+            }
+
+            bool hadExistingKey;
+            var keyable = activity as IKeyable<Guid>;
+
+            if (activity.Key == default)
+            {
+                hadExistingKey = false;
+                if (keyable == null) { throw new ArgumentException("IActivity has unset Key but is not IKeyable"); }
+                keyable.Key = Guid.NewGuid();
+            }
+            else
+            {
+                hadExistingKey = true;
+            }
+
+            Activities ??= new ConcurrentDictionary<Guid, IActivity>();
+
+            while (!Activities.TryAdd(activity.Key, activity))
+            {
+                throw new ArgumentException("IActivity Key is already registered");
+                if (hadExistingKey)
+                {
+                    throw new ArgumentException("IActivity Key is already registered");
+                }
+                else
+                {
+                    keyable.Key = Guid.NewGuid();
+                }
+            }
+
+            Logger.LogInformation($"Activity: {activity}");
+
+            if (activity?.Task == null)
+            {
+                OnTaskFinished(activity);
+            }
+            else
+            {
+                activity.Task.ContinueWith(t => OnTaskFinished(activity));
+            }
+
+            ActivityBucketChanged?.Invoke(ActivityBucket.InProgress, activity);
+        }
 
         public Task Add(Task task, [System.Runtime.CompilerServices.CallerMemberName] string activityName = "", string? description = null)
         {
-            Activity activity;
+            // REVIEW - REFACTOR with Add(IActivity)
+            TaskActivity activity;
             Guid guid;
             do
             {
                 guid = Guid.NewGuid();
-                activity = new Activity()
+                activity = new TaskActivity()
                 {
                     Key = guid,
                     Name = activityName,
@@ -171,6 +233,8 @@ namespace LionFire.Activities
 
         private void OnTaskFinished(IActivity activity)
         {
+            Logger.LogInformation($"Activity finished: {activity}");
+
             Activities?.TryRemove(activity.Key, out _);
             finished ??= new();
             finished.Add(activity);
@@ -193,7 +257,7 @@ namespace LionFire.Activities
         public string TextForChildren(IEnumerable<IActivity> activities, bool finished)
         {
             var statuses = activities.Select(a => a.Status ?? ActivityStatus.NullFallback).ToList();
-            
+
             var text = (finished ? "Finished: " : "In progress: ") + activities.Select(s => s.Name ?? s.Key.ToString()).Aggregate((x, y) => $"{x}, {y}");
             if (text.Length <= EffectiveOptions.MaxTextLength) { return text; }
 

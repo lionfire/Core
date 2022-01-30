@@ -4,7 +4,7 @@ namespace LionFire.FlexObjects
 {
     public partial class Flex : IFlex
     {
-        public object Value { get; set; }
+        public object FlexData { get; set; }
     }
 
     public partial class Flex

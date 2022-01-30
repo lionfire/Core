@@ -148,6 +148,8 @@ namespace LionFire.Dependencies
             }
         }
 
+        public static IServiceProvider CurrentServiceProvider => SingleRootServiceProvider ?? Current?.ServiceProvider;
+
         /// <summary>
         /// For simple/typical programs that have one root IServiceProvider, it is held here.  It is discarded upon an attempt to set it to a subsequent different value.
         /// </summary>
@@ -204,9 +206,9 @@ namespace LionFire.Dependencies
 
             #endregion
 
-            #region Try this.ServiceProvider
+            #region Try this.ServiceProvider ?? SingleRootServiceProvider
             {
-                var _serviceProvider = ServiceProvider;
+                var _serviceProvider = ServiceProvider ?? SingleRootServiceProvider;
                 if (_serviceProvider != null)
                 {
                     result = _serviceProvider.GetService(serviceType);

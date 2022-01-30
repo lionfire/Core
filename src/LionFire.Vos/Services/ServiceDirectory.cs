@@ -50,7 +50,7 @@ namespace LionFire.Vos.Services
 
         public static TService GetServiceFromStateVob<TService>(IVob vob)
             where TService : class 
-            => vob?.Value as TService;
+            => vob?.FlexData as TService;
 
         #endregion
 
@@ -60,7 +60,7 @@ namespace LionFire.Vos.Services
             => ServiceStateVob<TService>(name, serviceType).Add(value);
 
         public TService GetService<TService>(string name = null, string serviceType = null) where TService : class 
-            => ServiceStateVob<TService>(name, serviceType, createIfMissing: false).Value as TService;
+            => ServiceStateVob<TService>(name, serviceType, createIfMissing: false).FlexData as TService;
 
         //public TService FindService<TService>(string name = null, string serviceType = null)
         //    where TService : class

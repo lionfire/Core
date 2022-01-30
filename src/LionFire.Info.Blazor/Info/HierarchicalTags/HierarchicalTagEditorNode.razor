@@ -1,0 +1,30 @@
+﻿@inject ILogger<HierarchicalTagEditorNode> Logger
+@namespace LionFire.Info
+
+<MudTreeViewItem Class="HoverParent" T="TagNode" Value=@Value ExpandedIcon=@(Value.Children?.Any() == true ? Icons.Filled.KeyboardArrowRight : null) @bind-Expanded=Expanded>
+
+    @if (Value?.Children != null)
+    {
+        foreach (var child in Value.Children.Values)
+        {
+            <HierarchicalTagEditorNode Value=@child />
+        }
+
+    }
+
+</MudTreeViewItem>
+
+@code {
+    [Parameter]
+    public TagNode? Value { get; set; }
+
+    public bool Expanded{ get; set; }
+
+    protected override Task OnInitializedAsync()
+    {
+        Logger.LogInformation("OnInitializedAsync");
+        Expanded = Value?.Depth <= 1;
+
+        return base.OnInitializedAsync();
+    }
+}

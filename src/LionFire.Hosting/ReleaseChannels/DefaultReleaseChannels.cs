@@ -22,6 +22,7 @@ namespace LionFire.Deployment
                 yield return Test;
 
                 yield return Dev;
+                yield return Src;
             }
         }
 
@@ -38,6 +39,7 @@ namespace LionFire.Deployment
         public static ReleaseChannel AutoBuild = new ("autobuild", "AutoBuild", 5);
         public static ReleaseChannel Test = new("test", "Test", 6);
         public static ReleaseChannel Dev = new("dev", "Development", 7);
+        public static ReleaseChannel Src = new("src", "Source", 8);
 
         public static int? TryGetReleaseChannelPortOffset(string id)
             => All.Where(r => r.Id == id).FirstOrDefault().precedence;

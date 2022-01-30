@@ -58,7 +58,7 @@ namespace LionFire.Hosting
         private static IHostBuilder AugmentWithFramework(this IHostBuilder hostBuilder, FrameworkHostBuilderOptions options = null)
         {
             return hostBuilder
-                .UseDependencyContext() // REVIEW
+                //.UseDependencyContext() // OLD - this is now done in LionFire()
                 .ConfigureServices((context, services) =>
                 {
                     services

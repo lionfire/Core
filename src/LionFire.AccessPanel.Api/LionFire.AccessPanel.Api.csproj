@@ -1,26 +1,26 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk.Web">
 
-  <PropertyGroup>
-    <TargetFramework>netcoreapp3.0</TargetFramework>
-    <RootNamespace>LionFire.AccessPanel</RootNamespace>
-    <LangVersion>8.0</LangVersion>
-  </PropertyGroup>
+	<PropertyGroup>
+		<TargetFramework>net6.0</TargetFramework>
+		<RootNamespace>LionFire.AccessPanel</RootNamespace>
+		<LangVersion>8.0</LangVersion>
+	</PropertyGroup>
 
-  <ItemGroup>
-    <Folder Include="Applications\" />
-    <Folder Include="wwwroot\" />
-  </ItemGroup>
+	<ItemGroup>
+		<Folder Include="Applications\" />
+		<Folder Include="wwwroot\" />
+	</ItemGroup>
 
-  <ItemGroup>
-    <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="3.0.0" />
-  </ItemGroup>
+	<ItemGroup>
+		<PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="3.0.0" />
+	</ItemGroup>
 
-  <ItemGroup>
-    <ProjectReference Include="..\LionFire.AccessPanel\LionFire.AccessPanel.csproj" />
-    <ProjectReference Include="..\LionFire.Applications\LionFire.Applications.csproj" />
-    <ProjectReference Include="..\LionFire.Framework\LionFire.Framework.csproj" />
-    <ProjectReference Include="..\LionFire.ObjectBus\LionFire.ObjectBus.csproj" />
-    <ProjectReference Include="..\LionFire.Serialization.Json.Newtonsoft\LionFire.Serialization.Json.Newtonsoft.csproj" />
-  </ItemGroup>
+	<ItemGroup>
+		<ProjectReference Include="..\LionFire.AccessPanel\LionFire.AccessPanel.csproj" />
+		<ProjectReference Include="..\LionFire.Applications\LionFire.Applications.csproj" />
+		<ProjectReference Include="..\LionFire.Framework\LionFire.Framework.csproj" />
+		<ProjectReference Include="..\LionFire.ObjectBus\LionFire.ObjectBus.csproj" />
+		<ProjectReference Include="..\LionFire.Serialization.Json.Newtonsoft\LionFire.Serialization.Json.Newtonsoft.csproj" />
+	</ItemGroup>
 
 </Project>

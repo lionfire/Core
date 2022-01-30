@@ -330,7 +330,7 @@ namespace LionFire.Vos
 
         #endregion
 
-        public object Value { get; set; }
+        public object FlexData { get; set; }
 
         #region MultiTyped
 

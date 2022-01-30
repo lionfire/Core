@@ -1,0 +1,31 @@
+﻿@inject ILogger<AddTagDialog> Logger
+
+<MudDialog>
+    <DialogContent>
+        
+        <MudInput @bind-Value="NewName" @onkeydown="OnKeyDown"/>
+
+    </DialogContent>
+    <DialogActions>
+        <MudButton OnClick="Cancel">Cancel</MudButton>
+        <MudButton Color="Color.Primary" OnClick="Submit">Ok</MudButton>
+    </DialogActions>
+</MudDialog>
+
+@code {
+    [CascadingParameter] MudDialogInstance MudDialog { get; set; }
+
+    public string NewName{ get; set; }
+
+    void Submit() => MudDialog.Close(DialogResult.Ok(true));
+    void Cancel() => MudDialog.Cancel();
+
+    void OnKeyDown(KeyboardEventArgs args)
+    {
+        if(args.Key == "Enter")
+        {
+            Submit();
+        }
+        Logger.LogInformation($"OnKeyDown: {args.Key} {args.Type}");
+    }
+}
