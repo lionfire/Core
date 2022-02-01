@@ -238,6 +238,10 @@ table.PropertyGrid td:first-child > div {
     flex-direction: column;
 }
 
+.no-wrap {
+    flex-wrap: nowrap;
+}
+
 .items-center {
     align-items: center;
 }

@@ -7,7 +7,7 @@ namespace Dycen
     {
     }
 
-    [System.AttributeUsage(AttributeTargets.Class | AttributeTargets.Interface, Inherited = false, AllowMultiple = true)]
+    [System.AttributeUsage(AttributeTargets.Class | AttributeTargets.Interface | AttributeTargets.Property, Inherited = false, AllowMultiple = true)]
     public sealed class MutableAttribute : Attribute
     {
     }

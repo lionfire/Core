@@ -1,0 +1,17 @@
+﻿@page "/activities/{Key}/console"
+@inject LionFire.UI.ActivitiesTracker ActivitiesTracker
+
+<h3>ConsoleActivity</h3>
+
+@if (Activity == null)
+{
+    <div>
+        Activity @Key not found
+    </div>
+}
+
+@if (Activity is IConsoleActivity ca) {
+    <TerminalView Lines=@ca.Lines />
+}
+
+

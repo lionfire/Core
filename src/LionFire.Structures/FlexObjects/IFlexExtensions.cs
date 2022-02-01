@@ -145,7 +145,7 @@ namespace LionFire.FlexObjects
             result = createFactory != null ? createFactory()
                 : createArgs != null ? (T)FlexGlobalOptions.DefaultCreateWithOptionsFactory(typeof(T), createArgs)
                     : (T)FlexGlobalOptions.DefaultCreateFactory(typeof(T));
-            Set<T>(flex, result, allowReplace: false, throwOnFail: true);
+            Add<T>(flex, result, allowMultipleOfSameType: false);
 
             return result;
         }
@@ -249,6 +249,9 @@ namespace LionFire.FlexObjects
         {
             // REVIEW - are all the corner cases covered?  Can this be refactored?
 
+            // TODO: Refactor to use this KVP everywhere: GetTypeForValue(flex.FlexData), flex.FlexData
+            //var effectiveTypeForType = GetTypeForType(typeof(T));
+
             object effectiveObject = EffectiveSingleValue(obj);
 
             if (flex.FlexData == null)
@@ -272,6 +275,8 @@ namespace LionFire.FlexObjects
                 }
                 else if (flex.FlexData is FlexTypeDictionary ftd)
                 {
+                    
+
                     if (ftd.Types.ContainsKey(typeof(List<T>)))
                     {
                         if (!allowMultipleOfSameType) { throw new ArgumentException($"{nameof(allowMultipleOfSameType)} is false but there is already a list of type '{typeof(T).FullName}'"); }
@@ -291,17 +296,26 @@ namespace LionFire.FlexObjects
                 }
                 else
                 {
-                    throw new UnreachableCodeException();
-                    //// Something else is in the Flex, so allow for both
+                    // Something else is in the Flex, so allow for both
+                    var dict = new FlexTypeDictionary(flex.FlexData);
+                    dict.Add(flex.FlexData);
 
-                    //Type collectionType = flex.Value is ITypedObject to ? to.Type : flex.Value.GetType();
+                    // TODO - this will fail if both objects resolve to the same type
+                    dict.Add(obj); 
 
-                    //var dict = new FlexTypeDictionary(flex.Value, effectiveObject);
-                    //dict.Add(list);
-                    //dict.Add(flex.Value);
-                    //flex.Value = dict;
+                    flex.FlexData = dict;
                 }
             }
+        }
+
+        public static Type GetTypeForValue(object val)
+            => val is ITypedObject typedObject ? typedObject.Type : val.GetType();
+
+        public static Type GetTypeForType(Type type)
+        {
+            // TODO: Get attribute on type
+            //type.GetCustomAttribute<FlexTypeAttribute>();
+            return type;
         }
 
         //public static void GetOrAdd<T>(this ConcurrentDictionary<string, object> dict, string key, T value)

@@ -20,6 +20,12 @@ namespace LionFire.FlexObjects.Implementation
 
         (Type, object) ResolveType(object item) => item is ITypedObject to ? (to.Type, to.Object) : (item.GetType(), item);
 
+        public bool ContainsKey(object item)
+        {
+            var (type, _) = ResolveType(item);
+            return types.ContainsKey(type);
+        }
+
         public void Add(object item)
         {
             if (item == null) throw new ArgumentNullException();

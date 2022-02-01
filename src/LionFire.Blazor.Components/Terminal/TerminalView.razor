@@ -1,0 +1,17 @@
+﻿@using CircularBuffer
+
+<h3>TerminalView</h3>
+
+@foreach (var line in Lines)
+{
+    <div>
+        @line
+    </div>
+}
+
+@code {
+
+    [Parameter]
+    public CircularBuffer<string> Lines = new CircularBuffer<string>(1000, new[] { });
+
+}
