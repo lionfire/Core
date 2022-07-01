@@ -1,5 +1,7 @@
 ﻿@page "/activities/{Key}/console"
-@inject LionFire.UI.ActivitiesTracker ActivitiesTracker
+@inject LionFire.Activities.IActivitiesTracker ActivitiesTracker
+@using LionFire.FlexObjects
+@using LionFire.Activities
 
 <h3>ConsoleActivity</h3>
 
@@ -10,8 +12,8 @@
     </div>
 }
 
-@if (Activity is IConsoleActivity ca) {
-    <TerminalView Lines=@ca.Lines />
+@if (Lines != null) {
+    <TerminalView Lines=@Lines />
 }
 
 

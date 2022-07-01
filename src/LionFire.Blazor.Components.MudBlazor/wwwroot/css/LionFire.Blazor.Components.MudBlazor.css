@@ -1,0 +1,40 @@
+﻿:root {
+    --mud-typography-default-size: 2rem;
+}
+
+body {
+    background-color: var(--mud-palette-surface);
+}
+
+    body:not(.dark) {
+        background-color: var(--mud-palette-surface);
+    }
+
+        body:not(.dark) .top-row {
+            background-color: #f7f7f7;
+            border-bottom: 1px solid #d6d5d5;
+        }
+
+    body .top-row {
+        background-color: #f7f7f7;
+        border-bottom: 1px solid #d6d5d5;
+    }
+
+
+    body.dense .mud-icon-button {
+        padding: 1px;
+    }
+
+    body.dense .mud-list-item.mud-list-item-dense {
+        padding: 2px 8px;
+    }
+
+    body.dense .mud-list-subheader {
+        padding: 4px 8px 10px 8px;
+        padding-block-end: 5px;
+        padding-block-start: 2px;
+    }
+
+    body.dense .mud-list.mud-list-padding {
+        padding: 4px 0;
+    }

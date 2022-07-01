@@ -1,4 +1,5 @@
-﻿using System;
+﻿#nullable enable
+using System;
 using System.Collections.Generic;
 using System.Text;
 
@@ -6,8 +7,19 @@ namespace LionFire
 {
     public static class DictionaryExtensions
     {
+        public static void SetOrAdd<TKey, TValue>(this IDictionary<TKey, TValue> dictionary, TKey key, TValue value)
+        {
+            if (dictionary.ContainsKey(key))
+            {
+                dictionary[key] = value;
+            }
+            else
+            {
+                dictionary.Add(key, value);
+            }
+        }
 #if !AOT
-        public static ValueType TryGetValue<KeyType, ValueType>(this IDictionary<KeyType, ValueType> dictionary,
+        public static ValueType? TryGetValue<KeyType, ValueType>(this IDictionary<KeyType, ValueType> dictionary,
             KeyType key)
             where ValueType : class
         {
@@ -15,6 +27,7 @@ namespace LionFire
             if (dictionary.ContainsKey(key)) return dictionary[key];
             return null;
         }
+
 #else
         public static ValueType TryGetValue<KeyType, ValueType>(this Dictionary<KeyType, ValueType> dictionary,
             KeyType key)

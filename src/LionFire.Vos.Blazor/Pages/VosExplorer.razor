@@ -4,18 +4,20 @@
 
 @using LionFire.Referencing
 @using LionFire.Threading
+
 @inject IServiceProvider ServiceProvider
-@inject IVos  rootManager
+@inject IVos rootManager
 @inject NavigationManager navManager
 @*@inject Microsoft.Extensions.Logging.ILogger<string> logger*@
 @inject ILogger<VosExplorer> Logger
 
+@using LionFire.Vos.Mounts
 @using Microsoft.AspNetCore.WebUtilities
 @using Microsoft.Extensions.Logging
 @using LionFire.Persistence
 @using System.Reflection
 @using LionFire.Resolves
-@using MudBlazor 
+@using MudBlazor
 
 <MudIconButton Icon="@Icons.Material.Filled.ArrowBackIos" Style="@("opacity:" + (History.Count == 0 ? "0.2" : "1"))" @onclick=@Back></MudIconButton>
 <MudIconButton Icon="@Icons.Material.Filled.ArrowForwardIos" Style="@("opacity:" + (ForwardHistory.Count == 0 ? "0.2" : "1"))" @onclick=@Forward></MudIconButton>
@@ -58,6 +60,39 @@ else
             }
         </tbody>
     </table>
+
+    @if (Vob != null)
+    {
+        <table>
+            <tr>
+                <td>Path</td>
+                <td>@Vob.Path</td>
+            </tr>
+            <tr>
+                <td>VobMounts</td>
+                <td>@(VobMounts)</td>
+            </tr>
+        </table>
+        <div class="panel">
+            @if (VobMounts != null)
+            {
+                <div>
+                    @VobMounts.Options
+                </div>
+                <h4>Read mounts</h4>
+                @foreach (var mount in VobMounts.ReadMounts)
+                {
+                    <div>Mount: @mount.Key</div>
+                }
+                <h4>Write mounts</h4>
+                @foreach (var mount in VobMounts.WriteMounts)
+                {
+                    <div>Mount: @mount.Key</div>
+                }
+            }
+
+        </div>
+    }
 
     @if (CurrentObject != null)
     {

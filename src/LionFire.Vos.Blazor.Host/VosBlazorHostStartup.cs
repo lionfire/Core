@@ -19,105 +19,103 @@ using Blazorise.Icons.FontAwesome;
 using MudBlazor.Services;
 //using RazorComponentsPreview;
 
-namespace LionFire.Vos.Blazor.Host
+namespace LionFire.Vos.Blazor;
+
+public class VosBlazorHostStartup
 {
-    public class VosBlazorHostStartup
+    public IWebHostEnvironment Env { get; set; }
+
+    public bool Blazorise { get; set; } = true;
+
+    public VosBlazorHostStartup(IConfiguration configuration, IWebHostEnvironment env)
     {
-        public IWebHostEnvironment Env { get; set; }
+        Configuration = configuration;
+        Env = env;
+    }
 
-        public bool Blazorise { get; set; } = true;
+    public IConfiguration Configuration { get; }
 
-        public VosBlazorHostStartup(IConfiguration configuration, IWebHostEnvironment env)
-        {
-            Configuration = configuration;
-            Env = env;
-        }
- 
-        public IConfiguration Configuration { get; }
-
-        // This method gets called by the runtime. Use this method to add services to the container.
-        // For more information on how to configure your application, visit https://go.microsoft.com/fwlink/?LinkID=398940
-        public void ConfigureServices(IServiceCollection services)
-        {
-            var mvcBuilder = services.AddRazorPages();
+    // This method gets called by the runtime. Use this method to add services to the container.
+    // For more information on how to configure your application, visit https://go.microsoft.com/fwlink/?LinkID=398940
+    public void ConfigureServices(IServiceCollection services)
+    {
+        var mvcBuilder = services.AddRazorPages();
 #if DEBUG
-            
-            if (Env.IsDevelopment())
-            {
-                mvcBuilder.AddRazorRuntimeCompilation();
-            }
-            //services.AddRazorComponentsRuntimeCompilation();
+        
+        if (Env.IsDevelopment())
+        {
+            mvcBuilder.AddRazorRuntimeCompilation();
+        }
+        //services.AddRazorComponentsRuntimeCompilation();
 #endif
 
-            services.AddServerSideBlazor();
+        services.AddServerSideBlazor();
 
-            services
-                .AddTypeNameRegistry() // REVIEW - move this somewhere?  Needed by KnownTypes
-                //.RegisterTypesNamesWithAttribute(typeof(TimeTrackingItem).Assembly)
-                .RegisterTypeName(typeof(LionFire.Scheduling.TimeTrackingItem))
+        services
+            .AddTypeNameRegistry() // REVIEW - move this somewhere?  Needed by KnownTypes
+            //.RegisterTypesNamesWithAttribute(typeof(TimeTrackingItem).Assembly)
 
-                .AddReferenceProvider()
-                .AddPersisters()
-                .AddFilesystem()
+            .AddReferenceProvider()
+            .AddPersisters()
+            .AddFilesystem()
 
-                .AddNewtonsoftJson()
+            .AddNewtonsoftJson()
 
 
-                .AddJsonEx() // OLD?
-                .VosMount("/temp".ToVobReference(), @"c:\temp".ToFileReference())
-                .VosMount("/TimeTracker".ToVobReference(), @"C:\st\jvos\LionFire\TimeTracker".ToFileReference())
-                ;
+            .AddJsonEx() // OLD?
+            .VosMount("/temp".ToVobReference(), @"c:\temp".ToFileReference())
+            .VosMount("/TimeTracker".ToVobReference(), @"C:\st\jvos\LionFire\TimeTracker".ToFileReference())
             ;
+        ;
 
-            if (Blazorise)
-            {
-                services
-                   .AddBlazorise(options =>
-                   {
-                       options.ChangeTextOnKeyPress = true; // optional
-                   })
-                   .AddBootstrapProviders()
-                   .AddFontAwesomeIcons();
-            }
-
-            services.AddMudServices();
-        }
-
-        // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
+        if (Blazorise)
         {
-            //app.UseRazorComponentsRuntimeCompilation();
-            app.ApplicationServices.InitializeDependencyContextServiceProvider();
-
-            if (env.IsDevelopment())
-            {
-                app.UseDeveloperExceptionPage();
-            }
-            else
-            {
-                app.UseExceptionHandler("/Error");
-                // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
-                app.UseHsts();
-            }
-
-            app.UseHttpsRedirection();
-            app.UseStaticFiles();
-
-            app.UseRouting();
-
-            //if (Blazorise)
-            //{
-            //    app.ApplicationServices
-            //      .UseBootstrapProviders()
-            //      .UseFontAwesomeIcons()
-            //      ;
-            //}
-
-            app.UseEndpoints(endpoints =>
-            {
-                endpoints.MapBlazorHub();
-                endpoints.MapFallbackToPage("/_VosHost");
-            });
+            services
+               .AddBlazorise(options =>
+               {
+                   options.ChangeTextOnKeyPress = true; // optional
+               })
+               .AddBootstrapProviders()
+               .AddFontAwesomeIcons();
         }
+
+        services.AddMudServices();
+    }
+
+    // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
+    public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
+    {
+        //app.UseRazorComponentsRuntimeCompilation();
+        app.ApplicationServices.InitializeDependencyContextServiceProvider();
+
+        if (env.IsDevelopment())
+        {
+            app.UseDeveloperExceptionPage();
+        }
+        else
+        {
+            app.UseExceptionHandler("/Error");
+            // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
+            app.UseHsts();
+        }
+
+        app.UseHttpsRedirection();
+        app.UseStaticFiles();
+
+        app.UseRouting();
+
+        //if (Blazorise)
+        //{
+        //    app.ApplicationServices
+        //      .UseBootstrapProviders()
+        //      .UseFontAwesomeIcons()
+        //      ;
+        //}
+
+        app.UseEndpoints(endpoints =>
+        {
+            endpoints.MapBlazorHub();
+            endpoints.MapFallbackToPage("/_VosHost");
+        });
     }
 }

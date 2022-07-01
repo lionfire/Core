@@ -1,0 +1,98 @@
+﻿@inject LionFire.Activities.IActivitiesTracker Tracker
+@using LionFire.Activities
+
+@*<RadzenCard Style="margin-bottom: 200px; width: fit-content; min-width: 300px;" Class="mt-5 mx-auto text-right">*@
+<RadzenProfileMenu>
+    @*<Template>
+    <div style="color:white;">Hello</div>
+    <MudIcon Icon=@Icons.Filled.Alarm/>
+    </Template>*@
+    <ChildContent>
+
+        <MudTabs Elevation="2" Rounded="true" Centered="true">
+            <MudTabPanel Icon="@Icons.Material.Filled.Api" BadgeData='"live"' BadgeColor="Color.Info">
+                <ChildContent>
+                    <div>
+                        <div style="display: flex; flex-direction: row; padding: 14px;">
+                            <div class="mud-typography-body1">
+                                Clear
+                            </div>
+                            <div>
+                                <MudLink @onclick=ClearFinished>Finished</MudLink>
+                            </div>
+                            <div>
+                                <MudLink @onclick=ClearAll>All</MudLink>
+                            </div>
+                            @*<RadzenProfileMenuItem Text="Clear all" onclick=@(()=>Tracker.ClearHistory()) Icon="close"></RadzenProfileMenuItem>*@
+                        </div>
+
+                        <MudList>
+                            @foreach (var item in Tracker.ActivitiesOutstanding)
+                            {
+                                <NotificationsDropdownItem Item=@item />
+                            }
+                        </MudList>
+
+                    </div>
+                </ChildContent>
+            </MudTabPanel>
+
+            <MudTabPanel Icon="@Icons.Material.Filled.Build" BadgeData='"..."'>
+                <ChildContent>
+                    <div>
+                        <div style="display: flex; flex-direction: row; padding: 14px;">
+                            <div class="mud-typography-body1">
+                                Clear
+                            </div>
+                            <div>
+                                <MudLink @onclick=ClearFinished>Finished</MudLink>
+                            </div>
+                            <div>
+                                <MudLink @onclick=ClearAll>All</MudLink>
+                            </div>
+                            @*<RadzenProfileMenuItem Text="Clear all" onclick=@(()=>Tracker.ClearHistory()) Icon="close"></RadzenProfileMenuItem>*@
+                        </div>
+                        @foreach (var item in Tracker.RecentlyFinished)
+                        {
+                            <NotificationsDropdownItem Item=@item />
+                        }
+                    </div>
+                </ChildContent>
+            </MudTabPanel>
+
+            <MudTabPanel Icon="@Icons.Material.Filled.BugReport" BadgeData='"99+"' BadgeColor="Color.Error" />
+            <MudTabPanel Icon="@Icons.Material.Filled.AccessTime" BadgeData='string.Empty' BadgeDot="true" BadgeColor="Color.Success" />
+        </MudTabs>
+
+
+        <MudLink Href="/activities">All</MudLink>
+    </ChildContent>
+
+</RadzenProfileMenu>
+@*</RadzenCard>*@
+
+
+@code {
+
+    [CascadingParameter]
+    public RenderFragment DialogContent { get; set; }
+
+
+
+    protected override Task OnInitializedAsync()
+    {
+        Tracker.ActivityBucketChanged += (bucket, activity) => InvokeAsync(StateHasChanged);
+        return base.OnInitializedAsync();
+    }
+
+
+
+    public void ClearAll()
+    {
+        Tracker.ClearFinished(withErrors: true);
+    }
+    public void ClearFinished()
+    {
+        Tracker.ClearFinished(withErrors: false);
+    }
+}

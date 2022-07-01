@@ -7,8 +7,10 @@ using System.Threading.Tasks;
 
 namespace LionFire.Activities
 {
-    public  class NewActivity : INotification
+    public class NewActivity : INotification
     {
+        //public NewActivity() { }
+        public NewActivity(IActivity activity) { Activity = activity; }
         public IActivity Activity { get; set; }
     }
 
@@ -16,13 +18,12 @@ namespace LionFire.Activities
     {
         public Task Handle(NewActivity newActivity, CancellationToken cancellationToken)
         {
-            var a = DependencyContext.Current.GetService<ActivitiesTracker>();
-            if(a != null)
+            var a = DependencyContext.Current.GetService<IActivitiesTracker>();
+            if(a != null && newActivity.Activity != null)
             {
                 a.Add(newActivity.Activity);
             }
             return Task.CompletedTask;
         }
     }
-
 }

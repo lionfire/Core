@@ -1,4 +1,5 @@
-﻿using LionFire.IO;
+﻿using LionFire.Cqrs;
+using LionFire.IO;
 using LionFire.Persistence.Handles;
 using LionFire.Referencing;
 using LionFire.Serialization;
@@ -7,14 +8,18 @@ using LionFire.Vos.Mounts;
 using LionFire.Vos.Services;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
+using System.Xml.Linq;
 
 namespace LionFire.Persistence.Persisters.Vos
 {
+
     public class VosPersister :
         SerializingPersisterBase<VosPersisterOptions>
         , IPersister<IVobReference>
@@ -67,7 +72,7 @@ namespace LionFire.Persistence.Persisters.Vos
 
         public Task<IPersistenceResult> Exists<TValue>(IReferencable<IVobReference> referencable) => throw new System.NotImplementedException();
 
-        public async Task<IRetrieveResult<TValue>> Retrieve<TValue>(IReferencable<IVobReference> referencable)
+        public async IAsyncEnumerable<IRetrieveResult<TValue>> RetrieveAll<TValue>(IReferencable<IVobReference> referencable)
         {
             //l.Trace($"{replaceMode.DescriptionString()} {obj?.GetType().Name} {replaceMode.ToArrow()} {fsReference}");
 
@@ -79,8 +84,45 @@ namespace LionFire.Persistence.Persisters.Vos
 
             bool anyMounts = false;
             var vobMounts = vob.AcquireNext<VobMounts>();
+
+
+            //if(typeof(TValue) == typeof(Metadata<IEnumerable<Listing<object>>))
+            //{
+            //}
+
             if (vobMounts != null)
             {
+                // REFACTOR - replace this block with an extensibility point, such as "BeforeRetrieveListing"
+                var archivePlugin = vob.TryGetNextVobNode<ArchivePlugin>()?.Value;
+
+                if (archivePlugin != null 
+                    && typeof(TValue).IsGenericType
+                    && typeof(TValue).GetGenericTypeDefinition() == typeof(Metadata<>))
+                {
+                    var metadataType = typeof(TValue).GetGenericArguments()[0];
+
+                    if (metadataType.IsGenericType && metadataType.GetGenericTypeDefinition() == typeof(IEnumerable<>))
+                    {
+                        var enumerableType = metadataType.GetGenericArguments()[0];
+                        if (enumerableType.IsGenericType && enumerableType.GetGenericTypeDefinition() == typeof(Listing<>))
+                        {
+                            var listingType = enumerableType.GetGenericArguments()[0];
+                            if(listingType == typeof(IArchive))
+                            {
+
+                            }
+                            else //  listingType != typeof(IArchive)
+                            {
+                                
+                                if (archivePlugin.ShouldScan(referencable.Reference))
+                                {
+                                    await archivePlugin.TryAutoMountArchives(this, referencable);
+                                }
+                            }
+                        }
+                    }
+                }
+
                 // TODO: If TValue is IEnumerable, make a way (perhaps optional) to aggregate values from multiple ReadMounts.
 
                 foreach (var mount in vobMounts.RankedEffectiveReadMounts)
@@ -90,7 +132,6 @@ namespace LionFire.Persistence.Persisters.Vos
                     var rh = effectiveReference.GetReadHandle<TValue>(serviceProvider: ServiceProvider);
 
                     var childResult = (await rh.Resolve().ConfigureAwait(false)).ToRetrieveResult();
-
                     if (childResult.IsFail()) result.Flags |= PersistenceResultFlags.Fail; // Indicates that at least one underlying persister failed
 
                     if (childResult.IsSuccess == true)
@@ -103,14 +144,44 @@ namespace LionFire.Persistence.Persisters.Vos
                             result.Value = childResult.Value;
                             result.ResolvedVia = mount.Target;
                             l.Trace($"{result}: {vob.Path}");
-                            return result;
+                            yield return result;
                         }
                     }
                 }
             }
             if (!anyMounts) result.Flags |= PersistenceResultFlags.MountNotAvailable;
             l.Trace($"{result}: {vob.Path}");
-            return result;
+            yield return result;
+        }
+
+        public async Task<IRetrieveResult<TValue>> Retrieve<TValue>(IReferencable<IVobReference> referencable)
+        {
+            IRetrieveResult<TValue>? singleResult = null;
+
+            await foreach (var multiResult in RetrieveAll<TValue>(referencable))
+            {
+                if (multiResult.IsSuccess == true)
+                {
+                    if (multiResult.Flags.HasFlag(PersistenceResultFlags.MountNotAvailable))
+                    {
+                        return multiResult;
+                    }
+                    continue;
+                }
+
+                if (singleResult != null && multiResult.IsSuccess == true)
+                {
+                    return new RetrieveResult<TValue>
+                    {
+                        Error = "Multiple mounts returned a value",
+                        Flags = PersistenceResultFlags.Fail | PersistenceResultFlags.Found | PersistenceResultFlags.Ambiguous
+                    };
+                }
+
+                singleResult = multiResult;
+            }
+
+            return singleResult;
         }
 
         public Task<IPersistenceResult> Create<TValue>(IReferencable<IVobReference> referencable, TValue value) => throw new System.NotImplementedException();
@@ -162,14 +233,40 @@ namespace LionFire.Persistence.Persisters.Vos
             l.Trace($"Delete xx> {referencable.Reference}");
             throw new System.NotImplementedException();
         }
-        public async Task<IRetrieveResult<IEnumerable<Listing<T>>>> List<T>(IReferencable<IVobReference> referencable, ListFilter filter = null)
+
+        #region List
+
+
+        // TODO REVIEW - is this redundant / old?  Use overload with filter param instead?
+        public async Task<IRetrieveResult<IEnumerable<Listing<TValue>>>> List<TValue>(IReferencable<IVobReference> referencable)
+        {
+            var listingsLists = await RetrieveAll<Metadata<IEnumerable<Listing<TValue>>>>(referencable).ToListAsync();
+
+            List<Listing<TValue>> listings = new();
+
+            var consolidatedResult = new RetrieveResult<IEnumerable<Listing<TValue>>>();
+            consolidatedResult.Value = listings;
+
+            foreach (var result in listingsLists)
+            {
+                consolidatedResult.Flags |= result.Flags; // REVIEW - maybe only OR certain flags explicitly to prevent unintended consequences
+
+                if (result.Value.Value != null)
+                {
+                    listings.AddRange(result.Value.Value);
+                }
+            }
+            return consolidatedResult;
+        }
+
+        public async Task<IRetrieveResult<IEnumerable<Listing<TValue>>>> List<TValue>(IReferencable<IVobReference> referencable, ListFilter filter = null)
         {
             l.Trace($"List ...> {referencable.Reference}");
 
-            var retrieveResult = await Retrieve<Metadata<IEnumerable<Listing<T>>>>(referencable).ConfigureAwait(false);
+            var retrieveResult = await Retrieve<Metadata<IEnumerable<Listing<TValue>>>>(referencable).ConfigureAwait(false);
             var result = retrieveResult.IsSuccess()
-                ? RetrieveResult<IEnumerable<Listing<T>>>.Success(retrieveResult.Value.Value)
-                : new RetrieveResult<IEnumerable<Listing<T>>> { Flags = retrieveResult.Flags, Error = retrieveResult.Error };
+                ? RetrieveResult<IEnumerable<Listing<TValue>>>.Success(retrieveResult.Value.Value)
+                : new RetrieveResult<IEnumerable<Listing<TValue>>> { Flags = retrieveResult.Flags, Error = retrieveResult.Error };
             l.Trace(result.ToString());
             return result;
             //    var vob = Root[referencable.Reference.Path];
@@ -206,6 +303,8 @@ namespace LionFire.Persistence.Persisters.Vos
             //    if (!anyMounts) result.Flags |= PersistenceResultFlags.MountNotAvailable;
             //    return result;
         }
+
+        #endregion
 
         private readonly ILogger l;
     }

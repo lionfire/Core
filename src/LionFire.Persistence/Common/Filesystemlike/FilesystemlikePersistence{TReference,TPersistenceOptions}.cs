@@ -25,10 +25,9 @@ using LionFire.Ontology;
 
 namespace LionFire.Persistence.Filesystemlike
 {
-
-
     /// <summary>
     /// IPersister return IPersistenceResult and IFSPersistence returns simpler results closer to the underlying filesystem (or similar store)
+    /// TODO: Remove some hardcodes to 
     /// </summary>
     /// <typeparam name="TReference"></typeparam>
     /// <typeparam name="TPersistenceOptions"></typeparam>
@@ -62,6 +61,9 @@ namespace LionFire.Persistence.Filesystemlike
         private static TPersistenceOptions defaultOptions = Activator.CreateInstance<TPersistenceOptions>();
 
         #endregion
+
+        public abstract IDirectoryProvider DirectoryProvider { get; }
+        public abstract IFileProvider FileProvider { get; }
 
         #region Construction
 
@@ -112,10 +114,10 @@ namespace LionFire.Persistence.Filesystemlike
         /// <returns></returns>
         public async Task<IEnumerable<Listing<T>>?> List<T>(string path, ListFilter? filter = null)
         {
-            return await Task.Run(() =>
+            return await Task.Run(async () =>
             {
                 List<Listing<T>>? children = null;
-                if (Directory.Exists(path))
+                if (await DirectoryProvider.Exists(path).ConfigureAwait(false))
                 {
                     children = new List<Listing<T>>();
 
@@ -127,7 +129,8 @@ namespace LionFire.Persistence.Filesystemlike
 
                     if (showFile)
                     {
-                        foreach (var fileName in Directory.GetFiles(path).Select(p => Path.GetFileName(p)))
+
+                        foreach (var fileName in (await DirectoryProvider.GetFiles(path).ConfigureAwait(false)).Select(p => Path.GetFileName(p)))
                         {
                             var kind = ItemKindIdentifier.ResolveItemFlags(fileName);
 
@@ -141,7 +144,7 @@ namespace LionFire.Persistence.Filesystemlike
                     }
                     if (showDir)
                     {
-                        foreach (var dirName in Directory.GetDirectories(path).Select(p => Path.GetFileName(p) + LionPath.Separator))
+                        foreach (var dirName in (await DirectoryProvider.GetDirectories(path).ConfigureAwait(false)).Select(p => Path.GetFileName(p) + LionPath.Separator))
                         {
                             //var kind = ItemKindIdentifier.Identify(dir);
 

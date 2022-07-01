@@ -11,21 +11,39 @@ using LionFire.FlexObjects;
 
 namespace LionFire.Activities
 {
-    
 
-    public interface IActivity : IKeyed<Guid>, IFlex
+    public interface IActivity<TResult> : IActivityBase, IActivity
     {
+        new Task<TResult>? Task { get; }
+
+        new IActivity<TResult> ConfigureAwait(bool arg1);
+
+        new TaskAwaiter<TResult> GetAwaiter();
+
+
+        //void OnCompleted(Action continuation);
+        //void GetResult(); // TResult can also be void
+    }
+
+    public interface IActivity : IActivityBase
+    {
+        Task? Task { get; }
+        TaskAwaiter GetAwaiter();
+        IActivity ConfigureAwait(bool arg1);
+    }
+
+    public interface IActivityBase : IKeyed<Guid>, IFlex
+    {
+        ActivityOptions? Options { get; }
         ActivityStatus? Status { get; }
         bool IsCompleted { get; }
 
         string? Name { get; set; }
 
-        Task? Task { get; }
+        
         string? Description { get; }
-
-        TaskAwaiter GetAwaiter();
-
-        IActivity ConfigureAwait(bool arg1);
+        
+        
 
         void OnCompleted(Action continuation);
         void GetResult(); // TResult can also be void

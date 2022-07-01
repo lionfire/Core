@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>netstandard2.1</TargetFramework>
+    <TargetFramework>net6.0</TargetFramework> <!-- was netstandard2.1 -->
     <LangVersion>latest</LangVersion>
   </PropertyGroup>
 
@@ -31,6 +31,10 @@
 
   <ItemGroup>
     <Folder Include="Extras\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="System.Linq.Async" Version="6.0.1" />
   </ItemGroup>
 
 </Project>

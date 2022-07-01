@@ -1,4 +1,5 @@
-﻿using System;
+﻿#nullable enable
+using System;
 using System.Collections.Generic;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -6,14 +7,14 @@ namespace LionFire.Dependencies
 {
     public class DynamicServiceProvider2 : IServiceProvider
     {
-        public IServiceProvider ParentServiceProvider { get; }
+        public IServiceProvider? ParentServiceProvider { get; }
 
-        public DynamicServiceProvider2(IServiceProvider parentServiceProvider)
+        public DynamicServiceProvider2(IServiceProvider? parentServiceProvider = null)
         {
             ParentServiceProvider = parentServiceProvider;
         }
 
-        public object GetService(Type serviceType)
+        public object? GetService(Type serviceType)
         {
             if (Singletons.ContainsKey(serviceType)) { return Singletons[serviceType]; }
 
@@ -33,7 +34,7 @@ namespace LionFire.Dependencies
                     return result;
                 }
             }
-            return ParentServiceProvider.GetService(serviceType);
+            return ParentServiceProvider?.GetService(serviceType);
         }
 
         public Dictionary<Type, object> Singletons { get; } = new Dictionary<Type, object>();

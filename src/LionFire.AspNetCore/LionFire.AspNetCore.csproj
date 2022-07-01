@@ -14,7 +14,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\LionFire.Extensions.Configuration\LionFire.Extensions.Configuration.csproj" />
     <ProjectReference Include="..\LionFire.Hosting\LionFire.Hosting.csproj" />
   </ItemGroup>
   

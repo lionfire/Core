@@ -3,11 +3,11 @@
   <PropertyGroup>
     <TargetFramework>net6.0</TargetFramework>
     <LangVersion>latest</LangVersion>
-    <RootNamespace>LionFire.Vos.Blazor.Host</RootNamespace>
+    <RootNamespace>LionFire.Vos.Blazor</RootNamespace>
   </PropertyGroup>
 
   <ItemGroup>
-      <PackageReference Include="Blazorise.Bootstrap" Version="0.9.5.2" />
+      <PackageReference Include="Blazorise.Bootstrap" Version="0.9.5.4" />
       <PackageReference Include="Blazorise.Icons.FontAwesome" Version="0.9.5.2" />
       <PackageReference Include="Blazorise.Icons.Material" Version="0.9.5.2" />
       <PackageReference Include="Blazorise.Material" Version="0.9.5.2" />
@@ -18,14 +18,15 @@
     <PackageReference Include="Microsoft.AspNetCore.Mvc.Razor.RuntimeCompilation" Version="6.0.0" />
     <PackageReference Include="Microsoft.AspNetCore.WebUtilities" Version="2.2.0" />
     <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="6.0.0" />
+    <PackageReference Include="Microsoft.Extensions.Hosting" Version="6.0.1" />
     <PackageReference Include="MudBlazor" Version="6.0.5" />
     <PackageReference Include="NLog.Web.AspNetCore" Version="4.14.0" />
     <PackageReference Include="System.Configuration.ConfigurationManager" Version="6.0.0" />
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\..\Internal\src\LionFire.Life.Tracking\LionFire.Life.Tracking.csproj" />
     <ProjectReference Include="..\LionFire.Applications.Extensions\LionFire.Applications.Extensions.csproj" />
+    <ProjectReference Include="..\LionFire.AspNetCore\LionFire.AspNetCore.csproj" />
     <ProjectReference Include="..\LionFire.Persistence.Filesystem\LionFire.Persistence.Filesystem.csproj" />
     <ProjectReference Include="..\LionFire.Persistence.Handles\LionFire.Persistence.Handles.csproj" />
     <ProjectReference Include="..\LionFire.Serialization.Json.JsonEx\LionFire.Serialization.Json.JsonEx.csproj" />

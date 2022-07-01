@@ -58,9 +58,14 @@ namespace LionFire.Persistence.Redis
         //    }
         //};
 
+        public override IDirectoryProvider DirectoryProvider => throw new NotImplementedException();
+
+        public override IFileProvider FileProvider => throw new NotImplementedException();
+
         #region IO
 
         public override IOCapabilities Capabilities => IOCapabilities.All;
+                
 
         #region Read
 

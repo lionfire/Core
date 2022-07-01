@@ -39,6 +39,7 @@ namespace LionFire.ExtensionMethods.Dumping
             }
 
             foreach (var pi in obj.GetType().GetProperties()) {
+                if(pi.GetMethod.GetParameters().Length > 0) { continue; }
                 var val = pi.GetValue(obj);
                 if (ignoreDefaultValues) {
                     object defaultVal = pi.PropertyType.IsValueType ? Activator.CreateInstance(pi.PropertyType) : null;

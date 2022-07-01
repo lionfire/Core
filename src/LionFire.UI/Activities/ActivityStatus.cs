@@ -36,5 +36,11 @@ namespace LionFire.Activities
 
         public TimeSpan? ExpectedDuration { get; set; }
 
+        #region REVIEW: better way to sort out error/warning results?
+        
+        public bool HasError { get; set; }
+        public bool HasWarning { get; set; }
+
+        #endregion
     }
 }

@@ -44,5 +44,4 @@ namespace LionFire.Services
             return services;
         }
     }
-
 }

@@ -20,3 +20,11 @@ namespace LionFire.Hosting
             ;
     }
 }
+
+//public static class HostConfigurationBuilder
+//{
+//    public static IConfiguration Create(string basePath = null)
+//        => new ConfigurationBuilder()
+//             .SetBasePath(basePath ?? Path.GetDirectoryName(typeof(Program).Assembly.Location))
+//             .AddJsonFile("appsettings.json", optional: true, reloadOnChange: true).Build();
+//}

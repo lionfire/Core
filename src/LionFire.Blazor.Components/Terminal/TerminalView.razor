@@ -12,6 +12,6 @@
 @code {
 
     [Parameter]
-    public CircularBuffer<string> Lines = new CircularBuffer<string>(1000, new[] { });
+    public IEnumerable<string> Lines{get; set;} 
 
 }

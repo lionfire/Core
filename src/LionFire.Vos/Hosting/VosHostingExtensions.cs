@@ -38,8 +38,8 @@ namespace LionFire.Hosting
         {
             hostBuilder
                 .Persisters()
-                .HostBuilder
-                    .AddVos(persistence, enableLogging)
+                .ForHostBuilder(builder => builder
+                    .AddVos(persistence, enableLogging))
             ;
             return hostBuilder;
         }

@@ -18,12 +18,6 @@ using System.Threading.Tasks;
 
 namespace LionFire.Persistence.Filesystem
 {
-    // REVIEW - is there a way to do this?
-    //public static class PersisterBaseExtensions
-    //{
-    //    public static Task<IRetrieveResult<TValue>> Retrieve<TValue, TReference>(this IPersister<IFileReference> persister, FileReference reference)
-    //        => persister.Retrieve<TValue>((TReference)reference.Path);
-    //}
 
     public class FilesystemPersister : FilesystemlikePersistence<IFileReference, FilesystemPersisterOptions>, IPersister<IFileReference>
     {
@@ -59,9 +53,16 @@ namespace LionFire.Persistence.Filesystem
         //    }
         //};
 
+        public override IDirectoryProvider DirectoryProvider => directoryProvider;
+        static readonly FilesystemDirectoryProvider directoryProvider = new();
+
+        public override IFileProvider FileProvider => fileProvider;
+        static readonly FilesystemFileProvider fileProvider = new();
+
         #region IO
 
         public override IOCapabilities Capabilities => IOCapabilities.All;
+               
 
         #region Read
 
@@ -233,4 +234,5 @@ namespace LionFire.Persistence.Filesystem
     //    public static Task<IRetrieveResult<TValue>> Retrieve<TValue, TReference>(this IPersister<IFileReference> persister, FileReference reference)
     //        => persister.Retrieve<TValue>((TReference)reference.Path);
     //}
+
 }

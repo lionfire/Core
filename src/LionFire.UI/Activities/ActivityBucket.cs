@@ -6,7 +6,7 @@ namespace LionFire.Activities
     {
         InProgress,
         Finished,
-        Archived,
+        RemovedFromRecentlyFinished,
         Purged
     }
 

@@ -224,7 +224,7 @@ table.PropertyGrid td:first-child > div {
 /* Quasar */
 /* Quasar: Flex (consider simply importing quasar/src/css/flex-addon.sass) */
 
-.justify-content {
+.justify-center {
     justify-content: center;
 }
 
@@ -248,6 +248,9 @@ table.PropertyGrid td:first-child > div {
 
 .self-start {
     align-self: self-start;
+}
+.self-center {
+    align-self: center;
 }
 
 /* Adapted from default MainLayout.razor.css */
@@ -465,7 +468,10 @@ ul.rz-profile-menu, ul.rz-profile-menu .rz-navigation-menu {
 /* MudBlazor */
 
 .mud-button-group-root.mud-button-group-override-styles .mud-button-root.mud-button.selected {
-    background-color: hsl(var(--hue), 56%, 30%);
+    background-color: hsl(var(--hue), 56%, 50%);
+}
+.mud-button-group-root.mud-button-group-override-styles .mud-button-root.mud-button.half-selected {
+    background-color: hsla(var(--hue), 56%, 30%, 70%);
 }
 
 body.dark .mud-input-label-outlined {
@@ -514,4 +520,6 @@ body.dark .mud-input-label-outlined {
 .Indicators div.On {
     background: #babaf9;
 }
+
+
 

@@ -17,7 +17,12 @@ namespace LionFire.Hosting
 
     public static class WebHostExtensions
     {
-        public static LionFireHostBuilder WebHost<TStartup>(this LionFireHostBuilder builder, int? defaultPort = null, bool useReleaseChannelPortOffsets = true)
+
+        public static LionFireHostBuilder WebHost<TStartup>(this LionFireHostBuilder builder)
+            where TStartup : class
+            => builder.WebHost<TStartup>(null, false);
+
+        public static LionFireHostBuilder WebHost<TStartup>(this LionFireHostBuilder builder, int? defaultPort, bool useReleaseChannelPortOffsets = true)
             where TStartup : class
         {
             if (defaultPort.HasValue)
@@ -53,27 +58,31 @@ namespace LionFire.Hosting
                 //}
             }
 
-        builder.HostBuilder
-        .ConfigureServices((context, services) =>
-            {
-                    // Reference: https://docs.microsoft.com/en-us/aspnet/core/fundamentals/servers/kestrel/options?view=aspnetcore-6.0
-                    services.Configure<KestrelServerOptions>(
-                    context.Configuration.GetSection("Kestrel"));
-            })
-            .ConfigureWebHostDefaults(webBuilder =>
-            {
-        webBuilder.UseStartup<TStartup>();
-                
+            builder.HostBuilder
+                //.ConfigureServices((context, services) =>
+                //    {
+                //    // Reference: https://docs.microsoft.com/en-us/aspnet/core/fundamentals/servers/kestrel/options?view=aspnetcore-6.0
+                //        services.Configure<KestrelServerOptions>(
+                //            context.Configuration.GetSection("Kestrel"));
+                //    })
+                .ConfigureWebHostDefaults(webBuilder =>
+                    {
+                        webBuilder
+                            //.UseStartup(c => new TStartup())
+                            .UseStartup<TStartup>()
+                            .UseContentRoot(AppContext.BaseDirectory)
+                        ;
 
-
-        if (defaultPort.HasValue)
-        {
-            webBuilder
-                .UseUrls($"http://localhost:{defaultPort.Value}")
-                .UseContentRoot(AppContext.BaseDirectory)
-                ;
-        }
-    });
+                        if (defaultPort.HasValue)
+                        {
+                            // https://docs.microsoft.com/en-us/aspnet/core/fundamentals/configuration/?view=aspnetcore-6.0#kestrel-endpoint-configuration
+                            // https://andrewlock.net/5-ways-to-set-the-urls-for-an-aspnetcore-app/
+                            // https://docs.microsoft.com/en-us/aspnet/core/fundamentals/servers/kestrel/endpoints?view=aspnetcore-6.0
+                            webBuilder
+                                .UseUrls($"http://localhost:{defaultPort.Value}")
+                            ;
+                        }
+                    });
 
             return builder;
         }

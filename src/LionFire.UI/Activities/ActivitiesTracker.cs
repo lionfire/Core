@@ -1,5 +1,6 @@
 ﻿#nullable enable
 using LionFire.Collections.Concurrent;
+using LionFire.Dependencies;
 using LionFire.ExtensionMethods.Poco.Resolvables;
 using LionFire.Structures;
 using MediatR;
@@ -20,7 +21,7 @@ namespace LionFire.Activities
     /// <summary>
     /// Tracks a collection of Activities, which are anything from short-lived async Tasks to long-running distributed Jobs
     /// </summary>
-    public class ActivitiesTracker : INotifyPropertyChanged
+    public class ActivitiesTracker : INotifyPropertyChanged, IHandler<IActivity>, IActivitiesTracker
     {
         #region Dependencies
 
@@ -42,9 +43,10 @@ namespace LionFire.Activities
 
         #region Construction
 
-        public ActivitiesTracker(ILogger<ActivitiesTracker> logger)
+        public ActivitiesTracker(ILogger<ActivitiesTracker> logger, IServiceProvider serviceProvider)
         {
             Logger = logger;
+
         }
 
         #endregion
@@ -58,9 +60,55 @@ namespace LionFire.Activities
         public ConcurrentDictionary<Guid, IActivity>? Activities { get; private set; }
         // TODO: Make readonly
         public ConcurrentDictionary<Guid, IActivity>? InProgress { get; private set; }
-        // TODO: Make readonly
-        public IEnumerable<IActivity> Finished => finished ?? Enumerable.Empty<IActivity>();
-        private ConcurrentList<IActivity>? finished;
+
+        #region Ackable
+
+        /// <summary>
+        /// A cache of recently finished non-foreground activities, as well as all foreground activities that haven't been manually cleared
+        /// </summary>
+        public IEnumerable<IActivity> AckRequired => ackRequired ?? Enumerable.Empty<IActivity>();
+        private ConcurrentList<IActivity> ackRequired = new();
+
+        public void AckAll(bool withErrors = false)
+        {
+            foreach (var activity in ackRequired.Where(a => a.IsCompleted).ToArray())
+            {
+                if (!withErrors && activity.Status?.HasError == true) { continue; }
+                ackRequired?.Remove(activity);
+            }
+        }
+
+        #endregion
+
+        #region RecentlyFinished
+
+        /// <summary>
+        /// A cache of recently finished non-foreground activities, as well as all foreground activities that haven't been manually cleared
+        /// </summary>
+        public IEnumerable<IActivity> RecentlyFinished => recentlyFinished ?? Enumerable.Empty<IActivity>();
+        private ConcurrentList<IActivity> recentlyFinished = new();
+
+        public void ClearFinished(bool withErrors = false)
+        {
+            foreach (var activity in recentlyFinished.Where(a => a.IsCompleted).ToArray())
+            {
+                if (!withErrors && activity.Status?.HasError == true) { continue; }
+                recentlyFinished?.Remove(activity);
+            }
+        }
+
+        #endregion
+
+        #region Finished Activities
+
+        public bool ClearFinishedActivity(IActivity activity)
+        {
+            var result1 = recentlyFinished.Remove(activity);
+            var result2 = ackRequired.Remove(activity);
+            return result1 || result2;
+        }
+
+        #endregion
 
         // TODO: Make readonly
         public ConcurrentList<IActivity>? History { get => history; }
@@ -102,12 +150,12 @@ namespace LionFire.Activities
                     }
 
                 }
-                else if (Finished?.Any() == true)
+                else if (RecentlyFinished?.Any() == true)
                 {
-                    var children = Finished.Select(a => a.Status ?? ActivityStatus.NullFallback).ToList();
+                    var children = RecentlyFinished.Select(a => a.Status ?? ActivityStatus.NullFallback).ToList();
                     return new ActivityStatus
                     {
-                        Text = TextForChildren(Finished, true),
+                        Text = TextForChildren(RecentlyFinished, true),
                         Children = children,
                         Progress = 1,
                     };
@@ -142,6 +190,25 @@ namespace LionFire.Activities
         #endregion
 
         #endregion
+
+        #region IHandler<IActivity>
+
+        public void Handle(IActivity activity) { Add(activity); }
+
+        #endregion
+
+        public bool TryGetValue(Guid key, out IActivity? activity)
+        {
+            if (Activities != null)
+            {
+                return Activities.TryGetValue(key, out activity);
+            }
+            else
+            {
+                activity = default;
+                return false;
+            }
+        }
 
         public IEnumerable<IActivity> ActivitiesOutstanding => Activities?.Values.Where(j => !j.IsCompleted) ?? Enumerable.Empty<IActivity>();
 
@@ -196,7 +263,7 @@ namespace LionFire.Activities
             ActivityBucketChanged?.Invoke(ActivityBucket.InProgress, activity);
         }
 
-        public Task Add(Task task, [System.Runtime.CompilerServices.CallerMemberName] string activityName = "", string? description = null)
+        public IActivity Add(Task task, [System.Runtime.CompilerServices.CallerMemberName] string activityName = "", string? description = null)
         {
             // REVIEW - REFACTOR with Add(IActivity)
             TaskActivity activity;
@@ -220,7 +287,7 @@ namespace LionFire.Activities
 
             ActivityBucketChanged?.Invoke(ActivityBucket.InProgress, activity);
 
-            return task;
+            return activity;
         }
 
         #region (Public) Events
@@ -236,18 +303,22 @@ namespace LionFire.Activities
             Logger.LogInformation($"Activity finished: {activity}");
 
             Activities?.TryRemove(activity.Key, out _);
-            finished ??= new();
-            finished.Add(activity);
+            recentlyFinished ??= new();
+            recentlyFinished.Add(activity);
             ActivityBucketChanged?.Invoke(ActivityBucket.Finished, activity);
 
-            Task.Delay(EffectiveOptions.FinishedStatusMessageDuration).ContinueWith(t =>
-            {
-                history ??= new();
-                finished.Remove(activity);
-                history.Add(activity);
-                ActivityBucketChanged?.Invoke(ActivityBucket.Archived, activity);
+            history ??= new();
+            history.Add(activity);
 
-            });
+            if ((activity.Options?.Foreground) != true)
+            {
+                Task.Delay(EffectiveOptions.FinishedStatusMessageDuration).ContinueWith(t =>
+                {
+                    recentlyFinished.Remove(activity);
+                    ActivityBucketChanged?.Invoke(ActivityBucket.RemovedFromRecentlyFinished, activity);
+                });
+            }
+            // else, stays in recentlyFinished until user clears it
         }
 
         #endregion

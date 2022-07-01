@@ -96,6 +96,7 @@ namespace LionFire.Applications
         private string defaultAppId;
 
         public string OrgDomain { get; set; } = "example.com";
+        public string OrgNamespace { get; set; } = "Example";
 
         /// <summary>
         /// Recommendation: no spaces

@@ -106,7 +106,7 @@ namespace LionFire.Applications
             /// c:\ProgramData\{CompanyFolder}\{applicationFolder}
             string ApplicationFolderPath = appInfo.Directories.AppProgramDataDir;
 
-#if MONO || NETSTANDARD
+#if NETCOREAPP
             DirectoryInfo directoryInfo;
             if (!Directory.Exists(CompanyFolderPath))
             {

@@ -22,12 +22,16 @@ using LionFire.Persistence;
 using System.Reflection;
 using LionFire.Resolves;
 using MudBlazor;
+using LionFire.Vos.Mounts;
 
 namespace LionFire.Vos.Blazor
 {
 
     public partial class VosExplorer
     {
+        public IVob Vob { get; set; }
+        public VobMounts? VobMounts { get; set; } 
+
         #region CurrentObject
 
         [Parameter]
@@ -163,6 +167,9 @@ namespace LionFire.Vos.Blazor
                 Path = LionPath.Combine(Path, child);
             }
 
+            this.Vob = rootManager.GetVob(Path);
+            this.VobMounts = Vob?.AcquireNext<VobMounts>();
+
             return Refresh();
         }
 
@@ -205,7 +212,7 @@ namespace LionFire.Vos.Blazor
                 //    path = "/file";
                 //}
             }
-
+                        
 #if OLD
 //var hList = ((IReference)root[path].Reference).GetListingsHandle();
 #else
@@ -241,7 +248,7 @@ namespace LionFire.Vos.Blazor
                     var childPath = LionPath.Combine(path, listing.Name);
                     var handle = childPath.ToReference<object>().GetReadHandle<object>();
                     //newReadHandles.Add(handle);
-                    listing.Type = (await handle.GetValue().ConfigureAwait(false))?.GetType().Name;
+                    listing.Type = (await handle.TryGetValue().ConfigureAwait(false))?.GetType().Name;
                 }
                 catch
                 {

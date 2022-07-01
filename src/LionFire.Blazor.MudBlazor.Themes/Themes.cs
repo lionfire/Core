@@ -27,16 +27,21 @@ namespace LionFire.Blazor.MudBlazor_
             }
         };
 
-
-        public static void ToggleDarkMode()
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <returns>true if dark mode, false if light mode, null if other</returns>
+        public static bool? ToggleDarkMode()
         {
             if (Current == CurrentDark)
             {
                 Current = CurrentLight;
+                return false;
             }
             else
             {
                 Current = CurrentDark;
+                return true;
             }
         }
 

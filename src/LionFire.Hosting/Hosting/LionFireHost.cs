@@ -8,7 +8,7 @@ using System;
 namespace LionFire.Hosting
 {
     public static class LionFireHost
-    {
+    { 
 
         /// <summary>
         /// Fluent builder for LionFire's initialization of IHostBuilder

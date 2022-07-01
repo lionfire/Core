@@ -16,7 +16,7 @@ namespace LionFire.Persistence
         /// </summary>
         public bool ThrowDeserializationFailureWithReasons { get; set; } = true;
 
-        public bool ThrowOnDeserializationFailure { get; set; } = true;
+        public bool ThrowOnDeserializationFailure { get; set; } = false;
 
         public Encoding Encoding { get; set; } = Encoding.UTF8;
 

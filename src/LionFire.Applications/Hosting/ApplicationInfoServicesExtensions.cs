@@ -11,15 +11,25 @@ namespace LionFire.Hosting
 {
     public static class ApplicationInfoServicesExtensions
     {
-        public static IHostBuilder AddAppInfo(this IHostBuilder hostBuilder, AppInfo appInfo = null, bool autoDetect = true, bool autoCreateDirectories = false)
+        // Note: Not using Configure approach (cooperative construction) because this is needed early
+
+        public static IHostBuilder AppInfo(this IHostBuilder hostBuilder, AppInfo appInfo = null, bool autoDetect = true, bool autoCreateDirectories = false)
         {
             if (appInfo == null) appInfo = new AppInfo();
+
+            #region AutoDetect
 
             if (autoDetect)
             {
                 if (appInfo.OrgName == null) appInfo.OrgName = ApplicationAutoDetection.AutoDetectOrganizationName(null);
                 if (appInfo.AppName == null) appInfo.AppName = ApplicationAutoDetection.AutoDetectApplicationName(null);
             }
+            appInfo.AppDir = appInfo.AutodetectedAppDir;
+            hostBuilder.GetLogger(typeof(AppInfo).FullName).LogInformation($"AppDir: {appInfo.AutodetectedAppDir}");
+            
+            #endregion
+
+            #region Enable ambient access to AppInfo
 
             hostBuilder.Properties[typeof(AppInfo)] = appInfo;
 
@@ -32,29 +42,34 @@ namespace LionFire.Hosting
                     ["DataDirName"] = appInfo.DataDirName,
                 });
             });
-            hostBuilder.ConfigureServices((context, services) => services.AddSingleton(appInfo));
-
+            
             if(!LionFireEnvironment.IsMultiApplicationEnvironment)
             {
-                AppInfo.Instance = appInfo;
+                Applications.AppInfo.Instance = appInfo;
             }
             else
             {
-                if (AppInfo.RootInstance == null)
+                if (Applications.AppInfo.RootInstance == null)
                 {
-                    AppInfo.RootInstance = appInfo;
+                    Applications.AppInfo.RootInstance = appInfo;
                 }
             }
 
-            appInfo.AppDir = appInfo.AutodetectedAppDir;
-            hostBuilder.GetLogger(typeof(AppInfo).FullName).LogInformation($"AppDir: {appInfo.AutodetectedAppDir}");
+            #endregion
 
-            if(autoCreateDirectories)
+
+            #region Initialization
+
+            if (autoCreateDirectories)
             {
                 DirectoryUtils.EnsureAllDirectoriesExist(typeof(LionFireEnvironment.Directories));
                 //DirectoryUtils.EnsureAllDirectoriesExist<AppDirectories>();
                 AppDirectories.CreateProgramDataFolders(appInfo);
             }
+            
+            #endregion
+
+            hostBuilder.ConfigureServices((context, services) => services.AddSingleton(appInfo));
             return hostBuilder;
         }
     }

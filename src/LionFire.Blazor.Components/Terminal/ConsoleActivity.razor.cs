@@ -1,3 +1,4 @@
+#nullable enable
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -13,19 +14,19 @@ namespace LionFire.Blazor.Components.Terminal
         [Parameter]
         public Guid Key { get; set; }
 
-        public IActivity Activity { get; set; }
+        public IActivity? Activity { get; set; }
 
         protected override Task OnInitializedAsync()
         {
             if(Key != default)
             {
-                ActivitiesTracker a;
-                a.Activities.TryGetValue(Key, out var activity);
+                ActivitiesTracker.TryGetValue(Key, out var activity);
                 Activity = activity;
             }
             return base.OnInitializedAsync();
         }
 
-        public CircularBuffer<string> Lines = new CircularBuffer<string>(1000, new[]{});
+        public IEnumerable<string>? Lines => Activity?.Lines();
+
     }
 }

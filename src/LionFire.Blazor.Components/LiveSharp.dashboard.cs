@@ -1,3 +1,4 @@
+#if LiveSharp
 using LionFire.Dependencies;
 using LionFire.LiveSharp;
 using LiveSharp;
@@ -56,3 +57,4 @@ namespace LiveSharp
         }
     } 
 }
+#endif

@@ -6,11 +6,12 @@
 @inject ILogger<WorkspaceNavMenu> Logger
 @using System.Collections.Specialized
 @inject LionFire.Referencing.IUrlProvider UrlProvider
-@implements INotificationHandler<LionFire.LiveSharp.UpdatedMethodNotification>
 @using System.Threading
 @using MediatR 
-@using LionFire.LiveSharp 
-@inject LiveSharpNotifier LiveSharpNotifier
+
+@*@implements INotificationHandler<LionFire.LiveSharp.UpdatedMethodNotification>*@
+@*@using LionFire.LiveSharp *@
+@*@inject LiveSharpNotifier LiveSharpNotifier*@
 
 @*<li>*@
     @*<small>(Workspace @WorkspaceKey)</small>*@
@@ -44,6 +45,7 @@
     //Task INotificationHandler<UpdatedMethodNotification>.Handle(UpdatedMethodNotification notification, CancellationToken cancellationToken)
     //    => UltralightUIScript.Instance?.OnUpdatedMethodNotification(notification);
 
+    #if LiveSharp
     Task INotificationHandler<UpdatedMethodNotification>.Handle(UpdatedMethodNotification notification, CancellationToken cancellationToken)
     {
         try
@@ -75,9 +77,12 @@
         //return Task.CompletedTask;
 
     }
+    #endif
 
     protected override Task OnInitializedAsync() {
+        #if LiveSharp
         LiveSharpNotifier.MethodChanged += _ => StateHasChanged();
+        #endif
         return Task.CompletedTask;
     }
 
