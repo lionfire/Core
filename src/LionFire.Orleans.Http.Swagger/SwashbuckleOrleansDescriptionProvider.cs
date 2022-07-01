@@ -1,3 +1,5 @@
+// Based on this PR: https://github.com/OrleansContrib/Orleans.Http/pull/43#issuecomment-1165691331
+
 using Microsoft.AspNetCore.Mvc.Abstractions;
 using Microsoft.AspNetCore.Mvc.ActionConstraints;
 using Microsoft.AspNetCore.Mvc.ApiExplorer;
@@ -127,28 +129,28 @@ class SwashbuckleOrleansDescriptionProvider : IApiDescriptionGroupCollectionProv
                     Properties = new Dictionary<object, object>()
                 };
 
-                var pattern = methodAttributes.Pattern;
-                if(string.IsNullOrWhiteSpace(pattern))
-                {
-                    pattern = "{optionalPrefix}/{optionalTopLevelPattern}{grainTypeName}/{grainId}/{methodName}";
-                }
-                string optionalPrefix = "grians"; // TODO MOVE to configuration
-                string optionalTopLevelPatternWithTrailingSlash = ""; // TODO MOVE to configuration
+    var pattern = methodAttributes.Pattern;
+    if(string.IsNullOrWhiteSpace(pattern))
+    {
+        pattern = "{optionalPrefix}/{optionalTopLevelPattern}{grainTypeName}/{grainId}/{methodName}";
+    }
+    string optionalPrefix = "grains"; // TODO MOVE to configuration
+    string optionalTopLevelPatternWithTrailingSlash = ""; // TODO MOVE to configuration
 
-                var relativePath = pattern
-                    .Replace("{optionalPrefix}", optionalPrefix)
-                    .Replace("{optionalTopLevelPattern}", optionalTopLevelPatternWithTrailingSlash)
-                    .Replace("{grainTypeName}", grainType.FullName)
-                    .Replace("{methodName}", methodInfo.Name)
-                    ;
+    var relativePath = pattern
+        .Replace("{optionalPrefix}", optionalPrefix)
+        .Replace("{optionalTopLevelPattern}", optionalTopLevelPatternWithTrailingSlash)
+        .Replace("{grainTypeName}", grainType.FullName)
+        .Replace("{methodName}", methodInfo.Name)
+        ;
 
-                var description = new ApiDescription()
-                {
-                    ActionDescriptor = descriptor,
-                    //GroupName = groupName, // Causes things to be skipped by default if the group doesn't match the documentName (SwaggerGeneratorOptions.DefaultOperationIdSelector)
-                    HttpMethod = methodAttributes.Method,
-                    RelativePath = relativePath
-                };
+    var description = new ApiDescription()
+    {
+        ActionDescriptor = descriptor,
+        //GroupName = groupName, // Causes things to be skipped by default if the group doesn't match the documentName (SwaggerGeneratorOptions.DefaultOperationIdSelector)
+        HttpMethod = methodAttributes.Method,
+        RelativePath = relativePath
+    };
 
                 var methodParams = methodInfo.GetParameters();
 
