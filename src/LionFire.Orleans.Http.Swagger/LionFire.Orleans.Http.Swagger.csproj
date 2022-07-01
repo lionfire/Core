@@ -1,0 +1,21 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>Library</OutputType>
+    <TargetFramework>netcoreapp3.0</TargetFramework>
+    <LangVersion>latest</LangVersion>
+    <IsPackable>true</IsPackable>
+  </PropertyGroup>
+
+  <PropertyGroup>
+    <PackageId>Orleans.Http.Swagger</PackageId>
+    <Title>Microsoft Orleans Http Swagger</Title>
+    <Description>Microsoft Orleans Http Swagger</Description>
+    <RootNamespace>LionFire.Orleans_</RootNamespace>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Orleans.Http" Version="1.3.1" />
+  </ItemGroup>
+
+</Project>
