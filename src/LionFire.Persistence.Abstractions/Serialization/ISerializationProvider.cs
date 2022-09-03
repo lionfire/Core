@@ -3,6 +3,10 @@
 namespace LionFire.Serialization
 {
 
+    /// <summary>
+    /// Provides access to all ISerializationServices.  
+    /// TODO: Swap the names of ISerializationProvider and ISerializationService
+    /// </summary>
     public interface ISerializationProvider : IResolvesSerializationStrategies
     {
         IEnumerable<ISerializationService> SerializationServices { get; }

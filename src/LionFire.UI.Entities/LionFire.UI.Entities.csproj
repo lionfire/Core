@@ -11,13 +11,14 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Swordfish.NET.CollectionsV3" Version="3.3.8" />
+    <PackageReference Include="Swordfish.NET.CollectionsV3" Version="3.3.9" />
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\LionFire.Base\LionFire.Base.csproj" />
     <ProjectReference Include="..\LionFire.Instantiating.Abstractions\LionFire.Instantiating.Abstractions.csproj" />
     <ProjectReference Include="..\LionFire.Instantiating\LionFire.Instantiating.csproj" />
+    <ProjectReference Include="..\LionFire.Mvvm.Abstractions\LionFire.Mvvm.Abstractions.csproj" />
     <ProjectReference Include="..\LionFire.Structures\LionFire.Structures.csproj" />
     <ProjectReference Include="..\LionFire.UI\LionFire.UI.csproj" />
   </ItemGroup>

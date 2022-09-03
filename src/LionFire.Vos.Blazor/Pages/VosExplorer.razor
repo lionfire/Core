@@ -19,25 +19,31 @@
 @using LionFire.Resolves
 @using MudBlazor
 
-<MudIconButton Icon="@Icons.Material.Filled.ArrowBackIos" Style="@("opacity:" + (History.Count == 0 ? "0.2" : "1"))" @onclick=@Back></MudIconButton>
-<MudIconButton Icon="@Icons.Material.Filled.ArrowForwardIos" Style="@("opacity:" + (ForwardHistory.Count == 0 ? "0.2" : "1"))" @onclick=@Forward></MudIconButton>
-<MudIconButton Icon="@Icons.Material.Filled.Refresh" @onclick=@Refresh></MudIconButton>
+<div class="VosExplorer">
+
+<MudToolBar>
+    <MudIconButton Icon="@Icons.Material.Filled.ArrowBackIos" Size="@MudBlazor.Size.Medium" Style="@("opacity:" + (History.Count == 0 ? "0.2" : "1"))" @onclick=@Back></MudIconButton>
+
+    <MudIconButton Icon="@Icons.Material.Filled.ArrowForwardIos" Style="@("opacity:" + (ForwardHistory.Count == 0 ? "0.2" : "1"))" @onclick=@Forward></MudIconButton>
+
+    <button @onclick="@(e=> GoToPath(".."))"><span class="oi oi-arrow-top" /></button>
+
+    <div class="AddressBar">@Path</div>
+
+    <MudSpacer />
+
+    <MudIconButton Icon="@Icons.Material.Filled.Refresh" @onclick=@Refresh></MudIconButton>
+</MudToolBar>
 
 
-<i class="fas fa-angle-double-down"></i>
-<div>@Path</div>
+@*<i class="fas fa-angle-double-down"></i>*@
 @if (listings == null)
 {
     <p><em>Loading... @Path</em></p>
 }
 else
 {
-    <h3>@Root</h3>
-    <button @onclick="@(e=> GoToPath(".."))"><span class="oi oi-arrow-top" /></button>
-    <button @onclick="@(e=> Refresh())"><span class="oi oi-reload" /></button>
-    <div>@Path</div>
-
-    <table class="table">
+    <table class="table Listings">
         <thead>
             <tr>
                 <th></th>
@@ -54,7 +60,7 @@ else
                         <span @onclick="@(e => GoToPath(listing.Name))" class="@IconClasses(listing)" aria-hidden="true" data-glyph="battery-empty"></span>
                     </td>
                     <td>@listing.Name</td>
-                    <td>@listing.Type</td>
+                    <td>@listing.DataType</td>
                     <td></td>
                 </tr>
             }
@@ -64,10 +70,6 @@ else
     @if (Vob != null)
     {
         <table>
-            <tr>
-                <td>Path</td>
-                <td>@Vob.Path</td>
-            </tr>
             <tr>
                 <td>VobMounts</td>
                 <td>@(VobMounts)</td>
@@ -121,4 +123,4 @@ else
     }
 }
 
-
+</div>

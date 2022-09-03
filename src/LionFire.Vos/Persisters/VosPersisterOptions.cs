@@ -1,9 +1,7 @@
 ﻿using LionFire.Serialization;
 
-namespace LionFire.Persistence.Persisters.Vos
+namespace LionFire.Persistence.Persisters.Vos;
+
+public class VosPersisterOptions : PersistenceOptions
 {
-    public class VosPersisterOptions
-    {
-        public SerializationOptions SerializationOptions { get; set; }
-    }
 }

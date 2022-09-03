@@ -10,13 +10,13 @@
 	<ItemGroup>
 		<PackageReference Include="Microsoft.Extensions.Hosting.Abstractions" Version="6.0.0" />
 		<PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="6.0.1" />
-		<PackageReference Include="Microsoft.IdentityModel.Protocols.OpenIdConnect" Version="6.19.0" />
+		<PackageReference Include="Microsoft.IdentityModel.Protocols.OpenIdConnect" Version="6.21.0" />
 		
 		<PackageReference Include="Microsoft.Orleans.Core" Version="3.6.2" />
 		<PackageReference Include="Microsoft.Orleans.OrleansConsulUtils" Version="3.6.2" />
 		<PackageReference Include="Microsoft.Extensions.Caching.Abstractions" Version="6.0.0" />
 		<PackageReference Include="Microsoft.Extensions.Http" Version="6.0.0" />
-		<PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="6.19.0" />
+		<PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="6.21.0" />
 		<PackageReference Include="IdentityModel" Version="6.0.0" />
 	</ItemGroup>
 

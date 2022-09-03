@@ -26,6 +26,7 @@
     <Folder Include="Nodes\" />
     <Folder Include="Shell\Presenters\" />
     <Folder Include="Shell\Views\" />
+    <Folder Include="ViewModels\" />
   </ItemGroup>
 
   <ItemGroup>

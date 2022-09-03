@@ -9,6 +9,7 @@ namespace LionFire.Persistence.Persisters
     /// </summary>
     /// <typeparam name="TOptions"></typeparam>
     public class SerializingPersisterBase<TOptions> : PersisterBase<TOptions>, ISerializingPersister
+        where TOptions : PersistenceOptions
     {
         // SetOnce?
         public SerializationOptions SerializationOptions { get; set; }

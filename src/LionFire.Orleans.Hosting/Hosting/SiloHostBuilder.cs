@@ -17,16 +17,17 @@ using LionFire.Orleans_;
 using Microsoft.Extensions.Configuration;
 using LionFire.Deployment;
 using Polly;
+using HostBuilderContext = Microsoft.Extensions.Hosting.HostBuilderContext;
 
 namespace LionFire.Hosting;
 
 public static class SiloHostBuilder
 {
 
-    public static LionFireHostBuilder Silo(this LionFireHostBuilder lf, int port, Action<Microsoft.Extensions.Hosting.HostBuilderContext, ISiloBuilder>? configureSilo = null)
+    public static LionFireHostBuilder Silo(this LionFireHostBuilder lf, int port, Action<HostBuilderContext, ISiloBuilder>? configureSilo = null)
         => lf.Silo(new SiloProgramConfig(port), configureSilo);
 
-    public static LionFireHostBuilder Silo(this LionFireHostBuilder lf, SiloProgramConfig config = null, Action<Microsoft.Extensions.Hosting.HostBuilderContext, ISiloBuilder>? configureSilo = null)
+    public static LionFireHostBuilder Silo(this LionFireHostBuilder lf, SiloProgramConfig config = null, Action<HostBuilderContext, ISiloBuilder>? configureSilo = null)
     {
         config ??= new();
 
@@ -51,6 +52,7 @@ public static class SiloHostBuilder
             .ConfigureServices((context, services) =>
             {
                 services
+                    .AddOrleans()
                     .AddHostedService<OrleansHealthCheckHostedService>()
                     .Configure<OrleansCheckHostedServiceOptions>(c => { c.Port = config.OrleansHealthCheckPort; })
                     .AddHostedService<ConsulKVRegistration>()
@@ -63,7 +65,7 @@ public static class SiloHostBuilder
                     .RegisterSiloWithConsul(o =>
                     {
                         int tcpTimeout = 15;
-
+                        
                         var checks = new List<AgentServiceCheck>();
                         //checks.Add(new AgentServiceCheck
                         //{
@@ -113,13 +115,19 @@ public static class SiloHostBuilder
                 OrleansClusterConfig clusterConfig = new();
                 context.Configuration.Bind("Orleans:Cluster", clusterConfig);
 
+                // TODO: better way of confguring ClusterId/ServiceId.  Also see LionFire.Consul.Orleans RegisterSiloWithConsulHostedService
+                var clusterId = clusterConfig.ClusterId ?? OrleansClusterConfig.DefaultClusterId;
+                var serviceId = config?.ServiceId ?? clusterConfig.ServiceId ?? OrleansClusterConfig.DefaultServiceId;
 
+                var deploymentId = clusterId;
+                if (deploymentId == "blue" || deploymentId == "green") { deploymentId = "prod"; }
+                if (deploymentId == "beta.blue" || deploymentId == "beta.green") { deploymentId = "beta"; } 
 
                 builder
                     .Configure<ClusterOptions>(options =>
                     {
-                        options.ClusterId = clusterConfig.ClusterId ?? OrleansClusterConfig.DefaultClusterId;
-                        options.ServiceId = clusterConfig.ServiceId ?? OrleansClusterConfig.DefaultServiceId;
+                        options.ClusterId = deploymentId;
+                        options.ServiceId = serviceId;
                     })
                     .ConfigureApplicationParts(parts =>
                     {
@@ -129,7 +137,7 @@ public static class SiloHostBuilder
 
                     .If(clusterConfig.Kind == ClusterDiscovery.Localhost, s =>
                         // NOTE - redundant specification of ClusterId and ServiceId
-                        s.UseLocalhostClustering(config.SiloPort, config.GatewayPort, new IPEndPoint(IPAddress.Loopback, 99999), clusterConfig.ServiceId, clusterConfig.ClusterId
+                        s.UseLocalhostClustering(config.SiloPort, config.GatewayPort, config.LocalhostPrimaryClusterEndpoint, serviceId, deploymentId
                         ))
                     .If(clusterConfig.Kind == ClusterDiscovery.Consul, s =>
                         s.UseConsulClustering(gatewayOptions =>
@@ -142,9 +150,12 @@ public static class SiloHostBuilder
                                 gatewayOptions.Address = new Uri(clusterConsulConfig.ServiceDiscoverEndPoint);
                             }
                             gatewayOptions.AclClientToken = clusterConsulConfig.ServiceDiscoveryToken;
-                            gatewayOptions.KvRootFolder = clusterConsulConfig.KvFolderName ?? clusterConfig.ServiceId;
+                            gatewayOptions.KvRootFolder = clusterConsulConfig.KvFolderName ?? $"{serviceId}";
                         })
                     )
+                    .If(clusterConfig.Kind != ClusterDiscovery.Localhost && clusterConfig.Kind != ClusterDiscovery.Consul, s =>
+                        throw new NotSupportedException($"Unknown clusterConfig.Kind: {clusterConfig.Kind}"))
+
 
                     .ConfigureEndpoints(IPAddress.Parse(config.OrleansInterface), config.SiloPort, config.GatewayPort)
                     .ConfigureLogging(logging => logging.AddConsole())

@@ -58,6 +58,18 @@ namespace LionFire.Applications
 
         #endregion
 
+        public bool IsValid =>
+            OrgDomain != DefaultOrgDomain;
+
+        public string? InvalidReason
+        {
+            get
+            {
+                if (OrgDomain == DefaultOrgDomain) { return "OrgDomain must be set (cannot be DefaultOrgDomain)"; }
+                return null;
+            }
+        }
+
         public string FullAppId => OrgDomain.Split('.').Reverse().Concat(AppId.Split('.')).Aggregate((x, y) => $"{x}.{y}");
 
         #region Identity Properties
@@ -95,7 +107,8 @@ namespace LionFire.Applications
         }
         private string defaultAppId;
 
-        public string OrgDomain { get; set; } = "example.com";
+        public string OrgDomain { get; set; } = DefaultOrgDomain;
+        public static string DefaultOrgDomain = "example.com";
         public string OrgNamespace { get; set; } = "Example";
 
         /// <summary>

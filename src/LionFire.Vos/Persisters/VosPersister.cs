@@ -72,6 +72,37 @@ namespace LionFire.Persistence.Persisters.Vos
 
         public Task<IPersistenceResult> Exists<TValue>(IReferencable<IVobReference> referencable) => throw new System.NotImplementedException();
 
+
+        public Func<RetrieveContext, Task>? BeforeRetrieve { get; set; }
+        protected async Task OnBeforeRetrieve(RetrieveContext context)
+        {
+            BeforeRetrieve?.Invoke(context);
+
+            #region MOVE to ArchivePlugin and wire up thru something like BeforeRetrieve
+
+            var archivePlugin = context.Vob.TryGetNextVobNode<ArchivePlugin>()?.Value;
+
+            if (archivePlugin != null && context.ListingType != null)
+            {
+                if (context.ListingType != typeof(IArchive))
+                {
+                    if (archivePlugin.ShouldScan(context.Referencable.Reference))
+                    {
+                        await archivePlugin.TryAutoMountArchives(this, context.Referencable);
+                    }
+                }
+            }
+            
+            #endregion                        
+        }
+
+        public struct RetrieveContext
+        {
+            public Type? ListingType { get; set; }
+            public IVob Vob { get; internal set; }
+            public IReferencable<IVobReference> Referencable { get; internal set; }
+        }
+
         public async IAsyncEnumerable<IRetrieveResult<TValue>> RetrieveAll<TValue>(IReferencable<IVobReference> referencable)
         {
             //l.Trace($"{replaceMode.DescriptionString()} {obj?.GetType().Name} {replaceMode.ToArrow()} {fsReference}");
@@ -85,44 +116,30 @@ namespace LionFire.Persistence.Persisters.Vos
             bool anyMounts = false;
             var vobMounts = vob.AcquireNext<VobMounts>();
 
+            Type metadataType = null;
+            Type? listingType = null;
 
-            //if(typeof(TValue) == typeof(Metadata<IEnumerable<Listing<object>>))
-            //{
-            //}
-
-            if (vobMounts != null)
+            if (typeof(TValue).IsGenericType && typeof(TValue).GetGenericTypeDefinition() == typeof(Metadata<>))
             {
-                // REFACTOR - replace this block with an extensibility point, such as "BeforeRetrieveListing"
-                var archivePlugin = vob.TryGetNextVobNode<ArchivePlugin>()?.Value;
+                metadataType = typeof(TValue).GetGenericArguments()[0];
 
-                if (archivePlugin != null 
-                    && typeof(TValue).IsGenericType
-                    && typeof(TValue).GetGenericTypeDefinition() == typeof(Metadata<>))
+                if (metadataType.IsGenericType && metadataType.GetGenericTypeDefinition() == typeof(IEnumerable<>))
                 {
-                    var metadataType = typeof(TValue).GetGenericArguments()[0];
-
-                    if (metadataType.IsGenericType && metadataType.GetGenericTypeDefinition() == typeof(IEnumerable<>))
+                    var enumerableType = metadataType.GetGenericArguments()[0];
+                    if (enumerableType.IsGenericType && enumerableType.GetGenericTypeDefinition() == typeof(Listing<>))
                     {
-                        var enumerableType = metadataType.GetGenericArguments()[0];
-                        if (enumerableType.IsGenericType && enumerableType.GetGenericTypeDefinition() == typeof(Listing<>))
+                        listingType = enumerableType.GetGenericArguments()[0];
+                        if (listingType == typeof(IArchive))
                         {
-                            var listingType = enumerableType.GetGenericArguments()[0];
-                            if(listingType == typeof(IArchive))
-                            {
-
-                            }
-                            else //  listingType != typeof(IArchive)
-                            {
-                                
-                                if (archivePlugin.ShouldScan(referencable.Reference))
-                                {
-                                    await archivePlugin.TryAutoMountArchives(this, referencable);
-                                }
-                            }
                         }
                     }
                 }
+            }
 
+            OnBeforeRetrieve(new RetrieveContext { Vob = vob, ListingType = listingType, Referencable = referencable });
+
+            if (vobMounts != null)
+            {
                 // TODO: If TValue is IEnumerable, make a way (perhaps optional) to aggregate values from multiple ReadMounts.
 
                 foreach (var mount in vobMounts.RankedEffectiveReadMounts)
@@ -132,6 +149,16 @@ namespace LionFire.Persistence.Persisters.Vos
                     var rh = effectiveReference.GetReadHandle<TValue>(serviceProvider: ServiceProvider);
 
                     var childResult = (await rh.Resolve().ConfigureAwait(false)).ToRetrieveResult();
+
+                    if (typeof(TValue) != typeof(object))
+                    {
+                        var childType = childResult.Value?.GetType();
+                        if (!childType.IsAssignableTo(typeof(TValue))) {
+                            Trace.WriteLine($"Child {rh.Reference.Path} does not match type filter: {typeof(TValue).FullName}");
+                            continue; 
+                        }
+                    }
+
                     if (childResult.IsFail()) result.Flags |= PersistenceResultFlags.Fail; // Indicates that at least one underlying persister failed
 
                     if (childResult.IsSuccess == true)

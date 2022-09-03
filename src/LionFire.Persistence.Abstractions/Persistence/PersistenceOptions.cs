@@ -1,66 +1,68 @@
 ﻿
 using LionFire.Dependencies;
+using LionFire.Persistence.TypeInference;
 using LionFire.Serialization;
 using System.Text;
 
-namespace LionFire.Persistence
+namespace LionFire.Persistence;
+
+public class PersistenceOptions : IPersistenceOptions
 {
-    public class PersistenceOptions : IPersistenceOptions
-    {
-        public bool ThrowOnMissingSerializer = true;
+    public bool ThrowOnMissingSerializer = true;
 
-        public SerializationOptions SerializationOptions { get; set; }
+    public SerializationOptions SerializationOptions { get; set; }
+    public TypeInferenceOptions TypeInferenceOptions { get; set; }
 
-        /// <summary>
-        /// Recommended to have this on.  Otherwise, deserialization may fail and you may not know why.
-        /// </summary>
-        public bool ThrowDeserializationFailureWithReasons { get; set; } = true;
 
-        public bool ThrowOnDeserializationFailure { get; set; } = false;
+    /// <summary>
+    /// Recommended to have this on.  Otherwise, deserialization may fail and you may not know why.
+    /// </summary>
+    public bool ThrowDeserializationFailureWithReasons { get; set; } = true;
 
-        public Encoding Encoding { get; set; } = Encoding.UTF8;
+    public bool ThrowOnDeserializationFailure { get; set; } = false;
 
-        //public PersistenceOptions(ISerializationProvider serializationProvider)
-        //{
-        //    SerializationProvider = serializationProvider;
-        //}
+    public Encoding Encoding { get; set; } = Encoding.UTF8;
 
-        public bool? PreferStreamReading { get; set; } = true;
-        public bool? PreferStreamWriting { get; set; } = true;
+    //public PersistenceOptions(ISerializationProvider serializationProvider)
+    //{
+    //    SerializationProvider = serializationProvider;
+    //}
 
-        public PersistenceOperation RetrievePersistenceOperationDefaults { get; set; }
-        //    = new PersistenceOperation()
-        //{
-        //    AutoAppendExtension = AutoAppendExtension.Disabled,
-        //    Deserialization = new DeserializePersistenceOperation()
-        //    {
+    public bool? PreferStreamReading { get; set; } = true;
+    public bool? PreferStreamWriting { get; set; } = true;
 
-        //    },
-        //};
-        public PersistenceOperation PutPersistenceOperationDefaults { get; set; }
-        //    = new PersistenceOperation()
-        //{
-        //    AutoAppendExtension = AutoAppendExtension.Disabled,
-        //    //Serialization =  new SerializePersistenceOperation()
-        //    //{
-        //    //},
-        //};
+    public PersistenceOperation RetrievePersistenceOperationDefaults { get; set; }
+    //    = new PersistenceOperation()
+    //{
+    //    AutoAppendExtension = AutoAppendExtension.Disabled,
+    //    Deserialization = new DeserializePersistenceOperation()
+    //    {
 
-        // FUTURE: IEnumerable<IPersistenceInterceptor> RetrieveInterceptors, PutInterceptors
+    //    },
+    //};
+    public PersistenceOperation PutPersistenceOperationDefaults { get; set; }
+    //    = new PersistenceOperation()
+    //{
+    //    AutoAppendExtension = AutoAppendExtension.Disabled,
+    //    //Serialization =  new SerializePersistenceOperation()
+    //    //{
+    //    //},
+    //};
 
-        //public ISerializationProvider SerializationProvider
-        //{
-        //    get;
-        //    protected set;
-        //    //get
-        //    //{
-        //    //    if (defaultSerializationProvider == null)
-        //    //    {
-        //    //        defaultSerializationProvider = DependencyLocator.TryGet<ISerializationProvider>();
-        //    //    }
-        //    //    return defaultSerializationProvider;
-        //    //}
-        //}
-        //private ISerializationProvider defaultSerializationProvider;
-    }
+    // FUTURE: IEnumerable<IPersistenceInterceptor> RetrieveInterceptors, PutInterceptors
+
+    //public ISerializationProvider SerializationProvider
+    //{
+    //    get;
+    //    protected set;
+    //    //get
+    //    //{
+    //    //    if (defaultSerializationProvider == null)
+    //    //    {
+    //    //        defaultSerializationProvider = DependencyLocator.TryGet<ISerializationProvider>();
+    //    //    }
+    //    //    return defaultSerializationProvider;
+    //    //}
+    //}
+    //private ISerializationProvider defaultSerializationProvider;
 }

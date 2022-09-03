@@ -6,6 +6,7 @@ using LionFire.Persistence.Filesystemlike;
 using LionFire.Persistence.Persisters;
 using LionFire.Referencing;
 using LionFire.Serialization;
+using LionFire.Structures;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using System;
@@ -19,7 +20,7 @@ using System.Threading.Tasks;
 namespace LionFire.Persistence.Filesystem
 {
 
-    public class FilesystemPersister : FilesystemlikePersistence<IFileReference, FilesystemPersisterOptions>, IPersister<IFileReference>
+    public class FilesystemPersister : VirtualFilesystemPersisterBase<IFileReference, FilesystemPersisterOptions>, IPersister<IFileReference>
     {
 
         #region Static
@@ -53,11 +54,14 @@ namespace LionFire.Persistence.Filesystem
         //    }
         //};
 
-        public override IDirectoryProvider DirectoryProvider => directoryProvider;
-        static readonly FilesystemDirectoryProvider directoryProvider = new();
 
-        public override IFileProvider FileProvider => fileProvider;
-        static readonly FilesystemFileProvider fileProvider = new();
+        // OLD
+        //public override IDirectoryProvider DirectoryProvider => directoryProvider;
+        //static readonly FilesystemDirectoryProvider directoryProvider = new();
+        //public override IFileProvider FileProvider => fileProvider;
+        //static readonly FilesystemFileProvider fileProvider = new();
+        
+        public override IVirtualFilesystem VirtualFilesystem => ManualSingleton<NativeFilesystem>.GuaranteedInstance;
 
         #region IO
 

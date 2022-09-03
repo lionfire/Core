@@ -1,10 +1,13 @@
-﻿using LionFire.Serialization;
+﻿using LionFire.Ontology;
+using LionFire.Serialization;
 using System;
 using System.IO;
 
 namespace LionFire.Persistence.Persisters
 {
-    public class PersisterBase<TOptions>
+    
+    public class PersisterBase<TOptions> : IHas<TOptions>
+        where TOptions : PersistenceOptions
     {
         #region PersistenceOptions
 
@@ -18,6 +21,7 @@ namespace LionFire.Persistence.Persisters
             }
         }
         private TOptions persistenceOptions;
+        TOptions IHas<TOptions>.Object => persistenceOptions;
 
         #endregion
 

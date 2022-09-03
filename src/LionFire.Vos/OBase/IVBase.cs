@@ -4,7 +4,8 @@ using LionFire.ObjectBus;
 namespace LionFire.Vos
 {
 
-    public interface IVBase : IOBase
+    // UNUSED?
+    public interface IVBase //: IOBase
     {
         // TODO: Move these to IVob and make IVBase inherit IVob
 

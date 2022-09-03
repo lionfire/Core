@@ -35,7 +35,17 @@ namespace LionFire.Structures
         public TItem? this[string key]
         {
             get => Query(key, out var result) ? result : default;
-            set => Items.AddOrUpdate(key, value, (k, e) => value);
+            set
+            {
+                if (value == null)
+                {
+                    Items.TryRemove(key, out var _);
+                }
+                else
+                {
+                    Items.AddOrUpdate(key, value, (k, e) => value);
+                }
+            }
         }
 
         public bool Query(string key, out TItem result) => Items.TryGetValue(key, out result);

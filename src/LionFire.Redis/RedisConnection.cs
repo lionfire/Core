@@ -148,7 +148,14 @@ namespace LionFire.Redis
             connectingTask = ConnectionMultiplexer.ConnectAsync(ConnectionString);
             redis = connectingTask.Result;
             connectingTask = null;
-            logger.LogInformation($"[connected] ...connected to redis at {ConnectionString}");
+            var connectionStringSanitized = ConnectionString;
+            var pwIndex = connectionStringSanitized.IndexOf("password=");
+            if (pwIndex > -1)
+            {
+                connectionStringSanitized = connectionStringSanitized.Substring(0, pwIndex);
+            }
+
+            logger.LogInformation($"[connected] ...connected to redis at {connectionStringSanitized}");
         }
 
         public override async Task DisconnectImpl(CancellationToken cancellationToken = default(CancellationToken))

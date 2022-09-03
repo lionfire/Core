@@ -9,7 +9,7 @@ namespace LionFire.Ontology
     /// Object "is"/has a particular type, and the type will be returned upon a call to ObjectAsType<typeparamref name="T"/>()
     /// </summary>
     /// <typeparam name="T"></typeparam>
-    public interface IHas<T>
+    public interface IHas<out T>
     {
         T Object { get; }
     }

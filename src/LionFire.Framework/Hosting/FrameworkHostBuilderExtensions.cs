@@ -40,6 +40,12 @@ namespace LionFire.Hosting
     {
         #region LionFireHostBuilder
 
+        /// <summary>
+        /// Add the full opinionated LionFire Kitchen Sink(tm)
+        /// </summary>
+        /// <param name="lf"></param>
+        /// <param name="frameworkHostBuilderOptions"></param>
+        /// <returns></returns>
         public static LionFireHostBuilder Framework(this LionFireHostBuilder lf, FrameworkHostBuilderOptions frameworkHostBuilderOptions = null)
         {
             lf
@@ -54,11 +60,9 @@ namespace LionFire.Hosting
 
         #region IHostBuilder
 
-        [Obsolete("Use .LionFire(b=>b.Framework()) instead")]
         private static IHostBuilder AugmentWithFramework(this IHostBuilder hostBuilder, FrameworkHostBuilderOptions options = null)
         {
             return hostBuilder
-                //.UseDependencyContext() // OLD - this is now done in LionFire()
                 .ConfigureServices((context, services) =>
                 {
                     services

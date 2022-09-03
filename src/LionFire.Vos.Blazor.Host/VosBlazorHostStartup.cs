@@ -25,7 +25,7 @@ public class VosBlazorHostStartup
 {
     public IWebHostEnvironment Env { get; set; }
 
-    public bool Blazorise { get; set; } = true;
+    public bool Blazorise { get; set; } = false;
 
     public VosBlazorHostStartup(IConfiguration configuration, IWebHostEnvironment env)
     {

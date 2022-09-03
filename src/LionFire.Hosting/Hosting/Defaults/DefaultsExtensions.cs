@@ -1,4 +1,7 @@
-﻿using Microsoft.Extensions.Configuration;
+﻿using LionFire.Structures.Keys;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Hosting;
 using System;
 using System.IO;
@@ -22,6 +25,11 @@ namespace LionFire.Hosting
 
             lf.HostBuilder.UseDependencyContext();
 
+            lf.ConfigureServices(services =>
+            {
+                services.AddSingleton<IKeyProviderService<string>, KeyProviderService<string>>();
+            });
+
             //builder.ConfigureLogging((context, logger) => logger
             //    .AddLionFireNLog(context.Configuration.GetSection("Logging"), null)
             //);
@@ -33,9 +41,20 @@ namespace LionFire.Hosting
                 .AddJsonFile(Path.Combine(Environment.CurrentDirectory, "appsettings.json"), true, true)
            );
 
-            Console.WriteLine($"Current Directory: {Environment.CurrentDirectory}");
-            Console.WriteLine($"{Path.Combine(Environment.CurrentDirectory, "appsettings.json")} exists? {File.Exists(Path.Combine(Environment.CurrentDirectory, "appsettings.json"))}");
-            Console.WriteLine($"{Path.Combine(AppContext.BaseDirectory, "appsettings.json")} exists? {File.Exists(Path.Combine(AppContext.BaseDirectory, "appsettings.json"))}");
+            //Console.WriteLine($"Current Directory: {Environment.CurrentDirectory}");
+            //Console.WriteLine($"{Path.Combine(Environment.CurrentDirectory, "appsettings.json")} exists? {File.Exists(Path.Combine(Environment.CurrentDirectory, "appsettings.json"))}");
+            //Console.WriteLine($"{Path.Combine(AppContext.BaseDirectory, "appsettings.json")} exists? {File.Exists(Path.Combine(AppContext.BaseDirectory, "appsettings.json"))}");
+
+            builder.ConfigureAppConfiguration((hostingContext, config) =>
+             {
+                 var appSettingsFile = hostingContext.Configuration["AppSettingsFile"];
+                 if (appSettingsFile != null)
+                 {
+                     Console.WriteLine($"Adding config source: {appSettingsFile}  (exists: {File.Exists(appSettingsFile)})");
+                     config
+                           .AddJsonFile(appSettingsFile, optional: true, reloadOnChange: true);
+                 }
+             });
 
             // ----------------
 

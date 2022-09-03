@@ -248,11 +248,11 @@ namespace LionFire.Vos.Blazor
                     var childPath = LionPath.Combine(path, listing.Name);
                     var handle = childPath.ToReference<object>().GetReadHandle<object>();
                     //newReadHandles.Add(handle);
-                    listing.Type = (await handle.TryGetValue().ConfigureAwait(false))?.GetType().Name;
+                    listing.Type = (await handle.TryGetValue().ConfigureAwait(false))?.GetType();
                 }
                 catch
                 {
-                    listing.Type = "?";
+                    listing.Type = null;
                 }
             }
 
@@ -306,7 +306,7 @@ namespace LionFire.Vos.Blazor
         }
 
         #region (Private) Utility methods
-
+        
         private Uri uri => navManager.ToAbsoluteUri(navManager.Uri);
         public string IconClasses(Listing<object> listing)
         {

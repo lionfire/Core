@@ -3,7 +3,6 @@
 using LionFire.Referencing;
 using LionFire.Vos;
 using Microsoft.Extensions.Logging;
-using System.Threading.Tasks;
 
 namespace LionFire.Persistence.Persisters.Vos;
 
@@ -42,7 +41,7 @@ public class ArchivePlugin //: IVosPlugin
 
     public async Task TryAutoMountArchives(VosPersister vosPersister, IReferencable<IVobReference> referencable)
     {
-        await foreach (var archiveResult in vosPersister.RetrieveAll<Listing<IArchive>>(referencable))
+        await foreach (var archiveResult in vosPersister.RetrieveAll<Metadata<IEnumerable<Listing<IArchive>>>>(referencable))
         {
             if (archiveResult.IsSuccess != true)
             {
