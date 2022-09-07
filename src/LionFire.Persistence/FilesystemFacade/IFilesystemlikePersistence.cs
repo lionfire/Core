@@ -10,6 +10,9 @@ using LionFire.Serialization;
 namespace LionFire.Persistence.Filesystemlike
 {
 
+    // REVIEW - inherit from IVirtualFilesystem?
+    // Why take TReference if API uses string for file path?
+
     /// <summary>
     /// TODO - Work in progress
     /// </summary>

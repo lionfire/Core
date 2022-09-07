@@ -5,7 +5,7 @@ using System.Text;
 
 namespace LionFire.Execution;
 
-public delegate void OnProgressDelegate(int completed, int total);
+public delegate void OnProgressDelegate(int completed, int total, string? taskName = null);
 
 public class ProgressListener
 {

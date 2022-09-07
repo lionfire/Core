@@ -1,10 +1,10 @@
 ﻿@using Microsoft.Extensions.DependencyInjection
-@inject ILogger<ItemsEditor<TItem, TView>> Logger
+@inject ILogger<ItemsEditor<TView>> Logger
 @inject LionFire.Structures.Keys.IKeyProviderService<string> KeyProviderService
 @inject NavigationManager NavigationManager
 
 @namespace LionFire.Blazor.Components
-@typeparam TItem
+@*@typeparam TItem*@
 @typeparam TView
 
 @if (RetrieveAction != null && ShowRefresh)

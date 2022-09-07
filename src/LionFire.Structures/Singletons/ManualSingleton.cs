@@ -61,6 +61,7 @@ namespace LionFire.Structures
             return false;
         }
 
+        // REVIEW: Use GuaranteedInstance instead? (this is not threadsafe?)
         public static T GetGuaranteedInstance<CreateType>()
             where CreateType : class, T, new()
         {
@@ -70,6 +71,8 @@ namespace LionFire.Structures
             }
             return Instance;
         }
+
+        // REVIEW: Use GuaranteedInstance instead? (this is not threadsafe?)
         public static T GetGuaranteedInstance<CreateType>(Func<CreateType> createFunc)
             where CreateType : T
         {
@@ -79,6 +82,8 @@ namespace LionFire.Structures
             }
             return Instance;
         }
+
+        // REVIEW: Use GuaranteedInstance instead? (this is not threadsafe?)
         public static T GetGuaranteedInstance(Func<object> createFunc)
         {
             if (Instance == null)

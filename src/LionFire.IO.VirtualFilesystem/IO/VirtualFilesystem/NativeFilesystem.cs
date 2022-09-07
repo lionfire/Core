@@ -1,6 +1,10 @@
 ﻿
 namespace LionFire.IO;
 
+// Is there a better way to do async?
+// https://stackoverflow.com/questions/719020/is-there-an-async-version-of-directoryinfo-getfiles-directory-getdirectories-i
+
+
 public class NativeFilesystem : IVirtualFilesystem
 {
     #region Directories
@@ -28,86 +32,15 @@ public class NativeFilesystem : IVirtualFilesystem
 
 }
 
-#if false  // OLD - do this in Vos instead
 
-public interface IArchivePlugin
-{
-    IEnumerable<string> Extensions { get; }
-    Task<bool> Exists(string pathToArchive, string pathInArchive);
-    Task<string> ReadAllText(string pathToArchive, string pathInArchive);
-    Task Write(string pathToArchive, string pathInArchive, string textContents);
-}
+//public class FilesystemFileProvider : IFileProvider // TODO: Merge into LionFire.IO.VirtualFilesystem.dll
+//{
+//    public async Task<bool> Exists(string path)
+//        => await Task.Run(() => File.Exists(path)).ConfigureAwait(false);
 
-public class ZipArchiveProvider : IArchivePlugin
-{
-    public IEnumerable<string> Extensions { get { yield return "zip"; } }
+//    public Task<Stream> Open(string path, FileAccess fileAccess)
+//    {
+//        throw new System.NotImplementedException();
+//    }
+//}
 
-    public Task<bool> Exists(string pathToArchive, string pathInArchive)
-    {
-        throw new NotImplementedException();
-    }
-
-    public Task<string> ReadAllText(string pathToArchive, string pathInArchive)
-    {
-        throw new NotImplementedException();
-    }
-    public Task Write(string pathToArchive, string pathInArchive, string textContents)
-    {
-        throw new NotImplementedException();
-    }
-}
-
-public class ArchiveFilesystem : IFilesystemPlugin
-{
-    public IEnumerable<IArchivePlugin> ArchivePlugins { get; }
-
-    public ArchiveFilesystem(IEnumerable<IArchivePlugin> archivePlugins)
-    {
-        ArchivePlugins = archivePlugins;
-    }
-
-#region IFilesystem
-
-    /// <summary>
-    /// Discovering virtual directories that exist because of archives
-    /// </summary>
-    /// <param name="path"></param>
-    /// <returns></returns>
-    public IEnumerable<string> GetDirectories(string path)
-    {
-        throw new NotImplementedException();
-    }
-
-#endregion
-
-#region 
-
-
-#endregion
-
-#region Archives populating a particular directory
-
-    public IEnumerable<string> PossibleArchiveLocationsForDirectory(string directory)
-    {
-
-    }
-
-    public IEnumerable<string> ArchivesForDirectory(string directory)
-    {
-
-    }
-
-#endregion
-
-    public bool IsArchive(string path)
-    {
-
-    }
-}
-
-public interface IFilesystemPlugin
-{
-
-}
-
-#endif

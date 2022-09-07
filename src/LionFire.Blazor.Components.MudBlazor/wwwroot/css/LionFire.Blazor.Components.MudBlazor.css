@@ -38,3 +38,9 @@ body {
     body.dense .mud-list.mud-list-padding {
         padding: 4px 0;
     }
+
+table.quickgrid {
+    color: var(--mud-palette-text-primary);
+    background-color: var(--mud-palette-surface);
+    border-radius: var(--mud-default-borderradius);
+}

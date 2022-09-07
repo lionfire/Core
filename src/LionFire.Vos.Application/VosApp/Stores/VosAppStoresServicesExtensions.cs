@@ -11,6 +11,7 @@ using LionFire.Applications;
 using Microsoft.Extensions.Configuration;
 using System;
 using LionFire.FlexObjects;
+using LionFire.Hosting;
 
 namespace LionFire.Services
 {

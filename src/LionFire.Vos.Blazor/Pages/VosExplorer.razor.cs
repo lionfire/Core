@@ -261,6 +261,9 @@ namespace LionFire.Vos.Blazor
         }
 
         #endregion
+
+        public bool CanUp => Path != "/";
+
         void Pop()
         {
             ForwardHistory.Push((CurrentObject, BreadCrumbPath.Pop()));

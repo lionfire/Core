@@ -6,17 +6,16 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace LionFire.Hosting
+namespace LionFire.Hosting;
+
+public static class NavigatorHostingExtensions
 {
-    public static class NavigatorHostingExtensions
-    {
-        public static IServiceCollection AddNavigator<TNavigator>(this IServiceCollection services, Action<IParticipant> configure = null)
-            where TNavigator : class, IHostedService
-            => services
-                .AddSingletonHostedServiceDependency<TNavigator>(p =>
-                {
-                    configure?.Invoke(p);
-                    p.After(DependencyConventionsForUI.CanStartShell);
-                });
-    }
+    public static IServiceCollection AddNavigator<TNavigator>(this IServiceCollection services, Action<IParticipant> configure = null)
+        where TNavigator : class, IHostedService
+        => services
+            .AddSingletonHostedServiceDependency<TNavigator>(p =>
+            {
+                configure?.Invoke(p);
+                p.After(DependencyConventionsForUI.CanStartShell);
+            });
 }

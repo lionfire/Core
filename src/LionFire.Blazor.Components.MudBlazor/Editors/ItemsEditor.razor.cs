@@ -28,7 +28,19 @@ using LionFire.Structures.Keys;
 
 namespace LionFire.Blazor.Components;
 
-public partial class ItemsEditor<TItem, TView> : ComponentBase
+
+
+/// <summary>
+/// Edits a Grain that contains a list of other grains that 
+/// </summary>
+/// <typeparam name="T"></typeparam>
+public class GrainListEditor<TChild> : ICollectionEditor
+    where TChild : IGrain
+{
+
+}
+
+public partial class ItemsEditor<TView> : ComponentBase
 {
     #region Parameters
 
@@ -36,7 +48,7 @@ public partial class ItemsEditor<TItem, TView> : ComponentBase
     public bool ShowRefresh { get; set; }
 
     [Parameter]
-    public ObservableList<TItem>? Items
+    public ObservableList<TView>? Items
     {
         get => items;
         set
@@ -54,16 +66,16 @@ public partial class ItemsEditor<TItem, TView> : ComponentBase
                 if (ViewComparer == null)
                 {
                     
-                    View = items.CreateSortedView<TItem, string, TView>(item => GetKey?.Invoke(item) ?? KeyProviderService.TryGetKey(item).key ?? ThrowNoKey<string>(item), item => GetDisplayValue(item), ItemComparer ?? DefaultItemComparer);
+                    View = items.CreateSortedView<TView, string, TView>(item => GetKey?.Invoke(item) ?? KeyProviderService.TryGetKey(item).key ?? ThrowNoKey<string>(item), item => GetDisplayValue(item), ItemComparer ?? DefaultItemComparer);
                 }
                 else
                 {
-                    View = items.CreateSortedView<TItem, string, TView>(item => GetKey?.Invoke(item) ?? KeyProviderService.TryGetKey(item).key ?? ThrowNoKey<string>(item), item => GetDisplayValue(item), ViewComparer);
+                    View = items.CreateSortedView<TView, string, TView>(item => GetKey?.Invoke(item) ?? KeyProviderService.TryGetKey(item).key ?? ThrowNoKey<string>(item), item => GetDisplayValue(item), ViewComparer);
                 }
             }
         }
     }
-    private ObservableList<TItem>? items;
+    private ObservableList<TView>? items;
 
     public T ThrowNoKey<T>(object item) => throw new ArgumentException("Failed to resolve Key for object of type " + item?.GetType()?.FullName);
 
@@ -74,20 +86,20 @@ public partial class ItemsEditor<TItem, TView> : ComponentBase
     public Func<Type, Task>? Create { get; set; }
 
     [Parameter]
-    public Func<Task<IEnumerable<TItem>>>? RetrieveAction { get; set; }
+    public Func<Task<IEnumerable<TView>>>? RetrieveAction { get; set; }
 
     [Parameter]
-    public RenderFragment<ISynchronizedView<TItem, TView>>? ChildContent { get; set; }
+    public RenderFragment<ISynchronizedView<TView, TView>>? ChildContent { get; set; }
 
     [Parameter]
-    public Func<TItem, TView> GetDisplayValue { get; set; } = DefaultGetDisplayValue;
+    public Func<TView, TView> GetDisplayValue { get; set; } = DefaultGetDisplayValue;
 
-    public static Func<TItem, TView> DefaultGetDisplayValue { get; set; } = item => (TView)Activator.CreateInstance(typeof(TView), item);
+    public static Func<TView, TView> DefaultGetDisplayValue { get; set; } = item => (TView)Activator.CreateInstance(typeof(TView), item);
 
     [Parameter]
-    public Func<TItem, string?>? GetKey { get; set; }
+    public Func<TView, string?>? GetKey { get; set; }
 
-    public Func<TItem, string?>? DefaultGetKey => item =>
+    public Func<TView, string?>? DefaultGetKey => item =>
     {
         var keyed = (item as IKeyed);
         if (keyed != null) { return keyed.Key; }
@@ -103,13 +115,13 @@ public partial class ItemsEditor<TItem, TView> : ComponentBase
     /// Optional.  If none set, will compare using DefaultItemComparer
     /// </summary>
     [Parameter]
-    public IComparer<TItem>? ItemComparer { get; set; }
+    public IComparer<TView>? ItemComparer { get; set; }
 
     /// <summary>
     /// Default: compare based on IKeyed.Key.
     /// </summary>
-    IComparer<TItem> DefaultItemComparer => defaultItemComparer ??= new KeyComparer<string, TItem>(KeyProviderService);
-    IComparer<TItem>? defaultItemComparer;
+    IComparer<TView> DefaultItemComparer => defaultItemComparer ??= new KeyComparer<string, TView>(KeyProviderService);
+    IComparer<TView>? defaultItemComparer;
 
 
     /// <summary>
@@ -129,7 +141,7 @@ public partial class ItemsEditor<TItem, TView> : ComponentBase
 
     public HashSet<string> ShowDetailsFor { get; } = new();
 
-    ISynchronizedView<TItem, TView>? View { get; set; }
+    ISynchronizedView<TView, TView>? View { get; set; }
 
     #endregion
 
@@ -141,7 +153,7 @@ public partial class ItemsEditor<TItem, TView> : ComponentBase
         GlobalItemsChanged += ItemsEditor_GlobalItemsChanged;
     }
 
-    private void ItemsEditor_GlobalItemsChanged(ItemsEditor<TItem,TView> obj, string key)
+    private void ItemsEditor_GlobalItemsChanged(ItemsEditor<TView,TView> obj, string key)
     {
         if(Object.ReferenceEquals(obj, this) || key != EffectiveKey) { return; }
         InvokeAsync(Retrieve).FireAndForget();
@@ -175,12 +187,12 @@ public partial class ItemsEditor<TItem, TView> : ComponentBase
 
                 if (Items == null)
                 {
-                    Items = new ObservableList<TItem>(newItems);
+                    Items = new ObservableList<TView>(newItems);
                 }
                 else
                 {
-                    var additions = new List<TItem>();
-                    var removals = new List<TItem>();
+                    var additions = new List<TView>();
+                    var removals = new List<TView>();
                     foreach (var item in newItems)
                     {
                         if (!Items.Contains(item)) additions.Add(item);
@@ -211,7 +223,7 @@ public partial class ItemsEditor<TItem, TView> : ComponentBase
         }
     }
 
-    public static event Action<ItemsEditor<TItem, TView>, string> GlobalItemsChanged;
+    public static event Action<ItemsEditor<TView, TView>, string> GlobalItemsChanged;
 
     public void ToggleShowDetail(string id)
     {

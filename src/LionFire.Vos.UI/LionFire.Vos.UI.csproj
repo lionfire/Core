@@ -6,6 +6,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\LionFire.Persistence.Handles\LionFire.Persistence.Handles.csproj" />
+    <ProjectReference Include="..\LionFire.Vos.Abstractions\LionFire.Vos.Abstractions.csproj" />
   </ItemGroup>
 
 </Project>

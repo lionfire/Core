@@ -1,5 +1,7 @@
 ﻿namespace LionFire.IO;
 
+// TODO: Keep IFileProvider and IDirectoryProvider to keep API closer to System.IO?
+
 public interface IVirtualFilesystemDirectories
 {
     Task<IEnumerable<string>> GetDirectories(string path);

@@ -15,7 +15,7 @@ using LionFire.Persistence.Persisters;
 
 namespace LionFire.Persistence.Filesystemlike
 {
-    // This file: implement IFSPersistence<TReference, TPersistenceOptions>
+    // This file: implement IFilesystemlikePersistence<TReference, TPersistenceOptions>
     //  - default implementations for FilesystemFacade data storage
 
     public abstract partial class VirtualFilesystemPersisterBase<TReference, TPersistenceOptions>

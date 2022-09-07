@@ -9,24 +9,24 @@ using System;
 
 namespace LionFire.Hosting;
 
-public static class ArchivePluginHostingExtensions
+public static class ArchiveHostingExtensions
 {
-    public static IServiceCollection ArchivePlugin(this IServiceCollection services, VobReference vobReference, ArchivePluginOptions? options = null)
+    public static IServiceCollection ArchiveAdapter(this IServiceCollection services, VobReference vobReference, ArchiveOptions? options = null)
     {
         services.InitializeVob<IServiceProvider>(vobReference, (v, serviceProvider) =>
         {
-            v.AddArchivePlugin(serviceProvider, options);
+            v.AddArchiveAdapter(serviceProvider, options);
         }, key: $"{vobReference} ArchivePlugin", configure: c => c.Provide($"{vobReference} ArchivePlugin"));
         return services;
     }
 
-    public static IVob AddArchivePlugin(this IVob vob, IServiceProvider serviceProvider, ArchivePluginOptions ? options = null)
+    public static IVob AddArchiveAdapter(this IVob vob, IServiceProvider serviceProvider, ArchiveOptions ? options = null)
     {
-        options ??= new ArchivePluginOptions();
+        options ??= new ArchiveOptions();
 
-        var archivePlugin = ActivatorUtilities.CreateInstance<ArchivePlugin>(serviceProvider, vob, options);
+        var archivePlugin = ActivatorUtilities.CreateInstance<ArchiveAdapter>(serviceProvider, vob, options);
 
-        vob.AddOwn<ArchivePlugin>(archivePlugin);
+        vob.AddOwn<ArchiveAdapter>(archivePlugin);
 
         //#region Deprecated
 

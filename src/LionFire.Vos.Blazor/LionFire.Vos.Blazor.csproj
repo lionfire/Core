@@ -14,14 +14,15 @@
   <ItemGroup>    
     <PackageReference Include="Blazorise.Bootstrap" Version="0.9.5.4" />    
     <PackageReference Include="LiveSharp" Version="2.0.35" />    
-    <PackageReference Include="Microsoft.AspNetCore.Components.Web" Version="6.0.7" />
+    <PackageReference Include="Microsoft.AspNetCore.Components.Web" Version="6.0.8" />
     <PackageReference Include="Microsoft.AspNetCore.WebUtilities" Version="2.2.0" />
-    <PackageReference Include="MudBlazor" Version="6.0.14" />
+    <PackageReference Include="MudBlazor" Version="6.0.15" />
 
   </ItemGroup>
   
   <ItemGroup>
     <ProjectReference Include="..\LionFire.Persistence.Handles\LionFire.Persistence.Handles.csproj" />
+    <ProjectReference Include="..\LionFire.Vos.UI\LionFire.Vos.UI.csproj" />
     <ProjectReference Include="..\LionFire.Vos\LionFire.Vos.csproj" />
   </ItemGroup>
   

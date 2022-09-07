@@ -1,4 +1,5 @@
 using LionFire.Hosting;
+using LionFire.Persistence.Filesystem;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Hosting;
@@ -16,8 +17,12 @@ public class Program
                 .Vos()
                 .WebHost<VosBlazorHostStartup>()
             )
-            .ConfigureServices(s=>s
-                .ArchivePlugin("/"))
+            .ConfigureServices(s => s
+                .ArchiveAdapter("/") // TEMP
+                //.VosMount("/testmount".ToVobReference(), @"C:\temp".ToFileReference())
+            )
+                
+
             //.AddBlazorise(options =>
             //{
             //    options.ChangeTextOnKeyPress = true;

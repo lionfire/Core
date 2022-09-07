@@ -8,7 +8,6 @@
 @inject IServiceProvider ServiceProvider
 @inject IVos rootManager
 @inject NavigationManager navManager
-@*@inject Microsoft.Extensions.Logging.ILogger<string> logger*@
 @inject ILogger<VosExplorer> Logger
 
 @using LionFire.Vos.Mounts
@@ -26,7 +25,8 @@
 
     <MudIconButton Icon="@Icons.Material.Filled.ArrowForwardIos" Style="@("opacity:" + (ForwardHistory.Count == 0 ? "0.2" : "1"))" @onclick=@Forward></MudIconButton>
 
-    <button @onclick="@(e=> GoToPath(".."))"><span class="oi oi-arrow-top" /></button>
+
+    <MudIconButton Icon="@Icons.Material.Filled.KeyboardArrowUp" Style="@("opacity:" + (CanUp ? "1" : "0.2"))" @onclick=@(e => GoToPath(".."))></MudIconButton>
 
     <div class="AddressBar">@Path</div>
 
