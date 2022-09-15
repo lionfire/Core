@@ -22,6 +22,7 @@
   
   <ItemGroup>
     <ProjectReference Include="..\LionFire.Persistence.Handles\LionFire.Persistence.Handles.csproj" />
+    <ProjectReference Include="..\LionFire.UI.Abstractions\LionFire.UI.Abstractions.csproj" />
     <ProjectReference Include="..\LionFire.Vos.UI\LionFire.Vos.UI.csproj" />
     <ProjectReference Include="..\LionFire.Vos\LionFire.Vos.csproj" />
   </ItemGroup>

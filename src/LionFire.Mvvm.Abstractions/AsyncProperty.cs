@@ -1,6 +1,6 @@
 ﻿#nullable enable
 
-namespace LionFire.UI;
+namespace LionFire.Mvvm;
 
 public class AsyncProperty<TProperty> : INotifyPropertyChanged
 {

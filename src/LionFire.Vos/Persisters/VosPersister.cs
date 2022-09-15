@@ -86,6 +86,7 @@ public class VosPersister :
         public Type? ListingType { get; set; }
         public IVob Vob { get; internal set; }
         public IReferencable<IVobReference> Referencable { get; internal set; }
+        public HashSet<string> Flags { get; set; }
     }
 
     public async IAsyncEnumerable<IRetrieveResult<TValue>> RetrieveAll<TValue>(IReferencable<IVobReference> referencable)

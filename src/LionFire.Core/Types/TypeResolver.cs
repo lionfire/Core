@@ -24,7 +24,6 @@ namespace LionFire.Types
             TypeNameRegistry = typeNameRegistry;
         }
 
-
         //#region Register
 
         //public void Register(Type type, string? typeName = null)

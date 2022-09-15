@@ -2,12 +2,16 @@
 @page "/explorer"
 @page "/explorer/{*RootName}"
 @inject IServiceProvider serviceProvider
-@inject IObjectExplorerRoots roots
+@inject IOptionsMonitor<ObjectExplorerRoots> RootsOptions
 @inject ILogger<ObjectExplorer> Logger
+@using LionFire.UI
 @using Microsoft.Extensions.Logging
 @using System.Reflection;
+@using Microsoft.Extensions.Options
 @using MudBlazor
 @using global::MudBlazor.Dialog
+
+@namespace LionFire.Blazor.Components.MudBlazor_
 
 <div class="ObjectExplorer">
 
@@ -83,8 +87,8 @@
             }
 
             @foreach (var mi in CurrentObject.GetType().GetProperties(BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic).Cast<MemberInfo>()
-.Concat(CurrentObject.GetType().GetFields(BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic))
-)
+           .Concat(CurrentObject.GetType().GetFields(BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic))
+           )
             {
                 if (MemberDepth > 0 && GetMemberDepth(CurrentObject, mi) > MemberDepth) continue;
 
@@ -227,6 +231,9 @@
 
     protected override Task OnInitializedAsync()
     {
+        var roots = RootsOptions.CurrentValue;
+        if (!roots.Roots.Any()) throw new NotImplementedException("Unexpected: no roots. ");
+
         if (CurrentObject == null)
         {
             if (RootName != null && roots.Roots.ContainsKey(RootName))

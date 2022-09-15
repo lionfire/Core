@@ -1,14 +1,12 @@
-﻿using System;
+﻿
+namespace LionFire.Notifications;
 
-namespace LionFire.Notifications
+[System.AttributeUsage(AttributeTargets.Class, Inherited = false, AllowMultiple = true)]
+public sealed class NotifierHostAttribute : Attribute
 {
-    [System.AttributeUsage(AttributeTargets.Class, Inherited = false, AllowMultiple = true)]
-    public sealed class NotifierHostAttribute : Attribute
+    public NotifierHostAttribute(Type type)
     {
-        public NotifierHostAttribute(Type type)
-        {
-            this.Type = type;
-        }
-        public Type Type { get; private set; }
+        this.Type = type;
     }
+    public Type Type { get; private set; }
 }

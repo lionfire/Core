@@ -26,6 +26,12 @@
 
   <ItemGroup>
     <ProjectReference Include="..\LionFire.Blazor.Components\LionFire.Blazor.Components.csproj" />
+    <ProjectReference Include="..\LionFire.Mvvm\LionFire.Mvvm.csproj" />
+    <ProjectReference Include="..\LionFire.UI.Abstractions\LionFire.UI.Abstractions.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="ObjectExplorer\" />
   </ItemGroup>
 
 </Project>

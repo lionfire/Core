@@ -24,6 +24,10 @@
     </Content>
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Reflection\" />
+  </ItemGroup>
+
 	<PropertyGroup Condition=" '$(Configuration)'=='Release'">
 		<!--<BumpRevision>True</BumpRevision>-->
 		<GeneratePackageOnBuild>True</GeneratePackageOnBuild>

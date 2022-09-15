@@ -1,0 +1,45 @@
+﻿@using Microsoft.Extensions.DependencyInjection
+@inject ILogger<LionCollection<TItem, TItemVM>> Logger
+@inject LionFire.Structures.Keys.IKeyProviderService<string> KeyProviderService
+@inject NavigationManager NavigationManager
+@inject IServiceProvider ServiceProvider
+
+@namespace LionFire.Blazor.Components
+@typeparam TItem
+@typeparam TItemVM
+
+<MudMenu Class="" Label="Add" Icon="@Icons.Filled.Add" Variant="Variant.Outlined" Color="Color.Success" Dense AnchorOrigin="Origin.BottomLeft">
+    @foreach (var t in CreateableTypes)
+    {
+        <MudMenuItem OnClick="@(() => Add(t))">@DisplayNameForType(t)</MudMenuItem>
+    }
+</MudMenu>
+
+@if (RetrieveAction != null && ShowRefresh)
+{
+    <MudIconButton OnClick="Retrieve" Icon="@Icons.Filled.Refresh" />
+}
+
+@if (ChildContent != null)
+{
+    <div>@ChildContent(View)</div>
+}
+else
+{
+    <MudDataGrid T="TItemVM"
+             Items="@Items" SortMode="SortMode.Multiple" Filterable="true" Hideable="true" RowClick="@RowClicked">
+
+    </MudDataGrid>
+}
+
+@if (CreateableTypes != null && CreateableTypes.Any() && Create != null)
+{
+    <MudMenu Class="" Label="Add" Icon="@Icons.Filled.Add" Variant="Variant.Outlined" Color="Color.Success" Dense AnchorOrigin="Origin.BottomLeft">
+        @foreach (var t in CreateableTypes)
+        {
+            <MudMenuItem OnClick="@(() => Create(t))">
+                @DisplayNameForType(t)
+            </MudMenuItem>
+        }
+    </MudMenu>
+}

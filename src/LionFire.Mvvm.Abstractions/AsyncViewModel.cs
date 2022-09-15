@@ -1,35 +1,29 @@
 ﻿#nullable enable
-using LionFire.UI;
-//using Microsoft.Extensions.Options;
-//using static LionFire.Reflection.GetMethodEx;
+//using LionFire.UI;
 
-namespace LionFire.UI;
+namespace LionFire.Mvvm;
 
-public abstract class AsyncViewModel<T> : IDependsOn<T>, IReadWrapper<T>
+public abstract class AsyncVM<T> : IDependsOn<T>, IViewModel<T>
     where T : class
 {
 
     public AsyncPropertyOptions? Options { get; set; }
 
-    public T Model { get => model; set { if (model != default) { throw new AlreadySetException(); } model = value; } }
+    public T Value { get => model; set { if (model != default) { throw new AlreadySetException(); } model = value; } }
     private T model;
-    T? IReadWrapper<T>.Value => Model;
+    T? IReadWrapper<T>.Value => Value;
 
-    public T Dependency { set => Model = value; }
+    public T Dependency { set => Value = value; }
 
 
     #region Construction
 
-    public AsyncViewModel() { }
-    public AsyncViewModel(T model)
+    public AsyncVM() { }
+    public AsyncVM(T model)
     {
-        Model = model;
+        Value = model;
     }
 
     #endregion
 }
 
-//public class ConsistentAsyncProperty<TProperty>
-//{
-//    public TProperty LastValueFromSource { get; private set; }
-//}

@@ -1,6 +1,7 @@
-﻿using System.Collections.Generic;
+﻿using LionFire.Structures;
+using System.Collections.Generic;
 
-namespace LionFire.Structures
+namespace LionFire.ExtensionMethods
 {
     public static class IKeyedExtensions
     {
