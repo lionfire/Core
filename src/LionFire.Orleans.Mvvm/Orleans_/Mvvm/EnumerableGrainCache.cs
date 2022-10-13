@@ -39,7 +39,7 @@ public class EnumerableGrainCache<TCollection, TItem> : AsyncObservableListCache
 
     #endregion
 
-    protected override async Task<bool> Subscribe()
+    protected override Task<bool> Subscribe()
     {
         throw new NotImplementedException();
         //var streamProvider = ClusterClient.GetStreamProvider("CollectionStreamProvider"); // HARDCODE TODO
