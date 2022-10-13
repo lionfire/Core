@@ -21,7 +21,10 @@ public static class IViewModelExtensions
         //return objects.OfType<IViewModel<TSource>>().FirstOrDefault(v => v.IsViewModelOf(source ?? throw new ArgumentNullException(nameof(source)))) as TTarget;
         return objects.OfType<IViewModel<TModel>>().FirstOrDefault(v => ReferenceEquals(v.Value,source)) as TViewModel;
     }
-    //public static bool IsViewModelOf(this IViewModel vm, object obj) => vm?.Model != null && object.ReferenceEquals(obj, vm.Model);
+    public static bool IsViewModelOf<TViewModel, TModel>(this IViewModel<TModel> vm, TModel obj)
+        where TViewModel : IViewModel<TModel>
+        where TModel : class
+        => vm?.Value != default && object.ReferenceEquals(obj, vm.Value);
 
 }
 

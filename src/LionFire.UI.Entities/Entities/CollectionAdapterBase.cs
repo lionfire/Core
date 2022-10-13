@@ -10,7 +10,8 @@ using LionFire.Threading;
 namespace LionFire.UI
 {
     public class CollectionAdapterBase<TViewModel, TModel>: ObservableCollection<TViewModel>
-        where TViewModel : class
+        where TViewModel : class, IViewModel<TModel>
+        where TModel : class
     {
         protected readonly IEnumerable<TModel> _readOnlyModels;
 
@@ -133,7 +134,7 @@ namespace LionFire.UI
 
         public TViewModel GetViewModelOfModel(TModel model)
         {
-            return Items.OfType<IViewModel<TModel>>().FirstOrDefault(v => v.IsViewModelOf(model)) as TViewModel;
+            return Items.OfType<IViewModel<TModel>>().FirstOrDefault(v => v.IsViewModelOf<TViewModel,TModel>(model)) as TViewModel;
         }
 
         #endregion

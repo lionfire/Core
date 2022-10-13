@@ -3,17 +3,21 @@
 @inject LionFire.Structures.Keys.IKeyProviderService<string> KeyProviderService
 @inject NavigationManager NavigationManager
 @inject IServiceProvider ServiceProvider
+@inject IViewModelProvider ViewModelProvider
 
 @namespace LionFire.Blazor.Components
 @typeparam TItem
 @typeparam TItemVM
 
-<MudMenu Class="" Label="Add" Icon="@Icons.Filled.Add" Variant="Variant.Outlined" Color="Color.Success" Dense AnchorOrigin="Origin.BottomLeft">
-    @foreach (var t in CreateableTypes)
-    {
-        <MudMenuItem OnClick="@(() => Add(t))">@DisplayNameForType(t)</MudMenuItem>
-    }
-</MudMenu>
+@if (CreateableTypes != null)
+{
+    <MudMenu Class="" Label="Add" Icon="@Icons.Filled.Add" Variant="Variant.Outlined" Color="Color.Success" Dense AnchorOrigin="Origin.BottomLeft">
+        @foreach (var t in CreateableTypes)
+        {
+            <MudMenuItem OnClick="@(() => OnCreate(t))">@DisplayNameForType(t)</MudMenuItem>
+        }
+    </MudMenu>
+}
 
 @if (RetrieveAction != null && ShowRefresh)
 {
@@ -26,8 +30,8 @@
 }
 else
 {
-    <MudDataGrid T="TItemVM"
-             Items="@Items" SortMode="SortMode.Multiple" Filterable="true" Hideable="true" RowClick="@RowClicked">
+    <MudDataGrid T="(TItem, TItemVM)"
+             Items="@View" SortMode="SortMode.Multiple" Filterable="true" Hideable="true" RowClick="@RowClicked">
 
     </MudDataGrid>
 }
@@ -37,7 +41,7 @@ else
     <MudMenu Class="" Label="Add" Icon="@Icons.Filled.Add" Variant="Variant.Outlined" Color="Color.Success" Dense AnchorOrigin="Origin.BottomLeft">
         @foreach (var t in CreateableTypes)
         {
-            <MudMenuItem OnClick="@(() => Create(t))">
+            <MudMenuItem OnClick="@(() => OnCreate(t))">
                 @DisplayNameForType(t)
             </MudMenuItem>
         }

@@ -49,11 +49,13 @@ public class ViewModelTypeRegistry : IHostedService, IDisposable
                         if(iface.IsGenericType && iface.GetGenericTypeDefinition() == typeof(IViewModel<>))
                         {
                             var genericArguments = iface.GetGenericArguments();
-                            Register(type, genericArguments[0]);
+                            dict.Add(genericArguments[0], type);
+                            //Register(type, genericArguments[0]);
                         }
                     }
                 }
             }
+            viewModelsByModelType = dict;
         }
         finally
         {

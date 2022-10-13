@@ -13,6 +13,7 @@ using System.Xml.Linq;
 using LionFire.Reflection;
 using MudBlazor;
 using Microsoft.Extensions.DependencyInjection;
+using System.Collections.Specialized;
 
 namespace LionFire.Blazor.Components;
 
@@ -25,6 +26,8 @@ namespace LionFire.Blazor.Components;
 /// <typeparam name="TItem"></typeparam>
 public partial class LionCollection<TItem, TItemVM> : ComponentBase, IDisposable
 {
+    private static readonly object[] EmptyArray = new object[] { };
+
     public string Key { get; set; }
     public string EffectiveKey => Key ?? NavigationManager.Uri;
 
@@ -32,17 +35,17 @@ public partial class LionCollection<TItem, TItemVM> : ComponentBase, IDisposable
     #region Parameters
 
     [Parameter]
-    public Func<TItem, TItemVM> VMFactory { get; set; } = default;
+    public Func<TItem, TItemVM>? VMFactory { get; set; } = null;
 
     /// <summary>
     /// Recommended: ICollectionVM, or else set RefreshAction AddAction RemoveAction
     /// </summary>
     [Parameter]
-    public IReadOnlyCollection<TItemVM> Items
+    public IReadOnlyCollection<TItem> Items
     {
         get
         {
-            return items ??= new FreezedList<TItemVM>(Enumerable.Empty<TItemVM>().ToList());
+            return items ??= new FreezedList<TItem>(Enumerable.Empty<TItem>().ToList());
         }
         set
         {
@@ -50,7 +53,8 @@ public partial class LionCollection<TItem, TItemVM> : ComponentBase, IDisposable
             items = value;
         }
     }
-    private IReadOnlyCollection<TItemVM>? items;
+    private IReadOnlyCollection<TItem>? items;
+    private IReadOnlyCollection<TItem> itemsForView;
 
     [Parameter]
     public bool ShowRefresh { get; set; }
@@ -61,13 +65,30 @@ public partial class LionCollection<TItem, TItemVM> : ComponentBase, IDisposable
     [Parameter]
     public bool AutoRetrieveOnInit { get; set; } = true;
 
-        
 
     [Parameter]
     public IEnumerable<Type>? CreateableTypes { get; set; }
 
     [Parameter]
-    public Func<Type, Task>? Create { get; set; }
+    public Func<Type /*type*/, object[]? /*parameters*/, Task<TItem> /*newObject*/>? Create { get; set; }
+
+    [Parameter]
+    public Func<TItem, Task>? Add { get; set; }
+
+    [Parameter]
+    public Func<Type, Task<TItem>>? AddNew { get; set; }
+
+    //[Parameter]
+    //public object[] CreateParameters { get; set; } = new object[] { };
+
+    [Parameter]
+    public Func<Type, object[]>? ItemConstructorParameters { get; set; } = null;
+
+    /// <summary>
+    /// Only used if VMFactory is not set
+    /// </summary>
+    [Parameter]
+    public Func<TItem, object[]> VMConstructorParameters { get; set; } = _ => EmptyArray;
 
     [Parameter]
     public Func<Task<IEnumerable<TItem>>>? RetrieveAction { get; set; }
@@ -107,7 +128,6 @@ public partial class LionCollection<TItem, TItemVM> : ComponentBase, IDisposable
     IComparer<TItemVM> DefaultItemComparer => defaultItemComparer ??= new KeyComparer<string, TItemVM>(KeyProviderService);
     IComparer<TItemVM>? defaultItemComparer;
 
-
     /// <summary>
     /// Optional. Overrides ItemComparer.
     /// </summary>
@@ -117,9 +137,8 @@ public partial class LionCollection<TItem, TItemVM> : ComponentBase, IDisposable
     [Parameter]
     public bool ExpandMultipleDetail { get; set; }
 
-    [Parameter]
-    public ICollectionVM<TItem>? CollectionVM { get => collectionVM; set => collectionVM = value; }
-    private ICollectionVM<TItem>? collectionVM { get; set; }
+    public IAsyncCollectionCache<TItem>? AsyncCollectionCache { get => asyncCollectionCache; set => asyncCollectionCache = value; }
+    private IAsyncCollectionCache<TItem>? asyncCollectionCache;
 
     #endregion
 
@@ -129,11 +148,26 @@ public partial class LionCollection<TItem, TItemVM> : ComponentBase, IDisposable
 
     public HashSet<string> ShowDetailsFor { get; } = new();
 
-    ISynchronizedView<TItem, TItemVM>? View { get; set; }
+    ISynchronizedView<TItem, TItemVM>? View
+    {
+        get => view;
+        set
+        {
+            if (view != null)
+            {
+                view.CollectionStateChanged -= View_CollectionStateChanged;
+                view.Dispose();
+            }
+            view = value;
+            if (view != null)
+            {
+                view.CollectionStateChanged += View_CollectionStateChanged;
+            }
+        }
+    }
+    private ISynchronizedView<TItem, TItemVM>? view;
 
     #endregion
-
-    ISynchronizedView<TItem, TItemVM>? view = default!;
 
     public T ThrowNoKey<T>(object item) => throw new ArgumentException("Failed to resolve Key for object of type " + item?.GetType()?.FullName);
 
@@ -143,7 +177,6 @@ public partial class LionCollection<TItem, TItemVM> : ComponentBase, IDisposable
     //    InvokeAsync(Retrieve).FireAndForget();
     //}
 
-
     #region Lifecycle
 
     public LionCollection()
@@ -152,46 +185,54 @@ public partial class LionCollection<TItem, TItemVM> : ComponentBase, IDisposable
         //GlobalItemsChanged += ItemsEditor_GlobalItemsChanged;
     }
 
-    
+
     protected override async Task OnParametersSetAsync()
     {
         await base.OnParametersSetAsync();
 
-        InitCollection();
+        SetViewFromItems();
 
-        if (!CollectionVM.HasRetrieved && AutoRetrieveOnInit && CollectionVM.CanRetrieve)
+        if (AsyncCollectionCache != null && !AsyncCollectionCache.HasRetrieved && AutoRetrieveOnInit && AsyncCollectionCache.CanRetrieve)
         {
             await Retrieve();
         }
     }
-        
-    private void InitCollection()
+
+
+    void SetViewFromItems()
     {
-        CollectionVM ??= new ObservableListVM<TItem>();
+        //CollectionCache ??= new ObservableListCache<TItem>();
 
         if (ChildContent == null) { return; }
 
-
-        //view = observableCollection.CreateView(VMFactory);
         if (items == null) { view = null; }
         else
         {
-            if (items is ICollectionVM<TItem> vm)
+            if (!ReferenceEquals(itemsForView, items))
             {
-                CollectionVM = vm;
-                view = CollectionVM.Collection.CreateView(VMFactory);
-            }
-            else if (items is IObservableCollection<TItem> observableCollection)
-            {
-                view = observableCollection.CreateView(VMFactory);
-            }
-            else
-            {
-                // It is often the case that Items is not Observable.
-                // In that case, FreezedList is provided to create a View with the same API for normal collections.
-                var list = items as IReadOnlyList<TItem> ?? (IReadOnlyList<TItem>)items.ToList();
-                var freezedList = new FreezedList<TItem>(list);
-                view = freezedList.CreateView(VMFactory);
+                if (VMFactory == null)
+                {
+                    VMFactory = model => ViewModelProvider.Activate<TItemVM, TItem>(model, VMConstructorParameters(model));
+                }
+
+                if (items is IAsyncCollectionCache<TItem> vm)
+                {
+                    AsyncCollectionCache = vm;
+                    View = AsyncCollectionCache.Collection.CreateView(VMFactory);
+                }
+                else if (items is IObservableCollection<TItem> observableCollection)
+                {
+                    View = observableCollection.CreateView(VMFactory);
+                }
+                else
+                {
+                    // It is often the case that Items is not Observable.
+                    // In that case, FreezedList is provided to create a View with the same API for normal collections.
+                    var list = items as IReadOnlyList<TItem> ?? (IReadOnlyList<TItem>)items.ToList();
+                    var freezedList = new FreezedList<TItem>(list);
+                    View = freezedList.CreateView(VMFactory);
+                }
+                itemsForView = items;
             }
         }
 
@@ -211,24 +252,26 @@ public partial class LionCollection<TItem, TItemVM> : ComponentBase, IDisposable
         //        View = items.CreateSortedView<TItemVM, string, TItemVM>(item => GetKey?.Invoke(item) ?? KeyProviderService.TryGetKey(item).key ?? ThrowNoKey<string>(item), item => GetDisplayValue(item), ViewComparer);
         //    }
         //}
+    }
 
-        if (view != null)
-        {
-            view.CollectionStateChanged += async _ =>
-            {
-                // TODO - does this get disposed?
-                await InvokeAsync(StateHasChanged);
-            };
-        }
+    public void Dispose()
+    {
+        View = null;
     }
 
     #endregion
 
-    
+
+    #region Retrieve
+
+    public bool CanRetrieve => AsyncCollectionCache != null;
     public Task Retrieve()
     {
-        return CollectionVM.Retrieve();
+        if (AsyncCollectionCache == null) throw new ArgumentNullException($"{nameof(Items)} is not of type {typeof(IAsyncCollectionCache<TItem>).FullName}, so {nameof(Retrieve)} is not possible.");
+        return AsyncCollectionCache.Retrieve();
     }
+
+    #endregion
 
     //public static event Action<LionCollection<TItem, TItemVM>, string> GlobalItemsChanged;
 
@@ -242,34 +285,77 @@ public partial class LionCollection<TItem, TItemVM> : ComponentBase, IDisposable
     }
     public void RaiseStateHasChanged() => StateHasChanged();
 
-    public Func<Type, object[]>? ItemConstructorParameters { get; set; } = null;
-    async Task Add(Type type)
+    void ValidateCanModify()
     {
-        var itemsObservable = Items as ICollectionVM<TItemVM>;
-
-        if (itemsObservable == null) { throw new NotSupportedException($"{nameof(Items)} does not support modification"); }
-        if (itemsObservable.IsReadOnly) { throw new NotSupportedException($"{nameof(Items)} is read only"); }
-
-        Logger.LogInformation($"Adding {typeof(TItem).Name} type {type.Name}");
-
-        var p = ItemConstructorParameters?.Invoke(type);
-        var newItem = ActivatorUtilities.CreateInstance(ServiceProvider, type, p);
-
-        var newItemVM = GetVM(newItem);
-
-        await itemsObservable.Add(newItemVM);
+        if (ReadOnly) { throw new InvalidOperationException($"ReadOnly is true"); }
+        if (AsyncCollectionCache != null && AsyncCollectionCache.IsReadOnly) { throw new InvalidOperationException($"AsyncCollectionCache.ReadOnly is true"); }
     }
 
     public string DisplayNameForType(Type t) => t.Name.Replace("Item", "").TrimLeadingIOnInterfaceType();
 
-    public void Dispose()
-    {
-        view?.Dispose();
-    }
-
     #region Event Handling
 
-    void RowClicked(DataGridRowClickEventArgs<TItemVM> args)
+    private void View_CollectionStateChanged(NotifyCollectionChangedAction action)
+    {
+        InvokeAsync(StateHasChanged);
+    }
+
+    public async void OnCreate(Type type)
+    {
+        ValidateCanModify();
+
+        if(Create != null)
+        {
+            await Create(type, null);
+            return;
+        }
+        else if (AsyncCollectionCache != null && AsyncCollectionCache.CanCreate)
+        {
+            await AsyncCollectionCache.Create(type);
+            return;
+        }
+        else if (AddNew != null)
+        {
+            await AddNew(type);
+            return;
+        }
+        else if (AsyncCollectionCache != null && AsyncCollectionCache.CanAddNew)
+        {
+            await AsyncCollectionCache.AddNew(type);
+            return;
+        }
+        else if (Add != null)
+        {
+            await Add(await create(type));
+            return;
+        }
+        else if (AsyncCollectionCache != null && AsyncCollectionCache.CanAdd)
+        {
+            await AsyncCollectionCache.Add(await create(type));
+            return;
+        }
+        else
+        {
+            throw new NotSupportedException();
+        }
+        
+        async Task<TItem> create(Type type)
+        {
+            object[] args = Array.Empty<object>();
+            if (ItemConstructorParameters != null) { args = ItemConstructorParameters.Invoke(type); }
+
+            if (Create != null) { return await Create(type, args); }
+            else if (AsyncCollectionCache != null && AsyncCollectionCache.CanCreate) {
+                return await AsyncCollectionCache.Create(type, args);
+            }
+
+            return (TItem)ActivatorUtilities.CreateInstance(ServiceProvider, type, args)
+                ?? (TItem?)Activator.CreateInstance(type, args)
+                ?? throw new Exception($"Failed to create item of type {type.FullName}");
+        }
+    }
+
+    void RowClicked(DataGridRowClickEventArgs<(TItem, TItemVM)> args)
     {
         //_events.Insert(0, $"Event = RowClick, Index = {args.RowIndex}, Data = {System.Text.Json.JsonSerializer.Serialize(args.Item)}");
     }

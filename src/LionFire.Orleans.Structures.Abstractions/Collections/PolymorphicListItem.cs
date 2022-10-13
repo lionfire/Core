@@ -17,7 +17,7 @@ public record GrainListItem<TValue, TMetadata>(string Id, Type Type)
     private TValue? grain;
 }
 
-public record GrainListItem<TValue>(string Id, Type Type) : IDependsOn<IGrainFactory>
+public record GrainListItem<TValue>(string Id, Type Type) : IDependsOn<IGrainFactory>, IEquatable<GrainListItem<TValue>>
     where TValue : IGrain
 {
 

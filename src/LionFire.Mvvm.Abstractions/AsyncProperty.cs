@@ -1,24 +1,51 @@
 ﻿#nullable enable
 
+using System.Runtime.CompilerServices;
+
 namespace LionFire.Mvvm;
 
-public class AsyncProperty<TProperty> : INotifyPropertyChanged
+public class AsyncProperty<TObject, TProperty> : INotifyPropertyChanged
 {
     // TODO: Wire up change notifications from source
+    private object SyncRoot = new();
+    public IEqualityComparer<TProperty> EqualityComparer { get; set; } = EqualityComparer<TProperty>.Default;
 
 
-    public object Target { get; }
+    public TObject Target { get; }
     public AsyncPropertyOptions Options { get; }
-
-    public AsyncProperty(object target, AsyncPropertyOptions options)
+    public static AsyncPropertyOptions DefaultOptions = new();
+    public AsyncProperty(TObject target, AsyncPropertyOptions? options = null)
     {
         Target = target;
-        Options = options;
+        Options = options ?? DefaultOptions;
     }
 
     public bool HasValue { get; private set; }
     public bool IsGetting { get; private set; }
-    public (bool IsSetting, TProperty? SettingToValue) SetState { get; private set; }
+
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <remarks>
+    /// locked by: SyncRoot
+    /// </remarks>
+    public (Task? task, TProperty? SettingToValue) SetState
+    {
+        get => setState;
+        private set
+        {
+            bool oldIsSetting = IsSetting;
+            setState = value;
+
+            if (IsSetting != oldIsSetting)
+            {
+                OnPropertyChanged(nameof(IsSetting));
+            }
+        }
+    }
+    private (Task? task, TProperty? SettingToValue) setState;
+
+    public bool IsSetting => SetState.task != null;
 
     public TProperty Value
     {
@@ -50,10 +77,10 @@ public class AsyncProperty<TProperty> : INotifyPropertyChanged
 
     private void DoThrowOnGetValueIfNotLoaded() => throw new Exception("Value has not been gotten yet.  Invoke Get first or disable Options.ThrowOnGetValueIfNotLoaded");
 
-    public async Task<TProperty> Get(CancellationToken cancellationToken = default)
+    public async Task<TProperty?> Get(CancellationToken cancellationToken = default)
     {
         var setState = SetState;
-        if (setState.IsSetting && Options.OptimisticGetWhileSetting) { return setState.SettingToValue; }
+        if (IsSetting && Options.OptimisticGetWhileSetting) { return setState.SettingToValue; } // return Optimistically
 
         IsGetting = true;
         try
@@ -67,22 +94,46 @@ public class AsyncProperty<TProperty> : INotifyPropertyChanged
             IsGetting = false;
         }
     }
+
     public async Task Set(TProperty? value, CancellationToken cancellationToken = default)
     {
-        SetState = (true, value);
+        (Task? task, TProperty? SettingToValue) currentState;
+    start:
+        do
+        {
+            currentState = SetState;
+            if (currentState.task != null) { await currentState.task!.ConfigureAwait(false); }
+            if (EqualityComparer.Equals(currentState.SettingToValue, value)) { return; }
+        } while (currentState.task != null);
+
         try
         {
-            await Setter(Target, value, cancellationToken);
+            lock (SyncRoot)
+            {
+                if (IsSetting) goto start;
+                SetState = (Setter(Target, value, cancellationToken), value);
+            }
+            await SetState.task.ConfigureAwait(false);
+            OnPropertyChanged(nameof(Value));
         }
         finally
         {
-            SetState = (false, default);
+            SetState = (null, default);
         }
     }
 
-    public Func<object, CancellationToken, Task<TProperty>> Getter { get; set; }
-    public Func<object, TProperty, CancellationToken, Task> Setter { get; set; }
+    public Func<TObject, CancellationToken, Task<TProperty>> Getter { get; set; }
+    public Func<TObject, TProperty?, CancellationToken, Task> Setter { get; set; }
 
-    public event PropertyChangedEventHandler PropertyChanged;
+    public event PropertyChangedEventHandler? PropertyChanged;
+
+
+    #region INotifyPropertyChanged Implementation
+
+
+    protected void OnPropertyChanged(string propertyName) => PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+
+    #endregion
+
 }
 

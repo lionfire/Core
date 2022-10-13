@@ -9,10 +9,10 @@ public interface IAsyncObservableCollectionVM
     //Task Cancel();
 }
 
-public class DelegateListVM<T> : AsyncObservableCollectionVMBase<T, ObservableList<T>>, ICollectionVM<T>
+public class DelegateCollectionCache<T> : AsyncObservableCollectionCacheBase<T, ObservableList<T>>, IAsyncCollectionCache<T>
 {
 
-    public DelegateListVM()
+    public DelegateCollectionCache()
     {
     }
 

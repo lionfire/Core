@@ -10,7 +10,7 @@ namespace LionFire.Mvvm;
 
 //}
 
-public class AsyncObservableDictionaryVMBase<TKey, TValue> : ObservableObject, ICollectionVM<KeyValuePair<TKey, TValue>>
+public class AsyncObservableDictionaryCacheBase<TKey, TValue> : ObservableObject, IAsyncCollectionCache<KeyValuePair<TKey, TValue>>
     where TKey : notnull
 {
 
@@ -29,7 +29,7 @@ public class AsyncObservableDictionaryVMBase<TKey, TValue> : ObservableObject, I
         }
     }
     protected ObservableDictionary<TKey, TValue>? collection;
-    IObservableCollection<KeyValuePair<TKey, TValue>>? ICollectionVM<KeyValuePair<TKey, TValue>>.Collection => Dictionary;
+    IObservableCollection<KeyValuePair<TKey, TValue>>? IAsyncCollectionCache<KeyValuePair<TKey, TValue>>.Collection => Dictionary;
 
     #endregion
 
@@ -52,7 +52,7 @@ public class AsyncObservableDictionaryVMBase<TKey, TValue> : ObservableObject, I
 
     public virtual bool CanRetrieve => false;
 
-    public virtual Task<IEnumerable<KeyValuePair<TKey, TValue>>> Retrieve(CancellationToken cancellationToken = default) => throw new NotSupportedException();
+    public virtual Task<IEnumerable<KeyValuePair<TKey, TValue>>> Retrieve(bool syncToCollection = true, CancellationToken cancellationToken = default) => throw new NotSupportedException();
 
     #endregion
 
@@ -76,11 +76,18 @@ public class AsyncObservableDictionaryVMBase<TKey, TValue> : ObservableObject, I
     #region Remove
 
     public IEnumerable<KeyValuePair<TKey, TValue>> Removing => Enumerable.Empty<KeyValuePair<TKey, TValue>>();
-
     public Task<bool> Remove(KeyValuePair<TKey, TValue> item)
     {
         throw new NotSupportedException();
     }
+
     #endregion
+
+    public bool CanAdd => false;
+        public bool CanCreate => false;
+    public virtual Task<KeyValuePair<TKey, TValue>> Create(Type type, params object[]? constructorParameters) => throw new NotSupportedException();
+
+    public bool CanAddNew => false;
+    public virtual Task<KeyValuePair<TKey, TValue>> AddNew(Type type, params object[]? constructorParameters) => throw new NotSupportedException();
 
 }
