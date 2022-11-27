@@ -11,7 +11,8 @@ namespace LionFire.Persistence
     /// <summary>
     /// Returned for Retrieve or ResolveReference operations (which may do a Retrieve).
     /// </summary>
-    public interface IRetrieveResult<out T> : IResolveResult<T>, IPersistenceResult, ILazyResolveResult<T>
+    public interface IRetrieveResult<out T> : IResolveResult<T>, IPersistenceResult
+        , ILazyResolveResult<T> // REVIEW - is it correct to have ILazyResolveResult<T> here?
     {
     }
 

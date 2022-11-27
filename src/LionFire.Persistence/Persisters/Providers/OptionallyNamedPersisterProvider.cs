@@ -6,13 +6,13 @@ using System;
 
 namespace LionFire.Persistence.Persisters
 {
-    public class OptionallyNamedPersisterProvider<TReference, TPersister,TOptions> : NamedPersisterProviderBase<TReference, TPersister, TOptions> 
+    public class OptionallyNamedPersisterProvider<TReference, TPersister,TOptions> : NamedPersisterProviderBase<TReference, TPersister> 
         where TReference : IReference
-        where TPersister : class, IPersister<TReference>
+        where TPersister : IPersister<TReference>
     {
         public override bool HasDefaultPersister => true;
 
-        public OptionallyNamedPersisterProvider(IServiceProvider serviceProvider, IOptionsMonitor<TOptions> options) : base(serviceProvider, options)
+        public OptionallyNamedPersisterProvider(IServiceProvider serviceProvider) : base(serviceProvider)
         {
         }
     }

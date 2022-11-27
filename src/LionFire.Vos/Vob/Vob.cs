@@ -8,6 +8,7 @@ using System.Collections;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Text;
 using LionFire.Collections;
 using LionFire.DependencyInjection;
@@ -24,6 +25,7 @@ using LionFire.Vos.Internals;
 using LionFire.Vos.Services;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using static LionFire.Reflection.GetMethodEx;
 
 namespace LionFire.Vos
 {
@@ -480,14 +482,14 @@ namespace LionFire.Vos
         /// </summary>
         /// <typeparam name="T"></typeparam>
         /// <returns></returns>
-        public T AcquireOwn<T>() where T : class => Acquire<T>(maxDepth: 0).Take(1).FirstOrDefault();
+        public T AcquireOwn<T>() where T : class => AcquireEnumerator<T>(maxDepth: 0).Take(1).FirstOrDefault();
         //{
         //    var node = ((IVobInternals)this).TryAcquireOwnVobNode<T>();
         //    if (node != null) return node.Value;
         //    return default;
         //}
 
-        public IEnumerable<T> Acquire<T>(int minDepth = 0, int maxDepth = -1)
+        public IEnumerable<T> AcquireEnumerator<T>(int minDepth = 0, int maxDepth = -1)
             where T : class
         {
             IVob vob = this;
@@ -498,18 +500,24 @@ namespace LionFire.Vos
                 depth++;
             }
 
-            for (IVobNode<T> node = vob.TryGetOwnVobNode<T>(); node != null && (maxDepth < 0 || depth <= maxDepth); node = node.ParentVobNode)
+            for (IVobNode<T> node = vob.TryGetOwnVobNode<T>(); node != null && (maxDepth < 0 || depth <= maxDepth); node = vob?.TryGetOwnVobNode<T>())
             {
                 if (node?.Value != null) yield return node.Value;
 
-                if (node?.ParentVobNode != null)
-                {
-                    depth += node.Vob.Depth - node.ParentVobNode.Vob.Depth;
-                }
+                // OLD
+                //if (node?.NextAncestor() != null)
+                //{
+                //    depth += node.Vob.Depth - node.NextAncestor().Vob.Depth;
+                //}
+
+                // node = node.NextAncestor()
+                vob = vob.Parent;
+                if (vob == null) break;
+                depth++;
             }
         }
 
-        public IEnumerable<T> AcquireMany<T>() where T : class => Acquire<IEnumerable<T>>().SelectMany(e => e);
+        public IEnumerable<T> AcquireMany<T>() where T : class => AcquireEnumerator<IEnumerable<T>>().SelectMany(e => e);
 
         #endregion
 
@@ -524,6 +532,13 @@ namespace LionFire.Vos
             }
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="minDepth"></param>
+        /// <param name="maxDepth">Ignored if <= 0</param>
+        /// <returns></returns>
         VobNode<T> IVobInternals.TryAcquireNextVobNode<T>(int minDepth, int maxDepth)
             where T : class
         {
@@ -568,7 +583,7 @@ namespace LionFire.Vos
             return (addAtRoot ? vob : this).GetOrAddOwnVobNode<TInterface, TImplementation>(factory);
         }
 
-        public T AcquireNext<T>(int minDepth = 0, int maxDepth = -1)
+        public T Acquire<T>(int minDepth = 0, int maxDepth = -1)
             where T : class
             => this.TryGetNextVobNode<T>(minDepth: minDepth, maxDepth: maxDepth)?.Value ?? default;
 
@@ -662,3 +677,4 @@ namespace LionFire.Vos
     }
 
 }
+

@@ -1,4 +1,5 @@
 ﻿using LionFire.Structures.Keys;
+using LionFire.Types.Scanning;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
@@ -27,7 +28,13 @@ namespace LionFire.Hosting
 
             lf.ConfigureServices(services =>
             {
-                services.AddSingleton<IKeyProviderService<string>, KeyProviderService<string>>();
+                services
+                    .AddSingleton<TypeScanner>()
+                    .Configure<TypeScannerOptions>(o =>
+                    {
+                        o.DllPrefixWhitelist.Add("LionFire.");
+                    })
+                    .AddSingleton<IKeyProviderService<string>, KeyProviderService<string>>();
             });
 
             //builder.ConfigureLogging((context, logger) => logger
@@ -145,7 +152,7 @@ namespace LionFire.Hosting
             //            });
 
             return lf;
-            
+
         }
     }
 }

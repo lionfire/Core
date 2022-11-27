@@ -9,14 +9,13 @@ namespace LionFire.Persistence.Persisters
     /// <summary>
     /// Requires a named persister provider.  Attempts to get an unnamed (or empty string) one will throw a NotSupportedException
     /// </summary>
-    public class NamedPersisterProvider<TReference, TPersister, TOptions> : NamedPersisterProviderBase<TReference, TPersister, TOptions>, IPersisterProvider<TReference>
+    public class NamedPersisterProvider<TReference, TPersister> : NamedPersisterProviderBase<TReference, TPersister>, IPersisterProvider<TReference>
           where TReference : IReference
         where TPersister : IPersister<TReference>
-        //where TOptions : INamedPersisterOptions
     {
         public override bool HasDefaultPersister => false;
 
-        public NamedPersisterProvider(IServiceProvider serviceProvider, IOptionsMonitor<TOptions> options) : base(serviceProvider, options)
+        public NamedPersisterProvider(IServiceProvider serviceProvider) : base(serviceProvider)
         {
         }
 

@@ -1,4 +1,4 @@
-﻿<Project Sdk="Microsoft.NET.Sdk.Razor">
+<Project Sdk="Microsoft.NET.Sdk.Razor">
 
   <PropertyGroup>
     <TargetFramework>net6.0</TargetFramework>
@@ -12,11 +12,11 @@
   </ItemGroup>
   
   <ItemGroup>    
-    <PackageReference Include="Blazorise.Bootstrap" Version="0.9.5.4" />    
-    <PackageReference Include="LiveSharp" Version="2.0.35" />    
-    <PackageReference Include="Microsoft.AspNetCore.Components.Web" Version="6.0.9" />
-    <PackageReference Include="Microsoft.AspNetCore.WebUtilities" Version="2.2.0" />
-    <PackageReference Include="MudBlazor" Version="6.0.16" />
+    <PackageReference Include="Blazorise.Bootstrap" />    
+    <PackageReference Include="LiveSharp" />    
+    <PackageReference Include="Microsoft.AspNetCore.Components.Web" />
+    <PackageReference Include="Microsoft.AspNetCore.WebUtilities" />
+    <PackageReference Include="MudBlazor" />
 
   </ItemGroup>
   

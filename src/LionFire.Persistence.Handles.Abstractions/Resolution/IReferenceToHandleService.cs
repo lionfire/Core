@@ -4,94 +4,98 @@ using System.Collections.Generic;
 
 // TODO: enable nullable, make Get methods non-nullable, and add TryGet methods that are nullable in return type.
 
-namespace LionFire.Persistence.Handles
+namespace LionFire.Persistence.Handles;
+
+public interface IReferenceToHandleService //: IReferenceToHandleService<IReference>
 {
-    public interface IReferenceToHandleService //: IReferenceToHandleProvider<IReference>
-    {
-        #region Read
+    #region Read
 
-        #region Provider
+    #region Provider
 
-        IReadHandleProvider GetReadHandleProvider(IReference input);
-        IReadHandleProvider<TReference> GetReadHandleProvider<TReference>(TReference input)
-            where TReference : IReference
-            ;
+    IReadHandleProvider GetReadHandleProvider(IReference input);
+    IReadHandleProvider<TReference> GetReadHandleProvider<TReference>(TReference input)
+        where TReference : IReference
+        ;
 
-        #endregion
+    #endregion
 
-        #region Creator
+    #region Creator
 
-        IReadHandleCreator GetReadHandleCreator(IReference input);
-        IReadHandleCreator<TReference> GetReadHandleCreator<TReference>(TReference input)
-            where TReference : IReference
-            ;
+    IReadHandleCreator GetReadHandleCreator(IReference input);
+    IReadHandleCreator<TReference> GetReadHandleCreator<TReference>(TReference input)
+        where TReference : IReference
+        ;
 
-        #endregion
+    #endregion
 
-        #endregion
+    #endregion
 
-        #region ReadWrite
+    #region ReadWrite
 
-        #region Provider
+    #region Provider
 
-        IReadWriteHandleProvider GetReadWriteHandleProvider(IReference input);
-        IReadWriteHandleProvider<TReference> GetReadWriteHandleProvider<TReference>(TReference input)
-            where TReference : IReference
-            ;
+    IReadWriteHandleProvider GetReadWriteHandleProvider(IReference input);
+    IReadWriteHandleProvider<TReference> GetReadWriteHandleProvider<TReference>(TReference input)
+        where TReference : IReference
+        ;
 
-        #endregion
+    #endregion
 
-        #region Creator
+    #region Creator
 
-        IReadWriteHandleCreator GetReadWriteHandleCreator(IReference input);
-        IReadWriteHandleCreator<TReference> GetReadWriteHandleCreator<TReference>(TReference input)
-            where TReference : IReference
-            ;
+    IReadWriteHandleCreator GetReadWriteHandleCreator(IReference input);
+    IReadWriteHandleCreator<TReference> GetReadWriteHandleCreator<TReference>(TReference input)
+        where TReference : IReference
+        ;
 
-        #endregion
+    #endregion
 
-        #endregion
+    #endregion
 
-        #region Write
+    #region Write
 
-        #region Provider
+    #region Provider
 
-        IWriteHandleProvider GetWriteHandleProvider(IReference input);
-        
-        IWriteHandleProvider<TReference> GetWriteHandleProvider<TReference>(TReference input)
-            where TReference : IReference
-            ;
+    IWriteHandleProvider GetWriteHandleProvider(IReference input);
+    
+    IWriteHandleProvider<TReference> GetWriteHandleProvider<TReference>(TReference input)
+        where TReference : IReference
+        ;
 
-        #endregion
+    #endregion
 
-        #region Creator
+    #region Creator
 
-        IWriteHandleCreator GetWriteHandleCreator(IReference input);
+    IWriteHandleCreator GetWriteHandleCreator(IReference input);
 
-        IWriteHandleCreator<TReference> GetWriteHandleCreator<TReference>(TReference input)
-            where TReference : IReference
-            ;
+    IWriteHandleCreator<TReference> GetWriteHandleCreator<TReference>(TReference input)
+        where TReference : IReference
+        ;
 
-        #endregion
+    #endregion
 
-        #endregion
+    #endregion
 
-        #region Collection
+    #region Collection
 
-        ICollectionHandleProvider GetCollectionHandleProvider(IReference input);
+    ICollectionHandleProvider GetCollectionHandleProvider(IReference input);
 
-        #endregion
+    #endregion
 
-        //IReadWriteHandleProvider GetHandleProvider(Type referenceType);
-        //IReadHandleProvider GetReadHandleProvider(Type referenceType);
-    }
-
-    //public interface IReferenceToHandleProviderProvider<TReference>
-    //    where TReference : IReference
-    //{
-    //    IEnumerable<IReadWriteHandleProvider> GetHandleProviders(IReference input);
-    //    IEnumerable<IReadHandleProvider> GetReadHandleProviders(IReference input);
-    //}
-
-
+    //IReadWriteHandleProvider GetHandleProvider(Type referenceType);
+    //IReadHandleProvider GetReadHandleProvider(Type referenceType);
 }
+
+// TODO: OPTIMIZE - optimization of non-generic IReferenceToHandleService - worth it?
+// If doing this, make IReferenceToHandleService inherit from  IReferenceToHandleService<IReference>
+//public interface IReferenceToHandleService<TReference>
+//    where TReference : IReference
+//{
+//}
+
+//public interface IReferenceToHandleProviderProvider<TReference>
+//    where TReference : IReference
+//{
+//    IEnumerable<IReadWriteHandleProvider> GetHandleProviders(IReference input);
+//    IEnumerable<IReadHandleProvider> GetReadHandleProviders(IReference input);
+//}

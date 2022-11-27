@@ -2,6 +2,7 @@
 using LionFire.ExtensionMethods.Dependencies;
 using LionFire.Vos.Internals;
 using Microsoft.Extensions.DependencyInjection;
+using NLog.Filters;
 
 namespace LionFire.Vos
 {
@@ -29,6 +30,13 @@ namespace LionFire.Vos
 
         #region Values
 
+        /// <remarks>
+        /// Calls AddOwnVobNode
+        /// </remarks>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="vob"></param>
+        /// <param name="value"></param>
+        /// <returns></returns>
         public static T AddOwn<T>(this IVob vob, T value)
             where T : class
             => (vob as IVobInternals).AddOwnVobNode<T>(vobNode => value).Value;
@@ -85,6 +93,11 @@ namespace LionFire.Vos
         //return (VobNode<TImplementation>)vobNodesByType.GetOrAdd(typeof(TImplementation),
         //    t => (IVobNode)Activator.CreateInstance(typeof(VobNode<>).MakeGenericType(t),
         //    this, factory ?? (Func<IVobNode, TImplementation>)(vobNode => (TImplementation)Activator.CreateInstance(typeof(TImplementation), vobNode))));
+
+        public static IVobNode<TVobNode> NextAncestor<TVobNode>(this IVobNode<TVobNode> vobNode)
+            where TVobNode : class, IVobNode
+            =>  vobNode.Vob.Parent.TryGetNextVobNode<TVobNode>();
+        
     }
 
 }

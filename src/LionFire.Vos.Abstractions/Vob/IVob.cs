@@ -4,8 +4,10 @@ using System.Text;
 using System.Threading.Tasks;
 using LionFire.FlexObjects;
 using LionFire.MultiTyping;
+using LionFire.Ontology;
 using LionFire.Persistence;
 using LionFire.Referencing;
+using LionFire.Structures;
 using LionFire.Types;
 
 namespace LionFire.Vos
@@ -14,7 +16,10 @@ namespace LionFire.Vos
         //IReadOnlyMultiTyped, 
         IReferencable,
         IEnumerable<IVob>, // Does not trigger a Retrieve (IO) operation -- it is just the child Vobs currently tracked
-        IFlex
+        IFlex,
+        IAcquires,
+        IParented<IVob>
+
     {
         new IVobReference Reference { get; }
         string Name { get; }
@@ -31,9 +36,9 @@ namespace LionFire.Vos
 
         #region Nodes
 
-        T AcquireNext<T>(int minDepth = 0, int maxDepth = -1) where T : class;
+        T Acquire<T>(int minDepth = 0, int maxDepth = -1) where T : class;
         T AcquireOwn<T>() where T : class; 
-        IEnumerable<T> Acquire<T>(int minDepth = 0, int maxDepth = -1) where T : class;
+        IEnumerable<T> AcquireEnumerator<T>(int minDepth = 0, int maxDepth = -1) where T : class;
 
         #endregion
 

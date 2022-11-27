@@ -1,11 +1,11 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <TargetFrameworks>net6.0</TargetFrameworks>
     <LangVersion>latest</LangVersion>
   </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="Stride.Engine" Version="4.1.0.1459-beta" />
-    <PackageReference Include="Stride.Physics" Version="4.1.0.1459-beta" />
+    <PackageReference Include="Stride.Engine" />
+    <PackageReference Include="Stride.Physics" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\LionFire.Core\LionFire.Core.csproj" />

@@ -8,7 +8,7 @@ namespace LionFire.Persistence.Filesystem
 {
     public class FilesystemPersisterProvider : OptionallyNamedPersisterProvider<IFileReference, FilesystemPersister, FilesystemPersisterOptions>, IPersisterProvider<ProviderFileReference>
     {
-        public FilesystemPersisterProvider(IServiceProvider serviceProvider, IOptionsMonitor<FilesystemPersisterOptions> options) : base(serviceProvider, options)
+        public FilesystemPersisterProvider(IServiceProvider serviceProvider) : base(serviceProvider)
         { }
 
         IPersister<ProviderFileReference> IPersisterProvider<ProviderFileReference>.GetPersister(string name) => GetPersister(name);

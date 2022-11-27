@@ -1,4 +1,4 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <TargetFramework>net6.0</TargetFramework> <!-- was netstandard2.1 -->
@@ -7,9 +7,9 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="AnyDiff" Version="1.0.88" />
-    <PackageReference Include="Microsoft.Extensions.Hosting" Version="6.0.0" />
-    <PackageReference Include="UltraMapper" Version="0.2.59" />
+    <PackageReference Include="AnyDiff" />
+    <PackageReference Include="Microsoft.Extensions.Hosting" />
+    <PackageReference Include="UltraMapper" />
   </ItemGroup>
 
   <ItemGroup>

@@ -8,7 +8,7 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace LionFire.Services
+namespace LionFire.Services // RENAME to LionFire.Hosting
 {
     //public class EnumerableHostedServiceProxy : IHostedService
     //{

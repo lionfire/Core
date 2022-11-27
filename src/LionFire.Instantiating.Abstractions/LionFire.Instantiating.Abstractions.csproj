@@ -1,4 +1,4 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <TargetFramework>net6.0</TargetFramework> <!-- was netstandard2.1 -->
@@ -19,10 +19,10 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Newtonsoft.Json" Version="12.0.3" />
-    <PackageReference Include="System.Reflection" Version="4.3.0" />
-    <PackageReference Include="System.Reflection.Extensions" Version="4.3.0" />
-    <PackageReference Include="System.Reflection.TypeExtensions" Version="4.7.0" />
+    <PackageReference Include="Newtonsoft.Json" />
+    <PackageReference Include="System.Reflection" />
+    <PackageReference Include="System.Reflection.Extensions" />
+    <PackageReference Include="System.Reflection.TypeExtensions" />
   </ItemGroup>
 
   <ItemGroup>

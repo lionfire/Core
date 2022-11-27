@@ -8,19 +8,22 @@ using System.Threading.Tasks;
 
 namespace LionFire.Mvvm;
 
+public interface IAsyncCanCreate<TItem>
+{
+    IEnumerable<Type>? CreateableTypes { get; }
+    public bool CanCreate { get; }
+    public Task<TItem> Create(Type type, params object[] constructorParameters); // TODO: Return key
+}
+
 public interface IAsyncCollectionCache<TItem> : IReadOnlyCollection<TItem>, INotifyPropertyChanged
 {
     IObservableCollection<TItem> Collection { get; }
-
-    IEnumerable<Type>? CreateableTypes { get; }
 
     public bool HasRetrieved { get; }
     public bool IsRetrieving { get; }
     public Task<IEnumerable<TItem>> Retrieve(bool syncToCollection = true, CancellationToken cancellationToken = default);
     public bool CanRetrieve { get; }
-
-    public bool CanCreate { get; }
-    public Task<TItem> Create(Type type, params object[] constructorParameters);
+        
 
     public bool CanAdd { get; }
     IEnumerable<TItem> Adding { get; }

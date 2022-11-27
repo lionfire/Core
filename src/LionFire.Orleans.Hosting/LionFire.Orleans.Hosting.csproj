@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
 	<PropertyGroup>
-		<TargetFramework>net6.0</TargetFramework>
+		<TargetFramework>net7.0</TargetFramework>
 		<RootNamespace>LionFire.Orleans_</RootNamespace>
 	</PropertyGroup>
 
@@ -10,15 +10,11 @@
 	</ItemGroup>
 
 	<ItemGroup>
-		<PackageReference Include="Microsoft.Orleans.CodeGenerator.MSBuild" Version="3.6.2">
-			<PrivateAssets>all</PrivateAssets>
-			<IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
-		</PackageReference>
-		<PackageReference Include="Microsoft.Orleans.OrleansConsulUtils" Version="3.6.2" />
-		<PackageReference Include="Microsoft.Orleans.Server" Version="3.6.2" />
-		<PackageReference Include="Microsoft.Orleans.OrleansTelemetryConsumers.Counters" Version="3.6.2" />
-		<PackageReference Include="Microsoft.Orleans.OrleansTelemetryConsumers.Linux" Version="3.6.2" />
-		<PackageReference Include="OrleansDashboard" Version="3.5.2" />
+		<PackageReference Include="Microsoft.Orleans.OrleansConsulUtils" />
+		<PackageReference Include="Microsoft.Orleans.Server" />
+		<PackageReference Include="Microsoft.Orleans.OrleansTelemetryConsumers.Counters" />
+		<PackageReference Include="Microsoft.Orleans.OrleansTelemetryConsumers.Linux" />
+		<PackageReference Include="OrleansDashboard" />
 
 
 	</ItemGroup>

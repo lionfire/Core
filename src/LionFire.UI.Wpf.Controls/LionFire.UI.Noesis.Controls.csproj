@@ -83,11 +83,11 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="6.0.0" />
-    <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="6.0.0" />
-    <PackageReference Include="Noesis.GUI" Version="3.0.5" />
-    <PackageReference Include="PixelLab.Core" Version="6.0.2" />
-    <PackageReference Include="WPFTransitionals" Version="1.0.0" />
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" />
+    <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" />
+    <PackageReference Include="Noesis.GUI" />
+    <PackageReference Include="PixelLab.Core" />
+    <PackageReference Include="WPFTransitionals" />
   </ItemGroup>
 
   

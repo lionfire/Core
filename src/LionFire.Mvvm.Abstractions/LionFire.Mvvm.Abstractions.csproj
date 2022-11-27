@@ -8,7 +8,7 @@
 	</PropertyGroup>
 
 	<ItemGroup>
-	  <PackageReference Include="ObservableCollections" Version="1.1.2" />
+	  <PackageReference Include="ObservableCollections" />
 	</ItemGroup>
 
 	<ItemGroup>

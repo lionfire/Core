@@ -10,7 +10,7 @@ namespace LionFire.Mvvm;
 
 //}
 
-public class AsyncObservableDictionaryCacheBase<TKey, TValue> : ObservableObject, IAsyncCollectionCache<KeyValuePair<TKey, TValue>>
+public class AsyncObservableDictionaryCacheBase<TKey, TValue> : ObservableObject, IAsyncCollectionCache<KeyValuePair<TKey, TValue>>, IAsyncCanCreate<KeyValuePair<TKey, TValue>>
     where TKey : notnull
 {
 

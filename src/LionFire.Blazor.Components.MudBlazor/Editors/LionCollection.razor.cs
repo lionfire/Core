@@ -14,6 +14,10 @@ using LionFire.Reflection;
 using MudBlazor;
 using Microsoft.Extensions.DependencyInjection;
 using System.Collections.Specialized;
+using System.ComponentModel;
+using LionFire.Reactive;
+using System.Reactive.Subjects;
+using LionFire.ExtensionMethods.Copying;
 
 namespace LionFire.Blazor.Components;
 
@@ -24,8 +28,11 @@ namespace LionFire.Blazor.Components;
 ///  - 
 /// </summary>
 /// <typeparam name="TItem"></typeparam>
-public partial class LionCollection<TItem, TItemVM> : ComponentBase, IDisposable
+public partial class LionCollection<TItem, TItemVM> : ComponentBase, IDisposable,
+    //IAsyncObserver<Collections.NotifyCollectionChangedEventArgs<TItem>>
+    IObserver<Collections.NotifyCollectionChangedEventArgs<string>>
 {
+
     private static readonly object[] EmptyArray = new object[] { };
 
     public string Key { get; set; }
@@ -36,6 +43,9 @@ public partial class LionCollection<TItem, TItemVM> : ComponentBase, IDisposable
 
     [Parameter]
     public Func<TItem, TItemVM>? VMFactory { get; set; } = null;
+
+    [Parameter]
+    public Func<TItem, object>? ModelSelector { get; set; }
 
     /// <summary>
     /// Recommended: ICollectionVM, or else set RefreshAction AddAction RemoveAction
@@ -103,8 +113,20 @@ public partial class LionCollection<TItem, TItemVM> : ComponentBase, IDisposable
 
     [Parameter]
     public Func<TItemVM, string?>? GetKey { get; set; }
+    public Func<TItem, string?>? GetKeyForItem { get; set; }
 
     public Func<TItemVM, string?>? DefaultGetKey => item =>
+    {
+        var keyed = (item as IKeyed);
+        if (keyed != null) { return keyed.Key; }
+
+        var result = KeyProviderService.TryGetKey(item);
+        if (result.success) { return result.key; }
+
+        Debug.WriteLine("[ItemsEditor] No key provider for object of type " + item?.GetType().FullName);
+        return item!.GetHashCode().ToString();
+    };
+    public Func<TItem, string?>? DefaultGetKeyForItem => item =>
     {
         var keyed = (item as IKeyed);
         if (keyed != null) { return keyed.Key; }
@@ -146,7 +168,12 @@ public partial class LionCollection<TItem, TItemVM> : ComponentBase, IDisposable
 
     public bool IsRefreshing { get; set; }
 
+    /// <summary>
+    /// A collection of Keys to show detail for
+    /// </summary>
     public HashSet<string> ShowDetailsFor { get; } = new();
+
+    public bool ShouldShow(TItem item) => ShowDetailsFor.Contains(GetKeyForItem(item));
 
     ISynchronizedView<TItem, TItemVM>? View
     {
@@ -182,6 +209,7 @@ public partial class LionCollection<TItem, TItemVM> : ComponentBase, IDisposable
     public LionCollection()
     {
         GetKey = DefaultGetKey;
+        GetKeyForItem = DefaultGetKeyForItem;
         //GlobalItemsChanged += ItemsEditor_GlobalItemsChanged;
     }
 
@@ -196,6 +224,7 @@ public partial class LionCollection<TItem, TItemVM> : ComponentBase, IDisposable
         {
             await Retrieve();
         }
+        await SubscribeAsync(); // TEMP
     }
 
 
@@ -257,6 +286,7 @@ public partial class LionCollection<TItem, TItemVM> : ComponentBase, IDisposable
     public void Dispose()
     {
         View = null;
+        UnsubscribeAsync();
     }
 
     #endregion
@@ -275,12 +305,17 @@ public partial class LionCollection<TItem, TItemVM> : ComponentBase, IDisposable
 
     //public static event Action<LionCollection<TItem, TItemVM>, string> GlobalItemsChanged;
 
-    public void ToggleShowDetail(string id)
+    public void ToggleShowDetail(TItem item)
     {
-        if (!ShowDetailsFor.Remove(id))
+        ToggleShowDetail(GetKeyForItem(item));
+    }
+
+    public void ToggleShowDetail(string key)
+    {
+        if (!ShowDetailsFor.Remove(key))
         {
             if (!ExpandMultipleDetail) { ShowDetailsFor.Clear(); }
-            ShowDetailsFor.Add(id);
+            ShowDetailsFor.Add(key);
         }
     }
     public void RaiseStateHasChanged() => StateHasChanged();
@@ -304,49 +339,58 @@ public partial class LionCollection<TItem, TItemVM> : ComponentBase, IDisposable
     {
         ValidateCanModify();
 
-        if(Create != null)
+        try
         {
-            await Create(type, null);
-            return;
+            if (Create != null)
+            {
+                await Create(type, null);
+                return;
+            }
+            else if (AsyncCollectionCache is IAsyncCanCreate<TItem> cc && cc.CanCreate)
+            {
+                await cc.Create(type);
+                return;
+            }
+            else if (AddNew != null)
+            {
+                await AddNew(type);
+                return;
+            }
+            else if (AsyncCollectionCache != null && AsyncCollectionCache.CanAddNew)
+            {
+                await AsyncCollectionCache.AddNew(type);
+                return;
+            }
+            else if (Add != null)
+            {
+                await Add(await create(type));
+                return;
+            }
+            else if (AsyncCollectionCache != null && AsyncCollectionCache.CanAdd)
+            {
+                await AsyncCollectionCache.Add(await create(type));
+                return;
+            }
+            else
+            {
+                throw new NotSupportedException();
+            }
         }
-        else if (AsyncCollectionCache != null && AsyncCollectionCache.CanCreate)
+        finally
         {
-            await AsyncCollectionCache.Create(type);
-            return;
+            await Retrieve();
+            //StateHasChanged();
         }
-        else if (AddNew != null)
-        {
-            await AddNew(type);
-            return;
-        }
-        else if (AsyncCollectionCache != null && AsyncCollectionCache.CanAddNew)
-        {
-            await AsyncCollectionCache.AddNew(type);
-            return;
-        }
-        else if (Add != null)
-        {
-            await Add(await create(type));
-            return;
-        }
-        else if (AsyncCollectionCache != null && AsyncCollectionCache.CanAdd)
-        {
-            await AsyncCollectionCache.Add(await create(type));
-            return;
-        }
-        else
-        {
-            throw new NotSupportedException();
-        }
-        
+
         async Task<TItem> create(Type type)
         {
             object[] args = Array.Empty<object>();
             if (ItemConstructorParameters != null) { args = ItemConstructorParameters.Invoke(type); }
 
             if (Create != null) { return await Create(type, args); }
-            else if (AsyncCollectionCache != null && AsyncCollectionCache.CanCreate) {
-                return await AsyncCollectionCache.Create(type, args);
+            else if (AsyncCollectionCache is IAsyncCanCreate<TItem> cc && cc.CanCreate)
+            {
+                return await cc.Create(type, args);
             }
 
             return (TItem)ActivatorUtilities.CreateInstance(ServiceProvider, type, args)
@@ -361,4 +405,111 @@ public partial class LionCollection<TItem, TItemVM> : ComponentBase, IDisposable
     }
 
     #endregion
+
+
+    #region Subscription to Events
+
+    //Items
+
+    public bool CanSubscribe => Items is IAsyncObservable<Collections.NotifyCollectionChangedEventArgs<TItem>>;
+    public bool IsSubscribed => sub != null;
+
+    private IAsyncObservableForSyncObservers<Collections.NotifyCollectionChangedEventArgs<string>>? Subscribable => Items as IAsyncObservableForSyncObservers<Collections.NotifyCollectionChangedEventArgs<string>>;
+
+    private bool IsSubscribing;
+
+    Guid G = Guid.NewGuid();
+
+    public async Task SubscribeAsync()
+    {
+        var subscribable = Subscribable;
+        if (subscribable == null)
+        {
+            return;
+            //throw new NotSupportedException(); 
+        }
+        if (!IsSubscribing)
+        {
+            try
+            {
+                IsSubscribing = true;
+                if (sub != null) return;
+                Debug.WriteLine($"SubscribeAsync {G}");
+                sub = await subscribable.SubscribeAsync(this).ConfigureAwait(false);
+            }
+            finally
+            {
+                IsSubscribing = false;
+            }
+        }
+    }
+
+    public ValueTask UnsubscribeAsync()
+    {
+        var subCopy = sub;
+        if (subCopy != null)
+        {
+            sub = null;
+            return subCopy.DisposeAsync();
+        }
+        else { return ValueTask.CompletedTask; }
+    }
+
+    IAsyncDisposable? sub
+    {
+        get => _sub;
+        set
+        {
+            if (ReferenceEquals(_sub, value)) return;
+            if (_sub != null && value != null) { throw new AlreadySetException(); }
+            _sub = value;
+        }
+    }
+    IAsyncDisposable? _sub;
+
+    #region IAsyncObserver
+
+    //public Task OnNextAsync(Collections.NotifyCollectionChangedEventArgs<TItem> item)
+    //{
+    //    throw new NotImplementedException();
+    //}
+
+    //public Task OnCompletedAsync()
+    //{
+    //    throw new NotImplementedException();
+    //}
+
+    //public Task OnErrorAsync(Exception ex)
+    //{
+    //    throw new NotImplementedException();
+    //}
+
+    #endregion
+
+    #region IObserver<>
+
+    public void OnCompleted()
+    {
+        // TODO
+    }
+
+    public void OnError(Exception error)
+    {
+        // TODO
+    }
+
+    public void OnNext(Collections.NotifyCollectionChangedEventArgs<string> value)
+    {
+        Debug.WriteLine($"OnNext {G}");
+        Task.Run(async () =>
+        {
+            await Retrieve();
+            await InvokeAsync(StateHasChanged);
+        });
+    }
+
+    #endregion
+
+    #endregion
 }
+

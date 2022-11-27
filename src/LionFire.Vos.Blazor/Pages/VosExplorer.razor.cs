@@ -168,7 +168,7 @@ namespace LionFire.Vos.Blazor
             }
 
             this.Vob = rootManager.GetVob(Path);
-            this.VobMounts = Vob?.AcquireNext<VobMounts>();
+            this.VobMounts = Vob?.Acquire<VobMounts>();
 
             return Refresh();
         }

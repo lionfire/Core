@@ -1,10 +1,9 @@
 ﻿using System;
 
-namespace LionFire.Referencing
+namespace LionFire.Referencing;
+
+public interface IChangeableReferencable : IReferencable // An idea: RENAME to pointer?
 {
-    public interface IChangeableReferencable : IReferencable // An idea: RENAME to pointer?
-    {
-        new IReference Reference { get; set; }
-        event Action<IChangeableReferencable, IReference> ReferenceChangedForFrom;
-    }
+    new IReference Reference { get; set; }
+    event Action<IChangeableReferencable, IReference> ReferenceChangedForFrom;
 }

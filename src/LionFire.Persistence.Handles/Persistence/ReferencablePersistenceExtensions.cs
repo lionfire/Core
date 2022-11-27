@@ -64,7 +64,7 @@ namespace LionFire.ExtensionMethods.Persistence
                 {
                     initialValue = referencable;
                 }
-                var handle2 = referencable.Reference.GetReadWriteHandle(type, initialValue);
+                var handle2 = referencable.Reference.GetReadWriteHandlePreresolved(type, initialValue, overwriteValue: true).handle;
                 puts = handle2;
             }
             

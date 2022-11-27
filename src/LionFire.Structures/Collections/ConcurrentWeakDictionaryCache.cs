@@ -8,7 +8,10 @@ namespace LionFire.Collections
     {
         private ConcurrentDictionary<TKey, WeakReference<TValue>> dict = new ConcurrentDictionary<TKey, WeakReference<TValue>>();
 
-        public Func<TKey, TValue> Getter;
+        /// <summary>
+        /// Instantiate/Create TValue for TKey.
+        /// </summary>
+        public Func<TKey, TValue> Getter; // RENAME Instantiator
 
         public ConcurrentWeakDictionaryCache(Func<TKey, TValue> getter)
         {

@@ -37,7 +37,8 @@ public abstract partial class VirtualFilesystemPersisterBase<TReference, TPersis
     , IPersister<TReference>
     , IReadPersister<TReference>
     , IWritePersister<TReference>
-
+    where TReference : class, IReference
+    where TPersistenceOptions : FilesystemlikePersisterOptionsBase, IPersistenceOptions
 {
     public abstract IOCapabilities Capabilities { get; }
 
@@ -106,6 +107,14 @@ public abstract partial class VirtualFilesystemPersisterBase<TReference, TPersis
 
     public async Task<IRetrieveResult<IEnumerable<Listing<T>>>> List<T>(TReference reference, ListFilter? filter = null)
     {
+        var context = new RetrieveContext<TReference>
+        {
+            Persister = this,
+            ListingType = typeof(Listing<T>),
+            Reference = reference,
+        };
+        //await PersisterEvents?.OnBeforeRetrieve(context).ConfigureAwait(false);
+
         var listResult = await List<T>(reference.Path, filter);
         return listResult == null
             ? RetrieveResult<IEnumerable<Listing<T>>>.SuccessNotFound
@@ -114,7 +123,6 @@ public abstract partial class VirtualFilesystemPersisterBase<TReference, TPersis
 
     public Task<IEnumerable<Listing<object>>?> List(string path, ListFilter? filter = null) => List<object>(path, filter);
 
-  
     /// <summary>
     /// Returns null if directory not found
     /// </summary>

@@ -1,11 +1,11 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <TargetFramework>net6.0</TargetFramework> <!-- was netstandard2.1 -->
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="RethinkDb.Driver" Version="2.3.150" />
+    <PackageReference Include="RethinkDb.Driver" />
   </ItemGroup>
 
   <ItemGroup>

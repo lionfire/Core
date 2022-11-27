@@ -11,7 +11,7 @@ namespace LionFire.Vos.Mounts
     {
         #region Options
 
-        public VobMountOptions Options { get; set; }
+        public VobMountOptions_Old Options { get; set; }
 
         #endregion
 
@@ -180,7 +180,7 @@ namespace LionFire.Vos.Mounts
                 public MountEnumerator(IVobNode<VobMounts> local, PersistenceDirection direction)
                 {
                     this.local = local;
-                    parent = local.ParentVobNode;
+                    parent = local.NextAncestor();
                     this.direction = direction;
                 }
 
@@ -206,7 +206,7 @@ namespace LionFire.Vos.Mounts
                     //    return false;
                     //    //return true;
                     //}
-                    if (!ReferenceEquals(local.ParentVobNode, parent))
+                    if (!ReferenceEquals(local.NextAncestor(), parent))
                     {
                         Current = null;
                         throw new Exception("!ReferenceEquals(local.ParentVobNode, parent)");
@@ -432,7 +432,7 @@ namespace LionFire.Vos.Mounts
                 return readMountsCache?.Mounts;
             }
         }
-        IMountResolutionCache ReadMountsCache => (readMountsCache != null && (ParentVobNode == null || readMountsCache.Version == ParentValue.MountStateVersion)) ? readMountsCache : null;
+        IMountResolutionCache ReadMountsCache => (readMountsCache != null && (this.NextAncestor() == null || readMountsCache.Version == ParentValue.MountStateVersion)) ? readMountsCache : null;
         IMountResolutionCache readMountsCache;
 
         #endregion
@@ -460,7 +460,7 @@ namespace LionFire.Vos.Mounts
             }
         }
 
-        IMountResolutionCache WriteMountsCache => (writeMountsCache != null && (ParentVobNode == null || writeMountsCache.Version == ParentValue.MountStateVersion)) ? writeMountsCache : null;
+        IMountResolutionCache WriteMountsCache => (writeMountsCache != null && (this.NextAncestor() == null || writeMountsCache.Version == ParentValue.MountStateVersion)) ? writeMountsCache : null;
         IMountResolutionCache writeMountsCache;
 
         #endregion

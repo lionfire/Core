@@ -1,16 +1,15 @@
-﻿namespace LionFire.Vos.Mounts
+﻿namespace LionFire.Vos.Mounts;
+
+public class VobMountOptions_Old
 {
-    public class VobMountOptions
-    {
-        // UNUSED - REVIEW
-        public bool AllowMultiMounts { get; set; }
+    // UNUSED - REVIEW
+    public bool AllowMultiMounts { get; set; }
 
-        // UNUSED - REVIEW
-        /// <summary>
-        /// False if mounts are sealed
-        /// </summary>
-        public bool AllowMounts { get; set; }
+    // UNUSED - REVIEW
+    /// <summary>
+    /// False if mounts are sealed
+    /// </summary>
+    public bool AllowMounts { get; set; }
 
-        public bool IsFrozen { get; set; } // TODO Implement - how?
-    }
+    public bool IsFrozen { get; set; } // TODO Implement - how?
 }

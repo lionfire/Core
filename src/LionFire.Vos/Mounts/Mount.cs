@@ -32,20 +32,20 @@ namespace LionFire.Vos.Mounts
 
         #region Options
 
-        public IMountOptions Options { get; }
+        public IVobMountOptions Options { get; }
 
         #endregion
 
         #region Construction
 
-        public Mount(IVob vob, IReference targetReference, IMountOptions mountOptions = null)
+        public Mount(IVob vob, IReference targetReference, IVobMountOptions mountOptions = null)
         {
             MountPoint = vob ?? throw new ArgumentNullException($"{nameof(vob)}");
             Target = targetReference;
-            this.Options = mountOptions ?? MountOptions.Default;
+            this.Options = mountOptions ?? VobMountOptions.Default;
         }
 
-        public Mount(IVob vob, IVob target, IMountOptions mountOptions = null)
+        public Mount(IVob vob, IVob target, IVobMountOptions mountOptions = null)
             : this(vob, target.Reference, mountOptions)
         {
         }

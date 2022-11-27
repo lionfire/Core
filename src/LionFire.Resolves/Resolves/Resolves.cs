@@ -130,6 +130,7 @@ namespace LionFire.Resolves
         //SmartWrappedValue SmartWrappedValue = new SmartWrappedValue();
         //protected TValue ProtectedValue { get=>SmartWrappedValue.Prote}
 
+        // REVIEW: should this be TValue?  Should TValue have constraint of : default?
         protected TValue ProtectedValue
         {
             get => protectedValue;

@@ -42,7 +42,18 @@ public class ViewModelProvider : IViewModelProvider
         // TODO: if registryName is null, use a global registry or all registries?
 
         var inputType = input.GetType();
-        var viewModelType = ViewModelTypeRegistry.GetViewModelType(typeof(TModel));
+        var viewModelType = ViewModelTypeRegistry.TryGetViewModelType(typeof(TModel));
+
+        if(viewModelType == null)
+        {
+            if(typeof(TViewModel).IsInterface || typeof(TViewModel).IsAbstract)
+            {
+                throw new ArgumentException($"No ViewModel Type is registered in ViewModelTypeRegistry for model type ({typeof(TModel).FullName}) and TViewModel ({typeof(TViewModel).FullName}) is not instantiable.");
+            } else
+            {
+                viewModelType = typeof(TViewModel);
+            }
+        }
 
         var actualConstructorParameters = InjectionReflectionCache<TViewModel, TModel>.IncludeInputInConstructorParameters ? (constructorParameters == null ? new object[] { input } : constructorParameters.ToList().Concat(new object[] { input! })) : constructorParameters;
 

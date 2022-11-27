@@ -12,7 +12,7 @@ namespace LionFire.Vos
 
         public static T GetOwnRequired<T>(this IVob vob) where T : class => vob.AcquireOwn<T>() ?? throw new NotFoundException($"{typeof(T).FullName} not found on Vob: {vob}");
         public static T GetNextRequired<T>(this IVob vob, bool skipOwn = false) where T : class 
-            => vob.AcquireNext<T>() ?? throw new NotFoundException($"{typeof(T).FullName} not found on Vob {vob} {(skipOwn ? "" : "or its")} ancestors");
+            => vob.Acquire<T>() ?? throw new NotFoundException($"{typeof(T).FullName} not found on Vob {vob} {(skipOwn ? "" : "or its")} ancestors");
 
 
         public static IVob QueryChild(this IVob vob, params string[] subpathChunks) => vob.QueryChild(subpathChunks, 0);

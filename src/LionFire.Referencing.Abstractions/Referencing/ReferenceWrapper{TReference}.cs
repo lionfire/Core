@@ -11,7 +11,7 @@ namespace LionFire.Referencing
 
         public ReferenceWrapper(TReference reference) { Reference = reference; }
 
-        public override bool Equals(object obj)
+        public override bool Equals(object? obj)
         {
             if (obj is IReferencable<TReference> referencable)
             {

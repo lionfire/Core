@@ -9,7 +9,7 @@
 @typeparam TItem
 @typeparam TItemVM
 
-@if (CreateableTypes != null)
+@if (CreateableTypes != null && CreateableTypes.Any())
 {
     <MudMenu Class="" Label="Add" Icon="@Icons.Filled.Add" Variant="Variant.Outlined" Color="Color.Success" Dense AnchorOrigin="Origin.BottomLeft">
         @foreach (var t in CreateableTypes)

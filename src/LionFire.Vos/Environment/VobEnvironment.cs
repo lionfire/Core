@@ -44,7 +44,7 @@ namespace LionFire.Vos.Environment
         
         #endregion
 
-        IFlexOwner IFlexOverlayOwner.ParentFlex => Inherit ? ParentVobNode?.Value : null;
+        IFlexOwner IFlexOverlayOwner.ParentFlex => Inherit ? this.NextAncestor()?.Value : null;
 
         public T TryGet<T>(string key) => FlexDictionary.QueryFlex(key).Get<T>();
         

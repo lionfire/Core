@@ -6,8 +6,8 @@ using System.Collections;
 
 namespace LionFire.Mvvm;
 
-public abstract partial class AsyncObservableCollectionCacheBase<T, TCollection> : ObservableObject, IAsyncCollectionCache<T>
-    where TCollection : IObservableCollection<T>, new()
+public abstract partial class AsyncObservableCollectionCacheBase<TItem, TCollection> : ObservableObject, IAsyncCollectionCache<TItem>, IAsyncCanCreate<TItem>
+    where TCollection : IObservableCollection<TItem>, new()
 {
     #region (Static) Defaults
 
@@ -37,7 +37,7 @@ public abstract partial class AsyncObservableCollectionCacheBase<T, TCollection>
     #region Lifecycle
 
     public AsyncObservableCollectionCacheBase() { Options = AsyncObservableCollectionOptions.Default; }
-    public AsyncObservableCollectionCacheBase(IObservableCollection<T>? collection = null, AsyncObservableCollectionOptions? options = null)
+    public AsyncObservableCollectionCacheBase(IObservableCollection<TItem>? collection = null, AsyncObservableCollectionOptions? options = null)
     {
         if (collection != null) { Collection = collection; }
         Options = options ?? AsyncObservableCollectionOptions.Default;
@@ -47,7 +47,9 @@ public abstract partial class AsyncObservableCollectionCacheBase<T, TCollection>
 
     #region State
 
-    public virtual IObservableCollection<T> Collection
+    object _lock = new();
+
+    public virtual IObservableCollection<TItem> Collection
     {
         get
         {
@@ -55,7 +57,13 @@ public abstract partial class AsyncObservableCollectionCacheBase<T, TCollection>
             {
                 if (Options.AutoInstantiateCollection)
                 {
-                    Collection = new TCollection();
+                    lock (_lock)
+                    {
+                        if (collection == null)
+                        {
+                            Collection = new TCollection();
+                        }
+                    }
                 }
                 else
                 {
@@ -67,11 +75,13 @@ public abstract partial class AsyncObservableCollectionCacheBase<T, TCollection>
         set
         {
             if (ReferenceEquals(value, collection)) { return; }
-            if (collection != null) { throw new AlreadySetException(); }
-            collection = value is TCollection collectionValue
-                ? collectionValue
-                : throw new ArgumentException($"{nameof(value)} must be of type {typeof(TCollection).FullName}");
-
+            lock (_lock)
+            {
+                if (collection != null) { throw new AlreadySetException(); }
+                collection = value is TCollection collectionValue
+                    ? collectionValue
+                    : throw new ArgumentException($"{nameof(value)} must be of type {typeof(TCollection).FullName}");
+            }
             if (Options.AutoSync)
             {
 
@@ -155,8 +165,8 @@ public abstract partial class AsyncObservableCollectionCacheBase<T, TCollection>
 
     public int Count => collection?.Count ?? 0;
 
-    public IEnumerator<T> GetEnumerator()
-        => collection?.GetEnumerator() ?? Enumerable.Empty<T>().GetEnumerator();
+    public IEnumerator<TItem> GetEnumerator()
+        => collection?.GetEnumerator() ?? Enumerable.Empty<TItem>().GetEnumerator();
 
     IEnumerator IEnumerable.GetEnumerator() => this.GetEnumerator();
 
@@ -174,7 +184,7 @@ public abstract partial class AsyncObservableCollectionCacheBase<T, TCollection>
 
     public virtual bool CanRetrieve => false;
 
-    public async Task<IEnumerable<T>> Retrieve(bool syncToCollection = true, CancellationToken cancellationToken = default)
+    public async Task<IEnumerable<TItem>> Retrieve(bool syncToCollection = true, CancellationToken cancellationToken = default)
     {
         if (!CanRetrieve) { throw new InvalidOperationException($"!{nameof(CanRetrieve)}"); }
 
@@ -186,13 +196,13 @@ public abstract partial class AsyncObservableCollectionCacheBase<T, TCollection>
             {
                 Collection = new TCollection();
             }
-            if (Collection is ObservableHashSet<T> h) result.SyncTo(h);
+            if (Collection is ObservableHashSet<TItem> h) result.SyncTo(h);
             else result.SyncTo(Collection);
         }
 
         return result;
     }
-    protected virtual Task<IEnumerable<T>> RetrieveImpl(CancellationToken cancellationToken = default)
+    protected virtual Task<IEnumerable<TItem>> RetrieveImpl(CancellationToken cancellationToken = default)
     {
         throw new NotSupportedException();
     }
@@ -202,19 +212,19 @@ public abstract partial class AsyncObservableCollectionCacheBase<T, TCollection>
     #region Instantiate
 
     public virtual bool CanInstantiate => true;
-    public virtual T Instantiate(Type type, params object[] parameters)
+    public virtual TItem Instantiate(Type type, params object[] parameters)
     {
-        T? newItem = default;
+        TItem? newItem = default;
         if (ServiceProvider != null)
         {
-            newItem = (T)ActivatorUtilities.CreateInstance(ServiceProvider, type, parameters);
+            newItem = (TItem)ActivatorUtilities.CreateInstance(ServiceProvider, type, parameters);
         }
 
-        if (EqualityComparer<T>.Default.Equals(newItem, default))
+        if (EqualityComparer<TItem>.Default.Equals(newItem, default))
         {
-            newItem = (T)Activator.CreateInstance(type, parameters)!;
+            newItem = (TItem)Activator.CreateInstance(type, parameters)!;
         }
-        if (EqualityComparer<T>.Default.Equals(newItem, default))
+        if (EqualityComparer<TItem>.Default.Equals(newItem, default))
         {
             throw new ArgumentException($"Failed to instantiate type {type.FullName}");
         }
@@ -226,7 +236,7 @@ public abstract partial class AsyncObservableCollectionCacheBase<T, TCollection>
     #region Create
 
     public virtual bool CanCreate => false;
-    public virtual Task<T> Create(Type type, params object[]? constructorParameters)
+    public virtual Task<TItem> Create(Type type, params object[]? constructorParameters)
     {
         throw new NotSupportedException();
         //if (!CanCreate) { throw new NotSupportedException($"!{nameof(CanCreate)}"); }
@@ -237,17 +247,17 @@ public abstract partial class AsyncObservableCollectionCacheBase<T, TCollection>
 
     #region Add
 
-    public virtual IEnumerable<T> Adding => Enumerable.Empty<T>();
+    public virtual IEnumerable<TItem> Adding => Enumerable.Empty<TItem>();
 
     public virtual bool CanAdd => false;
-    public virtual Task Add(T item)
+    public virtual Task Add(TItem item)
     {
         //if (!CanAdd) { throw new NotSupportedException($"{nameof(CanAdd)}"); }
         throw new NotSupportedException();
     }
 
     public bool CanAddNew => CanInstantiate && CanAdd;
-    public virtual async Task<T> AddNew(Type type, params object[] constructorParameters)
+    public virtual async Task<TItem> AddNew(Type type, params object[] constructorParameters)
     {
         if (!CanAddNew) { throw new NotSupportedException($"!{nameof(CanAddNew)}"); }
         var item = Instantiate(type, constructorParameters);
@@ -256,15 +266,15 @@ public abstract partial class AsyncObservableCollectionCacheBase<T, TCollection>
     }
 
     // TODO: REVIEW - parallel vs batch vs serial
-    public virtual Task AddRange(IEnumerable<T> items/*, int batchSize = 10 */) => Task.WhenAll(items.Select(item => Add(item)));
+    public virtual Task AddRange(IEnumerable<TItem> items/*, int batchSize = 10 */) => Task.WhenAll(items.Select(item => Add(item)));
 
     #endregion
 
     #region Remove
 
-    public IEnumerable<T> Removing => Enumerable.Empty<T>();
+    public IEnumerable<TItem> Removing => Enumerable.Empty<TItem>();
 
-    public virtual Task<bool> Remove(T item) => throw new NotSupportedException();
+    public virtual Task<bool> Remove(TItem item) => throw new NotSupportedException();
 
     #endregion
 }

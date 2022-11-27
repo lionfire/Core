@@ -11,7 +11,7 @@ namespace LionFire.Vos
         where TInterface : class
     {
 
-        public Vob Vob { get; }
+        public IVob Vob { get; }
 
         public VobNode(Vob vob, Func<IVobNode, TInterface> factory)
         {
@@ -33,7 +33,7 @@ namespace LionFire.Vos
                 return parentNodeValue;
             }
         }
-        public IVobNode<TInterface> ParentVobNode
+        public IVobNode<TInterface> NextAncestor
         {
             get
             {
@@ -43,9 +43,7 @@ namespace LionFire.Vos
 
                 return parentVobNode;
             }
-        }
-
-        
+        }        
     }
 
 

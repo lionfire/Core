@@ -81,7 +81,8 @@ namespace LionFire.Referencing
         [Assignment(AssignmentMode.Ignore)]
         public virtual string Persister
         {
-            get => null; set { if (value != null) throw new NotSupportedException(); }
+            get => null; 
+            set { if (value != null) throw new NotSupportedException(); }
         }
 
         [Assignment(AssignmentMode.Ignore)]
@@ -94,17 +95,17 @@ namespace LionFire.Referencing
 
         [Assignment(AssignmentMode.Ignore)]
         public abstract string Path { get; protected set; } // TODO BREAKINGCHANGE: Make set protected, use constructors/factories to set Path and other properties
+        /// <summary>
+        /// Set path without usual checks for already set
+        /// </summary>
+        /// <param name="path"></param>
+        protected abstract void InternalSetPath(string path); // REFACTOR: replace this with a lowercase settable property path
+        //protected abstract string path { set; }
 
         protected virtual void CopyFrom(ConcreteType other)
         {
             this.Key = other.Key;
         }
-
-        /// <summary>
-        /// Set path without usual checks for already set
-        /// </summary>
-        /// <param name="path"></param>
-        protected abstract void InternalSetPath(string path);
 
         #region Children
 

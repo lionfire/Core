@@ -20,7 +20,7 @@ namespace LionFire.Persistence.Filesystemlike
 
     public abstract partial class VirtualFilesystemPersisterBase<TReference, TPersistenceOptions>
         : IFilesystemlikePersistence<TReference, TPersistenceOptions>
-        where TReference : IReference
+        where TReference : class, IReference
         where TPersistenceOptions : FilesystemlikePersisterOptionsBase, IPersistenceOptions
     {
         #region IO

@@ -23,6 +23,12 @@ namespace LionFire.Types
         public Dictionary<string, Type> Types { get; } = new Dictionary<string, Type>();
         public Dictionary<Type, string> TypeNames { get; } = new Dictionary<Type, string>();
 
+        public void RegisterFullName<T>()
+        {
+            Types.Add(typeof(T).FullName, typeof(T));
+            TypeNames.Add(typeof(T), typeof(T).FullName);
+        }
+
         //public TypeNameRegistry(IEnumerable<TypeNameRegistryInitializer> initializers)
         //{
         //    foreach (var initializer in initializers) initializer.Initialize(this);

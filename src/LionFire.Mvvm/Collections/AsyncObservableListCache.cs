@@ -18,9 +18,9 @@ namespace LionFire.Mvvm;
 /// <remarks>
 /// Not supported yet: ability to control sorting or reordering
 /// </remarks>
-public class AsyncObservableListCache<T> : AsyncObservableCollectionCacheBase<T, ObservableList<T>>, IAsyncCollectionCache<T>
+public class AsyncObservableListCache<TItem> : AsyncObservableCollectionCacheBase<TItem, ObservableList<TItem>>
 {
     public AsyncObservableListCache() { }
-    public AsyncObservableListCache(IObservableCollection<T>? collection = null, AsyncObservableCollectionOptions? options = null) : base(collection, options) { }
+    public AsyncObservableListCache(IObservableCollection<TItem>? collection = null, AsyncObservableCollectionOptions? options = null) : base(collection, options) { }
 
 }

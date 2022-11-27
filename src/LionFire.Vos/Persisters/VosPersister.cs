@@ -1,48 +1,21 @@
-﻿using LionFire.Cqrs;
-using LionFire.IO;
-using LionFire.Persistence.Handles;
+﻿using LionFire.IO;
 using LionFire.Referencing;
 using LionFire.Serialization;
+using LionFire.Structures;
 using LionFire.Vos;
 using LionFire.Vos.Mounts;
 using LionFire.Vos.Services;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
-using Newtonsoft.Json.Linq;
-using System;
-using System.Collections.Generic;
 using System.Diagnostics;
-using System.Linq;
-using System.Threading;
-using System.Threading.Tasks;
-using System.Xml.Linq;
 
 namespace LionFire.Persistence.Persisters.Vos;
 
-public class VosPersister :
-    SerializingPersisterBase<VosPersisterOptions>
-    , IPersister<IVobReference>
-//, IFilesystemPersistence<TReference, TPersistenceOptions>
-//, IWriter<string> // FUTURE?
-//, IReader<string> // FUTURE?
+public class VosPersister : SerializingPersisterBase<VosPersisterOptions>, IPersister<IVobReference>, IBatchingReadPersister<IVobReference>
 {
+    #region Dependencies
 
-    //#region RootName
-
-    //[SetOnce]
-    //public string RootName
-    //{
-    //    get => rootName;
-    //    set
-    //    {
-    //        if (rootName == value) return;
-    //        if (rootName != default) throw new AlreadySetException();
-    //        rootName = value;
-    //    }
-    //}
-    //private string rootName;
-
-    //#endregion
+    IServiceProvider ServiceProvider => Root?.GetServiceProvider();
 
     #region Root
 
@@ -50,46 +23,38 @@ public class VosPersister :
 
     #endregion
 
-    IServiceProvider ServiceProvider => Root?.GetServiceProvider();
+    #endregion
 
-    //public VosPersister(IRootVob root, SerializationOptions serializationOptions) : base(serializationOptions)
-    //{
-    //}
-    public VosPersister(ILogger<VosPersister> logger, IVos vosRootManager, VosPersisterOptions options, SerializationOptions serializationOptions) : this(logger, vosRootManager, null, options, serializationOptions)
+    #region Configuration
+
+    public VosPersisterOptions VosPersisterOptions { get; init; }
+
+    #endregion
+
+    #region Lifecycle
+
+    public VosPersister(ILogger<VosPersister> logger, IVos vosRootManager, SerializationOptions serializationOptions, PersisterEvents persisterEvents, IOptionsMonitor<VosPersisterOptions> optionsMonitor)
+        : this(logger, vosRootManager, serializationOptions, persisterEvents, optionsMonitor, OptionsName.Default)
     {
     }
-    public VosPersister(ILogger<VosPersister> logger, IVos vosRootManager, string rootName, VosPersisterOptions options, SerializationOptions serializationOptions)
-        //: this(vosRootManager.Get(rootName), options?.SerializationOptions ?? serializationOptions)
-        : base(options?.SerializationOptions ?? serializationOptions)
+
+    public VosPersister(ILogger<VosPersister> logger, IVos vosRootManager, SerializationOptions serializationOptions, PersisterEvents persisterEvents
+        , IOptionsMonitor<VosPersisterOptions> optionsMonitor
+        , OptionsName optionsName
+        )
+        : base(optionsMonitor.Get(optionsName.NameOrDefault)?.SerializationOptions ?? serializationOptions, persisterEvents)
     {
         l = logger;
+        VosPersisterOptions = optionsMonitor.Get(optionsName.NameOrDefault);
+        var rootName = VosPersisterOptions?.RootName ?? optionsName.Name;
         Root = vosRootManager.Get(rootName);
-        //this.RootName = rootName;
-        //root = vosRootManager.Get(rootName);
     }
 
+    #endregion
 
-    public Task<IPersistenceResult> Exists<TValue>(IReferencable<IVobReference> referencable) => throw new System.NotImplementedException();
+    #region IBatchingReadPersister
 
-
-    public Func<RetrieveContext, Task>? BeforeRetrieve { get; set; }
-    protected async Task OnBeforeRetrieve(RetrieveContext context)
-    {
-        BeforeRetrieve?.Invoke(context);
-
-        // TODO: Dynamically attach this invokation somehow through some sort of event/callback plugin
-        await ArchiveAdapterStatic.VosPersister_OnBeforeRetrieve(this, context);
-    }
-
-    public struct RetrieveContext
-    {
-        public Type? ListingType { get; set; }
-        public IVob Vob { get; internal set; }
-        public IReferencable<IVobReference> Referencable { get; internal set; }
-        public HashSet<string> Flags { get; set; }
-    }
-
-    public async IAsyncEnumerable<IRetrieveResult<TValue>> RetrieveAll<TValue>(IReferencable<IVobReference> referencable)
+    public async IAsyncEnumerable<IRetrieveResult<TValue>> RetrieveBatches<TValue>(IReferencable<IVobReference> referencable)
     {
         //l.Trace($"{replaceMode.DescriptionString()} {obj?.GetType().Name} {replaceMode.ToArrow()} {fsReference}");
 
@@ -100,7 +65,7 @@ public class VosPersister :
         var result = new VosRetrieveResult<TValue>();
 
         bool anyMounts = false;
-        var vobMounts = vob.AcquireNext<VobMounts>();
+        var vobMounts = vob.Acquire<VobMounts>();
 
         Type metadataType = null;
         Type? listingType = null;
@@ -115,14 +80,32 @@ public class VosPersister :
                 if (enumerableType.IsGenericType && enumerableType.GetGenericTypeDefinition() == typeof(Listing<>))
                 {
                     listingType = enumerableType.GetGenericArguments()[0];
-                    if (listingType == typeof(IArchive))
-                    {
-                    }
+                    //if (listingType == typeof(IArchive))
+                    //{
+                    //}
                 }
             }
         }
 
-        OnBeforeRetrieve(new RetrieveContext { Vob = vob, ListingType = listingType, Referencable = referencable });
+        if (listingType != null)
+        {
+            var blea = new BeforeListEventArgs
+            {
+                Vob = vob,
+                ResultType = typeof(TValue),
+                Referencable = referencable,
+                ListingType = listingType,
+                Persister = this,
+            };
+
+            foreach (var handlers in vob.GetAcquireEnumerator2<IVob, Handlers<BeforeListEventArgs>>())
+            {
+                blea.HandlerVob = handlers.Item2;
+                await handlers.Item1.Raise(blea).ConfigureAwait(false);
+            }
+        }
+        //await OnBeforeRetrieve(new VosRetrieveContext { Persister = this, Vob = vob, ListingType = listingType, Referencable = referencable });
+
 
         if (vobMounts != null)
         {
@@ -139,9 +122,10 @@ public class VosPersister :
                 if (typeof(TValue) != typeof(object))
                 {
                     var childType = childResult.Value?.GetType();
-                    if (!childType.IsAssignableTo(typeof(TValue))) {
+                    if (!childType.IsAssignableTo(typeof(TValue)))
+                    {
                         Trace.WriteLine($"Child {rh.Reference.Path} does not match type filter: {typeof(TValue).FullName}");
-                        continue; 
+                        continue;
                     }
                 }
 
@@ -167,11 +151,17 @@ public class VosPersister :
         yield return result;
     }
 
+    #endregion
+
+    #region IReadPersister
+
+    public Task<IPersistenceResult> Exists<TValue>(IReferencable<IVobReference> referencable) => throw new System.NotImplementedException();
+
     public async Task<IRetrieveResult<TValue>> Retrieve<TValue>(IReferencable<IVobReference> referencable)
     {
         IRetrieveResult<TValue>? singleResult = null;
 
-        await foreach (var multiResult in RetrieveAll<TValue>(referencable))
+        await foreach (var multiResult in RetrieveBatches<TValue>(referencable))
         {
             if (multiResult.IsSuccess == true)
             {
@@ -196,6 +186,10 @@ public class VosPersister :
 
         return singleResult;
     }
+    
+    #endregion
+
+    #region IWritePersister
 
     public Task<IPersistenceResult> Create<TValue>(IReferencable<IVobReference> referencable, TValue value) => throw new System.NotImplementedException();
     public Task<IPersistenceResult> Update<TValue>(IReferencable<IVobReference> referencable, TValue value) => throw new System.NotImplementedException();
@@ -208,7 +202,7 @@ public class VosPersister :
         var result = new VosPersistenceResult();
 
         bool anyMounts = false;
-        var vobMounts = vob.AcquireNext<VobMounts>();
+        var vobMounts = vob.Acquire<VobMounts>();
         if (vobMounts != null)
         {
             foreach (var mount in vobMounts.RankedEffectiveWriteMounts)
@@ -247,13 +241,14 @@ public class VosPersister :
         throw new System.NotImplementedException();
     }
 
-    #region List
+    #endregion
 
+    #region IListPersister
 
     // TODO REVIEW - is this redundant / old?  Use overload with filter param instead?
     public async Task<IRetrieveResult<IEnumerable<Listing<TValue>>>> List<TValue>(IReferencable<IVobReference> referencable)
     {
-        var listingsLists = await RetrieveAll<Metadata<IEnumerable<Listing<TValue>>>>(referencable).ToListAsync();
+        var listingsLists = await RetrieveBatches<Metadata<IEnumerable<Listing<TValue>>>>(referencable).ToListAsync();
 
         List<Listing<TValue>> listings = new();
 
@@ -319,5 +314,10 @@ public class VosPersister :
 
     #endregion
 
+    #region Misc
+
     private readonly ILogger l;
+
+    #endregion
+
 }

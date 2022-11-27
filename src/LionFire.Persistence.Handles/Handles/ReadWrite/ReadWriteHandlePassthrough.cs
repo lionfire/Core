@@ -49,7 +49,7 @@ namespace LionFire.Persistence.Handles
                 {
                     if (Reference != null)
                     {
-                        readWriteHandle = Reference.GetReadWriteHandle<TValue>(value);
+                        readWriteHandle = Reference.GetReadWriteHandlePreresolved<TValue>(value, overwriteValue: true).handle;
                     }
                     else
                     {

@@ -17,43 +17,55 @@ namespace LionFire.Orleans_.Clients
     public class ClusterClientHostedService : IHostedService
     {
         public IClusterClient Client { get; }
-        public OrleansClusterConfig ClusterConfig { get; }
-        public OrleansConsulClusterConfig ConsulClusterConfig { get; }
 
         public ClusterClientHostedService(ILoggerProvider loggerProvider, IOptions<OrleansClusterConfig> clusterConfig, IOptions<OrleansConsulClusterConfig> consulClusterConfig)
         {
-            ClusterConfig = clusterConfig.Value;
-            ConsulClusterConfig = consulClusterConfig.Value;
-
-            var builder = new ClientBuilder();
-
-            switch (ClusterConfig.Kind)
+            IHostBuilder hb;
+            hb.UseOrleansClient(builder =>
             {
-                case ClusterDiscovery.Unspecified:
-                    break;
-                case ClusterDiscovery.None:
-                    break;
-                case ClusterDiscovery.Localhost:
-                    builder.UseLocalhostClustering();
-                    break;
-                case ClusterDiscovery.Consul:
-                    builder.UseConsulClustering(gatewayOptions =>
-                    {
-                        //OrleansConsulClusterConfig clusterConsulConfig = new();
-                        //context.Configuration.Bind("Orleans:Cluster:Consul", ConsulClusterConfig);
-                        
-                        if (ConsulClusterConfig.ServiceDiscoverEndPoint != null)
-                        {
-                            gatewayOptions.Address = new Uri(ConsulClusterConfig.ServiceDiscoverEndPoint);
-                        }
-                        gatewayOptions.AclClientToken = ConsulClusterConfig.ServiceDiscoveryToken;
-                        gatewayOptions.KvRootFolder = ConsulClusterConfig.KvFolderName ?? ClusterConfig.ServiceId;
+                OrleansClusterConfig ClusterConfig;
+                OrleansConsulClusterConfig ConsulClusterConfig;
 
-                    });
-                    break;
-                default:
-                    break;
-            }
+                ClusterConfig = clusterConfig.Value;
+                ConsulClusterConfig = consulClusterConfig.Value;
+
+                //var builder = new ClientBuilder();
+
+                switch (ClusterConfig.Kind)
+                {
+                    case ClusterDiscovery.Unspecified:
+                        break;
+                    case ClusterDiscovery.None:
+                        break;
+                    case ClusterDiscovery.Localhost:
+                        builder.UseLocalhostClustering();
+                        break;
+                    case ClusterDiscovery.Consul:
+                        builder.UseConsulClientClustering(gatewayOptions =>
+                        {
+                            Consul.IConsulClient c;
+                            c.
+                            gatewayOptions.ConfigureConsulClient(consulClient =>
+                            {
+                                consulClient.
+                            });
+                            //OrleansConsulClusterConfig clusterConsulConfig = new();
+                            //context.Configuration.Bind("Orleans:Cluster:Consul", ConsulClusterConfig);
+
+                            if (ConsulClusterConfig.ServiceDiscoverEndPoint != null)
+                            {
+                                gatewayOptions.Address = new Uri(ConsulClusterConfig.ServiceDiscoverEndPoint);
+                            }
+                            gatewayOptions.AclClientToken = ConsulClusterConfig.ServiceDiscoveryToken;
+                            gatewayOptions.KvRootFolder = ConsulClusterConfig.KvFolderName ?? ClusterConfig.ServiceId;
+
+                        });
+                        break;
+                    default:
+                        break;
+                }
+
+            });
 
             Client = builder
                 .ConfigureLogging(builder => builder.AddProvider(loggerProvider))
@@ -63,7 +75,7 @@ namespace LionFire.Orleans_.Clients
                     o.ServiceId = ClusterConfig.ServiceId;
                 })
                 .Build();
-            
+
         }
 
         public async Task StartAsync(CancellationToken cancellationToken)

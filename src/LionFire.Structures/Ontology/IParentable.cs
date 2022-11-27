@@ -1,20 +1,17 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+﻿#nullable enable
 
-namespace LionFire.Ontology
+namespace LionFire.Ontology;
+
+public interface IParented
 {
-    public interface IParented
-    {
-        object Parent { get; set; }
-    }
-    public interface IParentable<T> : IParented<T>
-    {
-        new T Parent { get;  set; }
-    }
-    public interface IParented<out T>
-    {
-        T Parent { get; }
-    }
+    object Parent { get; set; }
+}
+public interface IParentable<T> : IParented<T>
+{
+    new T? Parent { get;  set; }
+}
+
+public interface IParented<out T>
+{
+    T? Parent { get; }
 }

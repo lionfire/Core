@@ -8,9 +8,9 @@ namespace LionFire.Vos.Mounts
 {
     public static class IVobMountExtensions
     {
-        public static IMount Mount(this IVob vob, IReference target, MountOptions options = null)
+        public static IMount Mount(this IVob vob, IReference target, VobMountOptions options = null)
           => vob.GetRequiredService<VobMounter>().Mount(vob, target, options);
-        public static IMount Mount(this IVob vob, IVob target, MountOptions options = null)
+        public static IMount Mount(this IVob vob, IVob target, VobMountOptions options = null)
           => vob.GetRequiredService<VobMounter>().Mount(vob, target, options);
 
         public static IMount Mount(this IVob vob, ITMount tMount)

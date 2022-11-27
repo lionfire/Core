@@ -83,7 +83,12 @@ public class ViewModelTypeRegistry : IHostedService, IDisposable
 
     public Type GetViewModelType(Type modelType)
     {
+        return TryGetViewModelType(modelType) ?? throw new NotFoundException();
+    }
+    public Type? TryGetViewModelType(Type modelType)
+    {
         Ready.Wait();
-        return ViewModelsByModelType[modelType];
+        if (ViewModelsByModelType.TryGetValue(modelType, out var type)) { return type; }
+        return null;
     }
 }

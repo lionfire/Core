@@ -1,4 +1,5 @@
-﻿using System;
+﻿#nullable enable
+using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using LionFire.Referencing;
@@ -155,18 +156,21 @@ namespace LionFire.Persistence.Handles
         protected ReadHandleBase(TReference input) : base(input)
         {
         }
-        protected ReadHandleBase(TReference input, TValue preresolvedValue) : base(input)
+        protected ReadHandleBase(TReference input, TValue? preresolvedValue) : base(input)
         {
             SetValueFromConstructor(preresolvedValue);
         }
-      
+
         /// <summary>
         /// Override this to disallow setting presresolved values in a constructor, or to take some other action
         /// </summary>
         /// <param name="initialValue"></param>
-        protected virtual void SetValueFromConstructor(TValue initialValue)
+        protected virtual void SetValueFromConstructor(TValue? initialValue)
         {
-            ProtectedValue = initialValue;
+            if (!EqualityComparer<TValue>.Default.Equals(initialValue,default))
+            {
+                ProtectedValue = initialValue; // REVIEW nullability
+            }
             // FUTURE: In the future, we may want to do something special here, like set something along the lines of PersistenceFlags.SetByUser
         }
 

@@ -25,7 +25,7 @@ namespace LionFire.Referencing
 
         #endregion
 
-        
+
         // Field arrays can't be made readonly
 
 
@@ -88,6 +88,8 @@ namespace LionFire.Referencing
             //return (paths[0].StartsWith(Separator) ? Separator : "") + String.Concat(PathSeparatorRepeater.Zip(paths, (separator, chunk) => x.Trim(SeparatorChar) + y)).TrimEnd(SeparatorChar);
         }
 
+        public static string Combine(IEnumerable<string> path1, string path2)
+            => Combine(path1.Concat(new string[] { path2 }));
         public static string Combine(string path1, IEnumerable<string> path2)
         {
             var sb = new StringBuilder();
@@ -141,8 +143,8 @@ namespace LionFire.Referencing
             var sb = new StringBuilder();
             if (absolute.Value) { sb.Append(SeparatorChar); }
 
-            if(endIndex < 0) { endIndex = chunks.Length + endIndex; }
-            for(int i = startIndex; i < endIndex; i++)
+            if (endIndex < 0) { endIndex = chunks.Length + endIndex; }
+            for (int i = startIndex; i < endIndex; i++)
             {
                 if (i != startIndex) { sb.Append(Separator); }
                 sb.Append(chunks[i]);
@@ -155,9 +157,9 @@ namespace LionFire.Referencing
 
         #region From Path
 
-        public static string[] ToPathArray(this string path) 
-            => path == null 
-                ? Array.Empty<string>() 
+        public static string[] ToPathArray(this string path)
+            => path == null
+                ? Array.Empty<string>()
                 : path.Split(SeparatorChars, StringSplitOptions.RemoveEmptyEntries);
 
         #endregion
@@ -205,7 +207,7 @@ namespace LionFire.Referencing
 
         public static string GetDirectoryName(string path) => System.IO.Path.GetDirectoryName(StripSpecifiers(path)).Replace('\\', '/');
         public static string GetFileName(string path) => System.IO.Path.GetFileName(StripSpecifiers(path));
-        
+
         // REDUNDANT to GetFileName???
         /// <summary>
         /// Returns the substring after the last VosPath.PathDelimiter.  If path is null, returns null.
@@ -231,7 +233,7 @@ namespace LionFire.Referencing
             if (result != null && result.Length == System.IO.Path.GetFileName(path).Length) return null; // Treat treat ".filename" as having no extension.
             return result.Length == 0 ? null : result;
         }
-        
+
         #endregion
 
         #region Metrics
@@ -278,7 +280,7 @@ namespace LionFire.Referencing
             }
             return childChunks.Length > parentChunks.Length;
         }
-        
+
         #endregion
 
         #endregion

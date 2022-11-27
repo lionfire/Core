@@ -15,18 +15,18 @@ public static class VosMountServiceCollectionExtensions
     /// <summary>
     /// Defaults to Read mount if no options specified or both ReadPriority and WritePriority are null
     /// </summary>
-    public static IServiceCollection VosMount(this IServiceCollection services, VobReference vobReference, IReference reference, IMountOptions options = null)
+    public static IServiceCollection VosMount(this IServiceCollection services, VobReference vobReference, IReference reference, IVobMountOptions options = null)
         => services.VosMount((IVobReference)vobReference, reference, options);
 
     /// <summary>
     /// Defaults to Read mount if no options specified or both ReadPriority and WritePriority are null
     /// </summary>
-    public static IServiceCollection VosMount(this IServiceCollection services, IVobReference vobReference, IReference reference, IMountOptions options = null)
+    public static IServiceCollection VosMount(this IServiceCollection services, IVobReference vobReference, IReference reference, IVobMountOptions options = null)
     {
-        if (options == null) options = new MountOptions();
+        if (options == null) options = new VobMountOptions();
         if (options.ReadPriority == null && options.WritePriority == null)
         {
-            options.ReadPriority = MountOptions.DefaultReadPriority;
+            options.ReadPriority = VobMountOptions.DefaultReadPriority;
         }
 
         return services.Configure<VobRootOptions>(options?.RootName ?? VosConstants.DefaultRootName, o => o.Mounts.Add(new TMount(vobReference, reference, options)));
@@ -41,10 +41,10 @@ public static class VosMountServiceCollectionExtensions
     /// <param name="options"></param>
     /// <returns></returns>
     public static IServiceCollection VosMountRead(this IServiceCollection services, VobReference mountPoint, IReference reference)
-       => VosMount(services, mountPoint, reference, MountOptions.DefaultRead);
+       => VosMount(services, mountPoint, reference, VobMountOptions.DefaultRead);
     public static IServiceCollection VosMountReadWrite(this IServiceCollection services, VobReference mountPoint, IReference reference)
-        => VosMount(services, mountPoint, reference, MountOptions.DefaultReadWrite);
+        => VosMount(services, mountPoint, reference, VobMountOptions.DefaultReadWrite);
     public static IServiceCollection VosMountWrite(this IServiceCollection services, VobReference mountPoint, IReference reference)
-        => VosMount(services, mountPoint, reference, MountOptions.DefaultWrite);
+        => VosMount(services, mountPoint, reference, VobMountOptions.DefaultWrite);
 
 }

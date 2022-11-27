@@ -4,5 +4,5 @@ namespace LionFire.Mvvm;
 
 public class ViewModelConfiguration
 {
-    public TypeScanOptions TypeScanOptions { get; set; } = new();
+    public TypeScannerOptions TypeScanOptions { get; set; } = new();
 }

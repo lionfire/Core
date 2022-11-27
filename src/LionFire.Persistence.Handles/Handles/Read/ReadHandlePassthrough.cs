@@ -63,7 +63,9 @@ namespace LionFire.Persistence.Handles
                 if (handle != null) throw new AlreadySetException($"{nameof(ReadHandle)} is already set");
                 if(Reference != null)
                 {
-                handle = Reference.GetReadHandle<TValue>(value);
+                    var result = Reference.GetReadHandlePreresolved<TValue>(value);
+                    handle = result.handle;
+                    if(!result.usedPreresolved) { }
                 } else
                 {
                     handle = value.ToObjectHandle();

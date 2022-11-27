@@ -19,7 +19,7 @@ namespace LionFire.Vos
                 //}
                 if (!typeof(T).IsAssignableFrom(typedReference.Type))
                 {
-                    throw new ArgumentException("!typeof(T).IsAssignableFrom(reference.Type))");
+                    throw new ArgumentException("!typeof(TValue).IsAssignableFrom(reference.Type))");
                 }
             }
         }

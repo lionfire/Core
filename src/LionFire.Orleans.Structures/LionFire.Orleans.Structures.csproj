@@ -1,22 +1,25 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>net6.0</TargetFramework>
+    <TargetFramework>net7.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
 	  <RootNamespace>LionFire.Orleans_</RootNamespace>
   </PropertyGroup>
 
   <ItemGroup>
+    <Folder Include="Collections\GrainListGrain\" />
+    <Folder Include="Collections\PolymorphicGrainListGrain\" />
     <Folder Include="Structures\" />
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Microsoft.Orleans.Core.Abstractions" Version="3.6.2" />
-    <PackageReference Include="Microsoft.Orleans.Runtime.Abstractions" Version="3.6.2" />
+    <PackageReference Include="Microsoft.Orleans.Sdk" />
+    <PackageReference Include="System.Reactive" />
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\LionFire.Core\LionFire.Core.csproj" />
     <ProjectReference Include="..\LionFire.Orleans.Structures.Abstractions\LionFire.Orleans.Structures.Abstractions.csproj" />
   </ItemGroup>
 

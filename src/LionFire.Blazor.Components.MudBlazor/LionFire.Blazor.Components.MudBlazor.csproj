@@ -1,4 +1,4 @@
-﻿<Project Sdk="Microsoft.NET.Sdk.Razor">
+<Project Sdk="Microsoft.NET.Sdk.Razor">
 
   <PropertyGroup>
     <TargetFramework>net6.0</TargetFramework>
@@ -15,13 +15,13 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="LiveSharp" Version="2.0.35" />
-    <PackageReference Include="Microsoft.AspNetCore.Components.Web" Version="6.0.9" />
-    <PackageReference Include="MudBlazor" Version="6.0.16" />
-    <PackageReference Include="Radzen.Blazor" Version="3.18.1" />
-    <PackageReference Include="System.ComponentModel" Version="4.3.0" />
-    <PackageReference Include="System.ComponentModel.Annotations" Version="5.0.0" />
-	  <PackageReference Include="ObservableCollections" Version="1.1.2" />
+    <PackageReference Include="LiveSharp" />
+    <PackageReference Include="Microsoft.AspNetCore.Components.Web" />
+    <PackageReference Include="MudBlazor" />
+    <PackageReference Include="Radzen.Blazor" />
+    <PackageReference Include="System.ComponentModel" />
+    <PackageReference Include="System.ComponentModel.Annotations" />
+	  <PackageReference Include="ObservableCollections" />
   </ItemGroup>
 
   <ItemGroup>

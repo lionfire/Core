@@ -64,6 +64,9 @@ namespace LionFire.Hosting
                     services
                         .AddDependencyMachine()
                         .AddRootManager() // Provides IVos
+                        
+                        .AddSingleton<PersisterEvents, PersisterEvents>()
+                        //.TryAddEnumerableSingleton<IAttacher<VosPersister>, ArchiveAdapter>()
 
                         //#region TEMP
 
@@ -75,7 +78,7 @@ namespace LionFire.Hosting
 
                         //#endregion
 
-                        .TryAddEnumerableSingleton<ICollectionTypeProvider<VobReference>, CollectionTypeFromVobNode>() // Allows Vobs to provide Collection Type for themselves
+                        .TryAddEnumerableSingleton<ICollectionTypeProvider<VobReference>, CollectionTypeFromVobNode>() // Allows Vobs to provide Collection Type for themselves - REVIEW
                     #region Referencing
 
                         .TryAddEnumerableSingleton<IReferenceProvider, VobReferenceProvider>()
@@ -85,7 +88,9 @@ namespace LionFire.Hosting
                     #region Persistence
                         .If(persistence, s =>
                         {
-                            s.AddSingleton<IPersisterProvider<IVobReference>, VosPersisterProvider>()
+                            s
+                            .AddSingleton<IPersisterProvider<IVobReference>, VosPersisterProvider>()
+                            .AddSingleton<IPersister<IVobReference>, VosPersister>()
                             .Configure<VosPersisterOptions>(vpo => { })
                             .AddSingleton(s => s.GetRequiredService<IOptionsMonitor<VosPersisterOptions>>().CurrentValue) // REVIEW - force usage via IOptionsMonitor?
 
