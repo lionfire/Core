@@ -18,19 +18,35 @@ public interface IReadHandleProvider
     /// Example implementation:
     ///   IReadHandle<T> IReadHandleProvider.GetReadHandle<T>(IReference reference) => (reference is FileReference fileReference) ? GetReadHandle<T>(fileReference) : null;
     /// </remarks>
-    IReadHandle<T>? GetReadHandle<T>(IReference reference, T preresolvedValue = default);
+    IReadHandle<T>? GetReadHandle<T>(IReference reference);
 }
+
 
 //[AutoRegister]
-public interface IReadHandleProvider<TReference> : IReadHandleProvider
+public interface IReadHandleProvider<TReference> 
+    //: IReadHandleProvider  // REVIEW - do I need this?  It burdens all the implementors to cast from IReference to TReference.
     where TReference : IReference
 {
-    IReadHandle<T> GetReadHandle<T>(TReference reference, T preresolvedValue = default);
+    IReadHandle<T> GetReadHandle<T>(TReference reference);
 
 }
-    
-// FUTURE: Split out another method dedicated to Preresolved?
-public interface IPreresolvableReadHandleProvider<TReference> : IReadHandleProvider
+
+public static class IReadHandleProviderExtensions
+{
+    public static IReadHandle<T> GetReadHandle<TReference,T>(this IReadHandleProvider<TReference> hp, IReference<T> reference)
+        where TReference : IReference
+    {
+        return hp.GetReadHandle<T>((TReference)reference);
+    }
+}
+
+
+public interface IPreresolvableReadHandleProvider : IReadHandleProvider
+{
+    IReadHandle<T>? GetReadHandlePreresolved<T>(IReference reference, T preresolvedValue = default);
+}
+
+public interface IPreresolvableReadHandleProvider<TReference> : IReadHandleProvider<TReference>, IPreresolvableReadHandleProvider
     where TReference : IReference
 {
     IReadHandle<T> GetReadHandlePreresolved<T>(TReference reference, T preresolvedValue);
@@ -38,9 +54,9 @@ public interface IPreresolvableReadHandleProvider<TReference> : IReadHandleProvi
 
 public static class ReadHandleProviderX
 {
-    public static IReadHandle<T>? GetReadHandle<T, TReference>(this IReadHandleProvider<TReference> provider, IReference reference, T? preresolvedValue = default)
+    public static IReadHandle<T>? GetReadHandle<T, TReference>(this IReadHandleProvider<TReference> provider, IReference reference)
         where TReference : IReference 
-        => provider.GetReadHandle<T>((TReference)reference, preresolvedValue);
+        => provider.GetReadHandle<T>((TReference)reference);
 }
 
 

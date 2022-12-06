@@ -21,12 +21,12 @@ namespace LionFire.Vos.Assets.Handles
             PersisterProvider = persisterProvider;
         }
 
-        public IReadHandle<T> GetReadHandle<T>(IAssetReference reference, T preresolvedValue = default)
+        public IReadHandle<T> GetReadHandle<T>(IAssetReference reference)
         {
             var persister = (VosAssetPersister)PersisterProvider.GetPersister(reference.Persister);
             if (persister == null) throw new NotFoundException($"Could not find AssetPersister for '{reference}'");
 
-            return new PersisterReadHandle<IAssetReference, T, VosAssetPersister>(persister, reference.ForType<T>(), preresolvedValue);
+            return new PersisterReadHandle<IAssetReference, T, VosAssetPersister>(persister, reference.ForType<T>());
         }
         public IReadHandle<T> GetReadHandle<T>(IReference reference, T preresolvedValue = default)
             => reference is IAssetReference iar ? GetReadHandle<T>(iar, preresolvedValue) : null;

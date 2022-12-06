@@ -46,7 +46,8 @@ public static partial class ReferenceToReadHandleExtensions
         return (HandleRegistry.GetOrAddRead<IReadHandle<TValue>>(reference.Url, _ =>
         {
             usedPreresolved = true;
-            var handle = reference.GetReadHandleProvider(serviceProvider).GetReadHandle(reference, preresolvedValue);
+            IPreresolvableReadHandleProvider p = reference.GetReadHandleProvider(serviceProvider) as IPreresolvableReadHandleProvider ?? throw new NotFoundException($"{nameof(IPreresolvableReadHandleProvider)} not found");
+            var handle = p.GetReadHandlePreresolved(reference, preresolvedValue);
             return handle;
         }), usedPreresolved);
 

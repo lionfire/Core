@@ -17,6 +17,7 @@ namespace LionFire.Persistence.Handles
     public abstract class ReadHandleBase<TReference, TValue> : Resolves<TReference, TValue>, IReadHandleBase<TValue>
         , IReferencable<IReference>
         , IReferencableAsValueType<TValue>
+        , IKeyed<string>
         where TReference : IReference<TValue>
         //, IReadHandleInvariant<TValue>
     {
@@ -176,6 +177,7 @@ namespace LionFire.Persistence.Handles
 
         #endregion
 
+        string IKeyed<string>.Key => Reference.Key;
 
         #region REORGANIZE
 

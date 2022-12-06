@@ -3,9 +3,11 @@ using LionFire.Collections;
 using LionFire.DependencyInjection;
 using LionFire.Structures;
 using LionFire.Threading;
+using Microsoft.AspNetCore.Connections.Features;
 using Microsoft.Extensions.DependencyInjection;
 using Newtonsoft.Json.Linq;
 using Orleans;
+using Orleans.Streams;
 using System.ComponentModel;
 using System.Reactive;
 using System.Reactive.Linq;
@@ -39,7 +41,7 @@ public class ListGrain<TItem> : Grain
 
 
     #region Dependencies
-
+    
     public IClusterClient ClusterClient => ServiceProvider.GetRequiredService<IClusterClient>();
     protected IPersistentState<List<TItem>> ItemsState { get; }
 
@@ -76,10 +78,10 @@ public class ListGrain<TItem> : Grain
         DeletedItemsState = deletedItemsState;
     }
 
-    public override Task OnActivateAsync()
+    public override Task OnActivateAsync(CancellationToken cancellationToken = default)
     {
         ItemsState.State ??= new();
-        return base.OnActivateAsync();
+        return base.OnActivateAsync(cancellationToken);
     }
 
     #endregion

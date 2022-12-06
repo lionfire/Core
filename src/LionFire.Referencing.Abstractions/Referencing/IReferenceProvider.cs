@@ -15,9 +15,7 @@ public interface IReferenceProvider : ISupportsUriSchemes
 
 public static class IReferenceProviderExtensions
 {
-    public static TReference GetReference<TReference>(this IReferenceProvider referenceProvider, string uri)
-        where TReference : IReference
-        => referenceProvider.TryGetReference<TReference>(uri).result ?? throw new NotFoundException();
+    
     
 }
 

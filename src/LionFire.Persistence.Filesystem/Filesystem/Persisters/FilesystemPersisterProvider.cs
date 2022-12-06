@@ -6,7 +6,7 @@ using System.Text;
 
 namespace LionFire.Persistence.Filesystem
 {
-    public class FilesystemPersisterProvider : OptionallyNamedPersisterProvider<IFileReference, FilesystemPersister, FilesystemPersisterOptions>, IPersisterProvider<ProviderFileReference>
+    public class FilesystemPersisterProvider : OptionallyNamedPersisterProvider<IFileReference, FilesystemPersister>, IPersisterProvider<ProviderFileReference>
     {
         public FilesystemPersisterProvider(IServiceProvider serviceProvider) : base(serviceProvider)
         { }

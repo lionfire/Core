@@ -140,7 +140,7 @@ namespace LionFire.FlexObjects
         public static T Get<T>(this IFlex flex, string name = null, Func<T> createFactory = null, bool throwIfMissing = true, object[] createArgs = null)
         {
             var result = Query<T>(flex, name);
-            if(!EqualityComparer<T>.Default.Equals(result, default)) { return result; }
+            if (!EqualityComparer<T>.Default.Equals(result, default)) { return result; }
 
             result = createFactory != null ? createFactory()
                 : createArgs != null ? (T)FlexGlobalOptions.DefaultCreateWithOptionsFactory(typeof(T), createArgs)
@@ -152,19 +152,30 @@ namespace LionFire.FlexObjects
 
         public static T Query<T>(this IFlex flex, string name = null)
         {
+            if (Query<T>(flex, out var result, name)) { return result; }
+            return default;
+        }
+        public static bool Query<T>(this IFlex flex, out T result, string name = null)
+        {
             if (name == null)
             {
-                if (flex.FlexData is T match) return match;
+                if (flex.FlexData is T match)
+                {
+                    result = match;
+                    return true;
+                }
                 if (flex.FlexData is FlexTypeDictionary d)
                 {
-                    return (T)d.Types[typeof(T)];
+                    result = (T)d.Types[typeof(T)];
+                    return true;
                 }
             }
             else
             {
                 throw new NotImplementedException("Query with name");
             }
-            return default;
+            result = default;
+            return false;
         }
 
 
@@ -275,7 +286,7 @@ namespace LionFire.FlexObjects
                 }
                 else if (flex.FlexData is FlexTypeDictionary ftd)
                 {
-                    
+
 
                     if (ftd.Types.ContainsKey(typeof(List<T>)))
                     {
@@ -301,7 +312,7 @@ namespace LionFire.FlexObjects
                     dict.Add(flex.FlexData);
 
                     // TODO - this will fail if both objects resolve to the same type
-                    dict.Add(obj); 
+                    dict.Add(obj);
 
                     flex.FlexData = dict;
                 }

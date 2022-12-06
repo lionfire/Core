@@ -9,6 +9,7 @@ namespace LionFire.Persistence.Redis
     public class RedisHandleProvider :
 
         IReadHandleProvider<IRedisReference>
+        , IReadHandleProvider
         , IReadWriteHandleProvider<IRedisReference>
 
         , IReadWriteHandleProvider // REVIEW
@@ -29,8 +30,8 @@ namespace LionFire.Persistence.Redis
 
         #region IRedisReference
 
-        public IReadHandle<T> GetReadHandle<T>(IRedisReference reference, T preresolvedValue = default)
-            => new PersisterReadHandle<RedisReference<T>, T, IPersister<IRedisReference>>(persister, (IReference<T>) reference, preresolvedValue);
+        public IReadHandle<T> GetReadHandle<T>(IRedisReference reference)
+            => new PersisterReadHandle<RedisReference<T>, T, IPersister<IRedisReference>>(persister, (IReference<T>) reference);
         public IReadWriteHandle<T> GetReadWriteHandle<T>(IRedisReference reference, T? preresolvedValue = default)
             => new PersisterReadWriteHandle<IRedisReference, T, IPersister<IRedisReference>>(persister, (IReference<T>)reference, preresolvedValue);
         public IWriteHandle<T> GetWriteHandle<T>(IRedisReference reference, T prestagedValue = default) => GetReadWriteHandle<T>(reference, prestagedValue);
@@ -41,7 +42,7 @@ namespace LionFire.Persistence.Redis
 
 
 
-        IReadHandle<T>? IReadHandleProvider.GetReadHandle<T>(IReference reference, T preresolvedValue) => (reference is RedisReference<T> redisReference) ? GetReadHandle<T>(redisReference, preresolvedValue) : null;
+        IReadHandle<T>? IReadHandleProvider.GetReadHandle<T>(IReference reference) => (reference is RedisReference<T> redisReference) ? GetReadHandle<T>(redisReference) : null;
         IReadWriteHandle<T>? IReadWriteHandleProvider.GetReadWriteHandle<T>(IReference reference, T preresolvedValue) => (reference is RedisReference<T> redisReference) ? GetReadWriteHandle<T>(redisReference, preresolvedValue) : null;
         IWriteHandle<T>? IWriteHandleProvider.GetWriteHandle<T>(IReference reference, T prestagedValue) => (reference is RedisReference<T> redisReference) ? GetWriteHandle<T>(redisReference, prestagedValue) : null;
 

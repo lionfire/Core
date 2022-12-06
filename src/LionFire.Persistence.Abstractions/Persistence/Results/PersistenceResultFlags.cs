@@ -58,6 +58,8 @@ namespace LionFire.Persistence
         //PreviewNotFound = 1 << 23, // Not used yet. Should it be?
         Ambiguous = 1 << 25,
 
+        InnerFail = 1 << 26, // MOVE number near Fail?
+
         MountNotAvailable = 1 << 28,
         SerializerNotAvailable = 1 << 29,
         ProviderNotAvailable = 1 << 30,

@@ -129,27 +129,27 @@ public static class SiloHostBuilder
                         options.ClusterId = deploymentId;
                         options.ServiceId = serviceId;
                     })
-                    .ConfigureApplicationParts(parts =>
-                    {
-                        parts.AddApplicationPart(typeof(LocalHealthCheckGrain).Assembly).WithReferences();
-                        //parts.AddFromApplicationBaseDirectory();
-                    })
+                    //.ConfigureApplicationParts(parts => // OLD - Orleans 3
+                    //{
+                    //    parts.AddApplicationPart(typeof(LocalHealthCheckGrain).Assembly).WithReferences();
+                    //    //parts.AddFromApplicationBaseDirectory();
+                    //})
 
                     .If(clusterConfig.Kind == ClusterDiscovery.Localhost, s =>
                         // NOTE - redundant specification of ClusterId and ServiceId
                         s.UseLocalhostClustering(config.SiloPort, config.GatewayPort, config.LocalhostPrimaryClusterEndpoint, serviceId, deploymentId
                         ))
                     .If(clusterConfig.Kind == ClusterDiscovery.Consul, s =>
-                        s.UseConsulClustering(gatewayOptions =>
+                        s.UseConsulSiloClustering(gatewayOptions =>
                         {
                             OrleansConsulClusterConfig clusterConsulConfig = new();
                             context.Configuration.Bind("Orleans:Cluster:Consul", clusterConsulConfig);
 
                             if (clusterConsulConfig.ServiceDiscoverEndPoint != null)
                             {
-                                gatewayOptions.Address = new Uri(clusterConsulConfig.ServiceDiscoverEndPoint);
+                                gatewayOptions.ConfigureConsulClient(new Uri(clusterConsulConfig.ServiceDiscoverEndPoint), clusterConsulConfig.ServiceDiscoveryToken);
                             }
-                            gatewayOptions.AclClientToken = clusterConsulConfig.ServiceDiscoveryToken;
+                            
                             gatewayOptions.KvRootFolder = clusterConsulConfig.KvFolderName ?? $"{serviceId}";
                         })
                     )
@@ -159,12 +159,12 @@ public static class SiloHostBuilder
 
                     .ConfigureEndpoints(IPAddress.Parse(config.OrleansInterface), config.SiloPort, config.GatewayPort)
                     .ConfigureLogging(logging => logging.AddConsole())
-                    .UsePerfCounterEnvironmentStatistics()
+                    //.UsePerfCounterEnvironmentStatistics() // TODO TOPORT from Orleans 3.x
                     ;
 
                 configureSilo?.Invoke(context, builder);
 
-                if (!OperatingSystem.IsWindows()) { builder.UseLinuxEnvironmentStatistics(); }
+                //if (!OperatingSystem.IsWindows()) { builder.UseLinuxEnvironmentStatistics(); }  // TODO TOPORT from Orleans 3.x
 
                 if (config.OrleansDashboard) builder.UseDashboard(options => { options.Port = config.DashboardPort; options.Host = config.DashboardInterface; });
             })

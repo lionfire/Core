@@ -19,17 +19,19 @@ namespace LionFire.Orleans_.AspNetCore_
 
         public async Task<HealthCheckResult> CheckHealthAsync(HealthCheckContext context, CancellationToken cancellationToken = default)
         {
-            var manager = client.GetGrain<IManagementGrain>(0);
-            try
-            {
-                var hosts = await manager.GetHosts();
-                var count = hosts.Values.Where(x => x.IsUnavailable()).Count();
-                return count > 0 ? HealthCheckResult.Degraded($"{count} silo(s) unavailable") : HealthCheckResult.Healthy();
-            }
-            catch (Exception error)
-            {
-                return HealthCheckResult.Unhealthy("Failed to get cluster status", error);
-            }
+            throw new NotImplementedException();//What happened to IsUnavailable?
+
+            //var manager = client.GetGrain<IManagementGrain>(0);
+            //try
+            //{
+            //    var hosts = await manager.GetHosts();
+            //    var count = hosts.Values.Where(x => x.IsUnavailable()).Count();
+            //    return count > 0 ? HealthCheckResult.Degraded($"{count} silo(s) unavailable") : HealthCheckResult.Healthy();
+            //}
+            //catch (Exception error)
+            //{
+            //    return HealthCheckResult.Unhealthy("Failed to get cluster status", error);
+            //}
         }
     }
 }

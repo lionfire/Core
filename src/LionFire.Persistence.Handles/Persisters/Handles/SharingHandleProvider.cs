@@ -12,17 +12,28 @@ namespace LionFire.Persistence.Persisters
 
     }
 
-    public class SharingHandleProvider<TReference> : SharingHandleProviderBase<TReference, object>, IReadHandleProvider<TReference>
+    public class SharingHandleProvider<TReference> : SharingHandleProviderBase<TReference, object>
+        , IReadHandleProvider<TReference>
+        , IPreresolvableReadHandleProvider<TReference>
         where TReference : IReference
     {
         public IReadHandleProvider<TReference> InnerReadHandleProvider { get; }
 
-        public IReadHandle<T> GetReadHandle<T>(TReference reference, T preresolvedValue = default)
+        public IReadHandle<T> GetReadHandle<T>(TReference reference)
         {
             throw new System.NotImplementedException();
         }
 
-        public IReadHandle<T> GetReadHandle<T>(IReference reference, T preresolvedValue = default) => reference is TReference tReference ? GetReadHandle<T>(tReference, preresolvedValue) : null;
+        public IReadHandle<T> GetReadHandle<T>(IReference reference)
+        {
+            throw new System.NotImplementedException();
+        }
+
+        public IReadHandle<T> GetReadHandlePreresolved<T>(TReference reference, T preresolvedValue)
+        {
+            throw new System.NotImplementedException();
+        }
+        public IReadHandle<T> GetReadHandlePreresolved<T>(IReference reference, T preresolvedValue = default) => reference is TReference tReference ? GetReadHandlePreresolved<T>(tReference, preresolvedValue) : null;
 
     }
 }

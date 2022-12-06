@@ -16,8 +16,8 @@ public static class OrleansServiceCollectionExtensions
             .AddSingleton<IKeyProvider<string>, GrainKeyProvider>()
             ;
 
-    public static IHostBuilder AddOrleansClientX(this IHostBuilder services)
-        => services
-            .UseOrleansClient()
-            ;
+    //public static IHostBuilder AddOrleansClientX(this IHostBuilder services)
+    //    => services
+    //        .UseOrleansClient(c=>c)
+    //        ;
 }

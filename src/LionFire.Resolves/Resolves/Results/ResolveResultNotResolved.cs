@@ -10,7 +10,7 @@ namespace LionFire.Resolves
 
         public bool HasValue => false;
 
-        public bool IsNoop => true;
+        public bool IsNoop => false;
 
         public static ResolveResultNotResolved<TValue> Instance { get; } = new ResolveResultNotResolved<TValue>();
     }

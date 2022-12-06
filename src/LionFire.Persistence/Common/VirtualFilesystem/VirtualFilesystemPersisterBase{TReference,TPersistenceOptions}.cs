@@ -75,7 +75,6 @@ public abstract partial class VirtualFilesystemPersisterBase<TReference, TPersis
     public VirtualFilesystemPersisterBase(string name, ISerializationProvider serializationProvider, IOptionsMonitor<TPersistenceOptions> options, IPersistenceConventions itemKindIdentifier, SerializationOptions serializationOptions) : base(serializationOptions)
     {
         this.SerializationProvider = serializationProvider; // MOVE to base ctor, maybe others as well
-        //this.PersistenceOptions = persistenceOptions;
         this.PersistenceOptions = string.IsNullOrEmpty(name) ? options.CurrentValue : options.Get(name);
         this.optionsMonitor = options;
         ItemKindIdentifier = itemKindIdentifier;

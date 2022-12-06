@@ -21,7 +21,7 @@ public class VosPersisterProviderOptions : MultiplexingPersisterProviderOptions
 }
 
 
-public class VosPersisterProvider : OptionallyNamedPersisterProvider<IVobReference, VosPersister, VosPersisterOptions>
+public class VosPersisterProvider : OptionallyNamedPersisterProvider<IVobReference, VosPersister>
 {
     public IOptionsMonitor<VosPersisterProviderOptions> VosPersisterProviderOptionsMonitor { get; }
 

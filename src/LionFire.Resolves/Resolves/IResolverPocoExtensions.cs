@@ -1,7 +1,10 @@
 ﻿using LionFire.Dependencies;
+using LionFire.ExtensionMethods.Objects;
+using LionFire.Ontology;
 using LionFire.Resolvables;
 using LionFire.Resolvers;
 using LionFire.Resolves;
+using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
@@ -21,7 +24,7 @@ namespace LionFire.ExtensionMethods.Poco.Resolvables
         /// <returns></returns>
         public static async Task<IResolveResult<TValue>> Resolve<TKey, TValue>(this TKey resolvable, bool returnFirstFound = true)
         {
-            foreach (var resolver in DependencyContext.Current.GetServices<IResolver<TKey, TValue>>())
+            foreach (var resolver in resolvable.GetAmbientServiceProvider().GetServices<IResolver<TKey, TValue>>())
             {
                 var result = await resolver.Resolve(resolvable).ConfigureAwait(false);
                 if (returnFirstFound)

@@ -19,11 +19,20 @@ public class PersisterHandleProviderBase<TReference>
         //this.providerFilePersisterProvider = providerFilePersisterProvider;
     }
 
-    public virtual IReadHandle<TValue> GetReadHandle<TValue>(IReference<TValue> reference, TValue preresolvedValue = default)
-        => new PersisterReadHandle<TReference, TValue, IPersister<TReference>>(persister, reference, preresolvedValue);
-    
-    public virtual IReadHandle<TValue> GetReadHandle<TValue>(TReference reference, TValue preresolvedValue = default)
+    #region R
+
+    public virtual IReadHandle<TValue> GetReadHandle<TValue>(IReference<TValue> reference)
+        => new PersisterReadHandle<TReference, TValue, IPersister<TReference>>(persister, reference);
+    public virtual IReadHandle<TValue> GetReadHandlePreresolved<TValue>(IReference<TValue> reference, TValue preresolvedValue = default)
+            => new PersisterReadHandle<TReference, TValue, IPersister<TReference>>(persister, reference, preresolvedValue);
+
+
+    public virtual IReadHandle<TValue> GetReadHandle<TValue>(TReference reference)
+        => new PersisterReadHandle<TReference, TValue, IPersister<TReference>>(persister, (IReference<TValue>)reference);
+    public virtual IReadHandle<TValue> GetReadHandlePreresolved<TValue>(TReference reference, TValue preresolvedValue = default)
         => new PersisterReadHandle<TReference, TValue, IPersister<TReference>>(persister, (IReference<TValue>)reference, preresolvedValue);
+
+    #endregion
 
     public virtual IWriteHandle<TValue> GetWriteHandle<TValue>(IReference<TValue> reference, TValue preresolvedValue = default)
         => new PersisterWriteHandle<TReference, TValue, IPersister<TReference>>(persister, reference, preresolvedValue);

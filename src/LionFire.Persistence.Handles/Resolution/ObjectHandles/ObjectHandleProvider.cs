@@ -1,6 +1,7 @@
 ﻿using LionFire.Dependencies;
 using LionFire.Referencing;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace LionFire.Persistence.Handles
 {
@@ -29,9 +30,9 @@ namespace LionFire.Persistence.Handles
         {
             if (Options.CheckIReferencable && obj is IReferencable referencable)
             {
-                foreach (var r in readHandleProviders)
+                foreach (var r in readHandleProviders.OfType<IPreresolvableReadHandleProvider>())
                 {
-                    var result = r.GetReadHandle<TValue>(referencable.Reference, obj);
+                    var result = r.GetReadHandlePreresolved(referencable.Reference, obj);
                     if (result != null) return result;
                 }
             }

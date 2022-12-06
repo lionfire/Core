@@ -6,7 +6,7 @@ using System;
 
 namespace LionFire.Persistence.Persisters
 {
-    public class OptionallyNamedPersisterProvider<TReference, TPersister,TOptions> : NamedPersisterProviderBase<TReference, TPersister> 
+    public class OptionallyNamedPersisterProvider<TReference, TPersister> : NamedPersisterProviderBase<TReference, TPersister>
         where TReference : IReference
         where TPersister : IPersister<TReference>
     {

@@ -136,10 +136,10 @@ public abstract class PolymorphicListGrain<TValue, TMetadata> : Grain, IListGrai
         ItemsState = items;
     }
 
-    public override Task OnActivateAsync()
+    public override Task OnActivateAsync(CancellationToken cancellationToken = default)
     {
         ItemsState.State ??= new();
-        return base.OnActivateAsync();
+        return base.OnActivateAsync(cancellationToken);
     }
 
     public async virtual Task<(string, TValue)> Create(Type type)
@@ -200,10 +200,10 @@ public abstract class PolymorphicListGrain<TValue, TMetadata> : Grain, IListGrai
 //        Matchmakers = matchmakers;
 //    }
 
-//    public override Task OnActivateAsync()
+//    public override Task OnActivateAsync(CancellationToken cancellationToken = default)
 //    {
 //        Matchmakers.State ??= new();
-//        return base.OnActivateAsync();
+//        return base.OnActivateAsync(cancellationToken);
 //    }
 
 //    public Task<IEnumerable<MatchmakerInfo>> GetAllMatchmakerInfos()

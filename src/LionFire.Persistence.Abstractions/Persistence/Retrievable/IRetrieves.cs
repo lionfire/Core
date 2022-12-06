@@ -41,7 +41,7 @@ namespace LionFire.Persistence
         }
 
         /// <summary>
-        /// (Uses reflection)
+        /// Uses reflection to call IResolves&lt;object&gt;.Resolve then upcasts result to IResolveResult&lt;object&gt;.  Consider using IResolves&lt;object&gt;.Resolve directly.
         /// </summary>
         /// <param name="retrieves"></param>
         /// <returns></returns>

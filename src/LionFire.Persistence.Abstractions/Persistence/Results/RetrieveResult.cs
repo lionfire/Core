@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using LionFire.Referencing;
+using LionFire.Resolves;
 
 namespace LionFire.Persistence
 {
@@ -36,6 +37,8 @@ namespace LionFire.Persistence
         public bool? IsSuccess => Flags.IsSuccessTernary();
 
         public bool IsNoop => Flags.HasFlag(PersistenceResultFlags.Noop);
+
+        public IResolveResult<object> InnerResult { get; set; }
 
         #region Static
 

@@ -6,10 +6,10 @@ using System.Text;
 
 namespace LionFire.Persistence.Redis
 {
-    public class RedisPersisterProvider : OptionallyNamedPersisterProvider<IRedisReference, RedisPersister, RedisPersisterOptions>
+    public class RedisPersisterProvider : OptionallyNamedPersisterProvider<IRedisReference, RedisPersister>
     {
-        public RedisPersisterProvider(IServiceProvider serviceProvider, IOptionsMonitor<RedisPersisterOptions> options)
-            : base(serviceProvider, options)
+        public RedisPersisterProvider(IServiceProvider serviceProvider)
+            : base(serviceProvider)
         { }
     }
 }
