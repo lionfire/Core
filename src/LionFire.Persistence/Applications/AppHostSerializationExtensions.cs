@@ -1,7 +1,9 @@
 ﻿using System;
 using LionFire.Applications.Hosting;
 using LionFire.Serialization;
+using LionFire.Services;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Options;
 
@@ -27,8 +29,14 @@ namespace LionFire.Applications.Hosting
 
             if (useDefaultSettings)
             {
-                foreach (var type in DefaultScorers.DefaultDeserializerScorers) services.AddSingleton(typeof(IDeserializeScorer), type);
-                foreach (var type in DefaultScorers.DefaultSerializerScorers) services.AddSingleton(typeof(ISerializeScorer), type);
+                foreach (var type in DefaultScorers.DefaultDeserializerScorers)
+                {
+                    services.TryAddEnumerable(new ServiceDescriptor(typeof(IDeserializeScorer), type, ServiceLifetime.Singleton));
+                }
+                foreach (var type in DefaultScorers.DefaultSerializerScorers)
+                {
+                    services.TryAddEnumerable(new ServiceDescriptor(typeof(ISerializeScorer), type, ServiceLifetime.Singleton));
+                }
             }
             return services;
         }
@@ -60,7 +68,7 @@ namespace LionFire.Applications.Hosting
             //}
             return app;
         }
-        public static IHostBuilder AddSerialization(this IHostBuilder hostBuilder, bool useDefaultSettings = true) 
+        public static IHostBuilder AddSerialization(this IHostBuilder hostBuilder, bool useDefaultSettings = true)
             => hostBuilder.ConfigureServices((context, services) => services.AddSerialization());
 
         /// <summary>

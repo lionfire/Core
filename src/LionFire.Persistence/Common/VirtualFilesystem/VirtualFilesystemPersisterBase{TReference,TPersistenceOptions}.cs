@@ -12,7 +12,6 @@ using FileMode = System.IO.FileMode;
 using System.Threading.Tasks;
 using System.Linq;
 using LionFire.IO;
-using System.IO;
 using LionFire.Execution;
 using LionFire.Persistence.Persisters;
 using Microsoft.Extensions.Options;
@@ -23,6 +22,10 @@ using System.Net.Http.Headers;
 using LionFire.Exceptions;
 using LionFire.Ontology;
 using LionFire.Persistence.TypeInference;
+using Path = System.IO.Path;
+using FileNotFoundException = System.IO.FileNotFoundException;
+using IOException = System.IO.IOException;
+using Stream = System.IO.Stream;
 
 namespace LionFire.Persistence.Filesystemlike;
 
@@ -382,6 +385,9 @@ public abstract partial class VirtualFilesystemPersisterBase<TReference, TPersis
     //public virtual Task<IRetrieveResult<T>> ReadAndDeserializeExactPath<T>(TReference reference, Lazy<PersistenceOperation> operation = null, PersistenceContext context = null)
     //    => ReadAndDeserializeExactPath<T>(reference.Path, operation, context);
 
+    private static readonly IEnumerable<SerializationSelectionResult> NoopSerializationSelectionResults = new SerializationSelectionResult[] {
+        new SerializationSelectionResult() };
+
     // RENAME to eliminate "ExactPath" since it's no longer needed to distinguish in this class
     public virtual async Task<IRetrieveResult<T>> ReadAndDeserializeAutoPath<T>(string path, Lazy<PersistenceOperation> operation, PersistenceContext? context = null, bool throwOnFail = true)
     {
@@ -399,6 +405,8 @@ public abstract partial class VirtualFilesystemPersisterBase<TReference, TPersis
 
         PersistenceResultFlags flags = PersistenceResultFlags.None;
 
+        #region Scan for files with arbitrary extensions (if configured in Options)
+
         var autoAppendExtension = PersistenceOptions.AppendExtensionOnRead;
         //bool fileHasAnyExtension;
         string? fileExtension = null;
@@ -407,16 +415,16 @@ public abstract partial class VirtualFilesystemPersisterBase<TReference, TPersis
 
         var dir = Path.GetDirectoryName(path) ?? Path.GetPathRoot(path);
 
-        IEnumerable<string> GetPotentialExtensions(string p)
+        async Task<IEnumerable<string>> GetPotentialExtensions(string p)
         {
-            if (!Directory.Exists(dir)) { return Array.Empty<string>(); }
-            IEnumerable<string> result = System.IO.Directory.GetFiles(dir, $"{Path.GetFileName(p)}.*")
+            if (!await DirectoryExists(dir).ConfigureAwait(false)) { return Array.Empty<string>(); }
+            IEnumerable<string> result = (await Task.Run(() => System.IO.Directory.GetFiles(dir, $"{Path.GetFileName(p)}.*")).ConfigureAwait(false))
                 .Select(p =>
                 Path.GetExtension(p)
                 .Substring(1) // trim the leading .
                 );
 
-            if (File.Exists(path))
+            if (await Exists(path).ConfigureAwait(false))
             {
                 result = result.Concat(new string[] { "" });
             }
@@ -428,45 +436,56 @@ public abstract partial class VirtualFilesystemPersisterBase<TReference, TPersis
             case AppendExtensionOnRead.Never:
             default:
                 //fileHasAnyExtension = false; // Value ignored later
-                potentialExtensions = File.Exists(path) ? new string[] { "" } : Enumerable.Empty<string>();
+                bool exists = await Exists(path).ConfigureAwait(false);
+                potentialExtensions = exists ? new string[] { "" } : Enumerable.Empty<string>();
                 break;
             case AppendExtensionOnRead.IfNoExtensions:
                 fileExtension = LionPath.GetExtension(path);
                 if (fileExtension == null)
                 {
-                    potentialExtensions = GetPotentialExtensions(path);
+                    potentialExtensions = await GetPotentialExtensions(path).ConfigureAwait(false);
                 }
-                if (File.Exists(path))
+                else if (await Exists(path).ConfigureAwait(false))
                 {
                     potentialExtensions = potentialExtensions == null ? new string[] { "" } : potentialExtensions.Concat(new string[] { "" });
                 }
+                else
+                {
+                    potentialExtensions = new string[] { "" };
+                }
                 break;
             case AppendExtensionOnRead.Always:
-                potentialExtensions = GetPotentialExtensions(path);
+                potentialExtensions = await GetPotentialExtensions(path);
                 // Doesn't check for File.Exists(path)
                 break;
         }
+
+        #endregion
+
+        #region Fail: too few or too many matches
 
         if (!potentialExtensions.Any())
         {
             l.Trace($"NotFound: {path}[.*]");
             return RetrieveResult<T>.NotFound;
         }
-
-        bool foundOne = false;
-        //TReference effectiveReference;
-
         if (potentialExtensions.Count() >= 2 && PersistenceOptions.ValidateOneFilePerPath.HasFlag(ValidateOneFilePerPath.OnRead))
         {
             throw new PersistenceException($"ValidateOneFilePerPath has flag OnRead and there is more than one possible file extension found for path '{path}'");
         }
 
+        #endregion
+
+        bool foundOne = false;
         operation.Value.PotentialExtensions = potentialExtensions;
 
-        foreach (var attempt in SerializationProvider.ResolveStrategies(operation, context, IODirection.Read))
+        bool noop = typeof(T) == typeof(byte[]) || typeof(T) == typeof(Stream);
+
+        IEnumerable<SerializationSelectionResult> serializationSelectionResult = noop ? NoopSerializationSelectionResults : SerializationProvider.ResolveStrategies(operation, context, IODirection.Read);
+
+        foreach (var attempt in serializationSelectionResult)
         {
-            var strategy = attempt.Strategy;
-            string effectiveFSPath = string.IsNullOrEmpty(attempt.ScoringAttempt.Extension) ? path : $"{path}.{attempt.ScoringAttempt.Extension}";
+            string effectiveFSPath = string.IsNullOrEmpty(attempt.ScoringAttempt?.Extension) ? path : $"{path}.{attempt.ScoringAttempt.Extension}";
 
             //switch (autoAppendExtension)
             //{
@@ -491,56 +510,83 @@ public abstract partial class VirtualFilesystemPersisterBase<TReference, TPersis
             //        throw new ArgumentException(nameof(PersistenceOptions.AutoAppendExtensionOnWrite));
             //}
 
-            byte[]? bytes;
+            Stream stream = null;
+
+            if(typeof(T) == typeof(Stream) || attempt.Strategy?.ImplementsFromStream == true)
+            {
+                stream = await ReadStream(effectiveFSPath).ConfigureAwait(false);
+                if (stream == null)
+                {
+                    throw new InvalidOperationException("ReadStream returned null");
+                }
+                flags |= PersistenceResultFlags.Found; // Found something.  REVIEW: what if this is some unrelated metadata or OOB file?
+                if (typeof(T) == typeof(Stream))
+                {
+                    flags |= PersistenceResultFlags.Success;
+                    return (RetrieveResult<T>)(object)new RetrieveResult<Stream>(stream, flags); // HARDCAST
+                }
+            }
+
+            byte[]? bytes = null;
 
             //if (!await Exists(effectiveFSPath).ConfigureAwait(false)) continue;
 
-            //try
-            //{
-            bytes = await ReadBytes(effectiveFSPath).ConfigureAwait(false);
-            flags |= PersistenceResultFlags.Found; // Found something.  REVIEW: what if this is some unrelated metadata or OOB file?
+            if (stream == null)
+            {
+                //try
+                //{
+                bytes = await ReadBytes(effectiveFSPath).ConfigureAwait(false);
+                if (bytes == null)
+                {
+                    throw new InvalidOperationException("ReadBytes returned null");
+                }
+                flags |= PersistenceResultFlags.Found; // Found something.  REVIEW: what if this is some unrelated metadata or OOB file?
+            }
+            if (typeof(T) == typeof(byte[]))
+            {
+                flags |= PersistenceResultFlags.Success;
+                return (RetrieveResult<T>)(object)new RetrieveResult<byte[]>(bytes, flags); // HARDCAST
+            }
 
             //}
             //catch (FileNotFoundException)
             //{
             //    bytes = null;
             //}
-
             //if (bytes == null)
             //{
             //    flags |= PersistenceResultFlags.NotFound | PersistenceResultFlags.Fail;
             //}
-            //else
+
+            //else {
+
+            if (attempt.Strategy == null) { throw new UnreachableCodeException(); } // Should only have a null Strategy for byte[] and Stream, handled above 
+
+            DeserializationResult<T> result;
+            try
             {
-                foundOne = true;
-
-                DeserializationResult<T> result;
-                try
-                {
-                    result = strategy.ToObject<T>(bytes, operation, context);
-                }
-                catch (Exception ex)
-                {
-                    throw new PermanentException(ex);
-                }
-
-                if (result.IsSuccess)
-                {
-                    flags |= PersistenceResultFlags.Success;
-                    OnDeserialized(result.Object);
-                    return new RetrieveResult<T>(result.Object, flags);
-                }
-                else if (PersistenceOptions.ThrowDeserializationFailureWithReasons)
-                {
-                    if (failures == null)
-                    {
-                        failures = new List<KeyValuePair<ISerializationStrategy, SerializationResult>>();
-                    }
-                    failures.Add(new KeyValuePair<ISerializationStrategy, SerializationResult>(strategy, result));
-                }
-                // else don't initialize failures and throw
+                if (stream != null) { result = attempt.Strategy.ToObject<T>(stream, operation, context); }
+                else { result = attempt.Strategy.ToObject<T>(bytes, operation, context); }
             }
+            catch (Exception ex) { throw new PermanentException(ex); }
+
+            if (result.IsSuccess)
+            {
+                flags |= PersistenceResultFlags.Success;
+                OnDeserialized(result.Object);
+                return new RetrieveResult<T>(result.Object, flags);
+            }
+            else if (PersistenceOptions.ThrowDeserializationFailureWithReasons)
+            {
+                if (failures == null)
+                {
+                    failures = new List<KeyValuePair<ISerializationStrategy, SerializationResult>>();
+                }
+                failures.Add(new KeyValuePair<ISerializationStrategy, SerializationResult>(attempt.Strategy, result));
+            }
+            // else don't initialize failures and throw
         }
+
         if (!foundOne) flags |= PersistenceResultFlags.SerializerNotAvailable;
         flags |= PersistenceResultFlags.Fail;
 
@@ -548,7 +594,6 @@ public abstract partial class VirtualFilesystemPersisterBase<TReference, TPersis
         {
             throw new SerializationException(SerializationOperationType.FromBytes, operation, context, failures, noSerializerAvailable: !foundOne);
         }
-
 
 #nullable disable
         return new RetrieveResult<T>(default, flags)
@@ -577,7 +622,7 @@ public abstract partial class VirtualFilesystemPersisterBase<TReference, TPersis
             {
                 bytes = await ReadBytes(path).ConfigureAwait(false);
             }
-            catch (FileNotFoundException)
+            catch (FileNotFoundException) // System.IO -- REVIEW - does LionFire code throw this if file is not found?
             {
                 bytes = null;
             }
@@ -773,7 +818,7 @@ public abstract partial class VirtualFilesystemPersisterBase<TReference, TPersis
                 {
                     serializationResult = await SerializeToOutput(obj, effectiveFSPath, strategy, replaceMode, operation, context).ConfigureAwait(false);
                 }
-                catch (IOException ex) when (ex.Message.Contains("used by another process"))
+                catch (IOException ex) when (ex.Message.Contains("used by another process")) // System.IO
                 {
                     serializationResult = SerializationResult.SharingViolation;
                     if (retries-- > 0)
@@ -926,7 +971,7 @@ public abstract partial class VirtualFilesystemPersisterBase<TReference, TPersis
     }
 
     #endregion
-        
+
     private static ILogger l = Log.Get();
 
 }

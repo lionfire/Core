@@ -1,6 +1,8 @@
 ﻿using LionFire.ExtensionMethods;
+using LionFire.ExtensionMethods.Poco.Resolvables;
 using LionFire.Persistence;
 using LionFire.Persistence.Handles;
+using LionFire.Persistence.Persisters;
 using LionFire.Referencing;
 using LionFire.Resolvers;
 using LionFire.Resolves;
@@ -9,6 +11,7 @@ using MorseCode.ITask;
 
 namespace LionFire.Persisters.Expanders;
 
+// REVIEW - add TSource as generic parameter?
 public class ExpanderReadHandle<TValue> : ReadHandleBase<ExpansionReference<TValue>, TValue>, IReadHandle<TValue>, IExpanderReadHandle
 {
     #region Dependencies
@@ -115,38 +118,46 @@ public class ExpanderReadHandle<TValue> : ReadHandleBase<ExpansionReference<TVal
 
     protected override async ITask<IResolveResult<TValue>> ResolveImpl()
     {
-        if (!IsResolved) { await TryResolveSourceAndExpander(); }
+        (IExpander Expander, IReadHandle SourceReadHandle)? resolved = this.resolved ?? await TryResolveSourceAndExpander();
+        if (resolved == null || resolved.Value.SourceReadHandle == null) { return SourceProviderNotAvailable; }
 
-        if (SourceReadHandle == null) { return SourceProviderNotAvailable; }
+                
 
-        // TODO ENH - mount Zip file for read-write?  Or keep open? Locking?
+        #region Target
 
-        //Expander.Retrieve(SourceReadHandle, );
+        // Example for sourceResolveResult.Value: ZipFile
+        
+        var targetResolveResult = await resolved.Value.Expander.RetrieveTarget<TValue>(resolved.Value.SourceReadHandle, Reference.Path).ConfigureAwait(false);
 
-        var sourceResolveResult = await SourceReadHandle.Resolve().ConfigureAwait(false);
-
-        if (sourceResolveResult.IsSuccess() == false)
+        //var targetResolveResult = await resolved.Value.SourceReadHandle.Value.Retrieve<TValue>(new PathReference(Reference.Path));
+        if (targetResolveResult.IsSuccess() == false)
         {
             return new RetrieveResult<TValue>()
             {
                 Flags = PersistenceResultFlags.Fail | PersistenceResultFlags.InnerFail,
-                InnerResult = sourceResolveResult,
+                InnerResult = (IResolveResult<object>)targetResolveResult,
             };
         }
-        if (!sourceResolveResult.HasValue)
+        if (!targetResolveResult.HasValue)
         {
-            return sourceResolveResult.IsSuccess() switch
+            return targetResolveResult.IsSuccess() switch
             {
                 true => RetrieveResult<TValue>.SuccessNotFound,
                 false => throw new UnreachableCodeException(),
-                null => RetrieveResult<TValue>.NotFound,
+                //null => RetrieveResult<TValue>.NotFound,
             };
         }
 
+        return new RetrieveResult<TValue>(targetResolveResult.Value, PersistenceResultFlags.Success | PersistenceResultFlags.Found);
 
-        throw new NotImplementedException("Exp resolv");
+        #endregion
+
     }
 
     #endregion
+}
+public interface IExpanderReadHandle<TValue> : IReadHandle<TValue>, IReadPersister<PathReference>
+{
+
 }
 

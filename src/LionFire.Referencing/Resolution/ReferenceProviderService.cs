@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 
 namespace LionFire.Referencing;
 
@@ -33,7 +34,7 @@ public class ReferenceProviderService : IReferenceProviderService
 
     #endregion
 
-    public bool AllowMultipleProvidersPerScheme { get; set; } = false;
+    public bool AllowMultipleProvidersPerScheme { get; set; } = true;
 
     private class ReferenceProviderServiceState
     {
@@ -91,35 +92,64 @@ public class ReferenceProviderService : IReferenceProviderService
         (IEnumerable<string>)State.SchemeProviderLists.Keys :
         State.SchemeProviders.Keys;
 
-    public IReferenceProvider TryGetReferenceProvider(string uri)
+    //public IReferenceProvider TryGetReferenceProvider(string uri)
+    //{
+    //    var scheme = LionUri.TryGetUriScheme(uri);
+    //    if (scheme == null) return null;
+    //    if (AllowMultipleProvidersPerScheme)
+    //    {
+    //        if (State.SchemeProviderLists.TryGetValue(scheme, out var providers))
+    //        {
+    //            foreach (var provider in
+
+    //        }
+    //        throw new NotImplementedException(nameof(AllowMultipleProvidersPerScheme));
+    //    }
+    //    else
+    //    {
+    //        if (State.SchemeProviders.TryGetValue(scheme, out IReferenceProvider provider))
+    //        {
+    //            return provider;
+    //        }
+    //    }
+    //    return null;
+    //}
+
+    public IEnumerable<IReferenceProvider> TryGetReferenceProviders(string uri)
     {
         var scheme = LionUri.TryGetUriScheme(uri);
-        if (scheme == null) return null;
-        if (AllowMultipleProvidersPerScheme) throw new NotImplementedException(nameof(AllowMultipleProvidersPerScheme));
-
-        if (State.SchemeProviders.TryGetValue(scheme, out IReferenceProvider provider))
+        if (scheme != null && State.SchemeProviderLists.TryGetValue(scheme, out var providers))
         {
-            return provider;
+            return providers;
         }
-        return null;
+        return Enumerable.Empty<IReferenceProvider>();
     }
 
-    public IReferenceProvider GetReferenceProvider(string uri)
+    //public IReferenceProvider GetReferenceProvider(string uri)
+    //{
+    //    var result = TryGetReferenceProvider(uri);
+    //    if (result != null) return result;
+
+    //    var scheme = LionUri.TryGetUriScheme(uri);
+    //    if (scheme == null) throw new ArgumentException($"Specified {nameof(uri)} is missing a URI scheme.");
+    //    throw new KeyNotFoundException();
+    //}
+
+    public (TReference result, string error) TryGetReference<TReference>(string uri, bool aggregateErrors = false) where TReference : IReference
     {
-        var result = TryGetReferenceProvider(uri);
-        if (result != null) return result;
+        StringBuilder? sb = null;
 
-        var scheme = LionUri.TryGetUriScheme(uri);
-        if (scheme == null) throw new ArgumentException($"Specified {nameof(uri)} is missing a URI scheme.");
-        throw new KeyNotFoundException();
+        foreach (var provider in TryGetReferenceProviders(uri))
+        {
+            var result = provider.TryGetReference<TReference>(uri);
+            if (result.result != null) { return result; }
+            else if (aggregateErrors)
+            {
+                sb ??= new StringBuilder();
+                sb.AppendLine($"{provider.GetType().Name}: {result.error ?? "(No error given)"}");
+            }
+        }
+        return (default, sb?.ToString() ?? "(No error available)");
     }
-
-    public (TReference result, string error) TryGetReference<TReference>(string uri) where TReference : IReference
-    {
-        var provider = TryGetReferenceProvider(uri);
-        if(provider == null) { return (default, $"No provider available for scheme: '{LionUri.TryGetUriScheme(uri)}'"); }
-
-        return provider.TryGetReference<TReference>(uri);
-    }
-    public TReference GetReference<TReference>(string uri) where TReference : IReference => GetReferenceProvider(uri).GetReference<TReference>(uri);
+    //public TReference GetReference<TReference>(string uri) where TReference : IReference => GetReferenceProvider(uri).GetReference<TReference>(uri);
 }

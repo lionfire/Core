@@ -10,6 +10,7 @@ namespace LionFire.Services
     public static class FilesystemServiceCollectionExtensions
     {
 
+        // TODO: optional auto-extension support for deserializers/serializers. Serializer adapter?
         public static IServiceCollection AddFilesystem(this IServiceCollection services)
         {
             services

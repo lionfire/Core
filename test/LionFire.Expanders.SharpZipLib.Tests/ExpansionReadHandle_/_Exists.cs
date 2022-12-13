@@ -1,14 +1,16 @@
-﻿
-namespace LionFire.Persisters.Expanders.Tests.ExpansionReadHandle_;
+﻿using LionFire.Persistence;
+using LionFire.Persistence.Handles;
+using LionFire.Persisters.Expanders;
+
+namespace ExpansionReference_;
 
 [TestClass]
-public class _Resolve
+public class _Exists
 {
     public static IHostBuilder H => TestHostBuilder.H;
 
     public const string ExpansionReferenceString = "expand:vos://c/TestSourceDir/TestSourceFile.zip:/TestTargetDir/TestTargetFile.txt";
-
-
+    
     [TestMethod]
     public void _()
     {

@@ -82,6 +82,7 @@ namespace LionFire.Hosting
                     #region Referencing
 
                         .TryAddEnumerableSingleton<IReferenceProvider, VobReferenceProvider>()
+                        .TryAddEnumerableSingleton<IReferenceProvider, TypedVobReferenceProvider>()
 
                     #endregion
 

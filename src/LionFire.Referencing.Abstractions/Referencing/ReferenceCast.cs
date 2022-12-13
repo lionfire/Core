@@ -2,7 +2,12 @@
 
 namespace LionFire.Referencing;
 
-public class ReferenceCast<TValue> : IReference<TValue>
+public interface IReferenceCast
+{
+    IReference InnerReference { get; }
+}
+
+public class ReferenceCast<TValue> : IReference<TValue>, IReferenceCast
 {
     public ReferenceCast(IReference reference)
     {

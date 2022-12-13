@@ -9,7 +9,7 @@ internal static class ExpanderHandleHelpers
     {
         foreach (var expander in expanderProvider.Expanders)
         {
-            var sourceReadHandle = expander.TryGetReadHandle(sourceReference);
+            var sourceReadHandle = await expander.TryGetSourceReadHandle(sourceReference).ConfigureAwait(false);
             if (sourceReadHandle == null) { continue; }
 
             // TODO NEXT: SharpZipLibExpander to provide a SharpZipLibReadHandle

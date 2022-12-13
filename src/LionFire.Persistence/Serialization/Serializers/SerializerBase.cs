@@ -12,10 +12,13 @@ namespace LionFire.Serialization
     public abstract class SerializerBase<ConcreteType> : ISerializationStrategy
         where ConcreteType : SerializerBase<ConcreteType>
     {
+        public virtual bool SupportsSerializedType(Type type) => true;
+        public virtual bool SupportsDeserializedType(Type type) => true;
+
         #region SerializerBaseReflectionInfo
 
         private static class SerializerBaseReflectionInfo<T>
-            where T :  SerializerBase<T>,  ISerializationStrategy
+            where T : SerializerBase<T>, ISerializationStrategy
         {
             public static readonly bool HasToString;
             public static readonly bool HasToBytes;
@@ -76,7 +79,7 @@ namespace LionFire.Serialization
         public virtual IEnumerable<Type> SerializationOptionsTypes => Enumerable.Empty<Type>();
 
         public bool ImplementsToString => SerializerBaseReflectionInfo<ConcreteType>.HasToString;
-        public bool ImplementsToStream=> SerializerBaseReflectionInfo<ConcreteType>.HasToStream;
+        public bool ImplementsToStream => SerializerBaseReflectionInfo<ConcreteType>.HasToStream;
         public bool ImplementsToBytes => SerializerBaseReflectionInfo<ConcreteType>.HasToBytes;
         public bool ImplementsFromString => SerializerBaseReflectionInfo<ConcreteType>.HasFromString;
         public bool ImplementsFromStream => SerializerBaseReflectionInfo<ConcreteType>.HasFromStream;

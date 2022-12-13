@@ -1,10 +1,13 @@
 ﻿using LionFire.Persistence;
+using LionFire.Persistence.Persisters;
 using LionFire.Referencing;
+using LionFire.Resolves;
 
 namespace LionFire.Persisters.Expanders;
 
 public interface IExpander
 {
+
     /// <summary>
     /// If null, defer to SourceReadTypeForReference
     /// </summary>
@@ -17,5 +20,8 @@ public interface IExpander
     /// <param name="reference"></param>
     /// <returns></returns>
     Type? SourceReadTypeForReference(IReference reference);
-    IReadHandle? TryGetReadHandle(IReference sourceReference);
+    Task<IReadHandle>? TryGetSourceReadHandle(IReference sourceReference);
+
+    Task<IRetrieveResult<T>> RetrieveTarget<T>(IReadHandle sourceReadHandle, string targetPath);
+
 }

@@ -27,6 +27,9 @@ public class VobReference<TValue> : VobReferenceBase<VobReference<TValue>>, IVob
     {
     }
 
+    public VobReference(string path) : base(path)
+    {
+    }
     public VobReference(string path, ImmutableList<KeyValuePair<string, string>> filters = null) : base(path, filters)
     {
     }

@@ -192,4 +192,13 @@ public static class IReferenceExtensions
     }
 
     public static IReference<TValue> Cast<TValue>(this IReference reference) => reference as IReference<TValue> ?? new ReferenceCast<TValue>(reference ?? throw new ArgumentNullException(nameof(reference)));
+
+    public static IReference Innermost(this IReference r)
+    {
+        var inner = r;
+        while(inner is IReferenceCast rc) {
+            inner = rc.InnerReference;
+        }
+        return inner;
+    }
 }

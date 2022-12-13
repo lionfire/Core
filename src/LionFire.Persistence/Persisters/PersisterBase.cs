@@ -35,6 +35,11 @@ public class PersisterBase<TOptions> : IHas<TOptions>
 
     public virtual bool AllowAutoRetryForThisException(Exception e)
     { 
+        if(e is IOException ioe)
+        {
+            if(ioe.Message.EndsWith("being used by another process.")) { return true; }
+        }
+
         // ENH - better approach for this -- maybe register exception types
         return !(
             e is SerializationException

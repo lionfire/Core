@@ -25,7 +25,7 @@ public class VosHandleProvider : PersisterHandleProviderBase<IVobReference>
     public override IReadHandle<T> GetReadHandlePreresolved<T>(IVobReference reference, T preresolvedValue = default)
         => reference.GetVob().GetReadHandle<T>(preresolvedValue);
 
-    IReadHandle<T> IReadHandleProvider.GetReadHandle<T>(IReference reference) => GetReadHandle<T>((IVobReference)reference);  // REVIEW
+    IReadHandle<T> IReadHandleProvider.GetReadHandle<T>(IReference reference) => GetReadHandle<T>((IVobReference)reference.Innermost());  // REVIEW
     IReadHandle<T> IPreresolvableReadHandleProvider.GetReadHandlePreresolved<T>(IReference reference, T preresolvedValue) => GetReadHandlePreresolved<T>((IVobReference)reference, preresolvedValue);  // REVIEW
 
     #endregion

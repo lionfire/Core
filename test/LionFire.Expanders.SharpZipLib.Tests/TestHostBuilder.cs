@@ -7,8 +7,6 @@ using LionFire.Vos;
 using Microsoft.Extensions.Hosting;
 using System.Diagnostics;
 
-namespace LionFire.Persisters.Expanders.Tests;
-
 public static class TestHostBuilder
 {
     public static IHostBuilder H
@@ -21,7 +19,11 @@ public static class TestHostBuilder
                 )
                 .ConfigureServices((c, s) => s
                     .Expansion()
+                    .AddFilesystem()
+                     .VosMount("/c", "c:".ToFileReference()) // TEMP
+                    .ArchiveAdapter("/") // TEMP
                     .AddSharpZipLib()
+                    .TryAddEnumerableSingleton<IArchivePlugin, ZipPlugin>()
 
                     // How to convert this to something else?  "vos://c/temp/TestDoc.zip:/"
                     // ExpansionReference

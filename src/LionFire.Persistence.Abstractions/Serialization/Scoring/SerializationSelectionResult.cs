@@ -1,4 +1,5 @@
-﻿using System;
+﻿#nullable enable
+using System;
 using System.Collections.Generic;
 using LionFire.Persistence;
 
@@ -14,11 +15,11 @@ namespace LionFire.Serialization
             ScoringAttempt = scoringAttempt;
         }
 
-        public SerializationStrategyPreference Preference { get; set; }
+        public SerializationStrategyPreference? Preference { get; set; }
         public float Score { get; set; }
         public Dictionary<string, int> Weights { get; set; }
 
-        public ISerializationStrategy Strategy => Preference.Strategy;
+        public ISerializationStrategy? Strategy => Preference?.Strategy;
 
         public ScoringAttempt ScoringAttempt { get; set; }
     }

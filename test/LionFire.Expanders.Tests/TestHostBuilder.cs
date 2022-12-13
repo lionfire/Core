@@ -1,13 +1,9 @@
 using LionFire.Hosting;
 using LionFire.Persistence.Filesystem;
-using LionFire.Persistence.Persisters.Vos;
 using LionFire.Persisters.Expanders;
 using LionFire.Services;
-using LionFire.Vos;
 using Microsoft.Extensions.Hosting;
 using System.Diagnostics;
-
-namespace LionFire.Persisters.Expanders.Vos.Tests;
 
 public static class TestHostBuilder
 {
@@ -17,13 +13,14 @@ public static class TestHostBuilder
         {
             return Host.CreateDefaultBuilder()
                 .LionFire(lf => lf
+                    //.Persisters()
                     .Vos()
-                )
+                )                
                 .ConfigureServices((c, s) => s
                     .Expansion()
-                    .ArchiveAdapter("/") // TEMP
-                    .AddSharpZipLib()
-                    .TryAddEnumerableSingleton<IArchivePlugin, ZipPlugin>()
+
+                    .AddFilesystem() 
+                    //.VosMount("/c", "c:".ToFileReference()) // TEMP
 
                     // How to convert this to something else?  "vos://c/temp/TestDoc.zip:/"
                     // ExpansionReference
@@ -56,7 +53,7 @@ public static class TestHostBuilder
                     //  - Read sharing mode
                     //  - Writable
 
-                    .VosMount("/testzip", "vos://c/temp/TestDoc.zip:/".ToVobReference())
+                    //.VosMount("/testzip", "vos://c/temp/TestDoc.zip:/".ToVobReference())
                 //.AddVosObjectExplorerRoot() // TODO
                 //.VosMount("/testmount".ToVobReference(), @"C:\temp".ToFileReference())
                 )

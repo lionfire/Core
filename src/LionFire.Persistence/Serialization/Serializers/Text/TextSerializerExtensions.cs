@@ -9,7 +9,7 @@ namespace Microsoft.Extensions.DependencyInjection
         public static IServiceCollection AddTextSerializer(this IServiceCollection services)
         {
             services.TryAddEnumerableSingleton<ISerializationStrategy, TextSerializer>();
-            services.AddSingleton<BinarySerializer>();
+            services.AddSingleton<TextSerializer>();
             return services;
         }
     }

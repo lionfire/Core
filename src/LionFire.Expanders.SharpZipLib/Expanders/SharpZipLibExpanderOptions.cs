@@ -33,6 +33,7 @@ public class SharpZipLibExpanderOptions : ExpanderOptions, ISupportsFileExtensio
     public List<string> FileExtensions { get => fileExtensions ??= new(); set => fileExtensions = value; }
     private List<string>? fileExtensions;
 
+    public bool IgnoreCaseInTargetPath { get; set; } = false;
 }
 
 public static class SharpZipLibExpanderOptionsX

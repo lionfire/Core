@@ -172,7 +172,7 @@ namespace LionFire.Resolves
             var currentValue = ProtectedValue;
             if (!EqualityComparer<TValue>.Default.Equals(currentValue, default)) return new ResolveResultNoop<TValue>(ProtectedValue);
 
-            var resolveResult = await Resolve();
+            var resolveResult = await Resolve().ConfigureAwait(false);
             return new LazyResolveResult<TValue>(resolveResult.HasValue, resolveResult.Value);
         }
 

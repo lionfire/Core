@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>net6.0</TargetFramework>
+    <TargetFramework>net7.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
 
@@ -16,6 +16,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\..\src\LionFire.Expanders.SharpZipLib\LionFire.Expanders.SharpZipLib.csproj" />
     <ProjectReference Include="..\..\src\LionFire.Persistence.Expanders.Vos\LionFire.Persistence.Expanders.Vos.csproj" />
 	  <ProjectReference Include="..\..\src\LionFire.Persistence.Filesystem\LionFire.Persistence.Filesystem.csproj" />
 	  <ProjectReference Include="..\..\src\LionFire.Persistence.SharpZipLib\LionFire.Persistence.SharpZipLib.csproj" />
