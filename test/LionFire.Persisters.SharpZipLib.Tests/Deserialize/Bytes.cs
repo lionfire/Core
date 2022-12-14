@@ -18,20 +18,25 @@ public class Bytes
 {
     public static IHostBuilder H => TestHostBuilder.H;
 
-    public const string ZipFileReferenceString = "vos:///c/Temp/TestSourceDir/TestSourceFile.zip";
+    static string TestZipPath => Path.Combine(TestHostBuilder.DataDir, "TestSourceFile.zip");
+    static string TestZipUrlPath => TestZipPath.Replace(":", "");
+
+    public static readonly string ZipFileReferenceString = $"vos:///{TestZipUrlPath}";
 
     [TestMethod]
     public void _()
     {
         H.Run(async sp =>
         {
+            var expectedPath = "/" + TestZipUrlPath.Replace("\\", "/");
+
             var reference = ZipFileReferenceString.ToReference<byte[]>();
             Assert.IsInstanceOfType(reference, typeof(VobReference<byte[]>));
-            Assert.AreEqual("/c/Temp/TestSourceDir/TestSourceFile.zip", reference.Path);
+            Assert.AreEqual(expectedPath, reference.Path);
 
             var readHandle = reference.GetReadHandle<byte[]>();
             Assert.IsInstanceOfType(readHandle, typeof(PersisterReadHandle<IVobReference, byte[], VosPersister>));
-            Assert.AreEqual("/c/Temp/TestSourceDir/TestSourceFile.zip", readHandle.Key);
+            Assert.AreEqual(expectedPath, readHandle.Key);
 
             var resolveResult = await readHandle.Resolve();
             Assert.IsNotNull(resolveResult.Value);

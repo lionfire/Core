@@ -9,6 +9,22 @@ using System.Diagnostics;
 
 public static class TestHostBuilder
 {
+    public static string DataDir
+    {
+        get
+        {
+            if (dataDir == null)
+            {
+                var loc = typeof(TestHostBuilder).Assembly.Location;
+                var dir = Path.GetDirectoryName(loc);
+                dataDir = Path.GetFullPath("../../../../../test/data", dir);
+                dataDir = Path.Combine(dataDir, typeof(TestHostBuilder).Assembly.GetName().Name);
+            }
+            return dataDir;
+        }
+    }
+    private static string dataDir;
+
     public static IHostBuilder H
     {
         get
@@ -20,7 +36,8 @@ public static class TestHostBuilder
                 .ConfigureServices((c, s) => s
                     .Expansion()
                     .AddFilesystem()
-                     .VosMount("/c", "c:".ToFileReference()) // TEMP
+                    .AddNewtonsoftJson()
+                     .VosMount("/C", "c:".ToFileReference()) // TEMP
                     .ArchiveAdapter("/") // TEMP
                     .AddSharpZipLib()
                     .TryAddEnumerableSingleton<IArchivePlugin, ZipPlugin>()
@@ -30,7 +47,7 @@ public static class TestHostBuilder
                     //  - source: vos://c/temp/TestDoc.zip
                     //  - relative path: /
                     // .ToExpansionReference()  expand:<source>:<target>
-                    
+
                     // ^^^ DONE ^^^
 
                     // ExpansionProvider

@@ -14,6 +14,22 @@ namespace LionFire.Persisters.SharpZipLib.Tests;
 
 public static class TestHostBuilder
 {
+    public static string DataDir
+    {
+        get
+        {
+            if (dataDir == null)
+            {
+                var loc = typeof(TestHostBuilder).Assembly.Location;
+                var dir = Path.GetDirectoryName(loc);
+                dataDir = Path.GetFullPath("../../../../../test/data", dir);
+                dataDir = Path.Combine(dataDir, typeof(TestHostBuilder).Assembly.GetName().Name);
+            }
+            return dataDir;
+        }
+    }
+    private static string dataDir;
+
     public static IHostBuilder H
     {
         get
@@ -24,7 +40,7 @@ public static class TestHostBuilder
                 )
                 .ConfigureServices((c, s) => s
                     .AddFilesystem()
-                    .VosMount("/c", "c:".ToFileReference()) // TEMP
+                    .VosMount("/C", "c:".ToFileReference()) // TEMP
                     .AddSharpZipLibPersistence()
 #warning NEXT: Use the CanDeserializeType on the Strategy selector, trace through the Serializer selector code
                 )

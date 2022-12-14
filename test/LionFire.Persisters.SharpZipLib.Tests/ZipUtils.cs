@@ -13,7 +13,7 @@ public class ZipUtils
     {
         var entries = zipFile.OfType<ZipEntry>();
 
-        Assert.AreEqual(2, entries.Count());
+        Assert.AreEqual(3, entries.Count());
         //Assert.AreEqual(1, entries["TestTargetDir"]);
 
         var dirEntry = zipFile[zipFile.FindEntry("TestTargetDir/", false)];

@@ -6,13 +6,20 @@ public class _Resolve
 {
     public static IHostBuilder H => TestHostBuilder.H;
 
-    public const string ExpansionReferenceString = "expand:vos://c/Temp/TestSourceDir/TestSourceFile.zip:/TestTargetDir/TestTargetFile.txt";
-    public const string ExpansionReferenceString_NotFound = "expand:vos://c/Temp/TestSourceDir/TestSourceFile.zip:/TestTargetDir/TestTargetFile-NOTFOUND.txt";
-    public const string ExpansionReferenceTestClass = "expand:vos://c/Temp/TestSourceDir/TestSourceFile.zip:/TestTargetDir/TestClass.json";
+    static string TestZipPath => Path.Combine(TestHostBuilder.DataDir, "TestSourceFile.zip");
+    static string TestZipUrlPath => TestZipPath.Replace(":", "");
+
+    public static readonly string ExpansionReferenceString = $"expand:vos://{TestZipUrlPath}:/TestTargetDir/TestTargetFile.txt";
+    public static readonly string ExpansionReferenceString_NotFound = $"expand:vos://{TestZipUrlPath}:/TestTargetDir/TestTargetFile-NOTFOUND.txt";
+    public static readonly string ExpansionReferenceTestClass = $"expand:vos://{TestZipUrlPath}:/TestTargetDir/TestClass.json";
 
     [TestMethod]
     public void _String()
     {
+
+        var testZipPath = Path.Combine(TestHostBuilder.DataDir, "TestSourceFile.zip");
+        Assert.IsTrue(File.Exists(testZipPath));
+
         H.Run(async sp =>
         {
             var HandleProvider = sp.GetRequiredService<IReadHandleProvider<IExpansionReference>>();
@@ -46,7 +53,7 @@ public class _Resolve
             Assert.AreSame(handle.Reference, iExpansionReference);
 
             var exists = await handle.Exists().ConfigureAwait(false);
-            Assert.IsTrue(exists);
+            Assert.IsFalse(exists);
 
             var resolveResult = await handle.Retrieve<string>().ConfigureAwait(false);
             Assert.IsTrue(resolveResult.IsSuccess);
@@ -56,27 +63,30 @@ public class _Resolve
         });
     }
 
-    // TODO
-    //[TestMethod]
-    //public void _TestClass()
-    //{
-    //    H.Run(async sp =>
-    //    {
-    //        var HandleProvider = sp.GetRequiredService<IReadHandleProvider<IExpansionReference>>();
 
-    //        var expansionReference = ExpansionReferenceTestClass.ToExpansionReference<TestClass>();
-    //        var iExpansionReference = (IExpansionReference<TestClass>)expansionReference;
-    //        var handle = HandleProvider.GetReadHandle(iExpansionReference);
+    [TestMethod]
+    public void _TestClass()
+    {
+        H.Run(async sp =>
+        {
+            var HandleProvider = sp.GetRequiredService<IReadHandleProvider<IExpansionReference>>();
 
-    //        Assert.AreSame(handle.Reference, iExpansionReference);
+            var expansionReference = ExpansionReferenceTestClass.ToExpansionReference<TestClass>();
+            var iExpansionReference = (IExpansionReference<TestClass>)expansionReference;
+            var handle = HandleProvider.GetReadHandle(iExpansionReference);
 
-    //        var exists = await handle.Exists().ConfigureAwait(false);
-    //        Assert.IsTrue(exists);
+            Assert.AreSame(handle.Reference, iExpansionReference);
 
-    //        var exists = await handle.Resolve().ConfigureAwait(false);
-    //        Assert.IsTrue(exists);
+            var exists = await handle.Exists().ConfigureAwait(false);
+            Assert.IsTrue(exists);
 
+            var resolveResult = await handle.Resolve().ConfigureAwait(false);
+            Assert.IsTrue(resolveResult.IsSuccess);
+            Assert.IsTrue(resolveResult.HasValue);
+            Assert.IsNotNull(resolveResult.Value);
+            Assert.AreEqual("Test Name", resolveResult.Value.Name);
+            Assert.AreEqual(123, resolveResult.Value.Number);
 
-    //    });
-    //}
+        });
+    }
 }

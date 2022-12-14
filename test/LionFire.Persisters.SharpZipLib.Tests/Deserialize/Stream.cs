@@ -17,23 +17,28 @@ namespace LionFire.Persisters.SharpZipLib.Tests.Deserialize;
 public class Stream_
 {
     public static IHostBuilder H => TestHostBuilder.H;
+        
+    static string TestZipPath => Path.Combine(TestHostBuilder.DataDir, "TestSourceFile.zip");
+    static string TestZipUrlPath => TestZipPath.Replace(":", "");
 
-    public const string ZipFileReferenceString = "vos:///c/Temp/TestSourceDir/TestSourceFile.zip";
+    public static readonly string ZipFileReferenceString = $"vos:///{TestZipUrlPath}";
 
     // TODO: VirtualFilesystemPersisterBase needs to check whether the Serializer strategy prefers stream (I think a static ctor figures it out?), in which case, don't get byte[], just get a FileStream and pass it to the Serializer
-    
+
     [TestMethod]
     public void _()
     {
         H.Run(async sp =>
         {
+            var expectedPath = "/" + TestZipUrlPath.Replace("\\", "/");
+
             var reference = ZipFileReferenceString.ToReference<Stream>();
             Assert.IsInstanceOfType(reference, typeof(VobReference<Stream>));
-            Assert.AreEqual("/c/Temp/TestSourceDir/TestSourceFile.zip", reference.Path);
+            Assert.AreEqual(expectedPath, reference.Path);
 
             var readHandle = reference.GetReadHandle<Stream>();
             Assert.IsInstanceOfType(readHandle, typeof(PersisterReadHandle<IVobReference, Stream, VosPersister>));
-            Assert.AreEqual("/c/Temp/TestSourceDir/TestSourceFile.zip", readHandle.Key);
+            Assert.AreEqual(expectedPath, readHandle.Key);
 
             var resolveResult = await readHandle.Resolve();
             Assert.IsNotNull(resolveResult.Value);

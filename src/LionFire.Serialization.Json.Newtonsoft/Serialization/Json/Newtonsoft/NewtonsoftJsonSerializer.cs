@@ -68,14 +68,21 @@ namespace LionFire.Serialization.Json.Newtonsoft
         public JsonSerializerSettings PersistenceSettings { get; }
         public JsonSerializerSettings NetworkSettings { get; }
 
+        /// <summary>
+        /// If no SerializeContext set, defaults to PersistenceSettings
+        /// </summary>
+        /// <param name="op"></param>
+        /// <returns></returns>
+        /// <exception cref="ArgumentException"></exception>
         public JsonSerializerSettings SettingsForContext(PersistenceOperation op)
         {
-            LionSerializeContext lionSerializeContext = op.SerializeContext;
+            LionSerializeContext? lionSerializeContext = op?.SerializeContext;
 
             Exception ThrowMultiple() => new ArgumentException("LionSerializeContext can only be a single flag");
 
             return lionSerializeContext switch
             {
+                null => PersistenceSettings,
                 LionSerializeContext.Persistence => PersistenceSettings,
                 LionSerializeContext.Network => NetworkSettings,
                 LionSerializeContext.Copy => NetworkSettings,
@@ -83,7 +90,7 @@ namespace LionFire.Serialization.Json.Newtonsoft
                 LionSerializeContext.AllSerialization => throw ThrowMultiple(),
                 LionSerializeContext.All => throw ThrowMultiple(),
                 //LionSerializeContext.None => throw new NotImplementedException(),
-                _ => throw new ArgumentException("LionSerializeContext is not set"),
+                _ => throw new NotSupportedException(), //throw new ArgumentException("LionSerializeContext is not set"),
             };
         }
         #endregion
