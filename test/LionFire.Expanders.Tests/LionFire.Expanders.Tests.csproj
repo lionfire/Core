@@ -17,7 +17,7 @@
 	</ItemGroup>
 
 	<ItemGroup>
-	  <ProjectReference Include="..\..\src\LionFire.Persistence.Expanders\LionFire.Persistence.Expanders.csproj" />
+	  <ProjectReference Include="..\..\src\LionFire.Expanders\LionFire.Expanders.csproj" />
 	  <ProjectReference Include="..\..\src\LionFire.Persistence.Filesystem\LionFire.Persistence.Filesystem.csproj" />
 	  <ProjectReference Include="..\..\src\LionFire.Vos\LionFire.Vos.csproj" />
 	</ItemGroup>

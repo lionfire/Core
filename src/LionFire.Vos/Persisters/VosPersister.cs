@@ -8,8 +8,11 @@ using LionFire.Vos.Services;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using System.Diagnostics;
+using System.Threading;
 
 namespace LionFire.Persistence.Persisters.Vos;
+
+// TODO FIXME: also do RetrieveOpMounts approach on non-Retrieve operations, to avoid infinite loops. (Or avoid some other way)
 
 public class VosPersister : SerializingPersisterBase<VosPersisterOptions>, IPersister<IVobReference>, IBatchingReadPersister<IVobReference>
 {
@@ -53,6 +56,8 @@ public class VosPersister : SerializingPersisterBase<VosPersisterOptions>, IPers
     #endregion
 
     #region IBatchingReadPersister
+
+    static AsyncLocal<List<IMount>> RetrieveOpMounts = new();
 
     public async IAsyncEnumerable<IRetrieveResult<TValue>> RetrieveBatches<TValue>(IReferencable<IVobReference> referencable)
     {
@@ -104,6 +109,22 @@ public class VosPersister : SerializingPersisterBase<VosPersisterOptions>, IPers
                 await handlers.Item1.Raise(blea).ConfigureAwait(false);
             }
         }
+        else
+        {
+            var blea = new BeforeRetrieveEventArgs
+            {
+                Vob = vob,
+                ResultType = typeof(TValue),
+                Referencable = referencable,
+                Persister = this,
+            };
+
+            foreach (var handlers in vob.GetAcquireEnumerator2<IVob, Handlers<BeforeRetrieveEventArgs>>())
+            {
+                blea.HandlerVob = handlers.Item2;
+                await handlers.Item1.Raise(blea).ConfigureAwait(false);
+            }
+        }
         //await OnBeforeRetrieve(new VosRetrieveContext { Persister = this, Vob = vob, ListingType = listingType, Referencable = referencable });
 
 
@@ -113,13 +134,36 @@ public class VosPersister : SerializingPersisterBase<VosPersisterOptions>, IPers
 
             foreach (var mount in vobMounts.RankedEffectiveReadMounts)
             {
+                if (RetrieveOpMounts.Value != null)
+                {
+                    if (RetrieveOpMounts.Value.Contains(mount))
+                    {
+                        Debug.Write("RetrieveOpMounts.Value.Contains(mount)");
+                        continue;
+                    }
+                }
+                //if (mount.UpstreamMount != null)
+                //{
+                //    mount.HasAncestor
+                //}
                 var relativePathChunks = vob.PathElements.Skip(mount.VobDepth);
                 var effectiveReference = !relativePathChunks.Any() ? mount.Target : mount.Target.GetChildSubpath(relativePathChunks);
                 var rh = effectiveReference.GetReadHandle<TValue>(serviceProvider: ServiceProvider);
 
-                var childResult = (await rh.Resolve().ConfigureAwait(false)).ToRetrieveResult();
+                RetrieveOpMounts.Value ??= new();
+                RetrieveOpMounts.Value.Add(mount);
 
-                if (typeof(TValue) != typeof(object))
+                IRetrieveResult<TValue> childResult;
+                try
+                {
+                    childResult = (await rh.Resolve().ConfigureAwait(false)).ToRetrieveResult();
+                }
+                finally
+                {
+                    RetrieveOpMounts.Value.Remove(mount);
+                }
+
+                if (typeof(TValue) != typeof(object) && childResult.HasValue)
                 {
                     var childType = childResult.Value?.GetType();
                     if (!childType.IsAssignableTo(typeof(TValue)))
@@ -139,7 +183,7 @@ public class VosPersister : SerializingPersisterBase<VosPersisterOptions>, IPers
                     {
                         result.Flags |= PersistenceResultFlags.Found;
                         result.Value = childResult.Value;
-                        result.ResolvedVia = mount.Target;
+                        result.ResolvedViaMount = mount;
                         l.Trace($"{result}: {vob.Path}");
                         yield return result;
                     }
@@ -186,7 +230,7 @@ public class VosPersister : SerializingPersisterBase<VosPersisterOptions>, IPers
 
         return singleResult;
     }
-    
+
     #endregion
 
     #region IWritePersister
@@ -220,7 +264,7 @@ public class VosPersister : SerializingPersisterBase<VosPersisterOptions>, IPers
                 if (childResult.IsSuccess == true)
                 {
                     result.Flags |= PersistenceResultFlags.Success; // Indicates that at least one underlying persister succeeded
-                    result.ResolvedVia = mount.Target;
+                    result.ResolvedViaMount = mount;
 
                     l.Trace(result.ToString() + " " + wh.Reference);
                     return result;
@@ -230,7 +274,6 @@ public class VosPersister : SerializingPersisterBase<VosPersisterOptions>, IPers
         if (!anyMounts)
         {
             result.Flags |= PersistenceResultFlags.MountNotAvailable;
-            result.ResolvedVia = referencable?.Reference;
         }
         l.Trace($"{result.Flags}: {ReplaceMode.Upsert.DescriptionString()} {value?.GetType().Name} {ReplaceMode.Upsert.ToArrow()} {referencable.Reference} via {result.ResolvedVia}");
         return result;
@@ -302,7 +345,7 @@ public class VosPersister : SerializingPersisterBase<VosPersisterOptions>, IPers
         //                if (childResult.Flags.HasFlag(PersistenceResultFlags.Found))
         //                {
         //                    result.Value = childResult.Value;
-        //                    result.ResolvedVia = mount.Target;
+        //                    result.ResolvedViaMount = mount;
         //                    return result;
         //                }
         //            }

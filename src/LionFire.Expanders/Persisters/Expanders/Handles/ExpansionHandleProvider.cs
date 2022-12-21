@@ -7,8 +7,8 @@ namespace LionFire.Persisters.Expanders;
 
 public class ExpansionHandleProvider : HandleProviderBase<IExpansionReference>
      // PersisterHandleProviderBase<IExpansionReference>
+     , IReadHandleProvider
      , IReadHandleProvider<IExpansionReference>
-//, IReadHandleProvider // REVIEW
 //, IReadWriteHandleProvider<IExpansionReference>
 //, IReadWriteHandleProvider // REVIEW
 //, IWriteHandleProvider<IExpansionReference>
@@ -62,7 +62,25 @@ public class ExpansionHandleProvider : HandleProviderBase<IExpansionReference>
         //        SourceReference = result.result;
         //    }
         //}
+    }
 
+    public static ExpansionReference<TValue>? TryCoerceReferenceType<TValue>(IReference reference)
+    {
+        var result = reference as ExpansionReference<TValue>;
+        if (result != null) return result;
+
+        var nativeReference = reference as IExpansionReference;
+        if (nativeReference == null) return null;
+
+        return new ExpansionReference<TValue>(nativeReference.SourceKey, nativeReference.Path);
+    }
+    public IReadHandle<TValue>? GetReadHandle<TValue>(IReference reference)
+    {
+        var nativeReference = TryCoerceReferenceType<TValue>(reference);
+        if (nativeReference == null) return null;
+
+        var sourceReference = ReferenceProviderService.GetReference(nativeReference.SourceKey);
+        return new ExpanderReadHandle<TValue>(ExpanderProvider, sourceReference, nativeReference);
     }
 
     //public override IReadHandle<TValue> GetReadHandle<TValue>(ExpansionReference reference, TValue preresolvedValue = default)

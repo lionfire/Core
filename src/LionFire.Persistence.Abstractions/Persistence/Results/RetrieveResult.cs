@@ -28,6 +28,7 @@ namespace LionFire.Persistence
         #endregion
 
         public object Error { get; set; }
+        public object ErrorDetail { get; set; }
         public T Value { get; set; }
         public bool HasValue =>
             !EqualityComparer<T>.Default.Equals(default, Value);
@@ -38,7 +39,7 @@ namespace LionFire.Persistence
 
         public bool IsNoop => Flags.HasFlag(PersistenceResultFlags.Noop);
 
-        public IResolveResult<object> InnerResult { get; set; }
+        public object InnerResult { get; set; }
 
         #region Static
 

@@ -19,8 +19,8 @@ public static partial class ReferenceToCollectionHandleExtensions
 
     public static IReadHandle<Metadata<IEnumerable<Listing<object>>>> GetListingsHandle(this IReference reference)
         => reference.GetReadHandle<Metadata<IEnumerable<Listing<object>>>>();
-    public static IReadHandle<Metadata<IEnumerable<Listing<object>>>> GetListingsHandle(this IReferencable referencable)
-        => referencable.Reference.GetReadHandle<Metadata<IEnumerable<Listing<object>>>>();
+    //public static IReadHandle<Metadata<IEnumerable<Listing<object>>>> GetListingsHandle(this IReferencable referencable)
+        //=> referencable.Reference.GetReadHandle<Metadata<IEnumerable<Listing<object>>>>();
     public static IReadHandle<Metadata<IEnumerable<Listing<T>>>> GetListingsHandle<T>(this IReference reference)
               => reference.GetReadHandle<Metadata<IEnumerable<Listing<T>>>>();
     public static IReadHandle<Metadata<IEnumerable<Listing<T>>>> ReferenceGetListingsHandle<T>(this IReferencable referencable)

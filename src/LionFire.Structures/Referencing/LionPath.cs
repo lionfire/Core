@@ -305,6 +305,7 @@ namespace LionFire.Referencing
 
         #region Coercion / Normalization
 
+        // OPTIMIZE?
         public static string Normalize(string path) => path?.Replace(@"\", "/");
 
         public static string StripSpecifiers(string lionPath) => lionPath.TrimEnd(ExplicitNoExtensionSuffix).TrimEnd(ExplicitHasExtension);

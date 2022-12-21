@@ -1,8 +1,45 @@
-﻿using LionFire.Persistence;
-using LionFire.Persistence.Handles;
-using LionFire.Persisters.Expanders;
+﻿//using LionFire.Persistence;
+//using LionFire.Persistence.Handles;
+//using LionFire.Persisters.Expanders;
+//using LionFire.Vos;
 
-namespace ExpansionReference_;
+//namespace ExpansionReference_;
+
+//[TestClass]
+//public class _Exists
+//{
+//    public static IHostBuilder H => TestHostBuilder.ExpandMount;
+
+//    public static readonly string VobReferenceString = $"vos:///test/ExpandMount/TestTargetDir/TestClass.json";
+    
+//    [TestMethod]
+//    public void _()
+//    {
+//        H.Run(async sp =>
+//        {
+//            var HandleProvider = sp.GetRequiredService<IReadHandleProvider<IExpansionReference>>();
+
+//            var reference = VobReferenceString.ToVobReference<TestClass>();
+//            var handle = HandleProvider.GetReadHandle(reference);
+//            Assert.AreSame(handle.Reference, reference);
+
+//            var exists = await handle.Exists();
+
+//            Assert.IsTrue(exists);
+
+//        });
+//    }
+//}
+
+
+using LionFire.Persistence.Handles;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace ExpansionReadHandle_;
 
 [TestClass]
 public class _Exists
@@ -13,8 +50,6 @@ public class _Exists
     static string TestZipUrlPath => TestZipPath.Replace(":", "");
     public static readonly string ExpansionReferenceString = $"expand:vos://{TestZipUrlPath}:/TestTargetDir/TestClass.json";
 
-    //public const string ExpansionReferenceString = "expand:vos://c/TestSourceDir/TestSourceFile.zip:/TestTargetDir/TestTargetFile.txt";
-    
     [TestMethod]
     public void _()
     {
@@ -29,7 +64,6 @@ public class _Exists
             Assert.AreSame(handle.Reference, iExpansionReference);
 
             var exists = await handle.Exists();
-
             Assert.IsTrue(exists);
         });
     }

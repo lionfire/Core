@@ -15,15 +15,16 @@ namespace LionFire.Vos
     public interface IVob :
         //IReadOnlyMultiTyped, 
         IReferencable,
+        IReferencable<IVobReference>,
         IEnumerable<IVob>, // Does not trigger a Retrieve (IO) operation -- it is just the child Vobs currently tracked
         IFlex,
         IAcquires,
         IParented<IVob>
 
     {
-        new IVobReference Reference { get; }
         string Name { get; }
-        IVob Parent { get; }
+        //IVobReference Reference { get; }
+        //IVob Parent { get; }
 
         #region Cache
 

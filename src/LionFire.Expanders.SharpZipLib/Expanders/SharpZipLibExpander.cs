@@ -132,6 +132,11 @@ public class SharpZipLibExpander : ExpanderPersister, ISupportsFileExtensions, I
         var nativeTargetPath = targetPath.TrimStart('/');
         var entryIndex = zipFile.FindEntry(nativeTargetPath, OptionsMonitor.CurrentValue.IgnoreCaseInTargetPath);
 
+        bool foundFile = false;
+        bool foundDirectory = false;
+
+        List<DeserializationResult<TValue>>? deserializationResults = null;
+
         if (entryIndex == -1)
         {
             return RetrieveResult<TValue>.SuccessNotFound;
@@ -142,13 +147,25 @@ public class SharpZipLibExpander : ExpanderPersister, ISupportsFileExtensions, I
 
             if (entry.IsFile)
             {
+                foundFile = true;
                 var ext = Path.GetExtension(targetPath).TrimFirstDot();
                 //throw new NotImplementedException("Deserialize ZipEntry");
                 var ss = DependencyContext.Current.GetService<ISerializationProvider>(); // FIXME SERVICELOCATOR TEMP
+                var strategies = ss.GetDistinctRankedStrategiesByExtension(s => s.SupportsExtension(ext));
+                if (!strategies.Any())
+                {
+                    return new RetrieveResult<TValue>
+                    {
+                        Error = $"Found file {nativeTargetPath}, but {nameof(ISerializationProvider)} provided no serializers",
+                        Flags = PersistenceResultFlags.SerializerNotAvailable | PersistenceResultFlags.Fail,
+                    };
+                }
 
                 using var stream = zipFile.GetInputStream(entry);
                 //new PersistenceOperation(null, new DeserializePersistenceOperation() { }))
-                foreach (var s in ss.GetDistinctRankedStrategiesByExtension(s => s.SupportsExtension(ext)))
+
+
+                foreach (var s in strategies)
                 {
                     //s.strategy.SupportedCapabilities.HasFlag(SerializationFlags.)
                     var deserializeResult = s.strategy.ToObject<TValue>(stream);
@@ -160,17 +177,14 @@ public class SharpZipLibExpander : ExpanderPersister, ISupportsFileExtensions, I
                     }
                     else
                     {
-                        throw new NotImplementedException("Deserialize fail");
-                        //var result = new RetrieveResult
-                        //{
-                        //    Error = deserializeResult.Exception
-                        //};
+                        deserializationResults ??= new List<DeserializationResult<TValue>>();
+                        deserializationResults.Add(deserializeResult);
                     }
-                    //return Results;
                 }
             }
             else if (entry.IsDirectory)
             {
+                foundDirectory = true;
                 throw new NotImplementedException();
             }
             else
@@ -181,7 +195,17 @@ public class SharpZipLibExpander : ExpanderPersister, ISupportsFileExtensions, I
             //return new RetrieveResult<TValue>(,)
         }
 
-        throw new NotImplementedException();
+        if (deserializationResults != null)
+        {
+            return new RetrieveResult<TValue>
+            {
+                Error = $"Found file {nativeTargetPath}, but {(deserializationResults.Count == 1 ? "serializer" : $"{deserializationResults.Count} serializers")} failed to deserialize.  See ErrorDetail.",
+                ErrorDetail = deserializationResults,
+                Flags = PersistenceResultFlags.Fail,
+            };
+        }
+
+        throw new UnreachableCodeException();
     }
 
     public override Task<RetrieveResult<TValue>> Retrieve<TValue>(ExpanderReadHandle<TValue> readHandle)

@@ -13,5 +13,7 @@ public class ExpansionMountOptions
     public int ReadCount { get; } = 1;
     public int ReadWriteCount { get; } = 2;
     public int WriteCount { get; } = 3;
+
+    public TimeSpan? TimeBetweenScans { get; set; } = TimeSpan.FromMinutes(5);
 }
 

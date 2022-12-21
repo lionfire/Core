@@ -22,7 +22,7 @@ public class Program
                 .WebHost<VosBlazorHostStartup>()
             )
             .ConfigureServices((c,s) => s
-                .ArchiveAdapter("/") // TEMP
+                .AddExpanderMounter("/") // TEMP
                 .AddSharpZipLib()
                 .TryAddEnumerableSingleton<IArchivePlugin, ZipPlugin>() // REVIEW
 

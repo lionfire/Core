@@ -50,23 +50,23 @@ namespace LionFire.ExtensionMethods.Acquisition
 
         // REFACTOR: Replace minDepth with parented.SkipParents(depth)
         // REFACTOR: replace loop with GetParentEnumerator?
-        public static IEnumerable<(TValue, TNode)> GetAcquireEnumerator<TNode, TValue>(this TNode parented, int minDepth = 0, int maxDepth = -1)
+        public static IEnumerable<(TValue?, TNode)> GetAcquireEnumerator<TNode, TValue>(this TNode? node, int minDepth = 0, int maxDepth = -1, bool includeNull = false)
             where TNode : IParented<TNode>
             where TValue : class
         {
             int depth = 0;
-            for (int skip = minDepth; skip > 0 && parented != null; skip--)
+            for (int skip = minDepth; skip > 0 && node != null; skip--)
             {
-                parented = parented.Parent;
+                node = node.Parent;
                 depth++;
             }
 
-            for (TValue node = Acquisitor<TNode, TValue>.GetValue(parented); node != null && (maxDepth < 0 || depth <= maxDepth); node = parented == null ? null : Acquisitor<TNode, TValue>.GetValue(parented))
+            for (TValue? value = node == null ? null : Acquisitor<TNode, TValue>.GetValue(node); node != null && (maxDepth < 0 || depth <= maxDepth); value = node == null ? null : Acquisitor<TNode, TValue>.GetValue(node))
             {
-                if (node != null) yield return (node, parented);
+                if (includeNull || value != null) yield return (value, node);
 
-                parented = parented.Parent;
-                if (parented == null) break;
+                node = node.Parent;
+                if (node == null) break;
                 depth++;
             }
         }

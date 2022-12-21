@@ -98,8 +98,35 @@ namespace LionFire.Vos.Mounts
         public bool CanHaveMultiReadMounts { get; set; }
         public bool CanHaveMultiWriteMounts { get; set; }
 
-        private bool MountRead(IMount mount, bool force = false)
+        private IMount QueryExistingMount(IMount mount, ref IMount single, ref List<IMount> multi)
         {
+            ArgumentNullException.ThrowIfNull(mount);
+            if(single?.Target.Key == mount.Target.Key) { return single; }
+            return multi?.Where(m => m.Target.Key == mount.Target.Key).FirstOrDefault();
+        }
+
+        public bool UpdateReadMount(IMount existing, IMount newMount)
+        {
+            if(!existing.Options.Equals(newMount.Options))
+            {
+                Unmount(existing.Target.Key);
+                MountRead(newMount);
+                return true;
+            }
+            if(existing.IsEnabled != newMount.IsEnabled)
+            {
+                existing.IsEnabled = newMount.IsEnabled;
+                return true;
+            }
+
+            return false;
+        }
+                
+        private bool MountRead(IMount mount, bool force = false) // DUPLICATE of MountWrite
+        {
+            var existing = QueryExistingMount(mount, ref localReadMount, ref localReadMounts);
+            if (existing != null) { return UpdateReadMount(existing, mount); }
+
             #region Validation
 
             if (localReadMounts == null && localReadMount == null)
@@ -310,6 +337,9 @@ namespace LionFire.Vos.Mounts
 
         private bool MountWrite(IMount mount, bool force = false) // DUPLICATE of MountRead
         {
+            var existing = QueryExistingMount(mount, ref localReadMount, ref localReadMounts);
+            if (existing != null) { return UpdateReadMount(existing, mount); }
+
             #region Validation
 
             if (localWriteMounts == null && localWriteMount == null)

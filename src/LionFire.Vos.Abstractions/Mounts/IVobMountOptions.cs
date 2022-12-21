@@ -1,7 +1,12 @@
-﻿namespace LionFire.Vos.Mounts;
+﻿#nullable enable
+using LionFire.MultiTyping;
+using System;
 
-public interface IVobMountOptions
+namespace LionFire.Vos.Mounts;
+
+public interface IVobMountOptions : IEquatable<IVobMountOptions>, IMultiTypable
 {
+    string Name { get; }
     bool IsExclusive { get; set; }
     bool IsSealed { get; set; }
     bool IsWritable { get; set; }
@@ -16,5 +21,9 @@ public interface IVobMountOptions
     bool IsExclusiveWithReadAndWrite { get; set; }
     string RootName { get; set; }
 
+    bool? IsOwnedByOperatingSystemUser { get; } // REVIEW - does this belong here?
+    bool? IsVariableDataLocation { get; } // REVIEW - does this belong here?
     //IFlex Flex { get; set; }
+
+    IMount? UpstreamMount { get; set; }
 }

@@ -1,5 +1,6 @@
 ﻿using LionFire.Extensions.DefaultValues;
 using LionFire.FlexObjects.Implementation;
+using LionFire.Threading;
 using System;
 using System.Collections.Generic;
 using System.Reflection;
@@ -164,7 +165,7 @@ namespace LionFire.FlexObjects
                     result = match;
                     return true;
                 }
-                if (flex.FlexData is FlexTypeDictionary d)
+                if (flex.FlexData is FlexTypeDictionary d && d.Types?.ContainsKey(typeof(T)) == true)
                 {
                     result = (T)d.Types[typeof(T)];
                     return true;

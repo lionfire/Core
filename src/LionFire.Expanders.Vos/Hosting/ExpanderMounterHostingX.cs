@@ -12,32 +12,27 @@ using System;
 
 namespace LionFire.Hosting;
 
-public static class ExpansionMounterHostingExtensions
+public static class ExpanderMounterHostingX
 {
-    public static IServiceCollection ArchiveAdapter(this IServiceCollection services, VobReference vobReference, ExpansionMountOptions? options = null)
+    public static IServiceCollection AddExpanderMounter(this IServiceCollection services, VobReference vobReference, ExpansionMountOptions? options = null)
     {
         services.InitializeVob<IServiceProvider>(vobReference, (v, serviceProvider) =>
         {
-            v.AddArchiveAdapter(serviceProvider, options);
+            v.AddExpanderMounter(serviceProvider, options);
         }, key: $"{vobReference} ArchivePlugin", configure: c => c.Provide($"{vobReference} ArchivePlugin"));
         return services;
     }
 
-    public static IVob AddArchiveAdapter(this IVob vob, IServiceProvider serviceProvider, ExpansionMountOptions? options = null)
+    public static IVob AddExpanderMounter(this IVob vob, IServiceProvider serviceProvider, ExpansionMountOptions? options = null)
     {
         options ??= new ExpansionMountOptions();
 
-        var archivePlugin = ActivatorUtilities.CreateInstance<ExpansionMounter>(serviceProvider, vob, options);
+        var expanderMounter = ActivatorUtilities.CreateInstance<ExpanderMounter>(serviceProvider, vob, options);
 
-        vob.AddOwn<ExpansionMounter>(archivePlugin);
+        vob.AddOwn(expanderMounter);
 
-        var h = vob.Acquire<IVob, Handlers<BeforeListEventArgs>>();
-        if (h == null)
-        {
-            h = new Handlers<BeforeListEventArgs>();
-            vob.SetAcquirable<IVob, Handlers<BeforeListEventArgs>>(h);
-        }
-        h.AddHandler(archivePlugin.BeforeListHandler);
+        AddHandler<BeforeListEventArgs>(vob, expanderMounter, expanderMounter.BeforeListHandler);
+        AddHandler<BeforeRetrieveEventArgs>(vob, expanderMounter, expanderMounter.BeforeRetrieveHandler);
 
         //#region Deprecated
 
@@ -51,5 +46,16 @@ public static class ExpansionMounterHostingExtensions
         //#endregion
 
         return vob;
+
+        static void AddHandler<TArgs>(IVob vob, ExpanderMounter archivePlugin, Func<TArgs, Task> handler)
+        {
+            var h = vob.Acquire<IVob, Handlers<TArgs>>();
+            if (h == null)
+            {
+                h = new Handlers<TArgs>();
+                vob.SetAcquirable<IVob, Handlers<TArgs>>(h);
+            }
+            h.AddHandler(handler);
+        }
     }
 }

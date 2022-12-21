@@ -201,7 +201,7 @@ namespace LionFire.Vos
 
         private void DoSetPath(string path)
         {
-            this.path = path;
+            this.path = LionPath.Normalize(path);
             persister = VosPath.GetRootNameForPath(path);
         }
 

@@ -1,4 +1,5 @@
 ﻿using LionFire.ExtensionMethods.Parsing;
+using LionFire.Ontology;
 using LionFire.Referencing;
 using System;
 using System.Collections.Generic;
@@ -38,6 +39,7 @@ public interface IParses<TInput, TOutput>
 #endif
 }
 
+[TreatAs(typeof(IExpansionReference))]
 public class ExpansionReference : ExpansionReference<object>, IParses<string, ExpansionReference>
 {
     /// <summary>
@@ -47,6 +49,17 @@ public class ExpansionReference : ExpansionReference<object>, IParses<string, Ex
     public ExpansionReference(string key) : base(key)
     {
     }
+    public ExpansionReference(string sourceKey, string targetPath) : base(sourceKey,targetPath) { }
+
+    public new static ExpansionReference? TryParse(string x)
+    {
+        var result = TryParseIntoComponents(x);
+        if (result == null) return null;
+        else return new ExpansionReference(result.Value.sourceUri, result.Value.targetPath);
+    }
+    public new static ExpansionReference Parse(string x) => TryParse(x) ?? throw new ArgumentException(InvalidFormatErrorMessage);
+
+    public override ExpansionReference CloneWithPath(string newPath) => new ExpansionReference(SourceKey, newPath);
 
 }
 
@@ -57,6 +70,7 @@ public class ExpansionReference : ExpansionReference<object>, IParses<string, Ex
 /// Path refers to the SubPath within the Target, which can be found at the SourceKey
 /// </remarks>
 /// <typeparam name="TValue"></typeparam>
+[TreatAs(typeof(IExpansionReference))]
 public class ExpansionReference<TValue> : ReferenceBase<ExpansionReference<TValue>>, IExpansionReference<TValue>
 {
     #region Constants
@@ -111,6 +125,8 @@ public class ExpansionReference<TValue> : ReferenceBase<ExpansionReference<TValu
         else return new ExpansionReference<TValue>(result.Value.sourceUri, result.Value.targetPath);
     }
 
+    public override ExpansionReference<TValue> CloneWithPath(string newPath) => new ExpansionReference<TValue>(SourceKey, newPath);
+
     #endregion
 
     #region IExpansionReference
@@ -151,4 +167,10 @@ public class ExpansionReference<TValue> : ReferenceBase<ExpansionReference<TValu
     {
         throw new NotSupportedException();
     }
+
+    #region Misc
+
+    public override string ToString() => $"expand:{SourceKey}:{Path}";
+
+    #endregion
 }

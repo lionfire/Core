@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net.Http.Headers;
 
 namespace LionFire.Vos;
 
@@ -13,6 +14,8 @@ public static class VobReferenceExtensions
     /// <param name="path"></param>
     /// <returns></returns>
     public static VobReference V(this string path) => path.ToVobReference();
+
+    public static VobReference<TValue> ToVobReference<TValue>(this string path) => new VobReference<TValue>(path);
 
     public static VobReference ToVobReference(this string path) => new VobReference(path);
     public static VobReference ToVobReference(this string[] pathChunks) => new VobReference(pathChunks);

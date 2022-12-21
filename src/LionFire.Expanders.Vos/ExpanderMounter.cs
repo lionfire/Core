@@ -14,6 +14,7 @@ using LionFire.Vos.Mounts;
 using Microsoft.Extensions.Logging;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Net.Mail;
 using System.Threading;
@@ -37,7 +38,7 @@ public interface IArchive { }
 
 // Hooks:
 //  - BeforeList: 
-public class ExpansionMounter : IParentable<IVob>
+public class ExpanderMounter : IParentable<IVob>
 {
 
     #region Relationships
@@ -57,23 +58,22 @@ public class ExpansionMounter : IParentable<IVob>
     #endregion
 
     public ExpansionMountOptions Options { get; }
-    public ILogger<ExpansionMounter> Logger { get; }
-    //public IEnumerable<IArchivePlugin> ArchivePlugins { get; }
+    public ILogger<ExpanderMounter> Logger { get; }
 
-    public SortedList<int, IArchivePlugin> ArchivePlugins { get; }
+    public SortedList<int, IExpanderPlugin> Expanders { get; }
     public IEnumerable<string> ArchiveExtensions { get; }
 
     #region Lifecycle
 
-    public ExpansionMounter(IVob vob, ExpansionMountOptions options, ILogger<ExpansionMounter> logger, IEnumerable<IArchivePlugin> archivePlugins)
+    public ExpanderMounter(IVob vob, ExpansionMountOptions options, ILogger<ExpanderMounter> logger, IEnumerable<IExpanderPlugin> archivePlugins)
     {
         Parent = vob;
         Options = options;
         Logger = logger;
 
-        ArchivePlugins = new SortedList<int, IArchivePlugin>(archivePlugins.ToDictionary(a => a.Priority ?? a.GetType().GetHashCode()));
+        Expanders = new SortedList<int, IExpanderPlugin>(archivePlugins.ToDictionary(a => a.Priority ?? a.GetType().GetHashCode()));
 
-        ArchiveExtensions = new List<string>(ArchivePlugins.SelectMany(p => p.Value.Extensions));
+        ArchiveExtensions = new List<string>(Expanders.SelectMany(p => p.Value.Extensions));
     }
 
     #endregion
@@ -138,16 +138,44 @@ public class ExpansionMounter : IParentable<IVob>
         };
     }
 
-    public bool ShouldScan(IVobReference reference)
+    public async Task<bool> Scan(BeforeReadEventArgs args)
     {
+        bool foundExpanderMounterVob = false;
+
+        foreach (var x in args.Vob.GetAcquireEnumerator2<IVob, ExpanderScanState>(includeNull: true).TakeWhile(z =>
+        {
+            var shouldContinue = !foundExpanderMounterVob;
+            if (z.Item2 == this.Vob) foundExpanderMounterVob = true;
+            return shouldContinue;
+        }))
+        {
+            var state = x.Item1;
+            if (state == null)
+            {
+                state = x.Item2.GetOrAddOwn(_ => new ExpanderScanState());
+            }
+
+            bool shouldScan =
+                !state.LastScan.HasValue
+                || Options.TimeBetweenScans.HasValue && DateTime.UtcNow - state.LastScan > Options.TimeBetweenScans.Value
+                ;
+
+            if (shouldScan)
+            {
+                state.LastScan = DateTime.UtcNow;
+                await TryAutoMountArchives(args.Persister, x.Item2);
+            }
+        }
+
         return true; // TODO - opt-in to caching logic, and file watching to avoid excess scans
     }
 
     private static AsyncLocal<bool> IsInArchiveScan = new();
 
 
-    public async Task TryAutoMountArchives(VosPersister vosPersister, IReferencable<IVobReference> referencable)
+    public async Task TryAutoMountArchives(VosPersister vosPersister, IVob vob)
     {
+        IReferencable<IVobReference> referencable = vob.Reference;
         ExpansionMountStates? states = null;
 
         if (IsInArchiveScan.Value) { return; }
@@ -158,7 +186,7 @@ public class ExpansionMounter : IParentable<IVob>
 
             //TODO: Instead of RetrieveAll, use List(filter ), with a filter that's either a Predicate<string filename>
 
-            await foreach (var archiveResultsBatch in vosPersister.RetrieveBatches<Metadata<IEnumerable<Listing<IArchive>>>>(referencable))
+            await foreach (var archiveResultsBatch in vosPersister.RetrieveBatches<Metadata<IEnumerable<Listing<IArchive>>>>(vob))
             {
                 //var listResult = await vosPersister.List<object>(referencable, new ListFilter
                 //{
@@ -179,43 +207,44 @@ public class ExpansionMounter : IParentable<IVob>
 
                 if (archiveResultsBatch.IsSuccess == true)
                 {
-                    foreach (var archiveResult in archiveResultsBatch.Value.Value)
-                    {
-                        var archiveName = GetExpansionSubpath(archiveResult.Name);
-
-                        if (archiveName.Direction != IODirection.Unspecified)
+                    if (archiveResultsBatch.HasValue && archiveResultsBatch.Value.Value != null)
+                        foreach (var archiveResult in archiveResultsBatch.Value.Value)
                         {
+                            Debug.Assert(archiveResult?.Name != null);
+                            var expansionArgs = GetExpansionSubpath(archiveResult.Name);
+                            if (expansionArgs.Direction == IODirection.Unspecified) continue;
                             var ext = Path.GetExtension(archiveResult.Name);
-                            //    var ext = LionPath.GetExtension(archiveResult.Value);
-                            foreach (var plugin in MatchingPluginsForExtension(ext))
+                            //var ext = LionPath.GetExtension(archiveResult.Name);
+                            foreach (var plugin in MatchingExpandersForExtension(ext))
                             {
-                                var vob = vosPersister.Root[referencable.Reference];
-                                states ??= vob.Acquire<ExpansionMountStates>();
-
+                                //var vob = vosPersister.Root[vob.Reference];
+                                states ??= vob.GetOrAddOwn<ExpansionMountStates>();
+                                Debug.Assert(states.States != null);
                                 var state = states.States.GetOrAdd(archiveResult.Name, (n) => new ExpansionMountState { Name = n });
 
                                 if (state.Mount == null)
                                 {
-                                    var expansionReference = new VobReference(LionPath.Combine(referencable.Reference.PathChunks, archiveResult.Name))
+                                    var expansionReference = new ExpansionReference(("/" + LionPath.Combine(vob.Reference.PathChunks, archiveResult.Name)).ToVobReference().ToString(), "");
+                                    var vobMountPoint = vob;
+                                    if (!string.IsNullOrEmpty(expansionArgs.Subpath))
                                     {
-                                        Persister = PersisterName,
-                                    };
-                                    vob.Mount(expansionReference, new VobMountOptions
+                                        vobMountPoint = vobMountPoint[expansionArgs.Subpath];
+                                    }
+
+                                    var upstreamMount = (archiveResultsBatch as VosPersistenceResult)?.ResolvedViaMount;
+                                    var mount = vobMountPoint.Mount(expansionReference, new VobMountOptions
                                     {
-                                        IsReadOnly = archiveName.Direction == IODirection.Read,
-                                        IsWritable = archiveName.Direction.IsWritable(),
-                                        Name = $"Expansion: {expansionReference.Path}",
-                                        //ReadPriority = ,
+                                        IsReadOnly = expansionArgs.Direction == IODirection.Read,
+                                        IsWritable = expansionArgs.Direction.IsWritable(),
+                                        Name = $"Expansion: {expansionReference.ToString()}",
+                                        UpstreamMount = upstreamMount,
+                                        //ReadPriority = -10,
                                         //WritePriority = ,
                                     });
+                                    Logger.LogInformation($"ExpanderMounter mounted {archiveResult.Name}: {mount}.");
                                 }
-
-                                Logger.LogCritical($"NEXT: implement FilenameFilter.  Then: found archive file {archiveResult.Name}. Next, get plugin");
-                                //        Logger.LogCritical($"NEXT: found {plugin.Name} archive: {archiveResult.Value}");
-                                //                Trace.WriteLine($"Vob found archive: {archiveName} at {referencable.Reference.Path}");
                             }
                         }
-                    }
                 }
             }
         }
@@ -228,10 +257,12 @@ public class ExpansionMounter : IParentable<IVob>
     public const string PersisterName = "expand";
 
 
-    public IEnumerable<IArchivePlugin> MatchingPluginsForExtension(string extension)
+    public IEnumerable<IExpanderPlugin> MatchingExpandersForExtension(string extension)
     {
+        // ENH: Sort by plugin priority
+
         extension = extension.TrimStart('.');
-        foreach (var plugin in ArchivePlugins.Values)
+        foreach (var plugin in Expanders.Values)
         {
             if (plugin.Extensions.Contains(extension)) { yield return plugin; }
         }
@@ -241,16 +272,16 @@ public class ExpansionMounter : IParentable<IVob>
     {
         if (args.ListingType != typeof(IArchive))
         {
-            var reference = args.Referencable.Reference;
-            if (ShouldScan(reference))
+            // TODO: how to avoid infinite recursion?
+            if (args.Flags?.Contains("ArchiveScan") != true)
             {
-                // TODO: how to avoid infinite recursion?
-                if (args.Flags?.Contains("ArchiveScan") != true)
-                {
-                    await TryAutoMountArchives((VosPersister)args.Persister, reference);
-                }
+                await Scan(args).ConfigureAwait(false);
             }
         }
+    }
+    public Task BeforeRetrieveHandler(BeforeRetrieveEventArgs args)
+    {
+        return Scan(args);
     }
 }
 
@@ -284,7 +315,7 @@ public class ExpansionMounter : IParentable<IVob>
 //    }
 //}
 
-public interface IArchivePlugin
+public interface IExpanderPlugin
 {
     int? Priority { get; }
     string Name { get; }
@@ -294,7 +325,7 @@ public interface IArchivePlugin
     Task Write(string pathToArchive, string pathInArchive, string textContents);
 }
 
-public class ZipPlugin : IArchivePlugin
+public class ZipPlugin : IExpanderPlugin
 {
     public string Name => "Zip";
 
@@ -325,6 +356,12 @@ public class ExpansionMountState
 public class ExpansionMountStates
 {
     public ConcurrentDictionary<string, ExpansionMountState> States { get; } = new();
+}
+
+public class ExpanderScanState
+{
+    public DateTime? LastScan { get; set; }
+
 }
 
 

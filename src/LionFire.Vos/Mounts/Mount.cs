@@ -5,6 +5,7 @@ using System.Text;
 using LionFire.Collections;
 using LionFire.Instantiating;
 using LionFire.ObjectBus;
+using LionFire.Ontology;
 using LionFire.Persistence;
 using LionFire.Referencing;
 using LionFire.Structures;
@@ -33,6 +34,8 @@ namespace LionFire.Vos.Mounts
         #region Options
 
         public IVobMountOptions Options { get; }
+
+        IMount IParented<IMount>.Parent => Options?.UpstreamMount;
 
         #endregion
 

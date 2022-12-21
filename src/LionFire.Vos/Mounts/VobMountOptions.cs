@@ -8,7 +8,7 @@ using System.Text;
 
 namespace LionFire.Vos.Mounts;
 
-public class VobMountOptions : IVobMountOptions, IMultiTypable
+public class VobMountOptions : IVobMountOptions
 {
     #region (Static)
 
@@ -86,8 +86,6 @@ public class VobMountOptions : IVobMountOptions, IMultiTypable
         }
     }
     private IMultiTyped multiTyped;
-
-
 
     #endregion
 
@@ -198,6 +196,9 @@ public class VobMountOptions : IVobMountOptions, IMultiTypable
             }
         }
     }
+
+    public IMount UpstreamMount { get; set; }
+
     #endregion
 
     #endregion
@@ -211,6 +212,62 @@ public class VobMountOptions : IVobMountOptions, IMultiTypable
     //   - Common object merge: this, other, merge based on priority
     //   - Common node merge: this, other, merge based on priority
 
+    #region Misc
+
+    public override bool Equals(object obj)
+    {
+        return Equals(obj as VobMountOptions);
+    }
+
+    public bool Equals(IVobMountOptions other)
+    {
+        return other is not null &&
+               MultiTypeEqualityComparer.Default.Equals(MultiTyped, other.MultiTyped) &&
+               RootName == other.RootName &&
+               Name == other.Name &&
+               IsManuallyEnabled == other.IsManuallyEnabled &&
+               IsExclusive == other.IsExclusive &&
+               IsExclusiveWithReadAndWrite == other.IsExclusiveWithReadAndWrite &&
+               IsSealed == other.IsSealed &&
+               IsWritable == other.IsWritable &&
+               TryCreateIfMissing == other.TryCreateIfMissing &&
+               ReadPriority == other.ReadPriority &&
+               WritePriority == other.WritePriority &&
+               IsOwnedByOperatingSystemUser == other.IsOwnedByOperatingSystemUser &&
+               IsVariableDataLocation == other.IsVariableDataLocation
+               ;
+    }
+
+    public override int GetHashCode()
+    {
+        HashCode hash = new HashCode();
+        hash.Add(MultiTyped);
+        hash.Add(RootName);
+        hash.Add(Name);
+        hash.Add(IsManuallyEnabled);
+        hash.Add(IsExclusive);
+        hash.Add(IsExclusiveWithReadAndWrite);
+        hash.Add(IsSealed);
+        hash.Add(IsWritable);
+        hash.Add(TryCreateIfMissing);
+        hash.Add(ReadPriority);
+        hash.Add(WritePriority);
+        hash.Add(IsOwnedByOperatingSystemUser);
+        hash.Add(IsVariableDataLocation);
+        return hash.ToHashCode();
+    }
+
+    public static bool operator ==(VobMountOptions left, VobMountOptions right)
+    {
+        return EqualityComparer<VobMountOptions>.Default.Equals(left, right);
+    }
+
+    public static bool operator !=(VobMountOptions left, VobMountOptions right)
+    {
+        return !(left == right);
+    }
+
+    #endregion
 }
 
 public static class MountOptionsExtensions

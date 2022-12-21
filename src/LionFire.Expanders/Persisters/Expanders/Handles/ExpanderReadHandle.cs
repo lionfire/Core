@@ -135,7 +135,9 @@ public class ExpanderReadHandle<TValue> : ReadHandleBase<ExpansionReference<TVal
             return new RetrieveResult<TValue>()
             {
                 Flags = PersistenceResultFlags.Fail | PersistenceResultFlags.InnerFail,
-                InnerResult = (IResolveResult<object>)targetResolveResult,
+                // REVIEW - why can't I cast? Changed InnerResult to object
+                //InnerResult = (IResolveResult<object>)(IRetrieveResult<object>)(IRetrieveResult<TValue>)targetResolveResult,
+                InnerResult = targetResolveResult,
             };
         }
         if (!targetResolveResult.HasValue)

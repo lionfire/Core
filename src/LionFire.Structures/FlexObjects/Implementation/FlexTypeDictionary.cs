@@ -1,4 +1,5 @@
-﻿using LionFire.ExtensionMethods;
+﻿#nullable enable
+using LionFire.ExtensionMethods;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
@@ -7,8 +8,8 @@ namespace LionFire.FlexObjects.Implementation
 {
     public class FlexTypeDictionary
     {
-        public ConcurrentDictionary<Type, object> Types => types;
-        private ConcurrentDictionary<Type, object> types;
+        public ConcurrentDictionary<Type, object>? Types => types;
+        private ConcurrentDictionary<Type, object>? types;
 
         public FlexTypeDictionary(params object[] items)
         {
@@ -23,14 +24,14 @@ namespace LionFire.FlexObjects.Implementation
         public bool ContainsKey(object item)
         {
             var (type, _) = ResolveType(item);
-            return types.ContainsKey(type);
+            return types?.ContainsKey(type) == true;
         }
 
         public void Add(object item)
         {
             if (item == null) throw new ArgumentNullException();
 
-            if (types == null) types = new ConcurrentDictionary<Type, object>();
+            types ??= new ConcurrentDictionary<Type, object>();
 
             var (type, actualObject) = ResolveType(item);
             types.AddOrThrow(type, actualObject);
@@ -47,9 +48,10 @@ namespace LionFire.FlexObjects.Implementation
             if (types[type] != item) return false;
 
             // REVIEW - potential data loss in thread race conditions, or failure on bad equality comparison
-            if (!types.TryRemove(type, out object removed)) return false;
+            if (!types.TryRemove(type, out object? removed)) return false;
             else
             {
+                if (types?.Count == 0) types = null;
                 if (removed == actualObject) return true;
                 else
                 {

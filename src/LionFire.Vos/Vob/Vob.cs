@@ -446,7 +446,7 @@ namespace LionFire.Vos
 
         VobNode<TInterface> IVobInternals.TryAddOwnVobNode<TInterface>(Func<IVobNode, TInterface> valueFactory)
         {
-            if (vobNodesByType == null) vobNodesByType = new ConcurrentDictionary<Type, IVobNode>();
+            vobNodesByType ??= new ConcurrentDictionary<Type, IVobNode>();
             var already = vobNodesByType.ContainsKey(typeof(TInterface));
             VobNode<TInterface> result = null;
             if (!already)
@@ -461,7 +461,7 @@ namespace LionFire.Vos
 
         VobNode<TInterface> IVobInternals.AcquireOrAddOwnVobNode<TInterface>(Func<IVobNode, TInterface> valueFactory)
         {
-            if (vobNodesByType == null) vobNodesByType = new ConcurrentDictionary<Type, IVobNode>();
+            vobNodesByType ??= new ConcurrentDictionary<Type, IVobNode>();
             return (VobNode<TInterface>)vobNodesByType.GetOrAdd(typeof(TInterface),
                 t => (IVobNode)Activator.CreateInstance(typeof(VobNode<>).MakeGenericType(t),
                 this, valueFactory ?? DefaultVobNodeValueFactory<TInterface>));
@@ -471,7 +471,7 @@ namespace LionFire.Vos
         //where TInterface : class
         //where TImplementation : TInterface
         {
-            if (vobNodesByType == null) vobNodesByType = new ConcurrentDictionary<Type, IVobNode>();
+            vobNodesByType ??= new ConcurrentDictionary<Type, IVobNode>();
             return (VobNode<TInterface>)vobNodesByType.GetOrAdd(typeof(TInterface),
                 t => (IVobNode)Activator.CreateInstance(typeof(VobNode<>).MakeGenericType(t),
                 this, valueFactory ?? DefaultVobNodeValueFactory<TInterface, TImplementation>));
@@ -570,7 +570,7 @@ namespace LionFire.Vos
 
         /// <param name="addAtRoot">True: if missing, will add at root. False: if missing, add at local Vob</param>
         /// <returns></returns>
-        public VobNode<TInterface> AcquireOrAddNextVobNode<TInterface, TImplementation>(Func<IVobNode, TInterface> factory = null, bool addAtRoot = true)
+        public VobNode<TInterface> AcquireNextOrAddVobNode<TInterface, TImplementation>(Func<IVobNode, TInterface> factory = null, bool addAtRoot = true)
             where TImplementation : TInterface
             where TInterface : class
         {
