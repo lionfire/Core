@@ -17,7 +17,7 @@ public class _Resolve
     {
         H.Run(async sp =>
         {
-            #region TEMP
+            #region TODO: Get this working without this List
             var listingsHandle = "/testdata/zip".ToVobReference().GetListingsHandle();
             var listings = await listingsHandle.Resolve();
             foreach (var item in listings?.Value.Value ?? Enumerable.Empty<Listing<object>>())
