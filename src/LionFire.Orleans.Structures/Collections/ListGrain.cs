@@ -208,8 +208,8 @@ public class ListGrain<TItem> : Grain
 
     #region Event: CollectionChanged
 
-    private IAsyncStream<NotifyCollectionChangedEventArgs<TItem>> CollectionChangedStream => GetStreamProvider("ChangeNotifications").GetStream<NotifyCollectionChangedEventArgs<TItem>>(
-               Guid.Parse(this.GetPrimaryKeyString()), "CollectionChanged");
+    private IAsyncStream<NotifyCollectionChangedEventArgs<TItem>> CollectionChangedStream => this.GetStreamProvider("ChangeNotifications").GetStream<NotifyCollectionChangedEventArgs<TItem>>( 
+               this.GetPrimaryKeyString(), "CollectionChanged");
 
     public Task PublishCollectionChanged(NotifyCollectionChangedEventArgs<TItem> args)
     {

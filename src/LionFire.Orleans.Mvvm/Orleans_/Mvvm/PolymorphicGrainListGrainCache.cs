@@ -92,7 +92,7 @@ public class PolymorphicGrainListGrainCache<TItem> : AsyncObservableListCache<TI
     {
         get
         {
-            var s = ClusterClient.GetStreamProvider("ChangeNotifications").GetStream<NotifyCollectionChangedEventArgs<TItem>>(Guid.Parse(Source.GetPrimaryKeyString()), "CollectionChanged");
+            var s = ClusterClient.GetStreamProvider("ChangeNotifications").GetStream<NotifyCollectionChangedEventArgs<TItem>>(Source.GetPrimaryKeyString(), "CollectionChanged");
             return s;
         }
     }

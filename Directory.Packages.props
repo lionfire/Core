@@ -168,10 +168,12 @@
 		<PackageVersion Include="RethinkDb.Driver" Version="2.3.150" />
 		<PackageVersion Include="SharpZipLib" Version="1.4.1" />
 		<PackageVersion Include="StackExchange.Redis" Version="2.2.4" />
-		    <PackageVersion Include="StardustDL.RazorComponents.MaterialDesignIcons" Version="5.9.55.51" />
-
+		<PackageVersion Include="StardustDL.RazorComponents.MaterialDesignIcons" Version="5.9.55.51" />
+		
 		<PackageVersion Include="Stride.Engine" Version="4.1.0.1734" />
 		<PackageVersion Include="Stride.Physics" Version="4.1.0.1734" />
+		
+		<PackageVersion Include="Swashbuckle.AspNetCore" Version="6.4.0" />
 		<PackageVersion Include="Swordfish.NET.CollectionsV3" Version="3.3.9" />
 		<PackageVersion Include="System.Collections.Concurrent" Version="4.3.0" />
 		<PackageVersion Include="System.Collections.Immutable" Version="7.0.0" />
