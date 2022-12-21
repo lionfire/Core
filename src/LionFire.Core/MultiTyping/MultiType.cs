@@ -1,6 +1,7 @@
 ﻿using LionFire.Types;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
@@ -53,6 +54,33 @@ namespace LionFire.MultiTyping
             IsDisposed = true;
             multiTyped = null;
 #endif
+        }
+    }
+
+    public class MultiTypeEqualityComparer : IEqualityComparer<IMultiTyped>
+    {
+        public static IEqualityComparer<IMultiTyped> Default { get; } = new MultiTypeEqualityComparer();
+
+        public bool Equals(IMultiTyped x, IMultiTyped y)
+        {
+            if (x == null || x.IsEmpty) return y == null || y.IsEmpty;
+
+            throw new NotImplementedException("MultiTyped equality comparison");
+            //return true;
+        }
+
+        public int GetHashCode([DisallowNull] IMultiTyped obj)
+        {
+            var hashCode = new HashCode();
+
+            if (obj.SubTypes != null)
+                foreach (var child in obj.SubTypes)
+                {
+                    hashCode.Add(child.GetHashCode());
+                }
+            // REVIEW - is this complete?
+
+            return hashCode.ToHashCode();
         }
     }
 
