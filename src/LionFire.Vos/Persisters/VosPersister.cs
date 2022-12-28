@@ -8,7 +8,11 @@ using LionFire.Vos.Services;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using System.Diagnostics;
+using System.Diagnostics.Metrics;
+using System.Linq;
+using System.Text;
 using System.Threading;
+using static LionFire.Persistence.Persisters.Vos.VosPersister;
 
 namespace LionFire.Persistence.Persisters.Vos;
 
@@ -55,6 +59,17 @@ public class VosPersister : SerializingPersisterBase<VosPersisterOptions>, IPers
 
     #endregion
 
+    #region Metrics
+
+    private static readonly Meter Meter = new("LionFire.Vos", "1.0");
+    private static readonly Counter<long> ExistsC = Meter.CreateCounter<long>("Exists");
+    private static readonly Counter<long> RetrieveC = Meter.CreateCounter<long>("Retrieve");
+    private static readonly Counter<long> RetrieveSecondPassC = Meter.CreateCounter<long>("Retrieve.SecondPass");
+    private static readonly Counter<long> RetrieveBatchC = Meter.CreateCounter<long>("Retrieve.Batch");
+    private static readonly Counter<long> ListC = Meter.CreateCounter<long>("List");
+
+    #endregion
+
     #region IBatchingReadPersister
 
     static AsyncLocal<List<IMount>> RetrieveOpMounts = new();
@@ -67,10 +82,10 @@ public class VosPersister : SerializingPersisterBase<VosPersisterOptions>, IPers
 
         var vob = Root[referencable.Reference.Path];
 
-        var result = new VosRetrieveResult<TValue>();
+        var resultForNoChildResults = new VosRetrieveResult<TValue>();
+        var returnedChildResult = false;
 
         bool anyMounts = false;
-        var vobMounts = vob.Acquire<VobMounts>();
 
         Type metadataType = null;
         Type? listingType = null;
@@ -92,6 +107,12 @@ public class VosPersister : SerializingPersisterBase<VosPersisterOptions>, IPers
             }
         }
 
+        #region Retry control 
+        VobMounts? oldVobMounts = null;
+        bool needsSecondPass = true;
+    #endregion
+
+    again:
         if (listingType != null)
         {
             var blea = new BeforeListEventArgs
@@ -127,25 +148,85 @@ public class VosPersister : SerializingPersisterBase<VosPersisterOptions>, IPers
         }
         //await OnBeforeRetrieve(new VosRetrieveContext { Persister = this, Vob = vob, ListingType = listingType, Referencable = referencable });
 
+        var vobMountsNode = vob.Acquire<VobMounts>();
 
-        if (vobMounts != null)
+        IEnumerable<IMount> mounts = null;
+
+        if (vobMountsNode.Vob.Key == oldVobMounts?.Vob.Key)
+        {
+            l.LogDebug($"UNTESTED - Second pass retrieve, skipping {oldVobMounts.RankedEffectiveReadMounts.Count()} previous mounts");
+            l.LogDebug($"TEMP - Old mounts:");
+            {
+                var sb = new StringBuilder();
+                foreach (var mount in oldVobMounts.RankedEffectiveReadMounts)
+                {
+                    sb.Append(" - ");
+                    sb.AppendLine(mount.ToString());
+                }
+                l.LogDebug(sb.ToString());
+
+                sb = new StringBuilder();
+                l.LogDebug($"TEMP - New mounts:");
+                foreach (var mount in vobMountsNode.RankedEffectiveReadMounts)
+                {
+                    sb.Append(" - ");
+                    sb.AppendLine(mount.ToString());
+                }
+                l.LogDebug(sb.ToString());
+
+                sb = new StringBuilder();
+                l.LogDebug($"TEMP - Continuing with mounts:");
+                mounts = vobMountsNode.RankedEffectiveReadMounts.Except(oldVobMounts.RankedEffectiveReadMounts);
+                foreach (var mount in mounts)
+                {
+                    sb.Append(" - ");
+                    sb.AppendLine(mount.ToString());
+                }
+                l.LogDebug(sb.ToString());
+            }
+        }
+        else
+        {
+            if (oldVobMounts != null)
+            {
+                l.LogDebug($"[retrieving {referencable.Reference.Path}({typeof(TValue).Name})] Second pass: different VobMounts node.  Old @ {oldVobMounts.Vob.Key}, New @ {vobMountsNode.Vob.Key}");
+            }
+            //else
+            //{
+            //    l.LogDebug($"[retrieving {referencable.Reference.Path}({typeof(TValue).Name})] First pass: {vobMountsNode.RankedEffectiveReadMounts.Count()} mounts");
+            //}
+            mounts = vobMountsNode.RankedEffectiveReadMounts;
+        }
+
+        if (vobMountsNode != null)
         {
             // TODO: If TValue is IEnumerable, make a way (perhaps optional) to aggregate values from multiple ReadMounts.
-
-            foreach (var mount in vobMounts.RankedEffectiveReadMounts)
             {
+                var sb = new StringBuilder();
+                sb.Append($"[retrieving {referencable.Reference.Path}({typeof(TValue).Name})] from mounts:");
+                if (vobMountsNode.ReadMountsVersion > 0)
+                {
+                    sb.Append("v:");
+                    sb.Append(vobMountsNode.ReadMountsVersion);
+                }
+                l.Trace(sb.ToString());
+            }
+            foreach (var mount in mounts)
+            {
+                #region Prevent recursion
                 if (RetrieveOpMounts.Value != null)
                 {
                     if (RetrieveOpMounts.Value.Contains(mount))
                     {
-                        Debug.Write("RetrieveOpMounts.Value.Contains(mount)");
+                        //Trace.Write("RetrieveOpMounts.Value.Contains(mount)");
                         continue;
                     }
                 }
-                //if (mount.UpstreamMount != null)
-                //{
-                //    mount.HasAncestor
-                //}
+                #endregion
+                l.Trace($"[retrieving {referencable.Reference.Path}({typeof(TValue).Name})] - retrieving from {mount}");
+
+                anyMounts = true;
+
                 var relativePathChunks = vob.PathElements.Skip(mount.VobDepth);
                 var effectiveReference = !relativePathChunks.Any() ? mount.Target : mount.Target.GetChildSubpath(relativePathChunks);
                 var rh = effectiveReference.GetReadHandle<TValue>(serviceProvider: ServiceProvider);
@@ -157,6 +238,7 @@ public class VosPersister : SerializingPersisterBase<VosPersisterOptions>, IPers
                 try
                 {
                     childResult = (await rh.Resolve().ConfigureAwait(false)).ToRetrieveResult();
+                    l.Info(childResult.ToString() + " " + rh.Reference + $" (for {referencable.Reference})"); // TEMP log level
                 }
                 finally
                 {
@@ -173,51 +255,199 @@ public class VosPersister : SerializingPersisterBase<VosPersisterOptions>, IPers
                     }
                 }
 
-                if (childResult.IsFail()) result.Flags |= PersistenceResultFlags.Fail; // Indicates that at least one underlying persister failed
+                if (childResult.IsFail()) resultForNoChildResults.Flags |= PersistenceResultFlags.Fail; // Indicates that at least one underlying persister failed
 
                 if (childResult.IsSuccess == true)
                 {
-                    result.Flags |= PersistenceResultFlags.Success; // Indicates that at least one underlying persister succeeded
+                    resultForNoChildResults.Flags |= PersistenceResultFlags.Success; // Indicates that at least one underlying persister succeeded
 
                     if (childResult.Flags.HasFlag(PersistenceResultFlags.Found))
                     {
-                        result.Flags |= PersistenceResultFlags.Found;
-                        result.Value = childResult.Value;
-                        result.ResolvedViaMount = mount;
-                        l.Trace($"{result}: {vob.Path}");
-                        yield return result;
+                        l.LogTrace($"[retrieving {referencable.Reference.Path}({typeof(TValue).Name})] Found child.  {(oldVobMounts == null ? "Second (UNTESTED)" : "First")} pass retrieve @ {referencable.Reference}({typeof(TValue).Name})");
+
+                        resultForNoChildResults.Flags |= PersistenceResultFlags.Found;
+                        resultForNoChildResults.Value = childResult.Value;
+                        resultForNoChildResults.ResolvedViaMount = mount;
+                        l.Trace($"{resultForNoChildResults}: {vob.Path}");
+                        returnedChildResult = true;
+                        yield return childResult;
                     }
                 }
             }
         }
-        if (!anyMounts) result.Flags |= PersistenceResultFlags.MountNotAvailable;
-        l.Trace($"{result}: {vob.Path}");
-        yield return result;
+
+        if (!returnedChildResult)
+        {
+            {
+                var blea = new AfterNotFoundEventArgs
+                {
+                    Vob = vob,
+                    ResultType = typeof(TValue),
+                    Referencable = referencable,
+                    Persister = this,
+                    FoundMore = false, // (Output)
+                };
+
+                foreach (var handlers in vob.GetAcquireEnumerator2<IVob, Handlers<AfterNotFoundEventArgs>>())
+                {
+                    oldVobMounts ??= vobMountsNode;
+                    blea.HandlerVob = handlers.Item2;
+                    await handlers.Item1.Raise(blea).ConfigureAwait(false);
+                }
+                if (!blea.FoundMore) { needsSecondPass = false; }
+
+                if (needsSecondPass)
+                {
+                    needsSecondPass = false;
+                    RetrieveSecondPassC.Add(1);
+                    l.LogInformation("UNTESTED [FOUNDMORE] Trying 2nd retrieve");
+                    goto again;
+                }
+            }
+
+            if (!anyMounts)
+            {
+                resultForNoChildResults.Flags |= PersistenceResultFlags.MountNotAvailable;
+                l.Info(resultForNoChildResults.ToString() + $" (for {referencable.Reference}) "); // TEMP log level
+            }
+            else
+            {
+                resultForNoChildResults.Flags |= PersistenceResultFlags.NotFound;
+            }
+            l.Trace($"{resultForNoChildResults}: {vob.Path}");
+
+            var sb = new StringBuilder($"[retrieve  {referencable.Reference.Path}({typeof(TValue).Name})] NO CHILD f:[{resultForNoChildResults.Flags}]" + Environment.NewLine);
+            foreach (var mount in mounts)
+            {
+                sb.Append(" - ");
+                sb.AppendLine(mount.ToString());
+            }
+            l.Trace(sb.ToString());
+            l.Trace($"[retrieve {referencable.Reference.Path}({typeof(TValue).Name})] End. V:{vobMountsNode.ReadMountsVersion} #:{vobMountsNode.RankedEffectiveReadMounts.Count()}");
+            yield return resultForNoChildResults;
+        }
     }
 
     #endregion
 
     #region IReadPersister
 
-    public Task<IPersistenceResult> Exists<TValue>(IReferencable<IVobReference> referencable) => throw new System.NotImplementedException();
-
-    public async Task<IRetrieveResult<TValue>> Retrieve<TValue>(IReferencable<IVobReference> referencable)
+    public Task<IPersistenceResult> Exists<TValue>(IReferencable<IVobReference> referencable)
     {
+        ExistsC.Add(1);
+        throw new System.NotImplementedException();
+    }
+
+#nullable enable
+    public static Type? GetMetadataListingType<TValue>()
+    {
+        if (typeof(TValue).IsConstructedGenericType)
+        {
+            var generic = typeof(TValue).GetGenericTypeDefinition();
+            if (generic == typeof(Metadata<>))
+            {
+                var genericParameter = typeof(TValue).GetGenericArguments()[0];
+                if (genericParameter.IsConstructedGenericType)
+                {
+                    var metadataGeneric = genericParameter.GetGenericTypeDefinition();
+                    if (metadataGeneric == typeof(Listing<>))
+                    {
+                        var listingType = genericParameter.GetGenericArguments()[0];
+                        return listingType;
+                        //var aggregatorType = typeof(ResultAggregator<,>).MakeGenericType(typeof(TValue), typeof(listingType));
+                    }
+                }
+            }
+        }
+        return null;
+    }
+    public static class ResultAggregator<TValue, TItem>
+    {
+        //public Func<TValue, >
+        public static async Task<IRetrieveResult<TValue>> RetrieveWithAggregation<TValue, TItem>(IReferencable<IVobReference> referencable)
+        {
+            List<TItem> aggregation = new List<TItem>();
+
+            throw new NotImplementedException();
+        }
+    }
+
+    public bool CanAggregateType<TValue>()
+    {
+        return GetMetadataListingType<TValue>() != null;
+    }
+
+    protected async Task<IRetrieveResult<TValue>> RetrieveWithAggregation<TValue>(IReferencable<IVobReference> referencable)
+    {
+        throw new NotImplementedException();
+#warning NEXT: Get aggregator
         IRetrieveResult<TValue>? singleResult = null;
 
         await foreach (var multiResult in RetrieveBatches<TValue>(referencable))
         {
-            if (multiResult.IsSuccess == true)
+            //if (multiResult.IsSuccess == true)
+            //{
+            //    if (multiResult.Flags.HasFlag(PersistenceResultFlags.MountNotAvailable))
+            //    {
+            //        return multiResult;
+            //    }
+            //    continue;
+            //}
+            if (multiResult.IsSuccess != true)
             {
                 if (multiResult.Flags.HasFlag(PersistenceResultFlags.MountNotAvailable))
                 {
-                    return multiResult;
+                    continue;
                 }
-                continue;
+                else return multiResult; // Return the failure
             }
 
             if (singleResult != null && multiResult.IsSuccess == true)
             {
+                l.Error($"AMBIGUOUS: {referencable.Reference} {typeof(TValue).Name}");
+                return new RetrieveResult<TValue>
+                {
+                    Error = "Multiple mounts returned a value",
+                    Flags = PersistenceResultFlags.Fail | PersistenceResultFlags.Found | PersistenceResultFlags.Ambiguous
+                };
+            }
+
+            singleResult = multiResult;
+        }
+
+        return singleResult;
+    }
+
+    public async Task<IRetrieveResult<TValue>> Retrieve<TValue>(IReferencable<IVobReference> referencable)
+    {
+        RetrieveC.Add(1);
+        if (CanAggregateType<TValue>()) { return await RetrieveWithAggregation<TValue>(referencable).ConfigureAwait(false); }
+
+        IRetrieveResult<TValue>? singleResult = null;
+
+        await foreach (var multiResult in RetrieveBatches<TValue>(referencable))
+        {
+            RetrieveBatchC.Add(1);
+            //if (multiResult.IsSuccess == true)
+            //{
+            //    if (multiResult.Flags.HasFlag(PersistenceResultFlags.MountNotAvailable))
+            //    {
+            //        return multiResult;
+            //    }
+            //    continue;
+            //}
+            if (multiResult.IsSuccess != true)
+            {
+                if (multiResult.Flags.HasFlag(PersistenceResultFlags.MountNotAvailable))
+                {
+                    continue;
+                }
+                else return multiResult; // Return the failure
+            }
+
+            if (singleResult != null && multiResult.IsSuccess == true)
+            {
+                l.Error($"AMBIGUOUS: {referencable.Reference} {typeof(TValue).Name}");
                 return new RetrieveResult<TValue>
                 {
                     Error = "Multiple mounts returned a value",
@@ -291,6 +521,7 @@ public class VosPersister : SerializingPersisterBase<VosPersisterOptions>, IPers
     // TODO REVIEW - is this redundant / old?  Use overload with filter param instead?
     public async Task<IRetrieveResult<IEnumerable<Listing<TValue>>>> List<TValue>(IReferencable<IVobReference> referencable)
     {
+        ListC.Add(1);
         var listingsLists = await RetrieveBatches<Metadata<IEnumerable<Listing<TValue>>>>(referencable).ToListAsync();
 
         List<Listing<TValue>> listings = new();

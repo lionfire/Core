@@ -1,11 +1,14 @@
-﻿using LionFire.Referencing;
+﻿using LionFire.Execution;
+using LionFire.Referencing;
 using LionFire.Vos.Mounts;
+using Microsoft.Extensions.Primitives;
 using System;
 using System.Collections.Generic;
+using System.Text;
 
 namespace LionFire.Persistence.Persisters.Vos
 {
-    public struct VosRetrieveResult<T> :  IVosRetrieveResult<T>
+    public struct VosRetrieveResult<T> : IVosRetrieveResult<T>
     {
         // Largely a DUPLICATE of RetrieveResult<T>
 
@@ -97,6 +100,42 @@ namespace LionFire.Persistence.Persisters.Vos
         public static bool operator !=(VosRetrieveResult<T> left, VosRetrieveResult<T> right) => !(left == right);
 
         public string ToXamlString() => $"{{VosRetrieveResult {Flags}}}";
-        public override string ToString() => Flags.ToString();
+        public override string ToString()
+        {
+            var sb = new StringBuilder();
+            sb.Append("VosRetrieve ");
+            if (IsSuccess.Value != true)
+            {
+                sb.Append(IsSuccess == null ? "(null IsSuccess)" : (IsSuccess.Value ? "" : "FAIL"));
+            }
+
+            sb.Append(" [");
+            var flags = Flags.ToDisplayString();
+            sb.Append(flags.ToString());
+
+            if (!HasValue && !Flags.HasFlag(PersistenceResultFlags.NotFound))
+            {
+                if (flags.Length > 0) sb.Append(", ");
+                sb.Append("NOVALUE");
+            }
+            sb.Append("] ");
+
+            sb.Append(typeof(T).Name);
+
+            if (ResolvedVia != null)
+            {
+                sb.AppendLine();
+                sb.Append(" - ResolvedVia: ");
+                sb.Append(ResolvedVia);
+            }
+            if (Error != null)
+            {
+                sb.AppendLine();
+                sb.Append(" x Error: ");
+                sb.Append(Error);
+            }
+
+            return sb.ToString();
+        }
     }
 }

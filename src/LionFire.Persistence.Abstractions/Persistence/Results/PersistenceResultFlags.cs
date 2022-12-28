@@ -1,5 +1,7 @@
 ﻿using LionFire.Ontology;
 using System;
+using System.Net.WebSockets;
+using System.Text;
 
 namespace LionFire.Persistence
 {
@@ -21,11 +23,11 @@ namespace LionFire.Persistence
         Fail = 1 << 1, // RENAME to exception?
 
         Found = 1 << 2,
-        
+
         NotFound = 1 << 3,
 
         Retrieved = 1 << 4,
-        
+
         /// <summary>
         /// Retrieved null (for reference types) or default value (for value types)
         /// </summary>
@@ -52,7 +54,7 @@ namespace LionFire.Persistence
         /// When checking for whether an operation is possible, this is set if the operation is expected to fail.
         /// </summary>
         PreviewFail = 1 << 21,
-        
+
         PreviewIndeterminate = 1 << 22,
 
         //PreviewNotFound = 1 << 23, // Not used yet. Should it be?
@@ -69,6 +71,29 @@ namespace LionFire.Persistence
 
     public static class PersistenceResultFlagsExtensions
     {
+        public static string ToDisplayString(this PersistenceResultFlags flags, bool uppercase = true)
+        {
+            var sb = new StringBuilder();
+            bool noSuccess = !flags.HasFlag(PersistenceResultFlags.Success) && !flags.HasFlag(PersistenceResultFlags.Fail);
+
+            flags &= ~PersistenceResultFlags.Success;
+
+            if (flags != PersistenceResultFlags.None)
+            {
+                sb.Append(flags.ToString());
+            }
+
+            if (noSuccess)
+            {
+                if (sb.Length > 0) sb.Append(", ");
+                sb.Append("NoSuccess");
+            }
+
+            if (sb.Length == 0) sb.Append("NoFlags");
+            var result = sb.ToString();
+            return uppercase ? result.ToUpperInvariant() : result;
+        }
+
         public static bool? IsFound(this PersistenceResultFlags flags)
         {
             if (flags.HasFlag(PersistenceResultFlags.Found)) return true;

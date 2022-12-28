@@ -81,6 +81,8 @@ public abstract partial class VirtualFilesystemPersisterBase<TReference, TPersis
         this.PersistenceOptions = string.IsNullOrEmpty(name) ? options.CurrentValue : options.Get(name);
         this.optionsMonitor = options;
         ItemKindIdentifier = itemKindIdentifier;
+
+        l = Log.Get(this.GetType().FullName);
     }
 
     #endregion
@@ -418,6 +420,7 @@ public abstract partial class VirtualFilesystemPersisterBase<TReference, TPersis
         async Task<IEnumerable<string>> GetPotentialExtensions(string p)
         {
             if (!await DirectoryExists(dir).ConfigureAwait(false)) { return Array.Empty<string>(); }
+            l.LogDebug($"[FS List] {dir}"); // Replace with OTel counter?  TOD FIXME - should be no Disk IO in this class
             IEnumerable<string> result = (await Task.Run(() => System.IO.Directory.GetFiles(dir, $"{Path.GetFileName(p)}.*")).ConfigureAwait(false))
                 .Select(p =>
                 Path.GetExtension(p)
@@ -512,7 +515,7 @@ public abstract partial class VirtualFilesystemPersisterBase<TReference, TPersis
 
             Stream stream = null;
 
-            if(typeof(T) == typeof(Stream) || attempt.Strategy?.ImplementsFromStream == true)
+            if (typeof(T) == typeof(Stream) || attempt.Strategy?.ImplementsFromStream == true)
             {
                 stream = await ReadStream(effectiveFSPath).ConfigureAwait(false);
                 if (stream == null)
@@ -972,8 +975,7 @@ public abstract partial class VirtualFilesystemPersisterBase<TReference, TPersis
 
     #endregion
 
-    private static ILogger l = Log.Get();
-
+    private readonly ILogger l;
 }
 // REVIEW What should the flow be for Persistence.Retrieve, and Persistence.Write?  Create an op, and then iterate over Serializers until it succeeds? Do Retrieve/Write just create an op, and then the op can run on its own?  Is it like a blackboard object with its own configurable pipeline?  Is there a hidden IPersisterOperationsProvider interface for CreateRetrieveOperation and CreateWriteOperation?
 

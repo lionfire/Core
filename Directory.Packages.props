@@ -145,6 +145,8 @@
     <PackageVersion Include="Oakton" Version="4.5.0" />
     <PackageVersion Include="ObservableCollections" Version="1.1.3" />
     <PackageVersion Include="OpenIddict.EntityFrameworkCore" Version="3.1.1" />
+    <PackageVersion Include="OpenTelemetry.Exporter.Console" Version="1.4.0-rc.1" />
+    <PackageVersion Include="OpenTelemetry.Extensions.Hosting" Version="1.4.0-rc.1" />
     <PackageVersion Include="OrchardCore.Application.Cms.Targets" Version="1.3.0" />
     <PackageVersion Include="Orleans.Http" Version="1.3.1" />
     <PackageVersion Include="Orleans.Http.Abstractions" Version="1.3.1" />
@@ -158,9 +160,18 @@
     <PackageVersion Include="RestSharp.NetCore" Version="105.2.3" />
     <PackageVersion Include="RethinkDb.Driver" Version="2.3.150" />
     <PackageVersion Include="Serilog.AspNetCore" Version="6.1.0" />
+    <PackageVersion Include="Serilog.Expressions" Version="3.4.1" />
     <PackageVersion Include="Serilog.Extensions.Hosting" Version="5.0.1" />
     <PackageVersion Include="Serilog.Extensions.Logging" Version="3.1.0" />
+    <PackageVersion Include="Serilog.Formatting.Compact" Version="1.1.0" />
+    <PackageVersion Include="Serilog.Settings.Configuration" Version="3.4.0" />
     <PackageVersion Include="Serilog.Sinks.Console" Version="4.1.0" />
+    <PackageVersion Include="Serilog.Sinks.Debug" Version="2.0.0" />
+    <PackageVersion Include="Serilog.Sinks.File" Version="5.0.0" />
+    <PackageVersion Include="Serilog.Sinks.File.Archive" Version="1.0.3" />
+    <PackageVersion Include="Serilog.Sinks.File.GZip" Version="1.0.2" />
+    <PackageVersion Include="Serilog.Sinks.Loki" Version="4.0.0-beta3" />
+    <PackageVersion Include="Serilog.Sinks.TestCorrelator" Version="3.2.0" />
     <PackageVersion Include="SharpZipLib" Version="1.4.1" />
     <PackageVersion Include="StackExchange.Redis" Version="2.2.4" />
     <PackageVersion Include="StardustDL.RazorComponents.MaterialDesignIcons" Version="5.9.55.51" />

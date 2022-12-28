@@ -9,6 +9,7 @@ using LionFire.Serialization;
 using LionFire.Structures;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+//using NLog;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
@@ -139,12 +140,15 @@ public class FilesystemPersister : VirtualFilesystemPersisterBase<IFileReference
 
         string dirPath = Path.GetDirectoryName(namePath);
 
+        l.LogDebug($"[FS DirExists] {dirPath}"); // Replace with OTel counter?
         if (Directory.Exists(dirPath))
         {
+            l.LogDebug($"[FS List] {dirPath}"); // Replace with OTel counter?
             var fileList = Directory.GetFiles(dirPath, name + "*").OfType<string>();
             string nameWithoutExtension = Path.GetFileNameWithoutExtension(namePath);
             if (nameWithoutExtension != name)
             {
+                l.LogDebug($"[FS List] {dirPath}"); // Replace with OTel counter?
                 fileList = fileList.Concat(Directory.GetFiles(dirPath, nameWithoutExtension + "*").OfType<string>()).Distinct();
             }
 
@@ -219,7 +223,7 @@ public class FilesystemPersister : VirtualFilesystemPersisterBase<IFileReference
 
     #endregion
 
-    private static readonly ILogger l = Log.Get();
+    private static readonly Microsoft.Extensions.Logging.ILogger l = Log.Get<FilesystemPersister>();
 
     #endregion
 

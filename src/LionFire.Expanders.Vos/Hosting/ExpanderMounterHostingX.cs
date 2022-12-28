@@ -32,7 +32,8 @@ public static class ExpanderMounterHostingX
         vob.AddOwn(expanderMounter);
 
         AddHandler<BeforeListEventArgs>(vob, expanderMounter, expanderMounter.BeforeListHandler);
-        AddHandler<BeforeRetrieveEventArgs>(vob, expanderMounter, expanderMounter.BeforeRetrieveHandler);
+        //AddHandler<BeforeRetrieveEventArgs>(vob, expanderMounter, expanderMounter.BeforeRetrieveHandler);
+        AddHandler<AfterNotFoundEventArgs>(vob, expanderMounter, expanderMounter.AfterNotFoundHandler);
 
         //#region Deprecated
 

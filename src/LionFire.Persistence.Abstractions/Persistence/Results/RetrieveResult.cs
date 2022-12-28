@@ -1,6 +1,7 @@
 ﻿
 using System;
 using System.Collections.Generic;
+using System.Text;
 using LionFire.Referencing;
 using LionFire.Resolves;
 
@@ -116,5 +117,49 @@ namespace LionFire.Persistence
 
         public static bool operator !=(RetrieveResult<T> left, RetrieveResult<T> right) => !(left == right);
 
+        public override string ToString()
+        {
+            var sb = new StringBuilder();
+
+            sb.Append("Retrieve ");
+            if (IsSuccess.Value != true)
+            {
+                sb.Append(IsSuccess == null ? "(null IsSuccess)" : (IsSuccess.Value ? "" : "FAIL"));
+            }
+
+            sb.Append(" [");
+            var flags = Flags.ToDisplayString();
+            sb.Append(flags.ToString());
+
+            if (!HasValue && !Flags.HasFlag(PersistenceResultFlags.NotFound))
+            {
+                if (flags.Length > 0) sb.Append(", ");
+                sb.Append("NOVALUE");
+            }
+            sb.Append("] ");
+
+            sb.Append(typeof(T).Name);
+
+            if (Error != null)
+            {
+                sb.AppendLine();
+                sb.Append(" - Error: ");
+                sb.Append(Error);
+            }
+            if (ErrorDetail != null)
+            {
+                sb.AppendLine();
+                sb.Append(" - ErrorDetail: ");
+                sb.Append(ErrorDetail);
+            }
+
+            if (InnerResult != null)
+            {
+                sb.AppendLine();
+                sb.Append(" - Inner result: ");
+                sb.Append(InnerResult.ToString());
+            }
+            return sb.ToString();
+        }
     }
 }

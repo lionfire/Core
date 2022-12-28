@@ -122,7 +122,7 @@ namespace LionFire.DependencyMachines
         CompiledDependencyMachine? compiled;
         protected void CalculateStages()
         {
-            compiled = new CompiledDependencyMachine(ServiceProvider, EffectiveConfig);
+            compiled = ActivatorUtilities.CreateInstance<CompiledDependencyMachine>(ServiceProvider, EffectiveConfig);
             IsLoggingEnabled = ActiveConfig!.EnableLogging;
         }
 

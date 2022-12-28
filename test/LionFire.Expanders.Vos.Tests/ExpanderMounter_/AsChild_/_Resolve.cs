@@ -4,6 +4,8 @@ using LionFire.Persisters.Expanders;
 using LionFire.Referencing;
 using LionFire.Vos;
 using Microsoft.Extensions.Hosting;
+using Microsoft.VisualStudio.TestTools.UnitTesting.Logging;
+using Serilog;
 using System.Diagnostics;
 using static TestHostBuilder;
 
@@ -14,7 +16,7 @@ public class _Resolve
 {
 
     [TestMethod]
-    public void _()
+    public void _Resolve_AsChild()
     {
         H.Run(async sp =>
         {

@@ -70,7 +70,7 @@ public class RZip : ReadHandle<IReference<ZipFile>, ZipFile>, IHas<IServiceProvi
         {
             return ResolveResultNotResolved<ZipFile>.Instance;
         }
-        Debug.WriteLine($"Retrieved {bytesRetrieveResult}");
+        Log.Get<RZip>().Debug($"RZip Retrieved {bytesRetrieveResult.Value.Length} bytes");
 
         var oldMemoryStream = ms;
         if (oldMemoryStream != null)
