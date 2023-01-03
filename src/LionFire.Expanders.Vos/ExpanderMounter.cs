@@ -41,6 +41,8 @@ public interface IArchive { }
 //  - BeforeList: 
 public class ExpanderMounter : IParentable<IVob>
 {
+    ActivitySource ActivitySource = new ActivitySource(typeof(ExpanderMounter).FullName);
+
 
     #region Relationships
 
@@ -141,6 +143,11 @@ public class ExpanderMounter : IParentable<IVob>
 
     public async Task<bool> Scan(BeforeReadEventArgs args)
     {
+        using var activity = ActivitySource.StartActivity("Scan");
+        activity?.SetTag("HandlerVob", args.HandlerVob?.Path);
+        activity?.SetTag("Reference", args.Referencable?.Reference.ToString());
+        activity?.SetTag("PersisterType", args.Persister?.GetType().Name);
+
         bool mountedSomething = false;
         bool foundExpanderMounterVob = false;
 
@@ -169,6 +176,7 @@ public class ExpanderMounter : IParentable<IVob>
             }
         }
 
+        activity?.SetTag("MountedSomething", mountedSomething);
         return mountedSomething; // TODO - opt-in to caching logic, and file watching to avoid excess scans
     }
 
@@ -265,6 +273,8 @@ public class ExpanderMounter : IParentable<IVob>
         }
         finally
         {
+            Logger.LogDebug($"TryAutoMountArchives: {vob.Reference} ...done.  mountedSomething: {mountedSomething}");
+
             IsInArchiveScanD.Value.Remove(reference);
             if(IsInArchiveScanD.Value.Count == 0)
             {

@@ -9,7 +9,7 @@ using LionFire.Persistence;
 using ICSharpCode.SharpZipLib.Zip;
 using System.Net.Http.Headers;
 using Newtonsoft.Json.Linq;
-using System.Collections.Concurrent;
+using System.Linq;
 using LionFire.Persistence.Handles;
 using LionFire.Serialization.Adapters;
 using static LionFire.Persisters.SharpZipLib_.SharpZipLibExpander;
@@ -17,11 +17,32 @@ using LionFire.ExtensionMethods.Poco.Resolvables;
 using LionFire.Resolves;
 using LionFire.Serialization;
 using LionFire.Dependencies;
+using System.Reflection;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace LionFire.Persisters.SharpZipLib_;
 
+//public class SharpZipLibHandleProvider : ObjectHandleRegistrar<HandleRegistrarOptions>
+//{
+//    protected override IReadHandle<TValue> CreateReadHandle<TValue>(TValue obj)
+//    {
+//        return new RZip(sourceReference.Cast<ZipFile>(), ServiceProvider);
+//    }
+
+//    protected override IReadWriteHandle<TValue> CreateReadWriteHandle<TValue>(TValue obj)
+//    {
+//        throw new NotImplementedException();
+//    }
+
+//    protected override IWriteHandle<TValue> CreateWriteHandle<TValue>(TValue obj)
+//    {
+//        throw new NotImplementedException();
+//    }
+//}
+
 public class SharpZipLibExpander : ExpanderPersister, ISupportsFileExtensions, IPersister<IExpansionReference>
 {
+
     public IServiceProvider ServiceProvider { get; }
 
     //ITypeTransformer TypeTransformer { get; }
@@ -132,6 +153,20 @@ public class SharpZipLibExpander : ExpanderPersister, ISupportsFileExtensions, I
         var nativeTargetPath = targetPath.TrimStart('/');
         var entryIndex = zipFile.FindEntry(nativeTargetPath, OptionsMonitor.CurrentValue.IgnoreCaseInTargetPath);
 
+
+        if (entryIndex == -1) // Try again to get opposite of: file or directory
+        {
+            if (nativeTargetPath.EndsWith('/'))
+            {
+                nativeTargetPath = nativeTargetPath.TrimEnd('/');
+            }
+            else
+            {
+                nativeTargetPath += "/";
+            }
+            entryIndex = zipFile.FindEntry(nativeTargetPath, OptionsMonitor.CurrentValue.IgnoreCaseInTargetPath);
+        }
+
         bool foundFile = false;
         bool foundDirectory = false;
 
@@ -185,7 +220,37 @@ public class SharpZipLibExpander : ExpanderPersister, ISupportsFileExtensions, I
             else if (entry.IsDirectory)
             {
                 foundDirectory = true;
-                throw new NotImplementedException();
+                var flags = PersistenceResultFlags.Found;
+
+                if (typeof(TValue) == typeof(Metadata<IEnumerable<Listing<object>>>))
+                {
+                    var list = new List<ZipEntry>(zipFile.OfType<ZipEntry>().Where(e => e.Name.StartsWith(nativeTargetPath) && Path.GetDirectoryName(entry.Name) == nativeTargetPath));
+                    flags |= PersistenceResultFlags.Success;
+                    var value = new Metadata<IEnumerable<Listing<object>>>();
+                    value.Value = list.Select(i => new Listing<object>(Path.GetFileName(i.Name)));
+                    return new RetrieveResult<TValue>((TValue)(object)value, flags); // HARDCAST
+                }
+
+                if (typeof(TValue).IsGenericType)
+                {
+                    var genericType = typeof(TValue).GetGenericTypeDefinition();
+                    if (genericType == typeof(Metadata<>))
+                    {
+                        var metadataType = genericType.GetGenericArguments()[0];
+                        if (metadataType.IsGenericType && metadataType.GetGenericTypeDefinition() == typeof(IEnumerable<>))
+                        {
+                            var enumerableType = metadataType.GetGenericArguments()[0];
+                            if (enumerableType.IsGenericType && enumerableType.GetGenericTypeDefinition() == typeof(Listing<>))
+                            {
+                                var listingType = enumerableType.GetGenericArguments()[0];
+                                // REFACTOR this?
+                                // TODO: Filter listings of type listingType
+                            }
+                        }
+                        flags |= PersistenceResultFlags.PersisterNotAvailable | PersistenceResultFlags.Fail;
+                        return new RetrieveResult<TValue>(default, flags);
+                    }
+                }
             }
             else
             {

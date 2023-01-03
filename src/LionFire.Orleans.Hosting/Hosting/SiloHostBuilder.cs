@@ -24,10 +24,10 @@ namespace LionFire.Hosting;
 public static class SiloHostBuilder
 {
 
-    public static LionFireHostBuilder Silo(this LionFireHostBuilder lf, int port, Action<HostBuilderContext, ISiloBuilder>? configureSilo = null)
+    public static ILionFireHostBuilder Silo(this ILionFireHostBuilder lf, int port, Action<HostBuilderContext, ISiloBuilder>? configureSilo = null)
         => lf.Silo(new SiloProgramConfig(port), configureSilo);
 
-    public static LionFireHostBuilder Silo(this LionFireHostBuilder lf, SiloProgramConfig config = null, Action<HostBuilderContext, ISiloBuilder>? configureSilo = null)
+    public static ILionFireHostBuilder Silo(this ILionFireHostBuilder lf, SiloProgramConfig config = null, Action<HostBuilderContext, ISiloBuilder>? configureSilo = null)
     {
         config ??= new();
 

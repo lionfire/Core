@@ -2,7 +2,6 @@
 using LionFire.ExtensionMethods.Dependencies;
 using LionFire.Vos.Internals;
 using Microsoft.Extensions.DependencyInjection;
-using NLog.Filters;
 
 namespace LionFire.Vos
 {

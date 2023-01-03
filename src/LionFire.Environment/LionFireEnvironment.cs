@@ -132,7 +132,7 @@ namespace LionFire
         /// 
         /// Defaults to true if IsUnitTest is true.
         /// </summary>
-        public static bool IsMultiApplicationEnvironment
+        public static bool IsMultiApplicationEnvironment // REVIEW - move to LionFrie.Hosting
         {
             get
             {

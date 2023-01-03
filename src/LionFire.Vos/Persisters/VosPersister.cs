@@ -1,4 +1,5 @@
-﻿using LionFire.IO;
+﻿using LionFire.Execution;
+using LionFire.IO;
 using LionFire.Referencing;
 using LionFire.Serialization;
 using LionFire.Structures;
@@ -64,7 +65,7 @@ public class VosPersister : SerializingPersisterBase<VosPersisterOptions>, IPers
     private static readonly Meter Meter = new("LionFire.Vos", "1.0");
     private static readonly Counter<long> ExistsC = Meter.CreateCounter<long>("Exists");
     private static readonly Counter<long> RetrieveC = Meter.CreateCounter<long>("Retrieve");
-    private static readonly Counter<long> RetrieveSecondPassC = Meter.CreateCounter<long>("Retrieve.SecondPass");
+    private static readonly Counter<long> RetrieveRetryAfterMountsChangedC = Meter.CreateCounter<long>("Retrieve.RetryAfterMountsChanged");
     private static readonly Counter<long> RetrieveBatchC = Meter.CreateCounter<long>("Retrieve.Batch");
     private static readonly Counter<long> ListC = Meter.CreateCounter<long>("List");
 
@@ -82,8 +83,6 @@ public class VosPersister : SerializingPersisterBase<VosPersisterOptions>, IPers
 
         var vob = Root[referencable.Reference.Path];
 
-        var resultForNoChildResults = new VosRetrieveResult<TValue>();
-        var returnedChildResult = false;
 
         bool anyMounts = false;
 
@@ -109,9 +108,12 @@ public class VosPersister : SerializingPersisterBase<VosPersisterOptions>, IPers
 
         #region Retry control 
         VobMounts? oldVobMounts = null;
-        bool needsSecondPass = true;
-    #endregion
+        int maxRetries = 10;
+        int iteration = 0;
+        #endregion
 
+        var resultForNoChildResults = new VosRetrieveResult<TValue>();
+    //for (; iteration < maxRetries; iteration++) { }
     again:
         if (listingType != null)
         {
@@ -148,57 +150,63 @@ public class VosPersister : SerializingPersisterBase<VosPersisterOptions>, IPers
         }
         //await OnBeforeRetrieve(new VosRetrieveContext { Persister = this, Vob = vob, ListingType = listingType, Referencable = referencable });
 
-        var vobMountsNode = vob.Acquire<VobMounts>();
+        var (vobMountsNode, mounts) = GetMounts();
 
-        IEnumerable<IMount> mounts = null;
-
-        if (vobMountsNode.Vob.Key == oldVobMounts?.Vob.Key)
+        (VobMounts vobMountsNode, IEnumerable<IMount> mounts) GetMounts()
         {
-            l.LogDebug($"UNTESTED - Second pass retrieve, skipping {oldVobMounts.RankedEffectiveReadMounts.Count()} previous mounts");
-            l.LogDebug($"TEMP - Old mounts:");
+            var vobMountsNode = vob.Acquire<VobMounts>();
+
+            IEnumerable<IMount> mounts = null;
+
+            if (vobMountsNode.Vob.Key == oldVobMounts?.Vob.Key)
             {
-                var sb = new StringBuilder();
-                foreach (var mount in oldVobMounts.RankedEffectiveReadMounts)
+                l.LogDebug($"UNTESTED - Second pass retrieve, skipping {oldVobMounts.RankedEffectiveReadMounts.Count()} previous mounts");
+                l.LogDebug($"TEMP - Old mounts:");
                 {
-                    sb.Append(" - ");
-                    sb.AppendLine(mount.ToString());
-                }
-                l.LogDebug(sb.ToString());
+                    var sb = new StringBuilder();
+                    foreach (var mount in oldVobMounts.RankedEffectiveReadMounts)
+                    {
+                        sb.Append(" - ");
+                        sb.AppendLine(mount.ToString());
+                    }
+                    l.LogDebug(sb.ToString());
 
-                sb = new StringBuilder();
-                l.LogDebug($"TEMP - New mounts:");
-                foreach (var mount in vobMountsNode.RankedEffectiveReadMounts)
-                {
-                    sb.Append(" - ");
-                    sb.AppendLine(mount.ToString());
-                }
-                l.LogDebug(sb.ToString());
+                    sb = new StringBuilder();
+                    l.LogDebug($"TEMP - New mounts:");
+                    foreach (var mount in vobMountsNode.RankedEffectiveReadMounts)
+                    {
+                        sb.Append(" - ");
+                        sb.AppendLine(mount.ToString());
+                    }
+                    l.LogDebug(sb.ToString());
 
-                sb = new StringBuilder();
-                l.LogDebug($"TEMP - Continuing with mounts:");
-                mounts = vobMountsNode.RankedEffectiveReadMounts.Except(oldVobMounts.RankedEffectiveReadMounts);
-                foreach (var mount in mounts)
-                {
-                    sb.Append(" - ");
-                    sb.AppendLine(mount.ToString());
+                    sb = new StringBuilder();
+                    l.LogDebug($"TEMP - Continuing with mounts:");
+                    mounts = vobMountsNode.RankedEffectiveReadMounts.Except(oldVobMounts.RankedEffectiveReadMounts);
+                    foreach (var mount in mounts)
+                    {
+                        sb.Append(" - ");
+                        sb.AppendLine(mount.ToString());
+                    }
+                    l.LogDebug(sb.ToString());
                 }
-                l.LogDebug(sb.ToString());
             }
-        }
-        else
-        {
-            if (oldVobMounts != null)
+            else
             {
-                l.LogDebug($"[retrieving {referencable.Reference.Path}({typeof(TValue).Name})] Second pass: different VobMounts node.  Old @ {oldVobMounts.Vob.Key}, New @ {vobMountsNode.Vob.Key}");
+                if (oldVobMounts != null)
+                {
+                    l.LogDebug($"[retrieving {referencable.Reference.Path}({typeof(TValue).Name})] Second pass: different VobMounts node.  Old @ {oldVobMounts.Vob.Key}, New @ {vobMountsNode.Vob.Key}");
+                }
+                //else
+                //{
+                //    l.LogDebug($"[retrieving {referencable.Reference.Path}({typeof(TValue).Name})] First pass: {vobMountsNode.RankedEffectiveReadMounts.Count()} mounts");
+                //}
+                mounts = vobMountsNode.RankedEffectiveReadMounts;
             }
-            //else
-            //{
-            //    l.LogDebug($"[retrieving {referencable.Reference.Path}({typeof(TValue).Name})] First pass: {vobMountsNode.RankedEffectiveReadMounts.Count()} mounts");
-            //}
-            mounts = vobMountsNode.RankedEffectiveReadMounts;
+            return (vobMountsNode, mounts);
         }
 
-        if (vobMountsNode != null)
+        if (mounts?.Any() == true)
         {
             // TODO: If TValue is IEnumerable, make a way (perhaps optional) to aggregate values from multiple ReadMounts.
             {
@@ -263,23 +271,35 @@ public class VosPersister : SerializingPersisterBase<VosPersisterOptions>, IPers
 
                     if (childResult.Flags.HasFlag(PersistenceResultFlags.Found))
                     {
-                        l.LogTrace($"[retrieving {referencable.Reference.Path}({typeof(TValue).Name})] Found child.  {(oldVobMounts == null ? "Second (UNTESTED)" : "First")} pass retrieve @ {referencable.Reference}({typeof(TValue).Name})");
+                        l.LogTrace($"[retrieving {referencable.Reference.Path}({typeof(TValue).Name})] Found child.  {(oldVobMounts == null ? "First" : "Second (UNTESTED)")} pass retrieve @ {referencable.Reference}({typeof(TValue).Name})");
 
                         resultForNoChildResults.Flags |= PersistenceResultFlags.Found;
-                        resultForNoChildResults.Value = childResult.Value;
-                        resultForNoChildResults.ResolvedViaMount = mount;
-                        l.Trace($"{resultForNoChildResults}: {vob.Path}");
-                        returnedChildResult = true;
                         yield return childResult;
                     }
                 }
             }
         }
 
-        if (!returnedChildResult)
+        bool MountsEqual(IEnumerable<IMount> left, IEnumerable<IMount> right)
         {
+            if(left.Count() != right.Count()) return false;
+
+            var rightEnumerator = right.GetEnumerator();
+            foreach(var leftItem in left)
             {
-                var blea = new AfterNotFoundEventArgs
+                rightEnumerator.MoveNext();
+                if(leftItem.ToString() != rightEnumerator.Current.ToString()) return false;
+            }
+            return true;
+        }
+
+        if (!resultForNoChildResults.Flags.HasFlag(PersistenceResultFlags.Found))
+        {
+
+            bool detectedMountsChange = false;
+
+            {
+                var eventArgs = new AfterNotFoundEventArgs
                 {
                     Vob = vob,
                     ResultType = typeof(TValue),
@@ -290,19 +310,28 @@ public class VosPersister : SerializingPersisterBase<VosPersisterOptions>, IPers
 
                 foreach (var handlers in vob.GetAcquireEnumerator2<IVob, Handlers<AfterNotFoundEventArgs>>())
                 {
-                    oldVobMounts ??= vobMountsNode;
-                    blea.HandlerVob = handlers.Item2;
-                    await handlers.Item1.Raise(blea).ConfigureAwait(false);
+                    //oldVobMounts ??= vobMountsNode;
+                    eventArgs.HandlerVob = handlers.Item2;
+                    await handlers.Item1.Raise(eventArgs).ConfigureAwait(false);
                 }
-                if (!blea.FoundMore) { needsSecondPass = false; }
+                detectedMountsChange |= eventArgs.FoundMore;
+            }
 
-                if (needsSecondPass)
+            if (!detectedMountsChange && iteration < maxRetries)
+            {
+                var (newVobMountsNode, newMounts) = GetMounts();
+                if (newVobMountsNode != vobMountsNode || !MountsEqual(mounts, newMounts))
                 {
-                    needsSecondPass = false;
-                    RetrieveSecondPassC.Add(1);
-                    l.LogInformation("UNTESTED [FOUNDMORE] Trying 2nd retrieve");
-                    goto again;
+                    detectedMountsChange |= true;
                 }
+            }
+
+            if (detectedMountsChange && iteration < maxRetries)
+            {
+                RetrieveRetryAfterMountsChangedC.Add(1);
+                iteration++;
+                l.LogDebug($"[retrieving {referencable.Reference.Path}({typeof(TValue).Name})] FOUNDMORE - Trying retrieve #{(iteration + 1)}");
+                goto again;
             }
 
             if (!anyMounts)

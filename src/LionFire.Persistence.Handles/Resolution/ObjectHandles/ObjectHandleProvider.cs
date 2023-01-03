@@ -12,7 +12,7 @@ namespace LionFire.Persistence.Handles
     ///  - (if enabled) Check for an existing ObjectHandle for this object, and return it
     ///  - Create and (if enabled) register an ObjectHandle for the object.
     /// </summary>
-    public class ObjectHandleProvider : HandleRegistrar<ObjectHandleProviderOptions>, IObjectHandleProvider
+    public class ObjectHandleProvider : ObjectHandleRegistrar<ObjectHandleProviderOptions>, IObjectHandleProvider
     {
         IEnumerable<IReadHandleProvider> readHandleProviders;
         IEnumerable<IReadWriteHandleProvider> readWriteHandleProviders;

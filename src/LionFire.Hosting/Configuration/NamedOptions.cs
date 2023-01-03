@@ -21,7 +21,7 @@ namespace LionFire.Configuration
 
     public static class NamedOptionsExtensions
     {
-        public static LionFireHostBuilder NamedOptions<TOptions>(this LionFireHostBuilder builder, string configRootKey)
+        public static ILionFireHostBuilder NamedOptions<TOptions>(this ILionFireHostBuilder builder, string configRootKey)
             where TOptions : new()
             => builder.ForHostBuilder(b=>b
                     .ConfigureServices((context, services) => services

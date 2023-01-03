@@ -12,7 +12,7 @@ public static class TestHostBuilder
                 .LionFire(lf => lf
                     .Vos()
                 )
-                .ConfigureServices((c, s) => s
+                .ConfigureServices(s => s
                     .Expansion()
                     .AddFilesystem()
                 );

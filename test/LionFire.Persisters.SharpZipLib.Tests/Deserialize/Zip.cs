@@ -6,7 +6,6 @@ using LionFire.Persisters.SharpZipLib_;
 using LionFire.Referencing;
 using LionFire.Vos;
 using Microsoft.Extensions.Hosting;
-using NLog.MessageTemplates;
 using System.Diagnostics;
 
 namespace LionFire.Persisters.SharpZipLib.Tests.Deserialize;

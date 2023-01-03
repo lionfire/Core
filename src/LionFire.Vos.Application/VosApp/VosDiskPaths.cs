@@ -4,13 +4,14 @@ using System.Linq;
 using System.Text;
 using System.IO;
 using LionFire.Applications;
+using LionFire.Dependencies;
 
 namespace LionFire.Vos.VosApp
 {
 
     public static class VosDiskPaths
     {
-        private static AppInfo AppInfo => AppInfo.Instance;
+        private static AppInfo AppInfo => DependencyContext.Current.GetService<AppInfo>();
 
         public static string Base => @"Base";
         //public static string BasePacks { get { return @"Static\BasePacks"; } }

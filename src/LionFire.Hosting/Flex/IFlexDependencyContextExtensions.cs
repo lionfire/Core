@@ -12,7 +12,7 @@ namespace LionFire.Hosting
         /// </summary>
         /// <param name="lf"></param>
         /// <returns></returns>
-        public static LionFireHostBuilder UseDependencyContextToActivateFlexChildren(this LionFireHostBuilder lf)
+        public static ILionFireHostBuilder UseDependencyContextToActivateFlexChildren(this ILionFireHostBuilder lf)
         {
             UseDependencyContextToActivateFlexChildren();
             return lf;

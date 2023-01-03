@@ -8,7 +8,6 @@ using LionFire.Referencing;
 using LionFire.Serialization;
 using LionFire.Vos;
 using Microsoft.Extensions.Hosting;
-using NLog.MessageTemplates;
 using System.Diagnostics;
 
 namespace LionFire.Persisters.SharpZipLib.Tests.Deserialize;

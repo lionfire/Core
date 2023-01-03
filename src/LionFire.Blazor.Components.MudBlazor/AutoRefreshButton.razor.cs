@@ -10,7 +10,6 @@ using MudBlazor;
 using System.Text;
 using System.Threading;
 using Microsoft.Extensions.Logging;
-using NLog;
 using System.Diagnostics;
 
 namespace LionFire.Blazor.Components.MudBlazor_

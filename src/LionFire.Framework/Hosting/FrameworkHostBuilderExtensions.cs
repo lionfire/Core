@@ -38,7 +38,7 @@ namespace LionFire.Hosting
 
     public static class FrameworkHostBuilderExtensions
     {
-        #region LionFireHostBuilder
+        #region ILionFireHostBuilder
 
         /// <summary>
         /// Add the full opinionated LionFire Kitchen Sink(tm)
@@ -46,7 +46,7 @@ namespace LionFire.Hosting
         /// <param name="lf"></param>
         /// <param name="frameworkHostBuilderOptions"></param>
         /// <returns></returns>
-        public static LionFireHostBuilder Framework(this LionFireHostBuilder lf, FrameworkHostBuilderOptions frameworkHostBuilderOptions = null)
+        public static ILionFireHostBuilder Framework(this ILionFireHostBuilder lf, FrameworkHostBuilderOptions frameworkHostBuilderOptions = null)
         {
             lf
                 .VosApp()

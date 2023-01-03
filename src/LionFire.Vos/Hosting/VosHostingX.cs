@@ -32,9 +32,9 @@ namespace LionFire.Hosting
 
     public static class VosHostingX
     {
-        #region LionFireHostBuilder
+        #region ILionFireHostBuilder
 
-        public static LionFireHostBuilder Vos(this LionFireHostBuilder hostBuilder, bool persistence = true, bool enableLogging = true)
+        public static ILionFireHostBuilder Vos(this ILionFireHostBuilder hostBuilder, bool persistence = true, bool enableLogging = true)
         {
             hostBuilder
                 .Persisters()

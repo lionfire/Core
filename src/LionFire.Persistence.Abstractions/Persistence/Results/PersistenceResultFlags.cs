@@ -62,6 +62,7 @@ namespace LionFire.Persistence
 
         InnerFail = 1 << 26, // MOVE number near Fail?
 
+        PersisterNotAvailable = 1 << 27,
         MountNotAvailable = 1 << 28,
         SerializerNotAvailable = 1 << 29,
         ProviderNotAvailable = 1 << 30,

@@ -17,9 +17,9 @@ namespace LionFire.Hosting
 {
     public static class PersistersHost
     {
-        #region LionFireHostBuilder
+        #region ILionFireHostBuilder
 
-        public static LionFireHostBuilder Persisters(this LionFireHostBuilder hostBuilder)
+        public static ILionFireHostBuilder Persisters(this ILionFireHostBuilder hostBuilder)
         {
             hostBuilder.HostBuilder
                 .AddPersisters()
@@ -32,7 +32,7 @@ namespace LionFire.Hosting
         [Obsolete]
         public static IHostBuilder Create(string[] args = null)
          => Host.CreateDefaultBuilder(args)
-                .AddLionFire()
+                .LionFire()
                 .AddPersisters();
 
         public static IHostBuilder AddPersisters(this IHostBuilder hostBuilder)

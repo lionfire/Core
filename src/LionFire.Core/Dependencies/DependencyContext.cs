@@ -12,8 +12,10 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace LionFire.Dependencies;
 
+// ENH idea: during construction of IHostBuilder or HostApplicationBuilder, register builder with DependencyContext, and allow GetService which will get IServiceProvider from IServiceCollection so far
+
 // REVIEW - this wraps ServiceProvider using 4 interfaces. Superfluous?
-public interface IDependencyContext : IHas<IServiceProvider?>, IWrapper<IServiceProvider?>, IServiceProvider // RENAME to AmbientContext?
+public interface IDependencyContext : IHas<IServiceProvider?>, IWrapper<IServiceProvider?>, IServiceProvider // RENAME to IServiceProviderContext?
 {
     IServiceProvider? ServiceProvider { get; }
 }
@@ -22,6 +24,7 @@ public interface IDependencyContext : IHas<IServiceProvider?>, IWrapper<IService
 /// Wraps a IServiceProvider, with potential fallback to other IServiceProviders
 /// </summary>
 /// <remarks>
+/// RENAME to ServiceProviderContext?
 /// FUTURE:
 ///  - Named services?
 /// </remarks>
@@ -53,10 +56,22 @@ public class DependencyContext : IDependencyContext
         }
     }
 
-    public static void Reset()
+    //[Obsolete("Use Deinitialize()")]
+    //public static void Reset()
+    //{
+    //    Deinitialize();
+    //}
+    public static void Deinitialize()
     {
-        current = null;
+        AsyncLocal = null;
         Default = null;
+
+        var current = Current;
+        if (current != null)
+        {
+            current.ServiceProvider = null;
+            Current = null;
+        }
     }
 
     /// <summary>
@@ -346,7 +361,7 @@ public static class IServiceProviderX
         where T : class
     {
         var singleResult = tryFirstServiceProvider?.GetService<T>() ?? fallbackServiceProvider?.GetService<T>();
-        if(singleResult != null)
+        if (singleResult != null)
         {
             return new T[] { singleResult };
         }
@@ -404,14 +419,14 @@ public static class IDependencyContextX
         where T : class
     {
         return dependencyContext?.ServiceProvider?.GetServices<T>(tryFirstServiceProvider);
-        
+
         // OLD
         //var singleResult = dependencyContext.GetService<T>(tryFirstServiceProvider);
         //return singleResult != null ? (new T[] { singleResult }) : dependencyContext.GetService<IEnumerable<T>>(); // Bug: didn't try tryFirstServiceProvider
     }
 
     #endregion
-    
+
     public static void UseAsGuaranteedSingletonProvider(this IDependencyContext dependencyContext, bool useDefaultAsFallback = true)
     {
         var fallback = useDefaultAsFallback ? ManualSingletonProvider.GuaranteedInstanceProvider : null;

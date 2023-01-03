@@ -11,7 +11,7 @@ namespace LionFire.Hosting
 {
     public static class InfoHostingExtensions
     {
-        public static LionFireHostBuilder Info(this LionFireHostBuilder b)
+        public static ILionFireHostBuilder Info(this ILionFireHostBuilder b)
             => b.ForHostBuilder(b=>b.ConfigureServices((_,services) => services
                 .AddSingleton<NamedSingletons<HierarchicalTagContext>>()));
     }

@@ -15,9 +15,9 @@ namespace LionFire.Hosting // REVIEW - consider changing this to LionFire.Servic
 {
     public static class VosAppHostBuilder
     {
-        #region LionFireHostBuilder
+        #region ILionFireHostBuilder
 
-        public static LionFireHostBuilder VosApp(this LionFireHostBuilder lf)
+        public static ILionFireHostBuilder VosApp(this ILionFireHostBuilder lf)
             => lf
                     .Vos()
                     .ForHostBuilder(b => b
@@ -63,15 +63,31 @@ namespace LionFire.Hosting // REVIEW - consider changing this to LionFire.Servic
                 //.AddVosAppOptions(options)
                 ;
 
-        public static AppInfo AppInfo(this IHostBuilder hostBuilder)
-            => hostBuilder.Properties[typeof(AppInfo)] as AppInfo ?? throw new ArgumentException("IHostBuilder needs to have AddAppInfo() invoked on it.");
+        #region // Obsolete: IHostBuilder
 
-        public static IHostBuilder AddDefaultVosAppStores(this IHostBuilder hostBuilder, bool useExeDirAsAppDirIfMissing = false)
-            => hostBuilder.ConfigureServices(services =>
+        //[Obsolete("Use HostApplicationBuilder")]
+        //public static AppInfo AppInfo(this IHostBuilder hostBuilder)
+        //    => hostBuilder.Properties[typeof(AppInfo)] as AppInfo ?? throw new ArgumentException("IHostBuilder needs to have AddAppInfo() invoked on it.");
+        
+        //[Obsolete("Use HostApplicationBuilder")]
+        //public static IHostBuilder AddDefaultVosAppStores(this IHostBuilder builder, bool useExeDirAsAppDirIfMissing = false)
+        //    => throw new NotSupportedException("Obsolete. Use HostApplicationBuilder instead");
+        //builder.ConfigureServices((context, services) =>
+        //        services
+        //             .AddAppDirStore(appInfo: builder.AppInfo(), useExeDirAsAppDirIfMissing: useExeDirAsAppDirIfMissing)
+        //             .AddExeDirStore()
+        //             .AddPlatformSpecificStores(builder.AppInfo()));
+
+        #endregion
+        
+        public static AppInfo AppInfo(this HostApplicationBuilder builder)
+            => builder.Services.BuildServiceProvider().GetService<AppInfo>() ?? throw new ArgumentException("HostApplicationBuilder needs to have AddAppInfo() already invoked on it.");
+
+        public static IHostBuilder AddDefaultVosAppStores(this HostApplicationBuilder builder, bool useExeDirAsAppDirIfMissing = false)
+            => builder.ConfigureServices(services =>
                 services
-                     .AddAppDirStore(appInfo: hostBuilder.AppInfo(), useExeDirAsAppDirIfMissing: useExeDirAsAppDirIfMissing)
+                     .AddAppDirStore(appInfo: builder.AppInfo(), useExeDirAsAppDirIfMissing: useExeDirAsAppDirIfMissing)
                      .AddExeDirStore()
-                     .AddPlatformSpecificStores(hostBuilder.AppInfo()));
-
+                     .AddPlatformSpecificStores(builder.AppInfo()));
     }
 }

@@ -66,7 +66,7 @@ public static class VobExtensions
     public static T GetNextOrCreateAtRoot<T>(this IVob vob, Func<IVobNode, T> valueFactory = null, bool skipOwn = false) where T : class
         => vob.Acquire<T>() ?? vob.Root.GetOrAddOwn<T>(valueFactory);
 
-    public static List<IMount> AllMountsRecursive(this IVob vob, List<IMount> list = null)
+    public static HashSet<IMount> AllMountsRecursive(this IVob vob, HashSet<IMount> list = null)
     {
         list ??= new();
 

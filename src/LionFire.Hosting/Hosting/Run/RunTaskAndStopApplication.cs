@@ -4,48 +4,47 @@ using Microsoft.Extensions.Hosting;
 using System.Threading;
 using LionFire.Dependencies;
 
-namespace LionFire.Hosting
+namespace LionFire.Hosting;
+
+// ENH: Support multiple run actions, in serial or parallel
+
+public class RunTaskAndStopApplication : BackgroundService
 {
-    // ENH: Support multiple run actions, in serial or parallel
+    readonly IServiceProvider serviceProvider;
+    private readonly RunOptions options;
+    readonly IHostApplicationLifetime hostApplicationLifetime;
 
-    public class RunTaskAndStopApplication : BackgroundService
+    public RunTaskAndStopApplication(IServiceProvider serviceProvider, RunOptions options, IHostApplicationLifetime hostApplicationLifetime)
     {
-        readonly IServiceProvider serviceProvider;
-        private readonly RunOptions options;
-        readonly IHostApplicationLifetime hostApplicationLifetime;
 
-        public RunTaskAndStopApplication(IServiceProvider serviceProvider, RunOptions options, IHostApplicationLifetime hostApplicationLifetime)
+        // OLD - now use DependencyContextServiceProviderFactoryWrapper
+        // : Use a custom Container factory that is just a wrapper around the default Microsoft (or some other like Autofac) Container provider
+        //DependencyContext.Default.ServiceProvider = serviceProvider;
+
+        this.serviceProvider = serviceProvider;
+        this.options = options;
+        this.hostApplicationLifetime = hostApplicationLifetime;
+    }
+
+    protected override Task ExecuteAsync(CancellationToken stoppingToken)
+    {
+        if (options?.Action != null)
         {
-
-            // OLD - now use DependencyContextServiceProviderFactoryWrapper
-            // : Use a custom Container factory that is just a wrapper around the default Microsoft (or some other like Autofac) Container provider
-            //DependencyContext.Default.ServiceProvider = serviceProvider;
-
-            this.serviceProvider = serviceProvider;
-            this.options = options;
-            this.hostApplicationLifetime = hostApplicationLifetime;
-        }
-
-        protected override Task ExecuteAsync(CancellationToken stoppingToken)
-        {
-            if (options?.Action != null)
+            Task.Factory.StartNew(async () =>
             {
-                Task.Factory.StartNew(async () =>
+                try
                 {
-                    try
+                    await options.Action(serviceProvider, stoppingToken).ConfigureAwait(false);
+                }
+                finally
+                {
+                    if (options.StopApplicationAfterRun)
                     {
-                        await options.Action(serviceProvider, stoppingToken).ConfigureAwait(false);
+                        hostApplicationLifetime.StopApplication();
                     }
-                    finally
-                    {
-                        if (options.StopApplicationAfterRun)
-                        {
-                            hostApplicationLifetime.StopApplication();
-                        }
-                    }
-                }, TaskCreationOptions.AttachedToParent);
-            }
-            return Task.CompletedTask;
+                }
+            }, TaskCreationOptions.AttachedToParent);
         }
+        return Task.CompletedTask;
     }
 }

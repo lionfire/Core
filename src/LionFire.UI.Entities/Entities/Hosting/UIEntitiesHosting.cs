@@ -35,8 +35,8 @@ namespace LionFire.Hosting
         /// <param name="services"></param>
         /// <param name="configure"></param>
         /// <returns></returns>
-        public static LionFireHostBuilder UIEntities(this LionFireHostBuilder lf, Action<IParticipant> configure = null)
-            => lf.ConfigureServices((context, services) => services.AddUIEntities(configure));
+        public static ILionFireHostBuilder UIEntities(this ILionFireHostBuilder lf, Action<IParticipant> configure = null)
+            => lf.ConfigureServices(services => services.AddUIEntities(configure));
 
         public static IServiceCollection AddUIEntities(this IServiceCollection services, Action<IParticipant> configure = null) => services
                 .AddSingleton<UIStarter>()

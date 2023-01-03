@@ -12,6 +12,7 @@ public static class OrleansClientServiceCollectionExtensions
 {
     public static IHostBuilder UseOrleansClient_LF(this IHostBuilder hostBuilder, IConfiguration configuration)
     {
+        //hostBuilder.Cont
 
         return hostBuilder
             //.ConfigureServices(services =>

@@ -8,7 +8,6 @@ using Microsoft.AspNetCore.Server.Kestrel.Core;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Hosting;
-using NLog.Fluent;
 using System;
 using System.Collections.Generic;
 
@@ -18,11 +17,11 @@ namespace LionFire.Hosting
     public static class WebHostExtensions
     {
 
-        public static LionFireHostBuilder WebHost<TStartup>(this LionFireHostBuilder builder)
+        public static ILionFireHostBuilder WebHost<TStartup>(this ILionFireHostBuilder builder)
             where TStartup : class
             => builder.WebHost<TStartup>(null, false);
 
-        public static LionFireHostBuilder WebHost<TStartup>(this LionFireHostBuilder builder, int? defaultPort, bool useReleaseChannelPortOffsets = true)
+        public static ILionFireHostBuilder WebHost<TStartup>(this ILionFireHostBuilder builder, int? defaultPort, bool useReleaseChannelPortOffsets = true)
             where TStartup : class
         {
             if (defaultPort.HasValue)
