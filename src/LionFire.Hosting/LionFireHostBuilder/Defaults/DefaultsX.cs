@@ -6,6 +6,8 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Hosting.Internal;
+using Microsoft.Extensions.Logging;
+using Serilog.Core;
 using System;
 using System.Diagnostics;
 using System.IO;
@@ -24,7 +26,7 @@ public static class DefaultsX
 
         var builder = lf.HostBuilder;
 
-        builder.UseContentRoot(AppContext.BaseDirectory);
+        builder.UseContentRoot(AppContext.BaseDirectory); // REVIEW - compare with Microsoft default behavior, eliminate if not needed, or else document more
 
         #region Configuration
 
@@ -46,17 +48,12 @@ public static class DefaultsX
         {
             lf.HostBuilder.WrappedHostBuilder.ConfigureHostConfiguration(c =>
             {
+                // REVIEW: releaseChannel is set to test, but this lets us change releaseChannel to something else while still using settings for testing
                 if(isTest) c.AddJsonFile("appsettings.test.json", optional: true, reloadOnChange: false);
 
                 c.AddEnvironmentVariables(prefix: "LionFire_");
             });
 
-            lf.HostBuilder.WrappedHostBuilder.ConfigureAppConfiguration(c =>
-            {
-                if (isTest) c.AddJsonFile("appsettings.test.json", optional: true, reloadOnChange: false);
-
-                c.AddEnvironmentVariables(prefix: "LionFire_");
-            });
             lf.HostBuilder.WrappedHostBuilder
                 .ReleaseChannel() // adds appsettings.{ReleaseChannel}.json
                 .CopyExampleAppSettings()
@@ -64,13 +61,15 @@ public static class DefaultsX
         }
         else if (lf.HostBuilder.WrappedHostApplicationBuilder != null)
         {
+            // REFACTOR - is there a better way to avoid this duplicated code?
+
             var c = lf.HostBuilder.WrappedHostApplicationBuilder.Configuration;
 
             if (isTest) c.AddJsonFile("appsettings.test.json", optional: true, reloadOnChange: false);
             c.AddEnvironmentVariables(prefix: "LionFire_");
 
             lf.HostBuilder.WrappedHostApplicationBuilder
-                .ReleaseChannel() // adds appsettings.{Environment}.json
+                .ReleaseChannel() // adds appsettings.{ReleaseChannel}.json
                 .CopyExampleAppSettings()
                 ;
         }
@@ -98,7 +97,7 @@ public static class DefaultsX
             var appSettingsFile = hostingContext.Configuration[ConfigurationKeys.AppSettingsFileKey];
             if (appSettingsFile != null)
             {
-                Console.WriteLine($"Adding config source: {appSettingsFile}  (exists: {File.Exists(appSettingsFile)})");
+                Log.Get(typeof(DefaultsX).FullName).LogInformation($"Adding config source: {appSettingsFile}  (exists: {File.Exists(appSettingsFile)})");
                 config
                       .AddJsonFile(appSettingsFile, optional: true, reloadOnChange: true);
             }

@@ -30,7 +30,7 @@ public class LionFireHostBuilder : ILionFireHostBuilder
     public ILionFireHostBuilder ConfigureServices(Action<IServiceCollection> configure) { HostBuilder.ConfigureServices(configure); return this; }
     public ILionFireHostBuilder ConfigureServices(Action<HostBuilderContext, IServiceCollection> configure) { HostBuilder.ConfigureServices(configure); return this; }
 
-    public IConfiguration GetBootstrapConfiguration(LionFireHostBuilderBootstrapOptions options)
+    public IConfiguration GetBootstrapConfiguration(LionFireHostBuilderBootstrapOptions? options = null)
     {
         if (HostBuilder.WrappedHostApplicationBuilder != null)
         {
@@ -39,7 +39,7 @@ public class LionFireHostBuilder : ILionFireHostBuilder
         else
         {
             var hab = new HostApplicationBuilder();
-
+            options ??= new();
             hab.LionFire(options.BootstrapLionFireHostBuilder, options.UseDefaults);
 
             return hab.Configuration;

@@ -31,6 +31,8 @@ namespace LionFire.Execution
 
     public static class AutoRetryExtensions
     {
+        //private static ILogger l = Log.Get(typeof(AutoRetryExtensions).FullName);  // TODO: Replace Debug statements?
+
         private const int DefaultMaxRetries = 15;
         private const bool ThrowLastExceptionOnFail = true;
         private const int DefaultMillisecondsBetweenAttempts = 150;
@@ -70,7 +72,7 @@ namespace LionFire.Execution
                     {
                         await Task.Delay(millisecondsBetweenAttempts).ConfigureAwait(false);
                     }
-                    Trace.WriteLine($"[autoretry] {retriesRemaining} retries remain after exception {ex.GetType().FullName}");
+                    Trace.WriteLine($"[autoretry] {retriesRemaining} retries remain after exception {ex.GetType().FullName}", typeof(AutoRetryExtensions).FullName);
                 }
             }
             if (throwLastExceptionOnFail)
@@ -113,7 +115,7 @@ namespace LionFire.Execution
                     {
                         await Task.Delay(millisecondsBetweenAttempts).ConfigureAwait(false);
                     }
-                    Trace.WriteLine($"[autoretry] {retriesRemaining} retries remain after exception {ex.GetType().FullName}");
+                    Trace.WriteLine($"{retriesRemaining} retries remain after exception {ex.GetType().FullName}", typeof(AutoRetryExtensions).FullName);
                 }
             }
             if (throwLastExceptionOnFail)
@@ -155,12 +157,12 @@ namespace LionFire.Execution
                     if (exceptions == null) exceptions = new List<Exception>();
                     exceptions.Add(ex);
 
-                    Debug.WriteLine($"AutoRetry got {ex.GetType().Name}, retrying after {millisecondsBetweenAttempts}ms.  {retriesRemaining} retries remaining. \r\n"+ex.ToString());
+                    Debug.WriteLine($"AutoRetry got {ex.GetType().Name}, retrying after {millisecondsBetweenAttempts}ms.  {retriesRemaining} retries remaining. \r\n"+ex.ToString(), typeof(AutoRetryExtensions).FullName);
                     if (millisecondsBetweenAttempts > 0)
                     {
                         await Task.Delay(millisecondsBetweenAttempts).ConfigureAwait(false);
                     }
-                    Trace.WriteLine($"[autoretry] {retriesRemaining} retries remain after exception {ex.GetType().FullName}");
+                    Trace.WriteLine($"{retriesRemaining} retries remain after exception {ex.GetType().FullName}", typeof(AutoRetryExtensions).FullName);
                 }
             }
             if (throwLastExceptionOnFail)

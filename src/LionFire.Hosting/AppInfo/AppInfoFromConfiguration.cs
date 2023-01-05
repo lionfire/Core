@@ -12,6 +12,8 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace LionFire.Hosting;
 
+// REVIEW: Replace/merge AppInfo to prefer this?
+
 public partial class AppInfoFromConfiguration
 {
     public IConfiguration configuration { get; }
@@ -38,11 +40,11 @@ public partial class AppInfoFromConfiguration
 
 public partial class AppInfoFromConfiguration // Static
 {
-    public static string? ApplicationName(IConfiguration configuration)
+    public static string? ApplicationName(IConfiguration? configuration)
         => configuration?[HostDefaults.ApplicationKey];
-    public static string? Environment(IConfiguration configuration)
+    public static string? Environment(IConfiguration? configuration)
         => configuration?[HostDefaults.EnvironmentKey];
-    public static string? ContentRoot(IConfiguration configuration)
+    public static string? ContentRoot(IConfiguration? configuration)
         => configuration?[HostDefaults.ContentRootKey];
 
     public static string ApplicationNameFallback
@@ -88,6 +90,6 @@ public partial class AppInfoFromConfiguration // Static
         }
     }
 
-    public static string ApplicationNameOrFallback(IConfiguration configuration)
+    public static string ApplicationNameOrFallback(IConfiguration? configuration)
         => ApplicationName(configuration) ?? ApplicationNameFallback;
 }

@@ -15,7 +15,7 @@ public class LionFireSerilogBuilder
 {
     public LoggerConfiguration LoggerConfiguration { get; }
     public IConfiguration? Configuration { get; }
-    
+
     public LionFireSerilogBuilder(LoggerConfiguration loggerConfiguration, IConfiguration? configuration)
     {
         LoggerConfiguration = loggerConfiguration;
@@ -30,6 +30,32 @@ public class LionFireSerilogBuilder
         File();
         Loki();
 
+        FromConfiguration();
+        
+        TraceListener();
+
+        return this;
+    }
+
+    private static bool AttachedToGlobalLogger = false;
+    public LionFireSerilogBuilder TraceListener()
+    {
+        if (!AttachedToGlobalLogger)
+        {
+            AttachedToGlobalLogger = true;
+            var listener = new SerilogTraceListener.SerilogTraceListener();
+            System.Diagnostics.Trace.Listeners.Add(listener);
+        }
+
+        return this;
+    }
+
+    public LionFireSerilogBuilder FromConfiguration()
+    {
+        if(Configuration != null)
+        {
+            LoggerConfiguration.ReadFrom.Configuration(Configuration);
+        }
         return this;
     }
 

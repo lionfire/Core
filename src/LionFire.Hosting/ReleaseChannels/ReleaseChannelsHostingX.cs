@@ -12,6 +12,8 @@ namespace LionFire.Hosting;
 
 public static class ReleaseChannelsHostingX
 {
+    public static string TestReleaseChannel = "test";
+
     public static HostApplicationBuilder ReleaseChannel(this HostApplicationBuilder hostBuilder, bool reloadOnChange = true)
     {
         hostBuilder.Services.AddHostedService<ReleaseChannelLogger>();
@@ -25,7 +27,15 @@ public static class ReleaseChannelsHostingX
         //            .AddInMemoryCollection(new KeyValuePair<string, string>[] { new(ReleaseChannelKeys.ReleaseChannel, releaseChannel) });
         //}
 
+
         var configuredReleaseChannel = hostBuilder.Configuration[ReleaseChannelKeys.ReleaseChannel];
+
+        if (configuredReleaseChannel == null && TestInfo.IsTest == true)
+        {
+            hostBuilder.Configuration
+                    .AddInMemoryCollection(new KeyValuePair<string, string>[] { new(ReleaseChannelKeys.ReleaseChannel, TestReleaseChannel) });
+        }
+
         if (configuredReleaseChannel != null)
         {
             var releaseChannelConfigFile = $"appsettings.{configuredReleaseChannel}.json";
@@ -38,11 +48,15 @@ public static class ReleaseChannelsHostingX
         return hostBuilder;
     }
 
+
     public static IHostBuilder ReleaseChannel(this IHostBuilder hostBuilder, bool reloadOnChange = true)
     {
         hostBuilder.ConfigureServices(s => s.AddHostedService<ReleaseChannelLogger>());
 
-        var releaseChannel = Environment.GetEnvironmentVariable("RELEASE_CHANNEL");
+        var releaseChannel = Environment.GetEnvironmentVariable("DOTNET_releaseChannel");
+
+        if (releaseChannel == null && TestInfo.IsTest == true) releaseChannel = TestReleaseChannel;
+
         if (releaseChannel != null)
         {
             hostBuilder.Properties.Add("releaseChannel", releaseChannel);
@@ -52,20 +66,23 @@ public static class ReleaseChannelsHostingX
         {
             if (releaseChannel != null)
             {
-                config.AddInMemoryCollection(new KeyValuePair<string, string>[] { new("releaseChannel", releaseChannel) });
+                config
+                    .AddInMemoryCollection(new KeyValuePair<string, string>[] { new("releaseChannel", releaseChannel) })
+                    .AddJsonFile($"appsettings.{releaseChannel}.json", optional: true, reloadOnChange)
+                ;
             }
         });
 
-        hostBuilder.ConfigureAppConfiguration((hostContext, config) =>
-        {
-            var releaseChannel = hostContext.Configuration["releaseChannel"];
-            if (releaseChannel != null)
-            {
-                config
-                    .AddJsonFile($"appsettings.{releaseChannel}.json", optional: true, reloadOnChange)
-                    ;
-            }
-        });
+        //hostBuilder.ConfigureAppConfiguration((hostContext, config) =>
+        //{
+        //    var releaseChannel = hostContext.Configuration["releaseChannel"];
+        //    if (releaseChannel != null)
+        //    {
+        //        config
+
+        //            ;
+        //    }
+        //});
 
         return hostBuilder;
     }

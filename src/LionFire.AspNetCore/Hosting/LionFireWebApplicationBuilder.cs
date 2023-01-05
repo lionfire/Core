@@ -8,30 +8,30 @@ namespace LionFire.Hosting;
 
 public class LionFireWebApplicationBuilder : ILionFireHostBuilder
 {
-    public WebApplicationBuilder HostBuilder1 { get; }
+    public WebApplicationBuilder WebApplicationBuilder { get; }
 
     public LionFireWebApplicationBuilder(WebApplicationBuilder hostBuilder)
     {
-        HostBuilder1 = hostBuilder;
+        WebApplicationBuilder = hostBuilder;
     }
 
     public HostBuilderWrapper HostBuilder => throw new NotImplementedException(); // TODO - eliminate need for this
 
-    public HostBuilderContext GetHostBuilderContext => new HostBuilderContext(HostBuilder1.Host.Properties)
+    public HostBuilderContext GetHostBuilderContext => new HostBuilderContext(WebApplicationBuilder.Host.Properties)
     {
-        Configuration = HostBuilder1.Configuration,
-        HostingEnvironment = HostBuilder1.Environment,
+        Configuration = WebApplicationBuilder.Configuration,
+        HostingEnvironment = WebApplicationBuilder.Environment,
     };
 
     public ILionFireHostBuilder ConfigureServices(Action<HostBuilderContext, IServiceCollection> configure)
     {
-        configure(GetHostBuilderContext, HostBuilder1.Services);
+        configure(GetHostBuilderContext, WebApplicationBuilder.Services);
         return this;
     }
 
     public ILionFireHostBuilder ConfigureServices(Action<IServiceCollection> configure)
     {
-        configure(HostBuilder1.Services);
+        configure(WebApplicationBuilder.Services);
         return this;
     }
 
@@ -40,6 +40,6 @@ public class LionFireWebApplicationBuilder : ILionFireHostBuilder
         throw new NotImplementedException();
     }
 
-    public IConfiguration GetBootstrapConfiguration(LionFireHostBuilderBootstrapOptions options)
-        => HostBuilder1.Configuration;
+    public IConfiguration GetBootstrapConfiguration(LionFireHostBuilderBootstrapOptions? options = null)
+        => WebApplicationBuilder.Configuration;
 }

@@ -21,6 +21,7 @@
 	  <PackageReference Include="Serilog.Sinks.File.Archive" />
 	  <PackageReference Include="Serilog.Sinks.File.GZip" />
 	  <PackageReference Include="Serilog.Sinks.Loki" />
+	  <PackageReference Include="SerilogTraceListener" />
   </ItemGroup>
 
   <ItemGroup>

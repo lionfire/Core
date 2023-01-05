@@ -7,6 +7,8 @@ using LionFire.Ontology;
 using LionFire.Persistence;
 using System.Diagnostics;
 using LionFire.ExtensionMethods;
+using Microsoft.Extensions.Logging;
+using Serilog.Core;
 
 namespace LionFire.Persisters.SharpZipLib_;
 
@@ -23,6 +25,7 @@ public class RZip : ReadHandle<IReference<ZipFile>, ZipFile>, IHas<IServiceProvi
 
     public RZip(IReference<ZipFile> reference, IServiceProvider serviceProvider) : base(reference)
     {
+        Logger.LogInformation("++++++ RZIP ctor");
         ServiceProvider = serviceProvider;
     }
 
@@ -51,7 +54,7 @@ public class RZip : ReadHandle<IReference<ZipFile>, ZipFile>, IHas<IServiceProvi
 
     protected override async ITask<IResolveResult<ZipFile>> ResolveImpl()
     {
-#if ENH
+        //#if ENH
         // ENH: Try getting a Stream, unless user opted to use byte[].  Maybe use a different class of handle: RZipStream
         //var result = await Reference.Resolve<IReference, Stream>().ConfigureAwait(false);
         var streamReadHandle = this.Key.GetReadHandle<Stream>();
@@ -59,30 +62,36 @@ public class RZip : ReadHandle<IReference<ZipFile>, ZipFile>, IHas<IServiceProvi
 
         if (streamRetrieveResult.IsSuccess() == true)
         {
-            Debug.WriteLine($"Retrieved stream");
+            Log.Get<RZip>().Debug($"RZip Retrieved stream of length {streamRetrieveResult.Value.Length} bytes");
+            Debug.WriteLine($"Retrieved stream", this.GetType().FullName);
+            ProtectedValue = new ICSharpCode.SharpZipLib.Zip.ZipFile(streamRetrieveResult.Value, false);
+            return new ResolveResultSuccess<ZipFile>(Value);
         }
-#endif
-
-        var bytesReadHandle = this.Key.GetReadHandle<byte[]>();
-        var bytesRetrieveResult = await bytesReadHandle.Resolve().ConfigureAwait(false);
-
-        if (bytesRetrieveResult.IsSuccess() != true)
+        else
+        //#endif
         {
-            return ResolveResultNotResolved<ZipFile>.Instance;
-        }
-        Log.Get<RZip>().Debug($"RZip Retrieved {bytesRetrieveResult.Value.Length} bytes");
+            var bytesReadHandle = this.Key.GetReadHandle<byte[]>();
+            var bytesRetrieveResult = await bytesReadHandle.Resolve().ConfigureAwait(false);
 
-        var oldMemoryStream = ms;
-        if (oldMemoryStream != null)
-        {
-            await oldMemoryStream.DisposeAsync();
-        }
+            if (bytesRetrieveResult.IsSuccess() != true)
+            {
+                return ResolveResultNotResolved<ZipFile>.Instance;
+            }
+            Log.Get<RZip>().Debug($"RZip Retrieved byte array of {bytesRetrieveResult.Value.Length} bytes");
 
-        ms = new MemoryStream(bytesRetrieveResult.Value);
-        ProtectedValue = new ICSharpCode.SharpZipLib.Zip.ZipFile(ms, true);
-        return new ResolveResultSuccess<ZipFile>(Value);
+            var oldMemoryStream = ms;
+            if (oldMemoryStream != null)
+            {
+                await oldMemoryStream.DisposeAsync();
+            }
+
+            ms = new MemoryStream(bytesRetrieveResult.Value);
+            ProtectedValue = new ICSharpCode.SharpZipLib.Zip.ZipFile(ms, true);
+            return new ResolveResultSuccess<ZipFile>(Value);
+        }
     }
 
     #endregion
 
+    static ILogger Logger =>  Log.Get<RZip>();
 }
