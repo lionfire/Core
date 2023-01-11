@@ -1,32 +1,19 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
 
 	<PropertyGroup>
 		<TargetFramework>net7.0</TargetFramework>
 		<ImplicitUsings>enable</ImplicitUsings>
 		<Nullable>enable</Nullable>
-
-		<IsPackable>false</IsPackable>
-		<RootNamespace></RootNamespace>
 	</PropertyGroup>
 
-	<ItemGroup>
-	  <None Remove="appsettings.test.json" />
-	</ItemGroup>
-
-	<ItemGroup>
-	  <Content Include="appsettings.test.json">
-	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-	    <SubType>Component</SubType>
-	  </Content>
-	</ItemGroup>
 
 	<ItemGroup>
 		<PackageReference Include="Microsoft.NET.Test.Sdk" />
 		<PackageReference Include="MSTest.TestAdapter" />
 		<PackageReference Include="MSTest.TestFramework" />
 		<PackageReference Include="coverlet.collector">
-		  <PrivateAssets>all</PrivateAssets>
-		  <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+			<PrivateAssets>all</PrivateAssets>
+			<IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
 		</PackageReference>
 		<PackageReference Include="OpenTelemetry.Exporter.Console" />
 		<PackageReference Include="OpenTelemetry.Exporter.InMemory" />
@@ -45,18 +32,10 @@
 		<PackageReference Include="Serilog.Sinks.File.Archive" />
 		<PackageReference Include="Serilog.Sinks.File.GZip" />
 		<PackageReference Include="Serilog.Sinks.Loki" />
-		
-
-	</ItemGroup>
+		</ItemGroup>
 
 
 	<ItemGroup>
-		<ProjectReference Include="..\..\src\LionFire.Expanders.SharpZipLib\LionFire.Expanders.SharpZipLib.csproj" />
-		<ProjectReference Include="..\..\src\LionFire.Expanders.Vos\LionFire.Expanders.Vos.csproj" />
-		<ProjectReference Include="..\..\src\LionFire.Expanders\LionFire.Expanders.csproj" />
-		<ProjectReference Include="..\..\src\LionFire.Persistence.Filesystem\LionFire.Persistence.Filesystem.csproj" />
-		<ProjectReference Include="..\..\src\LionFire.Testing\LionFire.Testing.csproj" />
-		<ProjectReference Include="..\..\src\LionFire.Vos\LionFire.Vos.csproj" />
+	  <ProjectReference Include="..\LionFire.Hosting\LionFire.Hosting.csproj" />
 	</ItemGroup>
-
-</Project>
+	</Project>

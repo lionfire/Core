@@ -2,31 +2,8 @@
 using OpenTelemetry.Resources;
 using OpenTelemetry.Trace;
 using OpenTelemetry.Metrics;
-using OpenTelemetry.Exporter;
 
-public class LionFireMemoryExporter<T> : InMemoryExporter<T>
-    where T : class
-{
-    public LionFireMemoryExporter(ICollection<T> items) : base(items) { }
-}
-
-public class LionFireMetricReader : BaseExportingMetricReader
-{
-    public static int CreateCount = 0;
-    public LionFireMetricReader(BaseExporter<Metric> exporter) : base(exporter)
-    {
-        CreateCount++;
-    }
-
-    public int CollectCount = 0;
-    public bool DoCollect()
-    {
-        CollectCount++;
-        return base.Collect();
-    }
-}
-
-public static class LionFireOpenTelemetryTracingX // MOVE
+public static class LionFireOpenTelemetryTracingX
 {
     private static MeterProviderBuilder AddLionFireMemoryExporter(
             this MeterProviderBuilder builder, IServiceCollection services,

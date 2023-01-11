@@ -14,7 +14,7 @@ namespace LionFire.Hosting;
 
 // REVIEW: Replace/merge AppInfo to prefer this?
 
-public partial class AppInfoFromConfiguration
+public partial class AppInfoFromConfiguration // RENAME to be simpler
 {
     public IConfiguration configuration { get; }
     public ILogger<AppInfoFromConfiguration> Logger { get; }
