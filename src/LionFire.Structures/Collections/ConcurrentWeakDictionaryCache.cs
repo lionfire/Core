@@ -11,14 +11,14 @@ namespace LionFire.Collections
         /// <summary>
         /// Instantiate/Create TValue for TKey.
         /// </summary>
-        public Func<TKey, TValue> Getter; // RENAME Instantiator
+        public Func<TKey, TValue> Getter { get; set; } // RENAME Instantiator
 
-        public ConcurrentWeakDictionaryCache(Func<TKey, TValue> getter)
+        public ConcurrentWeakDictionaryCache(Func<TKey, TValue> getter = null)
         {
             Getter = getter;
         }
 
-        private WeakReference<TValue> Get(TKey key) => new WeakReference<TValue>(Getter(key));
+        private WeakReference<TValue> Get(TKey key) => Getter == null ? throw new ArgumentException($"{nameof(Getter)} not available") : new WeakReference<TValue>(Getter(key));
 
         public TValue this[TKey key]
         {
@@ -43,6 +43,19 @@ namespace LionFire.Collections
                 }
                 throw new InvalidOperationException("Failed to get target from weak reference"); // Race condition.  Make this threadsafe, or fix here or make user code threadsafe.
             }
+        }
+
+        public TValue GetOrAdd(TKey key, Func<TValue> value)
+        {
+            if(dict.GetOrAdd(key, k =>
+            {
+                TValue val = value();
+                return new WeakReference<TValue>(val);
+            }).TryGetTarget(out var target))
+            {
+                return target;
+            }
+            throw new UnreachableCodeException("WeakReference forgot Target");
         }
     }
 }

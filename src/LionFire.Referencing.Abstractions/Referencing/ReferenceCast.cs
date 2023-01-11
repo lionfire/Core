@@ -23,4 +23,6 @@ public class ReferenceCast<TValue> : IReference<TValue>, IReferenceCast
     public string Url => InnerReference.Url;
 
     public string Key => InnerReference.Key;
+
+    public override string ToString() => $"({typeof(TValue).Name}){InnerReference}";
 }

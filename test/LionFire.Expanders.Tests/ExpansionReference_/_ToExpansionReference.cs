@@ -18,7 +18,7 @@ public class _ToExpansionReference
             var expansionReference = ExpansionReferenceString.ToExpansionReference<TestClass>();
 
             Assert.IsNotNull(expansionReference);
-            Assert.AreEqual("vos://c/TestSourceDir/TestSourceFile.zip", expansionReference.SourceKey);
+            Assert.AreEqual("vos://c/TestSourceDir/TestSourceFile.zip", expansionReference.SourceUri);
             Assert.AreEqual("/TestTargetDir/TestTargetFile.txt", expansionReference.Path);
             Assert.AreEqual(typeof(TestClass), expansionReference.Type);
 

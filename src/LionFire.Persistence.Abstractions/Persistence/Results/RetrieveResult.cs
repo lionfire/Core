@@ -66,6 +66,13 @@ namespace LionFire.Persistence
             Flags = PersistenceResultFlags.Success | PersistenceResultFlags.NotFound, // Success but did not find
             Value = default,
         };
+        
+        // Noop means this is possibly a redundant/avoidable retrieve, but maybe didn't cost much
+        public static readonly RetrieveResult<T> SuccessNotFoundNoop = new RetrieveResult<T>()
+        {
+            Flags = PersistenceResultFlags.Success | PersistenceResultFlags.NotFound | PersistenceResultFlags.Noop, // Success but did not find
+            Value = default,
+        };
         public static RetrieveResult<T> Found() => found;
         private static readonly RetrieveResult<T> found = new RetrieveResult<T>()
         {

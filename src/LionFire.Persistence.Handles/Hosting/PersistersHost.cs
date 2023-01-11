@@ -13,46 +13,50 @@ using LionFire.Persistence;
 using Microsoft.Extensions.Options;
 using Microsoft.Extensions.Configuration;
 
-namespace LionFire.Hosting
+namespace LionFire.Hosting;
+
+public static class PersistersHost
 {
-    public static class PersistersHost
+    #region ILionFireHostBuilder
+
+    public static ILionFireHostBuilder Persisters(this ILionFireHostBuilder hostBuilder)
     {
-        #region ILionFireHostBuilder
-
-        public static ILionFireHostBuilder Persisters(this ILionFireHostBuilder hostBuilder)
-        {
-            hostBuilder.HostBuilder
-                .AddPersisters()
-                ;
-            return hostBuilder;
-        }
-
-        #endregion
-
-        [Obsolete]
-        public static IHostBuilder Create(string[] args = null)
-         => Host.CreateDefaultBuilder(args)
-                .LionFire()
-                .AddPersisters();
-
-        public static IHostBuilder AddPersisters(this IHostBuilder hostBuilder)
-            => hostBuilder.ConfigureServices((context, services) => services.AddPersisters());
-
-        public static IServiceCollection AddPersisters(this IServiceCollection services)
-                  => services
-                              .AddSerialization()
-                              .AddBuiltInSerializers()
-                              .AddSingleton<IPersistenceConventions, PersistenceConventions>()
-                              .AddSingleton<IReferenceToHandleService, ReferenceToHandleService>()
-                              .AddReferenceProvider()
-                              .Configure<ObjectHandleProviderOptions>(c =>
-                              {
-                                  c.AutoRegister = true;
-                                  c.CheckIReferencable = true;
-                                  c.ReuseHandles = true;
-                              })
-                              .AddSingleton(serviceProvider => serviceProvider.GetRequiredService<IOptionsMonitor<ObjectHandleProviderOptions>>().CurrentValue)
-                              .AddSingleton<IObjectHandleProvider, ObjectHandleProvider>()
-                          ;
+        hostBuilder.HostBuilder
+            .AddPersisters()
+            ;
+        return hostBuilder;
     }
+
+    #endregion
+
+    public static IHostBuilder AddPersisters(this IHostBuilder hostBuilder)
+        => hostBuilder.ConfigureServices((context, services) => services.AddPersisters());
+
+    public static IServiceCollection AddPersisters(this IServiceCollection services)
+              => services
+                          .AddSerialization()
+                          .AddBuiltInSerializers()
+                          .AddSingleton<IPersistenceConventions, PersistenceConventions>()
+                          .AddSingleton<IReferenceToHandleService, ReferenceToHandleService>()
+                          .AddReferenceProvider()
+                          .AddSingleton<HandleCache>()
+                          .Configure<ObjectHandleProviderOptions>(c =>
+                          {
+                              c.AutoRegister = true;
+                              c.CheckIReferencable = true;
+                              c.ReuseHandles = true;
+                          })
+                          .AddSingleton(serviceProvider => serviceProvider.GetRequiredService<IOptionsMonitor<ObjectHandleProviderOptions>>().CurrentValue)
+                          .AddSingleton<IObjectHandleProvider, ObjectHandleProvider>()
+                      ;
+
+    #region OLD
+
+    [Obsolete("Use LionFireHostBuilder")]
+    public static IHostBuilder Create(string[] args = null)
+     => Host.CreateDefaultBuilder(args)
+            .LionFire()
+            .AddPersisters();
+
+    #endregion
 }

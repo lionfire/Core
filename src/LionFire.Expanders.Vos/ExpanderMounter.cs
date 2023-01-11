@@ -172,7 +172,7 @@ public class ExpanderMounter : IParentable<IVob>
             if (shouldScan)
             {
                 state.LastScan = DateTime.UtcNow;
-                mountedSomething |= await TryAutoMountArchives(args.Persister, x.Item2);
+                mountedSomething |= await TryAutoMountArchives(args.Persister, x.Item2.Parent);
             }
         }
 

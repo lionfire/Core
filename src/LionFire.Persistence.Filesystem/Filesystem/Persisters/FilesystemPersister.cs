@@ -14,12 +14,19 @@ using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Diagnostics.Metrics;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 
 namespace LionFire.Persistence.Filesystem;
 
+public static class FilesystemPersisterEventIds
+{
+    public const int ReadAllText = 1000;
+    public const int ReadAllBytes = 1010;
+    public const int OpenStream = 2000;
+}
 /// <summary>
 /// Persists using NativeFilesystem implementation of IVirtualFilesystem, as well as .NET-provided System.IO filesystem methods.
 /// </summary>
@@ -30,6 +37,26 @@ public class FilesystemPersister : VirtualFilesystemPersisterBase<IFileReference
 
     public static FilesystemPersister Current { get; } = ServiceLocator.Get<FilesystemPersister>();
 
+    #endregion
+
+    #region Metrics
+
+    private static readonly Meter Meter = new("LionFire.Persistence.Filesystem", "1.0");
+    private static readonly Counter<long> ExistsC = Meter.CreateCounter<long>("Exists");
+    private static readonly Counter<long> FileExistsC = Meter.CreateCounter<long>("FileExistsC");
+    private static readonly Counter<long> DirectoryExistsC = Meter.CreateCounter<long>("DirectoryExistsC");
+
+    private static readonly Counter<long> ReadAllTextC = Meter.CreateCounter<long>("ReadAllText");
+    private static readonly Counter<long> ReadAllBytesC = Meter.CreateCounter<long>("ReadAllBytes");
+    private static readonly Counter<long> WriteBytesC = Meter.CreateCounter<long>("WriteBytes");
+    private static readonly Counter<long> WriteTextC = Meter.CreateCounter<long>("WriteText");
+
+    private static readonly Counter<long> OpenReadStreamC = Meter.CreateCounter<long>("OpenReadStream");
+    private static readonly Counter<long> OpenReadWriteStreamC = Meter.CreateCounter<long>("OpenReadWriteStream");
+
+    private static readonly Counter<long> ListC = Meter.CreateCounter<long>("List");
+
+    private static readonly Counter<long> CreateDirectoryC = Meter.CreateCounter<long>("CreateDirectory");
     #endregion
 
     #region Construction
@@ -43,7 +70,7 @@ public class FilesystemPersister : VirtualFilesystemPersisterBase<IFileReference
 
     #endregion
 
-    public override IFileReference PathToReference(string fsPath) =>  (FileReference<object>)fsPath;
+    public override IFileReference PathToReference(string fsPath) => (FileReference<object>)fsPath;
 
     //protected override PersistenceContext DeserializingContext => deserializingContext;
     //private readonly PersistenceContext deserializingContext = new PersistenceContext
@@ -56,29 +83,60 @@ public class FilesystemPersister : VirtualFilesystemPersisterBase<IFileReference
     //        PathToString = FSPersistenceExtensions.PathToString,
     //    }
     //};
-    
+
     public override IVirtualFilesystem VirtualFilesystem => ManualSingleton<NativeFilesystem>.GuaranteedInstance;
 
     #region IO
 
     public override IOCapabilities Capabilities => IOCapabilities.All;
-           
+
 
     #region Read
 
-    public override Task<Stream> ReadStream(string path) => Task.FromResult<Stream>(new FileStream(path, FileMode.Open));
-    public override Task<string> ReadString(string path) => Task.Run(() => File.ReadAllText(path, PersistenceOptions.Encoding));
-    public override Task<byte[]> ReadBytes(string path) => Task.Run(() => File.ReadAllBytes(path));
+    public override Task<Stream> ReadStream(string path)
+    {
+        OpenReadStreamC.Add(1);
+        l.LogInformation(FilesystemPersisterEventIds.OpenStream, "Opening Read Stream: {Path}", path);
+        return Task.FromResult<Stream>(new FileStream(path, FileMode.Open));
+    }
+    public override Task<string> ReadString(string path) => Task.Run(() =>
+           {
+               ReadAllTextC.Add(1);
+               l.LogInformation(FilesystemPersisterEventIds.ReadAllText, "Reading text: {Path}", path);
+               return File.ReadAllText(path, PersistenceOptions.Encoding);
+           });
+    public override Task<byte[]> ReadBytes(string path) => Task.Run(() =>
+    {
+        ReadAllBytesC.Add(1);
+        l.LogInformation(FilesystemPersisterEventIds.ReadAllBytes, "Reading bytes: {Path}", path);
+        return File.ReadAllBytes(path);
+    });
 
     #endregion
 
     #region Write
 
     public override Task<Stream> WriteStream(string path, ReplaceMode replaceMode)
-        => Task.FromResult<Stream>(new FileStream(path, replaceMode.ToFileMode()));
+    {
+        OpenReadWriteStreamC.Add(1);
+        l.LogInformation(FilesystemPersisterEventIds.OpenStream, "Opening ReadWrite Stream: {Path}", path);
+        return Task.FromResult<Stream>(new FileStream(path, replaceMode.ToFileMode()));
+    }
 
-    public override Task WriteBytes(string path, byte[] bytes, ReplaceMode replaceMode) => Task.Run(() => File.WriteAllBytes(path, bytes));
-    public override Task WriteString(string path, string str, ReplaceMode replaceMode) => Task.Run(() => File.WriteAllText(path, str));
+    public override Task WriteBytes(string path, byte[] bytes, ReplaceMode replaceMode)
+        => Task.Run(() =>
+        {
+            WriteBytesC.Add(1);
+            l.LogInformation("Writing bytes: {Path}", path);
+            File.WriteAllBytes(path, bytes);
+        });
+
+    public override Task WriteString(string path, string str, ReplaceMode replaceMode) => Task.Run(() =>
+    {
+        WriteTextC.Add(1);
+        l.LogInformation("Writing text: {Path}", path);
+        File.WriteAllText(path, str);
+    });
 
     #endregion
 
@@ -92,13 +150,26 @@ public class FilesystemPersister : VirtualFilesystemPersisterBase<IFileReference
 
     #region List
 
+    public override Task<string[]> GetFiles(string dir, string pattern)
+        => Task.Run(() =>
+        {
+            ListC.Add(1);
+            l.LogInformation("GetFiles: {Path}, pattern: {Pattern}", dir, pattern);
+            return System.IO.Directory.GetFiles(dir, pattern);
+        });
+
     #endregion
 
     #endregion
 
     #region Directories
 
-    public override Task CreateDirectory(string fsPath) => Task.Run(() => Directory.CreateDirectory(fsPath)); // TODO SECURITY - set permissions to all users writable
+    public override Task CreateDirectory(string path) => Task.Run(() =>
+    {
+        CreateDirectoryC.Add(1);
+        l.LogInformation("Creating directory: {Path}", path);
+        Directory.CreateDirectory(path);
+    }); // TODO SECURITY - set permissions to all users writable
 
     #endregion
 
@@ -107,10 +178,24 @@ public class FilesystemPersister : VirtualFilesystemPersisterBase<IFileReference
     #region Exists
 
     public override async Task<bool> Exists(string fsPath)
-        => await FileExists(fsPath).ConfigureAwait(false) ? true : await DirectoryExists(fsPath).ConfigureAwait(false);
+    {
+        ExistsC.Add(1);
+        return await FileExists(fsPath).ConfigureAwait(false) ? true : await DirectoryExists(fsPath).ConfigureAwait(false);
+    }
 
-    public Task<bool> FileExists(string fsPath) => Task.Run(() => File.Exists(fsPath));
-    public override Task<bool> DirectoryExists(string fsPath) => Task.Run(() => Directory.Exists(fsPath));
+    public Task<bool> FileExists(string path) => Task.Run(() =>
+    {
+        FileExistsC.Add(1);
+        l.LogInformation("Retrieving File Exists:  {Path}", path);
+        return File.Exists(path);
+    });
+    public override Task<bool> DirectoryExists(string path) => Task.Run(() =>
+    {
+        DirectoryExistsC.Add(1);
+        l.LogInformation("Retrieving Directory Exists:  {Path}", path);
+        return Directory.Exists(path);
+    });
+
 
     #endregion
 
@@ -127,6 +212,7 @@ public class FilesystemPersister : VirtualFilesystemPersisterBase<IFileReference
 
     #region (Static) Directory accessors
 
+#if UNUSED
     /// <summary>
     /// WARNING REVIEW: If files have multiple extensions, there may be strange behavior
     /// </summary>
@@ -141,10 +227,10 @@ public class FilesystemPersister : VirtualFilesystemPersisterBase<IFileReference
         string dirPath = Path.GetDirectoryName(namePath);
 
         l.LogDebug($"[FS DirExists] {dirPath}"); // Replace with OTel counter?
-        if (Directory.Exists(dirPath))
+        if (Directory.Exists(dirPath)) // FILESYSTEMIO
         {
             l.LogDebug($"[FS List] {dirPath}"); // Replace with OTel counter?
-            var fileList = Directory.GetFiles(dirPath, name + "*").OfType<string>();
+            var fileList = Directory.GetFiles(dirPath, name + "*").OfType<string>();  // FILESYSTEMIO
             string nameWithoutExtension = Path.GetFileNameWithoutExtension(namePath);
             if (nameWithoutExtension != name)
             {
@@ -166,6 +252,7 @@ public class FilesystemPersister : VirtualFilesystemPersisterBase<IFileReference
         }
         return paths;
     }
+
 
     public string GetNameFromFileName(string filename) // MOVE to VOS
     {
@@ -194,6 +281,7 @@ public class FilesystemPersister : VirtualFilesystemPersisterBase<IFileReference
 
         return name;
     }
+#endif
 
     #region Metadata
 

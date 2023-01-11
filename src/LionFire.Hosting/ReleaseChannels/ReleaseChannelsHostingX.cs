@@ -30,7 +30,7 @@ public static class ReleaseChannelsHostingX
 
         var configuredReleaseChannel = hostBuilder.Configuration[ReleaseChannelKeys.ReleaseChannel];
 
-        if (configuredReleaseChannel == null && TestInfo.IsTest == true)
+        if (configuredReleaseChannel == null && LionFireEnvironment.IsUnitTest == true)
         {
             hostBuilder.Configuration
                     .AddInMemoryCollection(new KeyValuePair<string, string>[] { new(ReleaseChannelKeys.ReleaseChannel, TestReleaseChannel) });
@@ -55,7 +55,7 @@ public static class ReleaseChannelsHostingX
 
         var releaseChannel = Environment.GetEnvironmentVariable("DOTNET_releaseChannel");
 
-        if (releaseChannel == null && TestInfo.IsTest == true) releaseChannel = TestReleaseChannel;
+        if (releaseChannel == null && LionFireEnvironment.IsUnitTest == true) releaseChannel = TestReleaseChannel;
 
         if (releaseChannel != null)
         {

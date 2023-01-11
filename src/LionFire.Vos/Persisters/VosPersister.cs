@@ -75,7 +75,7 @@ public class VosPersister : SerializingPersisterBase<VosPersisterOptions>, IPers
 
     static AsyncLocal<List<IMount>> RetrieveOpMounts = new();
 
-    public async IAsyncEnumerable<IRetrieveResult<TValue>> RetrieveBatches<TValue>(IReferencable<IVobReference> referencable)
+    public async IAsyncEnumerable<IRetrieveResult<TValue>> RetrieveBatches<TValue>(IReferencable<IVobReference> referencable, bool breakOnFirstValue = true)
     {
         //l.Trace($"{replaceMode.DescriptionString()} {obj?.GetType().Name} {replaceMode.ToArrow()} {fsReference}");
 
@@ -275,6 +275,10 @@ public class VosPersister : SerializingPersisterBase<VosPersisterOptions>, IPers
 
                         resultForNoChildResults.Flags |= PersistenceResultFlags.Found;
                         yield return childResult;
+                        if (breakOnFirstValue && childResult.HasValue)
+                        {
+                            break;
+                        }
                     }
                 }
             }

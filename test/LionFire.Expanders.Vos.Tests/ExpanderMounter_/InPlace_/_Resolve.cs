@@ -1,4 +1,5 @@
-﻿using LionFire.Execution;
+﻿using Google.Protobuf.WellKnownTypes;
+using LionFire.Execution;
 using LionFire.ExtensionMethods.Dumping;
 using LionFire.Persistence;
 using LionFire.Persistence.Handles;
@@ -10,7 +11,9 @@ using Microsoft.Extensions.Logging;
 using OpenTelemetry.Metrics;
 using System.Diagnostics;
 using System.Diagnostics.Metrics;
+using System.Globalization;
 using System.Runtime.CompilerServices;
+using static AnyDiff.DifferenceLines;
 using static TestHostBuilder;
 
 namespace ExpanderMounter_.InPlace_;
@@ -23,15 +26,6 @@ public class _Resolve
     {
         H.Run(async sp =>
         {
-            #region TODO: Get this working without this List
-            var listingsHandle = "/testdata/zip".ToVobReference().GetListingsHandle();
-            var listings = await listingsHandle.Resolve();
-            foreach (var item in listings?.Value.Value ?? Enumerable.Empty<Listing<object>>())
-            {
-                Debug.WriteLine(item);
-            }
-            #endregion
-
             var handle = "/testdata/zip/TestTargetDir/TestClass.json".ToVobReference<TestClass>().GetReadHandle<TestClass>();
             var exists = await handle.Exists().ConfigureAwait(false);
             Assert.IsTrue(exists, "Not found");
@@ -66,12 +60,12 @@ public class _Resolve
         H.Run(async sp =>
         {
             #region Trying activities
-            {
-                using var activity = MyActivitySource.StartActivity("SayHello");
-                activity?.SetTag("foo", 1);
-                activity?.SetTag("bar", "Hello, World!");
-                activity?.SetTag("baz", new int[] { 1, 2, 3 });
-            }
+            //{
+            //    using var activity = MyActivitySource.StartActivity("SayHello");
+            //    activity?.SetTag("foo", 1);
+            //    activity?.SetTag("bar", "Hello, World!");
+            //    activity?.SetTag("baz", new int[] { 1, 2, 3 });
+            //}
             #endregion
 
             var handle = "/testdata/zip/TestTargetDir/TestClass.json".ToVobReference<TestClass>().GetReadHandle<TestClass>();
@@ -87,19 +81,45 @@ public class _Resolve
             Assert.AreEqual("Test Name", resolveResult.Value.Name);
             Assert.AreEqual(123, resolveResult.Value.Number);
 
-#warning NEXT: metrics for Vos/file/expand retrieve counts, assert it is the expected number
-#warning NEXT: prevent more than 1 read of RZip file
+            #region Final asserts
 
+            var l = sp.GetRequiredService<ILogger<TestLog>>();
+            var mounts = "/".ToVobReference().GetVob().AllMountsRecursive();
+            l.LogInformation(mounts.DumpList("Mounts").ToString());
+            Assert.AreEqual(3, mounts.Count); // TODO: Metric for total mounts, and/or current moutns
 
-            foreach (var item in ActivitiesExport.Metrics.Value!)
+            Assert.AreEqual(1, RootVob.CreateCount);
+
+            #region Metrics
+
+            var metrics = GetMetrics(sp, log: true);
+
+            try
             {
-                System.Console.WriteLine($"OTel: {item.Name}: {item.Dump()}");
+                Assert.AreEqual(2, (long)metrics["LionFire.Vos.Retrieve"].value!);
+                Assert.AreEqual(2, (long)metrics["LionFire.Vos.Retrieve.RetryAfterMountsChanged"].value!);
+                Assert.AreEqual(2, (long)metrics["LionFire.Vos.Retrieve.Batch"].value!);
+                Assert.AreEqual(2, (long)metrics["LionFire.Persistence.Filesystem.Exists"].value!);
+                Assert.AreEqual(2, (long)metrics["LionFire.Persistence.Filesystem.FileExistsC"].value!);
+                Assert.AreEqual(1, (long)metrics["LionFire.Persistence.Filesystem.DirectoryExistsC"].value!);
+                Assert.AreEqual(1, (long)metrics["LionFire.Persistence.Filesystem.OpenReadStream"].value!);
+                Assert.AreEqual(1, (long)metrics["LionFire.Persisters.SharpZipLib.StreamRead"].value!);
+                Assert.AreEqual(8, metrics.Count);
+            }
+            catch
+            {
+                GenerateAsserts(metrics);
+                throw;
             }
 
-            sp.GetRequiredService<ILogger<TestLog>>().LogInformation("/".ToVobReference().GetVob().AllMountsRecursive().DumpList("Mounts").ToString());
+            #endregion
+
+            #endregion
         });
         Serilog.Log.CloseAndFlush();
     }
+
+    
 
     [TestMethod]
     public void _OpenTelemetryTest2()
@@ -119,7 +139,7 @@ public class _Resolve
 
             //return Task.CompletedTask;
             //Assert.IsTrue(ActivitiesExport.Metrics.Value!.Count > 0);
-            for(int i = 0; i < 30; i++)
+            for (int i = 0; i < 30; i++)
             {
                 Console.WriteLine("Metrics count: " + ActivitiesExport.Metrics.Value.Count);
                 await Task.Delay(100);
@@ -133,5 +153,3 @@ public class _Resolve
 
 
 }
-
-

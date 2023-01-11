@@ -14,7 +14,7 @@ public class TypeScannerOptions
         "System.",
     };
 
-    public List<string>? DllPrefixWhitelist { get; set; } = new();
+    public List<string> DllPrefixWhitelist { get; set; } = new();
 
     /// <summary>
     /// Make sure the developer didn't forget to set up the Whitelist

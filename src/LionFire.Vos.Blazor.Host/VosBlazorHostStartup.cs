@@ -13,11 +13,7 @@ using LionFire.Services;
 using LionFire.Persistence.Filesystem;
 using LionFire.Hosting;
 using LionFire.Serialization.Json.JsonEx;
-using Blazorise;
-using Blazorise.Bootstrap;
-using Blazorise.Icons.FontAwesome;
 using MudBlazor.Services;
-//using RazorComponentsPreview;
 
 namespace LionFire.Vos.Blazor;
 
@@ -70,13 +66,14 @@ public class VosBlazorHostStartup
 
         if (Blazorise)
         {
-            services
-               .AddBlazorise(options =>
-               {
-                   options.ChangeTextOnKeyPress = true; // optional
-               })
-               .AddBootstrapProviders()
-               .AddFontAwesomeIcons();
+            throw new NotImplementedException(); // OLD
+            //services
+            //   .AddBlazorise(options =>
+            //   {
+            //       options.ChangeTextOnKeyPress = true; // optional
+            //   })
+            //   .AddBootstrapProviders()
+            //   .AddFontAwesomeIcons();
         }
 
         services.AddMudServices();

@@ -173,7 +173,7 @@ public abstract partial class VirtualFilesystemPersisterBase<TReference, TPersis
                         //if (kind.HasFlag(ItemFlags.Special) && !showSpecial) continue;
                         //if (kind.HasFlag(ItemFlags.Meta) && !showMeta) continue;
 
-                        children.Add(new Listing<T>(dirName, directory: true));
+                        children.Add(Listing<T>.CreateDirectoryListing(dirName));
                     }
                 }
             }
@@ -420,8 +420,9 @@ public abstract partial class VirtualFilesystemPersisterBase<TReference, TPersis
         async Task<IEnumerable<string>> GetPotentialExtensions(string p)
         {
             if (!await DirectoryExists(dir).ConfigureAwait(false)) { return Array.Empty<string>(); }
-            l.LogDebug($"[FS List] {dir}"); // Replace with OTel counter?  TOD FIXME - should be no Disk IO in this class
-            IEnumerable<string> result = (await Task.Run(() => System.IO.Directory.GetFiles(dir, $"{Path.GetFileName(p)}.*")).ConfigureAwait(false))
+            l.LogWarning($"[FS List] {dir}"); // Replace with OTel counter?
+
+            IEnumerable<string> result = (await GetFiles(dir, $"{Path.GetFileName(p)}.*").ConfigureAwait(false))
                 .Select(p =>
                 Path.GetExtension(p)
                 .Substring(1) // trim the leading .
@@ -469,7 +470,7 @@ public abstract partial class VirtualFilesystemPersisterBase<TReference, TPersis
 
         if (!potentialExtensions.Any())
         {
-            l.Trace($"NotFound: {path}[.*]");
+            l.LogTrace("ReadAndDeserializeAutoPath returning NotFound: {path}, autoAppendExtension: {autoAppendExtension}", path, autoAppendExtension);
             return RetrieveResult<T>.NotFound;
         }
         if (potentialExtensions.Count() >= 2 && PersistenceOptions.ValidateOneFilePerPath.HasFlag(ValidateOneFilePerPath.OnRead))

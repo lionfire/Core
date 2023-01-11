@@ -25,6 +25,8 @@ namespace LionFire.Vos
 
     public class RootVob : Vob, IRootVob, IHas<IVos>, IHostedService, IHasMany<IParticipant>, IHas<IServiceProvider>
     {
+        public static int CreateCount = 0;
+
         public IVos RootManager { get; private set; }
         IServiceProvider RootManagerServiceProvider => (RootManager as IHas<IServiceProvider>)?.Object;
 
@@ -46,6 +48,8 @@ namespace LionFire.Vos
         public RootVob(IVos rootManager, string rootName, VosOptions vosOptions, IOptionsMonitor<VobRootOptions> OptionsMonitor)
             : base(parent: null, name: null) // Note: Use null parent and null name even for named Roots
         {
+            Interlocked.Increment(ref CreateCount);
+
             this.RootName = rootName;
 
             //ServiceProvider = ((IHas<IServiceProvider>)rootManager).Object;

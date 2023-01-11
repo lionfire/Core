@@ -20,7 +20,7 @@ public interface IExpansionReference : IReference
     /// <summary>
     /// Key for a Reference that points to the Source to look within
     /// </summary>
-    public string SourceKey { get; }
+    public string SourceUri { get; }
 }
 
 /// <remarks>
@@ -49,7 +49,7 @@ public class ExpansionReference : ExpansionReference<object>, IParses<string, Ex
     public ExpansionReference(string key) : base(key)
     {
     }
-    public ExpansionReference(string sourceKey, string targetPath) : base(sourceKey,targetPath) { }
+    public ExpansionReference(string sourceUri, string targetPath) : base(sourceUri,targetPath) { }
 
     public new static ExpansionReference? TryParse(string x)
     {
@@ -59,7 +59,7 @@ public class ExpansionReference : ExpansionReference<object>, IParses<string, Ex
     }
     public new static ExpansionReference Parse(string x) => TryParse(x) ?? throw new ArgumentException(InvalidFormatErrorMessage);
 
-    public override ExpansionReference CloneWithPath(string newPath) => new ExpansionReference(SourceKey, newPath);
+    public override ExpansionReference CloneWithPath(string newPath) => new ExpansionReference(SourceUri, newPath);
 
 }
 
@@ -91,7 +91,7 @@ public class ExpansionReference<TValue> : ReferenceBase<ExpansionReference<TValu
     /// </summary>
     /// <param name="key">expand: scheme must be stripped, unless it indicates a nested expansion.  {targetScheme}:{restOfTargetUrl}:/{subpath}</param>
     public ExpansionReference(string key) { this.Key = key; }
-    public ExpansionReference(string sourceKey, string targetPath) { this.Components = (sourceKey, targetPath); }
+    public ExpansionReference(string sourceUri, string targetPath) { this.Components = (sourceUri, targetPath); }
 
     public static (string sourceUri, string targetPath)? TryParseIntoComponents(string x)
     {
@@ -125,7 +125,7 @@ public class ExpansionReference<TValue> : ReferenceBase<ExpansionReference<TValu
         else return new ExpansionReference<TValue>(result.Value.sourceUri, result.Value.targetPath);
     }
 
-    public override ExpansionReference<TValue> CloneWithPath(string newPath) => new ExpansionReference<TValue>(SourceKey, newPath);
+    public override ExpansionReference<TValue> CloneWithPath(string newPath) => new ExpansionReference<TValue>(SourceUri, newPath);
 
     #endregion
 
@@ -134,7 +134,7 @@ public class ExpansionReference<TValue> : ReferenceBase<ExpansionReference<TValu
     /// <summary>
     /// Key for (IReference) Source
     /// </summary>
-    public string SourceKey => Components.SourceUri;
+    public string SourceUri => Components.SourceUri;
 
     #endregion
 
@@ -145,7 +145,7 @@ public class ExpansionReference<TValue> : ReferenceBase<ExpansionReference<TValu
     public const string InvalidFormatErrorMessage = "Must be in the format: expand:<SourceUrl>:<TargetPath>";
     public override string Key
     {
-        get => SourceKey + ExpansionDelimiter + Path;
+        get => SourceUri + ExpansionDelimiter + Path;
         protected set
         {
             var result = TryParseIntoComponents(value);
@@ -170,7 +170,7 @@ public class ExpansionReference<TValue> : ReferenceBase<ExpansionReference<TValu
 
     #region Misc
 
-    public override string ToString() => $"expand:{SourceKey}:{Path}";
+    public override string ToString() => $"expand:{SourceUri}:{Path}";
 
     #endregion
 }

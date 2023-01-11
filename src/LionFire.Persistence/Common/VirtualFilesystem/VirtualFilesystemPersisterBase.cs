@@ -1,4 +1,5 @@
-﻿using LionFire.Dependencies;
+﻿#nullable enable
+using LionFire.Dependencies;
 using LionFire.IO;
 using LionFire.Persistence.FilesystemFacade;
 using LionFire.Serialization;
@@ -50,6 +51,8 @@ namespace LionFire.Persistence.Filesystemlike
         public virtual Task<bool> Exists(string fsPath) => Exists<object>(fsPath);
 
         public abstract Task<bool> DirectoryExists(string fsPath);
+
+        public abstract Task<string[]> GetFiles(string dir, string? pattern = null);
 
         #endregion
 

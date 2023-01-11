@@ -44,7 +44,7 @@ public class ExpansionHandleProvider : HandleProviderBase<IExpansionReference>
     public override IReadHandle<TValue> GetReadHandle<TValue>(IExpansionReference reference)
     //where TValue : default
     {
-        var sourceReference = ReferenceProviderService.GetReference(reference.SourceKey);
+        var sourceReference = ReferenceProviderService.GetReference(reference.SourceUri);
 
         return new ExpanderReadHandle<TValue>(ExpanderProvider, sourceReference, (ExpansionReference<TValue>)reference);
 
@@ -72,14 +72,14 @@ public class ExpansionHandleProvider : HandleProviderBase<IExpansionReference>
         var nativeReference = reference as IExpansionReference;
         if (nativeReference == null) return null;
 
-        return new ExpansionReference<TValue>(nativeReference.SourceKey, nativeReference.Path);
+        return new ExpansionReference<TValue>(nativeReference.SourceUri, nativeReference.Path);
     }
     public IReadHandle<TValue>? GetReadHandle<TValue>(IReference reference)
     {
         var nativeReference = TryCoerceReferenceType<TValue>(reference);
         if (nativeReference == null) return null;
 
-        var sourceReference = ReferenceProviderService.GetReference(nativeReference.SourceKey);
+        var sourceReference = ReferenceProviderService.GetReference(nativeReference.SourceUri);
         return new ExpanderReadHandle<TValue>(ExpanderProvider, sourceReference, nativeReference);
     }
 

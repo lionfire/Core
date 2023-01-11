@@ -7,13 +7,19 @@ public class Listing<T>
     #region Construction
 
     public Listing() { }
-    public Listing(string name, Type type = null, string mimeType = null, bool directory = false)
+    public Listing(string name)
     {
-        Name = name;
+        Name = name;        
+    }
+    public Listing(string name, Type type, string mimeType = null, bool directory = false) : this(name)
+    {
         Type = type;
         MimeType = mimeType;
         IsDirectory = directory;
     }
+
+    public static Listing<T> CreateDirectoryListing(string name) => new Listing<T>(name, type: null, directory: true);
+
     //public Listing(string name, string typeName, string mimeType = null, bool directory = false)
     //{
     //    Name = name;

@@ -3,18 +3,6 @@ using System.Runtime.CompilerServices;
 
 namespace LionFire.Persistence.Handles;
 
-
-public class HandleRegistrar
-{
-    #region Fields
-
-    ConditionalWeakTable<string, IHandleBase> readHandles = new ConditionalWeakTable<string, IHandleBase>();
-    ConditionalWeakTable<string, IHandleBase> readWriteHandles = new ConditionalWeakTable<string, IHandleBase>();
-    ConditionalWeakTable<string, IHandleBase> writeHandles = new ConditionalWeakTable<string, IHandleBase>();
-
-    #endregion
-}
-
 public abstract class ObjectHandleRegistrar<TOptions> // : IHandleRegistrar
     where TOptions : HandleRegistrarOptions
 {

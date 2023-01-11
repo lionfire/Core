@@ -24,7 +24,7 @@ public class Program
             .ConfigureServices((c,s) => s
                 .AddExpanderMounter("/") // TEMP
                 .AddSharpZipLib()
-                .TryAddEnumerableSingleton<IArchivePlugin, ZipPlugin>() // REVIEW
+                .TryAddEnumerableSingleton<IExpanderPlugin, ZipPlugin>() // REVIEW
 
                 // How to convert this to something else?  "vos://c/temp/TestDoc.zip:/"
                 // ExpansionReference

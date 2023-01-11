@@ -51,7 +51,7 @@ public partial class AppInfoFromConfiguration // Static
     {
         get
         {
-            if (TestInfo.IsTest == true)
+            if (LionFireEnvironment.IsUnitTest == true)
             {
                 for (int i = 0; i < 9999; i++)
                 {
@@ -65,7 +65,7 @@ public partial class AppInfoFromConfiguration // Static
                 }
             }
 
-            return Assembly.GetEntryAssembly()?.GetName().Name + (TestInfo.IsTest == true ? "-" + Guid.NewGuid().ToString() : "") ?? Guid.NewGuid().ToString();
+            return Assembly.GetEntryAssembly()?.GetName().Name + (LionFireEnvironment.IsUnitTest == true ? "-" + Guid.NewGuid().ToString() : "") ?? Guid.NewGuid().ToString();
         }
     }
 
@@ -73,7 +73,7 @@ public partial class AppInfoFromConfiguration // Static
     {
         get
         {
-            if (TestInfo.IsTest == true)
+            if (LionFireEnvironment.IsUnitTest == true)
             {
                 for (int i = 0; i < 9999; i++)
                 {

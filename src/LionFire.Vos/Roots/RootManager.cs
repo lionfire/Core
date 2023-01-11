@@ -10,6 +10,7 @@ using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Diagnostics.Metrics;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -32,6 +33,13 @@ namespace LionFire.Vos
 
         public VosOptions Options => vosOptions;
         readonly VosOptions vosOptions;
+
+        #endregion
+
+        #region Meters
+
+        private static readonly Meter Meter = new("LionFire.Vos.RootManager", "1.0");
+        private static readonly Counter<long> CreateC = Meter.CreateCounter<long>("Create");
 
         #endregion
 
@@ -123,7 +131,11 @@ namespace LionFire.Vos
                 //}
                 //try
                 //{
-                    return new Lazy<RootVob>(() => ActivatorUtilities.CreateInstance<RootVob>(ServiceProvider, this, n), LazyThreadSafetyMode.ExecutionAndPublication); 
+                return new Lazy<RootVob>(() =>
+                {
+                    CreateC.Add(1);
+                    return ActivatorUtilities.CreateInstance<RootVob>(ServiceProvider, this, n);
+                }, LazyThreadSafetyMode.ExecutionAndPublication);
                 //}
                 //catch (AlreadySetException) when (rootName == VosConstants.DefaultRootName)
                 //{

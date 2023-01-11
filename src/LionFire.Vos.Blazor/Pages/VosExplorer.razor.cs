@@ -13,7 +13,6 @@ using Microsoft.AspNetCore.Components.Web.Virtualization;
 using Microsoft.JSInterop;
 using LionFire.Vos.Blazor;
 using LionFire.Vos;
-using Blazorise;
 using LionFire.Referencing;
 using LionFire.Threading;
 using Microsoft.AspNetCore.WebUtilities;

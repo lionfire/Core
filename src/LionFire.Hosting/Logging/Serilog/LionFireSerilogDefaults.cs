@@ -19,7 +19,7 @@ public class LionFireSerilogDefaults
     public static ExpressionTemplate? DebugTemplate { get; set; } = null;
 
 
-    public static ExpressionTemplate ConsoleTemplate => TestInfo.IsTest == true ? TestConsoleTemplate : new ExpressionTemplate(
+    public static ExpressionTemplate ConsoleTemplate => LionFireEnvironment.IsUnitTest == true ? TestConsoleTemplate : new ExpressionTemplate(
             template: "[{@t:yyyy-MM-dd HH:mm:ss} {@l:u2} {ToString(Substring(SourceContext, LastIndexOf(SourceContext, '.')+1), '        '):u10}] {@m}\n{@x}",
              theme: TemplateTheme.Code);
     public static ExpressionTemplate TestConsoleTemplate => new ExpressionTemplate(

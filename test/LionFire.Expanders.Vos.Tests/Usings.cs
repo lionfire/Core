@@ -12,3 +12,4 @@ global using System.Threading.Tasks;
 global using LionFire.Persisters.Expanders;
 global using LionFire.Vos;
 global using LionFire.Referencing;
+global using static LionFire.Testing.TestUtils;

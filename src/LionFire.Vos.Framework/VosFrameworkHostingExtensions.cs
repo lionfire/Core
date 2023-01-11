@@ -1,5 +1,6 @@
 ﻿using LionFire.DependencyMachines;
 using LionFire.Persistence.Persisters.Vos;
+using LionFire.Persisters.Expanders;
 using LionFire.Vos;
 using LionFire.Vos.Internals;
 using Microsoft.Extensions.DependencyInjection;
@@ -25,7 +26,7 @@ public static class VosFrameworkHostingExtensions
                 {
                     StartAction = () =>
                     {
-                        (root[path] as IVobInternals).GetOrAddVobNode<ArchiveAdapter>();
+                        (root[path] as IVobInternals).GetOrAddVobNode<ExpanderMounter>();
                     }
                 });
                 return list;

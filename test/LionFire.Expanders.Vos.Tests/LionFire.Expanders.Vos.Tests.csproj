@@ -10,7 +10,6 @@
 	</PropertyGroup>
 
 	<ItemGroup>
-	  <None Remove="appsettings.json" />
 	  <None Remove="appsettings.test.json" />
 	</ItemGroup>
 
@@ -18,9 +17,6 @@
 	  <Content Include="appsettings.test.json">
 	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
 	    <SubType>Component</SubType>
-	  </Content>
-	  <Content Include="appsettings.json">
-	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
 	  </Content>
 	</ItemGroup>
 

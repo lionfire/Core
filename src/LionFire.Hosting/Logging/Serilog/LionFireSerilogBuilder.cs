@@ -96,7 +96,7 @@ public class LionFireSerilogBuilder
         if (path == null)
         {
             string? dir = null;
-            if (TestInfo.IsTest == true)
+            if (LionFireEnvironment.IsUnitTest == true)
             {
                 dir = Configuration?[LionFireConfigKeys.Log.TestDir] as string;
                 if (dir != null)

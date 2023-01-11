@@ -14,6 +14,7 @@ namespace ExpanderMounter_.AsChild_;
 [TestClass]
 public class _Resolve
 {
+    
 
     [TestMethod]
     public void _Resolve_AsChild()
@@ -21,19 +22,19 @@ public class _Resolve
         H.Run(async sp =>
         {
             #region TODO: Get this working without this List
-            var listingsHandle = "/testdata/zip/ExpandAsChildTest".ToVobReference().GetListingsHandle();
-            var listings = await listingsHandle.Resolve();
-            foreach (var item in listings?.Value.Value ?? Enumerable.Empty<Listing<object>>())
-            {
-                Debug.WriteLine(item);
-            }
+            //var listingsHandle = "/testdata/zip/ExpandAsChildTest".ToVobReference().GetListingsHandle();
+            //var listings = await listingsHandle.Resolve();
+            //foreach (var item in listings?.Value.Value ?? Enumerable.Empty<Listing<object>>())
+            //{
+            //    Debug.WriteLine(item);
+            //}
             #endregion
 
             var handle = "/testdata/zip/ExpandAsChildTest/TestTargetDir/TestClass.json".ToVobReference<TestClass>().GetReadHandle<TestClass>();
             var exists = await handle.Exists().ConfigureAwait(false);
             Assert.IsTrue(exists, "Not found");
 
-            var resolveResult = await handle.Resolve().ConfigureAwait(false);
+            var resolveResult = await handle.TryGetValue().ConfigureAwait(false);
             Assert.IsTrue(resolveResult.IsSuccess);
             Assert.IsTrue(resolveResult.HasValue);
             Assert.IsNotNull(resolveResult.Value);

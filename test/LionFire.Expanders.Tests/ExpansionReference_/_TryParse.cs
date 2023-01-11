@@ -15,7 +15,7 @@ public class _TryParse
             var expansionReference = ExpansionReference.TryParse(ExpansionReferenceString);
 
             Assert.IsNotNull(expansionReference);
-            Assert.AreEqual("vos://c/TestSourceDir/TestSourceFile.zip", expansionReference.SourceKey);
+            Assert.AreEqual("vos://c/TestSourceDir/TestSourceFile.zip", expansionReference.SourceUri);
             Assert.AreEqual("/TestTargetDir/TestTargetFile.txt", expansionReference.Path);
 
             return Task.CompletedTask;
@@ -31,7 +31,7 @@ public class _TryParse
             var expansionReference = ExpansionReference.TryParse("expand:vos://c/TestSourceDir:/TestTargetDir/Test::TargetFile.txt");
 
             Assert.IsNotNull(expansionReference);
-            Assert.AreEqual(expansionReference.SourceKey, "vos://c/TestSourceDir");
+            Assert.AreEqual(expansionReference.SourceUri, "vos://c/TestSourceDir");
             Assert.AreEqual(expansionReference.Path, "/TestTargetDir/Test:TargetFile.txt");
             return Task.CompletedTask;
         });
@@ -46,7 +46,7 @@ public class _TryParse
             var expansionReference = ExpansionReference.TryParse("expand:vos://c/TestSourceDir:/TestTargetDir/Test::Targ::etFile.txt");
 
             Assert.IsNotNull(expansionReference);
-            Assert.AreEqual(expansionReference.SourceKey, "vos://c/TestSourceDir");
+            Assert.AreEqual(expansionReference.SourceUri, "vos://c/TestSourceDir");
             Assert.AreEqual(expansionReference.Path, "/TestTargetDir/Test:Targ:etFile.txt");
             return Task.CompletedTask;
         });

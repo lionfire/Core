@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk.Web">
+﻿<Project Sdk="Microsoft.NET.Sdk.Web">
 
   <PropertyGroup>
     <TargetFramework>net7.0</TargetFramework>
@@ -7,10 +7,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-      <PackageReference Include="Blazorise.Bootstrap" />
-      <PackageReference Include="Blazorise.Icons.FontAwesome" />
-      <PackageReference Include="Blazorise.Icons.Material" />
-      <PackageReference Include="Blazorise.Material" />
     <PackageReference Include="GitVersion.MsBuild">
       <PrivateAssets>All</PrivateAssets>
     </PackageReference>
@@ -30,6 +26,8 @@
     <ProjectReference Include="..\LionFire.Blazor.Components.MudBlazor\LionFire.Blazor.Components.MudBlazor.csproj" />
     <ProjectReference Include="..\LionFire.Blazor.Components\LionFire.Blazor.Components.csproj" />
     <ProjectReference Include="..\LionFire.Blazor.MudBlazor.Themes\LionFire.Blazor.MudBlazor.Themes.csproj" />
+    <ProjectReference Include="..\LionFire.Expanders.SharpZipLib\LionFire.Expanders.SharpZipLib.csproj" />
+    <ProjectReference Include="..\LionFire.Expanders.Vos\LionFire.Expanders.Vos.csproj" />
     <ProjectReference Include="..\LionFire.Persistence.Filesystem\LionFire.Persistence.Filesystem.csproj" />
     <ProjectReference Include="..\LionFire.Persistence.Handles\LionFire.Persistence.Handles.csproj" />
     <ProjectReference Include="..\LionFire.Persistence.SharpZipLib\LionFire.Persistence.SharpZipLib.csproj" />
@@ -37,6 +35,13 @@
     <ProjectReference Include="..\LionFire.Serialization.Json.Newtonsoft\LionFire.Serialization.Json.Newtonsoft.csproj" />
     <ProjectReference Include="..\LionFire.Vos.Blazor\LionFire.Vos.Blazor.csproj" />
     <ProjectReference Include="..\LionFire.Vos\LionFire.Vos.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Update="appsettings.test.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <SubType>Component</SubType>
+    </Content>
   </ItemGroup>
 
 </Project>

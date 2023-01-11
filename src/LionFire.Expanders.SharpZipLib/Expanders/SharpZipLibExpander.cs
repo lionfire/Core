@@ -1,4 +1,5 @@
-﻿using LionFire.Persistence.Persisters;
+﻿using Overby.Extensions.Attachments;
+using LionFire.Persistence.Persisters;
 using LionFire.Persistence.Persisters.Vos;
 using LionFire.Referencing;
 using LionFire.Structures;
@@ -19,6 +20,8 @@ using LionFire.Serialization;
 using LionFire.Dependencies;
 using System.Reflection;
 using Microsoft.Extensions.DependencyInjection;
+using LionFire.Collections;
+using System.Diagnostics.Metrics;
 
 namespace LionFire.Persisters.SharpZipLib_;
 
@@ -43,69 +46,70 @@ namespace LionFire.Persisters.SharpZipLib_;
 public class SharpZipLibExpander : ExpanderPersister, ISupportsFileExtensions, IPersister<IExpansionReference>
 {
 
+    #region Metrics
+
+    private static readonly Meter Meter = new Meter("LionFire.Persisters.SharpZipLib.SharpZipLibExpander");
+    private static readonly Counter<long> ReadZipFileStreamC = Meter.CreateCounter<long>("ReadZipFileStream");
+
+    #endregion
+
+    #region Dependencies
+
     public IServiceProvider ServiceProvider { get; }
 
-    //ITypeTransformer TypeTransformer { get; }
-    //ICSharpCode.SharpZipLib.Zip.
     public IOptionsMonitor<SharpZipLibExpanderOptions> OptionsMonitor { get; }
+    public HandleCache HandleCache { get; }
+    public ISerializationProvider SerializationProvider { get; }
 
-
-    public SharpZipLibExpander(IServiceProvider serviceProvider, IOptionsMonitor<SharpZipLibExpanderOptions> optionsMonitor)
-    {
-        ServiceProvider = serviceProvider;
-        OptionsMonitor = optionsMonitor;
-        //TypeTransformer = typeTransformer;
-    }
+    #region Derived
 
     public List<string> FileExtensions => OptionsMonitor.CurrentValue.FileExtensions;
 
+    #endregion
 
+    #endregion
+
+    #region Lifecycle
+
+    public SharpZipLibExpander(IServiceProvider serviceProvider, IOptionsMonitor<SharpZipLibExpanderOptions> optionsMonitor
+        , HandleCache handleCache
+        , ISerializationProvider serializationProvider
+        )
+    {
+        ServiceProvider = serviceProvider;
+        OptionsMonitor = optionsMonitor;
+        HandleCache = handleCache;
+        SerializationProvider = serializationProvider;
+    }
+
+    #endregion
 
     public override Type? SourceReadType() => typeof(byte[]); // TODO: also support Stream?
 
-
-
-    //ConcurrentDictionary<string, RZip> zips = new();
-
-
     public Type NativeType => typeof(ZipFile);
-
 
     public override Task<IReadHandle>? TryGetSourceReadHandle(IReference sourceReference)
     {
-        //throw new NotImplementedException();
-        //IReadHandle<ZipFile> zipFileHandle = await sourceReference.GetReadHandle<ZipFile>(sourceReference);
-        //var resolveResult = await zipFileHandle.Resolve();
-        ////IReadHandle<ZipFile> zipFileHandle = await sourceReference.Transform<ZipFile>(sourceReference);
-
-
-        //IReadHandle archiveHandle;
-        //foreach (var sourceType in TypeTransformer.SourceTypesFor(NativeType))
-        //{
-        //    var potentialSourceHandle = sourceReference.GetReadHandle(sourceType, ServiceProvider);
-
-        //    if (await potentialSourceHandle.Exists<TValue>())
-        //    {
-        //        archiveHandle = potentialSourceHandle;
-        //    }
-        //}
-
-        //if (archiveHandle == null)
-        //{
-
-        //}
-
-        //IReadHandleProvider rps;
-        //rps.GetReadHandle
         var ext = Path.GetExtension(sourceReference.Path)?.TrimStart('.');
 
         IReadHandle archiveHandle;
 
+        var reuse = true;
+
         switch (ext)
         {
             case "zip":
-                // TODO ENH: Reuse source handles
-                archiveHandle = new RZip(sourceReference.Cast<ZipFile>(), ServiceProvider);
+                // TODO: ZipFileReadHandleProvider.GetReadHandle();
+                RZip create() => new RZip(sourceReference.Cast<ZipFile>(), ServiceProvider);
+                if (reuse)
+                {
+                    var referenceString = string.Intern(sourceReference.Cast<ZipFile>().ToString()!);
+                    archiveHandle = HandleCache.GetOrAdd(referenceString, () => create());
+                }
+                else
+                {
+                    archiveHandle = create();
+                }
                 break;
             //case "tar":
             //    break;
@@ -119,6 +123,28 @@ public class SharpZipLibExpander : ExpanderPersister, ISupportsFileExtensions, I
                 throw new ArgumentException("unknown/unimplemented extension and autodetect type is not yet implemented");
         }
         return Task.FromResult(archiveHandle);
+    }
+
+    Type? GetListingType<TValue>()
+    {
+        if (typeof(TValue).IsGenericType)
+        {
+            var genericType = typeof(TValue).GetGenericTypeDefinition();
+            if (genericType == typeof(Metadata<>))
+            {
+                var metadataType = typeof(TValue).GetGenericArguments()[0];
+                if (metadataType.IsGenericType && metadataType.GetGenericTypeDefinition() == typeof(IEnumerable<>))
+                {
+                    var enumerableType = metadataType.GetGenericArguments()[0];
+                    if (enumerableType.IsGenericType && enumerableType.GetGenericTypeDefinition() == typeof(Listing<>))
+                    {
+                        var listingType = enumerableType.GetGenericArguments()[0];
+                        return listingType;
+                    }
+                }
+            }
+        }
+        return null;
     }
 
     public override async Task<IRetrieveResult<TValue>> RetrieveTarget<TValue>(IReadHandle sourceReadHandle, string targetPath)
@@ -142,6 +168,8 @@ public class SharpZipLibExpander : ExpanderPersister, ISupportsFileExtensions, I
         }
 
         #endregion
+
+        var listingItemType = GetListingType<TValue>();
 
         var zipFile = sourceResolveResult.Value as ZipFile;
 
@@ -182,11 +210,10 @@ public class SharpZipLibExpander : ExpanderPersister, ISupportsFileExtensions, I
 
             if (entry.IsFile)
             {
+                if (listingItemType != null) { return RetrieveResult<TValue>.SuccessNotFound; }
                 foundFile = true;
                 var ext = Path.GetExtension(targetPath).TrimFirstDot();
-                //throw new NotImplementedException("Deserialize ZipEntry");
-                var ss = DependencyContext.Current.GetService<ISerializationProvider>(); // FIXME SERVICELOCATOR TEMP
-                var strategies = ss.GetDistinctRankedStrategiesByExtension(s => s.SupportsExtension(ext));
+                var strategies = SerializationProvider.GetDistinctRankedStrategiesByExtension(s => s.SupportsExtension(ext));
                 if (!strategies.Any())
                 {
                     return new RetrieveResult<TValue>
@@ -197,8 +224,8 @@ public class SharpZipLibExpander : ExpanderPersister, ISupportsFileExtensions, I
                 }
 
                 using var stream = zipFile.GetInputStream(entry);
+                ReadZipFileStreamC.Add(1);
                 //new PersistenceOperation(null, new DeserializePersistenceOperation() { }))
-
 
                 foreach (var s in strategies)
                 {
@@ -222,34 +249,61 @@ public class SharpZipLibExpander : ExpanderPersister, ISupportsFileExtensions, I
                 foundDirectory = true;
                 var flags = PersistenceResultFlags.Found;
 
-                if (typeof(TValue) == typeof(Metadata<IEnumerable<Listing<object>>>))
+                if (listingItemType != null)
                 {
-                    var list = new List<ZipEntry>(zipFile.OfType<ZipEntry>().Where(e => e.Name.StartsWith(nativeTargetPath) && Path.GetDirectoryName(entry.Name) == nativeTargetPath));
-                    flags |= PersistenceResultFlags.Success;
-                    var value = new Metadata<IEnumerable<Listing<object>>>();
-                    value.Value = list.Select(i => new Listing<object>(Path.GetFileName(i.Name)));
-                    return new RetrieveResult<TValue>((TValue)(object)value, flags); // HARDCAST
-                }
+                    TValue retrieveValue;
 
-                if (typeof(TValue).IsGenericType)
-                {
-                    var genericType = typeof(TValue).GetGenericTypeDefinition();
-                    if (genericType == typeof(Metadata<>))
+                    IEnumerable<ZipEntry> zipEntries = new List<ZipEntry>(zipFile.OfType<ZipEntry>().Where(e =>
+                            e.Name.StartsWith(nativeTargetPath)
+                            && Path.GetDirectoryName(e.Name) + "/" == nativeTargetPath
+                            && (e.Name.Length > Path.GetDirectoryName(e.Name!)!.Length + 1)
+                        ));
+
+                    if (listingItemType == typeof(object))
                     {
-                        var metadataType = genericType.GetGenericArguments()[0];
-                        if (metadataType.IsGenericType && metadataType.GetGenericTypeDefinition() == typeof(IEnumerable<>))
-                        {
-                            var enumerableType = metadataType.GetGenericArguments()[0];
-                            if (enumerableType.IsGenericType && enumerableType.GetGenericTypeDefinition() == typeof(Listing<>))
-                            {
-                                var listingType = enumerableType.GetGenericArguments()[0];
-                                // REFACTOR this?
-                                // TODO: Filter listings of type listingType
-                            }
-                        }
-                        flags |= PersistenceResultFlags.PersisterNotAvailable | PersistenceResultFlags.Fail;
-                        return new RetrieveResult<TValue>(default, flags);
+                        retrieveValue = (TValue)(object)new Metadata<IEnumerable<Listing<object>>>(zipEntries.Select(i => new Listing<object>(Path.GetFileName(i.Name)))); // HARDCAST
                     }
+                    else
+                    {
+                        // REVIEW - this is a ton of reflection.
+                        // TODO ENH - replace typed Listings with an API parameter to filter type (and potentially other things)
+
+                        if (listingItemType.Name == "IArchive") // HARDCODE - type name
+                        {
+                            zipEntries = zipEntries.Where(i => i.Name.EndsWith(".zip")); // STUB - Simplistic implementation
+                        }
+                        else
+                        {
+                            zipEntries = await zipEntries.ToAsyncEnumerable().WhereAwait(async zipEntry =>
+                            {
+                                // FUTURE ENH: determine the types of all the listings (potentially expensive: worst case is attempting deserialization of everything)
+                                var typeHandle = new ExpansionReference(sourceReadHandle.Reference.Url, zipEntry.Name).GetReadHandle<Metadata<Type>>();
+                                var typeResolve = await typeHandle.Resolve().ConfigureAwait(false);
+                                if (typeResolve.IsSuccess == true && typeResolve.HasValue)
+                                {
+                                    return listingItemType.IsAssignableFrom(typeResolve.Value);
+                                }
+                                else
+                                {
+                                    throw new NotImplementedException("Type filtering on Listings");
+                                }
+                            }).ToListAsync().ConfigureAwait(false);
+                        }
+
+
+                        var listingEntryType = typeof(Listing<>).MakeGenericType(listingItemType);
+
+                        var enumerableOfListings = Activator.CreateInstance(typeof(List<>).MakeGenericType(typeof(Listing<>).MakeGenericType(listingItemType)));
+                        var mi = enumerableOfListings!.GetType().GetMethod("Add");
+                        foreach (var zipEntry in zipEntries)
+                        {
+                            mi!.Invoke(enumerableOfListings, new object[] { Activator.CreateInstance(listingEntryType, Path.GetFileName(zipEntry.Name))! });
+                        }
+                        //pi!.SetValue(retrieveValue, enumerableOfListings);
+                        retrieveValue = (TValue)Activator.CreateInstance(typeof(TValue), enumerableOfListings)!;
+                    }
+                    flags |= PersistenceResultFlags.Success;
+                    return new RetrieveResult<TValue>(retrieveValue, flags);
                 }
             }
             else

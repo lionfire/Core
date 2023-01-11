@@ -15,4 +15,10 @@
     <ProjectReference Include="..\LionFire.Vos\LionFire.Vos.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Reference Include="LionFire.Expanders.Vos">
+      <HintPath>..\..\build\obj\LionFire.Expanders.Vos\Debug\net6.0\ref\LionFire.Expanders.Vos.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+
 </Project>

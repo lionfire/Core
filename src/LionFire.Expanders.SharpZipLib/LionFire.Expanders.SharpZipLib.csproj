@@ -8,6 +8,10 @@
 
 	</PropertyGroup>
 
+	<ItemGroup>
+	  <PackageReference Include="Overby.Extensions.Attachments" />
+	</ItemGroup>
+
 
 	<ItemGroup>
 		<ProjectReference Include="..\LionFire.Persistence.SharpZipLib\LionFire.Persistence.SharpZipLib.csproj" />

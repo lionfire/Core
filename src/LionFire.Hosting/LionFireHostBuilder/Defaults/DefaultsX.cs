@@ -22,7 +22,7 @@ public static class DefaultsX
     /// </summary>
     public static ILionFireHostBuilder Defaults(this ILionFireHostBuilder lf)
     {
-        bool isTest = TestInfo.IsTest == true;
+        bool isTest = LionFireEnvironment.IsUnitTest == true;
 
         var builder = lf.HostBuilder;
 
