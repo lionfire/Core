@@ -49,11 +49,11 @@ public static class LionFireOpenTelemetryTracingX
 
                 .ConfigureResource(r => r
                     .AddService("LionFire.Test")
-                    .AddService("LionFire.Vos")
-                    .AddService("LionFire.Persistence.Filesystem")
-                    .AddService("LionFire.Vos.RootManager")
-                    .AddService("LionFire.Persisters.SharpZipLib.SharpZipLibExpander")
-
+                    //.AddService("LionFire.Vos")
+                    //.AddService("LionFire.Persistence.Filesystem")
+                    //.AddService("LionFire.Vos.RootManager")
+                    //.AddService("LionFire.Persisters.SharpZipLib.SharpZipLibExpander")
+                    //.AddService("LionFire.Persistence.Handles.WeakHandleRegistry")
 
                 )
                 //.AddRuntimeInstrumentation()
@@ -63,7 +63,9 @@ public static class LionFireOpenTelemetryTracingX
                 .AddMeter("LionFire.Persisters.SharpZipLib")
                 .AddMeter("LionFire.Vos.RootManager")
                 .AddMeter("LionFire.Persisters.SharpZipLib.SharpZipLibExpander")
+                .AddMeter("LionFire.Persistence.Handles.WeakHandleRegistry")
                 
+
             )
         //    .WithTracing(c => c
         //        .AddConsoleExporter()

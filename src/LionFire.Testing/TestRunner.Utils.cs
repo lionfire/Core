@@ -4,7 +4,7 @@ using System.Collections.Generic;
 
 namespace LionFire.Testing;
 
-public static class TestUtils
+public static partial class TestRunner
 {
     public static Dictionary<string, (Metric metric, MetricPoint metricPoint, object? value)> GetMetrics(IServiceProvider sp, bool log = false)
     {
@@ -19,7 +19,39 @@ public static class TestUtils
 
         foreach (var metric in metrics)
         {
-            foreach (var metricPoint in metric.GetMetricPoints())
+            MetricPoint? GetMetricPoint(Metric metric)
+            {
+                if (LionFireEnvironment.MetricsContext != null)
+                {
+                    foreach (var metricPoint in metric.GetMetricPoints())
+                    {
+                        foreach (var tag in metricPoint.Tags)
+                        {
+                            if (tag.Key == LionFireEnvironment.MetricsContextKey && LionFireEnvironment.MetricsContext.Equals(tag.Value))
+                            {
+                                return metricPoint;
+                            }
+                        }
+                    }
+                    // Didn't find matching context, so return first one
+                    foreach (var metricPoint in metric.GetMetricPoints())
+                    {
+                        return metricPoint;
+                    }
+                }
+                else
+                {
+                    // Commented because if it's 0, we don't want to return the first one from another unit test.
+                    //foreach (var metricPoint in metric.GetMetricPoints())
+                    //{
+                    //    return metricPoint; // return first one
+                    //}
+                }
+                return null;
+            }
+
+            var metricPoint = GetMetricPoint(metric);
+            if (metricPoint.HasValue)
             {
                 object? value = null;
 
@@ -28,16 +60,16 @@ public static class TestUtils
                 {
                     if (metricType.IsSum())
                     {
-                        value = metricPoint.GetSumLong();
+                        value = metricPoint.Value.GetSumLong();
                     }
                     else
                     {
-                        value = metricPoint.GetGaugeLastValueLong();
+                        value = metricPoint.Value.GetGaugeLastValueLong();
                     }
                 }
-                list.Add((metric, metricPoint, value));
-
+                list.Add((metric, metricPoint.Value, value));
             }
+
         }
 
         Dictionary<string, (Metric metric, MetricPoint metricPoint, object? value)> result;
@@ -70,12 +102,23 @@ public static class TestUtils
     }
     public static void GenerateAsserts(Dictionary<string, (Metric metric, MetricPoint metricPoint, object? value)> dict)
     {
-        foreach (var x in dict)
+        Console.WriteLine();
+        Console.WriteLine("#region Metrics");
+        Console.WriteLine();
+        Console.WriteLine("var metrics = GetMetrics(sp, log: true);");
+        
+        foreach (var x in dict.Where(i => !i.Value.metric.Name.EndsWith(".") && i.Value.metric.MetricType != MetricType.LongGauge))
         {
             // TODO: cast type
             Console.WriteLine($"Assert.AreEqual({x.Value.value}, (long)metrics[\"{x.Key}\"].value!);");
             //System.Console.WriteLine($"OTel: {item.Name}: {item.Dump()}");
         }
-        Console.WriteLine($"Assert.AreEqual({dict.Count}, metrics.Count);");
+        Console.WriteLine("TestRunner.RanAsserts = true;");
+        Console.WriteLine();
+        Console.WriteLine("#endregion");
+        Console.WriteLine();
+        //Console.WriteLine($"Assert.AreEqual({dict.Count}, metrics.Count);");
+
     }
+    public static bool RanAsserts { get; set; }
 }

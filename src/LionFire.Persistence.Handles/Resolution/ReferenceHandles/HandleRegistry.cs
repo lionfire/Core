@@ -1,54 +1,36 @@
 ﻿using System;
 using System.Collections.Concurrent;
 using System.Runtime.CompilerServices;
+using BernhardHaus.Collections.WeakDictionary;
+using LionFire.Dependencies;
+using LionFire.Persistence;
+using LionFire.Persistence.Handles;
+using LionFire.Structures;
 
 namespace LionFire.Referencing.Ex;
 
-// TODO NEXT
-// - non-static dictionaries: use HandleCache class instead
-// - add separated RW, W to HandleCache
-// - consolidate with HandleCache: which should be WeakReferences, and which ones strong? All Weak?
-// - Should I use Overby to attach HandleCache instance?  Idk how I'd do that.  IServiceProvider could be scoped.  Still, it might be nice to have a Context object() to act as a marker.  Maybe the IServiceProvider object is it.
-
-public class HandleRegistrar
-{
-    #region Fields
-
-    ConditionalWeakTable<string, IHandleBase> readHandles = new ConditionalWeakTable<string, IHandleBase>();
-    ConditionalWeakTable<string, IHandleBase> readWriteHandles = new ConditionalWeakTable<string, IHandleBase>();
-    ConditionalWeakTable<string, IHandleBase> writeHandles = new ConditionalWeakTable<string, IHandleBase>();
-
-    #endregion
-}
-
-public interface IHandleRegistry
-{
-    T GetOrAddReadWrite<T>(string key, Func<string, object> factory);
-    T GetOrAddWrite<T>(string key, Func<string, object> factory);
-    T GetOrAddRead<T>(string key, Func<string, object> factory);
-}
-
-public static class HandleRegistry2<T>
+// static Replacement for HandleRegistry
+public static class HandleRegistry2
 {
     public static IHandleRegistry HandleRegistry
     {
         get
         {
-
+            return DependencyContext.Current.GetService<IHandleRegistry>() ?? (LionFireEnvironment.IsMultiApplicationEnvironment ? throw new ArgumentNullException($"LionFireEnvironment.IsMultiApplicationEnvironment is true but there is no IHandleRegistry registered with {nameof(DependencyContext)}.Current") : ManualSingleton<WeakHandleRegistry>.GuaranteedInstance);
         }
     }
 
-    public static T GetOrAddReadWrite(string key, Func<string, object> factory) => (T)ReadWriteHandles.GetOrAdd(typeof(T).FullName + ":" + key, factory);
-    public static T GetOrAddWrite(string key, Func<string, object> factory) => (T)WriteHandles.GetOrAdd(typeof(T).FullName + ":" + key, factory);
-    public static T GetOrAddRead(string key, Func<string, object> factory) => (T)ReadHandles.GetOrAdd(typeof(T).FullName + ":" + key, factory);
+    public static IReadHandle<T> GetOrAddRead<T>(string key, Func<string, IReadHandle<T>> factory) => HandleRegistry.GetOrAddRead<T>(typeof(T).FullName + ":" + key, factory);
+    public static IReadWriteHandle<T> GetOrAddReadWrite<T>(string key, Func<string, IReadWriteHandle<T>> factory) => HandleRegistry.GetOrAddReadWrite<T>(typeof(T).FullName + ":" + key, factory);
+    public static IWriteHandle<T> GetOrAddWrite<T>(string key, Func<string, IWriteHandle<T>> factory) => HandleRegistry.GetOrAddWrite<T>(typeof(T).FullName + ":" + key, factory);
 
 }
 
 public static class HandleRegistry
 {
     public static ConcurrentDictionary<string, object> ReadHandles { get; } = new ConcurrentDictionary<string, object>();
-    public static ConcurrentDictionary<string, object> WriteHandles { get; } = new ConcurrentDictionary<string, object>();
     public static ConcurrentDictionary<string, object> ReadWriteHandles { get; } = new ConcurrentDictionary<string, object>();
+    public static ConcurrentDictionary<string, object> WriteHandles { get; } = new ConcurrentDictionary<string, object>();
 
     //public static T TryGetReadWrite<T>(string key)
     //{
@@ -68,9 +50,9 @@ public static class HandleRegistry
     //    return default;
     //}
 
+    public static T GetOrAddRead<T>(string key, Func<string, object> factory) => (T)ReadHandles.GetOrAdd(typeof(T).FullName + ":" + key, factory);
     public static T GetOrAddReadWrite<T>(string key, Func<string, object> factory) => (T)ReadWriteHandles.GetOrAdd(typeof(T).FullName + ":" + key, factory);
     public static T GetOrAddWrite<T>(string key, Func<string, object> factory) => (T)WriteHandles.GetOrAdd(typeof(T).FullName + ":" + key, factory);
-    public static T GetOrAddRead<T>(string key, Func<string, object> factory) => (T)ReadHandles.GetOrAdd(typeof(T).FullName + ":" + key, factory);
 }
 
 public static class ObjectHandleRegistry

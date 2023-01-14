@@ -20,6 +20,7 @@
   <ItemGroup>
     <ProjectReference Include="..\..\src\LionFire.Persistence.SharpZipLib\LionFire.Persistence.SharpZipLib.csproj" />
 		<ProjectReference Include="..\..\src\LionFire.Persistence.Filesystem\LionFire.Persistence.Filesystem.csproj" />
+		<ProjectReference Include="..\..\src\LionFire.Testing\LionFire.Testing.csproj" />
   </ItemGroup>
 
 </Project>

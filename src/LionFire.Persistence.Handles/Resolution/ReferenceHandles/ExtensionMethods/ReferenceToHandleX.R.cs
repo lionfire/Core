@@ -8,7 +8,10 @@ using System.Linq;
 
 namespace LionFire.Referencing; // REVIEW - should be in another namespace?
 
-public static partial class ReferenceToReadHandleExtensions
+// ENH idea: API to request private copy of handle
+// ENH idea: options to disable cache for certain types of TValue, and always use factory
+
+public static partial class ReferenceToReadHandleX
 {
     // TODO: Review and make Read/ReadWrite/Write consistent
 
@@ -17,7 +20,7 @@ public static partial class ReferenceToReadHandleExtensions
     // Generic, typed Reference
     public static IReadHandle<TValue> GetReadHandle<TValue, TReference>(this TReference reference, IServiceProvider serviceProvider = null)
         where TReference : IReference
-        => HandleRegistry.GetOrAddRead<IReadHandle<TValue>>(reference.Url, _ => reference.TryGetReadHandleProvider<TReference>(serviceProvider).GetReadHandle<TValue>(reference));
+        => HandleRegistry2.GetOrAddRead<TValue>(reference.Url, _ => reference.TryGetReadHandleProvider<TReference>(serviceProvider).GetReadHandle<TValue>(reference));
 
     // Generic, ITypedReference  REVIEW - why is this different than ReadWriteHandleExtensions?
     // UNUSED? - Trying to comment this since I'm not sure if it's really needed. Uncomment if used.  
@@ -27,12 +30,12 @@ public static partial class ReferenceToReadHandleExtensions
 
     // Generic
     public static IReadHandle<TValue> GetReadHandle<TValue>(this IReference reference, IServiceProvider serviceProvider = null)
-        => HandleRegistry.GetOrAddRead<IReadHandle<TValue>>(reference?.Url ?? throw new ArgumentNullException(nameof(reference)),
+        => HandleRegistry2.GetOrAddRead<TValue>(reference?.Url ?? throw new ArgumentNullException(nameof(reference)),
             _ => reference.GetReadHandleProvider().GetReadHandle<TValue>(reference));
 
     // Non-generic (reflection helper)
     public static IReadHandle GetReadHandle(this IReference reference, Type type, IServiceProvider serviceProvider = null)
-        => (IReadWriteHandle)typeof(ReferenceToReadHandleExtensions).GetMethods(BindingFlags.Public | BindingFlags.Static).Where(mi => mi.Name == nameof(GetReadHandle) && mi.GetGenericArguments().Length == 1).First().MakeGenericMethod(type).Invoke(null, new object[] { reference });
+        => (IReadWriteHandle)typeof(ReferenceToReadHandleX).GetMethods(BindingFlags.Public | BindingFlags.Static).Where(mi => mi.Name == nameof(GetReadHandle) && mi.GetGenericArguments().Length == 1).First().MakeGenericMethod(type).Invoke(null, new object[] { reference });
 
     #endregion
 
@@ -43,7 +46,7 @@ public static partial class ReferenceToReadHandleExtensions
     public static (IReadHandle<TValue> handle, bool usedPreresolved) GetReadHandlePreresolved<TValue>(this IReference reference, TValue preresolvedValue, IServiceProvider serviceProvider = null)
     {
         bool usedPreresolved = false;
-        return (HandleRegistry.GetOrAddRead<IReadHandle<TValue>>(reference.Url, _ =>
+        return (HandleRegistry2.GetOrAddRead<TValue>(reference.Url, _ =>
         {
             usedPreresolved = true;
             IPreresolvableReadHandleProvider p = reference.GetReadHandleProvider(serviceProvider) as IPreresolvableReadHandleProvider ?? throw new NotFoundException($"{nameof(IPreresolvableReadHandleProvider)} not found");
@@ -102,7 +105,7 @@ public static partial class ReferenceToReadHandleExtensions
                 return (IReadHandle)type.GetProperty(nameof(IHasReadHandle<object>.ReadHandle)).GetValue(referencable);
             }
         }
-        return (IReadHandle)typeof(ReferenceToReadHandleExtensions).GetMethods(BindingFlags.Public | BindingFlags.Static).Where(mi => mi.Name == nameof(GetReadHandle) && mi.GetGenericArguments().Length == 1 & mi.GetParameters().Length == 1).Single().MakeGenericMethod(referenceValueType).Invoke(null, new object[] { referencable.Reference });
+        return (IReadHandle)typeof(ReferenceToReadHandleX).GetMethods(BindingFlags.Public | BindingFlags.Static).Where(mi => mi.Name == nameof(GetReadHandle) && mi.GetGenericArguments().Length == 1 & mi.GetParameters().Length == 1).Single().MakeGenericMethod(referenceValueType).Invoke(null, new object[] { referencable.Reference });
 
     }
     public static IReadHandle<T> GetExistingReadHandle<T>(this IReference reference)

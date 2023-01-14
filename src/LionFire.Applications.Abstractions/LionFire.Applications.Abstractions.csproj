@@ -15,7 +15,7 @@
     <RepositoryUrl>https://github.com/jaredthirsk/Core</RepositoryUrl>
     <PackageTags>DependencyInjection AppBuilder</PackageTags>
     <NeutralLanguage>en-US</NeutralLanguage>
-    <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
+    <GeneratePackageOnBuild>False</GeneratePackageOnBuild>
     <Authors>Jared Thirsk</Authors>
     <PackageReleaseNotes></PackageReleaseNotes>
     <Version>2.0.0</Version>

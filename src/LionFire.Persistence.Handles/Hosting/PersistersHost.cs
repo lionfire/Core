@@ -39,7 +39,7 @@ public static class PersistersHost
                           .AddSingleton<IPersistenceConventions, PersistenceConventions>()
                           .AddSingleton<IReferenceToHandleService, ReferenceToHandleService>()
                           .AddReferenceProvider()
-                          .AddSingleton<HandleCache>()
+                          .AddSingleton<IHandleRegistry, WeakHandleRegistry>()
                           .Configure<ObjectHandleProviderOptions>(c =>
                           {
                               c.AutoRegister = true;

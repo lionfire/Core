@@ -382,7 +382,8 @@ public abstract partial class VirtualFilesystemPersisterBase<TReference, TPersis
         }
     }
 
-    PersisterRetryOptions? RetryOptions => (PersistenceOptions as IHas<PersisterRetryOptions>)?.Object;
+    PersisterRetryOptions RetryOptions => (PersistenceOptions as IHas<PersisterRetryOptions>)?.Object ?? PersisterRetryOptions.Default;
+    
 
     //public virtual Task<IRetrieveResult<T>> ReadAndDeserializeExactPath<T>(TReference reference, Lazy<PersistenceOperation> operation = null, PersistenceContext context = null)
     //    => ReadAndDeserializeExactPath<T>(reference.Path, operation, context);
@@ -516,9 +517,14 @@ public abstract partial class VirtualFilesystemPersisterBase<TReference, TPersis
 
             Stream stream = null;
 
+            
             if (typeof(T) == typeof(Stream) || attempt.Strategy?.ImplementsFromStream == true)
             {
-                stream = await ReadStream(effectiveFSPath).ConfigureAwait(false);
+                stream = await new Func<Task<Stream>>(() => ReadStream(effectiveFSPath))
+                    .AutoRetry(maxRetries: RetryOptions.MaxGetRetries,
+                        millisecondsBetweenAttempts: RetryOptions.MillisecondsBetweenGetRetries, allowException: AllowAutoRetryForThisException).ConfigureAwait(false);
+
+                //stream = await ReadStream(effectiveFSPath).ConfigureAwait(false);
                 if (stream == null)
                 {
                     throw new InvalidOperationException("ReadStream returned null");

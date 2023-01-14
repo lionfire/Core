@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RunSettings>
+	<MSTest>
+		<Parallelize>
+			<Workers>34</Workers>
+			<Scope>MethodLevel</Scope>
+		</Parallelize>
+	</MSTest>
+  <RunConfiguration>
+    <MaxCpuCount>30</MaxCpuCount>
+    <TargetFrameworkVersion>net7.0</TargetFrameworkVersion>
+	<TargetPlatform>x64</TargetPlatform>
+	<ResultsDirectory>z:\Test\Results</ResultsDirectory>
+    <!--		
+    <TestAdaptersPaths>%SystemDrive%\Temp\foo;%SystemDrive%\Temp\bar</TestAdaptersPaths>
+    <TestSessionTimeout>10000</TestSessionTimeout>
+    <TreatNoTestsAsError>true</TreatNoTestsAsError>
+	-->
+</RunConfiguration>
+</RunSettings>

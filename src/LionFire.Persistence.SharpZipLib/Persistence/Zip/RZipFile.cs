@@ -14,20 +14,21 @@ using System.IO;
 
 namespace LionFire.Persisters.SharpZipLib_;
 
-public class RZip : ReadHandle<IReference<ZipFile>, ZipFile>, IHas<IServiceProvider> // RENAME to RZipFile?
+// RENAME to RZipFile
+public class RZipFile : ReadHandle<IReference<ZipFile>, ZipFile>
+    //, IHas<IServiceProvider> 
 {
     #region Dependencies
 
-    public IServiceProvider ServiceProvider { get; }
-    IServiceProvider IHas<IServiceProvider>.Object => ServiceProvider;
+    //public IServiceProvider ServiceProvider { get; }
+    //IServiceProvider IHas<IServiceProvider>.Object => ServiceProvider;
 
     #endregion
 
     #region Lifecycle
 
-    public RZip(IReference<ZipFile> reference, IServiceProvider serviceProvider) : base(reference)
+    public RZipFile(IReference reference) : base(reference.Cast<ZipFile>())
     {
-        ServiceProvider = serviceProvider;
     }
 
     public override void Dispose()
@@ -72,6 +73,7 @@ public class RZip : ReadHandle<IReference<ZipFile>, ZipFile>, IHas<IServiceProvi
 
     private static readonly Meter Meter = new("LionFire.Persisters.SharpZipLib", "1.0");
     private static readonly Counter<long> StreamReadC = Meter.CreateCounter<long>("StreamRead");
+    private static readonly Counter<long> StreamReadBytesC = Meter.CreateCounter<long>("StreamReadBytes");
 
     protected override async ITask<IResolveResult<ZipFile>> ResolveImpl()
     {
@@ -84,14 +86,15 @@ public class RZip : ReadHandle<IReference<ZipFile>, ZipFile>, IHas<IServiceProvi
         // TODO TOTHREADSAFETY
         if (!noop)
         {
-            StreamReadC.Add(1);
+            StreamReadC.IncrementWithContext();
             streamRetrieveResult ??= await (streamReadHandle ??= this.Key.GetReadHandle<Stream>())
                 .TryGetValue().ConfigureAwait(false);
         }
 
         if (streamRetrieveResult.IsSuccess() == true)
         {
-            Log.Get<RZip>().Debug($"{(noop ? "[NOOP] " : "")} RZip Retrieved stream of length {streamRetrieveResult.Value.Length} bytes from {Key} ");
+            if (!noop) { StreamReadBytesC.IncrementWithContext(streamRetrieveResult!.Value.Length); }
+            Log.Get<RZipFile>().Debug($"{(noop ? "[NOOP] " : "")} RZipFile Retrieved stream of length {streamRetrieveResult!.Value.Length} bytes from {Key} ");
             ProtectedValue = new ICSharpCode.SharpZipLib.Zip.ZipFile(streamRetrieveResult.Value, true);
             return new ResolveResultSuccess<ZipFile>(Value);
         }
@@ -105,7 +108,7 @@ public class RZip : ReadHandle<IReference<ZipFile>, ZipFile>, IHas<IServiceProvi
             {
                 return ResolveResultNotResolved<ZipFile>.Instance;
             }
-            Log.Get<RZip>().Debug($"RZip Retrieved byte array of {bytesRetrieveResult.Value.Length} bytes");
+            Log.Get<RZipFile>().Debug($"RZipFile Retrieved byte array of {bytesRetrieveResult.Value.Length} bytes");
 
             var oldMemoryStream = ms;
             if (oldMemoryStream != null)
@@ -115,11 +118,12 @@ public class RZip : ReadHandle<IReference<ZipFile>, ZipFile>, IHas<IServiceProvi
 
             ms = new MemoryStream(bytesRetrieveResult.Value);
             ProtectedValue = new ICSharpCode.SharpZipLib.Zip.ZipFile(ms, false);
+
             return new ResolveResultSuccess<ZipFile>(Value);
         }
     }
 
     #endregion
 
-    static ILogger Logger => Log.Get<RZip>();
+    static ILogger Logger => Log.Get<RZipFile>();
 }

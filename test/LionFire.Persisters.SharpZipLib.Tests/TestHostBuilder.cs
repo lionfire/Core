@@ -9,11 +9,14 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.DependencyInjection;
 using System.Diagnostics;
 using LionFire.Persisters.SharpZipLib.Tests.Deserialize;
+using LionFire.Testing;
 
 namespace LionFire.Persisters.SharpZipLib.Tests;
 
+[TestClass]
 public static class TestHostBuilder
 {
+
     public static string DataDir
     {
         get
@@ -30,21 +33,23 @@ public static class TestHostBuilder
     }
     private static string dataDir;
 
-    public static IHostBuilder H
+    [AssemblyInitialize]
+    public static void Init(TestContext testContext)
     {
-        get
+        TestRunner.HostApplicationFactory = () =>
         {
-            return Host.CreateDefaultBuilder()
-                .LionFire(lf => lf
-                    .Vos()
-                )
-                .ConfigureServices((c, s) => s
-                    .AddFilesystem()
-                    .VosMount("/C", "c:".ToFileReference()) // TEMP
-                    .AddSharpZipLibPersistence()
+            var hab = new HostApplicationBuilder();
+
+            hab.LionFire(lf => lf
+                .Vos()
+            )
+            .Services
+                .AddFilesystem()
+                .VosMount("/C", "c:".ToFileReference()) // TEMP
+                .AddSharpZipLibPersistence()
 #warning NEXT: Use the CanDeserializeType on the Strategy selector, trace through the Serializer selector code
-                )
-                ;
-        }
+            ;
+            return hab;
+        };
     }
 }

@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RunSettings>
+  <RunConfiguration>
+    <MaxCpuCount>0</MaxCpuCount>
+    <TargetFrameworkVersion>net7.0</TargetFrameworkVersion>
+	<TargetPlatform>x64</TargetPlatform>
+	<ResultsDirectory>z:\Test\Results</ResultsDirectory>
+    <!--		
+    <TestAdaptersPaths>%SystemDrive%\Temp\foo;%SystemDrive%\Temp\bar</TestAdaptersPaths>
+    <TestSessionTimeout>10000</TestSessionTimeout>
+    <TreatNoTestsAsError>true</TreatNoTestsAsError>
+	-->
+</RunConfiguration>
+</RunSettings>

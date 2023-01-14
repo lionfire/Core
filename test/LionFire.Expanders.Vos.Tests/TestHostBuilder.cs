@@ -14,8 +14,12 @@ using Serilog.Sinks.Loki;
 using Serilog.Sinks.Loki.Labels;
 using Serilog.Sinks.File.GZip;
 using Serilog.Formatting;
+using LionFire.Persistence.Handles;
+using LionFire.Testing;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 
-public static class TestHostBuilder
+[TestClass]
+public class TestHostBuilder
 {
     public static string DataDir
     {
@@ -38,29 +42,34 @@ public static class TestHostBuilder
 
     public static readonly string ZipBaseVobReferenceString = $"vos:///{TestZipUrlPath}:";
 
-    public static HostApplicationBuilder H
+    [AssemblyInitialize]
+    public static void Init(TestContext testContext)
     {
-        get
-        {
-            //if (Log.Logger.GetType().FullName == "Serilog.Core.Pipeline.SilentLogger") SerilogUtils.ConfigureStaticSerilog();
-            
-            return new HostApplicationBuilder(new HostApplicationBuilderSettings() { })
-                .LionFire(lf => lf
-                    .Vos()
-                    .ConfigureServices(s => s
-                        .AddOpenTelemetryTracingLF()
-                        .Expansion()
-                        .AddFilesystem()
+        TestRunner.HostApplicationFactory = () =>
+            {
+                return new HostApplicationBuilder(new HostApplicationBuilderSettings() { })
+                    .LionFire(lf => lf
+                        .Vos()
+                        .ConfigureServices(s => s
+                            .Expansion()
+                            .AddFilesystem()
 
-                        .TryAddEnumerableSingleton<IExpanderPlugin, ZipPlugin>()
+                            .TryAddEnumerableSingleton<IExpanderPlugin, ZipPlugin>()
 
-                        .AddExpanderMounter("/testdata/zip")
-                        .VosMount("/testdata", DataDir.ToFileReference())
+                            .AddExpanderMounter("/testdata/zip")
+                            .VosMount("/testdata", DataDir.ToFileReference())
 
-                        .AddSharpZipLib()
-                        .AddNewtonsoftJson()
-                    )
-                );
-        }
+                            .AddSharpZipLib()
+                            .AddNewtonsoftJson()
+                        )
+                    );
+            };
     }
+
+    //[TestMethod]
+    //public void X()
+    //{
+    //    Assert.IsTrue(true);
+    //}
+
 }

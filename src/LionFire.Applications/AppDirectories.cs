@@ -65,7 +65,7 @@ namespace LionFire.Applications
         /// <summary>
         /// c:\ProgramData\{CompanyName}\{AppDataDirName}
         /// </summary>
-        public string AppProgramDataDir => GetProgramDataDir(AppInfo.DataDirName);
+        public string AppProgramDataDir => GetProgramDataDir(AppInfo.EffectiveDataDirName);
 
         #region (Parameterized) Custom Data Dir in ProgramData
 

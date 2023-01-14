@@ -4,20 +4,21 @@ using LionFire.Persisters.Expanders;
 using LionFire.Vos;
 using LionFire.Hosting;
 using LionFire.Resolves;
+using LionFire.Testing;
 
 namespace ExpandMount_;
 
 [TestClass]
 public class _Resolve
 {
-    public static IHostBuilder H => TestHostBuilder.ExpandMount;
-
     public static readonly string VobReferencePath = $"/test/ExpandMount/TestTargetDir/TestClass.json";
 
+    public Action<HostApplicationBuilder> config => TestHostBuilder.ExpandMount;
+
     [TestMethod]
-    public void _()
+    public void _1()
     {
-        H.Run(async sp =>
+        RunTest(config, async sp =>
         {
             var HandleProvider = sp.GetRequiredService<IReadHandleProvider<IVobReference>>();
 
@@ -33,13 +34,30 @@ public class _Resolve
             Assert.IsNotNull(resolveResult.Value);
             Assert.AreEqual("Test Name", resolveResult.Value.Name);
             Assert.AreEqual(123, resolveResult.Value.Number);
+
+
+
+            #region Metrics
+
+            var metrics = GetMetrics(sp, log: true);
+            Assert.AreEqual(2, (long)metrics["LionFire.Vos.Retrieve"].value!);
+            Assert.AreEqual(2, (long)metrics["LionFire.Vos.Retrieve.Batch"].value!);
+            Assert.AreEqual(4, (long)metrics["LionFire.Persistence.Handles.WeakHandleRegistry.ReadHandlesCreated"].value!);
+            Assert.AreEqual(1, (long)metrics["LionFire.Persisters.SharpZipLib.StreamRead"].value!);
+            Assert.AreEqual(1, (long)metrics["LionFire.Persistence.Filesystem.Exists"].value!);
+            Assert.AreEqual(1, (long)metrics["LionFire.Persistence.Filesystem.FileExists"].value!);
+            Assert.AreEqual(1, (long)metrics["LionFire.Persistence.Filesystem.OpenReadStream"].value!);
+            Assert.AreEqual(1, (long)metrics["LionFire.Persisters.SharpZipLib.SharpZipLibExpander.ReadZipFileStream"].value!);
+            TestRunner.RanAsserts = true;
+
+            #endregion
         });
     }
 
     [TestMethod]
     public void _AfterExists()
     {
-        H.Run(async sp =>
+        RunTest(config, async sp =>
         {
             var HandleProvider = sp.GetRequiredService<IReadHandleProvider<IVobReference>>();
 
@@ -58,13 +76,29 @@ public class _Resolve
             Assert.IsNotNull(resolveResult.Value);
             Assert.AreEqual("Test Name", resolveResult.Value.Name);
             Assert.AreEqual(123, resolveResult.Value.Number);
+
+            #region Metrics
+
+            var metrics = GetMetrics(sp, log: true);
+            Assert.AreEqual(4, (long)metrics["LionFire.Vos.Retrieve"].value!);
+            Assert.AreEqual(4, (long)metrics["LionFire.Vos.Retrieve.Batch"].value!);
+            Assert.AreEqual(4, (long)metrics["LionFire.Persistence.Handles.WeakHandleRegistry.ReadHandlesCreated"].value!);
+            Assert.AreEqual(2, (long)metrics["LionFire.Persisters.SharpZipLib.StreamRead"].value!);
+            Assert.AreEqual(2, (long)metrics["LionFire.Persistence.Filesystem.Exists"].value!);
+            Assert.AreEqual(2, (long)metrics["LionFire.Persistence.Filesystem.FileExists"].value!);
+            Assert.AreEqual(2, (long)metrics["LionFire.Persistence.Filesystem.OpenReadStream"].value!);
+            Assert.AreEqual(2, (long)metrics["LionFire.Persisters.SharpZipLib.SharpZipLibExpander.ReadZipFileStream"].value!);
+            TestRunner.RanAsserts = true;
+
+            #endregion
+
         });
     }
 
     [TestMethod]
     public void _Twice()
     {
-        H.Run(async sp =>
+        RunTest(config, async sp =>
         {
             var HandleProvider = sp.GetRequiredService<IReadHandleProvider<IVobReference>>();
 
@@ -85,13 +119,29 @@ public class _Resolve
 
             validate(await handle.Resolve().ConfigureAwait(false));
             validate(await handle.Resolve().ConfigureAwait(false));
+
+            #region Metrics
+
+            var metrics = GetMetrics(sp, log: true);
+            Assert.AreEqual(4, (long)metrics["LionFire.Vos.Retrieve"].value!);
+            Assert.AreEqual(4, (long)metrics["LionFire.Vos.Retrieve.Batch"].value!);
+            Assert.AreEqual(4, (long)metrics["LionFire.Persistence.Handles.WeakHandleRegistry.ReadHandlesCreated"].value!);
+            Assert.AreEqual(2, (long)metrics["LionFire.Persisters.SharpZipLib.StreamRead"].value!);
+            Assert.AreEqual(2, (long)metrics["LionFire.Persistence.Filesystem.Exists"].value!);
+            Assert.AreEqual(2, (long)metrics["LionFire.Persistence.Filesystem.FileExists"].value!);
+            Assert.AreEqual(2, (long)metrics["LionFire.Persistence.Filesystem.OpenReadStream"].value!);
+            Assert.AreEqual(2, (long)metrics["LionFire.Persisters.SharpZipLib.SharpZipLibExpander.ReadZipFileStream"].value!);
+            TestRunner.RanAsserts = true;
+
+            #endregion
+
         });
     }
 
     [TestMethod]
     public void _Discard_ResolveAgain()
     {
-        H.Run(async sp =>
+        RunTest(config, async sp =>
         {
             var HandleProvider = sp.GetRequiredService<IReadHandleProvider<IVobReference>>();
 
@@ -113,6 +163,22 @@ public class _Resolve
             validate(await handle.Resolve().ConfigureAwait(false));
             handle.DiscardValue();
             validate(await handle.Resolve().ConfigureAwait(false));
+
+            #region Metrics
+
+            var metrics = GetMetrics(sp, log: true);
+            Assert.AreEqual(4, (long)metrics["LionFire.Vos.Retrieve"].value!);
+            Assert.AreEqual(4, (long)metrics["LionFire.Vos.Retrieve.Batch"].value!);
+            Assert.AreEqual(4, (long)metrics["LionFire.Persistence.Handles.WeakHandleRegistry.ReadHandlesCreated"].value!);
+            Assert.AreEqual(2, (long)metrics["LionFire.Persisters.SharpZipLib.StreamRead"].value!);
+            Assert.AreEqual(2, (long)metrics["LionFire.Persistence.Filesystem.Exists"].value!);
+            Assert.AreEqual(2, (long)metrics["LionFire.Persistence.Filesystem.FileExists"].value!);
+            Assert.AreEqual(2, (long)metrics["LionFire.Persistence.Filesystem.OpenReadStream"].value!);
+            Assert.AreEqual(2, (long)metrics["LionFire.Persisters.SharpZipLib.SharpZipLibExpander.ReadZipFileStream"].value!);
+            TestRunner.RanAsserts = true;
+
+            #endregion
+
         });
     }
 }

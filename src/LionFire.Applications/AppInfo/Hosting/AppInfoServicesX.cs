@@ -37,11 +37,11 @@ public static class AppInfoServicesX
     #region Host Builder extension methods
       
 
-    public static HostApplicationBuilder AppInfo(this HostApplicationBuilder builder, Action<AppInfo>? config = null, AppInfoOptions? options = null)
+    public static HostApplicationBuilder AppInfo(this HostApplicationBuilder builder, AppInfo? appInfo = null, Action<AppInfo>? config = null, AppInfoOptions? options = null)
     {
         options ??= new();
+        appInfo ??= new();
         
-        var appInfo = new AppInfo();
         if (config != null) config(appInfo);
         if (options.AutoDetect) appInfo.AutoDetect();
         builder.GetLogger(typeof(AppInfo).FullName).LogInformation($"AppInfo: {appInfo.Dump()}");

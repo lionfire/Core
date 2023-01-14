@@ -3,10 +3,12 @@ using LionFire.Persistence.Filesystem;
 using LionFire.Persistence.Persisters.Vos;
 using LionFire.Persisters.Expanders;
 using LionFire.Services;
+using LionFire.Testing;
 using LionFire.Vos;
 using Microsoft.Extensions.Hosting;
 using System.Diagnostics;
 
+[TestClass]
 public static class TestHostBuilder
 {
     public static string DataDir
@@ -30,30 +32,28 @@ public static class TestHostBuilder
 
     public static readonly string ExpandMountReferenceString = $"expand:vos:///{TestZipUrlPath}:";
 
-    public static IHostBuilder ExpandMount
-        => H
-                .ConfigureServices(s => s 
-                    .VosMount("/test/ExpandMount", ExpandMountReferenceString.ToExpansionReference())
-            );
+    public static void ExpandMount(HostApplicationBuilder hb)
+        => hb.Services.VosMount("/test/ExpandMount", ExpandMountReferenceString.ToExpansionReference());
 
-    public static IHostBuilder H
+    [AssemblyInitialize]
+    public static void Init(TestContext testContext)
     {
-        get
+        TestRunner.HostApplicationFactory = () =>
         {
-            return Host.CreateDefaultBuilder()
-                .LionFire(lf => lf
-                    .Vos()
-                )
-                .ConfigureServices(s => s
-                    .Expansion()
-                    .AddFilesystem()
-                    .AddNewtonsoftJson()
-                    .VosMount("/C", "c:".ToFileReference()) // TEMP - TODO: change to match location of test data dir
+            var hab = new HostApplicationBuilder();
 
-                    .AddSharpZipLib()
-                    
-                )
-                ;
-        }
+            hab.LionFire(lf => lf
+                .Vos()
+            )
+            .Services
+                .Expansion()
+                .AddFilesystem()
+                .AddNewtonsoftJson()
+                .VosMount("/C", "c:".ToFileReference()) // TEMP - TODO: change to match location of test data dir
+
+                .AddSharpZipLib()
+            ;
+            return hab;
+        };
     }
 }

@@ -13,7 +13,8 @@
 		<PackageReference Include="Microsoft.Extensions.Logging.Abstractions" />
 		<PackageReference Include="Microsoft.IdentityModel.Protocols.OpenIdConnect" />
 		<PackageReference Include="Microsoft.Orleans.Clustering.Consul" />
-		
+
+		<PackageReference Include="Microsoft.Orleans.Sdk" />
 		<PackageReference Include="Microsoft.Orleans.Core" />
 		<PackageReference Include="Microsoft.Orleans.Clustering.Consul" />
 		<PackageReference Include="Microsoft.Extensions.Caching.Abstractions" />

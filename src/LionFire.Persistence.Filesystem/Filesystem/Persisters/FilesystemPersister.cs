@@ -43,8 +43,8 @@ public class FilesystemPersister : VirtualFilesystemPersisterBase<IFileReference
 
     private static readonly Meter Meter = new("LionFire.Persistence.Filesystem", "1.0");
     private static readonly Counter<long> ExistsC = Meter.CreateCounter<long>("Exists");
-    private static readonly Counter<long> FileExistsC = Meter.CreateCounter<long>("FileExistsC");
-    private static readonly Counter<long> DirectoryExistsC = Meter.CreateCounter<long>("DirectoryExistsC");
+    private static readonly Counter<long> FileExistsC = Meter.CreateCounter<long>("FileExists");
+    private static readonly Counter<long> DirectoryExistsC = Meter.CreateCounter<long>("DirectoryExists");
 
     private static readonly Counter<long> ReadAllTextC = Meter.CreateCounter<long>("ReadAllText");
     private static readonly Counter<long> ReadAllBytesC = Meter.CreateCounter<long>("ReadAllBytes");
@@ -52,6 +52,7 @@ public class FilesystemPersister : VirtualFilesystemPersisterBase<IFileReference
     private static readonly Counter<long> WriteTextC = Meter.CreateCounter<long>("WriteText");
 
     private static readonly Counter<long> OpenReadStreamC = Meter.CreateCounter<long>("OpenReadStream");
+    private static readonly Counter<long> OpenReadStreamExC = Meter.CreateCounter<long>("OpenReadStreamEx.");
     private static readonly Counter<long> OpenReadWriteStreamC = Meter.CreateCounter<long>("OpenReadWriteStream");
 
     private static readonly Counter<long> ListC = Meter.CreateCounter<long>("List");
@@ -95,19 +96,30 @@ public class FilesystemPersister : VirtualFilesystemPersisterBase<IFileReference
 
     public override Task<Stream> ReadStream(string path)
     {
-        OpenReadStreamC.Add(1);
-        l.LogInformation(FilesystemPersisterEventIds.OpenStream, "Opening Read Stream: {Path}", path);
-        return Task.FromResult<Stream>(new FileStream(path, FileMode.Open));
+        FileStream fs;
+        try
+        {
+            l.LogInformation(FilesystemPersisterEventIds.OpenStream, "Opening Read Stream: {Path}", path);
+            fs = new FileStream(path, FileMode.Open);
+        }
+        catch (IOException ex)
+        {
+            Debug.WriteLine(ex);
+            OpenReadStreamExC.IncrementWithContext();
+            throw;
+        }
+        OpenReadStreamC.IncrementWithContext();
+        return Task.FromResult<Stream>(fs);
     }
     public override Task<string> ReadString(string path) => Task.Run(() =>
            {
-               ReadAllTextC.Add(1);
+               ReadAllTextC.IncrementWithContext();
                l.LogInformation(FilesystemPersisterEventIds.ReadAllText, "Reading text: {Path}", path);
                return File.ReadAllText(path, PersistenceOptions.Encoding);
            });
     public override Task<byte[]> ReadBytes(string path) => Task.Run(() =>
     {
-        ReadAllBytesC.Add(1);
+        ReadAllBytesC.IncrementWithContext();
         l.LogInformation(FilesystemPersisterEventIds.ReadAllBytes, "Reading bytes: {Path}", path);
         return File.ReadAllBytes(path);
     });
@@ -118,7 +130,7 @@ public class FilesystemPersister : VirtualFilesystemPersisterBase<IFileReference
 
     public override Task<Stream> WriteStream(string path, ReplaceMode replaceMode)
     {
-        OpenReadWriteStreamC.Add(1);
+        OpenReadWriteStreamC.IncrementWithContext();
         l.LogInformation(FilesystemPersisterEventIds.OpenStream, "Opening ReadWrite Stream: {Path}", path);
         return Task.FromResult<Stream>(new FileStream(path, replaceMode.ToFileMode()));
     }
@@ -126,14 +138,14 @@ public class FilesystemPersister : VirtualFilesystemPersisterBase<IFileReference
     public override Task WriteBytes(string path, byte[] bytes, ReplaceMode replaceMode)
         => Task.Run(() =>
         {
-            WriteBytesC.Add(1);
+            WriteBytesC.IncrementWithContext();
             l.LogInformation("Writing bytes: {Path}", path);
             File.WriteAllBytes(path, bytes);
         });
 
     public override Task WriteString(string path, string str, ReplaceMode replaceMode) => Task.Run(() =>
     {
-        WriteTextC.Add(1);
+        WriteTextC.IncrementWithContext();
         l.LogInformation("Writing text: {Path}", path);
         File.WriteAllText(path, str);
     });
@@ -153,7 +165,7 @@ public class FilesystemPersister : VirtualFilesystemPersisterBase<IFileReference
     public override Task<string[]> GetFiles(string dir, string pattern)
         => Task.Run(() =>
         {
-            ListC.Add(1);
+            ListC.IncrementWithContext();
             l.LogInformation("GetFiles: {Path}, pattern: {Pattern}", dir, pattern);
             return System.IO.Directory.GetFiles(dir, pattern);
         });
@@ -166,7 +178,7 @@ public class FilesystemPersister : VirtualFilesystemPersisterBase<IFileReference
 
     public override Task CreateDirectory(string path) => Task.Run(() =>
     {
-        CreateDirectoryC.Add(1);
+        CreateDirectoryC.IncrementWithContext();
         l.LogInformation("Creating directory: {Path}", path);
         Directory.CreateDirectory(path);
     }); // TODO SECURITY - set permissions to all users writable
@@ -179,19 +191,19 @@ public class FilesystemPersister : VirtualFilesystemPersisterBase<IFileReference
 
     public override async Task<bool> Exists(string fsPath)
     {
-        ExistsC.Add(1);
+        ExistsC.IncrementWithContext();
         return await FileExists(fsPath).ConfigureAwait(false) ? true : await DirectoryExists(fsPath).ConfigureAwait(false);
     }
 
     public Task<bool> FileExists(string path) => Task.Run(() =>
     {
-        FileExistsC.Add(1);
+        FileExistsC.IncrementWithContext();
         l.LogInformation("Retrieving File Exists:  {Path}", path);
         return File.Exists(path);
     });
     public override Task<bool> DirectoryExists(string path) => Task.Run(() =>
     {
-        DirectoryExistsC.Add(1);
+        DirectoryExistsC.IncrementWithContext();
         l.LogInformation("Retrieving Directory Exists:  {Path}", path);
         return Directory.Exists(path);
     });

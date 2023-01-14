@@ -1,11 +1,11 @@
 ﻿
+using LionFire.Testing;
+
 namespace ExpansionReadHandle_;
 
 [TestClass]
 public class _Resolve
 {
-    public static IHostBuilder H => TestHostBuilder.H;
-
     static string TestZipPath => Path.Combine(TestHostBuilder.DataDir, "TestSourceFile.zip");
     static string TestZipUrlPath => TestZipPath.Replace(":", "");
 
@@ -16,11 +16,10 @@ public class _Resolve
     [TestMethod]
     public void _String()
     {
-
         var testZipPath = Path.Combine(TestHostBuilder.DataDir, "TestSourceFile.zip");
         Assert.IsTrue(File.Exists(testZipPath));
 
-        H.Run(async sp =>
+        RunTest(async sp =>
         {
             var HandleProvider = sp.GetRequiredService<IReadHandleProvider<IExpansionReference>>();
 
@@ -37,13 +36,27 @@ public class _Resolve
             Assert.IsTrue(resolveResult.HasValue);
             Assert.AreEqual("This is a test.", resolveResult.Value);
 
+            #region Metrics
+
+            var metrics = GetMetrics(sp, log: true);
+            Assert.AreEqual(2, (long)metrics["LionFire.Vos.Retrieve"].value!);
+            Assert.AreEqual(2, (long)metrics["LionFire.Vos.Retrieve.Batch"].value!);
+            Assert.AreEqual(3, (long)metrics["LionFire.Persistence.Handles.WeakHandleRegistry.ReadHandlesCreated"].value!);
+            Assert.AreEqual(2, (long)metrics["LionFire.Persisters.SharpZipLib.StreamRead"].value!);
+            Assert.AreEqual(2, (long)metrics["LionFire.Persistence.Filesystem.Exists"].value!);
+            Assert.AreEqual(2, (long)metrics["LionFire.Persistence.Filesystem.FileExists"].value!);
+            Assert.AreEqual(2, (long)metrics["LionFire.Persistence.Filesystem.OpenReadStream"].value!);
+            Assert.AreEqual(2, (long)metrics["LionFire.Persisters.SharpZipLib.SharpZipLibExpander.ReadZipFileStream"].value!);
+            TestRunner.RanAsserts = true;
+
+            #endregion
         });
     }
 
     [TestMethod]
     public void _String_NotFound()
     {
-        H.Run(async sp =>
+        RunTest(async sp =>
         {
             var HandleProvider = sp.GetRequiredService<IReadHandleProvider<IExpansionReference>>();
 
@@ -60,6 +73,20 @@ public class _Resolve
             Assert.IsFalse(resolveResult.HasValue);
             Assert.IsTrue(resolveResult.Flags.HasFlag(PersistenceResultFlags.NotFound));
 
+            #region Metrics
+
+            var metrics = GetMetrics(sp, log: true);
+            Assert.AreEqual(2, (long)metrics["LionFire.Vos.Retrieve"].value!);
+            Assert.AreEqual(2, (long)metrics["LionFire.Vos.Retrieve.Batch"].value!);
+            Assert.AreEqual(3, (long)metrics["LionFire.Persistence.Handles.WeakHandleRegistry.ReadHandlesCreated"].value!);
+            Assert.AreEqual(2, (long)metrics["LionFire.Persisters.SharpZipLib.StreamRead"].value!);
+            Assert.AreEqual(2, (long)metrics["LionFire.Persistence.Filesystem.Exists"].value!);
+            Assert.AreEqual(2, (long)metrics["LionFire.Persistence.Filesystem.FileExists"].value!);
+            Assert.AreEqual(2, (long)metrics["LionFire.Persistence.Filesystem.OpenReadStream"].value!);
+            Assert.AreEqual(2, (long)metrics["LionFire.Persisters.SharpZipLib.SharpZipLibExpander.ReadZipFileStream"].value!);
+            TestRunner.RanAsserts = true;
+
+            #endregion
         });
     }
 
@@ -67,7 +94,7 @@ public class _Resolve
     [TestMethod]
     public void _TestClass()
     {
-        H.Run(async sp =>
+        RunTest(async sp =>
         {
             var HandleProvider = sp.GetRequiredService<IReadHandleProvider<IExpansionReference>>();
 
@@ -87,6 +114,20 @@ public class _Resolve
             Assert.AreEqual("Test Name", resolveResult.Value.Name);
             Assert.AreEqual(123, resolveResult.Value.Number);
 
+            #region Metrics
+
+            var metrics = GetMetrics(sp, log: true);
+            Assert.AreEqual(2, (long)metrics["LionFire.Vos.Retrieve"].value!);
+            Assert.AreEqual(2, (long)metrics["LionFire.Vos.Retrieve.Batch"].value!);
+            Assert.AreEqual(3, (long)metrics["LionFire.Persistence.Handles.WeakHandleRegistry.ReadHandlesCreated"].value!);
+            Assert.AreEqual(2, (long)metrics["LionFire.Persisters.SharpZipLib.StreamRead"].value!);
+            Assert.AreEqual(2, (long)metrics["LionFire.Persistence.Filesystem.Exists"].value!);
+            Assert.AreEqual(2, (long)metrics["LionFire.Persistence.Filesystem.FileExists"].value!);
+            Assert.AreEqual(2, (long)metrics["LionFire.Persistence.Filesystem.OpenReadStream"].value!);
+            Assert.AreEqual(2, (long)metrics["LionFire.Persisters.SharpZipLib.SharpZipLibExpander.ReadZipFileStream"].value!);
+            TestRunner.RanAsserts = true;
+
+            #endregion
         });
     }
 }

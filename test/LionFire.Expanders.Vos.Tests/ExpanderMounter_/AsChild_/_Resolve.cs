@@ -19,7 +19,7 @@ public class _Resolve
     [TestMethod]
     public void _Resolve_AsChild()
     {
-        H.Run(async sp =>
+        RunTest(async sp =>
         {
             #region TODO: Get this working without this List
             //var listingsHandle = "/testdata/zip/ExpandAsChildTest".ToVobReference().GetListingsHandle();

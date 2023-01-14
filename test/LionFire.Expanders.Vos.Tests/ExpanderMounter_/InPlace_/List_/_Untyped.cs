@@ -1,4 +1,5 @@
-﻿using LionFire.ExtensionMethods.Dumping;
+﻿using LionFire;
+using LionFire.ExtensionMethods.Dumping;
 using LionFire.Resolves;
 using Microsoft.Extensions.Logging;
 using System.Diagnostics;
@@ -17,26 +18,30 @@ public class _Untyped
 
     private void _untyped(string path)
     {
-        H.Run(async sp =>
+        RunTest(async sp =>
         {
             var handle = path.ToVobReference<TestClass>().GetListingsHandle<object>();
 
             IResolveResult<Metadata<IEnumerable<Listing<object>>>> resolveResult = await handle.Resolve().ConfigureAwait(false);
             ValidateListing(resolveResult);
 
+            Assert.IsTrue(LionFireEnvironment.IsUnitTest);
+
             #region Metrics
+
+            Assert.IsTrue(LionFireEnvironment.IsUnitTest);
 
             var metrics = GetMetrics(sp, log: true);
 
             try
             {
+                Assert.AreEqual(7, (long)metrics["LionFire.Persistence.Handles.WeakHandleRegistry.ReadHandlesCreated"].value!);
                 Assert.AreEqual(2, (long)metrics["LionFire.Vos.Retrieve"].value!);
                 Assert.AreEqual(2, (long)metrics["LionFire.Vos.Retrieve.Batch"].value!);
                 Assert.AreEqual(1, (long)metrics["LionFire.Persisters.SharpZipLib.StreamRead"].value!);
                 Assert.AreEqual(1, (long)metrics["LionFire.Persistence.Filesystem.Exists"].value!);
-                Assert.AreEqual(1, (long)metrics["LionFire.Persistence.Filesystem.FileExistsC"].value!);
+                Assert.AreEqual(1, (long)metrics["LionFire.Persistence.Filesystem.FileExists"].value!);
                 Assert.AreEqual(1, (long)metrics["LionFire.Persistence.Filesystem.OpenReadStream"].value!);
-                Assert.AreEqual(6, metrics.Count);
             }
             catch
             {
@@ -44,11 +49,12 @@ public class _Untyped
                 throw;
             }
 
+            LionFire.Persistence.Handles.WeakHandleRegistry.StaticDispose();
+
             #endregion
 
             sp.GetRequiredService<ILogger<TestLog>>().LogInformation("/".ToVobReference().GetVob().AllMountsRecursive().DumpList("Mounts").ToString());
         });
-        Serilog.Log.CloseAndFlush();
     }
 
     #region Common

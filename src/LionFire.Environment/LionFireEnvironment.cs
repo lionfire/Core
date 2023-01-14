@@ -1,15 +1,59 @@
-﻿using System;
+﻿#nullable enable
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Diagnostics.Metrics;
 using System.IO;
 using System.Linq;
 using System.Reflection;
+using System.Threading;
 using System.Threading.Tasks;
 using LionFire.Structures;
 using Microsoft.Extensions.PlatformAbstractions;
 
 namespace LionFire;
 
+public static class OpenTelemetryX
+{
+    public static void IncrementWithContext(this Counter<long> counter)
+    {
+        if (LionFireEnvironment.MetricsContext != null)
+        {
+            counter.Add(1, new KeyValuePair<string, object?>(LionFireEnvironment.MetricsContextKey, LionFireEnvironment.MetricsContext ?? "?"));
+        }
+        else
+        {
+            throw new Exception();
+            //counter.Add(1);
+        }
+    }
+    public static void IncrementWithContext(this Counter<long> counter, long delta)
+    {
+        if (LionFireEnvironment.MetricsContext != null)
+        {
+            counter.Add(delta, new KeyValuePair<string, object?>(LionFireEnvironment.MetricsContextKey, LionFireEnvironment.MetricsContext ?? "?"));
+        }
+        else
+        {
+            throw new Exception();
+            //counter.Add(delta);
+        }
+    }
+#if NET7_0_OR_GREATER
+    public static void IncrementWithContext(this UpDownCounter<long> counter)
+    {
+        if (LionFireEnvironment.MetricsContext != null)
+        {
+            counter.Add(1, new KeyValuePair<string, object?>(LionFireEnvironment.MetricsContextKey, LionFireEnvironment.MetricsContext ?? "?"));
+        }
+        else
+        {
+            counter.Add(1);
+        }
+    }
+#endif
+    //static Action<Counter<long>> AddAction;
+}
 public partial class LionFireEnvironment
 {
 
@@ -48,19 +92,19 @@ public partial class LionFireEnvironment
     #region Make DEBUG / TRACE define constants visible to application
 
     // This only applies to LionFireEnvironment.  FUTURE: try to determine for each DLL somehow
-//        public const bool IsDebug =
-//#if DEBUG
-// true;
-//#else
-// false;
-//#endif
+    //        public const bool IsDebug =
+    //#if DEBUG
+    // true;
+    //#else
+    // false;
+    //#endif
 
-//        public const bool IsTrace =
-//#if TRACE
-// true;
-//#else
-// false;
-//#endif
+    //        public const bool IsTrace =
+    //#if TRACE
+    // true;
+    //#else
+    // false;
+    //#endif
 
     #endregion
 
@@ -77,26 +121,48 @@ public partial class LionFireEnvironment
     };
     private static HashSet<string> unitTestProducts;
 
-    public static bool? IsUnitTest
+    public static bool IsUnitTest
     {
         get
         {
-            if (isUnitTest.HasValue) return isUnitTest.Value;
+            if (!isUnitTest.HasValue)
+            {
+                var assembly = Assembly.GetEntryAssembly();
+                if (assembly == null) isUnitTest = false;
+                else if (assembly.Modules.Any() && assembly.Modules.First().Name == "testhost.dll") isUnitTest = true;
+                else
+                {
+                    // OLD:
+                    //var entryAssembly = Assembly.GetEntryAssembly();
+                    //return entryAssembly?.CustomAttributes.OfType<CustomAttributeData>().Where(cad => cad.AttributeType.Name == "AssemblyProductAttribute" && UnitTestProducts.Contains(cad.ConstructorArguments.Select(arg => arg.Value as string).FirstOrDefault())).Any() == true;
 
-            var assembly = Assembly.GetEntryAssembly();
-            if (assembly == null) return null;
-
-            if (assembly.Modules.Any() && assembly.Modules.First().Name == "testhost.dll") return true;
-
-            // OLD:
-            //var entryAssembly = Assembly.GetEntryAssembly();
-            //return entryAssembly?.CustomAttributes.OfType<CustomAttributeData>().Where(cad => cad.AttributeType.Name == "AssemblyProductAttribute" && UnitTestProducts.Contains(cad.ConstructorArguments.Select(arg => arg.Value as string).FirstOrDefault())).Any() == true;
-
-            return false;
+                    isUnitTest = false;
+                }
+            }
+            return isUnitTest.Value;
         }
         set => isUnitTest = value;
     }
     private static bool? isUnitTest;
+
+    public static string TestMethodName
+    {
+        get
+        {
+            var mi = new StackTrace().GetFrames()?.Select(stackFrame => stackFrame.GetMethod())
+            .FirstOrDefault(m => m.GetCustomAttributes(false).Where(a => a.GetType().Name == "TestMethodAttribute").Any());
+            if (mi == null) return null;
+            return $"{mi.DeclaringType.FullName}.{mi.Name}";
+        }
+    }
+
+    public const string MetricsContextKey = "context";
+    public static string? MetricsContext
+    {
+        get => metricsContext?.Value;
+        set => (metricsContext ??= new()).Value = value;
+    }
+    private static AsyncLocal<string?>? metricsContext;
 
     // REFACTOR: Merge VosAppHost ExeDir finding logic into here
     public static string ExeDir
@@ -140,7 +206,7 @@ public partial class LionFireEnvironment
     /// 
     /// Defaults to true if IsUnitTest is true.
     /// </summary>
-    public static bool IsMultiApplicationEnvironment 
+    public static bool IsMultiApplicationEnvironment
     {
         get
         {

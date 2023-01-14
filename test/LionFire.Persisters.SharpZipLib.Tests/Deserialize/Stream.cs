@@ -15,8 +15,6 @@ namespace LionFire.Persisters.SharpZipLib.Tests.Deserialize;
 [TestClass]
 public class Stream_
 {
-    public static IHostBuilder H => TestHostBuilder.H;
-        
     static string TestZipPath => Path.Combine(TestHostBuilder.DataDir, "TestSourceFile.zip");
     static string TestZipUrlPath => TestZipPath.Replace(":", "");
 
@@ -27,7 +25,7 @@ public class Stream_
     [TestMethod]
     public void _()
     {
-        H.Run(async sp =>
+        RunTest(async sp =>
         {
             var expectedPath = "/" + TestZipUrlPath.Replace("\\", "/");
 

@@ -8,4 +8,5 @@ global using System.Linq;
 global using System.Text;
 global using System.Threading.Tasks;
 global using LionFire.Referencing;
-global using static LionFire.Testing.TestUtils;
+global using static LionFire.Testing.TestRunner;
+

@@ -220,6 +220,11 @@ public class RedisPersister : VirtualFilesystemPersisterBase<IRedisReference, Re
     // MOVE to Vos (or VosApp?)
     private static Type GetDefaultChildTypeForPath(string path) => throw new NotImplementedException("TOPORT");//#if AOT // TOPORT//            var metadata = VFSMetadata[path].AsType(typeof(FSMetaData)) as FSMetaData;//#else//            var metadata = VFSMetadata[path].AsType<FSMetaData>();//#endif//            if (metadata == null) return null;//            return metadata.DefaultType;
 
+    public override Task<string[]> GetFiles(string dir, string pattern = null)
+    {
+        throw new NotImplementedException();
+    }
+
     #endregion
 
     #endregion

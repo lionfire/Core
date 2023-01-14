@@ -6,6 +6,7 @@ using LionFire.Dependencies;
 using Microsoft.Extensions.Hosting;
 using LionFire.Applications.Hosting;
 using Newtonsoft.Json;
+using LionFire.Hosting;
 
 namespace LionFire.Services
 {

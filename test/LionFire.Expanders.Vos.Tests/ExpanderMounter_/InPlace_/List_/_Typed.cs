@@ -20,7 +20,7 @@ public class _Typed
     [TestMethod]
     public void _Typed_NI()
     {
-        H.Run(sp =>
+        RunTest(sp =>
         {
 
             var handle = "/testdata/zip/TestTargetDir/".ToVobReference<TestClass>().GetListingsHandle<TestClass>();

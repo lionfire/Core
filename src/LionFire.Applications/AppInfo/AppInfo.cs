@@ -116,7 +116,7 @@ public class AppInfo
     /// <summary>
     /// Recommendation: no spaces
     /// </summary>
-    public string OrgName { get; set; } = "MyOrganization";
+    public string? OrgName { get; set; }
 
     #endregion
 

@@ -9,7 +9,7 @@ public class _Setup
 {
     [TestMethod]
     public void _() =>
-        H.Run(async sp =>
+        RunTest(async sp =>
         {
             var handle = ZipVobReference.GetReadHandle<byte[]>(sp);
 

@@ -1,4 +1,5 @@
-﻿using LionFire.Execution;
+﻿using LionFire.Dependencies;
+using LionFire.Execution;
 using LionFire.IO;
 using LionFire.Referencing;
 using LionFire.Serialization;
@@ -286,13 +287,13 @@ public class VosPersister : SerializingPersisterBase<VosPersisterOptions>, IPers
 
         bool MountsEqual(IEnumerable<IMount> left, IEnumerable<IMount> right)
         {
-            if(left.Count() != right.Count()) return false;
+            if (left.Count() != right.Count()) return false;
 
             var rightEnumerator = right.GetEnumerator();
-            foreach(var leftItem in left)
+            foreach (var leftItem in left)
             {
                 rightEnumerator.MoveNext();
-                if(leftItem.ToString() != rightEnumerator.Current.ToString()) return false;
+                if (leftItem.ToString() != rightEnumerator.Current.ToString()) return false;
             }
             return true;
         }
@@ -332,7 +333,7 @@ public class VosPersister : SerializingPersisterBase<VosPersisterOptions>, IPers
 
             if (detectedMountsChange && iteration < maxRetries)
             {
-                RetrieveRetryAfterMountsChangedC.Add(1);
+                RetrieveRetryAfterMountsChangedC.IncrementWithContext();
                 iteration++;
                 l.LogDebug($"[retrieving {referencable.Reference.Path}({typeof(TValue).Name})] FOUNDMORE - Trying retrieve #{(iteration + 1)}");
                 goto again;
@@ -367,7 +368,7 @@ public class VosPersister : SerializingPersisterBase<VosPersisterOptions>, IPers
 
     public Task<IPersistenceResult> Exists<TValue>(IReferencable<IVobReference> referencable)
     {
-        ExistsC.Add(1);
+        ExistsC.IncrementWithContext();
         throw new System.NotImplementedException();
     }
 
@@ -453,14 +454,14 @@ public class VosPersister : SerializingPersisterBase<VosPersisterOptions>, IPers
 
     public async Task<IRetrieveResult<TValue>> Retrieve<TValue>(IReferencable<IVobReference> referencable)
     {
-        RetrieveC.Add(1);
+        RetrieveC.IncrementWithContext();
         if (CanAggregateType<TValue>()) { return await RetrieveWithAggregation<TValue>(referencable).ConfigureAwait(false); }
 
         IRetrieveResult<TValue>? singleResult = null;
 
         await foreach (var multiResult in RetrieveBatches<TValue>(referencable))
         {
-            RetrieveBatchC.Add(1);
+            RetrieveBatchC.IncrementWithContext();
             //if (multiResult.IsSuccess == true)
             //{
             //    if (multiResult.Flags.HasFlag(PersistenceResultFlags.MountNotAvailable))
@@ -554,7 +555,7 @@ public class VosPersister : SerializingPersisterBase<VosPersisterOptions>, IPers
     // TODO REVIEW - is this redundant / old?  Use overload with filter param instead?
     public async Task<IRetrieveResult<IEnumerable<Listing<TValue>>>> List<TValue>(IReferencable<IVobReference> referencable)
     {
-        ListC.Add(1);
+        ListC.IncrementWithContext();
         var listingsLists = await RetrieveBatches<Metadata<IEnumerable<Listing<TValue>>>>(referencable).ToListAsync();
 
         List<Listing<TValue>> listings = new();

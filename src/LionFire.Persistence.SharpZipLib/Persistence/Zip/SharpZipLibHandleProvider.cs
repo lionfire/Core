@@ -30,7 +30,7 @@ public class ReadHandleProvider<TReferenceValue, THandle> : IReadHandleProvider<
 }
 
 
-public class SharpZipLibHandleProvider : ReadHandleProvider<ZipFile, RZip>
+public class SharpZipLibHandleProvider : ReadHandleProvider<ZipFile, RZipFile>
 {
     public SharpZipLibHandleProvider(IServiceProvider serviceProvider) : base(serviceProvider)
     {

@@ -6,14 +6,12 @@ namespace LionFire.Persisters.Expanders.Tests.ExpansionReference_;
 [TestClass]
 public class _ToExpansionReference
 {
-    public static IHostBuilder H => TestHostBuilder.H;
-
     public const string ExpansionReferenceString = "expand:vos://c/TestSourceDir/TestSourceFile.zip:/TestTargetDir/TestTargetFile.txt";
 
     [TestMethod]
     public void _()
     {
-        H.Run(sp =>
+        RunTest(sp =>
         {
             var expansionReference = ExpansionReferenceString.ToExpansionReference<TestClass>();
 

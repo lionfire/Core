@@ -19,5 +19,5 @@ public static class DependencyContextWrapperExtensions
     }
 
     public static IHostBuilder RegisterServiceProviderWithDependencyContext(this IHostBuilder hostBuilder, bool allowMultipleRootServiceProviders = false)
-        => hostBuilder.UseServiceProviderFactory(new DependencyContextServiceProviderFactoryWrapper(new DefaultServiceProviderFactory(), allowMultipleRootServiceProviders));
+        => hostBuilder.UseServiceProviderFactory(new CaptureServiceProviderIntoContextAndWrapFactory(new DefaultServiceProviderFactory(), allowMultipleRootServiceProviders));
 }

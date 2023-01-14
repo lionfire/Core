@@ -4,6 +4,7 @@ using LionFire.Persistence.Handles;
 using LionFire.Persistence.Persisters;
 using Microsoft.Extensions.Options;
 using LionFire.Referencing;
+using LionFire.Hosting;
 
 namespace LionFire.Services
 {

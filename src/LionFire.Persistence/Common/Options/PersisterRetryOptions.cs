@@ -2,6 +2,8 @@
 {
     public class PersisterRetryOptions
     {
+        public static PersisterRetryOptions Default { get; } = new();
+
         // REVIEW - is there a more pluggable way of getting these?  Make this type MultiTypable and have named Decorators for AutoRetry for Retrieve/Put/etc.?
         public int MaxGetRetries { get; set; } = 5;
         public int MaxDeleteRetries { get; set; } = 3;

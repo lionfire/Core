@@ -49,7 +49,7 @@ namespace LionFire.Vos
             : base(parent: null, name: null) // Note: Use null parent and null name even for named Roots
         {
             Interlocked.Increment(ref CreateCount);
-
+            //if (CreateCount > 1) throw new Exception("TEMP - RootVob already created");
             this.RootName = rootName;
 
             //ServiceProvider = ((IHas<IServiceProvider>)rootManager).Object;
