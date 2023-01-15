@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Diagnostics.Metrics;
 using System.Linq;
 using System.Threading;
+using LionFire.Collections;
 using LionFire.Collections.Concurrent;
 using LionFire.Dependencies;
 using LionFire.Persistence;
@@ -69,9 +70,9 @@ public class WeakHandleRegistry : IHandleRegistry, IDisposable
 
     #region Fields
 
-    private BernhardHaus.Collections.WeakDictionary.WeakDictionary<(string, Type), object>? readHandles;
-    //private BernhardHaus.Collections.WeakDictionary.WeakDictionary<string, object>? readWriteHandles;
-    //private BernhardHaus.Collections.WeakDictionary.WeakDictionary<string, object>? writeHandles;
+    private WeakDictionary<(string, Type), object> readHandles = new();
+    //private WeakDictionary<string, object>? readWriteHandles;
+    //private WeakDictionary<string, object>? writeHandles;
 
     #endregion
 
@@ -90,20 +91,29 @@ public class WeakHandleRegistry : IHandleRegistry, IDisposable
 
     public IReadHandle<TValue> GetOrAddRead<TValue>(string uri, Func<string, IReadHandle<TValue>> factory)
     {
-        readHandles ??= new();
-
         var key = (uri, typeof(TValue));
-        if (readHandles.TryGetValue(key, out var found)) { return (IReadHandle<TValue>)found; }
+        //if (readHandles.TryGetValue(key, out var found)) { return (IReadHandle<TValue>)found; }
 
-        lock (_read)
-        {
-            if (readHandles.TryGetValue(key, out found)) { return (IReadHandle<TValue>)found; }
+        return (IReadHandle<TValue>)readHandles.GetOrAdd(key, _ => factory(uri));
 
-            var value = factory(uri);
-            readHandles.Add(key, value);
-            ReadHandlesCreatedC.IncrementWithContext();
-            return value;
-        }
+        //lock (_read)
+        //{
+        //    if (readHandles.TryGetValue(key, out found)) { return (IReadHandle<TValue>)found; }
+        //    if (readHandles.TryGetValue(key, out found)) { return (IReadHandle<TValue>)found; }
+
+        //    var value = factory(uri);
+        //    try
+        //    {
+        //        readHandles.Add(key, value);
+        //    }
+        //    catch (ArgumentException ex) when (ex.Message.Contains("already"))
+        //    {
+        //        if (readHandles.TryGetValue(key, out found)) { return (IReadHandle<TValue>)found; }
+        //        else throw new Exception("Already exists, but can't get value");
+        //    }
+        //    ReadHandlesCreatedC.IncrementWithContext();
+        //    return value;
+        //}
     }
 
     #endregion

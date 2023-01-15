@@ -10,6 +10,7 @@
     <PackageReference Include="GitVersion.MsBuild">
       <PrivateAssets>All</PrivateAssets>
     </PackageReference>
+    <PackageReference Include="LiveSharp" />
     <PackageReference Include="Microsoft.AspNetCore.Components.Web" />
     <PackageReference Include="Microsoft.AspNetCore.Mvc.Razor.RuntimeCompilation" />
     <PackageReference Include="Microsoft.AspNetCore.WebUtilities" />
@@ -17,6 +18,10 @@
     <PackageReference Include="Microsoft.Extensions.Hosting" />
     <PackageReference Include="MudBlazor" />
     <PackageReference Include="NLog.Web.AspNetCore" />
+    <PackageReference Include="OpenTelemetry.Exporter.Prometheus" />
+    <PackageReference Include="OpenTelemetry.Extensions.Hosting" />
+    <PackageReference Include="OpenTelemetry.Instrumentation.Process" />
+    <PackageReference Include="OpenTelemetry.Instrumentation.Runtime" />
     <PackageReference Include="System.Configuration.ConfigurationManager" />
   </ItemGroup>
 

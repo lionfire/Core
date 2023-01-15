@@ -19,9 +19,9 @@ namespace LionFire.Persistence.Persisters
             => persister.Exists<TValue>(new ReferenceWrapper<TReference>(reference));
 
 
-        public static Task<IRetrieveResult<TValue>> Retrieve<TReference, TValue>(this IPersister<TReference> persister, TReference reference) 
+        public static Task<IRetrieveResult<TValue>> Retrieve<TReference, TValue>(this IPersister<TReference> persister, TReference reference, RetrieveOptions? options = null) 
             where TReference : IReference
-            => persister.Retrieve<TValue>(new ReferenceWrapper<TReference>(reference));
+            => persister.Retrieve<TValue>(new ReferenceWrapper<TReference>(reference), options);
 
         public static Task<IPersistenceResult> Update<TReference, TValue>(this IPersister<TReference> persister, TReference reference, TValue value)
             where TReference : IReference

@@ -61,9 +61,9 @@ namespace LionFire.Persistence.Persisters
         public Task<IRetrieveResult<IEnumerable<Listing<T>>>> List<T>(IReferencable<TReference> referencable, ListFilter filter = null)
           => GetUnderlyingPersister(referencable.Reference).List<T>(TranslateReferenceForRead(referencable.Reference), filter);
 
-        public async Task<IRetrieveResult<TValue>> Retrieve<TValue>(IReferencable<TReference> referencable)
+        public async Task<IRetrieveResult<TValue>> Retrieve<TValue>(IReferencable<TReference> referencable, RetrieveOptions? options = null)
         {
-            var result = await GetUnderlyingPersister(referencable.Reference).Retrieve<TValue>(TranslateReferenceForRead(referencable.Reference)).ConfigureAwait(false);
+            var result = await GetUnderlyingPersister(referencable.Reference).Retrieve<TValue>(TranslateReferenceForRead(referencable.Reference), options).ConfigureAwait(false);
 
             if (result.HasValue && result is INotifyReferenceDeserialized<TReference> nrd)
             {

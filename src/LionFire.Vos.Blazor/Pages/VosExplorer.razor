@@ -20,107 +20,110 @@
 
 <div class="VosExplorer">
 
-<MudToolBar>
-    <MudIconButton Icon="@Icons.Material.Filled.ArrowBackIos" Size="@MudBlazor.Size.Medium" Style="@("opacity:" + (History.Count == 0 ? "0.2" : "1"))" @onclick=@Back></MudIconButton>
+    <MudToolBar>
+        <MudIconButton Icon="@Icons.Material.Filled.ArrowBackIos" Size="@MudBlazor.Size.Medium" Style="@("opacity:" + (History.Count == 0 ? "0.2" : "1"))" @onclick=@Back></MudIconButton>
 
-    <MudIconButton Icon="@Icons.Material.Filled.ArrowForwardIos" Style="@("opacity:" + (ForwardHistory.Count == 0 ? "0.2" : "1"))" @onclick=@Forward></MudIconButton>
-
-
-    <MudIconButton Icon="@Icons.Material.Filled.KeyboardArrowUp" Style="@("opacity:" + (CanUp ? "1" : "0.2"))" @onclick=@(e => GoToPath(".."))></MudIconButton>
-
-    <div class="AddressBar">@Path</div>
-
-    <MudSpacer />
-
-    <MudIconButton Icon="@Icons.Material.Filled.Refresh" @onclick=@Refresh></MudIconButton>
-</MudToolBar>
+        <MudIconButton Icon="@Icons.Material.Filled.ArrowForwardIos" Style="@("opacity:" + (ForwardHistory.Count == 0 ? "0.2" : "1"))" @onclick=@Forward></MudIconButton>
 
 
-@*<i class="fas fa-angle-double-down"></i>*@
-@if (listings == null)
-{
-    <p><em>Loading... @Path</em></p>
-}
-else
-{
-    <table class="table Listings">
-        <thead>
-            <tr>
-                <th></th>
-                <th>Name</th>
-                <th>Type</th>
-                @*<th>Dir</th>*@
-            </tr>
-        </thead>
-        <tbody>
-            @foreach (var listing in listings)
-            {
-                <tr>
-                    <td>
-                        <span @onclick="@(e => GoToPath(listing.Name))" class="@IconClasses(listing)" aria-hidden="true" data-glyph="battery-empty"></span>
-                    </td>
-                    <td>@listing.Name</td>
-                    <td>@listing.DataType</td>
-                    <td></td>
-                </tr>
-            }
-        </tbody>
-    </table>
+        <MudIconButton Icon="@Icons.Material.Filled.KeyboardArrowUp" Style="@("opacity:" + (CanUp ? "1" : "0.2"))" @onclick=@(e => GoToPath(".."))></MudIconButton>
 
-    @if (Vob != null)
+        <div class="AddressBar">@Path</div>
+
+        <MudSpacer />
+
+        <MudIconButton Icon="@Icons.Material.Filled.Refresh" @onclick=@Refresh></MudIconButton>
+    </MudToolBar>
+
+
+    @*<i class="fas fa-angle-double-down"></i>*@
+    @if (listings == null)
     {
-        <table>
-            <tr>
-                <td>VobMounts</td>
-                <td>@(VobMounts)</td>
-            </tr>
-        </table>
-        <div class="panel">
-            @if (VobMounts != null)
-            {
-                <div>
-                    @VobMounts.Options
-                </div>
-                <h4>Read mounts</h4>
-                @foreach (var mount in VobMounts.ReadMounts)
-                {
-                    <div>Mount: @mount.Key</div>
-                }
-                <h4>Write mounts</h4>
-                @foreach (var mount in VobMounts.WriteMounts)
-                {
-                    <div>Mount: @mount.Key</div>
-                }
-            }
-
-        </div>
+        <p><em>Loading... @Path</em></p>
     }
-
-    @if (CurrentObject != null)
+    else
     {
-        <table class="table">
+        <table class="table Listings">
             <thead>
                 <tr>
                     <th></th>
-                    <th>Property</th>
-                    <th>Value</th>
+                    <th>Name</th>
+                    <th>Type</th>
+                    @*<th>Dir</th>*@
                 </tr>
             </thead>
             <tbody>
-                @foreach (var pi in CurrentObject.GetType().GetProperties(BindingFlags.Instance | BindingFlags.Public))
+                @foreach (var listing in listings)
                 {
                     <tr>
                         <td>
-                            @*<span @onclick="@(e => GoToPath(listing.Name))" class="@IconClasses(listing)" aria-hidden="true"></span>*@
+                            <span @onclick="@(e => GoToPath(listing.Name))" class="@IconClasses(listing)" aria-hidden="true" data-glyph="battery-empty"></span>
                         </td>
-                        <td>@pi.Name</td>
-                        <td>@pi.GetValue(CurrentObject)</td>
-                        @*<td></td>*@
+                        <td>@listing.Name</td>
+                        <td>@listing.DataType</td>
+                        <td></td>
                     </tr>
                 }
             </tbody>
         </table>
+
+        @if (Vob != null)
+        {
+            <table>
+                <tr>
+                    <td>VobMounts</td>
+                    <td>@(VobMounts)</td>
+                </tr>
+            </table>
+            <div class="panel">
+                @if (VobMounts != null)
+                {
+                    <div>
+                        @VobMounts.Options
+                    </div>
+                    @if (VobMounts != null)
+                    {
+                        <h4>Read mounts</h4>
+                        @foreach (var mount in VobMounts?.ReadMounts ?? Enumerable.Empty<KeyValuePair<int, IMount>>())
+                        {
+                            <div>Mount: @mount.Key</div>
+                        }
+                        <h4>Write mounts</h4>
+                        @foreach (var mount in VobMounts.WriteMounts ?? Enumerable.Empty < KeyValuePair<int, IMount>>())
+                        {
+                            <div>Mount: @mount.Key</div>
+                        }
+                    }
+                }
+
+            </div>
+        }
+
+        @if (CurrentObject != null)
+        {
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th></th>
+                        <th>Property</th>
+                        <th>Value</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var pi in CurrentObject.GetType().GetProperties(BindingFlags.Instance | BindingFlags.Public))
+                    {
+                        <tr>
+                            <td>
+                                @*<span @onclick="@(e => GoToPath(listing.Name))" class="@IconClasses(listing)" aria-hidden="true"></span>*@
+                            </td>
+                            <td>@pi.Name</td>
+                            <td>@pi.GetValue(CurrentObject)</td>
+                            @*<td></td>*@
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        }
     }
-}
 
 </div>

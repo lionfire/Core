@@ -258,6 +258,8 @@ public class ExpanderMounter : IParentable<IVob>
                                     {
                                         IsReadOnly = expansionArgs.Direction == IODirection.Read,
                                         IsWritable = expansionArgs.Direction.IsWritable(),
+                                        IsExclusiveWithReadAndWrite = false,
+                                        IsExclusive = false,
                                         Name = $"Expansion: {expansionReference.ToString()}",
                                         //UpstreamMount = upstreamMount, // Not needed, with VosPersister mount loop avoidance
                                         //ReadPriority = -10,

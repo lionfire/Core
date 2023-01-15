@@ -351,7 +351,7 @@ public class SharpZipLibExpander : ExpanderPersister, ISupportsFileExtensions, I
         throw new NotImplementedException();
     }
 
-    public Task<IRetrieveResult<TValue>> Retrieve<TValue>(IReferencable<IExpansionReference> referencable)
+    public Task<IRetrieveResult<TValue>> Retrieve<TValue>(IReferencable<IExpansionReference> referencable, RetrieveOptions? options = null)
     {
         throw new NotImplementedException();
     }

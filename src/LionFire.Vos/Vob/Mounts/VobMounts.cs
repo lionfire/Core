@@ -12,6 +12,10 @@ namespace LionFire.Vos.Mounts
         #region Options
 
         public VobMountOptions_Old Options { get; set; }
+        public bool CanHaveMultiReadMounts { get; set; } = true;
+        public bool CanHaveMultiWriteMounts { get; set; } = true;
+
+
 
         #endregion
 
@@ -95,8 +99,6 @@ namespace LionFire.Vos.Mounts
             MountStateVersion++;
             // FUTURE: Proactively invalidate and recalculate (at low thread priority) mount resolutions for child VobNodes.
         }
-        public bool CanHaveMultiReadMounts { get; set; }
-        public bool CanHaveMultiWriteMounts { get; set; }
 
         private IMount QueryExistingMount(IMount mount, ref IMount single, ref List<IMount> multi)
         {
@@ -355,7 +357,7 @@ namespace LionFire.Vos.Mounts
             {
                 if (!CanHaveMultiWriteMounts)
                 {
-                    throw new VosException("Already has write mount, but not allowed to have multiple write mounts because CanHaveMultiWriteMounts is false.  First unmount the existing read mount.");
+                    throw new VosException("Already has write mount, but not allowed to have multiple write mounts because CanHaveMultiWriteMounts is false.  First unmount the existing write mount.");
                 }
                 if (localWriteMount.Options.IsExclusive || mount.Options.IsExclusive)
                 {

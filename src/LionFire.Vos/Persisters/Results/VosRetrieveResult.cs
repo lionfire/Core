@@ -104,7 +104,7 @@ namespace LionFire.Persistence.Persisters.Vos
         {
             var sb = new StringBuilder();
             sb.Append("VosRetrieve ");
-            if (IsSuccess.Value != true)
+            if (IsSuccess != true)
             {
                 sb.Append(IsSuccess == null ? "(null IsSuccess)" : (IsSuccess.Value ? "" : "FAIL"));
             }

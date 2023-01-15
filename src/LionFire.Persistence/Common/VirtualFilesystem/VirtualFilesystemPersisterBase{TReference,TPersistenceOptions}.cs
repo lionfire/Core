@@ -292,8 +292,8 @@ public abstract partial class VirtualFilesystemPersisterBase<TReference, TPersis
 
     #region Retrieve
 
-    public Task<IRetrieveResult<TValue>> Retrieve<TValue>(IReferencable<TReference> referencable)  // Unwrap IReferencable
-        => Retrieve<TValue>(referencable.Reference);
+    public Task<IRetrieveResult<TValue>> Retrieve<TValue>(IReferencable<TReference> referencable, RetrieveOptions? options = null)  // Unwrap IReferencable
+        => Retrieve<TValue>(referencable.Reference, options);
 
     // REVIEW - Yikes this is ugly.  OPTIMIZE?  Use non-generic methods?
     private async Task<IRetrieveResult<TValue>> RetrieveMetadata<TValue, TMetadata>(TReference reference)
@@ -337,7 +337,7 @@ public abstract partial class VirtualFilesystemPersisterBase<TReference, TPersis
     /// <remarks>
     /// Default implementation: pass-through to ReadAndDeserializeExactPath, with AutoRetry
     /// </remarks>
-    public virtual async Task<IRetrieveResult<TValue>> Retrieve<TValue>(TReference reference)
+    public virtual async Task<IRetrieveResult<TValue>> Retrieve<TValue>(TReference reference, RetrieveOptions? options = null)
     {
         if (typeof(TValue).IsGenericType && typeof(TValue).GetGenericTypeDefinition() == typeof(Metadata<>))
         {

@@ -1,4 +1,5 @@
-﻿using LionFire.Dependencies;
+﻿#nullable enable
+using LionFire.Dependencies;
 using LionFire.Execution;
 using LionFire.IO;
 using LionFire.Referencing;
@@ -76,8 +77,10 @@ public class VosPersister : SerializingPersisterBase<VosPersisterOptions>, IPers
 
     static AsyncLocal<List<IMount>> RetrieveOpMounts = new();
 
-    public async IAsyncEnumerable<IRetrieveResult<TValue>> RetrieveBatches<TValue>(IReferencable<IVobReference> referencable, bool breakOnFirstValue = true)
+    public async IAsyncEnumerable<IRetrieveResult<TValue>> RetrieveBatches<TValue>(IReferencable<IVobReference> referencable, RetrieveOptions? options = null)
     {
+        var finishAfterReturningFirstFound = (options ?? RetrieveOptions.Default).ReturnFirstFound;
+
         //l.Trace($"{replaceMode.DescriptionString()} {obj?.GetType().Name} {replaceMode.ToArrow()} {fsReference}");
 
         //if (typeof(TValue) == typeof(Metadata<IEnumerable<Listing>>)) return (IRetrieveResult<TValue>)await List(referencable).ConfigureAwait(false);
@@ -155,11 +158,13 @@ public class VosPersister : SerializingPersisterBase<VosPersisterOptions>, IPers
 
         (VobMounts vobMountsNode, IEnumerable<IMount> mounts) GetMounts()
         {
-            var vobMountsNode = vob.Acquire<VobMounts>();
-
+            //var vobMountsNode = vob.Acquire<VobMounts>();
+            var vobMountsNode = vob.GetOrAddNextVobNode<VobMounts>();
+            var vobMounts = vobMountsNode.Value;
+            //var vobMountsNode = IVobInternalsVobNodeExtensions.GetOrAddNextVobNode<VobMounts>(vob);
             IEnumerable<IMount> mounts = null;
 
-            if (vobMountsNode.Vob.Key == oldVobMounts?.Vob.Key)
+            if (vobMounts.Vob.Key == oldVobMounts?.Vob.Key)
             {
                 l.LogDebug($"UNTESTED - Second pass retrieve, skipping {oldVobMounts.RankedEffectiveReadMounts.Count()} previous mounts");
                 l.LogDebug($"TEMP - Old mounts:");
@@ -174,7 +179,7 @@ public class VosPersister : SerializingPersisterBase<VosPersisterOptions>, IPers
 
                     sb = new StringBuilder();
                     l.LogDebug($"TEMP - New mounts:");
-                    foreach (var mount in vobMountsNode.RankedEffectiveReadMounts)
+                    foreach (var mount in vobMounts.RankedEffectiveReadMounts)
                     {
                         sb.Append(" - ");
                         sb.AppendLine(mount.ToString());
@@ -183,7 +188,7 @@ public class VosPersister : SerializingPersisterBase<VosPersisterOptions>, IPers
 
                     sb = new StringBuilder();
                     l.LogDebug($"TEMP - Continuing with mounts:");
-                    mounts = vobMountsNode.RankedEffectiveReadMounts.Except(oldVobMounts.RankedEffectiveReadMounts);
+                    mounts = vobMounts.RankedEffectiveReadMounts.Except(oldVobMounts.RankedEffectiveReadMounts);
                     foreach (var mount in mounts)
                     {
                         sb.Append(" - ");
@@ -196,15 +201,15 @@ public class VosPersister : SerializingPersisterBase<VosPersisterOptions>, IPers
             {
                 if (oldVobMounts != null)
                 {
-                    l.LogDebug($"[retrieving {referencable.Reference.Path}({typeof(TValue).Name})] Second pass: different VobMounts node.  Old @ {oldVobMounts.Vob.Key}, New @ {vobMountsNode.Vob.Key}");
+                    l.LogDebug($"[retrieving {referencable.Reference.Path}({typeof(TValue).Name})] Second pass: different VobMounts node.  Old @ {oldVobMounts.Vob.Key}, New @ {vobMounts.Vob.Key}");
                 }
                 //else
                 //{
                 //    l.LogDebug($"[retrieving {referencable.Reference.Path}({typeof(TValue).Name})] First pass: {vobMountsNode.RankedEffectiveReadMounts.Count()} mounts");
                 //}
-                mounts = vobMountsNode.RankedEffectiveReadMounts;
+                mounts = vobMounts.RankedEffectiveReadMounts;
             }
-            return (vobMountsNode, mounts);
+            return (vobMounts, mounts);
         }
 
         if (mounts?.Any() == true)
@@ -276,7 +281,7 @@ public class VosPersister : SerializingPersisterBase<VosPersisterOptions>, IPers
 
                         resultForNoChildResults.Flags |= PersistenceResultFlags.Found;
                         yield return childResult;
-                        if (breakOnFirstValue && childResult.HasValue)
+                        if (finishAfterReturningFirstFound && childResult.HasValue)
                         {
                             break;
                         }
@@ -452,8 +457,10 @@ public class VosPersister : SerializingPersisterBase<VosPersisterOptions>, IPers
         return singleResult;
     }
 
-    public async Task<IRetrieveResult<TValue>> Retrieve<TValue>(IReferencable<IVobReference> referencable)
+    public async Task<IRetrieveResult<TValue>> Retrieve<TValue>(IReferencable<IVobReference> referencable, RetrieveOptions? options = null)
     {
+        bool returnFirstSuccess = options == null || !options.ValidationFlags.HasFlag(RetrieveValidateFlags.NotAmbiguous);
+
         RetrieveC.IncrementWithContext();
         if (CanAggregateType<TValue>()) { return await RetrieveWithAggregation<TValue>(referencable).ConfigureAwait(false); }
 
@@ -461,6 +468,7 @@ public class VosPersister : SerializingPersisterBase<VosPersisterOptions>, IPers
 
         await foreach (var multiResult in RetrieveBatches<TValue>(referencable))
         {
+            Debug.Assert(multiResult != null);
             RetrieveBatchC.IncrementWithContext();
             //if (multiResult.IsSuccess == true)
             //{
@@ -470,14 +478,8 @@ public class VosPersister : SerializingPersisterBase<VosPersisterOptions>, IPers
             //    }
             //    continue;
             //}
-            if (multiResult.IsSuccess != true)
-            {
-                if (multiResult.Flags.HasFlag(PersistenceResultFlags.MountNotAvailable))
-                {
-                    continue;
-                }
-                else return multiResult; // Return the failure
-            }
+
+            if (multiResult.IsSuccess != true && ShouldReturnError(multiResult)) return multiResult; // Return the failure
 
             if (singleResult != null && multiResult.IsSuccess == true)
             {
@@ -489,10 +491,14 @@ public class VosPersister : SerializingPersisterBase<VosPersisterOptions>, IPers
                 };
             }
 
+            if (returnFirstSuccess && singleResult?.IsSuccess == true) return singleResult;
+
             singleResult = multiResult;
         }
 
         return singleResult;
+
+        bool ShouldReturnError(IRetrieveResult<TValue> r) => r.Flags.HasFlag(PersistenceResultFlags.MountNotAvailable);
     }
 
     #endregion

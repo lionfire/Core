@@ -1,8 +1,11 @@
-﻿using LionFire.Structures;
+﻿#nullable enable
+using LionFire.Structures;
 using Microsoft.Extensions.Logging;
 using MorseCode.ITask;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
+using System.Diagnostics.CodeAnalysis;
 using System.Threading;
 
 namespace LionFire.Resolves;
@@ -169,6 +172,7 @@ public abstract class Resolves<TKey, TValue> : DisposableKeyed<TKey>, INotifyWra
     public async ITask<IResolveResult<TValue>> Resolve()
     {
         var resolveResult = await ResolveImpl();
+        Debug.Assert(resolveResult != null, "ResolveImpl must not return null");
         ProtectedValue = resolveResult.Value;
         return resolveResult;
     }

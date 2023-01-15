@@ -28,7 +28,7 @@ public class LionFireSerilogBuilder
         DefaultEnrich();
         Console();
         File();
-        Loki();
+        //Loki();
 
         FromConfiguration();
         

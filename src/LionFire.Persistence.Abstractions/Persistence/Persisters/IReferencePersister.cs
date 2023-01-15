@@ -12,7 +12,7 @@ namespace LionFire.Persistence.Persisters
 
         Task<IPersistenceResult> Exists<TValue>(TReference reference);
 
-        Task<IRetrieveResult<TValue>> Retrieve<TValue>(TReference reference);
+        Task<IRetrieveResult<TValue>> Retrieve<TValue>(TReference reference, RetrieveOptions? options = null);
 
         Task<IPersistenceResult> Update<TValue>(TReference reference, TValue value);
         Task<IPersistenceResult> Upsert<TValue>(TReference reference, TValue value);

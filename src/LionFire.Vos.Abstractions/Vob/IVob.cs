@@ -19,7 +19,8 @@ namespace LionFire.Vos
         IEnumerable<IVob>, // Does not trigger a Retrieve (IO) operation -- it is just the child Vobs currently tracked
         IFlex,
         IAcquires,
-        IParented<IVob>
+        IParented<IVob>,
+        IKeyed
 
     {
         string Name { get; }

@@ -23,8 +23,8 @@ public static class OpenTelemetryX
         }
         else
         {
-            throw new Exception();
-            //counter.Add(1);
+            if (LionFireEnvironment.IsMultiApplicationEnvironment) throw new Exception();
+            counter.Add(1);
         }
     }
     public static void IncrementWithContext(this Counter<long> counter, long delta)
@@ -35,8 +35,8 @@ public static class OpenTelemetryX
         }
         else
         {
-            throw new Exception();
-            //counter.Add(delta);
+            if (LionFireEnvironment.IsMultiApplicationEnvironment) throw new Exception();
+            counter.Add(delta);
         }
     }
 #if NET7_0_OR_GREATER

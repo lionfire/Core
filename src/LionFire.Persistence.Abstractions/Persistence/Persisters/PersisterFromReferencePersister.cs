@@ -24,8 +24,8 @@ namespace LionFire.Persistence.Persisters
         public Task<IPersistenceResult> Exists<TValue>(IReferencable<TReference> referencable)
             => Persister.Exists<TValue>(referencable.Reference);
 
-        public Task<IRetrieveResult<TValue>> Retrieve<TValue>(IReferencable<TReference> referencable)
-            => Persister.Retrieve<TValue>(referencable.Reference);
+        public Task<IRetrieveResult<TValue>> Retrieve<TValue>(IReferencable<TReference> referencable, RetrieveOptions? options = null)
+            => Persister.Retrieve<TValue>(referencable.Reference, options);
 
         public Task<IPersistenceResult> Update<TValue>(IReferencable<TReference> referencable, TValue value)
             => Persister.Update(referencable.Reference, value);

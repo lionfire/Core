@@ -143,7 +143,7 @@ namespace LionFire.Vos
         }
         #endregion
 
-        public static bool ThrowOnMissingEnvironmentVariables = true;
+        public static bool ThrowOnMissingEnvironmentVariables = false;
 
         // SIMILAR logic: GetChild and QueryChild
         public IVob GetChild(IEnumerator<string> subpathChunks)
@@ -217,6 +217,7 @@ namespace LionFire.Vos
             return child.GetChild(subpathChunks);
         }
 
+        // TODO REVIEW - should this be opt-in?  And/Or should listings escape the environment variable delimiter?
         private (bool goToNext, IVob Vob) TryProcessEnvironmentChunk(string chunk)
         {
             var resolvedChunks = TryResolvePathChunk(chunk);
@@ -224,7 +225,7 @@ namespace LionFire.Vos
             if (resolvedChunks.StringChunk != null)
             {
                 if (resolvedChunks.StringChunk.Length > 0) return (false, GetChild(resolvedChunks.StringChunk.ToPathElements()));
-                else { return (true, null); }
+                else { return (false, null); }
             }
             else if (resolvedChunks.ReferenceChunk != null)
             {

@@ -23,12 +23,14 @@ public static partial class TestRunner
         _Run(hostApplicationFactory, (h, metricsContext) =>
         {
             configure?.Invoke(h);
-            
+
             h.Services.AddOpenTelemetryTracingLF();
 
             h.Run(async sp =>
             {
                 LionFireEnvironment.MetricsContext = metricsContext;
+
+                Dictionary<string, (Metric metric, MetricPoint metricPoint, object? value)>? metrics = null;
 
                 try
                 {
@@ -36,17 +38,23 @@ public static partial class TestRunner
                 }
                 catch (AssertFailedException)
                 {
-                    var metrics = GetMetrics(sp, log: true);
-                    GenerateAsserts(metrics);
+                    if (sp.GetRequiredService<LionFireMetricReader>().CollectCount == 0)
+                    {
+                        metrics ??= GetMetrics(sp, log: true);
+                        GenerateAsserts(metrics);
+                    }
                     throw;
                 }
 
                 if (!TestRunner.RanAsserts)
                 {
-                    var metrics = GetMetrics(sp, log: true);
-                    if (metrics.Count > 0)
+                    if (sp.GetRequiredService<LionFireMetricReader>().CollectCount == 0)
                     {
-                        GenerateAsserts(metrics);
+                        metrics ??= GetMetrics(sp, log: true);
+                        if (metrics.Count > 0)
+                        {
+                            GenerateAsserts(metrics);
+                        }
                     }
                 }
             });

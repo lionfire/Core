@@ -20,9 +20,9 @@ namespace LionFire.Persistence.Persisters
 
         public Task<IPersistenceResult> Put<TValue>(TReference reference, TValue value) 
             => Task.FromResult<IPersistenceResult>(NoopPutPersistenceResult.Instance);
-        public Task<IRetrieveResult<TValue>> Retrieve<TValue>(TReference reference)
-            
+        public Task<IRetrieveResult<TValue>> Retrieve<TValue>(TReference reference, RetrieveOptions? options = null)
             => Task.FromResult<IRetrieveResult<TValue>>(NoopRetrieveResult<TValue>.Instance);
+            
         public Task<IPersistenceResult> Update<TValue>(TReference reference, TValue value) 
             => Task.FromResult<IPersistenceResult>(NoopPutPersistenceResult.Instance);
         public Task<IPersistenceResult> Upsert<TValue>(TReference reference, TValue value) 

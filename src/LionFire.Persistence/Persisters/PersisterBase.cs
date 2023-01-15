@@ -44,6 +44,7 @@ public class PersisterBase<TOptions> : IHas<TOptions>
         return !(
             e is SerializationException
             || e is FileNotFoundException
+            || e is UnauthorizedAccessException
             );
     }
 

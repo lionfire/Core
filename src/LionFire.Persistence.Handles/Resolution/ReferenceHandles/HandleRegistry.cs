@@ -1,7 +1,5 @@
 ﻿using System;
 using System.Collections.Concurrent;
-using System.Runtime.CompilerServices;
-using BernhardHaus.Collections.WeakDictionary;
 using LionFire.Dependencies;
 using LionFire.Persistence;
 using LionFire.Persistence.Handles;
