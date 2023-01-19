@@ -26,6 +26,7 @@ where T : class
             if (instance == value) return;
             if (value != null && instance != default(T)) throw new NotSupportedException("Instance can only be set once or back to null.");
             instance = value;
+            ManualSingleton.RaiseInstanceChanged<T>(instance);
         }
     }
     private static T instance;
@@ -98,4 +99,11 @@ public sealed class ManualSingleton
 {
     public static object GetInstance(object obj, Type type) => typeof(ManualSingleton<>).MakeGenericType(type).GetProperty("Instance").GetValue(null);
     public static void SetInstance(object obj, Type type) => typeof(ManualSingleton<>).MakeGenericType(type).GetProperty("Instance").SetValue(null, obj);
+
+    public static void RaiseInstanceChanged<T>(T instance)
+    {
+        InstanceChanged?.Invoke(typeof(T), instance);
+    }
+
+    public static event Action<Type, object> InstanceChanged;
 }

@@ -11,6 +11,7 @@ using Serilog.Core;
 using System;
 using System.Diagnostics;
 using System.IO;
+using System.Reflection;
 
 namespace LionFire.Hosting;
 
@@ -49,10 +50,25 @@ public static class DefaultsX
             lf.HostBuilder.WrappedHostBuilder.ConfigureHostConfiguration(c =>
             {
                 // REVIEW: releaseChannel is set to test, but this lets us change releaseChannel to something else while still using settings for testing
-                if(isTest) c.AddJsonFile("appsettings.test.json", optional: true, reloadOnChange: false);
+                if (isTest) c.AddJsonFile("appsettings.test.json", optional: true, reloadOnChange: false);
 
                 c.AddEnvironmentVariables(prefix: "LionFire_");
             });
+
+            #region AddUserSecrets
+            lf.HostBuilder.WrappedHostBuilder.ConfigureAppConfiguration((context, config) =>
+            {
+                IHostEnvironment env = context.HostingEnvironment;
+                if (env.IsDevelopment() && env.ApplicationName is { Length: > 0 })
+                {
+                    var appAssembly = Assembly.Load(new AssemblyName(env.ApplicationName));
+                    if (appAssembly is not null)
+                    {
+                        config.AddUserSecrets(appAssembly, optional: true, reloadOnChange: false);
+                    }
+                }
+            });
+            #endregion
 
             lf.HostBuilder.WrappedHostBuilder
                 .ReleaseChannel() // adds appsettings.{ReleaseChannel}.json
@@ -63,15 +79,27 @@ public static class DefaultsX
         {
             // REFACTOR - is there a better way to avoid this duplicated code?
 
-            var c = lf.HostBuilder.WrappedHostApplicationBuilder.Configuration;
+            var config = lf.HostBuilder.WrappedHostApplicationBuilder.Configuration;
 
-            if (isTest) c.AddJsonFile("appsettings.test.json", optional: true, reloadOnChange: false);
-            c.AddEnvironmentVariables(prefix: "LionFire_");
+            if (isTest) config.AddJsonFile("appsettings.test.json", optional: true, reloadOnChange: false);
+            config.AddEnvironmentVariables(prefix: "LionFire_");
 
             lf.HostBuilder.WrappedHostApplicationBuilder
                 .ReleaseChannel() // adds appsettings.{ReleaseChannel}.json
                 .CopyExampleAppSettings()
                 ;
+
+            #region AddUserSecrets
+            IHostEnvironment env = lf.HostBuilder.WrappedHostApplicationBuilder.Environment;
+            if (env.IsDevelopment() && env.ApplicationName is { Length: > 0 })
+            {
+                var appAssembly = Assembly.Load(new AssemblyName(env.ApplicationName));
+                if (appAssembly is not null)
+                {
+                    config.AddUserSecrets(appAssembly, optional: true, reloadOnChange: false);
+                }
+            }
+            #endregion
         }
         else
         {
@@ -80,16 +108,6 @@ public static class DefaultsX
 
         #endregion
 
-        // TODO
-        //   IHostEnvironment env = hostingContext.HostingEnvironment;
-        //    if (env.IsDevelopment() && env.ApplicationName is { Length: > 0 })
-        //    {
-        //        var appAssembly = Assembly.Load(new AssemblyName(env.ApplicationName));
-        //        if (appAssembly is not null)
-        //        {
-        //            config.AddUserSecrets(appAssembly, optional: true, reloadOnChange: reloadOnChange);
-        //        }
-        //    }
 
         // Configured supplemental AppSettings file
         builder.ConfigureAppConfiguration((hostingContext, config) =>

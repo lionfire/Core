@@ -18,7 +18,7 @@ public class Bytes
     static string TestZipPath => Path.Combine(TestHostBuilder.DataDir, "TestSourceFile.zip");
     static string TestZipUrlPath => TestZipPath.Replace(":", "");
 
-    public static readonly string ZipFileReferenceString = $"vos:///{TestZipUrlPath}";
+    public readonly string ZipFileReferenceString = $"vos:///{TestZipUrlPath}";
 
     [TestMethod]
     public void _()

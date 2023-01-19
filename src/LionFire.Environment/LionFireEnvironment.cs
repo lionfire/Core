@@ -12,47 +12,10 @@ using LionFire.Structures;
 using Microsoft.Extensions.PlatformAbstractions;
 
 namespace LionFire;
-
-public static class OpenTelemetryX
+public static class MetricsKeys
 {
-    public static void IncrementWithContext(this Counter<long> counter)
-    {
-        if (LionFireEnvironment.MetricsContext != null)
-        {
-            counter.Add(1, new KeyValuePair<string, object?>(LionFireEnvironment.MetricsContextKey, LionFireEnvironment.MetricsContext ?? "?"));
-        }
-        else
-        {
-            if (LionFireEnvironment.IsMultiApplicationEnvironment) throw new Exception();
-            counter.Add(1);
-        }
-    }
-    public static void IncrementWithContext(this Counter<long> counter, long delta)
-    {
-        if (LionFireEnvironment.MetricsContext != null)
-        {
-            counter.Add(delta, new KeyValuePair<string, object?>(LionFireEnvironment.MetricsContextKey, LionFireEnvironment.MetricsContext ?? "?"));
-        }
-        else
-        {
-            if (LionFireEnvironment.IsMultiApplicationEnvironment) throw new Exception();
-            counter.Add(delta);
-        }
-    }
-#if NET7_0_OR_GREATER
-    public static void IncrementWithContext(this UpDownCounter<long> counter)
-    {
-        if (LionFireEnvironment.MetricsContext != null)
-        {
-            counter.Add(1, new KeyValuePair<string, object?>(LionFireEnvironment.MetricsContextKey, LionFireEnvironment.MetricsContext ?? "?"));
-        }
-        else
-        {
-            counter.Add(1);
-        }
-    }
-#endif
-    //static Action<Counter<long>> AddAction;
+    public const string MetricsContextKey = "context";
+    public const string TestName = "test_name";
 }
 public partial class LionFireEnvironment
 {
@@ -156,13 +119,22 @@ public partial class LionFireEnvironment
         }
     }
 
-    public const string MetricsContextKey = "context";
-    public static string? MetricsContext
+
+    public static KeyValuePair<string, object?>[]? ContextTags
     {
-        get => metricsContext?.Value;
-        set => (metricsContext ??= new()).Value = value;
+        get => contextTags?.Value;
+        set => (contextTags ??= new()).Value = value;
     }
-    private static AsyncLocal<string?>? metricsContext;
+    private static AsyncLocal<KeyValuePair<string, object?>[]?>? contextTags;
+    public static IDictionary<string, object?>? ContextTagsDictionary => ContextTags == null ? null : new Dictionary<string, object?>(ContextTags);
+
+
+    //public static string? MetricsContext
+    //{
+    //    get => metricsContext?.Value;
+    //    set => (metricsContext ??= new()).Value = value;
+    //}
+    //private static AsyncLocal<string?>? metricsContext;
 
     // REFACTOR: Merge VosAppHost ExeDir finding logic into here
     public static string ExeDir
@@ -210,12 +182,24 @@ public partial class LionFireEnvironment
     {
         get
         {
-            if (isMultiApplicationEnvironment.HasValue) return isMultiApplicationEnvironment.Value;
+            isMultiApplicationEnvironment ??= IsUnitTest == true;
+            return isMultiApplicationEnvironment.Value;
+            //if (isMultiApplicationEnvironment.HasValue) return isMultiApplicationEnvironment.Value;
 
-            return IsUnitTest == true;
+            //return IsUnitTest == true;
         }
-        set => isMultiApplicationEnvironment = value;
+        set
+        {
+            isMultiApplicationEnvironment = value;
+            if (value)
+            {
+                ManualSingleton.InstanceChanged += ManualSingleton_InstanceChanged; // TODO: Per Host ManualSingleton services?
+            }
+        }
     }
+
+    private static void ManualSingleton_InstanceChanged(Type type, object newInstance) => throw new NotSupportedException($"ManualSingleton_InstanceChanged in IsMultiApplicationEnvironment = true: {type.FullName}");
+
     private static bool? isMultiApplicationEnvironment;
 
     #endregion

@@ -158,7 +158,7 @@ public static class RunTaskAndStopApplicationHostApplicationBuilderX
             .AddRunTaskAndStop(taskFactory, exceptionWrapper);
 
         await hostBuilder.Build()
-        .InitializeDependencyContextServiceProvider()
+        //.InitializeDependencyContextServiceProvider()
         .RunAsync()
         .ContinueWith(t =>
         {
@@ -347,7 +347,7 @@ public static class RunTaskAndStopApplicationHostBuilderX
         await hostBuilder
             .ConfigureServices((context, sc) => sc.AddRunTaskAndStop(taskFactory, exceptionWrapper))
             .Build()
-            .InitializeDependencyContextServiceProvider()
+            //.InitializeDependencyContextServiceProvider()
             .RunAsync()
             .ContinueWith(t =>
             {
@@ -369,32 +369,32 @@ public static class RunTaskAndStopApplicationHostBuilderX
 
 public static class RunTaskAndStopApplicationHostX
 {
-    public static IHost InitializeDependencyContextServiceProvider(this IHost host)
-    {
-        InitializeDependencyContextServiceProvider(host.Services);
-        return host;
-    }
-    public static IServiceProvider InitializeDependencyContextServiceProvider(this IServiceProvider serviceProvider)
-    {
-        if (LionFireEnvironment.IsMultiApplicationEnvironment)
-        {
-            if (DependencyContext.AsyncLocal == null) throw new Exception("IsMultiApplicationEnvironment but DependencyContext.AsyncLocal == null");
-            DependencyContext.Current.ServiceProvider = serviceProvider;
-        }
-        else
-        {
-            if (DependencyContext.Current == null)
-            {
-                DependencyContext.Current = new DependencyContext();
-            }
+    //public static IHost InitializeDependencyContextServiceProvider(this IHost host)
+    //{
+    //    InitializeDependencyContextServiceProvider(host.Services);
+    //    return host;
+    //}
+    //public static IServiceProvider InitializeDependencyContextServiceProvider(this IServiceProvider serviceProvider)
+    //{
+    //    if (LionFireEnvironment.IsMultiApplicationEnvironment)
+    //    {
+    //        if (DependencyContext.AsyncLocal == null) throw new Exception("IsMultiApplicationEnvironment but DependencyContext.AsyncLocal == null");
+    //        DependencyContext.AsyncLocal.ServiceProvider = serviceProvider;
+    //    }
+    //    else
+    //    {
+    //        if (DependencyContext.Current == null)
+    //        {
+    //            DependencyContext.Current = new DependencyContext();
+    //        }
 
-            if (DependencyContext.Current.ServiceProvider == null)
-            {
-                DependencyContext.Current.ServiceProvider = serviceProvider;
-            }
-        }
-        return serviceProvider;
-    }
+    //        if (DependencyContext.Current.ServiceProvider == null)
+    //        {
+    //            DependencyContext.Current.ServiceProvider = serviceProvider;
+    //        }
+    //    }
+    //    return serviceProvider;
+    //}
 
     //public static IServiceProvider InitializeDependencyContext_Old(this IServiceProvider serviceProvider)
     //{

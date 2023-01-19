@@ -1,7 +1,45 @@
-﻿using LionFire.Results;
+﻿#nullable enable
+using LionFire.Persistence;
+using LionFire.Results;
 
 namespace LionFire.Referencing;
 
+public static class Listing
+{
+    public static bool IsListingType(Type type)
+    {
+        if (type.IsGenericType && type.GetGenericTypeDefinition() == typeof(Metadata<>))
+        {
+            var metadataInnerType = type.GetGenericArguments()[0];
+            return metadataInnerType.IsGenericType && metadataInnerType.GetGenericTypeDefinition() == typeof(Listing<>);
+        }
+        return false;
+    }
+
+    public static Type? GetListingType<TValue>()
+    {
+        if (typeof(TValue).IsGenericType)
+        {
+            var genericType = typeof(TValue).GetGenericTypeDefinition();
+            if (genericType == typeof(Metadata<>))
+            {
+                var metadataType = typeof(TValue).GetGenericArguments()[0];
+                if (metadataType.IsGenericType && metadataType.GetGenericTypeDefinition() == typeof(IEnumerable<>))
+                {
+                    var enumerableType = metadataType.GetGenericArguments()[0];
+                    if (enumerableType.IsGenericType && enumerableType.GetGenericTypeDefinition() == typeof(Listing<>))
+                    {
+                        var listingType = enumerableType.GetGenericArguments()[0];
+                        return listingType;
+                    }
+                }
+            }
+        }
+        return null;
+    }
+}
+
+// REVIEW: Consider replacing Listing<T> with Listing, and doing type filtering another way
 public class Listing<T>
 {
     #region Construction
@@ -9,7 +47,7 @@ public class Listing<T>
     public Listing() { }
     public Listing(string name)
     {
-        Name = name;        
+        Name = name;
     }
     public Listing(string name, Type type, string mimeType = null, bool directory = false) : this(name)
     {

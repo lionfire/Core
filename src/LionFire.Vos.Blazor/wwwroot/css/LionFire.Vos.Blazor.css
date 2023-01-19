@@ -12,3 +12,10 @@
 .VosExplorer .Listings {
     margin: 10px 0;
 }
+
+.Listings td.Name {
+    cursor: pointer;
+}
+.Listings td.Icon {
+    width: 25px;
+}

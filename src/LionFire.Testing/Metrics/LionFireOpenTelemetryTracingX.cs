@@ -32,6 +32,7 @@ public static class LionFireOpenTelemetryTracingX
         services
         .AddOpenTelemetry()
             .WithMetrics(c => c
+
                 //.AddConsoleExporter(o => o
                 //.Targets = OpenTelemetry.Exporter.ConsoleExporterOutputTargets.Console
                 //)
@@ -42,10 +43,14 @@ public static class LionFireOpenTelemetryTracingX
                 //        ExportIntervalMilliseconds = 1000,
                 //        //ExportTimeoutMilliseconds
                 //    })
-                //.AddOtlpExporter(opts =>
-                //{
+                .AddOtlpExporter(option =>
+                {
+                    option.Endpoint = new Uri("http://localhost:4317");
                 //    opts.Endpoint = new Uri(builder.Configuration["Otlp:Endpoint"]);
-                //})
+                    option.ExportProcessorType = ExportProcessorType.Batch;
+                    option.Protocol = OpenTelemetry.Exporter.OtlpExportProtocol.Grpc;
+                    //option.Headers = $"x-example-apikey={apiKey}";
+                })
 
                 .ConfigureResource(r => r
                     .AddService("LionFire.Test")
@@ -58,14 +63,8 @@ public static class LionFireOpenTelemetryTracingX
                 )
                 //.AddRuntimeInstrumentation()
                 .AddMeter("LionFire.Test")
-                .AddMeter("LionFire.Vos")
-                .AddMeter("LionFire.Persistence.Filesystem")
-                .AddMeter("LionFire.Persisters.SharpZipLib")
-                .AddMeter("LionFire.Vos.RootManager")
-                .AddMeter("LionFire.Persisters.SharpZipLib.SharpZipLibExpander")
-                .AddMeter("LionFire.Persistence.Handles.WeakHandleRegistry")
-                
-
+                .AddMeter("LionFire.Execution.AutoRetry")
+                .AddVosInstrumentation()
             )
         //    .WithTracing(c => c
         //        .AddConsoleExporter()

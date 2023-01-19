@@ -141,7 +141,7 @@ public class ExpanderMounter : IParentable<IVob>
         };
     }
 
-    public async Task<bool> Scan(BeforeReadEventArgs args)
+    public async Task<bool> Scan(BeforeReadEventArgs args, bool startWithParent = false)
     {
         using var activity = ActivitySource.StartActivity("Scan");
         activity?.SetTag("HandlerVob", args.HandlerVob?.Path);
@@ -151,7 +151,15 @@ public class ExpanderMounter : IParentable<IVob>
         bool mountedSomething = false;
         bool foundExpanderMounterVob = false;
 
-        foreach (var x in args.Vob.GetAcquireEnumerator2<IVob, ExpanderScanState>(includeNull: true).TakeWhile(z =>
+        IVob? vobToScan = args.Vob;
+        if(startWithParent)
+        {
+            if(vobToScan == this.Vob) { return false; }
+            vobToScan = vobToScan?.Parent;
+        }
+        if (vobToScan == null) { return false; }
+
+        foreach (var x in vobToScan.GetAcquireEnumerator2<IVob, ExpanderScanState>(includeNull: true).TakeWhile(z =>
         {
             var shouldContinue = !foundExpanderMounterVob;
             if (z.Item2 == this.Vob) foundExpanderMounterVob = true;
@@ -172,7 +180,7 @@ public class ExpanderMounter : IParentable<IVob>
             if (shouldScan)
             {
                 state.LastScan = DateTime.UtcNow;
-                mountedSomething |= await TryAutoMountArchives(args.Persister, x.Item2.Parent);
+                mountedSomething |= await TryAutoMountArchives(args.Persister, x.Item2); // TODO REVIEW FIXME NEXT Parent or not?
             }
         }
 
@@ -188,6 +196,7 @@ public class ExpanderMounter : IParentable<IVob>
 
     public async Task<bool> TryAutoMountArchives(VosPersister vosPersister, IVob vob)
     {
+        ArgumentNullException.ThrowIfNull(vob);
         bool mountedSomething = false;
 
         IReferencable<IVobReference> referencable = vob.Reference;
@@ -314,16 +323,15 @@ public class ExpanderMounter : IParentable<IVob>
     public Task BeforeRetrieveHandler(BeforeRetrieveEventArgs args)
     {
         Logger.LogTrace("BeforeRetrieveHandler");
-        return Scan(args);
+        return Scan(args, startWithParent: true);
     }
     public async Task AfterNotFoundHandler(AfterNotFoundEventArgs args)
     {
         //Logger.LogTrace("AfterNotFoundHandler");
-        var mountedSomething = await Scan(args).ConfigureAwait(false);
+        var mountedSomething = await Scan(args, startWithParent: true).ConfigureAwait(false);
         args.FoundMore |= mountedSomething;
     }
 }
-
 
 //public class VosRetrieveContext : RetrieveContext<IVobReference>
 //{

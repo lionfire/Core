@@ -90,8 +90,8 @@ public class VosPersister : SerializingPersisterBase<VosPersisterOptions>, IPers
 
         bool anyMounts = false;
 
-        Type metadataType = null;
-        Type? listingType = null;
+        Type? metadataType = null;
+        Type? listingItemType = null;
 
         if (typeof(TValue).IsGenericType && typeof(TValue).GetGenericTypeDefinition() == typeof(Metadata<>))
         {
@@ -102,8 +102,8 @@ public class VosPersister : SerializingPersisterBase<VosPersisterOptions>, IPers
                 var enumerableType = metadataType.GetGenericArguments()[0];
                 if (enumerableType.IsGenericType && enumerableType.GetGenericTypeDefinition() == typeof(Listing<>))
                 {
-                    listingType = enumerableType.GetGenericArguments()[0];
-                    //if (listingType == typeof(IArchive))
+                    listingItemType = enumerableType.GetGenericArguments()[0];
+                    //if (listingItemType == typeof(IArchive))
                     //{
                     //}
                 }
@@ -117,16 +117,43 @@ public class VosPersister : SerializingPersisterBase<VosPersisterOptions>, IPers
         #endregion
 
         var resultForNoChildResults = new VosRetrieveResult<TValue>();
-    //for (; iteration < maxRetries; iteration++) { }
+        //for (; iteration < maxRetries; iteration++) { }
+
+//        if (listingItemType != null)
+//        {
+//#warning 230119 NEXT: Why isn't the mounted Zip being returned in the list? What's different between Vos.Blazor's list and the List unit tests? Do I need to add Vos children (that have mounts) to the list here?  As though Vob Children is another potential source?  Why does the unit test work?
+
+//            if (listingItemType != typeof(object))
+//            {
+//                //throw new NotImplementedException();
+//            }
+//            else
+//            {
+//                var vobChildren = vob.Children;
+
+//                if (listingItemType != typeof(object))
+//                {
+//                    // TODO get all known ReadHandles for child, and skip ones that do not match listingItemType
+//                    //vobChildren = vobChildren.Where(v => v.Matches(listingItemType));
+//                }
+
+//                var listingType = typeof(Listing<>).MakeGenericType(listingItemType);
+
+//                var vobChildrenListings = vobChildren.Select(v => (Listing<object> /* TODO HARDCAST */)Activator.CreateInstance(listingType, v.Key)!);
+
+//                yield return new VosRetrieveResult<TValue>((TValue)(object)new Metadata<IEnumerable<Listing<object>>>(vobChildrenListings));
+//            }
+//        }
+
     again:
-        if (listingType != null)
+        if (listingItemType != null)
         {
             var blea = new BeforeListEventArgs
             {
                 Vob = vob,
                 ResultType = typeof(TValue),
                 Referencable = referencable,
-                ListingType = listingType,
+                ListingType = listingItemType,
                 Persister = this,
             };
 
@@ -152,7 +179,7 @@ public class VosPersister : SerializingPersisterBase<VosPersisterOptions>, IPers
                 await handlers.Item1.Raise(blea).ConfigureAwait(false);
             }
         }
-        //await OnBeforeRetrieve(new VosRetrieveContext { Persister = this, Vob = vob, ListingType = listingType, Referencable = referencable });
+        //await OnBeforeRetrieve(new VosRetrieveContext { Persister = this, Vob = vob, ListingType = listingItemType, Referencable = referencable });
 
         var (vobMountsNode, mounts) = GetMounts();
 
@@ -166,6 +193,7 @@ public class VosPersister : SerializingPersisterBase<VosPersisterOptions>, IPers
 
             if (vobMounts.Vob.Key == oldVobMounts?.Vob.Key)
             {
+#if DEBUG_Off
                 l.LogDebug($"UNTESTED - Second pass retrieve, skipping {oldVobMounts.RankedEffectiveReadMounts.Count()} previous mounts");
                 l.LogDebug($"TEMP - Old mounts:");
                 {
@@ -188,7 +216,9 @@ public class VosPersister : SerializingPersisterBase<VosPersisterOptions>, IPers
 
                     sb = new StringBuilder();
                     l.LogDebug($"TEMP - Continuing with mounts:");
-                    mounts = vobMounts.RankedEffectiveReadMounts.Except(oldVobMounts.RankedEffectiveReadMounts);
+#endif
+                mounts = vobMounts.RankedEffectiveReadMounts.Except(oldVobMounts.RankedEffectiveReadMounts);
+#if DEBUG_Off
                     foreach (var mount in mounts)
                     {
                         sb.Append(" - ");
@@ -196,6 +226,7 @@ public class VosPersister : SerializingPersisterBase<VosPersisterOptions>, IPers
                     }
                     l.LogDebug(sb.ToString());
                 }
+#endif
             }
             else
             {
@@ -215,6 +246,7 @@ public class VosPersister : SerializingPersisterBase<VosPersisterOptions>, IPers
         if (mounts?.Any() == true)
         {
             // TODO: If TValue is IEnumerable, make a way (perhaps optional) to aggregate values from multiple ReadMounts.
+            #region Log
             {
                 var sb = new StringBuilder();
                 sb.Append($"[retrieving {referencable.Reference.Path}({typeof(TValue).Name})] from mounts:");
@@ -225,6 +257,7 @@ public class VosPersister : SerializingPersisterBase<VosPersisterOptions>, IPers
                 }
                 l.Trace(sb.ToString());
             }
+            #endregion
             foreach (var mount in mounts)
             {
                 #region Prevent recursion
@@ -393,7 +426,7 @@ public class VosPersister : SerializingPersisterBase<VosPersisterOptions>, IPers
                     {
                         var listingType = genericParameter.GetGenericArguments()[0];
                         return listingType;
-                        //var aggregatorType = typeof(ResultAggregator<,>).MakeGenericType(typeof(TValue), typeof(listingType));
+                        //var aggregatorType = typeof(ResultAggregator<,>).MakeGenericType(typeof(TValue), typeof(listingItemType));
                     }
                 }
             }
@@ -578,6 +611,7 @@ public class VosPersister : SerializingPersisterBase<VosPersisterOptions>, IPers
                 listings.AddRange(result.Value.Value);
             }
         }
+
         return consolidatedResult;
     }
 

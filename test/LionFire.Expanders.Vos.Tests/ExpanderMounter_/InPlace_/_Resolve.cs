@@ -56,7 +56,6 @@ public class _Resolve
     [TestMethod]
     public void _Resolve_InPlace() => RunTest(async sp =>
     {
-        Debug.WriteLine(LionFireEnvironment.MetricsContext);
         #region Trying activities
         //var MyActivitySource = new ActivitySource("_Resolve_InPlace");
         //{

@@ -24,6 +24,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\LionFire.Base\LionFire.Base.csproj" />
+    <ProjectReference Include="..\LionFire.Structures\LionFire.Structures.csproj" />
   </ItemGroup>
 
 </Project>

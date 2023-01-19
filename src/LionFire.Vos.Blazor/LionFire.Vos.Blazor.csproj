@@ -12,7 +12,6 @@
   </ItemGroup>
   
   <ItemGroup>    
-    <PackageReference Include="LiveSharp" />    
     <PackageReference Include="Microsoft.AspNetCore.Components.Web" />
     <PackageReference Include="Microsoft.AspNetCore.WebUtilities" />
     <PackageReference Include="MudBlazor" />

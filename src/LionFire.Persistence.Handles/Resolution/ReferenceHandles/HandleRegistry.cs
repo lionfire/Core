@@ -18,9 +18,10 @@ public static class HandleRegistry2
         }
     }
 
-    public static IReadHandle<T> GetOrAddRead<T>(string key, Func<string, IReadHandle<T>> factory) => HandleRegistry.GetOrAddRead<T>(typeof(T).FullName + ":" + key, factory);
-    public static IReadWriteHandle<T> GetOrAddReadWrite<T>(string key, Func<string, IReadWriteHandle<T>> factory) => HandleRegistry.GetOrAddReadWrite<T>(typeof(T).FullName + ":" + key, factory);
-    public static IWriteHandle<T> GetOrAddWrite<T>(string key, Func<string, IWriteHandle<T>> factory) => HandleRegistry.GetOrAddWrite<T>(typeof(T).FullName + ":" + key, factory);
+    public static string GetKeyWithType<T>(string key) => $"{typeof(T).FullName}){key}";
+    public static IReadHandle<T> GetOrAddRead<T>(string key, Func<string, IReadHandle<T>> factory) => HandleRegistry.GetOrAddRead<T>(GetKeyWithType<T>(key), factory);
+    public static IReadWriteHandle<T> GetOrAddReadWrite<T>(string key, Func<string, IReadWriteHandle<T>> factory) => HandleRegistry.GetOrAddReadWrite<T>(GetKeyWithType<T>(key), factory);
+    public static IWriteHandle<T> GetOrAddWrite<T>(string key, Func<string, IWriteHandle<T>> factory) => HandleRegistry.GetOrAddWrite<T>(GetKeyWithType<T>(key), factory);
 
 }
 

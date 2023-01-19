@@ -12,21 +12,21 @@ using Microsoft.Extensions.Hosting;
 using OpenTelemetry;
 using OpenTelemetry.Metrics;
 using OpenTelemetry.Trace;
+using System;
 
 //namespace LionFire.Vos.Blazor;
 
-
-//public class Program
-//{
-//    public static void Main(string[] args)
-//    {
 Host.CreateDefaultBuilder(args)
+//new HostApplicationBuilder(args)
     .LionFire(lf => lf
         .Vos()
         .WebHost<VosBlazorHostStartup>()
     )
-    .ConfigureServices((c, s) => s
-        .AddExpanderMounter("/fs/c/temp") // TEMP
+    .ConfigureServices(s => s
+        .Expansion()
+        //.AddExpanderMounter("/fs/c/temp") // TEMP
+        //.AddExpanderMounter("/fs") // TEMP
+        .AddExpanderMounter("/") // TEMP
         .AddSharpZipLib()
         .TryAddEnumerableSingleton<IExpanderPlugin, ZipPlugin>() // REVIEW
 
@@ -65,11 +65,21 @@ Host.CreateDefaultBuilder(args)
     //.AddVosObjectExplorerRoot() // TODO
     //.VosMount("/testmount".ToVobReference(), @"C:\temp".ToFileReference())
 
-    //.AddOpenTelemetry()
-    //    .WithMetrics(b => b
-    //    .AddProcessInstrumentation()
-    //    .AddPrometheusExporter()
-    //    ).StartWithHost()
+    .AddOpenTelemetry()
+        .WithMetrics(b => b
+            .Orleans()
+            .AddProcessInstrumentation()
+            .AddRuntimeInstrumentation()
+            .AddAspNetCoreInstrumentation()
+            //.AddHttpClientInstrumentation()
+            .AddVosInstrumentation()
+        .AddOtlpExporter(option =>
+        {
+            option.Endpoint = new Uri("http://localhost:4317");
+            option.ExportProcessorType = ExportProcessorType.Batch;
+            option.Protocol = OpenTelemetry.Exporter.OtlpExportProtocol.Grpc;
+        })
+        ).StartWithHost()
     )
 
 
@@ -80,5 +90,4 @@ Host.CreateDefaultBuilder(args)
 
     .Build()
     .Run();
-//    }
-//}
+

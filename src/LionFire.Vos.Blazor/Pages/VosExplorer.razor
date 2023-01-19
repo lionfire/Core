@@ -43,7 +43,7 @@
     }
     else
     {
-        <table class="table Listings">
+        <table class="table Listings dense">
             <thead>
                 <tr>
                     <th></th>
@@ -56,10 +56,10 @@
                 @foreach (var listing in listings)
                 {
                     <tr>
-                        <td>
+                        <td class="Icon">
                             <span @onclick="@(e => GoToPath(listing.Name))" class="@IconClasses(listing)" aria-hidden="true" data-glyph="battery-empty"></span>
                         </td>
-                        <td>@listing.Name</td>
+                        <td class="Name" @onclick="@(e => ClickListing(e, listing))">@listing.Name</td>
                         <td>@listing.DataType</td>
                         <td></td>
                     </tr>
@@ -69,34 +69,43 @@
 
         @if (Vob != null)
         {
-            <table>
-                <tr>
-                    <td>VobMounts</td>
-                    <td>@(VobMounts)</td>
-                </tr>
-            </table>
-            <div class="panel">
-                @if (VobMounts != null)
-                {
-                    <div>
-                        @VobMounts.Options
-                    </div>
-                    @if (VobMounts != null)
-                    {
-                        <h4>Read mounts</h4>
-                        @foreach (var mount in VobMounts?.ReadMounts ?? Enumerable.Empty<KeyValuePair<int, IMount>>())
-                        {
-                            <div>Mount: @mount.Key</div>
-                        }
-                        <h4>Write mounts</h4>
-                        @foreach (var mount in VobMounts.WriteMounts ?? Enumerable.Empty < KeyValuePair<int, IMount>>())
-                        {
-                            <div>Mount: @mount.Key</div>
-                        }
-                    }
-                }
+            @if (VobMounts != null)
+            {
+                <div class="panel">
+                    <h5>VobMounts</h5>
 
-            </div>
+                    <table>
+                        <tr>
+                            <th>Vob</th>
+                            <td>@VobMounts.Vob.Path</td>
+                        </tr>
+                        <tr>
+                            <th>Options</th>
+                            <td>@VobMounts.Options</td>
+                        </tr>
+                        <tr>
+                            <th>Read mounts</th>
+                            <td>
+                                @foreach (var mount in VobMounts?.ReadMounts ?? Enumerable.Empty<KeyValuePair<int, IMount>>())
+                                {
+                                    <div>@mount.Value</div>
+                                }
+                            </td>
+                        </tr>
+
+                        <tr>
+                            <th>Write mounts</th>
+                            <td>
+                                @foreach (var mount in VobMounts.WriteMounts ?? Enumerable.Empty<KeyValuePair<int, IMount>>())
+                                {
+                                    <div>@mount.Value</div>
+                                }
+                            </td>
+                        </tr>
+
+                    </table>
+                </div>
+            }
         }
 
         @if (CurrentObject != null)

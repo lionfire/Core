@@ -63,6 +63,12 @@ public class DependencyContext : IDependencyContext
     //}
     public static void Deinitialize()
     {
+        if (AsyncLocal != null) // REVIEW
+        {
+            Deinitialize(AsyncLocal);
+            return;
+        }
+
         AsyncLocal = null;
         Default = null;
 
@@ -73,6 +79,10 @@ public class DependencyContext : IDependencyContext
             Current = null;
         }
     }
+    public static void Deinitialize(DependencyContext dependencyContext)
+    {
+
+    }
 
     /// <summary>
     /// REVIEW - need to think seriously about this.
@@ -82,14 +92,31 @@ public class DependencyContext : IDependencyContext
     /// </summary>
     public static DependencyContext? Current
     {
-        get => AsyncLocal ?? current ?? Default;
+        get
+        {
+            if (LionFireEnvironment.IsMultiApplicationEnvironment)
+            {
+                return AsyncLocal;
+            }
+            else
+            {
+                return AsyncLocal ?? current ?? Default;
+            }
+        }
         set
         {
-            if (current != null && value != null && value != current)
+            if (LionFireEnvironment.IsMultiApplicationEnvironment)
             {
-                throw new Exception("Cannot be set to another value without first setting to null.");
+                AsyncLocal = value;
             }
-            current = value;
+            else
+            {
+                if (current != null && value != null && value != current)
+                {
+                    throw new Exception("Cannot be set to another value without first setting to null.");
+                }
+                current = value;
+            }
         }
     }
     protected static DependencyContext? current;
@@ -145,35 +172,46 @@ public class DependencyContext : IDependencyContext
     }
     private static ThreadLocal<DependencyContext?>? threadLocal;
 
-    public static IServiceProvider? CurrentServiceProvider => SingleRootServiceProvider ?? Current?.ServiceProvider;
+    public static IServiceProvider? CurrentServiceProvider => GlobalServiceProvider ?? Current?.ServiceProvider;
+
+    public static DependencyContext? Global
+    {
+        get
+        {
+            if (!LionFireEnvironment.IsMultiApplicationEnvironment)
+            {
+                return global ??= new();
+            }
+            return null;
+        }
+    }
+    private static DependencyContext? global;
 
     /// <summary>
     /// For simple/typical programs that have one root IServiceProvider, it is held here.  It is discarded upon an attempt to set it to a subsequent different value.
     /// </summary>
-    public static IServiceProvider? SingleRootServiceProvider
+    public static IServiceProvider? GlobalServiceProvider // was SingleRootServiceProvider
     {
-        get => primaryServiceProvider;
+        get => Global?.ServiceProvider;
         set
         {
-            if (noPrimaryServiceProviderBecauseThereAreMultiple) { return; }
+            if (Global == null) { throw new InvalidOperationException("Cannot set GlobalServiceProvider. Not supported when LionFireEnvironment.IsMultiApplicationEnvironment is true. "); }
 
-            if (primaryServiceProvider != null)
+            if (noGlobalServiceProviderBecauseThereAreMultiple) { return; }
+
+            if (GlobalServiceProvider != null)
             {
-                if (Object.ReferenceEquals(value, primaryServiceProvider)) { return; }
+                if (Object.ReferenceEquals(value, GlobalServiceProvider)) { return; }
 
-                primaryServiceProvider = null;
-                noPrimaryServiceProviderBecauseThereAreMultiple = true;
+                Global.ServiceProvider = null;
+                noGlobalServiceProviderBecauseThereAreMultiple = true;
                 return;
             }
 
-            primaryServiceProvider = value;
+            Global.ServiceProvider = value;
         }
     }
-    private static IServiceProvider? primaryServiceProvider;
-
-    private static bool noPrimaryServiceProviderBecauseThereAreMultiple;
-
-
+    private static volatile bool noGlobalServiceProviderBecauseThereAreMultiple;
 
     #endregion
 
@@ -184,7 +222,11 @@ public class DependencyContext : IDependencyContext
     public IServiceProvider? ServiceProvider
     {
         get => serviceProvider;
-        set => serviceProvider = value;
+        set
+        {
+            if (value != null && serviceProvider != null && !ReferenceEquals(value, serviceProvider)) { throw new AlreadySetException($"{nameof(ServiceProvider)} is already set. It must be first be set back to null, to avoid unintentional overwriting."); }
+            serviceProvider = value;
+        }
     }
     private IServiceProvider? serviceProvider;
 
@@ -398,7 +440,7 @@ public static class IDependencyContextX
 
         #region Try this.ServiceProvider ?? SingleRootServiceProvider
         {
-            var _serviceProvider = dependencyContext.ServiceProvider ?? DependencyContext.SingleRootServiceProvider;
+            var _serviceProvider = dependencyContext.ServiceProvider ?? DependencyContext.GlobalServiceProvider;
             if (_serviceProvider != null)
             {
                 result = _serviceProvider.GetService(serviceType);
@@ -436,4 +478,12 @@ public static class IDependencyContextX
         //ManualSingletonProvider.GuaranteedInstanceProvider =
         //dc.GuaranteedInstanceProvider(fallback: useDefaultAsFallback ? ManualSingletonProvider.GuaranteedInstanceProvider : null);
     }
+
+    // UNUSED
+    //public static void UseAsGuaranteedSingletonProvider(this IServiceProvider serviceProvider, bool useDefaultAsFallback = true)
+    //{
+    //    var fallback = useDefaultAsFallback ? ManualSingletonProvider.GuaranteedInstanceProvider : null;
+    //    ManualSingletonProvider.GuaranteedInstanceProvider =
+    //            new Func<Type, object>(createType => serviceProvider.GetService(createType) ?? fallback?.Invoke(createType) ?? throw new DependencyMissingException(createType.FullName));
+    //}
 }

@@ -17,9 +17,11 @@ namespace LionFire.Orleans_.AspNetCore_
             this.client = client;
         }
 
-        public async Task<HealthCheckResult> CheckHealthAsync(HealthCheckContext context, CancellationToken cancellationToken = default)
+        public Task<HealthCheckResult> CheckHealthAsync(HealthCheckContext context, CancellationToken cancellationToken = default)
         {
-            throw new NotImplementedException();//What happened to IsUnavailable?
+            return Task.FromResult(HealthCheckResult.Unhealthy("TODO"));
+
+            //throw new NotImplementedException();//What happened to IsUnavailable?
 
             //var manager = client.GetGrain<IManagementGrain>(0);
             //try

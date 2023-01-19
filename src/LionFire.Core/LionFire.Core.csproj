@@ -58,7 +58,6 @@ This package is typically not added on its own, but is a dependency required by 
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Execution\" />
     <Folder Include="Handles\" />
     <Folder Include="MultiTyping\Overlaying\" />
     <Folder Include="MultiTyping\Validation\" />

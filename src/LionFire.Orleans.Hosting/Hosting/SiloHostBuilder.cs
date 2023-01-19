@@ -21,6 +21,7 @@ using HostBuilderContext = Microsoft.Extensions.Hosting.HostBuilderContext;
 
 namespace LionFire.Hosting;
 
+
 public static class SiloHostBuilder
 {
 
@@ -65,7 +66,7 @@ public static class SiloHostBuilder
                     .RegisterSiloWithConsul(o =>
                     {
                         int tcpTimeout = 15;
-                        
+
                         var checks = new List<AgentServiceCheck>();
                         //checks.Add(new AgentServiceCheck
                         //{
@@ -121,7 +122,7 @@ public static class SiloHostBuilder
 
                 var deploymentId = clusterId;
                 if (deploymentId == "blue" || deploymentId == "green") { deploymentId = "prod"; }
-                if (deploymentId == "beta.blue" || deploymentId == "beta.green") { deploymentId = "beta"; } 
+                if (deploymentId == "beta.blue" || deploymentId == "beta.green") { deploymentId = "beta"; }
 
                 builder
                     .Configure<ClusterOptions>(options =>
@@ -149,13 +150,22 @@ public static class SiloHostBuilder
                             {
                                 gatewayOptions.ConfigureConsulClient(new Uri(clusterConsulConfig.ServiceDiscoverEndPoint), clusterConsulConfig.ServiceDiscoveryToken);
                             }
-                            
+
                             gatewayOptions.KvRootFolder = clusterConsulConfig.KvFolderName ?? $"{serviceId}";
                         })
                     )
-                    .If(clusterConfig.Kind != ClusterDiscovery.Localhost && clusterConfig.Kind != ClusterDiscovery.Consul, s =>
-                        throw new NotSupportedException($"Unknown clusterConfig.Kind: {clusterConfig.Kind}"))
+                    .If(clusterConfig.Kind == ClusterDiscovery.Redis, s =>
+                        s.UseRedisClustering(gatewayOptions =>
+                        {
+                            OrleansRedisClusterConfig clusterRedisConfig = new();
+                            context.Configuration.Bind("Orleans:Cluster:Redis", clusterRedisConfig);
 
+                            gatewayOptions.Database = clusterRedisConfig.Database ?? 3;
+                            gatewayOptions.ConnectionString = clusterRedisConfig.ConnectionString ?? "localhost:6379";
+                        })
+                    )
+                    .If(clusterConfig.Kind != ClusterDiscovery.Localhost && clusterConfig.Kind != ClusterDiscovery.Consul && clusterConfig.Kind != ClusterDiscovery.Redis, s =>
+                        throw new NotSupportedException($"Unknown clusterConfig.Kind: {clusterConfig.Kind}"))
 
                     .ConfigureEndpoints(IPAddress.Parse(config.OrleansInterface), config.SiloPort, config.GatewayPort)
                     .ConfigureLogging(logging => logging.AddConsole())

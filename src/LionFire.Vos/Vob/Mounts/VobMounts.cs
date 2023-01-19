@@ -103,19 +103,19 @@ namespace LionFire.Vos.Mounts
         private IMount QueryExistingMount(IMount mount, ref IMount single, ref List<IMount> multi)
         {
             ArgumentNullException.ThrowIfNull(mount);
-            if(single?.Target.Key == mount.Target.Key) { return single; }
+            if (single?.Target.Key == mount.Target.Key) { return single; }
             return multi?.Where(m => m.Target.Key == mount.Target.Key).FirstOrDefault();
         }
 
         public bool UpdateReadMount(IMount existing, IMount newMount)
         {
-            if(!existing.Options.Equals(newMount.Options))
+            if (!existing.Options.Equals(newMount.Options))
             {
                 Unmount(existing.Target.Key);
                 MountRead(newMount);
                 return true;
             }
-            if(existing.IsEnabled != newMount.IsEnabled)
+            if (existing.IsEnabled != newMount.IsEnabled)
             {
                 existing.IsEnabled = newMount.IsEnabled;
                 return true;
@@ -123,7 +123,7 @@ namespace LionFire.Vos.Mounts
 
             return false;
         }
-                
+
         private bool MountRead(IMount mount, bool force = false) // DUPLICATE of MountWrite
         {
             var existing = QueryExistingMount(mount, ref localReadMount, ref localReadMounts);
@@ -349,9 +349,13 @@ namespace LionFire.Vos.Mounts
                 localWriteMount = mount;
                 return true;
             }
-            if (localReadMount != null && (localWriteMount.Options.IsExclusiveWithReadAndWrite || mount.Options.IsExclusiveWithReadAndWrite))
+            if (localReadMount != null
+                && (localWriteMount?.Options?.IsExclusiveWithReadAndWrite == true
+                    || localWriteMounts?.Where(m => m?.Options.IsExclusiveWithReadAndWrite == true).Any() == true
+                    || mount.Options?.IsExclusiveWithReadAndWrite == true)
+                )
             {
-                throw new VosException("Already has read mount, but either this mount or existing write mount has IsExclusiveWithReadAndWrite == true.");
+                throw new VosException("Already has read mount, but either this mount or an existing write mount has IsExclusiveWithReadAndWrite == true.");
             }
             if (localWriteMount != null)
             {
@@ -461,7 +465,7 @@ namespace LionFire.Vos.Mounts
                         _ => new MultiMountResolutionCache(Vob, ReadMountsVersion++, AllEffectiveReadMounts, PersistenceDirection.Read),
                     };
                 }
-                return readMountsCache?.Mounts;
+                return readMountsCache?.Mounts;//.SelectMany(kvp => kvp.Value.Select(v => new KeyValuePair<int, IMount>(kvp.Key, v)));
             }
         }
         IMountResolutionCache ReadMountsCache => (readMountsCache != null && (this.NextAncestor() == null || readMountsCache.Version == ParentValue.MountStateVersion)) ? readMountsCache : null;
@@ -489,6 +493,7 @@ namespace LionFire.Vos.Mounts
                     };
                 }
                 return writeMountsCache?.Mounts;
+                //return writeMountsCache?.Mounts.SelectMany(kvp => kvp.Value.Select(v => new KeyValuePair<int, IMount>(kvp.Key, v)));
             }
         }
 

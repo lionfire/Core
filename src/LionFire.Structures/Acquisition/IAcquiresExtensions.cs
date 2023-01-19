@@ -3,6 +3,7 @@ using LionFire.Ontology;
 using LionFire.ExtensionMethods.Acquisition;
 using LionFire.Structures;
 using System.Collections.Generic;
+using System;
 
 namespace LionFire;
 
@@ -31,6 +32,6 @@ public static class IAcquiresExtensions
 
     public static void SetAcquirable<TNode, TValue>(this TNode parented, TValue value)
     {
-        
+        throw new NotImplementedException();        
     }
 }

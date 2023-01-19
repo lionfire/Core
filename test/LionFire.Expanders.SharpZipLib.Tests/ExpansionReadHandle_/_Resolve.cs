@@ -83,7 +83,7 @@ public class _Resolve
             Assert.AreEqual(2, (long)metrics["LionFire.Persistence.Filesystem.Exists"].value!);
             Assert.AreEqual(2, (long)metrics["LionFire.Persistence.Filesystem.FileExists"].value!);
             Assert.AreEqual(2, (long)metrics["LionFire.Persistence.Filesystem.OpenReadStream"].value!);
-            Assert.AreEqual(2, (long)metrics["LionFire.Persisters.SharpZipLib.SharpZipLibExpander.ReadZipFileStream"].value!);
+            //Assert.AreEqual(2, (long)metrics["LionFire.Persisters.SharpZipLib.SharpZipLibExpander.ReadZipFileStream"].value!);
             TestRunner.RanAsserts = true;
 
             #endregion

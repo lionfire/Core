@@ -17,17 +17,19 @@ public static partial class TestRunner
         var metrics = sp.GetService<ICollection<Metric>>()!;
         //var metrics = ActivitiesExport.Metrics.Value!;
 
+        var testMethodName = LionFireEnvironment.ContextTagsDictionary[MetricsKeys.TestName] ?? throw new Exception($"Couldn't get LionFireEnvironment.ContextTags[{MetricsKeys.TestName}]");
+
         foreach (var metric in metrics)
         {
             MetricPoint? GetMetricPoint(Metric metric)
             {
-                if (LionFireEnvironment.MetricsContext != null)
+                if (LionFireEnvironment.ContextTags != null)
                 {
                     foreach (var metricPoint in metric.GetMetricPoints())
                     {
                         foreach (var tag in metricPoint.Tags)
                         {
-                            if (tag.Key == LionFireEnvironment.MetricsContextKey && LionFireEnvironment.MetricsContext.Equals(tag.Value))
+                            if (tag.Key == MetricsKeys.TestName && testMethodName.Equals(tag.Value))
                             {
                                 return metricPoint;
                             }
@@ -95,7 +97,35 @@ public static partial class TestRunner
 
         foreach (var x in dict)
         {
-            sb.AppendLine($" - {x.Key}: {x.Value.value?.ToString() ?? "?"}");
+            sb.Append($" - ");
+            sb.Append(x.Key);
+            sb.Append(": ");
+
+            if (x.Value.metric.MetricType == MetricType.Histogram)
+            {
+                var buckets = x.Value.metricPoint.GetHistogramBuckets();
+                bool first = true;
+                foreach (var bucket in buckets)
+                {
+                    if (bucket.BucketCount == 0) continue;
+
+                    #region Comma separator
+                    if (first) first = false;
+                    else sb.Append(", ");
+                    #endregion
+
+                    sb.Append(bucket.ExplicitBound);
+                    sb.Append(": ");
+                    sb.Append(bucket.BucketCount);
+                }
+            }
+            else
+            {
+                sb.Append(x.Value.value?.ToString() ?? " ?");
+            }
+            sb.AppendLine();
+            //sb.AppendLine($" - {x.Key}: {x.Value.value?.ToString() ?? "?"}");
+
             //System.Console.WriteLine($"OTel: {item.Name}: {item.Dump()}");
         }
         return sb;
@@ -106,7 +136,7 @@ public static partial class TestRunner
         Console.WriteLine("#region Metrics");
         Console.WriteLine();
         Console.WriteLine("var metrics = GetMetrics(sp, log: true);");
-        
+
         foreach (var x in dict.Where(i => !i.Value.metric.Name.EndsWith(".") && i.Value.metric.MetricType != MetricType.LongGauge))
         {
             // TODO: cast type

@@ -17,7 +17,9 @@ namespace LionFire.Vos.Mounts
 
         public int Version { get; }
 
-        public IEnumerable<KeyValuePair<int, IMount>> Mounts => (IEnumerable<KeyValuePair<int, IMount>>)sortedMounts;
+        public IEnumerable<KeyValuePair<int, IMount>> Mounts => sortedMounts
+            .SelectMany(kvp => kvp.Value.Select(v => new KeyValuePair<int, IMount>(kvp.Key, v)));
+
         MultiValueSortedList<int, IMount> sortedMounts;
 
         private static MultiValueSortedList<int, IMount> Import(IEnumerable<IMount> mountsToImport, PersistenceDirection persistenceDirection, bool autoResolveDuplicatePriorities = false)

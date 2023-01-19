@@ -43,22 +43,29 @@ namespace LionFire.Resolves;
 //    public event Action<INotifyWrappedValueChanged> WrappedValueChanged;
 //}
 
+public static class ResolvesOptions<TValue>
+{
+    public static bool DisposeValue { get; set; } = true;
+}
+
 /// <summary>
 /// 
 /// </summary>
 /// <remarks>
 /// Only requires one method to be implemented: ResolveImpl.
 /// </remarks>
-public abstract class Resolves<TKey, TValue> : DisposableKeyed<TKey>, INotifyWrappedValueChanged, INotifyWrappedValueReplaced
-    // REVIEW Inherit ILazilyResolves<TValue> on concrete classes, as desired?
-    //  - Or rename this class to LazilyResolvesDeluxe<> to distinguish from LazilyResolves<>?
-    //  - , ILazilyResolves<TValue> 
+public abstract class Resolves<TKey, TValue> 
+    : DisposableKeyed<TKey>
+    , INotifyWrappedValueChanged
+    , INotifyWrappedValueReplaced
+   , ILazilyResolves<TValue>
+   //  - RENAME this class to LazilyResolvesDeluxe<> to distinguish from LazilyResolves<>? Or rename LazilyResolves<> to SimpleLazilyResolves<>?
 {
     static ValueChangedPropagation ValueChangedPropagation = new ValueChangedPropagation();
 
     #region Configuration
 
-    public static bool DisposeValue { get; set; } = true;
+    public static bool DisposeValue => ResolvesOptions<TValue>.DisposeValue;
 
     #endregion
 
@@ -107,9 +114,10 @@ public abstract class Resolves<TKey, TValue> : DisposableKeyed<TKey>, INotifyWra
             if (EqualityComparer<TValue>.Default.Equals(protectedValue, value)) return;
             var oldValue = protectedValue;
 
-            if (DisposeValue && oldValue is IDisposable d) {
+            if (DisposeValue && oldValue is IDisposable d)
+            {
                 Log.Get<Resolves<TKey, TValue>>().LogDebug("Disposing object of type {Type}", d.GetType().FullName);
-                d.Dispose(); 
+                d.Dispose();
             }
 
             ValueChangedPropagation.Detach(this, protectedValue);

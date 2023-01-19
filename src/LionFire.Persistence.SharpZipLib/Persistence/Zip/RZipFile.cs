@@ -94,7 +94,7 @@ public class RZipFile : ReadHandle<IReference<ZipFile>, ZipFile>
         if (streamRetrieveResult.IsSuccess() == true)
         {
             if (!noop) { StreamReadBytesC.IncrementWithContext(streamRetrieveResult!.Value.Length); }
-            Log.Get<RZipFile>().Debug($"{(noop ? "[NOOP] " : "")} RZipFile Retrieved stream of length {streamRetrieveResult!.Value.Length} bytes from {Key} ");
+            Logger.Debug($"{(noop ? "[NOOP] " : "")} RZipFile Retrieved stream of length {streamRetrieveResult!.Value.Length} bytes from {Key} ");
             ProtectedValue = new ICSharpCode.SharpZipLib.Zip.ZipFile(streamRetrieveResult.Value, true);
             return new ResolveResultSuccess<ZipFile>(Value);
         }
@@ -108,7 +108,7 @@ public class RZipFile : ReadHandle<IReference<ZipFile>, ZipFile>
             {
                 return ResolveResultNotResolved<ZipFile>.Instance;
             }
-            Log.Get<RZipFile>().Debug($"RZipFile Retrieved byte array of {bytesRetrieveResult.Value.Length} bytes");
+            Logger.Debug($"RZipFile Retrieved byte array of {bytesRetrieveResult.Value?.Length} bytes");
 
             var oldMemoryStream = ms;
             if (oldMemoryStream != null)
@@ -116,10 +116,17 @@ public class RZipFile : ReadHandle<IReference<ZipFile>, ZipFile>
                 await oldMemoryStream.DisposeAsync();
             }
 
-            ms = new MemoryStream(bytesRetrieveResult.Value);
-            ProtectedValue = new ICSharpCode.SharpZipLib.Zip.ZipFile(ms, false);
-
-            return new ResolveResultSuccess<ZipFile>(Value);
+            if (bytesRetrieveResult.Value == null)
+            {
+                ProtectedValue = null;
+                return ResolveResultNotResolved<ZipFile>.Instance;
+            }
+            else
+            {
+                ms = new MemoryStream(bytesRetrieveResult.Value);
+                ProtectedValue = new ICSharpCode.SharpZipLib.Zip.ZipFile(ms, false);
+                return new ResolveResultSuccess<ZipFile>(Value);
+            }
         }
     }
 

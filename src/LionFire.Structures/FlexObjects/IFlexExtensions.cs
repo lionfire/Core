@@ -140,14 +140,22 @@ namespace LionFire.FlexObjects
         /// <returns></returns>
         public static T Get<T>(this IFlex flex, string name = null, Func<T> createFactory = null, bool throwIfMissing = true, object[] createArgs = null)
         {
+
             var result = Query<T>(flex, name);
             if (!EqualityComparer<T>.Default.Equals(result, default)) { return result; }
 
-            result = createFactory != null ? createFactory()
-                : createArgs != null ? (T)FlexGlobalOptions.DefaultCreateWithOptionsFactory(typeof(T), createArgs)
-                    : (T)FlexGlobalOptions.DefaultCreateFactory(typeof(T));
-            Add<T>(flex, result, allowMultipleOfSameType: false);
+            lock (flex) // REVIEW - locks on the flex object itself.  This is generally not advised. Is there another way? Should we add a new object() to the flex?  Dedicated ConditionalWeakTable?
+            {
+                #region redo
+                result = Query<T>(flex, name);
+                if (!EqualityComparer<T>.Default.Equals(result, default)) { return result; }
+                #endregion
 
+                result = createFactory != null ? createFactory()
+                    : createArgs != null ? (T)FlexGlobalOptions.DefaultCreateWithOptionsFactory(typeof(T), createArgs)
+                        : (T)FlexGlobalOptions.DefaultCreateFactory(typeof(T));
+                Add<T>(flex, result, allowMultipleOfSameType: false);
+            }
             return result;
         }
 

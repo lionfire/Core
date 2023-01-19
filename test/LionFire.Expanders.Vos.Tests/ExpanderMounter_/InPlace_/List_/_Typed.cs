@@ -32,15 +32,18 @@ public class _Typed
             });
 
             bool NI = false;
+            LionFire.Resolves.IResolveResult<Metadata<IEnumerable<Listing<TestClass>>>> resolveResult = null;
             try
             {
-                var resolveResult = handle.Resolve().Result;
+                resolveResult = handle.Resolve().Result;
             }
             catch (AggregateException aex)
             {
                 NI = aex.InnerExceptions.OfType<NotImplementedException>().Any();
             }
+            Debug.WriteLine(resolveResult);
             Assert.IsTrue(NI);
+
 
             //var resolveResult = await handle.Resolve();
             //Assert.IsTrue(resolveResult.IsSuccess);

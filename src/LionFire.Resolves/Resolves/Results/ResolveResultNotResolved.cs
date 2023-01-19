@@ -1,18 +1,16 @@
 ﻿using LionFire.Results;
 
-namespace LionFire.Resolves
+namespace LionFire.Resolves;
+
+public struct ResolveResultNotResolved<TValue> : ISuccessResult, ILazyResolveResult<TValue>
 {
-    public struct ResolveResultNotResolved<TValue> : ISuccessResult, ILazyResolveResult<TValue>
-    {
-        public bool? IsSuccess => false;
+    public bool? IsSuccess => false;
 
-        public TValue Value => default;
+    public TValue Value => default;
 
-        public bool HasValue => false;
+    public bool HasValue => false;
 
-        public bool IsNoop => false;
+    public bool IsNoop => false;
 
-        public static ResolveResultNotResolved<TValue> Instance { get; } = new ResolveResultNotResolved<TValue>();
-    }
-
+    public static ResolveResultNotResolved<TValue> Instance { get; } = new ResolveResultNotResolved<TValue>();
 }

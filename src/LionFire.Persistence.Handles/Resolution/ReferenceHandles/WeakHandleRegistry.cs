@@ -94,7 +94,11 @@ public class WeakHandleRegistry : IHandleRegistry, IDisposable
         var key = (uri, typeof(TValue));
         //if (readHandles.TryGetValue(key, out var found)) { return (IReadHandle<TValue>)found; }
 
-        return (IReadHandle<TValue>)readHandles.GetOrAdd(key, _ => factory(uri));
+        return (IReadHandle<TValue>)readHandles.GetOrAdd(key, _ =>
+        {
+            ReadHandlesCreatedC.IncrementWithContext();
+            return factory(uri);
+        });
 
         //lock (_read)
         //{
