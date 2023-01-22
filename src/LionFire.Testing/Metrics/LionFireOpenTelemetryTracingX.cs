@@ -32,7 +32,6 @@ public static class LionFireOpenTelemetryTracingX
         services
         .AddOpenTelemetry()
             .WithMetrics(c => c
-
                 //.AddConsoleExporter(o => o
                 //.Targets = OpenTelemetry.Exporter.ConsoleExporterOutputTargets.Console
                 //)

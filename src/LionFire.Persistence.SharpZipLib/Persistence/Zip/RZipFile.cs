@@ -95,6 +95,7 @@ public class RZipFile : ReadHandle<IReference<ZipFile>, ZipFile>
         {
             if (!noop) { StreamReadBytesC.IncrementWithContext(streamRetrieveResult!.Value.Length); }
             Logger.Debug($"{(noop ? "[NOOP] " : "")} RZipFile Retrieved stream of length {streamRetrieveResult!.Value.Length} bytes from {Key} ");
+            streamRetrieveResult.Value.Seek(0, SeekOrigin.Begin);
             ProtectedValue = new ICSharpCode.SharpZipLib.Zip.ZipFile(streamRetrieveResult.Value, true);
             return new ResolveResultSuccess<ZipFile>(Value);
         }

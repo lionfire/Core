@@ -67,12 +67,12 @@ Host.CreateDefaultBuilder(args)
 
     .AddOpenTelemetry()
         .WithMetrics(b => b
-            .Orleans()
             .AddProcessInstrumentation()
             .AddRuntimeInstrumentation()
             .AddAspNetCoreInstrumentation()
             //.AddHttpClientInstrumentation()
             .AddVosInstrumentation()
+        
         .AddOtlpExporter(option =>
         {
             option.Endpoint = new Uri("http://localhost:4317");

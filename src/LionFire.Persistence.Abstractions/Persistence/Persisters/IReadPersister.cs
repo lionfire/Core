@@ -6,22 +6,24 @@ using System.Threading.Tasks;
 namespace LionFire.Persistence.Persisters;
 
 [Flags]
-public enum RetrieveValidateFlags : byte
+public enum RetrieveFlags : byte
 {
     None = 0,
-    NotAmbiguous = 1 << 0,
+    //NotAmbiguous = 1 << 0,
+    FirstSuccess = 1 << 1,
+
 }
 
 public class RetrieveOptions
 {
     public static RetrieveOptions Default { get; } = new();
 
-    public RetrieveValidateFlags ValidationFlags { get; set; }
+    public RetrieveFlags ValidationFlags { get; set; }
 
     /// <summary>
     /// Only return the first item found
     /// </summary>
-    public bool ReturnFirstFound => !ValidationFlags.HasFlag(RetrieveValidateFlags.NotAmbiguous);
+    public bool ReturnFirstFound => ValidationFlags.HasFlag(RetrieveFlags.FirstSuccess);
 
 }
 

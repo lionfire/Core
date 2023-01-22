@@ -29,6 +29,8 @@ namespace LionFire.Referencing
         public static bool operator ==(ReferenceWrapper<TReference> left, ReferenceWrapper<TReference> right) => left.Reference.Equals(right.Reference);
 
         public static bool operator !=(ReferenceWrapper<TReference> left, ReferenceWrapper<TReference> right) => !(left.Reference.Equals(right.Reference));
+
+        public override string ToString() => Reference?.ToString() ?? "(null)";
     }
 
     //public struct ReferenceWrapper<TReference> : IReferencable<TReference>, IReferencable

@@ -255,8 +255,17 @@ public class SharpZipLibExpander : ExpanderPersister, ISupportsFileExtensions, I
                 {
                     foundDirectory = true;
                     var flags = PersistenceResultFlags.Found;
-
-                    if (listingItemType != null)
+                    if (listingItemType == null)
+                    {
+                        // We are trying to retrieve a Directory as some sort of object
+                        if (entryIndex == -2) { return RetrieveResult<TValue>.Found(); } // TODO: Return some sort of VosDirectory as value?
+                        else
+                        {
+                            throw new NotImplementedException("UNTESTED");
+                            return RetrieveResult<TValue>.Found();    // TODO: Return some sort of VosDirectory as value?
+                        }
+                    }
+                    else
                     {
                         return await retrieveListingForDirectory(nativeTargetPath).ConfigureAwait(false);
 

@@ -1,6 +1,7 @@
 ﻿#nullable enable
 using LionFire.Dependencies;
 using LionFire.Execution;
+using LionFire.Extensions.DefaultValues;
 using LionFire.IO;
 using LionFire.Referencing;
 using LionFire.Serialization;
@@ -10,9 +11,12 @@ using LionFire.Vos.Mounts;
 using LionFire.Vos.Services;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using System.Collections;
 using System.Diagnostics;
 using System.Diagnostics.Metrics;
 using System.Linq;
+using System.Net.WebSockets;
+using System.Reflection.Metadata.Ecma335;
 using System.Text;
 using System.Threading;
 using static LionFire.Persistence.Persisters.Vos.VosPersister;
@@ -119,31 +123,38 @@ public class VosPersister : SerializingPersisterBase<VosPersisterOptions>, IPers
         var resultForNoChildResults = new VosRetrieveResult<TValue>();
         //for (; iteration < maxRetries; iteration++) { }
 
-//        if (listingItemType != null)
-//        {
-//#warning 230119 NEXT: Why isn't the mounted Zip being returned in the list? What's different between Vos.Blazor's list and the List unit tests? Do I need to add Vos children (that have mounts) to the list here?  As though Vob Children is another potential source?  Why does the unit test work?
+        if (listingItemType != null)
+        {
+#warning NEXT: Add Vos children (that have mounts) to the list here.  
 
-//            if (listingItemType != typeof(object))
-//            {
-//                //throw new NotImplementedException();
-//            }
-//            else
-//            {
-//                var vobChildren = vob.Children;
+            if (listingItemType != typeof(object))
+            {
+                //throw new NotImplementedException();
+            }
+            else
+            {
+                var vobChildren = vob.Children;
 
-//                if (listingItemType != typeof(object))
-//                {
-//                    // TODO get all known ReadHandles for child, and skip ones that do not match listingItemType
-//                    //vobChildren = vobChildren.Where(v => v.Matches(listingItemType));
-//                }
+                if (listingItemType == typeof(object))
+                {
+                    var listingType = typeof(Listing<>).MakeGenericType(listingItemType);
 
-//                var listingType = typeof(Listing<>).MakeGenericType(listingItemType);
+                    var vobChildrenListings = vobChildren.Select(v =>
+                    {
+                        var listing = (Listing<object> /* TODO HARDCAST */)Activator.CreateInstance(listingType, v.Key)!;
+                        listing.IsDirectory = true;
+                        return listing;
+                    });
 
-//                var vobChildrenListings = vobChildren.Select(v => (Listing<object> /* TODO HARDCAST */)Activator.CreateInstance(listingType, v.Key)!);
-
-//                yield return new VosRetrieveResult<TValue>((TValue)(object)new Metadata<IEnumerable<Listing<object>>>(vobChildrenListings));
-//            }
-//        }
+                    yield return new VosRetrieveResult<TValue>((TValue)(object)new Metadata<IEnumerable<Listing<object>>>(vobChildrenListings));
+                }
+                else
+                {
+                    // TODO get all known ReadHandles for child, and skip ones that do not match listingItemType
+                    //vobChildren = vobChildren.Where(v => v.Matches(listingItemType));
+                }
+            }
+        }
 
     again:
         if (listingItemType != null)
@@ -411,110 +422,185 @@ public class VosPersister : SerializingPersisterBase<VosPersisterOptions>, IPers
     }
 
 #nullable enable
-    public static Type? GetMetadataListingType<TValue>()
+
+    public static Type? GetMetadataListingType<TValue>() => typeof(TValue).UnwrapGeneric(typeof(Metadata<>))?.UnwrapGeneric(typeof(IEnumerable<>))?.IfGenericOrDefault(typeof(Listing<>));
+
+    public static Type? GetMetadataListingItemType<TValue>() => GetMetadataListingType<TValue>()?.GetGenericArguments()[0];
+
+    protected async Task<IRetrieveResult<TValue>> RetrieveWithAggregation<TValue>(IReferencable<IVobReference> referencable, RetrieveOptions? options = null)
     {
-        if (typeof(TValue).IsConstructedGenericType)
+        RetrieveResult<TValue> aggregatedResult = new RetrieveResult<TValue>();
+        List<IRetrieveResult<TValue>> childResults = null;
+
+        var aggregationItemType = WrapperUtils<TValue>.GetInnermostEnumerableItemType;
+        if (aggregationItemType == null) throw new ArgumentException("Aggregation not supported for type: " + typeof(TValue).FullName);
+
+        IListAggregator<TValue> aggregator = ListAggregator.Create<TValue>();
+
+        await foreach (var childResult in RetrieveBatches<TValue>(referencable))
         {
-            var generic = typeof(TValue).GetGenericTypeDefinition();
-            if (generic == typeof(Metadata<>))
+            Debug.Assert(childResult != null);
+            RetrieveBatchC.IncrementWithContext();
+            childResults ??= new();
+
+            childResults.Add(childResult);
+
+            if (childResult.Flags.HasFlag(PersistenceResultFlags.Fail)) { aggregatedResult.Flags |= PersistenceResultFlags.InnerFail | PersistenceResultFlags.Fail; }
+            if (childResult.Flags.HasFlag(PersistenceResultFlags.Success)) { aggregatedResult.Flags |= PersistenceResultFlags.Success; }
+            if (childResult.Flags.HasFlag(PersistenceResultFlags.Found)) { aggregatedResult.Flags |= PersistenceResultFlags.Found; }
+
+            if (childResult.HasValue) { aggregator.Aggregate(childResult.Value); }
+        }
+
+        if (!aggregatedResult.Flags.HasFlag(PersistenceResultFlags.Found)) { aggregatedResult.Flags |= PersistenceResultFlags.NotFound; }
+
+        aggregatedResult.Value = aggregator.GetValue();
+
+        aggregatedResult.InnerResult = childResults;
+        return aggregatedResult;
+    }
+
+    #region Aggregator MOVE
+
+
+    public bool CanAggregateType<TValue>() => WrapperUtils<TValue>.GetInnermostEnumerableType != null;
+    //return GetMetadataListingItemType<TValue>() != null;
+
+    private interface IListAggregator<TValue>
+    {
+        void Aggregate(TValue value);
+
+        TValue GetValue();
+    }
+
+    private static class ListAggregator
+    {
+        public static IListAggregator<TValue> Create<TValue>()
+            => (IListAggregator<TValue>)Activator.CreateInstance(typeof(WrappedEnumerableAggregator<,>).MakeGenericType(typeof(TValue), GetMetadataListingType<TValue>()));
+    }
+
+    private class WrappedEnumerableAggregator<TValue, TItem> : IListAggregator<TValue>
+    {
+        List<TItem>? aggregatedItems;
+
+        public void Aggregate(TValue value)
+        {
+            aggregatedItems ??= new();
+            aggregatedItems.AddRange(WrapperUtils<TValue>.GetEnumerable<TItem>(value));
+        }
+
+        public TValue GetValue() => WrapperUtils<TValue>.Wrap(aggregatedItems);
+    }
+
+    public static class WrapperUtils<T>
+    {
+        public static bool IsReadWrapper => isReadWrapper ??= typeof(T).GetInterfaces().Where(t => t.IsGenericType && t.GetGenericTypeDefinition() == typeof(IReadWrapper<>)).Any();
+        private static bool? isReadWrapper;
+
+        public static bool IsWriteWrapper => isWriteWrapper ??= typeof(T).GetInterfaces().Where(t => t.IsGenericType && t.GetGenericTypeDefinition() == typeof(IWriteWrapper<>)).Any();
+        private static bool? isWriteWrapper;
+
+        public static bool IsWrapper => IsReadWrapper && IsWriteWrapper;
+
+        public static Type? GetWrappedReadType => getWrappedReadType ??= (Type?)typeof(T).GetInterfaces().Where(t => t.IsGenericType && t.GetGenericTypeDefinition() == typeof(IReadWrapper<>)).FirstOrDefault()?.GetGenericArguments()[0];
+        private static Type? getWrappedReadType;
+
+        public static Type? GetWrappedWriteType => getWrappedWriteType ??= (Type?)typeof(T).GetInterfaces().Where(t => t.IsGenericType && t.GetGenericTypeDefinition() == typeof(IWriteWrapper<>)).FirstOrDefault()?.GetGenericArguments()[0];
+        private static Type? getWrappedWriteType;
+
+        public static Type? GetInnermostWrappedReadType
+        {
+            get
             {
-                var genericParameter = typeof(TValue).GetGenericArguments()[0];
-                if (genericParameter.IsConstructedGenericType)
+                if (wrappedType == null)
                 {
-                    var metadataGeneric = genericParameter.GetGenericTypeDefinition();
-                    if (metadataGeneric == typeof(Listing<>))
+                    for (wrappedType = GetWrappedReadType; wrappedType != null; wrappedType = GetWrappedReadType)
                     {
-                        var listingType = genericParameter.GetGenericArguments()[0];
-                        return listingType;
-                        //var aggregatorType = typeof(ResultAggregator<,>).MakeGenericType(typeof(TValue), typeof(listingItemType));
+                        var child = typeof(WrapperUtils<>).MakeGenericType(wrappedType);
+                        Type? innerWrappedReadType = (Type?)child!.GetProperty(nameof(GetWrappedReadType), System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.Static)!.GetValue(null);
+                        if (innerWrappedReadType != null)
+                        {
+                            wrappedType = innerWrappedReadType;
+                        }
+                        else
+                        {
+                            break;
+                        }
                     }
                 }
+                return wrappedType;
             }
         }
-        return null;
-    }
-    public static class ResultAggregator<TValue, TItem>
-    {
-        //public Func<TValue, >
-        public static async Task<IRetrieveResult<TValue>> RetrieveWithAggregation<TValue, TItem>(IReferencable<IVobReference> referencable)
+        private static Type? wrappedType;
+
+        public static Type? GetInnermostEnumerableType
         {
-            List<TItem> aggregation = new List<TItem>();
+            get
+            {
+                getInnermostEnumerableType ??= GetInnermostWrappedReadType?.IsAssignableTo(typeof(IEnumerable)) == true ? GetInnermostWrappedReadType : GetInnermostWrappedReadType?.GetInterfaces().Where(t => t.IsGenericType && t.GetGenericTypeDefinition() == typeof(IEnumerable<>)).FirstOrDefault() ?? typeof(DBNull);
 
-            throw new NotImplementedException();
+                return getInnermostEnumerableType == typeof(DBNull) ? null : getInnermostEnumerableType;
+            }
         }
-    }
+        private static Type? getInnermostEnumerableType;
 
-    public bool CanAggregateType<TValue>()
-    {
-        return GetMetadataListingType<TValue>() != null;
-    }
+        public static Type? GetInnermostEnumerableItemType() => GetInnermostEnumerableType?.GetGenericArguments()[0];
 
-    protected async Task<IRetrieveResult<TValue>> RetrieveWithAggregation<TValue>(IReferencable<IVobReference> referencable)
-    {
-        throw new NotImplementedException();
-#warning NEXT: Get aggregator
-        IRetrieveResult<TValue>? singleResult = null;
-
-        await foreach (var multiResult in RetrieveBatches<TValue>(referencable))
+        public static IEnumerable<TItem>? GetEnumerable<TItem>(T wrapper)
         {
-            //if (multiResult.IsSuccess == true)
-            //{
-            //    if (multiResult.Flags.HasFlag(PersistenceResultFlags.MountNotAvailable))
-            //    {
-            //        return multiResult;
-            //    }
-            //    continue;
-            //}
-            if (multiResult.IsSuccess != true)
+            if(wrapper is IReadWrapper<IEnumerable<TItem>> w)
             {
-                if (multiResult.Flags.HasFlag(PersistenceResultFlags.MountNotAvailable))
-                {
-                    continue;
-                }
-                else return multiResult; // Return the failure
+                return w.Value;
             }
-
-            if (singleResult != null && multiResult.IsSuccess == true)
-            {
-                l.Error($"AMBIGUOUS: {referencable.Reference} {typeof(TValue).Name}");
-                return new RetrieveResult<TValue>
-                {
-                    Error = "Multiple mounts returned a value",
-                    Flags = PersistenceResultFlags.Fail | PersistenceResultFlags.Found | PersistenceResultFlags.Ambiguous
-                };
-            }
-
-            singleResult = multiResult;
+            return null;
         }
 
-        return singleResult;
+        public static T Wrap<TInner>(TInner value)
+        {
+            // ENH: If there isn't a ctor that takes a single parameter of type TInner, create using default constructor, and set via IWriteWrapper<TInner>
+            return (T)Activator.CreateInstance(typeof(T), value);
+        }
     }
+    #endregion
 
     public async Task<IRetrieveResult<TValue>> Retrieve<TValue>(IReferencable<IVobReference> referencable, RetrieveOptions? options = null)
     {
-        bool returnFirstSuccess = options == null || !options.ValidationFlags.HasFlag(RetrieveValidateFlags.NotAmbiguous);
-
-        RetrieveC.IncrementWithContext();
         if (CanAggregateType<TValue>()) { return await RetrieveWithAggregation<TValue>(referencable).ConfigureAwait(false); }
+
+        bool returnFirstSuccess = options?.ValidationFlags.HasFlag(RetrieveFlags.FirstSuccess) == true;
+        RetrieveC.IncrementWithContext();
 
         IRetrieveResult<TValue>? singleResult = null;
 
-        await foreach (var multiResult in RetrieveBatches<TValue>(referencable))
+        IRetrieveResult<TValue>? singleNonSuccessResult = null;
+        List<IRetrieveResult<TValue>>? nonSuccessResults = null;
+
+        await foreach (var childResult in RetrieveBatches<TValue>(referencable))
         {
-            Debug.Assert(multiResult != null);
+            Debug.Assert(childResult != null);
             RetrieveBatchC.IncrementWithContext();
-            //if (multiResult.IsSuccess == true)
-            //{
-            //    if (multiResult.Flags.HasFlag(PersistenceResultFlags.MountNotAvailable))
-            //    {
-            //        return multiResult;
-            //    }
-            //    continue;
-            //}
 
-            if (multiResult.IsSuccess != true && ShouldReturnError(multiResult)) return multiResult; // Return the failure
+            #region Non-success
+            if (childResult.IsSuccess != true)
+            {
+                if (singleNonSuccessResult != null && nonSuccessResults == null)
+                {
+                    nonSuccessResults = new();
+                    nonSuccessResults.Add(singleNonSuccessResult);
+                }
+                if (nonSuccessResults != null)
+                {
+                    nonSuccessResults.Add(childResult);
+                }
+                singleNonSuccessResult ??= childResult;
 
-            if (singleResult != null && multiResult.IsSuccess == true)
+                //if (ShouldReturnSingleErrorImmediately(childResult)) return childResult; // Return the failure
+                continue;
+            }
+            #endregion
+
+            #region Ambiguous check
+            if (singleResult != null && childResult.IsSuccess == true)
             {
                 l.Error($"AMBIGUOUS: {referencable.Reference} {typeof(TValue).Name}");
                 return new RetrieveResult<TValue>
@@ -523,15 +609,21 @@ public class VosPersister : SerializingPersisterBase<VosPersisterOptions>, IPers
                     Flags = PersistenceResultFlags.Fail | PersistenceResultFlags.Found | PersistenceResultFlags.Ambiguous
                 };
             }
+            #endregion
 
+            #region returnFirstSuccess
             if (returnFirstSuccess && singleResult?.IsSuccess == true) return singleResult;
+            #endregion
 
-            singleResult = multiResult;
+            singleResult = childResult;
         }
 
-        return singleResult;
+        if (singleResult is not null) { return singleResult; }
+        else if (singleNonSuccessResult is not null) return singleNonSuccessResult;
+        else if (nonSuccessResults is not null) return new RetrieveResult<TValue> { Flags = PersistenceResultFlags.Fail | PersistenceResultFlags.InnerFail, InnerResults = nonSuccessResults };
+        else throw new UnreachableCodeException($"{nameof(RetrieveBatches)} must return at least one result");
 
-        bool ShouldReturnError(IRetrieveResult<TValue> r) => r.Flags.HasFlag(PersistenceResultFlags.MountNotAvailable);
+        //bool ShouldReturnSingleErrorImmediately(IRetrieveResult<TValue> r) => r.Flags.HasFlag(PersistenceResultFlags.MountNotAvailable);
     }
 
     #endregion
@@ -591,35 +683,37 @@ public class VosPersister : SerializingPersisterBase<VosPersisterOptions>, IPers
 
     #region IListPersister
 
-    // TODO REVIEW - is this redundant / old?  Use overload with filter param instead?
-    public async Task<IRetrieveResult<IEnumerable<Listing<TValue>>>> List<TValue>(IReferencable<IVobReference> referencable)
-    {
-        ListC.IncrementWithContext();
-        var listingsLists = await RetrieveBatches<Metadata<IEnumerable<Listing<TValue>>>>(referencable).ToListAsync();
+    // TODO - use a single overload, with null defaulting ListOptions
 
-        List<Listing<TValue>> listings = new();
+    //public async Task<IRetrieveResult<IEnumerable<Listing<TValue>>>> List<TValue>(IReferencable<IVobReference> referencable)
+    //{
+    //    throw new NotSupportedException();
+    //    ListC.IncrementWithContext();
+    //    var listingsLists = await RetrieveBatches<Metadata<IEnumerable<Listing<TValue>>>>(referencable).ToListAsync();
 
-        var consolidatedResult = new RetrieveResult<IEnumerable<Listing<TValue>>>();
-        consolidatedResult.Value = listings;
+    //    List<Listing<TValue>> listings = new();
 
-        foreach (var result in listingsLists)
-        {
-            consolidatedResult.Flags |= result.Flags; // REVIEW - maybe only OR certain flags explicitly to prevent unintended consequences
+    //    var consolidatedResult = new RetrieveResult<IEnumerable<Listing<TValue>>>();
+    //    consolidatedResult.Value = listings;
 
-            if (result.Value.Value != null)
-            {
-                listings.AddRange(result.Value.Value);
-            }
-        }
+    //    foreach (var result in listingsLists)
+    //    {
+    //        consolidatedResult.Flags |= result.Flags; // REVIEW - maybe only OR certain flags explicitly to prevent unintended consequences
 
-        return consolidatedResult;
-    }
+    //        if (result.Value.Value != null)
+    //        {
+    //            listings.AddRange(result.Value.Value);
+    //        }
+    //    }
+
+    //    return consolidatedResult;
+    //}
 
     public async Task<IRetrieveResult<IEnumerable<Listing<TValue>>>> List<TValue>(IReferencable<IVobReference> referencable, ListFilter filter = null)
     {
         l.Trace($"List ...> {referencable.Reference}");
 
-        var retrieveResult = await Retrieve<Metadata<IEnumerable<Listing<TValue>>>>(referencable).ConfigureAwait(false);
+        var retrieveResult = await RetrieveWithAggregation<Metadata<IEnumerable<Listing<TValue>>>>(referencable).ConfigureAwait(false);
         var result = retrieveResult.IsSuccess()
             ? RetrieveResult<IEnumerable<Listing<TValue>>>.Success(retrieveResult.Value.Value)
             : new RetrieveResult<IEnumerable<Listing<TValue>>> { Flags = retrieveResult.Flags, Error = retrieveResult.Error };
@@ -668,4 +762,17 @@ public class VosPersister : SerializingPersisterBase<VosPersisterOptions>, IPers
 
     #endregion
 
+}
+public static class ReflectionX // MOVE
+{
+    public static Type? UnwrapGeneric(this Type type, Type genericType)
+    {
+        if (type.IsConstructedGenericType && type.GetGenericTypeDefinition() == genericType) return type.GetGenericArguments()[0];
+        return null;
+    }
+    public static Type? IfGenericOrDefault(this Type type, Type genericType)
+    {
+        if (type.IsConstructedGenericType && type.GetGenericTypeDefinition() == genericType) return type;
+        return null;
+    }
 }

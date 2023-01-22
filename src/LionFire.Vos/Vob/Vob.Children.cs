@@ -246,7 +246,7 @@ namespace LionFire.Vos
         /// </summary>
         /// <param name="subpathChunks"></param>
         /// <param name="index"></param>
-        /// <returns>Null if any items in subpathChunks are null</returns>
+        /// <returns>Null if any aggregatedItems in subpathChunks are null</returns>
         public IVob GetChild(string[] subpathChunks, int index = 0)
         {
             // SIMILAR logic: GetChild and QueryChild

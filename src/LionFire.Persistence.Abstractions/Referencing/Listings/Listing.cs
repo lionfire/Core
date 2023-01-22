@@ -72,7 +72,7 @@ public class Listing<T>
     public string Name { get; private set; }
 
     public string MimeType { get; }
-    public bool IsDirectory { get; }
+    public bool IsDirectory { get; set; }
 
     public IReference UnderlyingReference { get; set; }
     public string RawName { get; set; }

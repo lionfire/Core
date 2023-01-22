@@ -180,7 +180,7 @@ public abstract class Resolves<TKey, TValue>
     public async ITask<IResolveResult<TValue>> Resolve()
     {
         var resolveResult = await ResolveImpl();
-        Debug.Assert(resolveResult != null, "ResolveImpl must not return null");
+        Debug.Assert(resolveResult is not null, "ResolveImpl must not return null");
         ProtectedValue = resolveResult.Value;
         return resolveResult;
     }

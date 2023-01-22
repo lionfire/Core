@@ -1,4 +1,4 @@
-﻿
+﻿#nullable enable
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -24,12 +24,12 @@ namespace LionFire.Persistence
         //    Flags = default;
         //}
         public RetrieveResult(T value) : this() { this.Value = value; }
-        public RetrieveResult(T value, PersistenceResultFlags flags, object error = null) : this(value) { Flags = flags; Error = error; }
+        public RetrieveResult(T value, PersistenceResultFlags flags, object? error = null) : this(value) { Flags = flags; Error = error; }
 
         #endregion
 
-        public object Error { get; set; }
-        public object ErrorDetail { get; set; }
+        public object? Error { get; set; }
+        public object? ErrorDetail { get; set; }
         public T Value { get; set; }
         public bool HasValue =>
             !EqualityComparer<T>.Default.Equals(default, Value);
@@ -40,7 +40,8 @@ namespace LionFire.Persistence
 
         public bool IsNoop => Flags.HasFlag(PersistenceResultFlags.Noop);
 
-        public object InnerResult { get; set; }
+        public object? InnerResult { get; set; }
+        public IEnumerable<IRetrieveResult<T>>? InnerResults { get; set; }
 
         #region Static
 
