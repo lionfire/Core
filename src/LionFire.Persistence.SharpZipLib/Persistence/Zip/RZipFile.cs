@@ -14,9 +14,15 @@ using System.IO;
 
 namespace LionFire.Persisters.SharpZipLib_;
 
+public class ZipFileOptions
+{
+    public bool LeaveOpen { get; set; } = true;
+
+    public static ZipFileOptions Default { get; set; } = new();
+}
 // RENAME to RZipFile
 public class RZipFile : ReadHandle<IReference<ZipFile>, ZipFile>
-    //, IHas<IServiceProvider> 
+//, IHas<IServiceProvider> 
 {
     #region Dependencies
 
@@ -95,8 +101,15 @@ public class RZipFile : ReadHandle<IReference<ZipFile>, ZipFile>
         {
             if (!noop) { StreamReadBytesC.IncrementWithContext(streamRetrieveResult!.Value.Length); }
             Logger.Debug($"{(noop ? "[NOOP] " : "")} RZipFile Retrieved stream of length {streamRetrieveResult!.Value.Length} bytes from {Key} ");
+            if (ProtectedValue != null)
+            {
+                Logger.Warn("ProtectedValue != null");
+            }
+            //else
+            //{
             streamRetrieveResult.Value.Seek(0, SeekOrigin.Begin);
-            ProtectedValue = new ICSharpCode.SharpZipLib.Zip.ZipFile(streamRetrieveResult.Value, true);
+            ProtectedValue = new ICSharpCode.SharpZipLib.Zip.ZipFile(streamRetrieveResult.Value, leaveOpen: ZipFileOptions.Default.LeaveOpen);
+            //}
             return new ResolveResultSuccess<ZipFile>(Value);
         }
         else
