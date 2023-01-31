@@ -164,7 +164,7 @@ public abstract partial class VirtualFilesystemPersisterBase<TReference, TPersis
                 }
                 if (showDir)
                 {
-                    foreach (var dirName in (await VirtualFilesystem.GetDirectories(path).ConfigureAwait(false)).Select(p => Path.GetFileName(p) + LionPath.Separator))
+                    foreach (var dirName in (await VirtualFilesystem.GetDirectories(path).ConfigureAwait(false)).Select(p => Path.GetFileName(p) /*+ LionPath.Separator*/))
                     {
                         //var kind = ItemKindIdentifier.Identify(dir);
 
