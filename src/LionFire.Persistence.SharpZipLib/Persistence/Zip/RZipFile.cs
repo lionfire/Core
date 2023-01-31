@@ -14,17 +14,8 @@ using System.IO;
 
 namespace LionFire.Persisters.SharpZipLib_;
 
-// RENAME to RZipFile
 public class RZipFile : ReadHandle<IReference<ZipFile>, ZipFile>
-    //, IHas<IServiceProvider> 
 {
-    #region Dependencies
-
-    //public IServiceProvider ServiceProvider { get; }
-    //IServiceProvider IHas<IServiceProvider>.Object => ServiceProvider;
-
-    #endregion
-
     #region Lifecycle
 
     public RZipFile(IReference reference) : base(reference.Cast<ZipFile>())
@@ -48,7 +39,6 @@ public class RZipFile : ReadHandle<IReference<ZipFile>, ZipFile>
     #region State
 
     MemoryStream? ms;
-    public ICSharpCode.SharpZipLib.Zip.ZipFile? ZipFile { get; private set; }
 
     #endregion
 
@@ -119,7 +109,7 @@ public class RZipFile : ReadHandle<IReference<ZipFile>, ZipFile>
 
             if (bytesRetrieveResult.Value == null)
             {
-                ProtectedValue = null;
+                ProtectedValue = default;
                 return ResolveResultNotResolved<ZipFile>.Instance;
             }
             else
