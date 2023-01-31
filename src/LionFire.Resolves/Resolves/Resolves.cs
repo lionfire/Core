@@ -148,13 +148,23 @@ public abstract class Resolves<TKey, TValue>
 
     #region GetValue
 
+    private SemaphoreSlim TryGetSemaphore = new SemaphoreSlim(1);
+
     public async ITask<ILazyResolveResult<TValue>> TryGetValue()
     {
-        var currentValue = ProtectedValue;
-        if (!EqualityComparer<TValue>.Default.Equals(currentValue, default)) return new ResolveResultNoop<TValue>(ProtectedValue);
+        await TryGetSemaphore.WaitAsync().ConfigureAwait(false);
+        try
+        {
+            var currentValue = ProtectedValue;
+            if (!EqualityComparer<TValue>.Default.Equals(currentValue, default)) return new ResolveResultNoop<TValue>(ProtectedValue);
 
-        var resolveResult = await Resolve().ConfigureAwait(false);
-        return new LazyResolveResult<TValue>(resolveResult.HasValue, resolveResult.Value);
+            var resolveResult = await Resolve().ConfigureAwait(false);
+            return new LazyResolveResult<TValue>(resolveResult.HasValue, resolveResult.Value);
+        }
+        finally
+        {
+            TryGetSemaphore.Release();
+        }
     }
 
     #endregion
