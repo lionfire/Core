@@ -18,4 +18,8 @@
     <PackageReference Include="Orleans.Http" />
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\LionFire.Orleans.Http.Stub\LionFire.Orleans.Http.Stub.csproj" />
+  </ItemGroup>
+
 </Project>
