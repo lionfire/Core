@@ -3,7 +3,6 @@ using LionFire.Vos.VosApp;
 using Microsoft.Extensions.DependencyInjection;
 using LionFire.Persistence.Filesystem;
 using LionFire.Vos;
-using LionFire.Vos.Packages;
 using System.IO;
 using System.Reflection;
 using LionFire.Environment.AutoDetect;

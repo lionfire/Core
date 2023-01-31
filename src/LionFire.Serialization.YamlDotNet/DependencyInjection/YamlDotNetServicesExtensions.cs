@@ -6,7 +6,7 @@ using LionFire.Dependencies;
 using Microsoft.Extensions.Hosting;
 using LionFire.Applications.Hosting;
 using YamlDotNet;
-
+using LionFire.Hosting;
 
 namespace LionFire.Services
 {

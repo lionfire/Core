@@ -2,6 +2,7 @@
 using System;
 using LionFire.Dependencies;
 using LionFire.Vos;
+using LionFire.Vos.Packages;
 using Microsoft.Extensions.Logging;
 
 namespace LionFire.Vos.VosApp

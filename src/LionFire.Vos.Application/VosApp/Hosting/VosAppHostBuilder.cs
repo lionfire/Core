@@ -5,11 +5,11 @@ using LionFire.Services;
 using LionFire.Vos.VosApp;
 using LionFire.Vos;
 using LionFire.Applications;
-using LionFire.Vos.Packages;
 using System.Collections.Generic;
 using LionFire.DependencyMachines;
 using Microsoft.Extensions.Configuration;
 using LionFire.Settings;
+using LionFire.Vos.Packages;
 
 namespace LionFire.Hosting // REVIEW - consider changing this to LionFire.Services to make it easier to remember how to create a new app
 {
