@@ -1,7 +1,7 @@
 ﻿@inject ILogger<HierarchicalTagEditorNode> Logger
 @namespace LionFire.Info
 
-<MudTreeViewItem Class="HoverParent" T="TagNode" Value=@Value ExpandedIcon=@(Value.Children?.Any() == true ? Icons.Filled.KeyboardArrowRight : null) @bind-Expanded=Expanded>
+<MudTreeViewItem Class="HoverParent" T="TagNode" Value=@Value ExpandedIcon=@(Value.Children?.Any() == true ? Icons.Material.Filled.KeyboardArrowRight : null) @bind-Expanded=Expanded>
 
     @if (Value?.Children != null)
     {

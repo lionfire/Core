@@ -11,27 +11,27 @@
             {
                 if (Item.Status.HasError)
                 {
-                    <MudIcon Icon=@Icons.Sharp.Error />
+                    <MudIcon Icon=@Icons.Material.Sharp.Error />
                 }
                 else if (Item.Status.HasWarning)
                 {
-                    <MudIcon Icon=@Icons.Sharp.Warning />
+                    <MudIcon Icon=@Icons.Material.Sharp.Warning />
                 }
                 else
                 {
-                    <MudIcon Icon=@Icons.Sharp.Check />
+                    <MudIcon Icon=@Icons.Material.Sharp.Check />
                 }
             }
         }
         else
         {
-            <MudIcon Icon=@Icons.Sharp.Task />
+            <MudIcon Icon=@Icons.Material.Sharp.Task />
         }
         <div title=@Item.Description>
             @Item.Name
         </div>
-        <button @onclick=@(() => ShowDetails(Item))><MudIcon Icon="@Icons.Filled.More"/></button>
-        <button @onclick=@(() => Tracker.ClearFinishedActivity(Item))><MudIcon Icon="@Icons.Outlined.Close" /></button>
+        <button @onclick=@(() => ShowDetails(Item))><MudIcon Icon="@Icons.Material.Filled.More" /></button>
+        <button @onclick=@(() => Tracker.ClearFinishedActivity(Item))><MudIcon Icon="@Icons.Material.Outlined.Close" /></button>
     </div>
 </MudListItem>
 

@@ -11,7 +11,7 @@
 
 @if (CreateableTypes != null && CreateableTypes.Any())
 {
-    <MudMenu Class="" Label="Add" Icon="@Icons.Filled.Add" Variant="Variant.Outlined" Color="Color.Success" Dense AnchorOrigin="Origin.BottomLeft">
+    <MudMenu Class="" Label="Add" Icon="@Icons.Material.Filled.Add" Variant="Variant.Outlined" Color="Color.Success" Dense AnchorOrigin="Origin.BottomLeft">
         @foreach (var t in CreateableTypes)
         {
             <MudMenuItem OnClick="@(() => OnCreate(t))">@DisplayNameForType(t)</MudMenuItem>
@@ -21,7 +21,7 @@
 
 @if (RetrieveAction != null && ShowRefresh)
 {
-    <MudIconButton OnClick="Retrieve" Icon="@Icons.Filled.Refresh" />
+    <MudIconButton OnClick="Retrieve" Icon="@Icons.Material.Filled.Refresh" />
 }
 
 @if (ChildContent != null)
@@ -38,7 +38,7 @@ else
 
 @if (CreateableTypes != null && CreateableTypes.Any() && Create != null)
 {
-    <MudMenu Class="" Label="Add" Icon="@Icons.Filled.Add" Variant="Variant.Outlined" Color="Color.Success" Dense AnchorOrigin="Origin.BottomLeft">
+    <MudMenu Class="" Label="Add" Icon="@Icons.Material.Filled.Add" Variant="Variant.Outlined" Color="Color.Success" Dense AnchorOrigin="Origin.BottomLeft">
         @foreach (var t in CreateableTypes)
         {
             <MudMenuItem OnClick="@(() => OnCreate(t))">

@@ -11,12 +11,18 @@ using Microsoft.Extensions.Logging;
 using Serilog.Core;
 using System.Diagnostics.Metrics;
 using System.IO;
+using Timer = System.Timers.Timer;
 
 namespace LionFire.Persisters.SharpZipLib_;
 
+public class DelayCloser
+{
+
+}
+
 public class ZipFileOptions
 {
-    public bool LeaveOpen { get; set; } = true;
+    public bool LeaveOpen { get; set; } = false;
 
     public static ZipFileOptions Default { get; set; } = new();
 }
@@ -72,8 +78,36 @@ public class RZipFile : ReadHandle<IReference<ZipFile>, ZipFile>
     private static readonly Counter<long> StreamReadC = Meter.CreateCounter<long>("StreamRead");
     private static readonly Counter<long> StreamReadBytesC = Meter.CreateCounter<long>("StreamReadBytes");
 
+
+    Timer DelayCloseTimer;
+    private void DelayClose()
+    {
+        if (DelayCloseTimer == null)
+        {
+            DelayCloseTimer = new Timer(300);
+            DelayCloseTimer.Elapsed += DelayCloseTimer_Elapsed;
+            DelayCloseTimer.AutoReset = false;
+        }
+        else
+        {
+            DelayCloseTimer.Stop();
+        }
+        DelayCloseTimer.Start();
+    }
+
+    private void DelayCloseTimer_Elapsed(object? sender, System.Timers.ElapsedEventArgs e)
+    {
+        Logger.LogInformation("DelayCloseTimer_Elapsed, discarding: ", Reference);
+        DiscardValue();
+    }
+
     protected override async ITask<IResolveResult<ZipFile>> ResolveImpl()
     {
+        ResolveResultSuccess<ZipFile> onSuccess(ZipFile value)
+        {
+            DelayClose();
+            return new ResolveResultSuccess<ZipFile>(Value);
+        }
         //#if ENH
         // ENH: Try getting a Stream, unless user opted to use byte[].  Maybe use a different class of handle: RZipStream
         //var result = await Reference.Resolve<IReference, Stream>().ConfigureAwait(false);
@@ -101,7 +135,7 @@ public class RZipFile : ReadHandle<IReference<ZipFile>, ZipFile>
             streamRetrieveResult.Value.Seek(0, SeekOrigin.Begin);
             ProtectedValue = new ICSharpCode.SharpZipLib.Zip.ZipFile(streamRetrieveResult.Value, leaveOpen: ZipFileOptions.Default.LeaveOpen);
             //}
-            return new ResolveResultSuccess<ZipFile>(Value);
+            return onSuccess(Value);
         }
         else
         //#endif
@@ -130,7 +164,7 @@ public class RZipFile : ReadHandle<IReference<ZipFile>, ZipFile>
             {
                 ms = new MemoryStream(bytesRetrieveResult.Value);
                 ProtectedValue = new ICSharpCode.SharpZipLib.Zip.ZipFile(ms, false);
-                return new ResolveResultSuccess<ZipFile>(Value);
+                return onSuccess(Value);
             }
         }
     }

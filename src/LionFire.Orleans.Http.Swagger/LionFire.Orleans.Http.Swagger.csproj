@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk.Web">
 
   <PropertyGroup>
     <OutputType>Library</OutputType>
@@ -15,8 +15,12 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Orleans.Http" />
+    <PackageReference Include="Microsoft.Orleans.Sdk" />
   </ItemGroup>
+
+  <!--<ItemGroup>
+    <PackageReference Include="Orleans.Http" />
+  </ItemGroup>-->
 
   <ItemGroup>
     <ProjectReference Include="..\LionFire.Orleans.Http.Stub\LionFire.Orleans.Http.Stub.csproj" />

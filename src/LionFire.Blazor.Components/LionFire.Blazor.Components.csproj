@@ -27,6 +27,12 @@
     <ProjectReference Include="..\LionFire.UI\LionFire.UI.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Content Update="Terminal\OutputPane.razor">
+      <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
+    </Content>
+  </ItemGroup>
+
   
 
 </Project>

@@ -275,7 +275,7 @@ public class SharpZipLibExpander : ExpanderPersister, ISupportsFileExtensions, I
 
                             IEnumerable<ZipEntry> zipEntries = new List<ZipEntry>(zipFile.OfType<ZipEntry>().Where(e =>
                                     (e.Name == string.Empty || e.Name.StartsWith(nativeTargetDirPath))
-                                    && Path.GetDirectoryName(e.Name) + (nativeTargetDirPath == string.Empty ? "" : "/") == nativeTargetDirPath
+                                    && Path.GetDirectoryName(e.IsDirectory ? Path.GetDirectoryName(e.Name) : e.Name) + (nativeTargetDirPath == string.Empty ? "" : "/") == nativeTargetDirPath
                                     && (e.Name.Length > Path.GetDirectoryName(e.Name!)!.Length + 1)
                                 ));
 

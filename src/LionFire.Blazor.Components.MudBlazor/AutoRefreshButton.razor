@@ -16,22 +16,22 @@ title=@Tooltip
 >
     @if (Refreshing)
     {
-        <MudIcon Icon=@Icons.Filled.Refresh Style=@($"color: {Colors.LightGreen.Default};") />
+        <MudIcon Icon=@Icons.Material.Filled.Refresh Style=@($"color: {Colors.LightGreen.Default};") />
     }
     else if (Errored)
     {
-        <MudIcon Icon=@Icons.Filled.Refresh Style=@($"color: {Colors.Red.Darken1};") />
+        <MudIcon Icon=@Icons.Material.Filled.Refresh Style=@($"color: {Colors.Red.Darken1};") />
     }
     else if (Auto)
     {
-        <MudIcon Icon=@Icons.Filled.Refresh Style=@($"color: {Colors.Blue.Default};") />
+        <MudIcon Icon=@Icons.Material.Filled.Refresh Style=@($"color: {Colors.Blue.Default};") />
     }
     else if (CanRefresh)
     {
-        <MudIcon Icon=@Icons.Filled.Refresh Style=@($"color: {Colors.Grey.Darken2};") />
+        <MudIcon Icon=@Icons.Material.Filled.Refresh Style=@($"color: {Colors.Grey.Darken2};") />
     }
     else
     {
-        <MudIcon Icon=@Icons.Filled.Refresh Style=@($"color: {Colors.Grey.Darken4};") />
+        <MudIcon Icon=@Icons.Material.Filled.Refresh Style=@($"color: {Colors.Grey.Darken4};") />
     }
 </button>
