@@ -1,0 +1,7 @@
+{
+  "profiles": {
+    "LionFire.Orleans.Cli": {
+      "commandName": "Project"
+    }
+  }
+}
