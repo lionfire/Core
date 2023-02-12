@@ -29,9 +29,6 @@ public class SiloProgramConfig
 
     #endregion
 
-
-    public string? ServiceId { get; set; }
-
     #region Consul
 
     //public ConsulServiceOptions ConsulServiceOptions { get; set; }
@@ -47,7 +44,8 @@ public class SiloProgramConfig
 
     public int PortBase
     {
-        get => portBase; set
+        get => portBase; 
+        set
         {
             portBase = value;
             DashboardPort = PortBase;

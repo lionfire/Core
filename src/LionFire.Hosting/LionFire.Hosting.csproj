@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-	  <TargetFramework>net6.0</TargetFramework> <!-- was netstandard2.1 -->
+	  <TargetFramework>net6.0</TargetFramework>
 	  <LangVersion>latest</LangVersion>
   </PropertyGroup>
 
@@ -9,7 +9,8 @@
     <PackageReference Include="CommandLineParser" />
     <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" />
     <PackageReference Include="Microsoft.Extensions.Hosting.Abstractions" />
-    
+	  
+	  
 	  <PackageReference Include="Serilog.Expressions" />
 	  <PackageReference Include="Serilog.Extensions.Hosting" />
 	  <PackageReference Include="Serilog.Extensions.Logging" />
@@ -22,6 +23,10 @@
 	  <PackageReference Include="Serilog.Sinks.File.GZip" />
 	  <PackageReference Include="Serilog.Sinks.Loki" />
 	  <PackageReference Include="SerilogTraceListener" />
+	  <PackageReference Include="System.CommandLine" />
+	  <PackageReference Include="System.CommandLine.Hosting" />
+	  <PackageReference Include="System.CommandLine.NamingConventionBinder" />
+	
   </ItemGroup>
 
   <ItemGroup>

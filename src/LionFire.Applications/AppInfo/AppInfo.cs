@@ -111,12 +111,14 @@ public class AppInfo
 
     public string OrgDomain { get; set; } = DefaultOrgDomain;
     public static string DefaultOrgDomain = "example.com";
-    public string OrgNamespace { get; set; } = "Example";
+    public string OrgNamespace { get; set; } = "";
 
     /// <summary>
     /// Recommendation: no spaces
+    /// TODO: Rename this to OrgId (typically it will match first chunk of namespace in C# code), and have a separate OrgName that can contain spaces
     /// </summary>
     public string? OrgName { get; set; }
+    public string? OrgDisplayName { get; set; }
 
     #endregion
 
@@ -128,6 +130,8 @@ public class AppInfo
     #endregion
 
     /// <summary>
+    /// Partial Id, ideally without OrgNamespace
+    /// 
     /// Recommendations: 
     ///  - unique name within your organization
     ///  - no spaces, unless your executable file has spaces in it.

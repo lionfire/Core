@@ -7,6 +7,7 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
+using System.Xml.Linq;
 
 namespace LionFire.Hosting;
 
@@ -14,75 +15,109 @@ public static class ReleaseChannelsHostingX
 {
     public static string TestReleaseChannel = "test";
 
+    public static HostApplicationBuilder DeploymentSlot(this HostApplicationBuilder hostBuilder, bool reloadOnChange = true)
+    {
+        hostBuilder.Services.AddHostedService<DeploymentSlotLogger>();
+        var value = _EnvVar(hostBuilder, "slot");
+      
+        if (value != null)
+        {
+            var configFile = $"appsettings.slot.{value}.json";
+            Log.Get(typeof(ReleaseChannelsHostingX).FullName).LogInformation($"Adding configuration source for deployment slot: {configFile}");
+            hostBuilder.Configuration.AddJsonFile(configFile, optional: true, reloadOnChange);
+        }
+
+        return hostBuilder;
+    }
+
+    private static string _EnvVar(HostApplicationBuilder hostBuilder, string name, bool reloadOnChange = true)
+    {
+        var value = hostBuilder.Configuration[name];
+        return value;
+    }
     public static HostApplicationBuilder ReleaseChannel(this HostApplicationBuilder hostBuilder, bool reloadOnChange = true)
     {
         hostBuilder.Services.AddHostedService<ReleaseChannelLogger>();
 
-        // Old, use DOTNET_releaseChannel
-        //var releaseChannel = Environment.GetEnvironmentVariable("RELEASE_CHANNEL");
-
-        //if (releaseChannel != null)
+        // REVIEW - not needed?
+        //if (value != null)
         //{
         //    hostBuilder.Configuration
-        //            .AddInMemoryCollection(new KeyValuePair<string, string>[] { new(ReleaseChannelKeys.ReleaseChannel, releaseChannel) });
+        //            .AddInMemoryCollection(new KeyValuePair<string, string>[] { new(ReleaseChannelKeys.ReleaseChannel, value) });
         //}
 
+        var value = _EnvVar(hostBuilder, ReleaseChannelKeys.ReleaseChannel);
 
-        var configuredReleaseChannel = hostBuilder.Configuration[ReleaseChannelKeys.ReleaseChannel];
-
-        if (configuredReleaseChannel == null && LionFireEnvironment.IsUnitTest == true)
+        if (value == null && LionFireEnvironment.IsUnitTest == true)
         {
             hostBuilder.Configuration
                     .AddInMemoryCollection(new KeyValuePair<string, string>[] { new(ReleaseChannelKeys.ReleaseChannel, TestReleaseChannel) });
         }
 
-        if (configuredReleaseChannel != null)
+        if (value != null)
         {
-            var releaseChannelConfigFile = $"appsettings.{configuredReleaseChannel}.json";
-
-            Log.Get(typeof(ReleaseChannelsHostingX).FullName).LogInformation($"Adding configuration source for release channel: {releaseChannelConfigFile}");
-
-            hostBuilder.Configuration.AddJsonFile(releaseChannelConfigFile, optional: true, reloadOnChange);
+            var configFile = $"appsettings.{value}.json";
+            Log.Get(typeof(ReleaseChannelsHostingX).FullName).LogInformation($"Adding configuration source for release channel: {configFile}");
+            hostBuilder.Configuration.AddJsonFile(configFile, optional: true, reloadOnChange);
         }
 
         return hostBuilder;
     }
 
 
-    public static IHostBuilder ReleaseChannel(this IHostBuilder hostBuilder, bool reloadOnChange = true)
+    public static IHostBuilder DeploymentSlot(this IHostBuilder hostBuilder, bool reloadOnChange = true)
     {
-        hostBuilder.ConfigureServices(s => s.AddHostedService<ReleaseChannelLogger>());
+        hostBuilder.ConfigureServices(s => s.AddHostedService<DeploymentSlotLogger>());
 
-        var releaseChannel = Environment.GetEnvironmentVariable("DOTNET_releaseChannel");
-
-        if (releaseChannel == null && LionFireEnvironment.IsUnitTest == true) releaseChannel = TestReleaseChannel;
-
-        if (releaseChannel != null)
-        {
-            hostBuilder.Properties.Add("releaseChannel", releaseChannel);
-        }
+        var value = _EnvVar(hostBuilder, "slot");
 
         hostBuilder.ConfigureHostConfiguration(config =>
         {
-            if (releaseChannel != null)
+            if (value != null)
             {
                 config
-                    .AddInMemoryCollection(new KeyValuePair<string, string>[] { new("releaseChannel", releaseChannel) })
-                    .AddJsonFile($"appsettings.{releaseChannel}.json", optional: true, reloadOnChange)
+                    .AddJsonFile($"appsettings.slot.{value}.json", optional: true, reloadOnChange)
                 ;
             }
         });
 
-        //hostBuilder.ConfigureAppConfiguration((hostContext, config) =>
-        //{
-        //    var releaseChannel = hostContext.Configuration["releaseChannel"];
-        //    if (releaseChannel != null)
-        //    {
-        //        config
+        return hostBuilder;
+    }
 
-        //            ;
-        //    }
-        //});
+    private static string _EnvVar(this IHostBuilder hostBuilder, string name, bool reloadOnChange = true)
+    {
+        var value = Environment.GetEnvironmentVariable($"DOTNET_{name}");
+
+        if (value != null) { hostBuilder.Properties.Add(name, value); }
+
+        hostBuilder.ConfigureHostConfiguration(config =>
+        {
+            if (value != null)
+            {
+                config
+                    .AddInMemoryCollection(new KeyValuePair<string, string>[] { new(name, value) })
+                ;
+            }
+        });
+        return value;
+    }
+    public static IHostBuilder ReleaseChannel(this IHostBuilder hostBuilder, bool reloadOnChange = true)
+    {
+
+        hostBuilder.ConfigureServices(s => s.AddHostedService<ReleaseChannelLogger>());
+
+        var value = _EnvVar(hostBuilder, "releaseChannel");
+        if (value == null && LionFireEnvironment.IsUnitTest == true) value = TestReleaseChannel;
+
+        hostBuilder.ConfigureHostConfiguration(config =>
+        {
+            if (value != null)
+            {
+                config
+                    .AddJsonFile($"appsettings.{value}.json", optional: true, reloadOnChange)
+                ;
+            }
+        });
 
         return hostBuilder;
     }

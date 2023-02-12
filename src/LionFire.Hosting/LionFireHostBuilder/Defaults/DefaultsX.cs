@@ -71,7 +71,8 @@ public static class DefaultsX
             #endregion
 
             lf.HostBuilder.WrappedHostBuilder
-                .ReleaseChannel() // adds appsettings.{ReleaseChannel}.json
+                .ReleaseChannel() // adds appsettings.{releaseChannel}.json
+                .DeploymentSlot() // adds appsettings.slot.{slot}.json
                 .CopyExampleAppSettings()
                 ;
         }
@@ -85,7 +86,8 @@ public static class DefaultsX
             config.AddEnvironmentVariables(prefix: "LionFire_");
 
             lf.HostBuilder.WrappedHostApplicationBuilder
-                .ReleaseChannel() // adds appsettings.{ReleaseChannel}.json
+                .ReleaseChannel() // adds appsettings.{releaseChannel}.json
+                .DeploymentSlot() // adds appsettings.slot.{slot}.json
                 .CopyExampleAppSettings()
                 ;
 

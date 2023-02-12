@@ -19,8 +19,10 @@ public static class AppInfoServicesX
     {
         appInfo ??= new();
 
-        appInfo.OrgName ??= ApplicationAutoDetection.AutoDetectOrganizationName(null);
-        appInfo.AppName ??= ApplicationAutoDetection.AutoDetectApplicationName(null);
+        if (string.IsNullOrEmpty(appInfo.OrgNamespace)) { appInfo.OrgNamespace ??= ApplicationAutoDetection.AutoDetectOrgNamespace(null); }
+        appInfo.OrgName ??= appInfo.OrgNamespace;
+        appInfo.OrgDisplayName ??= appInfo.OrgName;
+        appInfo.AppName ??= ApplicationAutoDetection.AutoDetectAppName(null, appInfo.OrgName);
         appInfo.AppDir ??= appInfo.AutodetectedAppDir;
 
         return appInfo;
@@ -35,13 +37,13 @@ public static class AppInfoServicesX
         });
 
     #region Host Builder extension methods
-      
+
 
     public static HostApplicationBuilder AppInfo(this HostApplicationBuilder builder, AppInfo? appInfo = null, Action<AppInfo>? config = null, AppInfoOptions? options = null)
     {
         options ??= new();
         appInfo ??= new();
-        
+
         if (config != null) config(appInfo);
         if (options.AutoDetect) appInfo.AutoDetect();
         builder.GetLogger(typeof(AppInfo).FullName).LogInformation($"AppInfo: {appInfo.Dump()}");

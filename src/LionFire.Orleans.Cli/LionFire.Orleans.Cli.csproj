@@ -24,6 +24,7 @@
     <PackageReference Include="Serilog" />
     <PackageReference Include="Serilog.Settings.Configuration" />
     <PackageReference Include="Spectre.Console.Cli" />
+    <PackageReference Include="System.CommandLine" />
   </ItemGroup>
 
 </Project>

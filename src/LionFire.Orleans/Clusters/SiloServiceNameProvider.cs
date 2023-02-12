@@ -5,11 +5,11 @@ namespace LionFire.Hosting;
 
 public class SiloServiceNameProvider
 {
-    public SiloServiceNameProvider(AppInfo appInfo, IOptions<OrleansClusterConfig> orleansClusterConfig)
+    public SiloServiceNameProvider(AppInfo appInfo, OrleansClusterConfigProvider orleansClusterConfig)
     {
         if (!appInfo.IsValid) { throw new InvalidOperationException($"AppInfo is invalid: " + appInfo.InvalidReason); }
         ServiceName = @$"silo.{(
-            (orleansClusterConfig.Value.ServiceId ?? OrleansClusterConfig.DefaultServiceId).ToLower()
+            (orleansClusterConfig.ServiceId).ToLower()
                 .Replace("lionfire.", "")
                 .Replace(oldValue: "silo.", "")
                 .Replace(oldValue: ".silo", "")

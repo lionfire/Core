@@ -4,6 +4,7 @@ using System.ComponentModel.Design;
 using Microsoft.Extensions.Configuration;
 using System.Reflection;
 using System;
+using LionFire.ExtensionMethods;
 
 namespace LionFire.Hosting;
 public static class IHostBuilderX
@@ -18,9 +19,12 @@ public static class IHostBuilderX
     /// <returns></returns>
     public static IHostBuilder LionFire(this IHostBuilder hostBuilder, Action<ILionFireHostBuilder>? action = null, bool useDefaults = true)
     {
-        var lf = new LionFireHostBuilder(hostBuilder);
-
-        if (useDefaults) { lf.Defaults(); }
+        var lf = (ILionFireHostBuilder) hostBuilder.Properties.GetOrAdd(typeof(LionFireHostBuilder).Name, _ =>
+        {
+            var result = new LionFireHostBuilder(hostBuilder);
+            if (useDefaults) { result.Defaults(); }
+            return result;
+        });
 
         action?.Invoke(lf);
 

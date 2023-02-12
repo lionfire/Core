@@ -4,17 +4,28 @@ using Microsoft.Extensions.Logging;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace LionFire.Hosting
+namespace LionFire.Hosting;
+
+public class ReleaseChannelLogger : IHostedService
 {
-    public class ReleaseChannelLogger : IHostedService
+    public ReleaseChannelLogger(ILogger<ReleaseChannelLogger> logger, IConfiguration configuration)
     {
-        public ReleaseChannelLogger(ILogger<ReleaseChannelLogger> logger, IConfiguration configuration)
-        {
-            logger.LogInformation($"Release channel: {configuration["releaseChannel"]}");
-        }
-
-        public Task StartAsync(CancellationToken cancellationToken) => Task.CompletedTask;
-
-        public Task StopAsync(CancellationToken cancellationToken)=> Task.CompletedTask;
+        logger.LogInformation($"Release channel: {configuration["releaseChannel"]}");
     }
+
+    public Task StartAsync(CancellationToken cancellationToken) => Task.CompletedTask;
+
+    public Task StopAsync(CancellationToken cancellationToken)=> Task.CompletedTask;
+}
+
+public class DeploymentSlotLogger : IHostedService
+{
+    public DeploymentSlotLogger(ILogger<DeploymentSlotLogger> logger, IConfiguration configuration)
+    {
+        logger.LogInformation($"Deployment slot: {configuration["slot"]}");
+    }
+
+    public Task StartAsync(CancellationToken cancellationToken) => Task.CompletedTask;
+
+    public Task StopAsync(CancellationToken cancellationToken) => Task.CompletedTask;
 }

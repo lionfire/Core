@@ -16,7 +16,6 @@
 
 		<PackageReference Include="Microsoft.Orleans.Sdk" />
 		<PackageReference Include="Microsoft.Orleans.Core" />
-		<PackageReference Include="Microsoft.Orleans.Clustering.Consul" />
 		<PackageReference Include="Microsoft.Extensions.Caching.Abstractions" />
 		<PackageReference Include="Microsoft.Extensions.Http" />
 		<PackageReference Include="System.IdentityModel.Tokens.Jwt" />
