@@ -144,6 +144,7 @@ public class DatabaseCommands : ConsoleAppBase
                     CREATE DATABASE {database};
                     CREATE ROLE {databaseUser} LOGIN  PASSWORD '{childDatabasePassword}';
                     GRANT ALL PRIVILEGES ON DATABASE {database} TO {databaseUser};
+                    GRANT ALL PRIVILEGES ON ALL TABLES IN SCHEMA public TO {databaseUser};
                     """;
                 await using var command = dataSource.CreateCommand(sql);
                 await command.ExecuteNonQueryAsync();
