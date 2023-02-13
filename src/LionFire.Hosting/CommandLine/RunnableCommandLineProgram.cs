@@ -6,9 +6,11 @@ using System.CommandLine.NamingConventionBinder;
 
 namespace LionFire.Hosting;
 
-public class CliRunProgram<TConcrete> : CliProgram<TConcrete>
-    where TConcrete : CliRunProgram<TConcrete>
+public class RunnableCommandLineProgram<TConcrete> : CommandLineProgram<TConcrete>
+    where TConcrete : RunnableCommandLineProgram<TConcrete>
 {
+    public string RunCommandName { get; set; } = "run";
+
     #region RunHostBuilder
 
     public TConcrete RunHostBuilder(Action<IHostBuilder> action)
@@ -17,13 +19,12 @@ public class CliRunProgram<TConcrete> : CliProgram<TConcrete>
         (RunHostBuilderInitializer ??= new()).Add(action);
         return (TConcrete)this;
     }
-    Initializer<IHostBuilder, HostBuilder> RunHostBuilderInitializer;
+    Builder<IHostBuilder, HostBuilder> RunHostBuilderInitializer;
 
     #endregion
 
     protected override void OnBuildingCommandLine(RootCommand root)
     {
-        root.AddCommand(new Command("run") { Handler = CommandHandler.Create(() => (RunHostBuilderInitializer ??= new()).Create().RunConsoleAsync()) });
-
+        root.AddCommand(new Command(RunCommandName) { Handler = CommandHandler.Create(() => (RunHostBuilderInitializer ??= new()).Create(ProgramHostBuilderInitializer.Create()).RunConsoleAsync()) });
     }
 }

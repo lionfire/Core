@@ -31,6 +31,15 @@ public static class DefaultsX
 
         #region Configuration
 
+        builder.ConfigureHostConfiguration(config =>
+        {
+            config.AddEnvironmentVariables(prefix: "DOTNET_");
+            //if (args is { Length: > 0 })
+            //{
+            //    config.AddCommandLine(args);
+            //}
+        });
+
         #region appsettings.json
 
         builder.ConfigureAppConfiguration((context, config) => config
@@ -42,6 +51,7 @@ public static class DefaultsX
         // FUTURE: Config parent dir?  For things like /etc/lionfire/{appName}/appsettings.json
 
         #endregion
+
 
         #region appsettings.{Environment}.json, appsettings.test.json, env: LionFire_*, copy example settings
 

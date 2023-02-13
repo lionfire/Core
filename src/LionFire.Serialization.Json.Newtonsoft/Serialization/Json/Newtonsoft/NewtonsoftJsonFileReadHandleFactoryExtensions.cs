@@ -28,9 +28,9 @@ namespace LionFire.Serialization.Json.Newtonsoft
 //{
 //    public interface IAppInitializer
 //    {
-//        IAppHost Initializer(IAppHost appHost);
+//        IAppHost Builder(IAppHost appHost);
 //    }
-//    public static class Initializer
+//    public static class Builder
 //    {
 //        public static IAppHost Initialize(this IAppHost appHost)
 //        {

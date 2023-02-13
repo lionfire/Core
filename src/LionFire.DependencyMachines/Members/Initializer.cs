@@ -5,9 +5,9 @@
 //    /// <summary>
 //    /// Initializers run as soon as possible
 //    /// </summary>
-//    public class Initializer : StartableParticipant<Initializer>
+//    public class Builder : StartableParticipant<Builder>
 //    {
-//        public Initializer(string key, string? runAfter = null)
+//        public Builder(string key, string? runAfter = null)
 //        {
 //            Key = key;
 //            RunAfter = runAfter;

@@ -19,6 +19,7 @@ public static class LionFireSerilogX
 {
     public static ILionFireHostBuilder Serilog(this ILionFireHostBuilder b, Action<LionFireSerilogBuilder>? configure = null, bool configureFallbackToDefaults = true)
     {
+        if(global::Serilog.Log.Logger != null) { return b; }
         LogBootstrappingState.IsBootstrapping = true;
 
         if (configureFallbackToDefaults) configure ??= lionFireSerilogBuilder => lionFireSerilogBuilder.Defaults();

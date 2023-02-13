@@ -1,4 +1,5 @@
-﻿using System;
+﻿#nullable enable
+using System;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Hosting;
 using LionFire.Threading;
@@ -9,52 +10,20 @@ using System.CommandLine.Hosting;
 using System.CommandLine.Parsing;
 using System.Collections.Generic;
 using static System.Collections.Specialized.BitVector32;
+using System.ComponentModel.Design;
 
 namespace LionFire.Hosting;
 
-//static void RunSilo(RunSiloOptions runSiloOptions, IHost host)
-//{
-//    IHostApplicationLifetime lifetime = host.Services.GetService<IHostApplicationLifetime>();
-//    var siloOptions = host.Services.GetService<IOptions<Orleans.Configuration.SiloOptions>>();
-
-//    Console.WriteLine("Silo running: " + siloOptions?.Value?.SiloName);
-//    lifetime.ApplicationStopping.WaitHandle.WaitOneAsync().Wait();
-//    Console.WriteLine("Silo done.");
-//}
-
-public class Initializer<T, TImplementation>
-    where TImplementation : T, new()
-{
-    public T Create()
-    {
-        var result = new TImplementation();
-        foreach (var initializer in Initializers)
-        {
-            initializer(result);
-        }
-        return result;
-    }
-    public void Add(Action<T> a)
-    {
-        Initializers ??= new();
-        Initializers.Add(a);
-    }
-
-    public List<Action<T>> Initializers { get; set; }
-}
-
-public class CliProgram<TConcrete>
-    where TConcrete : CliProgram<TConcrete>
-
+public class CommandLineProgram<TConcrete> : ICommandLineProgram
+    where TConcrete : CommandLineProgram<TConcrete>
 {
     public bool Defaults { get; }
 
-    public CliProgram(bool defaults = true)
+    public CommandLineProgram(bool defaults = true)
     {
         Defaults = defaults;
     }
 
-    //public Func<HostApplicationBuilder> ProgramHostApplicationBuilder { get; set; } // TODO - add this, or replace ProgramHostBuilder?
     public Action<RootCommand>? CommandLine { get; set; }
 
     #region ProgramHostBuilder
@@ -66,7 +35,8 @@ public class CliProgram<TConcrete>
         return (TConcrete)this;
     }
 
-    Initializer<IHostBuilder, HostBuilder> ProgramHostBuilderInitializer
+    IInitializer<IHostBuilder> ICommandLineProgram.ProgramHostBuilderInitializer => this.ProgramHostBuilderInitializer;
+    protected Builder<IHostBuilder, HostBuilder> ProgramHostBuilderInitializer
     {
         get
         {
@@ -84,13 +54,13 @@ public class CliProgram<TConcrete>
             return programHostBuilderInitializer;
         }
     }
-    Initializer<IHostBuilder, HostBuilder> programHostBuilderInitializer;
+    Builder<IHostBuilder, HostBuilder>? programHostBuilderInitializer;
 
 
     #region HostApplicationBuilder
 
-    private List<Action<HostApplicationBuilder>> HostApplicationBuilderActions;
 #if UNUSED // Needs Microsoft to support it in System.CommandLine.Hosting?  Or is there an adapter I made?
+    private List<Action<HostApplicationBuilder>>? HostApplicationBuilderActions;
     public CliProgram ProgramHostApplicationBuilder(Action<IHostBuilder> action)
     {
         if (HostBuilderActions != null) throw new NotImplementedException("Cannot mix IHostBuilder and HostApplicationBuilder yet");
@@ -118,7 +88,7 @@ public class CliProgram<TConcrete>
     {
         return args.RunWithExitCodeAsync(args2 =>
                  BuildCommandLine()
-                    .UseHost(args3 => ProgramHostBuilderInitializer.Create())
+                    //.UseHost(args3 => ProgramHostBuilderInitializer.Create())
                     .UseDefaults()
                     .Build()
                     .InvokeAsync(args2)

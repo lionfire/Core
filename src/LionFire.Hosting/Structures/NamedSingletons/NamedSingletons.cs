@@ -48,7 +48,7 @@ namespace LionFire.Structures
             }
         }
 
-        public bool Query(string key, out TItem result) => Items.TryGetValue(key, out result);
+        public bool Query(string key, out TItem? result) => Items.TryGetValue(key, out result);
 
 
         public Task<TItem> GetOrCreateAsync(string key, params object[] parameters)

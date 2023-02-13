@@ -3,6 +3,13 @@ using System.Threading.Tasks;
 
 namespace LionFire.Hosting.ExitCode;
 
+//static void RunSilo(RunSiloOptions runSiloOptions, IHost host)
+//{
+//    IHostApplicationLifetime lifetime = host.Services.GetService<IHostApplicationLifetime>();
+//    lifetime.ApplicationStopping.WaitHandle.WaitOneAsync().Wait();
+//    Console.WriteLine("Done.");
+//}
+
 public static class RunWithExitCodeX
 {
     public static async Task<int> RunWithExitCodeAsync(this string[] args, Func<string[], Task<int>> action)
