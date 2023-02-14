@@ -75,7 +75,7 @@ public static class SiloHostBuilder
                         //    TTL = TimeSpan.FromSeconds(30),
                         //    Status = HealthStatus.Passing,
                         //});
-                        if (config.OrleansDashboard)
+                        if (config.DashboardEnabled)
                         {
                             checks.Add(new AgentServiceCheck
                             {
@@ -164,7 +164,7 @@ public static class SiloHostBuilder
 
                 configureSilo?.Invoke(siloContext, builder);
 
-                if (config.OrleansDashboard) builder.UseDashboard(options => { options.Port = config.DashboardPort; options.Host = config.DashboardInterface; });
+                if (config.DashboardEnabled) builder.UseDashboard(options => { options.Port = config.DashboardPort; options.Host = config.DashboardInterface; });
             })
             ;
 

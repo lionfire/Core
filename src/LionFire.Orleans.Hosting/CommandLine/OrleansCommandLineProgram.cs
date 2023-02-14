@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.Hosting;
+﻿using LionFire.Orleans.CommandLine;
+using Microsoft.Extensions.Hosting;
 using System;
 using System.CommandLine;
 using System.CommandLine.NamingConventionBinder;
@@ -9,10 +10,10 @@ public static class OrleansCommandLineProgram
 {
     public static void AddOrleansCommands(ICommandLineProgram program, RootCommand root)
     {
-        var dbCommand = new Command("db", "Database commands")
-        {
-            Handler = CommandHandler.Create(() => program.ProgramHostBuilderInitializer.Create().Run(() => Console.WriteLine("TODO: db"))),
-        };
-        root.AddCommand(dbCommand);
+        root.AddCommand(DbCommand.AddSubcommands(program));
+        //var dbCommand = new Command("db", "Database commands")
+        //{
+        //    Handler = CommandHandler.Create(() => program.ProgramHostBuilderInitializer.Create().Run(() => Console.WriteLine("TODO: db"))),
+        //};
     }
 }

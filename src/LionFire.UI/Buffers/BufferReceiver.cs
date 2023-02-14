@@ -17,6 +17,6 @@ public class LFCircularBuffer<T>
     public CircularBuffer<T> Items { get; } = new CircularBuffer<T>(400);
 }
 
-public class BufferReceiver : I
-{
-}
+//public class BufferReceiver : I
+//{
+//}

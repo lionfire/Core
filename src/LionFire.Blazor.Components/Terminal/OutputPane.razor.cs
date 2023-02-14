@@ -9,7 +9,7 @@ using Microsoft.AspNetCore.Components;
 
 namespace LionFire.Blazor.Components.Terminal
 {
-    public partial class ConsoleActivity
+    public partial class OutputPane
     {
         [Parameter]
         public Guid Key { get; set; }

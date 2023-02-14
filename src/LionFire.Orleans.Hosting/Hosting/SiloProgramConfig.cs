@@ -5,10 +5,10 @@ using System.Text;
 
 namespace LionFire.Hosting;
 
-//public class ConsulServiceOptions
-//{
+public class ConsulServiceOptions
+{
 
-//}
+}
 
 public class SiloProgramConfig
 {
@@ -31,12 +31,11 @@ public class SiloProgramConfig
 
     #region Consul
 
-    //public ConsulServiceOptions ConsulServiceOptions { get; set; }
+    public ConsulServiceOptions ConsulServiceOptions { get; set; }
 
-    public string ConsulDatacenter = "dc1";
+    public string ConsulDatacenter { get; set; } = "dc1";
 
     public bool RegisterSiloWithConsul { get; set; } = true;
-
 
     #endregion
 
@@ -95,11 +94,12 @@ public class SiloProgramConfig
 
     #region Dashboard
 
-    public bool OrleansDashboard { get; set; } = true;
+    public bool DashboardEnabled { get; set; } = true;
     public string DashboardInterface { get; set; } = "127.0.0.1";
     public int DashboardPort { get; set; }
-    public IPEndPoint? LocalhostPrimaryClusterEndpoint { get; set; }
 
     #endregion
+
+    public IPEndPoint? LocalhostPrimaryClusterEndpoint { get; set; }
 
 }
