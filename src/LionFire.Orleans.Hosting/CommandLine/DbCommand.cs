@@ -42,15 +42,14 @@ public class DbCommand
         }
     }
 
-    static public Command AddSubcommands(ICommandLineProgram program)
+    static public Command Create(ICommandLineProgram? program = null)
     {
         var dbCommand = new Command("db", "manage the database");
         foreach (var option in GlobalOptions) dbCommand.AddGlobalOption(option);
         //{ Options = GlobalOptions.ToList() };
 
         var create = new Command("create", "Create the Orleans database");
-        create.Handler = CommandHandler.Create(() => program.ProgramHostBuilderInitializer.Create().Run(() => Console.WriteLine("TODO: create")));
-
+        create.Handler = CommandHandler.Create(() => (program?.ProgramHostBuilderInitializer.Create() ?? new HostBuilder()).Run(() => Console.WriteLine("TODO: create")));
         dbCommand.AddCommand(create);
 
         var teardown = new Command("teardown", "Delete data in the Orleans database and remove the database from the database server");

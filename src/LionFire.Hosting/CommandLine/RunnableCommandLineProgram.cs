@@ -6,6 +6,7 @@ using System.CommandLine.NamingConventionBinder;
 
 namespace LionFire.Hosting;
 
+[Obsolete("TODO: Composition alternative")]
 public class RunnableCommandLineProgram<TConcrete> : CommandLineProgram<TConcrete>
     where TConcrete : RunnableCommandLineProgram<TConcrete>
 {

@@ -1,9 +1,4 @@
 ﻿#nullable enable
-using System;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Logging;
-using Orleans;
 using Orleans.Configuration;
 using Orleans.Hosting;
 using Orleans.Statistics;
@@ -20,7 +15,6 @@ using Polly;
 using HostBuilderContext = Microsoft.Extensions.Hosting.HostBuilderContext;
 
 namespace LionFire.Hosting;
-
 
 public static class SiloHostBuilder
 {
@@ -53,15 +47,19 @@ public static class SiloHostBuilder
             {
                 services
                     .AddOrleans()
-                    .AddTransient<OrleansClusterConfigProvider>()
+                    .AddTransient<LionFireSiloConfigurator>()
                     .AddHostedService<OrleansHealthCheckHostedService>()
                     .Configure<OrleansCheckHostedServiceOptions>(c => { c.Port = config.OrleansHealthCheckPort; })
-                    .AddHostedService<ConsulKVRegistration>()
+                    .If(config.RegisterSiloWithConsul, s => s
+                        .AddHostedService<ConsulKVRegistration>()
+                    )
 
                     .Configure<OrleansClusterConfig>(o => context.Configuration.Bind("Orleans:Cluster", o))
                     .Configure<SiloOptions>(options => options.SiloName ??= $"LFSilo_{Guid.NewGuid().ToString("N").Substring(0, 5)}");
                 ;
             })
+
+            .UseLionFireOrleans(config, configureSilo)
 
             .If(config.RegisterSiloWithConsul, builder => builder
                     .RegisterSiloWithConsul(o =>
@@ -112,60 +110,6 @@ public static class SiloHostBuilder
                         o.Checks = checks;
                     })
             )
-            .UseOrleans((siloContext, builder) =>
-            {
-                var clusterConfig = new OrleansClusterConfigProvider(siloContext.Configuration);
-         
-                builder
-                    .Configure<ClusterOptions>(options =>
-                    {
-                        options.ClusterId = clusterConfig.ClusterId;
-                        options.ServiceId = clusterConfig.ServiceId;
-                    })
-
-                    #region Kind
-
-                    .If(clusterConfig.Kind == ClusterDiscovery.Localhost, s =>
-                        // NOTE - redundant specification of ClusterId and ServiceId
-                        s.UseLocalhostClustering(config.SiloPort, config.GatewayPort, config.LocalhostPrimaryClusterEndpoint, clusterConfig.ServiceId, clusterConfig.ClusterId
-                        ))
-                    .If(clusterConfig.Kind == ClusterDiscovery.Consul, s =>
-                        s.UseConsulSiloClustering(gatewayOptions =>
-                        {
-                            OrleansConsulClusterConfig clusterConsulConfig = new();
-                            siloContext.Configuration.Bind("Orleans:Cluster:Consul", clusterConsulConfig);
-
-                            if (clusterConsulConfig.ServiceDiscoverEndPoint != null)
-                            {
-                                gatewayOptions.ConfigureConsulClient(new Uri(clusterConsulConfig.ServiceDiscoverEndPoint), clusterConsulConfig.ServiceDiscoveryToken);
-                            }
-
-                            gatewayOptions.KvRootFolder = clusterConsulConfig.KvFolderName ?? $"{clusterConfig.ServiceId}";
-                        })
-                    )
-                    .If(clusterConfig.Kind == ClusterDiscovery.Redis, s =>
-                        s.UseRedisClustering(gatewayOptions =>
-                        {
-                            OrleansRedisClusterConfig clusterRedisConfig = new();
-                            siloContext.Configuration.Bind("Orleans:Cluster:Redis", clusterRedisConfig);
-
-                            gatewayOptions.Database = clusterRedisConfig.Database ?? 3;
-                            gatewayOptions.ConnectionString = clusterRedisConfig.ConnectionString ?? "localhost:6379";
-                        })
-                    )
-                    .If(clusterConfig.Kind != ClusterDiscovery.Localhost && clusterConfig.Kind != ClusterDiscovery.Consul && clusterConfig.Kind != ClusterDiscovery.Redis, s =>
-                        throw new NotSupportedException($"Unknown clusterConfig.Kind: {clusterConfig.Kind}"))
-               
-                    #endregion
-
-                    .ConfigureEndpoints(IPAddress.Parse(config.OrleansInterface), config.SiloPort, config.GatewayPort)
-                    .ConfigureLogging(logging => logging.AddConsole())
-                    ;
-
-                configureSilo?.Invoke(siloContext, builder);
-
-                if (config.DashboardEnabled) builder.UseDashboard(options => { options.Port = config.DashboardPort; options.Host = config.DashboardInterface; });
-            })
             ;
 
         return lf;

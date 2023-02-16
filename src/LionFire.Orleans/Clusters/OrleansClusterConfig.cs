@@ -1,53 +1,6 @@
-﻿using Microsoft.Extensions.Configuration;
-using Orleans.Serialization.TypeSystem;
-using System.Reflection;
+﻿using Orleans.Serialization.TypeSystem;
 
 namespace LionFire.Hosting;
-
-public class OrleansClusterConfigProvider
-{
-    public OrleansClusterConfig ClusterConfig { get; }
-
-    public IConfiguration Configuration { get; }
-
-    public OrleansClusterConfigProvider(IConfiguration configuration)
-    {
-        Configuration = configuration;
-        OrleansClusterConfig clusterConfig = new();
-        configuration.Bind("Orleans:Cluster", clusterConfig);
-        ClusterConfig = clusterConfig;
-    }
-
-    public ClusterDiscovery? Kind => ClusterConfig.Kind;
-
-
-    public static string DefaultClusterId2 = "blue";
-
-
-    public string ClusterId => Configuration["slot"] ?? DefaultClusterId2;
-    //var deploymentId = clusterId;
-    //            if (deploymentId == "blue" || deploymentId == "green") { deploymentId = "prod"; }
-    //            if (deploymentId == "beta.blue" || deploymentId == "beta.green") { deploymentId = "beta"; }
-
-    public  string ServiceId
-    {
-        get
-        {
-            var result = Assembly.GetEntryAssembly()?.FullName ?? throw new NotSupportedException($"{nameof(ServiceId)} is not available because Assembly.GetEntryAssembly()?.FullName returned null.");
-            result = result.Substring(0, result.IndexOf(','));
-            result = result.Replace(".Silo", "");
-
-            var releaseChannel = Configuration["releaseChannel"] ?? "prod";
-
-            if (!string.IsNullOrWhiteSpace(releaseChannel) && releaseChannel != "prod")
-            {
-                result += "-" + releaseChannel;
-            }
-
-            return result;
-        }
-    }
-}
 
 public class OrleansClusterConfig
 {

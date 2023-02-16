@@ -14,6 +14,12 @@ using System.ComponentModel.Design;
 
 namespace LionFire.Hosting;
 
+// REVIEW: Is there a composition alternative to this?  Some sort of ProgramBuilder rather than inheritance.
+// TODO Idea: programBuilder.HostBuilder("run", (hostBuilder, (IFlex) context) => ...)
+// TODO Idea: programBuilder.HostBuilder("orleans db create", (hostBuilder, (IFlex) context) => ...)
+// TODO Idea: programBuilder.HostBuilder("orleans db verify", (hostBuilder, (IFlex) context) => ... , noInherit: new string[] { "orleans", "orleans db" })
+// TODO Idea: programBuilder.UseOrleans()
+
 public class CommandLineProgram<TConcrete> : ICommandLineProgram
     where TConcrete : CommandLineProgram<TConcrete>
 {
@@ -108,5 +114,6 @@ public class CommandLineProgram<TConcrete> : ICommandLineProgram
         return new CommandLineBuilder(root);
     }
 
+    [Obsolete]
     protected virtual void OnBuildingCommandLine(RootCommand root) { }
 }
