@@ -9,7 +9,6 @@ using LionFire.ExtensionMethods;
 namespace LionFire.Hosting;
 public static class IHostBuilderX
 {   
-
     /// <summary>
     /// Fluent builder for LionFire's initialization of IHostBuilder
     /// </summary>
@@ -59,8 +58,6 @@ public static class IHostBuilderX
     //        //.ConfigureContainer<LionFireDefaultServiceProviderFactory>(f => { })
     //        .UseServiceProviderFactory(new LionFireDefaultServiceProviderFactory())
     //        ;
-    
-
 
 #if FUTURE // Is this really needed?
     // REVIEW - adapted from Microsoft

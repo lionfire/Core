@@ -17,10 +17,10 @@ public class LionFireHostBuilderBootstrapOptions
 /// </summary>
 public class LionFireHostBuilder : ILionFireHostBuilder
 {
-    public LionFireHostBuilder(IHostBuilder hostBuilder) { HostBuilder = new HostBuilderWrapper(hostBuilder, this); }
-    public LionFireHostBuilder(HostApplicationBuilder hostApplicationBuilder) { HostBuilder = new HostBuilderWrapper(hostApplicationBuilder, this); }
+    public LionFireHostBuilder(IHostBuilder hostBuilder) { HostBuilder = new LionFireHostBuilderWrapper(hostBuilder, this); }
+    public LionFireHostBuilder(HostApplicationBuilder hostApplicationBuilder) { HostBuilder = new LionFireHostBuilderWrapper(hostApplicationBuilder, this); }
 
-    public HostBuilderWrapper HostBuilder { get; }
+    public LionFireHostBuilderWrapper HostBuilder { get; }
 
     public ILionFireHostBuilder ForHostBuilder(Action<IHostBuilder> action)
     {
@@ -51,7 +51,7 @@ public class LionFireHostBuilder : ILionFireHostBuilder
 
 public static class DoneExtensions
 {
-    public static ILionFireHostBuilder Done(this IHostBuilder hostBuilder) => (hostBuilder as HostBuilderWrapper)?.Done() 
-        ?? throw new ArgumentException("hostBuilder is not HostBuilderWrapper and does not need Done")
+    public static ILionFireHostBuilder Done(this IHostBuilder hostBuilder) => (hostBuilder as LionFireHostBuilderWrapper)?.Done() 
+        ?? throw new ArgumentException("hostBuilder is not LionFireHostBuilderWrapper and does not need Done")
         ;
 }

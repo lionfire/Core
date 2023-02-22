@@ -30,4 +30,24 @@ public static class HostApplicationBuilderX
         configure(hostApplicationBuilder.Services);
         return hostApplicationBuilder;
     }
+
+    #region UseConsoleLifetime
+
+    public static HostApplicationBuilder UseConsoleLifetime(this HostApplicationBuilder hostApplicationBuilder)
+    {
+        hostApplicationBuilder.Services
+            .AddSingleton<IHostLifetime, Microsoft.Extensions.Hosting.Internal.ConsoleLifetime>()
+             ;
+        return hostApplicationBuilder;
+    }
+    public static HostApplicationBuilder UseConsoleLifetime(this HostApplicationBuilder hostApplicationBuilder, Action<ConsoleLifetimeOptions> configureOptions)
+    {
+        hostApplicationBuilder.Services
+            .AddSingleton<IHostLifetime, Microsoft.Extensions.Hosting.Internal.ConsoleLifetime>()
+             .Configure(configureOptions)
+             ;
+        return hostApplicationBuilder;
+    }
+
+    #endregion
 }

@@ -7,8 +7,23 @@ using System.Threading.Tasks;
 using System.CommandLine;
 using System.CommandLine.NamingConventionBinder;
 using LionFire.Hosting;
+using LionFire.Execution;
+using System.CommandLine.Parsing;
+using LionFire.Hosting.CommandLine;
 
 namespace LionFire.Orleans.CommandLine;
+
+public class OrleansCommand
+{
+    static public Command Create(ICommandLineProgram? program = null)
+    {
+        var command = new Command("orleans", "manage orleans");
+
+        command.AddCommand(DbCommand.Create(program));
+
+        return command;
+    }
+}
 
 public class DbCommand
 {
@@ -44,16 +59,26 @@ public class DbCommand
 
     static public Command Create(ICommandLineProgram? program = null)
     {
-        var dbCommand = new Command("db", "manage the database");
+        var dbCommand = new Command("db", "Manage the database");
         foreach (var option in GlobalOptions) dbCommand.AddGlobalOption(option);
-        //{ Options = GlobalOptions.ToList() };
+
+        #region Create
 
         var create = new Command("create", "Create the Orleans database");
-        create.Handler = CommandHandler.Create(() => (program?.ProgramHostBuilderInitializer.Create() ?? new HostBuilder()).Run(() => Console.WriteLine("TODO: create")));
+
+        //create.Handler = CommandHandler.Create(() => (program?.HostBuilder.Create() ?? new HostBuilder()).RunCommand(() => Console.WriteLine("TODO: create")));
+        create.SetHandler(program.Handler);
+    
         dbCommand.AddCommand(create);
+
+        #endregion
+
+        #region Teardown
 
         var teardown = new Command("teardown", "Delete data in the Orleans database and remove the database from the database server");
         dbCommand.AddCommand(teardown);
+
+        #endregion
 
         return dbCommand;
     }

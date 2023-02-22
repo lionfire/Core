@@ -56,6 +56,28 @@ public class DependencyContext : IDependencyContext
         }
     }
 
+    // TODO - this is not called
+    // Caution: could be race condition at startup where this may not be set yet.  Hook into IHostLifetime.WaitForStartAsync?
+    public static IServiceProvider RegisterServiceProvider(IServiceProvider serviceProvider)
+    {
+        if (LionFireEnvironment.IsMultiApplicationEnvironment)
+        {
+            if (DependencyContext.AsyncLocal == null) throw new Exception("IsMultiApplicationEnvironment but DependencyContext.AsyncLocal == null.  Call InitializeCurrent() first.");
+            DependencyContext.AsyncLocal.ServiceProvider = serviceProvider;
+        }
+        else
+        {
+            DependencyContext.Current ??= new DependencyContext();
+
+            if (DependencyContext.Current.ServiceProvider == null)
+            {
+                DependencyContext.Current.ServiceProvider = serviceProvider;
+            }
+            else if (!ReferenceEquals(serviceProvider, DependencyContext.Current.ServiceProvider)) { throw new AlreadySetException(); }
+        }
+        return serviceProvider;
+    }
+
     //[Obsolete("Use Deinitialize()")]
     //public static void Reset()
     //{

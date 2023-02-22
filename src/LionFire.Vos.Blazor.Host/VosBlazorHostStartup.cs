@@ -83,7 +83,6 @@ public class VosBlazorHostStartup
     public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
     {
         //app.UseRazorComponentsRuntimeCompilation();
-        //app.ApplicationServices.InitializeDependencyContextServiceProvider();
 
         if (env.IsDevelopment())
         {

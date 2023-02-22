@@ -81,7 +81,7 @@ namespace LionFire.Hosting
         }
 
         #endregion
-        
+
 
 #if TODO // TOVOSAPP
         public static IHostBuilder CreateVos(string[] args = null, Action<IServiceCollection> serializers = null)

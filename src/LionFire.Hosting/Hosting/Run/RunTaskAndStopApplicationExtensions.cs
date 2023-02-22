@@ -146,46 +146,67 @@ public static class RunTaskAndStopApplicationHostApplicationBuilderX
         });
     }
 
+
+    public static HostApplicationBuilder AddRunTaskAndStop(this HostApplicationBuilder hostApplicationBuilder, Func<IServiceProvider, Task> taskFactory)
+    {
+        hostApplicationBuilder.Services.AddRunTaskAndStop(taskFactory);
+        return hostApplicationBuilder;
+    }
+    internal static HostApplicationBuilder AddRunTaskAndStop(this HostApplicationBuilder hostApplicationBuilder, Func<IServiceProvider, Task> taskFactory, ExceptionWrapper exceptionWrapper)
+    {
+        hostApplicationBuilder.Services.AddRunTaskAndStop(taskFactory, exceptionWrapper);
+        return hostApplicationBuilder;
+    }
+
     public static async Task RunAsync(this HostApplicationBuilder hostBuilder, Func<IServiceProvider, Task> taskFactory)
     {
-        DependencyContext.InitializeCurrent();
-
-        var tcs = new TaskCompletionSource<object>();
+        var tcs = new TaskCompletionSource<object?>();
 
         ExceptionWrapper exceptionWrapper = new();
 
-        hostBuilder.Services
-            .AddRunTaskAndStop(taskFactory, exceptionWrapper);
+        hostBuilder.AddRunTaskAndStop(taskFactory, exceptionWrapper);
 
         await hostBuilder.Build()
-        //.InitializeDependencyContextServiceProvider()
-        .RunAsync()
-        .ContinueWith(t =>
-        {
-            DependencyContext.Deinitialize(); // ENH: Decouple by firing some sort of LionFireApplicationStopped event, and listen for that
+            .RunAsync()
+            .ContinueWith(t =>
+            {
+                DependencyContext.Deinitialize(); // ENH: Decouple by firing some sort of LionFireApplicationStopped event, and listen for that
 
-            if (exceptionWrapper.Exception != null)
-            {
-                tcs.SetException(exceptionWrapper.Exception);
-            }
-            else
-            {
-                tcs.SetResult(null);
-            }
-        });
+                if (exceptionWrapper.Exception != null)
+                {
+                    tcs.SetException(exceptionWrapper.Exception);
+                }
+                else
+                {
+                    tcs.SetResult(null);
+                }
+            });
 
         await tcs.Task;
     }
 }
-
-internal static class RunTaskAndStopApplicationCommonX
+public static class RunTaskAndStopApplicationCommonX
 {
+    public static IServiceCollection AddRunTaskAndStop(this IServiceCollection services, Func<IServiceProvider, Task> taskFactory)
+    {
+        return services
+            .AddSingleton(new RunOptions(async services =>
+            {
+                await taskFactory(services).ConfigureAwait(false);
+            }))
+            .AddHostedService<RunTaskAndStopApplication>()
+            ;
+    }
+}
+
+internal static class InternalRunTaskAndStopApplicationCommonX
+{
+    // REVIEW - what is the point of this ExceptionWrapper?
     public static IServiceCollection AddRunTaskAndStop(this IServiceCollection services, Func<IServiceProvider, Task> taskFactory, ExceptionWrapper exceptionWrapper)
     {
         return services
             .AddSingleton(new RunOptions(async services =>
                 {
-                    //Debug.WriteLine("Run starting");
                     try
                     {
                         await taskFactory(services).ConfigureAwait(false);
@@ -195,13 +216,11 @@ internal static class RunTaskAndStopApplicationCommonX
                         exceptionWrapper.Exception = ex;
                         throw;
                     }
-                    //Debug.WriteLine("Run done");
                 }))
             .AddHostedService<RunTaskAndStopApplication>()
             ;
     }
 }
-
 
 public static class RunTaskAndStopApplicationHostBuilderX
 {
@@ -284,6 +303,7 @@ public static class RunTaskAndStopApplicationHostBuilderX
 
 
     public static void Run<T1>(this IHostBuilder hostBuilder, Func<T1, Task> taskFactory)
+        where T1 : notnull
     {
         hostBuilder.RunAsync(new Func<IServiceProvider, Task>(s =>
         {
@@ -292,6 +312,8 @@ public static class RunTaskAndStopApplicationHostBuilderX
     }
 
     public static Task RunAsync<T1, T2>(this IHostBuilder hostBuilder, Func<T1, T2, Task> taskFactory)
+        where T1 : notnull
+        where T2 : notnull
     {
         return hostBuilder.RunAsync(new Func<IServiceProvider, Task>(async s =>
         {
@@ -301,6 +323,9 @@ public static class RunTaskAndStopApplicationHostBuilderX
         }));
     }
     public static Task RunAsync<T1, T2, T3>(this IHostBuilder hostBuilder, Func<T1, T2, T3, Task> taskFactory)
+        where T1 : notnull
+        where T2 : notnull
+        where T3 : notnull
     {
         return hostBuilder.RunAsync(new Func<IServiceProvider, Task>(async s =>
         {
@@ -325,6 +350,22 @@ public static class RunTaskAndStopApplicationHostBuilderX
 
     #endregion
 
+    #region AddRunTaskAndStop
+
+    public static IHostBuilder AddRunTaskAndStop(this IHostBuilder hostBuilder, Func<IServiceProvider, Task> taskFactory)
+    {
+        hostBuilder.ConfigureServices(s=>s.AddRunTaskAndStop(taskFactory));
+        return hostBuilder;
+    }
+    internal static IHostBuilder AddRunTaskAndStop(this IHostBuilder hostBuilder, Func<IServiceProvider, Task> taskFactory, ExceptionWrapper exceptionWrapper)
+    {
+        hostBuilder.ConfigureServices(s=>s.AddRunTaskAndStop(taskFactory, exceptionWrapper));
+        return hostBuilder;
+    }
+
+    #endregion
+
+    #region IServiceProvider
 
     public static Task RunAsync(this IHostBuilder hostBuilder, Action<IServiceProvider> action)
     {
@@ -338,16 +379,13 @@ public static class RunTaskAndStopApplicationHostBuilderX
 
     public static async Task RunAsync(this IHostBuilder hostBuilder, Func<IServiceProvider, Task> taskFactory)
     {
-        DependencyContext.InitializeCurrent();
-
-        var tcs = new TaskCompletionSource<object>();
+        var tcs = new TaskCompletionSource<object?>();
 
         ExceptionWrapper exceptionWrapper = new();
 
         await hostBuilder
             .ConfigureServices((context, sc) => sc.AddRunTaskAndStop(taskFactory, exceptionWrapper))
             .Build()
-            //.InitializeDependencyContextServiceProvider()
             .RunAsync()
             .ContinueWith(t =>
             {
@@ -359,68 +397,13 @@ public static class RunTaskAndStopApplicationHostBuilderX
                 }
                 else
                 {
-                    tcs.SetResult(null);
+                    tcs.SetResult(default);
                 }
             });
 
         await tcs.Task;
     }
+
+    #endregion
+
 }
-
-public static class RunTaskAndStopApplicationHostX
-{
-    //public static IHost InitializeDependencyContextServiceProvider(this IHost host)
-    //{
-    //    InitializeDependencyContextServiceProvider(host.Services);
-    //    return host;
-    //}
-    //public static IServiceProvider InitializeDependencyContextServiceProvider(this IServiceProvider serviceProvider)
-    //{
-    //    if (LionFireEnvironment.IsMultiApplicationEnvironment)
-    //    {
-    //        if (DependencyContext.AsyncLocal == null) throw new Exception("IsMultiApplicationEnvironment but DependencyContext.AsyncLocal == null");
-    //        DependencyContext.AsyncLocal.ServiceProvider = serviceProvider;
-    //    }
-    //    else
-    //    {
-    //        if (DependencyContext.Current == null)
-    //        {
-    //            DependencyContext.Current = new DependencyContext();
-    //        }
-
-    //        if (DependencyContext.Current.ServiceProvider == null)
-    //        {
-    //            DependencyContext.Current.ServiceProvider = serviceProvider;
-    //        }
-    //    }
-    //    return serviceProvider;
-    //}
-
-    //public static IServiceProvider InitializeDependencyContext_Old(this IServiceProvider serviceProvider)
-    //{
-    //    if (LionFireEnvironment.IsMultiApplicationEnvironment)
-    //    {
-    //        DependencyLocatorConfiguration.UseServiceProviderToActivateSingletons = false;
-    //        DependencyLocatorConfiguration.UseSingletons = false;
-
-    //        if (DependencyContext.AsyncLocal != null) throw new AlreadyException("UNEXPECTED: LionFireEnvironment.IsMultiApplicationEnvironment == true && DependencyContext.AsyncLocal != null "); // FUTURE - deinit on Run complete?  Unit tests running in series?
-
-    //        DependencyContext.AsyncLocal = new DependencyContext();
-    //        DependencyContext.Current.ServiceProvider = serviceProvider;
-    //    }
-    //    else
-    //    {
-    //        if (DependencyContext.Current == null)
-    //        {
-    //            DependencyContext.Current = new DependencyContext();
-    //        }
-
-    //        if (DependencyContext.Current.ServiceProvider == null)
-    //        {
-    //            DependencyContext.Current.ServiceProvider = serviceProvider;
-    //        }
-    //    }
-    //    return serviceProvider;
-    //}
-}
-

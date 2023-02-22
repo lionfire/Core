@@ -199,7 +199,7 @@ namespace LionFire.FlexObjects
         #region Set
 
         /// <summary>
-        /// Set the IFlex to a particular value.  Only allows one value at a time.  For multiple values, use Add instead.
+        /// Set the IFlex to a particular value.  Only allows one value of any type at a time for the entire Flex.  For multiple values, use Add instead.
         /// </summary>
         /// <typeparam name="T"></typeparam>
         /// <param name="flex"></param>
@@ -208,7 +208,7 @@ namespace LionFire.FlexObjects
         /// <param name="throwOnFail">Set to true to ensure Set always succeeds in setting the value, otherwise an Exception is thrown.</param>
         /// <param name="onlyReplaceSameType"></param>
         /// <returns>True if an existing value was replaced, false if not.</returns>
-        public static bool Set<T>(this IFlex flex, T value, string name = null, bool allowReplace = true, bool throwOnFail = false, bool onlyReplaceSameType = true)
+        public static bool SetExclusive<T>(this IFlex flex, T value, string name = null, bool allowReplace = false, bool throwOnFail = false, bool onlyReplaceSameType = true)
         {
             if (name != null) throw new NotImplementedException(nameof(name));
             var valueType = typeof(T) != typeof(object) ? typeof(T) : value?.GetType();
@@ -263,9 +263,42 @@ namespace LionFire.FlexObjects
         }
         //private static MethodInfo addMethod;
 
-        public static void SetType<T>(this IFlex flex, T obj) => Add(flex, obj, allowMultipleOfSameType: false); // TODO: allow replace
 
-        public static void Add<T>(this IFlex flex, T obj, bool allowMultipleOfSameType = true)
+        public static void Set<T>(this IFlex flex, T obj) => _AddOrReplace<T>(flex, obj, allowMultipleOfSameType: false, replace: true);
+
+
+        public class CollectionOptions<T>
+        {
+            public bool? AllowMultipleOfSameInstance { get; set; }
+
+        }
+
+        public static void AddSingle<T>(this IFlex flex, T obj)
+            => Add(flex, obj, allowMultipleOfSameType: false, allowMultipleOfSameInstance: null);
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="flex"></param>
+        /// <param name="obj"></param>
+        /// <param name="allowMultipleOfSameType"></param>
+        /// <param name="allowMultipleOfSameInstance">true: multiple can be added.  false: throws if already contains obj.  null: ignores if already contains obj.</param>
+        /// <exception cref="ArgumentException"></exception>
+        public static void Add<T>(this IFlex flex, T obj, bool allowMultipleOfSameType = true, bool? allowMultipleOfSameInstance = null)
+            => _AddOrReplace<T>(flex, obj, allowMultipleOfSameType, allowMultipleOfSameInstance);
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="flex"></param>
+        /// <param name="obj"></param>
+        /// <param name="allowMultipleOfSameType"></param>
+        /// <param name="allowMultipleOfSameInstance">true: multiple can be added.  false: throws if already contains obj.  null: ignores if already contains obj.</param>
+        /// <param name="replace">if true, replace existing with new obj.  Only happens if allowMultipleOfSameType is false</param>
+        /// <exception cref="ArgumentException"></exception>
+        private static void _AddOrReplace<T>(this IFlex flex, T obj, bool allowMultipleOfSameType = true, bool? allowMultipleOfSameInstance = null, bool replace = false)
         {
             // REVIEW - are all the corner cases covered?  Can this be refactored?
 
@@ -282,32 +315,90 @@ namespace LionFire.FlexObjects
             {
                 if (flex.FlexData is List<T> existingList)
                 {
-                    if (!allowMultipleOfSameType) { throw new ArgumentException($"{nameof(allowMultipleOfSameType)} is false but there is already a list of type '{typeof(T).FullName}'"); }
+                    //if (!allowMultipleOfSameType) { throw new ArgumentException($"{nameof(allowMultipleOfSameType)} is false but there is already a list of type '{typeof(T).FullName}'"); }
                     // 3rd (or later) item of list
-                    existingList.Add(obj);
+                    if (OnExistingList(existingList)) { existingList.Add(obj); }
                 }
                 else if (flex.FlexData is T existingItem)
                 {
-                    if (!allowMultipleOfSameType) { throw new ArgumentException($"{nameof(allowMultipleOfSameType)} is false but there is already a '{typeof(T).FullName}'"); }
-                    // Convert a single existing value into a list and add the parameter
-                    var list = new List<T> { existingItem, obj };
-                    flex.FlexData = list;
+                    bool followThrough = true;
+                    if (!allowMultipleOfSameType)
+                    {
+                        if (replace)
+                        {
+                            flex.FlexData = obj;
+                            followThrough = false;
+                        }
+                        else
+                        {
+                            throw new ArgumentException($"{nameof(allowMultipleOfSameType)} is false but there is already a '{typeof(T).FullName}'");
+                        }
+                    }
+                    if (existingItem.Equals(obj))
+                    {
+                        switch (allowMultipleOfSameInstance)
+                        {
+                            case true:
+                                break;
+                            case false:
+                                throw new AlreadySetException();
+                            case null:
+                            default:
+                                followThrough = false;
+                                break;
+                        }
+                    }
+                    if (followThrough)
+                    {
+                        // Convert a single existing value into a list and add the parameter
+                        var list = new List<T> { existingItem, obj };
+                        flex.FlexData = list;
+                    }
                 }
                 else if (flex.FlexData is FlexTypeDictionary ftd)
                 {
-
-
                     if (ftd.Types.ContainsKey(typeof(List<T>)))
                     {
-                        if (!allowMultipleOfSameType) { throw new ArgumentException($"{nameof(allowMultipleOfSameType)} is false but there is already a list of type '{typeof(T).FullName}'"); }
-                        ((List<T>)ftd.Types[typeof(List<T>)]).Add(obj);
+                        List<T> existingList2 = (List<T>)ftd.Types[typeof(List<T>)];
+                        if (OnExistingList(existingList2)) { existingList2.Add(obj); }
                     }
-                    if (ftd.Types.ContainsKey(typeof(T)))
+                    else if (ftd.Types.ContainsKey(typeof(T)))
                     {
-                        if (!allowMultipleOfSameType) { throw new ArgumentException($"{nameof(allowMultipleOfSameType)} is false but there is already a '{typeof(T).FullName}'"); }
-                        var list = new List<T> { (T)ftd.Types[typeof(T)], obj };
-                        ftd.Types.TryRemove(typeof(T), out _);
-                        ftd.Add(list);
+                        bool followThrough = true;
+                        if (!allowMultipleOfSameType)
+                        {
+                            if (replace)
+                            {
+                                ftd.Types[typeof(T)] = obj;
+                                followThrough = false;
+                            }
+                            else
+                            {
+                                throw new ArgumentException($"{nameof(allowMultipleOfSameType)} is false but there is already a '{typeof(T).FullName}'");
+                            }
+                        }
+
+                        var existingItem2 = ftd.Types[typeof(T)];
+                        if (existingItem2.Equals(obj))
+                        {
+                            switch (allowMultipleOfSameInstance)
+                            {
+                                case true:
+                                    break;
+                                case false:
+                                    throw new AlreadySetException();
+                                case null:
+                                default:
+                                    followThrough = false;
+                                    break;
+                            }
+                        }
+                        if (followThrough)
+                        {
+                            var list = new List<T> { (T)ftd.Types[typeof(T)], obj };
+                            ftd.Types.TryRemove(typeof(T), out _);
+                            ftd.Add(list);
+                        }
                     }
                     else
                     {
@@ -326,6 +417,28 @@ namespace LionFire.FlexObjects
                     flex.FlexData = dict;
                 }
             }
+
+            #region (local methods)
+
+            bool OnExistingList(List<T> existingList)
+            {
+                bool followThrough = true;
+                switch (allowMultipleOfSameInstance)
+                {
+                    case true:
+                        break;
+                    case false:
+                        if (existingList.Contains(obj)) throw new AlreadySetException();
+                        break;
+                    case null:
+                    default:
+                        followThrough = false;
+                        break;
+                }
+                return followThrough;
+            }
+
+            #endregion
         }
 
         public static Type GetTypeForValue(object val)

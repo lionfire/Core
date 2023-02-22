@@ -8,6 +8,8 @@ public static class DependencyContextWrapperExtensions
 {
     public static IHostBuilder UseDependencyContext(this IHostBuilder hostBuilder, bool useAsGuaranteedSingletonProvider = true, bool? multiHostEnvironment = null)
     {
+        DependencyContext.InitializeCurrent();
+
         hostBuilder.RegisterServiceProviderWithDependencyContext(multiHostEnvironment: multiHostEnvironment, useAsGuaranteedSingletonProvider: useAsGuaranteedSingletonProvider);
 
         return hostBuilder;

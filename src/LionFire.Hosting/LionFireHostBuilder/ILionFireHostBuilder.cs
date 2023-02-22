@@ -8,7 +8,7 @@ namespace LionFire.Hosting;
 
 public interface ILionFireHostBuilder
 {
-    HostBuilderWrapper HostBuilder { get; }
+    LionFireHostBuilderWrapper HostBuilder { get; }
 
     ILionFireHostBuilder ConfigureServices(Action<HostBuilderContext, IServiceCollection> configure);
     ILionFireHostBuilder ConfigureServices(Action<IServiceCollection> configure);

@@ -75,39 +75,48 @@ public class LionFireSiloConfigurator
     }
 
     #endregion
-
 }
 
 public static class LionFireSiloConfiguratorX
 {
     public static IHostBuilder UseLionFireOrleans(this IHostBuilder builder, SiloProgramConfig? config = null, Action<HostBuilderContext, ISiloBuilder>? configureSilo = null)
-        => builder.UseOrleans((context, siloBuilder) => siloBuilder.UseLionFireOrleans(builder, config, context, configureSilo));
+    {
+
+        //builder.ConfigureAppConfiguration((context, c) =>
+        //{
+        // REVIEW - can't modify builder here. still ok?
+        //    builder.ConfigureServices((c, s) => s.Configure<ClusterOptions>(o => ConfigureClusterOptions(o, c)));
+        //});
+
+        builder.UseOrleans((context, siloBuilder) => siloBuilder.UseLionFireOrleans(config, context, configureSilo));
+        return builder;
+    }
+    private static void ConfigureClusterOptions(ClusterOptions options, HostBuilderContext context)
+    {
+        var clusterConfigProvider = new LionFireSiloConfigurator(context.Configuration);
+
+        options.ClusterId = clusterConfigProvider.ClusterId;
+        options.ServiceId = clusterConfigProvider.ServiceId;
+    }
 
     /// <summary>
     /// (Prefer IHostBuilder.UseLionFireOrleans)
     /// </summary>
     /// <param name="siloBuilder"></param>
-    /// <param name="hostBuilder"></param>
     /// <param name="config"></param>
     /// <param name="context"></param>
     /// <param name="configureSilo"></param>
     /// <returns></returns>
     /// <exception cref="NotSupportedException"></exception>
-    public static ISiloBuilder UseLionFireOrleans(this ISiloBuilder siloBuilder, IHostBuilder hostBuilder, SiloProgramConfig config, HostBuilderContext context, Action<HostBuilderContext, ISiloBuilder>? configureSilo = null)
+    public static ISiloBuilder UseLionFireOrleans(this ISiloBuilder siloBuilder, SiloProgramConfig config, HostBuilderContext context, Action<HostBuilderContext, ISiloBuilder>? configureSilo = null)
     {
         var clusterConfigSection = context.Configuration.GetSection("Orleans:Cluster");
+
+        siloBuilder.Configure<ClusterOptions>(o => ConfigureClusterOptions(o, context)); // REVIEW - is this needed, or does the IHostBuilder.ConfigureAppConfiguration cover this? Or is that one redundant?  Or is it needed elsewhere by me?
+
         var clusterConfigProvider = new LionFireSiloConfigurator(context.Configuration);
 
-        void ConfigureClusterOptions(ClusterOptions options)
-        {
-            options.ClusterId = clusterConfigProvider.ClusterId;
-            options.ServiceId = clusterConfigProvider.ServiceId;
-        }
-
-        hostBuilder.ConfigureServices(s => s.Configure<ClusterOptions>(ConfigureClusterOptions));
-
-        siloBuilder
-            .Configure<ClusterOptions>(ConfigureClusterOptions)
+        siloBuilder // ...
 
         #region Kind
 

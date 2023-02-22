@@ -6,17 +6,17 @@ using System.Collections.Generic;
 
 namespace LionFire.Hosting;
 
-// TODO: Refactor this with LionFireHostBuilder, support other builder types: ASP.NET Core, MAUI
+// TODO: Refactor this with LionFireHostBuilder, consider support for other builder types: ASP.NET Core, MAUI
 
-public class HostBuilderWrapper : IHostBuilder
+public class LionFireHostBuilderWrapper : IHostBuilder
 {
 
-    public HostBuilderWrapper(IHostBuilder hostBuilder, ILionFireHostBuilder parent)
+    public LionFireHostBuilderWrapper(IHostBuilder hostBuilder, ILionFireHostBuilder parent)
     {
         WrappedHostBuilder = hostBuilder;
         Parent = parent;
     }
-    public HostBuilderWrapper(HostApplicationBuilder hostApplicationBuilder, ILionFireHostBuilder parent)
+    public LionFireHostBuilderWrapper(HostApplicationBuilder hostApplicationBuilder, ILionFireHostBuilder parent)
     {
         WrappedHostApplicationBuilder = hostApplicationBuilder;
         //WrappedHostBuilder = new HostBuilderAdapter(WrappedHostApplicationBuilder); // Exists internally to Microsoft code
@@ -40,12 +40,12 @@ public class HostBuilderWrapper : IHostBuilder
 
     public IHost Build() => WrappedHostBuilder?.Build() ?? WrappedHostApplicationBuilder.Build();
 
-    public HostBuilderContext WrappedHostApplicationBuilderContext 
+    public HostBuilderContext WrappedHostApplicationBuilderContext
         => new(Properties)
-                {
-                    Configuration = WrappedHostApplicationBuilder.Configuration,
-                    HostingEnvironment = WrappedHostApplicationBuilder.Environment,
-                };
+        {
+            Configuration = WrappedHostApplicationBuilder.Configuration,
+            HostingEnvironment = WrappedHostApplicationBuilder.Environment,
+        };
 
     public IHostBuilder ConfigureAppConfiguration(Action<HostBuilderContext, IConfigurationBuilder> configureDelegate)
     {

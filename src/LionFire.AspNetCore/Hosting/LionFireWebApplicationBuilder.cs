@@ -15,7 +15,7 @@ public class LionFireWebApplicationBuilder : ILionFireHostBuilder
         WebApplicationBuilder = hostBuilder;
     }
 
-    public HostBuilderWrapper HostBuilder => throw new NotImplementedException(); // TODO - eliminate need for this
+    public LionFireHostBuilderWrapper HostBuilder => throw new NotImplementedException(); // TODO - eliminate need for this
 
     public HostBuilderContext GetHostBuilderContext => new HostBuilderContext(WebApplicationBuilder.Host.Properties)
     {
