@@ -34,12 +34,20 @@ public static class CommandLineProgramHierarchy
             yield return sb.ToString();
         }
     }
+  public static IEnumerable<string> GetCommandNames(string commands)
+    {
+        yield return "";
 
+        foreach (var command in commands.Split(" ", StringSplitOptions.RemoveEmptyEntries))
+        {
+            yield return command;
+        }
+    }
     public static IEnumerable<string> GetCommandNames(InvocationContext context)
     {
         var list = new List<string>();
         
-        for (CommandResult? commandResult = context.ParseResult.CommandResult; commandResult != null; commandResult = commandResult.Parent as CommandResult)
+        for (CommandResult? commandResult = context.ParseResult.CommandResult; commandResult != null && commandResult.Parent != null; commandResult = commandResult.Parent as CommandResult)
         {
             list.Add(commandResult.Command.Name);
         }

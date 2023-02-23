@@ -14,7 +14,7 @@ public static class RootCommandX
     /// <returns></returns>
     public static Command GetOrCreateCommandFromHierarchy(this RootCommand rootCommand, string commandHierarchy)
     {
-        var hierarchy = CommandLineProgramHierarchy.GetCommands(commandHierarchy);
+        var hierarchy = CommandLineProgramHierarchy.GetCommandNames(commandHierarchy);
         Command command = rootCommand;
 
         foreach(var commandName in hierarchy)

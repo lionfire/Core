@@ -3,6 +3,7 @@ using Microsoft.Extensions.Hosting;
 using System.CommandLine;
 using LionFire.FlexObjects;
 using System.Runtime.CompilerServices;
+using LionFire.Hosting.CommandLine.HostApplicationBuilder_;
 
 namespace LionFire.Hosting.CommandLine;
 
@@ -20,21 +21,3 @@ public static class HostApplicationBuilderCommandLineProgramX
         return program;
     }
 }
-
-//public class HostApplicationBuilderBuilderBuilder
-//{
-//    public HostApplicationBuilderBuilderBuilder(HostApplicationBuilderBuilder hostApplicationBuilderBuilder)
-//    {
-//        HostApplicationBuilderBuilder = hostApplicationBuilderBuilder;
-//    }
-
-//    public HostApplicationBuilderBuilder HostApplicationBuilderBuilder { get; }
-
-//    public HostApplicationBuilderBuilderBuilder OnRun(Func<IServiceProvider, Task> run)
-//    {
-//        HostApplicationBuilderBuilder.Initializers.Add((context, hab) =>
-//        {
-//            hab.RunAsync(run);
-//        });
-//    }
-//}

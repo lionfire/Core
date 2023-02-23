@@ -14,6 +14,7 @@ public interface IHostingBuilderBuilder
 {
     Type BuilderType { get; }
     bool Inherit { get; set; }
+    //ICommandLineProgram CommandLineProgram { get; }
 
     IHost Build(ICommandLineProgram program, InvocationContext invocationContext);
     //Task<int> RunAsync(ICommandLineProgram program, InvocationContext context);
@@ -21,10 +22,17 @@ public interface IHostingBuilderBuilder
     IHostingBuilderBuilder ConfigureServices(Action<IServiceCollection> services);
 
     Command Command { get; internal set; }
+
+    string CommandHierarchy { get; internal set; }
 }
 
 public static class IHostingBuilderBuilderX
 {
+    public static void AddCommand(this IHostingBuilderBuilder hostingBuilderBuilder, Action<IHostingBuilderBuilder> config)
+    {
+        config(hostingBuilderBuilder);
+    }
+
     public static IHostingBuilderBuilder UseConsoleLifetime(this IHostingBuilderBuilder builder)
     {
         builder.ConfigureServices(services => services.AddSingleton<IHostLifetime, Microsoft.Extensions.Hosting.Internal.ConsoleLifetime>());
@@ -44,7 +52,6 @@ public static class IHostingBuilderBuilderX
         try
         {
             await builder
-                //.UseConsoleLifetime() // By default, this is already added in CommandLineProgram
                 .Build(program, invocationContext)
                 .RunAsync(cancellationToken);
 

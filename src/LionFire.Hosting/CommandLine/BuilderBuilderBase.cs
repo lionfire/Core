@@ -6,6 +6,7 @@ using Microsoft.Extensions.Options;
 using System;
 using System.Collections.Generic;
 using System.CommandLine.Invocation;
+using System.Diagnostics;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -17,9 +18,24 @@ namespace LionFire.Hosting.CommandLine;
 //  - HostApplicationBuilder
 public abstract class BuilderBuilderBase<TBuilder> : IHostingBuilderBuilder<TBuilder>
 {
+    #region Relationships
+
+    public Command? Command { get; set; }
+
+    #endregion
+
+    #region Identity
+
     public Type BuilderType => typeof(TBuilder);
 
-    public Command Command { get; set; }
+    /// <summary>
+    /// Commands separated by single spaces
+    /// </summary>
+    public string? CommandHierarchy { get; set; }
+
+    #endregion
+    
+    #region Parameters
 
     /// <summary>
     /// Inherit HostApplicationBuilder from parent commands.
@@ -36,15 +52,58 @@ public abstract class BuilderBuilderBase<TBuilder> : IHostingBuilderBuilder<TBui
         }
     }
 
+    #endregion
+
+    #region Methods
+
     public void InitializeHierarchy(ICommandLineProgram program, InvocationContext invocationContext, HostingBuilderBuilderContext context, TBuilder builder)
     {
-        foreach (var bb in program.GetBuilderBuilderHierarchy(invocationContext).Cast<IHostingBuilderBuilder<TBuilder>>())
+        foreach (var bb in program.GetBuilderBuilderHierarchy(invocationContext).Reverse().Cast<IHostingBuilderBuilder<TBuilder>>())
         {
-            bb.Initialize(context, builder);
+            Debug.WriteLine($"Initializing for {bb.Command.GetType().Name}: " + bb.Command.Name);
+            context.InitializingForCommandName = bb.Command.Name;
+            try
+            {
+                bb.Initialize(context, builder);
+            }
+            finally
+            {
+                context.InitializingForCommandName = null;
+            }
         }
-
-        Initialize(context, builder);
     }
+
+    #region Pass-thru
+
+    public abstract IHostingBuilderBuilder ConfigureServices(Action<IServiceCollection> services);
+
+    public IHost Build(ICommandLineProgram program, InvocationContext invocationContext)
+    {
+        var builder = CreateBuilder();
+
+        var context = new HostingBuilderBuilderContext
+        {
+            HostingBuilderBuilder = this,
+            Program = program,
+            InvocationContext = invocationContext
+        };
+
+        InitializeHierarchy(program, invocationContext, context, builder);
+
+        return Build(builder);
+    }
+
+    public abstract IHost Build(TBuilder builder);
+
+    #endregion
+
+    #endregion
+
+    #region (protected) Methods
+
+    protected virtual TBuilder CreateBuilder() => Activator.CreateInstance<TBuilder>();
+
+    #endregion
 
     //public async Task<int> RunAsync(ICommandLineProgram program, InvocationContext invocationContext)
     //{
@@ -62,41 +121,5 @@ public abstract class BuilderBuilderBase<TBuilder> : IHostingBuilderBuilder<TBui
     //    }
     //}
 
-    protected virtual TBuilder CreateBuilder() => Activator.CreateInstance<TBuilder>();
-
-    public IHost Build(ICommandLineProgram program, InvocationContext invocationContext)
-    {
-        var builder = CreateBuilder();
-
-        var context = new HostingBuilderBuilderContext();
-        context.AddSingle(program);
-        context.AddSingle(invocationContext);
-
-        InitializeHierarchy(program, invocationContext, context, builder);
-
-        return Build(builder);
-    }
-
-    public abstract IHost Build(TBuilder builder);
-    //protected abstract Task _RunConsoleAsync(TBuilder builder, CancellationToken cancellationToken = default);
-
-    public abstract IHostingBuilderBuilder ConfigureServices(Action<IServiceCollection> services);
-}
-
-public class HostApplicationBuilderBuilder : BuilderBuilderBase<HostApplicationBuilder>
-{
-    public override IHostingBuilderBuilder ConfigureServices(Action<IServiceCollection> services) { Initializers.Add((_, hab) => services(hab.Services)); return this; }
-    public override IHost Build(HostApplicationBuilder builder) => builder.Build();
-    //protected override Task _RunConsoleAsync(HostApplicationBuilder builder, CancellationToken cancellationToken = default) => builder.Build().RunAsync(cancellationToken);
-
-}
-
-public class HostBuilderBuilder : BuilderBuilderBase<IHostBuilder>
-{
-    public override IHostingBuilderBuilder ConfigureServices(Action<IServiceCollection> services) { Initializers.Add((_, hb) => hb.ConfigureServices(services)); return this; }
-    public override IHost Build(IHostBuilder builder) => builder.Build();
-    //protected override Task _RunConsoleAsync(IHostBuilder builder, CancellationToken cancellationToken = default) => builder.Build().RunAsync(cancellationToken);
-
-    protected override IHostBuilder CreateBuilder() => new HostBuilder();
 
 }
