@@ -12,18 +12,40 @@ namespace LionFire.Hosting.CommandLine;
 
 public interface IHostingBuilderBuilder
 {
-    Type BuilderType { get; }
-    bool Inherit { get; set; }
-    //ICommandLineProgram CommandLineProgram { get; }
+    #region Relationships
 
-    IHost Build(ICommandLineProgram program, InvocationContext invocationContext);
-    //Task<int> RunAsync(ICommandLineProgram program, InvocationContext context);
+    ICommandLineProgram? Program { get; set; }
+
+    Command? Command { get; internal set; }
+
+    #endregion
+
+    #region Identity
+
+    string CommandHierarchy { get; internal set; }
+    
+    #endregion
+
+    #region (static) Identity
+
+    Type BuilderType { get; }
+
+    #endregion
+
+    #region Parameters
+
+    bool Inherit { get; set; }
 
     IHostingBuilderBuilder ConfigureServices(Action<IServiceCollection> services);
 
-    Command Command { get; internal set; }
+    #endregion
 
-    string CommandHierarchy { get; internal set; }
+    #region Methods
+
+    IHost Build(ICommandLineProgram program, InvocationContext invocationContext);
+    
+    #endregion
+
 }
 
 public static class IHostingBuilderBuilderX
@@ -69,4 +91,6 @@ public static class IHostingBuilderBuilderX
 public interface IHostingBuilderBuilder<TBuilder> : IHostingBuilderBuilder
 {
     void Initialize(HostingBuilderBuilderContext context, TBuilder builder);
+
+    void AddInitializer(Action<HostingBuilderBuilderContext, TBuilder> initializer);
 }

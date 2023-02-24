@@ -21,6 +21,30 @@ namespace LionFire.Hosting.CommandLine;
 //   programBuilder.HostBuilder("orleans db create", (hostBuilder, (IFlex) invocationContext) => ...)
 //   programBuilder.HostBuilder("orleans db verify", (hostBuilder, (IFlex) invocationContext) => ... , noInherit: new string[] { "orleans", "orleans db" })
 
+public class HostBuilderProgram : CommandLineProgram<IHostBuilder, HostBuilder_.HostBuilderBuilder> { }
+public class HostApplicationBuilderProgram : CommandLineProgram<HostApplicationBuilder, HostApplicationBuilder_.HostApplicationBuilderBuilder> { }
+
+
+public class CommandLineProgram<TBuilder, TBuilderBuilder> : CommandLineProgram
+    where TBuilderBuilder : IHostingBuilderBuilder<TBuilder>
+{
+    // ENH: replace parameters with Action<BuilderBuilderBuilder> (:-D) with fluent API 
+    public CommandLineProgram<TBuilder, TBuilderBuilder> RootCommand(Action<TBuilder> builder, Action<TBuilderBuilder>? builderBuilder = null, Action<Command>? command = null) => Command("", builder, builderBuilder: builderBuilder, command: command);
+    public CommandLineProgram<TBuilder, TBuilderBuilder> RootCommand(Action<HostingBuilderBuilderContext, TBuilder> builder, Action<TBuilderBuilder>? builderBuilder = null, Action<Command>? command = null) => Command("", builder, builderBuilder: builderBuilder, command: command);
+    public CommandLineProgram<TBuilder, TBuilderBuilder> Command(string commandHierarchy, Action<TBuilder> builder, Action<TBuilderBuilder>? builderBuilder = null, Action<Command>? command = null) => Command(commandHierarchy, (_, b) => builder(b), builderBuilder: builderBuilder, command: command);
+    public CommandLineProgram<TBuilder, TBuilderBuilder> Command(string commandHierarchy, Action<HostingBuilderBuilderContext, TBuilder>? builder = null, Action<TBuilderBuilder>? builderBuilder = null, Action<Command>? command = null)
+    {
+        CommandLineProgramValidation.ValidateCommand(commandHierarchy);
+
+        var hostBuilderBuilder = GetOrAdd<TBuilderBuilder>(commandHierarchy);
+        builderBuilder?.Invoke(hostBuilderBuilder);
+        command?.Invoke(hostBuilderBuilder.Command!);
+        if (builder != null) hostBuilderBuilder.AddInitializer(builder);
+
+        return this;
+    }
+}
+
 public class CommandLineProgram : ICommandLineProgram, IFlex
 {
     #region Lifecycle
@@ -78,11 +102,11 @@ public class CommandLineProgram : ICommandLineProgram, IFlex
         #region Create Command
 
         var command = RootCommand.GetOrCreateCommandFromHierarchy(commandHierarchy);
-        command.SetHandler(Handler);
 
         #endregion
 
         var builderBuilder = (TBuilderBuilder)Activator.CreateInstance(typeof(TBuilderBuilder))!;
+        builderBuilder.Program = this;
         builderBuilder.Command = command;
         builderBuilder.CommandHierarchy = commandHierarchy;
         TryApplyDefaults(builderBuilder);
@@ -95,7 +119,7 @@ public class CommandLineProgram : ICommandLineProgram, IFlex
     public virtual void TryApplyDefaults(IHostingBuilderBuilder builderBuilder)
     {
         if (!Defaults) return;
-        builderBuilder.UseConsoleLifetime();
+        //builderBuilder.UseConsoleLifetime();
     }
 
     #endregion

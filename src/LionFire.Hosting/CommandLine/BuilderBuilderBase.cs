@@ -5,6 +5,7 @@ using Microsoft.Extensions.Hosting.Internal;
 using Microsoft.Extensions.Options;
 using System;
 using System.Collections.Generic;
+using System.CommandLine;
 using System.CommandLine.Invocation;
 using System.Diagnostics;
 using System.Linq;
@@ -21,6 +22,7 @@ public abstract class BuilderBuilderBase<TBuilder> : IHostingBuilderBuilder<TBui
     #region Relationships
 
     public Command? Command { get; set; }
+    public ICommandLineProgram? Program { get; set; }
 
     #endregion
 
@@ -34,7 +36,7 @@ public abstract class BuilderBuilderBase<TBuilder> : IHostingBuilderBuilder<TBui
     public string? CommandHierarchy { get; set; }
 
     #endregion
-    
+
     #region Parameters
 
     /// <summary>
@@ -42,7 +44,19 @@ public abstract class BuilderBuilderBase<TBuilder> : IHostingBuilderBuilder<TBui
     /// Default: true
     /// </summary>
     public bool Inherit { get; set; } = true;
-    public List<Action<HostingBuilderBuilderContext, TBuilder>> Initializers { get; set; } = new();
+    public IReadOnlyList<Action<HostingBuilderBuilderContext, TBuilder>> Initializers => initializers;
+
+
+    protected List<Action<HostingBuilderBuilderContext, TBuilder>> initializers;
+    public void AddInitializer(Action<HostingBuilderBuilderContext, TBuilder> initializer)
+    {
+        if (initializers == null)
+        {
+            initializers = new();
+            Command.SetHandler(Program.Handler);
+        }
+        initializers.Add(initializer);
+    }
 
     public void Initialize(HostingBuilderBuilderContext context, TBuilder builder)
     {
@@ -58,13 +72,17 @@ public abstract class BuilderBuilderBase<TBuilder> : IHostingBuilderBuilder<TBui
 
     public void InitializeHierarchy(ICommandLineProgram program, InvocationContext invocationContext, HostingBuilderBuilderContext context, TBuilder builder)
     {
-        foreach (var bb in program.GetBuilderBuilderHierarchy(invocationContext).Reverse().Cast<IHostingBuilderBuilder<TBuilder>>())
+        foreach (var bb in program.GetBuilderBuilderHierarchy(invocationContext).Reverse())
         {
+            if (bb is not IHostingBuilderBuilder<TBuilder> bbCasted)
+            {
+                throw new Exception($"Mismatch in hierarchy of host builder types: expecting IHostingBuilderBuilder<{typeof(TBuilder)}> but got {bb.GetType().Name}.  Either align types, or set IHostingBuilderBuilder.Inherit to false");
+            }
             Debug.WriteLine($"Initializing for {bb.Command.GetType().Name}: " + bb.Command.Name);
             context.InitializingForCommandName = bb.Command.Name;
             try
             {
-                bb.Initialize(context, builder);
+                bbCasted.Initialize(context, builder);
             }
             finally
             {
@@ -77,20 +95,30 @@ public abstract class BuilderBuilderBase<TBuilder> : IHostingBuilderBuilder<TBui
 
     public abstract IHostingBuilderBuilder ConfigureServices(Action<IServiceCollection> services);
 
+    protected TBuilder? Builder;
+
     public IHost Build(ICommandLineProgram program, InvocationContext invocationContext)
     {
-        var builder = CreateBuilder();
-
-        var context = new HostingBuilderBuilderContext
+        if(Builder != null) { throw new AlreadyException(); }
+        try
         {
-            HostingBuilderBuilder = this,
-            Program = program,
-            InvocationContext = invocationContext
-        };
+            Builder = CreateBuilder();
 
-        InitializeHierarchy(program, invocationContext, context, builder);
+            var context = new HostingBuilderBuilderContext
+            {
+                HostingBuilderBuilder = this,
+                Program = program,
+                InvocationContext = invocationContext,
+            };
 
-        return Build(builder);
+            InitializeHierarchy(program, invocationContext, context, Builder);
+
+            return Build(Builder);
+        }
+        finally
+        {
+            Builder = default;
+        }
     }
 
     public abstract IHost Build(TBuilder builder);

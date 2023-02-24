@@ -37,29 +37,37 @@ public static class OrleansCommandLineProgramX
         }
     }
 
-    public static ICommandLineProgram AddOrleansCommands(this ICommandLineProgram program, string commandName = "orleans")
+    public static CommandLineProgram<TBuilder, TBuilderBuilder> AddOrleansCommands<TBuilder, TBuilderBuilder>(this CommandLineProgram<TBuilder, TBuilderBuilder> program, string commandName = "orleans")
+        where TBuilderBuilder : IHostingBuilderBuilder<TBuilder>
     {
-        var orleans = program.Add<HostBuilderBuilder>(commandName);
-        orleans.Command.Description = "orleans commands";
+        var orleans = program.Command(commandName, command: c => c.Description = "orleans commands");
 
         #region db
 
         var dbCommandName = commandName + " db";
-        var db = program.Add<HostBuilderBuilder>(dbCommandName);
-        db.Command.Description = "Manage the database";
-        foreach (var option in GlobalOptions) db.Command.AddGlobalOption(option);
+        var db = program.Command(dbCommandName,
+            //(c,b) => c.HostingBuilderBuilder.ConfigureServices(s => s.AddRunTaskAndStop(() => Console.WriteLine("TODO: orleans db NOOP"))),
+            //bb=>bb.Inherit = false,
+            command: c =>
+            {
+                c.Description = "Manage the database";
+                foreach (var option in GlobalOptions) c.AddGlobalOption(option);
+            }
+            );
 
         #region Create
 
-        var create = program.Add<HostBuilderBuilder>(dbCommandName + " create");
-        create.Command.Description = "Create the Orleans database";
+        var create = program.Command(dbCommandName + " create",
+            (c,b) => c.HostingBuilderBuilder.ConfigureServices(s => s.AddRunTaskAndStop(() => Console.WriteLine("TODO: orleans db create"))),
+            command: c => c.Description = "Create the Orleans database");
 
         #endregion
 
         #region Teardown
 
-        var teardown = program.Add<HostBuilderBuilder>(dbCommandName + " teardown");
-        teardown.Command.Description = "Delete data in the Orleans database and remove the database from the database server";
+        var teardown = program.Command(dbCommandName + " teardown",
+           (c, b) => c.HostingBuilderBuilder.ConfigureServices(s => s.AddRunTaskAndStop(() => Console.WriteLine("TODO: orleans db teardown"))),
+           command: c => c.Description = "Delete data in the Orleans database and remove the database from the database server");
 
         #endregion
 

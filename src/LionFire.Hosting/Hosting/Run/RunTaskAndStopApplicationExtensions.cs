@@ -187,6 +187,11 @@ public static class RunTaskAndStopApplicationHostApplicationBuilderX
 }
 public static class RunTaskAndStopApplicationCommonX
 {
+    public static IServiceCollection AddRunTaskAndStop(this IServiceCollection services, Action taskFactory)
+        => services.AddRunTaskAndStop(_ => { taskFactory(); return Task.CompletedTask; });
+
+    public static IServiceCollection AddRunTaskAndStop(this IServiceCollection services, Func<Task> taskFactory)
+        => services.AddRunTaskAndStop(_ => taskFactory());
     public static IServiceCollection AddRunTaskAndStop(this IServiceCollection services, Func<IServiceProvider, Task> taskFactory)
     {
         return services

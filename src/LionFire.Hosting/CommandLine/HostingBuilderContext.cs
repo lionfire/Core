@@ -1,6 +1,7 @@
 ﻿#nullable enable
 
 using LionFire.Hosting.CommandLine;
+using Microsoft.Extensions.DependencyInjection;
 using System.CommandLine.Invocation;
 using System.Linq;
 
@@ -17,4 +18,5 @@ public class HostingBuilderBuilderContext : IFlex
 
     public ICommandLineProgram? Program { get; internal set; }
     public InvocationContext? InvocationContext { get; internal set; }
+
 }

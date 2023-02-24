@@ -9,15 +9,17 @@ namespace LionFire.Hosting.CommandLine;
 
 public static class HostApplicationBuilderCommandLineProgramX
 {
-    public static ICommandLineProgram HostApplicationBuilder(this ICommandLineProgram program, Action<HostApplicationBuilder> action) => program.HostApplicationBuilder("", action);
-    public static ICommandLineProgram HostApplicationBuilder(this ICommandLineProgram program, Action<HostingBuilderBuilderContext, HostApplicationBuilder> action) => program.HostApplicationBuilder("", action);
-    public static ICommandLineProgram HostApplicationBuilder(this ICommandLineProgram program, string command, Action<HostApplicationBuilder> action) => program.HostApplicationBuilder(command, (_, builder) => action(builder));
-    public static ICommandLineProgram HostApplicationBuilder(this ICommandLineProgram program, string command, Action<HostingBuilderBuilderContext, HostApplicationBuilder> action)
+    public static ICommandLineProgram HostApplicationBuilder(this ICommandLineProgram program, Action<HostApplicationBuilder> buildBuilderAction, Action<HostApplicationBuilderBuilder>? configureBuilderBuilder = null) => program.HostApplicationBuilder("", buildBuilderAction, configureBuilderBuilder: configureBuilderBuilder);
+    public static ICommandLineProgram HostApplicationBuilder(this ICommandLineProgram program, Action<HostingBuilderBuilderContext, HostApplicationBuilder> buildBuilderAction, Action<HostApplicationBuilderBuilder>? configureBuilderBuilder = null) => program.HostApplicationBuilder("", buildBuilderAction, configureBuilderBuilder: configureBuilderBuilder);
+    public static ICommandLineProgram HostApplicationBuilder(this ICommandLineProgram program, string commandHierarchy, Action<HostApplicationBuilder> buildBuilderAction, Action<HostApplicationBuilderBuilder>? configureBuilderBuilder = null) => program.HostApplicationBuilder(commandHierarchy, (_, builder) => buildBuilderAction(builder), configureBuilderBuilder: configureBuilderBuilder);
+    public static ICommandLineProgram HostApplicationBuilder(this ICommandLineProgram program, string commandHierarchy, Action<HostingBuilderBuilderContext, HostApplicationBuilder> buildBuilderAction, Action<HostApplicationBuilderBuilder>? configureBuilderBuilder = null, Action<Command>? command = null)
     {
-        CommandLineProgramValidation.ValidateCommand(command);
+        CommandLineProgramValidation.ValidateCommand(commandHierarchy);
 
-        var hostBuilderBuilder = program.GetOrAdd<HostApplicationBuilderBuilder>(command);
-        hostBuilderBuilder.Initializers.Add(action);
+        var hostBuilderBuilder = program.GetOrAdd<HostApplicationBuilderBuilder>(commandHierarchy);
+        configureBuilderBuilder?.Invoke(hostBuilderBuilder);
+        command?.Invoke(hostBuilderBuilder.Command!);
+        hostBuilderBuilder.AddInitializer(buildBuilderAction);
         return program;
     }
 }
