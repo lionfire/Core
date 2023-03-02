@@ -32,13 +32,14 @@ namespace LionFire.Services
     {
         public static IServiceCollection AddPackageSourceFromStore(this IServiceCollection services, string storeName, string packageProviderName, VobMountOptions? mountOptions = null, string? rootName = null)
         {
-            return services.InitializeVob(VosPaths.GetRootPath(rootName), root =>
-                 (root[VosPackageLocations.GetPackageProviderPath(packageProviderName)].AsPackageProvider()?.AvailableRoot
-                    ?? throw new NotFoundException($"Could not find package provider '{packageProviderName}''s mount point for available packages.  Is this packageProvider registered?"))
-                    .Mount(root[$"$stores/{storeName}"], mountOptions),
-                 c => c.DependsOn(VosAppInitStage.PackageProviders)
-                    .Contributes(VosAppInitStage.PackageSources)
-                 );
+            throw new NotImplementedException();
+            //return services.InitializeVob(VosPaths.GetRootPath(rootName), root =>
+            //     (root[VosPackageLocations.GetPackageProviderPath(packageProviderName)].AsPackageProvider()?.AvailableRoot
+            //        ?? throw new NotFoundException($"Could not find package provider '{packageProviderName}''s mount point for available packages.  Is this packageProvider registered?"))
+            //        .Mount(root[$"$stores/{storeName}"], mountOptions),
+            //     c => c.DependsOn(VosAppInitStage.PackageProviders)
+            //        .Contributes(VosAppInitStage.PackageSources)
+            //     );
         }
 
         #region All Defaults

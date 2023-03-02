@@ -58,7 +58,7 @@ public static class OrleansCommandLineProgramX
         #region Create
 
         var create = program.Command(dbCommandName + " create",
-            (c,b) => c.HostingBuilderBuilder.ConfigureServices(s => s.AddRunTaskAndStop(() => Console.WriteLine("TODO: orleans db create"))),
+            (c, b) => c.HostingBuilderBuilder.ConfigureServices(s => s.AddRunTaskAndStop(() => Console.WriteLine("TODO: orleans db create"))),
             command: c => c.Description = "Create the Orleans database");
 
         #endregion

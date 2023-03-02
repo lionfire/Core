@@ -51,7 +51,7 @@ namespace LionFire.Vos.Environment
         public object this[string key]
         {
             get => FlexDictionary.QueryFlex(key)?.SingleValueOrDefault();
-            set => FlexDictionary.GetFlex(key)?.Set(value, allowReplace: true, onlyReplaceSameType: false);
+            set => FlexDictionary.GetFlex(key)?.Set(value);
         }
 
         //public void Add<T>(string key, T value)

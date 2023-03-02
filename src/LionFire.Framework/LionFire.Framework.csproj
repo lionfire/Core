@@ -43,6 +43,7 @@
     <ProjectReference Include="..\LionFire.Structures\LionFire.Structures.csproj" />
     <ProjectReference Include="..\LionFire.Vos.Application\LionFire.Vos.VosApp.csproj" />
     <ProjectReference Include="..\LionFire.Vos.Assets\LionFire.Vos.Assets.csproj" />
+    <ProjectReference Include="..\LionFire.Vos.Packages\LionFire.Vos.Packages.csproj" />
     <ProjectReference Include="..\LionFire.Vos\LionFire.Vos.csproj" />
   </ItemGroup>
 
