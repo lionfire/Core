@@ -23,6 +23,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\LionFire.Flex\LionFire.Flex.csproj" />
     <ProjectReference Include="..\LionFire.UI.Entities\LionFire.UI.Entities.csproj" />
     <ProjectReference Include="..\LionFire.UI\LionFire.UI.csproj" />
   </ItemGroup>

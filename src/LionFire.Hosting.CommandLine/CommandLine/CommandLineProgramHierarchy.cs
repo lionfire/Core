@@ -34,7 +34,7 @@ public static class CommandLineProgramHierarchy
         yield return "";
         var sb = new StringBuilder();
 
-        foreach (var command in commands.Split(" ", StringSplitOptions.RemoveEmptyEntries))
+        foreach (var command in commands.Split(new char[] { ' ' }, StringSplitOptions.RemoveEmptyEntries))
         {
             if (sb.Length != 0) sb.Append(' ');
             sb.Append(command);
@@ -45,7 +45,7 @@ public static class CommandLineProgramHierarchy
     {
         yield return "";
 
-        foreach (var command in commands.Split(" ", StringSplitOptions.RemoveEmptyEntries))
+        foreach (var command in commands.Split(new char[] { ' ' }, StringSplitOptions.RemoveEmptyEntries))
         {
             yield return command;
         }
