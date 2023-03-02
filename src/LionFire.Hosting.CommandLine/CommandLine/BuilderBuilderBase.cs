@@ -22,7 +22,7 @@ public abstract class BuilderBuilderBase<TBuilder> : IHostingBuilderBuilder<TBui
     #region Relationships
 
     public Command? Command { get; set; }
-    public ICommandLineProgram? Program { get; set; }
+    public IProgram? Program { get; set; }
 
     #endregion
 
@@ -70,7 +70,7 @@ public abstract class BuilderBuilderBase<TBuilder> : IHostingBuilderBuilder<TBui
 
     #region Methods
 
-    public void InitializeHierarchy(ICommandLineProgram program, InvocationContext invocationContext, HostingBuilderBuilderContext context, TBuilder builder)
+    public void InitializeHierarchy(IProgram program, InvocationContext invocationContext, HostingBuilderBuilderContext context, TBuilder builder)
     {
         foreach (var bb in program.GetBuilderBuilderHierarchy(invocationContext).Reverse())
         {
@@ -97,7 +97,7 @@ public abstract class BuilderBuilderBase<TBuilder> : IHostingBuilderBuilder<TBui
 
     protected TBuilder? Builder;
 
-    public IHost Build(ICommandLineProgram program, InvocationContext invocationContext)
+    public IHost Build(IProgram program, InvocationContext invocationContext)
     {
         if(Builder != null) { throw new AlreadyException(); }
         try

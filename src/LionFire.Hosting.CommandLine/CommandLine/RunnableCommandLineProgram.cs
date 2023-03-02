@@ -2,7 +2,6 @@
 using Microsoft.Extensions.Hosting;
 using LionFire.Hosting;
 using System.CommandLine;
-using System.CommandLine.NamingConventionBinder;
 
 namespace LionFire.Hosting;
 

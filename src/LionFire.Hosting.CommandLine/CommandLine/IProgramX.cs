@@ -1,31 +1,11 @@
 ﻿#nullable enable
-using Microsoft.Extensions.Hosting;
-using System.Collections.Generic;
-using System.CommandLine;
 using System.CommandLine.Invocation;
 using System.Diagnostics;
 using System.Linq;
-using System.Threading.Tasks;
 
 namespace LionFire.Hosting.CommandLine;
 
-public interface ICommandLineProgram
-{
-    IReadOnlyDictionary<string, IHostingBuilderBuilder> BuilderBuilders { get; }
-
-    TBuilderBuilder GetOrAdd<TBuilderBuilder>(string commandHierarchy)
-        where TBuilderBuilder : IHostingBuilderBuilder;
-    TBuilderBuilder Add<TBuilderBuilder>(string commandHierarchy)
-        where TBuilderBuilder : IHostingBuilderBuilder;
-
-
-    Task<int> Handler(InvocationContext context);
-
-    Task<int> RunAsync(string[] args);
-}
-
-
-public static class ICommandLineProgramX
+public static class IProgramX
 {
 
     /// <summary>
@@ -35,7 +15,7 @@ public static class ICommandLineProgramX
     /// <returns>
     /// Order: from descendant to ancestor
     /// </returns>
-    public static IEnumerable<IHostingBuilderBuilder> GetBuilderBuilderHierarchy(this ICommandLineProgram program, InvocationContext context)
+    public static IEnumerable<IHostingBuilderBuilder> GetBuilderBuilderHierarchy(this IProgram program, InvocationContext context)
     {
         foreach (var commandHierarchy in CommandLineProgramHierarchy.GetCommands(context).Reverse())
         {

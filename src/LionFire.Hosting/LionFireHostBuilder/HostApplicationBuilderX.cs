@@ -25,11 +25,6 @@ public static class HostApplicationBuilderX
         return hostBuilder;
     }
 
-    public static HostApplicationBuilder ConfigureServices(this HostApplicationBuilder hostApplicationBuilder, Action<IServiceCollection> configure)
-    {
-        configure(hostApplicationBuilder.Services);
-        return hostApplicationBuilder;
-    }
 
     #region UseConsoleLifetime
 

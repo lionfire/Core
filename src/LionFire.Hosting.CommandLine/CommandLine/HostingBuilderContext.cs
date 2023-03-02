@@ -1,5 +1,6 @@
 ﻿#nullable enable
 
+using LionFire.FlexObjects;
 using LionFire.Hosting.CommandLine;
 using Microsoft.Extensions.DependencyInjection;
 using System.CommandLine.Invocation;
@@ -16,7 +17,7 @@ public class HostingBuilderBuilderContext : IFlex
     public string? CommandName => HostingBuilderBuilder?.Command.Name;
     public string? InitializingForCommandName { get; set; }
 
-    public ICommandLineProgram? Program { get; internal set; }
+    public IProgram? Program { get; internal set; }
     public InvocationContext? InvocationContext { get; internal set; }
 
 }

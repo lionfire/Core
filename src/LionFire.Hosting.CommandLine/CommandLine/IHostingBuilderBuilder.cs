@@ -3,6 +3,7 @@
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using System.Collections.Generic;
+using System.CommandLine;
 using System.CommandLine.Invocation;
 using System.Runtime.CompilerServices;
 using System.Threading;
@@ -14,7 +15,7 @@ public interface IHostingBuilderBuilder
 {
     #region Relationships
 
-    ICommandLineProgram? Program { get; set; }
+    IProgram? Program { get; set; }
 
     Command? Command { get; internal set; }
 
@@ -42,7 +43,7 @@ public interface IHostingBuilderBuilder
 
     #region Methods
 
-    IHost Build(ICommandLineProgram program, InvocationContext invocationContext);
+    IHost Build(IProgram program, InvocationContext invocationContext);
     
     #endregion
 
@@ -69,7 +70,7 @@ public static class IHostingBuilderBuilderX
         return builder;
     }
 
-    public static async Task<int> RunAsync(this IHostingBuilderBuilder builder, ICommandLineProgram program, InvocationContext invocationContext, CancellationToken cancellationToken = default)
+    public static async Task<int> RunAsync(this IHostingBuilderBuilder builder, IProgram program, InvocationContext invocationContext, CancellationToken cancellationToken = default)
     {
         try
         {

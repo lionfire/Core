@@ -1,37 +1,32 @@
 ﻿#nullable enable
+//#define BuilderBuilderBuilder  // replaces parameters with Action<BuilderBuilderBuilder> with fluent API, but it may be more natural to deal with the multiple parameters
+
 using System;
-using System.Threading.Tasks;
-using Microsoft.Extensions.Hosting;
 using LionFire.Threading;
-using LionFire.Hosting.ExitCode;
 using System.CommandLine;
 using System.CommandLine.Builder;
-using System.CommandLine.Hosting;
 using System.CommandLine.Parsing;
-using System.Collections.Generic;
-using System.ComponentModel.Design;
 using LionFire.FlexObjects;
 using System.CommandLine.Invocation;
-using System.Linq;
 
 namespace LionFire.Hosting.CommandLine;
 
-// REVIEW: API ideas
-//   programBuilder.HostBuilder("run", (hostBuilder, (IFlex) invocationContext) => ...)
-//   programBuilder.HostBuilder("orleans db create", (hostBuilder, (IFlex) invocationContext) => ...)
-//   programBuilder.HostBuilder("orleans db verify", (hostBuilder, (IFlex) invocationContext) => ... , noInherit: new string[] { "orleans", "orleans db" })
-
-public class HostBuilderProgram : CommandLineProgram<IHostBuilder, HostBuilder_.HostBuilderBuilder> { }
-public class HostApplicationBuilderProgram : CommandLineProgram<HostApplicationBuilder, HostApplicationBuilder_.HostApplicationBuilderBuilder> { }
+// FUTURE ENH - flesh out inheritance API ideas:
+// - Inherit (ancestors)
+// - Inherited (by children)
 
 
 public class CommandLineProgram<TBuilder, TBuilderBuilder> : CommandLineProgram
     where TBuilderBuilder : IHostingBuilderBuilder<TBuilder>
 {
-    // ENH: replace parameters with Action<BuilderBuilderBuilder> (:-D) with fluent API 
-    public CommandLineProgram<TBuilder, TBuilderBuilder> RootCommand(Action<TBuilder> builder, Action<TBuilderBuilder>? builderBuilder = null, Action<Command>? command = null) => Command("", builder, builderBuilder: builderBuilder, command: command);
-    public CommandLineProgram<TBuilder, TBuilderBuilder> RootCommand(Action<HostingBuilderBuilderContext, TBuilder> builder, Action<TBuilderBuilder>? builderBuilder = null, Action<Command>? command = null) => Command("", builder, builderBuilder: builderBuilder, command: command);
+    // REVIEW: the API style. command is accessible via builderBuilder, so it could be removed as a parameter here.  Or could/should builderBuilder be removed?  
+    
+    public new CommandLineProgram<TBuilder, TBuilderBuilder> RootCommand(Action<TBuilder> builder, Action<TBuilderBuilder>? builderBuilder = null, Action<Command>? command = null) => Command("", builder, builderBuilder: builderBuilder, command: command);
+    public new CommandLineProgram<TBuilder, TBuilderBuilder> RootCommand(Action<HostingBuilderBuilderContext, TBuilder> builder, Action<TBuilderBuilder>? builderBuilder = null, Action<Command>? command = null) => Command("", builder, builderBuilder: builderBuilder, command: command);
+
+
     public CommandLineProgram<TBuilder, TBuilderBuilder> Command(string commandHierarchy, Action<TBuilder> builder, Action<TBuilderBuilder>? builderBuilder = null, Action<Command>? command = null) => Command(commandHierarchy, (_, b) => builder(b), builderBuilder: builderBuilder, command: command);
+
     public CommandLineProgram<TBuilder, TBuilderBuilder> Command(string commandHierarchy, Action<HostingBuilderBuilderContext, TBuilder>? builder = null, Action<TBuilderBuilder>? builderBuilder = null, Action<Command>? command = null)
     {
         CommandLineProgramValidation.ValidateCommand(commandHierarchy);
@@ -43,9 +38,59 @@ public class CommandLineProgram<TBuilder, TBuilderBuilder> : CommandLineProgram
 
         return this;
     }
+
+#if BuilderBuilderBuilder
+    public new CommandLineProgram<TBuilder, TBuilderBuilder> RootCommandBuilder(Action<HostingBuilderBuilderBuilder<TBuilder, TBuilderBuilder>>? builderBuilder = null) => CommandBuilder("", builderBuilder);
+    public CommandLineProgram<TBuilder, TBuilderBuilder> CommandBuilder(string commandHierarchy, Action<HostingBuilderBuilderBuilder<TBuilder, TBuilderBuilder>>? builderBuilder = null)
+    {
+        CommandLineProgramValidation.ValidateCommand(commandHierarchy);
+
+        var hostBuilderBuilder = GetOrAdd<TBuilderBuilder>(commandHierarchy);
+
+        if (builderBuilder != null)
+        {
+            builderBuilder(new HostingBuilderBuilderBuilder<TBuilder, TBuilderBuilder>(hostBuilderBuilder));
+        }
+
+        return this;
+    }
+#endif
 }
 
-public class CommandLineProgram : ICommandLineProgram, IFlex
+#if BuilderBuilderBuilder
+
+public class HostingBuilderBuilderBuilder<TBuilder, TBuilderBuilder>
+    where TBuilderBuilder : IHostingBuilderBuilder<TBuilder>
+{
+    public TBuilderBuilder HostBuilderBuilder { get; init; }
+
+    public HostingBuilderBuilderBuilder(TBuilderBuilder hostBuilderBuilder)
+    {
+        ArgumentNullException.ThrowIfNull(hostBuilderBuilder);
+        HostBuilderBuilder = hostBuilderBuilder;
+    }
+}
+
+public static class HostingBuilderBuilderBuilderX
+{
+    public static HostingBuilderBuilderBuilder<TBuilder, TBuilderBuilder> Builder<TBuilder, TBuilderBuilder>(this HostingBuilderBuilderBuilder<TBuilder, TBuilderBuilder> bbb, Action<HostingBuilderBuilderContext, TBuilder> builder)
+      where TBuilderBuilder : IHostingBuilderBuilder<TBuilder>
+    {
+        bbb.HostBuilderBuilder.AddInitializer(builder);
+        return bbb;
+    }
+
+    public static HostingBuilderBuilderBuilder<TBuilder, TBuilderBuilder> Command<TBuilder, TBuilderBuilder>(this HostingBuilderBuilderBuilder<TBuilder, TBuilderBuilder> bbb, Action<Command> command)
+        where TBuilderBuilder : IHostingBuilderBuilder<TBuilder>
+    {
+        ArgumentNullException.ThrowIfNull(bbb.HostBuilderBuilder.Command);
+        command(bbb.HostBuilderBuilder.Command);
+        return bbb;
+    }
+}
+#endif
+
+public class CommandLineProgram : IProgram, IFlex
 {
     #region Lifecycle
 
@@ -78,7 +123,7 @@ public class CommandLineProgram : ICommandLineProgram, IFlex
     public IReadOnlyDictionary<string, IHostingBuilderBuilder> BuilderBuilders => builderBuilders;
     protected Dictionary<string, IHostingBuilderBuilder> builderBuilders { get; } = new();
 
-    public TBuilderBuilder GetOrAdd<TBuilderBuilder>(string commandHierarchy)
+    protected TBuilderBuilder GetOrAdd<TBuilderBuilder>(string commandHierarchy)
         where TBuilderBuilder : IHostingBuilderBuilder
     {
         if (BuilderBuilders.TryGetValue(commandHierarchy, out var hostingBuilderBuilder))
@@ -89,7 +134,7 @@ public class CommandLineProgram : ICommandLineProgram, IFlex
         return CreateBuilderAndCommand<TBuilderBuilder>(commandHierarchy);
     }
 
-    public TBuilderBuilder Add<TBuilderBuilder>(string commandHierarchy)
+    protected TBuilderBuilder Add<TBuilderBuilder>(string commandHierarchy)
       where TBuilderBuilder : IHostingBuilderBuilder
     {
         if (BuilderBuilders.ContainsKey(commandHierarchy)) throw new AlreadySetException();
@@ -106,6 +151,7 @@ public class CommandLineProgram : ICommandLineProgram, IFlex
         #endregion
 
         var builderBuilder = (TBuilderBuilder)Activator.CreateInstance(typeof(TBuilderBuilder))!;
+        // ENH: Replace with common ctor arguments?
         builderBuilder.Program = this;
         builderBuilder.Command = command;
         builderBuilder.CommandHierarchy = commandHierarchy;
