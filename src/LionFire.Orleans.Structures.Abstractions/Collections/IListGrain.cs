@@ -10,7 +10,7 @@ public interface IAsyncDictionary<TKey, TValue>
 
 public interface IAsyncCreating<TValue>
 {
-    Task<TValue> Create(Type type, Action<TValue>? init = null);
+    Task<TValue> Create(Type type/*, Action<TValue>? init = null*/);
 
     Task<IEnumerable<Type>> CreateableTypes();
 }

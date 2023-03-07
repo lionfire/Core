@@ -32,6 +32,7 @@ namespace LionFire.Orleans_.Collections;
 #endregion
 
 // OPTIMIZE: Replace List with HashSet
+//[GenerateSerializer]
 public class ListGrain<TItem> : Grain
     , IListGrain<TItem>
     //, IAsyncCreating<TItem> 
@@ -43,8 +44,11 @@ public class ListGrain<TItem> : Grain
     #region Dependencies
     
     public IClusterClient ClusterClient => ServiceProvider.GetRequiredService<IClusterClient>();
+
+    [Id(0)]
     protected IPersistentState<List<TItem>> ItemsState { get; }
 
+    [Id(1)]
     protected IPersistentState<SortedDictionary<DateTime, TItem>>? DeletedItemsState { get; private set; }
 
     #endregion
@@ -107,6 +111,7 @@ public class ListGrain<TItem> : Grain
 
     #region Deleted Items: Pruning
 
+    [Id(2)]
     public TimeSpan DeletedItemExpiry { get; set; } = TimeSpan.FromDays(90);
 
     public async Task PruneDeletedItems()

@@ -8,6 +8,7 @@ using System.Linq;
 namespace LionFire.Orleans_.Collections;
 
 
+//[GenerateSerializer]
 public class PolymorphicGrainListGrain<TGrainItem> : ListGrain<PolymorphicGrainListGrainItem<TGrainItem>>
     , IPolymorphicGrainListGrain<TGrainItem>
     //, IAsyncCreating<TValue>
@@ -56,20 +57,27 @@ public class PolymorphicGrainListGrain<TGrainItem> : ListGrain<PolymorphicGrainL
         Func<Type,bool> param = t => t.IsInterface && !t.Name.StartsWith("OrleansCodeGen");
 
         var result = TypeScanner.GetAllAssignableTo<TGrainItem>("test",param);
-        return Task.FromResult(result);
+        return Task.FromResult<IEnumerable<Type>>(result.ToArray());
+        IEnumerable<Type> list = new List<Type>(result);
+        //return Task.FromResult( list);
+
         //return Task.FromResult(createableTypes ??= TypeScanner.GetAllAssignableTo<TGrainItem>(t => t.IsInterface && !t.Name.StartsWith("OrleansCodeGen")));
         //var wrappedType = typeof(IPolymorphicGrainListGrainItem<>).MakeGenericType(type);
     }
 
-    public Task<TGrainItem> Create(Type type, Action<TGrainItem>? init = null)
+    public async Task<TGrainItem> Create(Type type/*, Action<TGrainItem>? init = null*/)
     {
-        throw new NotImplementedException();
+        var item = Instantiate(type);
+
+        ItemsState.State.Add(item);
+        await ItemsState.WriteStateAsync();
+        return  item.GetGrain(GrainFactory);
     }
 
-    public Task<PolymorphicGrainListGrainItem<TGrainItem>> Create(Type type, Action<PolymorphicGrainListGrainItem<TGrainItem>>? init = null)
-    {
-        throw new NotImplementedException();
-    }
+    //public Task<PolymorphicGrainListGrainItem<TGrainItem>> Create(Type type/*, Action<PolymorphicGrainListGrainItem<TGrainItem>>? init = null*/)
+    //{
+    //    throw new NotImplementedException();
+    //}
 
     //public virtual Task<IEnumerable<Type>> CreateableTypes() => Task.FromResult(Enumerable.Empty<Type>());
 
