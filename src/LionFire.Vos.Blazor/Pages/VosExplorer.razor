@@ -60,7 +60,7 @@
                             <span @onclick="@(e => GoToPath(listing.Name))" class="@IconClasses(listing)" aria-hidden="true" data-glyph="battery-empty"></span>
                         </td>
                         <td class="Name" @onclick="@(e => ClickListing(e, listing))">@listing.Name</td>
-                        <td>@listing.DataType</td>
+                        <td>@(listing.DataType ?? listing.Type)</td>
                         <td></td>
                     </tr>
                 }

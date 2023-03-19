@@ -35,6 +35,7 @@
     <ProjectReference Include="..\LionFire.Blazor.MudBlazor.Themes\LionFire.Blazor.MudBlazor.Themes.csproj" />
     <ProjectReference Include="..\LionFire.Expanders.SharpZipLib\LionFire.Expanders.SharpZipLib.csproj" />
     <ProjectReference Include="..\LionFire.Expanders.Vos\LionFire.Expanders.Vos.csproj" />
+    <ProjectReference Include="..\LionFire.Internals.Blazor\LionFire.Internals.Blazor.csproj" />
     <ProjectReference Include="..\LionFire.Persistence.Filesystem\LionFire.Persistence.Filesystem.csproj" />
     <ProjectReference Include="..\LionFire.Persistence.Handles\LionFire.Persistence.Handles.csproj" />
     <ProjectReference Include="..\LionFire.Persistence.SharpZipLib\LionFire.Persistence.SharpZipLib.csproj" />

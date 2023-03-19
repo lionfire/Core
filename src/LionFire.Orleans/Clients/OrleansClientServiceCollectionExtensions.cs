@@ -10,9 +10,12 @@ namespace LionFire.Hosting;
 
 public static class OrleansClientServiceCollectionExtensions
 {
-    public static IHostBuilder UseOrleansClient_LF(this IHostBuilder hostBuilder, IConfiguration configuration)
+    //{
+
+    //}
+    //public static IHostBuilder AddOrleansClient_LF(this IServiceCollection services, IHostBuilderContext context)
+    public static IHostBuilder UseOrleansClient_LF(this IHostBuilder hostBuilder)
     {
-        //hostBuilder.Cont
 
         return hostBuilder
             //.ConfigureServices(services =>
@@ -24,37 +27,41 @@ public static class OrleansClientServiceCollectionExtensions
             //        })
 
             //    )
-            .UseOrleansClient((context, builder) =>
+            .ConfigureServices((context, services) =>
+            //.UseOrleansClient((context, builder) =>
             {
-                builder
-                    .Configure<ClusterOptions>(context.Configuration.GetSection("Orleans:Cluster"))
-                ;
-
-                var ClusterConfig = new OrleansClusterConfig();
-                context.Configuration.GetSection("Orleans:Cluster").Bind(ClusterConfig);
-
-                var ConsulClusterConfig = new OrleansConsulClusterConfig();
-                context.Configuration.GetSection("Orleans:Cluster:Consul").Bind(ConsulClusterConfig);
-
-                switch (ClusterConfig.Kind)
+                services.AddOrleansClient(builder =>
                 {
-                    case ClusterDiscovery.Unspecified:
-                        break;
-                    case ClusterDiscovery.None:
-                        break;
-                    case ClusterDiscovery.Localhost:
-                        builder.UseLocalhostClustering();
-                        break;
-                    case ClusterDiscovery.Consul:
-                        builder.UseConsulClientClustering(options => 
-                        {
-                            options.ConfigureConsulClient(new Uri(ConsulClusterConfig.ServiceDiscoverEndPoint ?? throw new ArgumentNullException("Missing config: Orleans:Cluster:Consul:ServiceDiscoverEndPoint")), ConsulClusterConfig.ServiceDiscoveryToken);
-                            options.KvRootFolder = ConsulClusterConfig.KvFolderName ?? ClusterConfig.ServiceId;
-                        });
-                        break;
-                    default:
-                        break;
-                }
+                    builder
+                        .Configure<ClusterOptions>(context.Configuration.GetSection("Orleans:Cluster"))
+                    ;
+
+                    var ClusterConfig = new OrleansClusterConfig();
+                    context.Configuration.GetSection("Orleans:Cluster").Bind(ClusterConfig);
+
+                    var ConsulClusterConfig = new OrleansConsulClusterConfig();
+                    context.Configuration.GetSection("Orleans:Cluster:Consul").Bind(ConsulClusterConfig);
+
+                    switch (ClusterConfig.Kind)
+                    {
+                        case ClusterDiscovery.Unspecified:
+                            break;
+                        case ClusterDiscovery.None:
+                            break;
+                        case ClusterDiscovery.Localhost:
+                            builder.UseLocalhostClustering();
+                            break;
+                        case ClusterDiscovery.Consul:
+                            builder.UseConsulClientClustering(options =>
+                            {
+                                options.ConfigureConsulClient(new Uri(ConsulClusterConfig.ServiceDiscoverEndPoint ?? throw new ArgumentNullException("Missing config: Orleans:Cluster:Consul:ServiceDiscoverEndPoint")), ConsulClusterConfig.ServiceDiscoveryToken);
+                                options.KvRootFolder = ConsulClusterConfig.KvFolderName ?? ClusterConfig.ServiceId;
+                            });
+                            break;
+                        default:
+                            break;
+                    }
+                });
             });
     }
     //public static IServiceCollection AddOrleansClient(this IServiceCollection services, IConfiguration configuration)

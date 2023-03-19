@@ -28,19 +28,19 @@ namespace LionFire.Persistence.Handles
 
     public class ListingValues<TItem>
         : AsyncMapper<TItem,
-            Listing<TItem>,
-            IEnumerable<Listing<TItem>>,
-            //IReadHandleBase<Metadata<IEnumerable<Listing<TItem>>>>,
-            Metadata<IEnumerable<Listing<TItem>>>>
+            IListing<TItem>,
+            IEnumerable<IListing<TItem>>,
+            //IReadHandleBase<Metadata<IEnumerable<IListing<TItem>>>>,
+            Metadata<IEnumerable<IListing<TItem>>>>
     {
         IReference reference;
 
-        public ListingValues(IReadHandleBase<Metadata<IEnumerable<Listing<TItem>>>> listings) : base(listings)
+        public ListingValues(IReadHandleBase<Metadata<IEnumerable<IListing<TItem>>>> listings) : base(listings)
         {
             reference = listings.Reference;
         }
 
-        public override async Task<TItem> Map(Listing<TItem> underlying)
+        public override async Task<TItem> Map(IListing<TItem> underlying)
         {
             var result = await reference.GetChild(underlying.Name).GetReadHandle<TItem>().TryGetValue().ConfigureAwait(false);
             return result.Value;

@@ -22,7 +22,7 @@ namespace LionFire.ExtensionMethods.Acquisition
             return parented.GetAcquireEnumerator<TNode, TValue>(minDepth, maxDepth).FirstOrDefault().Item1;
         }
 
-        public static (TValue value, TNode node)? AcquireWithOwner<TNode, TValue>(this TNode parented, int minDepth = 0, int maxDepth = -1)
+        public static (TValue? value, TNode node)? AcquireWithOwner<TNode, TValue>(this TNode parented, int minDepth = 0, int maxDepth = -1)
             where TNode : IParented<TNode>
             where TValue : class
         {

@@ -14,6 +14,7 @@ using LionFire.Persistence.Filesystem;
 using LionFire.Hosting;
 using LionFire.Serialization.Json.JsonEx;
 using MudBlazor.Services;
+using LionFire.Resolves;
 
 namespace LionFire.Vos.Blazor;
 
@@ -50,7 +51,7 @@ public class VosBlazorHostStartup
         services
             .AddTypeNameRegistry() // REVIEW - move this somewhere?  Needed by KnownTypes
             //.RegisterTypesNamesWithAttribute(typeof(TimeTrackingItem).Assembly)
-
+            .AddResolvesTracker()
             .AddReferenceProvider()
             .AddPersisters()
             .AddFilesystem()

@@ -22,7 +22,7 @@ public class _Untyped
         {
             var handle = path.ToVobReference<TestClass>().GetListingsHandle<object>();
 
-            IResolveResult<Metadata<IEnumerable<Listing<object>>>> resolveResult = await handle.Resolve().ConfigureAwait(false);
+            IResolveResult<Metadata<IEnumerable<IListing<object>>>> resolveResult = await handle.Resolve().ConfigureAwait(false);
             ValidateListing(resolveResult);
 
             Assert.IsTrue(LionFireEnvironment.IsUnitTest);
@@ -59,7 +59,7 @@ public class _Untyped
 
     #region Common
 
-    private void ValidateListing(IResolveResult<Metadata<IEnumerable<Listing<object>>>> resolveResult)
+    private void ValidateListing(IResolveResult<Metadata<IEnumerable<IListing<object>>>> resolveResult)
     {
         // TODO: Add child folder (with child file that isn't listed) to this Zip directory
         var expecteds = new HashSet<string>{
@@ -70,8 +70,8 @@ public class _Untyped
         Assert.IsTrue(resolveResult.IsSuccess);
         Assert.IsTrue(resolveResult.HasValue, "No value");
         Assert.IsNotNull(resolveResult.Value);
-        Assert.IsInstanceOfType<RetrieveResult<Metadata<IEnumerable<Listing<object>>>>>(resolveResult);
-        var r = (RetrieveResult<Metadata<IEnumerable<Listing<object>>>>)resolveResult;
+        Assert.IsInstanceOfType<RetrieveResult<Metadata<IEnumerable<IListing<object>>>>>(resolveResult);
+        var r = (RetrieveResult<Metadata<IEnumerable<IListing<object>>>>)resolveResult;
         Assert.IsTrue(r.Flags.HasFlag(PersistenceResultFlags.Found), "Not Found");
         Assert.IsFalse(r.Flags.HasFlag(PersistenceResultFlags.NotFound), "Has NotFound flag");
 

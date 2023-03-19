@@ -167,7 +167,7 @@ public class AppInfo
 
     // FUTURE: Allow multiple data dirs
     public string DataDirName { get; set; }
-    public string EffectiveDataDirName => DataDirName ?? AppName;
+    public string EffectiveDataDirName => DataDirName ?? AppName?.Replace('.', Path.DirectorySeparatorChar);
 
     public string ProgramVersion { get; set; } = "0.0.0";
     [Obsolete]

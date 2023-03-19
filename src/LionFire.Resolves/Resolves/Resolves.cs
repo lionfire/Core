@@ -54,12 +54,12 @@ public static class ResolvesOptions<TValue>
 /// <remarks>
 /// Only requires one method to be implemented: ResolveImpl.
 /// </remarks>
-public abstract class Resolves<TKey, TValue> 
+public abstract class Resolves<TKey, TValue>
     : DisposableKeyed<TKey>
     , INotifyWrappedValueChanged
     , INotifyWrappedValueReplaced
    , ILazilyResolves<TValue>
-   //  - RENAME this class to LazilyResolvesDeluxe<> to distinguish from LazilyResolves<>? Or rename LazilyResolves<> to SimpleLazilyResolves<>?
+//  - RENAME this class to LazilyResolvesDeluxe<> to distinguish from LazilyResolves<>? Or rename LazilyResolves<> to SimpleLazilyResolves<>?
 {
     static ValueChangedPropagation ValueChangedPropagation = new ValueChangedPropagation();
 
@@ -96,7 +96,7 @@ public abstract class Resolves<TKey, TValue>
     /// </summary>
     public bool HasValue => !EqualityComparer<TValue>.Default.Equals(ProtectedValue, default);
 
-    public TValue Value
+    public TValue? Value
     {
         [Blocking(Alternative = nameof(TryGetValue))]
         get => ProtectedValue ?? TryGetValue().Result.Value;
@@ -106,7 +106,7 @@ public abstract class Resolves<TKey, TValue>
     //protected TValue ProtectedValue { get=>SmartWrappedValue.Prote}
 
     // REVIEW: should this be TValue?  Should TValue have constraint of : default?
-    protected TValue ProtectedValue
+    protected TValue? ProtectedValue
     {
         get => protectedValue;
         set
@@ -114,6 +114,7 @@ public abstract class Resolves<TKey, TValue>
             if (EqualityComparer<TValue>.Default.Equals(protectedValue, value)) return;
             var oldValue = protectedValue;
 
+            // TODO: Move this to a finally block?
             if (DisposeValue && oldValue is IDisposable d)
             {
                 Log.Get<Resolves<TKey, TValue>>().LogDebug("Disposing object of type {Type}", d.GetType().FullName);
@@ -132,17 +133,20 @@ public abstract class Resolves<TKey, TValue>
     /// <summary>
     /// Raw field for protectedValue.  Should typically call OnValueChanged(TValue newValue, TValue oldValue) after this field changes.
     /// </summary>
-    protected TValue protectedValue;
+    protected TValue? protectedValue;
 
-    public event Action<INotifyWrappedValueReplaced, object, object> WrappedValueForFromTo;
-    public event Action<INotifyWrappedValueChanged> WrappedValueChanged;
+    public event Action<INotifyWrappedValueReplaced, object?, object?>? WrappedValueForFromTo;
+    public event Action<INotifyWrappedValueChanged>? WrappedValueChanged;
 
     /// <summary>
     /// Raised when ProtectedValue changes
     /// </summary>
     /// <param name="newValue"></param>
     /// <param name="oldValue"></param>
-    protected virtual void OnValueChanged(TValue newValue, TValue oldValue) { }
+    protected virtual void OnValueChanged(TValue? newValue, TValue? oldValue)
+    {
+        LazilyResolvesEvents.RaiseValueChanged<TValue>(this, oldValue, newValue);
+    }
 
     #endregion
 

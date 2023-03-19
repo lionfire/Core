@@ -32,7 +32,7 @@ public class _Typed
             });
 
             bool NI = false;
-            LionFire.Resolves.IResolveResult<Metadata<IEnumerable<Listing<TestClass>>>> resolveResult = null;
+            LionFire.Resolves.IResolveResult<Metadata<IEnumerable<IListing<TestClass>>>> resolveResult = null;
             try
             {
                 resolveResult = handle.Resolve().Result;
@@ -49,8 +49,8 @@ public class _Typed
             //Assert.IsTrue(resolveResult.IsSuccess);
             //Assert.IsTrue(resolveResult.HasValue, "No value");
             //Assert.IsNotNull(resolveResult.Value);
-            //Assert.IsInstanceOfType<RetrieveResult<Metadata<IEnumerable<Listing<TestClass>>>>>(resolveResult);
-            //var r = (RetrieveResult<Metadata<IEnumerable<Listing<TestClass>>>>)resolveResult;
+            //Assert.IsInstanceOfType<RetrieveResult<Metadata<IEnumerable<IListing<TestClass>>>>>(resolveResult);
+            //var r = (RetrieveResult<Metadata<IEnumerable<IListing<TestClass>>>>)resolveResult;
             //Assert.IsTrue(r.Flags.HasFlag(PersistenceResultFlags.Found), "Not Found");
             //Assert.IsFalse(r.Flags.HasFlag(PersistenceResultFlags.NotFound), "Has NotFound flag");
 

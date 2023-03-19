@@ -85,6 +85,12 @@ public class PolymorphicGrainListGrainCache<TItem> : AsyncObservableListCache<TI
 
     #endregion
 
+    #region Remove
+
+    public override Task<bool> Remove(TItem item) => Source.Remove(item);
+
+    #endregion
+
 
     #region Notifications Stream
 

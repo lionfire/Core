@@ -2,7 +2,7 @@
 <MudThemeProvider />
 <MudDialogProvider />
 <MudSnackbarProvider />
-<Router AppAssembly="@typeof(VosBlazorUtils).Assembly">
+<Router AppAssembly="@typeof(VosBlazorUtils).Assembly" AdditionalAssemblies="new[] { typeof(ResolvesTrackerView).Assembly }">
     <Found Context="routeData">
         <RouteView RouteData="@routeData" DefaultLayout="@typeof(MainLayout)" />
     </Found>

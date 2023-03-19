@@ -1,4 +1,6 @@
-﻿using LionFire.Persistence;
+﻿#nullable enable
+
+using LionFire.Persistence;
 using LionFire.Referencing;
 using System.Threading.Tasks;
 

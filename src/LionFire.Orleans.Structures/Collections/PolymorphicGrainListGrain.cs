@@ -9,7 +9,7 @@ namespace LionFire.Orleans_.Collections;
 
 
 //[GenerateSerializer]
-public class PolymorphicGrainListGrain<TGrainItem> : ListGrain<PolymorphicGrainListGrainItem<TGrainItem>>
+public class PolymorphicGrainListGrain<TGrainItem> : ListGrain<IPolymorphicGrainListGrainItem<TGrainItem>>
     , IPolymorphicGrainListGrain<TGrainItem>
     //, IAsyncCreating<TValue>
     //ICreatingAsyncDictionary<string, TGrainItem>
@@ -23,7 +23,7 @@ public class PolymorphicGrainListGrain<TGrainItem> : ListGrain<PolymorphicGrainL
 
     #region Lifecycle
 
-    protected PolymorphicGrainListGrain(TypeScanner typeScanner, IPersistentState<List<PolymorphicGrainListGrainItem<TGrainItem>>> items, IPersistentState<SortedDictionary<DateTime, PolymorphicGrainListGrainItem<TGrainItem>>> deletedItemsState = null)
+    protected PolymorphicGrainListGrain(TypeScanner typeScanner, IPersistentState<List<IPolymorphicGrainListGrainItem<TGrainItem>>> items, IPersistentState<SortedDictionary<DateTime, IPolymorphicGrainListGrainItem<TGrainItem>>> deletedItemsState = null)
         : base(items, deletedItemsState)
     {
         TypeScanner = typeScanner;
@@ -89,13 +89,20 @@ public class PolymorphicGrainListGrain<TGrainItem> : ListGrain<PolymorphicGrainL
 
     #region Remove
 
-    public Task<bool> Remove(TGrainItem item)
+    public async Task<bool> Remove(TGrainItem item)
     {
-        throw new NotImplementedException();
+        var existing = ItemsState.State.Where(i => i.Id == item.GetGrainId().Key.ToString()).FirstOrDefault();
+        if (existing == null) return false;
+
+        var result = ItemsState.State.Remove(existing);
+        await ItemsState.WriteStateAsync();
+        return result;
     }
-    public Task<bool> Remove(IPolymorphicGrainListGrainItem<TGrainItem> item)
+    public async Task<bool> Remove(IPolymorphicGrainListGrainItem<TGrainItem> item)
     {
-        throw new NotImplementedException();
+        var result = ItemsState.State.Remove(item);
+        await ItemsState.WriteStateAsync();
+        return result;
     }
 
     #endregion

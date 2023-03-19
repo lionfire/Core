@@ -16,7 +16,7 @@ public static class IAcquiresExtensions
         return ParentedAcquisitionExtensions.Acquire<TNode, TValue>(parented, minDepth, maxDepth);
     }
 
-    public static (TValue value, TNode node)? AcquireWithOwner2<TNode, TValue>(this TNode parented, int minDepth = 0, int maxDepth = -1)
+    public static (TValue? value, TNode node)? AcquireWithOwner2<TNode, TValue>(this TNode parented, int minDepth = 0, int maxDepth = -1)
         where TNode : IAcquires, IParented<TNode>
         where TValue : class
     {

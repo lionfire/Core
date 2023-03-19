@@ -1,4 +1,6 @@
-﻿using System;
+﻿#nullable enable
+
+using System;
 using System.Collections.Generic;
 using System.Text;
 
@@ -13,7 +15,7 @@ public class KeyProviderService<TKey> : IKeyProviderService<TKey>
 
     public IEnumerable<IKeyProvider<TKey>> KeyProviders { get; }
 
-    public (bool, TKey?) TryGetKey(object obj)
+    public (bool, TKey?) TryGetKey(object? obj)
     {
         if(obj is IKeyed<TKey> k) { return (true, k.Key); }
 

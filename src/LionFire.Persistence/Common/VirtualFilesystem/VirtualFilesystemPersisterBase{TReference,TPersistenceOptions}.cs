@@ -89,9 +89,9 @@ public abstract partial class VirtualFilesystemPersisterBase<TReference, TPersis
 
     #region List
 
-    public Task<IRetrieveResult<IEnumerable<Listing<object>>>> List(IReferencable<TReference> referencable, ListFilter? filter = null)
+    public Task<IRetrieveResult<IEnumerable<IListing<object>>>> List(IReferencable<TReference> referencable, ListFilter? filter = null)
         => List<object>(referencable.Reference, filter);
-    public Task<IRetrieveResult<IEnumerable<Listing<T>>>> List<T>(IReferencable<TReference> referencable, ListFilter? filter = null)
+    public Task<IRetrieveResult<IEnumerable<IListing<T>>>> List<T>(IReferencable<TReference> referencable, ListFilter? filter = null)
                 => List<T>(referencable.Reference, filter);
 
     private object List(Type type, TReference reference, ListFilter? filter = null)
@@ -109,37 +109,37 @@ public abstract partial class VirtualFilesystemPersisterBase<TReference, TPersis
         return p[0].ParameterType == typeof(TReference) && p[1].ParameterType == typeof(ListFilter);
     }).First();
 
-    public async Task<IRetrieveResult<IEnumerable<Listing<T>>>> List<T>(TReference reference, ListFilter? filter = null)
+    public async Task<IRetrieveResult<IEnumerable<IListing<T>>>> List<T>(TReference reference, ListFilter? filter = null)
     {
         var context = new RetrieveContext<TReference>
         {
             Persister = this,
-            ListingType = typeof(Listing<T>),
+            ListingType = typeof(IListing<T>),
             Reference = reference,
         };
         //await PersisterEvents?.OnBeforeRetrieve(context).ConfigureAwait(false);
 
         var listResult = await List<T>(reference.Path, filter);
         return listResult == null
-            ? RetrieveResult<IEnumerable<Listing<T>>>.SuccessNotFound
-            : (IRetrieveResult<IEnumerable<Listing<T>>>)RetrieveResult<IEnumerable<Listing<T>>>.Found(listResult);
+            ? RetrieveResult<IEnumerable<IListing<T>>>.SuccessNotFound
+            : (IRetrieveResult<IEnumerable<IListing<T>>>)RetrieveResult<IEnumerable<IListing<T>>>.Found(listResult);
     }
 
-    public Task<IEnumerable<Listing<object>>?> List(string path, ListFilter? filter = null) => List<object>(path, filter);
+    public Task<IEnumerable<IListing<object>>?> List(string path, ListFilter? filter = null) => List<object>(path, filter);
 
     /// <summary>
     /// Returns null if directory not found
     /// </summary>
     /// <param name="path"></param>
     /// <returns></returns>
-    public async Task<IEnumerable<Listing<T>>?> List<T>(string path, ListFilter? filter = null)
+    public async Task<IEnumerable<IListing<T>>?> List<T>(string path, ListFilter? filter = null)
     {
         return await Task.Run(async () =>
         {
-            List<Listing<T>>? children = null;
+            List<IListing<T>>? children = null;
             if (await VirtualFilesystem.DirectoryExists(path).ConfigureAwait(false))
             {
-                children = new List<Listing<T>>();
+                children = new List<IListing<T>>();
 
                 bool showFile = filter == null || filter.Flags == ItemFlags.None || filter.Flags.HasFlag(ItemFlags.File) || !filter.Flags.HasFlag(ItemFlags.Directory);
                 bool showDir = filter == null || filter.Flags == ItemFlags.None || filter.Flags.HasFlag(ItemFlags.Directory) || !filter.Flags.HasFlag(ItemFlags.File);
@@ -159,7 +159,7 @@ public abstract partial class VirtualFilesystemPersisterBase<TReference, TPersis
                         //if (kind.HasFlag(ItemFlags.Special) && !showSpecial) continue;
                         //if (kind.HasFlag(ItemFlags.Meta) && !showMeta) continue;
 
-                        children.Add(fileName);
+                        children.Add((Listing<T>)fileName);
                     }
                 }
                 if (showDir)
@@ -305,15 +305,15 @@ public abstract partial class VirtualFilesystemPersisterBase<TReference, TPersis
             var enumerableType = metadataType.GetGenericArguments()[0];
 
             var listingGenericType = enumerableType.GetGenericTypeDefinition();
-            if (enumerableType.IsGenericType && listingGenericType == typeof(Listing<>))
+            if (enumerableType.IsGenericType && listingGenericType == typeof(IListing<>))
             {
                 var listingType = enumerableType.GetGenericArguments()[0];
-                var resultEnumerableType = typeof(IEnumerable<>).MakeGenericType(typeof(Listing<>).MakeGenericType(listingType));
+                var resultEnumerableType = typeof(IEnumerable<>).MakeGenericType(typeof(IListing<>).MakeGenericType(listingType));
                 //var resultEnumerableTaskType = typeof(Task<>).MakeGenericType(resultEnumerableType);
 
                 var listResult = await ((Task<IRetrieveResult<TMetadata>>)List(listingType, reference)).ConfigureAwait(false);
 
-                //var resultType = typeof(Metadata<>).MakeGenericType(typeof(IEnumerable<>).MakeGenericType(typeof(Listing<>).MakeGenericType(listingType)));
+                //var resultType = typeof(Metadata<>).MakeGenericType(typeof(IEnumerable<>).MakeGenericType(typeof(IListing<>).MakeGenericType(listingType)));
 
                 //return (IRetrieveResult<TValue>) await List(listResult, reference, filter).ConfigureAwait(false);
 
@@ -323,7 +323,7 @@ public abstract partial class VirtualFilesystemPersisterBase<TReference, TPersis
                     listResult.Flags,
                     listResult.Error)!; // REVIEW - why does Activator.CreateInstance return "object?" instead of "object"?
 
-                //return (IRetrieveResult<TValue>)(object)new RetrieveResult<Metadata<IEnumerable<Listing<>>>>(new Metadata<IEnumerable<Listing<TValue>>>(listResult.Value), listResult.Flags) // HARDCAST
+                //return (IRetrieveResult<TValue>)(object)new RetrieveResult<Metadata<IEnumerable<IListing<>>>>(new Metadata<IEnumerable<Listing<TValue>>>(listResult.Value), listResult.Flags) // HARDCAST
                 //{
                 //    Error = listResult.Error,
                 //};

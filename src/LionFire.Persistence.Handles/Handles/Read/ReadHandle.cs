@@ -93,7 +93,7 @@ namespace LionFire.Persistence.Handles
         //}
         //protected TValue _value;
 
-        protected override void OnValueChanged(TValue newValue, TValue oldValue) => OnPropertyChanged(nameof(Value));
+        protected override void OnValueChanged(TValue newValue, TValue oldValue) { OnPropertyChanged(nameof(Value)); base.OnValueChanged(newValue, oldValue); }
 
         //protected virtual async Task<bool> DoTryRetrieve()
         //{

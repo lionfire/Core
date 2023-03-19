@@ -26,13 +26,16 @@ public class ZipFileOptions
 
     public static ZipFileOptions Default { get; set; } = new();
 }
-// RENAME to RZipFile
+
 public class RZipFile : ReadHandle<IReference<ZipFile>, ZipFile>
 {
+    //public IServiceProvider ServiceProvider { get; }
+
     #region Lifecycle
 
     public RZipFile(IReference reference) : base(reference.Cast<ZipFile>())
     {
+        //ServiceProvider = serviceProvider;
     }
 
     public override void Dispose()
@@ -105,7 +108,7 @@ public class RZipFile : ReadHandle<IReference<ZipFile>, ZipFile>
     {
         ResolveResultSuccess<ZipFile> onSuccess(ZipFile value)
         {
-            DelayClose();
+            //DelayClose();
             return new ResolveResultSuccess<ZipFile>(Value);
         }
         //#if ENH
@@ -172,4 +175,5 @@ public class RZipFile : ReadHandle<IReference<ZipFile>, ZipFile>
     #endregion
 
     static ILogger Logger => Log.Get<RZipFile>();
+
 }

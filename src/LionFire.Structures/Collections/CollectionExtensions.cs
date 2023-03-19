@@ -55,7 +55,8 @@ public static class CollectionExtensions
 
     public static void Shuffle<T>(this IList<T> list) // From http://stackoverflow.com/questions/273313/randomize-a-listt-in-c
     {
-        RNGCryptoServiceProvider provider = new RNGCryptoServiceProvider();
+        var provider = RandomNumberGenerator.Create();
+        //RNGCryptoServiceProvider provider = new RNGCryptoServiceProvider();
         int n = list.Count;
         while (n > 1)
         {

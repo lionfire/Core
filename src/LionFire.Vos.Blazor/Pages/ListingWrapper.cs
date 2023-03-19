@@ -8,7 +8,7 @@ namespace LionFire.Persistence
 {
     public class ListingWrapper
     {
-        public Listing<IReference> Listing { get; set; }
+        public IListing<IReference> Listing { get; set; }
         public IReadHandle<object> ReadHandle { get; set; }
     }
 }

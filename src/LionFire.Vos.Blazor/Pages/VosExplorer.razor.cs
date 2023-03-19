@@ -112,7 +112,7 @@ public partial class VosExplorer
     Stack<object> History = new Stack<object>();
     Stack<(object, string)> ForwardHistory = new Stack<(object, string)>();
     Stack<string> BreadCrumbPath = new Stack<string>();
-    private Listing<object>[] listings;
+    private IListing<object>[] listings;
     //private List<IReadHandle<object>> readHandles;
 
     #endregion
@@ -131,7 +131,7 @@ public partial class VosExplorer
 
     #region UI Event handlers
 
-    public void ClickListing(MouseEventArgs e, Listing<object> listing)
+    public void ClickListing(MouseEventArgs e, IListing<object> listing)
     {
         Debug.WriteLine(e);
         GoToPath(listing.Name);
@@ -235,13 +235,13 @@ public partial class VosExplorer
         }
 
         var result = await hList.Resolve();
-        listings = (result?.Value.Value?.Where(l=>l.IsDirectory) ?? Array.Empty<Listing<object>>())
-            .Concat(result?.Value.Value?.Where(l => !l.IsDirectory) ?? Array.Empty<Listing<object>>())
+        listings = (result?.Value.Value?.Where(l=>l.IsDirectory) ?? Array.Empty<IListing<object>>())
+            .Concat(result?.Value.Value?.Where(l => !l.IsDirectory) ?? Array.Empty<IListing<object>>())
             .ToArray();
         if (listings.Length == 0)
         {
             // FIXME - why is hList empty?????????
-            var list = new List<Listing<object>>();
+            var list = new List<IListing<object>>();
             var vob = root[reference.Path];
             foreach (var x in vob)
             {
@@ -333,7 +333,7 @@ public partial class VosExplorer
     #region (Private) Utility methods
 
     private Uri uri => navManager.ToAbsoluteUri(navManager.Uri);
-    public string IconClasses(Listing<object> listing)
+    public string IconClasses(IListing<object> listing)
     {
         if (listing.IsDirectory)
         {

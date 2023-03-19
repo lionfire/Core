@@ -1,9 +1,10 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Concurrent;
 
 namespace LionFire.Collections
 {
-    public class ConcurrentWeakDictionaryCache<TKey, TValue> : IDictionaryCache<TKey, TValue>
+    public class ConcurrentWeakDictionaryCache<TKey, TValue> : IDictionaryCache<TKey, TValue>, IEnumerable<KeyValuePair<TKey, WeakReference<TValue>>>
         where TValue : class
     {
         private ConcurrentDictionary<TKey, WeakReference<TValue>> dict = new ConcurrentDictionary<TKey, WeakReference<TValue>>();
@@ -57,5 +58,14 @@ namespace LionFire.Collections
             }
             throw new UnreachableCodeException("WeakReference forgot Target");
         }
+
+        public bool Remove(TKey key) => dict.TryRemove(key, out _);
+
+        public IEnumerator<KeyValuePair<TKey, WeakReference< TValue>>> GetEnumerator()
+        {
+            return dict.GetEnumerator();
+        }
+
+        IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
     }
 }

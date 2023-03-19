@@ -25,7 +25,7 @@ public class _List
             var listings = await listingsHandle.Resolve();
 
             var listingText = new StringBuilder("+++Listings: ").AppendLine();
-            foreach (var item in listings?.Value.Value ?? Enumerable.Empty<Listing<object>>())
+            foreach (var item in listings?.Value.Value ?? Enumerable.Empty<IListing<object>>())
             {
                 listingText.AppendLine(" - " + item.ToString());
             }

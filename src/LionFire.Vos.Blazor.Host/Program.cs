@@ -1,3 +1,4 @@
+using LionFire.Activities;
 using LionFire.Hosting;
 using LionFire.Persistence.Filesystem;
 using LionFire.Persistence.Persisters.Vos;
@@ -8,6 +9,7 @@ using LionFire.Vos;
 using LionFire.Vos.Blazor;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using OpenTelemetry;
 using OpenTelemetry.Metrics;
@@ -29,6 +31,7 @@ Host.CreateDefaultBuilder(args)
         .AddExpanderMounter("/") // TEMP
         .AddSharpZipLib()
         .TryAddEnumerableSingleton<IExpanderPlugin, ZipPlugin>() // REVIEW
+        .AddSingleton<IActivitiesTracker, ActivitiesTracker>() // REVIEW
 
 
         // How to convert this to something else?  "vos://c/temp/TestDoc.zip:/"

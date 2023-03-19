@@ -17,14 +17,14 @@ public static partial class ReferenceToCollectionHandleExtensions
 
     #region Listings
 
-    public static IReadHandle<Metadata<IEnumerable<Listing<object>>>> GetListingsHandle(this IReference reference)
-        => reference.GetReadHandle<Metadata<IEnumerable<Listing<object>>>>();
+    public static IReadHandle<Metadata<IEnumerable<IListing<object>>>> GetListingsHandle(this IReference reference)
+        => reference.GetReadHandle<Metadata<IEnumerable<IListing<object>>>>();
     //public static IReadHandle<Metadata<IEnumerable<Listing<object>>>> GetListingsHandle(this IReferencable referencable)
         //=> referencable.Reference.GetReadHandle<Metadata<IEnumerable<Listing<object>>>>();
-    public static IReadHandle<Metadata<IEnumerable<Listing<T>>>> GetListingsHandle<T>(this IReference reference)
-              => reference.GetReadHandle<Metadata<IEnumerable<Listing<T>>>>();
-    public static IReadHandle<Metadata<IEnumerable<Listing<T>>>> ReferenceGetListingsHandle<T>(this IReferencable referencable)
-        => referencable.Reference.GetReadHandle<Metadata<IEnumerable<Listing<T>>>>();
+    public static IReadHandle<Metadata<IEnumerable<IListing<T>>>> GetListingsHandle<T>(this IReference reference)
+              => reference.GetReadHandle<Metadata<IEnumerable<IListing<T>>>>();
+    public static IReadHandle<Metadata<IEnumerable<IListing<T>>>> ReferenceGetListingsHandle<T>(this IReferencable referencable)
+        => referencable.Reference.GetReadHandle<Metadata<IEnumerable<IListing<T>>>>();
 
     #endregion
 
@@ -36,8 +36,8 @@ public static partial class ReferenceToCollectionHandleExtensions
     //    => referencable.Reference.GetReadHandle<Metadata<IEnumerable<Listing<object>>>>();
     public static ListingValues<T> GetListingValues<T>(this IReference reference)
               => new ListingValues<T>(reference.GetListingsHandle<T>());
-    //public static IReadHandle<Metadata<IEnumerable<Listing<T>>>> ReferenceGetListiandle<T>(this IReferencable referencable)
-    //=> referencable.Reference.GetReadHandle<Metadata<IEnumerable<Listing<T>>>>();
+    //public static IReadHandle<Metadata<IEnumerable<IListing<T>>>> ReferenceGetListiandle<T>(this IReferencable referencable)
+    //=> referencable.Reference.GetReadHandle<Metadata<IEnumerable<IListing<T>>>>();
 
 
     #endregion

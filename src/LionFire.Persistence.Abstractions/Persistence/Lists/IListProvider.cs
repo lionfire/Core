@@ -29,6 +29,6 @@ namespace LionFire.Persistence.Persisters
         /// <param name="referencable"></param>
         /// <param name="filter"></param>
         /// <returns></returns>
-        Task<IEnumerable<Listing<T>>> List<T>(IPersister<TReference> persister, IReferencable<TReference> referencable, ListFilter? filter = null);
+        Task<IEnumerable<IListing<T>>> List<T>(IPersister<TReference> persister, IReferencable<TReference> referencable, ListFilter? filter = null);
     }
 }

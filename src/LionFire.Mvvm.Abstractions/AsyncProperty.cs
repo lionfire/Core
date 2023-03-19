@@ -47,7 +47,7 @@ public class AsyncProperty<TObject, TProperty> : INotifyPropertyChanged
 
     public bool IsSetting => SetState.task != null;
 
-    public TProperty Value
+    public TProperty? Value
     {
         get
         {
@@ -73,7 +73,7 @@ public class AsyncProperty<TObject, TProperty> : INotifyPropertyChanged
             cachedValue = value;
         }
     }
-    private TProperty cachedValue;
+    private TProperty? cachedValue;
 
     private void DoThrowOnGetValueIfNotLoaded() => throw new Exception("Value has not been gotten yet.  Invoke Get first or disable Options.ThrowOnGetValueIfNotLoaded");
 

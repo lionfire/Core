@@ -217,6 +217,7 @@ namespace LionFire.Vos.Mounts
 
                 object IEnumerator.Current => Current;
 
+                bool IsDisposed => local == null;
                 public void Dispose()
                 {
                     local = null;
@@ -229,6 +230,7 @@ namespace LionFire.Vos.Mounts
                 }
                 public bool MoveNext()
                 {
+                    if (IsDisposed) throw new ObjectDisposedException("");
                     //if (parent == null)
                     //{
                     //    Current = null;
@@ -238,7 +240,7 @@ namespace LionFire.Vos.Mounts
                     if (!ReferenceEquals(local.NextAncestor(), parent))
                     {
                         Current = null;
-                        throw new Exception("!ReferenceEquals(local.ParentVobNode, parent)");
+                        throw new UnreachableCodeException("!ReferenceEquals(local.ParentVobNode, parent)");
                         //OnInvalid();
                         //return true;
                         return false;

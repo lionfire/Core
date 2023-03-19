@@ -11,7 +11,7 @@ using System.Collections.Generic;
 using LionFire.Orleans_;
 using Microsoft.Extensions.Configuration;
 using LionFire.Deployment;
-using Polly;
+//using Polly;
 using HostBuilderContext = Microsoft.Extensions.Hosting.HostBuilderContext;
 
 namespace LionFire.Hosting;

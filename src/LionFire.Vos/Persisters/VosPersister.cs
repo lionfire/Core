@@ -104,7 +104,7 @@ public class VosPersister : SerializingPersisterBase<VosPersisterOptions>, IPers
             if (metadataType.IsGenericType && metadataType.GetGenericTypeDefinition() == typeof(IEnumerable<>))
             {
                 var enumerableType = metadataType.GetGenericArguments()[0];
-                if (enumerableType.IsGenericType && enumerableType.GetGenericTypeDefinition() == typeof(Listing<>))
+                if (enumerableType.IsGenericType && enumerableType.GetGenericTypeDefinition() == typeof(IListing<>))
                 {
                     listingItemType = enumerableType.GetGenericArguments()[0];
                     //if (listingItemType == typeof(IArchive))
@@ -141,12 +141,13 @@ public class VosPersister : SerializingPersisterBase<VosPersisterOptions>, IPers
 
                     var vobChildrenListings = vobChildren.Select(v =>
                     {
-                        var listing = (Listing<object> /* TODO HARDCAST */)Activator.CreateInstance(listingType, v.Key)!;
-                        listing.IsDirectory = true;
+                        var listing = (IListing<object> /* TODO HARDCAST */)Activator.CreateInstance(listingType, v.Key)!;
+#warning NEXT: Don't set this to true if it's not really a directory.  TODO: How to tell? Children.Any()?  Or NonMetaChildren.Any()?
+                        listing.IsDirectory = v.Value.Children.Any();
                         return listing;
                     });
 
-                    yield return new VosRetrieveResult<TValue>((TValue)(object)new Metadata<IEnumerable<Listing<object>>>(vobChildrenListings));
+                    yield return new VosRetrieveResult<TValue>((TValue)(object)new Metadata<IEnumerable<IListing<object>>>(vobChildrenListings));
                 }
                 else
                 {
@@ -423,7 +424,7 @@ public class VosPersister : SerializingPersisterBase<VosPersisterOptions>, IPers
 
 #nullable enable
 
-    public static Type? GetMetadataListingType<TValue>() => typeof(TValue).UnwrapGeneric(typeof(Metadata<>))?.UnwrapGeneric(typeof(IEnumerable<>))?.IfGenericOrDefault(typeof(Listing<>));
+    public static Type? GetMetadataListingType<TValue>() => typeof(TValue).UnwrapGeneric(typeof(Metadata<>))?.UnwrapGeneric(typeof(IEnumerable<>))?.IfGenericOrDefault(typeof(IListing<>));
 
     public static Type? GetMetadataListingItemType<TValue>() => GetMetadataListingType<TValue>()?.GetGenericArguments()[0];
 
@@ -685,15 +686,15 @@ public class VosPersister : SerializingPersisterBase<VosPersisterOptions>, IPers
 
     // TODO - use a single overload, with null defaulting ListOptions
 
-    //public async Task<IRetrieveResult<IEnumerable<Listing<TValue>>>> List<TValue>(IReferencable<IVobReference> referencable)
+    //public async Task<IRetrieveResult<IEnumerable<IListing<TValue>>>> List<TValue>(IReferencable<IVobReference> referencable)
     //{
     //    throw new NotSupportedException();
     //    ListC.IncrementWithContext();
-    //    var listingsLists = await RetrieveBatches<Metadata<IEnumerable<Listing<TValue>>>>(referencable).ToListAsync();
+    //    var listingsLists = await RetrieveBatches<Metadata<IEnumerable<IListing<TValue>>>>(referencable).ToListAsync();
 
-    //    List<Listing<TValue>> listings = new();
+    //    List<IListing<TValue>> listings = new();
 
-    //    var consolidatedResult = new RetrieveResult<IEnumerable<Listing<TValue>>>();
+    //    var consolidatedResult = new RetrieveResult<IEnumerable<IListing<TValue>>>();
     //    consolidatedResult.Value = listings;
 
     //    foreach (var result in listingsLists)
@@ -709,14 +710,14 @@ public class VosPersister : SerializingPersisterBase<VosPersisterOptions>, IPers
     //    return consolidatedResult;
     //}
 
-    public async Task<IRetrieveResult<IEnumerable<Listing<TValue>>>> List<TValue>(IReferencable<IVobReference> referencable, ListFilter filter = null)
+    public async Task<IRetrieveResult<IEnumerable<IListing<TValue>>>> List<TValue>(IReferencable<IVobReference> referencable, ListFilter filter = null)
     {
         l.Trace($"List ...> {referencable.Reference}");
 
-        var retrieveResult = await RetrieveWithAggregation<Metadata<IEnumerable<Listing<TValue>>>>(referencable).ConfigureAwait(false);
+        var retrieveResult = await RetrieveWithAggregation<Metadata<IEnumerable<IListing<TValue>>>>(referencable).ConfigureAwait(false);
         var result = retrieveResult.IsSuccess()
-            ? RetrieveResult<IEnumerable<Listing<TValue>>>.Success(retrieveResult.Value.Value)
-            : new RetrieveResult<IEnumerable<Listing<TValue>>> { Flags = retrieveResult.Flags, Error = retrieveResult.Error };
+            ? RetrieveResult<IEnumerable<IListing<TValue>>>.Success(retrieveResult.Value.Value)
+            : new RetrieveResult<IEnumerable<IListing<TValue>>> { Flags = retrieveResult.Flags, Error = retrieveResult.Error };
         l.Trace(result.ToString());
         return result;
         //    var vob = Root[referencable.Reference.Path];

@@ -19,6 +19,6 @@ namespace LionFire.Persistence.Persisters
 
         Task<IPersistenceResult> Delete(TReference reference);
 
-        Task<IRetrieveResult<IEnumerable<Listing<T>>>> List<T>(TReference reference, ListFilter? filter = null);
+        Task<IRetrieveResult<IEnumerable<IListing<T>>>> List<T>(TReference reference, ListFilter? filter = null);
     }
 }

@@ -217,7 +217,7 @@ public class ExpanderMounter : IParentable<IVob>
 
             //TODO: Instead of RetrieveAll, use List(filter ), with a filter that's either a Predicate<string filename>
 
-            await foreach (var archiveResultsBatch in vosPersister.RetrieveBatches<Metadata<IEnumerable<Listing<IArchive>>>>(vob))
+            await foreach (var archiveResultsBatch in vosPersister.RetrieveBatches<Metadata<IEnumerable<IListing<IArchive>>>>(vob))
             {
                 //var listResult = await vosPersister.List<object>(referencable, new ListFilter
                 //{
