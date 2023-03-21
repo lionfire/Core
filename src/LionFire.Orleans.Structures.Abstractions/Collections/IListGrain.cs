@@ -8,7 +8,7 @@ public interface IAsyncDictionary<TKey, TValue>
     Task<bool> Remove(TKey id);
 }
 
-public interface IAsyncCreating<TValue>
+public interface ICreatesAsync<TValue>
 {
     Task<TValue> Create(Type type/*, Action<TValue>? init = null*/);
 
@@ -16,7 +16,7 @@ public interface IAsyncCreating<TValue>
 }
 public interface ICreatingAsyncDictionary<TKey, TValue>
     : IAsyncDictionary<string, TValue>
-    , IAsyncCreating<TValue>
+    , ICreatesAsync<TValue>
     //EnumerableAsync<TValue> // Change to KVP<TKey,TValue>?    
 {
 }

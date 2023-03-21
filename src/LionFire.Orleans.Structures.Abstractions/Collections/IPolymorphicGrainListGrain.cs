@@ -6,10 +6,10 @@ namespace LionFire.Orleans_.Collections;
 /// List of potentially various types of Grains that are all assignable to TGrainItem
 /// </summary>
 /// <typeparam name="TGrainItem"></typeparam>
-public interface IPolymorphicGrainListGrain<TGrainItem> 
+public interface IPolymorphicGrainListGrain<TGrainItem>
     : IGrain
     , IListAsync<TGrainItem>
-    , IAsyncCreating<TGrainItem>
+    , ICreatesAsync<TGrainItem>
     //ICreatingAsyncDictionary<string, PolymorphicGrainListGrainItem<TGrainItem>> 
     //, IEnumerable<TGrainItem>
     where TGrainItem : IGrain
@@ -17,4 +17,9 @@ public interface IPolymorphicGrainListGrain<TGrainItem>
     //IListGrain<string, PolymorphicGrainListGrainItem<TGrainItem>> ListGrain { get; }
 
     //Task<IEnumerable<TGrainItem>> GrainItems();
+
+    public Task Subscribe(ICollectionNotificationHandler observer);
+
+    public Task Unsubscribe(ICollectionNotificationHandler observer);
+
 }

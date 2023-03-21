@@ -17,7 +17,7 @@ namespace LionFire.Vos.Collections.ByType
         /// <param name="referencable"></param>
         /// <param name="filter"></param>
         /// <returns></returns>
-        public Task<IEnumerable<Listing<T>>> List<T>(IPersister<VobReference> persister, IReferencable<VobReference> referencable, ListFilter filter = null)
+        public Task<IEnumerable<IListing<T>>> List<T>(IPersister<VobReference> persister, IReferencable<VobReference> referencable, ListFilter filter = null)
         {
             var vob = referencable.ReferencableToVob();
 

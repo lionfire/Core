@@ -1,12 +1,13 @@
 ﻿using LionFire.Orleans_.Collections.PolymorphicGrainListGrain;
 using LionFire.Structures;
 using LionFire.Types.Scanning;
+using Microsoft.Extensions.Logging;
 using Newtonsoft.Json.Linq;
+using Orleans.Utilities;
 using System.Collections;
 using System.Linq;
 
 namespace LionFire.Orleans_.Collections;
-
 
 //[GenerateSerializer]
 public class PolymorphicGrainListGrain<TGrainItem> : ListGrain<IPolymorphicGrainListGrainItem<TGrainItem>>
@@ -19,14 +20,17 @@ public class PolymorphicGrainListGrain<TGrainItem> : ListGrain<IPolymorphicGrain
     //ICreatingAsyncDictionary<string, PolymorphicGrainListGrainItem<TGrainItem>> listGrain { get; }
     //public IGrainFactory GrainFactory { get; }
 
+    private readonly ObserverManager<ICollectionNotificationHandler> collectionNotificationHandlers;
+
     public TypeScanner TypeScanner { get; }
 
     #region Lifecycle
 
-    protected PolymorphicGrainListGrain(TypeScanner typeScanner, IPersistentState<List<IPolymorphicGrainListGrainItem<TGrainItem>>> items, IPersistentState<SortedDictionary<DateTime, IPolymorphicGrainListGrainItem<TGrainItem>>> deletedItemsState = null)
+    protected PolymorphicGrainListGrain(ILogger<IPolymorphicGrainListGrain<TGrainItem>> logger, TypeScanner typeScanner, IPersistentState<List<IPolymorphicGrainListGrainItem<TGrainItem>>> items, IPersistentState<SortedDictionary<DateTime, IPolymorphicGrainListGrainItem<TGrainItem>>> deletedItemsState = null)
         : base(items, deletedItemsState)
     {
         TypeScanner = typeScanner;
+        collectionNotificationHandlers = new ObserverManager<ICollectionNotificationHandler>(TimeSpan.FromMinutes(5), logger);
     }
 
     #endregion
@@ -54,9 +58,9 @@ public class PolymorphicGrainListGrain<TGrainItem> : ListGrain<IPolymorphicGrain
     {
 #warning NEXT: why is there no parameter here?
 
-        Func<Type,bool> param = t => t.IsInterface && !t.Name.StartsWith("OrleansCodeGen");
+        Func<Type, bool> param = t => t.IsInterface && !t.Name.StartsWith("OrleansCodeGen");
 
-        var result = TypeScanner.GetAllAssignableTo<TGrainItem>("test",param);
+        var result = TypeScanner.GetAllAssignableTo<TGrainItem>("test", param);
         return Task.FromResult<IEnumerable<Type>>(result.ToArray());
         IEnumerable<Type> list = new List<Type>(result);
         //return Task.FromResult( list);
@@ -71,7 +75,7 @@ public class PolymorphicGrainListGrain<TGrainItem> : ListGrain<IPolymorphicGrain
 
         ItemsState.State.Add(item);
         await ItemsState.WriteStateAsync();
-        return  item.GetGrain(GrainFactory);
+        return item.GetGrain(GrainFactory);
     }
 
     //public Task<PolymorphicGrainListGrainItem<TGrainItem>> Create(Type type/*, Action<PolymorphicGrainListGrainItem<TGrainItem>>? init = null*/)
@@ -135,6 +139,21 @@ public class PolymorphicGrainListGrain<TGrainItem> : ListGrain<IPolymorphicGrain
 
     #endregion
 
+    #region Events
+
+    public Task Subscribe(ICollectionNotificationHandler observer)
+    {
+        collectionNotificationHandlers.Subscribe(observer, observer);
+        return Task.CompletedTask;
+    }
+
+    public Task Unsubscribe(ICollectionNotificationHandler observer)
+    {
+        collectionNotificationHandlers.Unsubscribe(observer);
+        return Task.CompletedTask;
+    }
+
+    #endregion
 }
 
 #if OLD
