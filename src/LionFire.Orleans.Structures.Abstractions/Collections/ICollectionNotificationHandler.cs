@@ -2,7 +2,7 @@
 
 namespace LionFire.Orleans_.Collections;
 
-public interface ICollectionNotificationHandler : IAddressable
+public interface ICollectionNotificationHandler //: IAddressable
 {
     Task OnCollectionChanged(CollectionChangedEvent collectionChangedEvent);
 }

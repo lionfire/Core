@@ -18,6 +18,7 @@ using System.ComponentModel;
 using LionFire.Reactive;
 using System.Reactive.Subjects;
 using LionFire.ExtensionMethods.Copying;
+using LionFire.Orleans_.Collections;
 
 namespace LionFire.Blazor.Components;
 
@@ -28,11 +29,16 @@ namespace LionFire.Blazor.Components;
 ///  - 
 /// </summary>
 /// <typeparam name="TItem"></typeparam>
-public partial class LionCollection<TItem, TItemVM> : ComponentBase, IDisposable,
+public partial class LionCollection<TItem, TItemVM> : ComponentBase, IDisposable
     //IAsyncObserver<Collections.NotifyCollectionChangedEventArgs<TItem>>
-    IObserver<Collections.NotifyCollectionChangedEventArgs<string>>
+    //,IObserver<Collections.NotifyCollectionChangedEventArgs<string>>
 {
 
+    protected override Task OnInitializedAsync()
+    {
+        OrleansClient
+        return base.OnInitializedAsync();
+    }
     private static readonly object[] EmptyArray = new object[] { };
 
     public string Key { get; set; }
