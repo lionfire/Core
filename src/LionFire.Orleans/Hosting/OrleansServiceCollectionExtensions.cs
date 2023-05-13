@@ -13,7 +13,7 @@ public static class OrleansServiceCollectionExtensions
 {
     public static IServiceCollection AddOrleans(this IServiceCollection services)
         => services
-            .AddSingleton<IKeyProvider<string>, GrainKeyProvider>()
+            .AddSingleton<IKeyProviderStrategy<string>, GrainKeyProvider>()
             ;
 
     //public static IHostBuilder AddOrleansClientX(this IHostBuilder services)

@@ -133,7 +133,7 @@ namespace LionFire.Persistence
             }
             else if (allowRetrieve)
             {
-                var result = await ReadHandle.GetValue();
+                var result = await ReadHandle.ResolveIfNeeded();
 
                 if (result.HasValue)
                 {
@@ -180,7 +180,7 @@ namespace LionFire.Persistence
         #region Cloning
 
         public async Task<(TValue clonedValue, bool clonedSomething)> CloneGetReadHandleValueToWriteHandleValue(bool propagateNoValue = false)
-            => _CloneGetOrQueryReadHandleValueToWriteHandleValue2(await ReadHandle.GetValue().ConfigureAwait(false), propagateNoValue);
+            => _CloneGetOrQueryReadHandleValueToWriteHandleValue2(await ReadHandle.ResolveIfNeeded().ConfigureAwait(false), propagateNoValue);
 
         public (TValue clonedValue, bool clonedSomething) CloneQueryReadHandleValueToWriteHandleValue(bool propagateNoValue = false)
             => _CloneGetOrQueryReadHandleValueToWriteHandleValue2(!HasReadHandle ? null : ReadHandle.QueryValue(), propagateNoValue);

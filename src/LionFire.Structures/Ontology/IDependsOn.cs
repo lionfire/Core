@@ -1,6 +1,6 @@
 ﻿#nullable enable
 
-namespace LionFire.Structures;
+namespace LionFire.Ontology;
 
 public interface IDependsOn<T>
 {

@@ -6,27 +6,34 @@ using System.Text;
 
 namespace LionFire.Structures.Keys;
 
-public class KeyProviderService<TKey> : IKeyProviderService<TKey>
+public class KeyProviderService<TKey, TValue> : IKeyProvider<TKey, TValue>
 {
-    public KeyProviderService(IEnumerable<IKeyProvider<TKey>> keyProviders)
+    public KeyProviderService(IEnumerable<IKeyProviderStrategy<TKey, TValue>> strategies)
     {
-        KeyProviders = keyProviders;
+        Strategies = strategies;
     }
 
-    public IEnumerable<IKeyProvider<TKey>> KeyProviders { get; }
+    public IEnumerable<IKeyProviderStrategy<TKey, TValue>> Strategies { get; }
 
-    public (bool, TKey?) TryGetKey(object? obj)
+    public TKey GetKey(TValue? value)
+    {
+        var result = TryGetKey(value);
+        if (result.success) return result.key;
+        throw new NotFoundException();
+    }
+
+    public (bool success, TKey key) TryGetKey(TValue? obj)
     {
         if(obj is IKeyed<TKey> k) { return (true, k.Key); }
 
-        foreach (var kp in KeyProviders)
+        foreach (var strategy in Strategies)
         {
-            var result = kp.TryGetKey(obj);
+            var result = strategy.TryGetKey(obj);
             if (result.success)
             {
                 return result;
             }
         }
-        return (false, default);
+        return (false, default!); // NULLABILITY override
     }
 }

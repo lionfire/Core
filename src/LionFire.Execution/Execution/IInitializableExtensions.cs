@@ -9,7 +9,7 @@ namespace LionFire.Execution
     public static class IInitializableExtensions
     {
         /// <summary>
-        /// Throw on TryInitializeAll, else return nothing
+        /// ToException on TryInitializeAll, else return nothing
         /// </summary>
         public static async Task InitializeAll(this IEnumerable<IInitializable2> initializables, int maxRepetitions = int.MaxValue)
         {

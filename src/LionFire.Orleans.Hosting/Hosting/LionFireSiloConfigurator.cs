@@ -7,6 +7,8 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using System.Net;
 using HostBuilderContext = Microsoft.Extensions.Hosting.HostBuilderContext;
+using Orleans.Serialization;
+using Microsoft.Extensions.Options;
 
 namespace LionFire.Hosting;
 
@@ -87,6 +89,8 @@ public static class LionFireSiloConfiguratorX
         // REVIEW - can't modify builder here. still ok?
         //    builder.ConfigureServices((c, s) => s.Configure<ClusterOptions>(o => ConfigureClusterOptions(o, c)));
         //});
+
+        //builder.ConfigureServices(s => s.AddSingleton<IPostConfigureOptions<OrleansJsonSerializerOptions>, ConfigureOrleansJsonSerializerOptions>());
 
         builder.UseOrleans((context, siloBuilder) => siloBuilder.UseLionFireOrleans(config, context, configureSilo));
         return builder;

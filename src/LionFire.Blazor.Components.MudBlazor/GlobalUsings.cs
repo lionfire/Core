@@ -5,3 +5,6 @@ global using System.Threading.Tasks;
 global using LionFire.Threading;
 global using LionFire.Mvvm;
 global using LionFire.Structures;
+global using MudBlazor;
+global using ReactiveUI;
+global using System.Reactive.Disposables;

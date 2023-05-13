@@ -1,4 +1,5 @@
 ﻿using LionFire.Configuration.Hosting;
+using LionFire.Structures;
 using LionFire.Structures.Keys;
 using LionFire.Types.Scanning;
 using Microsoft.Extensions.Configuration;
@@ -7,6 +8,7 @@ using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Hosting.Internal;
 using Microsoft.Extensions.Logging;
+using Newtonsoft.Json.Linq;
 using Serilog.Core;
 using System;
 using System.Diagnostics;
@@ -147,7 +149,7 @@ public static class DefaultsX
                 {
                     o.DllPrefixWhitelist.Add("LionFire.");
                 })
-                .AddSingleton<IKeyProviderService<string>, KeyProviderService<string>>();
+                .AddSingleton<IKeyProvider<string, object>, KeyProviderService<string, object>>();
         });
 
         //Console.WriteLine($"Current Directory: {Environment.CurrentDirectory}");

@@ -1,4 +1,5 @@
-﻿using LionFire.Orleans_.Collections.GrainListGrain;
+﻿#if false
+using LionFire.Orleans_.Collections.GrainListGrain;
 
 namespace LionFire.Orleans_.Collections.ListGrain;
 
@@ -39,5 +40,8 @@ public sealed record GrainListGrainItem<TValue>(string Id) :
         return other.Id == Id;
     }
 
+    public override int GetHashCode() => HashCode.Combine(Id);
+
     #endregion
 }
+#endif

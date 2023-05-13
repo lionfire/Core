@@ -1,4 +1,4 @@
-﻿namespace LionFire.Reflection;
+﻿namespace LionFire.ExtensionMethods.Types;
 
 public static class TypeNameExtensions
 {

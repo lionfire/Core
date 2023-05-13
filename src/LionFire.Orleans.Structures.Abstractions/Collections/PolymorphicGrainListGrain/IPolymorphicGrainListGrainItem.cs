@@ -1,7 +1,8 @@
-﻿using LionFire.Orleans_.Collections.GrainListGrain;
+﻿#if OLD
+using LionFire.Orleans_.Collections.GrainListGrain;
 using LionFire.Orleans_.Collections.ListGrain;
 
-namespace LionFire.Orleans_.Collections.PolymorphicGrainListGrain;
+namespace LionFire.Orleans_.Collections.PolymorphicGrainListG;
 
 public interface IPolymorphicGrainListGrainItem<out TValue> : IGrainListGrainItem<TValue>
         
@@ -17,3 +18,4 @@ public interface IPolymorphicGrainListGrainItem<out TValue> : IGrainListGrainIte
 //    where TValue : IGrain
 //{
 //}
+#endif

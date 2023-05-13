@@ -6,9 +6,9 @@
 //internal class ListGrainCollectionChangedSubject<TValue> : ISubject<ListGrainCollectionChangedEvent<TValue>>
 //{
 //    private readonly IClusterClient clusterClient;
-//    private IListGrain<TValue> listGrain;
+//    private IListG<TValue> listGrain;
 
-//    public ListGrainCollectionChangedSubject(IClusterClient clusterClient, IListGrain<TValue> listGrain)
+//    public ListGrainCollectionChangedSubject(IClusterClient clusterClient, IListG<TValue> listGrain)
 //    {
 //        this.clusterClient = clusterClient;
 //        this.listGrain = listGrain;
@@ -82,7 +82,7 @@
 //        ////c.GetStreamProvider;
 //        //IGrainFactory f;
 //        //IGrain g;
-//        var handle = await clusterClient.GetStreamProvider("s").GetStream<ListGrainCollectionChangedEvent<TValue>>(Guid.Empty,"asdf").SubscribeAsync(Subject).ConfigureAwait(false);
+//        var handle = await clusterClient.GetStreamProvider("s").GetStream<ListGrainCollectionChangedEvent<TValue>>(Guid.Empty,"asdf").Subscribe(Subject).ConfigureAwait(false);
 //    }
 //    public void UnsubscribeFromStream()
 //    {
@@ -93,7 +93,7 @@
 
 ////public static class IListGrainExtensions
 ////{
-////    public static IDisposable Subscribe(this IListGrain observer)
+////    public static IDisposable Subscribe(this IListG observer)
 ////    {
 ////        IListGrainExtensionsData<TValue>.ListGrainCollectionChangedSubjects[observer].Subscribe(observer);
 

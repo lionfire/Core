@@ -1,21 +1,33 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <TargetFramework>net6.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
+    <RootNamespace>LionFire</RootNamespace>
   </PropertyGroup>
 
   <ItemGroup>
     <PackageReference Include="CommunityToolkit.Mvvm" />
-    <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" />
+	  <PackageReference Include="DynamicData" />
+	  <PackageReference Include="ReactiveUI" />
+	  <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" />
     <PackageReference Include="Microsoft.Extensions.Hosting.Abstractions" />
+    <PackageReference Include="ReactiveUI.Fody" />
+    <PackageReference Include="Splat.Microsoft.Extensions.DependencyInjection" />
+    <PackageReference Include="Splat.Microsoft.Extensions.Logging" />
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\LionFire.Collections.Async\LionFire.Collections.Async.csproj" />
     <ProjectReference Include="..\LionFire.Core\LionFire.Core.csproj" />
     <ProjectReference Include="..\LionFire.Hosting\LionFire.Hosting.csproj" />
     <ProjectReference Include="..\LionFire.Mvvm.Abstractions\LionFire.Mvvm.Abstractions.csproj" />
+    <ProjectReference Include="..\LionFire.Resolves.Abstractions\LionFire.Resolves.Abstractions.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Mvvm\Collections\List\" />
   </ItemGroup>
 
 </Project>

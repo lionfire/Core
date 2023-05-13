@@ -1,4 +1,5 @@
-﻿//using LionFire.Structures;
+﻿#if OLD
+//using LionFire.Structures;
 
 //namespace LionFire.Orleans_.Collections.ListGrain;
 
@@ -17,3 +18,4 @@ public interface IGrainListGrainItem<out TValue>
     string Id { get; }
 }
 
+#endif

@@ -1,4 +1,4 @@
-﻿//#nullable enable
+﻿#nullable enable
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -11,7 +11,7 @@ namespace LionFire.Ontology
     /// <typeparam name="T"></typeparam>
     public interface IHas<out T>
     {
-        T Object { get; }
+        T? Object { get; }
     }
 
 }

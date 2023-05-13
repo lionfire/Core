@@ -6,3 +6,7 @@ global using System.ComponentModel;
 global using System.Linq;
 global using System.Threading;
 global using System.Threading.Tasks;
+global using DynamicData;
+global using ReactiveUI.Fody.Helpers;
+global using ReactiveUI;
+global using LionFire.Ontology;

@@ -8,8 +8,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Folder Include="Collections\GrainListGrain\" />
-    <Folder Include="Collections\PolymorphicGrainListGrain\" />
+    <Folder Include="Collections\PolymorphicGrainListG\" />
     <Folder Include="Structures\" />
   </ItemGroup>
 

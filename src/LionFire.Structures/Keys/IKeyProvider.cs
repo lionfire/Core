@@ -1,8 +1,20 @@
 ﻿#nullable enable
-
 namespace LionFire.Structures.Keys;
 
-public interface IKeyProvider<TKey>
+public interface IKeyProvider<out TKey> : IKeyProvider<TKey, object>
 {
-    (bool success, TKey? key) TryGetKey(object? obj);
 }
+
+public interface IKeyProvider<out TKey, in TValue>
+{
+    TKey GetKey(TValue? value);
+}
+
+//public interface IGuaranteedKeyProvider<out TKey> : IGuaranteedKeyProvider<TKey, object>
+//{
+//}
+
+//public interface IGuaranteedKeyProvider<out TKey, in TValue>
+//{
+//    TKey GetKey(TValue? value);
+//}

@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <TargetFramework>net7.0</TargetFramework>
@@ -9,14 +9,18 @@
 
   <ItemGroup>
     <PackageReference Include="Microsoft.Orleans.Core.Abstractions" />
+	  <PackageReference Include="System.Reactive" />
+	  <PackageReference Include="System.Reactive.Async" />
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\LionFire.Collections.Async\LionFire.Collections.Async.csproj" />
+    <ProjectReference Include="..\LionFire.DynamicData.Orleans\LionFire.DynamicData.Orleans.csproj" />
     <ProjectReference Include="..\LionFire.Structures\LionFire.Structures.csproj" />
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Collections\ListGrain\" />
+    <Folder Include="Collections\Notification\Streams\" />
   </ItemGroup>
 
 </Project>

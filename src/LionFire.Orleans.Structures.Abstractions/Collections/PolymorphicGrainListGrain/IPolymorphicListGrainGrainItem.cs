@@ -1,4 +1,4 @@
-﻿namespace LionFire.Orleans_.Collections.PolymorphicGrainListGrain;
+﻿namespace LionFire.Orleans_.Collections.PolymorphicGrainListG;
 #if UNUSED
 public record GrainListItem<TValue, TMetadata>(string Id, Type Type)
     where TValue : IGrain

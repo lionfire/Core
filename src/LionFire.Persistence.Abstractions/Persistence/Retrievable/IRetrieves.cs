@@ -66,7 +66,7 @@ public static class IRetrievesX
     ///// <returns>true if an object was retrieved.  False if object was not found at location of the Reference.  Throws if could not resolve the Reference to a valid source.</returns>
     [Casts("retrieves.ResolveAsync must return IRetrieveResult<T>", typeof(IRetrieveResult<>))]
     [Obsolete("TODO - use ToRetrieveResult instead")]
-    public static async Task<IRetrieveResult<T>> Retrieve<T>(this IRetrieves<T> retrieves) => (IRetrieveResult<T>)await IResolvesExtensions.Resolve(retrieves).ConfigureAwait(false); // CAST
+    public static async Task<IRetrieveResult<T>> Retrieve<T>(this IRetrieves<T> retrieves) => (IRetrieveResult<T>)await IResolvesX.Resolve(retrieves).ConfigureAwait(false); // CAST
 
     public static IRetrieveResult<T> ToRetrieveResult<T>(this IResolveResult<T> resolveResult)
     {
@@ -111,7 +111,7 @@ public static class IRetrievesX
             //return await lazilyResolves.Exists();
         }
 
-        return (await IResolvesExtensions.Resolve(resolves)).HasValue;
+        return (await IResolvesX.Resolve(resolves)).HasValue;
     }
     public static async Task<bool> Exists<T>(this IResolves resolves)
     {

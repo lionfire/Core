@@ -13,6 +13,7 @@ using Microsoft.Extensions.Configuration;
 using LionFire.Deployment;
 //using Polly;
 using HostBuilderContext = Microsoft.Extensions.Hosting.HostBuilderContext;
+using Orleans.Serialization;
 
 namespace LionFire.Hosting;
 

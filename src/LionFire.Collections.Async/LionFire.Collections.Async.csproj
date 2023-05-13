@@ -1,0 +1,22 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net6.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+	  <RootNamespace>LionFire</RootNamespace>
+  </PropertyGroup>
+
+	<ItemGroup>
+		<PackageReference Include="DynamicData" />
+		<PackageReference Include="ReactiveUI" />
+		<PackageReference Include="MorseCode.ITask" />
+		<PackageReference Include="System.Reactive" />
+		<PackageReference Include="System.Reactive.Async" />
+	</ItemGroup>
+
+	<ItemGroup>
+	  <ProjectReference Include="..\LionFire.Resolves.Abstractions\LionFire.Resolves.Abstractions.csproj" />
+	  <ProjectReference Include="..\LionFire.Resolves\LionFire.Resolves.csproj" />
+	</ItemGroup>
+</Project>

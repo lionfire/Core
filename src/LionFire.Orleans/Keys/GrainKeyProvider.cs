@@ -2,7 +2,7 @@
 
 namespace LionFire.Structures.Keys;
 
-public class GrainKeyProvider : IKeyProvider<string>
+public class GrainKeyProvider : IKeyProviderStrategy<string>
 {
     public (bool success, string? key) TryGetKey(object obj)
     {
