@@ -13,56 +13,36 @@ using System.Reactive;
 namespace LionFire.Orleans_.Collections;
 
 //[GenerateSerializer]
-public class GrainListG<TItemG>
-    : KeyedListG<GrainId, TItemG>
-    //, IAsyncCreating<TValue>
-    //ICreatingAsyncDictionary<string, TItemG>
+public class GrainCollectionG<TItemG>
+    : DeleteTrackingKeyedCollectionG<GrainId, TItemG>
     where TItemG : IGrainWithStringKey
 {
-    //public ICreatingAsyncDictionary<TOutputItem, PolymorphicGrainListGrainItem<TItemG>> ListG => listGrain;
-    //ICreatingAsyncDictionary<string, PolymorphicGrainListGrainItem<TItemG>> listGrain { get; }
-    //public IGrainFactory GrainFactory { get; }
-
-    private readonly ObserverManager<IAsyncObserver<ChangeSet<GrainId>>> collectionNotificationHandlers;
-
-    public TypeScanner TypeScanner { get; }
+    public TypeScanner TypeScanner { get; } // REFACTOR - Don't have TypeScanner here, but something like ITypeProvider
 
     #region Lifecycle
 
-    protected GrainListG(ILogger<GrainListG<TItemG>> logger, TypeScanner typeScanner, IPersistentState<List<TItemG>> items, IPersistentState<SortedDictionary<DateTime, TItemG>> deletedItemsState)
-        : base(items, deletedItemsState)
+    protected GrainCollectionG(ILogger<GrainCollectionG<TItemG>> logger, TypeScanner typeScanner, IPersistentState<Dictionary<GrainId, TItemG>> items, IPersistentState<SortedDictionary<DateTime, GrainId>> deletedItemsState, IServiceProvider serviceProvider)
+        : base(serviceProvider, items, logger, deletedItemsState)
     {
         TypeScanner = typeScanner;
-        collectionNotificationHandlers = new ObserverManager<IAsyncObserver<ChangeSet<GrainId>>>(TimeSpan.FromMinutes(5), logger);
     }
 
     #endregion
 
     #region Add / Create / Instantiate
 
-    #region Add
-
-    public Task Add(TItemG item)
-    {
-        throw new NotImplementedException();
-    }
-
-    #endregion
-
     #region Create
 
     static IEnumerable<Type>? createableTypes = null;
     public override Task<IEnumerable<Type>> SupportedTypes()
     {
-#warning NEXT: why is there no parameter here?
-
-        Func<Type, bool> param = t => t.IsInterface && !t.Name.StartsWith("OrleansCodeGen");
-
-        var result = TypeScanner.GetAllAssignableTo<TItemG>("test", param);
-        return Task.FromResult<IEnumerable<Type>>(result.ToArray());
-        IEnumerable<Type> list = new List<Type>(result);
-        //return Task.FromResult( list);
-
+        if (createableTypes == null) {
+            Func<Type, bool> param = t => t.IsInterface && !t.Name.StartsWith("OrleansCodeGen");
+#warning NEXT: why is there no parameter here?  parameter gets lost in Orleans RPC somehow?
+            createableTypes = TypeScanner.GetAllAssignableTo<TItemG>("test", param);
+        }
+        
+        return Task.FromResult<IEnumerable<Type>>(createableTypes.ToArray());
         //return Task.FromResult(createableTypes ??= TypeScanner.GetAllAssignableTo<TItemG>(t => t.IsInterface && !t.Name.StartsWith("OrleansCodeGen")));
     }
 
@@ -96,158 +76,14 @@ public class GrainListG<TItemG>
 
     #endregion
 
+    #endregion
+
+    #region Instantiate
+
     protected override TItemG Instantiate(Type type) => (TItemG)GrainFactory.GetGrain(type, Guid.NewGuid().ToString());
 
     #endregion
 
-    #region Remove
-
-    //public async Task<bool> Remove(TItemG item) // OLD
-    //{
-    //    var existing = ItemsState.State.Where(i => i.Id == item.GetGrainId().Key.ToString()).FirstOrDefault();
-    //    if (existing == null) return false;
-
-    //    var result = ItemsState.State.Remove(existing);
-    //    await ItemsState.WriteStateAsync();
-    //    return result;
-    //}
-    public async Task<bool> Remove(TItemG item)
-    {
-        var result = ItemsState.State.Remove(item);
-        await ItemsState.WriteStateAsync();
-        return result;
-    }
-
-    #endregion
-
-    #region Enumerable
-
-    //public async Task<IEnumerable<TItemG>> GrainItems() 
-    //    => (await ListG.GetEnumerableAsync().ConfigureAwait(false))
-    //            .Select(mi => (TItemG)GrainFactory.GetGrain(mi.Type, mi.Id))
-    //        ;
-
-    public Task<IEnumerable<TItemG>> Items()
-    {
-        throw new NotImplementedException();
-    }
-
-    public new async Task<IEnumerable<TItemG>> GetEnumerableAsync()
-    {
-        var result = new List<TItemG>();
-        foreach (var item in await base.GetEnumerableAsync())
-        {
-            result.Add(item);
-        }
-        return result;
-    }
-
-    #endregion
-
-
-
-    #region IAsyncObservable
-
-    public ValueTask<IAsyncDisposable> SubscribeAsync(IAsyncObserver<ChangeSet<GrainId>> observer)
-    {
-        collectionNotificationHandlers.Subscribe((IAddressable)observer, observer);
-
-        return new ValueTask<IAsyncDisposable>(new UnsubscribeOnDispose
-        {
-            Publisher = this.GetGrainId(),
-            Subscriber = (IAddressable)observer,
-        });
-    }
-
-    public ValueTask UnsubscribeAsync(IAddressable addressable)
-    {
-        collectionNotificationHandlers.Unsubscribe(addressable);
-        return ValueTask.CompletedTask;
-    }
-
-
-    [GenerateSerializer]
-    internal class UnsubscribeOnDispose : IAsyncDisposable, IDependsOn<IGrainFactory>
-    {
-        [Id(0)]
-        public GrainId Publisher { get; set; }
-
-        [Id(1)]
-        public IAddressable? Subscriber { get; set; }
-
-        public IGrainFactory? GrainFactory { get; set; }
-        IGrainFactory IDependsOn<IGrainFactory>.Dependency { set => GrainFactory = value; }
-
-        public ValueTask DisposeAsync()
-        {
-            ArgumentNullException.ThrowIfNull(GrainFactory, "IDependsOn<IGrainFactory>.Dependency");
-            ArgumentNullException.ThrowIfNull(Subscriber);
-            var grain = (IChangeSetObservableBaseG)GrainFactory.GetGrain(Publisher);
-            grain.UnsubscribeAsync(Subscriber);
-            return ValueTask.CompletedTask;
-        }
-    }
-
-    #endregion
-
-    public Task<bool> Contains(TItemG item)
-    {
-        throw new NotImplementedException();
-    }
-
-    public Task CopyTo(TItemG[] array, int arrayIndex)
-    {
-        throw new NotImplementedException();
-    }
-
-    Task<TItemG> IAsyncListBase<TItemG>.ElementAt(int index)
-    {
-        throw new NotImplementedException();
-    }
-
-    public Task ElementAt(int index, TItemG value)
-    {
-        throw new NotImplementedException();
-    }
-
-    public Task<int> IndexOf(TItemG item)
-    {
-        throw new NotImplementedException();
-    }
-
-    public Task Insert(int index, TItemG item)
-    {
-        throw new NotImplementedException();
-    }
-
-    #region Events
-
-    //public Task Subscribe(ICollectionNotificationObserver observer)
-    //{
-    //    var obj = GrainFactory.CreateObjectReference<ICollectionNotificationObserver>(observer);
-
-    //    collectionNotificationHandlers.Subscribe(obj, observer);
-    //    return Task.CompletedTask;
-    //}
-
-    //public Task Unsubscribe(ICollectionNotificationObserver observer)
-    //{
-    //    collectionNotificationHandlers.Unsubscribe(observer);
-    //    return Task.CompletedTask;
-    //}
-
-    #endregion
-
-    #region ICreatesG
-
-
-    public Task<TItemG> Create(Type type, params object[] constructorParameters)
-    {
-        throw new NotImplementedException();
-    }
-
-
-    #endregion
 }
 
 #if OLD

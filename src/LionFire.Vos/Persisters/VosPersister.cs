@@ -2,6 +2,7 @@
 using LionFire.Dependencies;
 using LionFire.Execution;
 using LionFire.Extensions.DefaultValues;
+using LionFire.ExtensionMethods.Acquisition;
 using LionFire.IO;
 using LionFire.Referencing;
 using LionFire.Serialization;

@@ -3,7 +3,7 @@
 namespace LionFire.Collections.Async;
 
 
-public interface IAsyncListBase<TItem>
+public interface IAsyncListBase<TItem> : IAsyncCollectionBase<TItem>
 {
     Task<TItem> ElementAt(int index);
     Task ElementAt(int index, TItem value);
@@ -14,6 +14,7 @@ public interface IAsyncListBase<TItem>
     
     Task RemoveAt(int index);
 }
+
 
 public interface IAsyncList<TItem> : IAsyncCollection<TItem>, IAsyncListBase<TItem>
 {

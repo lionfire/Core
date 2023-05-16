@@ -5,7 +5,7 @@ using LionFire.Structures;
 using System.Collections.Generic;
 using System;
 
-namespace LionFire;
+namespace LionFire.ExtensionMethods.Acquisition;
 
 public static class IAcquiresExtensions
 {

@@ -31,6 +31,7 @@ using LionFire.Resolvers;
 using ReactiveUI;
 using System.Reactive;
 using System.Linq;
+using LionFire.Orleans_.Reactive_;
 
 namespace LionFire.Orleans_.Mvvm;
 
@@ -55,16 +56,14 @@ namespace LionFire.Orleans_.Mvvm;
 /// <summary>
 /// Write-through Async Cache for an IKeyedListG
 /// Underlying collection is a list of GrainIds.  This Mvvm collection is a dictionary with GrainId keys and TItemGrain grain values.
-/// RENAME: GrainListGrainCache
 /// TODO: change this class to ListGrainCache?  Is there a benefit to knowing TNotificationItem is a grain?
 /// </summary>
 /// <typeparam name="T"></typeparam>
-public class GrainListCache<TItemGrain>
-    : AsyncListCache<TItemGrain>
-    , ICreatesAsync<string, TItemGrain>
+public class GrainListCache<TItemGrain> // RENAME: GrainCollectionCache
+    : AsyncDictionaryCache<GrainId, TItemGrain>
+    , IObservableCreatesAsync<GrainId, TItemGrain>
     , IDisposable
-    , IChangeSetObserverO<TItemGrain>
-
+    , IAsyncDisposable
     where TItemGrain : class, IGrainWithStringKey
     //where TCollectionGrain : IGrain, IGrainWithStringKey
 {
@@ -100,20 +99,20 @@ public class GrainListCache<TItemGrain>
     #endregion
 
     public GrainListCache(IKeyedListG<GrainId, TItemGrain> collectionGrain, IClusterClient clusterClient)
-        //: base(new(g => g.GetGrainId()))
+    //: base(new(g => g.GetGrainId()))
     {
         ClusterClient = clusterClient;
         CollectionGrain = collectionGrain;
-        SyncViaObserver = true; // REVIEW
+        SubscribeViaGrainObserver().FireAndForget(); // REVIEW
         Options = options!; // might be null
 
-       // CreateForKeyCommand = ReactiveCommand.Create<(string key, Type grainType), TItemGrain>(async ((string key, Type grainType) x) =>
-       // {
-       //     return await GetOrCreateImpl(CollectionGrain, x).ConfigureAwait(false);
-       // }
-       ////, canExecute
-       ////, scheduler
-       //);
+        // CreateForKeyCommand = ReactiveCommand.Create<(string key, Type grainType), TItemGrain>(async ((string key, Type grainType) x) =>
+        // {
+        //     return await GetOrCreateImpl(CollectionGrain, x).ConfigureAwait(false);
+        // }
+        ////, canExecute
+        ////, scheduler
+        //);
 
         GetOrCreateForKey = ReactiveCommand.Create<(string key, Type grainType), Task<TItemGrain>>(((string, Type) parameters) => GetOrCreateImpl(CollectionGrain, parameters));
 
@@ -123,6 +122,20 @@ public class GrainListCache<TItemGrain>
     {
         throw new NotImplementedException();
     }
+    public async ValueTask DisposeAsync()
+    {
+        await (Interlocked.Exchange(ref keyedListObserverO, null)?.DisposeAsync() ?? ValueTask.CompletedTask);
+    }
+
+    #endregion
+
+    #region State
+
+    #region Components
+
+    KeyedListObserverO<GrainId, TItemGrain> keyedListObserverO;
+
+    #endregion
 
     #endregion
 
@@ -152,8 +165,8 @@ public class GrainListCache<TItemGrain>
                 {
                     SourceList.EditDiff(result.Value ?? Enumerable.Empty<TItemGrain>(),
                         EqualityComparer<TItemGrain>.Default
-                        //    (left, right) => 
-                        ////left.GetGrainId() == right.GetGrainId()
+                    //    (left, right) => 
+                    ////left.GetGrainId() == right.GetGrainId()
                     );
                     //return new ResolveResultSuccess<IEnumerable<TItemGrain>>(result.Value);
                 }
@@ -186,11 +199,11 @@ public class GrainListCache<TItemGrain>
     static void InitGetOrCreateForKeyImpl()
     {
 
-        if (typeof(TItemGrain).IsAssignableTo(typeof(ICreatesAsync<string, TItemGrain>)))
+        if (typeof(TItemGrain).IsAssignableTo(typeof(IObservableCreatesAsync<string, TItemGrain>)))
         {
             GetOrCreateImpl = async (IGrain grain, (string key, Type grainType) parameters) =>
             {
-                var creates = (ICreatesAsync<string, TItemGrain>)grain;
+                var creates = (IObservableCreatesAsync<string, TItemGrain>)grain;
 
                 var newItemGrain = await creates.CreateForKey(parameters.key, parameters.grainType).ConfigureAwait(false);
                 return newItemGrain;
@@ -198,7 +211,7 @@ public class GrainListCache<TItemGrain>
         }
         else
         {
-            GetOrCreateImpl = (_, _) => throw new NotImplementedException($"Either implement {typeof(ICreatesAsync<string, TItemGrain>).FullName} on {nameof(CollectionGrain)} or set {nameof(GetOrCreateImpl)}");
+            GetOrCreateImpl = (_, _) => throw new NotImplementedException($"Either implement {typeof(IObservableCreatesAsync<string, TItemGrain>).FullName} on {nameof(CollectionGrain)} or set {nameof(GetOrCreateImpl)}");
         }
     }
 
@@ -206,7 +219,7 @@ public class GrainListCache<TItemGrain>
 
     #endregion
 
-    public ReactiveCommand<(string key, Type grainType), Task<TItemGrain>> GetOrCreateForKey { get; }
+    public ReactiveCommand<(GrainId key, Type grainType), Task<TItemGrain>> GetOrCreateForKey { get; }
 
     //public Task<TItemGrain> GetOrCreateForKey(string key, Type type, params object[] constructorParameters)
     //{
@@ -218,7 +231,7 @@ public class GrainListCache<TItemGrain>
 
     //public virtual bool CanCreate => true;
 
-    public IObservable<(string key, Type type, object[] parameters, Task result)> CreatesForKey => throw new NotImplementedException();
+    public IObservable<(GrainId key, Type type, object[] parameters, Task result)> CreatesForKey => throw new NotImplementedException();
 
     //public async Task<KeyValuePair<string, TItemGrain>> Create<TNewItem>(params object[]? constructorParameters)
     //    where TNewItem : TItemGrain
@@ -230,12 +243,12 @@ public class GrainListCache<TItemGrain>
     //    return new KeyValuePair<string, TItemGrain>(((IGrainWithStringKey)result).GetPrimaryKeyString(), result);
     //}
 
-    public Task<TItemGrain> CreateForKey(string key, Type type, params object[] constructorParameters)
+    public Task<TItemGrain> CreateForKey(GrainId key, Type type, params object[] constructorParameters)
     {
         throw new NotImplementedException();
     }
 
-    Task<TItemGrain> ICreatesG<string, TItemGrain>.GetOrCreateForKey(string key, Type type, params object[] constructorParameters)
+    Task<TItemGrain> ICreatesAsync<GrainId, TItemGrain>.GetOrCreateForKey(GrainId key, Type type, params object[] constructorParameters)
     {
         throw new NotImplementedException();
     }
@@ -290,7 +303,7 @@ public class GrainListCache<TItemGrain>
 
     public override bool HasValue => throw new NotImplementedException();
 
-    public override IEnumerable< TItemGrain>? Value => throw new NotImplementedException();
+    public override IEnumerable<TItemGrain>? Value => throw new NotImplementedException();
 
     public override ITask<ILazyResolveResult<IEnumerable<TItemGrain>>> TryGetValue()
     {
@@ -319,33 +332,20 @@ public class GrainListCache<TItemGrain>
     //public IGrainObserverO<TItemGrain>? ChangeSetGrainObserver => changeSetGrainObserver;
     //private ChangeSetGrainObserver<TItemGrain>? changeSetGrainObserver;
 
-    public bool SyncViaObserver
+    IAsyncDisposable grainObserverSubscription;
+    AsyncGate grainObserverSubscriptionGate = new();
+
+    public Task<bool> SubscribeViaGrainObserver()
     {
-        set
+        using (await grainObserverSubscriptionGate.LockAsync().ConfigureAwait(false))
         {
+#error FIXME: NEXT
             if (syncViaObserver == value) return;
 
             syncViaObserver = value;
             if (value)
             {
-                // Create ChangeSetGrainObserver
-                //if (changeSetGrainObserver == null)
-                //{
-                //    changeSetGrainObserver = new ChangeSetGrainObserver<TItemGrain>();
-                //    changeSetGrainObserver.Subscribe(this,)
-                //}
-                ReSyncViaObserver = new PeriodicTimer(TimeSpan.FromMinutes(4.5));
-                Task.Run(async () =>
-                {
-                    while (await ReSyncViaObserver.WaitForNextTickAsync())
-                    {
-                        if (syncViaObserver)
-                        {
-                            await CollectionGrain.SubscribeObserver(this);
-                        }
-                    }
-                });
-                CollectionGrain.SubscribeObserver(this);
+                var grainObserverSubscription = this.SubscribeViaGrainObserver().Result;
             }
             else
             {
@@ -358,7 +358,11 @@ public class GrainListCache<TItemGrain>
         }
     }
     bool syncViaObserver;
-    PeriodicTimer? ReSyncViaObserver;
+
+    public Task<bool> UnsubscribeViaGrainObserver()
+    {
+
+    }
 
     // TODO?
     //public bool SyncViaStream
@@ -398,13 +402,20 @@ public class GrainListCache<TItemGrain>
 
     #endregion
 
-    
+    #region System.IAsyncObservable
+
+    public ValueTask<IAsyncDisposable> SubscribeAsync(System.IAsyncObserver<ChangeSet<TItemGrain, GrainId>> observer)
+    {
+        throw new NotImplementedException();
+    }
+
+    #endregion
 
     //public override IEnumerator<TItemGrain> GetEnumerator()
     //{
     //    throw new NotImplementedException();
     //}
-    
+
 }
 
 #if GrainDictionaryCache

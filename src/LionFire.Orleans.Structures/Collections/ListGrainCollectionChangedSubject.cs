@@ -37,13 +37,13 @@
 
 //    #region IObservable
 
-//    public IDisposable Subscribe(IObserver<ListGrainCollectionChangedEvent<TValue>> observer)
+//    public IDisposable Connect(IObserver<ListGrainCollectionChangedEvent<TValue>> observer)
 //    {
 //        if(!Subject.HasObservers)
 //        {
 //            SubscribeToStream();
 //        }
-//        var inner = ((IObservable<ListGrainCollectionChangedEvent<TValue>>)Subject).Subscribe(observer);
+//        var inner = ((IObservable<ListGrainCollectionChangedEvent<TValue>>)Subject).Connect(observer);
 //        return new ListGrainCollectionChangedDisposableWrapper<TValue>(this, inner);
 //    }
 
@@ -82,7 +82,7 @@
 //        ////c.GetStreamProvider;
 //        //IGrainFactory f;
 //        //IGrain g;
-//        var handle = await clusterClient.GetStreamProvider("s").GetStream<ListGrainCollectionChangedEvent<TValue>>(Guid.Empty,"asdf").Subscribe(Subject).ConfigureAwait(false);
+//        var handle = await clusterClient.GetStreamProvider("s").GetStream<ListGrainCollectionChangedEvent<TValue>>(Guid.Empty,"asdf").Connect(Subject).ConfigureAwait(false);
 //    }
 //    public void UnsubscribeFromStream()
 //    {
@@ -93,9 +93,9 @@
 
 ////public static class IListGrainExtensions
 ////{
-////    public static IDisposable Subscribe(this IListG observer)
+////    public static IDisposable Connect(this IListG observer)
 ////    {
-////        IListGrainExtensionsData<TValue>.ListGrainCollectionChangedSubjects[observer].Subscribe(observer);
+////        IListGrainExtensionsData<TValue>.ListGrainCollectionChangedSubjects[observer].Connect(observer);
 
 ////        //IObserver<ListGrainCollectionChangedEvent<TValue>>
 

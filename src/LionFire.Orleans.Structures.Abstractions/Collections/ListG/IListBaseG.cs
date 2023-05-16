@@ -1,4 +1,5 @@
-﻿using LionFire.Collections.Async;
+﻿using DynamicData;
+using LionFire.Collections.Async;
 
 namespace LionFire.Orleans_.Collections;
 
@@ -10,6 +11,7 @@ public interface IListBaseG<TItem>
     : IGrainWithStringKey
     , ICollectionG<TItem>
     , IAsyncListBase<TItem>
-    , ICreatesG<TItem>
+    , ICreatesAsync<TItem>
 {
 }
+

@@ -1,14 +1,15 @@
 ﻿using LionFire.Collections.Async;
+using Newtonsoft.Json.Linq;
 
 namespace LionFire.Orleans_.Collections;
 
-public interface IGrainListG<TItemG>
-    : IListG<TItemG>
-    , ICreatesG<TItemG>
-    , IChangeSetObservableG<TItemG>
-    where TItemG : IGrain
-{
-}
+//public interface IGrainListG<TItemG>
+//    : IListG<TItemG>
+//    , ICreatesG<TItemG>
+//    , IGrainObservableG<ChangeSet<TItemG, GrainId>>
+//    where TItemG : IGrain
+//{
+//}
 
 #if ENH
 /// <summary>

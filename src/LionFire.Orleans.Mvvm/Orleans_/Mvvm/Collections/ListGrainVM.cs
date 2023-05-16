@@ -27,7 +27,7 @@ namespace LionFire.Orleans_.Mvvm;
 
 //    #endregion
 
-//    #region ICreatesAsync
+//    #region IObservableCreatesAsync
 
 //    //public override IObservable<(Type, object[], Task<KeyValuePair<TOutputItem, TValue>>)> Creates => throw new NotImplementedException();
 

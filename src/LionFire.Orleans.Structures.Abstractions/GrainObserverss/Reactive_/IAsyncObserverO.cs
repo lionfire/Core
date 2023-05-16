@@ -9,6 +9,7 @@
 /// </remarks>
 public interface IAsyncObserverO<TValue>
     : System.IAsyncObserver<TValue>
+    , System.IAsyncObservable<TValue>
     , IGrainObserver
 {
 

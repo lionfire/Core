@@ -16,6 +16,7 @@
 	  <PackageReference Include="Microsoft.Orleans.Runtime" />
 	  <PackageReference Include="Microsoft.Orleans.Sdk" />
 	  <PackageReference Include="Microsoft.Orleans.Streaming" />
+	  <PackageReference Include="Nito.AsyncEx.Coordination" />
 	  <PackageReference Include="System.Reactive" />
   </ItemGroup>
 

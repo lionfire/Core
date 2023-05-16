@@ -16,10 +16,10 @@ public class AsyncDictionaryVM<TKey, TValue, TValueVM> : LazilyResolvesDictionar
     public AsyncDictionaryVM() 
     {
         Create = ReactiveCommand.Create<ActivationParameters, Task<KeyValuePair<TKey, TValue>>>(p =>
-            (Cache as ICreatesAsync<KeyValuePair<TKey, TValue>> ?? throw new ArgumentException($"{nameof(Cache)} must be ICreatesAsync<KeyValuePair<TKey, TValue>>")).Create(p.Type, p.Parameters)
+            (Cache as IObservableCreatesAsync<KeyValuePair<TKey, TValue>> ?? throw new ArgumentException($"{nameof(Cache)} must be ICreatesAsync<KeyValuePair<TKey, TValue>>")).Create(p.Type, p.Parameters)
         , Observable.Create<bool>(o =>
         {
-            o.OnNext(Cache is ICreatesAsync<KeyValuePair<TKey, TValue>>);
+            o.OnNext(Cache is IObservableCreatesAsync<KeyValuePair<TKey, TValue>>);
             return Disposable.Empty;
         }));
     }
@@ -59,7 +59,7 @@ public class AsyncDictionaryVM<TKey, TValue, TValueVM> : LazilyResolvesDictionar
     //            await Create(type, null);
     //            return;
     //        }
-    //        else if (Cache is ICreatesAsync<TValue> cc)
+    //        else if (Cache is IObservableCreatesAsync<TValue> cc)
     //        {
     //            await cc.Create(type);
     //            return;
@@ -96,7 +96,7 @@ public class AsyncDictionaryVM<TKey, TValue, TValueVM> : LazilyResolvesDictionar
     //        if (ItemConstructorParameters != null) { args = ItemConstructorParameters.Invoke(type); }
 
     //        if (Create != null) { return await Create(type, args); }
-    //        else if (Cache is ICreatesAsync<TValue> cc && cc.CanCreate)
+    //        else if (Cache is IObservableCreatesAsync<TValue> cc && cc.CanCreate)
     //        {
     //            return await cc.Create(type, args);
     //        }
@@ -111,7 +111,7 @@ public class AsyncDictionaryVM<TKey, TValue, TValueVM> : LazilyResolvesDictionar
 
     #endregion
 
-    //#region ICreatesAsync<TValue>
+    //#region IObservableCreatesAsync<TValue>
 
     //public abstract IObservable<(Type, object[], Task<KeyValuePair<TKey, TValue>>)> Creates { get; }
 
@@ -121,11 +121,11 @@ public class AsyncDictionaryVM<TKey, TValue, TValueVM> : LazilyResolvesDictionar
 }
 
 //public class AsyncDictionaryVM<TKey, TValue, TValueVM> : AsyncCollectionVM<TKey, TValue>
-//    //, ICreatesAsync<TKey, TValue>
+//    //, IObservableCreatesAsync<TKey, TValue>
 //    where TKey : notnull
 //{
 
-//    //#region ICreatesAsync<TKey, TValue>
+//    //#region IObservableCreatesAsync<TKey, TValue>
 
 //    //public Task<TValue> CreateForKey(string key, Type type, params object[] constructorParameters)
 //    //{

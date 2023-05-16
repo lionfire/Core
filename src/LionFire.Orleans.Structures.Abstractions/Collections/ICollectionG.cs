@@ -45,10 +45,10 @@ internal class CollectionGAdapter<TItem> : IAsyncCollection<TItem>
         return c.Contains(item);
     }
 
-    public Task CopyTo(TItem[] array, int arrayIndex)
-    {
-        return c.CopyTo(array, arrayIndex);
-    }
+    //public Task CopyTo(TItem[] array, int arrayIndex)
+    //{
+    //    return c.CopyTo(array, arrayIndex);
+    //}
 
     public Task<IEnumerable<TItem>> GetEnumerableAsync()
     {
