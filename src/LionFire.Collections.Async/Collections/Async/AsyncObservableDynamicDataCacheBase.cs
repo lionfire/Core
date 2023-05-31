@@ -2,7 +2,9 @@
 using LionFire.Resolves;
 using MorseCode.ITask;
 using ReactiveUI;
+using ReactiveUI.Fody.Helpers;
 using System.Collections;
+using System.Reactive.Subjects;
 
 namespace LionFire.Collections.Async;
 
@@ -16,9 +18,10 @@ namespace LionFire.Collections.Async;
 //  - for DynamicData's ObservableList<TValue>:
 //    - AsyncReadOnlyListCache<TValue>
 //      - AsyncListCache<TValue>
-public abstract partial class AsyncDynamicDataCollectionCache<TItem>
+public abstract partial class AsyncDynamicDataCollectionCache<TValue>
     : ReactiveObject
-    , IAsyncReadOnlyCollectionCache<TItem>
+    , IAsyncReadOnlyCollectionCacheBase<TValue>
+    , IObservableResolves<IEnumerable<TValue>>
 // Derived classes may implement read interfaces:
 //  - INotifiesChildChanged
 //  - INotifiesChildDeeplyChanged
@@ -32,11 +35,13 @@ public abstract partial class AsyncDynamicDataCollectionCache<TItem>
 
     #region IObservableResolves
 
-    public abstract IObservable<ITask<IResolveResult<IEnumerable<TItem>>>> Resolves { get; }
+    public bool IsResolving => !resolves.Value.AsTask().IsCompleted;
+    public IObservable<ITask<IResolveResult<IEnumerable<TValue>>>> Resolves => resolves;
+    protected BehaviorSubject<ITask<IResolveResult<IEnumerable<TValue>>>> resolves = new(Task.FromResult<IResolveResult<IEnumerable<TValue>>>(ResolveResultNotResolvedNoop<IEnumerable<TValue>>.Instance).AsITask());
 
     #region IResolves
 
-    public abstract ITask<IResolveResult<IEnumerable<TItem>>> Resolve();
+    public abstract ITask<IResolveResult<IEnumerable<TValue>>> Resolve();
 
     #endregion
 
@@ -44,16 +49,22 @@ public abstract partial class AsyncDynamicDataCollectionCache<TItem>
 
     #region ILazilyResolves<IEnumerable<TItem>>
 
-    public abstract ITask<ILazyResolveResult<IEnumerable<TItem>>> TryGetValue();
-    public abstract ILazyResolveResult<IEnumerable<TItem>> QueryValue();
+    public async ITask<ILazyResolveResult<IEnumerable<TValue>>> TryGetValue()
+    {
+        if (HasValue) { return new LazyResolveNoopResult<IEnumerable<TValue>>(HasValue, Value); }
+        var result = await Resolve().ConfigureAwait(false);
+        return new LazyResolveResult<IEnumerable<TValue>>(result.HasValue, result.Value);
+    }
 
-    public abstract bool HasValue { get; }
+    public virtual ILazyResolveResult<IEnumerable<TValue>> QueryValue() => new LazyResolveNoopResult<IEnumerable<TValue>>(HasValue, Value);
 
-    public abstract void DiscardValue();
+    public virtual bool HasValue => Value != null;
+
+    public abstract void DiscardValue(); // => Value = null;
 
     #region IReadWrapper<T>
 
-    public abstract IEnumerable<TItem>? Value { get; }
+    public abstract IEnumerable<TValue>? Value { get; }
 
     #endregion
 
@@ -61,11 +72,11 @@ public abstract partial class AsyncDynamicDataCollectionCache<TItem>
 
     #region IReadOnlyCollection<TItem>
 
-    public abstract int Count { get; }
+    public virtual int Count => (Value ?? Enumerable.Empty<TValue>()).Count();
 
     #region IEnumerable<TItem>
 
-    public abstract IEnumerator<TItem> GetEnumerator();
+    public virtual IEnumerator<TValue> GetEnumerator() => (Value ?? Enumerable.Empty<TValue>()).GetEnumerator();
     IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
 
     #endregion
@@ -74,6 +85,6 @@ public abstract partial class AsyncDynamicDataCollectionCache<TItem>
 
     #endregion
 
-    public abstract DynamicData.IObservableList<TItem> List { get; }
+    //public abstract DynamicData.IObservableList<TItem> List { get; }
 
 }

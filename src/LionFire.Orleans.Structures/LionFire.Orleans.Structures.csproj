@@ -9,7 +9,6 @@
 
   <ItemGroup>
     <Folder Include="Collections\PolymorphicGrainListG\" />
-    <Folder Include="Structures\" />
   </ItemGroup>
 
   <ItemGroup>

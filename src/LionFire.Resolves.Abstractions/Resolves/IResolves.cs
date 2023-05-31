@@ -1,4 +1,5 @@
-﻿using MorseCode.ITask;
+﻿using LionFire.Resolvers;
+using MorseCode.ITask;
 using System.Threading.Tasks;
 
 namespace LionFire.Resolves;
@@ -7,6 +8,8 @@ namespace LionFire.Resolves;
 /// Marker interface indicating that a IResolves&lt;TValue&gt; is likely also present.
 /// </summary>
 public interface IResolves { }
+
+
 
 /// <summary>
 /// Resolve the value for this instance.  If the value was already resolved or provided, this re-resolves the value.  (Use ILazilyResolves to avoid unwanted re-resolving.)

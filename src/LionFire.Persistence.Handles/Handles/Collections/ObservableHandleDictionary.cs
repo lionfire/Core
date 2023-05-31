@@ -57,9 +57,9 @@ namespace LionFire.Persistence.Handles
             var writable = (IWriteHandleBase<TValue>)handle;
             writable.Value = obj;
 
-            if (handle is IPuts saveable)
+            if (handle is ISets saveable)
             {
-                await saveable.Put().ConfigureAwait(false);
+                await saveable.Set().ConfigureAwait(false);
             }
             return handle;
         }

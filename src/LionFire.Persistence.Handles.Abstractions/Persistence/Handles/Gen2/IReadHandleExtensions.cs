@@ -35,7 +35,7 @@ namespace LionFire
             }
         }
 
-        public static bool IsWritable<T>(this IReadHandleBase<T> readHandle) => readHandle as IPuts != null;
+        public static bool IsWritable<T>(this IReadHandleBase<T> readHandle) => readHandle as ISets != null;
 
         public static async Task<bool> IsValueAvailable<T>(this IReadHandleBase<T> readHandle)
         {

@@ -26,6 +26,8 @@ public static class SiloHostBuilder
     {
         config ??= new();
 
+        OrleansStaticInitialization.InitOrleans();
+
         lf.HostBuilder
             .ConfigureHostConfiguration(b =>
             {

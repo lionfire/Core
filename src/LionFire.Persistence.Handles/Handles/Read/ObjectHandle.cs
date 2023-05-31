@@ -7,6 +7,7 @@ using LionFire.Referencing;
 using LionFire.Resolves;
 using MorseCode.ITask;
 using LionFire.Results;
+using System.Threading;
 
 namespace LionFire.Persistence.Handles
 {
@@ -52,7 +53,7 @@ namespace LionFire.Persistence.Handles
             }
         }
 
-        public Task<ISuccessResult> Put(TValue value)
+        public Task<ISuccessResult> Set(TValue value, CancellationToken cancellationToken = default)
         {
             if (!ReferenceEquals(value, ProtectedValue))
             {
@@ -61,7 +62,7 @@ namespace LionFire.Persistence.Handles
             return Task.FromResult(NoopSuccessResult.Instance);
         }
 
-        public Task<ISuccessResult> Put()
+        public Task<ISuccessResult> Set()
         {
             if (isDeletePending)
             {

@@ -10,7 +10,7 @@ public interface ICreatesAsync<TValue>
     /// </summary>
     /// <param name="type"></param>
     /// <returns></returns>
-    Task<TValue> Create(Type type, params object[] constructorParameters);
+    Task<TValue> Create(Type type, params object[]? constructorParameters);
 
 }
 

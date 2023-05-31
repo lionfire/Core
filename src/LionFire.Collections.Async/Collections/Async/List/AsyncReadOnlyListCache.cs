@@ -54,7 +54,7 @@ public abstract class AsyncReadOnlyListCache<TValue>
     #region State
 
     protected SourceList<TValue> SourceList { get; }
-    public override DynamicData.IObservableList<TValue> List => SourceList.AsObservableList();
+    //public override DynamicData.IObservableList<TValue> List => SourceList.AsObservableList();
 
     #endregion
 

@@ -56,7 +56,7 @@ namespace LionFire.UI.Workspaces
 // - Executable initialization
     public abstract class WorkspaceOld<TTemplate, TChild> : InitializableExecutableBase, ITemplateInstance<TTemplate>, IComposition, 
         //IWorkspace, 
-        IPuts,
+        ISets,
         IFlex
 
         where TTemplate : class, ITemplate
@@ -83,7 +83,7 @@ namespace LionFire.UI.Workspaces
 
         protected virtual void OnTemplateChanged(TTemplate oldValue, TTemplate newValue) { }
 
-        public virtual Task<ISuccessResult> Put()
+        public virtual Task<ISuccessResult> Set()
         {
             throw new NotImplementedException();
         }

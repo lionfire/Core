@@ -29,7 +29,7 @@ namespace LionFire.Persistence.Handles
         , IWrapper<TValue>
         , IHandleInternal<TValue>
         , IDeletable
-        , IPuts<TValue>
+        , ISets<TValue>
         , IReferencable<TReference>
         , INotifyWrappedValueChanged
         , INotifyWrappedValueReplaced
@@ -197,8 +197,8 @@ namespace LionFire.Persistence.Handles
             throw new System.NotImplementedException();
         }
 
-        async Task<ISuccessResult> IPuts.Put() => await Put();
-        public async Task<ISuccessResult> Put(TValue value)
+        async Task<ISuccessResult> ISets.Set() => await Put();
+        public async Task<ISuccessResult> Set(TValue value, CancellationToken cancellationToken = default)
         {
             Value = value;
             return await Put().ConfigureAwait(false);

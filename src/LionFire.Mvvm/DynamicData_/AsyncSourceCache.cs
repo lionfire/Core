@@ -47,7 +47,7 @@
 //}
 
 ///// <summary>
-///// Cache for an underlying collection that is accessed asynchronously
+///// ObservableCache for an underlying collection that is accessed asynchronously
 ///// </summary>
 ///// <typeparam name="TValue"></typeparam>
 ///// <typeparam name="SourceCache<TValue, TItem>">must be a CySharp/ObservableCollections IObservableCollection&lt;TValue&gt; type</typeparam>
@@ -67,7 +67,7 @@
 //    get
 //    {
 //        // TODO: use Type introspection service to get list types that derive from TValue
-//        // alternate: inspect T for attributes
+//        // alternate: inspect TValue for attributes
 //        return Enumerable.Empty<Type>();
 //    }
 //}
@@ -319,7 +319,7 @@
 //    throw new NotSupportedException();
 //    //if (!CanCreate) { throw new NotSupportedException($"!{nameof(CanCreate)}"); }
 
-//    //return (T)(Activator.CreateInstance(type, constructorParameters) ?? throw new Exception("CreateInstance failed for type: " + type.FullName));
+//    //return (TValue)(Activator.CreateInstance(type, constructorParameters) ?? throw new Exception("CreateInstance failed for type: " + type.FullName));
 //}
 //#endregion
 

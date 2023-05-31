@@ -6,6 +6,13 @@ using LionFire.Collections.Async;
 using Newtonsoft.Json.Linq;
 using System.Reactive.Linq;
 using System.Reactive.Disposables;
+using Microsoft.Extensions.DependencyInjection;
+using DynamicData.Binding;
+using ReactiveUI;
+using System.Reactive.Subjects;
+using LionFire.ExtensionMethods;
+using System.Diagnostics;
+using System;
 
 namespace LionFire.Mvvm;
 
@@ -64,37 +71,6 @@ public class LazilyResolvesVM<T> : ResolvesVM<T>, ILazilyResolvesVM<T>
     [Reactive]
     public bool HasValue { get; set; }
     //{ get => !Source.HasValue; } // Not reactive
-
-    #endregion
-}
-
-public interface IResolvesCollectionVM<TItem2, TCollection, TViewModel> : IResolvesVM<TCollection>
-    where TCollection : IEnumerable<TItem2>
-{
-}
-
-public class LazilyResolvesCollectionVM<T> : LazilyResolvesCollectionVM<T, IEnumerable<T>>
-{
-}
-
-public class LazilyResolvesCollectionVM<T, TCollection> : LazilyResolvesVM<TCollection>, IResolvesCollectionVM<T, TCollection, object>
-    where TCollection : IEnumerable<T>
-{
-}
-
-public class LazilyResolvesDictionaryVM<TKey, TValue> : LazilyResolvesDictionaryVM<TKey, TValue, IEnumerable<KeyValuePair<TKey, TValue>>>
-    where TKey : notnull
-{
-}
-
-public class LazilyResolvesDictionaryVM<TKey, TValue, TCollection> : LazilyResolvesCollectionVM<KeyValuePair<TKey, TValue>, TCollection>
-    where TKey : notnull
-    where TCollection : IEnumerable<KeyValuePair<TKey, TValue>>
-{
-    #region State (derived)
-
-    public IAsyncReadOnlyDictionaryCache<TKey, TValue>? Cache => Source as IAsyncReadOnlyDictionaryCache<TKey, TValue>;
-    public IObservableCache<TValue, TKey>? ObservableCache => Cache?.Cache;
 
     #endregion
 }

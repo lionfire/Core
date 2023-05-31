@@ -8,4 +8,5 @@ public interface IKeyedCollectionG<TKey, TItem>
     , IGrainObservableG<ChangeSet<TItem, TKey>>
     where TKey : notnull
 {
+    Task<IEnumerable<Type>> SupportedTypes();
 }

@@ -46,10 +46,6 @@ namespace LiveSharp
 
         }
 
-
-
-
-
         public void Run(ILiveSharpRuntime app)
         {
             // Use this method to execute any code in runtime

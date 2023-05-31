@@ -25,7 +25,8 @@ public class AsyncObservableCollectionOptions
     };
 
 
-    // ENH Idea: IsAuthoritative: This Cache is the sole gatekeeper of the model in the system
-    // ENH Idea: IsOptimisticAuthoritativeWrite: This Cache is authoritative, and assume writes succeed immediately without waiting for async
+    // ENH Idea: IsAuthoritative: This ObservableCache is the sole gatekeeper of the model in the system
+    // ENH Idea: IsOptimisticAuthoritativeWrite: This ObservableCache is authoritative, and assume writes succeed immediately without waiting for async
 
 }
+

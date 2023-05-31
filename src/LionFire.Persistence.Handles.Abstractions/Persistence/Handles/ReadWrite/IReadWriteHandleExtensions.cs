@@ -41,7 +41,7 @@ namespace LionFire.Persistence
             }
 
             handle.Value = Activator.CreateInstance<T>();
-            var putResult = await handle.Put().ConfigureAwait(false);
+            var putResult = await handle.Set().ConfigureAwait(false);
             if (putResult.IsSuccess != true)
             {
                 throw new PersistenceException(putResult as IPersistenceResult, "Failed to create. Put result: " + putResult);

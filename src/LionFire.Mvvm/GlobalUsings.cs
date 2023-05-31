@@ -10,3 +10,8 @@ global using DynamicData;
 global using ReactiveUI.Fody.Helpers;
 global using ReactiveUI;
 global using LionFire.Ontology;
+global using DynamicData.Binding;
+global using System.Diagnostics;
+global using System.Reactive.Subjects;
+global using System.Reactive;
+global using System.Reactive.Linq;

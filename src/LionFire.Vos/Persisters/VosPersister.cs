@@ -654,7 +654,7 @@ public class VosPersister : SerializingPersisterBase<VosPersisterOptions>, IPers
                 var wh = effectiveReference.GetWriteHandle<TValue>(serviceProvider: ServiceProvider);
 
                 wh.Value = value;
-                var childResult = (await wh.Put().ConfigureAwait(false)).ToPersistenceResult();
+                var childResult = (await wh.Set().ConfigureAwait(false)).ToPersistenceResult();
 
                 if (childResult.IsFail()) result.Flags |= PersistenceResultFlags.Fail; // Indicates that at least one underlying persister failed
 

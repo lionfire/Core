@@ -2,7 +2,7 @@
 
 namespace LionFire.Orleans_;
 
-//public class AsyncSystemObserverToOrleansObserver<T> : //? 
+//public class AsyncSystemObserverToOrleansObserver<TValue> : //? 
 //{
 //}
 

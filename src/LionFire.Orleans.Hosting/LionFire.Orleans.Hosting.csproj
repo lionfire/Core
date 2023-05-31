@@ -21,6 +21,7 @@
 		<ProjectReference Include="..\..\..\Internal\src\LionFire.Consul.Orleans\LionFire.Consul.Orleans.csproj" />
 		<ProjectReference Include="..\..\..\Internal\src\LionFire.Consul\LionFire.Consul.csproj" />
 		<ProjectReference Include="..\LionFire.Hosting\LionFire.Hosting.csproj" />
+		<ProjectReference Include="..\LionFire.Orleans.Structures\LionFire.Orleans.Structures.csproj" />
 		<ProjectReference Include="..\LionFire.Orleans\LionFire.Orleans.csproj" />
 	</ItemGroup>
 

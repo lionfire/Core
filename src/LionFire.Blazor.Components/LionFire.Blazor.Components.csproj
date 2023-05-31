@@ -2,6 +2,7 @@
 
   <PropertyGroup>
     <TargetFramework>net7.0</TargetFramework>
+	<Nullable>enable</Nullable>
   </PropertyGroup>
 
   
@@ -15,6 +16,7 @@
 	  <PackageReference Include="MediatR" />
     <PackageReference Include="Microsoft.AspNetCore.Components.Web" />
     <PackageReference Include="Microsoft.CodeAnalysis" />
+    <PackageReference Include="ReactiveUI.Blazor" />
     <PackageReference Include="Swordfish.NET.CollectionsV3" />
 	  <PackageReference Include="System.ComponentModel" />
 	  <PackageReference Include="System.ComponentModel.Annotations" />
@@ -24,6 +26,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\LionFire.Flex\LionFire.Flex.csproj" />
+    <ProjectReference Include="..\LionFire.Mvvm\LionFire.Mvvm.csproj" />
     <ProjectReference Include="..\LionFire.UI.Entities\LionFire.UI.Entities.csproj" />
     <ProjectReference Include="..\LionFire.UI\LionFire.UI.csproj" />
   </ItemGroup>

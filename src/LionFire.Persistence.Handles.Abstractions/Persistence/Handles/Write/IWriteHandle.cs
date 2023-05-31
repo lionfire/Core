@@ -9,14 +9,14 @@ namespace LionFire.Persistence
     /// IWriteHandleEx
     /// </summary>
     /// <typeparam name="T"></typeparam>
-    public interface IWriteHandle<T> : IWriteHandleBase<T>, IWriteHandle, IPuts<T>
+    public interface IWriteHandle<T> : IWriteHandleBase<T>, IWriteHandle, ISets<T>
     {
     }
 
     /// <summary>
     /// Limited interface for when generic interface type is not available
     /// </summary>
-    public interface IWriteHandle : IPuts, IDeletable, IDiscardableValue, IHandleBase
+    public interface IWriteHandle : ISets, IDeletable, IDiscardableValue, IHandleBase
     {
 
     }

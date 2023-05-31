@@ -7,6 +7,8 @@ using MorseCode.ITask;
 using System.Collections.Generic;
 using System.Reactive.Subjects;
 using System.Reactive;
+using Microsoft.Extensions.DependencyInjection;
+using LionFire.Dependencies;
 
 namespace LionFire.Collections.Async;
 
@@ -37,8 +39,9 @@ public abstract class AsyncReadOnlyDictionaryCache<TKey, TValue>
 
     #region Parameters
 
+    // TODO: Eliminate KeySelector for this class, since keys tend to come from user, not from TValue.  If keys come from TValue, use AsyncReadOnlyKeyedCollectionCache instead.
     protected Func<TValue, TKey> KeySelector { get; }
-    public virtual Func<TValue, TKey> DefaultKeySelector => v => AmbientKeyProviderX.GetKey<TKey, TValue>(v);
+    public virtual Func<TValue, TKey> DefaultKeySelector() => KeySelectors.GetKeySelector<TValue,TKey>(DependencyContext.Current.ServiceProvider);
 
     #endregion
 
@@ -48,7 +51,7 @@ public abstract class AsyncReadOnlyDictionaryCache<TKey, TValue>
 
     public AsyncReadOnlyDictionaryCache(Func<TValue, TKey>? keySelector, SourceCache<TValue, TKey>? dictionary = null, AsyncObservableCollectionOptions? options = null)
     {
-        KeySelector = keySelector ?? DefaultKeySelector;
+        KeySelector = keySelector ?? DefaultKeySelector();
         SourceCache = dictionary ?? new SourceCache<TValue, TKey>(KeySelector);
     }
 
@@ -57,12 +60,10 @@ public abstract class AsyncReadOnlyDictionaryCache<TKey, TValue>
     #region State
 
     public SourceCache<TValue, TKey> SourceCache { get; }
-    public IObservableCache<TValue, TKey> Cache => SourceCache.AsObservableCache();
-    public override DynamicData.IObservableList<KeyValuePair<TKey, TValue>> List => throw new NotImplementedException();// SourceCache.AsObservableList();
+    public IObservableCache<TValue, TKey> ObservableCache => SourceCache.AsObservableCache(); // Converts to read only
+    //public override DynamicData.IObservableList<KeyValuePair<TKey, TValue>> List => throw new NotImplementedException();// SourceCache.AsObservableList();
 
     #endregion
-
-
 
     #region (explicit) IAsyncCollectionCache<TValue>
 
@@ -82,6 +83,8 @@ public abstract class AsyncReadOnlyDictionaryCache<TKey, TValue>
 
 
     IObservable<ITask<IResolveResult<IEnumerable<KeyValuePair<TKey, TValue>>>>> IObservableResolves<IEnumerable<KeyValuePair<TKey, TValue>>>.Resolves => throw new NotImplementedException();
+
+    //IObservable<ITask<IResolveResult<IEnumerable<TValue>>>> IObservableResolving<TValue>.Resolving => throw new NotImplementedException();
 
     #endregion
 

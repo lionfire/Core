@@ -27,6 +27,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Folder Include="Mvvm\Collections\Dictionary\" />
     <Folder Include="Mvvm\Collections\List\" />
   </ItemGroup>
 

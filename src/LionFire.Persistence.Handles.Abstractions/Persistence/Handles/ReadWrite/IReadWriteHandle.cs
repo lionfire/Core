@@ -10,7 +10,7 @@
     /// IReadWriteHandle
     /// </summary>
     /// <typeparam name="T"></typeparam>
-    public interface IReadWriteHandleBase<T> : IHandleBase, IReadHandleBase<T>, IWrapper<T>, IPuts, IDeletable, IWriteHandleBase<T> { }
+    public interface IReadWriteHandleBase<T> : IHandleBase, IReadHandleBase<T>, IWrapper<T>, ISets, IDeletable, IWriteHandleBase<T> { }
 
     /// <summary>
     /// Limited interface for when generic interface type is not available

@@ -10,6 +10,7 @@ public interface ILazilyResolves<out T> : IResolves<T>, ILazilyResolves, IDefaul
 
     /// <summary>
     /// RENAME to ResolvedResult or Result, make it a property?
+    /// REVIEW - change return type to T?  And separate this into LastResolveResult
     /// </summary>
     /// <returns></returns>
     ILazyResolveResult<T> QueryValue();

@@ -4,12 +4,15 @@
 		<TargetFramework>net6.0</TargetFramework>
 		<ImplicitUsings>enable</ImplicitUsings>
 		<Nullable>enable</Nullable>
-		<RootNamespace>LionFire.Mvvm</RootNamespace>
+		<RootNamespace>LionFire</RootNamespace>
 	</PropertyGroup>
 
 	<ItemGroup>
 	  <PackageReference Include="DynamicData" />
-	  <!--<PackageReference Include="ObservableCollections" />-->
+	  <PackageReference Include="ReactiveUI" />
+		<!--<PackageReference Include="ReactiveUI.Fody" />-->
+
+		<!--<PackageReference Include="ObservableCollections" />-->
 	</ItemGroup>
 
 	<ItemGroup>
@@ -18,9 +21,9 @@
 	</ItemGroup>
 
 	<ItemGroup>
-	  <Folder Include="Async\Collections\Collection\" />
-	  <Folder Include="Async\Collections\Dictionary\" />
-	  <Folder Include="Structures\" />
+	  <Folder Include="Mvvm\Async\Collections\Collection\" />
+	  <Folder Include="Mvvm\Async\Collections\Dictionary\" />
+	  <Folder Include="Mvvm\Structures\" />
 	</ItemGroup>
 
 </Project>

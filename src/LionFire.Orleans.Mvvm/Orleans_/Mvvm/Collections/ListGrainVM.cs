@@ -39,21 +39,22 @@ namespace LionFire.Orleans_.Mvvm;
 //    #endregion
 //}
 
-public class OrleansDictionaryVM<TKey, TValue> : AsyncDictionaryVM<TKey, TValue>
-    where TKey : notnull
-{
-    #region Model
+//public class OrleansDictionaryVM<TKey, TValue> : AsyncDictionaryVM<TKey, TValue>
+//    where TKey : notnull
+//{
+//    #region Model
 
-    public IGrain Grain { get; }
+//    public IGrain Grain { get; }
 
-    #endregion
+//    #endregion
 
-    #region Lifecycle
+//    #region Lifecycle
 
-    public OrleansDictionaryVM(IGrain dictionaryGrain) : base(dictionaryGrain as ILazilyResolves<IEnumerable<KeyValuePair<TKey, TValue>>> ?? throw new ArgumentException($"{nameof(dictionaryGrain)} must implement {nameof(ILazilyResolves<IEnumerable<KeyValuePair<TKey, TValue>>>)}"))
-    {
-        this.Grain = dictionaryGrain;
-    }
+//    public OrleansDictionaryVM(IGrain dictionaryGrain) 
+//        //: base(dictionaryGrain as ILazilyResolves<IEnumerable<KeyValuePair<TKey, TValue>>> ?? throw new ArgumentException($"{nameof(dictionaryGrain)} must implement {nameof(ILazilyResolves<IEnumerable<KeyValuePair<TKey, TValue>>>)}"))
+//    {
+//        this.Grain = dictionaryGrain;
+//    }
 
-    #endregion
-}
+//    #endregion
+//}

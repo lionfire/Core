@@ -1,7 +1,8 @@
 ﻿using DynamicData;
 using LionFire.ExtensionMethods.Cloning;
 using LionFire.FlexObjects;
-using LionFire.Ontology;
+using LionFire.Orleans_;
+
 using LionFire.Orleans_.Reactive_;
 using LionFire.Subscribing;
 using LionFire.Threading;
@@ -12,35 +13,12 @@ using ReactiveUI;
 using System;
 using System.Diagnostics;
 using System.Reactive.Disposables;
-using System.Reactive.Linq;
 using System.Reactive.Subjects;
 using System.Runtime.CompilerServices;
 using System.Threading;
 using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace LionFire.Orleans_.Collections;
-
-public static class GrainObserverUtils
-{
-    public static Func<TimeSpan, TimeSpan> GetRenewInterval { get; set; } = (TimeSpan timeout)
-      => TimeSpan.FromSeconds(Math.Min(timeout.TotalSeconds * 0.9, Math.Max(5, timeout.TotalSeconds - 20)));
-}
-
-public static class KeyedListObserverOX
-{
-    public static async Task<IAsyncDisposable> SubscribeViaGrainObserver<TKey, TItem>(this IAsyncObserver<ChangeSet<TItem, TKey>> observer, IGrainObservableG<ChangeSet<TItem, TKey>>? grain = null)
-        where TKey : notnull
-    {
-        grain = (observer as IHas<IGrainObservableG<ChangeSet<TItem, TKey>>>)?.Object;
-        if (grain == null)
-        {
-            throw new ArgumentException($"Must provide grain, or implement {nameof(IHas<IGrainObservableG<ChangeSet<TItem, TKey>>>)} on the {nameof(observer)}");
-        }
-        var keyedListObserverO = new KeyedListObserverO<TKey, TItem>(grain);
-        await keyedListObserverO.SubscribeAsync(observer).ConfigureAwait(false);
-        return keyedListObserverO;
-    }
-}
 
 public sealed class KeyedListObserverO<TKey, TItem>
     : IAsyncObserverO<ChangeSet<TItem, TKey>>
@@ -52,15 +30,20 @@ public sealed class KeyedListObserverO<TKey, TItem>
     #region Relationships
 
     public IGrainObservableG<ChangeSet<TItem, TKey>> ObservableCollection { get; }
+    //public IClusterClient ClusterClient { get; }
 
+    IAsyncObserverO<ChangeSet<TItem, TKey>> orleansObjectReference { get; }
     #endregion
 
     #region Lifecycle
 
-    public KeyedListObserverO(IGrainObservableG<ChangeSet<TItem, TKey>> observableCollection)
+    public KeyedListObserverO(IGrainObservableG<ChangeSet<TItem, TKey>> observableCollection, IClusterClient clusterClient)
     {
         ObservableCollection = observableCollection;
+        //ClusterClient = clusterClient;
+        orleansObjectReference = clusterClient.CreateObjectReference<IAsyncObserverO<ChangeSet<TItem, TKey>>>(this);
         Init();
+        if (UseStats) Stats = new();
     }
 
     void Init()
@@ -84,6 +67,10 @@ public sealed class KeyedListObserverO<TKey, TItem>
 
     #region State
 
+    public GrainObserverStatus Status { get; } = new();
+    public GrainObserverStats? Stats { get; } = new();
+    public static bool UseStats { get; set; } = false;
+
     RefCountAsyncDisposable? SubscriptionRefCount;
 
     public bool IsConnected => SubscriptionRefCount != null;
@@ -91,9 +78,7 @@ public sealed class KeyedListObserverO<TKey, TItem>
     public bool IsConnecting { get; set; }
     private Task? renewTask = null;
 
-    private
-
-    Lazy<ConcurrentSimpleAsyncSubject<ChangeSet<TItem, TKey>>> subject;
+    private Lazy<ConcurrentSimpleAsyncSubject<ChangeSet<TItem, TKey>>> subject;
 
     #endregion
 
@@ -140,14 +125,17 @@ public sealed class KeyedListObserverO<TKey, TItem>
                                 }
                             }));
 
-                        var subscriptionTask = ObservableCollection.Subscribe(this); // "Connects"
+                        var subSW = Stopwatch.StartNew();
+                        var subscriptionTask = ObservableCollection.Subscribe(orleansObjectReference); // "Connects"
                         var timeoutTask = ObservableCollection.SubscriptionTimeout();
                         TimeSpan timeout;
 
                         try
                         {
                             await subscriptionTask.ConfigureAwait(false);
-                            timeout = await timeoutTask.ConfigureAwait(false);
+                            if (Stats != null) { Stats.LastSubscribeDuration = subSW.Elapsed; }
+                            Status.LastRenewal = DateTimeOffset.Now;
+                            Status.Timeout = timeout = await timeoutTask.ConfigureAwait(false);
                         }
                         catch (Exception ex)
                         {
@@ -156,7 +144,7 @@ public sealed class KeyedListObserverO<TKey, TItem>
                             throw;
                         }
 
-                        renewTimer = new PeriodicTimer(GrainObserverUtils.GetRenewInterval(timeout));
+                        renewTimer = new PeriodicTimer(Status.RenewInterval = GrainObserverConfiguration.GetRenewInterval(timeout));
 
                         renewTask = Task.Run(async () =>
                         {
@@ -164,7 +152,8 @@ public sealed class KeyedListObserverO<TKey, TItem>
                             {
                                 while (await renewTimer.WaitForNextTickAsync(cts.Token))
                                 {
-                                    await ObservableCollection.Subscribe(this).ConfigureAwait(false);
+                                    await ObservableCollection.Subscribe(this.orleansObjectReference).ConfigureAwait(false);
+                                    Status.LastRenewal = DateTimeOffset.Now;
                                 }
                             }
                             catch (Exception ex)

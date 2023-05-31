@@ -4,7 +4,7 @@ using LionFire.Structures;
 
 namespace LionFire.Persistence
 {
-    public interface IContravariantWriteHandleBase<in T> : IHandleBase, IDefaultableWriteWrapper<T>, IPuts, IDiscardableValue
+    public interface IContravariantWriteHandleBase<in T> : IHandleBase, IDefaultableWriteWrapper<T>, ISets, IDiscardableValue
     {
     }
 

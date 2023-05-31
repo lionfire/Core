@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace LionFire.Persistence
 {
-    public interface IHandlePersistence : IPuts
+    public interface IHandlePersistence : ISets
     {
         void AssignFrom(object other);
 

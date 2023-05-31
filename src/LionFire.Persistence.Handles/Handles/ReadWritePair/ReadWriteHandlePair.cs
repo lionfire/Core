@@ -7,6 +7,7 @@ using LionFire.Results;
 using LionFire.Structures;
 using MorseCode.ITask;
 using System;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace LionFire.Persistence
@@ -38,8 +39,8 @@ namespace LionFire.Persistence
         public override Task<bool?> Delete() => throw new NotImplementedException();
         public override void DiscardValue() => throw new NotImplementedException();
         public override void MarkDeleted() => throw new NotImplementedException();
-        public override Task<ISuccessResult> Put() => throw new NotImplementedException();
-        public override Task<ISuccessResult> Put(TValue value) => throw new NotImplementedException();
+        public override Task<ISuccessResult> Set() => throw new NotImplementedException();
+        public override Task<ISuccessResult> Set(TValue value, CancellationToken cancellationToken = default) => throw new NotImplementedException();
     }
 
     public abstract class ReadWriteHandlePair<TReference, TValue>
@@ -61,8 +62,8 @@ namespace LionFire.Persistence
         public abstract Task<bool?> Delete();
         public abstract void DiscardValue();
         public abstract void MarkDeleted();
-        public abstract Task<ISuccessResult> Put();
-        public abstract Task<ISuccessResult> Put(TValue value);
+        public abstract Task<ISuccessResult> Set();
+        public abstract Task<ISuccessResult> Set(TValue value, CancellationToken cancellationToken = default);
 
         //public Task<bool?> Delete() => WriteHandle.Delete();
         //public void MarkDeleted() => WriteHandle.MarkDeleted();
@@ -202,7 +203,7 @@ namespace LionFire.Persistence
 
         TValue IWriteWrapper<TValue>.Value { set => WriteHandle.Value = value; }
 
-        Task<ISuccessResult> IPuts.Put() => WriteHandle.Put();
+        Task<ISuccessResult> ISets.Set() => WriteHandle.Set();
         
 
         #endregion

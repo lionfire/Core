@@ -7,6 +7,6 @@ namespace LionFire.Resolves
     public interface IResolveCommitPair<TValue>
     {
         IResolves<TValue> Resolves { get; }
-        IPuts Commits { get; }
+        ISets Commits { get; }
     }
 }

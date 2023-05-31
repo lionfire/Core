@@ -5,20 +5,20 @@ using static LionFire.Reflection.GetMethodEx;
 
 namespace LionFire.Orleans_.Streams;
 
-//public class OrleansStreamObserverToAsyncObserver<T> : System.IAsyncObservable<T>
+//public class OrleansStreamObserverToAsyncObserver<TValue> : System.IAsyncObservable<TValue>
 //{
-//    StreamSubscriptionHandle<T>? handle;
-//    Orleans.Streams.IAsyncObservable<T> observableStream;
+//    StreamSubscriptionHandle<TValue>? handle;
+//    Orleans.Streams.IAsyncObservable<TValue> observableStream;
 
-//    public OrleansStreamObserverToAsyncObserver(Orleans.Streams.IAsyncObservable<T> observableStream)
+//    public OrleansStreamObserverToAsyncObserver(Orleans.Streams.IAsyncObservable<TValue> observableStream)
 //    {
 //        this.observableStream = observableStream;
 //    }
 
-//    public async Task<IAsyncDisposable> Subscribe(Reactive.IAsyncObserver<T> observer)
+//    public async Task<IAsyncDisposable> Subscribe(Reactive.IAsyncObserver<TValue> observer)
 //    {
-//        handle = await observableStream.Subscribe(new AsyncObserverToOrleansStreamsAsyncObserver<T>(observer));
-//        return new StreamSubscriptionHandleAsyncWrapper<T>(handle);
+//        handle = await observableStream.Subscribe(new AsyncObserverToOrleansStreamsAsyncObserver<TValue>(observer));
+//        return new StreamSubscriptionHandleAsyncWrapper<TValue>(handle);
 //    }
 //}
 

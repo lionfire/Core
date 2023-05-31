@@ -5,7 +5,7 @@
     <LangVersion>latest</LangVersion>
     <!--<VersionPrefix>1.0.2</VersionPrefix>-->
 
-	  <TargetFramework>net6.0</TargetFramework> <!-- was netstandard2.1 -->
+	  <TargetFramework>net6.0</TargetFramework>
     <AssemblyName>LionFire.Core</AssemblyName>
     <PackageId>LionFire.Core</PackageId>
     <GenerateAssemblyConfigurationAttribute>false</GenerateAssemblyConfigurationAttribute>
@@ -22,6 +22,7 @@ This package is typically not added on its own, but is a dependency required by 
     <RepositoryUrl>https://github.com/lionfire/core</RepositoryUrl>
     <NeutralLanguage>en-US</NeutralLanguage>
     <PackageTags>utility collections</PackageTags>
+	  <Nullable>enable</Nullable>
   </PropertyGroup>
 
   <ItemGroup>

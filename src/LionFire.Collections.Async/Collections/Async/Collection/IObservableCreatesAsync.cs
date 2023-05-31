@@ -18,6 +18,6 @@ namespace LionFire.Collections.Async;
 /// <typeparam name="TValue"></typeparam>
 public interface IObservableCreatesAsync<TValue>: ICreatesAsync<TValue>
 {
-    IObservable<(Type, object[], Task<TValue>)> Creates { get; }
+    IObservable<(Type, object[]?, Task<TValue>)> Creates { get; }
 }
 

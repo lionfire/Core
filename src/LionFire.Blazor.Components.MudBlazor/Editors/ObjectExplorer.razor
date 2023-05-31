@@ -232,9 +232,7 @@
     protected override Task OnInitializedAsync()
     {
         var roots = RootsOptions.CurrentValue;
-        if (!roots.Roots.Any()) throw new NotImplementedException("Unexpected: no roots. ");
-
-        if (CurrentObject == null)
+        if (roots.Roots.Any() && CurrentObject == null)
         {
             if (RootName != null && roots.Roots.ContainsKey(RootName))
             {

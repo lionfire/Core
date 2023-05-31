@@ -11,6 +11,7 @@
 		<PackageReference Include="DynamicData" />
 		<PackageReference Include="ReactiveUI" />
 		<PackageReference Include="MorseCode.ITask" />
+		<PackageReference Include="ReactiveUI.Fody" />
 		<PackageReference Include="System.Reactive" />
 		<PackageReference Include="System.Reactive.Async" />
 	</ItemGroup>

@@ -13,13 +13,16 @@ public static class ReactiveUIHostingX
 {
     public static IServiceCollection UseMicrosoftDIForReactiveUI(this IServiceCollection services)
     {
+        // TODO: Is there a way to use MicrosoftDependencyResolver and also UseMicrosoftExtensionsLoggingWithWrappingFullLogger?
+
         services.UseMicrosoftDependencyResolver();
+        //Locator.CurrentMutable.UseMicrosoftExtensionsLoggingWithWrappingFullLogger(loggerFactory);
         var resolver = Locator.CurrentMutable;
         resolver.InitializeSplat();
         resolver.InitializeReactiveUI();
 
 
-        services.AddHostedService<RegisterILoggerFactoryWithSplat>();
+        //services.AddHostedService<RegisterILoggerFactoryWithSplat>();
 
         //Locator.CurrentMutable.UseSerilogFullLogger();
 
@@ -27,14 +30,14 @@ public static class ReactiveUIHostingX
     }
 }
 
-public class RegisterILoggerFactoryWithSplat : IHostedService
-{
-    public RegisterILoggerFactoryWithSplat(ILoggerFactory loggerFactory)
-    {
-        Locator.CurrentMutable.UseMicrosoftExtensionsLoggingWithWrappingFullLogger(loggerFactory);
-    }
+//public class RegisterILoggerFactoryWithSplat : IHostedService
+//{
+//    public RegisterILoggerFactoryWithSplat(ILoggerFactory loggerFactory)
+//    {
+//        Locator.CurrentMutable.UseMicrosoftExtensionsLoggingWithWrappingFullLogger(loggerFactory);
+//    }
 
-    public Task StartAsync(CancellationToken cancellationToken) => Task.CompletedTask;
+//    public Task StartAsync(CancellationToken cancellationToken) => Task.CompletedTask;
 
-    public Task StopAsync(CancellationToken cancellationToken) => Task.CompletedTask;
-}
+//    public Task StopAsync(CancellationToken cancellationToken) => Task.CompletedTask;
+//}

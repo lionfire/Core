@@ -6,6 +6,7 @@ using LionFire.Structures;
 using Microsoft.Extensions.Logging.EventSource;
 using MorseCode.ITask;
 using System;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace LionFire.Persistence.Handles
@@ -83,9 +84,9 @@ namespace LionFire.Persistence.Handles
         public ITask<ILazyResolveResult<TValue>> TryGetValue() => ReadWriteHandle.TryGetValue();
         public ITask<IResolveResult<TValue>> GetOrInstantiateValue() => ReadWriteHandle.GetOrInstantiateValue();
         public ILazyResolveResult<TValue> QueryValue() => ReadWriteHandle.QueryValue();
-        public Task<ISuccessResult> Put(TValue value) => ReadWriteHandle.Put(value);
+        public Task<ISuccessResult> Set(TValue value, CancellationToken cancellationToken = default) => ReadWriteHandle.Set(value, cancellationToken);
         public ITask<IResolveResult<TValue>> Resolve() => ReadWriteHandle.Resolve();
-        public Task<ISuccessResult> Put() => ReadWriteHandle.Put();
+        public Task<ISuccessResult> Set() => ReadWriteHandle.Set();
         public Task<bool?> Delete() => ReadWriteHandle.Delete();
         public void MarkDeleted() => ReadWriteHandle.MarkDeleted();
         public void DiscardValue() => ReadWriteHandle.DiscardValue();

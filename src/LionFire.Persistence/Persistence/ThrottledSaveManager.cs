@@ -74,22 +74,22 @@ namespace LionFire.Persistence
         {
             lock (saveLock)
             {
-                HashSet<IPuts> saved = new HashSet<IPuts>();
+                HashSet<ISets> saved = new HashSet<ISets>();
 
                 if (queue.Count > 0)
                 {
-                    while (queue.TryDequeue(out IPuts item))
+                    while (queue.TryDequeue(out ISets item))
                     {
                         if (saved.Contains(item))
                         {
                             continue;
                         }
 
-                        if (item is IPuts h)
+                        if (item is ISets h)
                         {
                             try
                             {
-                                h.Put();
+                                h.Set();
                                 l.Trace("UNTESTED - Delay saved " + item.ToString());
                             }
                             catch (Exception ex)
@@ -115,9 +115,9 @@ namespace LionFire.Persistence
 
         #region Manual Change Notifications
 
-        private ConcurrentQueue<IPuts> queue = new ConcurrentQueue<IPuts>();
+        private ConcurrentQueue<ISets> queue = new ConcurrentQueue<ISets>();
 
-        public void OnChanged(IPuts obj)
+        public void OnChanged(ISets obj)
         {
             queue.Enqueue(obj);
             timer.Enabled = true;

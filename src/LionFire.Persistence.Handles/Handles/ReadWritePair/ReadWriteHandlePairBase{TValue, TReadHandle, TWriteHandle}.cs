@@ -106,7 +106,7 @@ namespace LionFire.Persistence
         }
         protected TWriteHandle writeHandle;
         public bool HasWriteHandle => writeHandle != null;
-        IPuts IResolveCommitPair<TValue>.Commits => WriteHandle;
+        ISets IResolveCommitPair<TValue>.Commits => WriteHandle;
 
         #endregion
 

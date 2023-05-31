@@ -1,47 +1,84 @@
 ﻿using DynamicData;
+using DynamicData.Kernel;
 
-namespace LionFire.DynamicData.Orleans;
+namespace LionFire.DynamicData_.Orleans;
+
 
 [GenerateSerializer]
-public struct Change_Surrogate<T>
+public struct Change_Surrogate<TItem, TKey>
 {
     [Id(0)]
-    public ItemChange<T> Item;
+    public ChangeReason Reason;
 
     [Id(1)]
-    public RangeChange<T> Range;
+    public TKey Key;
 
     [Id(2)]
-    public ListChangeReason Reason;
+    public TItem Current;
+
+    [Id(3)]
+    public Optional<TItem> Previous;
+    [Id(4)]
+    public int CurrentIndex;
+    [Id(5)]
+    public int PreviousIndex;
 }
 
 [RegisterConverter]
-public sealed class Change_SurrogateConverter<T> : IConverter<Change<T>, Change_Surrogate<T>>
+public sealed class Change_SurrogateConverter<TItem, TKey> : IConverter<Change<TItem, TKey>, Change_Surrogate<TItem, TKey>>
+    where TKey : notnull
 {
-    public Change<T> ConvertFromSurrogate(in Change_Surrogate<T> surrogate)
+    public Change<TItem, TKey> ConvertFromSurrogate(in Change_Surrogate<TItem, TKey> surrogate) 
+        => new Change<TItem, TKey>(
+            surrogate.Reason, 
+            surrogate.Key, 
+            surrogate.Current, 
+            surrogate.Previous, 
+            surrogate.CurrentIndex, 
+            surrogate.PreviousIndex);
+
+    public Change_Surrogate<TItem, TKey> ConvertToSurrogate(in Change<TItem, TKey> value) =>
+        new()
+        {
+            Reason = value.Reason,
+            Key = value.Key,
+            Current = value.Current,
+            Previous = value.Previous,
+            CurrentIndex = value.CurrentIndex,
+            PreviousIndex = value.PreviousIndex
+        };
+}
+
+
+#if FUTURE // List Change
+[RegisterConverter]
+public sealed class Change_SurrogateConverter<TItem> : IConverter<Change<TItem>, Change_Surrogate<TItem>>
+    where TKey : notnull
+{
+    public Change<TItem, TKey> ConvertFromSurrogate(in Change_Surrogate<TItem> surrogate)
     {
 
         return surrogate.Reason switch
         {
-            ListChangeReason.Add 
+            ListChangeReason.Add
             or ListChangeReason.Remove
                 => new(surrogate.Reason, surrogate.Item.Current, surrogate.Item.CurrentIndex),
 
-            ListChangeReason.AddRange 
+            ListChangeReason.AddRange
             or ListChangeReason.RemoveRange
                 => new(surrogate.Reason, surrogate.Range, surrogate.Range.Index),
 
-            //ListChangeReason.Moved => new(surrogate.Reason, surrogate.Item.Current, surrogate.Item.Previous, surrogate.Item.CurrentIndex, surrogate.Item.PreviousIndex),
-            //or ListChangeReason.Replace
+            //ChangeReason.Moved => new(surrogate.Reason, surrogate.Item.Current, surrogate.Item.Previous, surrogate.Item.CurrentIndex, surrogate.Item.PreviousIndex),
+            //or ChangeReason.Replace
 
-            ListChangeReason.Clear 
+            ListChangeReason.Clear
             or ListChangeReason.Refresh
             => new(surrogate.Reason, (T)default),
             _ => throw new NotImplementedException(),
         };
     }
 
-    public Change_Surrogate<T> ConvertToSurrogate(in Change<T> value) =>
+    public Change_Surrogate<TItem> ConvertToSurrogate(in Change<TItem> value) =>
         new()
         {
             Item = value.Item,
@@ -49,3 +86,4 @@ public sealed class Change_SurrogateConverter<T> : IConverter<Change<T>, Change_
             Reason = value.Reason
         };
 }
+#endif

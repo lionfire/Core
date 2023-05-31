@@ -3,24 +3,24 @@
 
 //namespace LionFire.Orleans_.Streams;
 
-//public class OrleansObserverAdapter<T> : IObservable<T>
+//public class OrleansObserverAdapter<TValue> : IObservable<TValue>
 //{
-//    StreamSubscriptionHandle<T> handle;
+//    StreamSubscriptionHandle<TValue> handle;
 
-//    public static async Task<OrleansObserverAdapter<T>> Create(Reactive.IAsyncObserver<T> observer1, Orleans.Streams.IAsyncObservable<T> parent)
+//    public static async Task<OrleansObserverAdapter<TValue>> Create(Reactive.IAsyncObserver<TValue> observer1, Orleans.Streams.IAsyncObservable<TValue> parent)
 //    {
-//        var orleansAsyncObserver = new AsyncSystemObserverToOrleansStreamsAsyncObserver<T>(observer1);
+//        var orleansAsyncObserver = new AsyncSystemObserverToOrleansStreamsAsyncObserver<TValue>(observer1);
 
-//        var result = new OrleansObserverAdapter<T>()
+//        var result = new OrleansObserverAdapter<TValue>()
 //        {
 //            handle = await parent.Subscribe(orleansAsyncObserver)
 //        };
 //        return result;
 //    }
 
-//    public IDisposable Subscribe(IObserver<T> observer)
+//    public IDisposable Subscribe(IObserver<TValue> observer)
 //    {
-//        return new StreamSubscriptionHandleWrapper<T>(handle);
+//        return new StreamSubscriptionHandleWrapper<TValue>(handle);
 
 //    }
 //}
