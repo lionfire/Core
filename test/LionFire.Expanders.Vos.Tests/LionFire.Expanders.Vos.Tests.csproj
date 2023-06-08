@@ -28,6 +28,7 @@
 		  <PrivateAssets>all</PrivateAssets>
 		  <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
 		</PackageReference>
+		<PackageReference Include="OpenTelemetry.Api" />
 		<PackageReference Include="OpenTelemetry.Exporter.Console" />
 		<PackageReference Include="OpenTelemetry.Exporter.InMemory" />
 		<PackageReference Include="OpenTelemetry.Exporter.OpenTelemetryProtocol.Logs" />

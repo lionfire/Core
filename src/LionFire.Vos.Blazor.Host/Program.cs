@@ -18,8 +18,8 @@ using System;
 
 //namespace LionFire.Vos.Blazor;
 
-Host.CreateDefaultBuilder(args)
-//new HostApplicationBuilder(args)
+//Host.CreateDefaultBuilder(args) // Doesn't work
+new HostApplicationBuilder(args)
     .LionFire(lf => lf
         .Vos()
         .WebHost<VosBlazorHostStartup>()
