@@ -1,9 +1,9 @@
 ﻿using LionFire.Structures;
 using MorseCode.ITask;
 
-namespace LionFire.Resolves;
+namespace LionFire.Data.Async.Gets;
 
-public interface ILazilyResolves<out T> : IResolves<T>, ILazilyResolves, IDefaultableReadWrapper<T>
+public interface ILazilyResolves<out T> : IGets<T>, ILazilyResolves, IDefaultableReadWrapper<T>
 {
     // TODO: RENAME TryGetValue to ResolveIfNeeded
     ITask<ILazyResolveResult<T>> TryGetValue();

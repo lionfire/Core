@@ -1,5 +1,5 @@
 ﻿using LionFire.Results;
 
-namespace LionFire.Resolves;
+namespace LionFire.Data.Async.Gets;
 
 //public interface ISetResult : IResult, ISuccessResult { }

@@ -13,8 +13,14 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\LionFire.Resolves.Abstractions\LionFire.Data.Async.Abstractions.csproj" />
-    <ProjectReference Include="..\LionFire.Resolves\LionFire.Data.Async.csproj" />
+    <ProjectReference Include="..\LionFire.Data.Async.Reactive.Abstractions\LionFire.Data.Async.Reactive.Abstractions.csproj" />
+    <ProjectReference Include="..\LionFire.Data.Async.Gets.Abstractions\LionFire.Data.Async.Abstractions.csproj" />
+    <ProjectReference Include="..\LionFire.Data.Async.Gets\LionFire.Data.Async.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Data\Async\Values\Sets\" />
+    <Folder Include="Values\Write\" />
   </ItemGroup>
 
 </Project>

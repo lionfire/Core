@@ -1,14 +1,14 @@
-﻿using LionFire.Resolves;
+﻿using LionFire.Data.Async.Gets;
 using MorseCode.ITask;
 
 namespace LionFire.Resolvers;
 
 public interface IResolver<in TInput, out TOutput>
 {
-    ITask<IResolveResult<TOutput>> Resolve(TInput resolvable);
+    ITask<IGetResult<TOutput>> Resolve(TInput resolvable);
 }
 
 public interface IResolverSync<in TInput, out TOutput>
 {
-    IResolveResult<TOutput> Resolve(TInput resolvable);
+    IGetResult<TOutput> Resolve(TInput resolvable);
 }

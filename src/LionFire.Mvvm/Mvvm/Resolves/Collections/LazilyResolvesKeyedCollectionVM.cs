@@ -1,6 +1,6 @@
 ﻿using LionFire.Collections.Async;
 using LionFire.ExtensionMethods;
-using LionFire.Resolves;
+using LionFire.Data.Async.Gets;
 using System.ComponentModel;
 
 namespace LionFire.Mvvm;
@@ -56,7 +56,7 @@ public class LazilyResolvesKeyedCollectionVM<TKey, TValue, TValueVM, TCollection
 
     public IAsyncReadOnlyKeyedCollectionCache<TKey, TValue>? PreferredSource { get => base.Source as IAsyncReadOnlyKeyedCollectionCache<TKey, TValue>; set => base.Source = (ILazilyResolves<TCollection>?)value; }
 
-    protected override void OnSourceChanged(IResolves<TCollection>? newValue)
+    protected override void OnSourceChanged(IGets<TCollection>? newValue)
     {
         ((ReactiveObject)this).RaisePropertyChanged(nameof(PreferredSource));
     }

@@ -2,11 +2,11 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace LionFire.Resolves
+namespace LionFire.Data.Async.Gets
 {
     public interface IResolveCommitPair<TValue>
     {
-        IResolves<TValue> Resolves { get; }
+        IGets<TValue> Resolves { get; }
         ISets Commits { get; }
     }
 }

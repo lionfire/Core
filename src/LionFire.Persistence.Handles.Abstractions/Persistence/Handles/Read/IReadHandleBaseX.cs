@@ -1,5 +1,5 @@
 ﻿using LionFire.Resolvables;
-using LionFire.Resolves;
+using LionFire.Data.Async.Gets;
 using LionFire.Structures;
 using System;
 using System.Threading.Tasks;

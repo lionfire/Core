@@ -5,8 +5,8 @@ using System.Threading.Tasks;
 namespace LionFire.Persistence.Handles
 {
     //public abstract class ResolvableMapper<TItem, TUnderlying, TUnderlyingCollection, TResolvedUnderlyingCollection> : AsyncMapper<TItem, TUnderlying, TUnderlyingCollection, TResolvedUnderlyingCollection>
-    //    //, IResolves<TUnderlyingCollectionItem>
-    //    //where TUnderlyingCollection : IResolves<TUnderlyingCollectionItem>
+    //    //, IGets<TUnderlyingCollectionItem>
+    //    //where TUnderlyingCollection : IGets<TUnderlyingCollectionItem>
     //    where TUnderlyingCollection : IEnumerable<TUnderlying>
     //{
     //    public ResolvableMapper(TUnderlyingCollection underlying) : base(underlying)
@@ -16,8 +16,8 @@ namespace LionFire.Persistence.Handles
     //    //public ITask<IResolveResult<TUnderlyingCollectionItem>> Resolve() => UnderlyingHandle.Resolve();
     //}
     //public abstract class AsyncResolvableMapper<TItem, TUnderlying, TUnderlyingCollection, TResolvedUnderlyingCollection> : AsyncMapper<TItem, TUnderlying, TUnderlyingCollection, TResolvedUnderlyingCollection>
-    //    //, IResolves<TUnderlyingCollectionItem>
-    //    where TUnderlyingCollection : IResolves<TUnderlyingCollectionItem>, IEnumerable<TUnderlying>
+    //    //, IGets<TUnderlyingCollectionItem>
+    //    where TUnderlyingCollection : IGets<TUnderlyingCollectionItem>, IEnumerable<TUnderlying>
     //{
     //    public AsyncResolvableMapper(TUnderlyingCollection underlying) : base(underlying)
     //    {

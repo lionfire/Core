@@ -2,7 +2,7 @@
 using LionFire.Structures;
 using System.Threading.Tasks;
 
-namespace LionFire.Resolves
+namespace LionFire.Data.Async.Gets
 {
     public interface ILazilyResolvesCovariant<out T> : ILazilyResolves, IReadWrapper<T>
     {

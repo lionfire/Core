@@ -4,7 +4,7 @@ using MorseCode.ITask;
 using System;
 using System.Linq;
 
-namespace LionFire.Resolves
+namespace LionFire.Data.Async.Gets
 {
 
     public interface ILazilyResolves : IDefaultable

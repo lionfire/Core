@@ -1,6 +1,6 @@
 ﻿using LionFire.Events;
 using LionFire.Persistence.Handles;
-using LionFire.Resolves;
+using LionFire.Data.Async.Gets;
 using LionFire.Structures;
 
 namespace LionFire.Persistence

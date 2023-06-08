@@ -3,7 +3,7 @@ using LionFire.Persistence.Handles;
 using LionFire.Persisters.Expanders;
 using LionFire.Vos;
 using LionFire.Hosting;
-using LionFire.Resolves;
+using LionFire.Data.Async.Gets;
 using LionFire.Testing;
 
 namespace ExpandMount_;
@@ -108,7 +108,7 @@ public class _Resolve
             //Assert.IsTrue(ReferenceEquals(handle.Reference, reference));
             //Assert.AreSame(handle.Reference, reference);
 
-            void validate(IResolveResult<TestClass> resolveResult)
+            void validate(IGetResult<TestClass> resolveResult)
             {
                 Assert.IsTrue(resolveResult.IsSuccess);
                 Assert.IsTrue(resolveResult.HasValue);
@@ -151,7 +151,7 @@ public class _Resolve
             //Assert.IsTrue(ReferenceEquals(handle.Reference, reference));
             //Assert.AreSame(handle.Reference, reference);
 
-            void validate(IResolveResult<TestClass> resolveResult)
+            void validate(IGetResult<TestClass> resolveResult)
             {
                 Assert.IsTrue(resolveResult.IsSuccess);
                 Assert.IsTrue(resolveResult.HasValue);

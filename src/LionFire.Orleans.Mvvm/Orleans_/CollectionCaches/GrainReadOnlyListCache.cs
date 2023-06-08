@@ -1,7 +1,7 @@
 ﻿using DynamicData;
 using LionFire.Collections.Async;
 using LionFire.Orleans_.Streams;
-using LionFire.Resolves;
+using LionFire.Data.Async.Gets;
 using MorseCode.ITask;
 using Orleans.Runtime;
 using Orleans.Streams;
@@ -16,11 +16,11 @@ public static class GrainListCacheCommon<TItemGrain/*, TCollection*/>
 
     public static async ITask<IResolveResult<IEnumerable<TItemGrain>>> ResolvesRetrieveFunc(IGrain CollectionGrain)
     {
-        if (CollectionGrain is IResolvesG<IEnumerable<TItemGrain>> resolves)
+        if (CollectionGrain is IGetsG<IEnumerable<TItemGrain>> resolves)
         {
             return await resolves.Resolve().ConfigureAwait(false);
         }
-        else throw new NotSupportedException($"{nameof(CollectionGrain)} does not implement {nameof(IResolvesG<IEnumerable<TItemGrain>>)}");
+        else throw new NotSupportedException($"{nameof(CollectionGrain)} does not implement {nameof(IGetsG<IEnumerable<TItemGrain>>)}");
     }
     //. Either implement it or provide either {nameof(ResolveFunc)} or {nameof(RetrieveFunc)}
 

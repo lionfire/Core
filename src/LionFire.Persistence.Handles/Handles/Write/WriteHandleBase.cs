@@ -7,14 +7,14 @@ using System.Threading.Tasks;
 using LionFire.Activation;
 using LionFire.Extensions.DefaultValues;
 using LionFire.Referencing;
-using LionFire.Resolves;
+using LionFire.Data.Async.Gets;
 using LionFire.Results;
 using LionFire.Structures;
 using LionFire.Threading;
 
 namespace LionFire.Persistence.Handles
 {
-    internal static class DllInternals // Move to LionFire.Resolves and 
+    internal static class DllInternals // Move to LionFire.Data.Async.Gets and 
     {
         internal static ValueChangedPropagation ValueChangedPropagation = new ValueChangedPropagation();
     }

@@ -7,7 +7,7 @@ using System.Collections.Generic;
 using LionFire.Persistence;
 using System.Threading.Tasks;
 using System;
-using LionFire.Resolves;
+using LionFire.Data.Async.Gets;
 using LionFire.Results;
 using LionFire.FlexObjects;
 using Swordfish.NET.Collections;

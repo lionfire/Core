@@ -2,7 +2,7 @@
 using MorseCode.ITask;
 using System;
 
-namespace LionFire.Resolves;
+namespace LionFire.Data.Async.Gets;
 
 public interface IObservableSets<in TValue> : ISets<TValue>
 {

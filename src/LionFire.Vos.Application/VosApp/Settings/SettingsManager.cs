@@ -1,6 +1,6 @@
 ﻿using LionFire.Applications;
 using LionFire.Persistence;
-using LionFire.Resolves;
+using LionFire.Data.Async.Gets;
 using LionFire.Settings;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Options;

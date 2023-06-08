@@ -1,5 +1,5 @@
 ﻿using DynamicData;
-using LionFire.Resolves;
+using LionFire.Data.Async.Gets;
 
 namespace LionFire.Collections.Async;
 

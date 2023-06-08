@@ -1,6 +1,6 @@
 ﻿using LionFire.Results;
 
-namespace LionFire.Resolves
+namespace LionFire.Data.Async.Gets
 {
     public interface IDeleteResult : ISuccessResult { } // REVIEW - is this useful?
 

@@ -1,12 +1,12 @@
 ﻿using LionFire.Collections.Async;
-using LionFire.Resolves;
+using LionFire.Data.Async.Gets;
 
 namespace LionFire.Orleans_.Collections;
 
 /// <remarks>
 /// Adds back get method editions of properties
 /// </remarks>
-public interface ICollectionG<TItem> : IAsyncCollectionBase<TItem>, IResolvesG<IEnumerable<TItem>>
+public interface ICollectionG<TItem> : IAsyncCollectionBase<TItem>, IGetsG<IEnumerable<TItem>>
 {
     Task<int> GetCount();
     Task<bool> GetIsReadOnly();

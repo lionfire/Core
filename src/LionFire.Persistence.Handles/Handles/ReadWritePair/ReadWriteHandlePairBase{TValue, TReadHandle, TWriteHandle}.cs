@@ -2,7 +2,7 @@
 using LionFire.Persistence;
 using LionFire.Persistence.Handles;
 using LionFire.Referencing;
-using LionFire.Resolves;
+using LionFire.Data.Async.Gets;
 using LionFire.Threading;
 using System;
 using System.Threading.Tasks;
@@ -81,7 +81,7 @@ namespace LionFire.Persistence
         }
         protected TReadHandle readHandle;
         public bool HasReadHandle => readHandle != null;
-        IResolves<TValue> IResolveCommitPair<TValue>.Resolves => ReadHandle;
+        IGets<TValue> IResolveCommitPair<TValue>.Resolves => ReadHandle;
 
         #endregion
 

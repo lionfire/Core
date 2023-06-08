@@ -1,6 +1,6 @@
 ﻿using LionFire;
 using LionFire.ExtensionMethods.Dumping;
-using LionFire.Resolves;
+using LionFire.Data.Async.Gets;
 using Microsoft.Extensions.Logging;
 using System.Diagnostics;
 using static TestHostBuilder;
@@ -22,7 +22,7 @@ public class _Untyped
         {
             var handle = path.ToVobReference<TestClass>().GetListingsHandle<object>();
 
-            IResolveResult<Metadata<IEnumerable<IListing<object>>>> resolveResult = await handle.Resolve().ConfigureAwait(false);
+            IGetResult<Metadata<IEnumerable<IListing<object>>>> resolveResult = await handle.Resolve().ConfigureAwait(false);
             ValidateListing(resolveResult);
 
             Assert.IsTrue(LionFireEnvironment.IsUnitTest);
@@ -59,7 +59,7 @@ public class _Untyped
 
     #region Common
 
-    private void ValidateListing(IResolveResult<Metadata<IEnumerable<IListing<object>>>> resolveResult)
+    private void ValidateListing(IGetResult<Metadata<IEnumerable<IListing<object>>>> resolveResult)
     {
         // TODO: Add child folder (with child file that isn't listed) to this Zip directory
         var expecteds = new HashSet<string>{

@@ -32,7 +32,7 @@ public class _Typed
             });
 
             bool NI = false;
-            LionFire.Resolves.IResolveResult<Metadata<IEnumerable<IListing<TestClass>>>> resolveResult = null;
+            LionFire.Data.Async.Gets.IGetResult<Metadata<IEnumerable<IListing<TestClass>>>> resolveResult = null;
             try
             {
                 resolveResult = handle.Resolve().Result;

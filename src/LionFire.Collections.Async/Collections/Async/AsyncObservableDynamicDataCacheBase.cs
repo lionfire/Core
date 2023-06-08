@@ -1,5 +1,5 @@
 ﻿using DynamicData;
-using LionFire.Resolves;
+using LionFire.Data.Async.Gets;
 using MorseCode.ITask;
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;

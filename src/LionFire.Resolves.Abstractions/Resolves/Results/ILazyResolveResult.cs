@@ -1,8 +1,8 @@
 ﻿using LionFire.Results;
 
-namespace LionFire.Resolves
+namespace LionFire.Data.Async.Gets
 {
-    public interface ILazyResolveResult<out TValue> : IResolveResult<TValue>, INoopResult
+    public interface ILazyResolveResult<out TValue> : IGetResult<TValue>, INoopResult
     {
     }
 }

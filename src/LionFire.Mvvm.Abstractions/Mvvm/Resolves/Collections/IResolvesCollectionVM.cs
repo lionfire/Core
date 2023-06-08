@@ -1,7 +1,7 @@
 ﻿namespace LionFire.Mvvm;
 
 public interface IResolvesCollectionVM<TValue, TValueVM, TCollection>
-    : IResolvesVM<TCollection>
+    : IResolvesRx<TCollection>
     where TCollection : IEnumerable<TValue>
 {
 }

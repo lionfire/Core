@@ -1,7 +1,7 @@
 ﻿using LionFire.Persistence;
 using LionFire.Persistence.Implementation;
 using LionFire.Referencing;
-using LionFire.Resolves;
+using LionFire.Data.Async.Gets;
 using LionFire.Threading;
 using MorseCode.ITask;
 using System;
@@ -81,7 +81,7 @@ namespace LionFire.Persistence.Handles
 
         void IDeletable.MarkDeleted() => this.OnUserChangedValue_ReadWrite(default);
 
-        ITask<IResolveResult<TValue>> IResolves<TValue>.Resolve() => Resolve().AsITask();
+        ITask<IResolveResult<TValue>> IGets<TValue>.Resolve() => Resolve().AsITask();
     }
 
 #if OLD

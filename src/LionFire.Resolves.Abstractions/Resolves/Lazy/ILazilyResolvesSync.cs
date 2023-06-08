@@ -1,6 +1,6 @@
 ﻿using LionFire.Structures;
 
-namespace LionFire.Resolves
+namespace LionFire.Data.Async.Gets
 {
     public interface ILazilyResolvesSync<out T> : ILazilyResolves, IReadWrapper<T>
     {

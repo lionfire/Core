@@ -1,6 +1,6 @@
 ﻿#nullable enable
 
-using LionFire.Resolves;
+using LionFire.Data.Async.Gets;
 using System.Reactive;
 using MorseCode.ITask;
 using System.Reactive.Linq;
@@ -9,24 +9,24 @@ using System.Reactive.Disposables;
 
 namespace LionFire.Mvvm;
 
-public class ResolvesVM<T> : ReactiveObject, IResolvesVM<T>, IResolves<T>
+public class ResolvesVM<T> : ReactiveObject, IResolvesRx<T>, IGets<T>
 {
     #region Model
 
     #region Source
 
-    public IResolves<T>? Source
+    public IGets<T>? Source
     {
         get => source;
         set
         {
-            if (EqualityComparer<IResolves<T>>.Default.Equals(source, value)) { return; }
+            if (EqualityComparer<IGets<T>>.Default.Equals(source, value)) { return; }
             this.RaiseAndSetIfChanged(ref source, value);
             OnSourceChanged(value);
         }
     }
-    private IResolves<T>? source;
-    protected virtual void OnSourceChanged(IResolves<T>? newValue) { }
+    private IGets<T>? source;
+    protected virtual void OnSourceChanged(IGets<T>? newValue) { }
 
     #endregion
 
@@ -44,7 +44,7 @@ public class ResolvesVM<T> : ReactiveObject, IResolvesVM<T>, IResolves<T>
     public ResolvesVM()
 #pragma warning restore CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
     {
-        //Resolve = ReactiveCommand.CreateFromTask(() => ((IResolves<T>)this).Resolve().AsTask()
+        //Resolve = ReactiveCommand.CreateFromTask(() => ((IGets<T>)this).Resolve().AsTask()
         //, canExecute: );
         //Resolve.ThrownExceptions.Subscribe(ex => this.Log().Error(ex, "Something went wrong"));
 
@@ -68,7 +68,7 @@ public class ResolvesVM<T> : ReactiveObject, IResolvesVM<T>, IResolves<T>
 
     #region IResolves<T>
 
-    ITask<IResolveResult<T>> IResolves<T>.Resolve() => Source == null ? throw new ArgumentNullException(nameof(Source)) : Source.Resolve();
+    ITask<IResolveResult<T>> IGets<T>.Resolve() => Source == null ? throw new ArgumentNullException(nameof(Source)) : Source.Resolve();
 
     #endregion
 
@@ -88,6 +88,6 @@ public class ResolvesVM<T> : ReactiveObject, IResolvesVM<T>, IResolves<T>
     #endregion
 
     public IObservable<IResolveResult<T>> ResolveImpl()
-        => Observable.StartAsync(async () => await ((IResolves<T>)this).Resolve());
+        => Observable.StartAsync(async () => await ((IGets<T>)this).Resolve());
 
 }

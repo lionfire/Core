@@ -1,6 +1,6 @@
 ﻿using LionFire.Ontology;
 using LionFire.Resolvables;
-using LionFire.Resolves;
+using LionFire.Data.Async.Gets;
 using LionFire.Results;
 using LionFire.Structures;
 using MorseCode.ITask;
@@ -20,15 +20,15 @@ namespace LionFire.Persistence;
 /// 
 /// Common peer interfaces: IDetects, ILazilyRetrieves&lt;T&gt;
 /// </summary>
-public interface IRetrieves : IResolves //, IResolvesCovariant<object>
+public interface IRetrieves : IGets //, IResolvesCovariant<object>
 {
     // For a Retrieve method, see IRetrievesX.Retrieve
 }
 
 
-public interface IRetrieves<out T> : IRetrieves, IResolves<T>, IDefaultableReadWrapper<T> { }
+public interface IRetrieves<out T> : IRetrieves, IGets<T>, IDefaultableReadWrapper<T> { }
 
-//public interface IRetrievesCovariant<out T> : IRetrieves, IResolves<T>, IReadWrapper<T>, IWrapper { }
+//public interface IRetrievesCovariant<out T> : IRetrieves, IGets<T>, IReadWrapper<T>, IWrapper { }
 
 
 public static class IRetrievesX
@@ -41,14 +41,14 @@ public static class IRetrievesX
     }
 
     /// <summary>
-    /// Uses reflection to call IResolves&lt;object&gt;.Resolve then upcasts result to IResolveResult&lt;object&gt;.  Consider using IResolves&lt;object&gt;.Resolve directly.
+    /// Uses reflection to call IGets&lt;object&gt;.Resolve then upcasts result to IResolveResult&lt;object&gt;.  Consider using IGets&lt;object&gt;.Resolve directly.
     /// </summary>
     /// <param name="retrieves"></param>
     /// <returns></returns>
     public static async Task<IRetrieveResult<object>> Retrieve(this IRetrieves retrieves)
     {
-        var retrievesInterface = retrieves.GetType().GetInterfaces().Where(t => t.IsGenericType && t.GetGenericTypeDefinition() == typeof(IResolves<>)).Single();
-        return (await ((ITask<IResolveResult<object>>)retrievesInterface.GetMethod(nameof(IResolves<object>.Resolve)).Invoke(retrieves, null)).ConfigureAwait(false)).ToRetrieveResult();
+        var retrievesInterface = retrieves.GetType().GetInterfaces().Where(t => t.IsGenericType && t.GetGenericTypeDefinition() == typeof(IGets<>)).Single();
+        return (await ((ITask<IResolveResult<object>>)retrievesInterface.GetMethod(nameof(IGets<object>.Resolve)).Invoke(retrieves, null)).ConfigureAwait(false)).ToRetrieveResult();
     }
 
     /////// <summary>
@@ -57,7 +57,7 @@ public static class IRetrievesX
     /////// <remarks>Can't return a generic IRetrieveResult due to limitation of the language.</remarks>
     /////// <returns>true if an object was retrieved.  False if object was not found at location of the Reference.  Throws if could not resolve the Reference to a valid source.</returns>
     //[Casts("retrieves.ResolveAsync must return IRetrieveResult<object>", typeof(IRetrieveResult<object>))]
-    //public static async Task<IRetrieveResult<object>> Retrieve(this IRetrieves retrieves) => (IRetrieveResult<object>) (await ((IResolves<object>)retrieves).Resolve().ConfigureAwait(false));
+    //public static async Task<IRetrieveResult<object>> Retrieve(this IRetrieves retrieves) => (IRetrieveResult<object>) (await ((IGets<object>)retrieves).Resolve().ConfigureAwait(false));
 
     ///// <summary>
     ///// Force a retrieve of the reference from the source.  Replace the Object.
@@ -101,7 +101,7 @@ public static class IRetrievesX
     //public static async Task<bool> Exists<T>(this ILazilyResolves<T> resolves)
     //{
     //}
-    public static async Task<bool> Exists<T>(this IResolves<T> resolves)
+    public static async Task<bool> Exists<T>(this IGets<T> resolves)
     {
         if (resolves is ILazilyResolves<T> lazilyResolves)
         {
@@ -113,7 +113,7 @@ public static class IRetrievesX
 
         return (await IResolvesX.Resolve(resolves)).HasValue;
     }
-    public static async Task<bool> Exists<T>(this IResolves resolves)
+    public static async Task<bool> Exists<T>(this IGets resolves)
     {
         if (resolves is ILazilyResolves<T> lazilyResolves)
         {

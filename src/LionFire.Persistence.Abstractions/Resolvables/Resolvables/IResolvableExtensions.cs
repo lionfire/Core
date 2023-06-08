@@ -1,5 +1,5 @@
 ﻿using LionFire.Persistence;
-using LionFire.Resolves;
+using LionFire.Data.Async.Gets;
 using LionFire.Structures;
 using System;
 using System.Threading.Tasks;
@@ -39,7 +39,7 @@ namespace LionFire.Resolvables
             return false;
         }
 
-        public static async Task<T> GetValueAsync<T>(this IResolves<T> resolves)
+        public static async Task<T> GetValueAsync<T>(this IGets<T> resolves)
         {
             var result = await resolves.Resolve().ConfigureAwait(false);
             if (result.IsSuccess != true) throw new PersistenceException("Resolve failed: " + result.ToString());

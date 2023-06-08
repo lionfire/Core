@@ -1,6 +1,6 @@
 ﻿using LionFire.Persistence.Handles;
 using LionFire.Referencing;
-using LionFire.Resolves;
+using LionFire.Data.Async.Gets;
 using MorseCode.ITask;
 using ICSharpCode.SharpZipLib.Zip;
 using LionFire.Ontology;
@@ -104,7 +104,7 @@ public class RZipFile : ReadHandle<IReference<ZipFile>, ZipFile>
         DiscardValue();
     }
 
-    protected override async ITask<IResolveResult<ZipFile>> ResolveImpl()
+    protected override async ITask<IGetResult<ZipFile>> ResolveImpl()
     {
         ResolveResultSuccess<ZipFile> onSuccess(ZipFile value)
         {

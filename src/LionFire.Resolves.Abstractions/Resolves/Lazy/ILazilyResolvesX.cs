@@ -3,7 +3,7 @@ using System;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace LionFire.Resolves
+namespace LionFire.Data.Async.Gets
 {
     public static class ILazilyResolvesX
     {

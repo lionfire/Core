@@ -1,5 +1,5 @@
 ﻿// MOVED to LionFire.Structures
-//namespace LionFire.Resolves
+//namespace LionFire.Data.Async.Gets
 //{
 //    public interface IValueResult<out TValue>
 //    {

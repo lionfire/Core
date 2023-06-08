@@ -1,6 +1,6 @@
 ﻿#nullable enable
 
-namespace LionFire.Resolves;
+namespace LionFire.Data.Async.Gets;
 
 public interface IStagesSet<T>
 {

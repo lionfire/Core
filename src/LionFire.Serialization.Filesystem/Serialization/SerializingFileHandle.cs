@@ -7,7 +7,7 @@ using LionFire.IO;
 using LionFire.ObjectBus.Filesystem;
 using LionFire.Persistence;
 using LionFire.Persistence.Filesystem;
-using LionFire.Resolves;
+using LionFire.Data.Async.Gets;
 using LionFire.Serialization.Contexts;
 using MorseCode.ITask;
 
@@ -109,7 +109,7 @@ namespace LionFire.Serialization
         //    return persistenceContext;
         //}
 
-        protected override async ITask<IResolveResult<T>> ResolveImpl()
+        protected override async ITask<IGetResult<T>> ResolveImpl()
         {
             // TODO: Change TryRetrieveObject() to TryRetrieveObject(Func<PersistenceContext>) which contains SerializationOperation?
 

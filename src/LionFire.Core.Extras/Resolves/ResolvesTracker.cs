@@ -11,7 +11,7 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace LionFire.Resolves;
+namespace LionFire.Data.Async.Gets;
 
 public class ResolvesTracker : IHostedService
 {

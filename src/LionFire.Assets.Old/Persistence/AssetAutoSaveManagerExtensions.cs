@@ -7,7 +7,7 @@ using System.Collections.Concurrent;
 using LionFire.ExtensionMethods;
 using LionFire.Structures;
 using LionFire.Results;
-using LionFire.Resolves;
+using LionFire.Data.Async.Gets;
 
 namespace LionFire.Persistence
 {

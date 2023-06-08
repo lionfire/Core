@@ -13,4 +13,9 @@
     <ProjectReference Include="..\LionFire.Structures\LionFire.Structures.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Data\Async\Values\Value\" />
+    <Folder Include="Data\Async\Values\Sets\" />
+  </ItemGroup>
+
 </Project>

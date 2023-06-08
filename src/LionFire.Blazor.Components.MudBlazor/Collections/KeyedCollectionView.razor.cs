@@ -4,7 +4,7 @@ using Microsoft.AspNetCore.Components;
 using LionFire.Structures.Keys;
 using LionFire.Reflection;
 using LionFire.Reactive;
-using LionFire.Resolves;
+using LionFire.Data.Async.Gets;
 using static MudBlazor.CategoryTypes;
 using DynamicData.Binding;
 using LionFire.ExtensionMethods;
@@ -252,7 +252,7 @@ public partial class KeyedCollectionView<TKey, TValue, TValueVM>
     //        return (IResolveResult<IEnumerable<TValue>>)result;
     //    }
 
-    //    if (Items is IResolves<IEnumerable<TValue>> resolves)
+    //    if (Items is IGets<IEnumerable<TValue>> resolves)
     //    {
     //        var result = await resolves.Resolve().ConfigureAwait(false);
     //        return result;
@@ -262,7 +262,7 @@ public partial class KeyedCollectionView<TKey, TValue, TValueVM>
     //}
     //public async Task<IResolveResult<TValue>> Resolve()
     //{
-    //    if (Items is IResolves<IEnumerable<TValue>> resolves)
+    //    if (Items is IGets<IEnumerable<TValue>> resolves)
     //    {
     //        var result = await resolves.Resolve().ConfigureAwait(false);
     //        return result;

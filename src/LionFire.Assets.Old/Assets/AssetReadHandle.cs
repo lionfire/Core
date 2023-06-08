@@ -6,7 +6,7 @@ using LionFire.Assets;
 using LionFire.Persistence.Handles;
 using LionFire.Referencing;
 using LionFire.Persistence;
-using LionFire.Resolves;
+using LionFire.Data.Async.Gets;
 using MorseCode.ITask;
 
 namespace LionFire.Persistence.Assets

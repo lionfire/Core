@@ -1,5 +1,5 @@
 ﻿using DynamicData;
-using LionFire.Resolves;
+using LionFire.Data.Async.Gets;
 using LionFire.Ontology;
 using LionFire.Structures;
 using LionFire.Structures.Keys;
@@ -120,7 +120,7 @@ public abstract class AsyncReadOnlyDictionaryCache<TKey, TValue>
 
     #region IResolves<IEnumerable<KeyValuePair<TKey, TValue>>>
 
-    async ITask<IResolveResult<IEnumerable<KeyValuePair<TKey, TValue>>>> IResolves<IEnumerable<KeyValuePair<TKey, TValue>>>.Resolve()
+    async ITask<IResolveResult<IEnumerable<KeyValuePair<TKey, TValue>>>> IGets<IEnumerable<KeyValuePair<TKey, TValue>>>.Resolve()
     {
         await this.Resolve().ConfigureAwait(false);
         throw new NotImplementedException();

@@ -16,13 +16,15 @@
 	</ItemGroup>
 
 	<ItemGroup>
-	  <ProjectReference Include="..\LionFire.Resolves.Abstractions\LionFire.Data.Async.Abstractions.csproj" />
+	  <ProjectReference Include="..\LionFire.Data.Async.Gets.Abstractions\LionFire.Data.Async.Abstractions.csproj" />
 	  <ProjectReference Include="..\LionFire.Structures\LionFire.Structures.csproj" />
 	</ItemGroup>
 
 	<ItemGroup>
+	  <Folder Include="Data\Async\Write\" />
 	  <Folder Include="Mvvm\Async\Collections\Collection\" />
 	  <Folder Include="Mvvm\Async\Collections\Dictionary\" />
+	  <Folder Include="Mvvm\Async\Properties\" />
 	  <Folder Include="Mvvm\Puts\" />
 	  <Folder Include="Mvvm\Structures\" />
 	</ItemGroup>

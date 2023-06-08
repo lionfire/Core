@@ -2,7 +2,7 @@
 using LionFire.ExtensionMethods.Resolves;
 using LionFire.Persistence;
 using LionFire.Referencing;
-using LionFire.Resolves;
+using LionFire.Data.Async.Gets;
 using LionFire.Results;
 using LionFire.Structures;
 using MorseCode.ITask;
@@ -235,7 +235,7 @@ namespace LionFire.Persistence
         ////protected IReadHandleBase<T> readHandle;
         ////public bool HasReadHandle => readHandle != null;
         //public abstract bool HasReadHandle { get; }
-        //IResolves<T> IResolveCommitPair<T>.Resolves => ReadHandle;
+        //IGets<T> IResolveCommitPair<T>.Resolves => ReadHandle;
 
         //#endregion
 

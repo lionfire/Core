@@ -1,5 +1,5 @@
 ﻿using LionFire.ExtensionMethods.Resolves;
-using LionFire.Resolves;
+using LionFire.Data.Async.Gets;
 using LionFire.Structures;
 using MorseCode.ITask;
 using System;
@@ -31,8 +31,8 @@ namespace LionFire.Persistence.Handles
     // Full async: resolve listings, start retrieving all children all at once, async enumerate over children
 
 
-    public abstract class AsyncMapper<TItem, TUnderlying, TUnderlyingCollection, TResolvedUnderlyingCollection> : IAsyncEnumerable<TItem>, IResolves<TResolvedUnderlyingCollection>, ILazilyResolves<TResolvedUnderlyingCollection>
-        //where TUnderlyingCollectionResolvable : IResolves<TUnderlyingCollection>
+    public abstract class AsyncMapper<TItem, TUnderlying, TUnderlyingCollection, TResolvedUnderlyingCollection> : IAsyncEnumerable<TItem>, IGets<TResolvedUnderlyingCollection>, ILazilyResolves<TResolvedUnderlyingCollection>
+        //where TUnderlyingCollectionResolvable : IGets<TUnderlyingCollection>
         where TUnderlyingCollection : IEnumerable<TUnderlying>
     {
         #region Static
@@ -58,8 +58,8 @@ namespace LionFire.Persistence.Handles
         }
 
         #endregion
-        public IResolves<TResolvedUnderlyingCollection> UnderlyingResolves => underlyingResolves;
-        IResolves<TResolvedUnderlyingCollection> underlyingResolves;
+        public IGets<TResolvedUnderlyingCollection> UnderlyingResolves => underlyingResolves;
+        IGets<TResolvedUnderlyingCollection> underlyingResolves;
         public ILazilyResolves<TResolvedUnderlyingCollection> UnderlyingLazilyResolves => underlyingResolves as ILazilyResolves<TResolvedUnderlyingCollection>;
 
         private TResolvedUnderlyingCollection ResolvedUnderlyingCollection { get; set; }
@@ -71,7 +71,7 @@ namespace LionFire.Persistence.Handles
 
         #region Construction
 
-        public AsyncMapper(IResolves<TResolvedUnderlyingCollection> underlyingResolves)
+        public AsyncMapper(IGets<TResolvedUnderlyingCollection> underlyingResolves)
         {
             this.underlyingResolves = underlyingResolves;
         }

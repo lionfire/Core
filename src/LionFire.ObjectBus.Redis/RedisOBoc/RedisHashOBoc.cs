@@ -8,7 +8,7 @@ using LionFire.ObjectBus.Handles;
 using LionFire.ObjectBus.RedisPub;
 using LionFire.Persistence;
 using LionFire.Referencing;
-using LionFire.Resolves;
+using LionFire.Data.Async.Gets;
 using MorseCode.ITask;
 
 namespace LionFire.ObjectBus.Redis

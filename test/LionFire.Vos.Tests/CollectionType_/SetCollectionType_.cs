@@ -6,7 +6,7 @@ using Xunit;
 using LionFire.Services;
 using LionFire.Vos;
 using LionFire.Vos.Environment;
-using LionFire.Resolves.ChainResolving;
+using LionFire.Data.Async.Gets.ChainResolving;
 using LionFire.FlexObjects;
 using Microsoft.Extensions.DependencyInjection;
 using LionFire.Vos.Collections;

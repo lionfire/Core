@@ -24,7 +24,7 @@ using Orleans.Runtime;
 using LionFire.ExtensionMethods.Collections;
 using Orleans.Metadata;
 using LionFire.Mvvm;
-using LionFire.Resolves;
+using LionFire.Data.Async.Gets;
 using MorseCode.ITask;
 using System.Reactive.Subjects;
 using LionFire.Resolvers;

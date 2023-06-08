@@ -1,5 +1,5 @@
 ﻿using LionFire.Resolvables;
-using LionFire.Resolves;
+using LionFire.Data.Async.Gets;
 using System;
 
 namespace LionFire.UI
@@ -40,7 +40,7 @@ namespace LionFire.UI
 
         public object ViewModel { get; set; }
 
-        public IResolves<object> DataContextHandle { get; set; }
+        public IGets<object> DataContextHandle { get; set; }
         public object DataContext
         {
             get => dataContext ??= DataContextHandle?.Resolve();
