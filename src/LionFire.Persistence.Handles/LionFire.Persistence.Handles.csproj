@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>net6.0</TargetFramework> <!-- was netstandard2.1 -->
+    <TargetFramework>net6.0</TargetFramework> 
     <RootNamespace>LionFire</RootNamespace>
     <LangVersion>latest</LangVersion>
   </PropertyGroup>
@@ -21,7 +21,7 @@
     <ProjectReference Include="..\LionFire.Persistence.Handles.Abstractions\LionFire.Persistence.Handles.Abstractions.csproj" />
     <ProjectReference Include="..\LionFire.Persistence\LionFire.Persistence.csproj" />
     <ProjectReference Include="..\LionFire.Referencing\LionFire.Referencing.csproj" />
-    <ProjectReference Include="..\LionFire.Resolves\LionFire.Resolves.csproj" />
+    <ProjectReference Include="..\LionFire.Resolves\LionFire.Data.Async.csproj" />
     <ProjectReference Include="..\LionFire.Structures\LionFire.Structures.csproj" />
   </ItemGroup>
 

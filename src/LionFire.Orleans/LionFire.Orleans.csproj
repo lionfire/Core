@@ -24,7 +24,7 @@
 
 	<ItemGroup>
 		<ProjectReference Include="..\LionFire.Applications\LionFire.Applications.csproj" />
-		<ProjectReference Include="..\LionFire.Resolves\LionFire.Resolves.csproj" />
+		<ProjectReference Include="..\LionFire.Resolves\LionFire.Data.Async.csproj" />
 	</ItemGroup>
 
 </Project>

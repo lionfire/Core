@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>net6.0</TargetFramework> <!-- was netstandard2.1 -->
+    <TargetFramework>net6.0</TargetFramework> 
   </PropertyGroup>
 
   <ItemGroup>
