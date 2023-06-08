@@ -23,6 +23,7 @@
 	<ItemGroup>
 	  <Folder Include="Mvvm\Async\Collections\Collection\" />
 	  <Folder Include="Mvvm\Async\Collections\Dictionary\" />
+	  <Folder Include="Mvvm\Puts\" />
 	  <Folder Include="Mvvm\Structures\" />
 	</ItemGroup>
 

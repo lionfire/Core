@@ -30,8 +30,8 @@ public static class IAcquiresExtensions
         return ParentedAcquisitionExtensions.GetAcquireEnumerator<TNode, TValue>(parented, minDepth, maxDepth, includeNull);
     }
 
-    public static void SetAcquirable<TNode, TValue>(this TNode parented, TValue value)
-    {
-        throw new NotImplementedException();        
-    }
+    //public static void SetAcquirable<TNode, TValue>(this TNode parented, TValue value)
+    //{
+    //    throw new NotImplementedException();        
+    //}
 }

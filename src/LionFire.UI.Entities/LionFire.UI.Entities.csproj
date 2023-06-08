@@ -4,6 +4,7 @@
     <TargetFramework>net6.0</TargetFramework>
     <RootNamespace>LionFire.UI</RootNamespace>
     <LangVersion>latest</LangVersion>
+	<Nullable>enable</Nullable>
   </PropertyGroup>
 
   <ItemGroup>
@@ -21,6 +22,7 @@
     <ProjectReference Include="..\LionFire.Base\LionFire.Base.csproj" />
     <ProjectReference Include="..\LionFire.Instantiating.Abstractions\LionFire.Instantiating.Abstractions.csproj" />
     <ProjectReference Include="..\LionFire.Instantiating\LionFire.Instantiating.csproj" />
+    <ProjectReference Include="..\LionFire.Metadata\LionFire.Metadata.csproj" />
     <ProjectReference Include="..\LionFire.Mvvm.Abstractions\LionFire.Mvvm.Abstractions.csproj" />
     <ProjectReference Include="..\LionFire.Mvvm\LionFire.Mvvm.csproj" />
     <ProjectReference Include="..\LionFire.Structures\LionFire.Structures.csproj" />

@@ -3,6 +3,7 @@
   <PropertyGroup>
     <TargetFramework>net7.0</TargetFramework>
     <RootNamespace>LionFire.Blazor.Components.MudBlazor_</RootNamespace>
+	<Nullable>enable</Nullable>
   </PropertyGroup>
 
   <ItemGroup>

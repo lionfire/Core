@@ -82,7 +82,7 @@ public class ResolvesVM<T> : ReactiveObject, IResolvesVM<T>, IResolves<T>
     [ObservableAsProperty]
     public bool IsResolving { get; }
 
-    //public bool IsResolving { get { return isResolving.Model; } }
+    //public bool IsResolving { get { return isResolving.Value; } }
     //readonly ObservableAsPropertyHelper<bool> isResolving;
 
     #endregion

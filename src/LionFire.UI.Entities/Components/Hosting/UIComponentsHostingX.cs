@@ -13,7 +13,9 @@ public static class UIComponentsHostingX
     public static IServiceCollection AddUIComponents(this IServiceCollection services)
     {
         return services
-            .AddSingleton<PropertyGridVM>()
+            .AddTransient<PropertyGridVM>()
+            .AddTransient<PropertyGridRowVM>()
+            .AddTransient<PropertyGridRowsVM>()            
             ;
     }
 }

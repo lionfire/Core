@@ -11,7 +11,7 @@ namespace LionFire.Orleans_.Mvvm;
 //public class OrleansListVM<TOutputItem, TValue> : AsyncCollectionVM<TOutputItem, TValue>
 //    where TOutputItem : notnull
 //{
-//    #region Model
+//    #region Value
 
 //    public IGrain Grain { get; }
 
@@ -42,7 +42,7 @@ namespace LionFire.Orleans_.Mvvm;
 //public class OrleansDictionaryVM<TKey, TValue> : AsyncDictionaryVM<TKey, TValue>
 //    where TKey : notnull
 //{
-//    #region Model
+//    #region Value
 
 //    public IGrain Grain { get; }
 

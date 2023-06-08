@@ -6,13 +6,16 @@ using MorseCode.ITask;
 
 namespace LionFire.Mvvm.Async;
 
+[Obsolete("Use AsyncValueRx")] // OLD
 public class SettablePropertyAsync<TObject, TValue>
     : PropertyAsync<TObject, TValue>
+    , IStagesSet<TValue>
+    , ISets
     , IObservableSets<TValue>
 {
     #region Lifecycle
 
-    public SettablePropertyAsync(TObject target, AsyncPropertyOptions? options = null) : base(target, options)
+    public SettablePropertyAsync(TObject target, AsyncValueOptions? options = null) : base(target, options)
     {
     }
 
@@ -37,26 +40,47 @@ public class SettablePropertyAsync<TObject, TValue>
     /// 
     /// </summary>
     /// <remarks>
-    /// locked by: SyncRoot
+    /// locked by: setLock
     /// </remarks>
-    public (Task? task, TValue? SettingToValue) SetState
+    [Reactive]
+    public (Task? task, TValue? SettingToValue) SetState { get; private set; }
+    //{
+    //    get => setState;
+    //    private set
+    //    {
+    //        // REVIEW - is this necessary?
+    //        //bool oldIsSetting = IsSetting;
+    //        //setState = value;
+
+    //        this.RaiseAndSetIfChanged(ref setState, value);
+
+    //        //if (IsSetting != oldIsSetting)
+    //        //{
+    //        //    OnPropertyChanged(nameof(IsSetting));
+    //        //}
+    //    }
+    //}
+    //private (Task? task, TValue? SettingToValue) setState;
+
+    #endregion
+
+    #region IStagesSet, ISets
+
+    [Reactive]
+    public TValue? StagedValue { get; set; }
+
+    public async Task<ISuccessResult> Set(CancellationToken cancellationToken = default)
     {
-        get => setState;
-        private set
+        try
         {
-            // REVIEW - is this necessary?
-            //bool oldIsSetting = IsSetting;
-            //setState = value;
-
-            this.RaiseAndSetIfChanged(ref setState, value);
-
-            //if (IsSetting != oldIsSetting)
-            //{
-            //    OnPropertyChanged(nameof(IsSetting));
-            //}
+            await Set(StagedValue, cancellationToken);
+            return SuccessResult.Success;
+        }
+        catch(Exception ex)
+        {
+            return new ExceptionResult(ex);
         }
     }
-    private (Task? task, TValue? SettingToValue) setState;
 
     #endregion
 
@@ -67,14 +91,17 @@ public class SettablePropertyAsync<TObject, TValue>
     public Func<TObject, TValue?, CancellationToken, Task> Setter { get; set; }
     public async Task Set(TValue? value, CancellationToken cancellationToken = default)
     {
-        (Task? task, TValue? SettingToValue) currentState;
+
+        (Task? task, TValue? SettingToValue) currentSetState;
     start:
         do
         {
-            currentState = SetState;
-            if (currentState.task != null) { await currentState.task!.ConfigureAwait(false); }
-            if (EqualityComparer.Equals(currentState.SettingToValue, value)) { return; }
-        } while (currentState.task != null);
+            currentSetState = SetState;
+            if (currentSetState.task != null) { await currentSetState.task!.ConfigureAwait(false); }
+            if (EqualityComparer.Equals(currentSetState.SettingToValue, value)) { return; }
+
+            // ENH: Based on option: Also wait for existing get/set to complete to avoid setting to a value that will be overwritten, or to avoid setting to a value that is the same as the gotten value
+        } while (currentSetState.task != null);
 
         try
         {
@@ -92,21 +119,7 @@ public class SettablePropertyAsync<TObject, TValue>
         }
     }
 
-
-    public IObservable<Task<TValue>> Sets => sets;
-    private Subject<Task<TValue>> sets = new();
-
     #endregion
-
-    #region IObservableSets
-
-    IObservable<ITask<ISuccessResult>> IObservableSets<TValue>.Sets => throw new NotImplementedException();
-
-    Task<ISuccessResult> ISets<TValue>.Set(TValue value, CancellationToken cancellationToken)
-    {
-        throw new NotImplementedException();
-    }
-
-    #endregion
+   
 }
 

@@ -6,3 +6,5 @@ global using System.ComponentModel;
 global using System.Linq;
 global using System.Threading;
 global using System.Threading.Tasks;
+global using LionFire.Metadata;
+global using LionFire.ExtensionMethods.Metadata;

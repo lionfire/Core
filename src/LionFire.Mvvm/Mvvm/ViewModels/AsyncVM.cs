@@ -1,32 +1,50 @@
 ﻿#nullable enable
 
+using LionFire.Metadata;
+
 namespace LionFire.Mvvm;
 
 public abstract class AsyncVM<T> : ReactiveObject, IDependsOn<T>, IViewModel<T>
     where T : class
 {
+    #region Parameters
 
-    public AsyncPropertyOptions? Options { get; set; }
-
-    public T Model { get => model; set { if (model != default) { throw new AlreadySetException(); } model = value; } }
-    private T model;
-
-    #region Explicit interfaces
-
-    T? IReadWrapper<T>.Value => Model;
-    T IDependsOn<T>.Dependency { set => Model = value; }
+    [Relevance(RelevanceFlags.Technical | RelevanceFlags.Internal)]
+    public AsyncValueOptions? Options { get; set; }
 
     #endregion
-
 
     #region Construction
 
-    //public AsyncVM() { }
     public AsyncVM(T model)
     {
-        Model = model;
+        Value = model;
     }
 
     #endregion
+
+    #region State
+
+    [Relevance(RelevanceFlags.Internal)]
+    public T? Value
+    {
+        get => value;
+        set
+        {
+            if (this.value != default) { throw new AlreadySetException(); }
+            this.value = value;
+        }
+    }
+    private T? value;
+
+    #region Explicit interfaces
+
+    //T? IReadWrapper<T>.Value => Value;
+    T IDependsOn<T>.Dependency { set => Value = value; }
+
+    #endregion
+
+    #endregion
+
 }
 

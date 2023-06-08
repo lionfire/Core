@@ -9,7 +9,13 @@ using System.Threading;
 
 namespace LionFire.Mvvm.Async;
 
-public class PropertyAsync<TObject, TValue> : ReactiveObject, ILazilyResolves<TValue>, IObservableResolves<TValue>
+public class AsyncValue<TValue> : ReactiveObject
+    , ILazilyResolves<TValue>
+    , IObservableResolves<TValue>
+{
+}
+
+public class PropertyAsync<TObject, TValue> : AsyncValue<TValue>
 {
     // TODO: Wire up change notifications from source
 
@@ -23,15 +29,15 @@ public class PropertyAsync<TObject, TValue> : ReactiveObject, ILazilyResolves<TV
 
     #region Parameters
 
-    public AsyncPropertyOptions Options { get; }
-    public static AsyncPropertyOptions DefaultOptions = new();
+    public AsyncValueOptions Options { get; }
+    public static AsyncValueOptions DefaultOptions = new();
     public IEqualityComparer<TValue> EqualityComparer { get; set; } = EqualityComparer<TValue>.Default;
 
     #endregion
 
     #region Lifecycle
 
-    public PropertyAsync(TObject target, AsyncPropertyOptions? options = null)
+    public PropertyAsync(TObject target, AsyncValueOptions? options = null)
     {
         Target = target;
         Options = options ?? TargetAsync?.Options.PropertyOptions ?? DefaultOptions;
@@ -147,7 +153,7 @@ public class PropertyAsync<TObject, TValue> : ReactiveObject, ILazilyResolves<TV
 
     #endregion
 
-    
+
 
 }
 

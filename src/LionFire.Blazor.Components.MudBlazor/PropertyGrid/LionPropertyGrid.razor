@@ -1,0 +1,63 @@
+﻿@inherits ReactiveUI.Blazor.ReactiveInjectableComponentBase<PropertyGridVM>
+
+@using LionFire.UI.Components.PropertyGrid
+@using LionFire.Blazor.Components.MudBlazor_.PropertyGrid
+
+@namespace LionFire.Blazor.Components.MudBlazor_
+
+@if (ViewModel.ShowTitle)
+{
+    <h3>@ViewModel.Title</h3>
+}
+
+@if (DevMode)
+{
+    <div class="dev">Type: @Object?.GetType().Name</div>
+}
+
+@if (ViewModel.ShowFilterTypes)
+{
+    <button class=@("toggle " + (ViewModel.ShowDataMembers ? "selected" : ""))
+    @onclick=@(()=>ViewModel.ShowDataMembers ^= true)>
+        D
+    </button>
+    <button class=@("toggle " + (ViewModel.ShowEvents ? "selected" : ""))
+    @onclick=@(()=>ViewModel.ShowEvents ^= true)>
+        E
+    </button>
+    <button class=@("toggle " + (ViewModel.ShowMethods ? "selected" : ""))
+    @onclick=@(()=>ViewModel.ShowMethods ^= true)>
+        M
+    </button>
+}
+
+<MudSimpleTable Class="PropertyGrid">
+    <CascadingValue Name="PropertyGridVM" Value="@ViewModel">
+        <LionPropertyGridRows MemberVMs="@ViewModel.MemberVMs" />
+    </CascadingValue>
+</MudSimpleTable>
+
+
+@code {
+    [CascadingParameter]
+    protected bool DevMode { get; set; }
+
+    [Parameter]
+    public object Object { get; set; }
+
+    [Parameter]
+    public bool ReadOnly { get; set; }
+
+    protected override Task OnParametersSetAsync()
+    {
+        ViewModel.Object = Object;
+        ViewModel.ReadOnly = ReadOnly;
+
+        return base.OnParametersSetAsync();
+    }
+
+    protected override Task OnInitializedAsync()
+    {
+        return base.OnInitializedAsync();
+    }
+}

@@ -8,5 +8,5 @@
 //    where TNotificationItem : IGrain
 //    where TViewModel : IReadWrapper<TNotificationItem>
 //{
-//    //public override PolymorphicGrainListItem<TValue> Model { get; set; }
+//    //public override PolymorphicGrainListItem<TValue> Value { get; set; }
 //}

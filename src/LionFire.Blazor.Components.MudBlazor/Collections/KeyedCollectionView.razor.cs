@@ -36,7 +36,7 @@ public partial class KeyedCollectionView<TKey, TValue, TValueVM>
     [Parameter]
     public IEnumerable<TValue>? Items { get; set; }
     IEnumerable<TValue>? oldItems { get; set; }
-    //public IEnumerable<TValue>? Values => Items?.Select(x => x.Model);
+    //public IEnumerable<TValue>? Values => Items?.Select(x => x.Value);
 
     #region TODO: Pass-thru to VM
 
@@ -120,11 +120,11 @@ public partial class KeyedCollectionView<TKey, TValue, TValueVM>
 
             //#if true // TODO: How to bind [Parameter] to ViewModel?  Set in OnParametersSetAsync?
             //            this.WhenAnyValue(v => v.Items)
-            //                .BindTo(ViewModel, vm => vm.Model)
+            //                .BindTo(ViewModel, vm => vm.Value)
             //                .DisposeWith(disposableRegistration);
             //#else
             //            this.Bind(ViewModel,
-            //                    viewModel => viewModel.Model,
+            //                    viewModel => viewModel.Value,
             //                    view => view.Items)
             //                .DisposeWith(disposableRegistration);
             //#endif
@@ -134,7 +134,7 @@ public partial class KeyedCollectionView<TKey, TValue, TValueVM>
             //        viewModel => viewModel.ValueVMs, // REVIEW Nullability: Source
             //        view => view.Children
             //        //,
-            //        //vmToViewConverter: vm => vm?.Select(kvp => kvp.Model),
+            //        //vmToViewConverter: vm => vm?.Select(kvp => kvp.Value),
             //        //viewToVmConverter: v => null
             //        )
             //    .DisposeWith(disposableRegistration);

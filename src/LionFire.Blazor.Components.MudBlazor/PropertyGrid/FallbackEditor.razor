@@ -1,0 +1,9 @@
+﻿<div class="Value fallback">
+    @(ViewModel.DisplayValue ?? ViewModel.Value)
+</div>
+@* <div class="dev">(fallback editor)</div> *@
+
+@code {
+    [Parameter]
+    public PropertyVM ViewModel { get; set; }
+}

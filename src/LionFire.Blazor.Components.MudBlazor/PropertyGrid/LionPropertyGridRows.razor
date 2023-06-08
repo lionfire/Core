@@ -1,0 +1,32 @@
+﻿@inherits ReactiveUI.Blazor.ReactiveInjectableComponentBase<PropertyGridRowsVM>
+
+@using LionFire.UI.Components.PropertyGrid;
+
+@if (ViewModel.MemberVMs?.Any() == true)
+{
+    @foreach (var member in ViewModel.VisibleMembers)
+    {
+        <LionPropertyGridRow MemberVM="@member" Depth="@Depth" />
+    }
+} else
+{
+    <div>(no children)</div>
+}
+
+@code {
+    [CascadingParameter(Name = "PropertyGridVM")]
+    public PropertyGridVM PropertyGridVM { get; set; }
+
+    [Parameter]
+    public int Depth { get; set; }
+
+    [Parameter]
+    public IEnumerable<MemberVM> MemberVMs { get; set; }
+
+    protected override void OnParametersSet()
+    {
+        ViewModel.PropertyGridVM = PropertyGridVM;
+        ViewModel.MemberVMs = MemberVMs;
+        base.OnParametersSet();
+    }
+}

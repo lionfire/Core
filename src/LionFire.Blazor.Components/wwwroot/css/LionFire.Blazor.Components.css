@@ -526,4 +526,6 @@ body.dark .mud-input-label-outlined {
 }
 
 
-
+.dev {
+    opacity: 0.5;
+}

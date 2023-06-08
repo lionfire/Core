@@ -22,6 +22,7 @@
     <ProjectReference Include="..\LionFire.Execution\LionFire.Execution.csproj" />
     <ProjectReference Include="..\LionFire.Instantiating.Abstractions\LionFire.Instantiating.Abstractions.csproj" />
     <ProjectReference Include="..\LionFire.Instantiating\LionFire.Instantiating.csproj" />
+    <ProjectReference Include="..\LionFire.Metadata\LionFire.Metadata.csproj" />
   </ItemGroup>
 
   <ItemGroup>

@@ -44,3 +44,24 @@ table.quickgrid {
     background-color: var(--mud-palette-surface);
     border-radius: var(--mud-default-borderradius);
 }
+
+.PropertyGrid td.Namespace {
+    text-align: right;
+}
+
+.Value {
+    color: #eee;
+}
+.Value.error {
+    color: #d31717;
+}
+.Value.null {
+    color: #888;
+    font-style: italic;
+}
+.Value.String {
+    color: #aaa;
+}
+.Value.number {
+    color: #5f5fcb;
+}

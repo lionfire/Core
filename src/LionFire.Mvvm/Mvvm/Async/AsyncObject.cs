@@ -7,11 +7,11 @@ using System.Threading.Tasks;
 
 namespace LionFire.Mvvm.Async;
 
-public class ObjectOptions
-{
-    public AsyncPropertyOptions PropertyOptions { get; } = new();
-}
-
+/// <summary>
+/// Represents an Async Object that has its members accessed in an async manner.
+/// The intended purpose is to act as a write-through cache or proxy for a remote object.
+/// </summary>
+/// <typeparam name="TObject"></typeparam>
 public class AsyncObject<TObject> : ReactiveObject
 {
     #region Relationships
@@ -23,14 +23,14 @@ public class AsyncObject<TObject> : ReactiveObject
 
     #region Parameters  
 
-    public ObjectOptions Options { get; } 
-    public static ObjectOptions DefaultOptions = new();
+    public AsyncObjectOptions Options { get; } 
+    public static AsyncObjectOptions DefaultOptions = new();
 
     #endregion
 
     #region Lifecycle
 
-    public AsyncObject(TObject target, ObjectOptions? options = null)
+    public AsyncObject(TObject target, AsyncObjectOptions? options = null)
     {
         Target = target;
         Options = options ?? DefaultOptions;

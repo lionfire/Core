@@ -12,11 +12,9 @@ public class ItemPage<TViewModel> : ReactiveInjectableComponentBase<TViewModel>
     where TViewModel : class, IItemPageVM, INotifyPropertyChanged
 {
     [Parameter]
-    //[Reactive]
     public string? Id { get; set; }
 
     [Parameter]
-    //[Reactive]
     public string? TypeName { get; set; }
 
 

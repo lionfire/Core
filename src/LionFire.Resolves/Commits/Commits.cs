@@ -6,11 +6,13 @@ using System.Threading.Tasks;
 
 namespace LionFire.Resolves
 {
+    
     /// <summary>
     /// Only requires one method to be implemented: CommitImpl.
     /// 
     /// If setting to null or default is a legitimate operation, use DefaultableValue&lt;TValue&gt;
     /// </summary>
+    [Obsolete("Use Sets")] // OLD
     public abstract class Commits<TKey, TValue> : DisposableKeyed<TKey>, IDiscardableValue
         where TKey : class
         where TValue : class
@@ -56,9 +58,9 @@ namespace LionFire.Resolves
 
         public async Task<ISuccessResult> Commit()
         {
-            var resolveResult = await CommitImpl(ProtectedValue);
-            OnCommitted(resolveResult, ProtectedValue);
-            return resolveResult;
+            var result = await CommitImpl(ProtectedValue);
+            OnCommitted(result, ProtectedValue);
+            return result;
         }
 
         #endregion

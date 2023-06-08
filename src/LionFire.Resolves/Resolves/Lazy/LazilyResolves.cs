@@ -3,6 +3,8 @@ using System.Threading.Tasks;
 
 namespace LionFire.Resolves;
 
+// DUPE - near Duplicate of LazilyGetsRx<T>, sans ReactiveUI
+
 /// <summary>
 /// 
 /// </summary>
@@ -26,6 +28,12 @@ public abstract class LazilyResolves<T> : ILazilyResolves<T>
         HasValue = result.IsSuccess == true;
         return result;
     }
+
+    protected abstract ITask<IResolveResult<T>> GetImpl();
+
+    public bool IsGetting => getState != null && getState.AsTask().IsCompleted == false;
+    public ITask<IResolveResult<T>>? GetState => getState;
+    private ITask<IResolveResult<T>>? getState;
 
     public async ITask<ILazyResolveResult<T>> TryGetValue()
     {

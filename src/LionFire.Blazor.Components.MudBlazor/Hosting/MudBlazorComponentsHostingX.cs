@@ -1,4 +1,6 @@
-﻿using System;
+﻿using LionFire.Blazor.Components.MudBlazor_;
+using Microsoft.Extensions.DependencyInjection;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -12,6 +14,8 @@ public static class MudBlazorComponentsHostingX
     {
         return services
             .AddUIComponents()
+            .AddSingleton<MudBlazorViewTypeProvider>()
+            .AddSingleton<IViewTypeProvider, MudBlazorViewTypeProvider>(sp => sp.GetRequiredService<MudBlazorViewTypeProvider>())
             ;
-    }   
+    }
 }

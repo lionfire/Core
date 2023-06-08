@@ -2,5 +2,5 @@
 
 public interface IAsyncObject
 {
-    ObjectOptions Options { get; }
+    AsyncObjectOptions Options { get; }
 }
