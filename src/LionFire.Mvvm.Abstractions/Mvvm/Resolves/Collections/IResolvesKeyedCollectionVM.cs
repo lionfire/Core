@@ -1,4 +1,4 @@
-﻿namespace LionFire.Mvvm;
+﻿namespace LionFire.Data.Async.Mvvm;
 
 public interface IResolvesKeyedCollectionVM<TKey, TValue, TValueVM, TCollection>
     : IResolvesCollectionVM<TValue, TValueVM, TCollection>

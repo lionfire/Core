@@ -4,18 +4,22 @@
     <TargetFramework>net6.0</TargetFramework> 
     <LangVersion>latest</LangVersion>
 	<RootNamespace>LionFire</RootNamespace>
+    <Nullable>enable</Nullable>
   </PropertyGroup>
-
+	
+	<ItemGroup>
+		<PackageReference Include="MorseCode.ITask" />
+	</ItemGroup>
+	
   <ItemGroup>
     <ProjectReference Include="..\LionFire.Core\LionFire.Core.csproj" />
-    <ProjectReference Include="..\LionFire.Data.Async.Gets.Abstractions\LionFire.Data.Async.Abstractions.csproj" />
+    <ProjectReference Include="..\LionFire.Resolves.Abstractions\LionFire.Data.Async.Abstractions.csproj" />
     <ProjectReference Include="..\LionFire.Structures\LionFire.Structures.csproj" />
   </ItemGroup>
 
   <ItemGroup>
     <Folder Include="Collections\" />
     <Folder Include="Objects\" />
-    <Folder Include="Values\ReadWrite\" />
   </ItemGroup>
 
 </Project>

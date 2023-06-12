@@ -1,19 +1,16 @@
 ﻿#nullable enable
 
+using LionFire.Data.Async;
 using LionFire.Data.Async.Gets;
+using LionFire.Results;
 using MorseCode.ITask;
 using Newtonsoft.Json.Linq;
 using System.Reactive.Subjects;
 using System.Runtime.CompilerServices;
 using System.Threading;
 
-namespace LionFire.Mvvm.Async;
+namespace LionFire.Data.Async;
 
-public class AsyncValue<TValue> : ReactiveObject
-    , ILazilyResolves<TValue>
-    , IObservableResolves<TValue>
-{
-}
 
 public class PropertyAsync<TObject, TValue> : AsyncValue<TValue>
 {
@@ -47,14 +44,14 @@ public class PropertyAsync<TObject, TValue> : AsyncValue<TValue>
 
     #region IResolves
 
-    public IObservable<ITask<IResolveResult<TValue>>> Resolves => resolves;
-    private BehaviorSubject<ITask<IResolveResult<TValue>>> resolves = new(Task.FromResult<IResolveResult<TValue>>(ResolveResultNotResolvedNoop<TValue>.Instance).AsITask());
+    public IObservable<ITask<IGetResult<TValue>>> Resolves => resolves;
+    private BehaviorSubject<ITask<IGetResult<TValue>>> resolves = new(Task.FromResult<IGetResult<TValue>>(ResolveResultNotResolvedNoop<TValue>.Instance).AsITask());
 
     public bool IsResolving => !resolves.Value.AsTask().IsCompleted;
 
     #endregion
 
-    #region ILazilyResolves
+    #region ILazilyGets
 
     #region Value
 
@@ -93,7 +90,7 @@ public class PropertyAsync<TObject, TValue> : AsyncValue<TValue>
 
     public bool HasValue => hasValue.Value;
     private BehaviorSubject<bool> hasValue = new(false);
-    //private IObservable<bool> hasValue { get; } = this.Resolves.Select(r => r.HasValue); // TODO: Derive this from Resolves
+    //private IObservable<bool> hasValue { get; } = this.Gets.Select(r => r.HasValue); // TODO: Derive this from Gets
 
     #endregion
 
@@ -103,23 +100,23 @@ public class PropertyAsync<TObject, TValue> : AsyncValue<TValue>
         hasValue.OnNext(false);
     }
 
-    public async ITask<ILazyResolveResult<TValue>> TryGetValue() // RENAME ResolveIfNeeded
+    public async ITask<ILazyGetResult<TValue>> TryGetValue() // RENAME GetIfNeeded
     {
         if (HasValue) return new LazyResolveNoopResult<TValue>(HasValue, Value);
         var value = await this.Get().ConfigureAwait(false);
         return new LazyResolveResult<TValue>(true, value);
     }
 
-    public ILazyResolveResult<TValue> QueryValue() => new LazyResolveNoopResult<TValue>(HasValue, Value);
+    public ILazyGetResult<TValue> QueryValue() => new LazyResolveNoopResult<TValue>(HasValue, Value);
 
-    public ITask<IResolveResult<TValue>> Resolve()
+    public ITask<IGetResult<TValue>> Resolve()
     {
         lock (resolvingLock)
         {
             var task = resolves.Value;
             if (!task.AsTask().IsCompleted) { return task; }
 
-            task = Task.Run<IResolveResult<TValue>>(async () =>
+            task = Task.Run<IGetResult<TValue>>(async () =>
             {
                 var task = Getter(Target, default);
                 //gets.OnNext(task);
@@ -151,9 +148,21 @@ public class PropertyAsync<TObject, TValue> : AsyncValue<TValue>
         return result.Value;
     }
 
+    protected override ITask<IGetResult<TValue>> GetImpl()
+    {
+        throw new NotImplementedException();
+    }
+
     #endregion
 
+    #region Set
 
+    public override Task<ISuccessResult> Set(TValue? value, CancellationToken cancellationToken = default)
+    {
+        throw new NotImplementedException();
+    }
+
+    #endregion
 
 }
 

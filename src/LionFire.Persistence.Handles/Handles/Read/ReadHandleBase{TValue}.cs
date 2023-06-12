@@ -181,7 +181,7 @@ namespace LionFire.Persistence.Handles
 
         #region REORGANIZE
 
-        ITask<IResolveResult<TValue>> IGets<TValue>.Resolve() => ResolveImpl();
+        ITask<IGetResult<TValue>> IGets<TValue>.Resolve() => ResolveImpl();
 
         //protected override bool IsAllowedReferenceType(Type type) => type == typeof(TReference);
 
@@ -229,7 +229,7 @@ namespace LionFire.Persistence.Handles
 
         //public  class ReadHandleBaseCovariant<T> : ResolvesBaseCovariant<IReference, T>, IReadHandleEx<T>, IKeyed<string>, IRetrievableImpl<T>, IHas<PersistenceResultFlags>
     //{
-    //    public override Task<IResolveResult<T>> ResolveImpl() => throw new NotImplementedException();
+    //    public override Task<IGetResult<T>> ResolveImpl() => throw new NotImplementedException();
     //}
 
 

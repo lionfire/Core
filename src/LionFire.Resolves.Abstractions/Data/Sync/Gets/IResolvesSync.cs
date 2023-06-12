@@ -5,7 +5,7 @@ namespace LionFire.Data.Sync.Gets;
 
 public interface IResolvesSync
 {
-    IResolveResult Resolve();
+    IGetResult Resolve();
 }
 
 #endif

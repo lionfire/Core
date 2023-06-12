@@ -41,14 +41,14 @@ public static class IRetrievesX
     }
 
     /// <summary>
-    /// Uses reflection to call IGets&lt;object&gt;.Resolve then upcasts result to IResolveResult&lt;object&gt;.  Consider using IGets&lt;object&gt;.Resolve directly.
+    /// Uses reflection to call IGets&lt;object&gt;.Resolve then upcasts result to IGetResult&lt;object&gt;.  Consider using IGets&lt;object&gt;.Resolve directly.
     /// </summary>
     /// <param name="retrieves"></param>
     /// <returns></returns>
     public static async Task<IRetrieveResult<object>> Retrieve(this IRetrieves retrieves)
     {
         var retrievesInterface = retrieves.GetType().GetInterfaces().Where(t => t.IsGenericType && t.GetGenericTypeDefinition() == typeof(IGets<>)).Single();
-        return (await ((ITask<IResolveResult<object>>)retrievesInterface.GetMethod(nameof(IGets<object>.Resolve)).Invoke(retrieves, null)).ConfigureAwait(false)).ToRetrieveResult();
+        return (await ((ITask<IGetResult<object>>)retrievesInterface.GetMethod(nameof(IGets<object>.Resolve)).Invoke(retrieves, null)).ConfigureAwait(false)).ToRetrieveResult();
     }
 
     /////// <summary>
@@ -68,7 +68,7 @@ public static class IRetrievesX
     [Obsolete("TODO - use ToRetrieveResult instead")]
     public static async Task<IRetrieveResult<T>> Retrieve<T>(this IRetrieves<T> retrieves) => (IRetrieveResult<T>)await IResolvesX.Resolve(retrieves).ConfigureAwait(false); // CAST
 
-    public static IRetrieveResult<T> ToRetrieveResult<T>(this IResolveResult<T> resolveResult)
+    public static IRetrieveResult<T> ToRetrieveResult<T>(this IGetResult<T> resolveResult)
     {
         if (resolveResult is IRetrieveResult<T> rr) return rr;
 
@@ -98,12 +98,12 @@ public static class IRetrievesX
         return new PersistenceResult() { Flags = flags };
     }
 
-    //public static async Task<bool> Exists<T>(this ILazilyResolves<T> resolves)
+    //public static async Task<bool> Exists<T>(this ILazilyGets<T> resolves)
     //{
     //}
     public static async Task<bool> Exists<T>(this IGets<T> resolves)
     {
-        if (resolves is ILazilyResolves<T> lazilyResolves)
+        if (resolves is ILazilyGets<T> lazilyResolves)
         {
             if (lazilyResolves is IDetects d) return await d.Exists();
 
@@ -115,7 +115,7 @@ public static class IRetrievesX
     }
     public static async Task<bool> Exists<T>(this IGets resolves)
     {
-        if (resolves is ILazilyResolves<T> lazilyResolves)
+        if (resolves is ILazilyGets<T> lazilyResolves)
         {
             if (lazilyResolves is IDetects d) return await d.Exists();
 

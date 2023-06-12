@@ -14,17 +14,17 @@ public static class GrainListCacheCommon<TItemGrain/*, TCollection*/>
     //where TCollection : ReactiveObject, IAsyncDictionaryCache<GrainId, TItemGrain>
 {
 
-    public static async ITask<IResolveResult<IEnumerable<TItemGrain>>> ResolvesRetrieveFunc(IGrain CollectionGrain)
+    public static async ITask<IGetResult<IEnumerable<TItemGrain>>> ResolvesRetrieveFunc(IGrain CollectionGrain)
     {
         if (CollectionGrain is IGetsG<IEnumerable<TItemGrain>> resolves)
         {
-            return await resolves.Resolve().ConfigureAwait(false);
+            return await resolves.Get().ConfigureAwait(false);
         }
         else throw new NotSupportedException($"{nameof(CollectionGrain)} does not implement {nameof(IGetsG<IEnumerable<TItemGrain>>)}");
     }
     //. Either implement it or provide either {nameof(ResolveFunc)} or {nameof(RetrieveFunc)}
 
-    //    public static Func<IGrain, ITask<IResolveResult<IEnumerable<TItemGrain>>>> RetrieveToResolveFunc(Func<IGrain, ITask<IEnumerable<TItemGrain>>> retrieveFunc)
+    //    public static Func<IGrain, ITask<IGetResult<IEnumerable<TItemGrain>>>> RetrieveToResolveFunc(Func<IGrain, ITask<IEnumerable<TItemGrain>>> retrieveFunc)
     //        => async grain =>
     //        {
     //            var values = await value(grain).ConfigureAwait(false);
@@ -240,7 +240,7 @@ public class GrainReadOnlyListCache<TItemGrain>
     Subject<IEnumerable<TItemGrain>> Retrieved = new();
     public IDisposable RetrievedToCacheSubscription { get; private set; }
 
-    public async ITask<IResolveResult<IEnumerable<TItemGrain>>> Resolve()
+    public async ITask<IGetResult<IEnumerable<TItemGrain>>> Resolve()
     {
 
     }

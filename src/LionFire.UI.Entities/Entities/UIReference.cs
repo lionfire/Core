@@ -43,7 +43,7 @@ namespace LionFire.UI
         public IGets<object> DataContextHandle { get; set; }
         public object DataContext
         {
-            get => dataContext ??= DataContextHandle?.Resolve();
+            get => dataContext ??= DataContextHandle?.Get();
             set => dataContext = value;
         }
         private object dataContext;

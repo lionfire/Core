@@ -31,7 +31,7 @@ namespace LionFire.Persistence.Handles
     // Full async: resolve listings, start retrieving all children all at once, async enumerate over children
 
 
-    public abstract class AsyncMapper<TItem, TUnderlying, TUnderlyingCollection, TResolvedUnderlyingCollection> : IAsyncEnumerable<TItem>, IGets<TResolvedUnderlyingCollection>, ILazilyResolves<TResolvedUnderlyingCollection>
+    public abstract class AsyncMapper<TItem, TUnderlying, TUnderlyingCollection, TResolvedUnderlyingCollection> : IAsyncEnumerable<TItem>, IGets<TResolvedUnderlyingCollection>, ILazilyGets<TResolvedUnderlyingCollection>
         //where TUnderlyingCollectionResolvable : IGets<TUnderlyingCollection>
         where TUnderlyingCollection : IEnumerable<TUnderlying>
     {
@@ -60,7 +60,7 @@ namespace LionFire.Persistence.Handles
         #endregion
         public IGets<TResolvedUnderlyingCollection> UnderlyingResolves => underlyingResolves;
         IGets<TResolvedUnderlyingCollection> underlyingResolves;
-        public ILazilyResolves<TResolvedUnderlyingCollection> UnderlyingLazilyResolves => underlyingResolves as ILazilyResolves<TResolvedUnderlyingCollection>;
+        public ILazilyGets<TResolvedUnderlyingCollection> UnderlyingLazilyResolves => underlyingResolves as ILazilyGets<TResolvedUnderlyingCollection>;
 
         private TResolvedUnderlyingCollection ResolvedUnderlyingCollection { get; set; }
         private TUnderlyingCollection UnderlyingCollection { get; set; }
@@ -143,7 +143,7 @@ namespace LionFire.Persistence.Handles
 
         #region Resolve
 
-        public async ITask<IResolveResult<TResolvedUnderlyingCollection>> Resolve()
+        public async ITask<IGetResult<TResolvedUnderlyingCollection>> Resolve()
         {
             var result = await underlyingResolves.Resolve();
 
@@ -152,9 +152,9 @@ namespace LionFire.Persistence.Handles
             return result;
         }
 
-        #region ILazilyResolves
+        #region ILazilyGets
 
-        public async ITask<ILazyResolveResult<TResolvedUnderlyingCollection>> TryGetValue()
+        public async ITask<ILazyGetResult<TResolvedUnderlyingCollection>> TryGetValue()
         {
             var ulr = UnderlyingLazilyResolves;
             if (ulr != null)
@@ -167,7 +167,7 @@ namespace LionFire.Persistence.Handles
             }
         }
 
-        public ILazyResolveResult<TResolvedUnderlyingCollection> QueryValue()
+        public ILazyGetResult<TResolvedUnderlyingCollection> QueryValue()
         {
             var ulr = UnderlyingLazilyResolves;
             if (ulr != null)

@@ -39,7 +39,7 @@
 //        }
 
 //        // Some code duplication with OBaseReadHandle
-//        protected override async Task<IResolveResult<T>> ResolveImpl() 
+//        protected override async Task<IGetResult<T>> ResolveImpl() 
 //            => await OBase.Get<T>(this.Reference).ConfigureAwait(false);
 
 //        //protected async Task<IPersistenceResult> DeleteObject()

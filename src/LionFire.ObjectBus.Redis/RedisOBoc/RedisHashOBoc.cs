@@ -55,7 +55,7 @@ namespace LionFire.ObjectBus.Redis
         
         public override IEnumerator<T> GetEnumerator() => throw new NotImplementedException();
         //public override Task<IRetrieveResult<INotifyingReadOnlyCollection<RedisEntry>>> RetrieveImpl() => throw new NotImplementedException();
-        protected override ITask<IResolveResult<INotifyingReadOnlyCollection<RedisEntry>>> ResolveImpl() => throw new NotImplementedException();
+        protected override ITask<IGetResult<INotifyingReadOnlyCollection<RedisEntry>>> ResolveImpl() => throw new NotImplementedException();
     }
 }
 #endif

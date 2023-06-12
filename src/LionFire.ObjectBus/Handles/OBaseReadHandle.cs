@@ -25,7 +25,7 @@ namespace LionFire.ObjectBus.Handles
             this.OBase = obase ?? throw new ArgumentNullException(nameof(obase));
         }
 
-        protected override async ITask<IResolveResult<T>> ResolveImpl()
+        protected override async ITask<IGetResult<T>> ResolveImpl()
             => await OBase.Get<T>(this.Reference).ConfigureAwait(false);
     }
 

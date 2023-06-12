@@ -14,7 +14,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\LionFire.Collections.Async\LionFire.Collections.Async.csproj" />
     <ProjectReference Include="..\LionFire.DynamicData.Orleans\LionFire.DynamicData.Orleans.csproj" />
     <ProjectReference Include="..\LionFire.Structures\LionFire.Structures.csproj" />
   </ItemGroup>

@@ -15,7 +15,7 @@ namespace LionFire.Persistence
     /// <summary>
     /// Limited interface for when generic interface type is not available
     /// </summary>
-    public interface IReadHandle : IHandleEx, IPersists, ILazilyResolves, IDefaultable, IRetrieves 
+    public interface IReadHandle : IHandleEx, IPersists, ILazilyGets, IDefaultable, IRetrieves 
     {
     }
 
@@ -23,7 +23,7 @@ namespace LionFire.Persistence
     /// Lazy Read Persistence Handle
     /// </summary>
     /// <typeparam name="T"></typeparam>
-    public interface IReadHandle<out T> : IReadHandleBase<T>, IReadHandle, ILazilyResolves<T>
+    public interface IReadHandle<out T> : IReadHandleBase<T>, IReadHandle, ILazilyGets<T>
         , IReferencableAsValueType<T>
     // , INotifyChanged<T>
     //, INotifyingWrapper<T>
@@ -41,7 +41,7 @@ namespace LionFire.Persistence
     //public interface IEventedPersistenceReadHandle<out T> : IEventedReadHandle<T>, IPersisted { }
 
     //public interface ILazyRetrievableReadHandleCovariant<out T> : RH<T>, ILazilyResolvesCovariant<T> { }
-    //public interface ILazyRetrievableReadHandle<T> : RH<T>, ILazilyResolves<T> { }
+    //public interface ILazyRetrievableReadHandle<T> : RH<T>, ILazilyGets<T> { }
 
 
     #region RH
@@ -85,7 +85,7 @@ namespace LionFire.Persistence
     //public interface IEventedPersistenceReadHandle<out T> : IEventedReadHandle<T>, IPersisted { }
 
     //public interface ILazyRetrievableReadHandleCovariant<out T> : RH<T>, ILazilyResolvesCovariant<T> { }
-    //public interface ILazyRetrievableReadHandle<T> : RH<T>, ILazilyResolves<T> { }
+    //public interface ILazyRetrievableReadHandle<T> : RH<T>, ILazilyGets<T> { }
 
 #endregion
 

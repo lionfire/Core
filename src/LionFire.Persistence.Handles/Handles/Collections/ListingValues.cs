@@ -13,7 +13,7 @@ namespace LionFire.Persistence.Handles
     //    {
     //    }
 
-    //    //public ITask<IResolveResult<TUnderlyingCollectionItem>> Resolve() => UnderlyingHandle.Resolve();
+    //    //public ITask<IGetResult<TUnderlyingCollectionItem>> Resolve() => UnderlyingHandle.Resolve();
     //}
     //public abstract class AsyncResolvableMapper<TItem, TUnderlying, TUnderlyingCollection, TResolvedUnderlyingCollection> : AsyncMapper<TItem, TUnderlying, TUnderlyingCollection, TResolvedUnderlyingCollection>
     //    //, IGets<TUnderlyingCollectionItem>
@@ -23,7 +23,7 @@ namespace LionFire.Persistence.Handles
     //    {
     //    }
 
-    //    //public ITask<IResolveResult<TUnderlyingCollectionItem>> Resolve() => UnderlyingResolves.Resolve();
+    //    //public ITask<IGetResult<TUnderlyingCollectionItem>> Resolve() => UnderlyingResolves.Resolve();
     //}
 
     public class ListingValues<TItem>

@@ -49,7 +49,7 @@ namespace LionFire.Persistence.Handles
         /// </summary>
         /// <returns>A guaranteed Value, that may have been preexisting, lazily loaded, or just instantiated.</returns>
         [ThreadSafe]
-        public async ITask<IResolveResult<TValue>> GetOrInstantiateValue()
+        public async ITask<IGetResult<TValue>> GetOrInstantiateValue()
         {
             var getResult = await GetValue().ConfigureAwait(false);
             if (getResult.HasValue) return getResult;
@@ -81,7 +81,7 @@ namespace LionFire.Persistence.Handles
 
         void IDeletable.MarkDeleted() => this.OnUserChangedValue_ReadWrite(default);
 
-        ITask<IResolveResult<TValue>> IGets<TValue>.Resolve() => Resolve().AsITask();
+        ITask<IGetResult<TValue>> IGets<TValue>.Resolve() => Resolve().AsITask();
     }
 
 #if OLD

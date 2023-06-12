@@ -24,9 +24,9 @@ namespace LionFire.Referencing
             var replacements = new List<object>();
             var removals = new List<object>();
 
-            await Task.WhenAll(collection.OfType<ILazilyResolves<object>>().Select(async rh => await rh.TryGetValue().ConfigureAwait(false))).ConfigureAwait(false);
+            await Task.WhenAll(collection.OfType<ILazilyGets<object>>().Select(async rh => await rh.TryGetValue().ConfigureAwait(false))).ConfigureAwait(false);
 
-            foreach (var component in collection.OfType<ILazilyResolves<object>>().ToArray())
+            foreach (var component in collection.OfType<ILazilyGets<object>>().ToArray())
             {
                 if (component.Value == null) throw new ReferencedValueNotFoundException(component as IReferencable);
                 try

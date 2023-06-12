@@ -13,7 +13,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\LionFire.Referencing.Abstractions\LionFire.Referencing.Abstractions.csproj" />
-    <ProjectReference Include="..\LionFire.Data.Async.Gets.Abstractions\LionFire.Data.Async.Abstractions.csproj" />
+    <ProjectReference Include="..\LionFire.Resolves.Abstractions\LionFire.Data.Async.Abstractions.csproj" />
   </ItemGroup>
 
 </Project>

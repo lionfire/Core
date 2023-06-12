@@ -43,7 +43,7 @@ namespace LionFire.Persistence.Handles
 #endregion
     }
 
-    public class ObservableReadDictionaryHandle<TReference, THandle, TValue> : ObservableReadDictionary<TReference, THandle, TValue> : IResolves<IEnumerable<T>>, IReferencable<TReference>
+    public class ObservableReadDictionaryHandle<TReference, THandle, TValue> : ObservableReadDictionary<TReference, THandle, TValue> : IGets<IEnumerable<T>>, IReferencable<TReference>
         where THandle : IReadHandle<TValue>, INotifyPersists<TValue>
         where TReference : class, IReference // TODO: class only needed for == operator
     {

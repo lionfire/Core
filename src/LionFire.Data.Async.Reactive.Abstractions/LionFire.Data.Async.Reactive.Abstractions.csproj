@@ -6,4 +6,16 @@
     <Nullable>enable</Nullable>
   </PropertyGroup>
 
+  <ItemGroup>
+    <Folder Include="Collections\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="ReactiveUI" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\LionFire.Resolves.Abstractions\LionFire.Data.Async.Abstractions.csproj" />
+  </ItemGroup>
+
 </Project>

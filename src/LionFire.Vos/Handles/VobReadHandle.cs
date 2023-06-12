@@ -127,7 +127,7 @@ namespace LionFire.Vos
         #region Read handle implementation
 
         public void OnRenamed(IVobHandle<object> newHandle) => throw new NotImplementedException();
-        protected override ITask<IResolveResult<T>> ResolveImpl() => throw new NotImplementedException();
+        protected override ITask<IGetResult<T>> ResolveImpl() => throw new NotImplementedException();
 
         #endregion
 

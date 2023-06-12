@@ -1,26 +1,29 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
-  <PropertyGroup>
-    <TargetFramework>net6.0</TargetFramework>
-    <ImplicitUsings>enable</ImplicitUsings>
-    <Nullable>enable</Nullable>
-	<RootNamespace>LionFire</RootNamespace>
-  </PropertyGroup>
+	<PropertyGroup>
+		<TargetFramework>net6.0</TargetFramework>
+		<ImplicitUsings>enable</ImplicitUsings>
+		<Nullable>enable</Nullable>
+		<RootNamespace>LionFire</RootNamespace>
+	</PropertyGroup>
 
-  <ItemGroup>
-    <PackageReference Include="ReactiveUI" />
-    <PackageReference Include="ReactiveUI.Fody" />
-  </ItemGroup>
+	<ItemGroup>
+		<PackageReference Include="ReactiveUI" />
+		<PackageReference Include="ReactiveUI.Fody" />
+		<PackageReference Include="System.Reactive" />
+		<PackageReference Include="System.Reactive.Async" />
+	</ItemGroup>
 
-  <ItemGroup>
-    <ProjectReference Include="..\LionFire.Data.Async.Reactive.Abstractions\LionFire.Data.Async.Reactive.Abstractions.csproj" />
-    <ProjectReference Include="..\LionFire.Data.Async.Gets.Abstractions\LionFire.Data.Async.Abstractions.csproj" />
-    <ProjectReference Include="..\LionFire.Data.Async.Gets\LionFire.Data.Async.csproj" />
-  </ItemGroup>
+	<ItemGroup>
+		<ProjectReference Include="..\LionFire.Data.Async.Reactive.Abstractions\LionFire.Data.Async.Reactive.Abstractions.csproj" />
+		<ProjectReference Include="..\LionFire.Resolves.Abstractions\LionFire.Data.Async.Abstractions.csproj" />
+		<ProjectReference Include="..\LionFire.Resolves\LionFire.Data.Async.csproj" />
+	</ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="Data\Async\Values\Sets\" />
-    <Folder Include="Values\Write\" />
-  </ItemGroup>
+	<ItemGroup>
+		<Folder Include="Data\Async\Values\Write\" />
+		<Folder Include="Values\Read\" />
+		<Folder Include="Values\Write\" />
+	</ItemGroup>
 
 </Project>

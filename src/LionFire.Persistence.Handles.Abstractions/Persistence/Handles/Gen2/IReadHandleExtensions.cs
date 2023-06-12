@@ -39,7 +39,7 @@ namespace LionFire
 
         public static async Task<bool> IsValueAvailable<T>(this IReadHandleBase<T> readHandle)
         {
-            if (readHandle is ILazilyResolves<T> lr && lr.HasValue) return true;
+            if (readHandle is ILazilyGets<T> lr && lr.HasValue) return true;
             if (readHandle is ISupportsExist<T> ec) return await ec.Exists().ConfigureAwait(false);
             _ = await readHandle.Resolve().ConfigureAwait(false);
             return readHandle.HasValue;

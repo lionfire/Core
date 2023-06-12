@@ -14,8 +14,8 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Data\Async\Values\Value\" />
-    <Folder Include="Data\Async\Values\Sets\" />
+    <Folder Include="Commits\" />
+    <Folder Include="Write\" />
   </ItemGroup>
 
 </Project>

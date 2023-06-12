@@ -45,10 +45,10 @@ namespace LionFire.Persistence.Handles
         public Task<bool> Exists(bool forceCheck = false) => Task.FromResult(true);
 
 
-        public ITask<ILazyResolveResult<TValue>> TryGetValue() => Task.FromResult<ILazyResolveResult<TValue>>(ResolveResultNoop<TValue>.Instance).AsITask();
-        public ITask<IResolveResult<TValue>> Resolve() => Task.FromResult<IResolveResult<TValue>>(NoopRetrieveResult).AsITask();
+        public ITask<ILazyGetResult<TValue>> TryGetValue() => Task.FromResult<ILazyGetResult<TValue>>(ResolveResultNoop<TValue>.Instance).AsITask();
+        public ITask<IGetResult<TValue>> Resolve() => Task.FromResult<IGetResult<TValue>>(NoopRetrieveResult).AsITask();
         public Task<bool> TryResolveObject() => Task.FromResult(true);
-        public ILazyResolveResult<TValue> QueryValue() => ResolveResultNoop<TValue>.Instance;
+        public ILazyGetResult<TValue> QueryValue() => ResolveResultNoop<TValue>.Instance;
 
         public static readonly RetrieveResult<TValue> NoopRetrieveResult = new RetrieveResult<TValue>()
         {

@@ -1,5 +1,6 @@
 ﻿#nullable enable
 
+using LionFire.Data.Async;
 using LionFire.Data.Async.Gets;
 using LionFire.Results;
 using MorseCode.ITask;
@@ -9,9 +10,6 @@ namespace LionFire.Mvvm.Async;
 [Obsolete("Use AsyncValueRx")] // OLD
 public class SettablePropertyAsync<TObject, TValue>
     : PropertyAsync<TObject, TValue>
-    , IStagesSet<TValue>
-    , ISets
-    , IObservableSets<TValue>
 {
     #region Lifecycle
 

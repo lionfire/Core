@@ -115,7 +115,7 @@ namespace LionFire.Persistence
             }
         }
 
-        public async Task<TValue> GetReadValue() => await ReadHandle.GetValue().ConfigureAwait(false); // REVIEW - consider a ILazilyResolves<T> so we can use ILazilyResolves<T>.GetValue instead of the IDefaultableReadWrapper extension method 
+        public async Task<TValue> GetReadValue() => await ReadHandle.GetValue().ConfigureAwait(false); // REVIEW - consider a ILazilyGets<T> so we can use ILazilyGets<T>.GetValue instead of the IDefaultableReadWrapper extension method 
 
 
         #endregion
@@ -183,7 +183,7 @@ namespace LionFire.Persistence
 
         public void DiscardValue()
         {
-            if (readHandle is ILazilyResolves<TValue> lr)
+            if (readHandle is ILazilyGets<TValue> lr)
             {
                 lr.DiscardValue();
             }

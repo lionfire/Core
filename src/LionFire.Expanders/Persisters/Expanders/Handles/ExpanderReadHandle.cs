@@ -107,7 +107,7 @@ public class ExpanderReadHandle<TValue> : ReadHandleBase<ExpansionReference<TVal
 
     #region Implementation
 
-    public static IResolveResult<TValue> SourceProviderNotAvailable = new RetrieveResult<TValue>
+    public static IGetResult<TValue> SourceProviderNotAvailable = new RetrieveResult<TValue>
     {
         Flags = PersistenceResultFlags.ProviderNotAvailable | PersistenceResultFlags.Fail,
     };
@@ -116,7 +116,7 @@ public class ExpanderReadHandle<TValue> : ReadHandleBase<ExpansionReference<TVal
 
 
 
-    protected override async ITask<IResolveResult<TValue>> ResolveImpl()
+    protected override async ITask<IGetResult<TValue>> ResolveImpl()
     {
         (IExpander Expander, IReadHandle SourceReadHandle)? resolved = this.resolved ?? await TryResolveSourceAndExpander();
         if (resolved == null || resolved.Value.SourceReadHandle == null) { return SourceProviderNotAvailable; }
@@ -136,7 +136,7 @@ public class ExpanderReadHandle<TValue> : ReadHandleBase<ExpansionReference<TVal
             {
                 Flags = PersistenceResultFlags.Fail | PersistenceResultFlags.InnerFail,
                 // REVIEW - why can't I cast? Changed InnerResult to object
-                //InnerResult = (IResolveResult<object>)(IRetrieveResult<object>)(IRetrieveResult<TValue>)targetResolveResult,
+                //InnerResult = (IGetResult<object>)(IRetrieveResult<object>)(IRetrieveResult<TValue>)targetResolveResult,
                 InnerResult = targetResolveResult,
             };
         }

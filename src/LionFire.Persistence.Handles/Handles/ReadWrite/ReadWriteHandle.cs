@@ -56,9 +56,9 @@ namespace LionFire.Persistence.Handles
 
         #region OLD (Resolves)
 
-        //public abstract ILazyResolveResult<TValue> QueryValue();
-        //public abstract ITask<ILazyResolveResult<TValue>> GetValue();
-        //ITask<ILazyResolveResult<TValue>> ILazilyResolves<TValue>.TryGetValue() => this.GetValue().AsITask();
+        //public abstract ILazyGetResult<TValue> QueryValue();
+        //public abstract ITask<ILazyGetResult<TValue>> GetValue();
+        //ITask<ILazyGetResult<TValue>> ILazilyGets<TValue>.TryGetValue() => this.GetValue().AsITask();
 
         #endregion
 

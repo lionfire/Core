@@ -36,7 +36,7 @@ public class ExpanderProvider : IResolverSync<IReference, IExpander>, IExpanderP
 
     protected DictionaryResolver<string, IExpander>? FileExtensionResolver { get; set; }
 
-    public IResolveResult<IExpander> Resolve(IReference reference)
+    public IGetResult<IExpander> Resolve(IReference reference)
     {
         // FUTURE: Configurable or more complex resolution order. For now it is just file extension, but in the future it could involve schema or other.
 

@@ -40,11 +40,11 @@ public static class IReadHandleBaseX
 //            return handle.Object;
 //        }
 
-    public static bool HasReferenceOrValue<TValue>(this IReadHandleBase<TValue> handle) => handle != null && (handle.Reference != null || (handle as ILazilyResolves)?.HasValue == true);
+    public static bool HasReferenceOrValue<TValue>(this IReadHandleBase<TValue> handle) => handle != null && (handle.Reference != null || (handle as ILazilyGets)?.HasValue == true);
 
     public static async Task<T> GetValue<T>(this IReadHandleBase<T> handle)
     {
-        if (handle is ILazilyResolves<T> l)
+        if (handle is ILazilyGets<T> l)
             return await l.GetValue<T>().ConfigureAwait(false);
 
         var result = await handle.Resolve().ConfigureAwait(false);
@@ -52,9 +52,9 @@ public static class IReadHandleBaseX
         return result.Value;
     }
 
-    public static async Task<IResolveResult<T>> ResolveIfNeeded<T>(this IReadHandleBase<T> handle)
+    public static async Task<IGetResult<T>> ResolveIfNeeded<T>(this IReadHandleBase<T> handle)
     {
-        if (handle is ILazilyResolves<T> l)
+        if (handle is ILazilyGets<T> l)
             return await l.TryGetValue().ConfigureAwait(false);
 
         var result = await handle.Resolve().ConfigureAwait(false);

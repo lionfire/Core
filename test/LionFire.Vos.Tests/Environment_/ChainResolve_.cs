@@ -57,7 +57,7 @@ namespace Environment_
                     Assert.IsType<VobReference>(r);
                     Assert.IsType<VobReference>(env.FlexDictionary.Values["key2"].SingleValueOrDefault());
 
-                    // TODO use this from Default:                 new ChainResolverWorker(typeof(ILazilyResolves<object>), o => ((ILazilyResolves<object>)o).GetValue()),
+                    // TODO use this from Default:                 new ChainResolverWorker(typeof(ILazilyGets<object>), o => ((ILazilyGets<object>)o).GetValue()),
                     Assert.True(false);
                 });
         }

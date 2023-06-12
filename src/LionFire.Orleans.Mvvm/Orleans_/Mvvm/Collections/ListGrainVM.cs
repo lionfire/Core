@@ -19,7 +19,7 @@ namespace LionFire.Orleans_.Mvvm;
 
 //    #region Lifecycle
 
-//    public OrleansListVM(IGrain listGrain) : base(listGrain as ILazilyResolves<IEnumerable<KeyValuePair<TOutputItem, TValue>>> ?? throw new ArgumentException($"{nameof(listGrain)} must implement {nameof(ILazilyResolves<IEnumerable<KeyValuePair<TOutputItem, TValue>>>)}"))
+//    public OrleansListVM(IGrain listGrain) : base(listGrain as ILazilyGets<IEnumerable<KeyValuePair<TOutputItem, TValue>>> ?? throw new ArgumentException($"{nameof(listGrain)} must implement {nameof(ILazilyGets<IEnumerable<KeyValuePair<TOutputItem, TValue>>>)}"))
 //    {
 
 //        this.Grain = listGrain;
@@ -51,7 +51,7 @@ namespace LionFire.Orleans_.Mvvm;
 //    #region Lifecycle
 
 //    public OrleansDictionaryVM(IGrain dictionaryGrain) 
-//        //: base(dictionaryGrain as ILazilyResolves<IEnumerable<KeyValuePair<TKey, TValue>>> ?? throw new ArgumentException($"{nameof(dictionaryGrain)} must implement {nameof(ILazilyResolves<IEnumerable<KeyValuePair<TKey, TValue>>>)}"))
+//        //: base(dictionaryGrain as ILazilyGets<IEnumerable<KeyValuePair<TKey, TValue>>> ?? throw new ArgumentException($"{nameof(dictionaryGrain)} must implement {nameof(ILazilyGets<IEnumerable<KeyValuePair<TKey, TValue>>>)}"))
 //    {
 //        this.Grain = dictionaryGrain;
 //    }

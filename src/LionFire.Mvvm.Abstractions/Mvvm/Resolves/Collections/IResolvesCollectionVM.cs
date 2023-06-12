@@ -1,7 +1,9 @@
-﻿namespace LionFire.Mvvm;
+﻿
+
+namespace LionFire.Data.Async.Mvvm;
 
 public interface IResolvesCollectionVM<TValue, TValueVM, TCollection>
-    : IResolvesRx<TCollection>
+    : IGetsVM<TCollection>
     where TCollection : IEnumerable<TValue>
 {
 }

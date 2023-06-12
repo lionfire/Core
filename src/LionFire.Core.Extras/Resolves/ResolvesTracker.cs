@@ -32,7 +32,7 @@ public class ResolvesTracker : IHostedService
         return Task.CompletedTask;
     }
 
-    private void LazilyResolvesEvents_ValueChanged((Type valueType, ILazilyResolves resolves, object from, object to) args)
+    private void LazilyResolvesEvents_ValueChanged((Type valueType, ILazilyGets resolves, object from, object to) args)
     {
         IKeyed<string> stringKeyed = args.resolves as IKeyed<string>;
         if (stringKeyed == null) return;

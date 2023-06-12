@@ -231,7 +231,7 @@ namespace LionFire.Persistence.Handles
         //    return result.IsSuccess();
         //}
 
-        //async ITask<ILazyResolveResult<T>> ILazilyResolves<T>.GetValue()
+        //async ITask<ILazyGetResult<T>> ILazilyGets<T>.GetValue()
         //{
         //    var result = await GetValue();
         //    return (result.HasObject, (T)(object)result.Object); // HARDCAST
@@ -243,7 +243,7 @@ namespace LionFire.Persistence.Handles
         ///// </summary>
         ///// <seealso cref="Exists"/>
         ///// <returns>True if an object was found after a retrieval or was manually set on the handle, false otherwise.</returns>
-        //public virtual async ITask<ILazyResolveResult<T>> GetValue()
+        //public virtual async ITask<ILazyGetResult<T>> GetValue()
         //{
         //    if (HasValue)
         //    {

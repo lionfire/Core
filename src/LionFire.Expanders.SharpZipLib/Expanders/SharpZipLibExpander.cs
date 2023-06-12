@@ -146,7 +146,7 @@ public class SharpZipLibExpander : ExpanderPersister, ISupportsFileExtensions, I
                     false => new RetrieveResult<TValue>()
                     {
                         Flags = PersistenceResultFlags.Fail | PersistenceResultFlags.InnerFail,
-                        InnerResult = (IResolveResult<object>)sourceResolveResult,
+                        InnerResult = (IGetResult<object>)sourceResolveResult,
                     },
                     null => RetrieveResult<TValue>.NotFound,
                 };
@@ -399,9 +399,9 @@ public class SharpZipLibExpander : ExpanderPersister, ISupportsFileExtensions, I
 
 public static class IReadHandleX
 {
-    public static async Task<IResolveResult<object>> TryGetValue(this IReadHandle rh)
+    public static async Task<IGetResult<object>> TryGetValue(this IReadHandle rh)
     {
-        if (rh is ILazilyResolves<object> lr)
+        if (rh is ILazilyGets<object> lr)
         {
             return await lr.TryGetValue().ConfigureAwait(false);
         }

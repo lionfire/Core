@@ -180,7 +180,7 @@ public class GrainCollectionCache<TValue> // RENAME: GrainCollectionCache
 
     #region Resolve
 
-    public override ITask<IResolveResult<IEnumerable<TValue>>> ResolveFromSource()
+    public override ITask<IGetResult<IEnumerable<TValue>>> ResolveFromSource()
     {
         return GrainListCacheCommon<TValue>.ResolvesRetrieveFunc(CollectionGrain);
     }

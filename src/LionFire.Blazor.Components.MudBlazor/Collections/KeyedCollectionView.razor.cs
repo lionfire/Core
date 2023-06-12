@@ -175,7 +175,7 @@ public partial class KeyedCollectionView<TKey, TValue, TValueVM>
         if (oldItems == null || !ReferenceEquals(oldItems, this.Items))
         {
             ViewModel.Source = Items == null ? null
-                : Items as ILazilyResolves<IEnumerable<TValue>>
+                : Items as ILazilyGets<IEnumerable<TValue>>
                     ?? new Preresolved<IEnumerable<TValue>>(Items);
 
             ViewModel.Source?.TryGetValue().AsTask().FireAndForget();
@@ -244,27 +244,27 @@ public partial class KeyedCollectionView<TKey, TValue, TValueVM>
 
     //public bool CanResolve => AsyncCollectionCache != null;
 
-    //public async Task<IResolveResult<IEnumerable<TValue>>> ResolveIfNeeded()
+    //public async Task<IGetResult<IEnumerable<TValue>>> GetIfNeeded()
     //{
-    //    if (Items is ILazilyResolves<IEnumerable<TValue>> lazily)
+    //    if (Items is ILazilyGets<IEnumerable<TValue>> lazily)
     //    {
     //        var result = await lazily.TryGetValue().ConfigureAwait(false);
-    //        return (IResolveResult<IEnumerable<TValue>>)result;
+    //        return (IGetResult<IEnumerable<TValue>>)result;
     //    }
 
     //    if (Items is IGets<IEnumerable<TValue>> resolves)
     //    {
-    //        var result = await resolves.Resolve().ConfigureAwait(false);
+    //        var result = await resolves.Get().ConfigureAwait(false);
     //        return result;
     //    }
     //    throw new NotSupportedException();
 
     //}
-    //public async Task<IResolveResult<TValue>> Resolve()
+    //public async Task<IGetResult<TValue>> Get()
     //{
     //    if (Items is IGets<IEnumerable<TValue>> resolves)
     //    {
-    //        var result = await resolves.Resolve().ConfigureAwait(false);
+    //        var result = await resolves.Get().ConfigureAwait(false);
     //        return result;
     //    }
     //    throw new NotSupportedException();

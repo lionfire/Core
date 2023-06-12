@@ -158,9 +158,9 @@ namespace LionFire.Vos
         public Task<bool> Delete() => throw new NotImplementedException();
 
         public void OnRenamed(IVobHandle<T> newHandle) => throw new NotImplementedException();
-        protected override Task<IResolveResult<T>> ResolveImpl() => throw new NotImplementedException();
+        protected override Task<IGetResult<T>> ResolveImpl() => throw new NotImplementedException();
         protected override Task<IPersistenceResult> UpsertImpl() => throw new NotImplementedException();
-        public override ILazyResolveResult<T> QueryValue() => throw new NotImplementedException();
+        public override ILazyGetResult<T> QueryValue() => throw new NotImplementedException();
         public override void RaisePersistenceEvent(PersistenceEvent<T> ev) => throw new NotImplementedException();
 
         #endregion

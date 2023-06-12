@@ -19,6 +19,6 @@
 //        {
 //        }
 
-//        protected override ITask<IResolveResult<T>> ResolveImpl() => throw new NotImplementedException();
+//        protected override ITask<IGetResult<T>> ResolveImpl() => throw new NotImplementedException();
 //    }
 //}

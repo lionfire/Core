@@ -3,6 +3,7 @@ using LionFire.Persistence;
 using LionFire.Persistence.Handles;
 using LionFire.Referencing;
 using LionFire.Data.Async.Gets;
+using LionFire.Data.Async;
 using LionFire.Threading;
 using System;
 using System.Threading.Tasks;
@@ -185,7 +186,7 @@ namespace LionFire.Persistence
         public (TValue clonedValue, bool clonedSomething) CloneQueryReadHandleValueToWriteHandleValue(bool propagateNoValue = false)
             => _CloneGetOrQueryReadHandleValueToWriteHandleValue2(!HasReadHandle ? null : ReadHandle.QueryValue(), propagateNoValue);
 
-        private (TValue clonedValue, bool clonedSomething) _CloneGetOrQueryReadHandleValueToWriteHandleValue2(IResolveResult<TValue> getOrQueryResult, bool propagateNoValue)
+        private (TValue clonedValue, bool clonedSomething) _CloneGetOrQueryReadHandleValueToWriteHandleValue2(IGetResult<TValue> getOrQueryResult, bool propagateNoValue)
         {
             if (getOrQueryResult != null && getOrQueryResult.HasValue)
             {

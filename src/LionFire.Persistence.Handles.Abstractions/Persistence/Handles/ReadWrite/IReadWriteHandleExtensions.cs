@@ -26,7 +26,7 @@ namespace LionFire.Persistence
         // ENH: Return Put task separately and don't await it
         public static async Task<T> TryGetOrCreate<T>(this IReadWriteHandle<T> handle)  // REVIEW - return PersistenceResult<T>?  Generic doesn't exist yet.
         {
-            if (handle is ILazilyResolves<T> lr)
+            if (handle is ILazilyGets<T> lr)
             {
                 var result = await lr.TryGetValue().ConfigureAwait(false);
                 if (result.HasValue)

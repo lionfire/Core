@@ -290,8 +290,8 @@ public class KeyedCollectionG<TKey, TItem> : Grain
 
     public virtual Task<IEnumerable<Type>> SupportedTypes() => Task.FromResult(Enumerable.Empty<Type>());
 
-    public Task<IResolveResult<IEnumerable<TItem>>> Resolve()
-        => Task.FromResult<IResolveResult<IEnumerable<TItem>>>(new ResolveResultSuccess<IEnumerable<TItem>>(ItemsState.State.Values.ToArray()));
+    public Task<IGetResult<IEnumerable<TItem>>> Resolve()
+        => Task.FromResult<IGetResult<IEnumerable<TItem>>>(new ResolveResultSuccess<IEnumerable<TItem>>(ItemsState.State.Values.ToArray()));
 
 
 }

@@ -152,7 +152,7 @@ namespace LionFire.Persistence.Handles
         #region GetValue
 
         // DUPLICATE of Resolves, almost.  Returns Task instead of ITask.
-        public async Task<ILazyResolveResult<TValue>> GetValue()
+        public async Task<ILazyGetResult<TValue>> GetValue()
         {
             var currentValue = ProtectedValue;
             if (currentValue != null) return new ResolveResultNoop<TValue>(ProtectedValue);
@@ -166,7 +166,7 @@ namespace LionFire.Persistence.Handles
         #region Resolve
 
         // DUPLICATE of Resolves, almost.  Returns Task instead of ITask.
-        public async Task<IResolveResult<TValue>> Resolve()
+        public async Task<IGetResult<TValue>> Resolve()
         {
             var resolveResult = await ResolveImpl();
             ProtectedValue = resolveResult.Value;
@@ -178,7 +178,7 @@ namespace LionFire.Persistence.Handles
         #region Abstract
 
         // DUPLICATE of Resolves, almost.  Returns Task instead of ITask.
-        //protected abstract ITask<IResolveResult<TValue>> ResolveImpl();
+        //protected abstract ITask<IGetResult<TValue>> ResolveImpl();
 
         #endregion
 

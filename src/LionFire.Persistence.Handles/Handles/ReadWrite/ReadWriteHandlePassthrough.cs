@@ -81,11 +81,11 @@ namespace LionFire.Persistence.Handles
 
 
 
-        public ITask<ILazyResolveResult<TValue>> TryGetValue() => ReadWriteHandle.TryGetValue();
-        public ITask<IResolveResult<TValue>> GetOrInstantiateValue() => ReadWriteHandle.GetOrInstantiateValue();
-        public ILazyResolveResult<TValue> QueryValue() => ReadWriteHandle.QueryValue();
+        public ITask<ILazyGetResult<TValue>> TryGetValue() => ReadWriteHandle.TryGetValue();
+        public ITask<IGetResult<TValue>> GetOrInstantiateValue() => ReadWriteHandle.GetOrInstantiateValue();
+        public ILazyGetResult<TValue> QueryValue() => ReadWriteHandle.QueryValue();
         public Task<ISuccessResult> Set(TValue value, CancellationToken cancellationToken = default) => ReadWriteHandle.Set(value, cancellationToken);
-        public ITask<IResolveResult<TValue>> Resolve() => ReadWriteHandle.Resolve();
+        public ITask<IGetResult<TValue>> Resolve() => ReadWriteHandle.Resolve();
         public Task<ISuccessResult> Set() => ReadWriteHandle.Set();
         public Task<bool?> Delete() => ReadWriteHandle.Delete();
         public void MarkDeleted() => ReadWriteHandle.MarkDeleted();

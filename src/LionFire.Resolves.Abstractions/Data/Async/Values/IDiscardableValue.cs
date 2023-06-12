@@ -12,6 +12,6 @@ public interface IDiscardableValue
 
 //public interface INotifyingLazilyResolves // Use Persistence instead?
 //{
-//    public event Action<ILazilyResolves> Resolved;
-//    public event Action<ILazilyResolves> Discarded;
+//    public event Action<ILazilyGets> Resolved;
+//    public event Action<ILazilyGets> Discarded;
 //}

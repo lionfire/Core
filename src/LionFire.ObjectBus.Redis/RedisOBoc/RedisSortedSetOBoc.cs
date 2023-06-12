@@ -133,7 +133,7 @@ namespace LionFire.ObjectBus.Redis
 
         public int PageSize = 5;
 
-        protected override ITask<IResolveResult<INotifyingReadOnlyCollection<RedisEntry>>> ResolveImpl()
+        protected override ITask<IGetResult<INotifyingReadOnlyCollection<RedisEntry>>> ResolveImpl()
         {
             throw new NotImplementedException("NEXT");
             //return await Task.Run(() =>

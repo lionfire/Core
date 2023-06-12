@@ -72,7 +72,7 @@ namespace LionFire.Hosting
 
             return services
                 // REVIEW - registering both IUserLocalSettings<WindowSettings> and IUserLocalSettings<>?  Maybe just register as UserLocalSettingsProvider<WindowSettings>
-                .AddSingletonHostedServiceDependency<ILazilyResolves<WindowSettings>, UserLocalSettingsProvider<WindowSettings>>(p 
+                .AddSingletonHostedServiceDependency<ILazilyGets<WindowSettings>, UserLocalSettingsProvider<WindowSettings>>(p 
                 => p
                     .Contributes(DependencyConventionsForUI.CanStartShell)
                     .After("vos:/") // TODO - what should this be?

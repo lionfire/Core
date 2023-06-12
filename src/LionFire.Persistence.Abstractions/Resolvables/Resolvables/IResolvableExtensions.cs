@@ -11,7 +11,7 @@ namespace LionFire.Resolvables
 #if UNUSED // Useful?  Users of handles won't be using this 
         public static Func<object, bool?> DefaultHasValueResolver = o =>
         {
-            if (o is ILazilyResolves rex)
+            if (o is ILazilyGets rex)
             {
                 return rex.HasValue;
             }

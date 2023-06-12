@@ -45,5 +45,5 @@ public class PersisterReadHandle<TPersisterReference, TValue, TPersister, TRefer
     public TPersister? Persister { get; protected set; }
     IPersister<TPersisterReference>? IPersisterHandle<TPersisterReference>.Persister => Persister;
 
-    protected override async ITask<IResolveResult<TValue>> ResolveImpl() => await Persister.Retrieve<TPersisterReference, TValue>((TPersisterReference)(object)Reference).ConfigureAwait(false); // HARDCAST
+    protected override async ITask<IGetResult<TValue>> ResolveImpl() => await Persister.Retrieve<TPersisterReference, TValue>((TPersisterReference)(object)Reference).ConfigureAwait(false); // HARDCAST
 }

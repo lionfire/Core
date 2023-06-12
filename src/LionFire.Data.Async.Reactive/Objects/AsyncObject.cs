@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace LionFire.Mvvm.Async;
+namespace LionFire.Data.Async;
 
 /// <summary>
 /// Represents an Async Object that has its members accessed in an async manner.

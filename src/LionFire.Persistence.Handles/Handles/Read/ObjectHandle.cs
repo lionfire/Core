@@ -37,11 +37,11 @@ namespace LionFire.Persistence.Handles
         }
         TValue IWriteWrapper<TValue>.Value { set => ThrowCannotSet(); }
 
-        protected override ITask<IResolveResult<TValue>> ResolveImpl()
+        protected override ITask<IGetResult<TValue>> ResolveImpl()
         {
             if (HasValue)
             {
-                return Task.FromResult<IResolveResult<TValue>>(new RetrieveResult<TValue>()
+                return Task.FromResult<IGetResult<TValue>>(new RetrieveResult<TValue>()
                 {
                     Flags = PersistenceResultFlags.Success,
                     Value = Value,
@@ -49,7 +49,7 @@ namespace LionFire.Persistence.Handles
             }
             else
             {
-                return Task.FromResult<IResolveResult<TValue>>(RetrieveResult<TValue>.NotFound).AsITask();
+                return Task.FromResult<IGetResult<TValue>>(RetrieveResult<TValue>.NotFound).AsITask();
             }
         }
 
@@ -81,11 +81,11 @@ namespace LionFire.Persistence.Handles
         }
         public void MarkDeleted() => isDeletePending = true;
 
-        public ITask<IResolveResult<TValue>> GetOrInstantiateValue()
+        public ITask<IGetResult<TValue>> GetOrInstantiateValue()
         {
-            if (HasValue) return Task.FromResult((IResolveResult<TValue>)RetrieveResult<TValue>.Noop(Value)).AsITask();
+            if (HasValue) return Task.FromResult((IGetResult<TValue>)RetrieveResult<TValue>.Noop(Value)).AsITask();
             ProtectedValue = Activator.CreateInstance<TValue>();
-            return Task.FromResult((IResolveResult<TValue>)new RetrieveResult<TValue>(Value, PersistenceResultFlags.Success | PersistenceResultFlags.Instantiated)).AsITask();
+            return Task.FromResult((IGetResult<TValue>)new RetrieveResult<TValue>(Value, PersistenceResultFlags.Success | PersistenceResultFlags.Instantiated)).AsITask();
         }
 
         bool isDeletePending = false;
