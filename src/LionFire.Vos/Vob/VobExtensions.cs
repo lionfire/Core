@@ -13,7 +13,7 @@ public static class VobExtensions
     /// <summary>
     /// Returns true if no information would be lost if the IVob was forgotten about.
     ///  - No Value
-    ///  - Nothing in MultiType
+    ///  - Nothing in MultiTyped
     ///  - No VobNodes
     /// </summary>
     /// <param name="vob"></param>

@@ -1,6 +1,6 @@
 ﻿using LionFire.Structures;
 
-namespace LionFire.Collections.Async;
+namespace LionFire.Data.Async.Collections;
 
 public interface IAsyncReadOnlyCollection<TItem> : IEnumerableAsync<TItem>
 {

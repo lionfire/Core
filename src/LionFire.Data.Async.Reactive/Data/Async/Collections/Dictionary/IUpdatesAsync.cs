@@ -1,4 +1,4 @@
-﻿namespace LionFire.Collections.Async;
+﻿namespace LionFire.Data.Async.Collections;
 
 
 public interface IUpdatesAsync<TKey, TItem>

@@ -39,9 +39,9 @@ namespace LionFire.MultiTyping.Overlaying
 
         #endregion
 
-        MultiType DefaultLayerOrCreate => defaultLayer ??= new MultiType();
+        MultiTyped DefaultLayerOrCreate => defaultLayer ??= new MultiTyped();
 
-        public MultiType DefaultLayer
+        public MultiTyped DefaultLayer
         {
             get => defaultLayer;
             set
@@ -60,7 +60,7 @@ namespace LionFire.MultiTyping.Overlaying
                 }
             }
         }
-        private MultiType defaultLayer;
+        private MultiTyped defaultLayer;
 
         #endregion
 
@@ -102,7 +102,7 @@ namespace LionFire.MultiTyping.Overlaying
 #if true // Autocreate DefaultLayer
                 if (DefaultLayer == null)
                 {
-                    DefaultLayer = new MultiType();
+                    DefaultLayer = new MultiTyped();
                 }
                 DefaultLayer[type] = value;
 #else
@@ -123,7 +123,7 @@ namespace LionFire.MultiTyping.Overlaying
 #if true // Autocreate DefaultLayer
             if (DefaultLayer == null)
             {
-                DefaultLayer = new MultiType();
+                DefaultLayer = new MultiTyped();
             }
             DefaultLayer.SetType(obj, type);
 #else
@@ -260,7 +260,7 @@ namespace LionFire.MultiTyping.Overlaying
         //{
         //    DoModificationOperation(new Type[] { layer.GetType() }, () =>
         //    {
-        //        MultiType mt = new MultiType(new object[] { layer });
+        //        MultiTyped mt = new MultiTyped(new object[] { layer });
         //        PROBLEM: Need corresponding remove method
         //        overlayStack.Objects.Add(modPriority, mt);
         //    });

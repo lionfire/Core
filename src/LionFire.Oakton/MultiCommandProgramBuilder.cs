@@ -44,7 +44,8 @@ namespace LionFire.Oakton
 
         private void ShowHelp()
         {
-            ConsoleWriter.Write("Help text here");
+            throw new NotImplementedException();
+            //ConsoleWriter.Write("Help text here");
             Environment.Exit(1);
         }
     }

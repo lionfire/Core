@@ -1,6 +1,6 @@
 ﻿using LionFire.Structures;
 
-namespace LionFire.Collections.Async;
+namespace LionFire.Data.Async.Collections;
 
 /// <typeparam name="TItem"></typeparam>
 /// <remarks>For uses that can't handle properties</remarks>

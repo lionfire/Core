@@ -9,7 +9,7 @@
   <ItemGroup>
     <ProjectReference Include="..\LionFire.DependencyMachines.Abstractions\LionFire.DependencyMachines.Abstractions.csproj" />
     <ProjectReference Include="..\LionFire.Hosting\LionFire.Hosting.csproj" />
-    <ProjectReference Include="..\LionFire.Persistence\LionFire.Persistence.csproj" />
+    <ProjectReference Include="..\LionFire.Persistence\LionFire.Data.Persisters.csproj" />
   </ItemGroup>
 
   <ItemGroup>

@@ -1,6 +1,6 @@
 ﻿using LionFire.Structures;
 
-namespace LionFire.Collections.Async;
+namespace LionFire.Data.Async.Collections;
 
 // Suggested companion interface: IAwareOfSupportedTypes
 public interface IObservableCreatesAsync<TKey, TValue>: ICreatesAsync<TKey, TValue>

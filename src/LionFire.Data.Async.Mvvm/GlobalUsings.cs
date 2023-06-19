@@ -6,3 +6,7 @@ global using Microsoft.Extensions.Logging;
 global using System.Collections.Generic;
 global using System.Diagnostics;
 global using System.Threading;
+global using LionFire.Mvvm;
+global using System.Reactive.Disposables;
+global using System.Reactive.Linq;
+global using ReactiveUI;

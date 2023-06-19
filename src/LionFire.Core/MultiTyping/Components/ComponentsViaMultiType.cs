@@ -16,7 +16,7 @@ public class ComponentsViaMultiType : IComponentizable
     {
         MultiType = new();
     }
-    public ComponentsViaMultiType(MultiType multiType)
+    public ComponentsViaMultiType(MultiTyped multiType)
     {
         MultiType = multiType;
     }
@@ -25,7 +25,7 @@ public class ComponentsViaMultiType : IComponentizable
 
     #region State
 
-    public MultiType MultiType { get; private set; }
+    public MultiTyped MultiType { get; private set; }
 
     #endregion
 

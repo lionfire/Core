@@ -41,7 +41,7 @@ namespace LionFire.Resolvables
 
         public static async Task<T> GetValueAsync<T>(this IGets<T> resolves)
         {
-            var result = await resolves.Resolve().ConfigureAwait(false);
+            var result = await resolves.Get().ConfigureAwait(false);
             if (result.IsSuccess != true) throw new PersistenceException("Resolve failed: " + result.ToString());
             return result.Value;
         }

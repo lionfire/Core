@@ -96,10 +96,6 @@
       <Project>{b2a92bb4-07ef-42b6-b9e8-d6cc469ca697}</Project>
       <Name>LionFire.Handles.Abstractions</Name>
     </ProjectReference>
-    <ProjectReference Include="..\LionFire.Persistence.Abstractions\LionFire.Persistence.Abstractions.csproj">
-      <Project>{76ca328c-f12a-49fe-a2ef-0b9d0caebef2}</Project>
-      <Name>LionFire.Persistence.Abstractions</Name>
-    </ProjectReference>
     <ProjectReference Include="..\LionFire.Persistence.Handles.Abstractions\LionFire.Persistence.Handles.Abstractions.csproj">
       <Project>{4d9958ee-99d7-4c14-ae2e-d5df5bc62a75}</Project>
       <Name>LionFire.Persistence.Handles.Abstractions</Name>
@@ -108,9 +104,9 @@
       <Project>{7be7447a-5990-4a38-94e7-5237451b4bf2}</Project>
       <Name>LionFire.Referencing.Abstractions</Name>
     </ProjectReference>
-    <ProjectReference Include="..\LionFire.Resolves.Abstractions\LionFire.Data.Async.Abstractions.csproj">
+    <ProjectReference Include="..\LionFire.Resolves.Abstractions\LionFire.Data.Abstractions.csproj">
       <Project>{5FE7478A-9F42-496F-8FBF-AFDDC39DB79C}</Project>
-      <Name>LionFire.Data.Async.Abstractions</Name>
+      <Name>LionFire.Data.Abstractions</Name>
     </ProjectReference>
     <ProjectReference Include="..\LionFire.Structures\LionFire.Structures.csproj">
       <Project>{0d31fb85-51e2-4e8a-96bf-7f5d904ec7d0}</Project>

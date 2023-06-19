@@ -49,7 +49,7 @@
 
 //    }
 
-//    public class ServiceConfiguration : MultiType, Frame
+//    public class ServiceConfiguration : MultiTyped, Frame
 //    {
 //        public IServiceCollection ServiceCollection { get; set; }
 
@@ -58,7 +58,7 @@
 //        public 
 //    }
 
-//    public class Initializable : MultiType, Frame
+//    public class Initializable : MultiTyped, Frame
 //    {
 //        public IServiceCollection ServiceCollection { get; set; }
 

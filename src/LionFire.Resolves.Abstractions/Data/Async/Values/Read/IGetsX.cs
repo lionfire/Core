@@ -14,7 +14,7 @@ public static class IGetsX
     /// </summary>
     /// <param name="resolves"></param>
     /// <returns></returns>
-    public static async Task<IGetResult<object>> Resolve(this IGets resolves)
+    public static async Task<IGetResult<object>> GetUnknownType(this IGets resolves)
     {
         var retrievesInterface = resolves.GetType().GetInterfaces().Where(t => t.IsGenericType && t.GetGenericTypeDefinition() == typeof(IGets<>)).Single();
         return await ((ITask<IGetResult<object>>)retrievesInterface.GetMethod(nameof(IGets<object>.Get)).Invoke(resolves, null)).ConfigureAwait(false);

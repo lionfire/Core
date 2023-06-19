@@ -1,5 +1,8 @@
 ﻿namespace LionFire.Data.Async;
 
+/// <summary>
+/// See also: <seealso cref="LionFire.Structures.IDiscardable"/> (recommended to also implement this)
+/// </summary>
 public interface IDiscardableValue
 {
     /// <summary>

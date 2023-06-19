@@ -1,5 +1,5 @@
 ﻿using DynamicData;
-using LionFire.Collections.Async;
+using LionFire.Data.Async.Collections;
 using LionFire.Ontology;
 using LionFire.Structures;
 using LionFire.Types.Scanning;

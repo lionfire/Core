@@ -1,4 +1,6 @@
-﻿namespace LionFire.Data.Async.Mvvm;
+﻿using LionFire.Mvvm;
+
+namespace LionFire.Data.Async.Mvvm;
 
 // Without TCollection
 public class LazilyGetsCollectionVM<TValue, TValueVM>

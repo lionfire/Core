@@ -1,17 +1,15 @@
 ﻿using LionFire.Results;
-using System;
 
 namespace LionFire.Data.Async.Gets;
 
 /// <summary>
 /// Marker interface for return values from Get methods on IGets.  Use extension methods to inspect details.
 /// </summary>
-public interface IGetResult : ISuccessResult { }
+public interface IGetResult : ITransferResult { }
 
 public interface IGetResult<out TValue> : IGetResult, IValueResult<TValue>, IHasValueResult
 {
 }
-
 
 public static class IGetResultX
 {
@@ -26,5 +24,4 @@ public static class IGetResultX
             return new InvalidOperationException("ToException called when IsSuccess is true.");
         }
     }
-
 }

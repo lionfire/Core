@@ -1,4 +1,4 @@
-﻿namespace LionFire.Collections.Async;
+﻿namespace LionFire.Data.Async.Collections;
 
 // Features included:
 //  - Remove

@@ -119,14 +119,14 @@ namespace LionFire.Vos
     /// <remarks>
     /// Handle overrides:
     ///  - (TODO) Object set/get.
-    ///    - get_Object - for Vob{T} this will return the object as T, if any.  Otherwise, it may return a single object, or a MultiType object
-    ///    - set_Object - depending on the situation, it may assign into a MultiType object
+    ///    - get_Object - for Vob{T} this will return the object as T, if any.  Otherwise, it may return a single object, or a MultiTyped object
+    ///    - set_Object - depending on the situation, it may assign into a MultiTyped object
     /// </remarks>
     public partial class Vob : // RENAME - MinimalVob?
                                //CachingHandleBase<Vob, Vob>,
                                //CachingChildren<Vob>,
                                //IHasHandle,
-                               //H, // TODO - make this a smarter handle.  The object might be a dynamically created MultiType for complex scenarios
+                               //H, // TODO - make this a smarter handle.  The object might be a dynamically created MultiTyped for complex scenarios
         IReferencable
 #if AOT
 		IParented
@@ -344,12 +344,12 @@ namespace LionFire.Vos
             {
                 if (multiTyped == null)
                 {
-                    multiTyped = new MultiType();
+                    multiTyped = new MultiTyped();
                 }
                 return multiTyped;
             }
         }
-        protected MultiType multiTyped;
+        protected MultiTyped multiTyped;
 
         #endregion
 

@@ -1,4 +1,4 @@
-﻿using LionFire.Collections.Async;
+﻿using LionFire.Data.Async.Collections;
 using LionFire.Data.Async.Gets;
 
 namespace LionFire.Orleans_.Collections;

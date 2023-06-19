@@ -10,7 +10,7 @@ using System.Reactive;
 using Microsoft.Extensions.DependencyInjection;
 using LionFire.Dependencies;
 
-namespace LionFire.Collections.Async;
+namespace LionFire.Data.Async.Collections;
 
 public abstract class AsyncReadOnlyDictionaryCache<TKey, TValue>
     : AsyncDynamicDataCollectionCache<KeyValuePair<TKey, TValue>>

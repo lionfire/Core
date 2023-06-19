@@ -48,7 +48,7 @@ namespace LionFire.Vos
 
         #endregion
 
-        public MultiType DefaultLayer
+        public MultiTyped DefaultLayer
         {
             get
             {
@@ -69,7 +69,7 @@ namespace LionFire.Vos
                     this.AddLayer(DefaultLayerPriority, defaultLayer);
                 }
             }
-        } private MultiType defaultLayer;
+        } private MultiTyped defaultLayer;
 
         #endregion
 
@@ -100,7 +100,7 @@ namespace LionFire.Vos
 #if true // Autocreate DefaultLayer
                 if (DefaultLayer == null)
                 {
-                    DefaultLayer = new MultiType();
+                    DefaultLayer = new MultiTyped();
                 }
                 DefaultLayer[type] = value;
 #else
@@ -121,7 +121,7 @@ namespace LionFire.Vos
 #if true // Autocreate DefaultLayer
             if (DefaultLayer == null)
             {
-                DefaultLayer = new MultiType();
+                DefaultLayer = new MultiTyped();
             }
             DefaultLayer.SetType(obj, type);
 #else
@@ -258,7 +258,7 @@ namespace LionFire.Vos
         //{
         //    DoModificationOperation(new Type[] { layer.GetType() }, () =>
         //    {
-        //        MultiType mt = new MultiType(new object[] { layer });
+        //        MultiTyped mt = new MultiTyped(new object[] { layer });
         //        PROBLEM: Need corresponding remove method
         //        overlayStack.Objects.Add(modPriority, mt);
         //    });
@@ -456,11 +456,11 @@ namespace LionFire.Vos
     {
         #region MultiType Pass-through
 
-        public MultiType MultiType
+        public MultiTyped MultiType
         {
             get { return multiType; }
             set { multiType = value; } // For serialization
-        } private MultiType multiType = new MultiType();
+        } private MultiTyped multiType = new MultiTyped();
 
 #if !NoGenericMethods
         public T AsType<T>() where T : class { return multiType.AsType<T>(); }

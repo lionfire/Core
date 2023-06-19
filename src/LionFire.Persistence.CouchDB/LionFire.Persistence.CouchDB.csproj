@@ -12,7 +12,7 @@
   <ItemGroup>
     <ProjectReference Include="..\LionFire.CouchDB\LionFire.CouchDB.csproj" />
     <ProjectReference Include="..\LionFire.Persistence.Filesystem\LionFire.Persistence.Filesystem.csproj" />
-    <ProjectReference Include="..\LionFire.Persistence\LionFire.Persistence.csproj" />
+    <ProjectReference Include="..\LionFire.Persistence\LionFire.Data.Persisters.csproj" />
   </ItemGroup>
 
 </Project>

@@ -1,7 +1,7 @@
 ﻿//using DynamicData;
 //using Microsoft.Extensions.Options;
 
-//namespace LionFire.Collections.Async;
+//namespace LionFire.Data.Async.Collections;
 
 //public abstract partial class AsyncObservableCollectionCacheBase<TItem, TCollection> : AsyncObservableCollectionCacheBaseBase<TItem, TCollection>
 //    where TCollection : class, IObservableCollection<TItem>, new()

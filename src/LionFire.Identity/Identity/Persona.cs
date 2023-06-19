@@ -14,7 +14,7 @@ namespace LionFire.Identity
         }
     }
 
-    public class Persona : MultiType, SPersona
+    public class Persona : MultiTyped, SPersona
     {
         #region Name
 

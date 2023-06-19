@@ -6,7 +6,7 @@ using System.Text;
 namespace LionFire.Types
 {
     /// <summary>
-    /// Use this attribute to treat a class as a base class or interface when adding to a MultiType object.
+    /// Use this attribute to treat a class as a base class or interface when adding to a MultiTyped object.
     /// </summary>
     [AttributeUsage(AttributeTargets.Class, Inherited = false, AllowMultiple = false)]
     public sealed class MultiTypeSlotAttribute : Attribute
@@ -19,7 +19,7 @@ namespace LionFire.Types
         }
 
         /// <summary>
-        /// Type to treat this type as when adding to a MultiType object.
+        /// Type to treat this type as when adding to a MultiTyped object.
         /// </summary>
         public Type Type
         {

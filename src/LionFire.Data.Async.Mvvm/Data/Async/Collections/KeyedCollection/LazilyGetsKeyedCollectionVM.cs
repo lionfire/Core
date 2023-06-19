@@ -1,4 +1,4 @@
-﻿using LionFire.Collections.Async;
+﻿using LionFire.Data.Async.Collections;
 using LionFire.ExtensionMethods;
 using LionFire.Data.Async.Gets;
 using System.ComponentModel;

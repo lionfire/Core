@@ -1,7 +1,6 @@
-﻿namespace LionFire.Results
+﻿namespace LionFire.Results;
+
+public interface ISuccessResult : IResult
 {
-    public interface ISuccessResult : IResult
-    {
-        bool? IsSuccess { get; }
-    }
+    bool? IsSuccess { get; }
 }

@@ -1,5 +1,5 @@
 ﻿
-namespace LionFire.Collections.Async;
+namespace LionFire.Data.Async.Collections;
 
 /// <remarks>
 /// Adds properties (which Orleans can't handle) to base interface 

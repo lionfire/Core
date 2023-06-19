@@ -73,7 +73,7 @@ public class VobMountOptions : IVobMountOptions
         {
             if (multiTyped == null)
             {
-                multiTyped = new MultiType();
+                multiTyped = new MultiTyped();
             }
             return multiTyped;
         }

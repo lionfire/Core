@@ -7,36 +7,16 @@ using MorseCode.ITask;
 using System;
 using System.Linq;
 using System.Threading.Tasks;
+using LionFire.Persistence;
 
-namespace LionFire.Persistence;
+namespace LionFire.Data.Async.Gets;
 
-/// <summary>
-/// An interface for directly initiating read-related persistence operations of single objects:
-///  - Retrieve
-///  - Exists
-/// 
-/// This is only a marker interface.  IRetrieves&lt;T&gt; should also be implemented.  There is a Retrieve extension method
-/// for this marker interface.
-/// 
-/// Common peer interfaces: IDetects, ILazilyRetrieves&lt;T&gt;
-/// </summary>
-public interface IRetrieves : IGets //, IResolvesCovariant<object>
-{
-    // For a Retrieve method, see IRetrievesX.Retrieve
-}
-
-
-public interface IRetrieves<out T> : IRetrieves, IGets<T>, IDefaultableReadWrapper<T> { }
-
-//public interface IRetrievesCovariant<out T> : IRetrieves, IGets<T>, IReadWrapper<T>, IWrapper { }
-
-
-public static class IRetrievesX
+public static class IGetsX2
 {
 
-    public static Type GetRetrieveType(this IRetrieves retrieves)
+    public static Type GetRetrieveType(this IGets gets)
     {
-        var retrievesInterface = retrieves.GetType().GetInterfaces().Where(t => t.IsGenericType && t.GetGenericTypeDefinition() == typeof(IRetrieves<>)).Single();
+        var retrievesInterface = gets.GetType().GetInterfaces().Where(t => t.IsGenericType && t.GetGenericTypeDefinition() == typeof(IGets<>)).Single();
         return retrievesInterface.GetGenericArguments()[0];
     }
 
@@ -45,32 +25,38 @@ public static class IRetrievesX
     /// </summary>
     /// <param name="retrieves"></param>
     /// <returns></returns>
-    public static async Task<IRetrieveResult<object>> Retrieve(this IRetrieves retrieves)
+    public static async Task<IGetResult<object>> GetUnknownType(this IGets retrieves)
     {
         var retrievesInterface = retrieves.GetType().GetInterfaces().Where(t => t.IsGenericType && t.GetGenericTypeDefinition() == typeof(IGets<>)).Single();
-        return (await ((ITask<IGetResult<object>>)retrievesInterface.GetMethod(nameof(IGets<object>.Resolve)).Invoke(retrieves, null)).ConfigureAwait(false)).ToRetrieveResult();
+        return (await ((ITask<IGetResult<object>>)retrievesInterface.GetMethod(nameof(IGets<object>.Get)).Invoke(retrieves, null)).ConfigureAwait(false));
     }
 
     /////// <summary>
     /////// Force a retrieve of the reference from the source.  Replace the Object.
     /////// </summary>
-    /////// <remarks>Can't return a generic IRetrieveResult due to limitation of the language.</remarks>
+    /////// <remarks>Can't return a generic IGetResult due to limitation of the language.</remarks>
     /////// <returns>true if an object was retrieved.  False if object was not found at location of the Reference.  Throws if could not resolve the Reference to a valid source.</returns>
-    //[Casts("retrieves.ResolveAsync must return IRetrieveResult<object>", typeof(IRetrieveResult<object>))]
-    //public static async Task<IRetrieveResult<object>> Retrieve(this IRetrieves retrieves) => (IRetrieveResult<object>) (await ((IGets<object>)retrieves).Resolve().ConfigureAwait(false));
+    //[Casts("lazilyiGets.ResolveAsync must return IGetResult<object>", typeof(IGetResult<object>))]
+    //public static async Task<IGetResult<object>> Retrieve(this IRetrieves lazilyiGets) => (IGetResult<object>) (await ((IGets<object>)lazilyiGets).Resolve().ConfigureAwait(false));
 
     ///// <summary>
     ///// Force a retrieve of the reference from the source.  Replace the Object.
     ///// </summary>
-    ///// <remarks>Can't return a generic IRetrieveResult due to limitation of the language.</remarks>
+    ///// <remarks>Can't return a generic IGetResult due to limitation of the language.</remarks>
     ///// <returns>true if an object was retrieved.  False if object was not found at location of the Reference.  Throws if could not resolve the Reference to a valid source.</returns>
-    [Casts("retrieves.ResolveAsync must return IRetrieveResult<T>", typeof(IRetrieveResult<>))]
+    [Casts("retrieves.ResolveAsync must return IGetResult<T>", typeof(IGetResult<>))]
     [Obsolete("TODO - use ToRetrieveResult instead")]
-    public static async Task<IRetrieveResult<T>> Retrieve<T>(this IRetrieves<T> retrieves) => (IRetrieveResult<T>)await IResolvesX.Resolve(retrieves).ConfigureAwait(false); // CAST
+    public static async Task<IGetResult<T>> Retrieve<T>(this ILazilyGets<T> lazilyGets) => (IGetResult<T>)await IGetsX2.GetUnknownType(lazilyGets).ConfigureAwait(false); // CAST
+
+    public static PersistenceResultFlags GetPersistenceResultFlags(this ITransferResult getResult)
+    {
+        if(getResult is IPersistenceResult pr) { return pr.Flags; }
+        return PersistenceResultFlags.None;
+    }
 
     public static IRetrieveResult<T> ToRetrieveResult<T>(this IGetResult<T> resolveResult)
     {
-        if (resolveResult is IRetrieveResult<T> rr) return rr;
+        if (resolveResult is IGetResult<T> rr) return rr;
 
         PersistenceResultFlags flags = PersistenceResultFlags.None;
 

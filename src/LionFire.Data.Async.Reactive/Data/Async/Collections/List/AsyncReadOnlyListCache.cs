@@ -3,7 +3,7 @@ using LionFire.Structures.Keys;
 using System.Reactive.Subjects;
 using System.Reactive;
 
-namespace LionFire.Collections.Async;
+namespace LionFire.Data.Async.Collections;
 
 
 // ENH // ideas specific to lists: sorting

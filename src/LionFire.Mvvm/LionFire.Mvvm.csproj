@@ -24,7 +24,7 @@
     <ProjectReference Include="..\LionFire.Hosting\LionFire.Hosting.csproj" />
     <ProjectReference Include="..\LionFire.Metadata\LionFire.Metadata.csproj" />
     <ProjectReference Include="..\LionFire.Mvvm.Abstractions\LionFire.Mvvm.Abstractions.csproj" />
-    <ProjectReference Include="..\LionFire.Resolves.Abstractions\LionFire.Data.Async.Abstractions.csproj" />
+    <ProjectReference Include="..\LionFire.Resolves.Abstractions\LionFire.Data.Abstractions.csproj" />
   </ItemGroup>
 
   <ItemGroup>

@@ -26,7 +26,7 @@
     <ProjectReference Include="..\LionFire.Framework\LionFire.Framework.csproj" />
     <ProjectReference Include="..\LionFire.ObjectBus.Redis\LionFire.ObjectBus.Redis.csproj" />
     <ProjectReference Include="..\LionFire.Persistence.Handles.Abstractions\LionFire.Persistence.Handles.Abstractions.csproj" />
-    <ProjectReference Include="..\LionFire.Persistence\LionFire.Persistence.csproj" />
+    <ProjectReference Include="..\LionFire.Persistence\LionFire.Data.Persisters.csproj" />
     <ProjectReference Include="..\LionFire.Serialization.Json.Newtonsoft\LionFire.Serialization.Json.Newtonsoft.csproj" />
   </ItemGroup>
 

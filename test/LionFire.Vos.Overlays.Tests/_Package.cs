@@ -40,7 +40,7 @@ namespace Packages_
 
                         //.VosMount("/`/TestPlugins/available", pluginsDir.ToFileReference(),
                         //new MountOptions(
-                        //    decorators: new MultiType(new MultiTypableVisitor<IVobNodeProvider>(() => new MountOptions { Name = "UnitTestPlugin", ReadPriority = 100, WritePriority = -100 }))
+                        //    decorators: new MultiTyped(new MultiTypableVisitor<IVobNodeProvider>(() => new MountOptions { Name = "UnitTestPlugin", ReadPriority = 100, WritePriority = -100 }))
                         //    {
                         //        Name = "UnitTestPluginsDir"
                         //    })

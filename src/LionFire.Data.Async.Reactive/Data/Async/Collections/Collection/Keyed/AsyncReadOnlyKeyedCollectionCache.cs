@@ -11,7 +11,7 @@ using LionFire.Dependencies;
 using System.Diagnostics;
 using System.Reactive.Linq;
 
-namespace LionFire.Collections.Async;
+namespace LionFire.Data.Async.Collections;
 
 public abstract class AsyncReadOnlyKeyedCollectionCache<TKey, TValue>
     : AsyncDynamicDataCollectionCache<TValue>

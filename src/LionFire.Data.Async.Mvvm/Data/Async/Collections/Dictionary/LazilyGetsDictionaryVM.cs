@@ -1,4 +1,4 @@
-﻿using LionFire.Collections.Async;
+﻿using LionFire.Data.Async.Collections;
 
 
 namespace LionFire.Data.Async.Mvvm;

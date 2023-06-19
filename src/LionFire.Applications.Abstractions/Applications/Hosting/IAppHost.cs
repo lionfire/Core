@@ -16,7 +16,7 @@ namespace LionFire.Applications.Hosting
 {
     // RENAME to ExecutionContainer?
     // - DependencyContext
-    // - MultiType
+    // - MultiTyped
     // - IComposable (children & multitype)
     // Can
     //  - Init/Run/Query result/Cleanup

@@ -16,7 +16,6 @@ public interface ILazilyGets<out T> : IGets<T>, ILazilyGets, IDefaultableReadWra
     ILazyGetResult<T> QueryValue();
 }
 
-
 #if UNUSED
 
 /// <summary>

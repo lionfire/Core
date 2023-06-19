@@ -16,7 +16,7 @@ using LionFire.Reactive;
 using System.Runtime.CompilerServices;
 using LionFire.Orleans_.Streams;
 using Newtonsoft.Json.Linq;
-using LionFire.Collections.Async;
+using LionFire.Data.Async.Collections;
 using DynamicData;
 using DynamicData.Cache;
 using System;

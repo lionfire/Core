@@ -5,7 +5,7 @@ using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
 using System.Collections;
 using System.Reactive.Subjects;
-namespace LionFire.Collections.Async;
+namespace LionFire.Data.Async.Collections;
 
 
 // Description: local cache of a collection that is read (and maybe written) across an async boundary (such as network or disk)

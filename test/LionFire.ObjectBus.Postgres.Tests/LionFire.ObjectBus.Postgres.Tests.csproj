@@ -17,9 +17,8 @@
     <ProjectReference Include="..\..\src\LionFire.Applications\LionFire.Applications.csproj" />
     <ProjectReference Include="..\..\src\LionFire.Execution\LionFire.Execution.csproj" />
     <ProjectReference Include="..\..\src\LionFire.ObjectBus.Postgres\LionFire.ObjectBus.Postgres.csproj" />
-    <ProjectReference Include="..\..\src\LionFire.ObjectBus.Testing\LionFire.ObjectBus.Testing.csproj" />
     <ProjectReference Include="..\..\src\LionFire.ObjectBus\LionFire.ObjectBus.csproj" />
-    <ProjectReference Include="..\..\src\LionFire.Persistence\LionFire.Persistence.csproj" />
+    <ProjectReference Include="..\..\src\LionFire.Persistence\LionFire.Data.Persisters.csproj" />
     <ProjectReference Include="..\..\src\LionFire.Serialization.Json.Newtonsoft\LionFire.Serialization.Json.Newtonsoft.csproj" />
   </ItemGroup>
 </Project>

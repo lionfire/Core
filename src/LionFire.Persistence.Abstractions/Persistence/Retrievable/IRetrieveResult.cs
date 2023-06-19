@@ -10,6 +10,7 @@ namespace LionFire.Persistence;
 /// <summary>
 /// Returned for Retrieve or ResolveReference operations (which may do a Retrieve).
 /// </summary>
+[Obsolete("TODO - Use ILazyGetResult or IGetResult, and get PersistenceFlags through extension method that casts to IPersistenceResult")]
 public interface IRetrieveResult<out T> : IGetResult<T>, IPersistenceResult
     , ILazyGetResult<T> // REVIEW - is it correct to have ILazyGetResult<T> here?
 {
