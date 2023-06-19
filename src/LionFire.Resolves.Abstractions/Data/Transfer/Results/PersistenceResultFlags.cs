@@ -9,7 +9,7 @@ namespace LionFire.Data;
 
 // TODO: Reorg the numbers, group for Resolve/Transmit/Persist.
 [Flags]
-public enum TransferResultFlags // TODO RENAME GLOBALRENAME to TransferResultFlags
+public enum TransferResultFlags
 {
     None = 0,
 
