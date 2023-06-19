@@ -74,8 +74,8 @@ public class _Resolve
         Assert.IsNotNull(resolveResult.Value);
         Assert.IsInstanceOfType<RetrieveResult<TestClass>>(resolveResult);
         var r = (RetrieveResult<TestClass>)resolveResult;
-        Assert.IsTrue(r.Flags.HasFlag(PersistenceResultFlags.Found), "Not Found");
-        Assert.IsFalse(r.Flags.HasFlag(PersistenceResultFlags.NotFound), "Has NotFound flag");
+        Assert.IsTrue(r.Flags.HasFlag(TransferResultFlags.Found), "Not Found");
+        Assert.IsFalse(r.Flags.HasFlag(TransferResultFlags.NotFound), "Has NotFound flag");
         Assert.AreEqual("Test Name", resolveResult.Value.Name);
         Assert.AreEqual(123, resolveResult.Value.Number);
 

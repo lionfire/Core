@@ -68,7 +68,7 @@ public abstract class Commits<TKey, TValue> : DisposableKeyed<TKey>, IDiscardabl
 
     #region Abstract
 
-    public abstract Task<IPersistenceResult> CommitImpl(TValue value);
+    public abstract Task<ITransferResult> CommitImpl(TValue value);
 
     #endregion
 

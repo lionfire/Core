@@ -51,7 +51,7 @@ namespace LionFire.ObjectBus
         // TODO BREAKING: make Get an extension method on HBase(this IOBase obase, IReference)
         Task<IRetrieveResult<T>> Get<T>(IReference reference);
 
-        Task<(bool exists, IPersistenceResult result)> Exists(IReference reference);
+        Task<(bool exists, ITransferResult result)> Exists(IReference reference);
 
         // FUTURE: flags for hidden, persisted
         //IEnumerable<string> GetChildrenNames(IReference parent, QueryFlags requiredFlags = QueryFlags.None, QueryFlags excludeFlags = QueryFlags.None);
@@ -107,15 +107,15 @@ namespace LionFire.ObjectBus
         /// <param name="type"></param>
         /// <param name="allowOverwrite"></param>
         /// <returns></returns>
-        Task<IPersistenceResult> Set<T>(IReference reference, T obj, bool allowOverwrite = true);
+        Task<ITransferResult> Set<T>(IReference reference, T obj, bool allowOverwrite = true);
 
-        Task<IPersistenceResult> TryDelete<T>(IReference reference);
+        Task<ITransferResult> TryDelete<T>(IReference reference);
 
         /// <summary>
         /// Detect whether deletion of the specified reference will succeed
         /// </summary>
-        /// <returns>A IPersistenceResult with PreviewSuccess or PreviewFail set</returns>
-        Task<IPersistenceResult> CanDelete<T>(IReference reference);
+        /// <returns>A ITransferResult with PreviewSuccess or PreviewFail set</returns>
+        Task<ITransferResult> CanDelete<T>(IReference reference);
 
         #endregion
     }
@@ -126,7 +126,7 @@ namespace LionFire.ObjectBus
         public static async Task<bool> CanDelete<T>(this IOBase obase, IReference reference)
         {
             var flags = (await obase.CanDelete<T>(reference)).Flags;
-            return flags.HasFlag(PersistenceResultFlags.PreviewSuccess) && !flags.HasFlag(PersistenceResultFlags.PreviewFail);
+            return flags.HasFlag(TransferResultFlags.PreviewSuccess) && !flags.HasFlag(TransferResultFlags.PreviewFail);
         }
 
         public static Task<IRetrieveResult<object>> TryGet(this IOBase obase, IReference reference) => obase.Get<object>(reference);

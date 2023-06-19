@@ -42,13 +42,13 @@
 //        protected override async Task<IGetResult<T>> ResolveImpl() 
 //            => await OBase.Get<T>(this.Reference).ConfigureAwait(false);
 
-//        //protected async Task<IPersistenceResult> DeleteObject()
+//        //protected async Task<ITransferResult> DeleteObject()
 //        //    => await OBase.TryDelete<T>(this.Reference).ConfigureAwait(false);
 
-//        protected async Task<IPersistenceResult> DeleteObject() // TODO: Override something? 
+//        protected async Task<ITransferResult> DeleteObject() // TODO: Override something? 
 //            => await OBase.TryDelete<T>(this.Reference).ConfigureAwait(false);
 
-//        protected override async Task<IPersistenceResult> UpsertImpl()
+//        protected override async Task<ITransferResult> UpsertImpl()
 //        {
 //            // TODO: propagate persistenceContext?  Or remove it and rely on ambient AsyncLocal?
 //            var result = await OBase.Set<T>(this.Reference, ProtectedValue).ConfigureAwait(false);

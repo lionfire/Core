@@ -9,7 +9,7 @@ namespace LionFire.Persistence
         public PersistenceException(string message) : base(message) { }
         public PersistenceException(string message, Exception inner) : base(message, inner) { }
 
-        public PersistenceException(IPersistenceResult result, string message = null) : base(message ?? $"Persistence operation failed.  See Result for details.")
+        public PersistenceException(ITransferResult result, string message = null) : base(message ?? $"Persistence operation failed.  See Result for details.")
         {
             this.Result = result;
         }
@@ -18,7 +18,7 @@ namespace LionFire.Persistence
         {
         }
 
-        public IPersistenceResult Result { get; private set; }
+        public ITransferResult Result { get; private set; }
 
     }
 

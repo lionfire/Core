@@ -61,7 +61,7 @@ namespace LionFire.ObjectBus.Filesystem
                     // OPTIMIZE: Use RetrieveResult<T>.NotFound
                     return new RetrieveResult<INotifyingReadOnlyCollection<FsListEntry>>
                     {
-                        Flags = PersistenceResultFlags.NotFound
+                        Flags = TransferResultFlags.NotFound
                     };
                 }
 

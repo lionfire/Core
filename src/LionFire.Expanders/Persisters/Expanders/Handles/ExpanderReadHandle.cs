@@ -109,7 +109,7 @@ public class ExpanderReadHandle<TValue> : ReadHandleBase<ExpansionReference<TVal
 
     public static IGetResult<TValue> SourceProviderNotAvailable = new RetrieveResult<TValue>
     {
-        Flags = PersistenceResultFlags.ProviderNotAvailable | PersistenceResultFlags.Fail,
+        Flags = TransferResultFlags.ProviderNotAvailable | TransferResultFlags.Fail,
     };
 
     public bool IsResolved => resolved != null;
@@ -134,7 +134,7 @@ public class ExpanderReadHandle<TValue> : ReadHandleBase<ExpansionReference<TVal
         {
             return new RetrieveResult<TValue>()
             {
-                Flags = PersistenceResultFlags.Fail | PersistenceResultFlags.InnerFail,
+                Flags = TransferResultFlags.Fail | TransferResultFlags.InnerFail,
                 // REVIEW - why can't I cast? Changed InnerResult to object
                 //InnerResult = (IGetResult<object>)(IRetrieveResult<object>)(IRetrieveResult<TValue>)targetResolveResult,
                 InnerResult = targetResolveResult,
@@ -150,7 +150,7 @@ public class ExpanderReadHandle<TValue> : ReadHandleBase<ExpansionReference<TVal
             };
         }
 
-        return new RetrieveResult<TValue>(targetResolveResult.Value, PersistenceResultFlags.Success | PersistenceResultFlags.Found);
+        return new RetrieveResult<TValue>(targetResolveResult.Value, TransferResultFlags.Success | TransferResultFlags.Found);
 
         #endregion
 

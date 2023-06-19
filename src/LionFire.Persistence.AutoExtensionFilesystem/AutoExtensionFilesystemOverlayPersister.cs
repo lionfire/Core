@@ -78,9 +78,9 @@ namespace LionFire.Persistence.AutoExtensionFilesystem
 
                 //var result = 
 
-                //if (result.Flags.HasFlag(PersistenceResultFlags.Success))
+                //if (result.Flags.HasFlag(TransferResultFlags.Success))
                 //{
-                //    if (result.Flags.HasFlag(PersistenceResultFlags.Found))
+                //    if (result.Flags.HasFlag(TransferResultFlags.Found))
                 //    {
                 //        return result; // Success
                 //    }
@@ -91,7 +91,7 @@ namespace LionFire.Persistence.AutoExtensionFilesystem
                 //    serializationFailuresRollup.AddRange(serializationFailures);
                 //}
 
-                //return new RetrieveResult<TValue> { Flags = PersistenceResultFlags.Fail | PersistenceResultFlags.Found, Error = serializationFailuresRollup };
+                //return new RetrieveResult<TValue> { Flags = TransferResultFlags.Fail | TransferResultFlags.Found, Error = serializationFailuresRollup };
 
             }, RetrieveResult<TValue>.SuccessNotFound);
 
@@ -102,7 +102,7 @@ namespace LionFire.Persistence.AutoExtensionFilesystem
             {
                 if (await Exists(reference.Path).ConfigureAwait(false)) existingCandidatePaths.Add(candidatePath);
             }
-            if (!existingCandidatePaths.Any()) return new RetrieveResult<TValue> { Flags = PersistenceResultFlags.NotFound | PersistenceResultFlags.Fail };
+            if (!existingCandidatePaths.Any()) return new RetrieveResult<TValue> { Flags = TransferResultFlags.NotFound | TransferResultFlags.Fail };
 
             //var effectiveContext = FSDeserializingPersistenceContext;
 
@@ -144,7 +144,7 @@ namespace LionFire.Persistence.AutoExtensionFilesystem
                     serializationFailuresRollup.AddRange(serializationFailures);
                 }
             }
-            return new RetrieveResult<TValue> { Flags = PersistenceResultFlags.Fail, Error = serializationFailuresRollup };
+            return new RetrieveResult<TValue> { Flags = TransferResultFlags.Fail, Error = serializationFailuresRollup };
         }
 
 
@@ -180,7 +180,7 @@ namespace LionFire.Persistence.AutoExtensionFilesystem
         public async Task<TResult> DoPersistenceForCandidatePaths<TValue, TResult>(FileReference reference,
             Func<string, Task<TResult>> func,
             TResult onNoSuccess)
-            where TResult : IPersistenceResult
+            where TResult : ITransferResult
         {
             //if (onNoSuccess == null) onNoSuccess = PersistenceResult.FailAndNotFound;
 
@@ -202,7 +202,7 @@ namespace LionFire.Persistence.AutoExtensionFilesystem
 
         #region Delete
 
-        //public override Task<IPersistenceResult> Delete(TReference reference) // No type checking
+        //public override Task<ITransferResult> Delete(TReference reference) // No type checking
             //=> DoPersistenceForCandidatePaths<object>(reference, fsPath => DeleteExactPath(fsPath));
         //{
         //    //return DoPersistenceForCandidatePaths(PersistenceOptions.VerifyExistsAsTypeBeforeDelete ? VerifyExistsAsTypeAndDeleteExactPath<T>(reference) : DeleteExactPath(reference));
@@ -222,12 +222,12 @@ namespace LionFire.Persistence.AutoExtensionFilesystem
         //    //return PersistenceResult.FailAndNotFound;
         //}
 
-        //public override Task<IPersistenceResult> Delete<TValue>(TReference reference)
+        //public override Task<ITransferResult> Delete<TValue>(TReference reference)
         //{
         //    return DoPersistenceForCandidatePaths<TValue>(reference,
         //        PersistenceOptions.VerifyExistsAsTypeBeforeDelete
         //        ? (VerifyExistsAsTypeAndDelete<TValue>)
-        //        : (Func<string, Task<IPersistenceResult>>)DeleteExactPath);
+        //        : (Func<string, Task<ITransferResult>>)DeleteExactPath);
         //}
 
         //        {

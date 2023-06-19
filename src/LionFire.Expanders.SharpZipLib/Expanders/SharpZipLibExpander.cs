@@ -145,7 +145,7 @@ public class SharpZipLibExpander : ExpanderPersister, ISupportsFileExtensions, I
                     true => RetrieveResult<TValue>.SuccessNotFound,
                     false => new RetrieveResult<TValue>()
                     {
-                        Flags = PersistenceResultFlags.Fail | PersistenceResultFlags.InnerFail,
+                        Flags = TransferResultFlags.Fail | TransferResultFlags.InnerFail,
                         InnerResult = (IGetResult<object>)sourceResolveResult,
                     },
                     null => RetrieveResult<TValue>.NotFound,
@@ -214,7 +214,7 @@ public class SharpZipLibExpander : ExpanderPersister, ISupportsFileExtensions, I
                         return new RetrieveResult<TValue>
                         {
                             Error = $"Found file {nativeTargetPath}, but {nameof(ISerializationProvider)} provided no serializers",
-                            Flags = PersistenceResultFlags.SerializerNotAvailable | PersistenceResultFlags.Fail,
+                            Flags = TransferResultFlags.SerializerNotAvailable | TransferResultFlags.Fail,
                         };
                     }
 
@@ -229,7 +229,7 @@ public class SharpZipLibExpander : ExpanderPersister, ISupportsFileExtensions, I
 
                         if (deserializeResult.IsSuccess)
                         {
-                            var flags = PersistenceResultFlags.Success | PersistenceResultFlags.Found;
+                            var flags = TransferResultFlags.Success | TransferResultFlags.Found;
                             return new RetrieveResult<TValue>(deserializeResult.Object, flags);
                         }
                         else
@@ -245,7 +245,7 @@ public class SharpZipLibExpander : ExpanderPersister, ISupportsFileExtensions, I
                         {
                             Error = $"Found file {nativeTargetPath}, but {(deserializationResults.Count == 1 ? "serializer" : $"{deserializationResults.Count} serializers")} failed to deserialize.  See ErrorDetail.",
                             ErrorDetail = deserializationResults,
-                            Flags = PersistenceResultFlags.Fail,
+                            Flags = TransferResultFlags.Fail,
                         };
                     }
                     else
@@ -256,7 +256,7 @@ public class SharpZipLibExpander : ExpanderPersister, ISupportsFileExtensions, I
                 else if (entry == null || entry.IsDirectory)
                 {
                     //foundDirectory = true;
-                    var flags = PersistenceResultFlags.Found;
+                    var flags = TransferResultFlags.Found;
                     if (listingItemType == null)
                     {
                         // We are trying to retrieve a Directory as some sort of object
@@ -332,7 +332,7 @@ public class SharpZipLibExpander : ExpanderPersister, ISupportsFileExtensions, I
                                 //pi!.SetValue(retrieveValue, enumerableOfListings);
                                 retrieveValue = (TValue)Activator.CreateInstance(typeof(TValue), enumerableOfListings)!;
                             }
-                            flags |= PersistenceResultFlags.Success;
+                            flags |= TransferResultFlags.Success;
                             return new RetrieveResult<TValue>(retrieveValue, flags);
                         }
                     }
@@ -361,7 +361,7 @@ public class SharpZipLibExpander : ExpanderPersister, ISupportsFileExtensions, I
         throw new NotImplementedException();
     }
 
-    public Task<IPersistenceResult> Exists<TValue>(IReferencable<IExpansionReference> referencable)
+    public Task<ITransferResult> Exists<TValue>(IReferencable<IExpansionReference> referencable)
     {
         throw new NotImplementedException();
     }
@@ -371,22 +371,22 @@ public class SharpZipLibExpander : ExpanderPersister, ISupportsFileExtensions, I
         throw new NotImplementedException();
     }
 
-    public Task<IPersistenceResult> Create<TValue>(IReferencable<IExpansionReference> referencable, TValue value)
+    public Task<ITransferResult> Create<TValue>(IReferencable<IExpansionReference> referencable, TValue value)
     {
         throw new NotImplementedException();
     }
 
-    public Task<IPersistenceResult> Update<TValue>(IReferencable<IExpansionReference> referencable, TValue value)
+    public Task<ITransferResult> Update<TValue>(IReferencable<IExpansionReference> referencable, TValue value)
     {
         throw new NotImplementedException();
     }
 
-    public Task<IPersistenceResult> Upsert<TValue>(IReferencable<IExpansionReference> referencable, TValue value)
+    public Task<ITransferResult> Upsert<TValue>(IReferencable<IExpansionReference> referencable, TValue value)
     {
         throw new NotImplementedException();
     }
 
-    public Task<IPersistenceResult> Delete(IReferencable<IExpansionReference> referencable)
+    public Task<ITransferResult> Delete(IReferencable<IExpansionReference> referencable)
     {
         throw new NotImplementedException();
     }

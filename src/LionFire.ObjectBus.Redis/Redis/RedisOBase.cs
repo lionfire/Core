@@ -246,7 +246,7 @@ namespace LionFire.ObjectBus.Redis
                 {
                     OBaseEvents.OnRetrievedObjectFromExternalSource(converted); // Put reference in here?
                     result.Value = converted;
-                    result.Flags |= PersistenceResultFlags.Success; // True regardless of whether an object was found
+                    result.Flags |= TransferResultFlags.Success; // True regardless of whether an object was found
                 }
 
                 return result;
@@ -260,7 +260,7 @@ namespace LionFire.ObjectBus.Redis
 
         #endregion
 
-        protected override async Task<IPersistenceResult> SetImpl<T>(RedisReference reference, T obj, bool allowOverwrite = true)
+        protected override async Task<ITransferResult> SetImpl<T>(RedisReference reference, T obj, bool allowOverwrite = true)
         {
             #region TODO
 

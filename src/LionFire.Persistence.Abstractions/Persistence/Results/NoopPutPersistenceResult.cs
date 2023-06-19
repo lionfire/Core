@@ -1,8 +1,8 @@
 ﻿namespace LionFire.Persistence
 {
-    public struct NoopPutPersistenceResult : IPersistenceResult
+    public struct NoopPutPersistenceResult : ITransferResult
     {
-        public PersistenceResultFlags Flags { get => PersistenceResultFlags.Noop | PersistenceResultFlags.Success; set => throw new System.NotImplementedException(); }
+        public TransferResultFlags Flags { get => TransferResultFlags.Noop | TransferResultFlags.Success; set => throw new System.NotImplementedException(); }
 
         public object Error => "Noop implementation";
 

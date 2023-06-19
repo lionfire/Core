@@ -79,14 +79,14 @@ namespace LionFire.Persistence.CouchDB
 
         #region Read
 
-        public Task<IPersistenceResult> Exists<TValue>(IReferencable<ICouchDBReference> referencable) => throw new NotImplementedException();
+        public Task<ITransferResult> Exists<TValue>(IReferencable<ICouchDBReference> referencable) => throw new NotImplementedException();
         public Task<IRetrieveResult<TValue>> Retrieve<TValue>(IReferencable<ICouchDBReference> referencable) => throw new NotImplementedException();
 
         #endregion
 
         #region Write
 
-        public async Task<IPersistenceResult> Create<TValue>(IReferencable<ICouchDBReference> referencable, TValue value)
+        public async Task<ITransferResult> Create<TValue>(IReferencable<ICouchDBReference> referencable, TValue value)
         {
             var r = referencable.Reference;
             var client = this.connectionForReference(r).MyCouchClient;
@@ -96,13 +96,13 @@ namespace LionFire.Persistence.CouchDB
 
             return PersistenceResult.Success;
         }
-        public Task<IPersistenceResult> Update<TValue>(IReferencable<ICouchDBReference> referencable, TValue value)
+        public Task<ITransferResult> Update<TValue>(IReferencable<ICouchDBReference> referencable, TValue value)
         {
             var r = referencable.Reference;
             var client = this.connectionForReference(r).MyCouchClient;
             throw new NotImplementedException();
         }
-        public async Task<IPersistenceResult> Upsert<TValue>(IReferencable<ICouchDBReference> referencable, TValue value)
+        public async Task<ITransferResult> Upsert<TValue>(IReferencable<ICouchDBReference> referencable, TValue value)
         {
             var r = referencable.Reference;
             var client = this.connectionForReference(r).MyCouchClient;
@@ -121,14 +121,14 @@ namespace LionFire.Persistence.CouchDB
             // TODO: what to do about the : class constraint???
             await client.Entities.PostAsync(new { Value = value }); // Using anonymous entities
 
-            return new PersistenceResult(PersistenceResultFlags.Success);
+            return new PersistenceResult(TransferResultFlags.Success);
         }
 
         #endregion
 
         #region Delete
 
-        public Task<IPersistenceResult> Delete(IReferencable<ICouchDBReference> referencable)
+        public Task<ITransferResult> Delete(IReferencable<ICouchDBReference> referencable)
         {
             var r = referencable.Reference;
             var client = this.connectionForReference(r).MyCouchClient;

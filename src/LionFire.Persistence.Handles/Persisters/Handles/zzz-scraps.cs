@@ -41,7 +41,7 @@ namespace LionFire.Persisters.Handles
 
     //    //#endregion
 
-    //    //public override Task<IPersistenceResult> UpsertImpl() => NoopPutPersistenceResult.Instance;
+    //    //public override Task<ITransferResult> UpsertImpl() => NoopPutPersistenceResult.Instance;
     //}
 
 #if OLD

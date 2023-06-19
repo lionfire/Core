@@ -35,7 +35,7 @@ namespace LionFire.ObjectBus.Redis
         public static (string dir, string name) BreakPath(string path) => (LionPath.GetDirectoryName(path), LionPath.GetFileName(path));
 
         public async Task<bool> Exists(string path) => await Db.KeyExistsAsync(path).ConfigureAwait(false);
-        public async Task<IPersistenceResult> Delete(string path)
+        public async Task<ITransferResult> Delete(string path)
         {
             var (dir, name) = BreakPath(path);
             bool deleted = await Db.SetRemoveAsync(dir + "/", name).ConfigureAwait(false);

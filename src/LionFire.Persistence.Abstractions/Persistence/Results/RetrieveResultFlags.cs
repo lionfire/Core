@@ -3,7 +3,7 @@
 namespace LionFire.Persistence
 {
     /// <summary>
-    /// Subset of PersistenceResultFlags
+    /// Subset of TransferResultFlags
     /// </summary>
     [Flags]
     public enum RetrieveResultFlags
@@ -13,34 +13,34 @@ namespace LionFire.Persistence
         /// <summary>
         /// True if operation was successful, even if retrieve did not find anything
         /// </summary>
-        Success = PersistenceResultFlags.Success,
+        Success = TransferResultFlags.Success,
 
         /// <summary>
         /// Exception
         /// </summary>
-        Fail = PersistenceResultFlags.Fail,
+        Fail = TransferResultFlags.Fail,
 
-        Found = PersistenceResultFlags.Found,
-        NotFound = PersistenceResultFlags.NotFound,
+        Found = TransferResultFlags.Found,
+        NotFound = TransferResultFlags.NotFound,
 
-        Retrieved = PersistenceResultFlags.Retrieved,
+        Retrieved = TransferResultFlags.Retrieved,
 
-        RetrievedNull = PersistenceResultFlags.RetrievedNullOrDefault,
+        RetrievedNull = TransferResultFlags.RetrievedNullOrDefault,
 
         /// <summary>
         /// When checking for whether an operation is possible, this is set if the operation is expected to succeed.
         /// </summary>
-        PreviewSuccess = PersistenceResultFlags.PreviewSuccess,
+        PreviewSuccess = TransferResultFlags.PreviewSuccess,
 
         /// <summary>
         /// When checking for whether an operation is possible, this is set if the operation is expected to fail.
         /// </summary>
-        PreviewFail = PersistenceResultFlags.PreviewFail,
+        PreviewFail = TransferResultFlags.PreviewFail,
 
         //PreviewNotFound = 1 << 22, // Not used yet. Should it be?
 
-        ProviderNotAvailable = PersistenceResultFlags.ProviderNotAvailable,
+        ProviderNotAvailable = TransferResultFlags.ProviderNotAvailable,
 
-        Noop = PersistenceResultFlags.Noop,
+        Noop = TransferResultFlags.Noop,
     }
 }

@@ -44,7 +44,7 @@ namespace LionFire.Persistence
             var putResult = await handle.Set().ConfigureAwait(false);
             if (putResult.IsSuccess != true)
             {
-                throw new PersistenceException(putResult as IPersistenceResult, "Failed to create. Put result: " + putResult);
+                throw new PersistenceException(putResult as ITransferResult, "Failed to create. Put result: " + putResult);
             }
             return handle.Value;
         }

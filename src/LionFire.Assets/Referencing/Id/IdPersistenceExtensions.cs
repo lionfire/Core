@@ -11,11 +11,11 @@ namespace LionFire.ExtensionMethods.Persistence
 {
     public static class IdedSaveExtensions
     {
-        public static Task<IPersistenceResult> Save<T>(this T ided)
+        public static Task<ITransferResult> Save<T>(this T ided)
           where T : IIded<string> 
             => ided.GetReadWriteHandle<T>().Save();
 
-        public static Task<IPersistenceResult> TrySave<T>(this T ided)
+        public static Task<ITransferResult> TrySave<T>(this T ided)
             where T : IIded<string>
             => ided.GetReadWriteHandle<T>().TrySave();
     }

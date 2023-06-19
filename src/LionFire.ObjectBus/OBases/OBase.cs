@@ -122,13 +122,13 @@ namespace LionFire.ObjectBus
         /// </remarks>
         /// <param name="reference"></param>
         /// <returns></returns>
-        public virtual async Task<(bool exists, IPersistenceResult result)> Exists(TReference reference)
+        public virtual async Task<(bool exists, ITransferResult result)> Exists(TReference reference)
         {
             var result = (await TryGet(reference));
-            return (result.Flags.HasFlag(PersistenceResultFlags.Found), result);
+            return (result.Flags.HasFlag(TransferResultFlags.Found), result);
         }
 
-        public Task<(bool exists, IPersistenceResult result)> Exists(IReference reference)
+        public Task<(bool exists, ITransferResult result)> Exists(IReference reference)
             => Exists(ConvertToReferenceType(reference));
 
         #endregion
@@ -149,11 +149,11 @@ namespace LionFire.ObjectBus
 
         #region Set
 
-        Task<IPersistenceResult> IOBase.Set<T>(IReference reference, T obj, bool allowOverwrite) => Set(ConvertToReferenceType(reference), obj, allowOverwrite);
+        Task<ITransferResult> IOBase.Set<T>(IReference reference, T obj, bool allowOverwrite) => Set(ConvertToReferenceType(reference), obj, allowOverwrite);
 
-        protected abstract Task<IPersistenceResult> SetImpl<T>(TReference reference, T obj, bool allowOverwrite = true);
+        protected abstract Task<ITransferResult> SetImpl<T>(TReference reference, T obj, bool allowOverwrite = true);
 
-        public virtual async Task<IPersistenceResult> Set<T>(TReference reference, T obj, bool allowOverwrite = true)
+        public virtual async Task<ITransferResult> Set<T>(TReference reference, T obj, bool allowOverwrite = true)
         {
             try
             {
@@ -195,15 +195,15 @@ namespace LionFire.ObjectBus
 
         #region Delete
 
-        public abstract Task<IPersistenceResult> CanDelete<T>(TReference reference);
+        public abstract Task<ITransferResult> CanDelete<T>(TReference reference);
 
-        public abstract Task<IPersistenceResult> TryDelete<T>(TReference reference/*, bool preview = false*/);
+        public abstract Task<ITransferResult> TryDelete<T>(TReference reference/*, bool preview = false*/);
 
         #region IReference overloads
 
-        Task<IPersistenceResult> IOBase.CanDelete<T>(IReference reference) => CanDelete<T>(ConvertToReferenceType(reference));
+        Task<ITransferResult> IOBase.CanDelete<T>(IReference reference) => CanDelete<T>(ConvertToReferenceType(reference));
         //public Task<bool?> CanDelete<T>(IReference reference) => CanDelete<T>(ConvertToReferenceType(reference));
-        public Task<IPersistenceResult> TryDelete<T>(IReference reference/*, bool preview*/) => TryDelete<T>(ConvertToReferenceType(reference)/*, preview*/);
+        public Task<ITransferResult> TryDelete<T>(IReference reference/*, bool preview*/) => TryDelete<T>(ConvertToReferenceType(reference)/*, preview*/);
 
         #endregion
 

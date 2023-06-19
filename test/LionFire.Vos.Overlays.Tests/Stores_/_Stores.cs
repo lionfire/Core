@@ -79,7 +79,7 @@ namespace Stores_
                 var persistenceResult = await readHandle.Resolve();
 
 //#error NEXT: this fails for P_Normal.  Verify in Enable that it is getting mounted.
-                Assert.True(persistenceResult.ToRetrieveResult().Flags.HasFlag(PersistenceResultFlags.Success));
+                Assert.True(persistenceResult.ToRetrieveResult().Flags.HasFlag(TransferResultFlags.Success));
                 Assert.True(persistenceResult.IsSuccess);
                 Assert.Equal(testContents1, readHandle.Value);
             }
@@ -126,13 +126,13 @@ namespace Stores_
             {
                 var readHandle = dataReference1.GetReadHandle<string>();
                 var persistenceResult = await readHandle.Resolve();
-                Assert.True(((IPersistenceResult)persistenceResult).Flags.HasFlag(PersistenceResultFlags.MountNotAvailable));
+                Assert.True(((ITransferResult)persistenceResult).Flags.HasFlag(TransferResultFlags.MountNotAvailable));
                 Assert.Null(persistenceResult.IsSuccess);
             }
             {
                 var readHandle = dataReference2.GetReadHandle<string>();
                 var persistenceResult = await readHandle.Resolve();
-                Assert.True(((IPersistenceResult)persistenceResult).Flags.HasFlag(PersistenceResultFlags.MountNotAvailable));
+                Assert.True(((ITransferResult)persistenceResult).Flags.HasFlag(TransferResultFlags.MountNotAvailable));
                 Assert.Null(persistenceResult.IsSuccess);
             }
 

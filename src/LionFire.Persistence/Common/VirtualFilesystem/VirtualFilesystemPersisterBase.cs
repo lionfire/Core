@@ -43,10 +43,10 @@ namespace LionFire.Persistence.Filesystemlike
 
         #region Exists
 
-        // Default Exists implementation: try IPersister.Retrieve and return true/false/null based on PersistenceResultFlags Found / NotFound / neither
+        // Default Exists implementation: try IPersister.Retrieve and return true/false/null based on TransferResultFlags Found / NotFound / neither
 
         public virtual async Task<bool> Exists<T>(string fsPath)
-            => (await Retrieve<T>(PathToReference(fsPath)).ConfigureAwait(false)).Flags.HasFlag(PersistenceResultFlags.Found);
+            => (await Retrieve<T>(PathToReference(fsPath)).ConfigureAwait(false)).Flags.HasFlag(TransferResultFlags.Found);
 
         public virtual Task<bool> Exists(string fsPath) => Exists<object>(fsPath);
 
@@ -61,8 +61,8 @@ namespace LionFire.Persistence.Filesystemlike
 
         //public Task<IRetrieveResult<T>> TryRetrieve<T>(FileReference fileReference, Lazy<PersistenceOperation> operation = null, PersistenceContext context = null)
         //=> TryRetrieve<T>(fileReference, operation);
-        //public Task<IPersistenceResult> Update<T>(T obj, string diskPath, Type type = null, PersistenceContext context = null) => FSPersistenceStatic.Update(obj, diskPath, type, context);
-        //public Task<IPersistenceResult> Upsert<T>(T obj, string diskPath, Type type = null, PersistenceContext context = null) => FSPersistenceStatic.Upsert(obj, diskPath, type, context);
+        //public Task<ITransferResult> Update<T>(T obj, string diskPath, Type type = null, PersistenceContext context = null) => FSPersistenceStatic.Update(obj, diskPath, type, context);
+        //public Task<ITransferResult> Upsert<T>(T obj, string diskPath, Type type = null, PersistenceContext context = null) => FSPersistenceStatic.Upsert(obj, diskPath, type, context);
 
         #region Delete
 

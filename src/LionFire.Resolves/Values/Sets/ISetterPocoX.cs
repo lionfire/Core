@@ -16,7 +16,7 @@ public static class ISetterPocoX
     /// <param name="key"></param>
     /// <param name="returnFirstSuccess">If false (default), it will instead return first result that has IsSuccess().HasValue == true.  If true, it will try all ICommitters until one returns IsSuccess() == true.</param>
     /// <returns></returns>
-    public static async Task<IPersistenceResult> Set<TKey, TValue>(this TKey key, TValue value, bool returnFirstSuccess = false)
+    public static async Task<ITransferResult> Set<TKey, TValue>(this TKey key, TValue value, bool returnFirstSuccess = false)
     {
         foreach (var setter in key.GetAmbientServiceProvider().GetServices<ISetter<TKey, TValue>>())
         {
@@ -30,6 +30,6 @@ public static class ISetterPocoX
                 if (result.IsSuccess == true) return result;
             }
         }
-        return new PersistenceResult(PersistenceResultFlags.PersisterNotAvailable);
+        return new PersistenceResult(TransferResultFlags.PersisterNotAvailable);
     }
 }

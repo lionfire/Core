@@ -23,7 +23,7 @@ namespace LionFire.Persistence.Persisters.Vos
         //    Flags = default;
         //}
         public VosRetrieveResult(T value) : this() { this.Value = value; }
-        public VosRetrieveResult(T value, PersistenceResultFlags flags) : this(value) { Flags = flags; }
+        public VosRetrieveResult(T value, TransferResultFlags flags) : this(value) { Flags = flags; }
 
         #endregion
 
@@ -33,59 +33,59 @@ namespace LionFire.Persistence.Persisters.Vos
             !EqualityComparer<T>.Default.Equals(default, Value);
         //Value != default;
 
-        public PersistenceResultFlags Flags { get; set; }
+        public TransferResultFlags Flags { get; set; }
         public bool? IsSuccess => Flags.IsSuccessTernary();
 
         public IReference ResolvedVia => ResolvedViaMount?.Target;
         public IMount ResolvedViaMount { get; set; }
-        public bool IsNoop => Flags.HasFlag(PersistenceResultFlags.Noop);
+        public bool IsNoop => Flags.HasFlag(TransferResultFlags.Noop);
 
         #region Static
 
         public static RetrieveResult<T> Success(T obj) => new RetrieveResult<T>()
         {
-            Flags = PersistenceResultFlags.Success,
+            Flags = TransferResultFlags.Success,
             Value = obj,
         };
 
         public static RetrieveResult<T> Noop(T obj) => new RetrieveResult<T>()
         {
-            Flags = PersistenceResultFlags.Noop,
+            Flags = TransferResultFlags.Noop,
             Value = obj,
         };
 
         public static readonly RetrieveResult<T> NotFound = new RetrieveResult<T>()
         {
-            Flags = PersistenceResultFlags.Success | PersistenceResultFlags.NotFound, // Success but did not find
+            Flags = TransferResultFlags.Success | TransferResultFlags.NotFound, // Success but did not find
             Value = default,
         };
         public static readonly RetrieveResult<T> SuccessNotFound = new RetrieveResult<T>()
         {
-            Flags = PersistenceResultFlags.Success | PersistenceResultFlags.NotFound, // Success but did not find
+            Flags = TransferResultFlags.Success | TransferResultFlags.NotFound, // Success but did not find
             Value = default,
         };
         public static readonly RetrieveResult<T> Found = new RetrieveResult<T>()
         {
-            Flags = PersistenceResultFlags.Success | PersistenceResultFlags.Found, // Success and did find, but did not retrieve Value
+            Flags = TransferResultFlags.Success | TransferResultFlags.Found, // Success and did find, but did not retrieve Value
             Value = default,
         };
 
         public static readonly RetrieveResult<T> InvalidReferenceType = new RetrieveResult<T>()
         {
-            Flags = PersistenceResultFlags.Fail,
+            Flags = TransferResultFlags.Fail,
             Value = default,
             Error = "Invalid Reference Type",
         };
 
         public static readonly RetrieveResult<T> Fail = new RetrieveResult<T>()
         {
-            Flags = PersistenceResultFlags.Fail,
+            Flags = TransferResultFlags.Fail,
             Value = default,
         };
 
         public static readonly RetrieveResult<T> RetrievedNull = new RetrieveResult<T>()
         {
-            Flags = PersistenceResultFlags.Success | PersistenceResultFlags.Found | PersistenceResultFlags.RetrievedNullOrDefault,
+            Flags = TransferResultFlags.Success | TransferResultFlags.Found | TransferResultFlags.RetrievedNullOrDefault,
             Value = default,
         };
 
@@ -113,7 +113,7 @@ namespace LionFire.Persistence.Persisters.Vos
             var flags = Flags.ToDisplayString();
             sb.Append(flags.ToString());
 
-            if (!HasValue && !Flags.HasFlag(PersistenceResultFlags.NotFound))
+            if (!HasValue && !Flags.HasFlag(TransferResultFlags.NotFound))
             {
                 if (flags.Length > 0) sb.Append(", ");
                 sb.Append("NOVALUE");

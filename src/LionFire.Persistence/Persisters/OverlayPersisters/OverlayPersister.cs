@@ -27,12 +27,12 @@ namespace LionFire.Persistence.Persisters
         {
         }
 
-        public Task<IPersistenceResult> Create<TValue>(IReferencable<TReference> referencable, TValue value) => throw new System.NotImplementedException();
-        public Task<IPersistenceResult> Delete(IReferencable<TReference> referencable) => throw new System.NotImplementedException();
-        public Task<IPersistenceResult> Exists<TValue>(IReferencable<TReference> referencable) => throw new System.NotImplementedException();
+        public Task<ITransferResult> Create<TValue>(IReferencable<TReference> referencable, TValue value) => throw new System.NotImplementedException();
+        public Task<ITransferResult> Delete(IReferencable<TReference> referencable) => throw new System.NotImplementedException();
+        public Task<ITransferResult> Exists<TValue>(IReferencable<TReference> referencable) => throw new System.NotImplementedException();
         public Task<IRetrieveResult<IEnumerable<IListing<T>>>> List<T>(IReferencable<TReference> referencable, ListFilter filter = null) => throw new System.NotImplementedException();
         public Task<IRetrieveResult<TValue>> Retrieve<TValue>(IReferencable<TReference> referencable, RetrieveOptions? options = null) => throw new System.NotImplementedException();
-        public Task<IPersistenceResult> Update<TValue>(IReferencable<TReference> referencable, TValue value) => throw new System.NotImplementedException();
-        public Task<IPersistenceResult> Upsert<TValue>(IReferencable<TReference> referencable, TValue value) => throw new System.NotImplementedException();
+        public Task<ITransferResult> Update<TValue>(IReferencable<TReference> referencable, TValue value) => throw new System.NotImplementedException();
+        public Task<ITransferResult> Upsert<TValue>(IReferencable<TReference> referencable, TValue value) => throw new System.NotImplementedException();
     }
 }

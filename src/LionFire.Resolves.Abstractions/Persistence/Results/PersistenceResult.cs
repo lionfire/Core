@@ -5,33 +5,33 @@ using LionFire.Referencing;
 
 namespace LionFire.Persistence
 {
-    public class PersistenceResult : IPersistenceResult
+    public class PersistenceResult : ITransferResult
     {
         public PersistenceResult() { }
 
-        public PersistenceResult(PersistenceResultFlags flags)
+        public PersistenceResult(TransferResultFlags flags)
         {
             Flags = flags;
             Error = null;
         }
 
         public object Error { get; set; }
-        public bool IsNoop => Flags.HasFlag(PersistenceResultFlags.Noop);
+        public bool IsNoop => Flags.HasFlag(TransferResultFlags.Noop);
 
-        public PersistenceResultFlags Flags { get; set; }
+        public TransferResultFlags Flags { get; set; }
 
         public bool? IsSuccess => Flags.IsSuccessTernary();
 
-        public static readonly PersistenceResult Indeterminate = new PersistenceResult { Flags = PersistenceResultFlags.Indeterminate };
-        public static readonly PersistenceResult Success = new PersistenceResult { Flags = PersistenceResultFlags.Success };
-        public static readonly PersistenceResult SuccessAndFound = new PersistenceResult { Flags = PersistenceResultFlags.Success | PersistenceResultFlags.Found };
-        public static readonly PersistenceResult Found = new PersistenceResult { Flags = PersistenceResultFlags.Found };
-        public static readonly PersistenceResult NotFound = new PersistenceResult { Flags = PersistenceResultFlags.NotFound };
-        public static readonly PersistenceResult SuccessNotFound = new PersistenceResult { Flags = PersistenceResultFlags.Success | PersistenceResultFlags.NotFound };
-        public static readonly PersistenceResult FailAndNotFound = new PersistenceResult { Flags = PersistenceResultFlags.Fail | PersistenceResultFlags.NotFound };
-        public static readonly PersistenceResult FailAndFound = new PersistenceResult { Flags = PersistenceResultFlags.Fail | PersistenceResultFlags.Found };
-        public static readonly PersistenceResult PreviewFail = new PersistenceResult { Flags = PersistenceResultFlags.PreviewFail };
-        public static readonly PersistenceResult PreviewSuccess = new PersistenceResult { Flags = PersistenceResultFlags.PreviewSuccess };
+        public static readonly PersistenceResult Indeterminate = new PersistenceResult { Flags = TransferResultFlags.Indeterminate };
+        public static readonly PersistenceResult Success = new PersistenceResult { Flags = TransferResultFlags.Success };
+        public static readonly PersistenceResult SuccessAndFound = new PersistenceResult { Flags = TransferResultFlags.Success | TransferResultFlags.Found };
+        public static readonly PersistenceResult Found = new PersistenceResult { Flags = TransferResultFlags.Found };
+        public static readonly PersistenceResult NotFound = new PersistenceResult { Flags = TransferResultFlags.NotFound };
+        public static readonly PersistenceResult SuccessNotFound = new PersistenceResult { Flags = TransferResultFlags.Success | TransferResultFlags.NotFound };
+        public static readonly PersistenceResult FailAndNotFound = new PersistenceResult { Flags = TransferResultFlags.Fail | TransferResultFlags.NotFound };
+        public static readonly PersistenceResult FailAndFound = new PersistenceResult { Flags = TransferResultFlags.Fail | TransferResultFlags.Found };
+        public static readonly PersistenceResult PreviewFail = new PersistenceResult { Flags = TransferResultFlags.PreviewFail };
+        public static readonly PersistenceResult PreviewSuccess = new PersistenceResult { Flags = TransferResultFlags.PreviewSuccess };
 
         public override string ToString() => $"{{{this.GetType().Name} {Flags}}}";
     }

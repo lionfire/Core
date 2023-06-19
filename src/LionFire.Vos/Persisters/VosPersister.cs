@@ -315,17 +315,17 @@ public class VosPersister : SerializingPersisterBase<VosPersisterOptions>, IPers
                     }
                 }
 
-                if (childResult.IsFail()) resultForNoChildResults.Flags |= PersistenceResultFlags.Fail; // Indicates that at least one underlying persister failed
+                if (childResult.IsFail()) resultForNoChildResults.Flags |= TransferResultFlags.Fail; // Indicates that at least one underlying persister failed
 
                 if (childResult.IsSuccess == true)
                 {
-                    resultForNoChildResults.Flags |= PersistenceResultFlags.Success; // Indicates that at least one underlying persister succeeded
+                    resultForNoChildResults.Flags |= TransferResultFlags.Success; // Indicates that at least one underlying persister succeeded
 
-                    if (childResult.Flags.HasFlag(PersistenceResultFlags.Found))
+                    if (childResult.Flags.HasFlag(TransferResultFlags.Found))
                     {
                         l.LogTrace($"[retrieving {referencable.Reference.Path}({typeof(TValue).Name})] Found child.  {(oldVobMounts == null ? "First" : "Second (UNTESTED)")} pass retrieve @ {referencable.Reference}({typeof(TValue).Name})");
 
-                        resultForNoChildResults.Flags |= PersistenceResultFlags.Found;
+                        resultForNoChildResults.Flags |= TransferResultFlags.Found;
                         yield return childResult;
                         if (finishAfterReturningFirstFound && childResult.HasValue)
                         {
@@ -349,7 +349,7 @@ public class VosPersister : SerializingPersisterBase<VosPersisterOptions>, IPers
             return true;
         }
 
-        if (!resultForNoChildResults.Flags.HasFlag(PersistenceResultFlags.Found))
+        if (!resultForNoChildResults.Flags.HasFlag(TransferResultFlags.Found))
         {
 
             bool detectedMountsChange = false;
@@ -392,12 +392,12 @@ public class VosPersister : SerializingPersisterBase<VosPersisterOptions>, IPers
 
             if (!anyMounts)
             {
-                resultForNoChildResults.Flags |= PersistenceResultFlags.MountNotAvailable;
+                resultForNoChildResults.Flags |= TransferResultFlags.MountNotAvailable;
                 l.Info(resultForNoChildResults.ToString() + $" (for {referencable.Reference}) "); // TEMP log level
             }
             else
             {
-                resultForNoChildResults.Flags |= PersistenceResultFlags.NotFound;
+                resultForNoChildResults.Flags |= TransferResultFlags.NotFound;
             }
             l.Trace($"{resultForNoChildResults}: {vob.Path}");
 
@@ -417,7 +417,7 @@ public class VosPersister : SerializingPersisterBase<VosPersisterOptions>, IPers
 
     #region IReadPersister
 
-    public Task<IPersistenceResult> Exists<TValue>(IReferencable<IVobReference> referencable)
+    public Task<ITransferResult> Exists<TValue>(IReferencable<IVobReference> referencable)
     {
         ExistsC.IncrementWithContext();
         throw new System.NotImplementedException();
@@ -447,14 +447,14 @@ public class VosPersister : SerializingPersisterBase<VosPersisterOptions>, IPers
 
             childResults.Add(childResult);
 
-            if (childResult.Flags.HasFlag(PersistenceResultFlags.Fail)) { aggregatedResult.Flags |= PersistenceResultFlags.InnerFail | PersistenceResultFlags.Fail; }
-            if (childResult.Flags.HasFlag(PersistenceResultFlags.Success)) { aggregatedResult.Flags |= PersistenceResultFlags.Success; }
-            if (childResult.Flags.HasFlag(PersistenceResultFlags.Found)) { aggregatedResult.Flags |= PersistenceResultFlags.Found; }
+            if (childResult.Flags.HasFlag(TransferResultFlags.Fail)) { aggregatedResult.Flags |= TransferResultFlags.InnerFail | TransferResultFlags.Fail; }
+            if (childResult.Flags.HasFlag(TransferResultFlags.Success)) { aggregatedResult.Flags |= TransferResultFlags.Success; }
+            if (childResult.Flags.HasFlag(TransferResultFlags.Found)) { aggregatedResult.Flags |= TransferResultFlags.Found; }
 
             if (childResult.HasValue) { aggregator.Aggregate(childResult.Value); }
         }
 
-        if (!aggregatedResult.Flags.HasFlag(PersistenceResultFlags.Found)) { aggregatedResult.Flags |= PersistenceResultFlags.NotFound; }
+        if (!aggregatedResult.Flags.HasFlag(TransferResultFlags.Found)) { aggregatedResult.Flags |= TransferResultFlags.NotFound; }
 
         aggregatedResult.Value = aggregator.GetValue();
 
@@ -608,7 +608,7 @@ public class VosPersister : SerializingPersisterBase<VosPersisterOptions>, IPers
                 return new RetrieveResult<TValue>
                 {
                     Error = "Multiple mounts returned a value",
-                    Flags = PersistenceResultFlags.Fail | PersistenceResultFlags.Found | PersistenceResultFlags.Ambiguous
+                    Flags = TransferResultFlags.Fail | TransferResultFlags.Found | TransferResultFlags.Ambiguous
                 };
             }
             #endregion
@@ -622,19 +622,19 @@ public class VosPersister : SerializingPersisterBase<VosPersisterOptions>, IPers
 
         if (singleResult is not null) { return singleResult; }
         else if (singleNonSuccessResult is not null) return singleNonSuccessResult;
-        else if (nonSuccessResults is not null) return new RetrieveResult<TValue> { Flags = PersistenceResultFlags.Fail | PersistenceResultFlags.InnerFail, InnerResults = nonSuccessResults };
+        else if (nonSuccessResults is not null) return new RetrieveResult<TValue> { Flags = TransferResultFlags.Fail | TransferResultFlags.InnerFail, InnerResults = nonSuccessResults };
         else throw new UnreachableCodeException($"{nameof(RetrieveBatches)} must return at least one result");
 
-        //bool ShouldReturnSingleErrorImmediately(IRetrieveResult<TValue> r) => r.Flags.HasFlag(PersistenceResultFlags.MountNotAvailable);
+        //bool ShouldReturnSingleErrorImmediately(IRetrieveResult<TValue> r) => r.Flags.HasFlag(TransferResultFlags.MountNotAvailable);
     }
 
     #endregion
 
     #region IWritePersister
 
-    public Task<IPersistenceResult> Create<TValue>(IReferencable<IVobReference> referencable, TValue value) => throw new System.NotImplementedException();
-    public Task<IPersistenceResult> Update<TValue>(IReferencable<IVobReference> referencable, TValue value) => throw new System.NotImplementedException();
-    public async Task<IPersistenceResult> Upsert<TValue>(IReferencable<IVobReference> referencable, TValue value)
+    public Task<ITransferResult> Create<TValue>(IReferencable<IVobReference> referencable, TValue value) => throw new System.NotImplementedException();
+    public Task<ITransferResult> Update<TValue>(IReferencable<IVobReference> referencable, TValue value) => throw new System.NotImplementedException();
+    public async Task<ITransferResult> Upsert<TValue>(IReferencable<IVobReference> referencable, TValue value)
     {
         //l.Trace($"{ReplaceMode.Upsert.DescriptionString()} {value?.GetType().Name} {ReplaceMode.Upsert.ToArrow()} {referencable.Reference}");
 
@@ -656,11 +656,11 @@ public class VosPersister : SerializingPersisterBase<VosPersisterOptions>, IPers
                 wh.Value = value;
                 var childResult = (await wh.Set().ConfigureAwait(false)).ToPersistenceResult();
 
-                if (childResult.IsFail()) result.Flags |= PersistenceResultFlags.Fail; // Indicates that at least one underlying persister failed
+                if (childResult.IsFail()) result.Flags |= TransferResultFlags.Fail; // Indicates that at least one underlying persister failed
 
                 if (childResult.IsSuccess == true)
                 {
-                    result.Flags |= PersistenceResultFlags.Success; // Indicates that at least one underlying persister succeeded
+                    result.Flags |= TransferResultFlags.Success; // Indicates that at least one underlying persister succeeded
                     result.ResolvedViaMount = mount;
 
                     l.Trace(result.ToString() + " " + wh.Reference);
@@ -670,12 +670,12 @@ public class VosPersister : SerializingPersisterBase<VosPersisterOptions>, IPers
         }
         if (!anyMounts)
         {
-            result.Flags |= PersistenceResultFlags.MountNotAvailable;
+            result.Flags |= TransferResultFlags.MountNotAvailable;
         }
         l.Trace($"{result.Flags}: {ReplaceMode.Upsert.DescriptionString()} {value?.GetType().Name} {ReplaceMode.Upsert.ToArrow()} {referencable.Reference} via {result.ResolvedVia}");
         return result;
     }
-    public Task<IPersistenceResult> Delete(IReferencable<IVobReference> referencable)
+    public Task<ITransferResult> Delete(IReferencable<IVobReference> referencable)
     {
         l.Trace($"Delete xx> {referencable.Reference}");
         throw new System.NotImplementedException();
@@ -737,13 +737,13 @@ public class VosPersister : SerializingPersisterBase<VosPersisterOptions>, IPers
 
         //            var childResult = (await rh.Resolve().ConfigureAwait(false)).ToRetrieveResult();
 
-        //            if (childResult.IsFail()) result.Flags |= PersistenceResultFlags.Fail; // Indicates that at least one underlying persister failed
+        //            if (childResult.IsFail()) result.Flags |= TransferResultFlags.Fail; // Indicates that at least one underlying persister failed
 
         //            if (childResult.IsSuccess == true)
         //            {
-        //                result.Flags |= PersistenceResultFlags.Success; // Indicates that at least one underlying persister succeeded
+        //                result.Flags |= TransferResultFlags.Success; // Indicates that at least one underlying persister succeeded
 
-        //                if (childResult.Flags.HasFlag(PersistenceResultFlags.Found))
+        //                if (childResult.Flags.HasFlag(TransferResultFlags.Found))
         //                {
         //                    result.Value = childResult.Value;
         //                    result.ResolvedViaMount = mount;
@@ -752,7 +752,7 @@ public class VosPersister : SerializingPersisterBase<VosPersisterOptions>, IPers
         //            }
         //        }
         //    }
-        //    if (!anyMounts) result.Flags |= PersistenceResultFlags.MountNotAvailable;
+        //    if (!anyMounts) result.Flags |= TransferResultFlags.MountNotAvailable;
         //    return result;
     }
 

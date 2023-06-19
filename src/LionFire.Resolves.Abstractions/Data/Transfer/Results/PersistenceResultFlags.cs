@@ -9,7 +9,7 @@ namespace LionFire.Data;
 
 // TODO: Reorg the numbers, group for Resolve/Transmit/Persist.
 [Flags]
-public enum PersistenceResultFlags // TODO RENAME GLOBALRENAME to TransferResultFlags
+public enum TransferResultFlags // TODO RENAME GLOBALRENAME to TransferResultFlags
 {
     None = 0,
 
@@ -124,16 +124,16 @@ public enum PersistenceResultFlags // TODO RENAME GLOBALRENAME to TransferResult
     Noop = 1 << 31,
 }
 
-public static class PersistenceResultFlagsExtensions
+public static class TransferResultFlagsExtensions
 {
-    public static string ToDisplayString(this PersistenceResultFlags flags, bool uppercase = true)
+    public static string ToDisplayString(this TransferResultFlags flags, bool uppercase = true)
     {
         var sb = new StringBuilder();
-        bool noSuccess = !flags.HasFlag(PersistenceResultFlags.Success) && !flags.HasFlag(PersistenceResultFlags.Fail);
+        bool noSuccess = !flags.HasFlag(TransferResultFlags.Success) && !flags.HasFlag(TransferResultFlags.Fail);
 
-        flags &= ~PersistenceResultFlags.Success;
+        flags &= ~TransferResultFlags.Success;
 
-        if (flags != PersistenceResultFlags.None)
+        if (flags != TransferResultFlags.None)
         {
             sb.Append(flags.ToString());
         }
@@ -149,12 +149,12 @@ public static class PersistenceResultFlagsExtensions
         return uppercase ? result.ToUpperInvariant() : result;
     }
 
-    public static bool? IsFound(this PersistenceResultFlags flags)
+    public static bool? IsFound(this TransferResultFlags flags)
     {
-        if (flags.HasFlag(PersistenceResultFlags.Found)) return true;
-        if (flags.HasFlag(PersistenceResultFlags.NotFound)) return false;
+        if (flags.HasFlag(TransferResultFlags.Found)) return true;
+        if (flags.HasFlag(TransferResultFlags.NotFound)) return false;
         return null;
     }
 
-    public static PersistenceResult ToResult(this PersistenceResultFlags flags) => new PersistenceResult { Flags = flags };
+    public static PersistenceResult ToResult(this TransferResultFlags flags) => new PersistenceResult { Flags = flags };
 }

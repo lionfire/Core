@@ -203,7 +203,7 @@ namespace LionFire.Persistence.Handles
             Value = value;
             return await Put().ConfigureAwait(false);
         }
-        public virtual Task<IPersistenceResult> Put()
+        public virtual Task<ITransferResult> Put()
         {
             if (Flags.HasFlag(PersistenceFlags.OutgoingUpdatePending))
             {
@@ -224,7 +224,7 @@ namespace LionFire.Persistence.Handles
             }
             else
             {
-                return Task.FromResult<IPersistenceResult>(NoopFailPersistenceResult<TValue>.Instance);
+                return Task.FromResult<ITransferResult>(NoopFailPersistenceResult<TValue>.Instance);
             }
         }
 
@@ -327,22 +327,22 @@ namespace LionFire.Persistence.Handles
 
         #region Abstract Methods
 
-        protected abstract Task<IPersistenceResult> UpsertImpl();
+        protected abstract Task<ITransferResult> UpsertImpl();
 
         /// <summary>
         /// Default implementation is to defer to UpsertImpl, which should set the value to the default value.  Override this for stores that have a dedicated delete API.
         /// </summary>
-        protected virtual Task<IPersistenceResult> DeleteImpl() => UpsertImpl();
+        protected virtual Task<ITransferResult> DeleteImpl() => UpsertImpl();
 
         /// <summary>
         /// Default implementation is to defer to UpsertImpl.
         /// </summary>
-        protected virtual Task<IPersistenceResult> CreateImpl() => UpsertImpl();
+        protected virtual Task<ITransferResult> CreateImpl() => UpsertImpl();
 
         /// <summary>
         /// Default implementation is to defer to UpsertImpl.
         /// </summary>
-        protected virtual Task<IPersistenceResult> UpdateImpl() => UpsertImpl();
+        protected virtual Task<ITransferResult> UpdateImpl() => UpsertImpl();
 
         #endregion
 

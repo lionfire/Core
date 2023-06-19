@@ -30,7 +30,7 @@ using Stream = System.IO.Stream;
 namespace LionFire.Persistence.Filesystemlike;
 
 /// <summary>
-/// IPersister return IPersistenceResult and IFSPersistence returns simpler results closer to the underlying filesystem (or similar store)
+/// IPersister return ITransferResult and IFSPersistence returns simpler results closer to the underlying filesystem (or similar store)
 /// TODO: Remove some hardcodes to 
 /// </summary>
 /// <typeparam name="TReference"></typeparam>
@@ -274,7 +274,7 @@ public abstract partial class VirtualFilesystemPersisterBase<TReference, TPersis
 
     #region Create
 
-    public async Task<IPersistenceResult> Create<TValue>(IReferencable<TReference> referencable, TValue value)
+    public async Task<ITransferResult> Create<TValue>(IReferencable<TReference> referencable, TValue value)
         => await Write(referencable.Reference, value, ReplaceMode.Create).ConfigureAwait(false);
 
     #endregion
@@ -283,9 +283,9 @@ public abstract partial class VirtualFilesystemPersisterBase<TReference, TPersis
 
     #region Exists
 
-    public async Task<IPersistenceResult> Exists<TValue>(IReferencable<TReference> referencable)
+    public async Task<ITransferResult> Exists<TValue>(IReferencable<TReference> referencable)
         => await Exists(referencable.Reference.Path) ? ExistsResult.Found : ExistsResult.NotFound;
-    public async Task<IPersistenceResult> Exists<TValue>(TReference reference)
+    public async Task<ITransferResult> Exists<TValue>(TReference reference)
         => await Exists(reference.Path) ? ExistsResult.Found : ExistsResult.NotFound;
 
     #endregion
@@ -406,7 +406,7 @@ public abstract partial class VirtualFilesystemPersisterBase<TReference, TPersis
 
         List<KeyValuePair<ISerializationStrategy, SerializationResult>>? failures = null;
 
-        PersistenceResultFlags flags = PersistenceResultFlags.None;
+        TransferResultFlags flags = TransferResultFlags.None;
 
         #region Scan for files with arbitrary extensions (if configured in Options)
 
@@ -529,10 +529,10 @@ public abstract partial class VirtualFilesystemPersisterBase<TReference, TPersis
                 {
                     throw new InvalidOperationException("ReadStream returned null");
                 }
-                flags |= PersistenceResultFlags.Found; // Found something.  REVIEW: what if this is some unrelated metadata or OOB file?
+                flags |= TransferResultFlags.Found; // Found something.  REVIEW: what if this is some unrelated metadata or OOB file?
                 if (typeof(T) == typeof(Stream))
                 {
-                    flags |= PersistenceResultFlags.Success;
+                    flags |= TransferResultFlags.Success;
                     return (RetrieveResult<T>)(object)new RetrieveResult<Stream>(stream, flags); // HARDCAST
                 }
             }
@@ -550,11 +550,11 @@ public abstract partial class VirtualFilesystemPersisterBase<TReference, TPersis
                 {
                     throw new InvalidOperationException("ReadBytes returned null");
                 }
-                flags |= PersistenceResultFlags.Found; // Found something.  REVIEW: what if this is some unrelated metadata or OOB file?
+                flags |= TransferResultFlags.Found; // Found something.  REVIEW: what if this is some unrelated metadata or OOB file?
             }
             if (typeof(T) == typeof(byte[]))
             {
-                flags |= PersistenceResultFlags.Success;
+                flags |= TransferResultFlags.Success;
                 return (RetrieveResult<T>)(object)new RetrieveResult<byte[]>(bytes, flags); // HARDCAST
             }
 
@@ -565,7 +565,7 @@ public abstract partial class VirtualFilesystemPersisterBase<TReference, TPersis
             //}
             //if (bytes == null)
             //{
-            //    flags |= PersistenceResultFlags.NotFound | PersistenceResultFlags.Fail;
+            //    flags |= TransferResultFlags.NotFound | TransferResultFlags.Fail;
             //}
 
             //else {
@@ -582,7 +582,7 @@ public abstract partial class VirtualFilesystemPersisterBase<TReference, TPersis
 
             if (result.IsSuccess)
             {
-                flags |= PersistenceResultFlags.Success;
+                flags |= TransferResultFlags.Success;
                 OnDeserialized(result.Object);
                 return new RetrieveResult<T>(result.Object, flags);
             }
@@ -597,8 +597,8 @@ public abstract partial class VirtualFilesystemPersisterBase<TReference, TPersis
             // else don't initialize failures and throw
         }
 
-        if (!foundOne) flags |= PersistenceResultFlags.SerializerNotAvailable;
-        flags |= PersistenceResultFlags.Fail;
+        if (!foundOne) flags |= TransferResultFlags.SerializerNotAvailable;
+        flags |= TransferResultFlags.Fail;
 
         if (throwOnFail && PersistenceOptions.ThrowOnDeserializationFailure)
         {
@@ -621,7 +621,7 @@ public abstract partial class VirtualFilesystemPersisterBase<TReference, TPersis
 
         List<KeyValuePair<ISerializationStrategy, SerializationResult>>? failures = null;
 
-        PersistenceResultFlags flags = PersistenceResultFlags.None;
+        TransferResultFlags flags = TransferResultFlags.None;
 
         byte[]? bytes;
 
@@ -639,11 +639,11 @@ public abstract partial class VirtualFilesystemPersisterBase<TReference, TPersis
         }
         if (bytes == null)
         {
-            flags |= PersistenceResultFlags.NotFound | PersistenceResultFlags.Fail;
+            flags |= TransferResultFlags.NotFound | TransferResultFlags.Fail;
         }
         else
         {
-            flags |= PersistenceResultFlags.Found;
+            flags |= TransferResultFlags.Found;
             bool foundOne = false;
 
             foreach (var strategy in SerializationProvider.ResolveStrategies(operation, context, IODirection.Read).Select(r => r.Strategy))
@@ -652,7 +652,7 @@ public abstract partial class VirtualFilesystemPersisterBase<TReference, TPersis
                 var result = strategy.ToObject<T>(bytes, operation, context);
                 if (result.IsSuccess)
                 {
-                    flags |= PersistenceResultFlags.Success;
+                    flags |= TransferResultFlags.Success;
                     return new RetrieveResult<T>(result.Object, flags);
                 }
                 else if (PersistenceOptions.ThrowDeserializationFailureWithReasons)
@@ -665,8 +665,8 @@ public abstract partial class VirtualFilesystemPersisterBase<TReference, TPersis
                 }
                 // else don't initialize failures and throw
             }
-            if (!foundOne) flags |= PersistenceResultFlags.SerializerNotAvailable;
-            flags |= PersistenceResultFlags.Fail;
+            if (!foundOne) flags |= TransferResultFlags.SerializerNotAvailable;
+            flags |= TransferResultFlags.Fail;
 
             if (throwOnFail && PersistenceOptions.ThrowOnDeserializationFailure)
             {
@@ -688,10 +688,10 @@ public abstract partial class VirtualFilesystemPersisterBase<TReference, TPersis
 
     #region Put
 
-    public Task<IPersistenceResult> Write<TValue>(string fsPath, TValue obj, ReplaceMode replaceMode = ReplaceMode.Upsert, PersistenceContext? context = null, Type? type = null)
+    public Task<ITransferResult> Write<TValue>(string fsPath, TValue obj, ReplaceMode replaceMode = ReplaceMode.Upsert, PersistenceContext? context = null, Type? type = null)
         => Write(PathToReference(fsPath), obj, replaceMode, context, type);
 
-    public Task<IPersistenceResult> Write<TValue>(TReference fsReference, TValue obj, ReplaceMode replaceMode = ReplaceMode.Upsert, PersistenceContext? context = null, Type? type = null)
+    public Task<ITransferResult> Write<TValue>(TReference fsReference, TValue obj, ReplaceMode replaceMode = ReplaceMode.Upsert, PersistenceContext? context = null, Type? type = null)
     {
         TReference effectiveReference;
         bool allowOverwrite = replaceMode.HasFlag(ReplaceMode.Update);
@@ -699,7 +699,7 @@ public abstract partial class VirtualFilesystemPersisterBase<TReference, TPersis
 
         l.Trace($"{replaceMode.DescriptionString()} {obj?.GetType().Name} {replaceMode.ToArrow()} {fsReference}");
 
-        return Task.Run<IPersistenceResult>(async () =>
+        return Task.Run<ITransferResult>(async () =>
         {
             var fsPath = fsReference.Path;
 
@@ -876,19 +876,19 @@ public abstract partial class VirtualFilesystemPersisterBase<TReference, TPersis
                 }
                 else
                 {
-                    return PersistenceResultFlags.SerializerNotAvailable.ToResult(); // TODO: return failed serialization results?
+                    return TransferResultFlags.SerializerNotAvailable.ToResult(); // TODO: return failed serialization results?
                 }
             }
 
-            return (PersistenceResultFlags.Success | (allowOverwrite ? PersistenceResultFlags.NotFound : PersistenceResultFlags.None)).ToResult();
+            return (TransferResultFlags.Success | (allowOverwrite ? TransferResultFlags.NotFound : TransferResultFlags.None)).ToResult();
         });
     }
 
 
-    public Task<IPersistenceResult> Upsert<TValue>(string diskPath, TValue value, Type? type = null, PersistenceContext? context = null)
+    public Task<ITransferResult> Upsert<TValue>(string diskPath, TValue value, Type? type = null, PersistenceContext? context = null)
         => Write(diskPath, value, ReplaceMode.Upsert, context: context, type: type);
 
-    public Task<IPersistenceResult> Update<TValue>(string diskPath, TValue value, Type? type = null, PersistenceContext? context = null)
+    public Task<ITransferResult> Update<TValue>(string diskPath, TValue value, Type? type = null, PersistenceContext? context = null)
         => Write(diskPath, value, ReplaceMode.Update, context: context, type: type);
 
     // TODO: overwrite modes, etc.
@@ -916,10 +916,10 @@ public abstract partial class VirtualFilesystemPersisterBase<TReference, TPersis
 
     #region Update
 
-    public async Task<IPersistenceResult> Update<TValue>(IReferencable<TReference> referencable, TValue value)
+    public async Task<ITransferResult> Update<TValue>(IReferencable<TReference> referencable, TValue value)
         => await Write(referencable.Reference.Path, value, ReplaceMode.Update).ConfigureAwait(false);
 
-    public async Task<IPersistenceResult> Upsert<TValue>(IReferencable<TReference> referencable, TValue value)
+    public async Task<ITransferResult> Upsert<TValue>(IReferencable<TReference> referencable, TValue value)
         => await Write(referencable.Reference.Path, value, ReplaceMode.Upsert).ConfigureAwait(false);
 
     #endregion
@@ -930,18 +930,18 @@ public abstract partial class VirtualFilesystemPersisterBase<TReference, TPersis
 
     // REVIEW: Should this be moved to an outside mechanism?
 
-    public virtual Task<IPersistenceResult> DeleteReferencable<T>(IReferencable<TReference> referencable) // Unwrap IReferencable
+    public virtual Task<ITransferResult> DeleteReferencable<T>(IReferencable<TReference> referencable) // Unwrap IReferencable
         => (PersistenceOptions.VerifyExistsAsTypeBeforeDelete
             ? VerifyExistsAsTypeAndDelete<T>(referencable.Reference.Path)
             : Delete(referencable.Reference.Path).DeleteResultToPersistenceResult());
 
 
-    public virtual Task<IPersistenceResult> Delete<T>(TReference reference) // Unwrap IReference, (optional Verify)
+    public virtual Task<ITransferResult> Delete<T>(TReference reference) // Unwrap IReference, (optional Verify)
         => (PersistenceOptions.VerifyExistsAsTypeBeforeDelete
             ? VerifyExistsAsTypeAndDelete<T>(reference.Path)
             : Delete(reference.Path).DeleteResultToPersistenceResult());
 
-    public async virtual Task<IPersistenceResult> VerifyExistsAsTypeAndDelete<TValue>(string fsPath)
+    public async virtual Task<ITransferResult> VerifyExistsAsTypeAndDelete<TValue>(string fsPath)
     {
         if (await Exists<TValue>(fsPath).ConfigureAwait(false))
         {
@@ -956,25 +956,25 @@ public abstract partial class VirtualFilesystemPersisterBase<TReference, TPersis
 
     #endregion
 
-    public virtual Task<IPersistenceResult> Delete(IReferencable<TReference> referencable) // Unwrap IReferencable
+    public virtual Task<ITransferResult> Delete(IReferencable<TReference> referencable) // Unwrap IReferencable
         => (PersistenceOptions.VerifyExistsBeforeDelete
             ? VerifyExistsAndDelete(referencable.Reference.Path)
             : Delete(referencable.Reference.Path).DeleteResultToPersistenceResult());
 
-    public virtual Task<IPersistenceResult> Delete(TReference reference) // Unwrap IReference
+    public virtual Task<ITransferResult> Delete(TReference reference) // Unwrap IReference
         => (PersistenceOptions.VerifyExistsBeforeDelete
             ? VerifyExistsAndDelete(reference.Path)
             : Delete(reference.Path).DeleteResultToPersistenceResult());
 
-    public async virtual Task<IPersistenceResult> VerifyExistsAndDelete(string fsPath) // No type checking
+    public async virtual Task<ITransferResult> VerifyExistsAndDelete(string fsPath) // No type checking
     {
         var existsResult = await Exists(fsPath);
         if (existsResult)
         {
             var deleteResult = await Delete(fsPath).ConfigureAwait(false);
-            var flags = PersistenceResultFlags.Found;
-            if (deleteResult == true) flags |= PersistenceResultFlags.Success;
-            if (deleteResult == false) flags |= PersistenceResultFlags.Fail;
+            var flags = TransferResultFlags.Found;
+            if (deleteResult == true) flags |= TransferResultFlags.Success;
+            if (deleteResult == false) flags |= TransferResultFlags.Fail;
             return new PersistenceResult { Flags = flags };
         }
         return PersistenceResult.SuccessNotFound;

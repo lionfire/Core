@@ -7,23 +7,23 @@ namespace LionFire.Persistence
     public struct TieredRetrieveResult : ITieredPersistenceResult
     {
         public bool? IsSuccess => Flags.IsSuccessTernary();
-        public PersistenceResultFlags Flags { get; set; }
+        public TransferResultFlags Flags { get; set; }
         public int RelevantUnderlyingCount { get; set; }
-        public IEnumerable<IPersistenceResult> Successes { get; set; }
-        public IEnumerable<IPersistenceResult> Failures { get; set; }
-        public bool IsNoop => Flags.HasFlag(PersistenceResultFlags.Noop);
+        public IEnumerable<ITransferResult> Successes { get; set; }
+        public IEnumerable<ITransferResult> Failures { get; set; }
+        public bool IsNoop => Flags.HasFlag(TransferResultFlags.Noop);
 
         public object Error { get; set; }
 
-        public static readonly TieredRetrieveResult NotFound = new TieredRetrieveResult { Flags = PersistenceResultFlags.NotFound };
+        public static readonly TieredRetrieveResult NotFound = new TieredRetrieveResult { Flags = TransferResultFlags.NotFound };
     }
 
     public class TieredRetrieveResult<T> : ITieredRetrieveResult<T>
         where T : class
     {
         public int RelevantUnderlyingCount { get; set; }
-        public IEnumerable<IPersistenceResult> Successes { get; set; }
-        public IEnumerable<IPersistenceResult> Failures { get; set; }
+        public IEnumerable<ITransferResult> Successes { get; set; }
+        public IEnumerable<ITransferResult> Failures { get; set; }
         public object Error { get; set; }
 
         #region Value
@@ -53,6 +53,6 @@ namespace LionFire.Persistence
 
         public bool? IsSuccess => Flags.IsSuccessTernary();
 
-        public PersistenceResultFlags Flags { get; set; }
+        public TransferResultFlags Flags { get; set; }
     }
 }

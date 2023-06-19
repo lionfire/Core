@@ -7,6 +7,6 @@ namespace LionFire.Persistence.Implementation
         /// <summary>
         /// Submit pending changes to the underlying store
         /// </summary>
-        Task<IPersistenceResult> Commit();
+        Task<ITransferResult> Commit();
     }
 }

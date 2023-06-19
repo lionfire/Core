@@ -72,8 +72,8 @@ public class _Untyped
         Assert.IsNotNull(resolveResult.Value);
         Assert.IsInstanceOfType<RetrieveResult<Metadata<IEnumerable<IListing<object>>>>>(resolveResult);
         var r = (RetrieveResult<Metadata<IEnumerable<IListing<object>>>>)resolveResult;
-        Assert.IsTrue(r.Flags.HasFlag(PersistenceResultFlags.Found), "Not Found");
-        Assert.IsFalse(r.Flags.HasFlag(PersistenceResultFlags.NotFound), "Has NotFound flag");
+        Assert.IsTrue(r.Flags.HasFlag(TransferResultFlags.Found), "Not Found");
+        Assert.IsFalse(r.Flags.HasFlag(TransferResultFlags.NotFound), "Has NotFound flag");
 
         Assert.AreEqual(2, resolveResult.Value.Value.Count());
 

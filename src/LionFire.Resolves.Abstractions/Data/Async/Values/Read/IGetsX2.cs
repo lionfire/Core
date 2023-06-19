@@ -48,37 +48,37 @@ public static class IGetsX2
     [Obsolete("TODO - use ToRetrieveResult instead")]
     public static async Task<IGetResult<T>> Retrieve<T>(this ILazilyGets<T> lazilyGets) => (IGetResult<T>)await IGetsX2.GetUnknownType(lazilyGets).ConfigureAwait(false); // CAST
 
-    public static PersistenceResultFlags GetPersistenceResultFlags(this ITransferResult getResult)
+    public static TransferResultFlags GetTransferResultFlags(this ITransferResult getResult)
     {
-        if(getResult is IPersistenceResult pr) { return pr.Flags; }
-        return PersistenceResultFlags.None;
+        if(getResult is ITransferResult pr) { return pr.Flags; }
+        return TransferResultFlags.None;
     }
 
     public static IRetrieveResult<T> ToRetrieveResult<T>(this IGetResult<T> resolveResult)
     {
         if (resolveResult is IGetResult<T> rr) return rr;
 
-        PersistenceResultFlags flags = PersistenceResultFlags.None;
+        TransferResultFlags flags = TransferResultFlags.None;
 
         if (resolveResult.IsSuccess.HasValue)
         {
-            flags |= resolveResult.IsSuccess.Value ? PersistenceResultFlags.Success : PersistenceResultFlags.Fail;
+            flags |= resolveResult.IsSuccess.Value ? TransferResultFlags.Success : TransferResultFlags.Fail;
         }
-        if (resolveResult.HasValue) flags |= PersistenceResultFlags.Found;
-        else if (resolveResult.IsSuccess == true) flags |= PersistenceResultFlags.NotFound;
+        if (resolveResult.HasValue) flags |= TransferResultFlags.Found;
+        else if (resolveResult.IsSuccess == true) flags |= TransferResultFlags.NotFound;
 
         return new RetrieveResult<T>(resolveResult.Value, flags);
     }
 
-    public static IPersistenceResult ToPersistenceResult(this ISuccessResult successResult)
+    public static ITransferResult ToPersistenceResult(this ISuccessResult successResult)
     {
-        if (successResult is IPersistenceResult pr) return pr;
+        if (successResult is ITransferResult pr) return pr;
 
-        PersistenceResultFlags flags = PersistenceResultFlags.None;
+        TransferResultFlags flags = TransferResultFlags.None;
 
         if (successResult.IsSuccess.HasValue)
         {
-            flags |= successResult.IsSuccess.Value ? PersistenceResultFlags.Success : PersistenceResultFlags.Fail;
+            flags |= successResult.IsSuccess.Value ? TransferResultFlags.Success : TransferResultFlags.Fail;
         }
 
         return new PersistenceResult() { Flags = flags };

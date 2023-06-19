@@ -2,7 +2,7 @@
 
 namespace LionFire.Persistence
 {
-    public interface IResolvePersistenceResult : IPersistenceResult, IGetResult
+    public interface IResolvePersistenceResult : ITransferResult, IGetResult
     {
     }
 

@@ -1,8 +1,8 @@
 ﻿namespace LionFire.Persistence
 {
-    public class OverlayPersistenceResult : OverlayPersistenceResultBase<IPersistenceResult>
+    public class OverlayPersistenceResult : OverlayPersistenceResultBase<ITransferResult>
     {
-        public OverlayPersistenceResult(IPersistenceResult underlyingResult) : base(underlyingResult)
+        public OverlayPersistenceResult(ITransferResult underlyingResult) : base(underlyingResult)
         {
         }
     }

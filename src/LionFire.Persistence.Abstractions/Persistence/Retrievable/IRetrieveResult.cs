@@ -10,8 +10,8 @@ namespace LionFire.Persistence;
 /// <summary>
 /// Returned for Retrieve or ResolveReference operations (which may do a Retrieve).
 /// </summary>
-[Obsolete("TODO - Use ILazyGetResult or IGetResult, and get PersistenceFlags through extension method that casts to IPersistenceResult")]
-public interface IRetrieveResult<out T> : IGetResult<T>, IPersistenceResult
+[Obsolete("TODO - Use ILazyGetResult or IGetResult, and get PersistenceFlags through extension method that casts to ITransferResult")]
+public interface IRetrieveResult<out T> : IGetResult<T>, ITransferResult
     , ILazyGetResult<T> // REVIEW - is it correct to have ILazyGetResult<T> here?
 {
 }
@@ -28,7 +28,7 @@ public static class IRetrieveResultExtensions
     /// <exception cref="FileNotFoundException">If not found</exception>
     public static TValue ValueOrThrow<TValue>(this IRetrieveResult<TValue> retrieveResult)
     {
-        if (!retrieveResult.Flags.HasFlag(PersistenceResultFlags.Found))
+        if (!retrieveResult.Flags.HasFlag(TransferResultFlags.Found))
         {
             throw new FileNotFoundException();
         }
@@ -61,7 +61,7 @@ public static class IRetrieveResultExtensions
 //    public static RetrievableState ToRetrievableState<T>(this IRetrieveResult<T> result, bool objectCanBeDefault)
 //    {
 //        RetrievableState retrievableState;
-//        if (result.Flags.HasFlag(PersistenceResultFlags.Success) || result.Flags.HasFlag(PersistenceResultFlags.Found))
+//        if (result.Flags.HasFlag(TransferResultFlags.Success) || result.Flags.HasFlag(TransferResultFlags.Found))
 //        {
 //            if (objectCanBeDefault)
 //            {
@@ -72,15 +72,15 @@ public static class IRetrieveResultExtensions
 //                retrievableState = result.Object == default ? RetrievableState.RetrievedObject : RetrievableState.NotFound;
 //            }
 //        }
-//        else if (result.Flags.HasFlag(PersistenceResultFlags.NotFound))
+//        else if (result.Flags.HasFlag(TransferResultFlags.NotFound))
 //        {
 //            retrievableState = RetrievableState.NotFound;
 //        }
-//        else if (result.Flags.HasFlag(PersistenceResultFlags.Fail))
+//        else if (result.Flags.HasFlag(TransferResultFlags.Fail))
 //        {
 //            retrievableState = RetrievableState.Exception;
 //        }
-//        else if (result.Flags.HasFlag(PersistenceResultFlags.ProviderNotAvailable))
+//        else if (result.Flags.HasFlag(TransferResultFlags.ProviderNotAvailable))
 //        {
 //            retrievableState = RetrievableState.NoRetrieverAvailable;
 //        }

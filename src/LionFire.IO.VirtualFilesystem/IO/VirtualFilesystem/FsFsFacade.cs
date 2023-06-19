@@ -11,7 +11,7 @@
 //    // TODO: Make async
 //    public class FsFsFacade : ISimpleFilesystemFacade
 //    {
-//        public async Task<IPersistenceResult> Delete(string path)
+//        public async Task<ITransferResult> Delete(string path)
 //        {
 //            var exists = await Exists(path).ConfigureAwait(false);
 //            return await Task.Run(() =>
@@ -20,11 +20,11 @@
 //                if (exists)
 //                {
 //                    File.Delete(path);
-//                    return (PersistenceResultFlags.Found | PersistenceResultFlags.Success).ToResult();
+//                    return (TransferResultFlags.Found | TransferResultFlags.Success).ToResult();
 //                }
 //                else
 //                {
-//                    return (PersistenceResultFlags.NotFound | PersistenceResultFlags.Success).ToResult();
+//                    return (TransferResultFlags.NotFound | TransferResultFlags.Success).ToResult();
 //                }
 //            }).ConfigureAwait(false);
 //        }

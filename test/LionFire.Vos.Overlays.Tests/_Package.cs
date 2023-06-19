@@ -105,7 +105,7 @@ namespace Packages_
                             var readHandle = dataReference1.GetReadHandle<string>();
                             var persistenceResult = await readHandle.Resolve();
 
-                            //Assert.True(persistenceResult.Flags.HasFlag(PersistenceResultFlags.Success)); // TODO - switch to Retrieve?
+                            //Assert.True(persistenceResult.Flags.HasFlag(TransferResultFlags.Success)); // TODO - switch to Retrieve?
                             Assert.True(persistenceResult.IsSuccess);
                             Assert.Equal(testContents1, readHandle.Value);
                         }
@@ -152,13 +152,13 @@ namespace Packages_
                         {
                             var readHandle = dataReference1.GetReadHandle<string>();
                             var persistenceResult = await readHandle.Resolve();
-                            Assert.True(((IPersistenceResult)persistenceResult).Flags.HasFlag(PersistenceResultFlags.MountNotAvailable));
+                            Assert.True(((ITransferResult)persistenceResult).Flags.HasFlag(TransferResultFlags.MountNotAvailable));
                             Assert.Null(persistenceResult.IsSuccess);
                         }
                         {
                             var readHandle = dataReference2.GetReadHandle<string>();
                             var persistenceResult = await readHandle.Resolve();
-                            Assert.True(((IPersistenceResult)persistenceResult).Flags.HasFlag(PersistenceResultFlags.MountNotAvailable));
+                            Assert.True(((ITransferResult)persistenceResult).Flags.HasFlag(TransferResultFlags.MountNotAvailable));
                             Assert.Null(persistenceResult.IsSuccess);
                         }
 

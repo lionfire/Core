@@ -53,7 +53,7 @@ namespace LionFire.Persistence.Handles
         public static readonly RetrieveResult<TValue> NoopRetrieveResult = new RetrieveResult<TValue>()
         {
             Value = default,
-            Flags = PersistenceResultFlags.Success | PersistenceResultFlags.Noop,
+            Flags = TransferResultFlags.Success | TransferResultFlags.Noop,
             Error = null
         };
     }

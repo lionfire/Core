@@ -1,10 +1,8 @@
 ﻿using LionFire.Results;
 
-namespace LionFire.Data; // MOVE to LionFire.Data
+namespace LionFire.Data;
 
-
-// GLOBALRENAME to ITransferResult
-public interface IPersistenceResult : IErrorResult, ISuccessResult, INoopResult
+public interface ITransferResult : IErrorResult, ISuccessResult, INoopResult
 {
-    PersistenceResultFlags Flags { get; set; }
+    TransferResultFlags Flags { get; set; }
 }

@@ -4,7 +4,7 @@ using LionFire.Results;
 
 namespace LionFire.Persistence
 {
-    public struct NoopFailPersistenceResult<TValue> : IPersistenceResult
+    public struct NoopFailPersistenceResult<TValue> : ITransferResult
     {
         public bool? IsSuccess => false;
 
@@ -12,7 +12,7 @@ namespace LionFire.Persistence
         public bool HasValue => false;
         public bool IsNoop => true;
 
-        public PersistenceResultFlags Flags { get => PersistenceResultFlags.Noop | PersistenceResultFlags.Fail; set { } }
+        public TransferResultFlags Flags { get => TransferResultFlags.Noop | TransferResultFlags.Fail; set { } }
 
         public object Error => null;
 

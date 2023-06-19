@@ -144,7 +144,7 @@ namespace LionFire.Serialization
 
         #region Delete
 
-        protected override async Task<IPersistenceResult> DeleteImpl()
+        protected override async Task<ITransferResult> DeleteImpl()
         {
             Action deleteAction = () => File.Delete(Path);
             await deleteAction.AutoRetry(); // TODO: Use File IO parameters registered in DI.
@@ -155,7 +155,7 @@ namespace LionFire.Serialization
 
         #region Save
 
-        protected override async Task<IPersistenceResult> UpsertImpl()
+        protected override async Task<ITransferResult> UpsertImpl()
         {
             await Task.Run(() =>
             {

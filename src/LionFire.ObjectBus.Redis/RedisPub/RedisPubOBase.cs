@@ -244,7 +244,7 @@ namespace LionFire.ObjectBus.RedisPub
             //    return new RetrieveResult<T>
             //    {
             //        Object = converted.result,
-            //        Flags =PersistenceResultFlags.Success | PersistenceResultFlags.Found | PersistenceResultFlags.Retrieved,
+            //        Flags =TransferResultFlags.Success | TransferResultFlags.Found | TransferResultFlags.Retrieved,
             //    };
             //}
             //catch (Exception ex)
@@ -257,7 +257,7 @@ namespace LionFire.ObjectBus.RedisPub
         #endregion
 
         
-        protected override Task<IPersistenceResult> SetImpl<T>(RedisPubReference reference, T obj, bool allowOverwrite = true)
+        protected override Task<ITransferResult> SetImpl<T>(RedisPubReference reference, T obj, bool allowOverwrite = true)
         {
             throw new NotImplementedException();
             //#region TODO
@@ -340,7 +340,7 @@ namespace LionFire.ObjectBus.RedisPub
         //public override IReadHandleBase<T> GetReadHandle<T>(IReference reference) => throw new NotImplementedException();
         
 
-        public override Task<IPersistenceResult> TryDelete<T>(RedisPubReference reference) => throw new NotImplementedException();
+        public override Task<ITransferResult> TryDelete<T>(RedisPubReference reference) => throw new NotImplementedException();
 
 #if TOPORT
             var chunks = VosPath.ToPathArray(parent.Path);

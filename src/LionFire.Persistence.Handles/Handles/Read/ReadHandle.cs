@@ -159,7 +159,7 @@ namespace LionFire.Persistence.Handles
         public override void DiscardValue()
         {
             base.DiscardValue();
-            //PersistenceResultFlags = PersistenceResultFlags.None;
+            //TransferResultFlags = TransferResultFlags.None;
             this.Flags = Flags.AfterDiscard();
         }
 
@@ -176,7 +176,7 @@ namespace LionFire.Persistence.Handles
         //public virtual bool HasObject => CanObjectBeDefault ? (!IsDefaultValue(_object) && !this.RetrievedNullOrDefault()) : (!IsDefaultValue(_object));
         //public virtual bool HasValue => State & (PersistenceState.UpToDate | PersistenceState.IncomingUpdateAvailable); // This looks wrong
 
-        //public PersistenceResultFlags PersistenceResultFlags
+        //public TransferResultFlags TransferResultFlags
         //{
         //    get => persistenceResultFlags;
         //    protected set
@@ -185,7 +185,7 @@ namespace LionFire.Persistence.Handles
         //        persistenceResultFlags = value;
         //    }
         //}
-        //private PersistenceResultFlags persistenceResultFlags;
+        //private TransferResultFlags persistenceResultFlags;
 
         #endregion
 
@@ -221,7 +221,7 @@ namespace LionFire.Persistence.Handles
         //    //var retrievableState = result.ToRetrievableState<T>(CanObjectBeDefault);
         //    //this.RetrievableState = retrievableState;
 
-        //    this.PersistenceResultFlags = result.Flags;
+        //    this.TransferResultFlags = result.Flags;
 
         //    if (result.IsSuccess())
         //    {

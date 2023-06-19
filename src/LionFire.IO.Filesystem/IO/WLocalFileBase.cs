@@ -46,7 +46,7 @@ namespace LionFire.IO
 
         #endregion
 
-        protected override async Task<IPersistenceResult> DeleteImpl()
+        protected override async Task<ITransferResult> DeleteImpl()
         {
             return await Task.Run(() =>
             {

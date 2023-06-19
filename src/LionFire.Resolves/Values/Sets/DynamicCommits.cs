@@ -12,8 +12,8 @@ public class DynamicCommits<TKey, TValue> : Commits<TKey, TValue>
     where TKey : class
     where TValue : class
 {
-    public Func<TKey, TValue, Task<IPersistenceResult>>? Committer { get; set; }
+    public Func<TKey, TValue, Task<ITransferResult>>? Committer { get; set; }
 
-    public override Task<IPersistenceResult> CommitImpl(TValue value) => Committer(Key, value);
+    public override Task<ITransferResult> CommitImpl(TValue value) => Committer(Key, value);
 }
 

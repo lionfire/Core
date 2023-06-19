@@ -18,7 +18,7 @@ namespace LionFire.Persistence.Persisters
         //public override void RaisePersistenceEvent(PersistenceEvent<TValue> ev) => throw new NotImplementedException();
         //protected override Task<IGetResult<TValue>> ResolveImpl() => throw new NotImplementedException();
 
-        //protected override async Task<IPersistenceResult> UpsertImpl() =>
+        //protected override async Task<ITransferResult> UpsertImpl() =>
         //    await Persister.Upsert<IReference, TValue>(this, ProtectedValue);
     }
 

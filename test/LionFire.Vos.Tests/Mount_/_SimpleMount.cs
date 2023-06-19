@@ -59,7 +59,7 @@ namespace Mount_
                     var readHandle = reference.GetVob(services).GetReadHandle<string>();
                     var persistenceResult = await readHandle.Resolve();
 
-                    //Assert.True(persistenceResult.Flags.HasFlag(PersistenceResultFlags.Success)); // TODO - switch to Retrieve?
+                    //Assert.True(persistenceResult.Flags.HasFlag(TransferResultFlags.Success)); // TODO - switch to Retrieve?
                     Assert.True(persistenceResult.IsSuccess);
                     Assert.Equal(testContents, readHandle.Value);
                 }
@@ -71,7 +71,7 @@ namespace Mount_
                 //    var readHandle = reference.GetReadHandle<string>();
                 //    var persistenceResult = await readHandle.Retrieve();
 
-                //    Assert.True(persistenceResult.Flags.HasFlag(PersistenceResultFlags.Success));
+                //    Assert.True(persistenceResult.Flags.HasFlag(TransferResultFlags.Success));
                 //    Assert.Equal(testContents, readHandle.Value);
                 //}
                 File.Delete(path);

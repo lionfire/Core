@@ -35,7 +35,7 @@ public static class IDetectsFallback
     //    //if(retrieves is IHasPersistenceState hps)
     //    //{
     //    //    if (hps.NotFound()) return false;
-    //    //    if (hps.State.HasFlag(PersistenceResultFlags.Found)) return true;
+    //    //    if (hps.State.HasFlag(TransferResultFlags.Found)) return true;
     //    //}
     //}
 }

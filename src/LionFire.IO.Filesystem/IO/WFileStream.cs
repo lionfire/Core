@@ -41,7 +41,7 @@ namespace LionFire.IO
         /// </summary>
         /// <param name="persistenceContext"></param>
         /// <returns></returns>
-        protected override async Task<IPersistenceResult> UpsertImpl()
+        protected override async Task<ITransferResult> UpsertImpl()
         {
             if (HasValue)
             {

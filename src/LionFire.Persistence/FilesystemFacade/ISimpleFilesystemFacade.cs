@@ -9,7 +9,7 @@ namespace LionFire.Persistence.FilesystemFacade
     {
         Task<bool> Exists(string path);
 
-        Task<IPersistenceResult> Delete(string path);
+        Task<ITransferResult> Delete(string path);
 
         Task<IEnumerable<string>> List(string directoryPath, string pattern = null);
         Task<byte[]> ReadAllBytes(string path);

@@ -50,7 +50,7 @@ namespace Named_
                     var readHandle = reference.GetReadHandle<string>();
                     var persistenceResult = await readHandle.Retrieve();
 
-                    Assert.True(persistenceResult.Flags.HasFlag(PersistenceResultFlags.Success));
+                    Assert.True(persistenceResult.Flags.HasFlag(TransferResultFlags.Success));
                     Assert.Equal(testContents, readHandle.Value);
                 }
 
@@ -61,7 +61,7 @@ namespace Named_
                 //    var readHandle = reference.GetReadHandle<string>();
                 //    var persistenceResult = await readHandle.Retrieve();
 
-                //    Assert.True(persistenceResult.Flags.HasFlag(PersistenceResultFlags.Success));
+                //    Assert.True(persistenceResult.Flags.HasFlag(TransferResultFlags.Success));
                 //    Assert.Equal(testContents, readHandle.Value);
                 //}
                 File.Delete(path);
@@ -105,7 +105,7 @@ namespace Named_
                     var readHandle = reference.GetReadHandle<string>();
                     var persistenceResult = await readHandle.Retrieve();
 
-                    Assert.True(persistenceResult.Flags.HasFlag(PersistenceResultFlags.Success));
+                    Assert.True(persistenceResult.Flags.HasFlag(TransferResultFlags.Success));
                     Assert.Equal(testContents, readHandle.Value);
                 }
 

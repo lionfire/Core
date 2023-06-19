@@ -24,7 +24,7 @@ namespace LionFire.ObjectBus.ExtensionlessFs
         }
 
         //private async Task<TResult> DoUnderlyingAction<TResult>(IReference reference, Func<IReference, Task<TResult>> action, Func<ValueTuple<PersistenceResultKind, TResult?, IEnumerable<TResult>>, TResult> consolidate, bool useFirstFoundUnderlyingReference = true)
-        //    where TResult : struct, IPersistenceResult
+        //    where TResult : struct, ITransferResult
         //    => consolidate(await DoUnderlyingAction(reference, action, useFirstFoundUnderlyingReference));
 
         /// <summary>
@@ -45,7 +45,7 @@ namespace LionFire.ObjectBus.ExtensionlessFs
             bool allowMultipleSuccess = false,
             bool requireAllSuccessToSucceed = false
             )
-            where TResult : class, IPersistenceResult
+            where TResult : class, ITransferResult
             where TCreate : class, TResult, ITieredPersistenceResult, new()
         {
             // OPTIMIZE: Execute underlyings in parallel
@@ -127,7 +127,7 @@ namespace LionFire.ObjectBus.ExtensionlessFs
             }
 
             var combined = new TCreate();
-            if (isSuccess) combined.Flags = PersistenceResultFlags.Success;
+            if (isSuccess) combined.Flags = TransferResultFlags.Success;
             foreach (var successItem in successes)
             {
 
@@ -178,8 +178,8 @@ namespace LionFire.ObjectBus.ExtensionlessFs
         #region Write
 
         #region Set
-        protected override async Task<IPersistenceResult> SetImpl<T>(TOverlayReference reference, T obj, bool allowOverwrite = true)
-            => await DoUnderlyingAction<IPersistenceResult, TieredPersistenceResult>(reference, (async underlyingReference =>
+        protected override async Task<ITransferResult> SetImpl<T>(TOverlayReference reference, T obj, bool allowOverwrite = true)
+            => await DoUnderlyingAction<ITransferResult, TieredPersistenceResult>(reference, (async underlyingReference =>
             {
                 return new OverlayPersistenceResult(await UnderlyingOBase.Set<T>(underlyingReference, obj, allowOverwrite: allowOverwrite));
             }), returnOnFirstSuccess: true);
@@ -189,14 +189,14 @@ namespace LionFire.ObjectBus.ExtensionlessFs
 
         #region Delete
 
-        public override Task<IPersistenceResult> CanDelete<T>(TOverlayReference reference) => throw new NotImplementedException();
-        public override Task<IPersistenceResult> TryDelete<T>(TOverlayReference reference) => throw new NotImplementedException();
+        public override Task<ITransferResult> CanDelete<T>(TOverlayReference reference) => throw new NotImplementedException();
+        public override Task<ITransferResult> TryDelete<T>(TOverlayReference reference) => throw new NotImplementedException();
 
         #endregion
 
         
-        //public async Task<IPersistenceResult> TryDelete(IReference reference) 
-        //=> await DoUnderlyingAction<IPersistenceResult, TieredPersistenceResult>(reference, underlyingReference => UnderlyingOBase.TryDelete<object>(underlyingReference));
+        //public async Task<ITransferResult> TryDelete(IReference reference) 
+        //=> await DoUnderlyingAction<ITransferResult, TieredPersistenceResult>(reference, underlyingReference => UnderlyingOBase.TryDelete<object>(underlyingReference));
 
         #endregion
 

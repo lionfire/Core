@@ -180,7 +180,7 @@ namespace LionFire.ObjectBus
             return result.IsSuccess();
         }
 
-        protected override async Task<IPersistenceResult> DeleteObject()
+        protected override async Task<ITransferResult> DeleteObject()
         {
             if (Reference == null) throw new ArgumentNullException(nameof(Reference));
 
@@ -194,7 +194,7 @@ namespace LionFire.ObjectBus
             }
             return result;
         }
-        protected override async Task<IPersistenceResult> WriteObject()
+        protected override async Task<ITransferResult> WriteObject()
         {
             if (Reference == null) throw new ArgumentNullException(nameof(Reference));
 

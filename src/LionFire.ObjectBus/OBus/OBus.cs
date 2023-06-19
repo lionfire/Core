@@ -100,7 +100,7 @@ namespace LionFire.ObjectBus
 
         public static async Task<bool> CanDelete<T>(this IReference reference) => (await reference.TryGetOBase().CanDelete<T>(reference).ConfigureAwait(false)).IsPreviewSuccess();
 
-        public static async Task<IPersistenceResult> TryDelete<T>(this IReference reference) => await reference.TryGetOBase().TryDelete<T>(reference).ConfigureAwait(false);
+        public static async Task<ITransferResult> TryDelete<T>(this IReference reference) => await reference.TryGetOBase().TryDelete<T>(reference).ConfigureAwait(false);
         public static async Task Delete<T>(this IReference reference) => await reference.TryGetOBase().Delete<T>(reference).ConfigureAwait(false);
 
         public static async Task Delete(this IReference reference) => await reference.TryGetOBase().Delete<object>(reference).ConfigureAwait(false);

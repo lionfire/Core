@@ -2,14 +2,14 @@
 
 namespace LionFire.Persistence
 {
-    public interface ITieredPersistenceResult : IPersistenceResult
+    public interface ITieredPersistenceResult : ITransferResult
     {
 
         int RelevantUnderlyingCount { get; set; }
 
 
-        IEnumerable<IPersistenceResult> Successes { get; set; }
-        IEnumerable<IPersistenceResult> Failures { get; set; }
+        IEnumerable<ITransferResult> Successes { get; set; }
+        IEnumerable<ITransferResult> Failures { get; set; }
     }
 
 }

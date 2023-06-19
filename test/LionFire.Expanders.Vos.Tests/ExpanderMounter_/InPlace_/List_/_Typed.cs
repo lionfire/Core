@@ -51,8 +51,8 @@ public class _Typed
             //Assert.IsNotNull(resolveResult.Value);
             //Assert.IsInstanceOfType<RetrieveResult<Metadata<IEnumerable<IListing<TestClass>>>>>(resolveResult);
             //var r = (RetrieveResult<Metadata<IEnumerable<IListing<TestClass>>>>)resolveResult;
-            //Assert.IsTrue(r.Flags.HasFlag(PersistenceResultFlags.Found), "Not Found");
-            //Assert.IsFalse(r.Flags.HasFlag(PersistenceResultFlags.NotFound), "Has NotFound flag");
+            //Assert.IsTrue(r.Flags.HasFlag(TransferResultFlags.Found), "Not Found");
+            //Assert.IsFalse(r.Flags.HasFlag(TransferResultFlags.NotFound), "Has NotFound flag");
 
             //Assert.AreEqual(1, resolveResult.Value.Value.Count());
 

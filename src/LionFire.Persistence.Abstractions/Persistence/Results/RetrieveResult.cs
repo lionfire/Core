@@ -7,7 +7,7 @@ using LionFire.Data.Async.Gets;
 
 namespace LionFire.Persistence;
 
-public interface IExistsResult : IPersistenceResult
+public interface IExistsResult : ITransferResult
 {
 }
 
@@ -23,7 +23,7 @@ public struct RetrieveResult<T> : IRetrieveResult<T>
     //    Flags = default;
     //}
     public RetrieveResult(T value) : this() { this.Value = value; }
-    public RetrieveResult(T value, PersistenceResultFlags flags, object? error = null) : this(value) { Flags = flags; Error = error; }
+    public RetrieveResult(T value, TransferResultFlags flags, object? error = null) : this(value) { Flags = flags; Error = error; }
 
     #endregion
 
@@ -34,10 +34,10 @@ public struct RetrieveResult<T> : IRetrieveResult<T>
         !EqualityComparer<T>.Default.Equals(default, Value);
     //Value != default;
 
-    public PersistenceResultFlags Flags { get; set; }
+    public TransferResultFlags Flags { get; set; }
     public bool? IsSuccess => Flags.IsSuccessTernary();
 
-    public bool IsNoop => Flags.HasFlag(PersistenceResultFlags.Noop);
+    public bool IsNoop => Flags.HasFlag(TransferResultFlags.Noop);
 
     public object? InnerResult { get; set; }
     public IEnumerable<IRetrieveResult<T>>? InnerResults { get; set; }
@@ -46,66 +46,66 @@ public struct RetrieveResult<T> : IRetrieveResult<T>
 
     public static RetrieveResult<T> Success(T obj) => new RetrieveResult<T>()
     {
-        Flags = PersistenceResultFlags.Success,
+        Flags = TransferResultFlags.Success,
         Value = obj,
     };
 
     public static RetrieveResult<T> Noop(T obj) => new RetrieveResult<T>()
     {
-        Flags = PersistenceResultFlags.Noop,
+        Flags = TransferResultFlags.Noop,
         Value = obj,
     };
 
     public static readonly RetrieveResult<T> NotFound = new RetrieveResult<T>()
     {
-        Flags = PersistenceResultFlags.Success | PersistenceResultFlags.NotFound, // Success but did not find
+        Flags = TransferResultFlags.Success | TransferResultFlags.NotFound, // Success but did not find
         Value = default,
     };
     public static readonly RetrieveResult<T> SuccessNotFound = new RetrieveResult<T>()
     {
-        Flags = PersistenceResultFlags.Success | PersistenceResultFlags.NotFound, // Success but did not find
+        Flags = TransferResultFlags.Success | TransferResultFlags.NotFound, // Success but did not find
         Value = default,
     };
     
     // Noop means this is possibly a redundant/avoidable retrieve, but maybe didn't cost much
     public static readonly RetrieveResult<T> SuccessNotFoundNoop = new RetrieveResult<T>()
     {
-        Flags = PersistenceResultFlags.Success | PersistenceResultFlags.NotFound | PersistenceResultFlags.Noop, // Success but did not find
+        Flags = TransferResultFlags.Success | TransferResultFlags.NotFound | TransferResultFlags.Noop, // Success but did not find
         Value = default,
     };
     public static RetrieveResult<T> Found() => found;
     private static readonly RetrieveResult<T> found = new RetrieveResult<T>()
     {
-        Flags = PersistenceResultFlags.Success | PersistenceResultFlags.Found, // Success and did find, but did not retrieve Value
+        Flags = TransferResultFlags.Success | TransferResultFlags.Found, // Success and did find, but did not retrieve Value
         Value = default,
     };
     public static RetrieveResult<T> Found(T obj) => new RetrieveResult<T>(obj)
     {
-        Flags = PersistenceResultFlags.Success | PersistenceResultFlags.Found, // Success and did find, but did not retrieve Value
+        Flags = TransferResultFlags.Success | TransferResultFlags.Found, // Success and did find, but did not retrieve Value
         Value = obj,
     };
 
     public static readonly RetrieveResult<T> InvalidReferenceType = new RetrieveResult<T>()
     {
-        Flags = PersistenceResultFlags.Fail,
+        Flags = TransferResultFlags.Fail,
         Value = default,
         Error = "Invalid Reference Type",
     };
 
     public static readonly RetrieveResult<T> Fail = new RetrieveResult<T>()
     {
-        Flags = PersistenceResultFlags.Fail,
+        Flags = TransferResultFlags.Fail,
         Value = default,
     };
 
     public static readonly RetrieveResult<T> RetrievedNull = new RetrieveResult<T>()
     {
-        Flags = PersistenceResultFlags.Success | PersistenceResultFlags.Found | PersistenceResultFlags.RetrievedNullOrDefault,
+        Flags = TransferResultFlags.Success | TransferResultFlags.Found | TransferResultFlags.RetrievedNullOrDefault,
         Value = default,
     };
     public static RetrieveResult<T> NotFoundButInstantiated(T obj) => new RetrieveResult<T>()
     {
-        Flags = PersistenceResultFlags.Success | PersistenceResultFlags.NotFound | PersistenceResultFlags.Instantiated,
+        Flags = TransferResultFlags.Success | TransferResultFlags.NotFound | TransferResultFlags.Instantiated,
         Value = obj,
     };
     #endregion
@@ -138,7 +138,7 @@ public struct RetrieveResult<T> : IRetrieveResult<T>
         var flags = Flags.ToDisplayString();
         sb.Append(flags.ToString());
 
-        if (!HasValue && !Flags.HasFlag(PersistenceResultFlags.NotFound))
+        if (!HasValue && !Flags.HasFlag(TransferResultFlags.NotFound))
         {
             if (flags.Length > 0) sb.Append(", ");
             sb.Append("NOVALUE");

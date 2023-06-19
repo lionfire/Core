@@ -62,7 +62,7 @@ namespace LionFire.ObjectBus.Filesystem
 
 #region Read
 
-        public override async Task<(bool exists, IPersistenceResult result)> Exists(FileReference reference)
+        public override async Task<(bool exists, ITransferResult result)> Exists(FileReference reference)
         {
             //var result = new RetrieveResult<bool>();
 
@@ -70,7 +70,7 @@ namespace LionFire.ObjectBus.Filesystem
             //bool existsResult = 
             return (existsResult, existsResult ? PersistenceResult.Found : PersistenceResult.NotFound);
             //result.Object = existsResult;
-            //result.Flags |= PersistenceResultFlags.Success;
+            //result.Flags |= TransferResultFlags.Success;
             //return result;
         }
 
@@ -111,9 +111,9 @@ namespace LionFire.ObjectBus.Filesystem
                 }
 
                 result.Value = converted;
-                result.Flags |= PersistenceResultFlags.Success;
-                if (converted != null) result.Flags |= PersistenceResultFlags.Found;
-                else result.Flags |= PersistenceResultFlags.NotFound;
+                result.Flags |= TransferResultFlags.Success;
+                if (converted != null) result.Flags |= TransferResultFlags.Found;
+                else result.Flags |= TransferResultFlags.NotFound;
 
                 return result;
             }
@@ -138,7 +138,7 @@ namespace LionFire.ObjectBus.Filesystem
 
 #region Delete
 
-        public override async Task<IPersistenceResult> CanDelete<T>(FileReference reference)
+        public override async Task<ITransferResult> CanDelete<T>(FileReference reference)
         {
             var existsResult = await Exists(reference);
             if (!existsResult.exists) return PersistenceResult.PreviewFail;
@@ -155,7 +155,7 @@ namespace LionFire.ObjectBus.Filesystem
             //return FsPersistence.TryDelete(filePath);
         }
 
-        public override async Task<IPersistenceResult> TryDelete<T>(FileReference reference)
+        public override async Task<ITransferResult> TryDelete<T>(FileReference reference)
         {
             string filePath = reference.Path;
             //if (!defaultTypeForDirIsT)
@@ -225,7 +225,7 @@ namespace LionFire.ObjectBus.Filesystem
         //        }
 
         //        result.Object = obj;
-        //        result.Flags |= PersistenceResultFlags.Success;
+        //        result.Flags |= TransferResultFlags.Success;
 
         //        return result;
         //    }
@@ -245,7 +245,7 @@ namespace LionFire.ObjectBus.Filesystem
         //    await FsOBasePersistence.Set(obj, reference.Path, preview: preview, type: typeof(T));
         //}
 
-        protected override async Task<IPersistenceResult> SetImpl<T>(FileReference reference, T obj, bool allowOverwrite = true)
+        protected override async Task<ITransferResult> SetImpl<T>(FileReference reference, T obj, bool allowOverwrite = true)
         {
 #region TODO
 

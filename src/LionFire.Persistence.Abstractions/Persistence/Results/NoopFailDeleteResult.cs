@@ -9,7 +9,7 @@ public struct NoopFailDeleteResult<TValue> : IDeleteResult
     public TValue Value => default;
     public bool IsNoop => true;
 
-    public PersistenceResultFlags Flags { get => PersistenceResultFlags.Fail | PersistenceResultFlags.Noop; set { } }
+    public TransferResultFlags Flags { get => TransferResultFlags.Fail | TransferResultFlags.Noop; set { } }
 
     public object Error => null;
 

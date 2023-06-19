@@ -6,7 +6,7 @@ namespace LionFire.Persistence.Filesystemlike
 
     public static class FilesystemlikePersisterExtensions
     {
-        public static async Task<IPersistenceResult> DeleteResultToPersistenceResult(this Task<bool?> deleteTask)
+        public static async Task<ITransferResult> DeleteResultToPersistenceResult(this Task<bool?> deleteTask)
         {
             var deleteResult = await deleteTask.ConfigureAwait(false);
             if (!deleteResult.HasValue) return PersistenceResult.Indeterminate;

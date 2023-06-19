@@ -96,7 +96,7 @@ namespace Persister_.Filesystem_
                 var persistenceResult = await ServiceLocator.Get<FilesystemPersister>().Delete(path.ToFileReference());
 
                 Assert.False(persistenceResult.IsFound());
-                Assert.True(persistenceResult.Flags.HasFlag(PersistenceResultFlags.NotFound));
+                Assert.True(persistenceResult.Flags.HasFlag(TransferResultFlags.NotFound));
                 Assert.True(persistenceResult.IsSuccess()); // If file doesn't exist at the end, it's considered a success
 
                 });
@@ -120,7 +120,7 @@ namespace Persister_.Filesystem_
                     var retrieveResult = await DependencyLocator.Get<FilesystemPersister>().Retrieve<string>(path.ToFileReference());
 
                     Assert.Equal(testContents, retrieveResult.Value);
-                    Assert.Equal(PersistenceResultFlags.Found | PersistenceResultFlags.Success, retrieveResult.Flags);
+                    Assert.Equal(TransferResultFlags.Found | TransferResultFlags.Success, retrieveResult.Flags);
 
                     File.Delete(path);
                     Assert.False(File.Exists(path));
@@ -150,7 +150,7 @@ namespace Persister_.Filesystem_
 
                     Assert.True(((ReadOnlySpan<byte>)testContents).SequenceEqual(retrieveResult.Value)); // Primary ASSERT
                     Assert.False(((ReadOnlySpan<byte>)testContentsDifferent).SequenceEqual(retrieveResult.Value));
-                    Assert.Equal(PersistenceResultFlags.Found | PersistenceResultFlags.Success, retrieveResult.Flags);
+                    Assert.Equal(TransferResultFlags.Found | TransferResultFlags.Success, retrieveResult.Flags);
 
                     File.Delete(path);
                     Assert.False(File.Exists(path));

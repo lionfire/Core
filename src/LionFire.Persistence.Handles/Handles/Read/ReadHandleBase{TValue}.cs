@@ -227,13 +227,13 @@ namespace LionFire.Persistence.Handles
 
 #if false // OLD
 
-        //public  class ReadHandleBaseCovariant<T> : ResolvesBaseCovariant<IReference, T>, IReadHandleEx<T>, IKeyed<string>, IRetrievableImpl<T>, IHas<PersistenceResultFlags>
+        //public  class ReadHandleBaseCovariant<T> : ResolvesBaseCovariant<IReference, T>, IReadHandleEx<T>, IKeyed<string>, IRetrievableImpl<T>, IHas<TransferResultFlags>
     //{
     //    public override Task<IGetResult<T>> ResolveImpl() => throw new NotImplementedException();
     //}
 
 
-    //public abstract class ReadHandleBase<T> : ResolvesBase<IReference, T>, IReadHandleEx<T>, IRetrievableImpl<T>, IHas<PersistenceResultFlags>, IPersisted
+    //public abstract class ReadHandleBase<T> : ResolvesBase<IReference, T>, IReadHandleEx<T>, IRetrievableImpl<T>, IHas<TransferResultFlags>, IPersisted
     //{
     //    #region Reference
 
@@ -251,7 +251,7 @@ namespace LionFire.Persistence.Handles
 
     //    #endregion
 
-    //    public PersistenceResultFlags Object => throw new NotImplementedException();
+    //    public TransferResultFlags Object => throw new NotImplementedException();
     //}
 
 

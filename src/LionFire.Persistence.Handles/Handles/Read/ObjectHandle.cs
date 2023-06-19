@@ -43,7 +43,7 @@ namespace LionFire.Persistence.Handles
             {
                 return Task.FromResult<IGetResult<TValue>>(new RetrieveResult<TValue>()
                 {
-                    Flags = PersistenceResultFlags.Success,
+                    Flags = TransferResultFlags.Success,
                     Value = Value,
                 }).AsITask();
             }
@@ -85,7 +85,7 @@ namespace LionFire.Persistence.Handles
         {
             if (HasValue) return Task.FromResult((IGetResult<TValue>)RetrieveResult<TValue>.Noop(Value)).AsITask();
             ProtectedValue = Activator.CreateInstance<TValue>();
-            return Task.FromResult((IGetResult<TValue>)new RetrieveResult<TValue>(Value, PersistenceResultFlags.Success | PersistenceResultFlags.Instantiated)).AsITask();
+            return Task.FromResult((IGetResult<TValue>)new RetrieveResult<TValue>(Value, TransferResultFlags.Success | TransferResultFlags.Instantiated)).AsITask();
         }
 
         bool isDeletePending = false;

@@ -15,7 +15,7 @@ namespace LionFire.ObjectBus
 
         #region Write
 
-        public override async Task<(bool exists, IPersistenceResult result)> Exists(TReference reference)
+        public override async Task<(bool exists, ITransferResult result)> Exists(TReference reference)
         {
             //var result = new RetrieveResult<bool>();
 
@@ -23,7 +23,7 @@ namespace LionFire.ObjectBus
 
             return existsResult ? (true, RetrieveResult<object>.Found()) : (false, RetrieveResult<object>.NotFound);
 
-            //result.Flags |= PersistenceResultFlags.Success | (existsResult ? PersistenceResultFlags.Found : PersistenceResultFlags.NotFound);
+            //result.Flags |= TransferResultFlags.Success | (existsResult ? TransferResultFlags.Found : TransferResultFlags.NotFound);
             //return (existsResult, result);
         }
 
@@ -33,11 +33,11 @@ namespace LionFire.ObjectBus
         /// <typeparam name="T"></typeparam>
         /// <param name="reference"></param>
         /// <returns></returns>
-        public override async Task<IPersistenceResult> CanDelete<T>(TReference reference)
+        public override async Task<ITransferResult> CanDelete<T>(TReference reference)
         {
             var existsResult = await Exists(reference);
             // FUTURE: Check filesystem permissions
-            return new PersistenceResult { Flags = (existsResult.result.Flags.HasFlag(PersistenceResultFlags.Found) ? PersistenceResultFlags.PreviewSuccess | PersistenceResultFlags.Found : PersistenceResultFlags.PreviewFail | PersistenceResultFlags.NotFound) }; 
+            return new PersistenceResult { Flags = (existsResult.result.Flags.HasFlag(TransferResultFlags.Found) ? TransferResultFlags.PreviewSuccess | TransferResultFlags.Found : TransferResultFlags.PreviewFail | TransferResultFlags.NotFound) }; 
 
             //return existsResult.Object;
             //return new RetrieveResult<bool?>
@@ -49,7 +49,7 @@ namespace LionFire.ObjectBus
             //return FsPersistence.TryDelete(filePath);
         }
 
-        public override async Task<IPersistenceResult> TryDelete<T>(TReference reference)
+        public override async Task<ITransferResult> TryDelete<T>(TReference reference)
         {
             string filePath = reference.Path;
             //if (!defaultTypeForDirIsT)

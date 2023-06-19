@@ -7,5 +7,5 @@ namespace LionFire.Data.Async.Sets;
 
 public interface ISetter<in TKey, in TValue>
 {
-    Task<IPersistenceResult> Set(TKey key, TValue value);
+    Task<ITransferResult> Set(TKey key, TValue value);
 }

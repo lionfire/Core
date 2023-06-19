@@ -12,13 +12,13 @@ namespace LionFire.ExtensionMethods.Persistence
 {
     public static class ReferencableSaveExtensions
     {        
-        public static async Task<IPersistenceResult> Save<T>(this T referencable)
+        public static async Task<ITransferResult> Save<T>(this T referencable)
           where T : IReferencable
         {
             if(referencable is IReadWriteHandle rwh)
             {
                 // UNTESTED
-                return (IPersistenceResult)await rwh.Set().ConfigureAwait(false);
+                return (ITransferResult)await rwh.Set().ConfigureAwait(false);
             }
 
             var result = await TrySave(referencable).ConfigureAwait(false);
@@ -29,12 +29,12 @@ namespace LionFire.ExtensionMethods.Persistence
             return result;
         }
 
-        public static async Task<IPersistenceResult> TrySave<T>(this T referencable)
+        public static async Task<ITransferResult> TrySave<T>(this T referencable)
             where T : IReferencable
         {
             if (typeof(T).IsInterface)
             {
-                return await ((Task<IPersistenceResult>)typeof(ReferencableSaveExtensions).GetMethod(nameof(TrySave)).MakeGenericMethod(referencable.GetType()).Invoke(null, new object[] { referencable })).ConfigureAwait(false);
+                return await ((Task<ITransferResult>)typeof(ReferencableSaveExtensions).GetMethod(nameof(TrySave)).MakeGenericMethod(referencable.GetType()).Invoke(null, new object[] { referencable })).ConfigureAwait(false);
             }
 
             ISets puts = referencable.GetExistingReadWriteHandle();
@@ -68,7 +68,7 @@ namespace LionFire.ExtensionMethods.Persistence
                 puts = handle2;
             }
             
-            return (IPersistenceResult)await puts.Set().ConfigureAwait(false);
+            return (ITransferResult)await puts.Set().ConfigureAwait(false);
         }
 
         public static async Task<T> Saved<T>(this T referencable)

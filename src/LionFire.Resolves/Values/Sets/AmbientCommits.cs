@@ -9,7 +9,7 @@ public class AmbientCommits<TKey, TValue> : Commits<TKey, TValue>
      where TKey : class
     where TValue : class
 {
-    public override Task<IPersistenceResult> CommitImpl(TValue value) => this.Key.Set(value);
+    public override Task<ITransferResult> CommitImpl(TValue value) => this.Key.Set(value);
     //foreach (var service in DependencyContext.Current.GetServices<ISetter<TKey, TValue>>())
     //{
     //    var result = await service.Put(Key, value).ConfigureAwait(false);

@@ -51,12 +51,12 @@ namespace LionFire.Persistence.Persisters
         protected virtual TUnderlyingPersister GetUnderlyingPersister(TReference reference) => default;
 
 
-        public Task<IPersistenceResult> Create<TValue>(IReferencable<TReference> referencable, TValue value)
+        public Task<ITransferResult> Create<TValue>(IReferencable<TReference> referencable, TValue value)
             => GetUnderlyingPersister(referencable.Reference).Create(TranslateReferenceForWrite(referencable.Reference), value);
 
-        public Task<IPersistenceResult> Delete(IReferencable<TReference> referencable)
+        public Task<ITransferResult> Delete(IReferencable<TReference> referencable)
            => GetUnderlyingPersister(referencable.Reference).Delete(TranslateReferenceForWrite(referencable.Reference));
-        public Task<IPersistenceResult> Exists<TValue>(IReferencable<TReference> referencable)
+        public Task<ITransferResult> Exists<TValue>(IReferencable<TReference> referencable)
           => GetUnderlyingPersister(referencable.Reference).Exists<TValue>(TranslateReferenceForRead(referencable.Reference));
         public Task<IRetrieveResult<IEnumerable<IListing<T>>>> List<T>(IReferencable<TReference> referencable, ListFilter filter = null)
           => GetUnderlyingPersister(referencable.Reference).List<T>(TranslateReferenceForRead(referencable.Reference), filter);
@@ -77,9 +77,9 @@ namespace LionFire.Persistence.Persisters
             return result;
         }
 
-        public Task<IPersistenceResult> Update<TValue>(IReferencable<TReference> referencable, TValue value)
+        public Task<ITransferResult> Update<TValue>(IReferencable<TReference> referencable, TValue value)
         => GetUnderlyingPersister(referencable.Reference).Update(TranslateReferenceForWrite(referencable.Reference), value);
-        public Task<IPersistenceResult> Upsert<TValue>(IReferencable<TReference> referencable, TValue value)
+        public Task<ITransferResult> Upsert<TValue>(IReferencable<TReference> referencable, TValue value)
          => GetUnderlyingPersister(referencable.Reference).Upsert(TranslateReferenceForWrite(referencable.Reference), value);
     }
 }

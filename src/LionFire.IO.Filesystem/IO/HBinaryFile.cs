@@ -18,7 +18,7 @@ namespace LionFire.IO
 
         #endregion
 
-        protected override async Task<IPersistenceResult> UpsertImpl()
+        protected override async Task<ITransferResult> UpsertImpl()
         {
             await Task.Run(() =>
             {
@@ -27,7 +27,7 @@ namespace LionFire.IO
             return PersistenceResult.Success;
         }
 
-        protected override async Task<IPersistenceResult> DeleteImpl()
+        protected override async Task<ITransferResult> DeleteImpl()
         {
             return await Task.Run(() =>
             {

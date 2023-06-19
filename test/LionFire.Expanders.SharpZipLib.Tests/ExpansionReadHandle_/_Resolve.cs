@@ -71,7 +71,7 @@ public class _Resolve
             var resolveResult = await handle.Retrieve<string>().ConfigureAwait(false);
             Assert.IsTrue(resolveResult.IsSuccess);
             Assert.IsFalse(resolveResult.HasValue);
-            Assert.IsTrue(resolveResult.Flags.HasFlag(PersistenceResultFlags.NotFound));
+            Assert.IsTrue(resolveResult.Flags.HasFlag(TransferResultFlags.NotFound));
 
             #region Metrics
 

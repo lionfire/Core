@@ -12,9 +12,9 @@ namespace LionFire.ObjectBus
         private Exception ReadOnlyException => new NotSupportedException("Read only");
 
 
-        public override Task<IPersistenceResult> Set<T>(ReferenceType reference, T obj, bool allowOverwrite = true) => throw ReadOnlyException;
+        public override Task<ITransferResult> Set<T>(ReferenceType reference, T obj, bool allowOverwrite = true) => throw ReadOnlyException;
 
-        public override Task<IPersistenceResult> CanDelete<T>(ReferenceType reference) => Task.FromResult<IPersistenceResult>(PersistenceResult.PreviewFail);
+        public override Task<ITransferResult> CanDelete<T>(ReferenceType reference) => Task.FromResult<ITransferResult>(PersistenceResult.PreviewFail);
 
     }
 }

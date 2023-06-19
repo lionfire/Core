@@ -19,17 +19,17 @@ namespace LionFire.Persistence
     {
         //        Task<int> Count();
 
-        //        IPersistenceResult Add(string name, T obj);
-        //        IPersistenceResult Add(H<T> handle);
-        //        IPersistenceResult Add(T obj);
+        //        ITransferResult Add(string name, T obj);
+        //        ITransferResult Add(H<T> handle);
+        //        ITransferResult Add(T obj);
 
-        //        IPersistenceResult Remove(string name);
-        //        IPersistenceResult Remove(H<T> handle);
-        //        IPersistenceResult Remove(T value);
+        //        ITransferResult Remove(string name);
+        //        ITransferResult Remove(H<T> handle);
+        //        ITransferResult Remove(T value);
 
         //        IEnumerable<CollectionOperation> UncommittedChanges { get; }
 
-        //        IPersistenceResult Put();
+        //        ITransferResult Put();
 
         IReadWriteHandle<T> this[string subpath] { get; }
     }

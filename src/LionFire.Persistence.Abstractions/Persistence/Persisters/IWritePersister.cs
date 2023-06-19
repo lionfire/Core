@@ -16,15 +16,15 @@ namespace LionFire.Persistence.Persisters
         /// <param name="value"></param>
         /// <returns></returns>
         /// <exception cref="AlreadySetException">When value already exists at referencable.Reference</exception>
-        Task<IPersistenceResult> Create<TValue>(IReferencable<TReference> referencable, TValue value);
+        Task<ITransferResult> Create<TValue>(IReferencable<TReference> referencable, TValue value);
 
         /// <exception cref="NotFoundException">When existing value not found at referencable.Reference</exception>
         /// <returns></returns>
-        Task<IPersistenceResult> Update<TValue>(IReferencable<TReference> referencable, TValue value);
-        Task<IPersistenceResult> Upsert<TValue>(IReferencable<TReference> referencable, TValue value);
+        Task<ITransferResult> Update<TValue>(IReferencable<TReference> referencable, TValue value);
+        Task<ITransferResult> Upsert<TValue>(IReferencable<TReference> referencable, TValue value);
 
         // REVIEW - is this the only method that does not take a generic <TValue>?  Should it?
-        Task<IPersistenceResult> Delete(IReferencable<TReference> referencable);
+        Task<ITransferResult> Delete(IReferencable<TReference> referencable);
     }
 
     //public interface IWritePersistenceOperationProvider<in TReference>

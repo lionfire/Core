@@ -10,9 +10,9 @@
 
         public bool HasValue => false;
 
-        public PersistenceResultFlags Flags
+        public TransferResultFlags Flags
         {
-            get => PersistenceResultFlags.Noop | PersistenceResultFlags.Fail;
+            get => TransferResultFlags.Noop | TransferResultFlags.Fail;
             set { }
         }
         public object Error => null;
