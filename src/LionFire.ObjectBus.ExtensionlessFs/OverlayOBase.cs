@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using LionFire.Persistence;
 using LionFire.Referencing;
 using LionFire.Persistence.Resolution;
+using LionFire.Data;
 
 namespace LionFire.ObjectBus.ExtensionlessFs
 {
@@ -76,7 +77,7 @@ namespace LionFire.ObjectBus.ExtensionlessFs
                 {
                     if (throwOnError && lastResult.IsFail())
                     {
-                        if (throwOnError) throw new PersistenceException(lastResult);
+                        if (throwOnError) throw new TransferException(lastResult);
                     }
                     if (failures == null)
                     {

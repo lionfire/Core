@@ -29,13 +29,13 @@ public abstract class LazilyGetsVM<T>
     //    get => source;
     //    set
     //    {
-    //        if (EqualityComparer<ILazilyGets<T>>.Default.Equals(source, value)) { return; }
+    //        if (EqualityComparer<ILazilyGets<TValue>>.Default.Equals(source, value)) { return; }
     //        this.RaiseAndSetIfChanged(ref source, value);
     //        OnSourceChanged(value);
     //    }
     //}
-    //private ILazilyGets<T>? source;
-    //protected virtual void OnSourceChanged(IGets<T>? newValue) { }
+    //private ILazilyGets<TValue>? source;
+    //protected virtual void OnSourceChanged(IGets<TValue>? newValue) { }
 
     IGets<T>? IReadWrapper<IGets<T>>.Value => Source;
     ILazilyGets<T>? IReadWrapper<ILazilyGets<T>>.Value => Source;
@@ -56,7 +56,7 @@ public abstract class LazilyGetsVM<T>
     public LazilyGetsVM()
 #pragma warning restore CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
     {
-        //Get = ReactiveCommand.CreateFromTask(() => ((IGets<T>)this).Get().AsTask()
+        //Get = ReactiveCommand.CreateFromTask(() => ((IGets<TValue>)this).Get().AsTask()
         //, canExecute: );
         //Get.ThrownExceptions.Subscribe(ex => this.Log().Error(ex, "Something went wrong"));
 
@@ -67,7 +67,7 @@ public abstract class LazilyGetsVM<T>
                 var cmd = ReactiveCommand.CreateFromTask<Unit, IGetResult<T>>(
                     _ => resolves!.Get().AsTask(),
                     canExecute: Observable.Return(resolves != null)
-                //Observable.Create<bool>(o => { o.OnNext(resolves != null); o.OnCompleted(); return Disposable.Empty; })
+                //Observable.Create<bool>(o => { o.OnNext(gets != null); o.OnCompleted(); return Disposable.Empty; })
                 );
                 Resolve = cmd;
                 cmd.ThrownExceptions.Subscribe(ex => this.Log().Error(ex, "Something went wrong"));

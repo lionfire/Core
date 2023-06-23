@@ -3,6 +3,8 @@ using LionFire.Results;
 using LionFire.ExtensionMethods.Objects;
 using LionFire.Data.Async.Sets;
 using LionFire.Persistence;
+using LionFire.Data;
+using System.Linq;
 
 namespace LionFire.ExtensionMethods.Poco.Data.Async;
 
@@ -18,7 +20,7 @@ public static class ISetterPocoX
     /// <returns></returns>
     public static async Task<ITransferResult> Set<TKey, TValue>(this TKey key, TValue value, bool returnFirstSuccess = false)
     {
-        foreach (var setter in key.GetAmbientServiceProvider().GetServices<ISetter<TKey, TValue>>())
+        foreach (var setter in key?.GetAmbientServiceProvider().GetServices<ISetter<TKey, TValue>>() ?? Enumerable.Empty<ISetter<TKey, TValue>>())
         {
             var result = await setter.Set(key).ConfigureAwait(false);
             if (!returnFirstSuccess)
@@ -30,6 +32,6 @@ public static class ISetterPocoX
                 if (result.IsSuccess == true) return result;
             }
         }
-        return new PersistenceResult(TransferResultFlags.PersisterNotAvailable);
+        return new TransferResult(TransferResultFlags.PersisterNotAvailable);
     }
 }

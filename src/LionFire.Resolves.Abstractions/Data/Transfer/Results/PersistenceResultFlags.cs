@@ -156,5 +156,6 @@ public static class TransferResultFlagsExtensions
         return null;
     }
 
-    public static PersistenceResult ToResult(this TransferResultFlags flags) => new PersistenceResult { Flags = flags };
+    
+    public static TransferResult ToResult(this TransferResultFlags flags) => new TransferResult { Flags = flags };
 }

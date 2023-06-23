@@ -1,7 +1,7 @@
 ﻿
 namespace LionFire.Data.Async;
 
-public abstract class LazilyGetsRx<T>
+public abstract class AsyncGets<T>
     : ReactiveObject
     , ILazilyGetsRx<T>
 {
@@ -21,11 +21,11 @@ public abstract class LazilyGetsRx<T>
 
     #region Lifecycle
 
-    protected LazilyGetsRx()
+    protected AsyncGets()
     {
         Options = DefaultOptions;
     }
-    protected LazilyGetsRx(AsyncValueOptions options) {
+    protected AsyncGets(AsyncValueOptions options) {
         Options = options;
     }
 
@@ -40,6 +40,7 @@ public abstract class LazilyGetsRx<T>
     public bool HasValue { get; private set; }
     public ILazyGetResult<T> QueryValue() => new LazyResolveResult<T>(HasValue, Value);
 
+    public void Discard() => DiscardValue();
     public void DiscardValue()
     {
         Value = default;

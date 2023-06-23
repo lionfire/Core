@@ -7,17 +7,17 @@ namespace LionFire.Data.Async.Collections;
 
 
 // ENH // ideas specific to lists: sorting
-//public class AsyncObservableListOptions<T> : AsyncObservableCollectionOptions
+//public class AsyncObservableListOptions<TValue> : AsyncObservableCollectionOptions
 //{
 //    public bool SortFromSource { get; set; }
 
-//    public IComparer<T>? Comparer { get; set; }
+//    public IComparer<TValue>? Comparer { get; set; }
 //}
 
 ///// <summary>
 ///// 
 ///// </summary>
-///// <typeparam name="T"></typeparam>
+///// <typeparam name="TValue"></typeparam>
 ///// <remarks>
 ///// Not supported yet: ability to control sorting or reordering
 ///// </remarks>

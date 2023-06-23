@@ -22,6 +22,10 @@ public class LionFireSerilogDefaults
     public static ExpressionTemplate ConsoleTemplate => LionFireEnvironment.IsUnitTest == true ? TestConsoleTemplate : new ExpressionTemplate(
             template: "[{@t:yyyy-MM-dd HH:mm:ss} {@l:u2} {ToString(Substring(SourceContext, LastIndexOf(SourceContext, '.')+1), '        '):u10}] {@m}\n{@x}",
              theme: TemplateTheme.Code);
+    public static ExpressionTemplate LongConsoleTemplate => LionFireEnvironment.IsUnitTest == true ? TestConsoleTemplate : new ExpressionTemplate(
+            template: "[{@t:yyyy-MM-dd HH:mm:ss} {@l:u2} {ToString(SourceContext, '        '):u10}] {@m}\n{@x}",
+             theme: TemplateTheme.Code);
+
     public static ExpressionTemplate TestConsoleTemplate => new ExpressionTemplate(
             template: "[{@t:mm:ss} {@l:u2} {ToString(Substring(SourceContext, LastIndexOf(SourceContext, '.')+1), '        '):u10}] {@m}\n{@x}",
              theme: TemplateTheme.Code);

@@ -24,17 +24,17 @@ namespace LionFire.IO
             {
                 File.WriteAllBytes(Path, Value);
             });
-            return PersistenceResult.Success;
+            return TransferResult.Success;
         }
 
         protected override async Task<ITransferResult> DeleteImpl()
         {
             return await Task.Run(() =>
             {
-                if (!File.Exists(Path)) return PersistenceResult.NotFound;
+                if (!File.Exists(Path)) return TransferResult.NotFound;
 
                 File.Delete(Path);
-                return PersistenceResult.Found;
+                return TransferResult.Found;
             }).ConfigureAwait(false);
         }
 

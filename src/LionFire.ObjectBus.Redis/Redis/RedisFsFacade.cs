@@ -40,7 +40,7 @@ namespace LionFire.ObjectBus.Redis
             var (dir, name) = BreakPath(path);
             bool deleted = await Db.SetRemoveAsync(dir + "/", name).ConfigureAwait(false);
             await Db.KeyDeleteAsync(path).ConfigureAwait(false);
-            return deleted ? PersistenceResult.Success : PersistenceResult.NotFound;
+            return deleted ? TransferResult.Success : TransferResult.NotFound;
         }
 
         public async Task<byte[]> ReadAllBytes(string path) => await Db.StringGetAsync(path).ConfigureAwait(false);

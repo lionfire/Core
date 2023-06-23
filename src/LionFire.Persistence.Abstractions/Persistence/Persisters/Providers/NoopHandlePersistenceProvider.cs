@@ -16,7 +16,7 @@ namespace LionFire.Persistence.Persisters
             => Task.FromResult<ITransferResult>(NoopPutPersistenceResult.Instance);
 
 
-        public Task<ITransferResult> Exists<TValue>(TReference reference) => Task.FromResult<ITransferResult>(PersistenceResult.NotFound);
+        public Task<ITransferResult> Exists<TValue>(TReference reference) => Task.FromResult<ITransferResult>(TransferResult.NotFound);
         public Task<IRetrieveResult<IEnumerable<IListing<T>>>> List<T>(TReference reference, ListFilter? filter = null) 
             => Task.FromResult<IRetrieveResult<IEnumerable<IListing<T>>>>(RetrieveResult<IEnumerable<IListing<T>>>.Noop(Enumerable.Empty<IListing<T>>()));
 

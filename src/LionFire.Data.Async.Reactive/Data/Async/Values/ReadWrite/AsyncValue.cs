@@ -6,11 +6,12 @@ using LionFire.Results;
 namespace LionFire.Data.Async;
 
 
-public abstract class AsyncValueRx<TValue>
-    : LazilyGetsRx<TValue>
+public abstract class AsyncValue<TValue>
+    : AsyncGets<TValue>
     , IAsyncValueRx<TValue>
 
 {
+    
     #region Options
 
     #region (static)
@@ -32,7 +33,7 @@ public abstract class AsyncValueRx<TValue>
 
     #region Lifecycle
 
-    public AsyncValueRx() : base(DefaultOptions)
+    public AsyncValue() : base(DefaultOptions)
     {
         this.ObservableForProperty(t => t.Value)
             .Subscribe(t =>
@@ -81,7 +82,7 @@ public abstract class AsyncValueRx<TValue>
 
     #region Methods
 
-    public Task<ISuccessResult> Set(CancellationToken cancellationToken = default)
+    public Task<ITransferResult> Set(CancellationToken cancellationToken = default)
     {
         throw new NotImplementedException();
         //try
@@ -94,7 +95,7 @@ public abstract class AsyncValueRx<TValue>
         //}
     }
 
-    public Task<ISuccessResult> Set(TValue? value, CancellationToken cancellationToken = default)
+    public Task<ITransferResult> Set(TValue? value, CancellationToken cancellationToken = default)
     {
         throw new NotImplementedException();
     }

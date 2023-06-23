@@ -83,7 +83,7 @@ public abstract class AsyncReadOnlyKeyedCollectionCache<TKey, TValue>
 
     //#region  IObservableGets<IEnumerable<TItem>>
 
-    //IObservable<ITask<IGetResult<IEnumerable<KeyValuePair<TKey, TValue>>>>> IObservableGets<IEnumerable<KeyValuePair<TKey, TValue>>>.Gets => throw new NotImplementedException();
+    //IObservable<ITask<IGetResult<IEnumerable<KeyValuePair<TKey, TValue>>>>> IObservableGets<IEnumerable<KeyValuePair<TKey, TValue>>>.AsyncGetsWithEvents => throw new NotImplementedException();
 
     //#endregion
 
@@ -144,7 +144,7 @@ public abstract class AsyncReadOnlyKeyedCollectionCache<TKey, TValue>
     {
         lock (currentResolvingLock)
         {
-            var existing = resolves.Value;
+            var existing = gets.Value;
             if (existing != null && !existing.AsTask().IsCompleted) { return existing; }
 
             var task = Task.Run<IGetResult<IEnumerable<TValue>>>(async () =>
@@ -161,7 +161,7 @@ public abstract class AsyncReadOnlyKeyedCollectionCache<TKey, TValue>
                 }
                 return result;
             }).AsITask();
-            resolves.OnNext(task);
+            gets.OnNext(task);
             return task;
         }
     }

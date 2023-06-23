@@ -37,7 +37,7 @@ namespace LionFire.ObjectBus
         {
             var existsResult = await Exists(reference);
             // FUTURE: Check filesystem permissions
-            return new PersistenceResult { Flags = (existsResult.result.Flags.HasFlag(TransferResultFlags.Found) ? TransferResultFlags.PreviewSuccess | TransferResultFlags.Found : TransferResultFlags.PreviewFail | TransferResultFlags.NotFound) }; 
+            return new TransferResult { Flags = (existsResult.result.Flags.HasFlag(TransferResultFlags.Found) ? TransferResultFlags.PreviewSuccess | TransferResultFlags.Found : TransferResultFlags.PreviewFail | TransferResultFlags.NotFound) }; 
 
             //return existsResult.Object;
             //return new RetrieveResult<bool?>

@@ -476,7 +476,7 @@ public abstract partial class VirtualFilesystemPersisterBase<TReference, TPersis
         }
         if (potentialExtensions.Count() >= 2 && PersistenceOptions.ValidateOneFilePerPath.HasFlag(ValidateOneFilePerPath.OnRead))
         {
-            throw new PersistenceException($"ValidateOneFilePerPath has flag OnRead and there is more than one possible file extension found for path '{path}'");
+            throw new TransferException($"ValidateOneFilePerPath has flag OnRead and there is more than one possible file extension found for path '{path}'");
         }
 
         #endregion
@@ -946,11 +946,11 @@ public abstract partial class VirtualFilesystemPersisterBase<TReference, TPersis
         if (await Exists<TValue>(fsPath).ConfigureAwait(false))
         {
             var deleteResult = await Delete(fsPath).ConfigureAwait(false);
-            return PersistenceResult.SuccessAndFound;
+            return TransferResult.SuccessAndFound;
         }
         else
         {
-            return PersistenceResult.SuccessNotFound;
+            return TransferResult.SuccessNotFound;
         }
     }
 
@@ -975,9 +975,9 @@ public abstract partial class VirtualFilesystemPersisterBase<TReference, TPersis
             var flags = TransferResultFlags.Found;
             if (deleteResult == true) flags |= TransferResultFlags.Success;
             if (deleteResult == false) flags |= TransferResultFlags.Fail;
-            return new PersistenceResult { Flags = flags };
+            return new TransferResult { Flags = flags };
         }
-        return PersistenceResult.SuccessNotFound;
+        return TransferResult.SuccessNotFound;
     }
 
     #endregion

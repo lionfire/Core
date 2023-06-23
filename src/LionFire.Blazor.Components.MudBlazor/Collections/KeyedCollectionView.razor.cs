@@ -53,7 +53,7 @@ public partial class KeyedCollectionView<TKey, TValue, TValueVM>
     //public bool AutoRetrieveOnInit { get; set; } = true; // TODO
 
     [Parameter]
-    public IEnumerable<Type>? CreatableTypes { get; set; } // TODO: Move to ICreatesAsyncVM<T>
+    public IEnumerable<Type>? CreatableTypes { get; set; } // TODO: Move to ICreatesAsyncVM<TValue>
 
     #region Collection Parameters
 
@@ -252,9 +252,9 @@ public partial class KeyedCollectionView<TKey, TValue, TValueVM>
     //        return (IGetResult<IEnumerable<TValue>>)result;
     //    }
 
-    //    if (Items is IGets<IEnumerable<TValue>> resolves)
+    //    if (Items is IGets<IEnumerable<TValue>> gets)
     //    {
-    //        var result = await resolves.Get().ConfigureAwait(false);
+    //        var result = await gets.Get().ConfigureAwait(false);
     //        return result;
     //    }
     //    throw new NotSupportedException();
@@ -262,9 +262,9 @@ public partial class KeyedCollectionView<TKey, TValue, TValueVM>
     //}
     //public async Task<IGetResult<TValue>> Get()
     //{
-    //    if (Items is IGets<IEnumerable<TValue>> resolves)
+    //    if (Items is IGets<IEnumerable<TValue>> gets)
     //    {
-    //        var result = await resolves.Get().ConfigureAwait(false);
+    //        var result = await gets.Get().ConfigureAwait(false);
     //        return result;
     //    }
     //    throw new NotSupportedException();

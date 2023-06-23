@@ -10,7 +10,7 @@ namespace LionFire.Data.Async.Gets;
 /// </summary>
 /// <typeparam name="T"></typeparam>
 /// <remarks>
-/// Gets&lt;T&gt; also implements ILazilyGets&lt;T&gt; and provides extra features. Consider using it.
+/// AsyncGetsWithEvents&lt;T&gt; also implements ILazilyGets&lt;T&gt; and provides extra features. Consider using it.
 /// </remarks>
 public abstract class LazilyResolves<T> : ILazilyGets<T>
 {
@@ -41,6 +41,7 @@ public abstract class LazilyResolves<T> : ILazilyGets<T>
     }
     public ILazyGetResult<T> QueryValue() => new LazyResolveResult<T>(HasValue, value);
 
+    public virtual void Discard() => DiscardValue();
     public void DiscardValue()
     {
         value = default;

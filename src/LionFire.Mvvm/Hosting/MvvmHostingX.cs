@@ -17,8 +17,6 @@ public static class MvvmHostingX
             .If(viewModelAssemblies.Length > 0, s => s.Configure<ViewModelConfiguration>(c => c.TypeScanOptions.AssemblyWhitelist = viewModelAssemblies))
             .AddSingleton<IViewModelProvider, CompoundViewModelProvider>()
 
-            .AddSingleton(typeof(AsyncKeyedCollectionVM<,,>))
-
             //.AddHostedService<TypeScanService>() // TODO: move this line to LionFire.Core/Hosting extensions?
             //.Configure<TypeScanOptions>(o =>
             //{

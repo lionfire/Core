@@ -5,18 +5,18 @@ using LionFire.Data.Async.Gets;
 
 namespace LionFire.Persistence
 {
-    //public struct PersistenceResult<T> : ITransferResult 
+    //public struct TransferResult<T> : ITransferResult 
     //{
     //    #region Construction
 
-    //    //public PersistenceResult()
+    //    //public TransferResult()
     //    //{
     //    //    Error = null;
     //    //    Value = default;
     //    //    Flags = default;
     //    //}
-    //    public PersistenceResult(T value) : this() { this.Value = value; }
-    //    public PersistenceResult(T value, TransferResultFlags flags) : this(value) { Flags = flags; }
+    //    public TransferResult(T value) : this() { this.Value = value; }
+    //    public TransferResult(T value, TransferResultFlags flags) : this(value) { Flags = flags; }
 
     //    #endregion
 
@@ -27,7 +27,7 @@ namespace LionFire.Persistence
     //    public TransferResultFlags Flags { get; set; }
     //    public bool? IsSuccess => Flags.IsSuccessTernary();
 
-    //    public static PersistenceResult<T> NotFoundButInstantiated(T obj) => new PersistenceResult<T>()
+    //    public static TransferResult<T> NotFoundButInstantiated(T obj) => new TransferResult<T>()
     //    {
     //        Flags = TransferResultFlags.Success | TransferResultFlags.NotFound | TransferResultFlags.Instantiated,
     //        Value = obj,

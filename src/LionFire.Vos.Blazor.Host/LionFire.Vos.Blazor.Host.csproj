@@ -17,8 +17,9 @@
     <PackageReference Include="Microsoft.Extensions.Hosting" />
     <PackageReference Include="MudBlazor" />
     <PackageReference Include="NLog.Web.AspNetCore" />
-    <PackageReference Include="OpenTelemetry.Exporter.OpenTelemetryProtocol" />
-    <PackageReference Include="OpenTelemetry.Exporter.Prometheus" />
+		<PackageReference Include="OpenTelemetry.Api" />
+		<PackageReference Include="OpenTelemetry.Exporter.OpenTelemetryProtocol" />
+		<PackageReference Include="OpenTelemetry.Exporter.Prometheus" />
     <PackageReference Include="OpenTelemetry.Exporter.Prometheus.AspNetCore" />
     <PackageReference Include="OpenTelemetry.Extensions.Hosting" />
     <PackageReference Include="OpenTelemetry.Instrumentation.AspNetCore" />

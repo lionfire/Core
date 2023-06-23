@@ -13,5 +13,5 @@ public interface ISets<in T>
     /// </summary>
     /// <param name="value"></param>
     /// <returns></returns>
-    Task<ISuccessResult> Set(T? value, CancellationToken cancellationToken = default);
+    Task<ITransferResult> Set(T? value, CancellationToken cancellationToken = default);
 }

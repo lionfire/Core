@@ -1,23 +1,19 @@
-﻿namespace LionFire.Persistence
+﻿using LionFire.Data;
+using LionFire.Data.Async.Gets;
+
+namespace LionFire.Persistence;
+
+public struct NoopRetrieveResult<T> : IGetResult<T>
 {
-    public struct NoopRetrieveResult<T> : IRetrieveResult<T>
-    {
-        public static NoopRetrieveResult<T> Instance => new NoopRetrieveResult<T>();
+    public static NoopRetrieveResult<T> Instance => new NoopRetrieveResult<T>();
 
-        public bool? IsSuccess => false;
+    public bool? IsSuccess => false;
 
-        public T Value => default;
+    public T Value => default;
 
-        public bool HasValue => false;
+    public bool HasValue => false;
 
-        public TransferResultFlags Flags
-        {
-            get => TransferResultFlags.Noop | TransferResultFlags.Fail;
-            set { }
-        }
-        public object Error => null;
+    public TransferResultFlags Flags => TransferResultFlags.Noop | TransferResultFlags.Fail;
 
-        public bool IsNoop => true;
-    }
-
+    
 }

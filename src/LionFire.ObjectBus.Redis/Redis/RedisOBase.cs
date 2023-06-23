@@ -298,7 +298,7 @@ namespace LionFire.ObjectBus.Redis
 
             // TODO: transaction: roll back on fail and throw
 
-            return PersistenceResult.Success;
+            return TransferResult.Success;
         }
 
         public const bool AppendTypeNameToFileNames = false; // TEMP - TODO: Figure out a way to do this in VOS land

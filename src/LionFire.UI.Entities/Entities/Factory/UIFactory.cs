@@ -201,12 +201,12 @@ namespace LionFire.UI.Entities
         {
             parent ??= Root;
 
-            //if (parent is IUIFactoryNode fn) { return fn.Show<T>(); }
+            //if (parent is IUIFactoryNode fn) { return fn.Show<TValue>(); }
 
             throw new NotImplementedException(); // TODO: Support lightweight view-injection in UINodes that do not implement IUIFactoryNode.
 
 
-            //var view = ServiceProvider.GetRequiredService<T>();
+            //var view = ServiceProvider.GetRequiredService<TValue>();
             ////if(view == null) { throw new ArgumentException($"No concrete "); }
 
 
@@ -216,7 +216,7 @@ namespace LionFire.UI.Entities
             ////}
 
 
-            //if (Platform.IsViewType(typeof(T)))
+            //if (Platform.IsViewType(typeof(TValue)))
             //{
             //    if (parent is IPresenter parentPresenter)
             //    {

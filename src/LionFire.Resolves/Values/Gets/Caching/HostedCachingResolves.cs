@@ -4,7 +4,7 @@
 //using System.Threading;
 //using System.Threading.Tasks;
 
-//namespace LionFire.Data.Async.Gets;
+//namespace LionFire.Data.Async.AsyncGetsWithEvents;
 
 //public abstract class HostedCachingResolves<T> : LazilyResolves<T>, IHostedService
 //{

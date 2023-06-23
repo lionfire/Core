@@ -94,7 +94,7 @@ namespace LionFire.Persistence.CouchDB
             //POST with server generated id
             await client.Documents.PostAsync(@"{""name"":""Daniel""}");
 
-            return PersistenceResult.Success;
+            return TransferResult.Success;
         }
         public Task<ITransferResult> Update<TValue>(IReferencable<ICouchDBReference> referencable, TValue value)
         {

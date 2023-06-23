@@ -4,6 +4,8 @@ using System.Collections.Generic;
 using System.Text;
 using LionFire.Referencing;
 using LionFire.Data.Async.Gets;
+using LionFire.Data;
+using LionFire.Results;
 
 namespace LionFire.Persistence;
 
@@ -11,37 +13,9 @@ public interface IExistsResult : ITransferResult
 {
 }
 
-public struct RetrieveResult<T> : IRetrieveResult<T>
+public struct RetrieveResult<T> : IRetrieveResult<T>, IErrorResult
 //where T : class
 {
-    #region Construction
-
-    //public RetrieveResult()
-    //{
-    //    Error = null;
-    //    Value = default;
-    //    Flags = default;
-    //}
-    public RetrieveResult(T value) : this() { this.Value = value; }
-    public RetrieveResult(T value, TransferResultFlags flags, object? error = null) : this(value) { Flags = flags; Error = error; }
-
-    #endregion
-
-    public object? Error { get; set; }
-    public object? ErrorDetail { get; set; }
-    public T? Value { get; set; }
-    public bool HasValue =>
-        !EqualityComparer<T>.Default.Equals(default, Value);
-    //Value != default;
-
-    public TransferResultFlags Flags { get; set; }
-    public bool? IsSuccess => Flags.IsSuccessTernary();
-
-    public bool IsNoop => Flags.HasFlag(TransferResultFlags.Noop);
-
-    public object? InnerResult { get; set; }
-    public IEnumerable<IRetrieveResult<T>>? InnerResults { get; set; }
-
     #region Static
 
     public static RetrieveResult<T> Success(T obj) => new RetrieveResult<T>()
@@ -110,6 +84,36 @@ public struct RetrieveResult<T> : IRetrieveResult<T>
     };
     #endregion
 
+    #region Construction
+
+    //public RetrieveResult()
+    //{
+    //    Error = null;
+    //    Value = default;
+    //    Flags = default;
+    //}
+    public RetrieveResult(T value) : this() { this.Value = value; }
+    public RetrieveResult(T value, TransferResultFlags flags, object? error = null) : this(value) { Flags = flags; Error = error; }
+
+    #endregion
+
+    public object? Error { get; set; }
+    public object? ErrorDetail { get; set; }
+
+    public T? Value { get; set; }
+    public bool HasValue => !EqualityComparer<T>.Default.Equals(default, Value);
+    //Value != default;
+
+    public TransferResultFlags Flags { get; set; }
+    public bool? IsSuccess => Flags.IsSuccessTernary();
+
+    //public bool IsNoop => Flags.HasFlag(TransferResultFlags.Noop);
+
+    public object? InnerResult { get; set; }
+    public IEnumerable<IRetrieveResult<T>>? InnerResults { get; set; }
+
+    #region Misc
+
     public override bool Equals(object? obj)
     {
         throw new NotImplementedException();
@@ -168,4 +172,6 @@ public struct RetrieveResult<T> : IRetrieveResult<T>
         }
         return sb.ToString();
     }
+
+    #endregion
 }

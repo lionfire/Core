@@ -34,9 +34,9 @@ public abstract partial class AsyncDynamicDataCollectionCache<TValue>
 
     #region IObservableGets
 
-    public bool IsResolving => !resolves.Value.AsTask().IsCompleted;
-    public IObservable<ITask<IGetResult<IEnumerable<TValue>>>> Gets => resolves;
-    protected BehaviorSubject<ITask<IGetResult<IEnumerable<TValue>>>> resolves = new(Task.FromResult<IGetResult<IEnumerable<TValue>>>(ResolveResultNotResolvedNoop<IEnumerable<TValue>>.Instance).AsITask());
+    public bool IsResolving => !gets.Value.AsTask().IsCompleted;
+    public IObservable<ITask<IGetResult<IEnumerable<TValue>>>> Gets => gets;
+    protected BehaviorSubject<ITask<IGetResult<IEnumerable<TValue>>>> gets = new(Task.FromResult<IGetResult<IEnumerable<TValue>>>(ResolveResultNotResolvedNoop<IEnumerable<TValue>>.Instance).AsITask());
 
     #region IResolves
 
@@ -60,6 +60,7 @@ public abstract partial class AsyncDynamicDataCollectionCache<TValue>
     public virtual bool HasValue => Value != null;
 
     public abstract void DiscardValue(); // => Value = null;
+    public virtual void Discard() => DiscardValue();
 
     #region IReadWrapper<T>
 

@@ -40,7 +40,7 @@ public abstract class AsyncVM<T> : ReactiveObject, IDependsOn<T>, IViewModel<T>
 
     #region Explicit interfaces
 
-    //T? IReadWrapper<T>.Value => Value;
+    //TValue? IReadWrapper<TValue>.Value => Value;
     T IDependsOn<T>.Dependency { set => Value = value; }
 
     #endregion

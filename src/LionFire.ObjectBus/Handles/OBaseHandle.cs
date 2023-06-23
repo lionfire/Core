@@ -52,7 +52,7 @@
 //        {
 //            // TODO: propagate persistenceContext?  Or remove it and rely on ambient AsyncLocal?
 //            var result = await OBase.Set<T>(this.Reference, ProtectedValue).ConfigureAwait(false);
-//            if (!result.IsSuccess()) throw new PersistenceException(result, "Failed to persist.  See Result for more information.");
+//            if (!result.IsSuccess()) throw new TransferException(result, "Failed to persist.  See Result for more information.");
 //            return result;
 //        }
 //    }

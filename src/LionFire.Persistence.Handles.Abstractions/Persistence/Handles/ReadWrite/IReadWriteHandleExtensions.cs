@@ -1,4 +1,5 @@
-﻿using LionFire.Data.Async.Gets;
+﻿using LionFire.Data;
+using LionFire.Data.Async.Gets;
 using System;
 using System.Reflection;
 using System.Threading.Tasks;
@@ -24,7 +25,7 @@ namespace LionFire.Persistence
         }
 
         // ENH: Return Put task separately and don't await it
-        public static async Task<T> TryGetOrCreate<T>(this IReadWriteHandle<T> handle)  // REVIEW - return PersistenceResult<T>?  Generic doesn't exist yet.
+        public static async Task<T> TryGetOrCreate<T>(this IReadWriteHandle<T> handle)  // REVIEW - return TransferResult<T>?  Generic doesn't exist yet.
         {
             if (handle is ILazilyGets<T> lr)
             {
@@ -44,7 +45,7 @@ namespace LionFire.Persistence
             var putResult = await handle.Set().ConfigureAwait(false);
             if (putResult.IsSuccess != true)
             {
-                throw new PersistenceException(putResult as ITransferResult, "Failed to create. Put result: " + putResult);
+                throw new TransferException(putResult as ITransferResult, "Failed to create. Put result: " + putResult);
             }
             return handle.Value;
         }

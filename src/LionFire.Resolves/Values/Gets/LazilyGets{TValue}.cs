@@ -1,50 +1,31 @@
-﻿using System.Threading.Tasks;
-
+﻿
 namespace LionFire.Data.Async.Gets;
 
-#if false // UNNEEDED OLD
-{
-    public abstract class ResolvesBase<TKey, TValue> : ResolvesBase<TKey, TValue, TValue>, ILazilyGets<TValue>
-    {
-        protected ResolvesBase() { }
-        protected ResolvesBase(TKey input) : base(input) { }
-
-        /// <summary>
-        /// Do not use this in derived classes that are purely resolve-only and not intended to set an initial value.
-        /// </summary>
-        /// <param name="input"></param>
-        /// <param name="initialValue"></param>
-        protected ResolvesBase(TKey input, TValue initialValue) : base(input, initialValue) { }
-    }
-}
-#endif
-
+/// <summary>
+/// 
+/// </summary>
 /// <remarks>
 /// Only requires one method to be implemented: GetImpl.
 /// </remarks>
-public abstract class Gets<TKey, TValue>
-    : DisposableKeyed<TKey>
-    , INotifyWrappedValueChanged
+public abstract class LazilyGets<TValue>
+    : INotifyWrappedValueChanged
     , INotifyWrappedValueReplaced
     , ILazilyGets<TValue>
-//  - RENAME this class to LazilyResolvesDeluxe<> to distinguish from LazilyResolves<>? Or rename LazilyResolves<> to SimpleLazilyResolves<>?
 {
     static ValueChangedPropagation ValueChangedPropagation = new ValueChangedPropagation();
 
     #region Configuration
 
-    public static bool DisposeValue => ResolvesOptions<TValue>.DisposeValue;
+    public static bool DisposeValue => LazilyGetsOptions<TValue>.DisposeValue;
 
     #endregion
 
     #region Lifecycle
 
-    protected Gets() { }
-    protected Gets(TKey input) : base(input) { }
+    protected LazilyGets() { }
 
-    public override void Dispose()
+    public void Dispose()
     {
-        base.Dispose();
         DiscardValue(); // Disposes ProtectedValue, if any
     }
 
@@ -63,10 +44,6 @@ public abstract class Gets<TKey, TValue>
         get => ProtectedValue ?? TryGetValue().Result.Value;
     }
 
-    //SmartWrappedValue SmartWrappedValue = new SmartWrappedValue();
-    //protected TValue ProtectedValue { get=>SmartWrappedValue.Prote}
-
-    // REVIEW: should this be TValue?  Should TValue have constraint of : default?
     protected TValue? ProtectedValue
     {
         get => protectedValue;
@@ -78,7 +55,7 @@ public abstract class Gets<TKey, TValue>
             // TODO: Move this to a finally block?
             if (DisposeValue && oldValue is IDisposable d)
             {
-                Log.Get<Gets<TKey, TValue>>().LogDebug("Disposing object of type {Type}", d.GetType().FullName);
+                Log.Get<LazilyGets<TValue>>().LogDebug("Disposing object of type {Type}", d.GetType().FullName);
                 d.Dispose();
             }
 
@@ -106,7 +83,7 @@ public abstract class Gets<TKey, TValue>
     /// <param name="oldValue"></param>
     protected virtual void OnValueChanged(TValue? newValue, TValue? oldValue)
     {
-        LazilyResolvesEvents.RaiseValueChanged<TValue>(this, oldValue, newValue);
+        LazilyGetsEvents.RaiseValueChanged<TValue>(this, oldValue, newValue);
     }
 
     #endregion
@@ -146,18 +123,19 @@ public abstract class Gets<TKey, TValue>
 
     #region Discard
 
+    public virtual void Discard() => DiscardValue();
     public virtual void DiscardValue() => ProtectedValue = default;
 
     #endregion
 
-    #region Get
+    #region Resolve
 
     public async ITask<IGetResult<TValue>> Get()
     {
-        var result = await GetImpl();
-        Debug.Assert(result is not null, $"{nameof(GetImpl)} must not return null");
-        ProtectedValue = result.Value;
-        return result;
+        var resolveResult = await GetImpl();
+        Debug.Assert(resolveResult is not null, "ResolveImpl must not return null");
+        ProtectedValue = resolveResult.Value;
+        return resolveResult;
     }
 
     #endregion
@@ -168,17 +146,5 @@ public abstract class Gets<TKey, TValue>
 
     #endregion
 
-    #region OLD
-
-    //public async ITask<ILazyGetResult<TValueReturned>> GetValue2()
-    //{
-    //    var currentValue = ProtectedValue;
-    //    if (currentValue != null) return new LazyResolveResultNoop<TValueReturned>((TValueReturned)(object)ProtectedValue);
-
-    //    var result = await Get();
-    //    return new LazyResolveResult<TValueReturned>(result.HasValue, (TValueReturned)(object)result.Value);
-    //}
-
-    #endregion
 }
 

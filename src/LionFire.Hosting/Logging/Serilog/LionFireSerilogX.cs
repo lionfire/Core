@@ -17,10 +17,10 @@ namespace LionFire.Hosting;
 
 public static class LionFireSerilogX
 {
-    public static ILionFireHostBuilder Serilog(this ILionFireHostBuilder b, Action<LionFireSerilogBuilder>? configure = null, bool configureFallbackToDefaults = true)
+    public static ILionFireHostBuilder Serilog(this ILionFireHostBuilder builder, Action<LionFireSerilogBuilder>? configure = null, bool configureFallbackToDefaults = true)
     {
-        if (global::Serilog.Log.Logger != null && global::Serilog.Log.Logger.GetType().Name != "SilentLogger") { return b; }
-        //if (global::Serilog.Log.Logger is not SilentL null && ) { return b; }
+        if (global::Serilog.Log.Logger != null && global::Serilog.Log.Logger.GetType().Name != "SilentLogger") { return builder; }
+        //if (global::Serilog.Log.Logger is not Silent null && ) { return builder; }
         
         LogBootstrappingState.IsBootstrapping = true;
 
@@ -28,7 +28,7 @@ public static class LionFireSerilogX
 
         #region Bootstrap
 
-        var configuration = b.GetBootstrapConfiguration(new LionFireHostBuilderBootstrapOptions
+        var configuration = builder.GetBootstrapConfiguration(new LionFireHostBuilderBootstrapOptions
         {
             BootstrapLionFireHostBuilder = lf => lf.Serilog(configure, configureFallbackToDefaults),
             UseDefaults = true
@@ -49,13 +49,13 @@ public static class LionFireSerilogX
 
         #endregion
 
-        b.HostBuilder.UseSerilog((context, serviceProvider, loggerConfiguration) =>
+        builder.HostBuilder.UseSerilog((context, serviceProvider, loggerConfiguration) =>
         {
             LogBootstrappingState.IsBootstrapping = false;
             global::Serilog.Log.Logger.Verbose($"----- BOOTSTRAP FINISHED -----");
             configure?.Invoke(new LionFireSerilogBuilder(loggerConfiguration, context?.Configuration));
         }, preserveStaticLogger: true);
 
-        return b;
+        return builder;
     }
 }

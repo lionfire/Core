@@ -1,31 +1,33 @@
 ﻿
 namespace LionFire.Data.Async.Gets;
 
-/// <summary>
-/// 
-/// </summary>
 /// <remarks>
 /// Only requires one method to be implemented: GetImpl.
 /// </remarks>
-public abstract class Gets<TValue>
-    : INotifyWrappedValueChanged
+[Obsolete("Use AsyncGets instead.  Revive this if ReactiveObject for some reason isn't ideal.")]
+public abstract class AsyncGetsWithEvents<TKey, TValue>
+    : DisposableKeyed<TKey>
+    , INotifyWrappedValueChanged
     , INotifyWrappedValueReplaced
     , ILazilyGets<TValue>
+//  - RENAME this class to LazilyResolvesDeluxe<> to distinguish from LazilyResolves<>? Or rename LazilyResolves<> to SimpleLazilyResolves<>?
 {
     static ValueChangedPropagation ValueChangedPropagation = new ValueChangedPropagation();
 
     #region Configuration
 
-    public static bool DisposeValue => ResolvesOptions<TValue>.DisposeValue;
+    public static bool DisposeValue => LazilyGetsOptions<TValue>.DisposeValue;
 
     #endregion
 
     #region Lifecycle
 
-    protected Gets() { }
+    protected AsyncGetsWithEvents() { }
+    protected AsyncGetsWithEvents(TKey input) : base(input) { }
 
-    public void Dispose()
+    public override void Dispose()
     {
+        base.Dispose();
         DiscardValue(); // Disposes ProtectedValue, if any
     }
 
@@ -44,6 +46,10 @@ public abstract class Gets<TValue>
         get => ProtectedValue ?? TryGetValue().Result.Value;
     }
 
+    //SmartWrappedValue SmartWrappedValue = new SmartWrappedValue();
+    //protected TValue ProtectedValue { get=>SmartWrappedValue.Prote}
+
+    // REVIEW: should this be TValue?  Should TValue have constraint of : default?
     protected TValue? ProtectedValue
     {
         get => protectedValue;
@@ -55,7 +61,7 @@ public abstract class Gets<TValue>
             // TODO: Move this to a finally block?
             if (DisposeValue && oldValue is IDisposable d)
             {
-                Log.Get<Gets<TValue>>().LogDebug("Disposing object of type {Type}", d.GetType().FullName);
+                Log.Get<AsyncGetsWithEvents<TKey, TValue>>().LogDebug("Disposing object of type {Type}", d.GetType().FullName);
                 d.Dispose();
             }
 
@@ -83,7 +89,7 @@ public abstract class Gets<TValue>
     /// <param name="oldValue"></param>
     protected virtual void OnValueChanged(TValue? newValue, TValue? oldValue)
     {
-        LazilyResolvesEvents.RaiseValueChanged<TValue>(this, oldValue, newValue);
+        LazilyGetsEvents.RaiseValueChanged<TValue>(this, oldValue, newValue);
     }
 
     #endregion
@@ -123,18 +129,20 @@ public abstract class Gets<TValue>
 
     #region Discard
 
+
+    public virtual void Discard() => DiscardValue();
     public virtual void DiscardValue() => ProtectedValue = default;
 
     #endregion
 
-    #region Resolve
+    #region Get
 
     public async ITask<IGetResult<TValue>> Get()
     {
-        var resolveResult = await GetImpl();
-        Debug.Assert(resolveResult is not null, "ResolveImpl must not return null");
-        ProtectedValue = resolveResult.Value;
-        return resolveResult;
+        var result = await GetImpl();
+        Debug.Assert(result is not null, $"{nameof(GetImpl)} must not return null");
+        ProtectedValue = result.Value;
+        return result;
     }
 
     #endregion
@@ -145,5 +153,17 @@ public abstract class Gets<TValue>
 
     #endregion
 
+    #region OLD
+
+    //public async ITask<ILazyGetResult<TValueReturned>> GetValue2()
+    //{
+    //    var currentValue = ProtectedValue;
+    //    if (currentValue != null) return new LazyResolveResultNoop<TValueReturned>((TValueReturned)(object)ProtectedValue);
+
+    //    var result = await Get();
+    //    return new LazyResolveResult<TValueReturned>(result.HasValue, (TValueReturned)(object)result.Value);
+    //}
+
+    #endregion
 }
 

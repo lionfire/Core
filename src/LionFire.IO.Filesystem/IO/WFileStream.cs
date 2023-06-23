@@ -46,7 +46,7 @@ namespace LionFire.IO
             if (HasValue)
             {
                 await Value.FlushAsync();
-                return PersistenceResult.Success;
+                return TransferResult.Success;
             }
             else
             {

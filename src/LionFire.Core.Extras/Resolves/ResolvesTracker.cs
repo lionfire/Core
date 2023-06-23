@@ -21,13 +21,13 @@ public class ResolvesTracker : IHostedService
     public Task StartAsync(CancellationToken cancellationToken)
     {
         types = new();
-        LazilyResolvesEvents.ValueChanged += LazilyResolvesEvents_ValueChanged;
+        LazilyGetsEvents.ValueChanged += LazilyResolvesEvents_ValueChanged;
         return Task.CompletedTask;
     }
 
     public Task StopAsync(CancellationToken cancellationToken)
     {
-        LazilyResolvesEvents.ValueChanged -= LazilyResolvesEvents_ValueChanged;
+        LazilyGetsEvents.ValueChanged -= LazilyResolvesEvents_ValueChanged;
         types = null;
         return Task.CompletedTask;
     }

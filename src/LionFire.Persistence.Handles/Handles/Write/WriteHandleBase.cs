@@ -14,7 +14,7 @@ using LionFire.Threading;
 
 namespace LionFire.Persistence.Handles
 {
-    internal static class DllInternals // Move to LionFire.Data.Async.Gets and 
+    internal static class DllInternals // Move to LionFire.Data.Async.AsyncGetsWithEvents and 
     {
         internal static ValueChangedPropagation ValueChangedPropagation = new ValueChangedPropagation();
     }

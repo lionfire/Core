@@ -6,7 +6,7 @@ namespace LionFire.Data.Async.Gets;
 
 public interface IObservableGets
 {
-    bool IsResolving { get; } // => !resolves.Value.AsTask().IsCompleted;
+    bool IsResolving { get; } // => !gets.Value.AsTask().IsCompleted;
 }
 
 public interface IObservableGets<out TValue> 

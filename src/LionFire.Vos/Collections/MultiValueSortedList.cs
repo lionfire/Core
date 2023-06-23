@@ -160,7 +160,7 @@ namespace LionFire.Collections
 
 
         /// <summary>
-        /// Gets the values for the key specified. This method is useful if you want to avoid an exception for key value retrieval and you can't use TryGetValue
+        /// AsyncGetsWithEvents the values for the key specified. This method is useful if you want to avoid an exception for key value retrieval and you can't use TryGetValue
         /// (e.g. in lambdas)
         /// </summary>
         /// <param name="key">The key.</param>

@@ -9,8 +9,8 @@ namespace LionFire.Persistence.Filesystemlike
         public static async Task<ITransferResult> DeleteResultToPersistenceResult(this Task<bool?> deleteTask)
         {
             var deleteResult = await deleteTask.ConfigureAwait(false);
-            if (!deleteResult.HasValue) return PersistenceResult.Indeterminate;
-            return deleteResult.Value ? PersistenceResult.SuccessAndFound : PersistenceResult.SuccessNotFound;
+            if (!deleteResult.HasValue) return TransferResult.Indeterminate;
+            return deleteResult.Value ? TransferResult.SuccessAndFound : TransferResult.SuccessNotFound;
         }
     }
 

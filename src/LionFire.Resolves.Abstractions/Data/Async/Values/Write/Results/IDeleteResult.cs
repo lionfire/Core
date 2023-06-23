@@ -3,5 +3,5 @@
 namespace LionFire.Data.Async.Sets;
 
 
-public interface IDeleteResult : ISuccessResult { } 
+public interface IDeleteResult : ITransferResult { } 
 

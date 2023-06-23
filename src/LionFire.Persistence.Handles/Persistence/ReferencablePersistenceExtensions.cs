@@ -7,8 +7,9 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
+using LionFire.Data;
 
-namespace LionFire.ExtensionMethods.Persistence
+namespace LionFire.ExtensionMethods.Persistence // REVIEW - change namespace to LionFire.ExtensionMethods.Data?
 {
     public static class ReferencableSaveExtensions
     {        
@@ -24,7 +25,7 @@ namespace LionFire.ExtensionMethods.Persistence
             var result = await TrySave(referencable).ConfigureAwait(false);
             if (result.IsSuccess() != true)
             {
-                throw new PersistenceException(result, $"Save of '{referencable.Reference}' failed: {result}");
+                throw new TransferException(result, $"Save of '{referencable.Reference}' failed: {result}");
             }
             return result;
         }

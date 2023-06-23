@@ -47,7 +47,7 @@ namespace LionFire.ObjectBus.RedisPub
                 bool deleted = await Db.SetRemoveAsync(p.dir + "/", p.name).ConfigureAwait(false);
                 await Db.KeyDeleteAsync(path).ConfigureAwait(false);
                 // TODO: Transaction
-                return deleted ? PersistenceResult.Success : PersistenceResult.NotFound;
+                return deleted ? TransferResult.Success : TransferResult.NotFound;
             }
 
             public async Task<byte[]> ReadAllBytes(string path) => await Db.StringGetAsync(path).ConfigureAwait(false);

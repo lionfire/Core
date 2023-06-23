@@ -148,7 +148,7 @@ namespace LionFire.Serialization
         {
             Action deleteAction = () => File.Delete(Path);
             await deleteAction.AutoRetry(); // TODO: Use File IO parameters registered in DI.
-            return PersistenceResult.Success;
+            return TransferResult.Success;
         }
 
         #endregion
@@ -173,7 +173,7 @@ namespace LionFire.Serialization
                 File.WriteAllBytes(writePath, bytes);
             }).ConfigureAwait(false);
 
-            return PersistenceResult.Success;
+            return TransferResult.Success;
         }
 
         #endregion

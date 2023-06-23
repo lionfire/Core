@@ -1,4 +1,5 @@
-﻿using System;
+﻿using LionFire.Data;
+using System;
 
 namespace LionFire.Persistence
 {

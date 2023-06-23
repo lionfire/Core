@@ -3,7 +3,7 @@ using LionFire.Results;
 
 namespace LionFire.Data.Async.Gets;
 
-public struct LazyResolveResult<TValue> : ISuccessResult, ILazyGetResult<TValue>
+public struct LazyResolveResult<TValue> : ISuccessResult, ILazyGetResult<TValue>, IErrorResult
 {
     public bool HasValue { get; set; }
     public TValue? Value { get; set; }
@@ -13,6 +13,10 @@ public struct LazyResolveResult<TValue> : ISuccessResult, ILazyGetResult<TValue>
     //public static implicit operator LazyResolveResult<T>((bool HasValue, T Value) values) => new LazyResolveResult<T>(values.HasValue, values.Value);
 
     public bool? IsSuccess => HasValue;
+
+    public TransferResultFlags Flags { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
+
+    public object? Error { get; set; }
 
     #region Struct implementation
 
@@ -32,7 +36,7 @@ public struct LazyResolveResult<TValue> : ISuccessResult, ILazyGetResult<TValue>
 
 }
 
-public struct LazyResolveNoopResult<TValue> : ISuccessResult, ILazyGetResult<TValue>
+public struct LazyResolveNoopResult<TValue> : ISuccessResult, ILazyGetResult<TValue>, IErrorResult
 {
     public bool HasValue { get; set; }
     public TValue? Value { get; set; }
@@ -42,6 +46,10 @@ public struct LazyResolveNoopResult<TValue> : ISuccessResult, ILazyGetResult<TVa
     //public static implicit operator LazyResolveResult<T>((bool HasValue, T Value) values) => new LazyResolveResult<T>(values.HasValue, values.Value);
 
     public bool? IsSuccess => HasValue;
+
+    public TransferResultFlags Flags { get; set; }
+
+    public object? Error { get; set; }
 
     #region Struct implementation
 

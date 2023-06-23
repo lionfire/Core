@@ -15,5 +15,10 @@ public class AsyncGetOptions
     public bool GetOnDemand { get; set; } = true;
     public bool BlockToGet { get; set; } = false;
 
+    /// <summary>
+    /// Try to Dispose the cached Value when the object is disposed
+    /// </summary>
+    public static bool DisposeValue { get; set; } = true;
+
     #endregion
 }

@@ -3,7 +3,7 @@ using System.Threading.Tasks;
 
 namespace LionFire.Data.Async.Gets
 {
-    //public abstract class ResolvesBaseCovariant<TKey, TValue> : Gets<TKey, TValue, object>, ILazilyResolvesCovariant<TValue>
+    //public abstract class ResolvesBaseCovariant<TKey, TValue> : AsyncGetsWithEvents<TKey, TValue, object>, ILazilyResolvesCovariant<TValue>
     //{
     //}
 

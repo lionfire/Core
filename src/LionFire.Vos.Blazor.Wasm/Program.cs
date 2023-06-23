@@ -16,6 +16,7 @@
 //}
 
 #error TODO: seems broken, maybe rebase off of  dotnet new blazorwasm --hosted -o MyProject
+
 using Microsoft.AspNetCore.Components.Web;
 using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
 using MyProject.Client;

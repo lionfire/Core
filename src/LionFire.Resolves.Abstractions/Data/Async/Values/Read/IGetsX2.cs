@@ -54,21 +54,22 @@ public static class IGetsX2
         return TransferResultFlags.None;
     }
 
-    public static IRetrieveResult<T> ToRetrieveResult<T>(this IGetResult<T> resolveResult)
-    {
-        if (resolveResult is IGetResult<T> rr) return rr;
+    // OLD - IGetResult now contains what IRetrieveResult did
+    //public static IRetrieveResult<T> ToRetrieveResult<T>(this IGetResult<T> resolveResult)
+    //{
+    //    if (resolveResult is IGetResult<T> rr) return rr;
 
-        TransferResultFlags flags = TransferResultFlags.None;
+    //    TransferResultFlags flags = TransferResultFlags.None;
 
-        if (resolveResult.IsSuccess.HasValue)
-        {
-            flags |= resolveResult.IsSuccess.Value ? TransferResultFlags.Success : TransferResultFlags.Fail;
-        }
-        if (resolveResult.HasValue) flags |= TransferResultFlags.Found;
-        else if (resolveResult.IsSuccess == true) flags |= TransferResultFlags.NotFound;
+    //    if (resolveResult.IsSuccess.HasValue)
+    //    {
+    //        flags |= resolveResult.IsSuccess.Value ? TransferResultFlags.Success : TransferResultFlags.Fail;
+    //    }
+    //    if (resolveResult.HasValue) flags |= TransferResultFlags.Found;
+    //    else if (resolveResult.IsSuccess == true) flags |= TransferResultFlags.NotFound;
 
-        return new RetrieveResult<T>(resolveResult.Value, flags);
-    }
+    //    return new RetrieveResult<T>(resolveResult.Value, flags);
+    //}
 
     public static ITransferResult ToPersistenceResult(this ISuccessResult successResult)
     {
@@ -81,23 +82,23 @@ public static class IGetsX2
             flags |= successResult.IsSuccess.Value ? TransferResultFlags.Success : TransferResultFlags.Fail;
         }
 
-        return new PersistenceResult() { Flags = flags };
+        return new TransferResult() { Flags = flags };
     }
 
     //public static async Task<bool> Exists<T>(this ILazilyGets<T> resolves)
     //{
     //}
-    public static async Task<bool> Exists<T>(this IGets<T> resolves)
+    public static async Task<bool> Exists<T>(this IGets<T> gets)
     {
-        if (resolves is ILazilyGets<T> lazilyResolves)
+        if (gets is ILazilyGets<T> lazilyGets)
         {
-            if (lazilyResolves is IDetects d) return await d.Exists();
+            if (lazilyGets is IDetects d) return await d.Exists();
 
-            return (await lazilyResolves.TryGetValue()).HasValue;
-            //return await lazilyResolves.Exists();
+            return (await lazilyGets.TryGetValue()).HasValue;
+            //return await lazilyGets.Exists();
         }
 
-        return (await IResolvesX.Resolve(resolves)).HasValue;
+        return (await gets.Get()).ValidateSuccess().HasValue;
     }
     public static async Task<bool> Exists<T>(this IGets resolves)
     {
@@ -106,7 +107,7 @@ public static class IGetsX2
             if (lazilyResolves is IDetects d) return await d.Exists();
 
             return (await lazilyResolves.TryGetValue()).HasValue;
-            //return await lazilyResolves.Exists();
+            //return await lazilyGets.Exists();
         }
 
         throw new NotSupportedException("TODO: Resolve<T>");

@@ -9,6 +9,6 @@ public class CannotExecuteReactiveCommand<TParam, TResult>
 
     static CannotExecuteReactiveCommand()
     {
-        Instance = ReactiveCommand.Create<TParam, TResult>(p => throw new UnreachableCodeException(), canExecute: ObservableEx.Return(false));
+        Instance = ReactiveCommand.Create<TParam, TResult>(p => throw new UnreachableCodeException(), canExecute: ObservableEx2.Return(false));
     }
 }

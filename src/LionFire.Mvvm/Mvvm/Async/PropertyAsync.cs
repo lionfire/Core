@@ -11,8 +11,8 @@ using System.Threading;
 
 namespace LionFire.Data.Async;
 
-
-public class PropertyAsync<TObject, TValue> : AsyncValue<TValue>
+[Obsolete("Use PropertyAsyncRx or AsyncValueRx")] // OLD
+public class PropertyAsync<TObject, TValue> : StatelessAsyncValue<TValue>
 {
     // TODO: Wire up change notifications from source
 
@@ -90,7 +90,7 @@ public class PropertyAsync<TObject, TValue> : AsyncValue<TValue>
 
     public bool HasValue => hasValue.Value;
     private BehaviorSubject<bool> hasValue = new(false);
-    //private IObservable<bool> hasValue { get; } = this.Gets.Select(r => r.HasValue); // TODO: Derive this from Gets
+    //private IObservable<bool> hasValue { get; } = this.AsyncGetsWithEvents.Select(r => r.HasValue); // TODO: Derive this from AsyncGetsWithEvents
 
     #endregion
 
@@ -136,7 +136,7 @@ public class PropertyAsync<TObject, TValue> : AsyncValue<TValue>
 
     #region Get
 
-    //public IObservable<Task<TValue>> Gets => gets;
+    //public IObservable<Task<TValue>> AsyncGetsWithEvents => gets;
     //private Subject<Task<TValue>> gets = new();
 
     public Func<TObject, CancellationToken, Task<TValue>> Getter { get; set; }
@@ -157,7 +157,7 @@ public class PropertyAsync<TObject, TValue> : AsyncValue<TValue>
 
     #region Set
 
-    public override Task<ISuccessResult> Set(TValue? value, CancellationToken cancellationToken = default)
+    public override Task<ITransferResult> Set(TValue? value, CancellationToken cancellationToken = default)
     {
         throw new NotImplementedException();
     }

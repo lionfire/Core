@@ -1,9 +1,7 @@
-﻿#nullable enable
-using System;
-
+﻿
 namespace LionFire.Data.Async.Gets;
 
-public static class LazilyResolvesEvents
+public static class LazilyGetsEvents
 {
     public static event Action<(Type valueType, ILazilyGets resolves, object? from, object? to)>? ValueChanged;
 

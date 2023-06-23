@@ -16,4 +16,13 @@ public record Preresolved<T>(T Value) : ILazilyGets<T>
     ITask<IGetResult<T>> IGets<T>.Get() => Task.FromResult<IGetResult<T>>(new ResolveResultNoop<T>(Value)).AsITask();
 
     public Task<T> Get() => Task.FromResult(Value);
+
+    public void Discard()
+    {
+        DiscardValue();
+    }
+
+    public TransferResultFlags Flags { get; set; }
+
+    public object? Error { get; set; }
 }

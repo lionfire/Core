@@ -53,9 +53,9 @@ namespace LionFire.IO
                 if (File.Exists(Path))
                 {
                     File.Delete(Path);
-                    return PersistenceResult.Success;
+                    return TransferResult.Success;
                 }
-                return PersistenceResult.NotFound;
+                return TransferResult.NotFound;
             }).ConfigureAwait(false);
         }
 

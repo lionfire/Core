@@ -1,9 +1,11 @@
-﻿using System;
+﻿using LionFire.Data;
+using LionFire.Results;
+using System;
 using System.Collections.Generic;
 
 namespace LionFire.Persistence
 {
-    public class OverlayPersistenceResultBase<TResult> : ITransferResult
+    public class OverlayPersistenceResultBase<TResult> : ITransferResult, IErrorResult
         where TResult : ITransferResult
     {
         protected TResult underlyingResult;
@@ -28,11 +30,11 @@ namespace LionFire.Persistence
         IEnumerable<ITransferResult> _underlyingEnumerable;
 
         public int RelevantUnderlyingCount { get; set; }
-        public bool IsNoop => underlyingResult.IsNoop;
+        //public bool IsNoop => underlyingResult.IsNoop;
 
         public IEnumerable<ITransferResult> Successes { get => underlyingResult.IsSuccess() ? underlyingEnumerable : null; set => throw new NotImplementedException(); }
         public IEnumerable<ITransferResult> Failures { get => underlyingResult.IsSuccess() ? null : underlyingEnumerable; set => throw new NotImplementedException(); }
-        public object Error => underlyingResult.Error;
+        public object? Error => underlyingResult.TryGetError();
 
         public TransferResultFlags Flags { get => underlyingResult.Flags; set => throw new NotImplementedException(); }
         public bool? IsSuccess => Flags.IsSuccessTernary();
