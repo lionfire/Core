@@ -10,7 +10,7 @@ namespace LionFire.Persistence.Persisters.Vos
 {
     public struct VosRetrieveResult<T> : IVosRetrieveResult<T>
     {
-        // Largely a DUPLICATE of RetrieveResult<T>
+        // Largely a DUPLICATE of RetrieveResult<TValue>
 
         public IReadHandleBase<T> ReadHandle { get; set; }
 

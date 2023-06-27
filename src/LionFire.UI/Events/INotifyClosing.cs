@@ -6,10 +6,10 @@ using System.Threading.Tasks;
 
 namespace LionFire.UI
 {
-    //public class CancelableEventArgs<T>
+    //public class CancelableEventArgs<TValue>
     //{
     //    public bool CancellationRequested { get; set; }
-    //    public T Context { get; set; }
+    //    public TValue Context { get; set; }
     //}
     //public class CancelableEventArgs
     //{

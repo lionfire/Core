@@ -40,7 +40,7 @@ namespace LionFire.DependencyMachines
             return services;
         }
 
-        //public static IServiceCollection AddHostedDependencyService<T>(this IServiceCollection services, IDependencyParticipant service)
+        //public static IServiceCollection AddHostedDependencyService<TValue>(this IServiceCollection services, IDependencyParticipant service)
         //{
         //    //return services.TryAddEnumerableSingleton<IEnumerable<IDependencyParticipant>>();
         //    return services.TryAddEnumerableSingleton<IEnumerable<IDependencyParticipant>>();
@@ -70,11 +70,11 @@ namespace LionFire.DependencyMachines
             return services;
         }
 
-        //public static void AddHostedDependencyService<T>(this IServiceCollection services, T service)
-        //    where T : class, IHostedService
+        //public static void AddHostedDependencyService<TValue>(this IServiceCollection services, TValue service)
+        //    where TValue : class, IHostedService
         //{
-        //    services.AddSingleton<T>(service);
-        //    services.GetDependencyStateMachine().Register(new HostedServiceDependencyProvider<T>(service));
+        //    services.AddSingleton<TValue>(service);
+        //    services.GetDependencyStateMachine().Register(new HostedServiceDependencyProvider<TValue>(service));
         //}
 
     }

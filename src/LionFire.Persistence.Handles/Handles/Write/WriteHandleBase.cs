@@ -80,7 +80,7 @@ namespace LionFire.Persistence.Handles
             set
             {
                 if (EqualityComparer<TValue>.Default.Equals(protectedValue, value)) return; // Should use Equality instead of Compare?
-                                                                                            //if (value == ProtectedValue) return;
+                                                                                            //if (value == ReadCacheValue) return;
 
                 HandleUtils.OnUserChangedValue_Write(this, value);
 
@@ -110,21 +110,21 @@ namespace LionFire.Persistence.Handles
             set
             {
                 if (object.Equals(value, protectedValue)) return;
-                //if (System.Collections.Generic.Comparer<TValue>.Default.Compare(protectedValue, value) == 0) return; // Should use Equality instead of Compare?
-                                                                                                                     //if (value == protectedValue) { return; }
+                //if (System.Collections.Generic.Comparer<TValue>.Default.Compare(readCacheValue, value) == 0) return; // Should use Equality instead of Compare?
+                                                                                                                     //if (value == readCacheValue) { return; }
                 var oldValue = protectedValue;
                 protectedValue = value;
                 OnValueChanged(value, oldValue);
             }
         }
         /// <summary>
-        /// Raw field for protectedValue.  Should typically call OnValueChanged(TValue newValue, TValue oldValue) after this field changes.
+        /// Raw field for readCacheValue.  Should typically call OnValueChanged(TValue newValue, TValue oldValue) after this field changes.
         /// </summary>
         protected TValue protectedValue;
         TValue IHandleInternal<TValue>.ProtectedValue { get => ProtectedValue; set => ProtectedValue = value; }
 
         /// <summary>
-        /// Raised when ProtectedValue changes
+        /// Raised when ReadCacheValue changes
         /// </summary>
         /// <param name="newValue"></param>
         /// <param name="oldValue"></param>
@@ -136,7 +136,7 @@ namespace LionFire.Persistence.Handles
                 DllInternals.ValueChangedPropagation.Attach(this, newValue, o =>
                 {
                     wrappedValueChanged?.Invoke(this);
-                    //this.OnUserChangedValue_ReadWrite(((WriteHandleBase<TReference, TValue>)o).protectedValue);
+                    //this.OnUserChangedValue_ReadWrite(((WriteHandleBase<TReference, TValue>)o).readCacheValue);
                     this.OnUserChangedValue_ReadWrite((TValue)o);
                 });
                 WrappedValueForFromTo?.Invoke(this, oldValue, newValue);
@@ -232,19 +232,19 @@ namespace LionFire.Persistence.Handles
 
         // THOUGHTS - I am not sure I want these methods here for instantiating values since it assumes how to create and even what type to create.
         // Could it be created by a service?  What about a static default?
-        // The static type registry could either point to a static Func, or else a flag that says use DependencyContext.  ITypeActivator<T>  ITypeActivationTypeProvider<T>
+        // The static type registry could either point to a static Func, or else a flag that says use DependencyContext.  ITypeActivator<TValue>  ITypeActivationTypeProvider<TValue>
 
 
         public ITypedReference TypedReference => Reference as ITypedReference; // REVIEW - does this belong here?  If this is non-null, it is queried when creating the Value on demand.  Maybe it belongs in the ReadWriteHandle.  // MOVE to ReadWriteHandle(?)
 
         //protected void DoPersistence(Action action)
         //{
-        //    var oldValue = protectedValue;
+        //    var oldValue = readCacheValue;
         //    action();
         //    var newValue = Value;
         //    var newHasValue = HasValue;
 
-        //    //if (System.Collections.Generic.Comparer<TValue>.Default.Compare(protectedValue, value) != 0)
+        //    //if (System.Collections.Generic.Comparer<TValue>.Default.Compare(readCacheValue, value) != 0)
         //    //{
         //    //    OnValue
         //    //}
@@ -258,13 +258,13 @@ namespace LionFire.Persistence.Handles
         //    if (EqualityComparer<TValue>.Default.Equals(value))
 
 
-        //    DoPersistence(() => Interlocked.CompareExchange<TValue>(ref protectedValue, value, default));
-        //    //var oldValue = protectedValue;
-        //    //var newValue = Interlocked.CompareExchange<T>(ref protectedValue, value, default);
+        //    DoPersistence(() => Interlocked.CompareExchange<TValue>(ref readCacheValue, value, default));
+        //    //var oldValue = readCacheValue;
+        //    //var newValue = Interlocked.CompareExchange<TValue>(ref readCacheValue, value, default);
         //    //OnValueChanged(newValue, oldValue);
         //    //return newValue;
         //}
-        //protected T TrySetProtectedValueIfDefault<T>(T value) where T : class, T => Interlocked.CompareExchange<T>(ref protectedValue, value, default);
+        //protected TValue TrySetProtectedValueIfDefault<TValue>(TValue value) where TValue : class, TValue => Interlocked.CompareExchange<TValue>(ref readCacheValue, value, default);
 
         // No persistence, just instantiating an ObjectType
 
@@ -286,7 +286,7 @@ namespace LionFire.Persistence.Handles
             else
             {
                 return TypeActivationConfiguration<TValue>.ActivationType;
-                //return typeof(T);
+                //return typeof(TValue);
             }
         }
 

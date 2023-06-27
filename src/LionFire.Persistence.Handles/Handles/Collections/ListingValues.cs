@@ -42,7 +42,7 @@ namespace LionFire.Persistence.Handles
 
         public override async Task<TItem> Map(IListing<TItem> underlying)
         {
-            var result = await reference.GetChild(underlying.Name).GetReadHandle<TItem>().TryGetValue().ConfigureAwait(false);
+            var result = await reference.GetChild(underlying.Name).GetReadHandle<TItem>().GetIfNeeded().ConfigureAwait(false);
             return result.Value;
         }
     }

@@ -22,8 +22,8 @@ namespace LionFire.Persistence
         /// <param name="op"></param>
         /// <param name="context"></param>
         /// <returns></returns>
-        //public static async Task<T> ToObject<T>(this PersistenceOperation op)
-        //    => await (op.Context?.SerializationProvider ?? DependencyLocator.TryGet<ISerializationProvider>()).ToObject<T>(op);
+        //public static async Task<TValue> ToObject<TValue>(this PersistenceOperation op)
+        //    => await (op.Context?.SerializationProvider ?? DependencyLocator.TryGet<ISerializationProvider>()).ToObject<TValue>(op);
 
             
 
@@ -64,7 +64,7 @@ namespace LionFire.Persistence
 
             //        using (var fs = context.Deserialization.PathToStream(path))
             //        {
-            //            var Result) = strategy.ToObject<T>(fs, op, context);
+            //            var Result) = strategy.ToObject<TValue>(fs, op, context);
             //            if (Result.IsSuccess)
             //            {
             //                return (Result.Object,Result);
@@ -72,7 +72,7 @@ namespace LionFire.Persistence
             //        }
             //    }
             //}
-            //return (default(T), );
+            //return (default(TValue), );
 
             //            using (var fs = new FileStream(diskPath, FileMode.Open, FileAccess.Read, FileShare.Read))
             //            {

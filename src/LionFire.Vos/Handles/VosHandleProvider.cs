@@ -46,11 +46,11 @@ public class VosHandleProvider : PersisterHandleProviderBase<IVobReference>
 
     IWriteHandle<T> IWriteHandleProvider.GetWriteHandle<T>(IReference reference, T prestagedValue) => GetWriteHandle<T>((IVobReference)reference, prestagedValue); // REVIEW
 
-    //IWriteHandle<T> GetWriteHandle<T>(IVobReference reference) 
-    //=> reference.ToVob().GetWriteHandle<T>();
+    //IWriteHandle<TValue> GetWriteHandle<TValue>(IVobReference reference) 
+    //=> reference.ToVob().GetWriteHandle<TValue>();
 
     #endregion
 
-    //public IReadHandle<T> GetReadHandle<T>(ProviderVobReference reference)
-    //    => new PersisterReadWriteHandle<ProviderVobReference, T, IPersister<ProviderVobReference>>(providerFilePersisterProvider.GetPersister(reference.Persister), reference);
+    //public IReadHandle<TValue> GetReadHandle<TValue>(ProviderVobReference reference)
+    //    => new PersisterReadWriteHandle<ProviderVobReference, TValue, IPersister<ProviderVobReference>>(providerFilePersisterProvider.GetPersister(reference.Persister), reference);
 }

@@ -24,7 +24,7 @@ namespace LionFire.Referencing
             var replacements = new List<object>();
             var removals = new List<object>();
 
-            await Task.WhenAll(collection.OfType<ILazilyGets<object>>().Select(async rh => await rh.TryGetValue().ConfigureAwait(false))).ConfigureAwait(false);
+            await Task.WhenAll(collection.OfType<ILazilyGets<object>>().Select(async rh => await rh.GetIfNeeded().ConfigureAwait(false))).ConfigureAwait(false);
 
             foreach (var component in collection.OfType<ILazilyGets<object>>().ToArray())
             {

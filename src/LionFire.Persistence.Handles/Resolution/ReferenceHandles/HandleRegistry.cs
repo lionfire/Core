@@ -31,21 +31,21 @@ public static class HandleRegistry
     public static ConcurrentDictionary<string, object> ReadWriteHandles { get; } = new ConcurrentDictionary<string, object>();
     public static ConcurrentDictionary<string, object> WriteHandles { get; } = new ConcurrentDictionary<string, object>();
 
-    //public static T TryGetReadWrite<T>(string key)
+    //public static TValue TryGetReadWrite<TValue>(string key)
     //{
-    //    if (ReadWriteHandles.TryGetValue(key, out var obj)) { return (T)obj; }
+    //    if (ReadWriteHandles.TryGetValue(key, out var obj)) { return (TValue)obj; }
     //    return default;
     //}
 
-    //public static T TryGetRead<T>(string key)
+    //public static TValue TryGetRead<TValue>(string key)
     //{
-    //    if (ReadHandles.TryGetValue(key, out var obj)) { return (T)obj; }
+    //    if (ReadHandles.TryGetValue(key, out var obj)) { return (TValue)obj; }
     //    return default;
     //}
 
-    //public static T TryGetWrite<T>(string key)
+    //public static TValue TryGetWrite<TValue>(string key)
     //{
-    //    if (WriteHandles.TryGetValue(key, out var obj)) { return (T)obj; }
+    //    if (WriteHandles.TryGetValue(key, out var obj)) { return (TValue)obj; }
     //    return default;
     //}
 

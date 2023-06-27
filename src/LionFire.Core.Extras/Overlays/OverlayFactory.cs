@@ -60,10 +60,10 @@ namespace LionFire.Overlays
 			}
 			else
 			{
-//				l.Warn("STUB - OverlayFactory.Create - new " + typeof(T).Name);
+//				l.Warn("STUB - OverlayFactory.Create - new " + typeof(TValue).Name);
 				
 				proxy = defaultInstance = new T();
-//				var mixin = new OverlayMixin<T>(nParameters.HasValue?nParameters.Value : new OverlayParameters(), defaultInstance);
+//				var mixin = new OverlayMixin<TValue>(nParameters.HasValue?nParameters.Value : new OverlayParameters(), defaultInstance);
 
 //				proxy = mixin.DefaultInstance;
 			}
@@ -73,7 +73,7 @@ namespace LionFire.Overlays
         }
 
 //
-//        public static T Create(OverlayParameters? nParameters = null, T defaultInstance = null)
+//        public static TValue Create(OverlayParameters? nParameters = null, TValue defaultInstance = null)
 //        {
 //            
 //        }

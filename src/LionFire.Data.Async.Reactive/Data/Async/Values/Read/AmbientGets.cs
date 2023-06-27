@@ -10,7 +10,7 @@ public class AmbientGets<TKey, TValue> : AsyncGets<TKey, TValue>
     {
     }
 
-    protected override ITask<IGetResult<TValue>> GetImpl() 
-        => this.Key.Resolve<TKey, TValue>().AsITask();
+    protected override ITask<IGetResult<TValue>> GetImpl(CancellationToken cancellationToken = default) 
+        => this.Key.AmbientGet<TKey, TValue>().AsITask();
 }
 

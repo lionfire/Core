@@ -11,7 +11,7 @@ namespace LionFire.Persistence.Handles
     }
 
     //public class ReadHandles<TItem> : IAsyncEnumerable<TItem>
-    //    //RCollectionBase<TReference, IReadHandle<Metadata<IEnumerable<IListing<T>>>>, TItem>, HC<TReference,string>
+    //    //RCollectionBase<TReference, IReadHandle<Metadata<IEnumerable<IListing<TValue>>>>, TItem>, HC<TReference,string>
     //    , IHasUnderlyingReadHandle<Metadata<IEnumerable<IListing<TItem>>>>
     //{
     //    public IReadHandleBase<Metadata<IEnumerable<IListing<TItem>>>> UnderlyingHandle => listings;

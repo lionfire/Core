@@ -127,7 +127,7 @@ namespace LionFire.Vos
 #endif
 
         /// <returns>Existing handle (should be used instead), or the specified handle if none existed</returns>
-        //internal VobHandle<T> TrySetHandle<T>(VobHandle<T> handle) => (VobHandle<T>)handles.AddOrUpdate(typeof(T), handle, (existingType, existingValue) => existingValue); 
+        //internal VobHandle<TValue> TrySetHandle<TValue>(VobHandle<TValue> handle) => (VobHandle<TValue>)handles.AddOrUpdate(typeof(TValue), handle, (existingType, existingValue) => existingValue); 
         // OPTIMIZE - Create a parallel generic version//return (VobHandle<T1>)TrySetHandle(handle, typeof(T1));
 
 

@@ -4,6 +4,7 @@ using MorseCode.ITask;
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
 using System.Collections;
+using System.Collections.Generic;
 using System.Reactive.Subjects;
 namespace LionFire.Data.Async.Collections;
 
@@ -40,7 +41,7 @@ public abstract partial class AsyncDynamicDataCollectionCache<TValue>
 
     #region IResolves
 
-    public abstract ITask<IGetResult<IEnumerable<TValue>>> Get();
+    public abstract ITask<IGetResult<IEnumerable<TValue>>> Get(CancellationToken cancellationToken = default);
 
     #endregion
 
@@ -48,23 +49,50 @@ public abstract partial class AsyncDynamicDataCollectionCache<TValue>
 
     #region ILazilyGets<IEnumerable<TItem>>
 
-    public async ITask<ILazyGetResult<IEnumerable<TValue>>> TryGetValue()
-    {
-        if (HasValue) { return new LazyResolveNoopResult<IEnumerable<TValue>>(HasValue, Value); }
-        var result = await Get().ConfigureAwait(false);
-        return new LazyResolveResult<IEnumerable<TValue>>(result.HasValue, result.Value);
-    }
+    #region State
 
-    public virtual ILazyGetResult<IEnumerable<TValue>> QueryValue() => new LazyResolveNoopResult<IEnumerable<TValue>>(HasValue, Value);
+    public abstract IEnumerable<TValue>? ReadCacheValue { get;  }
 
-    public virtual bool HasValue => Value != null;
+    #endregion
 
-    public abstract void DiscardValue(); // => Value = null;
-    public virtual void Discard() => DiscardValue();
+    public virtual bool HasValue => ReadCacheValue != null;
 
     #region IReadWrapper<T>
 
     public abstract IEnumerable<TValue>? Value { get; }
+    //[DebuggerBrowsable(DebuggerBrowsableState.Never)]
+    //public IEnumerable<TValue> Value
+    //{
+    //    [Blocking(Alternative = nameof(GetIfNeeded))]
+    //    get
+    //    {            
+    //        Debugger.NotifyOfCrossThreadDependency();
+    //        return ReadCacheValue ?? (DefaultOptions.BlockToGet ? GetIfNeeded().Result.Value ?? Enumerable.Empty<TValue>() : Enumerable.Empty<TValue>());
+    //    }
+    //}
+
+    private AsyncGetOptions DefaultOptions => AsyncGetOptions<IEnumerable<TValue>>.Default;
+
+    #endregion
+
+    #region Methods
+
+    public async ITask<ILazyGetResult<IEnumerable<TValue>>> GetIfNeeded()
+    {
+        // TODO ENH - Same read Semaphore as AsyncGet<TValue>
+        if (HasValue) { return new LazyResolveNoopResult<IEnumerable<TValue>>(HasValue, ReadCacheValue); }
+        var result = await Get().ConfigureAwait(false);
+        return new LazyResolveResult<IEnumerable<TValue>>(result.HasValue, result.Value);
+    }
+
+    public virtual ILazyGetResult<IEnumerable<TValue>> QueryValue() => new LazyResolveNoopResult<IEnumerable<TValue>>(HasValue, ReadCacheValue);
+
+    #endregion
+
+    #region Discard
+
+    public abstract void DiscardValue(); // => Value = null;
+    public virtual void Discard() => DiscardValue();
 
     #endregion
 
@@ -76,6 +104,7 @@ public abstract partial class AsyncDynamicDataCollectionCache<TValue>
 
     #region IEnumerable<TItem>
 
+    [Blocking(Alternative = nameof(GetIfNeeded))]
     public virtual IEnumerator<TValue> GetEnumerator() => (Value ?? Enumerable.Empty<TValue>()).GetEnumerator();
     IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
 

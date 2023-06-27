@@ -32,7 +32,7 @@ namespace LionFire.Persistence.Handles
         INotifyPersists<TValue>,
         INotifyPropertyChanged,
         INotifyPersistsInternal<TValue>
-        //, IRetrievableImpl<T>
+        //, IRetrievableImpl<TValue>
         where TReference : IReference<TValue>
     {
         #region Identity
@@ -65,7 +65,7 @@ namespace LionFire.Persistence.Handles
 
         #region Value
 
-        // OLD - Maybe I don't need to override Value or ProtectedValue?
+        // OLD - Maybe I don't need to override Value or ReadCacheValue?
         //public TValue Value
         //{
         //    [Blocking(Alternative = nameof(GetValue))]
@@ -152,7 +152,7 @@ namespace LionFire.Persistence.Handles
             // TODO: Events?
         }
 
-        //protected override void OnValueChanged(T newValue, T oldValue) { 
+        //protected override void OnValueChanged(TValue newValue, TValue oldValue) { 
 
         //}
 
@@ -210,7 +210,7 @@ namespace LionFire.Persistence.Handles
 
         #region Get
 
-        //public async ITask<IRetrieveResult<T>> RetrieveImpl() => (IRetrieveResult<T>)await ResolveImpl().ConfigureAwait(false);
+        //public async ITask<IRetrieveResult<TValue>> RetrieveImpl() => (IRetrieveResult<TValue>)await ResolveImpl().ConfigureAwait(false);
 
 
         //async Task<IRetrieveResult<ObjectType>> IRetrievableImpl<ObjectType>.RetrieveObject() => await RetrieveObject().ConfigureAwait(false);
@@ -218,7 +218,7 @@ namespace LionFire.Persistence.Handles
         //{
         //    var result = await RetrieveImpl().ConfigureAwait(false);
 
-        //    //var retrievableState = result.ToRetrievableState<T>(CanObjectBeDefault);
+        //    //var retrievableState = result.ToRetrievableState<TValue>(CanObjectBeDefault);
         //    //this.RetrievableState = retrievableState;
 
         //    this.TransferResultFlags = result.Flags;
@@ -231,10 +231,10 @@ namespace LionFire.Persistence.Handles
         //    return result.IsSuccess();
         //}
 
-        //async ITask<ILazyGetResult<T>> ILazilyGets<T>.GetValue()
+        //async ITask<ILazyGetResult<TValue>> ILazilyGets<TValue>.GetValue()
         //{
         //    var result = await GetValue();
-        //    return (result.HasObject, (T)(object)result.Object); // HARDCAST
+        //    return (result.HasObject, (TValue)(object)result.Object); // HARDCAST
         //}
 
         ///// <summary>
@@ -243,7 +243,7 @@ namespace LionFire.Persistence.Handles
         ///// </summary>
         ///// <seealso cref="Exists"/>
         ///// <returns>True if an object was found after a retrieval or was manually set on the handle, false otherwise.</returns>
-        //public virtual async ITask<ILazyGetResult<T>> GetValue()
+        //public virtual async ITask<ILazyGetResult<TValue>> GetValue()
         //{
         //    if (HasValue)
         //    {

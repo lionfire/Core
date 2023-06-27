@@ -49,7 +49,7 @@ public class ReferenceToHandleService : IReferenceToHandleService
     #region Lookup types
 
     /// <summary>
-    /// For types of type Key, Use the Value type when looking for IReadHandleProvider&lt;T&gt;
+    /// For types of type Key, Use the Value type when looking for IReadHandleProvider&lt;TValue&gt;
     /// </summary>
     ConcurrentDictionary<Type, Type> LookupTypes { get; } = new ConcurrentDictionary<Type, Type>();
 

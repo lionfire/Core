@@ -1,6 +1,7 @@
 ﻿using LionFire.Resolvers;
 using LionFire.Data.Async.Gets;
 using MorseCode.ITask;
+using LionFire.Data;
 
 namespace LionFire.Resolvers;
 
@@ -23,7 +24,7 @@ public class DictionaryResolver<TKey, TValue> : IResolverSync<TKey, TValue>
 }
 
 // ENH
-public class RankedDictionaryResolver<TKey, TValue> : IResolver<TKey, TValue>
+public class RankedDictionaryResolver<TKey, TValue> : IGetter<TKey, TValue>
     where TKey : notnull
 {
     public Dictionary<TKey, SortedList<float, Type>> Dictionary { get; set; } = new();

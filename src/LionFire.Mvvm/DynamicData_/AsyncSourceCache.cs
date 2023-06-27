@@ -56,7 +56,7 @@
 //{
 //    #region Parameters
 
-//    public AsyncObservableCollectionOptions Options { get; set; }
+//    public AsyncObservableCollectionOptions GetOptions { get; set; }
 
 //#region CreateableTypes
 
@@ -88,11 +88,11 @@
 
 //#region Lifecycle
 
-//public AsyncSourceCacheBase3() { Options = AsyncObservableCollectionOptions.Default; }
+//public AsyncSourceCacheBase3() { GetOptions = AsyncObservableCollectionOptions.Default; }
 //public AsyncSourceCacheBase3(SourceCache<TValue, TItem>? collection = default, AsyncObservableCollectionOptions? options = null, bool blockOnSetCollection = false)
 //{
 //    if (!EqualityComparer<SourceCache<TValue, TItem>>.Default.Equals(collection, default)) { var task = SetCollection(collection); if (blockOnSetCollection) task.Wait(); }
-//    Options = options ?? AsyncObservableCollectionOptions.Default;
+//    GetOptions = options ?? AsyncObservableCollectionOptions.Default;
 //}
 
 //#endregion
@@ -115,7 +115,7 @@
 //    {
 //        if (collection == null)
 //        {
-//            if (Options.AutoInstantiateCollection)
+//            if (GetOptions.AutoInstantiateCollection)
 //            {
 //                lock (_lock)
 //                {
@@ -148,7 +148,7 @@
 //        if (this.collection != null) { throw new AlreadySetException(); }
 //        this.collection = collection;
 //    }
-//    if (Options.AutoSync)
+//    if (GetOptions.AutoSync)
 //    {
 //        await Retrieve(cancellationToken: cancellationToken).ConfigureAwait(false);
 //    }
@@ -187,7 +187,7 @@
 //                subscribed = await Subscribe().ConfigureAwait(false);
 //            }
 //            // Wait for Subscribe to finish before Retrieving to make sure we don't miss updates
-//            if ((!canSubscribe || subscribed) && Options.AlwaysRetrieveOnEnableSync && CanRetrieve)
+//            if ((!canSubscribe || subscribed) && GetOptions.AlwaysRetrieveOnEnableSync && CanRetrieve)
 //            {
 //                await Retrieve().ConfigureAwait(false);
 //            }

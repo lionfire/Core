@@ -99,9 +99,9 @@ public abstract class AsyncReadOnlyDictionaryCache<TKey, TValue>
 
     #region ILazilyGets<IEnumerable<TItem>>
 
-    async ITask<ILazyGetResult<IEnumerable<KeyValuePair<TKey, TValue>>>> ILazilyGets<IEnumerable<KeyValuePair<TKey, TValue>>>.TryGetValue()
+    async ITask<ILazyGetResult<IEnumerable<KeyValuePair<TKey, TValue>>>> ILazilyGets<IEnumerable<KeyValuePair<TKey, TValue>>>.GetIfNeeded()
     {
-        var result = await this.TryGetValue().ConfigureAwait(false);
+        var result = await this.GetIfNeeded().ConfigureAwait(false);
         throw new NotImplementedException();
     }
 
@@ -120,9 +120,9 @@ public abstract class AsyncReadOnlyDictionaryCache<TKey, TValue>
 
     #region IGets<IEnumerable<KeyValuePair<TKey, TValue>>>
 
-    async ITask<IGetResult<IEnumerable<KeyValuePair<TKey, TValue>>>> IGets<IEnumerable<KeyValuePair<TKey, TValue>>>.Get()
+    async ITask<IGetResult<IEnumerable<KeyValuePair<TKey, TValue>>>> IGets<IEnumerable<KeyValuePair<TKey, TValue>>>.Get(CancellationToken cancellationToken)
     {
-        await this.Get().ConfigureAwait(false);
+        await this.Get(cancellationToken).ConfigureAwait(false);
         throw new NotImplementedException();
     }
 

@@ -13,7 +13,7 @@ using System.Threading.Tasks;
 namespace LionFire.Persistence
 {
     public class ReadWriteHandlePairEx<TReference, TValue> : ReadWriteHandlePairBase<TReference, TValue>
-        // , IReadWriteHandlePairEx<T> TODO
+        // , IReadWriteHandlePairEx<TValue> TODO
         where TReference : IReference
         where TValue : class
     {
@@ -115,7 +115,7 @@ namespace LionFire.Persistence
             }
         }
 
-        public async Task<TValue> GetReadValue() => await ReadHandle.GetValue().ConfigureAwait(false); // REVIEW - consider a ILazilyGets<T> so we can use ILazilyGets<T>.GetValue instead of the IDefaultableReadWrapper extension method 
+        public async Task<TValue> GetReadValue() => await ReadHandle.GetValue().ConfigureAwait(false); // REVIEW - consider a ILazilyGets<TValue> so we can use ILazilyGets<TValue>.GetValue instead of the IDefaultableReadWrapper extension method 
 
 
         #endregion
@@ -212,9 +212,9 @@ namespace LionFire.Persistence
 
         //#region ReadHandle
 
-        //public abstract IReadHandleBase<T> ReadHandle { get; protected set; }
+        //public abstract IReadHandleBase<TValue> ReadHandle { get; protected set; }
 
-        ////public virtual IReadHandleBase<T> ReadHandle
+        ////public virtual IReadHandleBase<TValue> ReadHandle
         ////{
         ////    get
         ////    {
@@ -222,7 +222,7 @@ namespace LionFire.Persistence
         ////        {
         ////            if (Reference != null)
         ////            {
-        ////                readHandle = Reference.GetReadHandle<T>();
+        ////                readHandle = Reference.GetReadHandle<TValue>();
         ////            }
         ////        }
         ////        return readHandle;
@@ -232,16 +232,16 @@ namespace LionFire.Persistence
         ////        readHandle = value;
         ////    }
         ////}
-        ////protected IReadHandleBase<T> readHandle;
+        ////protected IReadHandleBase<TValue> readHandle;
         ////public bool HasReadHandle => readHandle != null;
         //public abstract bool HasReadHandle { get; }
-        //IGets<T> IResolveCommitPair<T>.Resolves => ReadHandle;
+        //IGets<TValue> IResolveCommitPair<TValue>.Resolves => ReadHandle;
 
         //#endregion
 
         //#region WriteHandle
-        //public abstract IWriteHandleBase<T> WriteHandle { get; protected set; }
-        ////public virtual IWriteHandleBase<T> WriteHandle
+        //public abstract IWriteHandleBase<TValue> WriteHandle { get; protected set; }
+        ////public virtual IWriteHandleBase<TValue> WriteHandle
         ////{
         ////    get
         ////    {
@@ -249,17 +249,17 @@ namespace LionFire.Persistence
         ////        {
         ////            if (Reference != null)
         ////            {
-        ////                writeHandle = Reference.GetWriteHandle<T>();
+        ////                writeHandle = Reference.GetWriteHandle<TValue>();
         ////            }
         ////        }
         ////        return writeHandle;
         ////    }
         ////    protected set => writeHandle = value;
         ////}
-        ////protected IWriteHandleBase<T> writeHandle;
+        ////protected IWriteHandleBase<TValue> writeHandle;
         ////public bool HasWriteHandle => writeHandle != null;
         //public abstract bool HasWriteHandle { get; }
-        //IPuts IResolveCommitPair<T>.Commits => WriteHandle;
+        //IPuts IResolveCommitPair<TValue>.Commits => WriteHandle;
 
         //#endregion
     }

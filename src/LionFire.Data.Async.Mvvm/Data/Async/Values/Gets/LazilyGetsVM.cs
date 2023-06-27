@@ -79,7 +79,7 @@ public abstract class LazilyGetsVM<T>
             .Subscribe(resolves =>
             {
                 GetIfNeeded = ReactiveCommand.CreateFromTask<Unit, ILazyGetResult<T>>(
-                    _ => resolves.TryGetValue().AsTask(),
+                    _ => resolves.GetIfNeeded().AsTask(),
                     canExecute: Observable.Create<bool>(o => { o.OnNext(resolves != null); o.OnCompleted(); return Disposable.Empty; })
                 );
 

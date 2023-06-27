@@ -40,7 +40,7 @@ namespace LionFire.Execution
                     if (adding.OnAdding(this))
                     {
                         children.Add(component);
-                        //multiType.SetType<T>(component);
+                        //multiType.SetType<TValue>(component);
                     }
                 }
                 else

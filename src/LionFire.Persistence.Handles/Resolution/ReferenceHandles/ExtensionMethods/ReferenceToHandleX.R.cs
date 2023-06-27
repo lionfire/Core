@@ -95,7 +95,7 @@ public static partial class ReferenceToReadHandleX
             }
         }
 
-        if (referenceValueType == null) { throw new ArgumentException($"{nameof(referencable)} must implement IReferencableValueType, or its Reference must implement ITypedReference."); } // ENH: scan the object for IReadHandle<T>
+        if (referenceValueType == null) { throw new ArgumentException($"{nameof(referencable)} must implement IReferencableValueType, or its Reference must implement ITypedReference."); } // ENH: scan the object for IReadHandle<TValue>
 
         if (referencable is IHasReadHandle ihrh)
         {

@@ -131,7 +131,7 @@ public class GrainCollectionCache<TValue> // RENAME: GrainCollectionCache
 
         //TryAutoSubscribe(optionsMonitor.CurrentValue.AutoSubscribe); // TEMP Commented
         TryAutoSubscribe(SubscriptionMethods.GrainObserver);
-        //Options = options!; // might be null // TEMP Commented
+        //GetOptions = options!; // might be null // TEMP Commented
 
         // CreateForKeyCommand = ReactiveCommand.Create<(string key, Type grainType), TItemGrain>(async ((string key, Type grainType) x) =>
         // {
@@ -274,7 +274,7 @@ public class GrainCollectionCache<TValue> // RENAME: GrainCollectionCache
     {
         if (CollectionGrain == null) { throw new InvalidOperationException($"Cannot invoke while {nameof(CollectionGrain)} is null"); }
 
-        //if (Options.TrackOperationsInProgress) {
+        //if (GetOptions.TrackOperationsInProgress) {
         //    var changeSet
         //    (OperationsInProgress ??= new()).Add(new KeyValuePair<>()));
         //}
@@ -287,7 +287,7 @@ public class GrainCollectionCache<TValue> // RENAME: GrainCollectionCache
         //}
         //else throw new NotSupportedException();
 
-        //if (Options.TrackOperationsInProgress) { OperationsInProgress.Remove(item); if (RemovalsInProgrss.Count == 0) RemovalsInProgrss = null; }
+        //if (GetOptions.TrackOperationsInProgress) { OperationsInProgress.Remove(item); if (RemovalsInProgrss.Count == 0) RemovalsInProgrss = null; }
 
         return result;
     }

@@ -48,10 +48,10 @@ namespace LionFire.Persistence.Filesystem
             => new PersisterReadWriteHandle<ProviderFileReference, T, IPersister<ProviderFileReference>>(providerFilePersisterProvider.GetPersister(reference.Persister), reference.ForType<T>());
         public IReadHandle<T> GetReadHandlePreresolved<T>(ProviderFileReference reference, T preresolvedValue = default)
             => new PersisterReadWriteHandle<ProviderFileReference, T, IPersister<ProviderFileReference>>(providerFilePersisterProvider.GetPersister(reference.Persister), reference.ForType<T>(), preresolvedValue);
-        //public IReadHandle<T> GetReadWriteHandle<T>(ProviderFileReference reference)
-        //        => new PersisterReadWriteHandle<ProviderFileReference, T, IPersister<ProviderFileReference>>(providerFilePersisterProvider.GetPersister(reference.Persister), reference);
+        //public IReadHandle<TValue> GetReadWriteHandle<TValue>(ProviderFileReference reference)
+        //        => new PersisterReadWriteHandle<ProviderFileReference, TValue, IPersister<ProviderFileReference>>(providerFilePersisterProvider.GetPersister(reference.Persister), reference);
 
-        //IReadHandle<T> IReadHandleProvider<FileReference>.GetReadHandle<T>(FileReference reference) => throw new System.NotImplementedException();
+        //IReadHandle<TValue> IReadHandleProvider<FileReference>.GetReadHandle<TValue>(FileReference reference) => throw new System.NotImplementedException();
 
         public IWriteHandle<T> GetWriteHandle<T>(FileReference reference,T prestagedValue = default) => GetReadWriteHandle<T>(reference, prestagedValue); // REVIEW - 
         IWriteHandle<T>? IWriteHandleProvider.GetWriteHandle<T>(IReference reference,T prestagedValue) => (reference is FileReference fileReference) ? GetWriteHandle<T>(fileReference, prestagedValue) : null;

@@ -4,7 +4,7 @@ using LionFire.Data.Async.Gets;
 
 namespace LionFire.Persistence.Handles
 {
-    // TODO: Rebase on Resolves<TReference, T>?  Avoid IsAllowedReferenceType
+    // TODO: Rebase on Resolves<TReference, TValue>?  Avoid IsAllowedReferenceType
 #if false
     public abstract class ReadHandleBase2<TReference, TValue> : Resolves<TReference, TValue>, RH<TValue>, IReadHandleInvariant<TValue>
     {

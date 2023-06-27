@@ -13,7 +13,7 @@ namespace LionFire.Vos
             {
                 // TODO FIXME: Move this check into reference.ToReadHandle / VobHandle ctor
 
-                //if (!reference.Type.IsAssignableFrom(typeof(T)))
+                //if (!reference.Type.IsAssignableFrom(typeof(TValue)))
                 //{
                 //    throw new ArgumentException("!reference.Type.IsAssignableFrom(typeof(ResultType))");
                 //}

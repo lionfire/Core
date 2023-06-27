@@ -94,7 +94,7 @@ public static class IGetsX2
         {
             if (lazilyGets is IDetects d) return await d.Exists();
 
-            return (await lazilyGets.TryGetValue()).HasValue;
+            return (await lazilyGets.GetIfNeeded()).HasValue;
             //return await lazilyGets.Exists();
         }
 
@@ -106,7 +106,7 @@ public static class IGetsX2
         {
             if (lazilyResolves is IDetects d) return await d.Exists();
 
-            return (await lazilyResolves.TryGetValue()).HasValue;
+            return (await lazilyResolves.GetIfNeeded()).HasValue;
             //return await lazilyGets.Exists();
         }
 

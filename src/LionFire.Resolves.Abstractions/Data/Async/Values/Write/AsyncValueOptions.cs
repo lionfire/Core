@@ -8,3 +8,12 @@ public class AsyncValueOptions : AsyncGetOptions
     public bool OptimisticGetWhileSetting { get; set; } = true;
 
 }
+
+public static class AsyncValueOptions<TValue>
+{
+    public static AsyncValueOptions Default { get; set; } = new();
+}
+public static class AsyncValueOptions<TKey,TValue>
+{
+    public static AsyncValueOptions Default { get; set; } = new();
+}

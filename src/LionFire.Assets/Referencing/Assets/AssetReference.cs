@@ -9,7 +9,7 @@ using System.Text;
 namespace LionFire.Assets
 {
     
-    // REVIEW - RENAME this DLL to just LionFire.Assets?  Or move this AssetReference<T> to that DLL?
+    // REVIEW - RENAME this DLL to just LionFire.Assets?  Or move this AssetReference<TValue> to that DLL?
 
     [TreatAs(typeof(IAssetReference))]
     public class AssetReference<TValue> : ReferenceBase<AssetReference<TValue>>, IAssetReference<TValue>, IUrled, IKeyable

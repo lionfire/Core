@@ -4,9 +4,8 @@ using ReactiveUI;
 namespace LionFire.Data.Async.Sets;
 
 public interface ISetsRx<T> 
-    : ISets<T>
+    : IObservableSets<T>
     , IStagesSet<T>
-    , IObservableSets<T>
 
     , IHasNonNullSettable<AsyncValueOptions>
 

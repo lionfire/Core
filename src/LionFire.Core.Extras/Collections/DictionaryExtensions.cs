@@ -45,7 +45,7 @@ namespace LionFire
 #endif
 #endif
 
-        //public static IReadOnlyDictionary<TKey, T> ToReadOnly<TKey, T>(this IDictionary<TKey, T> dictionary)
+        //public static IReadOnlyDictionary<TKey, TValue> ToReadOnly<TKey, TValue>(this IDictionary<TKey, TValue> dictionary)
         //{
         //    // TODO: Wrap dictionary in read-only wrapper
         //}

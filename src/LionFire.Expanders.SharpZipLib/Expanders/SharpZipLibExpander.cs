@@ -403,7 +403,7 @@ public static class IReadHandleX
     {
         if (rh is ILazilyGets<object> lr)
         {
-            return await lr.TryGetValue().ConfigureAwait(false);
+            return await lr.GetIfNeeded().ConfigureAwait(false);
         }
 
         return await rh.Resolve().ConfigureAwait(false);

@@ -8,8 +8,8 @@
 
 //namespace LionFire.ObjectBus.Filesystem
 //{
-//    public class RFile<T> : ReadHandle<T>
-//        where T : class
+//    public class RFile<TValue> : ReadHandle<TValue>
+//        where TValue : class
 //    {
 //        public RFile() { }
 //        public RFile(string path) : base(new FileReference(path))
@@ -19,6 +19,6 @@
 //        {
 //        }
 
-//        protected override ITask<IGetResult<T>> ResolveImpl() => throw new NotImplementedException();
+//        protected override ITask<IGetResult<TValue>> ResolveImpl() => throw new NotImplementedException();
 //    }
 //}

@@ -16,10 +16,10 @@ using System.Threading.Tasks;
 
 namespace LionFire.Services
 {
-    //public class NamedTypeDependency<T>
+    //public class NamedTypeDependency<TValue>
     //{
     //    public string Name { get; set; }
-    //    public Type Type => typeof(T);
+    //    public Type Type => typeof(TValue);
 
     //}
 

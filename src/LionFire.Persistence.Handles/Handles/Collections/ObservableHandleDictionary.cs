@@ -42,7 +42,7 @@ namespace LionFire.Persistence.Handles
         /// <returns></returns>
         public async Task<THandle> Set(TValue obj, string key = null) 
         {
-            //if (!IsWritable) throw new ReadOnlyException("THandle does not implement IWriteHandle<T>");
+            //if (!IsWritable) throw new ReadOnlyException("THandle does not implement IWriteHandle<TValue>");
 
             THandle handle;
             if (key == null)

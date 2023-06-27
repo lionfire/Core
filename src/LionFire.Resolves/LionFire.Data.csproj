@@ -1,0 +1,29 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net6.0</TargetFramework> 
+    <LangVersion>latest</LangVersion>
+	<RootNamespace>LionFire</RootNamespace>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Remove="Collections\**" />
+    <Compile Remove="Objects\**" />
+    <EmbeddedResource Remove="Collections\**" />
+    <EmbeddedResource Remove="Objects\**" />
+    <None Remove="Collections\**" />
+    <None Remove="Objects\**" />
+  </ItemGroup>
+	
+	<ItemGroup>
+		<PackageReference Include="MorseCode.ITask" />
+	</ItemGroup>
+	
+  <ItemGroup>
+    <ProjectReference Include="..\LionFire.Core\LionFire.Core.csproj" />
+    <ProjectReference Include="..\LionFire.Resolves.Abstractions\LionFire.Data.Abstractions.csproj" />
+    <ProjectReference Include="..\LionFire.Structures\LionFire.Structures.csproj" />
+  </ItemGroup>
+
+</Project>

@@ -102,7 +102,7 @@ namespace LionFire.Persistence.Handles
 
                 getcol = query.HasValue ? new ValueTask<TUnderlyingCollection>(AsyncMapper<TItem, TUnderlying, TUnderlyingCollection, TResolvedUnderlyingCollection>.UnwrapUnderlyingCollection(query.Value)) : new ValueTask<TUnderlyingCollection>(Task.Run(async () =>
                    {
-                       var p = await parent.TryGetValue();
+                       var p = await parent.GetIfNeeded();
                        return AsyncMapper<TItem, TUnderlying, TUnderlyingCollection, TResolvedUnderlyingCollection>.UnwrapUnderlyingCollection(p.Value);
                    }));
             }
@@ -154,12 +154,12 @@ namespace LionFire.Persistence.Handles
 
         #region ILazilyGets
 
-        public async ITask<ILazyGetResult<TResolvedUnderlyingCollection>> TryGetValue()
+        public async ITask<ILazyGetResult<TResolvedUnderlyingCollection>> GetIfNeeded()
         {
             var ulr = UnderlyingLazilyResolves;
             if (ulr != null)
             {
-                return await ulr.TryGetValue().ConfigureAwait(false);
+                return await ulr.GetIfNeeded().ConfigureAwait(false);
             }
             else
             {
@@ -197,7 +197,7 @@ namespace LionFire.Persistence.Handles
     }
 
     //public class ReadHandles<TItem> : IAsyncEnumerable<TItem>
-    //    //RCollectionBase<TReference, IReadHandle<Metadata<IEnumerable<IListing<T>>>>, TItem>, HC<TReference,string>
+    //    //RCollectionBase<TReference, IReadHandle<Metadata<IEnumerable<IListing<TValue>>>>, TItem>, HC<TReference,string>
     //    , IHasUnderlyingReadHandle<Metadata<IEnumerable<IListing<TItem>>>>
     //{
     //    public IReadHandleBase<Metadata<IEnumerable<IListing<TItem>>>> UnderlyingHandle => listings;

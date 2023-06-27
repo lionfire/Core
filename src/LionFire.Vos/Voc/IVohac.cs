@@ -4,7 +4,7 @@ using System.Collections.Generic;
 
 namespace LionFire.Persistence.Collections
 {
-    // was IVohac<T>
+    // was IVohac<TValue>
 
     // TODO: Make an Async interface, and IResolvable
 

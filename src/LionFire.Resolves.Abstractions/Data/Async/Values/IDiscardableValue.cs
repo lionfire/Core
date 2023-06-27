@@ -1,4 +1,4 @@
-﻿namespace LionFire.Data.Async;
+﻿namespace LionFire.Data;
 
 /// <summary>
 /// See also: <seealso cref="LionFire.Structures.IDiscardable"/> (recommended to also implement this)

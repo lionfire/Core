@@ -32,7 +32,7 @@ namespace LionFire.Vos
             => (IReadHandle<T>)SharedReadHandles.GetOrAdd(typeof(T), t => CreateReadHandle<T>(preresolvedValue));
 #else
         public IReadHandle<T> GetReadHandle<T>(T preresolvedValue = default)
-            //=> (IReadHandle<T>)SharedReadHandles.GetOrAdd(typeof(T), t => CreateReadHandle<T>(preresolvedValue));
+            //=> (IReadHandle<TValue>)SharedReadHandles.GetOrAdd(typeof(TValue), t => CreateReadHandle<TValue>(preresolvedValue));
             => CreateReadHandle<T>(preresolvedValue);
 #endif
 
@@ -75,7 +75,7 @@ namespace LionFire.Vos
         public IWriteHandle<TValue> GetWriteHandle<TValue>(TValue prestagedValue = default)
          => CreateWriteHandle<TValue>(prestagedValue);
 #endif
-        //=> (IWriteHandle<T>)WriteHandles.GetOrAdd(typeof(T), t => new PersisterWriteHandle<VobReference, T, VosPersister>(this.GetService<VosPersister>(), VobReference));
+        //=> (IWriteHandle<TValue>)WriteHandles.GetOrAdd(typeof(TValue), t => new PersisterWriteHandle<VobReference, TValue, VosPersister>(this.GetService<VosPersister>(), VobReference));
         public IWriteHandle<T> CreateWriteHandle<T>(T prestagedValue = default)
             => new PersisterWriteHandle<IVobReference, T, VosPersister>(this.GetService<VosPersister>(), VobReference.ForType<T>(), prestagedValue);
 
@@ -250,16 +250,16 @@ namespace LionFire.Vos
             //                        continue;
             //                    }
 
-            //                    return GetReadWriteHandleFromMount<T>(mount);
+            //                    return GetReadWriteHandleFromMount<TValue>(mount);
             //                }
             //                return null;
             //            }
         }
 
-        //private VobHandle<T> GetFirstWriteHandle<T>()
+        //private VobHandle<TValue> GetFirstWriteHandle<TValue>()
         //{
         //    H objectHandle;
-        //    objectHandle = FirstWriteHandle<T>();
+        //    objectHandle = FirstWriteHandle<TValue>();
         //    return objectHandle;
         //}
 

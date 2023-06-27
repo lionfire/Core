@@ -9,12 +9,12 @@
 //{
 //    public class FileDeserializer : IFileDeserializer
 //    {
-//        public T ToObject<T>(SerializationContext context)
+//        public TValue ToObject<TValue>(SerializationContext context)
 //        {
-//            return Deserialize<T>(((FileSerializationContext)context).FileName, context);
+//            return Deserialize<TValue>(((FileSerializationContext)context).FileName, context);
 //        }
 
-//        public T Deserialize<T>(string path, SerializationContext context = null)
+//        public TValue Deserialize<TValue>(string path, SerializationContext context = null)
 //        {
 //            var fileContext = context as FileSerializationContext;
 //            if(path==null) path = fileContext.FileName;
@@ -46,7 +46,7 @@
 //            // TODO: Autoretry
 //            var bytes = File.ReadAllBytes(path);
 
-//            return selectedSerializer.ToObject<T>(bytes, context);
+//            return selectedSerializer.ToObject<TValue>(bytes, context);
 //        }
 //    }
 

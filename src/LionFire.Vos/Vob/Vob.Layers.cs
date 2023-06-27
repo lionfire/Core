@@ -36,7 +36,7 @@ namespace LionFire.Vos
 
         // TODO: Async version?
         public  Task<IEnumerable<T>> AllLayersOfType<T>()
-            //where T : class
+            //where TValue : class
         {
             throw new NotImplementedException();
 #if TODO

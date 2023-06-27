@@ -1,9 +1,11 @@
 ﻿
+using System.Threading;
+
 namespace LionFire.Data.Async;
 
-public abstract class AsyncGets<T>
+public abstract class AsyncGets<TValue>
     : ReactiveObject
-    , ILazilyGetsRx<T>
+    , ILazilyGetsRx<TValue>
 {
     #region Parameters
 
@@ -25,7 +27,7 @@ public abstract class AsyncGets<T>
     {
         Options = DefaultOptions;
     }
-    protected AsyncGets(AsyncValueOptions options) {
+    protected AsyncGets(AsyncGetOptions options) {
         Options = options;
     }
 
@@ -34,11 +36,17 @@ public abstract class AsyncGets<T>
     #region Value
 
     [Reactive]
-    public T? Value { get; private set; }
+    public TValue? ReadCacheValue { get; private set; }
+
+    public TValue? Value
+    {
+        [Blocking(Alternative = nameof(GetIfNeeded))]
+        get => ReadCacheValue ?? GetIfNeeded().Result.Value;
+    }
 
     [Reactive]
     public bool HasValue { get; private set; }
-    public ILazyGetResult<T> QueryValue() => new LazyResolveResult<T>(HasValue, Value);
+    public ILazyGetResult<TValue> QueryValue() => new LazyResolveResult<TValue>(HasValue, Value);
 
     public void Discard() => DiscardValue();
     public void DiscardValue()
@@ -51,15 +59,15 @@ public abstract class AsyncGets<T>
 
     #region Get
 
-    protected abstract ITask<IGetResult<T>> GetImpl();
+    protected abstract ITask<IGetResult<TValue>> GetImpl(CancellationToken cancellationToken = default);
 
     public bool IsGetting => getState != null && getState.AsTask().IsCompleted == false;
-    public ITask<IGetResult<T>>? GetState => getState;
+    public ITask<IGetResult<TValue>>? GetState => getState;
 
     AsyncGetOptions IHasNonNull<AsyncGetOptions>.Object => throw new NotImplementedException();
-    private ITask<IGetResult<T>>? getState;
+    private ITask<IGetResult<TValue>>? getState;
 
-    public virtual async ITask<IGetResult<T>> Get()
+    public virtual async ITask<IGetResult<TValue>> Get(CancellationToken cancellationToken = default)
     {
         var getTask = GetState;
         if (getTask != null && getState.AsTask().IsCompleted) { return await getTask.ConfigureAwait(false); }
@@ -70,11 +78,11 @@ public abstract class AsyncGets<T>
         return result;
     }
 
-    public async ITask<ILazyGetResult<T>> TryGetValue()
+    public async ITask<ILazyGetResult<TValue>> GetIfNeeded()
     {
         if (HasValue) { return QueryValue(); }
         var result = await Get().ConfigureAwait(false);
-        return new LazyResolveResult<T>(result.IsSuccess == true, result.Value);
+        return new LazyResolveResult<TValue>(result.IsSuccess == true, result.Value);
     }
 
     #endregion

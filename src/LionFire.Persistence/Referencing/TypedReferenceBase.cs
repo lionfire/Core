@@ -36,7 +36,7 @@ namespace LionFire.Referencing
     }
 
 #if TOPORT
-    public class AssetPathToVobReferenceResolver : IResolver<IResolvingReference, IReference>
+    public class AssetPathToVobReferenceResolver : IGetter<IResolvingReference, IReference>
     {
         public IReference Resolve<T>(T r) where T : IResolvingReference
         {
@@ -73,7 +73,7 @@ namespace LionFire.Referencing
         {
             if (resolvedReference == null)
             {
-                resolvedReference = (await ((TConcrete)(object)this).Resolve<TConcrete, IReference>().ConfigureAwait(false)).Value; // HARDCAST
+                resolvedReference = (await ((TConcrete)(object)this).AmbientGet<TConcrete, IReference>().ConfigureAwait(false)).Value; // HARDCAST
             }
         }
 

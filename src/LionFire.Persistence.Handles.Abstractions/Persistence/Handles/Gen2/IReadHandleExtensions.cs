@@ -2,6 +2,7 @@
 using System.Threading.Tasks;
 using LionFire.Persistence;
 using LionFire.Data.Async.Gets;
+using LionFire.Data.Async.Sets;
 
 namespace LionFire
 {
@@ -41,7 +42,7 @@ namespace LionFire
         {
             if (readHandle is ILazilyGets<T> lr && lr.HasValue) return true;
             if (readHandle is ISupportsExist<T> ec) return await ec.Exists().ConfigureAwait(false);
-            _ = await readHandle.Resolve().ConfigureAwait(false);
+            _ = await readHandle.Get().ConfigureAwait(false);
             return readHandle.HasValue;
         }
     }

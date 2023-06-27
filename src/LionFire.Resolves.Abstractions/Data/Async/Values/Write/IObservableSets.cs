@@ -6,6 +6,6 @@ namespace LionFire.Data.Async.Sets;
 
 public interface IObservableSets<in TValue> : ISets<TValue>
 {
-    IObservable<ITask<ISuccessResult>> Sets { get; } 
+    IObservable<ITask<ITransferResult>> Sets { get; } 
 }
 

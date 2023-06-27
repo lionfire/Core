@@ -61,9 +61,12 @@ public abstract class AsyncReadOnlyKeyedCollectionCache<TKey, TValue>
 
     #region State
 
+    public override IEnumerable<TValue>? ReadCacheValue => SourceCache.Items;
+
     public SourceCache<TValue, TKey> SourceCache { get; }
     public IObservableCache<TValue, TKey> ObservableCache => SourceCache.AsObservableCache(); // AsObservableCache converts it read only
-                                                                                              //public override DynamicData.IObservableList<KeyValuePair<TKey, TValue>> List => throw new NotImplementedException();// SourceCache.AsObservableList();
+                                                                                              
+    //public override DynamicData.IObservableList<KeyValuePair<TKey, TValue>> List => throw new NotImplementedException();// SourceCache.AsObservableList();
 
     #endregion
 
@@ -135,12 +138,12 @@ public abstract class AsyncReadOnlyKeyedCollectionCache<TKey, TValue>
 
     #region Resolve
 
-    public abstract ITask<IGetResult<IEnumerable<TValue>>> ResolveFromSource();
+    public abstract ITask<IGetResult<IEnumerable<TValue>>> ResolveFromSource(CancellationToken cancellationToken = default);
     
     Func<TValue, TValue, bool> ValueEqualityComparerFunc => (l, r) => DefaultKeyEqualityComparer.Equals(KeySelector(l), KeySelector(r));
 
     private object currentResolvingLock = new();
-    public override ITask<IGetResult<IEnumerable<TValue>>> Get()
+    public override ITask<IGetResult<IEnumerable<TValue>>> Get(CancellationToken cancellationToken = default)
     {
         lock (currentResolvingLock)
         {
@@ -149,7 +152,7 @@ public abstract class AsyncReadOnlyKeyedCollectionCache<TKey, TValue>
 
             var task = Task.Run<IGetResult<IEnumerable<TValue>>>(async () =>
             {
-                var result = await ResolveFromSource().ConfigureAwait(false);
+                var result = await ResolveFromSource(cancellationToken).ConfigureAwait(false);
                 if (result.IsSuccess == true)
                 {
                     SourceCache.EditDiff(result.Value ?? Enumerable.Empty<TValue>(), ValueEqualityComparerFunc);

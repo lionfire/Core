@@ -61,7 +61,7 @@ namespace LionFire.Applications.Hosting
                     //}
                     //else
                     //{
-                    //    return ServiceProvider.GetService<T>();
+                    //    return ServiceProvider.GetService<TValue>();
                     //}
                     return null;
             }

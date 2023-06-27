@@ -74,7 +74,7 @@ namespace LionFire.Serialization
 
         //public async Task<bool> TryRetrieveObject(Func<PersistenceContext> context)
         //{
-        //    Object = SerializationFacility.Default.ToObject<T>(fs, operation: SerializationOperation, context: DefaultSerializationContext, );
+        //    Object = SerializationFacility.Default.ToObject<TValue>(fs, operation: SerializationOperation, context: DefaultSerializationContext, );
         //}
 
         public PersistenceOperation GetPersistenceOperation()
@@ -124,7 +124,7 @@ namespace LionFire.Serialization
 #if true // Stream
                 using (var fs = new FileStream(Path, FileMode.Open, FileAccess.Read, FileShare.Read))
                 {
-                    //Object = SerializationFacility.Default.ToObject<T>(fs, operation: SerializationOperation, context: DefaultSerializationContext);
+                    //Object = SerializationFacility.Default.ToObject<TValue>(fs, operation: SerializationOperation, context: DefaultSerializationContext);
                     obj = SerializationFacility.Default.ToObject<T>(fs, new Lazy<PersistenceOperation>(GetPersistenceOperation));
                 }
 #else

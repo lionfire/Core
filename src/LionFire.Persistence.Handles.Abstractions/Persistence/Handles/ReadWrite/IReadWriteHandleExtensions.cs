@@ -18,7 +18,7 @@ namespace LionFire.Persistence
 
         public static async Task<object> TryGetOrCreate(this IReadWriteHandle handle)
         {
-            var result = (await handle.Resolve().ConfigureAwait(false)).ToRetrieveResult();
+            var result = (await handle.Get().ConfigureAwait(false)).ToRetrieveResult();
             if (result.IsFound() == true) return result.Value;
 
             throw new NotImplementedException("TODO: Create");
@@ -29,7 +29,7 @@ namespace LionFire.Persistence
         {
             if (handle is ILazilyGets<T> lr)
             {
-                var result = await lr.TryGetValue().ConfigureAwait(false);
+                var result = await lr.GetIfNeeded().ConfigureAwait(false);
                 if (result.HasValue)
                 {
                     return lr.Value;
@@ -37,7 +37,7 @@ namespace LionFire.Persistence
             }
             else
             {
-                var result = (await handle.Resolve().ConfigureAwait(false)).ToRetrieveResult();
+                var result = (await handle.Get().ConfigureAwait(false));
                 if (result.IsFound() == true) return result.Value;
             }
 

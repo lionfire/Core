@@ -190,7 +190,7 @@ public partial class VosExplorer
             var rh = ("vos:" + Path).ToReference()?.GetReadHandle<object>(); // TODO - get available types
             if (rh != null)
             {
-                var result = (await rh.TryGetValue().ConfigureAwait(false));
+                var result = (await rh.GetIfNeeded().ConfigureAwait(false));
                 newValue = result.Value;
                 if (result.IsSuccess != true)
                 {
@@ -267,7 +267,7 @@ public partial class VosExplorer
                     var childPath = LionPath.Combine(path, listing.Name);
                     var handle = childPath.ToReference<object>().GetReadHandle<object>();
                     //newReadHandles.Add(handle);
-                    listing.Type = (await handle.TryGetValue().ConfigureAwait(false))?.GetType();
+                    listing.Type = (await handle.GetIfNeeded().ConfigureAwait(false))?.GetType();
                 }
                 catch
                 {

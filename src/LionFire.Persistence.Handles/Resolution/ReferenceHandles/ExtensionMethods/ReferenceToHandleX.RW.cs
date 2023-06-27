@@ -92,7 +92,7 @@ public static partial class ReferenceToReadWriteHandleExtensions
             }
         }
 
-        if (referenceValueType == null) { throw new ArgumentException($"{nameof(referencable)} must implement IReferencableValueType, or its Reference must implement ITypedReference."); } // ENH: scan the object for IReadWriteHandle<T>
+        if (referenceValueType == null) { throw new ArgumentException($"{nameof(referencable)} must implement IReferencableValueType, or its Reference must implement ITypedReference."); } // ENH: scan the object for IReadWriteHandle<TValue>
 
         if (referencable is IHasReadWriteHandle ihrwh)
         {

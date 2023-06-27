@@ -18,7 +18,7 @@ namespace LionFire.Services
 
         public InitializingLifetimeWrapper(T wrappedLifetime, IEnumerable<IInitializable3> initializers) {
             //this.serviceProvider = serviceProvider;
-            this.WrappedLifetime = wrappedLifetime;// ?? new T();
+            this.WrappedLifetime = wrappedLifetime;// ?? new TValue();
             this.initializers = initializers;
         }
 

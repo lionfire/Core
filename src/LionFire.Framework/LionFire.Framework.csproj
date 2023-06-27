@@ -39,7 +39,7 @@
     <ProjectReference Include="..\LionFire.Persistence.Handles.Abstractions\LionFire.Persistence.Handles.Abstractions.csproj" />
     <ProjectReference Include="..\LionFire.Persistence.Handles\LionFire.Persistence.Handles.csproj" />
     <ProjectReference Include="..\LionFire.Referencing\LionFire.Referencing.csproj" />
-    <ProjectReference Include="..\LionFire.Resolves\LionFire.Data.Async.csproj" />
+    <ProjectReference Include="..\LionFire.Resolves\LionFire.Data.csproj" />
     <ProjectReference Include="..\LionFire.Serialization.Json.Newtonsoft\LionFire.Serialization.Json.Newtonsoft.csproj" />
     <ProjectReference Include="..\LionFire.Structures\LionFire.Structures.csproj" />
     <ProjectReference Include="..\LionFire.Vos.Application\LionFire.Vos.VosApp.csproj" />

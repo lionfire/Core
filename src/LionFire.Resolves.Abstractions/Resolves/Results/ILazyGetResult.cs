@@ -2,6 +2,6 @@
 
 namespace LionFire.Data.Async.Gets;
 
-public interface ILazyGetResult<out TValue> : IGetResult<TValue>, INoopResult
+public interface ILazyGetResult<out TValue> : IGetResult<TValue>
 {
 }

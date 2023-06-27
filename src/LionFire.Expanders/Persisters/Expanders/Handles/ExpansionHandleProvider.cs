@@ -93,7 +93,7 @@ public class ExpansionHandleProvider : HandleProviderBase<IExpansionReference>
     //    throw new NotImplementedException();
     //}
 
-    //public IReadHandle<T> GetReadHandle<T>(IExpansionReference reference, T? preresolvedValue = default)
+    //public IReadHandle<TValue> GetReadHandle<TValue>(IExpansionReference reference, TValue? preresolvedValue = default)
     //{
     //    throw new NotImplementedException();
     //}
@@ -105,22 +105,22 @@ public class ExpansionHandleProvider : HandleProviderBase<IExpansionReference>
     //}
 
 
-    //public override IReadHandle<T> GetReadHandle<T>(IExpansionReference reference, T preresolvedValue = default)
-    //    => reference.GetVob().GetReadHandle<T>(preresolvedValue);
-    //public override IReadWriteHandle<T> GetReadWriteHandle<T>(IExpansionReference reference, T preresolvedValue = default)
-    //          => reference.GetVob().GetReadWriteHandle<T>(preresolvedValue);
-    //public override IWriteHandle<T> GetWriteHandle<T>(IExpansionReference reference, T prestagedValue = default)
-    //   => reference.GetVob().GetWriteHandle<T>(prestagedValue);
-    ////IWriteHandle<T> GetWriteHandle<T>(IExpansionReference reference) 
-    ////=> reference.ToVob().GetWriteHandle<T>();
+    //public override IReadHandle<TValue> GetReadHandle<TValue>(IExpansionReference reference, TValue preresolvedValue = default)
+    //    => reference.GetVob().GetReadHandle<TValue>(preresolvedValue);
+    //public override IReadWriteHandle<TValue> GetReadWriteHandle<TValue>(IExpansionReference reference, TValue preresolvedValue = default)
+    //          => reference.GetVob().GetReadWriteHandle<TValue>(preresolvedValue);
+    //public override IWriteHandle<TValue> GetWriteHandle<TValue>(IExpansionReference reference, TValue prestagedValue = default)
+    //   => reference.GetVob().GetWriteHandle<TValue>(prestagedValue);
+    ////IWriteHandle<TValue> GetWriteHandle<TValue>(IExpansionReference reference) 
+    ////=> reference.ToVob().GetWriteHandle<TValue>();
 
-    //IReadHandle<T> IReadHandleProvider.GetReadHandle<T>(IReference reference, T preresolvedValue) => GetReadHandle<T>((IExpansionReference)reference, preresolvedValue);  // REVIEW
-    //IReadWriteHandle<T> IReadWriteHandleProvider.GetReadWriteHandle<T>(IReference reference, T preresolvedValue) => GetReadWriteHandle<T>((IExpansionReference)reference, preresolvedValue);  // REVIEW
-    //IWriteHandle<T> IWriteHandleProvider.GetWriteHandle<T>(IReference reference, T prestagedValue) => GetWriteHandle<T>((IExpansionReference)reference, prestagedValue); // REVIEW
+    //IReadHandle<TValue> IReadHandleProvider.GetReadHandle<TValue>(IReference reference, TValue preresolvedValue) => GetReadHandle<TValue>((IExpansionReference)reference, preresolvedValue);  // REVIEW
+    //IReadWriteHandle<TValue> IReadWriteHandleProvider.GetReadWriteHandle<TValue>(IReference reference, TValue preresolvedValue) => GetReadWriteHandle<TValue>((IExpansionReference)reference, preresolvedValue);  // REVIEW
+    //IWriteHandle<TValue> IWriteHandleProvider.GetWriteHandle<TValue>(IReference reference, TValue prestagedValue) => GetWriteHandle<TValue>((IExpansionReference)reference, prestagedValue); // REVIEW
 
 
-    //public IReadHandle<T> GetReadHandle<T>(ProviderVobReference reference)
-    //    => new PersisterReadWriteHandle<ProviderVobReference, T, IPersister<ProviderVobReference>>(providerFilePersisterProvider.GetPersister(reference.Persister), reference);
+    //public IReadHandle<TValue> GetReadHandle<TValue>(ProviderVobReference reference)
+    //    => new PersisterReadWriteHandle<ProviderVobReference, TValue, IPersister<ProviderVobReference>>(providerFilePersisterProvider.GetPersister(reference.Persister), reference);
 
     //#warning TODO: ReadWrite handle
 

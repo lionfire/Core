@@ -10,3 +10,4 @@ global using LionFire.Data.Async.Gets;
 global using ReactiveUI;
 global using ReactiveUI.Fody.Helpers;
 global using LionFire.Ontology;
+global using LionFire.Results;

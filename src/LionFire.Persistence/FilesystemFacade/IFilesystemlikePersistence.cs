@@ -26,8 +26,8 @@ namespace LionFire.Persistence.Filesystemlike
         Task<bool?> Delete(string fsPath);
         Task<bool> Exists(string fsPath);
         Task<bool> Exists<T>(string fsPath);
-        //Task<bool> TryDelete<T>(string fsPath, bool preview = false);
-        //Task<IRetrieveResult<T>> TryRetrieve<T>(TReference fileReference, Lazy<PersistenceOperation> operation = null, PersistenceContext context = null);
+        //Task<bool> TryDelete<TValue>(string fsPath, bool preview = false);
+        //Task<IRetrieveResult<TValue>> TryRetrieve<TValue>(TReference fileReference, Lazy<PersistenceOperation> operation = null, PersistenceContext context = null);
         Task<ITransferResult> Update<T>(string fsPath, T obj, Type type = null, PersistenceContext context = null);
         Task<ITransferResult> Upsert<T>(string fsPath, T obj, Type type = null, PersistenceContext context = null);
         Task<ITransferResult> Write<T>(string fsPath, T obj, ReplaceMode replaceMode = ReplaceMode.Upsert, PersistenceContext context = null, Type type = null);

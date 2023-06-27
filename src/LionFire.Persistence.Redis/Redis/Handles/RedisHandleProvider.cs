@@ -48,17 +48,17 @@ namespace LionFire.Persistence.Redis
 
         #endregion
 
-        //public IReadWriteHandle<T> GetReadWriteHandle<T>(RedisReference<T> reference, T? preresolvedValue = default)
-            //=> new PersisterReadWriteHandle<RedisReference<T>, T, IPersister<IRedisReference>>(persister, reference, preresolvedValue);
+        //public IReadWriteHandle<TValue> GetReadWriteHandle<TValue>(RedisReference<TValue> reference, TValue? preresolvedValue = default)
+            //=> new PersisterReadWriteHandle<RedisReference<TValue>, TValue, IPersister<IRedisReference>>(persister, reference, preresolvedValue);
 
         
 
-        //public IReadHandle<T> GetReadHandle<T>(ProviderRedisReference reference, T preresolvedValue = default)
-            //=> new PersisterReadWriteHandle<ProviderRedisReference, T, IPersister<ProviderRedisReference>>(providerRedisPersisterProvider.GetPersister(reference.Persister), reference, preresolvedValue);
-        //public IReadHandle<T> GetReadWriteHandle<T>(ProviderRedisReference reference)
-        //        => new PersisterReadWriteHandle<ProviderRedisReference, T, IPersister<ProviderRedisReference>>(providerRedisPersisterProvider.GetPersister(reference.Persister), reference);
+        //public IReadHandle<TValue> GetReadHandle<TValue>(ProviderRedisReference reference, TValue preresolvedValue = default)
+            //=> new PersisterReadWriteHandle<ProviderRedisReference, TValue, IPersister<ProviderRedisReference>>(providerRedisPersisterProvider.GetPersister(reference.Persister), reference, preresolvedValue);
+        //public IReadHandle<TValue> GetReadWriteHandle<TValue>(ProviderRedisReference reference)
+        //        => new PersisterReadWriteHandle<ProviderRedisReference, TValue, IPersister<ProviderRedisReference>>(providerRedisPersisterProvider.GetPersister(reference.Persister), reference);
 
-        //IReadHandle<T> IReadHandleProvider<RedisReference>.GetReadHandle<T>(RedisReference reference) => throw new System.NotImplementedException();
+        //IReadHandle<TValue> IReadHandleProvider<RedisReference>.GetReadHandle<TValue>(RedisReference reference) => throw new System.NotImplementedException();
 
         
         

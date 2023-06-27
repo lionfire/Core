@@ -176,7 +176,7 @@ public partial class KeyedCollectionView<TKey, TValue, TValueVM>
         {
             ViewModel.Source = Items == null ? null
                 : Items as ILazilyGets<IEnumerable<TValue>>
-                    ?? new Preresolved<IEnumerable<TValue>>(Items);
+                    ?? new PreresolvedGet<IEnumerable<TValue>>(Items);
 
             ViewModel.Source?.TryGetValue().AsTask().FireAndForget();
 

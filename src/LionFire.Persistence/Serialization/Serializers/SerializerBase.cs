@@ -30,7 +30,7 @@ namespace LionFire.Serialization
 
             static SerializerBaseReflectionInfo()
             {
-                //foreach (var mi in typeof(T).GetMethods())
+                //foreach (var mi in typeof(TValue).GetMethods())
                 //{
                 //    Debug.WriteLine(mi.Name + " ");
                 //    foreach (var param in mi.GetParameters())
@@ -196,7 +196,7 @@ namespace LionFire.Serialization
         protected byte[] StringToBytes(string str, PersistenceContext context = null) => str == null ? null : (context?.SerializationContext?.Encoding ?? DefaultEncoding).GetBytes(str);
         protected string BytesToString(byte[] bytes, PersistenceContext context = null) => bytes == null ? null : (context?.SerializationContext?.Encoding ?? DefaultEncoding).GetString(bytes);
 
-        //public abstract T ToObject<T>(string serializedData, SerializationContext context = null);
+        //public abstract TValue ToObject<TValue>(string serializedData, SerializationContext context = null);
 
         #endregion
 

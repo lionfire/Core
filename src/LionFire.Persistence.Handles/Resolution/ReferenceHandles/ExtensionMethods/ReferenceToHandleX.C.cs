@@ -36,8 +36,8 @@ public static partial class ReferenceToCollectionHandleExtensions
     //    => referencable.Reference.GetReadHandle<Metadata<IEnumerable<Listing<object>>>>();
     public static ListingValues<T> GetListingValues<T>(this IReference reference)
               => new ListingValues<T>(reference.GetListingsHandle<T>());
-    //public static IReadHandle<Metadata<IEnumerable<IListing<T>>>> ReferenceGetListiandle<T>(this IReferencable referencable)
-    //=> referencable.Reference.GetReadHandle<Metadata<IEnumerable<IListing<T>>>>();
+    //public static IReadHandle<Metadata<IEnumerable<IListing<TValue>>>> ReferenceGetListiandle<TValue>(this IReferencable referencable)
+    //=> referencable.Reference.GetReadHandle<Metadata<IEnumerable<IListing<TValue>>>>();
 
 
     #endregion
@@ -47,7 +47,7 @@ public static partial class ReferenceToCollectionHandleExtensions
     public static HC<T> GetCollectionHandle<T>(this IReference reference) => reference.GetCollectionHandleProvider().GetCollectionHandle<T>(reference);
 
     public static HC<T> ToCollectionHandle<T>(this IReference reference) => reference.ToCollectionHandleProvider().GetCollectionHandle<T>(reference) ?? throw new HasUnresolvedDependenciesException($"Could not get {nameof(HC<T>)} type for reference of type {reference.GetType().FullName}");
-    ////public static C<object> GetCollectionHandle<T>(this IReference reference) => reference.GetCollectionHandleProvider().GetCollectionHandle<object>(reference);
+    ////public static C<object> GetCollectionHandle<TValue>(this IReference reference) => reference.GetCollectionHandleProvider().GetCollectionHandle<object>(reference);
 
     public static RC<T> GetReadCollectionHandle<T>(this IReference reference) => reference.GetCollectionHandleProvider().GetReadCollectionHandle<T>(reference);
 

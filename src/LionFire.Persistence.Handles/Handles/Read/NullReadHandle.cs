@@ -32,12 +32,12 @@ namespace LionFire.Persistence.Handles
         public PersistenceFlags Flags => PersistenceFlags.UpToDate;
 
 
-        //public event Action<RH<T>, HandleEvents> HandleEvents;
-        //public event Action<RH<T>, T, T> ObjectReferenceChanged;
+        //public event Action<RH<TValue>, HandleEvents> HandleEvents;
+        //public event Action<RH<TValue>, TValue, TValue> ObjectReferenceChanged;
 
         public event Action<bool> IsResolvedChanged { add { } remove { } }
 
-        //event Action<INotifyingWrapper<T>, T, T> INotifyingWrapper<T>.ObjectChanged { add { } remove { } }
+        //event Action<INotifyingWrapper<TValue>, TValue, TValue> INotifyingWrapper<TValue>.ObjectChanged { add { } remove { } }
 
         public event Action<IReadHandleBase<TValue>> ObjectChanged { add { } remove { } }
 
@@ -45,7 +45,7 @@ namespace LionFire.Persistence.Handles
         public Task<bool> Exists(bool forceCheck = false) => Task.FromResult(true);
 
 
-        public ITask<ILazyGetResult<TValue>> TryGetValue() => Task.FromResult<ILazyGetResult<TValue>>(ResolveResultNoop<TValue>.Instance).AsITask();
+        public ITask<ILazyGetResult<TValue>> GetIfNeeded() => Task.FromResult<ILazyGetResult<TValue>>(ResolveResultNoop<TValue>.Instance).AsITask();
         public ITask<IGetResult<TValue>> Resolve() => Task.FromResult<IGetResult<TValue>>(NoopRetrieveResult).AsITask();
         public Task<bool> TryResolveObject() => Task.FromResult(true);
         public ILazyGetResult<TValue> QueryValue() => ResolveResultNoop<TValue>.Instance;

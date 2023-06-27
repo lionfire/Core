@@ -18,11 +18,11 @@ namespace LionFire.Persistence.Handles
     //    public override TValue Value
     //    {
     //        [Blocking(Alternative = nameof(GetValue))]
-    //        get => ProtectedValue ?? GetValue().Result.Value;
+    //        get => ReadCacheValue ?? GetValue().Result.Value;
     //        [PublicOnly]
     //        set
     //        {
-    //            if (EqualityComparer<TValue>.Default.Equals(protectedValue, value)) return;
+    //            if (EqualityComparer<TValue>.Default.Equals(readCacheValue, value)) return;
     //            this.MutatePersistenceStateAndNotify(() => HandleUtils.OnUserChangedValue_ReadWrite(this, value));
     //        }
     //    }
@@ -67,12 +67,12 @@ namespace LionFire.Persistence.Handles
         //public override TValue Value
         //{
         //    [Blocking(Alternative = nameof(GetValue))]
-        //    get => ProtectedValue ?? GetValue().Result.Value;
+        //    get => ReadCacheValue ?? GetValue().Result.Value;
         //    [PublicOnly]
         //    set
         //    {
-        //        if (EqualityComparer<TValue>.Default.Equals(protectedValue, value)) return;
-        //        ProtectedValue = value; // REVIEW TOTEST
+        //        if (EqualityComparer<TValue>.Default.Equals(readCacheValue, value)) return;
+        //        ReadCacheValue = value; // REVIEW TOTEST
         //    }
         //}
 
@@ -97,7 +97,7 @@ namespace LionFire.Persistence.Handles
 
             ////var old = PersistenceSnapshot;
 
-            //ProtectedValue = obj;
+            //ReadCacheValue = obj;
             //this.Flags |= PersistenceFlags.UpToDate;
 
             ////this.PersistenceStateChanged?.Invoke(new PersistenceEvent<TValue>

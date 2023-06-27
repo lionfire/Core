@@ -10,18 +10,18 @@
 //    {
 //        // UNTESTED: need to force this cast? (H)(object)
 //        public static H ToHandle(this IReference reference, object obj = null) => (H)HandleProvider<object>.ToHandle(reference, obj);
-//        public static H<T> ToHandle<T>(this IReference<T> reference, T obj = null)
-//         where T : class
-//             => HandleProvider<T>.ToHandle((IReference)reference, obj);
+//        public static H<TValue> ToHandle<TValue>(this IReference<TValue> reference, TValue obj = null)
+//         where TValue : class
+//             => HandleProvider<TValue>.ToHandle((IReference)reference, obj);
 //    }
 
-//    public static class HandleProvider<T>
-//    where T : class//, new()
+//    public static class HandleProvider<TValue>
+//    where TValue : class//, new()
 //    {
-//        private static Dictionary<string, H<T>> handlesByUri = new Dictionary<string, H<T>>();
+//        private static Dictionary<string, H<TValue>> handlesByUri = new Dictionary<string, H<TValue>>();
 //        private static ReaderWriterLockSlim handlesLock = new ReaderWriterLockSlim();
 
-//        public static H<T> ToHandle(IReference reference, T obj = null)
+//        public static H<TValue> ToHandle(IReference reference, TValue obj = null)
 //        {
 //#if DEBUG
 //            if (obj != null) throw new NotImplementedException("obj!=null");
@@ -31,9 +31,9 @@
 //                try
 //                {
 //                    handlesLock.EnterUpgradeableReadLock();
-//                    H<T> handle =
+//                    H<TValue> handle =
 //#if AOT
-//						(IHandle<T>)
+//						(IHandle<TValue>)
 //#endif
 //                            handlesByUri.TryGetValue(reference.Key);
 
@@ -44,7 +44,7 @@
 //                    else
 //                    {
 //                        //return CreateHandle(reference); TODO
-//                        handle = HandleFactory<T>.CreateHandle(reference, obj);
+//                        handle = HandleFactory<TValue>.CreateHandle(reference, obj);
 
 //                        handlesLock.EnterWriteLock();
 //                        try
@@ -68,7 +68,7 @@
 //            }
 //            else
 //            {
-//                return HandleFactory<T>.CreateHandle(reference);
+//                return HandleFactory<TValue>.CreateHandle(reference);
 //            }
 //        }
 //    }

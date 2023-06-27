@@ -55,11 +55,11 @@ public interface IVirtualFilesystemPersister : ISerializingPersister
 //    Task BytesToPath(string fsPath, byte[] bytes, ReplaceMode replaceMode);
 //    Task StringToPath(string fsPath, string str, ReplaceMode replaceMode);
 
-//    //Func<T, string, ISerializationStrategy, ReplaceMode, PersistenceOperation, PersistenceContext, SerializationResult> SerializeToString<T>(T obj, string fsPath, ISerializationStrategy strategy, ReplaceMode replaceMode, PersistenceOperation operation, PersistenceContext context) { get;}
+//    //Func<TValue, string, ISerializationStrategy, ReplaceMode, PersistenceOperation, PersistenceContext, SerializationResult> SerializeToString<TValue>(TValue obj, string fsPath, ISerializationStrategy strategy, ReplaceMode replaceMode, PersistenceOperation operation, PersistenceContext context) { get;}
 
-//    // Task<SerializationResult> SerializeToBytes<T>(T obj, string fsPath, ISerializationStrategy strategy, ReplaceMode replaceMode, PersistenceOperation operation, PersistenceContext context)
+//    // Task<SerializationResult> SerializeToBytes<TValue>(TValue obj, string fsPath, ISerializationStrategy strategy, ReplaceMode replaceMode, PersistenceOperation operation, PersistenceContext context)
 
-//    //Task<SerializationResult> SerializeToStream<T>(T obj, string fsPath, ISerializationStrategy strategy, ReplaceMode replaceMode, PersistenceOperation operation, PersistenceContext context)
+//    //Task<SerializationResult> SerializeToStream<TValue>(TValue obj, string fsPath, ISerializationStrategy strategy, ReplaceMode replaceMode, PersistenceOperation operation, PersistenceContext context)
 //}
 
 #endregion

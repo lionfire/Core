@@ -34,8 +34,8 @@ namespace LionFire.Persistence.Handles
             set
             {
                 if (object.Equals(value, protectedValue)) return;
-                //if (System.Collections.Generic.Comparer<TValue>.Default.Compare(protectedValue, value) == 0) return; // Should use Equality instead of Compare?
-                //if (value == ProtectedValue) return;
+                //if (System.Collections.Generic.Comparer<TValue>.Default.Compare(readCacheValue, value) == 0) return; // Should use Equality instead of Compare?
+                //if (value == ReadCacheValue) return;
                 HandleUtils.OnUserChangedValue_ReadWrite(this, value);
             }
         }
@@ -55,7 +55,7 @@ namespace LionFire.Persistence.Handles
             if (getResult.HasValue) return getResult;
 
             //TrySetProtectedValueIfDefault(InstantiateDefault());
-            //ProtectedValue = InstantiateDefault();
+            //ReadCacheValue = InstantiateDefault();
             var newValue = InstantiateDefault();
             this.OnUserChangedValue_Write(newValue);
 
@@ -66,9 +66,9 @@ namespace LionFire.Persistence.Handles
             //{
             //    if (!HasValue)
             //    {
-            //        ProtectedValue = InstantiateDefault();
+            //        ReadCacheValue = InstantiateDefault();
             //    }
-            //    return ProtectedValue;
+            //    return ReadCacheValue;
             //}
         }
 

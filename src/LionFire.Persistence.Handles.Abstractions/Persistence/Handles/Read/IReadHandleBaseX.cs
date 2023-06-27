@@ -1,9 +1,4 @@
-﻿using LionFire.Resolvables;
-using LionFire.Data.Async.Gets;
-using LionFire.Structures;
-using System;
-using System.Threading.Tasks;
-
+﻿
 namespace LionFire.Persistence;
 
 public static class IReadHandleBaseX
@@ -47,7 +42,7 @@ public static class IReadHandleBaseX
         if (handle is ILazilyGets<T> l)
             return await l.GetValue<T>().ConfigureAwait(false);
 
-        var result = await handle.Resolve().ConfigureAwait(false);
+        var result = await handle.Get().ConfigureAwait(false);
         if (!result.HasValue) throw new Exception("Failed to resolve value.");
         return result.Value;
     }
@@ -55,9 +50,9 @@ public static class IReadHandleBaseX
     public static async Task<IGetResult<T>> ResolveIfNeeded<T>(this IReadHandleBase<T> handle)
     {
         if (handle is ILazilyGets<T> l)
-            return await l.TryGetValue().ConfigureAwait(false);
+            return await l.GetIfNeeded().ConfigureAwait(false);
 
-        var result = await handle.Resolve().ConfigureAwait(false);
+        var result = await handle.Get().ConfigureAwait(false);
         return result;
     }
 }

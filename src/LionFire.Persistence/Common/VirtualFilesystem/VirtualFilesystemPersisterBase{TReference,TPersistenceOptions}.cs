@@ -385,8 +385,8 @@ public abstract partial class VirtualFilesystemPersisterBase<TReference, TPersis
     PersisterRetryOptions RetryOptions => (PersistenceOptions as IHas<PersisterRetryOptions>)?.Object ?? PersisterRetryOptions.Default;
     
 
-    //public virtual Task<IRetrieveResult<T>> ReadAndDeserializeExactPath<T>(TReference reference, Lazy<PersistenceOperation> operation = null, PersistenceContext context = null)
-    //    => ReadAndDeserializeExactPath<T>(reference.Path, operation, context);
+    //public virtual Task<IRetrieveResult<TValue>> ReadAndDeserializeExactPath<TValue>(TReference reference, Lazy<PersistenceOperation> operation = null, PersistenceContext context = null)
+    //    => ReadAndDeserializeExactPath<TValue>(reference.Path, operation, context);
 
     private static readonly IEnumerable<SerializationSelectionResult> NoopSerializationSelectionResults = new SerializationSelectionResult[] {
         new SerializationSelectionResult() };
@@ -401,8 +401,8 @@ public abstract partial class VirtualFilesystemPersisterBase<TReference, TPersis
         // - paths with multiple .'s
 
         // NEXT: how to invoke these?  Latest idea: persist/depersist pipelines
-        //var obj = await persistenceOperation.ToObject<T>(effectiveContext).ConfigureAwait(false);
-        //var obj = await (persistenceOperation.Context?.SerializationProvider ?? DependencyLocator.TryGet<ISerializationProvider>()).ToObject<T>(op);
+        //var obj = await persistenceOperation.ToObject<TValue>(effectiveContext).ConfigureAwait(false);
+        //var obj = await (persistenceOperation.Context?.SerializationProvider ?? DependencyLocator.TryGet<ISerializationProvider>()).ToObject<TValue>(op);
 
         List<KeyValuePair<ISerializationStrategy, SerializationResult>>? failures = null;
 
@@ -616,8 +616,8 @@ public abstract partial class VirtualFilesystemPersisterBase<TReference, TPersis
     public virtual async Task<IRetrieveResult<T>> ReadAndDeserializeExactPath<T>(string path, Lazy<PersistenceOperation>? operation = null, PersistenceContext? context = null, bool throwOnFail = true)
     {
         // NEXT: how to invoke these?  Latest idea: persist/depersist pipelines
-        //var obj = await persistenceOperation.ToObject<T>(effectiveContext).ConfigureAwait(false);
-        //var obj = await (persistenceOperation.Context?.SerializationProvider ?? DependencyLocator.TryGet<ISerializationProvider>()).ToObject<T>(op);
+        //var obj = await persistenceOperation.ToObject<TValue>(effectiveContext).ConfigureAwait(false);
+        //var obj = await (persistenceOperation.Context?.SerializationProvider ?? DependencyLocator.TryGet<ISerializationProvider>()).ToObject<TValue>(op);
 
         List<KeyValuePair<ISerializationStrategy, SerializationResult>>? failures = null;
 
@@ -705,8 +705,8 @@ public abstract partial class VirtualFilesystemPersisterBase<TReference, TPersis
 
             #region !allowOverwrite
 
-            //#warning FIXME: Use Exists() instead of Exists<T>
-            //if (!allowOverwrite && (await Exists<T>(fsPath).ConfigureAwait(false))) throw new AlreadySetException($"File already exists at '{fsReference}'"); // TOTEST
+            //#warning FIXME: Use Exists() instead of Exists<TValue>
+            //if (!allowOverwrite && (await Exists<TValue>(fsPath).ConfigureAwait(false))) throw new AlreadySetException($"File already exists at '{fsReference}'"); // TOTEST
             if (!allowOverwrite)
             {
                 if ((await Exists(fsPath).ConfigureAwait(false))) throw new AlreadySetException($"File already exists at '{fsReference}'"); // TOTEST
@@ -1030,11 +1030,11 @@ public abstract partial class VirtualFilesystemPersisterBase<TReference, TPersis
 //    Task BytesToPath(string fsPath, byte[] bytes, ReplaceMode replaceMode);
 //    Task StringToPath(string fsPath, string str, ReplaceMode replaceMode);
 
-//    //Func<T, string, ISerializationStrategy, ReplaceMode, PersistenceOperation, PersistenceContext, SerializationResult> SerializeToString<T>(T obj, string fsPath, ISerializationStrategy strategy, ReplaceMode replaceMode, PersistenceOperation operation, PersistenceContext context) { get;}
+//    //Func<TValue, string, ISerializationStrategy, ReplaceMode, PersistenceOperation, PersistenceContext, SerializationResult> SerializeToString<TValue>(TValue obj, string fsPath, ISerializationStrategy strategy, ReplaceMode replaceMode, PersistenceOperation operation, PersistenceContext context) { get;}
 
-//    // Task<SerializationResult> SerializeToBytes<T>(T obj, string fsPath, ISerializationStrategy strategy, ReplaceMode replaceMode, PersistenceOperation operation, PersistenceContext context)
+//    // Task<SerializationResult> SerializeToBytes<TValue>(TValue obj, string fsPath, ISerializationStrategy strategy, ReplaceMode replaceMode, PersistenceOperation operation, PersistenceContext context)
 
-//    //Task<SerializationResult> SerializeToStream<T>(T obj, string fsPath, ISerializationStrategy strategy, ReplaceMode replaceMode, PersistenceOperation operation, PersistenceContext context)
+//    //Task<SerializationResult> SerializeToStream<TValue>(TValue obj, string fsPath, ISerializationStrategy strategy, ReplaceMode replaceMode, PersistenceOperation operation, PersistenceContext context)
 //}
 
 #endregion

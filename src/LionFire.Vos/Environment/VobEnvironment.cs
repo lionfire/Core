@@ -54,16 +54,16 @@ namespace LionFire.Vos.Environment
             set => FlexDictionary.GetFlex(key)?.Set(value);
         }
 
-        //public void Add<T>(string key, T value)
-        //    => Values.AddOrThrow<string, T>(key, value);
+        //public void Add<TValue>(string key, TValue value)
+        //    => Values.AddOrThrow<string, TValue>(key, value);
 
-        //public T Get<T>(string key)
+        //public TValue Get<TValue>(string key)
         //{
-        //    if (Values.ContainsKey(key)) return (T)Values[key];
+        //    if (Values.ContainsKey(key)) return (TValue)Values[key];
         //    if (Inherit)
         //    {
         //        var parent = this.ParentValue;
-        //        if (parent != null) return parent.Get<T>(key);
+        //        if (parent != null) return parent.Get<TValue>(key);
         //    }
         //    return default;
         //}

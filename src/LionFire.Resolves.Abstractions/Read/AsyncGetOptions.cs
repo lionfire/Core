@@ -10,15 +10,32 @@ public class AsyncGetOptions
 
     #region Get
 
-    public bool ThrowOnGetValueIfNotResolved { get; set; } = false;
-    public bool AutoGet { get; set; }
-    public bool GetOnDemand { get; set; } = true;
+    public bool ThrowOnGetValueIfHasValueIsFalse { get; set; } = false;
+    public bool AutoGet { get; set; } // Get on init/ctor
+    public TimeSpan AutoGetDelay { get; set; } = TimeSpan.FromMilliseconds(80);
+    public int AutoGetDelayStaggerMilliseconds { get; set; } = 100;
+
+    public bool GetOnDemand { get; set; } = true; // NOTIMPLEMENTED TODO REVIEW: there needs to be Task<IGetResult<T>> GetResult for this to be implemented
+
+    /// <summary>
+    /// For Sync Value property getter: block on the Task (not recommended, unless you are prepared for the drawbacks)
+    /// </summary>
     public bool BlockToGet { get; set; } = false;
 
     /// <summary>
     /// Try to Dispose the cached Value when the object is disposed
     /// </summary>
-    public static bool DisposeValue { get; set; } = true;
+    public bool DisposeValue { get; set; } = true;
 
+    
     #endregion
+}
+
+public static class AsyncGetOptions<TValue>
+{
+    public static AsyncGetOptions Default { get; set; } = new();
+}
+public static class AsyncGetOptions<TKey, TValue>
+{
+    public static AsyncGetOptions Default { get; set; } = new();
 }

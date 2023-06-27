@@ -31,10 +31,10 @@ public interface IArchive { }
 ///// 
 ///// </summary>
 ///// <remarks>If needs to be detached, also implement IDisposable</remarks>
-///// <typeparam name="T"></typeparam>
-//public interface IAttacher<T>
+///// <typeparam name="TValue"></typeparam>
+//public interface IAttacher<TValue>
 //{
-//    void Attach(T vosPersister);
+//    void Attach(TValue vosPersister);
 //}
 
 // Hooks:

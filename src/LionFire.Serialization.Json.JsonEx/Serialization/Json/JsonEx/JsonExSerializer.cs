@@ -101,7 +101,7 @@ namespace LionFire.Serialization.Json.JsonEx
             }
             return (T)new global::JsonExSerializer.Serializer(typeof(T), DefaultSettings).Deserialize(str);
         }
-        //=> JsonConvert.DeserializeObject<T>(str, Settings);
+        //=> JsonConvert.DeserializeObject<TValue>(str, Settings);
 
         #endregion
 

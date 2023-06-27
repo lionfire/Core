@@ -76,14 +76,14 @@ namespace LionFire.Vos
     //    // vos://host/path/to/node/.TYPEs/instanceName
     //    // vos://host/path/to/node%Type[] - all instances, except main instance
 
-    //public class PathTree<T>
-    //    where T : class
+    //public class PathTree<TValue>
+    //    where TValue : class
     //{
-    //    public T this[string subpath] => this[subpath];
+    //    public TValue this[string subpath] => this[subpath];
 
-    //    public T GetChild(string subpath) => GetChild(subpath.ToPathArray(), 0);
+    //    public TValue GetChild(string subpath) => GetChild(subpath.ToPathArray(), 0);
 
-    //    public T QueryChild(string reference) => QueryChild(subpath.ToPathArray(), 0);
+    //    public TValue QueryChild(string reference) => QueryChild(subpath.ToPathArray(), 0);
 
     //}
 
@@ -484,7 +484,7 @@ namespace LionFire.Vos
         /// <returns></returns>
         public T AcquireOwn<T>() where T : class => AcquireEnumerator<T>(maxDepth: 0).Take(1).FirstOrDefault();
         //{
-        //    var node = ((IVobInternals)this).TryAcquireOwnVobNode<T>();
+        //    var node = ((IVobInternals)this).TryAcquireOwnVobNode<TValue>();
         //    if (node != null) return node.Value;
         //    return default;
         //}
@@ -558,7 +558,7 @@ namespace LionFire.Vos
             //var vob = ParentEnumerable.ElementAt(skipOwn ? 1 : 0);
             //while (vob != null)
             //{
-            //    var vobNode = ((IVobInternals)vob).TryGetOwnVobNode<T>();
+            //    var vobNode = ((IVobInternals)vob).TryGetOwnVobNode<TValue>();
             //    if (vobNode != null) return vobNode;
             //    vob = vob.Parent;
             //}
@@ -644,7 +644,7 @@ namespace LionFire.Vos
         /// <returns></returns>
         public IVobReference<T> GetReference<T>() => new VobReference<T>(Path) { Persister = string.IsNullOrEmpty(Root.RootName) ? null : Root.RootName };
         // OPTIMIZE: new VosRelativeReference(this)
-        // TODO: Use VobReference<T>?  Providers need to be wired up to DI
+        // TODO: Use VobReference<TValue>?  Providers need to be wired up to DI
 
         #endregion
 

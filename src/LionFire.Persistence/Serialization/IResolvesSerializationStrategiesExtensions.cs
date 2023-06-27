@@ -16,7 +16,7 @@ namespace LionFire.Serialization
 
         //public static ISerializationStrategy Strategy(this IResolvesSerializationStrategies resolves, Lazy<PersistenceOperation> operation = null, PersistenceContext context = null) => resolves.Strategies(operation, context).Select(result => result.Strategy).FirstOrDefault();
 
-        //private static T ForEachStrategy(this IResolvesSerializationStrategies resolves, Func<ISerializationStrategy, T>, Lazy<PersistenceOperation> operation = null, PersistenceContext context = null)
+        //private static TValue ForEachStrategy(this IResolvesSerializationStrategies resolves, Func<ISerializationStrategy, TValue>, Lazy<PersistenceOperation> operation = null, PersistenceContext context = null)
 
         #region ToBytes
 
@@ -101,19 +101,19 @@ namespace LionFire.Serialization
 
         #endregion
 
-        //public struct Wrapper<T>
+        //public struct Wrapper<TValue>
         //{
-        //    public T Object { get; set; }
-        //    public static implicit operator T(Wrapper<T> w) => w.Object;
-        //    public static implicit Wrapper<T>(T obj) => new Wrapper<T> { Object = obj };
+        //    public TValue Object { get; set; }
+        //    public static implicit operator TValue(Wrapper<TValue> w) => w.Object;
+        //    public static implicit Wrapper<TValue>(TValue obj) => new Wrapper<TValue> { Object = obj };
         //}
-        //public struct WrapperOrFunc<T>
+        //public struct WrapperOrFunc<TValue>
         //{
-        //    //public T Object { get; set; }
+        //    //public TValue Object { get; set; }
 
         //    #region Object
 
-        //    public T Object
+        //    public TValue Object
         //    {
         //        get
         //        {
@@ -125,14 +125,14 @@ namespace LionFire.Serialization
         //        }
         //        set => obj = value;
         //    }
-        //    private T obj;
+        //    private TValue obj;
 
         //    #endregion
 
-        //    public Func<T> ObjectFunc { get; set; }
-        //    public static implicit operator T(WrapperOrFunc<T> w) => w.Object;
-        //    public static implicit WrapperOrFunc<T>(T obj) => new WrapperOrFunc<T> { Object = obj };
-        //    public static implicit WrapperOrFunc<T>(Func<T> func) => new WrapperOrFunc<T> { ObjectFunc = func };
+        //    public Func<TValue> ObjectFunc { get; set; }
+        //    public static implicit operator TValue(WrapperOrFunc<TValue> w) => w.Object;
+        //    public static implicit WrapperOrFunc<TValue>(TValue obj) => new WrapperOrFunc<TValue> { Object = obj };
+        //    public static implicit WrapperOrFunc<TValue>(Func<TValue> func) => new WrapperOrFunc<TValue> { ObjectFunc = func };
         //}
 
         #region ToObject - byte[]
@@ -214,12 +214,12 @@ namespace LionFire.Serialization
                     failures.Add(new KeyValuePair<ISerializationStrategy, SerializationResult>(strategy, result));
                 }
             }
-            //return (default(T), new SerializationResult { AggregateResults = failures }));
+            //return (default(TValue), new SerializationResult { AggregateResults = failures }));
             throw new SerializationException(SerializationOperationType.FromStream, operation, context, failures);
         }
 
-        //public static Task<T> ToObject<T>(this IResolvesSerializationStrategies resolves, Func<PersistenceOperation> operation, PersistenceContext context = null)
-            //=> resolves.ToObject<T>(operation.ToLazy(), context);
+        //public static Task<TValue> ToObject<TValue>(this IResolvesSerializationStrategies resolves, Func<PersistenceOperation> operation, PersistenceContext context = null)
+            //=> resolves.ToObject<TValue>(operation.ToLazy(), context);
 
 #nullable enable
         public static async Task<T> ToObject<T>(this IResolvesSerializationStrategies resolves, PersistenceOperation operation)
@@ -251,7 +251,7 @@ namespace LionFire.Serialization
                     }
                 }
             }
-            //return (default(T), new SerializationResult { AggregateResults = failures }));
+            //return (default(TValue), new SerializationResult { AggregateResults = failures }));
             throw new SerializationException(SerializationOperationType.FromStream, operation, failReasons: failures);
 
             //List<KeyValuePair<ISerializationStrategy, SerializationResult>> failures = null;
@@ -260,7 +260,7 @@ namespace LionFire.Serialization
             //{
             //    try
             //    {
-            //        var result = resolves.ToObject<T>(stream, operation, context);
+            //        var result = resolves.ToObject<TValue>(stream, operation, context);
             //        return result;
             //    }
             //    catch(SerializationException sex)
@@ -303,7 +303,7 @@ namespace LionFire.Serialization
                     }
                 }
             }
-            //return (default(T), new SerializationResult { AggregateResults = failures }));
+            //return (default(TValue), new SerializationResult { AggregateResults = failures }));
             throw new SerializationException(SerializationOperationType.FromStream, operation, context, failures);
 
             //List<KeyValuePair<ISerializationStrategy, SerializationResult>> failures = null;
@@ -312,7 +312,7 @@ namespace LionFire.Serialization
             //{
             //    try
             //    {
-            //        var result = resolves.ToObject<T>(stream, operation, context);
+            //        var result = resolves.ToObject<TValue>(stream, operation, context);
             //        return result;
             //    }
             //    catch(SerializationException sex)

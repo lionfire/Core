@@ -1,19 +1,24 @@
-﻿using LionFire.Structures;
-using MorseCode.ITask;
-
+﻿
 namespace LionFire.Data.Async.Gets;
 
 public interface ILazilyGets<out T> : IGets<T>, ILazilyGets, IDefaultableReadWrapper<T>
 {
-    // TODO: RENAME TryGetValue to ResolveIfNeeded
-    ITask<ILazyGetResult<T>> TryGetValue();
+    // TODO: RENAME TryGetValue to GetIfNeeded
+    ITask<ILazyGetResult<T>> GetIfNeeded();
 
     /// <summary>
-    /// RENAME to ResolvedResult or Result, make it a property?
+    /// RENAME to Query
     /// REVIEW - change return type to T?  And separate this into LastResolveResult
     /// </summary>
     /// <returns></returns>
     ILazyGetResult<T> QueryValue();
+
+    T? ReadCacheValue { get; }
+}
+
+public interface ILazilyGetsValue<T> : ILazilyGets<T>
+{
+    ValueTask<T> GetValueIfNeeded();
 }
 
 #if UNUSED

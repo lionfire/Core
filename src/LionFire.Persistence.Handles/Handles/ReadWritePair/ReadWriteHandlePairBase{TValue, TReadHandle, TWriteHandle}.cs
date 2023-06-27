@@ -11,9 +11,9 @@ using UltraMapper;
 
 namespace LionFire.Persistence
 {
-    //public abstract class ReadWriteHandlePairBase<T> : DisposableKeyed<IReference>
-    //    , IReadWriteHandlePairBase<T>
-    //    , IResolveCommitPair<T>
+    //public abstract class ReadWriteHandlePairBase<TValue> : DisposableKeyed<IReference>
+    //    , IReadWriteHandlePairBase<TValue>
+    //    , IResolveCommitPair<TValue>
     //{
     //}
 
