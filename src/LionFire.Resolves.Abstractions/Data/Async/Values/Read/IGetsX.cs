@@ -12,12 +12,12 @@ public static class IGetsX
     /// <summary>
     /// (Uses reflection)
     /// </summary>
-    /// <param name="resolves"></param>
+    /// <param name="gets"></param>
     /// <returns></returns>
-    public static async Task<IGetResult<object>> GetUnknownType(this IGets resolves)
+    public static async Task<IGetResult<object>> GetUnknownType(this IGets gets, CancellationToken cancellationToken = default)
     {
-        var retrievesInterface = resolves.GetType().GetInterfaces().Where(t => t.IsGenericType && t.GetGenericTypeDefinition() == typeof(IGets<>)).Single();
-        return await ((ITask<IGetResult<object>>)retrievesInterface.GetMethod(nameof(IGets<object>.Get)).Invoke(resolves, null)).ConfigureAwait(false);
+        var getsInterface = gets.GetType().GetInterfaces().Where(t => t.IsGenericType && t.GetGenericTypeDefinition() == typeof(IGets<>)).Single();
+        return await ((ITask<IGetResult<object>>)getsInterface.GetMethod(nameof(IGets<object>.Get))!.Invoke(gets, new object?[] { cancellationToken })!).ConfigureAwait(false);
     }
 
     public static async Task<T> GetValue<T>(this IGets<T> resolves)

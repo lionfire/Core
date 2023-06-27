@@ -19,6 +19,8 @@ public abstract class AsyncGets<TValue>
 
     AsyncGetOptions IHasNonNullSettable<AsyncGetOptions>.Object { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
 
+    public virtual IEqualityComparer<TValue> EqualityComparer =>  AsyncGetOptions<TValue>.DefaultEqualityComparer;
+
     #endregion
 
     #region Lifecycle
@@ -27,8 +29,8 @@ public abstract class AsyncGets<TValue>
     {
         Options = DefaultOptions;
     }
-    protected AsyncGets(AsyncGetOptions options) {
-        Options = options;
+    protected AsyncGets(AsyncGetOptions? options) {
+        Options = options ?? DefaultOptions;
     }
 
     #endregion

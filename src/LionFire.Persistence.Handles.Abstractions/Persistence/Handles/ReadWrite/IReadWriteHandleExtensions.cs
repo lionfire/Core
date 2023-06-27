@@ -16,9 +16,9 @@ namespace LionFire.Persistence
             setValueMethod.Invoke(handle, new object[] { value });
         }
 
-        public static async Task<object> TryGetOrCreate(this IReadWriteHandle handle)
+        public static async Task<object> TryGetOrCreate(this IReadWriteHandle handle, CancellationToken cancellationToken = default)
         {
-            var result = (await handle.Get().ConfigureAwait(false)).ToRetrieveResult();
+            var result = (await handle.GetUnknownType(cancellationToken).ConfigureAwait(false));
             if (result.IsFound() == true) return result.Value;
 
             throw new NotImplementedException("TODO: Create");

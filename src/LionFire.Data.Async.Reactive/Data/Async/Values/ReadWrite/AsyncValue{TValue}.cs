@@ -32,10 +32,13 @@ public abstract class AsyncValue<TValue>
 
     public AsyncValue() : base(DefaultOptions)
     {
+        asyncSets = new();        
     }
 
     public AsyncValue(AsyncValueOptions options) : base(options)
     {
+        asyncSets = new(options);
+
         this.ObservableForProperty(t => t.Value)
             .Subscribe(t =>
             {
@@ -55,6 +58,22 @@ public abstract class AsyncValue<TValue>
 
     #endregion
 
+    #region Get (override)
+
+    public override ITask<IGetResult<TValue>> Get(CancellationToken cancellationToken = default)
+    {
+        var setState = SetState;
+        if (IsSetStateSetting(setState) && Options.OptimisticGetWhileSetting)
+        {
+            // return Optimistically
+            return Task.FromResult<IGetResult<TValue>>(new OptimisticGetResult<TValue>(setState.SettingToValue)).AsITask();
+        }
+        return base.Get(cancellationToken);
+    }
+
+    #endregion
+
+    AsyncSets<TValue> asyncSets;
     #region Set
 
     #region State
@@ -75,6 +94,10 @@ public abstract class AsyncValue<TValue>
 
     #endregion
 
+    #region Status
+
+    #endregion
+
     #region Events
 
     [Browsable(false)]
@@ -85,17 +108,15 @@ public abstract class AsyncValue<TValue>
 
     #region Methods
 
-    public Task<ITransferResult> Set(CancellationToken cancellationToken = default)
+    public abstract Task<ITransferResult> SetImpl(CancellationToken cancellationToken = default);
+    
+    public async Task<ITransferResult> Set(CancellationToken cancellationToken = default)
     {
-        throw new NotImplementedException();
-        //try
-        //{
-
-        //}
-        //catch ()
-        //{
-
-        //}
+        var result = await SetImpl(StagedValue, cancellationToken);
+        if(result.IsSuccess())
+        {
+            HasStagedValue = false;
+        }
     }
 
     public Task<ITransferResult> Set(TValue? value, CancellationToken cancellationToken = default)

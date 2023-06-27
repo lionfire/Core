@@ -1,6 +1,7 @@
 ﻿
 using DynamicData;
 using Microsoft.Extensions.Options;
+using System.Reactive.Subjects;
 
 namespace LionFire.Data.Async;
 
@@ -29,20 +30,10 @@ public abstract class AsyncGets<TKey, TValue>
 
     #region Key
 
-    //[SetOnce]
-    public TKey Key => key;
-    //{
-    //    get => isDisposed ? throw new ObjectDisposedException(nameof(DisposableKeyed<TKey>)) : key;
-    //    set
-    //    {
-    //        //if (ReferenceEquals(key, value)) return;
-    //        if (EqualityComparer<TKey>.Default.Equals(key, value)) return;
-    //        if (!EqualityComparer<TKey>.Default.Equals(key, default)) throw new AlreadySetException();
-    ////if (key != default) throw new AlreadySetException();
-    //key = value;
-    //    }
-    //}
-    protected TKey key;
+    public TKey Key => key ?? throw new ObjectDisposedException(null);
+    protected TKey? key;
+
+    public IAsyncObject? AsyncObjectKey => Key as IAsyncObject;
 
     public virtual void Dispose()
     {
@@ -59,6 +50,7 @@ public abstract class AsyncGets<TKey, TValue>
     public AsyncGetOptions GetOptions { get; set; } = AsyncGetOptions<TKey, TValue>.Default;
 
     AsyncGetOptions IHasNonNullSettable<AsyncGetOptions>.Object { get => GetOptions; set => GetOptions = value; }
+    //AsyncGetOptions IHasNonNull<AsyncGetOptions>.Object => GetOptions;
 
     #endregion
 
@@ -127,21 +119,53 @@ public abstract class AsyncGets<TKey, TValue>
     #endregion
 
     #region Get
+        
+    #region Status
+
+    public bool IsGetting => GetState.AsTask().IsCompleted == false;
+
+    public ITask<IGetResult<TValue>>? GetState => gets.Value;
+
+    #endregion
+
+    #region Methods
 
     protected abstract ITask<IGetResult<TValue>> GetImpl(CancellationToken cancellationToken = default);
 
-    public bool IsGetting => getState != null && getState.AsTask().IsCompleted == false;
-    public ITask<IGetResult<TValue>>? GetState => getState;
-
-    AsyncGetOptions IHasNonNull<AsyncGetOptions>.Object => throw new NotImplementedException();
-    private ITask<IGetResult<TValue>>? getState;
-
+    SemaphoreSlim getSemaphore = new(1, 1);
     public virtual async ITask<IGetResult<TValue>> Get(CancellationToken cancellationToken = default)
     {
-        var getTask = GetState;
-        if (getTask != null && getState.AsTask().IsCompleted) { return await getTask.ConfigureAwait(false); }
+        // TODO: Semaphore, TOTHREADSAFETY - (done in <TValue> version?)
 
-        var result = await GetImpl(cancellationToken).ConfigureAwait(false);
+        async Task<IGetResult<TValue>>? ReturnResultInProgress()
+        {
+            var getTask = GetState;
+            if (getTask != null && !getTask.AsTask().IsCompleted) { return await getTask.ConfigureAwait(false); }
+            return null;
+        }
+
+        Task<IGetResult<TValue>>? task = ReturnResultInProgress();
+        if (task != null) return await task.ConfigureAwait(false);
+
+        try
+        {
+            await getSemaphore.WaitAsync(cancellationToken);
+
+            task = ReturnResultInProgress();
+            if (task != null) return await task.ConfigureAwait(false);
+            else
+            {
+                var iTask = GetImpl(cancellationToken);
+                task = iTask.AsTask();
+                gets.OnNext(iTask);
+            }
+        }
+        finally
+        {
+            getSemaphore.Release();
+        }
+
+        var result = await task.ConfigureAwait(false);
         Value = result.IsSuccess == true ? result.Value : default;
         HasValue = result.IsSuccess == true;
         return result;
@@ -153,6 +177,15 @@ public abstract class AsyncGets<TKey, TValue>
         var result = await Get().ConfigureAwait(false);
         return new LazyResolveResult<TValue>(result.IsSuccess == true, result.Value);
     }
+
+    #endregion
+
+    #region Events
+        
+    public IObservable<ITask<IGetResult<TValue>>> Gets => gets;
+    private BehaviorSubject<ITask<IGetResult<TValue>>> gets = new(Task.FromResult<IGetResult<TValue>>(ResolveResultNotResolvedNoop<TValue>.Instance).AsITask());
+    
+    #endregion
 
     #endregion
 }

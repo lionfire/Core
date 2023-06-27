@@ -4,11 +4,9 @@ namespace LionFire.Data;
 /// <summary>
 /// Options for properties (and potentially fields) accessible in an async manner
 /// </summary>
-public class AsyncGetOptions
+public class AsyncGetOptions 
 {
     //public bool TargetNotifiesPropertyChanged { get; set; }
-
-    #region Get
 
     public bool ThrowOnGetValueIfHasValueIsFalse { get; set; } = false;
     public bool AutoGet { get; set; } // Get on init/ctor
@@ -26,14 +24,14 @@ public class AsyncGetOptions
     /// Try to Dispose the cached Value when the object is disposed
     /// </summary>
     public bool DisposeValue { get; set; } = true;
-
-    
-    #endregion
 }
 
-public static class AsyncGetOptions<TValue>
+public static class AsyncGetOptions<TValue> 
 {
     public static AsyncGetOptions Default { get; set; } = new();
+    
+    public static IEqualityComparer<TValue> DefaultEqualityComparer { get; set; } = EqualityComparer<TValue>.Default;
+
 }
 public static class AsyncGetOptions<TKey, TValue>
 {

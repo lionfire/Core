@@ -23,6 +23,8 @@ public class TransferResult : ITransferResult, IErrorResult
 
     public bool? IsSuccess => Flags.IsSuccessTernary();
 
+    public static readonly TransferResult Initialized = new TransferResult { Flags = TransferResultFlags.Indeterminate | TransferResultFlags.Noop }; // REVIEW - what flag to indicate nothing happened yet?
+
     public static readonly TransferResult Indeterminate = new TransferResult { Flags = TransferResultFlags.Indeterminate };
     public static readonly TransferResult Success = new TransferResult { Flags = TransferResultFlags.Success };
     public static readonly TransferResult SuccessAndFound = new TransferResult { Flags = TransferResultFlags.Success | TransferResultFlags.Found };

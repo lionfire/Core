@@ -22,7 +22,6 @@
 	</ItemGroup>
 
 	<ItemGroup>
-		<Folder Include="Data\Async\Values\Write\" />
 		<Folder Include="Values\Read\" />
 		<Folder Include="Values\Write\" />
 	</ItemGroup>

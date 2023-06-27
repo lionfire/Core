@@ -1,6 +1,7 @@
 ﻿using LionFire.Data.Async.Reactive;
 using LionFire.Results;
 using MorseCode.ITask;
+using System.Collections.Generic;
 using System.Reactive.Subjects;
 
 namespace LionFire.Data.Async;
@@ -17,7 +18,7 @@ public abstract class AsyncValue<TKey, TValue>
 
     #endregion
 
-    public new AsyncValueOptions Options
+    public AsyncValueOptions Options
     {
         get => (AsyncValueOptions)base.GetOptions;
         set => base.GetOptions = value;
@@ -30,8 +31,10 @@ public abstract class AsyncValue<TKey, TValue>
 
     #region Lifecycle
 
-    public AsyncValue(TKey key, AsyncGetOptions? options = null) : base(key, options ?? DefaultOptions)
+    public AsyncValue(TKey key, AsyncValueOptions? options = null) : base(key, options ?? DefaultOptions)
     {
+        Options = options ?? AsyncObjectKey?.Options.PropertyOptions ?? DefaultOptions;
+
         this.ObservableForProperty(t => t.Value)
             .Subscribe(t =>
             {
@@ -40,6 +43,21 @@ public abstract class AsyncValue<TKey, TValue>
                     ValueChangedWhileValueStaged = true;
                 }
             });
+    }
+
+    #endregion
+
+    #region Get (override)
+
+    public override ITask<IGetResult<TValue>> Get(CancellationToken cancellationToken = default)
+    {
+        var setState = SetState;
+        if (IsSetStateSetting(setState) && Options.OptimisticGetWhileSetting)
+        {
+            // return Optimistically
+            return Task.FromResult<IGetResult<TValue>>(new OptimisticGetResult<TValue>(setState.SettingToValue)).AsITask();
+        }
+        return base.Get(cancellationToken);
     }
 
     #endregion
@@ -71,29 +89,72 @@ public abstract class AsyncValue<TKey, TValue>
 
     #endregion
 
+    #region Status
+
+    public bool IsSetting => IsSetStateSetting(SetState);
+    public static bool IsSetStateSetting((TValue? SettingToValue, ITask<ITransferResult> task) setState) => setState.task != null && setState.task.AsTask().IsCompleted == false;
+
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <remarks>
+    /// locked by: setLock
+    /// </remarks>
+    [Reactive]
+    public (TValue? SettingToValue, ITask<ITransferResult> task) SetState => sets.Value;
+
+    #endregion
+
     #region Events
 
-    public IObservable<ITask<ITransferResult?>> Sets => sets;
-    private BehaviorSubject<ITask<ITransferResult?>> sets = new (Task.FromResult<ITransferResult?>(null).AsITask());
+    public IObservable<(TValue?, ITask<ITransferResult>)> Sets => sets;
+    private BehaviorSubject<(TValue?, ITask<ITransferResult>)> sets = new((default, Task.FromResult<ITransferResult>(TransferResult.Initialized).AsITask()));
 
     #endregion
 
     #region Methods
 
-    public Task<ITransferResult> Set(CancellationToken cancellationToken = default)
-    {        
-        throw new NotImplementedException();
-        //try
-        //{
-        //}
-        //catch ()
-        //{
-        //}
+    public async Task<ISuccessResult> Set(CancellationToken cancellationToken = default)
+    {
+        try
+        {
+            await Set(StagedValue, cancellationToken);
+            return SuccessResult.Success;
+        }
+        catch (Exception ex)
+        {
+            return new ExceptionResult(ex);
+        }
     }
 
-    public Task<ITransferResult> Set(TValue? value, CancellationToken cancellationToken = default)
+    public abstract Task SetImpl(TKey key, TValue? value, CancellationToken cancellationToken = default);
+
+    private object setLock = new();
+
+    public async Task Set(TValue? value, CancellationToken cancellationToken = default)
     {
-        throw new NotImplementedException();
+        var target = Key;
+        ArgumentNullException.ThrowIfNull(target, nameof(Key));
+
+        (TValue? SettingToValue, ITask<ITransferResult> task)? currentSetState;
+    start:
+        do
+        {
+            currentSetState = SetState;
+            if (currentSetState.task != null) { await currentSetState.Value.task!.ConfigureAwait(false); }
+            if (EqualityComparer.Equals(currentSetState.Value.SettingToValue, value)) { return; }
+
+            // ENH: Based on option: Also wait for existing get/set to complete to avoid setting to a value that will be overwritten, or to avoid setting to a value that is the same as the gotten value
+        } while (currentSetState.Value.task != null);
+
+        lock (setLock)
+        {
+            if (IsSetting) goto start;
+            sets.OnNext((value, SetImpl(target, value, cancellationToken)));
+        }
+        await SetState.task.ConfigureAwait(false);
+        //OnPropertyChanged(nameof(Value));
+
     }
 
     #endregion

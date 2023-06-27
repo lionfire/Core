@@ -9,8 +9,8 @@ public class DynamicGets<TKey, TValue> : AsyncGets<TKey, TValue>
     {
     }
 
-    public Func<TKey, ITask<IGetResult<TValue>>>? Getter { get; set; }
+    public Func<TKey, CancellationToken, ITask<IGetResult<TValue>>>? Getter { get; set; }
 
-    protected override ITask<IGetResult<TValue>> GetImpl() => (Getter ?? throw new ArgumentNullException(nameof(Getter)))(Key);
+    protected override ITask<IGetResult<TValue>> GetImpl(CancellationToken cancellationToken = default) => (Getter ?? throw new ArgumentNullException(nameof(Getter)))(Key, cancellationToken);
 }
 
