@@ -1,4 +1,5 @@
 ﻿#nullable enable
+using LionFire.Data;
 using LionFire.Persistence;
 using LionFire.Referencing;
 using LionFire.Serialization;
@@ -30,11 +31,11 @@ namespace LionFire.Persistence.Persisters
         }
 
         public Task<ITransferResult> Exists<TValue>(IReferencable<TReference> referencable) => Persister.Exists<TValue>(BaseReference.AddRight(referencable.Reference));
-        public Task<IRetrieveResult<TValue>> Retrieve<TValue>(IReferencable<TReference> referencable, RetrieveOptions? options = null) => Persister.Retrieve<TValue>(BaseReference.AddRight(referencable.Reference), options);
+        public Task<IGetResult<TValue>> Retrieve<TValue>(IReferencable<TReference> referencable, RetrieveOptions? options = null) => Persister.Retrieve<TValue>(BaseReference.AddRight(referencable.Reference), options);
         public Task<ITransferResult> Create<TValue>(IReferencable<TReference> referencable, TValue value) => Persister.Create(BaseReference.AddRight(referencable.Reference), value);
         public Task<ITransferResult> Update<TValue>(IReferencable<TReference> referencable, TValue value) => Persister.Update(BaseReference.AddRight(referencable.Reference), value);
         public Task<ITransferResult> Upsert<TValue>(IReferencable<TReference> referencable, TValue value) => Persister.Upsert(BaseReference.AddRight(referencable.Reference), value);
         public Task<ITransferResult> Delete(IReferencable<TReference> referencable) => Persister.Delete(BaseReference.AddRight(referencable.Reference));
-        public Task<IRetrieveResult<IEnumerable<IListing<T>>>> List<T>(IReferencable<TReference> referencable, ListFilter? filter = null) => Persister.List<T>(referencable, filter);
+        public Task<IGetResult<IEnumerable<IListing<T>>>> List<T>(IReferencable<TReference> referencable, ListFilter? filter = null) => Persister.List<T>(referencable, filter);
     }
 }

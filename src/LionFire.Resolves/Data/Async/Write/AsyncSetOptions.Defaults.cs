@@ -1,11 +1,6 @@
 ﻿
 namespace LionFire.Data;
 
-public class AsyncSetOptions 
-{
-    public bool BlockToSet { get; set; } = false;
-    public SetTriggerMode SetTriggerMode { get; set; }
-}
 
 public static class AsyncSetOptions<TValue>
 {

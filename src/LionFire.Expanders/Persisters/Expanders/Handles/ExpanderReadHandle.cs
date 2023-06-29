@@ -8,6 +8,7 @@ using LionFire.Resolvers;
 using LionFire.Data.Gets;
 using LionFire.Structures;
 using MorseCode.ITask;
+using LionFire.Data;
 
 namespace LionFire.Persisters.Expanders;
 
@@ -135,8 +136,6 @@ public class ExpanderReadHandle<TValue> : ReadHandleBase<ExpansionReference<TVal
             return new RetrieveResult<TValue>()
             {
                 Flags = TransferResultFlags.Fail | TransferResultFlags.InnerFail,
-                // REVIEW - why can't I cast? Changed InnerResult to object
-                //InnerResult = (IGetResult<object>)(IRetrieveResult<object>)(IRetrieveResult<TValue>)targetResolveResult,
                 InnerResult = targetResolveResult,
             };
         }

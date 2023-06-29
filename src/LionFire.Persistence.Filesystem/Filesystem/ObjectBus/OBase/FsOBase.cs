@@ -76,7 +76,7 @@ namespace LionFire.ObjectBus.Filesystem
 
 #region Get
 
-        public override async Task<IRetrieveResult<T>> TryGet<T>(FileReference reference)
+        public override async Task<IGetResult<T>> TryGet<T>(FileReference reference)
         {
             var result = new RetrieveResult<T>();
             try
@@ -177,7 +177,7 @@ namespace LionFire.ObjectBus.Filesystem
 #endregion
 
 
-        //public override async Task<IRetrieveResult<ResultType>> TryGet<ResultType>(LocalFileReference reference)
+        //public override async Task<IGetResult<ResultType>> TryGet<ResultType>(LocalFileReference reference)
         //{
         //    var result = await TryGet(reference, typeof(ResultType));
         //    var converted = (ResultType)OBaseTypeUtils.TryConvertToType(result.Result, typeof(ResultType));
@@ -189,7 +189,7 @@ namespace LionFire.ObjectBus.Filesystem
         //}
 
         // OLD
-        //public override async Task<IRetrieveResult<T>> TryGet<T>(LocalFileReference reference)
+        //public override async Task<IGetResult<T>> TryGet<T>(LocalFileReference reference)
         //{
         //    Type ResultType = typeof(T); // REFACTOR
         //    var result = new RetrieveResult<T>();
@@ -235,7 +235,7 @@ namespace LionFire.ObjectBus.Filesystem
         //        throw ex;
         //    }
         //}
-        //public override Task<IRetrieveResult<ResultType>> TryGetName<ResultType>(LocalFileReference reference)
+        //public override Task<IGetResult<ResultType>> TryGetName<ResultType>(LocalFileReference reference)
         //{
         //    throw new NotImplementedException();
         //}

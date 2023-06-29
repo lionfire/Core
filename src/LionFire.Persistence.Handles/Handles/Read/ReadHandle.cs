@@ -147,7 +147,7 @@ namespace LionFire.Persistence.Handles
 
         protected void RaiseRetrievedObject() { } // TODO
 
-        protected void OnRetrieveFailed(IRetrieveResult<TValue> retrieveResult)
+        protected void OnRetrieveFailed(IGetResult<TValue> retrieveResult)
         {
             // TODO: Events?
         }
@@ -210,10 +210,10 @@ namespace LionFire.Persistence.Handles
 
         #region Get
 
-        //public async ITask<IRetrieveResult<TValue>> RetrieveImpl() => (IRetrieveResult<TValue>)await ResolveImpl().ConfigureAwait(false);
+        //public async ITask<IGetResult<TValue>> RetrieveImpl() => (IGetResult<TValue>)await ResolveImpl().ConfigureAwait(false);
 
 
-        //async Task<IRetrieveResult<ObjectType>> IRetrievableImpl<ObjectType>.RetrieveObject() => await RetrieveObject().ConfigureAwait(false);
+        //async Task<IGetResult<ObjectType>> IRetrievableImpl<ObjectType>.RetrieveObject() => await RetrieveObject().ConfigureAwait(false);
         //public async Task<bool> Retrieve()
         //{
         //    var result = await RetrieveImpl().ConfigureAwait(false);

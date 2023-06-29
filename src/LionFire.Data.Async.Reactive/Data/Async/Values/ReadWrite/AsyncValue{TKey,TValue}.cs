@@ -8,8 +8,8 @@ namespace LionFire.Data;
 
 
 public abstract class AsyncValue<TKey, TValue>
-    : AsyncGets<TKey, TValue>
-    , IAsyncValueRx<TValue>
+: AsyncGets<TKey, TValue>
+, IAsyncValueRx<TValue>
 {
     #region Options
 

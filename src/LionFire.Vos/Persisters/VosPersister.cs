@@ -21,6 +21,7 @@ using System.Reflection.Metadata.Ecma335;
 using System.Text;
 using System.Threading;
 using static LionFire.Persistence.Persisters.Vos.VosPersister;
+using LionFire.Data;
 
 namespace LionFire.Persistence.Persisters.Vos;
 
@@ -82,13 +83,13 @@ public class VosPersister : SerializingPersisterBase<VosPersisterOptions>, IPers
 
     static AsyncLocal<List<IMount>> RetrieveOpMounts = new();
 
-    public async IAsyncEnumerable<IRetrieveResult<TValue>> RetrieveBatches<TValue>(IReferencable<IVobReference> referencable, RetrieveOptions? options = null)
+    public async IAsyncEnumerable<IGetResult<TValue>> RetrieveBatches<TValue>(IReferencable<IVobReference> referencable, RetrieveOptions? options = null)
     {
         var finishAfterReturningFirstFound = (options ?? RetrieveOptions.Default).ReturnFirstFound;
 
         //l.Trace($"{replaceMode.DescriptionString()} {obj?.GetType().Name} {replaceMode.ToArrow()} {fsReference}");
 
-        //if (typeof(TValue) == typeof(Metadata<IEnumerable<Listing>>)) return (IRetrieveResult<TValue>)await List(referencable).ConfigureAwait(false);
+        //if (typeof(TValue) == typeof(Metadata<IEnumerable<Listing>>)) return (IGetResult<TValue>)await List(referencable).ConfigureAwait(false);
 
         var vob = Root[referencable.Reference.Path];
 
@@ -294,7 +295,7 @@ public class VosPersister : SerializingPersisterBase<VosPersisterOptions>, IPers
                 RetrieveOpMounts.Value ??= new();
                 RetrieveOpMounts.Value.Add(mount);
 
-                IRetrieveResult<TValue> childResult;
+                IGetResult<TValue> childResult;
                 try
                 {
                     childResult = (await rh.Resolve().ConfigureAwait(false)).ToRetrieveResult();
@@ -429,10 +430,10 @@ public class VosPersister : SerializingPersisterBase<VosPersisterOptions>, IPers
 
     public static Type? GetMetadataListingItemType<TValue>() => GetMetadataListingType<TValue>()?.GetGenericArguments()[0];
 
-    protected async Task<IRetrieveResult<TValue>> RetrieveWithAggregation<TValue>(IReferencable<IVobReference> referencable, RetrieveOptions? options = null)
+    protected async Task<IGetResult<TValue>> RetrieveWithAggregation<TValue>(IReferencable<IVobReference> referencable, RetrieveOptions? options = null)
     {
         RetrieveResult<TValue> aggregatedResult = new RetrieveResult<TValue>();
-        List<IRetrieveResult<TValue>> childResults = null;
+        List<IGetResult<TValue>> childResults = null;
 
         var aggregationItemType = WrapperUtils<TValue>.GetInnermostEnumerableItemType;
         if (aggregationItemType == null) throw new ArgumentException("Aggregation not supported for type: " + typeof(TValue).FullName);
@@ -565,17 +566,17 @@ public class VosPersister : SerializingPersisterBase<VosPersisterOptions>, IPers
     }
     #endregion
 
-    public async Task<IRetrieveResult<TValue>> Retrieve<TValue>(IReferencable<IVobReference> referencable, RetrieveOptions? options = null)
+    public async Task<IGetResult<TValue>> Retrieve<TValue>(IReferencable<IVobReference> referencable, RetrieveOptions? options = null)
     {
         if (CanAggregateType<TValue>()) { return await RetrieveWithAggregation<TValue>(referencable).ConfigureAwait(false); }
 
         bool returnFirstSuccess = options?.ValidationFlags.HasFlag(RetrieveFlags.FirstSuccess) == true;
         RetrieveC.IncrementWithContext();
 
-        IRetrieveResult<TValue>? singleResult = null;
+        IGetResult<TValue>? singleResult = null;
 
-        IRetrieveResult<TValue>? singleNonSuccessResult = null;
-        List<IRetrieveResult<TValue>>? nonSuccessResults = null;
+        IGetResult<TValue>? singleNonSuccessResult = null;
+        List<IGetResult<TValue>>? nonSuccessResults = null;
 
         await foreach (var childResult in RetrieveBatches<TValue>(referencable))
         {
@@ -625,7 +626,7 @@ public class VosPersister : SerializingPersisterBase<VosPersisterOptions>, IPers
         else if (nonSuccessResults is not null) return new RetrieveResult<TValue> { Flags = TransferResultFlags.Fail | TransferResultFlags.InnerFail, InnerResults = nonSuccessResults };
         else throw new UnreachableCodeException($"{nameof(RetrieveBatches)} must return at least one result");
 
-        //bool ShouldReturnSingleErrorImmediately(IRetrieveResult<TValue> r) => r.Flags.HasFlag(TransferResultFlags.MountNotAvailable);
+        //bool ShouldReturnSingleErrorImmediately(IGetResult<TValue> r) => r.Flags.HasFlag(TransferResultFlags.MountNotAvailable);
     }
 
     #endregion
@@ -687,7 +688,7 @@ public class VosPersister : SerializingPersisterBase<VosPersisterOptions>, IPers
 
     // TODO - use a single overload, with null defaulting ListOptions
 
-    //public async Task<IRetrieveResult<IEnumerable<IListing<TValue>>>> List<TValue>(IReferencable<IVobReference> referencable)
+    //public async Task<IGetResult<IEnumerable<IListing<TValue>>>> List<TValue>(IReferencable<IVobReference> referencable)
     //{
     //    throw new NotSupportedException();
     //    ListC.IncrementWithContext();
@@ -711,7 +712,7 @@ public class VosPersister : SerializingPersisterBase<VosPersisterOptions>, IPers
     //    return consolidatedResult;
     //}
 
-    public async Task<IRetrieveResult<IEnumerable<IListing<TValue>>>> List<TValue>(IReferencable<IVobReference> referencable, ListFilter filter = null)
+    public async Task<IGetResult<IEnumerable<IListing<TValue>>>> List<TValue>(IReferencable<IVobReference> referencable, ListFilter filter = null)
     {
         l.Trace($"List ...> {referencable.Reference}");
 

@@ -29,6 +29,7 @@ public abstract class AsyncGets<TValue>
     {
         Options = DefaultOptions;
     }
+
     protected AsyncGets(AsyncGetOptions? options) {
         Options = options ?? DefaultOptions;
     }
@@ -71,6 +72,8 @@ public abstract class AsyncGets<TValue>
 
     public virtual async ITask<IGetResult<TValue>> Get(CancellationToken cancellationToken = default)
     {
+        // TODO: Triage logic from AsyncGets_NoBase.Get
+
         var getTask = GetState;
         if (getTask != null && getState.AsTask().IsCompleted) { return await getTask.ConfigureAwait(false); }
 

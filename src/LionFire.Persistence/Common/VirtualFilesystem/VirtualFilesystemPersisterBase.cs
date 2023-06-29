@@ -59,7 +59,7 @@ namespace LionFire.Persistence.Filesystemlike
         //protected abstract PersistenceContext DeserializingContext { get; }
         //protected abstract PersistenceContext SerializingContext { get; }
 
-        //public Task<IRetrieveResult<TValue>> TryRetrieve<TValue>(FileReference fileReference, Lazy<PersistenceOperation> operation = null, PersistenceContext context = null)
+        //public Task<IGetResult<TValue>> TryRetrieve<TValue>(FileReference fileReference, Lazy<PersistenceOperation> operation = null, PersistenceContext context = null)
         //=> TryRetrieve<TValue>(fileReference, operation);
         //public Task<ITransferResult> Update<TValue>(TValue obj, string diskPath, Type type = null, PersistenceContext context = null) => FSPersistenceStatic.Update(obj, diskPath, type, context);
         //public Task<ITransferResult> Upsert<TValue>(TValue obj, string diskPath, Type type = null, PersistenceContext context = null) => FSPersistenceStatic.Upsert(obj, diskPath, type, context);

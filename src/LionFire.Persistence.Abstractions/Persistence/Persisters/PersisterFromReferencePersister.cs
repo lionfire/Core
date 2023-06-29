@@ -24,7 +24,7 @@ public class PersisterFromReferencePersister<TReference> : IPersister<TReference
     public Task<ITransferResult> Exists<TValue>(IReferencable<TReference> referencable)
         => Persister.Exists<TValue>(referencable.Reference);
 
-    public Task<IRetrieveResult<TValue>> Retrieve<TValue>(IReferencable<TReference> referencable, RetrieveOptions? options = null)
+    public Task<IGetResult<TValue>> Retrieve<TValue>(IReferencable<TReference> referencable, RetrieveOptions? options = null)
         => Persister.Retrieve<TValue>(referencable.Reference, options);
 
     public Task<ITransferResult> Update<TValue>(IReferencable<TReference> referencable, TValue value)
@@ -36,7 +36,7 @@ public class PersisterFromReferencePersister<TReference> : IPersister<TReference
     public Task<ITransferResult> Delete(IReferencable<TReference> referencable)
         => Persister.Delete(referencable.Reference);
 
-    public Task<IRetrieveResult<IEnumerable<IListing<T>>>> List<T>(IReferencable<TReference> referencable, ListFilter? filter = null)
+    public Task<IGetResult<IEnumerable<IListing<T>>>> List<T>(IReferencable<TReference> referencable, ListFilter? filter = null)
         => Persister.List<T>(referencable.Reference, filter);
     //public Task<IEnumerable<string>> List(string path, ListFilter? filter = null) => Persister.List(path, filter);
 }

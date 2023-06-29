@@ -56,7 +56,7 @@ namespace LionFire.Vos
         /// <typeparam name="T"></typeparam>
         /// <param name="reference"></param>
         /// <returns></returns>
-        public override async Task<IRetrieveResult<T>> TryGet<T>(VobReference reference)
+        public override async Task<IGetResult<T>> TryGet<T>(VobReference reference)
         {
             var result = new RetrieveResult<T>();
 

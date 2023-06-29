@@ -1,4 +1,5 @@
-﻿using LionFire.Referencing;
+﻿using LionFire.Data;
+using LionFire.Referencing;
 using LionFire.Serialization;
 using Microsoft.Extensions.Options;
 using System;
@@ -58,10 +59,10 @@ namespace LionFire.Persistence.Persisters
            => GetUnderlyingPersister(referencable.Reference).Delete(TranslateReferenceForWrite(referencable.Reference));
         public Task<ITransferResult> Exists<TValue>(IReferencable<TReference> referencable)
           => GetUnderlyingPersister(referencable.Reference).Exists<TValue>(TranslateReferenceForRead(referencable.Reference));
-        public Task<IRetrieveResult<IEnumerable<IListing<T>>>> List<T>(IReferencable<TReference> referencable, ListFilter filter = null)
+        public Task<IGetResult<IEnumerable<IListing<T>>>> List<T>(IReferencable<TReference> referencable, ListFilter filter = null)
           => GetUnderlyingPersister(referencable.Reference).List<T>(TranslateReferenceForRead(referencable.Reference), filter);
 
-        public async Task<IRetrieveResult<TValue>> Retrieve<TValue>(IReferencable<TReference> referencable, RetrieveOptions? options = null)
+        public async Task<IGetResult<TValue>> Retrieve<TValue>(IReferencable<TReference> referencable, RetrieveOptions? options = null)
         {
             var result = await GetUnderlyingPersister(referencable.Reference).Retrieve<TValue>(TranslateReferenceForRead(referencable.Reference), options).ConfigureAwait(false);
 

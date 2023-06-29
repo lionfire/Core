@@ -2,6 +2,7 @@
 using LionFire.Persistence.Persisters;
 using LionFire.Referencing;
 using LionFire.Data.Gets;
+using LionFire.Data;
 
 namespace LionFire.Persisters.Expanders;
 
@@ -14,6 +15,6 @@ public abstract class ExpanderPersister : PersisterBase<ExpanderOptions>, IExpan
 
     public abstract Task<IReadHandle>? TryGetSourceReadHandle(IReference sourceReference);
     
-    public abstract Task<IRetrieveResult<T>> RetrieveTarget<T>(IReadHandle sourceReadHandle, string targetPath);
+    public abstract Task<IGetResult<T>> RetrieveTarget<T>(IReadHandle sourceReadHandle, string targetPath);
 }
 

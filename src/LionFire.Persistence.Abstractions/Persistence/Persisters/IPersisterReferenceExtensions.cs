@@ -22,7 +22,7 @@ namespace LionFire.Persistence.Persisters
             => persister.Exists<TValue>(new ReferenceWrapper<TReference>(reference));
 
 
-        public static Task<IRetrieveResult<TValue>> Retrieve<TReference, TValue>(this IPersister<TReference> persister, TReference reference, RetrieveOptions? options = null) 
+        public static Task<IGetResult<TValue>> Retrieve<TReference, TValue>(this IPersister<TReference> persister, TReference reference, RetrieveOptions? options = null) 
             where TReference : IReference
             => persister.Retrieve<TValue>(new ReferenceWrapper<TReference>(reference), options);
 

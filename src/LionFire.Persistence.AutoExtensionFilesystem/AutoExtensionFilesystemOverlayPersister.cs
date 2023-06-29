@@ -49,22 +49,22 @@ namespace LionFire.Persistence.AutoExtensionFilesystem
         /// <remarks>
         /// Override implementation: use default paths.  Auto-retry.
         /// </remarks>
-        public async Task<IRetrieveResult<TValue>> Retrieve<TValue>(AutoExtensionFileReference reference)
+        public async Task<IGetResult<TValue>> Retrieve<TValue>(AutoExtensionFileReference reference)
         {
-            return await new Func<Task<IRetrieveResult<TValue>>>(()
+            return await new Func<Task<IGetResult<TValue>>>(()
                 => RetrieveUsingCandidatePaths<TValue>(reference))
                       .AutoRetry(maxRetries: PersistenceOptions.MaxGetRetries,
                           millisecondsBetweenAttempts: PersistenceOptions.MillisecondsBetweenGetRetries).ConfigureAwait(false);
         }
 
 
-        public virtual async Task<IRetrieveResult<TValue>> RetrieveUsingCandidatePaths<TValue>(AutoExtensionFileReference reference, Lazy<PersistenceOperation> operation = null, PersistenceContext context = null)
+        public virtual async Task<IGetResult<TValue>> RetrieveUsingCandidatePaths<TValue>(AutoExtensionFileReference reference, Lazy<PersistenceOperation> operation = null, PersistenceContext context = null)
         {
             var type = reference.ReferenceType() ?? typeof(TValue);
             var fsPath = reference.Path;
             //var fileName = Path.GetFileName(fsPath);
 
-            return await DoPersistenceForCandidatePaths<TValue, IRetrieveResult<TValue>>(reference, async candidatePath =>
+            return await DoPersistenceForCandidatePaths<TValue, IGetResult<TValue>>(reference, async candidatePath =>
             {
                 //if (!await Exists(reference.Path).ConfigureAwait(false)) return null; // null means NotFound
 

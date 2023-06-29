@@ -33,7 +33,7 @@ namespace LionFire.Persistence.CouchDB
         #region Read
 
         public Task<ITransferResult> Exists<TValue>(IReferencable<ICouchDBReference> referencable) => throw new NotImplementedException();
-        public Task<IRetrieveResult<TValue>> Retrieve<TValue>(IReferencable<ICouchDBReference> referencable) => throw new NotImplementedException();
+        public Task<IGetResult<TValue>> Retrieve<TValue>(IReferencable<ICouchDBReference> referencable) => throw new NotImplementedException();
 
         #endregion
 
@@ -86,7 +86,7 @@ namespace LionFire.Persistence.CouchDB
 
         #endregion
 
-        public Task<IRetrieveResult<IEnumerable<string>>> List(IReferencable<ICouchDBReference> referencable, ListFilter filter = null) => throw new NotImplementedException();
-        public Task<IRetrieveResult<IEnumerable<Listing<T>>>> List<T>(IReferencable<ICouchDBReference> referencable, ListFilter filter = null) => throw new NotImplementedException();
+        public Task<IGetResult<IEnumerable<string>>> List(IReferencable<ICouchDBReference> referencable, ListFilter filter = null) => throw new NotImplementedException();
+        public Task<IGetResult<IEnumerable<Listing<T>>>> List<T>(IReferencable<ICouchDBReference> referencable, ListFilter filter = null) => throw new NotImplementedException();
     }
 }

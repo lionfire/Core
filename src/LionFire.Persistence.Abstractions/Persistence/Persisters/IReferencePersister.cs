@@ -12,13 +12,13 @@ namespace LionFire.Persistence.Persisters
 
         Task<ITransferResult> Exists<TValue>(TReference reference);
 
-        Task<IRetrieveResult<TValue>> Retrieve<TValue>(TReference reference, RetrieveOptions? options = null);
+        Task<IGetResult<TValue>> Retrieve<TValue>(TReference reference, RetrieveOptions? options = null);
 
         Task<ITransferResult> Update<TValue>(TReference reference, TValue value);
         Task<ITransferResult> Upsert<TValue>(TReference reference, TValue value);
 
         Task<ITransferResult> Delete(TReference reference);
 
-        Task<IRetrieveResult<IEnumerable<IListing<T>>>> List<T>(TReference reference, ListFilter? filter = null);
+        Task<IGetResult<IEnumerable<IListing<T>>>> List<T>(TReference reference, ListFilter? filter = null);
     }
 }

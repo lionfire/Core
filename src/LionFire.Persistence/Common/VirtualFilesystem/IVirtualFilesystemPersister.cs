@@ -14,7 +14,7 @@ public interface IVirtualFilesystemPersister : ISerializingPersister
 // REVIEW - is there a way to do this?
 //public static class PersisterBaseExtensions
 //{
-//    public static Task<IRetrieveResult<TValue>> Retrieve<TValue, TReference>(this IPersister<TReference> persister, TReference reference)
+//    public static Task<IGetResult<TValue>> Retrieve<TValue, TReference>(this IPersister<TReference> persister, TReference reference)
 //        => persister.Retrieve<TValue>((TReference)reference.Path);
 //}
 

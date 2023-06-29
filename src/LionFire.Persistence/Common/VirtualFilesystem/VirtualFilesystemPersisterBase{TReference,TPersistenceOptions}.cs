@@ -26,6 +26,7 @@ using Path = System.IO.Path;
 using FileNotFoundException = System.IO.FileNotFoundException;
 using IOException = System.IO.IOException;
 using Stream = System.IO.Stream;
+using LionFire.Data;
 
 namespace LionFire.Persistence.Filesystemlike;
 
@@ -89,9 +90,9 @@ public abstract partial class VirtualFilesystemPersisterBase<TReference, TPersis
 
     #region List
 
-    public Task<IRetrieveResult<IEnumerable<IListing<object>>>> List(IReferencable<TReference> referencable, ListFilter? filter = null)
+    public Task<IGetResult<IEnumerable<IListing<object>>>> List(IReferencable<TReference> referencable, ListFilter? filter = null)
         => List<object>(referencable.Reference, filter);
-    public Task<IRetrieveResult<IEnumerable<IListing<T>>>> List<T>(IReferencable<TReference> referencable, ListFilter? filter = null)
+    public Task<IGetResult<IEnumerable<IListing<T>>>> List<T>(IReferencable<TReference> referencable, ListFilter? filter = null)
                 => List<T>(referencable.Reference, filter);
 
     private object List(Type type, TReference reference, ListFilter? filter = null)
@@ -109,7 +110,7 @@ public abstract partial class VirtualFilesystemPersisterBase<TReference, TPersis
         return p[0].ParameterType == typeof(TReference) && p[1].ParameterType == typeof(ListFilter);
     }).First();
 
-    public async Task<IRetrieveResult<IEnumerable<IListing<T>>>> List<T>(TReference reference, ListFilter? filter = null)
+    public async Task<IGetResult<IEnumerable<IListing<T>>>> List<T>(TReference reference, ListFilter? filter = null)
     {
         var context = new RetrieveContext<TReference>
         {
@@ -122,7 +123,7 @@ public abstract partial class VirtualFilesystemPersisterBase<TReference, TPersis
         var listResult = await List<T>(reference.Path, filter);
         return listResult == null
             ? RetrieveResult<IEnumerable<IListing<T>>>.SuccessNotFound
-            : (IRetrieveResult<IEnumerable<IListing<T>>>)RetrieveResult<IEnumerable<IListing<T>>>.Found(listResult);
+            : (IGetResult<IEnumerable<IListing<T>>>)RetrieveResult<IEnumerable<IListing<T>>>.Found(listResult);
     }
 
     public Task<IEnumerable<IListing<object>>?> List(string path, ListFilter? filter = null) => List<object>(path, filter);
@@ -292,11 +293,11 @@ public abstract partial class VirtualFilesystemPersisterBase<TReference, TPersis
 
     #region Retrieve
 
-    public Task<IRetrieveResult<TValue>> Retrieve<TValue>(IReferencable<TReference> referencable, RetrieveOptions? options = null)  // Unwrap IReferencable
+    public Task<IGetResult<TValue>> Retrieve<TValue>(IReferencable<TReference> referencable, RetrieveOptions? options = null)  // Unwrap IReferencable
         => Retrieve<TValue>(referencable.Reference, options);
 
     // REVIEW - Yikes this is ugly.  OPTIMIZE?  Use non-generic methods?
-    private async Task<IRetrieveResult<TValue>> RetrieveMetadata<TValue, TMetadata>(TReference reference)
+    private async Task<IGetResult<TValue>> RetrieveMetadata<TValue, TMetadata>(TReference reference)
     {
         var metadataType = typeof(TValue).GetGenericArguments()[0];
 
@@ -311,19 +312,19 @@ public abstract partial class VirtualFilesystemPersisterBase<TReference, TPersis
                 var resultEnumerableType = typeof(IEnumerable<>).MakeGenericType(typeof(IListing<>).MakeGenericType(listingType));
                 //var resultEnumerableTaskType = typeof(Task<>).MakeGenericType(resultEnumerableType);
 
-                var listResult = await ((Task<IRetrieveResult<TMetadata>>)List(listingType, reference)).ConfigureAwait(false);
+                var listResult = await ((Task<IGetResult<TMetadata>>)List(listingType, reference)).ConfigureAwait(false);
 
                 //var resultType = typeof(Metadata<>).MakeGenericType(typeof(IEnumerable<>).MakeGenericType(typeof(IListing<>).MakeGenericType(listingType)));
 
-                //return (IRetrieveResult<TValue>) await List(listResult, reference, filter).ConfigureAwait(false);
+                //return (IGetResult<TValue>) await List(listResult, reference, filter).ConfigureAwait(false);
 
                 var resultType = typeof(RetrieveResult<>).MakeGenericType(typeof(TValue));
-                return (IRetrieveResult<TValue>)Activator.CreateInstance(resultType,
+                return (IGetResult<TValue>)Activator.CreateInstance(resultType,
                     Activator.CreateInstance(typeof(TValue), listResult.Value),
                     listResult.Flags,
                     listResult.Error)!; // REVIEW - why does Activator.CreateInstance return "object?" instead of "object"?
 
-                //return (IRetrieveResult<TValue>)(object)new RetrieveResult<Metadata<IEnumerable<IListing<>>>>(new Metadata<IEnumerable<Listing<TValue>>>(listResult.Value), listResult.Flags) // HARDCAST
+                //return (IGetResult<TValue>)(object)new RetrieveResult<Metadata<IEnumerable<IListing<>>>>(new Metadata<IEnumerable<Listing<TValue>>>(listResult.Value), listResult.Flags) // HARDCAST
                 //{
                 //    Error = listResult.Error,
                 //};
@@ -337,11 +338,11 @@ public abstract partial class VirtualFilesystemPersisterBase<TReference, TPersis
     /// <remarks>
     /// Default implementation: pass-through to ReadAndDeserializeExactPath, with AutoRetry
     /// </remarks>
-    public virtual async Task<IRetrieveResult<TValue>> Retrieve<TValue>(TReference reference, RetrieveOptions? options = null)
+    public virtual async Task<IGetResult<TValue>> Retrieve<TValue>(TReference reference, RetrieveOptions? options = null)
     {
         if (typeof(TValue).IsGenericType && typeof(TValue).GetGenericTypeDefinition() == typeof(Metadata<>))
         {
-            return await ((Task<IRetrieveResult<TValue>>)RetrieveMetadataMethodInfo.MakeGenericMethod(typeof(TValue), typeof(TValue).GetGenericArguments()[0]).Invoke(this, new object[] { reference })).ConfigureAwait(false);
+            return await ((Task<IGetResult<TValue>>)RetrieveMetadataMethodInfo.MakeGenericMethod(typeof(TValue), typeof(TValue).GetGenericArguments()[0]).Invoke(this, new object[] { reference })).ConfigureAwait(false);
             //return await RetrieveMetadata<TValue>(reference).ConfigureAwait(false);
         }
 
@@ -371,7 +372,7 @@ public abstract partial class VirtualFilesystemPersisterBase<TReference, TPersis
 
         if (retryOptions != null)
         {
-            return await new Func<Task<IRetrieveResult<TValue>>>(()
+            return await new Func<Task<IGetResult<TValue>>>(()
                 => ReadAndDeserializeAutoPath<TValue>(path, operation))
                 .AutoRetry(maxRetries: retryOptions.MaxGetRetries,
                 millisecondsBetweenAttempts: retryOptions.MillisecondsBetweenGetRetries, allowException: AllowAutoRetryForThisException).ConfigureAwait(false);
@@ -383,16 +384,16 @@ public abstract partial class VirtualFilesystemPersisterBase<TReference, TPersis
     }
 
     PersisterRetryOptions RetryOptions => (PersistenceOptions as IHas<PersisterRetryOptions>)?.Object ?? PersisterRetryOptions.Default;
-    
 
-    //public virtual Task<IRetrieveResult<TValue>> ReadAndDeserializeExactPath<TValue>(TReference reference, Lazy<PersistenceOperation> operation = null, PersistenceContext context = null)
+
+    //public virtual Task<IGetResult<TValue>> ReadAndDeserializeExactPath<TValue>(TReference reference, Lazy<PersistenceOperation> operation = null, PersistenceContext context = null)
     //    => ReadAndDeserializeExactPath<TValue>(reference.Path, operation, context);
 
     private static readonly IEnumerable<SerializationSelectionResult> NoopSerializationSelectionResults = new SerializationSelectionResult[] {
         new SerializationSelectionResult() };
 
     // RENAME to eliminate "ExactPath" since it's no longer needed to distinguish in this class
-    public virtual async Task<IRetrieveResult<T>> ReadAndDeserializeAutoPath<T>(string path, Lazy<PersistenceOperation> operation, PersistenceContext? context = null, bool throwOnFail = true)
+    public virtual async Task<IGetResult<T>> ReadAndDeserializeAutoPath<T>(string path, Lazy<PersistenceOperation> operation, PersistenceContext? context = null, bool throwOnFail = true)
     {
         // TOTEST:
         // - paths ending in /
@@ -613,7 +614,7 @@ public abstract partial class VirtualFilesystemPersisterBase<TReference, TPersis
 #nullable enable
     }
 
-    public virtual async Task<IRetrieveResult<T>> ReadAndDeserializeExactPath<T>(string path, Lazy<PersistenceOperation>? operation = null, PersistenceContext? context = null, bool throwOnFail = true)
+    public virtual async Task<IGetResult<T>> ReadAndDeserializeExactPath<T>(string path, Lazy<PersistenceOperation>? operation = null, PersistenceContext? context = null, bool throwOnFail = true)
     {
         // NEXT: how to invoke these?  Latest idea: persist/depersist pipelines
         //var obj = await persistenceOperation.ToObject<TValue>(effectiveContext).ConfigureAwait(false);
@@ -989,7 +990,7 @@ public abstract partial class VirtualFilesystemPersisterBase<TReference, TPersis
 // REVIEW - is there a way to do this?
 //public static class PersisterBaseExtensions
 //{
-//    public static Task<IRetrieveResult<TValue>> Retrieve<TValue, TReference>(this IPersister<TReference> persister, TReference reference)
+//    public static Task<IGetResult<TValue>> Retrieve<TValue, TReference>(this IPersister<TReference> persister, TReference reference)
 //        => persister.Retrieve<TValue>((TReference)reference.Path);
 //}
 

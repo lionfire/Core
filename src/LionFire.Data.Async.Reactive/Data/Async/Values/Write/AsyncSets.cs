@@ -1,9 +1,10 @@
 ﻿using LionFire.Data.Sets;
 using Microsoft.Extensions.Options;
+using System.Reactive.Subjects;
 
 namespace LionFire.Data;
 
-public class AsyncSets<TValue>
+public abstract class AsyncSets<TValue>
     : ReactiveObject
     , ISetsRx<TValue>
 {
@@ -16,8 +17,9 @@ public class AsyncSets<TValue>
     #endregion
 
     public AsyncSetOptions Options { get; }
+    //AsyncValueOptions IHasNonNull<AsyncValueOptions>.Object => Options;
 
-    AsyncGetOptions IHasNonNullSettable<AsyncSetOptions>.Object { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
+    //AsyncGetOptions IHasNonNullSettable<AsyncSetOptions>.Object { get => Options; set => Options = value; }
 
     public virtual IEqualityComparer<TValue> EqualityComparer => EqualityComparerOptions<TValue>.Default;
 
@@ -34,27 +36,37 @@ public class AsyncSets<TValue>
 
     #endregion
 
-    public IObservable<ITask<ITransferResult>> Sets => throw new NotImplementedException();
+    #region State
 
     public TValue? StagedValue { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
     public bool HasStagedValue { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
-    public AsyncValueOptions Object { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
 
-    AsyncValueOptions IHasNonNull<AsyncValueOptions>.Object => throw new NotImplementedException();
-    public Task<ITransferResult> Set(TValue? value, CancellationToken cancellationToken = default)
-    {
-        throw new NotImplementedException();
-    }
+    #endregion
+
+    #region Events
+
+    public IObservable<ISetOperation<TValue>> Sets => sets;
+    private BehaviorSubject<ISetOperation<TValue>> sets = new BehaviorSubject<ISetOperation<TValue>>(new SetOperation<TValue>(default, Task.FromResult(TransferResult.Initialized).AsITask()));
+
+    #endregion
+
+    #region Methods
+
+    public abstract Task<ITransferResult> Set(TValue? value, CancellationToken cancellationToken = default);
 
     public void DiscardStagedValue()
     {
-        throw new NotImplementedException();
+        HasStagedValue = false;
+        StagedValue = default;
     }
 
     public Task<ITransferResult> Set(CancellationToken cancellationToken = default)
     {
+        var value = StagedValue;
+
         throw new NotImplementedException();
     }
 
-    
+    #endregion
+
 }

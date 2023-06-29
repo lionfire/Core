@@ -14,5 +14,5 @@ public interface IListPersister<in TReference>
     /// <param name="referencable"></param>
     /// <param name="filter"></param>
     /// <returns></returns>
-    Task<IRetrieveResult<IEnumerable<IListing<T>>>> List<T>(IReferencable<TReference> referencable, ListFilter? filter = null);
+    Task<IGetResult<IEnumerable<IListing<T>>>> List<T>(IReferencable<TReference> referencable, ListFilter? filter = null);
 }

@@ -27,13 +27,13 @@ namespace LionFire.IO
         }
 
         // OLD
-        //public override Task<IRetrieveResult<Stream>> RetrieveImpl()
+        //public override Task<IGetResult<Stream>> RetrieveImpl()
         //{
-        //    if (stream != null) return Task.FromResult((IRetrieveResult<Stream>)RetrieveResult<Stream>.Noop(stream));
+        //    if (stream != null) return Task.FromResult((IGetResult<Stream>)RetrieveResult<Stream>.Noop(stream));
 
         //    stream = new FileStream(Path, FileMode.Open, FileAccess.Read, FileShare.Read);
         //    base.OnRetrievedObject(stream); // REVIEW - only retrieved the stream object.  User still needs to pull data.  Document this better?
-        //    return Task.FromResult((IRetrieveResult<Stream>)RetrieveResult<Stream>.Success(stream));
+        //    return Task.FromResult((IGetResult<Stream>)RetrieveResult<Stream>.Success(stream));
         //}
 
         /// <summary>

@@ -20,7 +20,7 @@ namespace LionFire.Persistence.Redis;
 // REVIEW - is there a way to do this?
 //public static class PersisterBaseExtensions
 //{
-//    public static Task<IRetrieveResult<TValue>> Retrieve<TValue, TReference>(this IPersister<RedisReference> persister, RedisReference reference)
+//    public static Task<IGetResult<TValue>> Retrieve<TValue, TReference>(this IPersister<RedisReference> persister, RedisReference reference)
 //        => persister.Retrieve<TValue>((TReference)reference.Path);
 //}
 

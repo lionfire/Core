@@ -1,14 +1,54 @@
 ﻿
-using System.Reactive.Subjects;
 
 namespace LionFire.Data;
 
+public abstract class AsyncGets<TKey, TValue>
+    : AsyncGets<TValue>
+    , IDisposable
+    , IKeyed<TKey>
+{
+    #region Key
+
+    public TKey Key => key ?? throw new ObjectDisposedException(null);
+    protected TKey? key;
+
+    public IAsyncObject? AsyncObjectKey => Key as IAsyncObject;
+
+    #endregion
+
+    #region Lifecycle
+
+    protected AsyncGets() : this(null)
+    {
+    }
+
+    protected AsyncGets(AsyncGetOptions? options) : base(options)
+    {
+    }
+
+    public virtual void Dispose()
+    {
+        isDisposed = true;
+        var keyCopy = key;
+        key = default;
+        if (keyCopy is IDisposable d && Options.DisposeKey) // ENH: Offload this to implementors
+        {
+            d.Dispose();
+        }
+    }
+    protected bool isDisposed;
+
+    #endregion
+}
+
+
+#if UNUSED // TRIAGE threadsafety logic
 /// <summary>
 /// Inheritors must implement GetImpl
 /// </summary>
 /// <typeparam name="TKey"></typeparam>
 /// <typeparam name="TValue"></typeparam>
-public abstract class AsyncGets<TKey, TValue>
+public abstract class AsyncGets_NoBase<TKey, TValue> // TODO: Base this class on AsyncGets<TValue>?
     : ReactiveObject
     , ILazilyGetsRx<TValue>
     , IDisposable
@@ -33,14 +73,6 @@ public abstract class AsyncGets<TKey, TValue>
 
     public IAsyncObject? AsyncObjectKey => Key as IAsyncObject;
 
-    public virtual void Dispose()
-    {
-        // TODO: THREADSAFETY
-        isDisposed = true;
-        key = default;
-    }
-    protected bool isDisposed;
-
     #endregion
 
     #region Options
@@ -56,11 +88,19 @@ public abstract class AsyncGets<TKey, TValue>
 
     #region Lifecycle
 
-    protected AsyncGets(TKey key, AsyncGetOptions? options = null)
+    protected AsyncGets_NoBase(TKey key, AsyncGetOptions? options = null)
     {
         this.key = key;
         GetOptions = options ?? DefaultOptions;
     }
+
+    public virtual void Dispose()
+    {
+        // TODO: THREADSAFETY
+        isDisposed = true;
+        key = default;
+    }
+    protected bool isDisposed;
 
     #endregion
 
@@ -188,3 +228,4 @@ public abstract class AsyncGets<TKey, TValue>
     #endregion
 }
 
+#endif

@@ -4,7 +4,7 @@ namespace LionFire.Data;
 /// <summary>
 /// Options for properties (and potentially fields) accessible in an async manner
 /// </summary>
-public class AsyncGetOptions 
+public class AsyncGetOptions : AsyncGetOrSetOptions
 {
     //public bool TargetNotifiesPropertyChanged { get; set; }
 
@@ -19,9 +19,5 @@ public class AsyncGetOptions
     /// For Sync Value property getter: block on the Task (not recommended, unless you are prepared for the drawbacks)
     /// </summary>
     public bool BlockToGet { get; set; } = false;
-
-    /// <summary>
-    /// Try to Dispose the cached Value when the object is disposed
-    /// </summary>
-    public bool DisposeValue { get; set; } = true;
+    
 }

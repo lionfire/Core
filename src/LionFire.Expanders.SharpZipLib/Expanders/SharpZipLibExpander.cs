@@ -25,6 +25,7 @@ using System.Diagnostics.Metrics;
 using LionFire.Referencing.Ex;
 using System.Runtime.CompilerServices;
 using MorseCode.ITask;
+using LionFire.Data;
 
 namespace LionFire.Persisters.SharpZipLib_;
 
@@ -130,7 +131,7 @@ public class SharpZipLibExpander : ExpanderPersister, ISupportsFileExtensions, I
         return Task.FromResult(archiveHandle);
     }
 
-    public override async Task<IRetrieveResult<TValue>> RetrieveTarget<TValue>(IReadHandle sourceReadHandle, string targetPath)
+    public override async Task<IGetResult<TValue>> RetrieveTarget<TValue>(IReadHandle sourceReadHandle, string targetPath)
     {
         try
         {
@@ -366,7 +367,7 @@ public class SharpZipLibExpander : ExpanderPersister, ISupportsFileExtensions, I
         throw new NotImplementedException();
     }
 
-    public Task<IRetrieveResult<TValue>> Retrieve<TValue>(IReferencable<IExpansionReference> referencable, RetrieveOptions? options = null)
+    public Task<IGetResult<TValue>> Retrieve<TValue>(IReferencable<IExpansionReference> referencable, RetrieveOptions? options = null)
     {
         throw new NotImplementedException();
     }
@@ -391,7 +392,7 @@ public class SharpZipLibExpander : ExpanderPersister, ISupportsFileExtensions, I
         throw new NotImplementedException();
     }
 
-    public Task<IRetrieveResult<IEnumerable<IListing<T>>>> List<T>(IReferencable<IExpansionReference> referencable, ListFilter? filter = null)
+    public Task<IGetResult<IEnumerable<IListing<T>>>> List<T>(IReferencable<IExpansionReference> referencable, ListFilter? filter = null)
     {
         throw new NotImplementedException();
     }

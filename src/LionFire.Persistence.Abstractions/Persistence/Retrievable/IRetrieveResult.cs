@@ -16,6 +16,7 @@ public interface IRetrieveResult<out T> : ILazyGetResult<T> // REVIEW - is it co
 {
 }
 
+#if UNUSED
 public static class IRetrieveResultExtensions
 {
 
@@ -35,6 +36,7 @@ public static class IRetrieveResultExtensions
         return retrieveResult.Value;
     }
 }
+#endif
 
 
 //public struct IPersistableSnapshot<T>
@@ -58,7 +60,7 @@ public static class IRetrieveResultExtensions
 //public static class RetrievableStateExtensions
 //{
 
-//    public static RetrievableState ToRetrievableState<T>(this IRetrieveResult<T> result, bool objectCanBeDefault)
+//    public static RetrievableState ToRetrievableState<T>(this IGetResult<T> result, bool objectCanBeDefault)
 //    {
 //        RetrievableState retrievableState;
 //        if (result.Flags.HasFlag(TransferResultFlags.Success) || result.Flags.HasFlag(TransferResultFlags.Found))
@@ -86,7 +88,7 @@ public static class IRetrieveResultExtensions
 //        }
 //        else
 //        {
-//            throw new ArgumentException($"{nameof(IRetrieveResult<T>)}.{nameof(IRetrieveResult<T>.Flags)} does not have one of the expected Flags");
+//            throw new ArgumentException($"{nameof(IGetResult<T>)}.{nameof(IRetrieveResult<T>.Flags)} does not have one of the expected Flags");
 //        }
 
 //        return retrievableState;

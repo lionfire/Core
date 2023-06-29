@@ -1,14 +1,16 @@
-﻿using System.Threading.Tasks;
+﻿#if UNUSED
+using System.Threading.Tasks;
 
-namespace LionFire.Persistence
+namespace LionFire.Persistence;
+
+public interface IRetrievableImpl<TObject>
 {
-    public interface IRetrievableImpl<TObject>
-    {
-        /// <summary>
-        /// Force a retrieve of the reference from the source.  Replace the Object.
-        /// </summary>
-        /// <remarks>Can't return a generic IRetrieveResult due to limitation of the language.</remarks>
-        /// <returns>true if an object was retrieved.  False if object was not found at location of the Reference.  Throws if could not resolve the Reference to a valid source.</returns>
-        Task<IRetrieveResult<TObject>> RetrieveImpl();
-    }
+    /// <summary>
+    /// Force a retrieve of the reference from the source.  Replace the Object.
+    /// </summary>
+    /// <remarks>Can't return a generic IGetResult due to limitation of the language.</remarks>
+    /// <returns>true if an object was retrieved.  False if object was not found at location of the Reference.  Throws if could not resolve the Reference to a valid source.</returns>
+    Task<IGetResult<TObject>> RetrieveImpl();
 }
+
+#endif

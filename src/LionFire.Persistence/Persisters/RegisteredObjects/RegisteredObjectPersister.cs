@@ -38,7 +38,7 @@ namespace LionFire.Persistence.RegisteredObjects
 
         public Task<ITransferResult> Delete(IReferencable<NamedObjectReference> referencable) => throw new NotImplementedException();
         public Task<ITransferResult> Exists<TValue>(IReferencable<NamedObjectReference> referencable) => throw new NotImplementedException();
-        public Task<IRetrieveResult<TValue>> Retrieve<TValue>(IReferencable<NamedObjectReference> referencable) => throw new NotImplementedException();
+        public Task<IGetResult<TValue>> Retrieve<TValue>(IReferencable<NamedObjectReference> referencable) => throw new NotImplementedException();
         public Task<ITransferResult> Update<TValue>(IReferencable<NamedObjectReference> referencable, TValue value) => throw new NotImplementedException();
         public Task<ITransferResult> Upsert<TValue>(IReferencable<NamedObjectReference> referencable, TValue value) => throw new NotImplementedException();
     }
@@ -47,7 +47,7 @@ namespace LionFire.Persistence.RegisteredObjects
     {
 
         public Task<ITransferResult> Exists<TValue>(IReferencable<RegisteredObjectReference> referencable) => throw new NotImplementedException();
-        public Task<IRetrieveResult<TValue>> Retrieve<TValue>(IReferencable<RegisteredObjectReference> referencable) => throw new NotImplementedException();
+        public Task<IGetResult<TValue>> Retrieve<TValue>(IReferencable<RegisteredObjectReference> referencable) => throw new NotImplementedException();
     }
 }
 #endif

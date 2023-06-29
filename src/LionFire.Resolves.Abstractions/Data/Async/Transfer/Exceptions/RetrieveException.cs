@@ -12,5 +12,5 @@ public class RetrieveException : TransferException
     public RetrieveException(ITransferResult result) : base(result) { }
     public RetrieveException(string message) : base(message) { }
     public RetrieveException(string message, Exception inner) : base(message, inner) { }
-    //public RetrieveException(IRetrieveResult<object> result) : base(result) { this.Result = result; }
+    //public RetrieveException(IGetResult<object> result) : base(result) { this.Result = result; }
 }

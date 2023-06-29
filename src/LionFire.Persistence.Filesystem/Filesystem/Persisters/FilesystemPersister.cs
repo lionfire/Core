@@ -332,7 +332,7 @@ public class FilesystemPersister : VirtualFilesystemPersisterBase<IFileReference
 // REVIEW - is there a way to do this?
 //public static class PersisterBaseExtensions
 //{
-//    public static Task<IRetrieveResult<TValue>> Retrieve<TValue, TReference>(this IPersister<IFileReference> persister, FileReference reference)
+//    public static Task<IGetResult<TValue>> Retrieve<TValue, TReference>(this IPersister<IFileReference> persister, FileReference reference)
 //        => persister.Retrieve<TValue>((TReference)reference.Path);
 //}
 

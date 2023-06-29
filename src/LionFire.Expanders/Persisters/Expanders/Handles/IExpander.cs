@@ -22,6 +22,6 @@ public interface IExpander
     Type? SourceReadTypeForReference(IReference reference);
     Task<IReadHandle>? TryGetSourceReadHandle(IReference sourceReference);
 
-    Task<IRetrieveResult<T>> RetrieveTarget<T>(IReadHandle sourceReadHandle, string targetPath);
+    Task<IGetResult<T>> RetrieveTarget<T>(IReadHandle sourceReadHandle, string targetPath);
 
 }
