@@ -1,7 +1,7 @@
 ﻿using LionFire.Structures;
 using System.Diagnostics.CodeAnalysis;
 
-namespace LionFire.Data.Async.Collections;
+namespace LionFire.Data.Collections;
 
 public interface IAsyncReadOnlyDictionary<TKey, TValue> : IEnumerableAsync<KeyValuePair<TKey, TValue>>
     , IAsyncReadOnlyCollection<KeyValuePair<TKey, TValue>>

@@ -2,7 +2,7 @@
 using ReactiveUI;
 using System.Reactive;
 
-namespace LionFire.Data.Async.Sets.Mvvm;
+namespace LionFire.Data.Sets.Mvvm;
 
 public interface ISetsVM<T>
     : ISetsRx<T>

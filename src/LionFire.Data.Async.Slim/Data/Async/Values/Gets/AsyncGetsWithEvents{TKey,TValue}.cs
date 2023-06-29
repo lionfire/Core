@@ -1,5 +1,5 @@
 ﻿
-namespace LionFire.Data.Async.Gets;
+namespace LionFire.Data.Gets;
 
 #if UNUSED
 

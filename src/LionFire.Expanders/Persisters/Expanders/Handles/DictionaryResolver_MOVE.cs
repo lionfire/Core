@@ -1,5 +1,5 @@
 ﻿using LionFire.Resolvers;
-using LionFire.Data.Async.Gets;
+using LionFire.Data.Gets;
 using MorseCode.ITask;
 using LionFire.Data;
 

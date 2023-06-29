@@ -1,4 +1,4 @@
-﻿namespace LionFire.Data.Async.Collections;
+﻿namespace LionFire.Data.Collections;
 
 
 public interface IAddsAsync<TItem>

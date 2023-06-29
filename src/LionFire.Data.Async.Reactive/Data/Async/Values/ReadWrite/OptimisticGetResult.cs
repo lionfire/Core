@@ -1,5 +1,5 @@
 ﻿
-namespace LionFire.Data.Async;
+namespace LionFire.Data;
 
 /// <summary>
 /// A set is in progress while a get was requested.  Optimistically returning the value used in the set.

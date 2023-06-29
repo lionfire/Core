@@ -1,6 +1,6 @@
 ﻿using LionFire;
 using LionFire.ExtensionMethods.Dumping;
-using LionFire.Data.Async.Gets;
+using LionFire.Data.Gets;
 using Microsoft.Extensions.Logging;
 using System.Diagnostics;
 using static TestHostBuilder;

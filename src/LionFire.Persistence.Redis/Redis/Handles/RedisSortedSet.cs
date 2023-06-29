@@ -1,6 +1,6 @@
 ﻿using LionFire.Collections;
 using LionFire.Persistence.Redis;
-using LionFire.Data.Async.Gets;
+using LionFire.Data.Gets;
 using MorseCode.ITask;
 using StackExchange.Redis;
 using Swordfish.NET.Collections;

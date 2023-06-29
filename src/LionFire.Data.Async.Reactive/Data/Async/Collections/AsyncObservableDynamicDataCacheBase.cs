@@ -1,12 +1,12 @@
 ﻿using DynamicData;
-using LionFire.Data.Async.Gets;
+using LionFire.Data.Gets;
 using MorseCode.ITask;
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
 using System.Collections;
 using System.Collections.Generic;
 using System.Reactive.Subjects;
-namespace LionFire.Data.Async.Collections;
+namespace LionFire.Data.Collections;
 
 
 // Description: local cache of a collection that is read (and maybe written) across an async boundary (such as network or disk)

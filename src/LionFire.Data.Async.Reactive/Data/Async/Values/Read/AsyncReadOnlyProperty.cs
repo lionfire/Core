@@ -1,7 +1,7 @@
 ﻿
 using System.Reactive.Subjects;
 
-namespace LionFire.Data.Async;
+namespace LionFire.Data;
 
 public abstract class AsyncReadOnlyProperty<TObject, TValue> : AsyncGets<TObject, TValue>
 {

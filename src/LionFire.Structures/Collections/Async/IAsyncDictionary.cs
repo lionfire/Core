@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Diagnostics.CodeAnalysis;
 
-namespace LionFire.Data.Async.Collections;
+namespace LionFire.Data.Collections;
 
 public interface IAsyncDictionary<TKey, TValue> : IAsyncCollection<KeyValuePair<TKey, TValue>>, IEnumerableAsync<KeyValuePair<TKey, TValue>>
 {

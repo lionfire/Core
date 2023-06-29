@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 using LionFire.Activation;
 using LionFire.Extensions.DefaultValues;
 using LionFire.Referencing;
-using LionFire.Data.Async.Gets;
+using LionFire.Data.Gets;
 using LionFire.Results;
 using LionFire.Structures;
 using LionFire.Threading;

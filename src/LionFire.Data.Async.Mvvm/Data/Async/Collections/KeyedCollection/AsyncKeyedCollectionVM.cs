@@ -3,7 +3,7 @@
 using LionFire.ExtensionMethods.Types;
 using LionFire.Reflection;
 
-namespace LionFire.Data.Async.Mvvm;
+namespace LionFire.Data.Mvvm;
 
 public class AsyncKeyedCollectionVM<TKey, TValue, TValueVM> 
     : LazilyGetsKeyedCollectionVM<TKey, TValue, TValueVM>

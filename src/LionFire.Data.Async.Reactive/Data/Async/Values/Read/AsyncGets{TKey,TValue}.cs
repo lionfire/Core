@@ -1,9 +1,7 @@
 ﻿
-using DynamicData;
-using Microsoft.Extensions.Options;
 using System.Reactive.Subjects;
 
-namespace LionFire.Data.Async;
+namespace LionFire.Data;
 
 /// <summary>
 /// Inheritors must implement GetImpl

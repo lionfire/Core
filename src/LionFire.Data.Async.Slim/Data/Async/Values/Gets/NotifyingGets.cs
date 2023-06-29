@@ -4,7 +4,7 @@ using MorseCode.ITask;
 using System;
 using System.Threading.Tasks;
 
-namespace LionFire.Data.Async.Gets
+namespace LionFire.Data.Gets
 {
     public class NotifyingResolves<TKey, TValue> : NotifyingResolvesBase<TKey, TValue>, ILazilyResolves<TValue>, INotifySenderChanged<TValue>
     {

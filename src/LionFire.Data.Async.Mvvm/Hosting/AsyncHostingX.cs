@@ -1,4 +1,4 @@
-﻿using LionFire.Data.Async.Mvvm;
+﻿using LionFire.Data.Mvvm;
 using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.Collections.Generic;

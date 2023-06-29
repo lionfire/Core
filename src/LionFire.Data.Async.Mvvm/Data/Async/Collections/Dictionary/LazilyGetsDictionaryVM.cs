@@ -1,7 +1,7 @@
-﻿using LionFire.Data.Async.Collections;
+﻿using LionFire.Data.Collections;
 
 
-namespace LionFire.Data.Async.Mvvm;
+namespace LionFire.Data.Mvvm;
 
 // Without TCollection
 public class LazilyGetsDictionaryVM<TKey, TValue>

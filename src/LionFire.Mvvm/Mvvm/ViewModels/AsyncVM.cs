@@ -1,6 +1,6 @@
 ﻿#nullable enable
 
-using LionFire.Data.Async;
+using LionFire.Data;
 using LionFire.Metadata;
 
 namespace LionFire.Mvvm;

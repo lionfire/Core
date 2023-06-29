@@ -3,7 +3,7 @@ using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using LionFire.Structures;
-using LionFire.Data.Async.Gets;
+using LionFire.Data.Gets;
 
 namespace LionFire.Persistence
 {

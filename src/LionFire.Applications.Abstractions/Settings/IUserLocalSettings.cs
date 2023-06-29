@@ -1,5 +1,5 @@
 ﻿using LionFire.Persistence;
-using LionFire.Data.Async.Gets;
+using LionFire.Data.Gets;
 using LionFire.Structures;
 using System.Threading.Tasks;
 

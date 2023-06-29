@@ -1,12 +1,12 @@
 ﻿using LionFire.Persistence;
 using LionFire.Referencing;
-using LionFire.Data.Async.Gets;
+using LionFire.Data.Gets;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using LionFire.Data.Async.Sets;
+using LionFire.Data.Sets;
 
 namespace LionFire.Persistence;
 

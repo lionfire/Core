@@ -3,7 +3,7 @@ using MorseCode.ITask;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace LionFire.Data.Async.Gets;
+namespace LionFire.Data.Gets;
 
 public abstract class HostedGetsSlim<T> : AsyncGetsSlim<T>, IHostedService
 {

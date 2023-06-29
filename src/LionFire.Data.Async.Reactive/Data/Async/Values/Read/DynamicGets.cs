@@ -1,5 +1,5 @@
 ﻿
-namespace LionFire.Data.Async.Gets;
+namespace LionFire.Data.Gets;
 
 public class DynamicGets<TKey, TValue> : AsyncGets<TKey, TValue>
     where TKey : class

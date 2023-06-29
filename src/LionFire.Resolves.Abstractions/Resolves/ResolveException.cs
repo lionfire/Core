@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace LionFire.Data.Async.Gets;
+namespace LionFire.Data.Gets;
 
 public class ResolveException : Exception
 {

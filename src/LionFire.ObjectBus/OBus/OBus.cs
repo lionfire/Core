@@ -7,7 +7,7 @@ using LionFire.ObjectBus.Handles;
 using LionFire.Ontology;
 using LionFire.Persistence;
 using LionFire.Referencing;
-using LionFire.Data.Async.Gets;
+using LionFire.Data.Gets;
 using LionFire.Results;
 
 namespace LionFire.ObjectBus.Ex // Extended API

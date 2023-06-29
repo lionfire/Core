@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
-using LionFire.Data.Async.Gets.ChainResolving;
+using LionFire.Data.Gets.ChainResolving;
 
 namespace LionFire.Vos.ChainResolving
 {

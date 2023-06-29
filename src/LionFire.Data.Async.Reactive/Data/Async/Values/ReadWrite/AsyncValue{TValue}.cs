@@ -1,19 +1,20 @@
-﻿using LionFire.Data.Async.Reactive;
+﻿using LionFire.Data.Reactive;
+using LionFire.Data.Sets;
 using LionFire.Results;
 using System.ComponentModel;
 using System.Reactive.Subjects;
 
-namespace LionFire.Data.Async;
+namespace LionFire.Data;
 
 public abstract class AsyncValue<TValue>
     : AsyncGets<TValue>
     , IAsyncValueRx<TValue>
-{    
+{
     #region Options
 
     #region (static)
 
-    public new static AsyncValueOptions DefaultOptions { get; set; } = new();
+    public new static AsyncValueOptions DefaultOptions => AsyncValueOptions<TKey, TValue>.Default;
 
     #endregion
 
@@ -32,7 +33,7 @@ public abstract class AsyncValue<TValue>
 
     public AsyncValue() : base(DefaultOptions)
     {
-        asyncSets = new();        
+        asyncSets = new();
     }
 
     public AsyncValue(AsyncValueOptions options) : base(options)
@@ -109,11 +110,11 @@ public abstract class AsyncValue<TValue>
     #region Methods
 
     public abstract Task<ITransferResult> SetImpl(CancellationToken cancellationToken = default);
-    
+
     public async Task<ITransferResult> Set(CancellationToken cancellationToken = default)
     {
         var result = await SetImpl(StagedValue, cancellationToken);
-        if(result.IsSuccess())
+        if (result.IsSuccess())
         {
             HasStagedValue = false;
         }
@@ -125,6 +126,77 @@ public abstract class AsyncValue<TValue>
     }
 
     #endregion
+
+    #endregion
+
+}
+
+public abstract class AsyncCompositeValue<TValue>
+    : ReactiveObject
+    , ILazilyGetsRx<TValue>
+//, IAsyncValueRx<TValue>
+{
+    #region Parameters
+
+    public AsyncValueOptions Options { get; }
+
+    #endregion
+
+    #region Components
+
+    public AsyncGets<TValue> Gets { get; }
+    public AsyncSets<TValue> Sets { get; }
+
+    #endregion
+
+    #region Lifecycle
+
+    public AsyncCompositeValue() : this(null) { }
+    public AsyncCompositeValue(AsyncValueOptions? options)
+    {
+        Options = options ?? AsyncValueOptions<TValue>.Default;
+        Gets = new(Options.Get);
+        Sets = new(Options.Set);
+    }
+
+    #endregion
+
+    #region Gets pass-thru
+
+    public TValue? ReadCacheValue => ((ILazilyGets<TValue>)Gets).ReadCacheValue;
+
+    public TValue? Value => ((IReadWrapper<TValue>)Gets).Value;
+
+    public bool HasValue => ((IDefaultable)Gets).HasValue;
+
+    public AsyncGetOptions Object { get => ((IHasNonNullSettable<AsyncGetOptions>)Gets).Object; set => ((IHasNonNullSettable<AsyncGetOptions>)Gets).Object = value; }
+
+    AsyncGetOptions IHasNonNull<AsyncGetOptions>.Object => ((IHasNonNull<AsyncGetOptions>)Gets).Object;
+
+    public ITask<ILazyGetResult<TValue>> GetIfNeeded()
+    {
+        return ((ILazilyGets<TValue>)Gets).GetIfNeeded();
+    }
+
+    public ILazyGetResult<TValue> QueryValue()
+    {
+        return ((ILazilyGets<TValue>)Gets).QueryValue();
+    }
+
+    public ITask<IGetResult<TValue>> Get(CancellationToken cancellationToken = default)
+    {
+        return ((IGets<TValue>)Gets).Get(cancellationToken);
+    }
+
+    public void DiscardValue()
+    {
+        ((IDiscardableValue)Gets).DiscardValue();
+    }
+
+    public void Discard()
+    {
+        ((IDiscardable)Gets).Discard();
+    }
 
     #endregion
 

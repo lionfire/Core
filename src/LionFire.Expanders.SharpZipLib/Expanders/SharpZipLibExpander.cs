@@ -15,7 +15,7 @@ using LionFire.Persistence.Handles;
 using LionFire.Serialization.Adapters;
 using static LionFire.Persisters.SharpZipLib_.SharpZipLibExpander;
 using LionFire.ExtensionMethods.Poco.Resolvables;
-using LionFire.Data.Async.Gets;
+using LionFire.Data.Gets;
 using LionFire.Serialization;
 using LionFire.Dependencies;
 using System.Reflection;

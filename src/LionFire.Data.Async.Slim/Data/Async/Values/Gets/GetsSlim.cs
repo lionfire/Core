@@ -1,5 +1,5 @@
 ﻿
-namespace LionFire.Data.Async.Gets;
+namespace LionFire.Data.Gets;
 
 /// <summary>
 /// Slim version of Gets<typeparamref name="TValue"/>.  This slim edition has no events and no ReactiveObject (ReactiveUI) base class.

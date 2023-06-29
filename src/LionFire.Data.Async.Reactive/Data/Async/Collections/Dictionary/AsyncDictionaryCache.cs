@@ -2,7 +2,7 @@
 using DynamicData;
 using System.Reactive.Subjects;
 
-namespace LionFire.Data.Async.Collections;
+namespace LionFire.Data.Collections;
 
 /// <summary>
 /// Read-only by default.  Override IsReadOnly and add more interfaces for read-write.

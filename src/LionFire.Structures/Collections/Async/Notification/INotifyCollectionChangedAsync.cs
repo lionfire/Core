@@ -1,6 +1,6 @@
 ﻿//using DynamicData;
 
-//namespace LionFire.Data.Async.Collections;
+//namespace LionFire.Data.Collections;
 
 //public interface INotifyCollectionChangedAsync<TItem>
 //{

@@ -10,7 +10,7 @@ using LionFire.Extensions.DefaultValues;
 using LionFire.Ontology;
 using LionFire.Referencing;
 using LionFire.Resolvables;
-using LionFire.Data.Async.Gets;
+using LionFire.Data.Gets;
 using LionFire.Structures;
 using LionFire.Threading;
 using MorseCode.ITask;

@@ -1,6 +1,6 @@
 ﻿using LionFire.Structures;
 
-namespace LionFire.Data.Async.Collections;
+namespace LionFire.Data.Collections;
 
 
 public interface IAsyncListBase<TItem> : IAsyncCollectionBase<TItem>

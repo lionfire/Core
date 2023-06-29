@@ -1,5 +1,5 @@
 ﻿using DynamicData;
-using LionFire.Data.Async.Gets;
+using LionFire.Data.Gets;
 using LionFire.Ontology;
 using LionFire.Structures;
 using LionFire.Structures.Keys;
@@ -10,7 +10,7 @@ using System.Reactive;
 using Microsoft.Extensions.DependencyInjection;
 using LionFire.Dependencies;
 
-namespace LionFire.Data.Async.Collections;
+namespace LionFire.Data.Collections;
 
 public abstract class AsyncReadOnlyDictionaryCache<TKey, TValue>
     : AsyncDynamicDataCollectionCache<KeyValuePair<TKey, TValue>>

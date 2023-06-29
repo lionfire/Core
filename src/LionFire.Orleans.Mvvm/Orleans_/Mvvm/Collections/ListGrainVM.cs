@@ -1,5 +1,5 @@
 ﻿using LionFire.Mvvm;
-using LionFire.Data.Async.Gets;
+using LionFire.Data.Gets;
 using System;
 using System.Collections.Generic;
 using System.Linq;

@@ -1,7 +1,7 @@
 ﻿using MorseCode.ITask;
 using System.Threading.Tasks;
 
-namespace LionFire.Data.Async.Gets;
+namespace LionFire.Data.Gets;
 
 // TODO: Dupe of GetsSlim? What's the difference?
 

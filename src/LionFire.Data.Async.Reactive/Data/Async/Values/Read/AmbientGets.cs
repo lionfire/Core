@@ -1,6 +1,6 @@
 ﻿using LionFire.ExtensionMethods.Poco.Resolvables;
 
-namespace LionFire.Data.Async.Gets;
+namespace LionFire.Data.Gets;
 
 public class AmbientGets<TKey, TValue> : AsyncGets<TKey, TValue>
      where TKey : class

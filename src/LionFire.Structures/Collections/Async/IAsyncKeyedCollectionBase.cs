@@ -1,4 +1,4 @@
-﻿namespace LionFire.Data.Async.Collections;
+﻿namespace LionFire.Data.Collections;
 
 public interface IAsyncKeyedCollectionBase<TKey, TItem> : IAsyncCollectionBase<TItem>
     where TKey : notnull

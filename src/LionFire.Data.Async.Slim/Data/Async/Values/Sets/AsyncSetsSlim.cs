@@ -1,7 +1,7 @@
-﻿using LionFire.Data.Async.Gets;
+﻿using LionFire.Data.Gets;
 using LionFire.Results;
 
-namespace LionFire.Data.Async.Sets;
+namespace LionFire.Data.Sets;
 
 /// <summary>
 /// Write-only wrapper around a value that is staged in this object and committed asynchronously.

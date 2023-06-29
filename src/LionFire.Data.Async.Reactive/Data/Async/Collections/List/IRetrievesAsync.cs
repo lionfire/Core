@@ -1,4 +1,4 @@
-﻿namespace LionFire.Data.Async.Collections;
+﻿namespace LionFire.Data.Collections;
 
 
 // I want some of this but I wonder if I can get it from IObservableGets and other interfaces

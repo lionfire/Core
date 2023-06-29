@@ -1,5 +1,5 @@
 ﻿using LionFire.Data;
-using LionFire.Data.Async.Gets;
+using LionFire.Data.Gets;
 using System;
 using System.Reflection;
 using System.Threading.Tasks;

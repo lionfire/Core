@@ -1,43 +1,60 @@
-﻿namespace LionFire.Data.Async;
+﻿using LionFire.Data.Sets;
+using Microsoft.Extensions.Options;
+
+namespace LionFire.Data;
 
 public class AsyncSets<TValue>
+    : ReactiveObject
+    , ISetsRx<TValue>
 {
     #region Parameters
 
     #region (static)
 
-    public static AsyncGetOptions DefaultOptions { get; set; } = new();
+    public static AsyncSetOptions DefaultOptions => AsyncSetOptions<TValue>.Default;
 
     #endregion
 
-    public AsyncGetOptions Options { get; set; }
+    public AsyncSetOptions Options { get; }
 
-    AsyncGetOptions IHasNonNullSettable<AsyncGetOptions>.Object { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
+    AsyncGetOptions IHasNonNullSettable<AsyncSetOptions>.Object { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
 
-    public virtual IEqualityComparer<TValue> EqualityComparer => AsyncGetOptions<TValue>.DefaultEqualityComparer;
+    public virtual IEqualityComparer<TValue> EqualityComparer => EqualityComparerOptions<TValue>.Default;
 
     #endregion
 
     #region Lifecycle
 
-    public AsyncSets() : base(DefaultOptions)
-    {
-        asyncSets = new();
-    }
+    public AsyncSets() : this(null) { }
 
-    public AsyncValue(AsyncValueOptions options) : base(options)
+    public AsyncSets(AsyncSetOptions? options)
     {
-        asyncSets = new(options);
-
-        this.ObservableForProperty(t => t.Value)
-            .Subscribe(t =>
-            {
-                if (HasStagedValue)
-                {
-                    ValueChangedWhileValueStaged = true;
-                }
-            });
+        Options = options ?? AsyncSetOptions<TValue>.Default;
     }
 
     #endregion
+
+    public IObservable<ITask<ITransferResult>> Sets => throw new NotImplementedException();
+
+    public TValue? StagedValue { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
+    public bool HasStagedValue { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
+    public AsyncValueOptions Object { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
+
+    AsyncValueOptions IHasNonNull<AsyncValueOptions>.Object => throw new NotImplementedException();
+    public Task<ITransferResult> Set(TValue? value, CancellationToken cancellationToken = default)
+    {
+        throw new NotImplementedException();
+    }
+
+    public void DiscardStagedValue()
+    {
+        throw new NotImplementedException();
+    }
+
+    public Task<ITransferResult> Set(CancellationToken cancellationToken = default)
+    {
+        throw new NotImplementedException();
+    }
+
+    
 }

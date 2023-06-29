@@ -1,6 +1,6 @@
 ﻿using LionFire.Referencing;
 using LionFire.Resolvers;
-using LionFire.Data.Async.Gets;
+using LionFire.Data.Gets;
 
 namespace LionFire.Persisters.Expanders;
 

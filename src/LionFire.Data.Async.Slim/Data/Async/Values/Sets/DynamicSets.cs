@@ -6,7 +6,7 @@ using LionFire.ExtensionMethods;
 using LionFire.Results;
 using LionFire.Persistence;
 
-namespace LionFire.Data.Async.Sets;
+namespace LionFire.Data.Sets;
 
 public class DynamicSets<TKey, TValue> : AsyncSetsSlim<TKey, TValue>
     where TKey : class

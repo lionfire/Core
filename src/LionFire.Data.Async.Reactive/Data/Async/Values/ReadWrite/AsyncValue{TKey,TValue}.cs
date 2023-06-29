@@ -1,10 +1,11 @@
-﻿using LionFire.Data.Async.Reactive;
+﻿using LionFire.Data.Reactive;
 using LionFire.Results;
 using MorseCode.ITask;
 using System.Collections.Generic;
 using System.Reactive.Subjects;
 
-namespace LionFire.Data.Async;
+namespace LionFire.Data;
+
 
 public abstract class AsyncValue<TKey, TValue>
     : AsyncGets<TKey, TValue>
@@ -15,6 +16,8 @@ public abstract class AsyncValue<TKey, TValue>
     #region (static)
 
     public static new AsyncValueOptions DefaultOptions => AsyncValueOptions<TKey, TValue>.Default;
+
+    public static IEqualityComparer<TValue> DefaultEqualityComparer => EqualityComparerOptions<TValue>.Default;
 
     #endregion
 
@@ -114,7 +117,7 @@ public abstract class AsyncValue<TKey, TValue>
 
     #region Methods
 
-    public async Task<ISuccessResult> Set(CancellationToken cancellationToken = default)
+    public async Task<ITransferResult> Set(CancellationToken cancellationToken = default)
     {
         try
         {
@@ -127,10 +130,16 @@ public abstract class AsyncValue<TKey, TValue>
         }
     }
 
-    public abstract Task SetImpl(TKey key, TValue? value, CancellationToken cancellationToken = default);
+    public abstract Task<ITransferResult> SetImpl(TKey key, TValue? value, CancellationToken cancellationToken = default);
 
     private object setLock = new();
 
+    /// <summary>
+    /// Skips set if DefaultEqualityComparer.Equals(currentSetState.Value.SettingToValue, value)
+    /// </summary>
+    /// <param name="value"></param>
+    /// <param name="cancellationToken"></param>
+    /// <returns></returns>
     public async Task Set(TValue? value, CancellationToken cancellationToken = default)
     {
         var target = Key;
@@ -142,7 +151,7 @@ public abstract class AsyncValue<TKey, TValue>
         {
             currentSetState = SetState;
             if (currentSetState.task != null) { await currentSetState.Value.task!.ConfigureAwait(false); }
-            if (EqualityComparer.Equals(currentSetState.Value.SettingToValue, value)) { return; }
+            if (DefaultEqualityComparer.Equals(currentSetState.Value.SettingToValue, value)) { return; }
 
             // ENH: Based on option: Also wait for existing get/set to complete to avoid setting to a value that will be overwritten, or to avoid setting to a value that is the same as the gotten value
         } while (currentSetState.Value.task != null);

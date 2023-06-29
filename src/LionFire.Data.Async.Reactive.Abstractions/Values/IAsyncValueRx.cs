@@ -1,11 +1,10 @@
-﻿using LionFire.Data.Async.Gets;
-using LionFire.Data.Async.Sets;
+﻿using LionFire.Data.Gets;
+using LionFire.Data.Sets;
 
-namespace LionFire.Data.Async.Reactive;
+namespace LionFire.Data.Reactive;
 
 public interface IAsyncValueRx<T> 
-    : IStatelessAsyncValue<T>
-    , ILazilyGetsRx<T>
+    : ILazilyGetsRx<T>
     , ISetsRx<T>
 {
 }

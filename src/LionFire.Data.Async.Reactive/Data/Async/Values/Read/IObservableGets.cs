@@ -2,7 +2,7 @@
 using System;
 using System.Collections.Generic;
 
-namespace LionFire.Data.Async.Gets;
+namespace LionFire.Data.Gets;
 
 public interface IObservableGets
 {

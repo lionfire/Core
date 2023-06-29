@@ -1,7 +1,7 @@
 ﻿
 using System.Threading;
 
-namespace LionFire.Data.Async;
+namespace LionFire.Data;
 
 public abstract class AsyncGets<TValue>
     : ReactiveObject

@@ -1,6 +1,6 @@
 ﻿using LionFire.Structures;
 
-namespace LionFire.Data.Async.Gets
+namespace LionFire.Data.Gets
 {
     /// <summary>
     /// Like IReadHandle but without the Reference.

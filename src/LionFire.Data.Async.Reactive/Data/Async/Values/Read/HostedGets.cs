@@ -1,6 +1,6 @@
 ﻿using Microsoft.Extensions.Hosting;
 
-namespace LionFire.Data.Async;
+namespace LionFire.Data;
 
 public abstract class HostedAsyncGets<T> : AsyncGets<T>, IHostedService
 {

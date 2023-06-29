@@ -15,8 +15,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Data\Async\Values\Read\Results\" />
-    <Folder Include="Data\Sets\" />
     <Folder Include="Resolves\Lazy\" />
   </ItemGroup>
 

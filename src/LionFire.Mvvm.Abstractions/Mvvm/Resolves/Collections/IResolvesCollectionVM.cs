@@ -1,6 +1,6 @@
 ﻿
 
-namespace LionFire.Data.Async.Mvvm;
+namespace LionFire.Data.Mvvm;
 
 public interface IResolvesCollectionVM<TValue, TValueVM, TCollection>
     : IGetsVM<TCollection>

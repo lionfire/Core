@@ -1,6 +1,6 @@
 ﻿using DynamicData;
 
-namespace LionFire.Data.Async.Collections;
+namespace LionFire.Data.Collections;
 
 // REFACTOR:
 //  - IAsyncReadOnlyDictionaryCache and IAsyncReadOnlyKeyedCollectionCache inherit from this

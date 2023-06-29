@@ -1,5 +1,5 @@
 ﻿
-namespace LionFire.Data.Async.Gets;
+namespace LionFire.Data.Gets;
 
 // ENH: make GetsSlim sealed for perf, and duplicate code here, with a tuple for ReadCacheValue and HasValue
 public abstract class GetsDefaultableSlim<TValue> : AsyncGetsSlim<TValue>

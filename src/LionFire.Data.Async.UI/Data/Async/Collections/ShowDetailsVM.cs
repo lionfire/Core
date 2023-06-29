@@ -1,7 +1,7 @@
 ﻿using Newtonsoft.Json.Linq;
 using System.Net.Http.Headers;
 
-namespace LionFire.Data.Async.Mvvm;
+namespace LionFire.Data.Mvvm;
 
 public class ShowDetailsVM<TKey, TValue, TValueVM>
     where TKey : notnull

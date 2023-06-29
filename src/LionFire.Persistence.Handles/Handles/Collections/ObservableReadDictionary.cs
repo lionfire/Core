@@ -9,7 +9,7 @@ using System.Collections;
 using System.Linq;
 using System.Threading.Tasks;
 using LionFire.Referencing;
-using LionFire.Data.Async.Gets;
+using LionFire.Data.Gets;
 
 namespace LionFire.Persistence.Handles
 {

@@ -1,7 +1,7 @@
-﻿using LionFire.Data.Async.Gets;
+﻿using LionFire.Data.Gets;
 using LionFire.Results;
 
-namespace LionFire.Data.Async;
+namespace LionFire.Data;
 
 public abstract class StatelessAsyncValueSlim<TValue> : AsyncGetsSlim<TValue>, IStatelessAsyncValue<TValue>
 {

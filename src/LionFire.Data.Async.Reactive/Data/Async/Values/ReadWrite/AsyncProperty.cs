@@ -1,7 +1,7 @@
 ﻿
 using System.Reactive.Subjects;
 
-namespace LionFire.Data.Async;
+namespace LionFire.Data;
 
 // OLD - folded into AsyncValue<,>
 //public abstract class AsyncProperty<TObject, TValue> : AsyncValue<TObject, TValue>

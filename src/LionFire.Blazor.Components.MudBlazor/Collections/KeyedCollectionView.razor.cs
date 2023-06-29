@@ -4,7 +4,7 @@ using Microsoft.AspNetCore.Components;
 using LionFire.Structures.Keys;
 using LionFire.Reflection;
 using LionFire.Reactive;
-using LionFire.Data.Async.Gets;
+using LionFire.Data.Gets;
 using static MudBlazor.CategoryTypes;
 using DynamicData.Binding;
 using LionFire.ExtensionMethods;

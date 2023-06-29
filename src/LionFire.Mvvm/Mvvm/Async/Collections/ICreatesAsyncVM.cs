@@ -3,7 +3,7 @@
 
 using LionFire.Reflection;
 
-namespace LionFire.Data.Async.Mvvm;
+namespace LionFire.Data.Mvvm;
 
 public interface ICreatesAsyncVM<T>
 {

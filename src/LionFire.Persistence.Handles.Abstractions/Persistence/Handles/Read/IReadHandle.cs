@@ -2,7 +2,7 @@
 using LionFire.Persistence.Handles;
 using LionFire.Referencing;
 using LionFire.Resolvables;
-using LionFire.Data.Async.Gets;
+using LionFire.Data.Gets;
 using LionFire.Structures;
 using System;
 using System.Collections.Generic;

@@ -10,7 +10,7 @@ using LionFire.Structures;
 using System.Diagnostics;
 using System.Reflection;
 using System.Collections.Specialized;
-using LionFire.Data.Async.Gets;
+using LionFire.Data.Gets;
 using LionFire.Results;
 
 namespace LionFire.Persistence

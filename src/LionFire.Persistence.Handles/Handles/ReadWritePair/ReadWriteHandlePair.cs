@@ -2,7 +2,7 @@
 using LionFire.ExtensionMethods.Resolves;
 using LionFire.Persistence;
 using LionFire.Referencing;
-using LionFire.Data.Async.Gets;
+using LionFire.Data.Gets;
 using LionFire.Results;
 using LionFire.Structures;
 using MorseCode.ITask;

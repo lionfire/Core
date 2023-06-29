@@ -1,5 +1,5 @@
 ﻿using LionFire.Resolvables;
-using LionFire.Data.Async.Gets;
+using LionFire.Data.Gets;
 using System;
 
 namespace LionFire.UI

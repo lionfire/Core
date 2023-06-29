@@ -1,6 +1,6 @@
 ﻿#nullable enable
 
-using LionFire.Data.Async.Gets;
+using LionFire.Data.Gets;
 using System.Reactive;
 using System.Reactive.Linq;
 using ReactiveUI;
@@ -8,7 +8,7 @@ using Splat;
 using ReactiveUI.Fody.Helpers;
 using System.Reactive.Disposables;
 
-namespace LionFire.Data.Async.Mvvm;
+namespace LionFire.Data.Mvvm;
 
 public class VMOptions
 {

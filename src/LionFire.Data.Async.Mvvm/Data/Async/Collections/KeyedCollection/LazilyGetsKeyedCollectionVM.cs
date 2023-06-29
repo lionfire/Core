@@ -1,10 +1,10 @@
-﻿using LionFire.Data.Async.Collections;
+﻿using LionFire.Data.Collections;
 using LionFire.ExtensionMethods;
-using LionFire.Data.Async.Gets;
+using LionFire.Data.Gets;
 using System.ComponentModel;
 using System.Reactive.Subjects;
 
-namespace LionFire.Data.Async.Mvvm;
+namespace LionFire.Data.Mvvm;
 
 public class LazilyGetsKeyedCollectionVM<TKey, TValue, TValueVM, TCollection>
     : LazilyGetsCollectionVM<TValue, TValueVM, TCollection>

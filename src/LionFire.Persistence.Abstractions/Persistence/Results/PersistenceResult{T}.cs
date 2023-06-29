@@ -1,7 +1,7 @@
 ﻿
 using System;
 using System.Collections.Generic;
-using LionFire.Data.Async.Gets;
+using LionFire.Data.Gets;
 
 namespace LionFire.Persistence
 {

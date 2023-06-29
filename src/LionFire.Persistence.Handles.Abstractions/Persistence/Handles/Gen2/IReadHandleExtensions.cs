@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Threading.Tasks;
 using LionFire.Persistence;
-using LionFire.Data.Async.Gets;
-using LionFire.Data.Async.Sets;
+using LionFire.Data.Gets;
+using LionFire.Data.Sets;
 
 namespace LionFire
 {

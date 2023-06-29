@@ -1,6 +1,6 @@
 ﻿using System.Threading.Tasks;
 
-namespace LionFire.Data.Async.Gets
+namespace LionFire.Data.Gets
 {
     // OLD - Defaultable classes unneeded. Just wrap with DefaultableValue<TValue>
 

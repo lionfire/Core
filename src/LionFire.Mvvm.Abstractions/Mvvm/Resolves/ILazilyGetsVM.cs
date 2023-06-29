@@ -1,8 +1,8 @@
-﻿using LionFire.Data.Async.Gets;
+﻿using LionFire.Data.Gets;
 using LionFire.Mvvm;
 using System.Reactive;
 
-namespace LionFire.Data.Async.Mvvm;
+namespace LionFire.Data.Mvvm;
 
 public interface ILazilyGetsVM<T> 
     : IGetsVM<T>

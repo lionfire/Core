@@ -2,10 +2,10 @@
 
 using LionFire.Persistence.Handles;
 using LionFire.Referencing;
-using LionFire.Data.Async.Gets;
+using LionFire.Data.Gets;
 using LionFire.Structures;
 using System;
-using LionFire.Data.Async.Sets;
+using LionFire.Data.Sets;
 
 /// <summary>
 /// IReadWriteHandle

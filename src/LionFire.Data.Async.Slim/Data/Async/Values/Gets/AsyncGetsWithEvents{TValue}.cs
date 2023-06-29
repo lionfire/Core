@@ -1,5 +1,5 @@
 ﻿
-namespace LionFire.Data.Async.Gets;
+namespace LionFire.Data.Gets;
 
 /// <remarks>
 /// Consider AsyncGets instead, for ReactiveUI support.

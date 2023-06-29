@@ -1,8 +1,8 @@
 ﻿using LionFire.Events;
 using LionFire.Persistence.Handles;
-using LionFire.Data.Async.Gets;
+using LionFire.Data.Gets;
 using LionFire.Structures;
-using LionFire.Data.Async.Sets;
+using LionFire.Data.Sets;
 using LionFire.Data;
 
 namespace LionFire.Persistence;

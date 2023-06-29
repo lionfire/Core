@@ -1,6 +1,6 @@
 ﻿using LionFire.ExtensionMethods.Poco.Data.Async;
 
-namespace LionFire.Data.Async.Sets;
+namespace LionFire.Data.Sets;
 
 public class AmbientSets<TKey, TValue> : AsyncSetsSlim<TKey, TValue>
      where TKey : class

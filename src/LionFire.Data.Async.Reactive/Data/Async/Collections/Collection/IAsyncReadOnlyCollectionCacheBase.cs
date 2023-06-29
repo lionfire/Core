@@ -1,7 +1,7 @@
 ﻿using DynamicData;
-using LionFire.Data.Async.Gets;
+using LionFire.Data.Gets;
 
-namespace LionFire.Data.Async.Collections;
+namespace LionFire.Data.Collections;
 
 public interface IAsyncReadOnlyCollectionCacheBase<TItem>
     : ILazilyGets<IEnumerable<TItem>>
