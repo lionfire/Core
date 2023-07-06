@@ -1,7 +1,7 @@
-﻿
+﻿#if UNUSED
 namespace LionFire.Data.Gets;
 
-public abstract class CachingGets<T> : ICachingResolves<T>
+public abstract class CachingGets<T> : ICachingGets<T>
 {
     public T Value => value;
     protected T? value;
@@ -17,3 +17,4 @@ public abstract class CachingGets<T> : ICachingResolves<T>
         return result;
     }
 }
+#endif

@@ -1,6 +1,4 @@
-﻿#nullable enable
-
-using LionFire.ExtensionMethods.Types;
+﻿using LionFire.ExtensionMethods.Types;
 using LionFire.Reflection;
 
 namespace LionFire.Data.Mvvm;

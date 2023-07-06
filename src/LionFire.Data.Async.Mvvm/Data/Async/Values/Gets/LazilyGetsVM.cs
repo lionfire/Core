@@ -15,6 +15,13 @@ public class VMOptions
     public bool ShowRefreshIfHasNoValue { get; set; } = true;
 }
 
+/// <summary>
+/// 
+/// </summary>
+/// <typeparam name="T"></typeparam>
+/// <remarks>
+/// Source: mutable (REVIEW)
+/// </remarks>
 public abstract class LazilyGetsVM<T>
     : ReactiveObject
     , ILazilyGetsVM<T>
@@ -60,35 +67,35 @@ public abstract class LazilyGetsVM<T>
         //, canExecute: );
         //Get.ThrownExceptions.Subscribe(ex => this.Log().Error(ex, "Something went wrong"));
 
-        this.WhenAnyValue(r => r.Source)
-            .Subscribe(resolves =>
-            {
-                // REVIEW - just making this up as I go.  Does this make any sense?
-                var cmd = ReactiveCommand.CreateFromTask<Unit, IGetResult<T>>(
-                    _ => resolves!.Get().AsTask(),
-                    canExecute: Observable.Return(resolves != null)
-                //Observable.Create<bool>(o => { o.OnNext(gets != null); o.OnCompleted(); return Disposable.Empty; })
+        #region GetCommand
+        GetCommand = ReactiveCommand.CreateFromTask<Unit, IGetResult<T>>(
+            _ => (Source ?? throw new ArgumentNullException(nameof(Source))).Get().AsTask(),
+            canExecute: Observable.Return(Source != null)
+        //Observable.Create<bool>(o => { o.OnNext(gets != null); o.OnCompleted(); return Disposable.Empty; })
+        );
+        GetCommand.ThrownExceptions.Subscribe(ex => this.Log().Error(ex, "Something went wrong"));
+        GetCommand.IsExecuting.ToPropertyEx(this, vm => vm.IsGetting, initialValue: false);
+        GetCommand.CanExecute.ToPropertyEx(this, vm => vm.CanGet, initialValue: false);
+        #endregion
+
+        #region GetIfNeededCommand
+        GetIfNeeded = ReactiveCommand.CreateFromTask<Unit, ILazyGetResult<T>>(
+                    _ => (Source ?? throw new ArgumentNullException(nameof(Source))).GetIfNeeded().AsTask(),
+                    canExecute: Observable.Create<bool>(o => { o.OnNext(Source != null); o.OnCompleted(); return Disposable.Empty; })
                 );
-                Resolve = cmd;
-                cmd.ThrownExceptions.Subscribe(ex => this.Log().Error(ex, "Something went wrong"));
-                cmd.IsExecuting.ToPropertyEx(this, vm => vm.IsResolving, initialValue: false);
-                cmd.CanExecute.ToPropertyEx(this, vm => vm.CanResolve, initialValue: false);
-            });
+        #endregion
 
         this.WhenAnyValue(r => r.Source)
-            .Subscribe(resolves =>
+            .Subscribe(source =>
             {
-                GetIfNeeded = ReactiveCommand.CreateFromTask<Unit, ILazyGetResult<T>>(
-                    _ => resolves.GetIfNeeded().AsTask(),
-                    canExecute: Observable.Create<bool>(o => { o.OnNext(resolves != null); o.OnCompleted(); return Disposable.Empty; })
-                );
+                observableGetsSubscription?.Dispose();
+                observableGetsSubscription = null;
 
-                #region NeedsLazilyResolve
-
-                if (resolves is IObservableGets<T> whenGets)
+                #region Bind: HasValue  (TODO: Value?)
+                if (source is IObservableGets<T> whenGets)
                 {
                     // Subscribe to the IObservableResolves
-                    whenGets.Gets.Subscribe(async resultTask =>
+                    observableGetsSubscription = whenGets.Gets.Subscribe(async resultTask =>
                     {
                         var result = await resultTask;
                         HasValue = result.HasValue;
@@ -97,13 +104,14 @@ public abstract class LazilyGetsVM<T>
                 else
                 {
                     // Subscribe to the ReactiveCommand in this
-                    Resolve.Subscribe(result => HasValue = result.HasValue);
+                    observableGetsSubscription = GetCommand.Subscribe(result => HasValue = result.HasValue);
                 }
                 HasValue = Source?.HasValue == true;
 
                 #endregion
             });
     }
+    IDisposable? observableGetsSubscription;
 
     #endregion
 
@@ -115,18 +123,21 @@ public abstract class LazilyGetsVM<T>
 
     #region Commands
 
-    public ReactiveCommand<Unit, IGetResult<T>> Resolve { get; private set; }
+    public ReactiveCommand<Unit, IGetResult<T>> GetCommand { get; private set; }
 
     [ObservableAsProperty]
-    public bool CanResolve { get; }
+    public bool CanGet { get; }
 
     [ObservableAsProperty]
-    public bool IsResolving { get; }
+    public bool IsGetting { get; }
 
-    //public bool IsResolving { get { return isResolving.Value; } }
+    //public bool IsGetting { get { return isResolving.Value; } }
     //readonly ObservableAsPropertyHelper<bool> isResolving;
 
     #endregion
+
+    [Reactive]
+    public bool HasValue { get; protected set; }
 
     public IObservable<IGetResult<T>> GetImpl()
         => Observable.StartAsync(async () => await ((IGets<T>)this).Get());

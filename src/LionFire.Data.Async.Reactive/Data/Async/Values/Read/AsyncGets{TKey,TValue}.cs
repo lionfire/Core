@@ -9,8 +9,8 @@ public abstract class AsyncGets<TKey, TValue>
 {
     #region Key
 
-    public TKey Key => key ?? throw new ObjectDisposedException(null);
-    protected TKey? key;
+    public TKey Key => isDisposed ? throw new ObjectDisposedException(null) : key;
+    protected TKey key;
 
     public IAsyncObject? AsyncObjectKey => Key as IAsyncObject;
 
@@ -18,12 +18,16 @@ public abstract class AsyncGets<TKey, TValue>
 
     #region Lifecycle
 
-    protected AsyncGets() : this(null)
-    {
-    }
+    //protected AsyncGets() : this(default, null)
+    //{
+    //}
 
-    protected AsyncGets(AsyncGetOptions? options) : base(options)
+    //protected AsyncGets(AsyncGetOptions? options) : base(options)
+    //{
+    //}
+    protected AsyncGets(TKey key, AsyncGetOptions? options) : base(options)
     {
+        this.key = key;
     }
 
     public virtual void Dispose()
@@ -31,7 +35,7 @@ public abstract class AsyncGets<TKey, TValue>
         isDisposed = true;
         var keyCopy = key;
         key = default;
-        if (keyCopy is IDisposable d && Options.DisposeKey) // ENH: Offload this to implementors
+        if (keyCopy is IDisposable d && GetOptions.DisposeKey) // ENH: Offload this to implementors
         {
             d.Dispose();
         }

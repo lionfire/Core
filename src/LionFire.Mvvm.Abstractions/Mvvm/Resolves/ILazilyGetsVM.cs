@@ -9,9 +9,9 @@ public interface ILazilyGetsVM<T>
     , IViewModel<ILazilyGets<T>>
 {
     ReactiveCommand<Unit, ILazyGetResult<T>> GetIfNeeded { get; }
-    bool HasValue { get; }
+    //bool HasValue { get; }
 
-    ReactiveCommand<Unit, Unit> DiscardValue { get; }
+    //ReactiveCommand<Unit, Unit> DiscardValue { get; }
 }
 
 //public IGetsRx<IEnumerable<TValue>>? GetsVM

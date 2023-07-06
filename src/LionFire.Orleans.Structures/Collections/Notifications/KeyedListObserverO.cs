@@ -4,12 +4,10 @@ using LionFire.FlexObjects;
 using LionFire.Orleans_;
 
 using LionFire.Orleans_.Reactive_;
-using LionFire.Subscribing;
 using LionFire.Threading;
 using Microsoft.Extensions.Logging;
 using Nito.AsyncEx;
 using Nito.Disposables;
-using ReactiveUI;
 using System;
 using System.Diagnostics;
 using System.Reactive.Disposables;

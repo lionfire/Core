@@ -1,25 +1,15 @@
 ﻿
-using DynamicData;
 using LionFire.Collections;
-using LionFire.DependencyInjection;
 using LionFire.Orleans_.Reactive_;
 using LionFire.Data.Gets;
-using LionFire.Structures;
-using LionFire.Subscribing;
 using LionFire.Threading;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json.Linq;
-using Orleans;
-using Orleans.Streams;
-using System;
-using System.ComponentModel;
-using System.Linq;
-using System.Reactive;
-using System.Reactive.Linq;
-using System.Reactive.Subjects;
 using static LionFire.Reflection.GetMethodEx;
 using static System.Runtime.InteropServices.JavaScript.JSType;
+using DynamicData;
+using Orleans.Streams;
 
 namespace LionFire.Orleans_.Collections;
 
@@ -290,7 +280,7 @@ public class KeyedCollectionG<TKey, TItem> : Grain
 
     public virtual Task<IEnumerable<Type>> SupportedTypes() => Task.FromResult(Enumerable.Empty<Type>());
 
-    public Task<IGetResult<IEnumerable<TItem>>> Resolve()
+    public Task<IGetResult<IEnumerable<TItem>>> Get(CancellationToken cancellationToken = default)
         => Task.FromResult<IGetResult<IEnumerable<TItem>>>(new ResolveResultSuccess<IEnumerable<TItem>>(ItemsState.State.Values.ToArray()));
 
 

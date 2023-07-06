@@ -15,6 +15,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Folder Include="Resolves\Caching\" />
     <Folder Include="Resolves\Lazy\" />
   </ItemGroup>
 

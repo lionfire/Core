@@ -15,7 +15,7 @@ public abstract class AsyncGets<TValue>
 
     #endregion
 
-    public AsyncGetOptions Options { get; set; }
+    public AsyncGetOptions GetOptions { get; set; }
 
     AsyncGetOptions IHasNonNullSettable<AsyncGetOptions>.Object { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
 
@@ -27,11 +27,11 @@ public abstract class AsyncGets<TValue>
 
     protected AsyncGets()
     {
-        Options = DefaultOptions;
+        GetOptions = DefaultOptions;
     }
 
     protected AsyncGets(AsyncGetOptions? options) {
-        Options = options ?? DefaultOptions;
+        GetOptions = options ?? DefaultOptions;
     }
 
     #endregion
@@ -54,7 +54,7 @@ public abstract class AsyncGets<TValue>
     public void Discard() => DiscardValue();
     public void DiscardValue()
     {
-        Value = default;
+        ReadCacheValue = default;
         HasValue = false;
     }
 
@@ -78,7 +78,7 @@ public abstract class AsyncGets<TValue>
         if (getTask != null && getState.AsTask().IsCompleted) { return await getTask.ConfigureAwait(false); }
 
         var result = await GetImpl().ConfigureAwait(false);
-        Value = result.IsSuccess == true ? result.Value : default;
+        ReadCacheValue = result.IsSuccess == true ? result.Value : default;
         HasValue = result.IsSuccess == true;
         return result;
     }

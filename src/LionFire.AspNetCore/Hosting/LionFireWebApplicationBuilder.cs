@@ -10,12 +10,29 @@ public class LionFireWebApplicationBuilder : ILionFireHostBuilder
 {
     public WebApplicationBuilder WebApplicationBuilder { get; }
 
+    private HostApplicationBuilder HostApplicationBuilder { get; }
+
+    #region IHostBuilder
+
+    // TODO - eliminate need for this?
+    public IHostBuilder IHostBuilder { get; }
+    //public LionFireHostBuilderWrapper HostBuilder => hostApplicationBuilder throw new NotImplementedException(); 
+
+    #endregion
+
+    public LionFireHostBuilderWrapper HostBuilder { get; }
+
+    #region Lifecycle
+
     public LionFireWebApplicationBuilder(WebApplicationBuilder hostBuilder)
     {
         WebApplicationBuilder = hostBuilder;
+        HostApplicationBuilder = hostBuilder.ToHostApplicationBuilder();
+        IHostBuilder = new HostApplicationBuilderToIHostBuilderAdapter(HostApplicationBuilder);
+        HostBuilder = new LionFireHostBuilderWrapper(HostApplicationBuilder, this);
     }
 
-    public LionFireHostBuilderWrapper HostBuilder => throw new NotImplementedException(); // TODO - eliminate need for this
+    #endregion
 
     public HostBuilderContext GetHostBuilderContext => new HostBuilderContext(WebApplicationBuilder.Host.Properties)
     {

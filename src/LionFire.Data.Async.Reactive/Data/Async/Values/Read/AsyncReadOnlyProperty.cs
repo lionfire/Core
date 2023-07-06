@@ -15,10 +15,10 @@ public abstract class AsyncReadOnlyProperty<TObject, TValue> : AsyncGets<TObject
 
     #region Lifecycle
 
-    public AsyncReadOnlyProperty(TObject target, AsyncValueOptions? options = null)
+    public AsyncReadOnlyProperty(TObject target, AsyncValueOptions? options = null) : base(target, options)
     {
         Target = target;
-        Options = options ?? TargetAsync?.Options?.PropertyOptions ?? DefaultOptions;
+        GetOptions = options ?? TargetAsync?.Options?.PropertyOptions ?? DefaultOptions;
     }
 
     #endregion

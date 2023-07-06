@@ -7,6 +7,7 @@ namespace LionFire.Data.Reactive;
 public interface IAsyncValueRx<T> 
     : ILazilyGetsRx<T>
     , ISetsRx<T>
-    , IHasNonNullSettable<AsyncValueOptions>
+    //, IHasNonNullSettable<AsyncValueOptions>
 {
+    AsyncValueOptions Options { get; set; }
 }

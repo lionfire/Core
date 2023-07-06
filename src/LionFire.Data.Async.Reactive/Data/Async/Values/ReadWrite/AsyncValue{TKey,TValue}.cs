@@ -1,4 +1,5 @@
 ﻿using LionFire.Data.Reactive;
+using LionFire.Data.Sets;
 using LionFire.Results;
 using MorseCode.ITask;
 using System.Collections.Generic;
@@ -7,28 +8,55 @@ using System.Reactive.Subjects;
 namespace LionFire.Data;
 
 
-public abstract class AsyncValue<TKey, TValue>
-: AsyncGets<TKey, TValue>
-, IAsyncValueRx<TValue>
+internal interface IGetsInternal<TValue> //: IAsyncGetsRx<TValue>
 {
+    IEqualityComparer<TValue> EqualityComparer { get; }
+}
+
+internal interface ISetsInternal<TValue> : IAsyncValueRx<TValue>
+{
+    IEqualityComparer<TValue> EqualityComparer { get; }
+    ISetOperation<TValue> SetState { get; }
+    object setLock { get; }
+    BehaviorSubject<ISetOperation<TValue>> sets { get; }
+    Task<ITransferResult> SetImpl(TValue? value, CancellationToken cancellationToken = default);
+}
+
+public abstract class AsyncValue<TKey, TValue>
+    : AsyncGets<TKey, TValue>
+    , IAsyncValueRx<TValue>
+    , ISetsInternal<TValue>
+{
+    #region Parameters
+
+
     #region Options
 
     #region (static)
 
     public static new AsyncValueOptions DefaultOptions => AsyncValueOptions<TKey, TValue>.Default;
 
-    public static IEqualityComparer<TValue> DefaultEqualityComparer => EqualityComparerOptions<TValue>.Default;
+    //public static IEqualityComparer<TValue> DefaultEqualityComparer => EqualityComparerOptions<TValue>.Default;
 
     #endregion
 
     public AsyncValueOptions Options
     {
-        get => (AsyncValueOptions)base.GetOptions;
-        set => base.GetOptions = value;
+        get => options;
+        set
+        {
+            options = value;
+            base.GetOptions = value; // redundant reference to GetOptions.
+        }
     }
-    AsyncValueOptions IHasNonNullSettable<AsyncValueOptions>.Object { get => Options; set => Options = value; }
+    AsyncValueOptions options;
 
-    AsyncValueOptions IHasNonNull<AsyncValueOptions>.Object => Options;
+    //AsyncValueOptions IHasNonNullSettable<AsyncValueOptions>.Object { get => Options; set => Options = value; }
+
+    //AsyncValueOptions IHasNonNull<AsyncValueOptions>.Object => Options;
+
+    #endregion
+
 
     #endregion
 
@@ -55,10 +83,10 @@ public abstract class AsyncValue<TKey, TValue>
     public override ITask<IGetResult<TValue>> Get(CancellationToken cancellationToken = default)
     {
         var setState = SetState;
-        if (IsSetStateSetting(setState) && Options.OptimisticGetWhileSetting)
+        if (AsyncSetLogic<TValue>.IsSetStateSetting(setState) && Options.OptimisticGetWhileSetting)
         {
             // return Optimistically
-            return Task.FromResult<IGetResult<TValue>>(new OptimisticGetResult<TValue>(setState.SettingToValue)).AsITask();
+            return Task.FromResult<IGetResult<TValue>>(new OptimisticGetResult<TValue>(setState.DesiredValue)).AsITask();
         }
         return base.Get(cancellationToken);
     }
@@ -94,45 +122,34 @@ public abstract class AsyncValue<TKey, TValue>
 
     #region Status
 
-    public bool IsSetting => IsSetStateSetting(SetState);
-    public static bool IsSetStateSetting((TValue? SettingToValue, ITask<ITransferResult> task) setState) => setState.task != null && setState.task.AsTask().IsCompleted == false;
+    public bool IsSetting => AsyncSetLogic<TValue>.IsSetStateSetting(SetState);
 
-    /// <summary>
-    /// 
-    /// </summary>
     /// <remarks>
     /// locked by: setLock
     /// </remarks>
-    [Reactive]
-    public (TValue? SettingToValue, ITask<ITransferResult> task) SetState => sets.Value;
+    public ISetOperation<TValue> SetState => sets.Value;
 
     #endregion
 
     #region Events
 
-    public IObservable<(TValue?, ITask<ITransferResult>)> Sets => sets;
-    private BehaviorSubject<(TValue?, ITask<ITransferResult>)> sets = new((default, Task.FromResult<ITransferResult>(TransferResult.Initialized).AsITask()));
+    public IObservable<ISetOperation<TValue>> Sets => sets;
+    private BehaviorSubject<ISetOperation<TValue>> sets = AsyncSetLogic<TValue>.InitSets;
+    BehaviorSubject<ISetOperation<TValue>> ISetsInternal<TValue>.sets => sets;
 
     #endregion
 
     #region Methods
 
-    public async Task<ITransferResult> Set(CancellationToken cancellationToken = default)
-    {
-        try
-        {
-            await Set(StagedValue, cancellationToken);
-            return SuccessResult.Success;
-        }
-        catch (Exception ex)
-        {
-            return new ExceptionResult(ex);
-        }
-    }
+    public Task<ITransferResult> Set(CancellationToken cancellationToken = default) 
+        => AsyncSetLogic<TValue>.Set(this, cancellationToken);
+
+    public Task<ITransferResult> SetImpl(TValue? value, CancellationToken cancellationToken = default)
+        => SetImpl(Key, value, cancellationToken);
 
     public abstract Task<ITransferResult> SetImpl(TKey key, TValue? value, CancellationToken cancellationToken = default);
 
-    private object setLock = new();
+    object ISetsInternal<TValue>.setLock { get; } = new();
 
     /// <summary>
     /// Skips set if DefaultEqualityComparer.Equals(currentSetState.Value.SettingToValue, value)
@@ -140,30 +157,12 @@ public abstract class AsyncValue<TKey, TValue>
     /// <param name="value"></param>
     /// <param name="cancellationToken"></param>
     /// <returns></returns>
-    public async Task Set(TValue? value, CancellationToken cancellationToken = default)
+    public Task<ITransferResult> Set(TValue? value, CancellationToken cancellationToken = default)
     {
         var target = Key;
         ArgumentNullException.ThrowIfNull(target, nameof(Key));
 
-        (TValue? SettingToValue, ITask<ITransferResult> task)? currentSetState;
-    start:
-        do
-        {
-            currentSetState = SetState;
-            if (currentSetState.task != null) { await currentSetState.Value.task!.ConfigureAwait(false); }
-            if (DefaultEqualityComparer.Equals(currentSetState.Value.SettingToValue, value)) { return; }
-
-            // ENH: Based on option: Also wait for existing get/set to complete to avoid setting to a value that will be overwritten, or to avoid setting to a value that is the same as the gotten value
-        } while (currentSetState.Value.task != null);
-
-        lock (setLock)
-        {
-            if (IsSetting) goto start;
-            sets.OnNext((value, SetImpl(target, value, cancellationToken)));
-        }
-        await SetState.task.ConfigureAwait(false);
-        //OnPropertyChanged(nameof(Value));
-
+        return AsyncSetLogic<TValue>.Set(this, value, cancellationToken);
     }
 
     #endregion

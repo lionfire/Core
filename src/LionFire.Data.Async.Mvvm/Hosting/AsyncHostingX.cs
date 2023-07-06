@@ -13,7 +13,7 @@ public static class AsyncHostingX
     public static IServiceCollection AddAsyncDataMvvm(this IServiceCollection services)
     {
         return services
-            .AddSingleton<AsyncKeyedCollectionVM<,,>>()
+            .AddSingleton(typeof(AsyncKeyedCollectionVM<,,>))
             ;
     }
 }

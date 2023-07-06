@@ -1,5 +1,4 @@
 ﻿using LionFire.Dependencies;
-using LionFire.Resolvers;
 using System;
 using System.Threading.Tasks;
 using LionFire.ExtensionMethods;

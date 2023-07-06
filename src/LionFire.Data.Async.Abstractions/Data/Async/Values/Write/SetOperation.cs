@@ -4,10 +4,10 @@ public readonly struct SetOperation<TValue> : ISetOperation<TValue>
 {
     public SetOperation(TValue? value, ITask<ITransferResult> task)
     {
-        Value = value;
+        DesiredValue = value;
         Task = task;
     }
-    public TValue? Value { get; }
+    public TValue? DesiredValue { get; }
 
     public ITask<ITransferResult> Task { get; }
 }

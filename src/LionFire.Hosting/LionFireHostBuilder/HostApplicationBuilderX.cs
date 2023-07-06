@@ -25,7 +25,6 @@ public static class HostApplicationBuilderX
         return hostBuilder;
     }
 
-
     #region UseConsoleLifetime
 
     public static HostApplicationBuilder UseConsoleLifetime(this HostApplicationBuilder hostApplicationBuilder)

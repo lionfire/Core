@@ -36,6 +36,8 @@ public class TransferResult : ITransferResult, IErrorResult
     public static readonly TransferResult PreviewFail = new TransferResult { Flags = TransferResultFlags.PreviewFail };
     public static readonly TransferResult PreviewSuccess = new TransferResult { Flags = TransferResultFlags.PreviewSuccess };
 
+    public static TransferResult FromException(Exception ex) => new TransferResult { Flags = TransferResultFlags.Fail, Error = ex };
+
     public override string ToString() => $"{{{this.GetType().Name} {Flags}}}";
 }
 

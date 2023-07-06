@@ -57,10 +57,10 @@ public class LazilyGetsKeyedCollectionVM<TKey, TValue, TValueVM, TCollection>
 
     public IAsyncReadOnlyKeyedCollectionCache<TKey, TValue>? PreferredSource { get => base.Source as IAsyncReadOnlyKeyedCollectionCache<TKey, TValue>; set => base.Source = (ILazilyGets<TCollection>?)value; }
 
-    protected override void OnSourceChanged(IGets<TCollection>? newValue)
-    {
-        ((ReactiveObject)this).RaisePropertyChanged(nameof(PreferredSource));
-    }
+    //protected void OnSourceChanged(IGets<TCollection>? newValue)
+    //{
+    //    ((ReactiveObject)this).RaisePropertyChanged(nameof(PreferredSource));
+    //}
 
     #endregion
 

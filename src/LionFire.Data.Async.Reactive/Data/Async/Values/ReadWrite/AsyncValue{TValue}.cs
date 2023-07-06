@@ -9,23 +9,25 @@ namespace LionFire.Data;
 public abstract class AsyncValue<TValue>
     : AsyncGets<TValue>
     , IAsyncValueRx<TValue>
+    , ISetsRx<TValue>
+    , ISetsInternal<TValue>
 {
     #region Options
 
     #region (static)
 
-    public new static AsyncValueOptions DefaultOptions => AsyncValueOptions<TKey, TValue>.Default;
+    public new static AsyncValueOptions DefaultOptions => AsyncValueOptions<TValue>.Default;
 
     #endregion
 
-    public new AsyncValueOptions Options
+    public AsyncValueOptions Options
     {
-        get => (AsyncValueOptions)base.Options;
-        set => base.Options = value;
+        get => (AsyncValueOptions)base.GetOptions;
+        set => base.GetOptions = value;
     }
-    AsyncValueOptions IHasNonNullSettable<AsyncValueOptions>.Object { get => Options; set => Options = value; }
+    //AsyncValueOptions IHasNonNullSettable<AsyncValueOptions>.Object { get => Options; set => Options = value; }
 
-    AsyncValueOptions IHasNonNull<AsyncValueOptions>.Object => Options;
+    //AsyncValueOptions IHasNonNull<AsyncValueOptions>.Object => Options;
 
     #endregion
 
@@ -33,13 +35,10 @@ public abstract class AsyncValue<TValue>
 
     public AsyncValue() : base(DefaultOptions)
     {
-        asyncSets = new();
     }
 
     public AsyncValue(AsyncValueOptions options) : base(options)
     {
-        asyncSets = new(options);
-
         this.ObservableForProperty(t => t.Value)
             .Subscribe(t =>
             {
@@ -64,18 +63,19 @@ public abstract class AsyncValue<TValue>
     public override ITask<IGetResult<TValue>> Get(CancellationToken cancellationToken = default)
     {
         var setState = SetState;
-        if (IsSetStateSetting(setState) && Options.OptimisticGetWhileSetting)
+        if (AsyncSetLogic<TValue>.IsSetStateSetting(setState) && Options.OptimisticGetWhileSetting)
         {
             // return Optimistically
-            return Task.FromResult<IGetResult<TValue>>(new OptimisticGetResult<TValue>(setState.SettingToValue)).AsITask();
+            return Task.FromResult<IGetResult<TValue>>(new OptimisticGetResult<TValue>(setState.DesiredValue)).AsITask();
         }
         return base.Get(cancellationToken);
     }
 
     #endregion
 
-    AsyncSets<TValue> asyncSets;
     #region Set
+
+    object ISetsInternal<TValue>.setLock { get; } = new();
 
     #region State
 
@@ -97,39 +97,36 @@ public abstract class AsyncValue<TValue>
 
     #region Status
 
+    public ISetOperation<TValue> SetState => sets.Value;
+
     #endregion
 
     #region Events
 
     [Browsable(false)]
-    public IObservable<ITask<ITransferResult>> Sets => sets ??= new();
-    private Subject<ITask<ITransferResult>>? sets;
+    public IObservable<ISetOperation<TValue>> Sets => sets;
+    private BehaviorSubject<ISetOperation<TValue>> sets = AsyncSetLogic<TValue>.InitSets;
+    BehaviorSubject<ISetOperation<TValue>> ISetsInternal<TValue>.sets => sets;
 
     #endregion
 
     #region Methods
 
-    public abstract Task<ITransferResult> SetImpl(CancellationToken cancellationToken = default);
+    public abstract Task<ITransferResult> SetImpl(TValue? value, CancellationToken cancellationToken = default);
 
-    public async Task<ITransferResult> Set(CancellationToken cancellationToken = default)
-    {
-        var result = await SetImpl(StagedValue, cancellationToken);
-        if (result.IsSuccess())
-        {
-            HasStagedValue = false;
-        }
-    }
-
+    public Task<ITransferResult> Set(CancellationToken cancellationToken = default)
+        => AsyncSetLogic<TValue>.Set(this, cancellationToken);
+    
     public Task<ITransferResult> Set(TValue? value, CancellationToken cancellationToken = default)
-    {
-        throw new NotImplementedException();
-    }
+        => AsyncSetLogic<TValue>.Set(this, value, cancellationToken);
 
     #endregion
 
     #endregion
 
 }
+
+#if false // TODO: Needs non-abstract AsyncGets
 
 public abstract class AsyncCompositeValue<TValue>
     : ReactiveObject
@@ -201,3 +198,4 @@ public abstract class AsyncCompositeValue<TValue>
     #endregion
 
 }
+#endif

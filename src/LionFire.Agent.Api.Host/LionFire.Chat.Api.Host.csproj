@@ -1,0 +1,43 @@
+﻿<Project Sdk="Microsoft.NET.Sdk.Web">
+
+	<PropertyGroup>
+		<TargetFramework>net7.0</TargetFramework>
+		<Nullable>enable</Nullable>
+		<ImplicitUsings>enable</ImplicitUsings>
+		<InvariantGlobalization>true</InvariantGlobalization>
+		<UserSecretsId>10d862fc-0a88-4d05-b20a-bd3c00b3c5c5</UserSecretsId>
+	</PropertyGroup>
+
+	<ItemGroup>
+
+		<PackageReference Include="Marten.NodaTime" />
+
+		<PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" />
+
+		<PackageReference Include="Microsoft.AspNetCore.OpenApi" />
+
+		<PackageReference Include="Swashbuckle.AspNetCore" />
+
+		<PackageReference Include="WolverineFx" />
+
+		<PackageReference Include="WolverineFx.Http" />
+
+		<PackageReference Include="WolverineFx.Marten" />
+
+		<PackageReference Include="WolverineFx.RabbitMQ" />
+
+	</ItemGroup>
+
+
+	<ItemGroup>
+		<ProjectReference Include="..\..\..\Internal\src\LionFire.Chat.Abstractions\LionFire.Chat.Abstractions.csproj" />
+		<ProjectReference Include="..\LionFire.AspNetCore\LionFire.AspNetCore.csproj" />
+		<ProjectReference Include="..\LionFire.Hosting\LionFire.Hosting.csproj" />
+	</ItemGroup>
+
+
+	<ItemGroup>
+	  <Folder Include="Chat\Model\" />
+	  <Folder Include="Events\" />
+	</ItemGroup>
+</Project>
