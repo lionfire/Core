@@ -61,8 +61,6 @@ public abstract class AsyncReadOnlyKeyedCollectionCache<TKey, TValue>
 
     #region State
 
-    public override IEnumerable<TValue>? ReadCacheValue => SourceCache.Items;
-
     public SourceCache<TValue, TKey> SourceCache { get; }
     public IObservableCache<TValue, TKey> ObservableCache => SourceCache.AsObservableCache(); // AsObservableCache converts it read only
                                                                                               

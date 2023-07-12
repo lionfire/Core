@@ -23,7 +23,7 @@ internal interface ISetsInternal<TValue> : IAsyncValueRx<TValue>
 }
 
 public abstract class AsyncValue<TKey, TValue>
-    : AsyncGets<TKey, TValue>
+    : Gets<TKey, TValue>
     , IAsyncValueRx<TValue>
     , ISetsInternal<TValue>
 {
@@ -66,7 +66,7 @@ public abstract class AsyncValue<TKey, TValue>
     {
         Options = options ?? AsyncObjectKey?.Options.PropertyOptions ?? DefaultOptions;
 
-        this.ObservableForProperty(t => t.Value)
+        this.ObservableForProperty(t => t.ReadCacheValue)
             .Subscribe(t =>
             {
                 if (HasStagedValue)

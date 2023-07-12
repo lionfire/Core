@@ -167,7 +167,7 @@ namespace LionFire.Persistence.Handles
             }
             if (AutoResolveObjects)
             {
-                await handle.Resolve().ConfigureAwait(false);
+                await handle.Get().ConfigureAwait(false);
             }
         }
 

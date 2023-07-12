@@ -27,6 +27,7 @@ using FileNotFoundException = System.IO.FileNotFoundException;
 using IOException = System.IO.IOException;
 using Stream = System.IO.Stream;
 using LionFire.Data;
+using LionFire.Results;
 
 namespace LionFire.Persistence.Filesystemlike;
 
@@ -322,7 +323,7 @@ public abstract partial class VirtualFilesystemPersisterBase<TReference, TPersis
                 return (IGetResult<TValue>)Activator.CreateInstance(resultType,
                     Activator.CreateInstance(typeof(TValue), listResult.Value),
                     listResult.Flags,
-                    listResult.Error)!; // REVIEW - why does Activator.CreateInstance return "object?" instead of "object"?
+                    (listResult as IErrorResult)?.Error)!; // REVIEW - why does Activator.CreateInstance return "object?" instead of "object"?
 
                 //return (IGetResult<TValue>)(object)new RetrieveResult<Metadata<IEnumerable<IListing<>>>>(new Metadata<IEnumerable<Listing<TValue>>>(listResult.Value), listResult.Flags) // HARDCAST
                 //{

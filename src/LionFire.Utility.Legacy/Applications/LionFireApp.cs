@@ -470,7 +470,7 @@ namespace LionFire.Applications
             try
             {
                 // TOPORT: ResolveOrCreate
-                await vs.Resolve().ConfigureAwait(false);
+                await vs.Get().ConfigureAwait(false);
                 //        vs.RetrieveOrCreate();
             }
             catch (Exception ex)

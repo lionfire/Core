@@ -9,3 +9,8 @@ public interface IStagesSet<T> : ISets
 
     void DiscardStagedValue();
 }
+
+public interface IStagesSetWithPersistenceFlags<T> : IStagesSet<T>
+{
+    PersistenceFlags Flags { get; set; }
+}

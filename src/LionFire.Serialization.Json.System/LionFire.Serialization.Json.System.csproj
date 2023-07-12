@@ -11,7 +11,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\LionFire.Hosting\LionFire.Hosting.csproj" />
-    <ProjectReference Include="..\LionFire.Persistence\LionFire.Persistence.csproj" />
+    <ProjectReference Include="..\LionFire.Persistence\LionFire.Data.Persisters.csproj" />
   </ItemGroup>
 
 </Project>

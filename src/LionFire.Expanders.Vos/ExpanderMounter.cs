@@ -10,6 +10,7 @@ using LionFire.Ontology;
 using LionFire.Persistence;
 using LionFire.Persistence.Persisters.Vos;
 using LionFire.Referencing;
+using LionFire.Results;
 using LionFire.Vos;
 using LionFire.Vos.Mounts;
 using Microsoft.Extensions.Logging;
@@ -213,7 +214,7 @@ public class ExpanderMounter : IParentable<IVob>
         try
         {
             Logger.LogDebug($"TryAutoMountArchives: {vob.Reference}");
-            bool ExtensionFilterFunc(string ext) => ArchiveExtensions.Contains(ext);
+            //bool ExtensionFilterFunc(string ext) => ArchiveExtensions.Contains(ext);
 
             //TODO: Instead of RetrieveAll, use List(filter ), with a filter that's either a Predicate<string filename>
 
@@ -230,9 +231,10 @@ public class ExpanderMounter : IParentable<IVob>
                 //    return;
                 //}
 
-                if (archiveResultsBatch.Error != null)
+                var error = (archiveResultsBatch as IErrorResult)?.Error;
+                if (error != null)
                 {
-                    Logger.LogWarning($"TryAutoMountArchives error when retrieving item (result: {archiveResultsBatch.IsSuccess}): " + archiveResultsBatch);
+                    Logger.LogWarning($"TryAutoMountArchives error when retrieving item (result: {archiveResultsBatch.IsSuccess}): {archiveResultsBatch}. Error: {error}");
                     continue;
                 }
 

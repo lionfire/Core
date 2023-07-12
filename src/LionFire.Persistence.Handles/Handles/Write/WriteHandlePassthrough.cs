@@ -34,11 +34,19 @@ public class WriteHandlePassthrough<TValue, TReference> : IWriteHandle<TValue>, 
 
     public PersistenceFlags Flags => WriteHandle.Flags;
 
+    public TValue? StagedValue { get => WriteHandle.StagedValue; set => WriteHandle.StagedValue = value; }
+    public bool HasStagedValue { get => WriteHandle.HasStagedValue; set => WriteHandle.HasStagedValue = value; }
+
     protected IWriteHandle<TValue> handle;
 
-    public Task<ISuccessResult> Set() => WriteHandle.Set();
+    public Task<ITransferResult> Set(CancellationToken cancellationToken = default) => WriteHandle.Set(cancellationToken);
     public Task<bool?> Delete() => WriteHandle.Delete();
     public void MarkDeleted() => WriteHandle.MarkDeleted();
     public void DiscardValue() => WriteHandle.DiscardValue();
-    public Task<ISuccessResult> Set(TValue value, CancellationToken cancellationToken = default) => WriteHandle.Set(value, cancellationToken);
+    public Task<ITransferResult> Set(TValue value, CancellationToken cancellationToken = default) => WriteHandle.Set(value, cancellationToken);
+
+    public void DiscardStagedValue()
+    {
+        WriteHandle.DiscardStagedValue();
+    }
 }

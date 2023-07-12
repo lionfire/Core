@@ -8,8 +8,9 @@ using System;
 using System.Linq;
 using System.Threading.Tasks;
 using LionFire.Persistence;
+using LionFire.Data;
 
-namespace LionFire.Data.Gets;
+namespace LionFire.ExtensionMethods.Data;
 
 public static class IGetsX2
 {
@@ -37,7 +38,7 @@ public static class IGetsX2
     /////// <remarks>Can't return a generic IGetResult due to limitation of the language.</remarks>
     /////// <returns>true if an object was retrieved.  False if object was not found at location of the Reference.  Throws if could not resolve the Reference to a valid source.</returns>
     //[Casts("lazilyiGets.ResolveAsync must return IGetResult<object>", typeof(IGetResult<object>))]
-    //public static async Task<IGetResult<object>> Retrieve(this IRetrieves lazilyiGets) => (IGetResult<object>) (await ((IGets<object>)lazilyiGets).Resolve().ConfigureAwait(false));
+    //public static async Task<IGetResult<object>> Retrieve(this IRetrieves lazilyiGets) => (IGetResult<object>) (await ((IGets<object>)lazilyiGets).Get().ConfigureAwait(false));
 
     ///// <summary>
     ///// Force a retrieve of the reference from the source.  Replace the Object.
@@ -50,52 +51,33 @@ public static class IGetsX2
 
     public static TransferResultFlags GetTransferResultFlags(this ITransferResult getResult)
     {
-        if(getResult is ITransferResult pr) { return pr.Flags; }
+        if (getResult is ITransferResult pr) { return pr.Flags; }
         return TransferResultFlags.None;
     }
 
-    // OLD - IGetResult now contains what IRetrieveResult did
-    //public static IRetrieveResult<T> ToRetrieveResult<T>(this IGetResult<T> resolveResult)
-    //{
-    //    if (resolveResult is IGetResult<T> rr) return rr;
-
-    //    TransferResultFlags flags = TransferResultFlags.None;
-
-    //    if (resolveResult.IsSuccess.HasValue)
-    //    {
-    //        flags |= resolveResult.IsSuccess.Value ? TransferResultFlags.Success : TransferResultFlags.Fail;
-    //    }
-    //    if (resolveResult.HasValue) flags |= TransferResultFlags.Found;
-    //    else if (resolveResult.IsSuccess == true) flags |= TransferResultFlags.NotFound;
-
-    //    return new RetrieveResult<T>(resolveResult.Value, flags);
-    //}
-
-    public static ITransferResult ToPersistenceResult(this ISuccessResult successResult)
+    public static bool Exists<T>(this ILazyGetResult<T> r)
     {
-        if (successResult is ITransferResult pr) return pr;
-
-        TransferResultFlags flags = TransferResultFlags.None;
-
-        if (successResult.IsSuccess.HasValue)
-        {
-            flags |= successResult.IsSuccess.Value ? TransferResultFlags.Success : TransferResultFlags.Fail;
-        }
-
-        return new TransferResult() { Flags = flags };
+        return r.Flags.HasFlag(TransferResultFlags.Found); // REVIEW: Ensure Found is always set in all relevant scenarios
     }
 
-    //public static async Task<bool> Exists<T>(this ILazilyGets<T> resolves)
-    //{
-    //}
+    // TODO: REVIEW all these Exists methods for correctness and optimality
+    public static async Task<bool> Exists<T>(this ILazilyGets<T> lazilyGets) 
+    {
+        if (lazilyGets is ILazilyDetects<T> ld) return (await ld.TryGetExistsWithValue().ConfigureAwait(false)).Exists<T>();
+
+        var queryValue = lazilyGets.QueryValue();
+        if (queryValue != null) return queryValue.Exists<T>();
+
+        if (lazilyGets is IDetects d) return await d.Exists().ConfigureAwait(false);
+
+        return (await lazilyGets.GetIfNeeded()).HasValue;
+        //return await lazilyGets.Exists();
+    }
     public static async Task<bool> Exists<T>(this IGets<T> gets)
     {
         if (gets is ILazilyGets<T> lazilyGets)
         {
-            if (lazilyGets is IDetects d) return await d.Exists();
-
-            return (await lazilyGets.GetIfNeeded()).HasValue;
-            //return await lazilyGets.Exists();
+            return await Exists(lazilyGets).ConfigureAwait(false);
         }
 
         return (await gets.Get()).ValidateSuccess().HasValue;

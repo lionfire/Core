@@ -52,10 +52,12 @@
 
 
 	<ItemGroup>
+		<ProjectReference Include="..\..\src\LionFire.Data.Async.Abstractions\LionFire.Data.Async.Abstractions.csproj" />
 		<ProjectReference Include="..\..\src\LionFire.Expanders.SharpZipLib\LionFire.Expanders.SharpZipLib.csproj" />
 		<ProjectReference Include="..\..\src\LionFire.Expanders.Vos\LionFire.Expanders.Vos.csproj" />
 		<ProjectReference Include="..\..\src\LionFire.Expanders\LionFire.Expanders.csproj" />
 		<ProjectReference Include="..\..\src\LionFire.Persistence.Filesystem\LionFire.Persistence.Filesystem.csproj" />
+		<ProjectReference Include="..\..\src\LionFire.Resolves.Abstractions\LionFire.Data.Abstractions.csproj" />
 		<ProjectReference Include="..\..\src\LionFire.Testing\LionFire.Testing.csproj" />
 		<ProjectReference Include="..\..\src\LionFire.Vos\LionFire.Vos.csproj" />
 	</ItemGroup>

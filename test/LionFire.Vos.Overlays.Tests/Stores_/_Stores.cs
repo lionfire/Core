@@ -65,7 +65,7 @@ namespace Stores_
             //var storesManager = storesManagerPath.ToVob().GetMultiTyped().AsType<PackageManager>();
             Assert.NotNull(storesManager);
 
-            //Assert.True(pluginManager.AvailablePackages.Contains("plugin1")); // TODO - once some sort of GetChildren functionality is available
+            //Assert.True(pluginManager.AvailablePackages.Contains("plugin1")); // TODO - once some sort of GetChildren functionality is available 
             //Assert.True(pluginManager.AvailablePackages.Contains("plugin2"));
             Assert.False(Enumerable.Any<string>(storesManager.EnabledPackages));
 
@@ -76,7 +76,7 @@ namespace Stores_
                 Assert.Single((System.Collections.Generic.IEnumerable<string>)storesManager.EnabledPackages);
 
                 var readHandle = dataReference1.GetReadHandle<string>();
-                var persistenceResult = await readHandle.Resolve();
+                var persistenceResult = await readHandle.Get();
 
 //#error NEXT: this fails for P_Normal.  Verify in Enable that it is getting mounted.
                 Assert.True(persistenceResult.ToRetrieveResult().Flags.HasFlag(TransferResultFlags.Success));
@@ -85,7 +85,7 @@ namespace Stores_
             }
             {
                 var readHandle = directReference1.GetReadHandle<string>();
-                var persistenceResult = await readHandle.Resolve();
+                var persistenceResult = await readHandle.Get();
                 Assert.True(persistenceResult.IsSuccess);
                 Assert.Equal(testContents1, readHandle.Value);
             }
@@ -99,7 +99,7 @@ namespace Stores_
                 Assert.Equal(2, Enumerable.Count<string>(storesManager.EnabledPackages));
 
                 var readHandle = dataReference2.GetReadHandle<string>();
-                var persistenceResult = await readHandle.Resolve();
+                var persistenceResult = await readHandle.Get();
 
                 Assert.True(persistenceResult.IsSuccess);
                 Assert.Equal(testContents2, readHandle.Value);
@@ -107,7 +107,7 @@ namespace Stores_
             }
             {
                 var readHandle = directReference2.GetReadHandle<string>();
-                var persistenceResult = await readHandle.Resolve();
+                var persistenceResult = await readHandle.Get();
                 Assert.True(persistenceResult.IsSuccess);
                 Assert.Equal(testContents2, readHandle.Value);
             }
@@ -125,13 +125,13 @@ namespace Stores_
 
             {
                 var readHandle = dataReference1.GetReadHandle<string>();
-                var persistenceResult = await readHandle.Resolve();
+                var persistenceResult = await readHandle.Get();
                 Assert.True(((ITransferResult)persistenceResult).Flags.HasFlag(TransferResultFlags.MountNotAvailable));
                 Assert.Null(persistenceResult.IsSuccess);
             }
             {
                 var readHandle = dataReference2.GetReadHandle<string>();
-                var persistenceResult = await readHandle.Resolve();
+                var persistenceResult = await readHandle.Get();
                 Assert.True(((ITransferResult)persistenceResult).Flags.HasFlag(TransferResultFlags.MountNotAvailable));
                 Assert.Null(persistenceResult.IsSuccess);
             }

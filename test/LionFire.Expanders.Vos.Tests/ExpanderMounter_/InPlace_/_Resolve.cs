@@ -1,5 +1,4 @@
 ﻿using Google.Protobuf.WellKnownTypes;
-using LionFire;
 using LionFire.Execution;
 using LionFire.ExtensionMethods.Dumping;
 using LionFire.Persistence;
@@ -31,7 +30,7 @@ public class _Resolve
             var exists = await handle.Exists().ConfigureAwait(false);
             Assert.IsTrue(exists, "Not found");
 
-            var resolveResult = await handle.Resolve().ConfigureAwait(false);
+            var resolveResult = await handle.Get().ConfigureAwait(false);
             Assert.IsTrue(resolveResult.IsSuccess);
             Assert.IsTrue(resolveResult.HasValue);
             Assert.IsNotNull(resolveResult.Value);
@@ -68,7 +67,7 @@ public class _Resolve
 
         var handle = "/testdata/zip/TestTargetDir/TestClass.json".ToVobReference<TestClass>().GetReadHandle<TestClass>();
 
-        var resolveResult = await handle.Resolve().ConfigureAwait(false);
+        var resolveResult = await handle.Get().ConfigureAwait(false);
         Assert.IsTrue(resolveResult.IsSuccess);
         Assert.IsTrue(resolveResult.HasValue, "No value");
         Assert.IsNotNull(resolveResult.Value);

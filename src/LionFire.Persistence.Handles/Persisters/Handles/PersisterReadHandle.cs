@@ -3,8 +3,6 @@ using LionFire;
 using LionFire.Persistence.Handles;
 using LionFire.Referencing;
 using LionFire.Data.Gets;
-using MorseCode.ITask;
-using System;
 using System.Threading.Tasks;
 
 namespace LionFire.Persistence.Persisters;
@@ -45,5 +43,5 @@ public class PersisterReadHandle<TPersisterReference, TValue, TPersister, TRefer
     public TPersister? Persister { get; protected set; }
     IPersister<TPersisterReference>? IPersisterHandle<TPersisterReference>.Persister => Persister;
 
-    protected override async ITask<IGetResult<TValue>> ResolveImpl() => await Persister.Retrieve<TPersisterReference, TValue>((TPersisterReference)(object)Reference).ConfigureAwait(false); // HARDCAST
+    protected override async ITask<IGetResult<TValue>> GetImpl(CancellationToken cancellationToken = default) => await Persister.Retrieve<TPersisterReference, TValue>((TPersisterReference)(object)Reference).ConfigureAwait(false); // HARDCAST
 }

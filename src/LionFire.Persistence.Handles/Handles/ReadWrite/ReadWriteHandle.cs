@@ -76,7 +76,7 @@ namespace LionFire.Persistence.Handles
         //    }
         //}
 
-        public PersistenceSnapshot<TValue> PersistenceState => new PersistenceSnapshot<TValue>(Flags, ProtectedValue, HasValue);
+        public IPersistenceSnapshot<TValue> PersistenceState => new PersistenceSnapshot<TValue>(Flags, ReadCacheValue, HasValue);
         public object PersistenceLock { get; } = new object();
 
         #endregion

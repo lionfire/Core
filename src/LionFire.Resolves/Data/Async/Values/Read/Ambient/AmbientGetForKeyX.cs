@@ -25,7 +25,7 @@ public static class IResolverPocoExtensions
         foreach (var resolver in resolvable!.GetAmbientServiceProvider()?.GetServices<IGetter<TKey, TValue>>() ?? Enumerable.Empty<IGetter<TKey, TValue>>())
         {
             gotResolver = true;
-            var result = await resolver.Resolve(resolvable, cancellationToken).ConfigureAwait(false);
+            var result = await resolver.Get(resolvable, cancellationToken).ConfigureAwait(false);
             if (returnFirstFound)
             {
                 if (result.HasValue) return result;

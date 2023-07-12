@@ -1,7 +1,7 @@
-<Project Sdk="Microsoft.NET.Sdk.Web">
+﻿<Project Sdk="Microsoft.NET.Sdk.Web">
 
   <PropertyGroup>
-	<TargetFramework>net6.0</TargetFramework>
+	<TargetFramework>net7.0</TargetFramework>
     <DockerComposeProjectPath>..\..\docker-compose.dcproj</DockerComposeProjectPath>
     <RootNamespace>LionFire.Supervising</RootNamespace>
     <AssemblyName>LionFire.Supervising.Sentinel</AssemblyName>
@@ -12,7 +12,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Microsoft.AspNetCore.All" />
     <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" />
   </ItemGroup>
 

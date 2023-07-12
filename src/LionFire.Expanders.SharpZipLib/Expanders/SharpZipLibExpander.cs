@@ -12,7 +12,7 @@ using System.Net.Http.Headers;
 using Newtonsoft.Json.Linq;
 using System.Linq;
 using LionFire.Persistence.Handles;
-using LionFire.Serialization.Adapters;
+//using LionFire.Serialization.Adapters;
 using static LionFire.Persisters.SharpZipLib_.SharpZipLibExpander;
 using LionFire.ExtensionMethods.Poco.Resolvables;
 using LionFire.Data.Gets;
@@ -309,7 +309,7 @@ public class SharpZipLibExpander : ExpanderPersister, ISupportsFileExtensions, I
                                     {
                                         // FUTURE ENH: determine the types of all the listings (potentially expensive: worst case is attempting deserialization of everything)
                                         var typeHandle = new ExpansionReference(sourceReadHandle.Reference.Url, zipEntry).GetReadHandle<Metadata<Type>>();
-                                        var typeResolve = await typeHandle.Resolve().ConfigureAwait(false);
+                                        var typeResolve = await typeHandle.Get().ConfigureAwait(false);
                                         if (typeResolve.IsSuccess == true && typeResolve.HasValue)
                                         {
                                             return listingItemType.IsAssignableFrom(typeResolve.Value);
@@ -407,6 +407,13 @@ public static class IReadHandleX
             return await lr.GetIfNeeded().ConfigureAwait(false);
         }
 
-        return await rh.Resolve().ConfigureAwait(false);
+        if (rh is IGets<object> g)
+        {
+            return await g.Get().ConfigureAwait(false);
+        }
+
+        throw new NotImplementedException();
+        //LionFire.ExtensionMethods.Poco.Data.Async.
+        //return await rh.Get().ConfigureAwait(false);
     }
 }

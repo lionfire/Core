@@ -1,9 +1,10 @@
 ﻿
 using System.Threading;
+using System.Xml.Linq;
 
 namespace LionFire.Data;
 
-public abstract class AsyncGets<TValue>
+public abstract class Gets<TValue>
     : ReactiveObject
     , ILazilyGetsRx<TValue>
 {
@@ -25,12 +26,12 @@ public abstract class AsyncGets<TValue>
 
     #region Lifecycle
 
-    protected AsyncGets()
+    protected Gets()
     {
         GetOptions = DefaultOptions;
     }
 
-    protected AsyncGets(AsyncGetOptions? options) {
+    protected Gets(AsyncGetOptions? options) {
         GetOptions = options ?? DefaultOptions;
     }
 
@@ -38,23 +39,24 @@ public abstract class AsyncGets<TValue>
 
     #region Value
 
-    [Reactive]
-    public TValue? ReadCacheValue { get; private set; }
+    public TValue? Value => ReadCacheValue;
 
-    public TValue? Value
+    public TValue? ReadCacheValue
     {
         [Blocking(Alternative = nameof(GetIfNeeded))]
-        get => ReadCacheValue ?? GetIfNeeded().Result.Value;
+        get => ReadCacheValue ??= GetIfNeeded().Result.Value;
+        protected set => this.RaiseAndSetIfChanged(ref readCacheValue, value);
     }
+    private TValue? readCacheValue;
 
     [Reactive]
     public bool HasValue { get; private set; }
-    public ILazyGetResult<TValue> QueryValue() => new LazyResolveResult<TValue>(HasValue, Value);
+    public ILazyGetResult<TValue> QueryValue() => new LazyResolveResult<TValue>(HasValue, ReadCacheValue);
 
     public void Discard() => DiscardValue();
     public void DiscardValue()
     {
-        ReadCacheValue = default;
+        readCacheValue = default;
         HasValue = false;
     }
 

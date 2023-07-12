@@ -27,15 +27,15 @@ public class _Typed
 
             Assert.ThrowsException<AggregateException>(() =>
             {
-                var resolveResult = handle.Resolve().Result;
+                var resolveResult = handle.Get().Result;
                 Assert.IsTrue(resolveResult.IsSuccess);
             });
 
             bool NI = false;
-            LionFire.Data.Async.Gets.IGetResult<Metadata<IEnumerable<IListing<TestClass>>>> resolveResult = null;
+            IGetResult<Metadata<IEnumerable<IListing<TestClass>>>>? resolveResult = null;
             try
             {
-                resolveResult = handle.Resolve().Result;
+                resolveResult = handle.Get().Result;
             }
             catch (AggregateException aex)
             {
@@ -45,7 +45,7 @@ public class _Typed
             Assert.IsTrue(NI);
 
 
-            //var resolveResult = await handle.Resolve();
+            //var resolveResult = await handle.Get();
             //Assert.IsTrue(resolveResult.IsSuccess);
             //Assert.IsTrue(resolveResult.HasValue, "No value");
             //Assert.IsNotNull(resolveResult.Value);

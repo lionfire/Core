@@ -1,5 +1,4 @@
-﻿#if false
-using LionFire.IO;
+﻿using LionFire.IO;
 using LionFire.Persistence.Filesystem;
 using LionFire.Referencing;
 using LionFire.Serialization;
@@ -11,11 +10,23 @@ namespace LionFire.Persistence.AutoExtensionFilesystem
 {
     public class AutoExtensionFilesystemPersister : AutoExtensionPersister<AutoExtensionFileReference, AutoExtensionFilesystemPersisterOptions, FileReference, FilesystemPersister>
     {
+        #region Dependencies
+        
+        public FilesystemPersister UnderlyingPersister { get; }
+
+        #endregion
+
+        #region Lifecycle
+              
         public AutoExtensionFilesystemPersister(FilesystemPersister filesystemPersister, AutoExtensionFilesystemPersisterOptions options, SerializationOptions serializationOptions) : base(serializationOptions)
         {
             UnderlyingPersister = filesystemPersister;
             PersistenceOptions = options;
         }
+
+        #endregion
+
+        protected override FilesystemPersister GetUnderlyingPersister(AutoExtensionFileReference reference) => UnderlyingPersister;
 
         protected override FileReference ConvertReferenceWithPath(AutoExtensionFileReference reference, string path) => new FileReference(path);
 
@@ -23,12 +34,17 @@ namespace LionFire.Persistence.AutoExtensionFilesystem
         {
             var parent = reference.GetParent();
 
-            var list = parent.GetListHandle();
+            var list = parent.GetListingsHandle();
             foreach (var item in list.Value.Value)
             {
-                Debug.WriteLine("TODO: " + item.Name);
+                Debug.WriteLine("TODO: " + item.Name);                    
             }
             return null;
+        }
+
+        public override FileReference TranslateReferenceForWrite(AutoExtensionFileReference reference)
+        {
+            throw new System.NotImplementedException();
         }
 
         // OPTIMIZE - this is faster?
@@ -54,4 +70,3 @@ namespace LionFire.Persistence.AutoExtensionFilesystem
         //}
     }
 }
-#endif

@@ -82,7 +82,8 @@ new HostApplicationBuilder(args)
             option.ExportProcessorType = ExportProcessorType.Batch;
             option.Protocol = OpenTelemetry.Exporter.OtlpExportProtocol.Grpc;
         })
-        ).StartWithHost()
+        )
+        //.StartWithHost()
     )
 
 

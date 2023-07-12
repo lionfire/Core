@@ -37,9 +37,9 @@ namespace Write_
                     var child1 = test.GetChild("child1.json").GetReadWriteHandle<TestClass1>();
                     var child2 = test.GetChild("child2.json").GetReadWriteHandle<TestClass2>();
 
-                    child1.Value = TestClass1.Create;
+                    child1.ReadCacheValue = TestClass1.Create;
                     await child1.Put();
-                    child2.Value = new TestClass2() { IntProp2 = 123, StringProp2 = "4S6" };
+                    child2.ReadCacheValue = new TestClass2() { IntProp2 = 123, StringProp2 = "4S6" };
                     await child2.Put();
 
                     //Assert.NotNull(result.Value);

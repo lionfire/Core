@@ -1,11 +1,8 @@
-﻿namespace LionFire.Persistence.Handles
+﻿namespace LionFire.Persistence.Handles;
+
+internal interface IHandleInternal<TValue> : IPersistsInternal
 {
-    internal interface IHandleInternal<TValue> : IPersists
-    {
-        TValue ProtectedValue { get; set; }
-        new PersistenceFlags Flags { set; }
-        bool HasValue { get; }
-
-
-    }
+    //TValue ProtectedValue { get; set; } // Use IStagesValue<TValue>.StagedValue instea
+    new PersistenceFlags Flags { set; } // Use IPersistsInternal.Flags instead
+    bool HasValue { get; } // Use IStagesValue<TValue>.StagedValue or ILazilyGets.HasValue
 }

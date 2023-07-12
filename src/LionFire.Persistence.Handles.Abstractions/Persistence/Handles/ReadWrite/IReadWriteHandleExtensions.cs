@@ -1,5 +1,6 @@
 ﻿using LionFire.Data;
 using LionFire.Data.Gets;
+using LionFire.Data.Sets;
 using System;
 using System.Reflection;
 using System.Threading.Tasks;
@@ -41,7 +42,7 @@ namespace LionFire.Persistence
                 if (result.IsFound() == true) return result.Value;
             }
 
-            handle.Value = Activator.CreateInstance<T>();
+            handle.StagedValue = Activator.CreateInstance<T>();
             var putResult = await handle.Set().ConfigureAwait(false);
             if (putResult.IsSuccess != true)
             {

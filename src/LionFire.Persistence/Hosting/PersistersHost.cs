@@ -8,10 +8,10 @@ using LionFire.Serialization;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using LionFire.Dependencies;
 using LionFire.Hosting;
-using LionFire.DependencyInjection.ExtensionMethods;
 using LionFire.Persistence;
 using Microsoft.Extensions.Options;
 using Microsoft.Extensions.Configuration;
+using LionFire.DependencyInjection.ExtensionMethods;
 
 namespace LionFire.Hosting;
 

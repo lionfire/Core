@@ -8,6 +8,7 @@ using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
 using LionFire.Data;
+using LionFire.Data.Sets;
 
 namespace LionFire.ExtensionMethods.Persistence // REVIEW - change namespace to LionFire.ExtensionMethods.Data?
 {
@@ -65,7 +66,7 @@ namespace LionFire.ExtensionMethods.Persistence // REVIEW - change namespace to 
                 {
                     initialValue = referencable;
                 }
-                var handle2 = referencable.Reference.GetReadWriteHandlePreresolved(type, initialValue, overwriteValue: true).handle;
+                var handle2 = referencable.Reference.GetReadWriteHandlePrestaged(type, initialValue, overwriteValue: true).handle;
                 puts = handle2;
             }
             

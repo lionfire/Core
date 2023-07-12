@@ -7,7 +7,7 @@ using System.Reactive.Subjects;
 namespace LionFire.Data;
 
 public abstract class AsyncValue<TValue>
-    : AsyncGets<TValue>
+    : Gets<TValue>
     , IAsyncValueRx<TValue>
     , ISetsRx<TValue>
     , ISetsInternal<TValue>
@@ -39,7 +39,7 @@ public abstract class AsyncValue<TValue>
 
     public AsyncValue(AsyncValueOptions options) : base(options)
     {
-        this.ObservableForProperty(t => t.Value)
+        this.ObservableForProperty(t => t.ReadCacheValue)
             .Subscribe(t =>
             {
                 if (HasStagedValue)

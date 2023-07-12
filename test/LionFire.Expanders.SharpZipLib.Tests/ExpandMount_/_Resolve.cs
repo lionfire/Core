@@ -3,8 +3,6 @@ using LionFire.Persistence.Handles;
 using LionFire.Persisters.Expanders;
 using LionFire.Vos;
 using LionFire.Hosting;
-using LionFire.Data.Gets;
-using LionFire.Testing;
 
 namespace ExpandMount_;
 
@@ -28,7 +26,7 @@ public class _Resolve
             //Assert.IsTrue(ReferenceEquals(handle.Reference, reference));
             //Assert.AreSame(handle.Reference, reference);
 
-            var resolveResult = await handle.Resolve().ConfigureAwait(false);
+            var resolveResult = await handle.Get().ConfigureAwait(false);
             Assert.IsTrue(resolveResult.IsSuccess);
             Assert.IsTrue(resolveResult.HasValue);
             Assert.IsNotNull(resolveResult.Value);
@@ -70,7 +68,7 @@ public class _Resolve
             var exists = await handle.Exists().ConfigureAwait(false);
             Assert.IsTrue(exists);
 
-            var resolveResult = await handle.Resolve().ConfigureAwait(false);
+            var resolveResult = await handle.Get().ConfigureAwait(false);
             Assert.IsTrue(resolveResult.IsSuccess);
             Assert.IsTrue(resolveResult.HasValue);
             Assert.IsNotNull(resolveResult.Value);
@@ -117,8 +115,8 @@ public class _Resolve
                 Assert.AreEqual(123, resolveResult.Value.Number);
             }
 
-            validate(await handle.Resolve().ConfigureAwait(false));
-            validate(await handle.Resolve().ConfigureAwait(false));
+            validate(await handle.Get().ConfigureAwait(false));
+            validate(await handle.Get().ConfigureAwait(false));
 
             #region Metrics
 
@@ -160,9 +158,9 @@ public class _Resolve
                 Assert.AreEqual(123, resolveResult.Value.Number);
             }
 
-            validate(await handle.Resolve().ConfigureAwait(false));
+            validate(await handle.Get().ConfigureAwait(false));
             handle.DiscardValue();
-            validate(await handle.Resolve().ConfigureAwait(false));
+            validate(await handle.Get().ConfigureAwait(false));
 
             #region Metrics
 

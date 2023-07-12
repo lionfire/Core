@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <TargetFramework>net7.0</TargetFramework>
@@ -26,6 +26,7 @@
     <ProjectReference Include="..\..\src\LionFire.Assets.Abstractions\LionFire.Assets.Abstractions.csproj" />
     <ProjectReference Include="..\..\src\LionFire.Assets\LionFire.Assets.csproj" />
     <ProjectReference Include="..\..\src\LionFire.Persistence.Filesystem\LionFire.Persistence.Filesystem.csproj" />
+    <ProjectReference Include="..\..\src\LionFire.Persistence\LionFire.Data.Persisters.csproj" />
     <ProjectReference Include="..\..\src\LionFire.Vos.Assets\LionFire.Vos.Assets.csproj" />
     <ProjectReference Include="..\..\src\LionFire.Vos\LionFire.Vos.csproj" />
     <ProjectReference Include="..\LionFire.Persistence.Testing\LionFire.Persistence.Testing.csproj" />

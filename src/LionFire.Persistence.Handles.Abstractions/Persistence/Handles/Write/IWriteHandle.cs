@@ -11,7 +11,7 @@ namespace LionFire.Persistence;
 /// IWriteHandleEx
 /// </summary>
 /// <typeparam name="T"></typeparam>
-public interface IWriteHandle<T> : IWriteHandleBase<T>, IWriteHandle, ISets<T>
+public interface IWriteHandle<T> : IWriteHandleBase<T>, IWriteHandle, ISets<T>, IStagesSet<T>
 {
 }
 

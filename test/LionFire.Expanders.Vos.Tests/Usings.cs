@@ -13,3 +13,6 @@ global using LionFire.Persisters.Expanders;
 global using LionFire.Vos;
 global using LionFire.Referencing;
 global using static LionFire.Testing.TestRunner;
+global using LionFire.ExtensionMethods.Data;
+global using LionFire;
+global using LionFire.Data;

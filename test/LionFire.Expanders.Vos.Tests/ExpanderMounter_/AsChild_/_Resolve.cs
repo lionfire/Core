@@ -23,7 +23,7 @@ public class _Resolve
         {
             #region TODO: Get this working without this List
             //var listingsHandle = "/testdata/zip/ExpandAsChildTest".ToVobReference().GetListingsHandle();
-            //var listings = await listingsHandle.Resolve();
+            //var listings = await listingsHandle.Get();
             //foreach (var item in listings?.Value.Value ?? Enumerable.Empty<IListing<object>>())
             //{
             //    Debug.WriteLine(item);

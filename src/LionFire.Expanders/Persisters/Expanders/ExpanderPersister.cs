@@ -16,5 +16,6 @@ public abstract class ExpanderPersister : PersisterBase<ExpanderOptions>, IExpan
     public abstract Task<IReadHandle>? TryGetSourceReadHandle(IReference sourceReference);
     
     public abstract Task<IGetResult<T>> RetrieveTarget<T>(IReadHandle sourceReadHandle, string targetPath);
+
 }
 

@@ -31,10 +31,11 @@
   <ItemGroup>
     <ProjectReference Include="..\..\src\LionFire.Framework\LionFire.Framework.csproj" />
     <ProjectReference Include="..\..\src\LionFire.Hosting\LionFire.Hosting.csproj" />
+    <ProjectReference Include="..\..\src\LionFire.Persistence.Abstractions\LionFire.Data.Persisters.Abstractions.csproj" />
     <ProjectReference Include="..\..\src\LionFire.Persistence.Filesystem\LionFire.Persistence.Filesystem.csproj" />
     <ProjectReference Include="..\..\src\LionFire.Persistence.Handles.Abstractions\LionFire.Persistence.Handles.Abstractions.csproj" />
     <ProjectReference Include="..\..\src\LionFire.Persistence.Handles\LionFire.Persistence.Handles.csproj" />
-    <ProjectReference Include="..\..\src\LionFire.Persistence\LionFire.Persistence.csproj" />
+    <ProjectReference Include="..\..\src\LionFire.Persistence\LionFire.Data.Persisters.csproj" />
     <ProjectReference Include="..\..\src\LionFire.Referencing.Abstractions\LionFire.Referencing.Abstractions.csproj" />
     <ProjectReference Include="..\..\src\LionFire.Referencing\LionFire.Referencing.csproj" />
     <ProjectReference Include="..\..\src\LionFire.Serialization.Json.Newtonsoft\LionFire.Serialization.Json.Newtonsoft.csproj" />

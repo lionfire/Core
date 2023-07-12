@@ -27,13 +27,13 @@ public abstract class AsyncGetsSlim2<TValue> : ILazilyGets<TValue>
     public TValue? Value
     {
         [Blocking(Alternative = nameof(GetIfNeeded))]
-        get => ReadCacheValue ?? GetIfNeeded().Result.Value;
+        get => Value ?? GetIfNeeded().Result.Value;
     }
 
     public TValue? ReadCacheValue
     {
         get => readCacheValue;
-        set
+        protected set
         {
             if (EqualityComparer<TValue>.Default.Equals(readCacheValue, value)) return;
             var oldValue = readCacheValue;
@@ -110,7 +110,7 @@ public abstract class AsyncGetsSlim2<TValue> : ILazilyGets<TValue>
     private ITask<IGetResult<TValue>>? getState;
 
 
-    public ILazyGetResult<TValue> QueryValue() => new LazyResolveResult<TValue>(HasValue, ReadCacheValue);
+    public ILazyGetResult<TValue> QueryValue() => new LazyResolveResult<TValue>(HasValue, Value);
 
 
 }

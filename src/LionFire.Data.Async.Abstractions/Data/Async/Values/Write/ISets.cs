@@ -1,8 +1,7 @@
-﻿using LionFire.Results;
-
+﻿
 namespace LionFire.Data.Sets;
 
-public interface ISets // RENAME to ICommits?
+public interface ISets
 {
     Task<ITransferResult> Set(CancellationToken cancellationToken = default);
 }

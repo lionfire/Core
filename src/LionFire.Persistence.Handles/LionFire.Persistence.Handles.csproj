@@ -16,10 +16,11 @@
   <ItemGroup>
     <ProjectReference Include="..\LionFire.Applications.Abstractions\LionFire.Applications.Abstractions.csproj" />
     <ProjectReference Include="..\LionFire.Core\LionFire.Core.csproj" />
+    <ProjectReference Include="..\LionFire.Data.Async.Slim\LionFire.Data.Async.Extras.csproj" />
     <ProjectReference Include="..\LionFire.Hosting\LionFire.Hosting.csproj" />
+    <ProjectReference Include="..\LionFire.Persistence.Abstractions\LionFire.Data.Persisters.Abstractions.csproj" />
     <!--<ProjectReference Include="..\LionFire.ObjectBus.Abstractions\LionFire.ObjectBus.Abstractions.csproj" />-->
     <ProjectReference Include="..\LionFire.Persistence.Handles.Abstractions\LionFire.Persistence.Handles.Abstractions.csproj" />
-    <ProjectReference Include="..\LionFire.Persistence\LionFire.Persistence.csproj" />
     <ProjectReference Include="..\LionFire.Referencing\LionFire.Referencing.csproj" />
     <ProjectReference Include="..\LionFire.Resolves\LionFire.Data.Async.csproj" />
     <ProjectReference Include="..\LionFire.Structures\LionFire.Structures.csproj" />
@@ -28,6 +29,7 @@
   <ItemGroup>
     <Folder Include="Handles\ReferenceHandles\" />
     <Folder Include="Handles\ReadWrite\Notifying\" />
+    <Folder Include="Hosting\" />
   </ItemGroup>
 
 </Project>

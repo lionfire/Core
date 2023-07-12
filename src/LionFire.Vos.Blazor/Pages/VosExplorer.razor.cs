@@ -234,7 +234,7 @@ public partial class VosExplorer
             return;
         }
 
-        var result = await hList.Resolve();
+        var result = await hList.Get();
         listings = (result?.Value.Value?.Where(l=>l.IsDirectory) ?? Array.Empty<IListing<object>>())
             .Concat(result?.Value.Value?.Where(l => !l.IsDirectory) ?? Array.Empty<IListing<object>>())
             .ToArray();

@@ -42,16 +42,16 @@ namespace List_
                     var child1 = test.GetChild("child1.json").GetReadWriteHandle<TestClass1>();
                     var child2 = test.GetChild("child2.json").GetReadWriteHandle<TestClass2>();
 
-                    child1.Value = TestClass1.Create;
+                    child1.ReadCacheValue = TestClass1.Create;
                     await child1.Put();
-                    child2.Value = new TestClass2() { IntProp2 = 12, StringProp2 = "abc" };
+                    child2.ReadCacheValue = new TestClass2() { IntProp2 = 12, StringProp2 = "abc" };
                     await child2.Put();
 
                     #endregion
 
                     var hList = test.GetListHandle();
 
-                    var result = await hList.Resolve();
+                    var result = await hList.Get();
 
                     var listings = result.Value.Value;
                     Assert.NotNull(listings);

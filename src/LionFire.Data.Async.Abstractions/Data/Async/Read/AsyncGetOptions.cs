@@ -19,5 +19,5 @@ public class AsyncGetOptions : AsyncGetOrSetOptions
     /// For Sync Value property getter: block on the Task (not recommended, unless you are prepared for the drawbacks)
     /// </summary>
     public bool BlockToGet { get; set; } = false;
-    
+    public bool DiscardReadCacheOnGetFailure { get; set; }
 }

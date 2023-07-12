@@ -18,7 +18,7 @@ namespace LionFire.IO
 
         #endregion
 
-        protected override async ITask<IGetResult<byte[]>> ResolveImpl()
+        protected override async ITask<IGetResult<byte[]>> GetImpl(CancellationToken cancellationToken = default)
         {
             return await Task.Run(() =>
             {

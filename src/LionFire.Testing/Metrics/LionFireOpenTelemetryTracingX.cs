@@ -2,6 +2,8 @@
 using OpenTelemetry.Resources;
 using OpenTelemetry.Trace;
 using OpenTelemetry.Metrics;
+using Microsoft.Extensions.Options;
+using System.Xml.Linq;
 
 public static class LionFireOpenTelemetryTracingX
 {
@@ -29,6 +31,34 @@ public static class LionFireOpenTelemetryTracingX
 
     public static IServiceCollection AddOpenTelemetryTracingLF(this IServiceCollection services, string? serviceName = null, string? serviceVersion = null, Action<TracerProviderBuilder>? configure = null)
     {
+
+        #region TODO
+#if TODO
+        // Use approach mentioned in guidance from docs for library authors: https://github.com/open-telemetry/opentelemetry-dotnet/blob/main/docs/trace/extending-the-sdk/README.md#registration-extension-method-guidance-for-library-authors
+
+        // Configure tracing.
+        services.ConfigureOpenTelemetryTracerProvider((sp, builder) =>
+        {
+            var options = sp.GetRequiredService<IOptionsMonitor<MyLibraryOptions>>().Get(name);
+            if (options.EnableTracing)
+            {
+                builder.AddSource("MyLibrary");
+            }
+        });
+
+        // Configure metrics.
+        services.ConfigureOpenTelemetryMeterProvider((sp, builder) =>
+        {
+            var options = sp.GetRequiredService<IOptionsMonitor<MyLibraryOptions>>().Get(name);
+            if (options.EnableMetrics)
+            {
+                builder.AddMeter("MyLibrary");
+            }
+        });
+#endif
+#endregion
+
+
         services
         .AddOpenTelemetry()
             .WithMetrics(c => c
@@ -65,28 +95,29 @@ public static class LionFireOpenTelemetryTracingX
                 .AddMeter("LionFire.Execution.AutoRetry")
                 .AddVosInstrumentation()
             )
-        //    .WithTracing(c => c
-        //        .AddConsoleExporter()
-        //        .AddInMemoryExporter(ActivitiesExport.Activities.Value ??= new())
+            //.WithTracing(c => c
+                //        .AddConsoleExporter()
+                //        .AddInMemoryExporter(ActivitiesExport.Activities.Value ??= new())
 
-        //        .AddSource(serviceName ?? "MyCompany.MyProduct.MyService")
-        //        .ConfigureResource(r => r
-        //                .AddService(serviceName: serviceName ?? "ExampleService", serviceVersion: serviceVersion ?? "0.0.0")
-        //                .AddService("inmemory-test") // ?                
-        //        )
+                //        .AddSource(serviceName ?? "MyCompany.MyProduct.MyService")
+                //        .ConfigureResource(r => r
+                //                .AddService(serviceName: serviceName ?? "ExampleService", serviceVersion: serviceVersion ?? "0.0.0")
+                //                .AddService("inmemory-test") // ?                
+                //        )
 
-        //         .ConfigureResource(r => r
-        //             .AddService("inmemory-test")
-        //             .AddService("LionFire.Test")                 
-        //         )
+                //         .ConfigureResource(r => r
+                //             .AddService("inmemory-test")
+                //             .AddService("LionFire.Test")                 
+                //         )
 
-        //        //.AddHttpClientInstrumentation()
-        //        //.AddAspNetCoreInstrumentation()
-        //        //.AddSqlClientInstrumentation();
+                //        //.AddHttpClientInstrumentation()
+                //        //.AddAspNetCoreInstrumentation()
+                //        //.AddSqlClientInstrumentation();
 
-        //        .If(configure != null, configure)
-        //)
-                .StartWithHost()
+                //        .If(configure != null, configure)
+                //)
+
+                //.StartWithHost()
             ;
         return services;
     }

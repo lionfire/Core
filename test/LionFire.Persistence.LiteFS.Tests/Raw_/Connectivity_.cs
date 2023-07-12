@@ -90,7 +90,7 @@ namespace Raw_
 
                //var readHandle = reference.GetReadHandle<string>();
                ////var persistenceResult = await readHandle.Retrieve();
-               //var persistenceResult = await readHandle.Resolve() as ITransferResult;
+               //var persistenceResult = await readHandle.Get() as ITransferResult;
 
                //Assert.True(persistenceResult.Flags.HasFlag(TransferResultFlags.Success));
                //Assert.Equal(testContents, readHandle.Value);

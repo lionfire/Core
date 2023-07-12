@@ -40,14 +40,14 @@ public static class IReadHandleBaseX
     public static async Task<T> GetValue<T>(this IReadHandleBase<T> handle)
     {
         if (handle is ILazilyGets<T> l)
-            return await l.GetValue<T>().ConfigureAwait(false);
+            return await l.GetIfNeeded<T>().ConfigureAwait(false);
 
         var result = await handle.Get().ConfigureAwait(false);
         if (!result.HasValue) throw new Exception("Failed to resolve value.");
         return result.Value;
     }
 
-    public static async Task<IGetResult<T>> ResolveIfNeeded<T>(this IReadHandleBase<T> handle)
+    public static async Task<IGetResult<T>> GetIfNeeded<T>(this IReadHandleBase<T> handle)
     {
         if (handle is ILazilyGets<T> l)
             return await l.GetIfNeeded().ConfigureAwait(false);

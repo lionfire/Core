@@ -75,7 +75,7 @@ namespace LionFire.Vos
         {
             if (!HasValue)
             {
-                await ResolveImpl().ConfigureAwait(false);
+                await GetImpl().ConfigureAwait(false);
                 if (!HasValue) { Value = ReferenceObjectFactory.ConstructDefault<T>(Reference); }
             }
             return Value;
@@ -158,7 +158,7 @@ namespace LionFire.Vos
         public Task<bool> Delete() => throw new NotImplementedException();
 
         public void OnRenamed(IVobHandle<T> newHandle) => throw new NotImplementedException();
-        protected override Task<IGetResult<T>> ResolveImpl() => throw new NotImplementedException();
+        protected override Task<IGetResult<T>> GetImpl(CancellationToken cancellationToken = default) => throw new NotImplementedException();
         protected override Task<ITransferResult> UpsertImpl() => throw new NotImplementedException();
         public override ILazyGetResult<T> QueryValue() => throw new NotImplementedException();
         public override void RaisePersistenceEvent(PersistenceEvent<T> ev) => throw new NotImplementedException();

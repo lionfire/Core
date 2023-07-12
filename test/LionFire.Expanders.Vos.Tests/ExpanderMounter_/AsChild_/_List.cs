@@ -10,6 +10,7 @@ using Serilog;
 using System.Collections.Generic;
 using System.Diagnostics;
 using static TestHostBuilder;
+using Log = Serilog.Log;
 
 namespace ExpanderMounter_.AsChild_;
 
@@ -22,7 +23,7 @@ public class _List
         RunTest(async sp =>
         {
             var listingsHandle = "/testdata/zip/ExpandAsChildTest".ToVobReference().GetListingsHandle();
-            var listings = await listingsHandle.Resolve();
+            var listings = await listingsHandle.Get();
 
             var listingText = new StringBuilder("+++Listings: ").AppendLine();
             foreach (var item in listings?.Value.Value ?? Enumerable.Empty<IListing<object>>())

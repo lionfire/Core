@@ -8,7 +8,7 @@ public abstract class CachingGets<T> : ICachingGets<T>
 
     public bool HasValue => value != null;
 
-    protected abstract ITask<IGetResult<T>> GetImpl();
+    protected abstract ITask<IGetResult<T>> GetImpl(CancellationToken cancellationToken = default);
 
     public virtual async ITask<IGetResult<T>> Get(CancellationToken cancellationToken = default)
     {

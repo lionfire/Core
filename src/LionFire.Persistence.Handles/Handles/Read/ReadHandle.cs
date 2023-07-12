@@ -27,11 +27,13 @@ namespace LionFire.Persistence.Handles
     ///  - ObjectChanged 
     /// </remarks>
     /// <typeparam name="TValue"></typeparam>
-    public abstract partial class ReadHandle<TReference, TValue> : ReadHandleBase<TReference, TValue>, IReadHandle<TValue>,
+    public abstract partial class ReadHandle<TReference, TValue> 
+        : ReadHandleBase<TReference, TValue>
+        , IReadHandle<TValue>
         //IReadHandleInvariantEx<TValue>, 
-        INotifyPersists<TValue>,
-        INotifyPropertyChanged,
-        INotifyPersistsInternal<TValue>
+        , INotifyPersists<TValue>
+        , INotifyPropertyChanged
+        , INotifyPersistsInternal<TValue>
         //, IRetrievableImpl<TValue>
         where TReference : IReference<TValue>
     {
@@ -118,7 +120,7 @@ namespace LionFire.Persistence.Handles
 
             //var old = PersistenceSnapshot;
 
-            ProtectedValue = obj;
+            ReadCacheValue = obj;
             this.Flags |= PersistenceFlags.UpToDate;
 
             //this.PersistenceStateChanged?.Invoke(new PersistenceEvent<TValue>
@@ -132,10 +134,10 @@ namespace LionFire.Persistence.Handles
             return obj;
         }
 
-        PersistenceSnapshot<TValue> IPersists<TValue>.PersistenceState
+        IPersistenceSnapshot<TValue> IPersists<TValue>.PersistenceState
              => new PersistenceSnapshot<TValue>
              {
-                 Value = ProtectedValue,
+                 Value = ReadCacheValue,
                  Flags = Flags,
                  HasValue = HasValue,
              };
@@ -210,7 +212,7 @@ namespace LionFire.Persistence.Handles
 
         #region Get
 
-        //public async ITask<IGetResult<TValue>> RetrieveImpl() => (IGetResult<TValue>)await ResolveImpl().ConfigureAwait(false);
+        //public async ITask<IGetResult<TValue>> RetrieveImpl() => (IGetResult<TValue>)await GetImpl().ConfigureAwait(false);
 
 
         //async Task<IGetResult<ObjectType>> IRetrievableImpl<ObjectType>.RetrieveObject() => await RetrieveObject().ConfigureAwait(false);
@@ -268,7 +270,7 @@ namespace LionFire.Persistence.Handles
         {
             if (forceCheck)
             {
-                return (await ResolveImpl().ConfigureAwait(false)).HasValue;
+                return (await GetImpl().ConfigureAwait(false)).HasValue;
             }
             else if (HasValue && IsUpToDate)
             {

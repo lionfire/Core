@@ -61,7 +61,7 @@ namespace LionFire.Persistence.Assets.Tests
 
                       var readHandle = assetReference.GetReadHandle<TestClass1>();
 
-                      var result = (await readHandle.Resolve()).ToRetrieveResult();
+                      var result = (await readHandle.Get()).ToRetrieveResult();
                       Assert.True(result.IsSuccess);
 
                       var value = readHandle.Value;

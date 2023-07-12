@@ -57,7 +57,7 @@ namespace Mount_
 
                     //var readHandle = reference.ToReadHandle<string>();
                     var readHandle = reference.GetVob(services).GetReadHandle<string>();
-                    var persistenceResult = await readHandle.Resolve();
+                    var persistenceResult = await readHandle.Get();
 
                     //Assert.True(persistenceResult.Flags.HasFlag(TransferResultFlags.Success)); // TODO - switch to Retrieve?
                     Assert.True(persistenceResult.IsSuccess);

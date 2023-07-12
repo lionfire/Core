@@ -3,8 +3,7 @@ namespace LionFire.Data.Gets;
 
 public interface ILazilyGets<out T> : IGets<T>, ILazilyGets, IDefaultableReadWrapper<T>
 {
-    // TODO: RENAME TryGetValue to GetIfNeeded
-    ITask<ILazyGetResult<T>> GetIfNeeded();
+    ITask<ILazyGetResult<T>> GetIfNeeded(); // TODO: Add CancellationToken
 
     /// <summary>
     /// RENAME to Query

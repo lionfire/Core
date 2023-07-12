@@ -37,7 +37,7 @@ public class Stream_
             Assert.IsInstanceOfType(readHandle, typeof(PersisterReadHandle<IVobReference, Stream, VosPersister>));
             Assert.AreEqual(expectedPath, readHandle.Key);
 
-            var resolveResult = await readHandle.Resolve();
+            var resolveResult = await readHandle.Get();
             Assert.IsNotNull(resolveResult.Value);
 
             Assert.IsTrue(resolveResult.Value.Length > 0);

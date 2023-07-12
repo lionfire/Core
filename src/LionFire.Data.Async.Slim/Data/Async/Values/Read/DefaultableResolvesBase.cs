@@ -32,7 +32,7 @@ namespace LionFire.Data.Gets
     //        return resolveResult;
     //    }
 
-    //    public abstract Task<IResolveResult<TValue>> GetImpl();
+    //    public abstract Task<IResolveResult<TValue>> GetImpl(CancellationToken cancellationToken = default);
     //}
 
     //public class DefaultableResolves<TKey, TValue> : DefaultableResolvesBase<TKey, TValue>
@@ -41,7 +41,7 @@ namespace LionFire.Data.Gets
 
     //    public Func<TKey, Task<IResolveResult<TValue>>> Resolver { get; set; }
 
-    //    public override Task<IResolveResult<TValue>> GetImpl() => return Resolver(this.Key);
+    //    public override Task<IResolveResult<TValue>> GetImpl(CancellationToken cancellationToken = default) => return Resolver(this.Key);
     //}
 
     //public abstract class NotifyingDefaultableResolvesBase<TKey, TValue> : DisposableKeyed<TKey>, ILazilyResolves<TValue>, INotifiesSenderValueChanged<DefaultableValue<TValue>>
@@ -95,7 +95,7 @@ namespace LionFire.Data.Gets
     //        return resolveResult;
     //    }
 
-    //    public abstract Task<IResolveResult<TValue>> GetImpl();
+    //    public abstract Task<IResolveResult<TValue>> GetImpl(CancellationToken cancellationToken = default);
     //}
 
 }

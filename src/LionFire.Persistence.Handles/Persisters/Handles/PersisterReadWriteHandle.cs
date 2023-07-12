@@ -54,9 +54,9 @@ namespace LionFire.Persistence.Persisters
 
         //public override ILazyGetResult<TValue> QueryValue() => throw new NotImplementedException();
         //public override void RaisePersistenceEvent(PersistenceEvent<TValue> ev) => throw new NotImplementedException();
-        protected override async ITask<IGetResult<TValue>> ResolveImpl() => await Persister.Retrieve<TPersisterReference, TValue>((TPersisterReference)(object)Reference).ConfigureAwait(false);
+        protected override async ITask<IGetResult<TValue>> GetImpl(CancellationToken cancellationToken = default) =>  await Persister.Retrieve<TPersisterReference, TValue>((TPersisterReference)(object)Reference).ConfigureAwait(false);
 
-        protected override async Task<ITransferResult> UpsertImpl() => await Persister.Upsert(this, ProtectedValue);
+        protected override async Task<ITransferResult> UpsertImpl() => await Persister.Upsert(this, StagedValue);
 
         protected override async Task<ITransferResult> DeleteImpl() => await Persister.Delete(this);
 

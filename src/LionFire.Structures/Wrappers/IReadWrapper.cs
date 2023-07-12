@@ -7,6 +7,6 @@ namespace LionFire.Structures;
 public interface IReadWrapper<out T>
 {
     // REVIEW: Consider replacing T with language-ext's Option<>?
-    T? Value { get; } 
+    T? Value { get; }  // RENAME to Value, or something
     //event Action<IReadWrapper<T> /* Wrapper */ , T /*oldValue*/ , T /*newValue*/> ObjectChanged;
 }

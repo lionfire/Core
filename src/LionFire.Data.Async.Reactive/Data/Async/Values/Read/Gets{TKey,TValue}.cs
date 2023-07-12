@@ -2,8 +2,8 @@
 
 namespace LionFire.Data;
 
-public abstract class AsyncGets<TKey, TValue>
-    : AsyncGets<TValue>
+public abstract class Gets<TKey, TValue>
+    : Gets<TValue>
     , IDisposable
     , IKeyed<TKey>
 {
@@ -25,7 +25,7 @@ public abstract class AsyncGets<TKey, TValue>
     //protected AsyncGets(AsyncGetOptions? options) : base(options)
     //{
     //}
-    protected AsyncGets(TKey key, AsyncGetOptions? options) : base(options)
+    protected Gets(TKey key, AsyncGetOptions? options) : base(options)
     {
         this.key = key;
     }

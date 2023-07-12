@@ -22,7 +22,10 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\..\src\LionFire.Data.Async.Abstractions\LionFire.Data.Async.Abstractions.csproj" />
     <ProjectReference Include="..\..\src\LionFire.IO.Filesystem\LionFire.IO.Filesystem.csproj" />
+    <ProjectReference Include="..\..\src\LionFire.Persistence\LionFire.Data.Persisters.csproj" />
+    <ProjectReference Include="..\..\src\LionFire.Resolves\LionFire.Data.Async.csproj" />
   </ItemGroup>
 
 </Project>

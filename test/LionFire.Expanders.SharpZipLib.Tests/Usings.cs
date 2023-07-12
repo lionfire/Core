@@ -11,3 +11,6 @@ global using System.Text;
 global using System.Threading.Tasks;
 global using LionFire.Persisters.Expanders;
 global using static LionFire.Testing.TestRunner;
+global using LionFire.ExtensionMethods.Data;
+global using LionFire.Testing;
+global using LionFire.Data;

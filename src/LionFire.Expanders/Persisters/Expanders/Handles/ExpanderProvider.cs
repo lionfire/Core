@@ -4,7 +4,7 @@ using LionFire.Data.Gets;
 
 namespace LionFire.Persisters.Expanders;
 
-public class ExpanderProvider : IResolverSync<IReference, IExpander>, IExpanderProvider
+public class ExpanderProvider : IGetsSync<IReference, IExpander>, IExpanderProvider
 {
     public IEnumerable<IExpander> Expanders => expanders;
     IEnumerable<IExpander> expanders;

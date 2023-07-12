@@ -1,9 +1,8 @@
-﻿namespace LionFire.Persistence.Handles
+﻿namespace LionFire.Persistence.Handles;
+
+internal interface INotifyPersistsInternal<TValue> : IPersists<TValue>
+    //where TValue : class
 {
-    internal interface INotifyPersistsInternal<TValue> : IPersists<TValue>
-        //where TValue : class
-    {
-        void RaisePersistenceEvent(PersistenceEvent<TValue> ev);
-        
-    }
+    void RaisePersistenceEvent(PersistenceEvent<TValue> ev);
+    
 }

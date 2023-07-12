@@ -1,9 +1,10 @@
-﻿using LionFire.Dependencies;
+﻿using LionFire.Data.Gets;
+using LionFire.Dependencies;
 using LionFire.ExtensionMethods.Poco.Resolvables;
-using LionFire.Resolvables;
 using LionFire.Structures;
 using System;
 using System.Threading.Tasks;
+using LionFire.Data.Gets;
 
 namespace LionFire.Referencing
 {
@@ -46,7 +47,10 @@ namespace LionFire.Referencing
 #endif
 
     // TODO: Document, maybe rename generic type names
-    public abstract class ResolvingTypedReferenceBase<TConcrete, TValue> : ReferenceBase<TConcrete>, ITypedReference, IResolvable
+    public abstract class ResolvingTypedReferenceBase<TConcrete, TValue> 
+        : ReferenceBase<TConcrete>
+        , ITypedReference
+        , IGets
         where TConcrete : ReferenceBase<TConcrete>
     {
         public override Type Type => typeof(TValue);

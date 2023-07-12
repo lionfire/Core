@@ -14,3 +14,7 @@ public interface IPersists
     
     PersistenceFlags Flags { get; }
 }
+public interface IPersistsInternal : IPersists
+{
+    new PersistenceFlags Flags { get;  set; }
+}

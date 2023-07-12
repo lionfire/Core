@@ -162,7 +162,7 @@ public abstract class AsyncGetsSlim<TValue> : ILazilyGets<TValue>
     {
         var resolveResult = await GetImpl(cancellationToken).ConfigureAwait(false);
         ReadCacheValue = resolveResult.Value;
-        Debug.Assert(!IsValueDefault, "ResolveImpl should not return default, or it will be repeatedly reevaluated.  Consider using GetsDefaultableSlim instead.");
+        Debug.Assert(!IsValueDefault, "GetImpl should not return default, or it will be repeatedly reevaluated.  Consider using GetsDefaultableSlim instead.");
         return resolveResult;
     }
 

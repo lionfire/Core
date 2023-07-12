@@ -8,6 +8,7 @@ using LionFire.Threading;
 using System;
 using System.Threading.Tasks;
 using UltraMapper;
+using LionFire.Data.Sets;
 
 namespace LionFire.Persistence
 {
@@ -26,7 +27,7 @@ namespace LionFire.Persistence
     /// <seealso cref="ReadWriteHandle"/>
     /// <seealso cref="ReadWriteHandlePairEx"/>
     public class ReadWriteHandlePairBase<TReference, TValue, TReadHandle, TWriteHandle> : DisposableKeyed<TReference>
-        , IResolveCommitPair<TValue>
+        , IGetsAndSetsWithoutStaging<TValue>
         , IReadWriteHandlePairBase<TValue, TReadHandle, TWriteHandle>
         where TReference : IReference
         where TReadHandle : class, IReadHandleBase<TValue>
@@ -82,7 +83,7 @@ namespace LionFire.Persistence
         }
         protected TReadHandle readHandle;
         public bool HasReadHandle => readHandle != null;
-        IGets<TValue> IResolveCommitPair<TValue>.Resolves => ReadHandle;
+        IGets<TValue> IGetsAndSetsWithoutStaging<TValue>.Resolves => ReadHandle;
 
         #endregion
 
@@ -107,7 +108,7 @@ namespace LionFire.Persistence
         }
         protected TWriteHandle writeHandle;
         public bool HasWriteHandle => writeHandle != null;
-        ISets IResolveCommitPair<TValue>.Commits => WriteHandle;
+        ISets IGetsAndSetsWithoutStaging<TValue>.Commits => WriteHandle;
 
         #endregion
 
@@ -134,7 +135,7 @@ namespace LionFire.Persistence
             }
             else if (allowRetrieve)
             {
-                var result = await ReadHandle.ResolveIfNeeded();
+                var result = await IReadHandleBaseX.GetIfNeeded(ReadHandle);
 
                 if (result.HasValue)
                 {
@@ -181,7 +182,7 @@ namespace LionFire.Persistence
         #region Cloning
 
         public async Task<(TValue clonedValue, bool clonedSomething)> CloneGetReadHandleValueToWriteHandleValue(bool propagateNoValue = false)
-            => _CloneGetOrQueryReadHandleValueToWriteHandleValue2(await ReadHandle.ResolveIfNeeded().ConfigureAwait(false), propagateNoValue);
+            => _CloneGetOrQueryReadHandleValueToWriteHandleValue2(await IReadHandleBaseX.GetIfNeeded(ReadHandle).ConfigureAwait(false), propagateNoValue);
 
         public (TValue clonedValue, bool clonedSomething) CloneQueryReadHandleValueToWriteHandleValue(bool propagateNoValue = false)
             => _CloneGetOrQueryReadHandleValueToWriteHandleValue2(!HasReadHandle ? null : ReadHandle.QueryValue(), propagateNoValue);
@@ -223,7 +224,7 @@ namespace LionFire.Persistence
 
             if (forceRetrieve)
             {
-                await ReadHandle?.Retrieve();
+                await ReadHandle?.Get();
             }
             else if (getIfNeeded)
             {

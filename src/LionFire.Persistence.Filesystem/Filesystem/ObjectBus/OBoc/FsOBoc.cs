@@ -45,7 +45,7 @@ namespace LionFire.ObjectBus.Filesystem
 
         
 
-        protected override async ITask<IGetResult<INotifyingReadOnlyCollection<FsListEntry>>> ResolveImpl()
+        protected override async ITask<IGetResult<INotifyingReadOnlyCollection<FsListEntry>>> GetImpl(CancellationToken cancellationToken = default)
         {
             var dir = Reference.Path;
 

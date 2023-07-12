@@ -27,6 +27,7 @@ public class TransferResult : ITransferResult, IErrorResult
 
     public static readonly TransferResult Indeterminate = new TransferResult { Flags = TransferResultFlags.Indeterminate };
     public static readonly TransferResult Success = new TransferResult { Flags = TransferResultFlags.Success };
+    public static readonly TransferResult NoopSuccess = new TransferResult { Flags = TransferResultFlags.Success | TransferResultFlags.Noop };
     public static readonly TransferResult SuccessAndFound = new TransferResult { Flags = TransferResultFlags.Success | TransferResultFlags.Found };
     public static readonly TransferResult Found = new TransferResult { Flags = TransferResultFlags.Found };
     public static readonly TransferResult NotFound = new TransferResult { Flags = TransferResultFlags.NotFound };

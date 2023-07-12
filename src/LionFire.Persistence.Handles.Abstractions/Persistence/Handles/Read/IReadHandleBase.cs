@@ -3,6 +3,8 @@ using LionFire.Persistence.Handles;
 
 namespace LionFire.Persistence;
 
+// REVIEW: Is there a better way to distinguish the minimal layer of IReadHandleBase?  The Base interfaces are stripped down
+
 /// <summary>
 /// IReadHandle - Minimal interface for Read Handles.  (See also: IReadHandleEx)
 /// 

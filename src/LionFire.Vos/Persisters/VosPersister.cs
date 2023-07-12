@@ -22,6 +22,7 @@ using System.Text;
 using System.Threading;
 using static LionFire.Persistence.Persisters.Vos.VosPersister;
 using LionFire.Data;
+using LionFire.Results;
 
 namespace LionFire.Persistence.Persisters.Vos;
 
@@ -298,7 +299,7 @@ public class VosPersister : SerializingPersisterBase<VosPersisterOptions>, IPers
                 IGetResult<TValue> childResult;
                 try
                 {
-                    childResult = (await rh.Resolve().ConfigureAwait(false)).ToRetrieveResult();
+                    childResult = (await rh.Get().ConfigureAwait(false));
                     l.Info(childResult.ToString() + " " + rh.Reference + $" (for {referencable.Reference})"); // TEMP log level
                 }
                 finally
@@ -655,7 +656,7 @@ public class VosPersister : SerializingPersisterBase<VosPersisterOptions>, IPers
                 var wh = effectiveReference.GetWriteHandle<TValue>(serviceProvider: ServiceProvider);
 
                 wh.Value = value;
-                var childResult = (await wh.Set().ConfigureAwait(false)).ToPersistenceResult();
+                var childResult = (await wh.Set().ConfigureAwait(false));
 
                 if (childResult.IsFail()) result.Flags |= TransferResultFlags.Fail; // Indicates that at least one underlying persister failed
 
@@ -719,7 +720,7 @@ public class VosPersister : SerializingPersisterBase<VosPersisterOptions>, IPers
         var retrieveResult = await RetrieveWithAggregation<Metadata<IEnumerable<IListing<TValue>>>>(referencable).ConfigureAwait(false);
         var result = retrieveResult.IsSuccess()
             ? RetrieveResult<IEnumerable<IListing<TValue>>>.Success(retrieveResult.Value.Value)
-            : new RetrieveResult<IEnumerable<IListing<TValue>>> { Flags = retrieveResult.Flags, Error = retrieveResult.Error };
+            : new RetrieveResult<IEnumerable<IListing<TValue>>> { Flags = retrieveResult.Flags, Error = (retrieveResult as IErrorResult)?.Error };
         l.Trace(result.ToString());
         return result;
         //    var vob = Root[referencable.Reference.Path];
@@ -736,7 +737,7 @@ public class VosPersister : SerializingPersisterBase<VosPersisterOptions>, IPers
         //            var effectiveReference = !relativePathChunks.Any() ? mount.Target : mount.Target.GetChildSubpath(relativePathChunks);
         //            var rh = effectiveReference.GetReadHandle<Metadata<IEnumerable<Listing>>>(ServiceProvider);
 
-        //            var childResult = (await rh.Resolve().ConfigureAwait(false)).ToRetrieveResult();
+        //            var childResult = (await rh.Get().ConfigureAwait(false)).ToRetrieveResult();
 
         //            if (childResult.IsFail()) result.Flags |= TransferResultFlags.Fail; // Indicates that at least one underlying persister failed
 

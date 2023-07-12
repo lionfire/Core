@@ -12,454 +12,452 @@ using LionFire.Serialization;
 using LionFire.Structures;
 using Newtonsoft.Json;
 
-namespace LionFire.Instantiating
+namespace LionFire.Instantiating;
+
+/// <summary>
+/// Represents the intent to instantiate an object from a template, and optionally template parameters and
+/// optionally state as understood by the instance.
+/// REVIEW - should this have anything to do with IInstantiation?  If so, maybe rename to Instantiation
+/// </summary>
+[LionSerializable(SerializeMethod.ByValue)] // REVIEW
+public abstract class InstantiationBase<TTemplate> : InstantiationBase<TTemplate, IReadHandleBase<TTemplate>, object>
+    where TTemplate : ITemplate
 {
-    /// <summary>
-    /// Represents the intent to instantiate an object from a template, and optionally template parameters and
-    /// optionally state as understood by the instance.
-    /// REVIEW - should this have anything to do with IInstantiation?  If so, maybe rename to Instantiation
-    /// </summary>
-    [LionSerializable(SerializeMethod.ByValue)] // REVIEW
-    public abstract class InstantiationBase<TTemplate> : InstantiationBase<TTemplate, IReadHandleBase<TTemplate>, object>
-        where TTemplate : ITemplate
+}
+
+public interface IInstantiationEx : IInstantiation
+{
+    string GetDefaultKey(IInstantiation instantiation);
+}
+
+/// <summary>
+/// Represents the intent to instantiate an object from a template, and optionally template parameters and
+/// optionally state as understood by the instance.
+/// REVIEW - should this have anything to do with IInstantiation?  If so, maybe rename to Instantiation
+/// </summary>
+[LionSerializable(SerializeMethod.ByValue)] // REVIEW
+[JsonObject]
+public abstract class InstantiationBase<TTemplate, TTemplateHandle, TState> 
+    : IInstantiation<TTemplate>, 
+    IParentedTemplateHandleParameters<TTemplate, TTemplateHandle>,
+    ITemplateParameters<TTemplate>,
+    IParented, 
+    IInstantiationEx
+    where TTemplate : ITemplate
+    where TTemplateHandle : class, IReadHandleBase<TTemplate>
+    //where TParameters : ITemplateHandleParameters<TTemplate, TTemplateHandle>
+{
+
+    #region Ontology - TODO - both Key and Pid???
+
+    #region Parent
+
+    #region Parent
+
+    [Ignore]
+    public object Parent { get; set; }
+
+    #endregion
+
+    [SerializeDefaultValue(false)]
+    public string ParentKey
     {
+        get;
+        set;
     }
 
-    public interface IInstantiationEx : IInstantiation
+    #endregion
+
+    #region Key
+
+    // object IKeyed<string>.Key { get { return Key; } }
+
+    [SerializeDefaultValue(false)]
+    public abstract string Key { get; set; }
+
+    #endregion
+
+    #region Pid
+
+    [DefaultValue(0)]
+    [SerializeDefaultValue(false)]
+    public short Pid
     {
-        string GetDefaultKey(IInstantiation instantiation);
+        get { return pid; }
+        set
+        {
+            if (pid == value) return;
+            if (value != 0 && pid != 0) throw new NotSupportedException("Pid can only be set once (unless first set back to default).");
+            pid = value;
+        }
+    }
+    private short pid = 0;
+    public IPidRoot PidRoot => this.ParentOfType<IPidRoot>();
+
+
+    public bool HasPid { get { return pid != 0; } }
+
+    public void EnsureHasPid()
+    {
+        if (!TryEnsureHasPid()) throw new Exception("Failed to get Pid: " + this.ToStringSafe());
     }
 
-    /// <summary>
-    /// Represents the intent to instantiate an object from a template, and optionally template parameters and
-    /// optionally state as understood by the instance.
-    /// REVIEW - should this have anything to do with IInstantiation?  If so, maybe rename to Instantiation
-    /// </summary>
-    [LionSerializable(SerializeMethod.ByValue)] // REVIEW
-    [JsonObject]
-    public abstract class InstantiationBase<TTemplate, TTemplateHandle, TState> 
-        : IInstantiation<TTemplate>, 
-        IParentedTemplateHandleParameters<TTemplate, TTemplateHandle>,
-        ITemplateParameters<TTemplate>,
-        IParented, 
-        IInstantiationEx
-        where TTemplate : ITemplate
-        where TTemplateHandle : class, IReadHandleBase<TTemplate>
-        //where TParameters : ITemplateHandleParameters<TTemplate, TTemplateHandle>
+    public bool TryEnsureHasPid()
     {
-
-        #region Ontology - TODO - both Key and Pid???
-
-        #region Parent
-
-        #region Parent
-
-        [Ignore]
-        public object Parent { get; set; }
-
-        #endregion
-
-        [SerializeDefaultValue(false)]
-        public string ParentKey
+        if (Pid == 0)
         {
-            get;
-            set;
-        }
-
-        #endregion
-
-        #region Key
-
-        // object IKeyed<string>.Key { get { return Key; } }
-
-        [SerializeDefaultValue(false)]
-        public abstract string Key { get; set; }
-
-        #endregion
-
-        #region Pid
-
-        [DefaultValue(0)]
-        [SerializeDefaultValue(false)]
-        public short Pid
-        {
-            get { return pid; }
-            set
+            var pidRoot = PidRoot;
+            if (pidRoot != null)
             {
-                if (pid == value) return;
-                if (value != 0 && pid != 0) throw new NotSupportedException("Pid can only be set once (unless first set back to default).");
-                pid = value;
+                Pid = pidRoot.KeyKeeper.GetNextKey();
+                return Pid != 0;
             }
+            else { return false; }
         }
-        private short pid = 0;
-        public IPidRoot PidRoot => this.ParentOfType<IPidRoot>();
-
-
-        public bool HasPid { get { return pid != 0; } }
-
-        public void EnsureHasPid()
+        else
         {
-            if (!TryEnsureHasPid()) throw new Exception("Failed to get Pid: " + this.ToStringSafe());
+            return true;
         }
+    }
+    #endregion
 
-        public bool TryEnsureHasPid()
+    #endregion
+
+    #region Construction
+
+    protected InstantiationBase() { }
+    protected InstantiationBase(TTemplateHandle template) { RTemplate = template; }
+
+    #endregion
+
+    /// <summary>
+    /// OverlayTargets: by default, the template's IInstantiation tree
+    /// </summary>
+    public virtual IEnumerable<IEnumerable<IInstantiation>> OverlayTargets
+    {
+        get
         {
-            if (Pid == 0)
-            {
-                var pidRoot = PidRoot;
-                if (pidRoot != null)
-                {
-                    Pid = pidRoot.KeyKeeper.GetNextKey();
-                    return Pid != 0;
-                }
-                else { return false; }
-            }
-            else
-            {
-                return true;
-            }
+            throw new NotImplementedException("TOPORT");
+            //if (Template != null && Template.Object != null)
+            //{
+            //    IHierarchicalTemplate hierarchicalTemplate = Template.Object as IHierarchicalTemplate;
+            //    if (hierarchicalTemplate != null && hierarchicalTemplate.Children != null)
+            //    {
+            //        yield return hierarchicalTemplate.Children;
+            //        //foreach (var child in hierarchicalTemplate.Children)
+            //        //{
+            //        //    yield return child;
+            //        //}
+            //    }
+            //}
+            ////var templateOverlayable = this.Parent as ITemplateOverlayable;
+            ////if (templateOverlayable != null)
+            ////{
+            ////    foreach (var target in templateOverlayable.OverlayTargets) { yield return target; }
+            ////}
+            //yield break;
         }
-        #endregion
+    }
 
-        #endregion
+    #region Prototype
 
-        #region Construction
+    [SerializeDefaultValue(false)]
+    public ICloneable Prototype { get; set; }
 
-        protected InstantiationBase() { }
-        protected InstantiationBase(TTemplateHandle template) { RTemplate = template; }
+    #endregion
 
-        #endregion
+    #region Template
 
-        /// <summary>
-        /// OverlayTargets: by default, the template's IInstantiation tree
-        /// </summary>
-        public virtual IEnumerable<IEnumerable<IInstantiation>> OverlayTargets
+    [Blocking]
+    ITemplate IHasTemplate.Template { get => Template; set => Template= (TTemplate)value; }
+    //ITemplate IHasTemplate.Template { get => RTemplate != null ? RTemplate.Value : (ITemplate)null; set => throw new NotImplementedException(); }
+
+
+    //public ITemplate TemplateObject
+    //{
+    //    get
+    //    {
+    //        if (Template != null && Template.Object != null)
+    //        {
+    //            return Template.Object;
+    //        }
+    //        //if (TemplateHandle != null)
+    //        //{
+    //        //    return TemplateHandle.Object;
+    //        //}
+    //        return null;
+    //    }
+    //}
+    //#region TemplateHandle
+
+    ////public IReadHandle<ITemplate> TemplateHandle
+    ////{
+    ////    get { return templateHandle; }
+    ////    set
+    ////    {
+    ////        if (templateHandle == value) return;
+    ////        if (templateHandle != default(IReadHandle<ITemplate>)) throw new NotSupportedException("TemplateHandle can only be set once.");
+    ////        templateHandle = value;
+    ////    }
+    ////} private IReadHandle<ITemplate> templateHandle;
+
+    //#endregion
+
+    //public IReadHandle TemplateAH
+    //{
+    //    get;
+    //    set;
+    //}
+
+    #region Template
+
+    public bool ShouldSerializeTemplate() => template != null && rTemplate == null;
+
+    //[Ignore]
+    [Blocking]
+    public TTemplate Template
+    {
+        get => template ?? (rTemplate == default ? default : rTemplate.Value);
+        set
         {
-            get
-            {
-                throw new NotImplementedException("TOPORT");
-                //if (Template != null && Template.Object != null)
-                //{
-                //    IHierarchicalTemplate hierarchicalTemplate = Template.Object as IHierarchicalTemplate;
-                //    if (hierarchicalTemplate != null && hierarchicalTemplate.Children != null)
-                //    {
-                //        yield return hierarchicalTemplate.Children;
-                //        //foreach (var child in hierarchicalTemplate.Children)
-                //        //{
-                //        //    yield return child;
-                //        //}
-                //    }
-                //}
-                ////var templateOverlayable = this.Parent as ITemplateOverlayable;
-                ////if (templateOverlayable != null)
-                ////{
-                ////    foreach (var target in templateOverlayable.OverlayTargets) { yield return target; }
-                ////}
-                //yield break;
-            }
+            if (EqualityComparer<TTemplate>.Default.Equals(template, value)) { return; } // REVIEW Equality comparison
+            if (value != null && rTemplate != null) throw new NotSupportedException($"Cannot set both {nameof(RTemplate)} and {nameof(Template)}");
+
+            template = value;
+            //if (rTemplate != null) throw new AlreadySetException();
+            //rTemplate = value.GetObjectReadHandle();
         }
+    }
+    protected TTemplate template;
 
-        #region Prototype
-
-        [SerializeDefaultValue(false)]
-        public ICloneable Prototype { get; set; }
-
-        #endregion
-
-        #region Template
-
-        [Blocking]
-        ITemplate IHasTemplate.Template { get => Template; set => Template= (TTemplate)value; }
-        //ITemplate IHasTemplate.Template { get => RTemplate != null ? RTemplate.Value : (ITemplate)null; set => throw new NotImplementedException(); }
+     object  IInstantiationBase.TemplateObj => Template;
 
 
-        //public ITemplate TemplateObject
-        //{
-        //    get
-        //    {
-        //        if (Template != null && Template.Object != null)
-        //        {
-        //            return Template.Object;
-        //        }
-        //        //if (TemplateHandle != null)
-        //        //{
-        //        //    return TemplateHandle.Object;
-        //        //}
-        //        return null;
-        //    }
-        //}
-        //#region TemplateHandle
+    //#if !AOT && !UNITY // Unity crashes with contravariant IReadHandle -- commented out the generic part of RH<>
+    IReadHandleBase<ITemplate> IHasRTemplate.RTemplate => (IReadHandleBase<ITemplate>)RTemplate;
 
-        ////public IReadHandle<ITemplate> TemplateHandle
-        ////{
-        ////    get { return templateHandle; }
-        ////    set
-        ////    {
-        ////        if (templateHandle == value) return;
-        ////        if (templateHandle != default(IReadHandle<ITemplate>)) throw new NotSupportedException("TemplateHandle can only be set once.");
-        ////        templateHandle = value;
-        ////    }
-        ////} private IReadHandle<ITemplate> templateHandle;
+    public bool ShouldSerializeRTemplate() => rTemplate != null;
 
-        //#endregion
+    IReadHandleBase<TTemplate> ITemplateParameters<TTemplate>.RTemplate { get => RTemplate; set => RTemplate = (TTemplateHandle)value; }
 
-        //public IReadHandle TemplateAH
-        //{
-        //    get;
-        //    set;
-        //}
-
-        #region Template
-
-        public bool ShouldSerializeTemplate() => template != null && rTemplate == null;
-
-        //[Ignore]
-        [Blocking]
-        public TTemplate Template
+    [Assignment(AssignmentMode.Assign)]
+    public TTemplateHandle RTemplate
+    //public R<TTemplate> Template
+    {
+        get
         {
-            get => template ?? (rTemplate == default ? default : rTemplate.Value);
-            set
-            {
-                if (EqualityComparer<TTemplate>.Default.Equals(template, value)) { return; } // REVIEW Equality comparison
-                if (value != null && rTemplate != null) throw new NotSupportedException($"Cannot set both {nameof(RTemplate)} and {nameof(Template)}");
-
-                template = value;
-                //if (rTemplate != null) throw new AlreadySetException();
-                //rTemplate = value.GetObjectReadHandle();
-            }
-        }
-        protected TTemplate template;
-
-         object  IInstantiationBase.TemplateObj => Template;
-
-
-        //#if !AOT && !UNITY // Unity crashes with contravariant IReadHandle -- commented out the generic part of RH<>
-        IReadHandleBase<ITemplate> IHasRTemplate.RTemplate => (IReadHandleBase<ITemplate>)RTemplate;
-
-        public bool ShouldSerializeRTemplate() => rTemplate != null;
-
-        IReadHandleBase<TTemplate> ITemplateParameters<TTemplate>.RTemplate { get => RTemplate; set => RTemplate = (TTemplateHandle)value; }
-
-        [Assignment(AssignmentMode.Assign)]
-        public TTemplateHandle RTemplate
-        //public R<TTemplate> Template
-        {
-            get
-            {
 #if RuntimeDebug
-                if (template != null && template.GetType() == typeof(string))
-                    throw new UnreachableCodeException("get_Template - got string: " + (string)(object)template);
+            if (template != null && template.GetType() == typeof(string))
+                throw new UnreachableCodeException("get_Template - got string: " + (string)(object)template);
 #endif
-                if (rTemplate != null) return rTemplate;
+            if (rTemplate != null) return rTemplate;
 
-                //if(template != null) { return template.GetObjectReadHandle(); }
-                if (rTemplate == null && !object.ReferenceEquals(Parameters, this))
-                {
-                    return Parameters?.RTemplate;
-                }
-                return rTemplate;
-            }
-            set
+            //if(template != null) { return template.GetObjectReadHandle(); }
+            if (rTemplate == null && !object.ReferenceEquals(Parameters, this))
             {
-                if ((rTemplate == null && value == null) || (rTemplate != null && value != null && rTemplate.Equals(value))) return;
-                //if (template != null) throw new NotSupportedException("Can only be set once.");
-                if (rTemplate != null && value != null) throw new AlreadySetException();
-                //if (value != null && value.GetType() == typeof(string))
-                //throw new UnreachableCodeException("set_Template - got string: " + (string)(object)value);
-                if (value != null && template != null) throw new NotSupportedException($"Cannot set both {nameof(RTemplate)} and {nameof(Template)}");
-                rTemplate = value;
-
-                //if (template != null && this.Key != null)
-                //{
-                //    this.TryGetOverlayParent();
-                //}
+                return Parameters?.RTemplate;
             }
+            return rTemplate;
         }
-        //protected R<TTemplate> template;
-        //protected IReadHandleBase<ITemplate> template;
-        protected TTemplateHandle rTemplate;
-
-        #endregion
-
-
-        //public Reference<ITemplate> Template
-        //{
-        //    get { return template; }
-        //    set
-        //    {
-        //        if (template == value) return;
-        //        if (template != default(Reference<ITemplate>)) throw new NotSupportedException("Template can only be set once.");
-        //        template = value;
-        //    }
-        //} private Reference<ITemplate> template;
-
-        #endregion
-
-        [SerializeDefaultValue(false)]
-        public virtual ITemplateHandleParameters<TTemplate, TTemplateHandle> Parameters { get; set; }
-        ITemplateParameters IInstantiationBase.Parameters { get => Parameters; set => Parameters = (ITemplateHandleParameters<TTemplate, TTemplateHandle>)value; }
-
-        #region Overlaying
-
-        //public virtual ParameterOverlayMode OverlayMode { get { if (Parameters == null) return ParameterOverlayMode.None; return Parameters.OverlayMode; } set { throw new NotSupportedException("Cannot set OverlayMode on Instantiation."); } }
-
-        //public virtual object OverlayParent
-        //{
-        //    get
-        //    {
-        //        if (Parameters == null)
-        //        {
-        //            return null;
-        //        }
-        //        return Parameters.OverlayParent;
-        //    }
-        //    set
-        //    {
-        //        if (Parameters == null) { throw new InvalidOperationException("Parameters == null"); }
-        //        Parameters.OverlayParent = value;
-        //    }
-        //}
-
-        #region OverlayMode
-
-        [DefaultValue(ParameterOverlayMode.None)]
-        [SerializeDefaultValue(false)]
-        public ParameterOverlayMode OverlayMode
+        set
         {
-            get { return overlayMode; }
-            set { overlayMode = value; }
+            if ((rTemplate == null && value == null) || (rTemplate != null && value != null && rTemplate.Equals(value))) return;
+            //if (template != null) throw new NotSupportedException("Can only be set once.");
+            if (rTemplate != null && value != null) throw new AlreadySetException();
+            //if (value != null && value.GetType() == typeof(string))
+            //throw new UnreachableCodeException("set_Template - got string: " + (string)(object)value);
+            if (value != null && template != null) throw new NotSupportedException($"Cannot set both {nameof(RTemplate)} and {nameof(Template)}");
+            rTemplate = value;
+
+            //if (template != null && this.Key != null)
+            //{
+            //    this.TryGetOverlayParent();
+            //}
         }
-        private ParameterOverlayMode overlayMode = ParameterOverlayMode.None;
+    }
+    //protected R<TTemplate> template;
+    //protected IReadHandleBase<ITemplate> template;
+    protected TTemplateHandle rTemplate;
 
-        #endregion
+    #endregion
 
-        #region OverlayParent
 
-        [Ignore]
-        [SerializeDefaultValue(false)]
-        public object OverlayParent
+    //public Reference<ITemplate> Template
+    //{
+    //    get { return template; }
+    //    set
+    //    {
+    //        if (template == value) return;
+    //        if (template != default(Reference<ITemplate>)) throw new NotSupportedException("Template can only be set once.");
+    //        template = value;
+    //    }
+    //} private Reference<ITemplate> template;
+
+    #endregion
+
+    [SerializeDefaultValue(false)]
+    public virtual ITemplateHandleParameters<TTemplate, TTemplateHandle> Parameters { get; set; }
+    ITemplateParameters IInstantiationBase.Parameters { get => Parameters; set => Parameters = (ITemplateHandleParameters<TTemplate, TTemplateHandle>)value; }
+
+    #region Overlaying
+
+    //public virtual ParameterOverlayMode OverlayMode { get { if (Parameters == null) return ParameterOverlayMode.None; return Parameters.OverlayMode; } set { throw new NotSupportedException("Cannot set OverlayMode on Instantiation."); } }
+
+    //public virtual object OverlayParent
+    //{
+    //    get
+    //    {
+    //        if (Parameters == null)
+    //        {
+    //            return null;
+    //        }
+    //        return Parameters.OverlayParent;
+    //    }
+    //    set
+    //    {
+    //        if (Parameters == null) { throw new InvalidOperationException("Parameters == null"); }
+    //        Parameters.OverlayParent = value;
+    //    }
+    //}
+
+    #region OverlayMode
+
+    [DefaultValue(ParameterOverlayMode.None)]
+    [SerializeDefaultValue(false)]
+    public ParameterOverlayMode OverlayMode
+    {
+        get { return overlayMode; }
+        set { overlayMode = value; }
+    }
+    private ParameterOverlayMode overlayMode = ParameterOverlayMode.None;
+
+    #endregion
+
+    #region OverlayParent
+
+    [Ignore]
+    [SerializeDefaultValue(false)]
+    public object OverlayParent
+    {
+        get
         {
-            get
-            {
-                return _overlayParent;
-            }
-            set { _overlayParent = value; }
+            return _overlayParent;
         }
-        private object _overlayParent;
+        set { _overlayParent = value; }
+    }
+    private object _overlayParent;
 
-        #endregion
+    #endregion
 
-        #endregion
+    #endregion
 
-        public string GetDefaultKey(IInstantiation instantiation) => GetDefaultKeyFunc(instantiation);
-        [Ignore]
-        public Func<IInstantiation, string> GetDefaultKeyFunc { get; set; } = GetDefaultKeyMethodDefault;
+    public string GetDefaultKey(IInstantiation instantiation) => GetDefaultKeyFunc(instantiation);
+    [Ignore]
+    public Func<IInstantiation, string> GetDefaultKeyFunc { get; set; } = GetDefaultKeyMethodDefault;
 
-        public static Func<IInstantiation, string> GetDefaultKeyMethodDefault = ins =>
-            {
-                if (ins == null) return null;
+    public static Func<IInstantiation, string> GetDefaultKeyMethodDefault = ins =>
+        {
+            if (ins == null) return null;
 
-                if (ins.Parameters is IDefaultInstanceKeyProvider provider) { return provider.DefaultKey; }
+            if (ins.Parameters is IDefaultInstanceKeyProvider provider) { return provider.DefaultKey; }
 
-                provider = ins.Template as IDefaultInstanceKeyProvider;
-                if (provider != null) { return provider.DefaultKey; }
+            provider = ins.Template as IDefaultInstanceKeyProvider;
+            if (provider != null) { return provider.DefaultKey; }
 
-                return null;
-            };
+            return null;
+        };
 
-        //[Ignore]
-        [SerializeDefaultValue(false)]
-        public virtual TState State { get; set; }
-        object IStateful.State { get => State; set => State = (TState)value; }
+    //[Ignore]
+    [SerializeDefaultValue(false)]
+    public virtual TState State { get; set; }
+    object IStateful.State { get => State; set => State = (TState)value; }
 
 
-        /// <summary>
-        /// REVIEW - A way to avoid this is to break up Create into Construct and InitializeState
-        /// </summary>
-        /// <remarks>
-        /// Valor: This is set by PortalSpawner.Spawn* methods.
-        /// </remarks>
-        [Ignore]
+    /// <summary>
+    /// REVIEW - A way to avoid this is to break up Create into Construct and InitializeState
+    /// </summary>
+    /// <remarks>
+    /// Valor: This is set by PortalSpawner.Spawn* methods.
+    /// </remarks>
+    [Ignore]
 #if AOT
 		public ActionObject InitializationMethod { get; set; }
 #else
-        public Action<object> InitializationMethod { get; set; }
+    public Action<object> InitializationMethod { get; set; }
 #endif
 
-        #region Children
+    #region Children
 
-        public bool HasChildren { get { return children != null && children.Count > 0; } }
+    public bool HasChildren { get { return children != null && children.Count > 0; } }
 
-        //private static readonly List<Instance> defaultList = new List<Instance>();
-        [SerializeDefaultValue(false)]
-        //[JsonExSerializer.JsonExDefault(defaultList)]
-        //[JsonExSerializer.JsonExDefaultValues(typeof(List<Instance>), )]
-        [LionSerializable(SerializeMethod.ByValue)]
-        public IInstantiationCollection Children
+    //private static readonly List<Instance> defaultList = new List<Instance>();
+    [SerializeDefaultValue(false)]
+    //[JsonExSerializer.JsonExDefault(defaultList)]
+    //[JsonExSerializer.JsonExDefaultValues(typeof(List<Instance>), )]
+    [LionSerializable(SerializeMethod.ByValue)]
+    public IInstantiationCollection Children
+    {
+        get { if (children == null) { Children = new InstantiationCollection(); } return children; }
+        set
         {
-            get { if (children == null) { Children = new InstantiationCollection(); } return children; }
-            set
+            if (children == value) return;
+            children = value;
+            children.Parent = this;
+        }
+    }
+    private IInstantiationCollection children;
+
+    public bool ShouldSerializeChildren() => children?.Count > 0;
+
+    #endregion
+
+    #region IEnumerable
+
+    public IEnumerator GetEnumerator()
+    {
+        if (children != null)
+        {
+            foreach (IInstantiation child in this.children.Values)
             {
-                if (children == value) return;
-                children = value;
-                children.Parent = this;
+                yield return child;
+
+                //foreach (IInstantiation result in child)
+                //{
+                //    yield return result;
+                //}
             }
         }
-        private IInstantiationCollection children;
+    }
+    IEnumerator IEnumerable.GetEnumerator() => this.GetEnumerator();
 
-        public bool ShouldSerializeChildren() => children?.Count > 0;
+    bool IHasPid.TryEnsureHasPid() => throw new NotImplementedException();
+    void IHasPid.EnsureHasPid() => throw new NotImplementedException();
 
-        #endregion
+    #endregion
 
-        #region IEnumerable
+    #region AllChildren
 
-        public IEnumerator GetEnumerator()
+    public IEnumerable<IInstantiation> AllChildren
+    {
+        get
         {
-            if (children != null)
+            if (HasChildren)
             {
-                foreach (IInstantiation child in this.children.Values)
-                {
-                    yield return child;
-
-                    //foreach (IInstantiation result in child)
-                    //{
-                    //    yield return result;
-                    //}
-                }
-            }
-        }
-        IEnumerator IEnumerable.GetEnumerator() => this.GetEnumerator();
-
-        bool IHasPid.TryEnsureHasPid() => throw new NotImplementedException();
-        void IHasPid.EnsureHasPid() => throw new NotImplementedException();
-
-        #endregion
-
-        #region AllChildren
-
-        public IEnumerable<IInstantiation> AllChildren
-        {
-            get
-            {
-                if (HasChildren)
-                {
 #if AOT
 					foreach (LionFire.IEnumerableExtensions.Recursion child in (this.Children.SelectRecursive(x => ((IInstantiation)x).GetChildrenEnumerable())))
 					{
 						yield return child.Item;
 					}
 #else
-                    foreach (var child in (this.Children.SelectRecursive(x => x.GetChildrenEnumerable()).Select(r => r.Item)))
-                    {
-                        yield return child;
-                    }
-#endif
+                foreach (var child in (this.Children.SelectRecursive(x => x.GetChildrenEnumerable()).Select(r => r.Item)))
+                {
+                    yield return child;
                 }
+#endif
             }
         }
-
-        #endregion
-
     }
+
+    #endregion
 
 }

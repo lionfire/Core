@@ -16,13 +16,13 @@ namespace LionFire.Persistence.Handles
 
     public interface IReadWriteHandleProvider
     {
-        IReadWriteHandle<T>? GetReadWriteHandle<T>(IReference reference, T preresolvedValue = default);
+        IReadWriteHandle<T>? GetReadWriteHandle<T>(IReference reference, T? preresolvedValue = default);
     }
 
     public interface IReadWriteHandleProvider<TReference>
         where TReference : IReference
     {
-        IReadWriteHandle<T> GetReadWriteHandle<T>(TReference reference, T preresolvedValue = default);
+        IReadWriteHandle<T> GetReadWriteHandle<T>(TReference reference, T? preresolvedValue = default);
     }
     
     //public static class IHandleProviderExtensions

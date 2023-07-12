@@ -35,7 +35,7 @@ public class Bytes
             Assert.IsInstanceOfType(readHandle, typeof(PersisterReadHandle<IVobReference, byte[], VosPersister>));
             Assert.AreEqual(expectedPath, readHandle.Key);
 
-            var resolveResult = await readHandle.Resolve();
+            var resolveResult = await readHandle.Get();
             Assert.IsNotNull(resolveResult.Value);
 
             Assert.IsTrue(resolveResult.Value.Length > 0);

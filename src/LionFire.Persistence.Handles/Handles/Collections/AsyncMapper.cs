@@ -68,7 +68,9 @@ public abstract class AsyncMapper<TItem, TUnderlying, TUnderlyingCollection, TRe
     private TResolvedUnderlyingCollection ResolvedUnderlyingCollection { get; set; }
     private TUnderlyingCollection UnderlyingCollection { get; set; }
 
-    public TResolvedUnderlyingCollection Value { get; private set; }
+    public TResolvedUnderlyingCollection Value => ReadCacheValue; // REVIEW
+    public TResolvedUnderlyingCollection ReadCacheValue { get; private set; } // REVIEW
+
     public void Discard() => throw new NotImplementedException();
 
     public bool HasValue { get; private set; }
@@ -168,7 +170,7 @@ public abstract class AsyncMapper<TItem, TUnderlying, TUnderlyingCollection, TRe
         }
         else
         {
-            return HasValue ? new LazyResolveResult<TResolvedUnderlyingCollection>(true, Value) : (await underlyingResolves.Resolve().ConfigureAwait(false)).ToLazyResolveResult();
+            return HasValue ? new LazyResolveResult<TResolvedUnderlyingCollection>(true, Value) : (await underlyingResolves.Get().ConfigureAwait(false)).ToLazyResolveResult();
         }
     }
 
@@ -192,7 +194,7 @@ public abstract class AsyncMapper<TItem, TUnderlying, TUnderlyingCollection, TRe
         {
             ulr.DiscardValue();
         }
-        Value = default;
+        ReadCacheValue = default;
         HasValue = false;
     }
 

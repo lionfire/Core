@@ -3,7 +3,7 @@ using System.Reactive.Subjects;
 
 namespace LionFire.Data;
 
-public abstract class AsyncReadOnlyProperty<TObject, TValue> : AsyncGets<TObject, TValue>
+public abstract class AsyncReadOnlyProperty<TObject, TValue> : Gets<TObject, TValue>
 {
     #region Relationships
 

@@ -22,7 +22,7 @@ public static class ILazilyGetsX
     public static async Task<bool> TryEnsureHasValue<T>(this ILazilyGets<T> lazilyResolves)
         => (await lazilyResolves.GetIfNeeded().ConfigureAwait(false)).HasValue;
 
-    public static async Task<T> GetValue<T>(this ILazilyGets<T> lazilyResolves)
+    public static async Task<T> GetIfNeeded<T>(this ILazilyGets<T> lazilyResolves)
     {
         var result = await lazilyResolves.GetIfNeeded().ConfigureAwait(false);
         if (result.IsSuccess == false) throw result.ToException();

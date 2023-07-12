@@ -62,7 +62,7 @@ namespace Universal_.ReadWriteHandle_
                 #region Retrieve
                 {
                     var rh = reference.GetReadHandle<string>();
-                    var retrieveResult = (await rh.Resolve()).ToRetrieveResult();
+                    var retrieveResult = (await rh.Get()).ToRetrieveResult();
                     Assert.True(retrieveResult.IsSuccess());
                     Assert.True(retrieveResult.IsFound());
                     Assert.Equal(testData, rh.Value);
@@ -157,7 +157,7 @@ namespace Universal_.ReadWriteHandle_
                     #region Retrieve
                     {
                         var rh = reference.GetReadHandle<string>();
-                        var retrieveResult = (await rh.Resolve()).ToRetrieveResult();
+                        var retrieveResult = (await rh.Get()).ToRetrieveResult();
                         Assert.True(retrieveResult.IsSuccess());
                         Assert.True(retrieveResult.IsFound());
                         Assert.Equal(testData, rh.Value);

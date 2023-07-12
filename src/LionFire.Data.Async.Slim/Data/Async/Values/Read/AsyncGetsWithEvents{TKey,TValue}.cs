@@ -1,12 +1,9 @@
 ﻿
 namespace LionFire.Data.Gets;
 
-#if UNUSED
-
 /// <remarks>
 /// Only requires one method to be implemented: GetImpl.
 /// </remarks>
-[Obsolete("Use AsyncGets instead.  Revive this if ReactiveObject for some reason isn't ideal.")]
 public abstract class AsyncGetsWithEvents<TKey, TValue>
     : DisposableKeyed<TKey>
     , INotifyWrappedValueChanged
@@ -18,7 +15,7 @@ public abstract class AsyncGetsWithEvents<TKey, TValue>
 
     #region Configuration
 
-    public static bool DisposeValue => LazilyGetsOptions<TValue>.DisposeValue;
+    public static bool DisposeValue => AsyncGetOptions<TValue>.Default.DisposeValue;
 
     #endregion
 
@@ -40,22 +37,22 @@ public abstract class AsyncGetsWithEvents<TKey, TValue>
     /// <summary>
     /// True if internal Value field is not default.  If default is a valid value, use DefaultableValue&lt;TValue&gt; as TValue type
     /// </summary>
-    public virtual bool HasValue => !EqualityComparer<TValue>.Default.Equals(ProtectedValue, default);
+    public bool HasValue { get; protected set; }
+
+    public virtual bool IsValueDefault => EqualityComparer.Equals(ReadCacheValue, default);
+    public virtual IEqualityComparer<TValue> EqualityComparer => EqualityComparer<TValue>.Default;
 
     public TValue? Value
     {
-        [Blocking(Alternative = nameof(TryGetValue))]
-        get => ProtectedValue ?? TryGetValue().Result.Value;
+        [Blocking(Alternative = nameof(GetIfNeeded))]
+        get => ReadCacheValue ?? GetIfNeeded().Result.Value;
     }
 
-    //SmartWrappedValue SmartWrappedValue = new SmartWrappedValue();
-    //protected TValue ProtectedValue { get=>SmartWrappedValue.Prote}
-
     // REVIEW: should this be TValue?  Should TValue have constraint of : default?
-    protected TValue? ProtectedValue
+    public TValue? ReadCacheValue
     {
         get => protectedValue;
-        set
+        protected set
         {
             if (EqualityComparer<TValue>.Default.Equals(protectedValue, value)) return;
             var oldValue = protectedValue;
@@ -100,13 +97,19 @@ public abstract class AsyncGetsWithEvents<TKey, TValue>
 
     private SemaphoreSlim TryGetSemaphore = new SemaphoreSlim(1);
 
-    public async ITask<ILazyGetResult<TValue>> TryGetValue()
+    public async ITask<ILazyGetResult<TValue>> GetIfNeeded()
     {
+        if (HasValue) { return new LazyResolveNoopResult<TValue>(true, ReadCacheValue); }
+
+        // TODO DUPE - Dedupe in GetsUtils.GetIfNeeded
+
         await TryGetSemaphore.WaitAsync().ConfigureAwait(false);
         try
         {
-            var currentValue = ProtectedValue;
-            if (!EqualityComparer<TValue>.Default.Equals(currentValue, default)) return new ResolveResultNoop<TValue>(ProtectedValue);
+            if (HasValue) { return new LazyResolveNoopResult<TValue>(true, ReadCacheValue); }
+
+            //var currentValue = ReadCacheValue;
+            //if (!EqualityComparer<TValue>.Default.Equals(currentValue, default)) return new ResolveResultNoop<TValue>(currentValue);
 
             var resolveResult = await Get().ConfigureAwait(false);
             return new LazyResolveResult<TValue>(resolveResult.HasValue, resolveResult.Value);
@@ -123,8 +126,8 @@ public abstract class AsyncGetsWithEvents<TKey, TValue>
 
     public ILazyGetResult<TValue> QueryValue()
     {
-        var currentValue = ProtectedValue;
-        return !EqualityComparer<TValue>.Default.Equals(currentValue, default) ? new ResolveResultNoop<TValue>(ProtectedValue) : (ILazyGetResult<TValue>)ResolveResultNotResolved<TValue>.Instance;
+        var currentValue = ReadCacheValue;
+        return !EqualityComparer<TValue>.Default.Equals(currentValue, default) ? new ResolveResultNoop<TValue>(ReadCacheValue) : (ILazyGetResult<TValue>)ResolveResultNotResolved<TValue>.Instance;
     }
 
     #endregion
@@ -133,17 +136,30 @@ public abstract class AsyncGetsWithEvents<TKey, TValue>
 
 
     public virtual void Discard() => DiscardValue();
-    public virtual void DiscardValue() => ProtectedValue = default;
+    public virtual void DiscardValue()
+    {
+        ReadCacheValue = default;
+        HasValue = false;
+    }
 
     #endregion
 
     #region Get
 
-    public async ITask<IGetResult<TValue>> Get()
+    public async ITask<IGetResult<TValue>> Get(CancellationToken cancellationToken = default)
     {
-        var result = await GetImpl();
+        // 
+        var result = await GetImpl(cancellationToken);
         Debug.Assert(result is not null, $"{nameof(GetImpl)} must not return null");
-        ProtectedValue = result.Value;
+        if (result.IsSuccess == true /*&& result.HasValue*/) // TODO REVIEW: LazilyGets.HasValue should instead be something like IsRetrieved to differentiate whether there is a Value at the source
+        {
+            HasValue = true;
+        } 
+        else if (AsyncGetOptions<TValue>.Default.DiscardReadCacheOnGetFailure)
+        {
+            DiscardValue();
+        }
+        ReadCacheValue = result.Value;
         return result;
     }
 
@@ -151,7 +167,7 @@ public abstract class AsyncGetsWithEvents<TKey, TValue>
 
     #region Abstract
 
-    protected abstract ITask<IGetResult<TValue>> GetImpl();
+    protected abstract ITask<IGetResult<TValue>> GetImpl(CancellationToken cancellationToken = default);
 
     #endregion
 
@@ -168,5 +184,3 @@ public abstract class AsyncGetsWithEvents<TKey, TValue>
 
     #endregion
 }
-
-#endif

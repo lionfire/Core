@@ -14,6 +14,7 @@
 
 
 	<ItemGroup>
+		<ProjectReference Include="..\LionFire.Persistence.Handles.Abstractions\LionFire.Persistence.Handles.Abstractions.csproj" />
 		<ProjectReference Include="..\LionFire.Persistence.SharpZipLib\LionFire.Persistence.SharpZipLib.csproj" />
 		<ProjectReference Include="..\LionFire.Expanders\LionFire.Expanders.csproj" />
 		<ProjectReference Include="..\LionFire.Persistence\LionFire.Data.Persisters.csproj" />

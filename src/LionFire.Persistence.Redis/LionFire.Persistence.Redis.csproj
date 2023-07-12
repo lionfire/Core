@@ -13,9 +13,10 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\LionFire.Persistence.Abstractions\LionFire.Persistence.Abstractions.csproj" />
+    <ProjectReference Include="..\LionFire.Data.Async.Abstractions\LionFire.Data.Async.Abstractions.csproj" />
+    <ProjectReference Include="..\LionFire.Persistence.Abstractions\LionFire.Data.Persisters.Abstractions.csproj" />
     <ProjectReference Include="..\LionFire.Persistence.Handles\LionFire.Persistence.Handles.csproj" />
-    <ProjectReference Include="..\LionFire.Persistence\LionFire.Persistence.csproj" />
+    <ProjectReference Include="..\LionFire.Persistence\LionFire.Data.Persisters.csproj" />
   </ItemGroup>
 
 </Project>

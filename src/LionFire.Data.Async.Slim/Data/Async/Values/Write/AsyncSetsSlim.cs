@@ -14,7 +14,10 @@ namespace LionFire.Data.Sets;
 /// <remarks>
 /// TODO: Move this to .Extras DLL, and make AsyncSets in the .Reactive DLL, as a ReactiveObject.
 /// </remarks>
-public abstract class AsyncSetsSlim<TKey, TValue> : DisposableKeyed<TKey>, IDiscardableValue
+public abstract class AsyncSetsSlim<TKey, TValue>
+    : DisposableKeyed<TKey>
+    , IDiscardableValue
+    // TODO: Add more interfaces
     where TKey : class
     where TValue : class
 {
@@ -34,7 +37,7 @@ public abstract class AsyncSetsSlim<TKey, TValue> : DisposableKeyed<TKey>, IDisc
 
     public TValue Value => ProtectedValue;
 
-    protected TValue ProtectedValue
+    protected TValue ProtectedValue // TODO: Change this to StagedValue
     {
         get => protectedValue;
         set
@@ -45,7 +48,7 @@ public abstract class AsyncSetsSlim<TKey, TValue> : DisposableKeyed<TKey>, IDisc
             OnValueChanged(value, oldValue);
         }
     }
-    private TValue protectedValue;
+    private TValue? protectedValue;
 
     #endregion
 

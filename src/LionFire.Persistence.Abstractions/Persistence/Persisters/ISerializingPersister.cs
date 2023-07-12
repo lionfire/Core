@@ -3,7 +3,7 @@ using LionFire.Serialization;
 
 namespace LionFire.Persistence.Persisters;
 
-public interface ISerializingPersister
+public interface ISerializingPersister : IPersister
 {
     ISerializationProvider SerializationProvider { get; }
 }

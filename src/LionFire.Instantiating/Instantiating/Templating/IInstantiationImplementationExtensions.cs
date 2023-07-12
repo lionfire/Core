@@ -1,27 +1,26 @@
 ﻿#nullable enable
 using System;
 
-namespace LionFire.Instantiating
+namespace LionFire.Instantiating;
+
+public static class IInstantiationImplementationExtensions
 {
-    public static class IInstantiationImplementationExtensions
+    // RENAME Instantiate
+    public static TInstance Create<TInstance>(this IInstantiation template) => template.Parameters.ToInstantiator().Instantiate<TInstance>();
+
+    public static object Create(this IInstantiation template, Type? instanceType = null) // RENAME Instantiate
     {
-        // RENAME Instantiate
-        public static TInstance Create<TInstance>(this IInstantiation template) => template.Parameters.ToInstantiator().Instantiate<TInstance>();
+        if (template.Template == null) throw new ArgumentNullException($"Missing template.  Reference: {template.RTemplate?.Reference?.ToString() ?? "null"}");
+        var result = template.Template.Create(instanceType);
 
-        public static object Create(this IInstantiation template, Type instanceType = null) // RENAME Instantiate
+        if (result  is IParameterizedTemplateInstance pti)
         {
-            if (template.Template == null) throw new ArgumentNullException($"Missing template.  Reference: {template.RTemplate?.Reference?.ToString() ?? "null"}");
-            var result = template.Template.Create(instanceType);
-
-            if (result  is IParameterizedTemplateInstance pti)
-            {
-                pti.Parameters = (template as ITemplateParameters) ?? template.Parameters;
-            }
-
-            // REVIEW - Where did this code go?  //throw new NotImplementedException("Does this implementation exist somewhere?");  
-            template.InitializationMethod?.Invoke(result);
-
-            return result;
+            pti.Parameters = (template as ITemplateParameters) ?? template.Parameters;
         }
+
+        // REVIEW - Where did this code go?  //throw new NotImplementedException("Does this implementation exist somewhere?");  
+        template.InitializationMethod?.Invoke(result);
+
+        return result;
     }
 }

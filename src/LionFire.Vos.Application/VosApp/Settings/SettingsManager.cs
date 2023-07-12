@@ -57,7 +57,7 @@ namespace LionFire.Settings
 
         public Task Save()
         {
-            return Task.WhenAll(Options.Handles.Select(h => h.Put()));
+            return Task.WhenAll(Options.Handles.Select(h => h.Set()));
         }
 
         public Task Load()

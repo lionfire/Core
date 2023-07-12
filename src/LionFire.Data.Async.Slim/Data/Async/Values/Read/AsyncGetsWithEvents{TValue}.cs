@@ -139,7 +139,7 @@ public abstract class AsyncGetsWithEvents<TValue>
     public async ITask<IGetResult<TValue>> Get(CancellationToken cancellationToken = default)
     {
         var resolveResult = await GetImpl(cancellationToken);
-        Debug.Assert(resolveResult is not null, "ResolveImpl must not return null");
+        Debug.Assert(resolveResult is not null, "GetImpl must not return null");
         ReadCacheValue = resolveResult.Value;
         return resolveResult;
     }

@@ -6,10 +6,7 @@ public record PreresolvedGet<T>(T Value) : ILazilyGets<T>
 {
     public bool HasValue => true;
 
-    /// <summary>
-    /// Does nothing
-    /// </summary>
-    public void DiscardValue() { } // => throw new NotSupportedException();
+    public void DiscardValue() => throw new NotSupportedException();
 
     public ILazyGetResult<T> QueryValue() => new ResolveResultNoop<T>(Value);
     public ITask<ILazyGetResult<T>> GetIfNeeded() => Task.FromResult<ILazyGetResult<T>>(new LazyResolveNoopResult<T>(true, Value)).AsITask();
@@ -17,10 +14,7 @@ public record PreresolvedGet<T>(T Value) : ILazilyGets<T>
 
     public Task<T> Get(CancellationToken cancellationToken = default) => Task.FromResult(Value);
 
-    public void Discard()
-    {
-        DiscardValue();
-    }
+    public void Discard() => DiscardValue();
 
     public TransferResultFlags Flags { get; set; }
 

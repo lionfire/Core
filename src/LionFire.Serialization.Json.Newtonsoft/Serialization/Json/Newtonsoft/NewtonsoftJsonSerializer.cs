@@ -9,127 +9,126 @@ using LionFire.Types;
 using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
 
-namespace LionFire.Serialization.Json.Newtonsoft
+namespace LionFire.Serialization.Json.Newtonsoft;
+
+//public class NewtonsoftJsonService : ISerializationService
+//{
+//    public IEnumerable<ISerializationStrategy> AllStrategies { get {
+//            yield return new NewtonsoftJsonSerializer();
+//        } }
+//}
+
+// UPSTREAM - Concurrency issue: https://github.com/JamesNK/Newtonsoft.Json/issues/1452
+
+// OPTIMIZE - keep AsyncLocal serializers for each possibility of SettingsForContext()?
+
+public class NewtonsoftJsonSerializer : SerializerBase<NewtonsoftJsonSerializer>
 {
-    //public class NewtonsoftJsonService : ISerializationService
+    public override SerializationFlags SupportedCapabilities =>
+        SerializationFlags.Text
+        | SerializationFlags.HumanReadable
+        | SerializationFlags.Minify
+        | SerializationFlags.Deserialize
+        | SerializationFlags.Serialize
+        ;
+
+    //#region (Static) Default Settings
+
+    //public static JsonSerializerSettings DefaultSettings = new JsonSerializerSettings
     //{
-    //    public IEnumerable<ISerializationStrategy> AllStrategies { get {
-    //            yield return new NewtonsoftJsonSerializer();
-    //        } }
-    //}
+    //    TypeNameHandling = TypeNameHandling.Auto,
+    //    //Converters = ,
+    //    DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate,
+    //    //NullValueHandling = 
+    //    TypeNameAssemblyFormatHandling = TypeNameAssemblyFormatHandling.Simple,
+    //};
 
-    // UPSTREAM - Concurrency issue: https://github.com/JamesNK/Newtonsoft.Json/issues/1452
+    //#endregion
 
-    // OPTIMIZE - keep AsyncLocal serializers for each possibility of SettingsForContext()?
-
-    public class NewtonsoftJsonSerializer : SerializerBase<NewtonsoftJsonSerializer>
+    public NewtonsoftJsonSerializer(IOptionsMonitor<JsonSerializerSettings> optionsMonitor, IServiceProvider serviceProvider)
     {
-        public override SerializationFlags SupportedCapabilities =>
-            SerializationFlags.Text
-            | SerializationFlags.HumanReadable
-            | SerializationFlags.Minify
-            | SerializationFlags.Deserialize
-            | SerializationFlags.Serialize
-            ;
+        PersistenceSettings = optionsMonitor.Get(LionSerializeContext.Persistence.ToString());
+        NetworkSettings = optionsMonitor.Get(LionSerializeContext.Network.ToString());
 
-        //#region (Static) Default Settings
-
-        //public static JsonSerializerSettings DefaultSettings = new JsonSerializerSettings
-        //{
-        //    TypeNameHandling = TypeNameHandling.Auto,
-        //    //Converters = ,
-        //    DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate,
-        //    //NullValueHandling = 
-        //    TypeNameAssemblyFormatHandling = TypeNameAssemblyFormatHandling.Simple,
-        //};
-
-        //#endregion
-
-        public NewtonsoftJsonSerializer(IOptionsMonitor<JsonSerializerSettings> optionsMonitor, IServiceProvider serviceProvider)
+        if (serviceProvider.GetService(typeof(TypeNameRegistry)) != null && serviceProvider.GetService(typeof(KnownTypesBinder)) is KnownTypesBinder knownTypesBinder)
         {
-            PersistenceSettings = optionsMonitor.Get(LionSerializeContext.Persistence.ToString());
-            NetworkSettings = optionsMonitor.Get(LionSerializeContext.Network.ToString());
-
-            if (serviceProvider.GetService(typeof(TypeNameRegistry)) != null && serviceProvider.GetService(typeof(KnownTypesBinder)) is KnownTypesBinder knownTypesBinder)
-            {
-                PersistenceSettings.SerializationBinder = knownTypesBinder;
-                NetworkSettings.SerializationBinder = knownTypesBinder;
-            }
+            PersistenceSettings.SerializationBinder = knownTypesBinder;
+            NetworkSettings.SerializationBinder = knownTypesBinder;
         }
+    }
 
-        public override SerializationFormat DefaultFormat => defaultFormat;
-        private static readonly SerializationFormat defaultFormat = new SerializationFormat("json", "JSON", "application/json")
+    public override SerializationFormat DefaultFormat => defaultFormat;
+    private static readonly SerializationFormat defaultFormat = new SerializationFormat("json", "JSON", "application/json")
+    {
+        Description = "Javascript Object Notation",
+    };
+
+    #region Settings
+
+    public JsonSerializerSettings PersistenceSettings { get; }
+    public JsonSerializerSettings NetworkSettings { get; }
+
+    /// <summary>
+    /// If no SerializeContext set, defaults to PersistenceSettings
+    /// </summary>
+    /// <param name="op"></param>
+    /// <returns></returns>
+    /// <exception cref="ArgumentException"></exception>
+    public JsonSerializerSettings SettingsForContext(PersistenceOperation op)
+    {
+        LionSerializeContext? lionSerializeContext = op?.SerializeContext;
+
+        Exception ThrowMultiple() => new ArgumentException("LionSerializeContext can only be a single flag");
+
+        return lionSerializeContext switch
         {
-            Description = "Javascript Object Notation",
+            null => PersistenceSettings,
+            LionSerializeContext.Persistence => PersistenceSettings,
+            LionSerializeContext.Network => NetworkSettings,
+            LionSerializeContext.Copy => NetworkSettings,
+
+            LionSerializeContext.AllSerialization => throw ThrowMultiple(),
+            LionSerializeContext.All => throw ThrowMultiple(),
+            //LionSerializeContext.None => throw new NotImplementedException(),
+            _ => throw new NotSupportedException(), //throw new ArgumentException("LionSerializeContext is not set"),
         };
+    }
+    #endregion
 
-        #region Settings
-
-        public JsonSerializerSettings PersistenceSettings { get; }
-        public JsonSerializerSettings NetworkSettings { get; }
-
-        /// <summary>
-        /// If no SerializeContext set, defaults to PersistenceSettings
-        /// </summary>
-        /// <param name="op"></param>
-        /// <returns></returns>
-        /// <exception cref="ArgumentException"></exception>
-        public JsonSerializerSettings SettingsForContext(PersistenceOperation op)
-        {
-            LionSerializeContext? lionSerializeContext = op?.SerializeContext;
-
-            Exception ThrowMultiple() => new ArgumentException("LionSerializeContext can only be a single flag");
-
-            return lionSerializeContext switch
-            {
-                null => PersistenceSettings,
-                LionSerializeContext.Persistence => PersistenceSettings,
-                LionSerializeContext.Network => NetworkSettings,
-                LionSerializeContext.Copy => NetworkSettings,
-
-                LionSerializeContext.AllSerialization => throw ThrowMultiple(),
-                LionSerializeContext.All => throw ThrowMultiple(),
-                //LionSerializeContext.None => throw new NotImplementedException(),
-                _ => throw new NotSupportedException(), //throw new ArgumentException("LionSerializeContext is not set"),
-            };
-        }
-        #endregion
-
-        #region Serializers
+    #region Serializers
 
 #if Experimental
-        ConcurrentDictionary<LionSerializeContext, AsyncLocal<JsonConverter>> converters = new ConcurrentDictionary<LionSerializeContext, AsyncLocal<JsonSerializer>>();
-        public JsonConverter GetConverter(object obj, Lazy<PersistenceOperation> operation = null, PersistenceContext context = null)
-        {
-            var sc = operation?.Value?.SerializeContext;
-            var local = serializers.GetOrAdd(operation.Value.SerializeContext, _ => new AsyncLocal<JsonConverter>());
-            return local.Value ??= new LionFireJsonConverter();
-        }
+    ConcurrentDictionary<LionSerializeContext, AsyncLocal<JsonConverter>> converters = new ConcurrentDictionary<LionSerializeContext, AsyncLocal<JsonSerializer>>();
+    public JsonConverter GetConverter(object obj, Lazy<PersistenceOperation> operation = null, PersistenceContext context = null)
+    {
+        var sc = operation?.Value?.SerializeContext;
+        var local = serializers.GetOrAdd(operation.Value.SerializeContext, _ => new AsyncLocal<JsonConverter>());
+        return local.Value ??= new LionFireJsonConverter();
+    }
 
 #endif
-        //ConcurrentDictionary<LionSerializeContext, AsyncLocal<JsonSerializer>> serializers = new ConcurrentDictionary<LionSerializeContext, AsyncLocal<JsonSerializer>>();
-        //public JsonSerializer GetSerializer(object obj, Lazy<PersistenceOperation> operation = null, PersistenceContext context = null)
-        //{
-        //    var sc = operation?.Value?.SerializeContext;
-        //    var local = serializers.GetOrAdd(operation.Value.SerializeContext, _ => new AsyncLocal<JsonSerializer>());
-        //    return local.Value ??= JsonSerializer.Create(SettingsForContext(operation));
-        //}
+    //ConcurrentDictionary<LionSerializeContext, AsyncLocal<JsonSerializer>> serializers = new ConcurrentDictionary<LionSerializeContext, AsyncLocal<JsonSerializer>>();
+    //public JsonSerializer GetSerializer(object obj, Lazy<PersistenceOperation> operation = null, PersistenceContext context = null)
+    //{
+    //    var sc = operation?.Value?.SerializeContext;
+    //    var local = serializers.GetOrAdd(operation.Value.SerializeContext, _ => new AsyncLocal<JsonSerializer>());
+    //    return local.Value ??= JsonSerializer.Create(SettingsForContext(operation));
+    //}
 
-        #endregion
+    #endregion
 
-        #region Serialize
+    #region Serialize
 
-        //public override (string String, SerializationResult Result) ToString(object obj, Lazy<PersistenceOperation> operation = null, PersistenceContext context = null) => GetSerializer().Serialize(JsonConvert.SerializeObject(obj, typeof(object), SettingsForContext(operation)), SerializationResult.Success);
-        public override (string String, SerializationResult Result) ToString(object obj, Lazy<PersistenceOperation> operation = null, PersistenceContext context = null) => (JsonConvert.SerializeObject(obj, typeof(object), SettingsForContext(operation)), SerializationResult.Success);
+    //public override (string String, SerializationResult Result) ToString(object obj, Lazy<PersistenceOperation> operation = null, PersistenceContext context = null) => GetSerializer().Serialize(JsonConvert.SerializeObject(obj, typeof(object), SettingsForContext(operation)), SerializationResult.Success);
+    public override (string String, SerializationResult Result) ToString(object obj, Lazy<PersistenceOperation> operation = null, PersistenceContext context = null) => (JsonConvert.SerializeObject(obj, typeof(object), SettingsForContext(operation)), SerializationResult.Success);
 
-        #endregion
+    #endregion
 
-        #region Deserialize
+    #region Deserialize
 
-        public override DeserializationResult<T> ToObject<T>(string str, Lazy<PersistenceOperation> operation = null, PersistenceContext context = null)
-            => JsonConvert.DeserializeObject<T>(str, SettingsForContext(operation));
+    public override DeserializationResult<T> ToObject<T>(string str, Lazy<PersistenceOperation> operation = null, PersistenceContext context = null)
+        => JsonConvert.DeserializeObject<T>(str, SettingsForContext(operation));
 
-        #endregion
+    #endregion
 
-    }
 }

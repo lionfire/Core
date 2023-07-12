@@ -12,6 +12,7 @@ using System.Reflection;
 using System.Collections.Specialized;
 using LionFire.Data.Gets;
 using LionFire.Results;
+using LionFire.Data.Sets;
 
 namespace LionFire.Persistence
 {
@@ -40,10 +41,10 @@ namespace LionFire.Persistence
             handler.Queue();
         }
 
-        private static ThrottledChangeHandler GetHandler(ISets asset, Func<object, Task<ISuccessResult>> saveAction = null)
+        private static ThrottledChangeHandler GetHandler(ISets asset, Func<object, ITask<ITransferResult>> saveAction = null)
         {
             if (asset == null) return null;
-            if (saveAction == null) saveAction = o => ((ISets)o).Set();
+            if (saveAction == null) saveAction = o => ((ISets)o).Set().AsITask();
             return AutoSaveManager.Instance.handlers.GetOrAdd(asset, a =>
             {
                 var wrappedChanged = a as INotifyWrappedValueChanged;
@@ -67,11 +68,11 @@ namespace LionFire.Persistence
         /// </summary>
         /// <param name="saveable"></param>
         /// <param name="enable"></param>
-        public static void EnableAutoSave(this ISets saveable, bool enable = true, Func<object, Task<ISuccessResult>> saveAction = null)
+        public static void EnableAutoSave(this ISets saveable, bool enable = true, Func<object, ITask<ITransferResult>>? saveAction = null)
         {
 
             //bool attachedToSomething = false;
-            var handler = GetHandler(saveable, saveAction ?? ((_) => saveable.Set()));
+            var handler = GetHandler(saveable, saveAction ?? ((_) => saveable.Set().AsITask()));
 
             //var ic = saveable as IChanged;
             //if (ic != null) // TO C#7

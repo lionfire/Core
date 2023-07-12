@@ -36,7 +36,9 @@ namespace LionFire.Persistence.Persisters
         //    {
         //        if (underlyingPersister == null)
         //        {
-        //            underlyingPersister = GetUnderlyingPersister;
+        // Replaced with GetUnderlyingPersister(TReference reference) 
+        //            throw new NotImplementedException();
+        //            //underlyingPersister = GetUnderlyingPersister;
         //        }
         //        return underlyingPersister;
         //    }

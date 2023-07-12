@@ -23,7 +23,7 @@ namespace LionFire.Persisters.Handles
 
     //public class NoopReadWriteHandle<TValue> : ReadWriteHandle<TValue>
     //{
-    //    //public override Task<IGetResult<TValue>> ResolveImpl() => Task.FromResult((IGetResult<TValue>)NoopFailResolveResult<TValue>.Instance);
+    //    //public override Task<IGetResult<TValue>> GetImpl(CancellationToken cancellationToken = default) => Task.FromResult((IGetResult<TValue>)NoopFailResolveResult<TValue>.Instance);
 
     //    //public override Task<IPutResult> Put(TValue value) => Task.FromResult((IPutResult)NoopFailPutResult<TValue>.Instance);
     //    //protected override Task<IDeleteResult> DeleteImpl() => Task.FromResult((IDeleteResult)NoopFailDeleteResult<TValue>.Instance);

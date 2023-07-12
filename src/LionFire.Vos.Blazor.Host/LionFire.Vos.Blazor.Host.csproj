@@ -34,12 +34,16 @@
     <ProjectReference Include="..\LionFire.Blazor.Components.MudBlazor\LionFire.Blazor.Components.MudBlazor.csproj" />
     <ProjectReference Include="..\LionFire.Blazor.Components\LionFire.Blazor.Components.csproj" />
     <ProjectReference Include="..\LionFire.Blazor.MudBlazor.Themes\LionFire.Blazor.MudBlazor.Themes.csproj" />
+    <ProjectReference Include="..\LionFire.Data.Async.Abstractions\LionFire.Data.Async.Abstractions.csproj" />
     <ProjectReference Include="..\LionFire.Expanders.SharpZipLib\LionFire.Expanders.SharpZipLib.csproj" />
     <ProjectReference Include="..\LionFire.Expanders.Vos\LionFire.Expanders.Vos.csproj" />
     <ProjectReference Include="..\LionFire.Internals.Blazor\LionFire.Internals.Blazor.csproj" />
+    <ProjectReference Include="..\LionFire.Persistence.Abstractions\LionFire.Data.Persisters.Abstractions.csproj" />
     <ProjectReference Include="..\LionFire.Persistence.Filesystem\LionFire.Persistence.Filesystem.csproj" />
     <ProjectReference Include="..\LionFire.Persistence.Handles\LionFire.Persistence.Handles.csproj" />
     <ProjectReference Include="..\LionFire.Persistence.SharpZipLib\LionFire.Persistence.SharpZipLib.csproj" />
+    <ProjectReference Include="..\LionFire.Persistence\LionFire.Data.Persisters.csproj" />
+    <ProjectReference Include="..\LionFire.Resolves\LionFire.Data.Async.csproj" />
     <ProjectReference Include="..\LionFire.Serialization.Json.JsonEx\LionFire.Serialization.Json.JsonEx.csproj" />
     <ProjectReference Include="..\LionFire.Serialization.Json.Newtonsoft\LionFire.Serialization.Json.Newtonsoft.csproj" />
     <ProjectReference Include="..\LionFire.Vos.Blazor\LionFire.Vos.Blazor.csproj" />

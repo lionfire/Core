@@ -1,7 +1,7 @@
 ﻿
 namespace LionFire.Data.Gets;
 
-public class DynamicGets<TKey, TValue> : AsyncGets<TKey, TValue>
+public class DynamicGets<TKey, TValue> : Gets<TKey, TValue>
     where TKey : class
     where TValue : class
 {

@@ -117,7 +117,7 @@ public class ExpanderReadHandle<TValue> : ReadHandleBase<ExpansionReference<TVal
 
 
 
-    protected override async ITask<IGetResult<TValue>> ResolveImpl()
+    protected override async ITask<IGetResult<TValue>> GetImpl(CancellationToken cancellationToken = default)
     {
         (IExpander Expander, IReadHandle SourceReadHandle)? resolved = this.resolved ?? await TryResolveSourceAndExpander();
         if (resolved == null || resolved.Value.SourceReadHandle == null) { return SourceProviderNotAvailable; }

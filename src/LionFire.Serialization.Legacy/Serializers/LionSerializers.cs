@@ -6,112 +6,110 @@ using System.IO;
 using LionFire.Collections;
 using System.Collections;
 
-namespace LionFire.Serialization
+namespace LionFire.Serialization;
+
+public static class LionSerializers
 {
-    public static class LionSerializers
+    // FUTURE: also add mime-types or something like that, so that compression 
+    // serialization types like zip can recurse
+
+    public static IReadOnlyCollection<LionSerializer> Serializers
+    { get { return serializers; } }
+    private static MultiBindableCollection<LionSerializer> serializers = new MultiBindableCollection<LionSerializer>();
+
+    private static MultiValueDictionary<string, LionSerializer> serializersByExtension = new MultiValueDictionary<string, LionSerializer>();
+
+    #region Serializers (HARDCODE)
+
+    #region Json
+
+    public static LionJsonSerializer Json
     {
-        // FUTURE: also add mime-types or something like that, so that compression 
-        // serialization types like zip can recurse
-
-
-        public static LionFire.Collections.IReadOnlyCollection<LionSerializer> Serializers
-        { get { return serializers; } }
-        private static MultiBindableCollection<LionSerializer> serializers = new MultiBindableCollection<LionSerializer>();
-
-        private static MultiValueDictionary<string, LionSerializer> serializersByExtension = new MultiValueDictionary<string, LionSerializer>();
-
-        #region Serializers (HARDCODE)
-
-        #region Json
-
-        public static LionJsonSerializer Json
+        get
         {
-            get
-            {
-                return lionJsonSerializer;
-            }
-        } private static LionJsonSerializer lionJsonSerializer = new LionJsonSerializer();
+            return lionJsonSerializer;
+        }
+    } private static LionJsonSerializer lionJsonSerializer = new LionJsonSerializer();
 
-        #endregion
+    #endregion
 
-        #region FastJson
+    #region FastJson
 #if FASTJSON
-        public static FastJsonSerializer FastJson
+    public static FastJsonSerializer FastJson
+    {
+        get
         {
-            get
-            {
-                return fastJsonSerializer;
-            }
-        } private static FastJsonSerializer fastJsonSerializer = new FastJsonSerializer();
+            return fastJsonSerializer;
+        }
+    } private static FastJsonSerializer fastJsonSerializer = new FastJsonSerializer();
 #endif
-        #endregion
+    #endregion
 
-        #region LionPack
+    #region LionPack
 
 #if MSGPACK
-        public static LionPackSerializer LionPack
+    public static LionPackSerializer LionPack
+    {
+        get
         {
-            get
-            {
-                return lionPackSerializer;
-            }
-        } private static LionPackSerializer lionPackSerializer = new LionPackSerializer();
+            return lionPackSerializer;
+        }
+    } private static LionPackSerializer lionPackSerializer = new LionPackSerializer();
 #endif
-        #endregion
+    #endregion
 
-        #endregion
+    #endregion
 
-        #region Construction
+    #region Construction
 
-        static LionSerializers()
-        {
-            RegisterSerializer(lionJsonSerializer);
+    static LionSerializers()
+    {
+        RegisterSerializer(lionJsonSerializer);
 #if MSGPACK
-            RegisterSerializer(lionPackSerializer);
+        RegisterSerializer(lionPackSerializer);
 #endif
-            //byte[] untypedJsonIdentifier = UTF8Encoding.UTF8.GetBytes("{");
-            //byte[] xmlIdentifier = UTF8Encoding.UTF8.GetBytes("<");
-        }
+        //byte[] untypedJsonIdentifier = UTF8Encoding.UTF8.GetBytes("{");
+        //byte[] xmlIdentifier = UTF8Encoding.UTF8.GetBytes("<");
+    }
 
-        #endregion
+    #endregion
 
-        public static void RegisterSerializer(LionSerializer serializer)
+    public static void RegisterSerializer(LionSerializer serializer)
+    {
+        serializers.Add(lionJsonSerializer);
+
+        foreach (var fileExtension in serializer.FileExtensions)
         {
-            serializers.Add(lionJsonSerializer);
-
-            foreach (var fileExtension in serializer.FileExtensions)
-            {
-                serializersByExtension.Add(fileExtension, serializer);
-            }
+            serializersByExtension.Add(fileExtension, serializer);
         }
+    }
 
-        public static LionSerializer DetectSerializer(Stream stream, string path = null)
+    public static LionSerializer DetectSerializer(Stream stream, string path = null)
+    {
+        string extension = path == null ? null : System.IO.Path.GetExtension(path).TrimStart('.');
+
+        if (extension != null)
         {
-            string extension = path == null ? null : System.IO.Path.GetExtension(path).TrimStart('.');
-
-            if (extension != null)
-            {
-                var serializers = serializersByExtension.TryGetValue(extension, returnEmptySet:true);
-                foreach (LionSerializer prospectiveSerializer in
+            var serializers = serializersByExtension.TryGetValue(extension, returnEmptySet:true);
+            foreach (LionSerializer prospectiveSerializer in
 #if AOT
- (IEnumerable)
+(IEnumerable)
 #endif
-                    serializers)
-                {
-                    if (prospectiveSerializer.MatchesHeader(stream))
-                    {
-                        return prospectiveSerializer;
-                    }
-                }
-            }
-            foreach (var prospectiveSerializer in Serializers)
+                serializers)
             {
                 if (prospectiveSerializer.MatchesHeader(stream))
                 {
                     return prospectiveSerializer;
                 }
             }
-            return null;
         }
+        foreach (var prospectiveSerializer in Serializers)
+        {
+            if (prospectiveSerializer.MatchesHeader(stream))
+            {
+                return prospectiveSerializer;
+            }
+        }
+        return null;
     }
 }

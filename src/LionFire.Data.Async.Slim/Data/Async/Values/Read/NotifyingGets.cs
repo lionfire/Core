@@ -10,7 +10,7 @@ namespace LionFire.Data.Gets
     {
         public Func<TKey, ITask<IResolveResult<TValue>>> Resolver { get; set; }
 
-        public override ITask<IResolveResult<TValue>> ResolveImpl() => Resolver(this.Key);
+        public override ITask<IResolveResult<TValue>> GetImpl(CancellationToken cancellationToken = default) => Resolver(this.Key);
     }
 
 }

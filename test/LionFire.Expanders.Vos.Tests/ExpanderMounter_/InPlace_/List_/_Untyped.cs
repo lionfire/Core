@@ -4,6 +4,7 @@ using LionFire.Data.Gets;
 using Microsoft.Extensions.Logging;
 using System.Diagnostics;
 using static TestHostBuilder;
+using LionFire.Data;
 
 namespace ExpanderMounter_.InPlace_.List_;
 
@@ -22,7 +23,7 @@ public class _Untyped
         {
             var handle = path.ToVobReference<TestClass>().GetListingsHandle<object>();
 
-            IGetResult<Metadata<IEnumerable<IListing<object>>>> resolveResult = await handle.Resolve().ConfigureAwait(false);
+            IGetResult<Metadata<IEnumerable<IListing<object>>>> resolveResult = await handle.Get().ConfigureAwait(false);
             ValidateListing(resolveResult);
 
             Assert.IsTrue(LionFireEnvironment.IsUnitTest);

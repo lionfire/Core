@@ -139,7 +139,7 @@ public abstract class LazilyGetsVM<T>
     [Reactive]
     public bool HasValue { get; protected set; }
 
-    public IObservable<IGetResult<T>> GetImpl()
+    public IObservable<IGetResult<T>> GetImpl(CancellationToken cancellationToken = default)
         => Observable.StartAsync(async () => await ((IGets<T>)this).Get());
 
 }

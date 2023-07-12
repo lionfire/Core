@@ -21,7 +21,7 @@ namespace LionFire.Persistence
     } // TEMP TOPORT
 
     public class RId<TValue> : ReadHandlePassthrough<TValue, IIdReference<TValue>>, IIdReadHandle<TValue>
-        where TValue : IIded<string>
+        where TValue : class, IIded<string>
     {
 
         #region Construction and Implicit Operators

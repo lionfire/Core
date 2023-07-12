@@ -20,7 +20,7 @@ namespace LionFire.IO
 
         #endregion
 
-        protected override ITask<IGetResult<Stream>> ResolveImpl()
+        protected override ITask<IGetResult<Stream>> GetImpl(CancellationToken cancellationToken = default)
         {
             var stream = new FileStream(Path, FileMode.Open, FileAccess.Write, FileShare.Write);
             return Task.FromResult((IGetResult<Stream>)RetrieveResult<Stream>.Success(stream)).AsITask();
@@ -59,7 +59,7 @@ namespace LionFire.IO
 
         public override void Dispose()
         {
-            var obj = base.ProtectedValue;
+            var obj = base.ReadCacheValue;
             if (obj != null)
             {
                 DiscardValue();

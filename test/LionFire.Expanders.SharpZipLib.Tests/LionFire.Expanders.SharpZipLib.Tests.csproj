@@ -27,6 +27,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\..\src\LionFire.Data.Async.Abstractions\LionFire.Data.Async.Abstractions.csproj" />
     <ProjectReference Include="..\..\src\LionFire.Expanders.SharpZipLib\LionFire.Expanders.SharpZipLib.csproj" />
 	  <ProjectReference Include="..\..\src\LionFire.Persistence.Filesystem\LionFire.Persistence.Filesystem.csproj" />
 	  <ProjectReference Include="..\..\src\LionFire.Persistence.SharpZipLib\LionFire.Persistence.SharpZipLib.csproj" />

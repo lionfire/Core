@@ -17,7 +17,7 @@ namespace LionFire.IO
 
         #endregion
         
-        protected override async ITask<IGetResult<string>> ResolveImpl()
+        protected override async ITask<IGetResult<string>> GetImpl(CancellationToken cancellationToken = default)
         {
             return await Task.Run(() =>
             {

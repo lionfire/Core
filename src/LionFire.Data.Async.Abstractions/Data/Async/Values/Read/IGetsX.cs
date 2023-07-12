@@ -24,7 +24,7 @@ public static class IGetsX
     {
         if (resolves is ILazilyGets<T> lazilyResolves)
         {
-            return await lazilyResolves.GetValue<T>().ConfigureAwait(false);
+            return await lazilyResolves.GetIfNeeded<T>().ConfigureAwait(false);
         }
 
         var result = await resolves.Get().ConfigureAwait(false);

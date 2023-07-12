@@ -1,5 +1,4 @@
-﻿using System;
-using System.IO;
+﻿using System.IO;
 using System.Threading.Tasks;
 using LionFire.Dependencies;
 using LionFire.Execution;
@@ -9,7 +8,6 @@ using LionFire.Persistence;
 using LionFire.Persistence.Filesystem;
 using LionFire.Data.Gets;
 using LionFire.Serialization.Contexts;
-using MorseCode.ITask;
 
 namespace LionFire.Serialization
 {
@@ -109,7 +107,7 @@ namespace LionFire.Serialization
         //    return persistenceContext;
         //}
 
-        protected override async ITask<IGetResult<T>> ResolveImpl()
+        protected override async ITask<IGetResult<T>> GetImpl(CancellationToken cancellationToken = default)
         {
             // TODO: Change TryRetrieveObject() to TryRetrieveObject(Func<PersistenceContext>) which contains SerializationOperation?
 

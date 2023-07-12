@@ -25,7 +25,11 @@ public interface IReadWriteHandle : IReadHandle, IWriteHandle { }
 public interface IReadWriteHandle<T> 
     : IReadHandle<T>, IWriteHandle<T>, IReadWriteHandleBase<T>, IReadWriteHandle, IReferencableAsValueType<T>
     //, IWritableLazilyGets<T> // Where did this go?
-{ }
+{
+
+    ITask<IGetResult<T>> GetOrInstantiateValue();
+}
+
 
 // REVIEW: Notifying interfaces
 

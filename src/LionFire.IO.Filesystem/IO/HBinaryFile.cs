@@ -1,8 +1,6 @@
 ﻿using LionFire.Persistence;
 using LionFire.Data.Gets;
-using MorseCode.ITask;
 using System.IO;
-using System.Threading.Tasks;
 
 namespace LionFire.IO
 {
@@ -38,7 +36,7 @@ namespace LionFire.IO
             }).ConfigureAwait(false);
         }
 
-        protected override async ITask<IGetResult<byte[]>> ResolveImpl()
+        protected override async ITask<IGetResult<byte[]>> GetImpl(CancellationToken cancellationToken = default)
         {
             return await Task.Run(() =>
             {

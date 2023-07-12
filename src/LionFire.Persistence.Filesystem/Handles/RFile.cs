@@ -19,6 +19,6 @@
 //        {
 //        }
 
-//        protected override ITask<IGetResult<TValue>> ResolveImpl() => throw new NotImplementedException();
+//        protected override ITask<IGetResult<TValue>> GetImpl(CancellationToken cancellationToken = default) => throw new NotImplementedException();
 //    }
 //}

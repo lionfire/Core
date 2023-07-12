@@ -33,7 +33,7 @@ public class Zip
             Assert.IsInstanceOfType(readHandle, typeof(PersisterReadHandle<IVobReference, ZipFile, VosPersister>));
             Assert.AreEqual(expectedPath, readHandle.Key);
 
-            var resolveResult = await readHandle.Resolve();
+            var resolveResult = await readHandle.Get();
             Assert.IsNotNull(resolveResult.Value);
 
             using var zipFile = resolveResult.Value;

@@ -51,7 +51,7 @@ public abstract partial class AsyncDynamicDataCollectionCache<TValue>
 
     #region State
 
-    public abstract IEnumerable<TValue>? ReadCacheValue { get;  }
+    public abstract IEnumerable<TValue>? Value { get;  }
 
     #endregion
 
@@ -59,7 +59,7 @@ public abstract partial class AsyncDynamicDataCollectionCache<TValue>
 
     #region IReadWrapper<T>
 
-    public abstract IEnumerable<TValue>? Value { get; }
+    public abstract IEnumerable<TValue>? ReadCacheValue { get; }
     //[DebuggerBrowsable(DebuggerBrowsableState.Never)]
     //public IEnumerable<TValue> Value
     //{
@@ -100,12 +100,12 @@ public abstract partial class AsyncDynamicDataCollectionCache<TValue>
 
     #region IReadOnlyCollection<TItem>
 
-    public virtual int Count => (Value ?? Enumerable.Empty<TValue>()).Count();
+    public virtual int Count => (ReadCacheValue ?? Enumerable.Empty<TValue>()).Count();
 
     #region IEnumerable<TItem>
 
     [Blocking(Alternative = nameof(GetIfNeeded))]
-    public virtual IEnumerator<TValue> GetEnumerator() => (Value ?? Enumerable.Empty<TValue>()).GetEnumerator();
+    public virtual IEnumerator<TValue> GetEnumerator() => (ReadCacheValue ?? Enumerable.Empty<TValue>()).GetEnumerator();
     IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
 
     #endregion

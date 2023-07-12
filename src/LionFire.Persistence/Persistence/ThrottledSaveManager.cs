@@ -4,6 +4,7 @@ using System.Collections.Concurrent;
 using System.Collections.Generic;
 using LionFire.Structures;
 using LionFire.Data.Gets;
+using LionFire.Data.Sets;
 
 namespace LionFire.Persistence
 {

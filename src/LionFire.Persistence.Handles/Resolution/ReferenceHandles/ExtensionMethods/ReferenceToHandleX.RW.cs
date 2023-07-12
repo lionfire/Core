@@ -28,7 +28,7 @@ public static partial class ReferenceToReadWriteHandleExtensions
 
     // Non-generic (reflection helper)
     public static IReadWriteHandle GetReadWriteHandle(this IReference reference, Type type, IServiceProvider? serviceProvider = null)
-        
+
         => (IReadWriteHandle)typeof(ReferenceToReadWriteHandleExtensions).GetMethods(BindingFlags.Public | BindingFlags.Static).Where(mi => mi.Name == nameof(GetReadWriteHandle) && mi.GetGenericArguments().Length == 1).First().MakeGenericMethod(type).Invoke(null, new object[] { reference, serviceProvider });
 
     #endregion
@@ -36,19 +36,21 @@ public static partial class ReferenceToReadWriteHandleExtensions
     #region Preresolved
 
     // Generic, typed Reference
-    public static (IReadWriteHandle<TValue> handle, bool usedPreresolved) GetReadWriteHandlePreresolved<TValue, TReference>(this TReference reference, TValue preresolvedValue = default, bool overwriteValue = false)
+    public static (IReadWriteHandle<TValue> handle, bool usedPreresolved) GetReadWriteHandlePreStaged<TValue, TReference>(this TReference reference, TValue preStagedValue = default, bool overwriteValue = false)
           where TReference : IReference
     {
         bool usedPreresolved = false;
 
-        var handle = HandleRegistry.GetOrAddReadWrite<IReadWriteHandle<TValue>>(reference?.Url ?? throw new ArgumentNullException(nameof(reference)), _ => reference.TryGetReadWriteHandleProvider<TReference>().GetReadWriteHandle<TValue>(reference, preresolvedValue));
+        var handle = HandleRegistry.GetOrAddReadWrite<IReadWriteHandle<TValue>>(reference?.Url ?? throw new ArgumentNullException(nameof(reference)), _ => reference.TryGetReadWriteHandleProvider<TReference>().GetReadWriteHandle<TValue>(reference, preStagedValue));
 
-        if (!usedPreresolved && overwriteValue) { handle.Value = preresolvedValue; usedPreresolved = true; }
+        if (!usedPreresolved && overwriteValue) { handle.StagedValue = preStagedValue; usedPreresolved = true; }
 
         return (handle, usedPreresolved);
     }
 
+#if OLD
     // Generic
+    [Obsolete("Use GetReadWriteHandlePrestaged instead")]
     public static (IReadWriteHandle<TValue> handle, bool usedPreresolved) GetReadWriteHandlePreresolved<TValue>(this IReference reference, TValue preresolvedValue = default, bool overwriteValue = false)
     {
         bool usedPreresolved = false;
@@ -56,21 +58,44 @@ public static partial class ReferenceToReadWriteHandleExtensions
         var handle = HandleRegistry.GetOrAddReadWrite<IReadWriteHandle<TValue>>(reference?.Url ?? throw new ArgumentNullException(nameof(reference)),
             _ => reference.GetReadWriteHandleProvider().GetReadWriteHandle<TValue>(reference, preresolvedValue));
 
-        if (!usedPreresolved && overwriteValue) { handle.Value = preresolvedValue; usedPreresolved = true; }
+        if (!usedPreresolved && overwriteValue) { handle.ReadCacheValue = preresolvedValue; usedPreresolved = true; }
+
+        return (handle, usedPreresolved);
+    }
+#endif
+    public static (IReadWriteHandle<TValue> handle, bool usedPreresolved) GetReadWriteHandlePrestaged<TValue>(this IReference reference, TValue? preStagedValue = default, bool overwriteValue = false)
+    {
+        bool usedPreresolved = false;
+
+        var handle = HandleRegistry.GetOrAddReadWrite<IReadWriteHandle<TValue>>(reference?.Url ?? throw new ArgumentNullException(nameof(reference)),
+            _ => reference.GetReadWriteHandleProvider().GetReadWriteHandle<TValue>(reference, preStagedValue));
+
+        if (!usedPreresolved && overwriteValue) { handle.StagedValue = preStagedValue; usedPreresolved = true; }
 
         return (handle, usedPreresolved);
     }
 
+#if OLD
     // Non-generic
     public static (IReadWriteHandle handle, bool usedPreresolved) GetReadWriteHandlePreresolved(this IReference reference, Type type, object preresolvedValue, bool overwriteValue = false)
     {
-        var result = (typeof(ReferenceToReadWriteHandleExtensions).GetMethods(BindingFlags.Public | BindingFlags.Static).Where(mi => mi.Name == nameof(GetReadWriteHandlePreresolved) && mi.GetGenericArguments().Length == 1).First().MakeGenericMethod(type).Invoke(null, new object[] { reference, preresolvedValue, overwriteValue })); // TODO - also for ReadHandle if needed?
+        var result = (typeof(ReferenceToReadWriteHandleExtensions).GetMethods(BindingFlags.Public | BindingFlags.Static).Where(mi => mi.Name == nameof(GetReadWriteHandlePrestaged) && mi.GetGenericArguments().Length == 1).First().MakeGenericMethod(type).Invoke(null, new object[] { reference, preresolvedValue, overwriteValue })); // TODO - also for ReadHandle if needed?
+
+        throw new NotImplementedException("TODO: extract and return result");
+        //return (result.handle, result.usedPreresolved);
+    }
+#endif
+
+    // Non-generic
+    public static (IReadWriteHandle handle, bool usedPreresolved) GetReadWriteHandlePrestaged(this IReference reference, Type type, object preStagedValue, bool overwriteValue = false)
+    {
+        var result = (typeof(ReferenceToReadWriteHandleExtensions).GetMethods(BindingFlags.Public | BindingFlags.Static).Where(mi => mi.Name == nameof(GetReadWriteHandlePrestaged) && mi.GetGenericArguments().Length == 1).First().MakeGenericMethod(type).Invoke(null, new object[] { reference, preStagedValue, overwriteValue })); // TODO - also for ReadHandle if needed?
 
         throw new NotImplementedException("TODO: extract and return result");
         //return (result.handle, result.usedPreresolved);
     }
 
-    #endregion
+#endregion
 
     // Always create
     public static IReadWriteHandle<T> ToReadWriteHandle<T>(this IReference reference) => reference.GetReadWriteHandleProvider().GetReadWriteHandle<T>(reference)

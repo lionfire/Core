@@ -10,11 +10,11 @@ namespace LionFire.Persistence
     //{
     //}
 
-    public struct PersistenceEvent<TValue> : ISenderValueChanged<INotifyPersists<TValue>, IPersistenceSnapshot<TValue>>
+    public struct PersistenceEvent<TValue> : ISenderValueChanged<object, IPersistenceSnapshot<TValue>>
     //: IPersistenceChangeEvent<T>
         //where TValue : class
     {
-        public INotifyPersists<TValue> Sender { get; set; }
+        public object Sender { get; set; }
 
         //public PersistenceEventKind Kind { get; set; }
 

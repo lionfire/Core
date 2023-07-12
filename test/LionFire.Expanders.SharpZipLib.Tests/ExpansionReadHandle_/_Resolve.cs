@@ -1,4 +1,4 @@
-﻿
+﻿using LionFire.Data.Gets;
 using LionFire.Testing;
 
 namespace ExpansionReadHandle_;
@@ -31,7 +31,7 @@ public class _Resolve
             var exists = await handle.Exists().ConfigureAwait(false);
             Assert.IsTrue(exists);
 
-            var resolveResult = await handle.Resolve().ConfigureAwait(false);
+            var resolveResult = await handle.Get().ConfigureAwait(false);
             Assert.IsTrue(resolveResult.IsSuccess);
             Assert.IsTrue(resolveResult.HasValue);
             Assert.AreEqual("This is a test.", resolveResult.Value);
@@ -107,7 +107,7 @@ public class _Resolve
             var exists = await handle.Exists().ConfigureAwait(false);
             Assert.IsTrue(exists);
 
-            var resolveResult = await handle.Resolve().ConfigureAwait(false);
+            var resolveResult = await handle.Get().ConfigureAwait(false);
             Assert.IsTrue(resolveResult.IsSuccess);
             Assert.IsTrue(resolveResult.HasValue);
             Assert.IsNotNull(resolveResult.Value);

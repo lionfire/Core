@@ -16,7 +16,12 @@
     <ProjectReference Include="..\LionFire.Applications\LionFire.Applications.csproj" />
     <ProjectReference Include="..\LionFire.Assets\LionFire.Assets.csproj" />
     <ProjectReference Include="..\LionFire.Core.Extras\LionFire.Core.Extras.csproj" />
+    <ProjectReference Include="..\LionFire.Data.Async.Abstractions\LionFire.Data.Async.Abstractions.csproj" />
+    <ProjectReference Include="..\LionFire.Data.Async.Reactive\LionFire.Data.Async.Reactive.csproj" />
+    <ProjectReference Include="..\LionFire.Persistence.Abstractions\LionFire.Data.Persisters.Abstractions.csproj" />
     <ProjectReference Include="..\LionFire.Persistence.Filesystem\LionFire.Persistence.Filesystem.csproj" />
+    <ProjectReference Include="..\LionFire.Persistence\LionFire.Data.Persisters.csproj" />
+    <ProjectReference Include="..\LionFire.Resolves\LionFire.Data.Async.csproj" />
 	  <ProjectReference Include="..\LionFire.Vos.Packages\LionFire.Vos.Packages.csproj" />
 	  <ProjectReference Include="..\LionFire.Vos\LionFire.Vos.csproj" />
   </ItemGroup>

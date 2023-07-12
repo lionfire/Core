@@ -2,7 +2,7 @@
 
 namespace LionFire.Data.Gets;
 
-public class AmbientGets<TKey, TValue> : AsyncGets<TKey, TValue>
+public class AmbientGets<TKey, TValue> : Gets<TKey, TValue>
      where TKey : class
     where TValue : class
 {

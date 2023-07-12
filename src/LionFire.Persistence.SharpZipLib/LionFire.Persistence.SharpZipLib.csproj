@@ -13,7 +13,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\LionFire.Expanders\LionFire.Expanders.csproj" />
-    <ProjectReference Include="..\LionFire.Persistence\LionFire.Persistence.csproj" />
+    <ProjectReference Include="..\LionFire.Persistence\LionFire.Data.Persisters.csproj" />
     <ProjectReference Include="..\LionFire.Vos\LionFire.Vos.csproj" />
   </ItemGroup>
 

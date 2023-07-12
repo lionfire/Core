@@ -10,20 +10,4 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 
-namespace LionFire.Vos.Api.Host
-{
-    public class Program
-    {
-        public static void Main(string[] args)
-        {
-            var app = new AppHost()
-                .Add<NewtonsoftJsonSerializer>()
-                
-                .Run(() => CreateWebHostBuilder(args).Build().Run());
-        }
-
-        public static IWebHostBuilder CreateWebHostBuilder(string[] args) =>
-            WebHost.CreateDefaultBuilder(args)
-                .UseStartup<Startup>();
-    }
-}
+Console.WriteLine("TODO");

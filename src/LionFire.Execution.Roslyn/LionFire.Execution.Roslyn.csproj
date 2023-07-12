@@ -1,7 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>net6.0</TargetFramework>
+    <TargetFramework>net7.0</TargetFramework>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     <AssemblyName>LionFire.Execution.Roslyn</AssemblyName>
     <PackageId>LionFire.Execution.Roslyn</PackageId>
@@ -15,6 +15,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\LionFire.Applications\LionFire.Applications.csproj" />
     <ProjectReference Include="..\LionFire.Core\LionFire.Core.csproj" />
     <ProjectReference Include="..\LionFire.Environment\LionFire.Environment.csproj" />
     <ProjectReference Include="..\LionFire.Execution.Context\LionFire.Execution.Context.csproj" />

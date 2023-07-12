@@ -16,7 +16,7 @@ public class _Setup
             var exists = await handle.Exists().ConfigureAwait(false);
             Assert.IsTrue(exists);
 
-            var resolveResult = await handle.Resolve().ConfigureAwait(false);
+            var resolveResult = await handle.Get().ConfigureAwait(false);
             Assert.IsTrue(resolveResult.IsSuccess);
             Assert.IsTrue(resolveResult.HasValue);
             Assert.IsNotNull(resolveResult.Value);
