@@ -140,6 +140,8 @@ public abstract class AsyncReadOnlyKeyedCollectionCache<TKey, TValue>
     
     Func<TValue, TValue, bool> ValueEqualityComparerFunc => (l, r) => DefaultKeyEqualityComparer.Equals(KeySelector(l), KeySelector(r));
 
+    public override IEnumerable<TValue>? ReadCacheValue => SourceCache.Items;
+
     private object currentResolvingLock = new();
     public override ITask<IGetResult<IEnumerable<TValue>>> Get(CancellationToken cancellationToken = default)
     {

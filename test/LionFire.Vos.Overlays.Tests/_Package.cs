@@ -15,6 +15,7 @@ using LionFire.MultiTyping;
 using LionFire.Vos;
 using LionFire.Vos.Packages;
 using LionFire.Vos.Packages;
+using LionFire.Data;
 
 namespace Packages_
 {
@@ -33,14 +34,14 @@ namespace Packages_
                         .AddFilesystem()
 
                         .VosPackageProvider("/`/TestPlugins".ToVobReference())
-                        .VosMount("/`/TestPlugins/available", pluginsDir.ToFileReference(), new MountOptions
+                        .VosMount("/`/TestPlugins/available", pluginsDir.ToFileReference(), new VobMountOptions
                         {
                             Name = "UnitTestPluginsDir",
                         })
 
                         //.VosMount("/`/TestPlugins/available", pluginsDir.ToFileReference(),
-                        //new MountOptions(
-                        //    decorators: new MultiTyped(new MultiTypableVisitor<IVobNodeProvider>(() => new MountOptions { Name = "UnitTestPlugin", ReadPriority = 100, WritePriority = -100 }))
+                        //new VobMountOptions(
+                        //    decorators: new MultiTyped(new MultiTypableVisitor<IVobNodeProvider>(() => new VobMountOptions { Name = "UnitTestPlugin", ReadPriority = 100, WritePriority = -100 }))
                         //    {
                         //        Name = "UnitTestPluginsDir"
                         //    })
@@ -52,7 +53,7 @@ namespace Packages_
                         //})
 
                         // MOVE - FUTURE: Vos metadata
-                        //.VosMount("/_/vos", new VobReference("/") { Persister = "vos" }, new MountOptions
+                        //.VosMount("/_/vos", new VobReference("/") { Persister = "vos" }, new VobMountOptions
                         //{
                         //    IsReadOnly = true,
                         //    IsExclusive = true,

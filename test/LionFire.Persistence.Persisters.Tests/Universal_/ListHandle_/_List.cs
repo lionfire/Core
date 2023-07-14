@@ -82,7 +82,7 @@ namespace Universal_.ListHandle_
                     {
                         var rwh = reference.GetReadWriteHandle<string>();
                         rwh.Value = testData;
-                        var result = await rwh.Put();
+                        var result = await rwh.Set();
                         Assert.True(result.IsSuccess);
                     }
                     #endregion
@@ -95,7 +95,7 @@ namespace Universal_.ListHandle_
                     if (SanityChecks)
                     {
                         var rh = reference.GetReadHandle<string>();
-                        var retrieveResult = (await rh.Get()).ToRetrieveResult();
+                        var retrieveResult = (await rh.Get());
                         Assert.True(retrieveResult.IsSuccess());
                         Assert.True(retrieveResult.IsFound());
                         Assert.Equal(testData, rh.Value);
@@ -229,7 +229,7 @@ namespace Universal_.ListHandle_
                     {
                         var rwh = reference.GetReadWriteHandle<string>();
                         rwh.Value = testData;
-                        var result = await rwh.Put();
+                        var result = await rwh.Set();
                         Assert.True(result.IsSuccess);
                     }
         #endregion
@@ -242,7 +242,7 @@ namespace Universal_.ListHandle_
                     if (SanityChecks)
                     {
                         var rh = reference.GetReadHandle<string>();
-                        var retrieveResult = (await rh.Get()).ToRetrieveResult();
+                        var retrieveResult = (await rh.Get());
                         Assert.True(retrieveResult.IsSuccess());
                         Assert.True(retrieveResult.IsFound());
                         Assert.Equal(testData, rh.Value);
@@ -266,14 +266,14 @@ namespace Universal_.ListHandle_
                     {
                         var rwh = reference.GetReadWriteHandle<TestClass1>();
                         rwh.Value = TestClass1.Create;
-                        var result = await rwh.Put();
+                        var result = await rwh.Set();
                         Assert.True(result.IsSuccess);
                     }
                     else
                     {
                         var rwh = reference.GetReadWriteHandle<TestClass2>();
                         rwh.Value = TestClass2.Create;
-                        var result = await rwh.Put();
+                        var result = await rwh.Set();
                         Assert.True(result.IsSuccess);
                     }
         #endregion
@@ -288,7 +288,7 @@ namespace Universal_.ListHandle_
                         if (filename.Contains('1'))
                         {
                             var rh = reference.GetReadHandle<TestClass1>();
-                            var retrieveResult = (await rh.Get()).ToRetrieveResult();
+                            var retrieveResult = (await rh.Get());
                             Assert.True(retrieveResult.IsSuccess());
                             Assert.True(retrieveResult.IsFound());
                             TestClass1.Create.WithDeepEqual(rh.Value).Assert();
@@ -296,7 +296,7 @@ namespace Universal_.ListHandle_
                         else
                         {
                             var rh = reference.GetReadHandle<TestClass2>();
-                            var retrieveResult = (await rh.Get()).ToRetrieveResult();
+                            var retrieveResult = (await rh.Get());
                             Assert.True(retrieveResult.IsSuccess());
                             Assert.True(retrieveResult.IsFound());
                             TestClass2.Create.WithDeepEqual(rh.Value).Assert();

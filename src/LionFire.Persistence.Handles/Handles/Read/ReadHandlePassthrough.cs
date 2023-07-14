@@ -5,6 +5,7 @@ using LionFire.Data.Gets;
 using MorseCode.ITask;
 using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace LionFire.Persistence.Handles;
 
@@ -78,6 +79,8 @@ public class ReadHandlePassthrough<TValue, TReference>
     }
 
     public void Discard() => ReadHandle?.Discard();
+
+    public Task<bool> Exists() => ReadHandle.Exists();
 
     public TValue? ReadCacheValue => ReadHandle?.ReadCacheValue;
 

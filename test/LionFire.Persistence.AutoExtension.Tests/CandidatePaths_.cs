@@ -34,9 +34,9 @@ namespace CandidatePaths_
 
                     var testString = "testString123";
                     var testBytes = new byte[] { 1, 2, 3 };
-                    await "/test/obj1.json".ToVobReference().GetReadWriteHandle<TestClass1>().Put(TestClass1.Create);
-                    await "/test/obj1.txt".ToVobReference().GetReadWriteHandle<string>().Put(testString);
-                    await "/test/obj1.bin".ToVobReference().GetReadWriteHandle<byte[]>().Put(testBytes);
+                    await "/test/obj1.json".ToVobReference().GetReadWriteHandle<TestClass1>().Set(TestClass1.Create);
+                    await "/test/obj1.txt".ToVobReference().GetReadWriteHandle<string>().Set(testString);
+                    await "/test/obj1.bin".ToVobReference().GetReadWriteHandle<byte[]>().Set(testBytes);
 
                     Assert.True(File.Exists(Path.Combine(dir, "obj1.json")));
                     Assert.True(File.Exists(Path.Combine(dir, "obj1.txt")));

@@ -872,7 +872,7 @@
 
 //        //public bool RetrieveOnDemand { get; set; }
 
-//        public void Retrieve()
+//        public void Get()
 //        {
 //            //if (this.Reference == null) throw new ArgumentException("this.Reference is null");
 

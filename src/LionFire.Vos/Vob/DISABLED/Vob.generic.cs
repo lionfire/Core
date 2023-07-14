@@ -102,9 +102,9 @@ namespace LionFire.Vos
             }
         }
 
-        public void Retrieve()
+        public void Get()
         {
-            vob.Retrieve();
+            vob.Get();
         }
 
         public object TryRetrieve()

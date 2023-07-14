@@ -24,7 +24,7 @@ namespace LionFire.Persistence.Persisters
         Task<ITransferResult> Upsert<TValue>(IReferencable<TReference> referencable, TValue value);
 
         // REVIEW - is this the only method that does not take a generic <TValue>?  Should it?
-        Task<ITransferResult> Delete(IReferencable<TReference> referencable);
+        Task<ITransferResult> DeleteReferencable(IReferencable<TReference> referencable);
     }
 
     //public interface IWritePersistenceOperationProvider<in TReference>

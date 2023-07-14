@@ -16,8 +16,6 @@ using OpenTelemetry.Metrics;
 using OpenTelemetry.Trace;
 using System;
 
-//namespace LionFire.Vos.Blazor;
-
 //Host.CreateDefaultBuilder(args) // Doesn't work
 new HostApplicationBuilder(args)
     .LionFire(lf => lf

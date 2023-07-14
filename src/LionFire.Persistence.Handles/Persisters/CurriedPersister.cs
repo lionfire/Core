@@ -35,6 +35,6 @@ public class CurriedPersister<TReference, TOverlayableReference> : IPersister<TR
     public Task<ITransferResult> Create<TValue>(IReferencable<TReference> referencable, TValue value) => Persister.Create(BaseReference.AddRight(referencable.Reference), value);
     public Task<ITransferResult> Update<TValue>(IReferencable<TReference> referencable, TValue value) => Persister.Update(BaseReference.AddRight(referencable.Reference), value);
     public Task<ITransferResult> Upsert<TValue>(IReferencable<TReference> referencable, TValue value) => Persister.Upsert(BaseReference.AddRight(referencable.Reference), value);
-    public Task<ITransferResult> Delete(IReferencable<TReference> referencable) => Persister.Delete(BaseReference.AddRight(referencable.Reference));
+    public Task<ITransferResult> DeleteReferencable(IReferencable<TReference> referencable) => Persister.DeleteReferencable(BaseReference.AddRight(referencable.Reference));
     public Task<IGetResult<IEnumerable<IListing<T>>>> List<T>(IReferencable<TReference> referencable, ListFilter? filter = null) => Persister.List<T>(referencable, filter);
 }

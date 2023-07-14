@@ -35,7 +35,7 @@ namespace LionFire.Persistence // Put in LionFire.ExtensionMethods.Persistence n
                 }
                 else
                 {
-                    return await rh.Retrieve().ConfigureAwait(false);
+                    return await rh.Get().ConfigureAwait(false);
                 }
                 //return (obj != default, obj);  OLD
             }

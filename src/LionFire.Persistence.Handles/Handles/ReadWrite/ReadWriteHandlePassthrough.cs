@@ -118,4 +118,6 @@ public class ReadWriteHandlePassthrough<TValue, TReference>
     {
         return ReadWriteHandle.Set(cancellationToken);
     }
+
+    public Task<bool> Exists() => ReadWriteHandle.Exists();
 }

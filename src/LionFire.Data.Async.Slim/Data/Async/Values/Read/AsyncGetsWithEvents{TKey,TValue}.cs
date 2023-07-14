@@ -1,8 +1,11 @@
 ﻿
 namespace LionFire.Data.Gets;
 
-/// <remarks>
+/// <summary>
 /// Only requires one method to be implemented: GetImpl.
+/// </summary>
+/// <remarks>
+/// TODO: bring this into alignment with the main Gets (base class ReactiveObject)
 /// </remarks>
 public abstract class AsyncGetsWithEvents<TKey, TValue>
     : DisposableKeyed<TKey>
@@ -143,6 +146,14 @@ public abstract class AsyncGetsWithEvents<TKey, TValue>
     }
 
     #endregion
+
+    public virtual async Task<bool> Exists()
+    {
+        if (HasValue) return true;
+        var result = await Get().ConfigureAwait(false);
+        return result.Flags.IsFound() == true;
+    }
+
 
     #region Get
 

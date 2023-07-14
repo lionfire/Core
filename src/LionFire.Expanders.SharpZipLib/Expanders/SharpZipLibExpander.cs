@@ -387,7 +387,7 @@ public class SharpZipLibExpander : ExpanderPersister, ISupportsFileExtensions, I
         throw new NotImplementedException();
     }
 
-    public Task<ITransferResult> Delete(IReferencable<IExpansionReference> referencable)
+    public Task<ITransferResult> DeleteReferencable(IReferencable<IExpansionReference> referencable)
     {
         throw new NotImplementedException();
     }

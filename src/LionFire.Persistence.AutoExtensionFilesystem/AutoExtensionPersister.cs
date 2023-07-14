@@ -2,6 +2,7 @@
 using LionFire.Persistence.Persisters;
 using System.Collections.Generic;
 using LionFire.IO;
+using LionFire.Data;
 using LionFire.Serialization;
 using System;
 using System.Linq;

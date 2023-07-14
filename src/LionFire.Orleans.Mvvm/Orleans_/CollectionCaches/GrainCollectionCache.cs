@@ -26,8 +26,8 @@ using Orleans.Metadata;
 using LionFire.Mvvm;
 using LionFire.Data.Gets;
 using MorseCode.ITask;
+using LionFire.Data;
 using System.Reactive.Subjects;
-using LionFire.Resolvers;
 using ReactiveUI;
 using System.Reactive;
 using System.Linq;
@@ -180,7 +180,7 @@ public class GrainCollectionCache<TValue> // RENAME: GrainCollectionCache
 
     #region Resolve
 
-    public override ITask<IGetResult<IEnumerable<TValue>>> ResolveFromSource()
+    public override ITask<IGetResult<IEnumerable<TValue>>> ResolveFromSource(CancellationToken cancellationToken = default)
     {
         return GrainListCacheCommon<TValue>.ResolvesRetrieveFunc(CollectionGrain);
     }

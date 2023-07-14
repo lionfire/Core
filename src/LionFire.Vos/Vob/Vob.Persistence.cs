@@ -167,7 +167,7 @@ namespace LionFire.Vos
             {
                 if (!reload)
                 {
-                    //UnitypeHandle.Retrieve();
+                    //UnitypeHandle.Get();
 
                     object uniTypeObj = UnitypeHandle.HasObject ? UnitypeHandle.Object : null;
 
@@ -388,7 +388,7 @@ namespace LionFire.Vos
             {
                 if (!reload)
                 {
-                    //UnitypeHandle.Retrieve();
+                    //UnitypeHandle.Get();
 
                     object uniTypeObj = UnitypeHandle.HasObject ? UnitypeHandle.Object : null;
 
@@ -993,7 +993,7 @@ namespace LionFire.Vos
         #endregion
 
 #endif
-        
+
         #region Delete
 
         //public DeleteMode DeleteMode { get; set; }

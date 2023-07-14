@@ -189,7 +189,7 @@
 //            // Wait for Subscribe to finish before Retrieving to make sure we don't miss updates
 //            if ((!canSubscribe || subscribed) && GetOptions.AlwaysRetrieveOnEnableSync && CanRetrieve)
 //            {
-//                await Retrieve().ConfigureAwait(false);
+//                await Get().ConfigureAwait(false);
 //            }
 //            if (!canSubscribe)
 //            {

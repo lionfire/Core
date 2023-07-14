@@ -5,9 +5,9 @@ namespace LionFire.Services
 {
     public static class VosTestHost
     {
-        public static IHostBuilder Create(string[] args = null, bool defaultBuilder = true, bool autoExtension = false)
+        public static IHostBuilder Create(string[] args = null, bool autoExtension = false)
         {
-            return VosHost.Create(args, defaultBuilder)
+            return VosHost.Create(args)
                 .ConfigureServices(services 
                 => services
                         .AddTestFileMount(autoExtension)

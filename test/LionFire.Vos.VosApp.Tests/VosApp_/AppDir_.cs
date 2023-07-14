@@ -27,8 +27,9 @@ namespace VosApp_
         [Fact]
         public void Pass()
         {
-            Host.CreateDefaultBuilder().LionFire(b => b.VosApp())
-                .AddAppInfo(new AppInfo(TestGlobals.TestApplicationId, TestGlobals.TestOrgName))
+            Host.CreateDefaultBuilder()
+                .AppInfo(new AppInfo(TestGlobals.TestApplicationId, TestGlobals.TestOrgName))
+                .LionFire(b => b.VosApp())
                 .RunAsync(serviceProvider =>
                 {
                     var root = serviceProvider.GetRequiredService<RootManager>().Get();

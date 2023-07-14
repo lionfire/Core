@@ -12,6 +12,7 @@ using LionFire.Results;
 using LionFire.FlexObjects;
 using Swordfish.NET.Collections;
 using LionFire.Structures;
+using LionFire.Data.Sets;
 
 namespace LionFire.UI.Workspaces
 {
@@ -56,7 +57,7 @@ namespace LionFire.UI.Workspaces
 // - Executable initialization
     public abstract class WorkspaceOld<TTemplate, TChild> : InitializableExecutableBase, ITemplateInstance<TTemplate>, IComposition, 
         //IWorkspace, 
-        ISets,
+        //ISets,
         IFlex
 
         where TTemplate : class, ITemplate

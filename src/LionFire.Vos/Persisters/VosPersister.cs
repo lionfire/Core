@@ -677,7 +677,7 @@ public class VosPersister : SerializingPersisterBase<VosPersisterOptions>, IPers
         l.Trace($"{result.Flags}: {ReplaceMode.Upsert.DescriptionString()} {value?.GetType().Name} {ReplaceMode.Upsert.ToArrow()} {referencable.Reference} via {result.ResolvedVia}");
         return result;
     }
-    public Task<ITransferResult> Delete(IReferencable<IVobReference> referencable)
+    public Task<ITransferResult> DeleteReferencable(IReferencable<IVobReference> referencable)
     {
         l.Trace($"Delete xx> {referencable.Reference}");
         throw new System.NotImplementedException();
@@ -737,7 +737,7 @@ public class VosPersister : SerializingPersisterBase<VosPersisterOptions>, IPers
         //            var effectiveReference = !relativePathChunks.Any() ? mount.Target : mount.Target.GetChildSubpath(relativePathChunks);
         //            var rh = effectiveReference.GetReadHandle<Metadata<IEnumerable<Listing>>>(ServiceProvider);
 
-        //            var childResult = (await rh.Get().ConfigureAwait(false)).ToRetrieveResult();
+        //            var childResult = (await rh.Get().ConfigureAwait(false));
 
         //            if (childResult.IsFail()) result.Flags |= TransferResultFlags.Fail; // Indicates that at least one underlying persister failed
 

@@ -958,7 +958,8 @@ public abstract partial class VirtualFilesystemPersisterBase<TReference, TPersis
 
     #endregion
 
-    public virtual Task<ITransferResult> Delete(IReferencable<TReference> referencable) // Unwrap IReferencable
+    // TODO: Resolve ambiguous methods between this and TReference
+    public virtual Task<ITransferResult> DeleteReferencable(IReferencable<TReference> referencable) 
         => (PersistenceOptions.VerifyExistsBeforeDelete
             ? VerifyExistsAndDelete(referencable.Reference.Path)
             : Delete(referencable.Reference.Path).DeleteResultToPersistenceResult());

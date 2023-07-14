@@ -15,7 +15,7 @@ namespace LionFire.Persistence.Persisters
 
         public static Task<ITransferResult> Delete<TReference, TValue>(this IPersister<TReference> persister, TReference reference) 
             where TReference : IReference
-            => persister.Delete(new ReferenceWrapper<TReference>(reference));
+            => persister.DeleteReferencable(new ReferenceWrapper<TReference>(reference));
 
         public static Task<ITransferResult> Exists<TReference, TValue>(this IPersister<TReference> persister, TReference reference) 
             where TReference : IReference

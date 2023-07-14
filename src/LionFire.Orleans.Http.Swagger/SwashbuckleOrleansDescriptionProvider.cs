@@ -10,6 +10,7 @@ using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.AspNetCore.Mvc.Routing;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
+using Orleans.Http;
 using System;
 using System.Buffers;
 using System.Collections.Generic;
@@ -51,30 +52,32 @@ class SwashbuckleOrleansDescriptionProvider : IApiDescriptionGroupCollectionProv
 
     public SwashbuckleOrleansDescriptionProvider(IServiceProvider services)
     {
-        var appPartsMgr = services.GetRequiredService<IApplicationPartManager>();
-        this.grainInterfaceFeature = appPartsMgr.CreateAndPopulateFeature<Orleans.Metadata.GrainInterfaceFeature>();
+        throw new NotImplementedException();
+        //var appPartsMgr = services.GetRequiredService<IApplicationPartManager>();
+        //this.grainInterfaceFeature = appPartsMgr.CreateAndPopulateFeature<Orleans.Metadata.GrainInterfaceFeature>();
         this.metadataProvider = services.GetRequiredService<IModelMetadataProvider>();
     }
 
     private static List<Type> DiscoverGrainTypesToMap(GrainInterfaceFeature grainInterfaceFeature)
     {
-        var grainTypesToMap = new List<Type>();
+        throw new NotImplementedException();
+        //var grainTypesToMap = new List<Type>();
 
-        foreach (var grainInterfaceMetadata in grainInterfaceFeature.Interfaces)
-        {
-            var grainType = grainInterfaceMetadata.InterfaceType;
+        //foreach (var grainInterfaceMetadata in grainInterfaceFeature.Interfaces)
+        //{
+        //    var grainType = grainInterfaceMetadata.InterfaceType;
 
-            // Only add to the list grains that either have the top-level route attribute or has one of the method attributes
-            if (grainType.GetCustomAttributes(true).Contains(_routeAttributeType) ||
-                grainType.GetMethods()
-                    .Any(m => m.GetCustomAttributes(true)
-                        .Any(attr => attr.GetType() == _routeAttributeType || _methodAttributeTypes.Contains(attr.GetType()))))
-            {
-                grainTypesToMap.Add(grainType);
-            }
-        }
+        //    // Only add to the list grains that either have the top-level route attribute or has one of the method attributes
+        //    if (grainType.GetCustomAttributes(true).Contains(_routeAttributeType) ||
+        //        grainType.GetMethods()
+        //            .Any(m => m.GetCustomAttributes(true)
+        //                .Any(attr => attr.GetType() == _routeAttributeType || _methodAttributeTypes.Contains(attr.GetType()))))
+        //    {
+        //        grainTypesToMap.Add(grainType);
+        //    }
+        //}
 
-        return grainTypesToMap;
+        //return grainTypesToMap;
     }
 
     public ApiDescriptionGroupCollection ApiDescriptionGroups

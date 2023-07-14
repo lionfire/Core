@@ -19,6 +19,7 @@ using DeepEqual.Syntax;
 using LionFire.Persistence.Filesystem.Tests;
 using LionFire.Persistence.Filesystem;
 using LionFire.Persistence.Testing;
+using LionFire.Referencing;
 
 namespace FilesystemPersister_
 {
@@ -37,7 +38,7 @@ namespace FilesystemPersister_
                     File.WriteAllText(path, TestClass1.ExpectedNewtonsoftJson);
                     Assert.True(File.Exists(path));
 
-                    var retrieveResult = await ServiceLocator.Get<FilesystemPersister>().Retrieve<TestClass1>(path.ToFileReference());
+                    var retrieveResult = await ServiceLocator.Get<FilesystemPersister>().Retrieve<TestClass1>((IReferencable<FileReference>)path.ToFileReference());
 
                     Assert.True(retrieveResult.Value.IsDeepEqual(TestClass1.Create));
 
@@ -58,7 +59,7 @@ namespace FilesystemPersister_
                     File.WriteAllText(path, testContents);
                     Assert.True(File.Exists(path));
 
-                    var retrieveResult = await ServiceLocator.Get<FilesystemPersister>().Retrieve<string>(path.ToFileReference());
+                    var retrieveResult = await ServiceLocator.Get<FilesystemPersister>().Retrieve<string>((IReferencable<FileReference>)path.ToFileReference());
 
                     Assert.Equal(testContents, retrieveResult.Value);
                     Assert.Equal(TransferResultFlags.Found | TransferResultFlags.Success, retrieveResult.Flags);
@@ -88,7 +89,7 @@ namespace FilesystemPersister_
                     File.WriteAllBytes(path, testContents);
                     Assert.True(File.Exists(path));
 
-                    var retrieveResult = await ServiceLocator.Get<FilesystemPersister>().Retrieve<byte[]>(path.ToFileReference());
+                    var retrieveResult = await ServiceLocator.Get<FilesystemPersister>().Retrieve<byte[]>((IReferencable<FileReference>)path.ToFileReference());
 
                     Assert.True(((ReadOnlySpan<byte>)testContents).SequenceEqual(retrieveResult.Value)); // Primary ASSERT
                     Assert.False(((ReadOnlySpan<byte>)testContentsDifferent).SequenceEqual(retrieveResult.Value));

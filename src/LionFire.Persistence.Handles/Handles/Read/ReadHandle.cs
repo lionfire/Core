@@ -77,7 +77,7 @@ namespace LionFire.Persistence.Handles
         //        if (!Flags.HasFlag(PersistenceFlags.UpToDate))
         //        {
         //            Resolve().ConfigureAwait(false).GetAwaiter().GetResult();
-        //            //_ = Retrieve().Result;
+        //            //_ = Get().Result;
         //        }
         //        return _value;
         //    }
@@ -216,7 +216,7 @@ namespace LionFire.Persistence.Handles
 
 
         //async Task<IGetResult<ObjectType>> IRetrievableImpl<ObjectType>.RetrieveObject() => await RetrieveObject().ConfigureAwait(false);
-        //public async Task<bool> Retrieve()
+        //public async Task<bool> Get()
         //{
         //    var result = await RetrieveImpl().ConfigureAwait(false);
 
@@ -255,7 +255,7 @@ namespace LionFire.Persistence.Handles
         //    if (!IsPersisted)
         //    {
         //        //await DoTryRetrieve().ConfigureAwait(false);
-        //        await Retrieve().ConfigureAwait(false);
+        //        await Get().ConfigureAwait(false);
         //    }
 
         //    return (HasValue, _object); ;

@@ -33,7 +33,7 @@ public class PersisterFromReferencePersister<TReference> : IPersister<TReference
     public Task<ITransferResult> Upsert<TValue>(IReferencable<TReference> referencable, TValue value)
         => Persister.Upsert(referencable.Reference, value);
 
-    public Task<ITransferResult> Delete(IReferencable<TReference> referencable)
+    public Task<ITransferResult> DeleteReferencable(IReferencable<TReference> referencable)
         => Persister.Delete(referencable.Reference);
 
     public Task<IGetResult<IEnumerable<IListing<T>>>> List<T>(IReferencable<TReference> referencable, ListFilter? filter = null)

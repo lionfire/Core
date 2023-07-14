@@ -31,7 +31,7 @@ namespace Mount_
                     .AddFilesystem()
                     .VosMount("/testDir", FsTestSetup.DataDir.ToFileReference())
                     .VosMount("/testDir2", FsTestSetup.DataDir.ToFileReference())
-                    .VosMount("/_/vos", new VobReference("/") { Persister = "vos" }, new MountOptions
+                    .VosMount("/_/vos", new VobReference("/") { Persister = "vos" }, new VobMountOptions
                     {
                         IsReadOnly = true,
                         IsExclusive = true,

@@ -17,7 +17,7 @@ public interface IHandlePersistence : ISets
     bool QueryExistance();
 
     //bool RetrieveOnDemand { get; set; }
-    //void Retrieve();
+    //void Get();
 
 #if LEGACY
     // FUTURE: Do a weak reverse reference instead if this is needed?

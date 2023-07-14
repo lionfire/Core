@@ -20,6 +20,7 @@ using LionFire.Persistence.Filesystem.Tests;
 using LionFire.Persistence.Filesystem;
 using Newtonsoft.Json;
 using LionFire.Persistence.Testing;
+using LionFire.Referencing;
 
 namespace FilesystemPersister_
 {
@@ -79,7 +80,7 @@ namespace FilesystemPersister_
                     File.WriteAllText(path, TestClass1.ExpectedNewtonsoftJson);
                     Assert.True(File.Exists(path));
 
-                    var persistenceResult = await ServiceLocator.Get<FilesystemPersister>().Delete(path.ToFileReference());
+                    var persistenceResult = await ServiceLocator.Get<FilesystemPersister>().DeleteReferencable((IReferencable<FileReference>)path.ToFileReference());
 
                     Assert.True(persistenceResult.IsSuccess());
                     Assert.True(persistenceResult.IsFound());

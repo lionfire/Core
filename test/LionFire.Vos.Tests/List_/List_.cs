@@ -42,14 +42,14 @@ namespace List_
                     var child1 = test.GetChild("child1.json").GetReadWriteHandle<TestClass1>();
                     var child2 = test.GetChild("child2.json").GetReadWriteHandle<TestClass2>();
 
-                    child1.ReadCacheValue = TestClass1.Create;
-                    await child1.Put();
-                    child2.ReadCacheValue = new TestClass2() { IntProp2 = 12, StringProp2 = "abc" };
-                    await child2.Put();
+                    child1.StagedValue = TestClass1.Create;
+                    await child1.Set();
+                    child2.StagedValue = new TestClass2() { IntProp2 = 12, StringProp2 = "abc" };
+                    await child2.Set();
 
                     #endregion
 
-                    var hList = test.GetListHandle();
+                    var hList = test.GetListingsHandle();
 
                     var result = await hList.Get();
 
@@ -75,8 +75,8 @@ namespace List_
                     var root = serviceProvider.GetRootVob();
                     var test = "$test".ToVobReference();
                     
-                    var hList1 = test.GetReadHandle<Metadata<IEnumerable<Listing>>>();
-                    var hList2 = test.GetListHandle();
+                    var hList1 = test.GetReadHandle<Metadata<IEnumerable<Listing<object>>>>();
+                    var hList2 = test.GetListingsHandle();
                     Assert.Equal(hList1.Key, hList2.Key);
                     Assert.Equal(hList1.Reference.Key, hList2.Reference.Key);
                     Assert.Equal(hList1.Reference.Path, hList2.Reference.Path);

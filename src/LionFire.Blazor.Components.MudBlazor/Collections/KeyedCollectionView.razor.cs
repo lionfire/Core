@@ -9,6 +9,7 @@ using static MudBlazor.CategoryTypes;
 using DynamicData.Binding;
 using LionFire.ExtensionMethods;
 using LionFire.Mvvm;
+using LionFire.Data.Mvvm;
 
 namespace LionFire.Blazor.Components;
 
@@ -24,7 +25,8 @@ namespace LionFire.Blazor.Components;
 /// <typeparam name="TValue"></typeparam>
 public partial class KeyedCollectionView<TKey, TValue, TValueVM>
     : IAsyncDisposable
-    , IComponentized<TKey, TValue, TValueVM>
+    //, IComponentized
+    , IGetsOrCreatesByType
     where TKey : notnull
 {
     #region Parameters
@@ -37,6 +39,8 @@ public partial class KeyedCollectionView<TKey, TValue, TValueVM>
     public IEnumerable<TValue>? Items { get; set; }
     IEnumerable<TValue>? oldItems { get; set; }
     //public IEnumerable<TValue>? Values => Items?.Select(x => x.Value);
+
+    public VMOptions ViewModelOptions { get; set; }
 
     #region TODO: Pass-thru to VM
 
@@ -178,7 +182,7 @@ public partial class KeyedCollectionView<TKey, TValue, TValueVM>
                 : Items as ILazilyGets<IEnumerable<TValue>>
                     ?? new PreresolvedGet<IEnumerable<TValue>>(Items);
 
-            ViewModel.Source?.TryGetValue().AsTask().FireAndForget();
+            ViewModel.Source?.GetIfNeeded().AsTask().FireAndForget();
 
 
             ViewModel.ValueVMCollections.Subscribe(o =>
@@ -289,7 +293,8 @@ public partial class KeyedCollectionView<TKey, TValue, TValueVM>
 
     #endregion
 
-    public T GetComponent<T>()
+    public T GetOrCreate<T>() // TODO: RENAME to GetOrCreate, abstract this to IGetsOrCreates<T>
+        where T : class
     {
         components ??= new();
         return (T)components.GetOrAdd(typeof(T), (type) => Activator.CreateInstance(type, ViewModel) ?? throw new Exception($"Failed to activate {typeof(T).FullName}"));
@@ -301,7 +306,8 @@ public partial class KeyedCollectionView<TKey, TValue, TValueVM>
     public void OnCreate(Type t)
     {
         Console.WriteLine("Create: " + t);
-        ViewModel.Create.Execute(t).Subscribe();
+        throw new NotImplementedException();
+        //ViewModel.Create.Execute(t).Subscribe();
     }
 }
 

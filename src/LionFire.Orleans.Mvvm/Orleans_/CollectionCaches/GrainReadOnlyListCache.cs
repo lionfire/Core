@@ -2,7 +2,6 @@
 using LionFire.Data.Collections;
 using LionFire.Orleans_.Streams;
 using LionFire.Data.Gets;
-using MorseCode.ITask;
 using Orleans.Runtime;
 using Orleans.Streams;
 using System.Collections;
@@ -14,13 +13,13 @@ public static class GrainListCacheCommon<TItemGrain/*, TCollection*/>
     //where TCollection : ReactiveObject, IAsyncDictionaryCache<GrainId, TItemGrain>
 {
 
-    public static async ITask<IGetResult<IEnumerable<TItemGrain>>> ResolvesRetrieveFunc(IGrain CollectionGrain)
+    public static async ITask<IGetResult<IEnumerable<TItemGrain>>> ResolvesRetrieveFunc(IGrain collectionGrain)
     {
-        if (CollectionGrain is IGetsG<IEnumerable<TItemGrain>> resolves)
+        if (collectionGrain is IGetsG<IEnumerable<TItemGrain>> resolves)
         {
             return await resolves.Get().ConfigureAwait(false);
         }
-        else throw new NotSupportedException($"{nameof(CollectionGrain)} does not implement {nameof(IGetsG<IEnumerable<TItemGrain>>)}");
+        else throw new NotSupportedException($"{nameof(collectionGrain)} does not implement {nameof(IGetsG<IEnumerable<TItemGrain>>)}");
     }
     //. Either implement it or provide either {nameof(ResolveFunc)} or {nameof(RetrieveFunc)}
 

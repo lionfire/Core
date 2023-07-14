@@ -35,7 +35,7 @@ namespace VosApp_.Windows_
         public void P_AppDir()
         {
             Host.CreateDefaultBuilder().LionFire(b => b.VosApp())
-                .AddAppInfo(new AppInfo(TestAppName, TestOrgName))
+                .AppInfo(new AppInfo(TestAppName, TestOrgName))
                 .RunAsync(serviceProvider =>
                 {
                     var programDataDir = Environment.GetEnvironmentVariable("LocalAppData");
@@ -48,12 +48,12 @@ namespace VosApp_.Windows_
                         .AcquireOwn<VobMounts>().ReadMounts.Single().Value.Target);
                 });
         }
-
+       
         [Fact]
         public void P_OrgDir()
         {
             Host.CreateDefaultBuilder().LionFire(b => b.VosApp())
-                .AddAppInfo(new AppInfo(TestAppName, TestOrgName))
+                .AppInfo(new AppInfo(TestAppName, TestOrgName))
                 .RunAsync(serviceProvider =>
                 {
                     var programDataDir = Environment.GetEnvironmentVariable("LocalAppData");
@@ -70,7 +70,7 @@ namespace VosApp_.Windows_
         public void P_CustomDir()
         {
             Host.CreateDefaultBuilder().LionFire(b => b.VosApp())
-                .AddAppInfo(new AppInfo
+                .AppInfo(new AppInfo
                 {
                     DataDirName = TestDataDir,
                     OrgName = TestOrgName,

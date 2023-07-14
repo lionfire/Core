@@ -10,7 +10,7 @@ public class UnitTest1
     private const string testText = "test text";
 
     [Fact]
-    public void Retrieve()
+    public void Get()
     {
         //var path = ; // TODO: Get temp file like in FSOBus tests
         //File.WriteAllText(path, testText);

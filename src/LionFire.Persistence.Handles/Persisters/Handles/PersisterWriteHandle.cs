@@ -46,6 +46,6 @@ namespace LionFire.Persistence.Persisters
 
         protected override async Task<ITransferResult> UpsertImpl() => await Persister.Upsert(this, StagedValue);
 
-        protected override async Task<ITransferResult> DeleteImpl() => await Persister.Delete(this);
+        protected override async Task<ITransferResult> DeleteImpl() => await Persister.DeleteReferencable(this);
     }
 }

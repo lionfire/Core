@@ -30,9 +30,10 @@ namespace Environment_
                     var root = serviceProvider.GetRootVob();
                     var env = root.Environment();
 
-                    var r = env.FlexDictionary.Values["key2"].ResolveTo<VobReference>();
-                    Assert.IsType<VobReference>(r);
-                    Assert.IsType<VobReference>(env.FlexDictionary.Values["key2"].SingleValueOrDefault());
+                    throw new NotImplementedException(); // ResolveTo
+                    // var r = env.FlexDictionary.Values["key2"].ResolveTo<VobReference>();
+                    //Assert.IsType<VobReference>(r);
+                    //Assert.IsType<VobReference>(env.FlexDictionary.Values["key2"].SingleValueOrDefault());
                 });
         }
 

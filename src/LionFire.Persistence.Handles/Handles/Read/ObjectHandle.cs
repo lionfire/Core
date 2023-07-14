@@ -146,6 +146,11 @@ public class ObjectHandle<TValue> : ReadHandleBase<NamedReference<TValue>, TValu
         throw new NotImplementedException();
     }
 
+    public Task<bool> Exists()
+    {
+        throw new NotImplementedException();
+    }
+
     #endregion
 
 }

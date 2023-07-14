@@ -29,23 +29,23 @@
         }
         @* TODO:  *@
         @* @if (ViewModel.Create != null && ViewModel.CanCreate)
-        {
-            <MudMenu Class="" Label="Add" Icon="@Icons.Material.Filled.Add" Variant="Variant.Outlined" Color="Color.Success" Dense AnchorOrigin="Origin.BottomLeft">
-                 @foreach (var t in CreatableTypes)
-                {
-                    <MudMenuItem OnClick="@(e => OnCreate(t))">
-                        @DisplayNameUtilsX.DisplayNameForType(t)
-                    </MudMenuItem>
-                }
-            </MudMenu>
-        } *@
+    {
+    <MudMenu Class="" Label="Add" Icon="@Icons.Material.Filled.Add" Variant="Variant.Outlined" Color="Color.Success" Dense AnchorOrigin="Origin.BottomLeft">
+    @foreach (var t in CreatableTypes)
+    {
+    <MudMenuItem OnClick="@(e => OnCreate(t))">
+    @DisplayNameUtilsX.DisplayNameForType(t)
+    </MudMenuItem>
+    }
+    </MudMenu>
+    } *@
     }
 
-@if (ViewModel != null && ViewModel.ShowRefresh || (ViewModel.ShowRefreshIfHasNoValue && !ViewModel.HasValue))
-{
-    @* TODO: Special color if !HasValue, indicating first resolve is needed *@
-    <MudIconButton Disabled="!ViewModel.CanResolve" OnClick="() => ViewModel.Resolve.Execute()" Color="@Color.Tertiary" Icon="@Icons.Material.Filled.Refresh" />
-}
+    @if (ViewModel != null && (ViewModel.ShowRefresh || ((ViewModelOptions?.ShowRefreshIfHasNoValue == true) && !ViewModel.HasValue)))
+    {
+        @* TODO: Special color if !HasValue, indicating first resolve is needed *@
+        <MudIconButton Disabled="!ViewModel.CanGet" OnClick="() => ViewModel.GetCommand.Execute()" Color="@Color.Tertiary" Icon="@Icons.Material.Filled.Refresh" />
+    }
 </MudToolBar>
 
 
