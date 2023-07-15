@@ -69,6 +69,7 @@ public static class ILazilyGetsX
         //return genericInterface.GetGenericArguments()[0];
     }
 
+    // TODO: Split to OrDefault and NonDefaultValue like above?  Or just OrDefault and nothing.
     public static async ITask<ILazyGetResult<object>> GetValue(this ILazilyGets lazilyResolves)
     {
         var genericInterface = lazilyResolves.GetLazilyGetsValueType();
