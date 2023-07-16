@@ -317,6 +317,11 @@ namespace LionFire.Assets
 
         public string ToUriString() => UriSchemePrefix + ToString();
 
+        public void Freeze()
+        {
+            throw new NotImplementedException();
+        }
+
         private static readonly ILogger l = Log.Get();
 
 #endregion

@@ -2,21 +2,13 @@
 using Microsoft.Extensions.DependencyInjection;
 using LionFire.Structures;
 using LionFire.Execution.Roslyn.Scripting;
+using LionFire.Execution.Hosting;
 
+// TODO: Use a HostBuilder .LionFire()
+ManualSingleton<IServiceCollection>.Instance = new ServiceCollection();
 
-namespace LionFire.Execution.Hosting
-{
-    public class Program
-    {
-        public static void Main(string[] args)
-        {
-            ManualSingleton<IServiceCollection>.Instance = new ServiceCollection();
+ManualSingleton<IServiceCollection>.Instance
+    .AddRoslynScripting()
+    ;
 
-            ManualSingleton<IServiceCollection>.Instance
-                .AddRoslynScripting()
-                ;
-
-            new ExecutionHostConsoleApp().Run(args);
-        }
-    }
-}
+new ExecutionHostConsoleApp().Run(args);

@@ -22,6 +22,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\src\LionFire.Compiling\LionFire.Compiling.csproj" />
+    <ProjectReference Include="..\..\src\LionFire.Dycen.Compiling\LionFire.Dycen.Compiling.csproj" />
     <ProjectReference Include="..\..\src\LionFire.Vos\LionFire.Vos.csproj" />
   </ItemGroup>
 

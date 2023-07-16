@@ -27,7 +27,7 @@ public class RoslynScriptHost
 
     public static async Task<object> TestScript()
     {
-        ApplicationEnvironment.AppInfo = new AppInfo { ProgramName = "RunnerProgramName" };
+        ApplicationEnvironment.AppInfo = new AppInfo { AppName  = "RunnerProgramName" };
 
         var opts = ScriptOptions.Default
             //.AddReferences("LionFire.Core")
@@ -36,7 +36,7 @@ public class RoslynScriptHost
               //.AddImports("LionFire")
               .WithSourceResolver(new SourceFileResolver(ImmutableArray<string>.Empty, AppContext.BaseDirectory));
 
-        Console.WriteLine("ProgramName: " + LionFireEnvironment.ProgramName);
+        Console.WriteLine("ApplicationEnvironment.AppInfo.AppName: " + ApplicationEnvironment.AppInfo.AppName);
 
         ScriptState <object> result = null;
 
@@ -61,7 +61,7 @@ public class RoslynScriptHost
         }
 
         Console.WriteLine("Return value: " + result?.ReturnValue);
-        Console.WriteLine("ProgramName: " + LionFireEnvironment.ProgramName);
+        Console.WriteLine("ApplicationEnvironment.AppInfo.AppName: " + ApplicationEnvironment.AppInfo.AppName);
         //And this from the REPL
         //Console.WriteLine(CSharpScriptEngine.Execute("new ScriptedClass().HelloWorld"));
         //#endif

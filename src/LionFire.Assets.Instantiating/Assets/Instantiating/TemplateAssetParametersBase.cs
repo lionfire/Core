@@ -8,7 +8,7 @@ namespace LionFire.Assets
 {
     public abstract class TemplateAssetParametersBase<TTemplate> : TemplateHandleParametersBase<TTemplate, RAsset<TTemplate>, object>
         //, IAssetInstantiation
-        where TTemplate : ITemplateAsset, IAsset<TTemplate>
+        where TTemplate : class, ITemplateAsset, IAsset<TTemplate>
     {
         protected TemplateAssetParametersBase() { }
         protected TemplateAssetParametersBase(RAsset<TTemplate> template) : base(template) { }
@@ -41,7 +41,7 @@ namespace LionFire.Assets
     //}
 
     public abstract class TemplateAssetParametersBase<TTemplate, TInstance> : TemplateAssetParametersBase<TTemplate>, ITemplateParameters<TTemplate, TInstance>
-        where TTemplate : ITemplateAsset<TTemplate, TInstance>
+        where TTemplate : class, ITemplateAsset<TTemplate, TInstance>
 
     {
         public TemplateAssetParametersBase() { }

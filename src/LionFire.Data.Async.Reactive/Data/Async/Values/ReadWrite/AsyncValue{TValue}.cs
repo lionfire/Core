@@ -20,11 +20,7 @@ public abstract class AsyncValue<TValue>
 
     #endregion
 
-    public AsyncValueOptions Options
-    {
-        get => (AsyncValueOptions)base.GetOptions;
-        set => base.GetOptions = value;
-    }
+    public AsyncValueOptions Options { get; set; }
     //AsyncValueOptions IHasNonNullSettable<AsyncValueOptions>.Object { get => Options; set => Options = value; }
 
     //AsyncValueOptions IHasNonNull<AsyncValueOptions>.Object => Options;
@@ -33,12 +29,15 @@ public abstract class AsyncValue<TValue>
 
     #region Lifecycle
 
-    public AsyncValue() : base(DefaultOptions)
+    public AsyncValue() : base(DefaultOptions.Get)
     {
+        Options = DefaultOptions;
     }
 
-    public AsyncValue(AsyncValueOptions options) : base(options)
+    public AsyncValue(AsyncValueOptions options) : base(options.Get)
     {
+        Options = options;
+
         this.ObservableForProperty(t => t.ReadCacheValue)
             .Subscribe(t =>
             {
@@ -116,7 +115,7 @@ public abstract class AsyncValue<TValue>
 
     public Task<ITransferResult> Set(CancellationToken cancellationToken = default)
         => AsyncSetLogic<TValue>.Set(this, cancellationToken);
-    
+
     public Task<ITransferResult> Set(TValue? value, CancellationToken cancellationToken = default)
         => AsyncSetLogic<TValue>.Set(this, value, cancellationToken);
 

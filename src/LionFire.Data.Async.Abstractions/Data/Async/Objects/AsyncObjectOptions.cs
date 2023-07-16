@@ -6,7 +6,6 @@ public class AsyncObjectOptions
     /// <summary>
     /// Default options to use for child properties.  If null, it will fall back to per-property options (see AsyncValueOptions<TValue>.Default).
     /// </summary>
-    public AsyncValueOptions? PropertyOptions { get; set; }
-
-    public bool AutoGet { get; set; }
+    public AsyncValueOptions? ValueOptions { get; set; }
+    
 }

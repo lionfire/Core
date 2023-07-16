@@ -46,7 +46,7 @@ public abstract class AsyncValue<TKey, TValue>
         set
         {
             options = value;
-            base.GetOptions = value; // redundant reference to GetOptions.
+            base.GetOptions = value.Get; // redundant reference to GetOptions.
         }
     }
     AsyncValueOptions options;
@@ -62,9 +62,9 @@ public abstract class AsyncValue<TKey, TValue>
 
     #region Lifecycle
 
-    public AsyncValue(TKey key, AsyncValueOptions? options = null) : base(key, options ?? DefaultOptions)
+    public AsyncValue(TKey key, AsyncValueOptions? options = null) : base(key, options?.Get ?? DefaultOptions.Get)
     {
-        Options = options ?? AsyncObjectKey?.Options.PropertyOptions ?? DefaultOptions;
+        Options = options ?? AsyncObjectKey?.Options.ValueOptions ?? DefaultOptions;
 
         this.ObservableForProperty(t => t.ReadCacheValue)
             .Subscribe(t =>

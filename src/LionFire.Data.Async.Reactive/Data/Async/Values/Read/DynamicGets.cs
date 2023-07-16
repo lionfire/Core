@@ -5,7 +5,7 @@ public class DynamicGets<TKey, TValue> : Gets<TKey, TValue>
     where TKey : class
     where TValue : class
 {
-    public DynamicGets(TKey key, AsyncValueOptions? options = null) : base(key, options)
+    public DynamicGets(TKey key, AsyncGetOptions? options = null) : base(key, options)
     {
     }
 

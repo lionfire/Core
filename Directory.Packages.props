@@ -25,7 +25,7 @@
     <PackageVersion Include="Blazorise.Material" Version="0.9.5.2" />
     <PackageVersion Include="BlazorMonaco" Version="3.0.0" />
     <PackageVersion Include="BlazorPro.Spinkit" Version="1.2.0" />
-    <PackageVersion Include="Caliburn.Micro" Version="4.0.173" />
+    <PackageVersion Include="Caliburn.Micro" Version="4.0.212" />
     <PackageVersion Include="Caliburn.Micro.Core" Version="4.0.173" />
     <PackageVersion Include="CircularBuffer" Version="1.3.0" />
     <PackageVersion Include="CommandLineParser" Version="2.9.1" />
@@ -66,7 +66,7 @@
     <PackageVersion Include="Microsoft.AspNetCore.Blazor.HttpClient" Version="7.0.2" />
     <PackageVersion Include="Microsoft.AspNetCore.Components.WebAssembly" Version="7.0.2" />
     <PackageVersion Include="Microsoft.AspNetCore.Components.WebAssembly.DevServer" Version="7.0.2" />
-    <PackageVersion Include="Microsoft.AspNetCore.Components.Web" Version="7.0.5" />
+    <PackageVersion Include="Microsoft.AspNetCore.Components.Web" Version="7.0.7" />
     <PackageVersion Include="Microsoft.AspNetCore.Connections.Abstractions" Version="7.0.2" />
     <PackageVersion Include="Microsoft.AspNetCore.Http.Abstractions" Version="2.2.0" />
     <PackageVersion Include="Microsoft.AspNetCore.Mvc.Core" Version="2.2.5" />
@@ -143,7 +143,7 @@
     <PackageVersion Include="Nito.AsyncEx.Interop.WaitHandles" Version="5.1.2" />
     <PackageVersion Include="Nito.ConnectedProperties" Version="4.1.1" />
     <PackageVersion Include="nj4x" Version="2.8.6" />
-    <PackageVersion Include="NLog" Version="5.0.0-beta10" />
+    <PackageVersion Include="NLog" Version="5.2.2" />
     <PackageVersion Include="NLog.Extensions.Hosting" Version="5.2.1" />
     <PackageVersion Include="NLog.Extensions.Logging" Version="5.2.1" />
     <PackageVersion Include="NLog.Web.AspNetCore" Version="4.14.0" />
@@ -177,7 +177,7 @@
     <PackageVersion Include="prometheus-net" Version="4.1.1" />
     <PackageVersion Include="Prometheus.Client.MetricPusher" Version="3.0.0" />
     <PackageVersion Include="QuantConnect.Indicators" Version="2.5.13897" />
-    <PackageVersion Include="Radzen.Blazor" Version="4.13.0" />
+    <PackageVersion Include="Radzen.Blazor" Version="4.13.1" />
     <PackageVersion Include="ReactiveUI" Version="19.2.1" />
     <PackageVersion Include="ReactiveUI.Blazor" Version="19.2.1" />
     <PackageVersion Include="ReactiveUI.Fody" Version="19.2.1" />
@@ -257,8 +257,8 @@
     <PackageVersion Include="WolverineFx.Marten" Version="1.1.2" />
     <PackageVersion Include="WolverineFx.RabbitMQ" Version="1.1.2" />
     <PackageVersion Include="WPFTransitionals" Version="1.1.0" />
-    <PackageVersion Include="xunit" Version="2.4.1" />
-    <PackageVersion Include="xunit.runner.visualstudio" Version="2.4.3" />
+    <PackageVersion Include="xunit" Version="2.5.0" />
+    <PackageVersion Include="xunit.runner.visualstudio" Version="2.5.0" />
     <PackageVersion Include="YamlDotNet" Version="12.3.1" />
     <PackageVersion Include="ZeroFormatter.Analyzer" Version="1.1.1" />
   </ItemGroup>

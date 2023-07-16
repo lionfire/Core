@@ -172,7 +172,7 @@ namespace LionFire.Notifications.Wpf.App
 
         public void Notify(string msg)
         {
-            //InjectionContext.Current.GetService<INotificationService>().Publish("DesktopAlerts", new
+            //DependencyContext.Current.GetService<INotificationService>().Publish("DesktopAlerts", new
             //{
             //    Message = "hello "+msg
             //});

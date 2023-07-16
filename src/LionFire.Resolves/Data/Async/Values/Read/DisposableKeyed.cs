@@ -8,12 +8,12 @@ public abstract class DisposableKeyed<TKey> : IDisposable, IKeyed<TKey>
      //where TKey : class
 {
     protected DisposableKeyed() { }
-    protected DisposableKeyed(TKey key) { this.Key = key; }
+    protected DisposableKeyed(TKey? key) { this.Key = key; }
 
     #region Input
 
     [SetOnce]
-    public TKey Key
+    public TKey? Key
     {
         get => isDisposed ? throw new ObjectDisposedException(nameof(DisposableKeyed<TKey>)) : key;
         set
@@ -25,7 +25,7 @@ public abstract class DisposableKeyed<TKey> : IDisposable, IKeyed<TKey>
             key = value;
         }
     }
-    protected TKey key;
+    protected TKey? key;
 
     public virtual void Dispose()
     {

@@ -1,7 +1,7 @@
 ﻿
 namespace LionFire.Data;
 
-public class AsyncValueOptions : AsyncGetOptions
+public class AsyncValueOptions
 {
     public AsyncGetOptions Get { get; set; } = new();
     public AsyncSetOptions Set { get; set; } = new();

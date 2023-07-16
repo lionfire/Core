@@ -4,7 +4,7 @@ using System;
 namespace LionFire.Assets
 {
     public class AssetInstantiation<TTemplate> : InstantiationBase<TTemplate, RAsset<TTemplate>, object>, IInstantiation
-        where TTemplate : ITemplate, IAsset<TTemplate>
+        where TTemplate : class, ITemplate, IAsset<TTemplate>
     {
         public override string Key { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
 
@@ -17,7 +17,7 @@ namespace LionFire.Assets
         //    where TTemplate : ITemplate, IAsset<TTemplate>
         //    => new AssetInstantiation<TTemplate>(template);
         public static AssetInstantiation<TTemplate> CreateAssetInstantiation<TTemplate>(this RAsset<TTemplate> template)
-            where TTemplate : ITemplate, IAsset<TTemplate>
+            where TTemplate : class, ITemplate, IAsset<TTemplate>
             => new AssetInstantiation<TTemplate>(template);
     }
 

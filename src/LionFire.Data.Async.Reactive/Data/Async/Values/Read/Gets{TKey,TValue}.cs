@@ -1,12 +1,23 @@
 ﻿
-
 namespace LionFire.Data;
+
+public class GetsForKeyOptions
+{
+    public bool DisposeKey { get; set; } = true;
+}
 
 public abstract class Gets<TKey, TValue>
     : Gets<TValue>
     , IDisposable
     , IKeyed<TKey>
 {
+    #region Options
+
+    public static GetsForKeyOptions DefaultGetsForKeyOptions { get; set; } = new();
+    public virtual GetsForKeyOptions GetsForKeyOptions => DefaultGetsForKeyOptions;
+
+    #endregion
+
     #region Key
 
     public TKey Key => isDisposed ? throw new ObjectDisposedException(null) : key;
@@ -18,13 +29,6 @@ public abstract class Gets<TKey, TValue>
 
     #region Lifecycle
 
-    //protected AsyncGets() : this(default, null)
-    //{
-    //}
-
-    //protected AsyncGets(AsyncGetOptions? options) : base(options)
-    //{
-    //}
     protected Gets(TKey key, AsyncGetOptions? options) : base(options)
     {
         this.key = key;
@@ -35,7 +39,7 @@ public abstract class Gets<TKey, TValue>
         isDisposed = true;
         var keyCopy = key;
         key = default;
-        if (keyCopy is IDisposable d && GetOptions.DisposeKey) // ENH: Offload this to implementors
+        if (keyCopy is IDisposable d && GetsForKeyOptions.DisposeKey)
         {
             d.Dispose();
         }

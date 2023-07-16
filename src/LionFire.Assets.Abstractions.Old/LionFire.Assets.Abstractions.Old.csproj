@@ -11,18 +11,18 @@
 
   <ItemGroup>
     <Compile Remove="Handles\**" />
+    <Compile Remove="Referencing\**" />
     <EmbeddedResource Remove="Handles\**" />
+    <EmbeddedResource Remove="Referencing\**" />
     <None Remove="Handles\**" />
+    <None Remove="Referencing\**" />
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\LionFire.Assets.Instantiating\LionFire.Assets.Instantiating.csproj" />
     <ProjectReference Include="..\LionFire.Instantiating.Abstractions\LionFire.Instantiating.Abstractions.csproj" />
     <ProjectReference Include="..\LionFire.Persistence.Abstractions\LionFire.Data.Persisters.Abstractions.csproj" />
     <ProjectReference Include="..\LionFire.Persistence.Handles.Abstractions\LionFire.Persistence.Handles.Abstractions.csproj" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="Referencing\" />
   </ItemGroup>
 
 

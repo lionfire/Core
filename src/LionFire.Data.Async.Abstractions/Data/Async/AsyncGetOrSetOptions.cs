@@ -8,7 +8,7 @@ public class AsyncGetOrSetOptions
     /// </summary>
     public bool DisposeValue { get; set; } = true;
 
-    public bool DisposeKey { get; set; } = false;
+    //public bool DisposeKey { get; set; } = false;
 
     /// <summary>
     /// If false, return a Fail TransferResult with the Exception in the Error property.

@@ -35,7 +35,6 @@
     <ProjectReference Include="..\LionFire.Instantiating\LionFire.Instantiating.csproj" />
     <ProjectReference Include="..\LionFire.Referencing.Abstractions\LionFire.Referencing.Abstractions.csproj" />
     <ProjectReference Include="..\LionFire.Serialization.Json.Newtonsoft\LionFire.Serialization.Json.Newtonsoft.csproj" />
-    <ProjectReference Include="..\LionFire.Serialization\LionFire.Serialization.csproj" />
     <ProjectReference Include="..\LionFire.Structures\LionFire.Structures.csproj" />
   </ItemGroup>
 

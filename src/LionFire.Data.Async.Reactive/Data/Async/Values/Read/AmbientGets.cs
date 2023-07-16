@@ -6,7 +6,7 @@ public class AmbientGets<TKey, TValue> : Gets<TKey, TValue>
      where TKey : class
     where TValue : class
 {
-    public AmbientGets(TKey key, AsyncValueOptions? options = null) : base(key, options)
+    public AmbientGets(TKey key, AsyncGetOptions? options = null) : base(key, options)
     {
     }
 
