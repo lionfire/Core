@@ -1,48 +1,48 @@
-﻿using LionFire.MultiTyping;
+﻿using LionFire.FlexObjects;
+using LionFire.MultiTyping;
 
-namespace LionFire.Identity
+namespace LionFire.Identity;
+
+public interface SPersona
 {
-    public interface SPersona
+    string Name
     {
-        string Name
+        get;
+    }
+    string AccountName
+    {
+        get;
+    }
+}
+
+public class Persona : FlexObject, SPersona
+{
+    #region Name
+
+    public string Name
+    {
+        get => name;
+        set
         {
-            get;
-        }
-        string AccountName
-        {
-            get;
+            if (name == value) return;
+            name = value;
         }
     }
+    private string name;
 
-    public class Persona : MultiTyped, SPersona
+    #endregion
+
+    #region AccountName
+
+    public string AccountName
     {
-        #region Name
-
-        public string Name
-        {
-            get => name;
-            set
-            {
-                if (name == value) return;
-                name = value;
-            }
-        }
-        private string name;
-
-        #endregion
-
-        #region AccountName
-
-        public string AccountName
-        {
-            get => accountName;
-            set => accountName = value;
-        }
-        private string accountName;
-
-        // TODO - Account property
-
-        #endregion
-
+        get => accountName;
+        set => accountName = value;
     }
+    private string accountName;
+
+    // TODO - Account property
+
+    #endregion
+
 }
