@@ -10,10 +10,19 @@ using DynamicData.Binding;
 using LionFire.ExtensionMethods;
 using LionFire.Mvvm;
 using LionFire.Data.Mvvm;
+using LionFire.FlexObjects;
 
 namespace LionFire.Blazor.Components;
 
 // TODO: Make this class as dumb as possible, moving testable logic to DictionaryVM
+
+public class Components : FlexObject, IComponentized
+{
+    public T TryGetComponent<T>() where T : class
+    {
+        this.GetType
+    }
+}
 
 /// <summary>
 /// TODO:
@@ -25,7 +34,7 @@ namespace LionFire.Blazor.Components;
 /// <typeparam name="TValue"></typeparam>
 public partial class KeyedCollectionView<TKey, TValue, TValueVM>
     : IAsyncDisposable
-    //, IComponentized
+    , IComponentized
     , IGetsOrCreatesByType
     where TKey : notnull
 {

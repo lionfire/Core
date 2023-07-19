@@ -78,6 +78,13 @@ public struct RetrieveResult<T> : IGetResult<T>, IErrorResult // RENAME to GetRe
         Value = default,
     };
 
+    public static RetrieveResult<T> FromException(Exception ex) => new RetrieveResult<T>()
+    {
+        Flags = TransferResultFlags.Fail,
+        Value = default,
+        Error = ex,
+    };
+
     public static readonly RetrieveResult<T> RetrievedNull = new RetrieveResult<T>()
     {
         Flags = TransferResultFlags.Success | TransferResultFlags.Found | TransferResultFlags.RetrievedNullOrDefault,

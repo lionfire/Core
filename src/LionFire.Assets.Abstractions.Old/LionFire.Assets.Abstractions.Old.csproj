@@ -2,8 +2,8 @@
 
   <PropertyGroup>
     <TargetFramework>net6.0</TargetFramework> 
-    <AssemblyName>LionFire.Assets.Abstractions</AssemblyName>
-    <PackageId>LionFire.Assets.Abstractions</PackageId>
+    <AssemblyName>LionFire.Assets.Abstractions.Old</AssemblyName>
+    <PackageId>LionFire.Assets.Abstractions.Old</PackageId>
     <GenerateAssemblyConfigurationAttribute>false</GenerateAssemblyConfigurationAttribute>
     <GenerateAssemblyCompanyAttribute>false</GenerateAssemblyCompanyAttribute>
     <GenerateAssemblyProductAttribute>false</GenerateAssemblyProductAttribute>

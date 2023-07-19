@@ -141,7 +141,7 @@ public abstract class AsyncValue<TKey, TValue>
 
     #region Methods
 
-    public Task<ITransferResult> Set(CancellationToken cancellationToken = default) 
+    public Task<ITransferResult> Set(CancellationToken cancellationToken = default)
         => AsyncSetLogic<TValue>.Set(this, cancellationToken);
 
     public Task<ITransferResult> SetImpl(TValue? value, CancellationToken cancellationToken = default)
