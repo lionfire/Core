@@ -629,7 +629,10 @@ public class LockingMultiType : IMultiTyped, IMultiTypable // RENAME to MultiTyp
     #endregion
 }
 #endif
-public sealed class MultiTyped : IMultiTyped, IMultiTypable // RENAME to MultiTyped
+
+// TODO: Make sealed?
+// TODO: Supercede with FlexObject? Or is that too wide open?
+public class MultiTyped : IMultiTyped, IMultiTypable 
 {
     private object _lock = new object();
 
@@ -1024,6 +1027,7 @@ public sealed class MultiTyped : IMultiTyped, IMultiTypable // RENAME to MultiTy
 #endif
 
 #if false // OLD - AOT replacement is no longer used
+#endif
     // Type shouldn't be allowed to be null, but this is to allow null slotType, for auto AOT method replacement, since the AOT-Compatlyzer is limited
     [AotReplacement]
     public object AsTypeOrCreateDefault(Func<object> defaultValueFunc = null, Type slotType = null, Type type = null)
@@ -1041,12 +1045,13 @@ public sealed class MultiTyped : IMultiTyped, IMultiTypable // RENAME to MultiTy
 
             object defaultValue = defaultValueFunc != null ? defaultValueFunc() : (Activator.CreateInstance(type) ?? throw new Exception($"Failed to create {type.FullName}"));
 
-            _Set(defaultValue, slotType);
-            //SetType(defaultValue, slotType);
+            //_SetOrReplaceSingle(defaultValue, slotType);
+            SetType(defaultValue, slotType);
 
             return defaultValue;
         }
     }
+
 
     [AotReplacement]
     public object AsTypeOrCreateDefault(Type type /* = null */, Type slotType = null)
@@ -1063,7 +1068,6 @@ public sealed class MultiTyped : IMultiTyped, IMultiTypable // RENAME to MultiTy
             null,
             slotType, type);
     }
-#endif
 
     #endregion
 
@@ -1165,7 +1169,7 @@ public sealed class MultiTyped : IMultiTyped, IMultiTypable // RENAME to MultiTy
     /// Warning: Object can be reused after disposing.
     /// REVIEW - From Legacy  - Should this be disposable?
     /// </summary>
-    public void Dispose()
+    public virtual void Dispose()
     {
         ClearSubTypes(true, false);
     }
