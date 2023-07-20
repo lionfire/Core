@@ -13,7 +13,8 @@
 
   <ItemGroup>
     <PackageReference Include="ReactiveUI" />
-	<PackageReference Include="MorseCode.ITask" />
+		<PackageReference Include="ReactiveUI.Fody" />
+	  <PackageReference Include="MorseCode.ITask" />
   </ItemGroup>
 
   <ItemGroup>

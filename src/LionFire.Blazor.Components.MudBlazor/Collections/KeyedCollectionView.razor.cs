@@ -16,14 +16,6 @@ namespace LionFire.Blazor.Components;
 
 // TODO: Make this class as dumb as possible, moving testable logic to DictionaryVM
 
-public class Components : FlexObject, IComponentized
-{
-    public T TryGetComponent<T>() where T : class
-    {
-        this.GetType
-    }
-}
-
 /// <summary>
 /// TODO:
 /// 
@@ -38,6 +30,16 @@ public partial class KeyedCollectionView<TKey, TValue, TValueVM>
     , IGetsOrCreatesByType
     where TKey : notnull
 {
+    #region IComponentized
+
+    Components Components { get; set; } = new();
+
+    public T TryGetComponent<T>() where T : class
+    {
+        return ((IComponentized)Components).TryGetComponent<T>();
+    }
+    #endregion
+
     #region Parameters
 
     // Recommended:
@@ -318,6 +320,8 @@ public partial class KeyedCollectionView<TKey, TValue, TValueVM>
         throw new NotImplementedException();
         //ViewModel.Create.Execute(t).Subscribe();
     }
+
+    
 }
 
 
