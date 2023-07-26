@@ -46,7 +46,7 @@ namespace LionFire.Vos.Environment
 
         IFlexOwner IFlexOverlayOwner.ParentFlex => Inherit ? this.NextAncestor()?.Value : null;
 
-        public T TryGet<T>(string key) => FlexDictionary.QueryFlex(key).Get<T>();
+        public T TryGet<T>(string key) => FlexDictionary.QueryFlex(key).GetOrCreate<T>();
         
         public object this[string key]
         {

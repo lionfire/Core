@@ -445,7 +445,7 @@ public static class IDependencyContextX
 
     public static T GetRequiredService<T>(this IDependencyContext dependencyContext, IServiceProvider? tryFirstServiceProvider = null)
         => (T?)dependencyContext.GetService(typeof(T), tryFirstServiceProvider) ?? throw new DependencyMissingException(typeof(T).FullName);
-
+        
     public static object? GetService(this IDependencyContext dependencyContext, Type serviceType, IServiceProvider? tryFirstServiceProvider = null)
     {
         object? result = null;

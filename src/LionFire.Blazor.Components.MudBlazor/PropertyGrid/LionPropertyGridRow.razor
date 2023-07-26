@@ -24,7 +24,7 @@
             </div>
         </td>
         <td class="@("Value " + ViewModel.ValueClass)">
-            <PropertyEditor ViewModel="@ViewModel" />
+            <PropertyEditor ViewModel="@ViewModel" PropertyName="@MemberVM.MemberInfoVM.Name" />
         </td>
 
         <td class="dev">@MemberVM.MemberKind.ToString().Substring(0, 1)</td>

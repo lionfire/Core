@@ -18,7 +18,6 @@
   <ItemGroup>
     <ProjectReference Include="..\LionFire.Assets.Abstractions.Old\LionFire.Assets.Abstractions.Old.csproj" />
     <ProjectReference Include="..\LionFire.Assets.Abstractions\LionFire.Assets.Abstractions.csproj" />
-    <ProjectReference Include="..\LionFire.Assets.Old\LionFire.Assets.Old.csproj" />
     <ProjectReference Include="..\LionFire.Core\LionFire.Core.csproj" />
     <ProjectReference Include="..\LionFire.Data.Async.Slim\LionFire.Data.Async.Extras.csproj" />
     <ProjectReference Include="..\LionFire.Environment\LionFire.Environment.csproj" />
@@ -30,6 +29,7 @@
     <ProjectReference Include="..\LionFire.Referencing\LionFire.Referencing.csproj" />
     <ProjectReference Include="..\LionFire.Resolves\LionFire.Data.Async.csproj" />
     <ProjectReference Include="..\LionFire.Structures\LionFire.Structures.csproj" />
+		
   </ItemGroup>
 
 </Project>

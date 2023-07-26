@@ -23,6 +23,9 @@ public class FuncAsyncValue<TKey, TValue> : AsyncValue<TKey, TValue>
 
     protected override async ITask<IGetResult<TValue>> GetImpl(CancellationToken cancellationToken = default)
     {
+        if (Getter == null) return RetrieveResult<TValue>.NotInitialized;
+
+        //return RetrieveResult<TValue>.NotInitialized; // TEMP FIXME
         try
         {
             var value = await Getter(this.Key, cancellationToken).ConfigureAwait(false);

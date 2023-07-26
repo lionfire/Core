@@ -84,6 +84,11 @@ public struct RetrieveResult<T> : IGetResult<T>, IErrorResult // RENAME to GetRe
         Value = default,
         Error = ex,
     };
+    public static RetrieveResult<T> NotInitialized { get; } = new RetrieveResult<T>()
+    {
+        Flags = TransferResultFlags.Noop | TransferResultFlags.Indeterminate,
+        Value = default
+    };
 
     public static readonly RetrieveResult<T> RetrievedNull = new RetrieveResult<T>()
     {

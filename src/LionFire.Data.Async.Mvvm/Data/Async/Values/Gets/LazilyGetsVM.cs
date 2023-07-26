@@ -67,15 +67,20 @@ public abstract class LazilyGetsVM<T>
         //, canExecute: );
         //Get.ThrownExceptions.Subscribe(ex => this.Log().Error(ex, "Something went wrong"));
 
+        this.WhenAnyValue(r => r.Source).Select(s => s != null);
+
+
         #region GetCommand
         GetCommand = ReactiveCommand.CreateFromTask<Unit, IGetResult<T>>(
             _ => (Source ?? throw new ArgumentNullException(nameof(Source))).Get().AsTask(),
-            canExecute: Observable.Return(Source != null)
+            canExecute: this.WhenAnyValue(r => r.Source).Select(s => s != null)
+            //canExecute: Observable.Return(Source != null)
         //Observable.Create<bool>(o => { o.OnNext(gets != null); o.OnCompleted(); return Disposable.Empty; })
         );
         GetCommand.ThrownExceptions.Subscribe(ex => this.Log().Error(ex, "Something went wrong"));
         GetCommand.IsExecuting.ToPropertyEx(this, vm => vm.IsGetting, initialValue: false);
-        GetCommand.CanExecute.ToPropertyEx(this, vm => vm.CanGet, initialValue: false);
+        GetCommand.CanExecute.ToPropertyEx(this, vm => vm.CanGet, initialValue: true);
+
         #endregion
 
         #region GetIfNeededCommand

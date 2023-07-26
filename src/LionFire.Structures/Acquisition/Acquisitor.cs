@@ -30,7 +30,7 @@ public static class Acquisitor<TNode, TValue>
     private static TValue GetValue_Flex(TNode o)
     {
         IFlex f = (IFlex)o;
-        return f.Get<TValue>();
+        return f.GetOrCreate<TValue>();
     }
     private static void SetValue_Flex(TNode o, TValue value)
     {

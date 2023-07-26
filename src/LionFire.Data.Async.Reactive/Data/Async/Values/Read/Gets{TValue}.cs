@@ -20,7 +20,7 @@ public abstract class Gets<TValue>
 
     AsyncGetOptions IHasNonNullSettable<AsyncGetOptions>.Object { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
 
-    public virtual IEqualityComparer<TValue> EqualityComparer =>  AsyncGetOptions<TValue>.DefaultEqualityComparer;
+    public virtual IEqualityComparer<TValue> EqualityComparer => AsyncGetOptions<TValue>.DefaultEqualityComparer;
 
     #endregion
 
@@ -31,7 +31,8 @@ public abstract class Gets<TValue>
         GetOptions = DefaultOptions;
     }
 
-    protected Gets(AsyncGetOptions? options) {
+    protected Gets(AsyncGetOptions? options)
+    {
         GetOptions = options ?? DefaultOptions;
     }
 
@@ -39,15 +40,43 @@ public abstract class Gets<TValue>
 
     #region Value
 
-    public TValue? Value => ReadCacheValue;
-
-    public TValue? ReadCacheValue
+    public TValue? Value
     {
         [Blocking(Alternative = nameof(GetIfNeeded))]
-        get => ReadCacheValue ??= GetIfNeeded().Result.Value;
-        protected set => this.RaiseAndSetIfChanged(ref readCacheValue, value);
+        get
+        {
+            var result = ReadCacheValue;
+            if (result == null)
+            {
+                result = GetIfNeeded().Result.Value; // BLOCKING
+                ReadCacheValue = result;
+            }
+            return result;
+        }
     }
-    private TValue? readCacheValue;
+
+    [Reactive]
+    public TValue? ReadCacheValue { get; set; }
+
+    //public TValue? ReadCacheValue
+    //{
+    //    [Blocking(Alternative = nameof(GetIfNeeded))]
+    //    get
+    //    {
+    //        var result = readCacheValue;
+    //        if (result == null)
+    //        {
+    //            result = GetIfNeeded().Result.Value; // BLOCKING
+    //            ReadCacheValue = result;
+    //        }
+    //        return result;
+    //    }
+    //    protected set => this.RaiseAndSetIfChanged(ref readCacheValue, value);
+    //}
+    //private TValue? readCacheValue;
+
+    //public string ReadCacheValue => readCacheValue.Value;
+    //readonly ObservableAsPropertyHelper<TValue?> readCacheValue;
 
     [Reactive]
     public bool HasValue { get; private set; }
@@ -56,7 +85,7 @@ public abstract class Gets<TValue>
     public void Discard() => DiscardValue();
     public void DiscardValue()
     {
-        readCacheValue = default;
+        ReadCacheValue = default;
         HasValue = false;
     }
 

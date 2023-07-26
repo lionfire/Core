@@ -41,7 +41,7 @@ public static class IFlexExtensions
         }
         else
         {
-            flex.Meta().Get<FlexOptions>();
+            flex.Meta().GetOrCreate<FlexOptions>();
         }
         return null;
     }
@@ -133,7 +133,7 @@ public static class IFlexExtensions
     /// <param name="throwIfMissing">Use this to guarantee the return value won't be nulll.  If createIfMissing is true, an attempt will be made to create via the createFactory, and if that result is default(T), a CreationFailureException will be thrown.</param>
     /// <param name="createArgs">Ignored if createFactory is specified</param>
     /// <returns></returns>
-    public static T Get<T>(this IFlex flex, string name = null, Func<T> createFactory = null, bool throwIfMissing = true, object[] createArgs = null)
+    public static T GetOrCreate<T>(this IFlex flex, string name = null, Func<T> createFactory = null, bool throwIfMissing = true, object[] createArgs = null)
     {
 
         var result = Query<T>(flex, name);
@@ -154,12 +154,12 @@ public static class IFlexExtensions
         return result;
     }
 
-    public static T Query<T>(this IFlex flex, string name = null)
+    public static T Query<T>(this IFlex flex, string name = null) // RENAME TryGet
     {
         if (Query<T>(flex, out var result, name)) { return result; }
         return default;
     }
-    public static bool Query<T>(this IFlex flex, out T result, string name = null)
+    public static bool Query<T>(this IFlex flex, out T result, string name = null) // RENAME TryGet
     {
         if (name == null)
         {
@@ -185,7 +185,7 @@ public static class IFlexExtensions
 
     #region Convenience / Backporting
 
-    public static T AsTypeOrCreateDefault<T>(this IFlex flex, Func<T> factory = null) => flex.Get(createFactory: factory, throwIfMissing: true);
+    public static T AsTypeOrCreateDefault<T>(this IFlex flex, Func<T> factory = null) => flex.GetOrCreate(createFactory: factory, throwIfMissing: true);
 
     #endregion
 
@@ -234,7 +234,7 @@ public static class IFlexExtensions
     // TODO: Different Set behavior depending on whether IFlex is single or multi typed.
     public static void Set_Old<T>(this IFlex flex, T value, bool allowReplace = true)
     {
-        if (flex.Get<T>().IsDefault())
+        if (flex.GetOrCreate<T>().IsDefault())
         {
             if (allowReplace) flex.Set<T>(value);
             else throw new AlreadySetException();

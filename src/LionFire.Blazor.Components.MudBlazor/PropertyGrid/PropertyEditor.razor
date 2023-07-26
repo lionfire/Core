@@ -45,7 +45,8 @@ else
 @code {
 
     [Parameter]
-    public PropertyVM ViewModel { get; set; }
+    public PropertyVM? ViewModel { get; set; }
+
 
     public Type? EditorType => ViewTypeProvider.GetViewType(ViewModel.DataType) ?? FallbackEditorType;
 

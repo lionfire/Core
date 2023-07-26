@@ -91,7 +91,7 @@ namespace Packages_
                         Assert.False(await dataReference2.GetReadHandle<string>().Exists());
 
                         // How to get a Vob?  VobReference.ToVob() might be nice.  How about VobReference.ToVob().AsType<PackageManager>()
-                        var packageProvider = "/`/TestPlugins".GetVob().Get<PackageProvider>();
+                        var packageProvider = "/`/TestPlugins".GetVob().GetOrCreate<PackageProvider>();
 
                         //Assert.True(pluginManager.AvailablePackages.Contains("plugin1")); // TODO
                         //Assert.True(pluginManager.AvailablePackages.Contains("plugin2"));
