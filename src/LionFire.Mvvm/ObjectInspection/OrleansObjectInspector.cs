@@ -35,7 +35,7 @@ public class OrleansObjectInspector : IObjectInspector
                 var parameter = mi.GetParameters()[0];
                 if (parameter.ParameterType != valueType) continue;
 
-                customObjectInspectorInfo.MemberInfoVMs.Add(new AsyncPropertyInfoVM
+                customObjectInspectorInfo.MemberInfoVMs.Add(new AsyncPropertyInfoVM(mi.Name, mi.ReturnType)
                 {
                     Getter = readMethodInfo,
                     Setter = mi,
@@ -46,30 +46,56 @@ public class OrleansObjectInspector : IObjectInspector
         });
     }
 
-    public IEnumerable<InspectedObjectItem> GetInspectedObjects(object obj)
+    public IEnumerable<object> GetInspectedObjects(object obj)
     {
         if (obj == null) yield break;
         var type = obj.GetType();
         var customObjectInspectorInfo = GetInfo(type);
 
         var customObjectInspector = new CustomObjectInspector(obj, customObjectInspectorInfo);
-        throw new NotImplementedException();
+
+        foreach (var x in customObjectInspectorInfo.MemberInfoVMs)
+        {
+            if (x.CanRead)
+            {
+                if (x.CanWrite)
+                {
+                    new DataMemberVM
+                }
+                else
+                {
+
+                }
+            }
+            else if (x.CanWrite)
+            {
+                throw new NotImplementedException("Write only");
+            }
+        }
+        yield return customObjectInspector;
     }
 }
 
 public class CustomObjectInspectorInfo
 {
-    public List<MemberInfoVM> MemberInfoVMs { get; set; }
+    public List<IMemberInfoVM> MemberInfoVMs { get; set; }
 }
 
-public class CustomObjectInspector
+public interface ICustomObjectInspector
 {
-    public CustomObjectInspector(object sourceObject, CustomObjectInspectorInfo customObjectInspectorInfo) {
+    List<MemberVM> MemberVMs { get; }
+    object SourceObject { get; }
+}
+
+public class CustomObjectInspector : ICustomObjectInspector
+{
+    public CustomObjectInspector(object sourceObject, CustomObjectInspectorInfo customObjectInspectorInfo)
+    {
         SourceObject = sourceObject;
         Info = customObjectInspectorInfo;
     }
 
-    public List<MemberVM> MemberVMs { get; set; }
+    public List<MemberVM> MemberVMs { get; } = new();
     public object SourceObject { get; }
     public CustomObjectInspectorInfo Info { get; }
 }

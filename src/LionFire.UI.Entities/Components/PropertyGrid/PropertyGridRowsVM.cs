@@ -1,5 +1,6 @@
 ﻿using ReactiveUI;
 using LionFire.UI.Components.PropertyGrid;
+using LionFire.Mvvm.ObjectInspection;
 
 namespace LionFire.UI.Components;
 

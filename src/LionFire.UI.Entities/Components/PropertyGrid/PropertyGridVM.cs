@@ -1,13 +1,10 @@
 ﻿using LionFire.Mvvm;
-using LionFire.UI.Metadata;
 using ReactiveUI;
 using LionFire.UI.Components.PropertyGrid;
 using LionFire.Mvvm.ObjectInspection;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace LionFire.UI.Components;
-
-
 
 public class PropertyGridVM : ReactiveObject, IObjectEditorVM
 {

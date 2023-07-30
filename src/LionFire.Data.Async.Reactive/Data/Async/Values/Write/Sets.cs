@@ -4,7 +4,7 @@ using System.Reactive.Subjects;
 
 namespace LionFire.Data;
 
-public abstract class AsyncSets<TValue>
+public abstract class Sets<TValue>
     : ReactiveObject
     , ISetsRx<TValue>
 {
@@ -27,9 +27,9 @@ public abstract class AsyncSets<TValue>
 
     #region Lifecycle
 
-    public AsyncSets() : this(null) { }
+    public Sets() : this(null) { }
 
-    public AsyncSets(AsyncSetOptions? options)
+    public Sets(AsyncSetOptions? options)
     {
         Options = options ?? AsyncSetOptions<TValue>.Default;
     }

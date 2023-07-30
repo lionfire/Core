@@ -22,7 +22,7 @@ internal interface ISetsInternal<TValue> : IAsyncValueRx<TValue>
     Task<ITransferResult> SetImpl(TValue? value, CancellationToken cancellationToken = default);
 }
 
-public abstract class AsyncValue<TKey, TValue>
+public abstract class Value<TKey, TValue>
     : Gets<TKey, TValue>
     , IAsyncValueRx<TValue>
     , ISetsInternal<TValue>
@@ -62,7 +62,7 @@ public abstract class AsyncValue<TKey, TValue>
 
     #region Lifecycle
 
-    public AsyncValue(TKey key, AsyncValueOptions? options = null) : base(key, options?.Get ?? DefaultOptions.Get)
+    public Value(TKey key, AsyncValueOptions? options = null) : base(key, options?.Get ?? DefaultOptions.Get)
     {
         Options = options ?? AsyncObjectKey?.Options.ValueOptions ?? DefaultOptions;
 
@@ -83,7 +83,7 @@ public abstract class AsyncValue<TKey, TValue>
     public override ITask<IGetResult<TValue>> Get(CancellationToken cancellationToken = default)
     {
         var setState = SetState;
-        if (AsyncSetLogic<TValue>.IsSetStateSetting(setState) && Options.OptimisticGetWhileSetting)
+        if (SetsLogic<TValue>.IsSetStateSetting(setState) && Options.OptimisticGetWhileSetting)
         {
             // return Optimistically
             return Task.FromResult<IGetResult<TValue>>(new OptimisticGetResult<TValue>(setState.DesiredValue)).AsITask();
@@ -122,7 +122,7 @@ public abstract class AsyncValue<TKey, TValue>
 
     #region Status
 
-    public bool IsSetting => AsyncSetLogic<TValue>.IsSetStateSetting(SetState);
+    public bool IsSetting => SetsLogic<TValue>.IsSetStateSetting(SetState);
 
     /// <remarks>
     /// locked by: setLock
@@ -134,7 +134,7 @@ public abstract class AsyncValue<TKey, TValue>
     #region Events
 
     public IObservable<ISetOperation<TValue>> Sets => sets;
-    private BehaviorSubject<ISetOperation<TValue>> sets = AsyncSetLogic<TValue>.InitSets;
+    private BehaviorSubject<ISetOperation<TValue>> sets = SetsLogic<TValue>.InitSets;
     BehaviorSubject<ISetOperation<TValue>> ISetsInternal<TValue>.sets => sets;
 
     #endregion
@@ -142,7 +142,7 @@ public abstract class AsyncValue<TKey, TValue>
     #region Methods
 
     public Task<ITransferResult> Set(CancellationToken cancellationToken = default)
-        => AsyncSetLogic<TValue>.Set(this, cancellationToken);
+        => SetsLogic<TValue>.Set(this, cancellationToken);
 
     public Task<ITransferResult> SetImpl(TValue? value, CancellationToken cancellationToken = default)
         => SetImpl(Key, value, cancellationToken);
@@ -162,7 +162,7 @@ public abstract class AsyncValue<TKey, TValue>
         var target = Key;
         ArgumentNullException.ThrowIfNull(target, nameof(Key));
 
-        return AsyncSetLogic<TValue>.Set(this, value, cancellationToken);
+        return SetsLogic<TValue>.Set(this, value, cancellationToken);
     }
 
     #endregion

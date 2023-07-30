@@ -1,11 +1,14 @@
 ﻿using ReactiveUI;
 using LionFire.UI.Components.PropertyGrid;
 using Newtonsoft.Json.Linq;
+using LionFire.Mvvm.ObjectInspection;
+using LionFire.Data.Gets;
 
 namespace LionFire.UI.Components;
 
 public class PropertyVM : ReactiveObject
 {
+
     #region Relationships
 
     public IObjectEditorVM? ObjectEditorVM { get; set; }
@@ -14,10 +17,24 @@ public class PropertyVM : ReactiveObject
 
     #region MemberVM
 
-    public MemberVM MemberVM { get; set; }
+
+    public MemberVM? MemberVM
+    {
+        get => memberVM; 
+        set
+        {
+            memberVM = value;
+            LazilyGets = memberVM as ILazilyGets<object>;
+        }
+    }
+    private MemberVM? memberVM;
+
     public IDataMemberVM? DataMemberVM => MemberVM as IDataMemberVM;
 
     #region Derived
+
+    public ILazilyGets<object>? LazilyGets { get; private set; }
+    public Value<object>? AsyncSets { get; private set; }
 
     public bool ReadOnly => ObjectEditorVM?.ReadOnly == true;
 
@@ -26,13 +43,13 @@ public class PropertyVM : ReactiveObject
         if (type.IsGenericType)
         {
             var generic = type.GetGenericTypeDefinition();
-            if(generic == typeof(Nullable<>))
+            if (generic == typeof(Nullable<>))
             {
                 return EditorExistsForType(type.GetGenericArguments()[0]);
             }
         }
 
-        if (type == typeof(bool) 
+        if (type == typeof(bool)
             || type == typeof(string)
             || type == typeof(int)
             || type == typeof(uint)

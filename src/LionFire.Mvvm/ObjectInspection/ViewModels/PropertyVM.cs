@@ -23,9 +23,11 @@ public class PropertyVM : DataMemberVM<PropertyInfo, PropertyInfoVM>
     public override Type DataType => DataMemberInfo.PropertyType;
 }
 
-public class AsyncPropertyInfoVM : DataMemberInfoVM
+public class AsyncPropertyInfoVM : CustomMemberInfoVM
 {
-    public Type PropertyType { get; init; }
+    public AsyncPropertyInfoVM(string name, Type type) : base(name, type)
+    {
+    }
 
     public MethodInfo? Getter { get; init; }
     public bool Preload { get; set; }
@@ -43,7 +45,7 @@ public class AsyncPropertyVM : DataMemberVM<PropertyInfo, PropertyInfoVM>
 
     public override PropertyInfoVM DataMemberInfoVM => throw new NotImplementedException();
 
-    public override Type DataType => AsyncPropertyInfoVM.PropertyType;
+    public override Type DataType => AsyncPropertyInfoVM.Type;
 
     public override object? GetValue()
     {

@@ -8,7 +8,7 @@ public class SetsForKeyOptions
 
 
 public abstract class Sets<TKey, TValue>
-	: AsyncSets<TValue>
+	: Sets<TValue>
 {
     #region Options
 

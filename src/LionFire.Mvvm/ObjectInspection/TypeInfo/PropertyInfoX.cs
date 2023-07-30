@@ -1,6 +1,6 @@
 ﻿using System.Reflection;
 
-namespace LionFire.UI.Components.PropertyGrid;
+namespace LionFire.Mvvm.ObjectInspection;
 
 public static class PropertyInfoX
 {

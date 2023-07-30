@@ -1,12 +1,11 @@
 ﻿using LionFire.Data.Reactive;
 using LionFire.Data.Sets;
-using LionFire.Results;
 using System.ComponentModel;
 using System.Reactive.Subjects;
 
 namespace LionFire.Data;
 
-public abstract class AsyncValue<TValue>
+public abstract class Value<TValue>
     : Gets<TValue>
     , IAsyncValueRx<TValue>
     , ISetsRx<TValue>
@@ -29,12 +28,12 @@ public abstract class AsyncValue<TValue>
 
     #region Lifecycle
 
-    public AsyncValue() : base(DefaultOptions.Get)
+    public Value() : base(DefaultOptions.Get)
     {
         Options = DefaultOptions;
     }
 
-    public AsyncValue(AsyncValueOptions options) : base(options.Get)
+    public Value(AsyncValueOptions options) : base(options.Get)
     {
         Options = options;
 
@@ -62,7 +61,7 @@ public abstract class AsyncValue<TValue>
     public override ITask<IGetResult<TValue>> Get(CancellationToken cancellationToken = default)
     {
         var setState = SetState;
-        if (AsyncSetLogic<TValue>.IsSetStateSetting(setState) && Options.OptimisticGetWhileSetting)
+        if (SetsLogic<TValue>.IsSetStateSetting(setState) && Options.OptimisticGetWhileSetting)
         {
             // return Optimistically
             return Task.FromResult<IGetResult<TValue>>(new OptimisticGetResult<TValue>(setState.DesiredValue)).AsITask();
@@ -104,7 +103,7 @@ public abstract class AsyncValue<TValue>
 
     [Browsable(false)]
     public IObservable<ISetOperation<TValue>> Sets => sets;
-    private BehaviorSubject<ISetOperation<TValue>> sets = AsyncSetLogic<TValue>.InitSets;
+    private BehaviorSubject<ISetOperation<TValue>> sets = SetsLogic<TValue>.InitSets;
     BehaviorSubject<ISetOperation<TValue>> ISetsInternal<TValue>.sets => sets;
 
     #endregion
@@ -114,10 +113,10 @@ public abstract class AsyncValue<TValue>
     public abstract Task<ITransferResult> SetImpl(TValue? value, CancellationToken cancellationToken = default);
 
     public Task<ITransferResult> Set(CancellationToken cancellationToken = default)
-        => AsyncSetLogic<TValue>.Set(this, cancellationToken);
+        => SetsLogic<TValue>.Set(this, cancellationToken);
 
     public Task<ITransferResult> Set(TValue? value, CancellationToken cancellationToken = default)
-        => AsyncSetLogic<TValue>.Set(this, value, cancellationToken);
+        => SetsLogic<TValue>.Set(this, value, cancellationToken);
 
     #endregion
 

@@ -11,7 +11,8 @@
     <BaseIntermediateOutputPath>$(BuildRoot)\obj\$(Configuration)\$(Platform)\$(MSBuildProjectName)\</BaseIntermediateOutputPath>
     <BaseOutputPath>$(BuildRoot)\bin\$(Configuration)\$(Platform)\$(MSBuildProjectName)\</BaseOutputPath>
     <MSBuildProjectExtensionsPath>z:\build\obj\$(MSBuildProjectName)\</MSBuildProjectExtensionsPath>
-    <PackageOutputDir>z:\nuget</PackageOutputDir>
+		
+		<PackageOutputDir>z:\nuget</PackageOutputDir>
 
     <!-- <NeutralLanguage>English (United States)</NeutralLanguage> -->
     <LangVersion>latest</LangVersion>

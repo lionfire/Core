@@ -14,8 +14,14 @@ public abstract class DataMemberVM<TMemberInfo, TMemberInfoVM> : MemberVM, IData
 
     public abstract TMemberInfoVM DataMemberInfoVM { get; }
 
+    #region State
+
+    // REVIEW - may be AsyncValue or AsyncGets?
     [Reactive]
     public AsyncVM<object> Value { get; set; }
+
+    #endregion
+
 
     public Exception? GetException { get; set; }
     public abstract object? GetValue();

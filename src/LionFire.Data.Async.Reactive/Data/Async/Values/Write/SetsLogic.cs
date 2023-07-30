@@ -11,7 +11,7 @@ using System.Threading.Tasks;
 
 namespace LionFire.Data.Sets;
 
-internal static class AsyncSetLogic<TValue>
+internal static class SetsLogic<TValue>
 {
     internal static BehaviorSubject<ISetOperation<TValue>> InitSets => new(new SetOperation<TValue>(default, Task.FromResult<ITransferResult>(TransferResult.Initialized).AsITask()));
 
@@ -43,7 +43,7 @@ internal static class AsyncSetLogic<TValue>
 
         lock (@this.setLock)
         {
-            if (AsyncSetLogic<TValue>.IsSetStateSetting(@this.SetState)) goto start;
+            if (SetsLogic<TValue>.IsSetStateSetting(@this.SetState)) goto start;
             @this.sets.OnNext(new SetOperation<TValue>(value, @this.SetImpl(value, cancellationToken).AsITask()));
         }
         await @this.SetState.Task.ConfigureAwait(false);
