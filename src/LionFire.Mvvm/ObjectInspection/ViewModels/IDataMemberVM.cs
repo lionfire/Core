@@ -1,7 +1,12 @@
 ﻿using LionFire.Mvvm;
 using System.Reflection;
 
-namespace LionFire.UI.Components.PropertyGrid;
+namespace LionFire.Mvvm.ObjectInspection;
+
+public interface IDataMemberVMBase
+{
+
+}
 
 public interface IDataMemberVM
 {

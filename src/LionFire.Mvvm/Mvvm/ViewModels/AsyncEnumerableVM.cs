@@ -1,4 +1,5 @@
-﻿namespace LionFire.UI.Components.PropertyGrid;
+﻿
+namespace LionFire.Mvvm.ObjectInspection;
 
 public class AsyncEnumerableVM : MemberVM//<PropertyInfo>
 {

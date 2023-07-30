@@ -1,5 +1,6 @@
 ﻿@inherits ReactiveUI.Blazor.ReactiveInjectableComponentBase<PropertyGridVM>
-
+@inject IServiceProvider ServiceProvider
+@using LionFire.Mvvm.ObjectInspection;
 @using LionFire.UI.Components.PropertyGrid
 @using LionFire.Blazor.Components.MudBlazor_.PropertyGrid
 
@@ -18,15 +19,22 @@
 @if (ViewModel.ShowFilterTypes)
 {
     <button class=@("toggle " + (ViewModel.ShowDataMembers ? "selected" : ""))
-    @onclick=@(()=>ViewModel.ShowDataMembers ^= true)>
-        D
+    @onclick=@(()=>ViewModel.ShowDataMembers ^= true) title="Show Data Members">
+        @if (ViewModel.ShowDataMembers)
+        {
+            <span>D</span>
+        }
+        else
+        {
+            <span>d</span>
+        }
     </button>
     <button class=@("toggle " + (ViewModel.ShowEvents ? "selected" : ""))
-    @onclick=@(()=>ViewModel.ShowEvents ^= true)>
+    @onclick=@(()=>ViewModel.ShowEvents ^= true) title="Show Events">
         E
     </button>
     <button class=@("toggle " + (ViewModel.ShowMethods ? "selected" : ""))
-    @onclick=@(()=>ViewModel.ShowMethods ^= true)>
+    @onclick=@(()=>ViewModel.ShowMethods ^= true) title="Show Methods">
         M
     </button>
 }
@@ -48,9 +56,12 @@
     [Parameter]
     public bool ReadOnly { get; set; }
 
+
     protected override Task OnParametersSetAsync()
     {
-        ViewModel.Object = Object;
+        ViewModel.SourceObject = Object;
+
+
         ViewModel.ReadOnly = ReadOnly;
 
         return base.OnParametersSetAsync();

@@ -2,7 +2,7 @@
 
 public interface IObjectEditorVM
 {
-    object Object { get; }
+    object SourceObject { get; }
 
     bool ReadOnly { get; }
 

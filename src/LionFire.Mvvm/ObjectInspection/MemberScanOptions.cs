@@ -1,6 +1,6 @@
 ﻿using System.Reflection;
 
-namespace LionFire.UI.Metadata;
+namespace LionFire.Mvvm.ObjectInspection;
 
 public class MemberScanOptions
 {

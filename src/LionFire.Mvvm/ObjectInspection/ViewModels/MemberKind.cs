@@ -1,4 +1,4 @@
-﻿namespace LionFire.UI.Components.PropertyGrid;
+﻿namespace LionFire.Mvvm.ObjectInspection;
 
 public enum MemberKind
 {

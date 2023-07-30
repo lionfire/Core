@@ -1,8 +1,38 @@
-﻿using System.Reflection;
+﻿using LionFire.Metadata;
+using System.Reflection;
+using LionFire.ExtensionMethods.Metadata;
 
-namespace LionFire.UI.Metadata;
+namespace LionFire.Mvvm.ObjectInspection;
 
-public class MemberInfoVM
+public interface IMemberInfoVM
+{
+    string Name { get; }
+    Type Type { get; }
+
+    public int Order { get; set; }
+
+    public virtual bool CanRead => false;
+    public virtual bool CanWrite => false;
+}
+
+public class CustomMemberInfoVM : IMemberInfoVM
+{
+    public CustomMemberInfoVM(string name, Type type)
+    {
+        Name = name;
+        Type = type;
+    }
+
+    public string Name { get; }
+    public Type Type { get; }
+
+    public int Order { get; set; }
+
+    public virtual bool CanRead => false;
+    public virtual bool CanWrite => false;
+}
+
+public class MemberInfoVM : IMemberInfoVM
 {
     #region Relationships
 
@@ -37,6 +67,8 @@ public class MemberInfoVM
     public virtual bool CanRead => false;
     public virtual bool CanWrite => false;
 
+    #region Downcast // REVIEW - does this belong here?
+
     public virtual object? GetValue(object obj)
     {
         return MemberInfo switch
@@ -44,36 +76,12 @@ public class MemberInfoVM
             PropertyInfo pi => pi.GetValue(obj),
             FieldInfo fi => fi.GetValue(obj),
             //MethodInfo mi => mi.Invoke(obj, null),
-            _ => throw new NotImplementedException(),
+            _ => throw new NotSupportedException(),
         };
     }
 
-    /// <summary>
-    /// Display text for the Type of the member
-    /// </summary>
-    public string DisplayType
-    {
-        get
-        {
-            var type = Type;
-            var genericTypeDefinition = type.IsGenericType ? type.GetGenericTypeDefinition() : null;
-            if (genericTypeDefinition == null) return type.Name;
+    #endregion
 
-            if (genericTypeDefinition == typeof(IObservable<>))
-            {
-                return type.GetGenericArguments()[0].Name;
-            }
-            else if (genericTypeDefinition == typeof(IAsyncEnumerable<>))
-            {
-                return type.GetGenericArguments()[0].Name;
-            }
-            else if (genericTypeDefinition.Name == "SettablePropertyAsync`2" || genericTypeDefinition.Name == "PropertyAsync`2")
-            {
-                return type.GetGenericArguments()[1].Name;
-            }
-            return type.Name;
-        }
-    }
 
     /// <summary>
     /// Informational flags about the Type of the member

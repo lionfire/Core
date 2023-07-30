@@ -5,6 +5,7 @@ using LionFire.Metadata;
 
 namespace LionFire.Mvvm;
 
+// REVIEW - isn't this a duplicate of AsyncValue?
 public abstract class AsyncVM<T> : ReactiveObject, IDependsOn<T>, IViewModel<T>
     where T : class
 {

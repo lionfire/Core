@@ -1,5 +1,6 @@
 ﻿@inherits ReactiveUI.Blazor.ReactiveInjectableComponentBase<PropertyGridRowVM>
 
+@using LionFire.Mvvm.ObjectInspection;
 @using LionFire.UI.Components.PropertyGrid;
 @using ReactiveUI;
 
@@ -24,14 +25,14 @@
             </div>
         </td>
         <td class="@("Value " + ViewModel.ValueClass)">
-            <PropertyEditor ViewModel="@ViewModel" PropertyName="@MemberVM.MemberInfoVM.Name" />
+            <PropertyEditor ViewModel="@ViewModel"  />
         </td>
 
         <td class="dev">@MemberVM.MemberKind.ToString().Substring(0, 1)</td>
         <td class="dev">@MemberVM.GetType().Name.Substring(0, 1)</td>
         <td class="dev">@MemberVM.MemberInfoVM.TypeFlags</td>
         <td class="dev Namespace">@MemberVM.MemberInfoVM.Type.Namespace</td>
-        <td class="dev">@MemberVM.MemberInfoVM.DisplayType</td>
+        <td class="dev">@TypeNameUtils.DisplayTypeName(MemberVM.MemberInfoVM.Type)</td>
         <td class="dev">
             @if (ShowValueType)
             {

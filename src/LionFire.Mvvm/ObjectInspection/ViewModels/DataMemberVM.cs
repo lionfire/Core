@@ -1,8 +1,7 @@
 ﻿using LionFire.Mvvm;
-using LionFire.UI.Metadata;
 using System.Reflection;
 
-namespace LionFire.UI.Components.PropertyGrid;
+namespace LionFire.Mvvm.ObjectInspection;
 
 // For Fields or Properties
 public abstract class DataMemberVM<TMemberInfo, TMemberInfoVM> : MemberVM, IDataMemberVM

@@ -1,8 +1,6 @@
-﻿using LionFire.UI.Metadata;
-using System.Reflection;
+﻿using System.Reflection;
 
-namespace LionFire.UI.Components.PropertyGrid;
-
+namespace LionFire.Mvvm.ObjectInspection;
 public class FieldVM : DataMemberVM<FieldInfo, FieldInfoVM>
 {
     public override FieldInfo DataMemberInfo => DataMemberInfoVM.FieldInfo;

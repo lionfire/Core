@@ -1,5 +1,4 @@
-﻿namespace LionFire.UI.Components.PropertyGrid;
-
+﻿namespace LionFire.Mvvm.ObjectInspection;
 public class EventVM : MemberVM//<EventInfo>
 {
     public override MemberKind MemberKind => MemberKind.Event;

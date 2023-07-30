@@ -1,6 +1,6 @@
 ﻿using System.Collections.Concurrent;
 
-namespace LionFire.UI.Metadata;
+namespace LionFire.Mvvm.ObjectInspection;
 
 public static class TypeInteractionModels
 {

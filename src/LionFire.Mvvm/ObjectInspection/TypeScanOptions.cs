@@ -1,4 +1,4 @@
-﻿namespace LionFire.UI.Metadata;
+﻿namespace LionFire.Mvvm.ObjectInspection;
 
 public class TypeScanOptions
 {
@@ -7,7 +7,7 @@ public class TypeScanOptions
     public static Func<TypeScanOptions> CreateDefault { get; set; } = () =>
         {
             var o = new TypeScanOptions();
-            o.Methods.Enabled = false;
+            //o.Methods.Enabled = false;
             return o;
         };
 

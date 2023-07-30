@@ -1,7 +1,7 @@
-﻿using LionFire.UI.Metadata;
+﻿using LionFire.Mvvm.ObjectInspection;
 using System.Reflection;
 
-namespace LionFire.UI.Components.PropertyGrid;
+namespace LionFire.Mvvm.ObjectInspection;
 
 public class IndexPropertyVM : DataMemberVM<PropertyInfo, IndexPropertyInfoVM>
 {

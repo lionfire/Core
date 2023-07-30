@@ -1,4 +1,5 @@
 ﻿using LionFire.Mvvm;
+using LionFire.Mvvm.ObjectInspection;
 using LionFire.Types;
 using LionFire.Types.Scanning;
 using Microsoft.Extensions.DependencyInjection;
@@ -14,6 +15,7 @@ public static class MvvmHostingX
             .UseMicrosoftDIForReactiveUI()
             .AddSingleton<ViewModelTypeRegistry>()
             .AddHostedService(s=>s.GetRequiredService<ViewModelTypeRegistry>())
+            .AddSingleton<ObjectInspectorService>()
             .If(viewModelAssemblies.Length > 0, s => s.Configure<ViewModelConfiguration>(c => c.TypeScanOptions.AssemblyWhitelist = viewModelAssemblies))
             .AddSingleton<IViewModelProvider, CompoundViewModelProvider>()
 

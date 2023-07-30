@@ -1,9 +1,7 @@
-﻿using LionFire.UI.Metadata;
-using ReactiveUI;
-using System;
-using System.Reflection;
+﻿using System.Reflection;
 
-namespace LionFire.UI.Components.PropertyGrid;
+namespace LionFire.Mvvm.ObjectInspection; 
+
 public abstract class MemberVM : ReactiveObject
 {
     #region (Static)

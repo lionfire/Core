@@ -65,3 +65,10 @@ table.quickgrid {
 .Value.number {
     color: #5f5fcb;
 }
+
+button:not(.selected) {
+    border: 1px solid #111;
+}
+button.selected {
+    border: 1px solid #ddd;
+}

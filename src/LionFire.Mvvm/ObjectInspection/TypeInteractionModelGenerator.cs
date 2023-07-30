@@ -2,7 +2,7 @@
 using System.Reflection;
 using System.Linq;
 
-namespace LionFire.UI.Metadata;
+namespace LionFire.Mvvm.ObjectInspection;
 
 public static class TypeInteractionModelGenerator
 {
@@ -61,6 +61,8 @@ public static class TypeInteractionModelGenerator
         {
             if (!memberTypeOptions.Enabled) return;
 
+            HashSet<string>? overlapping = null;
+
             foreach (var mi in get(memberTypeOptions).Where(mi => !ShouldIgnore(mi)))
             {
                 var memberVM = vm(mi);
@@ -80,7 +82,25 @@ public static class TypeInteractionModelGenerator
                 }
                 else
                 {
-                    unordered.Add(mi.Name, memberVM);
+                    var name = mi.Name;
+                    if (unordered.ContainsKey(name) || overlapping?.Contains(name) == true)
+                    {
+                        overlapping ??= new();
+                        overlapping.Add(name);
+
+                        if (mi is MethodInfo methodInfo)
+                        {
+                            name = NameForMethodInfo(methodInfo); // TODO: this fails if two overloads have matching Type names (fallback to Fullname or something else)
+                        }
+                        if (unordered.Remove(name, out var existing))
+                        {
+                            unordered.Add(existing.MemberInfo is MethodInfo ? NameForMethodInfo((MethodInfo)existing.MemberInfo) : name, existing);
+                        }
+                        #region (local) Methods
+                        string NameForMethodInfo(MethodInfo methodInfo) => $"{name}({string.Join(',', methodInfo.GetParameters().Select(pi => pi.ParameterType.Name))})";
+                        #endregion
+                    }
+                    unordered.Add(name, memberVM);
                 }
             }
         }

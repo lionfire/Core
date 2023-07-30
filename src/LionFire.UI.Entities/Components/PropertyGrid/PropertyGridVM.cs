@@ -2,43 +2,52 @@
 using LionFire.UI.Metadata;
 using ReactiveUI;
 using LionFire.UI.Components.PropertyGrid;
+using LionFire.Mvvm.ObjectInspection;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace LionFire.UI.Components;
+
+
 
 public class PropertyGridVM : ReactiveObject, IObjectEditorVM
 {
     [Reactive]
-    public object Object { get; set; }
+    public object? SourceObject { get; set; }
+
+    [Reactive]
+    public InspectedObjectVM? InspectedObjectVM { get; set; }
 
     public bool ReadOnly { get; set; }
 
     public int MaxDepth { get; set; } = 4; // TEMP TODO: change to something like 15, maybe
 
     //public EditApproach EditApproach { get; set; } = EditApproach.InPlace;
-    
+
     public RelevanceFlags ReadRelevance { get; set; } = RelevanceFlags.DefaultForUser;
     public RelevanceFlags WriteRelevance { get; set; } = RelevanceFlags.DefaultForUser;
 
     #region Derived
 
-    public TypeInteractionModel? TypeModel => TypeInteractionModels.Get(Object?.GetType());
+    public TypeInteractionModel? TypeModel => TypeInteractionModels.Get(SourceObject?.GetType());
 
     #endregion
 
     #region Lifecycle
 
-    public PropertyGridVM(IViewModelProvider viewModelProvider)
+    public PropertyGridVM(IViewModelProvider viewModelProvider, IServiceProvider serviceProvider)
     {
-        this.WhenAnyValue(t => t.Object)
-            .Subscribe(change => Init(change));
+        this.WhenAnyValue(t => t.SourceObject)
+            .Subscribe(o =>
+            {
+
+                InspectedObjectVM = o == null ? null : ActivatorUtilities.CreateInstance<InspectedObjectVM>(ServiceProvider, o);
+
+                MemberVMs = MemberVM.GetFor(InspectedObjectVM?.EffectiveObject); // TypeModel?.Members.Select(m => MemberVM.Create(m, o)).ToList() ?? new();
+
+                Title = o?.GetType().Name.ToDisplayString() ?? "???";
+            });
         ViewModelProvider = viewModelProvider;
-    }
-
-    public void Init(object o)
-    {
-        MemberVMs = MemberVM.GetFor(o); // TypeModel?.Members.Select(m => MemberVM.Create(m, o)).ToList() ?? new();
-
-        Title = o?.GetType().Name.ToDisplayString() ?? "???";
+        ServiceProvider = serviceProvider;
     }
 
     #endregion
@@ -90,6 +99,7 @@ public class PropertyGridVM : ReactiveObject, IObjectEditorVM
     public IEnumerable<MemberVM> MemberVMs { get; set; } = Enumerable.Empty<MemberVM>();
 
     public IViewModelProvider ViewModelProvider { get; }
+    public IServiceProvider ServiceProvider { get; }
 
     public bool CanRead(MemberVM member)
         => member.MemberInfoVM.ReadRelevance.HasFlag(ReadRelevance);

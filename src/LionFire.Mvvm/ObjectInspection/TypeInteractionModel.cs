@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace LionFire.UI.Metadata;
+namespace LionFire.Mvvm.ObjectInspection;
 
 public class TypeInteractionModel
 {

@@ -26,6 +26,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Folder Include="Metadata\" />
     <Folder Include="Nodes\" />
     <Folder Include="Shell\Presenters\" />
     <Folder Include="Shell\Views\" />
