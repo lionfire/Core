@@ -15,7 +15,7 @@ namespace LionFire.Persistence;
 /// <summary>
 /// Limited interface for when generic interface type is not available
 /// </summary>
-public interface IReadHandle : IHandleEx, IPersists, ILazilyGets, IDefaultable, IGets
+public interface IReadHandle : IHandleEx, IPersists, ILazilyGets, IDefaultable, IStatelessGets
 {
 }
 

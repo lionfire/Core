@@ -83,7 +83,7 @@ namespace LionFire.Persistence
         }
         protected TReadHandle readHandle;
         public bool HasReadHandle => readHandle != null;
-        IGets<TValue> IGetsAndSetsWithoutStaging<TValue>.Resolves => ReadHandle;
+        IStatelessGets<TValue> IGetsAndSetsWithoutStaging<TValue>.Resolves => ReadHandle;
 
         #endregion
 

@@ -3,6 +3,7 @@ using LionFire.UI.Components.PropertyGrid;
 using Newtonsoft.Json.Linq;
 using LionFire.Mvvm.ObjectInspection;
 using LionFire.Data.Gets;
+using System.Reflection;
 
 namespace LionFire.UI.Components;
 
@@ -18,7 +19,7 @@ public class PropertyVM : ReactiveObject
     #region MemberVM
 
 
-    public MemberVM? MemberVM
+    public ReflectionMemberVM? MemberVM
     {
         get => memberVM; 
         set
@@ -27,7 +28,7 @@ public class PropertyVM : ReactiveObject
             LazilyGets = memberVM as ILazilyGets<object>;
         }
     }
-    private MemberVM? memberVM;
+    private ReflectionMemberVM? memberVM;
 
     public IDataMemberVM? DataMemberVM => MemberVM as IDataMemberVM;
 
@@ -72,9 +73,9 @@ public class PropertyVM : ReactiveObject
             return true;
         return false;
     }
-    public bool CanEdit => MemberVM.MemberInfoVM.CanWrite
-        && !MemberVM.ReadOnly
-        && EditorExistsForType(DataType);
+    public bool CanEdit => MemberVM.Info.CanWrite()
+        //&& !MemberVM.ReadOnly
+        && EditorExistsForType(Type);
 
     #endregion
 
@@ -83,10 +84,10 @@ public class PropertyVM : ReactiveObject
     #region State
 
     public object Value { get; set; }
-    public Type? ValueType { get; set; }
-    public Type? DataType => (MemberVM as IDataMemberVM)?.DataType;
+    public Type? CurrentValueType { get; set; }
+    public Type? Type => MemberVM.Info.Type;
 
-    public bool ValueTypeDiffersFromMemberType => ValueType != null && ValueType != MemberVM.MemberInfoVM.Type;
+    public bool ValueTypeDiffersFromMemberType => CurrentValueType != null && CurrentValueType != MemberVM.Info.Type;
 
     #region Display
 
@@ -108,7 +109,7 @@ public class PropertyVM : ReactiveObject
     }
 
     public bool HasChildren => ChildMemberVMs?.Any() == true;
-    public IEnumerable<MemberVM> ChildMemberVMs { get; set; } = Enumerable.Empty<MemberVM>();
+    public IEnumerable<ReflectionMemberVM> ChildMemberVMs { get; set; } = Enumerable.Empty<ReflectionMemberVM>();
 
     #endregion
 
@@ -119,12 +120,12 @@ public class PropertyVM : ReactiveObject
         {
             if (MemberVM is IDataMemberVM d)
             {
-                if (d.CanGetValue)
+                if (MemberVM.Info.CanRead())
                 {
                     Value = d.GetValue();
-                    ValueType = Value?.GetType();
+                    CurrentValueType = Value?.GetType();
                     var result = Value?.ToString();
-                    if (MemberVM.MemberInfoVM.Type == typeof(string) && result != null)
+                    if (MemberVM.Info.Type == typeof(string) && result != null)
                     {
                         DisplayValue = $"\"{result}\"";
                     }

@@ -40,7 +40,7 @@ public static class IResolvableX
         return false;
     }
 
-    public static async Task<T> GetValueAsync<T>(this IGets<T> resolves)
+    public static async Task<T> GetValueAsync<T>(this IStatelessGets<T> resolves)
     {
         var result = await resolves.Get().ConfigureAwait(false);
         if (result.IsSuccess != true) throw new TransferException("Resolve failed: " + result.ToString());

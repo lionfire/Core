@@ -120,7 +120,7 @@ public abstract class AsyncReadOnlyDictionaryCache<TKey, TValue>
 
     #region IGets<IEnumerable<KeyValuePair<TKey, TValue>>>
 
-    async ITask<IGetResult<IEnumerable<KeyValuePair<TKey, TValue>>>> IGets<IEnumerable<KeyValuePair<TKey, TValue>>>.Get(CancellationToken cancellationToken)
+    async ITask<IGetResult<IEnumerable<KeyValuePair<TKey, TValue>>>> IStatelessGets<IEnumerable<KeyValuePair<TKey, TValue>>>.Get(CancellationToken cancellationToken)
     {
         await this.Get(cancellationToken).ConfigureAwait(false);
         throw new NotImplementedException();

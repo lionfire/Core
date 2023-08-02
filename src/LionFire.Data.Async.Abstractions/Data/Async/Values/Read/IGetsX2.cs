@@ -15,9 +15,9 @@ namespace LionFire.ExtensionMethods.Data;
 public static class IGetsX2
 {
 
-    public static Type GetRetrieveType(this IGets gets)
+    public static Type GetRetrieveType(this IStatelessGets gets)
     {
-        var retrievesInterface = gets.GetType().GetInterfaces().Where(t => t.IsGenericType && t.GetGenericTypeDefinition() == typeof(IGets<>)).Single();
+        var retrievesInterface = gets.GetType().GetInterfaces().Where(t => t.IsGenericType && t.GetGenericTypeDefinition() == typeof(IStatelessGets<>)).Single();
         return retrievesInterface.GetGenericArguments()[0];
     }
 
@@ -26,10 +26,10 @@ public static class IGetsX2
     /// </summary>
     /// <param name="retrieves"></param>
     /// <returns></returns>
-    public static async Task<IGetResult<object>> GetUnknownType(this IGets retrieves)
+    public static async Task<IGetResult<object>> GetUnknownType(this IStatelessGets retrieves)
     {
-        var retrievesInterface = retrieves.GetType().GetInterfaces().Where(t => t.IsGenericType && t.GetGenericTypeDefinition() == typeof(IGets<>)).Single();
-        return (await ((ITask<IGetResult<object>>)retrievesInterface.GetMethod(nameof(IGets<object>.Get)).Invoke(retrieves, null)).ConfigureAwait(false));
+        var retrievesInterface = retrieves.GetType().GetInterfaces().Where(t => t.IsGenericType && t.GetGenericTypeDefinition() == typeof(IStatelessGets<>)).Single();
+        return (await ((ITask<IGetResult<object>>)retrievesInterface.GetMethod(nameof(IStatelessGets<object>.Get)).Invoke(retrieves, null)).ConfigureAwait(false));
     }
 
     /////// <summary>
@@ -73,7 +73,7 @@ public static class IGetsX2
         return (await lazilyGets.GetIfNeeded()).HasValue;
         //return await lazilyGets.Exists();
     }
-    public static async Task<bool> Exists<T>(this IGets<T> gets)
+    public static async Task<bool> Exists<T>(this IStatelessGets<T> gets)
     {
         if (gets is ILazilyGets<T> lazilyGets)
         {
@@ -82,7 +82,7 @@ public static class IGetsX2
 
         return (await gets.Get()).ValidateSuccess().HasValue;
     }
-    public static async Task<bool> Exists<T>(this IGets resolves)
+    public static async Task<bool> Exists<T>(this IStatelessGets resolves)
     {
         if (resolves is ILazilyGets<T> lazilyResolves)
         {

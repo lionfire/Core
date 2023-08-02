@@ -7,29 +7,29 @@ namespace LionFire.UI.Components;
 public class PropertyGridRowsVM : ReactiveObject
 {
     public PropertyGridVM PropertyGridVM { get; set; }
-    public IEnumerable<MemberVM> MemberVMs { get; set; }
+    public IEnumerable<ReflectionMemberVM> MemberVMs { get; set; }
 
-    public IEnumerable<MemberVM> VisibleMembers
+    public IEnumerable<ReflectionMemberVM> VisibleMembers
     {
         get
         {
             if (PropertyGridVM.ShowDataMembers)
             {
-                foreach (var m in MemberVMs.Where(m => m.MemberKind == MemberKind.Data))
+                foreach (var m in MemberVMs.Where(m => m.Info.MemberKind == MemberKind.Data))
                 {
                     yield return m;
                 }
             }
             if (PropertyGridVM.ShowEvents)
             {
-                foreach (var m in MemberVMs.Where(m => m.MemberKind == MemberKind.Event))
+                foreach (var m in MemberVMs.Where(m => m.Info.MemberKind == MemberKind.Event))
                 {
                     yield return m;
                 }
             }
             if (PropertyGridVM.ShowMethods)
             {
-                foreach (var m in MemberVMs.Where(m => m.MemberKind == MemberKind.Method))
+                foreach (var m in MemberVMs.Where(m => m.Info.MemberKind == MemberKind.Method))
                 {
                     yield return m;
                 }

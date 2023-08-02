@@ -10,7 +10,7 @@ public record PreresolvedGet<T>(T Value) : ILazilyGets<T>
 
     public ILazyGetResult<T> QueryValue() => new ResolveResultNoop<T>(Value);
     public ITask<ILazyGetResult<T>> GetIfNeeded() => Task.FromResult<ILazyGetResult<T>>(new LazyResolveNoopResult<T>(true, Value)).AsITask();
-    ITask<IGetResult<T>> IGets<T>.Get(CancellationToken cancellationToken) => Task.FromResult<IGetResult<T>>(new ResolveResultNoop<T>(Value)).AsITask();
+    ITask<IGetResult<T>> IStatelessGets<T>.Get(CancellationToken cancellationToken) => Task.FromResult<IGetResult<T>>(new ResolveResultNoop<T>(Value)).AsITask();
 
     public Task<T> Get(CancellationToken cancellationToken = default) => Task.FromResult(Value);
 

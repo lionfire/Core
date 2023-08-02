@@ -14,13 +14,13 @@ public static class IGetsX
     /// </summary>
     /// <param name="gets"></param>
     /// <returns></returns>
-    public static async Task<IGetResult<object>> GetUnknownType(this IGets gets, CancellationToken cancellationToken = default)
+    public static async Task<IGetResult<object>> GetUnknownType(this IStatelessGets gets, CancellationToken cancellationToken = default)
     {
-        var getsInterface = gets.GetType().GetInterfaces().Where(t => t.IsGenericType && t.GetGenericTypeDefinition() == typeof(IGets<>)).Single();
-        return await ((ITask<IGetResult<object>>)getsInterface.GetMethod(nameof(IGets<object>.Get))!.Invoke(gets, new object?[] { cancellationToken })!).ConfigureAwait(false);
+        var getsInterface = gets.GetType().GetInterfaces().Where(t => t.IsGenericType && t.GetGenericTypeDefinition() == typeof(IStatelessGets<>)).Single();
+        return await ((ITask<IGetResult<object>>)getsInterface.GetMethod(nameof(IStatelessGets<object>.Get))!.Invoke(gets, new object?[] { cancellationToken })!).ConfigureAwait(false);
     }
 
-    public static async Task<T> GetValue<T>(this IGets<T> resolves)
+    public static async Task<T> GetValue<T>(this IStatelessGets<T> resolves)
     {
         if (resolves is ILazilyGets<T> lazilyResolves)
         {

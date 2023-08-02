@@ -1,11 +1,25 @@
-﻿using LionFire.Results;
-using ReactiveUI;
+﻿namespace LionFire.Data.Sets.Mvvm;
+
+using LionFire.Data.Sets;
+using LionFire.Mvvm;
 using System.Reactive;
 
-namespace LionFire.Data.Sets.Mvvm;
+public interface ISetsVMBase<T>
+{
+    ReactiveCommand<Unit, ITransferResult> SetCommand { get; }// REVIEW - does this match impl?
+
+    #region Derived
+
+    bool CanSet { get; }
+
+    bool IsSetting { get; }
+
+    #endregion
+}
+
 
 public interface ISetsVM<T>
-    : ISetsRx<T>
+    : IViewModel<ISets<T>>
+    , ISetsVMBase<T>
 {
-    ReactiveCommand<Unit, ITransferResult> SetCommand { get; } // REVIEW - does this match impl?
 }

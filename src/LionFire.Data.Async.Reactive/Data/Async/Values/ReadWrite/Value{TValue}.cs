@@ -7,9 +7,10 @@ namespace LionFire.Data;
 
 public abstract class Value<TValue>
     : Gets<TValue>
-    , IAsyncValueRx<TValue>
+    , IValueRx<TValue>
     , ISetsRx<TValue>
     , ISetsInternal<TValue>
+    , IValue<TValue>
 {
     #region Options
 
@@ -102,14 +103,19 @@ public abstract class Value<TValue>
     #region Events
 
     [Browsable(false)]
-    public IObservable<ISetOperation<TValue>> Sets => sets;
+    public IObservable<ISetOperation<TValue>> SetOperations => sets;
     private BehaviorSubject<ISetOperation<TValue>> sets = SetsLogic<TValue>.InitSets;
     BehaviorSubject<ISetOperation<TValue>> ISetsInternal<TValue>.sets => sets;
 
     #endregion
 
-    #region Methods
 
+    #region IGetsOrAsyncInstantiates<T>
+    //public abstract ITask<TValue> InstantiateValue(bool overwriteStagedValue = false, bool throwOnOverwrite = false);
+    //public abstract ITask<IGetResult<TValue>> GetOrAsyncInstantiateValue();
+    #endregion
+
+    #region Methods
     public abstract Task<ITransferResult> SetImpl(TValue? value, CancellationToken cancellationToken = default);
 
     public Task<ITransferResult> Set(CancellationToken cancellationToken = default)

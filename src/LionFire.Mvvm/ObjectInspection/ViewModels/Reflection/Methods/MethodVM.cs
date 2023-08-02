@@ -1,0 +1,11 @@
+﻿namespace LionFire.Mvvm.ObjectInspection;
+
+public class MethodVM : ReflectionMemberVM
+{
+    public MethodVM(ReflectionMemberInfo info, object source) : base(info, source)
+    {
+    }
+
+    //public override MemberKind MemberKind => MemberKind.Method;
+    
+}

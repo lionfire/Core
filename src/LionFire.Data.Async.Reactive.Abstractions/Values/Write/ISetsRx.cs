@@ -8,7 +8,7 @@ public interface ISetsRx<T>
     , IObservableSets<T> // covariant
     , IStagesSet<T>
 
-    //, IHasNonNullSettable<AsyncSetOptions>
+    //, IHasNonNullSettable<AsyncSetOptions> // TODO? Or just have an interface member?
 
     , IReactiveNotifyPropertyChanged<IReactiveObject>
     , IHandleObservableErrors

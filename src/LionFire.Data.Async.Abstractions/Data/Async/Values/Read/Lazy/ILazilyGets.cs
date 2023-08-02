@@ -1,12 +1,15 @@
 ﻿
 namespace LionFire.Data.Gets;
 
-public interface ILazilyGets<out T> : IGets<T>, ILazilyGets, IDefaultableReadWrapper<T>
+public interface ILazilyGets<out T>  // RENAME IGets
+    : IStatelessGets<T>
+    , ILazilyGets
+    , IDefaultableReadWrapper<T> 
 {
     ITask<ILazyGetResult<T>> GetIfNeeded(); // TODO: Add CancellationToken
 
     /// <summary>
-    /// RENAME to Query
+    /// RENAME to PeekLastGet
     /// REVIEW - change return type to T?  And separate this into LastResolveResult
     /// </summary>
     /// <returns></returns>

@@ -30,4 +30,5 @@ public class TypeScanOptions
     public MemberScanOptions Properties { get; set; } = new();
     public MemberScanOptions Fields { get; set; } = new();
     public MemberScanOptions Methods { get; set; } = new();
+    public MemberScanOptions Events { get; set; } = new();
 }

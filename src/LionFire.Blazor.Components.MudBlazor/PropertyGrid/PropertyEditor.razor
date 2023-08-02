@@ -15,15 +15,15 @@
 }
 else if (ViewModel.LazilyGets != null)
 {
-    if (ViewModel.DataType == typeof(bool))
+    if (ViewModel.Type == typeof(bool))
     {
         <MudSwitch @bind-Checked="ViewModel.LazilyGets.ReadCacheValue" />
     }
-    else if (ViewModel.DataType == typeof(string))
+    else if (ViewModel.Type == typeof(string))
     {
         <MudTextField T=Object @bind-Value="ViewModel.LazilyGets.ReadCacheValue" />
     }
-    else if (ViewModel.DataType == typeof(int))
+    else if (ViewModel.Type == typeof(int))
     {
         <MudNumericField @bind-Value="ViewModel.LazilyGets.ReadCacheValue" />
     }
@@ -40,7 +40,7 @@ else if (ViewModel.LazilyGets != null)
     public PropertyVM? ViewModel { get; set; }
 
 
-    public Type? EditorType => ViewTypeProvider.GetViewType(ViewModel.DataType) ?? FallbackEditorType;
+    public Type? EditorType => ViewTypeProvider.GetViewType(ViewModel.Type) ?? FallbackEditorType;
 
     public Type FallbackEditorType => typeof(FallbackEditor);
 

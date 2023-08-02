@@ -5,7 +5,7 @@
 @using LionFire.UI.Components.PropertyGrid;
 @using ReactiveUI;
 
-@if (ViewModel.PropertyGridVM.ReadRelevance.HasFlag(MemberVM.MemberInfoVM.ReadRelevance))
+@if (ViewModel.PropertyGridVM.ReadRelevance.HasFlag(MemberVM.Info.ReadRelevance))
 {
     <tr>
         @* <td class="dev">R relevant: @ViewModel.PropertyGridVM.ReadRelevance.HasFlag(MemberVM.MemberInfoVM.ReadRelevance)</td>
@@ -22,7 +22,7 @@
 
         <td>
             <div style="@($"margin-left: {Depth*10}px")">
-                @MemberVM.MemberInfoVM.Name
+                @MemberVM.Info.Name
             </div>
         </td>
         <td class="@("Value " + ViewModel.ValueClass)">
@@ -31,23 +31,23 @@
 
         <td class="dev">@MemberVM.MemberKind.ToString().Substring(0, 1)</td>
         <td class="dev">@MemberVM.GetType().Name.Substring(0, 1)</td>
-        <td class="dev">@MemberVM.MemberInfoVM.TypeFlags</td>
-        <td class="dev Namespace">@MemberVM.MemberInfoVM.Type.Namespace</td>
-        <td class="dev">@TypeNameUtils.DisplayTypeName(MemberVM.MemberInfoVM.Type)</td>
+        <td class="dev">@MemberVM.Info.TypeFlags</td>
+        <td class="dev Namespace">@MemberVM.Info.Type.Namespace</td>
+        <td class="dev">@TypeNameUtils.DisplayTypeName(MemberVM.Info.Type)</td>
         <td class="dev">
             @if (ShowValueType)
             {
-                <span title="@ViewModel.ValueType">
-                    @ViewModel.ValueType.Name
+                <span title="@ViewModel.CurrentValueType">
+                    @ViewModel.CurrentValueType.Name
                 </span>
             }
         </td>
         @* <td>@(ChildMemberVMs?.Any() == true ? ChildMemberVMs.Select(v => v.MemberInfoVM.Name).Aggregate((x, y) => $"{x}, {y}") : "")</td> *@
         @* <td>@ViewModel.IsExpanded</td> *@
         <td class="dev">@(
-        MemberVM.MemberInfoVM.CanRead ? "R" : ""
+        MemberVM.Info.CanRead() ? "R" : ""
         )@(
-               MemberVM.MemberInfoVM.CanWrite ? "W" : ""
+               MemberVM.Info.CanWrite() ? "W" : ""
                )</td>
         <td class="dev">@Depth</td>
     </tr>
@@ -80,7 +80,7 @@
     public int Depth { get; set; }
 
     [Parameter]
-    public MemberVM MemberVM { get; set; }// { get => ViewModel.MemberVM; set => ViewModel.MemberVM = value; }
+    public ReflectionMemberVM MemberVM { get; set; }// { get => ViewModel.MemberVM; set => ViewModel.MemberVM = value; }
 
     #endregion
 
@@ -98,7 +98,7 @@
 
     protected override Task OnInitializedAsync()
     {
-        Debug.WriteLine($"Depth: {Depth}.  Target: {MemberVM.Target?.GetType().Name}");
+        Debug.WriteLine($"Depth: {Depth}.  Target: {MemberVM.Source?.GetType().Name}");
 
         ViewModel.Refresh();
 
@@ -111,7 +111,7 @@
             {
                 try
                 {
-                    ViewModel.ChildMemberVMs = MemberVM.GetFor(dataMemberVM.GetValue());
+                    ViewModel.ChildMemberVMs = ReflectionMemberVM.GetFor(dataMemberVM.GetValue());
                 }
                 catch (Exception ex)
                 {

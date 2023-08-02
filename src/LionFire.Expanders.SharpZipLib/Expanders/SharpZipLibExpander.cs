@@ -407,7 +407,7 @@ public static class IReadHandleX
             return await lr.GetIfNeeded().ConfigureAwait(false);
         }
 
-        if (rh is IGets<object> g)
+        if (rh is IStatelessGets<object> g)
         {
             return await g.Get().ConfigureAwait(false);
         }

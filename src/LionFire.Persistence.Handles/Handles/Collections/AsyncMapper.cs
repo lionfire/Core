@@ -33,7 +33,7 @@ namespace LionFire.Persistence.Handles;
 
 public abstract class AsyncMapper<TItem, TUnderlying, TUnderlyingCollection, TResolvedUnderlyingCollection> 
     : IAsyncEnumerable<TItem>
-    , IGets<TResolvedUnderlyingCollection>
+    , IStatelessGets<TResolvedUnderlyingCollection>
     , ILazilyGets<TResolvedUnderlyingCollection>
     //where TUnderlyingCollectionResolvable : IGets<TUnderlyingCollection>
     where TUnderlyingCollection : IEnumerable<TUnderlying>
@@ -61,8 +61,8 @@ public abstract class AsyncMapper<TItem, TUnderlying, TUnderlyingCollection, TRe
     }
 
     #endregion
-    public IGets<TResolvedUnderlyingCollection> UnderlyingResolves => underlyingResolves;
-    IGets<TResolvedUnderlyingCollection> underlyingResolves;
+    public IStatelessGets<TResolvedUnderlyingCollection> UnderlyingResolves => underlyingResolves;
+    IStatelessGets<TResolvedUnderlyingCollection> underlyingResolves;
     public ILazilyGets<TResolvedUnderlyingCollection> UnderlyingLazilyResolves => underlyingResolves as ILazilyGets<TResolvedUnderlyingCollection>;
 
     private TResolvedUnderlyingCollection ResolvedUnderlyingCollection { get; set; }
@@ -78,7 +78,7 @@ public abstract class AsyncMapper<TItem, TUnderlying, TUnderlyingCollection, TRe
 
     #region Construction
 
-    public AsyncMapper(IGets<TResolvedUnderlyingCollection> underlyingResolves)
+    public AsyncMapper(IStatelessGets<TResolvedUnderlyingCollection> underlyingResolves)
     {
         this.underlyingResolves = underlyingResolves;
     }

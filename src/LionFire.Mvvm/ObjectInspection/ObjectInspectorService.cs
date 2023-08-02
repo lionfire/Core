@@ -9,7 +9,7 @@ public class ObjectInspectorService
 
     public IEnumerable<IObjectInspector> ObjectInspectors { get; }
 
-    public IEnumerable<InspectedObjectItem> GetInspectedObjects(object obj)
+    public IEnumerable<object> GetInspectedObjects(object obj)
     {
         foreach (var oi in ObjectInspectors)
         {

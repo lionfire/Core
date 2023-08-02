@@ -40,7 +40,7 @@ namespace LionFire.Data.Gets.ChainResolving
             Resolvers = new List<ChainResolverWorker>
             {
                 new ChainResolverWorker(typeof(ILazilyGets<object>), o => ((ILazilyGets<object>)o).GetIfNeeded()), // Put this first, because it caches results
-                new ChainResolverWorker(typeof(IGets<object>), o => ((IGets<object>)o).Get()), // Re-evaluates every time -- may be a long I/O operation
+                new ChainResolverWorker(typeof(IStatelessGets<object>), o => ((IStatelessGets<object>)o).Get()), // Re-evaluates every time -- may be a long I/O operation
             }
         };
     }

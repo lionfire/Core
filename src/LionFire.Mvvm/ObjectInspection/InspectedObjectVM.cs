@@ -13,7 +13,7 @@ public class InspectedObjectVM : ReactiveObject
 
     public object SourceObject { get; set; }
 
-    public IEnumerable<InspectedObjectItem> InspectedObjects { get; }
+    public IEnumerable<object> InspectedObjects { get; }
 
     [Reactive]
     public object EffectiveObject { get; set; }

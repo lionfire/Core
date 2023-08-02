@@ -3,6 +3,6 @@ namespace LionFire.Data.Sets;
 
 public interface IObservableSets<out TValue>
 {
-    IObservable<ISetOperation<TValue>> Sets { get; }
+    IObservable<ISetOperation<TValue>> SetOperations { get; }
 }
 

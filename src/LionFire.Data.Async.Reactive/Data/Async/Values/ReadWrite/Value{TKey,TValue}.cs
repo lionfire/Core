@@ -1,30 +1,12 @@
 ﻿using LionFire.Data.Reactive;
 using LionFire.Data.Sets;
-using LionFire.Results;
-using MorseCode.ITask;
-using System.Collections.Generic;
 using System.Reactive.Subjects;
 
 namespace LionFire.Data;
 
-
-internal interface IGetsInternal<TValue> //: IAsyncGetsRx<TValue>
-{
-    IEqualityComparer<TValue> EqualityComparer { get; }
-}
-
-internal interface ISetsInternal<TValue> : IAsyncValueRx<TValue>
-{
-    IEqualityComparer<TValue> EqualityComparer { get; }
-    ISetOperation<TValue> SetState { get; }
-    object setLock { get; }
-    BehaviorSubject<ISetOperation<TValue>> sets { get; }
-    Task<ITransferResult> SetImpl(TValue? value, CancellationToken cancellationToken = default);
-}
-
 public abstract class Value<TKey, TValue>
     : Gets<TKey, TValue>
-    , IAsyncValueRx<TValue>
+    , IValueRx<TValue>
     , ISetsInternal<TValue>
 {
     #region Parameters
@@ -133,7 +115,7 @@ public abstract class Value<TKey, TValue>
 
     #region Events
 
-    public IObservable<ISetOperation<TValue>> Sets => sets;
+    public IObservable<ISetOperation<TValue>> SetOperations => sets;
     private BehaviorSubject<ISetOperation<TValue>> sets = SetsLogic<TValue>.InitSets;
     BehaviorSubject<ISetOperation<TValue>> ISetsInternal<TValue>.sets => sets;
 
@@ -166,6 +148,13 @@ public abstract class Value<TKey, TValue>
     }
 
     #endregion
+
+    #endregion
+
+    #region IGetsOrAsyncInstantiates<T>
+
+    //public abstract ITask<TValue> InstantiateValue(bool overwriteStagedValue = false, bool throwOnOverwrite = false);
+    //public abstract ITask<IGetResult<TValue>> GetOrAsyncInstantiateValue();
 
     #endregion
 }

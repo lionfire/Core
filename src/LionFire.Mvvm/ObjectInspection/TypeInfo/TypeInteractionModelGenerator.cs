@@ -11,26 +11,32 @@ public static class TypeInteractionModelGenerator
     {
         options ??= TypeScanOptions.Default;
 
-        SortedList<int, MemberInfoVM> members = new();
-        SortedList<string, MemberInfoVM> conflicts = new();
-        SortedList<string, MemberInfoVM> unordered = new();
+        SortedList<int, ReflectionMemberInfo> members = new();
+        SortedList<string, ReflectionMemberInfo> conflicts = new();
+        SortedList<string, ReflectionMemberInfo> unordered = new();
         List<string>? validationErrors = null;
 
         #region Properties
 
-        GetItems(options.Properties, o => type.GetProperties(o.BindingFlags), m => new PropertyInfoVM(m));
+        GetItems(options.Properties, o => type.GetProperties(o.BindingFlags), m => new ReflectionPropertyInfo(m));
 
         #endregion
 
         #region Fields
 
-        GetItems(options.Fields, o => type.GetFields(o.BindingFlags), m => new FieldInfoVM(m));
+        GetItems(options.Fields, o => type.GetFields(o.BindingFlags), m => new ReflectionFieldInfo(m));
 
         #endregion
 
         #region Methods
 
-        GetItems(options.Methods, o => type.GetMethods(o.BindingFlags), m => new MethodInfoVM(m));
+        GetItems(options.Methods, o => type.GetMethods(o.BindingFlags), m => new ReflectionMethodInfo(m));
+
+        #endregion
+
+        #region Events
+
+        GetItems(options.Events, o => type.GetEvents(o.BindingFlags), m => new ReflectionEventInfo(m));
 
         #endregion
 
@@ -42,11 +48,11 @@ public static class TypeInteractionModelGenerator
 
         #region Local
 
-        int? GetOrder(MemberInfo mi)
+        int? GetOrder(System.Reflection.MemberInfo mi)
         {
             return mi.GetCustomAttribute<DisplayAttribute>()?.Order;
         }
-        bool ShouldIgnore(MemberInfo mi)
+        bool ShouldIgnore(System.Reflection.MemberInfo mi)
         {
             foreach (var ignoreAttributeType in options.IgnoreMemberAttributes)
             {
@@ -56,14 +62,14 @@ public static class TypeInteractionModelGenerator
         }
 
         void GetItems<T, TViewModel>(MemberScanOptions memberTypeOptions, Func<MemberScanOptions, T[]> get, Func<T, TViewModel> vm)
-            where T : MemberInfo
-            where TViewModel : MemberInfoVM
+            where T : System.Reflection.MemberInfo
+            where TViewModel : ReflectionMemberInfo
         {
             if (!memberTypeOptions.Enabled) return;
 
             HashSet<string>? overlapping = null;
 
-            foreach (var mi in get(memberTypeOptions).Where(mi => !ShouldIgnore(mi)))
+            foreach (var mi in get(memberTypeOptions).Where<T>((T mi) => !ShouldIgnore(mi)))
             {
                 var memberVM = vm(mi);
 

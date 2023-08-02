@@ -45,7 +45,7 @@ public abstract class Sets<TValue>
 
     #region Events
 
-    public IObservable<ISetOperation<TValue>> Sets => sets;
+    public IObservable<ISetOperation<TValue>> SetOperations => sets;
     private BehaviorSubject<ISetOperation<TValue>> sets = new BehaviorSubject<ISetOperation<TValue>>(new SetOperation<TValue>(default, Task.FromResult(TransferResult.Initialized).AsITask()));
 
     #endregion

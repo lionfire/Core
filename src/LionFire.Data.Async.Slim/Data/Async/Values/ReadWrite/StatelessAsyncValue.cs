@@ -9,7 +9,7 @@ public abstract class StatelessAsyncValueSlim<TValue> : AsyncGetsSlim<TValue>, I
 }
 
 // See also: AsyncValueRxEx
-public abstract class AsyncValueSlim<TValue> : StatelessAsyncValueSlim<TValue>, IAsyncValue<TValue>
+public abstract class AsyncValueSlim<TValue> : StatelessAsyncValueSlim<TValue>, IValue<TValue>
 {
     public abstract TValue? StagedValue { get; set; }
     public abstract bool HasStagedValue { get; set; }

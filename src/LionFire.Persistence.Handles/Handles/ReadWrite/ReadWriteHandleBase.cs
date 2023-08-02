@@ -84,7 +84,7 @@ public abstract class ReadWriteHandleBase<TReference, TValue>
     void IDeletable.MarkDeleted() => this.StageValue_ReadWrite(default);
 
 
-    ITask<IGetResult<TValue>> IGets<TValue>.Get(CancellationToken cancellationToken = default) => Get(cancellationToken);
+    ITask<IGetResult<TValue>> IStatelessGets<TValue>.Get(CancellationToken cancellationToken = default) => Get(cancellationToken);
 }
 
 #if OLD

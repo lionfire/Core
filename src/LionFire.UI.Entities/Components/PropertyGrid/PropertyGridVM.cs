@@ -33,16 +33,16 @@ public class PropertyGridVM : ReactiveObject, IObjectEditorVM
 
     public PropertyGridVM(IViewModelProvider viewModelProvider, IServiceProvider serviceProvider)
     {
-        this.WhenAnyValue(t => t.SourceObject)
-            .Subscribe(o =>
+        this.WhenAnyValue<PropertyGridVM, object>(t => t.SourceObject)
+            .Subscribe((Action<object>)(o =>
             {
 
                 InspectedObjectVM = o == null ? null : ActivatorUtilities.CreateInstance<InspectedObjectVM>(ServiceProvider, o);
 
-                MemberVMs = MemberVM.GetFor(InspectedObjectVM?.EffectiveObject); // TypeModel?.Members.Select(m => MemberVM.Create(m, o)).ToList() ?? new();
+                MemberVMs = ReflectionMemberVM.GetFor(InspectedObjectVM?.EffectiveObject); // TypeModel?.Members.Select(m => MemberVM.Create(m, o)).ToList() ?? new();
 
                 Title = o?.GetType().Name.ToDisplayString() ?? "???";
-            });
+            }));
         ViewModelProvider = viewModelProvider;
         ServiceProvider = serviceProvider;
     }
@@ -93,16 +93,16 @@ public class PropertyGridVM : ReactiveObject, IObjectEditorVM
 
     #region Items
 
-    public IEnumerable<MemberVM> MemberVMs { get; set; } = Enumerable.Empty<MemberVM>();
+    public IEnumerable<ReflectionMemberVM> MemberVMs { get; set; } = Enumerable.Empty<ReflectionMemberVM>();
 
     public IViewModelProvider ViewModelProvider { get; }
     public IServiceProvider ServiceProvider { get; }
 
-    public bool CanRead(MemberVM member)
-        => member.MemberInfoVM.ReadRelevance.HasFlag(ReadRelevance);
+    public bool CanRead(ReflectionMemberVM member)
+        => member.Info.ReadRelevance.HasFlag(ReadRelevance);
 
-    public bool CanWrite(MemberVM member)
-        => member.MemberInfoVM.WriteRelevance.HasFlag(WriteRelevance);
+    public bool CanWrite(ReflectionMemberVM member)
+        => member.Info.WriteRelevance.HasFlag(WriteRelevance);
 
     #endregion
 }

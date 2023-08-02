@@ -10,7 +10,7 @@ public interface IObservableGets
 }
 
 public interface IObservableGets<out TValue> 
-    : IGets<TValue>
+    : IStatelessGets<TValue>
     , IObservableGets
 {
     // REVIEW: Typical implementation should always return most recent resolve upon subscribe? Or Noop Result?

@@ -6,7 +6,7 @@ namespace LionFire.Data;
 
 public abstract class Gets<TValue>
     : ReactiveObject
-    , ILazilyGetsRx<TValue>
+    , IGetsRx<TValue>
 {
     #region Parameters
 

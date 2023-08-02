@@ -8,6 +8,6 @@ namespace LionFire.Data;
 
 public interface IGetsAndSetsWithoutStaging<TValue> // Rename to IStatelessGetsAndSets
 {
-    IGets<TValue> Resolves { get; }
+    IStatelessGets<TValue> Resolves { get; }
     ISets Commits { get; }
 }

@@ -8,7 +8,7 @@ namespace LionFire.Mvvm.ObjectInspection;
 
 public class TypeInteractionModel
 {
-    public TypeInteractionModel(IEnumerable<MemberInfoVM> members)
+    public TypeInteractionModel(IEnumerable<ReflectionMemberInfo> members)
     {
         this.members = members.ToList();
     }
@@ -16,8 +16,8 @@ public class TypeInteractionModel
     /// <summary>
     /// Sorted by Order
     /// </summary>
-    public IReadOnlyList<MemberInfoVM> Members => members;
-    List<MemberInfoVM> members = new();
+    public IReadOnlyList<ReflectionMemberInfo> Members => members;
+    List<ReflectionMemberInfo> members = new();
 
 
     public List<string>? ValidationErrors { get; set; }

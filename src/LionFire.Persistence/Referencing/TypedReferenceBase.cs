@@ -50,7 +50,7 @@ namespace LionFire.Referencing
     public abstract class ResolvingTypedReferenceBase<TConcrete, TValue> 
         : ReferenceBase<TConcrete>
         , ITypedReference
-        , IGets
+        , IStatelessGets
         where TConcrete : ReferenceBase<TConcrete>
     {
         public override Type Type => typeof(TValue);

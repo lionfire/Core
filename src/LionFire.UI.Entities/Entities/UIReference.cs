@@ -40,7 +40,7 @@ namespace LionFire.UI
 
         public object ViewModel { get; set; }
 
-        public IGets<object> DataContextHandle { get; set; }
+        public IStatelessGets<object> DataContextHandle { get; set; }
         public object DataContext
         {
             get => dataContext ??= DataContextHandle?.Get();

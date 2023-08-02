@@ -3,6 +3,6 @@ using LionFire.Data.Sets;
 
 namespace LionFire.Data;
 
-public interface IStatelessAsyncValue<T> : IGets<T>, ISets<T>
+public interface IStatelessAsyncValue<T> : IStatelessGets<T>, ISets<T>
 {
 }
