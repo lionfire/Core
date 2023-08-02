@@ -1,4 +1,5 @@
 ﻿using MorseCode.ITask;
+using System.Reactive.Subjects;
 using System.Threading.Tasks;
 
 namespace LionFire.Data.Gets;
@@ -22,7 +23,7 @@ public abstract class AsyncGetsSlim2<TValue> : IGets<TValue>
 
     #region Value
 
-    public bool HasValue { get; protected set; } // 
+    public bool HasValue => getResult.IsSuccess();
 
     public TValue? Value
     {
@@ -30,7 +31,7 @@ public abstract class AsyncGetsSlim2<TValue> : IGets<TValue>
         get => Value ?? GetIfNeeded().Result.Value;
     }
 
-    public TValue? ReadCacheValue
+    public TValue? ReadCacheValue // TODO: get accessor to getResult.Value?
     {
         get => readCacheValue;
         protected set
@@ -67,8 +68,10 @@ public abstract class AsyncGetsSlim2<TValue> : IGets<TValue>
     public void DiscardValue()
     {
         ReadCacheValue = default;
-        
-        HasValue = false;
+        getResult = new NoopGetResult<TValue>()
+        {
+            //Flags = TransferResultFlags.Discarded, // TODO
+        };
     }
 
     #endregion
@@ -79,19 +82,21 @@ public abstract class AsyncGetsSlim2<TValue> : IGets<TValue>
 
     private SemaphoreSlim TryGetSemaphore = new SemaphoreSlim(1);
 
-    public async ITask<ILazyGetResult<TValue>> GetIfNeeded()
+    public async ITask<IGetResult<TValue>> GetIfNeeded()
     {
         await TryGetSemaphore.WaitAsync().ConfigureAwait(false);
         try
         {
             var lastGetResult = QueryValue();
-            if (lastGetResult.HasValue) return lastGetResult;
-            if (HasValue) { return QueryValue(); } // TODO: 
-            var result = await Get().ConfigureAwait(false);
-            
-            getResult = LazyResolveResult<TValue>(HasValue, Value);
+            if (lastGetResult.HasValue)
+            {
+                if (lastGetResult.IsSuccess()) return lastGetResult;
+                //else if (lastGetResult.IsFail()) {  // ENH: return instant fail if too many recent failures, based on options? //}
+            }
 
-            return new LazyResolveResult<TValue>(result.IsSuccess == true, result.Value);
+            var result = getResult = await Get().ConfigureAwait(false);
+            return result;
+            //return new LazyResolveResult<TValue>(result.IsSuccess == true, result.Value);
         }
         finally
         {
@@ -114,8 +119,7 @@ public abstract class AsyncGetsSlim2<TValue> : IGets<TValue>
     public ITask<IGetResult<TValue>>? GetState => getState;
     private ITask<IGetResult<TValue>>? getState;
 
-
-    public ILazyGetResult<TValue> QueryValue() => getResult;
-    protected ILazyGetResult<TValue> getResult = new LazyResolveNoopResult<TValue>();
+    public IGetResult<TValue> QueryValue() => getResult;
+    protected IGetResult<TValue> getResult = new NoopGetResult<TValue>();
 
 }

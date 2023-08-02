@@ -15,5 +15,6 @@ public struct NoopRetrieveResult<T> : IGetResult<T>
 
     public TransferResultFlags Flags => TransferResultFlags.Noop | TransferResultFlags.Fail;
 
-    
+    public object? Error => null;
+
 }

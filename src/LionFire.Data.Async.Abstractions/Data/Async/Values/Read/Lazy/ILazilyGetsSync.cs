@@ -5,7 +5,7 @@ namespace LionFire.Data.Sync.Gets;
 
 public interface ILazilyGetsSync<out T> : ILazilyGets, IReadWrapper<T>
 {
-    ILazyGetResult<T> GetValue();
+    IGetResult<T> GetValue();
 }
 
 //public interface INotifyingLazilyResolves // Use Persistence instead?

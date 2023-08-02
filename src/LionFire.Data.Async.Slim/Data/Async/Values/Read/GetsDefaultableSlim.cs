@@ -2,7 +2,7 @@
 namespace LionFire.Data.Gets;
 
 // ENH: make GetsSlim sealed for perf, and duplicate code here, with a tuple for ReadCacheValue and HasValue
-public abstract class GetsDefaultableSlim<TValue> : AsyncGetsSlim<TValue>
+public abstract class GetsDefaultableSlim<TValue> : GetterSlim<TValue>
 {
     public override bool HasValue => hasValue;
     private bool hasValue;

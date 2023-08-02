@@ -102,7 +102,7 @@ public abstract class AsyncReadOnlyKeyedCollectionCache<TKey, TValue>
     public override bool HasValue => LastFullResolveValue != null;
 
     // OLD
-    //ITask<ILazyGetResult<IEnumerable<TValue>>> ILazilyGets<IEnumerable<TValue>>.TryGetValue()
+    //ITask<IGetResult<IEnumerable<TValue>>> ILazilyGets<IEnumerable<TValue>>.TryGetValue()
     //{
     //    var result = this.TryGetValue();
     //    throw new NotImplementedException("TODO: Notify / process results");
@@ -110,7 +110,7 @@ public abstract class AsyncReadOnlyKeyedCollectionCache<TKey, TValue>
     //}
 
     // OLD
-    //ILazyGetResult<IEnumerable<TValue>> ILazilyGets<IEnumerable<TValue>>.QueryValue()
+    //IGetResult<IEnumerable<TValue>> ILazilyGets<IEnumerable<TValue>>.QueryValue()
     //{
     //    var result = this.QueryValue();
 

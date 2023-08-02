@@ -14,4 +14,6 @@ public struct ResolveResultSuccess<TValue> : IGetResult<TValue>
     public bool HasValue => true;
 
     public TransferResultFlags Flags => TransferResultFlags.Found | TransferResultFlags.Success;
+    public object? Error => null;
+
 }

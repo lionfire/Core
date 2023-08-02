@@ -155,7 +155,7 @@ public abstract class WriteHandleBase2<TReference, TValue>
 
     #region GetValue
 
-    public Task<ILazyGetResult<TValue>> GetValue(CancellationToken cancellationToken = default)
+    public Task<IGetResult<TValue>> GetValue(CancellationToken cancellationToken = default)
     {
         return base.GetIfNeeded(/*cancellationToken*/).AsTask();
 
@@ -503,7 +503,7 @@ public abstract class WriteHandleBase<TReference, TValue>
 
     #region GetValue
 
-    public Task<ILazyGetResult<TValue>> GetValue(CancellationToken cancellationToken = default)
+    public Task<IGetResult<TValue>> GetValue(CancellationToken cancellationToken = default)
     {
         return base.GetIfNeeded(/*cancellationToken*/).AsTask();
 

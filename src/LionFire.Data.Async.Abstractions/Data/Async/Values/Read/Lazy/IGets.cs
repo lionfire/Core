@@ -32,11 +32,11 @@ public interface ILazilyGetsValue<T> : IGets<T>
 /// <typeparam name="TValue">If resolving to the default value (such as null) is possible, use a type wrapped with DefaultableValue&lt;T%gt; for TValue</typeparam>
 public interface ILazilyResolvesInvariant<TValue> : ILazilyGets, IGets<TValue>, IReadWrapper<TValue>
 {
-    ITask<ILazyGetResult<TValue>> GetValue();
+    ITask<IGetResult<TValue>> GetValue();
 }
 
 public interface ILazilyResolvesConcrete<TValue> : ILazilyGets, IGets<TValue>, IReadWrapper<TValue>
 {
-    Task<ILazyGetResult<TValue>> GetValue();
+    Task<IGetResult<TValue>> GetValue();
 }
 #endif

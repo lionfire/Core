@@ -69,8 +69,8 @@ public class ReadHandlePassthrough<TValue, TReference>
 
     public bool HasValue => ReadHandle?.HasValue == true;
     public ITask<IGetResult<TValue>> Resolve() => ReadHandle.Get();
-    public ITask<ILazyGetResult<TValue>> GetIfNeeded() => ReadHandle.GetIfNeeded();
-    public ILazyGetResult<TValue> QueryValue() => ReadHandle.QueryValue();
+    public ITask<IGetResult<TValue>> GetIfNeeded() => ReadHandle.GetIfNeeded();
+    public IGetResult<TValue> QueryValue() => ReadHandle.QueryValue();
     public void DiscardValue() => ReadHandle.DiscardValue();
 
     public ITask<IGetResult<TValue>> Get(CancellationToken cancellationToken = default)

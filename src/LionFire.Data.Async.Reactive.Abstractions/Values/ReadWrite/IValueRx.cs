@@ -6,7 +6,7 @@ namespace LionFire.Data.Reactive;
 
 public interface IValueRx<T> 
     : IGetsRx<T>
-    , ISetsRx<T>
+    , ISetterRxO<T>
     , IValue<T>
 //, IHasNonNullSettable<AsyncValueOptions>
 {

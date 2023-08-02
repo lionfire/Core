@@ -2,7 +2,7 @@
 
 namespace LionFire.Data.Gets;
 
-public readonly struct ResolveResultNotResolved<TValue> : ISuccessResult, ILazyGetResult<TValue>
+public readonly struct ResolveResultNotResolved<TValue> : IGetResult<TValue>
 {
     public static ResolveResultNotResolved<TValue> Instance { get; } = new ResolveResultNotResolved<TValue>();
 

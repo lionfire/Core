@@ -8,8 +8,8 @@ public record PreresolvedGet<T>(T Value) : IGets<T>
 
     public void DiscardValue() => throw new NotSupportedException();
 
-    public ILazyGetResult<T> QueryValue() => new ResolveResultNoop<T>(Value);
-    public ITask<ILazyGetResult<T>> GetIfNeeded() => Task.FromResult<ILazyGetResult<T>>(new LazyResolveNoopResult<T>(true, Value)).AsITask();
+    public IGetResult<T> QueryValue() => new ResolveResultNoop<T>(Value);
+    public ITask<IGetResult<T>> GetIfNeeded() => Task.FromResult<IGetResult<T>>(new NoopGetResult<T>(true, Value)).AsITask();
     ITask<IGetResult<T>> IStatelessGets<T>.Get(CancellationToken cancellationToken) => Task.FromResult<IGetResult<T>>(new ResolveResultNoop<T>(Value)).AsITask();
 
     public Task<T> Get(CancellationToken cancellationToken = default) => Task.FromResult(Value);

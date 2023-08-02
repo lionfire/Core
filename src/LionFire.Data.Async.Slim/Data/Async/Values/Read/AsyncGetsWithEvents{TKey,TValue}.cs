@@ -100,16 +100,16 @@ public abstract class AsyncGetsWithEvents<TKey, TValue>
 
     private SemaphoreSlim TryGetSemaphore = new SemaphoreSlim(1);
 
-    public async ITask<ILazyGetResult<TValue>> GetIfNeeded()
+    public async ITask<IGetResult<TValue>> GetIfNeeded()
     {
-        if (HasValue) { return new LazyResolveNoopResult<TValue>(true, ReadCacheValue); }
+        if (HasValue) { return new NoopGetResult<TValue>(true, ReadCacheValue); }
 
         // TODO DUPE - Dedupe in GetsUtils.GetIfNeeded
 
         await TryGetSemaphore.WaitAsync().ConfigureAwait(false);
         try
         {
-            if (HasValue) { return new LazyResolveNoopResult<TValue>(true, ReadCacheValue); }
+            if (HasValue) { return new NoopGetResult<TValue>(true, ReadCacheValue); }
 
             //var currentValue = ReadCacheValue;
             //if (!EqualityComparer<TValue>.Default.Equals(currentValue, default)) return new ResolveResultNoop<TValue>(currentValue);
@@ -127,10 +127,10 @@ public abstract class AsyncGetsWithEvents<TKey, TValue>
 
     #region QueryValue
 
-    public ILazyGetResult<TValue> QueryValue()
+    public IGetResult<TValue> QueryValue()
     {
         var currentValue = ReadCacheValue;
-        return !EqualityComparer<TValue>.Default.Equals(currentValue, default) ? new ResolveResultNoop<TValue>(ReadCacheValue) : (ILazyGetResult<TValue>)ResolveResultNotResolved<TValue>.Instance;
+        return !EqualityComparer<TValue>.Default.Equals(currentValue, default) ? new ResolveResultNoop<TValue>(ReadCacheValue) : (IGetResult<TValue>)ResolveResultNotResolved<TValue>.Instance;
     }
 
     #endregion
@@ -184,7 +184,7 @@ public abstract class AsyncGetsWithEvents<TKey, TValue>
 
     #region OLD
 
-    //public async ITask<ILazyGetResult<TValueReturned>> GetValue2()
+    //public async ITask<IGetResult<TValueReturned>> GetValue2()
     //{
     //    var currentValue = ProtectedValue;
     //    if (currentValue != null) return new LazyResolveResultNoop<TValueReturned>((TValueReturned)(object)ProtectedValue);

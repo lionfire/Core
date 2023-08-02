@@ -7,7 +7,7 @@ namespace LionFire.Data;
 /// </summary>
 public interface IGetResult : ITransferResult { }
 
-public interface IGetResult<out TValue> : IGetResult, IValueResult<TValue>, IHasValueResult
+public interface IGetResult<out TValue> : IGetResult, IValueResult<TValue>, IHasValueResult, IErrorResult
 {
 }
 

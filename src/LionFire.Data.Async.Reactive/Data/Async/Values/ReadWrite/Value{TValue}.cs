@@ -8,7 +8,7 @@ namespace LionFire.Data;
 public abstract class Value<TValue>
     : Gets<TValue>
     , IValueRx<TValue>
-    , ISetsRx<TValue>
+    , ISetterRxO<TValue>
     , ISetsInternal<TValue>
     , IValue<TValue>
 {
@@ -174,12 +174,12 @@ public abstract class AsyncCompositeValue<TValue>
 
     AsyncGetOptions IHasNonNull<AsyncGetOptions>.Object => ((IHasNonNull<AsyncGetOptions>)Gets).Object;
 
-    public ITask<ILazyGetResult<TValue>> GetIfNeeded()
+    public ITask<IGetResult<TValue>> GetIfNeeded()
     {
         return ((ILazilyGets<TValue>)Gets).GetIfNeeded();
     }
 
-    public ILazyGetResult<TValue> QueryValue()
+    public IGetResult<TValue> QueryValue()
     {
         return ((ILazilyGets<TValue>)Gets).QueryValue();
     }

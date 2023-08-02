@@ -2,7 +2,7 @@
 
 namespace LionFire.Data.Gets;
 
-public struct ResolveResultNotResolvedNoop<TValue> : ISuccessResult, ILazyGetResult<TValue>
+public struct ResolveResultNotResolvedNoop<TValue> : IGetResult<TValue>
 {
     public static ResolveResultNotResolved<TValue> Instance { get; } = new ResolveResultNotResolved<TValue>();
 
@@ -14,7 +14,7 @@ public struct ResolveResultNotResolvedNoop<TValue> : ISuccessResult, ILazyGetRes
 
     public bool IsNoop => true;
 
-
+    public object? Error => null;
     public TransferResultFlags Flags => TransferResultFlags.Noop | TransferResultFlags.NotFound;
 
 }

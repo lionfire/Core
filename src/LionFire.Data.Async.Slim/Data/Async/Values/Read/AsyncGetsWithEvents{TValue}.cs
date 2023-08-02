@@ -90,7 +90,7 @@ public abstract class AsyncGetsWithEvents<TValue>
 
     private SemaphoreSlim TryGetSemaphore = new SemaphoreSlim(1);
 
-    public async ITask<ILazyGetResult<TValue>> GetIfNeeded()
+    public async ITask<IGetResult<TValue>> GetIfNeeded()
     {
         await TryGetSemaphore.WaitAsync().ConfigureAwait(false);
         try
@@ -111,10 +111,10 @@ public abstract class AsyncGetsWithEvents<TValue>
 
     #region QueryValue
 
-    public ILazyGetResult<TValue> QueryValue()
+    public IGetResult<TValue> QueryValue()
     {
         var currentValue = ReadCacheValue;
-        return !EqualityComparer<TValue>.Default.Equals(currentValue, default) ? new ResolveResultNoop<TValue>(ReadCacheValue) : (ILazyGetResult<TValue>)ResolveResultNotResolved<TValue>.Instance;
+        return !EqualityComparer<TValue>.Default.Equals(currentValue, default) ? new ResolveResultNoop<TValue>(ReadCacheValue) : (IGetResult<TValue>)ResolveResultNotResolved<TValue>.Instance;
     }
 
     #endregion

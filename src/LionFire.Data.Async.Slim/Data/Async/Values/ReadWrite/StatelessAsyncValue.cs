@@ -3,7 +3,7 @@ using LionFire.Results;
 
 namespace LionFire.Data;
 
-public abstract class StatelessAsyncValueSlim<TValue> : AsyncGetsSlim<TValue>, IStatelessAsyncValue<TValue>
+public abstract class StatelessAsyncValueSlim<TValue> : GetterSlim<TValue>, IStatelessAsyncValue<TValue>
 {
     public abstract Task<ITransferResult> Set(TValue? value, CancellationToken cancellationToken = default);
 }

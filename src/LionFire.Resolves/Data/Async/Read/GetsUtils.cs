@@ -9,7 +9,7 @@ namespace LionFire.Data.Gets;
 public static class GetsUtils
 {
 
-    //public static ILazyGetResult<TValue> GetIfNeeded<TValue>()
+    //public static IGetResult<TValue> GetIfNeeded<TValue>()
     //{
 
     //}

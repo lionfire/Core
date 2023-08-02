@@ -19,7 +19,7 @@ public interface IGetsVM<T>
     , IViewModel<IStatelessGets<T>>
     , IReactiveObjectEx
 {
-    ReactiveCommand<Unit, Task<ILazyGetResult<T>>> GetIfNeeded { get; }
+    ReactiveCommand<Unit, Task<IGetResult<T>>> GetIfNeeded { get; }
 
 }
 

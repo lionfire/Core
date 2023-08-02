@@ -84,7 +84,7 @@ public class GetsVM<T>
         #endregion
 
         #region GetIfNeededCommand
-        GetIfNeeded = ReactiveCommand.CreateFromTask<Unit, ILazyGetResult<T>>(
+        GetIfNeeded = ReactiveCommand.CreateFromTask<Unit, IGetResult<T>>(
                     _ => (Source ?? throw new ArgumentNullException(nameof(Source))).GetIfNeeded().AsTask(),
                     canExecute: Observable.Create<bool>(o => { o.OnNext(Source != null); o.OnCompleted(); return Disposable.Empty; })
                 );
@@ -122,7 +122,7 @@ public class GetsVM<T>
 
     #region Gets
 
-    public ReactiveCommand<Unit, ILazyGetResult<T>> GetIfNeeded { get; private set; }
+    public ReactiveCommand<Unit, IGetResult<T>> GetIfNeeded { get; private set; }
 
     #endregion
 

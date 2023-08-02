@@ -70,17 +70,17 @@ public static class ILazilyGetsX
     }
 
     // TODO: Split to OrDefault and NonDefaultValue like above?  Or just OrDefault and nothing.
-    public static async ITask<ILazyGetResult<object>> GetValue(this ILazilyGets lazilyResolves)
+    public static async ITask<IGetResult<object>> GetValue(this ILazilyGets lazilyResolves)
     {
         var genericInterface = lazilyResolves.GetLazilyGetsValueType();
-        return (await ((ITask<ILazyGetResult<object>>)
+        return (await ((ITask<IGetResult<object>>)
             genericInterface.GetMethod(nameof(IGets<object>.GetIfNeeded)).Invoke(lazilyResolves, null)).ConfigureAwait(false));
     }
 
-    public static async ITask<ILazyGetResult<object>> QueryValue(this ILazilyGets lazilyResolves)
+    public static async ITask<IGetResult<object>> QueryValue(this ILazilyGets lazilyResolves)
     {
         var genericInterface = lazilyResolves.GetLazilyGetsValueType();
-        return (await ((ITask<ILazyGetResult<object>>)
+        return (await ((ITask<IGetResult<object>>)
             genericInterface.GetMethod(nameof(IGets<object>.QueryValue)).Invoke(lazilyResolves, null)).ConfigureAwait(false));
     }
 

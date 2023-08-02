@@ -55,14 +55,14 @@ namespace LionFire.Data;
 
 //    #endregion
         
-//    //public async ITask<ILazyGetResult<TValue>> GetIfNeeded() 
+//    //public async ITask<IGetResult<TValue>> GetIfNeeded() 
 //    //{
-//    //    if (HasValue) return new LazyResolveNoopResult<TValue>(HasValue, Value);
+//    //    if (HasValue) return new NoopGetResult<TValue>(HasValue, Value);
 //    //    var value = await this.Get().ConfigureAwait(false);
 //    //    return new LazyResolveResult<TValue>(true, value);
 //    //}
 
-//    //public ILazyGetResult<TValue> QueryValue() => new LazyResolveNoopResult<TValue>(HasValue, Value);
+//    //public IGetResult<TValue> QueryValue() => new NoopGetResult<TValue>(HasValue, Value);
 
 //    //public ITask<IGetResult<TValue>> Resolve()
 //    //{

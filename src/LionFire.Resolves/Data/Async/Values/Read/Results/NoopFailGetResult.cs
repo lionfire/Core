@@ -2,13 +2,13 @@
 
 namespace LionFire.Data.Gets;
 
-public struct NoopFailResolveResult<TValue> : ISuccessResult, ILazyGetResult<TValue>, IErrorResult
+public struct NoopFailGetResult<TValue> : IGetResult<TValue>
 {
-    public static readonly LazyResolveResult<TValue> Instance = new LazyResolveResult<TValue>();
+    public static readonly NoopFailGetResult<TValue> Instance = new NoopFailGetResult<TValue>();
 
     public bool? IsSuccess => false;
     public bool HasValue => false;
-    public TValue Value => default;
+    public TValue? Value => default;
     public bool IsNoop => true;
 
     public TransferResultFlags Flags { get; set; }

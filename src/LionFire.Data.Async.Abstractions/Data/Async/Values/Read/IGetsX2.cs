@@ -55,7 +55,7 @@ public static class IGetsX2
         return TransferResultFlags.None;
     }
 
-    public static bool Exists<T>(this ILazyGetResult<T> r)
+    public static bool Exists<T>(this IGetResult<T> r)
     {
         return r.Flags.HasFlag(TransferResultFlags.Found); // REVIEW: Ensure Found is always set in all relevant scenarios
     }

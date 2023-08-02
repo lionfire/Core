@@ -3,7 +3,7 @@ using LionFire.Results;
 
 namespace LionFire.Data.Gets;
 
-public struct ResolveResultNoop<TValue> : ISuccessResult, ILazyGetResult<TValue>
+public struct ResolveResultNoop<TValue> : IGetResult<TValue>
 {
     /// <summary>
     ///  For default values only

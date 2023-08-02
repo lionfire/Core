@@ -6,7 +6,7 @@ namespace LionFire.Data;
 
 public abstract class Sets<TValue>
     : ReactiveObject
-    , ISetsRx<TValue>
+    , ISetterRxO<TValue>
 {
     #region Parameters
 

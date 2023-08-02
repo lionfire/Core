@@ -77,15 +77,15 @@ public abstract partial class AsyncDynamicDataCollectionCache<TValue>
 
     #region Methods
 
-    public async ITask<ILazyGetResult<IEnumerable<TValue>>> GetIfNeeded()
+    public async ITask<IGetResult<IEnumerable<TValue>>> GetIfNeeded()
     {
         // TODO ENH - Same read Semaphore as AsyncGet<TValue>
-        if (HasValue) { return new LazyResolveNoopResult<IEnumerable<TValue>>(HasValue, ReadCacheValue); }
+        if (HasValue) { return new NoopGetResult<IEnumerable<TValue>>(HasValue, ReadCacheValue); }
         var result = await Get().ConfigureAwait(false);
         return new LazyResolveResult<IEnumerable<TValue>>(result.HasValue, result.Value);
     }
 
-    public virtual ILazyGetResult<IEnumerable<TValue>> QueryValue() => new LazyResolveNoopResult<IEnumerable<TValue>>(HasValue, ReadCacheValue);
+    public virtual IGetResult<IEnumerable<TValue>> QueryValue() => new NoopGetResult<IEnumerable<TValue>>(HasValue, ReadCacheValue);
 
     #endregion
 

@@ -3,7 +3,7 @@ using LionFire.Results;
 
 namespace LionFire.Data.Gets;
 
-public struct LazyResolveResult<TValue> : ISuccessResult, ILazyGetResult<TValue>, IErrorResult
+public struct LazyResolveResult<TValue> : IGetResult<TValue>
 {
     public bool HasValue { get; set; }
     public TValue? Value { get; set; }
@@ -31,39 +31,6 @@ public struct LazyResolveResult<TValue> : ISuccessResult, ILazyGetResult<TValue>
     public static bool operator ==(LazyResolveResult<TValue> left, LazyResolveResult<TValue> right) => left.Equals(right);
 
     public static bool operator !=(LazyResolveResult<TValue> left, LazyResolveResult<TValue> right) => !(left == right);
-
-    #endregion
-
-}
-
-public struct LazyResolveNoopResult<TValue> : ISuccessResult, ILazyGetResult<TValue>, IErrorResult
-{
-    public bool HasValue { get; set; }
-    public TValue? Value { get; set; }
-    public bool IsNoop => true;
-    public LazyResolveNoopResult(bool hasValue, TValue? value) { HasValue = hasValue; Value = value; }
-
-    //public static implicit operator LazyResolveResult<TValue>((bool HasValue, TValue Value) values) => new LazyResolveResult<TValue>(values.HasValue, values.Value);
-
-    public bool? IsSuccess => HasValue;
-
-    public TransferResultFlags Flags { get; set; }
-
-    public object? Error { get; set; }
-
-    #region Struct implementation
-
-    public override bool Equals(object? obj)
-    {
-        if (!(obj is LazyResolveNoopResult<TValue> mys)) return false;
-        return this.HasValue == mys.HasValue && ReferenceEquals(this.Value, mys.Value);
-    }
-
-    public override int GetHashCode() => (Value?.GetHashCode() ?? 0.GetHashCode()) + HasValue.GetHashCode();
-
-    public static bool operator ==(LazyResolveNoopResult<TValue> left, LazyResolveNoopResult<TValue> right) => left.Equals(right);
-
-    public static bool operator !=(LazyResolveNoopResult<TValue> left, LazyResolveNoopResult<TValue> right) => !(left == right);
 
     #endregion
 

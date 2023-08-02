@@ -3,10 +3,10 @@ using LionFire.Data.Gets;
 
 namespace LionFire.Persistence;
 
-public class OverlayRetrieveResult<T> : OverlayPersistenceResultBase<ILazyGetResult<T>>, ILazyGetResult<T>, ITieredPersistenceResult
+public class OverlayRetrieveResult<T> : OverlayPersistenceResultBase<IGetResult<T>>, IGetResult<T>, ITieredPersistenceResult
     where T : class
 {
-    public OverlayRetrieveResult(ILazyGetResult<T> underlyingResult) : base(underlyingResult)
+    public OverlayRetrieveResult(IGetResult<T> underlyingResult) : base(underlyingResult)
     {
     }
 

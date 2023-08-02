@@ -8,6 +8,6 @@ public interface IGetsRx<out TValue>
     : IGets<TValue> // ReadCacheValue
     , IHasNonNullSettable<AsyncGetOptions> // TODO: Remove this, just have interface member?
     , IReactiveObjectEx
-    , IObservableGets<TValue>
+    , IObservableGetResults<TValue>
 {    
 }

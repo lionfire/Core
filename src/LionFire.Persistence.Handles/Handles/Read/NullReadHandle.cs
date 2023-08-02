@@ -48,10 +48,10 @@ public class NullReadHandle<TValue> : IReadHandle<TValue>
     public Task<bool> Exists(bool forceCheck = false) => Task.FromResult(true);
 
 
-    public ITask<ILazyGetResult<TValue>> GetIfNeeded() => Task.FromResult<ILazyGetResult<TValue>>(ResolveResultNoop<TValue>.Instance).AsITask();
+    public ITask<IGetResult<TValue>> GetIfNeeded() => Task.FromResult<IGetResult<TValue>>(ResolveResultNoop<TValue>.Instance).AsITask();
     public ITask<IGetResult<TValue>> Get(CancellationToken cancellationToken = default) => Task.FromResult<IGetResult<TValue>>(NoopRetrieveResult).AsITask();
     public Task<bool> TryResolveObject() => Task.FromResult(true);
-    public ILazyGetResult<TValue> QueryValue() => ResolveResultNoop<TValue>.Instance;
+    public IGetResult<TValue> QueryValue() => ResolveResultNoop<TValue>.Instance;
 
     public void Discard()
     {

@@ -2,6 +2,7 @@
 
 namespace LionFire.Data.Gets;
 
-public interface ILazyGetResult<out TValue> : IGetResult<TValue> // TODO: Replace ILazyGetResult with IGetResult
-{
-}
+// OLD - Replaced IGetResult with IGetResult
+//public interface IGetResult<out TValue> : IGetResult<TValue>
+//{
+//}

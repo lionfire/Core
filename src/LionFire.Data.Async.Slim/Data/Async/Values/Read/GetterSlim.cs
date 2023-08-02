@@ -1,13 +1,84 @@
 ﻿
+using LionFire.ExtensionMethods.Poco.Data.Async;
+using System.Reactive.Subjects;
+
 namespace LionFire.Data.Gets;
 
 /// <summary>
-/// Slim version of Gets<typeparamref name="TValue"/>.  This slim edition has no events and no ReactiveObject (ReactiveUI) base class.
+/// Like GetterSlim but uses BehaviorSubject to hold the latest get result.
+/// </summary>
+/// <typeparam name="TValue"></typeparam>
+public abstract class GetterSlimO<TValue> : IGets<TValue>
+{
+    //BehaviorSubject<IGetResult<TValue>> getResult = new();
+    public TValue? ReadCacheValue => throw new NotImplementedException();
+
+    public TValue? Value => throw new NotImplementedException();
+
+    public bool HasValue => throw new NotImplementedException();
+
+    public void Discard()
+    {
+        throw new NotImplementedException();
+    }
+
+    public void DiscardValue()
+    {
+        throw new NotImplementedException();
+    }
+
+    public ITask<IGetResult<TValue>> Get(CancellationToken cancellationToken = default)
+    {
+        throw new NotImplementedException();
+    }
+
+    public ITask<IGetResult<TValue>> GetIfNeeded()
+    {
+        throw new NotImplementedException();
+    }
+
+    public IGetResult<TValue> QueryValue()
+    {
+        throw new NotImplementedException();
+    }
+
+    public IObservable<IGetResult<TValue>> GetResult => getResult.Value;
+    BehaviorSubject<IGetResult<TValue>> getResult = new(NoopGetResult<TValue>.Instantiated);
+}
+
+
+///// <summary>
+///// Extended functionality from options:
+/////  - expiry
+/////  - auto-refresh
+/////  - auto-get
+///// </summary>
+///// <typeparam name="TValue"></typeparam>
+//public abstract class GetterSlimEx<TValue> : IGets<TValue>
+//{
+//}
+
+///// <summary>
+/////  - after successfully got value, can't re-get
+///// </summary>
+///// <typeparam name="TValue"></typeparam>
+//public abstract class OneShotGetterSlim<TValue> : IGets<TValue>
+//{
+//}
+
+/// <summary>
+/// Slim version of Gets<typeparamref name="TValue"/>.  This slim edition has no events, no Rx subjects, and no ReactiveObject (ReactiveUI) base class.
+/// 
+/// Handle events, if desired, through: (TODO)
+///  - OnGetting
+///  - OnGet
+///  - OnValueChanged
+/// 
 /// </summary>
 /// <remarks>
 /// Only requires one method to be implemented: GetImpl.
 /// </remarks>
-public abstract class AsyncGetsSlim<TValue> : IGets<TValue>
+public abstract class GetterSlim<TValue> : IGets<TValue>
 {
     #region Configuration
 
@@ -43,6 +114,8 @@ public abstract class AsyncGetsSlim<TValue> : IGets<TValue>
         get => ReadCacheValue ?? TryGetValue().Result;
     }
 
+    ILogger l => Log.Get<GetterSlim<TValue>>();
+
     public TValue? ReadCacheValue
     {
         get => readCacheValue;
@@ -54,7 +127,7 @@ public abstract class AsyncGetsSlim<TValue> : IGets<TValue>
             // TODO: Move this to a finally block?
             if (DisposeValue && oldValue is IDisposable d)
             {
-                Log.Get<AsyncGetsSlim<TValue>>().LogDebug("Disposing object of type {Type}", d.GetType().FullName);
+                l.LogDebug("Disposing object of type {Type}", d.GetType().FullName);
                 d.Dispose();
             }
 
@@ -82,10 +155,10 @@ public abstract class AsyncGetsSlim<TValue> : IGets<TValue>
 
     #region GetValue
 
-    private SemaphoreSlim TryGetSemaphore => tryGetSemaphore ?? throw new ObjectDisposedException(nameof(AsyncGetsSlim<TValue>));
+    private SemaphoreSlim TryGetSemaphore => tryGetSemaphore ?? throw new ObjectDisposedException(nameof(GetterSlim<TValue>));
     SemaphoreSlim? tryGetSemaphore = new SemaphoreSlim(1);
 
-    public async ITask<ILazyGetResult<TValue>> GetIfNeeded()
+    public async ITask<IGetResult<TValue>> GetIfNeeded()
     {
         // OPTIMIZE REVIEW - is there an atomic way to avoid the semaphore, at least in some cases?  Use a tuple for (bool HasValue, TValue Value) ?
 
@@ -133,10 +206,10 @@ public abstract class AsyncGetsSlim<TValue> : IGets<TValue>
 
     #region QueryValue
 
-    public ILazyGetResult<TValue> QueryValue()
+    public IGetResult<TValue> QueryValue()
     {
         var currentValue = ReadCacheValue;
-        return !EqualityComparer<TValue>.Default.Equals(currentValue, default) ? new ResolveResultNoop<TValue>(ReadCacheValue) : (ILazyGetResult<TValue>)ResolveResultNotResolved<TValue>.Instance;
+        return !EqualityComparer<TValue>.Default.Equals(currentValue, default) ? new ResolveResultNoop<TValue>(ReadCacheValue) : (IGetResult<TValue>)ResolveResultNotResolved<TValue>.Instance;
     }
 
     #endregion

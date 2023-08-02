@@ -10,7 +10,7 @@ namespace LionFire.ObjectBus;
 
 public interface IMultiTypeOBase : IOBase
 {
-    Task<IRetrieveResult<T>> TryGetName<T>(IReference reference);
+    Task<IGetResult<T>> TryGetName<T>(IReference reference);
 }
 
 //public interface IOBaseImpl 
@@ -50,7 +50,7 @@ public interface IOBase : ISupportsUriSchemes
 
     // RENAME to Retrieve, and instead have EnsureGet which throws on not found
     // TODO BREAKING: make Get an extension method on HBase(this IOBase obase, IReference)
-    Task<IRetrieveResult<T>> Get<T>(IReference reference);
+    Task<IGetResult<T>> Get<T>(IReference reference);
 
     Task<(bool exists, ITransferResult result)> Exists(IReference reference);
 
@@ -130,9 +130,9 @@ public static class IOBaseExtensions
         return flags.HasFlag(TransferResultFlags.PreviewSuccess) && !flags.HasFlag(TransferResultFlags.PreviewFail);
     }
 
-    public static Task<IRetrieveResult<object>> TryGet(this IOBase obase, IReference reference) => obase.Get<object>(reference);
+    public static Task<IGetResult<object>> TryGet(this IOBase obase, IReference reference) => obase.Get<object>(reference);
 
-    public static async Task<IRetrieveResult<object>> Get(this IOBase obase, IReference reference)
+    public static async Task<IGetResult<object>> Get(this IOBase obase, IReference reference)
     {
         var result = await obase.TryGet(reference);
         if (!result.IsSuccess())

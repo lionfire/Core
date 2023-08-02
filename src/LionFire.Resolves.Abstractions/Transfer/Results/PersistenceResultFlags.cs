@@ -50,6 +50,8 @@ public enum TransferResultFlags
     /// </summary>
     Created = 1 << 11,
 
+    Discarded = 1 << 12,
+
     // = 1 << 12,
     // = 1 << 12,
     // = 1 << 13,

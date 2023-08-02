@@ -89,9 +89,9 @@ public class ReadWriteHandlePassthrough<TValue, TReference>
     public TValue? StagedValue { get => ReadWriteHandle.StagedValue; set => ReadWriteHandle.StagedValue = value; }
     public bool HasStagedValue { get => ReadWriteHandle.HasStagedValue; set => ReadWriteHandle.HasStagedValue = value; }
 
-    public ITask<ILazyGetResult<TValue>> GetIfNeeded() => ReadWriteHandle.GetIfNeeded();
+    public ITask<IGetResult<TValue>> GetIfNeeded() => ReadWriteHandle.GetIfNeeded();
     public ITask<IGetResult<TValue>> GetOrInstantiateValue() => ReadWriteHandle.GetOrInstantiateValue();
-    public ILazyGetResult<TValue> QueryValue() => ReadWriteHandle.QueryValue();
+    public IGetResult<TValue> QueryValue() => ReadWriteHandle.QueryValue();
     public Task<ITransferResult> Set(TValue value, CancellationToken cancellationToken = default) => ReadWriteHandle.Set(value, cancellationToken);
     public ITask<IGetResult<TValue>> Get() => ReadWriteHandle.Get();
     public Task<ITransferResult> Set() => ReadWriteHandle.Set();

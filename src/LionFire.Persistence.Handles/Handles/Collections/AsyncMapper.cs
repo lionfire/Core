@@ -174,7 +174,7 @@ public abstract class AsyncMapper<TItem, TUnderlying, TUnderlyingCollection, TRe
         }
     }
 
-    public ILazyGetResult<TResolvedUnderlyingCollection> QueryValue()
+    public IGetResult<TResolvedUnderlyingCollection> QueryValue()
     {
         var ulr = UnderlyingLazilyResolves;
         if (ulr != null)
@@ -183,7 +183,7 @@ public abstract class AsyncMapper<TItem, TUnderlying, TUnderlyingCollection, TRe
         }
         else
         {
-            return HasValue ? new LazyResolveResult<TResolvedUnderlyingCollection>(true, Value) : NoopFailResolveResult<TResolvedUnderlyingCollection>.Instance;
+            return HasValue ? new LazyResolveResult<TResolvedUnderlyingCollection>(true, Value) : NoopFailGetResult<TResolvedUnderlyingCollection>.Instance;
         }
     }
 

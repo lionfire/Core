@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 
 namespace LionFire.Data.Gets;
 
-public abstract class HostedGetsSlim<T> : AsyncGetsSlim<T>, IHostedService
+public abstract class HostedGetsSlim<T> : GetterSlim<T>, IHostedService
 {
     public Task StartAsync(CancellationToken cancellationToken) => Get(cancellationToken).AsTask();
     public Task StopAsync(CancellationToken cancellationToken) { Discard(); return Task.CompletedTask; }

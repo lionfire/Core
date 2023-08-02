@@ -2,9 +2,9 @@
 
 //public static class IGetResultX
 //{
-// OLD ILazyGetResult is being replaced with IGetResult
-//    public static ILazyGetResult<TValue> ToLazyResolveResult<TValue>(this IGetResult<TValue> input)
-//        => input is ILazyGetResult<TValue> lrr ? lrr
+// OLD IGetResult is being replaced with IGetResult
+//    public static IGetResult<TValue> ToLazyResolveResult<TValue>(this IGetResult<TValue> input)
+//        => input is IGetResult<TValue> lrr ? lrr
 //        : new LazyResolveResult<TValue>(input.HasValue, input.Value);
 //}
 

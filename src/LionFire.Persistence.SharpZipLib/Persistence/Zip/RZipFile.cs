@@ -61,7 +61,7 @@ public class RZipFile : ReadHandle<IReference<ZipFile>, ZipFile>
     #region Resolve Reference to ZipFile (via byte[] or Stream)
 
     IReadHandle<Stream>? streamReadHandle;
-    ILazyGetResult<Stream>? streamRetrieveResult;
+    IGetResult<Stream>? streamRetrieveResult;
 
     public override void DiscardValue()
     {

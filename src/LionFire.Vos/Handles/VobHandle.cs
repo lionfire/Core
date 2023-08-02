@@ -160,7 +160,7 @@ namespace LionFire.Vos
         public void OnRenamed(IVobHandle<T> newHandle) => throw new NotImplementedException();
         protected override Task<IGetResult<T>> GetImpl(CancellationToken cancellationToken = default) => throw new NotImplementedException();
         protected override Task<ITransferResult> UpsertImpl() => throw new NotImplementedException();
-        public override ILazyGetResult<T> QueryValue() => throw new NotImplementedException();
+        public override IGetResult<T> QueryValue() => throw new NotImplementedException();
         public override void RaisePersistenceEvent(PersistenceEvent<T> ev) => throw new NotImplementedException();
 
         #endregion

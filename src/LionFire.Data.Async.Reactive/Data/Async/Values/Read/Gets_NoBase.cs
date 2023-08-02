@@ -104,7 +104,7 @@ public abstract class Gets_NoBase<TKey, TValue> // TODO: Base this class on Asyn
 
     [Reactive]
     public bool HasValue { get; private set; }
-    public ILazyGetResult<TValue> QueryValue() => new LazyResolveResult<TValue>(HasValue, Value);
+    public IGetResult<TValue> QueryValue() => new LazyResolveResult<TValue>(HasValue, Value);
 
     public void Discard() => DiscardValue();
     public void DiscardValue()
@@ -168,7 +168,7 @@ public abstract class Gets_NoBase<TKey, TValue> // TODO: Base this class on Asyn
         return result;
     }
 
-    public async ITask<ILazyGetResult<TValue>> GetIfNeeded()
+    public async ITask<IGetResult<TValue>> GetIfNeeded()
     {
         if (HasValue) { return QueryValue(); }
         var result = await Get().ConfigureAwait(false);

@@ -22,10 +22,10 @@ public interface ILazilyDetects<out T> : IGets<T>, IDiscardable
     /// </summary>
     /// <param name="saveValueIfAvailable"></param>
     /// <returns></returns>
-    ITask<ILazyGetResult<T>> TryGetExistsWithValue(bool saveValueIfAvailable = true)
+    ITask<IGetResult<T>> TryGetExistsWithValue(bool saveValueIfAvailable = true)
         => this.GetIfNeeded();
 
-    ILazyGetResult<T> QueryExistsWithValue()
+    IGetResult<T> QueryExistsWithValue()
         => this.QueryValue();
 
     #endregion
