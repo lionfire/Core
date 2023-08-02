@@ -195,7 +195,7 @@ public class ReadWriteHandlePairBase<TReference, TValue>
 
     public void DiscardValue()
     {
-        if (readHandle is ILazilyGets<TValue> lr)
+        if (readHandle is IGets<TValue> lr)
         {
             lr.DiscardValue();
         }

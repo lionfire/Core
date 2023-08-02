@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 
 namespace LionFire.Settings
 {
-    public interface IUserLocalSettings<out T> : ILazilyGets<T>
+    public interface IUserLocalSettings<out T> : IGets<T>
         where T : class
     {
     }

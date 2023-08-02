@@ -7,7 +7,7 @@ namespace LionFire.Data.Gets;
 /// <remarks>
 /// Only requires one method to be implemented: GetImpl.
 /// </remarks>
-public abstract class AsyncGetsSlim<TValue> : ILazilyGets<TValue>
+public abstract class AsyncGetsSlim<TValue> : IGets<TValue>
 {
     #region Configuration
 

@@ -28,7 +28,7 @@ public static class ILazilyGetsFallbackExtensions
     /// <returns></returns>
     public static ITask<IGetResult<TValue>> GetValue<TValue>(this IReadWrapper<TValue> readWrapper)
     {
-        if (readWrapper is ILazilyGets<TValue> lr) return lr.GetIfNeeded();
+        if (readWrapper is IGets<TValue> lr) return lr.GetIfNeeded();
         if (readWrapper is IDefaultableReadWrapper<TValue> wrapper) return IDefaultableReadWrapperX.DefaultableReadWrapper_GetValue(wrapper);
 
         // Otherwise, assume it doesn't lazily load.
@@ -45,7 +45,7 @@ public static class ILazilyGetsFallbackExtensions
     /// <returns></returns>
     public static ITask<IGetResult<TValue>> GetValueExpensive<TValue>(this IReadWrapper<TValue> readWrapper)
     {
-        if (readWrapper is ILazilyGets<TValue> lr) return lr.GetIfNeeded();
+        if (readWrapper is IGets<TValue> lr) return lr.GetIfNeeded();
         if (readWrapper is IDefaultableReadWrapper<TValue> wrapper) return IDefaultableReadWrapperX.DefaultableReadWrapper_GetValue(wrapper);
 
         // Otherwise, assume it lazily loads even without the ILazilyGets<> interface.
@@ -70,7 +70,7 @@ public static class ILazilyGetsFallbackExtensions
     /// <returns></returns>
     public static IGetResult<TValue> QueryValue<TValue>(this IReadWrapper<TValue> readWrapper)
     {
-        if (readWrapper is ILazilyGets<TValue> lr) return lr.QueryValue<TValue>();
+        if (readWrapper is IGets<TValue> lr) return lr.QueryValue<TValue>();
 
         var value = readWrapper.Value;
         return new LazyResolveResult<TValue>(!EqualityComparer<TValue>.Default.Equals(value, default), value);

@@ -402,7 +402,7 @@ public static class IReadHandleX
 {
     public static async Task<IGetResult<object>> TryGetValue(this IReadHandle rh)
     {
-        if (rh is ILazilyGets<object> lr)
+        if (rh is IGets<object> lr)
         {
             return await lr.GetIfNeeded().ConfigureAwait(false);
         }

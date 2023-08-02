@@ -5,7 +5,7 @@
 // a retrieve which if an object was found may result in the detection of a merge conflict sooner than would otherwise be the case (FUTURE).
 
 
-public interface ILazilyDetects<out T> : ILazilyGets<T>, IDiscardable
+public interface ILazilyDetects<out T> : IGets<T>, IDiscardable
 {
 
     ITask<bool> TryGetExists(bool saveValueIfAvailable = true);

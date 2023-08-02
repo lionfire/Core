@@ -190,7 +190,7 @@ public partial class KeyedCollectionView<TKey, TValue, TValueVM>
         if (oldItems == null || !ReferenceEquals(oldItems, this.Items))
         {
             ViewModel.Source = Items == null ? null
-                : Items as ILazilyGets<IEnumerable<TValue>>
+                : Items as IGets<IEnumerable<TValue>>
                     ?? new PreresolvedGet<IEnumerable<TValue>>(Items);
 
             ViewModel.Source?.GetIfNeeded().AsTask().FireAndForget();

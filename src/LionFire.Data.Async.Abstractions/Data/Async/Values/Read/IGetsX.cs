@@ -22,7 +22,7 @@ public static class IGetsX
 
     public static async Task<T> GetValue<T>(this IStatelessGets<T> resolves)
     {
-        if (resolves is ILazilyGets<T> lazilyResolves)
+        if (resolves is IGets<T> lazilyResolves)
         {
             return await lazilyResolves.GetIfNeeded<T>().ConfigureAwait(false);
         }

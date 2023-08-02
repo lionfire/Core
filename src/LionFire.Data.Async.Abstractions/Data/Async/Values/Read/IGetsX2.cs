@@ -47,7 +47,7 @@ public static class IGetsX2
     ///// <returns>true if an object was retrieved.  False if object was not found at location of the Reference.  Throws if could not resolve the Reference to a valid source.</returns>
     [Casts("retrieves.ResolveAsync must return IGetResult<T>", typeof(IGetResult<>))]
     [Obsolete("TODO - use ToRetrieveResult instead")]
-    public static async Task<IGetResult<T>> Retrieve<T>(this ILazilyGets<T> lazilyGets) => (IGetResult<T>)await IGetsX2.GetUnknownType(lazilyGets).ConfigureAwait(false); // CAST
+    public static async Task<IGetResult<T>> Retrieve<T>(this IGets<T> lazilyGets) => (IGetResult<T>)await IGetsX2.GetUnknownType(lazilyGets).ConfigureAwait(false); // CAST
 
     public static TransferResultFlags GetTransferResultFlags(this ITransferResult getResult)
     {
@@ -61,7 +61,7 @@ public static class IGetsX2
     }
 
     // TODO: REVIEW all these Exists methods for correctness and optimality
-    public static async Task<bool> Exists<T>(this ILazilyGets<T> lazilyGets) 
+    public static async Task<bool> Exists<T>(this IGets<T> lazilyGets) 
     {
         if (lazilyGets is ILazilyDetects<T> ld) return (await ld.TryGetExistsWithValue().ConfigureAwait(false)).Exists<T>();
 
@@ -75,7 +75,7 @@ public static class IGetsX2
     }
     public static async Task<bool> Exists<T>(this IStatelessGets<T> gets)
     {
-        if (gets is ILazilyGets<T> lazilyGets)
+        if (gets is IGets<T> lazilyGets)
         {
             return await Exists(lazilyGets).ConfigureAwait(false);
         }
@@ -84,7 +84,7 @@ public static class IGetsX2
     }
     public static async Task<bool> Exists<T>(this IStatelessGets resolves)
     {
-        if (resolves is ILazilyGets<T> lazilyResolves)
+        if (resolves is IGets<T> lazilyResolves)
         {
             if (lazilyResolves is IDetects d) return await d.Exists();
 

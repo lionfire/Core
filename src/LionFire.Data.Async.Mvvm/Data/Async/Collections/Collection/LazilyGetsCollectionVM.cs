@@ -17,7 +17,7 @@ public class LazilyGetsCollectionVM<TValue, TValueVM>
 
 public class LazilyGetsCollectionVM<TValue, TValueVM, TCollection>
     : GetsVM<TCollection>
-    , IResolvesCollectionVM<TValue, TValueVM, TCollection>
+    , IGetsCollectionVM<TValue, TValueVM, TCollection>
     where TCollection : IEnumerable<TValue>
 {
     #region Dependencies

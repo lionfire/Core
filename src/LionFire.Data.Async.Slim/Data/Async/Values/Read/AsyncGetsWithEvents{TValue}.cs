@@ -8,7 +8,7 @@ namespace LionFire.Data.Gets;
 public abstract class AsyncGetsWithEvents<TValue>
     : INotifyWrappedValueChanged
     , INotifyWrappedValueReplaced
-    , ILazilyGets<TValue>
+    , IGets<TValue>
 {
     static ValueChangedPropagation ValueChangedPropagation = new ValueChangedPropagation();
 

@@ -7,17 +7,12 @@ using LionFire.Data.Sets;
 
 namespace LionFire.Data.Mvvm;
 
-public interface IValueVM<T>
-    : Reactive.IValueRx<T>
-{
-
-}
 public class ValueVM<T> 
     : GetsVM<T> // TEMP
                 
                 //, IStagesSet<T>
                 //, IValueVM<T>
-, IViewModel<ILazilyGets<T>>
+, IViewModel<IGets<T>>
 {
 
     public Value<T> Value { get; }

@@ -2,7 +2,7 @@
 
 namespace LionFire.Data.Gets;
 
-public record PreresolvedGet<T>(T Value) : ILazilyGets<T>
+public record PreresolvedGet<T>(T Value) : IGets<T>
 {
     public bool HasValue => true;
 
@@ -20,5 +20,5 @@ public record PreresolvedGet<T>(T Value) : ILazilyGets<T>
 
     public object? Error { get; set; }
 
-    T? ILazilyGets<T>.ReadCacheValue => Value;
+    T? IGets<T>.ReadCacheValue => Value;
 }

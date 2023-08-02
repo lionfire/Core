@@ -26,7 +26,7 @@ public interface IReadHandle : IHandleEx, IPersists, ILazilyGets, IDefaultable, 
 public interface IReadHandle<out T> 
     : IReadHandleBase<T>
     , IReadHandle
-    , ILazilyGets<T>
+    , IGets<T>
     , IDetects
     //, IDetects<T> // TODO?
     , IReferencableAsValueType<T>

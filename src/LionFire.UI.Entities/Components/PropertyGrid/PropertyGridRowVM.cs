@@ -25,7 +25,7 @@ public class PropertyVM : ReactiveObject
         set
         {
             memberVM = value;
-            LazilyGets = memberVM as ILazilyGets<object>;
+            LazilyGets = memberVM as IGets<object>;
         }
     }
     private ReflectionMemberVM? memberVM;
@@ -34,7 +34,7 @@ public class PropertyVM : ReactiveObject
 
     #region Derived
 
-    public ILazilyGets<object>? LazilyGets { get; private set; }
+    public IGets<object>? LazilyGets { get; private set; }
     public Value<object>? AsyncSets { get; private set; }
 
     public bool ReadOnly => ObjectEditorVM?.ReadOnly == true;

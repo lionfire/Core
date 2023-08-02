@@ -26,7 +26,7 @@ namespace LionFire.UI.Entities
 
 #region Construction
 
-        public WindowingRoot(ILazilyGets<WindowSettings> windowSettings, IOptionsMonitor<UIOptions> uiOptionsMonitor, IWindowFactory windowFactory)
+        public WindowingRoot(IGets<WindowSettings> windowSettings, IOptionsMonitor<UIOptions> uiOptionsMonitor, IWindowFactory windowFactory)
         {
             Key = "(windowing)";
             WindowSettings = windowSettings.QueryNonDefaultValue(); // WindowSettings should already be resolved as a Hosted Participant that contributes CanStartShell 

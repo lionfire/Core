@@ -9,7 +9,7 @@ public static class ILazilyGetsX
 {
     #region Generic
 
-    public static async Task EnsureHasValue<T>(this ILazilyGets<T> lazilyResolves)
+    public static async Task EnsureHasValue<T>(this IGets<T> lazilyResolves)
     {
         if (!(await lazilyResolves.GetIfNeeded().ConfigureAwait(false)).HasValue) throw new Exception("EnsureHasValue: could not get value");
     }
@@ -19,10 +19,10 @@ public static class ILazilyGetsX
     /// <typeparam name="T"></typeparam>
     /// <param name="lazilyResolves"></param>
     /// <returns>HasValue</returns>
-    public static async Task<bool> TryEnsureHasValue<T>(this ILazilyGets<T> lazilyResolves)
+    public static async Task<bool> TryEnsureHasValue<T>(this IGets<T> lazilyResolves)
         => (await lazilyResolves.GetIfNeeded().ConfigureAwait(false)).HasValue;
 
-    public static async Task<T> GetIfNeeded<T>(this ILazilyGets<T> lazilyResolves)
+    public static async Task<T> GetIfNeeded<T>(this IGets<T> lazilyResolves)
     {
         var result = await lazilyResolves.GetIfNeeded().ConfigureAwait(false);
         if (result.IsSuccess == false) throw result.ToException();
@@ -33,7 +33,7 @@ public static class ILazilyGetsX
         return result.Value;
     }
 
-    public static async Task<T> GetNonDefaultValue<T>(this ILazilyGets<T> lazilyResolves)
+    public static async Task<T> GetNonDefaultValue<T>(this IGets<T> lazilyResolves)
         where T : class
     {
         var result = await lazilyResolves.GetIfNeeded().ConfigureAwait(false);
@@ -41,7 +41,7 @@ public static class ILazilyGetsX
         return result.Value;
     }
 
-    public static T QueryNonDefaultValue<T>(this ILazilyGets<T> lazilyResolves)
+    public static T QueryNonDefaultValue<T>(this IGets<T> lazilyResolves)
         where T : class
     {
         var result =  lazilyResolves.QueryValue().Value;
@@ -49,7 +49,7 @@ public static class ILazilyGetsX
         return result;
     }
 
-    public static async Task<T> GetValueOrDefault<T>(this ILazilyGets<T> lazilyResolves)
+    public static async Task<T> GetValueOrDefault<T>(this IGets<T> lazilyResolves)
     {
         var result = await lazilyResolves.GetIfNeeded().ConfigureAwait(false);
 #if SanityChecks
@@ -64,7 +64,7 @@ public static class ILazilyGetsX
 
     public static Type GetLazilyGetsValueType(this ILazilyGets lazilyResolves)
     {
-        var genericInterface = lazilyResolves.GetType().GetInterfaces().Where(t => t.IsGenericType && t.GetGenericTypeDefinition() == typeof(ILazilyGets<>)).Single();
+        var genericInterface = lazilyResolves.GetType().GetInterfaces().Where(t => t.IsGenericType && t.GetGenericTypeDefinition() == typeof(IGets<>)).Single();
         return genericInterface;
         //return genericInterface.GetGenericArguments()[0];
     }
@@ -74,14 +74,14 @@ public static class ILazilyGetsX
     {
         var genericInterface = lazilyResolves.GetLazilyGetsValueType();
         return (await ((ITask<ILazyGetResult<object>>)
-            genericInterface.GetMethod(nameof(ILazilyGets<object>.GetIfNeeded)).Invoke(lazilyResolves, null)).ConfigureAwait(false));
+            genericInterface.GetMethod(nameof(IGets<object>.GetIfNeeded)).Invoke(lazilyResolves, null)).ConfigureAwait(false));
     }
 
     public static async ITask<ILazyGetResult<object>> QueryValue(this ILazilyGets lazilyResolves)
     {
         var genericInterface = lazilyResolves.GetLazilyGetsValueType();
         return (await ((ITask<ILazyGetResult<object>>)
-            genericInterface.GetMethod(nameof(ILazilyGets<object>.QueryValue)).Invoke(lazilyResolves, null)).ConfigureAwait(false));
+            genericInterface.GetMethod(nameof(IGets<object>.QueryValue)).Invoke(lazilyResolves, null)).ConfigureAwait(false));
     }
 
     #endregion

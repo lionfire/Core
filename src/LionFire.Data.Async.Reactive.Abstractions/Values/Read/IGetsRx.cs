@@ -1,14 +1,13 @@
 ﻿using LionFire.Ontology;
-using ReactiveUI;
+using LionFire.Reactive;
+using System.Reactive;
 
 namespace LionFire.Data.Gets;
 
-public interface IGetsRx<out T> 
-    : ILazilyGets<T>
+public interface IGetsRx<out TValue> 
+    : IGets<TValue> // ReadCacheValue
     , IHasNonNullSettable<AsyncGetOptions> // TODO: Remove this, just have interface member?
-
-    , IReactiveNotifyPropertyChanged<IReactiveObject>
-    , IHandleObservableErrors
-    , IReactiveObject
-{
+    , IReactiveObjectEx
+    , IObservableGets<TValue>
+{    
 }

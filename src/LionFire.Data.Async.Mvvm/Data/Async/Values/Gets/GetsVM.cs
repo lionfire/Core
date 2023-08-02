@@ -7,6 +7,7 @@ using ReactiveUI;
 using Splat;
 using ReactiveUI.Fody.Helpers;
 using System.Reactive.Disposables;
+using LionFire.Data.Gets.Mvvm;
 
 namespace LionFire.Data.Mvvm;
 
@@ -24,14 +25,14 @@ public class VMOptions
 /// </remarks>
 public class GetsVM<T>
     : ReactiveObject
-    , ILazilyGetsVM<T>
+    , IGetsVM<T>
 {
     #region Model
 
     #region Source
 
     [Reactive]
-    public ILazilyGets<T>? Source { get; set; }
+    public IGetsRx<T>? Source { get; set; }
     //{ OLD
     //    get => source;
     //    set
@@ -45,7 +46,7 @@ public class GetsVM<T>
     //protected virtual void OnSourceChanged(IGets<TValue>? newValue) { }
 
     IStatelessGets<T>? IReadWrapper<IStatelessGets<T>>.Value => Source;
-    ILazilyGets<T>? IReadWrapper<ILazilyGets<T>>.Value => Source;
+    IGets<T>? IReadWrapper<IGets<T>>.Value => Source;
 
     #endregion
 

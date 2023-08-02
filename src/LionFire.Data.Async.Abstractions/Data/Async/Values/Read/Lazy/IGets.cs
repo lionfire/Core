@@ -1,24 +1,25 @@
 ﻿
 namespace LionFire.Data.Gets;
 
-public interface ILazilyGets<out T>  // RENAME IGets
+public interface IGets<out T>  // RENAME IGets
     : IStatelessGets<T>
     , ILazilyGets
     , IDefaultableReadWrapper<T> 
 {
-    ITask<ILazyGetResult<T>> GetIfNeeded(); // TODO: Add CancellationToken
+    ITask<IGetResult<T>> GetIfNeeded(); // TODO: Add CancellationToken
 
     /// <summary>
-    /// RENAME to PeekLastGet
     /// REVIEW - change return type to T?  And separate this into LastResolveResult
     /// </summary>
     /// <returns></returns>
-    ILazyGetResult<T> QueryValue();
+    IGetResult<T> QueryValue(); // RENAME to LatestGetResult, or GetResult, make a get property
+    //IGetResult<T> GetResult { get; } // TODO
+    
 
     T? ReadCacheValue { get; }
 }
 
-public interface ILazilyGetsValue<T> : ILazilyGets<T>
+public interface ILazilyGetsValue<T> : IGets<T>
 {
     ValueTask<T> GetValueIfNeeded();
 }

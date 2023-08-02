@@ -13,7 +13,7 @@ namespace LionFire.Persistence;
 ///  
 /// </summary>
 /// <typeparam name="T"></typeparam>
-public interface IReadHandleBase<out T> : IHandleBase, ILazilyGets<T>
+public interface IReadHandleBase<out T> : IHandleBase, IGets<T>
 {
     ///// <summary>
     ///// Returns true if retrieval was attempted via get_Object or TryResolveObject, and a non-null object was retrieved.

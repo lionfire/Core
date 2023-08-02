@@ -34,7 +34,7 @@ namespace LionFire.Persistence.Handles;
 public abstract class AsyncMapper<TItem, TUnderlying, TUnderlyingCollection, TResolvedUnderlyingCollection> 
     : IAsyncEnumerable<TItem>
     , IStatelessGets<TResolvedUnderlyingCollection>
-    , ILazilyGets<TResolvedUnderlyingCollection>
+    , IGets<TResolvedUnderlyingCollection>
     //where TUnderlyingCollectionResolvable : IGets<TUnderlyingCollection>
     where TUnderlyingCollection : IEnumerable<TUnderlying>
 {
@@ -63,7 +63,7 @@ public abstract class AsyncMapper<TItem, TUnderlying, TUnderlyingCollection, TRe
     #endregion
     public IStatelessGets<TResolvedUnderlyingCollection> UnderlyingResolves => underlyingResolves;
     IStatelessGets<TResolvedUnderlyingCollection> underlyingResolves;
-    public ILazilyGets<TResolvedUnderlyingCollection> UnderlyingLazilyResolves => underlyingResolves as ILazilyGets<TResolvedUnderlyingCollection>;
+    public IGets<TResolvedUnderlyingCollection> UnderlyingLazilyResolves => underlyingResolves as IGets<TResolvedUnderlyingCollection>;
 
     private TResolvedUnderlyingCollection ResolvedUnderlyingCollection { get; set; }
     private TUnderlyingCollection UnderlyingCollection { get; set; }
@@ -161,7 +161,7 @@ public abstract class AsyncMapper<TItem, TUnderlying, TUnderlyingCollection, TRe
 
     #region ILazilyGets
 
-    public async ITask<ILazyGetResult<TResolvedUnderlyingCollection>> GetIfNeeded()
+    public async ITask<IGetResult<TResolvedUnderlyingCollection>> GetIfNeeded()
     {
         var ulr = UnderlyingLazilyResolves;
         if (ulr != null)
@@ -170,7 +170,7 @@ public abstract class AsyncMapper<TItem, TUnderlying, TUnderlyingCollection, TRe
         }
         else
         {
-            return HasValue ? new LazyResolveResult<TResolvedUnderlyingCollection>(true, Value) : (await underlyingResolves.Get().ConfigureAwait(false)).ToLazyResolveResult();
+            return HasValue ? new LazyResolveResult<TResolvedUnderlyingCollection>(true, Value) : (await underlyingResolves.Get().ConfigureAwait(false));
         }
     }
 

@@ -4,7 +4,7 @@ using LionFire.Data.Gets;
 namespace LionFire.Data.Collections;
 
 public interface IAsyncReadOnlyCollectionCacheBase<TItem>
-    : ILazilyGets<IEnumerable<TItem>>
+    : IGets<IEnumerable<TItem>>
     , IObservableGets<IEnumerable<TItem>>
     , IReadOnlyCollection<TItem>
 {

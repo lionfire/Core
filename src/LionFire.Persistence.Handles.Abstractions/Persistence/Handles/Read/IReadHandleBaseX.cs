@@ -39,7 +39,7 @@ public static class IReadHandleBaseX
 
     public static async Task<T> GetValue<T>(this IReadHandleBase<T> handle)
     {
-        if (handle is ILazilyGets<T> l)
+        if (handle is IGets<T> l)
             return await l.GetIfNeeded<T>().ConfigureAwait(false);
 
         var result = await handle.Get().ConfigureAwait(false);
@@ -49,7 +49,7 @@ public static class IReadHandleBaseX
 
     public static async Task<IGetResult<T>> GetIfNeeded<T>(this IReadHandleBase<T> handle)
     {
-        if (handle is ILazilyGets<T> l)
+        if (handle is IGets<T> l)
             return await l.GetIfNeeded().ConfigureAwait(false);
 
         var result = await handle.Get().ConfigureAwait(false);

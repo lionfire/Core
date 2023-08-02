@@ -11,7 +11,7 @@ public abstract class AsyncGetsWithEvents<TKey, TValue>
     : DisposableKeyed<TKey>
     , INotifyWrappedValueChanged
     , INotifyWrappedValueReplaced
-    , ILazilyGets<TValue>
+    , IGets<TValue>
 //  - RENAME this class to LazilyResolvesDeluxe<> to distinguish from LazilyResolves<>? Or rename LazilyResolves<> to SimpleLazilyResolves<>?
 {
     static ValueChangedPropagation ValueChangedPropagation = new ValueChangedPropagation();

@@ -20,4 +20,6 @@ public class AsyncGetOptions : AsyncGetOrSetOptions
     /// </summary>
     public bool BlockToGet { get; set; } = false;
     public bool DiscardReadCacheOnGetFailure { get; set; }
+
+    public TimeSpan? Expiry { get; set; }
 }

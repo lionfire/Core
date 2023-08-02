@@ -99,13 +99,13 @@ public abstract class AsyncReadOnlyDictionaryCache<TKey, TValue>
 
     #region ILazilyGets<IEnumerable<TItem>>
 
-    async ITask<ILazyGetResult<IEnumerable<KeyValuePair<TKey, TValue>>>> ILazilyGets<IEnumerable<KeyValuePair<TKey, TValue>>>.GetIfNeeded()
+    async ITask<ILazyGetResult<IEnumerable<KeyValuePair<TKey, TValue>>>> IGets<IEnumerable<KeyValuePair<TKey, TValue>>>.GetIfNeeded()
     {
         var result = await this.GetIfNeeded().ConfigureAwait(false);
         throw new NotImplementedException();
     }
 
-    ILazyGetResult<IEnumerable<KeyValuePair<TKey, TValue>>> ILazilyGets<IEnumerable<KeyValuePair<TKey, TValue>>>.QueryValue()
+    ILazyGetResult<IEnumerable<KeyValuePair<TKey, TValue>>> IGets<IEnumerable<KeyValuePair<TKey, TValue>>>.QueryValue()
     {
         var result = this.QueryValue();
 

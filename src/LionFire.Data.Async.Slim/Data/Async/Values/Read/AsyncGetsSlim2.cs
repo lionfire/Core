@@ -12,7 +12,7 @@ namespace LionFire.Data.Gets;
 /// <remarks>
 /// AsyncGets&lt;T&gt; also implements ILazilyGets&lt;T&gt; and provides Rx features. Consider using it.
 /// </remarks>
-public abstract class AsyncGetsSlim2<TValue> : ILazilyGets<TValue>
+public abstract class AsyncGetsSlim2<TValue> : IGets<TValue>
 {
     #region Configuration
 
@@ -22,7 +22,7 @@ public abstract class AsyncGetsSlim2<TValue> : ILazilyGets<TValue>
 
     #region Value
 
-    public bool HasValue { get; protected set; }
+    public bool HasValue { get; protected set; } // 
 
     public TValue? Value
     {
@@ -67,6 +67,7 @@ public abstract class AsyncGetsSlim2<TValue> : ILazilyGets<TValue>
     public void DiscardValue()
     {
         ReadCacheValue = default;
+        
         HasValue = false;
     }
 
@@ -83,8 +84,13 @@ public abstract class AsyncGetsSlim2<TValue> : ILazilyGets<TValue>
         await TryGetSemaphore.WaitAsync().ConfigureAwait(false);
         try
         {
-            if (HasValue) { return QueryValue(); }
+            var lastGetResult = QueryValue();
+            if (lastGetResult.HasValue) return lastGetResult;
+            if (HasValue) { return QueryValue(); } // TODO: 
             var result = await Get().ConfigureAwait(false);
+            
+            getResult = LazyResolveResult<TValue>(HasValue, Value);
+
             return new LazyResolveResult<TValue>(result.IsSuccess == true, result.Value);
         }
         finally
@@ -99,7 +105,6 @@ public abstract class AsyncGetsSlim2<TValue> : ILazilyGets<TValue>
     {
         var result = await GetImpl(cancellationToken).ConfigureAwait(false);
         readCacheValue = result.IsSuccess == true ? result.Value : default;
-        HasValue = result.IsSuccess == true;
         return result;
     }
 
@@ -110,7 +115,7 @@ public abstract class AsyncGetsSlim2<TValue> : ILazilyGets<TValue>
     private ITask<IGetResult<TValue>>? getState;
 
 
-    public ILazyGetResult<TValue> QueryValue() => new LazyResolveResult<TValue>(HasValue, Value);
-
+    public ILazyGetResult<TValue> QueryValue() => getResult;
+    protected ILazyGetResult<TValue> getResult = new LazyResolveNoopResult<TValue>();
 
 }

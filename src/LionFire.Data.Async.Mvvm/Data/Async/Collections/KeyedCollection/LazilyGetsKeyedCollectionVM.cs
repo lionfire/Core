@@ -8,7 +8,7 @@ namespace LionFire.Data.Mvvm;
 
 public class LazilyGetsKeyedCollectionVM<TKey, TValue, TValueVM, TCollection>
     : LazilyGetsCollectionVM<TValue, TValueVM, TCollection>
-    , IResolvesKeyedCollectionVM<TKey, TValue, TValueVM, TCollection>
+    , IGetsKeyedCollectionVM<TKey, TValue, TValueVM, TCollection>
     where TKey : notnull
     where TCollection : IEnumerable<TValue>
 {
@@ -58,7 +58,7 @@ public class LazilyGetsKeyedCollectionVM<TKey, TValue, TValueVM, TCollection>
 
     #region Source
 
-    public IAsyncReadOnlyKeyedCollectionCache<TKey, TValue>? PreferredSource { get => base.Source as IAsyncReadOnlyKeyedCollectionCache<TKey, TValue>; set => base.Source = (ILazilyGets<TCollection>?)value; }
+    public IAsyncReadOnlyKeyedCollectionCache<TKey, TValue>? PreferredSource { get => base.Source as IAsyncReadOnlyKeyedCollectionCache<TKey, TValue>; set => base.Source = (IGets<TCollection>?)value; }
 
     protected void OnSourceChanged(IStatelessGets<TCollection>? newValue)
     {
