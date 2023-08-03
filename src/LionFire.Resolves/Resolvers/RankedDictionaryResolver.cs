@@ -1,6 +1,5 @@
-﻿using LionFire.Data;
-
-namespace LionFire.Resolvers;
+﻿
+namespace LionFire.Data.Async.Gets;
 
 // ENH
 public class RankedDictionaryResolver<TKey, TValue> : IGetter<TKey, TValue>

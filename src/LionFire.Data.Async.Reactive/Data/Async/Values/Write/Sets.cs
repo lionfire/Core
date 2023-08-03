@@ -1,8 +1,8 @@
-﻿using LionFire.Data.Sets;
+﻿using LionFire.Data.Async.Sets;
 using Microsoft.Extensions.Options;
 using System.Reactive.Subjects;
 
-namespace LionFire.Data;
+namespace LionFire.Data.Async.Sets;
 
 public abstract class Sets<TValue>
     : ReactiveObject
@@ -12,14 +12,14 @@ public abstract class Sets<TValue>
 
     #region (static)
 
-    public static AsyncSetOptions DefaultOptions => AsyncSetOptions<TValue>.Default;
+    public static SetterOptions DefaultOptions => SetterOptions<TValue>.Default;
 
     #endregion
 
-    public AsyncSetOptions Options { get; }
-    //AsyncValueOptions IHasNonNull<AsyncValueOptions>.Object => Options;
+    public SetterOptions Options { get; }
+    SetterOptions IHasNonNull<SetterOptions>.Object => Options;
 
-    //AsyncGetOptions IHasNonNullSettable<AsyncSetOptions>.Object { get => Options; set => Options = value; }
+    //AsyncGetOptions IHasNonNullSettable<SetterOptions>.Object { get => Options; set => Options = value; }
 
     public virtual IEqualityComparer<TValue> EqualityComparer => EqualityComparerOptions<TValue>.Default;
 
@@ -29,9 +29,9 @@ public abstract class Sets<TValue>
 
     public Sets() : this(null) { }
 
-    public Sets(AsyncSetOptions? options)
+    public Sets(SetterOptions? options)
     {
-        Options = options ?? AsyncSetOptions<TValue>.Default;
+        Options = options ?? SetterOptions<TValue>.Default;
     }
 
     #endregion

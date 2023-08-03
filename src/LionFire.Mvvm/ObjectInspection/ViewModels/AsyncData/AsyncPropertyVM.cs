@@ -1,7 +1,7 @@
-﻿using LionFire.Data.Gets;
+﻿using LionFire.Data.Async.Gets;
 using LionFire.Data.Mvvm;
 using LionFire.Data.Reactive;
-using LionFire.Data.Sets;
+using LionFire.Data.Async.Sets;
 using LionFire.IO;
 using System.Reflection;
 
@@ -33,9 +33,9 @@ namespace LionFire.Mvvm.ObjectInspection;
 //    }
 //}
 
-public class GetsMemberVM<T> : MemberVM<IInspectorMemberInfo, IGetsRx<T>>
+public class GetsMemberVM<T> : MemberVM<IInspectorMemberInfo, IGetterRxO<T>>
 {
-    public GetsMemberVM(IInspectorMemberInfo info, IGetsRx<T> gets) : base(info, gets)
+    public GetsMemberVM(IInspectorMemberInfo info, IGetterRxO<T> gets) : base(info, gets)
     {
         //Gets = gets;
     }

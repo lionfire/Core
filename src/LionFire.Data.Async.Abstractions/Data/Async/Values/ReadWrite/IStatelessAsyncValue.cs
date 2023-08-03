@@ -1,8 +1,8 @@
-﻿using LionFire.Data.Gets;
-using LionFire.Data.Sets;
+﻿using LionFire.Data.Async.Gets;
+using LionFire.Data.Async.Sets;
 
-namespace LionFire.Data;
+namespace LionFire.Data.Async;
 
-public interface IStatelessAsyncValue<T> : IStatelessGets<T>, ISets<T>
+public interface IStatelessAsyncValue<T> : IStatelessGetter<T>, ISetter<T>
 {
 }

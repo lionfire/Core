@@ -1,4 +1,4 @@
-﻿using LionFire.Data.Gets;
+﻿using LionFire.Data.Async.Gets;
 using LionFire.Persistence.Handles;
 
 namespace LionFire.Persistence;
@@ -13,7 +13,7 @@ namespace LionFire.Persistence;
 ///  
 /// </summary>
 /// <typeparam name="T"></typeparam>
-public interface IReadHandleBase<out T> : IHandleBase, IGets<T>
+public interface IReadHandleBase<out T> : IHandleBase, IGetter<T>
 {
     ///// <summary>
     ///// Returns true if retrieval was attempted via get_Object or TryResolveObject, and a non-null object was retrieved.

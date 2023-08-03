@@ -1,5 +1,5 @@
 ﻿using DynamicData;
-using LionFire.Data.Gets;
+using LionFire.Data.Async.Gets;
 using LionFire.Ontology;
 using LionFire.Structures;
 using LionFire.Structures.Keys;
@@ -82,7 +82,7 @@ public abstract class AsyncReadOnlyDictionaryCache<TKey, TValue>
     #region  IObservableGets<IEnumerable<TItem>>
 
 
-    IObservable<ITask<IGetResult<IEnumerable<KeyValuePair<TKey, TValue>>>>> IObservableGets<IEnumerable<KeyValuePair<TKey, TValue>>>.Gets => throw new NotImplementedException();
+    IObservable<ITask<IGetResult<IEnumerable<KeyValuePair<TKey, TValue>>>>> IObservableGetOperations<IEnumerable<KeyValuePair<TKey, TValue>>>.GetOperations => throw new NotImplementedException();
 
     //IObservable<ITask<IGetResult<IEnumerable<TValue>>>> IObservableResolving<TValue>.Resolving => throw new NotImplementedException();
 
@@ -99,13 +99,13 @@ public abstract class AsyncReadOnlyDictionaryCache<TKey, TValue>
 
     #region ILazilyGets<IEnumerable<TItem>>
 
-    async ITask<IGetResult<IEnumerable<KeyValuePair<TKey, TValue>>>> IGets<IEnumerable<KeyValuePair<TKey, TValue>>>.GetIfNeeded()
+    async ITask<IGetResult<IEnumerable<KeyValuePair<TKey, TValue>>>> IGetter<IEnumerable<KeyValuePair<TKey, TValue>>>.GetIfNeeded()
     {
         var result = await this.GetIfNeeded().ConfigureAwait(false);
         throw new NotImplementedException();
     }
 
-    IGetResult<IEnumerable<KeyValuePair<TKey, TValue>>> IGets<IEnumerable<KeyValuePair<TKey, TValue>>>.QueryValue()
+    IGetResult<IEnumerable<KeyValuePair<TKey, TValue>>> IGetter<IEnumerable<KeyValuePair<TKey, TValue>>>.QueryValue()
     {
         var result = this.QueryValue();
 
@@ -120,7 +120,7 @@ public abstract class AsyncReadOnlyDictionaryCache<TKey, TValue>
 
     #region IGets<IEnumerable<KeyValuePair<TKey, TValue>>>
 
-    async ITask<IGetResult<IEnumerable<KeyValuePair<TKey, TValue>>>> IStatelessGets<IEnumerable<KeyValuePair<TKey, TValue>>>.Get(CancellationToken cancellationToken)
+    async ITask<IGetResult<IEnumerable<KeyValuePair<TKey, TValue>>>> IStatelessGetter<IEnumerable<KeyValuePair<TKey, TValue>>>.Get(CancellationToken cancellationToken)
     {
         await this.Get(cancellationToken).ConfigureAwait(false);
         throw new NotImplementedException();

@@ -1,5 +1,5 @@
 
-namespace LionFire.Data.Sets;
+namespace LionFire.Data.Async.Sets;
 
 public class SetsForKeyOptions
 {
@@ -30,7 +30,7 @@ public abstract class Sets<TKey, TValue>
 
     public Sets() : this(null) { }
 
-    public Sets(AsyncSetOptions? options) : base(options)
+    public Sets(SetterOptions? options) : base(options)
     {
     }
         

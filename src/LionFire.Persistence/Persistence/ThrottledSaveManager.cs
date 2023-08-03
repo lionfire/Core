@@ -3,8 +3,8 @@ using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using LionFire.Structures;
-using LionFire.Data.Gets;
-using LionFire.Data.Sets;
+using LionFire.Data.Async.Gets;
+using LionFire.Data.Async.Sets;
 
 namespace LionFire.Persistence
 {
@@ -75,18 +75,18 @@ namespace LionFire.Persistence
         {
             lock (saveLock)
             {
-                HashSet<ISets> saved = new HashSet<ISets>();
+                HashSet<ISetter> saved = new HashSet<ISetter>();
 
                 if (queue.Count > 0)
                 {
-                    while (queue.TryDequeue(out ISets item))
+                    while (queue.TryDequeue(out ISetter item))
                     {
                         if (saved.Contains(item))
                         {
                             continue;
                         }
 
-                        if (item is ISets h)
+                        if (item is ISetter h)
                         {
                             try
                             {
@@ -116,9 +116,9 @@ namespace LionFire.Persistence
 
         #region Manual Change Notifications
 
-        private ConcurrentQueue<ISets> queue = new ConcurrentQueue<ISets>();
+        private ConcurrentQueue<ISetter> queue = new ConcurrentQueue<ISetter>();
 
-        public void OnChanged(ISets obj)
+        public void OnChanged(ISetter obj)
         {
             queue.Enqueue(obj);
             timer.Enabled = true;

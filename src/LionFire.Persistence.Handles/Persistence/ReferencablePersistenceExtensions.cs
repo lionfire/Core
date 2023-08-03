@@ -1,14 +1,14 @@
 ﻿using LionFire.Persistence;
 using LionFire.Persistence.Handles;
 using LionFire.Referencing;
-using LionFire.Data.Gets;
+using LionFire.Data.Async.Gets;
 using LionFire.Structures;
 using System;
 using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
 using LionFire.Data;
-using LionFire.Data.Sets;
+using LionFire.Data.Async.Sets;
 
 namespace LionFire.ExtensionMethods.Persistence // REVIEW - change namespace to LionFire.ExtensionMethods.Data?
 {
@@ -39,7 +39,7 @@ namespace LionFire.ExtensionMethods.Persistence // REVIEW - change namespace to 
                 return await ((Task<ITransferResult>)typeof(ReferencableSaveExtensions).GetMethod(nameof(TrySave)).MakeGenericMethod(referencable.GetType()).Invoke(null, new object[] { referencable })).ConfigureAwait(false);
             }
 
-            ISets puts = referencable.GetExistingReadWriteHandle();
+            ISetter puts = referencable.GetExistingReadWriteHandle();
             if (puts == null)
             {
                 IReadHandle readHandle = referencable as IReadHandle;

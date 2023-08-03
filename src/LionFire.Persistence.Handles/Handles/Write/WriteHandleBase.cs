@@ -7,11 +7,11 @@ using System.Threading.Tasks;
 using LionFire.Activation;
 using LionFire.Extensions.DefaultValues;
 using LionFire.Referencing;
-using LionFire.Data.Gets;
+using LionFire.Data.Async.Gets;
 using LionFire.Results;
 using LionFire.Structures;
 using LionFire.Threading;
-using LionFire.Data.Sets;
+using LionFire.Data.Async.Sets;
 
 namespace LionFire.Persistence.Handles;
 
@@ -371,12 +371,12 @@ public abstract class WriteHandleBase2<TReference, TValue>
 // REVIEW - why is there GetValue in WriteHandleBase?  See WriteHandleBase2
 //[Obsolete("See WriteHandleBase2")]
 public abstract class WriteHandleBase<TReference, TValue> 
-    : AsyncGetsWithEvents<TReference, TValue>
+    : GetterWithEvents<TReference, TValue>
     , IWriteHandleBase<TValue>
     , IWrapper<TValue>
     , IHandleInternal<TValue>
     , IDeletable
-    , ISets<TValue>
+    , ISetter<TValue>
     , IStagesSet<TValue>
     , IReferencable<TReference>
     , INotifyWrappedValueChanged
@@ -554,7 +554,7 @@ public abstract class WriteHandleBase<TReference, TValue>
 
     #endregion
 
-    Task<ITransferResult> ISets.Set(CancellationToken cancellationToken) => Put(cancellationToken);
+    Task<ITransferResult> ISetter.Set(CancellationToken cancellationToken) => Put(cancellationToken);
 
     public async Task<ITransferResult> Set(TValue value, CancellationToken cancellationToken = default)
     {

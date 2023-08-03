@@ -1,5 +1,5 @@
 ﻿using LionFire.Data;
-using LionFire.Data.Gets;
+using LionFire.Data.Async.Gets;
 using MorseCode.ITask;
 
 namespace LionFire.Resolvers;
@@ -13,11 +13,11 @@ public class DictionaryResolver<TKey, TValue> : IGetsSync<TKey, TValue>
     {
         if (Dictionary.TryGetValue(resolvable, out var result))
         {
-            return new ResolveResultSuccess<TValue>(result);
+            return new SuccessGetResult<TValue>(result);
         }
         else
         {
-            return ResolveResultNotResolved<TValue>.Instance;
+            return NotFoundGetResult<TValue>.Instance;
         }
     }
 }

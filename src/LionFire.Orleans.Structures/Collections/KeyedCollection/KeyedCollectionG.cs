@@ -1,7 +1,7 @@
 ﻿
 using LionFire.Collections;
 using LionFire.Orleans_.Reactive_;
-using LionFire.Data.Gets;
+using LionFire.Data.Async.Gets;
 using LionFire.Threading;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
@@ -281,7 +281,7 @@ public class KeyedCollectionG<TKey, TItem> : Grain
     public virtual Task<IEnumerable<Type>> SupportedTypes() => Task.FromResult(Enumerable.Empty<Type>());
 
     public Task<IGetResult<IEnumerable<TItem>>> Get(CancellationToken cancellationToken = default)
-        => Task.FromResult<IGetResult<IEnumerable<TItem>>>(new ResolveResultSuccess<IEnumerable<TItem>>(ItemsState.State.Values.ToArray()));
+        => Task.FromResult<IGetResult<IEnumerable<TItem>>>(new SuccessGetResult<IEnumerable<TItem>>(ItemsState.State.Values.ToArray()));
 
 
 }

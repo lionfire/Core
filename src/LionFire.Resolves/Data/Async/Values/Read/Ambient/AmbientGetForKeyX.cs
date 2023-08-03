@@ -2,8 +2,9 @@
 using LionFire.ExtensionMethods.Objects;
 using System.Linq;
 using LionFire.Data;
+using LionFire.Data.Async.Gets;
 
-namespace LionFire.ExtensionMethods.Poco.Resolvables;
+namespace LionFire.ExtensionMethods.Poco.Getters;
 
 public static class IResolverPocoExtensions
 {
@@ -32,7 +33,7 @@ public static class IResolverPocoExtensions
             }
             else
             {
-                if (result.IsSuccess == true) return result;
+                if (result.IsSuccess() == true) return result;
             }
         }
 

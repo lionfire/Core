@@ -1,9 +1,7 @@
 ﻿
-using System.Reactive.Subjects;
+namespace LionFire.Data.Async;
 
-namespace LionFire.Data;
-
-public abstract class AsyncReadOnlyProperty<TObject, TValue> : Gets<TObject, TValue>
+public abstract class AsyncReadOnlyProperty<TObject, TValue> : Getter<TObject, TValue>
 {
     #region Relationships
 
@@ -15,7 +13,7 @@ public abstract class AsyncReadOnlyProperty<TObject, TValue> : Gets<TObject, TVa
 
     #region Lifecycle
 
-    public AsyncReadOnlyProperty(TObject target, AsyncGetOptions? options = null) : base(target, options)
+    public AsyncReadOnlyProperty(TObject target, GetterOptions? options = null) : base(target, options)
     {
         Target = target;
         GetOptions = options ?? TargetAsync?.Options?.ValueOptions.Get ?? DefaultOptions;

@@ -1,5 +1,5 @@
 ﻿using LionFire.Persistence;
-using LionFire.Data.Gets;
+using LionFire.Data.Async.Gets;
 using LionFire.Threading;
 using System;
 using System.Collections.Generic;
@@ -24,9 +24,9 @@ namespace LionFire.Referencing
             var replacements = new List<object>();
             var removals = new List<object>();
 
-            await Task.WhenAll(collection.OfType<IGets<object>>().Select(async rh => await rh.GetIfNeeded().ConfigureAwait(false))).ConfigureAwait(false);
+            await Task.WhenAll(collection.OfType<IGetter<object>>().Select(async rh => await rh.GetIfNeeded().ConfigureAwait(false))).ConfigureAwait(false);
 
-            foreach (var component in collection.OfType<IGets<object>>().ToArray())
+            foreach (var component in collection.OfType<IGetter<object>>().ToArray())
             {
                 if (component.Value == null) throw new ReferencedValueNotFoundException(component as IReferencable);
                 try

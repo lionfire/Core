@@ -4,7 +4,7 @@ using Microsoft.AspNetCore.Components;
 using LionFire.Structures.Keys;
 using LionFire.Reflection;
 using LionFire.Reactive;
-using LionFire.Data.Gets;
+using LionFire.Data.Async.Gets;
 using static MudBlazor.CategoryTypes;
 using DynamicData.Binding;
 using LionFire.ExtensionMethods;
@@ -190,8 +190,8 @@ public partial class KeyedCollectionView<TKey, TValue, TValueVM>
         if (oldItems == null || !ReferenceEquals(oldItems, this.Items))
         {
             ViewModel.Source = Items == null ? null
-                : Items as IGets<IEnumerable<TValue>>
-                    ?? new PreresolvedGet<IEnumerable<TValue>>(Items);
+                : Items as IGetter<IEnumerable<TValue>>
+                    ?? new PreresolvedGetter<IEnumerable<TValue>>(Items);
 
             ViewModel.Source?.GetIfNeeded().AsTask().FireAndForget();
 

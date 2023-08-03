@@ -9,7 +9,7 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace LionFire.Data.Sets;
+namespace LionFire.Data.Async.Sets;
 
 internal static class SetsLogic<TValue>
 {

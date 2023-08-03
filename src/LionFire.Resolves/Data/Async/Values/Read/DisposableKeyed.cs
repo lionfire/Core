@@ -1,5 +1,5 @@
 ﻿
-namespace LionFire.Data.Gets;
+namespace LionFire.Data.Async.Gets;
 
 // REVIEW - Renamed to DisposableKeyed, move to LionFire.Structures namespace and maybe DLL?
 // Is the Disposable part necessary for Resolvables?  It can act as a forceful signal from one part of an app to another that a handle/resolvable is dead and must not be used anymore.

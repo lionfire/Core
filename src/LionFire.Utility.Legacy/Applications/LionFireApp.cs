@@ -42,7 +42,7 @@ using System.Windows.Threading;
 using LionFire.Persistence;
 using LionFire.Vos;
 using LionFire.Resolvables;
-using LionFire.Data.Gets;
+using LionFire.Data.Async.Gets;
 using LionFire.Vos.VosApp;
 
 namespace LionFire.Applications

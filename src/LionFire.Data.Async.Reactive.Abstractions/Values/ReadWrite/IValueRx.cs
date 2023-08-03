@@ -1,14 +1,13 @@
-﻿using LionFire.Data.Gets;
-using LionFire.Data.Sets;
-using LionFire.Ontology;
+﻿using LionFire.Data.Async.Gets;
+using LionFire.Data.Async.Sets;
 
-namespace LionFire.Data.Reactive;
+namespace LionFire.Data.Async;
 
 public interface IValueRx<T> 
-    : IGetsRx<T>
+    : IGetterRxO<T>
     , ISetterRxO<T>
     , IValue<T>
 //, IHasNonNullSettable<AsyncValueOptions>
 {
-    AsyncValueOptions Options { get; set; }
+    ValueOptions Options { get; set; }
 }

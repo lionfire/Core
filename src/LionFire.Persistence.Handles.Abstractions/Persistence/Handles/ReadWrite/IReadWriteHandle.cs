@@ -2,16 +2,16 @@
 
 using LionFire.Persistence.Handles;
 using LionFire.Referencing;
-using LionFire.Data.Gets;
+using LionFire.Data.Async.Gets;
 using LionFire.Structures;
 using System;
-using LionFire.Data.Sets;
+using LionFire.Data.Async.Sets;
 
 /// <summary>
 /// IReadWriteHandle
 /// </summary>
 /// <typeparam name="T"></typeparam>
-public interface IReadWriteHandleBase<T> : IHandleBase, IReadHandleBase<T>, IWrapper<T>, ISets, IDeletable, IWriteHandleBase<T> { }
+public interface IReadWriteHandleBase<T> : IHandleBase, IReadHandleBase<T>, IWrapper<T>, ISetter, IDeletable, IWriteHandleBase<T> { }
 
 /// <summary>
 /// Limited interface for when generic interface type is not available

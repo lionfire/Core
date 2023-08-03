@@ -1,5 +1,5 @@
 ﻿using DynamicData;
-using LionFire.Data.Gets;
+using LionFire.Data.Async.Gets;
 using LionFire.Ontology;
 using LionFire.Structures;
 using LionFire.Structures.Keys;
@@ -147,7 +147,7 @@ public abstract class AsyncReadOnlyKeyedCollectionCache<TKey, TValue>
     {
         lock (currentResolvingLock)
         {
-            var existing = gets.Value;
+            var existing = getOperations.Value;
             if (existing != null && !existing.AsTask().IsCompleted) { return existing; }
 
             var task = Task.Run<IGetResult<IEnumerable<TValue>>>(async () =>
@@ -164,7 +164,7 @@ public abstract class AsyncReadOnlyKeyedCollectionCache<TKey, TValue>
                 }
                 return result;
             }).AsITask();
-            gets.OnNext(task);
+            getOperations.OnNext(task);
             return task;
         }
     }

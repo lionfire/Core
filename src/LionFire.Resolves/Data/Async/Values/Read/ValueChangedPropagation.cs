@@ -2,7 +2,7 @@
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
 
-namespace LionFire.Data.Gets;
+namespace LionFire.Data.Async.Gets;
 
 
 /// <summary>

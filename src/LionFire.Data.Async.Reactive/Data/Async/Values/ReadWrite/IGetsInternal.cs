@@ -1,4 +1,4 @@
-﻿namespace LionFire.Data;
+﻿namespace LionFire.Data.Async;
 
 internal interface IGetsInternal<TValue> //: IAsyncGetsRx<TValue>
 {

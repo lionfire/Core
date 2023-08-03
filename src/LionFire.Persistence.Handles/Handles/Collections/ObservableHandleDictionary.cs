@@ -1,10 +1,10 @@
 ﻿using LionFire.Persistence;
 using LionFire.Referencing;
-using LionFire.Data.Gets;
+using LionFire.Data.Async.Gets;
 using System;
 using System.Reflection;
 using System.Threading.Tasks;
-using LionFire.Data.Sets;
+using LionFire.Data.Async.Sets;
 
 namespace LionFire.Persistence.Handles
 {
@@ -58,7 +58,7 @@ namespace LionFire.Persistence.Handles
             var writable = (IWriteHandleBase<TValue>)handle;
             writable.Value = obj;
 
-            if (handle is ISets saveable)
+            if (handle is ISetter saveable)
             {
                 await saveable.Set().ConfigureAwait(false);
             }

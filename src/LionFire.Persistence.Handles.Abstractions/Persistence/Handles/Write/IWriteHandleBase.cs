@@ -1,5 +1,5 @@
-﻿using LionFire.Data.Gets;
-using LionFire.Data.Sets;
+﻿using LionFire.Data.Async.Gets;
+using LionFire.Data.Async.Sets;
 using LionFire.Structures;
 
 namespace LionFire.Persistence
@@ -12,7 +12,7 @@ namespace LionFire.Persistence
         : IContravariantWriteHandleBase<T>
         , IDefaultableWrapper<T>
         , IStagesSet<T>
-        , ISets<T>
+        , ISetter<T>
     {
     }
 }

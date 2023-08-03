@@ -1,7 +1,5 @@
 ﻿
-using System;
-
-namespace LionFire.Data;
+namespace LionFire.Data.Async;
 
 [Flags]
 public enum SetTriggerMode

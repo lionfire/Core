@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
-using LionFire.Data.Gets.ChainResolving;
+using LionFire.Data.Async.Gets.ChainResolving;
 
 namespace LionFire.Vos.ChainResolving
 {
@@ -18,18 +18,18 @@ namespace LionFire.Vos.ChainResolving
         /// <param name="obj"></param>
         /// <param name="options"></param>
         /// <returns></returns>
-        public static Task<ChainResolveResult<T>> ChainResolve<T>(this IVob vob, object obj, ChainResolveOptions options = null)
+        public static Task<ChainGetterResult<T>> ChainResolve<T>(this IVob vob, object obj, ChainGetterptions options = null)
         {
-            return obj.ChainResolveAsync<T>(vob.Acquire<ChainResolveOptions>() ?? Default);
+            return obj.ChainResolveAsync<T>(vob.Acquire<ChainGetterptions>() ?? Default);
         }
 
-        public static ChainResolveOptions Default = new ChainResolveOptions
+        public static ChainGetterptions Default = new ChainGetterptions
         {
-            Parent = ChainResolveOptions.Default,
-            Resolvers = new List<ChainResolverWorker>
+            Parent = ChainGetterptions.Default,
+            Resolvers = new List<ChainGetterWorker>
             {
-                new ChainResolverWorker(typeof(IVob), (Func<object, string, object>) ((o,subpath) => ((IVob)o)[subpath])),
-                new ChainResolverWorker(typeof(IVob), (Func<object, Type, object>) ((o,type) => ((IVob)o).GetReadHandle(type))),
+                new ChainGetterWorker(typeof(IVob), (Func<object, string, object>) ((o,subpath) => ((IVob)o)[subpath])),
+                new ChainGetterWorker(typeof(IVob), (Func<object, Type, object>) ((o,type) => ((IVob)o).GetReadHandle(type))),
             }
         };
     }

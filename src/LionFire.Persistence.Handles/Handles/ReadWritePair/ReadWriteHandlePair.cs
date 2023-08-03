@@ -2,14 +2,14 @@
 using LionFire.ExtensionMethods.Resolves;
 using LionFire.Persistence;
 using LionFire.Referencing;
-using LionFire.Data.Gets;
+using LionFire.Data.Async.Gets;
 using LionFire.Results;
 using LionFire.Structures;
 using MorseCode.ITask;
 using System;
 using System.Threading;
 using System.Threading.Tasks;
-using LionFire.Data.Sets;
+using LionFire.Data.Async.Sets;
 
 namespace LionFire.Persistence;
 
@@ -84,7 +84,7 @@ public abstract class ReadWriteHandlePair<TReference, TValue>
 /// <typeparam name="TValue"></typeparam>
 public class ReadWriteHandlePairBase<TReference, TValue>
     : ReadWriteHandlePairBase<TReference, TValue, IReadHandleBase<TValue>, IWriteHandleBase<TValue>>
-    , ISets<TValue>
+    , ISetter<TValue>
     , IStagesSet<TValue>
     , IReadWriteHandlePairBase<TValue>
     , IWriteHandleBase<TValue>
@@ -195,7 +195,7 @@ public class ReadWriteHandlePairBase<TReference, TValue>
 
     public void DiscardValue()
     {
-        if (readHandle is IGets<TValue> lr)
+        if (readHandle is IGetter<TValue> lr)
         {
             lr.DiscardValue();
         }
@@ -217,7 +217,7 @@ public class ReadWriteHandlePairBase<TReference, TValue>
     public TValue StagedValue { get => WriteHandle.StagedValue; set => WriteHandle.StagedValue = value; }
     public bool HasStagedValue { get => WriteHandle.HasStagedValue; set => WriteHandle.HasStagedValue = value; }
 
-    Task<ITransferResult> ISets.Set(CancellationToken cancellationToken) => WriteHandle.Set(cancellationToken);
+    Task<ITransferResult> ISetter.Set(CancellationToken cancellationToken) => WriteHandle.Set(cancellationToken);
 
     public Task<ITransferResult> Set(TValue value, CancellationToken cancellationToken = default)
         => WriteHandle.Set(value, cancellationToken);

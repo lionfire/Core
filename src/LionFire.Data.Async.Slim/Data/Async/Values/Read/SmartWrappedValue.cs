@@ -1,5 +1,5 @@
 ﻿
-namespace LionFire.Data.Gets;
+namespace LionFire.Data.Async.Gets;
 
 //public class SmartWrappedValue<TValue>
 //{

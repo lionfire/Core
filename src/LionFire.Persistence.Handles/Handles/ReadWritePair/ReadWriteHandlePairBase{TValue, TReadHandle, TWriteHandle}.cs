@@ -2,13 +2,13 @@
 using LionFire.Persistence;
 using LionFire.Persistence.Handles;
 using LionFire.Referencing;
-using LionFire.Data.Gets;
+using LionFire.Data.Async.Gets;
 using LionFire.Data;
 using LionFire.Threading;
 using System;
 using System.Threading.Tasks;
 using UltraMapper;
-using LionFire.Data.Sets;
+using LionFire.Data.Async.Sets;
 
 namespace LionFire.Persistence
 {
@@ -27,7 +27,7 @@ namespace LionFire.Persistence
     /// <seealso cref="ReadWriteHandle"/>
     /// <seealso cref="ReadWriteHandlePairEx"/>
     public class ReadWriteHandlePairBase<TReference, TValue, TReadHandle, TWriteHandle> : DisposableKeyed<TReference>
-        , IGetsAndSetsWithoutStaging<TValue>
+        , IStatelessGetterAndSetter<TValue>
         , IReadWriteHandlePairBase<TValue, TReadHandle, TWriteHandle>
         where TReference : IReference
         where TReadHandle : class, IReadHandleBase<TValue>
@@ -83,7 +83,7 @@ namespace LionFire.Persistence
         }
         protected TReadHandle readHandle;
         public bool HasReadHandle => readHandle != null;
-        IStatelessGets<TValue> IGetsAndSetsWithoutStaging<TValue>.Resolves => ReadHandle;
+        IStatelessGetter<TValue> IStatelessGetterAndSetter<TValue>.Getter => ReadHandle;
 
         #endregion
 
@@ -108,7 +108,7 @@ namespace LionFire.Persistence
         }
         protected TWriteHandle writeHandle;
         public bool HasWriteHandle => writeHandle != null;
-        ISets IGetsAndSetsWithoutStaging<TValue>.Commits => WriteHandle;
+        ISetter IStatelessGetterAndSetter<TValue>.Setter => WriteHandle;
 
         #endregion
 

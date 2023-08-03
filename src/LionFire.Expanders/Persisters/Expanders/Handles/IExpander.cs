@@ -1,7 +1,7 @@
 ﻿using LionFire.Persistence;
 using LionFire.Persistence.Persisters;
 using LionFire.Referencing;
-using LionFire.Data.Gets;
+using LionFire.Data.Async.Gets;
 using LionFire.Data;
 
 namespace LionFire.Persisters.Expanders;

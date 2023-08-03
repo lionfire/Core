@@ -1,7 +1,7 @@
 ﻿using LionFire.Results;
 using System.Threading.Tasks;
 
-namespace LionFire.Data.Gets;
+namespace LionFire.Data.Async.Gets;
 
 //public abstract class ResolvesBaseCovariant<TKey, TValue> : AsyncGetsWithEvents<TKey, TValue, object>, ILazilyGetsCovariant<TValue>
 //{

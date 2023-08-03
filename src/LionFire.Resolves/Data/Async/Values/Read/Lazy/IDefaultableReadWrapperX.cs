@@ -1,5 +1,5 @@
 ﻿using LionFire.Data;
-using LionFire.Data.Gets;
+using LionFire.Data.Async.Gets;
 using LionFire.Structures;
 using MorseCode.ITask;
 using System.Collections.Generic;
@@ -24,7 +24,7 @@ public static class IDefaultableReadWrapperX
     internal static ITask<IGetResult<TValue>> DefaultableReadWrapper_GetValue<TValue>(IDefaultableReadWrapper<TValue> readWrapper)
     {
         var value = readWrapper.Value;
-        return Task.FromResult((IGetResult<TValue>)new LazyResolveResult<TValue>(!EqualityComparer<TValue>.Default.Equals(value, default), value)).AsITask();
+        return Task.FromResult((IGetResult<TValue>)new GetResult<TValue>(!EqualityComparer<TValue>.Default.Equals(value, default), value)).AsITask();
     }
 
     #endregion

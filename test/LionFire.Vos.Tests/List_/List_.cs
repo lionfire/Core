@@ -7,7 +7,7 @@ using System.Text;
 using Xunit;
 using LionFire.Vos;
 using LionFire.Vos.Environment;
-using LionFire.Data.Gets.ChainResolving;
+using LionFire.Data.Async.Gets.ChainResolving;
 using LionFire.FlexObjects;
 using Microsoft.Extensions.DependencyInjection;
 using Xunit.Abstractions;

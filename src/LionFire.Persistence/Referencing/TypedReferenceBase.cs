@@ -1,10 +1,10 @@
-﻿using LionFire.Data.Gets;
+﻿using LionFire.Data.Async.Gets;
 using LionFire.Dependencies;
-using LionFire.ExtensionMethods.Poco.Resolvables;
+using LionFire.ExtensionMethods.Poco.Getters;
 using LionFire.Structures;
 using System;
 using System.Threading.Tasks;
-using LionFire.Data.Gets;
+using LionFire.Data.Async.Gets;
 
 namespace LionFire.Referencing
 {
@@ -50,7 +50,7 @@ namespace LionFire.Referencing
     public abstract class ResolvingTypedReferenceBase<TConcrete, TValue> 
         : ReferenceBase<TConcrete>
         , ITypedReference
-        , IStatelessGets
+        , IGetter
         where TConcrete : ReferenceBase<TConcrete>
     {
         public override Type Type => typeof(TValue);

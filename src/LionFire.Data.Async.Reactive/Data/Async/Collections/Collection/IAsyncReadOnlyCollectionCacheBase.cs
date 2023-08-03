@@ -1,11 +1,11 @@
 ﻿using DynamicData;
-using LionFire.Data.Gets;
+using LionFire.Data.Async.Gets;
 
 namespace LionFire.Data.Collections;
 
 public interface IAsyncReadOnlyCollectionCacheBase<TItem>
-    : IGets<IEnumerable<TItem>>
-    , IObservableGets<IEnumerable<TItem>>
+    : IGetter<IEnumerable<TItem>>
+    , IObservableGetOperations<IEnumerable<TItem>>
     , IReadOnlyCollection<TItem>
 {
 }

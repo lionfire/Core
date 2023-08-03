@@ -1,14 +1,14 @@
-﻿namespace LionFire.Resolvables
+﻿
+namespace LionFire.Data.Async.Gets;
+
+public static class IAsyncResolvableExtensions
 {
-    public static class IAsyncResolvableExtensions
+    public static bool IsResolutionExpensive(this IGetter ar)
     {
-        public static bool IsResolutionExpensive(this IAsyncResolvable ar)
+        if (ar is IGetterEx are)
         {
-            if (ar is IAsyncResolvableEx are)
-            {
-                return are.IsResolutionExpensive;
-            }
-            return true;
+            return are.IsResolutionExpensive;
         }
+        return true;
     }
 }

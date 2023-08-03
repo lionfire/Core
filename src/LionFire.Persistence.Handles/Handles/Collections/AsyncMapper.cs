@@ -1,5 +1,5 @@
 ﻿using LionFire.ExtensionMethods.Resolves;
-using LionFire.Data.Gets;
+using LionFire.Data.Async.Gets;
 using LionFire.Structures;
 using MorseCode.ITask;
 using System;
@@ -33,8 +33,8 @@ namespace LionFire.Persistence.Handles;
 
 public abstract class AsyncMapper<TItem, TUnderlying, TUnderlyingCollection, TResolvedUnderlyingCollection> 
     : IAsyncEnumerable<TItem>
-    , IStatelessGets<TResolvedUnderlyingCollection>
-    , IGets<TResolvedUnderlyingCollection>
+    , IStatelessGetter<TResolvedUnderlyingCollection>
+    , IGetter<TResolvedUnderlyingCollection>
     //where TUnderlyingCollectionResolvable : IGets<TUnderlyingCollection>
     where TUnderlyingCollection : IEnumerable<TUnderlying>
 {
@@ -61,9 +61,9 @@ public abstract class AsyncMapper<TItem, TUnderlying, TUnderlyingCollection, TRe
     }
 
     #endregion
-    public IStatelessGets<TResolvedUnderlyingCollection> UnderlyingResolves => underlyingResolves;
-    IStatelessGets<TResolvedUnderlyingCollection> underlyingResolves;
-    public IGets<TResolvedUnderlyingCollection> UnderlyingLazilyResolves => underlyingResolves as IGets<TResolvedUnderlyingCollection>;
+    public IStatelessGetter<TResolvedUnderlyingCollection> UnderlyingResolves => underlyingResolves;
+    IStatelessGetter<TResolvedUnderlyingCollection> underlyingResolves;
+    public IGetter<TResolvedUnderlyingCollection> UnderlyingLazilyResolves => underlyingResolves as IGetter<TResolvedUnderlyingCollection>;
 
     private TResolvedUnderlyingCollection ResolvedUnderlyingCollection { get; set; }
     private TUnderlyingCollection UnderlyingCollection { get; set; }
@@ -78,7 +78,7 @@ public abstract class AsyncMapper<TItem, TUnderlying, TUnderlyingCollection, TRe
 
     #region Construction
 
-    public AsyncMapper(IStatelessGets<TResolvedUnderlyingCollection> underlyingResolves)
+    public AsyncMapper(IStatelessGetter<TResolvedUnderlyingCollection> underlyingResolves)
     {
         this.underlyingResolves = underlyingResolves;
     }
@@ -170,7 +170,7 @@ public abstract class AsyncMapper<TItem, TUnderlying, TUnderlyingCollection, TRe
         }
         else
         {
-            return HasValue ? new LazyResolveResult<TResolvedUnderlyingCollection>(true, Value) : (await underlyingResolves.Get().ConfigureAwait(false));
+            return HasValue ? new GetResult<TResolvedUnderlyingCollection>(true, Value) : (await underlyingResolves.Get().ConfigureAwait(false));
         }
     }
 
@@ -183,7 +183,7 @@ public abstract class AsyncMapper<TItem, TUnderlying, TUnderlyingCollection, TRe
         }
         else
         {
-            return HasValue ? new LazyResolveResult<TResolvedUnderlyingCollection>(true, Value) : NoopFailGetResult<TResolvedUnderlyingCollection>.Instance;
+            return HasValue ? new GetResult<TResolvedUnderlyingCollection>(true, Value) : NoopFailGetResult<TResolvedUnderlyingCollection>.Instance;
         }
     }
 

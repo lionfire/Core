@@ -1,21 +1,18 @@
-﻿using LionFire.Data.Gets;
-using LionFire.Ontology;
+﻿using LionFire.Ontology;
 using LionFire.Reactive;
-using ReactiveUI;
 
-namespace LionFire.Data.Sets;
+namespace LionFire.Data.Async.Sets;
 
 /// <summary>
-/// ReactiveObject (ReactiveUI) version of ISetter
+/// ReactiveObject (ReactiveUI) version of ISetter, implementing IStagesSet
 /// </summary>
-/// <typeparam name="T"></typeparam>
-public interface ISetterRxO<T> 
+/// <typeparam name="TValue"></typeparam>
+public interface ISetterRxO<TValue> 
     : IReactiveObjectEx
-    , ISets<T> // contravariant
-    , IObservableSetResults // non-generic
-    , IObservableSetOperations<T> // covariant
-    , IStagesSet<T> // covariant and contravariant
-
-    , IHasNonNullSettable<AsyncSetOptions> // TODO? Or just have an interface member?
+    , ISetter<TValue> // contravariant
+    , IObservableSetResults<TValue> // covariant
+    , IObservableSetOperations<TValue> // covariant
+    , IStagesSet<TValue> // covariant and contravariant
+    , IHasNonNullSettable<SetterOptions> // TODO? Or just have an interface member?
 {
 }

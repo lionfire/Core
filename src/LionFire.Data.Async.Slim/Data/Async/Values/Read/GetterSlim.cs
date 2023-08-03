@@ -2,13 +2,13 @@
 using LionFire.ExtensionMethods.Poco.Data.Async;
 using System.Reactive.Subjects;
 
-namespace LionFire.Data.Gets;
+namespace LionFire.Data.Async.Gets;
 
 /// <summary>
 /// Like GetterSlim but uses BehaviorSubject to hold the latest get result.
 /// </summary>
 /// <typeparam name="TValue"></typeparam>
-public abstract class GetterSlimO<TValue> : IGets<TValue>
+public abstract class GetterSlimO<TValue> : IGetter<TValue>
 {
     //BehaviorSubject<IGetResult<TValue>> getResult = new();
     public TValue? ReadCacheValue => throw new NotImplementedException();
@@ -42,7 +42,7 @@ public abstract class GetterSlimO<TValue> : IGets<TValue>
         throw new NotImplementedException();
     }
 
-    public IObservable<IGetResult<TValue>> GetResult => getResult.Value;
+    public IObservable<IGetResult<TValue>> GetResult => getResult;
     BehaviorSubject<IGetResult<TValue>> getResult = new(NoopGetResult<TValue>.Instantiated);
 }
 
@@ -78,11 +78,11 @@ public abstract class GetterSlimO<TValue> : IGets<TValue>
 /// <remarks>
 /// Only requires one method to be implemented: GetImpl.
 /// </remarks>
-public abstract class GetterSlim<TValue> : IGets<TValue>
+public abstract class GetterSlim<TValue> : IGetter<TValue>
 {
     #region Configuration
 
-    public static bool DisposeValue => AsyncGetOptions<TValue>.Default.DisposeValue;
+    public static bool DisposeValue => GetterOptions<TValue>.Default.DisposeValue;
 
     #endregion
 
@@ -168,11 +168,11 @@ public abstract class GetterSlim<TValue> : IGets<TValue>
             if (HasValue)
             {
                 var currentValue = ReadCacheValue;
-                if (!EqualityComparer.Equals(currentValue, default)) return new ResolveResultNoop<TValue>(ReadCacheValue);
+                if (!EqualityComparer.Equals(currentValue, default)) return new NoopGetResult2<TValue>(ReadCacheValue);
             }
 
             var resolveResult = await Get().ConfigureAwait(false);
-            return new LazyResolveResult<TValue>(resolveResult.HasValue, resolveResult.Value);
+            return new GetResult<TValue>(resolveResult.HasValue, resolveResult.Value);
         }
         finally
         {
@@ -209,7 +209,7 @@ public abstract class GetterSlim<TValue> : IGets<TValue>
     public IGetResult<TValue> QueryValue()
     {
         var currentValue = ReadCacheValue;
-        return !EqualityComparer<TValue>.Default.Equals(currentValue, default) ? new ResolveResultNoop<TValue>(ReadCacheValue) : (IGetResult<TValue>)ResolveResultNotResolved<TValue>.Instance;
+        return !EqualityComparer<TValue>.Default.Equals(currentValue, default) ? new NoopGetResult2<TValue>(ReadCacheValue) : (IGetResult<TValue>)NotFoundGetResult<TValue>.Instance;
     }
 
     #endregion

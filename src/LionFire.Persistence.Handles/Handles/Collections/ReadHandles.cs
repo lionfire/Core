@@ -1,4 +1,4 @@
-﻿using LionFire.ExtensionMethods.Poco.Resolvables;
+﻿using LionFire.ExtensionMethods.Poco.Getters;
 using LionFire.Resolvables;
 using System.Collections;
 using System.Net.Http.Headers;

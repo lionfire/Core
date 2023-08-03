@@ -1,5 +1,5 @@
 ﻿
-namespace LionFire.Data.Gets;
+namespace LionFire.Data.Async.Gets;
 
 public interface IDetects
 {
@@ -15,7 +15,7 @@ public interface IDetects
     Task<bool> Exists(); // REVIEW - pass to ICanResolveAsync, like with ResolveAsync?    
 }
 
-public interface IDetects<T> : IStatelessGets<T>
+public interface IDetects<T> : IStatelessGetter<T>
 {
     /// <summary>
     /// Check whether the Value exists at source.  In some cases, it is cheap to acquire the value.  In such cases, return the Value along with a positive Exists result.  If this returns Exists but no value, you must call Get to retrieve the Value.

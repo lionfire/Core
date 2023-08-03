@@ -1,10 +1,10 @@
 ﻿using LionFire.Data.Reactive;
-using LionFire.Data.Sets;
+using LionFire.Data.Async.Sets;
 using System.Reactive.Subjects;
 
-namespace LionFire.Data;
+namespace LionFire.Data.Async;
 
-internal interface ISetsInternal<TValue> : Reactive.IValueRx<TValue>
+internal interface ISetsInternal<TValue> : IValueRx<TValue>
 {
     IEqualityComparer<TValue> EqualityComparer { get; }
     ISetOperation<TValue> SetState { get; }

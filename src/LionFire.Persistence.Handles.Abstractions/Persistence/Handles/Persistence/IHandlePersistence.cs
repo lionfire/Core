@@ -1,16 +1,16 @@
 ﻿using LionFire.Persistence;
 using LionFire.Referencing;
-using LionFire.Data.Gets;
+using LionFire.Data.Async.Gets;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using LionFire.Data.Sets;
+using LionFire.Data.Async.Sets;
 
 namespace LionFire.Persistence;
 
-public interface IHandlePersistence : ISets
+public interface IHandlePersistence : ISetter
 {
     void AssignFrom(object other);
 

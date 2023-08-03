@@ -1,5 +1,5 @@
 ﻿
-namespace LionFire.Data;
+namespace LionFire.Data.Async;
 
 public class GetsForKeyOptions
 {

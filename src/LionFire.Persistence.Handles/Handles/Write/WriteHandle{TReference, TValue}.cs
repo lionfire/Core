@@ -2,9 +2,9 @@
 using System;
 using System.Threading.Tasks;
 using LionFire.Referencing;
-using LionFire.Data.Gets;
+using LionFire.Data.Async.Gets;
 using MorseCode.ITask;
-using LionFire.Data.Sets;
+using LionFire.Data.Async.Sets;
 
 namespace LionFire.Persistence.Handles;
 

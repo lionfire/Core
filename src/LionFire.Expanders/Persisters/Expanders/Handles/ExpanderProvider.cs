@@ -1,6 +1,6 @@
 ﻿using LionFire.Referencing;
 
-using LionFire.Data.Gets;
+using LionFire.Data.Async.Gets;
 using LionFire.Resolvers;
 
 namespace LionFire.Persisters.Expanders;
@@ -53,6 +53,6 @@ public class ExpanderProvider : IGetsSync<IReference, IExpander>, IExpanderProvi
                 }
             }
         }
-        return ResolveResultNotResolved<IExpander>.Instance;
+        return NotFoundGetResult<IExpander>.Instance;
     }
 }

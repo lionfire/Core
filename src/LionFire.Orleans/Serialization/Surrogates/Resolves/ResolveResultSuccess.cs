@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using LionFire.Data.Gets;
+using LionFire.Data.Async.Gets;
 using Newtonsoft.Json.Linq;
 
 namespace LionFire.Orleans_.Serialization.Surrogates;
@@ -17,11 +17,11 @@ public struct ResolveResultSuccess_Surrogate<T>
 
 
 [RegisterConverter]
-public sealed class ResolveResultSuccess_SurrogateConverter<T> : IConverter<ResolveResultSuccess<T>, ResolveResultSuccess_Surrogate<T>>
+public sealed class ResolveResultSuccess_SurrogateConverter<T> : IConverter<SuccessGetResult<T>, ResolveResultSuccess_Surrogate<T>>
 {
-    public ResolveResultSuccess<T> ConvertFromSurrogate(in ResolveResultSuccess_Surrogate<T> surrogate) => new(surrogate.Value);
+    public SuccessGetResult<T> ConvertFromSurrogate(in ResolveResultSuccess_Surrogate<T> surrogate) => new(surrogate.Value);
 
-    public ResolveResultSuccess_Surrogate<T> ConvertToSurrogate(in ResolveResultSuccess<T> value) => new()
+    public ResolveResultSuccess_Surrogate<T> ConvertToSurrogate(in SuccessGetResult<T> value) => new()
     {
         Value = value.Value
     };

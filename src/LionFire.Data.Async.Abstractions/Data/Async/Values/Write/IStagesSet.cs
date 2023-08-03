@@ -1,17 +1,17 @@
 ﻿#nullable enable
 
-namespace LionFire.Data.Sets;
+namespace LionFire.Data.Async.Sets;
 
 public interface IStagesSet<T> : IReadStagesSet<T>, IWriteStagesSet<T>
 {
 }
 
-public interface IReadStagesSet<out T> : ISets
+public interface IReadStagesSet<out T> : ISetter
 {
     T? StagedValue { get; }    
 }
 
-public interface IWriteStagesSet<in T> : ISets
+public interface IWriteStagesSet<in T> : ISetter
 {
     T? StagedValue { set; }
     bool HasStagedValue { get; set; }

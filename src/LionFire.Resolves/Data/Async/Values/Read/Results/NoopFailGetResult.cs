@@ -1,6 +1,6 @@
 ﻿using LionFire.Results;
 
-namespace LionFire.Data.Gets;
+namespace LionFire.Data.Async.Gets;
 
 public struct NoopFailGetResult<TValue> : IGetResult<TValue>
 {

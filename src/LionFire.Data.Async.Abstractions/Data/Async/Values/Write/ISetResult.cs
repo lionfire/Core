@@ -1,6 +1,6 @@
 ﻿using LionFire.Results;
 
-namespace LionFire.Data.Sets;
+namespace LionFire.Data.Async.Sets;
 
 #if NotRecommended
 

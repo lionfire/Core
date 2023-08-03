@@ -2,7 +2,7 @@
 using LionFire.UI.Components.PropertyGrid;
 using Newtonsoft.Json.Linq;
 using LionFire.Mvvm.ObjectInspection;
-using LionFire.Data.Gets;
+using LionFire.Data.Async.Gets;
 using System.Reflection;
 
 namespace LionFire.UI.Components;
@@ -25,7 +25,7 @@ public class PropertyVM : ReactiveObject
         set
         {
             memberVM = value;
-            LazilyGets = memberVM as IGets<object>;
+            LazilyGets = memberVM as IGetter<object>;
         }
     }
     private ReflectionMemberVM? memberVM;
@@ -34,7 +34,7 @@ public class PropertyVM : ReactiveObject
 
     #region Derived
 
-    public IGets<object>? LazilyGets { get; private set; }
+    public IGetter<object>? LazilyGets { get; private set; }
     public Value<object>? AsyncSets { get; private set; }
 
     public bool ReadOnly => ObjectEditorVM?.ReadOnly == true;

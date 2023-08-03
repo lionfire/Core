@@ -1,12 +1,12 @@
 ﻿using LionFire.Persistence;
 using LionFire.Persistence.Implementation;
 using LionFire.Referencing;
-using LionFire.Data.Gets;
+using LionFire.Data.Async.Gets;
 using LionFire.Threading;
 using MorseCode.ITask;
 using System;
 using System.Threading.Tasks;
-using LionFire.Data.Sets;
+using LionFire.Data.Async.Sets;
 
 namespace LionFire.Persistence.Handles;
 
@@ -84,7 +84,7 @@ public abstract class ReadWriteHandleBase<TReference, TValue>
     void IDeletable.MarkDeleted() => this.StageValue_ReadWrite(default);
 
 
-    ITask<IGetResult<TValue>> IStatelessGets<TValue>.Get(CancellationToken cancellationToken = default) => Get(cancellationToken);
+    ITask<IGetResult<TValue>> IStatelessGetter<TValue>.Get(CancellationToken cancellationToken = default) => Get(cancellationToken);
 }
 
 #if OLD

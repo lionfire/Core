@@ -1,9 +1,9 @@
 ﻿
-using LionFire.Data.Gets;
+using LionFire.Data.Async.Gets;
 
-namespace LionFire.Data.Sets;
+namespace LionFire.Data.Async.Sets;
 
-public interface IGetsOrAsyncInstantiates<TValue> : IStatelessGets<TValue>, IAsyncInstantiatesForSet<TValue>
+public interface IGetsOrAsyncInstantiates<TValue> : IStatelessGetter<TValue>, IAsyncInstantiatesForSet<TValue>
 {
     ITask<IGetResult<TValue>> GetOrAsyncInstantiateValue();
 }

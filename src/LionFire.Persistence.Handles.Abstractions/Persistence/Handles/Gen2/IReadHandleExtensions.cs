@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Threading.Tasks;
 using LionFire.Persistence;
-using LionFire.Data.Gets;
-using LionFire.Data.Sets;
+using LionFire.Data.Async.Gets;
+using LionFire.Data.Async.Sets;
 
 namespace LionFire
 {
@@ -36,11 +36,11 @@ namespace LionFire
             }
         }
 
-        public static bool IsWritable<T>(this IReadHandleBase<T> readHandle) => readHandle as ISets != null;
+        public static bool IsWritable<T>(this IReadHandleBase<T> readHandle) => readHandle as ISetter != null;
 
         public static async Task<bool> IsValueAvailable<T>(this IReadHandleBase<T> readHandle)
         {
-            if (readHandle is IGets<T> lr && lr.HasValue) return true;
+            if (readHandle is IGetter<T> lr && lr.HasValue) return true;
             if (readHandle is ISupportsExist<T> ec) return await ec.Exists().ConfigureAwait(false);
             _ = await readHandle.Get().ConfigureAwait(false);
             return readHandle.HasValue;

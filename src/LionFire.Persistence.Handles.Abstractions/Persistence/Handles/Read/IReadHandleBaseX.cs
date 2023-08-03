@@ -35,11 +35,11 @@ public static class IReadHandleBaseX
 //            return handle.Object;
 //        }
 
-    public static bool HasReferenceOrValue<TValue>(this IReadHandleBase<TValue> handle) => handle != null && (handle.Reference != null || (handle as ILazilyGets)?.HasValue == true);
+    public static bool HasReferenceOrValue<TValue>(this IReadHandleBase<TValue> handle) => handle != null && (handle.Reference != null || (handle as ILazyGetter)?.HasValue == true);
 
     public static async Task<T> GetValue<T>(this IReadHandleBase<T> handle)
     {
-        if (handle is IGets<T> l)
+        if (handle is IGetter<T> l)
             return await l.GetIfNeeded<T>().ConfigureAwait(false);
 
         var result = await handle.Get().ConfigureAwait(false);
@@ -49,7 +49,7 @@ public static class IReadHandleBaseX
 
     public static async Task<IGetResult<T>> GetIfNeeded<T>(this IReadHandleBase<T> handle)
     {
-        if (handle is IGets<T> l)
+        if (handle is IGetter<T> l)
             return await l.GetIfNeeded().ConfigureAwait(false);
 
         var result = await handle.Get().ConfigureAwait(false);

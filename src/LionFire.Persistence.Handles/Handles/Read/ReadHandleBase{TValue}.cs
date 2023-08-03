@@ -3,7 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using LionFire.Referencing;
-using LionFire.Data.Gets;
+using LionFire.Data.Async.Gets;
 using LionFire.Structures;
 using MorseCode.ITask;
 
@@ -15,7 +15,7 @@ namespace LionFire.Persistence.Handles;
 /// <typeparam name="TValue"></typeparam>
 /// <seealso cref="ReadHandle{TValue}"/>
 public abstract class ReadHandleBase<TReference, TValue> 
-    : AsyncGetsWithEvents<TReference, TValue>, IReadHandleBase<TValue>
+    : GetterWithEvents<TReference, TValue>, IReadHandleBase<TValue>
     , IReferencable<IReference>
     , IReferencableAsValueType<TValue>
     , IKeyed<string>

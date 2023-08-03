@@ -11,7 +11,7 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace LionFire.Data.Gets;
+namespace LionFire.Data.Async.Gets;
 
 public class ResolvesTracker : IHostedService
 {
@@ -21,18 +21,18 @@ public class ResolvesTracker : IHostedService
     public Task StartAsync(CancellationToken cancellationToken)
     {
         types = new();
-        LazilyGetsEvents.ValueChanged += LazilyResolvesEvents_ValueChanged;
+        LazyGetterEvents.ValueChanged += LazilyResolvesEvents_ValueChanged;
         return Task.CompletedTask;
     }
 
     public Task StopAsync(CancellationToken cancellationToken)
     {
-        LazilyGetsEvents.ValueChanged -= LazilyResolvesEvents_ValueChanged;
+        LazyGetterEvents.ValueChanged -= LazilyResolvesEvents_ValueChanged;
         types = null;
         return Task.CompletedTask;
     }
 
-    private void LazilyResolvesEvents_ValueChanged((Type valueType, ILazilyGets resolves, object from, object to) args)
+    private void LazilyResolvesEvents_ValueChanged((Type valueType, ILazyGetter resolves, object from, object to) args)
     {
         IKeyed<string> stringKeyed = args.resolves as IKeyed<string>;
         if (stringKeyed == null) return;

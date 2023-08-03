@@ -2,7 +2,7 @@
 using LionFire;
 using LionFire.Persistence.Handles;
 using LionFire.Referencing;
-using LionFire.Data.Gets;
+using LionFire.Data.Async.Gets;
 using System.Threading.Tasks;
 
 namespace LionFire.Persistence.Persisters;

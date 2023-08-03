@@ -1,6 +1,6 @@
 ﻿using LionFire.Data;
-using LionFire.Data.Gets;
-using LionFire.Data.Sets;
+using LionFire.Data.Async.Gets;
+using LionFire.Data.Async.Sets;
 using System;
 using System.Reflection;
 using System.Threading.Tasks;
@@ -28,7 +28,7 @@ namespace LionFire.Persistence
         // ENH: Return Put task separately and don't await it
         public static async Task<T> TryGetOrCreate<T>(this IReadWriteHandle<T> handle)  // REVIEW - return TransferResult<T>?  Generic doesn't exist yet.
         {
-            if (handle is IGets<T> lr)
+            if (handle is IGetter<T> lr)
             {
                 var result = await lr.GetIfNeeded().ConfigureAwait(false);
                 if (result.HasValue)

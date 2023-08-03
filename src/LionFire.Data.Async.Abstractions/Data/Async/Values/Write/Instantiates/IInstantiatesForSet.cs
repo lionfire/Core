@@ -1,7 +1,7 @@
 ﻿using MorseCode.ITask;
 
-namespace LionFire.Data.Sets;
-public interface IInstantiatesForSet<TValue> : ISets<TValue>, IStagesSet<TValue>
+namespace LionFire.Data.Async.Sets;
+public interface IInstantiatesForSet<TValue> : ISetter<TValue>, IStagesSet<TValue>
 {
     TValue InstantiateValue(bool overwriteStagedValue = false, bool throwOnOverwrite = false);
 }

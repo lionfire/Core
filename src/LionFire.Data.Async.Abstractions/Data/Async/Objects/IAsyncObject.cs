@@ -1,6 +1,6 @@
-﻿namespace LionFire.Data;
+﻿namespace LionFire.Data.Async;
 
 public interface IAsyncObject
 {
-    AsyncObjectOptions Options { get; }
+    ObjectOptions Options { get; }
 }

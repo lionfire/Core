@@ -1,5 +1,4 @@
 ﻿#nullable enable
-using LionFire.Data.Gets;
 using LionFire.Results;
 
 namespace LionFire.Data;

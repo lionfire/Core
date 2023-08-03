@@ -1,7 +1,7 @@
 ﻿#nullable enable
 using LionFire.Collections.Concurrent;
 using LionFire.Dependencies;
-using LionFire.ExtensionMethods.Poco.Resolvables;
+using LionFire.ExtensionMethods.Poco.Getters;
 using LionFire.Structures;
 using MediatR;
 using Microsoft.Extensions.Logging;

@@ -1,4 +1,4 @@
-﻿namespace LionFire.Data;
+﻿namespace LionFire.Data.Async;
 
 public class FuncValue<TKey, TValue> : Value<TKey, TValue>
 {

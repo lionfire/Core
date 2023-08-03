@@ -2,7 +2,7 @@
 using LionFire.Persistence.Handles;
 using LionFire.Referencing;
 using LionFire.Resolvables;
-using LionFire.Data.Gets;
+using LionFire.Data.Async.Gets;
 using LionFire.Structures;
 using System;
 using System.Collections.Generic;
@@ -15,7 +15,7 @@ namespace LionFire.Persistence;
 /// <summary>
 /// Limited interface for when generic interface type is not available
 /// </summary>
-public interface IReadHandle : IHandleEx, IPersists, ILazilyGets, IDefaultable, IStatelessGets
+public interface IReadHandle : IHandleEx, IPersists, ILazyGetter, IDefaultable, IGetter
 {
 }
 
@@ -26,7 +26,7 @@ public interface IReadHandle : IHandleEx, IPersists, ILazilyGets, IDefaultable, 
 public interface IReadHandle<out T> 
     : IReadHandleBase<T>
     , IReadHandle
-    , IGets<T>
+    , IGetter<T>
     , IDetects
     //, IDetects<T> // TODO?
     , IReferencableAsValueType<T>

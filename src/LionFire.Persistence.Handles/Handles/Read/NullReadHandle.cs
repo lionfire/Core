@@ -1,7 +1,7 @@
 ﻿#nullable enable
 using LionFire.Referencing;
 using LionFire.Resolvables;
-using LionFire.Data.Gets;
+using LionFire.Data.Async.Gets;
 using LionFire.Results;
 using LionFire.Structures;
 using MorseCode.ITask;
@@ -48,10 +48,10 @@ public class NullReadHandle<TValue> : IReadHandle<TValue>
     public Task<bool> Exists(bool forceCheck = false) => Task.FromResult(true);
 
 
-    public ITask<IGetResult<TValue>> GetIfNeeded() => Task.FromResult<IGetResult<TValue>>(ResolveResultNoop<TValue>.Instance).AsITask();
+    public ITask<IGetResult<TValue>> GetIfNeeded() => Task.FromResult<IGetResult<TValue>>(NoopGetResult2<TValue>.Instance).AsITask();
     public ITask<IGetResult<TValue>> Get(CancellationToken cancellationToken = default) => Task.FromResult<IGetResult<TValue>>(NoopRetrieveResult).AsITask();
     public Task<bool> TryResolveObject() => Task.FromResult(true);
-    public IGetResult<TValue> QueryValue() => ResolveResultNoop<TValue>.Instance;
+    public IGetResult<TValue> QueryValue() => NoopGetResult2<TValue>.Instance;
 
     public void Discard()
     {

@@ -1,6 +1,6 @@
 ﻿using LionFire.Persistence.Handles;
 using LionFire.Referencing;
-using LionFire.Data.Gets;
+using LionFire.Data.Async.Gets;
 using MorseCode.ITask;
 using ICSharpCode.SharpZipLib.Zip;
 using LionFire.Ontology;
@@ -106,10 +106,10 @@ public class RZipFile : ReadHandle<IReference<ZipFile>, ZipFile>
 
     protected override async ITask<IGetResult<ZipFile>> GetImpl(CancellationToken cancellationToken = default)
     {
-        ResolveResultSuccess<ZipFile> onSuccess(ZipFile value)
+        SuccessGetResult<ZipFile> onSuccess(ZipFile value)
         {
             //DelayClose();
-            return new ResolveResultSuccess<ZipFile>(Value);
+            return new SuccessGetResult<ZipFile>(Value);
         }
         //#if ENH
         // ENH: Try getting a Stream, unless user opted to use byte[].  Maybe use a different class of handle: RZipStream
@@ -148,7 +148,7 @@ public class RZipFile : ReadHandle<IReference<ZipFile>, ZipFile>
 
             if (bytesRetrieveResult.IsSuccess() != true)
             {
-                return ResolveResultNotResolved<ZipFile>.Instance;
+                return NotFoundGetResult<ZipFile>.Instance;
             }
             Logger.Debug($"RZipFile Retrieved byte array of {bytesRetrieveResult.Value?.Length} bytes");
 
@@ -161,7 +161,7 @@ public class RZipFile : ReadHandle<IReference<ZipFile>, ZipFile>
             if (bytesRetrieveResult.Value == null)
             {
                 ReadCacheValue = default;
-                return ResolveResultNotResolved<ZipFile>.Instance;
+                return NotFoundGetResult<ZipFile>.Instance;
             }
             else
             {

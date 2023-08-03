@@ -1,13 +1,13 @@
 ﻿
-namespace LionFire.Data;
+namespace LionFire.Data.Async;
 
 
-public static class AsyncSetOptions<TValue>
+public static class SetterOptions<TValue>
 {
-    public static AsyncSetOptions Default { get; set; } = new();
+    public static SetterOptions Default { get; set; } = new();
 }
 
-public static class AsyncSetOptions<TKey, TValue>
+public static class SetterOptions<TKey, TValue>
 {
-    public static AsyncSetOptions Default { get; set; } = new();
+    public static SetterOptions Default { get; set; } = new();
 }

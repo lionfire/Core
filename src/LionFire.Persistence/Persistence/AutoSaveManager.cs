@@ -10,9 +10,9 @@ using LionFire.Structures;
 using System.Diagnostics;
 using System.Reflection;
 using System.Collections.Specialized;
-using LionFire.Data.Gets;
+using LionFire.Data.Async.Gets;
 using LionFire.Results;
-using LionFire.Data.Sets;
+using LionFire.Data.Async.Sets;
 
 namespace LionFire.Persistence
 {
@@ -29,22 +29,22 @@ namespace LionFire.Persistence
 
         public AutoSaveOptions Options { get; set; } = new AutoSaveOptions();
 
-        internal ConcurrentDictionary<ISets, ThrottledChangeHandler> handlers = new ConcurrentDictionary<ISets, ThrottledChangeHandler>();
+        internal ConcurrentDictionary<ISetter, ThrottledChangeHandler> handlers = new ConcurrentDictionary<ISetter, ThrottledChangeHandler>();
     }
 
     public static class AutoSaveManagerExtensions
     {
-        public static void QueueAutoSave(this ISets saveable)
+        public static void QueueAutoSave(this ISetter saveable)
         {
             Trace.WriteLine($"Queued autosave for {saveable.GetType().Name}: {saveable}");
             var handler = GetHandler(saveable);
             handler.Queue();
         }
 
-        private static ThrottledChangeHandler GetHandler(ISets asset, Func<object, ITask<ITransferResult>> saveAction = null)
+        private static ThrottledChangeHandler GetHandler(ISetter asset, Func<object, ITask<ITransferResult>> saveAction = null)
         {
             if (asset == null) return null;
-            if (saveAction == null) saveAction = o => ((ISets)o).Set().AsITask();
+            if (saveAction == null) saveAction = o => ((ISetter)o).Set().AsITask();
             return AutoSaveManager.Instance.handlers.GetOrAdd(asset, a =>
             {
                 var wrappedChanged = a as INotifyWrappedValueChanged;
@@ -59,7 +59,7 @@ namespace LionFire.Persistence
 
         private static void OnChangeQueueHandler(object sender)
         {
-            var h = GetHandler(sender as ISets);
+            var h = GetHandler(sender as ISetter);
             h?.Queue();
         }
 
@@ -68,7 +68,7 @@ namespace LionFire.Persistence
         /// </summary>
         /// <param name="saveable"></param>
         /// <param name="enable"></param>
-        public static void EnableAutoSave(this ISets saveable, bool enable = true, Func<object, ITask<ITransferResult>>? saveAction = null)
+        public static void EnableAutoSave(this ISetter saveable, bool enable = true, Func<object, ITask<ITransferResult>>? saveAction = null)
         {
 
             //bool attachedToSomething = false;

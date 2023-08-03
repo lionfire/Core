@@ -1,11 +1,10 @@
-﻿using LionFire.Data.Reactive;
-using LionFire.Data.Sets;
+﻿using LionFire.Data.Async.Sets;
 using System.Reactive.Subjects;
 
-namespace LionFire.Data;
+namespace LionFire.Data.Async;
 
 public abstract class Value<TKey, TValue>
-    : Gets<TKey, TValue>
+    : Getter<TKey, TValue>
     , IValueRx<TValue>
     , ISetsInternal<TValue>
 {

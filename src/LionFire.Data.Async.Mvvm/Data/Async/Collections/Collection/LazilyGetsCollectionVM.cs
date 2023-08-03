@@ -16,7 +16,7 @@ public class LazilyGetsCollectionVM<TValue, TValueVM>
 }
 
 public class LazilyGetsCollectionVM<TValue, TValueVM, TCollection>
-    : GetsVM<TCollection>
+    : GetterVM<TCollection>
     , IGetsCollectionVM<TValue, TValueVM, TCollection>
     where TCollection : IEnumerable<TValue>
 {

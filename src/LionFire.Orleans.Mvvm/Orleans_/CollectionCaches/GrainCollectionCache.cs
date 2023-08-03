@@ -24,7 +24,7 @@ using Orleans.Runtime;
 using LionFire.ExtensionMethods.Collections;
 using Orleans.Metadata;
 using LionFire.Mvvm;
-using LionFire.Data.Gets;
+using LionFire.Data.Async.Gets;
 using MorseCode.ITask;
 using LionFire.Data;
 using System.Reactive.Subjects;
@@ -36,7 +36,7 @@ using System.Reactive.Disposables;
 using System.Diagnostics.CodeAnalysis;
 using LionFire.Threading;
 using Microsoft.Extensions.Options;
-using LionFire.ExtensionMethods.Poco.Resolvables;
+using LionFire.ExtensionMethods.Poco.Getters;
 using LionFire.Ontology;
 
 namespace LionFire.Orleans_.Mvvm;

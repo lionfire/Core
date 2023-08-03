@@ -1,7 +1,7 @@
 ﻿#if UNUSED 
 using LionFire.Results;
 
-namespace LionFire.Data.Gets;
+namespace LionFire.Data.Async.Gets;
 
 //public interface ISetResult : IResult, ISuccessResult { }
 

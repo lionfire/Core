@@ -1,8 +1,8 @@
 ﻿
-namespace LionFire.Data.Sets;
+namespace LionFire.Data.Async.Sets;
 
 public interface IObservableSetOperations<out TValue>
 {
 
-    IObservable<ITask<IGetResult<TValue>>> SetOperations { get; }
+    IObservable<ITask<ISetResult<TValue>>> SetOperations { get; }
 }

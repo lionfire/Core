@@ -1,6 +1,6 @@
 ﻿using LionFire.Data.Collections;
 using LionFire.ExtensionMethods;
-using LionFire.Data.Gets;
+using LionFire.Data.Async.Gets;
 using System.ComponentModel;
 using System.Reactive.Subjects;
 
@@ -58,9 +58,9 @@ public class LazilyGetsKeyedCollectionVM<TKey, TValue, TValueVM, TCollection>
 
     #region Source
 
-    public IAsyncReadOnlyKeyedCollectionCache<TKey, TValue>? PreferredSource { get => base.Source as IAsyncReadOnlyKeyedCollectionCache<TKey, TValue>; set => base.Source = (IGets<TCollection>?)value; }
+    public IAsyncReadOnlyKeyedCollectionCache<TKey, TValue>? PreferredSource { get => base.Source as IAsyncReadOnlyKeyedCollectionCache<TKey, TValue>; set => base.Source = (IGetter<TCollection>?)value; }
 
-    protected void OnSourceChanged(IStatelessGets<TCollection>? newValue)
+    protected void OnSourceChanged(IStatelessGetter<TCollection>? newValue)
     {
         ((ReactiveObject)this).RaisePropertyChanged(nameof(PreferredSource));
     }

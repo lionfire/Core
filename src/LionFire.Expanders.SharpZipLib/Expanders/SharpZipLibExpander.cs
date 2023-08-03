@@ -14,8 +14,8 @@ using System.Linq;
 using LionFire.Persistence.Handles;
 //using LionFire.Serialization.Adapters;
 using static LionFire.Persisters.SharpZipLib_.SharpZipLibExpander;
-using LionFire.ExtensionMethods.Poco.Resolvables;
-using LionFire.Data.Gets;
+using LionFire.ExtensionMethods.Poco.Getters;
+using LionFire.Data.Async.Gets;
 using LionFire.Serialization;
 using LionFire.Dependencies;
 using System.Reflection;
@@ -402,12 +402,12 @@ public static class IReadHandleX
 {
     public static async Task<IGetResult<object>> TryGetValue(this IReadHandle rh)
     {
-        if (rh is IGets<object> lr)
+        if (rh is IGetter<object> lr)
         {
             return await lr.GetIfNeeded().ConfigureAwait(false);
         }
 
-        if (rh is IStatelessGets<object> g)
+        if (rh is IStatelessGetter<object> g)
         {
             return await g.Get().ConfigureAwait(false);
         }

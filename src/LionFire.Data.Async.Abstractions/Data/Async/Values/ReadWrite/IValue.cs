@@ -1,7 +1,6 @@
-﻿using LionFire.Data.Sets;
+﻿using LionFire.Data.Async.Sets;
 
-namespace LionFire.Data;
-
+namespace LionFire.Data.Async;
 public interface IValue<T> 
     : IStatelessAsyncValue<T>
 {

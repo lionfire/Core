@@ -1,7 +1,7 @@
 ﻿
-namespace LionFire.Data.Sets;
+namespace LionFire.Data.Async.Sets;
 
-public interface IObservableSetResults
+public interface IObservableSetResults<out TValue>
 {
-    IObservable<ITransferResult> SetResults { get; }
+    IObservable<ISetResult<TValue>> SetResults { get; }
 }

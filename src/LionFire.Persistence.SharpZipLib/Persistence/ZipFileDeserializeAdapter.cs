@@ -13,7 +13,7 @@
 //using LionFire.Persistence.Handles;
 //using LionFire.Serialization.Adapters;
 //using static LionFire.Persisters.SharpZipLib_.SharpZipLibExpander;
-//using LionFire.ExtensionMethods.Poco.Resolvables;
+//using LionFire.ExtensionMethods.Poco.Getters;
 
 //namespace LionFire.Persisters.SharpZipLib_;
 

@@ -1,5 +1,5 @@
 ﻿using DynamicData;
-using LionFire.Data.Gets;
+using LionFire.Data.Async.Gets;
 using MorseCode.ITask;
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
@@ -21,7 +21,7 @@ namespace LionFire.Data.Collections;
 public abstract partial class AsyncDynamicDataCollectionCache<TValue>
     : ReactiveObject
     , IAsyncReadOnlyCollectionCacheBase<TValue>
-    , IObservableGets<IEnumerable<TValue>>
+    , IObservableGetOperations<IEnumerable<TValue>>
 // Derived classes may implement read interfaces:
 //  - INotifiesChildChanged
 //  - INotifiesChildDeeplyChanged
@@ -33,11 +33,13 @@ public abstract partial class AsyncDynamicDataCollectionCache<TValue>
 
     #region IAsyncReadOnlyCollectionCache<TItem>
 
-    #region IObservableGets
+    #region IObservableGetOperations
 
-    public bool IsResolving => !gets.Value.AsTask().IsCompleted;
-    public IObservable<ITask<IGetResult<IEnumerable<TValue>>>> Gets => gets;
-    protected BehaviorSubject<ITask<IGetResult<IEnumerable<TValue>>>> gets = new(Task.FromResult<IGetResult<IEnumerable<TValue>>>(ResolveResultNotResolvedNoop<IEnumerable<TValue>>.Instance).AsITask());
+    //[Obsolete("TODO: Move to VM class")]
+    //public bool IsResolving => !getOperations.Value.AsTask().IsCompleted;
+
+    public IObservable<ITask<IGetResult<IEnumerable<TValue>>>> GetOperations => getOperations;
+    protected BehaviorSubject<ITask<IGetResult<IEnumerable<TValue>>>> getOperations = new(Task.FromResult<IGetResult<IEnumerable<TValue>>>(NoopNotFoundGetResult<IEnumerable<TValue>>.Instance).AsITask());
 
     #region IResolves
 
@@ -71,7 +73,7 @@ public abstract partial class AsyncDynamicDataCollectionCache<TValue>
     //    }
     //}
 
-    private AsyncGetOptions DefaultOptions => AsyncGetOptions<IEnumerable<TValue>>.Default;
+    private GetterOptions DefaultOptions => GetterOptions<IEnumerable<TValue>>.Default;
 
     #endregion
 
@@ -82,7 +84,7 @@ public abstract partial class AsyncDynamicDataCollectionCache<TValue>
         // TODO ENH - Same read Semaphore as AsyncGet<TValue>
         if (HasValue) { return new NoopGetResult<IEnumerable<TValue>>(HasValue, ReadCacheValue); }
         var result = await Get().ConfigureAwait(false);
-        return new LazyResolveResult<IEnumerable<TValue>>(result.HasValue, result.Value);
+        return new GetResult<IEnumerable<TValue>>(result.HasValue, result.Value);
     }
 
     public virtual IGetResult<IEnumerable<TValue>> QueryValue() => new NoopGetResult<IEnumerable<TValue>>(HasValue, ReadCacheValue);

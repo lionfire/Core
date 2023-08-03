@@ -1,4 +1,4 @@
-﻿namespace LionFire.Data.Sets;
+﻿namespace LionFire.Data.Async.Sets;
 
 public interface IIntendsNewValue
 {

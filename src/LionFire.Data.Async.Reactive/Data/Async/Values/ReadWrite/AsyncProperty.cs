@@ -1,7 +1,7 @@
 ﻿
 using System.Reactive.Subjects;
 
-namespace LionFire.Data;
+namespace LionFire.Data.Async;
 
 // OLD - folded into AsyncValue<,>
 //public abstract class AsyncProperty<TObject, TValue> : AsyncValue<TObject, TValue>
@@ -54,7 +54,7 @@ namespace LionFire.Data;
 //    //private TValue? cachedValue;
 
 //    #endregion
-        
+
 //    //public async ITask<IGetResult<TValue>> GetIfNeeded() 
 //    //{
 //    //    if (HasValue) return new NoopGetResult<TValue>(HasValue, Value);
@@ -88,7 +88,7 @@ namespace LionFire.Data;
 //    #endregion
 
 //    //private void DoThrowOnGetValueIfNotLoaded() => throw new Exception("Value has not been gotten yet.  Invoke Get first or disable Options.ThrowOnGetValueIfNotLoaded");
-       
+
 
 //}
 
