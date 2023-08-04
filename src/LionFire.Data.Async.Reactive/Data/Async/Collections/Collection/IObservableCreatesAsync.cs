@@ -1,7 +1,8 @@
 ﻿using LionFire.Data;
+using LionFire.Data.Async.Sets;
 using LionFire.Structures;
 
-namespace LionFire.Data.Collections;
+namespace LionFire.Data.Async.Collections;
 
 /// <summary>
 /// Adds a new instance of a specified type.  

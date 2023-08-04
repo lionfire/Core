@@ -13,11 +13,11 @@ namespace LionFire.Data.Async.Sets;
 
 internal static class SetsLogic<TValue>
 {
-    internal static BehaviorSubject<ISetOperation<TValue>> InitSets => new(new SetOperation<TValue>(default, Task.FromResult<ITransferResult>(TransferResult.Initialized).AsITask()));
+    internal static BehaviorSubject<ISetOperation<TValue>> InitSetOperations => new(NoopSetOperation<TValue>.Instantiated); //  new (new SetOperation<TValue>(default, Task.FromResult<ITransferResult>(TransferResult.Initialized).AsITask()));
 
     internal static bool IsSetStateSetting(ISetOperation<TValue> setState) => setState.Task != null && setState.Task.AsTask().IsCompleted == false;
 
-    internal static async Task<ITransferResult> Set(ISetsInternal<TValue> @this, TValue? value, CancellationToken cancellationToken = default)
+    internal static async Task<ISetResult<T>> Set<T>(ISetsInternal<TValue> @this, TValue? value, CancellationToken cancellationToken = default) where T : TValue
     {
         ISetOperation<TValue> currentSetState;
     start:
@@ -51,7 +51,7 @@ internal static class SetsLogic<TValue>
         return await currentSetState.Task!.ConfigureAwait(false);
     }
 
-    internal static async Task<ITransferResult> Set(ISetsInternal<TValue> @this, CancellationToken cancellationToken = default)
+    internal static async Task<ISetResult<TValue>> Set(ISetsInternal<TValue> @this, CancellationToken cancellationToken = default)
     {
         // ENH idea: 
         //Options.Set.DoSet(() => () =>
@@ -61,12 +61,12 @@ internal static class SetsLogic<TValue>
 
         try
         {
-            return await @this.Set(@this.StagedValue, cancellationToken).ConfigureAwait(false);
+            return await @this.SetImpl(((IReadStagesSet<TValue>)@this).StagedValue, cancellationToken).ConfigureAwait(false);
         }
         catch (Exception ex)
         {
             if (@this.Options.Set.ThrowOnException) throw;
-            else return TransferResult.FromException(ex);
+            else return SetResult<TValue>.FromException(ex);
         }
     }
 }

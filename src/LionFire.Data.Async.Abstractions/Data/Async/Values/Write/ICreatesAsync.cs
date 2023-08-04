@@ -1,4 +1,4 @@
-﻿namespace LionFire.Data.Async;
+﻿namespace LionFire.Data.Async.Sets;
 
 // Separated from IAsyncCreates for Orleans grains
 public interface ICreatesAsync<TValue>

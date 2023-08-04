@@ -9,6 +9,7 @@ using LionFire.Results;
 
 namespace LionFire.Data;
 
+// TODO: Replace with GetResult<T>?
 public struct RetrieveResult<T> : IGetResult<T>, IErrorResult // RENAME to GetResult
 //where T : class
 {

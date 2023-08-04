@@ -10,9 +10,9 @@ namespace LionFire.Data.Async.Sets;
 public interface ISetterRxO<TValue> 
     : IReactiveObjectEx
     , ISetter<TValue> // contravariant
-    , IObservableSetResults<TValue> // covariant
     , IObservableSetOperations<TValue> // covariant
+    , IObservableSetResults<TValue> // covariant
     , IStagesSet<TValue> // covariant and contravariant
-    , IHasNonNullSettable<SetterOptions> // TODO? Or just have an interface member?
+    //, IHasNonNullSettable<SetterOptions> // TODO? Or just have an interface member?
 {
 }

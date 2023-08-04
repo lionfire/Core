@@ -1,5 +1,5 @@
 ﻿
-namespace LionFire.Data.Async;
+namespace LionFire.Data.Async.Gets;
 
 
 public static class GetterOptions<TValue> 

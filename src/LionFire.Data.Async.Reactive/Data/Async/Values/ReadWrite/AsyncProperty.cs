@@ -8,7 +8,7 @@ namespace LionFire.Data.Async;
 //{
 //    #region Lifecycle
 
-//    public AsyncProperty(TObject target, AsyncValueOptions? options = null) : base(target, options)
+//    public AsyncProperty(TObject target, ValueOptions? options = null) : base(target, options)
 //    {        
 //    }
 

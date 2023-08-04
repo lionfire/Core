@@ -19,7 +19,7 @@ public abstract class GetterRxO<TValue>
 
     public GetterOptions GetOptions { get; set; }
 
-    GetterOptions IHasNonNullSettable<GetterOptions>.Object { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
+    //GetterOptions IHasNonNullSettable<GetterOptions>.Object { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
 
     public virtual IEqualityComparer<TValue> EqualityComparer => GetterOptions<TValue>.DefaultEqualityComparer;
 
@@ -99,10 +99,10 @@ public abstract class GetterRxO<TValue>
     public bool IsGetting => getState != null && getState.AsTask().IsCompleted == false;
     public ITask<IGetResult<TValue>>? GetState => getState;
 
-    GetterOptions IHasNonNull<GetterOptions>.Object => throw new NotImplementedException();
+    //GetterOptions IHasNonNull<GetterOptions>.Object => throw new NotImplementedException();
 
     public IObservable<ITask<IGetResult<TValue>>> GetOperations => getOperations;
-    BehaviorSubject<ITask<IGetResult<TValue>>> getOperations = new(Task.FromResult(NoopGetResult<TValue>.Instantiated));
+    BehaviorSubject<ITask<IGetResult<TValue>>> getOperations = new(Task.FromResult((IGetResult<TValue>)NoopGetResult<TValue>.Instantiated).AsITask());
     public IObservable<IGetResult<TValue>> GetResults => getResults;
     Subject<IGetResult<TValue>> getResults = new();
 

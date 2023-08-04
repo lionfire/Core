@@ -1,13 +1,14 @@
-﻿using LionFire.Data.Reactive;
-using LionFire.Data.Async.Sets;
+﻿using LionFire.Data.Async.Sets;
 using System.ComponentModel;
+using System.Reactive;
+using System.Reactive.Linq;
 using System.Reactive.Subjects;
 
 namespace LionFire.Data.Async;
 
 public abstract class Value<TValue>
     : GetterRxO<TValue>
-    , IValueRx<TValue>
+    , IValueRxO<TValue>
     , ISetterRxO<TValue>
     , ISetsInternal<TValue>
     , IValue<TValue>
@@ -16,14 +17,14 @@ public abstract class Value<TValue>
 
     #region (static)
 
-    public new static AsyncValueOptions DefaultOptions => AsyncValueOptions<TValue>.Default;
+    public new static ValueOptions DefaultOptions => ValueOptions<TValue>.Default;
 
     #endregion
 
-    public AsyncValueOptions Options { get; set; }
-    //AsyncValueOptions IHasNonNullSettable<AsyncValueOptions>.Object { get => Options; set => Options = value; }
+    public ValueOptions Options { get; set; }
+    //ValueOptions IHasNonNullSettable<ValueOptions>.Object { get => Options; set => Options = value; }
 
-    //AsyncValueOptions IHasNonNull<AsyncValueOptions>.Object => Options;
+    //ValueOptions IHasNonNull<ValueOptions>.Object => Options;
 
     #endregion
 
@@ -34,7 +35,7 @@ public abstract class Value<TValue>
         Options = DefaultOptions;
     }
 
-    public Value(AsyncValueOptions options) : base(options.Get)
+    public Value(ValueOptions options) : base(options.Get)
     {
         Options = options;
 
@@ -104,8 +105,11 @@ public abstract class Value<TValue>
 
     [Browsable(false)]
     public IObservable<ISetOperation<TValue>> SetOperations => sets;
-    private BehaviorSubject<ISetOperation<TValue>> sets = SetsLogic<TValue>.InitSets;
+    private BehaviorSubject<ISetOperation<TValue>> sets = new(NoopSetOperation<TValue>.Instantiated);
     BehaviorSubject<ISetOperation<TValue>> ISetsInternal<TValue>.sets => sets;
+
+    public IObservable<ISetResult<TValue>> SetResults => setResults; // sets.Select(async o => (await o.Task));//setResults; // TODO: instead of another BehaviorSubject, subscribe to SetOperations and unwrap the ISetResult from the task
+    private BehaviorSubject<ISetResult<TValue>> setResults = new(NoopSetResult<TValue>.Instantiated);
 
     #endregion
 
@@ -116,13 +120,23 @@ public abstract class Value<TValue>
     #endregion
 
     #region Methods
-    public abstract Task<ITransferResult> SetImpl(TValue? value, CancellationToken cancellationToken = default);
 
-    public Task<ITransferResult> Set(CancellationToken cancellationToken = default)
-        => SetsLogic<TValue>.Set(this, cancellationToken);
+    public abstract Task<ISetResult<T>> SetImpl<T>(T? value, CancellationToken cancellationToken = default) where T : TValue;
 
-    public Task<ITransferResult> Set(TValue? value, CancellationToken cancellationToken = default)
-        => SetsLogic<TValue>.Set(this, value, cancellationToken);
+    public async ITask<ISetResult<T>> Set<T>(T? value, CancellationToken cancellationToken = default) where T : TValue
+    {
+        var task = SetImpl(value, cancellationToken);
+        sets.OnNext(new SetOperation<TValue>(value, task.AsITask()));
+        var result = await task.ConfigureAwait(false);
+        setResults.OnNext((ISetResult<TValue>)result);
+        return result;
+    }
+
+    public async Task<ISetResult> Set(CancellationToken cancellationToken = default)
+        => await SetsLogic<TValue>.Set(this, cancellationToken).ConfigureAwait(false);
+
+    public Task<ISetResult<TValue>> Set(TValue? value, CancellationToken cancellationToken = default)
+        => SetsLogic<TValue>.Set<TValue>(this, value, cancellationToken);
 
     #endregion
 
@@ -139,7 +153,7 @@ public abstract class AsyncCompositeValue<TValue>
 {
     #region Parameters
 
-    public AsyncValueOptions Options { get; }
+    public ValueOptions Options { get; }
 
     #endregion
 
@@ -153,9 +167,9 @@ public abstract class AsyncCompositeValue<TValue>
     #region Lifecycle
 
     public AsyncCompositeValue() : this(null) { }
-    public AsyncCompositeValue(AsyncValueOptions? options)
+    public AsyncCompositeValue(ValueOptions? options)
     {
-        Options = options ?? AsyncValueOptions<TValue>.Default;
+        Options = options ?? ValueOptions<TValue>.Default;
         Gets = new(Options.Get);
         Sets = new(Options.Set);
     }

@@ -5,7 +5,7 @@ namespace LionFire.Data.Async;
 
 public abstract class Value<TKey, TValue>
     : Getter<TKey, TValue>
-    , IValueRx<TValue>
+    , IValueRxO<TValue>
     , ISetsInternal<TValue>
 {
     #region Parameters
@@ -15,13 +15,13 @@ public abstract class Value<TKey, TValue>
 
     #region (static)
 
-    public static new AsyncValueOptions DefaultOptions => AsyncValueOptions<TKey, TValue>.Default;
+    public static new ValueOptions DefaultOptions => ValueOptions<TKey, TValue>.Default;
 
     //public static IEqualityComparer<TValue> DefaultEqualityComparer => EqualityComparerOptions<TValue>.Default;
 
     #endregion
 
-    public AsyncValueOptions Options
+    public ValueOptions Options
     {
         get => options;
         set
@@ -30,11 +30,13 @@ public abstract class Value<TKey, TValue>
             base.GetOptions = value.Get; // redundant reference to GetOptions.
         }
     }
-    AsyncValueOptions options;
+    ValueOptions options;
 
-    //AsyncValueOptions IHasNonNullSettable<AsyncValueOptions>.Object { get => Options; set => Options = value; }
+    //ValueOptions IHasNonNullSettable<ValueOptions>.Object { get => Options; set => Options = value; }
+    //ValueOptions IHasNonNull<ValueOptions>.Object { get => Options; }
 
-    //AsyncValueOptions IHasNonNull<AsyncValueOptions>.Object => Options;
+    //SetterOptions IHasNonNullSettable<SetterOptions>.Object { get => Options.Set; set => Options.Set = value; }
+    //SetterOptions IHasNonNull<SetterOptions>.Object { get => Options.Set; }
 
     #endregion
 
@@ -43,7 +45,7 @@ public abstract class Value<TKey, TValue>
 
     #region Lifecycle
 
-    public Value(TKey key, AsyncValueOptions? options = null) : base(key, options?.Get ?? DefaultOptions.Get)
+    public Value(TKey key, ValueOptions? options = null) : base(key, options?.Get ?? DefaultOptions.Get)
     {
         Options = options ?? AsyncObjectKey?.Options.ValueOptions ?? DefaultOptions;
 
@@ -108,29 +110,35 @@ public abstract class Value<TKey, TValue>
     /// <remarks>
     /// locked by: setLock
     /// </remarks>
-    public ISetOperation<TValue> SetState => sets.Value;
+    public ISetOperation<TValue> SetState => setOperations.Value;
 
     #endregion
 
     #region Events
 
-    public IObservable<ISetOperation<TValue>> SetOperations => sets;
-    private BehaviorSubject<ISetOperation<TValue>> sets = SetsLogic<TValue>.InitSets;
-    BehaviorSubject<ISetOperation<TValue>> ISetsInternal<TValue>.sets => sets;
+    public IObservable<ISetOperation<TValue>> SetOperations => setOperations;
+    private BehaviorSubject<ISetOperation<TValue>> setOperations = new(NoopSetOperation<TValue>.Instantiated);
+    BehaviorSubject<ISetOperation<TValue>> ISetsInternal<TValue>.sets => setOperations;
+
+    public IObservable<ISetResult<TValue>> SetResults => setResults;
+    private BehaviorSubject<ISetResult<TValue>> setResults = new(NoopSetResult<TValue>.Instantiated);
 
     #endregion
 
     #region Methods
 
-    public Task<ITransferResult> Set(CancellationToken cancellationToken = default)
-        => SetsLogic<TValue>.Set(this, cancellationToken);
+    public abstract Task<ISetResult<T>> SetImpl<T>(T? value, CancellationToken cancellationToken = default) where T : TValue;
+        //=> SetImpl(value, cancellationToken).AsITask();
+    //public abstract Task<ISetResult<TValue>> SetImpl(TValue? value, CancellationToken cancellationToken = default);
 
-    public Task<ITransferResult> SetImpl(TValue? value, CancellationToken cancellationToken = default)
-        => SetImpl(Key, value, cancellationToken);
+    //public abstract Task<ISetResult<TValue>> SetImpl(TValue? value, CancellationToken cancellationToken = default);
+    //public abstract Task<ISetResult<T>> SetImpl<T>(TKey key, T? value, CancellationToken cancellationToken = default) where T : TValue;
 
-    public abstract Task<ITransferResult> SetImpl(TKey key, TValue? value, CancellationToken cancellationToken = default);
 
     object ISetsInternal<TValue>.setLock { get; } = new();
+
+    public async Task<ISetResult> Set(CancellationToken cancellationToken = default)
+        => await SetsLogic<TValue>.Set(this, cancellationToken).ConfigureAwait(false);
 
     /// <summary>
     /// Skips set if DefaultEqualityComparer.Equals(currentSetState.Value.SettingToValue, value)
@@ -138,12 +146,12 @@ public abstract class Value<TKey, TValue>
     /// <param name="value"></param>
     /// <param name="cancellationToken"></param>
     /// <returns></returns>
-    public Task<ITransferResult> Set(TValue? value, CancellationToken cancellationToken = default)
+    public ITask<ISetResult<T>> Set<T>(T? value, CancellationToken cancellationToken = default) where T : TValue
     {
         var target = Key;
         ArgumentNullException.ThrowIfNull(target, nameof(Key));
 
-        return SetsLogic<TValue>.Set(this, value, cancellationToken);
+        return SetsLogic<TValue>.Set<T>(this, value, cancellationToken).AsITask();
     }
 
     #endregion

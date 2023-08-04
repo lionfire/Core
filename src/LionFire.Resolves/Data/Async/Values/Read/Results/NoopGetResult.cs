@@ -1,5 +1,6 @@
 ﻿#nullable enable
 
+
 namespace LionFire.Data.Async.Gets;
 
 public struct NoopGetResult<TValue> : IGetResult<TValue>

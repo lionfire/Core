@@ -1,30 +1,37 @@
-﻿namespace LionFire.Data.Async;
+﻿using LionFire.Data.Async.Sets;
+
+namespace LionFire.Data.Async;
 
 public class FuncValue<TKey, TValue> : Value<TKey, TValue>
 {
-    public FuncValue(TKey key, Func<TKey, CancellationToken, Task<TValue>> getter, Func<TKey, TValue?, CancellationToken, Task> setter, AsyncValueOptions? options = null) : base(key, options)
+    public FuncValue(TKey key, Func<TKey, CancellationToken, Task<TValue>> getter, Func<TKey, TValue?, CancellationToken, Task> setter, ValueOptions? options = null) : base(key, options)
     {
         Getter = getter;
         Setter = setter;
     }
 
+    #region Set
+
     public Func<TKey, TValue?, CancellationToken, Task> Setter { get; }
 
-    public override async Task<ITransferResult> SetImpl(TKey key, TValue? value, CancellationToken cancellationToken = default)
+    public override async Task<ISetResult<T>> SetImpl<T>(T? value, CancellationToken cancellationToken = default) where T : default
     {
         try
         {
-            await Setter(this.Key, value, cancellationToken).ConfigureAwait(false);
-            return TransferResult.Success;
+            await Setter(Key, value, cancellationToken).ConfigureAwait(false);
+            return SetResult<T>.Success(value);
         }
         catch (Exception ex)
         {
-            return TransferResult.FromException(ex);
+            return SetResult<T>.FromException(ex, value);
         }
     }
 
     public Func<TKey, CancellationToken, Task<TValue>> Getter { get; }
 
+    #endregion
+
+    #region Get
 
     protected override async ITask<IGetResult<TValue>> GetImpl(CancellationToken cancellationToken = default)
     {
@@ -42,5 +49,6 @@ public class FuncValue<TKey, TValue> : Value<TKey, TValue>
         }
     }
 
-    
+    #endregion
+        
 }

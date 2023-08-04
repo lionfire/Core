@@ -1,5 +1,5 @@
 ﻿
-namespace LionFire.Data.Async;
+namespace LionFire.Data.Async.Sets;
 
 
 public static class SetterOptions<TValue>

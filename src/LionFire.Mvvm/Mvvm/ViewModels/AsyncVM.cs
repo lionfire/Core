@@ -12,7 +12,7 @@ public abstract class AsyncVM<T> : ReactiveObject, IDependsOn<T>, IViewModel<T>
     #region Parameters
 
     [Relevance(RelevanceFlags.Technical | RelevanceFlags.Internal)]
-    public AsyncValueOptions? Options { get; set; }
+    public ValueOptions? Options { get; set; }
 
     #endregion
 

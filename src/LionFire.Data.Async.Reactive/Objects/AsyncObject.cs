@@ -23,14 +23,14 @@ public class AsyncObject<TObject> : ReactiveObject
 
     #region Parameters  
 
-    public AsyncObjectOptions Options { get; } 
-    public static AsyncObjectOptions DefaultOptions = new();
+    public ObjectOptions Options { get; } 
+    public static ObjectOptions DefaultOptions = new();
 
     #endregion
 
     #region Lifecycle
 
-    public AsyncObject(TObject target, AsyncObjectOptions? options = null)
+    public AsyncObject(TObject target, ObjectOptions? options = null)
     {
         Target = target;
         Options = options ?? DefaultOptions;

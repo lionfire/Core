@@ -1,5 +1,5 @@
 ﻿
-namespace LionFire.Data.Async;
+namespace LionFire.Data.Async.Gets;
 
 /// <summary>
 /// Options for properties (and potentially fields) accessible in an async manner

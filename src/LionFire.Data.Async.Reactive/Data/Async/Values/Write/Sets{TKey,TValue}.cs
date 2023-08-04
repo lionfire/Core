@@ -8,7 +8,7 @@ public class SetsForKeyOptions
 
 
 public abstract class Sets<TKey, TValue>
-	: Sets<TValue>
+	: Setter<TValue>
 {
     #region Options
 
