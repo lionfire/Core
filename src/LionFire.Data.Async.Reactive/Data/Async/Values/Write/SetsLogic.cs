@@ -17,7 +17,7 @@ internal static class SetsLogic<TValue>
 
     internal static bool IsSetStateSetting(ISetOperation<TValue> setState) => setState.Task != null && setState.Task.AsTask().IsCompleted == false;
 
-    internal static async Task<ISetResult<T>> Set<T>(ISetsInternal<TValue> @this, TValue? value, CancellationToken cancellationToken = default) where T : TValue
+    internal static async Task<ISetResult<TValue>> Set(ISetsInternal<TValue> @this, TValue? value, CancellationToken cancellationToken = default) 
     {
         ISetOperation<TValue> currentSetState;
     start:

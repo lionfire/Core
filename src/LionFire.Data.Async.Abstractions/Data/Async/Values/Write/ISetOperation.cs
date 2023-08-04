@@ -4,7 +4,7 @@ namespace LionFire.Data.Async.Sets;
 public interface ISetOperation<out TValue>
 {
     TValue? DesiredValue { get; }
-    ITask<ITransferResult> Task { get; }
+    ITask<ISetResult<TValue>> Task { get; }
 }
 
 // ENH - maybe:

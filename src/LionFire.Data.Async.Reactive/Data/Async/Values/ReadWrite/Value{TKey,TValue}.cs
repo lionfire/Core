@@ -127,9 +127,8 @@ public abstract class Value<TKey, TValue>
 
     #region Methods
 
-    public abstract Task<ISetResult<T>> SetImpl<T>(T? value, CancellationToken cancellationToken = default) where T : TValue;
-        //=> SetImpl(value, cancellationToken).AsITask();
-    //public abstract Task<ISetResult<TValue>> SetImpl(TValue? value, CancellationToken cancellationToken = default);
+    public abstract Task<ISetResult<TValue>> SetImpl(TValue? value, CancellationToken cancellationToken = default);
+    //=> SetImpl(value, cancellationToken).AsITask();
 
     //public abstract Task<ISetResult<TValue>> SetImpl(TValue? value, CancellationToken cancellationToken = default);
     //public abstract Task<ISetResult<T>> SetImpl<T>(TKey key, T? value, CancellationToken cancellationToken = default) where T : TValue;
@@ -146,13 +145,14 @@ public abstract class Value<TKey, TValue>
     /// <param name="value"></param>
     /// <param name="cancellationToken"></param>
     /// <returns></returns>
-    public ITask<ISetResult<T>> Set<T>(T? value, CancellationToken cancellationToken = default) where T : TValue
+    public Task<ISetResult<TValue>> Set(TValue? value, CancellationToken cancellationToken = default)
     {
         var target = Key;
         ArgumentNullException.ThrowIfNull(target, nameof(Key));
 
-        return SetsLogic<TValue>.Set<T>(this, value, cancellationToken).AsITask();
+        return SetsLogic<TValue>.Set(this, value, cancellationToken);
     }
+    //public ITask<ISetResult<T>> Set<T>(T? value, CancellationToken cancellationToken = default) where T : TValue
 
     #endregion
 

@@ -121,22 +121,24 @@ public abstract class Value<TValue>
 
     #region Methods
 
-    public abstract Task<ISetResult<T>> SetImpl<T>(T? value, CancellationToken cancellationToken = default) where T : TValue;
+    //public abstract Task<ISetResult<T>> SetImpl<T>(T? value, CancellationToken cancellationToken = default) where T : TValue;
+    public abstract Task<ISetResult<TValue>> SetImpl(TValue? value, CancellationToken cancellationToken = default);
 
-    public async ITask<ISetResult<T>> Set<T>(T? value, CancellationToken cancellationToken = default) where T : TValue
+    public async Task<ISetResult<TValue>> Set(TValue? value, CancellationToken cancellationToken = default) 
     {
+        SetsLogic<TValue>.Set(this, value, cancellationToken).AsITask();
+        throw new NotImplementedException("TODO - MERGE");
+
         var task = SetImpl(value, cancellationToken);
         sets.OnNext(new SetOperation<TValue>(value, task.AsITask()));
         var result = await task.ConfigureAwait(false);
-        setResults.OnNext((ISetResult<TValue>)result);
+        setResults.OnNext(result);
         return result;
     }
+   
 
     public async Task<ISetResult> Set(CancellationToken cancellationToken = default)
         => await SetsLogic<TValue>.Set(this, cancellationToken).ConfigureAwait(false);
-
-    public Task<ISetResult<TValue>> Set(TValue? value, CancellationToken cancellationToken = default)
-        => SetsLogic<TValue>.Set<TValue>(this, value, cancellationToken);
 
     #endregion
 

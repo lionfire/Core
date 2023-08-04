@@ -9,6 +9,6 @@ internal interface ISetsInternal<TValue> : IValueRxO<TValue>
     ISetOperation<TValue> SetState { get; }
     object setLock { get; }
     BehaviorSubject<ISetOperation<TValue>> sets { get; }
-    //Task<ISetResult<TValue>> SetImpl(TValue? value, CancellationToken cancellationToken = default);
-    Task<ISetResult<T>> SetImpl<T>(T? value, CancellationToken cancellationToken = default) where T : TValue;
+    //Task<ISetResult<TValue>> SetImpl<TValue>(TValue? value, CancellationToken cancellationToken = default);
+    Task<ISetResult<TValue>> SetImpl(TValue? value, CancellationToken cancellationToken = default);
 }

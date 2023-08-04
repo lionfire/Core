@@ -14,16 +14,16 @@ public class FuncValue<TKey, TValue> : Value<TKey, TValue>
 
     public Func<TKey, TValue?, CancellationToken, Task> Setter { get; }
 
-    public override async Task<ISetResult<T>> SetImpl<T>(T? value, CancellationToken cancellationToken = default) where T : default
+    public override async Task<ISetResult<TValue>> SetImpl(TValue? value, CancellationToken cancellationToken = default) 
     {
         try
         {
             await Setter(Key, value, cancellationToken).ConfigureAwait(false);
-            return SetResult<T>.Success(value);
+            return SetResult<TValue>.Success(value);
         }
         catch (Exception ex)
         {
-            return SetResult<T>.FromException(ex, value);
+            return SetResult<TValue>.FromException(ex, value);
         }
     }
 
@@ -48,7 +48,7 @@ public class FuncValue<TKey, TValue> : Value<TKey, TValue>
             return RetrieveResult<TValue>.FromException(ex);
         }
     }
-
-    #endregion
         
+    #endregion
+
 }

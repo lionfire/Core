@@ -63,22 +63,24 @@ public abstract class Setter<TValue>
     private BehaviorSubject<ISetOperation<TValue>> sets = new(NoopSetOperation<TValue>.Instantiated);
 
     public IObservable<ISetResult<TValue>> SetResults => setResults;
-    private BehaviorSubject<ISetResult<TValue>> setResults = new(NoopSetOperation<TValue>.Instantiated);
+    private BehaviorSubject<ISetResult<TValue>> setResults = new(NoopSetResult<TValue>.Instantiated);
 
     #endregion
 
     #region Methods
 
-    public async ITask<ISetResult<T>> Set<T>(T? value, CancellationToken cancellationToken = default) where T : TValue
+    public async Task<ISetResult<TValue>> Set(TValue? value, CancellationToken cancellationToken = default)
     {
         var task = SetImpl(value, cancellationToken);
         sets.OnNext(new SetOperation<TValue>(value, task));
         var result = await task.ConfigureAwait(false);
-        setResults.OnNext((ISetResult<TValue>)result);
+        setResults.OnNext(result);
         return result;
     }
+    //public async ITask<ISetResult<T>> Set<T>(T? value, CancellationToken cancellationToken = default) where T : TValue
 
-    public abstract Task<ISetResult<T>> SetImpl<T>(T? value, CancellationToken cancellationToken = default) where T : TValue;
+    //public abstract Task<ISetResult<T>> SetImpl<T>(T? value, CancellationToken cancellationToken = default) where T : TValue;
+    public abstract Task<ISetResult<TValue>> SetImpl(TValue? value, CancellationToken cancellationToken = default);
 
     public void DiscardStagedValue()
     {
@@ -86,10 +88,10 @@ public abstract class Setter<TValue>
         StagedValue = default;
     }
 
-    public Task<ISetResult> Set(CancellationToken cancellationToken = default)
+    public async Task<ISetResult> Set(CancellationToken cancellationToken = default)
     {
         var value = StagedValue;
-        return Set(value, cancellationToken);
+        return await Set(value, cancellationToken).ConfigureAwait(false);
     }
 
     #endregion
