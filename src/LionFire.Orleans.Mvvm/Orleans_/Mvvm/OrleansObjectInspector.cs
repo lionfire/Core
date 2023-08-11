@@ -1,7 +1,9 @@
-﻿using LionFire.Data.Mvvm;
+﻿using LionFire.Data.Async;
+using LionFire.Data.Mvvm;
 using LionFire.ExtensionMethods;
 using MorseCode.ITask;
 using System.Collections.Concurrent;
+using System.Diagnostics;
 using System.Reflection;
 
 namespace LionFire.Mvvm.ObjectInspection;
@@ -66,7 +68,7 @@ public class OrleansObjectInspector : IObjectInspector
 
             #region Write
 
-            foreach (var name in writeProperties.Where(kvp => !readWriteProperties.Contains(kvp.Key)))
+            foreach (var kvp in writeProperties.Where(kvp => !readWriteProperties.Contains(kvp.Key)))
             {
                 var name = kvp.Key;
                 var writeMethodInfo = kvp.Value;
@@ -87,14 +89,15 @@ public class OrleansObjectInspector : IObjectInspector
                 var parameter = writeMethodInfo.GetParameters()[0];
                 if (parameter.ParameterType != valueType) continue;
 
-                customObjectInspectorInfo.MemberInfos.Add(new CustomMemberInfo(writeMethodInfo.Name, valueType, IO.IODirection.ReadWrite)
-                {
-                    CreateFunc = (obj, info) => typeof(FuncValue<,>).MakeGenericType(typeof(object), valueType)
-                    {
-                        Getter = readMethodInfo,
-                        Setter = writeMethodInfo,
-                    },
-                });
+
+                throw new NotImplementedException();
+                //customObjectInspectorInfo.MemberInfos.Add(new CustomMemberInfo(writeMethodInfo.Name, valueType, IO.IODirection.ReadWrite)
+                //{                    
+                //    CreateFunc = (obj, info) => Activator.CreateInstance(typeof(FuncValue<,>).MakeGenericType(typeof(object), valueType),)
+                    
+                //        //Getter = readMethodInfo,
+                //        //Setter = writeMethodInfo,                    
+                //});
             }
 
             #endregion
@@ -111,12 +114,12 @@ public class OrleansObjectInspector : IObjectInspector
         if (customObjectInspectorInfo == null) yield break;
 
 
-        var list = new List<IMemberVM>();
+        var list = new List<IInspectorNode>();
 
         foreach (var memberInfo in customObjectInspectorInfo.MemberInfos)
         {
             //if(memberInfo.CanRead())
-            IMemberVM vm = memberInfo.Create(obj);
+            IInspectorNode vm = memberInfo.Create(obj);
             list.Add(vm);
         }
         var customObjectInspector = new CustomObjectInspector(obj, list);

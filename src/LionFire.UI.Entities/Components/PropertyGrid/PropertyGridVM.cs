@@ -8,11 +8,17 @@ namespace LionFire.UI.Components;
 
 public class PropertyGridVM : ReactiveObject, IObjectEditorVM
 {
+    #region Dependencies
+
+    public ObjectInspectorService ObjectInspectorService { get; }
+
+    #endregion
+
     [Reactive]
     public object? SourceObject { get; set; }
 
     [Reactive]
-    public InspectedObjectVM? InspectedObjectVM { get; set; }
+    public InspectedObjectVM? InspectedObject { get; set; }
 
     public bool ReadOnly { get; set; }
 
@@ -31,20 +37,23 @@ public class PropertyGridVM : ReactiveObject, IObjectEditorVM
 
     #region Lifecycle
 
-    public PropertyGridVM(IViewModelProvider viewModelProvider, IServiceProvider serviceProvider)
+    public PropertyGridVM(IViewModelProvider viewModelProvider, IServiceProvider serviceProvider, ObjectInspectorService objectInspectorService)
     {
+        ViewModelProvider = viewModelProvider;
+        ServiceProvider = serviceProvider;
+        ObjectInspectorService = objectInspectorService;
+
         this.WhenAnyValue<PropertyGridVM, object>(t => t.SourceObject)
             .Subscribe((Action<object>)(o =>
             {
-
-                InspectedObjectVM = o == null ? null : ActivatorUtilities.CreateInstance<InspectedObjectVM>(ServiceProvider, o);
-
-                MemberVMs = ReflectionMemberVM.GetFor(InspectedObjectVM?.EffectiveObject); // TypeModel?.Members.Select(m => MemberVM.Create(m, o)).ToList() ?? new();
+                if (o is InspectedObjectVM x) InspectedObject = x;
+                else
+                {
+                    InspectedObject = o == null ? null : ActivatorUtilities.CreateInstance<InspectedObjectVM>(ServiceProvider, o);
+                }
 
                 Title = o?.GetType().Name.ToDisplayString() ?? "???";
             }));
-        ViewModelProvider = viewModelProvider;
-        ServiceProvider = serviceProvider;
     }
 
     #endregion
@@ -93,7 +102,7 @@ public class PropertyGridVM : ReactiveObject, IObjectEditorVM
 
     #region Items
 
-    public IEnumerable<ReflectionMemberVM> MemberVMs { get; set; } = Enumerable.Empty<ReflectionMemberVM>();
+    
 
     public IViewModelProvider ViewModelProvider { get; }
     public IServiceProvider ServiceProvider { get; }

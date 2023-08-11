@@ -14,10 +14,8 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\LionFire.Data.Async.Abstractions\LionFire.Data.Async.Abstractions.csproj" />
-    <ProjectReference Include="..\LionFire.Data.Async.Reactive.Abstractions\LionFire.Data.Async.ReactiveUI.Abstractions.csproj" />
+    <ProjectReference Include="..\LionFire.Data.Async.Reactive\LionFire.Data.Async.ReactiveUI.csproj" />
     <ProjectReference Include="..\LionFire.Mvvm\LionFire.Mvvm.csproj" />
-    <ProjectReference Include="..\LionFire.Resolves.Abstractions\LionFire.Data.Abstractions.csproj" />
   </ItemGroup>
 
 </Project>

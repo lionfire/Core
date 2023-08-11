@@ -1,6 +1,5 @@
 ﻿using LionFire.Data.Async.Gets;
 using LionFire.Data.Mvvm;
-using LionFire.Data.Reactive;
 using LionFire.Data.Async.Sets;
 using LionFire.IO;
 using System.Reflection;

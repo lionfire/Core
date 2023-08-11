@@ -1,5 +1,9 @@
 ﻿#nullable enable
 
+//using System.Reactive.Linq;
+using System.Reactive;
+using System.Reactive.Linq;
+
 namespace LionFire.Data.Async.Gets;
 
 public record PreresolvedGetter<T>(T Value) : IGetter<T>
@@ -21,4 +25,9 @@ public record PreresolvedGetter<T>(T Value) : IGetter<T>
     public object? Error { get; set; }
 
     T? IGetter<T>.ReadCacheValue => Value;
+
+    public IObservable<IGetResult<T>> GetResults => Observable.Return<IGetResult<T>>(getResult);
+
+    private IGetResult<T> getResult => new GetResult<T>(Value, true) { Flags = TransferResultFlags.Noop | TransferResultFlags.Found };
+    public IObservable<ITask<IGetResult<T>>> GetOperations => Observable.Return(Task.FromResult(getResult).AsITask());
 }

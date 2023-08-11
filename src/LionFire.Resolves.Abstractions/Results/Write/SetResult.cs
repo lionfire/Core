@@ -7,7 +7,10 @@ public struct SetResult<TValue> : ISetResult<TValue>
     #region (Static)
 
     public static SetResult<TValue> Success(TValue? value = default) => new SetResult<TValue> { Value = value, Flags = TransferResultFlags.Success };
+    public static SetResult<TValue> DeleteSuccess { get; } = new SetResult<TValue> { Flags = TransferResultFlags.Success }; // REVIEW: more explicit flag to say deleted, or no value?
+    public static SetResult<TValue> NoopSuccess(TValue? value = default) => new SetResult<TValue> { Value = value, Flags = TransferResultFlags.Success | TransferResultFlags.Noop };
     public static SetResult<TValue> FromException(Exception ex, TValue? value = default) => new SetResult<TValue> { Value = value, Flags = TransferResultFlags.Fail, Error = ex };
+    public static SetResult<TValue> FailWithFlags(TransferResultFlags flags) => new SetResult<TValue> { Flags = flags };
 
     #endregion
 
@@ -22,6 +25,17 @@ public struct SetResult<TValue> : ISetResult<TValue>
     public TransferResultFlags Flags { get; set; }
 
     public object? Error { get; set; }
+}
+public static class SetResultX
+{
+    public static ISetResult<TValue> ToSetResult<TValue>(this ITransferResult result, TValue? value = default)
+    {
+        return new SetResult<TValue>
+        {
+            Flags = result.Flags,
+            Value = value,
+        };
+    }
 }
 
 public struct NoopSetResult<TValue> : ISetResult<TValue>

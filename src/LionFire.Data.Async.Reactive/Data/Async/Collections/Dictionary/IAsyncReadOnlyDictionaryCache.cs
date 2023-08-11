@@ -12,7 +12,7 @@ namespace LionFire.Data.Collections;
 /// <typeparam name="TKey"></typeparam>
 /// <typeparam name="TItem"></typeparam>
 public interface IAsyncReadOnlyDictionaryCache<TKey, TItem>
-    : IAsyncReadOnlyCollectionCacheBase<KeyValuePair<TKey, TItem>>
+    : IEnumerableGetter<KeyValuePair<TKey, TItem>>
     where TKey : notnull
 {
 

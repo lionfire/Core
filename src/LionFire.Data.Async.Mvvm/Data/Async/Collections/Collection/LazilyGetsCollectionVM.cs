@@ -1,4 +1,5 @@
-﻿using LionFire.Mvvm;
+﻿using LionFire.Data.Async.Gets;
+using LionFire.Mvvm;
 
 namespace LionFire.Data.Mvvm;
 
@@ -25,6 +26,9 @@ public class LazilyGetsCollectionVM<TValue, TValueVM, TCollection>
     public IViewModelProvider ViewModelProvider { get; }
 
     #endregion
+
+    //IStatelessGetter<TCollection>? IReadWrapper<IStatelessGetter<TCollection>>.Value => Source;>
+
 
     #region Lifecycle
 

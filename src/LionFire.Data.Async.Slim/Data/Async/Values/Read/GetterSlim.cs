@@ -1,5 +1,6 @@
 ﻿
 using LionFire.ExtensionMethods.Poco.Data.Async;
+using System.Reactive.Linq;
 using System.Reactive.Subjects;
 
 namespace LionFire.Data.Async.Gets;
@@ -42,8 +43,9 @@ public abstract class GetterSlimO<TValue> : IGetter<TValue>
         throw new NotImplementedException();
     }
 
-    public IObservable<IGetResult<TValue>> GetResult => getResult;
-    BehaviorSubject<IGetResult<TValue>> getResult = new(NoopGetResult<TValue>.Instantiated);
+    public IObservable<ITask<IGetResult<TValue>>> GetOperations => getOperations;
+
+    protected BehaviorSubject<ITask<IGetResult<TValue>>> getOperations = new(Task.FromResult<IGetResult<TValue>>(NoopGetResult<TValue>.Instantiated).AsITask());
 }
 
 
@@ -156,6 +158,9 @@ public abstract class GetterSlim<TValue> : IGetter<TValue>
     #region GetValue
 
     private SemaphoreSlim TryGetSemaphore => tryGetSemaphore ?? throw new ObjectDisposedException(nameof(GetterSlim<TValue>));
+
+    public abstract IObservable<ITask<IGetResult<TValue>>> GetOperations { get; }
+
     SemaphoreSlim? tryGetSemaphore = new SemaphoreSlim(1);
 
     public async ITask<IGetResult<TValue>> GetIfNeeded()
@@ -172,7 +177,7 @@ public abstract class GetterSlim<TValue> : IGetter<TValue>
             }
 
             var resolveResult = await Get().ConfigureAwait(false);
-            return new GetResult<TValue>(resolveResult.HasValue, resolveResult.Value);
+            return new GetResult<TValue>(resolveResult.Value, resolveResult.HasValue);
         }
         finally
         {
@@ -219,14 +224,14 @@ public abstract class GetterSlim<TValue> : IGetter<TValue>
     public virtual void Discard() => DiscardValue();
     public virtual void DiscardValue()
     {
-        if(DisposeValue)
+        if (DisposeValue)
         {
             var oldValue = ReadCacheValue;
             if (oldValue is IDisposable d) d.Dispose();
         }
         ReadCacheValue = default;
     }
-    
+
     #endregion
 
     #region Resolve

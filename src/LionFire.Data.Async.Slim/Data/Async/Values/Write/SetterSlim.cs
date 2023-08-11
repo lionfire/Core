@@ -71,7 +71,7 @@ public abstract class SetterSlim<TKey, TValue>
 
     #region Abstract
 
-    public abstract Task<ITransferResult> SetImpl(TValue value);
+    public abstract Task<ISetResult<TValue>> SetImpl(TValue value);
 
     #endregion
 

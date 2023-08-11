@@ -122,4 +122,8 @@ public abstract class GetterSlim2<TValue> : IGetter<TValue>
     public IGetResult<TValue> QueryValue() => getResult;
     protected IGetResult<TValue> getResult = new NoopGetResult<TValue>();
 
+    #region TODO: implement somehow
+    public IObservable<ITask<IGetResult<TValue>>> GetOperations => getOperations;
+    protected BehaviorSubject<ITask<IGetResult<TValue>>> getOperations = new(Task.FromResult<IGetResult<TValue>>(NoopGetResult<TValue>.Instantiated).AsITask());
+    #endregion
 }

@@ -18,7 +18,7 @@ public interface IGetterVMBase<T>
 }
 
 public interface IStatelessGetterVM<T> 
-    : IViewModel<IStatelessGetter<T>> 
+    : IViewModel<IGetterRxO<T>> 
     , IGetterVMBase<T>
 {
 }

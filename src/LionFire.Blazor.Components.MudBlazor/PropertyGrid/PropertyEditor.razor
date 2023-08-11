@@ -13,19 +13,19 @@
 {
     @ViewModel.DisplayValue
 }
-else if (ViewModel.LazilyGets != null)
+else if (ViewModel.Getter != null)
 {
     if (ViewModel.Type == typeof(bool))
     {
-        <MudSwitch @bind-Checked="ViewModel.LazilyGets.ReadCacheValue" />
+        <MudSwitch @bind-Checked="ViewModel.Getter.ReadCacheValue" />
     }
     else if (ViewModel.Type == typeof(string))
     {
-        <MudTextField T=Object @bind-Value="ViewModel.LazilyGets.ReadCacheValue" />
+        <MudTextField T=Object @bind-Value="ViewModel.Value"  />
     }
     else if (ViewModel.Type == typeof(int))
     {
-        <MudNumericField @bind-Value="ViewModel.LazilyGets.ReadCacheValue" />
+        <MudNumericField @bind-Value="ViewModel.Getter.ReadCacheValue" />
     }
     else
     {

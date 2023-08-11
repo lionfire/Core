@@ -22,30 +22,26 @@ public abstract class InspectorMemberInfo : IInspectorMemberInfo
     /// <summary>
     /// Informational flags about the Type of the member
     /// </summary>
-    public string TypeFlags
+    public IEnumerable<string> TypeFlags
     {
         // TODO: Change PropertyType to IEnumerable<Flag>
         get
         {
             var type = Type;
             var genericTypeDefinition = type.IsGenericType ? type.GetGenericTypeDefinition() : null;
-            if (genericTypeDefinition == null) return "";
+            if (genericTypeDefinition == null) yield break;
 
             if (genericTypeDefinition == typeof(IObservable<>))
             {
-                return "Observable";
+                yield return "Observable";
             }
             else if (genericTypeDefinition == typeof(IAsyncEnumerable<>))
             {
-                return "AsyncEnumerable";
+                yield return "AsyncEnumerable";
             }
             else if (genericTypeDefinition.Name == "SettablePropertyAsync`2" || genericTypeDefinition.Name == "PropertyAsync`2")
             {
-                return "Async";
-            }
-            else
-            {
-                return "";
+                yield return "Async";
             }
         }
     }
@@ -54,7 +50,7 @@ public abstract class InspectorMemberInfo : IInspectorMemberInfo
 
     public RelevanceFlags WriteRelevance { get; set; }
 
-    public abstract IMemberVM Create(object obj);
+    public abstract IInspectorNode Create(object obj);
 }
 
 

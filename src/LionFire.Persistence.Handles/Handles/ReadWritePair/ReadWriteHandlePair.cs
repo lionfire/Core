@@ -42,9 +42,9 @@ public class NoopReadWriteHandlePair<TReference, TValue> : ReadWriteHandlePair<T
 
     public override void DiscardValue() => throw new NotImplementedException();
     public override void MarkDeleted() => throw new NotImplementedException();
-    public override Task<ITransferResult> Set(TValue value, CancellationToken cancellationToken = default) => throw new NotImplementedException();
+    public override Task<ISetResult<TValue>> Set(TValue value, CancellationToken cancellationToken = default) => throw new NotImplementedException();
 
-    public override Task<ITransferResult> Set(CancellationToken cancellationToken = default) => throw new NotImplementedException();
+    public override Task<ISetResult> Set(CancellationToken cancellationToken = default) => throw new NotImplementedException();
 }
 
 public abstract class ReadWriteHandlePair<TReference, TValue>
@@ -69,8 +69,8 @@ public abstract class ReadWriteHandlePair<TReference, TValue>
     public abstract void DiscardStagedValue();
     public abstract void DiscardValue();
     public abstract void MarkDeleted();
-    public abstract Task<ITransferResult> Set(CancellationToken cancellationToken = default);
-    public abstract Task<ITransferResult> Set(TValue value, CancellationToken cancellationToken = default);
+    public abstract Task<ISetResult> Set(CancellationToken cancellationToken = default);
+    public abstract Task<ISetResult<TValue>> Set(TValue value, CancellationToken cancellationToken = default);
 
     //public Task<bool?> Delete() => WriteHandle.Delete();
     //public void MarkDeleted() => WriteHandle.MarkDeleted();
@@ -217,9 +217,9 @@ public class ReadWriteHandlePairBase<TReference, TValue>
     public TValue StagedValue { get => WriteHandle.StagedValue; set => WriteHandle.StagedValue = value; }
     public bool HasStagedValue { get => WriteHandle.HasStagedValue; set => WriteHandle.HasStagedValue = value; }
 
-    Task<ITransferResult> ISetter.Set(CancellationToken cancellationToken) => WriteHandle.Set(cancellationToken);
+    Task<ISetResult> ISetter.Set(CancellationToken cancellationToken) => WriteHandle.Set(cancellationToken);
 
-    public Task<ITransferResult> Set(TValue value, CancellationToken cancellationToken = default)
+    public Task<ISetResult<TValue>> Set(TValue value, CancellationToken cancellationToken = default)
         => WriteHandle.Set(value, cancellationToken);
 
     public void DiscardStagedValue()=> WriteHandle.DiscardStagedValue();

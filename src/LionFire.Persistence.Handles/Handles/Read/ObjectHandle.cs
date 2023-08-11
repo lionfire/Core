@@ -8,6 +8,7 @@ using LionFire.Data.Async.Gets;
 using MorseCode.ITask;
 using LionFire.Results;
 using System.Threading;
+using LionFire.Data.Async.Sets;
 
 namespace LionFire.Persistence.Handles;
 
@@ -109,25 +110,25 @@ public class ObjectHandle<TValue> : ReadHandleBase<NamedReference<TValue>, TValu
 
     #region Set
 
-    public Task<ITransferResult> Set(TValue value, CancellationToken cancellationToken = default)
+    public Task<ISetResult<TValue>> Set(TValue value, CancellationToken cancellationToken = default)
     {
         if (!ReferenceEquals(value, ProtectedValue))
         {
             ThrowCannotSet();
         }
-        return Task.FromResult<ITransferResult>(TransferResult.NoopSuccess);
+        return Task.FromResult<ISetResult<TValue>>(SetResult<TValue>.NoopSuccess(value));
     }
 
-    public Task<ITransferResult> Set(CancellationToken cancellationToken = default)
+    public Task<ISetResult> Set(CancellationToken cancellationToken = default)
     {
         if (isDeletePending)
         {
             Delete();
-            return Task.FromResult<ITransferResult>(TransferResult.Success);
+            return Task.FromResult<ISetResult>((SetResult<TValue>.DeleteSuccess));
         }
         else
         {
-            return Task.FromResult<ITransferResult>(TransferResult.NoopSuccess);
+            return Task.FromResult<ISetResult>(SetResult<TValue>.NoopSuccess(ProtectedValue));
         }
     }
 

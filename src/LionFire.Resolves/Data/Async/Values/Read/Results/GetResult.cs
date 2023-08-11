@@ -5,10 +5,17 @@ namespace LionFire.Data.Async.Gets;
 
 public struct GetResult<TValue> : IGetResult<TValue>
 {
+    #region Static
+
+    public static GetResult<TValue> Discarded => new GetResult<TValue>(default, false) { Flags = TransferResultFlags.Discarded | TransferResultFlags.Noop };
+    public static GetResult<TValue> Instantiated => new GetResult<TValue>(default, false) { Flags = TransferResultFlags.Instantiated | TransferResultFlags.Noop };
+
+    #endregion
+
     public bool HasValue { get; set; }
     public TValue? Value { get; set; }
     public bool IsNoop => false;
-    public GetResult(bool hasValue, TValue? value) { HasValue = hasValue; Value = value; }
+    public GetResult(TValue? value, bool hasValue = true) { HasValue = hasValue; Value = value; }
 
     //public static implicit operator LazyResolveResult<TValue>((bool HasValue, TValue Value) values) => new LazyGetResult<TValue>(values.HasValue, values.Value);
 

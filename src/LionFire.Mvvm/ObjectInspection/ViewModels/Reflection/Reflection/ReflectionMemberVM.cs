@@ -12,7 +12,7 @@ public class BuiltInObjectInspectors : IObjectInspector // TODO
     }
 }
 
-public abstract class ReflectionMemberVM : MemberVM<ReflectionMemberInfo>, IMemberVM
+public abstract class ReflectionMemberVM : MemberVM<ReflectionMemberInfo, object>, IInspectorNode
 {
     #region (Static)
 
@@ -54,13 +54,10 @@ public abstract class ReflectionMemberVM : MemberVM<ReflectionMemberInfo>, IMemb
 
     #endregion
 
-    public object Source { get; set; }
-
     #region Lifecycle
 
-    protected ReflectionMemberVM(ReflectionMemberInfo info, object source) : base(info)
+    protected ReflectionMemberVM(ReflectionMemberInfo info, object source) : base(info, source)
     {
-        Source = source;
     }
 
     #endregion

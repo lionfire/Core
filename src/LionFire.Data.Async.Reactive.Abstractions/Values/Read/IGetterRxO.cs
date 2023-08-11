@@ -7,7 +7,5 @@ public interface IGetterRxO<out TValue>
     : IReactiveObjectEx
     , IGetter<TValue> // ReadCacheValue
     //, IHasNonNullSettable<GetterOptions> // TODO: Remove this, just have interface member?
-    , IObservableGetResults<TValue>
-    , IObservableGetOperations<TValue>
 {
 }

@@ -41,7 +41,7 @@
 
 <MudSimpleTable Class="PropertyGrid">
     <CascadingValue Name="PropertyGridVM" Value="@ViewModel">
-        <LionPropertyGridRows MemberVMs="@ViewModel.MemberVMs" />
+        <LionPropertyGridRows MemberVMs="@ViewModel.InspectedObject.Members" />
     </CascadingValue>
 </MudSimpleTable>
 

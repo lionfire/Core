@@ -8,6 +8,18 @@
 	</PropertyGroup>
 
 	<ItemGroup>
+	  <Compile Remove="Mvvm\Puts\**" />
+	  <Compile Remove="Mvvm\Resolves\**" />
+	  <Compile Remove="Mvvm\Structures\**" />
+	  <EmbeddedResource Remove="Mvvm\Puts\**" />
+	  <EmbeddedResource Remove="Mvvm\Resolves\**" />
+	  <EmbeddedResource Remove="Mvvm\Structures\**" />
+	  <None Remove="Mvvm\Puts\**" />
+	  <None Remove="Mvvm\Resolves\**" />
+	  <None Remove="Mvvm\Structures\**" />
+	</ItemGroup>
+
+	<ItemGroup>
 	  <PackageReference Include="DynamicData" />
 	  <PackageReference Include="ReactiveUI" />
 		<!--<PackageReference Include="ReactiveUI.Fody" />-->
@@ -17,6 +29,7 @@
 
 	<ItemGroup>
 	  <ProjectReference Include="..\LionFire.Data.Async.Abstractions\LionFire.Data.Async.Abstractions.csproj" />
+	  <ProjectReference Include="..\LionFire.Metadata\LionFire.Metadata.csproj" />
 	  <ProjectReference Include="..\LionFire.Resolves.Abstractions\LionFire.Data.Abstractions.csproj" />
 	  <ProjectReference Include="..\LionFire.Structures\LionFire.Structures.csproj" />
 	</ItemGroup>
@@ -25,9 +38,6 @@
 	  <Folder Include="Mvvm\Async\Collections\Collection\" />
 	  <Folder Include="Mvvm\Async\Collections\Dictionary\" />
 	  <Folder Include="Mvvm\Async\Properties\" />
-	  <Folder Include="Mvvm\Puts\" />
-	  <Folder Include="Mvvm\Resolves\" />
-	  <Folder Include="Mvvm\Structures\" />
 	</ItemGroup>
 
 </Project>

@@ -2,8 +2,8 @@
 
 public class ReadOnlyWrapperForMemberVM // FUTURE ENH
 {
-    public MemberVM MemberVM { get; }
-    public ReadOnlyWrapperForMemberVM(MemberVM memberVM)
+    public InspectorNode MemberVM { get; }
+    public ReadOnlyWrapperForMemberVM(InspectorNode memberVM)
     {
         MemberVM = memberVM;
     }

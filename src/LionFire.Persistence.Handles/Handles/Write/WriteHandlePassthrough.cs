@@ -1,4 +1,5 @@
-﻿using LionFire.Persistence;
+﻿using LionFire.Data.Async.Sets;
+using LionFire.Persistence;
 using LionFire.Referencing;
 using LionFire.Results;
 using LionFire.Structures;
@@ -39,11 +40,11 @@ public class WriteHandlePassthrough<TValue, TReference> : IWriteHandle<TValue>, 
 
     protected IWriteHandle<TValue> handle;
 
-    public Task<ITransferResult> Set(CancellationToken cancellationToken = default) => WriteHandle.Set(cancellationToken);
+    public Task<ISetResult> Set(CancellationToken cancellationToken = default) => WriteHandle.Set(cancellationToken);
     public Task<bool?> Delete() => WriteHandle.Delete();
     public void MarkDeleted() => WriteHandle.MarkDeleted();
     public void DiscardValue() => WriteHandle.DiscardValue();
-    public Task<ITransferResult> Set(TValue value, CancellationToken cancellationToken = default) => WriteHandle.Set(value, cancellationToken);
+    public Task<ISetResult<TValue>> Set(TValue value, CancellationToken cancellationToken = default) => WriteHandle.Set(value, cancellationToken);
 
     public void DiscardStagedValue()
     {

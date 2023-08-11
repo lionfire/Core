@@ -61,7 +61,7 @@ internal static class SetsLogic<TValue>
 
         try
         {
-            return await @this.SetImpl(((IReadStagesSet<TValue>)@this).StagedValue, cancellationToken).ConfigureAwait(false);
+            return await @this.SetImpl(@this.StagedValue, cancellationToken).ConfigureAwait(false);
         }
         catch (Exception ex)
         {

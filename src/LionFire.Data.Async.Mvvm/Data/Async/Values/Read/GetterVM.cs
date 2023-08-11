@@ -1,52 +1,47 @@
-﻿#nullable enable
-
-using LionFire.Data.Async.Gets;
+﻿using LionFire.Data.Async.Gets;
 using System.Reactive;
-using System.Reactive.Linq;
-using ReactiveUI;
 using Splat;
-using ReactiveUI.Fody.Helpers;
-using System.Reactive.Disposables;
-using LionFire.Data.Async.Gets.Mvvm;
+using LionFire.Data.Async;
 
 namespace LionFire.Data.Mvvm;
-
-public class VMOptions
-{
-    public bool ShowRefreshIfHasNoValue { get; set; } = true;
-}
 
 /// <summary>
 /// 
 /// </summary>
-/// <typeparam name="T"></typeparam>
+/// <typeparam name="TValue"></typeparam>
 /// <remarks>
 /// Source: mutable (REVIEW)
 /// </remarks>
-public class GetterVM<T>
+public class GetterVM<TValue>
     : ReactiveObject
-    , IGeterVM<T>
+    , IGetterVM<TValue>
+    , IViewModel<IGetterRxO<TValue>>
 {
     #region Model
 
     #region Source
 
+    /// <summary>
+    /// Consider preferring to use FullFeaturedSource
+    /// </summary>
     [Reactive]
-    public IGetterRxO<T>? Source { get; set; }
-    //{ OLD
-    //    get => source;
-    //    set
-    //    {
-    //        if (EqualityComparer<ILazilyGets<TValue>>.Default.Equals(source, value)) { return; }
-    //        this.RaiseAndSetIfChanged(ref source, value);
-    //        OnSourceChanged(value);
-    //    }
-    //}
-    //private ILazilyGets<TValue>? source;
-    //protected virtual void OnSourceChanged(IGets<TValue>? newValue) { }
+    public IGetter? Source
+    {
+        get => source;
+        set
+        {
+            if (FullFeaturedSource == value) { return; }
+            //        if (EqualityComparer<ILazilyGets<TValue>>.Default.Equals(source, value)) { return; }
+            FullFeaturedSource = value == null ? null : GetterRxOUpscaler.Upscale<TValue>(value);
+            this.RaiseAndSetIfChanged(ref source, value);
+        }
+    }
+    private IGetter? source;
 
-    IStatelessGetter<T>? IReadWrapper<IStatelessGetter<T>>.Value => Source;
-    IGetter<T>? IReadWrapper<IGetter<T>>.Value => Source;
+    [Reactive]
+    public IGetterRxO<TValue>? FullFeaturedSource { get; set; }
+
+    IGetterRxO<TValue>? IReadWrapper<IGetterRxO<TValue>>.Value => FullFeaturedSource;
 
     #endregion
 
@@ -60,6 +55,11 @@ public class GetterVM<T>
 
     #region Lifecycle
 
+    public GetterVM(IGetter getter) : this()
+    {
+        Source = getter;
+    }
+
 #pragma warning disable CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
     public GetterVM()
 #pragma warning restore CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
@@ -68,41 +68,41 @@ public class GetterVM<T>
         //, canExecute: );
         //Get.ThrownExceptions.Subscribe(ex => this.Log().Error(ex, "Something went wrong"));
 
-        this.WhenAnyValue(r => r.Source).Select(s => s != null);
+        this.WhenAnyValue(r => r.FullFeaturedSource).Select(s => s != null);
 
         #region GetCommand
-        GetCommand = ReactiveCommand.CreateFromTask<Unit, IGetResult<T>>(
-            _ => (Source ?? throw new ArgumentNullException(nameof(Source))).Get().AsTask(),
-            canExecute: this.WhenAnyValue(r => r.Source).Select(s => s != null)
-            //canExecute: Observable.Return(Source != null)
+        GetCommand = ReactiveCommand.CreateFromTask<Unit, IGetResult<TValue>>(
+            _ => (FullFeaturedSource ?? throw new ArgumentNullException(nameof(Source))).Get().AsTask(),
+            canExecute: this.WhenAnyValue(r => r.FullFeaturedSource).Select(s => s != null)
+        //canExecute: Observable.Return(FullFeaturedSource != null)
         //Observable.Create<bool>(o => { o.OnNext(gets != null); o.OnCompleted(); return Disposable.Empty; })
         );
         GetCommand.ThrownExceptions.Subscribe(ex => this.Log().Error(ex, "Something went wrong"));
         GetCommand.IsExecuting.ToPropertyEx(this, vm => vm.IsGetting, initialValue: false);
-        GetCommand.CanExecute.ToPropertyEx(this, vm => vm.CanGet, initialValue: Source != null);
+        GetCommand.CanExecute.ToPropertyEx(this, vm => vm.CanGet, initialValue: FullFeaturedSource != null);
 
         #endregion
 
         #region GetIfNeededCommand
-        GetIfNeeded = ReactiveCommand.CreateFromTask<Unit, IGetResult<T>>(
-                    _ => (Source ?? throw new ArgumentNullException(nameof(Source))).GetIfNeeded().AsTask(),
-                    canExecute: Observable.Create<bool>(o => { o.OnNext(Source != null); o.OnCompleted(); return Disposable.Empty; })
+        GetIfNeeded = ReactiveCommand.CreateFromTask<Unit, IGetResult<TValue>>(
+                    _ => (FullFeaturedSource ?? throw new ArgumentNullException(nameof(FullFeaturedSource))).GetIfNeeded().AsTask(),
+                    canExecute: Observable.Create<bool>(o => { o.OnNext(FullFeaturedSource != null); o.OnCompleted(); return Disposable.Empty; })
                 );
         #endregion
 
-        this.WhenAnyValue(r => r.Source)
+        this.WhenAnyValue(r => r.FullFeaturedSource)
             .Subscribe(source =>
             {
                 observableGetsSubscription?.Dispose();
                 observableGetsSubscription = null;
 
                 #region Bind: HasValue  (TODO: Value?)
-                if (source is IObservableGetOperations<T> whenGets)
+                if (source is IObservableGetOperations<TValue> whenGets)
                 {
                     // Subscribe to the IObservableResolves
-                    observableGetsSubscription = whenGets.Gets.Subscribe(async resultTask =>
+                    observableGetsSubscription = whenGets.GetOperations.Subscribe(async resultTask =>
                     {
-                        var result = await resultTask;
+                        var result = await resultTask.ConfigureAwait(false);
                         HasValue = result.HasValue;
                     });
                 }
@@ -111,24 +111,25 @@ public class GetterVM<T>
                     // Subscribe to the ReactiveCommand in this
                     observableGetsSubscription = GetCommand.Subscribe(result => HasValue = result.HasValue);
                 }
-                HasValue = Source?.HasValue == true;
+                HasValue = FullFeaturedSource?.HasValue == true;
 
                 #endregion
             });
     }
     IDisposable? observableGetsSubscription;
 
+
     #endregion
 
     #region Gets
 
-    public ReactiveCommand<Unit, IGetResult<T>> GetIfNeeded { get; private set; }
+    public ReactiveCommand<Unit, IGetResult<TValue>> GetIfNeeded { get; private set; }
 
     #endregion
 
     #region Commands
 
-    public ReactiveCommand<Unit, IGetResult<T>> GetCommand { get; private set; }
+    public ReactiveCommand<Unit, IGetResult<TValue>> GetCommand { get; private set; }
 
     [ObservableAsProperty]
     public bool CanGet { get; }
@@ -144,6 +145,6 @@ public class GetterVM<T>
     [Reactive]
     public bool HasValue { get; protected set; }
 
-    
+
 
 }

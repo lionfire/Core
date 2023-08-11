@@ -4,8 +4,17 @@ using Newtonsoft.Json.Linq;
 using LionFire.Mvvm.ObjectInspection;
 using LionFire.Data.Async.Gets;
 using System.Reflection;
+using LionFire.Data.Async;
+using LionFire.Data.Async.Sets;
+using System.Threading;
+using LionFire.Data.Mvvm;
 
 namespace LionFire.UI.Components;
+
+public class AsyncValueMultiplexer
+{
+
+}
 
 public class PropertyVM : ReactiveObject
 {
@@ -18,24 +27,66 @@ public class PropertyVM : ReactiveObject
 
     #region MemberVM
 
-
-    public ReflectionMemberVM? MemberVM
+    public IInspectorNode? MemberVM
     {
-        get => memberVM; 
+        get => memberVM;
         set
         {
             memberVM = value;
-            LazilyGets = memberVM as IGetter<object>;
+
+            Getter = memberVM?.Source as IGetter<object>;
+
+            if (memberVM?.Source is ISetter setter)
+            {
+                StagingSetTypes = StagesSetWriter.GetStagesSetTypes(setter).ToArray();
+
+                if (StagingSetTypes.Length == 0) { SetStagedValue = null; }
+                else if (StagingSetTypes.Length > 1) throw new NotImplementedException("More than one IWriteStagesSet<> interface not implemented");
+                else
+                {
+                    var propertyInfo = typeof(IStagesSet<>).MakeGenericType(StagingSetTypes[0]).GetProperty(nameof(IStagesSet<object>.StagedValue))!;
+                    SetStagedValue = val => propertyInfo.SetValue(setter, val);
+                }
+
+                NonstagingSetTypes = StagesSetWriter.GetNonstagingSetterTypes(setter).ToArray();
+
+                if (NonstagingSetTypes.Length == 0) { SetValue = null; }
+                else if (NonstagingSetTypes.Length > 1) throw new NotImplementedException("More than one Non-staging ISetter<> interface not implemented");
+                else
+                {
+                    var methodInfo = typeof(ISetter<>).MakeGenericType(NonstagingSetTypes[0]).GetMethod(nameof(ISetter<object>.Set))!;
+                    SetValue = val => methodInfo.Invoke(setter, new object[] { val, CancellationToken.None });
+                }
+            }
+            else
+            {
+                SetStagedValue = null;
+            }
         }
     }
-    private ReflectionMemberVM? memberVM;
-
-    public IDataMemberVM? DataMemberVM => MemberVM as IDataMemberVM;
+    private IInspectorNode? memberVM;
 
     #region Derived
 
-    public IGetter<object>? LazilyGets { get; private set; }
-    public Value<object>? AsyncSets { get; private set; }
+    public IGetter<object>? Getter { get; private set; }
+    public Value<object>? AsyncValue { get; private set; }
+
+    #region ISetter
+
+    public Type[]? StagingSetTypes { get; private set; }
+    private Action<object>? SetStagedValue { get; set; }
+    public bool CanSetStagedValue => SetStagedValue != null;
+
+    public Type[]? NonstagingSetTypes { get; private set; }
+    private Action<object>? SetValue { get; set; }
+    public bool CanSetValue => SetValue != null;
+
+
+
+    public IStagesSet<object>? Setter { get; private set; }
+    public ISetterRxO<object>? SetterRxO { get; private set; }
+
+    #endregion
 
     public bool ReadOnly => ObjectEditorVM?.ReadOnly == true;
 
@@ -83,7 +134,26 @@ public class PropertyVM : ReactiveObject
 
     #region State
 
-    public object Value { get; set; }
+    public object Value
+    {
+        get
+        {
+            if (AsyncValue != null) { return AsyncValue.ReadCacheValue; }
+            if (Getter != null) { return Getter.ReadCacheValue; }
+            if (AsyncValue != null) { return AsyncValue.StagedValue; }
+            if (Setter != null) { return Setter.StagedValue; }
+            return default;
+        }
+        set
+        {
+
+            if (AsyncValue != null) { AsyncValue.StagedValue = value; }
+            if (Setter != null) { AsyncValue.StagedValue = value; }
+
+        }
+    }
+    private object value;
+
     public Type? CurrentValueType { get; set; }
     public Type? Type => MemberVM.Info.Type;
 
@@ -111,6 +181,9 @@ public class PropertyVM : ReactiveObject
     public bool HasChildren => ChildMemberVMs?.Any() == true;
     public IEnumerable<ReflectionMemberVM> ChildMemberVMs { get; set; } = Enumerable.Empty<ReflectionMemberVM>();
 
+    public IGetterVM<IEnumerable<object>> ChildMemberVMs2 { get; private set; } // TODO: IInspectorMemberVM
+    public IEnumerable<ReflectionMemberVM> ChildMemberVMs;
+
     #endregion
 
 
@@ -118,33 +191,35 @@ public class PropertyVM : ReactiveObject
     {
         try
         {
-            if (MemberVM is IDataMemberVM d)
-            {
-                if (MemberVM.Info.CanRead())
-                {
-                    Value = d.GetValue();
-                    CurrentValueType = Value?.GetType();
-                    var result = Value?.ToString();
-                    if (MemberVM.Info.Type == typeof(string) && result != null)
-                    {
-                        DisplayValue = $"\"{result}\"";
-                    }
-                    ValueClass = result == null ? "null" : result.GetType().Name;
-                    DisplayValue = result ?? "(null)";
-                }
-                else
-                {
-                    DisplayValue = $"{{{d.MemberInfo.Name}}}";
-                }
-            }
-            else
-            {
-                DisplayValue = "";
-            }
+            throw new NotImplementedException();
+
+            //if (MemberVM is IReflectionDataMemberVM d)
+            //{
+            //    if (MemberVM.Info.CanRead())
+            //    {
+            //        Value = d.GetValue();
+            //        CurrentValueType = Value?.GetType();
+            //        var result = Value?.ToString();
+            //        if (MemberVM.Info.Type == typeof(string) && result != null)
+            //        {
+            //            DisplayValue = $"\"{result}\"";
+            //        }
+            //        ValueClass = result == null ? "null" : result.GetType().Name;
+            //        DisplayValue = result ?? "(null)";
+            //    }
+            //    else
+            //    {
+            //        DisplayValue = $"{{{d.MemberInfo.Name}}}";
+            //    }
+            //}
+            //else
+            //{
+            //    DisplayValue = "";
+            //}
         }
         catch (Exception ex)
         {
-            DisplayValue = $"<error: {ex.GetType().Name}>";
+            DisplayValue = $"<error: {ex.GetType().Name.Replace("Exception", "")}>";
             ValueClass = "error";
         }
     }

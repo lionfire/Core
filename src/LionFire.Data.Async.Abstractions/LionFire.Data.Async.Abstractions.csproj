@@ -13,6 +13,7 @@
 
 	<ItemGroup>
 		<PackageReference Include="MorseCode.ITask" />
+		<PackageReference Include="System.Reactive" />
 	</ItemGroup>
 	
 </Project>

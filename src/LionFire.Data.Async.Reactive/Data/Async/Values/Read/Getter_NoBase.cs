@@ -1,12 +1,7 @@
 ﻿
 namespace LionFire.Data.Async;
 
-#if UNUSED // TRIAGE threadsafety logic
-/// <summary>
-/// Inheritors must implement GetImpl
-/// </summary>
-/// <typeparam name="TKey"></typeparam>
-/// <typeparam name="TValue"></typeparam>
+#if UNUSED // TRIAGE threadsafety logic to GetterRxO
 public abstract class Getter_NoBase<TKey, TValue> // TODO: Base this class on AsyncGets<TValue>?
     : ReactiveObject
     , ILazilyGetsRx<TValue>
@@ -129,44 +124,8 @@ public abstract class Getter_NoBase<TKey, TValue> // TODO: Base this class on As
 
     protected abstract ITask<IGetResult<TValue>> GetImpl(CancellationToken cancellationToken = default);
 
-    SemaphoreSlim getSemaphore = new(1, 1);
-    public virtual async ITask<IGetResult<TValue>> Get(CancellationToken cancellationToken = default)
-    {
-        // TODO: Semaphore, TOTHREADSAFETY - (done in <TValue> version?)
-
-        async Task<IGetResult<TValue>>? ReturnResultInProgress()
-        {
-            var getTask = GetState;
-            if (getTask != null && !getTask.AsTask().IsCompleted) { return await getTask.ConfigureAwait(false); }
-            return null;
-        }
-
-        Task<IGetResult<TValue>>? task = ReturnResultInProgress();
-        if (task != null) return await task.ConfigureAwait(false);
-
-        try
-        {
-            await getSemaphore.WaitAsync(cancellationToken);
-
-            task = ReturnResultInProgress();
-            if (task != null) return await task.ConfigureAwait(false);
-            else
-            {
-                var iTask = GetImpl(cancellationToken);
-                task = iTask.AsTask();
-                gets.OnNext(iTask);
-            }
-        }
-        finally
-        {
-            getSemaphore.Release();
-        }
-
-        var result = await task.ConfigureAwait(false);
-        Value = result.IsSuccess == true ? result.Value : default;
-        HasValue = result.IsSuccess == true;
-        return result;
-    }
+    public virtual async ITask<IGetResult<TValue>> Get(CancellationToken cancellationToken = default);
+        // Moved to GetterRxO
 
     public async ITask<IGetResult<TValue>> GetIfNeeded()
     {

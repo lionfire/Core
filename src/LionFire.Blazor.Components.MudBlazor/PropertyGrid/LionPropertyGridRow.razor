@@ -9,9 +9,9 @@
 {
     <tr>
         @* <td class="dev">R relevant: @ViewModel.PropertyGridVM.ReadRelevance.HasFlag(MemberVM.MemberInfoVM.ReadRelevance)</td>
-        <td class="dev">W relevant: @ViewModel.PropertyGridVM.WriteRelevance.HasFlag(MemberVM.MemberInfoVM.WriteRelevance)</td>
-        <td class="dev">RR: @MemberVM.MemberInfoVM.ReadRelevance</td>
-        <td class="dev">WR: @MemberVM.MemberInfoVM.WriteRelevance</td> *@
+    <td class="dev">W relevant: @ViewModel.PropertyGridVM.WriteRelevance.HasFlag(MemberVM.MemberInfoVM.WriteRelevance)</td>
+    <td class="dev">RR: @MemberVM.MemberInfoVM.ReadRelevance</td>
+    <td class="dev">WR: @MemberVM.MemberInfoVM.WriteRelevance</td> *@
 
         <td>
             @if (ViewModel.HasChildren)
@@ -26,12 +26,12 @@
             </div>
         </td>
         <td class="@("Value " + ViewModel.ValueClass)">
-            <PropertyEditor ViewModel="@ViewModel"  />
+            <PropertyEditor ViewModel="@ViewModel" />
         </td>
 
-        <td class="dev">@MemberVM.MemberKind.ToString().Substring(0, 1)</td>
+        <td class="dev">@MemberVM.Info.MemberKind.ToString().Substring(0, 1)</td>
         <td class="dev">@MemberVM.GetType().Name.Substring(0, 1)</td>
-        <td class="dev">@MemberVM.Info.TypeFlags</td>
+        <td class="dev">@MemberVM.Info.TypeFlags.AggregateOrDefault((x,y)=>$"{x}, {y}")</td>
         <td class="dev Namespace">@MemberVM.Info.Type.Namespace</td>
         <td class="dev">@TypeNameUtils.DisplayTypeName(MemberVM.Info.Type)</td>
         <td class="dev">
@@ -44,11 +44,13 @@
         </td>
         @* <td>@(ChildMemberVMs?.Any() == true ? ChildMemberVMs.Select(v => v.MemberInfoVM.Name).Aggregate((x, y) => $"{x}, {y}") : "")</td> *@
         @* <td>@ViewModel.IsExpanded</td> *@
-        <td class="dev">@(
-        MemberVM.Info.CanRead() ? "R" : ""
-        )@(
+        <td class="dev">
+            @(
+                MemberVM.Info.CanRead() ? "R" : ""
+                )@(
                MemberVM.Info.CanWrite() ? "W" : ""
-               )</td>
+               )
+        </td>
         <td class="dev">@Depth</td>
     </tr>
 
@@ -71,85 +73,12 @@
 
 @code {
 
-    #region Parameters
-
-    [CascadingParameter(Name = "PropertyGridVM")]
-    public PropertyGridVM PropertyGridVM { get; set; }// { set => ViewModel.PropertyGridVM = value; }
-
-    [Parameter]
-    public int Depth { get; set; }
-
-    [Parameter]
-    public ReflectionMemberVM MemberVM { get; set; }// { get => ViewModel.MemberVM; set => ViewModel.MemberVM = value; }
-
-    #endregion
-
-    #region Lifecycle
-
-    protected override Task OnParametersSetAsync()
+    void SetChildGenerator()
     {
-        ViewModel.MemberVM = MemberVM;
-        ViewModel.PropertyGridVM = PropertyGridVM;
-
-        return base.OnParametersSetAsync();
-    }
-
-    public bool ShowValueType => ViewModel.ValueTypeDiffersFromMemberType;
-
-    protected override Task OnInitializedAsync()
-    {
-        Debug.WriteLine($"Depth: {Depth}.  Target: {MemberVM.Source?.GetType().Name}");
-
-        ViewModel.Refresh();
-
-        if (Depth == 0) ViewModel.IsExpanded = true;
-        UpdateChildContent(); // ENH - bind IsExpanded to UpdateChildContent
-
-        if (MemberVM is IDataMemberVM dataMemberVM && dataMemberVM.CanGetValue)
-        {
-            if (ViewModel.CanExpand(dataMemberVM.DataType))
-            {
-                try
-                {
-                    ViewModel.ChildMemberVMs = ReflectionMemberVM.GetFor(dataMemberVM.GetValue());
-                }
-                catch (Exception ex)
-                {
-                    Debug.WriteLine(ex);
-                }
-            }
-        }
-
         ChildGenerator = __builder =>
         {
-            <LionPropertyGridRows MemberVMs="@ViewModel.ChildMemberVMs" Depth="@(Depth + 1)" />
+            <LionPropertyGridRows MembersGetter="@ViewModel.ChildMemberVMs2.Value" Depth="@(Depth + 1)" />
         };
-
-        return base.OnInitializedAsync();
     }
 
-    #endregion
-
-    #region Children
-
-    private RenderFragment ChildGenerator;
-    private RenderFragment childrenContent;
-
-    public Task ExpandedChanged(bool newVal)
-    {
-        ViewModel.IsExpanded = newVal;
-        UpdateChildContent();
-        return Task.CompletedTask;
-    }
-
-    #region (private)
-
-    private void UpdateChildContent()
-    {
-        childrenContent = ViewModel.IsExpanded ? ChildGenerator : null;
-    }
-
-    #endregion
- 
-    #endregion
 }

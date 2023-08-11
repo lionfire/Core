@@ -221,7 +221,7 @@ public abstract class WriteHandleBase2<TReference, TValue>
 
     Task<ITransferResult> ISets.Set(CancellationToken cancellationToken) => Put(cancellationToken);
 
-    public async Task<ITransferResult> Set(TValue value, CancellationToken cancellationToken = default)
+    public async Task<ISetResult<TValue>> Set(TValue value, CancellationToken cancellationToken = default)
     {
         Value = value;
         return await Put().ConfigureAwait(false);
@@ -554,12 +554,13 @@ public abstract class WriteHandleBase<TReference, TValue>
 
     #endregion
 
-    Task<ITransferResult> ISetter.Set(CancellationToken cancellationToken) => Put(cancellationToken);
+    async Task<ISetResult> ISetter.Set(CancellationToken cancellationToken)
+        => (await Put(cancellationToken).ConfigureAwait(false)).ToSetResult(protectedValue);
 
-    public async Task<ITransferResult> Set(TValue value, CancellationToken cancellationToken = default)
+    public async Task<ISetResult<TValue>> Set(TValue value, CancellationToken cancellationToken = default)
     {
         Value = value;
-        return await Put().ConfigureAwait(false);
+        return (await Put().ConfigureAwait(false)).ToSetResult(value);
     }
 
     public virtual Task<ITransferResult> Put(CancellationToken cancellationToken = default) // Rename to Set

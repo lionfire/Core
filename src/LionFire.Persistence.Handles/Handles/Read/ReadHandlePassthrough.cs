@@ -6,6 +6,7 @@ using MorseCode.ITask;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using System.Reactive.Linq;
 
 namespace LionFire.Persistence.Handles;
 
@@ -15,7 +16,7 @@ namespace LionFire.Persistence.Handles;
 /// </summary>
 /// <typeparam name="TValue"></typeparam>
 /// <typeparam name="TReference"></typeparam>
-public class ReadHandlePassthrough<TValue, TReference> 
+public class ReadHandlePassthrough<TValue, TReference>
     : IReadHandle<TValue>
     , IReferencable<TReference>
     , IHasReadHandle<TValue>
@@ -30,7 +31,7 @@ public class ReadHandlePassthrough<TValue, TReference>
         get => reference;
         set
         {
-            
+
             if (EqualityComparer<TReference>.Default.Equals(reference, value)) return;
             if (!EqualityComparer<TReference>.Default.Equals(reference, default)) throw new AlreadySetException();
             reference = value;
@@ -45,7 +46,7 @@ public class ReadHandlePassthrough<TValue, TReference>
     #region Lifecycle
 
     public ReadHandlePassthrough() { }
-    public ReadHandlePassthrough(IReadHandle<TValue> handle) { this.handle = handle; Reference = (TReference?) handle?.Reference; }
+    public ReadHandlePassthrough(IReadHandle<TValue> handle) { this.handle = handle; Reference = (TReference?)handle?.Reference; }
 
     #endregion
 
@@ -94,17 +95,19 @@ public class ReadHandlePassthrough<TValue, TReference>
         protected set
         {
             if (handle != null) throw new AlreadySetException($"{nameof(ReadHandle)} is already set");
-            if(Reference != null)
+            if (Reference != null)
             {
                 var result = Reference.GetReadHandlePreresolved<TValue>(value);
                 handle = result.handle;
-                if(!result.usedPreresolved) { }
-            } else
+                if (!result.usedPreresolved) { }
+            }
+            else
             {
                 handle = value.ToObjectHandle();
             }
         }
     }
 
-    
+    public IObservable<ITask<IGetResult<TValue>>> GetOperations => ReadHandle?.GetOperations ?? Observable.Empty<ITask<IGetResult<TValue>>>();
+
 }

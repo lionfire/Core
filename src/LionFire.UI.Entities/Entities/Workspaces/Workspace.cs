@@ -84,7 +84,7 @@ namespace LionFire.UI.Workspaces
 
         protected virtual void OnTemplateChanged(TTemplate oldValue, TTemplate newValue) { }
 
-        public virtual Task<ITransferResult> Set()
+        public virtual Task<ISetResult<TValue>> Set<TValue>(TValue value)
         {
             throw new NotImplementedException();
         }

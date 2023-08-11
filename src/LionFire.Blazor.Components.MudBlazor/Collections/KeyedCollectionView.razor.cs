@@ -193,7 +193,7 @@ public partial class KeyedCollectionView<TKey, TValue, TValueVM>
                 : Items as IGetter<IEnumerable<TValue>>
                     ?? new PreresolvedGetter<IEnumerable<TValue>>(Items);
 
-            ViewModel.Source?.GetIfNeeded().AsTask().FireAndForget();
+            ViewModel.FullFeaturedSource?.GetIfNeeded().AsTask().FireAndForget();
 
 
             ViewModel.ValueVMCollections.Subscribe(o =>

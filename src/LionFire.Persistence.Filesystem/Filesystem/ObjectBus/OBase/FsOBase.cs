@@ -245,7 +245,7 @@ namespace LionFire.ObjectBus.Filesystem
         //    await FsOBasePersistence.Set(obj, reference.Path, preview: preview, type: typeof(T));
         //}
 
-        protected override async Task<ITransferResult> SetImpl<T>(FileReference reference, T obj, bool allowOverwrite = true)
+        protected override async Task<ISetResult<TValue>> SetImpl<T>(FileReference reference, T obj, bool allowOverwrite = true)
         {
 #region TODO
 

@@ -4,14 +4,14 @@ using System.Reflection;
 namespace LionFire.Mvvm.ObjectInspection;
 
 // For Fields or (indexed or non-indexed) Properties
-public abstract class DataReflectionMember<TMemberInfo, TReflectionMemberInfo> : ReflectionMemberVM, IDataMemberVM
+public abstract class DataReflectionMember<TMemberInfo, TReflectionMemberInfo> : ReflectionMemberVM, IReflectionDataMemberVM
     where TMemberInfo : System.Reflection.MemberInfo
     where TReflectionMemberInfo : ReflectionMemberInfo
 {
     #region Identity    
 
     public abstract TMemberInfo DataMemberInfo { get; }
-    System.Reflection.MemberInfo IDataMemberVM.MemberInfo  => (System.Reflection.MemberInfo)DataMemberInfo;
+    System.Reflection.MemberInfo IReflectionDataMemberVM.MemberInfo  => (System.Reflection.MemberInfo)DataMemberInfo;
 
     #endregion
 

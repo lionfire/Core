@@ -8,7 +8,7 @@ public interface IDataMemberVMBase
 
 }
 
-public interface IDataMemberVM
+public interface IReflectionDataMemberVM
 {
     //object GetValue();
     //bool CanGetValue { get; }

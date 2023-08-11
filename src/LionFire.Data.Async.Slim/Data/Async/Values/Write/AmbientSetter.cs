@@ -6,6 +6,6 @@ public class AmbientSetter<TKey, TValue> : SetterSlim<TKey, TValue>
      where TKey : class
     where TValue : class
 {
-    public override Task<ITransferResult> SetImpl(TValue value) => this.Key.Set(value);
+    public override Task<ISetResult<TValue>> SetImpl(TValue value) => this.Key.SetViaAmbient(value);
 }
 

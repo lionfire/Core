@@ -22,7 +22,7 @@ public class CustomMemberInfo : InspectorMemberInfo
 
     public override IODirection IODirection { get; }
 
-    public Func<object, CustomMemberInfo, IMemberVM> CreateFunc { get; set; } = (obj, mi) => throw new InvalidOperationException();
+    public Func<object, CustomMemberInfo, IInspectorNode> CreateFunc { get; set; } = (obj, mi) => throw new InvalidOperationException();
 
-    public override IMemberVM Create(object obj) => CreateFunc(obj,this);
+    public override IInspectorNode Create(object obj) => CreateFunc(obj,this);
 }

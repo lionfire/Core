@@ -5,7 +5,15 @@ using System.Threading.Tasks;
 
 namespace LionFire.Data.Async.Sets;
 
-public interface ISetter<in TKey, in TValue>
+public interface ISetter<in TKey, TValue>
 {
-    Task<ITransferResult> Set(TKey key, TValue value);
+    Task<ISetResult<TValue>> Set(TKey key, TValue value);
 }
+
+#if false
+// ?
+public interface ISetterContravariant<in TKey, in TValue>
+{
+    ITask<ISetResult<TValue>> Set(TKey key, TValue value);
+}
+#endif

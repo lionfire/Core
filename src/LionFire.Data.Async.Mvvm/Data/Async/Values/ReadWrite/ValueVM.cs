@@ -1,9 +1,5 @@
-﻿#nullable enable
-
-
-using LionFire.Data.Gets;
-using LionFire.Data.Reactive;
-using LionFire.Data.Sets;
+﻿using LionFire.Data.Async;
+using LionFire.Data.Async.Gets;
 
 namespace LionFire.Data.Mvvm;
 
@@ -12,8 +8,10 @@ public class ValueVM<T>
                 
                 //, IStagesSet<T>
                 //, IValueVM<T>
-, IViewModel<IGetter<T>>
+    , IViewModel<IGetter<T>>
 {
 
     public Value<T> Value { get; }
+    IGetter<T> IReadWrapper<IGetter<T>>.Value => Value;
+
 }

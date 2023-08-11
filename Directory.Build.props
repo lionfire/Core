@@ -10,7 +10,8 @@
 
     <BaseIntermediateOutputPath>$(BuildRoot)\obj\$(Configuration)\$(Platform)\$(MSBuildProjectName)\</BaseIntermediateOutputPath>
     <BaseOutputPath>$(BuildRoot)\bin\$(Configuration)\$(Platform)\$(MSBuildProjectName)\</BaseOutputPath>
-    <MSBuildProjectExtensionsPath>z:\build\obj\$(MSBuildProjectName)\</MSBuildProjectExtensionsPath>
+		<!--<MSBuildProjectExtensionsPath>$(BuildRoot)\obj-buildext\$(Configuration)\$(Platform)\$(MSBuildProjectName)\</MSBuildProjectExtensionsPath>-->
+		<!--<MSBuildProjectExtensionsPath>z:\build\obj\$(MSBuildProjectName)\</MSBuildProjectExtensionsPath>-->
 		
 		<PackageOutputDir>z:\nuget</PackageOutputDir>
 

@@ -1,6 +1,5 @@
-﻿namespace LionFire.Data.Sets.Mvvm;
+﻿namespace LionFire.Data.Async.Sets.Mvvm;
 
-using LionFire.Data.Sets;
 using LionFire.Mvvm;
 using System.Reactive;
 

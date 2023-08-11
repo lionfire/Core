@@ -1,5 +1,4 @@
-﻿#nullable enable
-using LionFire.Referencing;
+﻿using LionFire.Referencing;
 using LionFire.Resolvables;
 using LionFire.Data.Async.Gets;
 using LionFire.Results;
@@ -8,6 +7,9 @@ using MorseCode.ITask;
 using System;
 using System.Threading.Tasks;
 using System.Threading;
+using System.Reactive.Subjects;
+using System.Reactive.Linq;
+using System.Reactive.Disposables;
 
 namespace LionFire.Persistence.Handles;
 
@@ -66,6 +68,9 @@ public class NullReadHandle<TValue> : IReadHandle<TValue>
         Flags = TransferResultFlags.Success | TransferResultFlags.Noop,
         Error = null
     };
+
+    public IObservable<ITask<IGetResult<TValue>>> GetOperations => Observable.Return(Task.FromResult<IGetResult<TValue>>(GetResult<TValue>.Instantiated).AsITask());
+
 }
 #pragma warning restore CS8603 // Possible null reference return.
 

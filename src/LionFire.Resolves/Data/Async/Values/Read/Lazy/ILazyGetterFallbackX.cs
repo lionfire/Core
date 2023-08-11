@@ -34,7 +34,7 @@ public static class ILazilyGetsFallbackExtensions
         // Otherwise, assume it doesn't lazily load.
 
         var value = readWrapper.Value;
-        return Task.FromResult((IGetResult<TValue>)new GetResult<TValue>(!EqualityComparer<TValue>.Default.Equals(value, default), value)).AsITask();
+        return Task.FromResult((IGetResult<TValue>)new GetResult<TValue>(value, !EqualityComparer<TValue>.Default.Equals(value, default))).AsITask();
     }
 
     /// <summary>
@@ -53,7 +53,7 @@ public static class ILazilyGetsFallbackExtensions
         return Task.Run(() =>
         {
             var value = readWrapper.Value;
-            return (IGetResult<TValue>)new GetResult<TValue>(!EqualityComparer<TValue>.Default.Equals(value, default), value);
+            return (IGetResult<TValue>)new GetResult<TValue>(value, !EqualityComparer<TValue>.Default.Equals(value, default));
         }).AsITask();
     }
 
@@ -73,7 +73,7 @@ public static class ILazilyGetsFallbackExtensions
         if (readWrapper is IGetter<TValue> lr) return lr.QueryValue<TValue>();
 
         var value = readWrapper.Value;
-        return new GetResult<TValue>(!EqualityComparer<TValue>.Default.Equals(value, default), value);
+        return new GetResult<TValue>(value, !EqualityComparer<TValue>.Default.Equals(value, default));
     }
 
     #endregion

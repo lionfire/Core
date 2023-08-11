@@ -3,7 +3,7 @@
 /// <summary>
 /// An open-ended implementation of ICustomObjectInspector that can be configured however the creator wishes.
 /// </summary>
-public class CustomObjectInspector : ICustomObjectInspector
+public class CustomObjectInspector : IInspectorObjectVM
 {
     #region Relationships
 
@@ -14,17 +14,17 @@ public class CustomObjectInspector : ICustomObjectInspector
 
     #region Lifecycle
 
-    public CustomObjectInspector(object sourceObject, List<IMemberVM> memberVMs)
+    public CustomObjectInspector(object sourceObject, List<IInspectorNode> memberVMs)
     {
         Source = sourceObject;
-        MemberVMs = memberVMs;
+        Members = memberVMs;
     }
 
     #endregion
 
     #region Data
 
-    public List<IMemberVM> MemberVMs { get; } 
+    public List<IInspectorNode> Members { get; } 
 
     #endregion
 }

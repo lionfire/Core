@@ -58,9 +58,9 @@ public class LazilyGetsKeyedCollectionVM<TKey, TValue, TValueVM, TCollection>
 
     #region Source
 
-    public IAsyncReadOnlyKeyedCollectionCache<TKey, TValue>? PreferredSource { get => base.Source as IAsyncReadOnlyKeyedCollectionCache<TKey, TValue>; set => base.Source = (IGetter<TCollection>?)value; }
+    public IAsyncReadOnlyKeyedCollectionCache<TKey, TValue>? PreferredSource { get => base.Source as IAsyncReadOnlyKeyedCollectionCache<TKey, TValue>; set => base.Source = (IGetterRxO<TCollection>?)value; }
 
-    protected void OnSourceChanged(IStatelessGetter<TCollection>? newValue)
+    protected void OnSourceChanged(IGetter? newValue)
     {
         ((ReactiveObject)this).RaisePropertyChanged(nameof(PreferredSource));
     }

@@ -1,4 +1,6 @@
 ﻿
+using System.Reactive.Subjects;
+
 namespace LionFire.Data.Async.Gets;
 
 /// <remarks>
@@ -99,7 +101,7 @@ public abstract class GetterWithEvents<TValue>
             if (!EqualityComparer<TValue>.Default.Equals(currentValue, default)) return new NoopGetResult2<TValue>(ReadCacheValue);
 
             var resolveResult = await Get().ConfigureAwait(false);
-            return new GetResult<TValue>(resolveResult.HasValue, resolveResult.Value);
+            return new GetResult<TValue>(resolveResult.Value, resolveResult.HasValue);
         }
         finally
         {
@@ -152,5 +154,9 @@ public abstract class GetterWithEvents<TValue>
 
     #endregion
 
+    #region TODO: implement somehow
+    public IObservable<ITask<IGetResult<TValue>>> GetOperations => getOperations;
+    protected BehaviorSubject<ITask<IGetResult<TValue>>> getOperations = new(Task.FromResult<IGetResult<TValue>>(NoopGetResult<TValue>.Instantiated).AsITask());
+    #endregion
 }
 

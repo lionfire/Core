@@ -108,7 +108,7 @@ public interface IOBase : ISupportsUriSchemes
     /// <param name="type"></param>
     /// <param name="allowOverwrite"></param>
     /// <returns></returns>
-    Task<ITransferResult> Set<T>(IReference reference, T obj, bool allowOverwrite = true);
+    Task<ISetResult<TValue>> Set<T>(IReference reference, T obj, bool allowOverwrite = true);
 
     Task<ITransferResult> TryDelete<T>(IReference reference);
 

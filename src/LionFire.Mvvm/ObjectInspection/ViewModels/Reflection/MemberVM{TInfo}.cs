@@ -1,6 +1,6 @@
 ﻿namespace LionFire.Mvvm.ObjectInspection;
 
-public abstract class MemberVM<TInfo> : MemberVM
+public abstract class MemberVM<TInfo> : InspectorNode
     where TInfo : IInspectorMemberInfo
 {
     public new TInfo Info =>(TInfo)base.Info;
@@ -11,13 +11,15 @@ public abstract class MemberVM<TInfo> : MemberVM
     }
 }
 
-public abstract class MemberVM<TInfo, TState> : MemberVM<TInfo>
+public abstract class MemberVM<TInfo, TSource> : MemberVM<TInfo>
     where TInfo : IInspectorMemberInfo
+    where TSource : notnull
 {
-    protected MemberVM(TInfo info, TState state) : base(info)
+    protected MemberVM(TInfo info, TSource state) : base(info)
     {
-        State = state;
+        TypedSource = state;
     }
 
-    public TState State { get; }
+    public TSource TypedSource { get; }
+    public override object Source => TypedSource;
 }

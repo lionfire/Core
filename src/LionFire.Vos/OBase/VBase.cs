@@ -90,7 +90,7 @@ namespace LionFire.Vos
 
 #region Set
 
-        protected override Task<ITransferResult> SetImpl<T>(VobReference reference, T obj, bool allowOverwrite = true) => throw new NotImplementedException();
+        protected override Task<ISetResult<TValue>> SetImpl<T>(VobReference reference, T obj, bool allowOverwrite = true) => throw new NotImplementedException();
 
 #endregion
 

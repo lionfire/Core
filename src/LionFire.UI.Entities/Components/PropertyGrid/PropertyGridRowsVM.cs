@@ -1,15 +1,25 @@
 ﻿using ReactiveUI;
 using LionFire.UI.Components.PropertyGrid;
 using LionFire.Mvvm.ObjectInspection;
+using LionFire.Data.Async.Gets;
 
 namespace LionFire.UI.Components;
 
 public class PropertyGridRowsVM : ReactiveObject
 {
-    public PropertyGridVM PropertyGridVM { get; set; }
-    public IEnumerable<ReflectionMemberVM> MemberVMs { get; set; }
+    public ObjectInspectorService ObjectInspectorService { get; }
 
-    public IEnumerable<ReflectionMemberVM> VisibleMembers
+    public PropertyGridRowsVM(ObjectInspectorService objectInspectorService)
+    {
+        ObjectInspectorService = objectInspectorService;
+    }
+
+    public PropertyGridVM PropertyGridVM { get; set; }
+    public IEnumerable<IInspectorNode> MemberVMs { get; set; }
+
+    public IGetterRxO<IEnumerable<object>> MembersGetter { get; set; }
+
+    public IEnumerable<IInspectorNode> VisibleMembers
     {
         get
         {
@@ -36,4 +46,6 @@ public class PropertyGridRowsVM : ReactiveObject
             }
         }
     }
+
+    
 }

@@ -6,6 +6,7 @@ using System;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
+using System.Reactive.Subjects;
 
 namespace LionFire.Persistence.Handles;
 
@@ -152,8 +153,9 @@ public abstract class AsyncMapper<TItem, TUnderlying, TUnderlyingCollection, TRe
 
     public async ITask<IGetResult<TResolvedUnderlyingCollection>> Get(CancellationToken cancellationToken = default)
     {
-        var result = await underlyingResolves.Get(cancellationToken);
-
+        var task = underlyingResolves.Get(cancellationToken);
+        getOperations.OnNext(task);
+        var result = await task.ConfigureAwait(false);
         UnderlyingCollection = UnwrapUnderlyingCollection(result.Value);
 
         return result;
@@ -166,11 +168,22 @@ public abstract class AsyncMapper<TItem, TUnderlying, TUnderlyingCollection, TRe
         var ulr = UnderlyingLazilyResolves;
         if (ulr != null)
         {
-            return await ulr.GetIfNeeded().ConfigureAwait(false);
+            var task = ulr.GetIfNeeded();
+            getOperations.OnNext(task);
+            return await task.ConfigureAwait(false);
         }
         else
         {
-            return HasValue ? new GetResult<TResolvedUnderlyingCollection>(true, Value) : (await underlyingResolves.Get().ConfigureAwait(false));
+            if (HasValue)
+            {
+                return new GetResult<TResolvedUnderlyingCollection>(Value, true);
+            }
+            else
+            {
+                var task = underlyingResolves.Get();
+                getOperations.OnNext(task);
+                return (await task.ConfigureAwait(false));
+            }
         }
     }
 
@@ -183,7 +196,7 @@ public abstract class AsyncMapper<TItem, TUnderlying, TUnderlyingCollection, TRe
         }
         else
         {
-            return HasValue ? new GetResult<TResolvedUnderlyingCollection>(true, Value) : NoopFailGetResult<TResolvedUnderlyingCollection>.Instance;
+            return HasValue ? new GetResult<TResolvedUnderlyingCollection>(Value, true) : NoopFailGetResult<TResolvedUnderlyingCollection>.Instance;
         }
     }
 
@@ -199,6 +212,9 @@ public abstract class AsyncMapper<TItem, TUnderlying, TUnderlyingCollection, TRe
     }
 
     #endregion
+
+    public IObservable<ITask<IGetResult<TResolvedUnderlyingCollection>>> GetOperations => getOperations;
+    protected BehaviorSubject<ITask<IGetResult<TResolvedUnderlyingCollection>>> getOperations = new(Task.FromResult<IGetResult<TResolvedUnderlyingCollection>>(NoopGetResult<TResolvedUnderlyingCollection>.Instantiated).AsITask());
 
     #endregion
 }

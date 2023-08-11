@@ -1,7 +1,7 @@
 ﻿namespace LionFire.Data.Mvvm;
 
-using LionFire.Data.Gets.Mvvm;
-using LionFire.Data.Sets.Mvvm;
+using LionFire.Data.Async.Gets.Mvvm;
+using LionFire.Data.Async.Sets.Mvvm;
 
 public interface IValueVM<T>
     : //IViewModel<object>

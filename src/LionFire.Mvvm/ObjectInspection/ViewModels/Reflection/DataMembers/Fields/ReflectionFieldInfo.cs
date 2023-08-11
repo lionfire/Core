@@ -13,5 +13,5 @@ public class ReflectionFieldInfo : DataReflectionMemberInfo
 
     public override IODirection IODirection =>  IODirection.Read | (FieldInfo.IsInitOnly ? IODirection.Unspecified : IODirection.Write);
 
-    public override IMemberVM Create(object obj) => new FieldVM(this, obj);
+    public override IInspectorNode Create(object obj) => new FieldVM(this, obj);
 }

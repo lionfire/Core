@@ -1,5 +1,6 @@
 ﻿@inherits ReactiveUI.Blazor.ReactiveInjectableComponentBase<PropertyGridRowsVM>
 
+@using LionFire.Data.Async.Gets;
 @using LionFire.Mvvm.ObjectInspection;
 @using LionFire.UI.Components.PropertyGrid;
 
@@ -9,7 +10,8 @@
     {
         <LionPropertyGridRow MemberVM="@member" Depth="@Depth" />
     }
-} else
+}
+else
 {
     <div>(no children)</div>
 }
@@ -22,12 +24,33 @@
     public int Depth { get; set; }
 
     [Parameter]
-    public IEnumerable<ReflectionMemberVM> MemberVMs { get; set; }
+    public IEnumerable<IInspectorNode> MemberVMs { get; set; }
+
+    [Parameter]
+    public IObservableCache<IInspectorNode, string> ObservableMembersDictionary { get; set; }
+
+    [Parameter]
+    public IObservableList<IInspectorNode> ObservableMembers { get; set; }
+
+
+    // [Parameter]
+    // public IGetterRxO<IEnumerable<IInspectorMemberVM>> MembersGetter { get; set; }
+
+    // public IGetterRxO<IEnumerable<object>> ObjectsGetter { get; set; }
+
+
 
     protected override void OnParametersSet()
     {
         ViewModel.PropertyGridVM = PropertyGridVM;
         ViewModel.MemberVMs = MemberVMs;
+        // ViewModel.MembersGetter  = MembersGetter;
+
+
+        // if (MembersGetter != null)
+        // {
+        //     this.Bind()
+        // }
         base.OnParametersSet();
     }
 }

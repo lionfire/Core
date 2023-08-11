@@ -21,7 +21,7 @@ namespace LionFire.Data.Collections;
 //      - AsyncListCache<TValue>
 public abstract partial class AsyncDynamicDataCollectionCache<TValue>
     : ReactiveObject
-    , IAsyncReadOnlyCollectionCacheBase<TValue>
+    , IEnumerableGetter<TValue>
     , IObservableGetOperations<IEnumerable<TValue>>
 // Derived classes may implement read interfaces:
 //  - INotifiesChildChanged
@@ -85,7 +85,7 @@ public abstract partial class AsyncDynamicDataCollectionCache<TValue>
         // TODO ENH - Same read Semaphore as AsyncGet<TValue>
         if (HasValue) { return new NoopGetResult<IEnumerable<TValue>>(HasValue, ReadCacheValue); }
         var result = await Get().ConfigureAwait(false);
-        return new GetResult<IEnumerable<TValue>>(result.HasValue, result.Value);
+        return new GetResult<IEnumerable<TValue>>(result.Value, result.HasValue);
     }
 
     public virtual IGetResult<IEnumerable<TValue>> QueryValue() => new NoopGetResult<IEnumerable<TValue>>(HasValue, ReadCacheValue);
@@ -101,22 +101,21 @@ public abstract partial class AsyncDynamicDataCollectionCache<TValue>
 
     #endregion
 
-    #region IReadOnlyCollection<TItem>
+    //#region IReadOnlyCollection<TItem>
 
-    public virtual int Count => (ReadCacheValue ?? Enumerable.Empty<TValue>()).Count();
+    //public virtual int Count => (ReadCacheValue ?? Enumerable.Empty<TValue>()).Count();
 
-    #region IEnumerable<TItem>
+    //#region IEnumerable<TItem>
 
-    [Blocking(Alternative = nameof(GetIfNeeded))]
-    public virtual IEnumerator<TValue> GetEnumerator() => (ReadCacheValue ?? Enumerable.Empty<TValue>()).GetEnumerator();
-    IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
+    //[Blocking(Alternative = nameof(GetIfNeeded))]
+    //public virtual IEnumerator<TValue> GetEnumerator() => (ReadCacheValue ?? Enumerable.Empty<TValue>()).GetEnumerator();
+    //IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
 
-    #endregion
+    //#endregion
 
-    #endregion
+    //#endregion
 
     #endregion
 
     //public abstract DynamicData.IObservableList<TItem> List { get; }
-
 }

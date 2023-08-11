@@ -3,10 +3,9 @@ using LionFire.Data.Async.Gets;
 
 namespace LionFire.Data.Collections;
 
-public interface IAsyncReadOnlyCollectionCacheBase<TItem>
+public interface IEnumerableGetter<TItem>
     : IGetter<IEnumerable<TItem>>
-    , IObservableGetOperations<IEnumerable<TItem>>
-    , IReadOnlyCollection<TItem>
+    //, IReadOnlyCollection<TItem>
 {
 }
 

@@ -8,6 +8,8 @@ using MorseCode.ITask;
 using System;
 using System.Threading;
 using System.Threading.Tasks;
+using LionFire.Data.Async.Sets;
+using System.Reactive.Subjects;
 
 namespace LionFire.Persistence.Handles;
 
@@ -92,9 +94,9 @@ public class ReadWriteHandlePassthrough<TValue, TReference>
     public ITask<IGetResult<TValue>> GetIfNeeded() => ReadWriteHandle.GetIfNeeded();
     public ITask<IGetResult<TValue>> GetOrInstantiateValue() => ReadWriteHandle.GetOrInstantiateValue();
     public IGetResult<TValue> QueryValue() => ReadWriteHandle.QueryValue();
-    public Task<ITransferResult> Set(TValue value, CancellationToken cancellationToken = default) => ReadWriteHandle.Set(value, cancellationToken);
+    public Task<ISetResult<TValue>> Set(TValue value, CancellationToken cancellationToken = default) => ReadWriteHandle.Set(value, cancellationToken);
     public ITask<IGetResult<TValue>> Get() => ReadWriteHandle.Get();
-    public Task<ITransferResult> Set() => ReadWriteHandle.Set();
+    public Task<ISetResult> Set() => ReadWriteHandle.Set();
     public Task<bool?> Delete() => ReadWriteHandle.Delete();
     public void MarkDeleted() => ReadWriteHandle.MarkDeleted();
     public void DiscardValue() => ReadWriteHandle.DiscardValue();
@@ -114,10 +116,13 @@ public class ReadWriteHandlePassthrough<TValue, TReference>
         ReadWriteHandle.Discard();
     }
 
-    public Task<ITransferResult> Set(CancellationToken cancellationToken = default)
+    public Task<ISetResult> Set(CancellationToken cancellationToken = default)
     {
         return ReadWriteHandle.Set(cancellationToken);
     }
 
     public Task<bool> Exists() => ReadWriteHandle.Exists();
+
+    public IObservable<ITask<IGetResult<TValue>>> GetOperations => readWriteHandle.GetOperations;
+
 }

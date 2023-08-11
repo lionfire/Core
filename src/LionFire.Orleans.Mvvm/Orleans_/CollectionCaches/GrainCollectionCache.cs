@@ -81,7 +81,7 @@ public class SubscriptionOptions<T>
 public class GrainCollectionCache<TValue> // RENAME: GrainCollectionCache
     : AsyncKeyedCollectionCache<string, TValue>
     , IObservableCreatesAsync<string, TValue>
-    , IObservableCreatesAsync<TValue>
+    //, IObservableCreatesAsync<TValue>
     , IDisposable
     , IAsyncDisposable
     , ISubscribesAsync
