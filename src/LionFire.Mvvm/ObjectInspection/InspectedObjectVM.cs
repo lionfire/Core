@@ -1,4 +1,4 @@
-﻿namespace LionFire.Mvvm.ObjectInspection;
+﻿namespace LionFire.Inspection;
 
 public class InspectedObjectVM : InspectorNode<IInspectorNodeInfo>, IInspectorNode
 {
@@ -6,7 +6,7 @@ public class InspectedObjectVM : InspectorNode<IInspectorNodeInfo>, IInspectorNo
     {
         SourceObject = sourceObject;
 
-        InspectedObjects = objectInspectorService.GetInspectedObjects(sourceObject);
+        //InspectedObjects = GetInspectedObjects(objectInspectorService, sourceObject);
 
         EffectiveObject = InspectedObjects.LastOrDefault() ?? SourceObject;
 
@@ -14,6 +14,17 @@ public class InspectedObjectVM : InspectorNode<IInspectorNodeInfo>, IInspectorNo
         //MemberVMs = ReflectionMemberVM.GetFor(InspectedObject?.EffectiveObject); // TypeModel?.Members.Select(m => MemberVM.Create(m, o)).ToList() ?? new();
 
     }
+
+    //public IEnumerable<object> GetInspectedObjects(ObjectInspectorService objectInspectorService, object obj)
+    //{
+    //    foreach (var oi in objectInspectorService.ObjectInspectors)
+    //    {
+    //        foreach (var item in oi.GetInspectedObjects(obj))
+    //        {
+    //            yield return item;
+    //        }
+    //    }
+    //}
 
     public object SourceObject { get; set; }
 

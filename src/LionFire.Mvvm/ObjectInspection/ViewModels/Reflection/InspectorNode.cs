@@ -1,32 +1,50 @@
-﻿namespace LionFire.Mvvm.ObjectInspection;
+﻿using LionFire.Data.Async;
 
-public abstract class InspectorNode<TInfo> : IInspectorNode
-    where TInfo : IInspectorNodeInfo
+namespace LionFire.Inspection;
+
+public class InspectorContext
 {
-    public TInfo Info { get; }
-    IInspectorMemberInfo IInspectorNode.Info => Info;
 
-    public InspectorNode(TInfo info)
+}
+
+public class InspectorNode : IInspectorNode
+{
+    public object Source { get; }
+
+
+    #region Lifecycle
+
+    public InspectorNode(object source)
     {
-        Info = info;
+        Source = source;
     }
 
-    public abstract object Source { get; }
-    public abstract IEnumerable<IInspectorNode> DerivedFrom { get; }
-    public abstract IReadOnlyDictionary<string, IInspectorNode> DerivedInspectors { get; }
-    public abstract IObservableList<IInspectorNode> Children { get; }
-    public abstract IObservable<IReactivePropertyChangedEventArgs<IReactiveObject>> Changing { get; }
-    public abstract IObservable<IReactivePropertyChangedEventArgs<IReactiveObject>> Changed { get; }
-    public abstract IObservable<Exception> ThrownExceptions { get; }
+    #endregion
 
+    IObservableCache<InspectorGroupGetter, string> IInspectorNode.Groups => groups.AsObservableCache();
 
-    public abstract event PropertyChangedEventHandler? PropertyChanged;
-    public abstract event PropertyChangingEventHandler? PropertyChanging;
-
-    public abstract IDisposable SuppressChangeNotifications();
-    public abstract void RaisePropertyChanging(PropertyChangingEventArgs args);
-    public abstract void RaisePropertyChanged(PropertyChangedEventArgs args);
+    public SourceCache<InspectorGroupGetter, string> WriteableGroups => groups;
+    SourceCache<InspectorGroupGetter, string> groups = new SourceCache<InspectorGroupGetter, string>(x => x.Key);
 }
+
+//public abstract class InspectorNode<TInfo> : ReactiveObject, IInspectorNode
+//    where TInfo : IInspectorNodeInfo
+//{
+//    public TInfo Info { get; }
+//    IInspectorMemberInfo IInspectorNode.Info => Info;
+
+//    public InspectorContext Context { get; }
+
+//    public IObservableCache<InspectionGroupGetter, string> Groups => throw new NotImplementedException();
+
+//    public object Source => throw new NotImplementedException();
+
+//    public InspectorNode(TInfo info)
+//    {
+//        Info = info;
+//    }
+
+//}
 
 public abstract class MemberVM : InspectorNode<IInspectorMemberInfo>
 {

@@ -1,11 +1,17 @@
 ﻿
 namespace LionFire.Data.Async.Gets;
 
+/// <summary>
+/// 
+/// </summary>
+/// <typeparam name="TValue"></typeparam>
+/// <remarks>
+/// Suggested additional interface: IConfigurableGetter
+/// </remarks>
 public interface IGetter<out TValue>  
     : IStatelessGetter<TValue>
     , ILazyGetter
     , IDefaultableReadWrapper<TValue>
-    //, IObservableGetResults<TValue> // TODO: derive IObservableGetResults from IObservableGetOperations and eliminate this interface
     , IObservableGetOperations<TValue>
 {
     ITask<IGetResult<TValue>> GetIfNeeded(); // TODO: Add CancellationToken
@@ -18,8 +24,6 @@ public interface IGetter<out TValue>
     //IGetResult<T> GetResult { get; } // TODO
     
     TValue? ReadCacheValue { get; }
-
-    
 }
 
 public interface ILazilyGetsValue<T> : IGetter<T>

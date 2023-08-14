@@ -6,10 +6,10 @@ using System.Collections.Concurrent;
 using System.Diagnostics;
 using System.Reflection;
 
-namespace LionFire.Mvvm.ObjectInspection;
+namespace LionFire.Inspection;
 
 
-public class OrleansObjectInspector : IObjectInspector
+public class OrleansObjectInspector : IInspector
 {
     public static bool IsTypeTaskWithValue(Type type) => type.IsGenericType
                 && (type.GetGenericTypeDefinition() == typeof(Task<>)

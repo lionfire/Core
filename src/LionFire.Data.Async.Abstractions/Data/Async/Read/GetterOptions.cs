@@ -1,6 +1,14 @@
 ﻿
 namespace LionFire.Data.Async.Gets;
 
+[Flags]
+public enum GetterFeatures
+{
+    Unspecified = 0,
+    // TODO: a flag for each setting on GetterOptions
+}
+
+
 /// <summary>
 /// Options for properties (and potentially fields) accessible in an async manner
 /// </summary>

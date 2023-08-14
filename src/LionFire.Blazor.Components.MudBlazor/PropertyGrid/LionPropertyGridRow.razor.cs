@@ -1,5 +1,5 @@
 using LionFire.Data.Mvvm;
-using LionFire.Mvvm.ObjectInspection;
+using LionFire.Inspection;
 using LionFire.UI.Components;
 using Microsoft.AspNetCore.Components;
 

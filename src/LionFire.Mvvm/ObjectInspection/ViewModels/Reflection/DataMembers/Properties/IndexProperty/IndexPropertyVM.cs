@@ -1,7 +1,7 @@
-﻿using LionFire.Mvvm.ObjectInspection;
+﻿using LionFire.Inspection;
 using System.Reflection;
 
-namespace LionFire.Mvvm.ObjectInspection;
+namespace LionFire.Inspection;
 
 /// <summary>
 /// For C# Properties that are accessible via Index (GetIndexParameters().Length > 0)

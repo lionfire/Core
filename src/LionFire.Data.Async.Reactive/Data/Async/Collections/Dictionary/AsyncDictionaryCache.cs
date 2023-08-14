@@ -12,7 +12,7 @@ namespace LionFire.Data.Collections;
 /// <remarks>Implementors: override either RetrieveValues or RetrieveImpl</remarks>
 public abstract class AsyncDictionaryCache<TKey, TValue>
     : AsyncReadOnlyDictionaryCache<TKey, TValue>
-    , IAsyncCollectionCache<KeyValuePair<TKey, TValue>>
+    , IAsyncCollection<KeyValuePair<TKey, TValue>>
     where TKey : notnull
 {
     #region Lifecycle
@@ -48,7 +48,7 @@ public abstract class AsyncDictionaryCache<TKey, TValue>
     #region Remove (KVP)
 
     public Task<bool> Remove(KeyValuePair<TKey, TValue> item) => Remove(item.Value);
-    IObservable<(KeyValuePair<TKey, TValue> value, Task<bool> result)> IAsyncCollectionCache<KeyValuePair<TKey, TValue>>.Removes => throw new NotImplementedException();
+    IObservable<(KeyValuePair<TKey, TValue> value, Task<bool> result)> IAsyncCollection<KeyValuePair<TKey, TValue>>.Removes => throw new NotImplementedException();
 
     #endregion
 

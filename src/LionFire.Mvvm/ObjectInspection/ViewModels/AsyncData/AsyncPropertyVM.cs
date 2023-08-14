@@ -4,7 +4,7 @@ using LionFire.Data.Async.Sets;
 using LionFire.IO;
 using System.Reflection;
 
-namespace LionFire.Mvvm.ObjectInspection;
+namespace LionFire.Inspection;
 
 
 //public class FuncMemberInfo<T> : CustomMemberInfo

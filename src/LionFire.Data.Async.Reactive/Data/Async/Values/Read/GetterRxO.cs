@@ -1,7 +1,7 @@
 ﻿using System.Reactive.Linq;
 using System.Reactive.Subjects;
 
-namespace LionFire.Data.Async;
+namespace LionFire.Data.Async.Gets;
 
 public abstract class GetterRxO<TValue>
     : ReactiveObject

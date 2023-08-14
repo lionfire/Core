@@ -1,6 +1,6 @@
 ﻿using System.Reflection;
 
-namespace LionFire.Mvvm.ObjectInspection;
+namespace LionFire.Inspection;
 public class FieldVM : DataReflectionMember<FieldInfo, ReflectionFieldInfo>
 {
     public FieldVM(ReflectionMemberInfo info, object source) : base(info, source)

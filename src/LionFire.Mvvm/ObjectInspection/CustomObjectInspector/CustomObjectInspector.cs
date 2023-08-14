@@ -1,4 +1,4 @@
-﻿namespace LionFire.Mvvm.ObjectInspection;
+﻿namespace LionFire.Inspection;
 
 /// <summary>
 /// An open-ended implementation of ICustomObjectInspector that can be configured however the creator wishes.

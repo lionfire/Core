@@ -1,6 +1,6 @@
 ﻿using System.Reflection;
 
-namespace LionFire.Mvvm.ObjectInspection;
+namespace LionFire.Inspection;
 
 public static class PropertyInfoX
 {

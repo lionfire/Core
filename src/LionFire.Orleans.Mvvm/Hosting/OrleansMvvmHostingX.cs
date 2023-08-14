@@ -7,7 +7,7 @@ using System.Text;
 using System.Threading.Tasks;
 using LionFire.Orleans_.Mvvm;
 using LionFire.Mvvm;
-using LionFire.Mvvm.ObjectInspection;
+using LionFire.Inspection;
 
 namespace LionFire.Hosting;
 
@@ -17,7 +17,7 @@ public static class OrleansMvvmHostingX
     {
         return services
             .AddSingleton(typeof(GrainPageVM<,>))
-            .TryAddEnumerableSingleton<IObjectInspector, OrleansObjectInspector>()
+            .TryAddEnumerableSingleton<IInspector, OrleansObjectInspector>()
             ;
     }
 }

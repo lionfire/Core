@@ -1,5 +1,5 @@
 ﻿
-namespace LionFire.Mvvm.ObjectInspection;
+namespace LionFire.Inspection;
 
 public class AsyncEnumerableVM : ObjectInspectionAdapter<IAsyncEnumerable<object>>
 {

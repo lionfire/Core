@@ -1,7 +1,7 @@
 ﻿using LionFire.Mvvm;
 using System.Reflection;
 
-namespace LionFire.Mvvm.ObjectInspection;
+namespace LionFire.Inspection;
 
 // For Fields or (indexed or non-indexed) Properties
 public abstract class DataReflectionMember<TMemberInfo, TReflectionMemberInfo> : ReflectionMemberVM, IReflectionDataMemberVM

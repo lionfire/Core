@@ -1,6 +1,6 @@
 ﻿
 
-namespace LionFire.Mvvm.ObjectInspection;
+namespace LionFire.Inspection;
 
 public class ObservableVM : ObjectInspectionAdapter<IObservable<object>>
 {

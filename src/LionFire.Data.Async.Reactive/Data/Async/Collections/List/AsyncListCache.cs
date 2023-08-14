@@ -2,7 +2,7 @@
 
 public abstract class AsyncListCache<TValue> 
     : AsyncReadOnlyListCache<TValue>
-    , IAsyncCollectionCache<TValue>
+    , IAsyncCollection<TValue>
 {
     #region IAsyncCollectionCache<TValue>
 

@@ -1,7 +1,7 @@
 ﻿using System.Reflection;
 using System.Runtime.Serialization;
 
-namespace LionFire.Mvvm.ObjectInspection;
+namespace LionFire.Inspection;
 
 public class PropertyVM : DataReflectionMember<PropertyInfo, ReflectionPropertyInfo>
 {

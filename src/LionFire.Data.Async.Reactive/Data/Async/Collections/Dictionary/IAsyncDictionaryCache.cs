@@ -11,7 +11,7 @@ namespace LionFire.Data.Collections;
 //  - IAsyncAdds<TKey, TItem>
 //  - IAsyncCreates<TItem>
 //  - IAsyncCreatesForKey<TItem>
-public interface IAsyncDictionaryCache<TKey, TItem> : IAsyncCollectionCache<KeyValuePair<TKey, TItem>>
+public interface IAsyncDictionaryCache<TKey, TItem> : IAsyncCollection<KeyValuePair<TKey, TItem>>
     where TKey : notnull
 {
     IObservableCache<TItem, TKey> ObservableCache { get; }

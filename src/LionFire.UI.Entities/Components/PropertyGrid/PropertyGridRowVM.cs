@@ -1,7 +1,7 @@
 ﻿using ReactiveUI;
 using LionFire.UI.Components.PropertyGrid;
 using Newtonsoft.Json.Linq;
-using LionFire.Mvvm.ObjectInspection;
+using LionFire.Inspection;
 using LionFire.Data.Async.Gets;
 using System.Reflection;
 using LionFire.Data.Async;

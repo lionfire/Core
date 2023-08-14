@@ -2,7 +2,7 @@
 using LionFire.ExtensionMethods.Metadata;
 using LionFire.Metadata;
 
-namespace LionFire.Mvvm.ObjectInspection;
+namespace LionFire.Inspection;
 
 public abstract class ReflectionMemberInfo : InspectorMemberInfo
 {

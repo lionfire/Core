@@ -1,7 +1,7 @@
 ﻿using LionFire.Mvvm;
 using ReactiveUI;
 using LionFire.UI.Components.PropertyGrid;
-using LionFire.Mvvm.ObjectInspection;
+using LionFire.Inspection;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace LionFire.UI.Components;

@@ -2,7 +2,7 @@
 using System.Reflection;
 using System.Linq;
 
-namespace LionFire.Mvvm.ObjectInspection;
+namespace LionFire.Inspection;
 
 public static class TypeInteractionModelGenerator
 {

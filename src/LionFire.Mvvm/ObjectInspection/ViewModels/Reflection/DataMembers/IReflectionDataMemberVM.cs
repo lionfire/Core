@@ -1,7 +1,7 @@
 ﻿using LionFire.Mvvm;
 using System.Reflection;
 
-namespace LionFire.Mvvm.ObjectInspection;
+namespace LionFire.Inspection;
 
 public interface IDataMemberVMBase
 {

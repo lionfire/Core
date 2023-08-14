@@ -8,7 +8,7 @@
 //  - IAsyncAdds<TItem>
 //  - IAsyncCreates<TItem>
 //  - IAsyncCreatesForKey<TItem>
-public interface IAsyncCollectionCache<TItem> : IEnumerableGetter<TItem>
+public interface IAsyncCollection<TItem> : IEnumerableGetter<TItem>
 {
     bool IsReadOnly { get; }
 

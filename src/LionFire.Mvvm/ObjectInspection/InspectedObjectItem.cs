@@ -1,3 +1,3 @@
-﻿namespace LionFire.Mvvm.ObjectInspection;
+﻿namespace LionFire.Inspection;
 
 //public record InspectedObjectItem(object Object, InspectedObjectType InspectedObjectType) { }

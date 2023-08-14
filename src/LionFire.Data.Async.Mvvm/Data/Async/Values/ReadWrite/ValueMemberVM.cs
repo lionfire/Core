@@ -1,6 +1,6 @@
 ﻿
 using LionFire.Data.Async;
-using LionFire.Mvvm.ObjectInspection;
+using LionFire.Inspection;
 
 namespace LionFire.Data.Mvvm;
 

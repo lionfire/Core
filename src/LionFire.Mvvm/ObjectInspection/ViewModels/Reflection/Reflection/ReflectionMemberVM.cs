@@ -1,9 +1,9 @@
 ﻿using System.Reflection;
 using System.Runtime;
 
-namespace LionFire.Mvvm.ObjectInspection;
+namespace LionFire.Inspection;
 
-public class BuiltInObjectInspectors : IObjectInspector // TODO
+public class BuiltInObjectInspectors : IInspector // TODO
 {
     public IEnumerable<object> GetInspectedObjects(object @object)
     {

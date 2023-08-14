@@ -1,5 +1,6 @@
 ﻿using LionFire.Mvvm;
-using LionFire.Mvvm.ObjectInspection;
+using LionFire.Inspection;
+using LionFire.ObjectInspection;
 using LionFire.Types;
 using LionFire.Types.Scanning;
 using Microsoft.Extensions.DependencyInjection;
@@ -8,14 +9,15 @@ using System.Reflection;
 namespace LionFire.Hosting;
 public static class MvvmHostingX
 {
-    public static IServiceCollection AddMvvm(this IServiceCollection services, params Assembly[] viewModelAssemblies)
+    public static IServiceCollection AddMvvm(this IServiceCollection services, params Assembly[] viewModelAssemblies) => services.AddMvvm(useDefaults: true, viewModelAssemblies);
+    public static IServiceCollection AddMvvm(this IServiceCollection services, bool useDefaults = true, params Assembly[] viewModelAssemblies)
     {
 
         return services
             .UseMicrosoftDIForReactiveUI()
             .AddSingleton<ViewModelTypeRegistry>()
+            .AddInspector(useDefaults)
             .AddHostedService(s=>s.GetRequiredService<ViewModelTypeRegistry>())
-            .AddSingleton<ObjectInspectorService>()
             .If(viewModelAssemblies.Length > 0, s => s.Configure<ViewModelConfiguration>(c => c.TypeScanOptions.AssemblyWhitelist = viewModelAssemblies))
             .AddSingleton<IViewModelProvider, CompoundViewModelProvider>()
 
@@ -31,4 +33,7 @@ public static class MvvmHostingX
             //})
             ;
     }
+
+    
+
 }

@@ -1,6 +1,6 @@
 ﻿using LionFire.IO;
 
-namespace LionFire.Mvvm.ObjectInspection;
+namespace LionFire.Inspection;
 
 //public class CustomMemberInfo<TState> : CustomMemberInfo
 //{

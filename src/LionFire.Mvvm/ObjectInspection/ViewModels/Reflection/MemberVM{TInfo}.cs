@@ -1,4 +1,4 @@
-﻿namespace LionFire.Mvvm.ObjectInspection;
+﻿namespace LionFire.Inspection;
 
 public abstract class MemberVM<TInfo> : InspectorNode
     where TInfo : IInspectorMemberInfo

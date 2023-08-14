@@ -1,16 +1,51 @@
 ﻿using LionFire.IO;
 using LionFire.Metadata;
 
-namespace LionFire.Mvvm.ObjectInspection;
+namespace LionFire.Inspection;
+
+public enum InspectorNodeKind
+{
+    Unspecified = 0,
+
+    /// <summary>
+    /// 
+    /// </summary>
+    Object = 1 << 0,
+    Group = 1 << 1,
+    Members = 1 << 2,
+    Enumerable = 1 << 3,
+
+}
+public class InspectorInfoContext
+{
+    public IServiceProvider ServiceProvider { get; }
+
+    public InspectorInfoContext(IServiceProvider serviceProvider)
+    {
+        ServiceProvider = serviceProvider;
+    }
+}
 
 public interface IInspectorNodeInfo
 {
     string Name { get; }
 
+    InspectorNodeKind NodeKind { get; }
+
     /// <summary>
     /// If Order is 0, another default ordering will be used, such as alphabetical.
     /// </summary>
-    public int Order { get; set; }
+    public float Order { get; set; }
+
+    InspectorInfoContext Context { get; }
+
+    IInspectorNode CreateNode(params object?[]? parameters);
+}
+
+public interface IInspectorGroupInfo
+{
+    bool Flatten { get; }
+
 }
 
 public interface IInspectorMemberInfo : IInspectorNodeInfo

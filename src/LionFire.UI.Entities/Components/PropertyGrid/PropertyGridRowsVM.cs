@@ -1,6 +1,6 @@
 ﻿using ReactiveUI;
 using LionFire.UI.Components.PropertyGrid;
-using LionFire.Mvvm.ObjectInspection;
+using LionFire.Inspection;
 using LionFire.Data.Async.Gets;
 
 namespace LionFire.UI.Components;

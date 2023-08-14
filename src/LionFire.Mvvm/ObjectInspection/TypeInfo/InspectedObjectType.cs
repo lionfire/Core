@@ -1,4 +1,4 @@
-﻿namespace LionFire.Mvvm.ObjectInspection;
+﻿namespace LionFire.Inspection;
 
 [Flags]
 public enum InspectedObjectType
