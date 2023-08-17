@@ -20,6 +20,15 @@ public interface IStatelessGetter<out TValue> : IGetter
     ITask<IGetResult<TValue>> Get(CancellationToken cancellationToken = default);
 }
 
+public interface IStatelessGetter<in TParam, out TValue> : IGetter
+{
+    /// <summary>
+    /// Get the value for this instance.  If the value was already resolved or provided, this re-resolves the value.  (Use ILazilyGets to avoid unwanted re-resolving.)
+    /// </summary>
+    /// <returns></returns>
+    ITask<IGetResult<TValue>> Get(TParam parameter, CancellationToken cancellationToken = default);
+}
+
 // For Orleans grains: no covariance - REVIEW - is this really needed?
 public interface IStatelessGetterG<TValue> : IGetter
 {

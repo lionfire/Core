@@ -8,14 +8,12 @@ using System.Collections.Generic;
 using System.Reactive.Subjects;
 using System.Reactive;
 using LionFire.Dependencies;
-using System.Diagnostics;
-using System.Reactive.Linq;
 
 namespace LionFire.Data.Collections;
 
 public abstract class AsyncReadOnlyKeyedCollectionCache<TKey, TValue>
-    : AsyncDynamicDataCollectionCache<TValue>
-    , IAsyncReadOnlyKeyedCollectionCache<TKey, TValue>
+    : AsyncDynamicDataCollectionCache<KeyValuePair<TKey, TValue>>
+    , IObservableCacheGetter<TKey, TValue>
     , IInjectable<IKeyProvider<TKey, TValue>>
     , System.IAsyncObserver<ChangeSet<TValue, TKey>>
     where TKey : notnull
@@ -27,10 +25,8 @@ public abstract class AsyncReadOnlyKeyedCollectionCache<TKey, TValue>
     #region KeyProvider
 
     public IKeyProvider<TKey, TValue>? KeyProvider { get; set; }
-
-    public IKeyProvider<TKey, TValue>? Object => KeyProvider;
-
-    public IKeyProvider<TKey, TValue> Dependency { set => KeyProvider = value; }
+    IKeyProvider<TKey, TValue>? IHas<IKeyProvider<TKey, TValue>>.Object => KeyProvider;
+    IKeyProvider<TKey, TValue> IDependsOn<IKeyProvider<TKey, TValue>>.Dependency { set => KeyProvider = value; }
 
     #endregion
 
@@ -43,7 +39,9 @@ public abstract class AsyncReadOnlyKeyedCollectionCache<TKey, TValue>
     protected static IEqualityComparer<TKey> DefaultKeyEqualityComparer { get; set; } = EqualityComparer<TKey>.Default;
 
     protected Func<TValue, TKey> KeySelector { get; }
-    public virtual Func<TValue, TKey> DefaultKeySelector(IServiceProvider? serviceProvider = null) => KeySelectors.GetKeySelector<TValue, TKey>(serviceProvider ?? DependencyContext.Current.ServiceProvider);
+    public virtual Func<TValue, TKey> DefaultKeySelector(IServiceProvider? serviceProvider = null) => KeySelectors.GetKeySelector<TValue, TKey>(serviceProvider ?? DependencyContext.Current?.ServiceProvider);
+
+    AsyncObservableCollectionOptions? options; // UNUSED - TODO
 
     #endregion
 
@@ -55,6 +53,7 @@ public abstract class AsyncReadOnlyKeyedCollectionCache<TKey, TValue>
     {
         KeySelector = keySelector ?? DefaultKeySelector();
         SourceCache = dictionary ?? new SourceCache<TValue, TKey>(KeySelector);
+        this.options = options;
     }
 
     #endregion
@@ -63,7 +62,7 @@ public abstract class AsyncReadOnlyKeyedCollectionCache<TKey, TValue>
 
     public SourceCache<TValue, TKey> SourceCache { get; }
     public IObservableCache<TValue, TKey> ObservableCache => SourceCache.AsObservableCache(); // AsObservableCache converts it read only
-                                                                                              
+
     //public override DynamicData.IObservableList<KeyValuePair<TKey, TValue>> List => throw new NotImplementedException();// SourceCache.AsObservableList();
 
     #endregion
@@ -131,13 +130,13 @@ public abstract class AsyncReadOnlyKeyedCollectionCache<TKey, TValue>
     }
 
     #endregion
-        
+
     #region IGets<IEnumerable<TValue>>
 
     #region Resolve
 
     public abstract ITask<IGetResult<IEnumerable<TValue>>> ResolveFromSource(CancellationToken cancellationToken = default);
-    
+
     Func<TValue, TValue, bool> ValueEqualityComparerFunc => (l, r) => DefaultKeyEqualityComparer.Equals(KeySelector(l), KeySelector(r));
 
     public override IEnumerable<TValue>? ReadCacheValue => SourceCache.Items;

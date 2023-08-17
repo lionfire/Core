@@ -15,7 +15,7 @@ public class ObjectInspectorService
 
 public static class ObjectInspectorServiceX
 {
-    public static void Inject(this ObjectInspectorService objectInspectorService, IInspectorNode node)
+    public static void Inject(this ObjectInspectorService objectInspectorService, INode node)
     {
 
         foreach(var inspector in objectInspectorService.Inspectors)

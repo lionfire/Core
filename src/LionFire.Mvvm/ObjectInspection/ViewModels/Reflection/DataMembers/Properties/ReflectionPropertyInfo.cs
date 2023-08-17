@@ -14,7 +14,7 @@ public class ReflectionPropertyInfo : DataReflectionMemberInfo
     public override IODirection IODirection => PropertyInfo.GetIODirection();
 
 
-    public override IInspectorNode Create(object obj) => new PropertyVM(this, obj);
+    public override INode Create(object obj) => new PropertyVM(this, obj);
 }
 
 

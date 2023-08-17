@@ -12,7 +12,7 @@ namespace LionFire.Data.Collections;
 /// <remarks>Implementors: override either RetrieveValues or RetrieveImpl</remarks>
 public abstract class AsyncKeyedCollectionCache<TKey, TValue>
     : AsyncReadOnlyKeyedCollectionCache<TKey, TValue>
-    , IAsyncKeyedCollectionCache<TKey, TValue>
+    , IAsyncKeyedCollection<TKey, TValue>
     where TKey : notnull
 {
     #region Lifecycle

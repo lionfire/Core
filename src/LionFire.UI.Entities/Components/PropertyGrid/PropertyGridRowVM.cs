@@ -27,7 +27,7 @@ public class PropertyVM : ReactiveObject
 
     #region MemberVM
 
-    public IInspectorNode? MemberVM
+    public INode? MemberVM
     {
         get => memberVM;
         set
@@ -64,7 +64,7 @@ public class PropertyVM : ReactiveObject
             }
         }
     }
-    private IInspectorNode? memberVM;
+    private INode? memberVM;
 
     #region Derived
 

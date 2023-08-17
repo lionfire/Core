@@ -2,7 +2,7 @@
 
 namespace LionFire.Data.Collections;
 
-public interface IAsyncKeyedCollectionCache<TKey, TItem> : IAsyncCollection<TItem>
+public interface IAsyncKeyedCollection<TKey, TItem> : IAsyncCollection<KeyValuePair<TKey,TItem>>
     where TKey : notnull
 {
     IObservableCache<TItem, TKey> ObservableCache { get; }

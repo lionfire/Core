@@ -2,7 +2,7 @@
 namespace LionFire.Data.Async.Gets;
 
 // ENH
-public class RankedDictionaryResolver<TKey, TValue> : IGetter<TKey, TValue>
+public class RankedDictionaryResolver<TKey, TValue> : IStatelessGetter<TKey, TValue>
     where TKey : notnull
 {
     public Dictionary<TKey, SortedList<float, Type>> Dictionary { get; set; } = new();

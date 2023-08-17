@@ -4,6 +4,7 @@ using System.ComponentModel;
 
 namespace LionFire.Data.Mvvm;
 
+
 public class GetterToRxO<TValue>
     : ReactiveObject
     , IGetterRxO<TValue>

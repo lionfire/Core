@@ -24,13 +24,13 @@ else
     public int Depth { get; set; }
 
     [Parameter]
-    public IEnumerable<IInspectorNode> MemberVMs { get; set; }
+    public IEnumerable<INode> MemberVMs { get; set; }
 
     [Parameter]
-    public IObservableCache<IInspectorNode, string> ObservableMembersDictionary { get; set; }
+    public IObservableCache<INode, string> ObservableMembersDictionary { get; set; }
 
     [Parameter]
-    public IObservableList<IInspectorNode> ObservableMembers { get; set; }
+    public IObservableList<INode> ObservableMembers { get; set; }
 
 
     // [Parameter]

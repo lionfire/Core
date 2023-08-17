@@ -1,15 +1,8 @@
-﻿namespace LionFire.Inspection;
+﻿using LionFire.Data.Async.Gets;
+using LionFire.Data.Async.Sets;
 
-/// <summary>
-/// 
-/// </summary>
-/// <remarks>
-/// 
-/// </remarks>
-public interface IInspectorMember : IInspectorNode
-{
-    InspectorChildKind
-    IInspectorMemberInfo? Info { get; }
+namespace LionFire.Inspection;
+
 
 //public interface IInspectorMemberVM<TSource> : IInspectorMemberVM // not needed since ObjectInspection primarily works at runtime without static typing
 //{

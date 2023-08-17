@@ -18,8 +18,8 @@ namespace LionFire.Data.Collections;
 /// </remarks>
 /// <typeparam name="TKey"></typeparam>
 /// <typeparam name="TItem"></typeparam>
-public interface IAsyncReadOnlyKeyedCollectionCache<TKey, TItem>
-    : IEnumerableGetter<TItem>
+public interface IObservableCacheGetter<TKey, TItem>
+    : IEnumerableGetter<KeyValuePair<TKey, TItem>>
     where TKey : notnull
 {
     IObservableCache<TItem, TKey> ObservableCache { get; } 

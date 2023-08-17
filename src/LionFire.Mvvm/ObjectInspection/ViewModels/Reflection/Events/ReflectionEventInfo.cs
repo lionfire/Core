@@ -12,7 +12,7 @@ public class ReflectionEventInfo : ReflectionMemberInfo
     }
 
     public EventInfo EventInfo { get => (EventInfo)MemberInfo; set => MemberInfo = value; }
-    public override IInspectorNode Create(object obj) => new EventVM(this, obj);
+    public override INode Create(object obj) => new EventVM(this, obj);
 }
 
 

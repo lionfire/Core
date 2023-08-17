@@ -114,12 +114,12 @@ public class OrleansObjectInspector : IInspector
         if (customObjectInspectorInfo == null) yield break;
 
 
-        var list = new List<IInspectorNode>();
+        var list = new List<INode>();
 
         foreach (var memberInfo in customObjectInspectorInfo.MemberInfos)
         {
             //if(memberInfo.CanRead())
-            IInspectorNode vm = memberInfo.Create(obj);
+            INode vm = memberInfo.Create(obj);
             list.Add(vm);
         }
         var customObjectInspector = new CustomObjectInspector(obj, list);

@@ -1,4 +1,8 @@
 ﻿
+using LionFire.Data.Async.Gets;
+using LionFire.Data.Collections;
+using LionFire.Inspection.Nodes;
+
 namespace LionFire.Inspection;
 
 // Examples:
@@ -22,23 +26,24 @@ public interface IInspector
     /// If node.Source is a primitive, this is a one shot operation.  If it is a more complex object that changes over time, the inspector may subscribe to events on the Source and add or remove NodeGroups as appropriate.
     /// </summary>
     /// <param name="node"></param>
-    void Attach(IInspectorNode node)
+    void Attach(INode node)
     {
         if (node.Source is null) return;
 
         if(IsSourceSubscribable(node.Source))
         {
-
-        } 
+            throw new NotImplementedException();
+        }
         else
         {
-            node.Groups. GroupsForObject(node.Source);
+            throw new NotImplementedException();
+            //node.Groups. GroupsForObject(node.Source);
         }
 
     }
 
     bool IsSourceSubscribable(object source);
 
-    IEnumerable<IObservableCache<IInspectorNode, string>> GroupsForObject(object @object);
+    IEnumerableGetter<InspectorGroupGetter> GroupsForObject(object source);
 
 }

@@ -3,7 +3,7 @@
 namespace LionFire.Data.Collections;
 
 
-public interface IAsyncListBase<TItem> : IAsyncCollectionBase<TItem>
+public interface IAsyncListBase<TItem> : IAsyncCollectionBase_OLD<TItem>
 {
     Task<TItem> ElementAt(int index);
     Task ElementAt(int index, TItem value);

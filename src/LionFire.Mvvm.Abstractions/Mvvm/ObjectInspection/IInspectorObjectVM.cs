@@ -7,5 +7,5 @@ public interface IInspectorObjectVM
     /// </summary>
     object Source { get; }
 
-    List<IInspectorNode> Members { get; }
+    List<INode> Members { get; }
 }

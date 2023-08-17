@@ -12,7 +12,7 @@ public class BuiltInObjectInspectors : IInspector // TODO
     }
 }
 
-public abstract class ReflectionMemberVM : MemberVM<ReflectionMemberInfo, object>, IInspectorNode
+public abstract class ReflectionMemberVM : MemberVM<ReflectionMemberInfo, object>, INode
 {
     #region (Static)
 

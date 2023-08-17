@@ -7,7 +7,7 @@ public class InspectorContext
 
 }
 
-public class InspectorNode : IInspectorNode
+public class InspectorNode : INode
 {
     public object Source { get; }
 
@@ -21,17 +21,17 @@ public class InspectorNode : IInspectorNode
 
     #endregion
 
-    IObservableCache<InspectorGroupGetter, string> IInspectorNode.Groups => groups.AsObservableCache();
+    IObservableCache<InspectorGroupGetter, string> INode.Groups => groups.AsObservableCache();
 
     public SourceCache<InspectorGroupGetter, string> WriteableGroups => groups;
     SourceCache<InspectorGroupGetter, string> groups = new SourceCache<InspectorGroupGetter, string>(x => x.Key);
 }
 
-//public abstract class InspectorNode<TInfo> : ReactiveObject, IInspectorNode
-//    where TInfo : IInspectorNodeInfo
+//public abstract class InspectorNode<TInfo> : ReactiveObject, INode
+//    where TInfo : INodeInfo
 //{
 //    public TInfo Info { get; }
-//    IInspectorMemberInfo IInspectorNode.Info => Info;
+//    IInspectorMemberInfo INode.Info => Info;
 
 //    public InspectorContext Context { get; }
 

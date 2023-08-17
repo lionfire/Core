@@ -1,6 +1,6 @@
 ﻿namespace LionFire.Inspection;
 
-public class InspectedObjectVM : InspectorNode<IInspectorNodeInfo>, IInspectorNode
+public class InspectedObjectVM : InspectorNode<INodeInfo>, INode
 {
     public InspectedObjectVM(object sourceObject, ObjectInspectorService objectInspectorService)
     {
@@ -33,6 +33,6 @@ public class InspectedObjectVM : InspectorNode<IInspectorNodeInfo>, IInspectorNo
     [Reactive]
     public object EffectiveObject { get; set; }
 
-    public IEnumerable<IInspectorNode> Members { get; set; } = Enumerable.Empty<ReflectionMemberVM>();
+    public IEnumerable<INode> Members { get; set; } = Enumerable.Empty<ReflectionMemberVM>();
 
 }

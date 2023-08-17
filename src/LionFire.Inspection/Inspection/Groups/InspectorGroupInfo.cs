@@ -1,4 +1,6 @@
-﻿public class InspectorGroupInfo : IKeyable<string>
+﻿using LionFire.Structures;
+
+public class InspectorGroupInfo : IKeyable<string>
 {
 
     #region Relationships

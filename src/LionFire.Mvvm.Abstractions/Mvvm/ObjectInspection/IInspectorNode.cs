@@ -12,7 +12,7 @@ namespace LionFire.Inspection;
 /// <remarks>
 /// 
 /// </remarks>
-public interface IInspectorMember : IInspectorNode
+public interface IInspectorMember : INode
 {
     InspectorChildKind Kind { get; }
     IInspectorMemberInfo? Info { get; }

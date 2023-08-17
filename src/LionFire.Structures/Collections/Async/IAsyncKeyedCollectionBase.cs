@@ -1,6 +1,6 @@
 ﻿namespace LionFire.Data.Collections;
 
-public interface IAsyncKeyedCollectionBase<TKey, TItem> : IAsyncCollectionBase<TItem>
+public interface IAsyncKeyedCollectionBase<TKey, TItem> : IAsyncCollectionBase_OLD<TItem>
     where TKey : notnull
 {
     Task<bool> ContainsKey(TKey key);

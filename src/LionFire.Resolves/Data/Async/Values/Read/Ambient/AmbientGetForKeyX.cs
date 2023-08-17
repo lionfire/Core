@@ -23,7 +23,7 @@ public static class IResolverPocoExtensions
         ArgumentNullException.ThrowIfNull(resolvable);
 
         bool gotResolver = false;
-        foreach (var resolver in resolvable!.GetAmbientServiceProvider()?.GetServices<IGetter<TKey, TValue>>() ?? Enumerable.Empty<IGetter<TKey, TValue>>())
+        foreach (var resolver in resolvable!.GetAmbientServiceProvider()?.GetServices<IStatelessGetter<TKey, TValue>>() ?? Enumerable.Empty<IStatelessGetter<TKey, TValue>>())
         {
             gotResolver = true;
             var result = await resolver.Get(resolvable, cancellationToken).ConfigureAwait(false);

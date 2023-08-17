@@ -14,7 +14,7 @@ public class CustomObjectInspector : IInspectorObjectVM
 
     #region Lifecycle
 
-    public CustomObjectInspector(object sourceObject, List<IInspectorNode> memberVMs)
+    public CustomObjectInspector(object sourceObject, List<INode> memberVMs)
     {
         Source = sourceObject;
         Members = memberVMs;
@@ -24,7 +24,7 @@ public class CustomObjectInspector : IInspectorObjectVM
 
     #region Data
 
-    public List<IInspectorNode> Members { get; } 
+    public List<INode> Members { get; } 
 
     #endregion
 }

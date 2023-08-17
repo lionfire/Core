@@ -50,7 +50,7 @@ public abstract class InspectorMemberInfo : IInspectorMemberInfo
 
     public RelevanceFlags WriteRelevance { get; set; }
 
-    public abstract IInspectorNode Create(object obj);
+    public abstract INode Create(object obj);
 }
 
 

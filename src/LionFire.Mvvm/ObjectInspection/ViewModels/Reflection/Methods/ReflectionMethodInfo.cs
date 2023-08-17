@@ -12,7 +12,7 @@ public class ReflectionMethodInfo : ReflectionMemberInfo
     }
 
     public MethodInfo MethodInfo { get => (MethodInfo)MemberInfo; set => MemberInfo = value; }
-    public override IInspectorNode Create(object obj) => new MethodVM(this, obj);
+    public override INode Create(object obj) => new MethodVM(this, obj);
 }
 
 

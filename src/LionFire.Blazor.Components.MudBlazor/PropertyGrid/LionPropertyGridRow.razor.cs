@@ -16,7 +16,7 @@ public partial class LionPropertyGridRow
     public int Depth { get; set; }
 
     [Parameter]
-    public IInspectorNode? MemberVM { get; set; }// { get => ViewModel.MemberVM; set => ViewModel.MemberVM = value; }
+    public INode? MemberVM { get; set; }// { get => ViewModel.MemberVM; set => ViewModel.MemberVM = value; }
 
     #endregion
 

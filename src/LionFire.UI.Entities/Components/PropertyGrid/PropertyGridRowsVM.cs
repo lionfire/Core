@@ -15,11 +15,11 @@ public class PropertyGridRowsVM : ReactiveObject
     }
 
     public PropertyGridVM PropertyGridVM { get; set; }
-    public IEnumerable<IInspectorNode> MemberVMs { get; set; }
+    public IEnumerable<INode> MemberVMs { get; set; }
 
     public IGetterRxO<IEnumerable<object>> MembersGetter { get; set; }
 
-    public IEnumerable<IInspectorNode> VisibleMembers
+    public IEnumerable<INode> VisibleMembers
     {
         get
         {

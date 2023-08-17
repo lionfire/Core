@@ -4,7 +4,7 @@ namespace LionFire.Data.Collections;
 
 /// <typeparam name="TItem"></typeparam>
 /// <remarks>For uses that can't handle properties</remarks>
-public interface IAsyncCollectionBase<TItem> : IEnumerableAsync<TItem>
+public interface IAsyncCollectionBase_OLD<TItem> : IEnumerableAsync<TItem>
 {
 
     Task Add(TItem item);
