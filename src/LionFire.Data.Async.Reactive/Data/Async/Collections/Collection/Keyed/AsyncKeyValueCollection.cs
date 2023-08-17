@@ -9,10 +9,10 @@ using System.Reactive.Subjects;
 using System.Reactive;
 using LionFire.Dependencies;
 
-namespace LionFire.Data.Collections;
+namespace LionFire.Data.Collections; 
 
-public abstract class AsyncReadOnlyKeyedCollectionCache<TKey, TValue>
-    : AsyncDynamicDataCollectionCache<TValue>
+public abstract class AsyncReadOnlyKeyValueCollection<TKey, TValue>
+    : AsyncDynamicDataCollectionCache<KeyValuePair<TKey, TValue>>
     , IObservableCacheGetter<TKey, TValue>
     , IInjectable<IKeyProvider<TKey, TValue>>
     , System.IAsyncObserver<ChangeSet<TValue, TKey>>
@@ -47,9 +47,9 @@ public abstract class AsyncReadOnlyKeyedCollectionCache<TKey, TValue>
 
     #region Lifecycle
 
-    public AsyncReadOnlyKeyedCollectionCache() : this(null) { }
+    public AsyncReadOnlyKeyValueCollection() : this(null) { }
 
-    public AsyncReadOnlyKeyedCollectionCache(Func<TValue, TKey>? keySelector = null, SourceCache<TValue, TKey>? dictionary = null, AsyncObservableCollectionOptions? options = null)
+    public AsyncReadOnlyKeyValueCollection(Func<TValue, TKey>? keySelector = null, SourceCache<TValue, TKey>? dictionary = null, AsyncObservableCollectionOptions? options = null)
     {
         KeySelector = keySelector ?? DefaultKeySelector();
         SourceCache = dictionary ?? new SourceCache<TValue, TKey>(KeySelector);
@@ -121,7 +121,7 @@ public abstract class AsyncReadOnlyKeyedCollectionCache<TKey, TValue>
     //    return result;
     //}
 
-    public override IEnumerable<TValue>? Value => SourceCache.Items;
+    public override IEnumerable<KeyValuePair<TKey, TValue>>? Value => SourceCache.KeyValues;
 
     public override void DiscardValue()
     {
@@ -139,10 +139,10 @@ public abstract class AsyncReadOnlyKeyedCollectionCache<TKey, TValue>
 
     Func<TValue, TValue, bool> ValueEqualityComparerFunc => (l, r) => DefaultKeyEqualityComparer.Equals(KeySelector(l), KeySelector(r));
 
-    public override IEnumerable<TValue>? ReadCacheValue => SourceCache.Items;
+    public override IEnumerable<KeyValuePair<TKey, TValue>>? ReadCacheValue => SourceCache.KeyValues;
 
     private object currentResolvingLock = new();
-    public override ITask<IGetResult<IEnumerable<TValue>>> Get(CancellationToken cancellationToken = default)
+    public override ITask<IGetResult<IEnumerable<KeyValuePair<TKey, TValue>>>> Get(CancellationToken cancellationToken = default)
     {
         lock (currentResolvingLock)
         {
