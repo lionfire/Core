@@ -11,7 +11,7 @@ using LionFire.Dependencies;
 
 namespace LionFire.Data.Collections;
 
-public abstract class AsyncReadOnlyKeyedCollectionCache<TKey, TValue>
+public abstract class AsyncReadOnlyKeyedCollection<TKey, TValue>
     : AsyncDynamicDataCollectionCache<TValue>
     , IObservableCacheGetter<TKey, TValue>
     , IInjectable<IKeyProvider<TKey, TValue>>
@@ -47,9 +47,9 @@ public abstract class AsyncReadOnlyKeyedCollectionCache<TKey, TValue>
 
     #region Lifecycle
 
-    public AsyncReadOnlyKeyedCollectionCache() : this(null) { }
+    public AsyncReadOnlyKeyedCollection() : this(null) { }
 
-    public AsyncReadOnlyKeyedCollectionCache(Func<TValue, TKey>? keySelector = null, SourceCache<TValue, TKey>? dictionary = null, AsyncObservableCollectionOptions? options = null)
+    public AsyncReadOnlyKeyedCollection(Func<TValue, TKey>? keySelector = null, SourceCache<TValue, TKey>? dictionary = null, AsyncObservableCollectionOptions? options = null)
     {
         KeySelector = keySelector ?? DefaultKeySelector();
         SourceCache = dictionary ?? new SourceCache<TValue, TKey>(KeySelector);

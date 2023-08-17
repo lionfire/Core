@@ -10,16 +10,16 @@ namespace LionFire.Data.Collections;
 /// <typeparam name="TKey"></typeparam>
 /// <typeparam name="TValue"></typeparam>
 /// <remarks>Implementors: override either RetrieveValues or RetrieveImpl</remarks>
-public abstract class AsyncKeyedCollectionCache<TKey, TValue>
-    : AsyncReadOnlyKeyedCollectionCache<TKey, TValue>
+public abstract class AsyncKeyedCollection<TKey, TValue>
+    : AsyncReadOnlyKeyedCollection<TKey, TValue>
     , IAsyncKeyedCollection<TKey, TValue>
     where TKey : notnull
 {
     #region Lifecycle
 
-    public AsyncKeyedCollectionCache() : this(null) { }
+    public AsyncKeyedCollection() : this(null) { }
 
-    public AsyncKeyedCollectionCache(Func<TValue, TKey>? keySelector, SourceCache<TValue, TKey>? dictionary = null, AsyncObservableCollectionOptions? options = null) : base(keySelector, dictionary, options)
+    public AsyncKeyedCollection(Func<TValue, TKey>? keySelector, SourceCache<TValue, TKey>? dictionary = null, AsyncObservableCollectionOptions? options = null) : base(keySelector, dictionary, options)
     {
     }
 
