@@ -6,7 +6,7 @@ namespace LionFire.Orleans_.Collections;
 /// <remarks>
 /// Adds back get method editions of properties
 /// </remarks>
-public interface ICollectionG<TItem> : IAsyncCollectionBase<TItem>, IStatelessGetterG<IEnumerable<TItem>>
+public interface ICollectionG<TItem> : IAsyncCollectionBase_OLD<TItem>, IStatelessGetterG<IEnumerable<TItem>>
 {
     Task<int> GetCount();
     Task<bool> GetIsReadOnly();
@@ -14,10 +14,10 @@ public interface ICollectionG<TItem> : IAsyncCollectionBase<TItem>, IStatelessGe
 
 public static class ICollectionGX
 {
-    public static IAsyncCollection<TItem> ToAsyncCollection<TItem>(this ICollectionG<TItem> c) => new CollectionGAdapter<TItem>(c);
+    public static IAsyncCollection_OLD<TItem> ToAsyncCollection<TItem>(this ICollectionG<TItem> c) => new CollectionGAdapter<TItem>(c);
 }
 
-internal class CollectionGAdapter<TItem> : IAsyncCollection<TItem>
+internal class CollectionGAdapter<TItem> : IAsyncCollection_OLD<TItem>
 {
     private ICollectionG<TItem> c;
 

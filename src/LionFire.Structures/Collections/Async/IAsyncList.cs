@@ -16,7 +16,7 @@ public interface IAsyncListBase<TItem> : IAsyncCollectionBase_OLD<TItem>
 }
 
 
-public interface IAsyncList<TItem> : IAsyncCollection<TItem>, IAsyncListBase<TItem>
+public interface IAsyncList<TItem> : IAsyncCollection_OLD<TItem>, IAsyncListBase<TItem>
 {
 }
 

@@ -121,7 +121,7 @@ public abstract class AsyncReadOnlyKeyedCollectionCache<TKey, TValue>
     //    return result;
     //}
 
-    public override IEnumerable<TValue>? Value => SourceCache.Items;
+    public override IEnumerable<KeyValuePair<TKey, TValue>>? Value => SourceCache.KeyValues;
 
     public override void DiscardValue()
     {
@@ -139,10 +139,10 @@ public abstract class AsyncReadOnlyKeyedCollectionCache<TKey, TValue>
 
     Func<TValue, TValue, bool> ValueEqualityComparerFunc => (l, r) => DefaultKeyEqualityComparer.Equals(KeySelector(l), KeySelector(r));
 
-    public override IEnumerable<TValue>? ReadCacheValue => SourceCache.Items;
+    public override IEnumerable<KeyValuePair<TKey, TValue>>? ReadCacheValue => SourceCache.KeyValues;
 
     private object currentResolvingLock = new();
-    public override ITask<IGetResult<IEnumerable<TValue>>> Get(CancellationToken cancellationToken = default)
+    public override ITask<IGetResult<IEnumerable<KeyValuePair<TKey, TValue>>>> Get(CancellationToken cancellationToken = default)
     {
         lock (currentResolvingLock)
         {

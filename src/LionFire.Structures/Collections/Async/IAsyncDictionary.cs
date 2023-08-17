@@ -5,7 +5,7 @@ using System.Diagnostics.CodeAnalysis;
 
 namespace LionFire.Data.Collections;
 
-public interface IAsyncDictionary<TKey, TValue> : IAsyncCollection<KeyValuePair<TKey, TValue>>, IEnumerableAsync<KeyValuePair<TKey, TValue>>
+public interface IAsyncDictionary<TKey, TValue> : IAsyncCollection_OLD<KeyValuePair<TKey, TValue>>, IEnumerableAsync<KeyValuePair<TKey, TValue>>
 {
     Task<TValue> ElementAt(TKey key);
     Task ElementAt(TKey key, TValue value);

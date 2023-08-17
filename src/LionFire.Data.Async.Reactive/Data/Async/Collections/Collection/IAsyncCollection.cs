@@ -18,7 +18,7 @@ public interface IAsyncCollection<TItem> : IEnumerableGetter<TItem>
     #region Remove
 
     Task<bool> Remove(TItem item);
-    IObservable<(TItem value, Task<bool> result)> Removes { get; }
+    IObservable<(TItem item, Task<bool> result)> Removes { get; }
 
     #endregion
 

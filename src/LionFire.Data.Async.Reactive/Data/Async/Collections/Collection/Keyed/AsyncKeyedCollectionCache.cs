@@ -37,12 +37,13 @@ public abstract class AsyncKeyedCollectionCache<TKey, TValue>
 
     #region Remove
 
+    public abstract Task<bool> Remove(KeyValuePair<TKey,TValue> keyValuePair);
     public abstract Task<bool> Remove(TKey key);
     public virtual Task<bool> Remove(TValue item) => Remove(KeySelector(item));
 
-    public IObservable<(TValue value, Task<bool> result)> Removes => removes.Value;
+    public IObservable<(KeyValuePair<TKey, TValue> item, Task<bool> result)> Removes => removes.Value;
 
-    protected Lazy<Subject<(TValue value, Task<bool> result)>> removes = new Lazy<Subject<(TValue value, Task<bool> result)>>(LazyThreadSafetyMode.PublicationOnly);
+    protected Lazy<Subject<(KeyValuePair<TKey, TValue> item, Task<bool> result)>> removes = new Lazy<Subject<(KeyValuePair<TKey, TValue> item, Task<bool> result)>>(LazyThreadSafetyMode.PublicationOnly);
 
     #endregion
 

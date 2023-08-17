@@ -10,7 +10,7 @@ namespace LionFire.Orleans_.Collections;
 public interface ICollectionBaseG<TItem>
     : IGrainWithStringKey
     , ICollectionG<TItem>
-    , IAsyncCollectionBase<TItem>
+    , IAsyncCollectionBase_OLD<TItem>
     , ICreatesAsync<TItem>
 {
 }
