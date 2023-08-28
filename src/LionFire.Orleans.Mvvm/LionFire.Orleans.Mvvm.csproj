@@ -24,8 +24,4 @@
     <ProjectReference Include="..\LionFire.Resolves\LionFire.Data.Async.csproj" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="NewFolder\" />
-  </ItemGroup>
-
 </Project>

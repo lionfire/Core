@@ -1,5 +1,6 @@
 ﻿
 using DynamicData;
+using System.Reactive.Linq;
 using System.Reactive.Subjects;
 
 namespace LionFire.Data.Collections;
@@ -37,13 +38,18 @@ public abstract class AsyncKeyedCollection<TKey, TValue>
 
     #region Remove
 
-    public abstract Task<bool> Remove(KeyValuePair<TKey,TValue> keyValuePair);
+    public virtual Task<bool> Remove(KeyValuePair<TKey, TValue> keyValuePair)
+    {
+        if (!KeySelector(keyValuePair.Value).Equals(keyValuePair.Key)) throw new ArgumentNullException("Unexpected key for value");
+        return Remove(keyValuePair.Key);
+    }
     public abstract Task<bool> Remove(TKey key);
     public virtual Task<bool> Remove(TValue item) => Remove(KeySelector(item));
 
-    public IObservable<(KeyValuePair<TKey, TValue> item, Task<bool> result)> Removes => removes.Value;
+    public IObservable<(TValue item, Task<bool> result)> Removes => removes.Value;
+    protected Lazy<Subject<(TValue item, Task<bool> result)>> removes = new Lazy<Subject<(TValue item, Task<bool> result)>>(LazyThreadSafetyMode.PublicationOnly);
 
-    protected Lazy<Subject<(KeyValuePair<TKey, TValue> item, Task<bool> result)>> removes = new Lazy<Subject<(KeyValuePair<TKey, TValue> item, Task<bool> result)>>(LazyThreadSafetyMode.PublicationOnly);
+    public IObservable<(TKey key, TValue item, Task<bool> result)> RemovesWithKeys => Removes.Select(x => (KeySelector(x.item), x.item, x.result));
 
     #endregion
 

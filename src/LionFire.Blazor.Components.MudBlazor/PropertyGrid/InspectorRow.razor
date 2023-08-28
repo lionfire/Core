@@ -1,0 +1,121 @@
+﻿@inherits ReactiveUI.Blazor.ReactiveInjectableComponentBase<InspectorRowVM>
+
+@using LionFire.Inspection;
+@using LionFire.Reflection;
+@using LionFire.UI.Components.PropertyGrid;
+@using LionFire.Inspection.ViewModels;
+@using ReactiveUI;
+
+@if (ViewModel?.HasAnythingToShow == true)
+{
+    @if (ViewModel.NodeVM == null)
+    {
+        <tr>
+            <td></td>
+            <td>(No node)</td>
+        </tr>
+    }
+    else if (ViewModel.InspectorVM == null)
+    {
+        <tr>
+            <td></td>
+            <td>(No inspector)</td>
+        </tr>
+    }
+    else
+    {
+        <tr>
+            @* <td class="dev">R relevant: @ViewModel.InspectorVM.ReadRelevance.HasFlag(MemberVM.MemberInfoVM.ReadRelevance)</td>
+    <td class="dev">W relevant: @ViewModel.InspectorVM.WriteRelevance.HasFlag(MemberVM.MemberInfoVM.WriteRelevance)</td>
+    <td class="dev">RR: @MemberVM.MemberInfoVM.ReadRelevance</td>
+    <td class="dev">WR: @MemberVM.MemberInfoVM.WriteRelevance</td> *@
+
+            <td class="Expander">
+                @if (ViewModel.NodeVM.HasChildren != false)
+                {
+                    <MudCheckBox @bind-Checked="@ViewModel.NodeVM.AreChildrenVisible"
+                                 Dense=true
+                                 Size="@Size.Small"
+                                 Color="Color.Secondary"
+                                 CheckedIcon="@(ViewModel.NodeVM.HasChildren == true ? Icons.Material.Filled.ArrowDownward : Icons.Material.Outlined.ArrowDownward)"
+                                 UncheckedIcon="@(ViewModel.NodeVM.HasChildren == true ? Icons.Material.Filled.ArrowRight : Icons.Material.Outlined.ArrowRight)">
+                    </MudCheckBox>
+                }
+            </td>
+
+            <td class="Name">
+                <div style="@($"margin-left: {NodeVM!.Depth * 10}px")">
+                    @ViewModel.NodeVM.Node.Info.Name
+                </div>
+            </td>
+
+            <td class="@("Value " + ViewModel.ValueClass)">
+                <DataMemberEditor NodeVM="@ViewModel.NodeVM" />
+            </td>
+
+            <td class="FieldType">
+                <span title="@ViewModel.NodeVM!.CurrentValueType">
+                    @ViewModel!.NodeVM!.Node.Info.Type?.Name
+                </span>
+            </td>
+
+            <td class="ValueType">
+
+                @if (ViewModel!.NodeVM!.ValueTypeDiffersFromMemberType)
+                {
+                    <span title="@ViewModel.NodeVM!.CurrentValueType">
+                        @ViewModel!.NodeVM!.CurrentValueType?.Name
+                    </span>
+                }
+            </td>
+
+            @if (InspectorVM!.DevMode)
+            {
+                <td class="dev">@NodeVM.Node.Info.NodeKind.ToString().Substring(0, 1)</td>
+                <td class="dev">@NodeVM.GetType().Name.Substring(0, 1)</td>
+                <td class="dev">@NodeVM.Node.Info.TypeFlags.AggregateOrDefault((x,y)=>$"{x}, {y}")</td>
+                <td class="dev Namespace">@NodeVM!.Node.Info.Type?.Namespace</td>
+                <td class="dev">@TypeNameUtils.DisplayTypeName(NodeVM!.Node!.Info.Type)</td>
+
+                @* <td>@(ChildMemberVMs?.Any() == true ? ChildMemberVMs.Select(v => v.MemberInfoVM.Name).Aggregate((x, y) => $"{x}, {y}") : "")</td> *@
+                @* <td>@ViewModel.IsExpanded</td> *@
+                <td class="dev">
+                    @(
+                        NodeVM.Node.Info.CanRead() ? "R" : ""
+                        )@(
+                       NodeVM.Node.Info.CanWrite() ? "W" : ""
+                       )
+                </td>
+                <td class="dev">@NodeVM.Depth</td>
+                <td class="dev">@NodeVM.Node.Path</td>
+            }
+        </tr>
+
+        @if (ViewModel.NodeVM.AreChildrenVisible && ViewModel!.NodeVM!.Node.Groups.Items.Any())
+        {
+            @CurrentChildGenerator
+        }
+    }
+}
+
+@* <MudExpansionPanels>
+    <MudExpansionPanel Text="Members" >
+        @bind-IsExpanded="ViewModel.IsExpanded"
+        @childrenContent
+        <div>test1</div>
+    </MudExpansionPanel>
+    <MudExpansionPanel Text="Test">
+        <div>test</div>
+    </MudExpansionPanel>
+</MudExpansionPanels> *@
+
+@code {
+
+    void SetChildGenerator()
+    {
+        ChildGenerator = __builder =>
+        {
+            <InspectorRows NodeVM="@ViewModel.NodeVM" />
+        };
+    }
+}

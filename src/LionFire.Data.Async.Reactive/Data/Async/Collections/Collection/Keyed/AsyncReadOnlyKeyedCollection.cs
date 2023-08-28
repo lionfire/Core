@@ -12,8 +12,8 @@ using LionFire.Dependencies;
 namespace LionFire.Data.Collections;
 
 public abstract class AsyncReadOnlyKeyedCollection<TKey, TValue>
-    : AsyncDynamicDataCollectionCache<TValue>
-    , IObservableCacheGetter<TKey, TValue>
+    : AsyncDynamicDataCollection<TValue>
+    , IObservableCacheKeyableGetter<TKey, TValue>
     , IInjectable<IKeyProvider<TKey, TValue>>
     , System.IAsyncObserver<ChangeSet<TValue, TKey>>
     where TKey : notnull
@@ -38,7 +38,7 @@ public abstract class AsyncReadOnlyKeyedCollection<TKey, TValue>
 
     protected static IEqualityComparer<TKey> DefaultKeyEqualityComparer { get; set; } = EqualityComparer<TKey>.Default;
 
-    protected Func<TValue, TKey> KeySelector { get; }
+    public Func<TValue, TKey> KeySelector { get; }
     public virtual Func<TValue, TKey> DefaultKeySelector(IServiceProvider? serviceProvider = null) => KeySelectors.GetKeySelector<TValue, TKey>(serviceProvider ?? DependencyContext.Current?.ServiceProvider);
 
     AsyncObservableCollectionOptions? options; // UNUSED - TODO
@@ -139,7 +139,8 @@ public abstract class AsyncReadOnlyKeyedCollection<TKey, TValue>
 
     Func<TValue, TValue, bool> ValueEqualityComparerFunc => (l, r) => DefaultKeyEqualityComparer.Equals(KeySelector(l), KeySelector(r));
 
-    public override IEnumerable<TValue>? ReadCacheValue => SourceCache.Items;
+    //public override IEnumerable<TValue>? ReadCacheValue => SourceCache.Items;
+    public override IEnumerable<TValue>? ReadCacheValue { get; protected set; }
 
     private object currentResolvingLock = new();
     public override ITask<IGetResult<IEnumerable<TValue>>> Get(CancellationToken cancellationToken = default)
@@ -175,17 +176,17 @@ public abstract class AsyncReadOnlyKeyedCollection<TKey, TValue>
 
     #endregion
 
-    #region ICollection<int>
+    //#region ICollection<int>
 
-    public override int Count => SourceCache.Count;
+    //public override int Count => SourceCache.Count;
 
-    #endregion
+    //#endregion
 
-    #region IEnumerable
+    //#region IEnumerable
 
-    public override IEnumerator<TValue> GetEnumerator() => SourceCache.Items.GetEnumerator();
+    //public override IEnumerator<TValue> GetEnumerator() => SourceCache.Items.GetEnumerator();
 
-    #endregion
+    //#endregion
 
     #region IAsyncObserver
 

@@ -13,8 +13,10 @@ public class MudBlazorViewTypeProvider : IViewTypeProvider
         return GetViewType(modelType) != null;
     }
 
-    public Type? GetViewType(Type type)
+    public Type? GetViewType(Type? type)
     {
+        if (type == null) return null;
+
         if (type.IsGenericType)
         {
             var generic = type.GetGenericTypeDefinition();

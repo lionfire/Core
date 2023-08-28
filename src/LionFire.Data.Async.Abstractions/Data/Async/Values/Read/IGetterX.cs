@@ -14,6 +14,19 @@ public static class IGetterX
         return await ((ITask<IGetResult<object>>)getsInterface.GetMethod(nameof(IStatelessGetter<object>.Get))!.Invoke(gets, new object?[] { cancellationToken })!).ConfigureAwait(false);
     }
 
+    public static IEnumerable<Type> GetGetterTypes(this IGetter potentialGetter)
+    {
+        if (potentialGetter is null) yield break;
+
+        foreach (var interfaceType in potentialGetter.GetType().GetInterfaces().Where(t => t.IsGenericType))
+        {
+            var genericArguments = interfaceType.GetGenericArguments();
+            if (genericArguments.Length != 1) continue;
+            if (interfaceType.GetGenericTypeDefinition() != typeof(IGetter<>)) continue;
+            yield return genericArguments[0];
+        }
+    }
+
     public static async Task<T> GetValue<T>(this IStatelessGetter<T> resolves)
     {
         if (resolves is IGetter<T> lazilyResolves)

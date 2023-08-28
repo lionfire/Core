@@ -1,6 +1,7 @@
-﻿using LionFire.Structures;
+﻿using LionFire.Inspection.Nodes;
+using LionFire.Structures;
 
-public class InspectorGroupInfo : IKeyable<string>
+public abstract class InspectorGroupInfo : IKeyed<string>, INodeInfo
 {
 
     #region Relationships
@@ -33,7 +34,7 @@ public class InspectorGroupInfo : IKeyable<string>
 
     #region Identity
 
-    public string Key { get; set; }
+    public string Key { get; protected set; }
 
     #endregion
 
@@ -48,10 +49,19 @@ public class InspectorGroupInfo : IKeyable<string>
 
     #region Properties
 
-    public string Key { get; set; }
     public string DisplayName { get; set; }
 
-    public float Order { get; set; }
+    public string? Order { get; set; }
 
     #endregion
+
+    #region ITemplate-ish
+
+    public abstract bool IsSourceTypeSupported(Type sourceType);
+
+    public abstract InspectorGroup CreateFor(INode node);
+
+    #endregion
+
+
 }

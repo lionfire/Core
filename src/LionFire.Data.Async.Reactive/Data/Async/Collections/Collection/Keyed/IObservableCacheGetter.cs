@@ -1,6 +1,4 @@
-﻿using DynamicData;
-
-namespace LionFire.Data.Collections;
+﻿namespace LionFire.Data.Collections;
 
 // REFACTOR:
 //  - IAsyncReadOnlyDictionaryCache and IAsyncReadOnlyKeyedCollectionCache inherit from this
@@ -18,10 +16,18 @@ namespace LionFire.Data.Collections;
 /// </remarks>
 /// <typeparam name="TKey"></typeparam>
 /// <typeparam name="TItem"></typeparam>
-public interface IObservableCacheGetter<TKey, TItem>
-    : IEnumerableGetter<KeyValuePair<TKey, TItem>>
+public interface IObservableCacheKeyableGetter<TKey, TItem>
+    : IEnumerableGetter<TItem>
+    , IHasObservableCache<TItem, TKey>
     where TKey : notnull
 {
-    IObservableCache<TItem, TKey> ObservableCache { get; } 
+    Func<TItem, TKey> KeySelector { get; }
+}
+
+public interface IObservableCacheKeyValueGetter<TKey, TItem>
+    : IEnumerableGetter<KeyValuePair<TKey, TItem>>
+    , IHasObservableCache<TItem, TKey>
+    where TKey : notnull
+{
 }
 

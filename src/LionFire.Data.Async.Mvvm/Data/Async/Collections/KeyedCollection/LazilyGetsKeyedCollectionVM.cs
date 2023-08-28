@@ -58,7 +58,11 @@ public class LazilyGetsKeyedCollectionVM<TKey, TValue, TValueVM, TCollection>
 
     #region Source
 
-    public IAsyncReadOnlyKeyedCollectionCache<TKey, TValue>? PreferredSource { get => base.Source as IAsyncReadOnlyKeyedCollectionCache<TKey, TValue>; set => base.Source = (IGetterRxO<TCollection>?)value; }
+    public AsyncReadOnlyKeyValueCollection<TKey, TValue>? PreferredSource // REVIEW type, create and use interface?
+    {
+        get => base.Source as AsyncReadOnlyKeyValueCollection<TKey, TValue>; 
+        set => base.Source = (IGetterRxO<TCollection>?)value;
+    }
 
     protected void OnSourceChanged(IGetter? newValue)
     {

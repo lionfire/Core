@@ -6,45 +6,28 @@ using System.Reactive.Linq;
 
 namespace LionFire.Inspection;
 
-/// <summary>
-/// 
-/// </summary>
-/// <remarks>
-/// 
-/// </remarks>
-public interface IInspectorMember : INode
-{
-    InspectorChildKind Kind { get; }
-    IInspectorMemberInfo? Info { get; }
-
-    /// <summary>
-    /// sync: object
-    /// async: IGetter, ISetter, IValue
-    /// </summary>
-    object Source { get; }
-}
-
-
-
-public interface IInspectorGroupGetter
-{
-
-}
-
-//public class InspectorChildrenInfo
+///// <summary>
+///// 
+///// </summary>
+///// <remarks>
+///// 
+///// </remarks>
+//public interface IInspectorMember : INode
 //{
-//    public InspectorChildKind Kind { get; set; }
+//    InspectorChildKind Kind { get; }
+//    IInspectorMemberInfo? Info { get; }
 
-//}
-//public class InspectorChildrenVM
-//{
-
+//    /// <summary>
+//    /// sync: object
+//    /// async: IGetter, ISetter, IValue
+//    /// </summary>
+//    object Source { get; }
 //}
 
-public enum InspectorChildKind
-{
-    Unspecified = 0,
-    Member = 1 << 0,
-    Item = 1 << 1,
-    Relationship = 1 << 2,
-}
+//public enum InspectorChildKind
+//{
+//    Unspecified = 0,
+//    Member = 1 << 0,
+//    Item = 1 << 1,
+//    Relationship = 1 << 2,
+//}

@@ -30,4 +30,22 @@ public class GetterOptions : GetterOrSetterOptions
     public bool DiscardReadCacheOnGetFailure { get; set; }
 
     public TimeSpan? Expiry { get; set; }
+
+    #region Methods
+
+    // TODO: Move these to extension class?
+
+    public async ValueTask TryAutoGet<T>(IStatelessGetter<T> getter)
+    {
+        if (!AutoGet) return;
+
+        if(AutoGetDelay != TimeSpan.Zero) 
+        {
+            await Task.Delay(AutoGetDelay).ConfigureAwait(false);
+        }
+
+        await getter.Get().ConfigureAwait(false);
+    
+    }
+    #endregion
 }

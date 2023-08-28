@@ -1,4 +1,6 @@
 ﻿global using LionFire.Structures;
+global using LionFire.Inspection.Nodes;
+global using LionFire.Inspection;
 global using LionFire.Threading;
 global using System;
 global using System.Collections.Generic;

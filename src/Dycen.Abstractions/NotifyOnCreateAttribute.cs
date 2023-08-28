@@ -1,14 +1,8 @@
 ﻿using System;
 
-namespace Dycen
-{
-    [System.AttributeUsage(AttributeTargets.Class | AttributeTargets.Interface, Inherited = false, AllowMultiple = true)]
-    public sealed class NotifyOnCreateAttribute : Attribute
-    {
-    }
+namespace Dycen;
 
-    [System.AttributeUsage(AttributeTargets.Class | AttributeTargets.Interface | AttributeTargets.Property, Inherited = false, AllowMultiple = true)]
-    public sealed class MutableAttribute : Attribute
-    {
-    }
+[System.AttributeUsage(AttributeTargets.Class | AttributeTargets.Interface, Inherited = false, AllowMultiple = true)]
+public sealed class NotifyOnCreateAttribute : Attribute
+{
 }

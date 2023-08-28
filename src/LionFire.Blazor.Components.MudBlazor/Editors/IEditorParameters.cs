@@ -1,4 +1,5 @@
-﻿using LionFire.UI.Components;
+﻿using LionFire.Inspection.ViewModels;
+using LionFire.UI.Components;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,6 +10,6 @@ namespace LionFire.Blazor.Components.MudBlazor_;
 
 public interface IEditorParameters
 {
-    PropertyVM ViewModel { get; set; }
+    NodeVM NodeVM { get; set; }
 }
 

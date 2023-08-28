@@ -1,0 +1,73 @@
+﻿@inherits ReactiveUI.Blazor.ReactiveInjectableComponentBase<NodeChildrenVM>
+
+@using LionFire.Data.Async.Gets;
+@using LionFire.Inspection;
+@using LionFire.Inspection.Nodes;
+@using LionFire.UI.Components.PropertyGrid;
+@using LionFire.Inspection.ViewModels;
+
+@if (ViewModel!.NodeVMs?.Items.Any() == true)
+{
+    @foreach (var nodeVM in ViewModel.NodeVMs.VisibleChildren)
+    {
+        <InspectorRow NodeVM="@nodeVM" />
+        @* Depth = "@Depth" *@
+    }
+
+    @foreach (var group in ViewModel!.NodeVM!.Node.Groups.Items)
+    {
+        <tr class="GroupHeader">
+            <td>
+                <MudCheckBox @bind-Checked="@group.AreChildrenVisible"
+                             Dense=true
+                             Size="@Size.Small"
+                             Color="Color.Secondary"
+                             CheckedIcon="@(ViewModel.NodeVM.HasChildren == true ? Icons.Material.Filled.ArrowDownward : Icons.Material.Outlined.ArrowDownward)"
+                             UncheckedIcon="@(ViewModel.NodeVM.HasChildren == true ? Icons.Material.Filled.ArrowRight : Icons.Material.Outlined.ArrowRight)">
+                </MudCheckBox>
+            </td>
+            <td>
+                @group.Info.DisplayName
+            </td>
+        </tr>
+        @foreach (var child in group.ObservableCache.Items.Select(n => new NodeVM(NodeVM, n)))
+        {
+            <InspectorRow NodeVM="@child" />
+        }
+    }    
+}
+else
+{
+    <div>(no children)</div>
+}
+
+@code {
+    [CascadingParameter(Name = "InspectorVM")]
+    public InspectorVM? InspectorVM { get; set; }
+
+    [Parameter]
+    public NodeVM NodeVM { get; set; } = null!;
+
+    // [Parameter]
+    // public IEnumerable<NodeVM>? NodeVMs { get; set; }
+
+    // [Parameter]
+    // public IObservableCache<INode, string> ObservableMembersDictionary { get; set; }
+
+    // [Parameter]
+    // public IObservableList<INode> ObservableMembers { get; set; }
+
+    // [Parameter]
+    // public IGetterRxO<IEnumerable<NodeVM>> NodesGetter { get; set; }
+
+    // public IGetterRxO<IEnumerable<object>> ObjectsGetter { get; set; }
+
+
+    protected override void OnParametersSet()
+    {
+        ViewModel.InspectorVM = InspectorVM;
+        ViewModel.NodeVMs = NodeVM;
+
+        base.OnParametersSet();
+    }
+}

@@ -1,4 +1,5 @@
 ﻿using LionFire.Inspection;
+using LionFire.Inspection.Nodes;
 using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.Collections.Generic;
@@ -13,7 +14,7 @@ public static class InspectionHostingX
     public static IServiceCollection AddInspector(this IServiceCollection services, bool useDefaults = true)
     {
         services
-            .AddSingleton<ObjectInspectorService>()
+            .AddSingleton<InspectorService>()
             ;
 
         if (useDefaults)
@@ -25,7 +26,7 @@ public static class InspectionHostingX
     public static IServiceCollection AddDefaultInspectors(this IServiceCollection services)
     {
         return services
-            .AddSingleton<IInspector, PocoInspector>()
+            .TryAddEnumerableSingleton<IInspector, ReflectionInspector>()
             ;
     }
 }

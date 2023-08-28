@@ -17,7 +17,7 @@ public static class OrleansMvvmHostingX
     {
         return services
             .AddSingleton(typeof(GrainPageVM<,>))
-            .TryAddEnumerableSingleton<IInspector, OrleansObjectInspector>()
+            .TryAddEnumerableSingleton<IInspector, OrleansInspector>()
             ;
     }
 }

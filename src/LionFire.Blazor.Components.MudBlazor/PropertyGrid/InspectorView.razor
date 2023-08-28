@@ -1,0 +1,75 @@
+﻿@inherits ReactiveUI.Blazor.ReactiveInjectableComponentBase<InspectorVM>
+@inject IServiceProvider ServiceProvider
+@using LionFire.Inspection;
+@using LionFire.Inspection.ViewModels;
+@using LionFire.UI.Components.PropertyGrid
+@using LionFire.Blazor.Components.MudBlazor_.PropertyGrid
+
+@namespace LionFire.Blazor.Components.MudBlazor_
+
+@if (ViewModel.ShowTitle)
+{
+    <h3>@ViewModel.Title</h3>
+}
+
+@if (DevMode)
+{
+    <div class="dev">Type: @Object?.GetType().Name</div>
+}
+
+@if (ViewModel.ShowFilterTypes)
+{
+    <button class=@("toggle " + (ViewModel.ShowDataMembers ? "selected" : ""))
+    @onclick=@(()=>ViewModel.ShowDataMembers ^= true) title="Show Data Members">
+        @if (ViewModel.ShowDataMembers)
+        {
+            <span>D</span>
+        }
+        else
+        {
+            <span>d</span>
+        }
+    </button>
+    <button class=@("toggle " + (ViewModel.ShowEvents ? "selected" : ""))
+    @onclick=@(()=>ViewModel.ShowEvents ^= true) title="Show Events">
+        E
+    </button>
+    <button class=@("toggle " + (ViewModel.ShowMethods ? "selected" : ""))
+    @onclick=@(()=>ViewModel.ShowMethods ^= true) title="Show Methods">
+        M
+    </button>
+}
+
+<MudSimpleTable Class="PropertyGrid">
+    <CascadingValue Name="InspectorVM" Value="@ViewModel">
+        <InspectorRows MemberVMs="@ViewModel.NodeVM." />
+    </CascadingValue>
+</MudSimpleTable>
+
+
+@code {
+    [CascadingParameter]
+    protected bool DevMode { get; set; }
+
+    [Parameter]
+    public object Object { get; set; }
+
+    [Parameter]
+    public bool ReadOnly { get; set; }
+
+
+    protected override Task OnParametersSetAsync()
+    {
+        ViewModel.SourceObject = Object;
+
+
+        ViewModel.ReadOnly = ReadOnly;
+
+        return base.OnParametersSetAsync();
+    }
+
+    protected override Task OnInitializedAsync()
+    {
+        return base.OnInitializedAsync();
+    }
+}

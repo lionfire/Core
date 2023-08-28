@@ -9,7 +9,17 @@ public enum InspectorNodeKind
     /// </summary>
     Object = 1 << 0,
     Group = 1 << 1,
-    Members = 1 << 2,
+    Summary = 1 << 2,
+
     Enumerable = 1 << 3,
 
+
+    Data = 1 << 4,
+    Event = 1 << 5,
+    Method = 1 << 6,
+
+    // Maybe:
+    //Async = 1 << 16,
+
+    //Member = Data | Event | Method,
 }

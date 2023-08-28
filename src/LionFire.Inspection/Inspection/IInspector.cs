@@ -1,15 +1,17 @@
-﻿
-using LionFire.Data.Async.Gets;
-using LionFire.Data.Collections;
+﻿using LionFire.Data.Collections;
 using LionFire.Inspection.Nodes;
 
 namespace LionFire.Inspection;
 
-// Examples:
-//  - PocoInspector
-//  - GrainInspector
-//  - VobInspector
-
+/// <summary>
+/// 
+/// </summary>
+/// <remarks>
+/// Examples:
+///  - ReflectionInspector
+///  - GrainInspector
+///  - VobInspector
+/// </remarks>
 public interface IInspector
 {
     ///// <summary>
@@ -20,30 +22,40 @@ public interface IInspector
     ///// <returns></returns>
     //IEnumerable<object> GetInspectedObjects(object @object);
 
-
     /// <summary>
+    /// Take responsibility for adding/removing INode.Groups owned by this IInspector
+    /// 
     /// Assumes node.Source is immutable
     /// If node.Source is a primitive, this is a one shot operation.  If it is a more complex object that changes over time, the inspector may subscribe to events on the Source and add or remove NodeGroups as appropriate.
     /// </summary>
     /// <param name="node"></param>
-    void Attach(INode node)
+    IDisposable? Attach(INode node, InspectorContext? context = null)
     {
-        if (node.Source is null) return;
+        var source = node.Source; 
 
-        if(IsSourceSubscribable(node.Source))
-        {
-            throw new NotImplementedException();
-        }
-        else
-        {
-            throw new NotImplementedException();
-            //node.Groups. GroupsForObject(node.Source);
-        }
-
+        Type attachmentType = BaseAttachmentType(source.GetType()); // TODO - Use attachmentType?
+        return new AttachedInspector(this, node);
     }
 
-    bool IsSourceSubscribable(object source);
+    Type BaseAttachmentType(Type type) => type;
 
-    IEnumerableGetter<InspectorGroupGetter> GroupsForObject(object source);
+    bool IsSourceTypeSupported(Type sourceType)
+    {
+        foreach(var gi in GroupInfos.Values)
+        {
+            if (gi.IsSourceTypeSupported(sourceType)) return true;
+        }
+        return false;
+    }
+
+    IReadOnlyDictionary<string, InspectorGroupInfo> GroupInfos { get; }
+
+    //IEnumerable<InspectorGroupInfo> EnabledGroups(INode node) => node.Groups.Items.Where(g => GroupInfos.Select(gi => gi.Key).Contains(g.Info.Key));
+    //IEnumerable<string> DisabledGroups(INode node) => GroupInfos.Select(gi=>gi.Key).Except(node.Groups.Items.Select(i=>i.Info.Key));
+}
+
+public static class IInspectorX
+{
+
 
 }
