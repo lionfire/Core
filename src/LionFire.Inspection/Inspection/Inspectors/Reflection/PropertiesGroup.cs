@@ -5,9 +5,10 @@ namespace LionFire.Inspection.Nodes;
 
 public class PropertiesGroup : ReflectionGroup
 {
-    public static readonly InspectorGroupInfo InspectorGroupInfo = new PropertyGroupInfo();
+    public static readonly GroupInfo GroupInfo = new PropertyGroupInfo();
 
-    public override InspectorGroupInfo Info => InspectorGroupInfo;
+    public override GroupInfo Info => GroupInfo;
+
 
     #region Lifecycle
 
@@ -23,6 +24,10 @@ public class PropertiesGroup : ReflectionGroup
 
     #endregion
 
+
+
+    public override IDictionary<string, INode>? Value => throw new NotImplementedException();
+
     #region Get
 
     public override ITask<IGetResult<IEnumerable<KeyValuePair<string, INode>>>> GetImpl(CancellationToken cancellationToken = default)
@@ -31,9 +36,11 @@ public class PropertiesGroup : ReflectionGroup
             : Task.FromResult<IGetResult<IEnumerable<KeyValuePair<string, INode>>>>(new GetResult<IEnumerable<KeyValuePair<string, INode>>>(SourceType.GetProperties(System.Reflection.BindingFlags.Instance).Select(mi => new KeyValuePair<string, INode>(mi.Name, new PropertyNode(Node, SourceNode, mi))))).AsITask();
 
     #endregion
+
+
 }
 
-public class PropertyGroupInfo : InspectorGroupInfo
+public class PropertyGroupInfo : GroupInfo
 {
     public const string DefaultKey = "Data/Property";
 

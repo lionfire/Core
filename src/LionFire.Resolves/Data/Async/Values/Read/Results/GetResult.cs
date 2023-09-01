@@ -9,6 +9,7 @@ public struct GetResult<TValue> : IGetResult<TValue>
 
     public static GetResult<TValue> Discarded => new GetResult<TValue>(default, false) { Flags = TransferResultFlags.Discarded | TransferResultFlags.Noop };
     public static GetResult<TValue> Instantiated => new GetResult<TValue>(default, false) { Flags = TransferResultFlags.Instantiated | TransferResultFlags.Noop };
+    public static GetResult<TValue> NoopSuccess(TValue value) => new GetResult<TValue>(value, true) { Flags = TransferResultFlags.Success | TransferResultFlags.Noop };
 
     #endregion
 

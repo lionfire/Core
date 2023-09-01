@@ -6,6 +6,7 @@ public interface IKeyProvider<out TKey> : IKeyProvider<TKey, object>
 }
 
 public interface IKeyProvider<out TKey, in TValue>
+    
 {
     TKey GetKey(TValue? value);
 }

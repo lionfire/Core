@@ -1,6 +1,12 @@
-﻿using LionFire.Data.Async.Gets;
+﻿using MorseCode.ITask;
+using LionFire.Data.Async;
+using LionFire.Data.Async.Gets;
 using LionFire.Data.Collections;
 using LionFire.Data.Mvvm;
+using LionFire.Structures;
+using System.Collections.Generic;
+using System.Reactive.Linq;
+using LionFire.IO;
 
 namespace LionFire.Inspection.Nodes;
 
@@ -19,53 +25,56 @@ namespace LionFire.Inspection.Nodes;
 //    }
 //}
 
-
-public abstract class InspectorGroup : AsyncReadOnlyDictionary<string, INode>
+public interface IInspectorGroup : IDictionaryGetter<string, INode>
 {
-    #region Identity
+    GroupInfo Info { get; }
+}
 
-    public abstract InspectorGroupInfo Info { get; }
+public abstract class FrozenGroup : IInspectorGroup
+{
+    public abstract GroupInfo Info { get; }
 
-    public IInspector Inspector { get; set; }
+    #region Value
 
-    #endregion
+    public abstract IDictionary<string, INode>? Value { get; }
 
-    #region Options
+    IDictionary<string, INode>? IGetter<IDictionary<string, INode>>.ReadCacheValue => Value;
 
-    public GetterOptions? GetOptions { get; set; }
+    public bool HasValue => true;
 
-    #endregion
+    #region Discard
 
-    #region Lifecycle
-
-    public InspectorGroup(IInspector inspector, INode sourceNode, INode node)
+    public void Discard()
     {
-        SourceNode = sourceNode;
-        Node = node;
-        Inspector = inspector;
-    }        
+        DiscardValue();
+    }
+
+    public virtual void DiscardValue()
+    {
+    }
 
     #endregion
 
-    #region Transformation
+    #endregion
+    
+    #region IGetter
 
-    public InspectorGroup? TransformationParent { get; set; }
-    public int TransformationDepth { get; set; }
+    ITask<IGetResult<IDictionary<string, INode>>> IStatelessGetter<IDictionary<string, INode>>.Get(CancellationToken cancellationToken) => Task.FromResult(queryValue()).AsITask();
+    IObservable<ITask<IGetResult<IDictionary<string, INode>>>> IObservableGetOperations<IDictionary<string, INode>>.GetOperations => Observable.Return(Task.FromResult(queryValue()).AsITask());
 
-    public object? UntransformedSource { get; set; }
+    ITask<IGetResult<IDictionary<string, INode>>> IGetter<IDictionary<string, INode>>.GetIfNeeded() => Task.FromResult(queryValue()).AsITask();
 
-    #endregion 
+    private IGetResult<IDictionary<string, INode>> queryValue() => GetResult<IDictionary<string, INode>>.NoopSuccess(Value ?? (empty ??= new()));
 
-    public INode SourceNode { get; set; }
-    public object? Source => SourceNode.Source;
+    IGetResult<IDictionary<string, INode>> IGetter<IDictionary<string, INode>>.QueryValue() => queryValue();
 
-    public INode Node { get; }
+    #region (static)
 
-    #region State
-
-    public bool Subscribe { get; set; } = true;
-
+    private static Dictionary<string, INode> empty; // TODO .NET8 - FrozenDictionary
+    
     #endregion
 
+    #endregion
 
 }
+

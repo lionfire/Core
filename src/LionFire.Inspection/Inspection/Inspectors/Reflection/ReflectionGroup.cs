@@ -3,7 +3,7 @@
 
 namespace LionFire.Inspection.Nodes;
 
-public abstract class ReflectionGroup : InspectorGroup
+public abstract class ReflectionGroup : FrozenGroup
 {
     #region Lifecycle
 

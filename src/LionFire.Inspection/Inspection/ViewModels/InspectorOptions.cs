@@ -80,6 +80,8 @@ public class InspectorOptions : ReactiveObject, IInspectorOptions
     public TimeSpan GetChildrenOnExpandRetryDelay { get; set; }
 
     [Reactive]
-    public InspectorNodeKind VisibleItemTypes { get; set; } 
+    public InspectorNodeKind VisibleItemTypes { get; set; }
+
+    public HashSet<string>? FlattenedGroups { get; }
 
 }

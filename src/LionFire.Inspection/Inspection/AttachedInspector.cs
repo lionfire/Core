@@ -19,7 +19,6 @@ public class AttachedInspector : IDisposable
 
     #endregion
 
-    /// <summary>
     #region Lifecycle
 
     public AttachedInspector(IInspector inspector, INode node)
@@ -44,6 +43,7 @@ public class AttachedInspector : IDisposable
 
     #region State
 
+    /// <summary>
     /// If the Source changes to a type not assignable to this type, this AttachedInspector must be disposed and a fresh attachment made.
     /// </summary>
     public Type? AttachedSourceType { get; set; }

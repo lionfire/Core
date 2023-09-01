@@ -7,7 +7,7 @@ using System.Reflection;
 
 namespace LionFire.Inspection;
 
-public class GrainPropertiesInfo : InspectorGroupInfo
+public class GrainPropertiesInfo : GroupInfo
 {
     public GrainPropertiesInfo() : base("Orleans.Grain.Properties")
     {
@@ -50,14 +50,14 @@ public class OrleansInspector : IInspector
 
     public OrleansInspector()
     {
-        var groupInfos = new Dictionary<string, InspectorGroupInfo>(); // TODO: Frozen Dictionary
+        var groupInfos = new Dictionary<string, GroupInfo>(); // TODO: Frozen Dictionary
 
         groupInfos.Add(new GrainPropertiesInfo());
-        //new FreezableDictionary<string, InspectorGroupInfo>() // TODO .NET 8
+        //new FreezableDictionary<string, GroupInfo>() // TODO .NET 8
         GroupInfos = groupInfos;
     }
 
-    public IReadOnlyDictionary<string, InspectorGroupInfo> GroupInfos { get; }
+    public IReadOnlyDictionary<string, GroupInfo> GroupInfos { get; }
 
 
     public bool IsSupportedType(Type type)

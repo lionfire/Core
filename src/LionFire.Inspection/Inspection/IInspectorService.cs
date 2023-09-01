@@ -8,5 +8,5 @@ public interface IInspectorService
     IServiceProvider ServiceProvider { get; }
     InspectorContext Context { get; }
 
-    INode Inspect(object obj, InspectorContext? context = null) => new ObjectNode(obj, context ?? Context);
+    INode Inspect(object obj, InspectorContext? context = null) => new InspectedNode(obj, context ?? Context);
 }

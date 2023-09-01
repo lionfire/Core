@@ -12,17 +12,17 @@ namespace LionFire.Inspection;
 
 public class ReflectionInspector : IInspector
 {
-    public IReadOnlyDictionary<string, InspectorGroupInfo> GroupInfos => throw new NotImplementedException();
-    Dictionary<string, InspectorGroupInfo> groupInfos=new();
+    public IReadOnlyDictionary<string, GroupInfo> GroupInfos => throw new NotImplementedException();
+    Dictionary<string, GroupInfo> groupInfos=new();
 
     public bool IsSourceTypeSupported(object source) => source != null;
 
     public ReflectionInspector()
     {
-        groupInfos.Add(PropertiesGroup.InspectorGroupInfo.Key, PropertiesGroup.InspectorGroupInfo);
-        //groupInfos.Add(FieldsGetter.InspectorGroupInfo); // TODO NEXT
-        //groupInfos.Add(MethodsGetter.InspectorGroupInfo);// TODO NEXT
-        //groupInfos.Add(EventsGetter.InspectorGroupInfo);// TODO NEXT
+        groupInfos.Add(PropertiesGroup.GroupInfo.Key, PropertiesGroup.GroupInfo);
+        //groupInfos.Add(FieldsGetter.GroupInfo); // TODO NEXT
+        //groupInfos.Add(MethodsGetter.GroupInfo);// TODO NEXT
+        //groupInfos.Add(EventsGetter.GroupInfo);// TODO NEXT
     }
 }
 

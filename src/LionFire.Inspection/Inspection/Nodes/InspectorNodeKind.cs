@@ -18,6 +18,8 @@ public enum InspectorNodeKind
     Event = 1 << 5,
     Method = 1 << 6,
 
+    Transform = 1 << 8
+
     // Maybe:
     //Async = 1 << 16,
 

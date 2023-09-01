@@ -22,4 +22,8 @@
     <ProjectReference Include="..\LionFire.UI.Abstractions\LionFire.UI.Abstractions.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Inspection\Nodes\Groups\" />
+  </ItemGroup>
+
 </Project>

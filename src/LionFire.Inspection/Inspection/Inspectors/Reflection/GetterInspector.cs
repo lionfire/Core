@@ -6,7 +6,7 @@ namespace LionFire.Inspection.Nodes;
 
 //public class GetterInspector : IInspector
 //{
-//    public IReadOnlyDictionary<string, InspectorGroupInfo> GroupInfos { get; } = new();
+//    public IReadOnlyDictionary<string, GroupInfo> GroupInfos { get; } = new();
 
 //    public GetterInspector()
 //    {
@@ -43,7 +43,7 @@ namespace LionFire.Inspection.Nodes;
 
 //public class GetterInspectorGroup : InspectorGroup
 //{
-//    public GetterInspectorGroup(IInspector inspector, InspectorGroupInfo info, object source, INode node) : base(inspector, info, source, node)
+//    public GetterInspectorGroup(IInspector inspector, GroupInfo info, object source, INode node) : base(inspector, info, source, node)
 //    {
 //    }
 
@@ -62,7 +62,7 @@ namespace LionFire.Inspection.Nodes;
 //    }
 //}
 
-//public class GetterInspectorGroupInfo : InspectorGroupInfo
+//public class GetterInspectorGroupInfo : GroupInfo
 //{
 //    public GetterInspectorGroupInfo(IInspector inspector) : base("Getter")
 //    {

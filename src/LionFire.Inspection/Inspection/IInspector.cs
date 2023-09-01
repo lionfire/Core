@@ -48,9 +48,9 @@ public interface IInspector
         return false;
     }
 
-    IReadOnlyDictionary<string, InspectorGroupInfo> GroupInfos { get; }
+    IReadOnlyDictionary<string, GroupInfo> GroupInfos { get; }
 
-    //IEnumerable<InspectorGroupInfo> EnabledGroups(INode node) => node.Groups.Items.Where(g => GroupInfos.Select(gi => gi.Key).Contains(g.Info.Key));
+    //IEnumerable<GroupInfo> EnabledGroups(INode node) => node.Groups.Items.Where(g => GroupInfos.Select(gi => gi.Key).Contains(g.Info.Key));
     //IEnumerable<string> DisabledGroups(INode node) => GroupInfos.Select(gi=>gi.Key).Except(node.Groups.Items.Select(i=>i.Info.Key));
 }
 

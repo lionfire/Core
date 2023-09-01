@@ -36,7 +36,7 @@ public class PropertyNode : Node
 
     #endregion
 
-    //public InspectorGroupInfo PropertyGroupInfo { get; }
+    //public GroupInfo PropertyGroupInfo { get; }
 
     //public INode? Parent => throw new NotImplementedException();
     //public INodeInfo Info => throw new NotImplementedException();
