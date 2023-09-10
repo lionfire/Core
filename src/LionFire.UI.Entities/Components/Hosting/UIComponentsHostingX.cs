@@ -1,4 +1,5 @@
-﻿using LionFire.Inspection.ViewModels;
+﻿using LionFire.Inspection.Nodes;
+using LionFire.Inspection.ViewModels;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace LionFire.Hosting;

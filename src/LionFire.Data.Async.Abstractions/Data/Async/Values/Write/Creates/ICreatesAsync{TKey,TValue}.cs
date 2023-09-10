@@ -1,4 +1,4 @@
-﻿namespace LionFire.Data.Collections;
+﻿namespace LionFire.Data.Async.Sets;
 
 public interface ICreatesAsync<TKey, TValue>
 {

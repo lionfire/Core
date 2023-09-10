@@ -13,35 +13,89 @@ namespace LionFire.Inspection.Nodes;
 //}
 
 
+/// <summary>
+/// Decorates NodeVM with children and related properties
+/// </summary>
 public class NodeChildrenVM : ReactiveObject
 {
-    //public InspectorService InspectorService { get; }
+    #region Relationships
+
+    // Cascading parameter
+    public InspectorVM InspectorVM { get; set; }
+
+
+    public NodeVM NodeVM
+    {
+        get => nodeVM;
+        set
+        {
+            if (nodeVM == value) return;
+
+            nodeVM = value;
+
+            viewableChildrenSubscription?.Dispose();
+
+            if (Node is IHierarchicalNode h)
+            {
+                children = h.Children.ObservableCache.Connect()
+                    .Transform(n => new NodeVM(NodeVM, n))
+                    .AsObservableCache();
+                hasChildren = h.HasChildren.ToProperty(this, x => x.HasChildren);
+
+                viewableChildrenSubscription = children
+                    .Connect()
+                    .Filter(c => IsVisible(c))
+                    .ToSortedCollection(n => n.Node.Key)
+                    .BindTo(viewableChildren, c => c);
+            }
+            else
+            {
+                children = null;
+                hasChildren = null;
+                viewableChildren.Clear();
+            }
+        }
+    }
+
+    #region Derived
 
     private INode Node => NodeVM.Node;
 
+    #endregion
+
+    #endregion
+
+    #region Lifecycle
+
     public NodeChildrenVM(NodeVM nodeVM /*InspectorService inspectorService*/)
     {
-        //ObjectService = inspectorService;
         NodeVM = nodeVM;
-
-        hasChildren = Node.HasChildren.ToProperty(this, x => x.HasChildren);
-
-        children = Node.Groups.Connect()
-            .TransformMany(n => new NodeVM(NodeVM, n))
-            .AsObservableCache();
-
 
         // --------------------- TOTRIAGE:
 
         //NodeVM.InheritedOptions.FlattenedGroups
-
         //.BindToObservableList(out children)
-        //.Subscribe();
 
         //Children.Connect()
         //    .Filter(c => IsVisible(c))
         //    .AsObservableCache();
     }
+
+    #endregion
+
+    #region Children
+
+    public IObservableCache<NodeVM, string>? Children => children;
+    private IObservableCache<NodeVM, string>? children;
+
+    public bool? HasChildren => hasChildren?.Value ?? false;
+    private ObservableAsPropertyHelper<bool?>? hasChildren;
+
+    public IObservableCollection<NodeVM> ViewableChildren => viewableChildren;
+    private readonly IObservableCollection<NodeVM> viewableChildren = new ObservableCollectionExtended<NodeVM>();
+    IDisposable? viewableChildrenSubscription;
+
+    #endregion
 
     #region Event Handler
 
@@ -63,7 +117,11 @@ public class NodeChildrenVM : ReactiveObject
                 IsGettingChildren = true;
                 getChildrenTask = Task.Run(async () =>
                 {
-                    await Task.WhenAll(_.Item2.Groups.Items.Select(g => g.Get().AsTask())).ConfigureAwait(false);
+                    if (Node is IInspectedNode i)
+                    {
+                        await Task.WhenAll(i.Groups.Items.Select(g => g.Children.Get().AsTask())).ConfigureAwait(false);
+                    }
+
                     IsGettingChildren = false;
                 });
             }
@@ -72,25 +130,30 @@ public class NodeChildrenVM : ReactiveObject
 
     #endregion
 
-    public bool? HasChildren => hasChildren.Value;
-    readonly ObservableAsPropertyHelper<bool?> hasChildren;
-
-    // --------------------- TOTRIAGE:
-
-    public IObservableCache<NodeVM, string> Children => children;
-    private IObservableCache<NodeVM, string> children;
-
-    //public bool IsGroupVisible(NodeVM node) => true;
     public bool IsVisible(NodeVM nodeVM)
     {
         var o = NodeVM.InheritedOptions;
-        if (nodeVM.Node.Source is InspectorGroup g)
+
+        if (!InspectorVM.ShowDataMembers && nodeVM.Node.Info.NodeKind.HasFlag(InspectorNodeKind.Data))
+        {
+            return false;
+        }
+        if (!InspectorVM.ShowEvents && nodeVM.Node.Info.NodeKind.HasFlag(InspectorNodeKind.Event))
+        {
+            return false;
+        }
+        if (!InspectorVM.ShowMethods && nodeVM.Node.Info.NodeKind.HasFlag(InspectorNodeKind.Method))
+        {
+            return false;
+        }
+
+        if (nodeVM.Node is IInspectorGroup g)
         {
             if (o.GroupBlacklist?.Contains(g.Info.Key) == true)
             {
                 return false;
             }
-            if(o.GroupWhitelist != null && !o.GroupWhitelist.Contains(g.Info.Key))
+            if (o.GroupWhitelist != null && !o.GroupWhitelist.Contains(g.Info.Key))
             {
                 return false;
             }
@@ -102,34 +165,13 @@ public class NodeChildrenVM : ReactiveObject
         return true;
     }
 
+    // --------------------- TOTRIAGE:
 
-    public InspectorVM InspectorVM { get; set; }
-    public NodeVM NodeVM { get; set; }
 
-    public IGetterRxO<IEnumerable<object>> MembersGetter { get; set; }
+    //public IGetterRxO<IEnumerable<object>> MembersGetter { get; set; }
 
-    public IObservableCache<NodeVM, string> NodeVMs => NodeVM.Children;
-    public IObservableCache<NodeVM, string> Children => children;
-    private IObservableCache<NodeVM, string> children;
+    //public IObservableCache<NodeVM, string> NodeVMs => NodeVM.Children;
 
-    public IObservableCollection<NodeVM> VisibleChildren { get; init; }
-
-    public bool IsVisible(NodeVM nodeVM)
-    {
-        if (InspectorVM.ShowDataMembers && nodeVM.Node.Info.NodeKind.HasFlag(InspectorNodeKind.Data))
-        {
-            return true;
-        }
-        if (InspectorVM.ShowEvents && nodeVM.Node.Info.NodeKind.HasFlag(InspectorNodeKind.Event))
-        {
-            return true;
-        }
-        if (InspectorVM.ShowMethods && nodeVM.Node.Info.NodeKind.HasFlag(InspectorNodeKind.Method))
-        {
-            return true;
-        }
-        return false;
-    }
 
     //public IEnumerable<NodeVM> VisibleChildren
     //{
@@ -167,6 +209,7 @@ public class NodeChildrenVM : ReactiveObject
     public bool IsGettingChildren { get; set; }
 
     private Task? getChildrenTask;
+    private NodeVM nodeVM;
 
     #endregion
 }

@@ -15,13 +15,13 @@ public class AttachedInspector : IDisposable
     #region Relationships
 
     public IInspector Inspector { get; }
-    public INode Node { get; }
+    public IInspectedNode Node { get; }
 
     #endregion
 
     #region Lifecycle
 
-    public AttachedInspector(IInspector inspector, INode node)
+    public AttachedInspector(IInspector inspector, IInspectedNode node)
     {
         ArgumentNullException.ThrowIfNull(inspector);
         ArgumentNullException.ThrowIfNull(node);
@@ -34,7 +34,7 @@ public class AttachedInspector : IDisposable
 
     public void Dispose()
     {
-        Node.Groups.Edit(updater => {
+        Node.Groups?.Edit(updater => {
             foreach (var group in updater.Items.Where(g => g.Inspector == Inspector).Select(g => g.Info.Key)) { updater.Remove(group); }            
         });
     }
@@ -63,7 +63,7 @@ public class AttachedInspector : IDisposable
         {
             var oldGroups = IsAttached ? updater.Items.Where(g => g.Inspector == Inspector).ToDictionary(g => g.Info.Key) : null;
 
-            var newGroups = new List<InspectorGroup>();
+            var newGroups = new List<IInspectorGroup>();
 
             foreach (var groupInfo in Inspector.GroupInfos.Values)
             {

@@ -3,7 +3,7 @@ using System.Reactive.Subjects;
 
 namespace LionFire.Data.Async;
 
-public abstract class Value<TKey, TValue>
+public abstract class AsyncValue<TKey, TValue>
     : Getter<TKey, TValue>
     , IValueRxO<TValue>
     , ISetsInternal<TValue>
@@ -45,7 +45,7 @@ public abstract class Value<TKey, TValue>
 
     #region Lifecycle
 
-    public Value(TKey key, ValueOptions? options = null) : base(key, options?.Get ?? DefaultOptions.Get)
+    public AsyncValue(TKey key, ValueOptions? options = null) : base(key, options?.Get ?? DefaultOptions.Get)
     {
         Options = options ?? AsyncObjectKey?.Options.ValueOptions ?? DefaultOptions;
 
@@ -56,6 +56,12 @@ public abstract class Value<TKey, TValue>
                 {
                     ValueChangedWhileValueStaged = true;
                 }
+            });
+
+        this.WhenAnyValue(x => x.ReadCacheValue, x => x.StagedValue)
+            .Subscribe(t =>
+            {
+                this.RaisePropertyChanged(nameof(Value));
             });
     }
 
@@ -80,6 +86,17 @@ public abstract class Value<TKey, TValue>
 
     [Reactive]
     public bool ValueChangedWhileValueStaged { get; set; }
+
+    public new TValue? Value
+    {
+        [Blocking(Alternative = nameof(GetIfNeeded))]
+        get => HasStagedValue
+                ? StagedValue
+                : (!HasValue && GetOptions.BlockToGet)
+                    ? GetIfNeeded().Result.Value // BLOCKING
+                    : ReadCacheValue;
+        set => StagedValue = value;
+    }
 
     #endregion
 

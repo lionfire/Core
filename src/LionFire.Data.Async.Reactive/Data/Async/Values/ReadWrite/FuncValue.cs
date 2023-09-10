@@ -2,7 +2,7 @@
 
 namespace LionFire.Data.Async;
 
-public class FuncValue<TKey, TValue> : Value<TKey, TValue>
+public class FuncValue<TKey, TValue> : AsyncValue<TKey, TValue>
 {
     public FuncValue(TKey key, Func<TKey, CancellationToken, Task<TValue>> getter, Func<TKey, TValue?, CancellationToken, Task> setter, ValueOptions? options = null) : base(key, options)
     {

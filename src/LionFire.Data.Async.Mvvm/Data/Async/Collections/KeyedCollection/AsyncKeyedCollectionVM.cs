@@ -19,8 +19,7 @@ public class AsyncKeyedCollectionVM<TKey, TValue, TValueVM>
                 .Create(p.Type, p.Parameters)
         , Observable.Create<bool>(o =>
         {
-            o.OnNext(true); // TEMP FIXME
-            //o.OnNext(Source is ICreatesAsync<TValue>);
+            o.OnNext(Source is ICreatesAsync<TValue>);
             return Disposable.Empty;
         }));
 
@@ -28,7 +27,6 @@ public class AsyncKeyedCollectionVM<TKey, TValue, TValueVM>
     }
 
     #endregion
-
 
     #region ReadOnly
 

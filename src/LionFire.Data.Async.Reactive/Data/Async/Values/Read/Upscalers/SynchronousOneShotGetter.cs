@@ -1,6 +1,19 @@
 ﻿using System.Reactive.Linq;
 
-namespace LionFire.Data.Mvvm;
+namespace LionFire.Data.Async.Gets;
+
+public class FuncSynchronousOneShotGetter<TValue> : SynchronousOneShotGetter<TValue>
+{
+
+    public FuncSynchronousOneShotGetter(Func<TValue> getValue)
+    {
+        this.getValue = getValue;
+    }
+
+    public override TValue GetValue() => getValue();
+    private Func<TValue> getValue;
+}
+
 
 /// <summary>
 /// Treated as a preresolved Getter, but the value is calculated synchronously when first accessed.

@@ -9,7 +9,7 @@
 
 @code{
     [Parameter]
-    public IEnumerable<TItem> Items { get; set; }
+    public IEnumerable<TItem>? Items { get; set; }
     [Parameter]
-    public RenderFragment<TItem> Renderer { get; set; }
+    public RenderFragment<TItem>? Renderer { get; set; }
 }

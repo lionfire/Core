@@ -13,7 +13,7 @@ public class GrainPropertiesInfo : GroupInfo
     {
     }
 
-    public override InspectorGroup CreateFor(INode node)
+    public override IInspectorGroup CreateFor(INode node)
     {
         throw new NotImplementedException();
     }

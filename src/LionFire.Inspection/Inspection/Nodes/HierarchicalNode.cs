@@ -2,35 +2,35 @@
 
 namespace LionFire.Inspection.Nodes;
 
-public abstract class HierarchicalNode<TInfo> : Node<TInfo>, IHierarchicalNode
-    where TInfo : INodeInfo
-{
-    #region Lifecycle
+//public abstract class HierarchicalNode<TInfo> : Node<TInfo>, IHierarchicalNode
+//    where TInfo : INodeInfo
+//{
+//    #region Lifecycle
 
-    protected HierarchicalNode(INode? parent, object? source, InspectorContext? context = null)
-        : base(parent, source, context)
-    {
-    }
+//    protected HierarchicalNode(INode? parent, object? source, InspectorContext? context = null)
+//        : base(parent, source, context)
+//    {
+//    }
 
-    #endregion
+//    #endregion
 
-    #region Groups
+//    #region Groups
 
-    public virtual SourceCache<InspectorGroup, string>? Groups => null;
+//    public virtual SourceCache<IInspectorGroup, string>? Groups => null;
 
-    #endregion
+//    #endregion
 
-    #region Children
+//    #region Children
 
-    public virtual IObservable<bool?> HasChildren { get; } = Observable.Return((bool?)false);
-    public virtual IObservableCache<INode, string>? Children => empty.AsObservableCache();
-    private static readonly SourceCache<INode, string> empty = new SourceCache<INode, string>(n => n.Key);
+//    public virtual IObservable<bool?> HasChildren { get; } = Observable.Return((bool?)false);
+//    public virtual IObservableCache<INode, string>? Children => empty.AsObservableCache();
+//    private static readonly SourceCache<INode, string> empty = new SourceCache<INode, string>(n => n.Key);
 
-    #endregion
+//    #endregion
 
-    #region IKeyProvider
+//    #region IKeyProvider
 
-    public abstract string GetKey(INode? node);
+//    public abstract string GetKey(INode? node);
 
-    #endregion
-}
+//    #endregion
+//}

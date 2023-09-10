@@ -29,7 +29,7 @@ public interface IInspector
     /// If node.Source is a primitive, this is a one shot operation.  If it is a more complex object that changes over time, the inspector may subscribe to events on the Source and add or remove NodeGroups as appropriate.
     /// </summary>
     /// <param name="node"></param>
-    IDisposable? Attach(INode node, InspectorContext? context = null)
+    IDisposable? Attach(IInspectedNode node, InspectorContext? context = null)
     {
         var source = node.Source; 
 

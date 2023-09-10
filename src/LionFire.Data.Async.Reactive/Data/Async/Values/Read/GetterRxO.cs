@@ -45,13 +45,11 @@ public abstract class GetterRxO<TValue>
         [Blocking(Alternative = nameof(GetIfNeeded))]
         get
         {
-            var result = ReadCacheValue;
-            if (result == null)
+            if(!HasValue && GetOptions.BlockToGet)
             {
-                result = GetIfNeeded().Result.Value; // BLOCKING
-                ReadCacheValue = result;
+                return GetIfNeeded().Result.Value; // BLOCKING
             }
-            return result;
+            return ReadCacheValue;
         }
     }
 

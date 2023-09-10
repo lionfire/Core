@@ -41,7 +41,7 @@ public class InspectorRowVM : ReactiveObject
 
     #endregion
 
-    public bool HasAnythingToShow => NodeVM == null || NodeVM.CanRead || NodeVM.CanWrite || NodeVM.HasChildren != false;
+    public bool HasAnythingToShow => NodeVM == null || NodeVM.CanRead || NodeVM.CanWrite || NodeVM.CanHaveChildren;
 
     [Reactive]
     public string DisplayValue { get; set; } = "";

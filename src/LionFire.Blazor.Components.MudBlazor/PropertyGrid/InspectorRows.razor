@@ -6,15 +6,20 @@
 @using LionFire.UI.Components.PropertyGrid;
 @using LionFire.Inspection.ViewModels;
 
-@if (ViewModel!.NodeVMs?.Items.Any() == true)
+@if (ViewModel!.ViewableChildren.Count > 0 == true)
 {
-    @foreach (var nodeVM in ViewModel.NodeVMs.VisibleChildren)
+    @foreach (var nodeVM in ViewModel!.ViewableChildren)
     {
         <InspectorRow NodeVM="@nodeVM" />
-        @* Depth = "@Depth" *@
     }
 
-    @foreach (var group in ViewModel!.NodeVM!.Node.Groups.Items)
+}
+else
+{
+    <div>(no children)</div>
+}
+
+    @* @foreach (var group in ViewModel!.NodeVM!.Node.Groups.Items)
     {
         <tr class="GroupHeader">
             <td>
@@ -22,8 +27,8 @@
                              Dense=true
                              Size="@Size.Small"
                              Color="Color.Secondary"
-                             CheckedIcon="@(ViewModel.NodeVM.HasChildren == true ? Icons.Material.Filled.ArrowDownward : Icons.Material.Outlined.ArrowDownward)"
-                             UncheckedIcon="@(ViewModel.NodeVM.HasChildren == true ? Icons.Material.Filled.ArrowRight : Icons.Material.Outlined.ArrowRight)">
+                             CheckedIcon="@(ViewModel.NodeVM.HasOrMightHaveChildren == true ? Icons.Material.Filled.ArrowDownward : Icons.Material.Outlined.ArrowDownward)"
+                             UncheckedIcon="@(ViewModel.NodeVM.HasOrMightHaveChildren == true ? Icons.Material.Filled.ArrowRight : Icons.Material.Outlined.ArrowRight)">
                 </MudCheckBox>
             </td>
             <td>
@@ -34,12 +39,7 @@
         {
             <InspectorRow NodeVM="@child" />
         }
-    }    
-}
-else
-{
-    <div>(no children)</div>
-}
+    } *@
 
 @code {
     [CascadingParameter(Name = "InspectorVM")]
@@ -66,7 +66,7 @@ else
     protected override void OnParametersSet()
     {
         ViewModel.InspectorVM = InspectorVM;
-        ViewModel.NodeVMs = NodeVM;
+        ViewModel.NodeVM = NodeVM;
 
         base.OnParametersSet();
     }

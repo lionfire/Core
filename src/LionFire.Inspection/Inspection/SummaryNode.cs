@@ -1,21 +1,16 @@
 ﻿
 using DynamicData;
 using DynamicData.Binding;
+using LionFire.Structures;
 using ReactiveUI;
 
 namespace LionFire.Inspection.Nodes;
 
-public class SummaryNode : Node, INode
+public class SummaryNode : Node<INodeInfo>, INode
 {
-    public SummaryNode(INode? parent, INode sourceNode, INodeInfo info) : base(parent, sourceNode)
+    public SummaryNode(INode? parent, INode sourceNode, INodeInfo info) : base(parent, sourceNode, info: ManualSingleton<SummaryNodeInfo>.GuaranteedInstance)
     {
-        Info = info;
     }
-
-    public override INodeInfo Info { get; }
-        
-
-    public override SourceCache<InspectorGroup, string> Groups => throw new NotImplementedException();
 }
 
 

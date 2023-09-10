@@ -94,6 +94,8 @@ public enum TransferResultFlags
 
     //PreviewNotFound = 1 << 23, // Not used yet. Should it be?
 
+    RanSynchronously = 1 << 23,
+
     // 1 << 24
 
     Ambiguous = 1 << 25,

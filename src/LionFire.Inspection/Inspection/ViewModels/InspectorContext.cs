@@ -1,4 +1,6 @@
 ﻿using LionFire.FlexObjects;
+using LionFire.Inspection.ViewModels;
+using LionFire.Overlays;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace LionFire.Inspection;
@@ -24,5 +26,11 @@ public class InspectorContext : IFlex
     #endregion
 
     object? IFlex.FlexData { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
+
+    public IInspectorOptions Options { get; set; }
+
+    
+
+
 
 }

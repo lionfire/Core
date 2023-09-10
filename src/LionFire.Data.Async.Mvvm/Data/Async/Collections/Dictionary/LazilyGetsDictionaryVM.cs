@@ -34,7 +34,7 @@ public class LazilyGetsDictionaryVM<TKey, TValue, TCollection>
 
     #region State (derived)
 
-    public IAsyncReadOnlyDictionaryCache<TKey, TValue>? Cache => Source as IAsyncReadOnlyDictionaryCache<TKey, TValue>;
+    public IAsyncReadOnlyDictionary<TKey, TValue>? Cache => Source as IAsyncReadOnlyDictionary<TKey, TValue>;
     public IObservableCache<TValue, TKey>? ObservableCache => Cache?.ObservableCache;
 
     #endregion

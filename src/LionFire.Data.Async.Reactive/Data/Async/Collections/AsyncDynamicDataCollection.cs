@@ -9,47 +9,20 @@ using System.Collections.Generic;
 using System.Reactive.Subjects;
 namespace LionFire.Data.Collections;
 
-
 // TODO: Rename AsyncDynamicDataCollection to AsyncDynamicDataCollectionRxO, and have Lightweight version of AsyncDynamicDataCollection? It would possibly be without
 //  - ReactiveObject base
 //  - Value property
-
-public abstract partial class AsyncLazyDynamicDataCollection<TValue> : AsyncDynamicDataCollection<TValue>
-{
-    public override void DiscardValue() => ReadCacheValue = Enumerable.Empty<TValue>();
-
-    public override IEnumerable<TValue>? ReadCacheValue { get; protected set; }
-
-    public override async ITask<IGetResult<IEnumerable<TValue>>> Get(CancellationToken cancellationToken = default)
-    {
-        // TODO: THREADSAFETY, see code from non-collection 
-
-        var t = await GetImpl(cancellationToken).ConfigureAwait(false);
-
-        if (t.IsSuccess())
-        {
-            ReadCacheValue = t.Value;
-        }
-        else
-        {
-            // TODO: if Discard cache on Fail, discard it here
-        }
-        return t;
-    }
-
-    public abstract ITask<IGetResult<IEnumerable<TValue>>> GetImpl(CancellationToken cancellationToken = default);
-}
 
 /// <summary>
 /// Description: local cache of a collection that is read (and maybe written) across an async boundary (such as network or disk)
 ///   
 /// This is built for DynamicData's 2 collection types:
 ///  - for DynamicData's ObservableCache<TValue, TKey>:
-///    - AsyncReadOnlyDictionaryCache<TKey, TValue>
-///      - AsyncDictionaryCache<TKey, TValue>
+///    - AsyncReadOnlyDictionary<TKey, TValue>
+///      - AsyncDictionary<TKey, TValue>
 ///  - for DynamicData's ObservableList<TValue>:
-///    - AsyncReadOnlyListCache<TValue>
-///      - AsyncListCache<TValue>
+///    - AsyncReadOnlyList<TValue>
+///      - AsyncList<TValue>
 /// 
 /// </summary>
 /// <typeparam name="TValue"></typeparam>
@@ -98,6 +71,10 @@ public abstract partial class AsyncDynamicDataCollection<TValue>
     #endregion
 
     public virtual bool HasValue => ReadCacheValue != null;
+
+    public virtual IEnumerator<TValue> GetEnumerator() => (ReadCacheValue ?? Enumerable.Empty<TValue>()).GetEnumerator();
+    IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
+
 
     #region IReadWrapper<T>
 

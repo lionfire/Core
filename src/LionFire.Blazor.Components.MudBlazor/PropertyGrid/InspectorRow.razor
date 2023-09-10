@@ -31,14 +31,14 @@
     <td class="dev">WR: @MemberVM.MemberInfoVM.WriteRelevance</td> *@
 
             <td class="Expander">
-                @if (ViewModel.NodeVM.HasChildren != false)
+                @if (ViewModel.NodeVM.HasOrMightHaveChildren)
                 {
                     <MudCheckBox @bind-Checked="@ViewModel.NodeVM.AreChildrenVisible"
                                  Dense=true
                                  Size="@Size.Small"
                                  Color="Color.Secondary"
-                                 CheckedIcon="@(ViewModel.NodeVM.HasChildren == true ? Icons.Material.Filled.ArrowDownward : Icons.Material.Outlined.ArrowDownward)"
-                                 UncheckedIcon="@(ViewModel.NodeVM.HasChildren == true ? Icons.Material.Filled.ArrowRight : Icons.Material.Outlined.ArrowRight)">
+                                 CheckedIcon="@(ViewModel.NodeVM.HasOrMightHaveChildren == true ? Icons.Material.Filled.ArrowDownward : Icons.Material.Outlined.ArrowDownward)"
+                                 UncheckedIcon="@(ViewModel.NodeVM.HasOrMightHaveChildren == true ? Icons.Material.Filled.ArrowRight : Icons.Material.Outlined.ArrowRight)">
                     </MudCheckBox>
                 }
             </td>
@@ -91,9 +91,24 @@
             }
         </tr>
 
-        @if (ViewModel.NodeVM.AreChildrenVisible && ViewModel!.NodeVM!.Node.Groups.Items.Any())
+        @* @if (ViewModel.NodeVM.AreChildrenVisible && ViewModel!.NodeVM!.HasOrMightHaveChildren)
         {
             @CurrentChildGenerator
+        } *@
+        @if (ViewModel.NodeVM.AreChildrenVisible 
+                && ViewModel!.NodeVM!.HasOrMightHaveChildren
+                && ViewModel!.NodeVM.ChildrenVM != null
+                && ViewModel!.NodeVM.ChildrenVM.ViewableChildren.Count > 0 == true
+            )
+        {
+            @foreach (var nodeVM in ViewModel!.NodeVM.ChildrenVM.ViewableChildren)
+            {
+                <InspectorRow NodeVM="@nodeVM" />
+            }
+        }
+        else
+        {
+            <div>(no children)</div>
         }
     }
 }
@@ -109,13 +124,25 @@
     </MudExpansionPanel>
 </MudExpansionPanels> *@
 
-@code {
+@* @code {
 
-    void SetChildGenerator()
-    {
-        ChildGenerator = __builder =>
-        {
-            <InspectorRows NodeVM="@ViewModel.NodeVM" />
-        };
-    }
-}
+    // void SetChildGenerator()
+    // {
+    //     ChildGenerator = __builder =>
+    //     {
+    //         <InspectorRows NodeVM="@ViewModel!.NodeVM" />
+    //         @if (ViewModel!.ViewableChildren.Count > 0 == true)
+    //         {
+    //             @foreach (var nodeVM in ViewModel!.NodeVM.ChildrenVM.ViewableChildren)
+    //             {
+    //                 <InspectorRow NodeVM="@nodeVM" />
+    //             }
+
+    //         }
+    //         else
+    //         {
+    //             <div>(no children)</div>
+    //         }
+    //     };
+    // }
+} *@

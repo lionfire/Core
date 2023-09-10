@@ -1,48 +1,13 @@
-﻿
-using DynamicData.Binding;
-using LionFire.Reactive;
-using LionFire.Structures.Keys;
-using Microsoft.Extensions.DependencyInjection;
-using System.Runtime.CompilerServices;
+﻿using LionFire.Reactive;
 
 namespace LionFire.Inspection.Nodes;
-
-/// <remarks>
-/// Inheritors:
-///  - IInspectedNode: Children consist of GroupNodes.  NodeVM might flatten Groups' Children into a single collection.
-///  - IGroupNode: Children are directly provided by the particular GroupNode implementation
-/// </remarks>
-public interface IHierarchicalNode
-    : INode
-    //, IKeyProvider<string, INode> // TODO: Eliminate this? Bring it back on individual INode implementations if needed?
-{
-    IObservableCache<INode, string>? Children { get; }
-
-    IObservable<bool?> HasChildren { get; }
-}
 
 /// <summary>
 /// Decorates the parent Node with Children
 ///   - Groups: none (at least that's the plan)
 ///   - Children: Groups provide them directly for the parent Node
-
 /// </summary>
-public interface IGroupNode : IHierarchicalNode
-{
-}
-
-/// <summary>
-/// Groups are writable by IInspectors, and are the intended source for effective Children 
-/// </summary>
-public interface IInspectedNode : IHierarchicalNode
-{
-    /// <summary>
-    /// A writable blackboard for adding and removing InspectorGroups that are useful for inspecting the Source.
-    /// Recommendation:
-    ///  - Use ObjectInspectorService.Attach to automatically manage this.  It will use all available IInspectors, and you can create and register your own.
-    /// </summary>
-    SourceCache<InspectorGroup, string>? Groups { get; }
-}
+public interface IGroupNode : IHierarchicalNode { }
 
 /// <summary>
 /// 
@@ -55,14 +20,17 @@ public interface IInspectedNode : IHierarchicalNode
 /// </remarks>
 public interface INode
     : IReactiveObjectEx
+    , IParented<INode> // Immutable
 {
     #region Identity
 
+    [Immutable]
     INodeInfo Info { get; }
 
     /// <summary>
     /// A unique key for this node within its parent.  Parents are responsible for generating this via GetKey.
     /// </summary>
+    [Immutable]
     string Key { get; }
 
     #region Derived
@@ -76,11 +44,7 @@ public interface INode
 
     #region Relationships
 
-    INode? Parent { get; }
-
     /// <summary>
-    /// Immutable (REVIEW - trying fo rit)
-    /// 
     /// set directly for:
     ///  - IObjectNode
     ///  
@@ -92,6 +56,7 @@ public interface INode
     /// - IGetter<T>
     /// - IValue<T>
     /// </summary>
+    [Immutable]
     object? Source { get; }
 
     #region Semi-derived
@@ -118,7 +83,6 @@ public interface INode
     InspectorContext? Context { get; set; } // REVIEW - make non nullable?
 
     #endregion
-
 
     //#region Derived inspectors, Derived from
 
@@ -151,7 +115,6 @@ public interface INode
     //} // REVIEW: IObservableList<INode, int> instead?
     //            //.ToSortedCollection(,).OrderByDescending(v => v.Info.Depth).ThenBy(v => v.Info.Order).ThenBy(v => v.Info.Key); } // REVIEW: IObservableList<INode, int> instead?
 
-
 #if OLD
     //InspectedObjects = GetInspectedObjects(objectInspectorService, sourceObject);
     //EffectiveObject = InspectedObjects.LastOrDefault() ?? SourceObject;
@@ -169,8 +132,4 @@ public interface INode
     //[Reactive]
     //public object EffectiveObject { get; set; }
 #endif
-
-
-
 }
-

@@ -16,19 +16,39 @@
 {
     @NodeVM.DisplayValue
 }
+else if (NodeVM.AsyncValue != null)
+{
+    if (NodeVM.Node.Info.Type == typeof(bool))
+    {
+        <MudSwitch @bind-Checked="NodeVM.AsyncValue.Value" />
+    }
+    else if (NodeVM.Node.Info.Type == typeof(string))
+    {
+        <MudTextField T=Object @bind-Value="NodeVM.Value" />
+    }
+    else if (NodeVM.Node.Info.Type == typeof(int))
+    {
+        <MudNumericField @bind-Value="NodeVM.AsyncValue.Value" />
+    }
+    else
+    {
+        <DynamicComponent Type="@EditorType" Parameters="@Parameters"></DynamicComponent>
+        @* @ViewModel.DisplayValue *@
+    }
+}
 else if (NodeVM.Getter != null)
 {
     if (NodeVM.Node.Info.Type == typeof(bool))
     {
-        <MudSwitch @bind-Checked="NodeVM.Getter.ReadCacheValue" />
+        <MudSwitch T="bool" @Checked="NodeVM.Getter.Value" />
     }
     else if (NodeVM.Node.Info.Type == typeof(string))
     {
-        <MudTextField T=Object @bind-Value="NodeVM.Value"  />
+        <MudTextField T=Object @Value="NodeVM.Value"  />
     }
     else if (NodeVM.Node.Info.Type == typeof(int))
     {
-        <MudNumericField @bind-Value="NodeVM.Getter.ReadCacheValue" />
+        <MudNumericField T=int @Value="NodeVM.Getter.Value" />
     }
     else
     {

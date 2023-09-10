@@ -1,5 +1,7 @@
-﻿using LionFire.Mvvm;
+﻿using LionFire.Inspection.Nodes;
+using LionFire.Mvvm;
 using ReactiveUI;
+using System.Reactive.Linq;
 
 namespace LionFire.Inspection.ViewModels;
 
@@ -7,7 +9,18 @@ public class InspectorVM : ReactiveObject
 {
     #region Dependencies
 
-    public InspectorService ObjectInspectorService { get; }
+    public InspectorService InspectorService { get; }
+    public IViewModelProvider ViewModelProvider { get; }
+    public IServiceProvider ServiceProvider { get; }
+
+    #endregion
+
+    #region Parameters
+
+    [Reactive]
+    public object Source { get; set; }
+
+    private InspectorContext InspectorContext { get; set; } 
 
     #endregion
 
@@ -16,18 +29,21 @@ public class InspectorVM : ReactiveObject
     #region NodeVM
 
     //[EditorRequired]
-    [SetOnce]
-    public NodeVM NodeVM
-    {
-        get => nodeVM;
-        set
-        {
-            if (nodeVM == value) return;
-            if (nodeVM != default) throw new AlreadySetException();
-            nodeVM = value;
-        }
-    }
-    private NodeVM nodeVM = null!;
+    //[Mutable]
+    //public NodeVM NodeVM
+    //{
+    //    get => nodeVM;
+    //    protected set
+    //    {
+    //        if (nodeVM == value) return;
+    //        if (nodeVM != default) throw new AlreadySetException();
+    //        nodeVM = value;
+    //    }
+    //}
+    //private NodeVM nodeVM = null!;
+
+    public NodeVM NodeVM => nodeVM.Value;
+    private readonly ObservableAsPropertyHelper<NodeVM> nodeVM;
 
     #endregion
 
@@ -35,17 +51,24 @@ public class InspectorVM : ReactiveObject
 
     #region Derived
 
+    public InspectedNode InspectedNode => (InspectedNode)NodeVM.Node;
+
     //public TypeInteractionModel? TypeModel => TypeInteractionModels.Get(SourceObject?.GetType());
 
     #endregion
 
     #region Lifecycle
 
-    public InspectorVM(IViewModelProvider viewModelProvider, IServiceProvider serviceProvider, InspectorService objectInspectorService)
+    public InspectorVM(IViewModelProvider viewModelProvider, IServiceProvider serviceProvider, InspectorService inspectorService)
     {
         ViewModelProvider = viewModelProvider;
         ServiceProvider = serviceProvider;
-        ObjectInspectorService = objectInspectorService;
+        InspectorService = inspectorService;
+        InspectorContext = new(InspectorService);
+
+        nodeVM = this.WhenAnyValue(x => x.Source)
+                     .Select(o => new NodeVM( new InspectedNode(o, InspectorContext)))
+                     .ToProperty(this, nameof(this.NodeVM));
 
         //this.WhenAnyValue<InspectorVM, object>(x => x!.NodeVM!.Node!.Source!)
         //    .Subscribe(o =>
@@ -55,20 +78,23 @@ public class InspectorVM : ReactiveObject
         //        {
         //            NodeVM = o == null ? null : ActivatorUtilities.CreateInstance<NodeVM>(ServiceProvider, o);
         //        }
-
         //        Title = o?.GetType().Name.ToDisplayString() ?? "???";
         //    });
     }
 
     #endregion
 
-    #region Title
+    //#region Title  // OBSOLETE - move to something like WidgetWrapperVM
 
-    public string Title { get; set; } = "Properties";
-    public bool ShowTitle { get; set; } = true;
+    //public string Title { get; set; } = "Properties";
+    //public bool ShowTitle { get; set; } = true;
 
-    #endregion
-    
+    //#endregion
+
+    #region Options
+
+    public bool DevMode { get; set; } = true;
+
     #region Item Filters
 
     [Reactive]
@@ -77,12 +103,21 @@ public class InspectorVM : ReactiveObject
     IInspectorOptions Options => NodeVM.InheritedOptions;
     InspectorOptions LocalOptions => NodeVM.GetLocalOptions();
 
+    #region Individual Options
+
+    // TODO: Move this to NodeVM, and inherit down the tree
+    //public bool ShowDataMembers
+    //{
+    //    get => NodeVM?.ShowDataMembers ?? false;
+    //    set { if (NodeVM != null) NodeVM.ShowDataMembers = value; }
+    //}
+
     public bool ShowDataMembers
     {
         get => Options.VisibleItemTypes.HasFlag(InspectorNodeKind.Data);
         set
         {
-            if (value) LocalOptions.VisibleItemTypes |= InspectorNodeKind.Data; 
+            if (value) LocalOptions.VisibleItemTypes |= InspectorNodeKind.Data;
             else LocalOptions.VisibleItemTypes &= ~InspectorNodeKind.Data;
         }
     }
@@ -91,7 +126,7 @@ public class InspectorVM : ReactiveObject
         get => Options.VisibleItemTypes.HasFlag(InspectorNodeKind.Event);
         set
         {
-            if (value) LocalOptions.VisibleItemTypes |= InspectorNodeKind.Event; 
+            if (value) LocalOptions.VisibleItemTypes |= InspectorNodeKind.Event;
             else LocalOptions.VisibleItemTypes &= ~InspectorNodeKind.Event;
         }
     }
@@ -100,17 +135,17 @@ public class InspectorVM : ReactiveObject
         get => Options.VisibleItemTypes.HasFlag(InspectorNodeKind.Method);
         set
         {
-            if (value) LocalOptions.VisibleItemTypes |= InspectorNodeKind.Method; 
+            if (value) LocalOptions.VisibleItemTypes |= InspectorNodeKind.Method;
             else LocalOptions.VisibleItemTypes &= ~InspectorNodeKind.Method;
         }
     }
 
     #endregion
 
+    #endregion
+
     #region Items
 
-    public IViewModelProvider ViewModelProvider { get; }
-    public IServiceProvider ServiceProvider { get; }
 
     //public bool CanRead(ReflectionMemberVM member)
     //    => member.Info.ReadRelevance.HasFlag(ReadRelevance);
@@ -119,6 +154,6 @@ public class InspectorVM : ReactiveObject
     //    => member.Info.WriteRelevance.HasFlag(WriteRelevance);
 
     #endregion
+    #endregion
 
-    public bool DevMode { get; set; } = true;
 }

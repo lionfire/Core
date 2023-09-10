@@ -51,7 +51,11 @@ public class NodeVM : ReactiveObject, IViewModel<INode>, IParented<NodeVM>, IHas
 
     #region Lifecycle
 
-    public NodeVM(NodeVM? parent, INode node)
+    public NodeVM(INode node) : this(null, node)
+    {
+    }
+
+    public NodeVM(NodeVM parent, INode node)
     {
         ArgumentNullException.ThrowIfNull(node, nameof(node));
 
@@ -101,12 +105,14 @@ public class NodeVM : ReactiveObject, IViewModel<INode>, IParented<NodeVM>, IHas
 
         #region ChildrenVM
 
-        if (node.Groups.Count > 0) { 
+        if (node is IInspectedNode i && i.Groups.Count > 0)
+        {
             ChildrenVM = new NodeChildrenVM(this);
 
+            // Propagate AreChildrenVisible to ChildrenVM.OnExpand()
             this.WhenAnyValue(x => x.AreChildrenVisible)
                 .Subscribe(areChildrenVisible =>
-                {                    
+                {
                     if (areChildrenVisible)
                     {
                         ChildrenVM.OnExpand();
@@ -122,6 +128,8 @@ public class NodeVM : ReactiveObject, IViewModel<INode>, IParented<NodeVM>, IHas
     #region Options
 
     #region Options: this
+
+#warning TODO REVIEW: Use Options on Node instead of NodeVM?
 
     /// <summary>
     /// Local options, not inherited.  See EffectiveOptions for inherited options.
@@ -174,7 +182,7 @@ public class NodeVM : ReactiveObject, IViewModel<INode>, IParented<NodeVM>, IHas
 
     #region ReadWrite
 
-    public Value<object>? AsyncValue { get; private set; }
+    public AsyncValue<object>? AsyncValue { get; private set; }
 
     #endregion
 
@@ -238,7 +246,8 @@ public class NodeVM : ReactiveObject, IViewModel<INode>, IParented<NodeVM>, IHas
     #region Children
 
     public NodeChildrenVM? ChildrenVM { get; set; }
-    public bool MightHaveChildren => ChildrenVM != null;
+    public bool CanHaveChildren => ChildrenVM != null;
+    public bool HasOrMightHaveChildren => ChildrenVM != null && ChildrenVM.HasChildren != false;
 
     #endregion
 

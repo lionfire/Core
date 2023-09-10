@@ -13,7 +13,7 @@ public partial class InspectorRow
     public InspectorVM? InspectorVM { get; set; }
 
     [Parameter]
-    public NodeVM? NodeVM { get; set; }// { get => ViewModel.NodeVM; set => ViewModel.NodeVM = value; }
+    public NodeVM? NodeVM { get; set; }
 
     #endregion
 
@@ -43,21 +43,21 @@ public partial class InspectorRow
 
         UpdateChildContent(); // ENH - bind IsExpanded to UpdateChildContent
 
-        if (NodeVM.Node.Info.CanRead() && NodeVM.Node.Info.Type is System.Collections.IEnumerable e)
-        {
-            try
-            {
-                //ChildNodeVMs2 = new GetterVM<IEnumerable<object>>() InspectorNode.Source; 
-                //ViewModel.ChildNodeVMs = ReflectionNodeVM.GetFor(dataNodeVM.GetValue());
-                //ViewModel.ChildNodeVMs = ReflectionNodeVM.GetFor(dataNodeVM.GetValue());
-            }
-            catch (Exception ex)
-            {
-                Debug.WriteLine(ex);
-            }
-        }
+        //if (NodeVM.Node.Info.CanRead() && NodeVM.Node.Info.Type is System.Collections.IEnumerable e)
+        //{
+        //    try
+        //    {
+        //        //ChildNodeVMs2 = new GetterVM<IEnumerable<object>>() InspectorNode.Source; 
+        //        //ViewModel.ChildNodeVMs = ReflectionNodeVM.GetFor(dataNodeVM.GetValue());
+        //        //ViewModel.ChildNodeVMs = ReflectionNodeVM.GetFor(dataNodeVM.GetValue());
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        Debug.WriteLine(ex);
+        //    }
+        //}
 
-        SetChildGenerator(); // .razor
+        //SetChildGenerator(); // .razor
 
         return base.OnInitializedAsync();
     }
@@ -66,19 +66,19 @@ public partial class InspectorRow
 
     #region Children
 
-    private RenderFragment? ChildGenerator;
-    private RenderFragment? CurrentChildGenerator;
+    //private RenderFragment? ChildGenerator;
+    //private RenderFragment? CurrentChildGenerator;
 
     #region (private)
 
     private void UpdateChildContent()
     {
-        CurrentChildGenerator =
-            ViewModel?.NodeVM?.AreChildrenVisible == true
-                && ViewModel?.NodeVM?.Children.Count > 0 == true
-                && NodeVM.Depth < ViewModel.NodeVM.InheritedOptions.MaxDepth
-            ? ChildGenerator
-            : null;
+        //CurrentChildGenerator =
+        //    ViewModel?.NodeVM?.AreChildrenVisible == true
+        //        && ViewModel?.NodeVM?.Children.Count > 0 == true
+        //        && NodeVM.Depth < ViewModel.NodeVM.InheritedOptions.MaxDepth
+        //    ? ChildGenerator
+        //    : null;
     }
 
     #endregion

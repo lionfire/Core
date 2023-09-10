@@ -11,11 +11,11 @@ namespace LionFire.Data.Collections;
 //  - IAsyncAdds<TKey, TItem>
 //  - IAsyncCreates<TItem>
 //  - IAsyncCreatesForKey<TItem>
-public interface IAsyncDictionaryCache<TKey, TItem> : IAsyncCollection<KeyValuePair<TKey, TItem>>
+public interface IAsyncDictionary<TKey, TItem> 
+    : IAsyncCollection<KeyValuePair<TKey, TItem>>
+    , IAsyncReadOnlyDictionary<TKey, TItem>
     where TKey : notnull
-{
-    IObservableCache<TItem, TKey> ObservableCache { get; }
-
+{ 
     Task<bool> Remove(TKey key);
 }
 

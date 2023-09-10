@@ -7,15 +7,14 @@ namespace LionFire.Data.Collections;
 /// </summary>
 /// <remarks>
 /// Suggested interfaces:
-///  - ISubscribes&lt;IEnumerable&lt;KeyValuePair&lt;TKey, TItem&gt;&gt;&gt;
+///  - ISubscribes<IEnumerable<KeyValuePair<TKey, TItem>>>
 /// </remarks>
 /// <typeparam name="TKey"></typeparam>
 /// <typeparam name="TItem"></typeparam>
-public interface IAsyncReadOnlyDictionaryCache<TKey, TItem>
+public interface IAsyncReadOnlyDictionary<TKey, TItem>
     : IEnumerableGetter<KeyValuePair<TKey, TItem>>
     where TKey : notnull
 {
-
     IObservableCache<TItem, TKey> ObservableCache { get; } 
 
 }

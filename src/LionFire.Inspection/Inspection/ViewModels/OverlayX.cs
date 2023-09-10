@@ -14,6 +14,19 @@ public static class OverlayX_NEW
         return defaultValue;
     }
 
+    public static TValue? NextNonNull<TValue, TContainer>(this TContainer leaf, Func<TContainer, TValue?> selector, TValue? defaultValue = default)
+        where TContainer : IParented<TContainer>
+    {
+        var current = leaf;
+        while (current != null)
+        {
+            var selected = selector(current);
+            if (selected != null) return selected;
+            current = current.Parent;
+        }
+        return defaultValue;
+    }
+
     //public static TValue GetEffective<TValue, TContainer>(this TContainer leaf, TValue? defaultValue = null)
     //where TContainer : IParented<TContainer>, IHas<TValue>
     //{

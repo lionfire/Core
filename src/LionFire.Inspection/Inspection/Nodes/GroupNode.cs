@@ -1,25 +1,26 @@
-﻿using LionFire.IO;
+﻿using LionFire.Data.Collections;
+using LionFire.IO;
+using System.Reactive.Linq;
 
 namespace LionFire.Inspection.Nodes;
 
 public abstract class GroupNode : Node<GroupInfo>, IHierarchicalNode
 {
+    #region Relationships
+
+    public IInspector Inspector { get; }
+    
+    #endregion
+
     #region Lifecycle
 
-    public GroupNode(INode? parent, string? key = null ?, InspectorContext? inspectorContext = null) : base(parent, source, key, inspectorContext)
+    public GroupNode(IInspector inspector, INode? parent, GroupInfo info, string? key = null, InspectorContext? inspectorContext = null) : base(parent, source: null, info, key, inspectorContext)
     {
-        //source
-        //PopulateIntoChildren(source.Nodes, source.Id + "/");
+        Inspector = inspector;
     }
 
     #endregion
 
-    public IObservableCache<INode, string>? Children => throw new NotImplementedException();
-
-    public IObservable<bool?> HasChildren => throw new NotImplementedException();
-
-
-    //IObservableCache<INode, string> GroupNodes { get; }
-
+    public abstract IAsyncReadOnlyDictionary<string, INode> Children { get; }
 }
 

@@ -14,14 +14,19 @@ public interface IHasGetterRxO<T>
     IGetterRxO<T> Getter { get; }
 }
 
-public class PropertyNode : Node
+public class PropertyNodeInfo : NodeInfo
+{
+    public PropertyInfo PropertyInfo { get; set; }
+}
+
+public class PropertyNode : Node<PropertyNodeInfo>
     , IHasGetterRxO<object> // TODO: upgrade Getter to AsyncValue
     , INodeInfo
 {
 
     #region Lifecycle
 
-    public PropertyNode(INode parent, INode sourceNode, PropertyInfo propertyInfo) : base(parent, sourceNode)
+    public PropertyNode(INode parent, INode sourceNode, PropertyInfo propertyInfo) : base(parent, sourceNode, new PropertyNodeInfo { PropertyInfo = propertyInfo })
     {
         getter = new PropertyNodeGetter(sourceNode, propertyInfo);
         //PropertyGroupInfo = propertyGroupInfo;
@@ -41,7 +46,7 @@ public class PropertyNode : Node
     //public INode? Parent => throw new NotImplementedException();
     //public INodeInfo Info => throw new NotImplementedException();
 
-    public override SourceCache<InspectorGroup, string> Groups => throw new NotImplementedException();
+    //public override SourceCache<IInspectorGroup, string> Groups => throw new NotImplementedException();
 
     #region INodeInfo
 
@@ -53,15 +58,15 @@ public class PropertyNode : Node
 
     public IEnumerable<string> Flags => Enumerable.Empty<string>();
 
-    public override INodeInfo Info => this;
+    //public override INodeInfo Info => this;
 
     public IODirection IODirection => getter.PropertyInfo.GetIODirection();
 
     public Type? Type => getter.PropertyInfo.PropertyType;
-    public IEnumerable<Type>? InputTypes => !getter.PropertyInfo.CanWrite 
+    public IEnumerable<Type>? InputTypes => !getter.PropertyInfo.CanWrite
         ? null
-        : (getter.PropertyInfo.GetIndexParameters().Length == 0 
-            ? new Type[] { getter.PropertyInfo.PropertyType } 
+        : (getter.PropertyInfo.GetIndexParameters().Length == 0
+            ? new Type[] { getter.PropertyInfo.PropertyType }
             : Enumerable.Concat(new Type[] { getter.PropertyInfo.PropertyType }, getter.PropertyInfo.GetIndexParameters().Select(pi => pi.ParameterType))
         );
 

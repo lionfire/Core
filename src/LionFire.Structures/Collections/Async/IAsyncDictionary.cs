@@ -1,9 +1,10 @@
-﻿using LionFire.Structures;
+﻿#if UNUSED
+using LionFire.Structures;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Diagnostics.CodeAnalysis;
 
-namespace LionFire.Data.Collections;
+namespace LionFire.Structures.Collections;
 
 public interface IAsyncDictionary<TKey, TValue> : IAsyncCollection_OLD<KeyValuePair<TKey, TValue>>, IEnumerableAsync<KeyValuePair<TKey, TValue>>
 {
@@ -22,3 +23,4 @@ public interface IAsyncDictionary<TKey, TValue> : IAsyncCollection_OLD<KeyValueP
 
     Task<bool> TryGetValue(TKey key, /*[MaybeNullWhen(false)]*/ out TValue value);
 }
+#endif

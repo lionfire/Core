@@ -38,6 +38,7 @@ using LionFire.Threading;
 using Microsoft.Extensions.Options;
 using LionFire.ExtensionMethods.Poco.Getters;
 using LionFire.Ontology;
+using LionFire.Data.Async.Sets;
 
 namespace LionFire.Orleans_.Mvvm;
 
@@ -86,6 +87,8 @@ public class GrainCollectionCache<TValue> // RENAME: GrainCollectionCache
     , IAsyncDisposable
     , ISubscribesAsync
     , IHas<IGrainObservableG<ChangeSet<TValue, string>>>
+    , ICreatesAsync<string, TValue>
+    , ICreatesAsync<TValue>
     where TValue : class, IGrainWithStringKey
 {
     #region Dependencies
@@ -214,9 +217,12 @@ public class GrainCollectionCache<TValue> // RENAME: GrainCollectionCache
 
     #endregion
 
+    #region ICreatesAsync<TValue>
+
     public Task<TValue> Create(Type type, params object[]? constructorParameters)
         => CollectionGrain.Create(type, constructorParameters);
 
+    #endregion
 
     public ReactiveCommand<(string key, Type grainType), Task<TValue>> GetOrCreateForKey { get; }
 
@@ -242,17 +248,19 @@ public class GrainCollectionCache<TValue> // RENAME: GrainCollectionCache
     //    return new KeyValuePair<string, TItemGrain>(((IGrainWithStringKey)result).GetPrimaryKeyString(), result);
     //}
 
+    #region ICreatesAsync<TKey, TValue>
+
     public Task<TValue> CreateForKey(string key, Type type, params object[] constructorParameters)
     {
         throw new NotImplementedException();
     }
 
-    
-
     Task<TValue> ICreatesAsync<string, TValue>.GetOrCreateForKey(string key, Type type, params object[] constructorParameters)
     {
         throw new NotImplementedException();
     }
+
+    #endregion
 
     #endregion
 

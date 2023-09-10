@@ -11,7 +11,7 @@ public class ValueVM<T>
     , IViewModel<IGetter<T>>
 {
 
-    public Value<T> Value { get; }
+    public AsyncValue<T> Value { get; }
     IGetter<T> IReadWrapper<IGetter<T>>.Value => Value;
 
 }

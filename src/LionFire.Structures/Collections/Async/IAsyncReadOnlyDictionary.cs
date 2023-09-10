@@ -1,7 +1,8 @@
-﻿using LionFire.Structures;
+﻿#if UNUSED // conflicts, REVIEW: alongside LionFire.Data.Async IAsyncReadOnlyDictionaryCache
+using LionFire.Structures;
 using System.Diagnostics.CodeAnalysis;
 
-namespace LionFire.Data.Collections;
+namespace LionFire.Structures;
 
 public interface IAsyncReadOnlyDictionary<TKey, TValue> : IEnumerableAsync<KeyValuePair<TKey, TValue>>
     , IAsyncReadOnlyCollection<KeyValuePair<TKey, TValue>>
@@ -19,3 +20,4 @@ public interface IAsyncReadOnlyDictionary<TKey, TValue> : IEnumerableAsync<KeyVa
     
 
 }
+#endif

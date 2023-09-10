@@ -6,7 +6,7 @@ using System.Reactive.Subjects;
 
 namespace LionFire.Data.Async;
 
-public abstract class Value<TValue>
+public abstract class AsyncValue<TValue>
     : GetterRxO<TValue>
     , IValueRxO<TValue>
     , ISetterRxO<TValue>
@@ -30,12 +30,12 @@ public abstract class Value<TValue>
 
     #region Lifecycle
 
-    public Value() : base(DefaultOptions.Get)
+    public AsyncValue() : base(DefaultOptions.Get)
     {
         Options = DefaultOptions;
     }
 
-    public Value(ValueOptions options) : base(options.Get)
+    public AsyncValue(ValueOptions options) : base(options.Get)
     {
         Options = options;
 
@@ -47,6 +47,12 @@ public abstract class Value<TValue>
                     ValueChangedWhileValueStaged = true;
                 }
             });
+
+        this.WhenAnyValue(x => x.ReadCacheValue, x => x.StagedValue)
+            .Subscribe(t =>
+            {
+                this.RaisePropertyChanged(nameof(Value));
+            });
     }
 
     #endregion
@@ -55,6 +61,17 @@ public abstract class Value<TValue>
 
     [Reactive]
     public bool ValueChangedWhileValueStaged { get; set; }
+
+    public new TValue? Value
+    {
+        [Blocking(Alternative = nameof(GetIfNeeded))]
+        get => HasStagedValue
+                ? StagedValue
+                : (!HasValue && GetOptions.BlockToGet)
+                    ? GetIfNeeded().Result.Value // BLOCKING
+                    : ReadCacheValue;
+        set => StagedValue = value;
+    }
 
     #endregion
 
@@ -124,7 +141,7 @@ public abstract class Value<TValue>
     //public abstract Task<ISetResult<T>> SetImpl<T>(T? value, CancellationToken cancellationToken = default) where T : TValue;
     public abstract Task<ISetResult<TValue>> SetImpl(TValue? value, CancellationToken cancellationToken = default);
 
-    public async Task<ISetResult<TValue>> Set(TValue? value, CancellationToken cancellationToken = default) 
+    public async Task<ISetResult<TValue>> Set(TValue? value, CancellationToken cancellationToken = default)
     {
         SetsLogic<TValue>.Set(this, value, cancellationToken).AsITask();
         throw new NotImplementedException("TODO - MERGE");
@@ -135,7 +152,7 @@ public abstract class Value<TValue>
         setResults.OnNext(result);
         return result;
     }
-   
+
 
     public async Task<ISetResult> Set(CancellationToken cancellationToken = default)
         => await SetsLogic<TValue>.Set(this, cancellationToken).ConfigureAwait(false);

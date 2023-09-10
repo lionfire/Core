@@ -1,4 +1,6 @@
-﻿using LionFire.Structures.Keys;
+﻿using LionFire.Inspection.ViewModels;
+using LionFire.Overlays;
+using LionFire.Structures.Keys;
 using ReactiveUI;
 
 namespace LionFire.Inspection.Nodes;
@@ -42,6 +44,14 @@ public abstract class Node<TInfo> : ReactiveObject, INode
     #region Parameters
 
     public InspectorContext? Context { get; set; }
+
+    /// <summary>
+    /// </summary>
+    /// <remarks>
+    /// ENH: Inheritance on a per-property basis
+    /// </remarks>
+    public IInspectorOptions InheritedOptions
+        => OverlayX_NEW.NextNonNull<IInspectorOptions, INode>(this, n => n.Context?.Options, InspectorOptions.Default) ?? InspectorOptions.DefaultDefault;
 
     #endregion
 

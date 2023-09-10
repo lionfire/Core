@@ -1,6 +1,7 @@
-﻿using LionFire.Structures;
+﻿#if UNUSED
+using LionFire.Structures;
 
-namespace LionFire.Data.Collections;
+namespace LionFire.Structures.Collections;
 
 public interface IAsyncReadOnlyCollection<TItem> : IEnumerableAsync<TItem>
 {
@@ -8,3 +9,4 @@ public interface IAsyncReadOnlyCollection<TItem> : IEnumerableAsync<TItem>
 }
 
 
+#endif
