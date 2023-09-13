@@ -95,15 +95,16 @@
         {
             @CurrentChildGenerator
         } *@
-        @if (ViewModel.NodeVM.AreChildrenVisible 
+        @if (ViewModel!.NodeVM?.ChildrenVM?.ViewableChildren != null
+                && ViewModel.NodeVM.AreChildrenVisible
                 && ViewModel!.NodeVM!.HasOrMightHaveChildren
-                && ViewModel!.NodeVM.ChildrenVM != null
                 && ViewModel!.NodeVM.ChildrenVM.ViewableChildren.Count > 0 == true
+                && ViewModel.NodeVM.Depth < ViewModel.NodeVM.InheritedOptions.MaxDepth
             )
         {
             @foreach (var nodeVM in ViewModel!.NodeVM.ChildrenVM.ViewableChildren)
             {
-                <InspectorRow NodeVM="@nodeVM" />
+                @* <InspectorRow NodeVM="@nodeVM" /> *@
             }
         }
         else

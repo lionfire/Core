@@ -14,7 +14,7 @@ public static class InspectionHostingX
     public static IServiceCollection AddInspector(this IServiceCollection services, bool useDefaults = true)
     {
         services
-            .AddSingleton<InspectorService>()
+            .AddSingleton<IInspectorService, InspectorService>()
             ;
 
         if (useDefaults)

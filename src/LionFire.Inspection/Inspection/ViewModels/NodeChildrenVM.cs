@@ -3,6 +3,8 @@ using LionFire.Data.Async.Gets;
 using DynamicData.Binding;
 using LionFire.Inspection.ViewModels;
 using System.Diagnostics;
+using System.Reactive.Linq;
+using System.Collections.ObjectModel;
 
 namespace LionFire.Inspection.Nodes;
 
@@ -21,41 +23,48 @@ public class NodeChildrenVM : ReactiveObject
     #region Relationships
 
     // Cascading parameter
-    public InspectorVM InspectorVM { get; set; }
+    //public InspectorVM? InspectorVM { get; set; }
 
+    [Reactive]
+    [SetOnce]
+    public NodeVM NodeVM { get; set; }
 
-    public NodeVM NodeVM
-    {
-        get => nodeVM;
-        set
-        {
-            if (nodeVM == value) return;
+    //public NodeVM NodeVM
+    //{
+    //    get => nodeVM;
+    //    set
+    //    {
+    //        if (nodeVM == value) return;
 
-            nodeVM = value;
+    //        nodeVM = value;
 
-            viewableChildrenSubscription?.Dispose();
+    //        viewableChildrenSubscription?.Dispose();
 
-            if (Node is IHierarchicalNode h)
-            {
-                children = h.Children.ObservableCache.Connect()
-                    .Transform(n => new NodeVM(NodeVM, n))
-                    .AsObservableCache();
-                hasChildren = h.HasChildren.ToProperty(this, x => x.HasChildren);
+    //        if (Node is IHierarchicalNode h)
+    //        {
+    //            children = h.Children.ObservableCache.Connect()
+    //                .Transform(n => new NodeVM(NodeVM, n))
+    //                .AsObservableCache();
+    //            hasChildren = h.HasChildren.ToProperty(this, x => x.HasChildren);
 
-                viewableChildrenSubscription = children
-                    .Connect()
-                    .Filter(c => IsVisible(c))
-                    .ToSortedCollection(n => n.Node.Key)
-                    .BindTo(viewableChildren, c => c);
-            }
-            else
-            {
-                children = null;
-                hasChildren = null;
-                viewableChildren.Clear();
-            }
-        }
-    }
+    //            //viewableChildrenSubscription = children
+    //            viewableChildren = children
+    //                .Connect()
+    //                .Filter(c => IsVisible(c))
+    //                .ToSortedCollection(n => n.Node.Key)
+    //                .ToProperty(this, x => x.ViewableChildren);
+    //                //.BindTo(viewableChildren, c => c);
+    //        }
+    //        else
+    //        {
+    //            children = null;
+    //            hasChildren = null;
+    //            viewableChildren.Clear();
+    //        }
+    //    }
+    //}
+    //private NodeVM nodeVM;
+
 
     #region Derived
 
@@ -70,6 +79,70 @@ public class NodeChildrenVM : ReactiveObject
     public NodeChildrenVM(NodeVM nodeVM /*InspectorService inspectorService*/)
     {
         NodeVM = nodeVM;
+
+        //viewableChildrenSubscription = children
+        //this.WhenAnyValue(x.NodeVM)
+        //    .Connect()
+        //    .Subscribe(n =>
+        //    {
+
+        //    });
+
+        //viewableChildren = this.WhenAnyValue(x => x.NodeVM)
+        //    .Select(nodeVM =>
+        //    {
+        //        //viewableChildrenSubscription?.Dispose();
+
+        //        if (nodeVM.Node is IHierarchicalNode h)
+        //        {
+        //            children = h.Children.ObservableCache.Connect()
+        //                .Transform(n => new NodeVM(nodeVM, n))
+        //                .AsObservableCache();
+        //            hasChildren = h.HasChildren.ToProperty(this, x => x.HasChildren);
+
+        //            return children
+        //                .Connect()
+        //                .Filter(c => IsVisible(c))
+        //                .ToSortedCollection(n => n.Node.Key);
+        //        }
+        //        else
+        //        {
+        //            children = null;
+        //            hasChildren = null;
+        //            //viewableChildren.Clear();
+
+        //            return Observable.Return<IReadOnlyCollection<NodeVM>>(new ReadOnlyCollection<NodeVM>(new List<NodeVM> { }));
+        //        }
+
+        //    })
+        //    .ToProperty(this, x => x.ViewableChildren)
+        //    ;
+        //viewableChildrenSubscription?.Dispose();
+
+        if (nodeVM.Node is IHierarchicalNode h)
+        {
+            children = h.Children.ObservableCache.Connect()
+                .Transform(n => new NodeVM(nodeVM, n))
+                .AsObservableCache();
+            hasChildren = h.HasChildren.ToProperty(this, x => x.HasChildren);
+
+            viewableChildren = children
+                .Connect()
+                .Filter(c => IsVisible(c))
+                .ToSortedCollection(n => n.Node.Key)
+                .ToProperty(this, x => x.ViewableChildren);
+        }
+        else
+        {
+            children = null;
+            hasChildren = null;
+            //viewableChildren.Clear();
+
+            viewableChildren = Observable.Return<IReadOnlyCollection<NodeVM>>(new ReadOnlyCollection<NodeVM>(new List<NodeVM> { }))
+                .ToProperty(this, x => x.ViewableChildren);
+        }
+
+
 
         // --------------------- TOTRIAGE:
 
@@ -91,9 +164,10 @@ public class NodeChildrenVM : ReactiveObject
     public bool? HasChildren => hasChildren?.Value ?? false;
     private ObservableAsPropertyHelper<bool?>? hasChildren;
 
-    public IObservableCollection<NodeVM> ViewableChildren => viewableChildren;
-    private readonly IObservableCollection<NodeVM> viewableChildren = new ObservableCollectionExtended<NodeVM>();
-    IDisposable? viewableChildrenSubscription;
+    public IReadOnlyCollection<NodeVM> ViewableChildren => viewableChildren.Value;
+    private readonly ObservableAsPropertyHelper<IReadOnlyCollection<NodeVM>> viewableChildren;
+    //private readonly IObservableCollection<NodeVM> viewableChildren = new ObservableCollectionExtended<NodeVM>();
+    //IDisposable? viewableChildrenSubscription;
 
     #endregion
 
@@ -134,15 +208,15 @@ public class NodeChildrenVM : ReactiveObject
     {
         var o = NodeVM.InheritedOptions;
 
-        if (!InspectorVM.ShowDataMembers && nodeVM.Node.Info.NodeKind.HasFlag(InspectorNodeKind.Data))
+        if (!NodeVM.ShowDataMembers && nodeVM.Node.Info.NodeKind.HasFlag(InspectorNodeKind.Data))
         {
             return false;
         }
-        if (!InspectorVM.ShowEvents && nodeVM.Node.Info.NodeKind.HasFlag(InspectorNodeKind.Event))
+        if (!NodeVM.ShowEvents && nodeVM.Node.Info.NodeKind.HasFlag(InspectorNodeKind.Event))
         {
             return false;
         }
-        if (!InspectorVM.ShowMethods && nodeVM.Node.Info.NodeKind.HasFlag(InspectorNodeKind.Method))
+        if (!NodeVM.ShowMethods && nodeVM.Node.Info.NodeKind.HasFlag(InspectorNodeKind.Method))
         {
             return false;
         }
@@ -209,7 +283,6 @@ public class NodeChildrenVM : ReactiveObject
     public bool IsGettingChildren { get; set; }
 
     private Task? getChildrenTask;
-    private NodeVM nodeVM;
 
     #endregion
 }

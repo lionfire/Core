@@ -1,5 +1,6 @@
 using LionFire.Inspection.ViewModels;
 using Microsoft.AspNetCore.Components;
+using System.ComponentModel.DataAnnotations;
 
 namespace LionFire.Blazor.Components.MudBlazor_.PropertyGrid;
 
@@ -13,6 +14,7 @@ public partial class InspectorRow
     public InspectorVM? InspectorVM { get; set; }
 
     [Parameter]
+    [Required]
     public NodeVM? NodeVM { get; set; }
 
     #endregion
@@ -24,23 +26,22 @@ public partial class InspectorRow
         ViewModel!.NodeVM = NodeVM;
         ViewModel.InspectorVM = InspectorVM;
 
-        this.WhenAnyValue(x => x.NodeVM!.AreChildrenVisible)
-            .Subscribe(visible =>
-            {
-                UpdateChildContent();
-            });
+        Debug.WriteLine($"Depth: {NodeVM?.Depth}.  Target: {NodeVM?.Node.Source?.GetType().Name}");
+
+        ViewModel.Refresh();
+
+        if (NodeVM != null && NodeVM.Depth == 0) NodeVM.AreChildrenVisible = true; // View logic
 
         return base.OnParametersSetAsync();
     }
 
     protected override Task OnInitializedAsync()
     {
-        Debug.WriteLine($"Depth: {NodeVM.Depth}.  Target: {NodeVM.Node.Source?.GetType().Name}");
-
-        ViewModel.Refresh();
-
-        if (NodeVM.Depth == 0) ViewModel.NodeVM.AreChildrenVisible = true;
-
+        this.WhenAnyValue(x => x.NodeVM!.AreChildrenVisible)
+            .Subscribe(visible =>
+            {
+                UpdateChildContent();
+            });
         UpdateChildContent(); // ENH - bind IsExpanded to UpdateChildContent
 
         //if (NodeVM.Node.Info.CanRead() && NodeVM.Node.Info.Type is System.Collections.IEnumerable e)

@@ -1,4 +1,7 @@
-﻿namespace LionFire.Inspection.Nodes;
+﻿using LionFire.Inspection.ViewModels;
+using System.Reactive.Disposables;
+
+namespace LionFire.Inspection.Nodes;
 
 /// <summary>
 /// Groups are writable by IInspectors, and are the intended source for effective Children 
@@ -17,3 +20,21 @@ public interface IInspectedNode : IHierarchicalNode
     SourceCache<IInspectorGroup, string> Groups { get; }
 }
 
+public static class IInspectedNodeX
+{
+    public static IDisposable Attach(this IInspectedNode node)
+    {
+        var context = node.Context;
+        ArgumentNullException.ThrowIfNull(context, nameof(node.Context));
+        CompositeDisposable compositeDisposable = new();
+        foreach (var inspector in context.InspectorService.Inspectors)
+        {
+            if (inspector.IsSourceTypeSupported(node.Source?.GetType() ?? node.SourceType))
+            {
+                var disposable = inspector.Attach(node);
+                if (disposable != null) compositeDisposable.Add(disposable);
+            }
+        }
+        return compositeDisposable;
+    }
+}

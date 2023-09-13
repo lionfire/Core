@@ -12,8 +12,8 @@ namespace LionFire.Inspection;
 
 public class ReflectionInspector : IInspector
 {
-    public IReadOnlyDictionary<string, GroupInfo> GroupInfos => throw new NotImplementedException();
-    Dictionary<string, GroupInfo> groupInfos=new();
+    public IReadOnlyDictionary<string, GroupInfo> GroupInfos => groupInfos;
+    protected Dictionary<string, GroupInfo> groupInfos = new();
 
     public bool IsSourceTypeSupported(object source) => source != null;
 

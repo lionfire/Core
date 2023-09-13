@@ -62,7 +62,7 @@ public abstract class Node<TInfo> : ReactiveObject, INode
         Parent = parent;
         Source = source;
         Info = info;
-        Context = context;
+        Context = context ?? parent?.Context;
 
         Key = key ?? (parent as IKeyProvider<string, INode>)?.GetKey(this) ?? "";
 
@@ -79,17 +79,16 @@ public abstract class Node<TInfo> : ReactiveObject, INode
     /// <summary>
     /// When setting, you must set to a type assignable from the Source type (if Source is not null)
     /// </summary>
-    [Reactive]
     public Type SourceType
     {
         get => sourceType;
         set
         {
-            sourceType = value;
             if (Source != null && !Source.GetType().IsAssignableTo(value))
             {
                 throw new ArgumentException($"{nameof(Source)} of type '{Source.GetType().FullName}' is not assignable to specified type '{value.FullName}'");
             }
+            this.RaiseAndSetIfChanged(ref sourceType, value);
         }
     }
     private Type sourceType = typeof(DBNull);

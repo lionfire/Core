@@ -70,8 +70,8 @@ public class AttachedInspector : IDisposable
                 if (groupInfo.IsSourceTypeSupported(sourceType))
                 {
                     if (oldGroups != null && oldGroups.Remove(groupInfo.Key)) continue; // Keep existing group
-
-                    var group = groupInfo.CreateFor(Node);
+                    
+                    var group = groupInfo.CreateNode(Node, Inspector);
                     Debug.Assert(group.Info.Key == groupInfo.Key);
                     newGroups.Add(group);
                 }

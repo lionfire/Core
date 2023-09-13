@@ -24,7 +24,7 @@ public struct GetResult<TValue> : IGetResult<TValue>
 
     public bool? IsSuccess => HasValue;
 
-    public TransferResultFlags Flags { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
+    public TransferResultFlags Flags { get; set; }
 
     public object? Error { get; set; }
 

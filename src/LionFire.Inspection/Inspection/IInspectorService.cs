@@ -1,4 +1,5 @@
 ﻿using LionFire.Inspection.Nodes;
+using System.Reactive.Disposables;
 
 namespace LionFire.Inspection;
 
@@ -8,5 +9,13 @@ public interface IInspectorService
     IServiceProvider ServiceProvider { get; }
     InspectorContext Context { get; }
 
-    INode Inspect(object obj, InspectorContext? context = null) => new InspectedNode(obj, context ?? Context);
+    //[Obsolete]
+    //InspectedNode Inspect(object obj, InspectorContext? context = null)
+    //{
+    //    var node = new InspectedNode(obj, context ?? Context);
+    //    Attach(node);
+    //    return node;
+    //}
+
+    
 }

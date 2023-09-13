@@ -24,7 +24,7 @@ public class GetterVM<TValue>
     /// <summary>
     /// Consider preferring to use FullFeaturedSource
     /// </summary>
-    [Reactive]
+    //[Reactive]
     public IGetter? Source
     {
         get => source;
@@ -86,7 +86,10 @@ public class GetterVM<TValue>
         #region GetIfNeededCommand
         GetIfNeeded = ReactiveCommand.CreateFromTask<Unit, IGetResult<TValue>>(
                     _ => (FullFeaturedSource ?? throw new ArgumentNullException(nameof(FullFeaturedSource))).GetIfNeeded().AsTask(),
-                    canExecute: Observable.Create<bool>(o => { o.OnNext(FullFeaturedSource != null); o.OnCompleted(); return Disposable.Empty; })
+                    canExecute:
+                    this.WhenAnyValue(r => r.FullFeaturedSource).Select(s => s != null)
+
+                    //Observable.Create<bool>(o => { o.OnNext(FullFeaturedSource != null); o.OnCompleted(); return Disposable.Empty; })
                 );
         #endregion
 

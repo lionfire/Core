@@ -1,6 +1,7 @@
 ﻿using DynamicData;
 using LionFire.Data.Async;
 using LionFire.Data.Async.Gets;
+using LionFire.Data.Async.Sets;
 using MorseCode.ITask;
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
@@ -30,6 +31,7 @@ public abstract partial class AsyncDynamicDataCollection<TValue>
     : ReactiveObject
     , IEnumerableGetter<TValue>
     , IObservableGetOperations<IEnumerable<TValue>>
+    , IGetterRxO<IEnumerable<TValue>>
 // Derived classes may implement read interfaces:
 //  - INotifiesChildChanged
 //  - INotifiesChildDeeplyChanged

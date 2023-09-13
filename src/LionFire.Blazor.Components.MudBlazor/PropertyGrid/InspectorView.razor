@@ -43,7 +43,7 @@
 
 <MudSimpleTable Class="PropertyGrid">
     <CascadingValue Name="InspectorVM" Value="@ViewModel">
-        <InspectorRow NodeVM="@ViewModel.NodeVM" />
+        @* <InspectorRow NodeVM="@ViewModel.NodeVM" /> *@
     </CascadingValue>
 </MudSimpleTable>
 
@@ -53,14 +53,14 @@
     protected bool DevMode { get; set; }
 
     [Parameter]
-    public object Object { get; set; }
+    public object? Object { get; set; }
 
     // [Parameter]
     // public bool ReadOnly { get; set; }
 
     protected override Task OnParametersSetAsync()
     {
-        ViewModel.Source = Object;
+        ViewModel!.Source = Object;
         // ViewModel.ReadOnly = ReadOnly;
         return base.OnParametersSetAsync();
     }

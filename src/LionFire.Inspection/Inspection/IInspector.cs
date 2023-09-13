@@ -3,6 +3,14 @@ using LionFire.Inspection.Nodes;
 
 namespace LionFire.Inspection;
 
+public static class InspectorConstants
+{
+    //public Type NullType => typeof(DBNull); 
+    public static Type NullType => typeof(NullType);
+}
+public static class NullType { }
+
+
 /// <summary>
 /// 
 /// </summary>
@@ -29,11 +37,11 @@ public interface IInspector
     /// If node.Source is a primitive, this is a one shot operation.  If it is a more complex object that changes over time, the inspector may subscribe to events on the Source and add or remove NodeGroups as appropriate.
     /// </summary>
     /// <param name="node"></param>
-    IDisposable? Attach(IInspectedNode node, InspectorContext? context = null)
+    IDisposable? Attach(IInspectedNode node)
     {
-        var source = node.Source; 
+        var source = node.Source;
 
-        Type attachmentType = BaseAttachmentType(source.GetType()); // TODO - Use attachmentType?
+        Type attachmentType = BaseAttachmentType(source?.GetType() ?? InspectorConstants.NullType); // TODO - Use attachmentType?
         return new AttachedInspector(this, node);
     }
 
@@ -41,7 +49,7 @@ public interface IInspector
 
     bool IsSourceTypeSupported(Type sourceType)
     {
-        foreach(var gi in GroupInfos.Values)
+        foreach (var gi in GroupInfos.Values)
         {
             if (gi.IsSourceTypeSupported(sourceType)) return true;
         }

@@ -1,5 +1,6 @@
 ﻿using LionFire.FlexObjects;
 using LionFire.Inspection.ViewModels;
+using LionFire.Mvvm;
 using LionFire.Overlays;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -13,14 +14,16 @@ public class InspectorContext : IFlex
     IServiceProvider? serviceProvider;
 
     public IInspectorService InspectorService { get; }
+    public IViewModelProvider? ViewModelProvider { get; }
 
     #endregion
 
     #region Lifecycle
 
-    public InspectorContext(IInspectorService objectInspectorService)
+    public InspectorContext(IInspectorService service, IViewModelProvider? viewModelProvider = null)
     {
-        InspectorService = objectInspectorService;
+        InspectorService = service;
+        ViewModelProvider = viewModelProvider ?? service.ServiceProvider.GetService<IViewModelProvider>();
     }
 
     #endregion
@@ -29,7 +32,7 @@ public class InspectorContext : IFlex
 
     public IInspectorOptions Options { get; set; }
 
-    
+
 
 
 

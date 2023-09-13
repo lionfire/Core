@@ -77,5 +77,5 @@ public abstract class GroupInfo : IKeyed<string>, INodeInfo
 
     public abstract bool IsSourceTypeSupported(Type type);
 
-    public abstract IInspectorGroup CreateFor(INode node);
+    public abstract IInspectorGroup CreateNode(INode node, IInspector? inspector = null);
 }

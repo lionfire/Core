@@ -1,11 +1,24 @@
 ﻿using LionFire.Data.Async;
 using LionFire.Data.Mvvm;
 using LionFire.ExtensionMethods;
+using LionFire.ExtensionMethods.Orleans_;
 using LionFire.Inspection.Nodes;
 using System.Collections.Concurrent;
 using System.Reflection;
 
 namespace LionFire.Inspection;
+
+public class GrainPropertiesGroup : SyncFrozenGroup
+{
+    public GrainPropertiesGroup(IInspector inspector, INode? parent, GroupInfo info, string? key = null, InspectorContext? inspectorContext = null) : base(inspector, parent, info, key, inspectorContext)
+    {
+    }
+
+    protected override IEnumerable<KeyValuePair<string, INode>> GetChildren()
+    {
+        yield break;
+    }
+}
 
 public class GrainPropertiesInfo : GroupInfo
 {
@@ -13,16 +26,14 @@ public class GrainPropertiesInfo : GroupInfo
     {
     }
 
-    public override IInspectorGroup CreateFor(INode node)
+    public override IInspectorGroup CreateNode(INode node, IInspector? inspector = null)
     {
-        throw new NotImplementedException();
+        return new GrainPropertiesGroup(inspector, node, this);
     }
 
-    public override bool IsSourceTypeSupported(Type sourceType)
-    {
-        throw new NotImplementedException();
-    }
+    public override bool IsSourceTypeSupported(Type sourceType) => sourceType.IsOrleansProxy();
 }
+
 public class OrleansInspector : IInspector
 {
     #region (static)
@@ -60,8 +71,7 @@ public class OrleansInspector : IInspector
     public IReadOnlyDictionary<string, GroupInfo> GroupInfos { get; }
 
 
-    public bool IsSupportedType(Type type)
-        => type.FullName?.StartsWith("OrleansCodeGen.") == true && type.Name.StartsWith("Proxy_");
+    public bool IsSupportedType(Type type) => type.IsOrleansProxy();
 
     //public ConcurrentDictionary<Type, CustomObjectInspectorInfo> Infos { get; } = new();
 

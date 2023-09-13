@@ -1,4 +1,5 @@
 ﻿using LionFire.Reactive;
+using LionFire.Structures;
 
 namespace LionFire.Inspection.Nodes;
 
@@ -21,17 +22,18 @@ public interface IGroupNode : IHierarchicalNode { }
 public interface INode
     : IReactiveObjectEx
     , IParented<INode> // Immutable
+    , IKeyed<string>
 {
     #region Identity
 
     [Immutable]
     INodeInfo Info { get; }
 
-    /// <summary>
-    /// A unique key for this node within its parent.  Parents are responsible for generating this via GetKey.
-    /// </summary>
-    [Immutable]
-    string Key { get; }
+    ///// <summary>
+    ///// A unique key for this node within its parent.  Parents are responsible for generating this via GetKey.
+    ///// </summary>
+    //[Immutable]
+    //string Key { get; }
 
     #region Derived
 

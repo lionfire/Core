@@ -29,7 +29,9 @@ public class PropertiesGroup : SyncFrozenGroup
 
     public PropertiesGroup(IInspector inspector, INode parent, InspectorContext? context = null) : base(inspector, parent, GroupInfo, "group:Properties", context)
     {
+        ArgumentNullException.ThrowIfNull(inspector, nameof(inspector));
         ArgumentNullException.ThrowIfNull(parent, nameof(parent));
+        context ??= parent.Context;
 
         Parent.WhenAnyValue(x => x.SourceType)
             .Subscribe(t =>
@@ -51,8 +53,6 @@ public class PropertiesGroup : SyncFrozenGroup
                       );
 
     #endregion
-
-    
 }
 
 public class PropertiesGroupInfo : GroupInfo
@@ -63,10 +63,9 @@ public class PropertiesGroupInfo : GroupInfo
     {
     }
 
-    public override IInspectorGroup CreateFor(INode node)
+    public override IInspectorGroup CreateNode(INode node, IInspector? inspector = null)
     {
-        throw new NotImplementedException();
-        //return new PropertyNodesGetter()
+        return new PropertiesGroup(inspector ?? Inspector, node);
     }
 
     public override bool IsSourceTypeSupported(Type type)

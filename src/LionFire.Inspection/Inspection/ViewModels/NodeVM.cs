@@ -158,6 +158,45 @@ public class NodeVM : ReactiveObject, IViewModel<INode>, IParented<NodeVM>, IHas
     [Reactive]
     public bool AreChildrenVisible { get; set; } // RENAME ShowChildren (or IsExpanded)
 
+    #region Individual Options
+
+    // TODO: Move this to NodeVM, and inherit down the tree
+    //public bool ShowDataMembers
+    //{
+    //    get => NodeVM?.ShowDataMembers ?? false;
+    //    set { if (NodeVM != null) NodeVM.ShowDataMembers = value; }
+    //}
+
+    public bool ShowDataMembers
+    {
+        get => InheritedOptions.VisibleItemTypes.HasFlag(InspectorNodeKind.Data);
+        set
+        {
+            if (value) LocalOptions.VisibleItemTypes |= InspectorNodeKind.Data;
+            else GetLocalOptions().VisibleItemTypes &= ~InspectorNodeKind.Data;
+        }
+    }
+    public bool ShowEvents
+    {
+        get => InheritedOptions.VisibleItemTypes.HasFlag(InspectorNodeKind.Event);
+        set
+        {
+            if (value) LocalOptions.VisibleItemTypes |= InspectorNodeKind.Event;
+            else GetLocalOptions().VisibleItemTypes &= ~InspectorNodeKind.Event;
+        }
+    }
+    public bool ShowMethods
+    {
+        get => InheritedOptions.VisibleItemTypes.HasFlag(InspectorNodeKind.Method);
+        set
+        {
+            if (value) LocalOptions.VisibleItemTypes |= InspectorNodeKind.Method;
+            else GetLocalOptions().VisibleItemTypes &= ~InspectorNodeKind.Method;
+        }
+    }
+
+    #endregion
+
     #endregion
 
     #region Flex

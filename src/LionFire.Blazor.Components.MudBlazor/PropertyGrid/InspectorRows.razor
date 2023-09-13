@@ -1,4 +1,4 @@
-﻿@inherits ReactiveUI.Blazor.ReactiveInjectableComponentBase<NodeChildrenVM>
+﻿@* @inherits ReactiveUI.Blazor.ReactiveInjectableComponentBase<NodeVM> *@
 
 @using LionFire.Data.Async.Gets;
 @using LionFire.Inspection;
@@ -6,7 +6,7 @@
 @using LionFire.UI.Components.PropertyGrid;
 @using LionFire.Inspection.ViewModels;
 
-@if (ViewModel!.ViewableChildren.Count > 0 == true)
+@* @if (ViewModel!.ViewableChildren.Count > 0 == true)
 {
     @foreach (var nodeVM in ViewModel!.ViewableChildren)
     {
@@ -17,7 +17,7 @@
 else
 {
     <div>(no children)</div>
-}
+} *@
 
     @* @foreach (var group in ViewModel!.NodeVM!.Node.Groups.Items)
     {
@@ -65,8 +65,8 @@ else
 
     protected override void OnParametersSet()
     {
-        ViewModel.InspectorVM = InspectorVM;
-        ViewModel.NodeVM = NodeVM;
+        // ViewModel.InspectorVM = InspectorVM;
+        // ViewModel.NodeVM = NodeVM;
 
         base.OnParametersSet();
     }
