@@ -16,7 +16,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="LiveSharp" />
+    <!--<PackageReference Include="LiveSharp" />-->
     <PackageReference Include="Microsoft.AspNetCore.Components.Web" />
     <PackageReference Include="MudBlazor" />
     <PackageReference Include="Radzen.Blazor" />
@@ -29,6 +29,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\LionFire.Base\LionFire.Base.csproj" />
     <ProjectReference Include="..\LionFire.Blazor.Components\LionFire.Blazor.Components.csproj" />
     <ProjectReference Include="..\LionFire.Data.Async.Abstractions\LionFire.Data.Async.Abstractions.csproj" />
     <ProjectReference Include="..\LionFire.Data.Async.Mvvm\LionFire.Data.Async.Mvvm.csproj" />

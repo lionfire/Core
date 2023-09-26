@@ -129,7 +129,7 @@ public abstract class GetterWithEvents<TKey, TValue>
 
     #region QueryValue
 
-    public IGetResult<TValue> QueryValue()
+    public IGetResult<TValue> QueryGetResult()
     {
         var currentValue = ReadCacheValue;
         return !EqualityComparer<TValue>.Default.Equals(currentValue, default) ? new NoopGetResult2<TValue>(ReadCacheValue) : (IGetResult<TValue>)NotFoundGetResult<TValue>.Instance;

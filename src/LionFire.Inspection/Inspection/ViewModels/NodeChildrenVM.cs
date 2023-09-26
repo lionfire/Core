@@ -80,14 +80,6 @@ public class NodeChildrenVM : ReactiveObject
     {
         NodeVM = nodeVM;
 
-        //viewableChildrenSubscription = children
-        //this.WhenAnyValue(x.NodeVM)
-        //    .Connect()
-        //    .Subscribe(n =>
-        //    {
-
-        //    });
-
         //viewableChildren = this.WhenAnyValue(x => x.NodeVM)
         //    .Select(nodeVM =>
         //    {
@@ -164,10 +156,9 @@ public class NodeChildrenVM : ReactiveObject
     public bool? HasChildren => hasChildren?.Value ?? false;
     private ObservableAsPropertyHelper<bool?>? hasChildren;
 
-    public IReadOnlyCollection<NodeVM> ViewableChildren => viewableChildren.Value;
+    public IReadOnlyCollection<NodeVM> ViewableChildren => viewableChildren.Value ?? EmptyNodeVMs;
     private readonly ObservableAsPropertyHelper<IReadOnlyCollection<NodeVM>> viewableChildren;
-    //private readonly IObservableCollection<NodeVM> viewableChildren = new ObservableCollectionExtended<NodeVM>();
-    //IDisposable? viewableChildrenSubscription;
+    private readonly static ReadOnlyCollection<NodeVM> EmptyNodeVMs = new ReadOnlyCollection<NodeVM>(Enumerable.Empty<NodeVM>().ToList());
 
     #endregion
 
@@ -176,7 +167,7 @@ public class NodeChildrenVM : ReactiveObject
     public void OnExpand()
     {
         // ENH - more sophisticated approach to this
-        var delay = NodeVM.InheritedOptions.GetChildrenOnExpandRetryDelay;
+        var delay = NodeVM.Options.GetChildrenOnExpandRetryDelay;
         if (delay != TimeSpan.MaxValue
           && DateTimeOffset.UtcNow - MostRecentGetChildrenTime > delay)
         {
@@ -195,7 +186,11 @@ public class NodeChildrenVM : ReactiveObject
                     {
                         await Task.WhenAll(i.Groups.Items.Select(g => g.Children.Get().AsTask())).ConfigureAwait(false);
                     }
-
+                    else if (Node is IHierarchicalNode h)// Node.Info.NodeKind | InspectorNodeKind.Group == InspectorNodeKind.Group)
+                    {
+                        // TEMP?
+                        await Task.WhenAll(h.Children.Select(kvp => kvp.Value as IStatelessGetter<object>).Where(o => o != null).Select(g => g.Get().AsTask())).ConfigureAwait(false);
+                    }
                     IsGettingChildren = false;
                 });
             }
@@ -206,7 +201,7 @@ public class NodeChildrenVM : ReactiveObject
 
     public bool IsVisible(NodeVM nodeVM)
     {
-        var o = NodeVM.InheritedOptions;
+        var o = NodeVM.Options;
 
         if (!NodeVM.ShowDataMembers && nodeVM.Node.Info.NodeKind.HasFlag(InspectorNodeKind.Data))
         {

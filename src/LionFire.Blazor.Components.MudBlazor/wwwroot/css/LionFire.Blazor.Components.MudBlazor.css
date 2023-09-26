@@ -72,3 +72,16 @@ button:not(.selected) {
 button.selected {
     border: 1px solid #ddd;
 }
+
+*:not(.no-hidden) .hidden {
+    display: none;
+}
+
+/*.no-hidden .hidden {
+    display: initial;
+}*/
+
+.Inspector tr.Group {
+    background-color: #618ed573;
+    color: #ccc;
+}

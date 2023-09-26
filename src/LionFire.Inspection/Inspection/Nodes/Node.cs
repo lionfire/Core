@@ -2,11 +2,35 @@
 using LionFire.Overlays;
 using LionFire.Structures.Keys;
 using ReactiveUI;
+using System.Diagnostics;
+using System.Diagnostics.Metrics;
+using System.Reactive.Linq;
+using System.Reactive.Subjects;
+//using static LionFire.Inspection.Nodes.AsyncValueNode<TInfo>;
 
 namespace LionFire.Inspection.Nodes;
 
-public abstract class Node<TInfo> : ReactiveObject, INode
+#if false // Am I recreating IGetter and AsyncValue?
+public interface IValueNode { }
+/// <summary>
+/// A node whose primary object of interest is a Value.
+/// This Value is typically pushed into here via some mechanism that reads from Source.
+/// </summary>
+/// <typeparam name="TInfo"></typeparam>
+public abstract class ValueNode<TInfo> : Node<TInfo>
     where TInfo : INodeInfo
+{
+
+    [Reactive]
+    public override object? Value { get; set; }
+    //public override object? Value { get => this.value.Value; set => this.value.OnNext(value); }
+    //protected BehaviorSubject<object?> value = new(null);
+}
+#endif
+
+
+public abstract class Node<TInfo> : ReactiveObject, INode
+where TInfo : INodeInfo
 {
     #region Identity
 
@@ -38,6 +62,12 @@ public abstract class Node<TInfo> : ReactiveObject, INode
     {
         UpdateSourceType(source);
     }
+    protected virtual void InitValue() => OnValueChanged(Value);
+    protected virtual void OnValueChanged(object? newValue)
+    {
+        Debug.WriteLine($"{Key} Value = {newValue}");
+        UpdateValueType(newValue);
+    }
 
     #endregion
 
@@ -67,6 +97,7 @@ public abstract class Node<TInfo> : ReactiveObject, INode
         Key = key ?? (parent as IKeyProvider<string, INode>)?.GetKey(this) ?? "";
 
         InitSource();
+
     }
 
     protected Node(INode? parent, INode sourceNode, TInfo info, string? key = null, InspectorContext? context = null)
@@ -91,7 +122,7 @@ public abstract class Node<TInfo> : ReactiveObject, INode
             this.RaiseAndSetIfChanged(ref sourceType, value);
         }
     }
-    private Type sourceType = typeof(DBNull);
+    private Type sourceType = InspectorConstants.NullType;
 
     protected virtual void UpdateSourceType(object? newSource)
     {
@@ -103,6 +134,44 @@ public abstract class Node<TInfo> : ReactiveObject, INode
             }
         }
     }
+
+    /// <summary>
+    /// When setting, you must set to a type assignable from the Source type (if Source is not null)
+    /// </summary>
+    public Type ValueType
+    {
+        get => valueType;
+        set
+        {
+            if (Value != null && !Value.GetType().IsAssignableTo(value))
+            {
+                throw new ArgumentException($"{nameof(Value)} of type '{Value.GetType().FullName}' is not assignable to specified type '{value.FullName}'");
+            }
+            this.RaiseAndSetIfChanged(ref valueType, value);
+        }
+    }
+    private Type valueType = InspectorConstants.NullType;
+    protected virtual void UpdateValueType(object? newValue)
+    {
+        if (newValue != null)
+        {
+            if (!newValue.GetType().IsAssignableTo(SourceType))
+            {
+                ValueType = newValue.GetType();
+            }
+        }
+    }
+
+    #endregion
+
+    #region State
+
+
+    /// <summary>
+    /// Derived classes may wire this up to an IGetter or AsyncValue
+    /// </summary>
+    public virtual object? Value { get => Source; set => throw new NotSupportedException(); }
+    public virtual IObservable<object?> Values => Observable.Return(Value);
 
     #endregion
 

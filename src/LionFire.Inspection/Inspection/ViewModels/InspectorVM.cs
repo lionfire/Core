@@ -50,7 +50,12 @@ public class InspectorVM : ReactiveObject
         InspectorContext = new(inspectorService, viewModelProvider);
 
         nodeVM = this.WhenAnyValue(x => x.Source)
-                     .Select(o => new NodeVM(new InspectedNode(o, InspectorContext)))
+                     .Select(o =>
+                     {
+                         var nodeVM = new NodeVM(new InspectedNode(o, InspectorContext));
+                         nodeVM.GetLocalOptions(true);
+                         return nodeVM;
+                     })
                      .ToProperty(this, nameof(this.NodeVM));
     }
 
@@ -65,7 +70,7 @@ public class InspectorVM : ReactiveObject
     [Reactive]
     public bool ShowFilterTypes { get; set; }
 
-    IInspectorOptions Options => NodeVM.InheritedOptions;
+    IInspectorOptions Options => NodeVM.Options;
     InspectorOptions LocalOptions => NodeVM.GetLocalOptions();
 
     #endregion
@@ -84,3 +89,4 @@ public class InspectorVM : ReactiveObject
     #endregion
 
 }
+

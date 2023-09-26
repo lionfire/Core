@@ -12,7 +12,7 @@ public record PreresolvedGetter<T>(T Value) : IGetter<T>
 
     public void DiscardValue() => throw new NotSupportedException();
 
-    public IGetResult<T> QueryValue() => new NoopGetResult2<T>(Value);
+    public IGetResult<T> QueryGetResult() => new NoopGetResult2<T>(Value);
     public ITask<IGetResult<T>> GetIfNeeded() => Task.FromResult<IGetResult<T>>(new NoopGetResult<T>(true, Value)).AsITask();
     ITask<IGetResult<T>> IStatelessGetter<T>.Get(CancellationToken cancellationToken) => Task.FromResult<IGetResult<T>>(new NoopGetResult2<T>(Value)).AsITask();
 

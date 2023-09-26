@@ -4,7 +4,7 @@ using System.Reactive.Linq;
 
 namespace LionFire.Inspection.Nodes;
 
-public abstract class GroupNode : Node<GroupInfo>, IHierarchicalNode
+public abstract class GroupNode : Node<GroupInfo>, IGroupNode
 {
     #region Relationships
 
@@ -14,8 +14,9 @@ public abstract class GroupNode : Node<GroupInfo>, IHierarchicalNode
 
     #region Lifecycle
 
-    public GroupNode(IInspector inspector, INode? parent, GroupInfo info, string? key = null, InspectorContext? inspectorContext = null) : base(parent, source: null, info, key, inspectorContext)
+    public GroupNode(IInspector inspector, INode parent, GroupInfo info, string? key = null, InspectorContext? inspectorContext = null) : base(parent, source: parent.Source, info, key, inspectorContext)
     {
+        ArgumentNullException.ThrowIfNull(parent);
         Inspector = inspector;
     }
 

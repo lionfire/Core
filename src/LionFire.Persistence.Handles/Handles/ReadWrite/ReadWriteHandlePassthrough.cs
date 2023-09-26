@@ -93,7 +93,7 @@ public class ReadWriteHandlePassthrough<TValue, TReference>
 
     public ITask<IGetResult<TValue>> GetIfNeeded() => ReadWriteHandle.GetIfNeeded();
     public ITask<IGetResult<TValue>> GetOrInstantiateValue() => ReadWriteHandle.GetOrInstantiateValue();
-    public IGetResult<TValue> QueryValue() => ReadWriteHandle.QueryValue();
+    public IGetResult<TValue> QueryGetResult() => ReadWriteHandle.QueryGetResult();
     public Task<ISetResult<TValue>> Set(TValue value, CancellationToken cancellationToken = default) => ReadWriteHandle.Set(value, cancellationToken);
     public ITask<IGetResult<TValue>> Get() => ReadWriteHandle.Get();
     public Task<ISetResult> Set() => ReadWriteHandle.Set();

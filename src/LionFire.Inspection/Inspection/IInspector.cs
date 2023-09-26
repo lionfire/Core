@@ -5,7 +5,6 @@ namespace LionFire.Inspection;
 
 public static class InspectorConstants
 {
-    //public Type NullType => typeof(DBNull); 
     public static Type NullType => typeof(NullType);
 }
 public static class NullType { }
@@ -39,9 +38,8 @@ public interface IInspector
     /// <param name="node"></param>
     IDisposable? Attach(IInspectedNode node)
     {
-        var source = node.Source;
-
-        Type attachmentType = BaseAttachmentType(source?.GetType() ?? InspectorConstants.NullType); // TODO - Use attachmentType?
+        //var value = node.Value;
+        //Type attachmentType = BaseAttachmentType(value?.GetType() ?? InspectorConstants.NullType); // TODO - Use attachmentType?
         return new AttachedInspector(this, node);
     }
 
@@ -51,7 +49,7 @@ public interface IInspector
     {
         foreach (var gi in GroupInfos.Values)
         {
-            if (gi.IsSourceTypeSupported(sourceType)) return true;
+            if (gi.IsTypeSupported(sourceType)) return true;
         }
         return false;
     }

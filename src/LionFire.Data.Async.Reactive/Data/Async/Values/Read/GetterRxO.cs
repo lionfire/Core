@@ -1,4 +1,5 @@
-﻿using System.Reactive.Linq;
+﻿using System.ComponentModel;
+using System.Reactive.Linq;
 using System.Reactive.Subjects;
 
 namespace LionFire.Data.Async.Gets;
@@ -33,8 +34,27 @@ public abstract class GetterRxO<TValue>
 
         // TODO REVIEW - ReactiveUI docs say for critical code, instead of ObservableAsPropertyHelper use [Reactive] and BindTo, since this doesn't get set until change
         hasValue = ((IObservableGetOperations<TValue>)this).GetResults.Select(r => r.HasValue).ToProperty(this, x => x.HasValue);
-        readCacheValue2 = ((IObservableGetOperations<TValue?>)this).GetResults.Select(r => r.Value).ToProperty(this, x => x.ReadCacheValue2);
+        readCacheValue2 = ((IObservableGetOperations<TValue?>)this).GetResults.Select(r =>
+        {
+            Debug.WriteLine(r.ToDebugString());
+            return r.Value;
+        }).ToProperty(this, x => x.ReadCacheValue2);
+
+        this.ObservableForProperty(x => x.ReadCacheValue)
+            .Subscribe(x => this.RaisePropertyChanged(nameof(Value)));
+
+#if DEBUG
+        this.PropertyChanged += OnPropertyChanged_Debug;
+#endif
     }
+
+#if DEBUG
+    private void OnPropertyChanged_Debug(object sender, PropertyChangedEventArgs e)
+    {
+        Debug.WriteLine($"GetterRxO<{typeof(TValue).Name}>.PropertyChanged: {e.PropertyName} {(e.PropertyName == "Value" ? (Value?.ToString() ?? "null") : "")}");
+
+    }
+#endif
 
     #endregion
 
@@ -45,7 +65,7 @@ public abstract class GetterRxO<TValue>
         [Blocking(Alternative = nameof(GetIfNeeded))]
         get
         {
-            if(!HasValue && GetOptions.BlockToGet)
+            if (!HasValue && GetOptions.BlockToGet)
             {
                 return GetIfNeeded().Result.Value; // BLOCKING
             }
@@ -61,12 +81,12 @@ public abstract class GetterRxO<TValue>
 
     [Reactive]
     public TValue? ReadCacheValue { get; set; }
-    public TValue ReadCacheValue2 => readCacheValue2.Value;
+    public TValue? ReadCacheValue2 => readCacheValue2.Value;
     private readonly ObservableAsPropertyHelper<TValue?> readCacheValue2;
 
     #endregion
 
-    public IGetResult<TValue> QueryValue() => new GetResult<TValue>(ReadCacheValue, HasValue);
+    public IGetResult<TValue> QueryGetResult() => new GetResult<TValue>(ReadCacheValue, HasValue);
 
     public void Discard() => DiscardValue();
     public void DiscardValue()
@@ -91,6 +111,13 @@ public abstract class GetterRxO<TValue>
     BehaviorSubject<ITask<IGetResult<TValue>>> getOperations = new(Task.FromResult((IGetResult<TValue>)NoopGetResult<TValue>.Instantiated).AsITask());
 
     SemaphoreSlim getSemaphore = new(1, 1);
+
+    protected virtual void OnGetResult(IGetResult<TValue> result)
+    {
+        Debug.WriteLine($"GetterRxO.ReadCacheValue = {ReadCacheValue2} {HasValue} (was {ReadCacheValue})");
+        ReadCacheValue = ReadCacheValue2;
+    }
+
     public virtual async ITask<IGetResult<TValue>> Get(CancellationToken cancellationToken = default)
     {
         // This semaphore is to ensure only one operation active at a time (otherwise, see: https://stackoverflow.com/questions/24049931/making-an-iobservablet-that-uses-async-await-return-completed-tasks-in-origina)
@@ -107,6 +134,11 @@ public abstract class GetterRxO<TValue>
             else
             {
                 var iTask = GetImpl(cancellationToken);
+                iTask = iTask.AsTask().ContinueWith(x =>
+                {
+                    OnGetResult(x.Result);
+                    return x.Result;
+                }).AsITask();
                 getOperations.OnNext(iTask);
                 task = iTask;
             }
@@ -137,7 +169,7 @@ public abstract class GetterRxO<TValue>
 
     public async ITask<IGetResult<TValue>> GetIfNeeded()
     {
-        if (HasValue) { return QueryValue(); }
+        if (HasValue) { return QueryGetResult(); }
         var result = await Get().ConfigureAwait(false);
         return new GetResult<TValue>(result.Value, result.IsSuccess == true);
     }

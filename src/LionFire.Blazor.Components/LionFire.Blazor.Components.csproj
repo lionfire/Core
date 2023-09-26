@@ -12,7 +12,7 @@
 
   <ItemGroup>
     <PackageReference Include="CircularBuffer" />
-    <PackageReference Include="LiveSharp" />
+    <!--<PackageReference Include="LiveSharp" />-->
 	  <PackageReference Include="MediatR" />
     <PackageReference Include="Microsoft.AspNetCore.Components.Web" />
     <PackageReference Include="Microsoft.CodeAnalysis" />

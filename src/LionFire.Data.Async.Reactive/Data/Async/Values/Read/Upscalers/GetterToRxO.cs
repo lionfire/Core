@@ -61,7 +61,7 @@ public class GetterToRxO<TValue>
 
     public ITask<IGetResult<TValue>> GetIfNeeded() => source.GetIfNeeded();
 
-    public IGetResult<TValue> QueryValue() => source.QueryValue();
+    public IGetResult<TValue> QueryGetResult() => source.QueryGetResult();
 
     public IObservable<IGetResult<TValue>> GetResults => source.GetResults;
 

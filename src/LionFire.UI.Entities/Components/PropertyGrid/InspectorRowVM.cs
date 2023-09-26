@@ -53,7 +53,7 @@ public class InspectorRowVM : ReactiveObject
     {
         try
         {
-            throw new NotImplementedException();
+            //throw new NotImplementedException();
 
             //if (MemberVM is IReflectionDataMemberVM d)
             //{

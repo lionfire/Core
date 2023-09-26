@@ -168,7 +168,7 @@ public abstract class AsyncReadOnlyDictionary<TKey, TValue>
         try
         {
             var resultTask = GetImpl(cancellationToken);
-            hasValue = true;
+            hasValue = true; // REVIEW TODO: if resultTask fails, it didn't really get the value
             getOperations.OnNext(resultTask);
 
             return await resultTask.ConfigureAwait(false);

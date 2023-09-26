@@ -15,7 +15,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="LiveSharp" />
+    <!--<PackageReference Include="LiveSharp" />-->
     <PackageReference Include="MediatR" />
   </ItemGroup>
 

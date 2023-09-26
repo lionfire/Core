@@ -2,6 +2,7 @@
 using LionFire.Data.Async;
 using LionFire.Data.Async.Gets;
 using LionFire.Data.Async.Sets;
+using LionFire.ExtensionMethods.Cloning;
 using LionFire.FlexObjects;
 using LionFire.Inspection.Nodes;
 using LionFire.Mvvm;
@@ -36,6 +37,26 @@ public class NodeVM : ReactiveObject, IViewModel<INode>, IParented<NodeVM>, IHas
             return depth;
         }
     }
+
+    /// <summary>
+    /// Depth with flattened nodes not counted
+    /// </summary>
+    public int IndentLevel
+    {
+        get
+        {
+            int indents = 0;
+            NodeVM prior = this;
+            for (var parent = Parent; parent != null; prior = parent, parent = parent.Parent)
+            {
+                if (!prior.IsFlattened)
+                {
+                    indents++;
+                }
+            }
+            return indents;
+        }
+    }
     #endregion
 
     #endregion
@@ -55,6 +76,29 @@ public class NodeVM : ReactiveObject, IViewModel<INode>, IParented<NodeVM>, IHas
     {
     }
 
+    public void ApplyShowChildrenOptions()
+    {
+        if (Depth < Options.ShowChildrenForDepthBelow
+            || (Node.Info.NodeKind & Options.ShowChildrenForNodeKinds) == Node.Info.NodeKind
+            || IsFlattened)
+        {
+            ShowChildren = true;
+        }
+    }
+
+    public bool IsFlattened
+    {
+        get
+        {
+            if ((Node.Info.NodeKind & Options.FlattenedNodeKinds) == Node.Info.NodeKind
+                && !Options.ShowAll)
+            {
+                return true;
+            }
+            return false;
+        }
+    }
+
     public NodeVM(NodeVM parent, INode node)
     {
         ArgumentNullException.ThrowIfNull(node, nameof(node));
@@ -69,7 +113,9 @@ public class NodeVM : ReactiveObject, IViewModel<INode>, IParented<NodeVM>, IHas
 
         #region Getter
 
-        Getter = node.Source as IGetter<object>;
+        // REVIEW: don't fall back to Source?  Wire this up via Node implementation?
+        Getter = node as IGetter<object> ?? node.Source as IGetter<object>;
+        AsyncValue = node as IAsyncValue<object> ?? node.Source as AsyncValue<object>;
 
         #endregion
 
@@ -105,12 +151,21 @@ public class NodeVM : ReactiveObject, IViewModel<INode>, IParented<NodeVM>, IHas
 
         #region ChildrenVM
 
+        bool mightHaveChildren = false;
         if (node is IInspectedNode i && i.Groups.Count > 0)
+        {
+            mightHaveChildren = i.Groups.Count > 0;
+        }
+        else if (node is IHierarchicalNode h)
+        {
+            mightHaveChildren = true;
+        }
+        if (mightHaveChildren)
         {
             ChildrenVM = new NodeChildrenVM(this);
 
-            // Propagate AreChildrenVisible to ChildrenVM.OnExpand()
-            this.WhenAnyValue(x => x.AreChildrenVisible)
+            // Propagate ShowChildren to ChildrenVM.OnExpand()
+            this.WhenAnyValue(x => x.ShowChildren)
                 .Subscribe(areChildrenVisible =>
                 {
                     if (areChildrenVisible)
@@ -121,6 +176,9 @@ public class NodeVM : ReactiveObject, IViewModel<INode>, IParented<NodeVM>, IHas
         }
 
         #endregion
+
+        ApplyShowChildrenOptions();
+
     }
 
     #endregion
@@ -134,9 +192,9 @@ public class NodeVM : ReactiveObject, IViewModel<INode>, IParented<NodeVM>, IHas
     /// <summary>
     /// Local options, not inherited.  See EffectiveOptions for inherited options.
     /// </summary>
-    public InspectorOptions? Options { get; set; }
-    public InspectorOptions GetLocalOptions() => Options ??= new();
-    IInspectorOptions? IHas<IInspectorOptions>.Object => Options;
+    public InspectorOptions? LocalOptions { get; set; }
+    public InspectorOptions GetLocalOptions(bool useDefaults = false) => LocalOptions ??= (useDefaults ? (InspectorOptions)InspectorOptions.DefaultDefault.Clone() : new());
+    IInspectorOptions? IHas<IInspectorOptions>.Object => LocalOptions;
 
     #endregion
 
@@ -147,7 +205,7 @@ public class NodeVM : ReactiveObject, IViewModel<INode>, IParented<NodeVM>, IHas
     /// <remarks>
     /// ENH: Inheritance on a per-property basis
     /// </remarks>
-    public IInspectorOptions InheritedOptions
+    public IInspectorOptions Options
         => OverlayX_NEW.NextNonNull<IInspectorOptions, NodeVM>(this, InspectorOptions.Default) ?? InspectorOptions.DefaultDefault;
 
     //public IInspectorOptions EffectiveOptions => OverlayX.GetEffective<IInspectorOptions, NodeVM>(vm => (vm.Options, vm.Parent), InspectorOptions.Default);
@@ -156,7 +214,7 @@ public class NodeVM : ReactiveObject, IViewModel<INode>, IParented<NodeVM>, IHas
     #endregion
 
     [Reactive]
-    public bool AreChildrenVisible { get; set; } // RENAME ShowChildren (or IsExpanded)
+    public bool ShowChildren { get; set; }
 
     #region Individual Options
 
@@ -169,28 +227,28 @@ public class NodeVM : ReactiveObject, IViewModel<INode>, IParented<NodeVM>, IHas
 
     public bool ShowDataMembers
     {
-        get => InheritedOptions.VisibleItemTypes.HasFlag(InspectorNodeKind.Data);
+        get => Options.VisibleItemTypes.HasFlag(InspectorNodeKind.Data);
         set
         {
-            if (value) LocalOptions.VisibleItemTypes |= InspectorNodeKind.Data;
+            if (value) GetLocalOptions().VisibleItemTypes |= InspectorNodeKind.Data;
             else GetLocalOptions().VisibleItemTypes &= ~InspectorNodeKind.Data;
         }
     }
     public bool ShowEvents
     {
-        get => InheritedOptions.VisibleItemTypes.HasFlag(InspectorNodeKind.Event);
+        get => Options.VisibleItemTypes.HasFlag(InspectorNodeKind.Event);
         set
         {
-            if (value) LocalOptions.VisibleItemTypes |= InspectorNodeKind.Event;
+            if (value) GetLocalOptions().VisibleItemTypes |= InspectorNodeKind.Event;
             else GetLocalOptions().VisibleItemTypes &= ~InspectorNodeKind.Event;
         }
     }
     public bool ShowMethods
     {
-        get => InheritedOptions.VisibleItemTypes.HasFlag(InspectorNodeKind.Method);
+        get => Options.VisibleItemTypes.HasFlag(InspectorNodeKind.Method);
         set
         {
-            if (value) LocalOptions.VisibleItemTypes |= InspectorNodeKind.Method;
+            if (value) GetLocalOptions().VisibleItemTypes |= InspectorNodeKind.Method;
             else GetLocalOptions().VisibleItemTypes &= ~InspectorNodeKind.Method;
         }
     }
@@ -221,7 +279,7 @@ public class NodeVM : ReactiveObject, IViewModel<INode>, IParented<NodeVM>, IHas
 
     #region ReadWrite
 
-    public AsyncValue<object>? AsyncValue { get; private set; }
+    public IAsyncValue<object>? AsyncValue { get; private set; }
 
     #endregion
 
@@ -240,29 +298,71 @@ public class NodeVM : ReactiveObject, IViewModel<INode>, IParented<NodeVM>, IHas
 
     #endregion
 
-    #endregion
+#endregion
 
-    #region Derived: Value
+#region Derived: Value
+
+#if BadIdea
+    public object? SyncValue
+    {
+        get
+        {
+
+            var asyncValue = AsyncValue;
+            if (asyncValue != null)
+            {
+                if (asyncValue.HasStagedValue) return asyncValue.StagedValue;
+                return asyncValue.GetIfNeeded().GetAwaiter().GetResult().Value;
+            }
+
+            var setter = Setter;
+            if (setter != null && setter.HasStagedValue) { return setter.StagedValue; }
+
+            var getter = Getter;
+            if (getter != null) { getter.GetIfNeeded().GetAwaiter().GetResult(); return getter.ReadCacheValue; }
+
+            return default;
+        }
+        set
+        {
+            var asyncValue = AsyncValue;
+            if (asyncValue != null) { asyncValue.Value = value; }
+            else
+            {
+                var setter = Setter;
+                if (setter != null) { setter.StagedValue = value; }
+            }
+        }
+    }
+#endif
 
     public object? Value
     {
         get
         {
             var asyncValue = AsyncValue;
-            if (asyncValue != null) { return asyncValue.ReadCacheValue; }
+            if (asyncValue != null)
+            {
+                if (asyncValue.HasStagedValue) return asyncValue.StagedValue;
+                if (asyncValue.HasValue) { return asyncValue.ReadCacheValue; }
+            }
+            var setter = Setter;
+            if (setter != null && setter.HasStagedValue) { return setter.StagedValue; }
+
             var getter = Getter;
             if (getter != null) { return getter.ReadCacheValue; }
-            if (asyncValue != null) { return asyncValue.StagedValue; }
-            var setter = Setter;
-            if (setter != null) { return setter.StagedValue; }
+
             return default;
         }
         set
         {
             var asyncValue = AsyncValue;
-            if (asyncValue != null) { asyncValue.StagedValue = value; }
-            var setter = Setter;
-            if (setter != null) { setter.StagedValue = value; }
+            if (asyncValue != null) { asyncValue.Value = value; }
+            else
+            {
+                var setter = Setter;
+                if (setter != null) { setter.StagedValue = value; }
+            }
         }
     }
 
@@ -278,9 +378,9 @@ public class NodeVM : ReactiveObject, IViewModel<INode>, IParented<NodeVM>, IHas
 
     #endregion
 
-    #endregion
+#endregion
 
-    #endregion
+#endregion
 
     #region Children
 

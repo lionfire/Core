@@ -1,3 +1,4 @@
+using LionFire.Inspection.Nodes;
 using LionFire.Inspection.ViewModels;
 using Microsoft.AspNetCore.Components;
 using System.ComponentModel.DataAnnotations;
@@ -26,18 +27,20 @@ public partial class InspectorRow
         ViewModel!.NodeVM = NodeVM;
         ViewModel.InspectorVM = InspectorVM;
 
-        Debug.WriteLine($"Depth: {NodeVM?.Depth}.  Target: {NodeVM?.Node.Source?.GetType().Name}");
+        Debug.WriteLine($"{NodeVM?.Depth} {NodeVM?.Node.Path}  Source: {NodeVM?.Node.Source?.GetType().Name}, Value: {NodeVM?.Node.Value?.GetType().Name}");
 
         ViewModel.Refresh();
 
-        if (NodeVM != null && NodeVM.Depth == 0) NodeVM.AreChildrenVisible = true; // View logic
+        if (NodeVM != null && NodeVM.Depth == 0) NodeVM.ShowChildren = true; // View logic
 
         return base.OnParametersSetAsync();
     }
 
     protected override Task OnInitializedAsync()
     {
-        this.WhenAnyValue(x => x.NodeVM!.AreChildrenVisible)
+        NodeVM.ChildrenVM?.OnExpand();
+
+        this.WhenAnyValue(x => x.NodeVM!.ShowChildren)
             .Subscribe(visible =>
             {
                 UpdateChildContent();
@@ -75,7 +78,7 @@ public partial class InspectorRow
     private void UpdateChildContent()
     {
         //CurrentChildGenerator =
-        //    ViewModel?.NodeVM?.AreChildrenVisible == true
+        //    ViewModel?.NodeVM?.ShowChildren == true
         //        && ViewModel?.NodeVM?.Children.Count > 0 == true
         //        && NodeVM.Depth < ViewModel.NodeVM.InheritedOptions.MaxDepth
         //    ? ChildGenerator
@@ -85,5 +88,32 @@ public partial class InspectorRow
     #endregion
 
     #endregion
+
+
+    public bool ShowInspectedNode { get; set; } = false;
+    public bool ShowGroups { get; set; } = false;
+    public IEnumerable<string> GetRowClasses2(NodeVM nodeVM)
+    {
+        //yield return nodeVM.Node switch
+        //{
+        //    InspectedNode => "inspected-node",
+        //    _ => "",
+        //};
+        bool hidden = false;
+        if (!ShowInspectedNode && nodeVM.Node is InspectedNode) hidden=true;
+        if (!ShowGroups && nodeVM.Node is IGroupNode) hidden = true;
+        if (NodeVM.IsFlattened)
+        {
+            hidden = true; 
+            yield return "flattened";
+        }
+        yield return NodeVM.Node.Info.NodeKind.ToString();
+        if (hidden && !NodeVM.Options.ShowAll) yield return "hidden";
+        yield return nodeVM.Node.GetType().Name;
+    }
+    public string GetRowClasses(NodeVM nodeVM)
+    {
+        return string.Join(" ", GetRowClasses2(nodeVM));
+    }
 }
 

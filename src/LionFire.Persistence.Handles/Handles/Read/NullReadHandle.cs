@@ -53,7 +53,7 @@ public class NullReadHandle<TValue> : IReadHandle<TValue>
     public ITask<IGetResult<TValue>> GetIfNeeded() => Task.FromResult<IGetResult<TValue>>(NoopGetResult2<TValue>.Instance).AsITask();
     public ITask<IGetResult<TValue>> Get(CancellationToken cancellationToken = default) => Task.FromResult<IGetResult<TValue>>(NoopRetrieveResult).AsITask();
     public Task<bool> TryResolveObject() => Task.FromResult(true);
-    public IGetResult<TValue> QueryValue() => NoopGetResult2<TValue>.Instance;
+    public IGetResult<TValue> QueryGetResult() => NoopGetResult2<TValue>.Instance;
 
     public void Discard()
     {

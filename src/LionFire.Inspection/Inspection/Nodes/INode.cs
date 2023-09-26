@@ -1,5 +1,6 @@
 ﻿using LionFire.Reactive;
 using LionFire.Structures;
+using System.Reactive.Linq;
 
 namespace LionFire.Inspection.Nodes;
 
@@ -60,6 +61,10 @@ public interface INode
     /// </summary>
     [Immutable]
     object? Source { get; }
+
+    object? Value { get; set; }
+    Type ValueType { get; }
+    IObservable<object?> Values { get; }
 
     #region Semi-derived
 

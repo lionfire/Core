@@ -1,4 +1,6 @@
 ﻿
+using DynamicData;
+
 namespace LionFire.Data.Collections;
 
 public class OneShotSyncDictionary<TKey, TValue>
@@ -21,7 +23,7 @@ public class OneShotSyncDictionary<TKey, TValue>
     #endregion
 
     #region Implementation: GetImpl
-    
+
     protected override ITask<IGetResult<IEnumerable<KeyValuePair<TKey, TValue>>>> GetImpl(CancellationToken cancellationToken = default)
     {
         var getImplCopy = getImpl;
@@ -37,6 +39,7 @@ public class OneShotSyncDictionary<TKey, TValue>
             GetResult<IEnumerable<KeyValuePair<TKey, TValue>>>.SyncSuccess(getImplCopy())
             ).AsITask();
             getImpl = null;
+            SourceCache.Edit(u => u.Clone(new ChangeSet<TValue, TKey>((result.Result.Value ?? Enumerable.Empty<KeyValuePair<TKey, TValue>>()).Select(kvp => new Change<TValue, TKey>(ChangeReason.Add, kvp.Key, kvp.Value)))));
             return result;
         }
     }

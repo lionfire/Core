@@ -54,7 +54,7 @@ public abstract class GroupInfo : IKeyed<string>, INodeInfo
 
     public string? Order { get; set; }
 
-    public Type? Type => throw new NotImplementedException();
+    public Type? Type => typeof(IEnumerable<IInspectorGroup>);
 
     #region INodeInfo
 
@@ -75,7 +75,7 @@ public abstract class GroupInfo : IKeyed<string>, INodeInfo
 
     #endregion
 
-    public abstract bool IsSourceTypeSupported(Type type);
+    public abstract bool IsTypeSupported(Type type);
 
     public abstract IInspectorGroup CreateNode(INode node, IInspector? inspector = null);
 }

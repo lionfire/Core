@@ -106,7 +106,7 @@ public abstract class AsyncMapper<TItem, TUnderlying, TUnderlyingCollection, TRe
         {
             this.parent = parent;
 
-            var query = parent.QueryValue();
+            var query = parent.QueryGetResult();
 
             getcol = query.HasValue ? new ValueTask<TUnderlyingCollection>(AsyncMapper<TItem, TUnderlying, TUnderlyingCollection, TResolvedUnderlyingCollection>.UnwrapUnderlyingCollection(query.Value)) : new ValueTask<TUnderlyingCollection>(Task.Run(async () =>
                {
@@ -187,12 +187,12 @@ public abstract class AsyncMapper<TItem, TUnderlying, TUnderlyingCollection, TRe
         }
     }
 
-    public IGetResult<TResolvedUnderlyingCollection> QueryValue()
+    public IGetResult<TResolvedUnderlyingCollection> QueryGetResult()
     {
         var ulr = UnderlyingLazilyResolves;
         if (ulr != null)
         {
-            return ulr.QueryValue();
+            return ulr.QueryGetResult();
         }
         else
         {

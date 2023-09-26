@@ -1,5 +1,6 @@
 ﻿using LionFire.Data.Async.Sets;
 using System.ComponentModel;
+using System.Numerics;
 using System.Reactive;
 using System.Reactive.Linq;
 using System.Reactive.Subjects;
@@ -8,10 +9,8 @@ namespace LionFire.Data.Async;
 
 public abstract class AsyncValue<TValue>
     : GetterRxO<TValue>
-    , IValueRxO<TValue>
-    , ISetterRxO<TValue>
+    , IAsyncValue<TValue>
     , ISetsInternal<TValue>
-    , IValue<TValue>
 {
     #region Options
 
@@ -30,9 +29,8 @@ public abstract class AsyncValue<TValue>
 
     #region Lifecycle
 
-    public AsyncValue() : base(DefaultOptions.Get)
+    public AsyncValue() : this(DefaultOptions)
     {
-        Options = DefaultOptions;
     }
 
     public AsyncValue(ValueOptions options) : base(options.Get)
@@ -53,6 +51,13 @@ public abstract class AsyncValue<TValue>
             {
                 this.RaisePropertyChanged(nameof(Value));
             });
+
+        GetOperations.Subscribe(async t =>
+        {
+            var result = await t.ConfigureAwait(false);
+            Debug.WriteLine($"AsyncValue.GetOperations.OnNext: {result.ToDebugString()}");
+            ((IReactiveObject)this).RaisePropertyChanged(nameof(Value));
+        });
     }
 
     #endregion
@@ -68,10 +73,11 @@ public abstract class AsyncValue<TValue>
         get => HasStagedValue
                 ? StagedValue
                 : (!HasValue && GetOptions.BlockToGet)
-                    ? GetIfNeeded().Result.Value // BLOCKING
+                    ? GetIfNeeded().Result.Value // BLOCKING - consider eliminating this from the API altogether
                     : ReadCacheValue;
         set => StagedValue = value;
     }
+    public TValue? QueryValue => HasStagedValue ? StagedValue : ReadCacheValue;
 
     #endregion
 

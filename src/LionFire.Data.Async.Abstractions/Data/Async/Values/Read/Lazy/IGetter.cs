@@ -17,12 +17,14 @@ public interface IGetter<out TValue>
     ITask<IGetResult<TValue>> GetIfNeeded(); // TODO: Add CancellationToken
 
     /// <summary>
-    /// REVIEW - change return type to T?  And separate this into LastResolveResult
+    /// Synchronously transforms any ReadCacheValue into a GetResult
     /// </summary>
     /// <returns></returns>
-    IGetResult<TValue> QueryValue(); // RENAME to LatestGetResult, or GetResult, make a get property
-    //IGetResult<T> GetResult { get; } // TODO
-    
+    IGetResult<TValue> QueryGetResult(); 
+
+    /// ENH idea
+    //IGetResult<TValue>? LastGetResult();
+
     TValue? ReadCacheValue { get; }
 }
 

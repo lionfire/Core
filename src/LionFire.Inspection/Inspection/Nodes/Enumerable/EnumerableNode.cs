@@ -3,7 +3,7 @@ using DynamicData.Binding;
 
 namespace LionFire.Inspection.Nodes;
 
-public class EnumerableNode : Node<NodeInfo>, INode
+public class EnumerableNode : Node<NodeInfoBase>, INode
 {
     public EnumerableNode(INode? parent, object source) : base(parent, source, info)
     {
@@ -16,11 +16,10 @@ public class EnumerableNode : Node<NodeInfo>, INode
 
 
     //public override INodeInfo Info => info;
-    private static readonly NodeInfo info = new()
+    private static readonly NodeInfo info = new(InspectorNodeKind.Enumerable)
     {
         Name = "Enumerable",
         Order = "-1",
         Flags = Enumerable.Empty<string>(),
-        NodeKind = InspectorNodeKind.Enumerable,
     };
 }

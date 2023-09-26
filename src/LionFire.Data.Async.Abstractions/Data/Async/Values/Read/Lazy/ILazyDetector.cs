@@ -26,7 +26,7 @@ public interface ILazyDetector<out T> : IGetter<T>, IDiscardable
         => this.GetIfNeeded();
 
     IGetResult<T> QueryExistsWithValue()
-        => this.QueryValue();
+        => this.QueryGetResult();
 
     #endregion
 

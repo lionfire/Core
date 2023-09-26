@@ -38,7 +38,7 @@ public abstract class GetterSlimO<TValue> : IGetter<TValue>
         throw new NotImplementedException();
     }
 
-    public IGetResult<TValue> QueryValue()
+    public IGetResult<TValue> QueryGetResult()
     {
         throw new NotImplementedException();
     }
@@ -211,7 +211,7 @@ public abstract class GetterSlim<TValue> : IGetter<TValue>
 
     #region QueryValue
 
-    public IGetResult<TValue> QueryValue()
+    public IGetResult<TValue> QueryGetResult()
     {
         var currentValue = ReadCacheValue;
         return !EqualityComparer<TValue>.Default.Equals(currentValue, default) ? new NoopGetResult2<TValue>(ReadCacheValue) : (IGetResult<TValue>)NotFoundGetResult<TValue>.Instance;

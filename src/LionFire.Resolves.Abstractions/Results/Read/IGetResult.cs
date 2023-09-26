@@ -1,4 +1,5 @@
-﻿using LionFire.Results;
+﻿using LionFire.ExtensionMethods;
+using LionFire.Results;
 
 namespace LionFire.Data;
 
@@ -13,6 +14,11 @@ public interface IGetResult<out TValue> : IGetResult, IValueResult<TValue>, IHas
 
 public static class IGetResultX
 {
+    public static string ToDebugString<TValue>(this IGetResult<TValue> getResult)
+    {
+        return $"{getResult.GetType().ToHumanReadableName()} Flags: {getResult.Flags.ToDisplayString()}, HasValue: {getResult.HasValue}, Value: {getResult.Value}";
+    }
+
     public static Exception ToException<TValue>(this IGetResult<TValue> result)
     {
         if (result.IsSuccess != true)

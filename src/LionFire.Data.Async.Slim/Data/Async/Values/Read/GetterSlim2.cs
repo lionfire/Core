@@ -87,7 +87,7 @@ public abstract class GetterSlim2<TValue> : IGetter<TValue>
         await TryGetSemaphore.WaitAsync().ConfigureAwait(false);
         try
         {
-            var lastGetResult = QueryValue();
+            var lastGetResult = QueryGetResult();
             if (lastGetResult.HasValue)
             {
                 if (lastGetResult.IsSuccess()) return lastGetResult;
@@ -119,7 +119,7 @@ public abstract class GetterSlim2<TValue> : IGetter<TValue>
     public ITask<IGetResult<TValue>>? GetState => getState;
     private ITask<IGetResult<TValue>>? getState;
 
-    public IGetResult<TValue> QueryValue() => getResult;
+    public IGetResult<TValue> QueryGetResult() => getResult;
     protected IGetResult<TValue> getResult = new NoopGetResult<TValue>();
 
     #region TODO: implement somehow

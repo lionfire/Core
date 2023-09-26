@@ -1,5 +1,6 @@
 ﻿namespace LionFire.Inspection;
 
+[Flags]
 public enum InspectorNodeKind
 {
     Unspecified = 0,

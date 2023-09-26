@@ -18,9 +18,13 @@ public class InspectorOptions : ReactiveObject, IInspectorOptions
         EditApproach = UI.EditApproach.InPlace,
         ReadRelevance = RelevanceFlags.DefaultForUser,
         WriteRelevance = RelevanceFlags.DefaultForUser,
-        MaxDepth = 4, // TEMP TODO: change to something like 15, maybe
+        MaxDepth = 50,
         GetChildrenOnExpandRetryDelay = TimeSpan.FromSeconds(2),
         VisibleItemTypes = InspectorNodeKind.Data,
+        ShowChildrenForNodeKinds = InspectorNodeKind.Group,
+        FlattenedNodeKinds = InspectorNodeKind.Group,
+        ShowChildrenForDepthBelow = 1,
+        ShowAll = false,
     };
 
     static InspectorOptions()
@@ -82,6 +86,13 @@ public class InspectorOptions : ReactiveObject, IInspectorOptions
     [Reactive]
     public InspectorNodeKind VisibleItemTypes { get; set; }
 
-    public HashSet<string>? FlattenedGroups { get; }
+    public InspectorNodeKind ShowChildrenForNodeKinds { get; set; }
+    public InspectorNodeKind FlattenedNodeKinds { get; set; }
+    public int ShowChildrenForDepthBelow { get; set; }
+
+    public bool ShowAll { get; set; }
+    public bool DiagnosticsMode { get; set; }
+    //public HashSet<string>? FlattenedGroups { get; }
+
 
 }

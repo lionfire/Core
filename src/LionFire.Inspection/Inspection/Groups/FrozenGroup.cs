@@ -18,9 +18,7 @@ namespace LionFire.Inspection.Nodes;
 public abstract class FrozenGroup : GroupNode, IInspectorGroup
 {
 
-
-
-    protected FrozenGroup(IInspector inspector, INode? parent, GroupInfo info, string? key = null, InspectorContext? inspectorContext = null) : base(inspector, parent, info, key, inspectorContext)
+    protected FrozenGroup(IInspector inspector, INode parent, GroupInfo info, string? key = null, InspectorContext? inspectorContext = null) : base(inspector, parent, info, key, inspectorContext)
     {
     }
 

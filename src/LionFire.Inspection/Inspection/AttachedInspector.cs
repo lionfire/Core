@@ -1,6 +1,7 @@
 ﻿
 using LionFire.Data.Async.Gets;
 using LionFire.Inspection.Nodes;
+using LionFire.Threading;
 using ReactiveUI;
 using System.Diagnostics;
 using System.Security.AccessControl;
@@ -29,13 +30,29 @@ public class AttachedInspector : IDisposable
         Inspector = inspector;
         Node = node;
 
-        node.WhenAnyValue(n => n.SourceType).Subscribe(OnSourceTypeChanged);
+        //node.WhenAnyValue(n => n.SourceType).Subscribe(OnSourceTypeChanged);
+        node.WhenAnyValue(n => n.ValueType).Subscribe(OnValueTypeChanged);
+        //node.WhenAnyValue(n => n.Value).Subscribe(v =>
+        //{
+        //    //if(v != null) { OnSourceTypeChanged(v.GetType()); }
+        //    //foreach (var group in node.Groups.KeyValues)
+        //    //{
+        //    //    foreach (var groupChild in group.Value.Children.ReadCacheValue ?? Enumerable.Empty<KeyValuePair<string, INode>>())
+        //    //    {
+        //    //        groupChild.Value.Disc.DiscardValue();
+        //    //    }
+        //    //    group.Value.Children.DiscardValue();
+
+        //    //    group.Value.Children.Get().AsTask().FireAndForget();// TEMP
+        //    //}
+        //});
     }
 
     public void Dispose()
     {
-        Node.Groups?.Edit(updater => {
-            foreach (var group in updater.Items.Where(g => g.Inspector == Inspector).Select(g => g.Info.Key)) { updater.Remove(group); }            
+        Node.Groups?.Edit(updater =>
+        {
+            foreach (var group in updater.Items.Where(g => g.Inspector == Inspector).Select(g => g.Info.Key)) { updater.Remove(group); }
         });
     }
 
@@ -46,17 +63,17 @@ public class AttachedInspector : IDisposable
     /// <summary>
     /// If the Source changes to a type not assignable to this type, this AttachedInspector must be disposed and a fresh attachment made.
     /// </summary>
-    public Type? AttachedSourceType { get; set; }
-    public bool IsAttached => AttachedSourceType != null;
+    public Type? AttachedValueType { get; set; }
+    public bool IsAttached => AttachedValueType != null;
 
     #endregion
 
-    private void OnSourceTypeChanged(Type sourceType)
+    private void OnValueTypeChanged(Type valueType)
     {
-        if (IsAttached)
-        {
-            if (sourceType.IsAssignableTo(AttachedSourceType)) return;
-        }
+        //if (IsAttached)
+        //{
+        //    if (valueType.IsAssignableTo(AttachedValueType)) return;
+        //}
 
         // Add new groups from this Inspector
         Node.Groups.Edit(updater =>
@@ -67,10 +84,10 @@ public class AttachedInspector : IDisposable
 
             foreach (var groupInfo in Inspector.GroupInfos.Values)
             {
-                if (groupInfo.IsSourceTypeSupported(sourceType))
+                if (valueType is not NullType && groupInfo.IsTypeSupported(valueType))
                 {
                     if (oldGroups != null && oldGroups.Remove(groupInfo.Key)) continue; // Keep existing group
-                    
+
                     var group = groupInfo.CreateNode(Node, Inspector);
                     Debug.Assert(group.Info.Key == groupInfo.Key);
                     newGroups.Add(group);
@@ -89,6 +106,6 @@ public class AttachedInspector : IDisposable
                 updater.AddOrUpdate(group);
             }
         });
-        AttachedSourceType = sourceType;
+        AttachedValueType = valueType;
     }
 }

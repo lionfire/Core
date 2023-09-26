@@ -14,12 +14,13 @@ public class SummaryNode : Node<INodeInfo>, INode
 }
 
 
-public class SummaryNodeInfo : NodeInfo
+public class SummaryNodeInfo : NodeInfoBase
 {
     public SummaryNodeInfo()
     {
-        NodeKind = InspectorNodeKind.Summary;
     }
+
+    public override InspectorNodeKind NodeKind => InspectorNodeKind.Summary;
 
     //#region Dependencies
 

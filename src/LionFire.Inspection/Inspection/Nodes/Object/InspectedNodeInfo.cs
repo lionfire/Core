@@ -1,6 +1,6 @@
 ﻿namespace LionFire.Inspection.Nodes;
 
-public class InspectedNodeInfo : NodeInfo
+public class InspectedNodeInfo : NodeInfoBase
 {
     public static InspectedNodeInfo Default { get; } = new InspectedNodeInfo();
 
@@ -8,9 +8,11 @@ public class InspectedNodeInfo : NodeInfo
 
     public InspectedNodeInfo()
     {
-        Name = "(custom object)";
-        NodeKind = InspectorNodeKind.Object;
+        Name = "(inspected object)";
+        Type = typeof(object);
     }
 
     #endregion
+
+    public override InspectorNodeKind NodeKind => InspectorNodeKind.Object;
 }

@@ -42,11 +42,11 @@ using LionFire.Data.Async.Sets;
 
 namespace LionFire.Orleans_.Mvvm;
 
-//public class NotifyingGrainListCache<TValue, TCollection> : GrainListCache<TValue, TCollection>
+//public class NotifyingGrainListCache<TInfo, TCollection> : GrainListCache<TInfo, TCollection>
 //    , System.IAsyncObservable<NotifyCollectionChangedEventArgs<ChangeSet<GrainId>>>
 //    , LionFire.Reactive.IAsyncObservableForSyncObservers<ChangeSet<GrainId>>
-//    where TCollection : IAsyncList<TValue>, IAsyncCreates<TValue>, IGrain, IEnumerableAsync<KeyValuePair<string, TValue>>
-//    where TValue : class, IGrain
+//    where TCollection : IAsyncList<TInfo>, IAsyncCreates<TInfo>, IGrain, IEnumerableAsync<KeyValuePair<string, TInfo>>
+//    where TInfo : class, IGrain
 //{
 //    public IClusterClient ClusterClient { get; }
 
@@ -82,7 +82,7 @@ public class SubscriptionOptions<T>
 public class GrainCollectionCache<TValue> // RENAME: GrainCollectionCache
     : AsyncKeyedCollection<string, TValue>
     , IObservableCreatesAsync<string, TValue>
-    //, IObservableCreatesAsync<TValue>
+    //, IObservableCreatesAsync<TInfo>
     , IDisposable
     , IAsyncDisposable
     , ISubscribesAsync

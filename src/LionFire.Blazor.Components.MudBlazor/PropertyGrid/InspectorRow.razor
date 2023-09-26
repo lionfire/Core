@@ -6,7 +6,22 @@
 @using LionFire.Inspection.ViewModels;
 @using ReactiveUI;
 
-@if (ViewModel?.HasAnythingToShow == true)
+@* <tr class="dev">
+    <td></td>
+    <td>
+        @ViewModel.NodeVM.Node.Source
+    </td>
+</tr> *@
+@if (false && !ViewModel!.HasAnythingToShow)
+{
+    <tr>
+        <td></td>
+        <td>
+            <span>(nothing to show: @ViewModel.NodeVM.Node?.ToString())</span>
+        </td>
+    </tr>
+}
+else
 {
     @if (ViewModel.NodeVM == null)
     {
@@ -24,27 +39,28 @@
     }
     else
     {
-        <tr>
+        <tr class="@(GetRowClasses(ViewModel.NodeVM))">
             @* <td class="dev">R relevant: @ViewModel.InspectorVM.ReadRelevance.HasFlag(MemberVM.MemberInfoVM.ReadRelevance)</td>
     <td class="dev">W relevant: @ViewModel.InspectorVM.WriteRelevance.HasFlag(MemberVM.MemberInfoVM.WriteRelevance)</td>
     <td class="dev">RR: @MemberVM.MemberInfoVM.ReadRelevance</td>
     <td class="dev">WR: @MemberVM.MemberInfoVM.WriteRelevance</td> *@
 
             <td class="Expander">
-                @if (ViewModel.NodeVM.HasOrMightHaveChildren)
+                @if (true || ViewModel.NodeVM.HasOrMightHaveChildren)
                 {
-                    <MudCheckBox @bind-Checked="@ViewModel.NodeVM.AreChildrenVisible"
+                    <MudCheckBox @bind-Checked="@ViewModel.NodeVM.ShowChildren"
                                  Dense=true
-                                 Size="@Size.Small"
+                                 Size="@Size.Medium"
                                  Color="Color.Secondary"
                                  CheckedIcon="@(ViewModel.NodeVM.HasOrMightHaveChildren == true ? Icons.Material.Filled.ArrowDownward : Icons.Material.Outlined.ArrowDownward)"
-                                 UncheckedIcon="@(ViewModel.NodeVM.HasOrMightHaveChildren == true ? Icons.Material.Filled.ArrowRight : Icons.Material.Outlined.ArrowRight)">
+                                 UncheckedIcon="@(ViewModel.NodeVM.HasOrMightHaveChildren == true ? Icons.Material.Filled.ArrowRightAlt : Icons.Material.Outlined.ArrowRightAlt)"
+                                 title="@($"{ViewModel!.NodeVM.ChildrenVM?.ViewableChildren.Count} of {ViewModel!.NodeVM.ChildrenVM?.Children.Count}")">
                     </MudCheckBox>
                 }
             </td>
 
             <td class="Name">
-                <div style="@($"margin-left: {NodeVM!.Depth * 10}px")">
+                <div style="@($"margin-left: {NodeVM!.IndentLevel * 10}px")">
                     @ViewModel.NodeVM.Node.Info.Name
                 </div>
             </td>
@@ -53,66 +69,71 @@
                 <DataMemberEditor NodeVM="@ViewModel.NodeVM" />
             </td>
 
-            <td class="FieldType">
-                <span title="@ViewModel.NodeVM!.CurrentValueType">
-                    @ViewModel!.NodeVM!.Node.Info.Type?.Name
-                </span>
-            </td>
-
-            <td class="ValueType">
-
-                @if (ViewModel!.NodeVM!.ValueTypeDiffersFromMemberType)
-                {
-                    <span title="@ViewModel.NodeVM!.CurrentValueType">
-                        @ViewModel!.NodeVM!.CurrentValueType?.Name
-                    </span>
-                }
-            </td>
-
-            @if (InspectorVM!.DevMode)
+            @if (NodeVM.Options.DiagnosticsMode)
             {
-                <td class="dev">@NodeVM.Node.Info.NodeKind.ToString().Substring(0, 1)</td>
-                <td class="dev">@NodeVM.GetType().Name.Substring(0, 1)</td>
+                <td class="FieldType">
+                    <span title="@ViewModel!.NodeVM!.Node.Info.Type.FullName">
+                        @ViewModel!.NodeVM!.Node.Info.Type?.ToHumanReadableName()
+                    </span>
+                </td>
+
+                <td class="ValueType">
+
+                    @if (ViewModel!.NodeVM!.ValueTypeDiffersFromMemberType)
+                    {
+                        <span title="@ViewModel.NodeVM!.CurrentValueType">
+                            @ViewModel!.NodeVM!.CurrentValueType.ToHumanReadableName()
+                        </span>
+                    }
+                </td>
+
+                <td class="dev" title="@NodeVM.Node.Info.NodeKind.ToString()">@NodeVM.Node.Info.NodeKind.ToString().Substring(0, 4)</td>
+                <td class="dev" title="@NodeVM.Node.GetType().Name">@NodeVM.Node.GetType().Name.Substring(0, 6)</td>
                 <td class="dev">@NodeVM.Node.Info.TypeFlags.AggregateOrDefault((x,y)=>$"{x}, {y}")</td>
-                <td class="dev Namespace">@NodeVM!.Node.Info.Type?.Namespace</td>
-                <td class="dev">@TypeNameUtils.DisplayTypeName(NodeVM!.Node!.Info.Type)</td>
 
                 @* <td>@(ChildMemberVMs?.Any() == true ? ChildMemberVMs.Select(v => v.MemberInfoVM.Name).Aggregate((x, y) => $"{x}, {y}") : "")</td> *@
                 @* <td>@ViewModel.IsExpanded</td> *@
-                <td class="dev">
-                    @(
-                        NodeVM.Node.Info.CanRead() ? "R" : ""
-                        )@(
-                       NodeVM.Node.Info.CanWrite() ? "W" : ""
-                       )
-                </td>
-                <td class="dev">@NodeVM.Depth</td>
-                <td class="dev">@NodeVM.Node.Path</td>
+                <td class="dev">@NodeVM.Node.Info?.GetRWCodes()</td>
+                <td class="dev" title="Depth">@NodeVM.Depth</td>
+                <td class="dev" title="Path">@NodeVM.Node.Path</td>
+                <td class="dev" title="Child count">@ViewModel!.NodeVM.ChildrenVM?.Children.Count</td>
+                <td class="dev" title="Viewable child count">@ViewModel!.NodeVM.ChildrenVM?.ViewableChildren.Count</td>
+                <td class="dev" title="Source Type">@ViewModel!.NodeVM.Node.Source?.GetType().Name</td>
+                <td class="dev" title="Value Type">@ViewModel!.NodeVM.Node.Value?.GetType().Name</td>
+                @* <td class="dev" title="Key">@(ViewModel!.NodeVM.Node?.Key ?? "(null)")</td> *@
             }
         </tr>
 
-        @* @if (ViewModel.NodeVM.AreChildrenVisible && ViewModel!.NodeVM!.HasOrMightHaveChildren)
+        @if (ViewModel.NodeVM.ShowChildren)
+        {
+            @* @if (ViewModel.NodeVM.AreChildrenVisible && ViewModel!.NodeVM!.HasOrMightHaveChildren)
         {
             @CurrentChildGenerator
         } *@
-        @if (ViewModel!.NodeVM?.ChildrenVM?.ViewableChildren != null
-                && ViewModel.NodeVM.AreChildrenVisible
-                && ViewModel!.NodeVM!.HasOrMightHaveChildren
-                && ViewModel!.NodeVM.ChildrenVM.ViewableChildren.Count > 0 == true
-                && ViewModel.NodeVM.Depth < ViewModel.NodeVM.InheritedOptions.MaxDepth
-            )
-        {
-            @foreach (var nodeVM in ViewModel!.NodeVM.ChildrenVM.ViewableChildren)
+            @if (ViewModel!.NodeVM?.ChildrenVM?.ViewableChildren != null
+                                        && ViewModel!.NodeVM!.HasOrMightHaveChildren
+                                        && ViewModel!.NodeVM.ChildrenVM.ViewableChildren.Count > 0 == true
+                                        && ViewModel.NodeVM.Depth < ViewModel.NodeVM.Options.MaxDepth
+                                    )
             {
-                @* <InspectorRow NodeVM="@nodeVM" /> *@
+                @foreach (var nodeVM in ViewModel!.NodeVM.ChildrenVM.ViewableChildren)
+                {
+                    <InspectorRow NodeVM="@nodeVM" />
+                }
             }
-        }
-        else
-        {
-            <div>(no children)</div>
+            else if(!NodeVM.IsFlattened)
+            {
+                <tr>
+                    <td></td>
+                    <td>
+                        <div>(no children)</div>
+                    </td>
+                </tr>
+            }
         }
     }
 }
+
 
 @* <MudExpansionPanels>
     <MudExpansionPanel Text="Members" >

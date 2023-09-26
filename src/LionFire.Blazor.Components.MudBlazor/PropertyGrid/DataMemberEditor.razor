@@ -1,6 +1,7 @@
 @inject MudBlazorViewTypeProvider ViewTypeProvider
 
 @using LionFire.Inspection.ViewModels;
+@using System.ComponentModel;
 
 @implements IEditorParameters
 
@@ -14,17 +15,23 @@
 
 @if (!NodeVM.CanWrite)
 {
-    @NodeVM.DisplayValue
+    @* <div>
+            test
+    </div> *@
+    <div class="ReadOnly Value">
+        @NodeVM.Value
+    </div>
 }
 else if (NodeVM.AsyncValue != null)
 {
+    <div>AsyncValue</div>
     if (NodeVM.Node.Info.Type == typeof(bool))
     {
         <MudSwitch @bind-Checked="NodeVM.AsyncValue.Value" />
     }
     else if (NodeVM.Node.Info.Type == typeof(string))
     {
-        <MudTextField T=Object @bind-Value="NodeVM.Value" />
+        <MudTextField T=Object @bind-Value="NodeVM.AsyncValue.Value" />
     }
     else if (NodeVM.Node.Info.Type == typeof(int))
     {
@@ -38,13 +45,14 @@ else if (NodeVM.AsyncValue != null)
 }
 else if (NodeVM.Getter != null)
 {
+    <div>Getter</div>
     if (NodeVM.Node.Info.Type == typeof(bool))
     {
         <MudSwitch T="bool" @Checked="NodeVM.Getter.Value" />
     }
     else if (NodeVM.Node.Info.Type == typeof(string))
     {
-        <MudTextField T=Object @Value="NodeVM.Value"  />
+        <MudTextField T=Object @Value="NodeVM.Value" />
     }
     else if (NodeVM.Node.Info.Type == typeof(int))
     {
@@ -52,7 +60,7 @@ else if (NodeVM.Getter != null)
     }
     else
     {
-        <DynamicComponent Type="@EditorType" Parameters="@Parameters" ></DynamicComponent>
+        <DynamicComponent Type="@EditorType" Parameters="@Parameters"></DynamicComponent>
         @* @ViewModel.DisplayValue *@
     }
 }
@@ -67,10 +75,23 @@ else if (NodeVM.Getter != null)
 
     public Type FallbackEditorType => typeof(FallbackEditor);
 
-    public string Value { get; set; } = "abc";
+    // public string Value { get=> NodeVM.Value; set => NodeVM.Value = value; }
 
 
     public IDictionary<string, object?>? Parameters => ComponentParameters<IEditorParameters>.ToParameterDictionary(this);
 
-    
+
+    protected override async Task OnParametersSetAsync()
+    {
+        if (NodeVM.AsyncValue != null) { await NodeVM.AsyncValue.Get(); } // TEMP: await
+        else if (NodeVM.Getter != null) { await NodeVM.Getter.Get(); } // TEMP: await
+
+        base.OnParametersSetAsync();
+        NodeVM.PropertyChanged += OnNodeVMPropertyChanged;
+    }
+
+    private void OnNodeVMPropertyChanged(object? sender, PropertyChangedEventArgs e)
+    {
+        InvokeAsync(StateHasChanged).FireAndForget();
+    }
 }

@@ -110,7 +110,7 @@ public abstract partial class AsyncDynamicDataCollection<TValue>
     /// Get HasValue and ReadCacheValue (or Value) combined in one IGetResult
     /// </summary>
     /// <returns></returns>
-    public virtual IGetResult<IEnumerable<TValue>> QueryValue() => new NoopGetResult<IEnumerable<TValue>>(HasValue, ReadCacheValue);
+    public virtual IGetResult<IEnumerable<TValue>> QueryGetResult() => new NoopGetResult<IEnumerable<TValue>>(HasValue, ReadCacheValue);
 
     #endregion
 

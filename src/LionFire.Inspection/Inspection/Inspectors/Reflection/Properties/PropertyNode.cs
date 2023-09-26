@@ -5,6 +5,8 @@ using LionFire.IO;
 using LionFire.Threading;
 using MorseCode.ITask;
 using ReactiveUI;
+using System.ComponentModel;
+using System.Diagnostics.Tracing;
 using System.Reflection;
 
 namespace LionFire.Inspection.Nodes;
@@ -14,9 +16,16 @@ public interface IHasGetterRxO<T>
     IGetterRxO<T> Getter { get; }
 }
 
-public class PropertyNodeInfo : NodeInfo
+public class PropertyNodeInfo : NodeInfoBase
 {
+    public PropertyNodeInfo(PropertyInfo propertyInfo)
+    {
+        PropertyInfo = propertyInfo;
+    }
+
     public PropertyInfo PropertyInfo { get; set; }
+
+    public override InspectorNodeKind NodeKind => InspectorNodeKind.Data;
 }
 
 public class PropertyNode : Node<PropertyNodeInfo>
@@ -26,9 +35,9 @@ public class PropertyNode : Node<PropertyNodeInfo>
 
     #region Lifecycle
 
-    public PropertyNode(INode parent, INode sourceNode, PropertyInfo propertyInfo) : base(parent, sourceNode, new PropertyNodeInfo { PropertyInfo = propertyInfo })
+    public PropertyNode(INode parent, object source, PropertyInfo propertyInfo) : base(parent, source: source, new PropertyNodeInfo(propertyInfo))
     {
-        getter = new PropertyNodeGetter(sourceNode, propertyInfo);
+        getter = new PropertyNodeGetter(source, propertyInfo);
         //PropertyGroupInfo = propertyGroupInfo;
     }
 
@@ -74,38 +83,69 @@ public class PropertyNode : Node<PropertyNodeInfo>
 
     #region Internal Classes
 
-    public class PropertyNodeGetter : GetterRxO<object>
+    public class PropertyNodeGetter : GetterRxO<object?>//, IObserver<object?>
     {
-        public INode SourceNode { get; }
-        public object Source => SourceNode?.Source;
+        public object? Source { get; }
 
         public PropertyInfo PropertyInfo { get; }
 
-        public PropertyNodeGetter(INode sourceNode, PropertyInfo propertyInfo)
+        public PropertyNodeGetter(object source, PropertyInfo propertyInfo)
         {
-            SourceNode = sourceNode;
+            Source = source;
+
             PropertyInfo = propertyInfo;
 
-            this.SourceNode.WhenAnyValue(n => n.Source) // TODO: skip immediate evaluation
-                .Subscribe(OnSourceChanged);
+            //this.SourceNode.WhenAnyValue(n => n.Source) // TODO: skip immediate evaluation
+            //    .Subscribe(OnObjectChanged);
 
-        }
+            //SourceNode.Values.Subscribe(this);
 
-        private void OnSourceChanged(object? obj)
-        {
-            DiscardValue();
-
-            if (GetOptions.AutoGet)
+            // TODO: Subscribe to INotifyPropertyChanged
+            if (source is INotifyPropertyChanged inpc)
             {
-                Get().AsTask().FireAndForget();
+                inpc.PropertyChanged += OnPropertyChanged;
             }
         }
 
-        protected override ITask<IGetResult<object>> GetImpl(CancellationToken cancellationToken = default)
+        public bool SubscribeToSourceChanges { get; set; } = true; // TODO MOVE: to GetterOptions?
+        private void OnPropertyChanged(object? sender, PropertyChangedEventArgs e)
+        {
+            if (e.PropertyName == PropertyInfo.Name && SubscribeToSourceChanges)
+            {
+                this.Get().AsTask().FireAndForget();
+            }
+        }
+
+        protected override ITask<IGetResult<object?>> GetImpl(CancellationToken cancellationToken = default)
         {
             var result = PropertyInfo.GetValue(Source);
-            return Task.FromResult<IGetResult<object>>(new GetResult<object>(result)).AsITask();
+            return Task.FromResult<IGetResult<object?>>(new GetResult<object?>(result) { Flags = TransferResultFlags.RanSynchronously | TransferResultFlags.Success }).AsITask();
         }
+
+        #region IObserver: Values
+
+        //public void OnCompleted()
+        //{
+        //    throw new NotImplementedException(); // TODO: Noop, just want to see this get hit
+        //}
+
+        //public void OnError(Exception error)
+        //{
+        //    throw new NotImplementedException();
+        //}
+
+        //public void OnNext(object? obj)
+        //{
+        //    DiscardValue();
+
+        //    if (GetOptions.AutoGet)
+        //    {
+        //        Get().AsTask().FireAndForget();
+        //    }
+        //}
+
+        #endregion
+
     }
     #endregion
 }

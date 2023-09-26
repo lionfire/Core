@@ -186,7 +186,7 @@ public class ReadWriteHandlePairBase<TReference, TValue, TReadHandle, TWriteHand
         => _CloneGetOrQueryReadHandleValueToWriteHandleValue2(await IReadHandleBaseX.GetIfNeeded(ReadHandle).ConfigureAwait(false), propagateNoValue);
 
     public (TValue clonedValue, bool clonedSomething) CloneQueryReadHandleValueToWriteHandleValue(bool propagateNoValue = false)
-        => _CloneGetOrQueryReadHandleValueToWriteHandleValue2(!HasReadHandle ? null : ReadHandle.QueryValue(), propagateNoValue);
+        => _CloneGetOrQueryReadHandleValueToWriteHandleValue2(!HasReadHandle ? null : ReadHandle.QueryGetResult(), propagateNoValue);
 
     private (TValue clonedValue, bool clonedSomething) _CloneGetOrQueryReadHandleValueToWriteHandleValue2(IGetResult<TValue> getOrQueryResult, bool propagateNoValue)
     {

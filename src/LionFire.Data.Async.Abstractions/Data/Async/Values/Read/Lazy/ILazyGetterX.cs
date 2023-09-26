@@ -44,7 +44,7 @@ public static class ILazyGetterX
     public static T QueryNonDefaultValue<T>(this IGetter<T> lazilyResolves)
         where T : class
     {
-        var result =  lazilyResolves.QueryValue().Value;
+        var result =  lazilyResolves.QueryGetResult().Value;
         if (result == default(T)) throw new Exception("Failed to query non-default value.");
         return result;
     }
@@ -81,7 +81,7 @@ public static class ILazyGetterX
     {
         var genericInterface = lazilyResolves.GetLazilyGetsValueType();
         return (await ((ITask<IGetResult<object>>)
-            genericInterface.GetMethod(nameof(IGetter<object>.QueryValue)).Invoke(lazilyResolves, null)).ConfigureAwait(false));
+            genericInterface.GetMethod(nameof(IGetter<object>.QueryGetResult)).Invoke(lazilyResolves, null)).ConfigureAwait(false));
     }
 
     #endregion

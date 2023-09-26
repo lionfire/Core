@@ -42,7 +42,7 @@ public class StatelessGetterToRxO<TValue>
         throw new NotImplementedException();
     }
 
-    public IGetResult<TValue> QueryValue()
+    public IGetResult<TValue> QueryGetResult()
     {
         throw new NotImplementedException();
     }

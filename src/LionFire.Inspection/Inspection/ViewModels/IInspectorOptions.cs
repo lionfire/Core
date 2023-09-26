@@ -25,5 +25,11 @@ public interface IInspectorOptions : IFlex//, IParented<InspectorOptions>
 
     InspectorNodeKind VisibleItemTypes { get; }
 
-    HashSet<string>? FlattenedGroups { get; }
+    //HashSet<string>? FlattenedGroups { get; }
+    public InspectorNodeKind FlattenedNodeKinds { get; set; }
+    InspectorNodeKind ShowChildrenForNodeKinds { get; set; }
+    int ShowChildrenForDepthBelow { get; set; }
+    bool ShowAll { get; set; }
+    bool DiagnosticsMode { get; set; }
+    
 }

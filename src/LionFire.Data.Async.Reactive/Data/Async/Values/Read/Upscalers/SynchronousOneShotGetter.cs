@@ -63,6 +63,6 @@ public abstract class SynchronousOneShotGetter<TValue> : IGetter<TValue>
     public ITask<IGetResult<TValue>> GetIfNeeded() 
         => Task.FromResult<IGetResult<TValue>>(new GetResult<TValue>(ReadCacheValue, true)).AsITask();
 
-    public IGetResult<TValue> QueryValue()
+    public IGetResult<TValue> QueryGetResult()
         => new GetResult<TValue>(readCacheValue, HasValue);
 }
