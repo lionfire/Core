@@ -16,7 +16,7 @@ public static class OrleansStaticInitialization
     public static void InitOrleans()
     {
         StaticKeySelector<IAddressable, GrainId>.Selector = a => a.GetGrainId();
-        StaticKeySelector<IAddressable, string>.Selector = a => a.GetGrainId().Key.ToString();
+        StaticKeySelector<IAddressable, string>.Selector = a => a.GetGrainId().Key.ToString()!;
     }
 }
 

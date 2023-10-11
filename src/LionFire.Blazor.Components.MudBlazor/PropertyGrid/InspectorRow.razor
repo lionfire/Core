@@ -1,10 +1,5 @@
 ﻿@inherits ReactiveUI.Blazor.ReactiveInjectableComponentBase<InspectorRowVM>
 
-@using LionFire.Inspection;
-@using LionFire.Reflection;
-@using LionFire.UI.Components.PropertyGrid;
-@using LionFire.Inspection.ViewModels;
-@using ReactiveUI;
 
 @* <tr class="dev">
     <td></td>
@@ -46,7 +41,7 @@ else
     <td class="dev">WR: @MemberVM.MemberInfoVM.WriteRelevance</td> *@
 
             <td class="Expander">
-                @if (true || ViewModel.NodeVM.HasOrMightHaveChildren)
+                @if (ViewModel.NodeVM.HasOrMightHaveChildren)
                 {
                     <MudCheckBox @bind-Checked="@ViewModel.NodeVM.ShowChildren"
                                  Dense=true
@@ -54,7 +49,7 @@ else
                                  Color="Color.Secondary"
                                  CheckedIcon="@(ViewModel.NodeVM.HasOrMightHaveChildren == true ? Icons.Material.Filled.ArrowDownward : Icons.Material.Outlined.ArrowDownward)"
                                  UncheckedIcon="@(ViewModel.NodeVM.HasOrMightHaveChildren == true ? Icons.Material.Filled.ArrowRightAlt : Icons.Material.Outlined.ArrowRightAlt)"
-                                 title="@($"{ViewModel!.NodeVM.ChildrenVM?.ViewableChildren.Count} of {ViewModel!.NodeVM.ChildrenVM?.Children.Count}")">
+                                 title="@($"{ViewModel!.NodeVM.ChildrenVM?.ViewableChildren.Count} of {ViewModel!.NodeVM.ChildrenVM?.Children?.Count}")">
                     </MudCheckBox>
                 }
             </td>
@@ -66,23 +61,60 @@ else
             </td>
 
             <td class="@("Value " + ViewModel.ValueClass)">
-                <DataMemberEditor NodeVM="@ViewModel.NodeVM" />
+                <InspectorValueCell NodeVM="@ViewModel.NodeVM" />
+            </td>
+
+            <td>
+                @if (ViewModel.NodeVM.ValueState != null && ViewModel.NodeVM.ValueState.StateFlags.HasFlag(ValueStateFlags.HasStagedValue))
+                {
+                    <MudButtonGroup OverrideStyles="false">
+
+                        <MudButton 
+                            Color="@Color.Success" 
+                        OnClick="@(() => ViewModel.NodeVM.ValueState.Set())"
+                        Variant="@Variant.Filled"
+                        >
+                            @if (ViewModel.NodeVM.ValueState != null && ViewModel.NodeVM.ValueState.StateFlags.HasFlag(ValueStateFlags.IsSetting))
+                            {
+                                <MudProgressCircular Color="Color.Default" Indeterminate="true" />
+                            }
+                            else
+                            {
+                                <span>Save</span>
+                            }
+                        </MudButton>
+                        <MudButton Color="@Color.Error" OnClick="@(() => ViewModel.NodeVM.ValueState.DiscardStagedValue())">Discard</MudButton>
+                    </MudButtonGroup>
+                }
             </td>
 
             @if (NodeVM.Options.DiagnosticsMode)
             {
                 <td class="FieldType">
-                    <span title="@ViewModel!.NodeVM!.Node.Info.Type.FullName">
+                    <span title="@ViewModel!.NodeVM!.Node.Info.Type?.FullName">
                         @ViewModel!.NodeVM!.Node.Info.Type?.ToHumanReadableName()
                     </span>
                 </td>
 
                 <td class="ValueType">
 
-                    @if (ViewModel!.NodeVM!.ValueTypeDiffersFromMemberType)
+                    @if (true || ViewModel!.NodeVM!.ValueTypeDiffersFromMemberType)
                     {
-                        <span title="@ViewModel.NodeVM!.CurrentValueType">
-                            @ViewModel!.NodeVM!.CurrentValueType.ToHumanReadableName()
+                        <span title="@ViewModel!.NodeVM!.Node.Value?.GetType().FullName">
+                            @* title="@ViewModel.NodeVM!.CurrentValueType" *@
+                            @* @ViewModel!.NodeVM!.CurrentValueType.ToHumanReadableName() *@
+                            @(ViewModel!.NodeVM!.Node.Value?.GetType().ToHumanReadableName() ?? "(null)")
+                        </span>
+                        <MudIconButton Icon="@Icons.Material.Filled.Refresh" @onclick=@Refresh Size="@Size.Small"></MudIconButton>
+                    }
+                </td>
+                <td class="SourceType">
+                    @if (true || ViewModel!.NodeVM!.Node.Source == null || ViewModel!.NodeVM!.Node.Value?.GetType() != ViewModel!.NodeVM!.Node.Source?.GetType())
+                    {
+                        <span title="@ViewModel!.NodeVM!.Node.Source?.GetType().FullName">
+                            @* title="@ViewModel.NodeVM!.CurrentValueType" *@
+                            @* @ViewModel!.NodeVM!.CurrentValueType.ToHumanReadableName() *@
+                            @(ViewModel!.NodeVM!.Node.Source?.GetType().ToHumanReadableName() ?? "(null)")
                         </span>
                     }
                 </td>
@@ -98,8 +130,6 @@ else
                 <td class="dev" title="Path">@NodeVM.Node.Path</td>
                 <td class="dev" title="Child count">@ViewModel!.NodeVM.ChildrenVM?.Children.Count</td>
                 <td class="dev" title="Viewable child count">@ViewModel!.NodeVM.ChildrenVM?.ViewableChildren.Count</td>
-                <td class="dev" title="Source Type">@ViewModel!.NodeVM.Node.Source?.GetType().Name</td>
-                <td class="dev" title="Value Type">@ViewModel!.NodeVM.Node.Value?.GetType().Name</td>
                 @* <td class="dev" title="Key">@(ViewModel!.NodeVM.Node?.Key ?? "(null)")</td> *@
             }
         </tr>
@@ -111,17 +141,17 @@ else
             @CurrentChildGenerator
         } *@
             @if (ViewModel!.NodeVM?.ChildrenVM?.ViewableChildren != null
-                                        && ViewModel!.NodeVM!.HasOrMightHaveChildren
-                                        && ViewModel!.NodeVM.ChildrenVM.ViewableChildren.Count > 0 == true
-                                        && ViewModel.NodeVM.Depth < ViewModel.NodeVM.Options.MaxDepth
-                                    )
+                                     && ViewModel!.NodeVM!.HasOrMightHaveChildren
+                                     && ViewModel!.NodeVM.ChildrenVM.ViewableChildren.Count > 0 == true
+                                     && ViewModel.NodeVM.Depth < ViewModel.NodeVM.Options.MaxDepth
+                                 )
             {
                 @foreach (var nodeVM in ViewModel!.NodeVM.ChildrenVM.ViewableChildren)
                 {
                     <InspectorRow NodeVM="@nodeVM" />
                 }
             }
-            else if(!NodeVM.IsFlattened)
+            else if (!NodeVM.IsFlattened)
             {
                 <tr>
                     <td></td>

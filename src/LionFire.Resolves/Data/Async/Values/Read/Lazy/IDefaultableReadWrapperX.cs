@@ -24,7 +24,7 @@ public static class IDefaultableReadWrapperX
     internal static ITask<IGetResult<TValue>> DefaultableReadWrapper_GetValue<TValue>(IDefaultableReadWrapper<TValue> readWrapper)
     {
         var value = readWrapper.Value;
-        return Task.FromResult((IGetResult<TValue>)new GetResult<TValue>(value, !EqualityComparer<TValue>.Default.Equals(value, default))).AsITask();
+        return Task.FromResult((IGetResult<TValue>)GetResult<TValue>.SyncSuccess(value)).AsITask();
     }
 
     #endregion

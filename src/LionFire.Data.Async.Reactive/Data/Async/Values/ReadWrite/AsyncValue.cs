@@ -1,4 +1,5 @@
 ﻿using LionFire.Data.Async.Sets;
+using LionFire.IO;
 using System.ComponentModel;
 using System.Numerics;
 using System.Reactive;
@@ -11,6 +12,7 @@ public abstract class AsyncValue<TValue>
     : GetterRxO<TValue>
     , IAsyncValue<TValue>
     , ISetsInternal<TValue>
+    , IValueState<TValue>
 {
     #region Options
 
@@ -62,6 +64,8 @@ public abstract class AsyncValue<TValue>
 
     #endregion
 
+    public override IODirection IODirection => IODirection.ReadWrite;
+
     #region Get+Set 
 
     [Reactive]
@@ -78,6 +82,8 @@ public abstract class AsyncValue<TValue>
         set => StagedValue = value;
     }
     public TValue? QueryValue => HasStagedValue ? StagedValue : ReadCacheValue;
+
+    //TValue? IValueState<TValue>.Value { get => Value; set => Value = value; }
 
     #endregion
 
@@ -102,11 +108,28 @@ public abstract class AsyncValue<TValue>
 
     #region State
 
-    [Reactive]
-    public TValue? StagedValue { get; set; }
 
-    [Reactive]
-    public bool HasStagedValue { get; set; }
+    public TValue? StagedValue
+    {
+        get => stagedValue;
+        set
+        {
+            ((IReactiveObject)this).RaiseAndSetIfChanged(ref stagedValue, value);
+            HasStagedValue = value != null;
+        }
+    }
+    private TValue? stagedValue;
+
+    public bool HasStagedValue
+    {
+        get => hasStagedValue;
+        set
+        {
+            ((IReactiveObject)this).RaiseAndSetIfChanged(ref hasStagedValue, value);
+            StateFlags = value ? StateFlags | ValueStateFlags.HasStagedValue : StateFlags & ~ValueStateFlags.HasStagedValue;
+        }
+    }
+    private bool hasStagedValue;
 
     public void DiscardStagedValue()
     {
@@ -132,10 +155,12 @@ public abstract class AsyncValue<TValue>
     BehaviorSubject<ISetOperation<TValue>> ISetsInternal<TValue>.sets => sets;
 
     public IObservable<ISetResult<TValue>> SetResults => setResults; // sets.Select(async o => (await o.Task));//setResults; // TODO: instead of another BehaviorSubject, subscribe to SetOperations and unwrap the ISetResult from the task
+
     private BehaviorSubject<ISetResult<TValue>> setResults = new(NoopSetResult<TValue>.Instantiated);
 
-    #endregion
 
+
+    #endregion
 
     #region IGetsOrAsyncInstantiates<T>
     //public abstract ITask<TValue> InstantiateValue(bool overwriteStagedValue = false, bool throwOnOverwrite = false);
@@ -159,14 +184,17 @@ public abstract class AsyncValue<TValue>
         return result;
     }
 
-
     public async Task<ISetResult> Set(CancellationToken cancellationToken = default)
         => await SetsLogic<TValue>.Set(this, cancellationToken).ConfigureAwait(false);
 
-    #endregion
+    public Task Commit() => throw new NotSupportedException();
+
 
     #endregion
 
+    #endregion
+
+    
 }
 
 #if false // TODO: Needs non-abstract AsyncGets

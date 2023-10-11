@@ -17,15 +17,15 @@
 
 <div class=@InspectorClasses>
 
-    @if (DevMode)
+    @if (DiagnosticsMode)
     {
         <div class="dev">Type: @Object?.GetType().Name</div>
     }
 
     @if (ViewModel!.ShowFilterTypes)
     {
-        <button class=@("toggle " + (ViewModel.NodeVM.ShowDataMembers ? "selected" : ""))
-        @onclick=@(()=>ViewModel.NodeVM.ShowDataMembers ^= true) title="Show Data Members">
+        <button class=@("LionToggle " + (ViewModel.NodeVM.ShowDataMembers ? "selected" : ""))
+                @onclick=@(()=>ViewModel.NodeVM.ShowDataMembers ^= true) title="Show Data Members">
             @if (ViewModel.NodeVM.ShowDataMembers)
             {
                 <span>D</span>
@@ -35,8 +35,8 @@
                 <span>d</span>
             }
         </button>
-        <button class=@("toggle " + (ViewModel.NodeVM.ShowEvents ? "selected" : ""))
-        @onclick=@(()=>ViewModel.NodeVM.ShowEvents ^= true) title="Show Events">
+        <button class=@("LionToggle " + (ViewModel.NodeVM.ShowEvents ? "selected" : ""))
+                @onclick=@(()=>ViewModel.NodeVM.ShowEvents ^= true) title="Show Events">
             @if (ViewModel.NodeVM.ShowEvents)
             {
                 <span>E</span>
@@ -46,8 +46,8 @@
                 <span>e</span>
             }
         </button>
-        <button class=@("toggle " + (ViewModel.NodeVM.ShowMethods ? "selected" : ""))
-        @onclick=@(()=>ViewModel.NodeVM.ShowMethods ^= true) title="Show Methods">
+        <button class=@("LionToggle " + (ViewModel.NodeVM.ShowMethods ? "selected" : ""))
+                @onclick=@(()=>ViewModel.NodeVM.ShowMethods ^= true) title="Show Methods">
             @if (ViewModel.NodeVM.ShowMethods)
             {
                 <span>M</span>
@@ -58,8 +58,8 @@
             }
         </button>
 
-        <button class=@("toggle " + (ViewModel.NodeVM.Options.DiagnosticsMode ? "selected" : ""))
-        @onclick=@(()=>ViewModel.NodeVM.Options.DiagnosticsMode ^= true) title="Dev Mode">
+        <button class=@("LionToggle " + (ViewModel.NodeVM.Options.DiagnosticsMode ? "selected" : ""))
+                @onclick=@(()=>ViewModel.NodeVM.Options.DiagnosticsMode ^= true) title="Diagnostics Mode">
             @if (ViewModel.NodeVM.Options.DiagnosticsMode)
             {
                 <span>Dev</span>
@@ -73,8 +73,8 @@
 
         @if (ViewModel.NodeVM.Options.DiagnosticsMode)
         {
-            <button class=@("toggle " + (ViewModel.NodeVM.LocalOptions!.ShowAll ? "selected" : ""))
-            @onclick=@(()=>ViewModel.NodeVM.LocalOptions!.ShowAll ^= true) title="Show All">
+            <button class=@("LionToggle " + (ViewModel.NodeVM.LocalOptions!.ShowAll ? "selected" : ""))
+                    @onclick=@(()=>ViewModel.NodeVM.LocalOptions!.ShowAll ^= true) title="Show All">
                 @if (ViewModel.NodeVM.LocalOptions!.ShowAll)
                 {
                     <span>All</span>
@@ -94,9 +94,11 @@
                 <tr>
                     <th title="Collapsed"></th>
                     <th>Name</th>
-                    <th>Value</th>
+                    <th class="Value">Value</th>
+                    <th></th>
                     <th>Field Type</th>
-                    <th>Current Value Type</th>
+                    <th>Value Type</th>
+                    <th>Source Type</th>
                     <th>Kind</th>
                     <th title="Node type">Node</th>
                     <th>Flags</th>
@@ -114,8 +116,7 @@
 </div>
 
 @code {
-    [CascadingParameter]
-    protected bool DevMode { get; set; }
+    protected bool DiagnosticsMode => ViewModel!.NodeVM.Options.DiagnosticsMode;
 
     [Parameter]
     public object? Object { get; set; }
@@ -132,7 +133,6 @@
 
     protected override Task OnInitializedAsync()
     {
-
         return base.OnInitializedAsync();
     }
 

@@ -29,7 +29,8 @@ public interface INodeInfo
     /// -0002.05
     /// -1
     /// </summary>
-    string? Order { get; }
+    string? OrderString { get; }
+    float? Order { get; }
 
     InspectorNodeKind NodeKind { get; }
 

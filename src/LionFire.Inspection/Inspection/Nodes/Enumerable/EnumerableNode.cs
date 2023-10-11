@@ -19,7 +19,7 @@ public class EnumerableNode : Node<NodeInfoBase>, INode
     private static readonly NodeInfo info = new(InspectorNodeKind.Enumerable)
     {
         Name = "Enumerable",
-        Order = "-1",
+        OrderString = "-1",
         Flags = Enumerable.Empty<string>(),
     };
 }

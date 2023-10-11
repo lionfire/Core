@@ -5,6 +5,7 @@ using LionFire.Data.Async.Sets;
 using LionFire.ExtensionMethods.Cloning;
 using LionFire.FlexObjects;
 using LionFire.Inspection.Nodes;
+using LionFire.IO;
 using LionFire.Mvvm;
 using LionFire.Overlays;
 using LionFire.Structures;
@@ -61,6 +62,8 @@ public class NodeVM : ReactiveObject, IViewModel<INode>, IParented<NodeVM>, IHas
 
     #endregion
 
+    public object Tag { get; set; } // TEMP
+
     #region Node
 
     public INode Node { get; init; }
@@ -74,6 +77,7 @@ public class NodeVM : ReactiveObject, IViewModel<INode>, IParented<NodeVM>, IHas
 
     public NodeVM(INode node) : this(null, node)
     {
+        Tag = node.Path;
     }
 
     public void ApplyShowChildrenOptions()
@@ -111,11 +115,13 @@ public class NodeVM : ReactiveObject, IViewModel<INode>, IParented<NodeVM>, IHas
         //MemberVMs = ReflectionMemberVM.GetFor(InspectedObject?.EffectiveObject); // TypeModel?.Members.Select(m => MemberVM.Create(m, o)).ToList() ?? new();
 #endif
 
-        #region Getter
+        #region Async Value
 
         // REVIEW: don't fall back to Source?  Wire this up via Node implementation?
-        Getter = node as IGetter<object> ?? node.Source as IGetter<object>;
-        AsyncValue = node as IAsyncValue<object> ?? node.Source as AsyncValue<object>;
+        AsyncValue = node as IAsyncValue<object> ?? (node as IHas<IAsyncValue<object>>)?.Object ?? node.Source as AsyncValue<object>;
+        Getter = node as IGetter<object> ?? (node as IHas<IGetter<object>>)?.Object ?? node.Source as IGetter<object>;
+        // ENH: Setter for completeness
+        ValueState = AsyncValue as IValueState<object> ?? Getter as IValueState<object>;
 
         #endregion
 
@@ -266,9 +272,20 @@ public class NodeVM : ReactiveObject, IViewModel<INode>, IParented<NodeVM>, IHas
     #region Value
 
     #region Accessors
-
-    public bool CanRead => Getter != null || AsyncValue != null;
-    public bool CanWrite => SetValue != null;
+    
+    public IODirection IODirection
+    {
+        get
+        {
+            if (CanRead)
+            {
+                if (CanWrite) return IODirection.ReadWrite;
+                else return IODirection.Read;
+            }
+            else if (CanWrite) return IODirection.Write;
+            else return LionFire.IO.IODirection.Unspecified;
+        }
+    }
 
 
     #region Read
@@ -280,6 +297,15 @@ public class NodeVM : ReactiveObject, IViewModel<INode>, IParented<NodeVM>, IHas
     #region ReadWrite
 
     public IAsyncValue<object>? AsyncValue { get; private set; }
+    
+    public IValueState<object>? ValueState { get; private set; }
+
+    #region Derived: Convenience
+
+    public bool CanRead => ValueState?.CanRead == true;
+    public bool CanWrite => ValueState?.CanWrite == true;
+
+    #endregion
 
     #endregion
 

@@ -32,6 +32,7 @@ public class AttachedInspector : IDisposable
 
         //node.WhenAnyValue(n => n.SourceType).Subscribe(OnSourceTypeChanged);
         node.WhenAnyValue(n => n.ValueType).Subscribe(OnValueTypeChanged);
+        node.WhenAnyValue(n => n.Value).Subscribe(OnValueChanged);
         //node.WhenAnyValue(n => n.Value).Subscribe(v =>
         //{
         //    //if(v != null) { OnSourceTypeChanged(v.GetType()); }
@@ -68,6 +69,13 @@ public class AttachedInspector : IDisposable
 
     #endregion
 
+    private void OnValueChanged(object? value)
+    {
+        if (value != null)
+        {
+            OnValueTypeChanged(value.GetType());
+        }
+    }
     private void OnValueTypeChanged(Type valueType)
     {
         //if (IsAttached)
@@ -84,7 +92,7 @@ public class AttachedInspector : IDisposable
 
             foreach (var groupInfo in Inspector.GroupInfos.Values)
             {
-                if (valueType is not NullType && groupInfo.IsTypeSupported(valueType))
+                if (valueType != typeof(NullType) && groupInfo.IsTypeSupported(valueType))
                 {
                     if (oldGroups != null && oldGroups.Remove(groupInfo.Key)) continue; // Keep existing group
 

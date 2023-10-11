@@ -20,8 +20,8 @@ public class TransientGenericFactories : IOpenGenericFactory
     {
         ServiceProvider = serviceProvider;
 
-        var serivces = servicesOptions.CurrentValue;
-        foreach (var d in serivces)
+        var services = servicesOptions.CurrentValue;
+        foreach (var d in services)
         {
             if (d.ImplementationType != null)
             {

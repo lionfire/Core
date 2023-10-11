@@ -117,7 +117,7 @@ public abstract class GetterWithEvents<TKey, TValue>
             //if (!EqualityComparer<TValue>.Default.Equals(currentValue, default)) return new ResolveResultNoop<TValue>(currentValue);
 
             var resolveResult = await Get().ConfigureAwait(false);
-            return new GetResult<TValue>(resolveResult.Value, resolveResult.HasValue);
+            return GetResult<TValue>.Success(resolveResult.Value);
         }
         finally
         {

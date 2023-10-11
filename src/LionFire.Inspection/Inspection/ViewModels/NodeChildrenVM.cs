@@ -14,7 +14,6 @@ namespace LionFire.Inspection.Nodes;
 //    public InspectorNodeKind VisibleItemTypes { get; set; } = InspectorNodeKind.Data;
 //}
 
-
 /// <summary>
 /// Decorates NodeVM with children and related properties
 /// </summary>
@@ -76,7 +75,7 @@ public class NodeChildrenVM : ReactiveObject
 
     #region Lifecycle
 
-    public NodeChildrenVM(NodeVM nodeVM /*InspectorService inspectorService*/)
+    public NodeChildrenVM(NodeVM nodeVM)
     {
         NodeVM = nodeVM;
 
@@ -121,7 +120,7 @@ public class NodeChildrenVM : ReactiveObject
             viewableChildren = children
                 .Connect()
                 .Filter(c => IsVisible(c))
-                .ToSortedCollection(n => n.Node.Key)
+                .ToSortedCollection(NodeVMComparer.Instance) // was (n => n.Node.Key)
                 .ToProperty(this, x => x.ViewableChildren);
         }
         else
@@ -133,17 +132,6 @@ public class NodeChildrenVM : ReactiveObject
             viewableChildren = Observable.Return<IReadOnlyCollection<NodeVM>>(new ReadOnlyCollection<NodeVM>(new List<NodeVM> { }))
                 .ToProperty(this, x => x.ViewableChildren);
         }
-
-
-
-        // --------------------- TOTRIAGE:
-
-        //NodeVM.InheritedOptions.FlattenedGroups
-        //.BindToObservableList(out children)
-
-        //Children.Connect()
-        //    .Filter(c => IsVisible(c))
-        //    .AsObservableCache();
     }
 
     #endregion
@@ -281,4 +269,3 @@ public class NodeChildrenVM : ReactiveObject
 
     #endregion
 }
-

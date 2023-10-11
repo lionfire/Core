@@ -8,11 +8,13 @@ public class TransformInfo : INodeInfo
 
     public string? Name => throw new NotImplementedException();
 
-    public string? Order => throw new NotImplementedException();
+    public string? OrderString => throw new NotImplementedException();
 
     public InspectorNodeKind NodeKind => InspectorNodeKind.Transform;
 
     public IEnumerable<string> Flags => throw new NotImplementedException();
 
     public IODirection IODirection => throw new NotImplementedException();
+
+    public float? Order => throw new NotImplementedException();
 }

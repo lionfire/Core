@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.Configuration;
+﻿#nullable enable
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Hosting;
 using Orleans.Configuration;
 using Orleans.Hosting;
@@ -12,6 +13,7 @@ using Microsoft.Extensions.Options;
 
 namespace LionFire.Hosting;
 
+// REVIEW: Streamline this with SiloProgramConfig somehow?
 public class LionFireSiloConfigurator
 {
     #region Dependencies
@@ -81,7 +83,7 @@ public class LionFireSiloConfigurator
 
 public static class LionFireSiloConfiguratorX
 {
-    public static IHostBuilder UseLionFireOrleans(this IHostBuilder builder, SiloProgramConfig? config = null, Action<HostBuilderContext, ISiloBuilder>? configureSilo = null)
+    public static IHostBuilder UseLionFireOrleans(this IHostBuilder builder, Action<HostBuilderContext, ISiloBuilder>? configureSilo = null)
     {
 
         //builder.ConfigureAppConfiguration((context, c) =>
@@ -92,9 +94,9 @@ public static class LionFireSiloConfiguratorX
 
         //builder.ConfigureServices(s => s.AddSingleton<IPostConfigureOptions<OrleansJsonSerializerOptions>, ConfigureOrleansJsonSerializerOptions>());
 
-        builder.UseOrleans((context, siloBuilder) => siloBuilder.UseLionFireOrleans(config, context, configureSilo));
-        return builder;
+        return builder.UseOrleans((context, siloBuilder) => siloBuilder.UseLionFireOrleans(context, configureSilo));
     }
+
     private static void ConfigureClusterOptions(ClusterOptions options, HostBuilderContext context)
     {
         var clusterConfigProvider = new LionFireSiloConfigurator(context.Configuration);
@@ -112,8 +114,11 @@ public static class LionFireSiloConfiguratorX
     /// <param name="configureSilo"></param>
     /// <returns></returns>
     /// <exception cref="NotSupportedException"></exception>
-    public static ISiloBuilder UseLionFireOrleans(this ISiloBuilder siloBuilder, SiloProgramConfig config, HostBuilderContext context, Action<HostBuilderContext, ISiloBuilder>? configureSilo = null)
+    public static ISiloBuilder UseLionFireOrleans(this ISiloBuilder siloBuilder, HostBuilderContext context, Action<HostBuilderContext, ISiloBuilder>? configureSilo = null)
     {
+        var config = new SiloProgramOptions();
+        context.Configuration.Bind(SiloProgramOptions.ConfigLocation, config);
+
         var clusterConfigSection = context.Configuration.GetSection("Orleans:Cluster");
 
         siloBuilder.Configure<ClusterOptions>(o => ConfigureClusterOptions(o, context)); // REVIEW - is this needed, or does the IHostBuilder.ConfigureAppConfiguration cover this? Or is that one redundant?  Or is it needed elsewhere by me?

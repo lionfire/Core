@@ -28,7 +28,7 @@ public static class TypeTaskX
     }
     public static Type? UnwrapTaskType(this Type? type)
     {
-        if (type==null) return null;
+        if (type == null) return null;
 
         if (type.IsGenericType)
         {
@@ -38,7 +38,7 @@ public static class TypeTaskX
 #if NET6_0_OR_GREATER
                 || genericType == typeof(ValueTask<>)
 #endif
-                ) ? genericType.GetGenericArguments()[0] : null;
+                ) ? type.GetGenericArguments()[0] : null;
         }
         else
         {

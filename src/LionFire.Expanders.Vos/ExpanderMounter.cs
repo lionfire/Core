@@ -268,7 +268,7 @@ public class ExpanderMounter : IParentable<IVob>
                                     var mount = vobMountPoint.Mount(expansionReference, new VobMountOptions
                                     {
                                         IsReadOnly = expansionArgs.Direction == IODirection.Read,
-                                        IsWritable = expansionArgs.Direction.IsWritable(),
+                                        IsWritable = expansionArgs.Direction.CanWrite(),
                                         IsExclusiveWithReadAndWrite = false,
                                         IsExclusive = false,
                                         Name = $"Expansion: {expansionReference.ToString()}",

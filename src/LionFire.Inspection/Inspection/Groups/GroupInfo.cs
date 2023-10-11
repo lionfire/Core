@@ -52,7 +52,8 @@ public abstract class GroupInfo : IKeyed<string>, INodeInfo
 
     #region Properties
 
-    public string? Order { get; set; }
+    public string? OrderString { get; set; }
+    public float? Order { get; set; }
 
     public Type? Type => typeof(IEnumerable<IInspectorGroup>);
 

@@ -3,6 +3,7 @@ using LionFire.ExtensionMethods.Orleans_;
 using System.Reflection;
 using LionFire.ExtensionMethods;
 using System.Collections.Concurrent;
+using LionFire.Structures;
 
 namespace LionFire.Inspection;
 
@@ -130,11 +131,14 @@ public class GrainPropertiesGroup : SyncFrozenGroup
         });
 
     }
-
+        
     protected override IEnumerable<KeyValuePair<string, INode>> GetChildren()
     {
-        return GetChildren2().ToList();
+        var list = GetChildren2().ToList();
+        //list.Sort(NodeInfoKVSorter.Instance);
+        return list;
     }
+
     protected IEnumerable<KeyValuePair<string, INode>> GetChildren2()
     {
         var type = this.Parent!.Source?.GetType();
@@ -162,3 +166,12 @@ public class GrainPropertiesGroup : SyncFrozenGroup
         }
     }
 }
+
+//public class NodeInfoKVSorter : IComparer<KeyValuePair<string, INode>>
+//{
+//    public static readonly NodeInfoKVSorter Instance = new();
+
+//    public int Compare(KeyValuePair<string, INode> x, KeyValuePair<string, INode> y) 
+//        => NodeInfoSorter.Instance.Compare(x.Value?.Info, y.Value?.Info);
+//}
+

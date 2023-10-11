@@ -1,0 +1,171 @@
+@inherits ReactiveUI.Blazor.ReactiveInjectableComponentBase<InspectorValueCellVM>
+@* implements IEditorParameters *@
+
+@inject MudBlazorViewTypeProvider ViewTypeProvider
+
+@* @using LionFire.Blazor.Components.MudBlazor_.PropertyGrid.CellEditors *@
+@using LionFire.Inspection.ViewModels;
+@using System.ComponentModel;
+@using System.Text;
+
+
+@* <span class="dev">
+    @(ViewModel.CanEdit ? "" : "(Cannot edit)")
+</span>
+<span class="dev">
+    @(ViewModel.ReadOnly ? "(ReadOnly)" : "")
+</span> *@
+
+
+<div class=@Classes>
+
+    @if (NodeVM.ValueState != null && NodeVM.ValueState.StateFlags.HasFlag(Data.Async.ValueStateFlags.HasStagedValue))
+    {
+        <span style="color: #fff; font-size: 2em; margin-right: 0.4em;">•</span>
+    }
+
+    @if (NodeVM.Node.Info.Type == null)
+    {
+        <div>(NodeVM.Node.Info.Type == null)</div>
+    }
+    else if (NodeVM.Node.Info.Type == typeof(bool))
+    {
+        <MudBoolInspector CellVM="@ViewModel" NodeVM="@NodeVM" />
+    }
+    else if (NodeVM.Node.Info.Type.IsNumeric())
+    {
+        <MudNumericInspector NodeVM="@NodeVM" />
+    }
+    else if (NodeVM.Node.Info.Type == typeof(string)) // TODO: || IsCastableTo(typeof(string)))
+    {
+        <MudTextInspector NodeVM="@NodeVM" />
+    }
+    else if (NodeVM.Node.Info.Type == typeof(DateTime) || NodeVM.Node.Info.Type == typeof(Nullable<DateTime>))
+    {
+        <MudDateInspector NodeVM="@NodeVM" />
+    }
+    @*     else if (NodeVM.Node.Info.Type.IsValueType)
+    {
+    <MudSelectInspector NodeVM="@NodeVM" />
+    } *@
+    else if (NodeVM.Node.Info.Type.IsEnum)
+    {
+        <MudSelectInspector NodeVM="@NodeVM" />
+    }
+    else if (!NodeVM.Node.Info.Type.IsPrimitive)
+    {
+        @NodeVM.ValueState?.Value
+        @* if (NodeVM.HasOrMightHaveChildren)
+    {
+    <div class="DevMode">(see children)</div>
+    }
+    else
+    {
+    <div class="DevMode">(non-primitive)</div>
+    } *@
+    }
+    else
+    {
+        <div>(not supported)</div>
+        <div>NodeVM.Node.Info.Type: @NodeVM.Node?.Info?.Type  </div>
+        @* <DynamicComponent Type="@EditorType" Parameters="@Parameters"></DynamicComponent> *@
+        @* @ViewModel.DisplayValue *@
+    }
+</div>
+
+@code {
+    // TODO: Bind Value on behalf of the child,
+    //  - and keep track of whether it is modified
+    //  - and offer Save / Revert buttons (per cell, or per parent, or per form), or AutoSave
+
+    [Parameter]
+    public NodeVM NodeVM { get; set; } = null!;
+
+    [CascadingParameter]
+    public InspectorVM? InspectorVM { get; set; }
+
+    public IInspectorOptions Options => NodeVM.Options;
+
+
+    public Type? EditorType => ViewTypeProvider.GetViewType(NodeVM.Node.Info.Type) ?? FallbackEditorType;
+
+    public Type FallbackEditorType => typeof(FallbackEditor);
+
+    // public string Value { get=> NodeVM.Value; set => NodeVM.Value = value; }
+
+
+    // public IDictionary<string, object?>? Parameters => ComponentParameters<IEditorParameters>.ToParameterDictionary(this);
+
+
+    protected override async Task OnParametersSetAsync()
+    {
+        ViewModel.NodeVM = NodeVM;
+
+        if (NodeVM == null)
+        {
+        }
+        else
+        {
+            if (NodeVM.AsyncValue != null) { await NodeVM.AsyncValue.GetIfNeeded(); } // TEMP: await
+            else if (NodeVM.Getter != null) { await NodeVM.Getter.GetIfNeeded(); } // TEMP: await
+
+            NodeVM.Node.WhenAnyValue(x => x.Value).Subscribe(value =>
+            {
+                InvokeAsync(() =>
+                {
+                    OnValueChanged(value);
+                }).FireAndForget();
+            });
+
+            NodeVM.PropertyChanged += OnNodeVMPropertyChanged;
+        }
+        await base.OnParametersSetAsync();
+    }
+
+    private void OnNodeVMPropertyChanged(object? sender, PropertyChangedEventArgs e)
+    {
+        InvokeAsync(StateHasChanged).FireAndForget();
+    }
+
+    public string Classes
+    {
+        get
+        {
+            var sb = new StringBuilder();
+            sb.Append("InspectorValueCell");
+            if (!NodeVM.CanWrite) sb.Append(" ReadOnly");
+            return sb.ToString();
+        }
+    }
+
+    private void OnValueChanged(object? value)
+    {
+        InPlaceEditorType = Options.InPlaceEditing ? GetInPlaceEditorType() : null;
+
+        StateHasChanged();
+    }
+
+    // public enum EditMode
+    // {
+    //     Unspecified = 0,
+    //     InPlaceEditor,
+    //     ClickToEditInPlace,
+    //     ClickToEditInDialog,
+    // }
+
+    // public enum EditButtonMode
+    // {
+    //     Unspecified = 0,
+    //     PencilButton,
+    //     ClickableValue,
+    // }
+
+    public Type? GetInPlaceEditorType() { return null; }
+    public Type? InPlaceEditorType { get; set; }
+    public bool InPlaceEditorAvailable => InPlaceEditorType != null;
+
+    public bool ShowInPlaceEditor => InPlaceEditorType != null;
+    public bool ShowReadOnlyEditButton { get; set; }
+
+}
+

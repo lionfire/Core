@@ -15,3 +15,9 @@ public interface ILionFireHostBuilder
     ILionFireHostBuilder ForHostBuilder(Action<IHostBuilder> action);
     IConfiguration GetBootstrapConfiguration(LionFireHostBuilderBootstrapOptions? options = null);
 }
+
+public static class ILionFireHostBuilderX
+{
+    public static ILionFireHostBuilder ConfigureDefaults(this ILionFireHostBuilder lf, params KeyValuePair<string, string?>[] kvps)
+    => lf.ForHostBuilder(b => b.ConfigureHostConfiguration(c => c.AddInMemoryCollection(kvps)));
+}

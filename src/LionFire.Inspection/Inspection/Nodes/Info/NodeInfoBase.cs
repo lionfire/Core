@@ -17,7 +17,8 @@ public abstract class NodeInfoBase : INodeInfo
 {
     public string? Name { get; init; }
 
-    public string? Order { get; init; }
+    public string? OrderString { get; init; }
+    public float? Order { get; init; }
 
     public Type? Type { get; init; }
     public virtual bool IsAsync => false;

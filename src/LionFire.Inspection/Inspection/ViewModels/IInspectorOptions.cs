@@ -8,6 +8,8 @@ namespace LionFire.Inspection.ViewModels;
 public interface IInspectorOptions : IFlex//, IParented<InspectorOptions>
 {
     EditApproach? EditApproach { get; }
+    bool InPlaceEditing { get; }
+
     HashSet<string>? GroupBlacklist { get; }
     HashSet<string>? GroupWhitelist { get; }
     HashSet<Type>? InspectorBlacklist { get; }

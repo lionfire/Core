@@ -28,6 +28,6 @@ public record PreresolvedGetter<T>(T Value) : IGetter<T>
 
     public IObservable<IGetResult<T>> GetResults => Observable.Return<IGetResult<T>>(getResult);
 
-    private IGetResult<T> getResult => new GetResult<T>(Value, true) { Flags = TransferResultFlags.Noop | TransferResultFlags.Found };
+    private IGetResult<T> getResult => GetResult<T>.SyncSuccess(Value, TransferResultFlags.Noop);
     public IObservable<ITask<IGetResult<T>>> GetOperations => Observable.Return(Task.FromResult(getResult).AsITask());
 }

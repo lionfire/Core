@@ -1,0 +1,87 @@
+﻿@inherits ReactiveUI.Blazor.ReactiveInjectableComponentBase<InspectorValueCellVM<string>>
+@implements IDisposable
+@using LionFire.Data.Async;
+@using LionFire.Inspection.ViewModels
+
+@namespace LionFire.Blazor.Components.MudBlazor_.PropertyGrid
+
+<div class="TextInspector">
+    
+    @* <button @onclick="() => StateHasChanged()">r</button> *@
+
+    @if (ViewModel == null || ViewModel.NodeVM == null)
+    {
+        <div>(uninitialized)</div>
+    }
+    else if (ViewModel.ValueState == null)
+    {
+        <div>(unsupported)</div>
+    }
+    else
+    {
+        @if (Style == TextEditorStyle.RichText)
+        {
+            <div>TODO</div>
+        }
+        else if (ViewModel.ValueState.CanWrite == false)
+        {
+            <div>@ViewModel.ValueState!.Value</div>
+        }
+        else
+        {
+            <MudTextField @bind-Value="ViewModel.ValueState!.Value"
+                          ReadOnly=@(!ViewModel.CanWrite)
+                          Margin="Margin.Dense"
+                          Variant="Variant.Outlined"
+                          Lines="@(IsMultiLine ? Lines : 1)">
+            </MudTextField>
+
+            @* Label="With Helper"
+    Variant="Variant.Text"
+    InputType.Password
+    Immediate="true"
+    DebounceInterval = "1000"
+    HelperText="Some helping Text
+    InputType="InputType.Color"
+    InputType="InputType.Date
+    InputType.DateTimeLocal
+    InputType="InputType.Month"
+    InputType="InputType.Time"
+    InputType="InputType.Week"
+    *@
+
+        }
+    }
+</div>
+
+@code {
+
+    #region Parameters
+
+    [CascadingParameter]
+    public InspectorVM? InspectorVM { get; set; }
+
+    [Parameter]
+    public NodeVM NodeVM { get; set; } = null!;
+
+    #endregion
+
+    #region Lifecycle
+
+    protected override void OnParametersSet()
+    {
+        ViewModel!.NodeVM = NodeVM;
+    }
+
+    #endregion
+
+    #region TODO: how to do editor customizations?
+
+    public TextEditorStyle Style { get; set; } = TextEditorStyle.SingleLine;
+    public int Lines { get; set; } = 5;
+    public bool IsMultiLine => Style == TextEditorStyle.MultiLine || Style == TextEditorStyle.RichText;
+
+    #endregion
+
+}
+

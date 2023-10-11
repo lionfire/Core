@@ -7,7 +7,7 @@ using System.Reactive.Linq;
 
 namespace LionFire.Inspection.Nodes;
 
-public class PropertiesGroup : GroupNode, IConfiguredGetter, IInspectorGroup
+public class PropertiesGroup : GroupNode, IConfiguredGetter, IInspectorGroup, IHas<IStatelessGetter<object>>
 {
     public static readonly GroupInfo GroupInfo = new PropertiesGroupInfo();
 
@@ -33,6 +33,8 @@ public class PropertiesGroup : GroupNode, IConfiguredGetter, IInspectorGroup
         ArgumentNullException.ThrowIfNull(parent, nameof(parent));
         context ??= parent.Context;
 
+        Children = new PropertiesChildren(this);
+
         Parent.WhenAnyValue(x => x.Parent!.Value)
             .Subscribe(async v =>
             {
@@ -40,7 +42,6 @@ public class PropertiesGroup : GroupNode, IConfiguredGetter, IInspectorGroup
                 await GetterOptions.TryAutoGet(this.Children).AsTask();//.Wait(); // Blocking, but it's synchronous
             });
 
-        Children = new PropertiesChildren(this);
     }
 
     public class PropertiesChildren : AsyncReadOnlyDictionary<string, INode>
@@ -56,18 +57,20 @@ public class PropertiesGroup : GroupNode, IConfiguredGetter, IInspectorGroup
         {
             var v = propertiesGroup.Value;
             return Task.FromResult<IGetResult<IEnumerable<KeyValuePair<string, INode>>>>(
-                new GetResult<IEnumerable<KeyValuePair<string, INode>>>(
+                GetResult<IEnumerable<KeyValuePair<string, INode>>>.SyncSuccess(
                 v == null
                   ? Enumerable.Empty<KeyValuePair<string, INode>>()  // Empty
-                  : v.GetType().GetProperties(System.Reflection.BindingFlags.Instance).Select(mi =>
+                  : v.GetType().GetProperties(System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.Public)
+                  .Where(mi => mi.GetIndexParameters().Length == 0)
+                  .Select(mi =>
                       new KeyValuePair<string, INode>(mi.Name, new PropertyNode(propertiesGroup, v, mi))
                           )
-                  )
-                  ).AsITask();
+                  )).AsITask();
         }
     }
 
     public override IAsyncReadOnlyDictionary<string, INode> Children { get; }
+    IStatelessGetter<object>? IHas<IStatelessGetter<object>>.Object => Children;
 
     #endregion
 

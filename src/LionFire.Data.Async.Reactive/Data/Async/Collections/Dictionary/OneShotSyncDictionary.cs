@@ -43,6 +43,7 @@ public class OneShotSyncDictionary<TKey, TValue>
             return result;
         }
     }
+    public override void OnNext(IGetResult<IEnumerable<KeyValuePair<TKey, TValue>>> value) { }
 
     #endregion
 }

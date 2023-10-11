@@ -7,15 +7,15 @@
     <PackageVersion Include="Alexinea.ZeroFormatter" Version="1.6.4" />
     <PackageVersion Include="Alexinea.ZeroFormatter.Interfaces" Version="1.6.4" />
     <PackageVersion Include="AnyDiff" Version="1.0.88" />
-    <PackageVersion Include="AspNetCore.HealthChecks.UI" Version="6.0.5" />
+    <PackageVersion Include="AspNetCore.HealthChecks.UI" Version="7.0.2" />
     <PackageVersion Include="AspNetCore.HealthChecks.Consul" Version="6.0.2" />
     <PackageVersion Include="AspNetCore.HealthChecks.Network" Version="6.0.4" />
     <PackageVersion Include="AspNetCore.HealthChecks.Npgsql" Version="6.0.2" />
     <PackageVersion Include="AspNetCore.HealthChecks.Redis" Version="6.0.4" />
     <PackageVersion Include="AspNetCore.HealthChecks.System" Version="6.0.5" />
-    <PackageVersion Include="AspNetCore.HealthChecks.UI.Client" Version="6.0.5" />
-    <PackageVersion Include="AspNetCore.HealthChecks.UI.InMemory.Storage" Version="6.0.5" />
-    <PackageVersion Include="AspNetCore.HealthChecks.UI.SQLite.Storage" Version="6.0.5" />
+    <PackageVersion Include="AspNetCore.HealthChecks.UI.Client" Version="7.1.0" />
+    <PackageVersion Include="AspNetCore.HealthChecks.UI.InMemory.Storage" Version="7.0.0" />
+    <PackageVersion Include="AspNetCore.HealthChecks.UI.SQLite.Storage" Version="7.0.0" />
     <PackageVersion Include="BernhardHaus.Collections.WeakDictionary" Version="1.0.3" />
     <PackageVersion Include="Binance.Net" Version="8.0.9" />
     <PackageVersion Include="BinanceDotNet" Version="4.12.0" />
@@ -135,7 +135,7 @@
     <PackageVersion Include="MorseCode.ITask" Version="2.0.3" />
     <PackageVersion Include="MSTest.TestAdapter" Version="3.0.4" />
     <PackageVersion Include="MSTest.TestFramework" Version="3.0.4" />
-    <PackageVersion Include="MudBlazor" Version="6.7.0" />
+    <PackageVersion Include="MudBlazor" Version="6.11.0" />
     <PackageVersion Include="MyCouch" Version="7.5.0" />
     <PackageVersion Include="Newtonsoft.Json" Version="13.0.3" />
     <PackageVersion Include="Nito.AsyncEx" Version="5.1.2" />

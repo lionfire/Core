@@ -25,6 +25,7 @@ public class InspectorOptions : ReactiveObject, IInspectorOptions
         FlattenedNodeKinds = InspectorNodeKind.Group,
         ShowChildrenForDepthBelow = 1,
         ShowAll = false,
+        DiagnosticsMode = true, // TEMP
     };
 
     static InspectorOptions()
@@ -53,6 +54,7 @@ public class InspectorOptions : ReactiveObject, IInspectorOptions
 
     // ENH: Use Overlay objects to allow acquisition of parent properties
 
+    public bool InPlaceEditing { get; }
     public HashSet<Type>? InspectorBlacklist { get; set; }
     public HashSet<Type>? InspectorWhitelist { get; set; }
 

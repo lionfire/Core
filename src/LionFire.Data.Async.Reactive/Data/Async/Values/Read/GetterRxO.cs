@@ -1,4 +1,6 @@
-﻿using System.ComponentModel;
+﻿using LionFire.Data.Async.Sets;
+using LionFire.IO;
+using System.ComponentModel;
 using System.Reactive.Linq;
 using System.Reactive.Subjects;
 
@@ -7,6 +9,7 @@ namespace LionFire.Data.Async.Gets;
 public abstract class GetterRxO<TValue>
     : ReactiveObject
     , IGetterRxO<TValue>
+    , IValueState<TValue>
 {
     #region Parameters
 
@@ -51,7 +54,17 @@ public abstract class GetterRxO<TValue>
 #if DEBUG
     private void OnPropertyChanged_Debug(object sender, PropertyChangedEventArgs e)
     {
-        Debug.WriteLine($"GetterRxO<{typeof(TValue).Name}>.PropertyChanged: {e.PropertyName} {(e.PropertyName == "Value" ? (Value?.ToString() ?? "null") : "")}");
+        foreach (var pi in sender.GetType().GetProperties(System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.Public).Where(pi => pi.Name == e.PropertyName))
+        {
+            try
+            {
+                var val = pi.GetValue(sender)?.ToString() ?? "(null)";
+                Debug.WriteLine($"GetterRxO<{typeof(TValue).Name}>.PropertyChanged: {e.PropertyName} = {val}");
+            }
+            catch { }
+
+
+        }
 
     }
 #endif
@@ -73,6 +86,16 @@ public abstract class GetterRxO<TValue>
         }
     }
 
+    #region IValueState
+
+    TValue? IValueState<TValue>.Value { get => Value; set => throw new NotSupportedException(); }
+
+    [Reactive]
+    public ValueStateFlags StateFlags { get; protected set; }
+
+    public virtual IODirection IODirection => IODirection.Read;
+
+    #endregion
 
     public bool HasValue => hasValue.Value;
     private readonly ObservableAsPropertyHelper<bool> hasValue;
@@ -86,7 +109,7 @@ public abstract class GetterRxO<TValue>
 
     #endregion
 
-    public IGetResult<TValue> QueryGetResult() => new GetResult<TValue>(ReadCacheValue, HasValue);
+    public IGetResult<TValue> QueryGetResult() => GetResult<TValue>.QueryValue(ReadCacheValue, HasValue);
 
     public void Discard() => DiscardValue();
     public void DiscardValue()
@@ -108,7 +131,8 @@ public abstract class GetterRxO<TValue>
     private ITask<IGetResult<TValue>>? getState => getOperations.Value;
 
     public IObservable<ITask<IGetResult<TValue>>> GetOperations => getOperations;
-    BehaviorSubject<ITask<IGetResult<TValue>>> getOperations = new(Task.FromResult((IGetResult<TValue>)NoopGetResult<TValue>.Instantiated).AsITask());
+
+    protected BehaviorSubject<ITask<IGetResult<TValue>>> getOperations = new(Task.FromResult((IGetResult<TValue>)NoopGetResult<TValue>.Instantiated).AsITask());
 
     SemaphoreSlim getSemaphore = new(1, 1);
 
@@ -171,9 +195,27 @@ public abstract class GetterRxO<TValue>
     {
         if (HasValue) { return QueryGetResult(); }
         var result = await Get().ConfigureAwait(false);
-        return new GetResult<TValue>(result.Value, result.IsSuccess == true);
+        return result;
+        //return new GetResult<TValue>(result.Value, result.IsSuccess == true) { Flags = result.Flags };
     }
 
     #endregion
+
+
+    #region Non-existant Write support
+
+    void IWriteStagesSet.DiscardStagedValue() => throw new NotSupportedException();
+
+    Task<ISetResult> ISetter.Set(CancellationToken cancellationToken) => throw new NotSupportedException();
+
+    #endregion
+
+
+    // Exposed only on derived classes that are read-write IAwareOfSets
+    public void OnSet(ISetResult<TValue> setResult) 
+    {
+        // REVIEW: are there any race condition issues with Gets in progress?  Perhaps derived event notification ordering
+        getOperations.OnNext(Task.FromResult<IGetResult<TValue>>(GetResult<TValue>.FromSet(setResult)).AsITask());
+    }
 }
 

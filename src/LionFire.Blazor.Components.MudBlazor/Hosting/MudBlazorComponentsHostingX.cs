@@ -1,10 +1,6 @@
 ﻿using LionFire.Blazor.Components.MudBlazor_;
-using Microsoft.Extensions.DependencyInjection;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using LionFire.Blazor.Components.MudBlazor_.PropertyGrid;
+using LionFire.Inspection.ViewModels;
 
 namespace LionFire.Hosting;
 
@@ -16,6 +12,9 @@ public static class MudBlazorComponentsHostingX
             .AddUIComponents()
             .AddSingleton<MudBlazorViewTypeProvider>()
             .AddSingleton<IViewTypeProvider, MudBlazorViewTypeProvider>(sp => sp.GetRequiredService<MudBlazorViewTypeProvider>())
+
+            .AddTransient<InspectorValueCellVM>()
+            .AddTransient(typeof(InspectorValueCellVM<>))
             ;
     }
 }

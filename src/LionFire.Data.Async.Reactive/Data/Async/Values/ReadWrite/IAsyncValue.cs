@@ -2,18 +2,24 @@
 
 namespace LionFire.Data.Async;
 
+public interface IAwareOfSets<TValue>
+{
+    void OnSet(ISetResult<TValue> result);
+}
+
 public interface IAsyncValue<TValue>
     : IGetterRxO<TValue>
     , IValueRxO<TValue>
     , ISetterRxO<TValue>
     , IValue<TValue>
+    , IAwareOfSets<TValue>
 {
     new TValue Value { get; set; }
 
     /// <summary>
     /// Guaranteed not to block, even if BlockOnGet is enabled
     /// </summary>
-    TValue QueryValue { get; }
+    TValue? QueryValue { get; }
 }
 
 #if false // TODO: Needs non-abstract AsyncGets

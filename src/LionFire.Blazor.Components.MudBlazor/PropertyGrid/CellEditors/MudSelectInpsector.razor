@@ -1,0 +1,87 @@
+﻿@inherits ReactiveUI.Blazor.ReactiveInjectableComponentBase<InspectorValueCellVM<object>>
+@using LionFire.Inspection.ViewModels
+
+@namespace LionFire.Blazor.Components.MudBlazor_.PropertyGrid
+
+<div>select</div>
+@if (ViewModel == null || ViewModel.NodeVM == null)
+{
+    <div>(uninitialized)</div>
+}
+else if (ViewModel.ValueState == null)
+{
+    <div>(unsupported)</div>
+}
+else
+{
+    @if (!ViewModel.CanWrite)
+    {
+        <div>@ViewModel.ValueState!.Value</div>
+    }
+    else
+    {
+
+        <MudSelect @bind-Value="Value"
+                   Margin="Margin.Dense"
+                   ReadOnly=@(!ViewModel.CanWrite)></MudSelect>
+        @* Variant="Variant.Text"  *@
+    }
+}
+
+
+@code {
+    [Parameter]
+    public NodeVM NodeVM { get; set; } = null!;
+
+    [CascadingParameter]
+    public InspectorVM? InspectorVM { get; set; }
+
+    public bool Value { get; set; }
+    public bool SupportsWriting { get; private set; }
+
+    private bool Coerce(object o) => o switch
+    {
+        bool b => b,
+        int i => i != 0,
+        _ => false,
+    };
+
+    public bool IsMultiselect => false;
+
+    protected override void OnParametersSet()
+    {
+        ArgumentNullException.ThrowIfNull(NodeVM);
+
+        // TODO: see if TValue is supported
+
+        if (NodeVM.AsyncValue != null)
+        {
+            bindingDisposable = NodeVM.AsyncValue.WhenAnyValue(x => x.Value).Subscribe(v => Value = Coerce(v));
+            SupportsWriting = true;
+        }
+        else if (NodeVM.Getter != null)
+        {
+            bindingDisposable = NodeVM.Getter.WhenAnyValue(x => x.ReadCacheValue).Subscribe(v => Value = Coerce(v));
+            SupportsWriting = false;
+        }
+        else if (NodeVM.Setter != null)
+        {
+            bindingDisposable = NodeVM.Getter.WhenAnyValue(x => x.Value).Subscribe(v => Value = Coerce(v));
+            SupportsWriting = true;
+        }
+        else
+        {
+            Debug.WriteLine("BoolEditor: No binding");
+        }
+    }
+    IDisposable? bindingDisposable;
+
+    public TextEditorStyle Style { get; set; } = TextEditorStyle.SingleLine;
+
+    public void Dispose()
+    {
+        bindingDisposable?.Dispose();
+        bindingDisposable = null;
+    }
+}
+

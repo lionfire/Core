@@ -64,6 +64,7 @@ public abstract class AsyncReadOnlyDictionary<TKey, TValue>
     public AsyncReadOnlyDictionary(Func<TValue, TKey>? keySelector, SourceCache<TValue, TKey>? sourceCache = null, AsyncObservableCollectionOptions? options = null)
     {
         SourceCache = sourceCache ?? new SourceCache<TValue, TKey>(keySelector ?? DefaultKeySelector());
+
     }
 
     #endregion
@@ -71,15 +72,15 @@ public abstract class AsyncReadOnlyDictionary<TKey, TValue>
     #region State
 
     protected SourceCache<TValue, TKey> SourceCache { get; }
-    public override bool HasValue => hasValue;
-    protected bool hasValue;
+    //public override bool HasValue => hasValue;
+    //protected bool hasValue;
 
     #region Methods
 
     public override void DiscardValue()
     {
         SourceCache.Clear();
-        hasValue = false;
+        //hasValue = false;
     }
 
     #endregion
@@ -91,18 +92,28 @@ public abstract class AsyncReadOnlyDictionary<TKey, TValue>
     public override IEnumerable<KeyValuePair<TKey, TValue>>? ReadCacheValue
     {
         get => SourceCache.KeyValues;
-        protected set
-        {
-            SourceCache.EditDiff((value ?? Enumerable.Empty<KeyValuePair<TKey, TValue>>())
-                .Select(kvp => kvp.Value),
-                (v1, v2) => SourceCache.KeySelector(v1).Equals(SourceCache.KeySelector(v2)));
-        }
+        //protected set
+        //{
+        //    SourceCache.EditDiff((value ?? Enumerable.Empty<KeyValuePair<TKey, TValue>>())
+        //        .Select(kvp => kvp.Value),
+        //        (v1, v2) => SourceCache.KeySelector(v1).Equals(SourceCache.KeySelector(v2)));
+        //}
     }
     public override IEnumerable<KeyValuePair<TKey, TValue>>? Value => this.SourceCache.KeyValues;
 
     #endregion
 
     #endregion
+
+    public override void OnNext(IGetResult<IEnumerable<KeyValuePair<TKey, TValue>>> result)
+    {
+        if (result.IsSuccess())
+        {
+            SourceCache.EditDiff((result.Value ?? Enumerable.Empty<KeyValuePair<TKey, TValue>>())
+                   .Select(kvp => kvp.Value),
+                   (v1, v2) => SourceCache.KeySelector(v1).Equals(SourceCache.KeySelector(v2)));
+        }
+    }
 
     #region (explicit) IAsyncCollection<TValue>
 
@@ -163,23 +174,23 @@ public abstract class AsyncReadOnlyDictionary<TKey, TValue>
 
     #region Get
 
-    public override async ITask<IGetResult<IEnumerable<KeyValuePair<TKey, TValue>>>> Get(CancellationToken cancellationToken = default)
-    {
-        try
-        {
-            var resultTask = GetImpl(cancellationToken);
-            hasValue = true; // REVIEW TODO: if resultTask fails, it didn't really get the value
-            getOperations.OnNext(resultTask);
+    //public override async ITask<IGetResult<IEnumerable<KeyValuePair<TKey, TValue>>>> Get(CancellationToken cancellationToken = default)
+    //{
+    //    try
+    //    {
+    //        var resultTask = GetImpl(cancellationToken);
+    //        //hasValue = true; // REVIEW TODO: if resultTask fails, it didn't really get the value
+    //        getOperations.OnNext(resultTask);
 
-            return await resultTask.ConfigureAwait(false);
-        }
-        catch (Exception ex)
-        {
-            return GetResult<IEnumerable<KeyValuePair<TKey, TValue>>>.Exception(ex);
-        }
-    }
+    //        return await resultTask.ConfigureAwait(false);
+    //    }
+    //    catch (Exception ex)
+    //    {
+    //        return GetResult<IEnumerable<KeyValuePair<TKey, TValue>>>.Exception(ex);
+    //    }
+    //}
 
-    protected abstract ITask<IGetResult<IEnumerable<KeyValuePair<TKey, TValue>>>> GetImpl(CancellationToken cancellationToken = default);
+    //protected abstract ITask<IGetResult<IEnumerable<KeyValuePair<TKey, TValue>>>> GetImpl(CancellationToken cancellationToken = default);
 
     #endregion
 }

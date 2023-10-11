@@ -14,9 +14,14 @@ public class GrainPropertyAsyncValue : AsyncValue<object>
 
     public GrainReadWritePropertyNode Node { get; }
 
-    public override Task<ISetResult<object>> SetImpl(object? value, CancellationToken cancellationToken = default)
+    public override async Task<ISetResult<object>> SetImpl(object? value, CancellationToken cancellationToken = default)
     {
-        return (Task<ISetResult<object>>)((Node.Info.SetMethod ?? throw new NotSupportedException()).Invoke(Node.Source, new object?[] { value })!);
+        var resultObj = (Node.Info.SetMethod ?? throw new NotSupportedException()).Invoke(Node.Source, new object?[] { value })!;
+
+        if (resultObj is Task<ISetResult<object>> sr) { return await sr.ConfigureAwait(false); }
+        else if (resultObj is Task t) { await t.ConfigureAwait(false); return SetResult<object>.Success(value); }
+        else if (resultObj is ValueTask vt) { await vt.ConfigureAwait(false); return SetResult<object>.Success(value); }
+        else throw new NotSupportedException($"Return type: {resultObj?.GetType().FullName}");
     }
 
 
@@ -40,7 +45,7 @@ public class GrainPropertyAsyncValue : AsyncValue<object>
         awaiter.GetType().GetMethod("OnCompleted")!.Invoke(awaiter, new object[] { new Action(() =>
         {
             var value = miResult!.Invoke(awaiter, null);
-            getResult = new GetResult<object> { Value = value, Flags = TransferResultFlags.Success | (value == null ? TransferResultFlags.NotFound : TransferResultFlags.Found) | TransferResultFlags.Retrieved };
+            getResult = GetResult<object>.Success(value, extraFlags: TransferResultFlags.Retrieved);
             semaphore.Release();
         }) });
         

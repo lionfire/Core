@@ -177,7 +177,7 @@ public abstract class GetterSlim<TValue> : IGetter<TValue>
             }
 
             var resolveResult = await Get().ConfigureAwait(false);
-            return new GetResult<TValue>(resolveResult.Value, resolveResult.HasValue);
+            return GetResult<TValue>.Success(resolveResult.Value);
         }
         finally
         {

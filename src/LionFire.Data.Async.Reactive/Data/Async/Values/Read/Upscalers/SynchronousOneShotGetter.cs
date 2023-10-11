@@ -58,11 +58,11 @@ public abstract class SynchronousOneShotGetter<TValue> : IGetter<TValue>
     }
 
     public ITask<IGetResult<TValue>> Get(CancellationToken cancellationToken = default)
-        => Task.FromResult<IGetResult<TValue>>(new GetResult<TValue>(readCacheValue, true)).AsITask();
+        => Task.FromResult<IGetResult<TValue>>(GetResult<TValue>.NoopSyncSuccess(readCacheValue)).AsITask();
 
-    public ITask<IGetResult<TValue>> GetIfNeeded() 
-        => Task.FromResult<IGetResult<TValue>>(new GetResult<TValue>(ReadCacheValue, true)).AsITask();
+    public ITask<IGetResult<TValue>> GetIfNeeded()
+        => Task.FromResult<IGetResult<TValue>>(GetResult<TValue>.NoopSyncSuccess(readCacheValue)).AsITask();
 
     public IGetResult<TValue> QueryGetResult()
-        => new GetResult<TValue>(readCacheValue, HasValue);
+        => GetResult<TValue>.NoopSyncSuccess(readCacheValue);
 }

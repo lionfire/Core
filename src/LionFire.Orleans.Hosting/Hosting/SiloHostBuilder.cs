@@ -14,58 +14,69 @@ using LionFire.Deployment;
 //using Polly;
 using HostBuilderContext = Microsoft.Extensions.Hosting.HostBuilderContext;
 using Orleans.Serialization;
+using Microsoft.Extensions.DependencyInjection;
+using LionFire.ExtensionMethods.Copying;
+using LionFire.Consul_.Orleans_;
 
 namespace LionFire.Hosting;
 
 public static class SiloHostBuilder
 {
-    public static ILionFireHostBuilder Silo(this ILionFireHostBuilder lf, int port, Action<HostBuilderContext, ISiloBuilder>? configureSilo = null)
-        => lf.Silo(new SiloProgramConfig(port), configureSilo);
+    //public static ILionFireHostBuilder Silo(this ILionFireHostBuilder lf, int port, Action<HostBuilderContext, ISiloBuilder>? configureSilo = null)
+    //    => lf.Silo(new SiloProgramOptions(port), configureSilo);
 
-    public static ILionFireHostBuilder Silo(this ILionFireHostBuilder lf, SiloProgramConfig? config = null, Action<HostBuilderContext, ISiloBuilder>? configureSilo = null)
+    //public static ILionFireHostBuilder Silo(this ILionFireHostBuilder lf, SiloProgramOptions? defaultOptions = null, Action<HostBuilderContext, ISiloBuilder>? configureSilo = null)
+    //{
+    //    return lf.Silo(configureOptions: o =>
+    //    {
+    //        defaultOptions?.AssignPropertiesTo(o);
+    //    }, configureSilo);
+    //}
+
+    public static ILionFireHostBuilder Silo(this ILionFireHostBuilder lf, Action<HostBuilderContext, ISiloBuilder>? configureSilo = null, Action<SiloProgramOptions>? configureOptions = null)
     {
-        config ??= new();
-
         OrleansStaticInitialization.InitOrleans();
 
         lf.HostBuilder
-            .ConfigureHostConfiguration(b =>
+            .ConfigureAppConfiguration((context, b) =>
             {
-                if (config.HttpPort.HasValue)
+                SiloProgramOptions options = new();
+                context.Configuration.Bind(SiloProgramOptions.ConfigLocation, options);
+                if (options.HttpPort.HasValue)
                 {
                     b.AddInMemoryCollection(new Dictionary<string, string?>
                     {
-                        ["Kestrel:Endpoints:Http:Url"] = $"http://{config.HttpInterface}:{config.HttpPort}",
+                        ["Kestrel:Endpoints:Http:Url"] = $"http://{options.HttpInterface}:{options.HttpPort}",
                     });
                 }
-                if (config.HttpsPort.HasValue)
+                if (options.HttpsPort.HasValue)
                 {
                     b.AddInMemoryCollection(new Dictionary<string, string?>
                     {
-                        ["Kestrel:Endpoints:HttpsDefaultCert:Url"] = $"https://{config.HttpsInterface}:{config.HttpsPort}",
+                        ["Kestrel:Endpoints:HttpsDefaultCert:Url"] = $"https://{options.HttpsInterface}:{options.HttpsPort}",
                     });
                 }
             })
             .ConfigureServices((context, services) =>
             {
+                SiloProgramOptions options = new();
+                context.Configuration.Bind(SiloProgramOptions.ConfigLocation, options);
+
                 services
+                    .If(configureOptions != null, s => s.Configure(configureOptions!))
                     .AddOrleans()
+                    .Configure<SiloProgramOptions>(context.Configuration.GetSection(SiloProgramOptions.ConfigLocation))
                     .AddTransient<LionFireSiloConfigurator>()
                     .AddHostedService<OrleansHealthCheckHostedService>()
-                    .Configure<OrleansCheckHostedServiceOptions>(c => { c.Port = config.OrleansHealthCheckPort; })
-                    .If(config.RegisterSiloWithConsul, s => s
-                        .AddHostedService<ConsulKVRegistration>()
-                    )
+                    .Configure<OrleansCheckHostedServiceOptions>(c => { c.Port = options.OrleansHealthCheckPort; })
+
 
                     .Configure<OrleansClusterConfig>(o => context.Configuration.Bind("Orleans:Cluster", o))
-                    .Configure<SiloOptions>(options => options.SiloName ??= $"LFSilo_{Guid.NewGuid().ToString("N").Substring(0, 5)}");
-                ;
-            })
+                    .Configure<SiloOptions>(options => options.SiloName ??= $"LFSilo_{Guid.NewGuid().ToString("N").Substring(0, 5)}")
 
-            .UseLionFireOrleans(config, configureSilo)
+                #region Consul
 
-            .If(config.RegisterSiloWithConsul, builder => builder
-                    .RegisterSiloWithConsul(o =>
+                    .Configure<ConsulServiceOptions>(o =>
                     {
                         int tcpTimeout = 15;
 
@@ -76,43 +87,49 @@ public static class SiloHostBuilder
                         //    TTL = TimeSpan.FromSeconds(30),
                         //    Status = HealthStatus.Passing,
                         //});
-                        if (config.DashboardEnabled)
+                        if (options.DashboardEnabled)
                         {
                             checks.Add(new AgentServiceCheck
                             {
                                 Name = "Dashboard",
-                                Notes = $"http://{config.DashboardInterface}:{config.DashboardPort}",
-                                HTTP = $"http://{config.DashboardInterface}:{config.DashboardPort}",
+                                Notes = $"http://{options.DashboardInterface}:{options.DashboardPort}",
+                                HTTP = $"http://{options.DashboardInterface}:{options.DashboardPort}",
                                 Interval = TimeSpan.FromSeconds(60),
                             });
                         }
                         checks.Add(new AgentServiceCheck
                         {
                             Name = "HealthCheck",
-                            Notes = $"http://{config.HttpInterface}:{config.HttpPort}/health",
-                            HTTP = $"http://{config.HttpInterface}:{config.HttpPort}/health",
+                            Notes = $"http://{options.HttpInterface}:{options.HttpPort}/health",
+                            HTTP = $"http://{options.HttpInterface}:{options.HttpPort}/health",
                             Interval = TimeSpan.FromSeconds(60),
                         });
                         checks.Add(new AgentServiceCheck
                         {
                             Name = $"Silo Port",
-                            Notes = $"{config.OrleansInterface}:{config.SiloPort}",
-                            TCP = $"{config.OrleansInterface}:{config.SiloPort}",
+                            Notes = $"{options.OrleansInterface}:{options.SiloPort}",
+                            TCP = $"{options.OrleansInterface}:{options.SiloPort}",
                             Interval = TimeSpan.FromSeconds(tcpTimeout),
                         });
                         checks.Add(new AgentServiceCheck
                         {
                             Name = "Gateway Port",
-                            Notes = $"{config.OrleansInterface}:{config.GatewayPort}",
-                            TCP = $"{config.OrleansInterface}:{config.GatewayPort}",
+                            Notes = $"{options.OrleansInterface}:{options.GatewayPort}",
+                            TCP = $"{options.OrleansInterface}:{options.GatewayPort}",
                             Interval = TimeSpan.FromSeconds(tcpTimeout),
                         });
 
-                        o.Address = config.OrleansInterface;
-                        o.Port = config.GatewayPort;
+                        o.Address = options.OrleansInterface;
+                        o.Port = options.GatewayPort;
                         o.Checks = checks;
                     })
-            )
+                ;
+            })
+            .RegisterSiloWithConsul() // Will only register if ConsulServiceOptions.Register == true and/or ConsulKVOptions.Register == true
+
+        #endregion
+
+            .UseLionFireOrleans(configureSilo)
             ;
 
         return lf;

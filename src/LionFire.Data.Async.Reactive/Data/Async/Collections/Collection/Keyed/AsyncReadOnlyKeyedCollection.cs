@@ -138,39 +138,30 @@ public abstract class AsyncReadOnlyKeyedCollection<TKey, TValue>
 
     #region Resolve
 
-    public abstract ITask<IGetResult<IEnumerable<TValue>>> ResolveFromSource(CancellationToken cancellationToken = default);
 
     Func<TValue, TValue, bool> ValueEqualityComparerFunc => (l, r) => DefaultKeyEqualityComparer.Equals(KeySelector(l), KeySelector(r));
 
     //public override IEnumerable<TValue>? ReadCacheValue => SourceCache.Items;
-    public override IEnumerable<TValue>? ReadCacheValue { get; protected set; }
+    public override IEnumerable<TValue>? ReadCacheValue { get; }
 
-    private object currentResolvingLock = new();
-    public override ITask<IGetResult<IEnumerable<TValue>>> Get(CancellationToken cancellationToken = default)
+
+    //protected abstract ITask<IGetResult<IEnumerable<TValue>>> GetImpl(CancellationToken cancellationToken = default);
+    //protected abstract ITask<IGetResult<IEnumerable<TValue>>> GetImpl(CancellationToken cancellationToken = default);
+    protected override async ITask<IGetResult<IEnumerable<TValue>>> GetImpl(CancellationToken cancellationToken = default)
     {
-        lock (currentResolvingLock)
+        var result = await GetImpl(cancellationToken).ConfigureAwait(false);
+        if (result.IsSuccess == true)
         {
-            var existing = getOperations.Value;
-            if (existing != null && !existing.AsTask().IsCompleted) { return existing; }
-
-            var task = Task.Run<IGetResult<IEnumerable<TValue>>>(async () =>
-            {
-                var result = await ResolveFromSource(cancellationToken).ConfigureAwait(false);
-                if (result.IsSuccess == true)
-                {
-                    SourceCache.EditDiff(result.Value ?? Enumerable.Empty<TValue>(), ValueEqualityComparerFunc);
-                    this.LastFullResolveValue = result.Value;
-                }
-                else
-                {
-                    Debug.WriteLine($"TODO: Handle non-success: " + result);
-                }
-                return result;
-            }).AsITask();
-            getOperations.OnNext(task);
-            return task;
+            SourceCache.EditDiff(result.Value ?? Enumerable.Empty<TValue>(), ValueEqualityComparerFunc);
+            this.LastFullResolveValue = result.Value;
         }
+        else
+        {
+            Debug.WriteLine($"TODO: Handle non-success: " + result);
+        }
+        return result;
     }
+
     protected IEnumerable<TValue>? LastFullResolveValue { get; private set; }
 
     #endregion

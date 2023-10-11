@@ -5,13 +5,19 @@ using System.Text;
 
 namespace LionFire.Hosting;
 
-public class ConsulServiceOptions
+// TODO: Split into HostSiloProgramOptions and SiloApplicationOptions since some settings (ports and interfaces) are used while building Host and Configure is too late for it.
+// TODO: Bind to Configuration["SiloProgram"], populate from appsettings.json instead of hardcoded C#?
+// TODO: Split into subclasses
+//  - ConsulServiceConfig
+//  - RelativePortsConfig - not hardcoded.  Add some place to look up available ports.
+public class SiloProgramOptions
 {
+    #region (Constants)
 
-}
+    public const string ConfigLocation = "SiloProgram";
 
-public class SiloProgramConfig
-{
+    #endregion
+
     #region (static)
 
     public const int DefaultPortBase = 9090;
@@ -20,39 +26,29 @@ public class SiloProgramConfig
 
     #region Construction
 
-    public SiloProgramConfig() : this(DefaultPortBase) { }
+    public SiloProgramOptions() : this(DefaultPortBase) { }
 
-    public SiloProgramConfig(int portBase)
+    public SiloProgramOptions(int portBase)
     {
-        PortBase = portBase;
+        BasePort = portBase;
     }
-
-    #endregion
-
-    #region Consul
-
-    public ConsulServiceOptions ConsulServiceOptions { get; set; }
-
-    public string ConsulDatacenter { get; set; } = "dc1";
-
-    public bool RegisterSiloWithConsul { get; set; } = true;
 
     #endregion
 
     #region Interface and Port
 
-    public int PortBase
+    public int BasePort
     {
         get => portBase; 
         set
         {
             portBase = value;
-            DashboardPort = PortBase;
-            HttpPort = PortBase + 1;
-            SiloPort = PortBase + 2;
-            GatewayPort = PortBase + 3;
-            OrleansHealthCheckPort = PortBase + 4;
-            HttpsPort = PortBase + 5;
+            DashboardPort = BasePort;
+            HttpPort = BasePort + 1;
+            SiloPort = BasePort + 2;
+            GatewayPort = BasePort + 3;
+            OrleansHealthCheckPort = BasePort + 4;
+            HttpsPort = BasePort + 5;
         }
     }
     private int portBase = 0;
@@ -101,5 +97,6 @@ public class SiloProgramConfig
     #endregion
 
     public IPEndPoint? LocalhostPrimaryClusterEndpoint { get; set; }
+
 
 }

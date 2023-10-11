@@ -30,7 +30,7 @@ public class GrainPropertyGetter : GetterRxO<object>
         awaiter.GetType().GetMethod("OnCompleted")!.Invoke(awaiter, new object[] { new Action(() =>
         {
             var value = miResult!.Invoke(awaiter, null);
-            getResult = new GetResult<object> { Value = value, Flags = TransferResultFlags.Success | (value == null ? TransferResultFlags.NotFound : TransferResultFlags.Found) | TransferResultFlags.Retrieved };
+            getResult = GetResult<object>.Success(value, extraFlags: TransferResultFlags.Retrieved);
             semaphore.Release();
         }) });
 

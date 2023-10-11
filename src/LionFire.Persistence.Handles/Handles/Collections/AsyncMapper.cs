@@ -174,10 +174,7 @@ public abstract class AsyncMapper<TItem, TUnderlying, TUnderlyingCollection, TRe
         }
         else
         {
-            if (HasValue)
-            {
-                return new GetResult<TResolvedUnderlyingCollection>(Value, true);
-            }
+            if (HasValue) { return GetResult<TResolvedUnderlyingCollection>.NoopSuccess(Value); }
             else
             {
                 var task = underlyingResolves.Get();
@@ -196,7 +193,9 @@ public abstract class AsyncMapper<TItem, TUnderlying, TUnderlyingCollection, TRe
         }
         else
         {
-            return HasValue ? new GetResult<TResolvedUnderlyingCollection>(Value, true) : NoopFailGetResult<TResolvedUnderlyingCollection>.Instance;
+            return HasValue 
+                ? GetResult<TResolvedUnderlyingCollection>.NoopSuccess(Value) 
+                : NoopFailGetResult<TResolvedUnderlyingCollection>.Instance;
         }
     }
 

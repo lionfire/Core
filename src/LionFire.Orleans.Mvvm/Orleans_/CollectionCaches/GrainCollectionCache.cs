@@ -39,6 +39,8 @@ using Microsoft.Extensions.Options;
 using LionFire.ExtensionMethods.Poco.Getters;
 using LionFire.Ontology;
 using LionFire.Data.Async.Sets;
+using System.Diagnostics;
+using LionFire.ExtensionMethods;
 
 namespace LionFire.Orleans_.Mvvm;
 
@@ -181,11 +183,16 @@ public class GrainCollectionCache<TValue> // RENAME: GrainCollectionCache
 
     #endregion
 
-    #region Resolve
+    #region Get
 
-    public override ITask<IGetResult<IEnumerable<TValue>>> ResolveFromSource(CancellationToken cancellationToken = default)
+    protected override ITask<IGetResult<IEnumerable<TValue>>> GetImpl(CancellationToken cancellationToken = default)
     {
         return GrainListCacheCommon<TValue>.ResolvesRetrieveFunc(CollectionGrain);
+    }
+
+    public override void OnNext(IGetResult<IEnumerable<TValue>> result)
+    {
+        Debug.WriteLine($"{this.GetType().ToHumanReadableName()} OnNext GetResult: {result}");
     }
 
     #endregion
@@ -390,7 +397,7 @@ public class GrainCollectionCache<TValue> // RENAME: GrainCollectionCache
     {
         throw new NotImplementedException();
     }
-    
+
     #endregion
 
     //public override IEnumerator<TItemGrain> GetEnumerator()

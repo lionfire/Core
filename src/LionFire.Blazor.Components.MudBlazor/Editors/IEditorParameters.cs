@@ -8,8 +8,8 @@ using System.Threading.Tasks;
 
 namespace LionFire.Blazor.Components.MudBlazor_;
 
-public interface IEditorParameters
-{
-    NodeVM NodeVM { get; set; }
-}
+//public interface IEditorParameters
+//{
+//    NodeVM NodeVM { get; set; }
+//}
 

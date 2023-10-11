@@ -96,7 +96,7 @@ public enum TransferResultFlags
 
     RanSynchronously = 1 << 23,
 
-    // 1 << 24
+    Set = 1 << 24,
 
     Ambiguous = 1 << 25,
 

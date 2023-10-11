@@ -7,6 +7,6 @@ namespace LionFire.Data.Async.Sets;
 /// </summary>
 public interface ISetResult : ITransferResult, IErrorResult { }
 
-public interface ISetResult<out TValue> : ISetResult, IValueResult<TValue>
+public interface ISetResult<out TValue> : ISetResult, IValueResult<TValue>, IHasValueResult
 {
 }

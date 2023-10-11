@@ -6,7 +6,7 @@ using LionFire.Data.Async;
 namespace LionFire.Data.Collections;
 
 public abstract class AsyncReadOnlyList<TValue> 
-    : AsyncLazyDynamicDataCollection<TValue>
+    : AsyncDynamicDataCollection<TValue> // REVIEW - was AsyncLazyDynamicDataCollection
     , System.IAsyncObserver<ChangeSet<TValue>> // OPTIMIZE: Separate this out 
 {
 

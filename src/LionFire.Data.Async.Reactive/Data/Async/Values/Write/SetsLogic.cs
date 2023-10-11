@@ -61,7 +61,20 @@ internal static class SetsLogic<TValue>
 
         try
         {
-            return await @this.SetImpl(@this.StagedValue, cancellationToken).ConfigureAwait(false);
+            var stagedValue = @this.StagedValue;
+            var setResult = await @this.SetImpl(stagedValue, cancellationToken).ConfigureAwait(false);
+            @this.DiscardStagedValue();
+            if(@this is IAsyncValue<TValue> av)
+            {
+                if(@this is IAwareOfSets<TValue> a)
+                {
+                    a.OnSet(setResult);
+                } else
+                {
+                    await av.Get(cancellationToken).ConfigureAwait(false);
+                }
+            }
+            return setResult;
         }
         catch (Exception ex)
         {

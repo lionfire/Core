@@ -10,6 +10,6 @@ public static class INodeInfoX
         (mi?.CanRead() == true ? "R" : "")
         + (mi?.CanWrite() == true ? "W" : "");
 
-    public static bool CanRead(this INodeInfo mi) => mi.IODirection.IsReadable();
-    public static bool CanWrite(this INodeInfo mi) => mi.IODirection.IsWritable();
+    public static bool CanRead(this INodeInfo mi) => mi.IODirection.CanRead();
+    public static bool CanWrite(this INodeInfo mi) => mi.IODirection.CanWrite();
 }

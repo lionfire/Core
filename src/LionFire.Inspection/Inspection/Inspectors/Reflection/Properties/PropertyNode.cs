@@ -1,11 +1,14 @@
 ﻿using DynamicData.Binding;
 using LionFire.Data;
+using LionFire.Data.Async;
 using LionFire.Data.Async.Gets;
+using LionFire.Data.Async.Sets;
 using LionFire.IO;
 using LionFire.Threading;
 using MorseCode.ITask;
 using ReactiveUI;
 using System.ComponentModel;
+using System.Diagnostics;
 using System.Diagnostics.Tracing;
 using System.Reflection;
 
@@ -21,6 +24,8 @@ public class PropertyNodeInfo : NodeInfoBase
     public PropertyNodeInfo(PropertyInfo propertyInfo)
     {
         PropertyInfo = propertyInfo;
+        Name = propertyInfo.Name;
+        Type = propertyInfo.PropertyType;
     }
 
     public PropertyInfo PropertyInfo { get; set; }
@@ -29,24 +34,53 @@ public class PropertyNodeInfo : NodeInfoBase
 }
 
 public class PropertyNode : Node<PropertyNodeInfo>
-    , IHasGetterRxO<object> // TODO: upgrade Getter to AsyncValue
-    , INodeInfo
+    //, IHasGetterRxO<object?> // TODO: upgrade Getter to AsyncValue
+    , IHas<IGetterRxO<object?>>
+    , IHas<IAsyncValue<object?>>
+    //, INodeInfo
 {
 
     #region Lifecycle
 
     public PropertyNode(INode parent, object source, PropertyInfo propertyInfo) : base(parent, source: source, new PropertyNodeInfo(propertyInfo))
     {
-        getter = new PropertyNodeGetter(source, propertyInfo);
-        //PropertyGroupInfo = propertyGroupInfo;
+        Key = propertyInfo.Name;
+
+        if (propertyInfo.CanRead)
+        {
+            if (propertyInfo.CanWrite)
+            {
+                asyncValue = new PropertyNodeValue(source, propertyInfo);
+            }
+            else
+            {
+                getter = new PropertyNodeGetter(source, propertyInfo);
+            }
+        }
+        //else if (propertyInfo.CanWrite)
+        //{
+        //    // ENH: Setter
+        //} 
+        //else { /* can neither read nor write */ }
     }
 
     #endregion
 
     #region Getter
 
-    public IGetterRxO<object> Getter => getter;
-    protected PropertyNodeGetter getter;
+    public IGetterRxO<object?>? Getter => asyncValue ?? (IGetterRxO<object?>?)getter;
+    protected PropertyNodeGetter? getter;
+    IGetterRxO<object?>? IHas<IGetterRxO<object?>>.Object => Getter;
+
+    public IAsyncValue<object?>? AsyncValue => asyncValue;
+    protected PropertyNodeValue? asyncValue;
+    IAsyncValue<object?>? IHas<IAsyncValue<object?>>.Object => AsyncValue;
+
+#if ENH
+    public ISetterRxO<object?>? Setter => asyncValue ?? (ISetterRxO<object?>?)getter;
+    protected PropertyNodeSetter? setter;
+    ISetterRxO<object?>? IHas<ISetterRxO<object?>>.Object => Setter;
+#endif
 
     #endregion
 
@@ -61,7 +95,7 @@ public class PropertyNode : Node<PropertyNodeInfo>
 
     public string? Name => getter.PropertyInfo.Name;
 
-    public string? Order { get; set; } = null;
+    public string? OrderString { get; set; } = null;
 
     public InspectorNodeKind NodeKind => InspectorNodeKind.Data;
 
@@ -83,7 +117,7 @@ public class PropertyNode : Node<PropertyNodeInfo>
 
     #region Internal Classes
 
-    public class PropertyNodeGetter : GetterRxO<object?>//, IObserver<object?>
+    public class PropertyNodeGetter : GetterRxO<object?>
     {
         public object? Source { get; }
 
@@ -119,7 +153,79 @@ public class PropertyNode : Node<PropertyNodeInfo>
         protected override ITask<IGetResult<object?>> GetImpl(CancellationToken cancellationToken = default)
         {
             var result = PropertyInfo.GetValue(Source);
-            return Task.FromResult<IGetResult<object?>>(new GetResult<object?>(result) { Flags = TransferResultFlags.RanSynchronously | TransferResultFlags.Success }).AsITask();
+            return Task.FromResult<IGetResult<object?>>(GetResult<object?>.SyncSuccess(result)).AsITask();
+        }
+
+        #region IObserver: Values
+
+        //public void OnCompleted()
+        //{
+        //    throw new NotImplementedException(); // TODO: Noop, just want to see this get hit
+        //}
+
+        //public void OnError(Exception error)
+        //{
+        //    throw new NotImplementedException();
+        //}
+
+        //public void OnNext(object? obj)
+        //{
+        //    DiscardValue();
+
+        //    if (GetOptions.AutoGet)
+        //    {
+        //        Get().AsTask().FireAndForget();
+        //    }
+        //}
+
+        #endregion
+
+    }
+
+    public class PropertyNodeValue : AsyncValue<object?>
+    {
+        public object? Source { get; }
+
+        public PropertyInfo PropertyInfo { get; }
+
+        public PropertyNodeValue(object source, PropertyInfo propertyInfo)
+        {
+            Source = source;
+
+            PropertyInfo = propertyInfo;
+
+            //this.SourceNode.WhenAnyValue(n => n.Source) // TODO: skip immediate evaluation
+            //    .Subscribe(OnObjectChanged);
+
+            //SourceNode.Values.Subscribe(this);
+
+            // TODO: Subscribe to INotifyPropertyChanged
+            if (source is INotifyPropertyChanged inpc)
+            {
+                inpc.PropertyChanged += OnPropertyChanged;
+            }
+        }
+
+        public bool SubscribeToSourceChanges { get; set; } = true; // TODO MOVE: to GetterOptions?
+        private void OnPropertyChanged(object? sender, PropertyChangedEventArgs e)
+        {
+            if (e.PropertyName == PropertyInfo.Name && SubscribeToSourceChanges)
+            {
+                this.Get().AsTask().FireAndForget();
+            }
+        }
+
+        protected override ITask<IGetResult<object?>> GetImpl(CancellationToken cancellationToken = default)
+        {
+            var result = PropertyInfo.GetValue(Source);
+            Debug.WriteLine($"[PropertyNode] {PropertyInfo.Name} = {result}");
+            return Task.FromResult<IGetResult<object?>>(GetResult<object?>.SyncSuccess(result)).AsITask();
+        }
+
+        public override Task<ISetResult<object?>> SetImpl(object? value, CancellationToken cancellationToken = default)
+        {
+            PropertyInfo.SetValue(Source, value);
+            return Task.FromResult<ISetResult<object?>>(SetResult<object>.SyncSuccess(value));
         }
 
         #region IObserver: Values

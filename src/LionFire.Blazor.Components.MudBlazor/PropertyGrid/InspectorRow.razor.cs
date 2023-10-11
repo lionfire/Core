@@ -1,5 +1,7 @@
+using LionFire.Data.Async.Gets;
 using LionFire.Inspection.Nodes;
 using LionFire.Inspection.ViewModels;
+using LionFire.Ontology;
 using Microsoft.AspNetCore.Components;
 using System.ComponentModel.DataAnnotations;
 
@@ -20,6 +22,15 @@ public partial class InspectorRow
 
     #endregion
 
+    public async void Refresh()
+    {
+        if (NodeVM!.Node is IHas<IStatelessGetter<object>> has && has.Object != null) { await has.Object.Get().ConfigureAwait(false); }
+
+        if (NodeVM!.Node is IStatelessGetter<object> g) { await g.Get().ConfigureAwait(false); }
+        if (NodeVM!.Node.Value is IStatelessGetter<object> g2) { await g2.Get().ConfigureAwait(false); }
+
+    }
+
     #region Lifecycle
 
     protected override Task OnParametersSetAsync()
@@ -31,9 +42,19 @@ public partial class InspectorRow
 
         ViewModel.Refresh();
 
+        if (ViewModel.NodeVM?.ValueState != null) {
+            ViewModel.NodeVM.ValueState.SubscribePropertyChangedEvents();
+            ViewModel.NodeVM.ValueState.PropertyChanged += ValueState_PropertyChanged;
+        }
+
         if (NodeVM != null && NodeVM.Depth == 0) NodeVM.ShowChildren = true; // View logic
 
         return base.OnParametersSetAsync();
+    }
+
+    private void ValueState_PropertyChanged(object? sender, System.ComponentModel.PropertyChangedEventArgs e)
+    {
+        InvokeAsync(StateHasChanged);
     }
 
     protected override Task OnInitializedAsync()
@@ -100,11 +121,11 @@ public partial class InspectorRow
         //    _ => "",
         //};
         bool hidden = false;
-        if (!ShowInspectedNode && nodeVM.Node is InspectedNode) hidden=true;
+        if (!ShowInspectedNode && nodeVM.Node is InspectedNode) hidden = true;
         if (!ShowGroups && nodeVM.Node is IGroupNode) hidden = true;
         if (NodeVM.IsFlattened)
         {
-            hidden = true; 
+            hidden = true;
             yield return "flattened";
         }
         yield return NodeVM.Node.Info.NodeKind.ToString();

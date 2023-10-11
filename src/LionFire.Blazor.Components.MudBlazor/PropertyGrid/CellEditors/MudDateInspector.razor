@@ -1,0 +1,58 @@
+﻿@inherits ReactiveUI.Blazor.ReactiveInjectableComponentBase<InspectorValueCellVM<DateTime?>>
+@implements IDisposable
+@using LionFire.Data.Async;
+@using LionFire.Inspection.ViewModels
+
+@namespace LionFire.Blazor.Components.MudBlazor_.PropertyGrid
+
+@if (ViewModel == null || ViewModel.NodeVM == null)
+{
+    <div>(uninitialized)</div>
+}
+else if (ViewModel.ValueState == null)
+{
+    <div>(unsupported)</div>
+}
+else
+{
+    @if (!ViewModel.CanWrite)
+    {
+        <div>@ViewModel.ValueState!.Value</div>
+    }
+    else
+    {
+        <MudDatePicker @bind-Date="ViewModel.ValueState!.Value"
+                       ReadOnly=@(!ViewModel.CanWrite)
+                       Margin="Margin.Dense" />
+    }
+}
+
+@code {
+
+    #region Parameters
+
+    [CascadingParameter]
+    public InspectorVM? InspectorVM { get; set; }
+
+    [Parameter]
+    public NodeVM NodeVM { get; set; } = null!;
+
+    #endregion
+
+    #region Lifecycle
+
+    protected override void OnParametersSet()
+    {
+        ViewModel!.NodeVM = NodeVM;
+    }
+
+    #endregion
+
+    #region TODO: how to do editor customizations?
+
+    // public TextEditorStyle Style { get; set; } = TextEditorStyle.SingleLine;
+
+    #endregion
+
+}
+
