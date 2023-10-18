@@ -26,7 +26,7 @@ public class LionFireSerilogBuilder
     public LionFireSerilogBuilder Defaults()
     {
         DefaultEnrich();
-        Console();
+        Console(LionFireSerilogDefaults.LongConsoleTemplate);
         File();
         //Loki();
 

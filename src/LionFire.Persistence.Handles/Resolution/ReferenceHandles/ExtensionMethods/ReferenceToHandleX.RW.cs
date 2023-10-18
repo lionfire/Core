@@ -63,16 +63,20 @@ public static partial class ReferenceToReadWriteHandleExtensions
         return (handle, usedPreresolved);
     }
 #endif
-    public static (IReadWriteHandle<TValue> handle, bool usedPreresolved) GetReadWriteHandlePrestaged<TValue>(this IReference reference, TValue? preStagedValue = default, bool overwriteValue = false)
+    public static (IReadWriteHandle<TValue> handle, bool usedExisting) GetReadWriteHandlePrestaged<TValue>(this IReference reference, TValue? preStagedValue = default, bool overwriteValue = false)
     {
-        bool usedPreresolved = false;
+        bool usedExisting = true;
 
         var handle = HandleRegistry.GetOrAddReadWrite<IReadWriteHandle<TValue>>(reference?.Url ?? throw new ArgumentNullException(nameof(reference)),
-            _ => reference.GetReadWriteHandleProvider().GetReadWriteHandle<TValue>(reference, preStagedValue));
+            _ =>
+            {
+                usedExisting = false;
+                return reference.GetReadWriteHandleProvider().GetReadWriteHandle<TValue>(reference, preStagedValue);
+            });
 
-        if (!usedPreresolved && overwriteValue) { handle.StagedValue = preStagedValue; usedPreresolved = true; }
+        if (usedExisting && overwriteValue) { handle.StagedValue = preStagedValue; }
 
-        return (handle, usedPreresolved);
+        return (handle, usedExisting);
     }
 
 #if OLD
@@ -87,15 +91,27 @@ public static partial class ReferenceToReadWriteHandleExtensions
 #endif
 
     // Non-generic
-    public static (IReadWriteHandle handle, bool usedPreresolved) GetReadWriteHandlePrestaged(this IReference reference, Type type, object preStagedValue, bool overwriteValue = false)
+    public static (IReadWriteHandle handle, bool usedExisting) GetReadWriteHandlePrestaged(this IReference reference, Type type, object preStagedValue, bool overwriteValue = false)
     {
-        var result = (typeof(ReferenceToReadWriteHandleExtensions).GetMethods(BindingFlags.Public | BindingFlags.Static).Where(mi => mi.Name == nameof(GetReadWriteHandlePrestaged) && mi.GetGenericArguments().Length == 1).First().MakeGenericMethod(type).Invoke(null, new object[] { reference, preStagedValue, overwriteValue })); // TODO - also for ReadHandle if needed?
+        // REVIEW - this is not nice. Can it be avoided/removed?
 
-        throw new NotImplementedException("TODO: extract and return result");
-        //return (result.handle, result.usedPreresolved);
+        // result = GetReadWriteHandlePrestaged<Type>(reference, preStagedValue, overwriteValue);
+        var result = // (IReadWriteHandle<TValue> handle, bool usedExisting)
+            (typeof(ReferenceToReadWriteHandleExtensions)
+            .GetMethods(BindingFlags.Public | BindingFlags.Static)
+            .Where(mi => mi.Name == nameof(GetReadWriteHandlePrestaged)
+                && mi.GetGenericArguments().Length == 1)
+            .First()
+                .MakeGenericMethod(type)
+            .Invoke(null, new object[] { reference, preStagedValue, overwriteValue })); // TODO - also for ReadHandle if needed?
+
+        var item1 = (IReadWriteHandle)result.GetType().GetField("Item1").GetValue(result);
+        var item2 = (bool)result.GetType().GetField("Item2").GetValue(result);
+
+        return (item1, item2);
     }
 
-#endregion
+    #endregion
 
     // Always create
     public static IReadWriteHandle<T> ToReadWriteHandle<T>(this IReference reference) => reference.GetReadWriteHandleProvider().GetReadWriteHandle<T>(reference)

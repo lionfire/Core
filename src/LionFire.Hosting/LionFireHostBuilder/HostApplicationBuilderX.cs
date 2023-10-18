@@ -16,7 +16,7 @@ public static class HostApplicationBuilderX
     /// <returns></returns>
     public static HostApplicationBuilder LionFire(this HostApplicationBuilder hostBuilder, Action<ILionFireHostBuilder>? action = null, bool useDefaults = true)
     {
-        var lf = new LionFireHostBuilder(hostBuilder);
+        var lf = new LionFireHostBuilder(hostBuilder); // TODO - reuse existing from Properties if it exists
 
         if (useDefaults) { lf.Defaults(); }
 
@@ -24,6 +24,8 @@ public static class HostApplicationBuilderX
 
         return hostBuilder;
     }
+    public static HostApplicationBuilder LionFire(this HostApplicationBuilder hostBuilder, int basePort, Action<ILionFireHostBuilder>? action = null, bool useDefaults = true) 
+        => hostBuilder.BasePort(basePort).LionFire(action, useDefaults);
 
     #region UseConsoleLifetime
 

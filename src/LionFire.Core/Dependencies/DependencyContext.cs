@@ -5,6 +5,7 @@ using System.Linq;
 using System.Reflection;
 using System.Threading;
 using LionFire.ExtensionMethods;
+using LionFire.FlexObjects;
 using LionFire.MultiTyping;
 using LionFire.Ontology;
 using LionFire.Structures;
@@ -28,7 +29,7 @@ public interface IDependencyContext : IHas<IServiceProvider?>, IWrapper<IService
 /// FUTURE:
 ///  - Named services?
 /// </remarks>
-public class DependencyContext : IDependencyContext
+public class DependencyContext : IDependencyContext, IFlex
 {
     #region (static)
     // TODO FIXME - figure out how to initialize Default and Current and when to use each
@@ -239,6 +240,8 @@ public class DependencyContext : IDependencyContext
 
     #endregion
 
+    object? IFlex.FlexData { get; set; }
+
     #region ServiceProvider
 
     public IServiceProvider? ServiceProvider
@@ -255,9 +258,9 @@ public class DependencyContext : IDependencyContext
     IServiceProvider? IHas<IServiceProvider?>.Object => ServiceProvider;
     #region IWrapper<IServiceProvider>
 
-    public IServiceProvider Value { get => ServiceProvider; set => ServiceProvider = value; }
-    IServiceProvider IReadWrapper<IServiceProvider>.Value => ServiceProvider;
-    IServiceProvider IWriteWrapper<IServiceProvider>.Value { set => ServiceProvider = value; }
+    public IServiceProvider? Value { get => ServiceProvider; set => ServiceProvider = value; }
+    IServiceProvider? IReadWrapper<IServiceProvider?>.Value => ServiceProvider;
+    IServiceProvider? IWriteWrapper<IServiceProvider?>.Value { set => ServiceProvider = value; }
 
     #endregion
 

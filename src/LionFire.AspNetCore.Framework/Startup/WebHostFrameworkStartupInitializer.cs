@@ -5,16 +5,19 @@ using Microsoft.AspNetCore.Diagnostics.HealthChecks;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.FileProviders;
 using Microsoft.Extensions.Hosting;
 using MudBlazor.Services;
 
-namespace LionFire.Valor.Action.Silo;
+namespace LionFire.Hosting;
 
-public static class FrameworkStartupInitializer
+public static class WebHostFrameworkStartupInitializer
 {
-    public static IMvcBuilder? AddForOptions(this IServiceCollection services, WebFrameworkOptions o)
-    {
+    // TODO: LionFire Builder?  Add Startup class?  lf.WebHost<TStartup> - do I already have this?
+    // TODO: Review accessibility and streamline all of this
 
+    public static IMvcBuilder? AddForOptions(this IServiceCollection services, WebFrameworkConfig o)
+    {
         if (o.HealthChecks)
         {
             services.AddHealthChecks()
@@ -26,38 +29,50 @@ public static class FrameworkStartupInitializer
                 services
                      .AddHealthChecksUI(setupSettings: setup =>
                      {
-                         setup.AddHealthCheckEndpoint("self-detail", $"/health/detail"); // REVIEW - https cert failing?
+                         setup.AddHealthCheckEndpoint("self-detail", $"/health/detail");
                      })
                      //.AddSqliteStorage("Data Source=HealthCheckHistory.sqlite3")
                      .AddInMemoryStorage()
                      ;
             }
         }
-
+        if (o.Swagger || o.RequiresSwagger) {
+            //services.AddEndpointsApiExplorer();
+            services.AddMvcCore()
+                .AddApiExplorer();
+            services.AddSwaggerGen();
+        }
+        
         var mvcBuilder = AddAspNetCore(services, o);
 
         return mvcBuilder;
     }
-    private static IMvcBuilder? AddAspNetCore(this IServiceCollection services, WebFrameworkOptions o)
+    private static IMvcBuilder? AddAspNetCore(this IServiceCollection services, WebFrameworkConfig o)
     {
         IMvcBuilder? mvcBuilder = null;
 
         if (o.RequiresMvc) { mvcBuilder = services.AddMvc(); }
+        else if (o.RequiresMvcCore) { /*mvcBuilder = */services.AddMvcCore(); } // TODO - this is not returned
 
         if (o.RequiresControllersWithViews) { mvcBuilder = services.AddControllersWithViews(); }
         else if (o.RequiresControllers) { mvcBuilder = services.AddControllers(); }
 
-        if (o.RequiresServerSideBlazor)
+        if (o.RequiresBlazorServer)
         {
             services.AddServerSideBlazor();
             if (o.RequiresMudBlazor) { services.AddMudServices(); }
         }
-        if (o.RequiresRazorPages || o.RequiresServerSideBlazor) { mvcBuilder = services.AddRazorPages(); }
+        if (o.RequiresRazorPages || o.RequiresBlazorServer) { mvcBuilder = services.AddRazorPages(); }
 
+        if (o.RequiresAuth)
+        {
+            services.AddAuthentication();
+            services.AddAuthorization();
+        }
         return mvcBuilder;
     }
 
-    public static WebFrameworkOptions Configure(this WebFrameworkOptions options, IApplicationBuilder app, IWebHostEnvironment env, bool swagger = true, bool endpoints = true, Action<IEndpointRouteBuilder>? configureEndpoints = null)
+    public static WebFrameworkConfig Configure(this WebFrameworkConfig options, IApplicationBuilder app, IWebHostEnvironment env, bool swagger = true, bool endpoints = true, Action<IEndpointRouteBuilder>? configureEndpoints = null)
     {
         if (env.IsDevelopment())
         {
@@ -67,10 +82,11 @@ public static class FrameworkStartupInitializer
         {
             app.UseExceptionHandler("/Error");
         }
+        //app.UseHttpsRedirection(); // TODO: based on option, and if both http and https interfaces are configured
 
         if (options.RequiresStaticFiles)
         {
-#if DEBUG
+#if true || DEBUG // TODO REVIEW
             app.UseStaticFiles();
 #else
         app.UseStaticFiles(new StaticFileOptions
@@ -80,7 +96,7 @@ public static class FrameworkStartupInitializer
 #endif
         }
 
-        if(swagger) options.ConfigureSwagger(app, env);
+        if (swagger) options.ConfigureSwagger(app, env);
 
         app.UseRouting();
 
@@ -88,8 +104,9 @@ public static class FrameworkStartupInitializer
 
         if (endpoints)
         {
-            app.UseEndpoints(endpoints =>
+            app.UseEndpoints(endpoints => 
             {
+                // ENH: this could probably be reworked to be a little more flexible
                 configureEndpoints?.Invoke(endpoints);
                 options.MapEndpoints(endpoints);
             });
@@ -98,9 +115,9 @@ public static class FrameworkStartupInitializer
         return options;
     }
 
-    public static WebFrameworkOptions ConfigureSwagger(this WebFrameworkOptions options, IApplicationBuilder app, IWebHostEnvironment env, Action<IApplicationBuilder, IWebHostEnvironment>? customInit = null)
+    public static WebFrameworkConfig ConfigureSwagger(this WebFrameworkConfig options, IApplicationBuilder app, IWebHostEnvironment env, Action<IApplicationBuilder, IWebHostEnvironment>? customInit = null)
     {
-        if (options.SwaggerInDevOnly)
+        if (options.Swagger || options.RequiresSwagger)
         {
             if (!options.SwaggerInDevOnly || env.IsDevelopment())
             {
@@ -119,7 +136,7 @@ public static class FrameworkStartupInitializer
         return options;
     }
 
-    public static WebFrameworkOptions ConfigureAuth(this WebFrameworkOptions options, IApplicationBuilder app, IWebHostEnvironment env)
+    public static WebFrameworkConfig ConfigureAuth(this WebFrameworkConfig options, IApplicationBuilder app, IWebHostEnvironment env)
     {
         if (options.RequiresAuth)
         {
@@ -130,7 +147,7 @@ public static class FrameworkStartupInitializer
         return options;
     }
 
-    private static WebFrameworkOptions MapHealthCheckEndpoints(this WebFrameworkOptions options, IEndpointRouteBuilder endpoints)
+    private static WebFrameworkConfig MapHealthCheckEndpoints(this WebFrameworkConfig options, IEndpointRouteBuilder endpoints)
     {
         if (options.HealthChecks)
         {
@@ -140,30 +157,31 @@ public static class FrameworkStartupInitializer
                 Predicate = _ => true,
                 ResponseWriter = UIResponseWriter.WriteHealthCheckUIResponse
             });
-        }
-        if (options.HealthChecksUI)
-        {
-            endpoints.MapHealthChecksUI(config => config.UIPath = "/health-ui");
+            if (options.HealthChecksUI)
+            {
+                endpoints.MapHealthChecksUI(config => config.UIPath = "/health-ui");
+            }
         }
 
         return options;
     }
 
-    public static WebFrameworkOptions MapEndpoints(this WebFrameworkOptions options, IEndpointRouteBuilder endpoints)
+    public static WebFrameworkConfig MapEndpoints(this WebFrameworkConfig options, IEndpointRouteBuilder endpoints)
     {
         options.MapHealthCheckEndpoints(endpoints);
 
-        if (options.RequiresServerSideBlazor)
+        if (options.RequiresControllers || options.RequiresControllersWithViews) endpoints.MapControllers();
+
+        if (options.RequiresBlazorServer)
         {
             endpoints.MapBlazorHub();
             endpoints.MapFallbackToPage("/_Host");
         }
-        if (options.RequiresServerSideBlazor || options.RequiresRazorPages)
+        if (options.RequiresBlazorServer || options.RequiresRazorPages)
         {
             endpoints.MapRazorPages();
         }
-        if(options.RequiresControllers || options.RequiresControllersWithViews) endpoints.MapControllers();
-        
+
         return options;
     }
 }

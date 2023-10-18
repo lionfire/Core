@@ -16,5 +16,11 @@
 
 	</ItemGroup>
 
+	<ItemGroup>
+	  <ProjectReference Include="..\LionFire.AspNetCore\LionFire.AspNetCore.csproj" />
+	  <ProjectReference Include="..\LionFire.Base\LionFire.Base.csproj" />
+	  <ProjectReference Include="..\LionFire.Core\LionFire.Core.csproj" />
+	</ItemGroup>
+
 
 </Project>

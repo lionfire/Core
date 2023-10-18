@@ -35,6 +35,8 @@ public static class LionFireSerilogX
         });
 
         var bootstrapLoggerConfiguration = new LoggerConfiguration();
+        //bootstrapLoggerConfiguration.ReadFrom.Configuration(configuration); // REVIEW - needed?
+
         var bootstrapBuilder = new LionFireSerilogBuilder(bootstrapLoggerConfiguration, configuration);
 
         configure?.Invoke(bootstrapBuilder);
@@ -51,6 +53,8 @@ public static class LionFireSerilogX
 
         builder.HostBuilder.UseSerilog((context, serviceProvider, loggerConfiguration) =>
         {
+            //loggerConfiguration.ReadFrom.Configuration(configuration); // REVIEW - needed?
+
             LogBootstrappingState.IsBootstrapping = false;
             global::Serilog.Log.Logger.Verbose($"----- BOOTSTRAP FINISHED -----");
             configure?.Invoke(new LionFireSerilogBuilder(loggerConfiguration, context?.Configuration));

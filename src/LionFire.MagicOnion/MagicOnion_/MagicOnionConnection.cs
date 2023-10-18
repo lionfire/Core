@@ -6,10 +6,17 @@ namespace LionFire.MagicOnion_;
 
 public class MagicOnionConnection : IConnection
 {
+    public string Name { get; }
+
+    public MagicOnionConnection(string name) { Name = name; }
+
     /// <summary>
     /// e.g. "https://localhost:5001"
     /// </summary>
     public string? ConnectionString { get; set; }
+
+    public GrpcChannel? Channel => channel;
+
 
     GrpcChannel? channel;
 

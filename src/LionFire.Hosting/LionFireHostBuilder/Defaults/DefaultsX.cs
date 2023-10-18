@@ -25,6 +25,7 @@ public static class DefaultsX
     /// </summary>
     public static ILionFireHostBuilder Defaults(this ILionFireHostBuilder lf)
     {
+        bool reloadOnChange = true;
         bool isTest = LionFireEnvironment.IsUnitTest == true;
 
         var builder = lf.HostBuilder;
@@ -54,7 +55,6 @@ public static class DefaultsX
 
         #endregion
 
-
         #region appsettings.{Environment}.json, appsettings.test.json, env: LionFire_*, copy example settings
 
         if (lf.HostBuilder.WrappedHostBuilder != null)
@@ -65,6 +65,7 @@ public static class DefaultsX
                 if (isTest) c.AddJsonFile("appsettings.test.json", optional: true, reloadOnChange: false);
 
                 c.AddEnvironmentVariables(prefix: "LionFire_");
+
             });
 
             #region AddUserSecrets
@@ -114,6 +115,7 @@ public static class DefaultsX
                 }
             }
             #endregion
+
         }
         else
         {
@@ -126,6 +128,8 @@ public static class DefaultsX
         // Configured supplemental AppSettings file
         builder.ConfigureAppConfiguration((hostingContext, config) =>
         {
+            config.AddJsonFile("appsettings." + hostingContext.HostingEnvironment.EnvironmentName + ".json", optional: true, reloadOnChange);
+
             var appSettingsFile = hostingContext.Configuration[ConfigurationKeys.AppSettingsFileKey];
             if (appSettingsFile != null)
             {
@@ -137,7 +141,26 @@ public static class DefaultsX
 
         #endregion
 
+        builder.ConfigureLogging((context, logging) =>
+        {
+            logging.AddConfiguration(context.Configuration.GetSection("Logging"));
+        });
+
         lf.Serilog();
+
+#if OLD // TODELETE - NLog (from Valor)
+        //NLog.LogManager.Configuration = new NLogLoggingConfiguration(hostApplicationBuilder.Configuration.GetSection("NLog"));
+
+//.AddLogging(loggingBuilder =>
+                    //{
+                    //    loggingBuilder.ClearProviders();
+                    //    loggingBuilder.SetMinimumLevel(LogLevel.Trace);
+                    //    //loggingBuilder.AddNLog(hostApplicationBuilder.Configuration);
+                    //    //loggingBuilder.AddNLog(NLog.LogManager.Configuration);
+                    //    //loggingBuilder.AddConsole();
+                    //})
+#endif
+
 
         lf.HostBuilder.UseDependencyContext();
 

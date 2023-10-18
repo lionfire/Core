@@ -1,6 +1,7 @@
 ﻿#nullable enable
 using LionFire.Applications;
 using LionFire.Configuration;
+using LionFire.Dependencies;
 using LionFire.ExtensionMethods.Dumping;
 using LionFire.Extensions.Logging;
 using Microsoft.Extensions.Configuration;
@@ -38,18 +39,67 @@ public static class AppInfoServicesX
 
     #region Host Builder extension methods
 
+    #region HostApplicationBuilder
 
-    public static HostApplicationBuilder AppInfo(this HostApplicationBuilder builder, AppInfo? appInfo = null, Action<AppInfo>? config = null, AppInfoOptions? options = null)
+    public static HostApplicationBuilder AppInfo(this HostApplicationBuilder builder, AppInfo? appInfo = null,  AppInfoOptions? options = null)
     {
+        //Action<AppInfo>? config = null,
         options ??= new();
         appInfo ??= new();
 
-        if (config != null) config(appInfo);
+        //if (config != null) config(appInfo);
         if (options.AutoDetect) appInfo.AutoDetect();
-        builder.GetLogger(typeof(AppInfo).FullName).LogInformation($"AppInfo: {appInfo.Dump()}");
+        builder.GetLogger(typeof(AppInfo).FullName!).LogInformation($"AppInfo: {appInfo.Dump()}");
 
         builder.Services.AddSingleton(appInfo);
+
+        #region AppInfo Singletons
+
+        if (LionFireEnvironment.IsMultiApplicationEnvironment) // REVIEW: eliminate this in favor of DependencyContext.Current?
+        {
+            if (Applications.AppInfo.RootInstance == null)
+            {
+                Applications.AppInfo.RootInstance = appInfo;
+            }
+        } 
+        //DependencyContext.Current?.SetType<AppInfo>(appInfo); // ENH: Set on Flex context?
+
+        // ENH: Alternate idea to reduce coupling: publish a 'new ServiceAvailable<T>(appInfo)' message
+
+        #endregion
+
+        #region Missing functionality
+
+        // builder.AsHostBuilder().Properties[typeof(AppInfo)] = appInfo; // Unavailable due to internal access modifier
+        
+        #endregion
+
+        #region HostApplicationBuilder only
+
         builder.Configuration.AddAppInfo(appInfo);
+
+        #endregion
+
+        if (options.AutoCreateDirectories) AutoCreateDirectories(appInfo); // BLOCKING I/O
+
+        return builder;
+    }
+
+    #endregion
+
+    #region IHostBuilder
+
+    public static IHostBuilder AppInfo(this IHostBuilder builder, AppInfo? appInfo = null, AppInfoOptions? options = null)
+    {
+        //Action<AppInfo>? config = null,
+        options ??= new();
+        appInfo ??= new();
+
+        //if (config != null) config(appInfo);
+        if (options.AutoDetect) appInfo.AutoDetect();
+        builder.GetLogger(typeof(AppInfo).FullName!).LogInformation($"AppInfo: {appInfo.Dump()}");
+
+        builder.ConfigureServices(s => s.AddSingleton(appInfo));
 
         if (LionFireEnvironment.IsMultiApplicationEnvironment)
         {
@@ -61,8 +111,28 @@ public static class AppInfoServicesX
 
         if (options.AutoCreateDirectories) AutoCreateDirectories(appInfo);
 
+        builder.Properties[typeof(AppInfo)] = appInfo;
+
+        #region Adapted to IHostBuilder
+
+        builder.ConfigureHostConfiguration(cb => cb.AddAppInfo(appInfo));
+
+        #endregion
+
         return builder;
     }
+
+    #endregion
+
+    public static ILionFireHostBuilder AppInfo(this ILionFireHostBuilder builder, AppInfo appInfo, AppInfoOptions? options = null)
+    {
+        builder.HostBuilder.AppInfo(appInfo, options: options);
+        return builder;
+    }
+
+
+#endregion
+
 
     public static void AutoCreateDirectories(AppInfo appInfo)
     {
@@ -71,39 +141,5 @@ public static class AppInfoServicesX
         AppDirectories.CreateProgramDataFolders(appInfo);
     }
 
-    // Note: Not using Configure approach (cooperative construction) because this is needed early
-    public static IHostBuilder AppInfo(this IHostBuilder builder, AppInfo appInfo = null, bool autoDetect = true, bool autoCreateDirectories = false)
-    {
-        appInfo ??= new AppInfo();
-        if (autoDetect) appInfo.AutoDetect();
-        builder.GetLogger(typeof(AppInfo).FullName).LogInformation($"AppInfo: {appInfo.Dump()}");
-
-        #region Enable ambient access to AppInfo
-
-        //hostBuilder.Properties[typeof(AppInfo)] = appInfo; // DEPRECATED - Is this still needed?
-
-        builder.ConfigureHostConfiguration(c => c.AddAppInfo(appInfo));
-
-        if (LionFireEnvironment.IsMultiApplicationEnvironment)
-        {
-            if (Applications.AppInfo.RootInstance == null)
-            {
-                Applications.AppInfo.RootInstance = appInfo;
-            }
-        }
-        //else // OLD
-        //{
-        //    Applications.AppInfo.Instance = appInfo;
-        //}
-
-        #endregion
-
-        if (autoCreateDirectories) AutoCreateDirectories(appInfo);
-
-        builder.ConfigureServices(services => services.AddSingleton(appInfo));
-        return builder;
-    }
-
-    #endregion
 
 }

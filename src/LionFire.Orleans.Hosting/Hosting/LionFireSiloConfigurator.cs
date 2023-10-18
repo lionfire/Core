@@ -10,6 +10,7 @@ using System.Net;
 using HostBuilderContext = Microsoft.Extensions.Hosting.HostBuilderContext;
 using Orleans.Serialization;
 using Microsoft.Extensions.Options;
+using LionFire.Net;
 
 namespace LionFire.Hosting;
 
@@ -116,8 +117,7 @@ public static class LionFireSiloConfiguratorX
     /// <exception cref="NotSupportedException"></exception>
     public static ISiloBuilder UseLionFireOrleans(this ISiloBuilder siloBuilder, HostBuilderContext context, Action<HostBuilderContext, ISiloBuilder>? configureSilo = null)
     {
-        var config = new SiloProgramOptions();
-        context.Configuration.Bind(SiloProgramOptions.ConfigLocation, config);
+        var config = new SiloProgramConfig(context.Configuration);
 
         var clusterConfigSection = context.Configuration.GetSection("Orleans:Cluster");
 
@@ -131,7 +131,11 @@ public static class LionFireSiloConfiguratorX
 
                  .If(clusterConfigProvider.Kind == ClusterDiscovery.Localhost, s =>
                      // NOTE - redundant specification of ClusterId and ServiceId
-                     s.UseLocalhostClustering(config.SiloPort, config.GatewayPort, config.LocalhostPrimaryClusterEndpoint, clusterConfigProvider.ServiceId, clusterConfigProvider.ClusterId
+                     s.UseLocalhostClustering(config.SiloPort ?? throw new ArgumentNullException(nameof(config.SiloPort))
+                     , config.GatewayPort ?? throw new ArgumentNullException(nameof(config.GatewayPort))
+                     , config.LocalhostPrimaryClusterEndpoint ?? throw new ArgumentNullException(nameof(config.LocalhostPrimaryClusterEndpoint))
+                     , clusterConfigProvider.ServiceId
+                     , clusterConfigProvider.ClusterId
                      ))
                  .If(clusterConfigProvider.Kind == ClusterDiscovery.Consul, s =>
                      s.UseConsulSiloClustering(gatewayOptions =>
@@ -164,11 +168,13 @@ public static class LionFireSiloConfiguratorX
 
         #endregion
 
-                 .ConfigureEndpoints(IPAddress.Parse(config.OrleansInterface), config.SiloPort, config.GatewayPort)
+                 .ConfigureEndpoints(IPAddress.Parse(config.SiloInterface)
+                     , config.SiloPort ?? throw new ArgumentNullException(nameof(config.SiloPort))
+                     , config.GatewayPort ?? throw new ArgumentNullException(nameof(config.GatewayPort)))
                  .ConfigureLogging(logging => logging.AddConsole())
                  ;
 
-        if (config.DashboardEnabled) siloBuilder.UseDashboard(options => { options.Port = config.DashboardPort; options.Host = config.DashboardInterface; });
+        if (config.DashboardEnabled) siloBuilder.UseDashboard(options => { options.Port = config.DashboardPort ?? throw new ArgumentNullException(nameof(config.DashboardPort)); options.Host = config.DashboardInterface; });
 
         configureSilo?.Invoke(context, siloBuilder);
 

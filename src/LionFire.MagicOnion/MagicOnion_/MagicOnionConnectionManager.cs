@@ -4,8 +4,6 @@ using Microsoft.Extensions.Options;
 
 namespace LionFire.MagicOnion_;
 
-// MOVE to MagicOnion DLL
-
 public class MagicOnionConnectionManager : ConnectionManager<MagicOnionConnection, MagicOnionConnectionOptions>
 {
     public MagicOnionConnectionManager(IServiceProvider serviceProvider) : base(serviceProvider)

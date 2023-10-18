@@ -4,29 +4,28 @@ using System.Threading;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
 using System;
 
-namespace LionFire.Orleans_.AspNetCore_
+namespace LionFire.Orleans_.AspNetCore_;
+
+
+public class GrainHealthCheck : IHealthCheck
 {
+    private readonly IClusterClient client;
 
-    public class GrainHealthCheck : IHealthCheck
+    public GrainHealthCheck(IClusterClient client)
     {
-        private readonly IClusterClient client;
+        this.client = client;
+    }
 
-        public GrainHealthCheck(IClusterClient client)
+    public async Task<HealthCheckResult> CheckHealthAsync(HealthCheckContext context, CancellationToken cancellationToken = default)
+    {
+        try
         {
-            this.client = client;
+            await client.GetGrain<ILocalHealthCheckGrain>(Guid.Empty).PingAsync();
         }
-
-        public async Task<HealthCheckResult> CheckHealthAsync(HealthCheckContext context, CancellationToken cancellationToken = default)
+        catch (Exception error)
         {
-            try
-            {
-                await client.GetGrain<ILocalHealthCheckGrain>(Guid.Empty).PingAsync();
-            }
-            catch (Exception error)
-            {
-                return HealthCheckResult.Unhealthy("Failed to ping the local health check grain.", error);
-            }
-            return HealthCheckResult.Healthy();
+            return HealthCheckResult.Unhealthy("Failed to ping the local health check grain.", error);
         }
+        return HealthCheckResult.Healthy();
     }
 }
