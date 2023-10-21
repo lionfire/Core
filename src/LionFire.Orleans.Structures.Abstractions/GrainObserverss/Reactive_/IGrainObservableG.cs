@@ -8,7 +8,7 @@ public interface IGrainObservableG<T> : IAddressable
     ValueTask Unsubscribe(IAsyncObserverO<T> subscriber);
 
     /// <summary>
-    /// Observer must resubscribe before this timeout elapses, or the subscription will be terminated.
+    /// Observer must re-subscribe before this timeout elapses, or the subscription will be terminated.
     /// </summary>
     /// <returns></returns>
     ValueTask<TimeSpan> SubscriptionTimeout();
