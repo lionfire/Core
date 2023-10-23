@@ -38,7 +38,7 @@ public static class OrleansCommandLineProgramX
     }
 
     public static CommandLineProgram<TBuilder, TBuilderBuilder> AddOrleansCommands<TBuilder, TBuilderBuilder>(this CommandLineProgram<TBuilder, TBuilderBuilder> program, string commandName = "orleans")
-        where TBuilderBuilder : IHostingBuilderBuilder<TBuilder>
+        where TBuilderBuilder : IHostingBuilderBuilder<TBuilder>, new()
     {
         var orleans = program.Command(commandName, command: c => c.Description = "orleans commands");
 

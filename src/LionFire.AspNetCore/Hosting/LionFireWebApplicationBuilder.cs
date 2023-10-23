@@ -56,7 +56,13 @@ public class LionFireWebApplicationBuilder : ILionFireHostBuilder
     {
         throw new NotImplementedException();
     }
+    public ILionFireHostBuilder ForHostApplicationBuilder(Action<HostApplicationBuilder> action)
+    {
+        throw new NotImplementedException();
+    }
+
 
     public IConfiguration GetBootstrapConfiguration(LionFireHostBuilderBootstrapOptions? options = null)
         => WebApplicationBuilder.Configuration;
+
 }

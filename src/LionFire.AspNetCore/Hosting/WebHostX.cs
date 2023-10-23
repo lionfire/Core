@@ -48,11 +48,11 @@ public static class LionFireWebHostBuilderX
     private static string prefix => WebHostConfig.DefaultConfigLocation;
 
     public static LionFireWebHostBuilder Http(this LionFireWebHostBuilder lfw, bool enabled = true)
-    { lfw.Builder.ConfigureDefaults([new($"{prefix}:HttpEnabled", enabled.ToString())]); return lfw; }
+    { lfw.Builder.ConfigureDefaults([new($"{prefix}:{nameof(WebHostConfig.Http)}", enabled.ToString())]); return lfw; }
     public static LionFireWebHostBuilder Https(this LionFireWebHostBuilder lfw, bool enabled = true)
-    { lfw.Builder.ConfigureDefaults([new($"{prefix}:HttpsEnabled", enabled.ToString())]); return lfw; }
+    { lfw.Builder.ConfigureDefaults([new($"{prefix}:{nameof(WebHostConfig.Https)}", enabled.ToString())]); return lfw; }
     public static LionFireWebHostBuilder BlazorServer(this LionFireWebHostBuilder lfw, bool enabled = true)
-    { lfw.Builder.ConfigureDefaults([new($"{prefix}:BlazorServer", enabled.ToString())]); return lfw; }
+    { lfw.Builder.ConfigureDefaults([new($"{prefix}:{nameof(WebHostConfig.BlazorServer)}", enabled.ToString())]); return lfw; }
 
 }
 
@@ -92,7 +92,7 @@ public static class WebHostX
 
                     webBuilder
                         .UseStartup<TStartup>()
-                        .UseContentRoot(AppContext.BaseDirectory)
+                        //.UseContentRoot(AppContext.BaseDirectory)
                         ;
 
                     if (urls.Length > 0)
@@ -102,13 +102,6 @@ public static class WebHostX
 
                     #endregion
                 });
-
-        // REVIEW: Do I also need this?
-        //.ConfigureServices((context, services) =>
-        //    {
-        //        // Reference: https://docs.microsoft.com/en-us/aspnet/core/fundamentals/servers/kestrel/options?view=aspnetcore-6.0
-        //        services.Configure<KestrelServerOptions>(context.Configuration.GetSection("Kestrel"));
-        //    })
 
         return builder;
     }

@@ -8,6 +8,7 @@ using System.CommandLine.Builder;
 using System.CommandLine.Parsing;
 using LionFire.FlexObjects;
 using System.CommandLine.Invocation;
+using LionFire.ExtensionMethods;
 
 namespace LionFire.Hosting.CommandLine;
 
@@ -17,10 +18,24 @@ namespace LionFire.Hosting.CommandLine;
 
 
 public class CommandLineProgram<TBuilder, TBuilderBuilder> : CommandLineProgram
-    where TBuilderBuilder : IHostingBuilderBuilder<TBuilder>
+    where TBuilderBuilder : IHostingBuilderBuilder<TBuilder>, new()
 {
+#if false // ENH Maybe - there is already inheritance
+    public CommandLineProgram<TBuilder, TBuilderBuilder> Common(Action<HostingBuilderBuilderContext, TBuilder> initializer)
+    {
+        GetCommonBuilderBuilder<TBuilderBuilder, TBuilder>().AddInitializer(initializer);
+        return this;
+    }
+    public CommandLineProgram<TBuilder, TBuilderBuilder> Common(Action<TBuilder> initializer)
+    {
+        GetCommonBuilderBuilder<TBuilderBuilder, TBuilder>().AddInitializer((_, b) => initializer(b));
+        return this;
+    }
+#endif
+
+
     // REVIEW: the API style. command is accessible via builderBuilder, so it could be removed as a parameter here.  Or could/should builderBuilder be removed?  
-    
+
     public new CommandLineProgram<TBuilder, TBuilderBuilder> RootCommand(Action<TBuilder> builder, Action<TBuilderBuilder>? builderBuilder = null, Action<Command>? command = null) => Command("", builder, builderBuilder: builderBuilder, command: command);
     public new CommandLineProgram<TBuilder, TBuilderBuilder> RootCommand(Action<HostingBuilderBuilderContext, TBuilder> builder, Action<TBuilderBuilder>? builderBuilder = null, Action<Command>? command = null) => Command("", builder, builderBuilder: builderBuilder, command: command);
 
@@ -119,6 +134,24 @@ public class CommandLineProgram : IProgram, IFlex
     #endregion
 
     #region BuilderBuilders
+
+    public IHostingBuilderBuilder<TBuilder> GetCommonBuilderBuilder<TBuilderBuilder, TBuilder>()
+        where TBuilderBuilder : IHostingBuilderBuilder<TBuilder>, new()
+        //where TBuilder : IHostingBuilderBuilder<TBuilder>, new()
+    {
+        if (SharedBuilderBuilders.TryGetValue("", out var hostingBuilderBuilder))
+        {
+            if (hostingBuilderBuilder is not TBuilderBuilder casted) throw new AlreadySetException("Cannot mix IHostingBuilderBuilder implementation types for same command");
+            return casted;
+        }
+
+        var result = new TBuilderBuilder();
+        sharedBuilderBuilders.Add("", result);
+        return result;
+    }
+
+    public IReadOnlyDictionary<string, IHostingBuilderBuilder> SharedBuilderBuilders => builderBuilders;
+    protected Dictionary<string, IHostingBuilderBuilder> sharedBuilderBuilders { get; } = new();
 
     public IReadOnlyDictionary<string, IHostingBuilderBuilder> BuilderBuilders => builderBuilders;
     protected Dictionary<string, IHostingBuilderBuilder> builderBuilders { get; } = new();

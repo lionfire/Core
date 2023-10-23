@@ -203,8 +203,8 @@
     <PackageVersion Include="Splat.Microsoft.Extensions.Logging" Version="14.6.37" />
     <PackageVersion Include="StackExchange.Redis" Version="2.6.116" />
     <PackageVersion Include="StardustDL.RazorComponents.MaterialDesignIcons" Version="5.9.55.51" />
-    <PackageVersion Include="Stride.Engine" Version="4.1.0.1734" />
-    <PackageVersion Include="Stride.Physics" Version="4.1.0.1734" />
+    <PackageVersion Include="Stride.Engine" Version="4.1.0.1" />
+    <PackageVersion Include="Stride.Physics" Version="4.1.0.1" />
     <PackageVersion Include="Swashbuckle.AspNetCore" Version="6.5.0" />
     <PackageVersion Include="Swordfish.NET.CollectionsV3" Version="3.3.12" />
     <PackageVersion Include="System.Collections.Concurrent" Version="4.3.0" />

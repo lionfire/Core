@@ -13,7 +13,6 @@
 
   <ItemGroup>
     <ProjectReference Include="..\LionFire.Hosting\LionFire.Hosting.csproj" />
-    <ProjectReference Include="..\LionFire.Platform.Unity\LionFire.Platform.Unity.csproj" />
   </ItemGroup>
 
   <ItemGroup>

@@ -27,6 +27,12 @@ public class LionFireHostBuilder : ILionFireHostBuilder
         action(HostBuilder);
         return this;
     }
+    public ILionFireHostBuilder ForHostApplicationBuilder(Action<HostApplicationBuilder> action)
+    {
+        if (HostBuilder.WrappedHostApplicationBuilder == null) throw new NotSupportedException($"{typeof(HostApplicationBuilder).Name} not available");
+        action(HostBuilder.WrappedHostApplicationBuilder);
+        return this;
+    }
 
     public ILionFireHostBuilder ConfigureServices(Action<IServiceCollection> configure) { HostBuilder.ConfigureServices(configure); return this; }
     public ILionFireHostBuilder ConfigureServices(Action<HostBuilderContext, IServiceCollection> configure) { HostBuilder.ConfigureServices(configure); return this; }
@@ -51,7 +57,7 @@ public class LionFireHostBuilder : ILionFireHostBuilder
 
 public static class DoneExtensions
 {
-    public static ILionFireHostBuilder Done(this IHostBuilder hostBuilder) => (hostBuilder as LionFireHostBuilderWrapper)?.Done() 
+    public static ILionFireHostBuilder Done(this IHostBuilder hostBuilder) => (hostBuilder as LionFireHostBuilderWrapper)?.Done()
         ?? throw new ArgumentException("hostBuilder is not LionFireHostBuilderWrapper and does not need Done")
         ;
 }
