@@ -13,9 +13,10 @@
 		<!--<MSBuildProjectExtensionsPath>$(BuildRoot)\obj-buildext\$(Configuration)\$(Platform)\$(MSBuildProjectName)\</MSBuildProjectExtensionsPath>-->
 		<!--<MSBuildProjectExtensionsPath>z:\build\obj\$(MSBuildProjectName)\</MSBuildProjectExtensionsPath>-->
 		
-		<PackageOutputDir>z:\nuget</PackageOutputDir>
+		<!--<PackageOutputDir>g:\build\packages\lionfire</PackageOutputDir>-->
+		<GeneratePackageOnBuild>True</GeneratePackageOnBuild>
 
-    <!-- <NeutralLanguage>English (United States)</NeutralLanguage> -->
+		<!-- <NeutralLanguage>English (United States)</NeutralLanguage> -->
     <LangVersion>latest</LangVersion>
 
     <UseFullSemVerForNuGet>false</UseFullSemVerForNuGet>
@@ -61,9 +62,13 @@
   <!-- <Target Name="CopyPackage" AfterTargets="Pack">
     <Copy SourceFiles="$(OutputPath)\..\$(PackageId).$(PackageVersion).nupkg" DestinationFolder="c:\\src\packages\\" />
   </Target> -->
-<Target Name="CopyPackage" AfterTargets="Pack">
+<!--<Target Name="CopyPackage" AfterTargets="Pack">
 	<Copy SourceFiles="$(OutputPath)\..\$(PackageId).$(PackageVersion).nupkg" DestinationFolder="c:\\src\packages\\" ContinueOnError="true"/>
   <Copy SourceFiles="$(OutputPath)\$(PackageId).$(PackageVersion).nupkg" DestinationFolder="c:\\src\packages\\" ContinueOnError="true"/>
-</Target>
+</Target>-->
 
+	<Target Name="AfterPack" AfterTargets="Pack">
+		<Exec Command="dotnet nuget push $(PackageOutputPath)*.nupkg --source LionFireLocal" />
+	</Target>
+	
 </Project>
