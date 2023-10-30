@@ -111,6 +111,7 @@ public class VobMountOptions : IVobMountOptions
     /// Physical mounts should be mounted Exclusive.  That means
     ///  no other mounts can be mounted at or below the mount point (TODO - Not enforced yet)
     ///  TODO - automate for file and physical references
+    ///  TODO: for safety, change to NonExclusive, default to false
     /// </summary>
     public bool IsExclusive { get; set; } = true;
 

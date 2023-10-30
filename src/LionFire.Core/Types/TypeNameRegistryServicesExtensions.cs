@@ -6,93 +6,92 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 
-namespace LionFire.Services
+namespace LionFire.Hosting;
+
+public static class TypeNameRegistryServicesExtensions
 {
-    public static class TypeNameRegistryServicesExtensions
-    {
-        public static IServiceCollection AddTypeNameRegistry(this IServiceCollection services)
-            => services
-                            .AddSingleton<ITypeResolver, TypeResolver>()
-                            .AddSingleton(serviceProvider => serviceProvider.GetService<IOptionsMonitor<TypeNameRegistry>>().CurrentValue)
-                        ;
+    public static IServiceCollection AddTypeNameRegistry(this IServiceCollection services)
+        => services
+                        .AddSingleton<ITypeResolver, TypeResolver>()
+                        .AddSingleton(serviceProvider => serviceProvider.GetService<IOptionsMonitor<TypeNameRegistry>>().CurrentValue)
+                    ;
 
-        //public static IServiceCollection RegisterTypeNames(this IServiceCollection services, Assembly assembly, Predicate<Type> filter = null, bool registerShortNames = true, bool publicTypesOnly = true, bool concreteTypesOnly = true)
-        //{
-        //    services
-        //        .Configure((TypeNameRegistry r) =>
-        //        {
-        //            foreach (var type in publicTypesOnly ? assembly.ExportedTypes : assembly.GetTypes())
-        //            {
-        //                if (concreteTypesOnly && (type.GetTypeInfo().IsAbstract || type.GetTypeInfo().IsInterface)) continue;
-        //                if (filter != null && !filter(type)) continue;
-        //                r.Types.Add(registerShortNames ? type.Name : type.FullName, type);
-        //            }
-        //        })
-        //        .AddSingleton(serviceProvider => serviceProvider.GetService<IOptionsMonitor<TypeNameRegistry>>().CurrentValue)
-        //        .AddSingleton<ITypeResolver, TypeResolver>()
-        //    ;
-        //    return services;
-        //}
+    //public static IServiceCollection RegisterTypeNames(this IServiceCollection services, Assembly assembly, Predicate<Type> filter = null, bool registerShortNames = true, bool publicTypesOnly = true, bool concreteTypesOnly = true)
+    //{
+    //    services
+    //        .Configure((TypeNameRegistry r) =>
+    //        {
+    //            foreach (var type in publicTypesOnly ? assembly.ExportedTypes : assembly.GetTypes())
+    //            {
+    //                if (concreteTypesOnly && (type.GetTypeInfo().IsAbstract || type.GetTypeInfo().IsInterface)) continue;
+    //                if (filter != null && !filter(type)) continue;
+    //                r.Types.Add(registerShortNames ? type.Name : type.FullName, type);
+    //            }
+    //        })
+    //        .AddSingleton(serviceProvider => serviceProvider.GetService<IOptionsMonitor<TypeNameRegistry>>().CurrentValue)
+    //        .AddSingleton<ITypeResolver, TypeResolver>()
+    //    ;
+    //    return services;
+    //}
 
-        public static Func<Type, string> DefaultTypeNameSelector { get; set; } = t => t.Name;
+    public static Func<Type, string> DefaultTypeNameSelector { get; set; } = t => t.Name;
 
 
-        public static IServiceCollection RegisterTypeName<T>(this IServiceCollection services, string name = null)
-            => services
-                    .Configure((TypeNameRegistry r) => r.Types.Add(name ?? DefaultTypeNameSelector(typeof(T)), typeof(T)));
-        //.AddSingleton(new TypeNameRegistryInitializer(new Dictionary<string, Type>
-        //{
-        //    [name ?? typeof(T).Name] = typeof(T),
-        //}));
+    public static IServiceCollection RegisterTypeName<T>(this IServiceCollection services, string name = null)
+        => services
+                .Configure((TypeNameRegistry r) => r.Types.Add(name ?? DefaultTypeNameSelector(typeof(T)), typeof(T)));
+    //.AddSingleton(new TypeNameRegistryInitializer(new Dictionary<string, Type>
+    //{
+    //    [name ?? typeof(T).Name] = typeof(T),
+    //}));
 
-        public static IServiceCollection RegisterTypeName(this IServiceCollection services, Type type, string name = null)
-            => services
-                    .Configure((TypeNameRegistry r) =>
+    public static IServiceCollection RegisterTypeName(this IServiceCollection services, Type type, string name = null)
+        => services
+                .Configure((TypeNameRegistry r) =>
+                {
+                    var key = name ?? type.Name;
+                    if (r.Types.ContainsKey(key))
                     {
-                        var key = name ?? type.Name;
-                        if (r.Types.ContainsKey(key))
-                        {
-                            if (r.Types[key].FullName != type.FullName) throw new AlreadyException($"Type name {key} is already registered with a different type: {r.Types[key].FullName}.  Cannot register as {type.FullName}");
-                        }
-                        else if (r.TypeNames.ContainsKey(type))
-                        {
-                            if (r.TypeNames[type] != key) throw new AlreadyException($"Type {type} is already registered with a different key: {r.TypeNames[type]}.  Cannot register as {key}");
-                        }
-                        else
-                        {
-                            r.Types.Add(key, type);
-                            r.TypeNames.Add(type, key);
-                        }
-                    });
+                        if (r.Types[key].FullName != type.FullName) throw new AlreadyException($"Type name {key} is already registered with a different type: {r.Types[key].FullName}.  Cannot register as {type.FullName}");
+                    }
+                    else if (r.TypeNames.ContainsKey(type))
+                    {
+                        if (r.TypeNames[type] != key) throw new AlreadyException($"Type {type} is already registered with a different key: {r.TypeNames[type]}.  Cannot register as {key}");
+                    }
+                    else
+                    {
+                        r.Types.Add(key, type);
+                        r.TypeNames.Add(type, key);
+                    }
+                });
 
-        //=> services
-        //          .AddSingleton(new TypeNameRegistryInitializer(new Dictionary<string, Type>
-        //          {
-        //              [name ?? type.Name] = type,
-        //          }));
+    //=> services
+    //          .AddSingleton(new TypeNameRegistryInitializer(new Dictionary<string, Type>
+    //          {
+    //              [name ?? type.Name] = type,
+    //          }));
 
-        public static IServiceCollection RegisterTypeNames(this IServiceCollection services, Assembly assembly, bool exportedTypesOnly = true, Func<Type, string> selector = null, Func<Type, bool> filter = null,  bool abstractTypes = false, bool genericTypes = false, bool interfaceTypes = false)
+    public static IServiceCollection RegisterTypeNames(this IServiceCollection services, Assembly assembly, bool exportedTypesOnly = true, Func<Type, string> selector = null, Func<Type, bool> filter = null,  bool abstractTypes = false, bool genericTypes = false, bool interfaceTypes = false)
+    {
+        if (selector == null) selector = t => null; // Uses a default in RegisterTypeName
+        if (filter == null) filter = t => true;
+
+        foreach (var type in (exportedTypesOnly ? assembly.GetExportedTypes() : assembly.GetTypes()).Where(filter))
         {
-            if (selector == null) selector = t => null; // Uses a default in RegisterTypeName
-            if (filter == null) filter = t => true;
-
-            foreach (var type in (exportedTypesOnly ? assembly.GetExportedTypes() : assembly.GetTypes()).Where(filter))
-            {
-                if (!abstractTypes && type.IsAbstract && !type.IsInterface) continue;
-                if (!genericTypes && type.ContainsGenericParameters) continue;
-                if (!interfaceTypes && type.IsInterface) continue;
-                services.RegisterTypeName(type, selector(type));
-            }
-            return services;
+            if (!abstractTypes && type.IsAbstract && !type.IsInterface) continue;
+            if (!genericTypes && type.ContainsGenericParameters) continue;
+            if (!interfaceTypes && type.IsInterface) continue;
+            services.RegisterTypeName(type, selector(type));
         }
-
-        public static IServiceCollection RegisterTypesNamesWithAttribute<T>(this IServiceCollection services,
-            Assembly assembly,
-            bool exportedTypesOnly = true,
-            Func<Type, string> selector = null,
-            Func<Type, bool> filter = null,
-            bool inheritAttribute = false)
-            where T : Attribute
-            => services.RegisterTypeNames(assembly, exportedTypesOnly: exportedTypesOnly, selector: selector, filter: t => t.GetCustomAttribute<T>(inheritAttribute) != null);
+        return services;
     }
+
+    public static IServiceCollection RegisterTypesNamesWithAttribute<T>(this IServiceCollection services,
+        Assembly assembly,
+        bool exportedTypesOnly = true,
+        Func<Type, string> selector = null,
+        Func<Type, bool> filter = null,
+        bool inheritAttribute = false)
+        where T : Attribute
+        => services.RegisterTypeNames(assembly, exportedTypesOnly: exportedTypesOnly, selector: selector, filter: t => t.GetCustomAttribute<T>(inheritAttribute) != null);
 }

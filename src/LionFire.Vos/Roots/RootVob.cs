@@ -45,15 +45,15 @@ namespace LionFire.Vos
 
         private static object rootLock = new object();
 
-        public RootVob(IVos rootManager, string rootName, VosOptions vosOptions, IOptionsMonitor<VobRootOptions> OptionsMonitor)
+        public RootVob(IVos rootManager, string rootName, VosOptions vosOptions, IOptionsMonitor<VobRootOptions> OptionsMonitor, IServiceProvider serviceProvider)
             : base(parent: null, name: null) // Note: Use null parent and null name even for named Roots
         {
             Interlocked.Increment(ref CreateCount);
             //if (CreateCount > 1) throw new Exception("TEMP - RootVob already created");
             this.RootName = rootName;
 
-            //ServiceProvider = ((IHas<IServiceProvider>)rootManager).Object;
-            //this.AddOwn(ServiceProvider);
+            //var ServiceProvider = ((IHas<IServiceProvider>)rootManager).Object;
+            this.AddOwn(serviceProvider);
 
             Options = OptionsMonitor.Get(rootName);
             if (Options.ServiceProviderMode == ServiceProviderMode.UseRootManager)
@@ -91,8 +91,8 @@ namespace LionFire.Vos
             #endregion
         }
 
-        public RootVob(IVos rootManager, VosOptions vosOptions, IOptionsMonitor<VobRootOptions> OptionsMonitor)
-        : this(rootManager, VosConstants.DefaultRootName, vosOptions, OptionsMonitor)
+        public RootVob(IVos rootManager, VosOptions vosOptions, IOptionsMonitor<VobRootOptions> OptionsMonitor, IServiceProvider serviceProvider)
+        : this(rootManager, VosConstants.DefaultRootName, vosOptions, OptionsMonitor, serviceProvider:  serviceProvider)
         {
 
         }

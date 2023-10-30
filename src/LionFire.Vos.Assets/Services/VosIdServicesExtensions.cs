@@ -13,7 +13,7 @@ using LionFire.Data.Id;
 using LionFire.Vos.Id.Handles;
 using LionFire.Hosting;
 
-namespace LionFire.Services;
+namespace LionFire.Hosting;
 
 public static class VosIdServicesExtensions
 {

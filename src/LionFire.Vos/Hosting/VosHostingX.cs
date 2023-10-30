@@ -126,7 +126,7 @@ public static class VosHostingX
                                     .AddServiceProvider(s =>
                                     {
                                         s
-                                        .AddSingleton(_ => new ServiceDirectory((RootVob)vobRoot))
+                                        //.AddSingleton(_ => new ServiceDirectory((RootVob)vobRoot)) // OLD
                                         .AddSingleton(vobRoot)
                                         .AddSingleton(vobRoot.Root.RootManager)
                                         .AddSingleton<VobMounter>()

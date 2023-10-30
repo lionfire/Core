@@ -27,6 +27,11 @@ public struct SetResult<TValue> : ISetResult<TValue>
     public TransferResultFlags Flags { get; set; }
 
     public object? Error { get; set; }
+
+    public override string ToString()
+    {
+        return $"SetResult: {(IsSuccess.HasValue ? "(?)" : (IsSuccess.Value ? "success" : "FAIL"))} - {Flags}";
+    }
 }
 public static class SetResultX
 {

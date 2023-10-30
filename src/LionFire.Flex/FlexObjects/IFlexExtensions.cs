@@ -133,33 +133,36 @@ public static class IFlexExtensions
     /// <param name="throwIfMissing">Use this to guarantee the return value won't be nulll.  If createIfMissing is true, an attempt will be made to create via the createFactory, and if that result is default(T), a CreationFailureException will be thrown.</param>
     /// <param name="createArgs">Ignored if createFactory is specified</param>
     /// <returns></returns>
-    public static T GetOrCreate<T>(this IFlex flex, string name = null, Func<T> createFactory = null, bool throwIfMissing = true, object[] createArgs = null)
+    public static T GetOrCreate<T>(this IFlex flex, string? name = null, Func<T>? createFactory = null, object[]? createArgs = null)
     {
-
-        var result = Query<T>(flex, name);
-        if (!EqualityComparer<T>.Default.Equals(result, default)) { return result; }
+        if (Query<T>(flex, out var result, name)) { return result!; }
+        //var result = Query<T>(flex, name); // OLD
+        //if (!EqualityComparer<T>.Default.Equals(result, default)) { return result; }
 
         lock (flex) // REVIEW - locks on the flex object itself.  This is generally not advised. Is there another way? Should we add a new object() to the flex?  Dedicated ConditionalWeakTable?
         {
-            #region redo
-            result = Query<T>(flex, name);
-            if (!EqualityComparer<T>.Default.Equals(result, default)) { return result; }
+            #region redo inside lock
+            if (Query(flex, out result, name)) { return result!; }
+            //result = Query<T>(flex, name);
+            //if (!EqualityComparer<T>.Default.Equals(result, default)) { return result; }
             #endregion
 
             result = createFactory != null ? createFactory()
                 : createArgs != null ? (T)FlexGlobalOptions.DefaultCreateWithOptionsFactory(typeof(T), createArgs)
                     : (T)FlexGlobalOptions.DefaultCreateFactory(typeof(T));
-            Add<T>(flex, result, allowMultipleOfSameType: false);
+
+            if (name == null) Add<T>(flex, result, allowMultipleOfSameType: false);
+            else Add<T>(flex, name, result);
         }
         return result;
     }
 
-    public static T Query<T>(this IFlex flex, string name = null) // RENAME TryGet
+    public static T? Query<T>(this IFlex flex, string? name = null) // RENAME TryGet
     {
         if (Query<T>(flex, out var result, name)) { return result; }
         return default;
     }
-    public static bool Query<T>(this IFlex flex, out T result, string name = null) // RENAME TryGet
+    public static bool Query<T>(this IFlex flex, out T? result, string? name = null) // RENAME TryGet
     {
         if (name == null)
         {
@@ -176,7 +179,11 @@ public static class IFlexExtensions
         }
         else
         {
-            throw new NotImplementedException("Query with name");
+            var dict = Query<Dictionary<string, T>>(flex);
+            if (dict != null && dict.TryGetValue(name, out result))
+            {
+                return true;
+            }
         }
         result = default;
         return false;
@@ -282,6 +289,65 @@ public static class IFlexExtensions
     /// <exception cref="ArgumentException"></exception>
     public static void Add<T>(this IFlex flex, T obj, bool allowMultipleOfSameType = true, bool? allowMultipleOfSameInstance = null)
         => _AddOrReplace<T>(flex, obj, allowMultipleOfSameType, allowMultipleOfSameInstance);
+
+    #region Keyed
+
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
+    /// <param name="flex"></param>
+    /// <param name="obj"></param>
+    /// <param name="allowMultipleOfSameType"></param>
+    /// <param name="allowMultipleOfSameInstance"></param>
+    public static void Add<T>(this IFlex flex, string key, T obj)
+        => _AddOrReplaceKeyed<T>(flex, key, obj, replace: false);
+
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
+    /// <param name="flex"></param>
+    /// <param name="obj"></param>
+    /// <param name="allowMultipleOfSameType"></param>
+    /// <param name="allowMultipleOfSameInstance"></param>
+    public static void Set<T>(this IFlex flex, string key, T obj)
+        => _AddOrReplaceKeyed<T>(flex, key, obj, replace: true);
+
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
+    /// <param name="flex"></param>
+    /// <param name="obj"></param>
+    /// <param name="allowMultipleOfSameType"></param>
+    /// <param name="allowMultipleOfSameInstance">true: multiple can be added.  false: throws if already contains obj.  null: ignores if already contains obj.</param>
+    /// <param name="replace">if true, replace existing with new obj.  Only happens if allowMultipleOfSameType is false</param>
+    /// <exception cref="ArgumentException"></exception>
+    private static void _AddOrReplaceKeyed<T>(this IFlex flex, string key, T obj, bool replace = false)
+    {
+        var dict = flex.GetOrCreate(createFactory: () => new Dictionary<string, T>());
+
+        if (dict.TryGetValue(key, out var existing))
+        {
+            if (replace)
+            {
+                dict[key] = obj;
+                followThrough = false;
+            }
+            else
+            {
+                throw new ArgumentException($"{nameof(allowMultipleOfSameType)} is false but there is already a '{typeof(T).FullName}'");
+            }
+        }
+        else
+        {
+            dict.Add(key, obj);
+        }
+    }
+
+    #endregion
+
 
     /// <summary>
     /// 

@@ -1,4 +1,5 @@
-﻿using System;
+﻿#nullable enable
+using System;
 using System.Collections.Generic;
 using LionFire.Dependencies;
 
@@ -25,11 +26,12 @@ namespace LionFire.DependencyInjection
         public IServiceProvider UnderlyingServiceProvider { get; }
         public ServiceProviderWrapper(IServiceProvider underlyingServiceProvider, IDictionary<Type, object> singletons)
         {
+            ArgumentNullException.ThrowIfNull(underlyingServiceProvider);
             UnderlyingServiceProvider = underlyingServiceProvider;
             Singletons = singletons;
         }
 
-        public object GetService(Type serviceType) => Singletons.ContainsKey(serviceType) ? Singletons[serviceType] : UnderlyingServiceProvider.GetService(serviceType);
+        public object? GetService(Type serviceType) => Singletons.ContainsKey(serviceType) ? Singletons[serviceType] : UnderlyingServiceProvider.GetService(serviceType);
         public object GetRequiredService(Type serviceType) => Singletons.ContainsKey(serviceType) ? (Singletons[serviceType] ?? throw new HasUnresolvedDependenciesException(serviceType))
             : (UnderlyingServiceProvider?.GetService(serviceType) ?? throw new HasUnresolvedDependenciesException(serviceType));
     }

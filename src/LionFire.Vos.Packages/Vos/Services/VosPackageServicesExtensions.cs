@@ -18,7 +18,10 @@ public static class VosPackageServicesExtensions
         services.InitializeVob<IServiceProvider>(vobReference, (v, serviceProvider) =>
          {
              v.AddPackageProvider(options);
-         }, key: $"{vobReference} PackageProvider", configure: c => c.Provide($"{vobReference} PackageProvider"));
+         }, key: $"{vobReference} PackageProvider", configure: c => c
+            .Provide($"{vobReference} PackageProvider")
+            .After("vos:")
+            );
         return services;
     }
     //public static IServiceCollection VosPackageProvider(this IServiceCollection services, string vosPath, PackageProviderOptions options = null)

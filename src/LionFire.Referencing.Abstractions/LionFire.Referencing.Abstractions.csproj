@@ -1,6 +1,8 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
+		<VersionSuffix></VersionSuffix>
+		
     <TargetFramework>net6.0</TargetFramework>
     <AssemblyName>LionFire.Referencing.Abstractions</AssemblyName>
     <PackageId>LionFire.Referencing.Abstractions</PackageId>

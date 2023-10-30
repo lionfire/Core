@@ -62,19 +62,20 @@ namespace Stores_
             Assert.False(await dataReference2.GetReadHandle<string>().Exists());
 
             // How to get a Vob?  VobReference.ToVob() might be nice.  How about VobReference.ToVob().AsType<PackageManager>()
-            var storesManager = "/".GetVob().GetService<ServiceDirectory>().GetRequiredService<PackageProvider>();
+            var packageProvider = "/".GetVob().Acquire<PackageProvider>();
+            //var storesManager = "/".GetVob().GetService<ServiceDirectory>().GetRequiredService<PackageProvider>();
             //var storesManager = storesManagerPath.ToVob().GetMultiTyped().AsType<PackageManager>();
-            Assert.NotNull(storesManager);
+            Assert.NotNull(packageProvider);
 
             //Assert.True(pluginManager.AvailablePackages.Contains("plugin1")); // TODO - once some sort of GetChildren functionality is available 
             //Assert.True(pluginManager.AvailablePackages.Contains("plugin2"));
-            Assert.False(Enumerable.Any<string>(storesManager.EnabledPackages));
+            Assert.False(Enumerable.Any<string>(packageProvider.EnabledPackages));
 
             #region ExeDir
             {
-                storesManager.Enable("ExeDir");
-                Assert.Contains((System.Collections.Generic.IEnumerable<string>)storesManager.EnabledPackages, s => s == "ExeDir");
-                Assert.Single((System.Collections.Generic.IEnumerable<string>)storesManager.EnabledPackages);
+                packageProvider.Enable("ExeDir");
+                Assert.Contains((System.Collections.Generic.IEnumerable<string>)packageProvider.EnabledPackages, s => s == "ExeDir");
+                Assert.Single((System.Collections.Generic.IEnumerable<string>)packageProvider.EnabledPackages);
 
                 var readHandle = dataReference1.GetReadHandle<string>();
                 var persistenceResult = await readHandle.Get();
@@ -95,9 +96,9 @@ namespace Stores_
             #region DataDir
             {
                 Assert.False(await dataReference2.GetReadHandle<string>().Exists());
-                storesManager.Enable("DataDir");
-                Assert.Contains((System.Collections.Generic.IEnumerable<string>)storesManager.EnabledPackages, s => s == "DataDir");
-                Assert.Equal(2, Enumerable.Count<string>(storesManager.EnabledPackages));
+                packageProvider.Enable("DataDir");
+                Assert.Contains((System.Collections.Generic.IEnumerable<string>)packageProvider.EnabledPackages, s => s == "DataDir");
+                Assert.Equal(2, Enumerable.Count<string>(packageProvider.EnabledPackages));
 
                 var readHandle = dataReference2.GetReadHandle<string>();
                 var persistenceResult = await readHandle.Get();
@@ -114,9 +115,9 @@ namespace Stores_
             }
             #endregion
 
-            Assert.True((bool)storesManager.Disable("ExeDir"));
-            Assert.True((bool)storesManager.Disable("DataDir"));
-            Assert.Empty((System.Collections.IEnumerable)storesManager.EnabledPackages);
+            Assert.True((bool)packageProvider.Disable("ExeDir"));
+            Assert.True((bool)packageProvider.Disable("DataDir"));
+            Assert.Empty((System.Collections.IEnumerable)packageProvider.EnabledPackages);
 
             var vobMounts = new VobReference("/stores/data").GetVob().AcquireOwn<VobMounts>();
             Assert.False(vobMounts.HasLocalReadMounts);
