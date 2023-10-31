@@ -33,11 +33,6 @@ public class FlexServiceProvider : IServiceProvider
 
     public DynamicServiceProvider DynamicServiceProvider { get; }
 
-    // CLEANUP
-    //private IServiceProvider? resolvedServiceProvider;
-    //public IServiceProvider? FallbackServiceProvider => FallbackServiceProviderFunc(this);
-    //public Func<FlexServiceProvider, IServiceProvider?> FallbackServiceProviderFunc { get; set; }
-
     #region (static) Strategies
 
     public static Func<FlexServiceProvider, IServiceProvider?> DefaultStrategy { get; set; } = OneShotServiceProviderFromFlex;
@@ -49,9 +44,6 @@ public class FlexServiceProvider : IServiceProvider
         {
             @this.DynamicServiceProvider.Parent = result;
             @this.DynamicServiceProvider.ParentFunc = null;
-            // CLEANUP
-            //@this.resolvedServiceProvider = result;
-            //@this.FallbackServiceProviderFunc = ResolvedServiceProvider;
         }
         return result;
     }
@@ -61,11 +53,6 @@ public class FlexServiceProvider : IServiceProvider
 
     public static IServiceProvider? FallbackServiceProviderFromFlexRecursive(FlexServiceProvider @this)
         => @this.Flex.RecursiveQuery<IServiceProvider>();
-
-    // CLEANUP
-    //public static IServiceProvider? ResolvedServiceProvider(FlexServiceProvider @this)
-    //    //=> @this.resolvedServiceProvider;
-    //    => @this.DynamicServiceProvider.Parent;
 
     #endregion
 
