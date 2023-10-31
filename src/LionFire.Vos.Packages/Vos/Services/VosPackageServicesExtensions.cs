@@ -15,6 +15,14 @@ public static class VosPackageServicesExtensions
 
     public static IServiceCollection VosPackageProvider(this IServiceCollection services, VobReference vobReference, PackageProviderOptions options = null)
     {
+        if (options == null)
+        {
+            options = new()
+            {
+                Name = vobReference.MakeAbsolute().ToString(),
+            };
+        }
+
         services.InitializeVob<IServiceProvider>(vobReference, (v, serviceProvider) =>
          {
              v.AddPackageProvider(options);

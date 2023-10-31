@@ -4,7 +4,6 @@ using System.Runtime.CompilerServices;
 
 namespace LionFire.FlexObjects;
 
-
 /// <summary>
 /// 
 /// </summary>
@@ -166,12 +165,17 @@ public static class IFlexExtensions
     {
         if (name == null)
         {
-            if (flex.FlexData is T match)
+            if (flex.FlexData is T directMatch)
             {
-                result = match;
+                result = directMatch;
                 return true;
             }
-            if (flex.FlexData is FlexTypeDictionary d && d.Types?.ContainsKey(typeof(T)) == true)
+            else if (flex.FlexData is TypedObject<T> match)
+            {
+                result = match.Object;
+                return true;
+            }
+            else if (flex.FlexData is FlexTypeDictionary d && d.Types?.ContainsKey(typeof(T)) == true)
             {
                 result = (T)d.Types[typeof(T)];
                 return true;
@@ -192,7 +196,7 @@ public static class IFlexExtensions
 
     #region Convenience / Backporting
 
-    public static T AsTypeOrCreateDefault<T>(this IFlex flex, Func<T> factory = null) => flex.GetOrCreate(createFactory: factory, throwIfMissing: true);
+    public static T AsTypeOrCreateDefault<T>(this IFlex flex, Func<T> factory = null) => flex.GetOrCreate(createFactory: factory);
 
     #endregion
 
@@ -275,8 +279,23 @@ public static class IFlexExtensions
 
     }
 
+    /// <summary>
+    /// For the T type slot, there must be no existing value.  
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
+    /// <param name="flex"></param>
+    /// <param name="obj"></param>
     public static void AddSingle<T>(this IFlex flex, T obj)
         => Add(flex, obj, allowMultipleOfSameType: false, allowMultipleOfSameInstance: null);
+
+    /// <summary>
+    /// For the T type slot, there must be no existing value.  
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
+    /// <param name="flex"></param>
+    /// <param name="obj"></param>
+    public static void AddOrReplace<T>(this IFlex flex, T obj)
+        => _AddOrReplace<T>(flex, obj, allowMultipleOfSameType: false, allowMultipleOfSameInstance: null, replace: true);
 
     /// <summary>
     /// 
@@ -333,11 +352,10 @@ public static class IFlexExtensions
             if (replace)
             {
                 dict[key] = obj;
-                followThrough = false;
             }
             else
             {
-                throw new ArgumentException($"{nameof(allowMultipleOfSameType)} is false but there is already a '{typeof(T).FullName}'");
+                throw new AlreadySetException($"{nameof(replace)} is false but there is already a '{typeof(T).FullName}'");
             }
         }
         else
@@ -376,7 +394,7 @@ public static class IFlexExtensions
         {
             if (flex.FlexData is List<T> existingList)
             {
-                //if (!allowMultipleOfSameType) { throw new ArgumentException($"{nameof(allowMultipleOfSameType)} is false but there is already a list of type '{typeof(T).FullName}'"); }
+                //if (!allowMultipleOfSameType) { throw new AlreadySetException($"{nameof(allowMultipleOfSameType)} is false but there is already a list of type '{typeof(T).FullName}'"); }
                 // 3rd (or later) item of list
                 if (OnExistingList(existingList)) { existingList.Add(obj); }
             }
@@ -392,7 +410,7 @@ public static class IFlexExtensions
                     }
                     else
                     {
-                        throw new ArgumentException($"{nameof(allowMultipleOfSameType)} is false but there is already a '{typeof(T).FullName}'");
+                        throw new AlreadySetException($"{nameof(allowMultipleOfSameType)} and {nameof(replace)} are false but there is already a '{typeof(T).FullName}'");
                     }
                 }
                 if (existingItem.Equals(obj))
@@ -435,7 +453,7 @@ public static class IFlexExtensions
                         }
                         else
                         {
-                            throw new ArgumentException($"{nameof(allowMultipleOfSameType)} is false but there is already a '{typeof(T).FullName}'");
+                            throw new AlreadySetException($"{nameof(allowMultipleOfSameType)} and {nameof(replace)} are false but there is already a '{typeof(T).FullName}'");
                         }
                     }
 

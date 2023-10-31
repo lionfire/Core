@@ -1,4 +1,5 @@
-﻿using LionFire.MultiTyping;
+﻿#nullable enable
+using LionFire.MultiTyping;
 using Microsoft.Extensions.DependencyInjection;
 using System;
 using LionFire.Vos.Services;
@@ -8,8 +9,15 @@ using System.Threading.Tasks;
 using LionFire.Referencing;
 using LionFire.Persistence;
 using LionFire.FlexObjects;
+using LionFire.Flex;
 
 namespace LionFire.Vos.Packages;
+
+public static class IVobFlexX
+{
+    public static T TryAcquire<T>(this IVob vob, string? key = null) where T : class
+        => vob.RecursiveQuery<IVob, T>(key, o => o.Parent);
+}
 
 public static class PackageProviderExtensions
 {
@@ -19,22 +27,19 @@ public static class PackageProviderExtensions
 
         var packageProvider = new PackageProvider(vob, options: options);
 
-        vob.AddOwn<PackageProvider>(packageProvider);
+        vob.AddSingle<PackageProvider>(packageProvider); // New: IFlex
+        
+        vob.Root.Add(options?.Name ?? throw new ArgumentNullException("options.Name"), packageProvider);
 
-        #region Deprecated
+        #region Deprecated - VobNode
 
-        // REVIEW - is this still needed?  VobNode seems cleaner.  Calling method can add to ServiceDirectory if desired.
+        vob.AddOwn<PackageProvider>(packageProvider); // DEPRECATED - VobNode
 
         // Get the ServiceDirectory (crawls up the Vob tree).  ServiceDirectories can currently only be created at a RootVob.
         // Registers the PackageProvider at the given path
-        // Name must be unique among PackageProviders.  If omitted, it is treated as empty.
 
-#error NEXT: Named ServiceDirectory dictionary on Flex
-        // NEXT: Sunset ServiceDirectory
-        vob.GetRequiredService<ServiceDirectory>().Register(packageProvider, name: options?.Name);
-#error NEXT
-        // NEXT: do I want IVob to be IFlex? Alternative: IHasFlex
-        vob.Add(options?.Name, packageProvider);
+        //vob.GetRequiredService<ServiceDirectory>().Register(packageProvider, name: options?.Name);
+
 
         #endregion
 

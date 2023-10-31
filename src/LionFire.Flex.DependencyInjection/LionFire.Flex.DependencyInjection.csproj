@@ -1,0 +1,16 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+	<PropertyGroup>
+		<TargetFramework>net6.0</TargetFramework>
+		<ImplicitUsings>enable</ImplicitUsings>
+		<Nullable>enable</Nullable>
+	</PropertyGroup>
+
+	<ItemGroup>
+		<ProjectReference Include="..\LionFire.Extensions.DependencyInjection\LionFire.Extensions.DependencyInjection.csproj" />
+		<ProjectReference Include="..\LionFire.Flex.Extras\LionFire.Flex.Framework.csproj" />
+		<ProjectReference Include="..\LionFire.Structures\LionFire.Structures.csproj" />
+		<ProjectReference Include="..\LionFire.Base\LionFire.Base.csproj" />
+	</ItemGroup>
+
+</Project>

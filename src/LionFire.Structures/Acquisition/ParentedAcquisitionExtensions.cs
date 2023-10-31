@@ -10,7 +10,6 @@ namespace LionFire.ExtensionMethods.Acquisition
     //    where TNode : IParented<TNode>
     //    where TValue : class
     //{
-
     //}
 
     public static class ParentedAcquisitionExtensions

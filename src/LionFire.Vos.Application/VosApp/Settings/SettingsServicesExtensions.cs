@@ -22,7 +22,7 @@ namespace LionFire.Settings
     {
         public static IServiceCollection AddSettings(this IServiceCollection services, bool mountAll = true)
         => services
-            .VobEnvironment("AppSettingsId", serviceProvider => serviceProvider.GetService<AppInfo>().AppId)
+            .VobEnvironment("AppSettingsId", serviceProvider => serviceProvider.GetRequiredService<AppInfo>().AppId)
 
             .VobEnvironment("Settings", "/Settings".ToVobReference())
 

@@ -19,6 +19,7 @@ public static class VosAppPackagesServicesExtensions
         {
             Mode = PackageProviderMode.Unspecified | (exclusive ? PackageProviderMode.Single : PackageProviderMode.Overlay | PackageProviderMode.Active),
             AutoActivate = autoActivate,
+            Name = name,
         };
 
         VobReference packagePath = VosPackageLocations.GetPackageProviderPath(name);

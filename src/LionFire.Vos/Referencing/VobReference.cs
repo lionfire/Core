@@ -119,6 +119,12 @@ public class VobReference : VobReference<object>
 
     #endregion
 
+    public VobReference MakeAbsolute()
+    {
+        if (this.Path.StartsWith(LionPath.Separator)) return this;
+        return new VobReference(LionPath.Combine(LionPath.Separator, this.Path));
+    }
+
 }
 
 #if OLD

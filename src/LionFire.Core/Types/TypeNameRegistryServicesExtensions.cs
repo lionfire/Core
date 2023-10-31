@@ -46,22 +46,31 @@ public static class TypeNameRegistryServicesExtensions
     //}));
 
     public static IServiceCollection RegisterTypeName(this IServiceCollection services, Type type, string name = null)
+        => RegisterTypeNames(services, new(Type type, string? name)[] { (type, name) });
+
+    public static IServiceCollection RegisterTypeNames(this IServiceCollection services, IEnumerable<(Type type, string? name)> list)
         => services
                 .Configure((TypeNameRegistry r) =>
                 {
-                    var key = name ?? type.Name;
-                    if (r.Types.ContainsKey(key))
+                    foreach (var x in list)
                     {
-                        if (r.Types[key].FullName != type.FullName) throw new AlreadyException($"Type name {key} is already registered with a different type: {r.Types[key].FullName}.  Cannot register as {type.FullName}");
-                    }
-                    else if (r.TypeNames.ContainsKey(type))
-                    {
-                        if (r.TypeNames[type] != key) throw new AlreadyException($"Type {type} is already registered with a different key: {r.TypeNames[type]}.  Cannot register as {key}");
-                    }
-                    else
-                    {
-                        r.Types.Add(key, type);
-                        r.TypeNames.Add(type, key);
+                        var type = x.type;
+                        var name = x.name;
+
+                        var key = name ?? type.Name;
+                        if (r.Types.ContainsKey(key))
+                        {
+                            if (r.Types[key].FullName != type.FullName) throw new AlreadyException($"Type name {key} is already registered with a different type: {r.Types[key].FullName}.  Cannot register as {type.FullName}");
+                        }
+                        else if (r.TypeNames.ContainsKey(type))
+                        {
+                            if (r.TypeNames[type] != key) throw new AlreadyException($"Type {type} is already registered with a different key: {r.TypeNames[type]}.  Cannot register as {key}");
+                        }
+                        else
+                        {
+                            r.Types.Add(key, type);
+                            r.TypeNames.Add(type, key);
+                        }
                     }
                 });
 
@@ -71,18 +80,22 @@ public static class TypeNameRegistryServicesExtensions
     //              [name ?? type.Name] = type,
     //          }));
 
-    public static IServiceCollection RegisterTypeNames(this IServiceCollection services, Assembly assembly, bool exportedTypesOnly = true, Func<Type, string> selector = null, Func<Type, bool> filter = null,  bool abstractTypes = false, bool genericTypes = false, bool interfaceTypes = false)
+    public static IServiceCollection RegisterTypeNames(this IServiceCollection services, Assembly assembly, bool exportedTypesOnly = true, Func<Type, string> selector = null, Func<Type, bool> filter = null, bool abstractTypes = false, bool genericTypes = false, bool interfaceTypes = false)
     {
         if (selector == null) selector = t => null; // Uses a default in RegisterTypeName
         if (filter == null) filter = t => true;
 
+
+        var list = new List<(Type, string?)>();
         foreach (var type in (exportedTypesOnly ? assembly.GetExportedTypes() : assembly.GetTypes()).Where(filter))
         {
             if (!abstractTypes && type.IsAbstract && !type.IsInterface) continue;
             if (!genericTypes && type.ContainsGenericParameters) continue;
             if (!interfaceTypes && type.IsInterface) continue;
-            services.RegisterTypeName(type, selector(type));
+            list.Add((type, selector(type)));
         }
+
+        services.RegisterTypeNames(list);
         return services;
     }
 

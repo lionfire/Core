@@ -118,24 +118,30 @@ public static class VosHostingX
                           list.AddRange(DependencyStages.CreateStageChain(new string[] { "vos:" }.Concat(vobRootChain.Select(c => c + vobRoot.Reference)).ToArray()));
 
                           list.Add(new Participant()
-                          {
-                              Key = "RootInitializer",
-                              StartAction = () =>
                               {
-                                  vobRoot
-                                    .AddServiceProvider(s =>
-                                    {
-                                        s
-                                        //.AddSingleton(_ => new ServiceDirectory((RootVob)vobRoot)) // OLD
-                                        .AddSingleton(vobRoot)
-                                        .AddSingleton(vobRoot.Root.RootManager)
-                                        .AddSingleton<VobMounter>()
-                                        .If(persistence, s2 => s2.AddSingleton<VosPersister>())
-                                        ;
-                                    }, (vobRoot as IHas<IServiceProvider>)?.Object);
-                                  //.AddTransient<IServiceProvider, DynamicServiceProvider>() // Don't want this.  DELETE
-                              },
-                          }.Contributes("services:" + vobRoot.Reference /* vos:/ */)); // "RootVobs"),
+                                  Key = "RootInitializer",
+                                  StartAction = () =>
+                                  {
+                                      vobRoot
+                                        .AddDynamicServiceProvider(s =>
+                                        {
+                                            s
+                                            .AddSingleton(_ => new ServiceDirectory((RootVob)vobRoot)) // OLD
+                                            .AddSingleton(vobRoot)
+                                            .AddSingleton(vobRoot.Root.RootManager)
+                                            .AddSingleton<VobMounter>()
+                                            .If(persistence, s2 => s2.AddSingleton<VosPersister>())
+                                            ;
+                                        });
+                                  },
+                              }
+                              .Contributes("services:" + vobRoot.Reference /* vos:/ */)
+                              .Contributes("services:" + vobRoot.Reference + $"<{typeof(VobMounter).Name}>")
+                              .Contributes("services:" + vobRoot.Reference + $"<{typeof(IServiceProvider).Name}>")
+                              .Contributes("VobNode:" + vobRoot.Reference + $"<{typeof(IServiceProvider).Name}>") // REVIEW: it get set on Flex and as VobNode
+                              .Contributes("services:" + vobRoot.Reference + $"<{typeof(IRootVob).Name}>")
+                              .Contributes("services:" + vobRoot.Reference + $"<{typeof(IVos).Name}>")
+                          );
 
                           //new Dependency(VosInitStages.RootMountStage(vobRoot.Name), $"{vobRoot} mounts") { StartAction = () => vobRoot.InitializeMounts(), }.DependsOn("vos:"),
                           list.Add(new Participant(key: VosInitStages.RootMountStage(vobRoot.Name)) { StartAction = () => vobRoot.InitializeMounts(), }.After("environment:" + vobRoot.Reference.ToString()).Contributes(vobRoot.Reference.ToString()));
