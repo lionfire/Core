@@ -3,6 +3,7 @@ using System;
 using LionFire.Dependencies;
 using LionFire.DependencyInjection;
 using LionFire.FlexObjects;
+using LionFire.FlexObjects.Services;
 using LionFire.Vos;
 using LionFire.Vos.Internals;
 using Microsoft.Extensions.DependencyInjection;
@@ -25,25 +26,9 @@ public static class FlexActivatorX
     }
 }
 
-
-public class FlexAsServiceProvider : IServiceProvider
-{
-    private IFlex flex;
-
-    public FlexAsServiceProvider(IFlex flex)
-    {
-        this.flex = flex;
-    }
-
-    public object GetService(Type serviceType)
-    {
-        throw new NotImplementedException();
-    }
-}
-
 public static class VobServiceProviderExtensions
 {
-    public static IVob AddDynamicServiceProvider(this IVob vob, Action<IServiceCollection>? configurator = null, IServiceProvider parentServiceProvider = null)
+    public static IVob AddDynamicServiceProvider(this IVob vob, Action<IServiceCollection>? configurator = null, IServiceProvider? parentServiceProvider = null)
     {
         IServiceProvider? existingServiceProvider;
 
@@ -60,13 +45,19 @@ public static class VobServiceProviderExtensions
         #endregion
 
         existingServiceProvider = vob.Query<IServiceProvider>();
+        parentServiceProvider ??= existingServiceProvider;
 
-        var dsp = new DynamicServiceProvider(parentServiceProvider ?? existingServiceProvider);
+        var fsp = parentServiceProvider != null ? new FlexServiceProvider(vob, parentServiceProvider)
+            : new FlexServiceProvider(vob);
+
+        var dsp = fsp.DynamicServiceProvider;
         configurator?.Invoke(dsp);
 
         vob.AddOrReplace<IServiceProvider>(dsp); // Typically: replacing the application-wide IServiceProvider here
         vob.AddSingle<IServiceCollection>(dsp);
-        //vob.AddSingle<DynamicServiceProvider>(dsp);
+        //vob.AddSingle<DynamicServiceProvider>(dsp); // Go through FlexServiceProvider
+        vob.AddSingle<FlexServiceProvider>(fsp);
+        vob.Add<ITypedObjectProvider>(fsp); // Extends vob.Query<T> (flex) with the DynamicServiceProvider.  Note that this leaves the world of singletons and opens the door to transients (and in the future, scoped)
 
         vob.TryAddOwn<IServiceProvider>(_ => dsp);
 

@@ -14,7 +14,7 @@ public class DynamicServiceProvider : IServiceCollection, IServiceProvider
     {
         get
         {
-            return parent ?? ParentFunc();
+            return parent ??= ParentFunc?.Invoke();
         }
         set => parent = value;
     }

@@ -22,6 +22,7 @@
     <ProjectReference Include="..\LionFire.Environment\LionFire.Environment.csproj" />
     <ProjectReference Include="..\LionFire.Execution.Abstractions\LionFire.Execution.Abstractions.csproj" />
     <ProjectReference Include="..\LionFire.Execution\LionFire.Execution.csproj" />
+    <ProjectReference Include="..\LionFire.Flex.DependencyInjection\LionFire.Flex.DependencyInjection.csproj" />
     <ProjectReference Include="..\LionFire.Flex.Extras\LionFire.Flex.Framework.csproj" />
     <ProjectReference Include="..\LionFire.Flex\LionFire.Flex.csproj" />
     <ProjectReference Include="..\LionFire.Instantiating.Abstractions\LionFire.Instantiating.Abstractions.csproj" />

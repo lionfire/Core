@@ -17,30 +17,31 @@ namespace LionFire.Hosting;
 
 public static class VosIdServicesExtensions
 {
+    public const string DefaultIdPath = "/id";
+
     public static IServiceCollection AddIdPersistence(this IServiceCollection services, VosIdPersisterOptions options = null, VobReference contextVob = null)
     {
-        var idRoot = contextVob?.Path ?? "id";
+        var idRoot = contextVob?.Path ?? DefaultIdPath;
+        contextVob ??= idRoot.ToVobReference();
+
         services
+            .VobEnvironment("id", idRoot)
+
             .AddTypeNameRegistry()
 
-            .AddSingleton<VosIdHandleProvider>()
-            .AddSingleton<IReadHandleProvider<IIdReference>>(sp => sp.GetRequiredService<VosIdHandleProvider>())
-            .AddSingleton<IReadWriteHandleProvider<IIdReference>>(sp => sp.GetRequiredService<VosIdHandleProvider>())
-            .VobEnvironment("id", idRoot)
-            .InitializeVob<IServiceProvider>("id", (vob, serviceProvider) =>
+            .InitializeVob<IServiceProvider>(idRoot, (vob, serviceProvider) =>
             {
                 vob.AddOwn<ICollectionTypeProvider>(v => new CollectionsByTypeManager(v, serviceProvider.GetRequiredService<TypeNameRegistry>()));
-            }, key: "vos:id<ICollectionTypeProvider>", configure: c => c.DependsOn("vos:/<VobEnvironment>/*"))
+            }, key: contextVob + "<ICollectionTypeProvider>", configure: c => c.DependsOn("vos:/<VobEnvironment>/*"))
 
             .Configure<VosIdPersisterOptions>(o => { })
             .AddSingleton(s => s.GetService<IOptionsMonitor<VosIdPersisterOptions>>()?.CurrentValue)
 
             .TryAddEnumerableSingleton<ICollectionTypeProvider, CollectionsByTypeManager>()
 
-
             .AddSingleton<VosIdHandleProvider>()
-            .AddSingleton<IReadHandleProvider<IIdReference>, VosIdHandleProvider>(s => s.GetRequiredService<VosIdHandleProvider>())
-            .AddSingleton<IReadWriteHandleProvider<IIdReference>, VosIdHandleProvider>(s => s.GetRequiredService<VosIdHandleProvider>())
+            .AddSingleton<IReadHandleProvider<IIdReference>>(sp => sp.GetRequiredService<VosIdHandleProvider>())
+            .AddSingleton<IReadWriteHandleProvider<IIdReference>>(sp => sp.GetRequiredService<VosIdHandleProvider>())
 
             .AddSingleton<VosIdPersisterProvider>()
             .AddSingleton<IPersisterProvider<IIdReference>, VosIdPersisterProvider>(s => s.GetRequiredService<VosIdPersisterProvider>())
@@ -50,9 +51,11 @@ public static class VosIdServicesExtensions
         return services;
     }
 
-    public static IServiceCollection AddIdPersister(this IServiceCollection services, VosIdPersisterOptions options = null, VobReference contextVob = null)
+    private static IServiceCollection AddIdPersister(this IServiceCollection services, VosIdPersisterOptions options = null, VobReference contextVob = null)
     {
-        var vob = contextVob ?? "/".ToVobReference();
+        // TODO: Set VosIdPersister on vos:$id instead of vos:/.
+        var vob = "/".ToVobReference(); // TODO: contextVob ?? DefaultIdPath.ToVobReference();
+
         services.InitializeVob<IServiceProvider>(vob, (vob, serviceProvider) =>
         {
             vob.AddOwn<VosIdPersister>(v =>
@@ -63,5 +66,4 @@ public static class VosIdServicesExtensions
         }, c => c.Key = $"{vob}<{typeof(VosIdPersister).Name}> ");
         return services;
     }
-
 }

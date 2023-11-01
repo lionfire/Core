@@ -153,7 +153,7 @@ namespace LionFire.Vos.Packages
                     var vobMounts = reference.GetVob().AcquireOwn<VobMounts>();
                     if (vobMounts != null)
                     {
-                        foreach (var mount in vobMounts.AllMounts.Where(m => m.Options?.IsManuallyEnabled == true))
+                        foreach (var mount in vobMounts.AllMounts.Where(m => m.Options?.MustBeManuallyEnabled == true))
                         {
                             mount.IsEnabled = true;
                         }
@@ -183,7 +183,7 @@ namespace LionFire.Vos.Packages
                         var vobMounts = reference.GetVob().AcquireOwn<VobMounts>();
                         if (vobMounts != null)
                         {
-                            foreach (var mount in vobMounts.AllMounts.Where(m => m.Options?.IsManuallyEnabled == true))
+                            foreach (var mount in vobMounts.AllMounts.Where(m => m.Options?.MustBeManuallyEnabled == true))
                             {
                                 mount.IsEnabled = false;
                             }

@@ -175,14 +175,14 @@ namespace Stores_
 
                         .VosPackageProvider("/stores".ToVobReference())
 
-                        .VosMount("/stores/available/ExeDir", Path.GetDirectoryName(this.GetType().Assembly.Location).ToFileReference(), new VobMountOptions { IsManuallyEnabled = true })
+                        .VosMount("/stores/available/ExeDir", Path.GetDirectoryName(this.GetType().Assembly.Location).ToFileReference(), new VobMountOptions { MustBeManuallyEnabled = true })
                         .InitializeVob("/stores/available/ExeDir", v => v.AddOwn(v => new VobMountOptions
                         {
                             Name = "ExecutableDirectory",
                             ReadPriority = 10,
                             WritePriority = null,
                         }))
-                        .VosMount("/stores/available/DataDir", dataDir.ToFileReference(), new VobMountOptions { IsManuallyEnabled = true })
+                        .VosMount("/stores/available/DataDir", dataDir.ToFileReference(), new VobMountOptions { MustBeManuallyEnabled = true })
                         .InitializeVob("/stores/available/DataDir", v => v.AddOwn(v => new VobMountOptions
                         {
                             Name = "DataDirectory",

@@ -29,7 +29,7 @@ public static partial class ReferenceToReadHandleX
     //    => HandleRegistry.GetOrAddRead<IReadHandle<TValue>>(reference.Reference.Url, _ => reference.Reference.TryGetReadHandleProvider(serviceProvider).GetReadHandle<TValue>(reference.Reference));
 
     // Generic
-    public static IReadHandle<TValue> GetReadHandle<TValue>(this IReference reference, IServiceProvider serviceProvider = null)
+    public static IReadHandle<TValue> GetReadHandle<TValue>(this IReference reference)
         => HandleRegistry2.GetOrAddRead<TValue>(reference?.Url ?? throw new ArgumentNullException(nameof(reference)),
             _ => reference.GetReadHandleProvider().GetReadHandle<TValue>(reference));
 

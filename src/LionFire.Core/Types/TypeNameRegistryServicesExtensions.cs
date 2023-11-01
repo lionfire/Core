@@ -12,9 +12,9 @@ public static class TypeNameRegistryServicesExtensions
 {
     public static IServiceCollection AddTypeNameRegistry(this IServiceCollection services)
         => services
-                        .AddSingleton<ITypeResolver, TypeResolver>()
-                        .AddSingleton(serviceProvider => serviceProvider.GetService<IOptionsMonitor<TypeNameRegistry>>().CurrentValue)
-                    ;
+            .AddSingleton<ITypeResolver, TypeResolver>()
+            .AddSingleton(serviceProvider => serviceProvider.GetRequiredService<IOptionsMonitor<TypeNameRegistry>>().CurrentValue)
+            ;
 
     //public static IServiceCollection RegisterTypeNames(this IServiceCollection services, Assembly assembly, Predicate<Type> filter = null, bool registerShortNames = true, bool publicTypesOnly = true, bool concreteTypesOnly = true)
     //{

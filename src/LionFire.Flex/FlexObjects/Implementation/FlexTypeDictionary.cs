@@ -27,6 +27,19 @@ namespace LionFire.FlexObjects.Implementation
             return types?.ContainsKey(type) == true;
         }
 
+        public void Add(Type type, object item)
+        {
+            if (item == null) throw new ArgumentNullException();
+
+            types ??= new ConcurrentDictionary<Type, object>();
+            types.AddOrThrow(type, item);
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="item">If it is wrapped in ITypedObject, it will be unwrapped appropriately</param>
+        /// <exception cref="ArgumentNullException"></exception>
         public void Add(object item)
         {
             if (item == null) throw new ArgumentNullException();

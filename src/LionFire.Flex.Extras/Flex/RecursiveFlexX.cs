@@ -11,5 +11,8 @@ public static class ParentedRecursiveFlexX
 
     public static TCriteria? RecursiveQuery<TCriteria>(this IFlex node, string? key = null) 
         => node.RecursiveQuery<IFlex, TCriteria>(key, f => f is IParented<IFlex> p ? p.Parent : null);
+
+    public static object? RecursiveQuery(this IFlex node, Type type, string? key = null)
+        => node.RecursiveQuery(type, key, f => f is IParented<IFlex> p ? p.Parent : null);
 }
 

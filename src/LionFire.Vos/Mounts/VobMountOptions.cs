@@ -22,8 +22,8 @@ public class VobMountOptions : IVobMountOptions
     /// </summary>
     public static int DefaultWritePriority = 0;
     public static readonly VobMountOptions DefaultRead = new VobMountOptions() { ReadPriority = DefaultReadPriority };
-    public static readonly VobMountOptions DefaultReadWrite = new VobMountOptions() { ReadPriority = DefaultReadPriority, WritePriority = DefaultWritePriority };
-    public static readonly VobMountOptions DefaultWrite = new VobMountOptions() { WritePriority = DefaultWritePriority };
+    public static readonly VobMountOptions DefaultReadWrite = new VobMountOptions() { ReadPriority = DefaultReadPriority, WritePriority = DefaultWritePriority, IsWritable = true };
+    public static readonly VobMountOptions DefaultWrite = new VobMountOptions() { WritePriority = DefaultWritePriority, IsWritable = true };
 
     #endregion
 
@@ -105,7 +105,7 @@ public class VobMountOptions : IVobMountOptions
 
     //public string Package { get; set; }
     //public string Store { get; set; }
-    public bool IsManuallyEnabled { get; set; }
+    public bool MustBeManuallyEnabled { get; set; }
 
     /// <summary>
     /// Physical mounts should be mounted Exclusive.  That means
@@ -226,7 +226,7 @@ public class VobMountOptions : IVobMountOptions
                MultiTypeEqualityComparer.Default.Equals(MultiTyped, other.MultiTyped) &&
                RootName == other.RootName &&
                Name == other.Name &&
-               IsManuallyEnabled == other.IsManuallyEnabled &&
+               MustBeManuallyEnabled == other.MustBeManuallyEnabled &&
                IsExclusive == other.IsExclusive &&
                IsExclusiveWithReadAndWrite == other.IsExclusiveWithReadAndWrite &&
                IsSealed == other.IsSealed &&
@@ -245,7 +245,7 @@ public class VobMountOptions : IVobMountOptions
         hash.Add(MultiTyped);
         hash.Add(RootName);
         hash.Add(Name);
-        hash.Add(IsManuallyEnabled);
+        hash.Add(MustBeManuallyEnabled);
         hash.Add(IsExclusive);
         hash.Add(IsExclusiveWithReadAndWrite);
         hash.Add(IsSealed);

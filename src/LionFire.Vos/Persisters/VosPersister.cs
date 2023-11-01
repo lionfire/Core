@@ -291,7 +291,7 @@ public class VosPersister : SerializingPersisterBase<VosPersisterOptions>, IPers
 
                 var relativePathChunks = vob.PathElements.Skip(mount.VobDepth);
                 var effectiveReference = !relativePathChunks.Any() ? mount.Target : mount.Target.GetChildSubpath(relativePathChunks);
-                var rh = effectiveReference.GetReadHandle<TValue>(serviceProvider: ServiceProvider);
+                var rh = effectiveReference.GetReadHandle<TValue>(/*serviceProvider: ServiceProvider*/);
 
                 RetrieveOpMounts.Value ??= new();
                 RetrieveOpMounts.Value.Add(mount);

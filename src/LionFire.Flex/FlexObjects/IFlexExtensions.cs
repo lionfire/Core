@@ -1,4 +1,5 @@
-﻿using LionFire.Extensions.DefaultValues;
+﻿using LionFire.ExtensionMethods;
+using LionFire.Extensions.DefaultValues;
 using LionFire.FlexObjects.Implementation;
 using System.Runtime.CompilerServices;
 
@@ -156,11 +157,9 @@ public static class IFlexExtensions
         return result;
     }
 
-    public static T? Query<T>(this IFlex flex, string? name = null) // RENAME TryGet
-    {
-        if (Query<T>(flex, out var result, name)) { return result; }
-        return default;
-    }
+    public static T? Query<T>(this IFlex flex, string? name = null)
+        => Query<T>(flex, out var result, name) ? result : default;
+
     public static bool Query<T>(this IFlex flex, out T? result, string? name = null) // RENAME TryGet
     {
         if (name == null)
@@ -189,6 +188,52 @@ public static class IFlexExtensions
                 return true;
             }
         }
+        result = default;
+        return false;
+    }
+
+    public static object? Query(this IFlex flex, Type type, string? name = null) 
+        => Query(flex, type, out var result, name) ? result : default;
+
+    public static bool Query(this IFlex flex, Type type, out object? result, string? name = null)
+    {
+        if (name == null)
+        {
+            if (flex.FlexData?.GetType() == type)
+            {
+                result = flex.FlexData;
+                return true;
+            }
+            else if (flex.FlexData is ITypedObject typedObject && typedObject.Type == type)
+            {
+                result = typedObject.Object;
+                return true;
+            }
+            else if (flex.FlexData is FlexTypeDictionary d && d.Types?.ContainsKey(type) == true)
+            {
+                result = d.Types[type];
+                return true;
+            } 
+        }
+        else
+        {
+            var dictType = typeof(Dictionary<,>).MakeGenericType(typeof(string), type);
+            if (flex.Query(dictType, out var dict))
+            {
+                if (dict != null)
+                {
+                    result = ((System.Collections.IDictionary)dict)[name];
+                    return result != null;
+                }
+            }
+        }
+
+        if (type != typeof(ITypedObjectProvider) && flex.Query<ITypedObjectProvider>(out var top))
+        {
+            result = top!.Query(type, name);
+            if (result != null) return true;
+        }
+
         result = default;
         return false;
     }
@@ -481,7 +526,7 @@ public static class IFlexExtensions
                 }
                 else
                 {
-                    ftd.Add(obj);
+                    ftd.Add(typeof(T), obj);
                 }
             }
             else

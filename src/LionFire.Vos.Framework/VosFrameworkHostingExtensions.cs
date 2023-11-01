@@ -1,14 +1,8 @@
 ﻿using LionFire.DependencyMachines;
-using LionFire.Persistence.Persisters.Vos;
 using LionFire.Persisters.Expanders;
 using LionFire.Vos;
 using LionFire.Vos.Internals;
 using Microsoft.Extensions.DependencyInjection;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace LionFire.Hosting;
 
@@ -20,15 +14,16 @@ public static class VosFrameworkHostingExtensions
         {
             vo.PrimaryRootInitializers.Add(root =>
             {
-                var list = new List<IParticipant>();
-
-                list.Add(new Participant(key: "VosArchives for " + path)
+                var list = new List<IParticipant>
                 {
-                    StartAction = () =>
+                    new Participant(key: "VosArchives for " + path)
                     {
-                        (root[path] as IVobInternals).GetOrAddVobNode<ExpanderMounter>();
+                        StartAction = () =>
+                        {
+                            (root[path] as IVobInternals).GetOrAddVobNode<ExpanderMounter>();
+                        }
                     }
-                });
+                };
                 return list;
             });
         })

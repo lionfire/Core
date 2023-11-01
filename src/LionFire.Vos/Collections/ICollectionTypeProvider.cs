@@ -1,10 +1,12 @@
 ﻿using System;
 
-namespace LionFire.Vos.Collections
+namespace LionFire.Vos.Collections;
+
+
+/// <summary>
+/// Resolves the collection type for a particular Vob.
+/// </summary>
+public interface ICollectionTypeProvider
 {
-   
-    public interface ICollectionTypeProvider
-    {
-        Type GetCollectionType(IVob vob);
-    }
+    Type GetCollectionType(IVob vob);
 }

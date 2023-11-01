@@ -123,6 +123,22 @@ namespace LionFire.Vos.Mounts
 
             return false;
         }
+        public bool UpdateWriteMount(IMount existing, IMount newMount) // DUPLICATE of UpdateReadMount REFACTOR
+        {
+            if (!existing.Options.Equals(newMount.Options))
+            {
+                Unmount(existing.Target.Key);
+                MountWrite(newMount);
+                return true;
+            }
+            if (existing.IsEnabled != newMount.IsEnabled)
+            {
+                existing.IsEnabled = newMount.IsEnabled;
+                return true;
+            }
+
+            return false;
+        }
 
         private bool MountRead(IMount mount, bool force = false) // DUPLICATE of MountWrite
         {
@@ -131,12 +147,8 @@ namespace LionFire.Vos.Mounts
 
             #region Validation
 
-            if (localReadMounts == null && localReadMount == null)
-            {
-                localReadMount = mount;
-                return true;
-            }
-            if (localWriteMount != null && (localWriteMount.Options.IsExclusiveWithReadAndWrite || mount.Options.IsExclusiveWithReadAndWrite))
+            if ((localWriteMount != null && localWriteMount != mount)
+                && (localWriteMount.Options.IsExclusiveWithReadAndWrite || mount.Options.IsExclusiveWithReadAndWrite))
             {
                 throw new VosException("Already has write mount, but either this mount or existing write mount has IsExclusiveWithReadAndWrite == true.");
             }
@@ -154,6 +166,11 @@ namespace LionFire.Vos.Mounts
 
             #endregion
 
+            if (localReadMounts == null && localReadMount == null)
+            {
+                localReadMount = mount;
+                return true;
+            }
 
             if (localReadMount == null)
             {
@@ -188,10 +205,10 @@ namespace LionFire.Vos.Mounts
         {
             private PersistenceDirection direction;
             private IVobNode<VobMounts> vobNode;
-            public MountEnumerable(IVobNode<VobMounts> vobNode, PersistenceDirection read)
+            public MountEnumerable(IVobNode<VobMounts> vobNode, PersistenceDirection direction)
             {
                 this.vobNode = vobNode;
-                this.direction = read;
+                this.direction = direction;
             }
 
             public IEnumerator<IMount> GetEnumerator() => new MountEnumerator(vobNode, direction);
@@ -341,17 +358,12 @@ namespace LionFire.Vos.Mounts
 
         private bool MountWrite(IMount mount, bool force = false) // DUPLICATE of MountRead
         {
-            var existing = QueryExistingMount(mount, ref localReadMount, ref localReadMounts);
-            if (existing != null) { return UpdateReadMount(existing, mount); }
+            var existing = QueryExistingMount(mount, ref localWriteMount, ref localWriteMounts);
+            if (existing != null) { return UpdateWriteMount(existing, mount); }
 
             #region Validation
 
-            if (localWriteMounts == null && localWriteMount == null)
-            {
-                localWriteMount = mount;
-                return true;
-            }
-            if (localReadMount != null
+            if ((localReadMount != null && localReadMount != mount)
                 && (localWriteMount?.Options?.IsExclusiveWithReadAndWrite == true
                     || localWriteMounts?.Where(m => m?.Options.IsExclusiveWithReadAndWrite == true).Any() == true
                     || mount.Options?.IsExclusiveWithReadAndWrite == true)
@@ -372,6 +384,12 @@ namespace LionFire.Vos.Mounts
             }
 
             #endregion
+
+            if (localWriteMounts == null && localWriteMount == null)
+            {
+                localWriteMount = mount;
+                return true;
+            }
 
             if (localWriteMount == null)
             {

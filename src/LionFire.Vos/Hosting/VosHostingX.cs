@@ -1,8 +1,7 @@
-﻿using LionFire.Persistence;
+﻿using LionFire.FlexObjects;
 using LionFire.Vos;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using System.Diagnostics;
 using LionFire.Persistence.Handles;
 using LionFire.Vos.Handles;
 using LionFire.Persistence.Persisters;
@@ -10,18 +9,11 @@ using LionFire.Persistence.Persisters.Vos;
 using Microsoft.Extensions.Options;
 using LionFire.Vos.Services;
 using LionFire.Vos.Mounts;
-using LionFire.DependencyInjection;
-using System;
-using LionFire.Ontology;
 using LionFire.DependencyMachines;
-using System.Collections.Generic;
-using System.Threading.Tasks;
-using Microsoft.Extensions.DependencyInjection.Extensions;
-using System.Linq;
-using System.Runtime.CompilerServices;
 using LionFire.Services;
 using LionFire.Referencing;
 using OpenTelemetry.Metrics;
+using LionFire.FlexObjects.Services;
 
 namespace LionFire.Hosting;
 
@@ -29,12 +21,14 @@ public static class VosHostingX
 {
     #region ILionFireHostBuilder
 
-    public static ILionFireHostBuilder Vos(this ILionFireHostBuilder hostBuilder, bool persistence = true, bool enableLogging = true)
+    public static ILionFireHostBuilder Vos(this ILionFireHostBuilder hostBuilder, bool persistence = true)
     {
         hostBuilder
             .Persisters()
             .ForHostBuilder(builder => builder
-                .AddVos(persistence, enableLogging))
+                .AddVos(persistence)
+                .AddVosPersistence()
+                )
         ;
         return hostBuilder;
     }
@@ -50,8 +44,43 @@ public static class VosHostingX
                 c.AutoRegisterFromServiceTypes.Add(typeof(IVos));
             });
     }
-    
-    public static IHostBuilder AddVos(this IHostBuilder hostBuilder, bool persistence = true, bool enableLogging = true)
+
+    internal static IHostBuilder AddVosPersistence(this IHostBuilder hostBuilder)
+        => hostBuilder.ConfigureServices(s => s
+            .AddSingleton<IPersisterProvider<IVobReference>, VosPersisterProvider>()
+            .AddSingleton<IPersister<IVobReference>, VosPersister>()
+            .Configure<VosPersisterOptions>(vpo => { })
+            .AddSingleton(s => s.GetRequiredService<IOptionsMonitor<VosPersisterOptions>>().CurrentValue) // REVIEW - force usage via IOptionsMonitor?
+
+            .AddSingleton<IReadHandleProvider<IVobReference>, VosHandleProvider>()
+            .AddSingleton<IReadWriteHandleProvider<IVobReference>, VosHandleProvider>()
+            .AddSingleton<IWriteHandleProvider<IVobReference>, VosHandleProvider>()
+
+            .Configure<VosOptions>(vo =>
+            {
+                vo.PrimaryRootInitializers.Add(vobRoot => // Initializers for the Primary root
+                {
+                    var list = new List<IParticipant>
+                    {
+                        new Participant()
+                        {
+                            Key = "VosPersistence",
+                            StartAction = () =>
+                            {
+                                vobRoot.Query<IServiceCollection>()!.AddSingleton<VosPersister>();
+                            },
+                        }
+                        .DependsOn("services:" + vobRoot.Reference + $"<{typeof(FlexServiceProvider).Name}>")
+                        .DependsOn("services:" + vobRoot.Reference + $"<{typeof(IServiceCollection).Name}>")
+                        .Contributes("services:" + vobRoot.Reference + $"<{typeof(VosPersister).Name}>")
+                    };
+
+                    return list;
+                });
+            })
+        );
+
+    public static IHostBuilder AddVos(this IHostBuilder hostBuilder, bool persistence = true)
         => hostBuilder
             .AddPersisters()
             .ConfigureServices((_, services) =>
@@ -59,7 +88,7 @@ public static class VosHostingX
                 services
                     .AddDependencyMachine()
                     .AddRootManager() // Provides IVos
-                    
+
                     .AddSingleton<PersisterEvents, PersisterEvents>()
                     //.TryAddEnumerableSingleton<IAttacher<VosPersister>, ArchiveAdapter>()
 
@@ -80,22 +109,7 @@ public static class VosHostingX
                     .TryAddEnumerableSingleton<IReferenceProvider, TypedVobReferenceProvider>()
 
                 #endregion
-
-                #region Persistence
-                    .If(persistence, s =>
-                    {
-                        s
-                        .AddSingleton<IPersisterProvider<IVobReference>, VosPersisterProvider>()
-                        .AddSingleton<IPersister<IVobReference>, VosPersister>()
-                        .Configure<VosPersisterOptions>(vpo => { })
-                        .AddSingleton(s => s.GetRequiredService<IOptionsMonitor<VosPersisterOptions>>().CurrentValue) // REVIEW - force usage via IOptionsMonitor?
-
-                        .AddSingleton<IReadHandleProvider<IVobReference>, VosHandleProvider>()
-                        .AddSingleton<IReadWriteHandleProvider<IVobReference>, VosHandleProvider>()
-                        .AddSingleton<IWriteHandleProvider<IVobReference>, VosHandleProvider>()
-                        ;
-                    })
-                #endregion
+                
 
                   .Configure<VosOptions>(vo =>
                   {
@@ -118,27 +132,29 @@ public static class VosHostingX
                           list.AddRange(DependencyStages.CreateStageChain(new string[] { "vos:" }.Concat(vobRootChain.Select(c => c + vobRoot.Reference)).ToArray()));
 
                           list.Add(new Participant()
+                          {
+                              Key = "RootInitializer",
+                              StartAction = () =>
                               {
-                                  Key = "RootInitializer",
-                                  StartAction = () =>
-                                  {
-                                      vobRoot
-                                        .AddDynamicServiceProvider(s =>
-                                        {
-                                            s
-                                            .AddSingleton(_ => new ServiceDirectory((RootVob)vobRoot)) // OLD
-                                            .AddSingleton(vobRoot)
-                                            .AddSingleton(vobRoot.Root.RootManager)
-                                            .AddSingleton<VobMounter>()
-                                            .If(persistence, s2 => s2.AddSingleton<VosPersister>())
-                                            ;
-                                        });
-                                  },
-                              }
+                                  vobRoot
+                                    .AddDynamicServiceProvider(s =>
+                                    {
+                                        s
+                                        .AddSingleton(_ => new ServiceDirectory((RootVob)vobRoot)) // OLD
+                                        .AddSingleton(vobRoot)
+                                        .AddSingleton(vobRoot.Root.RootManager)
+                                        .AddSingleton<VobMounter>()
+                                        //.If(persistence, s2 => s2.AddSingleton<VosPersister>()) // MOVE to AddVosPersistence
+                                        ;
+                                    });
+                              },
+                          }
                               .Contributes("services:" + vobRoot.Reference /* vos:/ */)
-                              .Contributes("services:" + vobRoot.Reference + $"<{typeof(VobMounter).Name}>")
+                              .Contributes("services:" + vobRoot.Reference + $"<{typeof(VobMounter).Name}>") // ENH: .ContributesService<>()
                               .Contributes("services:" + vobRoot.Reference + $"<{typeof(IServiceProvider).Name}>")
-                              .Contributes("VobNode:" + vobRoot.Reference + $"<{typeof(IServiceProvider).Name}>") // REVIEW: it get set on Flex and as VobNode
+                              .Contributes("VobNode:" + vobRoot.Reference + $"<{typeof(IServiceProvider).Name}>") // REVIEW: it get set on Flex and as VobNode                              
+                              .Contributes("services:" + vobRoot.Reference + $"<{typeof(FlexServiceProvider).Name}>")
+                              .Contributes("services:" + vobRoot.Reference + $"<{typeof(IServiceCollection).Name}>")
                               .Contributes("services:" + vobRoot.Reference + $"<{typeof(IRootVob).Name}>")
                               .Contributes("services:" + vobRoot.Reference + $"<{typeof(IVos).Name}>")
                           );
@@ -196,7 +212,7 @@ public static class VosHostingX
         .AddMeter("LionFire.Vos")
         .AddMeter("LionFire.Vos.RootManager")
         .AddPersistenceInstrumentation()
-        .AddPersistersInstrumentation() 
+        .AddPersistersInstrumentation()
         ;
 
     public static MeterProviderBuilder AddPersistersInstrumentation(this MeterProviderBuilder b) => b // MOVE
