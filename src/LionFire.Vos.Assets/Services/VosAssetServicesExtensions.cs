@@ -36,6 +36,7 @@ namespace LionFire.Hosting
 
                 .AddSingleton<VosAssetHandleProvider>()
                 .AddSingleton<IReadHandleProvider<IAssetReference>>(sp => sp.GetRequiredService<VosAssetHandleProvider>())
+                .AddSingleton<IReadHandleCreator<IAssetReference>>(sp => sp.GetRequiredService<VosAssetHandleProvider>())
                 .AddSingleton<IReadWriteHandleProvider<IAssetReference>>(sp => sp.GetRequiredService<VosAssetHandleProvider>())
                 .InitializeVob<IServiceProvider>(options.AssetsRootEnvironmentVariableReference, (vob, serviceProvider) =>
                 {

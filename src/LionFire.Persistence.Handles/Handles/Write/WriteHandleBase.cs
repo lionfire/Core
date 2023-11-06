@@ -581,7 +581,8 @@ public abstract class WriteHandleBase<TReference, TValue>
 
     public ITypedReference TypedReference => Reference as ITypedReference; // REVIEW - does this belong here?  If this is non-null, it is queried when creating the Value on demand.  Maybe it belongs in the ReadWriteHandle.  // MOVE to ReadWriteHandle(?)
 
-    PersistenceFlags IPersistsInternal.Flags { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
+    PersistenceFlags IPersistsInternal.Flags { get => flags; set => flags = value; }
+    private PersistenceFlags flags;
 
     //protected void DoPersistence(Action action)
     //{

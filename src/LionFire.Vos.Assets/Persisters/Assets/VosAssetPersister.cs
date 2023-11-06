@@ -72,7 +72,7 @@ namespace LionFire.Vos.Assets.Persisters
 
         #region Construction
 
-        public VosAssetPersister(VosAssetOptions options, IPersisterProvider<IVobReference> persisterProvider, SerializationOptions serializationOptions) : base(options?.SerializationOptions ?? serializationOptions)
+        public VosAssetPersister(VosAssetOptions options, IPersisterProvider<IVobReference> persisterProvider, SerializationOptions serializationOptions, IServiceProvider serviceProvider) : base(serviceProvider, options?.SerializationOptions ?? serializationOptions)
         {
             VosPersisterProvider = persisterProvider;
             Options = options ?? VosAssetOptions.Default;

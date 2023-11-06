@@ -116,6 +116,8 @@ namespace LionFire.Persistence
 
         /// <seealso cref="PersistenceOperationExtensions.SetPath"/>
         public string? Path => Reference?.Path;
+        public string? FileName => System.IO.Path.GetFileNameWithoutExtension(Path);
+        public string? Id => FileName;
 
         //public bool? PathIsMissingExtension { get; set; } // TODO REVIEW - is this still needed now that there is AutoAppendExtension?
 

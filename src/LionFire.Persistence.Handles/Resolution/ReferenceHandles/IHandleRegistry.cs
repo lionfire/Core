@@ -19,5 +19,5 @@ public interface IHandleRegistry
     IReadWriteHandle<TValue>? TryGetReadWrite<TValue>(string uri);
     IWriteHandle<TValue>? TryGetWrite<TValue>(string uri);
     IReadHandle<TValue>? TryGetRead<TValue>(string uri);
-
+    void AddOrUpdate<T>(string url, IReadHandle<T> handle);
 }

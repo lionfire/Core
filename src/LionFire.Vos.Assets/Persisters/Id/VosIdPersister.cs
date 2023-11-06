@@ -28,7 +28,7 @@ namespace LionFire.Vos.Id.Persisters
 
         #region Construction
 
-        public VosIdPersister(VosIdPersisterOptions options, IPersisterProvider<IVobReference> persisterProvider, SerializationOptions serializationOptions) : base(options?.SerializationOptions ?? serializationOptions)
+        public VosIdPersister(VosIdPersisterOptions options, IPersisterProvider<IVobReference> persisterProvider, SerializationOptions serializationOptions, IServiceProvider serviceProvider) : base(serviceProvider, options?.SerializationOptions ?? serializationOptions)
         {
             VosPersisterProvider = persisterProvider;
             Options = options;

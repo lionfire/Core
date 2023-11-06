@@ -18,7 +18,7 @@ public interface IReadHandleProvider
     /// Example implementation:
     ///   IReadHandle<T> IReadHandleProvider.GetReadHandle<T>(IReference reference) => (reference is FileReference fileReference) ? GetReadHandle<T>(fileReference) : null;
     /// </remarks>
-    IReadHandle<T>? GetReadHandle<T>(IReference reference);
+    IReadHandle<T>? GetReadHandle<T>(IReference reference); // RENAME Try...
 }
 
 
@@ -43,7 +43,7 @@ public static class IReadHandleProviderExtensions
 
 public interface IPreresolvableReadHandleProvider : IReadHandleProvider
 {
-    IReadHandle<T>? GetReadHandlePreresolved<T>(IReference reference, T preresolvedValue = default);
+    IReadHandle<T>? GetReadHandlePreresolved<T>(IReference reference, T preresolvedValue = default); // RENAME Try...
 }
 
 public interface IPreresolvableReadHandleProvider<TReference> : IReadHandleProvider<TReference>, IPreresolvableReadHandleProvider
@@ -64,12 +64,12 @@ public static class ReadHandleProviderX
 
 public interface IReadHandleCreator
 {
-    IReadHandle<T> CreateReadHandle<T>(IReference reference);
+    IReadHandle<T>? CreateReadHandle<T>(IReference reference, T? preresolvedValue = default); // RENAME Try...
 }
 public interface IReadHandleCreator<TReference>
     where TReference : IReference
 {
-    IReadHandle<T> CreateReadHandle<T>(TReference reference);
+    IReadHandle<T> CreateReadHandle<T>(TReference reference, T? preresolvedValue = default);
 }
 
 #endregion

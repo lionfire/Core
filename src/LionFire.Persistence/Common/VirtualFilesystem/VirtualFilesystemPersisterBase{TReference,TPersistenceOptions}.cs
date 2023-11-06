@@ -28,6 +28,7 @@ using IOException = System.IO.IOException;
 using Stream = System.IO.Stream;
 using LionFire.Data;
 using LionFire.Results;
+using LionFire.Data.Async.Gets;
 
 namespace LionFire.Persistence.Filesystemlike;
 
@@ -77,7 +78,7 @@ public abstract partial class VirtualFilesystemPersisterBase<TReference, TPersis
 
     #region Construction
 
-    public VirtualFilesystemPersisterBase(string name, ISerializationProvider serializationProvider, IOptionsMonitor<TPersistenceOptions> options, IPersistenceConventions itemKindIdentifier, SerializationOptions serializationOptions) : base(serializationOptions)
+    public VirtualFilesystemPersisterBase(string name, ISerializationProvider serializationProvider, IOptionsMonitor<TPersistenceOptions> options, IPersistenceConventions itemKindIdentifier, SerializationOptions serializationOptions, IServiceProvider serviceProvider) : base(serviceProvider, serializationOptions)
     {
         this.SerializationProvider = serializationProvider; // MOVE to base ctor, maybe others as well
         this.PersistenceOptions = string.IsNullOrEmpty(name) ? options.CurrentValue : options.Get(name);
@@ -420,10 +421,20 @@ public abstract partial class VirtualFilesystemPersisterBase<TReference, TPersis
 
         var dir = Path.GetDirectoryName(path) ?? Path.GetPathRoot(path);
 
+        var fileName = Path.GetFileName(path);
+        if(
+            //fileName.IndexOf('.') == -1 && // OPTIMIZATION HACK
+            await DirectoryExists(path).ConfigureAwait(false))
+        {
+            // ENH: if T is Directory type, return found
+            // ENH: if T is Directory meta info type, return found, with directory meta info
+            return GetResult<T>.NotFound;
+        }
+
         async Task<IEnumerable<string>> GetPotentialExtensions(string p)
         {
             if (!await DirectoryExists(dir).ConfigureAwait(false)) { return Array.Empty<string>(); }
-            l.LogWarning($"[FS List] {dir}"); // Replace with OTel counter?
+            l.LogDebug($"[FS List for GetPotentialExtensions] {dir}"); // Replace with OTel counter?
 
             IEnumerable<string> result = (await GetFiles(dir, $"{Path.GetFileName(p)}.*").ConfigureAwait(false))
                 .Select(p =>
@@ -585,7 +596,7 @@ public abstract partial class VirtualFilesystemPersisterBase<TReference, TPersis
             if (result.IsSuccess)
             {
                 flags |= TransferResultFlags.Success;
-                OnDeserialized(result.Object);
+                OnDeserialized<T>(operation.Value, result);
                 return new RetrieveResult<T>(result.Object, flags);
             }
             else if (PersistenceOptions.ThrowDeserializationFailureWithReasons)

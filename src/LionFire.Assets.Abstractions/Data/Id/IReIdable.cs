@@ -1,4 +1,5 @@
-﻿using System;
+﻿#if UNUSED
+using System;
 using LionFire.Structures;
 
 namespace LionFire.Data.Id
@@ -10,9 +11,12 @@ namespace LionFire.Data.Id
     /// Use caution when designing for mutable primary keys.
     /// </remarks>
     /// <typeparam name="T"></typeparam>
-    public interface IReIdable<T, TKey>
+    [Obsolete("Use IIdentifiable in combination with a new INotifyingIdentifiable for event handling")]
+    public interface IReIdable<T, TKey> 
+
     {
         void ReId(TKey newId);
-        event Action<IIded<TKey>, TKey, TKey> IdChangedFromTo;
+        event Action<IIdentified<TKey>, TKey, TKey> IdChangedFromTo;
     }
 }
+#endif

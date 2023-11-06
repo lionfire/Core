@@ -34,14 +34,15 @@ public static class AppInfoServicesX
         {
             [AppConfigurationKeys.OrgName] = appInfo.OrgName,
             [AppConfigurationKeys.AppName] = appInfo.AppName,
+            [AppConfigurationKeys.AppVersion] = appInfo.ProgramVersion,
             [AppConfigurationKeys.DataDirName] = appInfo.DataDirName,
         });
 
     #region Host Builder extension methods
 
     #region HostApplicationBuilder
-
-    public static HostApplicationBuilder AppInfo(this HostApplicationBuilder builder, AppInfo? appInfo = null,  AppInfoOptions? options = null)
+        
+    public static HostApplicationBuilder AppInfo(this HostApplicationBuilder builder, AppInfo? appInfo = null, AppInfoOptions? options = null)
     {
         //Action<AppInfo>? config = null,
         options ??= new();
@@ -61,7 +62,7 @@ public static class AppInfoServicesX
             {
                 Applications.AppInfo.RootInstance = appInfo;
             }
-        } 
+        }
         //DependencyContext.Current?.SetType<AppInfo>(appInfo); // ENH: Set on Flex context?
 
         // ENH: Alternate idea to reduce coupling: publish a 'new ServiceAvailable<T>(appInfo)' message
@@ -70,8 +71,8 @@ public static class AppInfoServicesX
 
         #region Missing functionality
 
-        // builder.AsHostBuilder().Properties[typeof(AppInfo)] = appInfo; // Unavailable due to internal access modifier
-        
+        //builder.AsHostBuilder().Properties[typeof(AppInfo)] = appInfo; // Unavailable due to internal access modifier
+
         #endregion
 
         #region HostApplicationBuilder only
@@ -88,6 +89,11 @@ public static class AppInfoServicesX
     #endregion
 
     #region IHostBuilder
+
+    public static AppInfo? AppInfo(this IHostBuilder builder)
+        => builder.Properties[typeof(AppInfo)] as AppInfo;
+    //public static AppInfo AppInfo(this IHostBuilder hostBuilder)
+    //    => hostBuilder.Properties[typeof(AppInfo)] as AppInfo ?? throw new ArgumentException("IHostBuilder needs to have AddAppInfo() invoked on it.");
 
     public static IHostBuilder AppInfo(this IHostBuilder builder, AppInfo? appInfo = null, AppInfoOptions? options = null)
     {
@@ -119,6 +125,8 @@ public static class AppInfoServicesX
 
         #endregion
 
+
+
         return builder;
     }
 
@@ -131,7 +139,7 @@ public static class AppInfoServicesX
     }
 
 
-#endregion
+    #endregion
 
 
     public static void AutoCreateDirectories(AppInfo appInfo)

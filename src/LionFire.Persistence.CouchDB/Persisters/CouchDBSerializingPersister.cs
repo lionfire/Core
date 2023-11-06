@@ -26,7 +26,7 @@ public class CouchDBSerializingPersister : SerializingPersisterBase<CouchDBPersi
 
     #region Construction
 
-    public CouchDBSerializingPersister(ConnectionManager<CouchDBConnection, CouchDBConnectionOptions> connectionManager, ISerializationProvider serializationProvider, SerializationOptions serializationOptions) : base(serializationOptions)
+    public CouchDBSerializingPersister(ConnectionManager<CouchDBConnection, CouchDBConnectionOptions> connectionManager, ISerializationProvider serializationProvider, SerializationOptions serializationOptions, IServiceProvider serviceProvider) : base(serviceProvider, serializationOptions)
     {
         ConnectionManager = connectionManager;
         SerializationProvider = serializationProvider;

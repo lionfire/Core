@@ -18,7 +18,7 @@ namespace LionFire.Persistence
 
 
     public class RWId<TValue> : ReadWriteHandlePassthrough<TValue, IIdReference<TValue>>, IIdReadWriteHandle<TValue>
-        where TValue : IIded<string>
+        where TValue : IIdentified<string>
     {
 
         #region Construction and Implicit Operators

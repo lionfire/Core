@@ -65,9 +65,6 @@ public static class VosAppHostBuilder
 
     #region // Obsolete: IHostBuilder
 
-    public static AppInfo AppInfo(this IHostBuilder hostBuilder)
-        => hostBuilder.Properties[typeof(AppInfo)] as AppInfo ?? throw new ArgumentException("IHostBuilder needs to have AddAppInfo() invoked on it.");
-
     public static IHostBuilder AddDefaultVosAppStores(this IHostBuilder builder, bool useExeDirAsAppDirIfMissing = false)
         => builder.ConfigureServices((context, services) =>
             services

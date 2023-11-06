@@ -1,4 +1,6 @@
-﻿using System;
+﻿#nullable enable
+
+using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using LionFire.Persistence.Handles;
@@ -32,19 +34,24 @@ public class ObjectHandle<TValue> : ReadHandleBase<NamedReference<TValue>, TValu
 
     public ObjectHandle() { }
 
-    public ObjectHandle(TValue initialValue)
+    public ObjectHandle(TValue? initialValue)
     {
-        ProtectedValue = initialValue;
+        InitValue(initialValue);
     }
 
     public ObjectHandle(NamedReference<TValue> reference, TValue initialValue = default) : base(reference)
     {
         if (!EqualityComparer<TValue>.Default.Equals(initialValue, default))
         {
-            ProtectedValue = initialValue;
+            InitValue(initialValue);
         }
     }
 
+    private void InitValue(TValue? initialValue)
+    {
+        ReadCacheValue = initialValue;
+        HasValue = ReadCacheValue != null;
+    }
     private void Dispose()
     {
         isDisposed = true;
@@ -57,8 +64,9 @@ public class ObjectHandle<TValue> : ReadHandleBase<NamedReference<TValue>, TValu
 
     private bool isDisposed = false;
 
-    protected TValue ProtectedValue;
-    TValue IWrapper<TValue>.Value
+    //protected TValue? ProtectedValue; // OLD - REVIEW - ok to use ReadCacheValue?
+    protected TValue? ProtectedValue { get => ReadCacheValue; set => ReadCacheValue = value; }
+    TValue? IWrapper<TValue>.Value
     {
         get
         {
@@ -68,15 +76,23 @@ public class ObjectHandle<TValue> : ReadHandleBase<NamedReference<TValue>, TValu
         set => ThrowCannotSet();
     }
     TValue IWriteWrapper<TValue>.Value { set => ThrowCannotSet(); }
-    public TValue? StagedValue { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
-    public bool HasStagedValue { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
+    public TValue? StagedValue
+    {
+        get => ReadCacheValue;
+        set
+        {
+            if (ReferenceEquals(value, ReadCacheValue)) return;
+            ThrowCannotSet();
+        }
+    }
+    public bool HasStagedValue { get; set; }
 
     void ThrowCannotSet() => throw new InvalidOperationException("Cannot set the value on an ObjectHandle after creation");
 
     #endregion
 
     #region Get
-        
+
     protected override ITask<IGetResult<TValue>> GetImpl(CancellationToken cancellationToken = default)
     {
         if (HasValue)

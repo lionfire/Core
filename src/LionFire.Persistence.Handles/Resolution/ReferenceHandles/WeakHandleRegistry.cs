@@ -8,6 +8,7 @@ using System.Threading;
 using LionFire.Collections;
 using LionFire.Collections.Concurrent;
 using LionFire.Dependencies;
+using LionFire.ExtensionMethods;
 using LionFire.Persistence;
 using Microsoft.Extensions.Hosting;
 using Newtonsoft.Json.Linq;
@@ -119,6 +120,8 @@ public class WeakHandleRegistry : IHandleRegistry, IDisposable
         //    return value;
         //}
     }
+
+    public void AddOrUpdate<TValue>(string url, IReadHandle<TValue> handle) => readHandles.AddOrUpdate((url, typeof(TValue)), handle);
 
     #endregion
 

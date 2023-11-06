@@ -14,6 +14,8 @@ using LionFire.Data.Async.Gets;
 using LionFire.Structures;
 using LionFire.Threading;
 using MorseCode.ITask;
+using LionFire.Persistence.Persisters;
+using System.Diagnostics;
 
 namespace LionFire.Persistence.Handles
 {
@@ -27,7 +29,7 @@ namespace LionFire.Persistence.Handles
     ///  - ObjectChanged 
     /// </remarks>
     /// <typeparam name="TValue"></typeparam>
-    public abstract partial class ReadHandle<TReference, TValue> 
+    public abstract partial class ReadHandle<TReference, TValue>
         : ReadHandleBase<TReference, TValue>
         , IReadHandle<TValue>
         //IReadHandleInvariantEx<TValue>, 
@@ -35,7 +37,8 @@ namespace LionFire.Persistence.Handles
         , INotifyPropertyChanged
         , INotifyPersistsInternal<TValue>
         //, IRetrievableImpl<TValue>
-        where TReference : IReference<TValue>
+        , IPersistenceAware<TValue>
+    where TReference : IReference<TValue>
     {
         #region Identity
 
@@ -207,6 +210,27 @@ namespace LionFire.Persistence.Handles
         //protected void RaisePersistenceEvent(ValueChanged<PersistenceSnapshot> arg) => StateChanged?.Invoke(this, arg);
 
         //public event EventHandler<IValueChanged<IPersistenceSnapshot<TValue>>> StateChanged;
+
+        #endregion
+
+        #region (public) Event Handlers
+
+        public void OnPreresolved(TValue? preresolvedValue)
+        {
+            if (EqualityComparer.Equals(preresolvedValue, default)) return;
+            if (ReferenceEquals(ReadCacheValue, preresolvedValue)) return;
+            if (EqualityComparer<TValue>.Default.Equals(ReadCacheValue, preresolvedValue))
+            {
+                Debug.WriteLine("ReadHandle.OnPreresolved: EqualityComparer<TValue>.Default.Equals(ReadCacheValue, preresolvedValue). ReadCacheValue: " + ReadCacheValue);
+                return;
+            }
+
+            if (ReadCacheValue != null)
+            {
+                Debug.WriteLine("ReadHandle.OnPreresolved: ReadCacheValue != null && !ReferenceEquals(ReadCacheValue, preresolvedValue).  ReadCacheValue: " + ReadCacheValue + " PreresolvedValue: " + preresolvedValue);
+            }
+            ReadCacheValue = preresolvedValue;
+        }
 
         #endregion
 

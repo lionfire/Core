@@ -1,5 +1,6 @@
 ﻿using LionFire.Serialization;
 using Microsoft.Extensions.Options;
+using System;
 //using static LionFire.Persistence.Filesystemlike.VirtualFilesystemPersisterBase<TReference, TPersistenceOptions>;
 
 namespace LionFire.Persistence.Persisters;
@@ -17,7 +18,7 @@ public class SerializingPersisterBase<TOptions> : PersisterBase<TOptions>, ISeri
 
     #region Construction
 
-    public SerializingPersisterBase(SerializationOptions serializationOptions, PersisterEvents? persisterEvents = null) : base(persisterEvents)
+    public SerializingPersisterBase(IServiceProvider serviceProvider, SerializationOptions serializationOptions, PersisterEvents? persisterEvents = null) : base(serviceProvider, persisterEvents)
     {
         SerializationOptions = serializationOptions;
     }

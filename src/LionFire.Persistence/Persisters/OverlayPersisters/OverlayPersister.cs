@@ -3,6 +3,7 @@ using LionFire.Data;
 using LionFire.Referencing;
 using LionFire.Serialization;
 using Microsoft.Extensions.Options;
+using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
@@ -24,7 +25,7 @@ namespace LionFire.Persistence.Persisters
         where TReference : IReference
         where TOptions : PersistenceOptions
     {
-        public OverlayPersister(SerializationOptions serializationOptions) : base(serializationOptions)
+        public OverlayPersister(IServiceProvider serviceProvider, SerializationOptions serializationOptions) : base(serviceProvider, serializationOptions)
         {
         }
 

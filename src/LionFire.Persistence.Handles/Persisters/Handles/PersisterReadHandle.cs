@@ -26,6 +26,7 @@ public class PersisterReadHandle<TPersisterReference, TValue, TPersister> : Pers
 public class PersisterReadHandle<TPersisterReference, TValue, TPersister, TReference> 
     : ReadHandle<TReference, TValue>
     , IPersisterHandle<TPersisterReference, TPersister>
+    
    where TReference : IReference<TValue>
    where TPersister : IPersister<TPersisterReference>
    where TPersisterReference : IReference
@@ -44,4 +45,6 @@ public class PersisterReadHandle<TPersisterReference, TValue, TPersister, TRefer
     IPersister<TPersisterReference>? IPersisterHandle<TPersisterReference>.Persister => Persister;
 
     protected override async ITask<IGetResult<TValue>> GetImpl(CancellationToken cancellationToken = default) => await Persister.Retrieve<TPersisterReference, TValue>((TPersisterReference)(object)Reference).ConfigureAwait(false); // HARDCAST
+
+    
 }

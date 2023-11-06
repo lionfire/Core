@@ -1,10 +1,15 @@
-﻿using LionFire.Persistence.Handles;
+﻿#nullable enable
+
+using LionFire.Persistence.Handles;
 using LionFire.Persistence;
 using System;
 using LionFire.Referencing.Ex;
 using LionFire.Dependencies;
 using System.Reflection;
 using System.Linq;
+using System.Collections.Generic;
+using System.Diagnostics;
+using System.Diagnostics.Eventing.Reader;
 
 namespace LionFire.Referencing; // REVIEW - should be in another namespace?
 
@@ -43,16 +48,53 @@ public static partial class ReferenceToReadHandleX
     // no overwrite available, unlike for ReadWriteHandles
 
     // Non-generic
-    public static (IReadHandle<TValue> handle, bool usedPreresolved) GetReadHandlePreresolved<TValue>(this IReference reference, TValue preresolvedValue, IServiceProvider serviceProvider = null)
+    public static (IReadHandle<TValue> handle, bool createdNewHandle, bool conflictedWithRegistry) GetReadHandlePreresolved<TValue>(this IReference reference, TValue? preresolvedValue, IServiceProvider serviceProvider = null)
     {
-        bool usedPreresolved = false;
-        return (HandleRegistry2.GetOrAddRead<TValue>(reference.Url, _ =>
+        bool createdNewHandle = false;
+        bool conflictedWithRegistry = false;
+
+        var handle = HandleRegistry2.GetOrAddRead<TValue>(reference.Url, _ =>
         {
-            usedPreresolved = true;
+            createdNewHandle = true;
             IPreresolvableReadHandleProvider p = reference.GetReadHandleProvider(serviceProvider) as IPreresolvableReadHandleProvider ?? throw new NotFoundException($"{nameof(IPreresolvableReadHandleProvider)} not found");
             var handle = p.GetReadHandlePreresolved(reference, preresolvedValue);
             return handle;
-        }), usedPreresolved);
+        });
+
+        if (createdNewHandle && EqualityComparer<TValue>.Default.Equals(handle.Value, preresolvedValue))
+        {
+#if DEBUG
+            Debug.WriteLine("ReferenceToReadHandleX.GetReadHandlePreresolved: createdNewHandle && EqualityComparer<TValue>.Default.Equals(handle.Value, preresolvedValue).  preresolvedValue: " + preresolvedValue);
+            //throw new UnreachableCodeException();
+#endif
+        }
+        else
+        {
+            conflictedWithRegistry = true;
+
+            var existing = handle;
+
+            var p = reference.GetReadHandleCreator() ?? throw new NotFoundException($"{nameof(IReadHandleCreator)} not found");
+            //if (existing.Value == null)
+            //{
+            if (existing is IPersistenceAware<TValue> pa)
+            {
+                pa.OnPreresolved(preresolvedValue); // TODO: Notify existing handle that we preresolved something here
+            }
+            else
+            {
+                handle = p.CreateReadHandle<TValue>(reference, preresolvedValue);
+                // TODO: Consult handle sharing policy: try to update existing handle?
+                HandleRegistry2.AddOrUpdate(reference.Url, handle);
+            }
+            //}
+            //else
+            //{
+            //    Debug.WriteLine($"Conflicting non-null values for '{reference.Url}'. Existing value: {existing.Value}.  New preresolved value: {preresolvedValue}");
+            //}
+        }
+        return (handle, createdNewHandle, conflictedWithRegistry);
+
 
 #if OLD
         // OLD - Upcast approach.  Current approach above just relies on the full non-generic stack.
@@ -75,7 +117,7 @@ public static partial class ReferenceToReadHandleX
     }
 
     #endregion
-        
+
     public static IReadHandle<TValue> CreateReadHandle<TValue>(this IReference reference) => throw new NotImplementedException(); // FUTURE
 
     #region Existing

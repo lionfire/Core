@@ -31,7 +31,6 @@
 		<PackageReference Include="OpenTelemetry.Api" />
 		<PackageReference Include="OpenTelemetry.Exporter.Console" />
 		<PackageReference Include="OpenTelemetry.Exporter.InMemory" />
-		<PackageReference Include="OpenTelemetry.Exporter.OpenTelemetryProtocol.Logs" />
 		<PackageReference Include="OpenTelemetry.Extensions.Hosting" />
 		<PackageReference Include="OpenTelemetry.Instrumentation.Runtime" />
 		<PackageReference Include="Overby.Extensions.Attachments" />

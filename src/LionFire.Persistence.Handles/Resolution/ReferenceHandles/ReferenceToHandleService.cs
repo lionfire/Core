@@ -82,43 +82,7 @@ public class ReferenceToHandleService : IReferenceToHandleService
     //{
     //    this.optionsFactory = optionsFactory;
     //}
-#warning TODO: If this method is okay, do the same generic parameter for the others
-    public IReadHandleProvider<TReference> GetReadHandleProvider<TReference>(TReference input)
-        where TReference : IReference
-    {
-        // REVIEW - is this IReference check needed? What is performance?
-        //if (typeof(TReference) == typeof(IReference))
-        //{
-        //// Question: Handle named providers here, or let each provider type do it?
-        //return ServiceProvider.GetRequiredService<IReadHandleProvider>(typeof(IReadHandleProvider<>).MakeGenericType(input.GetType()));
-        //}
-        //else
-        {
-            if (typeof(TReference).IsGenericType)
-            {
-                throw new ArgumentException("Cannot be invoked when TReference is generic.  Use non-generic overload of this method instead.");
-            }
-            //else
-            //{
-            return ServiceProvider.GetRequiredService<IReadHandleProvider<TReference>>(typeof(IReadHandleProvider<TReference>));
-            //}
-        }
-    }
 
-    public IReadHandleProvider GetReadHandleProvider(IReference input)
-    {
-        var innermost = input; // TODO: if this is good, consider it for RW R List
-        while (innermost is IReferenceCast rc)
-        {
-            innermost = rc.InnerReference;
-        }
-
-        // Question: Handle named providers here, or let each provider type do it?
-        return ServiceProvider.GetRequiredService<IReadHandleProvider>(typeof(IReadHandleProvider<>).MakeGenericType(GetLookupType(innermost.GetType())));
-    }
-
-    public IReadWriteHandleProvider GetReadWriteHandleProvider(IReference input)
-        => ServiceProvider.GetRequiredService<IReadWriteHandleProvider>(typeof(IReadWriteHandleProvider<>).MakeGenericType(GetLookupType(input.GetType())));
 
     //if (handleProviders.TryGetValue(input.GetType(), out IReadWriteHandleProvider result))
     //{
@@ -131,21 +95,119 @@ public class ReferenceToHandleService : IReferenceToHandleService
     //    ServiceProvider.GetRequiredService<IReadHandleProvider<TReference>>(typeof(IReadHandleProvider<TReference>));
     //}
 
+    #region Read
+
+    #region Provider
+
+    IReference UnrollCasts(IReference input)
+    {
+        var innermost = input; // TODO: if this is good, consider it for RW R List
+        while (innermost is IReferenceCast rc)
+        {
+            innermost = rc.InnerReference;
+        }
+        return innermost;
+    }
+
+    // Question: Handle named providers here, or let each provider type do it?
+    public IReadHandleProvider GetReadHandleProvider(IReference input)
+        => ServiceProvider.GetRequiredService<IReadHandleProvider>(typeof(IReadHandleProvider<>).MakeGenericType(GetLookupType(UnrollCasts(input).GetType())));
+
+#warning TODO: If this method is okay, do the same generic parameter for the others
+    public IReadHandleProvider<TReference> GetReadHandleProvider<TReference>(TReference input)
+        where TReference : IReference
+    {
+        if (typeof(TReference) == typeof(IReference))
+        {
+            return (IReadHandleProvider<TReference>)ServiceProvider.GetRequiredService<IReadHandleProvider>(typeof(IReadHandleProvider<>).MakeGenericType(UnrollCasts(input).GetType()));
+        }
+        else
+        {
+            if (typeof(TReference).IsGenericType)
+            {
+                // GetRequiredService won't work for GetRequiredService<IReadHandleProvider<MyType<T>>>
+                throw new ArgumentException("Cannot be invoked when TReference is generic.  Use non-generic overload of this method instead.");
+            }
+            return ServiceProvider.GetRequiredService<IReadHandleProvider<TReference>>(typeof(IReadHandleProvider<TReference>));
+        }
+    }
+
+    #endregion
+
+    #region Creator
+
+    public IReadHandleCreator GetReadHandleCreator(IReference input)
+        => ServiceProvider.GetRequiredService<IReadHandleCreator>(typeof(IReadHandleCreator<>).MakeGenericType(GetLookupType(UnrollCasts(input).GetType())));
+
+    public IReadHandleCreator<TReference> GetReadHandleCreator<TReference>(TReference input)
+        where TReference : IReference
+    {
+        if (typeof(TReference) == typeof(IReference))
+        {
+            return (IReadHandleCreator<TReference>)ServiceProvider.GetRequiredService<IReadHandleCreator>(typeof(IReadHandleCreator<>).MakeGenericType(UnrollCasts(input).GetType()));
+        }
+        else
+        {
+            if (typeof(TReference).IsGenericType)
+            {
+                // GetRequiredService won't work for GetRequiredService<IReadHandleCreator<MyType<T>>>
+                throw new ArgumentException("Cannot be invoked when TReference is generic.  Use non-generic overload of this method instead.");
+            }
+            return ServiceProvider.GetRequiredService<IReadHandleCreator<TReference>>(typeof(IReadHandleCreator<TReference>));
+        }
+    }
+
+    #endregion
+
+    #endregion
+
+    #region ReadWrite
+
+    #region Provider
+
+    public IReadWriteHandleProvider GetReadWriteHandleProvider(IReference input)
+        => ServiceProvider.GetRequiredService<IReadWriteHandleProvider>(typeof(IReadWriteHandleProvider<>).MakeGenericType(GetLookupType(input.GetType())));
+    public IReadWriteHandleProvider<TReference> GetReadWriteHandleProvider<TReference>(TReference input) where TReference : IReference
+        => throw new NotImplementedException();
+
+    #endregion
+
+    #region Creator
+
+    public IReadWriteHandleCreator GetReadWriteHandleCreator(IReference input) => throw new NotImplementedException();
+    public IReadWriteHandleCreator<TReference> GetReadWriteHandleCreator<TReference>(TReference input) where TReference : IReference => throw new NotImplementedException();
+
+    #endregion
+
+    #endregion
+
+    #region Write
+
+    #region Provider
+
     public IWriteHandleProvider GetWriteHandleProvider(IReference input)
                 => ServiceProvider.GetRequiredService<IWriteHandleProvider>(typeof(IWriteHandleProvider<>).MakeGenericType(GetLookupType(input.GetType())));
+
+    public IWriteHandleProvider<TReference> GetWriteHandleProvider<TReference>(TReference input) where TReference : IReference => throw new NotImplementedException();
+
+    #endregion
+
+    #region Creator
+
+    public IWriteHandleCreator GetWriteHandleCreator(IReference input) => throw new NotImplementedException();
+    public IWriteHandleCreator<TReference> GetWriteHandleCreator<TReference>(TReference input) where TReference : IReference => throw new NotImplementedException();
+
+
+    #endregion
+
+    #endregion
+
+    #region Collection
 
     public ICollectionHandleProvider GetCollectionHandleProvider(IReference input)
         => ServiceProvider.GetRequiredService<ICollectionHandleProvider>(typeof(ICollectionHandleProvider<>).MakeGenericType(GetLookupType(input.GetType())));
 
-    public IReadHandleCreator GetReadHandleCreator(IReference input) => throw new NotImplementedException();
-    public IReadHandleCreator<TReference> GetReadHandleCreator<TReference>(TReference input) where TReference : IReference => throw new NotImplementedException();
-    public IReadWriteHandleProvider<TReference> GetReadWriteHandleProvider<TReference>(TReference input) where TReference : IReference => throw new NotImplementedException();
-    public IReadWriteHandleCreator GetReadWriteHandleCreator(IReference input) => throw new NotImplementedException();
-    public IReadWriteHandleCreator<TReference> GetReadWriteHandleCreator<TReference>(TReference input) where TReference : IReference => throw new NotImplementedException();
-    public IWriteHandleProvider<TReference> GetWriteHandleProvider<TReference>(TReference input) where TReference : IReference => throw new NotImplementedException();
-    public IWriteHandleCreator GetWriteHandleCreator(IReference input) => throw new NotImplementedException();
-    public IWriteHandleCreator<TReference> GetWriteHandleCreator<TReference>(TReference input) where TReference : IReference => throw new NotImplementedException();
-
+    #endregion
     /// ///////////////////
 
 

@@ -46,7 +46,7 @@ namespace LionFire.Persistence.Persisters
         //}
         //private TUnderlyingPersister underlyingPersister;
 
-        public PassthroughPersister(SerializationOptions serializationOptions) : base(serializationOptions)
+        public PassthroughPersister(IServiceProvider serviceProvider, SerializationOptions serializationOptions) : base(serviceProvider, serializationOptions)
         {
         }
 

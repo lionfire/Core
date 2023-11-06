@@ -11,14 +11,14 @@ public static class ObjectToHandleViaIdExtensions
 {
 
     public static IReadHandle<TValue> GetReadHandle<TValue>(this TValue obj)
-        where TValue : IIded<string>
+        where TValue : IIdentified<string>
         => new IdReference<TValue>(obj.Id).GetReadHandlePreresolved(preresolvedValue: obj).handle;
 
     public static IWriteHandle<TValue> GetWriteHandle<TValue>(this TValue obj)
-        where TValue : IIded<string>
+        where TValue : IIdentified<string>
         => new IdReference<TValue>(obj.Id).GetWriteHandle(prestagedValue: obj);
     
     public static IReadWriteHandle<TValue> GetReadWriteHandle<TValue>(this TValue obj)
-        where TValue : IIded<string>
+        where TValue : IIdentified<string>
         => new IdReference<TValue>(obj.Id).GetReadWriteHandlePrestaged<TValue>(preStagedValue: obj).handle;
 }

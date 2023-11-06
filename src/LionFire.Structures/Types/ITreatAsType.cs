@@ -1,11 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
+﻿
+namespace LionFire.Types;
 
-namespace LionFire.Types
+public interface ITreatAsType
 {
-    public interface ITreatAsType
-    {
-        Type TreatAsType { get; }
-    }
+    Type TreatAsType { get; }
 }

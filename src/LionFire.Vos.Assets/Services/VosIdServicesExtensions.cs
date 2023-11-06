@@ -41,6 +41,7 @@ public static class VosIdServicesExtensions
 
             .AddSingleton<VosIdHandleProvider>()
             .AddSingleton<IReadHandleProvider<IIdReference>>(sp => sp.GetRequiredService<VosIdHandleProvider>())
+            .AddSingleton<IReadHandleCreator<IIdReference>>(sp => sp.GetRequiredService<VosIdHandleProvider>())
             .AddSingleton<IReadWriteHandleProvider<IIdReference>>(sp => sp.GetRequiredService<VosIdHandleProvider>())
 
             .AddSingleton<VosIdPersisterProvider>()

@@ -7,6 +7,7 @@ using LionFire.Persistence.Persisters;
 using LionFire.Referencing;
 using LionFire.Serialization;
 using LionFire.Structures;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 //using NLog;
@@ -62,10 +63,10 @@ public class FilesystemPersister : VirtualFilesystemPersisterBase<IFileReference
 
     #region Construction
 
-    public FilesystemPersister(ISerializationProvider serializationProvider, IOptionsMonitor<FilesystemPersisterOptions> optionsMonitor, IPersistenceConventions itemKindIdentifier, SerializationOptions serializationOptions) : this(serializationProvider, null, optionsMonitor, itemKindIdentifier, serializationOptions)
+    public FilesystemPersister(ISerializationProvider serializationProvider, IOptionsMonitor<FilesystemPersisterOptions> optionsMonitor, IPersistenceConventions itemKindIdentifier, SerializationOptions serializationOptions, IServiceProvider serviceProvider) : this(serializationProvider, null, optionsMonitor, itemKindIdentifier, serializationOptions, serviceProvider)
     {
     }
-    public FilesystemPersister(ISerializationProvider serializationProvider, string name, IOptionsMonitor<FilesystemPersisterOptions> options, IPersistenceConventions itemKindIdentifier, SerializationOptions serializationOptions) : base(name, serializationProvider, options, itemKindIdentifier, serializationOptions)
+    public FilesystemPersister(ISerializationProvider serializationProvider, string name, IOptionsMonitor<FilesystemPersisterOptions> options, IPersistenceConventions itemKindIdentifier, SerializationOptions serializationOptions, IServiceProvider serviceProvider) : base(name, serializationProvider, options, itemKindIdentifier, serializationOptions, serviceProvider)
     {
     }
 

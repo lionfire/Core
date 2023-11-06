@@ -7,7 +7,7 @@ namespace LionFire.Data.Id
 {
     public static class IdedToIdReferenceExtensions
     {
-        public static IdReference<TValue> ToIdReference<TValue>(this IIded<string> ided)
+        public static IdReference<TValue> ToIdReference<TValue>(this IIdentified<string> ided)
         {
             if (ided == null) return null;
             return new IdReference<TValue>(ided.Id ?? throw new ArgumentNullException(nameof(ided.Id)));

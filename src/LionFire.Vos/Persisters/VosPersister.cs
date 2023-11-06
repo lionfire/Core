@@ -50,21 +50,22 @@ public class VosPersister : SerializingPersisterBase<VosPersisterOptions>, IPers
 
     #region Lifecycle
 
-    public VosPersister(ILogger<VosPersister> logger, IVos vosRootManager, SerializationOptions serializationOptions, PersisterEvents persisterEvents, IOptionsMonitor<VosPersisterOptions> optionsMonitor)
-        : this(logger, vosRootManager, serializationOptions, persisterEvents, optionsMonitor, OptionsName.Default)
+    public VosPersister(ILogger<VosPersister> logger, IVos vosRootManager, SerializationOptions serializationOptions, PersisterEvents persisterEvents, IOptionsMonitor<VosPersisterOptions> optionsMonitor, IServiceProvider serviceProvider)
+        : this(logger, vosRootManager, serializationOptions, persisterEvents, optionsMonitor, OptionsName.Default, serviceProvider)
     {
     }
 
     public VosPersister(ILogger<VosPersister> logger, IVos vosRootManager, SerializationOptions serializationOptions, PersisterEvents persisterEvents
         , IOptionsMonitor<VosPersisterOptions> optionsMonitor
         , OptionsName optionsName
+        , IServiceProvider serviceProvider
         )
-        : base(optionsMonitor.Get(optionsName.NameOrDefault)?.SerializationOptions ?? serializationOptions, persisterEvents)
+        : base(serviceProvider, optionsMonitor.Get(optionsName.NameOrDefault)?.SerializationOptions ?? serializationOptions, persisterEvents)
     {
         l = logger;
         VosPersisterOptions = optionsMonitor.Get(optionsName.NameOrDefault);
         var rootName = VosPersisterOptions?.RootName ?? optionsName.Name;
-        Root = vosRootManager.Get(rootName);
+        Root = vosRootManager.Get(rootName) ?? throw new ArgumentException($"Root not found: {rootName}");
     }
 
     #endregion

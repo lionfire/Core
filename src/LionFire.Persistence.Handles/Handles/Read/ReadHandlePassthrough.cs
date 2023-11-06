@@ -89,22 +89,16 @@ public class ReadHandlePassthrough<TValue, TReference>
 
     #endregion
 
-    public TValue Value
+    public TValue? Value
     {
         get => ReadHandle == null ? default : ReadHandle.Value;
         protected set
         {
             if (handle != null) throw new AlreadySetException($"{nameof(ReadHandle)} is already set");
-            if (Reference != null)
-            {
-                var result = Reference.GetReadHandlePreresolved<TValue>(value);
-                handle = result.handle;
-                if (!result.usedPreresolved) { }
-            }
-            else
-            {
-                handle = value.ToObjectHandle();
-            }
+
+            handle = Reference != null 
+                ? Reference.GetReadHandlePreresolved<TValue>(value).handle 
+                : value.ToObjectHandle();
         }
     }
 
