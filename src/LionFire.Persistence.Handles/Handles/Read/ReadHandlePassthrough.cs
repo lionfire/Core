@@ -60,7 +60,7 @@ public class ReadHandlePassthrough<TValue, TReference>
 
     #region Pass-thru
 
-    public Type? Type => ReadHandle?.Type;
+    public Type? Type => ReadHandle?.Type ?? (Reference as ITypedReference)?.Type ?? typeof(TValue);
 
     IReference IReferencable.Reference => ReadHandle.Reference;
 

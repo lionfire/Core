@@ -17,22 +17,13 @@
   <ItemGroup>
     <PackageReference Include="Microsoft.Extensions.DependencyInjection" />
     <PackageReference Include="Newtonsoft.Json" />
-    <PackageReference Include="System.Reflection" />
-    <PackageReference Include="System.Diagnostics.Process" />
+    <!--<PackageReference Include="System.Reflection" />-->
+    <!--<PackageReference Include="System.Diagnostics.Process" />
     <PackageReference Include="System.Runtime.Loader" />
     <PackageReference Include="System.Threading.Thread" />
     <PackageReference Include="System.Net.Http" />
     <PackageReference Include="System.Runtime.Extensions" />
-    <PackageReference Include="System.Reactive.Linq" />
-  </ItemGroup>
-
-  <ItemGroup Condition=" '$(TargetFramework)' == 'netstandard1.6' ">
-    <PackageReference Include="System.Runtime.Loader" />
-  </ItemGroup>
-
-  <ItemGroup Condition=" '$(TargetFramework)' == 'net462' ">
-    <Reference Include="System" />
-    <Reference Include="Microsoft.CSharp" />
+    <PackageReference Include="System.Reactive.Linq" />-->
   </ItemGroup>
 
 </Project>

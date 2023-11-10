@@ -182,7 +182,7 @@ public static class IReferenceExtensions
     /// <typeparam name="T"></typeparam>
     /// <param name="reference"></param>
     /// <returns></returns>
-    public static Type ReferenceType(this IReference reference)
+    public static Type? ReferenceType(this IReference reference)
     {
         if (reference is ITypedReference tr && tr.Type != null)
         {

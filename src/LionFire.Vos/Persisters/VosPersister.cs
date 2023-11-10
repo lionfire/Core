@@ -301,7 +301,7 @@ public class VosPersister : SerializingPersisterBase<VosPersisterOptions>, IPers
                 try
                 {
                     childResult = (await rh.Get().ConfigureAwait(false));
-                    l.Info(childResult.ToString() + " " + rh.Reference + $" (for {referencable.Reference})"); // TEMP log level
+                    l.Info(childResult?.ToString() + " " + rh.Reference + $" (for {referencable.Reference})"); // TEMP log level
                 }
                 finally
                 {

@@ -23,19 +23,18 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="System.Reflection" />
     <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" />
     <PackageReference Include="Microsoft.CodeAnalysis.CSharp.Scripting" />
-    <PackageReference Include="System.Security.Cryptography.Algorithms" />
+    <!--<PackageReference Include="System.Security.Cryptography.Algorithms" />-->
   </ItemGroup>
 
-  <ItemGroup Condition=" '$(TargetFramework)' == 'netstandard1.6' ">
+  <!--<ItemGroup Condition=" '$(TargetFramework)' == 'netstandard1.6' ">
     <PackageReference Include="System.Runtime.Loader" />
   </ItemGroup>
 
   <ItemGroup Condition=" '$(TargetFramework)' == 'net462' ">
     <Reference Include="System" />
     <Reference Include="Microsoft.CSharp" />
-  </ItemGroup>
+  </ItemGroup>-->
 
 </Project>

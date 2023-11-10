@@ -22,17 +22,8 @@
   <ItemGroup>
     <PackageReference Include="Microsoft.Extensions.Configuration" />
     <PackageReference Include="Microsoft.Extensions.PlatformAbstractions" />
-    <PackageReference Include="System.Diagnostics.Process" />
-    <PackageReference Include="System.Threading.Thread" />
+    <!--<PackageReference Include="System.Diagnostics.Process" />
+    <PackageReference Include="System.Threading.Thread" />-->
   </ItemGroup>
-
-  <ItemGroup Condition=" '$(TargetFramework)' == 'netstandard1.6' ">
-    <PackageReference Include="System.Runtime.Loader" />
-  </ItemGroup>
-
-  <ItemGroup Condition=" '$(TargetFramework)' == 'net462' ">
-    <Reference Include="System" />
-    <Reference Include="Microsoft.CSharp" />
-  </ItemGroup>
-
+  
 </Project>
