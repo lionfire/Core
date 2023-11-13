@@ -13,7 +13,6 @@ using Microsoft.Extensions.Options;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading;
@@ -24,7 +23,7 @@ namespace LionFire.DependencyMachines;
 // ENH: Pause/unpause
 // ENH: Reactive: detect started/stopped/faulted/paused states on members
 
-public class DependencyStateMachine : IDependencyStateMachine
+public partial class DependencyStateMachine : IDependencyStateMachine
 {
     #region Dependencies
 
@@ -184,36 +183,35 @@ public class DependencyStateMachine : IDependencyStateMachine
     {
         //var sb = new StringBuilder();
 
-        Logger.LogInformation("Dependency plan:");
+        Logger.LogDebug("Dependency plan:");
         foreach (var stage in this.Stages)
         {
-
-            Logger.LogInformation($" ===== [{stage.ToString()}] =====");
+            Logger.LogDebug($" ===== [{stage.ToString()}] =====");
             //sb.AppendLine($"- [{stage.ToString()}]");
             foreach (var member in stage.Members)
             {
-                Logger.LogInformation($"   [[ {member.ToString()} ]]");
+                Logger.LogDebug($"   [[ {member.ToString()} ]]");
                 foreach (var dependency in member.Dependencies ?? Enumerable.Empty<object>())
                 {
-                    Logger.LogInformation($"     o {dependency ?? "(root)"}");
+                    Logger.LogDebug($"     o {dependency ?? "(root)"}");
                 }
                 foreach (var after in member.After ?? Enumerable.Empty<object>())
                 {
-                    Logger.LogInformation($"     >> {after}");
+                    Logger.LogDebug($"     >> {after}");
                 }
                 foreach (var provides in member.Provides ?? Enumerable.Empty<object>())
                 {
                     if (provides?.ToString() == member.ToString()) { continue; }
-                    Logger.LogInformation($"     = {provides}");
+                    Logger.LogDebug($"     = {provides}");
                 }
                 foreach (var contributes in member.Contributes ?? Enumerable.Empty<object>())
                 {
-                    Logger.LogInformation($"     + {contributes}");
+                    Logger.LogDebug($"     + {contributes}");
                 }
                 //sb.AppendLine($"  - {member.ToString()}");
             }
         }
-        Logger.LogInformation($" ===== [end of stages] =====");
+        Logger.LogDebug($" ===== [end of stages] =====");
 
         //return sb.ToString();
     }
@@ -273,74 +271,78 @@ public class DependencyStateMachine : IDependencyStateMachine
         }
 
         Dictionary<IParticipant, object>? tryAgain = null;
-        foreach (var stage in Stages)
+        Logger.LogInformation($"Starting all stages...");
+        using (new DisposableStopwatch(sw => Logger.LogInformation($"...Started all stages. ({sw.ElapsedMilliseconds}ms)")))
         {
-            endOfStage.Clear();
-
-            foreach (var item in stage.Members)
+            foreach (var stage in Stages)
             {
-                if (item.Flags.HasFlag(ParticipantFlags.StageEnder))
-                {
-                    endOfStage.Add(item);
-                    continue;
-                }
-                //if (InjectMissingDependencies(item)) // FUTURE
-                //{
-                //    if (AllowRoundRobinWithinStageWhenMissingDependencies)
-                //    {
-                //        throw new NotImplementedException();
-                //    }
-                //    else
-                //    {
-                //        throw new DependencyMissingException($"Participant '{item}' has missing dependencies: " + item.DependencyHandles.Where(h => !h.HasValue).Select(h => h.Key).Aggregate((x, y) => $"{x}, {y}"));
-                //    }
-                //}
+                endOfStage.Clear();
 
-                startOrAddToList(item, await start(item, cancellationToken).ConfigureAwait(false), ref tryAgain);
-                //var startResult = await start(item, cancellationToken).ConfigureAwait(false);
-                //if (startResult != null)
-                //{
-                //    if (tryAgain == null) { tryAgain = new List<IParticipant>(); }
-                //    tryAgain.Add(item);
-                //}
-            }
-            int lastTryAgainCount = -1;
-            while (tryAgain.NullableAny() && lastTryAgainCount != tryAgain.Count)
-            {
-                Dictionary<IParticipant, object>? newTryAgain = null;
-                foreach (var item in tryAgain.Keys!)
+                foreach (var item in stage.Members)
                 {
-                    startOrAddToList(item, await start(item, cancellationToken).ConfigureAwait(false), ref newTryAgain);
-                }
+                    if (item.Flags.HasFlag(ParticipantFlags.StageEnder))
+                    {
+                        endOfStage.Add(item);
+                        continue;
+                    }
+                    //if (InjectMissingDependencies(item)) // FUTURE
+                    //{
+                    //    if (AllowRoundRobinWithinStageWhenMissingDependencies)
+                    //    {
+                    //        throw new NotImplementedException();
+                    //    }
+                    //    else
+                    //    {
+                    //        throw new DependencyMissingException($"Participant '{item}' has missing dependencies: " + item.DependencyHandles.Where(h => !h.HasValue).Select(h => h.Key).Aggregate((x, y) => $"{x}, {y}"));
+                    //    }
+                    //}
 
-                //var startResult = await start(item, cancellationToken).ConfigureAwait(false);
-                //if (startResult != null)
-                //{
-                //    if (tryAgain == null) { tryAgain = new List<IParticipant>(); }
-                //    tryAgain.Add(item);
-                //}
+                    startOrAddToList(item, await start(item, cancellationToken).ConfigureAwait(false), ref tryAgain);
+                    //var startResult = await start(item, cancellationToken).ConfigureAwait(false);
+                    //if (startResult != null)
+                    //{
+                    //    if (tryAgain == null) { tryAgain = new List<IParticipant>(); }
+                    //    tryAgain.Add(item);
+                    //}
+                }
+                int lastTryAgainCount = -1;
+                while (tryAgain.NullableAny() && lastTryAgainCount != tryAgain.Count)
+                {
+                    Dictionary<IParticipant, object>? newTryAgain = null;
+                    foreach (var item in tryAgain.Keys!)
+                    {
+                        startOrAddToList(item, await start(item, cancellationToken).ConfigureAwait(false), ref newTryAgain);
+                    }
 
-                lastTryAgainCount = tryAgain.Count;
-                tryAgain = newTryAgain;
-            }
-            if (tryAgain.NullableAny())
-            {
-                Logger.LogError($"{tryAgain.Count()} initialization failure(s):");
-                foreach (var fail in tryAgain!)
-                {
-                    Logger.LogError($" - {fail.Key} failure: {fail.Value}");
+                    //var startResult = await start(item, cancellationToken).ConfigureAwait(false);
+                    //if (startResult != null)
+                    //{
+                    //    if (tryAgain == null) { tryAgain = new List<IParticipant>(); }
+                    //    tryAgain.Add(item);
+                    //}
+
+                    lastTryAgainCount = tryAgain.Count;
+                    tryAgain = newTryAgain;
                 }
-                throw new DependenciesUnresolvableException("Failed to start participants due to validation errors.  See Data for details. ", tryAgain!);
-            }
-            foreach (var item in endOfStage)
-            {
-                var startResult = await start(item, cancellationToken).ConfigureAwait(false);
-                if (startResult != null)
+                if (tryAgain.NullableAny())
                 {
-                    throw new NotImplementedException("Stage-ender returned an error result.  Retry mechanism not implemented.");
+                    Logger.LogError($"{tryAgain.Count()} initialization failure(s):");
+                    foreach (var fail in tryAgain!)
+                    {
+                        Logger.LogError($" - {fail.Key} failure: {fail.Value}");
+                    }
+                    throw new DependenciesUnresolvableException("Failed to start participants due to validation errors.  See Data for details. ", tryAgain!);
                 }
+                foreach (var item in endOfStage)
+                {
+                    var startResult = await start(item, cancellationToken).ConfigureAwait(false);
+                    if (startResult != null)
+                    {
+                        throw new NotImplementedException("Stage-ender returned an error result.  Retry mechanism not implemented.");
+                    }
+                }
+                OnStartedStage(stage);
             }
-            OnStartedStage(stage);
         }
     }
 
@@ -397,18 +399,23 @@ public class DependencyStateMachine : IDependencyStateMachine
             }
             return null;
         }
-        foreach (var stage in Stages.Reverse())
+        Logger.LogInformation($"Stopping all stages...");
+
+        using (new DisposableStopwatch(sw => Logger.LogInformation($"...Stopped all stages. ({sw.ElapsedMilliseconds}ms)")))
         {
-            foreach (var item in stage.Members)
+            foreach (var stage in Stages.Reverse())
             {
-                if (startedParticipants.ContainsKey(item.Key))
+                foreach (var item in stage.Members)
                 {
-                    OnStopping(item);
-                    await stop(item, cancellationToken).ConfigureAwait(false);
-                    OnStopped(item);
+                    if (startedParticipants.ContainsKey(item.Key))
+                    {
+                        OnStopping(item);
+                        await stop(item, cancellationToken).ConfigureAwait(false);
+                        OnStopped(item);
+                    }
                 }
+                OnStoppedStage(stage);
             }
-            OnStoppedStage(stage);
         }
     }
 
@@ -428,7 +435,6 @@ public class DependencyStateMachine : IDependencyStateMachine
     public bool Unset(string key) => state.Remove(key);
 
     #endregion
-
     #endregion
 
     #region Events

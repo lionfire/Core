@@ -6,16 +6,27 @@ using System.Threading.Tasks;
 
 namespace LionFire.Hosting;
 
-public class ReleaseChannelLogger : IHostedService
+public class AppContextLogger(ILogger<ReleaseChannelLogger> logger) : IHostedService
 {
-    public ReleaseChannelLogger(ILogger<ReleaseChannelLogger> logger, IConfiguration configuration)
+    public Task StartAsync(CancellationToken cancellationToken)
     {
-        logger.LogInformation($"Release channel: {configuration["releaseChannel"]}");
+        logger.LogInformation($"AppContext.BaseDirectory: {AppContext.BaseDirectory}");
+        logger.LogInformation($"AppContext.TargetFrameworkName: {AppContext.TargetFrameworkName}");
+        return Task.CompletedTask;
     }
 
-    public Task StartAsync(CancellationToken cancellationToken) => Task.CompletedTask;
+    public Task StopAsync(CancellationToken cancellationToken) => Task.CompletedTask;
+}
 
-    public Task StopAsync(CancellationToken cancellationToken)=> Task.CompletedTask;
+public class ReleaseChannelLogger(ILogger<ReleaseChannelLogger> logger, IConfiguration configuration) : IHostedService
+{
+    public Task StartAsync(CancellationToken cancellationToken)
+    {
+        logger.LogInformation($"Release channel: {configuration["releaseChannel"]}");        
+        return Task.CompletedTask;
+    }
+
+    public Task StopAsync(CancellationToken cancellationToken) => Task.CompletedTask;
 }
 
 public class DeploymentSlotLogger : IHostedService

@@ -5,9 +5,12 @@ using Microsoft.Extensions.Configuration;
 using Serilog.Formatting;
 using System.IO;
 using LionFire.Configuration.Logging;
+#if OLD
 using Serilog.Sinks.Loki;
 using Serilog.Sinks.Loki.Labels;
+#endif
 using LionFire.Hosting;
+using Serilog.Sinks.Grafana.Loki;
 
 namespace LionFire.Logging.Serilog;
 
@@ -28,7 +31,7 @@ public class LionFireSerilogBuilder
         DefaultEnrich();
         Console(LionFireSerilogDefaults.LongConsoleTemplate);
         File();
-        //Loki();
+        Loki();
 
         FromConfiguration();
         
@@ -98,7 +101,7 @@ public class LionFireSerilogBuilder
             string? dir = null;
             if (LionFireEnvironment.IsUnitTest == true)
             {
-                dir = Configuration?[LionFireConfigKeys.Log.TestDir] as string;
+                dir = Configuration?[LionFireConfigKeys.Log.TestDir];
                 if (dir != null)
                 {
                     var testDllName = AppInfoFromConfiguration.TestDllName;
@@ -110,14 +113,17 @@ public class LionFireSerilogBuilder
                     }
                 }
             }
-            dir ??= Configuration?[LionFireConfigKeys.Log.Dir] as string;
+            dir ??= Configuration?[LionFireConfigKeys.Log.Dir];
 
             if (dir == null)
-            {
+            {                
                 if (throwOnMissingDirConfig) throw new ArgumentNullException($"Configuration[\"{LionFireConfigKeys.Log.Dir}\"]");
                 else
                 {
-                    System.Diagnostics.Debug.WriteLine($"Not logging to file, because log dir is missing in configuration: {LionFireConfigKeys.Log.Dir}.  Set {LionFireConfigKeys.Log.Enabled} to false to silence this message.");
+                    var msg = $"Not logging to file, because log dir is missing in configuration: {LionFireConfigKeys.Log.Dir}.  Set {LionFireConfigKeys.Log.Enabled} to false to silence this message.";
+                    System.Diagnostics.Debug.WriteLine(msg);
+                    System.Console.WriteLine(msg);
+                    // TODO: Log via bootstrap logger?
                     return this;
                 }
             }
@@ -137,15 +143,54 @@ public class LionFireSerilogBuilder
 
     public LionFireSerilogBuilder Loki(string? url = null)
     {
+        LoggerConfiguration.WriteTo.GrafanaLoki(url ?? DefaultLokiUrl);
+
+#if false
+        //logger.Information("The God of the day is {@God}", "the One and Only");
+        // https://github.com/serilog-contrib/serilog-sinks-grafana-loki
+        var appsettingsExample = """
+            {
+              "Serilog": {
+                "Using": [
+                  "Serilog.Sinks.Grafana.Loki"
+                ],
+                "MinimumLevel": {
+                  "Default": "Debug"
+                },
+                "WriteTo": [
+                  {
+                    "Name": "GrafanaLoki",
+                    "Args": {
+                      "uri": "http://localhost:3100",
+                      "labels": [
+                        {
+                          "key": "app",
+                          "value": "web_app"
+                        }
+                      ],
+                      "propertiesAsLabels": [
+                        "app"
+                      ]
+                    }
+                  }
+                ]
+              }
+            }
+            """;
+#endif
+
+#if OLD // Serilog.Sinks.Loki - abandoned library
         LoggerConfiguration.WriteTo.LokiHttp(() => new LokiSinkConfiguration()
         {
             LokiUrl = url ?? DefaultLokiUrl,
             LogLabelProvider = new DefaultLogLabelProvider(),
         });
+#endif
+
         return this;
     }
 
-    #endregion
+#endregion
     //.WriteTo.TestCorrelator()
 
 }

@@ -20,4 +20,6 @@ public class HostingBuilderBuilderContext : IFlex
     public IProgram? Program { get; internal set; }
     public InvocationContext? InvocationContext { get; internal set; }
 
+    public Dictionary<string, object?> Options { get; } = new();
+
 }

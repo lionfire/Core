@@ -6,8 +6,6 @@ using Serilog.Events;
 using Serilog.Formatting.Compact;
 using Serilog.Templates.Themes;
 using Serilog.Templates;
-using Serilog.Sinks.Loki;
-using Serilog.Sinks.Loki.Labels;
 using Serilog.Sinks.File.GZip;
 using Serilog.Formatting;
 using LionFire.Hosting;

@@ -1,4 +1,7 @@
 ﻿#nullable enable
+using LionFire.Extensions.Hosting;
+using LionFire.FlexObjects;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Hosting.Internal;
@@ -13,6 +16,11 @@ using System.Threading;
 using System.Threading.Tasks;
 
 namespace LionFire.Hosting.CommandLine;
+
+public class LionFireCommandLineOptions
+{
+    public Dictionary<string, object?> Options { get; set; }
+}
 
 // Supported TBuilder types:
 //  - IHostBuilder
@@ -70,6 +78,8 @@ public abstract class BuilderBuilderBase<TBuilder> : IHostingBuilderBuilder<TBui
 
     #region Methods
 
+    
+
     public void InitializeHierarchy(IProgram program, InvocationContext invocationContext, HostingBuilderBuilderContext context, TBuilder builder)
     {
         foreach (var bb in program.GetBuilderBuilderHierarchy(invocationContext).Reverse())
@@ -80,6 +90,16 @@ public abstract class BuilderBuilderBase<TBuilder> : IHostingBuilderBuilder<TBui
             }
             Debug.WriteLine($"Initializing for {bb.Command.GetType().Name}: " + bb.Command.Name);
             context.InitializingForCommandName = bb.Command.Name;
+
+            context.Options.AddParsedValues(invocationContext.BindingContext.ParseResult.CommandResult.Command.Options, invocationContext.BindingContext); // TODO: parse parent command options as well
+
+            var properties = (builder as IHostBuilder)?.Properties ?? (builder as HostApplicationBuilder)?.Properties();
+            properties?.TryAdd("Options", context.Options); // REVIEW - if already added, need to merge?
+
+            var hostBuilder = builder as IHostBuilder ?? (builder as HostApplicationBuilder)?.AsHostBuilder();
+            hostBuilder?.ConfigureServices(s => s
+                .AddSingleton(new LionFireCommandLineOptions { Options = context.Options }));
+
             try
             {
                 bbCasted.Initialize(context, builder);

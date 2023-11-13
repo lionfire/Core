@@ -160,7 +160,7 @@ public class RootManager : IVos, IHasMany<IParticipant>, IRootManager
         {
             yield return new StartableParticipant(ServiceProvider)
             {
-                StartAction = () => Logger.LogInformation("Vos initialized"),
+                StartAction = () => Logger.LogDebug("Vos initialized"),
             }
             .Provide("vos:")
             .RootDependency();

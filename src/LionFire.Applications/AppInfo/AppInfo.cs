@@ -1,5 +1,6 @@
 ﻿using LionFire.Dependencies;
 using LionFire.Structures;
+using Microsoft.Extensions.Hosting;
 using System;
 using System.Diagnostics;
 using System.IO;
@@ -89,12 +90,15 @@ public class AppInfo
     }
     private string appId;
 
+    public const string AppIdSchemePrefix = "app:";
+
     protected string DefaultAppId
     {
         get
         {
             if (defaultAppId == null && AppName != null)
             {
+#if false // reverse
                 if (OrgDomain != null)
                 {
                     defaultAppId = OrgDomain.Split('.').Reverse().Aggregate((x, y) => $"{x}.{y}") + "." + AppName;
@@ -103,6 +107,16 @@ public class AppInfo
                 {
                     return appId ?? $"{OrgName}.{AppName.Replace(" ", "")}";
                 }
+#else
+                if (OrgDomain != null)
+                {
+                    defaultAppId = AppIdSchemePrefix + AppName + "." + OrgDomain;
+                }
+                else if (OrgName != null)
+                {
+                    return appId ?? (AppIdSchemePrefix + $"{AppName.Replace(" ", "")}.{OrgName}");
+                }
+#endif
             }
             return defaultAppId;
         }
@@ -136,6 +150,12 @@ public class AppInfo
     ///  - unique name within your organization
     ///  - no spaces, unless your executable file has spaces in it.
     /// </summary>
+    /// <remarks>
+    /// Intended to match:
+    ///  - IHostBuilder.Properties[HostDefaults.ApplicationKey]
+    ///  - Configuration[HostDefaults.ApplicationKey]
+    ///  - note: HostDefaults.ApplicationKey = "AppName"
+    /// </remarks>
     public string AppName
     {
         get => appName ?? appId;
@@ -171,7 +191,7 @@ public class AppInfo
 
     public string ProgramVersion { get; set; } = "0.0.0";
     [Obsolete]
-    public string VersionString => ProgramVersion; 
+    public string VersionString => ProgramVersion;
 
     #region Directories
 
@@ -179,7 +199,7 @@ public class AppInfo
     {
         get
         {
-            if(directories == null)
+            if (directories == null)
             {
                 directories = new AppDirectories(this);
                 directories.Initialize();

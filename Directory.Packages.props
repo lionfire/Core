@@ -194,6 +194,8 @@
     <PackageVersion Include="Serilog.Sinks.File" Version="5.0.0" />
     <PackageVersion Include="Serilog.Sinks.File.Archive" Version="1.0.3" />
     <PackageVersion Include="Serilog.Sinks.File.GZip" Version="1.0.2" />
+    <PackageVersion Include="Serilog.Sinks.Grafana.Loki" Version="8.2.0" />
+    <PackageVersion Include="Serilog.Sinks.Http" Version="8.0.0" />
     <PackageVersion Include="Serilog.Sinks.Loki" Version="4.0.0-beta3" />
     <PackageVersion Include="Serilog.Sinks.TestCorrelator" Version="3.2.0" />
     <PackageVersion Include="SerilogTraceListener" Version="3.2.0" />
@@ -215,7 +217,7 @@
     <PackageVersion Include="System.ComponentModel" Version="4.3.0" />
     <PackageVersion Include="System.ComponentModel.Annotations" Version="5.0.0" />
     <PackageVersion Include="System.Configuration.ConfigurationManager" Version="7.0.0" />
-		<PackageVersion Include="System.Diagnostics.Contracts" Version="4.3.0" />
+    <PackageVersion Include="System.Diagnostics.Contracts" Version="4.3.0" />
     <PackageVersion Include="System.Diagnostics.Process" Version="4.3.0" />
     <PackageVersion Include="System.IdentityModel.Tokens.Jwt" Version="7.0.0" />
     <PackageVersion Include="System.IO.FileSystem" Version="4.3.0" />
@@ -240,7 +242,7 @@
     <PackageVersion Include="System.ServiceProcess.ServiceController" Version="7.0.0" />
     <PackageVersion Include="System.Text.Encoding.Extensions" Version="4.3.0" />
     <PackageVersion Include="System.Text.Json" Version="7.0.2" />
-		<PackageVersion Include="System.Threading.Tasks.Dataflow" Version="7.0.0" />
+    <PackageVersion Include="System.Threading.Tasks.Dataflow" Version="7.0.0" />
     <PackageVersion Include="System.Threading.Tasks.Extensions" Version="4.5.4" />
     <PackageVersion Include="System.Threading.Tasks.Parallel" Version="4.3.0" />
     <PackageVersion Include="System.Threading.Thread" Version="4.3.0" />

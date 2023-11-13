@@ -7,16 +7,15 @@ using System.Collections.Generic;
 namespace LionFire.Hosting;
 
 // TODO: Refactor this with LionFireHostBuilder, consider support for other builder types: ASP.NET Core, MAUI
-
 public class LionFireHostBuilderWrapper : IHostBuilder
 {
 
-    public LionFireHostBuilderWrapper(IHostBuilder hostBuilder, ILionFireHostBuilder parent)
+    public LionFireHostBuilderWrapper(IHostBuilder hostBuilder, ILionFireHostBuilder? parent = null)
     {
         WrappedHostBuilder = hostBuilder;
         Parent = parent;
     }
-    public LionFireHostBuilderWrapper(HostApplicationBuilder hostApplicationBuilder, ILionFireHostBuilder parent)
+    public LionFireHostBuilderWrapper(HostApplicationBuilder hostApplicationBuilder, ILionFireHostBuilder? parent = null)
     {
         WrappedHostApplicationBuilder = hostApplicationBuilder;
         //WrappedHostBuilder = new HostBuilderAdapter(WrappedHostApplicationBuilder); // Exists internally to Microsoft code
@@ -25,9 +24,12 @@ public class LionFireHostBuilderWrapper : IHostBuilder
     public IHostBuilder WrappedHostBuilder { get; set; }
     public HostApplicationBuilder WrappedHostApplicationBuilder { get; set; }
 
-    public ILionFireHostBuilder Parent { get; }
+    public ILionFireHostBuilder? Parent { get; }
 
+#if UNUSED
+    [Obsolete("Use ForHostBuilder")]
     public ILionFireHostBuilder Done() => Parent;
+#endif
 
     Exception NotSupportedForHostBuilderException => new NotSupportedException($"Not supported for {nameof(IHostBuilder)}");
     public IConfiguration Configuration => WrappedHostApplicationBuilder?.Configuration ?? throw NotSupportedForHostBuilderException; // TODO: How to get Configuration? Build first?

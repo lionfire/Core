@@ -90,9 +90,12 @@ public static class WebHostX
 
                     var urls = GetConfiguredUrls(builder.HostBuilder.Configuration);
 
+                    var applicationName = builder.Configuration[WebHostDefaults.ApplicationKey];
+
                     webBuilder
                         .UseStartup<TStartup>()
                         //.UseContentRoot(AppContext.BaseDirectory)
+                        .UseSetting(WebHostDefaults.ApplicationKey, applicationName)  // Undo the "applicationName" change.
                         ;
 
                     if (urls.Length > 0)

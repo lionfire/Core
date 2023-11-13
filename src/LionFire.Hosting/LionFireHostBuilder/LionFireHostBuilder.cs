@@ -55,9 +55,11 @@ public class LionFireHostBuilder : ILionFireHostBuilder
 
 }
 
+#if UNUSED // Obsolete - use ForHostBuilder instead
 public static class DoneExtensions
 {
     public static ILionFireHostBuilder Done(this IHostBuilder hostBuilder) => (hostBuilder as LionFireHostBuilderWrapper)?.Done()
         ?? throw new ArgumentException("hostBuilder is not LionFireHostBuilderWrapper and does not need Done")
         ;
 }
+#endif

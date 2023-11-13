@@ -9,6 +9,7 @@ using System.CommandLine.Parsing;
 using LionFire.FlexObjects;
 using System.CommandLine.Invocation;
 using LionFire.ExtensionMethods;
+using System.CommandLine.Binding;
 
 namespace LionFire.Hosting.CommandLine;
 
@@ -16,6 +17,41 @@ namespace LionFire.Hosting.CommandLine;
 // - Inherit (ancestors)
 // - Inherited (by children)
 
+
+
+public static class LionFireOptionBinderX
+{
+    public static void AddParsedValues(this Dictionary<string,object?> o, IEnumerable<Option> Options, BindingContext bindingContext)
+    {
+        foreach (var option in Options.Where(v => !o.ContainsKey(v.Name)))
+        {
+            o.Add(option.Name, bindingContext.ParseResult.GetValueForOption(option));
+        }
+    }
+}
+
+//public class LionFireOptionBinder : BinderBase<LionFireCommandLineOptions>
+//{
+//    public LionFireOptionBinder(List<Option> options)
+//    {
+//        Options = options;
+//    }
+
+//    public List<Option> Options { get; }
+
+//    protected override LionFireCommandLineOptions GetBoundValue(BindingContext bindingContext)
+//    {
+
+//        var result = new LionFireCommandLineOptions();
+
+//        foreach (var option in Options)
+//        {
+//            result.Options.Add(option.Name, bindingContext.ParseResult.GetValueForOption(option));
+//        }
+
+//        return result;
+//    }
+//}
 
 public class CommandLineProgram<TBuilder, TBuilderBuilder> : CommandLineProgram
     where TBuilderBuilder : IHostingBuilderBuilder<TBuilder>, new()
@@ -218,6 +254,7 @@ public class CommandLineProgram : IProgram, IFlex
                     .InvokeAsync(args)
             ;
 
-    public Task<int> Handler(InvocationContext invocationContext) => this.GetBuilderBuilderHierarchy(invocationContext).FirstOrDefault()?.RunAsync(this, invocationContext) ?? Task.FromResult(0);
+    public Task<int> Handler(InvocationContext invocationContext)
+        => this.GetBuilderBuilderHierarchy(invocationContext).FirstOrDefault()?.RunAsync(this, invocationContext) ?? Task.FromResult(0);
 
 }

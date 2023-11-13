@@ -16,4 +16,12 @@ public class HostApplicationBuilderBuilder : BuilderBuilderBase<HostApplicationB
     public override IHost Build(HostApplicationBuilder builder) => builder.Build();
     //protected override Task _RunConsoleAsync(HostApplicationBuilder builder, CancellationToken cancellationToken = default) => builder.Build().RunAsync(cancellationToken);
 
+    // TODO?
+    //protected override HostApplicationBuilder CreateBuilder() => new HostApplicationBuilder(new HostApplicationBuilderSettings
+    //{
+    //    Args = ..., // TODO?
+    //    Configuration = ..., //TODO: Parent Configuration?
+    //    //ApplicationName =
+    //    //DisableDefaults = 
+    //});
 }
