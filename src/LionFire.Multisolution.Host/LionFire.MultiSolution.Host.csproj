@@ -8,9 +8,13 @@
 
   <ItemGroup>
     <PackageReference Include="FileContextCore" />
+    <PackageReference Include="Microsoft.AspNetCore.Components.QuickGrid" />
     <PackageReference Include="Microsoft.FluentUI.AspNetCore.Components" />
     <PackageReference Include="Microsoft.FluentUI.AspNetCore.Components.Emoji" />
     <PackageReference Include="Microsoft.FluentUI.AspNetCore.Components.Icons" />
+    <PackageReference Include="MvsSln" />
+    <PackageReference Include="NuGet.Protocol" />
+    <PackageReference Include="Semver" />
   </ItemGroup>
 
   <ItemGroup>

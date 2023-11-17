@@ -1,7 +1,66 @@
 ﻿@page "/packages"
+@inject DocumentService DocumentService
+@using Microsoft.AspNetCore.Components.QuickGrid
+@using ReactiveUI
+@* @using MudBlazor *@
 
 <h3>Packages</h3>
 
-@code {
+<Microsoft.FluentUI.AspNetCore.Components.FluentButton @onclick="() => OnUpgrade()">Upgrade</Microsoft.FluentUI.AspNetCore.Components.FluentButton>
 
+<QuickGrid Items="@packages">
+    <PropertyColumn Property="@(p => p.PackageId)" Sortable="true" />
+    <PropertyColumn Property="@(p => p.Current)" Sortable="true" />
+    <PropertyColumn Property="@(p => p.Release)" Sortable="true" />
+    <PropertyColumn Property="@(p => p.Prerelease)" Sortable="true" />
+</QuickGrid>
+
+@code {
+    private record Package(string PackageId, string Current, string? Release, string? Prerelease);
+
+    private IQueryable<Package> packages = new Package[]
+    {
+        // new Package(10895, "Jean Martin", new DateOnly(1985, 3, 16)),
+        // new Package(10944, "António Langa", new DateOnly(1991, 12, 1)),
+        // new Package(11203, "Julie Smith", new DateOnly(1958, 10, 10)),
+        // new Package(11205, "Nur Sari", new DateOnly(1922, 4, 27)),
+        // new Package(11898, "Jose Hernandez", new DateOnly(2011, 5, 3)),
+        // new Package(12130, "Kenji Sato", new DateOnly(2004, 1, 9)),
+    }.AsQueryable();
+
+    public Task OnUpgrade()
+    {
+        return DocumentService.Upgrade(pretend: false, major: true);
+
+    }
+
+    private void Refresh()
+    {
+        List<Package> dict = new();
+        var d = DocumentService.Document;
+
+        foreach (var kvp in d.CurrentPackageVersions)
+        {
+            var id = kvp.Key;
+            var current = kvp.Value;
+
+            var release = d.AvailablePackageVersions.TryGetValue(id);
+            if (release == current) release = null;
+            var prerelease = d.AvailablePrereleasePackageVersions.TryGetValue(id);
+            if (prerelease?.ToString() == release?.ToString() || prerelease?.ToString() == current) prerelease = null;
+
+            dict.Add(new Package(id, current, release, prerelease));
+
+        }
+        packages = dict.AsQueryable();
+        OnUpgrade();
+    }
+
+    protected override Task OnInitializedAsync()
+    {
+        Refresh();
+
+
+        return base.OnInitializedAsync();
+    }
 }
