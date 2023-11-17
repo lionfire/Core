@@ -2,40 +2,46 @@
 @inject DocumentService DocumentService
 @using Microsoft.AspNetCore.Components.QuickGrid
 @using ReactiveUI
-@* @using MudBlazor *@
+@rendermode InteractiveServer
 
 <h3>Packages</h3>
 
+@* <button @onclick="@(() => Test(null))">Upgrade</button> *@
 <Microsoft.FluentUI.AspNetCore.Components.FluentButton @onclick="() => OnUpgrade()">Upgrade</Microsoft.FluentUI.AspNetCore.Components.FluentButton>
 
 <QuickGrid Items="@packages">
     <PropertyColumn Property="@(p => p.PackageId)" Sortable="true" />
     <PropertyColumn Property="@(p => p.Current)" Sortable="true" />
+
+    <TemplateColumn Title="">
+        <button @onclick="@(() => UpgradeSingle(context))">⮕</button>
+    </TemplateColumn>
     <PropertyColumn Property="@(p => p.Release)" Sortable="true" />
+
+    <TemplateColumn Title="">
+        <button @onclick="@(() => UpgradeSingle(context, prerelease: true))">⮕</button>
+    </TemplateColumn>
     <PropertyColumn Property="@(p => p.Prerelease)" Sortable="true" />
 </QuickGrid>
+
 
 @code {
     private record Package(string PackageId, string Current, string? Release, string? Prerelease);
 
+    private IQueryable<Package> packages = new Package[] { }.AsQueryable();
+
     public bool ShowUpToDatePackages { get; set; } = false;
     public bool ShowPrerelease { get; set; } = false;
 
-    private IQueryable<Package> packages = new Package[]
+    private async Task UpgradeSingle(Package x, bool prerelease = false)
     {
-        // new Package(10895, "Jean Martin", new DateOnly(1985, 3, 16)),
-        // new Package(10944, "António Langa", new DateOnly(1991, 12, 1)),
-        // new Package(11203, "Julie Smith", new DateOnly(1958, 10, 10)),
-        // new Package(11205, "Nur Sari", new DateOnly(1922, 4, 27)),
-        // new Package(11898, "Jose Hernandez", new DateOnly(2011, 5, 3)),
-        // new Package(12130, "Kenji Sato", new DateOnly(2004, 1, 9)),
-    }.AsQueryable();
-
-    public Task OnUpgrade()
-    {
-        return DocumentService.Upgrade(pretend: false, major: true);
-
+        Console.WriteLine($"Upgrading {x.PackageId}");
+        await DocumentService.Upgrade(pretend: false, major: true, singlePackageId: x.PackageId);
+        await DocumentService.TryLoad();
+        StateHasChanged();
     }
+
+    public Task OnUpgrade() => DocumentService.Upgrade(pretend: false, major: true);
 
     private void Refresh()
     {
@@ -62,7 +68,7 @@
 
         }
         packages = dict.AsQueryable();
-        OnUpgrade();
+        // OnUpgrade();
     }
 
     protected override Task OnInitializedAsync()

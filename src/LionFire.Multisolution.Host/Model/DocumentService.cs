@@ -59,7 +59,7 @@ public class DocumentService : ReactiveObject
             logger,
             cancellationToken);
 
-        SemVersion? highestRelease = null;
+        SemVersion? highestRelease = null; // TODO: Use NuGet.Versioning instead
         SemVersion? highestPrerelease = null;
 
         foreach (NuGetVersion version in versions)
@@ -86,7 +86,7 @@ public class DocumentService : ReactiveObject
         return (highestRelease?.ToString(), highestPrerelease?.ToString());
     }
 
-    public Task Upgrade(bool pretend = true, bool major = false, bool minor = true, bool consolidateOnly = false)
+    public Task Upgrade(bool pretend = true, bool major = false, bool minor = true, bool consolidateOnly = false, string? singlePackageId = null)
     {
         var d = Document;
 
@@ -119,8 +119,9 @@ public class DocumentService : ReactiveObject
         {
             var packageId = kvp.Key;
             var currentVersion = kvp.Value;
+            if (singlePackageId != null && packageId != singlePackageId) continue;
             //if (!packageId.StartsWith("Microsoft.") && !packageId.StartsWith("System.")) continue;
-            if (!packageId.StartsWith("Stride.")) continue;
+
             if (d.IgnoredPackages.Contains(packageId)) continue;
 
             var available = CurrentPrerelease.Contains(kvp.Key) ? d.AvailablePrereleasePackageVersions : d.AvailablePackageVersions;
@@ -269,8 +270,11 @@ public class DocumentService : ReactiveObject
         return await TryLoad(path);
     }
 
-    public async Task<bool> TryLoad(string path)
+    public async Task<bool> TryLoad(string? path = null)
     {
+        path ??= DocumentPath;
+        if(path == null) throw new ArgumentNullException($"{nameof(path)} or {nameof(DocumentPath)} must be set");
+
         var json = File.ReadAllText(path);
         var doc = JsonSerializer.Deserialize<MultiSolutionDocument>(json);
 
