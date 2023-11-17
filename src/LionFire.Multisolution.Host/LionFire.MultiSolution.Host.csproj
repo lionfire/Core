@@ -1,0 +1,22 @@
+﻿<Project Sdk="Microsoft.NET.Sdk.Web">
+
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="FileContextCore" />
+    <PackageReference Include="Microsoft.FluentUI.AspNetCore.Components" />
+    <PackageReference Include="Microsoft.FluentUI.AspNetCore.Components.Emoji" />
+    <PackageReference Include="Microsoft.FluentUI.AspNetCore.Components.Icons" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\LionFire.AspNetCore.Framework\LionFire.AspNetCore.Framework.csproj" />
+    <ProjectReference Include="..\LionFire.Blazor.Components.MudBlazor\LionFire.Blazor.Components.MudBlazor.csproj" />
+    <ProjectReference Include="..\LionFire.Framework\LionFire.Framework.csproj" />
+  </ItemGroup>
+
+</Project>
