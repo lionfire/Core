@@ -14,12 +14,18 @@
     <PropertyColumn Property="@(p => p.Current)" Sortable="true" />
 
     <TemplateColumn Title="">
-        <button @onclick="@(() => UpgradeSingle(context))">⮕</button>
+        @if (context.Release != null)
+        {
+            <button class="ArrowButton" @onclick="@(() => UpgradeSingle(context))" style="font-size: 20px;">⮕</button>
+        }
     </TemplateColumn>
     <PropertyColumn Property="@(p => p.Release)" Sortable="true" />
 
     <TemplateColumn Title="">
-        <button @onclick="@(() => UpgradeSingle(context, prerelease: true))">⮕</button>
+        @if (context.Prerelease != null)
+        {
+            <button class="ArrowButton" @onclick="@(() => UpgradeSingle(context, prerelease: true))" style="font-size: 20px;">⮕</button>
+        }
     </TemplateColumn>
     <PropertyColumn Property="@(p => p.Prerelease)" Sortable="true" />
 </QuickGrid>
@@ -36,7 +42,7 @@
     private async Task UpgradeSingle(Package x, bool prerelease = false)
     {
         Console.WriteLine($"Upgrading {x.PackageId}");
-        await DocumentService.Upgrade(pretend: false, major: true, singlePackageId: x.PackageId);
+        await DocumentService.Upgrade(pretend: false, major: true, singlePackageId: x.PackageId, prerelease: prerelease);
         await DocumentService.TryLoad();
         StateHasChanged();
     }

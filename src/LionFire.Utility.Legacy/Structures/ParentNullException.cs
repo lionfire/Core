@@ -12,9 +12,9 @@ namespace LionFire
         public ParentNullException() { }
         public ParentNullException(string message) : base(message) { }
         public ParentNullException(string message, Exception inner) : base(message, inner) { }
-        protected ParentNullException(
-          System.Runtime.Serialization.SerializationInfo info,
-          System.Runtime.Serialization.StreamingContext context)
-            : base(info, context) { }
+        //protected ParentNullException(
+        //  System.Runtime.Serialization.SerializationInfo info,
+        //  System.Runtime.Serialization.StreamingContext context)
+        //    : base(info, context) { }
     }
 }

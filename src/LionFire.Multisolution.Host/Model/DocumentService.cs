@@ -86,7 +86,7 @@ public class DocumentService : ReactiveObject
         return (highestRelease?.ToString(), highestPrerelease?.ToString());
     }
 
-    public Task Upgrade(bool pretend = true, bool major = false, bool minor = true, bool consolidateOnly = false, string? singlePackageId = null)
+    public Task Upgrade(bool pretend = true, bool major = false, bool minor = true, bool consolidateOnly = false, string? singlePackageId = null, bool prerelease = false)
     {
         var d = Document;
 
@@ -124,7 +124,9 @@ public class DocumentService : ReactiveObject
 
             if (d.IgnoredPackages.Contains(packageId)) continue;
 
-            var available = CurrentPrerelease.Contains(kvp.Key) ? d.AvailablePrereleasePackageVersions : d.AvailablePackageVersions;
+            var available = (prerelease || CurrentPrerelease.Contains(kvp.Key)) 
+                ? d.AvailablePrereleasePackageVersions 
+                : d.AvailablePackageVersions;
 
             if (available.TryGetValue(kvp.Key, out var availableVersion))
             {
