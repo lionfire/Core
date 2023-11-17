@@ -18,6 +18,9 @@
 @code {
     private record Package(string PackageId, string Current, string? Release, string? Prerelease);
 
+    public bool ShowUpToDatePackages { get; set; } = false;
+    public bool ShowPrerelease { get; set; } = false;
+
     private IQueryable<Package> packages = new Package[]
     {
         // new Package(10895, "Jean Martin", new DateOnly(1985, 3, 16)),
@@ -48,6 +51,12 @@
             if (release == current) release = null;
             var prerelease = d.AvailablePrereleasePackageVersions.TryGetValue(id);
             if (prerelease?.ToString() == release?.ToString() || prerelease?.ToString() == current) prerelease = null;
+
+            if (!ShowUpToDatePackages)
+            {
+                if (!ShowPrerelease && release == null) continue;
+                else if (release == null && prerelease == null) continue;
+            }
 
             dict.Add(new Package(id, current, release, prerelease));
 

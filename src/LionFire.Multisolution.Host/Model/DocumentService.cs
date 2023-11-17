@@ -86,7 +86,7 @@ public class DocumentService : ReactiveObject
         return (highestRelease?.ToString(), highestPrerelease?.ToString());
     }
 
-    public Task Upgrade(bool pretend = true, bool major = false, bool minor = true)
+    public Task Upgrade(bool pretend = true, bool major = false, bool minor = true, bool consolidateOnly = false)
     {
         var d = Document;
 
@@ -119,7 +119,9 @@ public class DocumentService : ReactiveObject
         {
             var packageId = kvp.Key;
             var currentVersion = kvp.Value;
-            if (!packageId.StartsWith("Microsoft.")) continue;
+            //if (!packageId.StartsWith("Microsoft.") && !packageId.StartsWith("System.")) continue;
+            if (!packageId.StartsWith("Stride.")) continue;
+            if (d.IgnoredPackages.Contains(packageId)) continue;
 
             var available = CurrentPrerelease.Contains(kvp.Key) ? d.AvailablePrereleasePackageVersions : d.AvailablePackageVersions;
 
@@ -138,39 +140,39 @@ public class DocumentService : ReactiveObject
 
                 if (packageVersion == null) continue;
 
+                var displayKey = propsDoc.Key.Replace(@"C:\\src\\","").Replace("\\Directory.Packages.props", "");
+
                 if (SemVersion.TryParse(packageVersion.Attribute("Version").Value, out var currentSemVersion)
                     && SemVersion.TryParse(availableVersion, out var availableSemVersion)
                     )
                 {
-                    if (availableSemVersion.Major != 8) continue; // TEMP 8 only
+                    if (consolidateOnly && currentVersion != "(multiple versions)") continue;
 
                     if (currentSemVersion.ToString() == availableSemVersion.ToString()) continue;
                     if (currentSemVersion > availableSemVersion)
                     {
-                        WriteLine($"skipping (downgrade) - {propsDoc.Key}: {packageId} '{packageVersion.Attribute("Version").Value}' ==> '{availableVersion}'");
+                        WriteLine($"skipping (downgrade) - {displayKey}: {packageId} '{packageVersion.Attribute("Version").Value}' ==> '{availableVersion}'");
                         continue;
                     }
                     if (!major && currentSemVersion.Major != availableSemVersion.Major)
                     {
-                        WriteLine($"skipping (major disabled) - {propsDoc.Key}: {packageId} '{packageVersion.Attribute("Version").Value}' ==> '{availableVersion}'");
+                        WriteLine($"skipping (major disabled) - {displayKey}: {packageId} '{packageVersion.Attribute("Version").Value}' ==> '{availableVersion}'");
                         continue;
                     }
                     if (!minor && currentSemVersion.Minor != availableSemVersion.Minor)
                     {
-                        WriteLine($"skipping (minor disabled) - {propsDoc.Key}: {packageId} '{packageVersion.Attribute("Version").Value}' ==> '{availableVersion}'");
+                        WriteLine($"skipping (minor disabled) - {displayKey}: {packageId} '{packageVersion.Attribute("Version").Value}' ==> '{availableVersion}'");
                         continue;
                     }
 
-                    WriteLine($"{propsDoc.Key}: {packageId} '{packageVersion.Attribute("Version").Value}' ==> '{availableVersion}'");
+                    WriteLine($"{packageId}: '{packageVersion.Attribute("Version").Value}' ==> '{availableVersion}' ({displayKey})");
                     if (!pretend)
                     {
                         packageVersion.Attribute("Version")!.Value = availableVersion;
                         if (!propsDocsDirty.ContainsKey(propsDoc.Key)) { propsDocsDirty.Add(propsDoc.Key, propsDoc.Value); }
                     }
                 }
-
             }
-
         }
 
         foreach (var kvp in propsDocsDirty)

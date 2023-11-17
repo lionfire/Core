@@ -12,10 +12,12 @@ public class MultiSolutionDocument : ReactiveObject
     public List<string> Solutions { get; set; } = new();
 
     public List<string> DirectoryPackagesProps { get; set; } = new();
+    public HashSet<string> IgnoredPackages { get; set; } = new();
 
     public DateTime LastCheckedNuget { get; set; } = DateTime.MinValue;
     public TimeSpan NugetRescanInterval { get; set; } = TimeSpan.FromHours(24);
 
+    
     public Dictionary<string, string> CurrentPackageVersions { get; set; } = new();
     public Dictionary<string, string> AvailablePackageVersions { get; set; } = new();
     public Dictionary<string, string> AvailablePrereleasePackageVersions { get; set; } = new();
