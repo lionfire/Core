@@ -271,7 +271,7 @@ public partial class DependencyStateMachine : IDependencyStateMachine
         }
 
         Dictionary<IParticipant, object>? tryAgain = null;
-        Logger.LogInformation($"Starting all stages...");
+        Logger.LogDebug($"Starting...");
         using (new DisposableStopwatch(sw => Logger.LogInformation($"...Started all stages. ({sw.ElapsedMilliseconds}ms)")))
         {
             foreach (var stage in Stages)
@@ -399,7 +399,7 @@ public partial class DependencyStateMachine : IDependencyStateMachine
             }
             return null;
         }
-        Logger.LogInformation($"Stopping all stages...");
+        Logger.LogDebug($"Stopping...");
 
         using (new DisposableStopwatch(sw => Logger.LogInformation($"...Stopped all stages. ({sw.ElapsedMilliseconds}ms)")))
         {
