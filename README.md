@@ -1,7 +1,7 @@
 
 # LionFire.Core
 
-Ambitious set of mini-frameworks being developed for other LionFire packages, targeting a mix of .NET 5.0 and netstandard2.0 (with some older parts in .NET Framework 4.8.)
+Ambitious set of mini-frameworks being developed for other LionFire packages, mostly targeting .NET 7.0+ (with some deprecated parts in .NET Framework 4.8 and netstandard2.0.)  I plan to drop .NET 7 for 8 once one of my needs for .NET 7 disappears, (Spotware cTrader).
 
 Docs: https://lionfire.readthedocs.io
 Home: https://open.lionfire.software
