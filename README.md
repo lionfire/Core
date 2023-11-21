@@ -90,6 +90,8 @@ First, here are projects that have been spun off into their own repo:
 
 - small set of utilities for AspNetCore
 
+## Data Toolkits
+
 ### Serialization
 
 - An open-ended serialization framework
@@ -97,10 +99,11 @@ First, here are projects that have been spun off into their own repo:
 ### Referencing
 
 - For making sense of URLs
+- You're encouraged to design your own URL schemas for your app
 
 ### Handles
 
-- Handles have a Reference, and can do things with it, like load or save data.
+- Handles have a Reference (URL), and can do things with it, like load or save data or be notified.
 - Open-ended, to add your own persistence or RPC layers
 
 ### Persisistence
@@ -118,6 +121,13 @@ First, here are projects that have been spun off into their own repo:
 ### Instantiating
 
  - A toolkit for creating instances of things based on templates, and optionally parameters
+
+### Assets / Ided
+
+- Simplified referencing for data entities: primary key
+- VOS is wide open, but this brings data access back to the simple way you do in a RDBMS or ODB: primary keys, and one table/collection per data type.
+- The primary key: usually a string or convertible to string (delimited if it is compound), so that it can be used in a URL alongside everything else
+- (Name subject to change to something like entities, records, etc.)
 
 ## "Framework layer"
 
