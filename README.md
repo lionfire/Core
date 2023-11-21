@@ -40,11 +40,11 @@ First, here are projects that have been spun off into their own repo:
 
 ### State Machines
 
- - (https://github.com/lionfire/class-state-machine)[Class State Machine] generator
+ - [Class State Machine](https://github.com/lionfire/class-state-machine) generator
 
 ### Trading
 
- - (https://github.com/lionfire/Trading)[Trading] related code (crypto, forex, bots, etc.)
+ - [Trading](https://github.com/lionfire/Trading) related code (crypto, forex, bots, etc.)
 
 ## Base layer
 
