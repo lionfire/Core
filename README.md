@@ -20,17 +20,17 @@ If you find a certain part interesting and want to help advance it into a first 
 
 - [Base layer](#base-layer)
   - Minimal dependencies
-- Core toolkit
+- [Core](#core) Toolkit
   - provides some innovative cross-cutting functionality
   - mostly unopinionated
-- various other [LionFire Toolkits](#toolkits)
+- [Toolkits](#toolkits)
   - unopinionated
   - the bulk of complex innovation
   - may depend on each other
-  - Intended to be a la carte: some toolkits will die, some will live on.  They are kept separate so this can happen organically.
-- [LionFire Framework](#framework)
+  - Intended to be a la carte: some toolkits will die, some will live on.  They are kept separate so this can happen organically.  Though some of them form a deep stack for data persistence.
+- The [LionFire Framework](#framework)
   - An opinionated holistic framework that integrates several LionFire Toolkits, by default
-  - the idea: `dotnet new lionfire-app` to get a new Program.cs with a boatload of features from one line of code: `new HostApplicationBuilder().LionFire();`
+  - the idea: `dotnet new lionfire-app` to get a new Program.cs with the boatload of features I want for every app from one line of code: `new HostApplicationBuilder().LionFire();`
 
 # Outline of Available Libraries
 
@@ -74,19 +74,21 @@ First, here are projects that have been spun off into their own repo:
 
 ## Toolkits
 
-### LionFire.Core
+### Core
 
 - A grab bag of essential common metadata and essential capabilities required by other toolkits
 - Attributes
 - Dependency Injection / Service Location
 - (I will probably try to minimize this.)
 
-### LionFire.Hosting
+### Hosting
 
 - My own extensions to Microsoft.Extensions.Hosting, IServiceCollection, etc.
 - Wraps IHostBuilder and HostApplicationBuilder
 
-### LionFire.AspNetCore.dll
+### AspNetCore
+
+- small set of utilities for AspNetCore
 
 ### Serialization
 
