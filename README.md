@@ -20,9 +20,10 @@ If you find a certain part interesting and want to help advance it into a first 
   - provides some innovative cross-cutting functionality
   - mostly unopinionated
 - various LionFire Toolkits
+  - unopinionated
   - the bulk of complex innovation
   - may depend on each other
   - Intended to be a la carte: some toolkits will die, some will live on.  They are kept separate so this can happen organically.
 - LionFire Framework
-  - An opinionated holistic framework that depends on several LionFire Toolkits
+  - An opinionated holistic framework that integrates several LionFire Toolkits, by default
   - the idea: `dotnet new lionfire-app` to get a new Program.cs with a boatload of features from one line of code: `new HostApplicationBuilder().LionFire();`
