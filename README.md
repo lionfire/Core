@@ -28,7 +28,7 @@ If you find a certain part interesting and want to help advance it into a first 
   - the bulk of complex innovation
   - may depend on each other
   - Intended to be a la carte: some toolkits will die, some will live on.  They are kept separate so this can happen organically.  Though some of them form a deep stack for data persistence.
-- The [LionFire Framework](#framework)
+- The [LionFire Framework](#framework-layer)
   - An opinionated holistic framework that integrates several LionFire Toolkits, by default
   - the idea: `dotnet new lionfire-app` to get a new Program.cs with the boatload of features I want for every app from one line of code: `new HostApplicationBuilder().LionFire();`
 
