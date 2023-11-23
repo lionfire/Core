@@ -53,6 +53,11 @@ public static class LionFireOptionBinderX
 //    }
 //}
 
+/// <summary>
+/// 
+/// </summary>
+/// <typeparam name="TBuilder">Default (and currently only) builder class (e.g. HostApplicationBuilder)</typeparam>
+/// <typeparam name="TBuilderBuilder">BuilderBuilder class, for configuring the TBuilder</typeparam>
 public class CommandLineProgram<TBuilder, TBuilderBuilder> : CommandLineProgram
     where TBuilderBuilder : IHostingBuilderBuilder<TBuilder>, new()
 {
@@ -251,10 +256,13 @@ public class CommandLineProgram : IProgram, IFlex
                     //.If(GlobalHost, casted => casted.UseHost(args3 => GlobalHostBuilderInitializer.Create()) // FUTURE Maybe
                     .UseDefaults()
                     .Build()
-                    .InvokeAsync(args)
+                    .InvokeAsync(args.Length == 0 ? DefaultArgsList : args)
             ;
 
     public Task<int> Handler(InvocationContext invocationContext)
         => this.GetBuilderBuilderHierarchy(invocationContext).FirstOrDefault()?.RunAsync(this, invocationContext) ?? Task.FromResult(0);
 
+    public string[] DefaultArgsList { get; set; } = Array.Empty<string>();
+
 }
+

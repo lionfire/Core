@@ -221,6 +221,7 @@
     <PackageVersion Include="System.Configuration.ConfigurationManager" Version="8.0.0" />
     <PackageVersion Include="System.Diagnostics.Contracts" Version="4.3.0" />
     <PackageVersion Include="System.Diagnostics.Process" Version="4.3.0" />
+		<PackageVersion Include="System.Diagnostics.DiagnosticSource" Version="8.0.0" />
     <PackageVersion Include="System.IdentityModel.Tokens.Jwt" Version="7.0.3" />
     <PackageVersion Include="System.IO.FileSystem" Version="4.3.0" />
     <PackageVersion Include="System.IO.FileSystem.DriveInfo" Version="4.3.1" />

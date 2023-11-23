@@ -11,4 +11,6 @@ public interface IProgram
     Task<int> Handler(InvocationContext context);
 
     Task<int> RunAsync(string[] args);
+
+    string[] DefaultArgsList { get; set; }
 }

@@ -31,4 +31,22 @@ public static class IProgramX
             }
         }
     }
+
+    public static T DefaultArgs<T>(this T program, string[] args)
+        where T : IProgram
+    {
+        program.DefaultArgsList = args;
+        return program;
+    }
+    public static T DefaultArgs<T>(this T program, string args)
+        where T : IProgram
+    {
+        if (args.Contains('"'))
+        {
+            throw new NotImplementedException("Not implemented yet: doublequotes");
+        }
+
+        program.DefaultArgsList = args.Split(' ');
+        return program;
+    }
 }

@@ -74,10 +74,10 @@ public static class VosAppHostBuilder
 
     #endregion
     
-    public static AppInfo AppInfo(this HostApplicationBuilder builder)
+    public static AppInfo AppInfo(this IHostApplicationBuilder builder)
         => builder.Services.BuildServiceProvider().GetService<AppInfo>() ?? throw new ArgumentException("HostApplicationBuilder needs to have AddAppInfo() already invoked on it.");
 
-    public static HostApplicationBuilder AddDefaultVosAppStores(this HostApplicationBuilder builder, bool useExeDirAsAppDirIfMissing = false)
+    public static IHostApplicationBuilder AddDefaultVosAppStores(this IHostApplicationBuilder builder, bool useExeDirAsAppDirIfMissing = false)
     {
         builder.Services
                  .AddAppDirStore(appInfo: builder.AppInfo(), useExeDirAsAppDirIfMissing: useExeDirAsAppDirIfMissing)

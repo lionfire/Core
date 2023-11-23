@@ -86,14 +86,19 @@ public static class WebHostFrameworkStartupInitializer
 
         if (options.RequiresStaticFiles)
         {
-//#if true || DEBUG // TODO REVIEW
-//            app.UseStaticFiles();
-//#else
-        app.UseStaticFiles(new StaticFileOptions
-        {
-            FileProvider = new PhysicalFileProvider(Path.Combine(AppContext.BaseDirectory, "wwwroot"))
-        });
-//#endif
+            // TODO REVIEW where and whether to set the dir here.
+            var rootDir = Path.Combine(AppContext.BaseDirectory, "wwwroot");
+            if(Directory.Exists(rootDir))
+            {
+                app.UseStaticFiles(new StaticFileOptions
+                {
+                    FileProvider = new PhysicalFileProvider(rootDir)
+                });
+            }
+            else
+            {
+                app.UseStaticFiles();
+            }
         }
 
         if (swagger) options.ConfigureSwagger(app, env);

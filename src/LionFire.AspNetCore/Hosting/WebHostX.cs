@@ -95,7 +95,7 @@ public static class WebHostX
                     webBuilder
                         .UseStartup<TStartup>()
                         //.UseContentRoot(AppContext.BaseDirectory)
-                        .UseSetting(WebHostDefaults.ApplicationKey, applicationName)  // Undo the "applicationName" change.
+                        //.UseSetting(WebHostDefaults.ApplicationKey, applicationName)  // Undo the "applicationName" change.
                         ;
 
                     if (urls.Length > 0)

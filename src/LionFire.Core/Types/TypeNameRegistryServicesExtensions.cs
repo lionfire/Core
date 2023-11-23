@@ -61,10 +61,12 @@ public static class TypeNameRegistryServicesExtensions
                         if (r.Types.ContainsKey(key))
                         {
                             if (r.Types[key].FullName != type.FullName) throw new AlreadyException($"Type name {key} is already registered with a different type: {r.Types[key].FullName}.  Cannot register as {type.FullName}");
+                            // else increment Metric indicating redundancy // OPTIMIZE
                         }
                         else if (r.TypeNames.ContainsKey(type))
                         {
                             if (r.TypeNames[type] != key) throw new AlreadyException($"Type {type} is already registered with a different key: {r.TypeNames[type]}.  Cannot register as {key}");
+                            // else increment Metric indicating redundancy // OPTIMIZE
                         }
                         else
                         {

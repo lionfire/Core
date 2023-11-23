@@ -1,3 +1,4 @@
+//#define ULSharp
 // Based on https://github.com/makotech222/Ultralight-Stride3d_Integration
 //  - See that repo's Readme for instructions
 
@@ -18,10 +19,6 @@ using LogLevel = Microsoft.Extensions.Logging.LogLevel;
 using System.Collections.Concurrent;
 using System.Reflection;
 using Microsoft.Extensions.Hosting;
-using ImpromptuNinjas.UltralightSharp.Safe;
-using MouseButton = ImpromptuNinjas.UltralightSharp.Enums.MouseButton;
-using MouseEventType = ImpromptuNinjas.UltralightSharp.Enums.MouseEventType;
-using ImpromptuString = ImpromptuNinjas.UltralightSharp.String;
 using LionFire.Stride3D.Input;
 using System.Diagnostics;
 using Keys = Stride.Input.Keys;
@@ -35,6 +32,27 @@ using LionFire.LiveSharp;
 using LionFire.Threading;
 using LionFire.Dispatching;
 using Stride.Audio;
+
+#if ULSharp
+using ImpromptuNinjas.UltralightSharp.Safe;
+using MouseButton = ImpromptuNinjas.UltralightSharp.Enums.MouseButton;
+using ULMouseEventType = ImpromptuNinjas.UltralightSharp.Enums.MouseEventType;
+using ImpromptuString = ImpromptuNinjas.UltralightSharp.String;
+using Renderer = ImpromptuNinjas.UltralightSharp.Safe.Renderer;
+using ULView = ImpromptuNinjas.UltralightSharp.Safe.View;
+using ULSession = ImpromptuNinjas.UltralightSharp.Safe.Session;
+#error TODO:
+using ULMouseEvent = ;
+using ULKeyEvent = ;
+using ULScrollEvent = ;
+#elif ULNet
+using Renderer = UltralightNet.Renderer;
+using UltralightNet.AppCore;
+using UltralightNet;
+using ULView = UltralightNet.View;
+using ULSession = UltralightNet.Session;
+
+#endif
 
 namespace LionFire.Stride3D.UI;
 
@@ -73,7 +91,7 @@ public class UltralightUIScript : SyncScript
     /// <summary>
     /// Should be only one renderer per Game.
     /// </summary>
-    protected static ImpromptuNinjas.UltralightSharp.Safe.Renderer renderer;
+    protected static Renderer renderer;
 
     #endregion
 
@@ -129,8 +147,8 @@ public class UltralightUIScript : SyncScript
     /// <summary>
     /// View created by Ultralight.
     /// </summary>
-    protected ImpromptuNinjas.UltralightSharp.Safe.View View { get; set; }
-    protected ImpromptuNinjas.UltralightSharp.Safe.Session session;
+    protected ULView View { get; set; }
+    protected ULSession session;
     protected Texture texture;
     protected SpriteFromTexture sprite;
 
@@ -196,10 +214,56 @@ public class UltralightUIScript : SyncScript
     //    }
     //}
 
+
+#if ULNet && false
+    void Headless_TOTRIAGE()
+    {
+        AppCoreMethods.SetPlatformFontLoader();
+        var cfg = new ULConfig();
+        using Renderer renderer = ULPlatform.CreateRenderer(cfg);
+        // --------------
+
+        // Create View
+        using View view = renderer.CreateView(1024, 768);
+
+        // Load URL
+
+        bool loaded = false;
+
+        view.OnFinishLoading += (_, _, _) =>
+        {
+            loaded = true;
+        };
+
+        view.URL = "https://ultralig.ht";
+
+        // Update Renderer until page is loaded
+        while (!loaded)
+        {
+            renderer.Update();
+            // give time to process network etc.
+            Thread.Sleep(10);
+        }
+
+        // Render
+        renderer.Render();
+
+        // Get Surface
+        ULSurface surface = view.Surface ?? throw new Exception("Surface not found, did you perhaps set ViewConfig.IsAccelerated to true?");
+
+        // Get Bitmap
+        ULBitmap bitmap = surface.Bitmap;
+
+        // Save bitmap to png file
+        var path = Path.GetDirectoryName(typeof(Program).Assembly.Location)!;
+        bitmap.WritePng(Path.Combine(path, "OUTPUT12345.png"));
+    }
+#endif
+
     protected void InitUltralight()
     {
+#if ULSharp
         Ultralight.SetLogger(new Logger { LogMessage = LoggerCallback });
-
         using var cfg = new Config();
 
         var cachePath = Path.Combine(AssetDirectory, "Cache");
@@ -214,7 +278,26 @@ public class UltralightUIScript : SyncScript
 
         AppCore.EnablePlatformFontLoader();
         AppCore.EnablePlatformFileSystem(AssetDirectory);
+
         renderer = new Renderer(cfg);
+#elif ULNet
+        //UltralightNet.Logger.LogMessage = LoggerCallback;    // TODO
+        AppCoreMethods.ulEnableDefaultLogger("z:/log/ultralight.log"); // TEMP HARDCODE HARDPATH
+        AppCoreMethods.SetPlatformFontLoader();
+        AppCoreMethods.ulEnablePlatformFileSystem(AssetDirectory);
+
+        var cfg = new ULConfig();
+
+        cfg.CachePath = Path.Combine(AssetDirectory, "Cache");
+        cfg.ResourcePathPrefix = Path.Combine(AssetDirectory, "resources");
+
+        //cfg.UseGpuRenderer = false;
+        //cfg.SetEnableImages(true);
+        //cfg.SetEnableJavaScript(true);
+
+        renderer = ULPlatform.CreateRenderer(cfg);
+#endif
+
     }
 
     ~UltralightUIScript()
@@ -270,7 +353,7 @@ public class UltralightUIScript : SyncScript
 #if LiveSharp
     internal Task OnUpdatedMethodNotification(UpdatedMethodNotification notification)
     {
-        Logger.LogInformation($"OnUpdatedMethodNotification -- TEMP " + notification.UpdatedMethod.DeclaringType.BaseType.BaseType.FullName);
+        //Logger.LogInformation($"OnUpdatedMethodNotification -- " + notification.UpdatedMethod.DeclaringType.BaseType.BaseType.FullName);
         if (AutoReload)
         {
             if (IsWebUI(notification.UpdatedMethod.DeclaringType))
@@ -529,7 +612,7 @@ public class UltralightUIScript : SyncScript
         if (!IsWebServerAvailable)
         {
             Logger.LogInformation("Web server not available yet.  Loading LoadingUrl.");
-            View.LoadUrl(LoadingUrl);
+            View.LoadUrl(LoadingUrl); // TEMP commented
             //Task.Run(async () =>
             //{
             //    //await HostApplicationLifetime.ApplicationStarted;
@@ -646,15 +729,16 @@ public class UltralightUIScript : SyncScript
 
     public class ComponentUI
     {
-        public ConcurrentQueue<MouseEvent> MouseEvents { get; set; } = new ConcurrentQueue<MouseEvent>();
-        public ConcurrentQueue<KeyEvent> KeyboardEvents { get; set; } = new ConcurrentQueue<KeyEvent>();
-        public ConcurrentQueue<ScrollEvent> ScrollEvents { get; set; } = new ConcurrentQueue<ScrollEvent>();
+        public ConcurrentQueue<ULMouseEvent> MouseEvents { get; set; } = new ConcurrentQueue<ULMouseEvent>();
+        public ConcurrentQueue<ULKeyEvent> KeyboardEvents { get; set; } = new ConcurrentQueue<ULKeyEvent>();
+        public ConcurrentQueue<ULScrollEvent> ScrollEvents { get; set; } = new ConcurrentQueue<ULScrollEvent>();
     }
 
     #endregion
 
     #region Logging
 
+#if ULSharp
     private LoggerLogMessageCallback LoggerCallback
         => new LoggerLogMessageCallback((logLevel, msg) =>
         {
@@ -667,7 +751,7 @@ public class UltralightUIScript : SyncScript
             };
             Logger.Log(microsoftLogLevel, msg);
         });
-
+#endif
     #endregion
 }
 
