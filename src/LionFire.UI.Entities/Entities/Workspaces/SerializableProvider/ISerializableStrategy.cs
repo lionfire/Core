@@ -5,7 +5,7 @@ namespace LionFire.UI.Workspaces
 
     // FUTURE - REVIEW - how to register for types?  Interface types vs concrete (TreatAs)?  Is this redundant?  Should concrete types provide their own serialization (yes)?
 
-    //public interface ISerializableStrategy<T> { }
+    //public interface ISerializableStrategy<TValue> { }
 
     public interface ISerializableStrategy
     {

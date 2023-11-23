@@ -10,6 +10,9 @@ using LionFire.Serialization;
 namespace LionFire.Persistence.Filesystemlike
 {
 
+    // REVIEW - inherit from IVirtualFilesystem?
+    // Why take TReference if API uses string for file path?
+
     /// <summary>
     /// TODO - Work in progress
     /// </summary>
@@ -23,10 +26,10 @@ namespace LionFire.Persistence.Filesystemlike
         Task<bool?> Delete(string fsPath);
         Task<bool> Exists(string fsPath);
         Task<bool> Exists<T>(string fsPath);
-        //Task<bool> TryDelete<T>(string fsPath, bool preview = false);
-        //Task<IRetrieveResult<T>> TryRetrieve<T>(TReference fileReference, Lazy<PersistenceOperation> operation = null, PersistenceContext context = null);
-        Task<IPersistenceResult> Update<T>(string fsPath, T obj, Type type = null, PersistenceContext context = null);
-        Task<IPersistenceResult> Upsert<T>(string fsPath, T obj, Type type = null, PersistenceContext context = null);
-        Task<IPersistenceResult> Write<T>(string fsPath, T obj, ReplaceMode replaceMode = ReplaceMode.Upsert, PersistenceContext context = null, Type type = null);
+        //Task<bool> TryDelete<TValue>(string fsPath, bool preview = false);
+        //Task<IGetResult<TValue>> TryRetrieve<TValue>(TReference fileReference, Lazy<PersistenceOperation> operation = null, PersistenceContext context = null);
+        Task<ITransferResult> Update<T>(string fsPath, T obj, Type type = null, PersistenceContext context = null);
+        Task<ITransferResult> Upsert<T>(string fsPath, T obj, Type type = null, PersistenceContext context = null);
+        Task<ITransferResult> Write<T>(string fsPath, T obj, ReplaceMode replaceMode = ReplaceMode.Upsert, PersistenceContext context = null, Type type = null);
     }
 }

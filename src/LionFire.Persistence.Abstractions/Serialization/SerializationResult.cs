@@ -1,4 +1,5 @@
-﻿using System;
+﻿#nullable enable
+using System;
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 
@@ -47,6 +48,7 @@ namespace LionFire.Serialization
         public void OnCompleted(Action continuation) => throw new NotImplementedException();
         public bool IsCompleted => true;
     }
+
 
     //public class MyAwaiter : INotifyCompletion
     //{
@@ -97,8 +99,12 @@ namespace LionFire.Serialization
     //    }
     //}
 
+    public interface IDeserializationResult
+    {
+        object? Object { get; set; }
+    }
 
-    public class DeserializationResult<T> : SerializationResult
+    public class DeserializationResult<T> : SerializationResult, IDeserializationResult
     {
         public new static readonly DeserializationResult<T> NotSupported = new DeserializationResult<T> { Flags = SerializationResultKind.NotSupported };
         public new static readonly DeserializationResult<T> Success = new DeserializationResult<T> { Flags = SerializationResultKind.Success };
@@ -112,7 +118,8 @@ namespace LionFire.Serialization
 
         //public SerializationAwaiter GetAwaiter() => new SerializationAwaiter();
 
-        public T Object { get; set; }
+        public T? Object { get; set; }
+        object? IDeserializationResult.Object { get => Object; set => Object = (T)value; }
 
         public static implicit operator DeserializationResult<T>(T obj)
         {

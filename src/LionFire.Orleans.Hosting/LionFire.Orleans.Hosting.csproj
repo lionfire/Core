@@ -1,0 +1,40 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+	<PropertyGroup>
+		<TargetFramework>net8.0</TargetFramework>
+		<RootNamespace>LionFire.Orleans_</RootNamespace>
+	</PropertyGroup>
+
+	<ItemGroup>
+		<FrameworkReference Include="Microsoft.AspNetCore.App" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<PackageReference Include="Microsoft.Orleans.Clustering.Consul" />
+		<PackageReference Include="Microsoft.Orleans.Server" />
+		<PackageReference Include="Orleans.Clustering.Redis" />
+		<PackageReference Include="OrleansDashboard" />
+
+	</ItemGroup>
+
+	<ItemGroup>
+		<ProjectReference Include="..\..\..\Internal\src\LionFire.Consul.Orleans\LionFire.Consul.Orleans.csproj" />
+		<ProjectReference Include="..\..\..\Internal\src\LionFire.Consul\LionFire.Consul.csproj" />
+		<ProjectReference Include="..\LionFire.AspNetCore.Consul\LionFire.AspNetCore.Consul.csproj" />
+		<ProjectReference Include="..\LionFire.AspNetCore\LionFire.AspNetCore.csproj" />
+		<ProjectReference Include="..\LionFire.Hosting\LionFire.Hosting.csproj" />
+		<ProjectReference Include="..\LionFire.Orleans.Structures\LionFire.Orleans.Structures.csproj" />
+		<ProjectReference Include="..\LionFire.Orleans\LionFire.Orleans.csproj" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<None Update="Licensing\LionFire.Orleans.txt">
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</None>
+	</ItemGroup>
+
+	<ItemGroup>
+	  <Orleans_CodeGenInputs Remove="Hosting\ClusterDiscovery.cs" />
+	</ItemGroup>
+
+</Project>

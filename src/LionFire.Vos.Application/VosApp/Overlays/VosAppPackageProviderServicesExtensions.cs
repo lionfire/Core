@@ -16,10 +16,10 @@ using System.Threading.Tasks;
 
 namespace LionFire.Services
 {
-    //public class NamedTypeDependency<T>
+    //public class NamedTypeDependency<TValue>
     //{
     //    public string Name { get; set; }
-    //    public Type Type => typeof(T);
+    //    public Type Type => typeof(TValue);
 
     //}
 
@@ -30,15 +30,16 @@ namespace LionFire.Services
 
     public static class VosAppPackageProviderServicesExtensions
     {
-        public static IServiceCollection AddPackageSourceFromStore(this IServiceCollection services, string storeName, string packageProviderName, MountOptions? mountOptions = null, string? rootName = null)
+        public static IServiceCollection AddPackageSourceFromStore(this IServiceCollection services, string storeName, string packageProviderName, VobMountOptions? mountOptions = null, string? rootName = null)
         {
-            return services.InitializeVob(VosPaths.GetRootPath(rootName), root =>
-                 (root[VosPackageLocations.GetPackageProviderPath(packageProviderName)].AsPackageProvider()?.AvailableRoot
-                    ?? throw new NotFoundException($"Could not find package provider '{packageProviderName}''s mount point for available packages.  Is this packageProvider registered?"))
-                    .Mount(root[$"$stores/{storeName}"], mountOptions),
-                 c => c.DependsOn(VosAppInitStage.PackageProviders)
-                    .Contributes(VosAppInitStage.PackageSources)
-                 );
+            throw new NotImplementedException();
+            //return services.InitializeVob(VosPaths.GetRootPath(rootName), root =>
+            //     (root[VosPackageLocations.GetPackageProviderPath(packageProviderName)].AsPackageProvider()?.AvailableRoot
+            //        ?? throw new NotFoundException($"Could not find package provider '{packageProviderName}''s mount point for available packages.  Is this packageProvider registered?"))
+            //        .Mount(root[$"$stores/{storeName}"], mountOptions),
+            //     c => c.DependsOn(VosAppInitStage.PackageProviders)
+            //        .Contributes(VosAppInitStage.PackageSources)
+            //     );
         }
 
         #region All Defaults
@@ -58,9 +59,9 @@ namespace LionFire.Services
 
         #region Individual Defaults
 
-        public static IServiceCollection AddExeDirToBasePackages(this IServiceCollection services, MountOptions? mountOptions = null)
+        public static IServiceCollection AddExeDirToBasePackages(this IServiceCollection services, VobMountOptions? mountOptions = null)
             => services
-            .AddPackageSourceFromStore(StoreNames.ExeDir, VosAppPackageProviderNames.Base, mountOptions ?? new MountOptions(100, null))
+            .AddPackageSourceFromStore(StoreNames.ExeDir, VosAppPackageProviderNames.Base, mountOptions ?? new VobMountOptions(100, null))
             ;
 
         #endregion

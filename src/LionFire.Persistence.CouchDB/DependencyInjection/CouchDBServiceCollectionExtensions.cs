@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Text;
 using LionFire.CouchDB;
 using LionFire.Data;
+using LionFire.Data.Connections;
 using LionFire.Persistence.CouchDB;
 using LionFire.Persistence.Handles;
 using LionFire.Persistence.Persisters;
@@ -37,13 +38,13 @@ namespace LionFire.Services
                 case MyCouchMode.Entity:
                     services
                         .AddSingleton<CouchDBEntityPersister>()
-                        .AddSingleton<IPersisterProvider<CouchDBReference>, OptionallyNamedPersisterProvider<CouchDBReference, CouchDBEntityPersister, CouchDBPersisterOptions>>()
+                        .AddSingleton<IPersisterProvider<CouchDBReference>, OptionallyNamedPersisterProvider<CouchDBReference, CouchDBEntityPersister>>()
                         ;
                     break;
                 case MyCouchMode.Document:
                     services
                         .AddSingleton<CouchDBSerializingPersister>()
-                        .AddSingleton<IPersisterProvider<CouchDBReference>, OptionallyNamedPersisterProvider<CouchDBReference, CouchDBSerializingPersister, CouchDBPersisterOptions>>()
+                        .AddSingleton<IPersisterProvider<CouchDBReference>, OptionallyNamedPersisterProvider<CouchDBReference, CouchDBSerializingPersister>>()
                         ;
                     break;
                 default:

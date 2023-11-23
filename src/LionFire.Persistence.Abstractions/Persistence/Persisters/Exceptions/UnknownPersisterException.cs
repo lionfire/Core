@@ -1,10 +1,9 @@
-﻿using System;
-using System.Runtime.Serialization;
+﻿using System.Runtime.Serialization;
 
 namespace LionFire.Persistence
 {
     [Serializable]
-    public class UnknownPersisterException : PersistenceException
+    public class UnknownPersisterException : TransferException
     {
         public UnknownPersisterException()
         {

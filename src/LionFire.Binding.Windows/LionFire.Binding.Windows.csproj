@@ -1,12 +1,14 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>net48</TargetFramework>
+    <!--<OutputType>WinExe</OutputType>-->
+    <TargetFramework>net8.0-windows</TargetFramework>
     <RootNamespace>LionFire</RootNamespace>
+    <UseWPF>true</UseWPF>
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="WindowsBase" Version="4.6.1055" />
+    <PackageReference Include="WindowsBase" />
   </ItemGroup>
 
   <ItemGroup>

@@ -7,7 +7,7 @@ using LionFire.Ontology;
 using LionFire.Persistence;
 using LionFire.Persistence.Handles;
 using LionFire.Referencing;
-using LionFire.Resolves;
+using LionFire.Data.Async.Gets;
 
 namespace LionFire.Vos
 {
@@ -75,7 +75,7 @@ namespace LionFire.Vos
         {
             if (!HasValue)
             {
-                await ResolveImpl().ConfigureAwait(false);
+                await GetImpl().ConfigureAwait(false);
                 if (!HasValue) { Value = ReferenceObjectFactory.ConstructDefault<T>(Reference); }
             }
             return Value;
@@ -158,9 +158,9 @@ namespace LionFire.Vos
         public Task<bool> Delete() => throw new NotImplementedException();
 
         public void OnRenamed(IVobHandle<T> newHandle) => throw new NotImplementedException();
-        protected override Task<IResolveResult<T>> ResolveImpl() => throw new NotImplementedException();
-        protected override Task<IPersistenceResult> UpsertImpl() => throw new NotImplementedException();
-        public override ILazyResolveResult<T> QueryValue() => throw new NotImplementedException();
+        protected override Task<IGetResult<T>> GetImpl(CancellationToken cancellationToken = default) => throw new NotImplementedException();
+        protected override Task<ITransferResult> UpsertImpl() => throw new NotImplementedException();
+        public override IGetResult<T> QueryValue() => throw new NotImplementedException();
         public override void RaisePersistenceEvent(PersistenceEvent<T> ev) => throw new NotImplementedException();
 
         #endregion

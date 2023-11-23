@@ -10,7 +10,7 @@ using Microsoft.Extensions.DependencyInjection;
 using LionFire.Execution;
 using LionFire.DependencyInjection;
 using LionFire.Trading.Triggers;
-using LionFire.Trading.TrueFx;
+//using LionFire.Trading.TrueFx;
 using LionFire.Trading;
 
 namespace LionFire.Notifications.Service

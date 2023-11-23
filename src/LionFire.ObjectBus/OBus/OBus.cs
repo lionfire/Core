@@ -7,7 +7,7 @@ using LionFire.ObjectBus.Handles;
 using LionFire.Ontology;
 using LionFire.Persistence;
 using LionFire.Referencing;
-using LionFire.Resolves;
+using LionFire.Data.Gets;
 using LionFire.Results;
 
 namespace LionFire.ObjectBus.Ex // Extended API
@@ -89,7 +89,7 @@ namespace LionFire.ObjectBus
 
     #region Set
 
-        public static async Task<ISuccessResult> SetObject<TObject>(this IReference reference, TObject @object) 
+        public static async Task<ITransferResult> SetObject<TObject>(this IReference reference, TObject @object) 
             => (await ((OBaseHandle<TObject>)reference.ToWriteHandle<TObject>()).Put(@object));
 
     #endregion
@@ -100,7 +100,7 @@ namespace LionFire.ObjectBus
 
         public static async Task<bool> CanDelete<T>(this IReference reference) => (await reference.TryGetOBase().CanDelete<T>(reference).ConfigureAwait(false)).IsPreviewSuccess();
 
-        public static async Task<IPersistenceResult> TryDelete<T>(this IReference reference) => await reference.TryGetOBase().TryDelete<T>(reference).ConfigureAwait(false);
+        public static async Task<ITransferResult> TryDelete<T>(this IReference reference) => await reference.TryGetOBase().TryDelete<T>(reference).ConfigureAwait(false);
         public static async Task Delete<T>(this IReference reference) => await reference.TryGetOBase().Delete<T>(reference).ConfigureAwait(false);
 
         public static async Task Delete(this IReference reference) => await reference.TryGetOBase().Delete<object>(reference).ConfigureAwait(false);

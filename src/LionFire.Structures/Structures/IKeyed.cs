@@ -1,13 +1,14 @@
-﻿using System;
-using System.Linq;
-using System.Threading.Tasks;
+﻿#nullable enable
 
-namespace LionFire.Structures
+using LionFire.Ontology;
+
+namespace LionFire.Structures;
+
+public interface IKeyed : IKeyed<string> { }
+
+public interface IKeyed<TKey>
 {
-    public interface IKeyed : IKeyed<string> { }
-
-    public interface IKeyed<TKey>
-    {
-        TKey Key { get; }
-    }
+    // TODO: Make not nullable
+    [Immutable]
+    TKey Key { get; }
 }

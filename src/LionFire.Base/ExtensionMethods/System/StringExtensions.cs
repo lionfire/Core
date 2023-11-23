@@ -18,14 +18,26 @@ namespace LionFire.ExtensionMethods
             }
             return sb.ToString();
         }
-        public static string TryRemoveFromEnd(this string str, string textToRemove)
+        public static string TryRemoveFromEnd(this string str, string stringToRemove)
         {
-            if (str.EndsWith(textToRemove))
+            if (str.EndsWith(stringToRemove))
             {
-                str = str.Substring(0, str.Length - textToRemove.Length);
+                str = str.Substring(0, str.Length - stringToRemove.Length);
             }
             return str;
         }
+        public static string TryRemoveFromStart(this string s, string stringToRemove)
+        {
+            if (s.StartsWith(stringToRemove)) return s.Substring(stringToRemove.Length);
+            return s;
+        }
+        public static string TryRemovePrefixFromStart(this string s, string stringToRemove)
+        {
+            if (s.HasPrefix(stringToRemove)) return s.Substring(stringToRemove.Length);
+            return s;
+        }
+
+        public static bool HasPrefix(this string s, string prefix) => s.StartsWith(prefix) && s.Length > prefix.Length && char.IsUpper(s[prefix.Length]);
 
         public static bool IsNullOrWhiteSpace(this string str) => string.IsNullOrWhiteSpace(str);
     }

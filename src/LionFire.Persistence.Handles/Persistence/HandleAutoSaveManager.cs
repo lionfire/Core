@@ -26,9 +26,9 @@ namespace LionFire.ObjectBus
 
     public class HandleAutoSaveManager
     {
-        public static HandleAutoSaveManager Instance { get { return Singleton<HandleAutoSaveManager>.Instance; } }
+        public static HandleAutoSaveManager Instance { get { return Singleton<HandleAutoSaveManager>.Instance; } } // STATICVAR
 
-        public static HashSet<Type> AutoSaveTypes = new HashSet<Type>();
+        public static HashSet<Type> AutoSaveTypes = new HashSet<Type>();  // STATICVAR
 
         //ChangeWatcher ChangeWatcher;
         public HandleAutoSaveManager()
@@ -38,7 +38,7 @@ namespace LionFire.ObjectBus
 
         public void Register(IHandleBase handle)
         {
-            throw new NotImplementedException("TODO: H<T>.ObjectChanged");
+            throw new NotImplementedException("TODO: H<TValue>.ObjectChanged");
 #if TODO
             // TODO MEMORYLEAK ToWeakEvents
             handle.ObjectChanged += handle_ObjectChanged;
@@ -68,7 +68,7 @@ namespace LionFire.ObjectBus
 
         public void Unregister(IHandleBase handle)
         {
-            throw new NotImplementedException("TODO: H<T>.ObjectChanged");
+            throw new NotImplementedException("TODO: H<TValue>.ObjectChanged");
 #if TODO
             handle.ObjectChanged -= handle_ObjectChanged;
             l.Trace("[autosave] Unregistered " + handle.ToStringSafe()); // TEMP

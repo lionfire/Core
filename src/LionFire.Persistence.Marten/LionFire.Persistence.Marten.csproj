@@ -1,0 +1,16 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net6.0</TargetFramework>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Marten" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\LionFire.Data.Connections\LionFire.Data.Connections.csproj" />
+    <ProjectReference Include="..\LionFire.Hosting\LionFire.Hosting.csproj" />
+  </ItemGroup>
+
+</Project>

@@ -1,11 +1,12 @@
-﻿using System;
+﻿#nullable enable
+using System;
 using System.Data.SqlTypes;
 
-namespace LionFire.Structures
+namespace LionFire.Structures;
+
+public interface IReadWrapper<out T>
 {
-    public interface IReadWrapper<out T>
-    {
-        T Value { get; } 
-        //event Action<IReadWrapper<T> /* Wrapper */ , T /*oldValue*/ , T /*newValue*/> ObjectChanged;
-    }
+    // REVIEW: Consider replacing T with language-ext's Option<>?
+    T? Value { get; }  // RENAME to Value, or something
+    //event Action<IReadWrapper<T> /* Wrapper */ , T /*oldValue*/ , T /*newValue*/> ObjectChanged;
 }

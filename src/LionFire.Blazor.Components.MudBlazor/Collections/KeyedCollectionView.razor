@@ -1,0 +1,85 @@
+﻿@inherits ReactiveInjectableComponentBase<AsyncKeyedCollectionVM<TKey,TValue,TValueVM>>
+@typeparam TKey
+@typeparam TValue
+@typeparam TValueVM
+
+@namespace LionFire.Blazor.Components
+
+@inject ILogger<KeyedCollectionView<TKey, TValue, TValueVM>> Logger
+@inject NavigationManager NavigationManager
+@inject IServiceProvider ServiceProvider
+@inject IViewModelProvider ViewModelProvider
+
+<MudToolBar>
+
+    @if (CreatableTypes != null && CreatableTypes.Any())
+    {
+        if (ViewModel is ICreatesAsyncVM<TValue> createsValue)
+        {
+            <MudMenu Class="" Label="Add" Icon="@Icons.Material.Filled.Add" Variant="Variant.Outlined" Color="Color.Success"
+                  Dense
+                      AnchorOrigin="Origin.BottomLeft">
+                 @foreach (var t in CreatableTypes)
+                {
+                    <MudMenuItem OnClick=@(() => createsValue.Create.Execute(t).Subscribe())>
+                        @DisplayNameUtilsX.DisplayNameForType(t)
+                    </MudMenuItem>
+                }
+            </MudMenu>
+        }
+      
+        @* TODO:  *@
+        @* @if (ViewModel.Create != null && ViewModel.CanCreate)
+    {
+    <MudMenu Class="" Label="Add" Icon="@Icons.Material.Filled.Add" Variant="Variant.Outlined" Color="Color.Success" Dense AnchorOrigin="Origin.BottomLeft">
+    @foreach (var t in CreatableTypes)
+    {
+    <MudMenuItem OnClick="@(e => OnCreate(t))">
+    @DisplayNameUtilsX.DisplayNameForType(t)
+    </MudMenuItem>
+    }
+    </MudMenu>
+    } *@
+    }
+
+    @if (ViewModel != null && (ViewModel.ShowRefresh || ((ViewModelOptions?.ShowRefreshIfHasNoValue == true) && !ViewModel.HasValue)))
+    {
+        @* TODO: Special color if !HasValue, indicating first resolve is needed *@
+        <MudIconButton Disabled="!ViewModel.CanGet" OnClick="() => ViewModel.GetCommand.Execute()" Color="@Color.Tertiary" Icon="@Icons.Material.Filled.Refresh" />
+    }
+</MudToolBar>
+
+
+@if (ChildContent != null)
+{
+    <div>@ChildContent(ViewModel)</div>
+}
+else if (ViewModel?.ValueVMs != null)
+{
+    <h3>ValueVMs @ViewModel.ValueVMs.Count</h3>
+    @foreach (var item in ViewModel.ValueVMs.Items)
+    {
+        <div>
+            <div>Item:</div>
+            @item
+        </div>
+    }
+    <MudDataGrid T="TValueVM"
+                 Items="@ViewModel.ValueVMs.Items" SortMode="SortMode.Multiple" Filterable="true" Hideable="true" RowClick="@RowClicked">
+    </MudDataGrid>
+}
+@*else if(Items!=null) // No TValueVM, show TValue items directly
+{
+    <MudDataGrid T="TValue"
+             Items="@Items" SortMode="SortMode.Multiple" Filterable="true" Hideable="true" RowClick="@RowClicked">
+
+    </MudDataGrid>
+}*@
+else // No TValueVM, show TValue items directly
+{
+    <span>(No data)</span>
+    @*<MudDataGrid T="TValue"
+             Items="@Items" SortMode="SortMode.Multiple" Filterable="true" Hideable="true" RowClick="@RowClicked">
+    </MudDataGrid>*@
+}
+

@@ -17,6 +17,6 @@ namespace LionFire.Results
         }
 
         public static readonly ISuccessResult Success = new SuccessResult(true);
-        public static ISuccessResult Fail => FailResult.Instance;
+        //public static ISuccessResult Fail => FailResult.Instance;
     }
 }

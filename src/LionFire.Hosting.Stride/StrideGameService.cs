@@ -2,6 +2,8 @@
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Stride.Engine;
+using Stride.Games;
+using Stride.Physics;
 using System;
 using System.Collections.Concurrent;
 using System.Threading;
@@ -10,6 +12,10 @@ using System.Threading.Tasks;
 namespace LionFire.Stride3D
 {
 
+    public static class GameExtensions
+    {
+        public static Simulation Simulation(this Game game) => game.SceneSystem.SceneInstance.GetProcessor<PhysicsProcessor>()?.Simulation;
+    }
 
     public class StrideGameService : IHostedService
     {
@@ -17,6 +23,8 @@ namespace LionFire.Stride3D
 
         public Game Game => game;
         private Game game;
+
+        public Simulation Simulation => game.SceneSystem.SceneInstance.GetProcessor<PhysicsProcessor>()?.Simulation;
 
 
         #region DataContext

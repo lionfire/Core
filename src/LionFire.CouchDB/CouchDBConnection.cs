@@ -1,4 +1,5 @@
 ﻿using LionFire.Data;
+using LionFire.Data.Connections;
 using LionFire.Threading;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
@@ -7,68 +8,67 @@ using System;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace LionFire.CouchDB
+namespace LionFire.CouchDB;
+
+
+/// <summary>
+/// Connection string:
+///   Comma separated host:port
+///   E.g. "server1:6379,server2:6379"
+///   Order not important; master is automatically identified
+/// </summary>
+public sealed class CouchDBConnection : ConnectionBase<CouchDBConnectionOptions, CouchDBConnection>
 {
-
     /// <summary>
-    /// Connection string:
-    ///   Comma separated host:port
-    ///   E.g. "server1:6379,server2:6379"
-    ///   Order not important; master is automatically identified
+    /// Gets or sets the number of milliseconds after which an active System.Net.ServicePoint connection is closed.
     /// </summary>
-    public sealed class CouchDBConnection : ConnectionBase<CouchDBConnectionOptions, CouchDBConnection>
+    public static int ConnectionLeaseTimeout { get; set; } = 60 * 1000; // 1 minute
+
+    public MyCouchClient MyCouchClient { get; private set; }
+    MyCouchClient NewCouchClient => new MyCouchClient($"{Options.DatabaseUrl}", Options.Database);
+
+    public CouchDBConnection(CouchDBConnectionOptions options, ILogger<CouchDBConnection> logger) : base(options, logger)
     {
-        /// <summary>
-        /// Gets or sets the number of milliseconds after which an active System.Net.ServicePoint connection is closed.
-        /// </summary>
-        public static int ConnectionLeaseTimeout { get; set; } = 60 * 1000; // 1 minute
+        ConnectionState = ConnectionState.NotConnected;
+    }
 
-        public MyCouchClient MyCouchClient { get; private set; }
-        MyCouchClient NewCouchClient => new MyCouchClient($"{Options.DatabaseUrl}", Options.Database);
+    //public bool IsConnectionDesired
+    //{
+    //    get => isConnectionDesired;
+    //    set
+    //    {
+    //        if (value)
+    //        {
+    //            Connect().FireAndForget();
+    //        }
+    //        else
+    //        {
+    //            Disconnect().FireAndForget();
+    //        }
+    //    }
+    //}
+    //private bool isConnectionDesired;
+    ////private Task<ConnectionMultiplexer> connectingTask;
 
-        public CouchDBConnection(CouchDBConnectionOptions options, ILogger<CouchDBConnection> logger) : base(options, logger)
+    public override Task ConnectImpl(CancellationToken cancellationToken = default)
+    {
+        var sp = System.Net.ServicePointManager.FindServicePoint(new Uri(Options.WebUrl));
+        sp.ConnectionLeaseTimeout = ConnectionLeaseTimeout;
+
+        if (MyCouchClient != null)
         {
-            ConnectionState = ConnectionState.NotConnected;
+            this.MyCouchClient = NewCouchClient;
         }
+        ConnectionState = ConnectionState.Ready;
 
-        //public bool IsConnectionDesired
-        //{
-        //    get => isConnectionDesired;
-        //    set
-        //    {
-        //        if (value)
-        //        {
-        //            Connect().FireAndForget();
-        //        }
-        //        else
-        //        {
-        //            Disconnect().FireAndForget();
-        //        }
-        //    }
-        //}
-        //private bool isConnectionDesired;
-        ////private Task<ConnectionMultiplexer> connectingTask;
+        return Task.CompletedTask;
+    }
+    public override Task DisconnectImpl(CancellationToken cancellationToken = default)
+    {
+        ConnectionState = ConnectionState.NotConnected;
 
-        public override Task ConnectImpl(CancellationToken cancellationToken = default)
-        {
-            var sp = System.Net.ServicePointManager.FindServicePoint(new Uri(Options.WebUrl));
-            sp.ConnectionLeaseTimeout = ConnectionLeaseTimeout;
-
-            if (MyCouchClient != null)
-            {
-                this.MyCouchClient = NewCouchClient;
-            }
-            ConnectionState = ConnectionState.Ready;
-
-            return Task.CompletedTask;
-        }
-        public override Task DisconnectImpl(CancellationToken cancellationToken = default)
-        {
-            ConnectionState = ConnectionState.NotConnected;
-
-            MyCouchClient?.Dispose();
-            MyCouchClient = null;
-            return Task.CompletedTask;
-        }
+        MyCouchClient?.Dispose();
+        MyCouchClient = null;
+        return Task.CompletedTask;
     }
 }

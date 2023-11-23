@@ -3,17 +3,16 @@ using LionFire.Serialization.Json.JsonEx;
 using Microsoft.Extensions.DependencyInjection;
 using LionFire.Applications.Hosting;
 
-namespace LionFire.Services
+namespace LionFire.Hosting;
+
+public static class JsonExAppHostExtensions
 {
-    public static class JsonExAppHostExtensions
+    public static IServiceCollection AddJsonEx(this IServiceCollection services)
     {
-        public static IServiceCollection AddJsonEx(this IServiceCollection services)
-        {
-            services
-                .AddSingleton<JsonExLionFireSerializer>()
-                .TryAddEnumerableSingleton<ISerializationStrategy, JsonExLionFireSerializer>()
-                ;
-            return services;
-        }
+        services
+            .AddSingleton<JsonExLionFireSerializer>()
+            .TryAddEnumerableSingleton<ISerializationStrategy, JsonExLionFireSerializer>()
+            ;
+        return services;
     }
 }

@@ -3,7 +3,6 @@ using LionFire.Vos.VosApp;
 using Microsoft.Extensions.DependencyInjection;
 using LionFire.Persistence.Filesystem;
 using LionFire.Vos;
-using LionFire.Vos.Packages;
 using System.IO;
 using System.Reflection;
 using LionFire.Environment.AutoDetect;
@@ -11,6 +10,7 @@ using LionFire.Applications;
 using Microsoft.Extensions.Configuration;
 using System;
 using LionFire.FlexObjects;
+using LionFire.Hosting;
 
 namespace LionFire.Services
 {
@@ -86,9 +86,9 @@ namespace LionFire.Services
         //    return services.VosMount("$stores/" + storeName, customApplicationDir.ToFileReference(), new MountOptions { });
         //}
 
-        public static MountOptions AugmentWithDefaults(this MountOptions mountOptions, string storeName, string path, bool writable = false)
+        public static VobMountOptions AugmentWithDefaults(this VobMountOptions mountOptions, string storeName, string path, bool writable = false)
         {
-            mountOptions.ReadPriority = MountOptions.DefaultReadPriority;
+            mountOptions.ReadPriority = VobMountOptions.DefaultReadPriority;
 
             mountOptions.IsExclusiveWithReadAndWrite = true;
 
@@ -114,13 +114,13 @@ namespace LionFire.Services
             }
             if (writable || mountOptions.IsVariableDataLocation == true)
             {
-                mountOptions.WritePriority = MountOptions.DefaultWritePriority;
+                mountOptions.WritePriority = VobMountOptions.DefaultWritePriority;
             }
             return mountOptions;
         }
 
-        public static MountOptions DefaultOptions(string storeName, string path, bool writable = false)
-            => new MountOptions().AugmentWithDefaults(storeName, path, writable);
+        public static VobMountOptions DefaultOptions(string storeName, string path, bool writable = false)
+            => new VobMountOptions().AugmentWithDefaults(storeName, path, writable);
 
         public static IServiceCollection AddPlatformSpecificStores(this IServiceCollection services, AppInfo appInfo)
         {
@@ -190,7 +190,7 @@ namespace LionFire.Services
         /// <param name="isOwnedByOperatingSystemUser"></param>
         /// <param name="isVariableDataLocation"></param>
         /// <returns></returns>
-        private static IServiceCollection _AddStore(this IServiceCollection services, MountOptions options, string storeName, string basePath, string dirName, bool isOwnedByOperatingSystemUser, bool isVariableDataLocation)
+        private static IServiceCollection _AddStore(this IServiceCollection services, VobMountOptions options, string storeName, string basePath, string dirName, bool isOwnedByOperatingSystemUser, bool isVariableDataLocation)
         {
             if (dirName == null) return services;
 
@@ -208,7 +208,7 @@ namespace LionFire.Services
 
         #region RoamingAppData
 
-        public static IServiceCollection AddRoamingAppDataDataDirStore(this IServiceCollection services, AppInfo appInfo, MountOptions options = null)
+        public static IServiceCollection AddRoamingAppDataDataDirStore(this IServiceCollection services, AppInfo appInfo, VobMountOptions options = null)
                  => _AddStore(services,
                    options,
                    StoreNames.RoamingAppDataDataDir,
@@ -231,7 +231,7 @@ namespace LionFire.Services
         //       options);
         //}
 
-        public static IServiceCollection AddRoamingAppDataAppStore(this IServiceCollection services, AppInfo appInfo, MountOptions options = null)
+        public static IServiceCollection AddRoamingAppDataAppStore(this IServiceCollection services, AppInfo appInfo, VobMountOptions options = null)
                  => _AddStore(services,
                    options,
                    StoreNames.RoamingAppDataAppDir,
@@ -251,7 +251,7 @@ namespace LionFire.Services
         //         options);
         //}
 
-        public static IServiceCollection AddRoamingAppDataOrgStore(this IServiceCollection services, AppInfo appInfo, MountOptions options = null)
+        public static IServiceCollection AddRoamingAppDataOrgStore(this IServiceCollection services, AppInfo appInfo, VobMountOptions options = null)
                  => _AddStore(services,
                    options,
                    StoreNames.RoamingAppDataOrgDir,
@@ -275,7 +275,7 @@ namespace LionFire.Services
 
         #region LocalLowAppData
 
-        public static IServiceCollection AddLocalLowAppDataDataDirStore(this IServiceCollection services, AppInfo appInfo, MountOptions options = null)
+        public static IServiceCollection AddLocalLowAppDataDataDirStore(this IServiceCollection services, AppInfo appInfo, VobMountOptions options = null)
                 => _AddStore(services,
                    options,
                    StoreNames.LocalLowAppDataDataDir,
@@ -298,7 +298,7 @@ namespace LionFire.Services
         //    options));
         //}
 
-        public static IServiceCollection AddLocalLowAppDataAppStore(this IServiceCollection services, AppInfo appInfo, MountOptions options = null)
+        public static IServiceCollection AddLocalLowAppDataAppStore(this IServiceCollection services, AppInfo appInfo, VobMountOptions options = null)
                 => _AddStore(services,
                    options,
                    StoreNames.LocalLowAppDataAppDir,
@@ -318,7 +318,7 @@ namespace LionFire.Services
         //            options ?? DefaultOptions(StoreNames.LocalLowAppDataAppDir));
         //}
 
-        public static IServiceCollection AddLocalLowAppDataOrgStore(this IServiceCollection services, AppInfo appInfo, MountOptions options = null)
+        public static IServiceCollection AddLocalLowAppDataOrgStore(this IServiceCollection services, AppInfo appInfo, VobMountOptions options = null)
                 => _AddStore(services,
                    options,
                    StoreNames.LocalLowAppDataOrgDir,
@@ -341,7 +341,7 @@ namespace LionFire.Services
 
         #region LocalAppData
 
-        public static IServiceCollection AddLocalAppDataDataDirStore(this IServiceCollection services, AppInfo appInfo, MountOptions options = null)
+        public static IServiceCollection AddLocalAppDataDataDirStore(this IServiceCollection services, AppInfo appInfo, VobMountOptions options = null)
                 => _AddStore(services,
                    options,
                    StoreNames.LocalAppDataDataDir,
@@ -361,7 +361,7 @@ namespace LionFire.Services
         //        options ?? DefaultOptions(StoreNames.LocalAppDataDataDir));
         //}
 
-        public static IServiceCollection AddLocalAppDataAppStore(this IServiceCollection services, AppInfo appInfo, MountOptions options = null)
+        public static IServiceCollection AddLocalAppDataAppStore(this IServiceCollection services, AppInfo appInfo, VobMountOptions options = null)
                 => _AddStore(services,
                    options,
                    StoreNames.LocalAppDataAppDir,
@@ -380,7 +380,7 @@ namespace LionFire.Services
         //            options ?? DefaultOptions(StoreNames.LocalAppDataAppDir));
         //}
 
-        public static IServiceCollection AddLocalAppDataOrgStore(this IServiceCollection services, AppInfo appInfo, MountOptions options = null)
+        public static IServiceCollection AddLocalAppDataOrgStore(this IServiceCollection services, AppInfo appInfo, VobMountOptions options = null)
                 => _AddStore(services,
                    options,
                    StoreNames.LocalAppDataOrgDir,
@@ -405,7 +405,7 @@ namespace LionFire.Services
 
 
 
-        public static IServiceCollection AddProgramDataDataDirStore(this IServiceCollection services, AppInfo appInfo, MountOptions options = null)
+        public static IServiceCollection AddProgramDataDataDirStore(this IServiceCollection services, AppInfo appInfo, VobMountOptions options = null)
             => _AddStore(services,
                 options,
                 StoreNames.ProgramDataDataDir,
@@ -423,7 +423,7 @@ namespace LionFire.Services
         //}
 
 
-        public static IServiceCollection AddProgramDataAppStore(this IServiceCollection services, AppInfo appInfo, MountOptions options = null)
+        public static IServiceCollection AddProgramDataAppStore(this IServiceCollection services, AppInfo appInfo, VobMountOptions options = null)
                => _AddStore(services,
                    options,
                    StoreNames.ProgramDataAppDir,
@@ -438,7 +438,7 @@ namespace LionFire.Services
         //                options ?? DefaultOptions(StoreNames.ProgramDataAppDir));
         //}
 
-        public static IServiceCollection AddProgramDataOrgStore(this IServiceCollection services, AppInfo appInfo, MountOptions options = null)
+        public static IServiceCollection AddProgramDataOrgStore(this IServiceCollection services, AppInfo appInfo, VobMountOptions options = null)
                => _AddStore(services,
                    options,
                    StoreNames.ProgramDataOrgDir,
@@ -455,13 +455,13 @@ namespace LionFire.Services
 
         #endregion
 
-        public static IServiceCollection AddAppDirStore(this IServiceCollection services, string storeName = StoreNames.AppDir, AppInfo appInfo = null, bool onlyIfNotExeDir = false, MountOptions options = null, string appDirPath = null, bool useExeDirAsAppDirIfMissing = true)
+        public static IServiceCollection AddAppDirStore(this IServiceCollection services, string storeName = StoreNames.AppDir, AppInfo appInfo = null, bool onlyIfNotExeDir = false, VobMountOptions options = null, string appDirPath = null, bool useExeDirAsAppDirIfMissing = true)
         {
             appDirPath ??= ApplicationAutoDetection.FindCustomAppRoot(appInfo?.AppId)
                                 ?? (useExeDirAsAppDirIfMissing && !onlyIfNotExeDir ? ExeDirPath : null);
 
             return _AddStore(services,
-                   new MountOptions(1, 1) { IsExclusiveWithReadAndWrite = true }.AugmentWithDefaults(StoreNames.AppDir, appDirPath),
+                   new VobMountOptions(1, 1) { IsExclusiveWithReadAndWrite = true }.AugmentWithDefaults(StoreNames.AppDir, appDirPath),
                    StoreNames.AppDir,
                    null,
                   appDirPath,
@@ -495,7 +495,7 @@ namespace LionFire.Services
         }
 
         // REVIEW - move to LionFire.Vos.Packages?  Can't now because can't create FileReferences from strings yet.
-        public static IServiceCollection AddExeDirStore(this IServiceCollection services, string name = StoreNames.ExeDir, MountOptions options = null)
+        public static IServiceCollection AddExeDirStore(this IServiceCollection services, string name = StoreNames.ExeDir, VobMountOptions options = null)
                 => _AddStore(services,
                    options,
                    StoreNames.ExeDir,

@@ -23,7 +23,7 @@ namespace LionFire.Persisters.Handles
 
     //public class NoopReadWriteHandle<TValue> : ReadWriteHandle<TValue>
     //{
-    //    //public override Task<IResolveResult<TValue>> ResolveImpl() => Task.FromResult((IResolveResult<TValue>)NoopFailResolveResult<TValue>.Instance);
+    //    //public override Task<IGetResult<TValue>> GetImpl(CancellationToken cancellationToken = default) => Task.FromResult((IGetResult<TValue>)NoopFailResolveResult<TValue>.Instance);
 
     //    //public override Task<IPutResult> Put(TValue value) => Task.FromResult((IPutResult)NoopFailPutResult<TValue>.Instance);
     //    //protected override Task<IDeleteResult> DeleteImpl() => Task.FromResult((IDeleteResult)NoopFailDeleteResult<TValue>.Instance);
@@ -36,12 +36,12 @@ namespace LionFire.Persisters.Handles
 
     //    //public override event Action<PersistenceEvent<TValue>> PersistenceStateChanged;
 
-    //    //public override ILazyResolveResult<TValue> QueryValue() => throw new NotImplementedException();
+    //    //public override IGetResult<TValue> QueryValue() => throw new NotImplementedException();
     //    //public override void RaisePersistenceEvent(PersistenceEvent<TValue> ev) => throw new NotImplementedException();
 
     //    //#endregion
 
-    //    //public override Task<IPersistenceResult> UpsertImpl() => NoopPutPersistenceResult.Instance;
+    //    //public override Task<ITransferResult> UpsertImpl() => NoopPutPersistenceResult.Instance;
     //}
 
 #if OLD

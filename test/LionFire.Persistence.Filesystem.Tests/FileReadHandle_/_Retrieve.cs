@@ -43,10 +43,10 @@ namespace FileReadHandle_
                 #region Retrieve (Primary assertion)
 
                 var readHandle = reference.GetReadHandle<string>();
-                //var persistenceResult = await readHandle.Retrieve();
-                var persistenceResult = await readHandle.Resolve() as IPersistenceResult;
+                //var persistenceResult = await readHandle.Get();
+                var persistenceResult = await readHandle.Get() as ITransferResult;
 
-                Assert.True(persistenceResult.Flags.HasFlag(PersistenceResultFlags.Success));
+                Assert.True(persistenceResult.Flags.HasFlag(TransferResultFlags.Success));
                 Assert.Equal(testContents, readHandle.Value);
 
                 #endregion

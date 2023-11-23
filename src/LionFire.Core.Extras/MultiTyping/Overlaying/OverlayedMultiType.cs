@@ -39,9 +39,9 @@ namespace LionFire.MultiTyping.Overlaying
 
         #endregion
 
-        MultiType DefaultLayerOrCreate => defaultLayer ??= new MultiType();
+        MultiTyped DefaultLayerOrCreate => defaultLayer ??= new MultiTyped();
 
-        public MultiType DefaultLayer
+        public MultiTyped DefaultLayer
         {
             get => defaultLayer;
             set
@@ -60,7 +60,7 @@ namespace LionFire.MultiTyping.Overlaying
                 }
             }
         }
-        private MultiType defaultLayer;
+        private MultiTyped defaultLayer;
 
         #endregion
 
@@ -102,7 +102,7 @@ namespace LionFire.MultiTyping.Overlaying
 #if true // Autocreate DefaultLayer
                 if (DefaultLayer == null)
                 {
-                    DefaultLayer = new MultiType();
+                    DefaultLayer = new MultiTyped();
                 }
                 DefaultLayer[type] = value;
 #else
@@ -123,7 +123,7 @@ namespace LionFire.MultiTyping.Overlaying
 #if true // Autocreate DefaultLayer
             if (DefaultLayer == null)
             {
-                DefaultLayer = new MultiType();
+                DefaultLayer = new MultiTyped();
             }
             DefaultLayer.SetType(obj, type);
 #else
@@ -145,20 +145,20 @@ namespace LionFire.MultiTyping.Overlaying
         }
 
 #if !NoGenericMethods
-        //T IMultiTyped.AsTypeOrSetDefault<T>(Func<T> defaultValueFunc, Type slotType
+        //TValue IMultiTyped.AsTypeOrSetDefault<TValue>(Func<TValue> defaultValueFunc, Type slotType
         //    //= null
         //    )
         //{
         //    throw new NotImplementedException();
         //}
-        //T IMultiTyped.AsTypeOrSetDefault<T>(Func<IMultiTyped, T> defaultValueFunc, Type slotType
+        //TValue IMultiTyped.AsTypeOrSetDefault<TValue>(Func<IMultiTyped, TValue> defaultValueFunc, Type slotType
         //    //= null
         //    )
         //{
         //    throw new NotImplementedException();
         //}
 
-        //T IMultiTyped.AsTypeOrCreateDefault<T>(Type slotType
+        //TValue IMultiTyped.AsTypeOrCreateDefault<TValue>(Type slotType
         //    //= null
         //    )
         //{
@@ -260,7 +260,7 @@ namespace LionFire.MultiTyping.Overlaying
         //{
         //    DoModificationOperation(new Type[] { layer.GetType() }, () =>
         //    {
-        //        MultiType mt = new MultiType(new object[] { layer });
+        //        MultiTyped mt = new MultiTyped(new object[] { layer });
         //        PROBLEM: Need corresponding remove method
         //        overlayStack.Objects.Add(modPriority, mt);
         //    });
@@ -407,7 +407,7 @@ namespace LionFire.MultiTyping.Overlaying
 
 
         public void AddTypeHandler(Type type, Action<IReadOnlyMultiTyped, Type> callback)
-        //where T : class
+        //where TValue : class
         {
             lock (handlersLock)
             {
@@ -418,8 +418,8 @@ namespace LionFire.MultiTyping.Overlaying
         }
 
         public void RemoveTypeHandler(Type type, Action<IReadOnlyMultiTyped, Type> callback)
-        //public void RemoveTypeHandler<T>(Type type, MulticastDelegate callback)
-        //where T : class
+        //public void RemoveTypeHandler<TValue>(Type type, MulticastDelegate callback)
+        //where TValue : class
         {
             lock (handlersLock)
             {
@@ -443,7 +443,7 @@ namespace LionFire.MultiTyping.Overlaying
         public T AsTypeOrCreateDefault<T>(Type slotType = null, Func<T> valueFactory = null) where T : class
         {
             throw new NotImplementedException();
-            //return ((IMultiTyped)DefaultLayer).AsTypeOrCreateDefault<T>(slotType);
+            //return ((IMultiTyped)DefaultLayer).AsTypeOrCreateDefault<TValue>(slotType);
         }
         public void SetType<T>(T obj) where T : class => DefaultLayerOrCreate.SetType<T>(obj);
 

@@ -8,6 +8,7 @@ using System.Collections;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Text;
 using LionFire.Collections;
 using LionFire.DependencyInjection;
@@ -24,6 +25,7 @@ using LionFire.Vos.Internals;
 using LionFire.Vos.Services;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using static LionFire.Reflection.GetMethodEx;
 
 namespace LionFire.Vos
 {
@@ -74,14 +76,14 @@ namespace LionFire.Vos
     //    // vos://host/path/to/node/.TYPEs/instanceName
     //    // vos://host/path/to/node%Type[] - all instances, except main instance
 
-    //public class PathTree<T>
-    //    where T : class
+    //public class PathTree<TValue>
+    //    where TValue : class
     //{
-    //    public T this[string subpath] => this[subpath];
+    //    public TValue this[string subpath] => this[subpath];
 
-    //    public T GetChild(string subpath) => GetChild(subpath.ToPathArray(), 0);
+    //    public TValue GetChild(string subpath) => GetChild(subpath.ToPathArray(), 0);
 
-    //    public T QueryChild(string reference) => QueryChild(subpath.ToPathArray(), 0);
+    //    public TValue QueryChild(string reference) => QueryChild(subpath.ToPathArray(), 0);
 
     //}
 
@@ -117,14 +119,14 @@ namespace LionFire.Vos
     /// <remarks>
     /// Handle overrides:
     ///  - (TODO) Object set/get.
-    ///    - get_Object - for Vob{T} this will return the object as T, if any.  Otherwise, it may return a single object, or a MultiType object
-    ///    - set_Object - depending on the situation, it may assign into a MultiType object
+    ///    - get_Object - for Vob{T} this will return the object as T, if any.  Otherwise, it may return a single object, or a MultiTyped object
+    ///    - set_Object - depending on the situation, it may assign into a MultiTyped object
     /// </remarks>
     public partial class Vob : // RENAME - MinimalVob?
                                //CachingHandleBase<Vob, Vob>,
                                //CachingChildren<Vob>,
                                //IHasHandle,
-                               //H, // TODO - make this a smarter handle.  The object might be a dynamically created MultiType for complex scenarios
+                               //H, // TODO - make this a smarter handle.  The object might be a dynamically created MultiTyped for complex scenarios
         IReferencable
 #if AOT
 		IParented
@@ -330,7 +332,7 @@ namespace LionFire.Vos
 
         #endregion
 
-        public object Value { get; set; }
+        public object FlexData { get; set; }
 
         #region MultiTyped
 
@@ -342,12 +344,12 @@ namespace LionFire.Vos
             {
                 if (multiTyped == null)
                 {
-                    multiTyped = new MultiType();
+                    multiTyped = new MultiTyped();
                 }
                 return multiTyped;
             }
         }
-        protected MultiType multiTyped;
+        protected MultiTyped multiTyped;
 
         #endregion
 
@@ -444,7 +446,7 @@ namespace LionFire.Vos
 
         VobNode<TInterface> IVobInternals.TryAddOwnVobNode<TInterface>(Func<IVobNode, TInterface> valueFactory)
         {
-            if (vobNodesByType == null) vobNodesByType = new ConcurrentDictionary<Type, IVobNode>();
+            vobNodesByType ??= new ConcurrentDictionary<Type, IVobNode>();
             var already = vobNodesByType.ContainsKey(typeof(TInterface));
             VobNode<TInterface> result = null;
             if (!already)
@@ -459,7 +461,7 @@ namespace LionFire.Vos
 
         VobNode<TInterface> IVobInternals.AcquireOrAddOwnVobNode<TInterface>(Func<IVobNode, TInterface> valueFactory)
         {
-            if (vobNodesByType == null) vobNodesByType = new ConcurrentDictionary<Type, IVobNode>();
+            vobNodesByType ??= new ConcurrentDictionary<Type, IVobNode>();
             return (VobNode<TInterface>)vobNodesByType.GetOrAdd(typeof(TInterface),
                 t => (IVobNode)Activator.CreateInstance(typeof(VobNode<>).MakeGenericType(t),
                 this, valueFactory ?? DefaultVobNodeValueFactory<TInterface>));
@@ -469,7 +471,7 @@ namespace LionFire.Vos
         //where TInterface : class
         //where TImplementation : TInterface
         {
-            if (vobNodesByType == null) vobNodesByType = new ConcurrentDictionary<Type, IVobNode>();
+            vobNodesByType ??= new ConcurrentDictionary<Type, IVobNode>();
             return (VobNode<TInterface>)vobNodesByType.GetOrAdd(typeof(TInterface),
                 t => (IVobNode)Activator.CreateInstance(typeof(VobNode<>).MakeGenericType(t),
                 this, valueFactory ?? DefaultVobNodeValueFactory<TInterface, TImplementation>));
@@ -480,14 +482,14 @@ namespace LionFire.Vos
         /// </summary>
         /// <typeparam name="T"></typeparam>
         /// <returns></returns>
-        public T AcquireOwn<T>() where T : class => Acquire<T>(maxDepth: 0).Take(1).FirstOrDefault();
+        public T AcquireOwn<T>() where T : class => AcquireEnumerator<T>(maxDepth: 0).Take(1).FirstOrDefault();
         //{
-        //    var node = ((IVobInternals)this).TryAcquireOwnVobNode<T>();
+        //    var node = ((IVobInternals)this).TryAcquireOwnVobNode<TValue>();
         //    if (node != null) return node.Value;
         //    return default;
         //}
 
-        public IEnumerable<T> Acquire<T>(int minDepth = 0, int maxDepth = -1)
+        public IEnumerable<T> AcquireEnumerator<T>(int minDepth = 0, int maxDepth = -1)
             where T : class
         {
             IVob vob = this;
@@ -498,18 +500,24 @@ namespace LionFire.Vos
                 depth++;
             }
 
-            for (IVobNode<T> node = vob.TryGetOwnVobNode<T>(); node != null && (maxDepth < 0 || depth <= maxDepth); node = node.ParentVobNode)
+            for (IVobNode<T> node = vob.TryGetOwnVobNode<T>(); node != null && (maxDepth < 0 || depth <= maxDepth); node = vob?.TryGetOwnVobNode<T>())
             {
                 if (node?.Value != null) yield return node.Value;
 
-                if (node?.ParentVobNode != null)
-                {
-                    depth += node.Vob.Depth - node.ParentVobNode.Vob.Depth;
-                }
+                // OLD
+                //if (node?.NextAncestor() != null)
+                //{
+                //    depth += node.Vob.Depth - node.NextAncestor().Vob.Depth;
+                //}
+
+                // node = node.NextAncestor()
+                vob = vob.Parent;
+                if (vob == null) break;
+                depth++;
             }
         }
 
-        public IEnumerable<T> AcquireMany<T>() where T : class => Acquire<IEnumerable<T>>().SelectMany(e => e);
+        public IEnumerable<T> AcquireMany<T>() where T : class => AcquireEnumerator<IEnumerable<T>>().SelectMany(e => e);
 
         #endregion
 
@@ -524,6 +532,13 @@ namespace LionFire.Vos
             }
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="minDepth"></param>
+        /// <param name="maxDepth">Ignored if <= 0</param>
+        /// <returns></returns>
         VobNode<T> IVobInternals.TryAcquireNextVobNode<T>(int minDepth, int maxDepth)
             where T : class
         {
@@ -543,7 +558,7 @@ namespace LionFire.Vos
             //var vob = ParentEnumerable.ElementAt(skipOwn ? 1 : 0);
             //while (vob != null)
             //{
-            //    var vobNode = ((IVobInternals)vob).TryGetOwnVobNode<T>();
+            //    var vobNode = ((IVobInternals)vob).TryGetOwnVobNode<TValue>();
             //    if (vobNode != null) return vobNode;
             //    vob = vob.Parent;
             //}
@@ -555,7 +570,7 @@ namespace LionFire.Vos
 
         /// <param name="addAtRoot">True: if missing, will add at root. False: if missing, add at local Vob</param>
         /// <returns></returns>
-        public VobNode<TInterface> AcquireOrAddNextVobNode<TInterface, TImplementation>(Func<IVobNode, TInterface> factory = null, bool addAtRoot = true)
+        public VobNode<TInterface> AcquireNextOrAddVobNode<TInterface, TImplementation>(Func<IVobNode, TInterface> factory = null, bool addAtRoot = true)
             where TImplementation : TInterface
             where TInterface : class
         {
@@ -568,7 +583,7 @@ namespace LionFire.Vos
             return (addAtRoot ? vob : this).GetOrAddOwnVobNode<TInterface, TImplementation>(factory);
         }
 
-        public T AcquireNext<T>(int minDepth = 0, int maxDepth = -1)
+        public T Acquire<T>(int minDepth = 0, int maxDepth = -1)
             where T : class
             => this.TryGetNextVobNode<T>(minDepth: minDepth, maxDepth: maxDepth)?.Value ?? default;
 
@@ -629,7 +644,7 @@ namespace LionFire.Vos
         /// <returns></returns>
         public IVobReference<T> GetReference<T>() => new VobReference<T>(Path) { Persister = string.IsNullOrEmpty(Root.RootName) ? null : Root.RootName };
         // OPTIMIZE: new VosRelativeReference(this)
-        // TODO: Use VobReference<T>?  Providers need to be wired up to DI
+        // TODO: Use VobReference<TValue>?  Providers need to be wired up to DI
 
         #endregion
 
@@ -662,3 +677,4 @@ namespace LionFire.Vos
     }
 
 }
+

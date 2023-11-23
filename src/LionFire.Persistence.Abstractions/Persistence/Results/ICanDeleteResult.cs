@@ -1,14 +1,14 @@
-﻿using LionFire.Resolves;
+﻿using LionFire.Data.Async.Gets;
 
 namespace LionFire.Persistence
 {
-    //public interface ICanDeleteResult : IPersistenceResult
+    //public interface ICanDeleteResult : ITransferResult
     //{
     //    //bool? CanDelete { get; }
     //}
     public static class ICanDeleteResultExtensions
     {
-        public static bool? CanDelete(this IPersistenceResult result) => result.IsPreviewSuccessTernary();
+        public static bool? CanDelete(this ITransferResult result) => result.IsPreviewSuccessTernary();
     }
     
 }

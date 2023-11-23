@@ -1,0 +1,26 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net6.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+		<RootNamespace>LionFire</RootNamespace>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="DynamicData" />
+    <PackageReference Include="ReactiveUI" />
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" />
+    <PackageReference Include="ReactiveUI.Fody" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\LionFire.Data.Async.Abstractions\LionFire.Data.Async.Abstractions.csproj" />
+    <ProjectReference Include="..\LionFire.Data.Async.Reactive\LionFire.Data.Async.ReactiveUI.csproj" />
+    <ProjectReference Include="..\LionFire.Hosting\LionFire.Hosting.csproj" />
+    <ProjectReference Include="..\LionFire.Metadata\LionFire.Metadata.csproj" />
+    <ProjectReference Include="..\LionFire.Mvvm.Abstractions\LionFire.Mvvm.Abstractions.csproj" />
+    <ProjectReference Include="..\LionFire.UI.Abstractions\LionFire.UI.Abstractions.csproj" />
+  </ItemGroup>
+
+</Project>

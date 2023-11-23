@@ -1,11 +1,9 @@
-﻿using LionFire.Persistence.Handles;
-using LionFire.Resolves;
-using LionFire.Structures;
+﻿using LionFire.Data;
+using LionFire.Data.Async.Sets;
+using LionFire.Persistence.Handles;
 
-namespace LionFire.Persistence
+namespace LionFire.Persistence; // RENAME to LionFire.Data.Handles
+
+public interface IContravariantWriteHandleBase<in T> : IHandleBase, IDefaultableWriteWrapper<T>, ISetter, IDiscardableValue
 {
-    public interface IContravariantWriteHandleBase<in T> : IHandleBase, IDefaultableWriteWrapper<T>, IPuts, IDiscardableValue
-    {
-    }
-
 }

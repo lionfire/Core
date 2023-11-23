@@ -1,0 +1,25 @@
+﻿@page "/tags/{TagContextName}/editor"
+@inject LionFire.Structures.NamedSingletons<HierarchicalTagContext> NS
+@inject IDialogService DialogService
+@namespace LionFire.Info
+
+<div class="row">
+    <div class="column toolbar transparent-unless-hover self-start">
+        <MudIconButton Icon=@Icons.Material.Filled.Add Size=Size.Small Disabled=@(SelectedValue == null) @onclick="ShowAddDialog" />
+        @*<MudMenu Icon=@Icons.Material.Filled.MoreHoriz Size=Size.Small>
+            <MudMenuItem>Export</MudMenuItem>
+            <MudMenuItem>Import</MudMenuItem>
+        </MudMenu>*@
+        @*<MudIconButton Icon=@Icons.Material.Filled.Add Size=Size.Small Disabled=@(SelectedValue == null) @onclick="ShowAddDialog" />*@
+            @*NEXT: Serialize this?*@
+    </div>
+
+
+    <MudTreeView T="TagNode" Dense="true" Hover="true" @bind-SelectedValue=@SelectedValue>
+        @if (TagContext != null)
+        {
+            <HierarchicalTagEditorNode Value=@TagContext />
+        }
+    </MudTreeView>
+
+</div>

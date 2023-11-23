@@ -1,0 +1,13 @@
+# Common languages. Example, remove .js if .js files are only compiled bundles.
+*.js
+*.tsx
+*.ts
+*.py
+*.go
+*.java
+*.c
+*.cpp
+*.h
+*.hpp
+*.rb
+*.php

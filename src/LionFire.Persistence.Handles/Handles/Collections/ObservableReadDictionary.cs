@@ -9,7 +9,7 @@ using System.Collections;
 using System.Linq;
 using System.Threading.Tasks;
 using LionFire.Referencing;
-using LionFire.Resolves;
+using LionFire.Data.Async.Gets;
 
 namespace LionFire.Persistence.Handles
 {
@@ -43,7 +43,7 @@ namespace LionFire.Persistence.Handles
 #endregion
     }
 
-    public class ObservableReadDictionaryHandle<TReference, THandle, TValue> : ObservableReadDictionary<TReference, THandle, TValue> : IResolves<IEnumerable<T>>, IReferencable<TReference>
+    public class ObservableReadDictionaryHandle<TReference, THandle, TValue> : ObservableReadDictionary<TReference, THandle, TValue> : IGets<IEnumerable<T>>, IReferencable<TReference>
         where THandle : IReadHandle<TValue>, INotifyPersists<TValue>
         where TReference : class, IReference // TODO: class only needed for == operator
     {
@@ -167,7 +167,7 @@ namespace LionFire.Persistence.Handles
             }
             if (AutoResolveObjects)
             {
-                await handle.Resolve().ConfigureAwait(false);
+                await handle.Get().ConfigureAwait(false);
             }
         }
 

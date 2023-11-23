@@ -1,0 +1,30 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+	<PropertyGroup>
+		<TargetFramework>net6.0</TargetFramework>
+		<ImplicitUsings>enable</ImplicitUsings>
+		<Nullable>enable</Nullable>
+		<RootNamespace>LionFire</RootNamespace>
+	</PropertyGroup>
+
+	<ItemGroup>
+		<PackageReference Include="ReactiveUI" />
+		<PackageReference Include="ReactiveUI.Fody" />
+		<PackageReference Include="System.Reactive" />
+		<PackageReference Include="System.Reactive.Async" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<ProjectReference Include="..\LionFire.Base\LionFire.Base.csproj" />
+		<ProjectReference Include="..\LionFire.Data.Async.Abstractions\LionFire.Data.Async.Abstractions.csproj" />
+		<ProjectReference Include="..\LionFire.Data.Async.Reactive.Abstractions\LionFire.Data.Async.ReactiveUI.Abstractions.csproj" />
+		<ProjectReference Include="..\LionFire.Resolves.Abstractions\LionFire.Data.Abstractions.csproj" />
+		<ProjectReference Include="..\LionFire.Resolves\LionFire.Data.Async.csproj" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<Folder Include="Values\Read\" />
+		<Folder Include="Values\Write\" />
+	</ItemGroup>
+
+</Project>

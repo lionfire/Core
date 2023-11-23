@@ -1,4 +1,6 @@
-﻿<div class="top-row pl-4 navbar navbar-dark">
+﻿@using System.IO
+
+<div class="top-row pl-4 navbar navbar-dark">
     <a class="navbar-brand" href="">Vos</a>
     <button class="navbar-toggler" @onclick="ToggleNavMenu">
         <span class="navbar-toggler-icon"></span>
@@ -7,71 +9,81 @@
 
 <div class="@NavMenuCssClass" @onclick="ToggleNavMenu">
     <ul class="nav flex-column">
+
+        @foreach (var driveInfo in DriveInfos)
+        {
+            <li class="nav-item px-3">
+                <NavLink class="nav-link" href=@($"/v/file:{driveInfo.Name.Replace("\\","/").Replace("/", "%2F")}/")>
+                    <MudIcon Icon="@Icons.Material.Filled.DriveEta" Style="margin-right: 12px;" />
+                    <span>
+                     @driveInfo.Name
+                    </span>
+                </NavLink>
+            </li>
+        }
+        
         <li class="nav-item px-3">
-            <NavLink class="nav-link" href="/v/file:c:/">
-                <span class="oi oi-list-rich" aria-hidden="true"></span> C:\
-            </NavLink>
-        </li>
-        <li class="nav-item px-3">
-            <NavLink class="nav-link" href="/v/file:d:/">
-                <span class="oi oi-list-rich" aria-hidden="true"></span> D:\
-            </NavLink>
-        </li>
-        <li class="nav-item px-3">
-            <NavLink class="nav-link" href="/v/file:z:/">
-                <span class="oi oi-list-rich" aria-hidden="true"></span> Z:\
-            </NavLink>
-        </li>
-        <li class="nav-item px-3">
-            <NavLink class="nav-link" href="/v/">
+            <NavLink class="nav-link" href="/v/"Match="NavLinkMatch.All">
                 <span class="oi oi-list-rich" aria-hidden="true"></span> vos:/
             </NavLink>
         </li>
         <li class="nav-item px-3">
-            <NavLink class="nav-link" href="/vos:/TimeTracker/Data/TimeTracking/Default/Days/2020/10/02">
-                <span class="oi oi-list-rich" aria-hidden="true"></span> vos:/TimeTracker
+            <NavLink class="nav-link" href="/v/fs/c/src/core/test/data/zip" Match="NavLinkMatch.All">
+                <span class="oi oi-list-rich" aria-hidden="true"></span> vos:/fs/c/src/core/test/data/zip
             </NavLink>
         </li>
         <li class="nav-item px-3">
-            <NavLink class="nav-link" href="?Root=vos:/TimeTracker/Data/TimeTracking/Default/Days/2020/10/02">
-                <span class="oi oi-list-rich" aria-hidden="true"></span> Shutdown
+            <NavLink class="nav-link" href="/vos:/TimeTracker/Data/TimeTracking/Default/Days/2020/10/02"Match="NavLinkMatch.All">
+                <span class="oi oi-list-rich" aria-hidden="true"></span> vos:/TimeTracker
+            </NavLink>
+        </li>
+
+          <li class="nav-item px-3">
+            <NavLink class="nav-link" href="/internals/resolves"Match="NavLinkMatch.All">
+                <span class="oi oi-list-rich" aria-hidden="true"></span> Resolves Tracker
             </NavLink>
         </li>
 
         @*<li class="nav-item px-3">
-            <NavLink class="nav-link" href="vos" Match="NavLinkMatch.Prefix">
-                <span class="oi oi-list-rich" aria-hidden="true"></span> Vos
+            <NavLink class="nav-link" href="?Root=vos:/TimeTracker/Data/TimeTracking/Default/Days/2020/10/02" Match="NavLinkMatch.All">
+                <span class="oi oi-list-rich" aria-hidden="true"></span> Shutdown
             </NavLink>
+        </li>*@
+
+        @*<li class="nav-item px-3">
+        <NavLink class="nav-link" href="vos" Match="NavLinkMatch.Prefix">
+        <span class="oi oi-list-rich" aria-hidden="true"></span> Vos
+        </NavLink>
         </li>
         <li class="nav-item px-3">
-            <NavLink class="nav-link" href="vos3" Match="NavLinkMatch.Prefix">
-                <span class="oi oi-list-rich" aria-hidden="true"></span> Vos3
-            </NavLink>
+        <NavLink class="nav-link" href="vos3" Match="NavLinkMatch.Prefix">
+        <span class="oi oi-list-rich" aria-hidden="true"></span> Vos3
+        </NavLink>
         </li>
         <li class="nav-item px-3">
-            <NavLink class="nav-link" href="vos4" Match="NavLinkMatch.Prefix">
-                <span class="oi oi-list-rich" aria-hidden="true"></span> Vos4
-            </NavLink>
+        <NavLink class="nav-link" href="vos4" Match="NavLinkMatch.Prefix">
+        <span class="oi oi-list-rich" aria-hidden="true"></span> Vos4
+        </NavLink>
         </li>
         <li class="nav-item px-3">
-            <NavLink class="nav-link" href="vos5" Match="NavLinkMatch.Prefix">
-                <span class="oi oi-list-rich" aria-hidden="true"></span> Vos5
-            </NavLink>
+        <NavLink class="nav-link" href="vos5" Match="NavLinkMatch.Prefix">
+        <span class="oi oi-list-rich" aria-hidden="true"></span> Vos5
+        </NavLink>
         </li>
         <li class="nav-item px-3">
-            <NavLink class="nav-link" href="/Index" Match="NavLinkMatch.All">
-                <span class="oi oi-home" aria-hidden="true"></span> Welcome
-            </NavLink>
+        <NavLink class="nav-link" href="/Index" Match="NavLinkMatch.All">
+        <span class="oi oi-home" aria-hidden="true"></span> Welcome
+        </NavLink>
         </li>
         <li class="nav-item px-3">
-            <NavLink class="nav-link" href="counter">
-                <span class="oi oi-plus" aria-hidden="true"></span> Counter
-            </NavLink>
+        <NavLink class="nav-link" href="counter">
+        <span class="oi oi-plus" aria-hidden="true"></span> Counter
+        </NavLink>
         </li>
         <li class="nav-item px-3">
-            <NavLink class="nav-link" href="fetchdata">
-                <span class="oi oi-list-rich" aria-hidden="true"></span> Fetch data
-            </NavLink>
+        <NavLink class="nav-link" href="fetchdata">
+        <span class="oi oi-list-rich" aria-hidden="true"></span> Fetch data
+        </NavLink>
         </li>
         *@
     </ul>
@@ -85,5 +97,17 @@
     private void ToggleNavMenu()
     {
         collapseNavMenu = !collapseNavMenu;
+    }
+
+    // ENH - Generate menu from LionFire.UI Workspaces
+
+    public IEnumerable<DriveInfo> DriveInfos { get; private set; }
+
+
+    protected override Task OnInitializedAsync()
+    {
+        DriveInfos = System.IO.DriveInfo.GetDrives();
+
+        return base.OnInitializedAsync();
     }
 }

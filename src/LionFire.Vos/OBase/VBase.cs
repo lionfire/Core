@@ -56,7 +56,7 @@ namespace LionFire.Vos
         /// <typeparam name="T"></typeparam>
         /// <param name="reference"></param>
         /// <returns></returns>
-        public override async Task<IRetrieveResult<T>> TryGet<T>(VobReference reference)
+        public override async Task<IGetResult<T>> TryGet<T>(VobReference reference)
         {
             var result = new RetrieveResult<T>();
 
@@ -90,14 +90,14 @@ namespace LionFire.Vos
 
 #region Set
 
-        protected override Task<IPersistenceResult> SetImpl<T>(VobReference reference, T obj, bool allowOverwrite = true) => throw new NotImplementedException();
+        protected override Task<ISetResult<TValue>> SetImpl<T>(VobReference reference, T obj, bool allowOverwrite = true) => throw new NotImplementedException();
 
 #endregion
 
 #region Delete
 
-        public override Task<IPersistenceResult> CanDelete<T>(VobReference reference) => throw new NotImplementedException();
-        public override Task<IPersistenceResult> TryDelete<T>(VobReference reference) => throw new NotImplementedException();
+        public override Task<ITransferResult> CanDelete<T>(VobReference reference) => throw new NotImplementedException();
+        public override Task<ITransferResult> TryDelete<T>(VobReference reference) => throw new NotImplementedException();
 
 #endregion
 

@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>netstandard2.0</TargetFramework>
+    <TargetFramework>net6.0</TargetFramework>
     <LangVersion>latest</LangVersion>
     <AssemblyName>LionFire.UI</AssemblyName>
     <PackageId>LionFire.UI</PackageId>
@@ -9,23 +9,33 @@
     <GenerateAssemblyCompanyAttribute>false</GenerateAssemblyCompanyAttribute>
     <GenerateAssemblyProductAttribute>false</GenerateAssemblyProductAttribute>
     <RootNamespace>LionFire</RootNamespace>
+	<Nullable>enable</Nullable>
   </PropertyGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\LionFire.Applications.Abstractions\LionFire.Applications.Abstractions.csproj" />
     <ProjectReference Include="..\LionFire.Core.Extras.Abstractions\LionFire.Core.Extras.Abstractions.csproj" />
-    <ProjectReference Include="..\LionFire.Core.Extras\LionFire.Core.Extras.csproj" />
     <ProjectReference Include="..\LionFire.Core\LionFire.Core.csproj" />
+    <ProjectReference Include="..\LionFire.DependencyMachines.Abstractions\LionFire.DependencyMachines.Abstractions.csproj" />
+    <ProjectReference Include="..\LionFire.DependencyMachines\LionFire.DependencyMachines.csproj" />
     <ProjectReference Include="..\LionFire.Execution.Abstractions\LionFire.Execution.Abstractions.csproj" />
     <ProjectReference Include="..\LionFire.Execution\LionFire.Execution.csproj" />
     <ProjectReference Include="..\LionFire.Instantiating.Abstractions\LionFire.Instantiating.Abstractions.csproj" />
     <ProjectReference Include="..\LionFire.Instantiating\LionFire.Instantiating.csproj" />
+    <ProjectReference Include="..\LionFire.Metadata\LionFire.Metadata.csproj" />
   </ItemGroup>
 
   <ItemGroup>
+    <Folder Include="Metadata\" />
     <Folder Include="Nodes\" />
     <Folder Include="Shell\Presenters\" />
     <Folder Include="Shell\Views\" />
+    <Folder Include="ViewModels\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="CircularBuffer" />
+    <PackageReference Include="MediatR" />
   </ItemGroup>
 
 </Project>

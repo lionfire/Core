@@ -65,6 +65,10 @@
     <None Include="app.config" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\LionFire.Applications\LionFire.Applications.csproj">
+      <Project>{E4B27AE8-25AF-4F17-B857-BF2EDEC416A9}</Project>
+      <Name>LionFire.Applications</Name>
+    </ProjectReference>
     <ProjectReference Include="..\LionFire.Core\LionFire.Core.csproj">
       <Project>{62e82f33-2263-49a2-8a81-1403ab343ef1}</Project>
       <Name>LionFire.Core</Name>

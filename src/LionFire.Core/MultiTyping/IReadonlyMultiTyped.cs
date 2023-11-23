@@ -10,7 +10,7 @@ namespace LionFire.MultiTyping
     {
         //T AsType<T>() where T : class;
 
-        object this[Type type] { get; }
+        object? this[Type type] { get; }
 
         IEnumerable<object> SubTypes { get; } // TODO - change to IEnumerable<object>
 

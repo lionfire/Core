@@ -1,7 +1,7 @@
-﻿<Project Sdk="Microsoft.NET.Sdk.Razor">
+<Project Sdk="Microsoft.NET.Sdk.Razor">
 
   <PropertyGroup>
-    <TargetFramework>net5.0</TargetFramework>
+    <TargetFramework>net8.0</TargetFramework>
     <OutputType>Library</OutputType>
     <RazorLangVersion>3.0</RazorLangVersion>
     <AddRazorSupportForMvc>true</AddRazorSupportForMvc>
@@ -12,17 +12,17 @@
   </ItemGroup>
   
   <ItemGroup>    
-    <PackageReference Include="Blazorise.Bootstrap" Version="0.9.3" />    
-    <PackageReference Include="LiveSharp" Version="2.0.13" />    
-    <PackageReference Include="Microsoft.AspNetCore.Components.Web" Version="5.0.6" />
-    <PackageReference Include="Microsoft.AspNetCore.WebUtilities" Version="2.2.0" />
-    <PackageReference Include="Microsoft.AspNetCore.Mvc.Razor.RuntimeCompilation" Version="5.0.3" />
-    <PackageReference Include="MudBlazor" Version="5.0.9" />
+    <PackageReference Include="BlazorMonaco" />    
+    <PackageReference Include="Microsoft.AspNetCore.Components.Web" />
+    <PackageReference Include="Microsoft.AspNetCore.WebUtilities" />
+    <PackageReference Include="MudBlazor" />
 
   </ItemGroup>
   
   <ItemGroup>
     <ProjectReference Include="..\LionFire.Persistence.Handles\LionFire.Persistence.Handles.csproj" />
+    <ProjectReference Include="..\LionFire.UI.Abstractions\LionFire.UI.Abstractions.csproj" />
+    <ProjectReference Include="..\LionFire.Vos.UI\LionFire.Vos.UI.csproj" />
     <ProjectReference Include="..\LionFire.Vos\LionFire.Vos.csproj" />
   </ItemGroup>
   

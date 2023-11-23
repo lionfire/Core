@@ -1,6 +1,6 @@
 ﻿#if false // Deferring to ILazilyResolvesFallbackExtensions
 using System.Threading.Tasks;
-using LionFire.Resolves;
+using LionFire.Data.Async.Gets;
 using LionFire.Results;
 
 namespace LionFire.Persistence // Put in LionFire.ExtensionMethods.Persistence namespace?
@@ -9,19 +9,19 @@ namespace LionFire.Persistence // Put in LionFire.ExtensionMethods.Persistence n
     {
 
         /// <summary>
-        /// Fallback to provide ILazilyResolves<T>.Get to RH<T>
-        /// Also makes Object return value strongly typed for the covariant ILazilyResolves.
+        /// Fallback to provide ILazilyGets<T>.Get to RH<T>
+        /// Also makes Object return value strongly typed for the covariant ILazilyGets.
         /// </summary>
         /// <typeparam name="TValue"></typeparam>
         /// <param name="rh"></param>
         /// <returns></returns>
-        public static async Task<IResolveResult<TValue>> GetValue<TValue>(this IReadHandleBase<TValue> rh) // RENAME: TryResolveNonNull
+        public static async Task<IGetResult<TValue>> GetValue<TValue>(this IReadHandleBase<TValue> rh) // RENAME: TryResolveNonNull
                 where TValue : class // REVIEW
         {
             //if (rh == null) return (false, default); OLD
             if (rh == null) return NoopFailResolveResult<TValue>.Instance;
 
-            if (rh is ILazilyResolves<TValue> lr)
+            if (rh is ILazilyGets<TValue> lr)
             {
                 return await lr.GetValue().ConfigureAwait(false);
                 //return (result.HasValue, result.Value);
@@ -35,7 +35,7 @@ namespace LionFire.Persistence // Put in LionFire.ExtensionMethods.Persistence n
                 }
                 else
                 {
-                    return await rh.Retrieve().ConfigureAwait(false);
+                    return await rh.Get().ConfigureAwait(false);
                 }
                 //return (obj != default, obj);  OLD
             }

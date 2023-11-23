@@ -3,7 +3,7 @@ using LionFire.Collections;
 using LionFire.ObjectBus.Handles;
 using LionFire.Persistence;
 using LionFire.Persistence.Filesystem;
-using LionFire.Resolves;
+using LionFire.Data.Async.Gets;
 using MorseCode.ITask;
 using System;
 using System.Collections.Generic;
@@ -45,7 +45,7 @@ namespace LionFire.ObjectBus.Filesystem
 
         
 
-        protected override async ITask<IResolveResult<INotifyingReadOnlyCollection<FsListEntry>>> ResolveImpl()
+        protected override async ITask<IGetResult<INotifyingReadOnlyCollection<FsListEntry>>> GetImpl(CancellationToken cancellationToken = default)
         {
             var dir = Reference.Path;
 
@@ -61,7 +61,7 @@ namespace LionFire.ObjectBus.Filesystem
                     // OPTIMIZE: Use RetrieveResult<T>.NotFound
                     return new RetrieveResult<INotifyingReadOnlyCollection<FsListEntry>>
                     {
-                        Flags = PersistenceResultFlags.NotFound
+                        Flags = TransferResultFlags.NotFound
                     };
                 }
 

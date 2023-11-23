@@ -9,6 +9,7 @@ namespace LionFire.Persistence.Redis
     public class RedisHandleProvider :
 
         IReadHandleProvider<IRedisReference>
+        , IReadHandleProvider
         , IReadWriteHandleProvider<IRedisReference>
 
         , IReadWriteHandleProvider // REVIEW
@@ -29,8 +30,8 @@ namespace LionFire.Persistence.Redis
 
         #region IRedisReference
 
-        public IReadHandle<T> GetReadHandle<T>(IRedisReference reference, T preresolvedValue = default)
-            => new PersisterReadHandle<RedisReference<T>, T, IPersister<IRedisReference>>(persister, (IReference<T>) reference, preresolvedValue);
+        public IReadHandle<T> GetReadHandle<T>(IRedisReference reference)
+            => new PersisterReadHandle<RedisReference<T>, T, IPersister<IRedisReference>>(persister, (IReference<T>) reference);
         public IReadWriteHandle<T> GetReadWriteHandle<T>(IRedisReference reference, T? preresolvedValue = default)
             => new PersisterReadWriteHandle<IRedisReference, T, IPersister<IRedisReference>>(persister, (IReference<T>)reference, preresolvedValue);
         public IWriteHandle<T> GetWriteHandle<T>(IRedisReference reference, T prestagedValue = default) => GetReadWriteHandle<T>(reference, prestagedValue);
@@ -41,23 +42,23 @@ namespace LionFire.Persistence.Redis
 
 
 
-        IReadHandle<T>? IReadHandleProvider.GetReadHandle<T>(IReference reference, T preresolvedValue) => (reference is RedisReference<T> redisReference) ? GetReadHandle<T>(redisReference, preresolvedValue) : null;
+        IReadHandle<T>? IReadHandleProvider.GetReadHandle<T>(IReference reference) => (reference is RedisReference<T> redisReference) ? GetReadHandle<T>(redisReference) : null;
         IReadWriteHandle<T>? IReadWriteHandleProvider.GetReadWriteHandle<T>(IReference reference, T preresolvedValue) => (reference is RedisReference<T> redisReference) ? GetReadWriteHandle<T>(redisReference, preresolvedValue) : null;
         IWriteHandle<T>? IWriteHandleProvider.GetWriteHandle<T>(IReference reference, T prestagedValue) => (reference is RedisReference<T> redisReference) ? GetWriteHandle<T>(redisReference, prestagedValue) : null;
 
         #endregion
 
-        //public IReadWriteHandle<T> GetReadWriteHandle<T>(RedisReference<T> reference, T? preresolvedValue = default)
-            //=> new PersisterReadWriteHandle<RedisReference<T>, T, IPersister<IRedisReference>>(persister, reference, preresolvedValue);
+        //public IReadWriteHandle<TValue> GetReadWriteHandle<TValue>(RedisReference<TValue> reference, TValue? preresolvedValue = default)
+            //=> new PersisterReadWriteHandle<RedisReference<TValue>, TValue, IPersister<IRedisReference>>(persister, reference, preresolvedValue);
 
         
 
-        //public IReadHandle<T> GetReadHandle<T>(ProviderRedisReference reference, T preresolvedValue = default)
-            //=> new PersisterReadWriteHandle<ProviderRedisReference, T, IPersister<ProviderRedisReference>>(providerRedisPersisterProvider.GetPersister(reference.Persister), reference, preresolvedValue);
-        //public IReadHandle<T> GetReadWriteHandle<T>(ProviderRedisReference reference)
-        //        => new PersisterReadWriteHandle<ProviderRedisReference, T, IPersister<ProviderRedisReference>>(providerRedisPersisterProvider.GetPersister(reference.Persister), reference);
+        //public IReadHandle<TValue> GetReadHandle<TValue>(ProviderRedisReference reference, TValue preresolvedValue = default)
+            //=> new PersisterReadWriteHandle<ProviderRedisReference, TValue, IPersister<ProviderRedisReference>>(providerRedisPersisterProvider.GetPersister(reference.Persister), reference, preresolvedValue);
+        //public IReadHandle<TValue> GetReadWriteHandle<TValue>(ProviderRedisReference reference)
+        //        => new PersisterReadWriteHandle<ProviderRedisReference, TValue, IPersister<ProviderRedisReference>>(providerRedisPersisterProvider.GetPersister(reference.Persister), reference);
 
-        //IReadHandle<T> IReadHandleProvider<RedisReference>.GetReadHandle<T>(RedisReference reference) => throw new System.NotImplementedException();
+        //IReadHandle<TValue> IReadHandleProvider<RedisReference>.GetReadHandle<TValue>(RedisReference reference) => throw new System.NotImplementedException();
 
         
         

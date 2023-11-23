@@ -1,0 +1,11 @@
+.Value.null {
+    color: #ff4;
+    background-color: #00ffff;
+    font-style: italic;
+}
+
+td.Expander {
+    max-width: 50px;
+    width: 50px;
+}
+

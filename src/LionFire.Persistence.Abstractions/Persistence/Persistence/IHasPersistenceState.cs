@@ -1,11 +1,9 @@
-﻿namespace LionFire.Persistence
+﻿namespace LionFire.Persistence;
+
+
+public interface IHasPersistenceStateEvents
 {
-
-    public interface IHasPersistenceStateEvents
-    {
-        event PersistenceStateChangeHandler StateChanged;
-    }
-
-    public delegate void PersistenceStateChangeHandler(PersistenceFlags from, PersistenceFlags to);
-
+    event PersistenceStateChangeHandler StateChanged;
 }
+
+public delegate void PersistenceStateChangeHandler(PersistenceFlags from, PersistenceFlags to);

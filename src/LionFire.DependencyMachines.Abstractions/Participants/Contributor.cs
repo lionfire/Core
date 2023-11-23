@@ -1,6 +1,6 @@
 ﻿// DEPRECATED - use Contributes instead
 //using LionFire.Collections.Concurrent;
-//using LionFire.Resolves;
+//using LionFire.Data.Async.Gets;
 //using System;
 //using System.Collections.Generic;
 //using System.Linq;

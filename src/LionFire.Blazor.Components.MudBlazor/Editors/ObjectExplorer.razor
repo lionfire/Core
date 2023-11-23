@@ -1,0 +1,347 @@
+﻿@page "/objects"
+@page "/explorer"
+@page "/explorer/{*RootName}"
+@inject IServiceProvider serviceProvider
+@inject IOptionsMonitor<ObjectExplorerRoots> RootsOptions
+@inject ILogger<ObjectExplorer> Logger
+@using LionFire.UI
+@using Microsoft.Extensions.Logging
+@using System.Reflection;
+@using Microsoft.Extensions.Options
+@using MudBlazor
+@using global::MudBlazor.Dialog
+
+@namespace LionFire.Blazor.Components.MudBlazor_
+
+<div class="ObjectExplorer">
+
+
+    <MudIconButton Icon="@Icons.Material.Filled.ArrowBackIos" Style="@("opacity:" + (History.Count == 0 ? "0.2" : "1"))" @onclick=@Back></MudIconButton>
+    <MudIconButton Icon="@Icons.Material.Filled.ArrowForwardIos" Style="@("opacity:" + (ForwardHistory.Count == 0 ? "0.2" : "1"))" @onclick=@Forward></MudIconButton>
+    <MudIconButton Icon="@Icons.Material.Filled.Refresh" @onclick=@Refresh></MudIconButton>
+    <MudIconButton Icon="@Icons.Material.Filled.ArrowDownward" @onclick=@DepthDecrease></MudIconButton>
+    <MudIconButton Icon="@Icons.Material.Filled.ArrowUpward" @onclick=@DepthIncrease></MudIconButton>
+
+    <MudItem>
+        <MudNumericField @bind-Value="MemberDepth" Label="Depth" Variant="Variant.Outlined" Margin="Margin.Dense" />
+    </MudItem>
+    @{
+        bool isFirst = false;
+    }
+
+    @foreach (var pathChunk in BreadCrumbPath.Reverse())
+    {
+        if (isFirst)
+        {
+            isFirst = false;
+        }
+        else
+        {
+            <span style="opacity: 0.5; font-size: 24px; position: relative; bottom: -4px;">&nbsp;/&nbsp;</span>
+        }
+        <span>@pathChunk</span>
+    }
+
+    @if (CurrentObject == null)
+    {
+        <div>(No object)</div>
+    }
+    else if (!CurrentObject.GetType().GetProperties().Any())
+    {
+        <div>No properties</div>
+    }
+    else
+    {
+        <table class="PropertyGrid">
+            @foreach (var mi in CurrentObject.GetType().GetMethods(BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance))
+            {
+                if (MemberDepth > 0 && GetMemberDepth(CurrentObject, mi) > MemberDepth) continue;
+                if (!CanRun(mi)) { continue; }
+                Color color = mi.IsPublic ? Color.Default : Color.Default;
+                Variant variant = mi.IsPublic ? Variant.Outlined : Variant.Filled;
+
+                <tr>
+                    <td>
+                        <div>
+                            @*<div style="margin-right: 10px;">*@
+                            @*<MudAvatar Size="Size.Small" Color="color">M</MudAvatar>*@
+                            <MudChip Size="Size.Small" Color="color" Variant="variant">M</MudChip>
+
+                        </div>
+                    </td>
+                    <td>
+                        @mi.Name
+                    </td>
+                    <td style="width: 10px;"></td>
+                    <td>
+                        <MudTooltip Text="@(mi.ReturnType.GetType().Name)">
+                            @if (CanRun(mi))
+                            {
+                                <MudButton class="Method" @onclick="@(e => mi.Invoke(CurrentObject, null))">Execute</MudButton>
+                            }
+                        </MudTooltip>
+                    </td>
+                    <td>
+                    </td>
+                </tr>
+            }
+
+            @foreach (var mi in CurrentObject.GetType().GetProperties(BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic).Cast<MemberInfo>()
+           .Concat(CurrentObject.GetType().GetFields(BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic))
+           )
+            {
+                if (MemberDepth > 0 && GetMemberDepth(CurrentObject, mi) > MemberDepth) continue;
+
+                if (!CanShow(mi)) { continue; }
+                var pi = mi as PropertyInfo;
+                var fi = mi as FieldInfo;
+
+
+                object val;
+                if (pi != null) val = pi.GetValue(CurrentObject);
+                else val = fi.GetValue(CurrentObject);
+
+                var miType = pi != null ? pi.PropertyType : fi.FieldType;
+
+                bool isPublic = pi != null ? pi.GetGetMethod().IsPublic : fi.IsPublic;
+                Color color = isPublic ? Color.Default : Color.Default;
+                Variant variant = isPublic ? Variant.Outlined : Variant.Filled;
+
+                <tr>
+                    <td>
+                        <div style="margin-right: 10px;">
+                            @if (pi != null)
+                            {
+                                @*<MudAvatar Size="Size.Small" Color="color">P</MudAvatar>*@
+                                <MudChip Size="Size.Small" Color="color" Variant="variant">P</MudChip>
+                            }
+                            else
+                            {
+                                @*<MudAvatar Size="Size.Small" Color="color">F</MudAvatar>*@
+                                <MudChip Size="Size.Small" Color="color" Variant="variant">F</MudChip>
+                            }
+                        </div>
+                    </td>
+                    <td>
+                        @mi.Name
+                    </td>
+                    <td style="width: 10px;"></td>
+                    <td>
+                        <MudTooltip Text="@(val?.GetType().Name ?? miType.Name)">
+                            @if (CanOpen(val))
+                            {
+                                <a href="#" class="@(CanOpen(val) ? "CanOpen" : "")" @onclick="@(e => Push(val, mi.Name))" @onclick:preventDefault="true">@val</a>
+                            }
+                            else
+                            {
+                                @val
+                            }
+                        </MudTooltip>
+                    </td>
+                    <td>
+                    </td>
+                </tr>
+            }
+
+            @if (CurrentObject is System.Collections.IEnumerable e)
+            {
+                <h6>Items:</h6>
+                int count = 0;
+                foreach (var item in e)
+                {
+                    Color color = Color.Default;
+                    Variant variant = Variant.Outlined;
+
+                    <tr>
+                        <td>
+                            <div>
+                                @*<MudAvatar Size="Size.Small" Color="color">M</MudAvatar>*@
+                                <MudChip Size="Size.Small" Color="color" Variant="variant">-</MudChip>
+
+                            </div>
+                        </td>
+                        <td>
+                            @count
+                        </td>
+                        <td style="width: 10px;"></td>
+                        <td>
+                            <MudTooltip Text="@(item.GetType().Name)">
+                                @if (CanOpen(item))
+                                {
+                                    <a href="#" class="Method" @onclick:preventDefault="true" @onclick="@(e => Push(item, count.ToString()))">@item</a>
+                                }
+                            </MudTooltip>
+                        </td>
+                        <td>
+                        </td>
+                    </tr>
+                    count++;
+                }
+            }
+        </table>
+    }
+
+</div>
+
+@code {
+#nullable enable
+
+
+    #region CurrentObject
+
+    [Parameter]
+    public object CurrentObject
+    {
+        get => currentObject;
+        set
+        {
+            if (currentObject == value) return;
+            if (currentObject != null && currentObject is System.ComponentModel.INotifyPropertyChanged inpcDisabling)
+            {
+                inpcDisabling.PropertyChanged -= OnCurrentObjectPropertyChanged;
+            }
+            currentObject = value;
+            if (currentObject != null && currentObject is System.ComponentModel.INotifyPropertyChanged inpcEnabling)
+            {
+                inpcEnabling.PropertyChanged += OnCurrentObjectPropertyChanged;
+            }
+        }
+    }
+    private object? currentObject;
+
+    #endregion
+
+    private void OnCurrentObjectPropertyChanged(object? sender, System.ComponentModel.PropertyChangedEventArgs e)
+    {
+        InvokeAsync(() =>
+        {
+            Logger.LogTrace("OnCurrentObjectPropertyChanged");
+            Refresh();
+            StateHasChanged();
+        });
+    }
+
+
+    [Parameter]
+    public string? RootName { get; set; }
+
+    Stack<object> History = new Stack<object>();
+    Stack<string> BreadCrumbPath = new Stack<string>();
+    Stack<(object, string)> ForwardHistory = new Stack<(object, string)>();
+
+    protected override Task OnInitializedAsync()
+    {
+        var roots = RootsOptions.CurrentValue;
+        if (roots.Roots.Any() && CurrentObject == null)
+        {
+            if (RootName != null && roots.Roots.ContainsKey(RootName))
+            {
+                CurrentObject = roots.Roots[RootName];
+            }
+            if (roots.Roots.Count == 1)
+            {
+                CurrentObject = roots.Roots.Values.First();
+            }
+
+            if (CurrentObject == null)
+            {
+                if (roots.Roots.Any())
+                {
+                    CurrentObject = roots.Roots;
+                }
+            }
+        }
+
+        BreadCrumbPath.Push(CurrentObject?.GetType().FullName ?? "(null)");
+        return base.OnInitializedAsync();
+    }
+
+    public static Func<MemberInfo, bool> MemberInfoFilter = null;
+
+    bool CanShow(MemberInfo mi)
+    {
+        if (mi.Name.EndsWith("__BackingField")) { return false; }
+        if (MemberInfoFilter != null && !MemberInfoFilter(mi)) { return false; }
+        var pi = mi as PropertyInfo;
+        if (pi != null && (!pi.CanRead || pi.GetIndexParameters().Any() || pi.GetGetMethod() == null)) { return false; }
+
+        return true;
+    }
+
+    bool CanOpen(object obj)
+    {
+        return obj != null && obj.GetType() != typeof(string) && !obj.GetType().IsPrimitive && (obj.GetType().GetProperties().Any() || obj.GetType().GetFields().Any());
+    }
+
+    void Pop()
+    {
+        ForwardHistory.Push((CurrentObject, BreadCrumbPath.Pop()));
+        CurrentObject = History.Pop();
+    }
+
+    void Push(object val, string name, bool fromForward = false)
+    {
+        if (val == null) return;
+        if (!fromForward && ForwardHistory.Any() && Object.ReferenceEquals(ForwardHistory.Peek().Item1, val))
+        {
+            Forward();
+            return;
+        }
+
+        History.Push(CurrentObject);
+
+        BreadCrumbPath.Push(name);
+        CurrentObject = val;
+
+        if (!fromForward)
+        {
+            ForwardHistory.Clear();
+        }
+    }
+
+    void Back()
+    {
+        if (History.Count > 0)
+        {
+            Pop();
+        }
+    }
+
+    void Forward()
+    {
+        if (ForwardHistory.Count == 0) { return; }
+
+        var next = ForwardHistory.Pop();
+        Push(next.Item1, next.Item2, fromForward: true);
+    }
+
+    void Refresh()
+    {
+        // UNTESTED
+        var old = CurrentObject;
+        CurrentObject = string.Empty;
+        CurrentObject = old;
+    }
+
+    bool CanRun(MethodInfo mi)
+    {
+
+        if (mi.GetCustomAttribute<System.ComponentModel.BrowsableAttribute>()?.Browsable != true) return false;
+        if (mi.GetParameters().Any()) return false;
+        return true;
+    }
+
+    public int MemberDepth { get; set; } = 1;
+    void DepthIncrease() => MemberDepth++;
+    void DepthDecrease() => MemberDepth--;
+    public int GetMemberDepth(object obj, MemberInfo mi)
+    {
+        if (obj == null) return -1;
+        Type type = obj.GetType();
+        for (int i = 0; ; i++)
+        {
+            if (mi.DeclaringType == type) return i;
+            type = type.BaseType;
+        }
+    }
+}

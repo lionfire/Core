@@ -1,5 +1,4 @@
-﻿using LionFire.Structures;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 
 namespace LionFire.Notifications
 {

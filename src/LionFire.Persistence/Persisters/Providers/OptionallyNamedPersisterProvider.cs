@@ -4,16 +4,15 @@ using LionFire.Referencing;
 using Microsoft.Extensions.Options;
 using System;
 
-namespace LionFire.Persistence.Persisters
-{
-    public class OptionallyNamedPersisterProvider<TReference, TPersister,TOptions> : NamedPersisterProviderBase<TReference, TPersister, TOptions> 
-        where TReference : IReference
-        where TPersister : class, IPersister<TReference>
-    {
-        public override bool HasDefaultPersister => true;
+namespace LionFire.Persistence.Persisters;
 
-        public OptionallyNamedPersisterProvider(IServiceProvider serviceProvider, IOptionsMonitor<TOptions> options) : base(serviceProvider, options)
-        {
-        }
+public class OptionallyNamedPersisterProvider<TReference, TPersister> : NamedPersisterProviderBase<TReference, TPersister>
+    where TReference : IReference
+    where TPersister : IPersister<TReference>
+{
+    public override bool HasDefaultPersister => true;
+
+    public OptionallyNamedPersisterProvider(IServiceProvider serviceProvider) : base(serviceProvider)
+    {
     }
 }

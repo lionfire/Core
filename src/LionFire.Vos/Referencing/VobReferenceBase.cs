@@ -76,12 +76,12 @@ namespace LionFire.Vos
         //// Better/direct versions of the ObjectBus ToHandle
 
         //public VobHandle<object> GetHandle(/*object obj = null*/) => new VobHandle<object>(this);
-        //public VobHandle<T> GetHandle<T>(/*T obj = default(T)*/) => new VobHandle<T>(this);
-        ////public VobHandle<T> ToHandle<T>(this T obj) => throw new NotImplementedException("FUTURE: if obj != null, create a NamedObjectHandle and assign a random key");
+        //public VobHandle<TValue> GetHandle<TValue>(/*TValue obj = default(TValue)*/) => new VobHandle<TValue>(this);
+        ////public VobHandle<TValue> ToHandle<TValue>(this TValue obj) => throw new NotImplementedException("FUTURE: if obj != null, create a NamedObjectHandle and assign a random key");
 
         //public VobReadHandle<object> GetReadHandle(/*object obj = null*/) => new VobReadHandle<object>(this);
-        //public VobReadHandle<T> GetReadHandle<T>(/*T obj = default(T)*/) => new VobReadHandle<T>(this);
-        ////public VobReadOnlyHandle<T> ObjectToReadHandle<T>(this T obj) => throw new NotImplementedException("FUTURE: if obj != null, create a NamedObjectHandle and assign a random key");
+        //public VobReadHandle<TValue> GetReadHandle<TValue>(/*TValue obj = default(TValue)*/) => new VobReadHandle<TValue>(this);
+        ////public VobReadOnlyHandle<TValue> ObjectToReadHandle<TValue>(this TValue obj) => throw new NotImplementedException("FUTURE: if obj != null, create a NamedObjectHandle and assign a random key");
 
         //#endregion
 
@@ -201,7 +201,7 @@ namespace LionFire.Vos
 
         private void DoSetPath(string path)
         {
-            this.path = path;
+            this.path = LionPath.Normalize(path);
             persister = VosPath.GetRootNameForPath(path);
         }
 

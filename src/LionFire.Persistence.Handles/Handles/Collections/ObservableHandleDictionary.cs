@@ -1,9 +1,10 @@
 ﻿using LionFire.Persistence;
 using LionFire.Referencing;
-using LionFire.Resolves;
+using LionFire.Data.Async.Gets;
 using System;
 using System.Reflection;
 using System.Threading.Tasks;
+using LionFire.Data.Async.Sets;
 
 namespace LionFire.Persistence.Handles
 {
@@ -42,7 +43,7 @@ namespace LionFire.Persistence.Handles
         /// <returns></returns>
         public async Task<THandle> Set(TValue obj, string key = null) 
         {
-            //if (!IsWritable) throw new ReadOnlyException("THandle does not implement IWriteHandle<T>");
+            //if (!IsWritable) throw new ReadOnlyException("THandle does not implement IWriteHandle<TValue>");
 
             THandle handle;
             if (key == null)
@@ -57,9 +58,9 @@ namespace LionFire.Persistence.Handles
             var writable = (IWriteHandleBase<TValue>)handle;
             writable.Value = obj;
 
-            if (handle is IPuts saveable)
+            if (handle is ISetter saveable)
             {
-                await saveable.Put().ConfigureAwait(false);
+                await saveable.Set().ConfigureAwait(false);
             }
             return handle;
         }

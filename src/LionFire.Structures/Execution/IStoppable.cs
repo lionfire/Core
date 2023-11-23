@@ -8,6 +8,6 @@ namespace LionFire.Execution
 {
     public interface IStoppable
     {
-        Task StopAsync(CancellationToken? cancellationToken = null);
+        Task StopAsync(CancellationToken cancellationToken = default);
     }
 }

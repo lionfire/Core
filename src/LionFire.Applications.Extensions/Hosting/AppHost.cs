@@ -37,7 +37,7 @@ namespace LionFire.Applications.Hosting
 
         #region MultiType
 
-        protected readonly MultiType multiType = new MultiType();
+        protected readonly MultiTyped multiType = new MultiTyped();
 
         // REVIEW - Not sure this is needed or a good idea
         T SReadOnlyMultiTyped.AsType<T>()
@@ -61,7 +61,7 @@ namespace LionFire.Applications.Hosting
                     //}
                     //else
                     //{
-                    //    return ServiceProvider.GetService<T>();
+                    //    return ServiceProvider.GetService<TValue>();
                     //}
                     return null;
             }

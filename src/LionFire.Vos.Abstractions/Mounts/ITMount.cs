@@ -5,7 +5,7 @@ namespace LionFire.Vos.Mounts
     public interface ITMount
     {
         IVobReference MountPoint { get; set; }
-        IMountOptions Options { get; set; }
+        IVobMountOptions Options { get; set; }
         IReference Reference { get; set; }
     }
 }

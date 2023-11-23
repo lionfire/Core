@@ -1,5 +1,5 @@
 ﻿using LionFire.Persistence;
-using LionFire.Resolves;
+using LionFire.Data.Async.Gets;
 using MorseCode.ITask;
 using System;
 using System.IO;
@@ -19,15 +19,15 @@ namespace LionFire.IO
 
         #endregion
 
-        protected override ITask<IResolveResult<Stream>> ResolveImpl()
+        protected override ITask<IGetResult<Stream>> GetImpl(CancellationToken cancellationToken = default)
         {
             var stream = new FileStream(Path, FileMode.Open, FileAccess.Read, FileShare.Read);
-            return Task.FromResult((IResolveResult<Stream>)RetrieveResult<Stream>.Success(stream)).AsITask();
+            return Task.FromResult((IGetResult<Stream>)RetrieveResult<Stream>.Success(stream)).AsITask();
         }
 
         public override void Dispose()
         {
-            var obj = base.ProtectedValue;
+            var obj = base.ReadCacheValue;
             if (obj != null)
             {
                 DiscardValue();

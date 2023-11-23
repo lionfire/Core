@@ -1,0 +1,20 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net6.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+		<RootNamespace>LionFire</RootNamespace>
+	  <!--<DefineConstants>NORPC</DefineConstants>-->
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Folder Include="Stubs\LionRing\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\..\valor\src\lidgren-network-gen3\Lidgren.Network.NetCore\Lidgren.Network.NetCore.csproj" />
+    <ProjectReference Include="..\LionFire.Structures\LionFire.Structures.csproj" />
+  </ItemGroup>
+
+</Project>

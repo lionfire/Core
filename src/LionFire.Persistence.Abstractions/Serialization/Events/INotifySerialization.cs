@@ -1,22 +1,19 @@
 ﻿using LionFire.Referencing;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 
-namespace LionFire.Serialization
+namespace LionFire.Serialization;
+
+public interface INotifyDeserialized
 {
-    public interface INotifyDeserialized
-    {
-        //void OnSerializing();
-        //void OnSerialized();
-        void OnDeserialized();
-    }
-    public interface INotifyReferenceDeserialized<TReference>
-        where TReference : IReference
-    {
-        //void OnSerializing();
-        //void OnSerialized();
-        void OnDeserialized(TReference reference);
-    }
+    //void OnSerializing();
+    //void OnSerialized();
+    void OnDeserialized();
+}
+
+// TODO: Replace parameters with PersistenceOperation, which includes Reference
+public interface INotifyReferenceDeserialized<TReference>
+    where TReference : IReference
+{
+    //void OnSerializing();
+    //void OnSerialized();
+    void OnDeserialized(TReference reference);
 }

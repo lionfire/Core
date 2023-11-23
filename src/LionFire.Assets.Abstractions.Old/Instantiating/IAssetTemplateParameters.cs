@@ -75,6 +75,8 @@ namespace LionFire.Assets
         public object OverlayParent { get => null; set => throw new NotSupportedException(); }
 
         public IEnumerable<IEnumerable<IInstantiation>> OverlayTargets => Enumerable.Empty<IEnumerable<IInstantiation>>();
+
+        public IReadHandleBase<ITemplate> RTemplate => throw new NotImplementedException();
     }
 
     //public abstract class TemplateParameters : ITemplateParameters

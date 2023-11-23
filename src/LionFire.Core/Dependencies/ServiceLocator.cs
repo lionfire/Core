@@ -1,4 +1,5 @@
-﻿using LionFire.Reflection;
+﻿// Obligatory: https://blog.ploeh.dk/2010/02/03/ServiceLocatorisanAnti-Pattern/
+using LionFire.Reflection;
 using LionFire.Structures;
 using Microsoft.Extensions.DependencyInjection;
 using System;
@@ -363,7 +364,7 @@ namespace LionFire.Reflection
         /// <summary>
         /// Special type used to match any generic parameter type in GetMethodExt().
         /// </summary>
-        public class T
+        public class MatchAnyGenericParameter
         { }
 
         /// <summary>
@@ -385,9 +386,9 @@ namespace LionFire.Reflection
                 return thisType.GetElementType().IsSimilarType(type.GetElementType());
 
             // If the types are identical, or they're both generic parameters 
-            // or the special 'T' type, treat as a match
-            if (thisType == type || ((thisType.IsGenericParameter || thisType == typeof(T))
-                                 && (type.IsGenericParameter || type == typeof(T))))
+            // or the special 'MatchAnyGenericParameter' type, treat as a match
+            if (thisType == type || ((thisType.IsGenericParameter || thisType == typeof(MatchAnyGenericParameter))
+                                 && (type.IsGenericParameter || type == typeof(MatchAnyGenericParameter))))
                 return true;
 
             // Handle any generic arguments

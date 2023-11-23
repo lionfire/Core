@@ -136,11 +136,26 @@ namespace LionFire.Redis
             #endregion
 
             isConnectionDesired = true;
-            logger.LogDebug($"[CONNECTING] Connecting to redis at {ConnectionString}...");
+            var msg = $"[CONNECTING] Connecting to redis at {ConnectionString ?? "null"}...";
+            if (ConnectionString == null)
+            {
+                logger.LogError(msg);
+            }
+            else
+            {
+                logger.LogDebug(msg);
+            }
             connectingTask = ConnectionMultiplexer.ConnectAsync(ConnectionString);
             redis = connectingTask.Result;
             connectingTask = null;
-            logger.LogInformation($"[connected] ...connected to redis at {ConnectionString}");
+            var connectionStringSanitized = ConnectionString;
+            var pwIndex = connectionStringSanitized.IndexOf("password=");
+            if (pwIndex > -1)
+            {
+                connectionStringSanitized = connectionStringSanitized.Substring(0, pwIndex);
+            }
+
+            logger.LogInformation($"[connected] ...connected to redis at {connectionStringSanitized}");
         }
 
         public override async Task DisconnectImpl(CancellationToken cancellationToken = default(CancellationToken))

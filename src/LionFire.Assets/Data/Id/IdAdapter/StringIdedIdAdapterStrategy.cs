@@ -7,7 +7,7 @@ namespace LionFire.Data.Id
     {
         public (bool, string) TryGetId(object obj)
         {
-            if (obj is IIded<string> k)
+            if (obj is IIdentified<string> k)
             {
                 return (true, k.Id);
             }

@@ -16,7 +16,7 @@ namespace LionFire.DependencyMachines
         public static object RootDependency { get; } = new object();
 
         /// <summary>
-        /// Default: Throw.  Recommend changing to Disable in application initialization frameworks once the implications are understood.
+        /// Default: ToException.  Recommend changing to Disable in application initialization frameworks once the implications are understood.
         /// </summary>
         public OrphanedStagePolicy OrphanedStagePolicy { get; set; }
             //= OrphanedStagePolicy.Execute;

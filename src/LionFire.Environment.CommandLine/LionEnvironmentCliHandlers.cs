@@ -26,13 +26,14 @@ namespace LionFire.Environment
         [CliDescription("Prints the version info for the program.")]
         public static void Version()
         {
-            var sb = new StringBuilder();
-            sb.Append(LionFireEnvironment.ProgramName);
-            sb.Append(" ");
-            sb.Append(LionFireEnvironment.MainAppInfo.ProgramVersion);
-            sb.AppendLine();
+            throw new NotImplementedException();
+            //var sb = new StringBuilder();
+            //sb.Append(LionFireEnvironment.ProgramName);
+            //sb.Append(" ");
+            //sb.Append(LionFireEnvironment.MainAppInfo.ProgramVersion);
+            //sb.AppendLine();
 
-            Console.WriteLine(sb.ToString());
+            //Console.WriteLine(sb.ToString());
         }
     }
 }

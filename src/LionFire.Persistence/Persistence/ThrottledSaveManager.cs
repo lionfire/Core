@@ -3,7 +3,8 @@ using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using LionFire.Structures;
-using LionFire.Resolves;
+using LionFire.Data.Async.Gets;
+using LionFire.Data.Async.Sets;
 
 namespace LionFire.Persistence
 {
@@ -74,22 +75,22 @@ namespace LionFire.Persistence
         {
             lock (saveLock)
             {
-                HashSet<IPuts> saved = new HashSet<IPuts>();
+                HashSet<ISetter> saved = new HashSet<ISetter>();
 
                 if (queue.Count > 0)
                 {
-                    while (queue.TryDequeue(out IPuts item))
+                    while (queue.TryDequeue(out ISetter item))
                     {
                         if (saved.Contains(item))
                         {
                             continue;
                         }
 
-                        if (item is IPuts h)
+                        if (item is ISetter h)
                         {
                             try
                             {
-                                h.Put();
+                                h.Set();
                                 l.Trace("UNTESTED - Delay saved " + item.ToString());
                             }
                             catch (Exception ex)
@@ -115,9 +116,9 @@ namespace LionFire.Persistence
 
         #region Manual Change Notifications
 
-        private ConcurrentQueue<IPuts> queue = new ConcurrentQueue<IPuts>();
+        private ConcurrentQueue<ISetter> queue = new ConcurrentQueue<ISetter>();
 
-        public void OnChanged(IPuts obj)
+        public void OnChanged(ISetter obj)
         {
             queue.Enqueue(obj);
             timer.Enabled = true;

@@ -1,7 +1,6 @@
-﻿namespace LionFire.Structures
+﻿namespace LionFire.Structures;
+
+public interface IKeyGenerator<TKey, TObject>
 {
-    public interface IKeyGenerator<TKey, TObject>
-    {
-        TKey GetKey(TObject obj);
-    }
+    TKey GetKey(TObject obj);
 }

@@ -1,12 +1,10 @@
-﻿using LionFire.Data;
-using System;
+﻿using System;
 
-namespace LionFire.RethinkDB
+namespace LionFire.RethinkDB;
+
+public class RethinkDBOptions : ConnectionOptions<RethinkDBOptions>
 {
-    public class RethinkDBOptions : ConnectionOptions<RethinkDBOptions>
-    {
-        public string Host { get; set; }
-        public int Port { get; set; } = 28015;
-        public int TimeoutSeconds { get; set; } = 60;
-    }
+    public string Host { get; set; }
+    public int Port { get; set; } = 28015;
+    public int TimeoutSeconds { get; set; } = 60;
 }

@@ -1,17 +1,18 @@
-﻿@using LionFire.UI.Workspaces
+﻿@using LionFire.Blazor.Components.Menus
+@using LionFire.UI.Workspaces
 @using System.Diagnostics 
 @*@inject IWorkspaceViewProvider  WorkspaceViewProvider*@
 @inject IWorkspaceProvider WorkspaceProvider
 @inject ILogger<WorkspaceNavMenu> Logger
 @using System.Collections.Specialized
 @inject LionFire.Referencing.IUrlProvider UrlProvider
-@implements INotificationHandler<LionFire.LiveSharp.UpdatedMethodNotification>
 @using System.Threading
 @using MediatR 
-@using LionFire.LiveSharp 
-@inject LiveSharpNotifier LiveSharpNotifier
 
-@*<h2>test 9      </h2>*@
+@*@implements INotificationHandler<LionFire.LiveSharp.UpdatedMethodNotification>*@
+@*@using LionFire.LiveSharp *@
+@*@inject LiveSharpNotifier LiveSharpNotifier*@
+
 @*<li>*@
     @*<small>(Workspace @WorkspaceKey)</small>*@
 
@@ -24,11 +25,9 @@
         @*<ul>*@  
             @foreach (var item in Workspace.Items)
             {
-                <li class="nav-item px-3" @key="item.Key">
-                    <NavLink class="nav-link" href="@UrlProvider.GetUrl(item.Value)" Match="NavLinkMatch.All">
-                        @*<span class="oi oi-list-rich" aria-hidden="true"></span>*@ @((item.Value as IDisplayNamed)?.DisplayName ?? item.Key)
-                    </NavLink>
-                </li>
+                <NavMenuItem Href="@item.Value" >
+                    @((item.Value as IDisplayNamed)?.DisplayName ?? item.Key)
+                </NavMenuItem>
             }
         @*</ul>*@
     }
@@ -41,13 +40,12 @@
 
     //public WorkspaceView WorkspaceView { get; set; }
 
-
-
     //, INotificationHandler<UpdatedResourceNotification>
 
     //Task INotificationHandler<UpdatedMethodNotification>.Handle(UpdatedMethodNotification notification, CancellationToken cancellationToken)
     //    => UltralightUIScript.Instance?.OnUpdatedMethodNotification(notification);
 
+    #if LiveSharp
     Task INotificationHandler<UpdatedMethodNotification>.Handle(UpdatedMethodNotification notification, CancellationToken cancellationToken)
     {
         try
@@ -79,9 +77,12 @@
         //return Task.CompletedTask;
 
     }
+    #endif
 
     protected override Task OnInitializedAsync() {
+        #if LiveSharp
         LiveSharpNotifier.MethodChanged += _ => StateHasChanged();
+        #endif
         return Task.CompletedTask;
     }
 

@@ -1,0 +1,78 @@
+﻿@implements IDisposable
+@using LionFire.Inspection.ViewModels
+
+@namespace LionFire.Blazor.Components.MudBlazor_.PropertyGrid
+
+@if (Style == BoolEditorStyle.Switch)
+{
+    <MudSwitch @bind-Checked="Value" ReadOnly=@(!SupportsWriting) />
+}
+else if (Style == BoolEditorStyle.CheckBox)
+{
+    <MudCheckBox @bind-Checked="Value" ReadOnly=@(!SupportsWriting) />
+}
+else if (Style == BoolEditorStyle.ToggleButton)
+{
+    <MudToggleIconButton @bind-Checked="Value" ReadOnly=@(!SupportsWriting) />
+}
+else
+{
+    <div>(Unknown BoolEditorStyle)</div>
+}
+
+@code {
+    [Parameter]
+    public NodeVM NodeVM { get; set; } = null!;
+    [Parameter]
+    public InspectorValueCellVM CellVM { get; set; } = null!;
+
+    [CascadingParameter]
+    public InspectorVM? InspectorVM { get; set; }
+
+    public bool Value { get; set; }
+    public bool SupportsWriting { get; private set; }
+
+    private bool Coerce(object o) => o switch
+    {
+        bool b => b,
+        int i => i != 0,
+        _ => false,
+    };
+
+    protected override void OnParametersSet()
+    {
+        ArgumentNullException.ThrowIfNull(NodeVM);
+
+        // TODO: see if TValue is supported
+
+        if (NodeVM.AsyncValue != null)
+        {
+            bindingDisposable = NodeVM.AsyncValue.WhenAnyValue(x => x.Value).Subscribe(v => Value = Coerce(v));
+            SupportsWriting = true;
+        }
+        else if (NodeVM.Getter != null)
+        {
+            bindingDisposable = NodeVM.Getter.WhenAnyValue(x => x.ReadCacheValue).Subscribe(v => Value = Coerce(v));
+            SupportsWriting = false;
+        }
+        else if (NodeVM.Setter != null)
+        {
+            bindingDisposable = NodeVM.Getter.WhenAnyValue(x => x.Value).Subscribe(v => Value = Coerce(v));
+            SupportsWriting = true;
+        }
+        else
+        {
+            Debug.WriteLine("BoolEditor: No binding");
+        }
+    }
+    IDisposable? bindingDisposable;
+
+    public BoolEditorStyle Style { get; set; } = BoolEditorStyle.Switch;
+
+    public void Dispose()
+    {
+        bindingDisposable?.Dispose();
+        bindingDisposable = null;
+    }
+}
+

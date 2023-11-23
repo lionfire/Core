@@ -6,7 +6,7 @@ using LionFire.Assets;
 using LionFire.Persistence.Handles;
 using LionFire.Referencing;
 using LionFire.Persistence;
-using LionFire.Resolves;
+using LionFire.Data.Gets;
 using MorseCode.ITask;
 
 namespace LionFire.Persistence.Assets
@@ -58,9 +58,9 @@ namespace LionFire.Persistence.Assets
             return new AssetReadHandle<T>(assetSubPath);
         }
 
-        protected override ITask<IResolveResult<T>> ResolveImpl() => throw new NotImplementedException();
+        protected override ITask<IGetResult<T>> ResolveImpl() => throw new NotImplementedException();
 
-        //protected override ITask<IResolveResult<T>> ResolveImpl()
+        //protected override ITask<IGetResult<T>> ResolveImpl()
         //{
 
         //    throw new NotImplementedException("TODO: Convert Assets to an OBus");

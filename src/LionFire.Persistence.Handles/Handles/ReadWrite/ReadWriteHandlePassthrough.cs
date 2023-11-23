@@ -1,93 +1,128 @@
 ﻿using LionFire.Persistence;
 using LionFire.Referencing;
-using LionFire.Resolves;
+using LionFire.Data.Async.Gets;
 using LionFire.Results;
 using LionFire.Structures;
 using Microsoft.Extensions.Logging.EventSource;
 using MorseCode.ITask;
 using System;
+using System.Threading;
 using System.Threading.Tasks;
+using LionFire.Data.Async.Sets;
+using System.Reactive.Subjects;
 
-namespace LionFire.Persistence.Handles
+namespace LionFire.Persistence.Handles;
+
+/// <summary>
+/// Convenience class that combines Reference and Handle
+/// </summary>
+/// <typeparam name="TValue"></typeparam>
+/// <typeparam name="TReference"></typeparam>
+public class ReadWriteHandlePassthrough<TValue, TReference> 
+    : IReadWriteHandle<TValue>
+    , IReferencable<TReference>
+    , IHasReadWriteHandle<TValue>
+    where TReference : IReference<TValue>
 {
-    /// <summary>
-    /// Convenience class that combines Reference and Handle
-    /// </summary>
-    /// <typeparam name="TValue"></typeparam>
-    /// <typeparam name="TReference"></typeparam>
-    public class ReadWriteHandlePassthrough<TValue, TReference> : IReadWriteHandle<TValue>, IReferencable<TReference>, IHasReadWriteHandle<TValue>
-        where TReference : IReference<TValue>
+    #region Construction
+
+    public ReadWriteHandlePassthrough() { }
+    public ReadWriteHandlePassthrough(IReadWriteHandle<TValue> handle)
     {
-        #region Construction
+        this.readWriteHandle = handle;
+        Reference = (TReference)handle?.Reference;
+    }
 
-        public ReadWriteHandlePassthrough() { }
-        public ReadWriteHandlePassthrough(IReadWriteHandle<TValue> handle)
+    #endregion
+
+
+    public TReference Reference { get; set; }
+    IReference<TValue> IReferencableAsValueType<TValue>.Reference => Reference;
+
+    public IReadWriteHandle<TValue> ReadWriteHandle => readWriteHandle ??= Reference?.GetReadWriteHandle<TValue>();
+    protected IReadWriteHandle<TValue> readWriteHandle;
+
+    [Ignore]
+    public TValue Value
+    {
+        get => ReadWriteHandle.ReadCacheValue; 
+        set
         {
-            this.readWriteHandle = handle;
-            Reference = (TReference)handle?.Reference;
-        }
-
-        #endregion
-
-
-        public TReference Reference { get; set; }
-        IReference<TValue> IReferencableAsValueType<TValue>.Reference => Reference;
-
-        public IReadWriteHandle<TValue> ReadWriteHandle => readWriteHandle ??= Reference?.GetReadWriteHandle<TValue>();
-        protected IReadWriteHandle<TValue> readWriteHandle;
-
-        [Ignore]
-        public TValue Value
-        {
-            get => ReadWriteHandle.Value; set
+            if (ReadWriteHandle != null)
             {
-                if (ReadWriteHandle != null)
+                ReadWriteHandle.StagedValue = value;
+            }
+            else
+            {
+                if (Reference != null)
                 {
-                    ReadWriteHandle.Value = value;
+                    readWriteHandle = Reference.GetReadWriteHandlePrestaged<TValue>(value, overwriteValue: true).handle;
                 }
                 else
                 {
-                    if (Reference != null)
-                    {
-                        readWriteHandle = Reference.GetReadWriteHandle<TValue>(value);
-                    }
-                    else
-                    {
-                        // ENH - optional ability to detect missing Reference at set-time?
-                        //if (IsReferenceRequired)
-                        //{
-                        //    throw new Exception();
-                        //}
-                        readWriteHandle = value.GetObjectReadWriteHandle();
-                    }
+                    // ENH - optional ability to detect missing Reference at set-time?
+                    //if (IsReferenceRequired)
+                    //{
+                    //    throw new Exception();
+                    //}
+                    readWriteHandle = value.GetObjectReadWriteHandle();
                 }
             }
         }
-
-        TValue IReadWrapper<TValue>.Value => ReadWriteHandle.Value;
-
-        TValue IWriteWrapper<TValue>.Value { set => ReadWriteHandle.Value = value; }
-
-        public string Key => ReadWriteHandle.Key;
-
-        public bool HasValue => ReadWriteHandle.HasValue;
-
-        public Type Type => ReadWriteHandle.Type;
-
-        IReference IReferencable.Reference => ReadWriteHandle.Reference;
-
-        public PersistenceFlags Flags => ReadWriteHandle.Flags;
-
-
-
-        public ITask<ILazyResolveResult<TValue>> TryGetValue() => ReadWriteHandle.TryGetValue();
-        public ITask<IResolveResult<TValue>> GetOrInstantiateValue() => ReadWriteHandle.GetOrInstantiateValue();
-        public ILazyResolveResult<TValue> QueryValue() => ReadWriteHandle.QueryValue();
-        public Task<ISuccessResult> Put(TValue value) => ReadWriteHandle.Put(value);
-        public ITask<IResolveResult<TValue>> Resolve() => ReadWriteHandle.Resolve();
-        public Task<ISuccessResult> Put() => ReadWriteHandle.Put();
-        public Task<bool?> Delete() => ReadWriteHandle.Delete();
-        public void MarkDeleted() => ReadWriteHandle.MarkDeleted();
-        public void DiscardValue() => ReadWriteHandle.DiscardValue();
     }
+
+    // ENH: Option to return Value from StagedValue if HasStagedValue is true, or always return ReadCacheValue
+    TValue IReadWrapper<TValue>.Value => ReadWriteHandle.HasStagedValue ? ReadWriteHandle.StagedValue : ReadWriteHandle.ReadCacheValue;
+
+    TValue IWriteWrapper<TValue>.Value { set => ReadWriteHandle.StagedValue = value; }
+
+    public string Key => ReadWriteHandle.Key;
+
+    public bool HasValue => ReadWriteHandle.HasValue;
+
+    public Type Type => ReadWriteHandle.Type;
+
+    IReference IReferencable.Reference => ReadWriteHandle.Reference;
+
+    public PersistenceFlags Flags => ReadWriteHandle.Flags;
+
+    public TValue? ReadCacheValue => ReadWriteHandle.ReadCacheValue;
+
+    public TValue? StagedValue { get => ReadWriteHandle.StagedValue; set => ReadWriteHandle.StagedValue = value; }
+    public bool HasStagedValue { get => ReadWriteHandle.HasStagedValue; set => ReadWriteHandle.HasStagedValue = value; }
+
+    public ITask<IGetResult<TValue>> GetIfNeeded() => ReadWriteHandle.GetIfNeeded();
+    public ITask<IGetResult<TValue>> GetOrInstantiateValue() => ReadWriteHandle.GetOrInstantiateValue();
+    public IGetResult<TValue> QueryGetResult() => ReadWriteHandle.QueryGetResult();
+    public Task<ISetResult<TValue>> Set(TValue value, CancellationToken cancellationToken = default) => ReadWriteHandle.Set(value, cancellationToken);
+    public ITask<IGetResult<TValue>> Get() => ReadWriteHandle.Get();
+    public Task<ISetResult> Set() => ReadWriteHandle.Set();
+    public Task<bool?> Delete() => ReadWriteHandle.Delete();
+    public void MarkDeleted() => ReadWriteHandle.MarkDeleted();
+    public void DiscardValue() => ReadWriteHandle.DiscardValue();
+
+    public ITask<IGetResult<TValue>> Get(CancellationToken cancellationToken = default)
+    {
+        return ReadWriteHandle.Get(cancellationToken);
+    }
+
+    public void DiscardStagedValue()
+    {
+        ReadWriteHandle.DiscardStagedValue();
+    }
+
+    public void Discard()
+    {
+        ReadWriteHandle.Discard();
+    }
+
+    public Task<ISetResult> Set(CancellationToken cancellationToken = default)
+    {
+        return ReadWriteHandle.Set(cancellationToken);
+    }
+
+    public Task<bool> Exists() => ReadWriteHandle.Exists();
+
+    public IObservable<ITask<IGetResult<TValue>>> GetOperations => readWriteHandle.GetOperations;
+
 }

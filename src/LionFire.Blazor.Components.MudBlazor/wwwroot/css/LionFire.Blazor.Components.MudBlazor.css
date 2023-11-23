@@ -1,0 +1,117 @@
+﻿:root {
+    --mud-typography-default-size: 2rem;
+}
+
+body {
+    background-color: var(--mud-palette-surface);
+}
+
+    body:not(.dark) {
+        background-color: var(--mud-palette-surface);
+    }
+
+        body:not(.dark) .top-row {
+            background-color: #f7f7f7;
+            border-bottom: 1px solid #d6d5d5;
+        }
+
+    body .top-row {
+        background-color: #f7f7f7;
+        border-bottom: 1px solid #d6d5d5;
+    }
+
+
+    body.dense .mud-icon-button {
+        padding: 1px;
+    }
+
+    body.dense .mud-list-item.mud-list-item-dense {
+        padding: 2px 8px;
+    }
+
+    body.dense .mud-list-subheader {
+        padding: 4px 8px 10px 8px;
+        padding-block-end: 5px;
+        padding-block-start: 2px;
+    }
+
+    body.dense .mud-list.mud-list-padding {
+        padding: 4px 0;
+    }
+
+table.quickgrid {
+    color: var(--mud-palette-text-primary);
+    background-color: var(--mud-palette-surface);
+    border-radius: var(--mud-default-borderradius);
+}
+
+.PropertyGrid td.Namespace {
+    text-align: right;
+}
+
+.Value {
+    color: #eee;
+}
+
+    .Value.error {
+        color: #d31717;
+    }
+
+    .Value.null {
+        color: #888;
+        font-style: italic;
+    }
+
+    .Value.String {
+        color: #aaa;
+    }
+
+    .Value.number {
+        color: #5f5fcb;
+    }
+
+button.LionToggle:not(.selected) {
+    border: 1px solid #111;
+}
+
+button.LionToggle.selected {
+    border: 1px solid #ddd;
+}
+
+*:not(.no-hidden) .hidden {
+    display: none;
+}
+
+/*.no-hidden .hidden {
+    display: initial;
+}*/
+
+.Inspector tr.Group {
+    background-color: #618ed573;
+    color: #ccc;
+}
+
+.InspectorValueCell {
+    min-height: 1rem;
+
+    display: flex;
+    align-items: end;
+}
+
+    body.DevMode .InspectorValueCell:not(.ReadOnly) {
+        border: 1px solid #aaaaaa20;
+        border-radius: 3px;
+    }
+
+    .InspectorValueCell.ReadOnly {
+        border: 1px dashed #313131;
+    }
+
+.ReadOnlyValueCell {
+    border: 1px solid #888;
+    min-height: 1rem;
+}
+
+.ProprtyGrid th.Value {
+    min-width: 150px;
+}

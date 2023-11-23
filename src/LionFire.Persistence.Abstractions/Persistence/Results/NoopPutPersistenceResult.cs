@@ -1,14 +1,13 @@
-﻿namespace LionFire.Persistence
+﻿using LionFire.Data;
+
+namespace LionFire.Persistence;
+
+public struct NoopPutPersistenceResult : ITransferResult
 {
-    public struct NoopPutPersistenceResult : IPersistenceResult
-    {
-        public PersistenceResultFlags Flags { get => PersistenceResultFlags.Noop | PersistenceResultFlags.Success; set => throw new System.NotImplementedException(); }
+    public static NoopPutPersistenceResult Instance { get; } = new NoopPutPersistenceResult();
 
-        public object Error => "Noop implementation";
+    public bool? IsSuccess => true;
 
-        public bool? IsSuccess => false;
-        public bool IsNoop => true;
+    public TransferResultFlags Flags { get => TransferResultFlags.Noop | TransferResultFlags.Success; }
 
-        public static NoopPutPersistenceResult Instance { get; } = new NoopPutPersistenceResult();
-    }
 }

@@ -11,8 +11,8 @@ namespace LionFire.Hosting
     {
         public static IServiceCollection AddRedis(this IServiceCollection services) // RENAME to AddRedisPersistence, and also have AddRedisConnections which is just LionFire.Redis
             => services
-                 .Configure<RedisPersisterOptions>(o => { })
-                 .AddSingleton(s => s.GetService<IOptionsMonitor<RedisPersisterOptions>>()?.CurrentValue)
+                 //.Configure<RedisPersisterOptions>(o => { })
+                 //.AddSingleton(s => s.GetService<IOptionsMonitor<RedisPersisterOptions>>()?.CurrentValue)
 
         #region Handles
 

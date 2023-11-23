@@ -50,5 +50,11 @@ namespace LionFire.Persistence.CouchDB
 
         #endregion
 
+        protected override void InternalSetPath(string path)
+        {
+            throw new System.NotImplementedException();
+        }
+
+
     }
 }

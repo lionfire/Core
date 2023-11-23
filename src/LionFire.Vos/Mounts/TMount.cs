@@ -9,7 +9,7 @@ namespace LionFire.Vos.Mounts
     public class TMount : ITemplate<Mount>, ITMount
     {
         public TMount() { }
-        public TMount(IVobReference vobReference, IReference reference, IMountOptions options = null)
+        public TMount(IVobReference vobReference, IReference reference, IVobMountOptions options = null)
         {
             MountPoint = vobReference;
             Reference = reference;
@@ -20,7 +20,7 @@ namespace LionFire.Vos.Mounts
 
         public IReference Reference { get; set; }
 
-        public IMountOptions Options { get; set; }
+        public IVobMountOptions Options { get; set; }
 
         public string ArrowSymbol
         {

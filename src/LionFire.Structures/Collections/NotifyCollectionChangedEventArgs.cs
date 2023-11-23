@@ -61,7 +61,7 @@ namespace LionFire.Collections
             this.Action = action;
         }
 
-        public NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction action, T[] items)
+        public NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction action, params T[] items)
         {
             if (action != NotifyCollectionChangedAction.Add
                 && action != NotifyCollectionChangedAction.Remove) throw new ArgumentException("Must be add or remove action");

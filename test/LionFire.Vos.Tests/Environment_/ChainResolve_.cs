@@ -6,7 +6,7 @@ using Xunit;
 using LionFire.Services;
 using LionFire.Vos;
 using LionFire.Vos.Environment;
-using LionFire.Resolves.ChainResolving;
+using LionFire.Data.Async.Gets.ChainResolving;
 using LionFire.FlexObjects;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -30,9 +30,10 @@ namespace Environment_
                     var root = serviceProvider.GetRootVob();
                     var env = root.Environment();
 
-                    var r = env.FlexDictionary.Values["key2"].ResolveTo<VobReference>();
-                    Assert.IsType<VobReference>(r);
-                    Assert.IsType<VobReference>(env.FlexDictionary.Values["key2"].SingleValueOrDefault());
+                    throw new NotImplementedException(); // ResolveTo
+                    // var r = env.FlexDictionary.Values["key2"].ResolveTo<VobReference>();
+                    //Assert.IsType<VobReference>(r);
+                    //Assert.IsType<VobReference>(env.FlexDictionary.Values["key2"].SingleValueOrDefault());
                 });
         }
 
@@ -57,7 +58,7 @@ namespace Environment_
                     Assert.IsType<VobReference>(r);
                     Assert.IsType<VobReference>(env.FlexDictionary.Values["key2"].SingleValueOrDefault());
 
-                    // TODO use this from Default:                 new ChainResolverWorker(typeof(ILazilyResolves<object>), o => ((ILazilyResolves<object>)o).GetValue()),
+                    // TODO use this from Default:                 new ChainResolverWorker(typeof(ILazilyGets<object>), o => ((ILazilyGets<object>)o).GetValue()),
                     Assert.True(false);
                 });
         }

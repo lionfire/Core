@@ -14,7 +14,7 @@ namespace LionFire.Types
     // TODO: Cleanup
     // TODO: Option for falling back to .NET Type.GetType()
 
-    public class TypeResolver : ITypeResolver
+    public class TypeResolver : ITypeResolver // RENAME TypeNameResolver
     {
         internal IDictionary<string, Type?> Types => TypeNameRegistry.Types;
 
@@ -23,7 +23,6 @@ namespace LionFire.Types
         {
             TypeNameRegistry = typeNameRegistry;
         }
-
 
         //#region Register
 

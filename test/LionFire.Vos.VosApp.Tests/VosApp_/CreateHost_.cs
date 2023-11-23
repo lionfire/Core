@@ -1,5 +1,6 @@
 using LionFire.Hosting;
 using LionFire.Vos.VosApp;
+using Microsoft.Extensions.Hosting;
 using System;
 using Xunit;
 
@@ -11,7 +12,7 @@ namespace VosApp_
         [Fact]
         public async void Pass()
         {
-            await VosAppHostBuilder.Create()
+            await Host.CreateDefaultBuilder().LionFire(b => b.VosApp())
                 .ConfigureServices((context, services) =>
                 {
 

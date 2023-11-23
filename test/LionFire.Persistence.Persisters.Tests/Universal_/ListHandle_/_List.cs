@@ -82,7 +82,7 @@ namespace Universal_.ListHandle_
                     {
                         var rwh = reference.GetReadWriteHandle<string>();
                         rwh.Value = testData;
-                        var result = await rwh.Put();
+                        var result = await rwh.Set();
                         Assert.True(result.IsSuccess);
                     }
                     #endregion
@@ -95,7 +95,7 @@ namespace Universal_.ListHandle_
                     if (SanityChecks)
                     {
                         var rh = reference.GetReadHandle<string>();
-                        var retrieveResult = (await rh.Resolve()).ToRetrieveResult();
+                        var retrieveResult = (await rh.Get());
                         Assert.True(retrieveResult.IsSuccess());
                         Assert.True(retrieveResult.IsFound());
                         Assert.Equal(testData, rh.Value);
@@ -109,7 +109,7 @@ namespace Universal_.ListHandle_
 
                 var listHandle = parentReference.GetListingsHandle();
 
-                await listHandle.Resolve().ConfigureAwait(false);
+                await listHandle.Get().ConfigureAwait(false);
 
                 listHandle.Value.Value.OrderBy(l => l.Name)
                     .WithDeepEqual(FileList.Select(f => new Listing<object>(f)).OrderBy(l => l.Name))
@@ -229,7 +229,7 @@ namespace Universal_.ListHandle_
                     {
                         var rwh = reference.GetReadWriteHandle<string>();
                         rwh.Value = testData;
-                        var result = await rwh.Put();
+                        var result = await rwh.Set();
                         Assert.True(result.IsSuccess);
                     }
         #endregion
@@ -242,7 +242,7 @@ namespace Universal_.ListHandle_
                     if (SanityChecks)
                     {
                         var rh = reference.GetReadHandle<string>();
-                        var retrieveResult = (await rh.Resolve()).ToRetrieveResult();
+                        var retrieveResult = (await rh.Get());
                         Assert.True(retrieveResult.IsSuccess());
                         Assert.True(retrieveResult.IsFound());
                         Assert.Equal(testData, rh.Value);
@@ -266,14 +266,14 @@ namespace Universal_.ListHandle_
                     {
                         var rwh = reference.GetReadWriteHandle<TestClass1>();
                         rwh.Value = TestClass1.Create;
-                        var result = await rwh.Put();
+                        var result = await rwh.Set();
                         Assert.True(result.IsSuccess);
                     }
                     else
                     {
                         var rwh = reference.GetReadWriteHandle<TestClass2>();
                         rwh.Value = TestClass2.Create;
-                        var result = await rwh.Put();
+                        var result = await rwh.Set();
                         Assert.True(result.IsSuccess);
                     }
         #endregion
@@ -288,7 +288,7 @@ namespace Universal_.ListHandle_
                         if (filename.Contains('1'))
                         {
                             var rh = reference.GetReadHandle<TestClass1>();
-                            var retrieveResult = (await rh.Resolve()).ToRetrieveResult();
+                            var retrieveResult = (await rh.Get());
                             Assert.True(retrieveResult.IsSuccess());
                             Assert.True(retrieveResult.IsFound());
                             TestClass1.Create.WithDeepEqual(rh.Value).Assert();
@@ -296,7 +296,7 @@ namespace Universal_.ListHandle_
                         else
                         {
                             var rh = reference.GetReadHandle<TestClass2>();
-                            var retrieveResult = (await rh.Resolve()).ToRetrieveResult();
+                            var retrieveResult = (await rh.Get());
                             Assert.True(retrieveResult.IsSuccess());
                             Assert.True(retrieveResult.IsFound());
                             TestClass2.Create.WithDeepEqual(rh.Value).Assert();
@@ -312,7 +312,7 @@ namespace Universal_.ListHandle_
         #region All
                 {
                     var listHandle = parentReference.GetListHandle();
-                    await listHandle.Resolve().ConfigureAwait(false);
+                    await listHandle.Get().ConfigureAwait(false);
                     listHandle.Value.Value.OrderBy(l => l.Name)
                         .WithDeepEqual(FileList.Concat(TypedFiles).Select(f => new Listing<object>(f)).OrderBy(l => l.Name))
                         .Assert();
@@ -322,7 +322,7 @@ namespace Universal_.ListHandle_
         #region string
                 {
                     var listHandle = parentReference.GetListHandle<string>();
-                    await listHandle.Resolve().ConfigureAwait(false);
+                    await listHandle.Get().ConfigureAwait(false);
                     listHandle.Value.Value.OrderBy(l => l.Name)
                         .WithDeepEqual(FileList.Select(f => new Listing<string>(f)).OrderBy(l => l.Name))
                         .Assert();
@@ -332,7 +332,7 @@ namespace Universal_.ListHandle_
         #region TestClass1
                 {
                     var listHandle = parentReference.GetListHandle<TestClass1>();
-                    await listHandle.Resolve().ConfigureAwait(false);
+                    await listHandle.Get().ConfigureAwait(false);
                     listHandle.Value.Value.OrderBy(l => l.Name)
                         .WithDeepEqual(TypedFiles.Where(f => f.Contains('1')).Select(f => new Listing<TestClass1>(f)).OrderBy(l => l.Name))
                         .Assert();
@@ -342,7 +342,7 @@ namespace Universal_.ListHandle_
         #region TestClass2
                 {
                     var listHandle = parentReference.GetListHandle<TestClass2>();
-                    await listHandle.Resolve().ConfigureAwait(false);
+                    await listHandle.Get().ConfigureAwait(false);
                     listHandle.Value.Value.OrderBy(l => l.Name)
                         .WithDeepEqual(TypedFiles.Where(f => f.Contains('2')).Select(f => new Listing<TestClass2>(f)).OrderBy(l => l.Name))
                         .Assert();

@@ -22,7 +22,7 @@ namespace LionFire.MultiTyping
                 if (multiTyped == null)
                 {
                     //LazyInitializer.EnsureInitialized(ref multiTyped);
-                    Interlocked.CompareExchange(ref multiTyped, new MultiType(), null);
+                    Interlocked.CompareExchange(ref multiTyped, new MultiTyped(), null);
                 }
                 return multiTyped;
             }

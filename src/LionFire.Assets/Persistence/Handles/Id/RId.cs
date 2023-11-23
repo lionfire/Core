@@ -21,7 +21,7 @@ namespace LionFire.Persistence
     } // TEMP TOPORT
 
     public class RId<TValue> : ReadHandlePassthrough<TValue, IIdReference<TValue>>, IIdReadHandle<TValue>
-        where TValue : IIded<string>
+        where TValue : class, IIdentified<string>
     {
 
         #region Construction and Implicit Operators
@@ -36,7 +36,7 @@ namespace LionFire.Persistence
         public RId(IReadHandle<TValue> handle) : base(handle) { }
 
         #endregion
-        
+
         public string IdPath => Reference.Path;
         public new IdReference<TValue> Reference { get => (IdReference<TValue>)base.Reference; set => base.Reference = value; }
 

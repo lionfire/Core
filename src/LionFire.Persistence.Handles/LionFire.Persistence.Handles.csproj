@@ -1,32 +1,36 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>netstandard2.0</TargetFramework>
+    <TargetFramework>net6.0</TargetFramework> 
     <RootNamespace>LionFire</RootNamespace>
     <LangVersion>latest</LangVersion>
+		<Nullable>enable</Nullable>
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="AnyClone" Version="1.0.39" />
-    <PackageReference Include="AnyDiff" Version="1.0.83" />
-    <PackageReference Include="Microsoft.Extensions.Hosting" Version="5.0.0" />
+    <PackageReference Include="AnyDiff" />
+    <PackageReference Include="BernhardHaus.Collections.WeakDictionary" />
+    <PackageReference Include="Microsoft.Extensions.Hosting" />
+    <PackageReference Include="UltraMapper" />
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\LionFire.Applications.Abstractions\LionFire.Applications.Abstractions.csproj" />
     <ProjectReference Include="..\LionFire.Core\LionFire.Core.csproj" />
+    <ProjectReference Include="..\LionFire.Data.Async.Slim\LionFire.Data.Async.Extras.csproj" />
     <ProjectReference Include="..\LionFire.Hosting\LionFire.Hosting.csproj" />
-    <ProjectReference Include="..\LionFire.ObjectBus.Abstractions\LionFire.ObjectBus.Abstractions.csproj" />
+    <ProjectReference Include="..\LionFire.Persistence.Abstractions\LionFire.Data.Persisters.Abstractions.csproj" />
+    <!--<ProjectReference Include="..\LionFire.ObjectBus.Abstractions\LionFire.ObjectBus.Abstractions.csproj" />-->
     <ProjectReference Include="..\LionFire.Persistence.Handles.Abstractions\LionFire.Persistence.Handles.Abstractions.csproj" />
-    <ProjectReference Include="..\LionFire.Persistence\LionFire.Persistence.csproj" />
     <ProjectReference Include="..\LionFire.Referencing\LionFire.Referencing.csproj" />
-    <ProjectReference Include="..\LionFire.Resolves\LionFire.Resolves.csproj" />
+    <ProjectReference Include="..\LionFire.Resolves\LionFire.Data.Async.csproj" />
     <ProjectReference Include="..\LionFire.Structures\LionFire.Structures.csproj" />
   </ItemGroup>
 
   <ItemGroup>
     <Folder Include="Handles\ReferenceHandles\" />
     <Folder Include="Handles\ReadWrite\Notifying\" />
+    <Folder Include="Hosting\" />
   </ItemGroup>
 
 </Project>

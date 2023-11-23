@@ -1,0 +1,21 @@
+﻿.VosExplorer .mud-toolbar button {
+    min-width: 24px;
+    box-sizing: border-box;
+    color: white;
+}
+
+.VosExplorer .mud-toolbar {
+    border: 1px solid #222;
+    border-radius: 2px;
+}
+
+.VosExplorer .Listings {
+    margin: 10px 0;
+}
+
+.Listings td.Name {
+    cursor: pointer;
+}
+.Listings td.Icon {
+    width: 25px;
+}

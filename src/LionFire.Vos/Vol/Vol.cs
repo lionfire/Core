@@ -4,7 +4,7 @@ using System.Text;
 
 namespace LionFire.Vos
 {
-    //public class Listing<T>
+    //public class IListing<TValue>
     //{
     //    public DateTime RetrieveTime { get; set; }
     //}

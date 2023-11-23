@@ -1,7 +1,7 @@
 ﻿#if OLD
 using LionFire.Persistence.Implementation;
 using LionFire.Referencing;
-using LionFire.Resolves;
+using LionFire.Data.Async.Gets;
 using LionFire.Threading;
 using System.Threading.Tasks;
 
@@ -86,7 +86,7 @@ namespace LionFire.Persistence.Handles
 
         public async Task Commit() => (await ((ICommitableImpl)this).Commit()).ThrowIfUnsuccessful();
 
-        //async Task<IPersistenceResult> ICommitableImpl.Commit()
+        //async Task<ITransferResult> ICommitableImpl.Commit()
         //{
         //    if (DeletePending || (DeleteIfObjectNull && _value == null))
         //    {
@@ -103,7 +103,7 @@ namespace LionFire.Persistence.Handles
         public async Task<bool> Delete() => (await ((IDeletableImpl)this).Delete()).IsSuccess();
 
         //[ThreadSafe(false)]
-        //async Task<IPersistenceResult> IDeletableImpl.Delete()
+        //async Task<ITransferResult> IDeletableImpl.Delete()
         //{
         //    this.Value = default;
         //    DeletePending = true;
@@ -124,9 +124,9 @@ namespace LionFire.Persistence.Handles
         /// If !HasObject, do nothing (REVIEW/confirm this)
         /// </summary>
         /// <returns></returns>
-        protected abstract Task<IPersistenceResult> WriteObject();
+        protected abstract Task<ITransferResult> WriteObject();
 
-        public virtual Task<IPersistenceResult> WriteObject(TValue @object)
+        public virtual Task<ITransferResult> WriteObject(TValue @object)
         {
             this.Value = @object;
             return WriteObject();
@@ -135,7 +135,7 @@ namespace LionFire.Persistence.Handles
 
         #endregion
 
-        protected abstract Task<IPersistenceResult> DeleteObject();
+        protected abstract Task<ITransferResult> DeleteObject();
         Task<IPutResult> IPuts.Put() => throw new System.NotImplementedException();
     }
 }

@@ -62,7 +62,7 @@ namespace LionFire.ObjectBus.ExtensionlessFs
 
         #endregion
 
-        protected override Task<IPersistenceResult> SetImpl<T>(ExtensionlessFileReference reference, T obj, bool allowOverwrite = true) => base.SetImpl(reference, obj, allowOverwrite);
+        protected override Task<ITransferResult> SetImpl<T>(ExtensionlessFileReference reference, T obj, bool allowOverwrite = true) => base.SetImpl(reference, obj, allowOverwrite);
 
     }
 }

@@ -1,0 +1,4 @@
+﻿  
+  Portions based on Orleans Health Checks Sample by Jorge Candeias, MIT License 
+    - https://jorgecandeias.github.io/2019/06/10/how-to-add-aspnet-core-health-checks-to-microsoft-orleans/
+    - https://github.com/JorgeCandeias/orleans/tree/feature/health-check-sample/Samples/2.3/HealthCheckSample

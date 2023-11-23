@@ -1,0 +1,34 @@
+﻿@page "/internals/resolves"
+@using LionFire.Data.Async.Gets;
+@inject ResolvesTracker ResolvesTracker
+
+<button onclick="@Refresh">Refresh</button>
+<h3>ResolvesTracker</h3>
+
+@foreach (var type in ResolvesTracker.Types)
+{
+    <h3>@type.Key.FullName</h3>
+    <table>
+        @foreach (var kvp in type.Value)
+        {
+            <tr>
+                <td>@kvp.Key</td>
+                <td>@TryGetTarget(kvp.Value)</td>
+            </tr>
+        }
+    </table>
+}
+
+@code {
+    public object? TryGetTarget(WeakReference<object> w)
+    {
+        if (w.TryGetTarget(out var x))
+            return x;
+        else return null;
+    }
+
+    public void Refresh()
+    {
+        StateHasChanged();
+    }
+}

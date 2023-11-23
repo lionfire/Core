@@ -1,4 +1,5 @@
-﻿using LionFire.DependencyMachines;
+﻿#nullable enable
+using LionFire.DependencyMachines;
 using LionFire.Ontology;
 using LionFire.Persistence.Persisters.Vos;
 using LionFire.Services;
@@ -14,6 +15,7 @@ using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using LionFire.FlexObjects;
 
 namespace LionFire.Vos
 {
@@ -25,10 +27,13 @@ namespace LionFire.Vos
 
     public class RootVob : Vob, IRootVob, IHas<IVos>, IHostedService, IHasMany<IParticipant>, IHas<IServiceProvider>
     {
-        public IVos RootManager { get; private set; }
-        IServiceProvider RootManagerServiceProvider => (RootManager as IHas<IServiceProvider>)?.Object;
+        public static int CreateCount = 0;
 
-        IServiceProvider IHas<IServiceProvider>.Object => this.TryGetOwnVobNode<IServiceProvider>()?.Value ?? RootManagerServiceProvider;
+        public IVos RootManager { get; private set; }
+        IServiceProvider? RootManagerServiceProvider => (RootManager as IHas<IServiceProvider>)?.Object;
+
+        //IServiceProvider IHas<IServiceProvider>.Object => this.TryGetOwnVobNode<IServiceProvider>()?.Value ?? RootManagerServiceProvider;
+        IServiceProvider? IHas<IServiceProvider>.Object => this.Query<IServiceProvider>(); // ?? RootManagerServiceProvider;
 
         IVos IHas<IVos>.Object => RootManager;
 
@@ -43,13 +48,16 @@ namespace LionFire.Vos
 
         private static object rootLock = new object();
 
-        public RootVob(IVos rootManager, string rootName, VosOptions vosOptions, IOptionsMonitor<VobRootOptions> OptionsMonitor)
+        public RootVob(IVos rootManager, string rootName, VosOptions vosOptions, IOptionsMonitor<VobRootOptions> OptionsMonitor, IServiceProvider? serviceProvider)
             : base(parent: null, name: null) // Note: Use null parent and null name even for named Roots
         {
+            Interlocked.Increment(ref CreateCount);
+            //if (CreateCount > 1) throw new Exception("TEMP - RootVob already created");
             this.RootName = rootName;
 
-            //ServiceProvider = ((IHas<IServiceProvider>)rootManager).Object;
-            //this.AddOwn(ServiceProvider);
+            //var ServiceProvider = ((IHas<IServiceProvider>)rootManager).Object;
+            //this.AddOwn(serviceProvider); // DEPRECATED: VobNode
+            if (serviceProvider != null) { this.AddSingle<IServiceProvider>(serviceProvider); }
 
             Options = OptionsMonitor.Get(rootName);
             if (Options.ServiceProviderMode == ServiceProviderMode.UseRootManager)
@@ -87,8 +95,8 @@ namespace LionFire.Vos
             #endregion
         }
 
-        public RootVob(IVos rootManager, VosOptions vosOptions, IOptionsMonitor<VobRootOptions> OptionsMonitor)
-        : this(rootManager, VosConstants.DefaultRootName, vosOptions, OptionsMonitor)
+        public RootVob(IVos rootManager, VosOptions vosOptions, IOptionsMonitor<VobRootOptions> OptionsMonitor, IServiceProvider serviceProvider)
+        : this(rootManager, VosConstants.DefaultRootName, vosOptions, OptionsMonitor, serviceProvider:  serviceProvider)
         {
 
         }

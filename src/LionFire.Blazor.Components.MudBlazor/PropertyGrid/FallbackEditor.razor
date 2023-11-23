@@ -1,0 +1,11 @@
+﻿@using LionFire.Inspection.ViewModels;
+
+<div class="Value fallback">
+    @(ViewModel.DisplayValue ?? ViewModel.Value)
+</div>
+@* <div class="dev">(fallback editor)</div> *@
+
+@code {
+    [Parameter]
+    public NodeVM ViewModel { get; set; }
+}

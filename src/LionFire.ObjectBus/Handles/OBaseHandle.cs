@@ -5,7 +5,7 @@
 //using LionFire.Persistence;
 //using LionFire.Persistence.Handles;
 //using LionFire.Referencing;
-//using LionFire.Resolves;
+//using LionFire.Data.Gets;
 
 //namespace LionFire.ObjectBus.Handles
 //{
@@ -39,20 +39,20 @@
 //        }
 
 //        // Some code duplication with OBaseReadHandle
-//        protected override async Task<IResolveResult<T>> ResolveImpl() 
+//        protected override async Task<IGetResult<T>> ResolveImpl() 
 //            => await OBase.Get<T>(this.Reference).ConfigureAwait(false);
 
-//        //protected async Task<IPersistenceResult> DeleteObject()
+//        //protected async Task<ITransferResult> DeleteObject()
 //        //    => await OBase.TryDelete<T>(this.Reference).ConfigureAwait(false);
 
-//        protected async Task<IPersistenceResult> DeleteObject() // TODO: Override something? 
+//        protected async Task<ITransferResult> DeleteObject() // TODO: Override something? 
 //            => await OBase.TryDelete<T>(this.Reference).ConfigureAwait(false);
 
-//        protected override async Task<IPersistenceResult> UpsertImpl()
+//        protected override async Task<ITransferResult> UpsertImpl()
 //        {
 //            // TODO: propagate persistenceContext?  Or remove it and rely on ambient AsyncLocal?
 //            var result = await OBase.Set<T>(this.Reference, ProtectedValue).ConfigureAwait(false);
-//            if (!result.IsSuccess()) throw new PersistenceException(result, "Failed to persist.  See Result for more information.");
+//            if (!result.IsSuccess()) throw new TransferException(result, "Failed to persist.  See Result for more information.");
 //            return result;
 //        }
 //    }

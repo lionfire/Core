@@ -1,25 +1,34 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>netstandard2.0</TargetFramework>
+    <TargetFramework>net6.0</TargetFramework>
     <RootNamespace>LionFire.UI</RootNamespace>
     <LangVersion>latest</LangVersion>
+	<Nullable>enable</Nullable>
   </PropertyGroup>
 
   <ItemGroup>
     <Folder Include="Entities\Nodes\" />
+    <Folder Include="Entities\PropertyGrid\" />
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Swordfish.NET.CollectionsV3" Version="3.3.6" />
+    <PackageReference Include="Swordfish.NET.CollectionsV3" />
+	<PackageReference Include="ReactiveUI.Blazor" />
+	<PackageReference Include="ReactiveUI.Fody" />
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\LionFire.Base\LionFire.Base.csproj" />
+    <ProjectReference Include="..\LionFire.Data.Async.Mvvm\LionFire.Data.Async.Mvvm.csproj" />
     <ProjectReference Include="..\LionFire.Instantiating.Abstractions\LionFire.Instantiating.Abstractions.csproj" />
     <ProjectReference Include="..\LionFire.Instantiating\LionFire.Instantiating.csproj" />
+    <ProjectReference Include="..\LionFire.Metadata\LionFire.Metadata.csproj" />
+    <ProjectReference Include="..\LionFire.Mvvm.Abstractions\LionFire.Mvvm.Abstractions.csproj" />
+    <ProjectReference Include="..\LionFire.Mvvm\LionFire.Mvvm.csproj" />
     <ProjectReference Include="..\LionFire.Structures\LionFire.Structures.csproj" />
     <ProjectReference Include="..\LionFire.UI\LionFire.UI.csproj" />
   </ItemGroup>
 
+	
 </Project>

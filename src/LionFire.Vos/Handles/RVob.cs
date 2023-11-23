@@ -1,12 +1,11 @@
 ﻿using LionFire.Persistence.Handles;
 using LionFire.Referencing;
-using System;
-using System.Collections.Generic;
-using System.Text;
+
 
 namespace LionFire.Vos
 {
     public class RVob<TValue> : ReadHandlePassthrough<TValue, VobReference<TValue>>
+        where TValue : class
     {
         public static implicit operator RVob<TValue>(VobReference<TValue> reference) => new RVob<TValue> { Reference = reference };
         public static implicit operator RVob<TValue>(string vosPath) => new RVob<TValue> { Reference = vosPath };

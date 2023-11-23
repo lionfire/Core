@@ -14,7 +14,7 @@ using LionFire.UI.Windowing;
 using LionFire.Vos;
 using LionFire.Vos.VosApp;
 using Microsoft.Extensions.Hosting;
-using LionFire.Resolves;
+using LionFire.Data.Async.Gets;
 using LionFire.UI;
 using LionFire.UI.Wpf;
 using LionFire.UI.Entities;
@@ -72,7 +72,7 @@ namespace LionFire.Hosting
 
             return services
                 // REVIEW - registering both IUserLocalSettings<WindowSettings> and IUserLocalSettings<>?  Maybe just register as UserLocalSettingsProvider<WindowSettings>
-                .AddSingletonHostedServiceDependency<ILazilyResolves<WindowSettings>, UserLocalSettingsProvider<WindowSettings>>(p 
+                .AddSingletonHostedServiceDependency<IGetter<WindowSettings>, UserLocalSettingsProvider<WindowSettings>>(p 
                 => p
                     .Contributes(DependencyConventionsForUI.CanStartShell)
                     .After("vos:/") // TODO - what should this be?

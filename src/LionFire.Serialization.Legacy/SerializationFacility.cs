@@ -6,221 +6,222 @@ using System.IO;
 using System.Threading;
 using LionFire.Collections;
 using System.Collections;
+using Microsoft.Extensions.Logging;
 
-namespace LionFire.Serialization
+namespace LionFire.Serialization;
+
+
+public static class SerializationFacility // TODO, Rename to file store, integrate with existing ObjectStore/FileStore????
 {
 
-    public static class SerializationFacility // TODO, Rename to file store, integrate with existing ObjectStore/FileStore????
-    {
+    #region Serializers
 
-        #region Serializers
+    // Move to LionSerializers somehow?
 
-        // Move to LionSerializers somehow?
+    public static LionSerializer DefaultSerializer = LionSerializers.Json;
+    public static LionSerializer ReadableSerializer = LionSerializers.Json;
 
-        public static LionSerializer DefaultSerializer = LionSerializers.Json;
-        public static LionSerializer ReadableSerializer = LionSerializers.Json;
-
-        public static LionSerializer CompactSerializer =
+    public static LionSerializer CompactSerializer =
 #if MSGPACK
-         LionSerializers.LionPack;
+     LionSerializers.LionPack;
 #else
-         LionSerializers.Json;
+     LionSerializers.Json;
 #endif
 
-        private static LionSerializer GetSerializer(SerializationParameters parameters = null)
+    private static LionSerializer GetSerializer(SerializationParameters parameters = null)
+    {
+        if (parameters == null) return DefaultSerializer;
+
+        if (parameters.SaveInArchive) throw new NotImplementedException();
+
+        if (parameters.SaveReadable)
         {
-            if (parameters == null) return DefaultSerializer;
+            return ReadableSerializer;
+        }
+        else
+        {
+            return CompactSerializer;
+        }
+    }
 
-            if (parameters.SaveInArchive) throw new NotImplementedException();
+    #endregion
 
-            if (parameters.SaveReadable)
-            {
-                return ReadableSerializer;
-            }
-            else
-            {
-                return CompactSerializer;
-            }
+    #region Serialize
+
+    public static void Serialize<T>(string path, T obj, SerializationParameters parameters = null)
+    {
+        LionSerializer serializer = GetSerializer(parameters);
+
+        string diskPath = serializer.GetDiskPath(path, obj, typeof(T));
+
+        string diskDirectory = Path.GetDirectoryName(diskPath);
+
+        if (!Directory.Exists(diskDirectory))
+        {
+            Directory.CreateDirectory(diskDirectory);
         }
 
-        #endregion
-
-        #region Serialize
-
-        public static void Serialize<T>(string path, T obj, SerializationParameters parameters = null)
+        using (FileStream fs = new FileStream(diskPath, FileMode.Create))
         {
-            LionSerializer serializer = GetSerializer(parameters);
-
-            string diskPath = serializer.GetDiskPath(path, obj, typeof(T));
-
-            string diskDirectory = Path.GetDirectoryName(diskPath);
-
-            if (!Directory.Exists(diskDirectory))
-            {
-                Directory.CreateDirectory(diskDirectory);
-            }
-
-            using (FileStream fs = new FileStream(diskPath, FileMode.Create))
-            {
-                serializer.Serialize(fs, obj);
-            }
+            serializer.Serialize(fs, obj);
         }
+    }
 
-        #endregion
+    #endregion
 
-        #region Extensions
+    #region Extensions
 
-        public static string DotDefaultExtension
+    public static string DotDefaultExtension
+    {
+        get { return Serializers.First().DotDefaultFileExtension; }
+    }
+
+    #endregion
+
+    #region Exists
+
+    public static string GetSerializationPathForPath(string path)
+    {
+        if (File.Exists(path)) return path;
+        else
         {
-            get { return Serializers.First().DotDefaultFileExtension; }
-        }
-
-        #endregion
-
-        #region Exists
-
-        public static string GetSerializationPathForPath(string path)
-        {
-            if (File.Exists(path)) return path;
-            else
-            {
-                foreach (LionSerializer prospectiveSerializer in
-                    #if AOT
-                        (IEnumerable)
+            foreach (LionSerializer prospectiveSerializer in
+                #if AOT
+                    (IEnumerable)
 #endif
-                    Serializers)
+                Serializers)
+            {
+                string dotExtension = prospectiveSerializer.DotDefaultFileExtension;
+                string pathPlusExtension = path + dotExtension;
+
+                if (File.Exists(pathPlusExtension))
                 {
-                    string dotExtension = prospectiveSerializer.DotDefaultFileExtension;
-                    string pathPlusExtension = path + dotExtension;
-
-                    if (File.Exists(pathPlusExtension))
-                    {
-                        return pathPlusExtension;
-                    }
+                    return pathPlusExtension;
                 }
             }
-            return null;
         }
+        return null;
+    }
 
-        public static bool Exists(string path)
+    public static bool Exists(string path)
+    {
+        var serializationPath = GetSerializationPathForPath(path);
+        return serializationPath != null;
+    }
+
+    public static void Delete(string path)
+    {
+        var serializationPath = GetSerializationPathForPath(path);
+        if (serializationPath != null)
         {
-            var serializationPath = GetSerializationPathForPath(path);
-            return serializationPath != null;
+            File.Delete(serializationPath);
         }
-
-        public static void Delete(string path)
-        {
-            var serializationPath = GetSerializationPathForPath(path);
-            if (serializationPath != null)
-            {
-                File.Delete(serializationPath);
-            }
 #if OLD
-            if (File.Exists(path)) { File.Delete(path); return ; }
-            else
-            {
-                foreach (LionSerializer prospectiveSerializer in Serializers)
-                {
-                    string dotExtension = prospectiveSerializer.DotDefaultFileExtension;
-                    string pathPlusExtension = path + dotExtension;
-
-                    if (File.Exists(pathPlusExtension))
-                    {
-                        File.Delete(pathPlusExtension);
-                        return ;
-                    }
-                }
-            }
-            return ;
-#endif
-        }
-
-        public static bool Exists<T>(string path)
+        if (File.Exists(path)) { File.Delete(path); return ; }
+        else
         {
-            if (Exists(path)) return true;
-
             foreach (LionSerializer prospectiveSerializer in Serializers)
             {
                 string dotExtension = prospectiveSerializer.DotDefaultFileExtension;
-                string pathPlusTypePlusExtension = path + "." + typeof(T).Name + dotExtension;
+                string pathPlusExtension = path + dotExtension;
 
-                if (File.Exists(pathPlusTypePlusExtension))
+                if (File.Exists(pathPlusExtension))
                 {
-                    return true;
+                    File.Delete(pathPlusExtension);
+                    return ;
                 }
             }
-
-            return false;
         }
+        return ;
+#endif
+    }
 
-        #endregion
+    public static bool Exists<T>(string path)
+    {
+        if (Exists(path)) return true;
 
-        #region Deserialization
-
-        #region By Stream
-
-        public static T Deserialize<T>(Stream stream)
+        foreach (LionSerializer prospectiveSerializer in Serializers)
         {
-            try
-            {
-                LionSerializer serializer = null;
-                serializer = LionSerializers.DetectSerializer(stream);
+            string dotExtension = prospectiveSerializer.DotDefaultFileExtension;
+            string pathPlusTypePlusExtension = path + "." + typeof(T).Name + dotExtension;
 
-                if (serializer == null) throw new Exception("Could not detect deserialization method.");
-
-                return serializer.Deserialize<T>(stream);
-            }
-            catch (Exception ex)
+            if (File.Exists(pathPlusTypePlusExtension))
             {
-                l.Error("Deserialization failed: " + ex.ToString());
-                throw;
+                return true;
             }
         }
-        public static object Deserialize(Stream stream, Type type, string path = null)
+
+        return false;
+    }
+
+    #endregion
+
+    #region Deserialization
+
+    #region By Stream
+
+    public static T Deserialize<T>(Stream stream)
+    {
+        try
         {
-            try
-            {
-                LionSerializer serializer = null;
+            LionSerializer serializer = null;
+            serializer = LionSerializers.DetectSerializer(stream);
 
-                serializer = LionSerializers.DetectSerializer(stream, path);
+            if (serializer == null) throw new Exception("Could not detect deserialization method.");
 
-                if (serializer == null) throw new Exception("Could not detect deserialization method.");
-
-                return serializer.Deserialize(stream, type);
-            }
-            catch (Exception ex)
-            {
-                l.Error("Deserialization of '"+path+"' failed: " + ex.ToString());
-                throw;
-            }
+            return serializer.Deserialize<T>(stream);
         }
-
-        #endregion
-
-        #region By Path
-
-        public static object Deserialize(string path, Type type = null)
+        catch (Exception ex)
         {
-            try
-            {
-                return Deserialize<object>(path);
-            }
-            catch (Exception)
-            {
-                l.Error("Failed to deserialize file: " + path);
-                throw;
-            }
-            //using (FileStream stream = new FileStream(path, FileMode.Open))
-            //{
-            //    LionSerializer serializer = null;
-            //    serializer = DetectSerializer(stream);
-
-            //    if (serializer == null) throw new Exception("Could not detect deserialization method.");
-
-            //    return serializer.Deserialize(stream, type);
-            //}
+            l.Error("Deserialization failed: " + ex.ToString());
+            throw;
         }
-                
+    }
+    public static object Deserialize(Stream stream, Type type, string path = null)
+    {
+        try
+        {
+            LionSerializer serializer = null;
+
+            serializer = LionSerializers.DetectSerializer(stream, path);
+
+            if (serializer == null) throw new Exception("Could not detect deserialization method.");
+
+            return serializer.Deserialize(stream, type);
+        }
+        catch (Exception ex)
+        {
+            l.Error("Deserialization of '"+path+"' failed: " + ex.ToString());
+            throw;
+        }
+    }
+
+    #endregion
+
+    #region By Path
+
+    public static object Deserialize(string path, Type type = null)
+    {
+        try
+        {
+            return Deserialize<object>(path);
+        }
+        catch (Exception)
+        {
+            l.Error("Failed to deserialize file: " + path);
+            throw;
+        }
+        //using (FileStream stream = new FileStream(path, FileMode.Open))
+        //{
+        //    LionSerializer serializer = null;
+        //    serializer = DetectSerializer(stream);
+
+        //    if (serializer == null) throw new Exception("Could not detect deserialization method.");
+
+        //    return serializer.Deserialize(stream, type);
+        //}
+    }
+            
 
 		public static T Deserialize<T>(string path, LionSerializer serializer = null)
 			where T : class
@@ -228,107 +229,108 @@ namespace LionFire.Serialization
 			object result = Deserialize(path, serializer, typeof(T));
 			return (T) result;
 		}
-		[AotReplacement]
+#if OLD // AOT
+    [AotReplacement]
 		public static object Deserialize(string path, LionSerializer serializer, Type T)
 		{
-            object result = null;
+        object result = null;
 
-            if (File.Exists(path))
+        if (File.Exists(path))
+        {
+            int retryCount = 100;
+            int retryDelayMilliseconds = 10;
+        retry:
+            try
             {
-                int retryCount = 100;
-                int retryDelayMilliseconds = 10;
-            retry:
-                try
+                //using (FileStream stream = new FileStream(path, FileMode.Open))
+                using (FileStream stream = new FileStream(path, FileMode.Open, FileAccess.Read, FileShare.Read))
+                //using (StreamReader stream = new StreamReader(File.OpenRead(path)))
                 {
-                    //using (FileStream stream = new FileStream(path, FileMode.Open))
-                    using (FileStream stream = new FileStream(path, FileMode.Open, FileAccess.Read, FileShare.Read))
-                    //using (StreamReader stream = new StreamReader(File.OpenRead(path)))
+                    if (serializer == null)
                     {
-                        if (serializer == null)
-                        {
-                            serializer = LionSerializers.DetectSerializer(stream);
-                        }
-                        if (serializer == null) throw new Exception("Could not recognize file.");
-
-                        result = serializer.Deserialize (stream, T);
-                        goto gotResult;
+                        serializer = LionSerializers.DetectSerializer(stream);
                     }
-                }
-                catch (IOException ioe)
-                {
-                    l.Debug("Got IOException when opening file.  It may be busy: " + ioe.ToString());
+                    if (serializer == null) throw new Exception("Could not recognize file.");
 
-                    if (retryCount > 0)
-                    {
-                        Thread.Sleep(retryDelayMilliseconds);
-                        retryCount--;
-                        goto retry;
-                    }
-                    else
-                    {
-                        throw ioe;
-                    }
-                }
-
-            }
-            else
-            {
-                if (serializer != null) throw new ArgumentException("Either path must exist or serializer must be null.");
-
-                // FUTURE: Support saving multiple types at the same name (multitype/mixin style behavior)
-
-                foreach (LionSerializer prospectiveSerializer in
-#if AOT
- (IEnumerable)
-#endif
-                    Serializers)
-                {
-                    string dotExtension = prospectiveSerializer.DotDefaultFileExtension;
-                    string pathPlusExtension = path + dotExtension;
-
-                    if (File.Exists(pathPlusExtension))
-                    {
-                        result = Deserialize(pathPlusExtension, prospectiveSerializer, T);
-                        goto gotResult;
-                    }
-                }
-
-                foreach (LionSerializer prospectiveSerializer in
-#if AOT
- (IEnumerable)
-#endif
-                    Serializers)
-                {
-                    string dotExtension = prospectiveSerializer.DotDefaultFileExtension;
-                    string pathPlusTypePlusExtension = path + "." + (T).Name + dotExtension;
-
-                    if (File.Exists(pathPlusTypePlusExtension))
-                    {
-                        result = Deserialize(pathPlusTypePlusExtension, prospectiveSerializer, T);
-                        goto gotResult;
-                    }
+                    result = serializer.Deserialize (stream, T);
+                    goto gotResult;
                 }
             }
-            throw new SerializationException("Failed to find file: " + path);
+            catch (IOException ioe)
+            {
+                l.Debug("Got IOException when opening file.  It may be busy: " + ioe.ToString());
 
-        gotResult:
-            INotifyDeserialized notifyDeserialized = result as INotifyDeserialized;
-            if (notifyDeserialized != null) notifyDeserialized.OnDeserialized();
+                if (retryCount > 0)
+                {
+                    Thread.Sleep(retryDelayMilliseconds);
+                    retryCount--;
+                    goto retry;
+                }
+                else
+                {
+                    throw ioe;
+                }
+            }
 
-            return result;
         }
+        else
+        {
+            if (serializer != null) throw new ArgumentException("Either path must exist or serializer must be null.");
 
-        #endregion
+            // FUTURE: Support saving multiple types at the same name (multitype/mixin style behavior)
 
-        #endregion
+            foreach (LionSerializer prospectiveSerializer in
+#if AOT
+(IEnumerable)
+#endif
+                Serializers)
+            {
+                string dotExtension = prospectiveSerializer.DotDefaultFileExtension;
+                string pathPlusExtension = path + dotExtension;
 
-        public static LionFire.Collections.IReadOnlyCollection<LionSerializer> Serializers { get { return LionSerializers.Serializers; } }
+                if (File.Exists(pathPlusExtension))
+                {
+                    result = Deserialize(pathPlusExtension, prospectiveSerializer, T);
+                    goto gotResult;
+                }
+            }
 
+            foreach (LionSerializer prospectiveSerializer in
+#if AOT
+(IEnumerable)
+#endif
+                Serializers)
+            {
+                string dotExtension = prospectiveSerializer.DotDefaultFileExtension;
+                string pathPlusTypePlusExtension = path + "." + (T).Name + dotExtension;
 
-        #region Misc
+                if (File.Exists(pathPlusTypePlusExtension))
+                {
+                    result = Deserialize(pathPlusTypePlusExtension, prospectiveSerializer, T);
+                    goto gotResult;
+                }
+            }
+        }
+        throw new SerializationException("Failed to find file: " + path);
 
-        private static ILogger l = Log.Get();
+    gotResult:
+        INotifyDeserialized notifyDeserialized = result as INotifyDeserialized;
+        if (notifyDeserialized != null) notifyDeserialized.OnDeserialized();
 
-        #endregion
+        return result;
     }
+#endif
+
+#endregion
+
+#endregion
+
+    public static IReadOnlyCollection<LionSerializer> Serializers { get { return LionSerializers.Serializers; } }
+
+
+    #region Misc
+
+    private static ILogger l = Log.Get();
+
+    #endregion
 }

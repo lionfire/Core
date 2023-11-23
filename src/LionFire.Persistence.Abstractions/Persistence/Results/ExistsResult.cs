@@ -1,19 +1,18 @@
 ﻿namespace LionFire.Persistence
 {
-    public struct ExistsResult : IPersistenceResult
+    public struct ExistsResult : ITransferResult
     {
         public object Error { get; set; }
 
-        public PersistenceResultFlags Flags { get; set; }
+        public TransferResultFlags Flags { get; set; }
 
         public bool? IsSuccess => Flags.IsSuccessTernary();
-        public bool IsNoop => Flags.HasFlag(PersistenceResultFlags.Noop);
 
-        public static readonly PersistenceResult Success = new PersistenceResult { Flags = PersistenceResultFlags.Success };
-        public static readonly PersistenceResult Found = new PersistenceResult { Flags = PersistenceResultFlags.Found };
-        public static readonly PersistenceResult NotFound = new PersistenceResult { Flags = PersistenceResultFlags.NotFound };
-        public static readonly PersistenceResult PreviewFail = new PersistenceResult { Flags = PersistenceResultFlags.PreviewFail };
-        public static readonly PersistenceResult PreviewSuccess = new PersistenceResult { Flags = PersistenceResultFlags.PreviewSuccess };
+        public static readonly TransferResult Success = new TransferResult { Flags = TransferResultFlags.Success };
+        public static readonly TransferResult Found = new TransferResult { Flags = TransferResultFlags.Found };
+        public static readonly TransferResult NotFound = new TransferResult { Flags = TransferResultFlags.NotFound };
+        public static readonly TransferResult PreviewFail = new TransferResult { Flags = TransferResultFlags.PreviewFail };
+        public static readonly TransferResult PreviewSuccess = new TransferResult { Flags = TransferResultFlags.PreviewSuccess };
     }
 
  }

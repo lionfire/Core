@@ -1,0 +1,25 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+	<PropertyGroup>
+		<TargetFramework>net8.0</TargetFramework>
+		<ImplicitUsings>enable</ImplicitUsings>
+		<Nullable>enable</Nullable>
+		<RootNamespace>LionFire.Expanders.SharpZipLib_</RootNamespace>
+
+	</PropertyGroup>
+
+	<ItemGroup>
+	  <PackageReference Include="Overby.Extensions.Attachments" />
+	</ItemGroup>
+
+
+	<ItemGroup>
+		<ProjectReference Include="..\LionFire.Persistence.Handles.Abstractions\LionFire.Persistence.Handles.Abstractions.csproj" />
+		<ProjectReference Include="..\LionFire.Persistence.SharpZipLib\LionFire.Persistence.SharpZipLib.csproj" />
+		<ProjectReference Include="..\LionFire.Expanders\LionFire.Expanders.csproj" />
+		<ProjectReference Include="..\LionFire.Persistence\LionFire.Data.Persisters.csproj" />
+		<ProjectReference Include="..\LionFire.Vos\LionFire.Vos.csproj" />
+	</ItemGroup>
+
+
+</Project>

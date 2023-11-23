@@ -17,7 +17,7 @@ namespace LionFire.Persistence
     public class PersistenceOperation
     {
         public static implicit operator Lazy<PersistenceOperation>(PersistenceOperation op) => new Lazy<PersistenceOperation>(() => op);
-        public static implicit operator PersistenceOperation(Lazy<PersistenceOperation> op) => (PersistenceOperation)op?.Value;
+        public static implicit operator PersistenceOperation?(Lazy<PersistenceOperation> op) => op?.Value;
 
         #region Static
 
@@ -115,10 +115,10 @@ namespace LionFire.Persistence
         #region Path
 
         /// <seealso cref="PersistenceOperationExtensions.SetPath"/>
-        public string Path
-        {
-            get => Reference?.Path;
-        }
+        public string? Path => Reference?.Path;
+        public string? FileName => System.IO.Path.GetFileNameWithoutExtension(Path);
+        public string? Id => FileName;
+
         //public bool? PathIsMissingExtension { get; set; } // TODO REVIEW - is this still needed now that there is AutoAppendExtension?
 
         //public AutoAppendExtension? AutoAppendExtension { get; set; }
@@ -193,7 +193,7 @@ namespace LionFire.Persistence
         #endregion
 
         public IEnumerable<string?> EffectiveReadExtensions 
-            => PotentialExtensions 
+            => PotentialExtensions?.Cast<string?>() 
             ?? new string?[] { Extension ?? DetectedOrEffectiveFileExtension /* may be null */ };
 
     }

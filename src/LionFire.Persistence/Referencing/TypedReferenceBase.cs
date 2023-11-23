@@ -1,9 +1,10 @@
-﻿using LionFire.Dependencies;
-using LionFire.ExtensionMethods.Poco.Resolvables;
-using LionFire.Resolvables;
+﻿using LionFire.Data.Async.Gets;
+using LionFire.Dependencies;
+using LionFire.ExtensionMethods.Poco.Getters;
 using LionFire.Structures;
 using System;
 using System.Threading.Tasks;
+using LionFire.Data.Async.Gets;
 
 namespace LionFire.Referencing
 {
@@ -36,7 +37,7 @@ namespace LionFire.Referencing
     }
 
 #if TOPORT
-    public class AssetPathToVobReferenceResolver : IResolver<IResolvingReference, IReference>
+    public class AssetPathToVobReferenceResolver : IGetter<IResolvingReference, IReference>
     {
         public IReference Resolve<T>(T r) where T : IResolvingReference
         {
@@ -46,7 +47,10 @@ namespace LionFire.Referencing
 #endif
 
     // TODO: Document, maybe rename generic type names
-    public abstract class ResolvingTypedReferenceBase<TConcrete, TValue> : ReferenceBase<TConcrete>, ITypedReference, IResolvable
+    public abstract class ResolvingTypedReferenceBase<TConcrete, TValue> 
+        : ReferenceBase<TConcrete>
+        , ITypedReference
+        , IGetter
         where TConcrete : ReferenceBase<TConcrete>
     {
         public override Type Type => typeof(TValue);
@@ -73,7 +77,7 @@ namespace LionFire.Referencing
         {
             if (resolvedReference == null)
             {
-                resolvedReference = (await ((TConcrete)(object)this).Resolve<TConcrete, IReference>().ConfigureAwait(false)).Value; // HARDCAST
+                resolvedReference = (await ((TConcrete)(object)this).AmbientGet<TConcrete, IReference>().ConfigureAwait(false)).Value; // HARDCAST
             }
         }
 

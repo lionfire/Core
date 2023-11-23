@@ -44,26 +44,26 @@ namespace LionFire.Vos.Environment
         
         #endregion
 
-        IFlexOwner IFlexOverlayOwner.ParentFlex => Inherit ? ParentVobNode?.Value : null;
+        IFlexOwner IFlexOverlayOwner.ParentFlex => Inherit ? this.NextAncestor()?.Value : null;
 
-        public T TryGet<T>(string key) => FlexDictionary.QueryFlex(key).Get<T>();
+        public T TryGet<T>(string key) => FlexDictionary.QueryFlex(key).GetOrCreate<T>();
         
         public object this[string key]
         {
             get => FlexDictionary.QueryFlex(key)?.SingleValueOrDefault();
-            set => FlexDictionary.GetFlex(key)?.Set(value, allowReplace: true, onlyReplaceSameType: false);
+            set => FlexDictionary.GetFlex(key)?.Set(value);
         }
 
-        //public void Add<T>(string key, T value)
-        //    => Values.AddOrThrow<string, T>(key, value);
+        //public void Add<TValue>(string key, TValue value)
+        //    => Values.AddOrThrow<string, TValue>(key, value);
 
-        //public T Get<T>(string key)
+        //public TValue Get<TValue>(string key)
         //{
-        //    if (Values.ContainsKey(key)) return (T)Values[key];
+        //    if (Values.ContainsKey(key)) return (TValue)Values[key];
         //    if (Inherit)
         //    {
         //        var parent = this.ParentValue;
-        //        if (parent != null) return parent.Get<T>(key);
+        //        if (parent != null) return parent.Get<TValue>(key);
         //    }
         //    return default;
         //}

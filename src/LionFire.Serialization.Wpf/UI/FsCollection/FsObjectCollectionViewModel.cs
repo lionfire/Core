@@ -8,6 +8,8 @@ using System.Threading.Tasks;
 using LionFire.UI;
 using System.Diagnostics;
 using LionFire.Persistence;
+using LionFire.Dependencies;
+using LionFire.Applications;
 
 namespace LionFire.Serialization.UI
 {
@@ -17,7 +19,7 @@ namespace LionFire.Serialization.UI
 
         public FsObjectCollectionViewModel()
         {
-            Root = new DirectoryTreeNode(LionFireEnvironment.Directories.AppProgramDataDir);
+            Root = new DirectoryTreeNode(DependencyContext.Current.GetService<AppDirectories>().AppProgramDataDir);
             objects.AutoResolveObjects = true;
             objects.IsObjectsEnabled = true;
             objects.Handles.CollectionChanged += Handles_CollectionChanged;

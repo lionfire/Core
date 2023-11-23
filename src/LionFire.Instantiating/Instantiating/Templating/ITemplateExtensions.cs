@@ -22,7 +22,15 @@ namespace LionFire.Instantiating
             => (TInstance)ITemplateExtensions.Create((ITemplate)template, typeof(TInstance), inject);
 
 
-        public static object Create(this ITemplate template, Type instanceType = null, bool inject = true)
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="template"></param>
+        /// <param name="instanceType"></param>
+        /// <param name="inject">Create using ActivatorUtilities.CreateInstance using ServiceProvider (if it is set) from DependencyContext.Current.ServiceProvider</param>
+        /// <returns></returns>
+        /// <exception cref="Exception"></exception>
+        public static object Create(this ITemplate template, Type instanceType = null, bool inject = true, IServiceProvider serviceProvider = null)
         {
             if (instanceType == null)
             {
@@ -30,7 +38,7 @@ namespace LionFire.Instantiating
                 instanceType = interfaceType.GenericTypeArguments[0];
             }
 
-            var inst = inject ? ActivatorUtilities.CreateInstance(DependencyContext.Current.ServiceProvider, instanceType) : Activator.CreateInstance(instanceType);
+            var inst = inject && (serviceProvider != null || DependencyContext.Current.ServiceProvider != null) ? ActivatorUtilities.CreateInstance(serviceProvider ?? DependencyContext.Current.ServiceProvider, instanceType) : Activator.CreateInstance(instanceType);
 
             var templateInstance = inst as ITemplateInstance;
             if (templateInstance != null)

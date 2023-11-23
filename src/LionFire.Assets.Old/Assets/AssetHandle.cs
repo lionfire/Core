@@ -41,8 +41,8 @@ namespace LionFire.Persistence.Assets
 #if TODO
         public void SetObject(T obj) { base.Value = obj; }
         Task<bool> IDeletable.Delete() => throw new System.NotImplementedException();
-        Task<IPersistenceResult> ICommitableImpl.Commit() => throw new System.NotImplementedException();
-        Task<IPersistenceResult> IDeletableImpl.Delete() => throw new System.NotImplementedException();
+        Task<ITransferResult> ICommitableImpl.Commit() => throw new System.NotImplementedException();
+        Task<ITransferResult> IDeletableImpl.Delete() => throw new System.NotImplementedException();
 #endif
         }
 

@@ -1,3 +1,4 @@
+#if LiveSharp
 using LionFire.Dependencies;
 using LionFire.LiveSharp;
 using LiveSharp;
@@ -32,7 +33,7 @@ namespace LiveSharp
                 {
                     Logger.LogInformation($"{typeof(ILiveSharpRuntime).Name}.{nameof(ILiveSharpRuntime.OnCodeUpdateReceived)}() Method: {updatedMethod.DeclaringType.FullName}.{updatedMethod.MethodIdentifier}");
 
-                    Mediator.Publish(new UpdatedMethodNotification(updatedMethod));
+                    Mediator?.Publish(new UpdatedMethodNotification(updatedMethod));
                 }
             }));
 
@@ -40,14 +41,10 @@ namespace LiveSharp
             {
                 Logger.LogInformation($"[LionFire.Blazor.Components] {typeof(ILiveSharpRuntime).Name}.{nameof(ILiveSharpRuntime.OnResourceUpdateReceived)}() {path}");
 
-                Mediator.Publish<UpdatedResourceNotification>(new UpdatedResourceNotification(path, content));
+                Mediator?.Publish<UpdatedResourceNotification>(new UpdatedResourceNotification(path, content));
             }));
 
         }
-
-
-
-
 
         public void Run(ILiveSharpRuntime app)
         {
@@ -56,3 +53,4 @@ namespace LiveSharp
         }
     } 
 }
+#endif

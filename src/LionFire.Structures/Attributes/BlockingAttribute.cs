@@ -3,17 +3,21 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace LionFire
-{
-    /// <summary>
-    /// When defined on a method, indicates that it causes some sort of blocking behavior
-    /// </summary>
-    [System.AttributeUsage(AttributeTargets.Method | AttributeTargets.Property, Inherited = true, AllowMultiple = false)]
-    public sealed class BlockingAttribute : Attribute
-    {        
-        public string Alternative { get; set; }
+namespace LionFire;
 
-        public BlockingAttribute() { }
-        public BlockingAttribute(string alternative) { Alternative = alternative; }
+/// <summary>
+/// When defined on a method, indicates that it causes some sort of blocking behavior
+/// </summary>
+[System.AttributeUsage(AttributeTargets.Method | AttributeTargets.Property, Inherited = true, AllowMultiple = false)]
+public sealed class BlockingAttribute : Attribute
+{
+    public string Alternative { get; set; }
+    public string Comment { get; set; }
+
+    public BlockingAttribute() { }
+    public BlockingAttribute(string alternative, string? comment = null)
+    {
+        Alternative = alternative;
+        Comment = comment;
     }
 }

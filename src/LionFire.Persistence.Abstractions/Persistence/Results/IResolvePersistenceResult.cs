@@ -1,8 +1,8 @@
-﻿using LionFire.Resolves;
+﻿using LionFire.Data.Async.Gets;
 
 namespace LionFire.Persistence
 {
-    public interface IResolvePersistenceResult : IPersistenceResult, IResolveResult
+    public interface IResolvePersistenceResult : ITransferResult, IGetResult
     {
     }
 

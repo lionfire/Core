@@ -91,7 +91,7 @@ namespace LionFire.Execution.Roslyn.Scripting
         }
 
 
-        public Task Start()
+        public Task StartAsync(CancellationToken cancellationToken = default)
         {
             cts = new System.Threading.CancellationTokenSource();
 #if GLOBALS
@@ -102,7 +102,7 @@ namespace LionFire.Execution.Roslyn.Scripting
 
             runTask = Task.Run(() =>
             {
-                roslynRunTask.Wait();
+                roslynRunTask.Wait(cancellationToken);
                 var result = roslynRunTask.Result;
                 if (result.Exception != null)
                 {
@@ -146,10 +146,6 @@ namespace LionFire.Execution.Roslyn.Scripting
 
     }
 }
-
-
-
-
 
 
 //public ScriptOptions Options {

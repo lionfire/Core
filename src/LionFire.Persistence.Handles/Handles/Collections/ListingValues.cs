@@ -5,44 +5,44 @@ using System.Threading.Tasks;
 namespace LionFire.Persistence.Handles
 {
     //public abstract class ResolvableMapper<TItem, TUnderlying, TUnderlyingCollection, TResolvedUnderlyingCollection> : AsyncMapper<TItem, TUnderlying, TUnderlyingCollection, TResolvedUnderlyingCollection>
-    //    //, IResolves<TUnderlyingCollectionItem>
-    //    //where TUnderlyingCollection : IResolves<TUnderlyingCollectionItem>
+    //    //, IGets<TUnderlyingCollectionItem>
+    //    //where TUnderlyingCollection : IGets<TUnderlyingCollectionItem>
     //    where TUnderlyingCollection : IEnumerable<TUnderlying>
     //{
     //    public ResolvableMapper(TUnderlyingCollection underlying) : base(underlying)
     //    {
     //    }
 
-    //    //public ITask<IResolveResult<TUnderlyingCollectionItem>> Resolve() => UnderlyingHandle.Resolve();
+    //    //public ITask<IGetResult<TUnderlyingCollectionItem>> Resolve() => UnderlyingHandle.Get();
     //}
     //public abstract class AsyncResolvableMapper<TItem, TUnderlying, TUnderlyingCollection, TResolvedUnderlyingCollection> : AsyncMapper<TItem, TUnderlying, TUnderlyingCollection, TResolvedUnderlyingCollection>
-    //    //, IResolves<TUnderlyingCollectionItem>
-    //    where TUnderlyingCollection : IResolves<TUnderlyingCollectionItem>, IEnumerable<TUnderlying>
+    //    //, IGets<TUnderlyingCollectionItem>
+    //    where TUnderlyingCollection : IGets<TUnderlyingCollectionItem>, IEnumerable<TUnderlying>
     //{
     //    public AsyncResolvableMapper(TUnderlyingCollection underlying) : base(underlying)
     //    {
     //    }
 
-    //    //public ITask<IResolveResult<TUnderlyingCollectionItem>> Resolve() => UnderlyingResolves.Resolve();
+    //    //public ITask<IGetResult<TUnderlyingCollectionItem>> Resolve() => UnderlyingResolves.Get();
     //}
 
     public class ListingValues<TItem>
         : AsyncMapper<TItem,
-            Listing<TItem>,
-            IEnumerable<Listing<TItem>>,
-            //IReadHandleBase<Metadata<IEnumerable<Listing<TItem>>>>,
-            Metadata<IEnumerable<Listing<TItem>>>>
+            IListing<TItem>,
+            IEnumerable<IListing<TItem>>,
+            //IReadHandleBase<Metadata<IEnumerable<IListing<TItem>>>>,
+            Metadata<IEnumerable<IListing<TItem>>>>
     {
         IReference reference;
 
-        public ListingValues(IReadHandleBase<Metadata<IEnumerable<Listing<TItem>>>> listings) : base(listings)
+        public ListingValues(IReadHandleBase<Metadata<IEnumerable<IListing<TItem>>>> listings) : base(listings)
         {
             reference = listings.Reference;
         }
 
-        public override async Task<TItem> Map(Listing<TItem> underlying)
+        public override async Task<TItem> Map(IListing<TItem> underlying)
         {
-            var result = await reference.GetChild(underlying.Name).GetReadHandle<TItem>().TryGetValue().ConfigureAwait(false);
+            var result = await reference.GetChild(underlying.Name).GetReadHandle<TItem>().GetIfNeeded().ConfigureAwait(false);
             return result.Value;
         }
     }

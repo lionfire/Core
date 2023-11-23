@@ -235,7 +235,7 @@ namespace LionFire.Applications
             }
             catch(Exception ex)
             {
-                l.Error("Initializer " + (staticType == null ? "(null)" : staticType.FullName) + " threw exception: " + ex.ToString());
+                l.Error("Builder " + (staticType == null ? "(null)" : staticType.FullName) + " threw exception: " + ex.ToString());
             }
 
             if (!foundInitializer)
@@ -264,11 +264,11 @@ namespace LionFire.Applications
 #endif
                             var initializer = (IAssemblyInitializer)Activator.CreateInstance(initializerType);
                             initializer.Initialize();
-                            l.Trace("Initializer '" + initializerType.FullName + "' executed.");
+                            l.Trace("Builder '" + initializerType.FullName + "' executed.");
                         }
                         catch (Exception ex)
                         {
-                            l.Error("Initializer '" + initializerType.FullName + "' threw exception: " + ex.ToString());
+                            l.Error("Builder '" + initializerType.FullName + "' threw exception: " + ex.ToString());
                         }
                         finally
                         {

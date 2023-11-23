@@ -7,7 +7,7 @@ using System;
 
 namespace LionFire.Persistence.Persisters
 {
-    public class DefaultOnlyPersisterProvider<TReference, TPersister, TOptions> : PersisterProviderBase<TReference, TPersister, TOptions>
+    public class DefaultOnlyPersisterProvider<TReference, TPersister> : PersisterProviderBase<TReference, TPersister>
           where TReference : IReference
         where TPersister : class, IPersister<TReference>
     {
@@ -15,7 +15,7 @@ namespace LionFire.Persistence.Persisters
 
         public override bool HasDefaultPersister => true;
 
-        public DefaultOnlyPersisterProvider(IServiceProvider serviceProvider, IOptionsMonitor<TOptions> options) : base(serviceProvider, options)
+        public DefaultOnlyPersisterProvider(IServiceProvider serviceProvider) : base(serviceProvider)
         {
         }
 

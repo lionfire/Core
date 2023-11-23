@@ -1,0 +1,66 @@
+﻿@using LionFire.Threading
+@*Inspired by https://stackoverflow.com/a/60036741/208304*@
+
+@typeparam TResult
+@typeparam TSource
+@typeparam TDisplay
+
+@namespace LionFire.Blazor.Components
+
+@if (Resolved)
+{
+    if (Ready != null)
+    {
+        @Ready(Transform(Result))
+    }
+    else
+    {
+        @Transform(Result)
+    }
+}
+else
+{
+    if (InProgress != null)
+    {
+        @InProgress
+    }
+    else
+    {
+        <span>...</span>
+    }
+}
+
+@code {
+    [Parameter] public TSource Source { get; set; }
+    [Parameter] public Func<TSource, Task<TResult>> Resolver { get; set; }
+    [Parameter] public Func<TResult, TDisplay> Transform { get; set; }
+
+    [Parameter] public RenderFragment<TDisplay> Ready { get; set; }
+    [Parameter] public RenderFragment InProgress { get; set; }
+    TResult Result { get; set; }
+
+    bool Resolved { get; set; }
+
+    protected override Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            Refresh().FireAndForget();
+        }
+        return base.OnAfterRenderAsync(firstRender);
+    }
+
+    public async Task Refresh()
+    {
+        if (Resolved)
+        {
+            Resolved = false;
+            InvokeAsync(StateHasChanged).FireAndForget();
+        }
+
+        Result = await Resolver.Invoke(Source);
+        Resolved = true;
+        InvokeAsync(StateHasChanged).FireAndForget();
+    }
+}
+

@@ -21,8 +21,8 @@ namespace LionFire.Persistence
     
 
     //public interface IEventedPersistenceReadHandle<out T> : IEventedReadHandle<T>, IPersisted { }
-    //public interface ILazyRetrievableReadHandleCovariant<out T> : RH<T>, ILazilyResolvesCovariant<T> { }
-    //public interface ILazyRetrievableReadHandle<T> : RH<T>, ILazilyResolves<T> { }
+    //public interface ILazyRetrievableReadHandleCovariant<out T> : RH<T>, ILazilyGetsCovariant<T> { }
+    //public interface ILazyRetrievableReadHandle<T> : RH<T>, ILazilyGets<T> { }
 
 
 

@@ -14,10 +14,10 @@ namespace LionFire.Assets
     public static class Assets<T>
     {
         public static HC<T> HC => new AssetReference<T>().GetCollectionHandle<T>();
-        public static IReadHandle<Metadata<IEnumerable<Listing<T>>>> List => new AssetReference<T>().GetListingsHandle<T>();
+        public static IReadHandle<Metadata<IEnumerable<IListing<T>>>> List => new AssetReference<T>().GetListingsHandle<T>();
 
         public static IReadHandle<T> R(string assetPath) => new AssetReference<T>(assetPath).GetReadHandle<T, IAssetReference>();
         public static IReadWriteHandle<T> H(string assetPath) => new AssetReference<T>(assetPath).GetReadWriteHandle<T, IAssetReference>();
-        //public static IReadWriteHandle<T> W(string assetPath) => new AssetReference<T>(assetPath).GetWriteHandle<T, IAssetReference>(); // FUTURE
+        //public static IReadWriteHandle<TValue> W(string assetPath) => new AssetReference<TValue>(assetPath).GetWriteHandle<TValue, IAssetReference>(); // FUTURE
     }
 }

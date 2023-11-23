@@ -15,6 +15,7 @@ using LionFire.Vos;
 using LionFire.Vos.Packages;
 using System.Threading.Tasks;
 using LionFire.Vos.Services;
+using LionFire.Data;
 
 namespace Stores_
 {
@@ -55,37 +56,38 @@ namespace Stores_
             var dataReference1 = new VobReference(storesManagerPath + "/data/file1.txt");
             var dataReference2 = new VobReference(storesManagerPath + "/data/file2.txt");
 
-            Assert.False(await directReference1.GetReadHandle<string>().Exists()); // False due to MountOptions.IsManuallyMounted = true
+            Assert.False(await directReference1.GetReadHandle<string>().Exists()); // False due to VobMountOptions.IsManuallyMounted = true
             Assert.False(await directReference2.GetReadHandle<string>().Exists());
             Assert.False(await dataReference1.GetReadHandle<string>().Exists());
             Assert.False(await dataReference2.GetReadHandle<string>().Exists());
 
             // How to get a Vob?  VobReference.ToVob() might be nice.  How about VobReference.ToVob().AsType<PackageManager>()
-            var storesManager = "/".GetVob().GetService<ServiceDirectory>().GetRequiredService<PackageActivator>();
+            var packageProvider = "/".GetVob().Acquire<PackageProvider>();
+            //var storesManager = "/".GetVob().GetService<ServiceDirectory>().GetRequiredService<PackageProvider>();
             //var storesManager = storesManagerPath.ToVob().GetMultiTyped().AsType<PackageManager>();
-            Assert.NotNull(storesManager);
+            Assert.NotNull(packageProvider);
 
-            //Assert.True(pluginManager.AvailablePackages.Contains("plugin1")); // TODO - once some sort of GetChildren functionality is available
+            //Assert.True(pluginManager.AvailablePackages.Contains("plugin1")); // TODO - once some sort of GetChildren functionality is available 
             //Assert.True(pluginManager.AvailablePackages.Contains("plugin2"));
-            Assert.False(Enumerable.Any<string>(storesManager.EnabledPackages));
+            Assert.False(Enumerable.Any<string>(packageProvider.EnabledPackages));
 
             #region ExeDir
             {
-                storesManager.Enable("ExeDir");
-                Assert.Contains((System.Collections.Generic.IEnumerable<string>)storesManager.EnabledPackages, s => s == "ExeDir");
-                Assert.Single((System.Collections.Generic.IEnumerable<string>)storesManager.EnabledPackages);
+                packageProvider.Enable("ExeDir");
+                Assert.Contains((System.Collections.Generic.IEnumerable<string>)packageProvider.EnabledPackages, s => s == "ExeDir");
+                Assert.Single((System.Collections.Generic.IEnumerable<string>)packageProvider.EnabledPackages);
 
                 var readHandle = dataReference1.GetReadHandle<string>();
-                var persistenceResult = await readHandle.Resolve();
+                var persistenceResult = await readHandle.Get();
 
 //#error NEXT: this fails for P_Normal.  Verify in Enable that it is getting mounted.
-                Assert.True(persistenceResult.ToRetrieveResult().Flags.HasFlag(PersistenceResultFlags.Success));
+                Assert.True(persistenceResult.Flags.HasFlag(TransferResultFlags.Success));
                 Assert.True(persistenceResult.IsSuccess);
                 Assert.Equal(testContents1, readHandle.Value);
             }
             {
                 var readHandle = directReference1.GetReadHandle<string>();
-                var persistenceResult = await readHandle.Resolve();
+                var persistenceResult = await readHandle.Get();
                 Assert.True(persistenceResult.IsSuccess);
                 Assert.Equal(testContents1, readHandle.Value);
             }
@@ -94,12 +96,12 @@ namespace Stores_
             #region DataDir
             {
                 Assert.False(await dataReference2.GetReadHandle<string>().Exists());
-                storesManager.Enable("DataDir");
-                Assert.Contains((System.Collections.Generic.IEnumerable<string>)storesManager.EnabledPackages, s => s == "DataDir");
-                Assert.Equal(2, Enumerable.Count<string>(storesManager.EnabledPackages));
+                packageProvider.Enable("DataDir");
+                Assert.Contains((System.Collections.Generic.IEnumerable<string>)packageProvider.EnabledPackages, s => s == "DataDir");
+                Assert.Equal(2, Enumerable.Count<string>(packageProvider.EnabledPackages));
 
                 var readHandle = dataReference2.GetReadHandle<string>();
-                var persistenceResult = await readHandle.Resolve();
+                var persistenceResult = await readHandle.Get();
 
                 Assert.True(persistenceResult.IsSuccess);
                 Assert.Equal(testContents2, readHandle.Value);
@@ -107,15 +109,15 @@ namespace Stores_
             }
             {
                 var readHandle = directReference2.GetReadHandle<string>();
-                var persistenceResult = await readHandle.Resolve();
+                var persistenceResult = await readHandle.Get();
                 Assert.True(persistenceResult.IsSuccess);
                 Assert.Equal(testContents2, readHandle.Value);
             }
             #endregion
 
-            Assert.True((bool)storesManager.Disable("ExeDir"));
-            Assert.True((bool)storesManager.Disable("DataDir"));
-            Assert.Empty((System.Collections.IEnumerable)storesManager.EnabledPackages);
+            Assert.True((bool)packageProvider.Disable("ExeDir"));
+            Assert.True((bool)packageProvider.Disable("DataDir"));
+            Assert.Empty((System.Collections.IEnumerable)packageProvider.EnabledPackages);
 
             var vobMounts = new VobReference("/stores/data").GetVob().AcquireOwn<VobMounts>();
             Assert.False(vobMounts.HasLocalReadMounts);
@@ -125,14 +127,14 @@ namespace Stores_
 
             {
                 var readHandle = dataReference1.GetReadHandle<string>();
-                var persistenceResult = await readHandle.Resolve();
-                Assert.True(((IPersistenceResult)persistenceResult).Flags.HasFlag(PersistenceResultFlags.MountNotAvailable));
+                var persistenceResult = await readHandle.Get();
+                Assert.True(((ITransferResult)persistenceResult).Flags.HasFlag(TransferResultFlags.MountNotAvailable));
                 Assert.Null(persistenceResult.IsSuccess);
             }
             {
                 var readHandle = dataReference2.GetReadHandle<string>();
-                var persistenceResult = await readHandle.Resolve();
-                Assert.True(((IPersistenceResult)persistenceResult).Flags.HasFlag(PersistenceResultFlags.MountNotAvailable));
+                var persistenceResult = await readHandle.Get();
+                Assert.True(((ITransferResult)persistenceResult).Flags.HasFlag(TransferResultFlags.MountNotAvailable));
                 Assert.Null(persistenceResult.IsSuccess);
             }
 
@@ -173,15 +175,15 @@ namespace Stores_
 
                         .VosPackageProvider("/stores".ToVobReference())
 
-                        .VosMount("/stores/available/ExeDir", Path.GetDirectoryName(this.GetType().Assembly.Location).ToFileReference(), new MountOptions { IsManuallyEnabled = true })
-                        .InitializeVob("/stores/available/ExeDir", v => v.AddOwn(v => new MountOptions
+                        .VosMount("/stores/available/ExeDir", Path.GetDirectoryName(this.GetType().Assembly.Location).ToFileReference(), new VobMountOptions { MustBeManuallyEnabled = true })
+                        .InitializeVob("/stores/available/ExeDir", v => v.AddOwn(v => new VobMountOptions
                         {
                             Name = "ExecutableDirectory",
                             ReadPriority = 10,
                             WritePriority = null,
                         }))
-                        .VosMount("/stores/available/DataDir", dataDir.ToFileReference(), new MountOptions { IsManuallyEnabled = true })
-                        .InitializeVob("/stores/available/DataDir", v => v.AddOwn(v => new MountOptions
+                        .VosMount("/stores/available/DataDir", dataDir.ToFileReference(), new VobMountOptions { MustBeManuallyEnabled = true })
+                        .InitializeVob("/stores/available/DataDir", v => v.AddOwn(v => new VobMountOptions
                         {
                             Name = "DataDirectory",
                             ReadPriority = 100,
@@ -210,7 +212,7 @@ namespace Stores_
 
                         //.AddVosStores("/.stores", c =>
                         //{
-                        //    c.AddStore("ExeDir", Path.GetDirectoryName(this.GetType().Assembly.Location).ToFileReference(), new MountOptions(10, name: "ExecutableDirectory"));
+                        //    c.AddStore("ExeDir", Path.GetDirectoryName(this.GetType().Assembly.Location).ToFileReference(), new VobMountOptions(10, name: "ExecutableDirectory"));
                         //})
 
 #if truex // TODO
@@ -230,15 +232,15 @@ namespace Stores_
 
 
                         //.VosPackageManager("/stores")
-                        //.VosMount("/stores/available/ExeDir", Path.GetDirectoryName(this.GetType().Assembly.Location).ToFileReference(), new MountOptions { /*IsDisabled = true */})
-                        //.InitializeVob("/stores/available/ExeDir", v => v.AddOwn(v => new MountOptions
+                        //.VosMount("/stores/available/ExeDir", Path.GetDirectoryName(this.GetType().Assembly.Location).ToFileReference(), new VobMountOptions { /*IsDisabled = true */})
+                        //.InitializeVob("/stores/available/ExeDir", v => v.AddOwn(v => new VobMountOptions
                         //{
                         //    Name = "ExecutableDirectory",
                         //    ReadPriority = 10,
                         //    WritePriority = null,
                         //}))
-                        //.VosMount("/stores/available/DataDir", dataDir.ToFileReference(), new MountOptions { /*IsDisabled = true */})
-                        //.InitializeVob("/stores/available/DataDir", v => v.AddOwn(v => new MountOptions
+                        //.VosMount("/stores/available/DataDir", dataDir.ToFileReference(), new VobMountOptions { /*IsDisabled = true */})
+                        //.InitializeVob("/stores/available/DataDir", v => v.AddOwn(v => new VobMountOptions
                         //{
                         //    Name = "DataDirectory",
                         //    ReadPriority = 100,
@@ -246,8 +248,8 @@ namespace Stores_
                         //}));
                         //#error NEXT: More elegant mount options for ExeDir
 
-                        //new MountOptions(
-                        //    decorators: new MultiType(new MultiTypableVisitor<IVobNodeProvider>(()=> new MountOptions { Name = "UnitTestPlugin", ReadPriority = 100, WritePriority = -100 }))
+                        //new VobMountOptions(
+                        //    decorators: new MultiType(new MultiTypableVisitor<IVobNodeProvider>(()=> new VobMountOptions { Name = "UnitTestPlugin", ReadPriority = 100, WritePriority = -100 }))
                         //{
                         //    Name = "UnitTestPluginsDir"
                         //})
@@ -255,7 +257,7 @@ namespace Stores_
                         //.VosMount("/`/PluginData", "/`/TestPlugins/data".ToVobReference()) // Custom data dir for app
 
                         // MOVE - FUTURE: Vos metadata
-                        //.VosMount("/_/vos", new VobReference("/") { Persister = "vos" }, new MountOptions
+                        //.VosMount("/_/vos", new VobReference("/") { Persister = "vos" }, new VobMountOptions
                         //{
                         //    IsReadOnly = true,
                         //    IsExclusive = true,

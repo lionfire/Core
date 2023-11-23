@@ -21,7 +21,7 @@ namespace LionFire.Vos.Collections
             var type = vob.TryGetOwnVobNode<CollectionType>()?.Value?.Type;
             if(type != null) { return type; }
 
-            var ctm = vob.AcquireNext<ICollectionTypeProvider>(1, 1);
+            var ctm = vob.Acquire<ICollectionTypeProvider>(1, 1);
             if (ctm != null) { type = ctm.GetCollectionType(vob);  }
             
             //type = vob.Reference.GetCollectionType();

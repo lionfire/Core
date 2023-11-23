@@ -17,6 +17,9 @@
         public bool ReuseHandles { get; set; }
         public bool AutoRegister { get; set; }
         public bool CheckIReferencable { get; set; }
+
+        //public bool WeakHandleReferences { get; set; } // Is this doable? A good idea?
+        //public bool WeakValueReferences { get; set; } // Is this doable? A good idea?
     }
 
 }

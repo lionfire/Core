@@ -1,0 +1,64 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+	<PropertyGroup>
+		<TargetFramework>net8.0</TargetFramework>
+		<ImplicitUsings>enable</ImplicitUsings>
+		<Nullable>enable</Nullable>
+
+		<IsPackable>false</IsPackable>
+		<RootNamespace></RootNamespace>
+	</PropertyGroup>
+
+	<ItemGroup>
+	  <None Remove="appsettings.test.json" />
+	</ItemGroup>
+
+	<ItemGroup>
+	  <Content Include="appsettings.test.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	    <SubType>Component</SubType>
+	  </Content>
+	</ItemGroup>
+
+	<ItemGroup>
+		<PackageReference Include="Microsoft.NET.Test.Sdk" />
+		<PackageReference Include="MSTest.TestAdapter" />
+		<PackageReference Include="MSTest.TestFramework" />
+		<PackageReference Include="coverlet.collector">
+		  <PrivateAssets>all</PrivateAssets>
+		  <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+		</PackageReference>
+		<PackageReference Include="OpenTelemetry.Api" />
+		<PackageReference Include="OpenTelemetry.Exporter.Console" />
+		<PackageReference Include="OpenTelemetry.Exporter.InMemory" />
+		<PackageReference Include="OpenTelemetry.Extensions.Hosting" />
+		<PackageReference Include="OpenTelemetry.Instrumentation.Runtime" />
+		<PackageReference Include="Overby.Extensions.Attachments" />
+		<PackageReference Include="Serilog.Expressions" />
+		<PackageReference Include="Serilog.Extensions.Hosting" />
+		<PackageReference Include="Serilog.Extensions.Logging" />
+		<PackageReference Include="Serilog.Sinks.Console" />
+		<PackageReference Include="Serilog.Formatting.Compact" />
+		<PackageReference Include="Serilog.Sinks.File" />
+		<PackageReference Include="Serilog.Sinks.Debug" />
+		<PackageReference Include="Serilog.Settings.Configuration" />
+		<PackageReference Include="Serilog.Sinks.File.Archive" />
+		<PackageReference Include="Serilog.Sinks.File.GZip" />
+		<PackageReference Include="Serilog.Sinks.Loki" />
+		
+
+	</ItemGroup>
+
+
+	<ItemGroup>
+		<ProjectReference Include="..\..\src\LionFire.Data.Async.Abstractions\LionFire.Data.Async.Abstractions.csproj" />
+		<ProjectReference Include="..\..\src\LionFire.Expanders.SharpZipLib\LionFire.Expanders.SharpZipLib.csproj" />
+		<ProjectReference Include="..\..\src\LionFire.Expanders.Vos\LionFire.Expanders.Vos.csproj" />
+		<ProjectReference Include="..\..\src\LionFire.Expanders\LionFire.Expanders.csproj" />
+		<ProjectReference Include="..\..\src\LionFire.Persistence.Filesystem\LionFire.Persistence.Filesystem.csproj" />
+		<ProjectReference Include="..\..\src\LionFire.Resolves.Abstractions\LionFire.Data.Abstractions.csproj" />
+		<ProjectReference Include="..\..\src\LionFire.Testing\LionFire.Testing.csproj" />
+		<ProjectReference Include="..\..\src\LionFire.Vos\LionFire.Vos.csproj" />
+	</ItemGroup>
+
+</Project>

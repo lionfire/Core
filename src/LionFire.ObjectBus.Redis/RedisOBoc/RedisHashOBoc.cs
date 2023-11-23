@@ -8,7 +8,7 @@ using LionFire.ObjectBus.Handles;
 using LionFire.ObjectBus.RedisPub;
 using LionFire.Persistence;
 using LionFire.Referencing;
-using LionFire.Resolves;
+using LionFire.Data.Gets;
 using MorseCode.ITask;
 
 namespace LionFire.ObjectBus.Redis
@@ -55,7 +55,7 @@ namespace LionFire.ObjectBus.Redis
         
         public override IEnumerator<T> GetEnumerator() => throw new NotImplementedException();
         //public override Task<IRetrieveResult<INotifyingReadOnlyCollection<RedisEntry>>> RetrieveImpl() => throw new NotImplementedException();
-        protected override ITask<IResolveResult<INotifyingReadOnlyCollection<RedisEntry>>> ResolveImpl() => throw new NotImplementedException();
+        protected override ITask<IGetResult<INotifyingReadOnlyCollection<RedisEntry>>> ResolveImpl() => throw new NotImplementedException();
     }
 }
 #endif

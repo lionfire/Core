@@ -1,0 +1,24 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\LionFire.Vos.Abstractions\LionFire.Vos.Abstractions.csproj" />
+    <ProjectReference Include="..\LionFire.Vos\LionFire.Vos.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Reference Include="LionFire.Expanders.Vos">
+      <HintPath>..\..\build\obj\LionFire.Expanders.Vos\Debug\net6.0\ref\LionFire.Expanders.Vos.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+
+</Project>

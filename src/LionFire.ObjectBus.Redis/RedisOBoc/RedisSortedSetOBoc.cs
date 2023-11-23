@@ -4,7 +4,7 @@ using LionFire.ObjectBus.RedisPub;
 using LionFire.Persistence;
 using LionFire.Persistence.Handles;
 using LionFire.Referencing;
-using LionFire.Resolves;
+using LionFire.Data.Gets;
 using MorseCode.ITask;
 using StackExchange.Redis;
 using System;
@@ -133,7 +133,7 @@ namespace LionFire.ObjectBus.Redis
 
         public int PageSize = 5;
 
-        protected override ITask<IResolveResult<INotifyingReadOnlyCollection<RedisEntry>>> ResolveImpl()
+        protected override ITask<IGetResult<INotifyingReadOnlyCollection<RedisEntry>>> ResolveImpl()
         {
             throw new NotImplementedException("NEXT");
             //return await Task.Run(() =>

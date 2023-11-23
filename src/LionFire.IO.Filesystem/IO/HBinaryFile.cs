@@ -1,8 +1,6 @@
 ﻿using LionFire.Persistence;
-using LionFire.Resolves;
-using MorseCode.ITask;
+using LionFire.Data.Async.Gets;
 using System.IO;
-using System.Threading.Tasks;
 
 namespace LionFire.IO
 {
@@ -18,27 +16,27 @@ namespace LionFire.IO
 
         #endregion
 
-        protected override async Task<IPersistenceResult> UpsertImpl()
+        protected override async Task<ITransferResult> UpsertImpl()
         {
             await Task.Run(() =>
             {
                 File.WriteAllBytes(Path, Value);
             });
-            return PersistenceResult.Success;
+            return TransferResult.Success;
         }
 
-        protected override async Task<IPersistenceResult> DeleteImpl()
+        protected override async Task<ITransferResult> DeleteImpl()
         {
             return await Task.Run(() =>
             {
-                if (!File.Exists(Path)) return PersistenceResult.NotFound;
+                if (!File.Exists(Path)) return TransferResult.NotFound;
 
                 File.Delete(Path);
-                return PersistenceResult.Found;
+                return TransferResult.Found;
             }).ConfigureAwait(false);
         }
 
-        protected override async ITask<IResolveResult<byte[]>> ResolveImpl()
+        protected override async ITask<IGetResult<byte[]>> GetImpl(CancellationToken cancellationToken = default)
         {
             return await Task.Run(() =>
             {

@@ -1,9 +1,9 @@
-﻿using System.Threading.Tasks;
+﻿using LionFire.Data;
+using System.Threading.Tasks;
 
-namespace LionFire.Persistence.Implementation
+namespace LionFire.Persistence.Implementation;
+
+public interface IDeletableImpl
 {
-    public interface IDeletableImpl
-    {
-        Task<IPersistenceResult> Delete();
-    }
+    Task<ITransferResult> Delete();
 }

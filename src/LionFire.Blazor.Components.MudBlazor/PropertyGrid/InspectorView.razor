@@ -1,0 +1,149 @@
+﻿@inherits ReactiveUI.Blazor.ReactiveInjectableComponentBase<InspectorVM>
+@inject IServiceProvider ServiceProvider
+@using LionFire.Inspection;
+@using LionFire.Inspection.Nodes;
+@using LionFire.Inspection.ViewModels;
+@using LionFire.UI.Components.PropertyGrid
+@using LionFire.Blazor.Components.MudBlazor_.PropertyGrid
+@using System.Text;
+
+@namespace LionFire.Blazor.Components.MudBlazor_
+
+@* @if (ViewModel.ShowTitle)
+{
+    <h3>@ViewModel.Title</h3>
+}
+ *@
+
+<div class=@InspectorClasses>
+
+    @if (DiagnosticsMode)
+    {
+        <div class="dev">Type: @Object?.GetType().Name</div>
+    }
+
+    @if (ViewModel!.ShowFilterTypes)
+    {
+        <button class=@("LionToggle " + (ViewModel.NodeVM.ShowDataMembers ? "selected" : ""))
+                @onclick=@(()=>ViewModel.NodeVM.ShowDataMembers ^= true) title="Show Data Members">
+            @if (ViewModel.NodeVM.ShowDataMembers)
+            {
+                <span>D</span>
+            }
+            else
+            {
+                <span>d</span>
+            }
+        </button>
+        <button class=@("LionToggle " + (ViewModel.NodeVM.ShowEvents ? "selected" : ""))
+                @onclick=@(()=>ViewModel.NodeVM.ShowEvents ^= true) title="Show Events">
+            @if (ViewModel.NodeVM.ShowEvents)
+            {
+                <span>E</span>
+            }
+            else
+            {
+                <span>e</span>
+            }
+        </button>
+        <button class=@("LionToggle " + (ViewModel.NodeVM.ShowMethods ? "selected" : ""))
+                @onclick=@(()=>ViewModel.NodeVM.ShowMethods ^= true) title="Show Methods">
+            @if (ViewModel.NodeVM.ShowMethods)
+            {
+                <span>M</span>
+            }
+            else
+            {
+                <span>m</span>
+            }
+        </button>
+
+        <button class=@("LionToggle " + (ViewModel.NodeVM.Options.DiagnosticsMode ? "selected" : ""))
+                @onclick=@(()=>ViewModel.NodeVM.Options.DiagnosticsMode ^= true) title="Diagnostics Mode">
+            @if (ViewModel.NodeVM.Options.DiagnosticsMode)
+            {
+                <span>Dev</span>
+            }
+            else
+            {
+                <span>dev</span>
+            }
+        </button>
+
+
+        @if (ViewModel.NodeVM.Options.DiagnosticsMode)
+        {
+            <button class=@("LionToggle " + (ViewModel.NodeVM.LocalOptions!.ShowAll ? "selected" : ""))
+                    @onclick=@(()=>ViewModel.NodeVM.LocalOptions!.ShowAll ^= true) title="Show All">
+                @if (ViewModel.NodeVM.LocalOptions!.ShowAll)
+                {
+                    <span>All</span>
+                }
+                else
+                {
+                    <span>all</span>
+                }
+            </button>
+        }
+    }
+
+    <MudSimpleTable Class="PropertyGrid">
+        <CascadingValue Name="InspectorVM" Value="@ViewModel">
+            @if (ViewModel.NodeVM.Options.DiagnosticsMode)
+            {
+                <tr>
+                    <th title="Collapsed"></th>
+                    <th>Name</th>
+                    <th class="Value">Value</th>
+                    <th></th>
+                    <th>Field Type</th>
+                    <th>Value Type</th>
+                    <th>Source Type</th>
+                    <th>Kind</th>
+                    <th title="Node type">Node</th>
+                    <th>Flags</th>
+                    <th>RW</th>
+                    <th>Depth</th>
+                    <th>Path</th>
+                    <th title="Viewable Children">VC</th>
+                    <th title="Total Children">C</th>
+                </tr>
+            }
+            <InspectorRow NodeVM="@ViewModel.NodeVM" />
+        </CascadingValue>
+    </MudSimpleTable>
+
+</div>
+
+@code {
+    protected bool DiagnosticsMode => ViewModel!.NodeVM.Options.DiagnosticsMode;
+
+    [Parameter]
+    public object? Object { get; set; }
+
+    // [Parameter]
+    // public bool ReadOnly { get; set; }
+
+    protected override Task OnParametersSetAsync()
+    {
+        ViewModel!.Source = Object;
+        // ViewModel.ReadOnly = ReadOnly;
+        return base.OnParametersSetAsync();
+    }
+
+    protected override Task OnInitializedAsync()
+    {
+        return base.OnInitializedAsync();
+    }
+
+    public string InspectorClasses
+    {
+        get
+        {
+            var sb = new StringBuilder();
+            sb.Append("Inspector");
+            if (ViewModel!.NodeVM.Options.ShowAll) { sb.Append(" no-hidden"); }
+            return sb.ToString();
+        }
+    }
+}

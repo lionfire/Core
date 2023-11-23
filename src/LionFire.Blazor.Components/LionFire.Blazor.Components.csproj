@@ -1,7 +1,8 @@
-﻿<Project Sdk="Microsoft.NET.Sdk.Razor">
+<Project Sdk="Microsoft.NET.Sdk.Razor">
 
   <PropertyGroup>
-    <TargetFramework>net5.0</TargetFramework>
+    <TargetFramework>net8.0</TargetFramework>
+	<Nullable>enable</Nullable>
   </PropertyGroup>
 
   
@@ -10,19 +11,32 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="LiveSharp" Version="2.0.13" />
-    <PackageReference Include="Microsoft.AspNetCore.Components.Web" Version="5.0.6" />
+    <PackageReference Include="CircularBuffer" />
+    <!--<PackageReference Include="LiveSharp" />-->
+	  <PackageReference Include="MediatR" />
+    <PackageReference Include="Microsoft.AspNetCore.Components.Web" />
+    <PackageReference Include="Microsoft.CodeAnalysis" />
+    <PackageReference Include="ReactiveUI.Blazor" />
+    <PackageReference Include="Swordfish.NET.CollectionsV3" />
+	  <PackageReference Include="System.ComponentModel" />
+	  <PackageReference Include="System.ComponentModel.Annotations" />
+	  <PackageReference Include="ObservableCollections" />
+	  
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\LionFire.LiveSharp\LionFire.LiveSharp.csproj" />
+    <ProjectReference Include="..\LionFire.Flex\LionFire.Flex.csproj" />
+    <ProjectReference Include="..\LionFire.Mvvm\LionFire.Mvvm.csproj" />
     <ProjectReference Include="..\LionFire.UI.Entities\LionFire.UI.Entities.csproj" />
+    <ProjectReference Include="..\LionFire.UI\LionFire.UI.csproj" />
   </ItemGroup>
 
   <ItemGroup>
-    <Reference Include="MediatR">
-      <HintPath>..\..\..\valor\Unity\Assets\Valor\bin\Debug\netstandard2.0\MediatR.dll</HintPath>
-    </Reference>
+    <Content Update="Terminal\OutputPane.razor">
+      <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
+    </Content>
   </ItemGroup>
+
+  
 
 </Project>

@@ -46,16 +46,16 @@ namespace LionFire.IO
 
         #endregion
 
-        protected override async Task<IPersistenceResult> DeleteImpl()
+        protected override async Task<ITransferResult> DeleteImpl()
         {
             return await Task.Run(() =>
             {
                 if (File.Exists(Path))
                 {
                     File.Delete(Path);
-                    return PersistenceResult.Success;
+                    return TransferResult.Success;
                 }
-                return PersistenceResult.NotFound;
+                return TransferResult.NotFound;
             }).ConfigureAwait(false);
         }
 

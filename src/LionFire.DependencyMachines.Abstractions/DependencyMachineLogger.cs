@@ -9,22 +9,22 @@ namespace LionFire.DependencyMachines.Abstractions
     {
         public DependencyMachineLogger(ILogger<IDependencyStateMachine> logger, IDependencyStateMachine dependencyStateMachine)
         {
-            if (dependencyStateMachine.Name == null)
-            {
-                logger.LogInformation("=============================================");
-            }
+            //if (dependencyStateMachine.Name == null)
+            //{
+            //    logger.LogInformation("=============================================");
+            //}
 
             Logger = logger;
             DependencyStateMachine = dependencyStateMachine;
 
-            DependencyStateMachine.Starting += p => Logger.LogDebug($"  - [starting] {p}");
-            DependencyStateMachine.Started += p => Logger.LogInformation($"  - [STARTED] {p}");
+            DependencyStateMachine.Starting += p => Logger.LogTrace($"  - [starting] {p}");
+            DependencyStateMachine.Started += p => Logger.LogDebug($"  - [STARTED] {p}");
 
-            DependencyStateMachine.Stopping += p => Logger.LogDebug($"  - [stopping] {p}");
-            DependencyStateMachine.Stopped += (p,_) => Logger.LogInformation($"  - [STOPPED] {p}");
+            DependencyStateMachine.Stopping += p => Logger.LogTrace($"  - [stopping] {p}");
+            DependencyStateMachine.Stopped += (p,_) => Logger.LogDebug($"  - [STOPPED] {p}");
 
-            DependencyStateMachine.StartedStage += p => Logger.LogInformation($"=====!   [[STARTED]] Stage {p}   !=====");
-            DependencyStateMachine.StoppedStage += p => Logger.LogInformation($"=====!x   [[STOPPED]] Stage {p}   x!=====");
+            DependencyStateMachine.StartedStage += p => Logger.LogDebug($"=====!   [[STARTED]] Stage {p}   !=====");
+            DependencyStateMachine.StoppedStage += p => Logger.LogDebug($"=====!x   [[STOPPED]] Stage {p}   x!=====");
         }
 
         public ILogger<IDependencyStateMachine> Logger { get; }

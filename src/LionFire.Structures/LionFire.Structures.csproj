@@ -1,21 +1,23 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>netstandard2.0</TargetFramework>
-    <RootNamespace>LionFire</RootNamespace>
+		<VersionSuffix></VersionSuffix>
+		
+	  <TargetFrameworks>netstandard2.0;net6.0</TargetFrameworks>
+	  <RootNamespace>LionFire</RootNamespace>
     <LangVersion>latest</LangVersion>
     <PackageTags>collections structures utility</PackageTags>
   </PropertyGroup>
 
   <ItemGroup>
     <Folder Include="Collections\Pathing\" />
-    <Folder Include="FlexObjects\NewFolder\" />
     <Folder Include="Persistence\" />
     <Folder Include="Validation\" />
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\LionFire.Base\LionFire.Base.csproj" />
+    <ProjectReference Include="..\LionFire.Flex\LionFire.Flex.csproj" />
   </ItemGroup>
 
 </Project>

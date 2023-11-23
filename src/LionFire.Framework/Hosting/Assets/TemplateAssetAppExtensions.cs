@@ -33,9 +33,9 @@ namespace LionFire.Applications.Hosting
             //    throw new InvalidOperationException("No IAssetProvider is registered.  One must be registered in order to retrieve the asset using this method.");
             //}
 
-            //var template = ap.Load<T>(assetSubpath).Result;
+            //var template = ap.Load<TValue>(assetSubpath).Result;
 
-            //if (template == null) throw new ArgumentException($"Failed to load: \"{assetSubpath}\" of type '{typeof(T).FullName}'");
+            //if (template == null) throw new ArgumentException($"Failed to load: \"{assetSubpath}\" of type '{typeof(TValue).FullName}'");
 
             //var templateInstance = template.Create();
 

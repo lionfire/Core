@@ -1,22 +1,43 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>netstandard2.0</TargetFramework>
-    <LangVersion>latest</LangVersion>
+	  <TargetFramework>net6.0</TargetFramework>
+	  <LangVersion>latest</LangVersion>
+	  <Nullable>enable</Nullable>
+		<Version>1.0.1</Version>
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="CommandLineParser" Version="2.8.0" />
-    <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="5.0.0" />
-    <PackageReference Include="Microsoft.Extensions.Hosting.Abstractions" Version="5.0.0" />
-    <PackageReference Include="NLog.Extensions.Logging" Version="1.7.2" />
+    <PackageReference Include="CommandLineParser" />
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" />
+    <PackageReference Include="Microsoft.Extensions.Hosting.Abstractions" />
+	  
+	  
+	  <PackageReference Include="Serilog.Expressions" />
+	  <PackageReference Include="Serilog.Extensions.Hosting" />
+	  <PackageReference Include="Serilog.Extensions.Logging" />
+	  <PackageReference Include="Serilog.Sinks.Console" />
+	  <PackageReference Include="Serilog.Formatting.Compact" />
+	  <PackageReference Include="Serilog.Sinks.File" />
+	  <PackageReference Include="Serilog.Sinks.Debug" />
+	  <PackageReference Include="Serilog.Settings.Configuration" />
+	  <PackageReference Include="Serilog.Sinks.File.Archive" />
+	  <PackageReference Include="Serilog.Sinks.File.GZip" />
+	  <PackageReference Include="Serilog.Sinks.Grafana.Loki" />
+	  <!--<PackageReference Include="Serilog.Sinks.Http" />-->
+	  <PackageReference Include="SerilogTraceListener" />
+	  <PackageReference Include="System.CommandLine" />
+	  <PackageReference Include="System.CommandLine.Hosting" />
+	  <PackageReference Include="System.CommandLine.NamingConventionBinder" />
+	
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\..\..\StateMachines\src\LionFire.StateMachines\LionFire.StateMachines.csproj" />
-    <ProjectReference Include="..\LionFire.Applications\LionFire.Applications.csproj" />
+    <ProjectReference Include="..\LionFire.Applications.Abstractions\LionFire.Applications.Abstractions.csproj" />
     <ProjectReference Include="..\LionFire.Core\LionFire.Core.csproj" />
     <ProjectReference Include="..\LionFire.Environment\LionFire.Environment.csproj" />
+    <ProjectReference Include="..\LionFire.Hosting.CommandLine\LionFire.Hosting.CommandLine.csproj" />
     <ProjectReference Include="..\LionFire.Structures\LionFire.Structures.csproj" />
   </ItemGroup>
 

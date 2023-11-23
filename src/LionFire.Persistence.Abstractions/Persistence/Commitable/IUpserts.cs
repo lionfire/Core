@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace LionFire.Persistence
 {
-    //public interface IUpsertResult : IPersistenceResult, ISuccessResult { }
+    //public interface IUpsertResult : ITransferResult, ISuccessResult { }
     
     //public interface IUpserts
     //{

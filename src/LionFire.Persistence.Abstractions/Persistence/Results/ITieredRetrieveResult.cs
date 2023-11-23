@@ -1,6 +1,6 @@
 ﻿namespace LionFire.Persistence
 {
-    public interface ITieredRetrieveResult<T> : IRetrieveResult<T>, ITieredPersistenceResult
+    public interface ITieredRetrieveResult<T> : IGetResult<T>, ITieredPersistenceResult
     {
 
     }

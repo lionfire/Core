@@ -6,14 +6,15 @@ using LionFire.Services;
 using LionFire.FlexObjects;
 using Microsoft.Extensions.Configuration;
 
-namespace LionFire.Hosting
+namespace LionFire.Hosting;
+
+public static class VosHost
 {
-    public static class VosHost
+    
+    [Obsolete("Use LionFireHostBuilder")]
+    public static IHostBuilder Create(string[] args = null) 
     {
-        public static IHostBuilder Create(IConfiguration config = null, string[] args = null, bool defaultBuilder = true, IFlex options = null) // Get rid of UNUSED options parameter?
-        {
-            return PersistersHost.Create(config, args, defaultBuilder: defaultBuilder)
-                .AddVos();
-        }
+        return PersistersHost.Create(args)
+            .AddVos();
     }
 }

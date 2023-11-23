@@ -1,20 +1,16 @@
-﻿using LionFire.Resolves;
+﻿using LionFire.Data;
+using LionFire.Data.Async.Sets;
 
-namespace LionFire.Persistence
+namespace LionFire.Persistence;
+
+public struct NoopFailDeleteResult<TValue> : IDeleteResult
 {
-    public struct NoopFailDeleteResult<TValue> : IDeleteResult
-    {
-        public bool? IsSuccess => false;
-        public bool HasValue => false;
-        public TValue Value => default;
-        public bool IsNoop => true;
+    public static readonly NoopFailDeleteResult<TValue> Instance = new NoopFailDeleteResult<TValue>();
 
-        public PersistenceResultFlags Flags { get => PersistenceResultFlags.Fail | PersistenceResultFlags.Noop; set { } }
+    public bool? IsSuccess => false;
 
-        public object Error => null;
+    public TValue Value => default;
+    public bool HasValue => false;
 
-        public static readonly NoopFailDeleteResult<TValue> Instance = new NoopFailDeleteResult<TValue>();
-
-    }
-
+    public TransferResultFlags Flags { get => TransferResultFlags.Fail | TransferResultFlags.Noop; }
 }

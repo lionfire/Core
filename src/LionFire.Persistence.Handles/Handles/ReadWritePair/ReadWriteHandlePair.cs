@@ -2,264 +2,283 @@
 using LionFire.ExtensionMethods.Resolves;
 using LionFire.Persistence;
 using LionFire.Referencing;
-using LionFire.Resolves;
+using LionFire.Data.Async.Gets;
 using LionFire.Results;
 using LionFire.Structures;
 using MorseCode.ITask;
 using System;
+using System.Threading;
 using System.Threading.Tasks;
+using LionFire.Data.Async.Sets;
 
-namespace LionFire.Persistence
+namespace LionFire.Persistence;
+
+public class ReadWriteHandlePairEx<TReference, TValue> : ReadWriteHandlePairBase<TReference, TValue>
+    // , IReadWriteHandlePairEx<TValue> TODO
+    where TReference : IReference
+    where TValue : class
 {
-    public class ReadWriteHandlePairEx<TReference, TValue> : ReadWriteHandlePairBase<TReference, TValue>
-        // , IReadWriteHandlePairEx<T> TODO
-        where TReference : IReference
-        where TValue : class
+}
+
+public class NoopReadWriteHandlePair<TReference, TValue> : ReadWriteHandlePair<TReference, TValue>
+    where TReference : IReference
+    where TValue : class // Required by UltraMapper
+{
+    public override TValue Value { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
+
+    public override bool HasValue => throw new NotImplementedException();
+
+    public override PersistenceFlags Flags => throw new NotImplementedException();
+
+    public override TValue StagedValue { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
+    public override bool HasStagedValue { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
+
+    public override Task<bool?> Delete() => throw new NotImplementedException();
+
+    public override void DiscardStagedValue()
     {
+        throw new NotImplementedException();
     }
 
-    //// This gets back to OBus / OBase.
-    //// Question: Previously, handles had a reference to the OBase that created the handle.  I think that can be a good idea, perhaps optionally
-    //public abstract class HandlePersistenceProviderBase : IHandlePersistenceProvider
-    //{
+    public override void DiscardValue() => throw new NotImplementedException();
+    public override void MarkDeleted() => throw new NotImplementedException();
+    public override Task<ISetResult<TValue>> Set(TValue value, CancellationToken cancellationToken = default) => throw new NotImplementedException();
 
-    //}
+    public override Task<ISetResult> Set(CancellationToken cancellationToken = default) => throw new NotImplementedException();
+}
 
-    public class NoopReadWriteHandlePair<TReference, TValue> : ReadWriteHandlePair<TReference, TValue>
-        where TReference  :IReference
+public abstract class ReadWriteHandlePair<TReference, TValue>
+    : ReadWriteHandlePairBase<TReference, TValue, IReadHandle<TValue>, IWriteHandle<TValue>>
+    , IReadWriteHandlePair<TValue>
+    , IWriteHandle<TValue>
+    where TReference : IReference
+    where TValue : class // Required by UltraMapper
+{
+
+    public abstract TValue Value { get; set; }
+    public abstract bool HasValue { get; }
+    public abstract PersistenceFlags Flags { get; }
+    public abstract TValue StagedValue { get; set; }
+    public abstract bool HasStagedValue { get; set; }
+
+    TValue IReadWrapper<TValue>.Value => Value;
+
+    TValue IWriteWrapper<TValue>.Value { set => StagedValue = value; }
+
+    public abstract Task<bool?> Delete();
+    public abstract void DiscardStagedValue();
+    public abstract void DiscardValue();
+    public abstract void MarkDeleted();
+    public abstract Task<ISetResult> Set(CancellationToken cancellationToken = default);
+    public abstract Task<ISetResult<TValue>> Set(TValue value, CancellationToken cancellationToken = default);
+
+    //public Task<bool?> Delete() => WriteHandle.Delete();
+    //public void MarkDeleted() => WriteHandle.MarkDeleted();
+    //public Task<ISuccessResult> Put(TValue value) => WriteHandle.Put(value);
+}
+
+/// <summary>
+/// Automatically clones the ReadHandle.Value to WriteHandle.Value when:
+///  - WriteHandle is lazily created and HasReadHandle and ReadHandle.HasValue are true
+/// </summary>
+/// <typeparam name="TValue"></typeparam>
+public class ReadWriteHandlePairBase<TReference, TValue>
+    : ReadWriteHandlePairBase<TReference, TValue, IReadHandleBase<TValue>, IWriteHandleBase<TValue>>
+    , ISetter<TValue>
+    , IStagesSet<TValue>
+    , IReadWriteHandlePairBase<TValue>
+    , IWriteHandleBase<TValue>
+    , IWrapper<TValue>
+    , IReadWrapper<TValue>
+    , IWriteWrapper<TValue>
+    where TReference : IReference
+    where TValue : class // Required by UltraMapper
+{
+
+    #region ReadHandle
+
+    public override IReadHandleBase<TValue> ReadHandle
     {
-        public override TValue Value { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
-
-        public override bool HasValue => throw new NotImplementedException();
-
-        public override PersistenceFlags Flags => throw new NotImplementedException();
-
-        public override Task<bool?> Delete() => throw new NotImplementedException();
-        public override void DiscardValue() => throw new NotImplementedException();
-        public override void MarkDeleted() => throw new NotImplementedException();
-        public override Task<ISuccessResult> Put() => throw new NotImplementedException();
-        public override Task<ISuccessResult> Put(TValue value) => throw new NotImplementedException();
-    }
-
-    public abstract class ReadWriteHandlePair<TReference, TValue>
-        : ReadWriteHandlePairBase<TReference, TValue, IReadHandle<TValue>, IWriteHandle<TValue>>
-        , IReadWriteHandlePair<TValue>
-        , IWriteHandle<TValue>
-        where TReference : IReference
-        //where TValue : class
-    {
-
-        public abstract TValue Value { get; set; }
-        public abstract bool HasValue { get; }
-        public abstract PersistenceFlags Flags { get; }
-
-        TValue IReadWrapper<TValue>.Value => throw new NotImplementedException();
-
-        TValue IWriteWrapper<TValue>.Value { set => throw new NotImplementedException(); }
-
-        public abstract Task<bool?> Delete();
-        public abstract void DiscardValue();
-        public abstract void MarkDeleted();
-        public abstract Task<ISuccessResult> Put();
-        public abstract Task<ISuccessResult> Put(TValue value);
-
-        //public Task<bool?> Delete() => WriteHandle.Delete();
-        //public void MarkDeleted() => WriteHandle.MarkDeleted();
-        //public Task<ISuccessResult> Put(TValue value) => WriteHandle.Put(value);
-    }
-
-    /// <summary>
-    /// Automatically clones the ReadHandle.Value to WriteHandle.Value when:
-    ///  - WriteHandle is lazily created and HasReadHandle and ReadHandle.HasValue are true
-    /// </summary>
-    /// <typeparam name="TValue"></typeparam>
-    public class ReadWriteHandlePairBase<TReference, TValue> : ReadWriteHandlePairBase<TReference, TValue, IReadHandleBase<TValue>, IWriteHandleBase<TValue>>, IReadWriteHandlePairBase<TValue>, IWriteHandleBase<TValue>
-        , IWrapper<TValue>
-        , IReadWrapper<TValue>
-        , IWriteWrapper<TValue>
-        where TReference : IReference
-    //where TValue : class
-    {
-
-        #region ReadHandle
-
-        public override IReadHandleBase<TValue> ReadHandle
+        get
         {
-            get
+            if (readHandle == null)
             {
-                if (readHandle == null)
+                if (Reference != null)
                 {
-                    if (Reference != null)
+                    readHandle = UpCast<IReadHandleBase<TValue>, IReadHandle<TValue>>(Reference.GetReadHandle<TValue>());
+                    if (readHandle is INotifyChanged<TValue> nvc)
                     {
-                        readHandle = UpCast<IReadHandleBase<TValue>, IReadHandle<TValue>>(Reference.GetReadHandle<TValue>());
-                        if (readHandle is INotifyChanged<TValue> nvc)
-                        {
-                            nvc.Changed += OnReadValueChanged;
-                        }
+                        nvc.Changed += OnReadValueChanged;
                     }
                 }
-                return readHandle;
             }
-            protected set
-            {
-                if (value == null)
-                {
-                    if (readHandle != null && readHandle is INotifyChanged<TValue> nvc)
-                    {
-                        nvc.Changed -= OnReadValueChanged;
-                    }
-                }
-                readHandle = value;
-            }
+            return readHandle;
         }
-
-        public async Task<IResolveResult<TValue>> GetReadValue() => await ReadHandle.GetValue().ConfigureAwait(false); // REVIEW - consider a ILazilyResolves<T> so we can use ILazilyResolves<T>.GetValue instead of the IDefaultableReadWrapper extension method 
-
-
-        #endregion
-
-        #region WriteHandle
-
-        public override IWriteHandleBase<TValue> WriteHandle
+        protected set
         {
-            get
+            if (value == null)
             {
-                if (writeHandle == null)
+                if (readHandle != null && readHandle is INotifyChanged<TValue> nvc)
                 {
-                    if (Reference != null)
-                    {
-                        writeHandle = UpCast<IWriteHandleBase<TValue>, IWriteHandle<TValue>>(Reference.TryGetWriteHandle<TValue>());
-                        if (readHandle != null)
-                        {
-                            var getResult = readHandle.GetValueWithoutRetrieve();
-                            if (getResult.HasValue)
-                            {
-                                CloneValueToWriteHandleValue(getResult.Value);
-                            }
-                        }
-                    }
+                    nvc.Changed -= OnReadValueChanged;
                 }
-                return writeHandle;
             }
-            protected set
-            {
-                writeHandle = value;
-            }
+            readHandle = value;
         }
+    }
 
-        public void SetWriteValue(TValue value)
+    public async Task<TValue> GetReadValue() => await ReadHandle.GetValue().ConfigureAwait(false); // REVIEW - consider a ILazilyGets<TValue> so we can use ILazilyGets<TValue>.GetValue instead of the IDefaultableReadWrapper extension method 
+
+
+    #endregion
+
+    #region WriteHandle
+
+    public override IWriteHandleBase<TValue> WriteHandle
+    {
+        get
         {
             if (writeHandle == null)
             {
                 if (Reference != null)
                 {
-                    writeHandle = Reference.TryGetWriteHandle<TValue>();
+                    writeHandle = UpCast<IWriteHandleBase<TValue>, IWriteHandle<TValue>>(Reference.TryGetWriteHandle<TValue>());
+                    if (readHandle != null)
+                    {
+                        var getResult = readHandle.GetValueWithoutRetrieve();
+                        if (getResult.HasValue)
+                        {
+                            CloneValueToWriteHandleValue(getResult.Value);
+                        }
+                    }
                 }
             }
-            writeHandle.Value = value;
+            return writeHandle;
         }
-
-        private void OnReadValueChanged(IValueChanged<TValue> obj)
+        protected set
         {
-            if (writeHandle != null && !writeHandle.HasValue)
-            {
-                CloneValueToWriteHandleValue(obj.New);
-            }
+            writeHandle = value;
         }
-
-        #endregion
-
-        #region Handle pass-thru
-
-        public PersistenceFlags Flags => ReadHandle.Flags | WriteHandle.Flags; // TODO: Mask each state with read/write masks before combining them?
-
-        public virtual PersistenceFlags SupportedFlags => PersistenceFlags.OutgoingFlags | PersistenceFlags.IncomingFlags;
-
-        public bool HasValue => (readHandle?.HasValue == true) || (writeHandle?.HasValue == true);
-
-        public TValue Value { get => ReadHandle.Value; set => WriteHandle.Value = value; }
-
-        public void DiscardValue()
-        {
-            if (readHandle is ILazilyResolves<TValue> lr)
-            {
-                lr.DiscardValue();
-            }
-            writeHandle?.DiscardValue();
-        }
-
-
-        #region IReadHandle<T>
-
-        TValue IReadWrapper<TValue>.Value => ReadHandle.Value;
-
-        #endregion
-
-        #region IWriteHandle<T>
-
-        public bool GetLocalValueFromRemote => throw new NotImplementedException();
-
-        TValue IWriteWrapper<TValue>.Value { set => WriteHandle.Value = value; }
-
-        Task<ISuccessResult> IPuts.Put() => WriteHandle.Put();
-        
-
-        #endregion
-
-        #endregion
-
-        //#region ReadHandle
-
-        //public abstract IReadHandleBase<T> ReadHandle { get; protected set; }
-
-        ////public virtual IReadHandleBase<T> ReadHandle
-        ////{
-        ////    get
-        ////    {
-        ////        if (readHandle == null)
-        ////        {
-        ////            if (Reference != null)
-        ////            {
-        ////                readHandle = Reference.GetReadHandle<T>();
-        ////            }
-        ////        }
-        ////        return readHandle;
-        ////    }
-        ////    protected set
-        ////    {
-        ////        readHandle = value;
-        ////    }
-        ////}
-        ////protected IReadHandleBase<T> readHandle;
-        ////public bool HasReadHandle => readHandle != null;
-        //public abstract bool HasReadHandle { get; }
-        //IResolves<T> IResolveCommitPair<T>.Resolves => ReadHandle;
-
-        //#endregion
-
-        //#region WriteHandle
-        //public abstract IWriteHandleBase<T> WriteHandle { get; protected set; }
-        ////public virtual IWriteHandleBase<T> WriteHandle
-        ////{
-        ////    get
-        ////    {
-        ////        if (writeHandle == null)
-        ////        {
-        ////            if (Reference != null)
-        ////            {
-        ////                writeHandle = Reference.GetWriteHandle<T>();
-        ////            }
-        ////        }
-        ////        return writeHandle;
-        ////    }
-        ////    protected set => writeHandle = value;
-        ////}
-        ////protected IWriteHandleBase<T> writeHandle;
-        ////public bool HasWriteHandle => writeHandle != null;
-        //public abstract bool HasWriteHandle { get; }
-        //IPuts IResolveCommitPair<T>.Commits => WriteHandle;
-
-        //#endregion
     }
 
+    public void SetWriteValue(TValue value)
+    {
+        if (writeHandle == null)
+        {
+            if (Reference != null)
+            {
+                writeHandle = Reference.TryGetWriteHandle<TValue>();
+            }
+        }
+        writeHandle.Value = value;
+    }
+
+    private void OnReadValueChanged(IValueChanged<TValue> obj)
+    {
+        if (writeHandle != null && !writeHandle.HasValue)
+        {
+            CloneValueToWriteHandleValue(obj.New);
+        }
+    }
+
+    #endregion
+
+    #region Handle pass-thru
+
+    public PersistenceFlags Flags => ReadHandle.Flags | WriteHandle.Flags; // TODO: Mask each state with read/write masks before combining them?
+
+    public virtual PersistenceFlags SupportedFlags => PersistenceFlags.OutgoingFlags | PersistenceFlags.IncomingFlags;
+
+    public bool HasValue => (readHandle?.HasValue == true) || (writeHandle?.HasValue == true);
+
+    public TValue Value { get => ReadHandle.Value; set => WriteHandle.Value = value; }
+
+    public void DiscardValue()
+    {
+        if (readHandle is IGetter<TValue> lr)
+        {
+            lr.DiscardValue();
+        }
+        writeHandle?.DiscardValue();
+    }
+
+
+    #region IReadHandle<T>
+
+    TValue IReadWrapper<TValue>.Value => ReadHandle.Value;
+
+    #endregion
+
+    #region IWriteHandle<T>
+
+    //public bool GetLocalValueFromRemote => throw new NotImplementedException();
+
+    TValue IWriteWrapper<TValue>.Value { set => WriteHandle.Value = value; }
+    public TValue StagedValue { get => WriteHandle.StagedValue; set => WriteHandle.StagedValue = value; }
+    public bool HasStagedValue { get => WriteHandle.HasStagedValue; set => WriteHandle.HasStagedValue = value; }
+
+    Task<ISetResult> ISetter.Set(CancellationToken cancellationToken) => WriteHandle.Set(cancellationToken);
+
+    public Task<ISetResult<TValue>> Set(TValue value, CancellationToken cancellationToken = default)
+        => WriteHandle.Set(value, cancellationToken);
+
+    public void DiscardStagedValue()=> WriteHandle.DiscardStagedValue();
+
+
+    #endregion
+
+    #endregion
+
+    //#region ReadHandle
+
+    //public abstract IReadHandleBase<TValue> ReadHandle { get; protected set; }
+
+    ////public virtual IReadHandleBase<TValue> ReadHandle
+    ////{
+    ////    get
+    ////    {
+    ////        if (readHandle == null)
+    ////        {
+    ////            if (Reference != null)
+    ////            {
+    ////                readHandle = Reference.GetReadHandle<TValue>();
+    ////            }
+    ////        }
+    ////        return readHandle;
+    ////    }
+    ////    protected set
+    ////    {
+    ////        readHandle = value;
+    ////    }
+    ////}
+    ////protected IReadHandleBase<TValue> readHandle;
+    ////public bool HasReadHandle => readHandle != null;
+    //public abstract bool HasReadHandle { get; }
+    //IGets<TValue> IResolveCommitPair<TValue>.Resolves => ReadHandle;
+
+    //#endregion
+
+    //#region WriteHandle
+    //public abstract IWriteHandleBase<TValue> WriteHandle { get; protected set; }
+    ////public virtual IWriteHandleBase<TValue> WriteHandle
+    ////{
+    ////    get
+    ////    {
+    ////        if (writeHandle == null)
+    ////        {
+    ////            if (Reference != null)
+    ////            {
+    ////                writeHandle = Reference.GetWriteHandle<TValue>();
+    ////            }
+    ////        }
+    ////        return writeHandle;
+    ////    }
+    ////    protected set => writeHandle = value;
+    ////}
+    ////protected IWriteHandleBase<TValue> writeHandle;
+    ////public bool HasWriteHandle => writeHandle != null;
+    //public abstract bool HasWriteHandle { get; }
+    //IPuts IResolveCommitPair<TValue>.Commits => WriteHandle;
+
+    //#endregion
 }

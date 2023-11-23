@@ -1,5 +1,4 @@
-﻿using System;
-using System.IO;
+﻿using System.IO;
 using System.Threading.Tasks;
 using LionFire.Dependencies;
 using LionFire.Execution;
@@ -7,9 +6,8 @@ using LionFire.IO;
 using LionFire.ObjectBus.Filesystem;
 using LionFire.Persistence;
 using LionFire.Persistence.Filesystem;
-using LionFire.Resolves;
+using LionFire.Data.Async.Gets;
 using LionFire.Serialization.Contexts;
-using MorseCode.ITask;
 
 namespace LionFire.Serialization
 {
@@ -74,7 +72,7 @@ namespace LionFire.Serialization
 
         //public async Task<bool> TryRetrieveObject(Func<PersistenceContext> context)
         //{
-        //    Object = SerializationFacility.Default.ToObject<T>(fs, operation: SerializationOperation, context: DefaultSerializationContext, );
+        //    Object = SerializationFacility.Default.ToObject<TValue>(fs, operation: SerializationOperation, context: DefaultSerializationContext, );
         //}
 
         public PersistenceOperation GetPersistenceOperation()
@@ -109,7 +107,7 @@ namespace LionFire.Serialization
         //    return persistenceContext;
         //}
 
-        protected override async ITask<IResolveResult<T>> ResolveImpl()
+        protected override async ITask<IGetResult<T>> GetImpl(CancellationToken cancellationToken = default)
         {
             // TODO: Change TryRetrieveObject() to TryRetrieveObject(Func<PersistenceContext>) which contains SerializationOperation?
 
@@ -124,7 +122,7 @@ namespace LionFire.Serialization
 #if true // Stream
                 using (var fs = new FileStream(Path, FileMode.Open, FileAccess.Read, FileShare.Read))
                 {
-                    //Object = SerializationFacility.Default.ToObject<T>(fs, operation: SerializationOperation, context: DefaultSerializationContext);
+                    //Object = SerializationFacility.Default.ToObject<TValue>(fs, operation: SerializationOperation, context: DefaultSerializationContext);
                     obj = SerializationFacility.Default.ToObject<T>(fs, new Lazy<PersistenceOperation>(GetPersistenceOperation));
                 }
 #else
@@ -144,18 +142,18 @@ namespace LionFire.Serialization
 
         #region Delete
 
-        protected override async Task<IPersistenceResult> DeleteImpl()
+        protected override async Task<ITransferResult> DeleteImpl()
         {
             Action deleteAction = () => File.Delete(Path);
             await deleteAction.AutoRetry(); // TODO: Use File IO parameters registered in DI.
-            return PersistenceResult.Success;
+            return TransferResult.Success;
         }
 
         #endregion
 
         #region Save
 
-        protected override async Task<IPersistenceResult> UpsertImpl()
+        protected override async Task<ITransferResult> UpsertImpl()
         {
             await Task.Run(() =>
             {
@@ -173,7 +171,7 @@ namespace LionFire.Serialization
                 File.WriteAllBytes(writePath, bytes);
             }).ConfigureAwait(false);
 
-            return PersistenceResult.Success;
+            return TransferResult.Success;
         }
 
         #endregion

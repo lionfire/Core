@@ -15,6 +15,7 @@ using LionFire.MultiTyping;
 using LionFire.Vos;
 using LionFire.Vos.Packages;
 using LionFire.Vos.Packages;
+using LionFire.Data;
 
 namespace Packages_
 {
@@ -33,14 +34,14 @@ namespace Packages_
                         .AddFilesystem()
 
                         .VosPackageProvider("/`/TestPlugins".ToVobReference())
-                        .VosMount("/`/TestPlugins/available", pluginsDir.ToFileReference(), new MountOptions
+                        .VosMount("/`/TestPlugins/available", pluginsDir.ToFileReference(), new VobMountOptions
                         {
                             Name = "UnitTestPluginsDir",
                         })
 
                         //.VosMount("/`/TestPlugins/available", pluginsDir.ToFileReference(),
-                        //new MountOptions(
-                        //    decorators: new MultiType(new MultiTypableVisitor<IVobNodeProvider>(() => new MountOptions { Name = "UnitTestPlugin", ReadPriority = 100, WritePriority = -100 }))
+                        //new VobMountOptions(
+                        //    decorators: new MultiTyped(new MultiTypableVisitor<IVobNodeProvider>(() => new VobMountOptions { Name = "UnitTestPlugin", ReadPriority = 100, WritePriority = -100 }))
                         //    {
                         //        Name = "UnitTestPluginsDir"
                         //    })
@@ -52,7 +53,7 @@ namespace Packages_
                         //})
 
                         // MOVE - FUTURE: Vos metadata
-                        //.VosMount("/_/vos", new VobReference("/") { Persister = "vos" }, new MountOptions
+                        //.VosMount("/_/vos", new VobReference("/") { Persister = "vos" }, new VobMountOptions
                         //{
                         //    IsReadOnly = true,
                         //    IsExclusive = true,
@@ -90,7 +91,7 @@ namespace Packages_
                         Assert.False(await dataReference2.GetReadHandle<string>().Exists());
 
                         // How to get a Vob?  VobReference.ToVob() might be nice.  How about VobReference.ToVob().AsType<PackageManager>()
-                        var packageProvider = "/`/TestPlugins".GetVob().Get<PackageProvider>();
+                        var packageProvider = "/`/TestPlugins".GetVob().GetOrCreate<PackageProvider>();
 
                         //Assert.True(pluginManager.AvailablePackages.Contains("plugin1")); // TODO
                         //Assert.True(pluginManager.AvailablePackages.Contains("plugin2"));
@@ -103,15 +104,15 @@ namespace Packages_
                             Assert.Single(packageProvider.EnabledPackages);
 
                             var readHandle = dataReference1.GetReadHandle<string>();
-                            var persistenceResult = await readHandle.Resolve();
+                            var persistenceResult = await readHandle.Get();
 
-                            //Assert.True(persistenceResult.Flags.HasFlag(PersistenceResultFlags.Success)); // TODO - switch to Retrieve?
+                            //Assert.True(persistenceResult.Flags.HasFlag(TransferResultFlags.Success)); // TODO - switch to Retrieve?
                             Assert.True(persistenceResult.IsSuccess);
                             Assert.Equal(testContents1, readHandle.Value);
                         }
                         {
                             var readHandle = pluginDataReference1.GetReadHandle<string>();
-                            var persistenceResult = await readHandle.Resolve();
+                            var persistenceResult = await readHandle.Get();
                             Assert.True(persistenceResult.IsSuccess);
                             Assert.Equal(testContents1, readHandle.Value);
                         }
@@ -125,7 +126,7 @@ namespace Packages_
                             Assert.Equal(2, packageProvider.EnabledPackages.Count());
 
                             var readHandle = dataReference2.GetReadHandle<string>();
-                            var persistenceResult = await readHandle.Resolve();
+                            var persistenceResult = await readHandle.Get();
 
                             Assert.True(persistenceResult.IsSuccess);
                             Assert.Equal(testContents2, readHandle.Value);
@@ -133,7 +134,7 @@ namespace Packages_
                         }
                         {
                             var readHandle = pluginDataReference2.GetReadHandle<string>();
-                            var persistenceResult = await readHandle.Resolve();
+                            var persistenceResult = await readHandle.Get();
                             Assert.True(persistenceResult.IsSuccess);
                             Assert.Equal(testContents2, readHandle.Value);
                         }
@@ -151,14 +152,14 @@ namespace Packages_
 
                         {
                             var readHandle = dataReference1.GetReadHandle<string>();
-                            var persistenceResult = await readHandle.Resolve();
-                            Assert.True(((IPersistenceResult)persistenceResult).Flags.HasFlag(PersistenceResultFlags.MountNotAvailable));
+                            var persistenceResult = await readHandle.Get();
+                            Assert.True(((ITransferResult)persistenceResult).Flags.HasFlag(TransferResultFlags.MountNotAvailable));
                             Assert.Null(persistenceResult.IsSuccess);
                         }
                         {
                             var readHandle = dataReference2.GetReadHandle<string>();
-                            var persistenceResult = await readHandle.Resolve();
-                            Assert.True(((IPersistenceResult)persistenceResult).Flags.HasFlag(PersistenceResultFlags.MountNotAvailable));
+                            var persistenceResult = await readHandle.Get();
+                            Assert.True(((ITransferResult)persistenceResult).Flags.HasFlag(TransferResultFlags.MountNotAvailable));
                             Assert.Null(persistenceResult.IsSuccess);
                         }
 

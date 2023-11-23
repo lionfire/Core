@@ -1,7 +1,6 @@
-﻿namespace LionFire.Results
+﻿namespace LionFire.Results;
+
+public interface INoopResult : IResult
 {
-    public interface INoopResult : IResult
-    {
-        bool IsNoop { get; }
-    }
+    bool IsNoop { get; }
 }

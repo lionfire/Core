@@ -1,23 +1,24 @@
 ﻿using LionFire.Events;
 using LionFire.Persistence.Handles;
-using LionFire.Resolves;
+using LionFire.Data.Async.Gets;
 using LionFire.Structures;
+using LionFire.Data.Async.Sets;
+using LionFire.Data;
 
-namespace LionFire.Persistence
+namespace LionFire.Persistence;
+
+/// <summary>
+/// IWriteHandleEx
+/// </summary>
+/// <typeparam name="T"></typeparam>
+public interface IWriteHandle<T> : IWriteHandleBase<T>, IWriteHandle, ISetter<T>, IStagesSet<T>
 {
-    /// <summary>
-    /// IWriteHandleEx
-    /// </summary>
-    /// <typeparam name="T"></typeparam>
-    public interface IWriteHandle<T> : IWriteHandleBase<T>, IWriteHandle, IPuts<T>
-    {
-    }
+}
 
-    /// <summary>
-    /// Limited interface for when generic interface type is not available
-    /// </summary>
-    public interface IWriteHandle : IPuts, IDeletable, IDiscardableValue, IHandleBase
-    {
+/// <summary>
+/// Limited interface for when generic interface type is not available
+/// </summary>
+public interface IWriteHandle : ISetter, IDeletable, IDiscardableValue, IHandleBase
+{
 
-    }
 }

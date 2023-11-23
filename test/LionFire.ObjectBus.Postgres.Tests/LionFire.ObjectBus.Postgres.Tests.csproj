@@ -1,14 +1,14 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <TargetFramework>netcoreapp3.0</TargetFramework>
+    <TargetFramework>net7.0</TargetFramework>
     <IsPackable>false</IsPackable>
     <UserSecretsId>c3b3dbe4-07fb-418b-901b-00a39bc30094</UserSecretsId>
   </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="16.3.0" />
-    <PackageReference Include="xunit" Version="2.4.1" />
-    <PackageReference Include="xunit.runner.visualstudio" Version="2.4.1">
+    <PackageReference Include="Microsoft.NET.Test.Sdk" />
+    <PackageReference Include="xunit" />
+    <PackageReference Include="xunit.runner.visualstudio">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers</IncludeAssets>
     </PackageReference>
@@ -17,9 +17,8 @@
     <ProjectReference Include="..\..\src\LionFire.Applications\LionFire.Applications.csproj" />
     <ProjectReference Include="..\..\src\LionFire.Execution\LionFire.Execution.csproj" />
     <ProjectReference Include="..\..\src\LionFire.ObjectBus.Postgres\LionFire.ObjectBus.Postgres.csproj" />
-    <ProjectReference Include="..\..\src\LionFire.ObjectBus.Testing\LionFire.ObjectBus.Testing.csproj" />
     <ProjectReference Include="..\..\src\LionFire.ObjectBus\LionFire.ObjectBus.csproj" />
-    <ProjectReference Include="..\..\src\LionFire.Persistence\LionFire.Persistence.csproj" />
+    <ProjectReference Include="..\..\src\LionFire.Persistence\LionFire.Data.Persisters.csproj" />
     <ProjectReference Include="..\..\src\LionFire.Serialization.Json.Newtonsoft\LionFire.Serialization.Json.Newtonsoft.csproj" />
   </ItemGroup>
 </Project>

@@ -1,0 +1,34 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net8.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <AssemblyName>lf-orleans</AssemblyName>
+    <ProduceReferenceAssembly>False</ProduceReferenceAssembly>
+    <PackageId>LionFire.Orleans.Cli</PackageId>
+    <Product>LionFire.Orleans.Cli</Product>
+    <Copyright>2010-2023 Jared Thirsk</Copyright>
+    <PackAsTool>True</PackAsTool>
+	  <RuntimeIdentifiers>win-x64;linux-x64</RuntimeIdentifiers>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="ConsoleAppFramework" />
+    <PackageReference Include="Dapper" />
+    <PackageReference Include="Meziantou.Framework.ValueStopwatch" />
+    <PackageReference Include="Npgsql" />
+    <PackageReference Include="Oakton" />
+    <PackageReference Include="PasswordGenerator" />
+    <PackageReference Include="Serilog" />
+    <PackageReference Include="Serilog.Settings.Configuration" />
+    <PackageReference Include="Spectre.Console.Cli" />
+    <PackageReference Include="System.CommandLine" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="SystemCL\" />
+  </ItemGroup>
+
+</Project>

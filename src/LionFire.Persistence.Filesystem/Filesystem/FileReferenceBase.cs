@@ -7,97 +7,95 @@ using LionFire.Referencing;
 using LionFire.Serialization;
 using LionFire.Structures;
 
-namespace LionFire.Persistence.Filesystem
+namespace LionFire.Persistence.Filesystem;
+
+[LionSerializable(SerializeMethod.ByValue)]
+public abstract class FileReferenceBase<ConcreteType, TValue> : LocalReferenceBase<ConcreteType, TValue>
+    //, IHas<IOBase>, IHas<IOBus>
+    //, IOBaseReference
+    where ConcreteType : FileReferenceBase<ConcreteType, TValue>
 {
-    [LionSerializable(SerializeMethod.ByValue)]
-    public abstract class FileReferenceBase<ConcreteType, TValue> : LocalReferenceBase<ConcreteType, TValue>
-        //, IHas<IOBase>, IHas<IOBus>
-        //, IOBaseReference
-        where ConcreteType : FileReferenceBase<ConcreteType, TValue>
+    public virtual string UriPrefixDefault => UriSchemeColon;
+    public virtual string UriSchemeColon => Scheme + ":";
+    //public abstract string UriScheme { get; }
+    //public override string Scheme => UriScheme;
+
+    public override IEnumerable<string> AllowedSchemes { get { yield return Scheme; } }
+
+
+    //IOBus IHas<IOBus>.Object => ManualSingleton<FSOBus>.GuaranteedInstance;
+    //IOBase IHas<IOBase>.Object => FsOBase;
+    //FSOBase FsOBase => ManualSingleton<FSOBase>.GuaranteedInstance;
+
+    public FileReferenceBase() { }
+    public FileReferenceBase(string path)
     {
-        public virtual string UriPrefixDefault => UriSchemeColon;
-        public virtual string UriSchemeColon => Scheme + ":";
-        //public abstract string UriScheme { get; }
-        //public override string Scheme => UriScheme;
+        this.Path = path;
+    }
 
-        public override IEnumerable<string> AllowedSchemes { get { yield return Scheme; } }
+    #region Conversion and Implicit operators
 
+    //public static implicit operator Handle(FileReference fsref)
+    //{
+    //    return fsref.ToHandle();
+    //}
 
-        //IOBus IHas<IOBus>.Object => ManualSingleton<FSOBus>.GuaranteedInstance;
-        //IOBase IHas<IOBase>.Object => FsOBase;
-        //FSOBase FsOBase => ManualSingleton<FSOBase>.GuaranteedInstance;
+    #endregion
 
-        public FileReferenceBase() { }
-        public FileReferenceBase(string path)
-        {
-            this.Path = path;
-        }
+    public static string CoercePath(string path)
+    {
+        //#if MONO
+        path = path.Replace('\\', '/');
+        //#else
+        //                value = value.Replace('/', '\\');
+        //#endif
 
-        #region Conversion and Implicit operators
-
-        //public static implicit operator Handle(FileReference fsref)
+        //if (value != null)
         //{
-        //    return fsref.ToHandle();
+        //    if (value.Length >= 1)
+        //    {
+        //        if (value[0] == ':') throw new ArgumentException();
+        //    }
+
+        //    var colon = value.LastIndexOf(':');
+        //    if (colon != -1 && colon != 1)
+        //    {
+        //        throw new ArgumentException();
+        //    }
         //}
 
-        #endregion
-
-        public static string CoercePath(string path)
-        {
-            //#if MONO
-            path = path.Replace('\\', '/');
-            //#else
-            //                value = value.Replace('/', '\\');
-            //#endif
-
-            //if (value != null)
-            //{
-            //    if (value.Length >= 1)
-            //    {
-            //        if (value[0] == ':') throw new ArgumentException();
-            //    }
-
-            //    var colon = value.LastIndexOf(':');
-            //    if (colon != -1 && colon != 1)
-            //    {
-            //        throw new ArgumentException();
-            //    }
-            //}
-
-            return path;
-        }
-
-        protected override void InternalSetPath(string path)
-        {
-            this.path = CoercePath(path);
-        }
-
-        
-
-        public override string Key
-        {
-            get => string.Concat(UriPrefixDefault, Path);
-            protected set
-            {
-                if (value.StartsWith(UriSchemeColon))
-                {
-                    if (value.StartsWith(UriPrefixDefault))
-                    {
-                        value = value.Substring(UriPrefixDefault.Length);
-                    }
-                    else
-                    {
-                        value = value.Substring(UriSchemeColon.Length);
-                    }
-                }
-                Path = value;
-            }
-        }
-
-
-        public  string ToXamlString() => $"{{{this.GetType().Name} {Path}}}";
-        public override string ToString() => Key; 
-
+        return path;
     }
+
+    protected override void InternalSetPath(string path)
+    {
+        this.path = CoercePath(path);
+    }
+
+    
+
+    public override string Key
+    {
+        get => string.Concat(UriPrefixDefault, Path);
+        protected set
+        {
+            if (value.StartsWith(UriSchemeColon))
+            {
+                if (value.StartsWith(UriPrefixDefault))
+                {
+                    value = value.Substring(UriPrefixDefault.Length);
+                }
+                else
+                {
+                    value = value.Substring(UriSchemeColon.Length);
+                }
+            }
+            Path = value;
+        }
+    }
+
+
+    public  string ToXamlString() => $"{{{this.GetType().Name} {Path}}}";
+    public override string ToString() => Key; 
 
 }

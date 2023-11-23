@@ -5,7 +5,7 @@ namespace LionFire.DependencyMachines
     public enum OrphanedStagePolicy
     {
         /// <summary>
-        /// Throw if a dependency does not have any dependencies.
+        /// ToException if a dependency does not have any dependencies.
         /// This only applies to IParticipants that are not No-ops.
         /// </summary>
         Throw,

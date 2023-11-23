@@ -12,10 +12,13 @@ namespace LionFire.Serialization
     public abstract class SerializerBase<ConcreteType> : ISerializationStrategy
         where ConcreteType : SerializerBase<ConcreteType>
     {
+        public virtual bool SupportsSerializedType(Type type) => true;
+        public virtual bool SupportsDeserializedType(Type type) => true;
+
         #region SerializerBaseReflectionInfo
 
         private static class SerializerBaseReflectionInfo<T>
-            where T :  SerializerBase<T>,  ISerializationStrategy
+            where T : SerializerBase<T>, ISerializationStrategy
         {
             public static readonly bool HasToString;
             public static readonly bool HasToBytes;
@@ -27,7 +30,7 @@ namespace LionFire.Serialization
 
             static SerializerBaseReflectionInfo()
             {
-                //foreach (var mi in typeof(T).GetMethods())
+                //foreach (var mi in typeof(TValue).GetMethods())
                 //{
                 //    Debug.WriteLine(mi.Name + " ");
                 //    foreach (var param in mi.GetParameters())
@@ -76,7 +79,7 @@ namespace LionFire.Serialization
         public virtual IEnumerable<Type> SerializationOptionsTypes => Enumerable.Empty<Type>();
 
         public bool ImplementsToString => SerializerBaseReflectionInfo<ConcreteType>.HasToString;
-        public bool ImplementsToStream=> SerializerBaseReflectionInfo<ConcreteType>.HasToStream;
+        public bool ImplementsToStream => SerializerBaseReflectionInfo<ConcreteType>.HasToStream;
         public bool ImplementsToBytes => SerializerBaseReflectionInfo<ConcreteType>.HasToBytes;
         public bool ImplementsFromString => SerializerBaseReflectionInfo<ConcreteType>.HasFromString;
         public bool ImplementsFromStream => SerializerBaseReflectionInfo<ConcreteType>.HasFromStream;
@@ -193,7 +196,7 @@ namespace LionFire.Serialization
         protected byte[] StringToBytes(string str, PersistenceContext context = null) => str == null ? null : (context?.SerializationContext?.Encoding ?? DefaultEncoding).GetBytes(str);
         protected string BytesToString(byte[] bytes, PersistenceContext context = null) => bytes == null ? null : (context?.SerializationContext?.Encoding ?? DefaultEncoding).GetString(bytes);
 
-        //public abstract T ToObject<T>(string serializedData, SerializationContext context = null);
+        //public abstract TValue ToObject<TValue>(string serializedData, SerializationContext context = null);
 
         #endregion
 

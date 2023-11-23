@@ -3,13 +3,15 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 using System.Linq;
+using LionFire.Mvvm;
 using LionFire.Structures;
 using LionFire.Threading;
 
 namespace LionFire.UI
 {
     public class CollectionAdapterBase<TViewModel, TModel>: ObservableCollection<TViewModel>
-        where TViewModel : class
+        where TViewModel : class, IViewModel<TModel>
+        where TModel : class
     {
         protected readonly IEnumerable<TModel> _readOnlyModels;
 
@@ -105,9 +107,9 @@ namespace LionFire.UI
 
 
         /// <summary>
-        /// Adds a new ViewModel for the specified Model instance
+        /// Adds a new ViewModel for the specified Value instance
         /// </summary>
-        /// <param name="model">Model to create ViewModel for</param>
+        /// <param name="model">Value to create ViewModel for</param>
         protected void AddForModel(TModel model)
         {
             Add(CreateViewModel(model));
@@ -115,9 +117,9 @@ namespace LionFire.UI
 
         /// <summary>
         /// Adds a new ViewModel with a new model instance of the specified type,
-        /// which is the ModelType or derived from the Model type
+        /// which is the ModelType or derived from the Value type
         /// </summary>
-        /// <typeparam name="TSpecificModel">Type of Model to add ViewModel for</typeparam>
+        /// <typeparam name="TSpecificModel">Type of Value to add ViewModel for</typeparam>
         public TViewModel AddNew<TSpecificModel>() where TSpecificModel : TModel, new()
         {
             var m = new TSpecificModel();
@@ -132,7 +134,7 @@ namespace LionFire.UI
 
         public TViewModel GetViewModelOfModel(TModel model)
         {
-            return Items.OfType<IViewModel<TModel>>().FirstOrDefault(v => v.IsViewModelOf(model)) as TViewModel;
+            return Items.OfType<IViewModel<TModel>>().FirstOrDefault(v => v.IsViewModelOf<TViewModel,TModel>(model)) as TViewModel;
         }
 
         #endregion

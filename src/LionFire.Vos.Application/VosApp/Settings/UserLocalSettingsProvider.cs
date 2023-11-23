@@ -1,12 +1,10 @@
 ﻿using LionFire.Vos.VosApp;
-using MorseCode.ITask;
-using LionFire.Resolves;
+using LionFire.Data.Async.Gets;
 
-namespace LionFire.Settings
+namespace LionFire.Settings;
+
+public class UserLocalSettingsProvider<T> : HostedGetter<T>, IUserLocalSettings<T>
+    where T : class
 {
-    public class UserLocalSettingsProvider<T> : HostedLazilyResolves<T>, IUserLocalSettings<T>
-        where T : class
-    {
-        protected override  ITask<IResolveResult<T>> ResolveImpl() => VosAppSettings.UserLocal<T>.H.GetOrInstantiateValue();
-    }
+    protected override  ITask<IGetResult<T>> GetImpl(CancellationToken cancellationToken = default) => VosAppSettings.UserLocal<T>.H.GetOrInstantiateValue();
 }

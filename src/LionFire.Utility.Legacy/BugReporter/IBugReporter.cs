@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+#if NETFRAMEWORK
 using System.Windows.Threading;
+#endif
 using System.Text;
 using System.Threading.Tasks;
 
@@ -12,7 +14,7 @@ namespace LionFire.Applications
     {
         bool IsEnabled { get; set; }
 
-#if !UNITY
+#if !UNITY && NETFRAMEWORK
         /// <summary>
         /// Return true if handled, false otherwise.
         /// </summary>
@@ -26,7 +28,7 @@ namespace LionFire.Applications
     {
         public bool IsEnabled { get; set; }
 
-#if !UNITY
+#if !UNITY && NETFRAMEWORK
         bool OnApplicationDispatcherException(object sender, DispatcherUnhandledExceptionEventArgs args) { return IsEnabled; }
 
 

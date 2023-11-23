@@ -20,7 +20,7 @@ namespace LionFire.CommandLine.Dispatching
         /// <param name="context"></param>
         /// <param name="handlerClass">If null, type of context will be used</param>
         /// <returns>True if something was dispatched, false otherwise (and options.Usage method was invoked if present)</returns>
-        public static bool Dispatch(string[] args, object handlerInstance = null, Type handlerClass = null, object context = null, CliDispatcherOptions options = null, CancellationToken? cancellationToken = null)
+        public static bool Dispatch(string[] args, object handlerInstance = null, Type handlerClass = null, object context = null, CliDispatcherOptions options = null, CancellationToken cancellationToken = default)
         {
             //CliDispatcher cd = new CliDispatcher(); // FUTURE
 
@@ -108,7 +108,7 @@ namespace LionFire.CommandLine.Dispatching
             return true;
         }
 
-        private static void RunHandler(MethodInfo handler, object instance, object context, string[] args, CommandLineArgs cla, CancellationToken? cancellationToken = null)
+        private static void RunHandler(MethodInfo handler, object instance, object context, string[] args, CommandLineArgs cla, CancellationToken cancellationToken = default)
         {
             var paraDefs = handler.GetParameters();
 

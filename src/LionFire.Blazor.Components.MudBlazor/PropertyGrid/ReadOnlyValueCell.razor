@@ -1,0 +1,28 @@
+﻿@using LionFire.Inspection.ViewModels;
+@using System.Text;
+<div class="@Classes">
+
+    
+</div>
+
+
+@code {
+    [Parameter]
+    public NodeVM? NodeVM { get; set; }
+
+
+    public string Classes
+    {
+        get
+        {
+            var sb = new StringBuilder();
+
+            sb.Append(this.GetType().Name);
+
+            sb.Append(" ");
+            sb.Append(NodeVM?.IODirection.ToString());
+
+            return sb.ToString();
+        }
+    }
+}

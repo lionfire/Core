@@ -104,7 +104,7 @@ namespace LionFire.ExtensionMethods.Copying
         public static object AssignNonDefaultPropertiesFrom(this object me, object other) => AssignPropertiesFrom(me, other, (m, o, pi) => pi.GetValue(o) != Activator.CreateInstance(pi.PropertyType));
         public static object AssignNonNullPropertiesFrom(this object me, object other) => AssignPropertiesFrom(me, other, (m, o, pi) => pi.GetValue(o) != null);
 
-        public static object AssignPropertiesFrom(this object me, object other, Func<object,object, PropertyInfo, bool> filter = null)
+        public static object AssignPropertiesFrom(this object me, object other, Func<object, object, PropertyInfo, bool> filter = null)
         {
             Type myType = me.GetType();
             Type otherType = other.GetType();
@@ -177,9 +177,18 @@ namespace LionFire.ExtensionMethods.Copying
             // TODO: Copy this same logic to AssignProperties to, and field methods
             var myPi = sameType ? otherPropertyInfo : myType.GetProperty(otherPropertyInfo.Name);
 
-            if (myPi == null || myPi.PropertyType != otherPropertyInfo.PropertyType)
+            bool isDateTimeToDateTimeOffsetConversion = false;
+            if (myPi == null) { return; }
+            if (myPi.PropertyType != otherPropertyInfo.PropertyType)
             {
-                return;
+                if (myPi.PropertyType == typeof(DateTimeOffset) && otherPropertyInfo.PropertyType == typeof(DateTime))
+                {
+                    isDateTimeToDateTimeOffsetConversion = true;
+                }
+                else
+                {
+                    return;
+                }
             }
             if (!myPi.CanWrite)
             {
@@ -205,6 +214,8 @@ namespace LionFire.ExtensionMethods.Copying
 #endif
 #else
             //Trace.WriteLine(me.GetType().Name + "." + myPi.Name + " = " + other.GetType() + "." + otherPropertyInfo.Name + " (" + val + ")");
+
+            if (isDateTimeToDateTimeOffsetConversion) { val = new DateTimeOffset((DateTime)val); }
             myPi.SetValue(me, val, null);
 #endif
         }
@@ -262,11 +273,11 @@ namespace LionFire.ExtensionMethods.Copying
             mi.SetValue(me, val);
 #endif
         }
-        
+
         #endregion
-        
+
         #endregion
-        
+
         public static object AssignPropertiesTo(this object me, object other, BindingFlags bindingFlags = BindingFlags.Public | BindingFlags.Instance)
         {
             Type T = other.GetType();
@@ -327,7 +338,7 @@ namespace LionFire.ExtensionMethods.Copying
             }
             return me;
         }
-        
+
         public static void AssignArrayFrom(this Array me, Array other, AssignmentMode assignmentMode = AssignmentMode.Assign)
         {
             if (me.GetType().IsArray)
@@ -367,11 +378,11 @@ namespace LionFire.ExtensionMethods.Copying
         #region Convenience
 
         public static void ShallowAssignFrom(this object me, object other) => AssignFrom(me, other, AssignmentMode.Assign);
-        
+
         #endregion
 
         #region Imported from LFU
-        
+
         // Move to generic extension method?
         //private static void AssignFrom_(Type T, object me, object other, bool useICloneableIfAvailable = false) // Move to generic extension method?
         private static void AssignFrom_(

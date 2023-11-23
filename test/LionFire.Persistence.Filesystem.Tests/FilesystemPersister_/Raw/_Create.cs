@@ -36,7 +36,7 @@ namespace FilesystemPersister_
 
                     var testContents = "testing123";
                     var persistenceResult = await ServiceLocator.Get<FilesystemPersister>().Create(path.ToFileReference(), testContents);
-                    Assert.True(persistenceResult.Flags.HasFlag(PersistenceResultFlags.Success));
+                    Assert.True(persistenceResult.Flags.HasFlag(TransferResultFlags.Success));
 
                     #endregion
 
@@ -68,7 +68,7 @@ namespace FilesystemPersister_
                     var testContents = new byte[] { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 32, 33, 34, 35, 64, 65, 66, 67, 68 };
                     var persistenceResult = await ServiceLocator.Get<FilesystemPersister>().Create(path.ToFileReference(), testContents);
 
-                    Assert.True(persistenceResult.Flags.HasFlag(PersistenceResultFlags.Success), "!PersistenceResultFlags.Success");
+                    Assert.True(persistenceResult.Flags.HasFlag(TransferResultFlags.Success), "!TransferResultFlags.Success");
 
                     Assert.True(File.Exists(path));
                     var fromFile = File.ReadAllBytes(path);

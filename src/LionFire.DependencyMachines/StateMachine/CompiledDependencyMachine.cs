@@ -3,6 +3,7 @@ using LionFire.ExtensionMethods.Collections;
 using LionFire.Ontology;
 using LionFire.Structures;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -16,6 +17,7 @@ namespace LionFire.DependencyMachines
         #region Parameters
 
         public DependencyMachineConfig Config { get; }
+        public ILogger<CompiledDependencyMachine> Logger { get; }
 
         public IEnumerable<IParticipant> Participants => participants;
         private readonly IEnumerable<IParticipant> participants;
@@ -43,11 +45,12 @@ namespace LionFire.DependencyMachines
 
         #region Construction
 
-        public CompiledDependencyMachine(IServiceProvider serviceProvider, DependencyMachineConfig config)
+        public CompiledDependencyMachine(IServiceProvider serviceProvider, DependencyMachineConfig config, ILogger<CompiledDependencyMachine> logger)
         {
+
             ServiceProvider = serviceProvider;
             Config = config;
-
+            Logger = logger;
             participants = Config.ParticipantInstances
                 .Concat(CreateInjectedParticipants())
                .Concat(AutoRegisteredFromTypes())
@@ -202,12 +205,12 @@ namespace LionFire.DependencyMachines
                             if (providedObjects.ContainsKey(key) || contributedObjects.ContainsKey(key)) aftersAreMissing = true;
                             else
                             {
-                                Trace.WriteLine("After is never provided.  Ignoring requirement to be After: " + key);
+                                Logger.LogTrace("After is never provided.  Ignoring requirement to be After: {key}", key);
                             }
                         }
                         if (aftersAreMissing)
                         {
-                            Debug.WriteLine($"[unsolved] '{member.Key}' must be after '{member.After.Select(a => a.ToDependencyKey()).Where(d => !availableDependencies.Contains(d)).Aggregate(agg)}'");
+                            Logger.LogTrace("[unsolved] '{Key}' must be after '{AfterMembers}'", member.Key, member.After.Select(a => a.ToDependencyKey()).Where(d => !availableDependencies.Contains(d)).Aggregate(agg));
                             StillUnsolved(member);
                             continue;
                         }
@@ -223,7 +226,7 @@ namespace LionFire.DependencyMachines
                         if (missingDependencies?.Any() == true)
                         {
                             lastUnsolvedDependencies.AddRange(missingDependencies);
-                            Debug.WriteLine($"[unsolved] '{member.Key}' depends on '{missingDependencies.Aggregate(agg)}'");
+                            Logger.LogTrace($"[unsolved] '{member.Key}' depends on '{missingDependencies.Aggregate(agg)}'");
                             StillUnsolved(member);
                             continue;
                         }
@@ -237,7 +240,7 @@ namespace LionFire.DependencyMachines
                         if (missingDependencyHandles?.Any() == true)
                         {
                             lastUnsolvedDependencyHandles.AddRange(missingDependencyHandles);
-                            Debug.WriteLine($"[unsolved] '{member.Key}' depends on '{missingDependencyHandles.Aggregate(agg)}'");
+                            Logger.LogTrace($"[unsolved] '{member.Key}' depends on '{missingDependencyHandles.Aggregate(agg)}'");
                             StillUnsolved(member);
                             continue;
                         }
@@ -275,7 +278,7 @@ namespace LionFire.DependencyMachines
                     stage.Add(solved);
 
                     unsolved.Remove(solved.Key);
-                    Debug.WriteLine($"[SOLVED] '{solved.Key}'");
+                    Logger.LogTrace("[SOLVED] '{Member}'", solved.Key);
 
                     if (solved.Contributes != null)
                     {
@@ -323,7 +326,7 @@ namespace LionFire.DependencyMachines
                             //        //{
                             //        //foreach (var potentiallyContributingMember in kvp.Value)
                             //        //{
-                            //        Debug.WriteLine($"[unsolved] Early contribution is not allowed, so '{potentiallyContributingMember.Key}' cannot contribute '{contribution.ToDependencyKey()}' yet");
+                            //        Logger.LogTrace($"[unsolved] Early contribution is not allowed, so '{potentiallyContributingMember.Key}' cannot contribute '{contribution.ToDependencyKey()}' yet");
                             //        StillUnsolved(member);
                             //        //}
                             //        //continue;
@@ -346,7 +349,7 @@ namespace LionFire.DependencyMachines
                         {
                             foreach (var member in contributionMembers.Value)
                             {
-                                Debug.WriteLine($"[unsolved] Early contribution is not allowed, so '{member.Key}' cannot contribute '{contributionMembers.Key}' yet");
+                                Logger.LogTrace($"[unsolved] Early contribution is not allowed, so '{member.Key}' cannot contribute '{contributionMembers.Key}' yet");
                                 StillUnsolved(member);
                             }
                         }

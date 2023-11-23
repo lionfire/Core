@@ -1,4 +1,5 @@
-﻿using System;
+﻿#nullable enable
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -7,7 +8,7 @@ namespace LionFire.Instantiating
 {
     public interface IHierarchicalTemplate : ITemplate
     {
-        IInstantiationCollection Children { get; }
+        IInstantiationCollection? Children { get; }
         //IEnumerable<IInstantiation> Children { get; 
             ////set;  // TOPORT if needed 
         //}

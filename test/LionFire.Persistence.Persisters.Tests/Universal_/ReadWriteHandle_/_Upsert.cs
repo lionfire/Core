@@ -50,7 +50,7 @@ namespace Universal_.ReadWriteHandle_
                 {
                     var rwh = reference.GetReadWriteHandle<string>();
                     rwh.Value = testData;
-                    var result = await rwh.Put();
+                    var result = await rwh.Set();
                     Assert.True(result.IsSuccess);
                 }
                 #endregion
@@ -62,7 +62,7 @@ namespace Universal_.ReadWriteHandle_
                 #region Retrieve
                 {
                     var rh = reference.GetReadHandle<string>();
-                    var retrieveResult = (await rh.Resolve()).ToRetrieveResult();
+                    var retrieveResult = (await rh.Get());
                     Assert.True(retrieveResult.IsSuccess());
                     Assert.True(retrieveResult.IsFound());
                     Assert.Equal(testData, rh.Value);
@@ -145,7 +145,7 @@ namespace Universal_.ReadWriteHandle_
                     {
                         var rwh = reference.GetReadWriteHandle<string>();
                         rwh.Value = testData;
-                        var result = await rwh.Put();
+                        var result = await rwh.Set();
                         Assert.True(result.IsSuccess);
                     }
                     #endregion
@@ -157,9 +157,9 @@ namespace Universal_.ReadWriteHandle_
                     #region Retrieve
                     {
                         var rh = reference.GetReadHandle<string>();
-                        var retrieveResult = (await rh.Resolve()).ToRetrieveResult();
-                        Assert.True(retrieveResult.IsSuccess());
-                        Assert.True(retrieveResult.IsFound());
+                        var getResult = (await rh.Get());
+                        Assert.True(getResult.IsSuccess());
+                        Assert.True(getResult.IsFound());
                         Assert.Equal(testData, rh.Value);
                     }
                     #endregion

@@ -11,7 +11,7 @@ namespace LionFire.Persistence.Handles
     /// A read-only notifying list
     /// </summary>
     /// <typeparam name="T"></typeparam>
-    public interface IListHandle<T> : IReadHandle<Metadata<IEnumerable<Listing<T>>>>, INotifyCollectionChanged<T>
+    public interface IListHandle<T> : IReadHandle<Metadata<IEnumerable<IListing<T>>>>, INotifyCollectionChanged<T>
     {
         void AutoLoad(bool enable);
     }

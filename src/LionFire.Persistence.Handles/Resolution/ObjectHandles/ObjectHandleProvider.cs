@@ -1,6 +1,7 @@
 ﻿using LionFire.Dependencies;
 using LionFire.Referencing;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace LionFire.Persistence.Handles
 {
@@ -11,7 +12,7 @@ namespace LionFire.Persistence.Handles
     ///  - (if enabled) Check for an existing ObjectHandle for this object, and return it
     ///  - Create and (if enabled) register an ObjectHandle for the object.
     /// </summary>
-    public class ObjectHandleProvider : HandleRegistrar<ObjectHandleProviderOptions>, IObjectHandleProvider
+    public class ObjectHandleProvider : ObjectHandleRegistrar<ObjectHandleProviderOptions>, IObjectHandleProvider
     {
         IEnumerable<IReadHandleProvider> readHandleProviders;
         IEnumerable<IReadWriteHandleProvider> readWriteHandleProviders;
@@ -29,9 +30,9 @@ namespace LionFire.Persistence.Handles
         {
             if (Options.CheckIReferencable && obj is IReferencable referencable)
             {
-                foreach (var r in readHandleProviders)
+                foreach (var r in readHandleProviders.OfType<IPreresolvableReadHandleProvider>())
                 {
-                    var result = r.GetReadHandle<TValue>(referencable.Reference, obj);
+                    var result = r.GetReadHandlePreresolved(referencable.Reference, obj);
                     if (result != null) return result;
                 }
             }

@@ -1,0 +1,17 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net6.0</TargetFramework>
+    <LangVersion>latest</LangVersion>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\LionFire.Environment\LionFire.Environment.csproj" />
+    <ProjectReference Include="..\LionFire.Flex.Extras\LionFire.Flex.Framework.csproj" />
+    <ProjectReference Include="..\LionFire.Structures\LionFire.Structures.csproj" />
+    <ProjectReference Include="..\LionFire.Vos.Abstractions\LionFire.Vos.Abstractions.csproj" />
+    <ProjectReference Include="..\LionFire.Vos\LionFire.Vos.csproj" />
+  </ItemGroup>
+ 
+
+</Project>

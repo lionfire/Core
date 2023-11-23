@@ -10,8 +10,9 @@ using LionFire.Structures;
 using System.Diagnostics;
 using System.Reflection;
 using System.Collections.Specialized;
-using LionFire.Resolves;
+using LionFire.Data.Async.Gets;
 using LionFire.Results;
+using LionFire.Data.Async.Sets;
 
 namespace LionFire.Persistence
 {
@@ -28,22 +29,22 @@ namespace LionFire.Persistence
 
         public AutoSaveOptions Options { get; set; } = new AutoSaveOptions();
 
-        internal ConcurrentDictionary<IPuts, ThrottledChangeHandler> handlers = new ConcurrentDictionary<IPuts, ThrottledChangeHandler>();
+        internal ConcurrentDictionary<ISetter, ThrottledChangeHandler> handlers = new ConcurrentDictionary<ISetter, ThrottledChangeHandler>();
     }
 
     public static class AutoSaveManagerExtensions
     {
-        public static void QueueAutoSave(this IPuts saveable)
+        public static void QueueAutoSave(this ISetter saveable)
         {
             Trace.WriteLine($"Queued autosave for {saveable.GetType().Name}: {saveable}");
             var handler = GetHandler(saveable);
             handler.Queue();
         }
 
-        private static ThrottledChangeHandler GetHandler(IPuts asset, Func<object, Task<ISuccessResult>> saveAction = null)
+        private static ThrottledChangeHandler GetHandler(ISetter asset, Func<object, ITask<ITransferResult>> saveAction = null)
         {
             if (asset == null) return null;
-            if (saveAction == null) saveAction = o => ((IPuts)o).Put();
+            if (saveAction == null) saveAction = o => ((ISetter)o).Set().AsITask();
             return AutoSaveManager.Instance.handlers.GetOrAdd(asset, a =>
             {
                 var wrappedChanged = a as INotifyWrappedValueChanged;
@@ -58,7 +59,7 @@ namespace LionFire.Persistence
 
         private static void OnChangeQueueHandler(object sender)
         {
-            var h = GetHandler(sender as IPuts);
+            var h = GetHandler(sender as ISetter);
             h?.Queue();
         }
 
@@ -67,11 +68,11 @@ namespace LionFire.Persistence
         /// </summary>
         /// <param name="saveable"></param>
         /// <param name="enable"></param>
-        public static void EnableAutoSave(this IPuts saveable, bool enable = true, Func<object, Task<ISuccessResult>> saveAction = null)
+        public static void EnableAutoSave(this ISetter saveable, bool enable = true, Func<object, ITask<ITransferResult>>? saveAction = null)
         {
 
             //bool attachedToSomething = false;
-            var handler = GetHandler(saveable, saveAction ?? ((_) => saveable.Put()));
+            var handler = GetHandler(saveable, saveAction ?? ((_) => saveable.Set().AsITask()));
 
             //var ic = saveable as IChanged;
             //if (ic != null) // TO C#7

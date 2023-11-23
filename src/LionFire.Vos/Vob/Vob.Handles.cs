@@ -1,4 +1,6 @@
-﻿using System;
+﻿//#define SharedHandles // No longer use these, now that we have WeakHandleRegistry (it conflicts with attached Finalizers)
+
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -19,6 +21,7 @@ namespace LionFire.Vos
 
         #region Read
 
+#if SharedHandles
         private ConcurrentDictionary<Type, IReadHandle> SharedReadHandles
         {
             get { if (sharedReadHandles == null) sharedReadHandles = new ConcurrentDictionary<Type, IReadHandle>(); return sharedReadHandles; }
@@ -27,6 +30,11 @@ namespace LionFire.Vos
 
         public IReadHandle<T> GetReadHandle<T>(T preresolvedValue = default)
             => (IReadHandle<T>)SharedReadHandles.GetOrAdd(typeof(T), t => CreateReadHandle<T>(preresolvedValue));
+#else
+        public IReadHandle<T> GetReadHandle<T>(T preresolvedValue = default)
+            //=> (IReadHandle<TValue>)SharedReadHandles.GetOrAdd(typeof(TValue), t => CreateReadHandle<TValue>(preresolvedValue));
+            => CreateReadHandle<T>(preresolvedValue);
+#endif
 
         public IReadHandle<T> CreateReadHandle<T>(T preresolvedValue = default)
             => new PersisterReadHandle<IVobReference, T, VosPersister>(this.GetRequiredService<VosPersister>(), VobReference.ForType<T>(), preresolvedValue);
@@ -34,6 +42,8 @@ namespace LionFire.Vos
         #endregion
 
         #region ReadWrite
+
+#if SharedHandles
 
         private ConcurrentDictionary<Type, IReadWriteHandle> SharedReadWriteHandles
         {
@@ -43,6 +53,10 @@ namespace LionFire.Vos
 
         public IReadWriteHandle<TValue> GetReadWriteHandle<TValue>(TValue preresolvedValue = default)
             => (IReadWriteHandle<TValue>)SharedReadWriteHandles.GetOrAdd(typeof(TValue), t => CreateReadWriteHandle<TValue>(preresolvedValue));
+#else
+        public IReadWriteHandle<TValue> GetReadWriteHandle<TValue>(TValue preresolvedValue = default)
+                    => CreateReadWriteHandle<TValue>(preresolvedValue);
+#endif
 
         public IReadWriteHandle<TValue> CreateReadWriteHandle<TValue>(TValue preresolvedValue = default)
             => new PersisterReadWriteHandle<IVobReference, TValue, VosPersister>(this.GetService<VosPersister>(), GetReference<TValue>().ForType<TValue>(), preresolvedValue);
@@ -51,13 +65,17 @@ namespace LionFire.Vos
 
         #region Write
 
+#if SharedHandles
         private ConcurrentDictionary<Type, IWriteHandle> SharedWriteHandles => sharedWriteHandles ??= new ConcurrentDictionary<Type, IWriteHandle>();
         private ConcurrentDictionary<Type, IWriteHandle> sharedWriteHandles;
 
         public IWriteHandle<TValue> GetWriteHandle<TValue>(TValue prestagedValue = default)
-            => (IWriteHandle<TValue>)SharedWriteHandles.GetOrAdd(typeof(TValue), t => CreateReadWriteHandle<TValue>(prestagedValue));
-
-        //=> (IWriteHandle<T>)WriteHandles.GetOrAdd(typeof(T), t => new PersisterWriteHandle<VobReference, T, VosPersister>(this.GetService<VosPersister>(), VobReference));
+            => (IWriteHandle<TValue>)SharedWriteHandles.GetOrAdd(typeof(TValue), t => CreateWriteHandle<TValue>(prestagedValue));
+#else
+        public IWriteHandle<TValue> GetWriteHandle<TValue>(TValue prestagedValue = default)
+         => CreateWriteHandle<TValue>(prestagedValue);
+#endif
+        //=> (IWriteHandle<TValue>)WriteHandles.GetOrAdd(typeof(TValue), t => new PersisterWriteHandle<VobReference, TValue, VosPersister>(this.GetService<VosPersister>(), VobReference));
         public IWriteHandle<T> CreateWriteHandle<T>(T prestagedValue = default)
             => new PersisterWriteHandle<IVobReference, T, VosPersister>(this.GetService<VosPersister>(), VobReference.ForType<T>(), prestagedValue);
 
@@ -232,16 +250,16 @@ namespace LionFire.Vos
             //                        continue;
             //                    }
 
-            //                    return GetReadWriteHandleFromMount<T>(mount);
+            //                    return GetReadWriteHandleFromMount<TValue>(mount);
             //                }
             //                return null;
             //            }
         }
 
-        //private VobHandle<T> GetFirstWriteHandle<T>()
+        //private VobHandle<TValue> GetFirstWriteHandle<TValue>()
         //{
         //    H objectHandle;
-        //    objectHandle = FirstWriteHandle<T>();
+        //    objectHandle = FirstWriteHandle<TValue>();
         //    return objectHandle;
         //}
 

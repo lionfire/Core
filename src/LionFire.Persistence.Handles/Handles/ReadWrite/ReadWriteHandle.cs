@@ -1,5 +1,5 @@
 ﻿using LionFire.Referencing;
-using LionFire.Resolves;
+using LionFire.Data.Async.Gets;
 using LionFire.Structures;
 using MorseCode.ITask;
 using System;
@@ -18,11 +18,11 @@ namespace LionFire.Persistence.Handles
     //    public override TValue Value
     //    {
     //        [Blocking(Alternative = nameof(GetValue))]
-    //        get => ProtectedValue ?? GetValue().Result.Value;
+    //        get => ReadCacheValue ?? GetValue().Result.Value;
     //        [PublicOnly]
     //        set
     //        {
-    //            if (EqualityComparer<TValue>.Default.Equals(protectedValue, value)) return;
+    //            if (EqualityComparer<TValue>.Default.Equals(readCacheValue, value)) return;
     //            this.MutatePersistenceStateAndNotify(() => HandleUtils.OnUserChangedValue_ReadWrite(this, value));
     //        }
     //    }
@@ -56,9 +56,9 @@ namespace LionFire.Persistence.Handles
 
         #region OLD (Resolves)
 
-        //public abstract ILazyResolveResult<TValue> QueryValue();
-        //public abstract ITask<ILazyResolveResult<TValue>> GetValue();
-        //ITask<ILazyResolveResult<TValue>> ILazilyResolves<TValue>.TryGetValue() => this.GetValue().AsITask();
+        //public abstract IGetResult<TValue> QueryValue();
+        //public abstract ITask<IGetResult<TValue>> GetValue();
+        //ITask<IGetResult<TValue>> ILazilyGets<TValue>.TryGetValue() => this.GetValue().AsITask();
 
         #endregion
 
@@ -67,16 +67,16 @@ namespace LionFire.Persistence.Handles
         //public override TValue Value
         //{
         //    [Blocking(Alternative = nameof(GetValue))]
-        //    get => ProtectedValue ?? GetValue().Result.Value;
+        //    get => ReadCacheValue ?? GetValue().Result.Value;
         //    [PublicOnly]
         //    set
         //    {
-        //        if (EqualityComparer<TValue>.Default.Equals(protectedValue, value)) return;
-        //        ProtectedValue = value; // REVIEW TOTEST
+        //        if (EqualityComparer<TValue>.Default.Equals(readCacheValue, value)) return;
+        //        ReadCacheValue = value; // REVIEW TOTEST
         //    }
         //}
 
-        public PersistenceSnapshot<TValue> PersistenceState => new PersistenceSnapshot<TValue>(Flags, ProtectedValue, HasValue);
+        public IPersistenceSnapshot<TValue> PersistenceState => new PersistenceSnapshot<TValue>(Flags, ReadCacheValue, HasValue);
         public object PersistenceLock { get; } = new object();
 
         #endregion
@@ -97,7 +97,7 @@ namespace LionFire.Persistence.Handles
 
             ////var old = PersistenceSnapshot;
 
-            //ProtectedValue = obj;
+            //ReadCacheValue = obj;
             //this.Flags |= PersistenceFlags.UpToDate;
 
             ////this.PersistenceStateChanged?.Invoke(new PersistenceEvent<TValue>

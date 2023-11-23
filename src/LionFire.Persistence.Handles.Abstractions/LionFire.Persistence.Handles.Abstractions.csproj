@@ -1,9 +1,10 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>netstandard2.0</TargetFramework>
+    <TargetFramework>net6.0</TargetFramework> 
     <RootNamespace>LionFire</RootNamespace>
     <LangVersion>Latest</LangVersion>
+		<Nullable>enable</Nullable>
   </PropertyGroup>
 
   <ItemGroup>
@@ -14,13 +15,9 @@
 
   <ItemGroup>
     <ProjectReference Include="..\LionFire.Core\LionFire.Core.csproj" />
-    <ProjectReference Include="..\LionFire.Persistence.Abstractions\LionFire.Persistence.Abstractions.csproj" />
+    <ProjectReference Include="..\LionFire.Persistence.Abstractions\LionFire.Data.Persisters.Abstractions.csproj" />
     <ProjectReference Include="..\LionFire.Referencing.Abstractions\LionFire.Referencing.Abstractions.csproj" />
-    <ProjectReference Include="..\LionFire.Resolves.Abstractions\LionFire.Resolves.Abstractions.csproj" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="NewFolder\" />
+    <ProjectReference Include="..\LionFire.Resolves.Abstractions\LionFire.Data.Abstractions.csproj" />
   </ItemGroup>
 
 </Project>

@@ -1,5 +1,5 @@
 ﻿using LionFire.Persistence;
-using LionFire.Resolves;
+using LionFire.Data.Async.Gets;
 using MorseCode.ITask;
 using System;
 using System.IO;
@@ -20,20 +20,20 @@ namespace LionFire.IO
 
         #endregion
 
-        protected override ITask<IResolveResult<Stream>> ResolveImpl()
+        protected override ITask<IGetResult<Stream>> GetImpl(CancellationToken cancellationToken = default)
         {
             var stream = new FileStream(Path, FileMode.Open, FileAccess.Write, FileShare.Write);
-            return Task.FromResult((IResolveResult<Stream>)RetrieveResult<Stream>.Success(stream)).AsITask();
+            return Task.FromResult((IGetResult<Stream>)RetrieveResult<Stream>.Success(stream)).AsITask();
         }
 
         // OLD
-        //public override Task<IRetrieveResult<Stream>> RetrieveImpl()
+        //public override Task<IGetResult<Stream>> RetrieveImpl()
         //{
-        //    if (stream != null) return Task.FromResult((IRetrieveResult<Stream>)RetrieveResult<Stream>.Noop(stream));
+        //    if (stream != null) return Task.FromResult((IGetResult<Stream>)RetrieveResult<Stream>.Noop(stream));
 
         //    stream = new FileStream(Path, FileMode.Open, FileAccess.Read, FileShare.Read);
         //    base.OnRetrievedObject(stream); // REVIEW - only retrieved the stream object.  User still needs to pull data.  Document this better?
-        //    return Task.FromResult((IRetrieveResult<Stream>)RetrieveResult<Stream>.Success(stream));
+        //    return Task.FromResult((IGetResult<Stream>)RetrieveResult<Stream>.Success(stream));
         //}
 
         /// <summary>
@@ -41,12 +41,12 @@ namespace LionFire.IO
         /// </summary>
         /// <param name="persistenceContext"></param>
         /// <returns></returns>
-        protected override async Task<IPersistenceResult> UpsertImpl()
+        protected override async Task<ITransferResult> UpsertImpl()
         {
             if (HasValue)
             {
                 await Value.FlushAsync();
-                return PersistenceResult.Success;
+                return TransferResult.Success;
             }
             else
             {
@@ -59,7 +59,7 @@ namespace LionFire.IO
 
         public override void Dispose()
         {
-            var obj = base.ProtectedValue;
+            var obj = base.ReadCacheValue;
             if (obj != null)
             {
                 DiscardValue();

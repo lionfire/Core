@@ -5,7 +5,7 @@
 //{
 //    public interface IFileDeserializer : IDeserializer
 //    {
-//        T Deserialize<T>(string path, SerializationContext context = null);
+//        TValue Deserialize<TValue>(string path, SerializationContext context = null);
 //    }
 
 //}

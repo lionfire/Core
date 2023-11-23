@@ -10,7 +10,7 @@ using LionFire.Ontology;
 using LionFire.Persistence;
 using LionFire.Persistence.Handles;
 using LionFire.Referencing;
-using LionFire.Resolves;
+using LionFire.Data.Async.Gets;
 using LionFire.Structures;
 using LionFire.Vos.Mounts;
 using MorseCode.ITask;
@@ -127,7 +127,7 @@ namespace LionFire.Vos
         #region Read handle implementation
 
         public void OnRenamed(IVobHandle<object> newHandle) => throw new NotImplementedException();
-        protected override ITask<IResolveResult<T>> ResolveImpl() => throw new NotImplementedException();
+        protected override ITask<IGetResult<T>> GetImpl(CancellationToken cancellationToken = default) => throw new NotImplementedException();
 
         #endregion
 

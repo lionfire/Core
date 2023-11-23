@@ -10,10 +10,12 @@ using LionFire.Extensions.DefaultValues;
 using LionFire.Ontology;
 using LionFire.Referencing;
 using LionFire.Resolvables;
-using LionFire.Resolves;
+using LionFire.Data.Async.Gets;
 using LionFire.Structures;
 using LionFire.Threading;
 using MorseCode.ITask;
+using LionFire.Persistence.Persisters;
+using System.Diagnostics;
 
 namespace LionFire.Persistence.Handles
 {
@@ -27,13 +29,16 @@ namespace LionFire.Persistence.Handles
     ///  - ObjectChanged 
     /// </remarks>
     /// <typeparam name="TValue"></typeparam>
-    public abstract partial class ReadHandle<TReference, TValue> : ReadHandleBase<TReference, TValue>, IReadHandle<TValue>,
+    public abstract partial class ReadHandle<TReference, TValue>
+        : ReadHandleBase<TReference, TValue>
+        , IReadHandle<TValue>
         //IReadHandleInvariantEx<TValue>, 
-        INotifyPersists<TValue>,
-        INotifyPropertyChanged,
-        INotifyPersistsInternal<TValue>
-        //, IRetrievableImpl<T>
-        where TReference : IReference<TValue>
+        , INotifyPersists<TValue>
+        , INotifyPropertyChanged
+        , INotifyPersistsInternal<TValue>
+        //, IRetrievableImpl<TValue>
+        , IPersistenceAware<TValue>
+    where TReference : IReference<TValue>
     {
         #region Identity
 
@@ -65,7 +70,7 @@ namespace LionFire.Persistence.Handles
 
         #region Value
 
-        // OLD - Maybe I don't need to override Value or ProtectedValue?
+        // OLD - Maybe I don't need to override Value or ReadCacheValue?
         //public TValue Value
         //{
         //    [Blocking(Alternative = nameof(GetValue))]
@@ -75,7 +80,7 @@ namespace LionFire.Persistence.Handles
         //        if (!Flags.HasFlag(PersistenceFlags.UpToDate))
         //        {
         //            Resolve().ConfigureAwait(false).GetAwaiter().GetResult();
-        //            //_ = Retrieve().Result;
+        //            //_ = Get().Result;
         //        }
         //        return _value;
         //    }
@@ -93,7 +98,7 @@ namespace LionFire.Persistence.Handles
         //}
         //protected TValue _value;
 
-        protected override void OnValueChanged(TValue newValue, TValue oldValue) => OnPropertyChanged(nameof(Value));
+        protected override void OnValueChanged(TValue newValue, TValue oldValue) { OnPropertyChanged(nameof(Value)); base.OnValueChanged(newValue, oldValue); }
 
         //protected virtual async Task<bool> DoTryRetrieve()
         //{
@@ -118,7 +123,7 @@ namespace LionFire.Persistence.Handles
 
             //var old = PersistenceSnapshot;
 
-            ProtectedValue = obj;
+            ReadCacheValue = obj;
             this.Flags |= PersistenceFlags.UpToDate;
 
             //this.PersistenceStateChanged?.Invoke(new PersistenceEvent<TValue>
@@ -132,10 +137,10 @@ namespace LionFire.Persistence.Handles
             return obj;
         }
 
-        PersistenceSnapshot<TValue> IPersists<TValue>.PersistenceState
+        IPersistenceSnapshot<TValue> IPersists<TValue>.PersistenceState
              => new PersistenceSnapshot<TValue>
              {
-                 Value = ProtectedValue,
+                 Value = ReadCacheValue,
                  Flags = Flags,
                  HasValue = HasValue,
              };
@@ -147,19 +152,19 @@ namespace LionFire.Persistence.Handles
 
         protected void RaiseRetrievedObject() { } // TODO
 
-        protected void OnRetrieveFailed(IRetrieveResult<TValue> retrieveResult)
+        protected void OnRetrieveFailed(IGetResult<TValue> retrieveResult)
         {
             // TODO: Events?
         }
 
-        //protected override void OnValueChanged(T newValue, T oldValue) { 
+        //protected override void OnValueChanged(TValue newValue, TValue oldValue) { 
 
         //}
 
         public override void DiscardValue()
         {
             base.DiscardValue();
-            //PersistenceResultFlags = PersistenceResultFlags.None;
+            //TransferResultFlags = TransferResultFlags.None;
             this.Flags = Flags.AfterDiscard();
         }
 
@@ -176,7 +181,7 @@ namespace LionFire.Persistence.Handles
         //public virtual bool HasObject => CanObjectBeDefault ? (!IsDefaultValue(_object) && !this.RetrievedNullOrDefault()) : (!IsDefaultValue(_object));
         //public virtual bool HasValue => State & (PersistenceState.UpToDate | PersistenceState.IncomingUpdateAvailable); // This looks wrong
 
-        //public PersistenceResultFlags PersistenceResultFlags
+        //public TransferResultFlags TransferResultFlags
         //{
         //    get => persistenceResultFlags;
         //    protected set
@@ -185,7 +190,7 @@ namespace LionFire.Persistence.Handles
         //        persistenceResultFlags = value;
         //    }
         //}
-        //private PersistenceResultFlags persistenceResultFlags;
+        //private TransferResultFlags persistenceResultFlags;
 
         #endregion
 
@@ -208,20 +213,41 @@ namespace LionFire.Persistence.Handles
 
         #endregion
 
+        #region (public) Event Handlers
+
+        public void OnPreresolved(TValue? preresolvedValue)
+        {
+            if (EqualityComparer.Equals(preresolvedValue, default)) return;
+            if (ReferenceEquals(ReadCacheValue, preresolvedValue)) return;
+            if (EqualityComparer<TValue>.Default.Equals(ReadCacheValue, preresolvedValue))
+            {
+                Debug.WriteLine("ReadHandle.OnPreresolved: EqualityComparer<TValue>.Default.Equals(ReadCacheValue, preresolvedValue). ReadCacheValue: " + ReadCacheValue);
+                return;
+            }
+
+            if (ReadCacheValue != null)
+            {
+                Debug.WriteLine("ReadHandle.OnPreresolved: ReadCacheValue != null && !ReferenceEquals(ReadCacheValue, preresolvedValue).  ReadCacheValue: " + ReadCacheValue + " PreresolvedValue: " + preresolvedValue);
+            }
+            ReadCacheValue = preresolvedValue;
+        }
+
+        #endregion
+
         #region Get
 
-        //public async ITask<IRetrieveResult<T>> RetrieveImpl() => (IRetrieveResult<T>)await ResolveImpl().ConfigureAwait(false);
+        //public async ITask<IGetResult<TValue>> RetrieveImpl() => (IGetResult<TValue>)await GetImpl().ConfigureAwait(false);
 
 
-        //async Task<IRetrieveResult<ObjectType>> IRetrievableImpl<ObjectType>.RetrieveObject() => await RetrieveObject().ConfigureAwait(false);
-        //public async Task<bool> Retrieve()
+        //async Task<IGetResult<ObjectType>> IRetrievableImpl<ObjectType>.RetrieveObject() => await RetrieveObject().ConfigureAwait(false);
+        //public async Task<bool> Get()
         //{
         //    var result = await RetrieveImpl().ConfigureAwait(false);
 
-        //    //var retrievableState = result.ToRetrievableState<T>(CanObjectBeDefault);
+        //    //var retrievableState = result.ToRetrievableState<TValue>(CanObjectBeDefault);
         //    //this.RetrievableState = retrievableState;
 
-        //    this.PersistenceResultFlags = result.Flags;
+        //    this.TransferResultFlags = result.Flags;
 
         //    if (result.IsSuccess())
         //    {
@@ -231,10 +257,10 @@ namespace LionFire.Persistence.Handles
         //    return result.IsSuccess();
         //}
 
-        //async ITask<ILazyResolveResult<T>> ILazilyResolves<T>.GetValue()
+        //async ITask<IGetResult<TValue>> ILazilyGets<TValue>.GetValue()
         //{
         //    var result = await GetValue();
-        //    return (result.HasObject, (T)(object)result.Object); // HARDCAST
+        //    return (result.HasObject, (TValue)(object)result.Object); // HARDCAST
         //}
 
         ///// <summary>
@@ -243,7 +269,7 @@ namespace LionFire.Persistence.Handles
         ///// </summary>
         ///// <seealso cref="Exists"/>
         ///// <returns>True if an object was found after a retrieval or was manually set on the handle, false otherwise.</returns>
-        //public virtual async ITask<ILazyResolveResult<T>> GetValue()
+        //public virtual async ITask<IGetResult<TValue>> GetValue()
         //{
         //    if (HasValue)
         //    {
@@ -253,7 +279,7 @@ namespace LionFire.Persistence.Handles
         //    if (!IsPersisted)
         //    {
         //        //await DoTryRetrieve().ConfigureAwait(false);
-        //        await Retrieve().ConfigureAwait(false);
+        //        await Get().ConfigureAwait(false);
         //    }
 
         //    return (HasValue, _object); ;
@@ -268,7 +294,7 @@ namespace LionFire.Persistence.Handles
         {
             if (forceCheck)
             {
-                return (await ResolveImpl().ConfigureAwait(false)).HasValue;
+                return (await GetImpl().ConfigureAwait(false)).HasValue;
             }
             else if (HasValue && IsUpToDate)
             {

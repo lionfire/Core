@@ -23,9 +23,11 @@ namespace LionFire.Vos.Internals
         VobNode<TInterface> TryAddOwnVobNode<TInterface>(Func<IVobNode, TInterface> valueFactory = null)
             where TInterface : class;
 
+        // RENAME to GetOrAddOwnVobNode, since we're not doing acquisition
         VobNode<TInterface> AcquireOrAddOwnVobNode<TInterface>(Func<IVobNode, TInterface> valueFactory = null)
             where TInterface : class;
 
+        // RENAME to GetOrAddOwnVobNode, since we're not doing acquisition
         VobNode<TInterface> AcquireOrAddOwnVobNode<TInterface, TImplementation>(Func<IVobNode, TInterface> valueFactory = null)
             where TInterface : class
             where TImplementation : TInterface;

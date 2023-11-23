@@ -1,6 +1,6 @@
 ﻿#if OLD
 using LionFire.Dependencies;
-using LionFire.Resolves;
+using LionFire.Data.Async.Gets;
 using LionFire.UI;
 using LionFire.UI.Windowing;
 using LionFire.Settings;
@@ -45,7 +45,7 @@ namespace LionFire.Shell.Wpf
 
         #region Construction and Destruction
 
-        public ShellConductor(IServiceProvider serviceProvider, IDispatcher dispatcher, DesktopProfileManager windowLayoutManager, ILazilyResolves<WindowSettings> windowSettings, IOptionsMonitor<ShellOptions> shellOptionsMonitor, IOptionsMonitor<ShellPresenterOptions> shellPresenterOptionsMonitor) : base(serviceProvider, dispatcher)
+        public ShellConductor(IServiceProvider serviceProvider, IDispatcher dispatcher, DesktopProfileManager windowLayoutManager, ILazilyGets<WindowSettings> windowSettings, IOptionsMonitor<ShellOptions> shellOptionsMonitor, IOptionsMonitor<ShellPresenterOptions> shellPresenterOptionsMonitor) : base(serviceProvider, dispatcher)
         {
             ShellOptionsMonitor = shellOptionsMonitor;
             ShellPresenterOptions = shellPresenterOptionsMonitor.CurrentValue;

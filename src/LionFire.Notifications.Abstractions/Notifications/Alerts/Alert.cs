@@ -15,7 +15,7 @@ namespace LionFire.Notifications
         public string Verbose { get; set; }
         //public string EncodedMessage { get; set; }
         public int Priority { get; set; }
-        public DateTime Date { get; set; }
+        public DateTimeOffset Date { get; set; }
         public int DispatchFailCount { get; set; }
     }
 }

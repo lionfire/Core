@@ -1,4 +1,5 @@
-﻿using LiveSharp;
+﻿
+using LiveSharp;
 using MediatR;
 
 namespace LionFire.LiveSharp

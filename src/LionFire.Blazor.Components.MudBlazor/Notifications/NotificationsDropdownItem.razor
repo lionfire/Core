@@ -1,0 +1,60 @@
+﻿@inject LionFire.Activities.IActivitiesTracker Tracker
+@using LionFire.Activities
+
+
+
+<MudListItem>
+    <div class="row">
+        @if (Item.IsCompleted)
+        {
+            if (Item.Status != null && Item.Status.IsFinished)
+            {
+                if (Item.Status.HasError)
+                {
+                    <MudIcon Icon=@Icons.Material.Sharp.Error />
+                }
+                else if (Item.Status.HasWarning)
+                {
+                    <MudIcon Icon=@Icons.Material.Sharp.Warning />
+                }
+                else
+                {
+                    <MudIcon Icon=@Icons.Material.Sharp.Check />
+                }
+            }
+        }
+        else
+        {
+            <MudIcon Icon=@Icons.Material.Sharp.Task />
+        }
+        <div title=@Item.Description>
+            @Item.Name
+        </div>
+        <button @onclick=@(() => ShowDetails(Item))><MudIcon Icon="@Icons.Material.Filled.More" /></button>
+        <button @onclick=@(() => Tracker.ClearFinishedActivity(Item))><MudIcon Icon="@Icons.Material.Outlined.Close" /></button>
+    </div>
+</MudListItem>
+
+@*<RadzenProfileMenuItem Text=@Item.Name Path="buttons" Icon="account_circle"></RadzenProfileMenuItem>*@
+
+@code {
+    [Parameter]
+    public IActivity Item { get; set; }
+
+    [CascadingParameter]
+    public bool ShowDialog { get; set; }
+
+    [CascadingParameter]
+    public RenderFragment DialogContent{ get; set; }
+
+    private RenderFragment AddContent(string textContent) => builder =>
+    {
+       builder.AddContent(1, textContent);
+    };
+
+    private void ShowDetails(IActivity activity)
+    {
+        ShowDialog = true;
+        DialogContent = AddContent("ruyfkuykuytgk6u7 123456789");
+    }
+}

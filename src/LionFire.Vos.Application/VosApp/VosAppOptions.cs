@@ -1,6 +1,5 @@
 ﻿using LionFire.Applications;
 using LionFire.Dependencies;
-using LionFire.Vos.Packages;
 using Microsoft.Extensions.DependencyInjection;
 using System.Collections.Generic;
 

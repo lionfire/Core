@@ -6,6 +6,7 @@ using LionFire.Vos.Mounts;
 using LionFire.Vos.VosApp;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -24,7 +25,7 @@ namespace VosApp_
         [Fact]
         public async void Pass()
         {
-            await VosAppHostBuilder.Create()
+            await Host.CreateDefaultBuilder().LionFire(b => b.VosApp())
                 .RunAsync(serviceProvider =>
                 {
                     // Assert list of stores from the Org and App names

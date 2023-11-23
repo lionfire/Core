@@ -1,19 +1,17 @@
-﻿using System.Collections.Generic;
+﻿
+using LionFire.Data.Async.Gets;
 
-namespace LionFire.Persistence
+namespace LionFire.Persistence;
+
+public class OverlayRetrieveResult<T> : OverlayPersistenceResultBase<IGetResult<T>>, IGetResult<T>, ITieredPersistenceResult
+    where T : class
 {
-
-    public class OverlayRetrieveResult<T> : OverlayPersistenceResultBase<IRetrieveResult<T>>, IRetrieveResult<T>, ITieredPersistenceResult
-        where T : class
+    public OverlayRetrieveResult(IGetResult<T> underlyingResult) : base(underlyingResult)
     {
-        public OverlayRetrieveResult(IRetrieveResult<T> underlyingResult) : base(underlyingResult)
-        {
-        }
-
-        public T Value => underlyingResult.Value;
-
-        public bool HasValue => Value == default;
-
-
     }
+
+    public T Value => underlyingResult.Value;
+
+    public bool HasValue => Value == default;
+
 }

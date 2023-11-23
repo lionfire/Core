@@ -33,7 +33,7 @@ namespace LionFire.Vos.Id.Persisters
         /// </param>
         /// <returns></returns>
         public IPersister<IIdReference> GetPersister(string? name = null) 
-            => RootManager.Get(name)?.AcquireOwn<VosIdPersister>() 
+            => RootManager.Get(name)?.AcquireOwn<VosIdPersister>()  // TODO: Get VosIdPersister from vos:$id instead of vos:/.
                 ?? throw new DependencyMissingException($"Missing VosIdedPersister on {(name == null ? "primary VobRoot" : $"VobRoot '{name}'")}");
     }
 }

@@ -1,21 +1,25 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Concurrent;
 
 namespace LionFire.Collections
 {
-    public class ConcurrentWeakDictionaryCache<TKey, TValue> : IDictionaryCache<TKey, TValue>
+    public class ConcurrentWeakDictionaryCache<TKey, TValue> : IDictionaryCache<TKey, TValue>, IEnumerable<KeyValuePair<TKey, WeakReference<TValue>>>
         where TValue : class
     {
         private ConcurrentDictionary<TKey, WeakReference<TValue>> dict = new ConcurrentDictionary<TKey, WeakReference<TValue>>();
 
-        public Func<TKey, TValue> Getter;
+        /// <summary>
+        /// Instantiate/Create TValue for TKey.
+        /// </summary>
+        public Func<TKey, TValue> Getter { get; set; } // RENAME Instantiator
 
-        public ConcurrentWeakDictionaryCache(Func<TKey, TValue> getter)
+        public ConcurrentWeakDictionaryCache(Func<TKey, TValue> getter = null)
         {
             Getter = getter;
         }
 
-        private WeakReference<TValue> Get(TKey key) => new WeakReference<TValue>(Getter(key));
+        private WeakReference<TValue> Get(TKey key) => Getter == null ? throw new ArgumentException($"{nameof(Getter)} not available") : new WeakReference<TValue>(Getter(key));
 
         public TValue this[TKey key]
         {
@@ -41,5 +45,27 @@ namespace LionFire.Collections
                 throw new InvalidOperationException("Failed to get target from weak reference"); // Race condition.  Make this threadsafe, or fix here or make user code threadsafe.
             }
         }
+
+        public TValue GetOrAdd(TKey key, Func<TValue> value)
+        {
+            if(dict.GetOrAdd(key, k =>
+            {
+                TValue val = value();
+                return new WeakReference<TValue>(val);
+            }).TryGetTarget(out var target))
+            {
+                return target;
+            }
+            throw new UnreachableCodeException("WeakReference forgot Target");
+        }
+
+        public bool Remove(TKey key) => dict.TryRemove(key, out _);
+
+        public IEnumerator<KeyValuePair<TKey, WeakReference< TValue>>> GetEnumerator()
+        {
+            return dict.GetEnumerator();
+        }
+
+        IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
     }
 }

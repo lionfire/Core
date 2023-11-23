@@ -4,12 +4,14 @@ using LionFire.Persistence.Handles;
 using LionFire.Persistence.Persisters;
 using Microsoft.Extensions.Options;
 using LionFire.Referencing;
+using LionFire.Hosting;
 
 namespace LionFire.Services
 {
     public static class FilesystemServiceCollectionExtensions
     {
 
+        // TODO: optional auto-extension support for deserializers/serializers. Serializer adapter?
         public static IServiceCollection AddFilesystem(this IServiceCollection services)
         {
             services
@@ -44,5 +46,4 @@ namespace LionFire.Services
             return services;
         }
     }
-
 }

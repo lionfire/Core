@@ -1,0 +1,87 @@
+﻿@page "/packages"
+@inject DocumentService DocumentService
+@using Microsoft.AspNetCore.Components.QuickGrid
+@using ReactiveUI
+@rendermode InteractiveServer
+
+<h3>Packages</h3>
+
+@* <button @onclick="@(() => Test(null))">Upgrade</button> *@
+<Microsoft.FluentUI.AspNetCore.Components.FluentButton @onclick="() => OnUpgrade()">Upgrade</Microsoft.FluentUI.AspNetCore.Components.FluentButton>
+
+<QuickGrid Items="@packages">
+    <PropertyColumn Property="@(p => p.PackageId)" Sortable="true" />
+    <PropertyColumn Property="@(p => p.Current)" Sortable="true" />
+
+    <TemplateColumn Title="">
+        @if (context.Release != null)
+        {
+            <button class="ArrowButton" @onclick="@(() => UpgradeSingle(context))" style="font-size: 20px;">⮕</button>
+        }
+    </TemplateColumn>
+    <PropertyColumn Property="@(p => p.Release)" Sortable="true" />
+
+    <TemplateColumn Title="">
+        @if (context.Prerelease != null)
+        {
+            <button class="ArrowButton" @onclick="@(() => UpgradeSingle(context, prerelease: true))" style="font-size: 20px;">⮕</button>
+        }
+    </TemplateColumn>
+    <PropertyColumn Property="@(p => p.Prerelease)" Sortable="true" />
+</QuickGrid>
+
+
+@code {
+    private record Package(string PackageId, string Current, string? Release, string? Prerelease);
+
+    private IQueryable<Package> packages = new Package[] { }.AsQueryable();
+
+    public bool ShowUpToDatePackages { get; set; } = false;
+    public bool ShowPrerelease { get; set; } = false;
+
+    private async Task UpgradeSingle(Package x, bool prerelease = false)
+    {
+        Console.WriteLine($"Upgrading {x.PackageId}");
+        await DocumentService.Upgrade(pretend: false, major: true, singlePackageId: x.PackageId, prerelease: prerelease);
+        await DocumentService.TryLoad();
+        StateHasChanged();
+    }
+
+    public Task OnUpgrade() => DocumentService.Upgrade(pretend: false, major: true);
+
+    private void Refresh()
+    {
+        List<Package> dict = new();
+        var d = DocumentService.Document;
+
+        foreach (var kvp in d.CurrentPackageVersions)
+        {
+            var id = kvp.Key;
+            var current = kvp.Value;
+
+            var release = d.AvailablePackageVersions.TryGetValue(id);
+            if (release == current) release = null;
+            var prerelease = d.AvailablePrereleasePackageVersions.TryGetValue(id);
+            if (prerelease?.ToString() == release?.ToString() || prerelease?.ToString() == current) prerelease = null;
+
+            if (!ShowUpToDatePackages)
+            {
+                if (!ShowPrerelease && release == null) continue;
+                else if (release == null && prerelease == null) continue;
+            }
+
+            dict.Add(new Package(id, current, release, prerelease));
+
+        }
+        packages = dict.AsQueryable();
+        // OnUpgrade();
+    }
+
+    protected override Task OnInitializedAsync()
+    {
+        Refresh();
+
+
+        return base.OnInitializedAsync();
+    }
+}

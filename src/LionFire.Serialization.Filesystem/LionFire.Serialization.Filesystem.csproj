@@ -1,12 +1,12 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>netstandard2.0</TargetFramework>
+    <TargetFramework>net6.0</TargetFramework> 
   </PropertyGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\LionFire.IO.Filesystem\LionFire.IO.Filesystem.csproj" />
-    <ProjectReference Include="..\LionFire.Persistence\LionFire.Persistence.csproj" />
+    <ProjectReference Include="..\LionFire.Persistence\LionFire.Data.Persisters.csproj" />
   </ItemGroup>
 
   <ItemGroup>

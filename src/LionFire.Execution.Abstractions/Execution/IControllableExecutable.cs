@@ -38,7 +38,7 @@ namespace LionFire.Execution
     public static class IControllableExecutableExtensions
     {
 
-        public static async Task<StateChangeResult> SetDesiredStateAndWait(this IControllableExecutable e, ExecutionStateEx state, CancellationToken? cancellationToken = null)
+        public static async Task<StateChangeResult> SetDesiredStateAndWait(this IControllableExecutable e, ExecutionStateEx state, CancellationToken cancellationToken = default)
         {
             if (e.State == state) return StateChangeResult.Success;
 
@@ -56,7 +56,7 @@ namespace LionFire.Execution
                 if (curState == state) return StateChangeResult.Success;
                 if (curState == ExecutionStateEx.Disposed || curState == ExecutionStateEx.Faulted) return StateChangeResult.Failed;
                 if (e.DesiredExecutionState != state) return StateChangeResult.Overridden;
-                if (cancellationToken.HasValue && cancellationToken.Value.IsCancellationRequested) return StateChangeResult.OperationCanceled;
+                if (cancellationToken != default && cancellationToken.IsCancellationRequested) return StateChangeResult.OperationCanceled;
 
                
                 await Task.Delay(100).ConfigureAwait(false);
