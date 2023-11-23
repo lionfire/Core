@@ -47,7 +47,7 @@ public static class AppSettingsHostingX
         return builder;
     }
 
-    public static HostApplicationBuilder CopyExampleAppSettings(this HostApplicationBuilder builder)
+    public static IHostApplicationBuilder CopyExampleAppSettings(this IHostApplicationBuilder builder)
     {
         var releaseChannel = builder.Configuration["releaseChannel"];
         LionFireHostingConfigurationUtils.OverwriteFromBaseDirectory("example.appsettings.json");

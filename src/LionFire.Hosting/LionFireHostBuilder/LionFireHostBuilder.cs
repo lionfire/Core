@@ -19,6 +19,8 @@ public class LionFireHostBuilder : ILionFireHostBuilder
 {
     public LionFireHostBuilder(IHostBuilder hostBuilder) { HostBuilder = new LionFireHostBuilderWrapper(hostBuilder, this); }
     public LionFireHostBuilder(HostApplicationBuilder hostApplicationBuilder) { HostBuilder = new LionFireHostBuilderWrapper(hostApplicationBuilder, this); }
+    public LionFireHostBuilder(IHostApplicationBuilder hostApplicationBuilder) { HostBuilder = new LionFireHostBuilderWrapper(hostApplicationBuilder, this); }
+
 
     public LionFireHostBuilderWrapper HostBuilder { get; }
 
@@ -27,10 +29,19 @@ public class LionFireHostBuilder : ILionFireHostBuilder
         action(HostBuilder);
         return this;
     }
-    public ILionFireHostBuilder ForHostApplicationBuilder(Action<HostApplicationBuilder> action)
+
+    //[Obsolete("Use ForIHostApplicationBuilder instead")]
+    //public ILionFireHostBuilder ForHostApplicationBuilder(Action<HostApplicationBuilder> action)
+    //{
+    //    if (HostBuilder.WrappedHostApplicationBuilder == null) throw new NotSupportedException($"{typeof(HostApplicationBuilder).Name} not available");
+    //    action(HostBuilder.WrappedHostApplicationBuilder);
+    //    return this;
+    //}
+
+    public ILionFireHostBuilder ForIHostApplicationBuilder(Action<IHostApplicationBuilder> action)
     {
-        if (HostBuilder.WrappedHostApplicationBuilder == null) throw new NotSupportedException($"{typeof(HostApplicationBuilder).Name} not available");
-        action(HostBuilder.WrappedHostApplicationBuilder);
+        if (HostBuilder.WrappedIHostApplicationBuilder == null) throw new NotSupportedException($"{typeof(IHostApplicationBuilder).Name} not available");
+        action(HostBuilder.WrappedIHostApplicationBuilder);
         return this;
     }
 
@@ -39,9 +50,9 @@ public class LionFireHostBuilder : ILionFireHostBuilder
 
     public IConfiguration GetBootstrapConfiguration(LionFireHostBuilderBootstrapOptions? options = null)
     {
-        if (HostBuilder.WrappedHostApplicationBuilder != null)
+        if (HostBuilder.WrappedIHostApplicationBuilder != null)
         {
-            return HostBuilder.WrappedHostApplicationBuilder.Configuration;
+            return HostBuilder.WrappedIHostApplicationBuilder.Configuration;
         }
         else
         {

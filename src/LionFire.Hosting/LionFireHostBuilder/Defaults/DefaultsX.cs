@@ -82,16 +82,16 @@ public static class DefaultsX
                 .CopyExampleAppSettings()
                 ;
         }
-        else if (lf.HostBuilder.WrappedHostApplicationBuilder != null)
+        else if (lf.HostBuilder.WrappedIHostApplicationBuilder != null)
         {
             // REFACTOR - is there a better way to avoid this duplicated code?
 
-            var config = lf.HostBuilder.WrappedHostApplicationBuilder.Configuration;
+            var config = lf.HostBuilder.WrappedIHostApplicationBuilder.Configuration;
 
             if (isTest) config.AddJsonFile("appsettings.test.json", optional: true, reloadOnChange: false);
             config.AddEnvironmentVariables(prefix: "LionFire_");
 
-            lf.HostBuilder.WrappedHostApplicationBuilder
+            lf.HostBuilder.WrappedIHostApplicationBuilder
                 .ReleaseChannel() // adds appsettings.{releaseChannel}.json
                 .DeploymentSlot() // adds appsettings.slot.{slot}.json
                 .ConfigureServices(s => s.AddHostedService<AppContextLogger>())
@@ -99,7 +99,7 @@ public static class DefaultsX
                 ;
 
             #region AddUserSecrets
-            IHostEnvironment env = lf.HostBuilder.WrappedHostApplicationBuilder.Environment;
+            IHostEnvironment env = lf.HostBuilder.WrappedIHostApplicationBuilder.Environment;
             if (env.IsDevelopment() && env.ApplicationName is { Length: > 0 })
             {
                 try

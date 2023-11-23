@@ -16,7 +16,8 @@ public interface ILionFireHostBuilder
     ILionFireHostBuilder ConfigureServices(Action<HostBuilderContext, IServiceCollection> configure);
     ILionFireHostBuilder ConfigureServices(Action<IServiceCollection> configure);
     ILionFireHostBuilder ForHostBuilder(Action<IHostBuilder> action);
-    ILionFireHostBuilder ForHostApplicationBuilder(Action<HostApplicationBuilder> action);
+    //ILionFireHostBuilder ForHostApplicationBuilder(Action<HostApplicationBuilder> action);
+    ILionFireHostBuilder ForIHostApplicationBuilder(Action<IHostApplicationBuilder> action);
     IConfiguration GetBootstrapConfiguration(LionFireHostBuilderBootstrapOptions? options = null);
 
 }

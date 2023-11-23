@@ -15,7 +15,7 @@ public static class ReleaseChannelsHostingX
 {
     public static string TestReleaseChannel = "test";
 
-    public static HostApplicationBuilder DeploymentSlot(this HostApplicationBuilder hostBuilder, bool reloadOnChange = true)
+    public static IHostApplicationBuilder DeploymentSlot(this IHostApplicationBuilder hostBuilder, bool reloadOnChange = true)
     {
         hostBuilder.Services.AddHostedService<DeploymentSlotLogger>();
         var value = _EnvVar(hostBuilder, "slot");
@@ -30,12 +30,12 @@ public static class ReleaseChannelsHostingX
         return hostBuilder;
     }
 
-    private static string _EnvVar(HostApplicationBuilder hostBuilder, string name, bool reloadOnChange = true)
+    private static string _EnvVar(IHostApplicationBuilder hostBuilder, string name, bool reloadOnChange = true)
     {
         var value = hostBuilder.Configuration[name];
         return value;
     }
-    public static HostApplicationBuilder ReleaseChannel(this HostApplicationBuilder hostBuilder, bool reloadOnChange = true)
+    public static IHostApplicationBuilder ReleaseChannel(this IHostApplicationBuilder hostBuilder, bool reloadOnChange = true)
     {
         hostBuilder.Services.AddHostedService<ReleaseChannelLogger>();
 
