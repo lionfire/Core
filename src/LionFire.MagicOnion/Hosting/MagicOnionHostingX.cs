@@ -7,7 +7,6 @@ public static class MagicOnionHostingX
 {
     public static IServiceCollection AddMagicOnionClient(this IServiceCollection services)
     {
-
         return services
             .AddTransient<MagicOnionConnection>()
             .AddSingleton<MagicOnionConnectionManager>()

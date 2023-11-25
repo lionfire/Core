@@ -22,10 +22,15 @@ namespace LionFire
     using LionFire.Data;
     using LionFire.Data.Connections;
 
-    // TO.NET5 - move this to an interface default method
+    public class ConnectionManagerConstants
+    {
+        public const string DefaultConnectionName = "default";
+    }
+
+    // TODO - move this to an interface default method?
     public static class IConnectionManagerExtensions
     {
-        public static async Task<TConnection> GetConnection<TConnection>(this IConnectionManager<TConnection> connectionManager, string name, CancellationToken cancellationToken = default)
+        public static async Task<TConnection> GetConnection<TConnection>(this IConnectionManager<TConnection> connectionManager, string name = ConnectionManagerConstants.DefaultConnectionName, CancellationToken cancellationToken = default)
             where TConnection : IConnection
         {
             var connection = connectionManager[name];

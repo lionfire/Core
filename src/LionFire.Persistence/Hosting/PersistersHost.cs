@@ -31,6 +31,8 @@ public static class PersistersHost
 
     public static IHostBuilder AddPersisters(this IHostBuilder hostBuilder)
         => hostBuilder.ConfigureServices((context, services) => services.AddPersisters());
+    public static HostApplicationBuilder AddPersisters(this HostApplicationBuilder hostBuilder)
+        => hostBuilder.ConfigureServices(services => services.AddPersisters());
 
     public static IServiceCollection AddPersisters(this IServiceCollection services)
               => services
@@ -54,7 +56,14 @@ public static class PersistersHost
 
     [Obsolete("Use LionFireHostBuilder")]
     public static IHostBuilder Create(string[] args = null)
-     => Host.CreateDefaultBuilder(args)
+     =>
+        Host.CreateDefaultBuilder(args)
+            .LionFire()
+            .AddPersisters();
+
+    public static HostApplicationBuilder Create_New(string[] args = null)
+     =>
+        new HostApplicationBuilder(args)
             .LionFire()
             .AddPersisters();
 

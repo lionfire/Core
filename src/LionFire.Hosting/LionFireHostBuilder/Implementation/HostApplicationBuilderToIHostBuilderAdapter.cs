@@ -7,7 +7,7 @@ using static LionFire.Hosting.HostApplicationBuilderToIHostBuilderAdapter;
 
 namespace LionFire.Hosting;
 
-// TODO: Switch to Microsoft's internal HostBuilderAdapter?
+// TODO: Switch to Microsoft'Services internal HostBuilderAdapter?
 public class HostApplicationBuilderToIHostBuilderAdapter : IHostBuilder
 {
     #region Relationships

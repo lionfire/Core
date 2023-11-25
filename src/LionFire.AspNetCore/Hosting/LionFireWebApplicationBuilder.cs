@@ -9,6 +9,7 @@ namespace LionFire.Hosting;
 public class LionFireWebApplicationBuilder : ILionFireHostBuilder
 {
     public WebApplicationBuilder WebApplicationBuilder { get; }
+    public IHostApplicationBuilder IHostApplicationBuilder => WebApplicationBuilder;
 
     private HostApplicationBuilder HostApplicationBuilder { get; }
 
@@ -39,6 +40,8 @@ public class LionFireWebApplicationBuilder : ILionFireHostBuilder
         Configuration = WebApplicationBuilder.Configuration,
         HostingEnvironment = WebApplicationBuilder.Environment,
     };
+
+    
 
     public ILionFireHostBuilder ConfigureServices(Action<HostBuilderContext, IServiceCollection> configure)
     {

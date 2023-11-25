@@ -1,68 +1,49 @@
-﻿using Consul;
-using Microsoft.Extensions.Configuration;
+﻿using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using Orleans;
 using Orleans.Configuration;
-using Orleans.Hosting;
 
 namespace LionFire.Hosting;
 
 public static class OrleansClientServiceCollectionExtensions
 {
-    //{
-
-    //}
-    //public static IHostBuilder AddOrleansClient_LF(this IServiceCollection services, IHostBuilderContext context)
-    public static IHostBuilder UseOrleansClient_LF(this IHostBuilder hostBuilder)
+    public static IHostApplicationBuilder UseOrleansClient_LF(this IHostApplicationBuilder hostBuilder, string? clusterName = null)
     {
+        //if (clusterName != null) throw new NotImplementedException("TODO: Support multiple clusters using .NET 8 Keyed Services, once Orleans supports it, or I implement it");
 
-        return hostBuilder
-            //.ConfigureServices(services =>
-            //    services
-            //        .Configure<ConsulClientConfiguration>(c =>
-            //        {
-            //            c.Address = ;
-            //            c.HttpAuth = ;
-            //        })
+        hostBuilder.Services.AddOrleansClient(builder => {
+            
+            var configKey = clusterName == null ? "Orleans:Cluster" : "Orleans:Clusters:" + clusterName;
 
-            //    )
-            .ConfigureServices((context, services) =>
-            //.UseOrleansClient((context, builder) =>
+            builder.Configure<ClusterOptions>(hostBuilder.Configuration.GetSection(configKey));
+
+            var ClusterConfig = new OrleansClusterConfig();
+            hostBuilder.Configuration.GetSection(configKey).Bind(ClusterConfig);
+
+            var ConsulClusterConfig = new OrleansConsulClusterConfig();
+            hostBuilder.Configuration.GetSection(configKey + ":Consul").Bind(ConsulClusterConfig);
+
+            switch (ClusterConfig.Kind)
             {
-                services.AddOrleansClient(builder =>
-                {
-                    builder
-                        .Configure<ClusterOptions>(context.Configuration.GetSection("Orleans:Cluster"))
-                    ;
-
-                    var ClusterConfig = new OrleansClusterConfig();
-                    context.Configuration.GetSection("Orleans:Cluster").Bind(ClusterConfig);
-
-                    var ConsulClusterConfig = new OrleansConsulClusterConfig();
-                    context.Configuration.GetSection("Orleans:Cluster:Consul").Bind(ConsulClusterConfig);
-
-                    switch (ClusterConfig.Kind)
+                case ClusterDiscovery.Unspecified:
+                    throw new ArgumentException($"Missing Configuration: {configKey}:Kind");
+                case ClusterDiscovery.Localhost:
+                    builder.UseLocalhostClustering();
+                    break;
+                case ClusterDiscovery.Consul:
+                    builder.UseConsulClientClustering(options =>
                     {
-                        case ClusterDiscovery.Unspecified:
-                            break;
-                        case ClusterDiscovery.None:
-                            break;
-                        case ClusterDiscovery.Localhost:
-                            builder.UseLocalhostClustering();
-                            break;
-                        case ClusterDiscovery.Consul:
-                            builder.UseConsulClientClustering(options =>
-                            {
-                                options.ConfigureConsulClient(new Uri(ConsulClusterConfig.ServiceDiscoverEndPoint ?? throw new ArgumentNullException("Missing config: Orleans:Cluster:Consul:ServiceDiscoverEndPoint")), ConsulClusterConfig.ServiceDiscoveryToken);
-                                options.KvRootFolder = ConsulClusterConfig.KvFolderName ?? ClusterConfig.ServiceId;
-                            });
-                            break;
-                        default:
-                            break;
-                    }
-                });
-            });
+                        options.ConfigureConsulClient(new Uri(ConsulClusterConfig.ServiceDiscoverEndPoint ?? throw new ArgumentNullException("Missing config: Orleans:Cluster:Consul:ServiceDiscoverEndPoint")), ConsulClusterConfig.ServiceDiscoveryToken);
+                        options.KvRootFolder = ConsulClusterConfig.KvFolderName ?? ClusterConfig.ServiceId;
+                    });
+                    break;
+                case ClusterDiscovery.None: // FUTURE - support disabling the client here? For now fall through to default which is invalid.  
+                default:
+                    throw new NotSupportedException($"Unsupported Configuration value for: {configKey}:Kind: {ClusterConfig.Kind}");
+            }
+        });
+
+        return hostBuilder;
     }
     //public static IServiceCollection AddOrleansClient(this IServiceCollection services, IConfiguration configuration)
     //{

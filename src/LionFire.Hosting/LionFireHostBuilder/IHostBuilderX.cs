@@ -10,7 +10,7 @@ namespace LionFire.Hosting;
 public static class IHostBuilderX
 {   
     /// <summary>
-    /// Fluent builder for LionFire's initialization of IHostBuilder
+    /// Fluent builder for LionFire'Services initialization of IHostBuilder
     /// </summary>
     /// <param name="hostBuilder"></param>
     /// <param name="action"></param>

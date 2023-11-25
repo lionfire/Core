@@ -7,7 +7,8 @@ using System;
 
 namespace LionFire.Hosting;
 
-public interface ILionFireHostBuilder
+// FUTURE: Remove support for IHostBuilder, and rely solely on IHostApplicationBuilder?
+public interface ILionFireHostBuilder : IHostApplicationSubBuilder
 {
     LionFireHostBuilderWrapper HostBuilder { get; }
 

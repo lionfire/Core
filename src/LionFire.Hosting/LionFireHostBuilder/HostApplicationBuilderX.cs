@@ -8,7 +8,7 @@ namespace LionFire.Hosting;
 public static class HostApplicationBuilderX
 {
     /// <summary>
-    /// Fluent builder for LionFire's initialization of HostApplicationBuilder
+    /// Fluent builder for LionFire'Services initialization of HostApplicationBuilder
     /// </summary>
     /// <param name="hostBuilder"></param>
     /// <param name="action"></param>

@@ -122,11 +122,11 @@ public static class RunTaskAndStopApplicationHostApplicationBuilderX
     }
     //public static Task RunAsync<T1, T2, T3,T4>(this HostApplicationBuilder hostBuilder, Func<T1, T2, T3, Task> taskFactory)
     //{
-    //    return hostBuilder.RunAsync(new Func<IServiceProvider, Task>(async s =>
+    //    return hostBuilder.RunAsync(new Func<IServiceProvider, Task>(async Services =>
     //    {
-    //        var p1 = s.GetRequiredService<T1>();
-    //        var p2 = s.GetRequiredService<T2>();
-    //        var p3 = s.GetRequiredService<T3>();
+    //        var p1 = Services.GetRequiredService<T1>();
+    //        var p2 = Services.GetRequiredService<T2>();
+    //        var p3 = Services.GetRequiredService<T3>();
     //        await taskFactory(p1, p2, p3);
     //    }));
     //}
@@ -342,11 +342,11 @@ public static class RunTaskAndStopApplicationHostBuilderX
     }
     //public static Task RunAsync<T1, T2, T3,T4>(this IHostBuilder hostBuilder, Func<T1, T2, T3, Task> taskFactory)
     //{
-    //    return hostBuilder.RunAsync(new Func<IServiceProvider, Task>(async s =>
+    //    return hostBuilder.RunAsync(new Func<IServiceProvider, Task>(async Services =>
     //    {
-    //        var p1 = s.GetRequiredService<T1>();
-    //        var p2 = s.GetRequiredService<T2>();
-    //        var p3 = s.GetRequiredService<T3>();
+    //        var p1 = Services.GetRequiredService<T1>();
+    //        var p2 = Services.GetRequiredService<T2>();
+    //        var p3 = Services.GetRequiredService<T3>();
     //        await taskFactory(p1, p2, p3);
     //    }));
     //}

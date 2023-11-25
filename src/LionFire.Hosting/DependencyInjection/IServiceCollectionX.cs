@@ -63,7 +63,7 @@ public static class IServiceCollectionX
 
         //services.AddHostedService<EnumerableHostedServiceProxy>();
 
-        //services.AddHostedService<TService>(sp => sp.GetRequiredService<IEnumerable<TService>>().Where(s => s.GetType() == TImplementation).Single());
+        //services.AddHostedService<TService>(sp => sp.GetRequiredService<IEnumerable<TService>>().Where(Services => Services.GetType() == TImplementation).Single());
 
         return services;
     }

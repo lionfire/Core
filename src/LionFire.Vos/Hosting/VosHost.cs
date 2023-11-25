@@ -17,4 +17,11 @@ public static class VosHost
         return PersistersHost.Create(args)
             .AddVos();
     }
+
+    [Obsolete("Use LionFireHostBuilder")]
+    public static HostApplicationBuilder Create_New(string[] args = null)
+    {
+        return PersistersHost.Create_New(args)
+            .AddVos();
+    }
 }

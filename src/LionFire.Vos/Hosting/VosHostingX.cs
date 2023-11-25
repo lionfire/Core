@@ -80,6 +80,9 @@ public static class VosHostingX
             })
         );
 
+    public static HostApplicationBuilder AddVos(this HostApplicationBuilder hostBuilder, bool persistence = true)
+        => throw new NotImplementedException("TODO NEXT - replace IHostBuilder");
+
     public static IHostBuilder AddVos(this IHostBuilder hostBuilder, bool persistence = true)
         => hostBuilder
             .AddPersisters()
