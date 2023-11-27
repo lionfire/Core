@@ -140,6 +140,7 @@ namespace LionFire.Redis
             if (ConnectionString == null)
             {
                 logger.LogError(msg);
+                throw new ArgumentNullException(nameof(ConnectionString), msg);
             }
             else
             {

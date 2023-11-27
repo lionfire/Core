@@ -30,10 +30,13 @@ public static class DefaultsX
         builder.ConfigureHostConfiguration(config =>
         {
             config.AddEnvironmentVariables(prefix: "DOTNET_");
-            //if (args is { Length: > 0 })
-            //{
-            //    config.AddCommandLine(args);
-            //}
+#if REVIEW
+            var args = Environment.CommandLine.Split((string?)null,StringSplitOptions.RemoveEmptyEntries);
+            if (args is { Length: > 0 })
+            {
+                config.AddCommandLine(args);
+            }
+#endif
         });
 
         #region appsettings.json
@@ -137,7 +140,7 @@ public static class DefaultsX
             }
         });
 
-        #endregion
+#endregion
 
         builder.ConfigureLogging((context, logging) =>
         {

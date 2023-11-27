@@ -35,10 +35,10 @@ public class RedisPersister : VirtualFilesystemPersisterBase<IRedisReference, Re
 
     #region Construction
 
-    public RedisPersister(ISerializationProvider serializationProvider, IOptionsMonitor<RedisPersisterOptions> optionsMonitor, IPersistenceConventions itemKindIdentifier, SerializationOptions serializationOptions) : this(serializationProvider, null, optionsMonitor, itemKindIdentifier, serializationOptions)
+    public RedisPersister(IServiceProvider serviceProvider, ISerializationProvider serializationProvider, IOptionsMonitor<RedisPersisterOptions> optionsMonitor, IPersistenceConventions itemKindIdentifier, SerializationOptions serializationOptions) : this(serviceProvider, serializationProvider, null, optionsMonitor, itemKindIdentifier, serializationOptions)
     {
     }
-    public RedisPersister(ISerializationProvider serializationProvider, string name, IOptionsMonitor<RedisPersisterOptions> options, IPersistenceConventions itemKindIdentifier, SerializationOptions serializationOptions) : base(name, serializationProvider, options, itemKindIdentifier, serializationOptions)
+    public RedisPersister(IServiceProvider serviceProvider, ISerializationProvider serializationProvider, string name, IOptionsMonitor<RedisPersisterOptions> options, IPersistenceConventions itemKindIdentifier, SerializationOptions serializationOptions) : base(name, serializationProvider, options, itemKindIdentifier, serializationOptions, serviceProvider)
     {
     }
 

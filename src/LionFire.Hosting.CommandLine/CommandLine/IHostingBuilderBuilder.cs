@@ -19,6 +19,8 @@ public interface IHostingBuilderBuilder
 
     Command? Command { get; internal set; }
 
+    Type? OptionsType { get; set; }
+
     #endregion
 
     #region Identity

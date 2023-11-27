@@ -4,8 +4,13 @@ using OpenTelemetry.Resources;
 using OpenTelemetry.Trace;
 using Microsoft.Extensions.DependencyInjection;
 using OpenTelemetry.Metrics;
+using Microsoft.Extensions.Hosting;
+using OpenTelemetry.Logs;
+using Microsoft.Extensions.Logging;
 
 namespace LionFire.Hosting;
+
+// TODO: Change these to all extend IHostApplicationBuilder and remove support for ILionFireHostBuilder
 
 public static class TelemetryHostingX
 {
@@ -15,17 +20,30 @@ public static class TelemetryHostingX
 
         var serviceName = lf.Configuration[AppConfigurationKeys.AppName] ?? throw new ArgumentNullException("Configuration: " + AppConfigurationKeys.AppName);
         var serviceVersion = lf.Configuration[AppConfigurationKeys.AppVersion] ?? throw new ArgumentNullException("Configuration: " + AppConfigurationKeys.AppVersion);
-        
+
+        lf.IHostApplicationBuilder.Logging.AddOpenTelemetry(logging =>
+        {
+            logging.IncludeFormattedMessage = true;
+            logging.IncludeScopes = true;
+        });
+
         lf.ConfigureServices(s => s
             .AddOpenTelemetry()
-              .WithTracing(b =>
+              .WithTracing(tracing =>
               {
-                  b
-                  .AddSource(serviceName)
-                  .ConfigureResource(resource =>
-                      resource.AddService(serviceName: serviceName, serviceVersion: serviceVersion))
-                  //.AddAspNetCoreInstrumentation()
-                  .AddConsoleExporter() // TEMP
+                  if (lf.IHostApplicationBuilder.Environment.IsDevelopment())
+                  {
+                      tracing.SetSampler(new AlwaysOnSampler());
+                  }
+
+                  tracing.AddAspNetCoreInstrumentation()
+                       .AddGrpcClientInstrumentation()
+                       .AddHttpClientInstrumentation();
+
+                  tracing
+                      .AddSource(serviceName)
+                      .ConfigureResource(resource =>
+                          resource.AddService(serviceName: serviceName, serviceVersion: serviceVersion))
                   ;
               })
         );
@@ -33,6 +51,16 @@ public static class TelemetryHostingX
         return lf;
     }
 
+    public static ILionFireHostBuilder OpenTelemetry(this ILionFireHostBuilder lf)
+    {
+        lf
+            .Metrics()
+            .Tracing()
+            .IHostApplicationBuilder
+                .AddOpenTelemetryExporters()
+            ;
+        return lf;
+    }
     public static ILionFireHostBuilder Metrics(this ILionFireHostBuilder lf)
     {
         //var appInfo = lf.AppInfo();
@@ -42,13 +70,41 @@ public static class TelemetryHostingX
         
         lf.ConfigureServices(s => s
             .AddOpenTelemetry()
-            .WithMetrics(builder => builder
+            .WithMetrics(metrics => metrics
                 //.AddAspNetCoreInstrumentation()
-                .AddConsoleExporter()
+                .AddRuntimeInstrumentation()
+                .AddBuiltInMeters()
+                //.AddConsoleExporter()
                 )
         );
+        
 
         return lf;
+    }
+
+    private static MeterProviderBuilder AddBuiltInMeters(this MeterProviderBuilder meterProviderBuilder) =>
+        meterProviderBuilder.AddMeter(
+            "Microsoft.AspNetCore.Hosting",
+            "Microsoft.AspNetCore.Server.Kestrel",
+            "System.Net.Http");
+
+    private static IHostApplicationBuilder AddOpenTelemetryExporters(this IHostApplicationBuilder builder)
+    {
+        //builder.Services.AddConsoleExporter(); // TEMP
+
+        var useOtlpExporter = !string.IsNullOrWhiteSpace(builder.Configuration["OTEL_EXPORTER_OTLP_ENDPOINT"]);
+
+        if (useOtlpExporter)
+        {
+            builder.Services.Configure<OpenTelemetryLoggerOptions>(logging => logging.AddOtlpExporter());
+            builder.Services.ConfigureOpenTelemetryMeterProvider(metrics => metrics.AddOtlpExporter());
+            builder.Services.ConfigureOpenTelemetryTracerProvider(tracing => tracing.AddOtlpExporter());
+        }
+
+        builder.Services.AddOpenTelemetry()
+           .WithMetrics(metrics => metrics.AddPrometheusExporter());
+        
+        return builder;
     }
 }
 

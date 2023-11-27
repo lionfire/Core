@@ -31,8 +31,8 @@ public static class PersistersHost
 
     public static IHostBuilder AddPersisters(this IHostBuilder hostBuilder)
         => hostBuilder.ConfigureServices((context, services) => services.AddPersisters());
-    public static HostApplicationBuilder AddPersisters(this HostApplicationBuilder hostBuilder)
-        => hostBuilder.ConfigureServices(services => services.AddPersisters());
+    public static HostApplicationBuilder AddPersisters(this HostApplicationBuilder hostApplicationBuilder)
+        => hostApplicationBuilder.ConfigureServices(services => services.AddPersisters());
 
     public static IServiceCollection AddPersisters(this IServiceCollection services)
               => services

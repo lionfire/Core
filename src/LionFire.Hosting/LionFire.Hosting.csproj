@@ -37,6 +37,7 @@
     <ProjectReference Include="..\LionFire.Applications.Abstractions\LionFire.Applications.Abstractions.csproj" />
     <ProjectReference Include="..\LionFire.Core\LionFire.Core.csproj" />
     <ProjectReference Include="..\LionFire.Environment\LionFire.Environment.csproj" />
+    <ProjectReference Include="..\LionFire.Hosting.Abstractions\LionFire.Hosting.Abstractions.csproj" />
     <ProjectReference Include="..\LionFire.Hosting.CommandLine\LionFire.Hosting.CommandLine.csproj" />
     <ProjectReference Include="..\LionFire.Structures\LionFire.Structures.csproj" />
   </ItemGroup>

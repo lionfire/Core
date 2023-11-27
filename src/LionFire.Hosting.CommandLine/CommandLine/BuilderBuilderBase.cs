@@ -1,36 +1,48 @@
 ﻿#nullable enable
-using LionFire.Extensions.Hosting;
-using LionFire.FlexObjects;
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Hosting.Internal;
-using Microsoft.Extensions.Options;
-using System;
-using System.Collections.Generic;
 using System.CommandLine;
 using System.CommandLine.Invocation;
+using System.CommandLine.NamingConventionBinder;
 using System.Diagnostics;
-using System.Linq;
-using System.Threading;
-using System.Threading.Tasks;
 
 namespace LionFire.Hosting.CommandLine;
 
 public class LionFireCommandLineOptions
 {
     public Dictionary<string, object?> Options { get; set; }
+    public InvocationContext InvocationContext { get; internal set; }
+
+    public T As<T>() where T : new()
+    {
+        var result = new T();
+
+        if (Options != null)
+        {
+            Type type = typeof(T);
+            foreach (var keyValue in Options)
+            {
+                type.GetProperty(keyValue.Key)?.SetValue(result, keyValue.Value, null);
+            }
+        }
+
+        return result;
+    }
 }
+
 
 // Supported TBuilder types:
 //  - IHostBuilder
 //  - HostApplicationBuilder
 public abstract class BuilderBuilderBase<TBuilder> : IHostingBuilderBuilder<TBuilder>
 {
+
     #region Relationships
 
     public Command? Command { get; set; }
     public IProgram? Program { get; set; }
+
+    public Type? OptionsType { get; set; }
 
     #endregion
 
@@ -78,8 +90,6 @@ public abstract class BuilderBuilderBase<TBuilder> : IHostingBuilderBuilder<TBui
 
     #region Methods
 
-    
-
     public void InitializeHierarchy(IProgram program, InvocationContext invocationContext, HostingBuilderBuilderContext context, TBuilder builder)
     {
         foreach (var bb in program.GetBuilderBuilderHierarchy(invocationContext).Reverse())
@@ -88,17 +98,36 @@ public abstract class BuilderBuilderBase<TBuilder> : IHostingBuilderBuilder<TBui
             {
                 throw new Exception($"Mismatch in hierarchy of host builder types: expecting IHostingBuilderBuilder<{typeof(TBuilder)}> but got {bb.GetType().Name}.  Either align types, or set IHostingBuilderBuilder.Inherit to false");
             }
-            Debug.WriteLine($"Initializing for {bb.Command.GetType().Name}: " + bb.Command.Name);
-            context.InitializingForCommandName = bb.Command.Name;
+            Debug.WriteLine($"Initializing for {bb.Command?.GetType().Name}: " + bb.Command?.Name);
+            context.InitializingForCommandName = bb.Command?.Name;
 
             context.Options.AddParsedValues(invocationContext.BindingContext.ParseResult.CommandResult.Command.Options, invocationContext.BindingContext); // TODO: parse parent command options as well
 
-            var properties = (builder as IHostBuilder)?.Properties ?? (builder as HostApplicationBuilder)?.Properties();
+            var properties = ObjectToHostBuilderX.GetProperties(builder);
+            //(builder as IHostBuilder)?.Properties ?? (builder as HostApplicationBuilder)?.Properties(); // OLD
+
             properties?.TryAdd("Options", context.Options); // REVIEW - if already added, need to merge?
 
-            var hostBuilder = builder as IHostBuilder ?? (builder as HostApplicationBuilder)?.AsHostBuilder();
-            hostBuilder?.ConfigureServices(s => s
-                .AddSingleton(new LionFireCommandLineOptions { Options = context.Options }));
+            var configureServices = ObjectToHostBuilderX.GetConfigureServices(builder);
+
+            configureServices(s => s
+                .AddSingleton(new LionFireCommandLineOptions
+                {
+                    Options = context.Options,
+                    InvocationContext = invocationContext
+                }));
+
+            //var hostBuilder = builder as IHostBuilder ?? (builder as HostApplicationBuilder)?.AsHostBuilder();
+
+            if (OptionsType != null)
+            {
+                var binder = new ModelBinder(OptionsType);
+                var optionsObject = binder.CreateInstance(invocationContext.BindingContext);
+                if (optionsObject != null)
+                {
+                    configureServices(s => s.AddSingleton(OptionsType, optionsObject));
+                }
+            }
 
             try
             {
@@ -119,7 +148,7 @@ public abstract class BuilderBuilderBase<TBuilder> : IHostingBuilderBuilder<TBui
 
     public IHost Build(IProgram program, InvocationContext invocationContext)
     {
-        if(Builder != null) { throw new AlreadyException(); }
+        if (Builder != null) { throw new AlreadyException(); }
         try
         {
             Builder = CreateBuilder();

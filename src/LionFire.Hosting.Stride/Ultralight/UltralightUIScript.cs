@@ -45,12 +45,18 @@ using ULSession = ImpromptuNinjas.UltralightSharp.Safe.Session;
 using ULMouseEvent = ;
 using ULKeyEvent = ;
 using ULScrollEvent = ;
+using ULKeyEventType = ImpromptuNinjas.UltralightSharp.Enums.KeyEventType
 #elif ULNet
 using Renderer = UltralightNet.Renderer;
 using UltralightNet.AppCore;
 using UltralightNet;
 using ULView = UltralightNet.View;
 using ULSession = UltralightNet.Session;
+//using ULMouseEvent = UltralightNet.ULMouseEvent;
+//using ULScrollEvent = UltralightNet.ULScrollEvent;
+using System.Drawing;
+using Silk.NET.OpenXR;
+using Stride.UI;
 
 #endif
 
@@ -322,7 +328,7 @@ public class UltralightUIScript : SyncScript
     private bool loadedLoadingUrl = false;
     private bool IsWebServerAvailable => HostApplicationLifetime.ApplicationStarted.IsCancellationRequested;
     private bool startedLoadingStartUrl = false;
-    private bool javascriptTestComplete = false;
+    private bool JavascriptTestComplete = false;
 
     #region Visible
 
@@ -405,8 +411,45 @@ public class UltralightUIScript : SyncScript
 
         startedLoadingStartUrl = true;
         Logger.LogInformation($"Loading: {StartUrl}");
-        View.LoadUrl(StartUrl);
+        SetUrl(StartUrl);
+        renderer.Render();
     }
+
+    private void SetUrl(string url)
+    {
+#if ULSharp
+        View.LoadUrl(LoadingUrl); // TEMP commented
+#else
+        View.URL = url;
+#endif
+        loaded = false;
+
+    }
+    private bool loaded = false;
+    public async Task WaitForLoaded()
+    {
+        while (!loaded)
+        {
+            renderer.Update();
+            await Task.Delay(10);
+        }
+        renderer.Render();
+        TakeScreenshot();
+    }
+
+    #region Diag
+
+    private void TakeScreenshot()
+    {
+        ULSurface surface = View.Surface ?? throw new Exception("Surface not found, did you perhaps set ViewConfig.IsAccelerated to true?");
+
+        ULBitmap bitmap = surface.Bitmap;
+        var path = Path.GetDirectoryName(@"z:\log\"); // TEMP
+        bitmap.WritePng(Path.Combine(path, $"Snapshot-{SnapshotId++}.png"));
+    }
+    static int SnapshotId = 0;
+
+    #endregion
 
     #region Event Handlers: Stride UI
 
@@ -427,7 +470,11 @@ public class UltralightUIScript : SyncScript
 #if TRACE_Touch
         Logger.LogTrace($"TouchDown {e.ScreenPosition} ({(int)(e.ScreenPosition.X * width)},{(int)(e.ScreenPosition.Y * height)}) {(Input.Mouse.DownButtons.Any() ? Input.Mouse.DownButtons.Select(m => m.ToString()).Aggregate((x, y) => $"{x},{y}") : "")}");
 #endif
-        pendingInputEvents.MouseEvents.Enqueue(new MouseEvent(MouseEventType.MouseDown, (int)(e.ScreenPosition.X * width), (int)(e.ScreenPosition.Y * height), MouseButton.Left));
+
+        pendingInputEvents.TouchEvents.Enqueue(e);
+#if ULSharp
+        //new ULMouseEvent(ULMouseEventType.MouseDown, (int)(e.ScreenPosition.X * width), (int)(e.ScreenPosition.Y * height), ULMouseButton.Left));
+#endif
         e.Handled = false;
     }
 
@@ -436,7 +483,12 @@ public class UltralightUIScript : SyncScript
 #if TRACE_Touch
         Logger.LogTrace($"TouchUp {e.ScreenPosition} ({(int)(e.ScreenPosition.X * width)},{(int)(e.ScreenPosition.Y * height)})");
 #endif
-        pendingInputEvents.MouseEvents.Enqueue(new MouseEvent(MouseEventType.MouseUp, (int)(e.ScreenPosition.X * width), (int)(e.ScreenPosition.Y * height), MouseButton.Left));
+
+#if ULSharp
+        pendingInputEvents.MouseEvents.Enqueue(new ULMouseEvent(ULMouseEventType.MouseUp, (int)(e.ScreenPosition.X * width), (int)(e.ScreenPosition.Y * height), ULMouseButton.Left));
+#else
+        pendingInputEvents.TouchEvents.Enqueue(e);
+#endif
     }
 
     #endregion
@@ -509,7 +561,12 @@ public class UltralightUIScript : SyncScript
 #endif
 
                     pendingInputEvents.KeyboardEvents.Enqueue(
-                        new KeyEvent(ImpromptuNinjas.UltralightSharp.Enums.KeyEventType.Char, 0, 0, 0, ImpromptuString.Create(keyString), ImpromptuString.Create(keyString), false, false, false));
+#if ULNet
+                        ULKeyEvent.Create(ULKeyEventType.Char, 0, 0, 0, keyString, keyString, false, false, false)
+#else
+                        new ULKeyEvent(ULKeyEventType.Char, 0, 0, 0, ImpromptuString.Create(keyString), ImpromptuString.Create(keyString), false, false, false));
+#endif
+                    );
                 }
                 continue;
             }
@@ -518,6 +575,9 @@ public class UltralightUIScript : SyncScript
 
             if (nativeCode != 0)
             {
+#if ULNet
+                Logger.LogWarning($"'{key}' Key pressed.  (code: {nativeCode}) - TODO");
+#elif ULSharp
                 unsafe
                 {
 #if TRACE_Keyboard
@@ -538,6 +598,7 @@ public class UltralightUIScript : SyncScript
                     var empty = ImpromptuString.Create("");
                     pendingInputEvents.KeyboardEvents.Enqueue(new KeyEvent(ImpromptuNinjas.UltralightSharp.Enums.KeyEventType.RawKeyDown, 0, nativeCode, 0, ImpromptuString.Create(""), empty, false, false, false));
                 }
+#endif
             }
             else
             {
@@ -597,13 +658,35 @@ public class UltralightUIScript : SyncScript
 
         if (renderer == null) { InitUltralight(); }
 
-        session = new Session(renderer, false, "");
-        View = new View(renderer, width, height, true, session);
+#if ULNet
+        session = renderer.DefaultSession;
+        var viewConfig = new ULViewConfig()
+        {
+            EnableImages = true,
+            EnableJavaScript = true,
+            //IsAccelerated = false,
+            //InitialDeviceScale = 1,
+            InitialFocus = true,
+            //IsTransparent = true,
+            UserAgent = "Valor",
+        };
+        View = renderer.CreateView(width, height, viewConfig, session);
+        // REVIEW - what was the true parameter in ULView?
+#else
+        session = new ULSession(renderer, false, "");
+        View = new ULView(renderer, width, height, true, session);
+#endif
+
+
+#if ULSharp
         View.SetFinishLoadingCallback((data, caller, frameId, isMainFrame, url) =>
         {
             loadedLoadingUrl = true;
             Logger.LogInformation($"Finished loading: {url}");
         }, default);
+#elif ULNet
+        View.OnFinishLoading += View_OnFinishLoading;
+#endif
 
         #endregion
 
@@ -612,7 +695,8 @@ public class UltralightUIScript : SyncScript
         if (!IsWebServerAvailable)
         {
             Logger.LogInformation("Web server not available yet.  Loading LoadingUrl.");
-            View.LoadUrl(LoadingUrl); // TEMP commented
+            SetUrl(LoadingUrl);
+
             //Task.Run(async () =>
             //{
             //    //await HostApplicationLifetime.ApplicationStarted;
@@ -633,9 +717,15 @@ public class UltralightUIScript : SyncScript
         }
 
         #endregion
-
     }
 
+#if ULNet
+    private void View_OnFinishLoading(ulong frameId, bool isMainFrame, string url)
+    {
+        loadedLoadingUrl = true;
+        Logger.LogInformation("Finished loading: {url}.  (IsMainFrame: {IsMainFrame})", url, isMainFrame);
+    }
+#endif
 
     public override void Update()
     {
@@ -650,7 +740,7 @@ public class UltralightUIScript : SyncScript
         if (!startedLoadingStartUrl && IsWebServerAvailable) { OnPrivateWebServerStarted(); }
 
 
-        if (!javascriptTestComplete) { DoJavascriptTest(); }
+        if (!JavascriptTestComplete) { DoJavascriptTest(); }
 
         FireInputs(pendingInputEvents);
 
@@ -686,16 +776,24 @@ public class UltralightUIScript : SyncScript
         renderer.Update();
         renderer.Render();
 
-        var surface = View.GetSurface();
-        var bitmap = surface.GetBitmap();
-        var pixels = bitmap.LockPixels();
+        var surface = View.Surface;
+        if (!surface.HasValue)
+        {
+            Logger.LogError("Ultralight: missing surface");
+            return;
+        }
+        var bitmap = surface.Value.Bitmap;
+        unsafe
+        {
+            var pixels = bitmap.LockPixels();
 
-        DataPointer dataPointer = new DataPointer((IntPtr)pixels, (int)bitmap.GetHeight() * (int)bitmap.GetWidth() * (int)bitmap.GetBpp());
-        texture.SetData(this.Game.GraphicsContext.CommandList, dataPointer);
-        sprite.Texture = texture;
-        imageElement.Source = sprite;
+            DataPointer dataPointer = new DataPointer((IntPtr)pixels, (int)bitmap.Height * (int)bitmap.Width * (int)bitmap.Bpp);
+            texture.SetData(this.Game.GraphicsContext.CommandList, dataPointer);
+            sprite.Texture = texture;
+            imageElement.Source = sprite;
 
-        bitmap.UnlockPixels();
+            bitmap.UnlockPixels();
+        }
         bitmap.Dispose();
 
         void FireInputs(ComponentUI ui)
@@ -706,7 +804,7 @@ public class UltralightUIScript : SyncScript
         }
         void DoJavascriptTest()
         {
-            javascriptTestComplete = true;
+            JavascriptTestComplete = true;
             try
             {
                 var result = View.EvaluateScript($"console.log('hi ' + (2+2)); 2+2;", out string exception);
@@ -729,6 +827,7 @@ public class UltralightUIScript : SyncScript
 
     public class ComponentUI
     {
+        public ConcurrentQueue<TouchEventArgs> TouchEvents { get; set; } = new ConcurrentQueue<TouchEventArgs>();
         public ConcurrentQueue<ULMouseEvent> MouseEvents { get; set; } = new ConcurrentQueue<ULMouseEvent>();
         public ConcurrentQueue<ULKeyEvent> KeyboardEvents { get; set; } = new ConcurrentQueue<ULKeyEvent>();
         public ConcurrentQueue<ULScrollEvent> ScrollEvents { get; set; } = new ConcurrentQueue<ULScrollEvent>();

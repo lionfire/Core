@@ -17,11 +17,9 @@ namespace LionFire.Hosting.CommandLine;
 // - Inherit (ancestors)
 // - Inherited (by children)
 
-
-
 public static class LionFireOptionBinderX
 {
-    public static void AddParsedValues(this Dictionary<string,object?> o, IEnumerable<Option> Options, BindingContext bindingContext)
+    public static void AddParsedValues(this Dictionary<string, object?> o, IEnumerable<Option> Options, BindingContext bindingContext)
     {
         foreach (var option in Options.Where(v => !o.ContainsKey(v.Name)))
         {
@@ -81,19 +79,29 @@ public class CommandLineProgram<TBuilder, TBuilderBuilder> : CommandLineProgram
     public new CommandLineProgram<TBuilder, TBuilderBuilder> RootCommand(Action<HostingBuilderBuilderContext, TBuilder> builder, Action<TBuilderBuilder>? builderBuilder = null, Action<Command>? command = null) => Command("", builder, builderBuilder: builderBuilder, command: command);
 
 
-    public CommandLineProgram<TBuilder, TBuilderBuilder> Command(string commandHierarchy, Action<TBuilder> builder, Action<TBuilderBuilder>? builderBuilder = null, Action<Command>? command = null) => Command(commandHierarchy, (_, b) => builder(b), builderBuilder: builderBuilder, command: command);
+    public CommandLineProgram<TBuilder, TBuilderBuilder> Command(string commandHierarchy, Action<TBuilder> builder, Action<TBuilderBuilder>? builderBuilder = null, Action<Command>? command = null, Type? optionsType = null) => Command(commandHierarchy, (_, b) => builder(b), builderBuilder: builderBuilder, command: command, optionsType: optionsType);
 
-    public CommandLineProgram<TBuilder, TBuilderBuilder> Command(string commandHierarchy, Action<HostingBuilderBuilderContext, TBuilder>? builder = null, Action<TBuilderBuilder>? builderBuilder = null, Action<Command>? command = null)
+    public CommandLineProgram<TBuilder, TBuilderBuilder> Command(string commandHierarchy, Action<HostingBuilderBuilderContext, TBuilder>? builder = null, Action<TBuilderBuilder>? builderBuilder = null, Action<Command>? command = null, Type? optionsType = null)
     {
         CommandLineProgramValidation.ValidateCommand(commandHierarchy);
 
         var hostBuilderBuilder = GetOrAdd<TBuilderBuilder>(commandHierarchy);
+        hostBuilderBuilder.OptionsType = optionsType;
         builderBuilder?.Invoke(hostBuilderBuilder);
         command?.Invoke(hostBuilderBuilder.Command!);
         if (builder != null) hostBuilderBuilder.AddInitializer(builder);
 
         return this;
     }
+
+    #region Command: OptionsType as generic parameter
+
+    public CommandLineProgram<TBuilder, TBuilderBuilder> Command<TOptions>(string commandHierarchy, Action<TBuilder> builder, Action<TBuilderBuilder>? builderBuilder = null, Action<Command>? command = null) => Command<TOptions>(commandHierarchy, (_, b) => builder(b), builderBuilder: builderBuilder, command: command);
+
+    public CommandLineProgram<TBuilder, TBuilderBuilder> Command<TOptions>(string commandHierarchy, Action<HostingBuilderBuilderContext, TBuilder>? builder = null, Action<TBuilderBuilder>? builderBuilder = null, Action<Command>? command = null)
+        => Command(commandHierarchy, builder, builderBuilder, command, typeof(TOptions));
+
+    #endregion
 
 #if BuilderBuilderBuilder
     public new CommandLineProgram<TBuilder, TBuilderBuilder> RootCommandBuilder(Action<HostingBuilderBuilderBuilder<TBuilder, TBuilderBuilder>>? builderBuilder = null) => CommandBuilder("", builderBuilder);

@@ -1,12 +1,18 @@
 ﻿#nullable enable
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Hosting;
-using System;
 
 namespace LionFire.Hosting;
 
 public static class HostApplicationBuilderX
 {
+    public static HostApplicationBuilder CreateNonDefault(string[]? args = null, HostApplicationBuilderSettings? settings = null)
+    {
+        settings ??= new();
+        settings.Args = args;
+        settings.DisableDefaults = true;
+        return new HostApplicationBuilder(settings);
+    }
+
     /// <summary>
     /// Fluent builder for LionFire'Services initialization of HostApplicationBuilder
     /// </summary>
@@ -24,7 +30,7 @@ public static class HostApplicationBuilderX
 
         return hostBuilder;
     }
-    public static HostApplicationBuilder LionFire(this HostApplicationBuilder hostBuilder, int basePort, Action<ILionFireHostBuilder>? action = null, bool useDefaults = true) 
+    public static HostApplicationBuilder LionFire(this HostApplicationBuilder hostBuilder, int basePort, Action<ILionFireHostBuilder>? action = null, bool useDefaults = true)
         => hostBuilder.BasePort(basePort).LionFire(action, useDefaults);
 
     // FUTURE - sort out IHostApplicationBuilder vs implementors such as HostApplicationBuilder (and nothing else so far?)
@@ -53,5 +59,9 @@ public static class HostApplicationBuilderX
     }
 
     #endregion
-        
+
+
+    
+
+
 }
