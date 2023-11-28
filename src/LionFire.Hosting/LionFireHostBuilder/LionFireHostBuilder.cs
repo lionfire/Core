@@ -15,7 +15,7 @@ public class LionFireHostBuilderBootstrapOptions
 /// <summary>
 /// Marker type for fluent building of programs that want to opt in to LionFire'Services common program features and opinionated conventions
 /// </summary>
-public class LionFireHostBuilder : ILionFireHostBuilder
+public class LionFireHostBuilder : HostApplicationSubBuilder, ILionFireHostBuilder
 {
     public LionFireHostBuilder(IHostBuilder hostBuilder) { HostBuilder = new LionFireHostBuilderWrapper(hostBuilder, this); }
     public LionFireHostBuilder(HostApplicationBuilder hostApplicationBuilder) { HostBuilder = new LionFireHostBuilderWrapper(hostApplicationBuilder, this); }
@@ -23,7 +23,9 @@ public class LionFireHostBuilder : ILionFireHostBuilder
 
 
     public LionFireHostBuilderWrapper HostBuilder { get; }
-    public IHostApplicationBuilder IHostApplicationBuilder => HostBuilder.WrappedIHostApplicationBuilder;
+    public override IHostApplicationBuilder IHostApplicationBuilder => HostBuilder.WrappedIHostApplicationBuilder;
+
+    public HashSet<string> RunMarkers { get; } = new();
 
     public ILionFireHostBuilder ForHostBuilder(Action<IHostBuilder> action)
     {

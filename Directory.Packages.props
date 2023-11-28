@@ -109,6 +109,7 @@
     <PackageVersion Include="Microsoft.Extensions.Options" Version="8.0.0" />
     <PackageVersion Include="Microsoft.Extensions.Options.ConfigurationExtensions" Version="8.0.0" />
     <PackageVersion Include="Microsoft.Extensions.PlatformAbstractions" Version="1.1.0" />
+    <PackageVersion Include="Microsoft.Extensions.Resilience" Version="8.0.0" />
     <PackageVersion Include="Microsoft.FluentUI.AspNetCore.Components" Version="4.0.0" />
     <PackageVersion Include="Microsoft.FluentUI.AspNetCore.Components.Emoji" Version="4.0.0" />
     <PackageVersion Include="Microsoft.FluentUI.AspNetCore.Components.Icons" Version="4.0.0" />
@@ -209,9 +210,13 @@
     <PackageVersion Include="Splat.Microsoft.Extensions.Logging" Version="14.8.6" />
     <PackageVersion Include="StackExchange.Redis" Version="2.7.4" />
     <PackageVersion Include="StardustDL.RazorComponents.MaterialDesignIcons" Version="5.9.55.17" />
-    <PackageVersion Include="Stride.Engine" Version="4.2.0.2043" />
-    <PackageVersion Include="Stride.Physics" Version="4.2.0.2043" />
-    <PackageVersion Include="Swashbuckle.AspNetCore" Version="6.5.0" />
+
+		<!--<PackageVersion Include="Stride.Engine" Version="4.2.0.2043" />
+		<PackageVersion Include="Stride.Physics" Version="4.2.0.2043" />-->
+		<PackageVersion Include="Stride.Engine" Version="4.2.0.1" />
+		<PackageVersion Include="Stride.Physics" Version="4.2.0.1" />
+
+		<PackageVersion Include="Swashbuckle.AspNetCore" Version="6.5.0" />
     <PackageVersion Include="Swordfish.NET.CollectionsV3" Version="3.3.12" />
     <PackageVersion Include="System.Collections.Concurrent" Version="4.3.0" />
     <PackageVersion Include="System.Collections.Immutable" Version="8.0.0" />

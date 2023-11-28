@@ -1,6 +1,7 @@
 ﻿using LionFire.Dependencies;
 using LionFire.ExtensionMethods.Collections;
 using LionFire.ExtensionMethods.Persistence.Filesystem;
+using LionFire.Hosting;
 using LionFire.IO;
 using LionFire.Persistence.Filesystemlike;
 using LionFire.Persistence.Persisters;
@@ -10,6 +11,9 @@ using LionFire.Structures;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using Polly;
+using Polly.Registry;
+
 //using NLog;
 using System;
 using System.Collections.Concurrent;
@@ -61,13 +65,40 @@ public class FilesystemPersister : VirtualFilesystemPersisterBase<IFileReference
     private static readonly Counter<long> CreateDirectoryC = Meter.CreateCounter<long>("CreateDirectory");
     #endregion
 
+    #region Dependencies
+
+    #region Optional
+
+    //[TryInject]
+    public ResiliencePipeline? ResiliencePipeline { get; }
+
+    #endregion
+
+    #endregion
+
     #region Construction
 
-    public FilesystemPersister(ISerializationProvider serializationProvider, IOptionsMonitor<FilesystemPersisterOptions> optionsMonitor, IPersistenceConventions itemKindIdentifier, SerializationOptions serializationOptions, IServiceProvider serviceProvider) : this(serializationProvider, null, optionsMonitor, itemKindIdentifier, serializationOptions, serviceProvider)
+    public FilesystemPersister(ISerializationProvider serializationProvider
+        , IOptionsMonitor<FilesystemPersisterOptions> optionsMonitor
+        , IPersistenceConventions itemKindIdentifier
+        , SerializationOptions serializationOptions
+        , IServiceProvider serviceProvider)
+        : this(serializationProvider, null, optionsMonitor, itemKindIdentifier, serializationOptions, serviceProvider)
     {
     }
-    public FilesystemPersister(ISerializationProvider serializationProvider, string name, IOptionsMonitor<FilesystemPersisterOptions> options, IPersistenceConventions itemKindIdentifier, SerializationOptions serializationOptions, IServiceProvider serviceProvider) : base(name, serializationProvider, options, itemKindIdentifier, serializationOptions, serviceProvider)
+    public FilesystemPersister(ISerializationProvider serializationProvider
+        , string name
+        , IOptionsMonitor<FilesystemPersisterOptions> options
+        , IPersistenceConventions itemKindIdentifier
+        , SerializationOptions serializationOptions
+        , IServiceProvider serviceProvider)
+        : base(name, serializationProvider, options, itemKindIdentifier, serializationOptions, serviceProvider)
     {
+        if (serviceProvider.GetService<ResiliencePipelineProvider<string>>()?.TryGetPipeline(FilesystemPersistenceResilience.RetryPolicyKey, out var p) == true)
+        {
+            ResiliencePipeline = p;
+        }
+        else ResiliencePipeline = null;
     }
 
     #endregion
@@ -132,24 +163,48 @@ public class FilesystemPersister : VirtualFilesystemPersisterBase<IFileReference
     public override Task<Stream> WriteStream(string path, ReplaceMode replaceMode)
     {
         OpenReadWriteStreamC.IncrementWithContext();
+        //Execute<Stream>(() => // TODO: ResiliencePipeline
+        //{
+        //WriteStreamAttemptC.IncrementWithContext(); // TODO: Separate counter to track retries and this top level call, or else track failures somehow?
         l.LogInformation(FilesystemPersisterEventIds.OpenStream, "Opening ReadWrite Stream: {Path}", path);
         return Task.FromResult<Stream>(new FileStream(path, replaceMode.ToFileMode()));
+        //});
     }
 
     public override Task WriteBytes(string path, byte[] bytes, ReplaceMode replaceMode)
         => Task.Run(() =>
         {
             WriteBytesC.IncrementWithContext();
-            l.LogInformation("Writing bytes: {Path}", path);
-            File.WriteAllBytes(path, bytes);
+            Execute(() =>
+            {
+                //WriteBytesAttemptC.IncrementWithContext(); // TODO: Separate counter to track retries and this top level call, or else track failures somehow?
+                l.LogInformation("Writing {Length} bytes to {Path}", bytes.Length, path);
+                File.WriteAllBytes(path, bytes);
+            });
         });
 
     public override Task WriteString(string path, string str, ReplaceMode replaceMode) => Task.Run(() =>
     {
         WriteTextC.IncrementWithContext();
-        l.LogInformation("Writing text: {Path}", path);
-        File.WriteAllText(path, str);
+        Execute(() =>
+        {
+            //WriteTextAttemptC.IncrementWithContext(); // TODO: Separate counter to track retries and this top level call, or else track failures somehow?
+            l.LogInformation("Writing {Length} characters of text to {Path}", str.Length, path);
+            File.WriteAllText(path, str);
+        });
     });
+
+    void Execute(Action a)
+    {
+        if (ResiliencePipeline != null)
+        {
+            ResiliencePipeline.Execute(a);
+        }
+        else
+        {
+            a();
+        }
+    }
 
     #endregion
 

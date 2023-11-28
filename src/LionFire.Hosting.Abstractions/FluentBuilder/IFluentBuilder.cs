@@ -11,6 +11,14 @@ public interface IFluentBuilder
 public interface IHostApplicationSubBuilder
 {
     IHostApplicationBuilder IHostApplicationBuilder { get; }
+
+    HashSet<string> RunMarkers { get; }
+}
+
+public abstract class HostApplicationSubBuilder : IHostApplicationSubBuilder
+{
+    public HashSet<string> RunMarkers { get; } = new();
+    public abstract IHostApplicationBuilder IHostApplicationBuilder { get; }
 }
 
 public static class IHostApplicationSubBuilderX
@@ -23,6 +31,41 @@ public static class IHostApplicationSubBuilderX
         where T : IHostApplicationSubBuilder
     {
         configureDelegate(b.IHostApplicationBuilder);
+        return b;
+    }
+
+    public static T ConfigureServices<T>(this T b, Action<IServiceCollection> configure)
+        where T : IHostApplicationSubBuilder
+    {
+        configure(b.IHostApplicationBuilder.Services);
+        return b;
+    }
+
+    public static T ThrowIfNotFirstTime<T>(this T b, [CallerMemberName] string? name = null)
+        where T : IHostApplicationSubBuilder
+    {
+        ArgumentNullException.ThrowIfNull(name);
+
+        if (b.RunMarkers.Contains(name))
+        {
+            throw new Exception("Cannot execute more than once: " + name);
+        }
+        else
+        {
+            b.RunMarkers.Add(name);
+        }
+        return b;
+    }
+    public static T IfFirstTime<T>(this T b, Action<T> configure, [CallerMemberName] string? name = null)
+        where T : IHostApplicationSubBuilder
+    {
+        ArgumentNullException.ThrowIfNull(name);
+
+        if (!b.RunMarkers.Contains(name))
+        {
+            configure(b);
+            b.RunMarkers.Add(name);
+        }
         return b;
     }
 }

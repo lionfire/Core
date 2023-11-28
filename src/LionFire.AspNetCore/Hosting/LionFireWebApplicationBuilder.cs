@@ -3,13 +3,16 @@ using System;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Configuration;
+using System.Collections.Generic;
 
 namespace LionFire.Hosting;
 
-public class LionFireWebApplicationBuilder : ILionFireHostBuilder
+// REVIEW - is this obsolete with .NET 8 and IHostApplicationBuilder?
+public class LionFireWebApplicationBuilder : HostApplicationSubBuilder, ILionFireHostBuilder
 {
+
     public WebApplicationBuilder WebApplicationBuilder { get; }
-    public IHostApplicationBuilder IHostApplicationBuilder => WebApplicationBuilder;
+    public override IHostApplicationBuilder IHostApplicationBuilder => WebApplicationBuilder;
 
     private HostApplicationBuilder HostApplicationBuilder { get; }
 

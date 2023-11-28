@@ -89,7 +89,7 @@ public partial class DependencyStateMachine : IDependencyStateMachine
         OptionsMonitor = optionsMonitor;
         Name = name;
         Logger = logger;
-        if (InjectedConfig.EnableLogging)
+        if (!InjectedConfig.DisableLogging)
         {
             ActivatorUtilities.CreateInstance<DependencyMachineLogger>(serviceProvider, this);
         }
@@ -122,7 +122,7 @@ public partial class DependencyStateMachine : IDependencyStateMachine
     protected void CalculateStages()
     {
         compiled = ActivatorUtilities.CreateInstance<CompiledDependencyMachine>(ServiceProvider, EffectiveConfig);
-        IsLoggingEnabled = ActiveConfig!.EnableLogging;
+        IsLoggingEnabled = !ActiveConfig!.DisableLogging;
     }
 
     protected IEnumerable<DependencyStage> Stages => compiled.Stages;

@@ -31,7 +31,7 @@ namespace LionFire.DependencyMachines
         public List<IParticipant> ParticipantInstances { get; } = new List<IParticipant>();
 
         
-        public bool EnableLogging { get; set; }
+        public bool DisableLogging { get; set; }
 
         public bool RequireFlagsToBeDeclared { get; set; } = true;
     }
