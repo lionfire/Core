@@ -23,6 +23,12 @@ namespace LionFire.DependencyMachines
         IServiceProvider IHas<IServiceProvider>.Object => ServiceProvider;
     }
 
+    // TODO: Move LionFire.Data.* to here and split to separate DLL
+    //public abstract class ResolvingStartableParticipant<TConcrete>
+    //{
+
+    //}
+
     public abstract class StartableParticipant<TConcrete> : IParticipant<TConcrete>, ITryStartable
         where TConcrete : StartableParticipant<TConcrete>
     {
@@ -31,7 +37,7 @@ namespace LionFire.DependencyMachines
         [SetOnce]
         public string? Key
         {
-            get => key ?? DefaultKey;
+            get => key ??= DefaultKey;
             set
             {
                 if (key == value) return;
@@ -67,9 +73,10 @@ namespace LionFire.DependencyMachines
         }
         private List<object>? dependencies;
 
+        // TODO: Move LionFire.Data.* to ResolvingStartableParticipant and split to separate DLL
         public IEnumerable<IReadWriteHandle>? DependencyHandles { get; set; }
-        public IEnumerable<IReadWriteHandle> UnsatisfiedDependencies => DependencyHandles.Where(h => !h.HasValue);
-        public IEnumerable<IReadWriteHandle> SatisfiedDependencies => DependencyHandles.Where(h => h.HasValue);
+        public IEnumerable<IReadWriteHandle> UnsatisfiedDependencies => DependencyHandles?.Where(h => !h.HasValue) ?? Enumerable.Empty<IReadWriteHandle>();
+        public IEnumerable<IReadWriteHandle> SatisfiedDependencies => DependencyHandles?.Where(h => h.HasValue) ?? Enumerable.Empty<IReadWriteHandle>();
 
         #endregion
 

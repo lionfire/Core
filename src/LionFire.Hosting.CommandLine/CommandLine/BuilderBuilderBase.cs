@@ -122,10 +122,11 @@ public abstract class BuilderBuilderBase<TBuilder> : IHostingBuilderBuilder<TBui
             if (OptionsType != null)
             {
                 var binder = new ModelBinder(OptionsType);
-                var optionsObject = binder.CreateInstance(invocationContext.BindingContext);
-                if (optionsObject != null)
+                context.OptionsObject = binder.CreateInstance(invocationContext.BindingContext);
+
+                if (context.OptionsObject != null)
                 {
-                    configureServices(s => s.AddSingleton(OptionsType, optionsObject));
+                    configureServices(s => s.AddSingleton(OptionsType, context.OptionsObject));
                 }
             }
 
@@ -139,7 +140,7 @@ public abstract class BuilderBuilderBase<TBuilder> : IHostingBuilderBuilder<TBui
             }
         }
     }
-
+    
     #region Pass-thru
 
     public abstract IHostingBuilderBuilder ConfigureServices(Action<IServiceCollection> services);

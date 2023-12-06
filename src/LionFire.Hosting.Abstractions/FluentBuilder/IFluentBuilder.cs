@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.DependencyInjection;
+﻿using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
 using System.Collections;
 using System.Runtime.CompilerServices;
 
@@ -19,6 +20,14 @@ public abstract class HostApplicationSubBuilder : IHostApplicationSubBuilder
 {
     public HashSet<string> RunMarkers { get; } = new();
     public abstract IHostApplicationBuilder IHostApplicationBuilder { get; }
+
+    #region Derived
+
+    public IServiceCollection Services => IHostApplicationBuilder.Services;
+    public IConfiguration Configuration => IHostApplicationBuilder.Configuration;
+
+    #endregion
+
 }
 
 public static class IHostApplicationSubBuilderX

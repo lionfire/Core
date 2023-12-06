@@ -17,6 +17,7 @@ using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using LionFire.Logging.Null;
 
 namespace LionFire.DependencyMachines;
 
@@ -25,11 +26,16 @@ namespace LionFire.DependencyMachines;
 
 public partial class DependencyStateMachine : IDependencyStateMachine
 {
+    #region Identity
+
+    public string? Name { get; }
+
+    #endregion
+
     #region Dependencies
 
-    public DependencyMachineConfig InjectedConfig => Name == null ? OptionsMonitor.CurrentValue : OptionsMonitor.Get(Name);
-    public IOptionsMonitor<DependencyMachineConfig> OptionsMonitor { get; }
-    public string Name { get; }
+    //public DependencyMachineConfig InjectedConfig => Name == null ? OptionsMonitor.CurrentValue : OptionsMonitor.Get(Name);
+    //public IOptionsMonitor<DependencyMachineConfig> OptionsMonitor { get; }
     public ILogger<DependencyStateMachine> Logger { get; }
     public IServiceProvider ServiceProvider { get; set; }
 
@@ -39,22 +45,23 @@ public partial class DependencyStateMachine : IDependencyStateMachine
 
     public bool AllowRoundRobinWithinStageWhenMissingDependencies { get; set; } = false; // true not implemented
 
-    public DependencyMachineConfig EffectiveConfig => Config ?? InjectedConfig;
+    public DependencyMachineConfig EffectiveConfig => /*Config ??*/ config;
 
-    public DependencyMachineConfig? Config
-    {
-        get => config;
-        set
-        {
-            if (ReferenceEquals(config, value)) return;
-            if (IsStarting || IsStarted)
-            {
-                throw new Exception("Cannot change config after start");
-            }
-            config = value;
-        }
-    }
-    private DependencyMachineConfig? config;
+    public DependencyMachineConfig? Config => config;
+    //{
+    //    get => config;
+    //    //set
+    //    //{
+    //    //    if (ReferenceEquals(config, value)) return;
+    //    //    if (IsStarting || IsStarted)
+    //    //    {
+    //    //        throw new Exception("Cannot change config after start");
+    //    //    }
+    //    //    config = value;
+    //    //}
+    //}
+    //private DependencyMachineConfig? config;
+    private DependencyMachineConfig config { get; }
 
     public DependencyMachineConfig? ActiveConfig => compiled?.Config;
 
@@ -83,17 +90,27 @@ public partial class DependencyStateMachine : IDependencyStateMachine
 
     #region Construction
 
-    public DependencyStateMachine(IServiceProvider serviceProvider, IOptionsMonitor<DependencyMachineConfig> optionsMonitor, ILogger<DependencyStateMachine> logger, string name = null)
+    [ActivatorUtilitiesConstructor]
+    public DependencyStateMachine(IServiceProvider serviceProvider, IOptionsMonitor<DependencyMachineConfig> optionsMonitor, ILogger<DependencyStateMachine>? logger, string? name = null)
+        : this(serviceProvider
+              , name == null ? optionsMonitor.CurrentValue : optionsMonitor.Get(name)
+              , logger
+              , name)
+    {
+    }
+
+    public DependencyStateMachine(IServiceProvider serviceProvider, DependencyMachineConfig config, ILogger<DependencyStateMachine>? logger = null, string? name = null)
     {
         ServiceProvider = serviceProvider;
-        OptionsMonitor = optionsMonitor;
+        this.config = config;
         Name = name;
-        Logger = logger;
-        if (!InjectedConfig.DisableLogging)
+        Logger = logger ?? serviceProvider.GetService<ILogger<DependencyStateMachine>>() ?? NullLogger< DependencyStateMachine>.Instance;
+        if (!this.config.DisableLogging)
         {
             ActivatorUtilities.CreateInstance<DependencyMachineLogger>(serviceProvider, this);
         }
     }
+
 
     #endregion
 

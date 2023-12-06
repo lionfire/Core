@@ -8,6 +8,7 @@ using System.Linq;
 
 namespace LionFire.Hosting;
 
+// ENH: strongly typed for Options type, if possible
 public class HostingBuilderBuilderContext : IFlex
 {
     object? IFlex.FlexData { get; set; }
@@ -21,5 +22,7 @@ public class HostingBuilderBuilderContext : IFlex
     public InvocationContext? InvocationContext { get; internal set; }
 
     public Dictionary<string, object?> Options { get; } = new();
-
+    public object? OptionsObject { get; internal set; }
+    public T GetOptions<T>() where T : class => (T) OptionsObject!;
+    public T? TryGetOptions<T>() where T : class => OptionsObject as T;
 }

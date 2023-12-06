@@ -10,11 +10,12 @@ namespace LionFire.Logging.Null
 {
     public class NullLogger : NullLogger<object>
     {
+        public static new NullLogger Instance { get { return Singleton<NullLogger>.Instance;  } } 
 
     }
     public class NullLogger<T> : TLogger, ILogger<T>
     {
-        public static NullLogger Instance { get { return Singleton<NullLogger>.Instance;  } }
+        public static NullLogger<T> Instance { get { return Singleton<NullLogger<T>>.Instance;  } }
         public IDisposable BeginScope<TState>(TState state)
         {
             return Singleton<NoopDisposable>.Instance;

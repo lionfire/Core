@@ -1,4 +1,5 @@
 ﻿#nullable enable
+using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.Collections.Generic;
 
@@ -34,5 +35,11 @@ namespace LionFire.DependencyMachines
         public bool DisableLogging { get; set; }
 
         public bool RequireFlagsToBeDeclared { get; set; } = true;
+
+
+        ///// <summary>
+        ///// Collection of IParticipants.  If not set, they will be obtained from the IServiceProvider
+        ///// </summary>
+        //public IServiceCollection? Services { get; } = new ServiceCollection();
     }
 }

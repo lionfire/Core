@@ -105,6 +105,7 @@ public class UltralightUIScript : SyncScript
 
     [DataMemberIgnore]
     public Keys? ToggleKey { get; set; } = Keys.F10;
+    public Keys? InspectorServerKey { get; set; } = Keys.F12;
     public Keys? ExternalBrowserKey { get; set; } = Keys.F9;
     public Keys? RefreshBrowserKey { get; set; } = Keys.F5;
 
@@ -294,8 +295,8 @@ public class UltralightUIScript : SyncScript
 
         var cfg = new ULConfig();
 
-        cfg.CachePath = Path.Combine(AssetDirectory, "Cache");
-        cfg.ResourcePathPrefix = Path.Combine(AssetDirectory, "resources");
+        cfg.CachePath = Path.Combine(AssetDirectory, "Cache") + Path.DirectorySeparatorChar;
+        cfg.ResourcePathPrefix = Path.Combine(AssetDirectory, "resources") + Path.DirectorySeparatorChar;
 
         //cfg.UseGpuRenderer = false;
         //cfg.SetEnableImages(true);
@@ -664,11 +665,15 @@ public class UltralightUIScript : SyncScript
         {
             EnableImages = true,
             EnableJavaScript = true,
-            //IsAccelerated = false,
+            //FontFamilyFixed =
+            //FontFamilySansSerif = 
+            //FontFamilySerif = 
+            //FontFamilyStandard = 
+            //IsAccelerated = true,
+            IsTransparent = true,
             //InitialDeviceScale = 1,
             InitialFocus = true,
-            //IsTransparent = true,
-            UserAgent = "Valor",
+            //UserAgent = "Valor",
         };
         View = renderer.CreateView(width, height, viewConfig, session);
         // REVIEW - what was the true parameter in ULView?
@@ -727,6 +732,8 @@ public class UltralightUIScript : SyncScript
     }
 #endif
 
+    bool IsInspectorServerStarted = false;
+
     public override void Update()
     {
         if (renderer == null) return;
@@ -748,6 +755,18 @@ public class UltralightUIScript : SyncScript
         {
             Logger.LogInformation("Refreshing");
             View.Reload();
+       }
+         if (InspectorServerKey.HasValue && Input.PressedKeys.Contains(InspectorServerKey.Value)) {
+            if(!IsInspectorServerStarted)
+            {
+                Logger.LogInformation("Ultralight Inspector Server starting...");
+                IsInspectorServerStarted = renderer.TryStartRemoteInspectorServer("127.0.0.1", 7152); // TODO Make Port HARDCODE configurable
+                Logger.LogInformation("Ultralight Inspector Server started.");
+            }
+            else
+            {
+                Logger.LogInformation("Ultralight Inspector Server already started.");
+            }
         }
         if (ToggleKey.HasValue && Input.PressedKeys.Contains(ToggleKey.Value)) { Visible ^= true; }
         if (ExternalBrowserKey.HasValue && Input.PressedKeys.Contains(ExternalBrowserKey.Value))
