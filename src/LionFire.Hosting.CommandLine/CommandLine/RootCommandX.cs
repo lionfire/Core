@@ -34,3 +34,11 @@ public static class RootCommandX
         return command;
     }
 }
+
+public static class CommandX
+{
+    #region Add Child commands
+
+    #endregion
+
+}

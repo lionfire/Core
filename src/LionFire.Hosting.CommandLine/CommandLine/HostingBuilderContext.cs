@@ -15,7 +15,7 @@ public class HostingBuilderBuilderContext : IFlex
 
     public IHostingBuilderBuilder? HostingBuilderBuilder { get; internal set; }
     public string? CommandHierarchy => HostingBuilderBuilder?.CommandHierarchy;
-    public string? CommandName => HostingBuilderBuilder?.Command.Name;
+    public string? CommandName => HostingBuilderBuilder?.Command?.Name;
     public string? InitializingForCommandName { get; set; }
 
     public IProgram? Program { get; internal set; }

@@ -1,9 +1,39 @@
 ﻿using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Resilience;
 using Microsoft.Extensions.Hosting;
 using Orleans.Configuration;
+using Polly;
+using Polly.Retry;
 
 namespace LionFire.Hosting;
+
+public static class OrleansClientResilience
+{
+    public const string RetryTimeoutPolicyKey = "ClusterClient-Retry-Timeout";
+}
+
+public static class OrleansClientResilienceX
+{
+    public static IServiceCollection AddOrleansClientResilience(this IServiceCollection s) => s
+      .AddResilienceEnricher() // For Telemetry
+      .AddResiliencePipeline(OrleansClientResilience.RetryTimeoutPolicyKey, static builder =>
+      {
+          // See: https://www.pollydocs.org/strategies/retry.html
+          builder.AddRetry(new RetryStrategyOptions
+          {
+              ShouldHandle = new PredicateBuilder().Handle<IOException>(),
+              BackoffType = DelayBackoffType.Exponential,
+              Delay = TimeSpan.FromMilliseconds(75),
+              MaxDelay = TimeSpan.FromSeconds(7),
+              MaxRetryAttempts = 9,
+          });
+
+          // See: https://www.pollydocs.org/strategies/timeout.html
+          builder.AddTimeout(TimeSpan.FromSeconds(3.0));
+      })
+  ;
+}
 
 public static class OrleansClientServiceCollectionExtensions
 {
@@ -11,9 +41,11 @@ public static class OrleansClientServiceCollectionExtensions
     {
         //if (clusterName != null) throw new NotImplementedException("TODO: Support multiple clusters using .NET 8 Keyed Services, once Orleans supports it, or I implement it");
 
-        hostBuilder.Services.AddOrleansClient(builder => {
-            
-            var configKey = clusterName == null ? "Orleans:Cluster" : "Orleans:Clusters:" + clusterName;
+        hostBuilder.Services
+            .AddOrleansClientResilience()
+            .AddOrleansClient(builder =>
+        {
+            var configKey = string.IsNullOrWhiteSpace(clusterName) ? "Orleans:Cluster" : "Orleans:Clusters:" + clusterName;
 
             builder.Configure<ClusterOptions>(hostBuilder.Configuration.GetSection(configKey));
 
@@ -33,7 +65,7 @@ public static class OrleansClientServiceCollectionExtensions
                 case ClusterDiscovery.Consul:
                     builder.UseConsulClientClustering(options =>
                     {
-                        options.ConfigureConsulClient(new Uri(ConsulClusterConfig.ServiceDiscoverEndPoint ?? throw new ArgumentNullException("Missing config: Orleans:Cluster:Consul:ServiceDiscoverEndPoint")), ConsulClusterConfig.ServiceDiscoveryToken);
+                        options.ConfigureConsulClient(new Uri(ConsulClusterConfig.ServiceDiscoverEndPoint ?? throw new ArgumentNullException($"Missing config: {configKey}:Consul:ServiceDiscoverEndPoint")), ConsulClusterConfig.ServiceDiscoveryToken);
                         options.KvRootFolder = ConsulClusterConfig.KvFolderName ?? ClusterConfig.ServiceId;
                     });
                     break;

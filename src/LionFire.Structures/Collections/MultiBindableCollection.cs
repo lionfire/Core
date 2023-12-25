@@ -68,7 +68,7 @@ namespace LionFire.Collections
         {
             if (list == null)
             { // Jared added
-                list = new ObservableList<T>();
+                list = new ObservableList2<T>();
             }
 
             if (list == null ||

@@ -2,6 +2,7 @@
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using System.CommandLine;
+using System.CommandLine.Binding;
 using System.CommandLine.Invocation;
 using System.CommandLine.NamingConventionBinder;
 using System.Diagnostics;
@@ -29,7 +30,6 @@ public class LionFireCommandLineOptions
         return result;
     }
 }
-
 
 // Supported TBuilder types:
 //  - IHostBuilder
@@ -126,7 +126,10 @@ public abstract class BuilderBuilderBase<TBuilder> : IHostingBuilderBuilder<TBui
 
                 if (context.OptionsObject != null)
                 {
-                    configureServices(s => s.AddSingleton(OptionsType, context.OptionsObject));
+                    //configureServices(s => s.AddSingleton(OptionsType, context.OptionsObject));
+
+                    typeof(CommandLineOptionsConfigurer<>).MakeGenericType(OptionsType).GetMethod(nameof(CommandLineOptionsConfigurer<object>.Configure))!
+                              .Invoke(null, [context.OptionsObject, configureServices, invocationContext.BindingContext]);
                 }
             }
 
@@ -140,7 +143,9 @@ public abstract class BuilderBuilderBase<TBuilder> : IHostingBuilderBuilder<TBui
             }
         }
     }
-    
+
+
+
     #region Pass-thru
 
     public abstract IHostingBuilderBuilder ConfigureServices(Action<IServiceCollection> services);

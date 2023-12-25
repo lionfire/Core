@@ -3,6 +3,19 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace LionFire.Hosting;
 
+
+public class SubBuilders
+{
+    public Dictionary<Type, object> subBuilders=new();
+    public T GetOrCreateSubBuilder<T>(Func<T> factory)
+    {
+        if (subBuilders.ContainsKey(typeof(T))) return (T)subBuilders[typeof(T)];
+        var result = factory();
+        if (result is { } notNullResult) subBuilders.Add(typeof(T), notNullResult);
+        return result;
+    }
+}
+
 public static class HostApplicationBuilderX
 {
     public static HostApplicationBuilder CreateNonDefault(string[]? args = null, HostApplicationBuilderSettings? settings = null)
@@ -22,9 +35,26 @@ public static class HostApplicationBuilderX
     /// <returns></returns>
     public static HostApplicationBuilder LionFire(this HostApplicationBuilder hostBuilder, Action<ILionFireHostBuilder>? action = null, bool useDefaults = true)
     {
-        var lf = new LionFireHostBuilder(hostBuilder); // TODO - reuse existing from Properties if it exists
+        IHostApplicationBuilder hab = hostBuilder;
 
-        if (useDefaults) { lf.Defaults(); }
+        SubBuilders SubBuilders;
+        if (hab.Properties.ContainsKey("SubBuilders"))
+        {
+            SubBuilders = (SubBuilders)hab.Properties["SubBuilders"];
+        }
+        else
+        {
+            SubBuilders = new();
+            hab.Properties.Add("SubBuilders", SubBuilders);
+        }
+        var lf = SubBuilders.GetOrCreateSubBuilder<LionFireHostBuilder>(() =>
+        {
+            var lf = new LionFireHostBuilder(hostBuilder); // TODO - reuse existing from Properties if it exists
+
+            if (useDefaults) { lf.Defaults(); }
+
+            return lf;
+        });
 
         action?.Invoke(lf);
 
@@ -61,7 +91,7 @@ public static class HostApplicationBuilderX
     #endregion
 
 
-    
+
 
 
 }

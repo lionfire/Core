@@ -6,12 +6,12 @@ using Orleans.Utilities;
 
 namespace LionFire.Orleans_.Collections;
 
-public class GrainObserverManager<T>
+public class AsyncObserverGrainObserverManager<T>
 {
     #region Dependencies
 
     //public ILogger Logger { get; }
-    static ILogger Logger = Log.Get<GrainObserverManager<T>>();
+    static ILogger Logger = Log.Get<AsyncObserverGrainObserverManager<T>>();
     public IGrainObservableG<T> Grain { get; }
 
     #endregion
@@ -24,7 +24,7 @@ public class GrainObserverManager<T>
 
     #region Lifecycle
 
-    public GrainObserverManager(IGrainObservableG<T> grain, TimeSpan timeSpan
+    public AsyncObserverGrainObserverManager(IGrainObservableG<T> grain, TimeSpan timeSpan
         //, ILogger logger
         )
     {

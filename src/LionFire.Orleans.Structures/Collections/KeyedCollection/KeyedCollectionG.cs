@@ -60,7 +60,7 @@ public class KeyedCollectionG<TKey, TItem> : Grain
         ItemsState = items;
         Logger = logger;
 
-        grainObserverManager = new(() => new GrainObserverManager<ChangeSet<TItem, TKey>>(this, DefaultGrainObserverTimeout));
+        grainObserverManager = new(() => new AsyncObserverGrainObserverManager<ChangeSet<TItem, TKey>>(this, DefaultGrainObserverTimeout));
 
         KeySelector = staticKeySelector ??= KeySelectors.GetKeySelector<TItem, TKey>(serviceProvider);
     }
@@ -76,8 +76,8 @@ public class KeyedCollectionG<TKey, TItem> : Grain
 
     #region IGrainObservers
 
-    protected GrainObserverManager<ChangeSet<TItem, TKey>> GrainObserverManager => grainObserverManager.Value;
-    Lazy<GrainObserverManager<ChangeSet<TItem, TKey>>> grainObserverManager;
+    protected AsyncObserverGrainObserverManager<ChangeSet<TItem, TKey>> GrainObserverManager => grainObserverManager.Value;
+    Lazy<AsyncObserverGrainObserverManager<ChangeSet<TItem, TKey>>> grainObserverManager;
 
     public static TimeSpan DefaultGrainObserverTimeout => TimeSpan.FromMinutes(5);
 

@@ -21,6 +21,7 @@ public class LionFireSiloConfigurator
 
     //public IOptions<OrleansClusterConfig> Options { get; }
 
+    public string ClusterConfigKey => "Orleans:Cluster"; // ENH: Ability to configure multiple clusters
     OrleansClusterConfig ClusterConfig { get; }
     public IConfiguration Configuration { get; }
 
@@ -40,7 +41,7 @@ public class LionFireSiloConfigurator
         //Options = options;
 
         var clusterConfig = new OrleansClusterConfig();
-        configuration.GetSection("Orleans:Cluster").Bind(clusterConfig);
+        configuration.GetSection(ClusterConfigKey).Bind(clusterConfig);
         ClusterConfig = clusterConfig;
     }
 
@@ -64,7 +65,9 @@ public class LionFireSiloConfigurator
     {
         get
         {
-            var result = Assembly.GetEntryAssembly()?.FullName ?? throw new NotSupportedException($"{nameof(ServiceId)} is not available because Assembly.GetEntryAssembly()?.FullName returned null.");
+            if(ClusterConfig.ServiceId != null) return ClusterConfig.ServiceId;
+
+            var result = Assembly.GetEntryAssembly()?.FullName ?? throw new NotSupportedException($"{nameof(ServiceId)} is not available because Assembly.GetEntryAssembly()?.FullName returned null. Set manually: {ClusterConfigKey}:ServiceId");
             result = result.Substring(0, result.IndexOf(','));
             result = result.Replace(".Silo", "");
 

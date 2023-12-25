@@ -14,10 +14,24 @@ public interface IHostApplicationSubBuilder
     IHostApplicationBuilder IHostApplicationBuilder { get; }
 
     HashSet<string> RunMarkers { get; }
+    T GetOrCreateSubBuilder<T>(Func<T> factory);
 }
 
 public abstract class HostApplicationSubBuilder : IHostApplicationSubBuilder
 {
+    #region SubBuilders
+
+    Dictionary<Type, object> subBuilders = new();
+    public T GetOrCreateSubBuilder<T>(Func<T> factory)
+    {
+        if (subBuilders.ContainsKey(typeof(T))) return (T)subBuilders[typeof(T)];
+        var result = factory();
+        if (result is { } notNullResult) subBuilders.Add(typeof(T), notNullResult);
+        return result;
+    }
+
+    #endregion
+
     public HashSet<string> RunMarkers { get; } = new();
     public abstract IHostApplicationBuilder IHostApplicationBuilder { get; }
 
