@@ -10,6 +10,12 @@ namespace LionFire.Oakton
 
         Dictionary<string, MultiCommand> Commands = new Dictionary<string, MultiCommand>();
 
+#if TODO // Wait for Oakton support? or dig out the private IHostBuilder from HostApplicationBuilder?  Or use adapter?
+        public MultiCommandProgramBuilder(HostApplicationBuilder builder)
+        {
+            HostBuilder = builder;
+        }
+#endif
         public MultiCommandProgramBuilder(IHostBuilder builder)
         {
             HostBuilder = builder;

@@ -25,8 +25,6 @@ public class LionFireHostBuilder : HostApplicationSubBuilder, ILionFireHostBuild
     public LionFireHostBuilderWrapper HostBuilder { get; }
     public override IHostApplicationBuilder IHostApplicationBuilder => HostBuilder.WrappedIHostApplicationBuilder;
 
-    public HashSet<string> RunMarkers { get; } = new();
-
     public ILionFireHostBuilder ForHostBuilder(Action<IHostBuilder> action)
     {
         action(HostBuilder);

@@ -10,7 +10,7 @@ public static class HostedServiceHostBuilderExtensions
         return hostBuilder.ConfigureServices((context, services) =>
             services.AddHostedService<T>());
     }
-    public static HostApplicationBuilder UseHostedService<T>(this HostApplicationBuilder hostApplicationBuilder)
+    public static IHostApplicationBuilder UseHostedService<T>(this IHostApplicationBuilder hostApplicationBuilder)
         where T : class, IHostedService
     {
         hostApplicationBuilder.Services.AddHostedService<T>();

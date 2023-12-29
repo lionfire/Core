@@ -18,6 +18,7 @@ public static class ReleaseChannelsHostingX
     public static IHostApplicationBuilder DeploymentSlot(this IHostApplicationBuilder hostBuilder, bool reloadOnChange = true)
     {
         hostBuilder.Services.AddHostedService<DeploymentSlotLogger>();
+        
         var value = _EnvVar(hostBuilder, "slot");
       
         if (value != null)

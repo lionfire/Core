@@ -25,6 +25,8 @@ public static class DefaultsX
 
         builder.UseContentRoot(AppContext.BaseDirectory); // REVIEW - compare with Microsoft default behavior, eliminate if not needed, or else document more
 
+        builder.ConfigureServices(s => s.AddHostedService<EnvironmentNameLogger>());
+
         #region Configuration
 
         builder.ConfigureHostConfiguration(config =>

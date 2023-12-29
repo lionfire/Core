@@ -33,7 +33,7 @@ public static class HostApplicationBuilderX
     /// <param name="action"></param>
     /// <param name="useDefaults"></param>
     /// <returns></returns>
-    public static HostApplicationBuilder LionFire(this HostApplicationBuilder hostBuilder, Action<ILionFireHostBuilder>? action = null, bool useDefaults = true)
+    public static HostApplicationBuilder LionFire(this HostApplicationBuilder hostBuilder, Action<ILionFireHostBuilder>? action = null, bool useDefaults = true, Action<ILionFireHostBuilder>? actionBeforeDefaults = null)
     {
         IHostApplicationBuilder hab = hostBuilder;
 
@@ -51,6 +51,8 @@ public static class HostApplicationBuilderX
         {
             var lf = new LionFireHostBuilder(hostBuilder); // TODO - reuse existing from Properties if it exists
 
+            actionBeforeDefaults?.Invoke(lf);
+
             if (useDefaults) { lf.Defaults(); }
 
             return lf;
@@ -60,8 +62,8 @@ public static class HostApplicationBuilderX
 
         return hostBuilder;
     }
-    public static HostApplicationBuilder LionFire(this HostApplicationBuilder hostBuilder, int basePort, Action<ILionFireHostBuilder>? action = null, bool useDefaults = true)
-        => hostBuilder.BasePort(basePort).LionFire(action, useDefaults);
+    public static HostApplicationBuilder LionFire(this HostApplicationBuilder hostBuilder, int basePort, Action<ILionFireHostBuilder>? action = null, bool useDefaults = true, Action<ILionFireHostBuilder>? actionBeforeDefaults = null)
+        => hostBuilder.BasePort(basePort).LionFire(action, useDefaults, actionBeforeDefaults);
 
     // FUTURE - sort out IHostApplicationBuilder vs implementors such as HostApplicationBuilder (and nothing else so far?)
     //public static IHostApplicationBuilder LionFire(this IHostApplicationBuilder hostBuilder, int basePort, Action<ILionFireHostBuilder>? action = null, bool useDefaults = true)

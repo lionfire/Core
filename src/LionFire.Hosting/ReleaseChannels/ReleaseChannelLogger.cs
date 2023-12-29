@@ -28,15 +28,3 @@ public class ReleaseChannelLogger(ILogger<ReleaseChannelLogger> logger, IConfigu
 
     public Task StopAsync(CancellationToken cancellationToken) => Task.CompletedTask;
 }
-
-public class DeploymentSlotLogger : IHostedService
-{
-    public DeploymentSlotLogger(ILogger<DeploymentSlotLogger> logger, IConfiguration configuration)
-    {
-        logger.LogInformation($"Deployment slot: {configuration["slot"]}");
-    }
-
-    public Task StartAsync(CancellationToken cancellationToken) => Task.CompletedTask;
-
-    public Task StopAsync(CancellationToken cancellationToken) => Task.CompletedTask;
-}

@@ -13,7 +13,7 @@ namespace LionFire.DependencyMachines;
 
 //public class DependencyMachineBuilder
 //{
-    
+
 //    public DependencyMachineConfig Config { get; } = new DependencyMachineConfig();
 
 //    public CompiledDependencyMachine Build(IServiceProvider serviceProvider) => ActivatorUtilities.CreateInstance<CompiledDependencyMachine>(serviceProvider,  Config);
@@ -90,7 +90,18 @@ public class CompiledDependencyMachine
     private void Calculate()
     {
         var unsolved = new Dictionary<string, IParticipant>();
-        unsolved.TryAddRange(participants.Select(p => new KeyValuePair<string, IParticipant>(p.Key, p)));
+
+        foreach (var p in participants)
+        {
+            if (unsolved.ContainsKey(p.Key))
+            {
+                Logger.LogWarning("Participant with key '{key}' already exists in the dependency machine.", p.Key);
+            }
+            else
+            {
+                unsolved.Add(p.Key, p);
+            }
+        }
 
         Dictionary<string, List<IParticipant>> contributorsRemaining = new Dictionary<string, List<IParticipant>>();
 

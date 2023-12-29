@@ -3,7 +3,9 @@ using LionFire.AspNetCore;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Diagnostics.HealthChecks;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Hosting.StaticWebAssets;
 using Microsoft.AspNetCore.Routing;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.FileProviders;
 using Microsoft.Extensions.Hosting;
@@ -100,7 +102,11 @@ public static class WebHostFrameworkStartupInitializer
                 app.UseStaticFiles();
             }
         }
-
+        //if (env.IsDevelopment())
+        {
+            //StaticWebAssetsLoader.UseStaticWebAssets(ctx.HostingEnvironment, ctx.Configuration);
+            StaticWebAssetsLoader.UseStaticWebAssets(env, app.ApplicationServices.GetRequiredService<IConfiguration>());
+        }
         if (swagger) options.ConfigureSwagger(app, env);
 
         app.UseRouting();

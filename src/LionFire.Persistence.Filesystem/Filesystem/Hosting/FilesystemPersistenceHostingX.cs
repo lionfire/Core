@@ -30,7 +30,7 @@ public static class FilesystemPersistenceHostingX
                 // "being used by another process"
                 ShouldHandle = new PredicateBuilder().Handle<IOException>(),
                 BackoffType = DelayBackoffType.Exponential,
-                Delay = TimeSpan.FromMilliseconds(75),
+                Delay = TimeSpan.FromMilliseconds(200),
                 MaxDelay = TimeSpan.FromSeconds(1),
                 MaxRetryAttempts = 5,
             });

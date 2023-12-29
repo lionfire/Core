@@ -17,6 +17,7 @@ namespace LionFire.Dispatching
     {
         #region (Static)
 
+        // TODO FIXME - eliminate static
         public static StrideDispatcher Instance => instance ?? throw new DependencyMissingException(typeof(StrideDispatcher).Name);
         private static StrideDispatcher instance;
         public bool HasInstance => instance != null;

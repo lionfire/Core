@@ -37,7 +37,7 @@ public static class VosAppHostBuilder
     //        ;
     //}
 
-    public static IServiceCollection AddVosApp(this IServiceCollection services)
+    public static IServiceCollection AddVosPackages(this IServiceCollection services)
         => services
              .AddDependencyMachine()
              .ConfigureDependencyMachine(dm =>
@@ -48,8 +48,13 @@ public static class VosAppHostBuilder
                      VosAppInitStage.PackageProviders,
                      VosAppInitStage.PackageSources));
              })
-             .VobEnvironment("app", "/app".ToVobReference()) // TODO: VosAppLocations.App = "$app"
              .VobEnvironment(VosPackageLocations.Packages, "/packages".ToVobReference())
+        ;
+
+    public static IServiceCollection AddVosApp(this IServiceCollection services)
+        => services
+             .AddVosPackages()
+             .VobEnvironment("app", "/app".ToVobReference()) // TODO: VosAppLocations.App = "$app"
              .VobEnvironment("internal", "/_".ToVobReference())
              .VobEnvironment("stores", "/_/stores".ToVobReference()) //.VobEnvironment("stores", "/$internal/stores".ToVobReference()) // TODO
 
@@ -73,7 +78,7 @@ public static class VosAppHostBuilder
                  .AddPlatformSpecificStores(builder.AppInfo()));
 
     #endregion
-    
+
     public static AppInfo AppInfo(this IHostApplicationBuilder builder)
         => builder.Services.BuildServiceProvider().GetService<AppInfo>() ?? throw new ArgumentException("HostApplicationBuilder needs to have AddAppInfo() already invoked on it.");
 
