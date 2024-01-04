@@ -2,6 +2,7 @@
 using Stride.Core.IO;
 using Stride.Core.Storage;
 using Stride.Core;
+using Stride.Graphics;
 
 namespace LionFire.Hosting;
 
@@ -31,6 +32,7 @@ public static class StrideHostingX
         #endregion
 
         // Server only, maybe, but doesn't seem to be needed: MOVE
+        // Enabling this breaks because Physics tries to add Debug Material code
         //GlobalStrideServices.AddService<IGraphicsDeviceService>(new GraphicsDeviceServiceLocal(null));
 
         return services;

@@ -3,6 +3,7 @@ using LionFire.Stride_.Core;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Stride.Core;
+using Stride.Core.IO;
 using Stride.Core.Serialization.Contents;
 using Stride.Engine;
 using Stride.Engine.Design;
@@ -53,7 +54,7 @@ public abstract class StrideRuntime : IStrideRuntime
     #region Configuration
 
     protected ContentManagerLoaderSettings loadSettings;
-    public string DefaultMainSceneName { get; set; } = "MainScene";
+    public string DefaultMainSceneName { get; set; } = "MainScene"; // was "ActionScene";
 
     #endregion
 
@@ -74,6 +75,7 @@ public abstract class StrideRuntime : IStrideRuntime
         Content = new ContentManager(StrideServices);
         StrideServices.AddService<IContentManager>(Content);
         StrideServices.AddService(Content);
+        DumpContentIndex();
 
         // Stride's Game systems
         gameSystems = new GameSystemCollection(StrideServices);
@@ -82,6 +84,40 @@ public abstract class StrideRuntime : IStrideRuntime
 
         loadSettings = CreateContentManagerLoaderSettings;
 
+        Load().Wait();
+    }
+
+    private void DumpContentIndex()
+    {
+        int contentCount = 0;
+        Logger.LogInformation("Content SearchValues:");
+
+        foreach (var k in Content.FileProvider.ContentIndexMap.SearchValues((_) => true))
+        {
+            Logger.LogInformation("{key} = {value}", k.Key, k.Value);
+        }
+        Logger.LogInformation("Content merged Id map:");
+        foreach (var k in Content.FileProvider.ContentIndexMap.GetMergedIdMap())
+        {
+            contentCount++;
+            Logger.LogInformation("{key} = {value}", k.Key, k.Value);
+        }
+
+        if (contentCount == 0)
+        {
+            Logger.LogError("Missing Stride Content!");
+        }
+        DumpContentDatabaseInfo();
+    }
+    private void DumpContentDatabaseInfo()
+    {
+        //var ObjectDatabase =ServiceProvider.GetRequiredService<ObjectDatabase>();
+        var DatabaseFileProvider = ServiceProvider.GetRequiredService<DatabaseFileProvider>();
+        var ObjectDatabase = DatabaseFileProvider.ObjectDatabase;
+
+        Logger.LogInformation("Bundle directory: {bundleDirectory}", ObjectDatabase.BundleBackend.BundleDirectory);
+
+
     }
 
     public async Task Load()
@@ -89,18 +125,30 @@ public abstract class StrideRuntime : IStrideRuntime
         await LoadMainScene();
     }
 
+    bool isLoaded = false;
+
     protected virtual async Task LoadMainScene(string? mainSceneName = null)
     {
+        if (isLoaded) throw new AlreadyException();
+        isLoaded = true;
+
         mainSceneName ??= DefaultMainSceneName;
 
         var scene = await Content.LoadAsync<Scene>(mainSceneName, loadSettings);
 
         SceneInstance = new SceneInstance(StrideServices, scene, ExecutionMode.None);
+        //if (SceneInstance.RootScene != null)
+        //{
+        //    Content.Unload(SceneInstance.RootScene);
+        //}
+        SceneInstance.RootScene = scene;
+
         var sceneSystem = new SceneSystem(StrideServices)
         {
             SceneInstance = SceneInstance
         };
         StrideServices.AddService(sceneSystem);
+
 
         var Physics = new PhysicsProcessor();
         SceneInstance.Processors.Add(Physics);
