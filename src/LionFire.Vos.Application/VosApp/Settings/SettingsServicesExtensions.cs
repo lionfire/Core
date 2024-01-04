@@ -9,8 +9,9 @@ namespace LionFire.Hosting;
 
 public static class SettingsServicesExtensions
 {
+
     public static IServiceCollection AddSettings(this IServiceCollection services, bool mountAll = true)
-    => services
+      => services
 
     #region AppInfo
         .VobEnvironment("AppId", serviceProvider => serviceProvider.GetRequiredService<AppInfo>().AppId)

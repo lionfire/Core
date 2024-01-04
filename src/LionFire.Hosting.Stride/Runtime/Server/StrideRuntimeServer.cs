@@ -4,17 +4,11 @@ using Stride.Engine.Design;
 using Stride.Engine;
 using Stride.Physics;
 
-namespace LionFire.Hosting;
+namespace LionFire.Stride_.Runtime;
 
 public class StrideRuntimeServer : StrideRuntime
 {
-    #region Parameters
-
-    public string SceneName { get; set; } = "MainScene";
-
-    #endregion
-
-    public StrideRuntimeServer(ILogger<StrideRuntimeServer> logger, ServiceRegistry globalStrideServices, ContentManager contentManager) : base(logger, globalStrideServices, contentManager: contentManager)
+    public StrideRuntimeServer(IServiceProvider serviceProvider, ILogger<StrideRuntimeServer> logger) : base(serviceProvider, logger)
     {
     }
 
@@ -24,20 +18,13 @@ public class StrideRuntimeServer : StrideRuntime
         ContentFilter = ContentManagerLoaderSettings.NewContentFilterByType()
     };
 
-    protected override async Task Init()
-    {
-        var scene = await GlobalContent.LoadAsync<Scene>(SceneName, loadSettings);
+    //protected override async Task LoadMainScene()
+    //{
+        
 
-        var sceneInstance = new SceneInstance(StrideServices, scene, ExecutionMode.None);
-        var sceneSystem = new SceneSystem(StrideServices)
-        {
-            SceneInstance = sceneInstance
-        };
-        StrideServices.AddService(sceneSystem);
-
-        Physics = new PhysicsProcessor();
-        sceneInstance.Processors.Add(Physics);
-    }
+    //    Physics = new PhysicsProcessor();
+    //    SceneInstance.Processors.Add(Physics);
+    //}
 
     //void Example()
     //{

@@ -8,13 +8,13 @@ namespace LionFire.Hosting;
 
 // ENH: Support multiple run actions, in serial or parallel
 
-public class RunTaskAndStopApplication : BackgroundService
+public class RunTaskAndShutdownApplication : BackgroundService
 {
     readonly IServiceProvider serviceProvider;
     private readonly RunOptions options;
     readonly IHostApplicationLifetime hostApplicationLifetime;
 
-    public RunTaskAndStopApplication(IServiceProvider serviceProvider, RunOptions options, IHostApplicationLifetime hostApplicationLifetime)
+    public RunTaskAndShutdownApplication(IServiceProvider serviceProvider, RunOptions options, IHostApplicationLifetime hostApplicationLifetime)
     {
 
         // OLD - now use DependencyContextServiceProviderFactoryWrapper

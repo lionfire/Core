@@ -46,12 +46,17 @@ namespace LionFire
     public class RuleError  // RECENTCHANGE - changed to class from struct
         //: IRuleError 
     {
-        public RuleError(string messageParam = null)
+        public RuleError(string message = null)
         {
-            message = messageParam;
+            this.Message = message;
             category = null;
             suggestedFix = null;
             remarks = null;
+        }
+
+        public static implicit operator RuleError(string message)
+        {
+            return new RuleError(message);
         }
         
         #region Category

@@ -147,9 +147,10 @@ public static class RunTaskAndStopApplicationHostApplicationBuilderX
     }
 
 
-    public static HostApplicationBuilder AddRunTaskAndStop(this HostApplicationBuilder hostApplicationBuilder, Func<IServiceProvider, Task> taskFactory)
+
+    public static HostApplicationBuilder AddRunTaskAndShutdown(this HostApplicationBuilder hostApplicationBuilder, Func<IServiceProvider, Task> taskFactory)
     {
-        hostApplicationBuilder.Services.AddRunTaskAndStop(taskFactory);
+        hostApplicationBuilder.Services.AddRunTaskAndShutdown(taskFactory);
         return hostApplicationBuilder;
     }
     internal static HostApplicationBuilder AddRunTaskAndStop(this HostApplicationBuilder hostApplicationBuilder, Func<IServiceProvider, Task> taskFactory, ExceptionWrapper exceptionWrapper)
@@ -168,7 +169,7 @@ public static class RunTaskAndStopApplicationHostApplicationBuilderX
 
         await hostBuilder.Build()
             .RunAsync()
-            .ContinueWith(t =>
+            .ContinueWith(t => // TODO: Move this to a HostedService that does things on Stop
             {
                 DependencyContext.Deinitialize(); // ENH: Decouple by firing some sort of LionFireApplicationStopped event, and listen for that
 
@@ -188,23 +189,23 @@ public static class RunTaskAndStopApplicationHostApplicationBuilderX
 public static class RunTaskAndStopApplicationCommonX
 {
     public static IServiceCollection AddRunTaskAndStop(this IServiceCollection services, Action taskFactory)
-        => services.AddRunTaskAndStop(_ => { taskFactory(); return Task.CompletedTask; });
+        => services.AddRunTaskAndShutdown(_ => { taskFactory(); return Task.CompletedTask; });
 
     public static IServiceCollection AddRunTaskAndStop(this IServiceCollection services, Func<Task> taskFactory)
-        => services.AddRunTaskAndStop(_ => taskFactory());
-    public static IServiceCollection AddRunTaskAndStop(this IServiceCollection services, Func<IServiceProvider, Task> taskFactory)
+        => services.AddRunTaskAndShutdown(_ => taskFactory());
+    public static IServiceCollection AddRunTaskAndShutdown(this IServiceCollection services, Func<IServiceProvider, Task> taskFactory)
     {
         return services
             .AddSingleton(new RunOptions(async services =>
             {
                 await taskFactory(services).ConfigureAwait(false);
             }))
-            .AddHostedService<RunTaskAndStopApplication>()
+            .AddHostedService<RunTaskAndShutdownApplication>()
             ;
     }
 }
 
-internal static class InternalRunTaskAndStopApplicationCommonX
+internal static class InternalRunTaskAndShutdownApplicationCommonX
 {
     // REVIEW - what is the point of this ExceptionWrapper?
     public static IServiceCollection AddRunTaskAndStop(this IServiceCollection services, Func<IServiceProvider, Task> taskFactory, ExceptionWrapper exceptionWrapper)
@@ -222,12 +223,12 @@ internal static class InternalRunTaskAndStopApplicationCommonX
                         throw;
                     }
                 }))
-            .AddHostedService<RunTaskAndStopApplication>()
+            .AddHostedService<RunTaskAndShutdownApplication>()
             ;
     }
 }
 
-public static class RunTaskAndStopApplicationHostBuilderX
+public static class RunTaskAndShutdownApplicationHostBuilderX
 {
     public static async Task RunAsync(this IHostBuilder hostBuilder, INotifyDisposing disposable)
     {
@@ -359,7 +360,7 @@ public static class RunTaskAndStopApplicationHostBuilderX
 
     public static IHostBuilder AddRunTaskAndStop(this IHostBuilder hostBuilder, Func<IServiceProvider, Task> taskFactory)
     {
-        hostBuilder.ConfigureServices(s=>s.AddRunTaskAndStop(taskFactory));
+        hostBuilder.ConfigureServices(s=>s.AddRunTaskAndShutdown(taskFactory));
         return hostBuilder;
     }
     internal static IHostBuilder AddRunTaskAndStop(this IHostBuilder hostBuilder, Func<IServiceProvider, Task> taskFactory, ExceptionWrapper exceptionWrapper)

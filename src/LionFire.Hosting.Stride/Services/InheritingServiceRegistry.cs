@@ -1,13 +1,20 @@
-﻿using Stride.Core;
+﻿#nullable enable
+using Stride.Core;
 using Stride.Core.Annotations;
 
-namespace LionFire.Hosting;
+namespace LionFire.Stride_.Core;
 
 public class InheritingServiceRegistry : IServiceRegistry
 {
     #region Dependencies
 
     public IServiceRegistry Parent { get; }
+
+    #endregion
+
+    #region Components
+
+    protected ServiceRegistry Self { get; } = new();
 
     #endregion
 
@@ -20,11 +27,6 @@ public class InheritingServiceRegistry : IServiceRegistry
 
     #endregion
 
-    #region State
-
-    protected ServiceRegistry Self { get; } = new();
-
-    #endregion
 
     #region Methods
 
@@ -32,6 +34,7 @@ public class InheritingServiceRegistry : IServiceRegistry
     public void RemoveService<T>() where T : class => Self.RemoveService<T>();
 
     public T GetService<T>() where T : class => Self.GetService<T>() ?? Parent.GetService<T>();
+    //public object? GetService(Type type) => Self.GetService(type) ?? Parent.GetService(type);
 
     #endregion
 

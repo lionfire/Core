@@ -5,95 +5,90 @@ using LionFire.Settings;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Options;
 using MorseCode.ITask;
-using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Text;
 using System.Threading;
-using System.Threading.Tasks;
-using System.Xml.Linq;
 
-namespace LionFire.Settings
+namespace LionFire.Settings;
+
+// TODO: Move to separate DLL?  LionFire.Preferences, or LionFire.Applications?
+
+public class SettingsManager : IHostedService
 {
-    // TODO: Move to separate DLL?  LionFire.Preferences, or LionFire.Applications?
+    #region Dependencies
 
-    public class SettingsManager : IHostedService
+    public IOptionsMonitor<SettingsOptions> SettingsOptionsMonitor { get; }
+    //public AppInfo AppInfo { get; }
+
+    public SettingsOptions Options => SettingsOptionsMonitor.CurrentValue;
+
+    #endregion
+
+    #region Construction
+
+    public SettingsManager(IOptionsMonitor<SettingsOptions> settingsOptionsMonitor, IServiceProvider serviceProvider)
     {
-        #region Dependencies
+        SettingsOptionsMonitor = settingsOptionsMonitor;
+        //AppInfo = serviceProvider.GetService<AppInfo>();
+    }
 
-        public IOptionsMonitor<SettingsOptions> SettingsOptionsMonitor { get; }
-        public AppInfo AppInfo { get; }
+    #endregion
 
-        public SettingsOptions Options => SettingsOptionsMonitor.CurrentValue;
+    #region Methods
 
-        #endregion
+    #region IsAutoSaveEnabled
 
-        #region Construction
-
-        public SettingsManager(IOptionsMonitor<SettingsOptions> settingsOptionsMonitor, AppInfo appInfo)
+    public bool IsAutoSaveEnabled
+    {
+        get => isAutoSaveEnabled;
+        set
         {
-            SettingsOptionsMonitor = settingsOptionsMonitor;
-            AppInfo = appInfo;
+            isAutoSaveEnabled = value;
         }
+    }
+    private bool isAutoSaveEnabled;
 
-        #endregion
+    #endregion
 
-        #region Methods
 
-        #region IsAutoSaveEnabled
+    public Task Save()
+    {
+        return Task.WhenAll(Options.Handles.Select(h => h.Set()));
+    }
 
-        public bool IsAutoSaveEnabled
+    public Task Load()
+    {
+        return Task.WhenAll(Options.Handles.Select(h => h.GetValue().AsTask()));
+    }
+
+    #endregion
+
+    public async Task StartAsync(CancellationToken cancellationToken)
+    {
+        await Load().ConfigureAwait(false);
+
+        if (Options.AutoSave)
         {
-            get => isAutoSaveEnabled;
-            set
+            foreach (var handle in Options.Handles)
             {
-                isAutoSaveEnabled = value;
+                handle.EnableAutoSave();
             }
         }
-        private bool isAutoSaveEnabled;
+    }
 
-        #endregion
-
-
-        public Task Save()
+    public async Task StopAsync(CancellationToken cancellationToken)
+    {
+        if (Options.AutoSave)
         {
-            return Task.WhenAll(Options.Handles.Select(h => h.Set()));
-        }
-
-        public Task Load()
-        {
-            return Task.WhenAll(Options.Handles.Select(h => h.GetValue().AsTask()));
-        }
-
-        #endregion
-
-        public async Task StartAsync(CancellationToken cancellationToken)
-        {
-            await Load().ConfigureAwait(false);
-
-            if (Options.AutoSave)
+            foreach (var handle in Options.Handles)
             {
-                foreach(var handle in Options.Handles)
-                {
-                    handle.EnableAutoSave();
-                }
+                handle.EnableAutoSave(enable: false);
             }
         }
 
-        public async Task StopAsync(CancellationToken cancellationToken)
+        if (Options.SaveOnExit)
         {
-            if (Options.AutoSave)
-            {
-                foreach (var handle in Options.Handles)
-                {
-                    handle.EnableAutoSave(enable: false);
-                }
-            }
-
-            if (Options.SaveOnExit)
-            {
-                await Save().ConfigureAwait(false);
-            }
+            await Save().ConfigureAwait(false);
         }
     }
 }

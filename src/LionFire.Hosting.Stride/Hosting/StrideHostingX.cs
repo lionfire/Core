@@ -1,13 +1,7 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using Stride.Core.IO;
-using Stride.Core.Serialization.Contents;
 using Stride.Core.Storage;
 using Stride.Core;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace LionFire.Hosting;
 
@@ -28,12 +22,15 @@ public static class StrideHostingX
 
         GlobalStrideServices.AddService<IDatabaseFileProviderService>(dbFileProviderService);
 
-        // Content manager
-        var Content = new ContentManager(GlobalStrideServices);
-        services.AddSingleton<ContentManager>(Content);
-        GlobalStrideServices.AddService<IContentManager>(Content);
-        GlobalStrideServices.AddService(Content);
+        #region FUTURE: Global Content manager
+        //var Content = new GlobalContentManager(GlobalStrideServices);
+        ////var Content = new ContentManager(GlobalStrideServices); No, it's not shareable due to async thread scheduling
+        //services.AddSingleton<ContentManager>(Content);
+        //GlobalStrideServices.AddService<IContentManager>(Content);
+        //GlobalStrideServices.AddService(Content);
+        #endregion
 
+        // Server only, maybe, but doesn't seem to be needed: MOVE
         //GlobalStrideServices.AddService<IGraphicsDeviceService>(new GraphicsDeviceServiceLocal(null));
 
         return services;

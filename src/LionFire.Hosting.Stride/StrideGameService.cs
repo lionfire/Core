@@ -30,8 +30,6 @@ public static class GameX
 /// </summary>
 public class StrideGameService : IHostedService
 {
-   
-
     #region Dependencies
 
     public IHostApplicationLifetime HostApplicationLifetime { get; }
