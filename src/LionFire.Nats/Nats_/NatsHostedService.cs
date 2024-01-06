@@ -9,8 +9,10 @@ public class NatsHostedService : IHostedService
     protected NatsConnection nats { get; }
     protected ILogger Logger { get; }
 
-    protected Task? responder = null;
-    protected INatsSub<string>? sub = null;
+    protected List<Task> responders = new();
+    //protected INatsSub<string>? sub = null;
+
+    protected List<IAsyncDisposable> disposables = new();
 
     public NatsHostedService(NatsConnection natsConnection, ILogger logger)
     {
@@ -25,7 +27,17 @@ public class NatsHostedService : IHostedService
 
     public async virtual Task StopAsync(CancellationToken cancellationToken)
     {
-        if (sub != null) await sub.UnsubscribeAsync();
-        if (responder != null) await responder;
+        //if (sub != null) await sub.UnsubscribeAsync();
+
+        foreach (var d in disposables)
+        {
+            await d.DisposeAsync();
+        }
+        foreach (var r in responders)
+        {
+            await r;
+        }
+
+        //if (responder != null) await responder;
     }
 }
