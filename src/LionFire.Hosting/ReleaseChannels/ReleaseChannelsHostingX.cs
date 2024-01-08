@@ -11,6 +11,7 @@ using System.Xml.Linq;
 
 namespace LionFire.Hosting;
 
+// TODO: Refactor common code between IHostBuilder and IHostApplicationBuilder
 public static class ReleaseChannelsHostingX
 {
     public static string TestReleaseChannel = "test";
@@ -104,7 +105,6 @@ public static class ReleaseChannelsHostingX
     }
     public static IHostBuilder ReleaseChannel(this IHostBuilder hostBuilder, bool reloadOnChange = true)
     {
-
         hostBuilder.ConfigureServices(s => s.AddHostedService<ReleaseChannelLogger>());
 
         var value = _EnvVar(hostBuilder, "releaseChannel");

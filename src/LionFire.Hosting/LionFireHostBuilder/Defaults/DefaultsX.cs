@@ -35,7 +35,7 @@ public static class DefaultsX
     public static ILionFireHostBuilder Defaults(this ILionFireHostBuilder lf)
     {
         lf.TrySetDefaultAppInfo();
-        lf.ConfigureServices(s => s.AddHostedService<ReleaseChannelLogger>());
+        lf.ConfigureServices(s => s.AddHostedService<AppInfoLogger>());
 
         bool reloadOnChange = true;
         bool isTest = LionFireEnvironment.IsUnitTest == true;

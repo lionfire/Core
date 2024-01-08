@@ -10,13 +10,18 @@ namespace LionFire.Hosting;
 
 public static class AppInfoHostingX
 {
+    /// <summary>
+    /// Take IHostEnvironment.ApplicationName, and use the segment before the first '.' as the key here.
+    /// </summary>
+    static Dictionary<string, (string orgDomain, string? orgName)> RecognizedNamespaces = new Dictionary<string, (string orgDomain, string? orgName)>
+    {
+        ["LionFire"] = ("lionfire.ca", null),
+        ["Valor"] = ("lionfire.ca", "LionFire"),
+        ["FireLynx"] = ("firelynx.io", null),
+    };
+
     public static AppInfo? GetDefaultAppInfo(this IHostEnvironment env)
     {
-        Dictionary<string, string> RecognizedOrgs = new Dictionary<string, string>
-        {
-            ["LionFire"] = "lionfire.ca",
-        };
-
         AppInfo? appInfo;
 
         if (env == null) return null;
@@ -26,11 +31,12 @@ public static class AppInfoHostingX
 
         var org = env.ApplicationName.Substring(0, index);
 
-        if (!RecognizedOrgs.TryGetValue(org, out var orgDomain)) return null;
+        if (!RecognizedNamespaces.TryGetValue(org, out var orgDomain)) return null;
 
-        appInfo = new AppInfo(env.ApplicationName.Substring(index + 1), org)
+        var orgName = orgDomain.orgName ?? env.ApplicationName.Substring(index + 1);
+        appInfo = new AppInfo(orgName, org)
         {
-            OrgDomain = orgDomain,
+            OrgDomain = orgDomain.orgDomain
         };
 
         return appInfo;
@@ -46,7 +52,6 @@ public static class AppInfoHostingX
         options ??= new();
 
         if (options.AutoDetect) appInfo.AutoDetect();
-      
 
         var appDirectories = new AppDirectories(appInfo);
 
