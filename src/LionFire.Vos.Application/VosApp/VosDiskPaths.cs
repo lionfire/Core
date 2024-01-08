@@ -12,6 +12,7 @@ namespace LionFire.Vos.VosApp
     public static class VosDiskPaths
     {
         private static AppInfo AppInfo => DependencyContext.Current.GetService<AppInfo>();
+        private static AppDirectories AppDirectories => DependencyContext.Current.GetService<AppDirectories>();
 
         public static string Base => @"Base";
         //public static string BasePacks { get { return @"Static\BasePacks"; } }
@@ -21,7 +22,7 @@ namespace LionFire.Vos.VosApp
 
         #region AppDir
 
-        public static string AppRoot => AppInfo.Directories.AppDir;
+        public static string AppRoot => AppDirectories.AppDir;
 
         public static string AppBase => Path.Combine(AppRoot, VosDiskPaths.Base);
 
@@ -73,18 +74,18 @@ namespace LionFire.Vos.VosApp
         #region Shared
 
 #if !UNITY
-        public static string GlobalSharedDataRoot => Path.Combine(AppInfo.Directories.CompanyProgramData, "Data");
-        public static string GlobalSharedStoresRoot => Path.Combine(AppInfo.Directories.CompanyProgramData, "Stores");
+        public static string GlobalSharedDataRoot => Path.Combine(AppDirectories.CompanyProgramData, "Data");
+        public static string GlobalSharedStoresRoot => Path.Combine(AppDirectories.CompanyProgramData, "Stores");
 #endif
 
-        public static string UserSharedDataRoot => Path.Combine(AppInfo.Directories.CompanyLocalAppDataPath, "Data");
-        public static string UserSharedStoresRoot => Path.Combine(AppInfo.Directories.CompanyLocalAppDataPath, "Stores");
+        public static string UserSharedDataRoot => Path.Combine(AppDirectories.CompanyLocalAppDataPath, "Data");
+        public static string UserSharedStoresRoot => Path.Combine(AppDirectories.CompanyLocalAppDataPath, "Stores");
 
         #endregion
 
         #region Var (CommonAppData aka Var aka ProgramData)
 
-        public static string VarRoot { get { return AppInfo.Directories.AppProgramDataDir; } } // c:\ProgramData\{CompanyFolder}\{applicationFolder}
+        public static string VarRoot { get { return AppDirectories.AppProgramDataDir; } } // c:\ProgramData\{CompanyFolder}\{applicationFolder}
 
         public static string VarBase
         {

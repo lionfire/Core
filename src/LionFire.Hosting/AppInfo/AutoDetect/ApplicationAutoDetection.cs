@@ -8,15 +8,15 @@ namespace LionFire.Applications;
 
 public static class ApplicationAutoDetection
 {
-    public static Func<string, string, string> AutoDetectAppName = (appId, orgNamespace) =>
+    public static Func<string?, string, string> AutoDetectAppName = (appId, orgNamespace) =>
     {
-        appId ??= Assembly.GetEntryAssembly().GetName().Name;
+        appId ??= Assembly.GetEntryAssembly()?.GetName().Name ?? "(null)";
 
         #region Trim leading OrgId
 
         var prefix = orgNamespace + ".";
-        if(appId.StartsWith(prefix) && appId.Length > prefix.Length) { appId = appId.Substring(prefix.Length); }
-     
+        if (appId.StartsWith(prefix) && appId.Length > prefix.Length) { appId = appId.Substring(prefix.Length); }
+
         #endregion
 
         return appId;
@@ -48,7 +48,7 @@ public static class ApplicationAutoDetection
         var dir = Path.GetDirectoryName(assembly.Location);
 
         bool foundIt = false;
-        for (; dir != null ; dir = Directory.GetParent(dir)?.FullName)
+        for (; dir != null; dir = Directory.GetParent(dir)?.FullName)
         {
             var path = Path.Combine(dir, "application.json");
             if (File.Exists(path))
@@ -61,10 +61,10 @@ public static class ApplicationAutoDetection
                         if (appInfo.AppId != null && appInfo.AppId != appId) continue;
                         foundIt = true;
                         //if (appInfo.AppId == null || appInfo.AppId == appId) { return dir; }
-                    }
-                    if (appInfo.Dir != null)
-                    {
-                        dir = Path.Combine(dir, appInfo.Dir);
+                        if (appInfo.Dir != null)
+                        {
+                            dir = Path.Combine(dir, appInfo.Dir);
+                        }
                     }
                 }
                 catch

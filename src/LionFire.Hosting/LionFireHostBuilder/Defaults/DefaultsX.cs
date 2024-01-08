@@ -1,4 +1,5 @@
-﻿using LionFire.Configuration.Hosting;
+﻿using LionFire.Applications;
+using LionFire.Configuration.Hosting;
 using LionFire.Structures.Keys;
 using LionFire.Types.Scanning;
 using Microsoft.Extensions.Configuration;
@@ -12,12 +13,30 @@ namespace LionFire.Hosting;
 
 public static class DefaultsX
 {
+    public static AppInfo? GetDefaultAppInfo(this ILionFireHostBuilder lf)
+    {
+        IHostEnvironment? env = lf.IHostApplicationBuilder?.Environment; // no IHostBuilder support
+
+        return env == null ? null : env.GetDefaultAppInfo();
+    }
+
+    public static ILionFireHostBuilder TrySetDefaultAppInfo(this ILionFireHostBuilder lf)
+    {
+        var appInfo = lf.GetDefaultAppInfo();
+
+        if (appInfo != null) { lf.AppInfo(appInfo); }
+
+        return lf;
+    }
 
     /// <summary>
     /// Add LionFire defaults for IHostBuilder
     /// </summary>
     public static ILionFireHostBuilder Defaults(this ILionFireHostBuilder lf)
     {
+        lf.TrySetDefaultAppInfo();
+        lf.ConfigureServices(s => s.AddHostedService<ReleaseChannelLogger>());
+
         bool reloadOnChange = true;
         bool isTest = LionFireEnvironment.IsUnitTest == true;
 
@@ -31,7 +50,7 @@ public static class DefaultsX
 
         builder.ConfigureHostConfiguration(config =>
         {
-            config.AddEnvironmentVariables(prefix: "DOTNET_");
+            config.AddEnvironmentVariables(prefix: "DOTNET__");
 #if REVIEW
             var args = Environment.CommandLine.Split((string?)null,StringSplitOptions.RemoveEmptyEntries);
             if (args is { Length: > 0 })
@@ -142,7 +161,7 @@ public static class DefaultsX
             }
         });
 
-#endregion
+        #endregion
 
         builder.ConfigureLogging((context, logging) =>
         {

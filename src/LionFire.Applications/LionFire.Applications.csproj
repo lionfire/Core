@@ -22,6 +22,11 @@
     <ProjectReference Include="..\LionFire.Hosting\LionFire.Hosting.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="AppInfo\Configuration\" />
+    <Folder Include="AppInfo\Hosting\" />
+  </ItemGroup>
+
 
 
 </Project>

@@ -1,4 +1,5 @@
 ﻿using LionFire.Applications;
+using LionFire.Dependencies;
 using LionFire.DependencyMachines;
 using Microsoft.Extensions.DependencyInjection;
 using System;
@@ -18,8 +19,7 @@ public static class RunServicesExtensions
 
                 c.StartFunc = (sp, ct) =>
                     {
-                        var appInfo = sp.ServiceProvider.GetRequiredService<AppInfo>();
-                        LionFireEnvironment.Directories.RunFileDirectory = Path.Combine(appInfo.Directories.CompanyProgramData, "Run");
+                        LionFireEnvironment.Directories.RunFileDirectory = Path.Combine(DependencyContext.Current.GetRequiredService<AppDirectories>().CompanyProgramData, "Run");
                         return null;
                     };
 

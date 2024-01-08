@@ -1,4 +1,5 @@
-﻿using System;
+﻿using LionFire.Dependencies;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Text;
@@ -50,7 +51,7 @@ public static class ApplicationEnvironment
         {
             if (machineGuid == null)
             {
-                var path = Path.Combine(AppInfo.Directories.CompanyProgramData, "machineid.txt");
+                var path = Path.Combine(DependencyContext.Current.GetRequiredService<AppDirectories>().CompanyProgramData, "machineid.txt");
                 string guidString;
                 Guid guid;
                 if (File.Exists(path))
@@ -72,10 +73,10 @@ public static class ApplicationEnvironment
                     machineGuid = guid;
                 }
             }
-            return machineGuid;
+            return machineGuid.Value;
         }
     }
-    private static Guid machineGuid;
+    private static Guid? machineGuid;
 
     #endregion
 }

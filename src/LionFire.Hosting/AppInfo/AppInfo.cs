@@ -13,7 +13,7 @@ public class AppInfo
 {
     #region Static
 
-    internal static AppInfo Default = new AppInfo();
+    public static AppInfo Default = new AppInfo(); // REVIEW - AutoDetectMissingValues ?
 
     /// <summary>
     /// See also: ServiceLocator.Get&lt;AppInfo&gt;()
@@ -53,10 +53,11 @@ public class AppInfo
     {
     }
 
-    public AppInfo(string appName, string orgName)
+    public AppInfo(string appName, string orgName, string? orgDomain = null)
     {
         AppName = appName;
         OrgName = orgName;
+        OrgDomain = orgDomain ?? DefaultOrgDomain;
     }
 
     #endregion
@@ -195,20 +196,20 @@ public class AppInfo
 
     #region Directories
 
-    public AppDirectories Directories
-    {
-        get
-        {
-            if (directories == null)
-            {
-                directories = new AppDirectories(this);
-                directories.Initialize();
-            }
-            return directories;
-        }
-        set => directories = value;
-    }
-    private AppDirectories directories;
+    //public AppDirectories Directories => DependencyContext.Current.GetService<AppDirectories>();
+    //{
+    //    get
+    //    {
+    //        if (directories == null)
+    //        {
+    //            directories = new AppDirectories(this);
+    //            directories.Initialize();
+    //        }
+    //        return directories;
+    //    }
+    //    set => directories = value;
+    //}
+    //private AppDirectories directories;
 
     #endregion
 

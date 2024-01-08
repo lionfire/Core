@@ -1,4 +1,6 @@
-﻿using Microsoft.Extensions.Configuration;
+﻿using LionFire.Applications;
+using LionFire.ExtensionMethods.Dumping;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using System.Threading;
@@ -25,6 +27,18 @@ public class ReleaseChannelLogger(ILogger<ReleaseChannelLogger> logger, IConfigu
         logger.LogInformation($"Release channel: {configuration["releaseChannel"]}");        
         return Task.CompletedTask;
     }
+
+    public Task StopAsync(CancellationToken cancellationToken) => Task.CompletedTask;
+}
+
+public class AppInfoLogger : IHostedService
+{
+    public AppInfoLogger(AppInfo appInfo, ILogger<AppInfoLogger> logger)
+    {
+        logger.LogInformation($"AppInfo: {appInfo.Dump()}");
+    }
+
+    public Task StartAsync(CancellationToken cancellationToken) => Task.CompletedTask;
 
     public Task StopAsync(CancellationToken cancellationToken) => Task.CompletedTask;
 }
