@@ -1,10 +1,11 @@
 ﻿using System.Threading.Tasks;
 using Orleans;
+using Orleans.Concurrency;
 
-namespace LionFire.Orleans_.AspNetCore_
+namespace LionFire.Orleans_.AspNetCore_;
+
+public interface IStorageHealthCheckGrain : IGrainWithStringKey
 {
-    public interface IStorageHealthCheckGrain : IGrainWithGuidKey
-    {
-        Task CheckAsync();
-    }
+    [ReadOnly]
+    Task CheckAsync();
 }

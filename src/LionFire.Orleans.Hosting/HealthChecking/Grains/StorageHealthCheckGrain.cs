@@ -11,7 +11,7 @@ namespace LionFire.Orleans_.AspNetCore_
     {
         private readonly IPersistentState<Guid> state;
 
-        public StorageHealthCheckGrain([PersistentState("State")] IPersistentState<Guid> state)
+        public StorageHealthCheckGrain([PersistentState("storage-health-check")] IPersistentState<Guid> state)
         {
             this.state = state;
         }

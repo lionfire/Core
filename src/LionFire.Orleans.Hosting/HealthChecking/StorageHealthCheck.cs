@@ -4,28 +4,27 @@ using System.Threading;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
 using System;
 
-namespace LionFire.Orleans_.AspNetCore_
+namespace LionFire.Orleans_.AspNetCore_;
+
+public class StorageHealthCheck : IHealthCheck
 {
-    public class StorageHealthCheck : IHealthCheck
+    private readonly IClusterClient client;
+
+    public StorageHealthCheck(IClusterClient client)
     {
-        private readonly IClusterClient client;
+        this.client = client;
+    }
 
-        public StorageHealthCheck(IClusterClient client)
+    public async Task<HealthCheckResult> CheckHealthAsync(HealthCheckContext context, CancellationToken cancellationToken = default)
+    {
+        try
         {
-            this.client = client;
+            await client.GetGrain<IStorageHealthCheckGrain>("0").CheckAsync();
         }
-
-        public async Task<HealthCheckResult> CheckHealthAsync(HealthCheckContext context, CancellationToken cancellationToken = default)
+        catch (Exception error)
         {
-            try
-            {
-                await client.GetGrain<IStorageHealthCheckGrain>(Guid.NewGuid()).CheckAsync();
-            }
-            catch (Exception error)
-            {
-                return HealthCheckResult.Unhealthy("Failed to ping the storage health check grain.", error);
-            }
-            return HealthCheckResult.Healthy();
+            return HealthCheckResult.Unhealthy("Failed to ping the storage health check grain.", error);
         }
+        return HealthCheckResult.Healthy();
     }
 }
