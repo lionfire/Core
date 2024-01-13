@@ -1,4 +1,5 @@
-﻿#nullable enable
+﻿#if UNUSED
+#nullable enable
 
 using LionFire;
 
@@ -16,3 +17,4 @@ public class FlexibleProgram : CommandLineProgram, IFlexibleProgram
         return GetOrAdd<TBuilderBuilder>(commandHierarchy);
     }
 }
+#endif

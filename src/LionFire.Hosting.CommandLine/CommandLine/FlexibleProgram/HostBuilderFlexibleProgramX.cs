@@ -1,4 +1,5 @@
-﻿#nullable enable
+﻿#if UNUSED
+#nullable enable
 using System.CommandLine;
 using System.Diagnostics;
 using System.Linq;
@@ -28,3 +29,4 @@ public static class HostBuilderFlexibleProgramX
     }
 
 }
+#endif

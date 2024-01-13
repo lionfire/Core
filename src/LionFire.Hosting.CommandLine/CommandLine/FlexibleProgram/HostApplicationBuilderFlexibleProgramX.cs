@@ -1,4 +1,5 @@
-﻿#nullable enable
+﻿#if UNUSED
+#nullable enable
 using Microsoft.Extensions.Hosting;
 using System.CommandLine;
 using LionFire.FlexObjects;
@@ -23,3 +24,4 @@ public static class HostApplicationBuilderFlexibleProgramX
         return program;
     }
 }
+#endif

@@ -33,7 +33,8 @@ public class LionFireCommandLineOptions
 
 // Supported TBuilder types:
 //  - IHostBuilder
-//  - HostApplicationBuilder
+//  - HostApplicationBuilder - TODO: change to IHostApplicationBuilder if possible
+//  - TODO: WebApplicationBuilder - (via IHostApplicationBuilder?)
 public abstract class BuilderBuilderBase<TBuilder> : IHostingBuilderBuilder<TBuilder>
 {
 
