@@ -8,6 +8,11 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\..\Internal\src\LionFire.Internal\LionFire.Internal.csproj" />
     <ProjectReference Include="..\LionFire.Hosting.CommandLine\LionFire.Hosting.CommandLine.csproj" />
   </ItemGroup>
 
