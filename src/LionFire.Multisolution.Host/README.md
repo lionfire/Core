@@ -21,7 +21,7 @@ But it saves me a lot of time.
 1. Copy `document.sample.json` somewhere on your disk, and edit it to your liking.
 2. Edit appsettings.json to point to this file in Documents:MostRecent[]
 
-### Upgrading
+### Upgrading your Nuget packages
 Start it, go to the Web UI, click the right arrow buttons to upgrade.  Done. 
 
 No fuss. No checking whether the stars are aligned enough for you to go through with the upgrade.
