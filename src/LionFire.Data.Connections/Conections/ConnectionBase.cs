@@ -1,7 +1,9 @@
 ﻿using LionFire.Data;
 using LionFire.Threading;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using System;
 using System.Diagnostics;
 using System.Threading;
@@ -34,11 +36,13 @@ public abstract class ConnectionBase<TConnectionOptions, TConcrete> : IHostedSer
         }
     }
     private TConnectionOptions options;
+    private readonly string connectionName;
+    private IOptionsMonitor<NamedConnectionOptions<TConnectionOptions>> optionsMonitor;
 
     private void OnOptionsChanged(TConnectionOptions options, TConnectionOptions oldValue)
     {
         Debug.WriteLine("TODO: Options changed");
-        
+
         if (oldValue != null && oldValue is IHasConnectionString hcs)
         {
             if (hcs.ConnectionString != ((IHasConnectionString)options).ConnectionString)
@@ -63,11 +67,17 @@ public abstract class ConnectionBase<TConnectionOptions, TConcrete> : IHostedSer
 
     protected int connectionCount = 0;
 
+    public ConnectionBase(string connectionName, IOptionsMonitor<NamedConnectionOptions<TConnectionOptions>> optionsMonitor,
+ILogger<TConcrete> logger)
 
-    public ConnectionBase(/* TODO: IOptionsMonitor */TConnectionOptions options, ILogger<TConcrete> logger)
     {
+        this.connectionName = connectionName;
+        this.optionsMonitor = optionsMonitor;
         this.logger = logger;
-        Options = options;
+
+        Options = optionsMonitor.CurrentValue.GetOptionsOrDefault(connectionName);
+
+        //string cs = configuration.GetConnectionString(connectionName);
 
         if (Options is IConnectingConnectionOptions cco && cco.AutoConnect) Connect().FireAndForget();
     }

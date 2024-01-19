@@ -4,7 +4,7 @@ using LionFire.Orleans_.Reactive_;
 using Microsoft.Extensions.Logging;
 using Orleans.Utilities;
 
-namespace LionFire.Orleans_.Collections;
+namespace LionFire.Orleans_.ObserverGrains;
 
 public class AsyncObserverGrainObserverManager<T>
 {

@@ -15,7 +15,7 @@ namespace LionFire.Data.Connections
         where TConcrete : OptionsConnectionBase<TConnectionOptions, TConcrete>
     {
         //IDisposable changeListener;
-        public OptionsConnectionBase(string connectionName, IOptionsMonitor<NamedConnectionOptions<TConnectionOptions>> options, ILogger<TConcrete> logger) : base(options.CurrentValue.GetOptionsOrDefault(connectionName), logger)
+        public OptionsConnectionBase(string connectionName, IOptionsMonitor<NamedConnectionOptions<TConnectionOptions>> options, ILogger<TConcrete> logger) : base(connectionName, options, logger)
         {
            
             //changeListener = options.OnChange((newOptions, nameOfNamedConnectionOptions) =>

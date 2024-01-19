@@ -27,7 +27,7 @@ public sealed class CouchDBConnection : ConnectionBase<CouchDBConnectionOptions,
     public MyCouchClient MyCouchClient { get; private set; }
     MyCouchClient NewCouchClient => new MyCouchClient($"{Options.DatabaseUrl}", Options.Database);
 
-    public CouchDBConnection(CouchDBConnectionOptions options, ILogger<CouchDBConnection> logger) : base(options, logger)
+    public CouchDBConnection(IOptionsMonitor<CouchDBConnectionOptions> options, ILogger<CouchDBConnection> logger) : base(options, logger)
     {
         ConnectionState = ConnectionState.NotConnected;
     }

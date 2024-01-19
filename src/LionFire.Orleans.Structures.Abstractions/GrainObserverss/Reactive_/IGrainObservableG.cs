@@ -1,6 +1,6 @@
 ﻿using LionFire.Orleans_.Reactive_;
 
-namespace LionFire.Orleans_.Collections;
+namespace LionFire.Orleans_.ObserverGrains;
 
 public interface IGrainObservableG<T> : IAddressable
 {

@@ -4,15 +4,21 @@ using Stride.Engine.Design;
 using Stride.Engine;
 using Stride.Physics;
 using Microsoft.Extensions.Logging;
+using Stride.Games;
 
 namespace  LionFire.Stride_.Runtime;
 
 public class StrideRuntimeClient : StrideRuntime
 {
+    protected override ClientOrServer ClientOrServer => ClientOrServer.Client;
+
     public StrideRuntimeClient(IServiceProvider serviceProvider, ILogger<StrideRuntimeClient> logger) : base(serviceProvider, logger)
     {
         
     }
+    protected override IGamePlatformEx CreateGamePlatform() =>
+        throw new NotImplementedException();
+        //Stride.Games.GamePlatform.Create(game);
 
     //protected override Task LoadMainScene(string? mainSceneName = null)
     //{

@@ -1,13 +1,17 @@
-﻿using Stride.Core;
-using Stride.Core.Serialization.Contents;
+﻿using Stride.Core.Serialization.Contents;
 using Stride.Engine.Design;
 using Stride.Engine;
 using Stride.Physics;
+using Microsoft.Extensions.DependencyInjection;
+using Stride.Games;
 
 namespace LionFire.Stride_.Runtime;
 
 public class StrideRuntimeServer : StrideRuntime
 {
+
+    protected override ClientOrServer ClientOrServer => ClientOrServer.Server;
+
     public StrideRuntimeServer(IServiceProvider serviceProvider, ILogger<StrideRuntimeServer> logger) : base(serviceProvider, logger)
     {
     }
@@ -18,10 +22,10 @@ public class StrideRuntimeServer : StrideRuntime
         ContentFilter = ContentManagerLoaderSettings.NewContentFilterByType()
     };
 
+    protected override IGamePlatformEx CreateGamePlatform() => ActivatorUtilities.CreateInstance<ServerGamePlatform>(ServiceProvider);
+
     //protected override async Task LoadMainScene()
     //{
-        
-
     //    Physics = new PhysicsProcessor();
     //    SceneInstance.Processors.Add(Physics);
     //}
@@ -30,6 +34,5 @@ public class StrideRuntimeServer : StrideRuntime
     //{
     //    //var result = Physics.Simulation.Raycast(start, end);
     //    //Console.WriteLine($"Performing raycast: {(result.Succeeded ? "hit" : "miss")}");
-
     //}
 }

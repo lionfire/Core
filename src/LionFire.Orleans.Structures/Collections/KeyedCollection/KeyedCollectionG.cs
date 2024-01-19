@@ -10,6 +10,7 @@ using static LionFire.Reflection.GetMethodEx;
 using static System.Runtime.InteropServices.JavaScript.JSType;
 using DynamicData;
 using Orleans.Streams;
+using LionFire.Orleans_.ObserverGrains;
 
 namespace LionFire.Orleans_.Collections;
 

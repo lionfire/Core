@@ -2,7 +2,7 @@
 using LionFire.ExtensionMethods.Cloning;
 using LionFire.FlexObjects;
 using LionFire.Orleans_;
-
+using LionFire.Orleans_.ObserverGrains;
 using LionFire.Orleans_.Reactive_;
 using LionFire.Threading;
 using Microsoft.Extensions.Logging;
@@ -23,6 +23,7 @@ public sealed class KeyedListObserverO<TKey, TItem>
     //, System.IAsyncObservable<ChangeSet<TItem, TKey>>
     , IAsyncDisposable
     where TKey : notnull
+    where TItem : notnull
 {
 
     #region Relationships
@@ -69,6 +70,9 @@ public sealed class KeyedListObserverO<TKey, TItem>
     public GrainObserverStats? Stats { get; } = new();
     public static bool UseStats { get; set; } = false;
 
+    private Lazy<ConcurrentSimpleAsyncSubject<ChangeSet<TItem, TKey>>> subject;
+
+
     RefCountAsyncDisposable? SubscriptionRefCount;
 
     public bool IsConnected => SubscriptionRefCount != null;
@@ -76,12 +80,11 @@ public sealed class KeyedListObserverO<TKey, TItem>
     public bool IsConnecting { get; set; }
     private Task? renewTask = null;
 
-    private Lazy<ConcurrentSimpleAsyncSubject<ChangeSet<TItem, TKey>>> subject;
-
     #endregion
 
     #region IAsyncObservable: SubscribeAsync
 
+    // REFACTOR: I started to extract and generalize this in GrainObserverSubscriber.
     public async ValueTask<IAsyncDisposable> SubscribeAsync(IAsyncObserver<ChangeSet<TItem, TKey>> observer)
     {
         await subject.Value.SubscribeAsync(observer);
