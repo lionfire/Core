@@ -63,6 +63,20 @@ public abstract class ConnectionBase<TConnectionOptions, TConcrete> : IHostedSer
     /// </summary>
     public string ConnectionString => (Options as IHasConnectionString)?.ConnectionString;
 
+    public string ConnectionStringSanitized
+    {
+        get
+        {
+            var connectionStringSanitized = ConnectionString;
+            var pwIndex = connectionStringSanitized.ToLowerInvariant().IndexOf("password=");
+            if (pwIndex > -1)
+            {
+                connectionStringSanitized = connectionStringSanitized.Substring(0, pwIndex) + "[redacted]";
+            }
+            return connectionStringSanitized;
+        }
+    }
+
     #endregion
 
     protected int connectionCount = 0;
@@ -83,8 +97,22 @@ ILogger<TConcrete> logger)
     }
 
     public async Task Connect(CancellationToken cancellationToken = default)
-        => await ConnectImpl(cancellationToken).WithTimeout(Options?.TimeoutMilliseconds,
-            () => throw new TimeoutException($"{this.GetType().Name}: Timed out while trying to connect. (Options: {Options?.ToString()})"));
+    {
+        try
+        {
+             await ConnectImpl(cancellationToken)
+                //.WithTimeout(Options?.TimeoutMilliseconds,
+                //() => throw new TimeoutException($"{this.GetType().Name}: Timed out while trying to connect. (Options: {Options?.ToString()})"))
+                ;
+            logger.LogInformation("Redis connected: '{name}'", connectionName);
+            
+        }
+        catch (Exception ex)
+        {
+            logger.LogError(ex, "Exception when attempting to connect on connection name '{connectionName}'", this.connectionName);
+        }
+
+    }
 
     public async Task Disconnect(CancellationToken cancellationToken = default)
    => await DisconnectImpl(cancellationToken).WithTimeout(Options?.TimeoutMilliseconds,

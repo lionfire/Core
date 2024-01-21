@@ -136,7 +136,7 @@ namespace LionFire.Redis
             #endregion
 
             isConnectionDesired = true;
-            var msg = $"[CONNECTING] Connecting to redis at {ConnectionString ?? "null"}...";
+            var msg = $"[CONNECTING] Connecting to redis at {ConnectionString[0..3] ?? "null"}...";
             if (ConnectionString == null)
             {
                 logger.LogError(msg);
@@ -146,17 +146,28 @@ namespace LionFire.Redis
             {
                 logger.LogDebug(msg);
             }
-            connectingTask = ConnectionMultiplexer.ConnectAsync(ConnectionString);
-            redis = connectingTask.Result;
-            connectingTask = null;
-            var connectionStringSanitized = ConnectionString;
-            var pwIndex = connectionStringSanitized.IndexOf("password=");
-            if (pwIndex > -1)
+            try
             {
-                connectionStringSanitized = connectionStringSanitized.Substring(0, pwIndex);
+                connectingTask = ConnectionMultiplexer.ConnectAsync(ConnectionString);
+                redis = await connectingTask;
+                connectingTask = null;
+                if (redis == null) { throw new UnreachableCodeException($"{typeof(ConnectionMultiplexer).Name} null after Connect"); }
+            }
+            catch (Exception ex)
+            {
+                logger.LogError("[FAILED] Exception connecting to redis with connection string '{connectionString}'", ConnectionStringSanitized);
+                throw;
             }
 
-            logger.LogInformation($"[connected] ...connected to redis at {connectionStringSanitized}");
+            //if (redis == null)
+            //{
+            //    logger.LogError("[FAILED] Failed to connect to redis at {ConnectionStringSanitized}", ConnectionStringSanitized);
+            //    throw new Exception("Failed to connect to redis");
+            //}
+            //else
+            //{
+            //}
+            logger.LogInformation("[connected] ...connected to redis at {connectionStringSanitized}", ConnectionStringSanitized);
         }
 
         public override async Task DisconnectImpl(CancellationToken cancellationToken = default(CancellationToken))

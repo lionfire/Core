@@ -213,6 +213,7 @@ public class AppInfo
 
     #endregion
 
+    public string CurrentDirectory => Environment.CurrentDirectory;
 
     #region AppDir
 
