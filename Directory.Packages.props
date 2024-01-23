@@ -218,6 +218,8 @@
     <!--<PackageVersion Include="Stride.Engine" Version="4.2.0.2043" />
 		<PackageVersion Include="Stride.Physics" Version="4.2.0.2043" />-->
     <PackageVersion Include="Stride.Engine" Version="4.2.0.1" />
+    <PackageVersion Include="Stride.Games" Version="4.2.0.1" />
+    <PackageVersion Include="Stride.Games.Fork" Version="4.2.0.1" />
     <PackageVersion Include="Stride.Physics" Version="4.2.0.1" />
     <PackageVersion Include="Swashbuckle.AspNetCore" Version="6.5.0" />
     <PackageVersion Include="Swordfish.NET.CollectionsV3" Version="3.3.12" />

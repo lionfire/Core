@@ -1,7 +1,6 @@
-﻿namespace LionFire.Stride.Interactive
-{
-    public class StrideInteractiveHostingX
-    {
+﻿namespace LionFire.Stride_.Interactive;
 
-    }
+public class StrideInteractiveHostingX
+{
+
 }

@@ -8,6 +8,7 @@
 	</PropertyGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\LionFire.Stride.Runtime\LionFire.Stride.Runtime.csproj" />
     <ProjectReference Include="..\LionFire.Stride.World\LionFire.Stride.World.csproj" />
   </ItemGroup>
 

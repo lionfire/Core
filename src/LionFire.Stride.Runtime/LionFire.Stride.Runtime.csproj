@@ -3,9 +3,11 @@
     <TargetFrameworks>net8.0</TargetFrameworks>
     <LangVersion>latest</LangVersion>
 		<RootNamespace>LionFire.Stride_</RootNamespace>
+		<Nullable>enable</Nullable>
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="Stride.Engine" />
+    <PackageReference Include="Stride.Games" />
     <PackageReference Include="Stride.Physics" />
   </ItemGroup>
   <ItemGroup>

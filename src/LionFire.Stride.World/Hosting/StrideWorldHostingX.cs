@@ -1,7 +1,6 @@
-﻿namespace LionFire.Stride.World
-{
-    public class StrideWorldHostingX
-    {
+﻿namespace LionFire.Stride_.World;
 
-    }
+public class StrideWorldHostingX
+{
+
 }

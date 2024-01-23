@@ -1,4 +1,30 @@
-﻿#nullable enable
+﻿// Inspired by and derived from Stride's GameBase.cs
+//
+// Stride license:
+//
+// Copyright (c) .NET Foundation and Contributors (https://dotnetfoundation.org/ & https://stride3d.net) and Silicon Studio Corp. (https://www.siliconstudio.co.jp)
+// Distributed under the MIT license. See the LICENSE.md file in the project root for more information.
+//
+// Copyright (c) 2010-2013 SharpDX - Alexandre Mutel
+// 
+// Permission is hereby granted, free of charge, to any person obtaining a copy
+// of this software and associated documentation files (the "Software"), to deal
+// in the Software without restriction, including without limitation the rights
+// to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+// copies of the Software, and to permit persons to whom the Software is
+// furnished to do so, subject to the following conditions:
+// 
+// The above copyright notice and this permission notice shall be included in
+// all copies or substantial portions of the Software.
+// 
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+// AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+// LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+// THE SOFTWARE.
+
 using LionFire.Stride_.Core;
 using LionFire.Threading;
 using Microsoft.Extensions.DependencyInjection;
@@ -13,29 +39,13 @@ using Stride.Games;
 using Stride.Games.Time;
 using Stride.Physics;
 using System.IO.IsolatedStorage;
+using ILogger = Microsoft.Extensions.Logging.ILogger;
 
 namespace LionFire.Stride_.Runtime;
 
-public interface ITypedServiceProvider
-{
-    T? GetService<T>() where T : class;
-}
-
-public interface IStrideRuntime : ITypedServiceProvider
-{
-    ContentManager Content { get; }
-    Task Load();
-    InheritingServiceRegistry StrideServices { get; }
-
-}
-
-[Flags]
-public enum ClientOrServer : byte
-{
-    Unspecified = 0,
-    Client = 1 << 1,
-    Server = 1 << 2,
-}
+/// <remarks>
+/// Based on GameBase.cs
+/// </summary>
 public abstract class StrideRuntime : IStrideRuntime
 {
 
@@ -46,14 +56,21 @@ public abstract class StrideRuntime : IStrideRuntime
     /// <summary>
     /// 
     /// </summary>
+    /// <remarks>
+    /// Available through ServiceProvider:
+    ///
+    /// ObjectDatabase ObjectDatabase { get; }
+    /// DatabaseFileProvider DatabaseFileProvider { get; }
+    /// DatabaseFileProviderService DatabaseFileProviderService { get; }
+    /// IDatabaseFileProviderService IDatabaseFileProviderService { get; }
+    /// 
+    /// </remarks>
     public IServiceProvider ServiceProvider { get; }
 
-    // Available through ServiceProvider:
-    //
-    //ObjectDatabase ObjectDatabase { get; }
-    //DatabaseFileProvider DatabaseFileProvider { get; }
-    //DatabaseFileProviderService DatabaseFileProviderService { get; }
-    //IDatabaseFileProviderService IDatabaseFileProviderService { get; }
+    //ObjectDatabase ObjectDatabase  => ServiceProvider.GetRequiredService<ObjectDatabase>();
+    /// DatabaseFileProvider DatabaseFileProvider => ServiceProvider.GetRequiredService<DatabaseFileProvider>();
+    /// DatabaseFileProviderService DatabaseFileProviderService => ServiceProvider.GetRequiredService<DatabaseFileProviderService>();
+    /// IDatabaseFileProviderService IDatabaseFileProviderService => ServiceProvider.GetRequiredService<IDatabaseFileProviderService>();
 
     #endregion
 
@@ -145,6 +162,7 @@ public abstract class StrideRuntime : IStrideRuntime
         }
         DumpContentDatabaseInfo();
     }
+
     private void DumpContentDatabaseInfo()
     {
         //var ObjectDatabase =ServiceProvider.GetRequiredService<ObjectDatabase>();
@@ -152,8 +170,6 @@ public abstract class StrideRuntime : IStrideRuntime
         var ObjectDatabase = DatabaseFileProvider.ObjectDatabase;
 
         Logger.LogInformation("Bundle directory: {bundleDirectory}", ObjectDatabase.BundleBackend.BundleDirectory);
-
-
     }
 
     #region Load
@@ -194,10 +210,13 @@ public abstract class StrideRuntime : IStrideRuntime
 
     #region Start
 
-    IGamePlatformEx gamePlatform;
+    IGamePlatformEx? gamePlatform;
     protected abstract IGamePlatformEx CreateGamePlatform();
 
     private bool isStarted = false;
+
+    protected virtual void InitGraphics() => throw new NotSupportedException("This runtime does not support graphics.");
+
     public async Task Run(GameContext? context = null)
     {
         if (isStarted) throw new AlreadyException();
@@ -218,19 +237,11 @@ public abstract class StrideRuntime : IStrideRuntime
 
         try
         {
-            if (GraphicsDeviceManager != null) {
-                // TODO temporary workaround as the engine doesn't support yet resize
-                var graphicsDeviceManagerImpl = (GraphicsDeviceManager)GraphicsDeviceManager;
-                throw new NotImplementedException("TODO: Init GameContext");
-#if TODO
-                Context.RequestedWidth = graphicsDeviceManagerImpl.PreferredBackBufferWidth;
-                Context.RequestedHeight = graphicsDeviceManagerImpl.PreferredBackBufferHeight;
-                Context.RequestedBackBufferFormat = graphicsDeviceManagerImpl.PreferredBackBufferFormat;
-                Context.RequestedDepthStencilFormat = graphicsDeviceManagerImpl.PreferredDepthStencilFormat;
-                Context.RequestedGraphicsProfile = graphicsDeviceManagerImpl.PreferredGraphicsProfile;
-                Context.DeviceCreationFlags = graphicsDeviceManagerImpl.DeviceCreationFlags;
-#endif
+            if (GraphicsDeviceManager != null)
+            {
+                InitGraphics(); // Tells Context preferred settings from Graphics Device Manager
             }
+
             gamePlatform = CreateGamePlatform();
             gamePlatform.Run(Context);
 
@@ -256,11 +267,19 @@ public abstract class StrideRuntime : IStrideRuntime
 
     protected virtual void PrepareContext()
     {
-
     }
 
 
-    private bool isEndRunRequired;
+    /// <summary>Called after the Game is created, but before <see cref="GraphicsDevice"/> is available and before LoadContent(). Reference page contains code sample.</summary>
+    protected virtual void Initialize()
+    {
+        GameSystems.Initialize();
+    }
+
+    internal virtual void LoadContentInternal()
+    {
+        GameSystems.LoadContent();
+    }
 
     /// <summary>
     /// Called after all components are initialized, before the game loop starts.
@@ -269,9 +288,83 @@ public abstract class StrideRuntime : IStrideRuntime
     {
     }
 
+    protected virtual void InitializeGraphicsBeforeRun() { }
+    internal void InitializeBeforeRun()
+    {
+        try
+        {
+            using (var profile = Profiler.Begin(GameProfilingKeys.GameInitialize))
+            {
+                // Initialize this instance and all game systems before trying to create the device.
+                Initialize();
+
+                InitializeGraphicsBeforeRun();
+
+                LoadContentInternal();
+                IsRunning = true;
+
+                BeginRun();
+
+                autoTickTimer.Reset();
+                UpdateTime.Reset(UpdateTime.Total);
+
+                // Run the first time an update
+                using (Profiler.Begin(GameProfilingKeys.GameUpdate))
+                {
+                    Update(UpdateTime);
+                }
+
+                // Unbind Graphics Context without presenting
+                EndDraw(false);
+            }
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, "Unexpected exception");
+            throw;
+        }
+    }
+
     protected virtual void EndRun()
     {
     }
+
+    private bool isEndRunRequired;
+
+    #endregion
+
+    #region IsRunning
+
+    /// <summary>
+    /// Gets a value indicating whether this instance is running.
+    /// </summary>
+    public bool IsRunning { get; private set; }
+    //public bool IsRunning => isStarted && !isFinished;
+
+    #endregion
+
+    #region Update
+
+    /// <summary>
+    /// Reference page contains links to related conceptual articles.
+    /// </summary>
+    /// <param name="gameTime">
+    /// Time passed since the last call to Update.
+    /// </param>
+    protected virtual void Update(GameTime gameTime)
+    {
+        GameSystems.Update(gameTime);
+    }
+
+    #endregion
+
+    #region Finished
+
+    private bool isFinished = false;
+
+    #endregion
+
+    #region Exit
 
     /// <summary>
     /// Gets a value indicating whether this instance is exiting.
@@ -290,82 +383,13 @@ public abstract class StrideRuntime : IStrideRuntime
 
     #endregion
 
-    internal void InitializeBeforeRun()
-    {
-        try
-        {
-            using (var profile = Profiler.Begin(GameProfilingKeys.GameInitialize))
-            {
-#if TODO
-                // Initialize this instance and all game systems before trying to create the device.
-                Initialize();
-
-                // Make sure that the device is already created
-                graphicsDeviceManager.CreateDevice();
-
-                // Gets the graphics device service
-                graphicsDeviceService = Services.GetService<IGraphicsDeviceService>();
-                if (graphicsDeviceService == null)
-                {
-                    throw new InvalidOperationException("No GraphicsDeviceService found");
-                }
-
-                // Checks the graphics device
-                if (graphicsDeviceService.GraphicsDevice == null)
-                {
-                    throw new InvalidOperationException("No GraphicsDevice found");
-                }
-
-                // Setup the graphics device if it was not already setup.
-                SetupGraphicsDeviceEvents();
-
-                // Bind Graphics Context enabling initialize to use GL API eg. SetData to texture ...etc
-                BeginDraw();
-
-                LoadContentInternal();
-#endif
-                IsRunning = true;
-
-                BeginRun();
-
-                autoTickTimer.Reset();
-                UpdateTime.Reset(UpdateTime.Total);
-
-                // Run the first time an update
-                using (Profiler.Begin(GameProfilingKeys.GameUpdate))
-                {
-                    Update(UpdateTime);
-                }
-#if TODO
-                // Unbind Graphics Context without presenting
-                EndDraw(false);
-#endif
-            }
-        }
-        catch (Exception ex)
-        {
-            Log.Error("Unexpected exception", ex);
-            throw;
-        }
-    }
-  
-    #region IsRunning
-
-    /// <summary>
-    /// Gets a value indicating whether this instance is running.
-    /// </summary>
-    public bool IsRunning { get; private set; }
-    //public bool IsRunning => isStarted && !isFinished;
-
     #endregion
 
-    #region Finished
+    #region Graphics
 
-    private bool isFinished = false;
+    protected virtual void EndDraw(bool present) { }
 
     #endregion
-
-#endregion
 
     protected virtual ContentManagerLoaderSettings CreateContentManagerLoaderSettings => new ContentManagerLoaderSettings();
 
@@ -377,7 +401,7 @@ public abstract class StrideRuntime : IStrideRuntime
     /// <summary>
     /// The total and delta time to be used for logic running in the update loop.
     /// </summary>
-    public GameTime UpdateTime { get; }
+    public GameTime UpdateTime { get; } = new();
 
     #endregion
 
@@ -390,7 +414,7 @@ public abstract class StrideRuntime : IStrideRuntime
     public GameSystemCollection GameSystems => gameSystems;
     GameSystemCollection gameSystems;
     public SceneInstance? SceneInstance { get; protected set; }
-    public PhysicsProcessor Physics { get; protected set; }
+    public PhysicsProcessor? Physics { get; protected set; }
     public IGraphicsDeviceManager? GraphicsDeviceManager { get; protected set; }
 
     #endregion

@@ -696,9 +696,9 @@ public class MultiTyped : IMultiTyped, IMultiTypable
         }
     }
 
-    public object this[Type type] { get => AsType(type); set => this.SetType(value, type); }
+    public object? this[Type type] { get => AsType(type); set => this.SetType(value, type); }
 
-    public T AsType<T>()
+    public T? AsType<T>()
         where T : class
     {
         if (typeDict == null) return null;
@@ -707,7 +707,7 @@ public class MultiTyped : IMultiTyped, IMultiTypable
     }
 
     [AotReplacement]
-    public object AsType(Type type)
+    public object? AsType(Type type)
     {
         if (typeDict == null) return null;
         if (!typeDict.ContainsKey(type)) return null;
@@ -807,9 +807,9 @@ public class MultiTyped : IMultiTyped, IMultiTypable
     public void AddType(Type T, object obj, bool allowMultiple = false)
         => typeof(MultiTyped).GetMethods()
         .Where(m => m.Name == nameof(AddType) && !m.ContainsGenericParameters).First().MakeGenericMethod(T)
-        .Invoke(this, new object[] { obj, allowMultiple });
+        .Invoke(this, [obj, allowMultiple]);
 
-    public void SetType<T>(T obj) // RENAME SetSingle
+    public void SetType<T>(T? obj) // RENAME SetSingle
         where T : class
     {
         if (obj == default(T)) { UnsetType<T>(); return; }
@@ -821,7 +821,7 @@ public class MultiTyped : IMultiTyped, IMultiTypable
     }
 
     // Non-generic version of SetType<T>
-    public void SetType(object obj, Type type) // RENAME SetSingle
+    public void SetType(object? obj, Type type) // RENAME SetSingle
     {
         if (type.IsValueType) throw new NotSupportedException("ValueType not currently supported");
         if (obj == null) { UnsetType(type); return; }
@@ -999,7 +999,7 @@ public class MultiTyped : IMultiTyped, IMultiTypable
     {
         slotType ??= GetSlotType(typeof(T));
 
-        object obj = this[slotType];
+        object? obj = this[slotType];
         if (obj != null) return (T)obj;
 
         lock (_lock)
@@ -1030,7 +1030,7 @@ public class MultiTyped : IMultiTyped, IMultiTypable
 #endif
     // Type shouldn't be allowed to be null, but this is to allow null slotType, for auto AOT method replacement, since the AOT-Compatlyzer is limited
     [AotReplacement]
-    public object AsTypeOrCreateDefault(Func<object> defaultValueFunc = null, Type slotType = null, Type type = null)
+    public object AsTypeOrCreateDefault(Func<object>? defaultValueFunc = null, Type? slotType = null, Type? type = null)
     {
         if (type == null) throw new ArgumentNullException("type");
         Type concreteType = type;
@@ -1040,7 +1040,7 @@ public class MultiTyped : IMultiTyped, IMultiTypable
 
         lock (_lock)
         {
-            object obj = this[slotType];
+            object? obj = this[slotType];
             if (obj != null) return obj;
 
             object defaultValue = defaultValueFunc != null ? defaultValueFunc() : (Activator.CreateInstance(type) ?? throw new Exception($"Failed to create {type.FullName}"));
@@ -1054,7 +1054,7 @@ public class MultiTyped : IMultiTyped, IMultiTypable
 
 
     [AotReplacement]
-    public object AsTypeOrCreateDefault(Type type /* = null */, Type slotType = null)
+    public object AsTypeOrCreateDefault(Type? type /* = null */, Type? slotType = null)
     {
         if (type == null) throw new ArgumentNullException(nameof(type));
 
