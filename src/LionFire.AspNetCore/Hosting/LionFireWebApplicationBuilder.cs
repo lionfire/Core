@@ -73,7 +73,7 @@ public class LionFireWebApplicationBuilder : HostApplicationSubBuilder, ILionFir
 
     public ILionFireHostBuilder ForIHostApplicationBuilder(Action<IHostApplicationBuilder> action)
     {
-        ForHostApplicationBuilder(action);
+        action(WebApplicationBuilder);
         return this;
     }
 }

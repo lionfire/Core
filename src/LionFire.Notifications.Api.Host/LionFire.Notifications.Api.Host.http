@@ -1,0 +1,6 @@
+@LionFire.Notifications.Api.Host_HostAddress = http://localhost:5067
+
+GET {{LionFire.Notifications.Api.Host_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
