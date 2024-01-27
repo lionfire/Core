@@ -12,5 +12,7 @@ public interface IStrideRuntime : ITypedServiceProvider, IHostedService
     InheritingServiceRegistry StrideServices { get; }
 
     CancellationToken IsStarted { get;}
+
+    Action RunCallback { get; set; }
 }
 

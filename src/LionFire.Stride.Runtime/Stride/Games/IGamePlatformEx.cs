@@ -1,4 +1,5 @@
 ﻿
+
 namespace Stride.Games;
 
 public interface IGamePlatformEx : IGamePlatform
@@ -7,4 +8,5 @@ public interface IGamePlatformEx : IGamePlatform
     void Exit();
 
     bool IsBlockingRun { get; }
+
 }

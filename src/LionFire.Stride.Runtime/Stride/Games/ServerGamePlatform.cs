@@ -1,5 +1,6 @@
 ﻿using LionFire;
 using Stride.Core;
+using System.Threading;
 
 namespace Stride.Games;
 
@@ -30,11 +31,49 @@ public class ServerGamePlatform : ReferenceBase, IGamePlatformEx
     }
 
     public bool IsBlockingRun { get; set; } = true;
+
+    internal Action InitCallback;
+
+    public Action RunCallback;
+
+    internal Action ExitCallback;
+    internal bool Exiting;
+
     [Blocking]
-    public void Run(GameContext gameContext)
+    public async void Run(GameContext gameContext)
     {
-        throw new NotImplementedException();
+        // Initialize the init callback
+        //InitCallback();
+
+        var context = gameContext;
+        if (context.IsUserManagingRun)
+        {
+            context.RunCallback = RunCallback;
+            context.ExitCallback = ExitCallback;
+        }
+        else
+        {
+            try
+            {
+                while (true)
+                {
+                    await PeriodicTimer.WaitForNextTickAsync();
+                    if (Exiting)
+                    {
+                        Destroy();
+                        return;
+                    }
+
+                    RunCallback();
+                }
+            }
+            finally
+            {
+                ExitCallback?.Invoke();
+            }
+        }
     }
+    PeriodicTimer PeriodicTimer = new PeriodicTimer(TimeSpan.FromMilliseconds(1.0));
 
     public void Exit()
     {

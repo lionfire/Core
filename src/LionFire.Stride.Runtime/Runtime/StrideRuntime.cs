@@ -83,6 +83,7 @@ public abstract class StrideRuntime : IStrideRuntime
 
     #region Configuration
 
+    public Action RunCallback { get; set; }
     protected abstract ClientOrServer ClientOrServer { get; }
 
     protected ContentManagerLoaderSettings loadSettings;
@@ -218,7 +219,8 @@ public abstract class StrideRuntime : IStrideRuntime
 
     protected virtual void InitGraphics() => throw new NotSupportedException("This runtime does not support graphics.");
 
-    public async Task Run(GameContext? context = null)
+
+    public async Task PrepareToRun(GameContext? context = null)
     {
         if (isStarted) throw new AlreadyException();
         isStarted = true;
@@ -235,15 +237,21 @@ public abstract class StrideRuntime : IStrideRuntime
 
         Context = context ??= GameContextFactory.NewGameContext(AppContextType);
         PrepareContext();
+        if (GraphicsDeviceManager != null)
+        {
+            InitGraphics(); // Tells Context preferred settings from Graphics Device Manager
+        }
+        gamePlatform = CreateGamePlatform();
+    }
 
+    public async Task Run(GameContext? context = null)
+    {
         try
         {
-            if (GraphicsDeviceManager != null)
+            if (gamePlatform is ServerGamePlatform serverGamePlatform)
             {
-                InitGraphics(); // Tells Context preferred settings from Graphics Device Manager
+                serverGamePlatform.RunCallback = this.RunCallback;
             }
-
-            gamePlatform = CreateGamePlatform();
             gamePlatform.Run(Context);
 
             if (gamePlatform.IsBlockingRun)
@@ -441,10 +449,24 @@ public abstract class StrideRuntime : IStrideRuntime
     {
         await Load();
         cts.Cancel();
+        await PrepareToRun();
+        runTask = Run();
+        if (gamePlatform!.IsBlockingRun)
+        {
+            await runTask;
+        }
+
     }
+    Task runTask;
 
     public Task StopAsync(CancellationToken cancellationToken) => Task.CompletedTask;
 
     #endregion
 }
 
+public class StrideServerGame : GameBase
+{
+    public override void ConfirmRenderingSettings(bool gameCreation)
+    {
+    }
+}
