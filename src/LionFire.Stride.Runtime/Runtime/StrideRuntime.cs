@@ -39,6 +39,7 @@ using Stride.Games;
 using Stride.Games.Time;
 using Stride.Physics;
 using System.IO.IsolatedStorage;
+using System.Threading;
 using ILogger = Microsoft.Extensions.Logging.ILogger;
 
 namespace LionFire.Stride_.Runtime;
@@ -428,6 +429,21 @@ public abstract class StrideRuntime : IStrideRuntime
         if (o != null) return o;
         return ServiceProvider.GetService<T>();
     }
+
+    #endregion
+
+    #region IHostedService
+
+    public CancellationToken IsStarted => cts.Token;
+    CancellationTokenSource cts = new();
+
+    public async Task StartAsync(CancellationToken cancellationToken)
+    {
+        await Load();
+        cts.Cancel();
+    }
+
+    public Task StopAsync(CancellationToken cancellationToken) => Task.CompletedTask;
 
     #endregion
 }
