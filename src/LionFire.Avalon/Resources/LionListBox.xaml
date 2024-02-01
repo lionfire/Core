@@ -1,0 +1,69 @@
+﻿<ResourceDictionary 
+  xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+  xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" 
+    xmlns:sys="clr-namespace:System;assembly=mscorlib"
+    xmlns:lfaL="clr-namespace:LionFire.Avalon"
+    xmlns:lfa="clr-namespace:LionFire.Avalon;assembly=LionFire.Avalon"
+    xmlns:black="clr-namespace:Blacklight.Controls;assembly=Blacklight.WPFControls"
+    >
+
+    <ResourceDictionary.MergedDictionaries>
+        <lfa:SharedResourceDictionary Source="pack://application:,,,/LionFire.Avalon;component/Resources/Text.xaml"/>
+        <lfa:SharedResourceDictionary Source="pack://application:,,,/LionFire.Avalon;component/Resources/Fonts.xaml"/>
+        <lfa:SharedResourceDictionary Source="pack://application:,,,/LionFire.Avalon;component/Resources/Palette.xaml"/>
+        <!--<lfa:SharedResourceDictionary Source="pack://application:,,,/LionFire.Avalon;component/Themes/LionButtons.Generic.xaml"/>-->
+    </ResourceDictionary.MergedDictionaries>
+
+    <CornerRadius x:Key="HighlightCornerRadius">9</CornerRadius>
+    <Thickness x:Key="HighlightMargin">0</Thickness>
+    <Thickness x:Key="HighlightBorderThickness">1.5</Thickness>
+    <SolidColorBrush x:Key="HighlightBorderBrush" Color="White"/>
+
+    <CornerRadius x:Key="HoverCornerRadius">9</CornerRadius>
+    <Thickness x:Key="HoverMargin">0</Thickness>
+    <Thickness x:Key="HoverBorderThickness">0</Thickness>
+    <SolidColorBrush x:Key="HoverBorderBrush" Color="White"/>
+
+    <LinearGradientBrush x:Key="HighlightBG"  StartPoint="0 0" EndPoint="0 1">
+        <GradientStop Offset="0" Color="#60FFFFFF"/>
+        <!--<GradientStop Offset="0.2" Color="#60ffffff"/>-->
+        <GradientStop Offset="0.5" Color="#20FFFFFF"/>
+        <GradientStop Offset="0.9" Color="#60FFFFFF"/>
+    </LinearGradientBrush>
+
+    <LinearGradientBrush x:Key="HoverBG"  StartPoint="0 0" EndPoint="0 1">
+        <GradientStop Offset="0" Color="#900000FF"/>
+        <!--<GradientStop Offset="0.2" Color="#60ffffff"/>-->
+        <!--<GradientStop Offset="0.7" Color="#20888888"/>-->
+        <GradientStop Offset="0.9" Color="#800000FF"/>
+    </LinearGradientBrush>
+
+    <ControlTemplate TargetType="ContentControl" x:Key="DefaultHighlightTemplate">
+        <Border 
+            IsHitTestVisible="False"
+            BorderBrush="{StaticResource HighlightBorderBrush}" 
+                BorderThickness="{DynamicResource HighlightBorderThickness}" 
+                x:Name="HighlightRoot"  
+                CornerRadius="{DynamicResource HighlightCornerRadius}" 
+            Margin="{DynamicResource HighlightMargin}" Background="{DynamicResource HighlightBG}">
+        </Border>
+    </ControlTemplate>
+
+    <ControlTemplate x:Key="ButtonHighlightTemplate" TargetType="ContentControl">
+        <Border BorderBrush="{StaticResource HighlightBorderBrush}" BorderThickness="{DynamicResource HighlightBorderThickness}" x:Name="HighlightRoot"  CornerRadius="{DynamicResource HighlightCornerRadius}" Margin="{DynamicResource HighlightMargin}" Background="{DynamicResource HighlightBG}">
+
+            <!--<lfa:LionButton HorizontalAlignment="Right" Width="20" CornerRadius="4" Padding="1" Margin="1" Command="{Binding Select}" FontWeight="Bold" FontSize="18" Foreground="White" Background="Green">&gt;</lfa:LionButton>-->
+        </Border>
+    </ControlTemplate>
+
+    <ControlTemplate x:Key="ButtonHoverTemplate" TargetType="ContentControl">
+        <Grid>
+            <Border BorderBrush="{StaticResource HoverBorderBrush}" BorderThickness="{DynamicResource HoverBorderThickness}" x:Name="HoverRoot"  CornerRadius="{DynamicResource HoverCornerRadius}" Margin="{DynamicResource HoverMargin}" Background="{DynamicResource HoverBG}" IsHitTestVisible="False">
+            </Border>
+
+            <lfa:LionButton x:Name="SelectButton" HorizontalAlignment="Right" Width="20" CornerRadius="4" Padding="0" Margin="0 2" Command="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=lfa:LionListBox}, Path=SelectCommand}" FontWeight="Bold" FontSize="16" Foreground="White" Background="Transparent" BorderThickness="0" HoverBackground="Green">&gt;</lfa:LionButton>
+        </Grid>
+    </ControlTemplate>
+
+
+</ResourceDictionary>

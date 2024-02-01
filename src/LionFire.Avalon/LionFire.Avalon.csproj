@@ -1,0 +1,639 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>8.0.30703</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{0BDD0A9C-FC25-4A88-88EE-EA0A1EC8F810}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>LionFire.Avalon</RootNamespace>
+    <AssemblyName>LionFire.Avalon</AssemblyName>
+    <TargetFrameworkVersion>v4.8</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <TargetFrameworkProfile />
+    <BaseIntermediateOutputPath>obj\</BaseIntermediateOutputPath>
+	
+		<BaseOutputPath>$(BuildRoot)\bin\$(Configuration)\$(Platform)\$(MSBuildProjectName)\</BaseOutputPath>
+		<OutputPath>$(BuildRoot)\bin\$(Configuration)\$(Platform)\$(MSBuildProjectName)\</OutputPath>
+    <!--<BaseOutputPath>$(BuildRoot)\bin\$(Configuration)\$(Platform)\$(MSBuildProjectName)\</BaseOutputPath>-->
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <BaseIntermediateOutputPath>obj\</BaseIntermediateOutputPath>
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <!-- <OutputPath>..\..\..\Bin\Debug\</OutputPath>-->
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <Prefer32Bit>false</Prefer32Bit>
+    <LangVersion>8.0</LangVersion>
+    <!--<IntermediateOutputPath>C:\Users\ja\AppData\Local\Temp\vsEB0C.tmp\Debug\</IntermediateOutputPath>-->
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <!-- <OutputPath>..\..\..\bin\</OutputPath>-->
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <Prefer32Bit>false</Prefer32Bit>
+    <LangVersion>8.0</LangVersion>
+    <IntermediateOutputPath>C:\Users\ja\AppData\Local\Temp\vsEB0C.tmp\Release\</IntermediateOutputPath>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x86'">
+    <DebugSymbols>true</DebugSymbols>
+    <!-- <OutputPath>..\..\Bin\Debug\</OutputPath>-->
+    <DefineConstants>TRACE;DEBUG</DefineConstants>
+    <DebugType>full</DebugType>
+    <PlatformTarget>x86</PlatformTarget>
+    <CodeAnalysisLogFile>bin\Debug\LionFire.Avalon.dll.CodeAnalysisLog.xml</CodeAnalysisLogFile>
+    <CodeAnalysisInputAssembly>bin\x86\Debug\LionFire.Avalon.dll</CodeAnalysisInputAssembly>
+    <CodeAnalysisUseTypeNameInSuppression>true</CodeAnalysisUseTypeNameInSuppression>
+    <CodeAnalysisModuleSuppressionsFile>GlobalSuppressions.cs</CodeAnalysisModuleSuppressionsFile>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+    <CodeAnalysisRuleSetDirectories>;C:\Program Files (x86)\Microsoft Visual Studio 10.0\Team Tools\Static Analysis Tools\\Rule Sets</CodeAnalysisRuleSetDirectories>
+    <CodeAnalysisIgnoreBuiltInRuleSets>false</CodeAnalysisIgnoreBuiltInRuleSets>
+    <CodeAnalysisRuleDirectories>;C:\Program Files (x86)\Microsoft Visual Studio 10.0\Team Tools\Static Analysis Tools\FxCop\\Rules</CodeAnalysisRuleDirectories>
+    <CodeAnalysisIgnoreBuiltInRules>false</CodeAnalysisIgnoreBuiltInRules>
+    <Prefer32Bit>false</Prefer32Bit>
+    <Optimize>true</Optimize>
+    <WarningsAsErrors>0108</WarningsAsErrors>
+    <LangVersion>8.0</LangVersion>
+    <!-- <IntermediateOutputPath>C:\Users\ja\AppData\Local\Temp\vsEB0C.tmp\x86\Debug\</IntermediateOutputPath>-->
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|x86'">
+    <!-- <OutputPath>..\..\Bin\Release\</OutputPath>-->
+    <DefineConstants>
+    </DefineConstants>
+    <Optimize>true</Optimize>
+    <DebugType>pdbonly</DebugType>
+    <PlatformTarget>x86</PlatformTarget>
+    <CodeAnalysisLogFile>bin\Release\LionFire.Avalon.dll.CodeAnalysisLog.xml</CodeAnalysisLogFile>
+    <CodeAnalysisInputAssembly>bin\x86\Release\LionFire.Avalon.dll</CodeAnalysisInputAssembly>
+    <CodeAnalysisUseTypeNameInSuppression>true</CodeAnalysisUseTypeNameInSuppression>
+    <CodeAnalysisModuleSuppressionsFile>GlobalSuppressions.cs</CodeAnalysisModuleSuppressionsFile>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+    <CodeAnalysisRuleSetDirectories>;C:\Program Files (x86)\Microsoft Visual Studio 10.0\Team Tools\Static Analysis Tools\\Rule Sets</CodeAnalysisRuleSetDirectories>
+    <CodeAnalysisIgnoreBuiltInRuleSets>false</CodeAnalysisIgnoreBuiltInRuleSets>
+    <CodeAnalysisRuleDirectories>;C:\Program Files (x86)\Microsoft Visual Studio 10.0\Team Tools\Static Analysis Tools\FxCop\\Rules</CodeAnalysisRuleDirectories>
+    <CodeAnalysisIgnoreBuiltInRules>false</CodeAnalysisIgnoreBuiltInRules>
+    <WarningsAsErrors>0108</WarningsAsErrors>
+    <Prefer32Bit>false</Prefer32Bit>
+    <LangVersion>8.0</LangVersion>
+    <IntermediateOutputPath>C:\Users\ja\AppData\Local\Temp\vsEB0C.tmp\x86\Release\</IntermediateOutputPath>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="AppUpdate, Version=1.0.0.1, Culture=neutral, PublicKeyToken=d1f1d1f19f9e5a56, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\Valor\Lib\NAppUpdate\0.2.1-j\AppUpdate.dll</HintPath>
+    </Reference>
+    <Reference Include="AvalonDock, Version=1.2.2691.0, Culture=neutral, PublicKeyToken=85a1e0ada7ec13e4, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\Valor\Lib\WPF\AvalonDock\AvalonDock.dll</HintPath>
+    </Reference>
+    <Reference Include="Aviad.WPF.Controls">
+      <HintPath>..\..\..\Valor\Lib\WPF\Aviad WPF Controls\Aviad.WPF.Controls.dll</HintPath>
+    </Reference>
+    <Reference Include="Blacklight.WPFControls, Version=4.1.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\Valor\Lib\WPF\Blacklight\4.2 WPF\CLR40\Release\Blacklight.WPFControls.dll</HintPath>
+    </Reference>
+    <Reference Include="DynamicDataDisplay">
+      <HintPath>..\..\..\Valor\Lib\WPF\D3\Current\Release\DynamicDataDisplay.dll</HintPath>
+    </Reference>
+    <Reference Include="J832.Common">
+      <HintPath>..\..\..\Valor\Lib\J832 BagOTricks\J832.Common.dll</HintPath>
+    </Reference>
+    <Reference Include="J832.Wpf.BagOTricksLib">
+      <HintPath>..\..\..\Valor\Lib\J832 BagOTricks\J832.Wpf.BagOTricksLib.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Practices.Prism, Version=4.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\Valor\Lib\Microsoft\Practices\Microsoft.Practices.Prism.dll</HintPath>
+    </Reference>
+    <Reference Include="Odyssey, Version=1.4.22.36909, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\Valor\Lib\WPF\Odyssey\Odyssey.dll</HintPath>
+    </Reference>
+    <Reference Include="PixelLab.Common, Version=5.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\Valor\Lib\WPF\Bot\Release\PixelLab.Common.dll</HintPath>
+    </Reference>
+    <Reference Include="PixelLab.Core, Version=5.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\Valor\Lib\WPF\Bot\Release\PixelLab.Core.dll</HintPath>
+    </Reference>
+    <Reference Include="PresentationCore" />
+    <Reference Include="PresentationFramework" />
+    <Reference Include="PresentationFramework.Aero" />
+    <Reference Include="System" />
+    <Reference Include="System.Activities.Presentation" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Reactive, Version=1.1.11111.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\Valor\Lib\Microsoft\Reactive\Current\.NETFramework\v4.0\System.Reactive.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Windows.Controls.WpfPropertyGrid">
+      <HintPath>..\..\..\Valor\Lib\WPF\WPG\Current\Release\System.Windows.Controls.WpfPropertyGrid.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Windows.Forms" />
+    <Reference Include="System.Windows.Interactivity, Version=4.5.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\Valor\Lib\Microsoft\Blend\v4.5\System.Windows.Interactivity.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Xaml" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Xml" />
+    <Reference Include="Transitionals, Version=1.2.0.0, Culture=neutral, PublicKeyToken=4747a3d6bcb35c80, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\Valor\Lib\WPF\Transitionals\14784 CLR40\Transitionals.dll</HintPath>
+    </Reference>
+    <Reference Include="UIAutomationProvider" />
+    <Reference Include="WindowsBase" />
+    <Reference Include="WindowsFormsIntegration" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Adorners\FrameworkElementAdorner.cs" />
+    <Compile Include="Alias.cs" />
+    <Compile Include="AssemblyInitializer.cs" />
+    <Compile Include="Charting\ChartController.cs" />
+    <Compile Include="Controls\AnimatedPanes.cs" />
+    <Compile Include="Controls\FlagsWrapPanel.xaml.cs">
+      <DependentUpon>FlagsWrapPanel.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Controls\FlagWidget.xaml.cs">
+      <DependentUpon>FlagWidget.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Controls\FractionSelector.xaml.cs">
+      <DependentUpon>FractionSelector.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Controls\TimeSpanSelector.xaml.cs">
+      <DependentUpon>TimeSpanSelector.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Controls\DayTimeSelector.xaml.cs">
+      <DependentUpon>DayTimeSelector.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Converters\BoolToVisibilityConverter.cs" />
+    <Compile Include="Converters\CaptionProviderConverter.cs" />
+    <Compile Include="Converters\ColorConverter.cs" />
+    <Compile Include="Converters\HlsConverter.cs" />
+    <Compile Include="Converters\HsvConverter.cs" />
+    <Compile Include="Converters\LionColor.cs" />
+    <Compile Include="Converters\OrientationInverter.cs" />
+    <Compile Include="Designer\DesignerUtils.cs" />
+    <Compile Include="FadeTrimming.cs" />
+    <Compile Include="Grids\GridAnimationBehavior.cs" />
+    <Compile Include="Grids\GridLengthAnimation.cs" />
+    <Compile Include="IEnumerable.cs" />
+    <Compile Include="Shell\DataContextTypeAttribute.cs" />
+    <Compile Include="Shell\Launcher.cs" />
+    <Compile Include="Shell\AssetVMBase.cs" />
+    <Compile Include="Behaviors\MouseWheelIncrementer.cs" />
+    <Compile Include="Buttons\LionToggleButton.cs" />
+    <Compile Include="Buttons\LionButton.cs" />
+    <Compile Include="Charting\ChartHostPanel.xaml.cs">
+      <DependentUpon>ChartHostPanel.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Collections\BindableCollection.cs" />
+    <Compile Include="Collections\CollectionPropertiesView.xaml.cs">
+      <DependentUpon>CollectionPropertiesView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="ColorUtils.cs" />
+    <Compile Include="Commands\DelegateCommand.cs" />
+    <Compile Include="Controls\ClippingBorder.cs" />
+    <Compile Include="Controls\RadialPanel.cs" />
+    <Compile Include="Controls\CueBannerService.cs" />
+    <Compile Include="Converters\BooleanPairToVisibilityConverter.cs" />
+    <Compile Include="Converters\BooleanToVisibilityInverseConverter.cs" />
+    <Compile Include="Converters\MultiplyConverter.cs" />
+    <Compile Include="Converters\NonnullToBooleanConverter.cs" />
+    <Compile Include="Converters\NonzeroToVisibilityConverter.cs" />
+    <Compile Include="EditableTextBlock.xaml.cs" />
+    <Compile Include="Events\DependencyPropertyExtensions.cs" />
+    <Compile Include="FluidWrapPanel\FluidLayoutManager.cs" />
+    <Compile Include="FluidWrapPanel\FluidMouseDragBehavior.cs" />
+    <Compile Include="FluidWrapPanel\FluidWrapPanel.cs" />
+    <Compile Include="FluidWrapPanel\IFluidItem.cs" />
+    <Compile Include="Geometry\CogwheelShape.cs" />
+    <Compile Include="Geometry\GradientMode.cs" />
+    <Compile Include="Geometry\GradientPath.cs" />
+    <Compile Include="Geometry\PieCharting\BaseWPFHelpers.cs" />
+    <Compile Include="Geometry\PieCharting\PieChart\ColourConverter.cs" />
+    <Compile Include="Geometry\PieCharting\PieChart\IColorSelector.cs" />
+    <Compile Include="Geometry\PieCharting\PieChart\IndexedColourSelector.cs" />
+    <Compile Include="Geometry\PieCharting\PieChart\Legend.xaml.cs">
+      <DependentUpon>Legend.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Geometry\PieCharting\PieChart\LegendConverter.cs" />
+    <Compile Include="Geometry\PieCharting\PieChart\PieChartLayout.xaml.cs">
+      <DependentUpon>PieChartLayout.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Geometry\PieCharting\PieChart\PiePlotter.xaml.cs">
+      <DependentUpon>PiePlotter.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Geometry\PieCharting\Shapes\PiePiece.cs" />
+    <Compile Include="Geometry\PieCharting\Util\FormattingConverter.cs" />
+    <Compile Include="Geometry\PieCharting\Util\Utils.cs" />
+    <Compile Include="Geometry\PolygonShape.cs" />
+    <Compile Include="ComboBox\LionComboBox.xaml.cs">
+      <DependentUpon>LionComboBox.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="OutlookBar\LionOutlookBar.xaml.cs">
+      <DependentUpon>LionOutlookBar.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Shell\LionFireWindowsApplication.cs" />
+    <Compile Include="Shell\ShellCommands.cs" />
+    <Compile Include="Shell\SplashWindow.xaml.cs">
+      <DependentUpon>SplashWindow.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Transitions\FlipTransition.cs" />
+    <Compile Include="Transitions\Transition.cs" />
+    <Compile Include="TreeViews\TreeListView\Collection.cs" />
+    <Compile Include="TreeViews\TreeListView\Converters.cs" />
+    <Compile Include="TreeViews\TreeListView\ITreeModel.cs" />
+    <Compile Include="TreeViews\TreeListView\RowExpander.cs" />
+    <Compile Include="TreeViews\TreeListView\TreeList.cs" />
+    <Compile Include="TreeViews\TreeListView\TreeListItem.cs" />
+    <Compile Include="TreeViews\TreeListView\TreeNode.cs" />
+    <Compile Include="Vos\VobListView.xaml.cs">
+      <DependentUpon>VobListView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Vos\VosExplorer.xaml.cs">
+      <DependentUpon>VosExplorer.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Windowing\AppBar\AppBarInterop.cs" />
+    <Compile Include="Windowing\AppBar\AppBarWindow.xaml.cs">
+      <DependentUpon>AppBarWindow.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Windowing\Messages\MToggleAppMenu.cs" />
+    <Compile Include="Windowing\WindowInterop.cs" />
+    <Compile Include="Windowing\WindowResizer.cs" />
+    <Compile Include="Windowing\WindowSettings.cs" />
+    <Compile Include="Windowing\WindowUtils.cs" />
+    <Compile Include="WinForms\WpfScreen.cs" />
+    <Compile Include="WpfAlerter.cs" />
+    <Compile Include="INotifyClosed.cs" />
+    <Compile Include="LocalProcessMonitorPanel.xaml.cs">
+      <DependentUpon>LocalProcessMonitorPanel.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Logging\LionLogPanel.xaml.cs">
+      <DependentUpon>LionLogPanel.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Resolution.cs" />
+    <Compile Include="SharedResourceDictionary.cs" />
+    <Compile Include="Shell\AlertAdorner.xaml.cs">
+      <DependentUpon>AlertAdorner.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="StaticApplicationResource.cs" />
+    <Compile Include="Subwindowing\Subwindow.xaml.cs">
+      <DependentUpon>Subwindow.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Subwindowing\SubwindowCanvas.xaml.cs">
+      <DependentUpon>SubwindowCanvas.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Tabs\LionListBox.xaml.cs">
+      <DependentUpon>LionListBox.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Tabs\LionTabControl.xaml.cs">
+      <DependentUpon>LionTabControl.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\DetailViewProvider.cs" />
+    <Compile Include="Views\IDetailViewProvider.cs" />
+    <Compile Include="Views\MasterDetailDockPanel.cs" />
+    <Compile Include="Views\ObjectView.xaml.cs">
+      <DependentUpon>ObjectView.xaml</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Views\ViewTypeRegistry.cs" />
+    <Compile Include="Widgets\WidgetHostBar.xaml.cs">
+      <DependentUpon>WidgetHostBar.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Widgets\WidgetHost.xaml.cs">
+      <DependentUpon>WidgetHost.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Windowing\FullScreenShellWindow.xaml.cs">
+      <DependentUpon>FullScreenShellWindow.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Shell\IControllable.cs" />
+    <Compile Include="Shell\WpfLionFireShell.xaml.cs">
+      <DependentUpon>WpfLionFireShell.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Shell\ShellContentPresenter.xaml.cs">
+      <DependentUpon>ShellContentPresenter.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Shell\ShellPresenterAttribute.cs" />
+    <Compile Include="Windowing\ShellWindow.xaml.cs">
+      <DependentUpon>ShellWindow.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Windowing\ShellWindowBase.cs" />
+    <Compile Include="Windowing\WindowBar.xaml.cs">
+      <DependentUpon>WindowBar.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="WpfPropertyGrid.cs" />
+    <Compile Include="WPF\DesignTimeResourceDictionary.cs" />
+    <Compile Include="WPF\FocusUtils.cs" />
+    <Compile Include="WPF\LogicalTreeExtensions.cs" />
+    <Compile Include="WPF\TextBoxHandlers.cs" />
+    <Compile Include="WPF\VisualTreeHelper2.cs" />
+    <Compile Include="ZapGrid\ZapGridPanel.xaml.cs">
+      <DependentUpon>ZapGridPanel.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Zap\ZapTabControl.cs" />
+    <Compile Include="Zap\LionZapScroller.xaml.cs">
+      <DependentUpon>LionZapScroller.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Zap\ZapCommandItem.cs" />
+    <Compile Include="Zap\ZapDecorator.cs" />
+    <Compile Include="Zap\ZapPanel.cs" />
+    <Compile Include="Zap\ZapScroller.cs" />
+    <Compile Include="ZoomPanView\ZoomPanView.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <Page Include="Charting\ChartHostPanel.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Controls\FlagsWrapPanel.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Controls\FlagWidget.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Controls\FractionSelector.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Controls\TimeSpanSelector.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Controls\DayTimeSelector.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="EditableTextBlock.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Generic.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Geometry\PieCharting\PieChart\Legend.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Geometry\PieCharting\PieChart\PieChartLayout.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Geometry\PieCharting\PieChart\PiePlotter.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="LocalProcessMonitorPanel.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Resource Include="Resources\Colours.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Resource>
+    <Resource Include="Resources\Windowing.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Resource>
+    <Page Include="Logging\LionLogPanel.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Resource Include="Resources\LionListBox.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Resource>
+    <Resource Include="Resources\Expanders.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Resource>
+    <Resource Include="Resources\Scrollbar.xaml">
+      <SubType>Designer</SubType>
+    </Resource>
+    <Resource Include="Resources\ListBox.Blend.xaml">
+      <SubType>Designer</SubType>
+    </Resource>
+    <Page Include="ComboBox\LionComboBox.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="OutlookBar\LionOutlookBar.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Resource Include="Resources\DateTime.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Resource>
+    <Page Include="Resources\PathShapes.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Shell\AlertAdorner.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Shell\SplashWindow.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Themes\LionButtons.Generic.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="TreeViews\TreeListView\Generic.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Vos\VobListView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Vos\VosExplorer.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Windowing\AppBar\AppBarWindow.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Windowing\WindowBar.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="ZapGrid\ZapGridPanel.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Zap\LionZapScroller.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Resource Include="Resources\Text.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Resource>
+    <Resource Include="Resources\Buttons.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Resource>
+    <Resource Include="Resources\GelButton.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Resource>
+    <Resource Include="Resources\JButton.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Resource>
+    <Resource Include="Resources\RoundedButton.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Resource>
+    <Resource Include="Resources\Palette.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Resource>
+    <Resource Include="Resources\LionButtons.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Resource>
+    <Page Include="Resources\Fonts.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Themes\ZapGeneric.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Subwindowing\Subwindow.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Subwindowing\SubwindowCanvas.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Tabs\LionListBox.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Tabs\LionTabControl.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Themes\generic.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Views\ObjectView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Windowing\FullScreenShellWindow.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+  </ItemGroup>
+  <ItemGroup>
+    <Page Include="Windowing\ShellWindow.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="app.config" />
+    <None Include="Shell\WpfLionFireShell.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="StartupScript.py">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <Page Include="Shell\ShellContentPresenter.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Resources\GlassButton.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Resource>
+  </ItemGroup>
+  <ItemGroup>
+    <Page Include="Widgets\WidgetHost.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+  </ItemGroup>
+  <ItemGroup>
+    <Page Include="Widgets\WidgetHostBar.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+  </ItemGroup>
+  <ItemGroup>
+    <Page Include="Collections\CollectionPropertiesView.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Resources\default-lfa.xaml">
+      <SubType>Designer</SubType>
+    </Resource>
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Licensing\LionFire.Avalon-License.txt">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Features\Licensing\" />
+    <Folder Include="ListBox\" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\..\valor\Dycen\Lionfire.Utility\LionFire.Utility.csproj">
+      <Project>{10df87c2-fbf7-45df-a2e3-eb22aea89e16}</Project>
+      <Name>LionFire.Utility</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    
+    <PackageReference Include="Microsoft.Extensions.Logging.Abstractions">
+    </PackageReference>
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <PropertyGroup>
+    <PostBuildEvent>if  "$(PlatformName)" == "x86" powershell -Command "$psi = New-Object System.Diagnostics.ProcessStartInfo;$psi.FileName='C:\Src\valor\Publishing\]] SetVersion().cs';$psi.WindowStyle = [System.Diagnostics.ProcessWindowStyle]::Hidden;[System.Diagnostics.Process]::Start($psi)"</PostBuildEvent>
+  </PropertyGroup>
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>

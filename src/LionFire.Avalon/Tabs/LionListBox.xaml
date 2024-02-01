@@ -1,0 +1,38 @@
+﻿<ListBox x:Class="LionFire.Avalon.LionListBox"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             mc:Ignorable="d" 
+             d:DesignHeight="300" d:DesignWidth="300" 
+         HorizontalAlignment="Stretch"
+         VerticalAlignment="Stretch"
+         HorizontalContentAlignment="Stretch"
+         VerticalContentAlignment="Stretch"
+         
+         >
+    <!--<DockPanel>
+        
+        <Canvas Background="Green">
+            <Border  
+                Height="{Binding RelativeSource={RelativeSource TemplatedParent}, Path=SelectedItem.ActualHeight}" 
+                Width="{Binding RelativeSource={RelativeSource TemplatedParent}, Path=SelectedItem.ActualWidth}" 
+                CornerRadius="15" BorderThickness="1.5"
+                BorderBrush="White">
+                <Border.Background>
+                    <LinearGradientBrush StartPoint="0,0" EndPoint="0,1">
+                        <GradientStop Color="#0FFFFFFF" Offset="0"/>
+                        <GradientStop Color="#9FFFFFFF" Offset="0.29"/>
+                        <GradientStop Color="#aFFFFFFF" Offset="0.3"/>
+                        <GradientStop Color="#7FFFFFFF" Offset="0.32"/>
+                        <GradientStop Color="#0FFFFFFF" Offset="1"/>
+                    </LinearGradientBrush>
+                </Border.Background>
+            </Border>
+        </Canvas>
+
+        <ListBox x:Name="ListBox" Background="Gray" VerticalAlignment="Stretch"/>
+
+
+    </DockPanel>-->
+</ListBox>

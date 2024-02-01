@@ -1,0 +1,150 @@
+﻿<UserControl
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:lfaL="clr-namespace:LionFire.Avalon"
+             xmlns:Themes="clr-namespace:Microsoft.Windows.Themes;assembly=PresentationFramework.Aero" x:Class="LionFire.Avalon.TimeSpanSelector"
+             mc:Ignorable="d" 
+             x:Name="uc"
+             d:DesignHeight="30" Height="30" MaxHeight="40" MinHeight="25"
+             
+             >
+    <UserControl.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="pack://application:,,,/LionFire.Avalon;component/Resources/DateTime.xaml"/>
+
+            </ResourceDictionary.MergedDictionaries>
+
+            <Style TargetType="{x:Type TextBlock}">
+                <Setter Property="VerticalAlignment" Value="Center"/>
+            </Style>
+
+            <Style x:Key="PrevNextText" TargetType="{x:Type TextBlock}">
+                <Setter Property="VerticalAlignment" Value="Center"/>
+                <Setter Property="Foreground" Value="White"/>
+                <Setter Property="FontSize" Value="6"/>
+                <Setter Property="FontFamily" Value="WebHostingHub-Glyphs"/>
+            </Style>
+
+            <Style TargetType="{x:Type lfaL:ClippingBorder}" x:Key="PrevNext">
+                <Setter Property="Padding" Value="3 2.5"/>
+                <Setter Property="Margin" Value="2"/>
+                <Setter Property="CornerRadius" Value="6"/>
+                <Setter Property="Background" Value="#cc00"/>
+                <!--<Setter Property="BorderBrush" Value="Black"/>-->
+                <!--<Setter Property="BorderThickness" Value="1"/>-->
+                <Setter Property="VerticalAlignment" Value="Center"/>
+            </Style>
+
+            <!--<Style TargetType="{x:Type lfaL:ClippingBorder}" x:Key="TimeComponentBorder">
+                <Setter Property="CornerRadius" Value="12"/>
+                <Setter Property="Padding" Value="0"/>
+                <Setter Property="Margin" Value="1 0"/>
+                <Setter Property="Background" Value="Magenta"/>
+            </Style>-->
+
+            <Style  x:Key="TimeTextBlock" TargetType="{x:Type TextBlock}" >
+                <Setter Property="FontFamily" Value="Novecento wide"/>
+                <Setter Property="FontWeight" Value="Bold"/>
+                <Setter Property="FontSize" Value="18"/>
+                <Setter Property="VerticalAlignment" Value="Center"/>
+                <Setter Property="HorizontalAlignment" Value="Center"/>
+                <Setter Property="Foreground" Value="{Binding Foreground, ElementName=uc}"/>
+            </Style>
+
+            <!--<ControlTemplate x:Key="TextBoxControlTemplate" TargetType="{x:Type TextBox}">
+            <Themes:ListBoxChrome x:Name="Bd" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}" Background="{TemplateBinding Background}" RenderMouseOver="{TemplateBinding IsMouseOver}" RenderFocused="{TemplateBinding IsKeyboardFocusWithin}" SnapsToDevicePixels="True">
+                <ScrollViewer x:Name="PART_ContentHost" SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}"/>
+            </Themes:ListBoxChrome>
+            <ControlTemplate.Triggers>
+                <Trigger Property="IsEnabled" Value="False">
+                    <Setter Property="Background" TargetName="Bd" Value="{DynamicResource {x:Static SystemColors.ControlBrushKey}}"/>
+                    <Setter Property="Foreground" Value="{DynamicResource {x:Static SystemColors.GrayTextBrushKey}}"/>
+                </Trigger>
+                <Trigger Property="IsReadOnly" Value="True">
+                    <Setter Property="Background" TargetName="Bd" Value="#F0F"/>
+                </Trigger>
+            </ControlTemplate.Triggers>
+        </ControlTemplate>-->
+
+
+            <!--OLD-->
+            <Style x:Key="TextBoxStyle1" TargetType="{x:Type TextBox}">
+                <!--<Setter Property="Template" Value="{StaticResource TextBoxControlTemplate}"/>-->
+                <Setter Property="MinWidth" Value="20"/>
+                <Setter Property="FontFamily" Value="Novecento wide"/>
+                <Setter Property="FontSize" Value="14"/>
+                <Setter Property="FontWeight" Value="Bold"/>
+                <Setter Property="Background" Value="Transparent"/>
+                <Setter Property="VerticalAlignment" Value="Stretch"/>
+                <Setter Property="VerticalContentAlignment" Value="Center"/>
+                <Setter Property="HorizontalAlignment" Value="Center"/>
+                <Setter Property="BorderBrush" Value="{x:Null}"/>
+                <Style.Triggers>
+                    <!--Binding="{Binding IsReadOnly, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type lfaL:TimeSpanSelector}}}"-->
+
+                    <!--{Binding IsReadOnly, RelativeSource={RelativeSource Mode=Self}}-->
+                    <!--<DataTrigger Binding="{Binding IsReadOnly, RelativeSource={RelativeSource AncestorType={x:Type TextBox}, Mode=FindAncestor}}">
+                    <Setter Property="Background" Value="Red"/>
+                </DataTrigger>-->
+                    <Trigger Property="IsMouseOver" Value="True">
+                        <Setter Property="Background" Value="#8FFF"/>
+                    </Trigger>
+                </Style.Triggers>
+            </Style>
+
+            <!--<lfaL:DayTimeSelectorVMConverter x:Key="DayTimeSelectorVMConverter"/>-->
+        </ResourceDictionary>
+    </UserControl.Resources>
+
+    <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+
+        <Grid x:Name="NegIconWrapper" Visibility="{Binding NegativeIconVisibility, ElementName=uc}" >
+            <lfaL:ClippingBorder x:Name="NegIcon"  Style="{StaticResource PrevNext}">
+                <TextBlock x:Name="NegText" Style="{StaticResource PrevNextText}"  ><Run Text="−"/></TextBlock>
+            </lfaL:ClippingBorder>
+        </Grid>
+
+
+        <lfaL:ClippingBorder CornerRadius="{Binding CornerRadius, ElementName=uc}" 
+                             Style="{StaticResource TimeSelectorBorder}"
+                             >
+
+            <StackPanel Orientation="Horizontal" >
+                <!--<lfaL:ClippingBorder Style="{StaticResource TimeComponentBorder}"  >-->
+                <TextBox x:Name="HourTextBox" Style="{StaticResource TimeTextBox}" 
+                         Visibility="{Binding HourVisibility, ElementName=uc}"
+				HorizontalAlignment="Right" TextAlignment="Right"
+                     
+				IsReadOnly="{Binding IsReadOnly, ElementName=uc}"
+				Text="{Binding Hour, ElementName=uc, UpdateSourceTrigger=PropertyChanged}" MouseWheel="HourTextBox_MouseWheel"/>
+                <!--</lfaL:ClippingBorder>-->
+
+                <!--<Grid VerticalAlignment="Stretch" Width="7" Background="#000">-->
+                <TextBlock x:Name="ColonText" Style="{StaticResource TimeTextBlock}" Text=":" FontSize="24"  VerticalAlignment="Center" Margin="0 -7 0 0"
+                           Visibility="{Binding HourVisibility, ElementName=uc}"
+                           />
+                <!--</Grid>-->
+
+                <!--<lfaL:ClippingBorder Style="{StaticResource TimeComponentBorder}" >-->
+                <TextBox x:Name="MinuteTextBox" Style="{StaticResource TimeTextBox}" 
+				IsReadOnly="{Binding IsReadOnly, ElementName=uc}"
+				Text="{Binding Minute, ElementName=uc, UpdateSourceTrigger=PropertyChanged}"   MouseWheel="MinuteTextBox_MouseWheel" HorizontalAlignment="Left" TextAlignment="Left"  />
+                <!--</lfaL:ClippingBorder>-->
+
+                <TextBlock x:Name="Colon2Text" Style="{StaticResource TimeTextBlock}" Text=":" FontSize="24"  VerticalAlignment="Center" Margin="0 -7 0 0"
+                           Visibility="{Binding SecondVisibility, ElementName=uc}"
+                           />
+
+                <TextBox x:Name="SecondTextBox" Style="{StaticResource TimeTextBox}" 
+				IsReadOnly="{Binding IsReadOnly, ElementName=uc}"
+                         Visibility="{Binding SecondVisibility, ElementName=uc}"
+				Text="{Binding Second, ElementName=uc, UpdateSourceTrigger=PropertyChanged}"   MouseWheel="SecondTextBox_MouseWheel" HorizontalAlignment="Left" TextAlignment="Left"  />
+
+            </StackPanel>
+        </lfaL:ClippingBorder>
+
+    </StackPanel>
+</UserControl>

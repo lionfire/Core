@@ -1,0 +1,16 @@
+<ResourceDictionary
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:black="clr-namespace:Blacklight.Controls;assembly=Blacklight.WPFControls"
+    xmlns:sys="clr-namespace:System;assembly=mscorlib"
+    xmlns:lfaL="clr-namespace:LionFire.Avalon">
+    <ResourceDictionary.MergedDictionaries>
+        <!--<lfaL:SharedResourceDictionary Source="pack://application:,,,/LionFire.Avalon;component/Resources/Fonts.xaml"/>-->
+        <!--<lfa:SharedResourceDictionary Source="/Resources/Fonts.xaml"/>-->
+    </ResourceDictionary.MergedDictionaries>
+
+
+
+    <Line x:Key="Dummy_LionButtons_Generic"/>
+
+</ResourceDictionary>

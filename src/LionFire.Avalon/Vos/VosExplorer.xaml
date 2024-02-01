@@ -1,0 +1,220 @@
+﻿<UserControl x:Class="LionFire.Avalon.Vos.VosExplorer"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             mc:Ignorable="d" 
+             x:Name="uc"
+             xmlns:odc="http://schemas.odyssey.com/wpf"
+              xmlns:lfaL="clr-namespace:LionFire.Avalon"
+             xmlns:sys="clr-namespace:System;assembly=mscorlib"
+             xmlns:vos="clr-namespace:LionFire.ObjectBus;assembly=LionFire.Utility"
+             xmlns:black="clr-namespace:Blacklight.Controls;assembly=Blacklight.WPFControls"
+             d:DesignHeight="300" d:DesignWidth="600">
+    <UserControl.Resources>
+        <ResourceDictionary>
+        <ResourceDictionary.MergedDictionaries>
+                <lfaL:SharedResourceDictionary Source="pack://application:,,,/LionFire.Avalon;component/Resources/default-lfa.xaml"/>
+                <!--<lfa:SharedResourceDictionary Source="pack://application:,,,/LionFire.Avalon;component/Resources/Text.xaml"/>
+                <lfa:SharedResourceDictionary Source="pack://application:,,,/LionFire.Avalon;component/Resources/Fonts.xaml"/>
+            <lfa:SharedResourceDictionary Source="pack://application:,,,/LionFire.Avalon;component/Resources/Palette.xaml"/>
+                <lfa:SharedResourceDictionary Source="pack://application:,,,/LionFire.Avalon;component/Resources/LionButtons.xaml"/>-->
+                <!--<lfa:SharedResourceDictionary Source="pack://application:,,,/LionFire.Avalon;component/Themes/LionButtons.Generic.xaml"/>-->
+        </ResourceDictionary.MergedDictionaries>
+
+            <SolidColorBrush x:Key="TriExplorerPaneBG" Color="#2FFF"/>
+
+            <Style TargetType="Grid" x:Key="DetailGrid">
+                <!--<Setter Property="Background" Value="{StaticResource TriExplorerPaneBG}"/>-->
+                <Setter Property="Grid.Row" Value="1"/>
+            </Style>
+
+            <HierarchicalDataTemplate x:Key="VobBCTemplate" DataType="{x:Type vos:Vob}" ItemsSource="{Binding Children}" >
+                <TextBlock Text="{Binding Name}"/>
+            </HierarchicalDataTemplate>
+
+            <!--Broken-->
+            <HierarchicalDataTemplate x:Key="VobDDTemplate" DataType="{x:Type vos:Vob}" ItemsSource="{Binding Children}" >
+                <!--<StackPanel Orientation="Horizontal">-->
+                <!--<TextBlock Text="Vob: "/>-->
+                <TextBlock Text="{Binding Name}"/>
+                <!--</StackPanel>-->
+            </HierarchicalDataTemplate>
+
+
+        </ResourceDictionary>
+    </UserControl.Resources>
+    
+    <DockPanel>
+        <DockPanel.Background>
+            <LinearGradientBrush  EndPoint="1 1">
+                <GradientStop Offset="0" Color="#FEEF"/>
+                <GradientStop Offset="1" Color="#F88a"/>
+            </LinearGradientBrush>
+        </DockPanel.Background>
+
+
+        <odc:BreadcrumbBar x:Name="BreadcrumbBar"
+                           DockPanel.Dock="Top"  Margin="5"
+                           BreadcrumbItemTemplate="{StaticResource VobBCTemplate}"
+                           TraceBinding="{Binding Path}"
+                           DropDownItemTemplate="{StaticResource VobDDTemplate}"
+                           >
+        </odc:BreadcrumbBar>
+
+        <Grid Height="100" DockPanel.Dock="Top">
+            <Grid.Resources>
+                <ControlTemplate x:Key="ListViewPaneTemplate">
+                    <ContentControl  ContentTemplate="{StaticResource InnerShadowListView}">
+                        <ListView x:Name="ListView0a"  />
+                    </ContentControl>
+                </ControlTemplate>
+            
+            </Grid.Resources>
+            
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="*"  />
+            </Grid.ColumnDefinitions>
+
+            <lfaL:AnimatedPanes x:Name="Con1" Grid.Column="0" Grid.ColumnSpan="2" PaneContentTemplate="{StaticResource InnerShadowListView}"/>
+
+            <Grid x:Name="Detail1" Style="{StaticResource DetailGrid}" Grid.Column="2"  >
+                <lfaL:ObjectView x:Name="Details1" Margin="0,0,0,0" ></lfaL:ObjectView>
+            </Grid>
+        </Grid>
+
+        <!--<Grid DockPanel.Dock="Top">
+            <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="*"/>
+            <ColumnDefinition Width="*"/>
+            <ColumnDefinition Width="*"/>
+        </Grid.ColumnDefinitions>
+            <lfaL:LionButton x:Name="BackButton1" Style="{StaticResource UpHierarchyButton}"
+                              Grid.Column="0" Click="Button_Click_2" >
+                <TextBlock Text="&#xD9;" FontFamily="Wingdings 3" />
+            </lfaL:LionButton>
+            
+            <lfaL:LionButton x:Name="BackButton2" Style="{StaticResource UpHierarchyButton}"
+                             Grid.Column="1" Click="Button_Click_2">
+                <TextBlock Text="&#xD9;" FontFamily="Wingdings 3" />
+            </lfaL:LionButton>
+        
+        </Grid>-->
+        
+        <Grid >
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="0" x:Name="C1"/>
+                <ColumnDefinition Width="*" x:Name="C2"/>
+                <ColumnDefinition Width="*" x:Name="C3"/>
+                <ColumnDefinition Width="0" x:Name="C4"/>
+                <ColumnDefinition Width="*" x:Name="C5" />
+            </Grid.ColumnDefinitions>
+
+            <ContentControl x:Name="View1"  Grid.Column="0" ContentTemplate="{StaticResource InnerShadowListView}">
+                <black:AnimatedContentControl x:Name="AC1">
+                        <ListView x:Name="ListView1"  />
+                    </black:AnimatedContentControl>
+            </ContentControl>
+            
+            <ContentControl x:Name="View2"  Grid.Column="1" ContentTemplate="{StaticResource InnerShadowListView}">
+                <ListView x:Name="ListView2"  />
+            </ContentControl>
+
+            <ContentControl x:Name="View3"  Grid.Column="2" ContentTemplate="{StaticResource InnerShadowListView}">
+                <ListView x:Name="ListView3"  />
+            </ContentControl>
+            
+            <ContentControl x:Name="View4"  Grid.Column="0" ContentTemplate="{StaticResource InnerShadowListView}">
+                <ListView x:Name="ListView4"  />
+            </ContentControl>
+
+            <!--<Grid Grid.Column="2" Grid.Row="1" Margin="5" x:Name="View3x">
+                <Grid.OpacityMask>
+                    <VisualBrush Visual="{Binding ElementName=Mask}" Stretch="None" />
+                </Grid.OpacityMask>
+                <Grid.Effect>
+                    <DropShadowEffect ShadowDepth="4" BlurRadius="12" Color="Black"/>
+                </Grid.Effect>
+
+                <Border x:Name="Mask" CornerRadius="20" >
+                    <Border.Background>
+                        <LinearGradientBrush  EndPoint="0 1">
+                            <GradientStop Offset="0" Color="#F444"/>
+                            <GradientStop Offset="1" Color="#F222"/>
+                        </LinearGradientBrush>
+                    </Border.Background>
+                </Border>
+
+                <Border x:Name="Shape" CornerRadius="20" Background="{x:Null}" BorderThickness="2" Margin="-2" BorderBrush="#F999">
+                    <Border.Effect>
+                        <DropShadowEffect ShadowDepth="0" BlurRadius="14" Color="White" Opacity="0.5"/>
+                    </Border.Effect>
+                </Border>
+
+                <Border  CornerRadius="20" Background="{x:Null}" BorderThickness="5" BorderBrush="#FFFF" Margin="-5">
+                    <Border.Effect>
+                        <DropShadowEffect ShadowDepth="0" BlurRadius="10" Color="White" Opacity="0.5"/>
+                    </Border.Effect>
+                    <ListView x:Name="ListView3"  />
+                </Border>
+
+            </Grid>-->
+        
+            <Grid Visibility="Collapsed">
+                <Viewbox VerticalAlignment="Stretch" HorizontalAlignment="Stretch">
+                    <Grid Width="32" Height="32" >
+
+                        <Rectangle Stroke="#87757575" StrokeDashCap="Square" StrokeEndLineCap="Flat" StrokeLineJoin="Miter" StrokeThickness="0.5" RadiusX="3" RadiusY="3" x:Name="icnBase" Margin="2,2,2,0" HorizontalAlignment="Stretch" Grid.Column="0" Grid.ColumnSpan="1">
+                            <Rectangle.Effect>
+                                <!--	Softness="0.305"-->
+                                <DropShadowEffect BlurRadius="2" Opacity="0.835" ShadowDepth="1" />
+                            </Rectangle.Effect>
+                            <Rectangle.Fill>
+                                <LinearGradientBrush StartPoint="0.538462,0.98077" EndPoint="0.538462,-0.576924">
+                                    <GradientStop Color="#FF232323" Offset="0"/>
+                                    <GradientStop Color="#FF5D5B5B" Offset="1"/>
+                                </LinearGradientBrush>
+                            </Rectangle.Fill>
+                        </Rectangle>
+
+                        <Rectangle Stroke="#87757575" StrokeDashCap="Square" StrokeEndLineCap="Flat" StrokeLineJoin="Miter" StrokeThickness="0.5" RadiusX="3" RadiusY="3" x:Name="icnBase_Copy"
+  Margin="2,2,2,0" Fill="{x:Null}" 
+  Clip="M0.25,3.25 C0.25,1.5931458 1.5931458,0.25 3.25,0.25 L28.75,0.25 C30.406854,0.25 31.75,1.5931458 31.75,3.25 L31.75,28.75 C31.75,30.406854 30.406854,31.75 28.75,31.75 L3.25,31.75 C1.5931458,31.75 0.25,30.406854 0.25,28.75 z" >
+                            <Rectangle.Effect>
+                                <DropShadowEffect BlurRadius="2" ShadowDepth="0" Color="#FFF9F9F9" Opacity="0.615"/>
+                            </Rectangle.Effect>
+                        </Rectangle>
+
+                        <Rectangle Stroke="#87757575" StrokeDashCap="Square" StrokeEndLineCap="Flat" StrokeLineJoin="Miter" StrokeThickness="0.5" RadiusX="3" RadiusY="3" x:Name="icnBase_Copy1" Margin="2,2,2,0" 
+                Fill="{x:Null}" 
+              Clip="M0.25,3.25 C0.25,1.5931458 1.5931458,0.25 3.25,0.25 L28.75,0.25 C30.406854,0.25 31.75,1.5931458 31.75,3.25 L31.75,28.75 C31.75,30.406854 30.406854,31.75 28.75,31.75 L3.25,31.75 C1.5931458,31.75 0.25,30.406854 0.25,28.75 z">
+                            <Rectangle.Effect>
+                                <DropShadowEffect BlurRadius="2" ShadowDepth="0" Color="#FFF9F9F9" Opacity="1.5"/>
+                            </Rectangle.Effect>
+                        </Rectangle>
+                    </Grid >
+                </Viewbox>
+            
+                <!--<ContentPresenter x:Name="Details1" />-->
+                <!--<lfaL:ClippingBorder CornerRadius="5" BorderThickness="4" BorderBrush="#8FFF" Margin="10">
+                    <lfaL:ClippingBorder.Effect>
+                        <DropShadowEffect ShadowDepth="0" BlurRadius="20"/>
+                    </lfaL:ClippingBorder.Effect>-->
+                    
+                    <!--<lfaL:ClippingBorder CornerRadius="5" BorderThickness="2" BorderBrush="White" >
+                        
+                        -->
+                <!--</lfaL:ClippingBorder>-->
+            </Grid>
+
+        <!--<Grid x:Name="Detail2" Style="{StaticResource DetailGrid}" Grid.Column="0" Margin="5">
+                <lfaL:ClippingBorder CornerRadius="5" BorderThickness="2" BorderBrush="White">
+                    <lfaL:ObjectView x:Name="Details2"></lfaL:ObjectView>
+                </lfaL:ClippingBorder>
+        </Grid>-->
+    </Grid>
+
+    </DockPanel>
+</UserControl>

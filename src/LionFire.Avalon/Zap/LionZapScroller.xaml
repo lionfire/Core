@@ -1,0 +1,72 @@
+﻿<UserControl x:Class="LionFire.Avalon.LionZapScroller"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             mc:Ignorable="d" 
+             xmlns:lfaL="clr-namespace:LionFire.Avalon"
+             x:Name="uc"
+             HorizontalAlignment="Stretch" VerticalAlignment="Stretch"
+             d:DesignHeight="300" d:DesignWidth="300">
+    <UserControl.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <lfaL:SharedResourceDictionary Source="pack://application:,,,/LionFire.Avalon;component/Resources/default-lfa.xaml"/>
+                <!--<lfaL:SharedResourceDictionary Source="pack://application:,,,/LionFire.Avalon;component/Resources/Text.xaml"/>-->
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
+
+    </UserControl.Resources>
+
+    <DockPanel>
+
+        <Grid Panel.ZIndex="99"
+            DockPanel.Dock="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type lfaL:LionZapScroller}}, Path=SelectorDock}" 
+            VerticalAlignment="Stretch" HorizontalAlignment="Stretch">
+
+            <ContentControl Template="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type lfaL:LionZapScroller}}, Path=SelectorBackgroundTemplate}" IsHitTestVisible="True" Focusable="False" MouseWheel="ContentControl_MouseWheel" />
+
+            <lfaL:LionListBox x:Name="LionListBox"   Margin="0" Padding="0"
+                             HorizontalContentAlignment="Stretch" VerticalContentAlignment="Stretch"
+HorizontalAlignment="Stretch" VerticalAlignment="Stretch"
+                             ItemsSource="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type lfaL:LionZapScroller}}, Path=ItemsSource}" DisplayMemberPath="Header"
+                             MouseWheel="ContentControl_MouseWheel" 
+                             MinWidth="0"
+                             MinHeight="0"
+                              
+                              SelectionChanged="LionListBox_SelectionChanged">
+
+                <!--<lfaL:LionListBox.Style>
+                    <Style TargetType="lfaL:LionListBox">
+                        <Style.Triggers>
+                            <Trigger Property="DockPanel.Dock" Value="Top">
+                                <Setter Property="Orientation" Value="Horizontal"/>
+                            </Trigger>
+                            <Trigger Property="DockPanel.Dock" Value="Bottom">
+                                <Setter Property="Orientation" Value="Horizontal"/>
+                            </Trigger>
+                            <Trigger Property="DockPanel.Dock" Value="Left">
+                                <Setter Property="Orientation" Value="Vertical"/>
+                            </Trigger>
+                            <Trigger Property="DockPanel.Dock" Value="Right">
+                                <Setter Property="Orientation" Value="Vertical"/>
+                            </Trigger>
+                        </Style.Triggers>
+                    </Style>
+                </lfaL:LionListBox.Style>-->
+            </lfaL:LionListBox>
+        </Grid>
+
+        <!--<AdornerDecorator>-->
+            <lfaL:ZapScroller x:Name="ZapScroller" ItemsSource="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type lfaL:LionZapScroller}}, Path=ItemsSource}"
+                         HorizontalAlignment="Stretch" VerticalAlignment="Stretch"
+                         Orientation="Vertical"
+                         MouseWheel="ZapScroller_MouseWheel"
+                             >
+                <!--Margin="{Binding ElementName=uc, Path=ContentPadding}"-->
+            </lfaL:ZapScroller>
+        <!--</AdornerDecorator>-->
+    </DockPanel>
+
+
+</UserControl >

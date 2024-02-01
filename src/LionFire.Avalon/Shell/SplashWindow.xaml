@@ -1,0 +1,128 @@
+﻿<Window x:Class="LionFire.Avalon.SplashWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+        mc:Ignorable="d" 
+        x:Name="uc"
+         xmlns:lfaL="clr-namespace:LionFire.Avalon"
+        Title="SplashWindow" Height="400" Width="280"
+        Background="Transparent"
+        AllowsTransparency="True"
+        WindowStyle="None"
+        
+        Topmost="True"
+        WindowStartupLocation="CenterScreen"
+        
+        >
+    <!--Topmost="True"-->
+    <Window.Resources>
+        <Style TargetType="Rectangle">
+            <Setter Property="Fill" Value="#000"/>
+        </Style>
+        
+        <SolidColorBrush x:Key="ProgressBarFG" Color="#FFF"/>
+        
+        <Storyboard x:Key="closeStoryBoard" >
+            <DoubleAnimation Storyboard.TargetProperty="Opacity" From="1" To="0" 
+                             Storyboard.Target="{Binding ElementName=uc}" Duration="0:0:0.8" FillBehavior="HoldEnd"  Completed="sb_Completed"/>
+        </Storyboard>
+    </Window.Resources>
+
+    <!--<Window.Triggers>-->
+        <!--<EventTrigger RoutedEvent="Window.Loaded">
+            <BeginStoryboard>
+                <Storyboard>
+                    <DoubleAnimation Storyboard.TargetProperty="Opacity" From="0" To="1" Duration="0:0:2" FillBehavior="HoldEnd" />
+                </Storyboard>
+            </BeginStoryboard>
+        </EventTrigger>
+        <EventTrigger RoutedEvent="Window.Closing">
+            <BeginStoryboard>
+                <Storyboard>
+                    
+                </Storyboard>
+            </BeginStoryboard>
+        </EventTrigger>
+    </Window.Triggers>-->
+    
+        <lfaL:ClippingBorder CornerRadius="10" Background="{x:Null}" BorderBrush="#000" BorderThickness="3"  >
+    <Grid Margin="-4">
+        <Grid.Background>
+            <RadialGradientBrush Center="0.5 0.5" GradientOrigin="0.5 0.95" RadiusX="0.7">
+                <GradientStop Color="#559" Offset="1"/>
+                <GradientStop Color="#99F" Offset="0"/>
+            </RadialGradientBrush>
+        </Grid.Background>
+        <DockPanel>
+            <lfaL:ClippingBorder Margin="20" DockPanel.Dock="Bottom" MinHeight="120">
+                <TextBlock  DataContext="{Binding LionFireApp.SplashMessage, ElementName=uc}" 
+                            Foreground="#FFF"
+                            d:DataContext="asdf asdf asdf asdf asdf asdf asdf asdf asdf asdf asdf asdf asdf asdf asdf asdf asdf asdf asdf asdf asdf asdf asdf asdf asdf asdf asdf asdf asdf asdf asdf asdf asdf asdf asdf asdf asdf asdf asdf asdf asdf asdf asdf asdf asdf asdf asdf asdf asdf asdf asdf asdf asdf asdf asdf asdf asdf asdf asdf asdf asdf asdf asdf asdf asdf asdf asdf asdf asdf asdf asdf asdf asdf asdf asdf asdf asdf asdf asdf asdf asdf asdf asdf asdf asdf asdf asdf asdf asdf asdf asdf asdf asdf asdf asdf asdf asdf asdf" Text="{Binding}" TextWrapping="WrapWithOverflow" HorizontalAlignment="Center" VerticalAlignment="Bottom" FontSize="9" FontFamily="Verdana"/>
+            </lfaL:ClippingBorder>
+        
+        <Grid DockPanel.Dock="Top">
+            <Grid.Effect>
+                <DropShadowEffect Color="#FFF" Direction="90" BlurRadius="15" ShadowDepth="2"/>
+            </Grid.Effect>
+            <StackPanel VerticalAlignment="Top" Margin="0 20 0 0">
+                        <UniformGrid Rows="1">
+                            <UniformGrid.Resources>
+                                <Style TargetType="TextBlock">
+                                    <Setter Property="FontFamily" Value="{DynamicResource SplashBadgeFont}"/>
+                                    <Setter Property="FontSize" Value="20"/>
+                                    <Setter Property="Background" Value="#777"/>
+                                    <Setter Property="TextAlignment" Value="Center"/>
+                                    <Setter Property="HorizontalAlignment" Value="Center"/>
+                                    <Setter Property="Padding" Value="9 3"/>
+                                    <Setter Property="Margin" Value="0 5 0 10"/>
+                                    
+                                </Style>
+                            </UniformGrid.Resources>
+                            <TextBlock x:Name="DebugText" Text="{Binding}" DataContext="DEBUG" Background="Green"/>
+                            <TextBlock x:Name="TraceText" Text="{Binding}" DataContext="TRACE" Background="LightGray"/>
+                            <TextBlock x:Name="DevText" Text="{Binding}" DataContext="DEV" Background="Red"/>
+
+                            <Grid>
+                            <TextBlock x:Name="PrealphaText" Text="{Binding}" DataContext="PREALPHA" Background="Magenta"/>
+                                <TextBlock x:Name="AlphaText" Text="{Binding}" DataContext="ALPHA" Background="Yellow"/>
+                                <TextBlock x:Name="BetaText" Text="{Binding}" DataContext="BETA" Background="Blue" Foreground="White"/>
+                            </Grid>
+                        </UniformGrid>
+                        <Grid>
+                    <Rectangle Height="10" Width="Auto" />
+                        <Rectangle x:Name="Prog1" Height="10" Width="Auto" Fill="{StaticResource ProgressBarFG}" d:DataContext="0.2" DataContext="{Binding LionFireApp.SplashProgress, ElementName=uc}">
+                        <Rectangle.RenderTransform>
+                            <ScaleTransform ScaleX="{Binding}"  />
+                        </Rectangle.RenderTransform>
+                    </Rectangle>
+                </Grid>
+                        <Viewbox Margin="20" MaxHeight="120">
+                <TextBlock 
+                    DataContext="{Binding AppName, ElementName=uc}"
+                    d:DataContext="AppName"
+                    Text="{Binding}" FontFamily="{DynamicResource SplashTitleFont}" FontSize="84" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="0 -10 0 10">
+                    <TextBlock.LayoutTransform>
+                        <ScaleTransform ScaleY="1.4"/>
+                    </TextBlock.LayoutTransform>
+                </TextBlock>
+                        </Viewbox>
+                        <Grid>
+                    <Rectangle Height="10" Width="Auto" />
+                    <Rectangle x:Name="Prog2" Height="10" Width="Auto" Fill="{StaticResource ProgressBarFG}" 
+                               d:DataContext="0.5" DataContext="{Binding LionFireApp.SplashProgress, ElementName=uc}">
+                        <Rectangle.RenderTransform>
+                            <ScaleTransform ScaleX="{Binding}"  />
+                        </Rectangle.RenderTransform>
+                    </Rectangle>
+                </Grid>
+
+                
+            </StackPanel>
+        </Grid>
+       
+        </DockPanel>
+        
+    </Grid>
+    </lfaL:ClippingBorder>
+</Window>
