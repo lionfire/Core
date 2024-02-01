@@ -42,6 +42,7 @@ This package is typically not added on its own, but is a dependency required by 
     <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" />
     <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" />
     <PackageReference Include="Microsoft.Extensions.Hosting" />
+    <PackageReference Include="Microsoft.Extensions.Resilience" />
     <PackageReference Include="System.Collections.Immutable" />
 <PackageReference Include="System.Reactive" />  </ItemGroup>
 

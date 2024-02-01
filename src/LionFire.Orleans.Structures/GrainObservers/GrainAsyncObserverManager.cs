@@ -12,7 +12,7 @@ public class AsyncObserverGrainObserverManager<T>
 
     //public ILogger Logger { get; }
     static ILogger Logger = Log.Get<AsyncObserverGrainObserverManager<T>>();
-    public IGrainObservableG<T> Grain { get; }
+    public IGrainObservableAsyncObservableG<T> Grain { get; }
 
     #endregion
 
@@ -24,27 +24,27 @@ public class AsyncObserverGrainObserverManager<T>
 
     #region Lifecycle
 
-    public AsyncObserverGrainObserverManager(IGrainObservableG<T> grain, TimeSpan timeSpan
+    public AsyncObserverGrainObserverManager(IGrainObservableAsyncObservableG<T> grain, TimeSpan timeSpan
         //, ILogger logger
         )
     {
         Grain = grain;
         SubscriptionTimeout = timeSpan;
         //Logger = logger;
-        observers = new ObserverManager<IAsyncObserverO<T>>(SubscriptionTimeout, Logger);
+        observers = new ObserverManager<IAsyncObservableO<T>>(SubscriptionTimeout, Logger);
     }
 
     #endregion
 
     #region State
 
-    private readonly ObserverManager<IAsyncObserverO<T>> observers;
+    private readonly ObserverManager<IAsyncObservableO<T>> observers;
 
     #endregion
 
     #region Methods
 
-    public void Subscribe(IAsyncObserverO<T> subscriber) => observers.Subscribe(subscriber, subscriber);
+    public void Subscribe(IAsyncObservableO<T> subscriber) => observers.Subscribe(subscriber, subscriber);
     // OLD
     //var result = new GrainObserverSubscription<T>()
     //{
@@ -53,7 +53,7 @@ public class AsyncObserverGrainObserverManager<T>
     //};
     //return Task.FromResult(result);
 
-    public void Unsubscribe(IAsyncObserverO<T> subscriber) => observers.Unsubscribe(subscriber);
+    public void Unsubscribe(IAsyncObservableO<T> subscriber) => observers.Unsubscribe(subscriber);
 
     public Task NotifyObservers(T message)
     {

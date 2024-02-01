@@ -19,7 +19,7 @@ using static System.Runtime.InteropServices.JavaScript.JSType;
 namespace LionFire.Orleans_.Collections;
 
 public sealed class KeyedListObserverO<TKey, TItem>
-    : IAsyncObserverO<ChangeSet<TItem, TKey>>
+    : IAsyncSubjectO<ChangeSet<TItem, TKey>>
     //, System.IAsyncObservable<ChangeSet<TItem, TKey>>
     , IAsyncDisposable
     where TKey : notnull
@@ -28,19 +28,19 @@ public sealed class KeyedListObserverO<TKey, TItem>
 
     #region Relationships
 
-    public IGrainObservableG<ChangeSet<TItem, TKey>> ObservableCollection { get; }
+    public IGrainObservableAsyncObservableG<ChangeSet<TItem, TKey>> ObservableCollection { get; }
     //public IClusterClient ClusterClient { get; }
 
-    IAsyncObserverO<ChangeSet<TItem, TKey>> orleansObjectReference { get; }
+    IAsyncSubjectO<ChangeSet<TItem, TKey>> orleansObjectReference { get; }
     #endregion
 
     #region Lifecycle
 
-    public KeyedListObserverO(IGrainObservableG<ChangeSet<TItem, TKey>> observableCollection, IClusterClient clusterClient)
+    public KeyedListObserverO(IGrainObservableAsyncObservableG<ChangeSet<TItem, TKey>> observableCollection, IClusterClient clusterClient)
     {
         ObservableCollection = observableCollection;
         //ClusterClient = clusterClient;
-        orleansObjectReference = clusterClient.CreateObjectReference<IAsyncObserverO<ChangeSet<TItem, TKey>>>(this);
+        orleansObjectReference = clusterClient.CreateObjectReference<IAsyncSubjectO<ChangeSet<TItem, TKey>>>(this);
         Init();
         if (UseStats) Stats = new();
     }

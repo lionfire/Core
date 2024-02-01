@@ -6,7 +6,7 @@ namespace LionFire.Orleans_.Collections;
 public interface IKeyedCollectionG<TKey, TItem>
     : ICollectionBaseG<TItem>
     , IAsyncKeyedCollectionBase<TKey, TItem>
-    , IGrainObservableG<ChangeSet<TItem, TKey>>
+    , IGrainObservableAsyncObservableG<ChangeSet<TItem, TKey>>
     where TKey : notnull
 {
     Task<IEnumerable<Type>> SupportedTypes();

@@ -68,6 +68,22 @@ public static class IServiceCollectionX
         return services;
     }
 
+    public static IServiceCollection AddHostedSingleton<TService, TImplementation>(this IServiceCollection services)
+      where TService : class
+      where TImplementation : class, IHostedService, TService
+    {
+        services.AddSingleton<TService, TImplementation>();
+        services.AddHostedService(sp => (TImplementation)sp.GetRequiredService<TService>());
+        return services;
+    }
+    public static IServiceCollection AddHostedSingleton<TImplementation>(this IServiceCollection services)
+        where TImplementation : class, IHostedService 
+    {
+        services.AddSingleton<TImplementation>();
+        services.AddHostedService(sp => sp.GetRequiredService<TImplementation>());
+        return services;
+    }
+
     //public static IServiceCollection AddEnumerableSingleton<TService, TImplementation>(this IServiceCollection services, Func<IServiceProvider, TService> factory)
     //{
     //    services.TryAddEnumerable(new ServiceDescriptor(typeof(TService), sp => factory(sp), ServiceLifetime.Singleton)

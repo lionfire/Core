@@ -89,7 +89,7 @@ public class GrainCollectionCache<TValue> // RENAME: GrainCollectionCache
     , IDisposable
     , IAsyncDisposable
     , ISubscribesAsync
-    , IHas<IGrainObservableG<ChangeSet<TValue, string>>>
+    , IHas<IGrainObservableAsyncObservableG<ChangeSet<TValue, string>>>
     , ICreatesAsync<string, TValue>
     , ICreatesAsync<TValue>
     where TValue : class, IGrainWithStringKey
@@ -103,7 +103,7 @@ public class GrainCollectionCache<TValue> // RENAME: GrainCollectionCache
     #region Relationships
 
     public IKeyedCollectionG<string, TValue> CollectionGrain { get; set; }
-    IGrainObservableG<ChangeSet<TValue, string>>  IHas<IGrainObservableG<ChangeSet<TValue, string>>>.Object => CollectionGrain;
+    IGrainObservableAsyncObservableG<ChangeSet<TValue, string>>  IHas<IGrainObservableAsyncObservableG<ChangeSet<TValue, string>>>.Object => CollectionGrain;
 
     #endregion
 

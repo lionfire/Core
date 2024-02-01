@@ -8,7 +8,7 @@ namespace LionFire.Orleans_.Collections;
 public interface IKeyedListG<TKey, TItem> 
     : IListBaseG<TItem>
     , IAsyncKeyedCollectionBase<TKey, TItem>
-    , IGrainObservableG<ChangeSet<TItem, TKey>>
+    , IGrainObservableAsyncObservableG<ChangeSet<TItem, TKey>>
     where TKey : notnull
 {
 }

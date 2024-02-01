@@ -9,6 +9,6 @@ namespace LionFire.Orleans_.Collections;
 /// <typeparam name="TItem"></typeparam>
 public interface IListG<TItem>
     : IListBaseG<TItem>
-    , IGrainObservableG<ChangeSet<TItem>>
+    , IGrainObservableAsyncObservableG<ChangeSet<TItem>>
 {
 }

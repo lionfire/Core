@@ -25,6 +25,7 @@ public class KeyedCollectionG<TKey, TItem> : Grain
     //, IAsyncCreating<TNotificationItem> 
     //, ICreatingAsyncDictionary<string, TNotificationItem>
     where TKey : notnull
+    where TItem : notnull
 {
     #region Dependencies
 
@@ -84,12 +85,12 @@ public class KeyedCollectionG<TKey, TItem> : Grain
 
     public ValueTask<TimeSpan> SubscriptionTimeout() => ValueTask.FromResult(GrainObserverManager.SubscriptionTimeout);
 
-    public ValueTask Subscribe(IAsyncObserverO<ChangeSet<TItem, TKey>> subscriber)
+    public ValueTask<TimeSpan> Subscribe(IAsyncObservableO<ChangeSet<TItem, TKey>> subscriber)
     {
         GrainObserverManager.Subscribe(subscriber);
-        return ValueTask.CompletedTask;
+        return ValueTask.FromResult(GrainObserverManager.SubscriptionTimeout);
     }
-    public ValueTask Unsubscribe(IAsyncObserverO<ChangeSet<TItem, TKey>> subscriber)
+    public ValueTask Unsubscribe(IAsyncObservableO<ChangeSet<TItem, TKey>> subscriber)
     {
         GrainObserverManager.Unsubscribe(subscriber);
         return ValueTask.CompletedTask;

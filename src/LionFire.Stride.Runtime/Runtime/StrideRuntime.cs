@@ -37,6 +37,7 @@ using Stride.Engine;
 using Stride.Engine.Design;
 using Stride.Games;
 using Stride.Games.Time;
+using Stride.Graphics;
 using Stride.Physics;
 using System.IO.IsolatedStorage;
 using System.Threading;
@@ -244,13 +245,249 @@ public abstract class StrideRuntime : IStrideRuntime
         gamePlatform = CreateGamePlatform();
     }
 
+    private void OnServerTick()
+    {
+        //Console.Write('2');
+        Tick();
+    }
+
+    private object TickLock = new();
+
+    private void CheckEndRun()
+    {
+        if (IsExiting && IsRunning && isEndRunRequired)
+        {
+            EndRun();
+            IsRunning = false;
+        }
+    }
+
+    /// <summary>
+    /// Gets or sets the time between each <see cref="Tick"/> when <see cref="IsActive"/> is false.
+    /// </summary>
+    /// <value>The inactive sleep time.</value>
+    public TimeSpan InactiveSleepTime { get; set; }
+
+    /// <summary>
+    /// Gets a value indicating whether this instance is active.
+    /// </summary>
+    /// <value><c>true</c> if this instance is active; otherwise, <c>false</c>.</value>
+    public bool IsActive { get; private set; } = true;
+
+    /// <summary>
+    /// Updates the game's clock and calls Update and Draw.
+    /// </summary>
+    public void Tick()
+    {
+        lock (TickLock)
+        {
+            // If this instance is existing, then don't make any further update/draw
+            if (IsExiting)
+            {
+                CheckEndRun();
+                return;
+            }
+
+            // If this instance is not active, sleep for an inactive sleep time
+            if (!IsActive)
+            {
+                Thread.Sleep(InactiveSleepTime);
+                return;
+            }
+
+            RawTickProducer();
+        }
+    }
+
+
+    private bool forceElapsedTimeToZero;
+    private readonly TimeSpan maximumElapsedTime = TimeSpan.FromMilliseconds(500.0);
+
+    /// <summary>
+    /// Gets or sets a value indicating whether the elapsed time between each update should be constant,
+    /// see <see cref="TargetElapsedTime"/> to configure the duration.
+    /// </summary>
+    /// <value><c>true</c> if this instance is fixed time step; otherwise, <c>false</c>.</value>
+    public bool IsFixedTimeStep { get; set; }
+
+    /// <summary>
+    /// Gets or sets the target elapsed time, this is the duration of each tick/update
+    /// when <see cref="IsFixedTimeStep"/> is enabled.
+    /// </summary>
+    /// <value>The target elapsed time.</value>
+    public TimeSpan TargetElapsedTime { get; set; }
+    private TimeSpan accumulatedElapsedGameTime;
+
+    /// <summary>
+    /// Gets or sets a value indicating whether this instance should force exactly one update step per one draw step
+    /// </summary>
+    /// <value><c>true</c> if this instance forces one update step per one draw step; otherwise, <c>false</c>.</value>
+    protected internal bool ForceOneUpdatePerDraw { get; set; }
+
+    /// <summary>
+    /// Access to the throttler used to set the minimum time allowed between each updates.
+    /// </summary>
+    public ThreadThrottler WindowMinimumUpdateRate { get; } = new ThreadThrottler(TimeSpan.FromSeconds(0d));
+
+    /// <summary>
+    /// Calls <see cref="RawTick"/> automatically based on this game's setup, override it to implement your own system.
+    /// </summary>
+    protected virtual void RawTickProducer()
+    {
+        try
+        {
+            // Update the timer
+            autoTickTimer.Tick();
+
+            var elapsedAdjustedTime = autoTickTimer.ElapsedTimeWithPause;
+
+            if (forceElapsedTimeToZero)
+            {
+                elapsedAdjustedTime = TimeSpan.Zero;
+                forceElapsedTimeToZero = false;
+            }
+
+            if (elapsedAdjustedTime > maximumElapsedTime)
+            {
+                elapsedAdjustedTime = maximumElapsedTime;
+            }
+            bool drawFrame = true;
+            int updateCount = 1;
+            var singleFrameElapsedTime = elapsedAdjustedTime;
+#if GRAPHICS // non-headless edition
+            var drawLag = 0L;
+
+            if (suppressDraw || Window.IsMinimized && DrawWhileMinimized == false)
+            {
+                drawFrame = false;
+                suppressDraw = false;
+            }
+#endif
+
+            if (IsFixedTimeStep)
+            {
+                // If the rounded TargetElapsedTime is equivalent to current ElapsedAdjustedTime
+                // then make ElapsedAdjustedTime = TargetElapsedTime. We take the same internal rules as XNA
+                if (Math.Abs(elapsedAdjustedTime.Ticks - TargetElapsedTime.Ticks) < (TargetElapsedTime.Ticks >> 6))
+                {
+                    elapsedAdjustedTime = TargetElapsedTime;
+                }
+
+                // Update the accumulated time
+                accumulatedElapsedGameTime += elapsedAdjustedTime;
+
+                // Calculate the number of update to issue
+                if (ForceOneUpdatePerDraw)
+                {
+                    updateCount = 1;
+                }
+                else
+                {
+                    updateCount = (int)(accumulatedElapsedGameTime.Ticks / TargetElapsedTime.Ticks);
+                }
+#if GRAPHICS // non-headless edition
+                if (IsDrawDesynchronized)
+                {
+                    drawLag = accumulatedElapsedGameTime.Ticks % TargetElapsedTime.Ticks;
+                }
+                else
+#endif
+                if (updateCount == 0)
+                {
+                    drawFrame = false;
+                    // If there is no need for update, then exit
+                    return;
+                }
+
+                // We are going to call Update updateCount times, so we can subtract this from accumulated elapsed game time
+                accumulatedElapsedGameTime = new TimeSpan(accumulatedElapsedGameTime.Ticks - (updateCount * TargetElapsedTime.Ticks));
+                singleFrameElapsedTime = TargetElapsedTime;
+            }
+
+            HeadlessRawTick(singleFrameElapsedTime, updateCount);
+
+#if GRAPHICS
+            var window = gamePlatform.MainWindow;
+            if (gamePlatform.IsBlockingRun) // throttle fps if Game.Tick() called from internal main loop
+            {
+                if (window.IsMinimized || window.Visible == false || (window.Focused == false && TreatNotFocusedLikeMinimized))
+                {
+                    MinimizedMinimumUpdateRate.Throttle(out long _);
+                }
+                else
+                {
+                    WindowMinimumUpdateRate.Throttle(out long _);
+                }
+            }
+#else
+            if (gamePlatform.IsBlockingRun) // throttle fps if Game.Tick() called from internal main loop
+            {
+                WindowMinimumUpdateRate.Throttle(out long _);
+            }
+#endif
+        }
+        catch (Exception ex)
+        {
+            Logger.Error("Unexpected exception", ex);
+            throw;
+        }
+    }
+
+    /// <summary>
+    /// Call this method within your overriden <see cref="RawTickProducer"/> to update and draw the game yourself. <br/>
+    /// As this version is manual, there are a lot of functionality purposefully skipped: <br/>
+    /// clamping elapsed time to a maximum, skipping drawing when the window is minimized, <see cref="ResetElapsedTime"/>, <see cref="SuppressDraw"/>, <see cref="IsFixedTimeStep"/>, <br/>
+    /// <see cref="IsDrawDesynchronized"/>, <see cref="MinimizedMinimumUpdateRate"/> / <see cref="WindowMinimumUpdateRate"/> / <see cref="TreatNotFocusedLikeMinimized"/>.
+    /// </summary>
+    /// <param name="elapsedTimePerUpdate">
+    /// The amount of time passed between each update of the game's system, 
+    /// the total time passed would be <paramref name="elapsedTimePerUpdate"/> * <paramref name="updateCount"/>.
+    /// </param>
+    /// <param name="updateCount">
+    /// The amount of updates that will be executed on the game's systems.
+    /// </param>
+    /// <param name="drawInterpolationFactor">
+    /// See <see cref="DrawInterpolationFactor"/>
+    /// </param>
+    /// <param name="drawFrame">
+    /// Draw a frame.
+    /// </param>
+    protected void HeadlessRawTick(TimeSpan elapsedTimePerUpdate, int updateCount = 1)
+    {
+        TimeSpan totalElapsedTime = TimeSpan.Zero;
+        try
+        {
+            // Reset the time of the next frame
+            for (int i = 0; i < updateCount && !IsExiting; i++)
+            {
+                UpdateTime.Update(UpdateTime.Total + elapsedTimePerUpdate, elapsedTimePerUpdate, true);
+                using (Profiler.Begin(GameProfilingKeys.GameUpdate))
+                {
+                    Update(UpdateTime);
+                }
+                totalElapsedTime += elapsedTimePerUpdate;
+                if(nextTickLog < DateTime.UtcNow)
+                {
+                    nextTickLog = DateTime.UtcNow + TimeSpan.FromSeconds(10);
+                    Logger.LogInformation("Total elapsed: {0},   time per update: {1}", totalElapsedTime, elapsedTimePerUpdate);
+                }
+            }
+        }
+        finally
+        {
+            CheckEndRun();
+        }
+    }
+    DateTime nextTickLog = DateTime.MinValue;
+
     public async Task Run(GameContext? context = null)
     {
         try
         {
             if (gamePlatform is ServerGamePlatform serverGamePlatform)
             {
-                serverGamePlatform.RunCallback = this.RunCallback;
+
+                serverGamePlatform.RunCallback = OnServerTick;
             }
             gamePlatform.Run(Context);
 
@@ -317,7 +554,7 @@ public abstract class StrideRuntime : IStrideRuntime
                 autoTickTimer.Reset();
                 UpdateTime.Reset(UpdateTime.Total);
 
-                // Run the first time an update
+                // Run an update for the first time
                 using (Profiler.Begin(GameProfilingKeys.GameUpdate))
                 {
                     Update(UpdateTime);
@@ -464,9 +701,3 @@ public abstract class StrideRuntime : IStrideRuntime
     #endregion
 }
 
-public class StrideServerGame : GameBase
-{
-    public override void ConfirmRenderingSettings(bool gameCreation)
-    {
-    }
-}
