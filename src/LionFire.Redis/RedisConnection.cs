@@ -167,6 +167,8 @@ namespace LionFire.Redis
             //else
             //{
             //}
+            
+            // TODO: Verify actually authenticated
             logger.LogInformation("[connected] ...connected to redis at {connectionStringSanitized}", ConnectionStringSanitized);
         }
 

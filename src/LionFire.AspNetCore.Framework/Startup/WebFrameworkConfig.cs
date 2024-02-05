@@ -29,7 +29,7 @@ public class WebFrameworkConfig : WebHostConfig
 
     #region Swagger
 
-    public bool Swagger { get; set; } = true;
+    public bool Swagger => RequiresSwagger;
     public bool SwaggerInDevOnly { get; set; } = false;
     public virtual bool RequiresSwagger => false;
 

@@ -13,6 +13,12 @@ namespace LionFire.Hosting;
 
 public static class DefaultsX
 {
+    #region Configuration
+
+    public static bool LogConfigFile = true;
+
+    #endregion
+
     public static AppInfo? GetDefaultAppInfo(this ILionFireHostBuilder lf)
     {
         IHostEnvironment? env = lf.IHostApplicationBuilder?.Environment; // no IHostBuilder support
@@ -28,16 +34,17 @@ public static class DefaultsX
 
         return lf;
     }
-
+    
     /// <summary>
     /// Add LionFire defaults for IHostBuilder
     /// </summary>
     public static ILionFireHostBuilder Defaults(this ILionFireHostBuilder lf)
     {
         lf.TrySetDefaultAppInfo();
-        
+
         lf.ConfigureServices(s => s
             .AddHostedService<AppInfoLogger>()
+            .AddHostedService<AppContextLogger>()
             .AddFilesystemResiliencePolicy()
         );
 
@@ -66,11 +73,26 @@ public static class DefaultsX
 
         #region appsettings.json
 
+        var appSettingsPath = Path.Combine(Environment.CurrentDirectory, "appsettings.json");
         builder.ConfigureAppConfiguration((context, config) => config
             //.SetBasePath(AppContext.BaseDirectory)
             //.SetBasePath(Environment.CurrentDirectory)
-            .AddJsonFile(Path.Combine(Environment.CurrentDirectory, "appsettings.json"), true, true)
-       );
+            .AddJsonFile(appSettingsPath, true, true)
+        );
+
+        if (LogConfigFile)
+        {
+            if (File.Exists(appSettingsPath))
+            {
+#if DEBUG
+                Console.WriteLine($"Using configuration: {appSettingsPath}");
+#endif
+            }
+            else
+            {
+                Console.WriteLine($"MISSING configuration: {appSettingsPath}");
+            }
+        }
 
         // FUTURE: Config parent dir?  For things like /etc/lionfire/{appName}/appsettings.json
 
@@ -122,7 +144,7 @@ public static class DefaultsX
             lf.HostBuilder.WrappedIHostApplicationBuilder
                 .ReleaseChannel() // adds appsettings.{releaseChannel}.json
                 .DeploymentSlot() // adds appsettings.slot.{slot}.json
-                .ConfigureServices(s => s.AddHostedService<AppContextLogger>())
+                //.ConfigureServices(s => s.AddHostedService<AppContextLogger>())
                 .CopyExampleAppSettings()
                 ;
 

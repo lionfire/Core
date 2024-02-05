@@ -39,12 +39,20 @@ public static class WebHostFrameworkStartupInitializer
             }
         }
         if (o.Swagger || o.RequiresSwagger) {
-            //services.AddEndpointsApiExplorer();
+            services.AddEndpointsApiExplorer();
             services.AddMvcCore()
                 .AddApiExplorer();
+            
             services.AddSwaggerGen();
+
         }
-        
+        //if (o.NSwag)
+        //{
+        //    //services.AddOpenApiDocument(); // add OpenAPI v3 document
+        // //      services.AddSwaggerDocument(); // add Swagger v2 document
+
+        //}
+
         var mvcBuilder = AddAspNetCore(services, o);
 
         return mvcBuilder;
@@ -191,6 +199,11 @@ public static class WebHostFrameworkStartupInitializer
         if (options.RequiresBlazorServer || options.RequiresRazorPages)
         {
             endpoints.MapRazorPages();
+        }
+
+        if (options.Swagger)
+        {
+            endpoints.MapSwagger();
         }
 
         return options;
