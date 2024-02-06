@@ -156,7 +156,7 @@
     <PackageVersion Include="Noesis.GUI" Version="3.2.2" />
     <PackageVersion Include="Npgsql" Version="8.0.1" />
     <PackageVersion Include="Npgsql.EntityFrameworkCore.PostGreSQL" Version="8.0.0" />
-    <PackageVersion Include="NSwag.AspNetCore" Version="14.0.2" />
+    <PackageVersion Include="NSwag.AspNetCore" Version="14.0.3" />
     <PackageVersion Include="NuGet.Protocol" Version="6.8.0" />
     <PackageVersion Include="Oakton" Version="6.1.0" />
     <PackageVersion Include="ObservableCollections" Version="1.1.3" />

@@ -94,6 +94,18 @@ public static class WebHostFrameworkStartupInitializer
         }
         //app.UseHttpsRedirection(); // TODO: based on option, and if both http and https interfaces are configured
 
+
+        if (env.IsDevelopment())
+        {
+            // Add OpenAPI 3.0 document serving middleware
+            // Available at: http://localhost:<port>/swagger/v1/swagger.json
+            app.UseOpenApi();
+
+            // Add web UIs to interact with the document
+            // Available at: http://localhost:<port>/swagger
+            app.UseSwaggerUi3();
+        }
+
         if (options.RequiresStaticFiles)
         {
             // TODO REVIEW where and whether to set the dir here.
