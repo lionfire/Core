@@ -38,13 +38,18 @@ public static class WebHostFrameworkStartupInitializer
                      ;
             }
         }
-        if (o.Swagger || o.RequiresSwagger) {
+        if (o.Swagger || o.RequiresSwagger)
+        {
             services.AddEndpointsApiExplorer();
             services.AddMvcCore()
                 .AddApiExplorer();
-            
-            services.AddSwaggerGen();
 
+#if Swashbuckle
+            services.AddSwaggerGen();
+#else // NSwag:
+            services.AddOpenApiDocument(); // add OpenAPI v3 document
+                                           //     services.AddSwaggerDocument(); // add Swagger v2 document
+#endif
         }
         //if (o.NSwag)
         //{
@@ -95,29 +100,20 @@ public static class WebHostFrameworkStartupInitializer
         //app.UseHttpsRedirection(); // TODO: based on option, and if both http and https interfaces are configured
 
 
-        if (env.IsDevelopment())
-        {
-            // Add OpenAPI 3.0 document serving middleware
-            // Available at: http://localhost:<port>/swagger/v1/swagger.json
-            app.UseOpenApi();
 
-            // Add web UIs to interact with the document
-            // Available at: http://localhost:<port>/swagger
-            app.UseSwaggerUi3();
-        }
 
         if (options.RequiresStaticFiles)
         {
             // TODO REVIEW where and whether to set the dir here.
             var rootDir = Path.Combine(AppContext.BaseDirectory, "wwwroot");
-            if(Directory.Exists(rootDir))
+            if (Directory.Exists(rootDir))
             {
                 app.UseStaticFiles(new StaticFileOptions
                 {
                     FileProvider = new PhysicalFileProvider(rootDir)
                 });
             }
-            else
+            //else
             {
                 app.UseStaticFiles();
             }
@@ -135,7 +131,7 @@ public static class WebHostFrameworkStartupInitializer
 
         if (endpoints)
         {
-            app.UseEndpoints(endpoints => 
+            app.UseEndpoints(endpoints =>
             {
                 // ENH: this could probably be reworked to be a little more flexible
                 configureEndpoints?.Invoke(endpoints);
@@ -155,12 +151,25 @@ public static class WebHostFrameworkStartupInitializer
                 if (customInit != null) customInit(app, env);
                 else
                 {
+#if Swashbuckle
                     app.UseSwagger();
                     app.UseSwaggerUI(options =>
                     {
                         options.SwaggerEndpoint("/swagger/v1/swagger.json", "v1");
                         //options.RoutePrefix = string.Empty;
                     });
+#else // NSwag
+                    // Add OpenAPI 3.0 document serving middleware
+                    // Available at: http://localhost:<port>/swagger/v1/swagger.json
+                    app.UseOpenApi(); // serve OpenAPI/Swagger documents
+
+                    // Add web UIs to interact with the document
+                    // Available at: http://localhost:<port>/swagger
+                    app.UseSwaggerUi(); // serve Swagger UI
+                    app.UseReDoc(s => s
+                        .DocumentPath = "/swagger/v1/swagger.json" // Default: /swagger/{documentName}/swagger.json').
+                    ); // serve ReDoc UI
+#endif
                 }
             }
         }
@@ -215,7 +224,10 @@ public static class WebHostFrameworkStartupInitializer
 
         if (options.Swagger)
         {
+#if Swashbuckle
             endpoints.MapSwagger();
+#else
+#endif
         }
 
         return options;
