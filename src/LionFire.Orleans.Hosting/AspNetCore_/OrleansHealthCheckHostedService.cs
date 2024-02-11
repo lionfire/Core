@@ -30,7 +30,7 @@ public static class OrleansHealthCheckX
         services.AddHealthChecks()
                         .AddCheck<GrainHealthCheck>("GrainHealth")
                         .AddCheck<SiloHealthCheck>("SiloHealth")
-                        .AddCheck<StorageHealthCheck>("StorageHealth")
+                        //.AddCheck<StorageHealthCheck>("StorageHealth")
                         .AddCheck<ClusterHealthCheck>("ClusterHealth");
 
         services.AddSingleton<IHealthCheckPublisher, LoggingHealthCheckPublisher>()

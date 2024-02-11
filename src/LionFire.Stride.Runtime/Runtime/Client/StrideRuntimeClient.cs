@@ -48,6 +48,19 @@ public class StrideRuntimeClient : StrideRuntime
         throw new NotImplementedException();
     //Stride.Games.GamePlatform.Create(game);
 
+    protected override void AddEarlyGameSystems()
+    {
+        base.AddEarlyGameSystems();
+
+#if TODO
+        // Add input system early so that it can obtained by the UI system
+        var inputSystem = new InputSystem(Services);
+        Input = inputSystem.Manager;
+        Services.AddService(Input);
+        GameSystems.Add(inputSystem);
+#endif
+
+    }
     /// <summary>
     /// 
     /// </summary>

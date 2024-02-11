@@ -39,9 +39,16 @@ using Stride.Games;
 using Stride.Games.Time;
 using Stride.Graphics;
 using Stride.Physics;
+using Stride.Profiling;
+using Stride.Rendering.Fonts;
+using Stride.Rendering;
+using Stride.Shaders.Compiler;
+using Stride.Streaming;
+using Stride.VirtualReality;
 using System.IO.IsolatedStorage;
 using System.Threading;
 using ILogger = Microsoft.Extensions.Logging.ILogger;
+using Stride.Engine.Processors;
 
 namespace LionFire.Stride_.Runtime;
 
@@ -127,21 +134,136 @@ public abstract class StrideRuntime : IStrideRuntime
         //GlobalContent = serviceProvider.GetService<GlobalContentManager>();
 
         // Stride's DI container, with global services as fallback for shareable services
-        StrideServices = new(GlobalStrideServices);
+        this.StrideServices = new(GlobalStrideServices);
 
         // Stride's Content Manager
-        Content = new ContentManager(StrideServices);
-        StrideServices.AddService<IContentManager>(Content);
-        StrideServices.AddService(Content);
+        Content = new ContentManager(this.StrideServices);
+        this.StrideServices.AddService<IContentManager>(Content);
+        this.StrideServices.AddService(Content);
         DumpContentIndex();
 
         // Stride's Game systems
-        gameSystems = new GameSystemCollection(StrideServices);
-        StrideServices.AddService<IGameSystemCollection>(gameSystems);
-        gameSystems.Initialize();
+        gameSystems = new GameSystemCollection(this.StrideServices);
+        this.StrideServices.AddService<IGameSystemCollection>(gameSystems);
 
         loadSettings = CreateContentManagerLoaderSettings;
+
+        Script = new ScriptSystem(StrideServices);
+        StrideServices.AddService(Script);
+
+        SceneSystem = new SceneSystem(StrideServices);
+        StrideServices.AddService(SceneSystem);
+
+#if TODO
+        Streaming = new StreamingManager(StrideServices);
+
+        Audio = new AudioSystem(StrideServices);
+        StrideServices.AddService(Audio);
+        StrideServices.AddService<IAudioEngineProvider>(Audio);
+
+        gameFontSystem = new GameFontSystem(StrideServices);
+        StrideServices.AddService(gameFontSystem.FontSystem);
+        StrideServices.AddService<IFontFactory>(gameFontSystem.FontSystem);
+
+        SpriteAnimation = new SpriteAnimationSystem(StrideServices);
+        StrideServices.AddService(SpriteAnimation);
+
+        DebugTextSystem = new DebugTextSystem(StrideServices);
+        StrideServices.AddService(DebugTextSystem);
+
+        ProfilingSystem = new GameProfilingSystem(StrideServices);
+        StrideServices.AddService(ProfilingSystem);
+
+        VRDeviceSystem = new VRDeviceSystem(StrideServices);
+        StrideServices.AddService(VRDeviceSystem);
+
+        // Creates the graphics device manager
+        GraphicsDeviceManager = new GraphicsDeviceManager(this);
+        StrideServices.AddService<IGraphicsDeviceManager>(GraphicsDeviceManager);
+        StrideServices.AddService<IGraphicsDeviceService>(GraphicsDeviceManager);
+
+        AutoLoadDefaultSettings = true;
+#endif
+
     }
+
+    #region Game Systems
+
+    /// <summary>
+    /// Gets the script system.
+    /// </summary>
+    /// <value>The script.</value>
+    public ScriptSystem Script { get; }
+
+    /// <summary>
+    /// Gets the scene system.
+    /// </summary>
+    /// <value>The scene system.</value>
+    public SceneSystem SceneSystem { get; }
+
+    #endregion
+
+    protected virtual void AddEarlyGameSystems() { }
+
+    /// <summary>Called after the Game is created, but before <see cref="GraphicsDevice"/> is available and before LoadContent(). Reference page contains code sample.</summary>
+    protected virtual void Initialize()
+    {
+        AddEarlyGameSystems();
+
+        gameSystems.Initialize();
+
+        Content.Serializer.LowLevelSerializerSelector = ParameterContainerExtensions.DefaultSceneSerializerSelector;
+
+        // Add the scheduler system
+        // - Must be after Input, so that scripts are able to get latest input
+        // - Must be before Entities/Camera/Audio/UI, so that scripts can apply
+        // changes in the same frame they will be applied
+        GameSystems.Add(Script);
+
+#if TODO
+        // Add the Font system
+        GameSystems.Add(gameFontSystem);
+        //Add the sprite animation System
+        GameSystems.Add(SpriteAnimation);
+
+        GameSystems.Add(DebugTextSystem);
+        GameSystems.Add(ProfilingSystem);
+
+        EffectSystem = new EffectSystem(Services);
+        Services.AddService(EffectSystem);
+
+        // If requested in game settings, compile effects remotely and/or notify new shader requests
+        EffectSystem.Compiler = EffectCompilerFactory.CreateEffectCompiler(Content.FileProvider, EffectSystem, Settings?.PackageName, Settings?.EffectCompilation ?? EffectCompilationMode.Local, Settings?.RecordUsedEffects ?? false);
+
+        // Setup shader compiler settings from a compilation mode. 
+        // TODO: We might want to provide overrides on the GameSettings to specify debug and/or optim level specifically.
+        if (Settings != null)
+            EffectSystem.SetCompilationMode(Settings.CompilationMode);
+
+        GameSystems.Add(EffectSystem);
+
+        if (Settings != null)
+            Streaming.SetStreamingSettings(Settings.Configurations.Get<StreamingSettings>());
+        GameSystems.Add(Streaming);
+        GameSystems.Add(SceneSystem);
+
+        // Add the Audio System
+        GameSystems.Add(Audio);
+
+        // Add the VR System
+        GameSystems.Add(VRDeviceSystem);
+
+        // TODO: data-driven?
+        Content.Serializer.RegisterSerializer(new ImageSerializer());
+#endif
+
+        Started?.Invoke(this, null);
+    }
+
+    /// <summary>
+    /// Static event that will be fired when a game is initialized
+    /// </summary>
+    public static event EventHandler Started;
 
     private void DumpContentIndex()
     {
@@ -198,12 +320,14 @@ public abstract class StrideRuntime : IStrideRuntime
         //}
         SceneInstance.RootScene = scene;
 
-        var sceneSystem = new SceneSystem(StrideServices)
-        {
-            SceneInstance = SceneInstance
-        };
-        StrideServices.AddService(sceneSystem);
+        //var sceneSystem = new SceneSystem(StrideServices)
+        //{
+        //    SceneInstance = SceneInstance
+        //};
+        //StrideServices.AddService(sceneSystem);
 
+        var sceneSystem = StrideServices.GetService<SceneSystem>();
+        sceneSystem.SceneInstance = SceneInstance;
 
         var Physics = new PhysicsProcessor();
         SceneInstance.Processors.Add(Physics);
@@ -466,7 +590,7 @@ public abstract class StrideRuntime : IStrideRuntime
                     Update(UpdateTime);
                 }
                 totalElapsedTime += elapsedTimePerUpdate;
-                if(nextTickLog < DateTime.UtcNow)
+                if (nextTickLog < DateTime.UtcNow)
                 {
                     nextTickLog = DateTime.UtcNow + TimeSpan.FromSeconds(10);
                     Logger.LogInformation("Total elapsed: {0},   time per update: {1}", totalElapsedTime, elapsedTimePerUpdate);
@@ -516,11 +640,6 @@ public abstract class StrideRuntime : IStrideRuntime
     }
 
 
-    /// <summary>Called after the Game is created, but before <see cref="GraphicsDevice"/> is available and before LoadContent(). Reference page contains code sample.</summary>
-    protected virtual void Initialize()
-    {
-        GameSystems.Initialize();
-    }
 
     internal virtual void LoadContentInternal()
     {
