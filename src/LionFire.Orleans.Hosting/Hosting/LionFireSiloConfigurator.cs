@@ -177,7 +177,14 @@ public static class LionFireSiloConfiguratorX
                  .ConfigureLogging(logging => logging.AddConsole())
                  ;
 
-        if (config.DashboardEnabled) siloBuilder.UseDashboard(options => { options.Port = config.DashboardPort ?? throw new ArgumentNullException(nameof(config.DashboardPort)); options.Host = config.DashboardInterface; });
+        if (config.DashboardEnabled)
+        {
+            siloBuilder.UseDashboard(options => { 
+                options.Port = config.DashboardPort ?? throw new ArgumentNullException(nameof(config.DashboardPort)); 
+                options.Host = config.DashboardInterface;
+                //options.HostSelf = false;
+            });
+        }
 
         configureSilo?.Invoke(context, siloBuilder);
 
