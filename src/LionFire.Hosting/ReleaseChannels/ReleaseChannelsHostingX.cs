@@ -7,6 +7,7 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Xml.Linq;
 
 namespace LionFire.Hosting;
@@ -19,9 +20,9 @@ public static class ReleaseChannelsHostingX
     public static IHostApplicationBuilder DeploymentSlot(this IHostApplicationBuilder hostBuilder, bool reloadOnChange = true)
     {
         hostBuilder.Services.AddHostedService<DeploymentSlotLogger>();
-        
+
         var value = _EnvVar(hostBuilder, "slot");
-      
+
         if (value != null)
         {
             var configFile = $"appsettings.slot.{value}.json";
@@ -66,19 +67,21 @@ public static class ReleaseChannelsHostingX
         return hostBuilder;
     }
 
+    static string configDirFromEnv => Environment.GetEnvironmentVariable($"DOTNET__ConfigDir");
+    static string configDir => configDirFromEnv ?? Environment.CurrentDirectory;
 
     public static IHostBuilder DeploymentSlot(this IHostBuilder hostBuilder, bool reloadOnChange = true)
     {
         hostBuilder.ConfigureServices(s => s.AddHostedService<DeploymentSlotLogger>());
 
-        var value = _EnvVar(hostBuilder, "slot");
+        var value = _EnvVar(hostBuilder, "Slot");
 
         hostBuilder.ConfigureHostConfiguration(config =>
         {
             if (value != null)
             {
                 config
-                    .AddJsonFile($"appsettings.slot.{value}.json", optional: true, reloadOnChange)
+                    .AddJsonFile(Path.Combine(configDir, $"appsettings.slot.{value}.json"), optional: true, reloadOnChange)
                 ;
             }
         });
@@ -88,7 +91,7 @@ public static class ReleaseChannelsHostingX
 
     private static string _EnvVar(this IHostBuilder hostBuilder, string name, bool reloadOnChange = true)
     {
-        var value = Environment.GetEnvironmentVariable($"DOTNET_{name}");
+        var value = Environment.GetEnvironmentVariable($"DOTNET__{name}");
 
         if (value != null) { hostBuilder.Properties.Add(name, value); }
 
@@ -107,7 +110,7 @@ public static class ReleaseChannelsHostingX
     {
         hostBuilder.ConfigureServices(s => s.AddHostedService<ReleaseChannelLogger>());
 
-        var value = _EnvVar(hostBuilder, "releaseChannel");
+        var value = _EnvVar(hostBuilder, "ReleaseChannel");
         if (value == null && LionFireEnvironment.IsUnitTest == true) value = TestReleaseChannel;
 
         hostBuilder.ConfigureHostConfiguration(config =>
@@ -115,7 +118,7 @@ public static class ReleaseChannelsHostingX
             if (value != null)
             {
                 config
-                    .AddJsonFile($"appsettings.{value}.json", optional: true, reloadOnChange)
+                    .AddJsonFile(Path.Combine(configDir, $"appsettings.{value}.json"), optional: true, reloadOnChange)
                 ;
             }
         });
