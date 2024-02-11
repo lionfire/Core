@@ -8,6 +8,7 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using System.IO;
 using System.Reflection;
+using System.Xml.Linq;
 
 namespace LionFire.Hosting;
 
@@ -73,7 +74,12 @@ public static class DefaultsX
 
         #region appsettings.json
 
-        var appSettingsPath = Path.Combine(Environment.CurrentDirectory, "appsettings.json");
+        var configDirFromEnv = Environment.GetEnvironmentVariable($"DOTNET__ConfigDir");
+        var configDir = configDirFromEnv ?? Environment.CurrentDirectory;
+
+        var configFileFromEnv = Environment.GetEnvironmentVariable($"DOTNET__ConfigFile");
+        var appSettingsPath = configFileFromEnv ?? Path.Combine(configDir, "appsettings.json");
+
         builder.ConfigureAppConfiguration((context, config) => config
             //.SetBasePath(AppContext.BaseDirectory)
             //.SetBasePath(Environment.CurrentDirectory)
@@ -98,7 +104,7 @@ public static class DefaultsX
 
         #endregion
 
-        #region appsettings.{Environment}.json, appsettings.test.json, env: LionFire_*, copy example settings
+        #region appsettings.{Environment}.json, appsettings.test.json, env: LionFire__*, copy example settings
 
         if (lf.HostBuilder.WrappedHostBuilder != null)
         {
@@ -107,7 +113,7 @@ public static class DefaultsX
                 // REVIEW: releaseChannel is set to test, but this lets us change releaseChannel to something else while still using settings for testing
                 if (isTest) c.AddJsonFile("appsettings.test.json", optional: true, reloadOnChange: false);
 
-                c.AddEnvironmentVariables(prefix: "LionFire_");
+                c.AddEnvironmentVariables(prefix: "LionFire__");
 
             });
 
@@ -139,7 +145,7 @@ public static class DefaultsX
             var config = lf.HostBuilder.WrappedIHostApplicationBuilder.Configuration;
 
             if (isTest) config.AddJsonFile("appsettings.test.json", optional: true, reloadOnChange: false);
-            config.AddEnvironmentVariables(prefix: "LionFire_");
+            config.AddEnvironmentVariables(prefix: "LionFire__");
 
             lf.HostBuilder.WrappedIHostApplicationBuilder
                 .ReleaseChannel() // adds appsettings.{releaseChannel}.json
@@ -176,12 +182,12 @@ public static class DefaultsX
         // Configured supplemental AppSettings file
         builder.ConfigureAppConfiguration((hostingContext, config) =>
         {
-            config.AddJsonFile("appsettings." + hostingContext.HostingEnvironment.EnvironmentName + ".json", optional: true, reloadOnChange);
+            config.AddJsonFile(Path.Combine(configDir, "appsettings." + hostingContext.HostingEnvironment.EnvironmentName + ".json"), optional: true, reloadOnChange);
 
             var appSettingsFile = hostingContext.Configuration[ConfigurationKeys.AppSettingsFileKey];
             if (appSettingsFile != null)
             {
-                Log.Get(typeof(DefaultsX).FullName).LogInformation($"Adding config source: {appSettingsFile}  (exists: {File.Exists(appSettingsFile)})");
+                Log.Get(typeof(DefaultsX).FullName!).LogInformation($"Adding config source: {appSettingsFile}  (exists: {File.Exists(appSettingsFile)})");
                 config
                       .AddJsonFile(appSettingsFile, optional: true, reloadOnChange: true);
             }
