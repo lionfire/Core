@@ -558,3 +558,12 @@ body.dark .mud-input-label-outlined {
 .dev {
     opacity: 0.5;
 }
+
+/* Hover */
+.HoverOnly {
+    visibility: hidden;
+}
+
+.HoverOnlyParent:hover .HoverOnly {
+    visibility: visible;
+}
