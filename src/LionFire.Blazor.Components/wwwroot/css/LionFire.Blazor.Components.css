@@ -567,3 +567,12 @@ body.dark .mud-input-label-outlined {
 .HoverOnlyParent:hover .HoverOnly {
     visibility: visible;
 }
+
+/* Faded */
+.FadeUnlessHover {
+    opacity: 0.4;
+}
+
+.FadeUnlessHoverParent:hover .FadeUnlessHover {
+    opacity: 1.0;
+}

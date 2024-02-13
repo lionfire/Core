@@ -15,7 +15,7 @@ namespace LionFire.Hosting;
 //    public Task StopAsync(CancellationToken cancellationToken) => Task.CompletedTask;
 //}
 
-public class AppContextLogger(ILogger<ReleaseChannelLogger> logger) : IHostedService
+public class AppContextLogger(ILogger<AppContextLogger> logger) : IHostedService
 {
     public Task StartAsync(CancellationToken cancellationToken)
     {

@@ -1,5 +1,6 @@
 ﻿using LionFire.Applications;
 using LionFire.Configuration.Hosting;
+using LionFire.ExtensionMethods;
 using LionFire.Structures.Keys;
 using LionFire.Types.Scanning;
 using Microsoft.Extensions.Configuration;
@@ -35,34 +36,25 @@ public static class DefaultsX
 
         return lf;
     }
-    
+
     /// <summary>
     /// Add LionFire defaults for IHostBuilder
     /// </summary>
     public static ILionFireHostBuilder Defaults(this ILionFireHostBuilder lf)
     {
-        lf.TrySetDefaultAppInfo();
-
-        lf.ConfigureServices(s => s
-            .AddHostedService<AppInfoLogger>()
-            .AddHostedService<AppContextLogger>()
-            .AddFilesystemResiliencePolicy()
-        );
-
-        bool reloadOnChange = true;
-        bool isTest = LionFireEnvironment.IsUnitTest == true;
-
         var builder = lf.HostBuilder;
 
-        builder.UseContentRoot(AppContext.BaseDirectory); // REVIEW - compare with Microsoft default behavior, eliminate if not needed, or else document more
-
-        builder.ConfigureServices(s => s.AddHostedService<EnvironmentNameLogger>());
-
-        #region Configuration
+        #region Environment
 
         builder.ConfigureHostConfiguration(config =>
         {
-            config.AddEnvironmentVariables(prefix: "DOTNET__");
+            config.AddEnvironmentVariables(prefix: "DOTNET_");
+
+            var env = Environment.GetEnvironmentVariable("DOTNET_Environment");
+            if (env is { Length: > 0 })
+            {
+                config.AddInMemoryCollection([new KeyValuePair<string, string?>(HostDefaults.EnvironmentKey, env)]);
+            }
 #if REVIEW
             var args = Environment.CommandLine.Split((string?)null,StringSplitOptions.RemoveEmptyEntries);
             if (args is { Length: > 0 })
@@ -72,12 +64,44 @@ public static class DefaultsX
 #endif
         });
 
+        #endregion
+
+        lf.TrySetDefaultAppInfo();
+
+        lf.ConfigureServices(s => s
+            .AddHostedService<AppInfoLogger>()
+            .AddHostedService<AppContextLogger>()
+            .AddHostedService<AssemblyVersionLogger>()
+            .Configure<AssemblyVersionLoggerOptions>(o =>
+            {
+                o.PrefixWhitelist.Add("LionFire");
+
+                var assemblyName = Assembly.GetEntryAssembly()?.FullName;
+                var index = assemblyName?.IndexOf('.');
+                if (assemblyName != null && index.HasValue && index.Value > 0)
+                {
+                    o.PrefixWhitelist.Add(assemblyName.Substring(0, index.Value));
+                }
+            })
+            .AddFilesystemResiliencePolicy()
+        );
+
+        bool reloadOnChange = true;
+        bool isTest = LionFireEnvironment.IsUnitTest == true;
+
+
+        builder.UseContentRoot(AppContext.BaseDirectory); // REVIEW - compare with Microsoft default behavior, eliminate if not needed, or else document more
+
+        builder.ConfigureServices(s => s.AddHostedService<EnvironmentNameLogger>());
+
+        #region Configuration
+
         #region appsettings.json
 
-        var configDirFromEnv = Environment.GetEnvironmentVariable($"DOTNET__ConfigDir");
+        var configDirFromEnv = Environment.GetEnvironmentVariable($"DOTNET_ConfigDir");
         var configDir = configDirFromEnv ?? Environment.CurrentDirectory;
 
-        var configFileFromEnv = Environment.GetEnvironmentVariable($"DOTNET__ConfigFile");
+        var configFileFromEnv = Environment.GetEnvironmentVariable($"DOTNET_ConfigFile");
         var appSettingsPath = configFileFromEnv ?? Path.Combine(configDir, "appsettings.json");
 
         builder.ConfigureAppConfiguration((context, config) => config
@@ -150,7 +174,7 @@ public static class DefaultsX
             lf.HostBuilder.WrappedIHostApplicationBuilder
                 .ReleaseChannel() // adds appsettings.{releaseChannel}.json
                 .DeploymentSlot() // adds appsettings.slot.{slot}.json
-                //.ConfigureServices(s => s.AddHostedService<AppContextLogger>())
+                                  //.ConfigureServices(s => s.AddHostedService<AppContextLogger>())
                 .CopyExampleAppSettings()
                 ;
 

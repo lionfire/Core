@@ -38,6 +38,7 @@ public static class ReleaseChannelsHostingX
         var value = hostBuilder.Configuration[name];
         return value;
     }
+
     public static IHostApplicationBuilder ReleaseChannel(this IHostApplicationBuilder hostBuilder, bool reloadOnChange = true)
     {
         hostBuilder.Services.AddHostedService<ReleaseChannelLogger>();
@@ -67,7 +68,7 @@ public static class ReleaseChannelsHostingX
         return hostBuilder;
     }
 
-    static string configDirFromEnv => Environment.GetEnvironmentVariable($"DOTNET__ConfigDir");
+    static string configDirFromEnv => Environment.GetEnvironmentVariable($"DOTNET_ConfigDir");
     static string configDir => configDirFromEnv ?? Environment.CurrentDirectory;
 
     public static IHostBuilder DeploymentSlot(this IHostBuilder hostBuilder, bool reloadOnChange = true)
@@ -91,7 +92,7 @@ public static class ReleaseChannelsHostingX
 
     private static string _EnvVar(this IHostBuilder hostBuilder, string name, bool reloadOnChange = true)
     {
-        var value = Environment.GetEnvironmentVariable($"DOTNET__{name}");
+        var value = Environment.GetEnvironmentVariable($"DOTNET_{name}");
 
         if (value != null) { hostBuilder.Properties.Add(name, value); }
 
