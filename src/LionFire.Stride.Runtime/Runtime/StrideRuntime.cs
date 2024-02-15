@@ -136,13 +136,11 @@ public abstract class StrideRuntime : IStrideRuntime
         // Stride's DI container, with global services as fallback for shareable services
         this.StrideServices = new(GlobalStrideServices);
 
-        // Stride's Content Manager
         Content = new ContentManager(this.StrideServices);
         this.StrideServices.AddService<IContentManager>(Content);
         this.StrideServices.AddService(Content);
         DumpContentIndex();
 
-        // Stride's Game systems
         gameSystems = new GameSystemCollection(this.StrideServices);
         this.StrideServices.AddService<IGameSystemCollection>(gameSystems);
 
@@ -153,37 +151,6 @@ public abstract class StrideRuntime : IStrideRuntime
 
         SceneSystem = new SceneSystem(StrideServices);
         StrideServices.AddService(SceneSystem);
-
-#if TODO
-        Streaming = new StreamingManager(StrideServices);
-
-        Audio = new AudioSystem(StrideServices);
-        StrideServices.AddService(Audio);
-        StrideServices.AddService<IAudioEngineProvider>(Audio);
-
-        gameFontSystem = new GameFontSystem(StrideServices);
-        StrideServices.AddService(gameFontSystem.FontSystem);
-        StrideServices.AddService<IFontFactory>(gameFontSystem.FontSystem);
-
-        SpriteAnimation = new SpriteAnimationSystem(StrideServices);
-        StrideServices.AddService(SpriteAnimation);
-
-        DebugTextSystem = new DebugTextSystem(StrideServices);
-        StrideServices.AddService(DebugTextSystem);
-
-        ProfilingSystem = new GameProfilingSystem(StrideServices);
-        StrideServices.AddService(ProfilingSystem);
-
-        VRDeviceSystem = new VRDeviceSystem(StrideServices);
-        StrideServices.AddService(VRDeviceSystem);
-
-        // Creates the graphics device manager
-        GraphicsDeviceManager = new GraphicsDeviceManager(this);
-        StrideServices.AddService<IGraphicsDeviceManager>(GraphicsDeviceManager);
-        StrideServices.AddService<IGraphicsDeviceService>(GraphicsDeviceManager);
-
-        AutoLoadDefaultSettings = true;
-#endif
 
     }
 
@@ -220,45 +187,45 @@ public abstract class StrideRuntime : IStrideRuntime
         // changes in the same frame they will be applied
         GameSystems.Add(Script);
 
-#if TODO
-        // Add the Font system
-        GameSystems.Add(gameFontSystem);
-        //Add the sprite animation System
-        GameSystems.Add(SpriteAnimation);
+        //// Add the Font system
+        //GameSystems.Add(gameFontSystem);
+        ////Add the sprite animation System
+        //GameSystems.Add(SpriteAnimation);
 
-        GameSystems.Add(DebugTextSystem);
-        GameSystems.Add(ProfilingSystem);
+        //GameSystems.Add(DebugTextSystem);
+        //GameSystems.Add(ProfilingSystem);
 
-        EffectSystem = new EffectSystem(Services);
-        Services.AddService(EffectSystem);
+        //EffectSystem = new EffectSystem(Services);
+        //Services.AddService(EffectSystem);
 
-        // If requested in game settings, compile effects remotely and/or notify new shader requests
-        EffectSystem.Compiler = EffectCompilerFactory.CreateEffectCompiler(Content.FileProvider, EffectSystem, Settings?.PackageName, Settings?.EffectCompilation ?? EffectCompilationMode.Local, Settings?.RecordUsedEffects ?? false);
+        //// If requested in game settings, compile effects remotely and/or notify new shader requests
+        //EffectSystem.Compiler = EffectCompilerFactory.CreateEffectCompiler(Content.FileProvider, EffectSystem, Settings?.PackageName, Settings?.EffectCompilation ?? EffectCompilationMode.Local, Settings?.RecordUsedEffects ?? false);
 
-        // Setup shader compiler settings from a compilation mode. 
-        // TODO: We might want to provide overrides on the GameSettings to specify debug and/or optim level specifically.
-        if (Settings != null)
-            EffectSystem.SetCompilationMode(Settings.CompilationMode);
+        //// Setup shader compiler settings from a compilation mode. 
+        //// TODO: We might want to provide overrides on the GameSettings to specify debug and/or optim level specifically.
+        //if (Settings != null)
+        //    EffectSystem.SetCompilationMode(Settings.CompilationMode);
 
-        GameSystems.Add(EffectSystem);
+        //GameSystems.Add(EffectSystem);
 
-        if (Settings != null)
-            Streaming.SetStreamingSettings(Settings.Configurations.Get<StreamingSettings>());
-        GameSystems.Add(Streaming);
-        GameSystems.Add(SceneSystem);
+        //if (Settings != null)
+        //Streaming.SetStreamingSettings(Settings.Configurations.Get<StreamingSettings>());
+        //GameSystems.Add(Streaming);
+        //GameSystems.Add(SceneSystem);
 
-        // Add the Audio System
-        GameSystems.Add(Audio);
+        //// Add the Audio System
+        //GameSystems.Add(Audio);
 
-        // Add the VR System
-        GameSystems.Add(VRDeviceSystem);
+        //// Add the VR System
+        //GameSystems.Add(VRDeviceSystem);
 
-        // TODO: data-driven?
-        Content.Serializer.RegisterSerializer(new ImageSerializer());
-#endif
+        //// TODO: data-driven?
+        //Content.Serializer.RegisterSerializer(new ImageSerializer());
 
         Started?.Invoke(this, null);
     }
+
+
 
     /// <summary>
     /// Static event that will be fired when a game is initialized
@@ -604,13 +571,14 @@ public abstract class StrideRuntime : IStrideRuntime
     }
     DateTime nextTickLog = DateTime.MinValue;
 
+
     public async Task Run(GameContext? context = null)
     {
         try
         {
             if (gamePlatform is ServerGamePlatform serverGamePlatform)
             {
-
+                OnInitCallback();
                 serverGamePlatform.RunCallback = OnServerTick;
             }
             gamePlatform.Run(Context);
@@ -654,6 +622,31 @@ public abstract class StrideRuntime : IStrideRuntime
     }
 
     protected virtual void InitializeGraphicsBeforeRun() { }
+
+    private void OnInitCallback()
+    {
+        // If/else outside of try-catch to separate user-unhandled exceptions properly
+        var unhandledException = game.UnhandledExceptionInternal;
+        if (unhandledException != null)
+        {
+            // Catch exceptions and transmit them to UnhandledException event
+            try
+            {
+                InitializeBeforeRun();
+            }
+            catch (Exception e)
+            {
+                // Some system was listening for exceptions
+                unhandledException(this, new GameUnhandledExceptionEventArgs(e, false));
+                Exit();
+            }
+        }
+        else
+        {
+            InitializeBeforeRun();
+        }
+    }
+
     internal void InitializeBeforeRun()
     {
         try

@@ -42,7 +42,36 @@ public class StrideRuntimeClient : StrideRuntime
 
     public StrideRuntimeClient(IServiceProvider serviceProvider, ILogger<StrideRuntimeClient> logger) : base(serviceProvider, logger)
     {
+#if TODO
+        Streaming = new StreamingManager(StrideServices);
 
+        Audio = new AudioSystem(StrideServices);
+        StrideServices.AddService(Audio);
+        StrideServices.AddService<IAudioEngineProvider>(Audio);
+
+        gameFontSystem = new GameFontSystem(StrideServices);
+        StrideServices.AddService(gameFontSystem.FontSystem);
+        StrideServices.AddService<IFontFactory>(gameFontSystem.FontSystem);
+
+        SpriteAnimation = new SpriteAnimationSystem(StrideServices);
+        StrideServices.AddService(SpriteAnimation);
+
+        DebugTextSystem = new DebugTextSystem(StrideServices);
+        StrideServices.AddService(DebugTextSystem);
+
+        ProfilingSystem = new GameProfilingSystem(StrideServices);
+        StrideServices.AddService(ProfilingSystem);
+
+        VRDeviceSystem = new VRDeviceSystem(StrideServices);
+        StrideServices.AddService(VRDeviceSystem);
+
+        // Creates the graphics device manager
+        GraphicsDeviceManager = new GraphicsDeviceManager(this);
+        StrideServices.AddService<IGraphicsDeviceManager>(GraphicsDeviceManager);
+        StrideServices.AddService<IGraphicsDeviceService>(GraphicsDeviceManager);
+
+        AutoLoadDefaultSettings = true;
+#endif
     }
     protected override IGamePlatformEx CreateGamePlatform() =>
         throw new NotImplementedException();
