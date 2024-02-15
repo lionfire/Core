@@ -79,7 +79,9 @@ public class AssemblyVersionLogger(ILogger<AssemblyVersionLogger> logger, IOptio
         }
         if (lastModified.HasValue)
         {
-            list.Add(lastModified.Value, assembly);
+            var key = lastModified.Value;
+            while (list.ContainsKey(key)) { key = key.AddTicks(1); }
+            list.Add(key, assembly);
         }
         else
         {
