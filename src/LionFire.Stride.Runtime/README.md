@@ -1,7 +1,19 @@
 
 ## Status
 
-WIP, not ready yet
+Early WIP.
+
+I made some progress.  I now have:
+
+- Bullet2PhysicsSystem
+- ScriptSystem
+- SceneSystem (derived class, with no-op for Draw)
+
+Update is called every tick on these, and no Draw calls.
+
+All that's needed from SceneSystem is to be able to set SceneInstance and call Update on it, so I made my own minimal version, but this started a chain reaction where I had to also provide numerous other classes: PhysicsProcessor, Simulation (duplicated a 1400 line C# file, Character stuff is internal and couldn't be used), with hacks (reflection or PrivateProxy to bypass private/internal accessibility).  This was a nightmare, so I subclassed SceneSystem instead.
+
+I don't have a sample program, but I'm checking in my library.  Instead of Game, the main class is called StrideRuntimeServer.
 
 ## LionFire.Stride.Runtime.dll Overview
 
