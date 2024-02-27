@@ -36,7 +36,7 @@ using Stride.Graphics;
 
 namespace LionFire.Stride_.Runtime;
 
-public class StrideRuntimeClient : StrideRuntime
+public class StrideRuntimeClient : StrideRuntime<SceneSystem>
 {
     protected override ClientOrServer ClientOrServer => ClientOrServer.Client;
 
@@ -73,6 +73,10 @@ public class StrideRuntimeClient : StrideRuntime
         AutoLoadDefaultSettings = true;
 #endif
     }
+
+    protected override SceneSystem CreateSceneSystem() =>  new SceneSystem(StrideServices);
+    protected override EntityProcessor CreatePhysicsProcessor() => new PhysicsProcessor();
+
     protected override IGamePlatformEx CreateGamePlatform() =>
         throw new NotImplementedException();
     //Stride.Games.GamePlatform.Create(game);

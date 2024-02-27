@@ -55,7 +55,8 @@ namespace LionFire.Stride_.Runtime;
 /// <remarks>
 /// Based on GameBase.cs
 /// </summary>
-public abstract class StrideRuntime : IStrideRuntime
+public abstract class StrideRuntime<TSceneSystem> : IStrideRuntime, ISceneSystem
+    where TSceneSystem : SceneSystem
 {
 
     #region Dependencies
@@ -149,10 +150,18 @@ public abstract class StrideRuntime : IStrideRuntime
         Script = new ScriptSystem(StrideServices);
         StrideServices.AddService(Script);
 
-        SceneSystem = new SceneSystem(StrideServices);
-        StrideServices.AddService(SceneSystem);
+        SceneSystem = CreateSceneSystem();
+        StrideServices.AddService<SceneSystem>(SceneSystem);
 
+        var physicsSystem = new Bullet2PhysicsSystem(StrideServices);
+        StrideServices.AddService<IPhysicsSystem>(physicsSystem);
+        gameSystems.Add(physicsSystem);
+        physicsSystem.Initialize(); // 
+
+        OnConstructed();
     }
+
+    protected virtual void OnConstructed() { }
 
     #region Game Systems
 
@@ -162,11 +171,43 @@ public abstract class StrideRuntime : IStrideRuntime
     /// <value>The script.</value>
     public ScriptSystem Script { get; }
 
+    #region SceneSystem
+
+    // Upstream PR idea: Ideally there would be a common interface or base class between SceneSystem and HeadlessSceneSystem
+
     /// <summary>
     /// Gets the scene system.
     /// </summary>
     /// <value>The scene system.</value>
-    public SceneSystem SceneSystem { get; }
+    public TSceneSystem SceneSystem { get; }
+    protected abstract TSceneSystem CreateSceneSystem();
+
+    ISceneSystem SceneSystemWrapper => this;
+
+    public SceneInstance? SceneInstance
+    {
+        get => SceneSystem switch
+        {
+            SceneSystem ss => ss.SceneInstance,
+            //HeadlessSceneSystem hss => hss.SceneInstance,
+            _ => null
+        };
+        protected set
+        {
+            switch (SceneSystem)
+            {
+                case SceneSystem ss:
+                    ss.SceneInstance = value; break;
+                //case HeadlessSceneSystem hss:
+                //    hss.SceneInstance = value; break;
+                default:
+                    throw new InvalidOperationException();
+            }
+        }
+    }
+    SceneInstance? ISceneSystem.SceneInstance { get => SceneInstance; set => SceneInstance = value; }
+
+    #endregion
 
     #endregion
 
@@ -211,7 +252,7 @@ public abstract class StrideRuntime : IStrideRuntime
         //if (Settings != null)
         //Streaming.SetStreamingSettings(Settings.Configurations.Get<StreamingSettings>());
         //GameSystems.Add(Streaming);
-        //GameSystems.Add(SceneSystem);
+        GameSystems.Add(SceneSystem);
 
         //// Add the Audio System
         //GameSystems.Add(Audio);
@@ -230,7 +271,7 @@ public abstract class StrideRuntime : IStrideRuntime
     /// <summary>
     /// Static event that will be fired when a game is initialized
     /// </summary>
-    public static event EventHandler Started;
+    public static event EventHandler? Started;
 
     private void DumpContentIndex()
     {
@@ -287,18 +328,12 @@ public abstract class StrideRuntime : IStrideRuntime
         //}
         SceneInstance.RootScene = scene;
 
-        //var sceneSystem = new SceneSystem(StrideServices)
-        //{
-        //    SceneInstance = SceneInstance
-        //};
-        //StrideServices.AddService(sceneSystem);
+        SceneSystemWrapper.SceneInstance = SceneInstance;
 
-        var sceneSystem = StrideServices.GetService<SceneSystem>();
-        sceneSystem.SceneInstance = SceneInstance;
-
-        var Physics = new PhysicsProcessor();
-        SceneInstance.Processors.Add(Physics);
+        SceneInstance.Processors.Add(CreatePhysicsProcessor());
     }
+
+    protected abstract EntityProcessor CreatePhysicsProcessor();
 
     #endregion
 
@@ -524,6 +559,7 @@ public abstract class StrideRuntime : IStrideRuntime
         }
     }
 
+    long tickCount = 0;
     /// <summary>
     /// Call this method within your overriden <see cref="RawTickProducer"/> to update and draw the game yourself. <br/>
     /// As this version is manual, there are a lot of functionality purposefully skipped: <br/>
@@ -551,6 +587,7 @@ public abstract class StrideRuntime : IStrideRuntime
             // Reset the time of the next frame
             for (int i = 0; i < updateCount && !IsExiting; i++)
             {
+                tickCount++;
                 UpdateTime.Update(UpdateTime.Total + elapsedTimePerUpdate, elapsedTimePerUpdate, true);
                 using (Profiler.Begin(GameProfilingKeys.GameUpdate))
                 {
@@ -560,7 +597,7 @@ public abstract class StrideRuntime : IStrideRuntime
                 if (nextTickLog < DateTime.UtcNow)
                 {
                     nextTickLog = DateTime.UtcNow + TimeSpan.FromSeconds(10);
-                    Logger.LogInformation("Total elapsed: {0},   time per update: {1}", totalElapsedTime, elapsedTimePerUpdate);
+                    Logger.LogInformation("Total elapsed: {0},   time per update: {1},   total ticks: {2}", totalElapsedTime, elapsedTimePerUpdate, tickCount);
                 }
             }
         }
@@ -623,10 +660,12 @@ public abstract class StrideRuntime : IStrideRuntime
 
     protected virtual void InitializeGraphicsBeforeRun() { }
 
+    EventHandler<GameUnhandledExceptionEventArgs> UnhandledExceptionInternal;
+
     private void OnInitCallback()
     {
         // If/else outside of try-catch to separate user-unhandled exceptions properly
-        var unhandledException = game.UnhandledExceptionInternal;
+        var unhandledException = UnhandledExceptionInternal;
         if (unhandledException != null)
         {
             // Catch exceptions and transmit them to UnhandledException event
@@ -771,7 +810,7 @@ public abstract class StrideRuntime : IStrideRuntime
 
     public GameSystemCollection GameSystems => gameSystems;
     GameSystemCollection gameSystems;
-    public SceneInstance? SceneInstance { get; protected set; }
+
     public PhysicsProcessor? Physics { get; protected set; }
     public IGraphicsDeviceManager? GraphicsDeviceManager { get; protected set; }
 
@@ -794,7 +833,7 @@ public abstract class StrideRuntime : IStrideRuntime
     public CancellationToken IsStarted => cts.Token;
     CancellationTokenSource cts = new();
 
-    public async Task StartAsync(CancellationToken cancellationToken)
+    public virtual async Task StartAsync(CancellationToken cancellationToken)
     {
         await Load();
         cts.Cancel();
@@ -812,4 +851,3 @@ public abstract class StrideRuntime : IStrideRuntime
 
     #endregion
 }
-

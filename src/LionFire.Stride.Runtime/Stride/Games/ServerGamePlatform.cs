@@ -17,6 +17,10 @@ public class ServerGamePlatform : ReferenceBase, IGamePlatformEx
 
     public string DefaultAppDirectory => throw new NotImplementedException();
 
+    // Reference:
+    // - https://diamondlobby.com/server-tick-rates/
+    public double TicksPerSecond { get; set; } = 128;
+
     #endregion
 
     #region Lifecycle
@@ -39,9 +43,15 @@ public class ServerGamePlatform : ReferenceBase, IGamePlatformEx
     internal Action ExitCallback;
     internal bool Exiting;
 
+    private void OnRunStarting()
+    {
+        PeriodicTimer = new PeriodicTimer(TimeSpan.FromSeconds(1.0 / TicksPerSecond));
+    }
+
     [Blocking]
     public async void Run(GameContext gameContext)
     {
+        OnRunStarting();
         // Initialize the init callback
         //InitCallback();
 
@@ -73,7 +83,7 @@ public class ServerGamePlatform : ReferenceBase, IGamePlatformEx
             }
         }
     }
-    PeriodicTimer PeriodicTimer = new PeriodicTimer(TimeSpan.FromMilliseconds(1.0));
+    PeriodicTimer PeriodicTimer;
 
     public void Exit()
     {

@@ -73,7 +73,8 @@ public static class WebHostX
     // Convenience overload: TWebHostConfig defaults to WebHostConfig
     public static ILionFireHostBuilder WebHost<TStartup>(this ILionFireHostBuilder builder, Action<LionFireWebHostBuilder>? configure = null)
         where TStartup : class
-            => throw new NotImplementedException("FIXME - config not being wired up for some reason");// builder.WebHost<TStartup, WebHostConfig>();
+            => builder.WebHost<TStartup, WebHostConfig>();
+        //throw new NotImplementedException("FIXME - config not being wired up for some reason");// builder.WebHost<TStartup, WebHostConfig>();
 
     private static ILionFireHostBuilder _WebHost<TStartup>(this ILionFireHostBuilder builder, WebHostConfig o /*Func<IConfiguration, WebHostConfig> oFunc*/)
         where TStartup : class

@@ -51,7 +51,7 @@ public static class TelemetryHostingX
         return lf;
     }
 
-    public static ILionFireHostBuilder OpenTelemetry(this ILionFireHostBuilder lf)
+    public static ILionFireHostBuilder OpenTelemetry(this ILionFireHostBuilder lf, Action<OpenTelemetryBuilder>? configure = null)
     {
         lf
             .Metrics()
@@ -59,6 +59,11 @@ public static class TelemetryHostingX
             .IHostApplicationBuilder
                 .AddOpenTelemetryExporters()
             ;
+
+        if(configure != null)
+        {
+            lf.ConfigureServices(s => configure(s.AddOpenTelemetry()));
+        }
         return lf;
     }
     public static ILionFireHostBuilder Metrics(this ILionFireHostBuilder lf)
@@ -102,7 +107,17 @@ public static class TelemetryHostingX
         }
 
         builder.Services.AddOpenTelemetry()
-           .WithMetrics(metrics => metrics.AddPrometheusExporter());
+           .WithMetrics(metrics => metrics.AddPrometheusExporter())
+            .ConfigureResource(resource => resource
+                .AddService(serviceName: builder.Environment.ApplicationName))
+            .WithMetrics(//metrics => metrics
+                //.AddAspNetCoreInstrumentation() // TODO: Add to WebHost
+                //.AddConsoleExporter((exporterOptions, metricReaderOptions) => // TEMP
+                //{
+                //    metricReaderOptions.PeriodicExportingMetricReaderOptions.ExportIntervalMilliseconds = 1000;
+                //})
+                )
+            ;
         
         return builder;
     }

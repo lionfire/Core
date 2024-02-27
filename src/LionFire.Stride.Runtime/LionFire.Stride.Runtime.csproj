@@ -6,6 +6,10 @@
 		<Nullable>enable</Nullable>
   </PropertyGroup>
   <ItemGroup>
+    <PackageReference Include="PrivateProxy">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
     <PackageReference Include="Stride.Engine" />
     <PackageReference Include="Stride.Games" />
     <PackageReference Include="Stride.Physics" />
