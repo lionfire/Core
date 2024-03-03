@@ -98,4 +98,17 @@ public class StrideRuntimeServer : StrideRuntime<HeadlessSceneSystem>, IGameSett
     //    //var result = Physics.Simulation.Raycast(start, end);
     //    //Console.WriteLine($"Performing raycast: {(result.Succeeded ? "hit" : "miss")}");
     //}
-}
+
+    public override Task Run(GameContext? context = null)
+    {
+
+        OnInitCallback(); // For Client, OnInitCallback is invoked at GameWindow.InitCallback, but we have no window so call it here
+        if (gamePlatform is ServerGamePlatform serverGamePlatform)
+        {
+            serverGamePlatform.RunCallback = Tick;
+        }
+
+        return base.Run(context);
+    }
+
+  }

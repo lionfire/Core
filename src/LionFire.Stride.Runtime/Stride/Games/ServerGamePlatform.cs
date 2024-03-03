@@ -38,7 +38,10 @@ public class ServerGamePlatform : ReferenceBase, IGamePlatformEx
 
     internal Action InitCallback;
 
-    public Action RunCallback;
+    /// <summary>
+    /// The Server or Window main loop repeatedly invokes this.
+    /// </summary>
+    public Action RunCallback { get; set; }
 
     internal Action ExitCallback;
     internal bool Exiting;

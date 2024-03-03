@@ -9,4 +9,9 @@ public interface IGamePlatformEx : IGamePlatform
 
     bool IsBlockingRun { get; }
 
+    /// <summary>
+    /// The Server or Window main loop repeatedly invokes this.
+    /// </summary>
+    public Action RunCallback { get; set; }
+
 }

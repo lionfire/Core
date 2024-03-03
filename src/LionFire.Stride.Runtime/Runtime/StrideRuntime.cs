@@ -153,10 +153,10 @@ public abstract class StrideRuntime<TSceneSystem> : IStrideRuntime, ISceneSystem
         SceneSystem = CreateSceneSystem();
         StrideServices.AddService<SceneSystem>(SceneSystem);
 
-        var physicsSystem = new Bullet2PhysicsSystem(StrideServices);
-        StrideServices.AddService<IPhysicsSystem>(physicsSystem);
-        gameSystems.Add(physicsSystem);
-        physicsSystem.Initialize(); // 
+        Bullet2PhysicsSystem = new Bullet2PhysicsSystem(StrideServices);
+        StrideServices.AddService<IPhysicsSystem>(Bullet2PhysicsSystem);
+        gameSystems.Add(Bullet2PhysicsSystem);
+        Bullet2PhysicsSystem.Initialize(); // 
 
         OnConstructed();
     }
@@ -206,6 +206,13 @@ public abstract class StrideRuntime<TSceneSystem> : IStrideRuntime, ISceneSystem
         }
     }
     SceneInstance? ISceneSystem.SceneInstance { get => SceneInstance; set => SceneInstance = value; }
+
+    #endregion
+
+    #region Physics
+
+    // TODO: Replace this with IPhysicsSystem
+    public Bullet2PhysicsSystem Bullet2PhysicsSystem { get; protected set; }
 
     #endregion
 
@@ -339,7 +346,7 @@ public abstract class StrideRuntime<TSceneSystem> : IStrideRuntime, ISceneSystem
 
     #region Start
 
-    IGamePlatformEx? gamePlatform;
+    protected IGamePlatformEx? gamePlatform;
     protected abstract IGamePlatformEx CreateGamePlatform();
 
     private bool isStarted = false;
@@ -371,11 +378,7 @@ public abstract class StrideRuntime<TSceneSystem> : IStrideRuntime, ISceneSystem
         gamePlatform = CreateGamePlatform();
     }
 
-    private void OnServerTick()
-    {
-        //Console.Write('2');
-        Tick();
-    }
+   
 
     private object TickLock = new();
 
@@ -597,7 +600,8 @@ public abstract class StrideRuntime<TSceneSystem> : IStrideRuntime, ISceneSystem
                 if (nextTickLog < DateTime.UtcNow)
                 {
                     nextTickLog = DateTime.UtcNow + TimeSpan.FromSeconds(10);
-                    Logger.LogInformation("Total elapsed: {0},   time per update: {1},   total ticks: {2}", totalElapsedTime, elapsedTimePerUpdate, tickCount);
+
+                    Logger.LogInformation("Total elapsed: {0},   time per update: {1},   total ticks: {2}, physics max tick: {3}", totalElapsedTime, elapsedTimePerUpdate, tickCount, SceneSystem.SceneInstance.GetProcessor<PhysicsProcessor>()?.Simulation.MaxTickDuration );
                 }
             }
         }
@@ -609,15 +613,10 @@ public abstract class StrideRuntime<TSceneSystem> : IStrideRuntime, ISceneSystem
     DateTime nextTickLog = DateTime.MinValue;
 
 
-    public async Task Run(GameContext? context = null)
+    public async virtual Task Run(GameContext? context = null)
     {
         try
         {
-            if (gamePlatform is ServerGamePlatform serverGamePlatform)
-            {
-                OnInitCallback();
-                serverGamePlatform.RunCallback = OnServerTick;
-            }
             gamePlatform.Run(Context);
 
             if (gamePlatform.IsBlockingRun)
@@ -662,7 +661,12 @@ public abstract class StrideRuntime<TSceneSystem> : IStrideRuntime, ISceneSystem
 
     EventHandler<GameUnhandledExceptionEventArgs> UnhandledExceptionInternal;
 
-    private void OnInitCallback()
+    /// <summary>
+    /// Call this when Run is imminent
+    /// - called by GameWindow.InitCallback
+    /// - called by StrideRuntime.Run 
+    /// </summary>
+    protected virtual void OnInitCallback()
     {
         // If/else outside of try-catch to separate user-unhandled exceptions properly
         var unhandledException = UnhandledExceptionInternal;
@@ -684,43 +688,48 @@ public abstract class StrideRuntime<TSceneSystem> : IStrideRuntime, ISceneSystem
         {
             InitializeBeforeRun();
         }
-    }
 
-    internal void InitializeBeforeRun()
-    {
-        try
+        #region (local)
+
+        void InitializeBeforeRun()
         {
-            using (var profile = Profiler.Begin(GameProfilingKeys.GameInitialize))
+            try
             {
-                // Initialize this instance and all game systems before trying to create the device.
-                Initialize();
-
-                InitializeGraphicsBeforeRun();
-
-                LoadContentInternal();
-                IsRunning = true;
-
-                BeginRun();
-
-                autoTickTimer.Reset();
-                UpdateTime.Reset(UpdateTime.Total);
-
-                // Run an update for the first time
-                using (Profiler.Begin(GameProfilingKeys.GameUpdate))
+                using (var profile = Profiler.Begin(GameProfilingKeys.GameInitialize))
                 {
-                    Update(UpdateTime);
-                }
+                    // Initialize this instance and all game systems before trying to create the device.
+                    Initialize();
 
-                // Unbind Graphics Context without presenting
-                EndDraw(false);
+                    InitializeGraphicsBeforeRun();
+
+                    LoadContentInternal();
+                    IsRunning = true;
+
+                    BeginRun();
+
+                    autoTickTimer.Reset();
+                    UpdateTime.Reset(UpdateTime.Total);
+
+                    // Run an update for the first time
+                    using (Profiler.Begin(GameProfilingKeys.GameUpdate))
+                    {
+                        Update(UpdateTime);
+                    }
+
+                    // Unbind Graphics Context without presenting
+                    EndDraw(false);
+                }
+            }
+            catch (Exception ex)
+            {
+                Logger.LogError(ex, "Unexpected exception");
+                throw;
             }
         }
-        catch (Exception ex)
-        {
-            Logger.LogError(ex, "Unexpected exception");
-            throw;
-        }
+
+        #endregion
     }
+
 
     protected virtual void EndRun()
     {
