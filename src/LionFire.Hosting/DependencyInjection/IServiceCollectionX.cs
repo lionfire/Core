@@ -37,6 +37,14 @@ public static class IServiceCollectionX
         return services;
     }
 
+    public static IServiceCollection TryAddEnumerableSingleton<TService, TImplementation>(this IServiceCollection services, Func<IServiceProvider, TImplementation> factory)
+    {
+        services.TryAddEnumerable(new ServiceDescriptor(typeof(TService), factory, ServiceLifetime.Singleton));
+
+        return services;
+    }
+
+
     public static IServiceCollection TryAddEnumerableSingleton<TService>(this IServiceCollection services, TService instance)
     {
         services.TryAddEnumerable(ServiceDescriptor.Describe(typeof(TService), typeof(TService), ServiceLifetime.Singleton));
