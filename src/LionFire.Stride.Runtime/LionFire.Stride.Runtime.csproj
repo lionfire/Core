@@ -4,6 +4,7 @@
     <LangVersion>latest</LangVersion>
 		<RootNamespace>LionFire.Stride_</RootNamespace>
 		<Nullable>enable</Nullable>
+		<Configurations>Debug;Release</Configurations>
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="PrivateProxy">

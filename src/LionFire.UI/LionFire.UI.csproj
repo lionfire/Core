@@ -10,6 +10,7 @@
     <GenerateAssemblyProductAttribute>false</GenerateAssemblyProductAttribute>
     <RootNamespace>LionFire</RootNamespace>
 	<Nullable>enable</Nullable>
+	<Configurations>Debug;Release</Configurations>
   </PropertyGroup>
 
   <ItemGroup>

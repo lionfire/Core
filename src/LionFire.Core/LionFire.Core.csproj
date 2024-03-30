@@ -25,6 +25,7 @@ This package is typically not added on its own, but is a dependency required by 
     <NeutralLanguage>en-US</NeutralLanguage>
     <PackageTags>utility collections</PackageTags>
 	  <Nullable>enable</Nullable>
+	  <Configurations>Debug;Release</Configurations>
   </PropertyGroup>
 
   <ItemGroup>

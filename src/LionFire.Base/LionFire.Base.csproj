@@ -9,6 +9,7 @@
 		<RepositoryUrl>https://github.com/lionfire/Core</RepositoryUrl>
 		<PackageTags>BCL extensions utility</PackageTags>
 		<Description>Simple extensions and additions to .NET Base Class Library (BCL) classes.</Description>
+		<Configurations>Debug;Release</Configurations>
 		<!--<Nullable>enable</Nullable>-->
 		<!--<WarningsAsErrors>Nullable</WarningsAsErrors>-->
 	</PropertyGroup>

@@ -12,6 +12,7 @@
     <Copyright>2010-2023 Jared Thirsk</Copyright>
     <PackAsTool>True</PackAsTool>
 	  <RuntimeIdentifiers>win-x64;linux-x64</RuntimeIdentifiers>
+	  <Configurations>Debug;Release</Configurations>
   </PropertyGroup>
 
   <ItemGroup>

@@ -12,6 +12,7 @@
     <RootNamespace>LionFire</RootNamespace>
     <LangVersion>latest</LangVersion>
 	<EnablePreviewFeatures>True</EnablePreviewFeatures>
+	<Configurations>Debug;Release</Configurations>
   </PropertyGroup>
 
   <ItemGroup Condition=" '$(TargetFramework)' == 'net462' ">

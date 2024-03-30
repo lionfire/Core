@@ -16,6 +16,7 @@ Reference this package in your main executable, and the related LionFire.Applica
     <NeutralLanguage>en-US</NeutralLanguage>
     <Authors>Jared Thirsk</Authors>
     <Version>2.0.1</Version>
+    <Configurations>Debug;Release</Configurations>
   </PropertyGroup>
 
   <ItemGroup>

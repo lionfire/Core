@@ -3,6 +3,7 @@
   <PropertyGroup>
     <TargetFrameworks>netstandard2.0</TargetFrameworks>
 		<ProduceReferenceAssembly>true</ProduceReferenceAssembly>
+		<Configurations>Debug;Release</Configurations>
 	</PropertyGroup>
 
 </Project>

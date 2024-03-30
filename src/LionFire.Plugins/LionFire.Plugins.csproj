@@ -9,6 +9,7 @@
     <!--<AppDesignerFolder>Properties</AppDesignerFolder>-->
     <RootNamespace>LionFire.Plugins</RootNamespace>
     <AssemblyName>LionFire.Plugins</AssemblyName>
+    <Configurations>Debug;Release</Configurations>
   </PropertyGroup>
   <ItemGroup>
     <ProjectReference Include="..\LionFire.Applications.Abstractions\LionFire.Applications.Abstractions.csproj" />

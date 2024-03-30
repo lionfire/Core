@@ -5,6 +5,7 @@
     <RootNamespace>LionFire</RootNamespace>
     <Version>2.0.0</Version>
     <LangVersion>latest</LangVersion>
+    <Configurations>Debug;Release</Configurations>
   </PropertyGroup>
 
   <ItemGroup>

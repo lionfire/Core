@@ -6,6 +6,7 @@
     <UserSecretsId>LionFire.Supervisor.App</UserSecretsId>
     <ApplicationIcon />
     <StartupObject />
+    <Configurations>Debug;Release</Configurations>
   </PropertyGroup>
 
   <ItemGroup>

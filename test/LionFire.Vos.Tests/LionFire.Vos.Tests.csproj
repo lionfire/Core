@@ -7,6 +7,8 @@
 
     <RootNamespace />
 
+    <Configurations>Debug;Release</Configurations>
+
   </PropertyGroup>
 
   <ItemGroup>

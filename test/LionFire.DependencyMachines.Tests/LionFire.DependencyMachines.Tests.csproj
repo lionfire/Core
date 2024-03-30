@@ -7,6 +7,8 @@
 		<IsPackable>false</IsPackable>
 
 		<RootNamespace>_</RootNamespace>
+
+		<Configurations>Debug;Release</Configurations>
 	</PropertyGroup>
 
 	<ItemGroup>
