@@ -56,10 +56,10 @@ namespace LionFire.Supervisor.App
 
     public static class EmailSettings
     {
-        public static string From { get; set; } = "ja+supervisor@thirsk.ca";
-        public static string To { get; set; } = "ja+notifications@thirsk.ca";
+        public static string From { get; set; } = "supervisor@example.com";
+        public static string To { get; set; } = "me@example.com";
 
-            public static string MailgunDomain = "mg.thirsk.ca";
+            public static string MailgunDomain = "mg.example.com";
     }
 
 
