@@ -35,6 +35,9 @@
     <BaseOutputPath>$(BuildRoot)\bin\$(Configuration)\$(Platform)\$(MSBuildProjectName)\</BaseOutputPath>
 		<!--<MSBuildProjectExtensionsPath>$(BuildRoot)\obj-buildext\$(Configuration)\$(Platform)\$(MSBuildProjectName)\</MSBuildProjectExtensionsPath>-->
 		<!--<MSBuildProjectExtensionsPath>z:\build\obj\$(MSBuildProjectName)\</MSBuildProjectExtensionsPath>-->
+
+		<AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
+		<AppendRuntimeIdentifierToOutputPath>false</AppendRuntimeIdentifierToOutputPath>
 		
 		<!--<PackageOutputDir>g:\build\packages\lionfire</PackageOutputDir>-->
 
