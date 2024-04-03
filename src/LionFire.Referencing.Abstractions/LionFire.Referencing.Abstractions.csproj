@@ -3,7 +3,7 @@
   <PropertyGroup>
 		<VersionSuffix></VersionSuffix>
 		
-    <TargetFramework>net6.0</TargetFramework>
+    <TargetFramework>net8.0</TargetFramework>
     <AssemblyName>LionFire.Referencing.Abstractions</AssemblyName>
     <PackageId>LionFire.Referencing.Abstractions</PackageId>
     <GenerateAssemblyConfigurationAttribute>false</GenerateAssemblyConfigurationAttribute>
@@ -11,7 +11,7 @@
     <GenerateAssemblyProductAttribute>false</GenerateAssemblyProductAttribute>
     <RootNamespace>LionFire</RootNamespace>
     <LangVersion>latest</LangVersion>
-	<EnablePreviewFeatures>True</EnablePreviewFeatures>
+	<!--<EnablePreviewFeatures>True</EnablePreviewFeatures>-->
 	<Configurations>Debug;Release</Configurations>
   </PropertyGroup>
 

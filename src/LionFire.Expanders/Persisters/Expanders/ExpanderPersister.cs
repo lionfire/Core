@@ -17,5 +17,6 @@ public abstract class ExpanderPersister : PersisterBase<ExpanderOptions>, IExpan
     
     public abstract Task<IGetResult<T>> RetrieveTarget<T>(IReadHandle sourceReadHandle, string targetPath);
 
+    public ExpanderPersister(IServiceProvider serviceProvider):base(serviceProvider) { }
 }
 

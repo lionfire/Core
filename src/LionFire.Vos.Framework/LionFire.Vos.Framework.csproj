@@ -18,7 +18,7 @@
 
   <ItemGroup>
     <Reference Include="LionFire.Expanders.Vos">
-      <HintPath>..\..\build\obj\LionFire.Expanders.Vos\Debug\net6.0\ref\LionFire.Expanders.Vos.dll</HintPath>
+      <HintPath>..\..\build\obj\LionFire.Expanders.Vos\Debug\net8.0\ref\LionFire.Expanders.Vos.dll</HintPath>
     </Reference>
   </ItemGroup>
 

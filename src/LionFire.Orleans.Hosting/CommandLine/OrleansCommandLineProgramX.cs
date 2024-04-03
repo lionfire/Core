@@ -19,13 +19,13 @@ public static class OrleansCommandLineProgramX
 
             var userOption = new Option<string>(
                  name: "--user",
-                 description: "User name for autheneticating to database server",
+                 description: "User name for authenticating to database server",
                  getDefaultValue: () => "postgres");
             yield return userOption;
 
             var passwordOption = new Option<string>(
                  name: "--password",
-                 description: "Password for autheneticating to database server",
+                 description: "Password for authenticating to database server",
                  getDefaultValue: () => "localhost");
             yield return passwordOption;
 

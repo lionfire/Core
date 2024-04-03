@@ -1,7 +1,8 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
-
+﻿<!--<Project >-->
+	<Project Sdk="Microsoft.NET.Sdk">
+		<!--<Import Project="Sdk.props" Sdk="Microsoft.NET.Sdk/1.0.0" />-->
 	<PropertyGroup>
-		<TargetFrameworks>netstandard2.0;net6.0;net8.0</TargetFrameworks>
+		<TargetFrameworks>netstandard2.0;net8.0</TargetFrameworks>
 		<VersionSuffix></VersionSuffix>
 		<LangVersion>latest</LangVersion>
 
@@ -37,5 +38,6 @@
 		<GeneratePackageOnBuild>True</GeneratePackageOnBuild>
 	</PropertyGroup>
 
+	<!--<Import Project="Sdk.targets" Sdk="Microsoft.NET.Sdk/1.0.0" />-->
 
 </Project>
