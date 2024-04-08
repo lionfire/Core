@@ -1,7 +1,13 @@
 <Project>
 
 	<PropertyGroup>
+		<Configurations>Debug;Release</Configurations>
+		<Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+		
+		<PlatformTarget Condition=" '$(PlatformTarget)' == '' ">AnyCPU</PlatformTarget>
+		
 		<!--<GeneratePackageOnBuild>True</GeneratePackageOnBuild>-->
+		
 		<DebugSymbols>true</DebugSymbols>
 		<EmbedAllSources>true</EmbedAllSources>
 		<DebugType>portable</DebugType>
@@ -20,19 +26,19 @@
 
 		<EnableSourceControlManagerQueries>true</EnableSourceControlManagerQueries>
 
+    <DefaultItemExcludes>$(MSBuildProjectDirectory)/bin/**;$(MSBuildProjectDirectory)/obj/**</DefaultItemExcludes>
+	
 	</PropertyGroup>
 
 	
 	<PropertyGroup>
-    <Configurations>Debug;Release</Configurations>
-
-    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
 
     <!--<BaseIntermediateOutputPath>$(MSBuildThisFileDirectory)..\bin\$(MSBuildProjectName)\</BaseIntermediateOutputPath>
     <BaseOutputPath Condition=" '$(BaseOutputPath)' == '' ">$(MSBuildThisFileDirectory)..\bin\$(MSBuildProjectName)\</BaseOutputPath>-->
 
     <BaseIntermediateOutputPath>$(BuildRoot)\obj\$(Configuration)\$(Platform)\$(MSBuildProjectName)\</BaseIntermediateOutputPath>
-    <BaseOutputPath>$(BuildRoot)\bin\$(Configuration)\$(Platform)\$(MSBuildProjectName)\</BaseOutputPath>
+    <BaseOutputPath>$(BuildRoot)\bin\$(Configuration)\$(PlatformTarget)\$(MSBuildProjectName)\</BaseOutputPath>
+		<OutputPath>$(BaseOutputPath)</OutputPath>
 		<!--<MSBuildProjectExtensionsPath>$(BuildRoot)\obj-buildext\$(Configuration)\$(Platform)\$(MSBuildProjectName)\</MSBuildProjectExtensionsPath>-->
 		<!--<MSBuildProjectExtensionsPath>z:\build\obj\$(MSBuildProjectName)\</MSBuildProjectExtensionsPath>-->
 

@@ -53,20 +53,20 @@ namespace GenericHost_
         public async void Fail_Action_Services()
         {
             await FrameworkHostBuilderExtensions.Create()
-                .RunAsync(services =>
+                .RunAsync(async services =>
                 {
                     services.GetService<ILogger<_RunAndExit>>().LogInformation("test log");
                     //Thread.Sleep(10);
-                    Assert.ThrowsAsync<Exception>(() => throw new Exception("test fail"));
+                    await Assert.ThrowsAsync<Exception>(() => throw new Exception("test fail"));
                 });
         }
 
         [Fact]
         public async void Fail_Action()
         {
-            await FrameworkHostBuilderExtensions.Create().RunAsync(() => {
+            await FrameworkHostBuilderExtensions.Create().RunAsync(async () => {
                 //Thread.Sleep(40);
-                Assert.ThrowsAsync<Exception>(()=> throw new Exception("test fail"));
+                await Assert.ThrowsAsync<Exception>(() => throw new Exception("test fail"));
             });
         }
 

@@ -56,9 +56,10 @@ public static class LionFireOpenTelemetryTracingX
             }
         });
 #endif
-#endregion
+        #endregion
 
 
+        throw new NotImplementedException("AddOtlpExporter not implemented");
         services
         .AddOpenTelemetry()
             .WithMetrics(c => c
@@ -72,6 +73,7 @@ public static class LionFireOpenTelemetryTracingX
                 //        ExportIntervalMilliseconds = 1000,
                 //        //ExportTimeoutMilliseconds
                 //    })
+#if TODO
                 .AddOtlpExporter(option =>
                 {
                     option.Endpoint = new Uri("http://localhost:4317");
@@ -80,7 +82,7 @@ public static class LionFireOpenTelemetryTracingX
                     option.Protocol = OpenTelemetry.Exporter.OtlpExportProtocol.Grpc;
                     //option.Headers = $"x-example-apikey={apiKey}";
                 })
-
+#endif
                 .ConfigureResource(r => r
                     .AddService("LionFire.Test")
                     //.AddService("LionFire.Vos")
