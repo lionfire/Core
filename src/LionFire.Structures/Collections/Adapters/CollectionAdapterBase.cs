@@ -11,7 +11,7 @@ using LionFire.Threading;
 namespace LionFire.Collections
 {
     public abstract class CollectionAdapterBase<TViewModel, TModel> : ObservableCollection<TViewModel>
-        where TViewModel : class//, IInstanceFor<TSource>
+        where TViewModel : class//, IInstanceForSettable<TSource>
         where TModel : class
     {
         // TODO: Contain ObservableCollection (and provide read-only access for ReadOnlyCollectionAdapter) instead of having it as a base type
@@ -208,7 +208,7 @@ namespace LionFire.Collections
         public TViewModel GetViewModelOfModel(TModel model)
         {
             // TODO OPTIMIZE SLOWALGO - O(n) search
-            return Items.OfType<IInstanceFor<TModel>>().FirstOrDefault(v => v.Template == model) as TViewModel;
+            return Items.OfType<IInstanceForSettable<TModel>>().FirstOrDefault(v => v.Template == model) as TViewModel;
         }
 
     }

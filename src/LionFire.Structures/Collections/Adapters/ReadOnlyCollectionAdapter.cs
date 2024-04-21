@@ -9,7 +9,7 @@ using LionFire.Threading;
 namespace LionFire.Collections
 {
     public class ReadOnlyCollectionAdapter<TTarget, TSource> : CollectionAdapterBase<TTarget, TSource>, IReadOnlyCollectionAdapter<TTarget>
-           where TTarget : class // , IInstanceFor<TSource>
+           where TTarget : class // , IInstanceForSettable<TSource>
         where TSource : class
     {
         public bool IsReadOnly => true;

@@ -13,7 +13,7 @@ namespace LionFire.Collections
     /// <typeparam name="TViewModel">Type of ViewModels in collection</typeparam>
     /// <typeparam name="TModel">Type of models in underlying collection</typeparam>
     public class CollectionAdapter<TViewModel, TModel> : CollectionAdapterBase<TViewModel, TModel>, ICollectionAdapter<TViewModel>
-        where TViewModel : class//, IInstanceFor<TModel>
+        where TViewModel : class//, IInstanceForSettable<TModel>
         where TModel : class
     {
         private readonly ICollection<TModel> model;
@@ -53,18 +53,18 @@ namespace LionFire.Collections
                 switch (e.Action)
                 {
                     case NotifyCollectionChangedAction.Add:
-                        foreach (var m in e.NewItems.OfType<IInstanceFor<TModel>>().Select(v => v.Template).OfType<TModel>())
+                        foreach (var m in e.NewItems.OfType<IInstanceForSettable<TModel>>().Select(v => v.Template).OfType<TModel>())
                             model.Add(m);
                         break;
 
                     case NotifyCollectionChangedAction.Remove:
-                        foreach (var m in e.OldItems.OfType<IInstanceFor<TModel>>().Select(v => v.Template).OfType<TModel>())
+                        foreach (var m in e.OldItems.OfType<IInstanceForSettable<TModel>>().Select(v => v.Template).OfType<TModel>())
                             model.Remove(m);
                         break;
 
                     case NotifyCollectionChangedAction.Reset:
                         model.Clear();
-                        foreach (var m in e.NewItems.OfType<IInstanceFor<TModel>>().Select(v => v.Template).OfType<TModel>())
+                        foreach (var m in e.NewItems.OfType<IInstanceForSettable<TModel>>().Select(v => v.Template).OfType<TModel>())
                             model.Add(m);
                         break;
                 }

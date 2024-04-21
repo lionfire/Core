@@ -28,7 +28,7 @@ public interface IParameterizedTemplateInstance<out TParameters, out TTemplate>
     ITemplateParameters<TTemplate> Parameters { get; set; }
 }
 
-public interface ITemplateInstance<TTemplate> : ITemplateInstance, IInstanceFor<TTemplate>
+public interface ITemplateInstance<TTemplate> : ITemplateInstance, IInstanceForSettable<TTemplate>
     where TTemplate : ITemplate
 {
      new TTemplate Template { get; set; }
