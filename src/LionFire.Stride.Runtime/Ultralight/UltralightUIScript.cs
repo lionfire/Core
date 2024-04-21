@@ -19,7 +19,7 @@ using LogLevel = Microsoft.Extensions.Logging.LogLevel;
 using System.Collections.Concurrent;
 using System.Reflection;
 using Microsoft.Extensions.Hosting;
-using LionFire.Stride3D.Input;
+using LionFire.Stride3D.Inputs;
 using System.Diagnostics;
 using Keys = Stride.Input.Keys;
 using MediatR;

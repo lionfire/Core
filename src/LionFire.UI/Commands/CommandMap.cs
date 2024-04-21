@@ -21,284 +21,283 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using LionFire.UI.Commands;
 
-namespace LionFire.Input
+namespace LionFire.Inputs;
+
+/// <summary>
+/// A map that exposes commands in a WPF binding friendly manner
+/// </summary>
+[TypeDescriptionProvider(typeof(CommandMapDescriptionProvider))]
+public class CommandMap
+//: IEnumerable<string, ICommand>
 {
+    // IEnumerator IEnumerable.GetEnumerator() { return this.GetEnumerator(); }
+    //public IEnumerator<KeyValuePair<string, ICommand>> GetEnumerator()
+    //{
+    //    return Commands.GetEnumerator();
+    //}
+
+    //public void Add(NamedDelegateCommand cmd)
+    //{
+    //    Commands[cmd.Name] = cmd;
+    //}
+
     /// <summary>
-    /// A map that exposes commands in a WPF binding friendly manner
+    /// Add a named command to the command map
     /// </summary>
-    [TypeDescriptionProvider(typeof(CommandMapDescriptionProvider))]
-    public class CommandMap
-    //: IEnumerable<string, ICommand>
+    /// <param name="commandName">The name of the command</param>
+    /// <param name="executeMethod">The method to execute</param>
+    public void AddCommand(string commandName, Action<object> executeMethod) 
+        => Commands[commandName] = new DelegateCommand(executeMethod);
+
+    /// <summary>
+    /// Add a named command to the command map
+    /// </summary>
+    /// <param name="commandName">The name of the command</param>
+    /// <param name="executeMethod">The method to execute</param>
+    /// <param name="canExecuteMethod">The method to execute to check if the command can be executed</param>
+    public void AddCommand(string commandName, Action<object> executeMethod, Predicate<object> canExecuteMethod) 
+        => Commands[commandName] = new DelegateCommand(executeMethod, canExecuteMethod);
+
+    /// <summary>
+    /// Remove a command from the command map
+    /// </summary>
+    /// <param name="commandName">The name of the command</param>
+    public void RemoveCommand(string commandName) => Commands.Remove(commandName);
+
+    /// <summary>
+    /// Expose the dictionary of commands
+    /// </summary>
+    protected Dictionary<string, ICommand> Commands
     {
-        // IEnumerator IEnumerable.GetEnumerator() { return this.GetEnumerator(); }
-        //public IEnumerator<KeyValuePair<string, ICommand>> GetEnumerator()
-        //{
-        //    return Commands.GetEnumerator();
-        //}
-
-        //public void Add(NamedDelegateCommand cmd)
-        //{
-        //    Commands[cmd.Name] = cmd;
-        //}
-
-        /// <summary>
-        /// Add a named command to the command map
-        /// </summary>
-        /// <param name="commandName">The name of the command</param>
-        /// <param name="executeMethod">The method to execute</param>
-        public void AddCommand(string commandName, Action<object> executeMethod) 
-            => Commands[commandName] = new DelegateCommand(executeMethod);
-
-        /// <summary>
-        /// Add a named command to the command map
-        /// </summary>
-        /// <param name="commandName">The name of the command</param>
-        /// <param name="executeMethod">The method to execute</param>
-        /// <param name="canExecuteMethod">The method to execute to check if the command can be executed</param>
-        public void AddCommand(string commandName, Action<object> executeMethod, Predicate<object> canExecuteMethod) 
-            => Commands[commandName] = new DelegateCommand(executeMethod, canExecuteMethod);
-
-        /// <summary>
-        /// Remove a command from the command map
-        /// </summary>
-        /// <param name="commandName">The name of the command</param>
-        public void RemoveCommand(string commandName) => Commands.Remove(commandName);
-
-        /// <summary>
-        /// Expose the dictionary of commands
-        /// </summary>
-        protected Dictionary<string, ICommand> Commands
+        get
         {
-            get
-            {
-                if (null == _commands)
-                    _commands = new Dictionary<string, ICommand>();
+            if (null == _commands)
+                _commands = new Dictionary<string, ICommand>();
 
-                return _commands;
-            }
+            return _commands;
         }
+    }
 
-        public ICommand this[string commandName] => Commands[commandName];
+    public ICommand this[string commandName] => Commands[commandName];
+
+    /// <summary>
+    /// Store the commands
+    /// </summary>
+    private Dictionary<string, ICommand> _commands;
+
+    //public class NamedDelegateCommand : DelegateCommand
+    //{
+    //    public string Name { get; set; }
+    //    public NamedDelegateCommand(Action<object> executeMethod) : base(executeMethod) { }
+    //    public NamedDelegateCommand(Action<object> executeMethod, Predicate<object> canExecuteMethod) : base(executeMethod, canExecuteMethod) { }
+
+    //    public NamedDelegateCommand(string name, Action<object> executeMethod) : base(executeMethod) { this.Name = name; }
+    //    public NamedDelegateCommand(string name, Action<object> executeMethod, Predicate<object> canExecuteMethod) : base(executeMethod, canExecuteMethod) { this.Name = name; }
+    //}
+    /// <summary>
+    /// Implements ICommand in a delegate friendly way
+    /// </summary>
+    private class DelegateCommand : ICommand
+    {
+        /// <summary>
+        /// Create a command that can always be executed
+        /// </summary>
+        /// <param name="executeMethod">The method to execute when the command is called</param>
+        public DelegateCommand(Action<object> executeMethod) : this(executeMethod, null) { }
 
         /// <summary>
-        /// Store the commands
+        /// Create a delegate command which executes the canExecuteMethod before executing the executeMethod
         /// </summary>
-        private Dictionary<string, ICommand> _commands;
-
-        //public class NamedDelegateCommand : DelegateCommand
-        //{
-        //    public string Name { get; set; }
-        //    public NamedDelegateCommand(Action<object> executeMethod) : base(executeMethod) { }
-        //    public NamedDelegateCommand(Action<object> executeMethod, Predicate<object> canExecuteMethod) : base(executeMethod, canExecuteMethod) { }
-
-        //    public NamedDelegateCommand(string name, Action<object> executeMethod) : base(executeMethod) { this.Name = name; }
-        //    public NamedDelegateCommand(string name, Action<object> executeMethod, Predicate<object> canExecuteMethod) : base(executeMethod, canExecuteMethod) { this.Name = name; }
-        //}
-        /// <summary>
-        /// Implements ICommand in a delegate friendly way
-        /// </summary>
-        private class DelegateCommand : ICommand
+        /// <param name="executeMethod"></param>
+        /// <param name="canExecuteMethod"></param>
+        public DelegateCommand(Action<object> executeMethod, Predicate<object> canExecuteMethod)
         {
-            /// <summary>
-            /// Create a command that can always be executed
-            /// </summary>
-            /// <param name="executeMethod">The method to execute when the command is called</param>
-            public DelegateCommand(Action<object> executeMethod) : this(executeMethod, null) { }
+            if (null == executeMethod)
+                throw new ArgumentNullException("executeMethod");
 
-            /// <summary>
-            /// Create a delegate command which executes the canExecuteMethod before executing the executeMethod
-            /// </summary>
-            /// <param name="executeMethod"></param>
-            /// <param name="canExecuteMethod"></param>
-            public DelegateCommand(Action<object> executeMethod, Predicate<object> canExecuteMethod)
-            {
-                if (null == executeMethod)
-                    throw new ArgumentNullException("executeMethod");
-
-                this._executeMethod = executeMethod;
-                this._canExecuteMethod = canExecuteMethod;
-            }
+            this._executeMethod = executeMethod;
+            this._canExecuteMethod = canExecuteMethod;
+        }
 
 #if NET35 && !UNITY
-            bool ICommand.CanExecute
-            {
-                get { return CanExecute(null); }
-            }
+        bool ICommand.CanExecute
+        {
+            get { return CanExecute(null); }
+        }
 #endif
 
-            public bool CanExecute(object parameter)
+        public bool CanExecute(object parameter)
+        {
+            return (null == _canExecuteMethod) ? true : _canExecuteMethod(parameter);
+        }
+
+        public event EventHandler CanExecuteChanged
+        {
+            add
             {
-                return (null == _canExecuteMethod) ? true : _canExecuteMethod(parameter);
+                LionFireCommandManager.RequerySuggested += value;
+                //LionFire.Events.ApplicationCommandManager.RequerySuggested += value; 
+                //throw new NotImplementedException("TODO: Switch to LionFire.UI's' LionFireCommandManager "); 
             }
-
-            public event EventHandler CanExecuteChanged
+            remove
             {
-                add
-                {
-                    LionFireCommandManager.RequerySuggested += value;
-                    //LionFire.Events.ApplicationCommandManager.RequerySuggested += value; 
-                    //throw new NotImplementedException("TODO: Switch to LionFire.UI's' LionFireCommandManager "); 
-                }
-                remove
-                {
-                    LionFireCommandManager.RequerySuggested -= value;
-                    //LionFire.Events.ApplicationCommandManager.RequerySuggested -= value; 
-                }
+                LionFireCommandManager.RequerySuggested -= value;
+                //LionFire.Events.ApplicationCommandManager.RequerySuggested -= value; 
             }
+        }
 
-            public void Execute(object parameter) => _executeMethod(parameter);
+        public void Execute(object parameter) => _executeMethod(parameter);
 
-            private Predicate<object> _canExecuteMethod;
-            private Action<object> _executeMethod;
+        private Predicate<object> _canExecuteMethod;
+        private Action<object> _executeMethod;
+    }
+
+    /// <summary>
+    /// Expose the dictionary entries of a CommandMap as properties
+    /// </summary>
+    private class CommandMapDescriptionProvider : TypeDescriptionProvider
+    {
+        /// <summary>
+        /// Standard constructor
+        /// </summary>
+        public CommandMapDescriptionProvider()
+            : this(TypeDescriptor.GetProvider(typeof(CommandMap)))
+        {
         }
 
         /// <summary>
-        /// Expose the dictionary entries of a CommandMap as properties
+        /// Construct the provider based on a parent provider
         /// </summary>
-        private class CommandMapDescriptionProvider : TypeDescriptionProvider
+        /// <param name="parent"></param>
+        public CommandMapDescriptionProvider(TypeDescriptionProvider parent)
+            : base(parent)
         {
-            /// <summary>
-            /// Standard constructor
-            /// </summary>
-            public CommandMapDescriptionProvider()
-                : this(TypeDescriptor.GetProvider(typeof(CommandMap)))
-            {
-            }
-
-            /// <summary>
-            /// Construct the provider based on a parent provider
-            /// </summary>
-            /// <param name="parent"></param>
-            public CommandMapDescriptionProvider(TypeDescriptionProvider parent)
-                : base(parent)
-            {
-            }
-
-            /// <summary>
-            /// Get the type descriptor for a given object instance
-            /// </summary>
-            /// <param name="objectType">The type of object for which a type descriptor is requested</param>
-            /// <param name="instance">The instance of the object</param>
-            /// <returns>A custom type descriptor</returns>
-            public override ICustomTypeDescriptor GetTypeDescriptor(Type objectType, object instance)
-            {
-                return new CommandMapDescriptor(base.GetTypeDescriptor(objectType, instance), instance as CommandMap);
-            }
         }
 
         /// <summary>
-        /// This class is responsible for providing custom properties to WPF - in this instance
-        /// allowing you to bind to commands by name
+        /// Get the type descriptor for a given object instance
         /// </summary>
-        private class CommandMapDescriptor : CustomTypeDescriptor
+        /// <param name="objectType">The type of object for which a type descriptor is requested</param>
+        /// <param name="instance">The instance of the object</param>
+        /// <returns>A custom type descriptor</returns>
+        public override ICustomTypeDescriptor GetTypeDescriptor(Type objectType, object instance)
         {
-            /// <summary>
-            /// Store the command map for later
-            /// </summary>
-            /// <param name="descriptor"></param>
-            /// <param name="map"></param>
-            public CommandMapDescriptor(ICustomTypeDescriptor descriptor, CommandMap map)
-                : base(descriptor)
-            {
-                _map = map;
-            }
+            return new CommandMapDescriptor(base.GetTypeDescriptor(objectType, instance), instance as CommandMap);
+        }
+    }
 
-            /// <summary>
-            /// Get the properties for this command map
-            /// </summary>
-            /// <returns>A collection of synthesized property descriptors</returns>
-            public override PropertyDescriptorCollection GetProperties()
-            {
-                //TODO: See about caching these properties (need the _map to be observable so can respond to add/remove)
-                PropertyDescriptor[] props = new PropertyDescriptor[_map.Commands.Count];
-
-                int pos = 0;
-
-                foreach (KeyValuePair<string, ICommand> command in _map.Commands)
-                    props[pos++] = new CommandPropertyDescriptor(command);
-
-                return new PropertyDescriptorCollection(props);
-            }
-
-            private CommandMap _map;
+    /// <summary>
+    /// This class is responsible for providing custom properties to WPF - in this instance
+    /// allowing you to bind to commands by name
+    /// </summary>
+    private class CommandMapDescriptor : CustomTypeDescriptor
+    {
+        /// <summary>
+        /// Store the command map for later
+        /// </summary>
+        /// <param name="descriptor"></param>
+        /// <param name="map"></param>
+        public CommandMapDescriptor(ICustomTypeDescriptor descriptor, CommandMap map)
+            : base(descriptor)
+        {
+            _map = map;
         }
 
         /// <summary>
-        /// A property descriptor which exposes an ICommand instance
+        /// Get the properties for this command map
         /// </summary>
-        private class CommandPropertyDescriptor : PropertyDescriptor
+        /// <returns>A collection of synthesized property descriptors</returns>
+        public override PropertyDescriptorCollection GetProperties()
         {
-            /// <summary>
-            /// Construct the descriptor
-            /// </summary>
-            /// <param name="command"></param>
-            public CommandPropertyDescriptor(KeyValuePair<string, ICommand> command)
-                : base(command.Key, null)
-            {
-                _command = command.Value;
-            }
+            //TODO: See about caching these properties (need the _map to be observable so can respond to add/remove)
+            PropertyDescriptor[] props = new PropertyDescriptor[_map.Commands.Count];
 
-            /// <summary>
-            /// Always read only in this case
-            /// </summary>
-            public override bool IsReadOnly => true;
+            int pos = 0;
 
-            /// <summary>
-            /// Nope, it's read only
-            /// </summary>
-            /// <param name="component"></param>
-            /// <returns></returns>
-            public override bool CanResetValue(object component) => false;
+            foreach (KeyValuePair<string, ICommand> command in _map.Commands)
+                props[pos++] = new CommandPropertyDescriptor(command);
 
-            /// <summary>
-            /// Not needed
-            /// </summary>
-            public override Type ComponentType => throw new NotImplementedException();
-
-            /// <summary>
-            /// Get the ICommand from the parent command map
-            /// </summary>
-            /// <param name="component"></param>
-            /// <returns></returns>
-            public override object GetValue(object component)
-            {
-                CommandMap map = component as CommandMap;
-
-                if (null == map)
-                    throw new ArgumentException("component is not a CommandMap instance", "component");
-
-                return map.Commands[this.Name];
-            }
-
-            /// <summary>
-            /// Get the type of the property
-            /// </summary>
-            public override Type PropertyType => typeof(ICommand);
-
-            /// <summary>
-            /// Not needed
-            /// </summary>
-            /// <param name="component"></param>
-            public override void ResetValue(object component) => throw new NotImplementedException();
-
-            /// <summary>
-            /// Not needed
-            /// </summary>
-            /// <param name="component"></param>
-            /// <param name="value"></param>
-            public override void SetValue(object component, object value) => throw new NotImplementedException();
-
-            /// <summary>
-            /// Not needed
-            /// </summary>
-            /// <param name="component"></param>
-            /// <returns></returns>
-            public override bool ShouldSerializeValue(object component) => false;
-
-            /// <summary>
-            /// Store the command which will be executed
-            /// </summary>
-            private ICommand _command;
+            return new PropertyDescriptorCollection(props);
         }
+
+        private CommandMap _map;
+    }
+
+    /// <summary>
+    /// A property descriptor which exposes an ICommand instance
+    /// </summary>
+    private class CommandPropertyDescriptor : PropertyDescriptor
+    {
+        /// <summary>
+        /// Construct the descriptor
+        /// </summary>
+        /// <param name="command"></param>
+        public CommandPropertyDescriptor(KeyValuePair<string, ICommand> command)
+            : base(command.Key, null)
+        {
+            _command = command.Value;
+        }
+
+        /// <summary>
+        /// Always read only in this case
+        /// </summary>
+        public override bool IsReadOnly => true;
+
+        /// <summary>
+        /// Nope, it's read only
+        /// </summary>
+        /// <param name="component"></param>
+        /// <returns></returns>
+        public override bool CanResetValue(object component) => false;
+
+        /// <summary>
+        /// Not needed
+        /// </summary>
+        public override Type ComponentType => throw new NotImplementedException();
+
+        /// <summary>
+        /// Get the ICommand from the parent command map
+        /// </summary>
+        /// <param name="component"></param>
+        /// <returns></returns>
+        public override object GetValue(object component)
+        {
+            CommandMap map = component as CommandMap;
+
+            if (null == map)
+                throw new ArgumentException("component is not a CommandMap instance", "component");
+
+            return map.Commands[this.Name];
+        }
+
+        /// <summary>
+        /// Get the type of the property
+        /// </summary>
+        public override Type PropertyType => typeof(ICommand);
+
+        /// <summary>
+        /// Not needed
+        /// </summary>
+        /// <param name="component"></param>
+        public override void ResetValue(object component) => throw new NotImplementedException();
+
+        /// <summary>
+        /// Not needed
+        /// </summary>
+        /// <param name="component"></param>
+        /// <param name="value"></param>
+        public override void SetValue(object component, object value) => throw new NotImplementedException();
+
+        /// <summary>
+        /// Not needed
+        /// </summary>
+        /// <param name="component"></param>
+        /// <returns></returns>
+        public override bool ShouldSerializeValue(object component) => false;
+
+        /// <summary>
+        /// Store the command which will be executed
+        /// </summary>
+        private ICommand _command;
     }
 }

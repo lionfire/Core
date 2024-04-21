@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel;
 
-namespace LionFire.Input
+namespace LionFire.Inputs
 {
     public interface IKeyboard :INotifyPropertyChanged
     {

@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace LionFire.Stride3D.Input;
+namespace LionFire.Stride3D.Inputs;
 
 public static class PlatformKeyConversion
 {
