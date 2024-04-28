@@ -19,14 +19,14 @@ public interface IParameterizedTemplateInstance
 {
     ITemplateParameters Parameters { get; set; }
 }
-public interface IParameterizedTemplateInstance<out TParameters>
-{
-    ITemplateParameters Parameters { get; set; }
-}
-public interface IParameterizedTemplateInstance<out TParameters, out TTemplate>
-{
-    ITemplateParameters<TTemplate> Parameters { get; set; }
-}
+//public interface IParameterizedTemplateInstance<out TParameters>
+//{
+//    ITemplateParameters Parameters { get; set; }
+//}
+//public interface IParameterizedTemplateInstance<out TParameters, out TTemplate>
+//{
+//    ITemplateParameters<TTemplate> Parameters { get; set; }
+//}
 
 public interface ITemplateInstance<TTemplate> : ITemplateInstance, IInstanceForSettable<TTemplate>
     where TTemplate : ITemplate
