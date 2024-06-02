@@ -32,7 +32,7 @@ public abstract partial class DynamicDataCollection<TValue>
 {
     public DynamicDataCollection() {
 
-        GetOperations.Subscribe(async t =>
+        GetOperations.Subscribe((Action<ITask<IGetResult<IEnumerable<TValue>>>>)(async t =>
         {
             var o = (IObserver<IGetResult<IEnumerable<TValue>>>)this;
             try
@@ -58,7 +58,7 @@ public abstract partial class DynamicDataCollection<TValue>
             //else
             //{
             //}
-        });
+        }));
     }
     
 
