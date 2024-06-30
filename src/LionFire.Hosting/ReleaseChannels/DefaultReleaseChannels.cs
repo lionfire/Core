@@ -5,6 +5,16 @@ namespace LionFire.Deployment
 {
     public static class DefaultReleaseChannels
     {
+        public static IEnumerable<ReleaseChannel> ProdChannels
+        {
+            get
+            {
+                yield return Prod;
+                yield return Green;
+                yield return Blue;
+            }
+        }
+
         public static IEnumerable<ReleaseChannel> All
         {
             get
@@ -22,6 +32,7 @@ namespace LionFire.Deployment
                 yield return Test;
 
                 yield return Dev;
+                yield return LocalDev;
                 yield return Src;
             }
         }
@@ -29,20 +40,23 @@ namespace LionFire.Deployment
         public static IDictionary<string, ReleaseChannel> Dictionary => dictionary ??= All.ToDictionary(x => x.Id);
         private static IDictionary<string, ReleaseChannel> dictionary;
 
-        public static ReleaseChannel Prod = new("prod", "Production", 0);
-        public static ReleaseChannel Green = new("green", "Production", 0);
-        public static ReleaseChannel Blue = new("blue", "Production", 1);
+        public static ReleaseChannel Prod = new("Prod", "Production", 0);
+        public static ReleaseChannel Green = new("Green", "Production", 0);
+        public static ReleaseChannel Blue = new("Blue", "Production", 1);
 
-        public static ReleaseChannel Beta = new ("beta", "Beta", 2);
-        public static ReleaseChannel Alpha = new ("alpha", "Alpha", 3);
-        public static ReleaseChannel Nightly = new ("nightly", "Nightly", 4);
-        public static ReleaseChannel AutoBuild = new ("autobuild", "AutoBuild", 5);
-        public static ReleaseChannel Test = new("test", "Test", 6);
-        public static ReleaseChannel Dev = new("dev", "Development", 7);
-        public static ReleaseChannel Src = new("src", "Source", 8);
+        public static ReleaseChannel Beta = new ("Beta", "Beta", 2);
+        public static ReleaseChannel Alpha = new ("Alpha", "Alpha", 3);
+        public static ReleaseChannel Nightly = new ("Nightly", "Nightly", 4);
+        public static ReleaseChannel AutoBuild = new ("AutoBuild", "AutoBuild", 5);
+        public static ReleaseChannel Test = new("Test", "Test", 6);
+        public static ReleaseChannel Dev = new("Dev", "Development", 7);
+        public static ReleaseChannel LocalDev = new("LocalDev", "Local Development", 8);
+        public static ReleaseChannel Src = new("Src", "Source", 9);
+
+        public static ReleaseChannel InProcess = new("InProcess", "In process, for Local Development", 10);
 
         public static int? TryGetReleaseChannelPortOffset(string id)
-            => All.Where(r => r.Id == id).FirstOrDefault().precedence;
+            => All.Where(r => r.Id == id).FirstOrDefault()?.precedence;
 
         //public static Dictionary<string, int> ReleaseChannelPortOffsets = new()
         //{

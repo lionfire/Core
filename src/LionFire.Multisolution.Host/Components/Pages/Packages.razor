@@ -8,6 +8,7 @@
 
 @* <button @onclick="@(() => Test(null))">Upgrade</button> *@
 <Microsoft.FluentUI.AspNetCore.Components.FluentButton @onclick="() => OnUpgrade()">Upgrade</Microsoft.FluentUI.AspNetCore.Components.FluentButton>
+<Microsoft.FluentUI.AspNetCore.Components.FluentButton @onclick="() => DocumentService.ScanNuget(true)">Rescan Nuget</Microsoft.FluentUI.AspNetCore.Components.FluentButton>
 
 <QuickGrid Items="@packages">
     <PropertyColumn Property="@(p => p.PackageId)" Sortable="true" />
