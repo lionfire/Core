@@ -27,7 +27,7 @@
 		<EnableSourceControlManagerQueries>true</EnableSourceControlManagerQueries>
 
     <DefaultItemExcludes>$(MSBuildProjectDirectory)/bin/**;$(MSBuildProjectDirectory)/obj/**</DefaultItemExcludes>
-	
+		<ProduceReferenceAssembly>true</ProduceReferenceAssembly>	
 	</PropertyGroup>
 
 	
