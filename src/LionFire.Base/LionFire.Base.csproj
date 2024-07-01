@@ -13,7 +13,10 @@
 		<Configurations>Debug;Release</Configurations>
 		<!--<Nullable>enable</Nullable>-->
 		<!--<WarningsAsErrors>Nullable</WarningsAsErrors>-->
-		
+
+<!--TODO: put TargetFramework back in everywhere, in Directory.Build.props, because it is needed when targeting multiple frameworks-->
+		<BaseOutputPath>$(BuildRoot)\bin\$(Configuration)\$(PlatformTarget)\$(MSBuildProjectName)\$(TargetFramework)\</BaseOutputPath>
+		<BaseIntermediateOutputPath>$(BuildRoot)\obj\$(Configuration)\$(PlatformTarget)\$(MSBuildProjectName)\$(TargetFramework)\</BaseIntermediateOutputPath>
 	</PropertyGroup>
 
 	<ItemGroup>

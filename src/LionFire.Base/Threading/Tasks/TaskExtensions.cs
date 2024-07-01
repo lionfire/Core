@@ -18,7 +18,7 @@ public static class TaskExtensions
     }
     public static void FireAndForget(this Task _) { }
 
-#if NET5_0_OR_GREATER
+#if NET8_0_OR_GREATER
     public static void FireAndForget(this ValueTask _) { }
 #endif
 

@@ -93,7 +93,7 @@ public class ApiConnectionStateMachine
             Connect().FireAndForget();
         }
     }
-
+    
     #endregion
 
     #region State
