@@ -24,6 +24,7 @@ internal static class SetsLogic<TValue>
         do
         {
             currentSetState = @this.SetState;
+
             if (!currentSetState.Task.AsTask().IsCompleted)
             {
                 if (@this.EqualityComparer.Equals(currentSetState.DesiredValue, value))
@@ -39,15 +40,19 @@ internal static class SetsLogic<TValue>
             }
 
             // ENH: Based on option: Also wait for existing get/set to complete to avoid setting to a value that will be overwritten, or to avoid setting to a value that is the same as the gotten value
-        } while (currentSetState.Task != null);
+        } while (currentSetState.Task != null && !currentSetState.Task.AsTask().IsCompleted);
 
         lock (@this.setLock)
         {
+            // Check again inside lock
             if (SetsLogic<TValue>.IsSetStateSetting(@this.SetState)) goto start;
-            @this.sets.OnNext(new SetOperation<TValue>(value, @this.SetImpl(value, cancellationToken).AsITask()));
-        }
-        await @this.SetState.Task.ConfigureAwait(false);
 
+            // Execute SetImpl,
+            currentSetState = new SetOperation<TValue>(value, @this.SetImpl(value, cancellationToken).AsITask());
+
+            // Fire event.  Sets @this.SetState = currentSetState
+            @this.sets.OnNext(currentSetState);
+        }
         return await currentSetState.Task!.ConfigureAwait(false);
     }
 

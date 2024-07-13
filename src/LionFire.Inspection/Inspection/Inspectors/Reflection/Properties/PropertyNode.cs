@@ -37,34 +37,56 @@ public class PropertyNode : Node<PropertyNodeInfo>
     //, IHasGetterRxO<object?> // TODO: upgrade Getter to AsyncValue
     , IHas<IGetterRxO<object?>>
     , IHas<IAsyncValue<object?>>
-    //, INodeInfo
+//, INodeInfo
 {
 
     #region Lifecycle
 
     public PropertyNode(INode parent, object source, PropertyInfo propertyInfo) : base(parent, source: source, new PropertyNodeInfo(propertyInfo))
     {
-        Key = propertyInfo.Name;
+        Key = propertyInfo.Name ?? throw new ArgumentNullException(nameof(propertyInfo) + "." + nameof(propertyInfo.Name));
 
         if (propertyInfo.CanRead)
         {
             if (propertyInfo.CanWrite)
             {
                 asyncValue = new PropertyNodeValue(source, propertyInfo);
+
             }
             else
             {
                 getter = new PropertyNodeGetter(source, propertyInfo);
             }
+            ((IHas<IGetterRxO<object?>>)this).Object!.GetResults.Subscribe(OnGetResult);
+            ((IHas<IAsyncValue<object?>>)this)?.Object?.SetResults.Subscribe(OnSetResult);
         }
-        //else if (propertyInfo.CanWrite)
+        //else if (propertyInfo.CanWrite) // Probably different enough to be a class on its own, unless perhaps the get part is StagedValue
         //{
-        //    // ENH: Setter
+        //    // ENH: Setter only - probably do a separate class since it is so different, unless the Get is just the staged value
         //} 
         //else { /* can neither read nor write */ }
+        //((IHas<IGetterRxO<object?>>)this).Object.GetOperations.Subscribe(OnGetResult);
+    }
+
+    private void OnGetResult(IGetResult<object?> result)
+    {
+        if (result.IsSuccess == true)
+        {
+            Parent?.RaisePropertyChanged(this.Name);
+        }
+    }
+    private void OnSetResult(ISetResult<object?> result)
+    {
+        if (result.IsSuccess == true && Parent?.Parent is INode grandparent)
+        {
+            grandparent.RaiseSourceChangeEvents.RaisePropertyChanged(this, Name!);
+            //Parent?.RaisePropertyChanged(this.Name);
+        }
     }
 
     #endregion
+
+    PropertyInfo PropertyInfo => (asyncValue?.PropertyInfo ?? getter?.PropertyInfo)!;
 
     #region Getter
 
@@ -93,7 +115,7 @@ public class PropertyNode : Node<PropertyNodeInfo>
 
     #region INodeInfo
 
-    public string? Name => getter.PropertyInfo.Name;
+    public string? Name => PropertyInfo.Name;
 
     public string? OrderString { get; set; } = null;
 
@@ -103,14 +125,14 @@ public class PropertyNode : Node<PropertyNodeInfo>
 
     //public override INodeInfo Info => this;
 
-    public IODirection IODirection => getter.PropertyInfo.GetIODirection();
+    public IODirection IODirection => PropertyInfo.GetIODirection();
 
-    public Type? Type => getter.PropertyInfo.PropertyType;
-    public IEnumerable<Type>? InputTypes => !getter.PropertyInfo.CanWrite
+    public Type? Type => PropertyInfo.PropertyType;
+    public IEnumerable<Type>? InputTypes => !PropertyInfo.CanWrite
         ? null
-        : (getter.PropertyInfo.GetIndexParameters().Length == 0
-            ? new Type[] { getter.PropertyInfo.PropertyType }
-            : Enumerable.Concat(new Type[] { getter.PropertyInfo.PropertyType }, getter.PropertyInfo.GetIndexParameters().Select(pi => pi.ParameterType))
+        : (PropertyInfo.GetIndexParameters().Length == 0
+            ? new Type[] { PropertyInfo.PropertyType }
+            : Enumerable.Concat(new Type[] { PropertyInfo.PropertyType }, PropertyInfo.GetIndexParameters().Select(pi => pi.ParameterType))
         );
 
     #endregion

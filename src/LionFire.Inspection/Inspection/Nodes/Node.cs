@@ -57,6 +57,10 @@ where TInfo : INodeInfo
     /// </summary>
     public object? Source { get; init; }
 
+    public IReactiveNotifyPropertyChanged<INode> SourceChangeEvents => RaiseSourceChangeEvents;
+    public ReactiveNotifyPropertyChanged<INode> RaiseSourceChangeEvents { get; } = new();
+
+
     protected virtual void InitSource() => OnSourceChanged(Source);
     protected virtual void OnSourceChanged(object? source)
     {

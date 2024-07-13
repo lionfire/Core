@@ -59,7 +59,7 @@
         </button>
 
         <button class=@("LionToggle " + (ViewModel.NodeVM.Options.DiagnosticsMode ? "selected" : ""))
-                @onclick=@(()=>ViewModel.NodeVM.Options.DiagnosticsMode ^= true) title="Diagnostics Mode">
+                @onclick=@(()=>ViewModel.NodeVM.Options.DiagnosticsMode ^= true) title="Developer Mode">
             @if (ViewModel.NodeVM.Options.DiagnosticsMode)
             {
                 <span>Dev</span>

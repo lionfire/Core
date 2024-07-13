@@ -65,7 +65,11 @@ else if (ViewModel?.ValueVMs != null)
         </div>
     }
     <MudDataGrid T="TValueVM"
-                 Items="@ViewModel.ValueVMs.Items" SortMode="SortMode.Multiple" Filterable="true" Hideable="true" RowClick="@RowClicked">
+                 Items="@ViewModel.ValueVMs.Items" 
+                 SortMode="SortMode.Multiple" 
+                 Filterable="true" 
+                 Hideable="true" 
+                 RowClick="@RowClicked">
     </MudDataGrid>
 }
 @*else if(Items!=null) // No TValueVM, show TValue items directly

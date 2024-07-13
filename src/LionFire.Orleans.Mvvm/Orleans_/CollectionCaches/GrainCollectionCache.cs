@@ -82,7 +82,7 @@ public class SubscriptionOptions<T>
 /// TODO: change this class to ListGrainCache?  Is there a benefit to knowing TNotificationItem is a grain?
 /// </summary>
 /// <typeparam name="T"></typeparam>
-public class GrainCollectionCache<TValue> // RENAME: GrainCollectionCache
+public class GrainCollectionCache<TValue> 
     : AsyncKeyedCollection<string, TValue>
     , IObservableCreatesAsync<string, TValue>
     //, IObservableCreatesAsync<TInfo>
@@ -178,7 +178,7 @@ public class GrainCollectionCache<TValue> // RENAME: GrainCollectionCache
 
     #region Components
 
-    KeyedListObserverO<string, TValue> keyedListObserverO;
+    KeyedListObserverO<string, TValue>? keyedListObserverO;
 
     #endregion
 
@@ -189,11 +189,6 @@ public class GrainCollectionCache<TValue> // RENAME: GrainCollectionCache
     protected override ITask<IGetResult<IEnumerable<TValue>>> GetImpl(CancellationToken cancellationToken = default)
     {
         return GrainListCacheCommon<TValue>.ResolvesRetrieveFunc(CollectionGrain);
-    }
-
-    public override void OnNext(IGetResult<IEnumerable<TValue>> result)
-    {
-        Debug.WriteLine($"{this.GetType().ToHumanReadableName()} OnNext GetResult: {result}");
     }
 
     #endregion

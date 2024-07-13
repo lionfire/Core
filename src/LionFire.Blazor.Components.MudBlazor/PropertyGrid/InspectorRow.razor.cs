@@ -42,15 +42,33 @@ public partial class InspectorRow
 
         ViewModel.Refresh();
 
-        if (ViewModel.NodeVM?.ValueState != null) {
+        if (ViewModel.NodeVM?.ValueState != null)
+        {
             ViewModel.NodeVM.ValueState.SubscribePropertyChangedEvents();
             ViewModel.NodeVM.ValueState.PropertyChanged += ValueState_PropertyChanged;
         }
 
         if (NodeVM != null && NodeVM.Depth == 0) NodeVM.ShowChildren = true; // View logic
 
+        this.WhenAnyValue(x => x.ViewModel.NodeVM.ShowChildren)
+            .Subscribe(showChildren =>
+            {
+                if (showChildren)
+                {
+                    childrenSubscription ??= ViewModel!.NodeVM!.ChildrenVM?.Children?.Connect().Subscribe(_ => InvokeAsync(StateHasChanged));
+                }
+                else
+                {
+                    if (childrenSubscription != null)
+                    {
+                        childrenSubscription?.Dispose();
+                        childrenSubscription = null;
+                    }
+                }
+            });
         return base.OnParametersSetAsync();
     }
+    IDisposable? childrenSubscription;
 
     private void ValueState_PropertyChanged(object? sender, System.ComponentModel.PropertyChangedEventArgs e)
     {
@@ -59,7 +77,7 @@ public partial class InspectorRow
 
     protected override Task OnInitializedAsync()
     {
-        NodeVM.ChildrenVM?.OnExpand();
+        NodeVM?.ChildrenVM?.OnExpand();
 
         this.WhenAnyValue(x => x.NodeVM!.ShowChildren)
             .Subscribe(visible =>

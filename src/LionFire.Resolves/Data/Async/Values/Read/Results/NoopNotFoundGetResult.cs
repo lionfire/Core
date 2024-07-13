@@ -6,15 +6,15 @@ public struct NoopNotFoundGetResult<TValue> : IGetResult<TValue>
 {
     public static NotFoundGetResult<TValue> Instance { get; } = new NotFoundGetResult<TValue>();
 
-    public bool? IsSuccess => false;
+    public readonly bool? IsSuccess => false;
 
-    public TValue Value => default;
+    public readonly TValue Value => default!;
 
-    public bool HasValue => false;
+    public readonly bool HasValue => false;
 
-    public bool IsNoop => true;
+    public readonly bool IsNoop => true;
 
-    public object? Error => null;
-    public TransferResultFlags Flags => TransferResultFlags.Noop | TransferResultFlags.NotFound;
+    public readonly object? Error => null;
+    public readonly TransferResultFlags Flags => TransferResultFlags.Noop | TransferResultFlags.NotFound;
 
 }

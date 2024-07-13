@@ -30,6 +30,9 @@ public abstract partial class DynamicDataCollection<TValue>
 //  - IAsyncCreates<TItem>
 //  - System.IAsyncObserver<ChangeSet<TItem>> // For subscribing to changes
 {
+
+    #region Lifecycle
+
     public DynamicDataCollection() {
 
         GetOperations.Subscribe((Action<ITask<IGetResult<IEnumerable<TValue>>>>)(async t =>
@@ -61,6 +64,7 @@ public abstract partial class DynamicDataCollection<TValue>
         }));
     }
     
+    #endregion
 
     #region IAsyncReadOnlyCollectionCache<TItem>
 
@@ -70,7 +74,7 @@ public abstract partial class DynamicDataCollection<TValue>
     //public bool IsResolving => !getOperations.Value.AsTask().IsCompleted;
 
     public IObservable<ITask<IGetResult<IEnumerable<TValue>>>> GetOperations => getOperations;
-    protected BehaviorSubject<ITask<IGetResult<IEnumerable<TValue>>>> getOperations = new(Task.FromResult<IGetResult<IEnumerable<TValue>>>(NoopNotFoundGetResult<IEnumerable<TValue>>.Instance).AsITask());
+    protected BehaviorSubject<ITask<IGetResult<IEnumerable<TValue>>>> getOperations = new(Task.FromResult<IGetResult<IEnumerable<TValue>>>(InitializedGetResult<IEnumerable<TValue>>.Instance).AsITask());
 
     #region IResolves
 

@@ -1,5 +1,6 @@
 ﻿using LionFire.Reactive;
 using LionFire.Structures;
+using ReactiveUI;
 using System.Reactive.Linq;
 
 namespace LionFire.Inspection.Nodes;
@@ -61,6 +62,9 @@ public interface INode
     /// </summary>
     [Immutable]
     object? Source { get; }
+
+    IReactiveNotifyPropertyChanged<INode> SourceChangeEvents { get; }
+    ReactiveNotifyPropertyChanged<INode> RaiseSourceChangeEvents { get; }
 
     object? Value { get; set; }
     Type ValueType { get; }

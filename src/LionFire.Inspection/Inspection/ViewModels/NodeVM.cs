@@ -11,6 +11,7 @@ using LionFire.Overlays;
 using LionFire.Structures;
 using ReactiveUI;
 using System.Diagnostics;
+using System.Reactive.Linq;
 
 namespace LionFire.Inspection.ViewModels;
 

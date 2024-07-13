@@ -55,7 +55,11 @@ public enum TransferResultFlags
     // = 1 << 12,
     // = 1 << 12,
     // = 1 << 13,
-    // = 1 << 14,
+
+    /// <summary>
+    /// This is not the result of an operation, but whoever owns this operation needed to initialize a result with something, so it was initialized with this flag.
+    /// </summary>
+    Initialized = 1 << 14,
 
     /// <summary>
     /// Failure in resolving a route from the source address to the ultimate target, such as:

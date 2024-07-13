@@ -9,6 +9,7 @@ using System.Reactive.Subjects;
 using System.Reactive;
 using LionFire.Dependencies;
 using System.Collections;
+using LionFire.ExtensionMethods;
 
 namespace LionFire.Data.Collections;
 
@@ -18,6 +19,7 @@ public abstract class AsyncReadOnlyKeyedCollection<TKey, TValue>
     , IInjectable<IKeyProvider<TKey, TValue>>
     , System.IAsyncObserver<ChangeSet<TValue, TKey>>
     where TKey : notnull
+    where TValue : notnull
 {
     #region Dependencies
 
@@ -77,7 +79,11 @@ public abstract class AsyncReadOnlyKeyedCollection<TKey, TValue>
 
     #endregion
 
-
+    public override void OnNext(IGetResult<IEnumerable<TValue>> result)
+    {
+        //Debug.WriteLine($"{this.GetType().ToHumanReadableName()} OnNext GetResult: {result}");
+        SourceCache?.EditDiff(result.Value ?? Enumerable.Empty<TValue>(), ValueEqualityComparerFunc);
+    }
 
     #region IAsyncReadOnlyCollectionCache<KeyValuePair<TKey, TItem>>
 

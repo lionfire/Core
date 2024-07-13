@@ -4,7 +4,7 @@ using LionFire.Reflection;
 
 namespace LionFire.Data.Mvvm;
 
-public class AsyncKeyedCollectionVM<TKey, TValue, TValueVM> 
+public class AsyncKeyedCollectionVM<TKey, TValue, TValueVM>
     : LazilyGetsKeyedCollectionVM<TKey, TValue, TValueVM>
     , ICreatesAsyncVM<TValue>
     where TKey : notnull
@@ -13,15 +13,17 @@ public class AsyncKeyedCollectionVM<TKey, TValue, TValueVM>
 
     public AsyncKeyedCollectionVM(IViewModelProvider viewModelProvider) : base(viewModelProvider)
     {
-        Create = ReactiveCommand.Create<ActivationParameters, Task<TValue>>(p =>
-            (Source as ICreatesAsync<TValue> 
-            ?? throw new ArgumentException($"{nameof(Source)} must be ICreatesAsync<TValue>"))
-                .Create(p.Type, p.Parameters)
-        , Observable.Create<bool>(o =>
-        {
-            o.OnNext(Source is ICreatesAsync<TValue>);
-            return Disposable.Empty;
-        }));
+        Create = ReactiveCommand.Create<ActivationParameters, Task<TValue>>(
+            execute: p =>
+                (Source as ICreatesAsync<TValue>
+                ?? throw new ArgumentException($"{nameof(Source)} must be ICreatesAsync<TValue>"))
+                    .Create(p.Type, p.Parameters),
+            canExecute: Observable.Create<bool>(o =>
+            {
+                o.OnNext(Source is ICreatesAsync<TValue>);
+                return Disposable.Empty;
+            })
+        );
 
         Create.CanExecute.ToProperty(this, nameof(CanCreate));
     }
@@ -43,7 +45,7 @@ public class AsyncKeyedCollectionVM<TKey, TValue, TValueVM>
     #region User Input
 
     #region Create
-    
+
     public IObservable<(string key, Type type, object[] parameters, Task result)> CreatesForKey => throw new NotImplementedException();
     public ReactiveCommand<ActivationParameters, Task<TValue>> Create { get; }
 
@@ -125,6 +127,7 @@ public class AsyncKeyedCollectionVM<TKey, TValue, TValueVM>
     //#endregion
 }
 
+#if UNUSED
 //public class AsyncDictionaryVM<TKey, TValue, TValueVM> : AsyncCollectionVM<TKey, TValue>
 //    //, IObservableCreatesAsync<TKey, TValue>
 //    where TKey : notnull
@@ -156,6 +159,7 @@ public abstract class AsyncDictionaryVM<TKey, TValue> : AsyncKeyedCollectionVM<T
 
     #endregion
 }
+#endif
 
 // vvv TODO: Triage vvv
 #if TODO // Triage
@@ -382,7 +386,8 @@ if (items is ICache<TValue> vm)
 
 }
 #endif
-public static class DisplayNameUtilsX {
+public static class DisplayNameUtilsX
+{
     public static string DisplayNameForType(Type t) => t.Name.Replace("Item", "").TrimLeadingIOnInterfaceType();
 }
 

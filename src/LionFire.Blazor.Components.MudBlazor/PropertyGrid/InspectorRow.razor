@@ -43,7 +43,7 @@ else
             <td class="Expander">
                 @if (ViewModel.NodeVM.HasOrMightHaveChildren)
                 {
-                    <MudCheckBox @bind-Checked="@ViewModel.NodeVM.ShowChildren"
+                    <MudCheckBox @bind-Value="@ViewModel.NodeVM.ShowChildren"
                                  Dense=true
                                  Size="@Size.Medium"
                                  Color="Color.Secondary"

@@ -154,7 +154,7 @@ public class KeyedCollectionG<TKey, TItem> : Grain
 
     #region Create
 
-    public async Task<TItem> Create(Type type, params object[] constructorParameters)
+    public async Task<TItem> Create(Type type, params object[]? constructorParameters)
     {
         if (constructorParameters != null && constructorParameters.Length > 0)
         {

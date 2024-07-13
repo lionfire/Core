@@ -212,7 +212,7 @@ public abstract class GetterRxO<TValue>
 
 
     // Exposed only on derived classes that are read-write IAwareOfSets
-    public void OnSet(ISetResult<TValue> setResult) 
+    public virtual void OnSet(ISetResult<TValue> setResult) 
     {
         // REVIEW: are there any race condition issues with Gets in progress?  Perhaps derived event notification ordering
         getOperations.OnNext(Task.FromResult<IGetResult<TValue>>(GetResult<TValue>.FromSet(setResult)).AsITask());

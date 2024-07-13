@@ -5,15 +5,15 @@
 
 @if (Style == BoolEditorStyle.Switch)
 {
-    <MudSwitch @bind-Checked="Value" ReadOnly=@(!SupportsWriting) />
+    <MudSwitch @bind-Value="Value" ReadOnly=@(!SupportsWriting) />
 }
 else if (Style == BoolEditorStyle.CheckBox)
 {
-    <MudCheckBox @bind-Checked="Value" ReadOnly=@(!SupportsWriting) />
+    <MudCheckBox @bind-Value="Value" ReadOnly=@(!SupportsWriting) />
 }
 else if (Style == BoolEditorStyle.ToggleButton)
 {
-    <MudToggleIconButton @bind-Checked="Value" ReadOnly=@(!SupportsWriting) />
+    <MudToggleIconButton @bind-Value="Value" ReadOnly=@(!SupportsWriting) />
 }
 else
 {

@@ -5,6 +5,7 @@ using LionFire.Structures;
 using LionFire.Data.Async.Sets;
 using LionFire.Threading;
 using System.Diagnostics;
+using ReactiveUI;
 
 namespace LionFire.Inspection;
 
@@ -26,7 +27,16 @@ public class GrainReadWritePropertyNode : AsyncValueNode<GrainPropertyInfo>
             Debug.WriteLine($"GrainReadWritePropertyNode GetOperations.OnNext: {r.ToDebugString()}");
         });
         AsyncValue.Get().AsTask().FireAndForget(); // TEMP
+
+        SourceChangeEvents.Changed.Subscribe(OnSourceChangedFromNode);
     }
+
+    void OnSourceChangedFromNode(IReactivePropertyChangedEventArgs<IReactiveObject> args)
+    {
+        AsyncValue.Set(AsyncValue.Value).FireAndForget(); // REVIEW - Editing in place: but we shouldn't be modifying original value?
+    }
+
+
 
     public override IAsyncValue<object?> AsyncValue => asyncValue ??= new GrainPropertyAsyncValue(this);
     private GrainPropertyAsyncValue? asyncValue;
