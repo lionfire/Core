@@ -260,6 +260,26 @@ public class NodeVM : ReactiveObject, IViewModel<INode>, IParented<NodeVM>, IHas
         }
     }
 
+    public bool ShowHidden
+    {
+        get => Options.VisibilityFlags.HasFlag(InspectorVisibility.Hidden);
+        set
+        {
+            if (value) GetLocalOptions().VisibilityFlags |= InspectorVisibility.Hidden;
+            else GetLocalOptions().VisibilityFlags &= ~InspectorVisibility.Hidden;
+        }
+    }
+
+    public bool ShowDev
+    {
+        get => Options.VisibilityFlags.HasFlag(InspectorVisibility.Dev);
+        set
+        {
+            if (value) GetLocalOptions().VisibilityFlags |= InspectorVisibility.Dev;
+            else GetLocalOptions().VisibilityFlags &= ~InspectorVisibility.Dev;
+        }
+    }
+
     #endregion
 
     #endregion

@@ -199,10 +199,9 @@ public class NodeChildrenVM : ReactiveObject
         {
             return false;
         }
-        if (!NodeVM.ShowMethods && nodeVM.Node.Info.NodeKind.HasFlag(InspectorNodeKind.Method))
-        {
-            return false;
-        }
+        if (!NodeVM.ShowMethods && nodeVM.Node.Info.NodeKind.HasFlag(InspectorNodeKind.Method)) { return false; }
+        if (!NodeVM.ShowDev && nodeVM.Node.Visibility.HasFlag(InspectorVisibility.Dev)) { return false; }
+        if (!NodeVM.ShowHidden && nodeVM.Node.Visibility.HasFlag(InspectorVisibility.Hidden)) { return false; }
 
         if (nodeVM.Node is IInspectorGroup g)
         {

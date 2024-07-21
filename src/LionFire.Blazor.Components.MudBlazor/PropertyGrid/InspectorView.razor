@@ -19,7 +19,7 @@
 
     @if (DiagnosticsMode)
     {
-        <div class="dev">Type: @Object?.GetType().Name</div>
+        <div class="dev">Root Object Type: @Object?.GetType().Name</div>
     }
 
     @if (ViewModel!.ShowFilterTypes)
@@ -59,8 +59,20 @@
         </button>
 
         <button class=@("LionToggle " + (ViewModel.NodeVM.Options.DiagnosticsMode ? "selected" : ""))
-                @onclick=@(()=>ViewModel.NodeVM.Options.DiagnosticsMode ^= true) title="Developer Mode">
+                @onclick=@(()=>ViewModel.NodeVM.Options.DiagnosticsMode ^= true) title="Diagnostics Mode">
             @if (ViewModel.NodeVM.Options.DiagnosticsMode)
+            {
+                <span>Diag</span>
+            }
+            else
+            {
+                <span>diag</span>
+            }
+        </button>
+
+        <button class=@("LionToggle " + (ViewModel.NodeVM.Options.DevMode ? "selected" : ""))
+                @onclick=@(()=>ViewModel.NodeVM.Options.DevMode ^= true) title="Developer Mode">
+            @if (ViewModel.NodeVM.Options.DevMode)
             {
                 <span>Dev</span>
             }
@@ -70,6 +82,17 @@
             }
         </button>
 
+        <button class=@("LionToggle " + (ViewModel.NodeVM.Options.HiddenMode ? "selected" : ""))
+                @onclick=@(()=>ViewModel.NodeVM.Options.HiddenMode ^= true) title="Hidden Mode">
+            @if (ViewModel.NodeVM.Options.HiddenMode)
+            {
+                <span>H</span>
+            }
+            else
+            {
+                <span>h</span>
+            }
+        </button>
 
         @if (ViewModel.NodeVM.Options.DiagnosticsMode)
         {

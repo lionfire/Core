@@ -25,7 +25,7 @@ public class InspectorOptions : ReactiveObject, IInspectorOptions
         FlattenedNodeKinds = InspectorNodeKind.Group,
         ShowChildrenForDepthBelow = 1,
         ShowAll = false,
-        DiagnosticsMode = true, // TEMP
+        DiagnosticsMode = false,
     };
 
     static InspectorOptions()
@@ -88,12 +88,17 @@ public class InspectorOptions : ReactiveObject, IInspectorOptions
     [Reactive]
     public InspectorNodeKind VisibleItemTypes { get; set; }
 
+    [Reactive]
+    public InspectorVisibility VisibilityFlags { get; set; }
+
     public InspectorNodeKind ShowChildrenForNodeKinds { get; set; }
     public InspectorNodeKind FlattenedNodeKinds { get; set; }
     public int ShowChildrenForDepthBelow { get; set; }
 
     public bool ShowAll { get; set; }
     public bool DiagnosticsMode { get; set; }
+    public bool DevMode { get; set; }
+    public bool HiddenMode { get; set; }
     //public HashSet<string>? FlattenedGroups { get; }
 
 

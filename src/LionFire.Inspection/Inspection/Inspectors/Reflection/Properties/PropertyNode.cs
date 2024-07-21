@@ -46,12 +46,17 @@ public class PropertyNode : Node<PropertyNodeInfo>
     {
         Key = propertyInfo.Name ?? throw new ArgumentNullException(nameof(propertyInfo) + "." + nameof(propertyInfo.Name));
 
+        // TEMP - TODO: An extensible system for decorating arbitrary types that are not owned
+        if (propertyInfo.DeclaringType.Name.StartsWith("Proxy_")) //.IsAssignableTo(typeof(Orleans.Runtime.GrainReference)))
+        {
+            Visibility |= InspectorVisibility.Hidden;
+        }
+
         if (propertyInfo.CanRead)
         {
             if (propertyInfo.CanWrite)
             {
                 asyncValue = new PropertyNodeValue(source, propertyInfo);
-
             }
             else
             {
@@ -120,6 +125,8 @@ public class PropertyNode : Node<PropertyNodeInfo>
     public string? OrderString { get; set; } = null;
 
     public InspectorNodeKind NodeKind => InspectorNodeKind.Data;
+    
+
 
     public IEnumerable<string> Flags => Enumerable.Empty<string>();
 

@@ -87,6 +87,8 @@ where TInfo : INodeInfo
     public IInspectorOptions InheritedOptions
         => OverlayX_NEW.NextNonNull<IInspectorOptions, INode>(this, n => n.Context?.Options, InspectorOptions.Default) ?? InspectorOptions.DefaultDefault;
 
+    public InspectorVisibility Visibility { get; set; }
+
     #endregion
 
     #region Lifecycle
