@@ -89,7 +89,7 @@ public class InspectorOptions : ReactiveObject, IInspectorOptions
     public InspectorNodeKind VisibleItemTypes { get; set; }
 
     [Reactive]
-    public InspectorVisibility VisibilityFlags { get; set; }
+    public InspectorVisibility VisibilityFlags { get; set; } = InspectorVisibility.Hidden;
 
     public InspectorNodeKind ShowChildrenForNodeKinds { get; set; }
     public InspectorNodeKind FlattenedNodeKinds { get; set; }
@@ -97,8 +97,22 @@ public class InspectorOptions : ReactiveObject, IInspectorOptions
 
     public bool ShowAll { get; set; }
     public bool DiagnosticsMode { get; set; }
-    public bool DevMode { get; set; }
-    public bool HiddenMode { get; set; }
+    public bool DevMode {
+        get => VisibilityFlags.HasFlag(InspectorVisibility.Dev);
+        set
+        {
+            if (value) { VisibilityFlags |= InspectorVisibility.Dev; }
+            else { VisibilityFlags &= ~InspectorVisibility.Dev; }
+        }
+    }
+    public bool HiddenMode { 
+        get => VisibilityFlags.HasFlag(InspectorVisibility.Hidden); 
+        set 
+        {
+            if (value) { VisibilityFlags |= InspectorVisibility.Hidden; }
+            else { VisibilityFlags &= ~InspectorVisibility.Hidden; }
+        }
+    }
     //public HashSet<string>? FlattenedGroups { get; }
 
 

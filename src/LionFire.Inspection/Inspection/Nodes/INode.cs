@@ -93,7 +93,7 @@ public interface INode
 
     InspectorContext? Context { get; set; } // REVIEW - make non nullable?
     
-    InspectorVisibility Visibility { get; }
+    InspectorVisibility Visibility { get; set; }
 
     #endregion
 

@@ -1,11 +1,13 @@
 ﻿using LionFire.FlexObjects;
 using LionFire.Metadata;
 using LionFire.UI;
+using ReactiveUI;
 
 namespace LionFire.Inspection.ViewModels;
 
 [Overlayable] // TODO: Source generator overlay for IInspectorContext
-public interface IInspectorOptions : IFlex//, IParented<InspectorOptions>
+public interface IInspectorOptions :  IFlex//, IParented<InspectorOptions>
+    , IReactiveNotifyPropertyChanged<IReactiveObject>, IHandleObservableErrors, IReactiveObject
 {
     EditApproach? EditApproach { get; }
     bool InPlaceEditing { get; }

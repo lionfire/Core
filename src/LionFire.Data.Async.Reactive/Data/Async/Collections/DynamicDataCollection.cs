@@ -22,6 +22,7 @@ public abstract partial class DynamicDataCollection<TValue>
     , IObservableGetOperations<IEnumerable<TValue>>
     , IGetterRxO<IEnumerable<TValue>>
     , IObserver<IGetResult<IEnumerable<TValue>>>
+    
 // Derived classes may implement read interfaces:
 //  - INotifiesChildChanged
 //  - INotifiesChildDeeplyChanged

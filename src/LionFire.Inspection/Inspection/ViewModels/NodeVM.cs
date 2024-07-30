@@ -199,6 +199,7 @@ public class NodeVM : ReactiveObject, IViewModel<INode>, IParented<NodeVM>, IHas
     /// <summary>
     /// Local options, not inherited.  See EffectiveOptions for inherited options.
     /// </summary>
+    [Reactive]
     public InspectorOptions? LocalOptions { get; set; }
     public InspectorOptions GetLocalOptions(bool useDefaults = false) => LocalOptions ??= (useDefaults ? (InspectorOptions)InspectorOptions.DefaultDefault.Clone() : new());
     IInspectorOptions? IHas<IInspectorOptions>.Object => LocalOptions;

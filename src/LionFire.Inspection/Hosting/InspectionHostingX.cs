@@ -20,6 +20,7 @@ public static class InspectionHostingX
         if (useDefaults)
         {
             services.AddDefaultInspectors();
+            services.AddOrleansInspectors(); // MOVE to separate DLL?
         }
         return services;
     }

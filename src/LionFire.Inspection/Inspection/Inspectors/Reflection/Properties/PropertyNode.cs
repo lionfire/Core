@@ -46,11 +46,7 @@ public class PropertyNode : Node<PropertyNodeInfo>
     {
         Key = propertyInfo.Name ?? throw new ArgumentNullException(nameof(propertyInfo) + "." + nameof(propertyInfo.Name));
 
-        // TEMP - TODO: An extensible system for decorating arbitrary types that are not owned
-        if (propertyInfo.DeclaringType.Name.StartsWith("Proxy_")) //.IsAssignableTo(typeof(Orleans.Runtime.GrainReference)))
-        {
-            Visibility |= InspectorVisibility.Hidden;
-        }
+        parent.Context?.InitNode(this);
 
         if (propertyInfo.CanRead)
         {

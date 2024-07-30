@@ -119,6 +119,8 @@ public class NodeChildrenVM : ReactiveObject
 
             viewableChildren = children
                 .Connect()
+                .AutoRefresh(x => x.LocalOptions)
+                .AutoRefresh(x => x.Options.VisibilityFlags)
                 .Filter(c => IsVisible(c))
                 .ToSortedCollection(NodeVMComparer.Instance) // was (n => n.Node.Key)
                 .ToProperty(this, x => x.ViewableChildren);
