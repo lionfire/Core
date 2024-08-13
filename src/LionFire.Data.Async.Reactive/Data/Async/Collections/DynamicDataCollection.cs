@@ -22,7 +22,7 @@ public abstract partial class DynamicDataCollection<TValue>
     , IObservableGetOperations<IEnumerable<TValue>>
     , IGetterRxO<IEnumerable<TValue>>
     , IObserver<IGetResult<IEnumerable<TValue>>>
-    
+
 // Derived classes may implement read interfaces:
 //  - INotifiesChildChanged
 //  - INotifiesChildDeeplyChanged
@@ -34,8 +34,13 @@ public abstract partial class DynamicDataCollection<TValue>
 
     #region Lifecycle
 
-    public DynamicDataCollection() {
+    public DynamicDataCollection(bool initializeGetOperations = true)
+    {
+        if (initializeGetOperations) { InitializeGetOperations(); }
+    }
 
+    protected void InitializeGetOperations()
+    {
         GetOperations.Subscribe((Action<ITask<IGetResult<IEnumerable<TValue>>>>)(async t =>
         {
             var o = (IObserver<IGetResult<IEnumerable<TValue>>>)this;
@@ -45,7 +50,7 @@ public abstract partial class DynamicDataCollection<TValue>
                 Debug.WriteLine($"DynamicDataCollection.GetOperations.OnNext: {result.ToDebugString()}");
                 o.OnNext(result);
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 o.OnError(ex);
             }
@@ -64,7 +69,7 @@ public abstract partial class DynamicDataCollection<TValue>
             //}
         }));
     }
-    
+
     #endregion
 
     #region IAsyncReadOnlyCollectionCache<TItem>

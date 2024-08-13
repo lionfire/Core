@@ -11,6 +11,8 @@ public abstract partial class AsyncDynamicDataCollection<TValue>
 
     // REVIEW: Move more async only things here?
 
+    protected AsyncDynamicDataCollection(bool initializeGetOperations = true) : base(initializeGetOperations) { }
+
     public override async ITask<IGetResult<IEnumerable<TValue>>> Get(CancellationToken cancellationToken = default)
     {
         ITask<IGetResult<IEnumerable<TValue>>> task;

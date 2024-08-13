@@ -5,17 +5,19 @@ using LionFire.Data.Async;
 
 namespace LionFire.Data.Collections;
 
-public abstract class AsyncReadOnlyList<TValue> 
+public abstract class AsyncReadOnlyList<TValue>
     : AsyncDynamicDataCollection<TValue> // REVIEW - was AsyncLazyDynamicDataCollection
     , System.IAsyncObserver<ChangeSet<TValue>> // OPTIMIZE: Separate this out 
+    where TValue : notnull
 {
 
     #region Lifecycle
 
     public AsyncReadOnlyList() : this(null) { }
-    public AsyncReadOnlyList(SourceList<TValue>? sourceList)
+    public AsyncReadOnlyList(SourceList<TValue>? sourceList) : base(false)
     {
         this.SourceList = sourceList ?? new SourceList<TValue>();
+        InitializeGetOperations();
     }
 
     #endregion
