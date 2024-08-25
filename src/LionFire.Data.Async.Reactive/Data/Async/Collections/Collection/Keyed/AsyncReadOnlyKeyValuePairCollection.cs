@@ -11,12 +11,13 @@ using LionFire.Dependencies;
 
 namespace LionFire.Data.Collections;
 
-public abstract class AsyncReadOnlyKeyValueCollection<TKey, TValue>
+public abstract class AsyncReadOnlyKeyValuePairCollection<TKey, TValue>
     : AsyncDynamicDataCollection<KeyValuePair<TKey, TValue>>
     , IObservableCacheKeyValueGetter<TKey, TValue>
     , IInjectable<IKeyProvider<TKey, TValue>>
     , System.IAsyncObserver<ChangeSet<TValue, TKey>>
     where TKey : notnull
+    where TValue : notnull
 {
     #region Dependencies
 
@@ -47,9 +48,9 @@ public abstract class AsyncReadOnlyKeyValueCollection<TKey, TValue>
 
     #region Lifecycle
 
-    public AsyncReadOnlyKeyValueCollection() : this(null) { }
+    public AsyncReadOnlyKeyValuePairCollection() : this(null) { }
 
-    public AsyncReadOnlyKeyValueCollection(Func<TValue, TKey>? keySelector = null, SourceCache<TValue, TKey>? dictionary = null, AsyncObservableCollectionOptions? options = null)
+    public AsyncReadOnlyKeyValuePairCollection(Func<TValue, TKey>? keySelector = null, SourceCache<TValue, TKey>? dictionary = null, AsyncObservableCollectionOptions? options = null)
     {
         KeySelector = keySelector ?? DefaultKeySelector();
         SourceCache = dictionary ?? new SourceCache<TValue, TKey>(KeySelector);

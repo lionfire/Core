@@ -11,7 +11,7 @@ namespace LionFire.Data.Collections;
 /// <typeparam name="TValue"></typeparam>
 /// <remarks>Implementors: override either RetrieveValues or RetrieveImpl</remarks>
 public abstract class AsyncKeyValueCollection<TKey, TValue>
-    : AsyncReadOnlyKeyValueCollection<TKey, TValue>
+    : AsyncReadOnlyKeyValuePairCollection<TKey, TValue>
     , IAsyncKeyValueCollection<TKey, TValue>
     where TKey : notnull
 {

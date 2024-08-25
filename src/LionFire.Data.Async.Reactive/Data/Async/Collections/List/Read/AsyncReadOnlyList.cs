@@ -14,9 +14,10 @@ public abstract class AsyncReadOnlyList<TValue>
     #region Lifecycle
 
     public AsyncReadOnlyList() : this(null) { }
-    public AsyncReadOnlyList(SourceList<TValue>? sourceList) : base(false)
+    public AsyncReadOnlyList(SourceList<TValue>? sourceList, Action<AsyncReadOnlyList<TValue>>? initializeHook = null) : base(false)
     {
         this.SourceList = sourceList ?? new SourceList<TValue>();
+        initializeHook?.Invoke(this);
         InitializeGetOperations();
     }
 
