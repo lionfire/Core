@@ -37,6 +37,8 @@ public class CompoundViewModelProvider : IViewModelProvider
     {
         foreach (var p in ViewModelProviders)
         {
+            if (model is TViewModel vm) return vm;
+
             var result = p.TryActivate<TViewModel, TModel>(model, initializer, constructorParameters);
             if (result != null) return result;
         }

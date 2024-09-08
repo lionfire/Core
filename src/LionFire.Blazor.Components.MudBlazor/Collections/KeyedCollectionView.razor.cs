@@ -17,10 +17,14 @@ namespace LionFire.Blazor.Components;
 // TODO: Make this class as dumb as possible, moving testable logic to DictionaryVM
 
 /// <summary>
-/// TODO:
+/// How to use:
+/// - without a ViewModel type: TValueVM same as TValue
+/// - with a ViewModel type: TValueVM different than TValue
 /// 
+/// TODO:
 ///  - optional ViewModel type: ctor injection, or IViewModelProvider
 ///  - optional reorder support
+///
 ///  RENAME: AsyncDictionaryView
 /// </summary>
 /// <typeparam name="TValue"></typeparam>
@@ -30,6 +34,8 @@ public partial class KeyedCollectionView<TKey, TValue, TValueVM>
     , IGetsOrCreatesByType
     where TKey : notnull
 {
+    #region Aspects
+
     #region IComponentized
 
     Components Components { get; set; } = new();
@@ -40,20 +46,55 @@ public partial class KeyedCollectionView<TKey, TValue, TValueVM>
     }
     #endregion
 
+    #endregion
+
     #region Parameters
 
-    // Recommended:
-    //  - IObservableCache<TValue, TItem>
-    //     - see AsyncObservableCache<TItem, TValue> and
-    //     - AsyncComposableObservableCache<TItem, TValue>)
+    #region Items
+
+    /// <summary>
+    /// Recommended:
+    ///  - IObservableCache<TValue, TItem>
+    ///     - see AsyncObservableCache<TItem, TValue> and
+    ///     - AsyncComposableObservableCache<TItem, TValue>)
+    /// </summary>
     [Parameter]
     public IEnumerable<TValue>? Items { get; set; }
-    IEnumerable<TValue>? oldItems { get; set; }
-    //public IEnumerable<TValue>? Values => Items?.Select(x => x.Value);
+    #region Derived
+
+    /// <summary>
+    /// Previous value of Items.
+    /// Used for change detection.
+    /// </summary>
+    private IEnumerable<TValue>? oldItems { get; set; }
+
+    #endregion
+
+    #endregion
+
+    #region Override: ChildContent
+
+    [Parameter]
+    public RenderFragment<AsyncKeyedCollectionVM<TKey, TValue, TValueVM>>? ChildContent { get; set; }
+
+    #endregion
+
+    #region ViewModel
+
+    #region ViewModelOptions 
 
     public VMOptions ViewModelOptions { get; set; }
 
-    #region TODO: Pass-thru to VM
+    #region Derived
+
+    public bool HasVM => typeof(TValue) != typeof(TValueVM);
+
+    #region TODO: Pass-thru to ViewModelOptions
+
+    //public Func<TValueVM, object>? ValueSelector { get;set;} = null;
+
+    [Parameter]
+    public IEnumerable<Type>? CreatableTypes { get; set; } // TODO: Move to ICreatesAsyncVM<TValue>
 
     //[Parameter]
     //public bool ShowRefresh { get; set; }
@@ -61,24 +102,20 @@ public partial class KeyedCollectionView<TKey, TValue, TValueVM>
     //[Parameter]
     //public bool ReadOnly { get; set; }
 
-    #endregion
-
-    // TODO
     //[Parameter]
     //public bool AutoRetrieveOnInit { get; set; } = true; // TODO
 
-    [Parameter]
-    public IEnumerable<Type>? CreatableTypes { get; set; } // TODO: Move to ICreatesAsyncVM<TValue>
+    #region TODO:  Pass-thru to ICollectionViewModelOptions
 
-    #region Collection Parameters
+    //[Parameter]
+    //public Func<TValue, TValueVM?> CreateViewModel { get; set; } = DefaultGetDisplayValue;
 
+    //public static Func<TValue, TValueVM?> DefaultCreateViewModel{ get; set; } = item => (TValueVM?)Activator.CreateInstance(typeof(TValueVM), item);
     //[Parameter]
     //public object[] CreateParameters { get; set; } = new object[] { };
 
     //[Parameter]
     //public Func<Type, object[]>? ItemConstructorParameters { get; set; } = null;
-
-    #endregion
 
     #region OLD - collection implementation - move to a composable AsyncCollection type
 
@@ -86,7 +123,6 @@ public partial class KeyedCollectionView<TKey, TValue, TValueVM>
     //public Func<Type /*type*/, object[]? /*parameters*/, Task<TValue> /*newObject*/>? Create { get; set; }
     //[Parameter]
     //public Func<TValue, Task>? Add { get; set; }
-
     //[Parameter]
     //public Func<Type, Task<TValue>>? AddNew { get; set; }
     //[Parameter]
@@ -94,19 +130,13 @@ public partial class KeyedCollectionView<TKey, TValue, TValueVM>
 
     #endregion
 
-    [Parameter]
-    public RenderFragment<AsyncKeyedCollectionVM<TKey, TValue, TValueVM>>? ChildContent { get; set; }
-
-    //[Parameter]
-    //public Func<TValue, TValueVM?> GetDisplayValue { get; set; } = DefaultGetDisplayValue;
-
-    //public static Func<TValue, TValueVM?> DefaultGetDisplayValue { get; set; } = item => (TValueVM?)Activator.CreateInstance(typeof(TValueVM), item);
+    #region Triage
 
     ///// <summary>
     ///// Optional.  If none set, will compare using DefaultItemComparer
     ///// </summary>
     //[Parameter]
-    //public IComparer<TValueVM>? ItemComparer { get; set; }
+    //public IComparer<TValueVM>? ViewModelComparer { get; set; }
 
     ///// <summary>
     ///// Default: compare based on IKeyed.Key.
@@ -122,6 +152,18 @@ public partial class KeyedCollectionView<TKey, TValue, TValueVM>
 
     #endregion
 
+    #endregion
+
+    #endregion
+
+    #endregion
+
+    #endregion
+
+    #endregion
+
+    #endregion
+
     #region Lifecycle
 
     public KeyedCollectionView()
@@ -131,7 +173,7 @@ public partial class KeyedCollectionView<TKey, TValue, TValueVM>
             if (ViewModel == null) throw new ArgumentNullException(nameof(ViewModel));
             ViewModel.PropertyChanged += ViewModel_PropertyChanged; // MEMORYLEAK?
 
-            
+
 
             //#if true // TODO: How to bind [Parameter] to ViewModel?  Set in OnParametersSetAsync?
             //            this.WhenAnyValue(v => v.Items)
@@ -176,11 +218,6 @@ public partial class KeyedCollectionView<TKey, TValue, TValueVM>
         });
     }
 
-    private void ViewModel_PropertyChanged(object? sender, System.ComponentModel.PropertyChangedEventArgs e)
-    {
-        Logger.LogInformation($"{nameof(KeyedCollectionView<TKey, TValue, TValueVM>)}.ViewModel.PropertyChanged: {e.PropertyName}");
-    }
-
     protected override async Task OnParametersSetAsync()
     {
         await base.OnParametersSetAsync();
@@ -194,7 +231,6 @@ public partial class KeyedCollectionView<TKey, TValue, TValueVM>
                     ?? new PreresolvedGetter<IEnumerable<TValue>>(Items);
 
             ViewModel.FullFeaturedSource?.GetIfNeeded().AsTask().FireAndForget();
-
 
             ViewModel.ValueVMCollections.Subscribe(o =>
             {
@@ -289,6 +325,11 @@ public partial class KeyedCollectionView<TKey, TValue, TValueVM>
 
     #region Event Handling
 
+    private void ViewModel_PropertyChanged(object? sender, System.ComponentModel.PropertyChangedEventArgs e)
+    {
+        Logger.LogInformation($"{nameof(KeyedCollectionView<TKey, TValue, TValueVM>)}.ViewModel.PropertyChanged: {e.PropertyName}");
+    }
+
     void RowClicked(DataGridRowClickEventArgs<(TValue, TValueVM)> args)
     {
         //_events.Insert(0, $"Event = RowClick, Index = {args.RowIndex}, Data = {System.Text.Json.JsonSerializer.Serialize(args.Item)}");
@@ -321,7 +362,7 @@ public partial class KeyedCollectionView<TKey, TValue, TValueVM>
         //ViewModel.Create.Execute(t).Subscribe();
     }
 
-    
+
 }
 
 

@@ -11,6 +11,8 @@ public class LazilyGetsKeyedCollectionVM<TKey, TValue, TValueVM, TCollection>
     , IGetsKeyedCollectionVM<TKey, TValue, TValueVM, TCollection>
     where TKey : notnull
     where TCollection : IEnumerable<TValue>
+    where TValue : notnull
+    where TValueVM : notnull
 {
     public Func<TValue, TKey> KeySelector { get; set; } = v => throw new NotImplementedException();
 
@@ -25,7 +27,7 @@ public class LazilyGetsKeyedCollectionVM<TKey, TValue, TValueVM, TCollection>
             .WhenAnyValue(vm => vm.PreferredSource!.ObservableCache)
             .Select(observableCache => observableCache
                     .Connect()
-                    .Transform(GetViewModel)
+                    .Transform(CreateViewModel)
             )
             .Subscribe(valueVMCollections);
 
@@ -36,7 +38,7 @@ public class LazilyGetsKeyedCollectionVM<TKey, TValue, TValueVM, TCollection>
 
     #endregion
 
-    TValueVM GetViewModel(TValue v)
+    TValueVM CreateViewModel(TValue v)
     {
         var vm = ViewModelProvider.Activate<TValueVM, TValue>(v);
 

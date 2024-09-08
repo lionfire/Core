@@ -9,15 +9,17 @@ namespace LionFire
 {
     public static class XamlUtilities
     {
-        public static string ToXamlAttribute<T>(this T obj, params string[] propertyNames)
+        public static string ToXamlProperties<T>(this T obj, params string[] propertyNames)
         {
-            if (obj == null)
-            {
-                return $"{{null ({obj.GetType().Name})}}";
-            }
-
             var sb = new StringBuilder();
-            sb.Append($"{{{obj.GetType().Name }");
+            ToXamlProperties(obj, sb, propertyNames);
+            return sb.ToString();
+        }
+
+        public static void ToXamlProperties<T>(this T obj, StringBuilder stringBuilder, params string[] propertyNames)
+        {
+            if (obj is null) { return; }
+
 
             HashSet<string> whitelist = propertyNames.Length > 0 ? new HashSet<string>(propertyNames) : null;
 
@@ -36,17 +38,24 @@ namespace LionFire
                 }
                 else
                 {
-                    sb.Append(",");
+                    stringBuilder.Append(",");
                 }
 
-                sb.Append(" ");
-                sb.Append(pi.Name);
-                sb.Append("=");
-                sb.Append(pi.GetValue(obj)?.ToString());
+                stringBuilder.Append(" ");
+                stringBuilder.Append(pi.Name);
+                stringBuilder.Append("=");
+                stringBuilder.Append(pi.GetValue(obj)?.ToString());
             }
+        }
+
+        public static string ToXamlAttribute<T>(this T obj, params string[] propertyNames)
+        {
+            if (obj == null) { return $"{{null ({obj.GetType().Name})}}"; }
+            var sb = new StringBuilder();
+            sb.Append($"{{{obj.GetType().Name}");
+            ToXamlProperties<T>(obj, sb, propertyNames);
             sb.Append("}");
             return sb.ToString();
         }
     }
-
 }

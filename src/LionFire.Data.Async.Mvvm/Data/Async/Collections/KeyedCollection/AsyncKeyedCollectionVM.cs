@@ -7,12 +7,14 @@ namespace LionFire.Data.Mvvm;
 public class AsyncKeyedCollectionVM<TKey, TValue, TValueVM>
     : LazilyGetsKeyedCollectionVM<TKey, TValue, TValueVM>
     , ICreatesAsyncVM<TValue>
+    //, IActivatableViewModel
     where TKey : notnull
 {
     #region Lifecycle
 
     public AsyncKeyedCollectionVM(IViewModelProvider viewModelProvider) : base(viewModelProvider)
     {
+        // TODO: map CanCreate, ReadOnly into this?
         Create = ReactiveCommand.Create<ActivationParameters, Task<TValue>>(
             execute: p =>
                 (Source as ICreatesAsync<TValue>
