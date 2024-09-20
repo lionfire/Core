@@ -1,11 +1,11 @@
-﻿@inherits ReactiveInjectableComponentBase<AsyncKeyedCollectionVM<TKey,TValue,TValueVM>>
+﻿@inherits ReactiveInjectableComponentBase<AsyncKeyedVMCollectionVM<TKey,TValue,TValueVM>>
 @typeparam TKey
 @typeparam TValue
 @typeparam TValueVM
 
 @namespace LionFire.Blazor.Components
 
-@inject ILogger<KeyedCollectionView<TKey, TValue, TValueVM>> Logger
+@inject ILogger<KeyedVMCollectionView<TKey, TValue, TValueVM>> Logger
 @inject NavigationManager NavigationManager
 @inject IServiceProvider ServiceProvider
 @inject IViewModelProvider ViewModelProvider
@@ -17,9 +17,9 @@
         if (ViewModel is ICreatesAsyncVM<TValue> createsValue)
         {
             <MudMenu Class="" Label="Add" Icon="@Icons.Material.Filled.Add" Variant="Variant.Outlined" Color="Color.Success"
-                  Dense
-                      AnchorOrigin="Origin.BottomLeft">
-                 @foreach (var t in CreatableTypes)
+                     Dense
+                     AnchorOrigin="Origin.BottomLeft">
+                @foreach (var t in CreatableTypes)
                 {
                     <MudMenuItem OnClick=@(() => createsValue.Create.Execute(t).Subscribe())>
                         @DisplayNameUtilsX.DisplayNameForType(t)
@@ -27,24 +27,10 @@
                 }
             </MudMenu>
         }
-      
-        @* TODO:  *@
-        @* @if (ViewModel.Create != null && ViewModel.CanCreate)
-    {
-    <MudMenu Class="" Label="Add" Icon="@Icons.Material.Filled.Add" Variant="Variant.Outlined" Color="Color.Success" Dense AnchorOrigin="Origin.BottomLeft">
-    @foreach (var t in CreatableTypes)
-    {
-    <MudMenuItem OnClick="@(e => OnCreate(t))">
-    @DisplayNameUtilsX.DisplayNameForType(t)
-    </MudMenuItem>
-    }
-    </MudMenu>
-    } *@
     }
 
     @if (ViewModel != null && (ViewModel.ShowRefresh || ((ViewModelOptions?.ShowRefreshIfHasNoValue == true) && !ViewModel.HasValue)))
     {
-        @* TODO: Special color if !HasValue, indicating first resolve is needed *@
         <MudIconButton Disabled="!ViewModel.CanGet" OnClick="() => ViewModel.GetCommand.Execute()" Color="@Color.Tertiary" Icon="@Icons.Material.Filled.Refresh" />
     }
 </MudToolBar>
@@ -65,15 +51,13 @@ else if (ViewModel?.ValueVMs != null)
         </div>
     } *@
     <MudDataGrid @ref="MudDataGrid" T="TValueVM"
-                 Items="@ViewModel?.ValueVMs?.Items" 
-                 SortMode="SortMode.Multiple" 
-                 Filterable="true" 
-                 Hideable="true" 
+                 Items="@ViewModel?.ValueVMs?.Items"
+                 SortMode="SortMode.Multiple"
+                 Filterable="true"
+                 Hideable="true"
                  RowClick="@RowClicked"
-                 Columns="@(Columns ?? CreateColumns)"
-    >
+                 Columns="@(b => CreateColumns(b))">
     </MudDataGrid>
-                 @* Columns="@(Columns ?? b => CreateColumns(b))"> *@
 }
 @*else if(Items!=null) // No TValueVM, show TValue items directly
 {

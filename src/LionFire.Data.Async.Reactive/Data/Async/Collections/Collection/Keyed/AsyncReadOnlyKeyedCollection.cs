@@ -50,13 +50,14 @@ public abstract class AsyncReadOnlyKeyedCollection<TKey, TValue>
 
     #region Lifecycle
 
-    public AsyncReadOnlyKeyedCollection() : this(null) { }
+    //public AsyncReadOnlyKeyedCollection() : this(null) { }
 
-    public AsyncReadOnlyKeyedCollection(Func<TValue, TKey>? keySelector = null, SourceCache<TValue, TKey>? dictionary = null, AsyncObservableCollectionOptions? options = null)
+    public AsyncReadOnlyKeyedCollection(Func<TValue, TKey>? keySelector = null, SourceCache<TValue, TKey>? dictionary = null, AsyncObservableCollectionOptions? options = null) : base(initializeGetOperations: false)
     {
         KeySelector = keySelector ?? DefaultKeySelector();
         SourceCache = dictionary ?? new SourceCache<TValue, TKey>(KeySelector);
         this.options = options;
+        InitializeGetOperations(); // After setting SourceCache
     }
 
     #endregion

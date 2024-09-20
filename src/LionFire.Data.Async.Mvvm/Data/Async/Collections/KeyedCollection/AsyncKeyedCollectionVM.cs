@@ -4,25 +4,30 @@ using LionFire.Reflection;
 
 namespace LionFire.Data.Mvvm;
 
-public class AsyncKeyedCollectionVM<TKey, TValue, TValueVM>
+public abstract class AsyncKeyedXCollectionVMBase<TKey, TValue, TValueVM>
     : LazilyGetsKeyedCollectionVM<TKey, TValue, TValueVM>
     , ICreatesAsyncVM<TValue>
     //, IActivatableViewModel
     where TKey : notnull
+    //where TValueVM : IViewModel<TValue> // suggested only
 {
     #region Lifecycle
 
-    public AsyncKeyedCollectionVM(IViewModelProvider viewModelProvider) : base(viewModelProvider)
+    public AsyncKeyedXCollectionVMBase(IViewModelProvider viewModelProvider) : base(viewModelProvider)
     {
         // TODO: map CanCreate, ReadOnly into this?
         Create = ReactiveCommand.Create<ActivationParameters, Task<TValue>>(
-            execute: p =>
-                (Source as ICreatesAsync<TValue>
-                ?? throw new ArgumentException($"{nameof(Source)} must be ICreatesAsync<TValue>"))
-                    .Create(p.Type, p.Parameters),
+            execute: async p =>
+            {
+                var newValue = await (EffectiveCreator
+                   ?? throw new ArgumentException($"{nameof(Source)} must be ICreatesAsync<TValue>"))
+                    .Create(p.Type, p.Parameters);
+                OnCreated(newValue);
+                return newValue;
+            },
             canExecute: Observable.Create<bool>(o =>
             {
-                o.OnNext(Source is ICreatesAsync<TValue>);
+                o.OnNext(EffectiveCreator is ICreatesAsync<TValue>);
                 return Disposable.Empty;
             })
         );
@@ -31,6 +36,9 @@ public class AsyncKeyedCollectionVM<TKey, TValue, TValueVM>
     }
 
     #endregion
+
+    public virtual ICreatesAsync<TValue>? EffectiveCreator => Creator;
+    public ICreatesAsync<TValue>? Creator { get; set; }
 
     #region ReadOnly
 
@@ -55,6 +63,7 @@ public class AsyncKeyedCollectionVM<TKey, TValue, TValueVM>
     public bool CanCreate { get; set; }
     public IEnumerable<Type>? CreatableTypes { get; set; }
 
+    protected virtual void OnCreated(TValue value) { }
 
     // TODO Triage
     //public async void OnCreate(Type type)
@@ -117,6 +126,38 @@ public class AsyncKeyedCollectionVM<TKey, TValue, TValueVM>
     //}
 
     #endregion
+
+    #endregion
+}
+
+public class AsyncKeyedVMCollectionVM<TKey, TValue, TValueVM>
+    : AsyncKeyedXCollectionVMBase<TKey, TValue, TValueVM>
+    where TKey : notnull
+    //where TValueVM : IViewModel<TValue> // Suggested only
+{
+    #region Lifecycle
+
+    public AsyncKeyedVMCollectionVM(IViewModelProvider viewModelProvider) : base(viewModelProvider)
+    {
+        throw new NotImplementedException();
+    }
+
+    #endregion
+}
+
+public class AsyncKeyedCollectionVM<TKey, TValue, TValueVM>
+    : AsyncKeyedXCollectionVMBase<TKey, TValue, TValueVM>
+, ICreatesAsyncVM<TValue>
+//, IActivatableViewModel
+where TKey : notnull
+{
+    public override ICreatesAsync<TValue>? EffectiveCreator => Creator ?? Source as ICreatesAsync<TValue>;
+
+    #region Lifecycle
+
+    public AsyncKeyedCollectionVM(IViewModelProvider viewModelProvider) : base(viewModelProvider)
+    {
+    }
 
     #endregion
 

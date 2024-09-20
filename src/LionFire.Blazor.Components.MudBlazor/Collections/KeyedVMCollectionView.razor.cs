@@ -13,6 +13,7 @@ using LionFire.Data.Mvvm;
 using LionFire.FlexObjects;
 using System.Linq.Expressions;
 using Microsoft.CodeAnalysis.VisualBasic.Syntax;
+using System.Reflection;
 
 namespace LionFire.Blazor.Components;
 
@@ -30,7 +31,7 @@ namespace LionFire.Blazor.Components;
 ///  RENAME: AsyncDictionaryView
 /// </summary>
 /// <typeparam name="TValue"></typeparam>
-public partial class KeyedCollectionView<TKey, TValue, TValueVM>
+public partial class KeyedVMCollectionView<TKey, TValue, TValueVM>
     : IAsyncDisposable
     , IComponentized
     , IGetsOrCreatesByType
@@ -61,7 +62,7 @@ public partial class KeyedCollectionView<TKey, TValue, TValueVM>
     ///     - AsyncComposableObservableCache<TItem, TValue>)
     /// </summary>
     [Parameter]
-    public IEnumerable<TValue>? Items { get; set; }
+    public IEnumerable<TValueVM>? Items { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
 
     #region Derived
 
@@ -69,7 +70,7 @@ public partial class KeyedCollectionView<TKey, TValue, TValueVM>
     /// Previous value of Items.
     /// Used for change detection.
     /// </summary>
-    private IEnumerable<TValue>? oldItems { get; set; }
+    private IEnumerable<TValueVM>? oldItems { get; set; }
 
     #endregion
 
@@ -78,10 +79,7 @@ public partial class KeyedCollectionView<TKey, TValue, TValueVM>
     #region Override: ChildContent
 
     [Parameter]
-    public RenderFragment<AsyncKeyedCollectionVM<TKey, TValue, TValueVM>>? ChildContent { get; set; }
-
-    [Parameter]
-    public RenderFragment? Columns { get; set; }
+    public RenderFragment<AsyncKeyedVMCollectionVM<TKey, TValue, TValueVM>>? ChildContent { get; set; }
 
     #endregion
 
@@ -178,12 +176,14 @@ public partial class KeyedCollectionView<TKey, TValue, TValueVM>
 
     #region Lifecycle
 
-    public KeyedCollectionView()
+    public KeyedVMCollectionView()
     {
         this.WhenActivated(disposableRegistration =>
         {
             if (ViewModel == null) throw new ArgumentNullException(nameof(ViewModel));
             ViewModel.PropertyChanged += ViewModel_PropertyChanged; // MEMORYLEAK?
+
+
 
             //#if true // TODO: How to bind [Parameter] to ViewModel?  Set in OnParametersSetAsync?
             //            this.WhenAnyValue(v => v.Items)
@@ -237,21 +237,21 @@ public partial class KeyedCollectionView<TKey, TValue, TValueVM>
         if (oldItems == null || !ReferenceEquals(oldItems, this.Items))
         {
             ViewModel.Source = Items == null ? null
-                : Items as IGetter<IEnumerable<TValue>>
-                    ?? new PreresolvedGetter<IEnumerable<TValue>>(Items);
+                : Items as IGetter<IEnumerable<TValueVM>>
+                    ?? new PreresolvedGetter<IEnumerable<TValueVM>>(Items);
 
             ViewModel.FullFeaturedSource?.GetIfNeeded().AsTask().FireAndForget();
 
             ViewModel.ValueVMCollections.Subscribe(o =>
             {
-                Debug.WriteLine($"KeyedCollectionView: VMCollectionChanged {ViewModel.ValueVMs != null}");
+                Debug.WriteLine($"KeyedVMCollectionView: VMCollectionChanged {ViewModel.ValueVMs != null}");
                 o.Subscribe(_ => InvokeAsync(StateHasChanged));
                 InvokeAsync(StateHasChanged);
             });
 
             ViewModel.ViewModelPropertyChanges.Subscribe(o =>
             {
-                Debug.WriteLine($"KeyedCollectionView: ViewModelPropertyChanges {o}");
+                Debug.WriteLine($"KeyedVMCollectionView: ViewModelPropertyChanges {o}");
                 InvokeAsync(StateHasChanged);
             });
 
@@ -375,7 +375,7 @@ public partial class KeyedCollectionView<TKey, TValue, TValueVM>
 
     public T ThrowNoKey<T>(object item) => throw new ArgumentException("Failed to resolve Key for object of type " + item?.GetType()?.FullName);
 
-    //private void ItemsEditor_GlobalItemsChanged(KeyedCollectionView<TValue, TValueVM> obj, string key)
+    //private void ItemsEditor_GlobalItemsChanged(KeyedVMCollectionView<TValue, TValueVM> obj, string key)
     //{
     //    if (Object.ReferenceEquals(obj, this) || key != EffectiveKey) { return; }
     //    InvokeAsync(Retrieve).FireAndForget();
@@ -418,7 +418,7 @@ public partial class KeyedCollectionView<TKey, TValue, TValueVM>
 
     private void ViewModel_PropertyChanged(object? sender, System.ComponentModel.PropertyChangedEventArgs e)
     {
-        Logger.LogInformation($"{nameof(KeyedCollectionView<TKey, TValue, TValueVM>)}.ViewModel.PropertyChanged: {e.PropertyName}");
+        Logger.LogInformation($"{nameof(KeyedVMCollectionView<TKey, TValue, TValueVM>)}.ViewModel.PropertyChanged: {e.PropertyName}");
     }
 
     void RowClicked(DataGridRowClickEventArgs<(TValue, TValueVM)> args)
