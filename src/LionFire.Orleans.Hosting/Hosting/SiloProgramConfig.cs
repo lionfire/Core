@@ -24,7 +24,7 @@ public class SiloProgramConfig : IHasConfigLocation
     public SiloProgramConfig(IConfiguration configuration)
     {
         var portsConfig = new PortsConfig(configuration);
-        BasePort = portsConfig.BasePort;
+        BasePort = portsConfig.EffectiveBasePort;
         this.Bind(configuration);
     }
 

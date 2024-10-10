@@ -23,7 +23,7 @@ public class WebHostConfig : IHasConfigLocation
     public WebHostConfig(IConfiguration configuration)
     {
         var portsConfig = new PortsConfig(configuration);
-        BasePort = portsConfig.BasePort;
+        BasePort = portsConfig.EffectiveBasePort;
         this.Bind(configuration);
     }
 

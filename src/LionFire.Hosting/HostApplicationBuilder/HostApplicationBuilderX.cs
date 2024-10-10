@@ -62,8 +62,8 @@ public static class HostApplicationBuilderX
 
         return hostBuilder;
     }
-    public static HostApplicationBuilder LionFire(this HostApplicationBuilder hostBuilder, int basePort, Action<ILionFireHostBuilder>? action = null, bool useDefaults = true, Action<ILionFireHostBuilder>? actionBeforeDefaults = null)
-        => hostBuilder.BasePort(basePort).LionFire(action, useDefaults, actionBeforeDefaults);
+    public static HostApplicationBuilder LionFire(this HostApplicationBuilder hostBuilder, int basePort, Action<ILionFireHostBuilder>? action = null, bool useDefaults = true, Action<ILionFireHostBuilder>? actionBeforeDefaults = null, bool useFallbackPorts = true)
+        => hostBuilder.BasePort(basePort, useFallbackPorts).LionFire(action, useDefaults, actionBeforeDefaults);
 
     // FUTURE - sort out IHostApplicationBuilder vs implementors such as HostApplicationBuilder (and nothing else so far?)
     //public static IHostApplicationBuilder LionFire(this IHostApplicationBuilder hostBuilder, int basePort, Action<ILionFireHostBuilder>? action = null, bool useDefaults = true)

@@ -44,7 +44,7 @@ public class ClusterHealthCheck : IHealthCheck
 
             var options = optionsMonitor.CurrentValue;
 
-            return activeCount >= options.HealthySiloCount ? HealthCheckResult.Healthy() : HealthCheckResult.Degraded($"Only {activeCount} active silo(s). Configured to be healthy when there are at least {options.HealthySiloCount} active silos. ({deadCount} dead silo(s))") ;
+            return activeCount >= options.HealthySiloCount ? HealthCheckResult.Healthy() : HealthCheckResult.Degraded($"Only {activeCount} active silo(s). Configured to be healthy when there are at least {options.HealthySiloCount} active silos. ({deadCount} dead silo(s))");
         }
         catch (Exception error)
         {

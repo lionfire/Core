@@ -1,7 +1,17 @@
 ﻿using LionFire.Configuration;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace LionFire.Net;
+
+
+public static class PortsConfigX
+{
+    public static IServiceCollection ConfigurePorts(this IServiceCollection services, IConfiguration configuration)
+    {
+        return services.Configure<PortsConfig>(configuration.GetSection(PortsConfig.DefaultConfigLocation));
+    }
+}
 
 public class PortsConfig : IHasConfigLocation
 {
@@ -9,6 +19,7 @@ public class PortsConfig : IHasConfigLocation
     public string ConfigLocation => DefaultConfigLocation;
 
 
+    public PortsConfig() { }
     public PortsConfig(IConfiguration configuration)
     {
         this.Bind(configuration);
@@ -21,6 +32,12 @@ public class PortsConfig : IHasConfigLocation
 
 
     public int? BasePort { get; set; } = DefaultPortBase;
+    public bool UseFallbackPorts { get; set; }
+
+    /// <summary>
+    /// If UseFallbackPorts is true, EffectiveBasePort should be configured to an alternate base port that is unused.
+    /// </summary>
+    public int? EffectiveBasePort { get; set; }
 
     #region ENH: Release channel offsets from BasePort
 

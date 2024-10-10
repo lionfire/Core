@@ -133,13 +133,21 @@ public static class LionFireSiloConfiguratorX
         #region Kind
 
                  .If(clusterConfigProvider.Kind == ClusterDiscovery.Localhost, s =>
-                     // NOTE - redundant specification of ClusterId and ServiceId
-                     s.UseLocalhostClustering(config.SiloPort ?? throw new ArgumentNullException(nameof(config.SiloPort))
-                     , config.GatewayPort ?? throw new ArgumentNullException(nameof(config.GatewayPort))
-                     , config.LocalhostPrimaryClusterEndpoint ?? throw new ArgumentNullException(nameof(config.LocalhostPrimaryClusterEndpoint))
-                     , clusterConfigProvider.ServiceId
-                     , clusterConfigProvider.ClusterId
-                     ))
+                 // NOTE - redundant specification of ClusterId and ServiceId
+                     {
+                         if (config.SiloPort.HasValue && config.LocalhostPrimaryClusterEndpoint != null) // LIMITATION: All or nothing for parameters
+                         {
+                             s.UseLocalhostClustering(config.SiloPort ?? throw new ArgumentNullException(nameof(config.SiloPort))
+                             , config.GatewayPort ?? throw new ArgumentNullException(nameof(config.GatewayPort))
+                             , config.LocalhostPrimaryClusterEndpoint ?? throw new ArgumentNullException(nameof(config.LocalhostPrimaryClusterEndpoint))
+                             , clusterConfigProvider.ServiceId
+                             , clusterConfigProvider.ClusterId
+                             );
+                         } else
+                         {
+                             s.UseLocalhostClustering();
+                         }
+                     })
                  .If(clusterConfigProvider.Kind == ClusterDiscovery.Consul, s =>
                      s.UseConsulSiloClustering(gatewayOptions =>
                      {
