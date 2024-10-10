@@ -9,12 +9,15 @@ public class GetterToRxO<TValue>
     : ReactiveObject
     , IGetterRxO<TValue>
     , IDisposable
+    , IMightFireChangeEvents
 {
     #region Relationships
 
     IGetter<TValue> source;
 
     #endregion
+
+    public bool FiresChangeEvents => false;
 
     #region Lifecycle
 

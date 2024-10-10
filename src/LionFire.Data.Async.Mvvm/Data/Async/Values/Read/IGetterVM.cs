@@ -6,6 +6,11 @@ using LionFire.Reactive;
 
 namespace LionFire.Data.Mvvm;
 
+//public interface ISupportsPolling
+//{
+//    TimeSpan? PollDelay { get; }
+//}
+
 public interface IGetterVM<TValue>
     : IReactiveObjectEx
     , IGetterVMBase<TValue>

@@ -1,23 +1,85 @@
 ﻿using DynamicData;
-using LionFire.Data.Async.Gets;
-using LionFire.Ontology;
-using LionFire.Structures;
 using LionFire.Structures.Keys;
-using MorseCode.ITask;
-using System.Collections.Generic;
 using System.Reactive.Subjects;
 using System.Reactive;
 using LionFire.Dependencies;
-using System.Collections;
-using LionFire.ExtensionMethods;
+using LionFire.Data.Async;
 
 namespace LionFire.Data.Collections;
 
+public struct OnKeyValuesChangesSubscriber<TKey, TValue> : IObserver<IChangeSet<TValue, TKey>>, IDisposable
+    where TKey : notnull
+    where TValue : notnull
+{
+    private SourceCache<TValue, TKey> sourceCache;
+    private readonly Action<Exception>? onError;
+    private IDisposable disposable;
+
+    public OnKeyValuesChangesSubscriber(SourceCache<TValue, TKey> values, IObservable<IChangeSet<TValue, TKey>> changes, Action<Exception>? onError = null)
+    {
+        this.sourceCache = values;
+        this.onError = onError;
+        disposable = changes!.Subscribe(this);
+    }
+
+    public void Dispose()
+    {
+        disposable?.Dispose();
+    }
+
+    public void OnCompleted() => disposable?.Dispose();
+
+    public void OnError(Exception error) => onError?.Invoke(error);
+
+    public void OnNext(IChangeSet<TValue, TKey> changeSet)
+    {
+        ApplyChanges(sourceCache, changeSet);
+
+        // OLD idea: Don't do this.  Leave GetOperations for actual get operations.
+        //sourceCache.getOperations.OnNext(Task.FromResult<IGetResult<IChangeSet<TValue>>>(
+        //    GetResult<IChangeSet<TValue>>.Success(changeSet, TransferResultFlags.FromChangeNotification)
+        //    ).AsITask());
+    }
+
+    public void ApplyChanges(SourceCache<TValue, TKey> sourceCache, IChangeSet<TValue, TKey> changeSet)
+    {
+        sourceCache.Edit(updater =>
+        {
+            foreach (var change in changeSet)
+            {
+                switch (change.Reason)
+                {
+                    case ChangeReason.Add:
+                        updater.AddOrUpdate(change.Current);
+                        break;
+                    case ChangeReason.Update:
+                        updater.AddOrUpdate(change.Current);
+                        break;
+                    case ChangeReason.Remove:
+                        updater.Remove(change.Key);
+                        break;
+                    case ChangeReason.Refresh:
+                        throw new NotSupportedException();
+                        //break;
+                }
+            }
+        });
+    }
+}
+
+
+/// <summary>
+/// Disposing:
+/// - Only needed if keyValueChanges was provided
+/// </summary>
+/// <typeparam name="TKey"></typeparam>
+/// <typeparam name="TValue"></typeparam>
 public abstract class AsyncReadOnlyKeyedCollection<TKey, TValue>
     : AsyncDynamicDataCollection<TValue>
     , IObservableCacheKeyableGetter<TKey, TValue>
     , IInjectable<IKeyProvider<TKey, TValue>>
     , System.IAsyncObserver<ChangeSet<TValue, TKey>>
+    , IDisposable
     where TKey : notnull
     where TValue : notnull
 {
@@ -42,9 +104,10 @@ public abstract class AsyncReadOnlyKeyedCollection<TKey, TValue>
     protected static IEqualityComparer<TKey> DefaultKeyEqualityComparer { get; set; } = EqualityComparer<TKey>.Default;
 
     public Func<TValue, TKey> KeySelector { get; }
-    public virtual Func<TValue, TKey> DefaultKeySelector(IServiceProvider? serviceProvider = null) => KeySelectors.GetKeySelector<TValue, TKey>(serviceProvider ?? DependencyContext.Current?.ServiceProvider);
+    public virtual Func<TValue, TKey> DefaultKeySelector(IServiceProvider? serviceProvider = null) => KeySelectors<TValue, TKey>.GetKeySelector(serviceProvider ?? DependencyContext.Current?.ServiceProvider);
 
     AsyncObservableCollectionOptions? options; // UNUSED - TODO
+    protected IObservable<IChangeSet<TValue, TKey>?>? keyValueChanges;
 
     #endregion
 
@@ -52,11 +115,17 @@ public abstract class AsyncReadOnlyKeyedCollection<TKey, TValue>
 
     //public AsyncReadOnlyKeyedCollection() : this(null) { }
 
-    public AsyncReadOnlyKeyedCollection(Func<TValue, TKey>? keySelector = null, SourceCache<TValue, TKey>? dictionary = null, AsyncObservableCollectionOptions? options = null) : base(initializeGetOperations: false)
+    public AsyncReadOnlyKeyedCollection(Func<TValue, TKey>? keySelector = null, SourceCache<TValue, TKey>? dictionary = null, AsyncObservableCollectionOptions? options = null, IObservable<IChangeSet<TValue, TKey>>? keyValueChanges = null) : base(initializeGetOperations: false)
     {
         KeySelector = keySelector ?? DefaultKeySelector();
         SourceCache = dictionary ?? new SourceCache<TValue, TKey>(KeySelector);
         this.options = options;
+
+        if (keyValueChanges != null)
+        {
+            (disposables ??= new()).Add(new OnKeyValuesChangesSubscriber<TKey, TValue>(SourceCache, keyValueChanges, OnKeyValueChangesError));
+        }
+
         InitializeGetOperations(); // After setting SourceCache
     }
 
@@ -64,6 +133,7 @@ public abstract class AsyncReadOnlyKeyedCollection<TKey, TValue>
 
     #region State
 
+    IDisposable? keyValueChangesSubscription;
     public SourceCache<TValue, TKey> SourceCache { get; }
     public IObservableCache<TValue, TKey> ObservableCache => SourceCache.AsObservableCache(); // AsObservableCache converts it read only
 
@@ -73,7 +143,7 @@ public abstract class AsyncReadOnlyKeyedCollection<TKey, TValue>
 
     #region (explicit) IAsyncCollectionCache<TValue>
 
-    // TODO: Several not implemented. Would benefit from being able to clone LazyResolveResult and other ResolveResults with a different type (overriding or transforming value)
+    // TODO: Several not implemented. Would benefit from being able to clone LazyResolveResult and other ResolveResults with a different type (overriding or transforming changeSet)
 
     // Allows treating this as a list
 
@@ -85,6 +155,8 @@ public abstract class AsyncReadOnlyKeyedCollection<TKey, TValue>
         //Debug.WriteLine($"{this.GetType().ToHumanReadableName()} OnNext GetResult: {result}");
         SourceCache?.EditDiff(result.Value ?? Enumerable.Empty<TValue>(), ValueEqualityComparerFunc);
     }
+
+    protected virtual void OnKeyValueChangesError(Exception exception) { }
 
     #region IAsyncReadOnlyCollectionCache<KeyValuePair<TKey, TItem>>
 

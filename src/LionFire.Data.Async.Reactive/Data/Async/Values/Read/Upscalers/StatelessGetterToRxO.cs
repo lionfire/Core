@@ -4,8 +4,11 @@ namespace LionFire.Data.Async.Gets;
 public class StatelessGetterToRxO<TValue>
     : ReactiveObject
     , IGetterRxO<TValue>
+    , IMightFireChangeEvents
 {
     IStatelessGetter<TValue> source;
+
+    public bool FiresChangeEvents => false;
 
     public StatelessGetterToRxO(IStatelessGetter<TValue> getter)
     {

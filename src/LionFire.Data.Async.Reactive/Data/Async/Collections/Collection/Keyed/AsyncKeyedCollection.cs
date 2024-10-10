@@ -15,12 +15,13 @@ public abstract class AsyncKeyedCollection<TKey, TValue>
     : AsyncReadOnlyKeyedCollection<TKey, TValue>
     , IAsyncKeyedCollection<TKey, TValue>
     where TKey : notnull
+    where TValue : notnull
 {
     #region Lifecycle
 
     public AsyncKeyedCollection() : this(null) { }
 
-    public AsyncKeyedCollection(Func<TValue, TKey>? keySelector, SourceCache<TValue, TKey>? dictionary = null, AsyncObservableCollectionOptions? options = null) : base(keySelector, dictionary, options)
+    public AsyncKeyedCollection(Func<TValue, TKey>? keySelector, SourceCache<TValue, TKey>? dictionary = null, AsyncObservableCollectionOptions? options = null, IObservable<IChangeSet<TValue, TKey>?>? keyValueChanges = null) : base(keySelector, dictionary, options, keyValueChanges)
     {
     }
 

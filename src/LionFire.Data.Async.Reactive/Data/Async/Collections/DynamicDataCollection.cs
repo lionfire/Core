@@ -1,6 +1,11 @@
-﻿using LionFire.ExtensionMethods;
+﻿using DynamicData;
+using LionFire.ExtensionMethods;
+using MorseCode.ITask;
 using System.Collections;
+using System.Reactive.Disposables;
+using System.Reactive.Linq;
 using System.Reactive.Subjects;
+
 namespace LionFire.Data.Collections;
 
 /// <summary>
@@ -14,6 +19,9 @@ namespace LionFire.Data.Collections;
 ///    - AsyncReadOnlyList<TValue>
 ///      - AsyncList<TValue>
 /// 
+/// IDisposable:
+/// - discard listeners (only applicable if valuesChanges IObservable was provided)
+/// 
 /// </summary>
 /// <typeparam name="TValue"></typeparam>
 public abstract partial class DynamicDataCollection<TValue>
@@ -22,6 +30,8 @@ public abstract partial class DynamicDataCollection<TValue>
     , IObservableGetOperations<IEnumerable<TValue>>
     , IGetterRxO<IEnumerable<TValue>>
     , IObserver<IGetResult<IEnumerable<TValue>>>
+    , IDisposable
+    where TValue : notnull
 
 // Derived classes may implement read interfaces:
 //  - INotifiesChildChanged
@@ -34,25 +44,34 @@ public abstract partial class DynamicDataCollection<TValue>
 
     #region Lifecycle
 
-    public DynamicDataCollection(bool initializeGetOperations = true)
+    public DynamicDataCollection(bool initializeGetOperations = true, IObservable<IChangeSet<TValue>?>? valuesChanges = null)
     {
+        this.valuesChanges = valuesChanges;
         if (initializeGetOperations) { InitializeGetOperations(); }
+    }
+
+    protected CompositeDisposable? disposables;
+ 
+    public void Dispose()
+    {
+        disposables?.Dispose();
+        disposables = null;
     }
 
     protected void InitializeGetOperations()
     {
         GetOperations.Subscribe((Action<ITask<IGetResult<IEnumerable<TValue>>>>)(async t =>
         {
-            var o = (IObserver<IGetResult<IEnumerable<TValue>>>)this;
+            var thisAsObserver = (IObserver<IGetResult<IEnumerable<TValue>>>)this;
             try
             {
                 var result = await t.ConfigureAwait(false);
-                Debug.WriteLine($"DynamicDataCollection.GetOperations.OnNext: {result.ToDebugString()}");
-                o.OnNext(result);
+                //Debug.WriteLine($"DynamicDataCollection.GetOperations.OnNext: {result.ToDebugString()}");
+                thisAsObserver.OnNext(result);
             }
             catch (Exception ex)
             {
-                o.OnError(ex);
+                thisAsObserver.OnError(ex);
             }
 
             //if (result.IsSuccess())
@@ -68,6 +87,48 @@ public abstract partial class DynamicDataCollection<TValue>
             //{
             //}
         }));
+
+        if (valuesChanges != null)
+        {
+            (disposables ??= new()).Add(new OnChangeSubscriber(this));
+        }
+    }
+
+
+    protected void OnChangeException(Exception exception)
+    {
+        Debug.WriteLine($"DynamicDataCollection: TODO: handle OnChangeException");
+
+    }
+
+    private struct OnChangeSubscriber : IObserver<IChangeSet<TValue>>, IDisposable
+    {
+        private DynamicDataCollection<TValue> values;
+        private IDisposable disposable;
+
+        public OnChangeSubscriber(DynamicDataCollection<TValue> values)
+        {
+            this.values = values;
+            disposable = values.valuesChanges!.Subscribe(this);
+        }
+
+        public void Dispose()
+        {
+            disposable?.Dispose();
+        }
+
+        public void OnCompleted() => disposable?.Dispose();
+
+        public void OnError(Exception error) => values.OnChangeException(error);
+
+        public void OnNext(IChangeSet<TValue> value)
+        {
+            throw new NotImplementedException(); // TODO: In a derived class, EditDiff the SourceList<TValue> using the ChangeSet
+            //sourceCache.getOperations.OnNext(Task.FromResult<IGetResult<IChangeSet<TValue>>>(
+            //    GetResult<IChangeSet<TValue>>.Success(value, TransferResultFlags.FromChangeNotification)
+            //    ).AsITask());
+        }
+
     }
 
     #endregion
@@ -81,6 +142,7 @@ public abstract partial class DynamicDataCollection<TValue>
 
     public IObservable<ITask<IGetResult<IEnumerable<TValue>>>> GetOperations => getOperations;
     protected BehaviorSubject<ITask<IGetResult<IEnumerable<TValue>>>> getOperations = new(Task.FromResult<IGetResult<IEnumerable<TValue>>>(InitializedGetResult<IEnumerable<TValue>>.Instance).AsITask());
+    private readonly IObservable<IChangeSet<TValue>?>? valuesChanges;
 
     #region IResolves
 

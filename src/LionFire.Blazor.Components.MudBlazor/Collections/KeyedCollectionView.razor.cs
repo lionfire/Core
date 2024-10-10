@@ -30,6 +30,7 @@ namespace LionFire.Blazor.Components;
 ///  RENAME: AsyncDictionaryView
 /// </summary>
 /// <typeparam name="TValue"></typeparam>
+//[CascadingTypeParameter(nameof(T))]
 public partial class KeyedCollectionView<TKey, TValue, TValueVM>
     : IAsyncDisposable
     , IComponentized
@@ -236,9 +237,11 @@ public partial class KeyedCollectionView<TKey, TValue, TValueVM>
 
         if (oldItems == null || !ReferenceEquals(oldItems, this.Items))
         {
+            ViewModel.PollDelay = TimeSpan.FromSeconds(5);
             ViewModel.Source = Items == null ? null
                 : Items as IGetter<IEnumerable<TValue>>
                     ?? new PreresolvedGetter<IEnumerable<TValue>>(Items);
+
 
             ViewModel.FullFeaturedSource?.GetIfNeeded().AsTask().FireAndForget();
 
@@ -260,6 +263,7 @@ public partial class KeyedCollectionView<TKey, TValue, TValueVM>
             //    view => view.)
         }
         oldItems = Items;
+         
 
         //#pragma warning disable BL0005 // Component parameter should not be set outside of its component.
         //        if (MudDataGrid != null)
@@ -371,7 +375,7 @@ public partial class KeyedCollectionView<TKey, TValue, TValueVM>
         }
     }
 
-#endregion
+    #endregion
 
     public T ThrowNoKey<T>(object item) => throw new ArgumentException("Failed to resolve Key for object of type " + item?.GetType()?.FullName);
 
@@ -421,14 +425,14 @@ public partial class KeyedCollectionView<TKey, TValue, TValueVM>
         Logger.LogInformation($"{nameof(KeyedCollectionView<TKey, TValue, TValueVM>)}.ViewModel.PropertyChanged: {e.PropertyName}");
     }
 
-    void RowClicked(DataGridRowClickEventArgs<(TValue, TValueVM)> args)
-    {
-        //_events.Insert(0, $"Event = RowClick, Index = {args.RowIndex}, Data = {System.Text.Json.JsonSerializer.Serialize(args.Item)}");
-    }
-    void RowClicked(DataGridRowClickEventArgs<TValue> args)
-    {
-        //_events.Insert(0, $"Event = RowClick, Index = {args.RowIndex}, Data = {System.Text.Json.JsonSerializer.Serialize(args.Item)}");
-    }
+    //void RowClicked(DataGridRowClickEventArgs<(TValue, TValueVM)> args)
+    //{
+    //    //_events.Insert(0, $"Event = RowClick, Index = {args.RowIndex}, Data = {System.Text.Json.JsonSerializer.Serialize(args.Item)}");
+    //}
+    //void RowClicked(DataGridRowClickEventArgs<TValue> args)
+    //{
+    //    //_events.Insert(0, $"Event = RowClick, Index = {args.RowIndex}, Data = {System.Text.Json.JsonSerializer.Serialize(args.Item)}");
+    //}
     void RowClicked(DataGridRowClickEventArgs<TValueVM> args)
     {
         //_events.Insert(0, $"Event = RowClick, Index = {args.RowIndex}, Data = {System.Text.Json.JsonSerializer.Serialize(args.Item)}");

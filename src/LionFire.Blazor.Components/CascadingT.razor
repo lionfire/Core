@@ -1,0 +1,10 @@
+﻿@typeparam T
+@attribute [CascadingTypeParameter(nameof(T))]
+
+
+@ChildContent
+
+@code {
+    [Parameter]
+    public RenderFragment? ChildContent { get; set; }
+}

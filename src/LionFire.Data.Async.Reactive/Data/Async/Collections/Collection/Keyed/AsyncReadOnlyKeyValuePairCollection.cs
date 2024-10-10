@@ -40,7 +40,7 @@ public abstract class AsyncReadOnlyKeyValuePairCollection<TKey, TValue>
     protected static IEqualityComparer<TKey> DefaultKeyEqualityComparer { get; set; } = EqualityComparer<TKey>.Default;
 
     protected Func<TValue, TKey> KeySelector { get; }
-    public virtual Func<TValue, TKey> DefaultKeySelector(IServiceProvider? serviceProvider = null) => KeySelectors.GetKeySelector<TValue, TKey>(serviceProvider ?? DependencyContext.Current?.ServiceProvider);
+    public virtual Func<TValue, TKey> DefaultKeySelector(IServiceProvider? serviceProvider = null) => KeySelectors<TValue, TKey>.GetKeySelector(serviceProvider ?? DependencyContext.Current?.ServiceProvider);
 
     AsyncObservableCollectionOptions? options; // UNUSED - TODO
 

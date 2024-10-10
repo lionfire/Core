@@ -53,7 +53,7 @@ public abstract class AsyncReadOnlyDictionary<TKey, TValue>
 
     // TODO: Eliminate KeySelector for this class, since keys tend to come from user, not from TValue.  If keys come from TValue, use AsyncReadOnlyKeyedCollectionCache instead.
     protected Func<TValue, TKey> KeySelector => SourceCache.KeySelector;
-    public virtual Func<TValue, TKey> DefaultKeySelector() => KeySelectors.GetKeySelector<TValue, TKey>(DependencyContext.Current?.ServiceProvider);
+    public virtual Func<TValue, TKey> DefaultKeySelector() => KeySelectors<TValue, TKey>.GetKeySelector(DependencyContext.Current?.ServiceProvider);
 
     #endregion
 

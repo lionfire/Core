@@ -90,7 +90,7 @@ public partial class InspectorRow
         //{
         //    try
         //    {
-        //        //ChildNodeVMs2 = new GetterVM<IEnumerable<object>>() InspectorNode.Source; 
+        //        //ChildNodeVMs2 = new PollFunc<IEnumerable<object>>() InspectorNode.Source; 
         //        //ViewModel.ChildNodeVMs = ReflectionNodeVM.GetFor(dataNodeVM.GetValue());
         //        //ViewModel.ChildNodeVMs = ReflectionNodeVM.GetFor(dataNodeVM.GetValue());
         //    }

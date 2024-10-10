@@ -2,20 +2,22 @@
 using System.Reactive;
 using Splat;
 using LionFire.Data.Async;
+using LionFire.Mvvm;
+using System.Reactive.Threading.Tasks;
 
 namespace LionFire.Data.Mvvm;
 
 /// <summary>
-/// 
+/// A smart ViewModel for a single IGetter, which itself may or may not be smart/reactive.
 /// </summary>
 /// <typeparam name="TValue"></typeparam>
 /// <remarks>
 /// Source: mutable (REVIEW)
 /// </remarks>
 public class GetterVM<TValue>
-    : ReactiveObject
-    , IGetterVM<TValue>
-    , IViewModel<IGetterRxO<TValue>>
+: ReactiveObject
+, IGetterVM<TValue>
+, IViewModel<IGetterRxO<TValue>>
 {
     #region Model
 
@@ -30,10 +32,21 @@ public class GetterVM<TValue>
         get => source;
         set
         {
-            if (FullFeaturedSource == value) { return; }
+            if (source == value) { return; }
+
+            if (poller != null)
+            {
+                poller.Dispose();
+                poller = null;
+            }
+
             //        if (EqualityComparer<ILazilyGets<TValue>>.Default.Equals(source, value)) { return; }
+
+            var fullFeaturedSource = value as IGetterRxO<TValue>;
+
             FullFeaturedSource = value == null ? null : GetterRxOUpscaler.Upscale<TValue>(value);
             this.RaiseAndSetIfChanged(ref source, value);
+            TryStartPolling();
         }
     }
     private IGetter? source;
@@ -50,6 +63,22 @@ public class GetterVM<TValue>
     #region Parameters
 
     public bool ShowRefresh { get; set; } = true; // TEMP
+
+    #endregion
+
+    #region Polling
+
+    AsyncPoller<TValue>? poller;
+    public TimeSpan? PollDelay { get; set; }
+
+    private void TryStartPolling()
+    {
+        if (!PollDelay.HasValue) return;
+        if (FullFeaturedSource is IMightFireChangeEvents m && m.FiresChangeEvents == true) { return; }
+        //else if (FullFeaturedSource != null) { return; }
+
+        poller = new AsyncPoller<TValue>(() => GetCommand.Execute().ToTask(), PollDelay.Value);
+    }
 
     #endregion
 
@@ -89,7 +118,7 @@ public class GetterVM<TValue>
                     canExecute:
                     this.WhenAnyValue(r => r.FullFeaturedSource).Select(s => s != null)
 
-                    //Observable.Create<bool>(o => { o.OnNext(FullFeaturedSource != null); o.OnCompleted(); return Disposable.Empty; })
+                //Observable.Create<bool>(o => { o.OnNext(FullFeaturedSource != null); o.OnCompleted(); return Disposable.Empty; })
                 );
         #endregion
 

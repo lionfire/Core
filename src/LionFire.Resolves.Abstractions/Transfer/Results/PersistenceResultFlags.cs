@@ -82,7 +82,7 @@ public enum TransferResultFlags
     TargetFail = 1 << 17, // TODO: Implement
 
     // = 1 << 18,
-    // = 1 << 19,
+    FromChangeNotification = 1 << 19,
 
     /// <summary>
     /// When checking for whether an operation is possible, this is set if the operation is expected to succeed.

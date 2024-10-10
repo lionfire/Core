@@ -1,4 +1,6 @@
-﻿namespace LionFire.Data.Collections;
+﻿using DynamicData;
+
+namespace LionFire.Data.Collections;
 
 // TODO: Rename AsyncDynamicDataCollection to AsyncDynamicDataCollectionRxO, and have Lightweight version of AsyncDynamicDataCollection? It would possibly be without
 //  - ReactiveObject base
@@ -6,12 +8,13 @@
 
 public abstract partial class AsyncDynamicDataCollection<TValue>
     : DynamicDataCollection<TValue>
+    where TValue : notnull
 {
     protected object getInProgressLock = new();
 
     // REVIEW: Move more async only things here?
 
-    protected AsyncDynamicDataCollection(bool initializeGetOperations = true) : base(initializeGetOperations) { }
+    protected AsyncDynamicDataCollection(bool initializeGetOperations = true, IObservable<IChangeSet<TValue>?>? onChange = null) : base(initializeGetOperations, valuesChanges: onChange) { }
 
     public override async ITask<IGetResult<IEnumerable<TValue>>> Get(CancellationToken cancellationToken = default)
     {

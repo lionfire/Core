@@ -17,9 +17,9 @@
         if (ViewModel is ICreatesAsyncVM<TValue> createsValue)
         {
             <MudMenu Class="" Label="Add" Icon="@Icons.Material.Filled.Add" Variant="Variant.Outlined" Color="Color.Success"
-                  Dense
-                      AnchorOrigin="Origin.BottomLeft">
-                 @foreach (var t in CreatableTypes)
+                     Dense
+                     AnchorOrigin="Origin.BottomLeft">
+                @foreach (var t in CreatableTypes)
                 {
                     <MudMenuItem OnClick=@(() => createsValue.Create.Execute(t).Subscribe())>
                         @DisplayNameUtilsX.DisplayNameForType(t)
@@ -27,7 +27,7 @@
                 }
             </MudMenu>
         }
-      
+
         @* TODO:  *@
         @* @if (ViewModel.Create != null && ViewModel.CanCreate)
     {
@@ -64,16 +64,18 @@ else if (ViewModel?.ValueVMs != null)
             @item
         </div>
     } *@
-    <MudDataGrid @ref="MudDataGrid" T="TValueVM"
-                 Items="@ViewModel?.ValueVMs?.Items" 
-                 SortMode="SortMode.Multiple" 
-                 Filterable="true" 
-                 Hideable="true" 
-                 RowClick="@RowClicked"
-                 Columns="@(Columns ?? CreateColumns)"
-    >
-    </MudDataGrid>
-                 @* Columns="@(Columns ?? b => CreateColumns(b))"> *@
+
+    @* <CascadingT T="TValueVM"> *@
+        <MudDataGrid @ref="MudDataGrid"
+                     T="TValueVM"
+                     Items="@ViewModel?.ValueVMs?.Items"
+                     SortMode="SortMode.Multiple"
+                     Filterable="true"
+                     Hideable="true"
+                     RowClick="@RowClicked"
+                     Columns="@(Columns ?? CreateColumns)">
+        </MudDataGrid>
+    @* </CascadingT> *@
 }
 @*else if(Items!=null) // No TValueVM, show TValue items directly
 {
