@@ -20,7 +20,7 @@ namespace LionFire.Orleans_.Collections;
 
 public sealed class KeyedListObserverO<TKey, TItem>
     : IAsyncSubjectO<ChangeSet<TItem, TKey>>
-    //, System.IAsyncObservable<ChangeSet<TItem, TKey>>
+    //, System.IAsyncObservable<ChangeSet<TValue, TKey>>
     , IAsyncDisposable
     where TKey : notnull
     where TItem : notnull
@@ -222,7 +222,7 @@ public sealed class KeyedListObserverO<TKey, TItem>
 
     // vvv REVIEW vvv
 
-    //public void BindTo(SourceCache<TItem, TKey> observableCache)
+    //public void BindTo(SourceCache<TValue, TKey> observableCache)
     //{
     //    this.subscribingObservable.SubscribeAsync(cs =>
     //    {
@@ -237,7 +237,7 @@ public sealed class KeyedListObserverO<TKey, TItem>
     #endregion
 }
 
-#if ENH // Optimize: only send GrainId over the network.  Missing dependency: Convert ChangeSet<TItem, TKey> to ChangeSet<TItem, TKey>
+#if ENH // Optimize: only send GrainId over the network.  Missing dependency: Convert ChangeSet<TValue, TKey> to ChangeSet<TValue, TKey>
 
 /// <summary>
 /// Listens to ChangeSet<TItem, TKey> changes, and publishes ChangeSet<ChangeSet<TItem, TKey>, TKey> changes
@@ -292,10 +292,10 @@ public abstract class KeyedListObserverBaseO<TKey, TItem, TChangeSet>
 ///// <summary>
 ///// Not Implemented
 ///// </summary>
-///// <typeparam name="TItem"></typeparam>
-//public class KeyedListObserverO<TItem>
+///// <typeparam name="TValue"></typeparam>
+//public class KeyedListObserverO<TValue>
 //    : IGrainObserverO<TKey>
-//    , IObservable<ChangeSet<TItem, TKey>>
+//    , IObservable<ChangeSet<TValue, TKey>>
 //{
 //    public KeyedListObserverO()
 //    {
@@ -304,10 +304,10 @@ public abstract class KeyedListObserverBaseO<TKey, TItem, TChangeSet>
 
 //    #region IObservable
 
-//    IObservable<ChangeSet<TItem, TKey>> subscribingObservable;
+//    IObservable<ChangeSet<TValue, TKey>> subscribingObservable;
 
-//    public IDisposable Connect(IObserver<ChangeSet<TItem, TKey>> observer)
-//        => ((IObservable<ChangeSet<TItem, TKey>>)subject).Connect(observer);
+//    public IDisposable Connect(IObserver<ChangeSet<TValue, TKey>> observer)
+//        => ((IObservable<ChangeSet<TValue, TKey>>)subject).Connect(observer);
 
 //    #endregion
 //}

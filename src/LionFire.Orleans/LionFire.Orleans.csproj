@@ -10,6 +10,7 @@
 
 	<ItemGroup>
 		<PackageReference Include="Consul" />
+		<PackageReference Include="DynamicData" />
 		<PackageReference Include="Microsoft.Extensions.Hosting.Abstractions" />
 		<PackageReference Include="Microsoft.Extensions.Logging.Abstractions" />
 		<PackageReference Include="Microsoft.Extensions.Resilience" />

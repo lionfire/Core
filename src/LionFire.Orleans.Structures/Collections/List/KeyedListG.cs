@@ -47,7 +47,7 @@ public class KeyedListG<TKey, TItem>
     {
         throw new NotImplementedException();
 
-        //var existing = ItemsState.State.Where(m => EqualityComparer<TItem>.Default.Equals(m, item)).FirstOrDefault();
+        //var existing = ItemsState.State.Where(m => EqualityComparer<TValue>.Default.Equals(m, item)).FirstOrDefault();
         //if (existing != null)
         //{
         //    // TOTRANSACTION
@@ -64,7 +64,7 @@ public class KeyedListG<TKey, TItem>
 
         //    ItemsState.State.Remove(existing);
         //    await ItemsState.WriteStateAsync();
-        //    await PublishCollectionChanged(new ChangeSet<TItem>(new List<Change<TItem>> { new Change<TItem>(ChangeReason.Remove, existing) }));
+        //    await PublishCollectionChanged(new ChangeSet<TValue>(new List<Change<TValue>> { new Change<TValue>(ChangeReason.Remove, existing) }));
         //    //PublishCollectionChanged(new NotifyCollectionChangedEventArgs<TNotificationItem>(System.Collections.Specialized.NotifyCollectionChangedAction.Remove, existing));
 
         //    if (deleteTask != null) { await deleteTask; }
@@ -76,7 +76,7 @@ public class KeyedListG<TKey, TItem>
         //}
     }
 
-    //public Task<bool> Remove(TItem item) => Remove(KeySelector(item));   
+    //public Task<bool> Remove(TValue item) => Remove(KeySelector(item));   
 
     public Task RemoveAt(int index)
     {

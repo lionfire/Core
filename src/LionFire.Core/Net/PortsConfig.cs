@@ -1,6 +1,7 @@
 ﻿using LionFire.Configuration;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using LionFire.ExtensionMethods.Configuration;
 
 namespace LionFire.Net;
 

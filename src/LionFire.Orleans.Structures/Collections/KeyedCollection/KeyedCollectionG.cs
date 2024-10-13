@@ -15,20 +15,20 @@ using LionFire.Orleans_.ObserverGrains;
 namespace LionFire.Orleans_.Collections;
 
 /// <summary>
-/// Implemented with Dictionary (so keys must be unique) but you add/remove items, and a Func<TItem, TKey> is used to extract the key from the item.
+/// Implemented with Dictionary (so keys must be unique) but you add/remove items, and a Func<TValue, TKey> is used to extract the key from the item.
 /// </summary>
 /// <typeparam name="TKey"></typeparam>
-/// <typeparam name="TItem"></typeparam>
-public class KeyedCollectionG<TKey, TItem> : KeyedCollectionGBase<TKey, TItem>
+/// <typeparam name="TValue"></typeparam>
+public class KeyedCollectionG<TKey, TValue> : KeyedCollectionGBase<TKey, TValue> // RENAME KeyableDictionaryG
 //, IAsyncCreating<TNotificationItem> 
 //, ICreatingAsyncDictionary<string, TNotificationItem>
 where TKey : notnull
-where TItem : notnull
+where TValue : notnull
 {
 
     #region Lifecycle
 
-    public KeyedCollectionG(IServiceProvider serviceProvider, /* [PersistentState("Matchmakers", MetaverseStoreNames.Metaverse)] */ IPersistentState<Dictionary<TKey, TItem>> items, ILogger<KeyedCollectionG<TKey, TItem>> logger) : base(serviceProvider, logger)
+    public KeyedCollectionG(IServiceProvider serviceProvider, /* [PersistentState("Matchmakers", MetaverseStoreNames.Metaverse)] */ IPersistentState<Dictionary<TKey, TValue>> items, ILogger<KeyedCollectionG<TKey, TValue>> logger) : base(serviceProvider, logger)
     {
         ItemsState = items;
     }
@@ -43,8 +43,8 @@ where TItem : notnull
 
     #region State
 
-    protected override IDictionary<TKey, TItem> ItemsDictionary  => ItemsState.State;
-    protected IPersistentState<Dictionary<TKey, TItem>> ItemsState { get; }
+    //protected override IObservableCache<TValue, TKey> ItemsDictionary  => ItemsState.State;
+    protected IPersistentState<Dictionary<TKey, TValue>> ItemsState { get; }
 
     #endregion
 

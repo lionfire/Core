@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.Logging;
+﻿using DynamicData;
+using Microsoft.Extensions.Logging;
 
 namespace LionFire.Orleans_.Collections;
 
@@ -10,13 +11,11 @@ public class InMemoryKeyedCollectionG<TKey, TItem> : KeyedCollectionGBase<TKey, 
 {
     public InMemoryKeyedCollectionG(IServiceProvider serviceProvider, /* [PersistentState("Matchmakers", MetaverseStoreNames.Metaverse)] */  ILogger<InMemoryKeyedCollectionG<TKey, TItem>> logger) : base(serviceProvider, logger)
     {
-        //Items = new();
     }
 
     #region State
 
-    protected override IDictionary<TKey, TItem> ItemsDictionary  => items;
-    protected Dictionary<TKey, TItem> items { get; } = new();
+    //protected override IObservableCache<TValue, TKey> ItemsDictionary => items;
 
     #endregion
 }

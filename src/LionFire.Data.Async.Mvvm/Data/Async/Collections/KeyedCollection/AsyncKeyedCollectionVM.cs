@@ -9,7 +9,9 @@ public abstract class AsyncKeyedXCollectionVMBase<TKey, TValue, TValueVM>
     , ICreatesAsyncVM<TValue>
     //, IActivatableViewModel
     where TKey : notnull
-    //where TValueVM : IViewModel<TValue> // suggested only
+    where TValue : notnull
+    where TValueVM : notnull//, IKeyed<TKey>
+    //, IViewModel<TValue> // suggested only
 {
     #region Lifecycle
 
@@ -133,7 +135,9 @@ public abstract class AsyncKeyedXCollectionVMBase<TKey, TValue, TValueVM>
 public class AsyncKeyedVMCollectionVM<TKey, TValue, TValueVM>
     : AsyncKeyedXCollectionVMBase<TKey, TValue, TValueVM>
     where TKey : notnull
-    //where TValueVM : IViewModel<TValue> // Suggested only
+    where TValue : notnull
+    where TValueVM : notnull//, IKeyed<TKey>
+    // , IViewModel<TValue> // Suggested only
 {
     #region Lifecycle
 
@@ -147,11 +151,15 @@ public class AsyncKeyedVMCollectionVM<TKey, TValue, TValueVM>
 
 public class AsyncKeyedCollectionVM<TKey, TValue, TValueVM>
     : AsyncKeyedXCollectionVMBase<TKey, TValue, TValueVM>
-, ICreatesAsyncVM<TValue>
-//, IActivatableViewModel
-where TKey : notnull
+    , ICreatesAsyncVM<TValue>
+    //, IActivatableViewModel
+    where TKey : notnull
+    where TValue : notnull
+    where TValueVM : notnull//, IKeyed<TKey>
+    // , IViewModel<TValue> // Suggested only
 {
     public override ICreatesAsync<TValue>? EffectiveCreator => Creator ?? Source as ICreatesAsync<TValue>;
+
 
     #region Lifecycle
 

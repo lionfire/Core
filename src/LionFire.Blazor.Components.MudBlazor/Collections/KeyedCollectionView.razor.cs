@@ -242,15 +242,22 @@ public partial class KeyedCollectionView<TKey, TValue, TValueVM>
                 : Items as IGetter<IEnumerable<TValue>>
                     ?? new PreresolvedGetter<IEnumerable<TValue>>(Items);
 
-
             ViewModel.FullFeaturedSource?.GetIfNeeded().AsTask().FireAndForget();
 
+#if true // NEW
+            ViewModel.ObservableCache.Connect().Subscribe(o =>
+            {
+                Debug.WriteLine($"KeyedCollectionView: VMCollectionChanged {ViewModel.ValueVMs != null}");
+                InvokeAsync(StateHasChanged);
+            });
+#else // OLD
             ViewModel.ValueVMCollections.Subscribe(o =>
             {
                 Debug.WriteLine($"KeyedCollectionView: VMCollectionChanged {ViewModel.ValueVMs != null}");
                 o.Subscribe(_ => InvokeAsync(StateHasChanged));
                 InvokeAsync(StateHasChanged);
             });
+#endif
 
             ViewModel.ViewModelPropertyChanges.Subscribe(o =>
             {
@@ -375,7 +382,7 @@ public partial class KeyedCollectionView<TKey, TValue, TValueVM>
         }
     }
 
-    #endregion
+#endregion
 
     public T ThrowNoKey<T>(object item) => throw new ArgumentException("Failed to resolve Key for object of type " + item?.GetType()?.FullName);
 

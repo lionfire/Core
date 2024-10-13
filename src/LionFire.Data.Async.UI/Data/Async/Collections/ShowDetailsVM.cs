@@ -5,6 +5,7 @@ namespace LionFire.Data.Mvvm;
 
 public class ShowDetailsVM<TKey, TValue, TValueVM>
     where TKey : notnull
+    where TValueVM : notnull
 {
     public AsyncKeyedCollectionVM<TKey, TValue, TValueVM> Parent { get; }
 

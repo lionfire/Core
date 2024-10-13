@@ -4,6 +4,7 @@ using LionFire.Net;
 using Microsoft.Extensions.Configuration;
 using System.Net;
 using static LionFire.Net.PortConfiguration;
+using LionFire.ExtensionMethods.Configuration;
 
 namespace LionFire.Hosting;
 

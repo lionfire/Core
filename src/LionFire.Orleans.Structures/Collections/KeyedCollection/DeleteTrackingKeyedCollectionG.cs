@@ -5,9 +5,10 @@ using System.Reactive.Linq;
 
 namespace LionFire.Orleans_.Collections;
 
-public class DeleteTrackingKeyedCollectionG<TKey, TItem> : KeyedCollectionG<TKey, TItem>
-    , IDeleteTrackingListGrain<TItem>
+public class DeleteTrackingKeyedCollectionG<TKey, TValue> : KeyedCollectionG<TKey, TValue>
+    , IDeleteTrackingListGrain<TValue>
     where TKey : notnull
+    where TValue : notnull
 {
     #region State (persisted)
 
@@ -37,7 +38,7 @@ public class DeleteTrackingKeyedCollectionG<TKey, TItem> : KeyedCollectionG<TKey
 
     #region Lifecycle
 
-    public DeleteTrackingKeyedCollectionG(IServiceProvider serviceProvider, IPersistentState<Dictionary<TKey,TItem>> items, ILogger<KeyedCollectionG<TKey, TItem>> logger, IPersistentState<SortedDictionary<DateTime, TKey>> deletedItemsState) : base(serviceProvider, items, logger)
+    public DeleteTrackingKeyedCollectionG(IServiceProvider serviceProvider, IPersistentState<Dictionary<TKey,TValue>> items, ILogger<KeyedCollectionG<TKey, TValue>> logger, IPersistentState<SortedDictionary<DateTime, TKey>> deletedItemsState) : base(serviceProvider, items, logger)
     {
         DeletedItemsState = deletedItemsState;
     }
@@ -46,9 +47,9 @@ public class DeleteTrackingKeyedCollectionG<TKey, TItem> : KeyedCollectionG<TKey
 
     #region Instantiation
 
-    protected override TItem Instantiate(Type type)
+    protected override TValue Instantiate(Type type)
     {
-        TItem result;
+        TValue result;
         TKey key;
 
         do
@@ -68,8 +69,8 @@ public class DeleteTrackingKeyedCollectionG<TKey, TItem> : KeyedCollectionG<TKey
 
     #region Deleted Items
 
-    public Task<IEnumerable<KeyValuePair<DateTime, TItem>>> DeletedKeys() => Task.FromResult(
-        (DeletedItemsState?.State as IEnumerable<KeyValuePair<DateTime, TItem>> ?? Enumerable.Empty<KeyValuePair<DateTime, TItem>>())
+    public Task<IEnumerable<KeyValuePair<DateTime, TValue>>> DeletedKeys() => Task.FromResult(
+        (DeletedItemsState?.State as IEnumerable<KeyValuePair<DateTime, TValue>> ?? Enumerable.Empty<KeyValuePair<DateTime, TValue>>())
         );
 
     #region Deleted Items: Pruning
@@ -113,7 +114,7 @@ public class DeleteTrackingKeyedCollectionG<TKey, TItem> : KeyedCollectionG<TKey
             await Task.WhenAll(DeletedItemsState.WriteStateAsync() ?? Task.CompletedTask, ItemsState.WriteStateAsync());
         }
 
-        await PublishCollectionChanged(new ChangeSet<TItem, TKey>(new Change<TItem, TKey>[] { new Change<TItem, TKey>(ChangeReason.Remove, key, default) }));
+        //await PublishCollectionChanged(new ChangeSet<TValue, TKey>(new Change<TValue, TKey>[] { new Change<TValue, TKey>(ChangeReason.Remove, key, default) }));
 
         return result;
     }

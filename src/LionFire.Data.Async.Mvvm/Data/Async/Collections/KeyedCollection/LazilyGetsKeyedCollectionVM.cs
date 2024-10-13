@@ -3,26 +3,51 @@ using LionFire.ExtensionMethods;
 using LionFire.Data.Async.Gets;
 using System.ComponentModel;
 using System.Reactive.Subjects;
+using DynamicData;
+using DynamicData.Binding;
+using System.Collections.ObjectModel;
 
 namespace LionFire.Data.Mvvm;
 
+/// <summary>
+/// How to use:
+/// - Set Source, which has a property named ObservableCache
+/// </summary>
+/// <typeparam name="TKey"></typeparam>
+/// <typeparam name="TValue"></typeparam>
+/// <typeparam name="TValueVM"></typeparam>
+/// <typeparam name="TCollection"></typeparam>
 public class LazilyGetsKeyedCollectionVM<TKey, TValue, TValueVM, TCollection>
     : LazilyGetsCollectionVM<TValue, TValueVM, TCollection>
     , IGetsKeyedCollectionVM<TKey, TValue, TValueVM, TCollection>
     where TKey : notnull
     where TCollection : IEnumerable<TValue>
     where TValue : notnull
-    where TValueVM : notnull
+    where TValueVM : notnull//, IKeyed<TKey>
 {
-    public Func<TValue, TKey> KeySelector { get; set; } = v => throw new NotImplementedException();
+    public Func<TValueVM, TKey> KeySelector { get; set; } 
+    public bool IsObservable { get; protected set; } // TODO: Move to base and implement IObservableList
 
     #region Lifecycle
 
-    public LazilyGetsKeyedCollectionVM(IViewModelProvider viewModelProvider) : base(viewModelProvider)
+    public LazilyGetsKeyedCollectionVM(IViewModelProvider viewModelProvider, Func<TValueVM, TKey>? keySelector = null) : base(viewModelProvider)
     {
+        KeySelector = keySelector ?? KeySelectors<TValueVM, TKey>.GetKeySelector();
+
         this.WhenAnyValue(vm => vm.Source)
             .Subscribe(OnSourceChanged);
 
+#if true
+        this
+            .WhenAnyValue(vm => vm.PreferredSource!.ObservableCache)
+            .Select(observableCache => observableCache
+                    .Connect()
+                    .Transform(CreateViewModel)
+            )
+        .Switch()
+            .BindToObservableListAction(list => ValueVMs = list)
+            .Subscribe();
+#else
         this
             .WhenAnyValue(vm => vm.PreferredSource!.ObservableCache)
             .Select(observableCache => observableCache
@@ -34,9 +59,14 @@ public class LazilyGetsKeyedCollectionVM<TKey, TValue, TValueVM, TCollection>
         ValueVMCollections.Subscribe(oc => oc
             .BindToObservableListAction(list => ValueVMs = list)
             .Subscribe());
+#endif
+
+        observableCache = bindingList
+            .AsObservableChangeSet(vm => KeySelector(vm))
+            .AsObservableCache();
     }
 
-    #endregion
+#endregion
 
     TValueVM CreateViewModel(TValue v)
     {
@@ -59,10 +89,12 @@ public class LazilyGetsKeyedCollectionVM<TKey, TValue, TValueVM, TCollection>
     #region State (derived)
 
     #region Source
+    
+    // REVIEW - is Source needed?  Or superfluous to ValueVMs?
 
     public IObservableCacheKeyableGetter<TKey, TValue>? PreferredSource // REVIEW type, create and use interface?
     {
-        get => base.Source as IObservableCacheKeyableGetter<TKey, TValue>; 
+        get => base.Source as IObservableCacheKeyableGetter<TKey, TValue>;
         set => base.Source = value;
     }
 
@@ -72,6 +104,7 @@ public class LazilyGetsKeyedCollectionVM<TKey, TValue, TValueVM, TCollection>
     }
 
     #endregion
+
 
     public IObservable<IObservable<IChangeSet<TValueVM, TKey>>> ValueVMCollections => valueVMCollections;
     BehaviorSubject<IObservable<IChangeSet<TValueVM, TKey>>> valueVMCollections = new(Observable.Empty<IChangeSet<TValueVM, TKey>>());
@@ -84,11 +117,36 @@ public class LazilyGetsKeyedCollectionVM<TKey, TValue, TValueVM, TCollection>
             if (ReferenceEquals(valueVMs, value)) { return; }
             var old = valueVMs;
             old?.Dispose();
+            bindingListSubscription?.Dispose();
+            bindingListSubscription = null;
+
             valueVMs = value;
+
             Debug.WriteLine("ValueVMs set to list with " + value?.Count + " items");
+
+            if (valueVMs != null)
+            {
+                bindingListSubscription = valueVMs
+                    .Connect()
+                    .Bind(bindingList)
+                    .Subscribe();
+
+           
+                    
+            }
         }
     }
     private IObservableList<TValueVM>? valueVMs;
+
+    #region IObservableCache
+
+    public  IObservableCache<TValueVM, TKey> ObservableCache => observableCache;
+    private readonly IObservableCache<TValueVM, TKey> observableCache;
+    private readonly ObservableCollectionExtended<TValueVM> bindingList = new();
+    private IDisposable? bindingListSubscription;
+
+    #endregion
+
 
     #endregion
 }
@@ -98,6 +156,8 @@ public class LazilyGetsKeyedCollectionVM<TKey, TValue, TValueVM, TCollection>
 public class LazilyGetsKeyedCollectionVM<TKey, TValue, TValueVM>
     : LazilyGetsKeyedCollectionVM<TKey, TValue, TValueVM, IEnumerable<TValue>>
     where TKey : notnull
+    where TValue : notnull
+    where TValueVM : notnull//, IKeyed<TKey>
 {
     #region Lifecycle
 

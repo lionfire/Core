@@ -9,10 +9,12 @@ using Orleans.Streams;
 using LionFire.Orleans_.ObserverGrains;
 using System.Runtime.CompilerServices;
 using LionFire.Data.Async;
+using Orleans;
 
 namespace LionFire.Orleans_.Collections;
 
 /// <summary>
+/// RENAME: KeyablesDictionary
 /// This is a keyed collection, not a dictionary, because TValues must be able to specify their own key.
 /// However, like a dictionary, keys must be unique, so duplicate TValues are effectively not allowed.
 /// </summary>
@@ -27,7 +29,7 @@ public abstract class KeyedCollectionGBase<TKey, TValue>
 
     #region Dependencies
 
-    public IClusterClient ClusterClient => ServiceProvider.GetRequiredService<IClusterClient>();
+    //public IClusterClient ClusterClient => ServiceProvider.GetRequiredService<IClusterClient>();
     public ILogger Logger { get; }
 
     public Func<TValue, TKey> KeySelector { get; }
@@ -36,9 +38,10 @@ public abstract class KeyedCollectionGBase<TKey, TValue>
 
     #region State (persisted)
 
-    public Task<IEnumerable<TValue>> Items() => Task.FromResult<IEnumerable<TValue>>(ItemsDictionary.Values.ToArray());
+    public Task<IEnumerable<TValue>> Items() => Task.FromResult<IEnumerable<TValue>>(ItemsDictionary.Items.ToArray());
 
-    protected virtual IDictionary<TKey, TValue> ItemsDictionary { get; }
+    protected IObservableCache<TValue, TKey> ItemsDictionary => items;
+    protected SourceCache<TValue, TKey> items { get; }
 
     #endregion
 
@@ -54,13 +57,15 @@ public abstract class KeyedCollectionGBase<TKey, TValue>
     public static Func<TValue, TKey>? staticKeySelector = AddressableKeySelectorProvider.TryGetKeySelector<TValue, TKey>();
 
     // TODO: Replace List<TNotificationItem> with Dictionary<string, TNotificationItem>
-    public KeyedCollectionGBase(IServiceProvider serviceProvider, ILogger logger)
+    public KeyedCollectionGBase(IServiceProvider serviceProvider, ILogger logger, Func<TValue, TKey>? keySelector = null)
     {
         Logger = logger;
 
         grainObserverManager = new(() => new AsyncObserverGrainObserverManager<ChangeSet<TValue, TKey>>(this, DefaultGrainObserverTimeout));
 
-        KeySelector = staticKeySelector ??= KeySelectors<TValue, TKey>.GetKeySelector(serviceProvider);
+        KeySelector = keySelector 
+            ?? (staticKeySelector ??= KeySelectors<TValue, TKey>.GetKeySelector(serviceProvider));
+        items = new(KeySelector);
     }
 
 
@@ -133,10 +138,10 @@ public abstract class KeyedCollectionGBase<TKey, TValue>
     public Task<bool> IsReadOnly => Task.FromResult(false);
     public Task<bool> GetIsReadOnly() => IsReadOnly;
 
-    public Task<bool> Contains(TValue item) => Task.FromResult(ItemsDictionary.Values.Contains(item)); // OPTIMIZE: If Dictionary, use ContainsValue
-    public Task<bool> ContainsKey(TKey key) => Task.FromResult(ItemsDictionary.ContainsKey(key));
+    public Task<bool> Contains(TValue item) => Task.FromResult(ItemsDictionary.Items.Contains(item)); // OPTIMIZE: If Dictionary, use ContainsValue
+    public Task<bool> ContainsKey(TKey key) => Task.FromResult(ItemsDictionary.Lookup(key).HasValue);
 
-    public Task<IEnumerable<TValue>> GetEnumerableAsync() => Task.FromResult<IEnumerable<TValue>>(ItemsDictionary.Values.ToArray());
+    public Task<IEnumerable<TValue>> GetEnumerableAsync() => Task.FromResult<IEnumerable<TValue>>(ItemsDictionary.Items.ToArray());
 
     #endregion
 
@@ -185,11 +190,11 @@ public abstract class KeyedCollectionGBase<TKey, TValue>
 
     public async Task Add(TValue item)
     {
-        var key = KeySelector(item);
-        ItemsDictionary.Add(key, item);
+        items.AddOrUpdate(item);
         await OnStateHasChanged();
 
-        await PublishCollectionChanged(new ChangeSet<TValue, TKey>(new Change<TValue, TKey>[] { new Change<TValue, TKey>(ChangeReason.Add, key, item) }));
+        //var key = KeySelector(item);
+        //await PublishCollectionChanged(new ChangeSet<TValue, TKey>(new Change<TValue, TKey>[] { new Change<TValue, TKey>(ChangeReason.Add, key, item) }));
     }
 
     #endregion
@@ -197,25 +202,25 @@ public abstract class KeyedCollectionGBase<TKey, TValue>
     #region Remove
     public async virtual Task Clear()
     {
-        var changeSet = new ChangeSet<TValue, TKey>(
-                ItemsDictionary.Select(kvp => new Change<TValue, TKey>(ChangeReason.Remove, kvp.Key, kvp.Value)));
+        //var changeSet = new ChangeSet<TValue, TKey>(
+                //ItemsDictionary.KeyValues.Select(kvp => new Change<TValue, TKey>(ChangeReason.Remove, kvp.Key, kvp.Value)));
 
-        ItemsDictionary.Clear();
+        items.Clear();
         await OnStateHasChanged();
 
-        await PublishCollectionChanged(changeSet);
+        //await PublishCollectionChanged(changeSet);
     }
 
     public async virtual Task<bool> Remove(TKey key)
     {
-        if (!ItemsDictionary.TryGetValue(key, out var item)) return false;
-
-        var result = ItemsDictionary.Remove(key);
+        var lookup = items.Lookup(key);
+        if (!lookup.HasValue) return false;
+        items.Remove(key);
         await OnStateHasChanged();
 
-        await PublishCollectionChanged(new ChangeSet<TValue, TKey>(new Change<TValue, TKey>[] { new(ChangeReason.Remove, key, item) }));
+        //await PublishCollectionChanged(new ChangeSet<TValue, TKey>(new Change<TValue, TKey>[] { new(ChangeReason.Remove, key, item) }));
 
-        return result;
+        return true;
     }
 
     public Task<bool> Remove(TValue item) => Remove(KeySelector(item));
@@ -233,34 +238,35 @@ public abstract class KeyedCollectionGBase<TKey, TValue>
 
     #endregion
 
-    public async Task PublishCollectionChanged(ChangeSet<TValue, TKey> args)
-    {
-        //var s = ClusterClient.GetStreamProvider("ChangeNotifications").GetStream<NotifyCollectionChangedEventArgs<TNotificationItem>>(Guid.Parse(Source.GetPrimaryKeyString()), "CollectionChanged");
+    // OLD
+    //public async Task PublishCollectionChanged(ChangeSet<TValue, TKey> args)
+    //{
+    //    //var s = ClusterClient.GetStreamProvider("ChangeNotifications").GetStream<NotifyCollectionChangedEventArgs<TNotificationItem>>(Guid.Parse(Source.GetPrimaryKeyString()), "CollectionChanged");
 
-        //IStreamProvider streamProvider = GetStreamProvider("ChangeNotifications");
+    //    //IStreamProvider streamProvider = GetStreamProvider("ChangeNotifications");
 
-        //var deviceStream = streamProvider.GetStream<CollectionChangeEventArgs>(
-        //       Guid.Parse(this.GetPrimaryKeyString()), "CollectionChanged");
+    //    //var deviceStream = streamProvider.GetStream<CollectionChangeEventArgs>(
+    //    //       Guid.Parse(this.GetPrimaryKeyString()), "CollectionChanged");
 
-        if (grainObserverManager.IsValueCreated) { await GrainObserverManager.NotifyObservers(args); }
+    //    if (grainObserverManager.IsValueCreated) { await GrainObserverManager.NotifyObservers(args); }
 
-        var publishTask = CollectionChangedStream.OnNextAsync(args);
-        if (AwaitPublishingNotificationEvents) { await publishTask; }
-        else
-        {
-            Task.Run(async () =>
-            {
-                try
-                {
-                    await publishTask;
-                }
-                catch (Exception ex)
-                {
-                    publishErrors.OnNext(ex);
-                }
-            }).FireAndForget();
-        }
-    }
+    //    var publishTask = CollectionChangedStream.OnNextAsync(args);
+    //    if (AwaitPublishingNotificationEvents) { await publishTask; }
+    //    else
+    //    {
+    //        Task.Run(async () =>
+    //        {
+    //            try
+    //            {
+    //                await publishTask;
+    //            }
+    //            catch (Exception ex)
+    //            {
+    //                publishErrors.OnNext(ex);
+    //            }
+    //        }).FireAndForget();
+    //    }
+    //}
 
     public IObservable<Exception> PublishErrors => publishErrors.AsObservable();
     Subject<Exception> publishErrors = new();
@@ -275,10 +281,26 @@ public abstract class KeyedCollectionGBase<TKey, TValue>
     public virtual Task<IEnumerable<Type>> SupportedTypes() => Task.FromResult(Enumerable.Empty<Type>());
 
     public Task<IGetResult<IEnumerable<TValue>>> Get(CancellationToken cancellationToken = default)
-        => Task.FromResult<IGetResult<IEnumerable<TValue>>>(new SuccessGetResult<IEnumerable<TValue>>(ItemsDictionary.Values.ToArray()));
+        => Task.FromResult<IGetResult<IEnumerable<TValue>>>(new SuccessGetResult<IEnumerable<TValue>>(ItemsDictionary.Items.ToArray()));
 
 
 }
+
+#if MAYBE
+public static class DynamicDataX
+{
+    public static bool TryGetValue<TValue, TKey>(this IObservableCache<TValue, TKey> oc, TKey key, out TValue result)
+    {
+        var lookup = oc.Lookup(key);
+        if (lookup.HasValue)
+        {
+            result = lookup.Value;
+        }
+        else { result = default!; }
+        return lookup.HasValue;
+    }
+}
+#endif
 
 #if DUPE
 public abstract class KeyedCollectionGBase<TKey, TValue>

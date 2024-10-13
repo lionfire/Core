@@ -1,7 +1,7 @@
 ﻿using LionFire.Configuration;
 using Microsoft.Extensions.Configuration;
 
-namespace LionFire;
+namespace LionFire.ExtensionMethods.Configuration;
 
 public static class IHasConfigLocationX
 {
