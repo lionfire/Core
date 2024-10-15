@@ -64,6 +64,10 @@ public partial class KeyedCollectionView<TKey, TValue, TValueVM>
     [Parameter]
     public IEnumerable<TValue>? Items { get; set; }
 
+    [Parameter]
+    public TimeSpan? PollDelay { get; set; }
+
+
     #region Derived
 
     /// <summary>
@@ -237,7 +241,8 @@ public partial class KeyedCollectionView<TKey, TValue, TValueVM>
 
         if (oldItems == null || !ReferenceEquals(oldItems, this.Items))
         {
-            ViewModel.PollDelay = TimeSpan.FromSeconds(5);
+
+            ViewModel.PollDelay = PollDelay;
             ViewModel.Source = Items == null ? null
                 : Items as IGetter<IEnumerable<TValue>>
                     ?? new PreresolvedGetter<IEnumerable<TValue>>(Items);

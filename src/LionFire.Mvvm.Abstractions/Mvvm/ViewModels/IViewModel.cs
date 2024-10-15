@@ -7,6 +7,7 @@ namespace LionFire.Mvvm;
 //public interface IViewModel { object? Model { get; set; } }
 
 public interface IViewModel<out TModel> : IReadWrapper<TModel> //: IViewModel
+    //where TModel : notnull
 {
     //TModel IReadWrapper.Value => Model;
 

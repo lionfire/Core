@@ -26,13 +26,25 @@ public class LazilyGetsKeyedCollectionVM<TKey, TValue, TValueVM, TCollection>
     where TValueVM : notnull//, IKeyed<TKey>
 {
     public Func<TValueVM, TKey> KeySelector { get; set; } 
-    public bool IsObservable { get; protected set; } // TODO: Move to base and implement IObservableList
+    //public bool IsObservable { get; protected set; } // TODO: Move to base and implement IObservableList
 
     #region Lifecycle
 
     public LazilyGetsKeyedCollectionVM(IViewModelProvider viewModelProvider, Func<TValueVM, TKey>? keySelector = null) : base(viewModelProvider)
     {
-        KeySelector = keySelector ?? KeySelectors<TValueVM, TKey>.GetKeySelector();
+        KeySelector = keySelector;
+        if(KeySelector == null)
+        {
+            if (typeof(TValueVM).IsAssignableTo(typeof(IKeyed<TKey>)))
+            {
+                KeySelector = vm => ((IKeyed<TKey>)vm).Key;
+            }
+            if (typeof(TValueVM).IsAssignableTo(typeof(IViewModel<TKey>)))
+            {
+                KeySelector = vm => ((IViewModel<TKey>)vm).Value!;
+            }
+        }
+        if (KeySelector == null) { KeySelectors<TValueVM, TKey>.GetKeySelector(); }
 
         this.WhenAnyValue(vm => vm.Source)
             .Subscribe(OnSourceChanged);

@@ -156,7 +156,9 @@ public abstract class AsyncReadOnlyKeyedCollection<TKey, TValue>
         SourceCache?.EditDiff(result.Value ?? Enumerable.Empty<TValue>(), ValueEqualityComparerFunc);
     }
 
-    protected virtual void OnKeyValueChangesError(Exception exception) { }
+    protected virtual void OnKeyValueChangesError(Exception exception) {
+        Debug.WriteLine(exception);
+    }
 
     #region IAsyncReadOnlyCollectionCache<KeyValuePair<TKey, TItem>>
 
