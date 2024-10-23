@@ -101,7 +101,16 @@ namespace LionFire.ExtensionMethods.Copying
             return me;
         }
 
-        public static object AssignNonDefaultPropertiesFrom(this object me, object other) => AssignPropertiesFrom(me, other, (m, o, pi) => pi.GetValue(o) != Activator.CreateInstance(pi.PropertyType));
+        public static object AssignNonDefaultPropertiesFrom(this object me, object other) => AssignPropertiesFrom(me, other, (m, o, pi) => !IsDefault(pi.PropertyType,  pi.GetValue(o))
+        );
+
+        private static bool IsDefault(Type type, object? value)
+        {
+            if(type == typeof(string) || !type.IsValueType) { return value == null; }
+
+            return value != Activator.CreateInstance(type);
+        }
+
         public static object AssignNonNullPropertiesFrom(this object me, object other) => AssignPropertiesFrom(me, other, (m, o, pi) => pi.GetValue(o) != null);
 
         public static object AssignPropertiesFrom(this object me, object other, Func<object, object, PropertyInfo, bool> filter = null)
@@ -178,12 +187,22 @@ namespace LionFire.ExtensionMethods.Copying
             var myPi = sameType ? otherPropertyInfo : myType.GetProperty(otherPropertyInfo.Name);
 
             bool isDateTimeToDateTimeOffsetConversion = false;
+            bool tryCastFromObject = false;
+
             if (myPi == null) { return; }
             if (myPi.PropertyType != otherPropertyInfo.PropertyType)
             {
                 if (myPi.PropertyType == typeof(DateTimeOffset) && otherPropertyInfo.PropertyType == typeof(DateTime))
                 {
                     isDateTimeToDateTimeOffsetConversion = true;
+                }
+                if (otherPropertyInfo.PropertyType.IsAssignableTo(myPi.PropertyType))
+                {
+                    // no-op, Ok
+                }
+                else if (otherPropertyInfo.PropertyType == typeof(object))
+                {
+                    tryCastFromObject = true;
                 }
                 else
                 {
@@ -216,6 +235,13 @@ namespace LionFire.ExtensionMethods.Copying
             //Trace.WriteLine(me.GetType().Name + "." + myPi.Name + " = " + other.GetType() + "." + otherPropertyInfo.Name + " (" + val + ")");
 
             if (isDateTimeToDateTimeOffsetConversion) { val = new DateTimeOffset((DateTime)val); }
+            else if (tryCastFromObject)
+            {
+                if (val != null && !val.GetType().IsAssignableTo(myPi.PropertyType))
+                {
+                    return; // Matching property name, but incompatible type
+                }
+            }
             myPi.SetValue(me, val, null);
 #endif
         }
