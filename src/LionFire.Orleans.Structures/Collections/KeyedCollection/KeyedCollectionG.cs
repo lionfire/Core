@@ -28,7 +28,7 @@ where TValue : notnull
 
     #region Lifecycle
 
-    public KeyedCollectionG(IServiceProvider serviceProvider, /* [PersistentState("Matchmakers", MetaverseStoreNames.Metaverse)] */ IPersistentState<Dictionary<TKey, TValue>> items, ILogger<KeyedCollectionG<TKey, TValue>> logger) : base(serviceProvider, logger)
+    public KeyedCollectionG(IServiceProvider serviceProvider, /*[PersistentState("Matchmakers", MetaverseStoreNames.Metaverse)]*/ IPersistentState<Dictionary<TKey, TValue>> items, ILogger<KeyedCollectionG<TKey, TValue>> logger) : base(serviceProvider, logger)
     {
         ItemsState = items;
     }

@@ -27,7 +27,12 @@
 
 	<ItemGroup>
 		<ProjectReference Include="..\LionFire.Applications\LionFire.Applications.csproj" />
+		<ProjectReference Include="..\LionFire.Orleans.Structures\LionFire.Orleans.Structures.csproj" />
 		<ProjectReference Include="..\LionFire.Resolves\LionFire.Data.Async.csproj" />
+	</ItemGroup>
+
+	<ItemGroup>
+	  <Folder Include="Grains\GrainObservers\" />
 	</ItemGroup>
 
 </Project>

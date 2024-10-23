@@ -13,6 +13,9 @@ using LionFire.Data.Mvvm;
 using LionFire.FlexObjects;
 using System.Linq.Expressions;
 using Microsoft.CodeAnalysis.VisualBasic.Syntax;
+using DynamicData;
+using LionFire.Data.Collections;
+using Orleans.Runtime;
 
 namespace LionFire.Blazor.Components;
 
@@ -246,8 +249,14 @@ public partial class KeyedCollectionView<TKey, TValue, TValueVM>
             ViewModel.Source = Items == null ? null
                 : Items as IGetter<IEnumerable<TValue>>
                     ?? new PreresolvedGetter<IEnumerable<TValue>>(Items);
-
             ViewModel.FullFeaturedSource?.GetIfNeeded().AsTask().FireAndForget();
+
+            if (Items is IHasObservableCache<TValue, TKey> hoc) {
+                hoc.ObservableCache.Connect().Subscribe(changeSet =>
+                {
+                    InvokeAsync(StateHasChanged);
+                });
+            }
 
 #if true // NEW
             ViewModel.ObservableCache.Connect().Subscribe(o =>

@@ -9,7 +9,6 @@ using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
 using LionFire.Structures;
-using Microsoft.Extensions.PlatformAbstractions;
 
 namespace LionFire;
 public static class MetricsKeys
@@ -242,7 +241,7 @@ public partial class LionFireEnvironment
     private static string machineName;
 
     #endregion
-
+  
     public static class Compilation
     {
         public static string BuildType { get; set; } = "(unknown)";

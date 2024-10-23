@@ -191,30 +191,36 @@ public class ObserverManagerEx<TIdentity, TObserver> : IEnumerable<TObserver> wh
     public void CheckForDefunct()
     {
         var now = GetDateTime();
-        var defunct = default(List<TIdentity>);
+        var defunct = default(List<KeyValuePair<TIdentity, IObserverEntry<TObserver>>>);
 
         foreach (var observer in _observers.KeyValues)
         {
             if (observer.Value.LastSeen + ExpirationDuration < now)
             {
                 // Expired observers will be removed.
-                defunct ??= new List<TIdentity>();
-                defunct.Add(observer.Key);
+                defunct ??= new();
+                defunct.Add(observer);
                 continue;
             }
         }
 
-        if (defunct != default(List<TIdentity>))
+        if (defunct != default) { RemoveDefunct(defunct); }
+    }
+
+    // TODO: Use this everywhere defunct are removed
+    // TODO: change parameter type to IEnumerable<TIdentity>
+    private void RemoveDefunct(IEnumerable<KeyValuePair<TIdentity, IObserverEntry<TObserver>>> defunctEntries)
+    {
+        foreach (var kvp in defunctEntries)
         {
-            foreach (var observer in defunct)
+            _observers.Remove(kvp.Key);
+            if (_log.IsEnabled(LogLevel.Debug))
             {
-                _observers.Remove(observer);
-                if (_log.IsEnabled(LogLevel.Debug))
-                {
-                    _log.LogDebug("Removing defunct entry for {Id}. {Count} total observers after remove.", observer, _observers.Count);
-                }
+                _log.LogDebug("Removing defunct entry for {Id}. {Count} total observers after remove.", kvp.Key, _observers.Count);
             }
         }
+        OnDefunct?.Invoke(defunctEntries.Select(kvp => kvp.Key));
+
     }
 
     /// <summary>

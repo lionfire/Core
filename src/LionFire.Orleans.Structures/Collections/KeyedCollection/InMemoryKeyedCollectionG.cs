@@ -9,7 +9,7 @@ public class InMemoryKeyedCollectionG<TKey, TItem> : KeyedCollectionGBase<TKey, 
     where TKey : notnull
     where TItem : notnull
 {
-    public InMemoryKeyedCollectionG(IServiceProvider serviceProvider, /* [PersistentState("Matchmakers", MetaverseStoreNames.Metaverse)] */  ILogger<InMemoryKeyedCollectionG<TKey, TItem>> logger) : base(serviceProvider, logger)
+    public InMemoryKeyedCollectionG(IServiceProvider serviceProvider, ILogger<InMemoryKeyedCollectionG<TKey, TItem>> logger) : base(serviceProvider, logger)
     {
     }
 
