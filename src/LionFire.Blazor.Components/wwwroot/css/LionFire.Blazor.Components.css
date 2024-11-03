@@ -15,6 +15,11 @@
     --opacity-6: 60%;
 }
 
+html.lionfire, html.lionfire > body, html.lionfire > body > div.page {
+    width: 100vw;
+    height: 100vh;
+}
+
 .dark {
     --background: hsl(var(--hue), 50%, 10%);
     --background-0: hsl(var(--hue), 50%, 5%);

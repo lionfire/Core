@@ -1,13 +1,16 @@
-﻿using DynamicData;
+﻿#define RedisCollections
+using DynamicData;
 using LionFire.Orleans_;
 using LionFire.Orleans_.Collections;
 using LionFire.Orleans_.Utilities;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using Orleans.Runtime;
-using Orleans.Utilities;
+using Microsoft.Extensions.Options;
+using Orleans.Configuration;
+using Orleans.Persistence;
+using StackExchange.Redis;
 using System.Diagnostics;
-using System.Threading;
-using System.Threading.Channels;
+using System.Text;
 
 namespace LionFire.Valor.Universes.Sim.Workers.Grains;
 
@@ -23,6 +26,241 @@ namespace LionFire.Valor.Universes.Sim.Workers.Grains;
 //}
 
 public class GrainObserverRegistrar<TGrainObserver>
+    : InMemoryGrainObserverRegistrar<TGrainObserver>
+    , IGrainObserverRegistrar<TGrainObserver>
+    where TGrainObserver : notnull, IAddressable, IGrainObserver, IGrainWithStringKey
+{
+    IGrainFactory grainFactory;
+
+    #region Lifecycle
+
+    public GrainObserverRegistrar(IServiceProvider serviceProvider, ILogger logger
+#if !RedisCollections
+      ,  IPersistentState<List<string>> persistentState
+#else 
+    , string redisStoreName
+#endif
+        ) : base(serviceProvider, logger)
+    {
+#if !RedisCollections
+        this.persistentState = persistentState;
+#endif
+        items.Connect().Subscribe(OnItemsChanged);
+
+#if RedisCollections
+        grainFactory = ServiceProvider.GetRequiredService<IGrainFactory>();
+        IOptions<ClusterOptions> clusterOptions = serviceProvider.GetRequiredService<IOptions<ClusterOptions>>();
+        _options = serviceProvider.GetRequiredService<IOptionsMonitor<RedisStorageOptions>>().Get(redisStoreName);
+        var _serviceId = clusterOptions.Value.ServiceId;
+        _keyPrefix = Encoding.UTF8.GetBytes($"{_serviceId}/state/");
+        _getKeyFunc = this._options.GetStorageKey ?? DefaultGetStorageKey;
+
+        redis = ConnectionMultiplexer.Connect(_options.ConfigurationOptions ?? throw new ArgumentNullException("Failed to get redis ConfigurationOptions from named Orleans redis source: " + redisStoreName));
+#endif
+
+    }
+
+    public override async Task OnActivateAsync(CancellationToken cancellationToken)
+    {
+        var existing = await DB.HashGetAllAsync(RedisKey);
+
+        if (existing.Length == 0)
+        {
+            HashEntry[] emptyHash = Array.Empty<HashEntry>();
+            await DB.HashSetAsync(RedisKey, emptyHash);
+        }
+        else
+        {
+#if false
+            foreach (var entry in existing)
+            {
+                var key = entry.Name.ToString();
+                var value = entry.Value.ToString();
+                TGrainObserver observer;
+                try
+                {
+#warning NEXT: Deserialize GrainObserver, but this doesn't make sense, so move this to a general purpose redis collection class
+                    //observer = grainFactory.CreateObjectReference<TGrainObserver>(key); // FIXME - are grain observers available from the global membership directory?
+                }
+                catch
+                {
+                    await DB.HashDeleteAsync(this.RedisKey, key);
+                    continue;
+                }
+                observerManager.Subscribe(observer, observer);
+            }
+#endif
+        }
+
+        await base.OnActivateAsync(cancellationToken);
+    }
+
+#endregion
+
+    #region State
+
+#if RedisCollections
+    RedisGrainStorage redisGrainStorage;
+    ConnectionMultiplexer redis;
+    IDatabase DB => redis.GetDatabase();
+#else
+    IPersistentState<List<string>> persistentState;
+#endif
+
+    List<IChangeSet<IObserverEntry<TGrainObserver>, IAddressable>> pendingWrites = new();
+
+    #endregion
+
+    #region Serialization
+
+    //public ISimServerWorkerO FromSerializableValue(string key) => grainFactory.GetGrain<ISimServerWorkerO>(key);
+    public string GetSerializableValue(TGrainObserver o) => o.GetGrainId().Key.ToString()!;
+
+    // Based on official Orleans implementation
+    private readonly RedisStorageOptions _options;
+    private readonly RedisKey _keyPrefix;
+    private readonly Func<string, GrainId, RedisKey> _getKeyFunc;
+    private string GrainType => this.GetType().Name.ToLowerInvariant(); // TODO - how does Orleans do this?
+    private RedisKey DefaultGetStorageKey(string grainType, GrainId grainId)
+    {
+        var grainIdTypeBytes = IdSpan.UnsafeGetArray(grainId.Type.Value);
+        var grainIdKeyBytes = IdSpan.UnsafeGetArray(grainId.Key);
+        var grainTypeLength = Encoding.UTF8.GetByteCount(grainType);
+        var suffix = new byte[grainIdTypeBytes!.Length + 1 + grainIdKeyBytes!.Length + 1 + grainTypeLength];
+        var index = 0;
+
+        grainIdTypeBytes.CopyTo(suffix, 0);
+        index += grainIdTypeBytes.Length;
+
+        suffix[index++] = (byte)'/';
+
+        grainIdKeyBytes.CopyTo(suffix, index);
+        index += grainIdKeyBytes.Length;
+
+        suffix[index++] = (byte)'/';
+
+        var bytesWritten = Encoding.UTF8.GetBytes(grainType, suffix.AsSpan(index));
+
+        Debug.Assert(bytesWritten == grainTypeLength);
+        Debug.Assert(index + bytesWritten == suffix.Length);
+        return _keyPrefix.Append(suffix);
+    }
+
+
+    #endregion
+    private string RedisKey => _getKeyFunc(GrainType, this.GetGrainId())!;
+
+    #region Handlers
+
+    private async void OnItemsChanged(IChangeSet<IObserverEntry<TGrainObserver>, IAddressable> set)
+    {
+        pendingWrites.Add(set);
+        await OnStateHasChanged();
+    }
+
+    protected override async ValueTask OnStateHasChanged()
+    {
+        await base.OnStateHasChanged();
+#if RedisCollections
+        var db = DB;
+        var key = RedisKey;
+
+#if false // Tips: Batch, efficiency
+
+        Efficiency Tips:
+Batch Operations: When adding or removing multiple items, it's more efficient to use batch operations as shown above. This reduces the number of round trips to the Redis server.
+Transactions: For operations that need to be atomic, consider using Redis transactions or Lua scripts.Here's a simple example of a transaction:
+csharp
+var trans = db.CreateTransaction();
+        trans.AddCondition(Condition.HashEqual("myhash", "field1", "value1"));
+        trans.HashSetAsync("myhash", "field2", "newValue2");
+        trans.HashSetAsync("myhash", "field3", "newValue3");
+
+        bool committed = trans.Execute();
+        if (committed)
+        {
+            Console.WriteLine("Transaction committed");
+        }
+        else
+        {
+            Console.WriteLine("Transaction not executed because condition failed");
+        }
+    Pipeline: For operations where the results aren't needed immediately, pipelining can greatly improve performance:
+csharp
+var tasks = new[]
+{
+    db.HashSetAsync("myhash", "field4", "value4"),
+    db.HashSetAsync("myhash", "field5", "value5")
+};
+
+        await Task.WhenAll(tasks);
+
+#endif
+        foreach (var set in pendingWrites)
+        {
+            List<Task> tasks = new();
+
+            if (pendingWrites
+                        .SelectMany(pw => pw)
+                        .Where(c => c.Reason == ChangeReason.Refresh).Any())
+            {
+                await Task.WhenAll(tasks);
+                tasks.Clear();
+                // Alternative to deleting:
+                // Using a transaction or Lua script to rename the hash, create a new empty hash with the original name, and then delete the renamed hash. Here's how you could do it with a transaction:
+                await db.KeyDeleteAsync(key);
+            }
+
+            bool batchWithinChangeSet = true;
+            if (batchWithinChangeSet)
+            {
+                // REVIEW TODO - batching these may lead to data loss in a more generalized collection scenario with rapid turnover
+                tasks.Add(db.HashSetAsync(key,
+                    set
+                        .Where(c => c.Reason == ChangeReason.Add)
+                        .Select(c => new HashEntry(
+                            c.Key.GetPrimaryKeyString(), c.Key.GetPrimaryKeyString())).ToArray()
+                    ));
+
+                tasks.Add(db.HashDeleteAsync(key,
+                    set
+                       .Where(c => c.Reason == ChangeReason.Remove)
+                       .Select(c => (RedisValue)c.Key.GetPrimaryKeyString()).ToArray()
+                    ));
+            }
+            else
+            {
+                foreach (var change in set)
+                {
+                    throw new NotImplementedException();
+                    //var serializableValue = GetSerializableValue(change.Current.Observer);
+                    //if (change.Reason == ChangeReason.Add)
+                    //{
+                    //    tasks.Add(db.HashSetAsync(key, [
+                    //        new(serializableValue, serializableValue),
+                    //]));
+                    //}
+                    //else if (change.Reason == ChangeReason.Remove)
+                    //{
+                    //    persistentState.State.RemoveKey(serializableValue);
+                    //}
+                }
+            }
+
+            await Task.WhenAll(tasks);
+        }
+        pendingWrites.Clear();
+#else
+        persistentState.State = items.Items.Select(i => GetSerializableValue(i.Observer)).ToList();
+        await persistentState.WriteStateAsync();
+#endif
+    }
+
+    #endregion
+}
+
+
+public class InMemoryGrainObserverRegistrar<TGrainObserver>
     : KeyedCollectionGBase<IAddressable, IObserverEntry<TGrainObserver>>
     , IGrainObserverRegistrar<TGrainObserver>
     where TGrainObserver : notnull, IAddressable, IGrainObserver
@@ -39,10 +277,9 @@ public class GrainObserverRegistrar<TGrainObserver>
 
     static int objectId = 0;
     public int OBJECTID = objectId++;
-    public GrainObserverRegistrar(IServiceProvider serviceProvider, ILogger logger) : base(serviceProvider, logger, e => e.Observer)
+    public InMemoryGrainObserverRegistrar(IServiceProvider serviceProvider, ILogger logger) : base(serviceProvider, logger, e => e.Observer)
     {
         observerManager = new(registrationTimeout, logger, items);
-
 
         observerManager.OnDefunct = async (defunctAddressables) =>
         {

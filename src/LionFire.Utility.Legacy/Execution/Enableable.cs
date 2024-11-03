@@ -77,7 +77,7 @@ namespace LionFire.Structures
                 if (value)
                 {
                     UpdateCanEnable(true);
-                    if (!CanEnable) throw new LionFireException("CanEnable is false: " + CannotEnableMessage);
+                    if (!CanEnable) throw new InvalidOperationException("CanEnable is false: " + CannotEnableMessage);
                 }
                 _SetEnabled(value);
             }

@@ -108,7 +108,7 @@ namespace LionFire.ExtensionMethods.Copying
         {
             if(type == typeof(string) || !type.IsValueType) { return value == null; }
 
-            return value != Activator.CreateInstance(type);
+            return value == Activator.CreateInstance(type);
         }
 
         public static object AssignNonNullPropertiesFrom(this object me, object other) => AssignPropertiesFrom(me, other, (m, o, pi) => pi.GetValue(o) != null);
