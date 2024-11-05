@@ -26,7 +26,7 @@
                             @*<RadzenProfileMenuItem Text="Clear all" onclick=@(()=>Tracker.ClearHistory()) Icon="close"></RadzenProfileMenuItem>*@
                         </div>
 
-                        <MudList>
+                        <MudList T="IActivity">
                             @foreach (var item in Tracker.ActivitiesOutstanding)
                             {
                                 <NotificationsDropdownItem Item=@item />

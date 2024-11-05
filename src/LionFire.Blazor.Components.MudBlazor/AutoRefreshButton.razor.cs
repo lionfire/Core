@@ -25,7 +25,7 @@ public partial class AutoRefreshButton
                 if((DateTimeOffset.UtcNow - LastRefresh).TotalMilliseconds > Interval / 2.0)
                 {
                     Logger.LogInformation("Enabled timer but it hasn't been refreshed recently. Refreshing now.");
-                    Refresh().AndForget();
+                    _ = Refresh();
                 }
             }
         }
@@ -59,7 +59,7 @@ public partial class AutoRefreshButton
     protected override Task OnInitializedAsync()
     {
         UpdateTimer();
-        if (Auto && OnRefresh != null) { Refresh().AndForget(); }
+        if (Auto && OnRefresh != null) { _ = Refresh(); }
         return base.OnInitializedAsync();
     }
 

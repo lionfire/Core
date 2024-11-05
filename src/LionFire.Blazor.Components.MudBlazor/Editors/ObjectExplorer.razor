@@ -9,7 +9,7 @@
 @using System.Reflection;
 @using Microsoft.Extensions.Options
 @using MudBlazor
-@using global::MudBlazor.Dialog
+@* @using global::MudBlazor.Dialog *@
 
 @namespace LionFire.Blazor.Components.MudBlazor_
 
@@ -65,7 +65,7 @@
                         <div>
                             @*<div style="margin-right: 10px;">*@
                             @*<MudAvatar Size="Size.Small" Color="color">M</MudAvatar>*@
-                            <MudChip Size="Size.Small" Color="color" Variant="variant">M</MudChip>
+                            <MudChip T="string" Size="Size.Small" Color="color" Variant="variant">M</MudChip>
 
                         </div>
                     </td>
@@ -113,12 +113,12 @@
                             @if (pi != null)
                             {
                                 @*<MudAvatar Size="Size.Small" Color="color">P</MudAvatar>*@
-                                <MudChip Size="Size.Small" Color="color" Variant="variant">P</MudChip>
+                                <MudChip T="string" Size="Size.Small" Color="color" Variant="variant">P</MudChip>
                             }
                             else
                             {
                                 @*<MudAvatar Size="Size.Small" Color="color">F</MudAvatar>*@
-                                <MudChip Size="Size.Small" Color="color" Variant="variant">F</MudChip>
+                                <MudChip T="string" Size="Size.Small" Color="color" Variant="variant">F</MudChip>
                             }
                         </div>
                     </td>
@@ -156,7 +156,7 @@
                         <td>
                             <div>
                                 @*<MudAvatar Size="Size.Small" Color="color">M</MudAvatar>*@
-                                <MudChip Size="Size.Small" Color="color" Variant="variant">-</MudChip>
+                                <MudChip T="string" Size="Size.Small" Color="color" Variant="variant">-</MudChip>
 
                             </div>
                         </td>

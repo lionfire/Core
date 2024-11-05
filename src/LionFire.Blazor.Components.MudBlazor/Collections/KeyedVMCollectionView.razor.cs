@@ -301,8 +301,8 @@ public partial class KeyedVMCollectionView<TKey, TValue, TValueVM>
          *        <TemplateColumn>
                 <CellTemplate>
                     <MudToggleIconButton Toggled="UniverseClient.UniverseInfo.Key == context.Item.Key"
-                                         ToggledIcon="@Icons.Filled.CheckCircle"
-                                         Icon="@Icons.Outlined.Circle" />
+                                         ToggledIcon="@Icons.Material.Filled.CheckCircle"
+                                         Icon="@Icons.Material.Outlined.Circle" />
                 </CellTemplate>
             </TemplateColumn>
             <PropertyColumn Property="p => p.Name" />

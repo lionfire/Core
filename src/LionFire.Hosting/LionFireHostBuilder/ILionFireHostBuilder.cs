@@ -29,8 +29,8 @@ public interface ILionFireHostBuilder : IHostApplicationSubBuilder
 
 public static class ILionFireHostBuilderX
 {
-    public static ILionFireHostBuilder ConfigureDefaults(this ILionFireHostBuilder lf, params KeyValuePair<string, string?>[] kvps)
-    => lf.ForHostBuilder(b => b.ConfigureHostConfiguration(c => c.AddInMemoryCollection(kvps)));
+    public static ILionFireHostBuilder ConfigureDefaults(this ILionFireHostBuilder lf, params KeyValuePair<string, string?>[] keyValuePairs)
+    => lf.ForHostBuilder(b => b.ConfigureHostConfiguration(c => c.AddInMemoryCollection(keyValuePairs)));
 
     public static ILionFireHostBuilder Configure(this ILionFireHostBuilder lf, Action<IHostEnvironment, IConfigurationBuilder> configure)
       => lf.ForIHostApplicationBuilder(b => configure(b.Environment, b.Configuration));

@@ -48,7 +48,7 @@ public static class DefaultsX
 
         builder.ConfigureHostConfiguration(config =>
         {
-            config.AddEnvironmentVariables(prefix: "DOTNET_");
+            config.AddEnvironmentVariables(prefix: "DOTNET_"); 
 
             var env = Environment.GetEnvironmentVariable("DOTNET_Environment");
             if (env is { Length: > 0 })

@@ -8,28 +8,19 @@ using LionFire.ExtensionMethods.Configuration;
 
 namespace LionFire.AspNetCore;
 
-public class WebHostConfig : IHasConfigLocation
+public class WebHostConfig : HasPortsConfigBase, IHasConfigLocation
 {
     public static string DefaultConfigLocation => "WebHost";
-    public virtual string ConfigLocation => DefaultConfigLocation;
-
-    #region Injected via ctor
-
-    protected int? BasePort { get; set; } // Inject this from LionFire.Net.PortsConfig
-
-    #endregion
+    public string ConfigLocation => DefaultConfigLocation;
 
     #region Construction
 
-    public WebHostConfig(IConfiguration configuration)
+    public WebHostConfig(IConfiguration configuration) : base(configuration)
     {
-        var portsConfig = new PortsConfig(configuration);
-        BasePort = portsConfig.EffectiveBasePort;
         this.Bind(configuration);
     }
 
     #endregion
-
 
     /// <summary>
     /// If false, calls to WebHost() become a no-op. (Do not initialize AspNetCore and Kestrel)

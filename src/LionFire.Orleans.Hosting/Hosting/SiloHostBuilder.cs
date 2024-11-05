@@ -22,6 +22,7 @@ using System.Linq;
 using System.Diagnostics;
 using Orleans.Runtime;
 using System.IO;
+using LionFire.Net;
 
 namespace LionFire.Hosting;
 
@@ -45,6 +46,7 @@ public static class SiloHostBuilder
                     .AddOrleans()
                     
                     .Configure<SiloProgramConfig>(context.Configuration.GetSection(siloOptions.ConfigLocation))
+                    .Configure<PortsConfig>(context.Configuration.GetSection(PortsConfig.DefaultConfigLocation))
                     .AddTransient<LionFireSiloConfigurator>()
 
 

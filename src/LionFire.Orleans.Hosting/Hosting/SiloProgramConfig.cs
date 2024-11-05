@@ -13,19 +13,19 @@ namespace LionFire.Hosting;
 // TODO: Split into subclasses
 //  - ConsulServiceConfig
 //  - RelativePortsConfig - not hardcoded.  Add some place to look up available ports.
-public class SiloProgramConfig : IHasConfigLocation
+public class SiloProgramConfig : HasPortsConfigBase, IHasConfigLocation
 {
     public static string DefaultConfigLocation => "Silo";
     public string ConfigLocation => DefaultConfigLocation;
 
-    protected int? BasePort { get; set; }
+    //protected int? BasePort { get; set; }
 
     #region Construction
 
-    public SiloProgramConfig(IConfiguration configuration)
+    public SiloProgramConfig(IConfiguration configuration) : base(configuration)
     {
-        var portsConfig = new PortsConfig(configuration);
-        BasePort = portsConfig.EffectiveBasePort;
+        //var portsConfig = new PortsConfig(configuration);
+        //BasePort = portsConfig.EffectiveBasePort;
         this.Bind(configuration);
     }
 

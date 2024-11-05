@@ -16,7 +16,7 @@ public static class PortsConfigX
 
 public class PortsConfig : IHasConfigLocation
 {
-    public static string DefaultConfigLocation => "Ports";
+    public static string DefaultConfigLocation { get; set; } = "Ports";
     public string ConfigLocation => DefaultConfigLocation;
 
 
@@ -32,11 +32,16 @@ public class PortsConfig : IHasConfigLocation
     public const int DefaultPortBase = 5000;
 
 
+    /// <summary>
+    /// This is the preferred base port.  If there's a chance it may be in use, you can use ILionFireHostBuilderX.BasePort() which will probe a port or range of ports and set EffectiveBasePort to an alternative port, if possible with a certain predictable offset from the preferred base port.
+    /// </summary>
     public int? BasePort { get; set; } = DefaultPortBase;
     public bool UseFallbackPorts { get; set; }
 
     /// <summary>
     /// If UseFallbackPorts is true, EffectiveBasePort should be configured to an alternate base port that is unused.
+    /// 
+    /// See ILionFireHostBuilderX.BasePort and ILionFireHostBuilderX.GetEffectiveBasePort in LionFire.Hosting.
     /// </summary>
     public int? EffectiveBasePort { get; set; }
 
