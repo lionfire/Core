@@ -7,26 +7,25 @@ using CircularBuffer;
 using LionFire.Activities;
 using Microsoft.AspNetCore.Components;
 
-namespace LionFire.Blazor.Components.Terminal
+namespace LionFire.Blazor.Components.Terminal;
+
+public partial class OutputPane
 {
-    public partial class OutputPane
+    [Parameter]
+    public Guid Key { get; set; }
+
+    public IActivity? Activity { get; set; }
+
+    protected override Task OnInitializedAsync()
     {
-        [Parameter]
-        public Guid Key { get; set; }
-
-        public IActivity? Activity { get; set; }
-
-        protected override Task OnInitializedAsync()
+        if(Key != default)
         {
-            if(Key != default)
-            {
-                ActivitiesTracker.TryGetValue(Key, out var activity);
-                Activity = activity;
-            }
-            return base.OnInitializedAsync();
+            ActivitiesTracker.TryGetValue(Key, out var activity);
+            Activity = activity;
         }
-
-        public IEnumerable<string>? Lines => Activity?.Lines();
-
+        return base.OnInitializedAsync();
     }
+
+    public IEnumerable<string>? Lines => Activity?.Lines();
+
 }

@@ -19,9 +19,13 @@ public static class LionFireSerilogX
 {
     public static ILionFireHostBuilder Serilog(this ILionFireHostBuilder builder, Action<LionFireSerilogBuilder>? configure = null, bool configureFallbackToDefaults = true)
     {
-        if (global::Serilog.Log.Logger != null && global::Serilog.Log.Logger.GetType().Name != "SilentLogger") { return builder; }
+        if (global::Serilog.Log.Logger != null && global::Serilog.Log.Logger.GetType().Name != "SilentLogger")
+        {
+            if (configure != null) throw new NotImplementedException("Serilog already configured.  TODO: Allow configuring existing builder.");
+            return builder;
+        }
         //if (global::Serilog.Log.Logger is not Silent null && ) { return builder; }
-        
+
         LogBootstrappingState.IsBootstrapping = true;
 
         if (configureFallbackToDefaults) configure ??= lionFireSerilogBuilder => lionFireSerilogBuilder.Defaults();
@@ -51,6 +55,7 @@ public static class LionFireSerilogX
 
         #endregion
 
+#if OLD
         builder.HostBuilder.UseSerilog((context, serviceProvider, loggerConfiguration) =>
         {
             //loggerConfiguration.ReadFrom.Configuration(configuration); // REVIEW - needed?
@@ -59,6 +64,20 @@ public static class LionFireSerilogX
             global::Serilog.Log.Logger.Verbose($"----- BOOTSTRAP FINISHED -----");
             configure?.Invoke(new LionFireSerilogBuilder(loggerConfiguration, context?.Configuration));
         }, preserveStaticLogger: true);
+#else
+        builder.ConfigureServices((context, services) => // Avoid HostBuilder
+        {
+            services.AddSerilog((serviceProvider, loggerConfiguration) =>
+            {
+                //loggerConfiguration.ReadFrom.Configuration(configuration); // REVIEW - needed?
+
+                LogBootstrappingState.IsBootstrapping = false;
+                global::Serilog.Log.Logger.Verbose($"----- BOOTSTRAP FINISHED -----");
+                configure?.Invoke(new LionFireSerilogBuilder(loggerConfiguration, context?.Configuration));
+            });
+        });
+#endif
+
 
         return builder;
     }

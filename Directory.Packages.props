@@ -40,7 +40,7 @@
     <PackageVersion Include="DeferredEvents" Version="1.0.5" />
     <PackageVersion Include="DotNetify.SignalR" Version="5.4.0" />
     <PackageVersion Include="DotNetProjects.Extended.Wpf.Toolkit" Version="4.6.97" />
-    <PackageVersion Include="DynamicData" Version="8.4.1" />
+    <PackageVersion Include="DynamicData" Version="9.0.4" />
     <PackageVersion Include="FileContextCore" Version="3.4.0" />
     <PackageVersion Include="FlexLabs.EntityFrameworkCore.Upsert" Version="8.0.0" />
     <PackageVersion Include="FluentEmail.Mailgun" Version="3.0.2" />
@@ -141,7 +141,7 @@
     <PackageVersion Include="MudBlazor" Version="7.15.0" />
     <PackageVersion Include="MvsSln" Version="2.6.2" />
     <PackageVersion Include="MyCouch" Version="7.6.0" />
-    <PackageVersion Include="NATS.Net" Version="2.2.3" />
+    <PackageVersion Include="NATS.Net" Version="2.5.3" />
     <PackageVersion Include="Newtonsoft.Json" Version="13.0.3" />
     <PackageVersion Include="Nito.AsyncEx" Version="5.1.2" />
     <PackageVersion Include="Nito.AsyncEx.Coordination" Version="5.1.2" />

@@ -1,17 +1,19 @@
 ﻿@using CircularBuffer
+@using DynamicData
+@using Microsoft.AspNetCore.Components.QuickGrid
+@* @using MudBlazor.Components *@
 
-<h3>TerminalView</h3>
+@* TODO: Probably use MudDataGrid or something else.  Try to get per-row classes, to style Info differently from Debug, etc. *@
 
-@foreach (var line in Lines)
-{
-    <div>
-        @line
-    </div>
-}
+<button @onclick=ViewModel.Clear>Clear</button>
 
-@code {
+<div class="Lines">
+    <QuickGrid TGridItem="LogEntry" Items="@ViewModel.Lines.Items.AsQueryable()" Virtualize="true" Class="LogView">
+        <PropertyColumn Property="@(c => c.Level)" Title="" Class="level" />
+        <PropertyColumn Property="@(c => c.LocalTimestamp)" Title="Time" Format="HH:mm:ss.fff" Class="timestamp" />
+        <PropertyColumn Property="@(c => c.ShortCategory)" Title="Category" Class="Category" />
+        <PropertyColumn Property="@(c => c.Text)" Title="Message" Class="message" />
+    </QuickGrid>
+</div>
 
-    [Parameter]
-    public IEnumerable<string> Lines{get; set;} 
 
-}

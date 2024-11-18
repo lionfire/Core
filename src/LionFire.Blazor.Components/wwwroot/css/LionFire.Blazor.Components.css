@@ -581,3 +581,15 @@ body.dark .mud-input-label-outlined {
 .FadeUnlessHoverParent:hover .FadeUnlessHover {
     opacity: 1.0;
 }
+
+/* LogView */
+
+.quickgrid.LogView td.time {
+    opacity: 0.5;
+}
+
+.quickgrid.LogView td.level {
+    font-family: 'Consolas', 'Courier New', monospace, serif;
+    font-weight: 700;
+}
+

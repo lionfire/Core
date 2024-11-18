@@ -37,6 +37,8 @@ public static class HostApplicationBuilderX
     {
         IHostApplicationBuilder hab = hostBuilder;
 
+        #region SubBuilders: init
+
         SubBuilders SubBuilders;
         if (hab.Properties.ContainsKey("SubBuilders"))
         {
@@ -47,6 +49,9 @@ public static class HostApplicationBuilderX
             SubBuilders = new();
             hab.Properties.Add("SubBuilders", SubBuilders);
         }
+        
+        #endregion
+
         var lf = SubBuilders.GetOrCreateSubBuilder<LionFireHostBuilder>(() =>
         {
             var lf = new LionFireHostBuilder(hostBuilder); // TODO - reuse existing from Properties if it exists
@@ -62,8 +67,11 @@ public static class HostApplicationBuilderX
 
         return hostBuilder;
     }
-    public static HostApplicationBuilder LionFire(this HostApplicationBuilder hostBuilder, int basePort, Action<ILionFireHostBuilder>? action = null, bool useDefaults = true, Action<ILionFireHostBuilder>? actionBeforeDefaults = null, bool useFallbackPorts = true)
-        => hostBuilder.BasePort(basePort, useFallbackPorts).LionFire(action, useDefaults, actionBeforeDefaults);
+    public static HostApplicationBuilder LionFire(this HostApplicationBuilder hostApplicationBuilder, int basePort, Action<ILionFireHostBuilder>? action = null, bool useDefaults = true, Action<ILionFireHostBuilder>? actionBeforeDefaults = null, bool useFallbackPorts = true)
+        => hostApplicationBuilder
+                .BasePort(basePort, useFallbackPorts)
+                .LionFire(action, useDefaults, actionBeforeDefaults);
+    
 
     // FUTURE - sort out IHostApplicationBuilder vs implementors such as HostApplicationBuilder (and nothing else so far?)
     //public static IHostApplicationBuilder LionFire(this IHostApplicationBuilder hostBuilder, int basePort, Action<ILionFireHostBuilder>? action = null, bool useDefaults = true)

@@ -13,7 +13,6 @@ public static class IRunnableX
     public static async Task Run(this IRunnable @this, CancellationToken cancellationToken = default)
     {
         await @this.StartAsync(cancellationToken);
-        await @this.RunTask; // TODO: use cancellationToken 
-        //await @this.Terminated;
+        await Task.Run(async () => await @this.RunTask, cancellationToken);
     }
 }
