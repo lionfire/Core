@@ -2,7 +2,7 @@
 	<Project Sdk="Microsoft.NET.Sdk">
 		<!--<Import Project="Sdk.props" Sdk="Microsoft.NET.Sdk/1.0.0" />-->
 	<PropertyGroup>
-		<TargetFrameworks>netstandard2.0;net8.0</TargetFrameworks>
+		<TargetFrameworks>netstandard2.0;net9.0</TargetFrameworks>
 		<VersionSuffix></VersionSuffix>
 		<LangVersion>latest</LangVersion>
 
