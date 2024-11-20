@@ -74,7 +74,7 @@ public static class LionFireSerilogX
                 LogBootstrappingState.IsBootstrapping = false;
                 global::Serilog.Log.Logger.Verbose($"----- BOOTSTRAP FINISHED -----");
                 configure?.Invoke(new LionFireSerilogBuilder(loggerConfiguration, context?.Configuration));
-            });
+            }, writeToProviders: true);
         });
 #endif
 

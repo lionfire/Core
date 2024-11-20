@@ -30,12 +30,12 @@ public class LionFireSerilogBuilder
     {
         DefaultEnrich();
         Console(LionFireSerilogDefaults.LongConsoleTemplate);
-        File();
-        Loki();
+        File(); // Writes if unit tests, or if a dir is specified in config
+        //Loki();
 
         FromConfiguration();
         
-        TraceListener();
+        TraceListener(); // Listen to Trace, and log
 
         return this;
     }
