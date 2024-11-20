@@ -122,3 +122,15 @@ footer {
 code {
     color: #c02d76;
 }
+
+table.PackagesGrid {
+    border-collapse: collapse;
+    border: 1px solid #e1e1f3;
+}
+
+    table.PackagesGrid tr:not(:nth-child(odd)) {
+        background: #e1e1f3;
+    }
+    table.PackagesGrid td {
+        border: 1px solid #e1e1f3;
+    }

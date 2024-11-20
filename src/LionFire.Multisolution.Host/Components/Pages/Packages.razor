@@ -2,6 +2,7 @@
 @inject DocumentService DocumentService
 @using Microsoft.AspNetCore.Components.QuickGrid
 @using ReactiveUI
+@using Semver
 @rendermode InteractiveServer
 
 <h3>Packages</h3>
@@ -10,9 +11,19 @@
 <Microsoft.FluentUI.AspNetCore.Components.FluentButton @onclick="() => OnUpgrade()">Upgrade</Microsoft.FluentUI.AspNetCore.Components.FluentButton>
 <Microsoft.FluentUI.AspNetCore.Components.FluentButton @onclick="() => DocumentService.ScanNuget(true)">Rescan Nuget</Microsoft.FluentUI.AspNetCore.Components.FluentButton>
 
-<QuickGrid Items="@packages">
-    <PropertyColumn Property="@(p => p.PackageId)" Sortable="true" />
-    <PropertyColumn Property="@(p => p.Current)" Sortable="true" />
+<QuickGrid Items="@packages" Class="PackagesGrid">
+    @* <PropertyColumn Property="@(p => p.PackageId)" Sortable="true" /> *@
+        <TemplateColumn Title="Package">
+        <a href=@($"https://www.nuget.org/packages/{context.PackageId}/")>@context.PackageId</a>
+
+        </TemplateColumn>
+    @* <PropertyColumn Property="@(p => p.Current)" Sortable="true" /> *@
+    <TemplateColumn Title="Current">
+        @foreach (var item in context.Current.DistinctBy(x => x.Version))
+        {
+            <div title="@item.ProjectName">@item.Version</div>
+        }
+    </TemplateColumn>
 
     <TemplateColumn Title="">
         @if (context.Release != null)
@@ -33,7 +44,7 @@
 
 
 @code {
-    private record Package(string PackageId, string Current, string? Release, string? Prerelease);
+    private record Package(string PackageId, List<ExistingPackageVersion> Current, string? Release, string? Prerelease);
 
     private IQueryable<Package> packages = new Package[] { }.AsQueryable();
 
@@ -52,30 +63,42 @@
 
     private void Refresh()
     {
-        List<Package> dict = new();
+        List<Package> result = new();
         var d = DocumentService.Document;
 
         foreach (var kvp in d.CurrentPackageVersions)
         {
             var id = kvp.Key;
             var current = kvp.Value;
+            var releaseAvailable = d.AvailablePackageVersions.TryGetValue(id);
+            var prereleaseAvailable = d.AvailablePrereleasePackageVersions.TryGetValue(id);
+            if (prereleaseAvailable?.ToString() == releaseAvailable?.ToString()) prereleaseAvailable = null;
 
-            var release = d.AvailablePackageVersions.TryGetValue(id);
-            if (release == current) release = null;
-            var prerelease = d.AvailablePrereleasePackageVersions.TryGetValue(id);
-            if (prerelease?.ToString() == release?.ToString() || prerelease?.ToString() == current) prerelease = null;
+            // if (prereleaseAvailable != null && releaseAvailable != null && SemVersion.Parse(prereleaseAvailable, SemVersionStyles.Any).ComparePrecedenceTo(SemVersion.Parse(releaseAvailable, SemVersionStyles.Any)) < 0)
+            // {
+            //     prereleaseAvailable = null;
+            // }
+
+            bool hasReleaseAvailable = false;
+            bool hasPrereleaseAvailable = false;
+
+            foreach (var currentItem in current)
+            {
+                if (releaseAvailable != currentItem.Version) hasReleaseAvailable = true;
+                if (prereleaseAvailable != null && prereleaseAvailable != currentItem.Version) hasPrereleaseAvailable = true;
+
+            }
+            if (!hasReleaseAvailable) { releaseAvailable = null; }
+            if (!hasPrereleaseAvailable) { prereleaseAvailable = null; }
 
             if (!ShowUpToDatePackages)
             {
-                if (!ShowPrerelease && release == null) continue;
-                else if (release == null && prerelease == null) continue;
+                if (!ShowPrerelease && releaseAvailable == null) continue;
+                else if (releaseAvailable == null && prereleaseAvailable == null) continue;
             }
-
-            dict.Add(new Package(id, current, release, prerelease));
-
+            result.Add(new Package(id, kvp.Value, releaseAvailable, prereleaseAvailable));
         }
-        packages = dict.AsQueryable();
-        // OnUpgrade();
+        packages = result.AsQueryable();
     }
 
     protected override Task OnInitializedAsync()

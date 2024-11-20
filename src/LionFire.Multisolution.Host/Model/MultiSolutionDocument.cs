@@ -7,6 +7,11 @@ using System.Linq;
 
 namespace LionFire.MultiSolution.Host.Model;
 
+
+public record ExistingPackageVersion(string ProjectName, string Version)
+{
+}
+
 public class MultiSolutionDocument : ReactiveObject
 {
     public List<string> Solutions { get; set; } = new();
@@ -17,8 +22,8 @@ public class MultiSolutionDocument : ReactiveObject
     public DateTime LastCheckedNuget { get; set; } = DateTime.MinValue;
     public TimeSpan NugetRescanInterval { get; set; } = TimeSpan.FromHours(24);
 
-    
-    public Dictionary<string, string> CurrentPackageVersions { get; set; } = new();
+
+    public Dictionary<string, List<ExistingPackageVersion>> CurrentPackageVersions { get; set; } = new();
     public Dictionary<string, string> AvailablePackageVersions { get; set; } = new();
     public Dictionary<string, string> AvailablePrereleasePackageVersions { get; set; } = new();
 
@@ -30,15 +35,15 @@ public class MultiSolutionDocument : ReactiveObject
 
     public Task LoadDirectoryPackagesProps()
     {
-        var dict = new Dictionary<string, string>();
+        var dict = new Dictionary<string, List<ExistingPackageVersion>>();
 
-        foreach(var path in DirectoryPackagesProps)
+        foreach (var path in DirectoryPackagesProps)
         {
             XDocument doc = XDocument.Load(path);
             if (doc.Root == null) continue;
             var packageVersions = doc.Root.Nodes().OfType<XElement>().Where(n => n.Name == "ItemGroup").SelectMany(ig => ig.Nodes().OfType<XElement>().Where(n => n.Name == "PackageVersion"));
 
-            foreach(var packageVersion in packageVersions)
+            foreach (var packageVersion in packageVersions)
             {
                 var include = packageVersion.Attribute("Include")?.Value;
                 var version = packageVersion.Attribute("Version")?.Value;
@@ -47,13 +52,14 @@ public class MultiSolutionDocument : ReactiveObject
                 {
                     continue;
                 }
+                var rec = new ExistingPackageVersion(Path.GetDirectoryName(path)!, version);
                 if (!dict.ContainsKey(include))
                 {
-                    dict.Add(include, version);
+                    dict.Add(include, [rec]);
                 }
-                else if (dict[include] != version)
+                else
                 {
-                    dict[include] = "(multiple versions)";
+                    dict[include].Add(rec);
                 }
             }
         }
@@ -68,11 +74,11 @@ public class MultiSolutionDocument : ReactiveObject
         {
             using var sln = new Sln(slnPath,
                 SlnItems.SolutionItems
-                |SlnItems.AllMinimal
+                | SlnItems.AllMinimal
                 //SlnItems.All & ~SlnItems.ProjectDependencies
-                ); 
+                );
 
-            foreach(var slnItem in sln.Result.SolutionFolders.SelectMany(sf => sf.items))
+            foreach (var slnItem in sln.Result.SolutionFolders.SelectMany(sf => sf.items))
             {
                 WriteLine(slnItem);
             }

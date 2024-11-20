@@ -118,61 +118,75 @@ public class DocumentService : ReactiveObject
             )
         {
             var packageId = kvp.Key;
-            var currentVersion = kvp.Value;
-            if (singlePackageId != null && packageId != singlePackageId) continue;
-            //if (!packageId.StartsWith("Microsoft.") && !packageId.StartsWith("System.")) continue;
 
-            if (d.IgnoredPackages.Contains(packageId)) continue;
-
-            var available = (prerelease || CurrentPrerelease.Contains(kvp.Key)) 
-                ? d.AvailablePrereleasePackageVersions 
-                : d.AvailablePackageVersions;
-
-            if (available.TryGetValue(kvp.Key, out var availableVersion))
+            foreach (var currentVersionRecord in kvp.Value)
             {
-                if (string.IsNullOrWhiteSpace(availableVersion) || availableVersion == currentVersion) continue;
+                var currentVersion = currentVersionRecord.Version;
 
-                //WriteLine($"[UPGRADING] {kvp.Key} to {availableVersion}");
-            }
+                //var currentVersion = kvp.Value;
+                if (singlePackageId != null && packageId != singlePackageId) continue;
+                //if (!packageId.StartsWith("Microsoft.") && !packageId.StartsWith("System.")) continue;
 
-            foreach (var propsDoc in propsDocs)
-            {
-                var packageVersion = propsDoc.Value.Root.Nodes().OfType<XElement>().Where(n => n.Name == "ItemGroup").SelectMany(ig => ig.Nodes().OfType<XElement>().Where(n => n.Name == "PackageVersion"
-                && n.Attribute("Include")?.Value == packageId
-                )).FirstOrDefault();
+                if (d.IgnoredPackages.Contains(packageId)) continue;
 
-                if (packageVersion == null) continue;
+                var available = (prerelease || CurrentPrerelease.Contains(kvp.Key))
+                    ? d.AvailablePrereleasePackageVersions
+                    : d.AvailablePackageVersions;
 
-                var displayKey = propsDoc.Key.Replace(@"C:\\src\\","").Replace("\\Directory.Packages.props", "");
-
-                if (SemVersion.TryParse(packageVersion.Attribute("Version").Value, out var currentSemVersion)
-                    && SemVersion.TryParse(availableVersion, out var availableSemVersion)
-                    )
+                if (available.TryGetValue(kvp.Key, out var availableVersion))
                 {
-                    if (consolidateOnly && currentVersion != "(multiple versions)") continue;
+                    if (string.IsNullOrWhiteSpace(availableVersion) || availableVersion == currentVersion) continue;
 
-                    if (currentSemVersion.ToString() == availableSemVersion.ToString()) continue;
-                    if (currentSemVersion > availableSemVersion)
-                    {
-                        WriteLine($"skipping (downgrade) - {displayKey}: {packageId} '{packageVersion.Attribute("Version").Value}' ==> '{availableVersion}'");
-                        continue;
-                    }
-                    if (!major && currentSemVersion.Major != availableSemVersion.Major)
-                    {
-                        WriteLine($"skipping (major disabled) - {displayKey}: {packageId} '{packageVersion.Attribute("Version").Value}' ==> '{availableVersion}'");
-                        continue;
-                    }
-                    if (!minor && currentSemVersion.Minor != availableSemVersion.Minor)
-                    {
-                        WriteLine($"skipping (minor disabled) - {displayKey}: {packageId} '{packageVersion.Attribute("Version").Value}' ==> '{availableVersion}'");
-                        continue;
-                    }
+                    //WriteLine($"[UPGRADING] {kvp.Key} to {availableVersion}");
+                }
 
-                    WriteLine($"{packageId}: '{packageVersion.Attribute("Version").Value}' ==> '{availableVersion}' ({displayKey})");
-                    if (!pretend)
+                foreach (var propsDoc in propsDocs)
+                {
+                    var packageVersion = propsDoc.Value.Root.Nodes().OfType<XElement>().Where(n => n.Name == "ItemGroup").SelectMany(ig => ig.Nodes().OfType<XElement>().Where(n => n.Name == "PackageVersion"
+                    && n.Attribute("Include")?.Value == packageId
+                    )).FirstOrDefault();
+
+                    if (packageVersion == null) continue;
+
+                    var displayKey = propsDoc.Key.Replace(@"C:\\src\\", "").Replace("\\Directory.Packages.props", "");
+
+                    if (SemVersion.TryParse(packageVersion.Attribute("Version").Value, out var currentSemVersion)
+                        && SemVersion.TryParse(availableVersion, out var availableSemVersion)
+                        )
                     {
-                        packageVersion.Attribute("Version")!.Value = availableVersion;
-                        if (!propsDocsDirty.ContainsKey(propsDoc.Key)) { propsDocsDirty.Add(propsDoc.Key, propsDoc.Value); }
+                        if (consolidateOnly && currentVersion != "(multiple versions)") continue;
+
+                        if (currentSemVersion.ToString() == availableSemVersion.ToString()) continue;
+                        if (currentSemVersion > availableSemVersion)
+                        {
+                            var currentParts = currentSemVersion.ToString().Split('-');
+                            var availableParts = availableSemVersion.ToString().Split('-');
+                            if (currentParts.Length <= 1 
+                                || availableParts.Length != 1
+                                || !(currentParts[1].Contains("preview") || currentParts[1].StartsWith("rc."))
+                                || currentParts[0] != availableParts[0])
+                            {
+                                WriteLine($"skipping (downgrade) - {displayKey}: {packageId} '{packageVersion.Attribute("Version").Value}' ==> '{availableVersion}'");
+                                continue;
+                            }
+                        }
+                        if (!major && currentSemVersion.Major != availableSemVersion.Major)
+                        {
+                            WriteLine($"skipping (major disabled) - {displayKey}: {packageId} '{packageVersion.Attribute("Version").Value}' ==> '{availableVersion}'");
+                            continue;
+                        }
+                        if (!minor && currentSemVersion.Minor != availableSemVersion.Minor)
+                        {
+                            WriteLine($"skipping (minor disabled) - {displayKey}: {packageId} '{packageVersion.Attribute("Version").Value}' ==> '{availableVersion}'");
+                            continue;
+                        }
+
+                        WriteLine($"{packageId}: '{packageVersion.Attribute("Version").Value}' ==> '{availableVersion}' ({displayKey})");
+                        if (!pretend)
+                        {
+                            packageVersion.Attribute("Version")!.Value = availableVersion;
+                            if (!propsDocsDirty.ContainsKey(propsDoc.Key)) { propsDocsDirty.Add(propsDoc.Key, propsDoc.Value); }
+                        }
                     }
                 }
             }
@@ -220,33 +234,37 @@ public class DocumentService : ReactiveObject
         {
             foreach (var kvp in Document.CurrentPackageVersions)
             {
-                if (!Document.AvailablePackageVersions.TryGetValue(kvp.Key, out var _)
-                    || !Document.AvailablePrereleasePackageVersions.TryGetValue(kvp.Key, out var _))
+                //foreach (var currentVersionRecord in kvp.Value)
                 {
-                    //if (MaxNugetRetrieves-- < 0)
-                    //{
-                    //    Console.WriteLine("MaxNugetRetrieves reached");
-                    //    break;
-                    //}
-                    var result = await GetLatestVersion(kvp.Key);
-
-                    if (!Document.AvailablePackageVersions.TryGetValue(kvp.Key, out var _))
+                    //var currentVersion = currentVersionRecord.Version;
+                    if (!Document.AvailablePackageVersions.TryGetValue(kvp.Key, out var _)
+                        || !Document.AvailablePrereleasePackageVersions.TryGetValue(kvp.Key, out var _))
                     {
-                        if (oldVersions != null && oldVersions.ContainsKey(kvp.Key) && oldVersions[kvp.Key] != (result.release ?? ""))
-                        {
-                            Log($"{kvp.Key} release: \"{oldVersions[kvp.Key]}\" ==> \"{result.release}\"");
-                        }
+                        //if (MaxNugetRetrieves-- < 0)
+                        //{
+                        //    Console.WriteLine("MaxNugetRetrieves reached");
+                        //    break;
+                        //}
+                        var result = await GetLatestVersion(kvp.Key);
 
-                        Document.AvailablePackageVersions.Add(kvp.Key, result.release ?? "");
-                    }
-                    if (!Document.AvailablePrereleasePackageVersions.TryGetValue(kvp.Key, out var _))
-                    {
-                        if (oldPrereleaseVersions != null && oldPrereleaseVersions.ContainsKey(kvp.Key) && oldPrereleaseVersions[kvp.Key] != (result.release ?? ""))
+                        if (!Document.AvailablePackageVersions.TryGetValue(kvp.Key, out var _))
                         {
-                            Log($"{kvp.Key} prerelease: \"{oldPrereleaseVersions[kvp.Key]}\" ==> \"{result.prerelease}\"");
-                        }
+                            if (oldVersions != null && oldVersions.ContainsKey(kvp.Key) && oldVersions[kvp.Key] != (result.release ?? ""))
+                            {
+                                Log($"{kvp.Key} release: \"{oldVersions[kvp.Key]}\" ==> \"{result.release}\"");
+                            }
 
-                        Document.AvailablePrereleasePackageVersions.Add(kvp.Key, result.prerelease ?? "");
+                            Document.AvailablePackageVersions.Add(kvp.Key, result.release ?? "");
+                        }
+                        if (!Document.AvailablePrereleasePackageVersions.TryGetValue(kvp.Key, out var _))
+                        {
+                            if (oldPrereleaseVersions != null && oldPrereleaseVersions.ContainsKey(kvp.Key) && oldPrereleaseVersions[kvp.Key] != (result.release ?? ""))
+                            {
+                                Log($"{kvp.Key} prerelease: \"{oldPrereleaseVersions[kvp.Key]}\" ==> \"{result.prerelease}\"");
+                            }
+
+                            Document.AvailablePrereleasePackageVersions.Add(kvp.Key, result.prerelease ?? "");
+                        }
                     }
                 }
             }
@@ -272,16 +290,19 @@ public class DocumentService : ReactiveObject
         return await TryLoad(path);
     }
 
+    private bool DocumentLoaded = false;
     public async Task<bool> TryLoad(string? path = null)
     {
-        path ??= DocumentPath;
-        if(path == null) throw new ArgumentNullException($"{nameof(path)} or {nameof(DocumentPath)} must be set");
+        DocumentLoaded = false;
+        path ??= DocumentPath ?? Options?.MostRecent.FirstOrDefault();
+        if (path == null) throw new ArgumentNullException($"{nameof(path)} or {nameof(DocumentPath)} must be set");
+
+        if (!File.Exists(path)) return false;
 
         var json = File.ReadAllText(path);
         var doc = JsonSerializer.Deserialize<MultiSolutionDocument>(json);
+        DocumentLoaded = doc != null;
 
-
-        DocumentPath = doc == null ? null : path;
         if (doc != null)
         {
             Document = doc;
@@ -292,7 +313,7 @@ public class DocumentService : ReactiveObject
 
     public Task Save(string? path = null)
     {
-        path ??= DocumentPath;
+        path ??= DocumentPath ?? Options?.MostRecent.FirstOrDefault();
         if (path == null) throw new ArgumentNullException($"{nameof(Path)} or {nameof(DocumentPath)} must be set");
 
         var json = JsonSerializer.Serialize<MultiSolutionDocument>(Document, new JsonSerializerOptions()
