@@ -7,10 +7,10 @@
 
 <button @onclick=ViewModel.Clear>Clear</button>
 
-<div class="Lines">
+<div class="Lines" style="@Style">
     <QuickGrid TGridItem="LogEntry" Items="@ViewModel.Lines.Items.AsQueryable()" Virtualize="true" Class="LogView">
-        <PropertyColumn Property="@(c => c.Level)" Title="" Class="level" />
         <PropertyColumn Property="@(c => c.LocalTimestamp)" Title="Time" Format="HH:mm:ss.fff" Class="timestamp" />
+        <PropertyColumn Property="@(c => c.LevelAbbreviation)" Title="" Class="level" />
         <PropertyColumn Property="@(c => c.ShortCategory)" Title="Category" Class="Category" />
         <PropertyColumn Property="@(c => c.Text)" Title="Message" Class="message" />
     </QuickGrid>

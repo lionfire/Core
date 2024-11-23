@@ -8,6 +8,9 @@ public partial class TerminalView
 {
     [Parameter]
     public LogVM ViewModel { get; set; } = new();
+
+    [Parameter]
+    public string? Style { get; set; }
 }
 
 public readonly struct LogEntry
@@ -15,6 +18,18 @@ public readonly struct LogEntry
     public readonly DateTimeOffset Timestamp;
     public readonly DateTimeOffset LocalTimestamp => Timestamp.ToLocalTime();
     public readonly LogLevel Level;
+    public string LevelAbbreviation
+            => Level switch
+            {
+                LogLevel.Trace => "TR",
+                LogLevel.Debug => "DB",
+                LogLevel.Information => "IN",
+                LogLevel.Warning => "WN",
+                LogLevel.Error => "ER",
+                LogLevel.Critical => "CR",
+                _ => "???",
+            };
+    
     public readonly string Category;
     public readonly string ShortCategory => Category?.Substring(Category.LastIndexOf('.') + 1) ?? string.Empty;
 
