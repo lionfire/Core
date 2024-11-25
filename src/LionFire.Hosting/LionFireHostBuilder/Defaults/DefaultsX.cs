@@ -222,8 +222,8 @@ public static class DefaultsX
 
         builder.ConfigureLogging((context, logging) =>
         {
+            logging.ClearProviders(); // Use Serilog providers by default, but you can still add more providers.  TODO - are there any to delete at this point?
             logging.AddConfiguration(context.Configuration.GetSection("Logging"));
-            //logging.ClearProviders(); // Use Serilog providers by default, but you can still add more providers.  TODO - are there any to delete at this point?
         });
         
         lf.Serilog();

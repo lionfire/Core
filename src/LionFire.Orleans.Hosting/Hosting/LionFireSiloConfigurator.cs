@@ -182,7 +182,7 @@ public static class LionFireSiloConfiguratorX
                  .ConfigureEndpoints(IPAddress.Parse(config.SiloInterface)
                      , config.SiloPort ?? throw new ArgumentNullException(nameof(config.SiloPort))
                      , config.GatewayPort ?? throw new ArgumentNullException(nameof(config.GatewayPort)))
-                 .ConfigureLogging(logging => logging.AddConsole())
+                 //.ConfigureLogging(logging => logging.AddConsole())
                  ;
 
         if (config.DashboardEnabled)
