@@ -140,7 +140,7 @@ public class AppInfo
     #region Directory names
 
     public string OrgDir => orgDir ?? OrgName;
-    private string orgDir;
+    private string? orgDir;
 
     #endregion
 

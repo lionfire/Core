@@ -210,6 +210,7 @@
     <PackageVersion Include="Serilog.Sinks.TestCorrelator" Version="4.0.0" />
     <PackageVersion Include="SerilogTraceListener" Version="3.2.0" />
     <PackageVersion Include="SharpZipLib" Version="1.4.2" />
+    <PackageVersion Include="Spectre.Console" Version="0.49.1" />
     <PackageVersion Include="Spectre.Console.Cli" Version="0.49.1" />
     <PackageVersion Include="Splat.Microsoft.Extensions.DependencyInjection" Version="15.2.22" />
     <PackageVersion Include="Splat.Microsoft.Extensions.Logging" Version="15.2.22" />

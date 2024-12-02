@@ -116,7 +116,7 @@ public static class DefaultsX
             if (File.Exists(appSettingsPath))
             {
 #if DEBUG
-                Console.WriteLine($"Using configuration: {appSettingsPath}");
+                //Console.WriteLine($"DEBUG: Using configuration: {appSettingsPath}");
 #endif
             }
             else

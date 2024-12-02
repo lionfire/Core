@@ -68,7 +68,7 @@ public class LionFireWebApplicationBuilder : HostApplicationSubBuilder, ILionFir
     }
 
 
-    public IConfiguration GetBootstrapConfiguration(LionFireHostBuilderBootstrapOptions? options = null)
+    public IConfiguration GetConfigurationForLogBootstrap(LionFireHostBuilderBootstrapOptions? options = null)
         => WebApplicationBuilder.Configuration;
 
     public ILionFireHostBuilder ForIHostApplicationBuilder(Action<IHostApplicationBuilder> action)

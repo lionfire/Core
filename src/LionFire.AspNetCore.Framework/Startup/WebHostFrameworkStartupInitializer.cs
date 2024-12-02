@@ -100,8 +100,6 @@ public static class WebHostFrameworkStartupInitializer
         //app.UseHttpsRedirection(); // TODO: based on option, and if both http and https interfaces are configured
 
 
-
-
         if (options.RequiresStaticFiles)
         {
             // TODO REVIEW where and whether to set the dir here.
@@ -215,7 +213,7 @@ public static class WebHostFrameworkStartupInitializer
         if (options.RequiresBlazorServer)
         {
             endpoints.MapBlazorHub();
-            endpoints.MapFallbackToPage("/_Host");
+            //endpoints.MapFallbackToPage("/_Host");
         }
         if (options.RequiresBlazorServer || options.RequiresRazorPages)
         {

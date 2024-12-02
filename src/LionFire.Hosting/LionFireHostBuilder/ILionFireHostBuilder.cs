@@ -14,6 +14,17 @@ public interface ILionFireHostBuilder : IHostApplicationSubBuilder
 {
     LionFireHostBuilderWrapper HostBuilder { get; }
 
+    Type? UnderlyingHostType
+    {
+        get
+        {
+            if (HostBuilder.WrappedIHostApplicationBuilder != null) { return HostBuilder.WrappedIHostApplicationBuilder.GetType(); }
+            if (HostBuilder.WrappedHostBuilder != null) { return HostBuilder.WrappedHostBuilder.GetType(); }
+            //if(HostBuilder.WrappedHostBuilder != null) { return typeof(IHostBuilder); }
+            return null;
+        }
+    }
+
     IConfiguration Configuration => HostBuilder.Configuration;
 
     IConfigurationManager ConfigurationManager => IHostApplicationBuilder.Configuration;
@@ -23,7 +34,7 @@ public interface ILionFireHostBuilder : IHostApplicationSubBuilder
     ILionFireHostBuilder ForHostBuilder(Action<IHostBuilder> action);
     //ILionFireHostBuilder ForHostApplicationBuilder(Action<HostApplicationBuilder> action);
     ILionFireHostBuilder ForIHostApplicationBuilder(Action<IHostApplicationBuilder> action);
-    IConfiguration GetBootstrapConfiguration(LionFireHostBuilderBootstrapOptions? options = null);
+    IConfiguration GetConfigurationForLogBootstrap(LionFireHostBuilderBootstrapOptions? options = null);
 
 }
 

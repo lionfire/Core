@@ -11,6 +11,7 @@ using Serilog.Sinks.Loki.Labels;
 #endif
 using LionFire.Hosting;
 using Serilog.Sinks.Grafana.Loki;
+using Microsoft.Extensions.Hosting;
 
 namespace LionFire.Logging.Serilog;
 
@@ -31,10 +32,10 @@ public class LionFireSerilogBuilder
         DefaultEnrich();
         Console(LionFireSerilogDefaults.LongConsoleTemplate);
         File(); // Writes if unit tests, or if a dir is specified in config
-        //Loki();
+        Loki();
 
         FromConfiguration();
-        
+
         TraceListener(); // Listen to Trace, and log
 
         return this;
@@ -55,7 +56,7 @@ public class LionFireSerilogBuilder
 
     public LionFireSerilogBuilder FromConfiguration()
     {
-        if(Configuration != null)
+        if (Configuration != null)
         {
             LoggerConfiguration.ReadFrom.Configuration(Configuration);
         }
@@ -76,19 +77,36 @@ public class LionFireSerilogBuilder
 
     public LionFireSerilogBuilder Console(ITextFormatter? textFormatter = null)
     {
+        var SinkName = "Console";
+        bool enabled;
+        if (!bool.TryParse(Configuration?[LionFireConfigKeys.Log.SinkEnabled(SinkName)] as string, out enabled))
+        {
+            // Default: enabled
+            enabled = true;
+        }
+        if (!enabled)
+        {
+#if DEBUG
+            System.Console.WriteLine("DEBUG: Console log disabled.");
+#endif
+            return this;
+        }
+
         LoggerConfiguration.WriteTo.Console(textFormatter ?? LionFireSerilogDefaults.ConsoleTemplate);
         return this;
     }
 
+
     public LionFireSerilogBuilder File(ITextFormatter? textFormatter = null, string? path = null, bool throwOnMissingDirConfig = false, string? appName = null)
     {
+        var SinkName = "File";
         if (LogBootstrappingState.IsBootstrapping && !LogBootstrappingState.FileLogDuringBootstrap) return this;
 
         appName ??= AppInfoFromConfiguration.ApplicationNameOrFallback(Configuration);
 
         bool enabled;
 
-        if (!bool.TryParse(Configuration?[LionFireConfigKeys.Log.Enabled] as string, out enabled))
+        if (!bool.TryParse(Configuration?[LionFireConfigKeys.Log.SinkEnabled(SinkName)] as string, out enabled))
         {
             // Default: Enabled
             enabled = true;
@@ -116,7 +134,7 @@ public class LionFireSerilogBuilder
             dir ??= Configuration?[LionFireConfigKeys.Log.Dir];
 
             if (dir == null)
-            {                
+            {
                 if (throwOnMissingDirConfig) throw new ArgumentNullException($"Configuration[\"{LionFireConfigKeys.Log.Dir}\"]");
                 else
                 {
@@ -137,13 +155,55 @@ public class LionFireSerilogBuilder
 
     #region Loki
 
+    /// <summary>
+    /// For reference, default loki ports:
+    /// - http: 3100
+    /// - grpc: 9096
+    /// </summary>
     public static string DefaultLokiUrl { get; set; } = "http://localhost:3100";
-    public bool LogStart { get; set; } = true;
-    public bool LogStop { get; set; } = true; // TODO TOIMPLEMENT
 
-    public LionFireSerilogBuilder Loki(string? url = null)
+    //public bool LogStart { get; set; } = true;
+    //public bool LogStop { get; set; } = true; // TODO TOIMPLEMENT
+
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <param name="url"></param>
+    /// <param name="appName"></param>
+    /// <returns></returns>
+    /// <remarks>
+    /// Recommendation:
+    /// 
+    /// Enable via environment variable:
+    ///    [System.Environment]::SetEnvironmentVariable("LionFire__LionFire__Logging__Loki__Enabled", "true", "User")
+    ///    [System.Environment]::SetEnvironmentVariable("LionFire__LionFire__Logging__File__Enabled", "false", "User")
+    ///
+    /// Disable via environment variable:
+    /// 
+    ///    [System.Environment]::SetEnvironmentVariable("LionFire__LionFire__Logging__Loki__Enabled", "false", "User")
+    ///    [System.Environment]::SetEnvironmentVariable("LionFire__LionFire__Logging__File__Enabled", "true", "User")
+    ///    
+    /// Grafana query:
+    /// 
+    ///   {transit="direct"} |= `` | json | line_format "{{.Message}}"
+    /// 
+    /// </remarks>
+    public LionFireSerilogBuilder Loki(string? url = null, string? appName = null)
     {
-        LoggerConfiguration.WriteTo.GrafanaLoki(url ?? DefaultLokiUrl);
+        appName ??= AppInfoFromConfiguration.ApplicationNameOrFallback(Configuration);
+
+        // TODO: Use gRPC instead of http: https://www.nuget.org/packages/Serilog.Sinks.Loki.gRPC
+
+        var SinkName = "Loki";
+        bool enabled;
+        if (!bool.TryParse(Configuration?[LionFireConfigKeys.Log.SinkEnabled(SinkName)] as string, out enabled))
+        {
+            // Default: Disabled
+            enabled = false;
+        }
+        if (!enabled) { return this; }
+
+        LoggerConfiguration.WriteTo.GrafanaLoki(url ?? DefaultLokiUrl, [new LokiLabel { Key = "app", Value = appName }, new LokiLabel { Key = "transit", Value = "direct" }], propertiesAsLabels: ["app"]);
 
 #if false
         //logger.Information("The God of the day is {@God}", "the One and Only");
@@ -190,7 +250,7 @@ public class LionFireSerilogBuilder
         return this;
     }
 
-#endregion
+    #endregion
     //.WriteTo.TestCorrelator()
 
 }

@@ -85,10 +85,27 @@ public static class IServiceCollectionX
         return services;
     }
     public static IServiceCollection AddHostedSingleton<TImplementation>(this IServiceCollection services)
-        where TImplementation : class, IHostedService 
+        where TImplementation : class, IHostedService
     {
         services.AddSingleton<TImplementation>();
         services.AddHostedService(sp => sp.GetRequiredService<TImplementation>());
+        return services;
+    }
+
+    public static IServiceCollection AddHostedKeyedSingleton<TService>(this IServiceCollection services, object key, Func<IServiceProvider, object?, TService> factory)
+    where TService : class, IHostedService
+    {
+        services.AddKeyedSingleton<TService>(key, factory);
+        services.AddHostedService(sp => sp.GetRequiredKeyedService<TService>(key));
+        return services;
+    }
+
+    public static IServiceCollection AddHostedKeyedSingleton<TService, TImplementation>(this IServiceCollection services, object key)
+        where TService : class, IHostedService
+        where TImplementation : class, TService, IHostedService
+    {
+        services.AddKeyedSingleton<TService, TImplementation>(key);
+        services.AddHostedService(sp => sp.GetRequiredKeyedService<TService>(key));
         return services;
     }
 

@@ -49,7 +49,7 @@ public class LionFireHostBuilder : HostApplicationSubBuilder, ILionFireHostBuild
     public ILionFireHostBuilder ConfigureServices(Action<IServiceCollection> configure) { HostBuilder.ConfigureServices(configure); return this; }
     public ILionFireHostBuilder ConfigureServices(Action<HostBuilderContext, IServiceCollection> configure) { HostBuilder.ConfigureServices(configure); return this; }
 
-    public IConfiguration GetBootstrapConfiguration(LionFireHostBuilderBootstrapOptions? options = null)
+    public IConfiguration GetConfigurationForLogBootstrap(LionFireHostBuilderBootstrapOptions? options = null)
     {
         if (HostBuilder.WrappedIHostApplicationBuilder != null)
         {
