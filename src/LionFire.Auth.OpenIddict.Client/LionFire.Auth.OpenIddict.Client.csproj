@@ -1,0 +1,16 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+	<PropertyGroup>
+		<TargetFramework>net9.0</TargetFramework>
+		<ImplicitUsings>enable</ImplicitUsings>
+		<Nullable>enable</Nullable>
+	</PropertyGroup>
+
+	<ItemGroup>
+		<PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" />
+		<PackageReference Include="OpenIddict.Client.SystemIntegration" />
+		<PackageReference Include="OpenIddict.Client.SystemNetHttp" />
+		<PackageReference Include="OpenIddict.Client.WebIntegration" />
+		<PackageReference Include="OpenIddict.EntityFrameworkCore" />
+	</ItemGroup>
+</Project>
