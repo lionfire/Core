@@ -166,18 +166,21 @@ public static class LionFireSiloConfiguratorX
                  .If(clusterConfigProvider.Kind == ClusterDiscovery.Redis, s =>
                      s.UseRedisClustering(gatewayOptions =>
                      {
+                         throw new NotImplementedException(); // TODO - port from other Orleans package.  The new one is maintained by Microsoft
+#if TOPORT
                          OrleansRedisClusterConfig clusterRedisConfig = new();
                          clusterConfigSection.GetSection("Redis").Bind(clusterRedisConfig);
                          //context.Configuration.Bind("Orleans:Cluster:Redis", clusterRedisConfig);
 
                          gatewayOptions.Database = clusterRedisConfig.Database ?? 3;
                          gatewayOptions.ConnectionString = clusterRedisConfig.ConnectionString ?? "localhost:6379";
+#endif
                      })
                  )
                  .If(clusterConfigProvider.Kind != ClusterDiscovery.Localhost && clusterConfigProvider.Kind != ClusterDiscovery.Consul && clusterConfigProvider.Kind != ClusterDiscovery.Redis, s =>
                      throw new NotSupportedException($"Unknown clusterConfigProvider.Kind: {clusterConfigProvider.Kind}"))
 
-        #endregion
+#endregion
 
                  .ConfigureEndpoints(IPAddress.Parse(config.SiloInterface)
                      , config.SiloPort ?? throw new ArgumentNullException(nameof(config.SiloPort))

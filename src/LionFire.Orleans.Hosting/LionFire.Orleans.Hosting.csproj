@@ -12,8 +12,8 @@
 
 	<ItemGroup>
 		<PackageReference Include="Microsoft.Orleans.Clustering.Consul" />
+		<PackageReference Include="Microsoft.Orleans.Clustering.Redis" />
 		<PackageReference Include="Microsoft.Orleans.Server" />
-		<PackageReference Include="Orleans.Clustering.Redis" />
 		<PackageReference Include="OrleansDashboard" />
 
 	</ItemGroup>
