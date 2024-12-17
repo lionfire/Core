@@ -40,7 +40,8 @@ public class LionFireHostBuilderWrapper : IHostBuilder
 #endif
 
     Exception NotSupportedForHostBuilderException => new NotSupportedException($"Not supported for {nameof(IHostBuilder)}");
-    public IConfiguration Configuration => WrappedIHostApplicationBuilder?.Configuration ?? throw NotSupportedForHostBuilderException; // TODO: How to get Configuration? Build first?
+    public IConfiguration Configuration => WrappedIHostApplicationBuilder?.Configuration 
+        ?? throw NotSupportedForHostBuilderException; // TODO: How to get Configuration? Build first?
     //(WrappedHostBuilder.Build().Services.GetService<IConfiguration>());
 
     public IConfigurationBuilder ConfigurationBuilder => WrappedIHostApplicationBuilder?.Configuration ?? throw NotSupportedForHostBuilderException; // TODO: How to get IConfigurationBuilder?

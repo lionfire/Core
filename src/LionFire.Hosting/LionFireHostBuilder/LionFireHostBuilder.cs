@@ -65,6 +65,30 @@ public class LionFireHostBuilder : HostApplicationSubBuilder, ILionFireHostBuild
         }
     }
 
+    public ILionFireHostBuilder ConfigureHostConfiguration(Action<IConfigurationBuilder> action)
+    {
+        if (HasConfiguration)
+        {
+            action(HostBuilder.ConfigurationBuilder);
+        }
+        else
+        {
+            HostBuilder.ConfigureHostConfiguration(configurationBuilder => action(configurationBuilder));
+        }
+        return this;
+    }
+    public ILionFireHostBuilder ConfigureAppConfiguration(Action<IConfigurationBuilder> action)
+    {
+        if (HasConfiguration)
+        {
+            action(HostBuilder.ConfigurationBuilder);
+        }
+        else
+        {
+            HostBuilder.ConfigureAppConfiguration((context, configurationBuilder) => action(configurationBuilder));
+        }
+        return this;
+    }
 }
 
 #if UNUSED // Obsolete - use ForHostBuilder instead

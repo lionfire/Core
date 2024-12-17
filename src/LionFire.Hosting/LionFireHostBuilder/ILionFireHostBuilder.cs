@@ -31,6 +31,9 @@ public interface ILionFireHostBuilder : IHostApplicationSubBuilder
 
     ILionFireHostBuilder ConfigureServices(Action<HostBuilderContext, IServiceCollection> configure);
     ILionFireHostBuilder ConfigureServices(Action<IServiceCollection> configure);
+    ILionFireHostBuilder ConfigureHostConfiguration(Action<IConfigurationBuilder> action);
+    ILionFireHostBuilder ConfigureAppConfiguration(Action<IConfigurationBuilder> action);
+
     ILionFireHostBuilder ForHostBuilder(Action<IHostBuilder> action);
     //ILionFireHostBuilder ForHostApplicationBuilder(Action<HostApplicationBuilder> action);
     ILionFireHostBuilder ForIHostApplicationBuilder(Action<IHostApplicationBuilder> action);

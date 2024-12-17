@@ -39,6 +39,7 @@ public abstract class HostApplicationSubBuilder : IHostApplicationSubBuilder
 
     public IServiceCollection Services => IHostApplicationBuilder.Services;
     public IConfiguration Configuration => IHostApplicationBuilder.Configuration;
+    public bool HasConfiguration => IHostApplicationBuilder?.Configuration != null;
 
     #endregion
 

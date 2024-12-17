@@ -82,14 +82,16 @@ public static class HostApplicationBuilderX
 
     #region UseConsoleLifetime
 
-    public static HostApplicationBuilder UseConsoleLifetime(this HostApplicationBuilder hostApplicationBuilder)
+    public static T UseConsoleLifetime<T>(this T hostApplicationBuilder)
+        where T : IHostApplicationBuilder
     {
         hostApplicationBuilder.Services
             .AddSingleton<IHostLifetime, Microsoft.Extensions.Hosting.Internal.ConsoleLifetime>()
              ;
         return hostApplicationBuilder;
     }
-    public static HostApplicationBuilder UseConsoleLifetime(this HostApplicationBuilder hostApplicationBuilder, Action<ConsoleLifetimeOptions> configureOptions)
+    public static T UseConsoleLifetime<T>(this T hostApplicationBuilder, Action<ConsoleLifetimeOptions> configureOptions)
+        where T : IHostApplicationBuilder
     {
         hostApplicationBuilder.Services
             .AddSingleton<IHostLifetime, Microsoft.Extensions.Hosting.Internal.ConsoleLifetime>()

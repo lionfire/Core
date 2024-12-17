@@ -76,4 +76,14 @@ public class LionFireWebApplicationBuilder : HostApplicationSubBuilder, ILionFir
         action(WebApplicationBuilder);
         return this;
     }
+
+    public ILionFireHostBuilder ConfigureHostConfiguration(Action<IConfigurationBuilder> action)
+    {
+        throw new NotImplementedException();
+    }
+
+    public ILionFireHostBuilder ConfigureAppConfiguration(Action<IConfigurationBuilder> action)
+    {
+        throw new NotImplementedException();
+    }
 }

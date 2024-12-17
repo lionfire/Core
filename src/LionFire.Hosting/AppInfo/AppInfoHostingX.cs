@@ -15,6 +15,7 @@ public static class AppInfoHostingX
     /// </summary>
     static Dictionary<string, (string orgDomain, string? orgName)> RecognizedNamespaces = new Dictionary<string, (string orgDomain, string? orgName)>
     {
+        // HARDCODE: First-party Defaults
         ["LionFire"] = ("lionfire.ca", null),
         ["Valor"] = ("lionfire.ca", "LionFire"),
         ["FireLynx"] = ("firelynx.io", null),
@@ -120,7 +121,7 @@ public static class AppInfoHostingX
     public static ILionFireHostBuilder AppInfo(this ILionFireHostBuilder builder, AppInfo appInfo, AppInfoOptions? options = null)
     {
         if (builder.HostBuilder.WrappedIHostApplicationBuilder != null) { builder.HostBuilder.WrappedIHostApplicationBuilder.AppInfo(appInfo, options); }
-        else if (builder.HostBuilder.WrappedIHostApplicationBuilder != null) { builder.HostBuilder.WrappedIHostApplicationBuilder.AppInfo(appInfo, options); }
+        else if (builder.HostBuilder.WrappedHostBuilder != null) { builder.HostBuilder.WrappedHostBuilder.AppInfo(appInfo, options); }
         else { throw new NotImplementedException(); }
         //builder.HostBuilder.AppInfo(appInfo, options: options);
         return builder;
