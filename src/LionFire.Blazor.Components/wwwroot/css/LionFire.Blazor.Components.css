@@ -15,6 +15,23 @@
     --opacity-6: 60%;
 }
 
+html.lionfire2, html.lionfire2 > body > div.page {
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+}
+    html.lionfire2 > body {
+        height: 100%;
+        /*height: calc(100vh - 64px);*/ /* adjust header/footer height */
+        overflow: hidden;
+    }
+
+html.lionfire2 .mud-app {
+    height: calc(100vh - 64px); /* adjust header/footer height */
+    display: grid;
+    grid-template-rows: minmax(0, 1fr);
+}
+
 html.lionfire, html.lionfire > body, html.lionfire > body > div.page {
     width: 100vw;
     height: 100vh;
@@ -145,16 +162,16 @@ html.lionfire, html.lionfire > body, html.lionfire > body > div.page {
     top: -2px;
 }
 
-html:not(.ultralight) {
+html.lionfire:not(.ultralight) {
     background: rgb(0,0,56);
     background: radial-gradient(circle at 100% 100%, rgba(0,0,56,1) 0%, rgba(1,0,10,1) 82%, rgba(0,0,0,1) 100%);
 }
 
-    html:not(.ultralight) body:not(.dark) {
+    html.lionfire:not(.ultralight) body:not(.dark) {
         background-color: white;
     }
 
-    html:not(.ultralight) body.dark {
+    html.lionfire:not(.ultralight) body.dark {
         background-color: transparent;
         /*background-color: rgb(255, 255, 255, 0.99);*/
     }
@@ -167,11 +184,11 @@ html.ultralight body.dark {
     background-color: transparent;
 }
 
-html body:not(.dark) {
+html.lionfire body:not(.dark) {
     color: black;
 }
 
-html body.dark {
+html.lionfire body.dark {
     color: white;
 }
 
@@ -590,6 +607,23 @@ body.dark .mud-input-label-outlined {
 
 .quickgrid.LogView td.level {
     font-family: 'Consolas', 'Courier New', monospace, serif;
+    font-weight: 700;
+}
+
+/* LionFire Fields*/
+.lf-field {
+    border: 1px solid #33336080;
+    border-radius: 3px;
+    padding: 0 1px;
+
+    display: flex;
+    flex-direction: column;
+}
+.lf-field .label {
+    opacity: 0.5;
+    order: 10;
+}
+.lf-field .value {
     font-weight: 700;
 }
 
