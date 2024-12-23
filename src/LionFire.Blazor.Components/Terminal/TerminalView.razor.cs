@@ -1,6 +1,8 @@
 using DynamicData;
 using Microsoft.AspNetCore.Components;
 using Microsoft.Extensions.Logging;
+using System.Reactive.Linq;
+using System.Reactive.Subjects;
 
 namespace LionFire.Blazor.Components.Terminal;
 
@@ -29,7 +31,7 @@ public readonly struct LogEntry
                 LogLevel.Critical => "CR",
                 _ => "???",
             };
-    
+
     public readonly string Category;
     public readonly string ShortCategory => Category?.Substring(Category.LastIndexOf('.') + 1) ?? string.Empty;
 
@@ -54,7 +56,35 @@ public class LogVM : ILogger
     public bool IsEnabled { get; set; } = true;
     public LogLevel LogLevel { get; set; } = LogLevel.Information;
 
+    public bool Reverse { get; set; } = true;
+
+    public TimeSpan Debounce
+    {
+        get => debounce; set
+        {
+            if (debounce == value) return;
+
+            debounceSubscription?.Dispose();
+            debounceSubscription = null;
+
+            debounce = value;
+            if (value != TimeSpan.Zero)
+            {
+                debounceSubscription = debouncedChanges
+                    .Throttle(value)
+                    .Subscribe(x => _Append(x.Item1, x.Item2, x.Item3));
+            }
+        }
+    }
+    private TimeSpan debounce;
+    IDisposable? debounceSubscription;
+
     #endregion
+
+    public LogVM()
+    {
+        Debounce = TimeSpan.FromSeconds(2.0);
+    }
 
     public IObservableCache<LogEntry, int> Lines => sourceCache;
     private SourceCache<LogEntry, int> sourceCache = new SourceCache<LogEntry, int>(x => x.Index);
@@ -62,12 +92,26 @@ public class LogVM : ILogger
     int index = 0;
     public void Append(string line, LogLevel logLevel = LogLevel.Information, string category = "")
     {
+        if (Debounce == TimeSpan.Zero)
+        {
+            _Append(line, logLevel, category);
+        }
+        else
+        {
+            debouncedChanges.OnNext((line, logLevel, category));
+        }
+    }
+    Subject<(string, LogLevel, string)> debouncedChanges = new();
+    private void _Append(string line, LogLevel logLevel = LogLevel.Information, string category = "")
+    {
         sourceCache.Edit(u =>
         {
-            u.AddOrUpdate(new LogEntry(DateTimeOffset.UtcNow, logLevel, line, index++, category));
+            u.AddOrUpdate(new LogEntry(DateTimeOffset.UtcNow, logLevel, line, Reverse ? index-- : index++, category));
+            var items = sourceCache.Items;
+
             while (sourceCache.Count > MaxBufferSize)
             {
-                u.Remove(sourceCache.Items.First().Index);
+                u.Remove((Reverse ? items.Last() : items.First()).Index);
             }
         });
     }

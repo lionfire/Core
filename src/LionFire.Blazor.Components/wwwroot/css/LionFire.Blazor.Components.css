@@ -20,17 +20,18 @@ html.lionfire2, html.lionfire2 > body > div.page {
     height: 100%;
     overflow: hidden;
 }
+
     html.lionfire2 > body {
         height: 100%;
         /*height: calc(100vh - 64px);*/ /* adjust header/footer height */
         overflow: hidden;
     }
 
-html.lionfire2 .mud-app {
-    height: calc(100vh - 64px); /* adjust header/footer height */
-    display: grid;
-    grid-template-rows: minmax(0, 1fr);
-}
+    html.lionfire2 .mud-app {
+        height: calc(100vh - 64px); /* adjust header/footer height */
+        display: grid;
+        grid-template-rows: minmax(0, 1fr);
+    }
 
 html.lionfire, html.lionfire > body, html.lionfire > body > div.page {
     width: 100vw;
@@ -612,18 +613,26 @@ body.dark .mud-input-label-outlined {
 
 /* LionFire Fields*/
 .lf-field {
-    border: 1px solid #33336080;
-    border-radius: 3px;
     padding: 0 1px;
-
     display: flex;
     flex-direction: column;
 }
-.lf-field .label {
-    opacity: 0.5;
-    order: 10;
-}
-.lf-field .value {
-    font-weight: 700;
-}
 
+    .lf-field.outlined {
+        border: 1px solid #33336080;
+        border-radius: 3px;
+    }
+
+    .lf-field.row {
+        flex-direction: row;
+        gap: 1ch;
+    }
+
+    .lf-field .label, .lf-field label {
+        opacity: 0.5;
+        order: 10;
+    }
+
+    .lf-field .value {
+        font-weight: 700;
+    }
