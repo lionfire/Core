@@ -615,7 +615,7 @@ body.dark .mud-input-label-outlined {
 .lf-field {
     padding: 0 1px;
     display: flex;
-    flex-direction: column;
+    /*flex-direction: column;*/
 }
 
     .lf-field.outlined {
@@ -630,7 +630,7 @@ body.dark .mud-input-label-outlined {
 
     .lf-field .label, .lf-field label {
         opacity: 0.5;
-        order: 10;
+        order: initial !important;
     }
 
     .lf-field .value {
