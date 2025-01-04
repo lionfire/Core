@@ -615,7 +615,7 @@ body.dark .mud-input-label-outlined {
 .lf-field {
     padding: 0 1px;
     display: flex;
-    /*flex-direction: column;*/
+    flex-direction: column;
 }
 
     .lf-field.outlined {

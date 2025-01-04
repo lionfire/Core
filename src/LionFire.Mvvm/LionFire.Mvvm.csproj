@@ -15,6 +15,10 @@
 	  <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" />
     <PackageReference Include="Microsoft.Extensions.Hosting.Abstractions" />
     <PackageReference Include="ReactiveUI.Fody" />
+    <PackageReference Include="ReactiveUI.SourceGenerators">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
     <PackageReference Include="Splat.Microsoft.Extensions.DependencyInjection" />
     <PackageReference Include="Splat.Microsoft.Extensions.Logging" />
   </ItemGroup>

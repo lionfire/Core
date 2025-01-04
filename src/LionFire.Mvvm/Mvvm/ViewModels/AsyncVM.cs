@@ -5,6 +5,16 @@ using LionFire.Metadata;
 namespace LionFire.Mvvm;
 
 // REVIEW - isn't this a duplicate of AsyncValue?
+//
+// AsyncValue
+//
+// implements:
+// - GetterRxO
+// - IAsyncValue<TValue>
+// - IValueState<TValue>
+//
+// parameters:
+// - ValueOptions
 public abstract class AsyncVM<T> : ReactiveObject, IDependsOn<T>, IViewModel<T>
     where T : class
 {

@@ -1,5 +1,6 @@
 ﻿using LionFire.Types;
 using ReactiveUI;
+using ReactiveUI.Fody.Helpers;
 using System;
 using System.Collections.Generic;
 using System.Linq;
