@@ -72,12 +72,17 @@ public static class WebHostFrameworkStartupInitializer
         if (o.RequiresControllersWithViews) { mvcBuilder = services.AddControllersWithViews(); }
         else if (o.RequiresControllers) { mvcBuilder = services.AddControllers(); }
 
-        if (o.RequiresBlazorServer)
+        if (o.RequiresBlazorInteractiveServer)
         {
+            services
+                .AddRazorComponents()
+                .AddInteractiveServerComponents();
             services.AddServerSideBlazor();
             if (o.RequiresMudBlazor) { services.AddMudServices(); }
         }
-        if (o.RequiresRazorPages || o.RequiresBlazorServer) { mvcBuilder = services.AddRazorPages(); }
+
+        if (o.RequiresRazorPages /* OLD: || o.RequiresBlazorInteractiveServer */) { mvcBuilder = services.AddRazorPages(); }
+
 
         if (o.RequiresAuth)
         {
@@ -182,6 +187,10 @@ public static class WebHostFrameworkStartupInitializer
             app.UseAuthorization();
         }
 
+        // Between UseRouting and UseEndpoints, if they exist.
+        // Must be after UseAuthentication and UseAuthorization if they exist.
+        app.UseAntiforgery();
+
         return options;
     }
 
@@ -210,12 +219,27 @@ public static class WebHostFrameworkStartupInitializer
 
         if (options.RequiresControllers || options.RequiresControllersWithViews) endpoints.MapControllers();
 
-        if (options.RequiresBlazorServer)
+        RazorComponentsEndpointConventionBuilder? razorComponentsEndpointConventionBuilder = null;
+        if (options.RootComponent != null)
         {
-            endpoints.MapBlazorHub();
-            //endpoints.MapFallbackToPage("/_Host");
+            razorComponentsEndpointConventionBuilder = (RazorComponentsEndpointConventionBuilder)typeof(RazorComponentsEndpointRouteBuilderExtensions).GetMethod("MapRazorComponents")!.MakeGenericMethod(options.RootComponent).Invoke(null, [endpoints!])!;
+
+            razorComponentsEndpointConventionBuilder.AddInteractiveServerRenderMode();
         }
-        if (options.RequiresBlazorServer || options.RequiresRazorPages)
+
+        if (options.RequiresBlazorInteractiveServer)
+        {
+            if (options.RootComponent != null && razorComponentsEndpointConventionBuilder != null)
+            {
+                razorComponentsEndpointConventionBuilder.AddInteractiveServerRenderMode();
+            }
+            else
+            {
+                endpoints.MapBlazorHub();
+                throw new Exception("TODO - REVIEW");
+            }
+        }
+        if (/* OLD - RazorPages no longer needed to bootstrap Blazor  options.RequiresBlazorInteractiveServer || */ options.RequiresRazorPages)
         {
             endpoints.MapRazorPages();
         }

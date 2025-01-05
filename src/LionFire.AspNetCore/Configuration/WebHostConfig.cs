@@ -70,30 +70,30 @@ public class WebHostConfig : HasPortsConfigBase, IHasConfigLocation
 
     #endregion
 
-    public bool BlazorServer { get; set; }
+    public bool BlazorInteractiveServer { get; set; }
 
 
     #region Program Requirements: set in derived classes
 
     public virtual bool RequiresAuth => true;
-    public virtual bool RequiresBlazorServer => BlazorServer;
+    public virtual bool RequiresBlazorInteractiveServer => BlazorInteractiveServer;
 
     public virtual bool RequiresControllers => false;
-    public virtual bool RequiresStaticFiles => RequiresBlazorServer;
+    public virtual bool RequiresStaticFiles => RequiresBlazorInteractiveServer;
 
     public virtual bool RequiresMvc => false;
     public virtual bool RequiresMvcCore => false;
 
     public virtual bool RequiresControllersWithViews => false;
 
-    public virtual bool RequiresRazorPages => RequiresBlazorServer;
+    public virtual bool RequiresRazorPages => RequiresBlazorInteractiveServer;
 
     #endregion
 
     #region Derived
 
-    public virtual bool HasAnyWebUI => RequiresBlazorServer;
-    public virtual bool HasAnyFeatures => HasAnyWebUI || RequiresMvc || RequiresControllers || RequiresStaticFiles || RequiresRazorPages || RequiresBlazorServer;
+    public virtual bool HasAnyWebUI => RequiresBlazorInteractiveServer;
+    public virtual bool HasAnyFeatures => HasAnyWebUI || RequiresMvc || RequiresControllers || RequiresStaticFiles || RequiresRazorPages || RequiresBlazorInteractiveServer;
 
     #endregion
 }

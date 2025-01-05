@@ -51,8 +51,10 @@ public static class LionFireWebHostBuilderX
     { lfw.Builder.ConfigureDefaults([new($"{prefix}:{nameof(WebHostConfig.Http)}", enabled.ToString())]); return lfw; }
     public static LionFireWebHostBuilder Https(this LionFireWebHostBuilder lfw, bool enabled = true)
     { lfw.Builder.ConfigureDefaults([new($"{prefix}:{nameof(WebHostConfig.Https)}", enabled.ToString())]); return lfw; }
-    public static LionFireWebHostBuilder BlazorServer(this LionFireWebHostBuilder lfw, bool enabled = true)
-    { lfw.Builder.ConfigureDefaults([new($"{prefix}:{nameof(WebHostConfig.BlazorServer)}", enabled.ToString())]); return lfw; }
+    [Obsolete("Use BlazorInteractiveServer")]
+    public static LionFireWebHostBuilder BlazorServer(this LionFireWebHostBuilder lfw, bool enabled = true) => lfw.BlazorInteractiveServer(enabled);
+    public static LionFireWebHostBuilder BlazorInteractiveServer(this LionFireWebHostBuilder lfw, bool enabled = true)
+    { lfw.Builder.ConfigureDefaults([new($"{prefix}:{nameof(WebHostConfig.BlazorInteractiveServer)}", enabled.ToString())]); return lfw; }
 
 }
 

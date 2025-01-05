@@ -4,6 +4,14 @@ using System.Text;
 
 namespace LionFire.AspNetCore;
 
+public class WebFrameworkConfig<TRootComponent> : WebFrameworkConfig
+{
+    public WebFrameworkConfig(IConfiguration configuration) : base(configuration)
+    {
+        RootComponent = typeof(TRootComponent);
+    }
+}
+
 public class WebFrameworkConfig : WebHostConfig
 {
     // See also:
@@ -56,14 +64,17 @@ public class WebFrameworkConfig : WebHostConfig
 
     public override bool RequiresStaticFiles => base.RequiresStaticFiles || HealthChecksUI || DiagnosticWebUI || Swagger;
 
-    public override bool RequiresBlazorServer => DiagnosticBlazorServerUI || base.BlazorServer;
+    public override bool RequiresBlazorInteractiveServer => DiagnosticBlazorServerUI || base.BlazorInteractiveServer;
 
     #endregion
 
     public virtual bool RequiresMudBlazor => true;
 
     public override bool RequiresMvcCore => base.RequiresMvcCore || Swagger || RequiresSwagger;
+
     #endregion
+
+    public Type? RootComponent { get; set; }
 
 
     #region Derived

@@ -1,10 +1,9 @@
 ﻿using System.Threading.Tasks;
 using Orleans;
 
-namespace LionFire.Orleans_.AspNetCore_
+namespace LionFire.Orleans_.AspNetCore_;
+
+public interface ILocalHealthCheckGrain : IGrainWithGuidKey
 {
-    public interface ILocalHealthCheckGrain : IGrainWithGuidKey
-    {
-        Task PingAsync();
-    }
+    Task PingAsync();
 }
