@@ -11,7 +11,7 @@ public class DocumentFsRepository<TValue>
 
     public IObservableCache<(string name, TValue value), string> ObservableCache => documentFsWatcher.ObservableCache;
 
-    public DocumentFsRepository(string dir, Func<string, TValue, ValueTask> serializeFile, Func<string, Func<string, ValueTask<TValue>>> deserializeFile, FsWatchOptions? watchOptions = null)
+    public DocumentFsRepository(string dir, Func<string, TValue, ValueTask> serializeFile,  Func<string, ValueTask<TValue>> deserializeFile, FsWatchOptions? watchOptions = null)
     {
         documentFsWatcher = new DocumentFsWatcher<TValue>(dir, deserializeFile, watchOptions);
         SerializeFile = serializeFile;

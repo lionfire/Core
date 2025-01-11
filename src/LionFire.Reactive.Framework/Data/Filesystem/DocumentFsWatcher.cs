@@ -27,7 +27,7 @@ public class DocumentFsWatcher<TValue>
     public SourceCache<(string name, TValue value), string> SourceCache => sourceCache;
     private SourceCache<(string name, TValue value), string> sourceCache;
 
-    public DocumentFsWatcher(string dir, Func<string, Func<string, ValueTask<TValue>>> deserializeFile, FsWatchOptions? options = null)
+    public DocumentFsWatcher(string dir, Func<string, ValueTask<TValue>> deserializeFile, FsWatchOptions? options = null)
     {
         sourceCache = new SourceCache<(string name, TValue value), string>(x => x.name);
         var fileInfos = FileInfoObservable.PollOnDemand(dir, options?.SearchPattern);
