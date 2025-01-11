@@ -36,7 +36,7 @@ namespace LionFire.Assets
         public string AssetPath { get => reference?.Path; set => Reference = value; }
 
         /// <summary>
-        /// Implementors should invoke OnKeyChanged
+        /// Implementers should invoke OnKeyChanged
         /// </summary>
         public abstract string Key { get; /*set;*/ }
 

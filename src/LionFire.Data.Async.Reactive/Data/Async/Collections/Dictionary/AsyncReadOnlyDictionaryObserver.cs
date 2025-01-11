@@ -1,4 +1,5 @@
-﻿using DynamicData;
+﻿#if UNUSED
+using DynamicData;
 using System.Reactive.Subjects;
 using System.Reactive;
 
@@ -47,3 +48,4 @@ public abstract class AsyncReadOnlyDictionaryObserver<TKey, TValue>
 
     #endregion
 }
+#endif

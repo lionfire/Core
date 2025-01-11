@@ -26,6 +26,7 @@ public interface IGetter<out TValue>
     //IGetResult<TValue>? LastGetResult();
 
     TValue? ReadCacheValue { get; }
+
 }
 
 public interface ILazilyGetsValue<T> : IGetter<T>

@@ -5,7 +5,7 @@ using LionFire.Dependencies;
 namespace LionFire.Data.Collections;
 
 /// <summary>
-/// 
+/// An IObservableCache&lt;TValue, TKey&gt; that is retrieved asynchronously.
 /// </summary>
 /// <typeparam name="TKey"></typeparam>
 /// <typeparam name="TValue"></typeparam>
@@ -30,6 +30,7 @@ public abstract class AsyncReadOnlyDictionary<TKey, TValue>
     , IAsyncReadOnlyDictionary<TKey, TValue>
     //, IInjectable<IKeyProvider<TKey, TValue>> // REVIEW - this is messy. Is it needed?
     where TKey : notnull
+    where TValue : notnull
 {
     //#region Dependencies
 
@@ -71,9 +72,9 @@ public abstract class AsyncReadOnlyDictionary<TKey, TValue>
 
     #region State
 
+    public IObservableCache<TValue, TKey> ObservableCache => SourceCache.AsObservableCache(); // Converts to read only
     protected SourceCache<TValue, TKey> SourceCache { get; }
-    //public override bool HasValue => hasValue;
-    //protected bool hasValue;
+
 
     #region Methods
 

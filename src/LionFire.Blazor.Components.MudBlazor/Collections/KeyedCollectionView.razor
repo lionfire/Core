@@ -1,7 +1,7 @@
 ﻿@inherits ReactiveInjectableComponentBase<AsyncKeyedCollectionVM<TKey,TValue,TValueVM>>
-@typeparam TKey
-@typeparam TValue
-@typeparam TValueVM
+@typeparam TKey where TKey : notnull
+@typeparam TValue where TValue : notnull
+@typeparam TValueVM where TValueVM : notnull
 
 @namespace LionFire.Blazor.Components
 

@@ -80,6 +80,7 @@ public abstract class AsyncReadOnlyKeyedCollection<TKey, TValue>
     , IInjectable<IKeyProvider<TKey, TValue>>
     , System.IAsyncObserver<ChangeSet<TValue, TKey>>
     , IDisposable
+    //, IObservableGetState // Consider adding this here and/or in concrete class
     where TKey : notnull
     where TValue : notnull
 {

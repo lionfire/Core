@@ -1,19 +1,38 @@
-﻿
-using DynamicData;
+﻿using DynamicData;
+using LionFire.Data.Async;
 using System.Reactive.Linq;
 using System.Reactive.Subjects;
 
 namespace LionFire.Data.Collections;
+
+
+
+public struct Label<TKey, TValue>
+    where TKey : notnull
+    where TValue : notnull
+{
+    public TKey Key;
+    public TValue Value;
+}
+#if false //OLD: This is what AsyncDictionary is for
+public abstract class AsyncLabelledCollection<TKey, TValue> : AsyncKeyedCollection<TKey, Label<TKey, TValue>>
+{
+    protected AsyncLabelledCollection(SourceCache<Label<TKey, TValue>, TKey>? dictionary = null, AsyncObservableCollectionOptions? options = null, IObservable<IChangeSet<Label<TKey, TValue>, TKey>?>? keyValueChanges = null) : base(v => v.Key, dictionary, options, keyValueChanges)
+    {
+    }
+}
+#endif
 
 /// <summary>
 /// Read-only by default.  Override IsReadOnly and add more interfaces for read-write.
 /// </summary>
 /// <typeparam name="TKey"></typeparam>
 /// <typeparam name="TValue"></typeparam>
-/// <remarks>Implementors: override either RetrieveValues or RetrieveImpl</remarks>
+/// <remarks>Implementers: override either RetrieveValues or RetrieveImpl</remarks>
 public abstract class AsyncKeyedCollection<TKey, TValue>
     : AsyncReadOnlyKeyedCollection<TKey, TValue>
     , IAsyncKeyedCollection<TKey, TValue>
+    //, IObservableSetState // Consider adding this here and/or in concrete class
     where TKey : notnull
     where TValue : notnull
 {
@@ -37,15 +56,22 @@ public abstract class AsyncKeyedCollection<TKey, TValue>
 
     #endregion
 
+    #region Add
+
+    public abstract ValueTask Add(TValue value);
+    public abstract ValueTask Upsert(TValue value);
+
+    #endregion
+
     #region Remove
 
-    public virtual Task<bool> Remove(KeyValuePair<TKey, TValue> keyValuePair)
+    public virtual ValueTask<bool> Remove(KeyValuePair<TKey, TValue> keyValuePair)
     {
         if (!KeySelector(keyValuePair.Value).Equals(keyValuePair.Key)) throw new ArgumentNullException("Unexpected key for value");
         return Remove(keyValuePair.Key);
     }
-    public abstract Task<bool> Remove(TKey key);
-    public virtual Task<bool> Remove(TValue item) => Remove(KeySelector(item));
+    public abstract ValueTask<bool> Remove(TKey key);
+    public virtual ValueTask<bool> Remove(TValue item) => Remove(KeySelector(item));
 
     public IObservable<(TValue item, Task<bool> result)> Removes => removes.Value;
     protected Lazy<Subject<(TValue item, Task<bool> result)>> removes = new Lazy<Subject<(TValue item, Task<bool> result)>>(LazyThreadSafetyMode.PublicationOnly);

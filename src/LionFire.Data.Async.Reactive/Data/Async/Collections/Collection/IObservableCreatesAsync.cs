@@ -9,7 +9,7 @@ namespace LionFire.Data.Async.Collections;
 /// 
 /// If this object is a collection, the newly created instance should typically be added to the collection
 /// 
-/// Implementors may support: 
+/// Implementers may support: 
 ///  - non-concrete types
 ///  - DI
 ///  - Identity generation

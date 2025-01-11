@@ -8,6 +8,13 @@ public struct GetResult<TValue> : IGetResult<TValue>
 {
     #region Static
 
+    public static GetResult<TValue> TransformFrom<TFrom>(IGetResult<TFrom> from, Func<TFrom, TValue> transform)
+    {
+        var result = new GetResult<TValue> { Flags = from.Flags, Error = from.Error, HasValue = from.HasValue };
+        if (from.HasValue) result.Value = transform(from.Value!);
+        return result;
+    }
+
     public static GetResult<TValue> Discarded => new GetResult<TValue>(default, false) { Flags = TransferResultFlags.Discarded | TransferResultFlags.Noop };
     public static GetResult<TValue> Instantiated => new GetResult<TValue>(default, false) { Flags = TransferResultFlags.Instantiated | TransferResultFlags.Noop };
     public static GetResult<TValue> NotFound => new GetResult<TValue>(default, false) { Flags = TransferResultFlags.NotFound };
@@ -38,7 +45,7 @@ public struct GetResult<TValue> : IGetResult<TValue>
             | extraFlags
         };
 
-    public static GetResult<TValue> SyncSuccess(TValue? value, TransferResultFlags extraFlags = TransferResultFlags.None) 
+    public static GetResult<TValue> SyncSuccess(TValue? value, TransferResultFlags extraFlags = TransferResultFlags.None)
         => new GetResult<TValue>(value, true)
         {
             Flags =

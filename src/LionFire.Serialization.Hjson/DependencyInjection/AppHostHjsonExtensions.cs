@@ -1,5 +1,5 @@
 ﻿using LionFire.Serialization;
-using LionFire.Serialization.Hjson;
+using LionFire.Serialization.Hjson_;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using LionFire.Dependencies;
@@ -8,7 +8,6 @@ using LionFire.Applications.Hosting;
 using Hjson;
 
 namespace LionFire.Hosting;
-
 
 public static class HjsonAppHostExtensions
 {
@@ -31,14 +30,14 @@ public static class HjsonAppHostExtensions
         return services;
     }
 
-
     public static HjsonSerializerSettings SetDefaults(this HjsonSerializerSettings settings, LionSerializeContext context)
     {
-        //settings.TypeNameHandling = TypeNameHandling.Auto;
-        ////Converters = ;
-        //settings.DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate;
-        ////NullValueHandling = 
-        //settings.TypeNameAssemblyFormatHandling = TypeNameAssemblyFormatHandling.Simple;
+        settings.Options = new()
+        {
+            EmitRootBraces = false,
+            //DsfProviders = new() { },
+            KeepWsc = context == LionSerializeContext.Persistence,
+        };
 
         return settings;
     }

@@ -11,7 +11,7 @@
 ///// </summary>
 ///// <typeparam name="TItem"></typeparam>
 ///// <typeparam name="TValue"></typeparam>
-///// <remarks>Implementors: override either RetrieveValues or RetrieveImpl</remarks>
+///// <remarks>Implementers: override either RetrieveValues or RetrieveImpl</remarks>
 //public abstract partial class AsyncSourceCache<TItem, TValue> :
 //    AsyncSourceCacheBase2<TItem, TValue>
 //    where TItem : notnull

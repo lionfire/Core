@@ -261,6 +261,9 @@ namespace LionFire.Serialization
 
         #endregion
 
+
+        public virtual IEnumerable<SerializationFormat>? SupportedInputs => null;
+
     }
 
     public static class SerializationModeConversion

@@ -24,7 +24,7 @@ public interface IReadHandleProvider
 
 //[AutoRegister]
 public interface IReadHandleProvider<TReference> 
-    //: IReadHandleProvider  // REVIEW - do I need this?  It burdens all the implementors to cast from IReference to TReference.
+    //: IReadHandleProvider  // REVIEW - do I need this?  It burdens all the implementers to cast from IReference to TReference.
     where TReference : IReference
 {
     IReadHandle<T> GetReadHandle<T>(TReference reference);

@@ -8,10 +8,7 @@ public interface IAwareOfSets<TValue>
 }
 
 public interface IAsyncValue<TValue>
-    : IGetterRxO<TValue>
-    , IValueRxO<TValue>
-    , ISetterRxO<TValue>
-    , IValue<TValue>
+    : IValueRxO<TValue>
     , IAwareOfSets<TValue>
 {
     new TValue Value { get; set; }

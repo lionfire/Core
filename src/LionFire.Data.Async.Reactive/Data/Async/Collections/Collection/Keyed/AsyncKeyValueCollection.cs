@@ -9,11 +9,12 @@ namespace LionFire.Data.Collections;
 /// </summary>
 /// <typeparam name="TKey"></typeparam>
 /// <typeparam name="TValue"></typeparam>
-/// <remarks>Implementors: override either RetrieveValues or RetrieveImpl</remarks>
+/// <remarks>Implementers: override either RetrieveValues or RetrieveImpl</remarks>
 public abstract class AsyncKeyValueCollection<TKey, TValue>
     : AsyncReadOnlyKeyValuePairCollection<TKey, TValue>
     , IAsyncKeyValueCollection<TKey, TValue>
     where TKey : notnull
+    where TValue : notnull
 {
     #region Lifecycle
 
@@ -37,9 +38,9 @@ public abstract class AsyncKeyValueCollection<TKey, TValue>
 
     #region Remove
 
-    public abstract Task<bool> Remove(KeyValuePair<TKey, TValue> keyValuePair);
-    public abstract Task<bool> Remove(TKey key);
-    public virtual Task<bool> Remove(TValue item) => Remove(KeySelector(item));
+    public abstract ValueTask<bool> Remove(KeyValuePair<TKey, TValue> keyValuePair);
+    public abstract ValueTask<bool> Remove(TKey key);
+    public virtual ValueTask<bool> Remove(TValue item) => Remove(KeySelector(item));
 
     public IObservable<(KeyValuePair<TKey, TValue> item, Task<bool> result)> Removes => removes.Value;
 

@@ -39,6 +39,8 @@ public partial class KeyedCollectionView<TKey, TValue, TValueVM>
     , IComponentized
     , IGetsOrCreatesByType
     where TKey : notnull
+    where TValue : notnull
+    where TValueVM : notnull
 {
     #region Aspects
 
@@ -251,7 +253,8 @@ public partial class KeyedCollectionView<TKey, TValue, TValueVM>
                     ?? new PreresolvedGetter<IEnumerable<TValue>>(Items);
             ViewModel.FullFeaturedSource?.GetIfNeeded().AsTask().FireAndForget();
 
-            if (Items is IHasObservableCache<TValue, TKey> hoc) {
+            if (Items is IHasObservableCache<TValue, TKey> hoc)
+            {
                 hoc.ObservableCache.Connect().Subscribe(changeSet =>
                 {
                     InvokeAsync(StateHasChanged);
@@ -284,7 +287,7 @@ public partial class KeyedCollectionView<TKey, TValue, TValueVM>
             //    view => view.)
         }
         oldItems = Items;
-         
+
 
         //#pragma warning disable BL0005 // Component parameter should not be set outside of its component.
         //        if (MudDataGrid != null)
@@ -396,7 +399,7 @@ public partial class KeyedCollectionView<TKey, TValue, TValueVM>
         }
     }
 
-#endregion
+    #endregion
 
     public T ThrowNoKey<T>(object item) => throw new ArgumentException("Failed to resolve Key for object of type " + item?.GetType()?.FullName);
 

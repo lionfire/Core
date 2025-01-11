@@ -12,7 +12,7 @@ namespace LionFire.Persistence.Handles;
 
 /// <summary>
 /// Convenience class that combines Reference and Handle.  
-/// Implementors can implement a static implicit operator from string to provide easy (implicit) conversion from a string to a particular IReference type.
+/// Implementers can implement a static implicit operator from string to provide easy (implicit) conversion from a string to a particular IReference type.
 /// </summary>
 /// <typeparam name="TValue"></typeparam>
 /// <typeparam name="TReference"></typeparam>

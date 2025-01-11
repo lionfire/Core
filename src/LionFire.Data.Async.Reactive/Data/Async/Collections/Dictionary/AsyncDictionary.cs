@@ -9,11 +9,12 @@ namespace LionFire.Data.Collections;
 /// </summary>
 /// <typeparam name="TKey"></typeparam>
 /// <typeparam name="TValue"></typeparam>
-/// <remarks>Implementors: override either RetrieveValues or RetrieveImpl</remarks>
+/// <remarks>Implementers: override either RetrieveValues or RetrieveImpl</remarks>
 public abstract class AsyncDictionary<TKey, TValue>
     : AsyncReadOnlyDictionary<TKey, TValue>
-    , IAsyncCollection<KeyValuePair<TKey, TValue>>
+    , IAsyncDictionary<TKey, TValue>
     where TKey : notnull
+    where TValue : notnull
 {
     #region Lifecycle
 
@@ -35,9 +36,23 @@ public abstract class AsyncDictionary<TKey, TValue>
 
     #endregion
 
+    #region Mutation
+
+    #region Add
+
+    public abstract ValueTask<bool> TryAdd(TKey key, TValue item);
+
+    #endregion
+
+    #region Upsert
+
+    public abstract ValueTask<bool?> Upsert(TKey key, TValue item);
+
+    #endregion
+
     #region Remove
 
-    public abstract Task<bool> Remove(TValue item);
+    public abstract ValueTask<bool> Remove(TKey item);
 
     public IObservable<(TValue value, Task<bool> result)> Removes => removes.Value;
 
@@ -47,7 +62,8 @@ public abstract class AsyncDictionary<TKey, TValue>
 
     #region Remove (KVP)
 
-    public Task<bool> Remove(KeyValuePair<TKey, TValue> item) => Remove(item.Value);
+    public ValueTask<bool> Remove(KeyValuePair<TKey, TValue> item) => Remove(item.Value);
+
     IObservable<(KeyValuePair<TKey, TValue> item, Task<bool> result)> IAsyncCollection<KeyValuePair<TKey, TValue>>.Removes => throw new NotImplementedException();
 
     #endregion
@@ -55,4 +71,5 @@ public abstract class AsyncDictionary<TKey, TValue>
     #endregion
 
 
+    #endregion
 }

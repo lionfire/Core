@@ -35,6 +35,11 @@ namespace LionFire.Serialization
         Serialize = 1 << 8,
         Deserialize = 1 << 9,
 
+        /// <summary>
+        /// Make a human-friendly format (example: Hjson for JSON)
+        /// </summary>
+        Humanize = 1 << 12,
+
     }
 
     public static class SerializationFlagsExtensions

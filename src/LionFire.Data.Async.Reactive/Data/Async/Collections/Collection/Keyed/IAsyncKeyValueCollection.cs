@@ -12,5 +12,5 @@ public interface IAsyncKeyValueCollection<TKey, TItem> : IAsyncCollection<KeyVal
 {
     IObservableCache<TItem, TKey> ObservableCache { get; }
 
-    Task<bool> Remove(TKey key);
+    ValueTask<bool> Remove(TKey key);
 }

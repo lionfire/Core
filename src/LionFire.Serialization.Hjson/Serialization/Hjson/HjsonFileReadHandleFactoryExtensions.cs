@@ -1,7 +1,7 @@
 ﻿using System.IO;
 using LionFire.Structures;
 
-namespace LionFire.Serialization.Hjson
+namespace LionFire.Serialization.Hjson_
 {
     // FUTURE - to revive?
     //public static class NewtonsoftJsonFileReadHandleFactoryExtensions

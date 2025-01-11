@@ -4,7 +4,7 @@ using System.Threading.Tasks;
 
 namespace LionFire.Data.Async.Gets;
 
-// TODO: Dupe of GetsSlim? What's the difference?
+// TODO: Dupe of GetterSlim? What's the difference?
 
 /// <summary>
 /// 

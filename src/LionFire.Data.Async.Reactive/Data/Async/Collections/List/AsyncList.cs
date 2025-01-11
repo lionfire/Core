@@ -16,7 +16,7 @@ public abstract class AsyncList<TValue>
     #region Remove
 
     public IObservable<(TValue item, Task<bool> result)> Removes => throw new NotImplementedException();
-    public abstract Task<bool> Remove(TValue item);
+    public abstract ValueTask<bool> Remove(TValue item);
 
     #endregion
 }

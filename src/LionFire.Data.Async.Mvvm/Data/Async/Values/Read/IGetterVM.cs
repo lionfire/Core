@@ -25,7 +25,7 @@ public interface IGetterVM<TValue>
 ///// </summary>
 ///// <typeparam name="TValue"></typeparam>
 ///// <remarks>
-///// Implementors should implement IViewModel<IStatelessGets<T>>
+///// Implementers should implement IViewModel<IStatelessGets<T>>
 ///// </remarks>
 //public interface IGetterVM<TValue>
 //    : IGetterRxO<TValue> // pass-thru to Source

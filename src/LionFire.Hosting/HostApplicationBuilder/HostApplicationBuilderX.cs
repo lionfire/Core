@@ -73,7 +73,7 @@ public static class HostApplicationBuilderX
                 .LionFire(action, useDefaults, actionBeforeDefaults);
     
 
-    // FUTURE - sort out IHostApplicationBuilder vs implementors such as HostApplicationBuilder (and nothing else so far?)
+    // FUTURE - sort out IHostApplicationBuilder vs implementers such as HostApplicationBuilder (and nothing else so far?)
     //public static IHostApplicationBuilder LionFire(this IHostApplicationBuilder hostBuilder, int basePort, Action<ILionFireHostBuilder>? action = null, bool useDefaults = true)
     //{
     //    hostBuilder.LionFire(basePort, action, useDefaults);

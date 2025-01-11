@@ -8,16 +8,22 @@
 //  - IAsyncAdds<TItem>
 //  - IAsyncCreates<TItem>
 //  - IAsyncCreatesForKey<TItem>
-public interface IAsyncCollection<TItem> : IEnumerableGetter<TItem>
+// See also:
+//  - IAsyncReadOnlyCollection<TItem>
+public interface IAsyncReadOnlyCollection<TItem> : IEnumerableGetter<TItem>
 {
     bool IsReadOnly { get; }
 
     // TODO: Count property?  If so, get it from source asynchronously, or get the local cache's count?  Latter can already be done, so this wouldn't add functionality.
     //Task<int> Count();
 
+}
+
+public interface IAsyncCollection<TItem> : IAsyncReadOnlyCollection<TItem>
+{
     #region Remove
 
-    Task<bool> Remove(TItem item);
+    ValueTask<bool> Remove(TItem item);
     IObservable<(TItem item, Task<bool> result)> Removes { get; }
 
     #endregion

@@ -1,12 +1,12 @@
-﻿using System;
+﻿#nullable enable 
+using System;
 using System.Collections.Generic;
 using LionFire.Dependencies;
 using LionFire.Persistence;
 using Microsoft.Extensions.Options;
 using Hjson;
-using Newtonsoft.Json;
 
-namespace LionFire.Serialization.Hjson;
+namespace LionFire.Serialization.Hjson_;
 
 public class HjsonSerializer : SerializerBase<HjsonSerializer>
 {
@@ -59,8 +59,9 @@ public class HjsonSerializer : SerializerBase<HjsonSerializer>
     public override (string String, SerializationResult Result) ToString(object obj, Lazy<PersistenceOperation> operation = null, PersistenceContext context = null)
     {
         // SettingsForContext(operation) // TODO
-        var json = JsonConvert.SerializeObject(obj); // HARDCODE - Newtonsoft.Json
-        var hjsonString = JsonValue.Parse(json).ToString(Stringify.Hjson);
+
+        if (obj is not string jsonObj) { throw new ArgumentException("Can only serialize strings"); }
+        var hjsonString = JsonValue.Parse(jsonObj).ToString(Stringify.Hjson);
         return (hjsonString, SerializationResult.Success);
     }
 
@@ -70,15 +71,21 @@ public class HjsonSerializer : SerializerBase<HjsonSerializer>
 
     public override DeserializationResult<T> ToObject<T>(string str, Lazy<PersistenceOperation> operation = null, PersistenceContext context = null)
     {
+        if (typeof(T) != typeof(string)) throw new ArgumentException("Can only deserialize to string");
+
         var jsonString = HjsonValue.Parse(str).ToString();
+        return (DeserializationResult<T>)(object)new DeserializationResult<string>(jsonString); // hardcast
 
         //var settings = SettingsForContext(operation); // TODO
 
-        var obj = JsonConvert.DeserializeObject<T>(str);  // HARDCODE - Newtonsoft.Json
-        return new DeserializationResult<T>(obj);
+        //var obj = JsonConvert.DeserializeObject<T>(str);  // HARDCODE - Newtonsoft.Json
+        //return new DeserializationResult<T>(obj);
     }
 
     #endregion
 
+    public override IEnumerable<SerializationFormat>? SupportedInputs => supportedInputs;
+    private static readonly IEnumerable<SerializationFormat> supportedInputs = [Json];
 
+    static SerializationFormat Json => new SerializationFormat("json", "JSON", "application/json");
 }

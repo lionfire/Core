@@ -5,14 +5,13 @@ using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Text;
 
-namespace LionFire.Persistence.Handles
+namespace LionFire.Persistence.Handles;
+
+/// <summary>
+/// A read-only notifying list
+/// </summary>
+/// <typeparam name="T"></typeparam>
+public interface IListHandle<T> : IReadHandle<Metadata<IEnumerable<IListing<T>>>>, INotifyCollectionChanged<T>
 {
-    /// <summary>
-    /// A read-only notifying list
-    /// </summary>
-    /// <typeparam name="T"></typeparam>
-    public interface IListHandle<T> : IReadHandle<Metadata<IEnumerable<IListing<T>>>>, INotifyCollectionChanged<T>
-    {
-        void AutoLoad(bool enable);
-    }
+    void AutoLoad(bool enable);
 }

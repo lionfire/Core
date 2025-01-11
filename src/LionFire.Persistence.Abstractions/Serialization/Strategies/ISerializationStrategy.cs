@@ -1,4 +1,5 @@
-﻿using LionFire.IO;
+﻿#nullable enable
+using LionFire.IO;
 using LionFire.Persistence;
 using System;
 using System.Collections.Generic;
@@ -13,6 +14,7 @@ namespace LionFire.Serialization
 
     public interface ISerializationStrategy : ISerializer
     {
+
         ///// <summary>
         ///// Return NaN for not supported
         ///// </summary>
@@ -42,7 +44,8 @@ namespace LionFire.Serialization
         bool ImplementsFromString { get; }
         bool ImplementsFromStream { get; }
         bool ImplementsFromBytes { get; }
-        
+
+        IEnumerable<SerializationFormat>? SupportedInputs { get; }
     }
 
     public static class ISerializationStrategyExtensions

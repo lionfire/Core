@@ -29,7 +29,7 @@ public abstract partial class DynamicDataCollection<TValue>
     , IEnumerableGetter<TValue>
     , IObservableGetOperations<IEnumerable<TValue>>
     , IGetterRxO<IEnumerable<TValue>>
-    , IObserver<IGetResult<IEnumerable<TValue>>>
+    , IObserver<IGetResult<IEnumerable<TValue>>> // REVIEW - IObserver allows others to write to it, but we may want to encapsulate this
     , IDisposable
     where TValue : notnull
 

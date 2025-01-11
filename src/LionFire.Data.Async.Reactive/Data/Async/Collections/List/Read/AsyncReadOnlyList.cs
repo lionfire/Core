@@ -7,7 +7,7 @@ namespace LionFire.Data.Collections;
 
 public abstract class AsyncReadOnlyList<TValue>
     : AsyncDynamicDataCollection<TValue> // REVIEW - was AsyncLazyDynamicDataCollection
-    , System.IAsyncObserver<ChangeSet<TValue>> // OPTIMIZE: Separate this out 
+    , System.IAsyncObserver<ChangeSet<TValue>> // OPTIMIZE: Separate this out  - REVIEW: is this the most conformant to DynamicData? Usually the receiver wants IObservable instead of IAsyncObserver, though this can provide backpressure
     where TValue : notnull
 {
 

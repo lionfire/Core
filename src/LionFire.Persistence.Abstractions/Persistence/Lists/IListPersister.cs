@@ -1,4 +1,5 @@
 ﻿#nullable enable
+using DynamicData;
 using LionFire.Referencing;
 using System.Collections.Generic;
 using System.Threading.Tasks;
@@ -11,8 +12,19 @@ public interface IListPersister<in TReference>
     /// <summary>
     /// List the names of all children
     /// </summary>
-    /// <param name="referencable"></param>
+    /// <param name="referenceable"></param>
     /// <param name="filter"></param>
     /// <returns></returns>
-    Task<IGetResult<IEnumerable<IListing<T>>>> List<T>(IReferencable<TReference> referencable, ListFilter? filter = null);
+    Task<IGetResult<IEnumerable<IListing<T>>>> List<T>(IReferencable<TReference> referenceable, ListFilter? filter = null);
 }
+
+// TODO
+public interface IObservableListPersister<in TReference>
+    where TReference : IReference
+{
+    // REVIEW: consider replacing filter with standard Rx api
+    IObservableCache<IListing<T>, string> GetObservableList<T>(IReferencable<TReference> referenceable, ListFilter? filter = null)
+        where T : notnull;
+}
+
+
