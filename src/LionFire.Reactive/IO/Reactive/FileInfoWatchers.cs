@@ -8,9 +8,10 @@ using System.Threading.Tasks;
 
 namespace LionFire.IO.Reactive;
 
-public class FileInfoObservable
+public class ObservableFileInfos
 {
 
+#if UNUSED // Specifying/obtaining a SourceCache - bad idea to modify the pristine read state (use another SourceCache for tracking pending writes)
     public static IObservable<IChangeSet<FileInfo, string>> PollOnDemand(string dir, out SourceCache<FileInfo, string> sourceCache)
     {
         sourceCache = new SourceCache<FileInfo, string>(x => x.Name);
@@ -25,9 +26,16 @@ public class FileInfoObservable
         return sourceCache.ConnectOnDemand(resourceFactory: resourceFactory(dir, searchPattern));
     }
 
+    //public static IObservable<IChangeSet<FileInfo, string>> PollOnDemand(string dir, string? searchPattern = null)
+    //{
+    //    var sourceCache = new SourceCache<FileInfo, string>(x => x.Name);
+    //    return PollOnDemand(sourceCache, dir, searchPattern);
+    //}
+#endif
+
     public static IObservable<IChangeSet<FileInfo, string>> PollOnDemand(string dir, string? searchPattern = null)
     {
-        return ObservableEx2.CreateConnectOnDemand<FileInfo, string>(x => x.Name,
+        return ObservableEx2.CreateConnectOnDemand(x => x.Name,
             resourceFactory: resourceFactory(dir, searchPattern)
         );
     }

@@ -1,6 +1,6 @@
 ﻿using LionFire.Types;
 using ReactiveUI;
-using ReactiveUI.Fody.Helpers;
+using ReactiveUI.SourceGenerators;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 
 namespace LionFire.Mvvm;
 
-public class ItemPageVM<TItem, TItemVM> : ReactiveObject, IItemPageVM
+public partial class ItemPageVM<TItem, TItemVM> : ReactiveObject, IItemPageVM
 //where TItemVM : IViewModel<TItem>
 {
     #region Static
@@ -32,16 +32,16 @@ public class ItemPageVM<TItem, TItemVM> : ReactiveObject, IItemPageVM
 
     #region Parameters
 
-    [Reactive]
-    public string? TypeName { get; set; }
-    
+    [ReactiveUI.SourceGenerators.Reactive]
+    private string? _typeName;
+
     public string? TypeNameRegistryName => DefaultTypeNameRegistryName;
 
     /// <summary>
     /// From URL
     /// </summary>
-    [Reactive]
-    public string? Id { get; set; }
+    [ReactiveUI.SourceGenerators.Reactive]
+    private string? _id;
 
     #endregion
 
@@ -65,14 +65,14 @@ public class ItemPageVM<TItem, TItemVM> : ReactiveObject, IItemPageVM
 
     #region Outputs
 
-    [Reactive]
-    public Type? Type { get; set; }
+    [ReactiveUI.SourceGenerators.Reactive]
+    private Type? _type;
 
-    [Reactive]
-    public TItem? Model { get; set; }
+    [ReactiveUI.SourceGenerators.Reactive]
+    private TItem? _model;
 
-    [Reactive]
-    public TItemVM? ViewModel { get; set; }
+    [ReactiveUI.SourceGenerators.Reactive]
+    private TItemVM? _viewModel;
 
     #endregion
 }

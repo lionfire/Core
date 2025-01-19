@@ -23,7 +23,6 @@
 	<ItemGroup>
 	  <PackageReference Include="DynamicData" />
 	  <PackageReference Include="ReactiveUI" />
-		<!--<PackageReference Include="ReactiveUI.Fody" />-->
 
 		<!--<PackageReference Include="ObservableCollections" />-->
 	</ItemGroup>

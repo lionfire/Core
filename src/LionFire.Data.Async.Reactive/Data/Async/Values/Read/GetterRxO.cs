@@ -6,7 +6,7 @@ using System.Reactive.Subjects;
 
 namespace LionFire.Data.Async.Gets;
 
-public abstract class GetterRxO<TValue>
+public abstract partial class GetterRxO<TValue>
     : ReactiveObject
     , IGetterRxO<TValue>
     , IValueState<TValue>
@@ -90,8 +90,8 @@ public abstract class GetterRxO<TValue>
 
     TValue? IValueState<TValue>.Value { get => Value; set => throw new NotSupportedException(); }
 
-    [Reactive]
-    public ValueStateFlags StateFlags { get; protected set; }
+    [ReactiveUI.SourceGenerators.Reactive(SetModifier = ReactiveUI.SourceGenerators.AccessModifier.Protected)]
+    private ValueStateFlags _stateFlags;
 
     public virtual IODirection IODirection => IODirection.Read;
 
@@ -102,8 +102,10 @@ public abstract class GetterRxO<TValue>
 
     #region ReadCacheValue
 
-    [Reactive]
-    public TValue? ReadCacheValue { get; set; }
+
+    [ReactiveUI.SourceGenerators.Reactive]
+    private TValue? _readCacheValue;
+
     public TValue? ReadCacheValue2 => readCacheValue2.Value;
     private readonly ObservableAsPropertyHelper<TValue?> readCacheValue2;
 

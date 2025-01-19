@@ -77,7 +77,6 @@ public static class WebHostFrameworkStartupInitializer
             services
                 .AddRazorComponents()
                 .AddInteractiveServerComponents();
-            services.AddServerSideBlazor();
             if (o.RequiresMudBlazor) { services.AddMudServices(); }
         }
 
@@ -104,23 +103,22 @@ public static class WebHostFrameworkStartupInitializer
         }
         //app.UseHttpsRedirection(); // TODO: based on option, and if both http and https interfaces are configured
 
-
-        if (options.RequiresStaticFiles)
-        {
-            // TODO REVIEW where and whether to set the dir here.
-            var rootDir = Path.Combine(AppContext.BaseDirectory, "wwwroot");
-            if (Directory.Exists(rootDir))
-            {
-                app.UseStaticFiles(new StaticFileOptions
-                {
-                    FileProvider = new PhysicalFileProvider(rootDir)
-                });
-            }
-            //else
-            {
-                app.UseStaticFiles();
-            }
-        }
+        //if (options.RequiresStaticFiles) // Moved to Endpoints / MapStaticFiles. 
+        //{
+        //    // TODO REVIEW where and whether to set the dir here.
+        //    var rootDir = Path.Combine(AppContext.BaseDirectory, "wwwroot");
+        //    if (Directory.Exists(rootDir))
+        //    {
+        //        app.UseStaticFiles(new StaticFileOptions
+        //        {
+        //            FileProvider = new PhysicalFileProvider(rootDir)
+        //        });
+        //    }
+        //    //else
+        //    {
+        //        app.UseStaticFiles();
+        //    }
+        //}
         //if (env.IsDevelopment())
         {
             //StaticWebAssetsLoader.UseStaticWebAssets(ctx.HostingEnvironment, ctx.Configuration);
@@ -220,11 +218,15 @@ public static class WebHostFrameworkStartupInitializer
         if (options.RequiresControllers || options.RequiresControllersWithViews) endpoints.MapControllers();
 
         RazorComponentsEndpointConventionBuilder? razorComponentsEndpointConventionBuilder = null;
+
+        if (options.RequiresStaticFiles) 
+        {
+            endpoints.MapStaticAssets();
+        }
+
         if (options.RootComponent != null)
         {
             razorComponentsEndpointConventionBuilder = (RazorComponentsEndpointConventionBuilder)typeof(RazorComponentsEndpointRouteBuilderExtensions).GetMethod("MapRazorComponents")!.MakeGenericMethod(options.RootComponent).Invoke(null, [endpoints!])!;
-
-            razorComponentsEndpointConventionBuilder.AddInteractiveServerRenderMode();
         }
 
         if (options.RequiresBlazorInteractiveServer)
@@ -236,7 +238,7 @@ public static class WebHostFrameworkStartupInitializer
             else
             {
                 endpoints.MapBlazorHub();
-                throw new Exception("TODO - REVIEW");
+                //throw new Exception("TODO - REVIEW");
             }
         }
         if (/* OLD - RazorPages no longer needed to bootstrap Blazor  options.RequiresBlazorInteractiveServer || */ options.RequiresRazorPages)

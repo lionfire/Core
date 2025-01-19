@@ -17,16 +17,16 @@ namespace LionFire.Inspection.Nodes;
 /// <summary>
 /// Decorates NodeVM with children and related properties
 /// </summary>
-public class NodeChildrenVM : ReactiveObject
+public partial class NodeChildrenVM : ReactiveObject
 {
     #region Relationships
 
     // Cascading parameter
     //public InspectorVM? InspectorVM { get; set; }
 
-    [Reactive]
     [SetOnce]
-    public NodeVM NodeVM { get; set; }
+    [ReactiveUI.SourceGenerators.Reactive]
+    private NodeVM _nodeVM;
 
     //public NodeVM NodeVM
     //{
@@ -263,9 +263,8 @@ public class NodeChildrenVM : ReactiveObject
 
     public DateTimeOffset MostRecentGetChildrenTime { get; set; } = DateTimeOffset.MinValue; // REVIEW - should this exist? Should it be a decorator on Node itself, if this tracking is requried?
 
-    [Reactive]
-    public bool IsGettingChildren { get; set; }
-
+    [ReactiveUI.SourceGenerators.Reactive]
+    private bool _isGettingChildren;
     private Task? getChildrenTask;
 
     #endregion

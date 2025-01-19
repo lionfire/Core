@@ -9,6 +9,12 @@ public interface IWorkspaceProvider
     IWorkspace Create(string key, IReference? template = null);
 }
 
+//public interface IEntityReader<TValue>
+//{
+
+//}
+
+
 public static class WorkspaceConstants
 {
     public static string DefaultWorkspaceKey = "Default";

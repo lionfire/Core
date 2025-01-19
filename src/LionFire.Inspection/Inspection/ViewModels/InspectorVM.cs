@@ -5,7 +5,7 @@ using System.Reactive.Linq;
 
 namespace LionFire.Inspection.ViewModels;
 
-public class InspectorVM : ReactiveObject
+public partial class InspectorVM : ReactiveObject
 {
     #region Dependencies
 
@@ -17,8 +17,8 @@ public class InspectorVM : ReactiveObject
 
     #region Parameters
 
-    [Reactive]
-    public object? Source { get; set; }
+    [ReactiveUI.SourceGenerators.Reactive]
+    private object? _source;
 
     private InspectorContext InspectorContext { get; set; } 
 
@@ -67,8 +67,8 @@ public class InspectorVM : ReactiveObject
 
     #region Item Filters
 
-    [Reactive]
-    public bool ShowFilterTypes { get; set; }
+    [ReactiveUI.SourceGenerators.Reactive]
+    private bool _showFilterTypes;
 
     IInspectorOptions Options => NodeVM.Options;
     InspectorOptions LocalOptions => NodeVM.GetLocalOptions();

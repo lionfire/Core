@@ -30,11 +30,6 @@ public class WebFrameworkConfig : WebHostConfig
 
     #endregion
 
-
-    #region Imported
-
-    #endregion
-
     #region Swagger
 
     public bool Swagger => RequiresSwagger;

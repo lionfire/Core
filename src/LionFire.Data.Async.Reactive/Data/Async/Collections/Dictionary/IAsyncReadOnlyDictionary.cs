@@ -15,10 +15,11 @@ namespace LionFire.Data.Collections;
 /// <typeparam name="TKey"></typeparam>
 /// <typeparam name="TValue"></typeparam>
 public interface IAsyncReadOnlyDictionary<TKey, TValue>
-    //: IGetter<IEnumerable<KeyValuePair<TKey, TItem>>>
+    : IGetter<IEnumerable<KeyValuePair<TKey, TValue>>>
     where TKey : notnull
     where TValue : notnull
 {
-    IObservableCache<(TKey key, TValue value), TKey> ObservableCache { get; }
+    IObservableCache<KeyValuePair<TKey, TValue>, TKey> ObservableCache { get; }
+    
 }
 

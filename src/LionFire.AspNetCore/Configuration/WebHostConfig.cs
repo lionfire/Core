@@ -10,10 +10,14 @@ namespace LionFire.AspNetCore;
 
 public class WebHostConfig : HasPortsConfigBase, IHasConfigLocation
 {
+    #region Config binding
+
     public static string DefaultConfigLocation => "WebHost";
     public string ConfigLocation => DefaultConfigLocation;
 
-    #region Construction
+    #endregion
+
+    #region Lifecycle
 
     public WebHostConfig(IConfiguration configuration) : base(configuration)
     {
@@ -86,7 +90,7 @@ public class WebHostConfig : HasPortsConfigBase, IHasConfigLocation
 
     public virtual bool RequiresControllersWithViews => false;
 
-    public virtual bool RequiresRazorPages => RequiresBlazorInteractiveServer;
+    public virtual bool RequiresRazorPages => false;
 
     #endregion
 

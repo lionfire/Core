@@ -1,0 +1,45 @@
+﻿
+<div class="lf-field">
+    @* <div class="label">Workspace</div> *@
+
+    <div class="value">
+
+        <MudSelect Label="Workspace" @bind-Value="CurrentWorkspace" Variant="Variant.Filled" Style="width: 100%">
+            @foreach (var workspace in Workspaces)
+            {
+                <MudSelectItem Value="@workspace">@workspace</MudSelectItem>
+            }
+        </MudSelect>
+    </div>
+
+</div>
+
+@code {
+    List<string> Workspaces = new List<string> { "one", "two", "three" };
+
+    [Parameter]
+    public string Workspace { get; set; } = "one";
+
+    private string? CurrentWorkspace
+    {
+        get => currentWorkspace;
+        set
+        {
+            currentWorkspace = value;
+            WorkspaceChanged.InvokeAsync(value);
+        }
+    }
+    private string? currentWorkspace;
+
+    protected override Task OnParametersSetAsync()
+    {
+        CurrentWorkspace = Workspace;
+        return base.OnParametersSetAsync();
+    }
+
+
+    [Parameter]
+    public EventCallback<string?> WorkspaceChanged { get; set; }
+
+
+}

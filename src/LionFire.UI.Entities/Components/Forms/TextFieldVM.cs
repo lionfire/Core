@@ -9,18 +9,16 @@ using System.Threading.Tasks;
 
 namespace LionFire.UI.Components;
 
-public class ValueViewerVM<TValue> : ReactiveObject
+public partial class ValueViewerVM<TValue> : ReactiveObject
 {
-    [Reactive]
-    public TValue? SourceValue { get; set; }
-
-
+    [ReactiveUI.SourceGenerators.Reactive]
+    private TValue? _sourceValue;
 }
 
-public class ValueEditorVM<TValue> : ValueViewerVM<TValue>
+public partial class ValueEditorVM<TValue> : ValueViewerVM<TValue>
 {
-    [Reactive]
-    public TValue? Value { get; set; }
+    [ReactiveUI.SourceGenerators.Reactive]
+    private TValue? _value;
 
     public void Discard() { Value = SourceValue; }
 
@@ -32,10 +30,8 @@ public class ValueEditorVM<TValue> : ValueViewerVM<TValue>
 
 }
 
-public class TextFieldVM<TValue> : ReactiveObject
+public partial class TextFieldVM<TValue> : ReactiveObject
 {
-    [Reactive]
-    public ValueEditorVM<TValue> ValueVM { get; set; }
-
-
+    [ReactiveUI.SourceGenerators.Reactive]
+    private ValueEditorVM<TValue> _valueVM;
 }

@@ -1,5 +1,4 @@
-﻿using DynamicData;
-using LionFire.Data.Async;
+﻿using LionFire.Data.Async;
 
 namespace LionFire.Data.Collections;
 
@@ -13,23 +12,6 @@ public interface IAsyncKeyedCollection<TKey, TItem> : IAsyncReadOnlyKeyedCollect
     ValueTask Add(TItem item);
     ValueTask Upsert(TItem item);
 
-}
-
-/// <summary>
-/// A Keyed Collection is for TItems that know their own TKey (or a selector func can be used to determine it.)
-/// </summary>
-/// <remarks>
-/// See also:
-/// - If TItem does not know its own TKey, but you still want a Dictionary style collection, use IAsyncDictionary&lt;TKey,TItem&gt; instead.
-/// </remarks>
-/// <typeparam name="TKey"></typeparam>
-/// <typeparam name="TItem"></typeparam>
-public interface IAsyncReadOnlyKeyedCollection<TKey, TItem> 
-    : IAsyncReadOnlyCollection<TItem>
-    where TKey : notnull
-    where TItem : notnull
-{
-    IObservableCache<TItem, TKey> ObservableCache { get; }
 }
 
 

@@ -1,11 +1,10 @@
 ﻿using LionFire.Mvvm;
 using LionFire.Types;
 using ReactiveUI;
-using ReactiveUI.Fody.Helpers;
 
 namespace LionFire.Orleans_.Mvvm;
 
-public class GrainPageVM<TGrain, TGrainVM> : ItemPageVM<TGrain, TGrainVM>
+public partial class GrainPageVM<TGrain, TGrainVM> : ItemPageVM<TGrain, TGrainVM>
     where TGrain : IGrain
 {
     #region Dependencies
@@ -33,7 +32,6 @@ public class GrainPageVM<TGrain, TGrainVM> : ItemPageVM<TGrain, TGrainVM>
 
     #region Upcast
 
-    [Reactive]
     public TGrain? Grain => Model;
 
     #endregion

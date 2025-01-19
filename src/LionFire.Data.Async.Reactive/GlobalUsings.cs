@@ -8,6 +8,6 @@ global using System.Diagnostics;
 global using System.Threading;
 global using LionFire.Data.Async.Gets;
 global using ReactiveUI;
-global using ReactiveUI.Fody.Helpers;
+global using ReactiveUI.SourceGenerators;
 global using LionFire.Ontology;
 global using LionFire.Results;

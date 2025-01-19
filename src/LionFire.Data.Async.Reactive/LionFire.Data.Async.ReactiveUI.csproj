@@ -11,7 +11,10 @@
 	<ItemGroup>
 		<PackageReference Include="Hjson" />
 		<PackageReference Include="ReactiveUI" />
-		<PackageReference Include="ReactiveUI.Fody" />
+		<PackageReference Include="ReactiveUI.SourceGenerators">
+		  <PrivateAssets>all</PrivateAssets>
+		  <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+		</PackageReference>
 		<PackageReference Include="System.Reactive" />
 		<PackageReference Include="System.Reactive.Async" />
 	</ItemGroup>
@@ -20,6 +23,7 @@
 		<ProjectReference Include="..\LionFire.Base\LionFire.Base.csproj" />
 		<ProjectReference Include="..\LionFire.Data.Async.Abstractions\LionFire.Data.Async.Abstractions.csproj" />
 		<ProjectReference Include="..\LionFire.Data.Async.Reactive.Abstractions\LionFire.Data.Async.ReactiveUI.Abstractions.csproj" />
+		<ProjectReference Include="..\LionFire.Reactive\LionFire.Reactive.csproj" />
 		<ProjectReference Include="..\LionFire.Resolves.Abstractions\LionFire.Data.Abstractions.csproj" />
 		<ProjectReference Include="..\LionFire.Resolves\LionFire.Data.Async.csproj" />
 	</ItemGroup>

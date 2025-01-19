@@ -5,5 +5,5 @@ global using System.Threading.Tasks;
 global using DynamicData;
 global using LionFire.Data;
 global using MorseCode.ITask;
-global using ReactiveUI.Fody.Helpers;
+global using ReactiveUI.SourceGenerators;
 global using LionFire.Ontology;

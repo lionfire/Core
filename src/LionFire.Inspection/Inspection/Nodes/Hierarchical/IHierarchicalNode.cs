@@ -12,7 +12,7 @@ public interface IHierarchicalNode
     : INode
     //, IKeyProvider<string, INode> // TODO: Eliminate this? Bring it back on individual INode implementations if needed?
 {
-    IAsyncReadOnlyDictionary<string, INode> Children { get; }
+    IAsyncReadOnlyKeyedCollection<string, INode> Children { get; }
 
     IObservable<bool?> HasChildren => Children.ObservableCache.CountChanged.Select(c => (bool?)(c > 0));
 }

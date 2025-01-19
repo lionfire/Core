@@ -53,15 +53,15 @@ public class PropertiesGroup : GroupNode, IConfiguredGetter, IInspectorGroup, IH
 
     #region Children
 
-    public override IAsyncReadOnlyDictionary<string, INode> Children { get; }
+    public override IAsyncReadOnlyKeyedCollection<string, INode> Children { get; }
     IStatelessGetter<object>? IHas<IStatelessGetter<object>>.Object => Children;
 
-    private class PropertiesChildren : AsyncReadOnlyDictionary<string, INode>
+    private class PropertiesChildren : AsyncReadOnlyKeyedCollection<string, INode>
 
     {
         private PropertiesGroup propertiesGroup;
 
-        public PropertiesChildren(PropertiesGroup propertiesGroup)
+        public PropertiesChildren(PropertiesGroup propertiesGroup) : base(n => n.Key)
         {
             this.propertiesGroup = propertiesGroup;
         }
@@ -69,16 +69,17 @@ public class PropertiesGroup : GroupNode, IConfiguredGetter, IInspectorGroup, IH
         private static readonly BindingFlags bindingFlags = BindingFlags.Instance | BindingFlags.Public;
 
         // REVIEW - can/should some of this be done once, statically, and/or synchronously?
-        protected override ITask<IGetResult<IEnumerable<KeyValuePair<string, INode>>>> GetImpl(CancellationToken cancellationToken = default)
+        protected override ITask<IGetResult<IEnumerable<INode>>> GetImpl(CancellationToken cancellationToken = default)
         {
             var v = propertiesGroup.Value;
-            return Task.FromResult<IGetResult<IEnumerable<KeyValuePair<string, INode>>>>(
-                GetResult<IEnumerable<KeyValuePair<string, INode>>>.SyncSuccess(
+            return Task.FromResult<IGetResult<IEnumerable<INode>>>(
+                GetResult<IEnumerable<INode>>.SyncSuccess(
                 v == null
                   ? []
                   : v.GetType().GetProperties(bindingFlags)
                   .Where(mi => mi.GetIndexParameters().Length == 0)
-                  .Select(mi => new KeyValuePair<string, INode>(mi.Name, new PropertyNode(propertiesGroup, v, mi)))
+                  //.Select(mi => new KeyValuePair<string, INode>(mi.Name, new PropertyNode(propertiesGroup, v, mi)))
+                  .Select(mi => new PropertyNode(propertiesGroup, v, mi))
                   )).AsITask();
         }
     }

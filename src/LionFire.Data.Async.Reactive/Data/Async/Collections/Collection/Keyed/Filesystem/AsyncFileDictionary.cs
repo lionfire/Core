@@ -1,7 +1,11 @@
-﻿
+﻿#if UNUSED
+using DynamicData;
+using LionFire.Data.Async;
+
 namespace LionFire.Data.Collections.Filesystem;
 
-public class AsyncFileDictionary : AsyncDictionary<string, byte[]>
+public class AsyncFileDictionary<TValue> : AsyncReadOnlyDictionary<string, TValue>
+    where TValue : notnull
 {
     #region Parameters
 
@@ -20,22 +24,22 @@ public class AsyncFileDictionary : AsyncDictionary<string, byte[]>
     public AsyncFileDictionary(string dir)
     {
         Dir = dir;
-    }
+    }1
 
     #endregion
 
     #region Read
 
-    protected override ITask<IGetResult<IEnumerable<KeyValuePair<string, byte[]>>>> GetImpl(CancellationToken cancellationToken = default)
-    {
-        throw new NotImplementedException();
-    }
+    //protected virtual ITask<IGetResult<IEnumerable<KeyValuePair<string, byte[]>>>> GetImpl(CancellationToken cancellationToken = default)
+    //{
+    //    throw new NotImplementedException();
+    //}
 
     #endregion
 
     #region Write
 
-    public override async ValueTask<bool> Remove(string key)
+    public virtual async ValueTask<bool> Remove(string key)
         => await Task.Run(() =>
         {
             var exists = File.Exists(key);
@@ -43,49 +47,35 @@ public class AsyncFileDictionary : AsyncDictionary<string, byte[]>
             return exists;
         });
 
-    public override async ValueTask Add(Label<string, byte[]> value)
+    public virtual async ValueTask<bool> TryAdd(string key, byte[] value)
     {
-        await Task.Run(() =>
+        var path = PathForName(key);
+        if (File.Exists(path)) return false;
+        ArgumentNullException.ThrowIfNull(value);
+        await File.WriteAllBytesAsync(path, value);
+        return true;
+    }
+
+    public virtual async ValueTask Upsert(string key, byte[] value)
+    {
+        var path = PathForName(key);
+        if (value == null)
         {
-            var path = PathForName(value.Key);
-            if (File.Exists(path)) throw new AlreadyException();
-            if (value.Value != null)
-            {
-                File.WriteAllBytes(path, value.Value);
-            }
-        });
-    }
-
-    public override async ValueTask Upsert(Label<string, byte[]> value)
-    {
-        await Task.Run(() =>
+            File.Delete(key);
+        }
+        else
         {
-            var path = PathForName(value.Key);
-            if (value.Value == null)
-            {
-                File.Delete(value.Key);
-            }
-            else
-            {
-                File.WriteAllBytes(path, value.Value);
-            }
-        });
+            await File.WriteAllBytesAsync(path, value);
+        }
     }
 
-    public override ValueTask<bool> TryAdd(string key, byte[] item)
-    {
-        throw new NotImplementedException();
-    }
-
-    public override ValueTask<bool?> Upsert(string key, byte[] item)
-    {
-        throw new NotImplementedException();
-    }
-
+ 
     #endregion
 
-    
+
 }
 
 
 
+
+#endif

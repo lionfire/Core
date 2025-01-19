@@ -5,7 +5,7 @@ using NuGet.Protocol.Core.Types;
 using NuGet.Versioning;
 using NuGet.Common;
 using ReactiveUI;
-using ReactiveUI.Fody.Helpers;
+using ReactiveUI.SourceGenerators;
 using System.Text.Json;
 using Mono.TextTemplating.CodeCompilation;
 using static System.Console;
@@ -20,13 +20,13 @@ public class DocumentsOptions
 
 }
 
-public class DocumentService : ReactiveObject
+public partial class DocumentService : ReactiveObject
 {
-    [Reactive]
-    public MultiSolutionDocument Document { get; set; } = new();
+    [ReactiveUI.SourceGenerators.Reactive]
+    private MultiSolutionDocument _document = new();
 
-    [Reactive]
-    public string? DocumentPath { get; set; }
+    [ReactiveUI.SourceGenerators.Reactive]
+    private string? _documentPath;
 
     public HashSet<string> CurrentPrerelease { get; set; } = new();
 

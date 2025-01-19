@@ -8,17 +8,15 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Compile Remove="IO\**" />
     <Compile Remove="Queues\**" />
-    <EmbeddedResource Remove="IO\**" />
     <EmbeddedResource Remove="Queues\**" />
-    <None Remove="IO\**" />
     <None Remove="Queues\**" />
   </ItemGroup>
 
   <ItemGroup>
     <PackageReference Include="System.Diagnostics.Process" />
-  </ItemGroup>
+		<PackageReference Include="Hjson" />
+	</ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\LionFire.Core\LionFire.Core.csproj" />

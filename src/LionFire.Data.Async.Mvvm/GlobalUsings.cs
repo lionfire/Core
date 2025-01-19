@@ -10,4 +10,4 @@ global using System.Reactive.Disposables;
 global using System.Reactive.Linq;
 global using DynamicData;
 global using ReactiveUI;
-global using ReactiveUI.Fody.Helpers;
+global using ReactiveUI.SourceGenerators;

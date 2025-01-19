@@ -10,7 +10,7 @@ namespace LionFire.Inspection.ViewModels;
 /// <summary>
 /// Options and relationships useful for inspection.
 /// </summary>
-public class InspectorOptions : ReactiveObject, IInspectorOptions
+public partial class InspectorOptions : ReactiveObject, IInspectorOptions
 {
     public static InspectorOptions Default { get; set; }
     public static readonly InspectorOptions DefaultDefault = new InspectorOptions
@@ -74,22 +74,22 @@ public class InspectorOptions : ReactiveObject, IInspectorOptions
 
     public EditApproach? EditApproach { get; set; }
 
-    [Reactive]
-    public RelevanceFlags? ReadRelevance { get; set; }
+    [ReactiveUI.SourceGenerators.Reactive]
+    private RelevanceFlags? _readRelevance;
 
-    [Reactive]
-    public RelevanceFlags? WriteRelevance { get; set; }
+    [ReactiveUI.SourceGenerators.Reactive]
+    private RelevanceFlags? _writeRelevance;
 
 
     #endregion
 
     public TimeSpan GetChildrenOnExpandRetryDelay { get; set; }
 
-    [Reactive]
-    public InspectorNodeKind VisibleItemTypes { get; set; }
+    [ReactiveUI.SourceGenerators.Reactive]
+    private InspectorNodeKind _visibleItemTypes;
 
-    [Reactive]
-    public InspectorVisibility VisibilityFlags { get; set; } = InspectorVisibility.Hidden;
+    [ReactiveUI.SourceGenerators.Reactive]
+    private InspectorVisibility _visibilityFlags = InspectorVisibility.Hidden;
 
     public InspectorNodeKind ShowChildrenForNodeKinds { get; set; }
     public InspectorNodeKind FlattenedNodeKinds { get; set; }

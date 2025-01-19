@@ -7,13 +7,13 @@ namespace LionFire.Data.Filesystem;
 public class DocumentFsRepository<TValue>
     where TValue : notnull
 {
-    DocumentFsWatcher<TValue> documentFsWatcher;
+    ObservableFsDocuments<TValue> documentFsWatcher;
 
     public IObservableCache<(string name, TValue value), string> ObservableCache => documentFsWatcher.ObservableCache;
 
     public DocumentFsRepository(string dir, Func<string, TValue, ValueTask> serializeFile,  Func<string, ValueTask<TValue>> deserializeFile, FsWatchOptions? watchOptions = null)
     {
-        documentFsWatcher = new DocumentFsWatcher<TValue>(dir, deserializeFile, watchOptions);
+        documentFsWatcher = new ObservableFsDocuments<TValue>(dir, deserializeFile, watchOptions);
         SerializeFile = serializeFile;
     }
 

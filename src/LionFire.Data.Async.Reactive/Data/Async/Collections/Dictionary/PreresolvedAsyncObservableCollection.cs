@@ -18,9 +18,10 @@ namespace LionFire.Data.Collections;
 ///  - IObservable<IGetResult<>> IObservableGetOperations.GetOperations
 /// </remarks>
 public class PreresolvedAsyncObservableCollection<TKey, TValue>
-    : DynamicDataCollection<KeyValuePair<TKey, TValue>>
-    , IAsyncReadOnlyDictionary<TKey, TValue>
+    : DynamicDataCollection<TValue>
+    , IAsyncReadOnlyKeyedCollection<TKey, TValue>
     where TKey : notnull
+    where TValue : notnull
 {
     #region Lifecycle
 
@@ -30,6 +31,8 @@ public class PreresolvedAsyncObservableCollection<TKey, TValue>
     }
 
     #endregion
+
+    public bool IsReadOnly => true;
 
     #region State
 
@@ -51,8 +54,8 @@ public class PreresolvedAsyncObservableCollection<TKey, TValue>
 
     public override bool HasValue => true;
 
-    public override IEnumerable<KeyValuePair<TKey, TValue>>? ReadCacheValue => ObservableCache.KeyValues;
-    public override IEnumerable<KeyValuePair<TKey, TValue>>? Value => this.ObservableCache.KeyValues;
+    public override IEnumerable<TValue>? ReadCacheValue => ObservableCache.Items;
+    public override IEnumerable<TValue>? Value => this.ObservableCache.Items;
 
     #endregion
 
@@ -60,10 +63,10 @@ public class PreresolvedAsyncObservableCollection<TKey, TValue>
 
     #region Get
 
-    public override ITask<IGetResult<IEnumerable<KeyValuePair<TKey, TValue>>>> Get(CancellationToken cancellationToken = default) 
-        => Task.FromResult<IGetResult<IEnumerable<KeyValuePair<TKey, TValue>>>>(GetResult<IEnumerable<KeyValuePair<TKey, TValue>>>.NoopSuccess(this.ObservableCache.KeyValues)).AsITask();
+    public override ITask<IGetResult<IEnumerable<TValue>>> Get(CancellationToken cancellationToken = default)
+        => Task.FromResult<IGetResult<IEnumerable<TValue>>>(GetResult<IEnumerable<TValue>>.NoopSuccess(this.ObservableCache.Items)).AsITask();
 
-    public override void OnNext(IGetResult<IEnumerable<KeyValuePair<TKey, TValue>>> value) { }
+    public override void OnNext(IGetResult<IEnumerable<TValue>> result) { }
 
     #endregion
 

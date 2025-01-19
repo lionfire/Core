@@ -11,7 +11,7 @@ namespace LionFire.Data.Async.Gets;
 /// <summary>
 /// Get the value for this instance.  If the value was already resolved or provided, this re-resolves the value.  (Use ILazilyGets to avoid unwanted re-resolving.)
 /// </summary>
-public interface IStatelessGetter<out TValue> : IGetter
+public interface IStatelessGetter<out TValue> : IGetter // RENAME IStatelessGettable
 {
     /// <summary>
     /// Get the value for this instance.  If the value was already resolved or provided, this re-resolves the value.  (Use ILazilyGets to avoid unwanted re-resolving.)

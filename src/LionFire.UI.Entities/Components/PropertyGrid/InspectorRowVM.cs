@@ -4,14 +4,14 @@ using LionFire.Data.Async.Gets;
 
 namespace LionFire.Inspection.ViewModels;
 
-public class InspectorRowVM : ReactiveObject
+public partial class InspectorRowVM : ReactiveObject
 {
     #region Relationships
 
     public InspectorVM? InspectorVM { get; set; }
 
-    [Reactive]
-    public NodeVM? NodeVM { get; set; }
+    [ReactiveUI.SourceGenerators.Reactive]
+    private NodeVM? _nodeVM;
 
     #endregion
 
@@ -43,11 +43,11 @@ public class InspectorRowVM : ReactiveObject
 
     public bool HasAnythingToShow => NodeVM == null || NodeVM.CanRead || NodeVM.CanWrite || NodeVM.CanHaveChildren;
 
-    [Reactive]
-    public string DisplayValue { get; set; } = "";
+    [ReactiveUI.SourceGenerators.Reactive]
+    private string _displayValue = "";
 
-    [Reactive]
-    public string ValueClass { get; set; } = "";
+    [ReactiveUI.SourceGenerators.Reactive]
+    private string _valueClass = "";
 
     public void Refresh()
     {

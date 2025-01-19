@@ -14,7 +14,7 @@ public interface ISetterHook<TValue>
     ValueTask OnSetComplete(ISetResult<TValue> setResult);
 }
 
-public abstract class AsyncValue<TValue>
+public abstract partial class AsyncValue<TValue>
     : GetterRxO<TValue>
     , IAsyncValue<TValue>
     , ISetsInternal<TValue>
@@ -74,8 +74,8 @@ public abstract class AsyncValue<TValue>
 
     #region Get+Set 
 
-    [Reactive]
-    public bool ValueChangedWhileValueStaged { get; set; }
+    [ReactiveUI.SourceGenerators.Reactive]
+    private bool _valueChangedWhileValueStaged;
 
     public new TValue? Value
     {

@@ -7,6 +7,6 @@ public interface IInspectorGroup : INode
     IInspector Inspector { get; }
     GroupInfo Info { get; }
 
-    IAsyncReadOnlyDictionary<string, INode> Children { get; }
+    IAsyncReadOnlyKeyedCollection<string, INode> Children { get; }
 }
 

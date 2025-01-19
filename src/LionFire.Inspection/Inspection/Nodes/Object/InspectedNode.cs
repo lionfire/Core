@@ -48,8 +48,6 @@ public class InspectedNode<TInfo> : Node<TInfo>, IInspectedNode, IDisposable
     public SourceCache<IInspectorGroup, string> Groups => groups ??= new(g => g.Info.Key);
     private SourceCache<IInspectorGroup, string>? groups;
 
-    public IAsyncReadOnlyDictionary<string, INode> Children => new PreresolvedAsyncObservableCollection<string, INode>(Groups.AsObservableCache().Connect().Cast(g => (INode)g).AsObservableCache());
-
-
+    public IAsyncReadOnlyKeyedCollection<string, INode> Children => new PreresolvedAsyncObservableCollection<string, INode>(Groups.AsObservableCache().Connect().Cast(g => (INode)g).AsObservableCache());
 
 }

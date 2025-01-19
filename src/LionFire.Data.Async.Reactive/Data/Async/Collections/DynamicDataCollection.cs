@@ -1,4 +1,5 @@
 ﻿using DynamicData;
+using DynamicData.Kernel;
 using LionFire.ExtensionMethods;
 using MorseCode.ITask;
 using System.Collections;
@@ -7,6 +8,32 @@ using System.Reactive.Linq;
 using System.Reactive.Subjects;
 
 namespace LionFire.Data.Collections;
+
+#if false // Ideas
+/// <summary>
+/// WIP
+/// Principles
+/// - slim as possible (no ReactivveObject)
+/// </summary>
+/// <typeparam name="TValue"></typeparam>
+public abstract partial class SmartObservableList<TValue>
+{
+
+    public abstract IEnumerable<TValue> Values { get; }
+
+    protected BehaviorSubject<Optional<IEnumerable<TValue>>> Subject { get; } = new BehaviorSubject<Optional<TValue>>(Optional<TValue>.None);
+
+}
+
+public class ConnectableObservableCache<TKey, TValue>
+    where TKey : notnull
+    where TValue : notnull
+{
+
+}
+#endif
+
+
 
 /// <summary>
 /// Description: local cache of a collection that is read (and maybe written) across an async boundary (such as network or disk)
@@ -33,13 +60,13 @@ public abstract partial class DynamicDataCollection<TValue>
     , IDisposable
     where TValue : notnull
 
-// Derived classes may implement read interfaces:
-//  - INotifiesChildChanged
-//  - INotifiesChildDeeplyChanged
+    // Derived classes may implement read interfaces:
+    //  - INotifiesChildChanged
+    //  - INotifiesChildDeeplyChanged
 
-// Derived classes may implement write interfaces:
-//  - IAsyncCreates<TItem>
-//  - System.IAsyncObserver<ChangeSet<TItem>> // For subscribing to changes
+    // Derived classes may implement write interfaces:
+    //  - IAsyncCreates<TItem>
+    //  - System.IAsyncObserver<ChangeSet<TItem>> // For subscribing to changes
 {
 
     #region Lifecycle
@@ -51,7 +78,7 @@ public abstract partial class DynamicDataCollection<TValue>
     }
 
     protected CompositeDisposable? disposables;
- 
+
     public void Dispose()
     {
         disposables?.Dispose();

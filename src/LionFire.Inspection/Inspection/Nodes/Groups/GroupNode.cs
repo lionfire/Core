@@ -22,6 +22,6 @@ public abstract class GroupNode : Node<GroupInfo>, IGroupNode
 
     #endregion
 
-    public abstract IAsyncReadOnlyDictionary<string, INode> Children { get; }
+    public abstract IAsyncReadOnlyKeyedCollection<string, INode> Children { get; }
 }
 

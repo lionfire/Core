@@ -14,7 +14,7 @@ namespace LionFire.Data.Mvvm;
 /// <remarks>
 /// Source: mutable (REVIEW)
 /// </remarks>
-public class GetterVM<TValue>
+public partial class GetterVM<TValue>
 : ReactiveObject
 , IGetterVM<TValue>
 , IViewModel<IGetterRxO<TValue>>
@@ -51,8 +51,8 @@ public class GetterVM<TValue>
     }
     private IGetter? source;
 
-    [Reactive]
-    public IGetterRxO<TValue>? FullFeaturedSource { get; set; }
+    [ReactiveUI.SourceGenerators.Reactive]
+    private IGetterRxO<TValue>? _fullFeaturedSource;
 
     IGetterRxO<TValue>? IReadWrapper<IGetterRxO<TValue>>.Value => FullFeaturedSource;
 
@@ -107,8 +107,9 @@ public class GetterVM<TValue>
         //Observable.Create<bool>(o => { o.OnNext(gets != null); o.OnCompleted(); return Disposable.Empty; })
         );
         GetCommand.ThrownExceptions.Subscribe(ex => this.Log().Error(ex, "Something went wrong"));
-        GetCommand.IsExecuting.ToPropertyEx(this, vm => vm.IsGetting, initialValue: false);
-        GetCommand.CanExecute.ToPropertyEx(this, vm => vm.CanGet, initialValue: FullFeaturedSource != null);
+
+        _isGetting = GetCommand.IsExecuting.ToProperty(this, x => x.IsGetting, false, false);
+        _canGet = GetCommand.CanExecute.ToProperty(this, x => x.CanGet, FullFeaturedSource != null, false);
 
         #endregion
 
@@ -163,20 +164,15 @@ public class GetterVM<TValue>
 
     public ReactiveCommand<Unit, IGetResult<TValue>> GetCommand { get; private set; }
 
-    [ObservableAsProperty]
-    public bool CanGet { get; }
+    public bool CanGet => _canGet.Value;
+    private ObservableAsPropertyHelper<bool> _canGet;
 
-    [ObservableAsProperty]
-    public bool IsGetting { get; }
+    public bool IsGetting => _isGetting.Value;
+    private ObservableAsPropertyHelper<bool> _isGetting;
 
-    //public bool IsGetting { get { return isResolving.Value; } }
-    //readonly ObservableAsPropertyHelper<bool> isResolving;
 
     #endregion
 
-    [Reactive]
-    public bool HasValue { get; protected set; }
-
-
-
+    [ReactiveUI.SourceGenerators.Reactive(SetModifier = ReactiveUI.SourceGenerators.AccessModifier.Protected)]
+    private bool _hasValue;
 }

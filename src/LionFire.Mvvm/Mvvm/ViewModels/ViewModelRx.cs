@@ -1,33 +1,18 @@
-﻿
-using LionFire.Data.Async;
-using LionFire.Metadata;
+﻿using LionFire.Metadata;
 
 namespace LionFire.Mvvm;
 
-// REVIEW - isn't this a duplicate of AsyncValue?
-//
-// AsyncValue
-//
-// implements:
-// - GetterRxO
-// - IAsyncValue<TValue>
-// - IValueState<TValue>
-//
-// parameters:
-// - ValueOptions
-public abstract class AsyncVM<T> : ReactiveObject, IDependsOn<T>, IViewModel<T>
+/// <summary>
+/// A IViewModel that requires a Value.
+/// </summary>
+/// <typeparam name="T"></typeparam>
+public abstract class ViewModelRx<T> : ReactiveObject, IDependsOn<T>, IViewModel<T>
     where T : class
 {
-    #region Parameters
-
-    [Relevance(RelevanceFlags.Technical | RelevanceFlags.Internal)]
-    public ValueOptions? Options { get; set; }
-
-    #endregion
 
     #region Construction
 
-    public AsyncVM(T model)
+    public ViewModelRx(T model)
     {
         Value = model;
     }

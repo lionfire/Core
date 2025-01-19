@@ -7,5 +7,5 @@ global using System.ComponentModel;
 global using System.Linq;
 global using System.Threading;
 global using System.Threading.Tasks;
-//global using ReactiveUI.Fody.Helpers;
+//global using ReactiveUI.SourceGenerators;
 global using ReactiveUI;

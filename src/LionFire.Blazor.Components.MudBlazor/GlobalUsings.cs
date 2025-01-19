@@ -16,4 +16,4 @@ global using System.Reactive;
 global using System.Collections.Concurrent;
 global using System.Threading;
 global using MorseCode.ITask;
-global using ReactiveUI.Fody.Helpers;
+global using ReactiveUI.SourceGenerators;

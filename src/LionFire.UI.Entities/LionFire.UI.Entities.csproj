@@ -14,9 +14,12 @@
   </ItemGroup>
 
   <ItemGroup>
+    <PackageReference Include="ReactiveUI.SourceGenerators">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
     <PackageReference Include="Swordfish.NET.CollectionsV3" />
 	<PackageReference Include="ReactiveUI.Blazor" />
-	<PackageReference Include="ReactiveUI.Fody" />
   </ItemGroup>
 
   <ItemGroup>

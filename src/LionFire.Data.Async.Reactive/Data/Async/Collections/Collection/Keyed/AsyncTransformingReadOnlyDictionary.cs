@@ -1,4 +1,5 @@
-﻿using DynamicData;
+﻿#if false // DISCARD
+using DynamicData;
 using System.Collections;
 using System.Reactive.Linq;
 using System.Reactive.Subjects;
@@ -21,7 +22,7 @@ where TUsable : notnull
 
     #region Lifecycle
 
-    public AsyncTransformingReadOnlyDictionary(AsyncDictionary<TKey, TUnderlying> underlying)
+    public AsyncTransformingReadOnlyDictionary(AsyncDictionary2<TKey, TUnderlying> underlying)
     {
         this.underlying = underlying;
 
@@ -40,8 +41,8 @@ where TUsable : notnull
 
     #region Usable
 
-    public IObservableCache<TUsable, TKey> ObservableCache => lazyUsableObservableCache.Value;
-    private Lazy<IObservableCache<TUsable, TKey>> lazyUsableObservableCache;
+    public IObservableCache<(TKey key, TUsable value), TKey> ObservableCache => lazyUsableObservableCache.Value;
+    private Lazy<IObservableCache<(TKey key, TUsable value), TKey>> lazyUsableObservableCache;
 
     #endregion
 
@@ -95,8 +96,8 @@ where TUsable : notnull
 
     #region IEnumerable
 
-    public IEnumerator<TUsable> GetEnumerator() => ObservableCache.Items.GetEnumerator();
-    IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
+    //public IEnumerator<TUsable> GetEnumerator() => ObservableCache.Items.GetEnumerator();
+    //IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
 
     #endregion
 
@@ -108,3 +109,5 @@ where TUsable : notnull
     #endregion
 }
 
+
+#endif

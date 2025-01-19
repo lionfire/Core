@@ -19,7 +19,7 @@ using Orleans.Runtime;
 
 namespace LionFire.Blazor.Components;
 
-// TODO: Make this class as dumb as possible, moving testable logic to the ViewModel class
+// TODO: Make this class as dumb as possible, moving testable logic to the AsyncKeyedCollectionVM / TValueVM classes
 
 /// <summary>
 /// How to use:
@@ -303,7 +303,7 @@ public partial class KeyedCollectionView<TKey, TValue, TValueVM>
 
         foreach (var prop in properties)
         {
-            KeyedCollectionViewUtilities.BuildPropertyColumn<TValueVM, TValue>(builder, prop);
+            MudDataGridUtilities.BuildPropertyColumn<TValueVM, TValue>(builder, prop);
 
             //if (prop.PropertyType == typeof(string))
             //{
@@ -317,7 +317,7 @@ public partial class KeyedCollectionView<TKey, TValue, TValueVM>
         properties = typeof(TValue).GetProperties();
         foreach (var prop in properties)
         {
-            KeyedCollectionViewUtilities.BuildPropertyColumn<TValueVM, TValue>(builder, prop, "Value");
+            MudDataGridUtilities.BuildPropertyColumn<TValueVM, TValue>(builder, prop, "Value");
             //    if (prop.PropertyType == typeof(string))
             //    {
             //        //BuildPropertyColumn(builder, prop, "p => p.Value.");
@@ -464,7 +464,7 @@ public partial class KeyedCollectionView<TKey, TValue, TValueVM>
 
     #endregion
 
-    public T GetOrCreate<T>() // TODO: RENAME to GetOrCreate, abstract this to IGetsOrCreates<T>
+    public T GetOrCreate<T>() // TODO: abstract this to IGetsOrCreates<T>
         where T : class
     {
         components ??= new();
@@ -472,7 +472,7 @@ public partial class KeyedCollectionView<TKey, TValue, TValueVM>
     }
     ConcurrentDictionary<Type, object>? components;
 
-    [Reactive]
+    //[Reactive]
     public bool CanCreate { get; set; }
     public void OnCreate(Type t)
     {

@@ -4,6 +4,7 @@ using System.Reactive.Subjects;
 using System.Reactive;
 using LionFire.Dependencies;
 using LionFire.Data.Async;
+using System.Collections.Generic;
 
 namespace LionFire.Data.Collections;
 
@@ -80,6 +81,7 @@ public abstract class AsyncReadOnlyKeyedCollection<TKey, TValue>
     , IInjectable<IKeyProvider<TKey, TValue>>
     , System.IAsyncObserver<ChangeSet<TValue, TKey>>
     , IDisposable
+    , IAsyncReadOnlyKeyedCollection<TKey, TValue>
     //, IObservableGetState // Consider adding this here and/or in concrete class
     where TKey : notnull
     where TValue : notnull
@@ -116,10 +118,10 @@ public abstract class AsyncReadOnlyKeyedCollection<TKey, TValue>
 
     //public AsyncReadOnlyKeyedCollection() : this(null) { }
 
-    public AsyncReadOnlyKeyedCollection(Func<TValue, TKey>? keySelector = null, SourceCache<TValue, TKey>? dictionary = null, AsyncObservableCollectionOptions? options = null, IObservable<IChangeSet<TValue, TKey>>? keyValueChanges = null) : base(initializeGetOperations: false)
+    public AsyncReadOnlyKeyedCollection(Func<TValue, TKey>? keySelector = null, SourceCache<TValue, TKey>? sourceCache = null, AsyncObservableCollectionOptions? options = null, IObservable<IChangeSet<TValue, TKey>>? keyValueChanges = null) : base(initializeGetOperations: false)
     {
-        KeySelector = keySelector ?? DefaultKeySelector();
-        SourceCache = dictionary ?? new SourceCache<TValue, TKey>(KeySelector);
+        KeySelector = keySelector ?? sourceCache?.KeySelector ?? DefaultKeySelector();
+        SourceCache = sourceCache ?? new SourceCache<TValue, TKey>(KeySelector);
         this.options = options;
 
         if (keyValueChanges != null)
@@ -135,8 +137,8 @@ public abstract class AsyncReadOnlyKeyedCollection<TKey, TValue>
     #region State
 
     IDisposable? keyValueChangesSubscription;
-    public SourceCache<TValue, TKey> SourceCache { get; }
     public IObservableCache<TValue, TKey> ObservableCache => SourceCache.AsObservableCache(); // AsObservableCache converts it read only
+    protected SourceCache<TValue, TKey> SourceCache { get; } 
 
     //public override DynamicData.IObservableList<KeyValuePair<TKey, TValue>> List => throw new NotImplementedException();// SourceCache.AsObservableList();
 
@@ -229,7 +231,7 @@ public abstract class AsyncReadOnlyKeyedCollection<TKey, TValue>
 
     //protected abstract ITask<IGetResult<IEnumerable<TValue>>> GetImpl(CancellationToken cancellationToken = default);
     //protected abstract ITask<IGetResult<IEnumerable<TValue>>> GetImpl(CancellationToken cancellationToken = default);
-    protected override async ITask<IGetResult<IEnumerable<TValue>>> GetImpl(CancellationToken cancellationToken = default)
+    public override async ITask<IGetResult<IEnumerable<TValue>>> Get(CancellationToken cancellationToken = default)
     {
         var result = await GetImpl(cancellationToken).ConfigureAwait(false);
         if (result.IsSuccess == true)
@@ -282,6 +284,9 @@ public abstract class AsyncReadOnlyKeyedCollection<TKey, TValue>
     }
 
     public IObservable<Unit> AsyncObserverCompleted => asyncObserverCompleted.Value;
+
+    public bool IsReadOnly => true;
+
     private Lazy<Subject<Unit>> asyncObserverCompleted = new();
 
     public ValueTask OnCompletedAsync()

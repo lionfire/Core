@@ -14,14 +14,14 @@
 
     @if (CreatableTypes != null && CreatableTypes.Any())
     {
-        if (ViewModel is ICreatesAsyncVM<TValue> createsValue)
+        if (ViewModel!.CreatableTypes?.Any() == true)
         {
             <MudMenu Class="" Label="Add" Icon="@Icons.Material.Filled.Add" Variant="Variant.Outlined" Color="Color.Success"
                      Dense
                      AnchorOrigin="Origin.BottomLeft">
                 @foreach (var t in CreatableTypes)
                 {
-                    <MudMenuItem OnClick=@(() => createsValue.Create.Execute(t).Subscribe())>
+                    <MudMenuItem OnClick=@(() => ViewModel.Create.Execute(t).Subscribe())>
                         @DisplayNameUtilsX.DisplayNameForType(t)
                     </MudMenuItem>
                 }

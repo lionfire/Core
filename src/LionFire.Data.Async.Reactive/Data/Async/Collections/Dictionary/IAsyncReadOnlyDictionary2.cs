@@ -2,6 +2,9 @@
 
 namespace LionFire.Data.Collections;
 
+// Difference from IAsyncReadOnlyDictionary: Instead of implementing IGetter, inject an IObservableCache.
+// FUTURE: Obsolete IAsyncReadOnlyDictionary and replace with IAsyncReadOnlyDictionary2.
+
 /// <summary>
 /// The Async means the collection can be retrieved asynchronously.
 /// </summary>
@@ -19,7 +22,15 @@ public interface IAsyncReadOnlyDictionary2<TKey, TValue>
     where TValue : notnull
 {
     IObservableCache<(TKey key, TValue value), TKey> ObservableCache { get; }
-
-
 }
 
+public interface IAsyncDictionary2<TKey, TItem>
+    : IAsyncReadOnlyDictionary2<TKey, TItem>
+    where TKey : notnull
+    where TItem : notnull
+{
+    ValueTask<bool> Remove(TKey key);
+
+    ValueTask<bool> TryAdd(TKey key, TItem item);
+    ValueTask Upsert(TKey key, TItem item);
+}

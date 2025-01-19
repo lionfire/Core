@@ -1,11 +1,13 @@
 ﻿
 using DynamicData;
+using LionFire.ExtensionMethods.Cloning;
 
 namespace LionFire.Data.Collections;
 
 public class OneShotSyncDictionary<TKey, TValue>
     : AsyncReadOnlyDictionary<TKey, TValue>
     where TKey : notnull
+    where TValue : notnull
 {
     #region Parameters
 
@@ -39,7 +41,15 @@ public class OneShotSyncDictionary<TKey, TValue>
             GetResult<IEnumerable<KeyValuePair<TKey, TValue>>>.SyncSuccess(getImplCopy())
             ).AsITask();
             getImpl = null;
-            SourceCache.Edit(u => u.Clone(new ChangeSet<TValue, TKey>((result.Result.Value ?? Enumerable.Empty<KeyValuePair<TKey, TValue>>()).Select(kvp => new Change<TValue, TKey>(ChangeReason.Add, kvp.Key, kvp.Value)))));
+
+            SourceCache.Edit(updater =>
+            {
+                var changes = result.Result.Value?.Select(kvp => new Change<KeyValuePair<TKey, TValue>, TKey>(ChangeReason.Add, kvp.Key, new KeyValuePair<TKey, TValue>(kvp.Key, kvp.Value)));
+                if (changes != null)
+                {
+                    updater.Clone(new ChangeSet<KeyValuePair<TKey, TValue>, TKey>(changes));
+                }
+            });
             return result;
         }
     }

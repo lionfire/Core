@@ -10,11 +10,11 @@
     // FUTURE: Create a new WorkspaceItemView for self (or load an existing one, to recover state), instead of accessing WorkspaceItem directly
 
     [Parameter]
-    public string WorkspaceKey { get; set; }
+    public string? WorkspaceKey { get; set; }
     [Parameter]
-    public string WorkspaceItemKey { get; set; }
+    public string? WorkspaceItemKey { get; set; }
 
-    public IWorkspace Workspace { get; private set; }
+    public IWorkspace? Workspace { get; private set; }
     public object WorkspaceItem { get; private set; }
 
     protected override Task OnParametersSetAsync()

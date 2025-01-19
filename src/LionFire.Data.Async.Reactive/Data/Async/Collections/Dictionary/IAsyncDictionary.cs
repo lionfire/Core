@@ -24,7 +24,7 @@ public interface IAsyncDictionary<TKey, TItem>
     ValueTask<bool> Remove(TKey key);
 
     ValueTask<bool> TryAdd(TKey key, TItem item);
-    ValueTask<bool?> Upsert(TKey key, TItem item);
+    ValueTask Upsert(TKey key, TItem item);
 }
 
 //internal interface IAsyncDictionaryCacheInternal<TKey, TItem> : IAsyncDictionaryCache<TKey, TItem>

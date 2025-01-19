@@ -32,48 +32,22 @@ public abstract class AsyncReadOnlyDictionary<TKey, TValue>
     where TKey : notnull
     where TValue : notnull
 {
-    //#region Dependencies
-
-    //#region Optional
-
-    //#region KeyProvider
-
-    // OLD: don't inject this. Rely on injected keySelector Func instead.
-    //public IKeyProvider<TKey, TValue>? KeyProvider { get; set; }
-
-    //IKeyProvider<TKey, TValue>? IHas<IKeyProvider<TKey, TValue>>.Object => KeyProvider;
-    //IKeyProvider<TKey, TValue> IDependsOn<IKeyProvider<TKey, TValue>>.Dependency { set => KeyProvider = value; }
-
-    //#endregion
-
-    //#endregion
-
-    //#endregion
-
-    #region Parameters
-
-    // TODO: Eliminate KeySelector for this class, since keys tend to come from user, not from TValue.  If keys come from TValue, use AsyncReadOnlyKeyedCollectionCache instead.
-    protected Func<TValue, TKey> KeySelector => SourceCache.KeySelector;
-    public virtual Func<TValue, TKey> DefaultKeySelector() => KeySelectors<TValue, TKey>.GetKeySelector(DependencyContext.Current?.ServiceProvider);
-
-    #endregion
-
+    AsyncObservableCollectionOptions Options { get; }
     #region Lifecycle
 
-    public AsyncReadOnlyDictionary() : this(null) { }
+    //public AsyncReadOnlyDictionary() : this(null) { }
 
-    public AsyncReadOnlyDictionary(Func<TValue, TKey>? keySelector, SourceCache<TValue, TKey>? sourceCache = null, AsyncObservableCollectionOptions? options = null)
+    public AsyncReadOnlyDictionary(AsyncObservableCollectionOptions? options = null) 
     {
-        SourceCache = sourceCache ?? new SourceCache<TValue, TKey>(keySelector ?? DefaultKeySelector());
-
+        Options = options ?? AsyncObservableCollectionOptions.Default;
+        SourceCache = new SourceCache<KeyValuePair<TKey, TValue>, TKey>(tuple => tuple.Key);
     }
 
     #endregion
 
     #region State
 
-    public IObservableCache<TValue, TKey> ObservableCache => SourceCache.AsObservableCache(); // Converts to read only
-    protected SourceCache<TValue, TKey> SourceCache { get; }
+    protected SourceCache<KeyValuePair<TKey, TValue>, TKey> SourceCache { get; }
 
 
     #region Methods
@@ -88,11 +62,11 @@ public abstract class AsyncReadOnlyDictionary<TKey, TValue>
 
     #region Derived
 
-    public IObservableCache<TValue, TKey> ObservableCache => SourceCache.AsObservableCache(); // Converts to read only
+    public IObservableCache<KeyValuePair<TKey, TValue>, TKey> ObservableCache => SourceCache.AsObservableCache(); // Converts to read only
 
     public override IEnumerable<KeyValuePair<TKey, TValue>>? ReadCacheValue
     {
-        get => SourceCache.KeyValues;
+        get => SourceCache.Items;
         //protected set
         //{
         //    SourceCache.EditDiff((value ?? Enumerable.Empty<KeyValuePair<TKey, TValue>>())
@@ -100,7 +74,7 @@ public abstract class AsyncReadOnlyDictionary<TKey, TValue>
         //        (v1, v2) => SourceCache.KeySelector(v1).Equals(SourceCache.KeySelector(v2)));
         //}
     }
-    public override IEnumerable<KeyValuePair<TKey, TValue>>? Value => this.SourceCache.KeyValues;
+    public override IEnumerable<KeyValuePair<TKey, TValue>>? Value => this.SourceCache.Items;
 
     #endregion
 
@@ -110,9 +84,12 @@ public abstract class AsyncReadOnlyDictionary<TKey, TValue>
     {
         if (result.IsSuccess())
         {
-            SourceCache.EditDiff((result.Value ?? Enumerable.Empty<KeyValuePair<TKey, TValue>>())
-                   .Select(kvp => kvp.Value),
-                   (v1, v2) => SourceCache.KeySelector(v1).Equals(SourceCache.KeySelector(v2)));
+            SourceCache.EditDiff(result.Value ?? Enumerable.Empty<KeyValuePair<TKey, TValue>>(),
+                (v1, v2) => v1.Key.Equals(v2.Key));
+
+//            SourceCache.EditDiff((result.Value ?? Enumerable.Empty<KeyValuePair<TKey, TValue>>())
+//                   //.Select(kvp => kvp.Value),
+//,                   (v1, v2) => v1.Key == v2.Key /* SourceCache.KeySelector(v1).Equals(SourceCache.KeySelector(v2))*/ );
         }
     }
 

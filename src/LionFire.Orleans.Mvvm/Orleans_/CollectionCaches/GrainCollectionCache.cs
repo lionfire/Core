@@ -82,7 +82,7 @@ public class SubscriptionOptions<T>
 /// TODO: change this class to ListGrainCache?  Is there a benefit to knowing TNotificationItem is a grain?
 /// </summary>
 /// <typeparam name="T"></typeparam>
-public class GrainCollectionCache<TValue> 
+public class GrainCollectionCache<TValue>
     : AsyncKeyedCollection<string, TValue>
     , IObservableCreatesAsync<string, TValue>
     //, IObservableCreatesAsync<TInfo>
@@ -103,7 +103,7 @@ public class GrainCollectionCache<TValue>
     #region Relationships
 
     public IKeyedCollectionG<string, TValue> CollectionGrain { get; set; }
-    IGrainObservableAsyncObservableG<ChangeSet<TValue, string>>  IHas<IGrainObservableAsyncObservableG<ChangeSet<TValue, string>>>.Object => CollectionGrain;
+    IGrainObservableAsyncObservableG<ChangeSet<TValue, string>> IHas<IGrainObservableAsyncObservableG<ChangeSet<TValue, string>>>.Object => CollectionGrain;
 
     #endregion
 
@@ -121,7 +121,7 @@ public class GrainCollectionCache<TValue>
 
     static GrainCollectionCache()
     {
-        InitGetOrCreateForKeyImpl();
+        GetOrCreateImpl = InitGetOrCreateForKeyImpl();
     }
 
     #endregion
@@ -162,11 +162,6 @@ public class GrainCollectionCache<TValue>
         //}
     }
 
-
-    public void Dispose()
-    {
-        throw new NotImplementedException();
-    }
     public async ValueTask DisposeAsync()
     {
         await (Interlocked.Exchange(ref keyedListObserverO, null)?.DisposeAsync() ?? ValueTask.CompletedTask);
@@ -197,12 +192,12 @@ public class GrainCollectionCache<TValue>
 
     #region (static)
 
-    static void InitGetOrCreateForKeyImpl()
+    public static Func<IGrain, (string, Type), Task<TValue>> GetOrCreateImpl;
+    private static Func<IGrain, (string, Type), Task<TValue>> InitGetOrCreateForKeyImpl()
     {
-
         if (typeof(TValue).IsAssignableTo(typeof(IObservableCreatesAsync<string, TValue>)))
         {
-            GetOrCreateImpl = async (IGrain grain, (string key, Type grainType) parameters) =>
+            return async (IGrain grain, (string key, Type grainType) parameters) =>
             {
                 var creates = (IObservableCreatesAsync<string, TValue>)grain;
 
@@ -212,11 +207,9 @@ public class GrainCollectionCache<TValue>
         }
         else
         {
-            GetOrCreateImpl = (_, _) => throw new NotImplementedException($"Either implement {typeof(IObservableCreatesAsync<string, TValue>).FullName} on {nameof(CollectionGrain)} or set {nameof(GetOrCreateImpl)}");
+            return (_, _) => throw new NotImplementedException($"Either implement {typeof(IObservableCreatesAsync<string, TValue>).FullName} on {nameof(CollectionGrain)} or set {nameof(GetOrCreateImpl)}");
         }
     }
-
-    public static Func<IGrain, (string, Type), Task<TValue>> GetOrCreateImpl;
 
     #endregion
 
@@ -279,9 +272,16 @@ public class GrainCollectionCache<TValue>
     // ENH: Tracking operations in progress
     //public SourceList<ChangeSet<KeyValuePair<GrainId, TItemGrain?>>> OperationsInProgress;
 
+    #region Mutation
+
+    // NEW
+    public override ValueTask Add(TValue value) => throw new NotImplementedException();
+    // NEW
+    public override ValueTask Upsert(TValue value) => throw new NotImplementedException();
+
     #region Remove
 
-    public override async Task<bool> Remove(string key)
+    public override async ValueTask<bool> Remove(string key)
     {
         if (CollectionGrain == null) { throw new InvalidOperationException($"Cannot invoke while {nameof(CollectionGrain)} is null"); }
 
@@ -303,10 +303,12 @@ public class GrainCollectionCache<TValue>
         return result;
     }
 
-    public override Task<bool> Remove(TValue item) => Remove(item.GetPrimaryKeyString());
+    public override ValueTask<bool> Remove(TValue item) => Remove(item.GetPrimaryKeyString());
 
     //public Task<bool> Remove(KeyValuePair<string, TItemGrain> item)
     //    => Remove(item.Key); // Alternative: ask the collection to remove the KeyValuePair
+
+    #endregion
 
     #endregion
 
@@ -321,7 +323,7 @@ public class GrainCollectionCache<TValue>
     Lazy<List<IAsyncDisposable>> subscriptions = new();
 
     public void OnSubscribing(IAsyncDisposable asyncDisposable) => subscriptions.Value.Add(asyncDisposable);
-    public ValueTask Unsubscribe() 
+    public ValueTask Unsubscribe()
         => ValueTaskEx.WhenAll(Interlocked.Exchange(ref subscriptions, new()).Value.Select(v => v.DisposeAsync()));
 
     #endregion
@@ -351,7 +353,7 @@ public class GrainCollectionCache<TValue>
     //public async Task UnsubscribeViaGrainObserver()
     //{
     //    await grainObserverSubscription.DisposeAsync().ConfigureAwait(false);
-        
+
     //    var reSyncViaObserver = ReSyncViaObserver;
     //    ReSyncViaObserver = null;
     //    reSyncViaObserver?.Dispose();
@@ -385,7 +387,7 @@ public class GrainCollectionCache<TValue>
     //bool syncViaStream;
 
     #endregion
-   
+
 
     #region System.IAsyncObservable
 

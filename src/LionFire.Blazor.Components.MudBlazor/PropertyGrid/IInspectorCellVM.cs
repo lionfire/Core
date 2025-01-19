@@ -5,10 +5,10 @@ using Microsoft.CodeAnalysis.CSharp.Syntax;
 
 namespace LionFire.Blazor.Components.MudBlazor_.PropertyGrid;
 
-public class InspectorCellVM : ReactiveObject
+public partial class InspectorCellVM : ReactiveObject
 {
-    [Reactive]
-    public object? Value { get; set; }
+    [ReactiveUI.SourceGenerators.Reactive]
+    private object? _value;
 
     public Type ValueType { get; set; }
 

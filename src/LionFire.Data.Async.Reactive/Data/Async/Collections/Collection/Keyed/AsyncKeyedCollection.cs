@@ -7,13 +7,13 @@ namespace LionFire.Data.Collections;
 
 
 
-public struct Label<TKey, TValue>
-    where TKey : notnull
-    where TValue : notnull
-{
-    public TKey Key;
-    public TValue Value;
-}
+//public struct Label<TKey, TValue>
+//    where TKey : notnull
+//    where TValue : notnull
+//{
+//    public TKey Key;
+//    public TValue Value;
+//}
 #if false //OLD: This is what AsyncDictionary is for
 public abstract class AsyncLabelledCollection<TKey, TValue> : AsyncKeyedCollection<TKey, Label<TKey, TValue>>
 {
@@ -24,7 +24,6 @@ public abstract class AsyncLabelledCollection<TKey, TValue> : AsyncKeyedCollecti
 #endif
 
 /// <summary>
-/// Read-only by default.  Override IsReadOnly and add more interfaces for read-write.
 /// </summary>
 /// <typeparam name="TKey"></typeparam>
 /// <typeparam name="TValue"></typeparam>
@@ -50,9 +49,8 @@ public abstract class AsyncKeyedCollection<TKey, TValue>
 
     #region IsReadOnly
 
-    public bool IsReadOnly => isReadOnly;
-    private bool isReadOnly = false;
-    public void SetIsReadOnly(bool readOnly) => isReadOnly = readOnly;
+    public virtual bool IsReadOnly => false;
+    //public void SetIsReadOnly(bool readOnly) => isReadOnly = readOnly;
 
     #endregion
 

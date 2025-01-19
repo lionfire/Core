@@ -1,4 +1,5 @@
-﻿using System.Reactive.Subjects;
+﻿#if DISCARD
+using System.Reactive.Subjects;
 
 namespace LionFire.Data.Collections;
 
@@ -21,11 +22,11 @@ public abstract class AsyncTransformingDictionary<TKey, TUnderlying, TUsable>
 
     public override bool IsReadOnly => false;
 
-    IEnumerable<KeyValuePair<TKey, TUsable>>? IGetter<IEnumerable<KeyValuePair<TKey, TUsable>>>.ReadCacheValue => throw new NotImplementedException();
+    //IEnumerable<KeyValuePair<TKey, TUsable>>? IGetter<IEnumerable<KeyValuePair<TKey, TUsable>>>.ReadCacheValue => throw new NotImplementedException();
 
-    IEnumerable<KeyValuePair<TKey, TUsable>>? IReadWrapper<IEnumerable<KeyValuePair<TKey, TUsable>>>.Value => throw new NotImplementedException();
+    //IEnumerable<KeyValuePair<TKey, TUsable>>? IReadWrapper<IEnumerable<KeyValuePair<TKey, TUsable>>>.Value => throw new NotImplementedException();
 
-    IObservable<ITask<IGetResult<IEnumerable<KeyValuePair<TKey, TUsable>>>>> IObservableGetOperations<IEnumerable<KeyValuePair<TKey, TUsable>>>.GetOperations => throw new NotImplementedException();
+    //IObservable<ITask<IGetResult<IEnumerable<KeyValuePair<TKey, TUsable>>>>> IObservableGetOperations<IEnumerable<KeyValuePair<TKey, TUsable>>>.GetOperations => throw new NotImplementedException();
 
     //IObservable<ITask<IGetResult<IEnumerable<KeyValuePair<TKey, TUsable>>>>> IObservableGetOperations<IEnumerable<KeyValuePair<TKey, TUsable>>>.GetOperations => getOperations;
 
@@ -34,7 +35,7 @@ public abstract class AsyncTransformingDictionary<TKey, TUnderlying, TUsable>
     #region Mutation
 
     public virtual ValueTask<bool> TryAdd(TKey key, TUsable item) => underlying.TryAdd(key, Serialize(item));
-    public ValueTask<bool?> Upsert(TKey key, TUsable item) => underlying.Upsert(key, Serialize(item));
+    public virtual ValueTask Upsert(TKey key, TUsable item) => underlying.Upsert(key, Serialize(item));
 
     //public virtual ValueTask<bool> Remove(TUsable item) => throw new NotSupportedException();
 
@@ -45,3 +46,5 @@ public abstract class AsyncTransformingDictionary<TKey, TUnderlying, TUsable>
     #endregion
 
 }
+
+#endif

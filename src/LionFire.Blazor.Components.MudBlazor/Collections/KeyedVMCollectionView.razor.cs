@@ -1,3 +1,5 @@
+// DUPE of KeyedCollectionView?
+
 #nullable enable
 
 using Microsoft.AspNetCore.Components;
@@ -36,6 +38,7 @@ public partial class KeyedVMCollectionView<TKey, TValue, TValueVM>
     , IComponentized
     , IGetsOrCreatesByType
     where TKey : notnull
+    //where TValueVM : // IKeyed<TKey> - Not sure I want to impose this constraint 
 {
     #region Aspects
 
@@ -275,7 +278,7 @@ public partial class KeyedVMCollectionView<TKey, TValue, TValueVM>
 
         foreach (var prop in properties)
         {
-            KeyedCollectionViewUtilities.BuildPropertyColumn<TValueVM, TValue>(builder, prop);
+            MudDataGridUtilities.BuildPropertyColumn<TValueVM, TValue>(builder, prop);
 
             //if (prop.PropertyType == typeof(string))
             //{
@@ -289,7 +292,7 @@ public partial class KeyedVMCollectionView<TKey, TValue, TValueVM>
         properties = typeof(TValue).GetProperties();
         foreach (var prop in properties)
         {
-            KeyedCollectionViewUtilities.BuildPropertyColumn<TValueVM, TValue>(builder, prop, "Value");
+            MudDataGridUtilities.BuildPropertyColumn<TValueVM, TValue>(builder, prop, "Value");
             //    if (prop.PropertyType == typeof(string))
             //    {
             //        //BuildPropertyColumn(builder, prop, "p => p.Value.");
@@ -444,7 +447,7 @@ public partial class KeyedVMCollectionView<TKey, TValue, TValueVM>
     }
     ConcurrentDictionary<Type, object>? components;
 
-    [Reactive]
+    //[Reactive]
     public bool CanCreate { get; set; }
     public void OnCreate(Type t)
     {

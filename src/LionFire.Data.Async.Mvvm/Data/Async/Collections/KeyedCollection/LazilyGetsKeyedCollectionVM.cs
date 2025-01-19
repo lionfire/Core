@@ -33,7 +33,7 @@ public class LazilyGetsKeyedCollectionVM<TKey, TValue, TValueVM, TCollection>
     public LazilyGetsKeyedCollectionVM(IViewModelProvider viewModelProvider, Func<TValueVM, TKey>? keySelector = null) : base(viewModelProvider)
     {
         KeySelector = keySelector;
-        if(KeySelector == null)
+        if (KeySelector == null)
         {
             if (typeof(TValueVM).IsAssignableTo(typeof(IKeyed<TKey>)))
             {
@@ -57,7 +57,7 @@ public class LazilyGetsKeyedCollectionVM<TKey, TValue, TValueVM, TCollection>
                     .Transform(CreateViewModel)
             )
         .Switch()
-            .BindToObservableListAction(list => ValueVMs = list)
+            .BindToObservableListAction(list => ValueVMs = list!)
             .Subscribe();
 #else
         this
@@ -121,7 +121,7 @@ public class LazilyGetsKeyedCollectionVM<TKey, TValue, TValueVM, TCollection>
     public IObservable<IObservable<IChangeSet<TValueVM, TKey>>> ValueVMCollections => valueVMCollections;
     BehaviorSubject<IObservable<IChangeSet<TValueVM, TKey>>> valueVMCollections = new(Observable.Empty<IChangeSet<TValueVM, TKey>>());
 
-    public IObservableList<TValueVM>? ValueVMs
+    public IObservableList<TValueVM> ValueVMs
     {
         get => valueVMs;
         set
@@ -142,13 +142,10 @@ public class LazilyGetsKeyedCollectionVM<TKey, TValue, TValueVM, TCollection>
                     .Connect()
                     .Bind(bindingList)
                     .Subscribe();
-
-           
-                    
             }
         }
     }
-    private IObservableList<TValueVM>? valueVMs;
+    private IObservableList<TValueVM> valueVMs = null!;
 
     #region IObservableCache
 

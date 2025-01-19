@@ -1,5 +1,13 @@
 ﻿
+using System.Reactive.Linq;
+
 namespace LionFire.Data.Async.Gets;
+
+// REVIEW: Look at alternate approach using IObservable, and keep a last value using:
+// - Latest
+// - BehaviorSubject
+//   - or ReplaySubject with size of 1
+// - Scan
 
 /// <summary>
 /// 

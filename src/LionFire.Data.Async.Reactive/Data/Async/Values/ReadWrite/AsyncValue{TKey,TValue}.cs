@@ -3,7 +3,7 @@ using System.Reactive.Subjects;
 
 namespace LionFire.Data.Async;
 
-public abstract class AsyncValue<TKey, TValue>
+public abstract partial class AsyncValue<TKey, TValue>
     : Getter<TKey, TValue>
     , IValueRxO<TValue>
     , ISetsInternal<TValue>
@@ -84,8 +84,8 @@ public abstract class AsyncValue<TKey, TValue>
 
     #region Get+Set 
 
-    [Reactive]
-    public bool ValueChangedWhileValueStaged { get; set; }
+    [ReactiveUI.SourceGenerators.Reactive]
+    private bool _valueChangedWhileValueStaged;
 
     public new TValue? Value
     {
@@ -104,11 +104,11 @@ public abstract class AsyncValue<TKey, TValue>
 
     #region State
 
-    [Reactive]
-    public TValue? StagedValue { get; set; }
+    [ReactiveUI.SourceGenerators.Reactive]
+    private TValue? _stagedValue;
 
-    [Reactive]
-    public bool HasStagedValue { get; set; }
+    [ReactiveUI.SourceGenerators.Reactive]
+    private bool _hasStagedValue;
 
     public void DiscardStagedValue()
     {

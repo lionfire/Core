@@ -1,15 +1,14 @@
 ﻿
-using ReactiveUI.Fody.Helpers;
 
 namespace LionFire.Inspection;
 
-public class ObjectInspectionAdapter<TObject> : ReactiveObject
+public partial class ObjectInspectionAdapter<TObject> : ReactiveObject
 {
     public ObjectInspectionAdapter(TObject obj)
     {
         Object = obj;
     }
 
-    [Reactive]
-    public TObject? Object { get; set; }
+    [ReactiveUI.SourceGenerators.Reactive]
+    private TObject? _object;
 }

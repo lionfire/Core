@@ -132,14 +132,14 @@ public class GrainPropertiesGroup : SyncFrozenGroup
 
     }
         
-    protected override IEnumerable<KeyValuePair<string, INode>> GetChildren()
+    protected override IEnumerable<INode> GetChildren()
     {
         var list = GetChildren2().ToList();
         //list.Sort(NodeInfoKVSorter.Instance);
         return list;
     }
 
-    protected IEnumerable<KeyValuePair<string, INode>> GetChildren2()
+    protected IEnumerable<INode> GetChildren2()
     {
         var type = this.Parent!.Source?.GetType();
 
@@ -151,27 +151,30 @@ public class GrainPropertiesGroup : SyncFrozenGroup
             {
                 if (info.CanWrite())
                 {
-                    yield return new KeyValuePair<string, INode>(info.Name ?? NullConstants.NullDisplayString, new GrainReadWritePropertyNode(this, Parent.Source, info));
+                    //yield return new INode(info.Name ?? NullConstants.NullDisplayString, new GrainReadWritePropertyNode(this, Parent.Source, info));
+                    yield return new GrainReadWritePropertyNode(this, Parent.Source, info);
 
                 }
                 else
                 {
-                    yield return new KeyValuePair<string, INode>(info.Name ?? NullConstants.NullDisplayString, new GrainReadPropertyNode(this, Parent.Source, info));
+                    //yield return new INode(info.Name ?? NullConstants.NullDisplayString, new GrainReadPropertyNode(this, Parent.Source, info));
+                    yield return  new GrainReadPropertyNode(this, Parent.Source, info);
                 }
             }
             else if (info.CanWrite())
             {
-                yield return new KeyValuePair<string, INode>(info.Name ?? NullConstants.NullDisplayString, new GrainWritePropertyNode(this, Parent.Source, info));
+                //yield return new INode(info.Name ?? NullConstants.NullDisplayString, new GrainWritePropertyNode(this, Parent.Source, info));
+                yield return new GrainWritePropertyNode(this, Parent.Source, info);
             }
         }
     }
 }
 
-//public class NodeInfoKVSorter : IComparer<KeyValuePair<string, INode>>
+//public class NodeInfoKVSorter : IComparer<INode>
 //{
 //    public static readonly NodeInfoKVSorter Instance = new();
 
-//    public int Compare(KeyValuePair<string, INode> x, KeyValuePair<string, INode> y) 
+//    public int Compare(INode x, INode y) 
 //        => NodeInfoSorter.Instance.Compare(x.Value?.Info, y.Value?.Info);
 //}
 

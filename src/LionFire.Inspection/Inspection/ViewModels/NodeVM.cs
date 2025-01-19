@@ -20,7 +20,7 @@ namespace LionFire.Inspection.ViewModels;
 ///  - inheritable options. 
 ///  - IFlex support for attaching arbitrary data
 /// </summary>
-public class NodeVM : ReactiveObject, IViewModel<INode>, IParented<NodeVM>, IHas<IInspectorOptions>, IFlex
+public partial class NodeVM : ReactiveObject, IViewModel<INode>, IParented<NodeVM>, IHas<IInspectorOptions>, IFlex
 {
     #region Relationships
 
@@ -199,8 +199,9 @@ public class NodeVM : ReactiveObject, IViewModel<INode>, IParented<NodeVM>, IHas
     /// <summary>
     /// Local options, not inherited.  See EffectiveOptions for inherited options.
     /// </summary>
-    [Reactive]
-    public InspectorOptions? LocalOptions { get; set; }
+    [ReactiveUI.SourceGenerators.Reactive]
+    private InspectorOptions? _localOptions;
+
     public InspectorOptions GetLocalOptions(bool useDefaults = false) => LocalOptions ??= (useDefaults ? (InspectorOptions)InspectorOptions.DefaultDefault.Clone() : new());
     IInspectorOptions? IHas<IInspectorOptions>.Object => LocalOptions;
 
@@ -221,8 +222,8 @@ public class NodeVM : ReactiveObject, IViewModel<INode>, IParented<NodeVM>, IHas
 
     #endregion
 
-    [Reactive]
-    public bool ShowChildren { get; set; }
+    [ReactiveUI.SourceGenerators.Reactive]
+    private bool _showChildren;
 
     #region Individual Options
 

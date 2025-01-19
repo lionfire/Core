@@ -13,10 +13,3 @@ public interface IAsyncSubjectO<TValue>
 {
 
 }
-
-public interface IAsyncObservableO<TValue> 
-    : System.IAsyncObserver<TValue> // ENH: [OneWay] on IAsyncObserver methods
-    , IGrainObserver
-{
-
-}

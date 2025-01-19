@@ -12,12 +12,12 @@ namespace LionFire.Data.Async;
 /// The intended purpose is to act as a write-through cache or proxy for a remote object.
 /// </summary>
 /// <typeparam name="TObject"></typeparam>
-public class AsyncObject<TObject> : ReactiveObject
+public partial class AsyncObject<TObject> : ReactiveObject
 {
     #region Relationships
 
-    [Reactive]
-    public TObject Target { get; set; }
+    [ReactiveUI.SourceGenerators.Reactive]
+    private TObject _target;
 
     #endregion
 
