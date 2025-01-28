@@ -5,6 +5,8 @@ using Microsoft.Extensions.Hosting;
 using Orleans.Configuration;
 using Polly;
 using Polly.Retry;
+using LionFire.Deployment;
+using System.Reflection;
 
 namespace LionFire.Hosting;
 
@@ -35,6 +37,37 @@ public static class OrleansClientResilienceX
   ;
 }
 
+public static class OrleansServiceIdX
+{
+    public static string ClusterConfigKey => "Orleans:Cluster"; // ENH: Ability to configure multiple clusters
+
+
+    public static string ServiceIdWithReleaseChannelSuffix(IConfiguration configuration)
+    {
+        var clusterConfig = new OrleansClusterConfig();
+        configuration.GetSection(ClusterConfigKey).Bind(clusterConfig);
+        var ClusterConfig = clusterConfig;
+
+        if (ClusterConfig.ServiceId != null) return ClusterConfig.ServiceId;
+
+        var result = ClusterConfig.BaseServiceId;
+        if (result == null)
+        {
+            result = Assembly.GetEntryAssembly()?.FullName ?? throw new NotSupportedException($"{nameof(ClusterConfig.ServiceId)} is not available because Assembly.GetEntryAssembly()?.FullName returned null. Set manually: {ClusterConfigKey}:ServiceId");
+            result = result.Substring(0, result.IndexOf(','));
+            result = result.Replace(".Silo", "");
+        }
+        var releaseChannel = configuration["releaseChannel"] ?? DefaultReleaseChannels.Prod.Id;
+
+        if (!string.IsNullOrWhiteSpace(releaseChannel) && releaseChannel != DefaultReleaseChannels.Prod.Id)
+        {
+            result += "-" + releaseChannel;
+        }
+        return result;
+    }
+
+}
+
 public static class OrleansClientServiceCollectionExtensions
 {
     public static IHostApplicationBuilder UseOrleansClient_LF(this IHostApplicationBuilder hostBuilder, string? clusterName = null)
@@ -46,6 +79,19 @@ public static class OrleansClientServiceCollectionExtensions
             .AddOrleansClient(builder =>
         {
             var configKey = string.IsNullOrWhiteSpace(clusterName) ? "Orleans:Cluster" : "Orleans:Clusters:" + clusterName;
+
+            var serviceId = hostBuilder.Configuration.GetSection(configKey)["ServiceId"];
+            if (string.IsNullOrWhiteSpace(serviceId))
+            {
+                var s = OrleansServiceIdX.ServiceIdWithReleaseChannelSuffix(hostBuilder.Configuration);
+                if (s != null)
+                {
+                    hostBuilder.Configuration.AddInMemoryCollection(new Dictionary<string, string?>
+                    {
+                        { $"{configKey}:ServiceId", s }
+                    });
+                }
+            }
 
             builder.Configure<ClusterOptions>(hostBuilder.Configuration.GetSection(configKey));
 

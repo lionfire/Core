@@ -23,16 +23,40 @@ using System.Diagnostics;
 using Orleans.Runtime;
 using System.IO;
 using LionFire.Net;
+using System.Threading.Tasks;
+using System.Text.Unicode;
+using System.Text;
 
 namespace LionFire.Hosting;
 
 public static class SiloHostBuilder
 {
+
+    private static async ValueTask ClearConsulSilos(LionFireHostBuilderWrapper lf)
+    {
+        using var consulClient = new ConsulClient();
+
+        var clusterId = new LionFireSiloConfigurator(lf.Configuration).ServiceId;
+        if (clusterId != null)
+        {
+            var kvPairs = await consulClient.KV.List(clusterId);
+            if (kvPairs.Response != null)
+            {
+                foreach (var kvPair in kvPairs.Response.Where(kvp => kvp.Key.Contains("127.0.0.1")))
+                {
+                    await consulClient.KV.Delete(kvPair.Key);
+                }
+            }
+        }
+    }
+
     public static ILionFireHostBuilder Silo(this ILionFireHostBuilder lf, Action<HostBuilderContext, ISiloBuilder>? configureSilo = null, Action<SiloProgramConfig>? configureOptions = null)
     {
         OrleansStaticInitialization.InitOrleans();
 
         var siloOptions2 = new SiloProgramConfig(lf.HostBuilder.Configuration);
+
+        ClearConsulSilos(lf.HostBuilder).AsTask().Wait(); // TEMP - move this to a configurable location in the framework somewhere, and do not run in prod, obviously.
 
         lf
             .ConfigureServices((context, services) =>
@@ -44,14 +68,14 @@ public static class SiloHostBuilder
 
                 services
                     .AddOrleans()
-                    
+
                     .Configure<SiloProgramConfig>(context.Configuration.GetSection(siloOptions.ConfigLocation))
                     .Configure<PortsConfig>(context.Configuration.GetSection(PortsConfig.DefaultConfigLocation))
                     .AddTransient<LionFireSiloConfigurator>()
 
 
                     .If(siloOptions.SiloHealthCheckEnabled, s => s.AddSiloHealthChecks(context))
-                   // .If(!siloOptions.SiloHealthCheckOnPrimaryWebHost, s => s.AddHostedService<OrleansHealthCheckHostedService>()) // OLD
+                    // .If(!siloOptions.SiloHealthCheckOnPrimaryWebHost, s => s.AddHostedService<OrleansHealthCheckHostedService>()) // OLD
 
                     .Configure<OrleansClusterConfig>(o => context.Configuration.Bind("Orleans:Cluster", o))
                     .Configure<SiloOptions>(options => options.SiloName ??= $"LFSilo_{Guid.NewGuid().ToString("N").Substring(0, 5)}")
@@ -152,7 +176,7 @@ public static class SiloHostBuilder
                 ;
             })
             .HostBuilder
-            .If(!siloOptions2.SiloHealthCheckOnPrimaryWebHost, b => 
+            .If(!siloOptions2.SiloHealthCheckOnPrimaryWebHost, b =>
             throw new NotImplementedException("TODO: SiloHealthCheckOnPrimaryWebHost == false not implemented yet")
             //b.ConfigureWebHostDefaults(builder => builder.UseSiloHealthChecks(myOptions))
             )

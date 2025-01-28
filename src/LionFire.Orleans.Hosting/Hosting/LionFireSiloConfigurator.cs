@@ -11,17 +11,17 @@ using HostBuilderContext = Microsoft.Extensions.Hosting.HostBuilderContext;
 using Orleans.Serialization;
 using Microsoft.Extensions.Options;
 using LionFire.Net;
+using LionFire.Deployment;
 
 namespace LionFire.Hosting;
 
-// REVIEW: Streamline this with SiloProgramConfig somehow?
+// REVIEW: Streamline this with SiloProgramConfig or Microsoft's Configure framework somehow?
 public class LionFireSiloConfigurator
 {
     #region Dependencies
 
     //public IOptions<OrleansClusterConfig> Options { get; }
 
-    public string ClusterConfigKey => "Orleans:Cluster"; // ENH: Ability to configure multiple clusters
     OrleansClusterConfig ClusterConfig { get; }
     public IConfiguration Configuration { get; }
 
@@ -41,7 +41,7 @@ public class LionFireSiloConfigurator
         //Options = options;
 
         var clusterConfig = new OrleansClusterConfig();
-        configuration.GetSection(ClusterConfigKey).Bind(clusterConfig);
+        configuration.GetSection(OrleansServiceIdX.ClusterConfigKey).Bind(clusterConfig);
         ClusterConfig = clusterConfig;
     }
 
@@ -65,23 +65,25 @@ public class LionFireSiloConfigurator
     {
         get
         {
-            if(ClusterConfig.ServiceId != null) return ClusterConfig.ServiceId;
+            return OrleansServiceIdX.ServiceIdWithReleaseChannelSuffix(Configuration) ?? "default";
+            //if (ClusterConfig.ServiceId != null) return ClusterConfig.ServiceId;
 
-            var result = Assembly.GetEntryAssembly()?.FullName ?? throw new NotSupportedException($"{nameof(ServiceId)} is not available because Assembly.GetEntryAssembly()?.FullName returned null. Set manually: {ClusterConfigKey}:ServiceId");
-            result = result.Substring(0, result.IndexOf(','));
-            result = result.Replace(".Silo", "");
+            //var result = Assembly.GetEntryAssembly()?.FullName ?? throw new NotSupportedException($"{nameof(ServiceId)} is not available because Assembly.GetEntryAssembly()?.FullName returned null. Set manually: {ClusterConfigKey}:ServiceId");
+            //result = result.Substring(0, result.IndexOf(','));
+            //result = result.Replace(".Silo", "");
 
-            var releaseChannel = Configuration["releaseChannel"] ?? "prod";
+            //var releaseChannel = Configuration["releaseChannel"] ?? DefaultReleaseChannels.Prod.Id;
+            
+            //if (!string.IsNullOrWhiteSpace(releaseChannel) && releaseChannel != DefaultReleaseChannels.Prod.Id)
+            //{
+            //    result += "-" + releaseChannel;
+            //}
 
-            if (!string.IsNullOrWhiteSpace(releaseChannel) && releaseChannel != "prod")
-            {
-                result += "-" + releaseChannel;
-            }
-
-            return result;
+            //return result;
         }
     }
 
+    
     #endregion
 }
 

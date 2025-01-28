@@ -24,6 +24,7 @@ public class OrleansClusterConfig
     /// See https://github.com/dotnet/orleans/issues/5696#issuecomment-503595998
     /// </remarks>
     public string ServiceId { get; set; }
+    public string? BaseServiceId { get; set; }
 
     #endregion
 
