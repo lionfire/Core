@@ -89,7 +89,17 @@ public class AssemblyVersionLogger(ILogger<AssemblyVersionLogger> logger, IOptio
         }
         foreach (var a in assembly.GetReferencedAssemblies())
         {
-            Recurse(Assembly.Load(a), list, depth + 1);
+            Assembly loaded;
+            try
+            {
+                loaded = Assembly.Load(a);
+            }
+            catch(Exception ex)
+            {
+                logger.LogWarning("Could not load referenced assembly: {assembly}", a.FullName);
+                continue;
+            }
+            Recurse(loaded, list, depth + 1);
         }
     }
 

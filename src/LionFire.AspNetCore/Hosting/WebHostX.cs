@@ -45,7 +45,7 @@ public class LionFireWebHostBuilder
 
 public static class LionFireWebHostBuilderX
 {
-    private static string prefix => WebHostConfig.DefaultConfigLocation;
+    public static string prefix => WebHostConfig.DefaultConfigLocation;
 
     public static LionFireWebHostBuilder Http(this LionFireWebHostBuilder lfw, bool enabled = true)
     { lfw.Builder.ConfigureDefaults([new($"{prefix}:{nameof(WebHostConfig.Http)}", enabled.ToString())]); return lfw; }
@@ -55,6 +55,9 @@ public static class LionFireWebHostBuilderX
     public static LionFireWebHostBuilder BlazorServer(this LionFireWebHostBuilder lfw, bool enabled = true) => lfw.BlazorInteractiveServer(enabled);
     public static LionFireWebHostBuilder BlazorInteractiveServer(this LionFireWebHostBuilder lfw, bool enabled = true)
     { lfw.Builder.ConfigureDefaults([new($"{prefix}:{nameof(WebHostConfig.BlazorInteractiveServer)}", enabled.ToString())]); return lfw; }
+    
+    //public static LionFireWebHostBuilder Mvc(this LionFireWebHostBuilder lfw, bool enabled = true)
+    //{ lfw.Builder.ConfigureDefaults([new($"{prefix}:{nameof(WebHostConfig.Mvc)}", enabled.ToString())]); return lfw; }
 
 }
 

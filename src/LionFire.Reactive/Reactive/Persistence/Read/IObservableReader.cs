@@ -18,7 +18,7 @@ public interface IObservableReader<TKey, TValue>
     /// <summary>
     /// Only subscribe if you want to load (deserialize) all available items
     /// </summary>
-    IObservableCache<TValue, TKey> Items { get; }
+    IObservableCache<TValue, TKey> ObservableCache { get; }
 
     IObservable<TValue?> Listen(TKey key);
 

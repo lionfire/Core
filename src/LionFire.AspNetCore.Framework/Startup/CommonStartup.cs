@@ -1,12 +1,11 @@
-﻿
-
-using LionFire.Hosting;
+﻿using LionFire.Hosting;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
+using System.Reflection;
 
 namespace LionFire.AspNetCore;
 
@@ -38,7 +37,7 @@ public class CommonStartup<TConfig>
 
         //ConfigureCore(app, env);
     }
-
+   
     //protected virtual void ConfigureCore(IApplicationBuilder app, IWebHostEnvironment env) // OLD
     //{
     //    //var options = app.ApplicationServices.GetRequiredService<IOptionsMonitor<TConfig>>().CurrentValue;
@@ -49,5 +48,7 @@ public class CommonStartup<TConfig>
     //}
 
     protected virtual Action<IEndpointRouteBuilder>? configureEndpoints => null;
+
+
 
 }

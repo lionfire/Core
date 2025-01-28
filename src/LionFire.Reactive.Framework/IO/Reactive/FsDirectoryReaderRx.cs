@@ -1,4 +1,5 @@
 ﻿using DynamicData.Binding;
+using LionFire.IO.Reactive.Filesystem;
 using LionFire.IO.Reactive.Hjson;
 using LionFire.Reactive.Persistence;
 using System.Collections.Generic;
@@ -15,13 +16,13 @@ public abstract class FsDirectoryReaderRx<TKey, TValue> : IObservableReader<TKey
 
     #region Parameters
 
-    public string Dir { get; }
+    public DirectorySelector Dir { get; }
 
     #endregion
 
     #region Lifecycle
 
-    public FsDirectoryReaderRx(string dir)
+    public FsDirectoryReaderRx(DirectorySelector dir)
     {
         Dir = dir;
         _ = LoadKeys();
@@ -45,7 +46,7 @@ public abstract class FsDirectoryReaderRx<TKey, TValue> : IObservableReader<TKey
             //.Where(change => change.Current.Value != null)
             .AsObservableCache()
             ;
-        Items = KeyedItems.Connect().Transform(x => x.Value).AsObservableCache();
+        ObservableCache = KeyedItems.Connect().Transform(x => x.Value).AsObservableCache();
 
 
     }
@@ -58,7 +59,7 @@ public abstract class FsDirectoryReaderRx<TKey, TValue> : IObservableReader<TKey
     private readonly ObservableCollection<TKey> keys = new();
 
     public IObservableCache<KeyValuePair<TKey, TValue>, TKey> KeyedItems { get; }
-    public IObservableCache<TValue, TKey> Items { get; }
+    public IObservableCache<TValue, TKey> ObservableCache { get; }
 
 
     #endregion
@@ -67,9 +68,9 @@ public abstract class FsDirectoryReaderRx<TKey, TValue> : IObservableReader<TKey
     {
         await Task.Run(() =>
         {
-            if (Directory.Exists(Dir))
+            if (Directory.Exists(Dir.Path))
             {
-                var files = Directory.GetFiles(Dir, "*" + Extension);
+                var files = Directory.GetFiles(Dir.Path, "*" + Extension, new EnumerationOptions { RecurseSubdirectories = Dir.Recursive });
                 foreach (var file in files)
                 {
                     var key = Path.GetFileNameWithoutExtension(file);
@@ -84,7 +85,7 @@ public abstract class FsDirectoryReaderRx<TKey, TValue> : IObservableReader<TKey
 
     public abstract IObservable<TValue?> Listen(TKey key);
 
-    protected string GetFilePath(TKey key) => Path.Combine(Dir, $"{key}{Extension}");
+    protected string GetFilePath(TKey key) => Path.Combine(Dir.Path ?? throw new ArgumentNullException(), $"{key}{Extension}");
 
     protected TValue? ReadFromFile(string filePath)
     {

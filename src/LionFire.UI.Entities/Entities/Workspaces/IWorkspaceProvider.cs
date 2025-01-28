@@ -1,4 +1,5 @@
-﻿#nullable enable
+﻿#if false // OLD
+#nullable enable
 using LionFire.Referencing;
 
 namespace LionFire.UI.Workspaces;
@@ -26,3 +27,5 @@ public static class IWorkspaceProviderExtensions
     public static IWorkspace Get(this IWorkspaceProvider workspaceProvider, string? key = null, IReference? template = null)
         => workspaceProvider.Query(key ?? WorkspaceConstants.DefaultWorkspaceKey) ?? workspaceProvider.Create(key ?? WorkspaceConstants.DefaultWorkspaceKey, template);
 }
+
+#endif

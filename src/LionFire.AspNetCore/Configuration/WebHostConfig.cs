@@ -5,6 +5,7 @@ using Microsoft.Extensions.Configuration;
 using System.Collections.Generic;
 using static LionFire.Net.PortConfiguration;
 using LionFire.ExtensionMethods.Configuration;
+using System.Reflection;
 
 namespace LionFire.AspNetCore;
 
@@ -75,6 +76,7 @@ public class WebHostConfig : HasPortsConfigBase, IHasConfigLocation
     #endregion
 
     public bool BlazorInteractiveServer { get; set; }
+        public virtual Assembly[] AdditionalRazorAssemblies => [];
 
 
     #region Program Requirements: set in derived classes

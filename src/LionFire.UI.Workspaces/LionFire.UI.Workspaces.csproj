@@ -1,9 +1,16 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFrameworks>netstandard2.0</TargetFrameworks>
+    <TargetFrameworks>net9.0</TargetFrameworks>
 		<ProduceReferenceAssembly>true</ProduceReferenceAssembly>
 		<Configurations>Debug;Release</Configurations>
+		<RootNamespace>LionFire</RootNamespace>
 	</PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\LionFire.Flex\LionFire.Flex.csproj" />
+    <ProjectReference Include="..\LionFire.Reactive\LionFire.Reactive.csproj" />
+    <ProjectReference Include="..\LionFire.Structures\LionFire.Structures.csproj" />
+  </ItemGroup>
 
 </Project>

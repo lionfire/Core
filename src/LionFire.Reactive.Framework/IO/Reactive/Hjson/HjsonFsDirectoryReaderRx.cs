@@ -1,4 +1,5 @@
-﻿using LionFire.Reactive.Persistence;
+﻿using LionFire.IO.Reactive.Filesystem;
+using LionFire.Reactive.Persistence;
 using System.IO;
 
 namespace LionFire.IO.Reactive.Hjson;
@@ -11,7 +12,7 @@ where TValue : notnull
 
     #region Lifecycle
 
-    public HjsonFsDirectoryReaderRx(string dir) : base(dir)
+    public HjsonFsDirectoryReaderRx(DirectorySelector dir) : base(dir)
     {
         _ = LoadKeys();
     }

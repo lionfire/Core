@@ -219,7 +219,7 @@ public static class WebHostFrameworkStartupInitializer
 
         RazorComponentsEndpointConventionBuilder? razorComponentsEndpointConventionBuilder = null;
 
-        if (options.RequiresStaticFiles) 
+        if (options.RequiresStaticFiles)
         {
             endpoints.MapStaticAssets();
         }
@@ -227,6 +227,11 @@ public static class WebHostFrameworkStartupInitializer
         if (options.RootComponent != null)
         {
             razorComponentsEndpointConventionBuilder = (RazorComponentsEndpointConventionBuilder)typeof(RazorComponentsEndpointRouteBuilderExtensions).GetMethod("MapRazorComponents")!.MakeGenericMethod(options.RootComponent).Invoke(null, [endpoints!])!;
+
+            if (options.AdditionalRazorAssemblies.Length > 0)
+            {
+                razorComponentsEndpointConventionBuilder.AddAdditionalAssemblies(options.AdditionalRazorAssemblies);
+            }
         }
 
         if (options.RequiresBlazorInteractiveServer)
@@ -237,8 +242,8 @@ public static class WebHostFrameworkStartupInitializer
             }
             else
             {
-                endpoints.MapBlazorHub();
                 //throw new Exception("TODO - REVIEW");
+                //endpoints.MapBlazorHub(); // Older versions of .NET
             }
         }
         if (/* OLD - RazorPages no longer needed to bootstrap Blazor  options.RequiresBlazorInteractiveServer || */ options.RequiresRazorPages)
@@ -246,7 +251,7 @@ public static class WebHostFrameworkStartupInitializer
             endpoints.MapRazorPages();
         }
 
-        if (options.Swagger)
+        if (options.Swagger || options.RequiresSwagger)
         {
 #if Swashbuckle
             endpoints.MapSwagger();

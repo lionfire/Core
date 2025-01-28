@@ -1,5 +1,5 @@
 ﻿@page "/w/{WorkspaceKey}/{WorkspaceItemKey}"
-@inject IWorkspaceProvider WorkspaceProvider
+@* @inject IWorkspaceProvider WorkspaceProvider *@
 
 <h3>WorkspaceItemContent</h3>
 <p>workspace: @Workspace?.GetType().FullName</p>
@@ -15,13 +15,13 @@
     public string? WorkspaceItemKey { get; set; }
 
     public IWorkspace? Workspace { get; private set; }
-    public object WorkspaceItem { get; private set; }
+    public object? WorkspaceItem { get; private set; }
 
     protected override Task OnParametersSetAsync()
     {
         base.OnParametersSetAsync();
-        Workspace = WorkspaceProvider.Query(WorkspaceKey);
-        WorkspaceItem = Workspace?.Items.Where(i => i.Key == WorkspaceItemKey).FirstOrDefault();
+        // Workspace = WorkspaceProvider.Query(WorkspaceKey);
+        // WorkspaceItem = Workspace?.Items.Where(i => i.Key == WorkspaceItemKey).FirstOrDefault();
 
         return Task.CompletedTask;
     }

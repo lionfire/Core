@@ -1,4 +1,5 @@
-﻿using LionFire.Reactive.Persistence;
+﻿using LionFire.ExtensionMethods;
+using LionFire.Reactive.Persistence;
 using Microsoft.Extensions.Options;
 using ReactiveUI;
 using System.IO;
@@ -10,12 +11,12 @@ public class HjsonFsDirectoryWriterRx<TKey, TValue> : IObservableWriter<TKey, TV
     where TKey : notnull
     where TValue : notnull
 {
-    public string Dir { get; }
+    public DirectorySelector Dir { get; }
 
     #region Lifecycle
 
     // ENH: Use FS Resilience pipeline
-    public HjsonFsDirectoryWriterRx(string dir)
+    public HjsonFsDirectoryWriterRx(DirectorySelector dir)
     {
         Dir = dir;
     }
@@ -69,15 +70,15 @@ public class HjsonFsDirectoryWriterRx<TKey, TValue> : IObservableWriter<TKey, TV
 
     private string GetFilePath(TKey key)
     {
-        return Path.Combine(Dir, $"{key}.hjson");
+        return Path.Combine(Dir.Path, $"{key}.hjson");
     }
 
     void CreateDirIfMissing()
     {
-        if (directoryExists) return;
-        if (!Directory.Exists(Dir))
+        if (directoryExists || Dir.Path == null) return;
+        if (!Directory.Exists(Dir.Path))
         {
-            Directory.CreateDirectory(Dir);
+            Directory.CreateDirectory(Dir.Path);
         }
         directoryExists = true;
     }
@@ -88,7 +89,15 @@ public class HjsonFsDirectoryWriterRx<TKey, TValue> : IObservableWriter<TKey, TV
         var bytes = HjsonSerialization.Serialize(value);
         await File.WriteAllBytesAsync(filePath, bytes).ConfigureAwait(false);
     }
+}
 
-
+public interface IDictionaryProvider
+{
+    IObservableReaderWriter<string, TValue> Get<TValue>()
+        where TValue : notnull;
+    IObservableReader<string, TValue> GetReadOnly<TValue>()
+        where TValue : notnull;
+    IObservableWriter<string, TValue> GetWriteOnly<TValue>()
+        where TValue : notnull;
 }
 

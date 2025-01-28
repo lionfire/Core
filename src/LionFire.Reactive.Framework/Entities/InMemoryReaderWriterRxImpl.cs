@@ -3,46 +3,9 @@ using DynamicData.Binding;
 using ReactiveUI;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.Linq;
 
 namespace LionFire.Reactive.Persistence;
 
-public class ObservableReaderWriter<TKey, TValue> : IObservableReaderWriter<TKey, TValue>
-    where TKey : notnull
-    where TValue : notnull
-{
-
-    #region Relationships
-
-    public IObservableReader<TKey, TValue> Read { get; }
-    public IObservableWriter<TKey, TValue> Write { get; }
-
-    #endregion
-
-    #region Lifecycle
-
-    public ObservableReaderWriter(IObservableReader<TKey, TValue> r, IObservableWriter<TKey, TValue> w)
-    {
-        Read = r;
-        Write = w;
-    }
-
-    #endregion
-
-}
-public class InMemoryReaderWriterRx<TKey, TValue> : IObservableReaderWriter<TKey, TValue>
-    where TKey : notnull
-    where TValue : notnull
-{
-
-    public IObservableReader<TKey, TValue> Read => impl;
-    public IObservableWriter<TKey, TValue> Write => impl;
-    private InMemoryReaderWriterRxImpl<TKey, TValue> impl;
-
-    public InMemoryReaderWriterRx(Func<TValue, TKey> keySelector)
-    {
-    }
-}
 internal class InMemoryReaderWriterRxImpl<TKey, TValue>
     : IObservableReader<TKey, TValue>
     , IObservableWriter<TKey, TValue>
@@ -58,7 +21,7 @@ internal class InMemoryReaderWriterRxImpl<TKey, TValue>
         //    //.Where(change => change.Current.Value != null)
         //    .AsObservableCache()
         //    ;
-        Items = KeyedItems.Connect().Transform(x => x.Value).AsObservableCache();
+        ObservableCache = KeyedItems.Connect().Transform(x => x.Value).AsObservableCache();
     }
 
     #region State
@@ -68,7 +31,7 @@ internal class InMemoryReaderWriterRxImpl<TKey, TValue>
 
     public IObservableCache<KeyValuePair<TKey, TValue>, TKey> KeyedItems => keyedItems;
     private SourceCache<KeyValuePair<TKey, TValue>, TKey> keyedItems = new(kvp => kvp.Key);
-    public IObservableCache<TValue, TKey> Items { get; }
+    public IObservableCache<TValue, TKey> ObservableCache { get; }
 
     #endregion
 

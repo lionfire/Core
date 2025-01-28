@@ -2,22 +2,21 @@
 using LionFire.Structures;
 using System.Collections.Generic;
 
-namespace LionFire.UI.Workspaces
+namespace LionFire.UI.Workspaces;
+
+// Overkill?
+public interface IWorkspaceItem : IFlex, IKeyed<string>
 {
-    // Overkill?
-    public interface IWorkspaceItem : IFlex, IKeyed<string>
-    {
-        string Title { get; set; }
+    string Title { get; set; }
 
-        ///// <summary>
-        ///// May be same as Title
-        ///// </summary>
-        //string DisplayTitle { get; set; }
+    ///// <summary>
+    ///// May be same as Title
+    ///// </summary>
+    //string DisplayTitle { get; set; }
 
-        //// Data items
-        //IEnumerable<object> Navs { get; }
+    //// Data items
+    //IEnumerable<object> Navs { get; }
 
-        //// 
-        //IEnumerable<object> ContentPanes { get;  }
-    }
+    //// 
+    //IEnumerable<object> ContentPanes { get;  }
 }

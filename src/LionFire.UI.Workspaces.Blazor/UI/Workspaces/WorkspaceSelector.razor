@@ -1,24 +1,36 @@
-﻿
+﻿@using LionFire.Reactive.Persistence
+@using Microsoft.Extensions.DependencyInjection
+
 <div class="lf-field">
     @* <div class="label">Workspace</div> *@
 
     <div class="value">
-
-        <MudSelect Label="Workspace" @bind-Value="CurrentWorkspace" Variant="Variant.Filled" Style="width: 100%">
-            @foreach (var workspace in Workspaces)
-            {
-                <MudSelectItem Value="@workspace">@workspace</MudSelectItem>
-            }
-        </MudSelect>
+        @if (Workspaces != null)
+        {
+            <MudSelect Label="Workspace" T="string" @bind-Value="CurrentWorkspace" Variant="Variant.Filled" Style="width: 100%">
+                @foreach (var kvp in Workspaces.ObservableCache.KeyValues)
+                {
+                    <MudSelectItem Value="@kvp.Key">@kvp.Key</MudSelectItem>
+                }
+            </MudSelect>
+        }
+        else
+        {
+            <text>(Workspaces not available) @Workspace</text>
+        }
     </div>
 
 </div>
 
 @code {
-    List<string> Workspaces = new List<string> { "one", "two", "three" };
+
+    [CascadingParameter]
+    public IServiceProvider? UserServices { get; set; }
 
     [Parameter]
     public string Workspace { get; set; } = "one";
+
+    IObservableReaderWriter<string, IWorkspace>? Workspaces;
 
     private string? CurrentWorkspace
     {
@@ -26,10 +38,18 @@
         set
         {
             currentWorkspace = value;
-            WorkspaceChanged.InvokeAsync(value);
+            // WorkspaceChanged.InvokeAsync(value);
         }
     }
     private string? currentWorkspace;
+
+    public EventCallback<string?> CurrentWorkspaceChanged { get; set; }
+
+    protected override void OnInitialized()
+    {
+        base.OnInitialized();
+        Workspaces = UserServices?.GetService<IObservableReaderWriter<string, IWorkspace>>();
+    }
 
     protected override Task OnParametersSetAsync()
     {

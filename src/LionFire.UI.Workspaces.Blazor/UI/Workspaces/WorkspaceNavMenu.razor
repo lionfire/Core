@@ -1,13 +1,15 @@
 ﻿@using LionFire.Blazor.Components.Menus
+@using LionFire.Reactive.Persistence
 @using LionFire.UI.Workspaces
 @using System.Diagnostics 
 @*@inject IWorkspaceViewProvider  WorkspaceViewProvider*@
-@inject IWorkspaceProvider WorkspaceProvider
+@* @inject IWorkspaceProvider WorkspaceProvider *@
 @inject ILogger<WorkspaceNavMenu> Logger
 @using System.Collections.Specialized
 @inject LionFire.Referencing.IUrlProvider UrlProvider
 @using System.Threading
 @using MediatR 
+@using LionFire.FlexObjects
 
 @*@implements INotificationHandler<LionFire.LiveSharp.UpdatedMethodNotification>*@
 @*@using LionFire.LiveSharp *@
@@ -23,12 +25,12 @@
     else
     {
         @*<ul>*@  
-            @foreach (var item in Workspace.Items)
+          @*   @foreach (var item in Workspace.Query<IObservableReader<string, IWorkspaceItem>>().ObservableCache.KeyValues)
             {
                 <NavMenuItem Href="@item.Value" >
                     @((item.Value as IDisplayNamed)?.DisplayName ?? item.Key)
                 </NavMenuItem>
-            }
+            } *@
         @*</ul>*@
     }
 @*</li>*@
@@ -91,10 +93,17 @@
 
     public IWorkspace? Workspace { get; private set; }
 
+    
+
+    IObservableReader<string, IWorkspaceItem>? WorkspaceItems;
+
     protected override Task OnParametersSetAsync()
     {
-        Workspace = WorkspaceProvider.Get(WorkspaceKey);
-        Workspace!.Items.CollectionChanged += OnCollectionChanged;
+        // Workspace = WorkspaceProvider.Get(WorkspaceKey);
+        // Workspace!.Items.CollectionChanged += OnCollectionChanged;
+
+        // WorkspaceItems = Workspace?.Query<IObservableReader<string, IWorkspaceItem>>().ObservableCache.KeyValues
+
         return Task.CompletedTask;
     }
 
