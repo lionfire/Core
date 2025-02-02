@@ -16,7 +16,6 @@ public partial class WorkspaceLayoutVM : UserLayoutVM
     #region Dependencies
 
     public AppInfo AppInfo { get; }
-    public IOptionsSnapshot<AppInfo> AppInfo2 { get; }
 
     #endregion
 
@@ -25,11 +24,14 @@ public partial class WorkspaceLayoutVM : UserLayoutVM
 
     #region Lifecycle
 
-    public WorkspaceLayoutVM(AuthenticationStateProvider AuthStateProvider, AppInfo appInfo, IOptionsSnapshot<AppInfo> appInfo2) : base(AuthStateProvider)
+    public WorkspaceLayoutVM(AuthenticationStateProvider AuthStateProvider, AppInfo appInfo) : base(AuthStateProvider)
     {
         AppInfo = appInfo;
-        AppInfo2 = appInfo2;
+
+        PostConstructor();
     }
+    
+    protected override bool DeferPostConstructor => true;
 
     #endregion
 
@@ -40,9 +42,7 @@ public partial class WorkspaceLayoutVM : UserLayoutVM
         string commonAppDataPath = Environment.GetFolderPath(Environment.SpecialFolder.CommonApplicationData);
         var orgDataDir = Path.Combine(commonAppDataPath, AppInfo.OrgDir);
 
-        var EcosystemDataDir = AppInfo.EffectiveDataDirName;
-
-        var appDataDir = Path.Combine(orgDataDir, EcosystemDataDir);
+        var appDataDir = Path.Combine(orgDataDir, AppInfo.EffectiveDataDirName!);
         var usersDataDir = Path.Combine(appDataDir, "Users");
         var userDir = Path.Combine(usersDataDir, EffectiveUserName);
         var workspacesDir = Path.Combine(userDir, "Workspaces");
@@ -51,9 +51,9 @@ public partial class WorkspaceLayoutVM : UserLayoutVM
 
 
         var dir = new LionFire.IO.Reactive.DirectorySelector(workspacesDir) { Recursive = true };
-        var r = new HjsonFsDirectoryReaderRx<string, IWorkspace>(dir);
-        var w = new HjsonFsDirectoryWriterRx<string, IWorkspace>(dir);
-        services.AddSingleton<IObservableReaderWriter<string, IWorkspace>>(sp => new ObservableReaderWriterFromComponents<string, IWorkspace>(r, w));
+        var r = new HjsonFsDirectoryReaderRx<string, Workspace>(dir);
+        var w = new HjsonFsDirectoryWriterRx<string, Workspace>(dir);
+        services.AddSingleton<IObservableReaderWriter<string, Workspace>>(sp => new ObservableReaderWriterFromComponents<string, Workspace>(r, w));
     }
 
     #endregion

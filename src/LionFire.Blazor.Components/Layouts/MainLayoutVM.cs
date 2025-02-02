@@ -26,10 +26,15 @@ public partial class UserLayoutVM : ReactiveObject
     {
         this.AuthStateProvider = AuthStateProvider;
 
+        if (!DeferPostConstructor) PostConstructor();
+    }
+    virtual protected void PostConstructor()
+    {
         this.WhenAnyValue(x => x.UserId)
             .Subscribe(async _ => await OnUserChanged());
-
     }
+    virtual protected bool DeferPostConstructor => false;
+
 
     public async ValueTask InitializeAsync()
     {

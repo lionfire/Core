@@ -11,6 +11,6 @@ public static class WorkspacesHosting
     //    => lf.ConfigureServices(services => services.AddWorkspaces());
 
     //public static IServiceCollection AddWorkspaces(this IServiceCollection services)
-    //    => services.AddSingleton<IObservableReaderWriter<string, IWorkspace>, InMemoryReaderWriterRx<string, IWorkspace>(); // TODO: let user specify another implementation
+    //    => services.AddSingleton<IObservableReaderWriter<string, Workspace>, InMemoryReaderWriterRx<string, Workspace>(); // TODO: let user specify another implementation
 
 }

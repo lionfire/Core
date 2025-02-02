@@ -30,7 +30,7 @@
     [Parameter]
     public string Workspace { get; set; } = "one";
 
-    IObservableReaderWriter<string, IWorkspace>? Workspaces;
+    IObservableReaderWriter<string, Workspace>? Workspaces;
 
     private string? CurrentWorkspace
     {
@@ -48,7 +48,7 @@
     protected override void OnInitialized()
     {
         base.OnInitialized();
-        Workspaces = UserServices?.GetRequiredService<IObservableReaderWriter<string, IWorkspace>>();
+        Workspaces = UserServices?.GetRequiredService<IObservableReaderWriter<string, Workspace>>();
         if (Workspaces.Keys.Count == 0)
         {
         }

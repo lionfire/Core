@@ -65,7 +65,7 @@ public class ObservableCacheProvider
 // OLD
 //public class InMemoryWorkspaceProvider : IWorkspaceProvider
 //{
-//    private ConcurrentDictionary<string, IWorkspace> workspaces = new ConcurrentDictionary<string, IWorkspace>();
+//    private ConcurrentDictionary<string, Workspace> workspaces = new ConcurrentDictionary<string, Workspace>();
 
 //    public IWorkspace Create(string key, IReference? template = null) => workspaces.GetOrAdd(key, k => new Workspace()); // RENAME to QueryOrCreate?
 //    public IWorkspace? Query(string key)

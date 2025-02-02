@@ -87,11 +87,7 @@ public abstract class FsDirectoryReaderRx<TKey, TValue> : IObservableReader<TKey
 
     protected string GetFilePath(TKey key) => Path.Combine(Dir.Path ?? throw new ArgumentNullException(), $"{key}{Extension}");
 
-    protected TValue? ReadFromFile(string filePath)
-    {
-        var bytes = File.ReadAllBytes(filePath);
-        return HjsonSerialization.Deserialize<TValue>(bytes);
-    }
+    protected abstract TValue? ReadFromFile(string filePath);
 
 }
 

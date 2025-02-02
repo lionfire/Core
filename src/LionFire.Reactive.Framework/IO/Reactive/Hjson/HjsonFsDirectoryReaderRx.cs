@@ -56,6 +56,10 @@ where TValue : notnull
             };
         });
     }
-
+    protected override TValue? ReadFromFile(string filePath)
+    {
+        var bytes = File.ReadAllBytes(filePath);
+        return HjsonSerialization.Deserialize<TValue>(bytes);
+    }
 }
 
