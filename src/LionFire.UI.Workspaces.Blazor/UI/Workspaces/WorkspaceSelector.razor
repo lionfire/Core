@@ -48,7 +48,10 @@
     protected override void OnInitialized()
     {
         base.OnInitialized();
-        Workspaces = UserServices?.GetService<IObservableReaderWriter<string, IWorkspace>>();
+        Workspaces = UserServices?.GetRequiredService<IObservableReaderWriter<string, IWorkspace>>();
+        if (Workspaces.Keys.Count == 0)
+        {
+        }
     }
 
     protected override Task OnParametersSetAsync()

@@ -2,7 +2,7 @@
 
 public class FlexObject : IFlex
 {
-    public object FlexData { get; set; }
+    public object? FlexData { get; set; }
 
     public FlexObject() { }
     public FlexObject(object value)
@@ -10,5 +10,5 @@ public class FlexObject : IFlex
         FlexData = value;
     }
 
-    public override string ToString() => FlexData == null ? "(null)" : FlexData.ToString();
+    public override string ToString() => FlexData == null ? "(null)" : (FlexData.ToString() ?? "");
 }

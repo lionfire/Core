@@ -5,11 +5,13 @@
 		<ProduceReferenceAssembly>true</ProduceReferenceAssembly>
 		<Configurations>Debug;Release</Configurations>
 		<RootNamespace>LionFire</RootNamespace>
+		<Nullable>enable</Nullable>
 	</PropertyGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\LionFire.Flex\LionFire.Flex.csproj" />
     <ProjectReference Include="..\LionFire.Reactive\LionFire.Reactive.csproj" />
+    <ProjectReference Include="..\LionFire.Schemas.Filesystem\LionFire.Schemas.Filesystem.csproj" />
     <ProjectReference Include="..\LionFire.Structures\LionFire.Structures.csproj" />
   </ItemGroup>
 

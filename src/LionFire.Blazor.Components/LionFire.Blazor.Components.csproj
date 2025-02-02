@@ -15,10 +15,15 @@
     <PackageReference Include="CircularBuffer" />
     <!--<PackageReference Include="LiveSharp" />-->
 	  <PackageReference Include="MediatR" />
+	  <PackageReference Include="Microsoft.AspNetCore.Components.Authorization" />
 	  <PackageReference Include="Microsoft.AspNetCore.Components.QuickGrid" />
     <PackageReference Include="Microsoft.AspNetCore.Components.Web" />
     <PackageReference Include="Microsoft.CodeAnalysis" />
     <PackageReference Include="ReactiveUI.Blazor" />
+    <PackageReference Include="ReactiveUI.SourceGenerators">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
     <PackageReference Include="Swordfish.NET.CollectionsV3" />
 	  <PackageReference Include="System.ComponentModel" />
 	  <PackageReference Include="System.ComponentModel.Annotations" />
