@@ -31,7 +31,8 @@ public static class AppInfoHostingX
 
         services
                 .Configure<AppInfo>(a => a.AssignPropertiesFrom(appInfo))
-               .AddTransient(sp => sp.GetRequiredService<IOptionsSnapshot<AppInfo>>().Value)
+               .AddSingleton(sp => sp.GetRequiredService<IOptions<AppInfo>>().Value)
+               //.AddTransient(sp => sp.GetRequiredService<IOptionsSnapshot<AppInfo>>().Value)
                .AddSingleton(appDirectories)
                ;
 

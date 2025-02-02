@@ -70,7 +70,7 @@ public static class AppInfoDefaultsX
 
     //public static AppInfo GetAppInfo(this IServiceCollection services)
     //{
-    //    return services.BuildServiceProvider().GetRequiredService<IOptionsSnapshot<AppInfo>>().Value;
+    //    return services.BuildServiceProvider().GetRequiredService<IOptions<AppInfo>>().Value;
     //}
 }
 //public class AppInfoOptionsFactory : OptionsFactory<AppInfo>

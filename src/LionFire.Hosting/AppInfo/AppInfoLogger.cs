@@ -11,32 +11,18 @@ public class AppInfoLogger : IHostedService
 {
     public AppInfoLogger(IServiceProvider serviceProvider, ILogger<AppInfoLogger> logger)
     {
-        {
-            AppInfo? appInfo = serviceProvider.GetService<AppInfo>();
+        AppInfo? appInfo = serviceProvider.GetService<AppInfo>();
 
-            if (appInfo == null)
-            {
-                logger.LogDebug("AppInfo: none.");
-            }
-            else
-            {
-                logger.LogInformation("AppInfo: {appInfo}", appInfo.Dump());
-            }
+        if (appInfo == null)
+        {
+            logger.LogDebug("AppInfo: none.");
+        }
+        else
+        {
+            logger.LogInformation("AppInfo: {appInfo}", appInfo.Dump());
         }
 
-        {
-            AppInfo? appInfo = serviceProvider.GetService<IOptionsSnapshot<AppInfo>>()?.Value;
-
-            if (appInfo == null)
-            {
-                logger.LogDebug("AppInfo2: none.");
-            }
-            else
-            {
-                logger.LogInformation("AppInfo2: {appInfo}", appInfo.Dump());
-            }
-        }
-                logger.LogInformation("AppContext.BaseDirectory: {BaseDirectory}", AppContext.BaseDirectory);
+        logger.LogInformation("AppContext.BaseDirectory: {BaseDirectory}", AppContext.BaseDirectory);
     }
 
     public Task StartAsync(CancellationToken cancellationToken) => Task.CompletedTask;
