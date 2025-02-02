@@ -70,24 +70,25 @@ public static class VosAppHostBuilder
 
     #region // Obsolete: IHostBuilder
 
+    //public static AppInfo AppInfo(this IHostBuilder builder)
+    //=> builder.Build().Services.GetService<AppInfo>() ?? throw new ArgumentException("HostApplicationBuilder needs to have AddAppInfo() already invoked on it.");
+
     public static IHostBuilder AddDefaultVosAppStores(this IHostBuilder builder, bool useExeDirAsAppDirIfMissing = false)
         => builder.ConfigureServices((context, services) =>
             services
-                 .AddAppDirStore(appInfo: builder.AppInfo(), useExeDirAsAppDirIfMissing: useExeDirAsAppDirIfMissing)
+                 .AddAppDirStore(appInfo: builder.GetAppInfo(), useExeDirAsAppDirIfMissing: useExeDirAsAppDirIfMissing)
                  .AddExeDirStore()
-                 .AddPlatformSpecificStores(builder.AppInfo()));
+                 .AddPlatformSpecificStores(builder.GetAppInfo()));
 
     #endregion
 
-    public static AppInfo AppInfo(this IHostApplicationBuilder builder)
-        => builder.Services.BuildServiceProvider().GetService<AppInfo>() ?? throw new ArgumentException("HostApplicationBuilder needs to have AddAppInfo() already invoked on it.");
-
+  
     public static IHostApplicationBuilder AddDefaultVosAppStores(this IHostApplicationBuilder builder, bool useExeDirAsAppDirIfMissing = false)
     {
         builder.Services
-                 .AddAppDirStore(appInfo: builder.AppInfo(), useExeDirAsAppDirIfMissing: useExeDirAsAppDirIfMissing)
+                 .AddAppDirStore(appInfo: builder.GetAppInfo(), useExeDirAsAppDirIfMissing: useExeDirAsAppDirIfMissing)
                  .AddExeDirStore()
-                 .AddPlatformSpecificStores(builder.AppInfo());
+                 .AddPlatformSpecificStores(builder.GetAppInfo());
         return builder;
     }
 }

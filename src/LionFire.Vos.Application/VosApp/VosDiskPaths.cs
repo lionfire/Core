@@ -114,23 +114,25 @@ namespace LionFire.Vos.VosApp
 
         #endregion
 
+        static string OrgName = DependencyContext.Current.GetRequiredService<AppInfo>().OrgName;
+
         public static string CompanyVarDir(string companyName = null)
         {
-            if (companyName == null) { companyName = ApplicationEnvironment.OrgName; }
+            if (companyName == null) { companyName = OrgName; }
             return Path.Combine(VarRoot, companyName);
         }
 
         public static string AppVarDir(string appName = null, string companyName = null)
         {
             if (appName == null) { appName = AppInfo.EffectiveDataDirName;  }
-            if (companyName == null) { companyName = ApplicationEnvironment.OrgName; }
+            if (companyName == null) { companyName = OrgName; }
 
             return Path.Combine(CompanyVarDir(companyName), appName);
         }
         public static string AppVarDataDir(string appName = null, string companyName = null)
         {
             if (appName == null) { appName = AppInfo.EffectiveDataDirName; }
-            if (companyName == null) { companyName = ApplicationEnvironment.OrgName; }
+            if (companyName == null) { companyName = OrgName; }
             return Path.Combine(AppVarDir(appName, companyName), VosDiskPaths.Data);
         }
 
