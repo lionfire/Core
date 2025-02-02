@@ -8,6 +8,10 @@ using System.Collections.Immutable;
 using System.Reflection;
 using System.IO;
 using LionFire.Applications;
+using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.DependencyInjection;
+using LionFire.Hosting;
+using System.Runtime.InteropServices;
 
 namespace LionFire.Execution.Roslyn.Scripting;
 
@@ -27,45 +31,54 @@ public class RoslynScriptHost
 
     public static async Task<object> TestScript()
     {
-        ApplicationEnvironment.AppInfo = new AppInfo { AppName  = "RunnerProgramName" };
+        var hab = new HostApplicationBuilder();
+        hab.AppInfo(new AppInfo { AppName = "RunnerProgramName" });
 
-        var opts = ScriptOptions.Default
-            //.AddReferences("LionFire.Core")
-            //.AddReferences("LionFire.Environment")
-              //.AddImports("System")
-              //.AddImports("LionFire")
-              .WithSourceResolver(new SourceFileResolver(ImmutableArray<string>.Empty, AppContext.BaseDirectory));
+        ScriptState<object> result = null;
 
-        Console.WriteLine("ApplicationEnvironment.AppInfo.AppName: " + ApplicationEnvironment.AppInfo.AppName);
-
-        ScriptState <object> result = null;
-
-        var assembly = typeof(RoslynScriptHost).GetTypeInfo().Assembly;
-        string[] names = assembly.GetManifestResourceNames();
-        Stream resource = assembly.GetManifestResourceStream("LionFire.Execution.Roslyn.Scripts.TestScript.csx");
-        var csharp = new StreamReader(resource).ReadToEnd();
-
-        try
+        await hab.RunAsync(async sp =>
         {
-            var script = Microsoft.CodeAnalysis.CSharp.Scripting.CSharpScript.Create(csharp, opts);
-            result = await script.RunAsync();
-        }
-        catch(Exception ex)
-        {
-            Console.WriteLine("SCRIPT HOST EXCEPTION: " + ex.ToString());
-        }
+            //ApplicationEnvironment.AppInfo = new AppInfo { AppName  = "RunnerProgramName" };
+            var appInfo = sp.GetRequiredService<AppInfo>();
 
-        if (result?.Exception != null)
-        {
-            Console.WriteLine("EXCEPTION: " + result.Exception.ToString());
-        }
 
-        Console.WriteLine("Return value: " + result?.ReturnValue);
-        Console.WriteLine("ApplicationEnvironment.AppInfo.AppName: " + ApplicationEnvironment.AppInfo.AppName);
-        //And this from the REPL
-        //Console.WriteLine(CSharpScriptEngine.Execute("new ScriptedClass().HelloWorld"));
-        //#endif
-        Console.ReadKey();
+            var opts = ScriptOptions.Default
+                  //.AddReferences("LionFire.Core")
+                  //.AddReferences("LionFire.Environment")
+                  //.AddImports("System")
+                  //.AddImports("LionFire")
+                  .WithSourceResolver(new SourceFileResolver(ImmutableArray<string>.Empty, AppContext.BaseDirectory));
+
+            Console.WriteLine("ApplicationEnvironment.AppInfo.AppName: " + appInfo.AppName);
+
+
+            var assembly = typeof(RoslynScriptHost).GetTypeInfo().Assembly;
+            string[] names = assembly.GetManifestResourceNames();
+            Stream resource = assembly.GetManifestResourceStream("LionFire.Execution.Roslyn.Scripts.TestScript.csx");
+            var csharp = new StreamReader(resource).ReadToEnd();
+
+            try
+            {
+                var script = Microsoft.CodeAnalysis.CSharp.Scripting.CSharpScript.Create(csharp, opts);
+                result = await script.RunAsync();
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("SCRIPT HOST EXCEPTION: " + ex.ToString());
+            }
+
+            if (result?.Exception != null)
+            {
+                Console.WriteLine("EXCEPTION: " + result.Exception.ToString());
+            }
+
+            Console.WriteLine("Return value: " + result?.ReturnValue);
+            Console.WriteLine("ApplicationEnvironment.AppInfo.AppName: " + appInfo.AppName);
+            //And this from the REPL
+            //Console.WriteLine(CSharpScriptEngine.Execute("new ScriptedClass().HelloWorld"));
+            //#endif
+            Console.ReadKey();
+        });
         return result.ReturnValue;
     }
 }

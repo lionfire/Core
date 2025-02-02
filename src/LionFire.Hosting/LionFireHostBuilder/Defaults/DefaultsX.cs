@@ -21,22 +21,6 @@ public static class DefaultsX
 
     #endregion
 
-    public static AppInfo? GetDefaultAppInfo(this ILionFireHostBuilder lf)
-    {
-        IHostEnvironment? env = lf.IHostApplicationBuilder?.Environment; // no IHostBuilder support
-
-        return env == null ? null : env.GetDefaultAppInfo();
-    }
-
-    public static ILionFireHostBuilder TrySetDefaultAppInfo(this ILionFireHostBuilder lf)
-    {
-        var appInfo = lf.GetDefaultAppInfo();
-
-        if (appInfo != null) { lf.AppInfo(appInfo); }
-
-        return lf;
-    }
-
     /// <summary>
     /// Add LionFire defaults for IHostBuilder
     /// </summary>

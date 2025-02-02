@@ -13,7 +13,9 @@ public class AppInfo
 {
     #region Static
 
-    public static AppInfo Default = new AppInfo(); // REVIEW - AutoDetectMissingValues ?
+    [Obsolete("Use DependencyContext.Current.GetService<AppInfo>()")]
+    public static AppInfo Default => @default ??= new AppInfo(); // REVIEW - AutoDetectMissingValues ?  - get from an ambient IServiceProvider?
+    private static AppInfo? @default;
 
     /// <summary>
     /// See also: ServiceLocator.Get&lt;AppInfo&gt;()
@@ -53,7 +55,7 @@ public class AppInfo
     {
     }
 
-    public AppInfo(string appName, string orgName, string? orgDomain = null)
+    public AppInfo(string appName, string orgName, string? orgDomain = null) : this()
     {
         AppName = appName;
         OrgName = orgName;
@@ -139,7 +141,7 @@ public class AppInfo
 
     #region Directory names
 
-    public string OrgDir => orgDir ?? OrgName;
+    public string? OrgDir => orgDir ?? OrgName;
     private string? orgDir;
 
     #endregion

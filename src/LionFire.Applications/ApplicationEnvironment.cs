@@ -10,17 +10,16 @@ namespace LionFire.Applications;
 
 public static class ApplicationEnvironment
 {
-    #region MainAppInfo
+    #region AppInfo
 
-    public static AppInfo AppInfo
+#if UNUSED
+    [Obsolete("Use AppInfoFromContext or DependencyContext.Current.GetService<AppInfo>()")]
+    public static AppInfo StaticAppInfo
     {
-        get => appInfo ?? AppInfo.Default;
+        get => appInfo;
         set
         {
-            if (appInfo == value)
-            {
-                return;
-            }
+            if (appInfo == value) { return; }
 
             /*if (mainAppInfo != default(AppInfo))
             {
@@ -32,16 +31,20 @@ public static class ApplicationEnvironment
     }
     private static AppInfo appInfo;
     public static bool IsMainAppInfoSet => appInfo != null;
+    public static AppInfo DefaultAppInfo => AppInfoFromContext ?? AppInfo.Default;
+#endif
+
+    public static AppInfo AppInfoFromContext => DependencyContext.Current.GetService<AppInfo>();
 
     #endregion
 
+#if UNUSED
     #region Convenience
-
-    public static string OrgName => AppInfo?.OrgName; 
-    public static string ProgramName => AppInfo?.AppName;
-    public static string ProgramDisplayName => AppInfo?.AppDisplayName;
-
+    public static string OrgName => StaticAppInfo?.OrgName; 
+    public static string ProgramName => StaticAppInfo?.AppName;
+    public static string ProgramDisplayName => StaticAppInfo?.AppDisplayName;
     #endregion
+#endif
 
     #region MachineGuid
 

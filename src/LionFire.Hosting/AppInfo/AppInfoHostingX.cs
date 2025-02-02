@@ -1,5 +1,7 @@
 ﻿using LionFire.Applications;
+using LionFire.ExtensionMethods.Copying;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Options;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -10,87 +12,84 @@ namespace LionFire.Hosting;
 
 public static class AppInfoHostingX
 {
+
+    #region IServiceCollection
+
     /// <summary>
-    /// Take IHostEnvironment.ApplicationName, and use the segment before the first '.' as the key here.
+    /// Prefer AppInfo on ILionFireHostBuilder if available.
     /// </summary>
-    static Dictionary<string, (string orgDomain, string? orgName)> RecognizedNamespaces = new Dictionary<string, (string orgDomain, string? orgName)>
+    /// <param name="services"></param>
+    /// <param name="appInfo"></param>
+    /// <param name="options"></param>
+    /// <returns></returns>
+    /// <remarks>
+    /// Private because options 
+    /// </remarks>
+    private static IServiceCollection AddAppInfo(this IServiceCollection services, AppInfo appInfo, AppInfoOptions? options = null)
     {
-        // HARDCODE: First-party Defaults
-        ["LionFire"] = ("lionfire.ca", null),
-        ["Valor"] = ("lionfire.ca", "LionFire"),
-        ["FireLynx"] = ("firelynx.io", null),
-    };
+        var appDirectories = new AppDirectories(appInfo);
 
-    public static AppInfo? GetDefaultAppInfo(this IHostEnvironment env)
-    {
-        AppInfo? appInfo;
+        services
+                .Configure<AppInfo>(a => a.AssignPropertiesFrom(appInfo))
+               .AddTransient(sp => sp.GetRequiredService<IOptionsSnapshot<AppInfo>>().Value)
+               .AddSingleton(appDirectories)
+               ;
 
-        if (env == null) return null;
-
-        var index = env.ApplicationName.IndexOf('.');
-        if (index <= 0) return null;
-
-        var org = env.ApplicationName.Substring(0, index);
-
-        if (!RecognizedNamespaces.TryGetValue(org, out var orgDomain)) return null;
-
-        var orgName = orgDomain.orgName ?? env.ApplicationName.Substring(index + 1);
-        appInfo = new AppInfo(orgName, org)
+        Task.Run(() =>
         {
-            OrgDomain = orgDomain.orgDomain
-        };
+            options ??= new();
+            if (options.AutoCreateDirectories) appDirectories.AutoCreateDirectories(appInfo);
+        });
 
-        return appInfo;
+        return services;
     }
 
+    #endregion
     #region Host Builder extension methods
 
     #region IHostApplicationBuilder
 
+    /// <summary>
+    /// - Invokes IServiceCollection.AddAppInfo
+    /// - Adds configuration: AppConfigurationKeys.*
+    /// 
+    /// </summary>
+    /// <param name="builder"></param>
+    /// <param name="appInfo"></param>
+    /// <param name="options"></param>
+    /// <returns></returns>
+    /// <exception cref="NotImplementedException"></exception>
     private static AppInfo common(object builder, AppInfo? appInfo = null, AppInfoOptions? options = null)
     {
         appInfo ??= new(); // ENH: Create from GetDefaultAppInfo
         options ??= new();
-
         if (options.AutoDetect) appInfo.AutoDetect();
 
-        var appDirectories = new AppDirectories(appInfo);
-
-        #region AppInfo Singletons
+        #region (optional) AppInfo.RootInstance Singleton
 
         if (LionFireEnvironment.IsMultiApplicationEnvironment) // REVIEW: eliminate this in favor of DependencyContext.Current?
         {
             if (Applications.AppInfo.RootInstance == null)
             {
-                Applications.AppInfo.RootInstance = appInfo;
+                Applications.AppInfo.RootInstance = appInfo; // First one becomes the RootInstance
             }
         }
 
         #endregion
 
-        void configureServices(IServiceCollection s)
-        {
-            s
-               .AddSingleton(appInfo)
-               .AddSingleton(appDirectories)
-               ;
-        }
-
         if (builder is IHostApplicationBuilder hab)
         {
-            hab.Properties[typeof(AppInfo)] = appInfo;
+            //hab.Properties[typeof(AppInfo)] = appInfo; // OLD
             hab.Configuration.AddAppInfo(appInfo);
-            configureServices(hab.Services);
+            hab.Services.AddAppInfo(appInfo, options);
         }
         else if (builder is IHostBuilder hb)
         {
-            hb.Properties[typeof(AppInfo)] = appInfo;
+            //hb.Properties[typeof(AppInfo)] = appInfo; // OLD
             hb.ConfigureHostConfiguration(cb => cb.AddAppInfo(appInfo));
-            hb.ConfigureServices(configureServices);
+            hb.ConfigureServices(s => s.AddAppInfo(appInfo, options));
         }
         else { throw new NotImplementedException(); }
-
-        if (options.AutoCreateDirectories) appDirectories.AutoCreateDirectories(appInfo);
 
         return appInfo;
     }
@@ -105,11 +104,6 @@ public static class AppInfoHostingX
 
     #region IHostBuilder
 
-    public static AppInfo? AppInfo(this IHostBuilder builder)
-        => builder.Properties[typeof(AppInfo)] as AppInfo;
-    //public static AppInfo AppInfo(this IHostBuilder hostBuilder)
-    //    => hostBuilder.Properties[typeof(AppInfo)] as AppInfo ?? throw new ArgumentException("IHostBuilder needs to have AddAppInfo() invoked on it.");
-
     public static IHostBuilder AppInfo(this IHostBuilder builder, AppInfo? appInfo = null, AppInfoOptions? options = null)
     {
         common(builder, appInfo, options);
@@ -123,9 +117,22 @@ public static class AppInfoHostingX
         if (builder.HostBuilder.WrappedIHostApplicationBuilder != null) { builder.HostBuilder.WrappedIHostApplicationBuilder.AppInfo(appInfo, options); }
         else if (builder.HostBuilder.WrappedHostBuilder != null) { builder.HostBuilder.WrappedHostBuilder.AppInfo(appInfo, options); }
         else { throw new NotImplementedException(); }
-        //builder.HostBuilder.AppInfo(appInfo, options: options);
         return builder;
     }
+
+    #endregion
+
+    #region AppInfo Accessors before Build
+
+    // Previously, AppInfo was available on Properties, but now it is only available as a service.
+
+    //public static AppInfo? AppInfo(this IHostBuilder builder) => builder.Properties[typeof(AppInfo)] as AppInfo; // OLD (avoids building)
+    public static AppInfo GetAppInfo(this IHostBuilder hostBuilder)
+        => throw new Exception("UNTESTED - verify this works");
+    //hostBuilder.Properties[typeof(AppInfo)] as AppInfo ?? throw new ArgumentException("IHostBuilder needs to have AddAppInfo() invoked on it.");
+
+    public static AppInfo GetAppInfo(this IHostApplicationBuilder builder)
+      => builder.Services.BuildServiceProvider().GetService<AppInfo>() ?? throw new ArgumentException("HostApplicationBuilder needs to have AddAppInfo() already invoked on it.");
 
     #endregion
 }
