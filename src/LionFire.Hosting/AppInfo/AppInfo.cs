@@ -13,6 +13,7 @@ public class AppInfo
 {
     #region Static
 
+#if OLD
     [Obsolete("Use DependencyContext.Current.GetService<AppInfo>()")]
     public static AppInfo Default => @default ??= new AppInfo(); // REVIEW - AutoDetectMissingValues ?  - get from an ambient IServiceProvider?
     private static AppInfo? @default;
@@ -23,7 +24,7 @@ public class AppInfo
     [Obsolete("See DependencyContext.Current.Get<AppInfo>()")]
     public static AppInfo Instance
     {
-        get => DependencyContext.Current.GetService<AppInfo>();
+        get => DependencyContext.Current.GetRequiredService<AppInfo>();
         //get => ManualSingleton<AppInfo>.Instance;
         //set
         //{
@@ -35,8 +36,9 @@ public class AppInfo
         //    ManualSingleton<AppInfo>.Instance = value;
         //}
     }
+#endif
 
-    public static AppInfo RootInstance
+    public static AppInfo? RootInstance
     {
         get => rootInstance;
         set
@@ -45,9 +47,9 @@ public class AppInfo
             rootInstance = value;
         }
     }
-    private static AppInfo rootInstance;
+    private static AppInfo? rootInstance;
 
-    #endregion
+#endregion
 
     #region Construction
 
@@ -91,7 +93,7 @@ public class AppInfo
         get => appId ?? DefaultAppId;
         set => appId = value;
     }
-    private string appId;
+    private string? appId;
 
     public const string AppIdSchemePrefix = "app:";
 
@@ -124,7 +126,7 @@ public class AppInfo
             return defaultAppId;
         }
     }
-    private string defaultAppId;
+    private string? defaultAppId;
 
     public string OrgDomain { get; set; } = DefaultOrgDomain;
     public static string DefaultOrgDomain = "example.com";
@@ -159,42 +161,45 @@ public class AppInfo
     ///  - Configuration[HostDefaults.ApplicationKey]
     ///  - note: HostDefaults.ApplicationKey = "AppName"
     /// </remarks>
-    public string AppName
+    public string? AppName
     {
         get => appName ?? appId;
         set => appName = value;
     }
-    private string appName;
+    private string? appName;
 
-    public string DevProjectName
+    public string? DevProjectName
     {
         get => devProjectName ?? AppName;
         set => devProjectName = value;
     }
-    private string devProjectName;
+    private string? devProjectName;
 
-    public string AppDisplayName
+    public string? AppDisplayName
     {
         get => appDisplayName ?? AppName;
         set => appDisplayName = value;
     }
+    private string? appDisplayName;
 
-    private string appDisplayName;
-    public string AppLongDisplayName
+    public string? AppLongDisplayName
     {
         get => appLongDisplayName ?? AppName;
         set => appLongDisplayName = value;
     }
-    private string appLongDisplayName;
+    private string? appLongDisplayName;
 
 
     // FUTURE: Allow multiple data dirs
-    public string DataDirName { get; set; }
-    public string EffectiveDataDirName => DataDirName ?? AppName?.Replace('.', Path.DirectorySeparatorChar);
+    public string? DataDirName { get; set; }
+    public string? EffectiveDataDirName => DataDirName ?? AppName?.Replace('.', Path.DirectorySeparatorChar);
 
     public string ProgramVersion { get; set; } = "0.0.0";
+
+#if OLD
     [Obsolete]
     public string VersionString => ProgramVersion;
+#endif
 
     #region Directories
 
@@ -219,15 +224,15 @@ public class AppInfo
 
     #region AppDir
 
-    public string AppDir
+    public string? AppDir
     {
         get => appDir;
         set => appDir = value;
     }
-    private string appDir;
+    private string? appDir;
 
-    public string AutodetectedAppDir => autodetectedAppDir ??= DetectAppDir();
-    private string autodetectedAppDir;
+    public string? AutodetectedAppDir => autodetectedAppDir ??= DetectAppDir();
+    private string? autodetectedAppDir;
 
     public string DetectAppDir()
     {
@@ -278,6 +283,6 @@ public class AppInfo
     /// <summary>
     /// Custom directory name for the application.  Example: c:\ProgramData\{OrgDir}\{CustomAppDir}
     /// </summary>
-    public string CustomAppDirName { get; set; }
+    public string? CustomAppDirName { get; set; }
 
 }
