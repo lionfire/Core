@@ -66,7 +66,8 @@ public class DirectorySchemaOnNativeFs
             //""");
 
             Directory.CreateDirectory(Path.Combine(dir, "Blue"));
-            await File.WriteAllTextAsync(Path.Combine(dir, "Blue", "workspace.hjson"), """
+
+            await File.WriteAllTextAsync(Path.Combine(dir, "Blue", "Blue.workspace.hjson"), """
             Description: This is a sample workspace named 'Blue'
             """);
 

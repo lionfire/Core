@@ -10,7 +10,7 @@ public static class HjsonSerialization
 {
     static readonly JsonSerializerSettings settings = new JsonSerializerSettings
     {
-        TypeNameHandling = TypeNameHandling.Auto
+        TypeNameHandling = TypeNameHandling.Objects
     };
 
     public static TValue Deserialize<TValue>(byte[] underlying)
@@ -26,7 +26,7 @@ public static class HjsonSerialization
         //var json = JsonSerializer.Serialize(usable);
         var json  = Newtonsoft.Json.JsonConvert.SerializeObject(usable, settings);
         var hjson = JsonValue.Parse(json).ToString(new HjsonOptions { EmitRootBraces = false });
-        return Encoding.UTF8.GetBytes(json);
+        return Encoding.UTF8.GetBytes(hjson);
     }
 }
 

@@ -1,18 +1,41 @@
-﻿using DynamicData.Binding;
+﻿// ENH maybe: for now just support the one approach of nameless documents.  Uncommenting this would allow for the document file to carry the matching name of the parent directory, which may make for more ease of use in some situations (such as having multiple files open in an editor.)
+//#define DocumentWithMatchingKeyName
+using DynamicData;
+using DynamicData.Binding;
+using DynamicData.Kernel;
 using LionFire.IO.Reactive.Filesystem;
 using LionFire.IO.Reactive.Hjson;
 using LionFire.Reactive.Persistence;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.IO;
+using System.Linq;
+using System.Text.RegularExpressions;
 
 namespace LionFire.IO.Reactive;
+
+file static class _StringX
+{
+
+    public static string ToKebabCase(this string input)
+    {
+        // Replace spaces with hyphens and convert to lowercase
+        return Regex.Replace(input, @"\s+", "-").ToLower();
+    }
+}
 
 public abstract class FsDirectoryReaderRx<TKey, TValue> : IObservableReader<TKey, TValue>
     where TKey : notnull
     where TValue : notnull
 {
     protected abstract string Extension { get; }
+    protected virtual string SecondExtension => typeof(TValue).Name.ToKebabCase();
+
+    public static string ToKebabCase(string input)
+    {
+        // Replace spaces with hyphens and convert to lowercase
+        return Regex.Replace(input, @"\s+", "-").ToLower();
+    }
 
     #region Parameters
 
@@ -64,21 +87,90 @@ public abstract class FsDirectoryReaderRx<TKey, TValue> : IObservableReader<TKey
 
     #endregion
 
+    //protected virtual GetKeyForFile(string path)
+    //{
+    //}
+
+    public Func<string, string, Optional<TKey>> GetKeyForNameAndPath { get; set; } = (string name, string path) =>
+    {
+        name = name.TrimStart(Path.PathSeparator).TrimStart(Path.AltDirectorySeparatorChar);
+
+        if (name is TKey typedName)
+        {
+            return typedName;
+        }
+
+        return Optional.None<TKey>();
+        //if (isStringKey)
+        //{
+        //    return (TKey)(object)name;
+        //}
+        //throw new NotImplementedException();
+    };
+
+    const bool AllowSingleFileAndMultiMode = true;
+
+    public string RootDirName { get; set; } = "(root)";
+
     protected async ValueTask LoadKeys()
     {
         await Task.Run(() =>
         {
+            var namelessDocumentFile = SecondExtension + Extension;
+
             if (Directory.Exists(Dir.Path))
             {
-                var files = Directory.GetFiles(Dir.Path, "*" + Extension, new EnumerationOptions { RecurseSubdirectories = Dir.Recursive });
-                foreach (var file in files)
+                var dirName = Path.GetDirectoryName(Dir.Path) ?? RootDirName;
+
+                var files = Directory.GetFiles(Dir.Path, "*" + SecondExtension + Extension, new EnumerationOptions { RecurseSubdirectories = Dir.Recursive });
+                bool isStringKey = typeof(TKey) == typeof(string);
+
+                bool namelessDocumentFileExists = files.Contains(namelessDocumentFile); // Takes precedence
+#if DocumentWithMatchingKeyName
+                //bool dirNameDocumentFileExists = files.Contains(Path.Combine(Dir.Path, dirName + "." + SecondExtension + Extension));
+#endif
+
+                bool multiMode = AllowSingleFileAndMultiMode ||
+                !namelessDocumentFileExists
+#if DocumentWithMatchingKeyName
+                && !dirNameDocumentFileExists
+#endif
+                ;
+
+                if (namelessDocumentFileExists)
                 {
-                    var key = Path.GetFileNameWithoutExtension(file);
-                    if (key is TKey typedKey)
+                    HandleNameless(namelessDocumentFile, dirName);
+                }
+#if DocumentWithMatchingKeyName
+                //else if (dirNameDocumentFileExists) { }
+#endif
+                if (multiMode)
+                {
+                    foreach (var file in files)
                     {
-                        keys.Add(typedKey);
+                        var fileDir = Path.GetDirectoryName(file) ?? "";
+                        var subDirsWithoutRoot = fileDir.Replace(Dir.Path, "");
+
+                        var withoutExt = Path.GetFileNameWithoutExtension(file);
+                        if (withoutExt == SecondExtension)
+                        {
+                            var key = GetKeyForNameAndPath(subDirsWithoutRoot, file);
+                            if (key.HasValue) { keys.Add(key.Value); }
+                        }
+                        else
+                        {
+                            var nameFromFileName = Path.GetFileNameWithoutExtension(withoutExt);
+                            var key = GetKeyForNameAndPath(Path.Combine(subDirsWithoutRoot, nameFromFileName), file);
+                            if (key.HasValue) { keys.Add(key.Value); }
+                        }
                     }
                 }
+            }
+
+            void HandleNameless(string namelessDocumentFile, string dirName)
+            {
+                var key = GetKeyForNameAndPath(dirName, namelessDocumentFile);
+                if (key.HasValue) { keys.Add(key.Value); }
             }
         });
     }

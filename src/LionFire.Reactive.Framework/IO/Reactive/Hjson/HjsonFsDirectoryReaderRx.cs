@@ -1,15 +1,26 @@
 ﻿using LionFire.IO.Reactive.Filesystem;
 using LionFire.Reactive.Persistence;
 using System.IO;
+using System.Text.RegularExpressions;
 
 namespace LionFire.IO.Reactive.Hjson;
+ 
+file static class _StringX
+{
+
+    public static string ToKebabCase(this string input)
+    {
+        // Replace spaces with hyphens and convert to lowercase
+        return Regex.Replace(input, @"\s+", "-").ToLower();
+    }
+}
 
 public class HjsonFsDirectoryReaderRx<TKey, TValue> : FsDirectoryReaderRx<TKey, TValue>, IObservableReader<TKey, TValue>
 where TKey : notnull
 where TValue : notnull
 {
     protected override string Extension => ".hjson";
-
+ 
     #region Lifecycle
 
     public HjsonFsDirectoryReaderRx(DirectorySelector dir) : base(dir)
