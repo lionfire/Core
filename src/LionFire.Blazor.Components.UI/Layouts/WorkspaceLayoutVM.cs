@@ -8,6 +8,7 @@ using LionFire.IO.Reactive.Hjson;
 using ReactiveUI;
 using ReactiveUI.SourceGenerators;
 using Microsoft.Extensions.Options;
+using System.Diagnostics;
 
 namespace LionFire.Blazor.Components;
 
@@ -29,8 +30,18 @@ public partial class WorkspaceLayoutVM : UserLayoutVM
         AppInfo = appInfo;
 
         PostConstructor();
+
+        this.PropertyChanged += WorkspaceLayoutVM_PropertyChanged;
     }
-    
+
+    private void WorkspaceLayoutVM_PropertyChanged(object? sender, System.ComponentModel.PropertyChangedEventArgs e)
+    {
+        if (e.PropertyName == "WorkspaceId")
+        {
+            Debug.WriteLine("Workspace: " + WorkspaceId);
+        }
+    }
+
     protected override bool DeferPostConstructor => true;
 
     #endregion

@@ -65,15 +65,38 @@ public class DirectorySchemaOnNativeFs
             //CollectionType: Workspace
             //""");
 
+            #region Blue
+
             Directory.CreateDirectory(Path.Combine(dir, "Blue"));
 
-            await File.WriteAllTextAsync(Path.Combine(dir, "Blue", "Blue.workspace.hjson"), """
+            await File.WriteAllTextAsync(Path.Combine(dir, "Blue", "workspace.hjson"), """
             Description: This is a sample workspace named 'Blue'
             """);
+
+            #region Bots
+
+            Directory.CreateDirectory(Path.Combine(dir, "Blue", "Bots"));
+            await File.WriteAllTextAsync(Path.Combine(dir, "Blue", "Bots", "TestBot1.bot.hjson"), """
+            Description: This is a sample bot 1
+            """);
+            await File.WriteAllTextAsync(Path.Combine(dir, "Blue", "Bots", "TestBot2.bot.hjson"), """
+            Description: This is a sample bot 2
+            """);
+
+            #endregion
+
+            #endregion
 
             Directory.CreateDirectory(Path.Combine(dir, "Red"));
             await File.WriteAllTextAsync(Path.Combine(dir, "Red", "workspace.hjson"), """
             Description: This is a sample workspace named 'Red'
+            SampleProperty: Sample value.
+            """);
+
+
+            Directory.CreateDirectory(Path.Combine(dir, "Misc"));
+            await File.WriteAllTextAsync(Path.Combine(dir, "Misc", "Green.workspace.hjson"), """
+            Description: This is a sample workspace named 'Green'
             SampleProperty: Sample value.
             """);
         }

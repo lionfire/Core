@@ -25,7 +25,7 @@ public class ObservableReaderWriterFromComponents<TKey, TValue> : IObservableRea
 
     #region Reader
 
-    public IObservableList<TKey> Keys => Read.Keys;
+    public IObservableCache<TKey, TKey> Keys => Read.Keys;
 
     public IObservableCache<TValue, TKey> ObservableCache => Read.ObservableCache;
 

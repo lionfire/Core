@@ -26,8 +26,8 @@ internal class InMemoryReaderWriterRxImpl<TKey, TValue>
 
     #region State
 
-    public IObservableList<TKey> Keys => keys.ToObservableChangeSet().AsObservableList();
-    private readonly ObservableCollection<TKey> keys = new();
+    public IObservableCache<TKey, TKey> Keys => keys.AsObservableCache();
+    private readonly SourceCache<TKey, TKey> keys = new(k => k);
 
     public IObservableCache<KeyValuePair<TKey, TValue>, TKey> KeyedItems => keyedItems;
     private SourceCache<KeyValuePair<TKey, TValue>, TKey> keyedItems = new(kvp => kvp.Key);

@@ -1,16 +1,16 @@
 ﻿@using LionFire.Reactive.Persistence
 @using Microsoft.Extensions.DependencyInjection
 
-<div class="lf-field">
+<div class="lf-field" style="min-width: 20em;">
     @* <div class="label">Workspace</div> *@
 
     <div class="value">
         @if (Workspaces != null)
         {
             <MudSelect Label="Workspace" T="string" @bind-Value="CurrentWorkspace" Variant="Variant.Filled" Style="width: 100%">
-                @foreach (var kvp in Workspaces.ObservableCache.KeyValues)
+                @foreach (var key in Workspaces.Keys.Keys)
                 {
-                    <MudSelectItem Value="@kvp.Key">@kvp.Key</MudSelectItem>
+                    <MudSelectItem Value="@key">@key</MudSelectItem>
                 }
             </MudSelect>
         }
@@ -28,7 +28,7 @@
     public IServiceProvider? UserServices { get; set; }
 
     [Parameter]
-    public string Workspace { get; set; } = "one";
+    public string? Workspace { get; set; }
 
     IObservableReaderWriter<string, Workspace>? Workspaces;
 
@@ -37,8 +37,9 @@
         get => currentWorkspace;
         set
         {
+            if (currentWorkspace == value) return;
             currentWorkspace = value;
-            // WorkspaceChanged.InvokeAsync(value);
+            WorkspaceChanged.InvokeAsync(currentWorkspace);
         }
     }
     private string? currentWorkspace;
@@ -49,15 +50,20 @@
     {
         base.OnInitialized();
         Workspaces = UserServices?.GetRequiredService<IObservableReaderWriter<string, Workspace>>();
-        if (Workspaces.Keys.Count == 0)
-        {
-        }
     }
 
-    protected override Task OnParametersSetAsync()
+    protected override async Task OnParametersSetAsync()
     {
         CurrentWorkspace = Workspace;
-        return base.OnParametersSetAsync();
+        if (CurrentWorkspace == null && Workspaces != null && Workspaces.Keys.Count != 0)
+        {
+            CurrentWorkspace = Workspaces.Keys.Keys.First();
+            // if (CurrentWorkspaceChanged.HasDelegate)
+            // {
+            //     await CurrentWorkspaceChanged.InvokeAsync(CurrentWorkspace);
+            // }
+        }
+        await base.OnParametersSetAsync();
     }
 
 

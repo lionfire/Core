@@ -8,6 +8,7 @@ using LionFire.IO.Reactive.Hjson;
 using LionFire.Reactive.Persistence;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.ComponentModel;
 using System.IO;
 using System.Linq;
 using System.Text.RegularExpressions;
@@ -62,9 +63,9 @@ public abstract class FsDirectoryReaderRx<TKey, TValue> : IObservableReader<TKey
         // Convert x to Items
 
         // Transform keys to KeyValuePair<TKey, TValue> and filter out null values
-        KeyedItems = keys.ToObservableChangeSet()
+        KeyedItems = keys.Connect()
             .Transform(key => new KeyValuePair<TKey, TValue>(key, ReadFromFile(GetFilePath(key))!))
-            .AddKey(kvp => kvp.Key)
+            //.AddKey(kvp => kvp.Key)
             //.Flatten()
             //.Where(change => change.Current.Value != null)
             .AsObservableCache()
@@ -78,8 +79,22 @@ public abstract class FsDirectoryReaderRx<TKey, TValue> : IObservableReader<TKey
 
     #region State
 
-    public IObservableList<TKey> Keys => keys.ToObservableChangeSet().AsObservableList();
-    private readonly ObservableCollection<TKey> keys = new();
+    public IObservableCache<TKey, TKey> Keys => keys.AsObservableCache();
+    //IObservableList<TKey> IObservableReader<TKey, TValue>.Keys
+    //{
+    //    get
+    //    {
+    //        var observableList = new ObservableCollection<TKey>();
+
+    //        keys.Connect().Transform(x => x)
+    //         .Bind(observableList)
+    //         .Subscribe();
+
+    //        return new ObservableListAdapter<TKey>(observableList);
+    //    }
+    //}
+    //private readonly ObservableCollection<TKey> keys = new();
+    private readonly SourceCache<TKey, TKey> keys = new(k => k);
 
     public IObservableCache<KeyValuePair<TKey, TValue>, TKey> KeyedItems { get; }
     public IObservableCache<TValue, TKey> ObservableCache { get; }
@@ -93,7 +108,7 @@ public abstract class FsDirectoryReaderRx<TKey, TValue> : IObservableReader<TKey
 
     public Func<string, string, Optional<TKey>> GetKeyForNameAndPath { get; set; } = (string name, string path) =>
     {
-        name = name.TrimStart(Path.PathSeparator).TrimStart(Path.AltDirectorySeparatorChar);
+        name = name.TrimStart(Path.DirectorySeparatorChar).TrimStart(Path.AltDirectorySeparatorChar);
 
         if (name is TKey typedName)
         {
@@ -149,19 +164,19 @@ public abstract class FsDirectoryReaderRx<TKey, TValue> : IObservableReader<TKey
                     foreach (var file in files)
                     {
                         var fileDir = Path.GetDirectoryName(file) ?? "";
-                        var subDirsWithoutRoot = fileDir.Replace(Dir.Path, "");
+                        var subDirsWithoutRoot = fileDir.Replace(Dir.Path, "").TrimStart(Path.DirectorySeparatorChar).TrimStart(Path.AltDirectorySeparatorChar);
 
                         var withoutExt = Path.GetFileNameWithoutExtension(file);
                         if (withoutExt == SecondExtension)
                         {
                             var key = GetKeyForNameAndPath(subDirsWithoutRoot, file);
-                            if (key.HasValue) { keys.Add(key.Value); }
+                            if (key.HasValue) { keys.AddOrUpdate(key.Value); }
                         }
                         else
                         {
                             var nameFromFileName = Path.GetFileNameWithoutExtension(withoutExt);
                             var key = GetKeyForNameAndPath(Path.Combine(subDirsWithoutRoot, nameFromFileName), file);
-                            if (key.HasValue) { keys.Add(key.Value); }
+                            if (key.HasValue) { keys.AddOrUpdate(key.Value); }
                         }
                     }
                 }
@@ -170,7 +185,7 @@ public abstract class FsDirectoryReaderRx<TKey, TValue> : IObservableReader<TKey
             void HandleNameless(string namelessDocumentFile, string dirName)
             {
                 var key = GetKeyForNameAndPath(dirName, namelessDocumentFile);
-                if (key.HasValue) { keys.Add(key.Value); }
+                if (key.HasValue) { keys.AddOrUpdate(key.Value); }
             }
         });
     }
