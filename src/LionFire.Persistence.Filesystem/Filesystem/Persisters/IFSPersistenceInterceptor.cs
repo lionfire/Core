@@ -1,4 +1,5 @@
-﻿using System;
+﻿#if UNUSED
+using System;
 
 namespace LionFire.Persistence.Filesystem
 {
@@ -13,3 +14,4 @@ namespace LionFire.Persistence.Filesystem
         //bool Write(object obj, string fullDiskPath, Type type, LionSerializer serializer); // TOPORT
     }
 }
+#endif

@@ -13,11 +13,6 @@ using System;
 
 namespace LionFire.Hosting;
 
-public static class FilesystemPersistenceResilience
-{
-    public const string RetryPolicyKey = "Filesystem-Retry-Timeout";
-}
-
 public static class FilesystemPersistenceHostingX
 {
     public static IServiceCollection AddFilesystemResilience(this IServiceCollection s) => s
@@ -63,16 +58,7 @@ public static class FilesystemPersistenceHostingX
             .AddSingleton<IWriteHandleProvider<FileReference>, FileHandleProvider>(s => s.GetRequiredService<FileHandleProvider>())
             //.AddSingleton<IReadWriteHandleProvider<FileReference>, FileHandleProvider>(s => s.GetRequiredService<FileHandleProvider>())
             //.AddSingleton<IWriteHandleProvider<ProviderFileReference>, FileHandleProvider>(s => s.GetRequiredService<FileHandleProvider>())
-
             ;
-
-        //IReadHandleProvider<ProviderFileReference> a;
-        //FileHandleProvider b;
-        //b = new FileHandleProvider(null);
-        //a = b;
-        //services
-        //.AddSingleton<, FileHandleProvider>();
-
 
         return services;
     }

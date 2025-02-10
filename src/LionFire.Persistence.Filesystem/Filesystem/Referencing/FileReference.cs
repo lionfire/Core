@@ -1,20 +1,9 @@
 ﻿using System.Collections.Generic;
 using LionFire.Referencing;
 using LionFire.Serialization;
+using LionFire.ExtensionMethods;
 
 namespace LionFire.Persistence.Filesystem;
-
-public static class StringUtilsX // MOVE
-{
-    public static string TrimStartString(this string path, string potentialPrefix)
-    {
-        if (path.StartsWith(potentialPrefix))
-        {
-            path = path.Substring(potentialPrefix.Length);
-        }
-        return path;
-    }
-}
 
 public interface IFileReference : IReference { }
 public interface IFileReference<out TValue> : IFileReference

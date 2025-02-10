@@ -8,7 +8,7 @@ namespace LionFire.Persistence.Filesystem
         public override string UriScheme => "file";
 
         public override (FileReference reference, string error) TryGetReference(string path)
-            => (new FileReference(path), null);
+            => (new FileReference(path), null); // TODO: validate path is valid
     }
 
 }

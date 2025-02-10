@@ -8,8 +8,11 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="Filesystem\ObjectBus\**" />
     <Compile Remove="Strategies\**" />
+    <EmbeddedResource Remove="Filesystem\ObjectBus\**" />
     <EmbeddedResource Remove="Strategies\**" />
+    <None Remove="Filesystem\ObjectBus\**" />
     <None Remove="Strategies\**" />
   </ItemGroup>
 
@@ -24,6 +27,10 @@
   <ItemGroup>
     <PackageReference Include="Microsoft.Extensions.DependencyInjection" />
     <PackageReference Include="Microsoft.Extensions.Resilience" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Triage\" />
   </ItemGroup>
 
 </Project>
