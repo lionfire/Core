@@ -1,18 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
-using LionFire.ObjectBus;
-using LionFire.ObjectBus.Filesystem;
-using LionFire.Ontology;
 using LionFire.Referencing;
 using LionFire.Serialization;
-using LionFire.Structures;
 
 namespace LionFire.Persistence.Filesystem;
 
 [LionSerializable(SerializeMethod.ByValue)]
 public abstract class FileReferenceBase<ConcreteType, TValue> : LocalReferenceBase<ConcreteType, TValue>
-    //, IHas<IOBase>, IHas<IOBus>
-    //, IOBaseReference
     where ConcreteType : FileReferenceBase<ConcreteType, TValue>
 {
     public virtual string UriPrefixDefault => UriSchemeColon;
@@ -22,10 +16,6 @@ public abstract class FileReferenceBase<ConcreteType, TValue> : LocalReferenceBa
 
     public override IEnumerable<string> AllowedSchemes { get { yield return Scheme; } }
 
-
-    //IOBus IHas<IOBus>.Object => ManualSingleton<FSOBus>.GuaranteedInstance;
-    //IOBase IHas<IOBase>.Object => FsOBase;
-    //FSOBase FsOBase => ManualSingleton<FSOBase>.GuaranteedInstance;
 
     public FileReferenceBase() { }
     public FileReferenceBase(string path)
@@ -44,11 +34,7 @@ public abstract class FileReferenceBase<ConcreteType, TValue> : LocalReferenceBa
 
     public static string CoercePath(string path)
     {
-        //#if MONO
         path = path.Replace('\\', '/');
-        //#else
-        //                value = value.Replace('/', '\\');
-        //#endif
 
         //if (value != null)
         //{
@@ -72,8 +58,6 @@ public abstract class FileReferenceBase<ConcreteType, TValue> : LocalReferenceBa
         this.path = CoercePath(path);
     }
 
-    
-
     public override string Key
     {
         get => string.Concat(UriPrefixDefault, Path);
@@ -93,8 +77,6 @@ public abstract class FileReferenceBase<ConcreteType, TValue> : LocalReferenceBa
             Path = value;
         }
     }
-
-
     public  string ToXamlString() => $"{{{this.GetType().Name} {Path}}}";
     public override string ToString() => Key; 
 

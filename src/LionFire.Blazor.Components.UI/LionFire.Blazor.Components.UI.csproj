@@ -22,6 +22,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\LionFire.Blazor.Components\LionFire.Blazor.Components.csproj" />
+    <ProjectReference Include="..\LionFire.Persistence.Filesystem\LionFire.Persistence.Filesystem.csproj" />
     <ProjectReference Include="..\LionFire.Reactive.Framework\LionFire.Reactive.Framework.csproj" />
   </ItemGroup>
 

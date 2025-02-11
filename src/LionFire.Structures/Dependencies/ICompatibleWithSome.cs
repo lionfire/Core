@@ -2,10 +2,9 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace LionFire.Dependencies
+namespace LionFire.Dependencies;
+
+public interface ICompatibleWithSome<T>
 {
-    public interface ICompatibleWithSome<T>
-    {
-        bool IsCompatibleWith(T obj);
-    }
+    bool IsCompatibleWith(T obj);
 }

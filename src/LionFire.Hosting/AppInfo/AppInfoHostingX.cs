@@ -136,4 +136,11 @@ public static class AppInfoHostingX
       => builder.Services.BuildServiceProvider().GetService<AppInfo>() ?? throw new ArgumentException("HostApplicationBuilder needs to have AddAppInfo() already invoked on it.");
 
     #endregion
+
+    public static IServiceCollection DataDir(this IServiceCollection services, string dataDirName)
+        => services.Configure<AppInfo>(a => a.DataDirName = dataDirName);
+    public static ILionFireHostBuilder DataDir(this ILionFireHostBuilder lf, string dataDirName)
+        => lf.ConfigureServices(s => s.Configure<AppInfo>(a => a.DataDirName = dataDirName));
+
+
 }

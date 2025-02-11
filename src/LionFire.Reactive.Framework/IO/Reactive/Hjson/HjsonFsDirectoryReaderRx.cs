@@ -1,4 +1,5 @@
 ﻿using LionFire.IO.Reactive.Filesystem;
+using LionFire.Persistence.Filesystemlike;
 using LionFire.Reactive.Persistence;
 using System.IO;
 using System.Text.RegularExpressions;
@@ -23,7 +24,7 @@ where TValue : notnull
  
     #region Lifecycle
 
-    public HjsonFsDirectoryReaderRx(DirectorySelector dir) : base(dir)
+    public HjsonFsDirectoryReaderRx(DirectorySelector dir, IFileExtensionConvention extensionConvention) : base(dir, extensionConvention)
     {
         _ = LoadKeys();
     }

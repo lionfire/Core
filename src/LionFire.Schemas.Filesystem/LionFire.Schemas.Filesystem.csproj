@@ -16,4 +16,8 @@
     <ProjectReference Include="..\LionFire.Structures\LionFire.Structures.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Schemas\Filesystem\Directories\" />
+  </ItemGroup>
+
 </Project>

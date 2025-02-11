@@ -25,5 +25,3 @@ public interface IWorkspace
 public class Workspace : FlexObject, IWorkspace
 {
 }
-
-

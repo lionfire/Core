@@ -2,6 +2,7 @@
 using LionFire.Schemas.Filesystem;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.IO;
 using System.Threading.Tasks;
 
@@ -12,6 +13,7 @@ public class WorkspaceSchemas
     public static string Namespace = "https://schemas.lionfire.ca/2025/ui";
 
     public static TypeSchemaBundle Types { get; }
+    //public static LionFire.Vfs.Conventions.Types Types2 { get; } // UNUSED
 
     public static DirectorySchema DirectorySchema { get; }
 
@@ -22,6 +24,12 @@ public class WorkspaceSchemas
             );
         Types.AddDefaultAliases();
 
+#if UNUSED
+        Types2 = new LionFire.Vfs.Conventions.Types();
+        Types2.DefaultType = TypeSchemaBundle.DefaultAliasFactory(typeof(IWorkspace)); // "Workspace",
+        Types2.WhitelistEnabled = true;
+#endif
+
         DirectorySchema = new DirectorySchema
         {
             CollectionType = new DirectoryCollectionSchema
@@ -31,11 +39,11 @@ public class WorkspaceSchemas
         };
     }
 
+    // TODO: Replace dir with IReference
     public static async ValueTask InitFilesystemSchemas(string workspacesDir)
     {
         await DirectorySchemaOnNativeFs.InitSchema(DirectorySchema, workspacesDir);
     }
-
 }
 
 

@@ -1,4 +1,5 @@
-﻿using LionFire.Reactive.Entities;
+﻿using LionFire.Persistence.Filesystemlike;
+using LionFire.Reactive.Entities;
 using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.Collections.Generic;
@@ -14,6 +15,14 @@ public static class ReactivePersistenceHostingX
     {
         return services
             .AddSingleton<ObservableCacheProvider>()
+            .AddFileExtensionConventions()
+            ;
+    }
+
+    public static IServiceCollection AddFileExtensionConventions(this IServiceCollection services)
+    {
+        return services
+            .AddSingleton<IFileExtensionConvention, DefaultExtensionConvention>()
             ;
     }
 }

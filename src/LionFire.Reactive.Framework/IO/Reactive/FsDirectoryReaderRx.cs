@@ -4,7 +4,7 @@ using DynamicData;
 using DynamicData.Binding;
 using DynamicData.Kernel;
 using LionFire.IO.Reactive.Filesystem;
-using LionFire.IO.Reactive.Hjson;
+using LionFire.Persistence.Filesystemlike;
 using LionFire.Reactive.Persistence;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -15,22 +15,13 @@ using System.Text.RegularExpressions;
 
 namespace LionFire.IO.Reactive;
 
-file static class _StringX
-{
-
-    public static string ToKebabCase(this string input)
-    {
-        // Replace spaces with hyphens and convert to lowercase
-        return Regex.Replace(input, @"\s+", "-").ToLower();
-    }
-}
-
 public abstract class FsDirectoryReaderRx<TKey, TValue> : IObservableReader<TKey, TValue>
     where TKey : notnull
     where TValue : notnull
 {
     protected abstract string Extension { get; }
-    protected virtual string SecondExtension => typeof(TValue).Name.ToKebabCase();
+    protected virtual string SecondExtension => ExtensionConvention.FileExtensionForType(typeof(TValue));
+        
 
     public static string ToKebabCase(string input)
     {
@@ -41,14 +32,16 @@ public abstract class FsDirectoryReaderRx<TKey, TValue> : IObservableReader<TKey
     #region Parameters
 
     public DirectorySelector Dir { get; }
+    public IFileExtensionConvention ExtensionConvention { get; }
 
     #endregion
 
     #region Lifecycle
 
-    public FsDirectoryReaderRx(DirectorySelector dir)
+    public FsDirectoryReaderRx(DirectorySelector dir, IFileExtensionConvention extensionConvention)
     {
         Dir = dir;
+        ExtensionConvention = extensionConvention;
         _ = LoadKeys();
 
         // REVIEW: how do deletions get handled?  When ReadFromFile returns null, it should be removed from the cache.

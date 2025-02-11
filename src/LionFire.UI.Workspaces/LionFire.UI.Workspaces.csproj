@@ -11,8 +11,10 @@
   <ItemGroup>
     <ProjectReference Include="..\LionFire.Flex\LionFire.Flex.csproj" />
     <ProjectReference Include="..\LionFire.Reactive\LionFire.Reactive.csproj" />
+    <ProjectReference Include="..\LionFire.Referencing.Abstractions\LionFire.Referencing.Abstractions.csproj" />
     <ProjectReference Include="..\LionFire.Schemas.Filesystem\LionFire.Schemas.Filesystem.csproj" />
     <ProjectReference Include="..\LionFire.Structures\LionFire.Structures.csproj" />
+    <ProjectReference Include="..\LionFire.Vfs.Conventions\LionFire.Vfs.Conventions.csproj" />
   </ItemGroup>
 
 </Project>

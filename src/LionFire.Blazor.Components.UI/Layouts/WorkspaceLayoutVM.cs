@@ -7,66 +7,131 @@ using System.IO;
 using LionFire.IO.Reactive.Hjson;
 using ReactiveUI;
 using ReactiveUI.SourceGenerators;
-using Microsoft.Extensions.Options;
 using System.Diagnostics;
+using LionFire.Referencing;
+using LionFire.Persistence.Filesystem;
 
 namespace LionFire.Blazor.Components;
 
 public partial class WorkspaceLayoutVM : UserLayoutVM
 {
-    #region Dependencies
+    #region Dependencies (some of them)
 
+    public IServiceProvider ServiceProvider { get; }
     public AppInfo AppInfo { get; }
 
     #endregion
 
-    [Reactive]
-    private string? _workspaceId;
-
     #region Lifecycle
 
-    public WorkspaceLayoutVM(AuthenticationStateProvider AuthStateProvider, AppInfo appInfo) : base(AuthStateProvider)
+    public WorkspaceLayoutVM(IServiceProvider serviceProvider, AuthenticationStateProvider AuthStateProvider, AppInfo appInfo, IEnumerable<IWorkspaceServiceConfigurator> workspaceServiceConfigurators) : base(AuthStateProvider)
     {
+        ServiceProvider = serviceProvider;
         AppInfo = appInfo;
+        WorkspaceServiceConfigurators = workspaceServiceConfigurators;
+        this.WhenAnyValue(x => x.UserId)
+         .Subscribe(async _ => await OnWorkspaceChanged());
 
         PostConstructor();
-
-        this.PropertyChanged += WorkspaceLayoutVM_PropertyChanged;
-    }
-
-    private void WorkspaceLayoutVM_PropertyChanged(object? sender, System.ComponentModel.PropertyChangedEventArgs e)
-    {
-        if (e.PropertyName == "WorkspaceId")
-        {
-            Debug.WriteLine("Workspace: " + WorkspaceId);
-        }
     }
 
     protected override bool DeferPostConstructor => true;
 
     #endregion
 
-    #region Event handling
+    #region User Services
 
-    protected override async ValueTask ConfigureServices(IServiceCollection services)
+    public bool WorkspacesAvailable => WorkspacesDir != null;
+    public string? WorkspacesDir { get; set; }
+
+    protected override async ValueTask ConfigureUserServices(IServiceCollection services)
     {
         string commonAppDataPath = Environment.GetFolderPath(Environment.SpecialFolder.CommonApplicationData);
-        var orgDataDir = Path.Combine(commonAppDataPath, AppInfo.OrgDir);
+        var orgDataDir = AppInfo.OrgDir == null ? null : Path.Combine(commonAppDataPath, AppInfo.OrgDir);
 
-        var appDataDir = Path.Combine(orgDataDir, AppInfo.EffectiveDataDirName!);
-        var usersDataDir = Path.Combine(appDataDir, "Users");
-        var userDir = Path.Combine(usersDataDir, EffectiveUserName);
-        var workspacesDir = Path.Combine(userDir, "Workspaces");
+        if (WorkspacesDir == null)
+        {
+            string? appDataDir;
+            if (orgDataDir == null) { appDataDir = null; }
+            else { appDataDir = Path.Combine(orgDataDir, AppInfo.EffectiveDataDirName!); }
 
-        await WorkspaceSchemas.InitFilesystemSchemas(workspacesDir);
+            string? usersDataDir;
+            if (appDataDir == null) usersDataDir = null;
+            else usersDataDir = Path.Combine(appDataDir, "Users");
 
+            string? userDir;
+            if (usersDataDir == null) userDir = null;
+            else userDir = Path.Combine(usersDataDir, EffectiveUserName);
 
-        var dir = new LionFire.IO.Reactive.DirectorySelector(workspacesDir) { Recursive = true };
-        var r = new HjsonFsDirectoryReaderRx<string, Workspace>(dir);
-        var w = new HjsonFsDirectoryWriterRx<string, Workspace>(dir);
-        services.AddSingleton<IObservableReaderWriter<string, Workspace>>(sp => new ObservableReaderWriterFromComponents<string, Workspace>(r, w));
+            if (userDir != null) { WorkspacesDir = Path.Combine(userDir, "Workspaces"); }
+
+        }
+
+        if (WorkspacesDir != null)
+        {
+            await WorkspaceSchemas.InitFilesystemSchemas(WorkspacesDir);
+
+            var dir = new LionFire.IO.Reactive.DirectorySelector(WorkspacesDir) { Recursive = true };
+            var r = ActivatorUtilities.CreateInstance<HjsonFsDirectoryReaderRx<string, Workspace>>(ServiceProvider, dir);
+            var w = ActivatorUtilities.CreateInstance<HjsonFsDirectoryWriterRx<string, Workspace>>(ServiceProvider, dir);
+            services.AddSingleton<IObservableReaderWriter<string, Workspace>>(sp => new ObservableReaderWriterFromComponents<string, Workspace>(r, w));
+        }
     }
 
     #endregion
 
+    #region Workspace
+
+    [Reactive]
+    private string? _workspaceId;
+
+    public string EffectiveWorkspaceName => WorkspaceId ?? "Anonymous";
+
+    private async ValueTask OnWorkspaceChanged()
+    {
+        await DoConfigureWorkspaceServices();
+    }
+
+    #region Workspace Services
+
+    public IEnumerable<IWorkspaceServiceConfigurator> WorkspaceServiceConfigurators { get; }
+
+    public IServiceProvider? WorkspaceServices { get; set; }
+
+    private async ValueTask DoConfigureWorkspaceServices()
+    {
+        var services = new ServiceCollection();
+
+        await ConfigureWorkspaceServices(services);
+
+        WorkspaceServices = services.BuildServiceProvider();
+    }
+
+    protected virtual ValueTask ConfigureWorkspaceServices(IServiceCollection services)
+    {
+        if (WorkspacesDir != null)
+        {
+            var r = new FileReference(WorkspacesDir);
+            foreach (var s in WorkspaceServiceConfigurators)
+            {
+                s.ConfigureWorkspaceServices(UserServices, r, services);
+            }
+        }
+        return ValueTask.CompletedTask;
+    }
+
+    #endregion
+
+    #endregion
+
+}
+
+public interface IWorkspaceServiceConfigurator
+{
+    ValueTask ConfigureWorkspaceServices(IServiceProvider? userServices, IReference workspaceReference, IServiceCollection services);
+}
+
+public class WorkspaceConfiguration
+{
+    public List<Type> MemberTypes { get; set; } = new();
 }

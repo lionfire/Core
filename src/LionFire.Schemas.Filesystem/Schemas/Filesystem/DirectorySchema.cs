@@ -3,19 +3,22 @@
 namespace LionFire.Schemas.Filesystem;
 
 [AttributeUsage(AttributeTargets.Class | AttributeTargets.Struct | AttributeTargets.Interface)]
-public class FileNameAlias : Attribute
+public class SchemaAttribute : Attribute
 {
-    public FileNameAlias(string alias)
+    public SchemaAttribute(string schemaUri)
     {
-        Alias = alias;
+        SchemaUri = schemaUri;
     }
-    public string Alias { get; set; }
+    public string SchemaUri { get; set; }
+
 }
 
+// REVIEW: Consider replacing with LionFire.Vfs.Conventions.Types
 [FileNameAlias("dir")]
-public class DirectorySchema : Schema
+[Schema("https://schemas.lionfire.ca/2025/filesystem")]
+public class DirectorySchema //: Schema
 {
-    public DirectorySchema() : base("https://schemas.lionfire.ca/2025/filesystem")
+    public DirectorySchema() //: base("https://schemas.lionfire.ca/2025/filesystem")
     {
     }
 
@@ -26,16 +29,6 @@ public class DirectorySchema : Schema
 public class DirectoryCollectionSchema
 {
     public string? CollectionType { get; set; }
-}
-
-public static class FileNameAliasUtils
-{
-    public static string GetAlias<T>()
-    {
-        var type = typeof(T);
-        var attr = type.GetCustomAttributes(typeof(FileNameAlias), true).FirstOrDefault() as FileNameAlias;
-        return attr?.Alias ?? type.Name;
-    }
 }
 
 /// <summary>
@@ -52,6 +45,7 @@ public class DirectorySchemaOnNativeFs
     const string ext = ".hjson";
 
 
+    // TODO: Replace dir with IReference
     public static async ValueTask InitSchema(DirectorySchema directorySchema, string dir)
     {
         if (!Directory.Exists(dir))

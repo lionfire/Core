@@ -1,4 +1,6 @@
-﻿using LionFire.Structures;
+﻿// Use SchemaAttribute instead
+#if UNUSED
+using LionFire.Structures;
 
 namespace LionFire.Schemas;
 
@@ -13,3 +15,4 @@ public class Schema : IKeyed<string>
     }
 }
 
+#endif

@@ -5,6 +5,7 @@ using System.Collections.Concurrent;
 
 namespace LionFire.IO.Reactive.Hjson;
 
+#if UNUSED
 public class HjsonFsDictionaryProvider : FsDictionaryProvider
 {
 
@@ -31,4 +32,4 @@ public class HjsonFsDictionaryProvider : FsDictionaryProvider
     public override IObservableWriter<string, TValue> GetWriteOnly<TValue>()
        => (IObservableWriter<string, TValue>)cache.GetOrAdd(typeof(IObservableWriter<string, TValue>), _ => new HjsonFsDirectoryWriterRx<string, TValue>(Dir));
 }
-
+#endif

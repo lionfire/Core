@@ -22,6 +22,8 @@ public partial class UserLayoutVM : ReactiveObject
 
     #endregion
 
+    #region Lifecycle
+
     public UserLayoutVM(AuthenticationStateProvider AuthStateProvider)
     {
         this.AuthStateProvider = AuthStateProvider;
@@ -41,11 +43,9 @@ public partial class UserLayoutVM : ReactiveObject
         await UpdateAuthenticationState();
     }
 
+    #endregion
 
-    public string EffectiveUserName => UserId ?? "Anonymous";
-
-    [Reactive]
-    private string? _userId;
+    #region Auth
 
     public async ValueTask UpdateAuthenticationState()
     {
@@ -55,26 +55,42 @@ public partial class UserLayoutVM : ReactiveObject
         UserId = user?.Identity?.Name;
     }
 
-    public IObservable<Unit> AuthChanges => authChanges;
-    private Subject<Unit> authChanges = new();
+    //public IObservable<Unit> AuthChanges => authChanges;
+    //private Subject<Unit> authChanges = new();
 
-    public IServiceProvider? UserServices { get; set; }
+    #endregion
+
+
+    #region User
+
+    public string EffectiveUserName => UserId ?? "Anonymous";
+    [Reactive]
+    private string? _userId;
 
     private async ValueTask OnUserChanged()
     {
-        await DoConfigureServices();
+        await DoConfigureUserServices();
     }
-    private async ValueTask DoConfigureServices()
+
+    #region User Services
+
+    public IServiceProvider? UserServices { get; set; }
+
+    private async ValueTask DoConfigureUserServices()
     {
         var services = new ServiceCollection();
 
-        await ConfigureServices(services);
+        await ConfigureUserServices(services);
 
         UserServices = services.BuildServiceProvider();
     }
 
-    protected virtual ValueTask ConfigureServices(IServiceCollection services)
+    protected virtual ValueTask ConfigureUserServices(IServiceCollection services)
     {
         return ValueTask.CompletedTask;
     }
+
+    #endregion
+    
+    #endregion
 }

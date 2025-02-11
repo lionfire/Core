@@ -1,0 +1,11 @@
+﻿@page "/workspace/{WorkspaceName}"
+
+@inherits ReactiveUI.Blazor.ReactiveInjectableComponentBase<WorkspaceGridVM>
+
+<h3>WorkspaceGrid</h3>
+
+@code {
+    [Parameter]
+    public string? WorkspaceName { get; set; }
+
+}
