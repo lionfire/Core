@@ -7,7 +7,7 @@ namespace LionFire.Hosting;
 
 public static class OpenIddictClientWebIntegrationBuilderX
 {
-    public static OpenIddictClientWebIntegrationBuilder AddLionFireId(this OpenIddictClientWebIntegrationBuilder builder, Action<ConfigurableLionFireIdRegistration>? configuration = null)
+    public static OpenIddictClientWebIntegrationBuilder AddLionFire(this OpenIddictClientWebIntegrationBuilder builder, Action<ConfigurableLionFireIdRegistration>? configuration = null)
     {
         Action<ConfigurableLionFireIdRegistration>? configuration2 = configuration;
         //if (configuration2 == null)
@@ -20,8 +20,23 @@ public static class OpenIddictClientWebIntegrationBuilderX
             OpenIddictClientRegistration openIddictClientRegistration = new OpenIddictClientRegistration
             {
                 ProviderSettings = new LionFireIdProviderSettings(),
-                //ProviderType = "87edae0b-e71e-4163-960f-cf7e2a780d77" // REVIEW - what's this?
+                Issuer = new Uri("https://id.lionfire.ca"),
+
+                #region Set by application
+                //ClientId = ..., // Set by application
+                //ClientSecret = , // If required (not recommended but doesn't hurt)
+                //RedirectUri = new Uri(), 
+                #endregion
+
+                ProviderName = "LionFire"
+
             };
+            openIddictClientRegistration.Scopes.Add("openid");
+            openIddictClientRegistration.Scopes.Add("profile");
+            openIddictClientRegistration.Scopes.Add("email");
+            openIddictClientRegistration.Scopes.Add("valor");
+            openIddictClientRegistration.Scopes.Add("valor.client");
+
             if (configuration2 != null)
             {
                 configuration2(new ConfigurableLionFireIdRegistration(openIddictClientRegistration));

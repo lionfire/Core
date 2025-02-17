@@ -46,12 +46,15 @@ public static class AppInfoDefaultsX
 
         var org = env.ApplicationName.Substring(0, indexOfFirstDot);
 
-        if (!RecognizedNamespaces.TryGetValue(org, out var orgDomain)) return null;
+        if (!RecognizedNamespaces.TryGetValue(org, out var recognized)) return null;
 
-        var orgName = orgDomain.orgNameOverride ?? env.ApplicationName.Substring(indexOfFirstDot + 1);
-        appInfo = new AppInfo(orgName, org)
+        var orgName = recognized.orgNameOverride ?? env.ApplicationName.Substring(indexOfFirstDot + 1);
+
+        var appName = env.ApplicationName;
+        if(appName.StartsWith(orgName + ".")) { appName = appName.Substring(orgName.Length + 1); }
+        appInfo = new AppInfo(appName, orgName, recognized.orgDomain)
         {
-            OrgDomain = orgDomain.orgDomain
+            OrgDomain = recognized.orgDomain
         };
 
         return appInfo;

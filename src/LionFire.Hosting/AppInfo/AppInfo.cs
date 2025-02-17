@@ -49,7 +49,7 @@ public class AppInfo
     }
     private static AppInfo? rootInstance;
 
-#endregion
+    #endregion
 
     #region Construction
 
@@ -61,6 +61,7 @@ public class AppInfo
     {
         AppName = appName;
         OrgName = orgName;
+        OrgNamespace = OrgName;
         OrgDomain = orgDomain ?? DefaultOrgDomain;
     }
 
@@ -88,48 +89,114 @@ public class AppInfo
     /// Alternate: Reverse domain name style
     /// Default: $"{OrgName}.{AppName.Replace(" ", "")}"
     /// </summary>
-    public string AppId
+    public string? AppId // Rename AppDomainUrl
     {
         get => appId ?? DefaultAppId;
         set => appId = value;
     }
     private string? appId;
 
+    public string? AppIdReverse // Rename AppReverseDomainUrl
+    {
+        get => appIdReverse ?? DefaultAppIdReverse;
+        set => appIdReverse = value;
+    }
+    private string? appIdReverse;
+
     public const string AppIdSchemePrefix = "app:";
 
-    protected string DefaultAppId
+    protected string? DefaultAppIdReverse => AppIdSchemePrefix + DefaultAppDomainReverse;
+    protected string? DefaultAppId => AppIdSchemePrefix + DefaultAppKey;
+    //{
+    //get 
+    //        {
+    //            if (defaultAppId == null && AppName != null)
+    //            {
+    //#if false // reverse
+    //                if (OrgDomain != null)
+    //                {
+    //                    defaultAppId = OrgDomain.Split('.').Reverse().Aggregate((x, y) => $"{x}.{y}") + "." + AppName;
+    //                }
+    //                else if(OrgName != null)
+    //                {
+    //                    return appId ?? $"{OrgName}.{AppName.Replace(" ", "")}";
+    //                }
+    //#else
+    //                if (OrgDomain != null)
+    //                {
+    //                    defaultAppId = AppIdSchemePrefix + AppName + "." + OrgDomain;
+    //                }
+    //                else if (OrgName != null)
+    //                {
+    //                    return appId ?? (AppIdSchemePrefix + $"{AppName.Replace(" ", "")}.{OrgName}");
+    //                }
+    //#endif
+    //            }
+    //            return defaultAppId;
+    //        }
+    //}
+    //private string? defaultAppId;
+
+    public static string? ReverseDomain(string? domain) => domain?.Split('.').Reverse().Aggregate((x, y) => $"{x}.{y}");
+
+    public string? AppDomainReverse
+    {
+        get => appDomainReverse ?? DefaultAppDomainReverse;
+        set => appDomainReverse = value;
+    }
+    private string? appDomainReverse;
+
+    protected string? DefaultAppDomainReverse //=> ReverseDomain(DefaultAppKey);
     {
         get
         {
-            if (defaultAppId == null && AppName != null)
+            if (defaultAppDomainReverse == null && AppNamespace != null)
+            {
+                if (OrgDomain != null) { defaultAppDomainReverse = (ReverseDomain(OrgDomain) + "." + AppName).ToLowerInvariant(); } // Kebab case?
+                else if(AppNamespace != null) { defaultAppDomainReverse =  AppNamespace; }
+                else if (OrgName != null ) { defaultAppDomainReverse = AppNamespace ?? ($"{OrgName}.{AppName}"); }
+            }
+            return defaultAppDomainReverse;
+        }
+    }
+    private string? defaultAppDomainReverse;
+
+    /// <summary>
+    /// Default: $"{AppName}.{OrgDomain}"
+    /// Fallback: $"{AppName}.{OrgName}"
+    /// 
+    /// </summary>
+    protected string? DefaultAppKey
+    {
+        get
+        {
+            if (defaultAppKey == null && AppName != null)
             {
 #if false // reverse
                 if (OrgDomain != null)
                 {
-                    defaultAppId = OrgDomain.Split('.').Reverse().Aggregate((x, y) => $"{x}.{y}") + "." + AppName;
+                    defaultAppKey = OrgDomain.Split('.').Reverse().Aggregate((x, y) => $"{x}.{y}") + "." + AppName;
                 }
                 else if(OrgName != null)
                 {
-                    return appId ?? $"{OrgName}.{AppName.Replace(" ", "")}";
+                    return appKey ?? $"{OrgName}.{AppName.Replace(" ", "")}";
                 }
 #else
-                if (OrgDomain != null)
-                {
-                    defaultAppId = AppIdSchemePrefix + AppName + "." + OrgDomain;
-                }
-                else if (OrgName != null)
-                {
-                    return appId ?? (AppIdSchemePrefix + $"{AppName.Replace(" ", "")}.{OrgName}");
-                }
+                if (OrgDomain != null) { defaultAppKey = AppName + "." + OrgDomain; }
+                else if (OrgName != null) { return appName ?? ($"{AppName.Replace(" ", "")}.{OrgName}"); }
 #endif
             }
-            return defaultAppId;
+            return defaultAppKey;
         }
     }
-    private string? defaultAppId;
+    private string? defaultAppKey;
 
     public string OrgDomain { get; set; } = DefaultOrgDomain;
     public static string DefaultOrgDomain = "example.com";
+
+    /// <summary>
+    /// Typically the same as OrgName, but could be multi-part
+    /// </summary>
     public string OrgNamespace { get; set; } = "";
 
     /// <summary>
@@ -149,11 +216,11 @@ public class AppInfo
     #endregion
 
     /// <summary>
-    /// Partial Id, ideally without OrgNamespace
+    /// Partial Id of an app within an Org, should be without OrgNamespace
     /// 
     /// Recommendations: 
     ///  - unique name within your organization
-    ///  - no spaces, unless your executable file has spaces in it.
+    ///  - no spaces, unless your executable file has spaces in it.  (Spaces may be removed when deriving a URL or domain.)
     /// </summary>
     /// <remarks>
     /// Intended to match:
@@ -163,10 +230,13 @@ public class AppInfo
     /// </remarks>
     public string? AppName
     {
-        get => appName ?? appId;
+        get => appName;
         set => appName = value;
     }
     private string? appName;
+
+    public string? AppNamespace => appNamespace ??= (OrgNamespace + "." + appName?.Replace(" ", ""))?.TrimStart('.');
+    private string? appNamespace;
 
     public string? DevProjectName
     {
