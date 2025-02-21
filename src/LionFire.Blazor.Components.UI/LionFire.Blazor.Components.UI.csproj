@@ -26,4 +26,8 @@
     <ProjectReference Include="..\LionFire.Reactive.Framework\LionFire.Reactive.Framework.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Pages\" />
+  </ItemGroup>
+
 </Project>

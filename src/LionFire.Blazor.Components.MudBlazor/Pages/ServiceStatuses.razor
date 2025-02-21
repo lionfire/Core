@@ -1,0 +1,50 @@
+@page "/process/services"
+@using LionFire.Hosting.Services
+@using Microsoft.Extensions.Hosting
+
+@inject IServiceProvider ServiceProvider
+
+@if (ServiceTracker == null)
+{
+    <div>
+        Service status not available.
+    </div>
+}
+else
+{
+    <MudDataGrid Items="ServiceTracker.SourceCache.Items">
+        <Columns>
+            <PropertyColumn TItem="ServiceStatus" Property="x => x.Key" HeaderText="Name" />
+            <PropertyColumn TItem="ServiceStatus" Property="x => x.Status" HeaderText="Status" />
+            <PropertyColumn TItem="ServiceStatus" Property="x => x.IsHealthy" HeaderText="Healthy" />
+            <TemplateColumn T="ServiceStatus">
+                <CellTemplate>
+                    <div>
+                        @if (context.Item.Object is IHostedService hs)
+                        {
+                            <MudIconButton Icon="@Icons.Material.Outlined.Start" OnClick="@(async _ => await hs.StartAsync(default))" />
+                            <MudIconButton Icon="@Icons.Material.Outlined.Stop" OnClick="@(async _ => await hs.StopAsync(default))" />
+                        }
+                    </div>
+                </CellTemplate>
+            </TemplateColumn>
+        </Columns>
+
+    </MudDataGrid>
+}
+
+@code {
+
+    ServiceTracker? ServiceTracker { get; set; }
+
+    public IEnumerable<ServiceStatus> Items => ServiceTracker?.SourceCache.Items;
+
+    protected override void OnInitialized()
+    {
+        ServiceTracker = ServiceProvider.GetService<ServiceTracker>();
+        base.OnInitialized();
+    }
+
+   
+}
+
