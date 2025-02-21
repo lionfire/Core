@@ -10,6 +10,8 @@ using ReactiveUI.SourceGenerators;
 using System.Diagnostics;
 using LionFire.Referencing;
 using LionFire.Persistence.Filesystem;
+using System.Reactive.Disposables;
+using System.Reactive.Linq;
 
 namespace LionFire.Blazor.Components;
 
@@ -29,10 +31,15 @@ public partial class WorkspaceLayoutVM : UserLayoutVM
         ServiceProvider = serviceProvider;
         AppInfo = appInfo;
         WorkspaceServiceConfigurators = workspaceServiceConfigurators;
-        this.WhenAnyValue(x => x.UserId)
-         .Subscribe(async _ => await OnWorkspaceChanged());
+        //this.WhenAnyValue(x => x.UserId).Subscribe(async _ => await OnWorkspaceChanged()).DisposeWith(disposables);
+        this.WhenAnyValue(x => x.WorkspaceId).DistinctUntilChanged().Subscribe(async workspaceId => await OnWorkspaceChanged()).DisposeWith(disposables);
 
         PostConstructor();
+    }
+    protected override async ValueTask OnUserChanged()
+    {
+        await base.OnUserChanged();
+        WorkspaceId = null;
     }
 
     protected override bool DeferPostConstructor => true;
@@ -46,6 +53,7 @@ public partial class WorkspaceLayoutVM : UserLayoutVM
 
     protected override async ValueTask ConfigureUserServices(IServiceCollection services)
     {
+        await base.ConfigureUserServices(services);
         string commonAppDataPath = Environment.GetFolderPath(Environment.SpecialFolder.CommonApplicationData);
         var orgDataDir = AppInfo.OrgDir == null ? null : Path.Combine(commonAppDataPath, AppInfo.OrgDir);
 
@@ -84,6 +92,8 @@ public partial class WorkspaceLayoutVM : UserLayoutVM
 
     [Reactive]
     private string? _workspaceId;
+
+
 
     public string EffectiveWorkspaceName => WorkspaceId ?? "Anonymous";
 

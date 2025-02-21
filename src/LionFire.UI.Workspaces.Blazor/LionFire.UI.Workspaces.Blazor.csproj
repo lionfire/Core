@@ -13,11 +13,13 @@
   </ItemGroup>
 
   <ItemGroup>
+    <PackageReference Include="BlazorGridStack" />
     <PackageReference Include="Microsoft.AspNetCore.Components.Web" />
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\LionFire.Blazor.Components.MudBlazor\LionFire.Blazor.Components.MudBlazor.csproj" />
+    <ProjectReference Include="..\LionFire.Blazor.Components.UI\LionFire.Blazor.Components.UI.csproj" />
     <ProjectReference Include="..\LionFire.Reactive\LionFire.Reactive.csproj" />
     <ProjectReference Include="..\LionFire.Structures\LionFire.Structures.csproj" />
     <ProjectReference Include="..\LionFire.UI.Workspaces\LionFire.UI.Workspaces.csproj" />

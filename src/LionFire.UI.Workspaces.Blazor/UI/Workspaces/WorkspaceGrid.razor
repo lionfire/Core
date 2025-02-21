@@ -1,11 +1,36 @@
-﻿@page "/workspace/{WorkspaceName}"
-
+﻿@page "/workspaces/{WorkspaceName}"
 @inherits ReactiveUI.Blazor.ReactiveInjectableComponentBase<WorkspaceGridVM>
 
+@using BlazorGridStack
+@using BlazorGridStack.Models
+
 <h3>WorkspaceGrid</h3>
+
+<BlazorGridStackBody GridStackOptions="@(new() { Class = "DashboardGrid" })">
+    <BlazorGridStackWidget WidgetOptions="@(new() {X = 3, Y = 2})">
+        <div class="tile">
+            hello
+        </div>
+    </BlazorGridStackWidget>
+</BlazorGridStackBody>
+
+<h3>Dynamic</h3>
+<button onclick="@AddElementClicked">Add Element</button>
+<BlazorGridStackBody @ref="Grid" GridStackOptions="@(new() { Class = "DashboardGrid" })"></BlazorGridStackBody>
+
 
 @code {
     [Parameter]
     public string? WorkspaceName { get; set; }
 
+    BlazorGridStackBody? Grid;
+
+    public void AddElementClicked()
+    {
+        Grid.AddWidget(new BlazorGridStackWidgetOptions
+            {
+                W = 1,
+                H = 1
+            });
+    }
 }

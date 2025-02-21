@@ -146,6 +146,21 @@ public class AppInfo
     }
     private string? appDomainReverse;
 
+    protected string? DefaultAppDomain
+    {
+        get
+        {
+            if (defaultAppDomain == null && AppNamespace != null)
+            {
+                if (OrgDomain != null) { defaultAppDomain = (ReverseDomain(AppName) + "." + OrgDomain).ToLowerInvariant(); } // Kebab case?
+                else if (AppNamespace != null) { defaultAppDomain = ReverseDomain(AppNamespace); }
+                else if (OrgName != null) { defaultAppDomain = ReverseDomain(AppNamespace) ?? ($"{ReverseDomain(AppName)}.{OrgName}"); }
+            }
+            return defaultAppDomain;
+        }
+    }
+    private string? defaultAppDomain;
+
     protected string? DefaultAppDomainReverse //=> ReverseDomain(DefaultAppKey);
     {
         get
@@ -153,8 +168,8 @@ public class AppInfo
             if (defaultAppDomainReverse == null && AppNamespace != null)
             {
                 if (OrgDomain != null) { defaultAppDomainReverse = (ReverseDomain(OrgDomain) + "." + AppName).ToLowerInvariant(); } // Kebab case?
-                else if(AppNamespace != null) { defaultAppDomainReverse =  AppNamespace; }
-                else if (OrgName != null ) { defaultAppDomainReverse = AppNamespace ?? ($"{OrgName}.{AppName}"); }
+                else if (AppNamespace != null) { defaultAppDomainReverse = AppNamespace; }
+                else if (OrgName != null) { defaultAppDomainReverse = AppNamespace ?? ($"{OrgName}.{AppName}"); }
             }
             return defaultAppDomainReverse;
         }
@@ -170,23 +185,25 @@ public class AppInfo
     {
         get
         {
-            if (defaultAppKey == null && AppName != null)
-            {
-#if false // reverse
-                if (OrgDomain != null)
-                {
-                    defaultAppKey = OrgDomain.Split('.').Reverse().Aggregate((x, y) => $"{x}.{y}") + "." + AppName;
-                }
-                else if(OrgName != null)
-                {
-                    return appKey ?? $"{OrgName}.{AppName.Replace(" ", "")}";
-                }
-#else
-                if (OrgDomain != null) { defaultAppKey = AppName + "." + OrgDomain; }
-                else if (OrgName != null) { return appName ?? ($"{AppName.Replace(" ", "")}.{OrgName}"); }
-#endif
-            }
-            return defaultAppKey;
+            return defaultAppKey ??= DefaultAppDomain;
+
+            //            if (defaultAppKey == null && AppName != null)
+            //            {
+            //#if false // reverse
+            //                if (OrgDomain != null)
+            //                {
+            //                    defaultAppKey = OrgDomain.Split('.').Reverse().Aggregate((x, y) => $"{x}.{y}") + "." + AppName;
+            //                }
+            //                else if(OrgName != null)
+            //                {
+            //                    return appKey ?? $"{OrgName}.{AppName.Replace(" ", "")}";
+            //                }
+            //#else
+            //                if (OrgDomain != null) { defaultAppKey = DefaultAppDomain; }
+            //                else if (OrgName != null) { return appName ?? ($"{AppName.Replace(" ", "")}.{OrgName}"); }
+            //#endif
+            //}
+            //return defaultAppKey;
         }
     }
     private string? defaultAppKey;

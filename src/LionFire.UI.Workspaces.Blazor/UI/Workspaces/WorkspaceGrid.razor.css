@@ -1,0 +1,14 @@
+.DashboardGrid {
+    outline: blue 1px solid;
+}
+
+.grid-stack-item-content {
+    border: 1px solid #395290;
+    height: 100%;
+    box-shadow: 1px 1px 9px #00000080;
+    /*overflow: visible;*/
+}
+
+/*.grid-stack-item-content {
+    overflow: visible;
+}*/

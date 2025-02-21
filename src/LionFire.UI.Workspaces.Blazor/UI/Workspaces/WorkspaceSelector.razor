@@ -1,4 +1,5 @@
-﻿@using LionFire.Reactive.Persistence
+﻿@using LionFire.Blazor.Components
+@using LionFire.Reactive.Persistence
 @using Microsoft.Extensions.DependencyInjection
 
 <div class="lf-field" style="min-width: 20em;">
@@ -24,11 +25,18 @@
 
 @code {
 
-    [CascadingParameter]
+    [CascadingParameter(Name = "UserServices")]
     public IServiceProvider? UserServices { get; set; }
 
     [Parameter]
     public string? Workspace { get; set; }
+
+    [Parameter]
+    public WorkspaceLayoutVM? VM { get; set; }
+
+    [Parameter]
+    // public EventCallback<string> WorkspaceChanged { get; set; }
+    public EventCallback<string?> WorkspaceChanged { get; set; }
 
     IObservableReaderWriter<string, Workspace>? Workspaces;
 
@@ -39,12 +47,11 @@
         {
             if (currentWorkspace == value) return;
             currentWorkspace = value;
-            WorkspaceChanged.InvokeAsync(currentWorkspace);
+            Workspace = value;
+            Task.Run(async () => await InvokeAsync(async () => await WorkspaceChanged.InvokeAsync(currentWorkspace)));
         }
     }
     private string? currentWorkspace;
-
-    public EventCallback<string?> CurrentWorkspaceChanged { get; set; }
 
     protected override void OnInitialized()
     {
@@ -54,10 +61,14 @@
 
     protected override async Task OnParametersSetAsync()
     {
-        CurrentWorkspace = Workspace;
-        if (CurrentWorkspace == null && Workspaces != null && Workspaces.Keys.Count != 0)
+        if (Workspace != null)
         {
-            CurrentWorkspace = Workspaces.Keys.Keys.First();
+            CurrentWorkspace = Workspace;
+        }
+        else if (Workspaces != null && Workspaces.Keys.Count != 0)
+        {
+            _ = Task.Run(() => InvokeAsync(() => CurrentWorkspace = Workspaces.Keys.Keys.First()));
+
             // if (CurrentWorkspaceChanged.HasDelegate)
             // {
             //     await CurrentWorkspaceChanged.InvokeAsync(CurrentWorkspace);
@@ -66,9 +77,6 @@
         await base.OnParametersSetAsync();
     }
 
-
-    [Parameter]
-    public EventCallback<string?> WorkspaceChanged { get; set; }
 
 
 }

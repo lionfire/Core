@@ -1,20 +1,21 @@
-﻿using Microsoft.AspNetCore.Components.Authorization;
+﻿using LionFire.Mvvm;
+using Microsoft.AspNetCore.Components.Authorization;
+using Microsoft.Extensions.DependencyInjection;
 using ReactiveUI;
 using ReactiveUI.SourceGenerators;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reactive;
+using System.Reactive.Disposables;
+using System.Reactive.Subjects;
 using System.Text;
 using System.Threading.Tasks;
 using static System.Runtime.InteropServices.JavaScript.JSType;
-using LionFire.Mvvm;
-using System.Reactive.Subjects;
-using System.Reactive;
-using Microsoft.Extensions.DependencyInjection;
 
 namespace LionFire.Blazor.Components;
 
-public partial class UserLayoutVM : ReactiveObject
+public partial class UserLayoutVM : ReactiveObject, IDisposable
 {
     #region Dependencies
 
@@ -32,11 +33,16 @@ public partial class UserLayoutVM : ReactiveObject
     }
     virtual protected void PostConstructor()
     {
-        this.WhenAnyValue(x => x.UserId)
-            .Subscribe(async _ => await OnUserChanged());
+        this.WhenAnyValue(x => x.UserId).Subscribe(async _ => await OnUserChanged());
     }
     virtual protected bool DeferPostConstructor => false;
 
+    protected CompositeDisposable disposables = new();
+
+    public void Dispose()
+    {
+        disposables.Dispose();
+    }
 
     public async ValueTask InitializeAsync()
     {
@@ -67,14 +73,15 @@ public partial class UserLayoutVM : ReactiveObject
     [Reactive]
     private string? _userId;
 
-    private async ValueTask OnUserChanged()
+    protected virtual async ValueTask OnUserChanged()
     {
         await DoConfigureUserServices();
     }
 
     #region User Services
 
-    public IServiceProvider? UserServices { get; set; }
+    [ReactiveUI.SourceGenerators.Reactive]
+    private IServiceProvider? _userServices;
 
     private async ValueTask DoConfigureUserServices()
     {

@@ -15,7 +15,7 @@ public static class ReactivePersistenceHostingX
     {
         return services
             .AddSingleton<ObservableCacheProvider>()
-            .AddFileExtensionConventions()
+            //.AddFileExtensionConventions()
             ;
     }
 
