@@ -1,4 +1,6 @@
-﻿using LionFire.Schemas;
+﻿using LionFire.Persistence.Filesystem;
+using LionFire.Referencing;
+using LionFire.Schemas;
 using LionFire.Schemas.Filesystem;
 using System;
 using System.Collections.Generic;
@@ -39,10 +41,16 @@ public class WorkspaceSchemas
         };
     }
 
-    // TODO: Replace dir with IReference
-    public static async ValueTask InitFilesystemSchemas(string workspacesDir)
+    public static async ValueTask InitFilesystemSchemas(IReference workspacesDir)
     {
-        await DirectorySchemaOnNativeFs.InitSchema(DirectorySchema, workspacesDir);
+        if (workspacesDir is FileReference fileReference)
+        {
+            await DirectorySchemaOnNativeFs.InitSchema(DirectorySchema, fileReference.Path);
+        }
+        else
+        {
+            throw new NotSupportedException();
+        }
     }
 }
 

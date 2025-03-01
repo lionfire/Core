@@ -1,11 +1,12 @@
-﻿@inherits ReactiveInjectableComponentBase<AsyncKeyedVMCollectionVM<TKey,TValue,TValueVM>>
+﻿@inherits ReactiveInjectableComponentBase<AsyncVMSourceCacheVM<TKey,TValue,TValueVM>>
 @typeparam TKey
 @typeparam TValue
 @typeparam TValueVM
 
 @namespace LionFire.Blazor.Components
+@using LionFire.Data.Async.Collections.DynamicData_
 
-@inject ILogger<KeyedVMCollectionView<TKey, TValue, TValueVM>> Logger
+@inject ILogger<AsyncVMSourceCacheView<TKey, TValue, TValueVM>> Logger
 @inject NavigationManager NavigationManager
 @inject IServiceProvider ServiceProvider
 @* @inject IViewModelProvider ViewModelProvider *@
@@ -29,10 +30,10 @@
         }
     }
 
-    @if (ViewModel != null && (ViewModel.ShowRefresh || ((ViewModelOptions?.ShowRefreshIfHasNoValue == true) && !ViewModel.HasValue)))
+  @*   @if (ViewModel != null && (ViewModel.ShowRefresh || ((ViewModelOptions?.ShowRefreshIfHasNoValue == true) && !ViewModel.HasValue)))
     {
         <MudIconButton Disabled="!ViewModel.CanGet" OnClick="() => ViewModel.GetCommand.Execute()" Color="@Color.Tertiary" Icon="@Icons.Material.Filled.Refresh" />
-    }
+    } *@
 </MudToolBar>
 
 
@@ -40,7 +41,7 @@
 {
     <div>@ChildContent(ViewModel!)</div>
 }
-else if (ViewModel?.ValueVMs != null)
+else if (ViewModel?.Items != null)
 {
     @* <h3>ValueVMs @ViewModel.ValueVMs.Count</h3> *@
     @* @foreach (var item in ViewModel.ValueVMs.Items)
@@ -51,7 +52,7 @@ else if (ViewModel?.ValueVMs != null)
         </div>
     } *@
     <MudDataGrid @ref="MudDataGrid" T="TValueVM"
-                 Items="@ViewModel?.ValueVMs?.Items"
+                 Items="@ViewModel?.Items.Items"
                  SortMode="SortMode.Multiple"
                  Filterable="true"
                  Hideable="true"

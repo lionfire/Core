@@ -1,7 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>net8.0-windows</TargetFramework>
+    <TargetFramework>net9.0-windows</TargetFramework>
     <UseWPF>true</UseWPF>
     <NeutralLanguage>en-US</NeutralLanguage>
   </PropertyGroup>
@@ -46,7 +46,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Compile Include="..\..\..\valor\Dycen\LionFire.Avalon\Geometry\CogwheelShape.cs" Link="Geometry\CogwheelShape.cs" />
+    <Compile Include="..\LionFire.Avalon\Geometry\CogwheelShape.cs" Link="Geometry\CogwheelShape.cs" />
   </ItemGroup>
 
   <ItemGroup>

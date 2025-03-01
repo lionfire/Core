@@ -669,12 +669,13 @@ namespace LionFire.UI
         }
 
 
-        DocumentManager DocumentManager;
+        //DocumentManager DocumentManager;
 
         private void OnSave(object sender, RoutedEventArgs args)
         {
             l.Trace("SCP.OnSave (routed)");
-            DocumentManager?.Save();
+            throw new NotImplementedException(); // Where did DocumentManager go?
+            //DocumentManager?.Save();
         }
 
         #endregion
@@ -778,7 +779,8 @@ namespace LionFire.UI
 
                 if (options.SaveOnClose)
                 {
-                    DocumentManager?.Save();
+                    throw new NotImplementedException();
+                    //DocumentManager?.Save();// Where did DocumentManager go?
                 }
             }
 

@@ -1,4 +1,5 @@
 ﻿using LionFire.IO.Reactive.Hjson;
+using LionFire.Ontology;
 using System.Collections.Concurrent;
 using System.Reflection;
 using System.Text.RegularExpressions;
@@ -13,7 +14,13 @@ public interface IFileExtensionConvention
         {
             var attr = type.GetCustomAttribute<FileExtensionAttribute>();
             if (attr != null) { return attr.Extension; }
-            return type.Name.ToKebabCase(); ;
+
+            var name = type.Name;
+
+            var attr2 = type.GetCustomAttribute<AliasAttribute>();
+            if (attr2 != null) { name = attr2.Alias; }
+
+            return name.ToKebabCase(); ;
         });
     }
 }

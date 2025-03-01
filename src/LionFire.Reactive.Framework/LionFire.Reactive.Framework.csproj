@@ -24,6 +24,7 @@
     <ProjectReference Include="..\LionFire.Execution.Abstractions\LionFire.Execution.Abstractions.csproj" />
     <ProjectReference Include="..\LionFire.Instantiating.Abstractions\LionFire.Instantiating.Abstractions.csproj" />
     <ProjectReference Include="..\LionFire.Metadata\LionFire.Metadata.csproj" />
+    <ProjectReference Include="..\LionFire.Persistence.Filesystem\LionFire.Persistence.Filesystem.csproj" />
     <ProjectReference Include="..\LionFire.Persistence\LionFire.Data.Persisters.csproj" />
     <ProjectReference Include="..\LionFire.Reactive\LionFire.Reactive.csproj" />
   </ItemGroup>

@@ -12,6 +12,8 @@ using LionFire.Referencing;
 using LionFire.Persistence.Filesystem;
 using System.Reactive.Disposables;
 using System.Reactive.Linq;
+using LionFire.IO.Reactive.Filesystem;
+using LionFire.IO.Reactive;
 
 namespace LionFire.Blazor.Components;
 
@@ -31,8 +33,19 @@ public partial class WorkspaceLayoutVM : UserLayoutVM
         ServiceProvider = serviceProvider;
         AppInfo = appInfo;
         WorkspaceServiceConfigurators = workspaceServiceConfigurators;
+
+        userWorkspacesService = new(serviceProvider);
+
         //this.WhenAnyValue(x => x.UserId).Subscribe(async _ => await OnWorkspaceChanged()).DisposeWith(disposables);
-        this.WhenAnyValue(x => x.WorkspaceId).DistinctUntilChanged().Subscribe(async workspaceId => await OnWorkspaceChanged()).DisposeWith(disposables);
+        this.WhenAnyValue(x => x.WorkspaceId)
+            .DistinctUntilChanged()
+            .Subscribe(async workspaceId => await OnWorkspaceChanged())
+            .DisposeWith(disposables);
+
+        this.WhenAnyValue(x => x.UserServices)
+            .DistinctUntilChanged()
+            .Subscribe(userServices => userWorkspacesService.UserServices = userServices)
+            .DisposeWith(disposables);
 
         PostConstructor();
     }
@@ -49,16 +62,22 @@ public partial class WorkspaceLayoutVM : UserLayoutVM
     #region User Services
 
     public bool WorkspacesAvailable => WorkspacesDir != null;
-    public string? WorkspacesDir { get; set; }
+    public string? WorkspacesDir { get => userWorkspacesService.UserWorkspacesDir; }
+    UserWorkspacesService userWorkspacesService { get; }
 
     protected override async ValueTask ConfigureUserServices(IServiceCollection services)
     {
         await base.ConfigureUserServices(services);
+
+        services.AddSingleton(userWorkspacesService);
+
         string commonAppDataPath = Environment.GetFolderPath(Environment.SpecialFolder.CommonApplicationData);
         var orgDataDir = AppInfo.OrgDir == null ? null : Path.Combine(commonAppDataPath, AppInfo.OrgDir);
 
-        if (WorkspacesDir == null)
+        if (userWorkspacesService.UserWorkspaces == null)
         {
+            // EXTENSIBILITY: Consider allowing configurability of default location through another IReference type (e.g. Vos) instead of direct filesystem access, though maybe this is what we want in this case:
+
             string? appDataDir;
             if (orgDataDir == null) { appDataDir = null; }
             else { appDataDir = Path.Combine(orgDataDir, AppInfo.EffectiveDataDirName!); }
@@ -71,18 +90,22 @@ public partial class WorkspaceLayoutVM : UserLayoutVM
             if (usersDataDir == null) userDir = null;
             else userDir = Path.Combine(usersDataDir, EffectiveUserName);
 
-            if (userDir != null) { WorkspacesDir = Path.Combine(userDir, "Workspaces"); }
-
+            if (userDir != null) { userWorkspacesService.UserWorkspacesDir = Path.Combine(userDir, "Workspaces"); }
         }
 
-        if (WorkspacesDir != null)
+        if (userWorkspacesService.UserWorkspaces != null)
         {
-            await WorkspaceSchemas.InitFilesystemSchemas(WorkspacesDir);
+            await WorkspaceSchemas.InitFilesystemSchemas(userWorkspacesService.UserWorkspaces);
 
-            var dir = new LionFire.IO.Reactive.DirectorySelector(WorkspacesDir) { Recursive = true };
-            var r = ActivatorUtilities.CreateInstance<HjsonFsDirectoryReaderRx<string, Workspace>>(ServiceProvider, dir);
-            var w = ActivatorUtilities.CreateInstance<HjsonFsDirectoryWriterRx<string, Workspace>>(ServiceProvider, dir);
-            services.AddSingleton<IObservableReaderWriter<string, Workspace>>(sp => new ObservableReaderWriterFromComponents<string, Workspace>(r, w));
+            services.RegisterObservablesInDir<Workspace>(ServiceProvider, new DirectoryReferenceSelector(userWorkspacesService.UserWorkspaces) { Recursive = true });
+            //services.RegisterObservablesInSubDirForType<Workspace>(ServiceProvider, userWorkspacesService.UserWorkspaces);
+
+            //var dirSelector = new LionFire.IO.Reactive.DirectoryReferenceSelector(userWorkspacesService.UserWorkspaces) { Recursive = true };
+            //var r = ActivatorUtilities.CreateInstance<HjsonFsDirectoryReaderRx<string, Workspace>>(ServiceProvider, dirSelector);
+            //var w = ActivatorUtilities.CreateInstance<HjsonFsDirectoryWriterRx<string, Workspace>>(ServiceProvider, dirSelector);
+            //services.AddSingleton<IObservableReaderWriter<string, Workspace>>(sp => new ObservableReaderWriterFromComponents<string, Workspace>(r, w));
+
+            // REVIEW - This isn't very ergonomic, so make this a property on UserWorkspaceService, and make that have a base class for containing entities (Workspaces)
         }
     }
 
@@ -112,19 +135,19 @@ public partial class WorkspaceLayoutVM : UserLayoutVM
     {
         var services = new ServiceCollection();
 
-        await ConfigureWorkspaceServices(services);
+        await ConfigureWorkspaceServices(services, WorkspaceId);
 
         WorkspaceServices = services.BuildServiceProvider();
     }
 
-    protected virtual ValueTask ConfigureWorkspaceServices(IServiceCollection services)
+    protected virtual ValueTask ConfigureWorkspaceServices(IServiceCollection services, string workspaceId)
     {
         if (WorkspacesDir != null)
         {
             var r = new FileReference(WorkspacesDir);
             foreach (var s in WorkspaceServiceConfigurators)
             {
-                s.ConfigureWorkspaceServices(UserServices, r, services);
+                s.ConfigureWorkspaceServices(services, userWorkspacesService, workspaceId);
             }
         }
         return ValueTask.CompletedTask;
@@ -136,10 +159,7 @@ public partial class WorkspaceLayoutVM : UserLayoutVM
 
 }
 
-public interface IWorkspaceServiceConfigurator
-{
-    ValueTask ConfigureWorkspaceServices(IServiceProvider? userServices, IReference workspaceReference, IServiceCollection services);
-}
+
 
 public class WorkspaceConfiguration
 {

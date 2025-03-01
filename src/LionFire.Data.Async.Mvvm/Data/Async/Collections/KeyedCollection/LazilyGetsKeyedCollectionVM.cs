@@ -25,7 +25,7 @@ public class LazilyGetsKeyedCollectionVM<TKey, TValue, TValueVM, TCollection>
     where TValue : notnull
     where TValueVM : notnull//, IKeyed<TKey>
 {
-    public Func<TValueVM, TKey> KeySelector { get; set; } 
+    public Func<TValueVM, TKey>? KeySelector { get; set; } 
     //public bool IsObservable { get; protected set; } // TODO: Move to base and implement IObservableList
 
     #region Lifecycle

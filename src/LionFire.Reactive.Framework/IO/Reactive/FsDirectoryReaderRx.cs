@@ -21,7 +21,7 @@ public abstract class FsDirectoryReaderRx<TKey, TValue> : IObservableReader<TKey
 {
     protected abstract string Extension { get; }
     protected virtual string SecondExtension => ExtensionConvention.FileExtensionForType(typeof(TValue));
-        
+
 
     public static string ToKebabCase(string input)
     {
@@ -157,6 +157,7 @@ public abstract class FsDirectoryReaderRx<TKey, TValue> : IObservableReader<TKey
                     foreach (var file in files)
                     {
                         var fileDir = Path.GetDirectoryName(file) ?? "";
+                        fileDir = fileDir.Replace('\\', '/');
                         var subDirsWithoutRoot = fileDir.Replace(Dir.Path, "").TrimStart(Path.DirectorySeparatorChar).TrimStart(Path.AltDirectorySeparatorChar);
 
                         var withoutExt = Path.GetFileNameWithoutExtension(file);

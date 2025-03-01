@@ -1,10 +1,11 @@
-﻿using LionFire.Reactive.Persistence;
+﻿using LionFire.IO.Reactive.Filesystem;
+using LionFire.IO.Reactive.Hjson;
+using LionFire.Persistence.Filesystem;
+using LionFire.Reactive.Persistence;
+using LionFire.Referencing;
 using LionFire.UI.Workspaces;
 using Microsoft.Extensions.DependencyInjection;
-using LionFire.IO.Reactive.Hjson;
 using Microsoft.Extensions.Options;
-using LionFire.Referencing;
-using LionFire.Persistence.Filesystem;
 
 namespace LionFire.Blazor.Components;
 
@@ -19,30 +20,23 @@ public class WorkspaceTypesConfigurator : IWorkspaceServiceConfigurator
         ServiceProvider = serviceProvider;
     }
 
-    public async ValueTask ConfigureWorkspaceServices(IServiceProvider? userServices, IReference workspaceReference, IServiceCollection services)
+    public async ValueTask ConfigureWorkspaceServices(IServiceCollection services, UserWorkspacesService userWorkspacesService, string workspaceId)
     {
-        if (workspaceReference is FileReference fileReference)
+        if (userWorkspacesService.UserWorkspaces == null) return;
+
+        var workspaceReference = userWorkspacesService.UserWorkspaces.GetChild(workspaceId);
+
+        await WorkspaceSchemas.InitFilesystemSchemas(userWorkspacesService.UserWorkspaces);
+
+        var dir = new LionFire.IO.Reactive.DirectoryReferenceSelector(userWorkspacesService.UserWorkspaces) { Recursive = true };
+
+        var method = typeof(FsObservableCollectionFactoryX).GetMethod(nameof(FsObservableCollectionFactoryX.RegisterObservablesInSubDirForType))!;
+
+        foreach (var type in Options.MemberTypes)
         {
-            var WorkspacesDir = fileReference.Path;
-            await WorkspaceSchemas.InitFilesystemSchemas(WorkspacesDir);
-
-            var dir = new LionFire.IO.Reactive.DirectorySelector(WorkspacesDir) { Recursive = true };
-
-            var method = typeof(WorkspaceTypesConfigurator).GetMethod(nameof(AddFsRWForType))!;
-            foreach (var type in Options.MemberTypes)
-            {
-                var genericMethod = method.MakeGenericMethod(type);
-                genericMethod.Invoke(this, [services, dir]);
-            }
+            var genericMethod = method.MakeGenericMethod(type);
+            genericMethod.Invoke(this, [services, ServiceProvider, dir.Path, null]);
         }
     }
 
-    // FUTURE: Replace with VOS (or some sort of VFS)
-    private void AddFsRWForType<TDocument>(IServiceCollection services, IO.Reactive.DirectorySelector dir)
-        where TDocument : notnull
-    {
-        var r = ActivatorUtilities.CreateInstance<HjsonFsDirectoryReaderRx<string, TDocument>>(ServiceProvider, dir);
-        var w = ActivatorUtilities.CreateInstance<HjsonFsDirectoryWriterRx<string, TDocument>>(ServiceProvider, dir);
-        services.AddSingleton<IObservableReaderWriter<string, TDocument>>(sp => new ObservableReaderWriterFromComponents<string, TDocument>(r, w));
-    }
 }

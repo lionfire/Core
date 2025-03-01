@@ -99,7 +99,7 @@ public partial class KeyedCollectionView<TKey, TValue, TValueVM>
 
     #region ViewModelOptions 
 
-    public VMOptions ViewModelOptions { get; set; }
+    public VMOptions? ViewModelOptions { get; set; }
 
     #region Derived
 
@@ -182,7 +182,7 @@ public partial class KeyedCollectionView<TKey, TValue, TValueVM>
 
     #region Refs
 
-    public MudDataGrid<TValueVM> MudDataGrid { get; set; }
+    public MudDataGrid<TValueVM> MudDataGrid { get; set; } = null!;
 
     #endregion
 

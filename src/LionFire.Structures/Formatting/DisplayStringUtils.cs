@@ -55,38 +55,16 @@ namespace LionFire
             return double.IsNaN(perunage) ? "???" : String.Format("{0:0.%}", perunage);
         }
 
-
-        public static string ToPluralName(this Type type)
+        public static string ToPluralName(this Type type) 
         {
-            var attr = type.GetCustomAttribute<PluralAttribute>();
-            if (attr != null) { return attr.PluralName; }
-
-            var name = type.Name;
-            return name + (name.EndsWith("s") ? "es" : "s");
+            // Moved to LionFire.Ontology
+            throw new NotImplementedException();
         }
-
-    }
-
-    [AttributeUsage(AttributeTargets.All, Inherited = false, AllowMultiple = false)]
-    public sealed class PluralAttribute : Attribute
-    {
-        public PluralAttribute(string pluralName)
-        {
-            this.pluralName = pluralName;
-        }
-
-        public string PluralName
-        {
-            get { return pluralName; }
-        } private readonly string pluralName;
     }
 
     public static class DisplayStringExtensions
     {
-        public static string ToPluralDisplayName(this Type type)
-        {
-            throw new NotImplementedException();
-        }
+        //public static string ToPluralDisplayName(this Type type) // See LionFire.Ontology.PluralX
 
         public static string TemplateTypeNameToDisplayString(this string name, string defaultName = "(unnamed)", bool spaces = true)
         {
