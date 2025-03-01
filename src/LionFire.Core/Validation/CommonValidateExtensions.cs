@@ -91,7 +91,7 @@ public static class CommonValidateExtensions
         if (obj == null) { obj = ctx.Object; }
         if (obj == null) { throw new ArgumentNullException("obj == null and ctx.Object == null"); }
 
-        // OPTIMIZE: Use Fody to add a method "ValidateMethods" to the obj and invoke that instead of reflecting over method attributes
+        // OPTIMIZE: Use SourceGenerators to add a method "ValidateMethods" to the obj and invoke that instead of reflecting over method attributes
 
         foreach (var mi in obj.GetType().GetMethods(BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance).Where(m => m.GetCustomAttribute<ValidateAttribute>() != null))
         {
