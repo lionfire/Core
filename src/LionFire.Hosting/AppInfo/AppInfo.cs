@@ -311,6 +311,13 @@ public class AppInfo
 
     #region AppDir
 
+
+    /// <summary>
+    /// Full path of App dir, typically containing the executable (alternative: exe is in a subfolder of AppDir named bin/)
+    /// 
+    /// e.g. for dev: d:\build\bin\Debug\AnyCPU\Valor.Universe.Silo
+    /// </summary>
+    /// <returns></returns>
     public string? AppDir
     {
         get => appDir;
@@ -318,9 +325,20 @@ public class AppInfo
     }
     private string? appDir;
 
+    ///// <summary>
+    ///// Custom directory name for the application.  Example: c:\ProgramData\{OrgDir}\{CustomAppDir}
+    ///// </summary>
+    //public string? CustomAppDirName { get; set; }
+
     public string? AutodetectedAppDir => autodetectedAppDir ??= DetectAppDir();
     private string? autodetectedAppDir;
 
+    /// <summary>
+    /// Full path of App dir, typically containing the executable (alternative: exe is in a subfolder of AppDir named bin/)
+    /// 
+    /// e.g. for dev: d:\build\bin\Debug\AnyCPU\Valor.Universe.Silo
+    /// </summary>
+    /// <returns></returns>
     public string DetectAppDir()
     {
         AppInfo appInfo = this;
@@ -331,8 +349,8 @@ public class AppInfo
         //string debugEnding2 = @"dbin"; // UNUSED but maybe bring it back
         string binEnding = @"bin";
 
-        string releaseProjectEnding = @"bin\" + appInfo.DevProjectName.ToLowerInvariant() + @"\release";
-        string debugProjectEnding = @"bin\" + appInfo.DevProjectName.ToLowerInvariant() + @"\debug";
+        string? releaseProjectEnding = appInfo.DevProjectName == null ? null : @"bin\" + appInfo.DevProjectName?.ToLowerInvariant() + @"\release";
+        string? debugProjectEnding = appInfo.DevProjectName == null ? null : @"bin\" + appInfo.DevProjectName?.ToLowerInvariant() + @"\debug";
 
         if (result.ToLower().EndsWith(releaseEnding))
         {
@@ -350,11 +368,11 @@ public class AppInfo
         {
             result = result.Substring(0, result.Length - binEnding.Length);
         }
-        else if (result.ToLower().EndsWith(releaseProjectEnding))
+        else if (releaseProjectEnding != null && appInfo.AppName != null && result.ToLower().EndsWith(releaseProjectEnding))
         {
             result = Path.Combine(result.Substring(0, result.Length - releaseProjectEnding.Length), appInfo.AppName);
         }
-        else if (result.ToLower().EndsWith(debugProjectEnding))
+        else if (debugProjectEnding != null && appInfo.AppName != null && result.ToLower().EndsWith(debugProjectEnding))
         {
             result = Path.Combine(result.Substring(0, result.Length - debugProjectEnding.Length), appInfo.AppName);
         }
@@ -367,9 +385,6 @@ public class AppInfo
     }
     #endregion
 
-    /// <summary>
-    /// Custom directory name for the application.  Example: c:\ProgramData\{OrgDir}\{CustomAppDir}
-    /// </summary>
-    public string? CustomAppDirName { get; set; }
+
 
 }

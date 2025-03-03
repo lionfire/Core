@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
+using System.Runtime.CompilerServices;
 using System.Text;
 
 namespace LionFire.Applications;
@@ -19,7 +20,7 @@ public class AppDirectories
     
     public void Initialize()
     {
-        appDir = AppInfo.CustomAppDirName;
+        //appDir = AppInfo.CustomAppDirName;
         CreateProgramDataFolders(AppInfo, this);
     }
 
@@ -35,17 +36,17 @@ public class AppDirectories
     /// <summary>
     /// C:\ProgramData\{CompanyName}
     /// </summary>
-    public string CompanyProgramData 
+    public string? CompanyProgramData 
         => string.IsNullOrWhiteSpace(CompanyName) 
         ? null 
         : Path.Combine(LionFireEnvironment.Directories.ProgramData, CompanyName);
 
     // TODO: Move VosAppHost AppDir finding logic (looking for application.json) into here
-    public string AppDir
+    public string? AppDir
     {
         get
         {
-            return ServiceLocator.GetRequired<AppInfo>().AppDir;
+            return appDir ?? AppInfo.AppDir; // TODO REVIEW and refactor Initialize's appInfo.CustomAppDirName
 //#if UNITY
 //                // TOUNITY TODO: Inject this from UnityHost
 //                return UnityEngine.Application.dataPath;
@@ -55,7 +56,7 @@ public class AppDirectories
 //#endif
         }
     }
-    private string appDir;
+    private string? appDir;
 
     #endregion
 
@@ -64,7 +65,7 @@ public class AppDirectories
     /// <summary>
     /// c:\ProgramData\{CompanyName}\{AppDataDirName}
     /// </summary>
-    public string AppProgramDataDir => GetProgramDataDir(AppInfo.EffectiveDataDirName);
+    public string? AppProgramDataDir => GetProgramDataDir(AppInfo.EffectiveDataDirName);
 
     #region (Parameterized) Custom Data Dir in ProgramData
 
@@ -73,7 +74,7 @@ public class AppDirectories
     /// </summary>
     /// <param name="namedDataDir"></param>
     /// <returns></returns>
-    public string GetProgramDataDir(string namedDataDir) => Path.Combine(LionFireEnvironment.Directories.ProgramData, CompanyName, namedDataDir);
+    public string? GetProgramDataDir(string? namedDataDir) => namedDataDir == null ? null : Path.Combine(LionFireEnvironment.Directories.ProgramData, CompanyName, namedDataDir);
 
     #endregion
 
@@ -95,20 +96,20 @@ public class AppDirectories
     // TODO REVIEW: Eliminate appInfo parameter?  It should be redundant to appDirectories
     public static void CreateProgramDataFolders(AppInfo appInfo, AppDirectories appDirectories/*, bool allUsers = false*/)
     {
-        string companyFolder = appInfo.OrgDir;
-        string applicationFolder = appInfo.CustomAppDirName;
+        string? companyFolder = appInfo.OrgDir;
+        //string? applicationFolder = appInfo.CustomAppDirName;
 
         // Gets the path of the company's data folder.
         // c:\ProgramData\{CompanyFolder}
-        string CompanyFolderPath = appDirectories.CompanyProgramData;
+        string? CompanyFolderPath = appDirectories.CompanyProgramData;
 
         /// Gets the path of the application's data folder.
         /// c:\ProgramData\{CompanyFolder}\{applicationFolder}
-        string ApplicationFolderPath = appDirectories.AppProgramDataDir;
+        string? ApplicationFolderPath = appDirectories.AppProgramDataDir;
 
 #if NETCOREAPP
         DirectoryInfo directoryInfo;
-        if (!Directory.Exists(CompanyFolderPath))
+        if (CompanyFolderPath != null && !Directory.Exists(CompanyFolderPath))
         {
             Console.WriteLine("Creating " + CompanyFolderPath);
             directoryInfo = Directory.CreateDirectory(CompanyFolderPath);
@@ -123,7 +124,7 @@ public class AppDirectories
             //directorySecurity.ModifyAccessRule(AccessControlModification.Add, rule, out modified);
             //directoryInfo.SetAccessControl(directorySecurity);
         }
-        if (!Directory.Exists(ApplicationFolderPath))
+        if (ApplicationFolderPath != null && !Directory.Exists(ApplicationFolderPath))
         {
             Console.WriteLine("Creating " + ApplicationFolderPath);
             directoryInfo = Directory.CreateDirectory(ApplicationFolderPath);
@@ -193,5 +194,3 @@ public class AppDirectories
 
     #endregion
 }
-
-

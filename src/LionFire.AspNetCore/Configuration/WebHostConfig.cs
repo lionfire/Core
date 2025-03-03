@@ -9,7 +9,12 @@ using System.Reflection;
 
 namespace LionFire.AspNetCore;
 
-public class WebHostConfig : HasPortsConfigBase, IHasConfigLocation
+public interface IWebHostConfig
+{
+    //static  string DefaultConfigLocation => "WebHost";
+    static abstract string DefaultConfigLocation { get; }
+}
+public class WebHostConfig : HasPortsConfigBase, IHasConfigLocation, IWebHostConfig
 {
     #region Config binding
 
@@ -76,7 +81,7 @@ public class WebHostConfig : HasPortsConfigBase, IHasConfigLocation
     #endregion
 
     public bool BlazorInteractiveServer { get; set; }
-        public virtual Assembly[] AdditionalRazorAssemblies => [];
+    public virtual Assembly[] AdditionalRazorAssemblies => [];
 
 
     #region Program Requirements: set in derived classes
@@ -96,9 +101,14 @@ public class WebHostConfig : HasPortsConfigBase, IHasConfigLocation
 
     #endregion
 
+    /// <summary>
+    /// Flag the application can set to globally enable user-interactive UI
+    /// </summary>
+    public bool WebUI { get; set; }
+
     #region Derived
 
-    public virtual bool HasAnyWebUI => RequiresBlazorInteractiveServer;
+    public virtual bool HasAnyWebUI => RequiresBlazorInteractiveServer || WebUI;
     public virtual bool HasAnyFeatures => HasAnyWebUI || RequiresMvc || RequiresControllers || RequiresStaticFiles || RequiresRazorPages || RequiresBlazorInteractiveServer;
 
     #endregion
