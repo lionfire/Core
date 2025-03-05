@@ -1,9 +1,13 @@
-﻿using static System.Console;
-//[Command("cleanup")]
-public class Cleanup : ConsoleAppBase
+﻿using ConsoleAppFramework;
+using static System.Console;
+
+[RegisterCommands("cleanup")]
+public class Cleanup //: ConsoleAppBase
 {
     //[RootCommand]
     //[Command("cleanup", "Clean download cache")]
+    [Command("")]
+    
     public void Run()
     {
         if (Directory.Exists(AppConfig.DownloadDir))

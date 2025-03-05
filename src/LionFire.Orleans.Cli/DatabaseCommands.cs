@@ -7,18 +7,20 @@ using Npgsql;
 using Serilog;
 using Microsoft.Extensions.Logging;
 using Dapper;
+using ConsoleAppFramework;
 
-[Command("db")]
-public class DatabaseCommands : ConsoleAppBase
+[RegisterCommands("db")]
+public class DatabaseCommands //: ConsoleAppBase
 {
-    public DatabaseCommands()
+    public DatabaseCommands(ILogger<DatabaseCommands> logger)
     {
         Log.Logger.Information("Test log");
+        Logger = logger;
         //WriteLine($"Working dir: {Environment.CurrentDirectory}");
         //WriteLine("Temp dir: " + Path.GetTempPath());
     }
 
-    public string GeneratePassword()
+    protected string GeneratePassword()
     {
         var passwordGenerator = new Password().IncludeLowercase().IncludeUppercase().IncludeSpecial("[]{}^_=").LengthRequired(30);
         var password = passwordGenerator.Next();
@@ -41,26 +43,43 @@ public class DatabaseCommands : ConsoleAppBase
 
     #endregion
 
-    [Command("connection-string", "Display the connection string")]
-    public string DisplayConnectionString(
-        [Option("d")] string database,
-        [Option("h")] string host = "localhost",
-        [Option("u", "User for authentication")] string? user = null,
-        [Option("p", "Password for authentication")] string? password = null
+    /// <summary>
+    /// Display the connection string 
+    /// </summary>
+    /// <param name="database"></param>
+    /// <param name="host"></param>
+    /// <param name="user">User for authentication</param>
+    /// <param name="password">Password for authentication</param>
+    /// <returns></returns>
+    [Command("connection-string")]
+    public void DisplayConnectionString(
+        /*[Argument]*/ string database,
+        /*[Argument] */string host = "localhost",
+        /*[Argument("u")]*/ string? user = null,
+        /*[Argument("p")] */string? password = null
         )
     {
         user ??= database;
 
         var connectionString = $"Host={host};Database={database};Username={user};Password={password}";
         WriteLine($"Connection string: {connectionString}");
-        return connectionString;
+        //return connectionString;
     }
 
-    [Command("user-pw", "Set user password")]
-    public async Task ChangeUserPassword([Option(0)] string user, [Option(1)] string password
-        , [Option("u", "User for authentication")] string authUser = "postgres"
-        , [Option("p", "Password for authentication")] string authPassword = "postgres"
-        , [Option("h")] string host = "localhost")
+    /// <summary>
+    /// Set user password 
+    /// </summary>
+    /// <param name="user">User for authentication</param>
+    /// <param name="password">Password for authentication</param>
+    /// <param name="authUser"></param>
+    /// <param name="authPassword"></param>
+    /// <param name="host"></param>
+    /// <returns></returns>
+    [Command("user-pw")]
+    public async Task ChangeUserPassword([Argument] string user, [Argument] string password
+        , /*[Argument("u")] */string authUser = "postgres"
+        , /*[Argument("p", "Password for authentication")] */string authPassword = "postgres"
+        , /*[Argument("h")] */string host = "localhost")
     {
         await using var dataSource = NpgsqlDataSource.Create($"Host={host};Username={authUser};Password={authPassword}");
         var sql = $"""
@@ -70,11 +89,19 @@ public class DatabaseCommands : ConsoleAppBase
         await command.ExecuteNonQueryAsync();
     }
 
-    [Command("user-pw-reset", "Reset user password")]
-    public async Task ResetRolePassword([Option(0)] string user
-             , [Option("u", "User for authentication")] string authUser = "postgres"
-        , [Option("p", "Password for authentication")] string password = "postgres"
-        , [Option("h")] string host = "localhost")
+    /// <summary>
+    /// Reset user password
+    /// </summary>
+    /// <param name="user"></param>
+    /// <param name="authUser">User for authentication</param>
+    /// <param name="password">Password for authentication</param>
+    /// <param name="host"></param>
+    /// <returns></returns>
+    [Command("user-pw-reset")]
+    public async Task ResetRolePassword([Argument] string user
+             , /*[Argument("u", "User for authentication")]*/ string authUser = "postgres"
+        , /*[Argument("p", "Password for authentication")] */string password = "postgres"
+        , /*[Argument("h")] */string host = "localhost")
     {
         await using var dataSource = NpgsqlDataSource.Create($"Host={host};Username={authUser};Password={password}");
         var newPassword = GeneratePassword();
@@ -86,8 +113,13 @@ public class DatabaseCommands : ConsoleAppBase
         WriteLine($"New password for {user}: {newPassword}");
     }
 
-    [Command("dl", "Download database init scripts")]
-    public async Task DownloadDatabaseInitScripts([Option("force", DefaultValue = "true")] bool force = false)
+    /// <summary>
+    /// Download database init scripts
+    /// </summary>
+    /// <param name="force"></param>
+    /// <returns></returns>
+    [Command("dl")]
+    public async Task DownloadDatabaseInitScripts(/*[Argument("force", DefaultValue = "true")] */bool force = false) // TODO: Set default of force to true
     {
         HttpClient? http = null;
 
@@ -120,12 +152,21 @@ public class DatabaseCommands : ConsoleAppBase
         await Task.WhenAll(scripts.Uris.Select(s => DownloadIfMissing(s)));
     }
 
-    [Command("create", "Create the database and initialize with Orleans init scripts")]
-    public void Create([Option(0, "database name")] string database
-        , [Option("u", "User for authentication")] string user = "postgres"
-        , [Option("p", "Password for authentication")] string password = "postgres"
-        , [Option("h")] string host = "localhost"
-        , [Option("user")] string? databaseUser = null
+    /// <summary>
+    /// Create the database and initialize with Orleans init scripts
+    /// </summary>
+    /// <param name="database">database name</param>
+    /// <param name="user">User for authentication</param>
+    /// <param name="password">Password for authentication</param>
+    /// <param name="host"></param>
+    /// <param name="databaseUser"></param>
+    /// <exception cref="Exception"></exception>
+    [Command("create")]
+    public void Create([Argument] string database
+        , /*[Argument("u", "User for authentication")]*/ string user = "postgres"
+        , /*[Argument("p", "Password for authentication")]*/ string password = "postgres"
+        , /*[Argument("h")]*/ string host = "localhost"
+        , /*[Argument("user")]*/ string? databaseUser = null
         )
     {
         Task.Run(async () =>
@@ -197,16 +238,17 @@ public class DatabaseCommands : ConsoleAppBase
     }
     public static NpgsqlDataSource GetDataSource(string host, string user, string password, string? database = null)
         => NpgsqlDataSource.Create(GetConnectionString(host, user, password, database));
-    public NpgsqlDataSource GetDataSource()
+    protected NpgsqlDataSource GetDataSource()
         => NpgsqlDataSource.Create(ConnectionString ?? throw new ArgumentNullException(nameof(ConnectionString)));
     public static NpgsqlConnection GetConnection(string host, string user, string password, string? database = null)
         => new NpgsqlConnection(GetConnectionString(host, user, password, database));
-    public NpgsqlConnection GetConnection()
+    protected NpgsqlConnection GetConnection()
          => new NpgsqlConnection(ConnectionString ?? throw new ArgumentNullException(nameof(ConnectionString)));
 
     public string? ConnectionString { get; set; }
+    public ILogger<DatabaseCommands> Logger { get; }
 
-    public async Task<bool> DatabaseExists(string database)
+    protected async Task<bool> DatabaseExists(string database)
     {
         using var connection = GetConnection();
         connection.Open();
@@ -214,7 +256,7 @@ public class DatabaseCommands : ConsoleAppBase
         return value.Any();
     }
 
-    public async Task<bool> RoleExists(string databaseUser)
+    protected async Task<bool> RoleExists(string databaseUser)
     {
         using var connection = GetConnection();
         connection.Open();
@@ -222,12 +264,22 @@ public class DatabaseCommands : ConsoleAppBase
         return value.Any();
     }
 
-    [Command("teardown", "Drop the database and the associated user")]
-    public async Task Teardown([Option(0, "database name")] string database
-        , [Option("u", "User for authentication")] string user = "postgres"
-        , [Option("p", "Password for authentication")] string password = "postgres"
-        , [Option("h")] string host = "localhost"
-        , [Option("user")] string? databaseUser = null
+    /// <summary>
+    /// Drop the database and the associated user
+    /// </summary>
+    /// <param name="database">database name</param>
+    /// <param name="user">User for authentication</param>
+    /// <param name="password">Password for authentication</param>
+    /// <param name="host"></param>
+    /// <param name="databaseUser"></param>
+    /// <returns></returns>
+    [Command("teardown")]
+    public async Task Teardown(/*[Argument(0)] */string database
+        , /*[Argument("u", "User for authentication")]*/ string user = "postgres"
+        , /*[Argument("p", "Password for authentication")]*/ string password = "postgres"
+        , /*[Argument("h")] */string host = "localhost"
+        , /*[Argument("user")]*/ string? databaseUser = null
+         
         )
     {
         ConnectionString = GetConnectionString(host, user, password);
@@ -237,9 +289,9 @@ public class DatabaseCommands : ConsoleAppBase
         bool databaseExists = await DatabaseExists(database);
         bool roleExists = await RoleExists(databaseUser);
 
-        if (!databaseExists) Context.Logger.LogInformation($"Database does not exist: {database}");
-        if (!roleExists) Context.Logger.LogInformation($"Role does not exist: {databaseUser}");
-        if (!databaseExists && !roleExists) { Context.Logger.LogInformation($"Nothing to do.  Quitting."); Context.Terminate(); }
+        if (!databaseExists) Logger.LogInformation($"Database does not exist: {database}");
+        if (!roleExists) Logger.LogInformation($"Role does not exist: {databaseUser}");
+        if (!databaseExists && !roleExists) { Logger.LogInformation($"Nothing to do.  Quitting."); return /*Context.Terminate()*/; }
 
 
         WriteLine("This is a destructive operation.  Are you sure you wish to destroy these two things?");
@@ -247,12 +299,12 @@ public class DatabaseCommands : ConsoleAppBase
         if(roleExists) WriteLine($" - Database user: {databaseUser}");
         WriteLine("Type 'destroy' to continue");
         var read = Console.ReadLine();
-        if (read == null) Context.Terminate();
+        if (read == null) { return; /* Context.Terminate();*/ }
 
         if (read != "destroy")
         {
             WriteLine("User did not choose to proceed.");
-            Context.Terminate();
+            //Context.Terminate();
             return;
         }
 
@@ -269,7 +321,7 @@ public class DatabaseCommands : ConsoleAppBase
             }
             catch (Exception ex)
             {
-                Context.Logger.LogError(ex, $"Failed to drop database: {database}");
+                Logger.LogError(ex, $"Failed to drop database: {database}");
             }
         }
 
@@ -282,7 +334,7 @@ public class DatabaseCommands : ConsoleAppBase
             }
             catch (Exception ex)
             {
-                Context.Logger.LogError(ex, $"Failed to drop role: {databaseUser}");
+                Logger.LogError(ex, $"Failed to drop role: {databaseUser}");
             }
         }
     }
