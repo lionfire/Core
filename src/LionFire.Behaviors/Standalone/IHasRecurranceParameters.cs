@@ -9,7 +9,6 @@ namespace LionFire.Coroutines
 {
     public interface IHasRecurranceParameters
     {
-#error TODO
     }
 public class RecurranceParameters
 {
