@@ -347,7 +347,7 @@ public abstract class DirectoryReaderRx<TKey, TValue>
 
     protected string GetFilePath(TKey key) => Path.Combine(Dir.Path ?? throw new ArgumentNullException(), $"{key}.{SecondExtension}{Extension}");
 
-    protected abstract TValue? ReadFromFile(string filePath);
+    protected abstract ValueTask<Optional<TValue>> ReadFromFile(string filePath);
 
     //protected abstract void LoadValues();
     //protected abstract void StopListeningForValues();
