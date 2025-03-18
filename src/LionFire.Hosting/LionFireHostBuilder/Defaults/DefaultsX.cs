@@ -68,7 +68,7 @@ public static class DefaultsX
                     o.PrefixWhitelist.Add(assemblyName.Substring(0, index.Value));
                 }
             })
-            .AddFilesystemResiliencePolicy()
+            .AddFilesystemResilience()
         );
 
         bool reloadOnChange = true;

@@ -94,7 +94,7 @@ public class FilesystemPersister : VirtualFilesystemPersisterBase<IFileReference
         , IServiceProvider serviceProvider)
         : base(name, serializationProvider, options, itemKindIdentifier, serializationOptions, serviceProvider)
     {
-        if (serviceProvider.GetService<ResiliencePipelineProvider<string>>()?.TryGetPipeline(FilesystemPersistenceResilience.RetryPolicyKey, out var p) == true)
+        if (serviceProvider.GetService<ResiliencePipelineProvider<string>>()?.TryGetPipeline(FilesystemRetryPolicy.Default, out var p) == true)
         {
             ResiliencePipeline = p;
         }
