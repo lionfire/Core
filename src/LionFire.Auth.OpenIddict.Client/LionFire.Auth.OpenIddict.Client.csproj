@@ -8,9 +8,13 @@
 
 	<ItemGroup>
 		<PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" />
+		<PackageReference Include="OpenIddict.Client.AspNetCore" />
 		<PackageReference Include="OpenIddict.Client.SystemIntegration" />
 		<PackageReference Include="OpenIddict.Client.SystemNetHttp" />
 		<PackageReference Include="OpenIddict.Client.WebIntegration" />
+		<PackageReference Include="Microsoft.AspNetCore.Mvc.Core"  />
+
+
 		<PackageReference Include="OpenIddict.EntityFrameworkCore" />
 	</ItemGroup>
 </Project>

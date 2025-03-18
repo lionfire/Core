@@ -23,10 +23,10 @@ public class CommonStartup<TConfig>
 
     public virtual void ConfigureServices(IServiceCollection services)
     {
-        /*var mvcBuilder = */
         services.AddForOptions(GetConfig());
     }
 
+    // REVIEW - make virtual so it can be replaced if needed?
     public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
     {
         //var options = app.ApplicationServices.GetRequiredService<IOptionsMonitor<TConfig>>().CurrentValue; // OLD
