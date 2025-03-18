@@ -2,6 +2,7 @@
 using LionFire.IO.Reactive.Filesystem;
 using LionFire.Persistence.Filesystemlike;
 using LionFire.Reactive.Persistence;
+using Polly.Registry;
 using System.IO;
 using System.Reactive.Disposables;
 using System.Reactive.Subjects;
@@ -9,30 +10,27 @@ using System.Text.RegularExpressions;
 
 namespace LionFire.IO.Reactive.Hjson;
 
-file static class _StringX
-{
-
-    public static string ToKebabCase(this string input)
-    {
-        // Replace spaces with hyphens and convert to lowercase
-        return Regex.Replace(input, @"\s+", "-").ToLower();
-    }
-}
-
 public class HjsonFsDirectoryReaderRx<TKey, TValue> : FsDirectoryReaderRx<TKey, TValue>, IObservableReader<TKey, TValue>
 where TKey : notnull
 where TValue : notnull
 {
     protected override string Extension => ".hjson";
 
+    public IResiliencePipelineProvider ResiliencePipelineProvider { get; }
+
     #region Lifecycle
 
-    public HjsonFsDirectoryReaderRx(DirectorySelector dir, IFileExtensionConvention extensionConvention) : base(dir, extensionConvention)
+    public HjsonFsDirectoryReaderRx(DirectorySelector dir, IFileExtensionConvention extensionConvention, IResiliencePipelineProvider resiliencePipelineProvider) : base(dir, extensionConvention)
     {
+
+        //// Choose pipeline based on file characteristics or needs
+        //string pipelineName = DeterminePipelineForFile(e.FullPath);
+        //var policy = ResiliencePipelineProvider.GetPipeline(pipelineName);
+        ResiliencePipelineProvider = resiliencePipelineProvider;
     }
 
     #endregion
-        
+
     protected override IObservable<TValue?> CreateValueObservable(TKey key)
     {
         var filePath = GetFilePath(key);

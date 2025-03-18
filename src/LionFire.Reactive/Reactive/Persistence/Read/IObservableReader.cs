@@ -27,8 +27,7 @@ public interface IObservableReader<TKey, TValue, TMetadata>
     /// </summary>
     IObservableCache<Optional<TValue>, TKey> Values { get; }
 
-    //IObservable<TValue?>? GetValueObservable(TKey key);
-    IObservable<TValue?> GetValueObservableIfExists(TKey key);
+    IObservable<TValue?>? GetValueObservableIfExists(TKey key);
     IObservable<TValue?> GetValueObservable(TKey key);
 
     IDisposable ListenAll();
