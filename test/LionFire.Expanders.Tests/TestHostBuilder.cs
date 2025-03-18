@@ -21,7 +21,7 @@ public static class TestHostBuilder
                 )
                 .Services
                     .Expansion()
-                    .AddFilesystem()
+                    .AddFilesystemPersister()
                     ;
             return hab;
         };

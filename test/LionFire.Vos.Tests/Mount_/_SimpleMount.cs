@@ -28,7 +28,7 @@ namespace Mount_
             .ConfigureServices((context, services) =>
             {
                 services
-                    .AddFilesystem()
+                    .AddFilesystemPersister()
                     .VosMount("/testDir", FsTestSetup.DataDir.ToFileReference())
                     .VosMount("/testDir2", FsTestSetup.DataDir.ToFileReference())
                     .VosMount("/_/vos", new VobReference("/") { Persister = "vos" }, new VobMountOptions

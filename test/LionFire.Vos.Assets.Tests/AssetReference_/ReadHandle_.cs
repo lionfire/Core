@@ -34,7 +34,7 @@ namespace LionFire.Persistence.Assets.Tests
                 {
                     services
                         .AddAssets()
-                        .AddFilesystem()
+                        .AddFilesystemPersister()
                         .AddNewtonsoftJson()
                         //.AddAssetPersister() // Default location: root of default vob tree
                         .VosMountRead("/assets", diskAssetsDir.ToFileReference())

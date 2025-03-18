@@ -70,7 +70,7 @@ public static class FrameworkHostBuilderExtensions
                     //.AddSerialization()
                     //.AddPersisters()
                     .AddReferenceProvider()
-                    .AddFilesystem()
+                    .AddFilesystemPersister()
                 //.AddIdPersister()
                 //.AddAssets()
 

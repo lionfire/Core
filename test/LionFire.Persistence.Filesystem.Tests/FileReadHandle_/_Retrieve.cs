@@ -22,7 +22,7 @@ namespace FileReadHandle_
             await PersistersHost.Create()
             .ConfigureServices((_, services) =>
             {
-                services.AddFilesystem();
+                services.AddFilesystemPersister();
             })
             .RunAsync(async () =>
             {

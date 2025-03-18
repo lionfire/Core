@@ -13,6 +13,10 @@ using System;
 
 namespace LionFire.Hosting;
 
+public static class FilesystemResilienceHostingX
+{
+
+}
 public static class FilesystemPersistenceHostingX
 {
     public static IServiceCollection AddFilesystemResilience(this IServiceCollection s) => s
@@ -35,31 +39,37 @@ public static class FilesystemPersistenceHostingX
         })
     ;
 
+    public static IServiceCollection AddFilesystemReferences(this IServiceCollection services)
+        => services
+            .TryAddEnumerableSingleton<IReferenceProvider, FileReferenceProvider>();
+
     // TODO: optional auto-extension support for deserializers/serializers. Serializer adapter?
-    public static IServiceCollection AddFilesystem(this IServiceCollection services)
-    {
-        services
-            
+    //public static IServiceCollection AddFilesystemPersister(this IServiceCollection services)
+    //{
+    //    return services
+    //        .Configure<FilesystemPersisterOptions>(o => { })
+    //        .AddSingleton(s => s.GetService<IOptionsMonitor<FilesystemPersisterOptions>>()?.CurrentValue)
+    //        .AddSingleton<FilesystemPersister>()
+
+    //        .AddSingleton<FileHandleProvider>()
+    //        .AddSingleton<IReadHandleProvider<FileReference>, FileHandleProvider>(s => s.GetRequiredService<FileHandleProvider>())
+    //        .AddSingleton<IReadWriteHandleProvider<FileReference>, FileHandleProvider>(s => s.GetRequiredService<FileHandleProvider>())
+    //        .AddSingleton<IReadHandleProvider<ProviderFileReference>, FileHandleProvider>(s => s.GetRequiredService<FileHandleProvider>())
+
+    //        .AddSingleton<FilesystemPersisterProvider>()
+    //        .AddSingleton<IPersisterProvider<IFileReference>, FilesystemPersisterProvider>(s => s.GetRequiredService<FilesystemPersisterProvider>())
+    //        .AddSingleton<IPersisterProvider<ProviderFileReference>, FilesystemPersisterProvider>(s => s.GetRequiredService<FilesystemPersisterProvider>())
+
+    //        .AddSingleton<IWriteHandleProvider<FileReference>, FileHandleProvider>(s => s.GetRequiredService<FileHandleProvider>())
+    //        //.AddSingleton<IReadWriteHandleProvider<FileReference>, FileHandleProvider>(s => s.GetRequiredService<FileHandleProvider>())
+    //        //.AddSingleton<IWriteHandleProvider<ProviderFileReference>, FileHandleProvider>(s => s.GetRequiredService<FileHandleProvider>())
+    //        ;
+    //}
+
+    public static IServiceCollection AddFilesystemPersister(this IServiceCollection services)
+        => services
             .AddFilesystemResilience()
-            .TryAddEnumerableSingleton<IReferenceProvider, FileReferenceProvider>()
-            .Configure<FilesystemPersisterOptions>(o => { })
-            .AddSingleton(s => s.GetService<IOptionsMonitor<FilesystemPersisterOptions>>()?.CurrentValue)
-            .AddSingleton<FilesystemPersister>()
-
-            .AddSingleton<FileHandleProvider>()
-            .AddSingleton<IReadHandleProvider<FileReference>, FileHandleProvider>(s => s.GetRequiredService<FileHandleProvider>())
-            .AddSingleton<IReadWriteHandleProvider<FileReference>, FileHandleProvider>(s => s.GetRequiredService<FileHandleProvider>())
-            .AddSingleton<IReadHandleProvider<ProviderFileReference>, FileHandleProvider>(s => s.GetRequiredService<FileHandleProvider>())
-
-            .AddSingleton<FilesystemPersisterProvider>()
-            .AddSingleton<IPersisterProvider<IFileReference>, FilesystemPersisterProvider>(s => s.GetRequiredService<FilesystemPersisterProvider>())
-            .AddSingleton<IPersisterProvider<ProviderFileReference>, FilesystemPersisterProvider>(s => s.GetRequiredService<FilesystemPersisterProvider>())
-
-            .AddSingleton<IWriteHandleProvider<FileReference>, FileHandleProvider>(s => s.GetRequiredService<FileHandleProvider>())
-            //.AddSingleton<IReadWriteHandleProvider<FileReference>, FileHandleProvider>(s => s.GetRequiredService<FileHandleProvider>())
-            //.AddSingleton<IWriteHandleProvider<ProviderFileReference>, FileHandleProvider>(s => s.GetRequiredService<FileHandleProvider>())
+            .AddFilesystemReferences()
+            //.AddFilesystemPersister()
             ;
-
-        return services;
-    }
 }

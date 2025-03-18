@@ -31,7 +31,7 @@ namespace Packages_
                     .ConfigureServices((context, services) =>
                     {
                         services
-                        .AddFilesystem()
+                        .AddFilesystemPersister()
 
                         .VosPackageProvider("/`/TestPlugins".ToVobReference())
                         .VosMount("/`/TestPlugins/available", pluginsDir.ToFileReference(), new VobMountOptions

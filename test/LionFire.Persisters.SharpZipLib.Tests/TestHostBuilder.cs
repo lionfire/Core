@@ -44,7 +44,7 @@ public static class TestHostBuilder
                 .Vos()
             )
             .Services
-                .AddFilesystem()
+                .AddFilesystemPersister()
                 .VosMount("/C", "c:".ToFileReference()) // TEMP
                 .AddSharpZipLibPersistence()
 #warning NEXT: Use the CanDeserializeType on the Strategy selector, trace through the Serializer selector code

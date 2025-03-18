@@ -15,7 +15,7 @@ namespace LionFire
             return PersistersHost.Create()
                 .ConfigureServices((_, services) =>
                 {
-                    services.AddFilesystem();
+                    services.AddFilesystemPersister();
                 });
         }
     }
@@ -28,7 +28,7 @@ namespace LionFire
               {
                   s
                   .AddNewtonsoftJson()
-                  .AddFilesystem()
+                  .AddFilesystemPersister()
                   ;
               });
         }

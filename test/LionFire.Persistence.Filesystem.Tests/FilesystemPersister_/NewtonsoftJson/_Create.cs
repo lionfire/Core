@@ -139,7 +139,7 @@ namespace FilesystemPersister_
                     .ConfigureServices(s =>
                     {
                         s.AddNewtonsoftJson();
-                        s.AddFilesystem();
+                        s.AddFilesystemPersister();
                         //    s.AddSingleton<FilesystemPersistenceOptions>(new FilesystemPersistenceOptions
                         //    {
                         //    });

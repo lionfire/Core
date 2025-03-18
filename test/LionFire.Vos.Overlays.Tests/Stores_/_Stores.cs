@@ -171,7 +171,7 @@ namespace Stores_
                     .ConfigureServices((context, services) =>
                     {
                         services
-                        .AddFilesystem()
+                        .AddFilesystemPersister()
 
                         .VosPackageProvider("/stores".ToVobReference())
 

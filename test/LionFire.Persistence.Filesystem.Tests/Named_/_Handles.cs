@@ -29,7 +29,7 @@ namespace Named_
             .ConfigureServices((context, services) =>
             {
                 services
-                    .AddFilesystem()
+                    .AddFilesystemPersister()
                     .Configure<FilesystemPersisterOptions>("UnitTestRoot", c => c.RootDirectory = FsTestSetup.DataDir)
                 ;
             })
@@ -78,7 +78,7 @@ namespace Named_
             .ConfigureServices((context, services) =>
             {
                 services
-                    .AddFilesystem()
+                    .AddFilesystemPersister()
                     .Configure<FilesystemPersisterOptions>("UnitTestDir", c => c.RootDirectory = FsTestSetup.DataDir)
                 ;
             })
@@ -127,7 +127,7 @@ namespace Named_
             .ConfigureServices((context, services) =>
             {
                 services
-                    .AddFilesystem()
+                    .AddFilesystemPersister()
                     .Configure<FilesystemPersisterOptions>("UnitTestRoot", c => c.RootDirectory = FsTestSetup.DataDir)
                 ;
             })

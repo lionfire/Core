@@ -52,7 +52,7 @@ public class TestHostBuilder
                         .Vos()
                         .ConfigureServices(s => s
                             .Expansion()
-                            .AddFilesystem()
+                            .AddFilesystemPersister()
 
                             .TryAddEnumerableSingleton<IExpanderPlugin, ZipPlugin>()
 

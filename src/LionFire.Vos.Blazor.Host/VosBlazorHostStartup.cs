@@ -54,7 +54,7 @@ public class VosBlazorHostStartup
             .AddResolvesTracker()
             .AddReferenceProvider()
             .AddPersisters()
-            .AddFilesystem()
+            .AddFilesystemPersister()
 
             .AddNewtonsoftJson()
 

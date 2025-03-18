@@ -47,7 +47,7 @@ public static class TestHostBuilder
             )
             .Services
                 .Expansion()
-                .AddFilesystem()
+                .AddFilesystemPersister()
                 .AddNewtonsoftJson()
                 .VosMount("/C", "c:".ToFileReference()) // TEMP - TODO: change to match location of test data dir
 

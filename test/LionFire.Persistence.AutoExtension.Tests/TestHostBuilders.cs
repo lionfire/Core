@@ -14,7 +14,7 @@ namespace LionFire
                                      {
                                          s
                                          .AddNewtonsoftJson()
-                                         .AddFilesystem()
+                                         .AddFilesystemPersister()
                                          ;
                                          //if (initializer != null) initializer.AddServicesForTest(s);
                                      });
@@ -24,7 +24,7 @@ namespace LionFire
                              .ConfigureServices(s =>
                              {
                                  s
-                                 .AddFilesystem()
+                                 .AddFilesystemPersister()
                                  ;
                              });
     }
