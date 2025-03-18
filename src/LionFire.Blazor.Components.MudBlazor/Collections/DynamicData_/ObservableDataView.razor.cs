@@ -16,6 +16,8 @@ using Microsoft.CodeAnalysis.VisualBasic.Syntax;
 using DynamicData;
 using LionFire.Data.Collections;
 using Orleans.Runtime;
+using LionFire.Reactive.Persistence;
+using DynamicData.Kernel;
 
 namespace LionFire.Blazor.Components;
 
@@ -34,7 +36,7 @@ namespace LionFire.Blazor.Components;
 /// </summary>
 /// <typeparam name="TValue"></typeparam>
 //[CascadingTypeParameter(nameof(T))]
-public partial class ObservableCacheView<TKey, TValue, TValueVM>
+public partial class ObservableDataView<TKey, TValue, TValueVM>
     : IAsyncDisposable
     , IComponentized
     , IGetsOrCreatesByType
@@ -60,35 +62,48 @@ public partial class ObservableCacheView<TKey, TValue, TValueVM>
 
     #region Items
 
+    ///// <summary>
+    ///// Recommended:
+    /////  - IObservableCache<TValue, TItem>
+    /////     - see AsyncObservableCache<TItem, TValue> and
+    /////     - AsyncComposableObservableCache<TItem, TValue>)
+    ///// </summary>
+    //[Parameter]
+    //public IEnumerable<TValue>? Items { get; set; }
+    //public IEnumerable<TValue>? EffectiveItems { get; private set; }
+
+    [Parameter]
+    public Func<TKey, Optional<TValue>, TValueVM>? VMFactory { get; set; }
+
     /// <summary>
-    /// Recommended:
-    ///  - IObservableCache<TValue, TItem>
-    ///     - see AsyncObservableCache<TItem, TValue> and
-    ///     - AsyncComposableObservableCache<TItem, TValue>)
+    /// If writable, supply IObservableReaderWriter here
     /// </summary>
     [Parameter]
-    public IEnumerable<TValue>? Items { get; set; }
+    public IObservableReader<TKey, TValue>? Data { get; set; }
+
+    public IObservableReader<TKey, TValue>? EffectiveData { get; private set; }
+    public IObservableReaderWriter<TKey, TValue>? EffectiveDataWriter { get; private set; }
 
     [Parameter]
     public TimeSpan? PollDelay { get; set; }
 
 
-    #region Derived
+    //#region Derived
 
-    /// <summary>
-    /// Previous value of Items.
-    /// Used for change detection.
-    /// </summary>
-    private IEnumerable<TValue>? oldItems { get; set; }
+    ///// <summary>
+    ///// Previous value of Items.
+    ///// Used for change detection.
+    ///// </summary>
+    //private IEnumerable<TValue>? oldItems { get; set; }
 
-    #endregion
+    //#endregion
 
     #endregion
 
     #region Override: ChildContent
 
     [Parameter]
-    public RenderFragment<AsyncObservableCacheVM<TKey, TValue, TValueVM>>? ChildContent { get; set; }
+    public RenderFragment<ObservableDataVM<TKey, TValue, TValueVM>>? ChildContent { get; set; }
 
     [Parameter]
     public RenderFragment? Columns { get; set; }
@@ -188,12 +203,13 @@ public partial class ObservableCacheView<TKey, TValue, TValueVM>
 
     #region Lifecycle
 
-    public ObservableCacheView()
+    public ObservableDataView()
     {
         this.WhenActivated(disposableRegistration =>
         {
             if (ViewModel == null) throw new ArgumentNullException(nameof(ViewModel));
-            ViewModel.PropertyChanged += ViewModel_PropertyChanged; // MEMORYLEAK?
+            ViewModel.PropertyChanged += ViewModel_PropertyChanged; // No Memory leak
+
 
             //#if true // TODO: How to bind [Parameter] to ViewModel?  Set in OnParametersSetAsync?
             //            this.WhenAnyValue(v => v.Items)
@@ -238,55 +254,73 @@ public partial class ObservableCacheView<TKey, TValue, TValueVM>
         });
     }
 
+    IDisposable? itemsSubscription = null;
     protected override async Task OnParametersSetAsync()
     {
         await base.OnParametersSetAsync();
 
         ArgumentNullException.ThrowIfNull(ViewModel);
 
-        if (oldItems == null || !ReferenceEquals(oldItems, this.Items))
+        ViewModel!.VMFactory = VMFactory;
+        ViewModel!.Data = Data;
+
+        ViewModel.ItemsChanged.Subscribe(_ => InvokeAsync(StateHasChanged));
+        //ViewModel.WhenAnyValue(vm => vm.Items).Subscribe(items => // MOVE this as an IObservable to VM class
+        //{
+        //    itemsSubscription?.Dispose();
+        //    itemsSubscription = items?.Connect().Subscribe(_ => InvokeAsync(StateHasChanged));
+        //});
+
+        //if (EffectiveData == null || !ReferenceEquals(EffectiveData, Data))
+        //{
+            //EffectiveData = Data;
+            //EffectiveDataWriter = EffectiveData as IObservableReaderWriter<TKey, TValue>;
+//#if true // NEW
+//            ViewModel.Data?.ObservableCache.Connect().Subscribe(o =>
+//            {
+//                //Debug.WriteLine($"ObservableDataView: VMCollectionChanged {ViewModel.ValueVMs != null}");
+//                Debug.WriteLine($"ObservableDataView: Data changed");
+//                InvokeAsync(StateHasChanged);
+//            });
+//#else // OLD
+//            ViewModel.ValueVMCollections.Subscribe(o =>
+//            {
+//                Debug.WriteLine($"ObservableDataView: VMCollectionChanged {ViewModel.ValueVMs != null}");
+//                o.Subscribe(_ => InvokeAsync(StateHasChanged));
+//                InvokeAsync(StateHasChanged);
+//            });
+//#endif
+        //}
+
+        //if (oldItems == null || !ReferenceEquals(oldItems, this.Items))
         {
 
-            ViewModel.PollDelay = PollDelay;
-            ViewModel.Source = Items == null ? null
-                : Items as IGetter<IEnumerable<TValue>>
-                    ?? new PreresolvedGetter<IEnumerable<TValue>>(Items);
-            ViewModel.FullFeaturedSource?.GetIfNeeded().AsTask().FireAndForget();
+            //ViewModel.PollDelay = PollDelay;
+            //ViewModel.Source = Items == null ? null
+            //    : Items as IGetter<IEnumerable<TValue>>
+            //        ?? new PreresolvedGetter<IEnumerable<TValue>>(Items);
+            //ViewModel.FullFeaturedSource?.GetIfNeeded().AsTask().FireAndForget();
 
-            if (Items is IHasObservableCache<TValue, TKey> hoc)
-            {
-                hoc.ObservableCache.Connect().Subscribe(changeSet =>
-                {
-                    InvokeAsync(StateHasChanged);
-                });
-            }
+            //if (Items is IHasObservableCache<TValue, TKey> hoc)
+            //{
+            //    hoc.ObservableCache.Connect().Subscribe(changeSet =>
+            //    {
+            //        InvokeAsync(StateHasChanged);
+            //    });
+            //}
 
-#if true // NEW
-            ViewModel.ObservableCache.Connect().Subscribe(o =>
-            {
-                Debug.WriteLine($"ObservableCacheView: VMCollectionChanged {ViewModel.ValueVMs != null}");
-                InvokeAsync(StateHasChanged);
-            });
-#else // OLD
-            ViewModel.ValueVMCollections.Subscribe(o =>
-            {
-                Debug.WriteLine($"ObservableCacheView: VMCollectionChanged {ViewModel.ValueVMs != null}");
-                o.Subscribe(_ => InvokeAsync(StateHasChanged));
-                InvokeAsync(StateHasChanged);
-            });
-#endif
 
-            ViewModel.ViewModelPropertyChanges.Subscribe(o =>
-            {
-                Debug.WriteLine($"ObservableCacheView: ViewModelPropertyChanges {o}");
-                InvokeAsync(StateHasChanged);
-            });
+            //ViewModel.ViewModelPropertyChanges.Subscribe(o =>
+            //{
+            //    Debug.WriteLine($"ObservableDataView: ViewModelPropertyChanges {o}");
+            //    InvokeAsync(StateHasChanged);
+            //});
 
             //this.BindCommand(ViewModel,
             //    viewModel => viewModel.Create,
             //    view => view.)
         }
-        oldItems = Items;
+        //oldItems = Items;
 
 
         //#pragma warning disable BL0005 // Component parameter should not be set outside of its component.
@@ -401,7 +435,7 @@ public partial class ObservableCacheView<TKey, TValue, TValueVM>
 
     public T ThrowNoKey<T>(object item) => throw new ArgumentException("Failed to resolve Key for object of type " + item?.GetType()?.FullName);
 
-    //private void ItemsEditor_GlobalItemsChanged(ObservableCacheView<TValue, TValueVM> obj, string key)
+    //private void ItemsEditor_GlobalItemsChanged(ObservableDataView<TValue, TValueVM> obj, string key)
     //{
     //    if (Object.ReferenceEquals(obj, this) || key != EffectiveKey) { return; }
     //    InvokeAsync(Retrieve).FireAndForget();
@@ -444,7 +478,7 @@ public partial class ObservableCacheView<TKey, TValue, TValueVM>
 
     private void ViewModel_PropertyChanged(object? sender, System.ComponentModel.PropertyChangedEventArgs e)
     {
-        Logger.LogInformation($"{nameof(ObservableCacheView<TKey, TValue, TValueVM>)}.ViewModel.PropertyChanged: {e.PropertyName}");
+        Logger.LogInformation($"{nameof(ObservableDataView<TKey, TValue, TValueVM>)}.ViewModel.PropertyChanged: {e.PropertyName}");
     }
 
     //void RowClicked(DataGridRowClickEventArgs<(TValue, TValueVM)> args)

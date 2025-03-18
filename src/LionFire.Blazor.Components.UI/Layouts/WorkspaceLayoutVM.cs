@@ -140,17 +140,16 @@ public partial class WorkspaceLayoutVM : UserLayoutVM
         WorkspaceServices = services.BuildServiceProvider();
     }
 
-    protected virtual ValueTask ConfigureWorkspaceServices(IServiceCollection services, string workspaceId)
+    protected virtual async ValueTask ConfigureWorkspaceServices(IServiceCollection services, string workspaceId)
     {
         if (WorkspacesDir != null)
         {
             var r = new FileReference(WorkspacesDir);
             foreach (var s in WorkspaceServiceConfigurators)
             {
-                s.ConfigureWorkspaceServices(services, userWorkspacesService, workspaceId);
+                await s.ConfigureWorkspaceServices(services, userWorkspacesService, workspaceId);
             }
         }
-        return ValueTask.CompletedTask;
     }
 
     #endregion

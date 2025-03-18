@@ -1,4 +1,5 @@
-﻿using System;
+﻿using DynamicData.Kernel;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -24,8 +25,16 @@ public interface IObservableReader<TKey, TValue, TMetadata>
     /// <summary>
     /// Only subscribe if you want to load (deserialize) all available items
     /// </summary>
-    IObservableCache<TValue, TKey> ObservableCache { get; }
+    IObservableCache<Optional<TValue>, TKey> Values { get; }
 
-    IObservable<TValue?> Listen(TKey key);
+    //IObservable<TValue?>? GetValueObservable(TKey key);
+    IObservable<TValue?> GetValueObservableIfExists(TKey key);
+    IObservable<TValue?> GetValueObservable(TKey key);
 
+    IDisposable ListenAll();
+
+    /// <summary>
+    /// Listen to specified keys (perhaps because they are in view)
+    /// </summary>
+    //SourceList<TKey> ListenTo { get; set; }
 }

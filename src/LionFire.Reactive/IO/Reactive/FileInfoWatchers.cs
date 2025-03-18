@@ -35,7 +35,7 @@ public class ObservableFileInfos
 
     public static IObservable<IChangeSet<FileInfo, string>> PollOnDemand(string dir, string? searchPattern = null)
     {
-        return ObservableEx2.CreateConnectOnDemand(x => x.Name,
+        return IObservableX.CreateConnectOnDemand(x => x.Name,
             resourceFactory: resourceFactory(dir, searchPattern)
         );
     }

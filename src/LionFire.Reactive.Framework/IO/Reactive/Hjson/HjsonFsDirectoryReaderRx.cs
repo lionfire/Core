@@ -1,11 +1,14 @@
-﻿using LionFire.IO.Reactive.Filesystem;
+﻿using DynamicData.Kernel;
+using LionFire.IO.Reactive.Filesystem;
 using LionFire.Persistence.Filesystemlike;
 using LionFire.Reactive.Persistence;
 using System.IO;
+using System.Reactive.Disposables;
+using System.Reactive.Subjects;
 using System.Text.RegularExpressions;
 
 namespace LionFire.IO.Reactive.Hjson;
- 
+
 file static class _StringX
 {
 
@@ -21,28 +24,37 @@ where TKey : notnull
 where TValue : notnull
 {
     protected override string Extension => ".hjson";
- 
+
     #region Lifecycle
 
     public HjsonFsDirectoryReaderRx(DirectorySelector dir, IFileExtensionConvention extensionConvention) : base(dir, extensionConvention)
     {
-        _ = LoadKeys();
     }
 
     #endregion
-
-    public override IObservable<TValue?> Listen(TKey key)
+        
+    protected override IObservable<TValue?> CreateValueObservable(TKey key)
     {
         var filePath = GetFilePath(key);
+
         return Observable.Create<TValue?>(observer =>
         {
+            Console.WriteLine("Listening to " + filePath);
             if (File.Exists(filePath))
             {
-                var value = ReadFromFile(filePath);
-                observer.OnNext(value);
+                try
+                {
+                    var value = ReadFromFile(filePath);
+                    observer.OnNext(value);
+                }
+                catch (Exception ex)
+                {
+                    observer.OnError(ex);
+                    return Disposable.Empty; // Early exit on error
+                }
             }
 
-            var watcher = new FileSystemWatcher(Path.GetDirectoryName(filePath)!, Path.GetFileName(filePath))
+            var watcher = new FileSystemWatcher(Path.GetDirectoryName(filePath) ?? "", Path.GetFileName(filePath) ?? throw new ArgumentNullException("key => " + nameof(filePath)))
             {
                 NotifyFilter = NotifyFilters.LastWrite | NotifyFilters.FileName | NotifyFilters.Size
             };
@@ -51,8 +63,15 @@ where TValue : notnull
             {
                 if (e.ChangeType == WatcherChangeTypes.Changed || e.ChangeType == WatcherChangeTypes.Created)
                 {
-                    var value = ReadFromFile(filePath);
-                    observer.OnNext(value);
+                    try
+                    {
+                        var value = ReadFromFile(filePath);
+                        observer.OnNext(value);
+                    }
+                    catch (Exception ex)
+                    {
+                        observer.OnError(ex);
+                    }
                 }
             };
 
@@ -60,12 +79,15 @@ where TValue : notnull
             watcher.Created += onChanged;
             watcher.EnableRaisingEvents = true;
 
-            return () =>
+            return Disposable.Create(() =>
             {
+                Console.WriteLine("Stopping listening to " + filePath);
+
+                watcher.EnableRaisingEvents = false;
                 watcher.Changed -= onChanged;
                 watcher.Created -= onChanged;
                 watcher.Dispose();
-            };
+            });
         });
     }
     protected override TValue? ReadFromFile(string filePath)

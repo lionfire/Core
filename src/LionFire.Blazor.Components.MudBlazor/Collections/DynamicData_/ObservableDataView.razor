@@ -1,5 +1,4 @@
-﻿@* NEW: WIP, not sure if good idea *@
-@inherits ReactiveInjectableComponentBase<AsyncObservableCacheVM<TKey,TValue,TValueVM>>
+﻿@inherits ReactiveInjectableComponentBase<ObservableDataVM<TKey,TValue,TValueVM>>
 @typeparam TKey where TKey : notnull
 @typeparam TValue where TValue : notnull
 @typeparam TValueVM where TValueVM : notnull
@@ -43,19 +42,19 @@
     } *@
     }
 
-    @if (ViewModel != null && (ViewModel.ShowRefresh || ((ViewModelOptions?.ShowRefreshIfHasNoValue == true) && !ViewModel.HasValue)))
+    @if (ViewModel != null && ViewModel.ShowRefresh)
     {
         @* TODO: Special color if !HasValue, indicating first resolve is needed *@
-        <MudIconButton Disabled="!ViewModel.CanGet" OnClick="() => ViewModel.GetCommand.Execute()" Color="@Color.Tertiary" Icon="@Icons.Material.Filled.Refresh" />
+        @* <MudIconButton Disabled="!ViewModel.CanGet" OnClick="() => ViewModel.GetCommand.Execute()" Color="@Color.Tertiary" Icon="@Icons.Material.Filled.Refresh" /> *@
     }
 </MudToolBar>
 
 
 @if (ChildContent != null)
 {
-    <div>@ChildContent(ViewModel)</div>
+    <div>@ChildContent(ViewModel!)</div>
 }
-else if (ViewModel?.ValueVMs != null)
+else if (ViewModel!.Items != null)
 {
     @* <h3>ValueVMs @ViewModel.ValueVMs.Count</h3> *@
     @* @foreach (var item in ViewModel.ValueVMs.Items)
@@ -67,9 +66,10 @@ else if (ViewModel?.ValueVMs != null)
     } *@
 
     @* <CascadingT T="TValueVM"> *@
+                     @* Items="@ViewModel!.Items?.Items" *@
         <MudDataGrid @ref="MudDataGrid"
                      T="TValueVM"
-                     Items="@ViewModel?.ValueVMs?.Items"
+                     Items="@ViewModel!.Items.Items"
                      SortMode="SortMode.Multiple"
                      Filterable="true"
                      Hideable="true"

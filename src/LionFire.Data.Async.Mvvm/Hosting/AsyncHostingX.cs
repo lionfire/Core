@@ -1,5 +1,4 @@
-﻿using LionFire.Data.Async.Collections.DynamicData_;
-using LionFire.Data.Mvvm;
+﻿using LionFire.Data.Mvvm;
 using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.Collections.Generic;
@@ -16,7 +15,7 @@ public static class AsyncHostingX
         return services
             .AddSingleton(typeof(AsyncKeyedCollectionVM<,,>))
             .AddSingleton(typeof(AsyncKeyedVMCollectionVM<,,>))
-            .AddSingleton(typeof(AsyncVMSourceCacheVM<,,>))
+            .AddSingleton(typeof(ObservableDataVM<,,>))
             ;
     }
 }

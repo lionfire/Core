@@ -1,4 +1,5 @@
-﻿using ReactiveUI;
+﻿using DynamicData.Kernel;
+using ReactiveUI;
 
 namespace LionFire.Reactive.Persistence;
 
@@ -27,12 +28,14 @@ public class ObservableReaderWriterFromComponents<TKey, TValue> : IObservableRea
 
     public IObservableCache<TKey, TKey> Keys => Read.Keys;
 
-    public IObservableCache<TValue, TKey> ObservableCache => Read.ObservableCache;
+    public IObservableCache<Optional<TValue>, TKey> Values => Read.Values;
 
-    public IObservable<TValue?> Listen(TKey key)
-    {
-        return Read.Listen(key);
-    }
+    //public IObservable<TValue?> GetListener(TKey key) => Read.GetListener(key);
+    public IDisposable ListenAll() => Read.ListenAll();
+
+    public IObservable<TValue?> GetValueObservableIfExists(TKey key) => Read.GetValueObservableIfExists(key);
+
+    public IObservable<TValue?> GetValueObservable(TKey key) => Read.GetValueObservable(key);
 
     #endregion
 
@@ -57,6 +60,7 @@ public class ObservableReaderWriterFromComponents<TKey, TValue> : IObservableRea
     {
         return Write.Synchronize(source, key, options);
     }
+
 
     #endregion
 

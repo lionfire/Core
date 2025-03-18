@@ -1,5 +1,7 @@
 ﻿
 using DynamicData.Binding;
+using DynamicData.Kernel;
+using LionFire.IO.Reactive;
 using ReactiveUI;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -7,7 +9,8 @@ using System.Collections.ObjectModel;
 namespace LionFire.Reactive.Persistence;
 
 internal class InMemoryReaderWriterRxImpl<TKey, TValue>
-    : IObservableReader<TKey, TValue>
+    : ObservableReaderBase<TKey, TValue>
+    , IObservableReader<TKey, TValue>
     , IObservableWriter<TKey, TValue>
     where TKey : notnull
     where TValue : notnull
@@ -21,7 +24,6 @@ internal class InMemoryReaderWriterRxImpl<TKey, TValue>
         //    //.Where(change => change.Current.Value != null)
         //    .AsObservableCache()
         //    ;
-        ObservableCache = KeyedItems.Connect().Transform(x => x.Value).AsObservableCache();
     }
 
     #region State
@@ -29,10 +31,7 @@ internal class InMemoryReaderWriterRxImpl<TKey, TValue>
     public IObservableCache<TKey, TKey> Keys => keys.AsObservableCache();
     private readonly SourceCache<TKey, TKey> keys = new(k => k);
 
-    public IObservableCache<KeyValuePair<TKey, TValue>, TKey> KeyedItems => keyedItems;
-    private SourceCache<KeyValuePair<TKey, TValue>, TKey> keyedItems = new(kvp => kvp.Key);
-    public IObservableCache<TValue, TKey> ObservableCache { get; }
-
+    
     #endregion
 
     #region Write
@@ -41,7 +40,7 @@ internal class InMemoryReaderWriterRxImpl<TKey, TValue>
     {
         return source
             //.Throttle(options?.DebounceDelay ?? TimeSpan.FromSeconds(1))
-            .Subscribe(value => keyedItems.Edit(u => u.AddOrUpdate(new KeyValuePair<TKey, TValue>(key, value))));
+            .Subscribe(value => values.Edit(u => u.AddOrUpdate((key, value))));
     }
 
     public IDisposable Synchronize(IReactiveNotifyPropertyChanged<IReactiveObject> source, TKey key, WritingOptions? options = null)
@@ -50,7 +49,7 @@ internal class InMemoryReaderWriterRxImpl<TKey, TValue>
         {
             return source.Changed
                 //.Throttle(options?.DebounceDelay ?? TimeSpan.FromSeconds(1))
-                .Subscribe(_ => keyedItems.Edit(u => u.AddOrUpdate(new KeyValuePair<TKey, TValue>(key, x))));
+                .Subscribe(_ => values.Edit(u => u.AddOrUpdate((key, x))));
         }
         else
         {
@@ -60,17 +59,23 @@ internal class InMemoryReaderWriterRxImpl<TKey, TValue>
 
     public ValueTask Write(TKey key, TValue value)
     {
-        keyedItems.Edit(u => u.AddOrUpdate(new KeyValuePair<TKey, TValue>(key, value)));
+        values.Edit(u => u.AddOrUpdate((key, value)));
         return ValueTask.CompletedTask;
     }
     public ValueTask<bool> Remove(TKey key)
     {
-        var result = keyedItems.Lookup(key).HasValue; // Result is not thread safe
-        keyedItems.Edit(u => u.RemoveKey(key));
+        var result = values.Lookup(key).HasValue; // Result is not thread safe
+        values.Edit(u => u.RemoveKey(key));
         return ValueTask.FromResult(true);
     }
 
-    public IObservable<TValue?> Listen(TKey key)
+    public IObservable<TValue?> GetValueObservableIfExists(TKey key)
+    {
+        throw new NotImplementedException();
+    }
+    public IDisposable ListenAll() => throw new NotImplementedException();
+
+    public IObservable<TValue?> GetValueObservable(TKey key)
     {
         throw new NotImplementedException();
     }

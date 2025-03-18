@@ -1,10 +1,9 @@
-﻿@inherits ReactiveInjectableComponentBase<AsyncVMSourceCacheVM<TKey,TValue,TValueVM>>
+﻿@inherits ReactiveInjectableComponentBase<ObservableDataVM<TKey,TValue,TValueVM>>
 @typeparam TKey
 @typeparam TValue
 @typeparam TValueVM
 
 @namespace LionFire.Blazor.Components
-@using LionFire.Data.Async.Collections.DynamicData_
 
 @inject ILogger<AsyncVMSourceCacheView<TKey, TValue, TValueVM>> Logger
 @inject NavigationManager NavigationManager

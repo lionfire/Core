@@ -3,7 +3,6 @@
 #nullable enable
 
 using DynamicData.Binding;
-using LionFire.Data.Async.Collections.DynamicData_;
 using LionFire.Data.Async.Gets;
 using LionFire.Data.Mvvm;
 using LionFire.ExtensionMethods;
@@ -86,7 +85,7 @@ public partial class AsyncVMSourceCacheView<TKey, TValue, TValueVM>
     #region Override default HTML: ChildContent
 
     [Parameter]
-    public RenderFragment<AsyncVMSourceCacheVM<TKey, TValue, TValueVM>>? ChildContent { get; set; }
+    public RenderFragment<ObservableDataVM<TKey, TValue, TValueVM>>? ChildContent { get; set; }
 
     #endregion
 
@@ -262,6 +261,7 @@ public partial class AsyncVMSourceCacheView<TKey, TValue, TValueVM>
             //        ?? new PreresolvedGetter<IEnumerable<TValueVM>>(Items);
 
             //ViewModel.FullFeaturedSource?.GetIfNeeded().AsTask().FireAndForget();
+            //ViewModel.Items = newReader.ObservableCache.Items;
 
             ViewModel.WhenAnyValue(x => x.Items).Subscribe(items =>
             {

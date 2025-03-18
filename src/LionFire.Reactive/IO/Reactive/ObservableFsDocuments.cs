@@ -30,7 +30,7 @@ public static class ObservableFsDocuments
 
     public static IObservable<IChangeSet<(string key, TValue value), string>> PollOnDemand<TValue>(string dir, Func<byte[], TValue> deserialize, string? searchPattern = null)
     {
-        return ObservableEx2.CreateConnectOnDemand(x => x.key,
+        return IObservableX.CreateConnectOnDemand(x => x.key,
             resourceFactory: resourceFactory(dir, deserialize, searchPattern)
         );
     }
