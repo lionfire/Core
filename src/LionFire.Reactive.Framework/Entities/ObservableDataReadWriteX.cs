@@ -70,6 +70,8 @@ public static class ObservableDataReadWriteX
                 {
                     try
                     {
+                        // REVIEW - why is this being reached twice for each change?
+                        // ENH - when deserializing, preserve existing object instance to avoid reattaching
                         d.Dispose();
                     }
                     catch { } // EMPTYCATCH
