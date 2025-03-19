@@ -12,4 +12,5 @@ public interface IObservableReaderWriterComponents<TKey, TValue>
 {
     IObservableReader<TKey, TValue> Read { get; }
     IObservableWriter<TKey, TValue> Write { get; }
+
 }

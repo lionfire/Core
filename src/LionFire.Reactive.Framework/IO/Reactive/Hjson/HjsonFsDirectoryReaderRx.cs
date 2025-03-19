@@ -33,7 +33,7 @@ where TValue : notnull
 
     #region Lifecycle
 
-    public HjsonFsDirectoryReaderRx(DirectorySelector dir, IFileExtensionConvention extensionConvention, ResiliencePipelineProvider<string> resiliencePipelineProvider) : base(dir, extensionConvention)
+    public HjsonFsDirectoryReaderRx(DirectorySelector dir, DirectoryTypeOptions directoryTypeOptions, ResiliencePipelineProvider<string> resiliencePipelineProvider) : base(dir, directoryTypeOptions)
     {
         ResiliencePipelineProvider = resiliencePipelineProvider ?? throw new ArgumentNullException();
         retryOnFileChange_Slow = ResiliencePipelineProvider.GetPipeline(FilesystemRetryPolicy.OnFileChange.Slow) ?? throw new ArgumentNullException();
@@ -107,6 +107,11 @@ where TValue : notnull
     }
     protected override async ValueTask<Optional<TValue>> ReadFromFile(string filePath)
     {
+        if(retryOnFileChange_Slow == null)
+        {
+            throw new ObjectDisposedException(""); // REVIEW - how can this happen?
+        }
+
         var bytes = await retryOnFileChange_Slow.ExecuteAsync(async context =>
         {
             Debug.WriteLine("Reading " + filePath);

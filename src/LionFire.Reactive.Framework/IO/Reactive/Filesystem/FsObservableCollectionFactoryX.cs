@@ -1,15 +1,19 @@
-﻿using LionFire.IO.Reactive.Hjson;
+﻿using LionFire.Dependencies;
+using LionFire.IO.Reactive.Hjson;
 using LionFire.Ontology;
 using LionFire.Persistence.Filesystem;
+using LionFire.Persistence.Filesystemlike;
 using LionFire.Reactive.Persistence;
 using LionFire.Referencing;
+using LionFire.Structures;
 using Microsoft.Extensions.DependencyInjection;
+using System.Reactive.Disposables;
 
 namespace LionFire.IO.Reactive.Filesystem;
 
 public static class FsObservableCollectionFactoryX
 {
-    public static IServiceCollection RegisterObservablesInSubDirForType<TValue>(this IServiceCollection services, IServiceProvider serviceProvider, IReference parentDir, string? entitySubdir = null, bool recursive = true)
+    public static IServiceCollection RegisterObservablesInSubDirForType<TValue>(this IServiceCollection services, IServiceProvider serviceProvider, IReference parentDir, string? entitySubdir = null, bool recursive = true, bool autosave = true)
         where TValue : notnull
     {
         var pluralTypeName = typeof(TValue).GetPluralName();
@@ -18,12 +22,12 @@ public static class FsObservableCollectionFactoryX
         var valuesDir = entitySubdir.Length == 0 ? parentDir : parentDir.GetChildSubpath(entitySubdir);
         var valuesDirSelector = new LionFire.IO.Reactive.DirectoryReferenceSelector(valuesDir) { Recursive = recursive };
 
-        services.RegisterObservablesInDir<TValue>(serviceProvider, valuesDirSelector);
+        services.RegisterObservablesInDir<TValue>(serviceProvider, valuesDirSelector, autosave: autosave);
 
         return services;
     }
     
-    public static void RegisterObservablesInDir<TValue>(this  IServiceCollection services, IServiceProvider serviceProvider, DirectoryReferenceSelector valuesDirReferenceSelector) where TValue : notnull
+    public static void RegisterObservablesInDir<TValue>(this  IServiceCollection services, IServiceProvider serviceProvider, DirectoryReferenceSelector valuesDirReferenceSelector, bool autosave = true) where TValue : notnull
     {
         if (valuesDirReferenceSelector.Path is FileReference fileReference) // TODO remove this HARDCODE - allow extensibility via DI instead of this
         {
@@ -33,9 +37,23 @@ public static class FsObservableCollectionFactoryX
                 Recursive = valuesDirReferenceSelector.Recursive,
             };
 
-            var r = ActivatorUtilities.CreateInstance<HjsonFsDirectoryReaderRx<string, TValue>>(serviceProvider, dirSelector);
-            var w = ActivatorUtilities.CreateInstance<HjsonFsDirectoryWriterRx<string, TValue>>(serviceProvider, dirSelector);
-            services.AddSingleton<IObservableReaderWriter<string, TValue>>(sp => new ObservableReaderWriterFromComponents<string, TValue>(r, w));
+            var DirectoryTypeOptions = new DirectoryTypeOptions
+            {
+                ExtensionConvention = serviceProvider.GetService<IFileExtensionConvention>() ?? Singleton<DefaultExtensionConvention>.Instance,
+            };
+            DirectoryTypeOptions.SecondExtension = DirectoryTypeOptions.ExtensionConvention.FileExtensionForType(typeof(TValue));
+
+            var r = ActivatorUtilities.CreateInstance<HjsonFsDirectoryReaderRx<string, TValue>>(serviceProvider, dirSelector, DirectoryTypeOptions);
+            var w = ActivatorUtilities.CreateInstance<HjsonFsDirectoryWriterRx<string, TValue>>(serviceProvider, dirSelector, DirectoryTypeOptions);
+            services.AddSingleton<IObservableReaderWriter<string, TValue>>(sp =>
+            {
+                var c = new ObservableReaderWriterFromComponents<string, TValue>(r, w);
+                if (autosave)
+                {
+                    var disposable = c.AutosaveValueChanges();
+                }
+                return c;
+            });
         }
         else
         {

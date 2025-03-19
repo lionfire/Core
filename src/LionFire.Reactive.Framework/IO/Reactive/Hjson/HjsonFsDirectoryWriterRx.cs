@@ -7,18 +7,56 @@ using System.Reactive.Linq;
 
 namespace LionFire.IO.Reactive.Hjson;
 
-public class HjsonFsDirectoryWriterRx<TKey, TValue> : IObservableWriter<TKey, TValue>
+public abstract class DirectoryWriterRx<TKey, TValue> //ObservableReaderBase<TKey, TValue>
+    //IObservableWriter<TKey, TValue>
     where TKey : notnull
     where TValue : notnull
 {
+    protected abstract IDirectoryAsync Directory { get; }
+
+    #region Parameters
+
     public DirectorySelector Dir { get; }
+
+    public DirectoryTypeOptions DirectoryTypeOptions { get; set; }
+
+    #endregion
 
     #region Lifecycle
 
-    // ENH: Use FS Resilience pipeline
-    public HjsonFsDirectoryWriterRx(DirectorySelector dir)
+    public DirectoryWriterRx(DirectorySelector dir, DirectoryTypeOptions directoryTypeOptions)
     {
         Dir = dir;
+        DirectoryTypeOptions = directoryTypeOptions;
+    }
+
+    #endregion
+}
+
+public class FsDirectoryWriterRx<TKey, TValue>
+    : DirectoryWriterRx<TKey, TValue>
+
+    where TKey : notnull
+    where TValue : notnull
+{
+    protected override IDirectoryAsync Directory => FsDirectory.Instance;
+
+    public FsDirectoryWriterRx(DirectorySelector dir, DirectoryTypeOptions directoryTypeOptions) : base(dir, directoryTypeOptions)
+    {
+    }
+}
+
+public class HjsonFsDirectoryWriterRx<TKey, TValue>
+    : FsDirectoryWriterRx<TKey, TValue>
+      , IObservableWriter<TKey, TValue>
+where TKey : notnull
+where TValue : notnull
+{
+    #region Lifecycle
+
+    // ENH: Use FS Resilience pipeline
+    public HjsonFsDirectoryWriterRx(DirectorySelector dir, DirectoryTypeOptions directoryTypeOptions) : base(dir, directoryTypeOptions)
+    {
     }
 
     #endregion
@@ -70,22 +108,22 @@ public class HjsonFsDirectoryWriterRx<TKey, TValue> : IObservableWriter<TKey, TV
 
     private string GetFilePath(TKey key)
     {
-        return Path.Combine(Dir.Path, $"{key}.hjson");
+        return Path.Combine(Dir.Path, $"{key}.{DirectoryTypeOptions.SecondExtension}.hjson");
     }
 
-    void CreateDirIfMissing()
+    async ValueTask CreateDirIfMissing()
     {
         if (directoryExists || Dir.Path == null) return;
-        if (!Directory.Exists(Dir.Path))
+        if (!await Directory.ExistsAsync(Dir.Path))
         {
-            Directory.CreateDirectory(Dir.Path);
+            await Directory.CreateDirectoryAsync(Dir.Path);
         }
         directoryExists = true;
     }
 
     private async ValueTask WriteToFile(string filePath, TValue value)
     {
-        CreateDirIfMissing();
+        await CreateDirIfMissing();
         var bytes = HjsonSerialization.Serialize(value);
         await File.WriteAllBytesAsync(filePath, bytes).ConfigureAwait(false);
     }

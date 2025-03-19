@@ -97,7 +97,8 @@ public partial class WorkspaceLayoutVM : UserLayoutVM
         {
             await WorkspaceSchemas.InitFilesystemSchemas(userWorkspacesService.UserWorkspaces);
 
-            services.RegisterObservablesInDir<Workspace>(ServiceProvider, new DirectoryReferenceSelector(userWorkspacesService.UserWorkspaces) { Recursive = true });
+             services.RegisterObservablesInDir<Workspace>(ServiceProvider, new DirectoryReferenceSelector(userWorkspacesService.UserWorkspaces) { Recursive = true });
+
             //services.RegisterObservablesInSubDirForType<Workspace>(ServiceProvider, userWorkspacesService.UserWorkspaces);
 
             //var dirSelector = new LionFire.IO.Reactive.DirectoryReferenceSelector(userWorkspacesService.UserWorkspaces) { Recursive = true };

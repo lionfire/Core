@@ -71,10 +71,13 @@ else if (ViewModel!.Items != null)
                      T="TValueVM"
                      Items="@ViewModel!.Items.Items"
                      SortMode="SortMode.Multiple"
+                     EditMode="DataGridEditMode.Cell"
                      Filterable="true"
                      Hideable="true"
+                     ReadOnly="false"
                      RowClick="@RowClicked"
                      Columns="@(Columns ?? CreateColumns)">
+        @* EditMode="@(_isCellEditMode? DataGridEditMode.Cell: DataGridEditMode.Form)" *@
         </MudDataGrid>
     @* </CascadingT> *@
 }

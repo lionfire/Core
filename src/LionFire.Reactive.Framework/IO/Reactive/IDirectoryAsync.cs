@@ -9,6 +9,7 @@ namespace LionFire.IO.Reactive;
 public interface IDirectoryAsync
 {
     Task<bool> ExistsAsync(string path);
+    Task CreateDirectoryAsync(string path);
 
     Task<string[]> GetFilesAsync(string path);
 
@@ -24,6 +25,7 @@ public class FsDirectory : IDirectoryAsync
     public static FsDirectory Instance => Singleton<FsDirectory>.Instance;
 
     public Task<bool> ExistsAsync(string path) => Task.Run(() => Directory.Exists(path));
+    public Task CreateDirectoryAsync(string path) => Task.Run(() => Directory.CreateDirectory(path));
 
     public Task<string[]> GetFilesAsync(string path) => Task.Run(() => Directory.GetFiles(path));
     public Task<string[]> GetFilesAsync(string path, string searchPattern) => Task.Run(() => Directory.GetFiles(path, searchPattern));

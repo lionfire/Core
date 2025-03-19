@@ -7,13 +7,18 @@ using System.Threading.Tasks;
 
 namespace LionFire.Reactive.Persistence;
 
-// Thoughts: Listen could be a separate interface
+//public interface IObservableData<TKey, TValue> 
+//    where TKey : notnull
+//    where TValue : notnull
+//{
+//}
 
 public interface IObservableReader<TKey, TValue> : IObservableReader<TKey, TValue, TKey>
     where TKey : notnull
     where TValue : notnull
 ;
 
+// Thoughts: Listen could be a separate interface
 public interface IObservableReader<TKey, TValue, TMetadata>
     where TKey : notnull
     where TValue : notnull
