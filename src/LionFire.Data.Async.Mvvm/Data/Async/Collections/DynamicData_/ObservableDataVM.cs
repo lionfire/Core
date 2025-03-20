@@ -3,6 +3,7 @@ using DynamicData.Kernel;
 using LionFire.Data.Collections;
 using LionFire.Ontology;
 using LionFire.Reactive.Persistence;
+using LionFire.Reflection;
 using LionFire.Structures.Keys;
 using ReactiveUI;
 using System.Reactive;
@@ -26,6 +27,7 @@ namespace LionFire.Data.Mvvm;
 /// <typeparam name="TValueVM"></typeparam>
 public partial class ObservableDataVM<TKey, TValue, TValueVM> : ReactiveObject
     //, IInjectable<Func<TKey, TValue, TValueVM>>
+    , ICreatesAsyncVM<TValue>
     where TKey : notnull
     where TValue : notnull
     where TValueVM : notnull
@@ -83,7 +85,7 @@ public partial class ObservableDataVM<TKey, TValue, TValueVM> : ReactiveObject
                         {
                             return EffectiveVMFactory(key, val);
                         }
-                        catch(Exception ex)
+                        catch (Exception ex)
                         {
                             Debug.WriteLine("ERROR: VMFactory failed: " + ex.ToString()); // TODO Log or throw somehow
                             throw;
@@ -98,7 +100,7 @@ public partial class ObservableDataVM<TKey, TValue, TValueVM> : ReactiveObject
         }
     }
     private IObservableReader<TKey, TValue>? data;
-    
+
 
     CompositeDisposable readerDisposables = new();
 
@@ -132,5 +134,31 @@ public partial class ObservableDataVM<TKey, TValue, TValueVM> : ReactiveObject
     private IObservableCache<TValueVM, TKey>? _items;
 
     public bool ShowRefresh { get; set; }
-}
 
+    #region Creation
+
+    public IEnumerable<Type> CreatableTypes
+    {
+        get => [.. (creatableTypes ?? (Type[])[]), .. (CanCreateValueType ? (Type[])[typeof(TValue)] : [])];
+        set => creatableTypes = value;
+    }
+    private IEnumerable<Type>? creatableTypes;
+
+    public bool CanCreateValueType { get; set; }
+
+    public ReactiveCommand<ActivationParameters, Task<TValue>> Create => throw new NotImplementedException();
+
+    #endregion
+
+    #region Read Only vs Allow Writes from user
+
+    public EditMode AllowedEditModes { get; set; }
+
+    public bool CanCreate => AllowedEditModes.CanCreate();
+    public bool CanRename => AllowedEditModes.CanRename();
+    public bool CanDelete => AllowedEditModes.CanDelete();
+    public bool CanUpdate => AllowedEditModes.CanUpdate();
+
+    #endregion
+
+}

@@ -12,9 +12,12 @@
 		<PackageReference Include="OpenIddict.Client.SystemIntegration" />
 		<PackageReference Include="OpenIddict.Client.SystemNetHttp" />
 		<PackageReference Include="OpenIddict.Client.WebIntegration" />
-		<PackageReference Include="Microsoft.AspNetCore.Mvc.Core"  />
+		<PackageReference Include="Microsoft.AspNetCore.Mvc.Core" />
 
 
 		<PackageReference Include="OpenIddict.EntityFrameworkCore" />
+
+
+		<PackageReference Include="System.IdentityModel.Tokens.Jwt" />
 	</ItemGroup>
 </Project>

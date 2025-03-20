@@ -63,7 +63,7 @@ public abstract partial class AsyncKeyedXCollectionVMBase<TKey, TValue, TValueVM
     [ReactiveUI.SourceGenerators.Reactive]
     private bool _canCreate;
 
-    public IEnumerable<Type>? CreatableTypes { get; set; }
+    public IEnumerable<Type> CreatableTypes { get; set; }
 
     protected virtual void OnCreated(TValue value) { }
 

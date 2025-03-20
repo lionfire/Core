@@ -12,14 +12,14 @@
 
 <MudToolBar>
 
-    @if (CreatableTypes != null && CreatableTypes.Any())
+    @if (ViewModel!.CanCreate && ViewModel!.CreatableTypes.Any())
     {
         if (ViewModel is ICreatesAsyncVM<TValue> createsValue)
         {
             <MudMenu Class="" Label="Add" Icon="@Icons.Material.Filled.Add" Variant="Variant.Outlined" Color="Color.Success"
                      Dense
                      AnchorOrigin="Origin.BottomLeft">
-                @foreach (var t in CreatableTypes)
+                @foreach (var t in ViewModel!.CreatableTypes)
                 {
                     <MudMenuItem OnClick=@(() => createsValue.Create.Execute(t).Subscribe())>
                         @DisplayNameUtilsX.DisplayNameForType(t)

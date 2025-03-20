@@ -72,6 +72,25 @@ public partial class ObservableDataView<TKey, TValue, TValueVM>
     //public IEnumerable<TValue>? Items { get; set; }
     //public IEnumerable<TValue>? EffectiveItems { get; private set; }
 
+    //[Parameter]
+    //public bool AllowCreate { get; set; }
+    //[Parameter]
+    //public bool AllowDelete { get; set; }
+    //[Parameter]
+    //public bool AllowEdit { get; set; }
+
+    [Parameter]
+    public EditMode AllowedEditModes { get; set; }
+
+
+    #region MudDataGrid passthrough
+
+    [Parameter]
+    public DataGridEditMode EditMode { get; set; } = DataGridEditMode.Form;
+
+    #endregion
+
+
     [Parameter]
     public Func<TKey, Optional<TValue>, TValueVM>? VMFactory { get; set; }
 
@@ -125,7 +144,12 @@ public partial class ObservableDataView<TKey, TValue, TValueVM>
     //public Func<TValueVM, object>? ValueSelector { get;set;} = null;
 
     [Parameter]
-    public IEnumerable<Type>? CreatableTypes { get; set; } // TODO: Move to ICreatesAsyncVM<TValue>
+    public IEnumerable<Type>? CreatableTypes { get; set; }
+
+    [Parameter]
+    public bool CanCreateValueType { get; set; } = true;
+
+
 
     //[Parameter]
     //public bool ShowRefresh { get; set; }
@@ -259,6 +283,10 @@ public partial class ObservableDataView<TKey, TValue, TValueVM>
     {
         await base.OnParametersSetAsync();
 
+        ViewModel!.CreatableTypes = CreatableTypes;
+        ViewModel!.CanCreateValueType = CanCreateValueType;
+
+
         ArgumentNullException.ThrowIfNull(ViewModel);
 
         ViewModel!.VMFactory = VMFactory;
@@ -385,7 +413,6 @@ public partial class ObservableDataView<TKey, TValue, TValueVM>
     {
         await base.OnInitializedAsync();
 
-
         //    new List<MudDataGridColumn<TValueVM>>
         //{
         //    new MudDataGridColumn<YourDataType>
@@ -442,7 +469,6 @@ public partial class ObservableDataView<TKey, TValue, TValueVM>
     //}
 
     #region Retrieve
-
 
     //public bool CanResolve => AsyncCollectionCache != null;
 
@@ -504,19 +530,13 @@ public partial class ObservableDataView<TKey, TValue, TValueVM>
     }
     ConcurrentDictionary<Type, object>? components;
 
-    //[Reactive]
-    public bool CanCreate { get; set; }
-
     public void OnCreate(Type t)
     {
         Console.WriteLine("Create: " + t);
         throw new NotImplementedException();
         //ViewModel.Create.Execute(t).Subscribe();
     }
-
-
 }
-
 
 //public partial class ListView<TItem, TValue, TValueVM> : IDisposable
 //    where TItem : notnull
@@ -524,3 +544,4 @@ public partial class ObservableDataView<TKey, TValue, TValueVM>
 //    [Parameter]
 //    public IEnumerable<TValue>? Items { get; set; }
 //}
+
