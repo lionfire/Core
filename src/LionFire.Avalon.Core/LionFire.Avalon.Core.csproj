@@ -1,0 +1,158 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>net48</TargetFramework>
+    <OutputType>Library</OutputType>
+    <RootNamespace>LionFire.Avalon</RootNamespace>
+    <AssemblyName>LionFire.Avalon</AssemblyName>
+    <BaseIntermediateOutputPath>obj\</BaseIntermediateOutputPath>
+    <BaseOutputPath>$(BuildRoot)\bin\$(Configuration)\$(Platform)\$(MSBuildProjectName)\</BaseOutputPath>
+    <OutputPath>$(BuildRoot)\bin\$(Configuration)\$(Platform)\$(MSBuildProjectName)\</OutputPath>
+    <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
+    <UseWindowsForms>true</UseWindowsForms>
+    <UseWPF>true</UseWPF>
+    <ImportWindowsDesktopTargets>true</ImportWindowsDesktopTargets>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <BaseIntermediateOutputPath>obj\</BaseIntermediateOutputPath>
+    <LangVersion>8.0</LangVersion>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <LangVersion>8.0</LangVersion>
+    <IntermediateOutputPath>C:\Users\ja\AppData\Local\Temp\vsEB0C.tmp\Release\</IntermediateOutputPath>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x86'">
+    <CodeAnalysisLogFile>bin\Debug\LionFire.Avalon.dll.CodeAnalysisLog.xml</CodeAnalysisLogFile>
+    <CodeAnalysisInputAssembly>bin\x86\Debug\LionFire.Avalon.dll</CodeAnalysisInputAssembly>
+    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+    <CodeAnalysisRuleSetDirectories>;C:\Program Files (x86)\Microsoft Visual Studio 10.0\Team Tools\Static Analysis Tools\\Rule Sets</CodeAnalysisRuleSetDirectories>
+    <CodeAnalysisIgnoreBuiltInRuleSets>false</CodeAnalysisIgnoreBuiltInRuleSets>
+    <CodeAnalysisRuleDirectories>;C:\Program Files (x86)\Microsoft Visual Studio 10.0\Team Tools\Static Analysis Tools\FxCop\\Rules</CodeAnalysisRuleDirectories>
+    <CodeAnalysisIgnoreBuiltInRules>false</CodeAnalysisIgnoreBuiltInRules>
+    <Optimize>true</Optimize>
+    <WarningsAsErrors>0108</WarningsAsErrors>
+    <LangVersion>8.0</LangVersion>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|x86'">
+    <DefineConstants></DefineConstants>
+    <CodeAnalysisLogFile>bin\Release\LionFire.Avalon.dll.CodeAnalysisLog.xml</CodeAnalysisLogFile>
+    <CodeAnalysisInputAssembly>bin\x86\Release\LionFire.Avalon.dll</CodeAnalysisInputAssembly>
+    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+    <CodeAnalysisRuleSetDirectories>;C:\Program Files (x86)\Microsoft Visual Studio 10.0\Team Tools\Static Analysis Tools\\Rule Sets</CodeAnalysisRuleSetDirectories>
+    <CodeAnalysisIgnoreBuiltInRuleSets>false</CodeAnalysisIgnoreBuiltInRuleSets>
+    <CodeAnalysisRuleDirectories>;C:\Program Files (x86)\Microsoft Visual Studio 10.0\Team Tools\Static Analysis Tools\FxCop\\Rules</CodeAnalysisRuleDirectories>
+    <CodeAnalysisIgnoreBuiltInRules>false</CodeAnalysisIgnoreBuiltInRules>
+    <WarningsAsErrors>0108</WarningsAsErrors>
+    <LangVersion>8.0</LangVersion>
+    <IntermediateOutputPath>C:\Users\ja\AppData\Local\Temp\vsEB0C.tmp\x86\Release\</IntermediateOutputPath>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="AppUpdate, Version=1.0.0.1, Culture=neutral, PublicKeyToken=d1f1d1f19f9e5a56, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\Valor\Lib\NAppUpdate\0.2.1-j\AppUpdate.dll</HintPath>
+    </Reference>
+    <Reference Include="AvalonDock, Version=1.2.2691.0, Culture=neutral, PublicKeyToken=85a1e0ada7ec13e4, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\Valor\Lib\WPF\AvalonDock\AvalonDock.dll</HintPath>
+    </Reference>
+    <Reference Include="Aviad.WPF.Controls">
+      <HintPath>..\..\..\Valor\Lib\WPF\Aviad WPF Controls\Aviad.WPF.Controls.dll</HintPath>
+    </Reference>
+    <Reference Include="Blacklight.WPFControls, Version=4.1.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\Valor\Lib\WPF\Blacklight\4.2 WPF\CLR40\Release\Blacklight.WPFControls.dll</HintPath>
+    </Reference>
+    <Reference Include="DynamicDataDisplay">
+      <HintPath>..\..\..\Valor\Lib\WPF\D3\Current\Release\DynamicDataDisplay.dll</HintPath>
+    </Reference>
+    <Reference Include="J832.Common">
+      <HintPath>..\..\..\Valor\Lib\J832 BagOTricks\J832.Common.dll</HintPath>
+    </Reference>
+    <Reference Include="J832.Wpf.BagOTricksLib">
+      <HintPath>..\..\..\Valor\Lib\J832 BagOTricks\J832.Wpf.BagOTricksLib.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Practices.Prism, Version=4.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\Valor\Lib\Microsoft\Practices\Microsoft.Practices.Prism.dll</HintPath>
+    </Reference>
+    <Reference Include="Odyssey, Version=1.4.22.36909, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\Valor\Lib\WPF\Odyssey\Odyssey.dll</HintPath>
+    </Reference>
+    <Reference Include="PixelLab.Common, Version=5.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\Valor\Lib\WPF\Bot\Release\PixelLab.Common.dll</HintPath>
+    </Reference>
+    <Reference Include="PixelLab.Core, Version=5.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\Valor\Lib\WPF\Bot\Release\PixelLab.Core.dll</HintPath>
+    </Reference>
+    <Reference Include="PresentationFramework.Aero" />
+    <Reference Include="System.Activities.Presentation" />
+    <Reference Include="System.Reactive, Version=1.1.11111.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\Valor\Lib\Microsoft\Reactive\Current\.NETFramework\v4.0\System.Reactive.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Windows.Controls.WpfPropertyGrid">
+      <HintPath>..\..\..\Valor\Lib\WPF\WPG\Current\Release\System.Windows.Controls.WpfPropertyGrid.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Windows.Interactivity, Version=4.5.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\Valor\Lib\Microsoft\Blend\v4.5\System.Windows.Interactivity.dll</HintPath>
+    </Reference>
+    <Reference Include="Transitionals, Version=1.2.0.0, Culture=neutral, PublicKeyToken=4747a3d6bcb35c80, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\Valor\Lib\WPF\Transitionals\14784 CLR40\Transitionals.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+  <ItemGroup>
+    <None Update="StartupScript.py">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Licensing\LionFire.Avalon-License.txt">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Features\Licensing\" />
+    <Folder Include="ListBox\" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\..\valor\Dycen\Lionfire.Utility\LionFire.Utility.csproj" />
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="Microsoft.CSharp" />
+    <PackageReference Include="Microsoft.Extensions.Logging.Abstractions"></PackageReference>
+    <PackageReference Include="System.Data.DataSetExtensions" />
+    <!--<PackageReference Include="System.Data.DataSetExtensions"  />-->
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Remove="Alerting\IAlerter.cs" />
+    <Compile Remove="Controls\NumericUpDownTextBox.xaml.cs" />
+    <Compile Remove="Controls\UpDownTextBlock.xaml.cs" />
+    <Compile Remove="Tabs\LionSelector.cs" />
+    <Page Remove="Controls\NumericUpDownTextBox.xaml" />
+    <Page Remove="Controls\UpDownTextBlock.xaml" />
+    <Page Remove="Resources\Buttons.xaml" />
+    <Page Remove="Resources\Colours.xaml" />
+    <Page Remove="Resources\DateTime.xaml" />
+    <Page Remove="Resources\default-lfa.xaml" />
+    <Page Remove="Resources\Expanders.xaml" />
+    <Page Remove="Resources\GelButton.xaml" />
+    <Page Remove="Resources\GlassButton.xaml" />
+    <Page Remove="Resources\JButton.xaml" />
+    <Page Remove="Resources\LionButtons.xaml" />
+    <Page Remove="Resources\LionListBox.xaml" />
+    <Page Remove="Resources\Listbox.Blend.xaml" />
+    <Page Remove="Resources\Palette.xaml" />
+    <Page Remove="Resources\RoundedButton.xaml" />
+    <Page Remove="Resources\Scrollbar.xaml" />
+    <Page Remove="Resources\Text.xaml" />
+    <Page Remove="Resources\Windowing.xaml" />
+    <Page Remove="Shell\WpfLionFireShell.xaml" />
+  </ItemGroup>
+  <PropertyGroup>
+    <PostBuildEvent>if  "$(PlatformName)" == "x86" powershell -Command "$psi = New-Object System.Diagnostics.ProcessStartInfo;$psi.FileName='C:\Src\valor\Publishing\]] SetVersion().cs';$psi.WindowStyle = [System.Diagnostics.ProcessWindowStyle]::Hidden;[System.Diagnostics.Process]::Start($psi)"</PostBuildEvent>
+  </PropertyGroup>
+</Project>

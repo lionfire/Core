@@ -1,0 +1,40 @@
+﻿<UserControl x:Class="LionFire.Avalon.EditableTextBlock"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="clr-namespace:LionFire.Avalon"
+                x:Name="mainControl">
+<!--Retrieved from http://www.codeproject.com/Articles/31592/Editable-TextBlock-in-WPF-for-In-place-Editing#xx
+Under CPOL-->
+
+    <UserControl.Resources>
+        
+<!--<DataTemplate x:Key="DefaultEditModeTemplate">
+            <TextBox KeyDown="TextBox_KeyDown" Loaded="TextBox_Loaded" LostFocus="TextBox_LostFocus"
+                     Text="{Binding ElementName=mainControl, Path=Text, UpdateSourceTrigger=PropertyChanged}"
+                     Margin="0" BorderThickness="1" />
+        </DataTemplate>
+
+        <DataTemplate x:Key="DefaultDisplayModeTemplate">
+            <TextBlock Background="Green" Text="{Binding ElementName=mainControl, Path=FormattedText}" Margin="5,3,5,3" MouseUp="TextBlock_MouseUp_1"/>
+        </DataTemplate>-->
+        
+<!--<ResourceDictionary>-->
+    <!--<ResourceDictionary.MergedDictionaries>
+        <lfa:SharedResourceDictionary Source=""/>
+    </ResourceDictionary.MergedDictionaries></ResourceDictionary>-->
+        
+    </UserControl.Resources>
+    <!--<UserControl.Triggers>
+        <Trigger Property="IsInEditMode" Value="True">
+            <Setter Property="ContentTemplate" Value="{Binding EditModeTemplate, ElementName=mainControl}"  />
+            <Setter Property="ContentTemplate" Value="{StaticResource DefaultEditModeTemplate}"  />
+        </Trigger>
+        <Trigger Property="IsInEditMode" Value="False">
+            <Setter Property="ContentTemplate" Value="{Binding DisplayModeTemplate, ElementName=mainControl}" />
+            <Setter Property="ContentTemplate" Value="{StaticResource DefaultDisplayModeTemplate}"  />
+        </Trigger>
+    </UserControl.Triggers>
+    <ContentControl>
+        
+    </ContentControl>-->
+</UserControl>

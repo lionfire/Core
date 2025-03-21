@@ -1,0 +1,116 @@
+﻿<ResourceDictionary 
+  xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+  xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" >
+
+    <!-- 3rd party, Retrieved from http://mark-dot-net.blogspot.com/2008/03/gel-button-template-in-silverlight.html -->
+    
+    <LinearGradientBrush x:Key="GreenGradientBrush" StartPoint="0,0" EndPoint="0,1">
+        <GradientStop Offset="0" Color="#006700"/>
+        <GradientStop Offset="1" Color="#00ef00"/>
+    </LinearGradientBrush>
+    <LinearGradientBrush x:Key="RedGradientBrush" StartPoint="0,0" EndPoint="0,1">
+        <GradientStop Offset="0" Color="#774040"/>
+        <GradientStop Offset="1" Color="#ef4040"/>
+    </LinearGradientBrush>
+    <LinearGradientBrush x:Key="BlueGradientBrush" StartPoint="0,0" EndPoint="0,1">
+        <GradientStop Offset="0" Color="#404077"/>
+        <GradientStop Offset="1" Color="#4040ef"/>
+    </LinearGradientBrush>
+    <LinearGradientBrush x:Key="CyanGradientBrush" StartPoint="0,0" EndPoint="0,1">
+        <GradientStop Offset="0" Color="#007777"/>
+        <GradientStop Offset="1" Color="#00efef"/>
+    </LinearGradientBrush>
+    <LinearGradientBrush x:Key="YellowGradientBrush" StartPoint="0,0" EndPoint="0,1">
+        <GradientStop Offset="0" Color="#777740"/>
+        <GradientStop Offset="1" Color="Yellow"/>
+    </LinearGradientBrush>
+    <LinearGradientBrush x:Key="MagentaGradientBrush" StartPoint="0,0" EndPoint="0,1">
+        <GradientStop Offset="0" Color="#770077"/>
+        <GradientStop Offset="1" Color="#ef00ef"/>
+    </LinearGradientBrush>
+    <LinearGradientBrush x:Key="OrangeGradientBrush" StartPoint="0,0" EndPoint="0,1">
+        <GradientStop Offset="0" Color="DarkOrange"/>
+        <GradientStop Offset="1" Color="Orange"/>
+    </LinearGradientBrush>
+
+    <Style TargetType="Button" x:Key="GelButton">
+        <Setter Property="Background" Value="{StaticResource GreenGradientBrush}" />
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="Button">
+                    <Grid x:Name="RootElement">
+                        <Grid.Resources>
+                            <Storyboard x:Key='MouseOver State'>
+                                <DoubleAnimation Storyboard.TargetName='MainButtonScale'
+                                Storyboard.TargetProperty='ScaleX' To='1.03'
+                                Duration='0:0:0.05'/>
+                                <DoubleAnimation Storyboard.TargetName='MainButtonScale'
+                                Storyboard.TargetProperty='ScaleY' To='1.03'
+                                Duration='0:0:0.05'/>
+                            </Storyboard>
+                            <Storyboard x:Key='Normal State'>
+                            </Storyboard>
+                            <Storyboard x:Key='Pressed State'>
+                                <DoubleAnimation Storyboard.TargetName='MainButtonTranslate'
+                                Storyboard.TargetProperty='X' To='1.0'
+                                Duration='0:0:0.05'/>
+                                <DoubleAnimation Storyboard.TargetName='MainButtonTranslate'
+                                Storyboard.TargetProperty='Y' To='1.0'
+                                Duration='0:0:0.05'/>
+                            </Storyboard>
+                            <Storyboard x:Key="Disabled State">
+                                <DoubleAnimation Duration="0:0:0"
+                                Storyboard.TargetName="Disabled"
+                                Storyboard.TargetProperty="Opacity"
+                                To="1" />
+                            </Storyboard>
+                        </Grid.Resources>
+
+                        <!-- drop shadow - needs to be blurred for correct effect -->
+                        <Rectangle Fill="#40000000" Margin="1,1,0,0" RadiusX="6" RadiusY="6" />
+
+                        <!-- main rect -->
+                        <Grid x:Name="mainButton"
+                          Margin="0,0,1,1"
+                          RenderTransformOrigin="0.5,0.5">
+                            <Grid.RenderTransform>
+                                <TransformGroup>
+                                    <TranslateTransform x:Name="MainButtonTranslate"
+                                                X="0.0" Y="0.0"/>
+                                    <ScaleTransform
+                                x:Name="MainButtonScale"
+                                ScaleX="1.0" ScaleY="1.0"
+                                />
+                                </TransformGroup>
+
+                            </Grid.RenderTransform>
+                            <Rectangle x:Name="mainRect"
+                               Fill="{TemplateBinding Background}"
+                               RadiusX="6" RadiusY="6">
+                            </Rectangle>
+
+                            <!-- transparent rect -->
+                            <Rectangle x:Name="glowRect" Margin="1,1,1,1" RadiusX="5" RadiusY="5">
+                                <Rectangle.Fill>
+                                    <LinearGradientBrush StartPoint="0,0" EndPoint="0,1">
+                                        <GradientStop Offset="0" Color="#DFFFFFFF"/>
+                                        <GradientStop Offset="1" Color="#00FFFFFF"/>
+                                    </LinearGradientBrush>
+                                </Rectangle.Fill>
+                            </Rectangle>
+
+                            <ContentPresenter HorizontalAlignment="Center"
+                             Margin="4,0,4,0"
+                             
+                             Content="{TemplateBinding Content}"
+                             VerticalAlignment="Center" />
+<!--Foreground="{TemplateBinding Foreground}"-->
+                        </Grid>
+                    </Grid>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+
+</ResourceDictionary>

@@ -1,0 +1,138 @@
+﻿<UserControl x:Class="LionFire.Avalon.AlertAdorner"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             mc:Ignorable="d" 
+             x:Name="uc"
+             xmlns:black="clr-namespace:Blacklight.Controls;assembly=Blacklight.WPFControls"
+              xmlns:sys="clr-namespace:System;assembly=mscorlib"
+             xmlns:lfa="clr-namespace:LionFire.Avalon"
+             xmlns:lfaL="clr-namespace:LionFire.Avalon"
+             d:DesignHeight="600" d:DesignWidth="600">
+    <UserControl.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                 <lfaL:DesignTimeResourceDictionary DesignTimeSource="pack://application:,,,/LionFire.Avalon;component/Resources/default-lfa.xaml"/>
+                <!--<lfa:SharedResourceDictionary Source="pack://application:,,,/LionFire.Avalon;component/Resources/default-lfa.xaml"/>-->
+                <!--<lfa:SharedResourceDictionary Source="pack://application:,,,/LionFire.Avalon;component/Resources/Fonts.xaml"/>
+                <lfa:SharedResourceDictionary Source="pack://application:,,,/LionFire.Avalon;component/Resources/Palette.xaml"/>
+                <lfa:SharedResourceDictionary Source="pack://application:,,,/LionFire.Avalon;component/Resources/Text.xaml"/>
+                <lfa:SharedResourceDictionary Source="pack://application:,,,/LionFire.Avalon;component/Resources/Buttons.xaml"/>-->
+
+                <!--<lfa:SharedResourceDictionary Source="pack://application:,,,/LionFire.Avalon;component/Resources/LionButtons.xaml"/>-->
+                <!--<lfa:SharedResourceDictionary Source="pack://application:,,,/LionFire.Avalon;component/Themes/LionButtons.Generic.xaml"/>-->
+            </ResourceDictionary.MergedDictionaries>
+
+            <lfaL:BoolToHorizontalAlignmentConverter x:Key="BoolToHorizontalAlignmentConverter"/>
+            <!--Background="#8000"-->
+
+            <SolidColorBrush x:Key="AlertScreenBG" Color="#8000"/>
+            
+            
+            <RadialGradientBrush x:Key="AlertBG" Center="0.5 .5" GradientOrigin="1.1 1">
+                <!--<GradientStop Offset="0" Color="#F00F"/>-->
+                <GradientStop Offset="0" Color="#FF22"/>
+                <GradientStop Offset="1" Color="#F000"/>
+            </RadialGradientBrush>
+            <!--<SolidColorBrush x:Key="AlertBG" Color="#F00F"/>-->
+            <!--<SolidColorBrush x:Key="AlertHeaderBG" Color="#F411"/>-->
+            <LinearGradientBrush x:Key="AlertHeaderBG" EndPoint="0 1">
+                <GradientStop Offset="-0.0" Color="#FF22"/>
+                <GradientStop Offset="1" Color="#0000"/>
+            </LinearGradientBrush>
+            
+            <SolidColorBrush x:Key="AlertFG" Color="#FFFF"/>
+            <SolidColorBrush x:Key="AlertBorder" Color="#FF88"/>
+
+            <sys:Double x:Key="AlertTitleFontSize">24</sys:Double>
+            <sys:Double x:Key="AlertMessageFontSize">14</sys:Double>
+            <sys:Double x:Key="AlertDetailFontSize">10</sys:Double>
+            <Thickness x:Key="AlertPadding">20</Thickness>
+
+            <Style x:Key="AlertCloseLionButton" TargetType="lfaL:LionButton">
+                <Setter Property="CornerRadius" Value="8 8 3 3"/>
+                <Setter Property="HorizontalAlignment" Value="Center"/>
+                <Setter Property="Background" Value="Black"/>
+                <Setter Property="CornerRadius" Value="8"/>
+                <Setter Property="GlassOpacity" Value="0.3"/>
+                <Setter Property="Padding" Value="20 20"/>
+                <Setter Property="Margin" Value="20"/>
+                <Setter Property="FontFamily" Value="{DynamicResource ButtonFont}"/>
+            </Style>
+
+            <Style x:Key="AlertText" TargetType="TextBlock">
+                <Setter Property="Foreground" Value="{DynamicResource AlertFG}"/>
+                <Setter Property="FontFamily" Value="{DynamicResource LargeFont}"/>
+                <!--<Setter Property="FontFamily" Value="Arial"/>-->
+                <Setter Property="Margin" Value="{DynamicResource AlertPadding}"/>
+                <Setter Property="TextWrapping" Value="Wrap"/>
+            </Style>
+
+            <Style x:Key="AlertTitleText" TargetType="TextBlock" BasedOn="{StaticResource AlertText}">
+                <Setter Property="HorizontalAlignment" Value="Center"/>
+                <Setter Property="TextAlignment" Value="Center"/>
+                <Setter Property="TextWrapping" Value="Wrap"/>
+            </Style>
+
+            <Style x:Key="AlertDetailText" TargetType="TextBlock" BasedOn="{StaticResource AlertText}">
+                <Setter Property="Margin" Value="10 5"/>
+                <Setter Property="TextWrapping" Value="Wrap"/>
+                <Setter Property="FontFamily" Value="Arial"/>
+            </Style>
+
+            <lfaL:BoolToVisibilityConverter x:Key="bvc"/>
+        </ResourceDictionary>
+    </UserControl.Resources>
+
+    <Grid Background="{DynamicResource AlertScreenBG}">
+        
+        <lfaL:ClippingBorder 
+            Background="{DynamicResource AlertBG}" Margin="50" CornerRadius="7" Padding="0" BorderBrush="{DynamicResource AlertBorder}" BorderThickness="3"
+            MaxWidth="550" MaxHeight="650" MinWidth="400" HorizontalAlignment="Center"  VerticalAlignment="Top"
+            >
+            <lfaL:ClippingBorder.Effect>
+                <DropShadowEffect Color="White" BlurRadius="18"  Direction="-90" ShadowDepth="1"/>
+            </lfaL:ClippingBorder.Effect>
+
+            <DockPanel>
+
+                <DockPanel x:Name="ButtonsPanel" DockPanel.Dock="Bottom" >
+                    <lfaL:LionButton x:Name="CloseButton" Click="CloseButton_Click" Style="{StaticResource AlertCloseLionButton}">Close</lfaL:LionButton>
+                </DockPanel>
+
+                <lfaL:ClippingBorder 
+            Background="{StaticResource AlertHeaderBG}" Margin="0" Padding="20" BorderBrush="Black" BorderThickness="1 1 1 3"
+                    DockPanel.Dock="Top" Visibility="{Binding HasTitle, Converter={StaticResource bvc}}"
+                    >
+                    <TextBlock Style="{DynamicResource AlertTitleText}" FontSize="{DynamicResource AlertTitleFontSize}" Text="{Binding Title}" />
+                </lfaL:ClippingBorder>
+
+                <TextBlock Style="{DynamicResource AlertText}"  Visibility="{Binding HasMessage, Converter={StaticResource bvc}}"
+                           DockPanel.Dock="Top"
+                           HorizontalAlignment="{Binding HasTitle, Converter={StaticResource BoolToHorizontalAlignmentConverter}}"
+                           FontSize="{DynamicResource AlertMessageFontSize}" Text="{Binding Message}" />
+
+
+
+                <Expander x:Name="DetailExpander" Foreground="#9FFF"  DockPanel.Dock="Bottom" Header="Detail" ExpandDirection="Up"  VerticalAlignment="Bottom" Padding="10 0" FontFamily="{DynamicResource SmallFont}" Visibility="{Binding HasDetail, Converter={StaticResource bvc}}">
+                    <ScrollViewer ScrollViewer.VerticalScrollBarVisibility="Auto">
+                    <StackPanel>
+                        <TextBlock Style="{DynamicResource AlertDetailText}" FontSize="{DynamicResource AlertDetailFontSize}" Text="{Binding Detail}"/>
+                        <TextBlock Style="{DynamicResource AlertDetailText}" FontSize="{DynamicResource AlertDetailFontSize}" Text="{Binding ExceptionString}"/>
+                        </StackPanel>
+                    </ScrollViewer>
+                </Expander>
+
+                <lfa:ClippingBorder BorderBrush="#FFF" BorderThickness="3" DockPanel.Dock="Bottom"  Margin="10" Padding="10" Visibility="{Binding ShowTextEntry, Converter={StaticResource bvc}}"
+                                    CornerRadius="2"
+                                    >
+                    <TextBox x:Name="TextBox" Text="{Binding DialogResult.TextEntry}" Foreground="#FFF" FontFamily="{DynamicResource TextBoxFont}" />
+                </lfa:ClippingBorder>
+
+            </DockPanel>
+        </lfaL:ClippingBorder>
+
+
+    </Grid>
+</UserControl>
