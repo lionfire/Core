@@ -1,0 +1,25 @@
+@page "/account"
+@using Microsoft.AspNetCore.Components.Authorization
+
+<AuthorizeView>
+    <Authorized>
+        <div>
+            @(context.User?.Claims?.FirstOrDefault()?.Value ?? "(null)")
+        </div>
+        @foreach(var claim in context.User?.Claims ?? [])
+        {
+            <div>@claim.Type: @claim.Value</div>
+        }
+        
+    </Authorized>
+    <NotAuthorized>
+        <div>(Not logged in)</div>
+    </NotAuthorized>
+</AuthorizeView>
+
+@code {
+    protected override Task OnInitializedAsync()
+    {
+        return base.OnInitializedAsync();
+    }
+}

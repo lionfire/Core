@@ -49,6 +49,7 @@
 
   <ItemGroup>
     <Folder Include="ObjectExplorer\" />
+    <Folder Include="Pages\Account\" />
   </ItemGroup>
 
 </Project>

@@ -27,9 +27,9 @@ public static class OpenIddictClientWebIntegrationBuilderX
                 //ClientId = ..., // Set by application
                 //ClientSecret = , // If required (not useful for public clients, can be useful for internally-hosted servers)
                 //RedirectUri = new Uri(), 
+                RedirectUri = new Uri("signin-oidc", UriKind.Relative),
                 #endregion
-                ProviderName = "LionFire"
-
+                ProviderName = "LionFire",
             };
 
             if (scopes != null)
