@@ -10,6 +10,7 @@ using System.Reactive;
 using System.Reactive.Disposables;
 using System.Reactive.Linq;
 using System.Reactive.Subjects;
+using System.Text;
 
 namespace LionFire.Data.Mvvm;
 
@@ -94,7 +95,6 @@ public partial class ObservableDataVM<TKey, TValue, TValueVM> : ReactiveObject
                     .AsObservableCache()
                     .DisposeWith(readerDisposables);
 
-                itemsChangedSubject.OnNext(Unit.Default);
                 data.ListenAll().DisposeWith(readerDisposables);
             }
         }
@@ -146,11 +146,35 @@ public partial class ObservableDataVM<TKey, TValue, TValueVM> : ReactiveObject
 
     public bool CanCreateValueType { get; set; }
 
-    public ReactiveCommand<ActivationParameters, Task<TValue>> Create => throw new NotImplementedException();
+    public ReactiveCommand<ActivationParameters, Task<TValue>> Create
+            => ReactiveCommand.Create<ActivationParameters, Task<TValue>>(async ap =>
+            {
+                var key = ".~New~" + GenerateRandomName();
+                var value = InstantiateNew();
+                await DataWriter!.Write((TKey)(object)key, value);
+                return value;
+            }, canExecute: Observable.Return(DataWriter != null && typeof(TKey) == typeof(string)));
+
+    public string GenerateRandomName(int length = 10)
+    {
+        string allowedCharacters = "ABCDEFGHJKLMNPQRTUVWXYZ2346789";
+
+        var sb = new StringBuilder();
+        for (int i = 0; i < length; i++)
+        {
+            sb.Append(allowedCharacters[Random.Shared.Next(0, allowedCharacters.Length)]);
+        }
+        return sb.ToString();
+    }
+
+    public TValue InstantiateNew()
+    {
+        return Activator.CreateInstance<TValue>();
+    }
 
     #endregion
 
-    #region Read Only vs Allow Writes from user
+    #region AllowedEditModes
 
     public EditMode AllowedEditModes { get; set; }
 

@@ -74,7 +74,9 @@ where TValue : notnull
 
             FileSystemEventHandler onChanged = async (s, e) =>
             {
-                if (e.ChangeType == WatcherChangeTypes.Changed || e.ChangeType == WatcherChangeTypes.Created || e.ChangeType == WatcherChangeTypes.Deleted)
+                if (e.ChangeType == WatcherChangeTypes.Changed 
+                || e.ChangeType == WatcherChangeTypes.Created 
+                || e.ChangeType == WatcherChangeTypes.Deleted)
                 {
                     try
                     {

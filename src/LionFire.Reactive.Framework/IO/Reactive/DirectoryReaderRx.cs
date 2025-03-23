@@ -1,5 +1,6 @@
 ﻿// ENH maybe: for now just support the one approach of nameless documents.  Uncommenting this would allow for the document file to carry the matching name of the parent directory, which may make for more ease of use in some situations (such as having multiple files open in an editor.)
 //#define DocumentWithMatchingKeyName
+using DynamicData;
 using DynamicData.Kernel;
 using LionFire.Ontology;
 using LionFire.Persistence.Filesystemlike;
@@ -12,6 +13,7 @@ using System.Reactive.Disposables;
 using System.Text.RegularExpressions;
 using System.Threading;
 using Path = System.IO.Path;
+using LionFire.Reactive;
 
 namespace LionFire.IO.Reactive;
 
@@ -115,7 +117,19 @@ public abstract class DirectoryReaderRx<TKey, TValue>
 
     #region State
 
-    public IObservableCache<TKey, TKey> Keys => keys.AsObservableCache();
+    public IObservableCache<TKey, TKey> Keys => keysWithSubscribeEvents ??=
+        keys
+            .ConnectOnDemand(v => v)
+            .PublishRefCountWithEvents(() =>
+            {
+                Debug.WriteLine("Keys subscribe");
+            }, () =>
+            {
+                Debug.WriteLine("Keys unsubscribe");
+            })
+            .AsObservableCache();
+    private IObservableCache<TKey, TKey>? keysWithSubscribeEvents;
+
     //IObservableList<TKey> IObservableReader<TKey, TValue>.Keys
     //{
     //    get

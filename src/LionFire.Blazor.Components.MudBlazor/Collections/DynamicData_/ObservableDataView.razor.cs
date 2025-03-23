@@ -283,7 +283,8 @@ public partial class ObservableDataView<TKey, TValue, TValueVM>
     {
         await base.OnParametersSetAsync();
 
-        ViewModel!.CreatableTypes = CreatableTypes;
+        ViewModel!.AllowedEditModes = AllowedEditModes;
+        ViewModel!.CreatableTypes = CreatableTypes ?? [];
         ViewModel!.CanCreateValueType = CanCreateValueType;
 
 
