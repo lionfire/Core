@@ -149,7 +149,7 @@ public partial class ObservableDataVM<TKey, TValue, TValueVM> : ReactiveObject
     public ReactiveCommand<ActivationParameters, Task<TValue>> Create
             => ReactiveCommand.Create<ActivationParameters, Task<TValue>>(async ap =>
             {
-                var key = ".~New~" + GenerateRandomName();
+                var key = "~New~" + GenerateRandomName();
                 var value = InstantiateNew();
                 await DataWriter!.Write((TKey)(object)key, value);
                 return value;

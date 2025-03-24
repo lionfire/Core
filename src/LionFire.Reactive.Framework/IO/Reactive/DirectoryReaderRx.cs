@@ -114,19 +114,104 @@ public abstract class DirectoryReaderRx<TKey, TValue>
 
     #endregion
 
+    #region Keys watcher
+
+    FileSystemWatcher? keysWatcher;
+
+    private void EnableKeysWatcher()
+    {
+        Debug.WriteLine("Keys subscribe: " + Dir.Path);
+
+        keysWatcher = new FileSystemWatcher(Dir.Path)
+        {
+            NotifyFilter = NotifyFilters.FileName | NotifyFilters.LastWrite,
+            Filter = $"*.{SecondExtension}{Extension}",
+            IncludeSubdirectories = Dir.Recursive,
+        };
+
+        keysWatcher.Created += OnFileCreated;
+        keysWatcher.Deleted += OnFileDeleted;
+        keysWatcher.Renamed += OnFileRenamed;
+        keysWatcher.Changed += OnFileChanged;
+        keysWatcher.EnableRaisingEvents = true;
+    }
+
+    private void DisableKeysWatcher()
+    {
+        Debug.WriteLine("Keys unsubscribe: " + Dir.Path);
+
+        if (keysWatcher != null)
+        {
+            keysWatcher.EnableRaisingEvents = false;
+            keysWatcher.Created -= OnFileCreated;
+            keysWatcher.Deleted -= OnFileDeleted;
+            keysWatcher.Renamed -= OnFileRenamed;
+            keysWatcher.Changed -= OnFileChanged;
+            keysWatcher.Dispose();
+            keysWatcher = null;
+        }
+    }
+
+
+    // REVIEW - REFACTOR into GetKeyForNameAndPath? How is this different?  No subdir support?
+    private Optional<TKey> KeysWatcher_GetKeyFromFileName(string fileName, string fullPath)
+        => GetKeyForNameAndPath(
+           Path.GetFileNameWithoutExtension(
+               Path.GetFileNameWithoutExtension(fileName))!,
+           fullPath);
+
+    private void OnFileCreated(object sender, FileSystemEventArgs e)
+    {
+        var key = KeysWatcher_GetKeyFromFileName(e.Name!, e.FullPath);
+        if (key.HasValue)
+        {
+            keys.AddOrUpdate(key.Value);
+        }
+    }
+
+    private void OnFileDeleted(object sender, FileSystemEventArgs e)
+    {
+        var key = KeysWatcher_GetKeyFromFileName(e.Name!, e.FullPath);
+        if (key.HasValue)
+        {
+            keys.RemoveKey(key.Value);
+        }
+    }
+
+    private void OnFileRenamed(object sender, RenamedEventArgs e)
+    {
+        var oldKey = KeysWatcher_GetKeyFromFileName(e.OldName!, e.OldFullPath);
+        var newKey = KeysWatcher_GetKeyFromFileName(e.Name!, e.FullPath);
+
+        if (oldKey.HasValue)
+        {
+            keys.RemoveKey(oldKey.Value);
+        }
+
+        if (newKey.HasValue)
+        {
+            keys.AddOrUpdate(newKey.Value);
+        }
+    }
+
+    private void OnFileChanged(object sender, FileSystemEventArgs e)
+    {
+        var key = KeysWatcher_GetKeyFromFileName(e.Name!, e.FullPath);
+        if (key.HasValue)
+        {
+            keys.AddOrUpdate(key.Value);
+        }
+    }
+
+    #endregion
+
 
     #region State
 
     public IObservableCache<TKey, TKey> Keys => keysWithSubscribeEvents ??=
         keys
             .ConnectOnDemand(v => v)
-            .PublishRefCountWithEvents(() =>
-            {
-                Debug.WriteLine("Keys subscribe");
-            }, () =>
-            {
-                Debug.WriteLine("Keys unsubscribe");
-            })
+            .PublishRefCountWithEvents(() => EnableKeysWatcher(), () => DisableKeysWatcher())
             .AsObservableCache();
     private IObservableCache<TKey, TKey>? keysWithSubscribeEvents;
 
@@ -293,8 +378,12 @@ public abstract class DirectoryReaderRx<TKey, TValue>
 
     SourceCache<(TKey key, IDisposable subscription), TKey> listenToAllListeners = new(i => i.key);
     IDisposable? listeningAllSubscription;
+    IDisposable? listeningAll_KeysSubscription;
+
     private void StartListeningAll()
     {
+        listeningAll_KeysSubscription = Keys.Connect().Subscribe();
+
         listeningAllSubscription = this.Keys.Connect().Subscribe(changeSet =>
         {
             listenToAllListeners.Edit(su =>
@@ -317,6 +406,7 @@ public abstract class DirectoryReaderRx<TKey, TValue>
                             {
                                 existing.Value.subscription.Dispose();
                                 su.RemoveKey(change.Key);
+                                values.Remove(change.Key);
                             }
                             break;
                         case ChangeReason.Refresh:
@@ -334,7 +424,12 @@ public abstract class DirectoryReaderRx<TKey, TValue>
 
     private void StopListeningAll()
     {
+        listeningAll_KeysSubscription?.Dispose();
+        listeningAll_KeysSubscription = null;
+
         listeningAllSubscription?.Dispose();
+        listeningAllSubscription = null;
+
         listenToAllListeners.Items.ToList().ForEach(i => i.subscription.Dispose());
         listenToAllListeners.Clear();
     }
