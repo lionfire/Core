@@ -82,11 +82,17 @@ public partial class ObservableDataView<TKey, TValue, TValueVM>
     [Parameter]
     public EditMode AllowedEditModes { get; set; }
 
+    [Parameter]
+    public bool AllowCellEdit { get; set; } = true;
 
     #region MudDataGrid passthrough
 
-    [Parameter]
-    public DataGridEditMode EditMode { get; set; } = DataGridEditMode.Form;
+    // OLD - REVIEW
+    //[Parameter]
+    //public DataGridEditMode EditMode { get; set; } = DataGridEditMode.Form;
+
+    public bool IsEditing { get; set; }
+    public DataGridEditMode EditMode => (IsEditing && AllowCellEdit )? DataGridEditMode.Cell : DataGridEditMode.Form;
 
     #endregion
 
@@ -106,6 +112,7 @@ public partial class ObservableDataView<TKey, TValue, TValueVM>
     [Parameter]
     public TimeSpan? PollDelay { get; set; }
 
+    
 
     //#region Derived
 
@@ -119,10 +126,28 @@ public partial class ObservableDataView<TKey, TValue, TValueVM>
 
     #endregion
 
+    #region Context Menu
+
+    MudMenu _contextMenu;
+    private TValueVM? _contextRow;
+    private async Task OpenMenuContent(DataGridRowClickEventArgs<TValueVM> args)
+    {
+        _contextRow = args.Item;
+        await _contextMenu.OpenMenuAsync(args.MouseEventArgs);
+    }
+
+    #endregion
+
     #region Override: ChildContent
 
     [Parameter]
     public RenderFragment<ObservableDataVM<TKey, TValue, TValueVM>>? ChildContent { get; set; }
+
+    [Parameter]
+    public RenderFragment<CellContext<TValueVM>>? ChildRowContent { get; set; }
+
+    [Parameter]
+    public RenderFragment<TValueVM>? ContextMenu { get; set; }
 
     [Parameter]
     public RenderFragment? Columns { get; set; }

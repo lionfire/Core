@@ -8,7 +8,7 @@ using System.ComponentModel.DataAnnotations;
 using System.IO;
 using System.Threading.Tasks;
 
-namespace LionFire.UI.Workspaces;
+namespace LionFire.Workspaces;
 
 public class WorkspaceSchemas
 {

@@ -27,6 +27,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Folder Include="Layouts\" />
     <Folder Include="Pages\" />
   </ItemGroup>
 

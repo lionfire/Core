@@ -15,6 +15,10 @@
   <ItemGroup>
     <PackageReference Include="BlazorGridStack" />
     <PackageReference Include="Microsoft.AspNetCore.Components.Web" />
+    <PackageReference Include="ReactiveUI.SourceGenerators">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
   </ItemGroup>
 
   <ItemGroup>
@@ -22,7 +26,7 @@
     <ProjectReference Include="..\LionFire.Blazor.Components.UI\LionFire.Blazor.Components.UI.csproj" />
     <ProjectReference Include="..\LionFire.Reactive\LionFire.Reactive.csproj" />
     <ProjectReference Include="..\LionFire.Structures\LionFire.Structures.csproj" />
-    <ProjectReference Include="..\LionFire.UI.Workspaces\LionFire.UI.Workspaces.csproj" />
+    <ProjectReference Include="..\LionFire.Workspaces.UI\LionFire.Workspaces.UI.csproj" />
   </ItemGroup>
 
 </Project>

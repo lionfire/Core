@@ -1,11 +1,7 @@
-﻿using LionFire.FlexObjects;
-using LionFire.Reactive.Persistence;
-using LionFire.Structures;
-//using Swordfish.NET.Collections;
-using System;
+﻿using System;
 using System.Collections.ObjectModel;
 
-namespace LionFire.UI.Workspaces;
+namespace LionFire.Workspaces;
 
 /// <remarks>
 /// Data and business logic for a domain object that is a user interface concept
@@ -20,8 +16,4 @@ public interface IWorkspace
     //void Add(object item);
 #endif
 
-}
-
-public class Workspace : FlexObject, IWorkspace
-{
 }

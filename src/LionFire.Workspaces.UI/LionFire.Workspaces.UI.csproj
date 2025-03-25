@@ -20,6 +20,7 @@
     <ProjectReference Include="..\LionFire.Schemas.Filesystem\LionFire.Schemas.Filesystem.csproj" />
     <ProjectReference Include="..\LionFire.Structures\LionFire.Structures.csproj" />
     <ProjectReference Include="..\LionFire.Vfs.Conventions\LionFire.Vfs.Conventions.csproj" />
+    <ProjectReference Include="..\LionFire.Workspaces\LionFire.Workspaces.csproj" />
   </ItemGroup>
 
 </Project>

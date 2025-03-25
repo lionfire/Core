@@ -14,8 +14,9 @@ using System.Reactive.Disposables;
 using System.Reactive.Linq;
 using LionFire.IO.Reactive.Filesystem;
 using LionFire.IO.Reactive;
+using LionFire.Blazor.Components;
 
-namespace LionFire.Blazor.Components;
+namespace LionFire.Workspaces.UI;
 
 public partial class WorkspaceLayoutVM : UserLayoutVM
 {
@@ -157,11 +158,4 @@ public partial class WorkspaceLayoutVM : UserLayoutVM
 
     #endregion
 
-}
-
-
-
-public class WorkspaceConfiguration
-{
-    public List<Type> MemberTypes { get; set; } = new();
 }

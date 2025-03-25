@@ -41,6 +41,7 @@
     </MudMenu>
     } *@
     }
+    <MudToggleIconButton Icon="@Icons.Material.Outlined.Edit" ToggledIcon="@Icons.Material.Filled.ModeEdit" @bind-Toggled="IsEditing" ToggledVariant="@Variant.Filled" ToggledColor="@Color.Primary" />
 
     @if (ViewModel != null && ViewModel.ShowRefresh)
     {
@@ -66,19 +67,36 @@ else if (ViewModel!.Items != null)
     } *@
 
     @* <CascadingT T="TValueVM"> *@
-                     @* Items="@ViewModel!.Items?.Items" *@
-        <MudDataGrid @ref="MudDataGrid"
-                     T="TValueVM"
-                     Items="@ViewModel!.Items.Items"
-                     SortMode="SortMode.Multiple"
-                     EditMode="DataGridEditMode.Cell"
-                     Filterable="true"
-                     Hideable="true"
-                     ReadOnly="false"
-                     RowClick="@RowClicked"
-                     Columns="@(Columns ?? CreateColumns)">
+    @* Items="@ViewModel!.Items?.Items" *@
+    <MudDataGrid @ref="MudDataGrid"
+                 T="TValueVM"
+                 EditMode="EditMode"
+                 Items="@ViewModel!.Items.Items"
+                 SortMode="SortMode.Multiple"
+                 ShowFilterIcons=false
+                 Filterable="true"
+                 Hideable="true"
+                 ReadOnly="false"
+                 RowClick="@RowClicked"
+                 RowContextMenuClick="@(OpenMenuContent!)"
+                 Columns="@(Columns ?? CreateColumns)"
+                 ChildRowContent="@ChildRowContent">
         @* EditMode="@(_isCellEditMode? DataGridEditMode.Cell: DataGridEditMode.Form)" *@
-        </MudDataGrid>
+    </MudDataGrid>
+    @if (ContextMenu != null)
+    {
+        <MudMenu PositionAtCursor="true" @ref="_contextMenu" id="_contextMenu">
+            @* <MudMenuItem Icon="@Icons.Material.Filled.Block">
+                Parent menu for: @_contextRow.
+            </MudMenuItem> *@
+            @if(_contextRow != null){
+                @ContextMenu(_contextRow)
+            }
+            @* <MudMenuItem Icon="@Icons.Material.Filled.Info" OnClick="@ShowHiddenInfo">
+                View Details for @_contextRow?.HwId
+            </MudMenuItem> *@
+        </MudMenu>
+    }
     @* </CascadingT> *@
 }
 @*else if(Items!=null) // No TValueVM, show TValue items directly

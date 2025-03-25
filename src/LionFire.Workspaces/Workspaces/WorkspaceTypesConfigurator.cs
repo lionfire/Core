@@ -3,11 +3,10 @@ using LionFire.IO.Reactive.Hjson;
 using LionFire.Persistence.Filesystem;
 using LionFire.Reactive.Persistence;
 using LionFire.Referencing;
-using LionFire.UI.Workspaces;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 
-namespace LionFire.Blazor.Components;
+namespace LionFire.Workspaces;
 
 public class WorkspaceTypesConfigurator : IWorkspaceServiceConfigurator
 {

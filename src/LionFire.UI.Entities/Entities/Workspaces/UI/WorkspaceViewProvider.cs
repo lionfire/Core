@@ -1,4 +1,5 @@
-﻿#nullable enable
+﻿#if UNUSED
+#nullable enable
 using LionFire.ExtensionMethods;
 using LionFire.Referencing;
 using System.Collections.Concurrent;
@@ -18,3 +19,4 @@ namespace LionFire.UI.Workspaces
         public IWorkspaceView? Query(string key) =>  views.TryGetValue(key);
     }
 }
+#endif

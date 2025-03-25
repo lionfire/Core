@@ -31,7 +31,6 @@
     <ProjectReference Include="..\LionFire.Mvvm.Abstractions\LionFire.Mvvm.Abstractions.csproj" />
     <ProjectReference Include="..\LionFire.Mvvm\LionFire.Mvvm.csproj" />
     <ProjectReference Include="..\LionFire.Structures\LionFire.Structures.csproj" />
-    <ProjectReference Include="..\LionFire.UI.Workspaces\LionFire.UI.Workspaces.csproj" />
     <ProjectReference Include="..\LionFire.UI\LionFire.UI.csproj" />
   </ItemGroup>
 

@@ -7,7 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace LionFire.UI.Workspaces;
+namespace LionFire.Workspaces;
 
 
 // REVIEW: Document the lifecycle of this service
