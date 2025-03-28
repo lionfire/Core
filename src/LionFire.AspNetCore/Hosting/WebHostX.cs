@@ -14,6 +14,9 @@ using Microsoft.Extensions.Configuration;
 using System.Linq;
 using LionFire.AspNetCore;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
+using LionFire.ExtensionMethods.Dependencies;
+using Microsoft.Extensions.Options;
+using LionFire.ExtensionMethods.Configuration;
 
 namespace LionFire.Hosting;
 
@@ -22,7 +25,7 @@ public static class WebHostConfigX
     public static WebHostConfig? GetWebHostConfig(this HostBuilderContext? context) => (context?.Properties.TryGetValue(typeof(WebHostConfig).Name) as Func<WebHostConfig>)?.Invoke();
     //public static Func<WebHostConfig>? GetWebHostConfigFunc(this HostBuilderContext? context) => (context?.Properties.TryGetValue(typeof(WebHostConfig).Name) as Func<WebHostConfig>);
 
-    public static TWebHostConfig GetConfig<TWebHostConfig>(this IConfiguration configuration)
+    public static TWebHostConfig GetWebHostConfig<TWebHostConfig>(this IConfiguration configuration)
         where TWebHostConfig : WebHostConfig
         => (TWebHostConfig)(Activator.CreateInstance(typeof(TWebHostConfig), configuration)
             ?? throw new Exception($"Failed to create {typeof(TWebHostConfig).FullName}.  It must have a constructor accepting a single parameter of type IConfiguration."));
@@ -47,6 +50,12 @@ public static class LionFireWebHostBuilderX
 {
     public static string prefix => WebHostConfig.DefaultConfigLocation;
 
+    public static LionFireWebHostBuilder RootComponent<T>(this LionFireWebHostBuilder lfw)
+    {
+        lfw.RootComponent = typeof(T);
+        return lfw;
+    }
+
     public static LionFireWebHostBuilder Http(this LionFireWebHostBuilder lfw, bool enabled = true)
     { lfw.Builder.ConfigureDefaults([new($"{prefix}:{nameof(WebHostConfig.Http)}", enabled.ToString())]); return lfw; }
     public static LionFireWebHostBuilder Https(this LionFireWebHostBuilder lfw, bool enabled = true)
@@ -66,24 +75,30 @@ public static class LionFireWebHostBuilderX
 
 public static class WebHostX
 {
-    public static ILionFireHostBuilder WebHost<TStartup, TWebHostConfig>(this ILionFireHostBuilder builder, Action<LionFireWebHostBuilder>? configure = null)
+    public static ILionFireHostBuilder WebHost<TStartup, TWebHostConfig, TRootBlazorComponent>(this ILionFireHostBuilder builder, Action<TWebHostConfig>? configureWebHostConfig = null)
+        where TStartup : class
+        where TWebHostConfig : WebHostConfig, IWebHostConfig
+        => builder.WebHost<TStartup, TWebHostConfig>(configureWebHostConfig: whc =>
+        {
+            whc.RootComponent = typeof(TRootBlazorComponent);
+            configureWebHostConfig?.Invoke(whc);
+        });
+
+#error LionFire.All: see if Action<LionFireWebHostBuilder> is used at all. If not, eliminate in favor of Action<TWebHostConfig>.
+    public static ILionFireHostBuilder WebHost<TStartup, TWebHostConfig>(this ILionFireHostBuilder builder, Action<LionFireWebHostBuilder>? configure = null, Action<TWebHostConfig>? configureWebHostConfig = null)
         where TStartup : class
         where TWebHostConfig : WebHostConfig, IWebHostConfig
     {
         var w = new LionFireWebHostBuilder(builder);
         configure?.Invoke(w);
 
-        builder.HostBuilder.Properties[typeof(WebHostConfig).Name] = () => builder.Configuration.GetConfig<TWebHostConfig>();
+        builder.HostBuilder.Properties[typeof(WebHostConfig).Name] = () => builder.Configuration.GetWebHostConfig<TWebHostConfig>();
 
-        var configLocation = TWebHostConfig.DefaultConfigLocation;
+        var webHostConfig = builder.Configuration.GetWebHostConfig<TWebHostConfig>();
 
-        if (configLocation != null)
-        {
-            builder.ConfigureServices((hostBuilderContext, services) => services
-                .Configure<TWebHostConfig>(hostBuilderContext.Configuration.GetSection(configLocation)));
-        }
+        configureWebHostConfig?.Invoke(webHostConfig);
 
-        return builder._WebHost<TStartup>(builder.Configuration.GetConfig<TWebHostConfig>());
+        return builder._WebHost<TStartup>(webHostConfig);
     }
 
     // Convenience overload: TWebHostConfig defaults to WebHostConfig
@@ -105,8 +120,6 @@ public static class WebHostX
                 {
                     #region URLs
 
-                    var urls = GetConfiguredUrls(builder.HostBuilder.Configuration);
-
                     var applicationName = builder.Configuration[WebHostDefaults.ApplicationKey];
 
                     webBuilder
@@ -115,6 +128,7 @@ public static class WebHostX
                         .UseSetting(WebHostDefaults.ApplicationKey, applicationName)  // Undo the "applicationName" change.
                         ;
 
+                    var urls = GetConfiguredUrls(builder.HostBuilder.Configuration);
                     if (urls.Length > 0)
                     {
                         webBuilder.UseUrls(urls.ToArray());

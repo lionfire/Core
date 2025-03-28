@@ -31,7 +31,7 @@ public class CommonStartup<TConfig>
     {
         //var options = app.ApplicationServices.GetRequiredService<IOptionsMonitor<TConfig>>().CurrentValue; // OLD
         //var options = app.ApplicationServices.GetRequiredService<TConfig>(); // OLD
-        var options = WebHostConfigX.GetConfig<TConfig>(Configuration);
+        var options = WebHostConfigX.GetWebHostConfig<TConfig>(Configuration);
 
         options.Configure(app, env, configureEndpoints: configureEndpoints);
 

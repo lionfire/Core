@@ -69,7 +69,6 @@ public class WebFrameworkConfig : WebHostConfig
 
     #endregion
 
-    public Type? RootComponent { get; set; }
 
 
     #region Derived

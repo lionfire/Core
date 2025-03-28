@@ -1,17 +1,23 @@
 ﻿using LionFire.Configuration;
+using LionFire.ExtensionMethods.Configuration;
 using LionFire.Hosting;
 using LionFire.Net;
 using Microsoft.Extensions.Configuration;
+using System;
 using System.Collections.Generic;
-using static LionFire.Net.PortConfiguration;
-using LionFire.ExtensionMethods.Configuration;
 using System.Reflection;
+using static LionFire.Net.PortConfiguration;
 
 namespace LionFire.AspNetCore;
+
 
 public interface IWebHostConfig
 {
     //static  string DefaultConfigLocation => "WebHost";
+
+    /// <remarks>
+    /// Used by LionFireWebHostBuilderX
+    /// </remarks>
     static abstract string DefaultConfigLocation { get; }
 }
 public class WebHostConfig : HasPortsConfigBase, IHasConfigLocation, IWebHostConfig
@@ -19,7 +25,7 @@ public class WebHostConfig : HasPortsConfigBase, IHasConfigLocation, IWebHostCon
     #region Config binding
 
     public static string DefaultConfigLocation => "WebHost";
-    public string ConfigLocation => DefaultConfigLocation;
+    public virtual string ConfigLocation => DefaultConfigLocation;
 
     #endregion
 
@@ -27,7 +33,12 @@ public class WebHostConfig : HasPortsConfigBase, IHasConfigLocation, IWebHostCon
 
     public WebHostConfig(IConfiguration configuration) : base(configuration)
     {
-        this.Bind(configuration);
+        if (ConfigLocation != null)
+        {
+            var configSection = configuration.GetSection(ConfigLocation);
+            configSection?.Bind(this);
+        }
+        //this.Bind(configuration); // OLD: Non-standard alternate
     }
 
     #endregion
@@ -105,6 +116,12 @@ public class WebHostConfig : HasPortsConfigBase, IHasConfigLocation, IWebHostCon
     /// Flag the application can set to globally enable user-interactive UI
     /// </summary>
     public bool WebUI { get; set; }
+
+    #region Blazor
+
+    public Type? RootComponent { get; set; }
+
+    #endregion
 
     #region Derived
 

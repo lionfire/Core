@@ -1,53 +1,55 @@
-<Project Sdk="Microsoft.NET.Sdk.Razor">
+﻿<Project Sdk="Microsoft.NET.Sdk.Razor">
 
-  <PropertyGroup>
-    <TargetFramework>net9.0</TargetFramework>
-	<Nullable>enable</Nullable>
-	<Configurations>Debug;Release</Configurations>
-  </PropertyGroup>
+	<PropertyGroup>
+		<TargetFramework>net9.0</TargetFramework>
+		<Nullable>enable</Nullable>
+		<Configurations>Debug;Release</Configurations>
+	</PropertyGroup>
 
-  
-  <ItemGroup>
-    <SupportedPlatform Include="browser" />
-  </ItemGroup>
 
-  <ItemGroup>
-    <PackageReference Include="CircularBuffer" />
-    <!--<PackageReference Include="LiveSharp" />-->
-	  <PackageReference Include="MediatR" />
-	  <PackageReference Include="Microsoft.AspNetCore.Components.Authorization" />
-	  <PackageReference Include="Microsoft.AspNetCore.Components.QuickGrid" />
-    <PackageReference Include="Microsoft.AspNetCore.Components.Web" />
-    <PackageReference Include="Microsoft.CodeAnalysis" />
-    <PackageReference Include="ReactiveUI.Blazor" />
-    <PackageReference Include="ReactiveUI.SourceGenerators">
-      <PrivateAssets>all</PrivateAssets>
-      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
-    </PackageReference>
-    <PackageReference Include="Swordfish.NET.CollectionsV3" />
-	  <PackageReference Include="System.ComponentModel" />
-	  <PackageReference Include="System.ComponentModel.Annotations" />
-	  <PackageReference Include="ObservableCollections" />
-	  
-  </ItemGroup>
+	<ItemGroup>
+		<SupportedPlatform Include="browser" />
+	</ItemGroup>
 
-  <ItemGroup>
-    <ProjectReference Include="..\LionFire.Flex\LionFire.Flex.csproj" />
-    <ProjectReference Include="..\LionFire.Mvvm\LionFire.Mvvm.csproj" />
-    <ProjectReference Include="..\LionFire.UI.Entities\LionFire.UI.Entities.csproj" />
-    <ProjectReference Include="..\LionFire.UI\LionFire.UI.csproj" />
-  </ItemGroup>
+	<ItemGroup>
+		<PackageReference Include="CircularBuffer" />
+		<!--<PackageReference Include="LiveSharp" />-->
+		<PackageReference Include="MediatR" />
+		<PackageReference Include="Microsoft.AspNetCore.Components.Authorization" />
+		<PackageReference Include="Microsoft.AspNetCore.Components.QuickGrid" />
+		<PackageReference Include="Microsoft.AspNetCore.Components.Web" />
+		<PackageReference Include="Microsoft.AspNetCore.Http.Abstractions" />
+		<PackageReference Include="Microsoft.CodeAnalysis" />
+		<PackageReference Include="ReactiveUI.Blazor" />
+		<PackageReference Include="ReactiveUI.SourceGenerators">
+			<PrivateAssets>all</PrivateAssets>
+			<IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+		</PackageReference>
+		<PackageReference Include="Swordfish.NET.CollectionsV3" />
+		<PackageReference Include="System.ComponentModel" />
+		<PackageReference Include="System.ComponentModel.Annotations" />
+		<PackageReference Include="ObservableCollections" />
 
-  <ItemGroup>
-    <Content Update="Terminal\OutputPane.razor">
-      <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
-    </Content>
-  </ItemGroup>
+	</ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="Reactive\" />
-  </ItemGroup>
+	<ItemGroup>
+		<ProjectReference Include="..\LionFire.Flex\LionFire.Flex.csproj" />
+		<ProjectReference Include="..\LionFire.Mvvm\LionFire.Mvvm.csproj" />
+		<ProjectReference Include="..\LionFire.UI.Entities\LionFire.UI.Entities.csproj" />
+		<ProjectReference Include="..\LionFire.UI\LionFire.UI.csproj" />
+	</ItemGroup>
 
-  
+	<ItemGroup>
+		<Content Update="Terminal\OutputPane.razor">
+			<ExcludeFromSingleFile>true</ExcludeFromSingleFile>
+		</Content>
+	</ItemGroup>
+
+	<ItemGroup>
+		<Folder Include="Components\Pages\" />
+		<Folder Include="Reactive\" />
+	</ItemGroup>
+
+
 
 </Project>
