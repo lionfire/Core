@@ -48,7 +48,7 @@ public partial class ObservableDataView<TKey, TValue, TValueVM>
 
     #region IComponentized
 
-    Components Components { get; set; } = new();
+    ComponentsContainer Components { get; set; } = new();
 
     public T TryGetComponent<T>() where T : class
     {

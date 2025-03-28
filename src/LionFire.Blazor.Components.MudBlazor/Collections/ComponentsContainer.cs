@@ -4,7 +4,7 @@ using LionFire.FlexObjects;
 
 namespace LionFire.Blazor.Components;
 
-public class Components : FlexObject, IComponentized // REVIEW - eliminate this and use Flex interface?
+public class ComponentsContainer : FlexObject, IComponentized // REVIEW - eliminate this and use Flex interface?
 {
     public T TryGetComponent<T>() where T : class
     {

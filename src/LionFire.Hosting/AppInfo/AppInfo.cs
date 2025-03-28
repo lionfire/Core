@@ -264,14 +264,14 @@ public class AppInfo
 
     public string? AppDisplayName
     {
-        get => appDisplayName ?? AppName;
+        get => appDisplayName ?? AppName?.Replace(".", " ");
         set => appDisplayName = value;
     }
     private string? appDisplayName;
 
     public string? AppLongDisplayName
     {
-        get => appLongDisplayName ?? AppName;
+        get => appLongDisplayName ?? AppDisplayName;
         set => appLongDisplayName = value;
     }
     private string? appLongDisplayName;

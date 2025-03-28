@@ -7,7 +7,7 @@ namespace LionFire.Configuration;
 
 public interface IHasConfigLocation
 {
-    string ConfigLocation
+    string? ConfigLocation
     {
         get
         {
