@@ -43,6 +43,16 @@ public class WebHostConfig : HasPortsConfigBase, IHasConfigLocation, IWebHostCon
 
     #endregion
 
+    #region State
+
+    #region Derived
+
+    public bool NeedsWebHost => Enabled && HasAnyInterfaces && HasAnyFeatures;
+
+    #endregion
+
+    #endregion
+
     /// <summary>
     /// If false, calls to WebHost() become a no-op. (Do not initialize AspNetCore and Kestrel)
     /// </summary>

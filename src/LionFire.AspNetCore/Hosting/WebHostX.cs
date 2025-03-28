@@ -25,10 +25,14 @@ public static class WebHostConfigX
     public static WebHostConfig? GetWebHostConfig(this HostBuilderContext? context) => (context?.Properties.TryGetValue(typeof(WebHostConfig).Name) as Func<WebHostConfig>)?.Invoke();
     //public static Func<WebHostConfig>? GetWebHostConfigFunc(this HostBuilderContext? context) => (context?.Properties.TryGetValue(typeof(WebHostConfig).Name) as Func<WebHostConfig>);
 
-    public static TWebHostConfig GetWebHostConfig<TWebHostConfig>(this IConfiguration configuration)
+    public static TWebHostConfig GetWebHostConfig<TWebHostConfig>(this IConfiguration configuration, Action<TWebHostConfig>? configure = null)
         where TWebHostConfig : WebHostConfig
-        => (TWebHostConfig)(Activator.CreateInstance(typeof(TWebHostConfig), configuration)
+    {
+        var result = (TWebHostConfig)(Activator.CreateInstance(typeof(TWebHostConfig), configuration)
             ?? throw new Exception($"Failed to create {typeof(TWebHostConfig).FullName}.  It must have a constructor accepting a single parameter of type IConfiguration."));
+        configure?.Invoke(result);
+        return result;
+    }
 
     public static Func<IConfiguration, WebHostConfig> GetWebHostConfigFunc<TWebHostConfig>()
         where TWebHostConfig : WebHostConfig
@@ -50,11 +54,12 @@ public static class LionFireWebHostBuilderX
 {
     public static string prefix => WebHostConfig.DefaultConfigLocation;
 
-    public static LionFireWebHostBuilder RootComponent<T>(this LionFireWebHostBuilder lfw)
-    {
-        lfw.RootComponent = typeof(T);
-        return lfw;
-    }
+    // REVIEW: Add this back?  Prefer this to generic parameters on WebHost<`2>?
+    //public static LionFireWebHostBuilder RootComponent<T>(this LionFireWebHostBuilder lfw)
+    //{
+    //    lfw.RootComponent = typeof(T);
+    //    return lfw;
+    //}
 
     public static LionFireWebHostBuilder Http(this LionFireWebHostBuilder lfw, bool enabled = true)
     { lfw.Builder.ConfigureDefaults([new($"{prefix}:{nameof(WebHostConfig.Http)}", enabled.ToString())]); return lfw; }
@@ -75,30 +80,25 @@ public static class LionFireWebHostBuilderX
 
 public static class WebHostX
 {
-    public static ILionFireHostBuilder WebHost<TStartup, TWebHostConfig, TRootBlazorComponent>(this ILionFireHostBuilder builder, Action<TWebHostConfig>? configureWebHostConfig = null)
+    public static ILionFireHostBuilder WebHost<TStartup, TWebHostConfig, TRootComponent>(this ILionFireHostBuilder builder, Action<TWebHostConfig>? configureWebHostConfig = null)
         where TStartup : class
         where TWebHostConfig : WebHostConfig, IWebHostConfig
-        => builder.WebHost<TStartup, TWebHostConfig>(configureWebHostConfig: whc =>
+        where TRootComponent : Microsoft.AspNetCore.Components.ComponentBase
+        => builder.WebHost<TStartup, TWebHostConfig>(configure: whc =>
         {
-            whc.RootComponent = typeof(TRootBlazorComponent);
+            whc.RootComponent = typeof(TRootComponent);
             configureWebHostConfig?.Invoke(whc);
         });
 
-#error LionFire.All: see if Action<LionFireWebHostBuilder> is used at all. If not, eliminate in favor of Action<TWebHostConfig>.
-    public static ILionFireHostBuilder WebHost<TStartup, TWebHostConfig>(this ILionFireHostBuilder builder, Action<LionFireWebHostBuilder>? configure = null, Action<TWebHostConfig>? configureWebHostConfig = null)
+    public static ILionFireHostBuilder WebHost<TStartup, TWebHostConfig>(this ILionFireHostBuilder builder, Action<TWebHostConfig>? configure = null)
         where TStartup : class
         where TWebHostConfig : WebHostConfig, IWebHostConfig
     {
-        var w = new LionFireWebHostBuilder(builder);
-        configure?.Invoke(w);
+        var webHostConfig = builder.Configuration.GetWebHostConfig<TWebHostConfig>(configure);
 
-        builder.HostBuilder.Properties[typeof(WebHostConfig).Name] = () => builder.Configuration.GetWebHostConfig<TWebHostConfig>();
+        builder.HostBuilder.Properties[typeof(WebHostConfig).Name] = webHostConfig;
 
-        var webHostConfig = builder.Configuration.GetWebHostConfig<TWebHostConfig>();
-
-        configureWebHostConfig?.Invoke(webHostConfig);
-
-        return builder._WebHost<TStartup>(webHostConfig);
+        return builder.ApplyWebHostConfig<TStartup>(webHostConfig);
     }
 
     // Convenience overload: TWebHostConfig defaults to WebHostConfig
@@ -107,16 +107,12 @@ public static class WebHostX
             => builder.WebHost<TStartup, WebHostConfig>(configure);
     //throw new NotImplementedException("FIXME - config not being wired up for some reason");// builder.WebHost<TStartup, WebHostConfig>();
 
-    private static ILionFireHostBuilder _WebHost<TStartup>(this ILionFireHostBuilder builder, WebHostConfig o /*Func<IConfiguration, WebHostConfig> oFunc*/)
+    private static ILionFireHostBuilder ApplyWebHostConfig<TStartup>(this ILionFireHostBuilder builder, WebHostConfig webHostConfig)
         where TStartup : class
     {
-        //{
-        //var o = oFunc(builder.Configuration);
-        if (!o.Enabled || !o.HasAnyInterfaces || !o.HasAnyFeatures) return builder;
-        //}
-
-        builder.HostBuilder
-            .ConfigureWebHostDefaults(webBuilder =>
+        if (webHostConfig.NeedsWebHost) // REVIEW - webHostConfig is not otherwise used here
+        {
+            builder.HostBuilder.ConfigureWebHostDefaults(webBuilder =>
                 {
                     #region URLs
 
@@ -136,7 +132,7 @@ public static class WebHostX
 
                     #endregion
                 });
-
+        }
         return builder;
     }
 
