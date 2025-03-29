@@ -48,25 +48,40 @@ public class LionFireWebHostBuilder
     {
         Builder = builder;
     }
+
+    public List<Action<WebHostConfig>> Actions { get; } = new();
 }
 
 public static class LionFireWebHostBuilderX
 {
     public static string prefix => WebHostConfig.DefaultConfigLocation;
 
-    // REVIEW: Add this back?  Prefer this to generic parameters on WebHost<`2>?
-    //public static LionFireWebHostBuilder RootComponent<T>(this LionFireWebHostBuilder lfw)
-    //{
-    //    lfw.RootComponent = typeof(T);
-    //    return lfw;
-    //}
+    public static LionFireWebHostBuilder RootComponent<T>(this LionFireWebHostBuilder lfw)
+        => lfw.Configure(c => c.RootComponent = typeof(T));
+    // ENH - maybe
+    public static LionFireWebHostBuilder Startup<T>(this LionFireWebHostBuilder lfw)
+        => lfw.Configure(c => c.Startup = typeof(T));
+    // ENH - maybe
+    public static LionFireWebHostBuilder Configuration<T>(this LionFireWebHostBuilder lfw)
+        => lfw.Configure(c => c.Configuration = typeof(T));
+
+    public static LionFireWebHostBuilder Configure(this LionFireWebHostBuilder lfw, Action<WebHostConfig> action)
+    {
+        lfw.Actions.Add(action);
+        return lfw;
+    }
 
     public static LionFireWebHostBuilder Http(this LionFireWebHostBuilder lfw, bool enabled = true)
     { lfw.Builder.ConfigureDefaults([new($"{prefix}:{nameof(WebHostConfig.Http)}", enabled.ToString())]); return lfw; }
+
+    #region TODO ENH - instead of setting Configuration key/value pairs, store a set of Action<WebHostConfig> configure methods, and execute them after WebHostConfig is instantiated.
+
+    public static LionFireWebHostBuilder Http_ENH(this LionFireWebHostBuilder lfw, bool enabled = true) => lfw.Configure(whc => whc.Http = enabled);
+
     public static LionFireWebHostBuilder Https(this LionFireWebHostBuilder lfw, bool enabled = true)
     { lfw.Builder.ConfigureDefaults([new($"{prefix}:{nameof(WebHostConfig.Https)}", enabled.ToString())]); return lfw; }
-    [Obsolete("Use BlazorInteractiveServer")]
-    public static LionFireWebHostBuilder BlazorServer(this LionFireWebHostBuilder lfw, bool enabled = true) => lfw.BlazorInteractiveServer(enabled);
+    //[Obsolete("Use BlazorInteractiveServer")]
+    //public static LionFireWebHostBuilder BlazorServer(this LionFireWebHostBuilder lfw, bool enabled = true) => lfw.BlazorInteractiveServer(enabled);
     public static LionFireWebHostBuilder BlazorInteractiveServer(this LionFireWebHostBuilder lfw, bool enabled = true)
     { lfw.Builder.ConfigureDefaults([new($"{prefix}:{nameof(WebHostConfig.BlazorInteractiveServer)}", enabled.ToString())]); return lfw; }
 
@@ -76,27 +91,36 @@ public static class LionFireWebHostBuilderX
     //public static LionFireWebHostBuilder Mvc(this LionFireWebHostBuilder lfw, bool enabled = true)
     //{ lfw.Builder.ConfigureDefaults([new($"{prefix}:{nameof(WebHostConfig.Mvc)}", enabled.ToString())]); return lfw; }
 
+    #endregion
 }
 
 public static class WebHostX
 {
-    public static ILionFireHostBuilder WebHost<TStartup, TWebHostConfig, TRootComponent>(this ILionFireHostBuilder builder, Action<TWebHostConfig>? configureWebHostConfig = null)
+    public static ILionFireHostBuilder WebHost<TStartup, TWebHostConfig, TRootComponent>(this ILionFireHostBuilder builder, Action<LionFireWebHostBuilder> configure
+        //, Action<TWebHostConfig>? configureWebHostConfig = null
+        )
         where TStartup : class
         where TWebHostConfig : WebHostConfig, IWebHostConfig
         where TRootComponent : Microsoft.AspNetCore.Components.ComponentBase
-        => builder.WebHost<TStartup, TWebHostConfig>(configure: whc =>
+        => builder.WebHost<TStartup, TWebHostConfig>(configure: webHostBuilder =>
         {
-            whc.RootComponent = typeof(TRootComponent);
-            configureWebHostConfig?.Invoke(whc);
+            webHostBuilder.Configure(c => c.RootComponent = typeof(TRootComponent));
+            configure?.Invoke(webHostBuilder);
         });
 
-    public static ILionFireHostBuilder WebHost<TStartup, TWebHostConfig>(this ILionFireHostBuilder builder, Action<TWebHostConfig>? configure = null)
+    public static ILionFireHostBuilder WebHost<TStartup, TWebHostConfig>(this ILionFireHostBuilder builder, Action<LionFireWebHostBuilder>? configure
+        )
         where TStartup : class
         where TWebHostConfig : WebHostConfig, IWebHostConfig
     {
-        var webHostConfig = builder.Configuration.GetWebHostConfig<TWebHostConfig>(configure);
+        var webHostBuilder = new LionFireWebHostBuilder(builder);
+        configure?.Invoke(webHostBuilder);
+
+        var webHostConfig = builder.Configuration.GetWebHostConfig<TWebHostConfig>();
 
         builder.HostBuilder.Properties[typeof(WebHostConfig).Name] = webHostConfig;
+
+        builder.ConfigureServices(s => s.AddSingleton(webHostConfig));
 
         return builder.ApplyWebHostConfig<TStartup>(webHostConfig);
     }

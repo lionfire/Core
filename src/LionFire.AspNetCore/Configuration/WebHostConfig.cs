@@ -133,6 +133,13 @@ public class WebHostConfig : HasPortsConfigBase, IHasConfigLocation, IWebHostCon
 
     #endregion
 
+    #region ENH - maybe?
+
+    public Type? Startup { get; set; }
+    public Type? Configuration { get; set; }
+
+    #endregion
+
     #region Derived
 
     public virtual bool HasAnyWebUI => RequiresBlazorInteractiveServer || WebUI;
