@@ -142,7 +142,7 @@ public static class DefaultsX
             #endregion
 
             lf.HostBuilder.WrappedHostBuilder
-                .ReleaseChannel() // adds appsettings.{releaseChannel}.json
+                .ReleaseChannel() // adds appsettings.{ReleaseChannel}.json
                 .DeploymentSlot() // adds appsettings.slot.{slot}.json
                 .CopyExampleAppSettings()
                 ;
@@ -159,7 +159,8 @@ public static class DefaultsX
             lf.HostBuilder.WrappedIHostApplicationBuilder
                 .ReleaseChannel() // adds appsettings.{releaseChannel}.json
                 .DeploymentSlot() // adds appsettings.slot.{slot}.json
-                                  //.ConfigureServices(s => s.AddHostedService<AppContextLogger>())
+                .TryAddConfigForDocker() // adds /app/conf/appsettings.json
+                //.ConfigureServices(s => s.AddHostedService<AppContextLogger>())
                 .CopyExampleAppSettings()
                 ;
 
