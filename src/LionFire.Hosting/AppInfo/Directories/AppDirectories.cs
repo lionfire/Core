@@ -37,7 +37,7 @@ public class AppDirectories
     /// C:\ProgramData\{CompanyName}
     /// </summary>
     public string? CompanyProgramData 
-        => string.IsNullOrWhiteSpace(CompanyName) 
+        => (LionFireEnvironment.Directories.ProgramData == null || string.IsNullOrWhiteSpace(CompanyName))
         ? null 
         : Path.Combine(LionFireEnvironment.Directories.ProgramData, CompanyName);
 
@@ -74,7 +74,7 @@ public class AppDirectories
     /// </summary>
     /// <param name="namedDataDir"></param>
     /// <returns></returns>
-    public string? GetProgramDataDir(string? namedDataDir) => namedDataDir == null ? null : Path.Combine(LionFireEnvironment.Directories.ProgramData, CompanyName, namedDataDir);
+    public string? GetProgramDataDir(string? namedDataDir) => (LionFireEnvironment.Directories.ProgramData == null || namedDataDir == null) ? null : Path.Combine(LionFireEnvironment.Directories.ProgramData, CompanyName, namedDataDir);
 
     #endregion
 
