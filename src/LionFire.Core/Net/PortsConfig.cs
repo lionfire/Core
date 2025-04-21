@@ -58,7 +58,7 @@ void OldReleaseChannelPortCode()
         {
             if (OLD_OPTIONS.UseReleaseChannelPortOffsets == true)
             {
-                var releaseChannel = OLD_OPTIONS.ReleaseChannelOverride ?? builder.HostBuilder.Properties.TryGetValue("releaseChannel") as string;
+                var releaseChannel = OLD_OPTIONS.ReleaseChannelOverride ?? builder.HostBuilder.Properties.TryGetValue("ReleaseChannel") as string;
                 if (releaseChannel != null)
                 {
                     var portOffset = DefaultReleaseChannels.TryGetReleaseChannelPortOffset(releaseChannel);
