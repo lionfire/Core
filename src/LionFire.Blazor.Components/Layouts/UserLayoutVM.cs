@@ -37,6 +37,7 @@ public partial class UserLayoutVM : ReactiveObject, IDisposable
     }
     virtual protected bool DeferPostConstructor => false;
 
+    public bool IsDisposed => disposables.IsDisposed;
     protected CompositeDisposable disposables = new();
 
     public void Dispose()

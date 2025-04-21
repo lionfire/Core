@@ -92,7 +92,7 @@ public partial class ObservableDataView<TKey, TValue, TValueVM>
     //public DataGridEditMode EditMode { get; set; } = DataGridEditMode.Form;
 
     public bool IsEditing { get; set; }
-    public DataGridEditMode EditMode => (IsEditing && AllowCellEdit )? DataGridEditMode.Cell : DataGridEditMode.Form;
+    public DataGridEditMode EditMode => (IsEditing && AllowCellEdit) ? DataGridEditMode.Cell : DataGridEditMode.Form;
 
     #endregion
 
@@ -112,7 +112,7 @@ public partial class ObservableDataView<TKey, TValue, TValueVM>
     [Parameter]
     public TimeSpan? PollDelay { get; set; }
 
-    
+
 
     //#region Derived
 
@@ -179,8 +179,8 @@ public partial class ObservableDataView<TKey, TValue, TValueVM>
     //[Parameter]
     //public bool ShowRefresh { get; set; }
 
-    //[Parameter]
-    //public bool ReadOnly { get; set; }
+    [Parameter]
+    public bool ReadOnly { get; set; } = true;
 
     //[Parameter]
     //public bool AutoRetrieveOnInit { get; set; } = true; // TODO
@@ -327,23 +327,23 @@ public partial class ObservableDataView<TKey, TValue, TValueVM>
 
         //if (EffectiveData == null || !ReferenceEquals(EffectiveData, Data))
         //{
-            //EffectiveData = Data;
-            //EffectiveDataWriter = EffectiveData as IObservableReaderWriter<TKey, TValue>;
-//#if true // NEW
-//            ViewModel.Data?.ObservableCache.Connect().Subscribe(o =>
-//            {
-//                //Debug.WriteLine($"ObservableDataView: VMCollectionChanged {ViewModel.ValueVMs != null}");
-//                Debug.WriteLine($"ObservableDataView: Data changed");
-//                InvokeAsync(StateHasChanged);
-//            });
-//#else // OLD
-//            ViewModel.ValueVMCollections.Subscribe(o =>
-//            {
-//                Debug.WriteLine($"ObservableDataView: VMCollectionChanged {ViewModel.ValueVMs != null}");
-//                o.Subscribe(_ => InvokeAsync(StateHasChanged));
-//                InvokeAsync(StateHasChanged);
-//            });
-//#endif
+        //EffectiveData = Data;
+        //EffectiveDataWriter = EffectiveData as IObservableReaderWriter<TKey, TValue>;
+        //#if true // NEW
+        //            ViewModel.Data?.ObservableCache.Connect().Subscribe(o =>
+        //            {
+        //                //Debug.WriteLine($"ObservableDataView: VMCollectionChanged {ViewModel.ValueVMs != null}");
+        //                Debug.WriteLine($"ObservableDataView: Data changed");
+        //                InvokeAsync(StateHasChanged);
+        //            });
+        //#else // OLD
+        //            ViewModel.ValueVMCollections.Subscribe(o =>
+        //            {
+        //                Debug.WriteLine($"ObservableDataView: VMCollectionChanged {ViewModel.ValueVMs != null}");
+        //                o.Subscribe(_ => InvokeAsync(StateHasChanged));
+        //                InvokeAsync(StateHasChanged);
+        //            });
+        //#endif
         //}
 
         //if (oldItems == null || !ReferenceEquals(oldItems, this.Items))

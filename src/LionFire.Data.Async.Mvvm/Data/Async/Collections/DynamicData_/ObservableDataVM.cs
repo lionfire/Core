@@ -56,6 +56,13 @@ public partial class ObservableDataVM<TKey, TValue, TValueVM> : ReactiveObject
 
     #endregion
 
+    #region State
+
+    public bool ShowRefresh { get; set; }
+    public bool ShowDeleteColumn { get; set; }
+
+    #endregion
+
     #region Reader and Writer
 
     /// <summary>
@@ -95,7 +102,7 @@ public partial class ObservableDataVM<TKey, TValue, TValueVM> : ReactiveObject
                     .AsObservableCache()
                     .DisposeWith(readerDisposables);
 
-                data.ListenAll().DisposeWith(readerDisposables);
+                data.ListenAllKeys().DisposeWith(readerDisposables);
             }
         }
     }
@@ -133,7 +140,6 @@ public partial class ObservableDataVM<TKey, TValue, TValueVM> : ReactiveObject
     }
     private IObservableCache<TValueVM, TKey>? _items;
 
-    public bool ShowRefresh { get; set; }
 
     #region Creation
 
@@ -185,4 +191,29 @@ public partial class ObservableDataVM<TKey, TValue, TValueVM> : ReactiveObject
 
     #endregion
 
+    public async Task Delete(TValueVM value)
+    {
+        if (!CanDelete || DataWriter == null) return;
+
+        if (value is IKeyed<TKey> keyed)
+        {
+            Debug.WriteLine("Deleting " + value);
+            await DataWriter.Remove(keyed.Key);
+        }
+        else
+        {
+            var kv = Items.KeyValues.Where(kv => ReferenceEquals(value, kv.Value)).FirstOrDefault();
+
+            if (kv.Key == null)
+            {
+                Debug.WriteLine("ERROR: Delete: Could not find key for value " + value);
+                return;
+            }
+            else
+            {
+                Debug.WriteLine("Deleting " + value);
+                await DataWriter.Remove(kv.Key);
+            }
+        }
+    }
 }

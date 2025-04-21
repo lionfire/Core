@@ -10,7 +10,7 @@
 @inject IServiceProvider ServiceProvider
 @inject IViewModelProvider ViewModelProvider
 
-<MudToolBar>
+<MudToolBar Class="gap-1">
 
     @if (ViewModel!.CanCreate && ViewModel!.CreatableTypes.Any())
     {
@@ -42,6 +42,8 @@
     } *@
     }
     <MudToggleIconButton Icon="@Icons.Material.Outlined.Edit" ToggledIcon="@Icons.Material.Filled.ModeEdit" @bind-Toggled="IsEditing" ToggledVariant="@Variant.Filled" ToggledColor="@Color.Primary" />
+
+    <MudToggleIconButton Icon="@Icons.Material.Outlined.DeleteForever" ToggledIcon="@Icons.Material.Filled.DeleteForever" @bind-Toggled="@ViewModel!.ShowDeleteColumn" ToggledVariant="@Variant.Filled" ToggledColor="@Color.Error" />
 
     @if (ViewModel != null && ViewModel.ShowRefresh)
     {
@@ -76,20 +78,42 @@ else if (ViewModel!.Items != null)
                  ShowFilterIcons=false
                  Filterable="true"
                  Hideable="true"
-                 ReadOnly="false"
+                 ReadOnly="@ReadOnly"
                  RowClick="@RowClicked"
                  RowContextMenuClick="@(OpenMenuContent!)"
-                 Columns="@(Columns ?? CreateColumns)"
                  ChildRowContent="@ChildRowContent">
         @* EditMode="@(_isCellEditMode? DataGridEditMode.Cell: DataGridEditMode.Form)" *@
+        @* Columns="@(Columns ?? CreateColumns)" *@
+        <Columns>
+            @if (Columns != null)
+            {
+                @Columns
+            }
+            else
+            {
+                @CreateColumns
+            }
+            @if (!ReadOnly && !IsEditing && ViewModel!.CanDelete && ViewModel!.ShowDeleteColumn)
+            {
+                <TemplateColumn Title="Delete">
+                    <CellTemplate>
+                        @* <MudStack Row> *@
+                        <MudIconButton Icon="@Icons.Material.Outlined.DeleteForever" Size="@Size.Small" Variant="@Variant.Outlined" Color="@Color.Error" OnClick="@(() => ViewModel.Delete(context.Item))"></MudIconButton>
+                        @* </MudStack> *@
+                    </CellTemplate>
+                </TemplateColumn>
+            }
+        </Columns>
     </MudDataGrid>
+
     @if (ContextMenu != null)
     {
         <MudMenu PositionAtCursor="true" @ref="_contextMenu" id="_contextMenu">
             @* <MudMenuItem Icon="@Icons.Material.Filled.Block">
                 Parent menu for: @_contextRow.
             </MudMenuItem> *@
-            @if(_contextRow != null){
+            @if (_contextRow != null)
+            {
                 @ContextMenu(_contextRow)
             }
             @* <MudMenuItem Icon="@Icons.Material.Filled.Info" OnClick="@ShowHiddenInfo">
