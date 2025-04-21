@@ -13,7 +13,7 @@ public static class AppSettingsHostingX
     //{
     //    builder.HostBuilder.ConfigureAppConfiguration((hostContext, config) =>
     //    {
-    //        var releaseChannel = hostContext.Configuration["releaseChannel"];
+    //        var releaseChannel = hostContext.Configuration["ReleaseChannel"];
     //        LionFireHostingConfigurationUtils.TryCopyFromBaseDirectoryIfMissing("appsettings.json", "appsettings.example.json");
 
     //        if (releaseChannel != null)
@@ -32,7 +32,7 @@ public static class AppSettingsHostingX
     {
         builder.ConfigureAppConfiguration((hostContext, config) =>
         {
-            var releaseChannel = hostContext.Configuration["releaseChannel"];
+            var releaseChannel = hostContext.Configuration["ReleaseChannel"];
             LionFireHostingConfigurationUtils.OverwriteFromBaseDirectory("example.appsettings.json");
 
             if (releaseChannel != null)
@@ -49,7 +49,7 @@ public static class AppSettingsHostingX
 
     public static IHostApplicationBuilder CopyExampleAppSettings(this IHostApplicationBuilder builder)
     {
-        var releaseChannel = builder.Configuration["releaseChannel"];
+        var releaseChannel = builder.Configuration["ReleaseChannel"];
         LionFireHostingConfigurationUtils.OverwriteFromBaseDirectory("example.appsettings.json");
 
         if (releaseChannel != null)
