@@ -24,6 +24,9 @@ public class CommonStartup<TConfig>
     public virtual void ConfigureServices(IServiceCollection services)
     {
         services.AddForOptions(GetConfig());
+
+        services.AddHostedService<WebHostConfigLogger<TConfig>>();
+
     }
 
     // REVIEW - make virtual so it can be replaced if needed?
@@ -37,7 +40,7 @@ public class CommonStartup<TConfig>
 
         //ConfigureCore(app, env);
     }
-   
+
     //protected virtual void ConfigureCore(IApplicationBuilder app, IWebHostEnvironment env) // OLD
     //{
     //    //var options = app.ApplicationServices.GetRequiredService<IOptionsMonitor<TConfig>>().CurrentValue;
