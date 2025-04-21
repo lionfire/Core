@@ -78,6 +78,8 @@ public class WebHostConfig : HasPortsConfigBase, IHasConfigLocation, IWebHostCon
 
     #region HTTPS
 
+    public bool DisableTransportSecurityRequirement { get; set; }
+
     public bool Https { get; set; }
     public string? HttpsInterface { get; set; } = "localhost";
     public int? HttpsPortOffset { get; set; } = 1;
