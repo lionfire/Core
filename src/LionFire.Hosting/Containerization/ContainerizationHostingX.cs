@@ -1,5 +1,4 @@
 ﻿using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -15,14 +14,20 @@ public static class ContainerizationHostingX
         => File.Exists("/.dockerenv")
         || File.Exists("/proc/self/cgroup") && File.ReadAllText("/proc/self/cgroup").Contains("docker");
 
-    public static IHostApplicationBuilder TryAddConfigForDocker(this IHostApplicationBuilder hostBuilder, bool reloadOnChange = true, bool force = false, string confDir = "/app/conf")
+
+    public static string DefaultDockerConfigDir { get; set; } = "/app/conf"; // REVIEW: change to conf.d?
+
+    public static IHostApplicationBuilder TryAddConfigForDocker(this IHostApplicationBuilder hostBuilder, bool reloadOnChange = true, bool force = false, bool optional = true, string? configDir = null)
     {
         if (!force && !IsInDockerContainer) return hostBuilder;
 
-        var configFile = Path.Combine(confDir, "appsettings.json");
-        Log.Get(typeof(ReleaseChannelsHostingX).FullName).LogInformation($"Adding configuration source for docker: {configFile}");
-        hostBuilder.Configuration.AddJsonFile(configFile, optional: true, reloadOnChange);
+        var configuredConfigDir = hostBuilder.Configuration.GetValue<string>("ConfigDir");
+
+        if (configuredConfigDir == null)
+        {
+            hostBuilder.AddConfigDir(configDir ?? DefaultDockerConfigDir, reloadOnChange: reloadOnChange, optional: optional);
+        }
+
         return hostBuilder;
     }
-
 }
