@@ -8,5 +8,5 @@ namespace LionFire.Configuration.ReleaseChannels;
 
 public static class ReleaseChannelKeys
 {
-    public const string ReleaseChannel = "releaseChannel";
+    public const string ReleaseChannel = "ReleaseChannel";
 }
