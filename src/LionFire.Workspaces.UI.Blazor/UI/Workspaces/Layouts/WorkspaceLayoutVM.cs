@@ -98,7 +98,14 @@ public partial class WorkspaceLayoutVM : UserLayoutVM
         {
             await WorkspaceSchemas.InitFilesystemSchemas(userWorkspacesService.UserWorkspaces);
 
-             services.RegisterObservablesInDir<Workspace>(ServiceProvider, new DirectoryReferenceSelector(userWorkspacesService.UserWorkspaces) { Recursive = true });
+            try
+            {
+                services.RegisterObservablesInDir<Workspace>(ServiceProvider, new DirectoryReferenceSelector(userWorkspacesService.UserWorkspaces) { Recursive = true });
+            }
+            catch (ObjectDisposedException)
+            {
+
+            }
 
             //services.RegisterObservablesInSubDirForType<Workspace>(ServiceProvider, userWorkspacesService.UserWorkspaces);
 

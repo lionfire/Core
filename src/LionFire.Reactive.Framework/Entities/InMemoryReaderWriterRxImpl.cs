@@ -31,8 +31,9 @@ internal class InMemoryReaderWriterRxImpl<TKey, TValue>
     public IObservableCache<TKey, TKey> Keys => keys.AsObservableCache();
     private readonly SourceCache<TKey, TKey> keys = new(k => k);
 
-    
+
     #endregion
+    public override IObservableCache<Optional<TValue>, TKey> ObservableCache => Values;
 
     #region Write
 
@@ -73,8 +74,9 @@ internal class InMemoryReaderWriterRxImpl<TKey, TValue>
     {
         throw new NotImplementedException();
     }
-    public IDisposable ListenAll() => throw new NotImplementedException();
-
+    public IDisposable ListenAllKeys() => throw new NotImplementedException();
+    public ValueTask<IDisposable> ListenAllValues() => throw new NotImplementedException();
+    //public ValueTask<Optional<TValue>> TryGetValue(TKey key);
     public IObservable<TValue?> GetValueObservable(TKey key)
     {
         throw new NotImplementedException();

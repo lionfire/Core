@@ -9,7 +9,7 @@ public class ServiceInfo
     public ServiceInfo(IHostEnvironment hostEnvironment, IConfiguration configuration)
     {
         App = hostEnvironment.ApplicationName;
-        ReleaseChannel = configuration["releaseChannel"];
+        ReleaseChannel = configuration["ReleaseChannel"];
 
     }
 

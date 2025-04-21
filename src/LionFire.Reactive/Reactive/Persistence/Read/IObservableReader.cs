@@ -25,17 +25,38 @@ public interface IObservableReader<TKey, TValue, TMetadata>
     where TMetadata : notnull
 {
 
+    #region Keys
+
     IObservableCache<TMetadata, TKey> Keys { get; }
+
+    // ENH - Return a task that completes after the initial loading of missing values is complete (like ListenAllValues)
+    IDisposable ListenAllKeys();  // ENH - add CancelationToken parameter for initial load
+
+    #endregion
+
+    #region Values
+
+    // REVIEW - Values redundant with ObservableCache?
 
     /// <summary>
     /// Only subscribe if you want to load (deserialize) all available items
     /// </summary>
     IObservableCache<Optional<TValue>, TKey> Values { get; }
 
+    /// <summary>
+    /// </summary>
+    /// <returns>
+    /// Returns a task that completes after the initial loading of missing values is complete.  TODO: Also wait for initial loading of Keys
+    /// </returns>
+    ValueTask<IDisposable> ListenAllValues(); // ENH - add CancelationToken parameter for initial load
+    IObservableCache<Optional<TValue>, TKey> ObservableCache { get; }
+
+    //ValueTask<Optional<TValue>> TryGetValue(TKey key);
     IObservable<TValue?>? GetValueObservableIfExists(TKey key);
     IObservable<TValue?> GetValueObservable(TKey key);
 
-    IDisposable ListenAll();
+
+    #endregion
 
     /// <summary>
     /// Listen to specified keys (perhaps because they are in view)

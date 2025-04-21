@@ -26,8 +26,18 @@ public static class FsObservableCollectionFactoryX
 
         return services;
     }
-    
-    public static void RegisterObservablesInDir<TValue>(this  IServiceCollection services, IServiceProvider serviceProvider, DirectoryReferenceSelector valuesDirReferenceSelector, bool autosave = true) where TValue : notnull
+
+    public static IServiceCollection RegisterObservablesInDir<TValue>(this IServiceCollection services, IServiceProvider serviceProvider, DirectoryReferenceSelector valuesDirReferenceSelector, bool autosave = true) where TValue : notnull
+    {
+        var x = serviceProvider.RegisterObservablesInDir<TValue>(valuesDirReferenceSelector, autosave);
+        if (x != null)
+        {
+            services.AddSingleton<IObservableReaderWriter<string, TValue>>(x);
+        }
+        return services;
+    }
+
+    public static Func<IServiceProvider, IObservableReaderWriter<string, TValue>> RegisterObservablesInDir<TValue>(this IServiceProvider serviceProvider, DirectoryReferenceSelector valuesDirReferenceSelector, bool autosave = true) where TValue : notnull
     {
         if (valuesDirReferenceSelector.Path is FileReference fileReference) // TODO remove this HARDCODE - allow extensibility via DI instead of this
         {
@@ -37,15 +47,23 @@ public static class FsObservableCollectionFactoryX
                 Recursive = valuesDirReferenceSelector.Recursive,
             };
 
-            var DirectoryTypeOptions = new DirectoryTypeOptions
+            DirectoryTypeOptions DirectoryTypeOptions;
+            try
             {
-                ExtensionConvention = serviceProvider.GetService<IFileExtensionConvention>() ?? Singleton<DefaultExtensionConvention>.Instance,
-            };
+                DirectoryTypeOptions = new DirectoryTypeOptions
+                {
+                    ExtensionConvention = serviceProvider.GetService<IFileExtensionConvention>() ?? Singleton<DefaultExtensionConvention>.Instance,
+                };
+            }
+            catch (ObjectDisposedException)
+            {
+                return null!; // NULLABILITY OVERRIDE
+            }
             DirectoryTypeOptions.SecondExtension = DirectoryTypeOptions.ExtensionConvention.FileExtensionForType(typeof(TValue));
 
             var r = ActivatorUtilities.CreateInstance<HjsonFsDirectoryReaderRx<string, TValue>>(serviceProvider, dirSelector, DirectoryTypeOptions);
             var w = ActivatorUtilities.CreateInstance<HjsonFsDirectoryWriterRx<string, TValue>>(serviceProvider, dirSelector, DirectoryTypeOptions);
-            services.AddSingleton<IObservableReaderWriter<string, TValue>>(sp =>
+            return sp =>
             {
                 var c = new ObservableReaderWriterFromComponents<string, TValue>(r, w);
                 if (autosave)
@@ -53,7 +71,7 @@ public static class FsObservableCollectionFactoryX
                     var disposable = c.AutosaveValueChanges();
                 }
                 return c;
-            });
+            };
         }
         else
         {

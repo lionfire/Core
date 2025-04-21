@@ -57,9 +57,9 @@ public static class OrleansServiceIdX
             result = result.Substring(0, result.IndexOf(','));
             result = result.Replace(".Silo", "");
         }
-        var releaseChannel = configuration["releaseChannel"] ?? DefaultReleaseChannels.Prod.Id;
+        var releaseChannel = configuration["ReleaseChannel"] ?? ReleaseChannels.Prod.Id;
 
-        if (!string.IsNullOrWhiteSpace(releaseChannel) && releaseChannel != DefaultReleaseChannels.Prod.Id)
+        if (!string.IsNullOrWhiteSpace(releaseChannel) && releaseChannel != ReleaseChannels.Prod.Id)
         {
             result += "-" + releaseChannel;
         }

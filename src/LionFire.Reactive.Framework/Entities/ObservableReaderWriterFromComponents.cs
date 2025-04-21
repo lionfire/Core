@@ -30,9 +30,11 @@ public class ObservableReaderWriterFromComponents<TKey, TValue> : IObservableRea
     public IObservableCache<TKey, TKey> Keys => Read.Keys;
 
     public IObservableCache<Optional<TValue>, TKey> Values => Read.Values;
+    public IObservableCache<Optional<TValue>, TKey> ObservableCache => Read.ObservableCache;
 
     //public IObservable<TValue?> GetListener(TKey key) => Read.GetListener(key);
-    public IDisposable ListenAll() => Read.ListenAll();
+    public IDisposable ListenAllKeys() => Read.ListenAllKeys();
+    public ValueTask<IDisposable> ListenAllValues() => Read.ListenAllValues();
 
     public IObservable<TValue?>? GetValueObservableIfExists(TKey key) => Read.GetValueObservableIfExists(key);
 

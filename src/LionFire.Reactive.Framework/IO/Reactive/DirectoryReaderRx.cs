@@ -14,6 +14,8 @@ using System.Text.RegularExpressions;
 using System.Threading;
 using Path = System.IO.Path;
 using LionFire.Reactive;
+using LionFire.Dependencies;
+using Microsoft.Extensions.Logging;
 
 namespace LionFire.IO.Reactive;
 
@@ -28,6 +30,10 @@ public abstract class DirectoryReaderRx<TKey, TValue>
 {
     protected abstract IDirectoryAsync Directory { get; }
     protected abstract string Extension { get; }
+
+    //private static ILogger? Logger => logger ??= DependencyContext.Current?.GetService<ILogger<DirectoryReaderRx<TKey, TValue>>>();
+    //private static ILogger? logger;
+    protected ILogger Logger { get; }
 
     #region Parameters
 
@@ -49,12 +55,21 @@ public abstract class DirectoryReaderRx<TKey, TValue>
 
     #region Lifecycle
 
-    public DirectoryReaderRx(DirectorySelector dir, DirectoryTypeOptions directoryTypeOptions)
+    protected virtual async Task Initialize()
     {
+        await LoadKeys();
+    }
+
+    public DirectoryReaderRx(DirectorySelector dir, DirectoryTypeOptions directoryTypeOptions, ILogger logger, bool deferInit = false)
+    {
+        Logger = logger;
         Dir = dir;
         DirectoryTypeOptions = directoryTypeOptions;
 
-        _ = LoadKeys();
+        if (!deferInit)
+        {
+            _ = Initialize();
+        }
         //_ = LoadValues();
 
         // REVIEW: how do deletions get handled?  When ReadFromFile returns null, it should be removed from the cache.
@@ -92,10 +107,10 @@ public abstract class DirectoryReaderRx<TKey, TValue>
             .SubscribeCount() // Custom extension method (defined below)
             .Subscribe(count =>
             {
-                Console.WriteLine($"Subscriber count changed to: {count}");
+                Debug.WriteLine($"{this.GetType()} - Subscriber count changed to: {count}");
                 if (count == 1)
                 {
-                    listenAllSubscription = ListenAll();
+                    listenAllSubscription = ListenAllKeys();
                     //LoadValues();
                 }
                 else if (count == 0)
@@ -234,10 +249,10 @@ public abstract class DirectoryReaderRx<TKey, TValue>
 
     // ENH: Implement this in one of various ways:
     // - identical to KeyedItems (ObservableCache), but remove items when listening stops.  KeyedItems is still useful for one-shot (manual) loads of data.
-    public IObservableList<TKey> ListeningForValues => listeningForValues; // NOTIMPLEMENTED
-    private SourceList<TKey> listeningForValues = new();
+    //public IObservableList<TKey> ListeningForValues => listeningForValues; // NOTIMPLEMENTED
+    //private SourceList<TKey> listeningForValues = new();
 
-    public IObservableCache<Optional<TValue>, TKey> ObservableCache { get; }
+    public override IObservableCache<Optional<TValue>, TKey> ObservableCache { get; }
 
     private int subscriberCount = 0;
     private readonly object subscriberLock = new object();
@@ -337,25 +352,49 @@ public abstract class DirectoryReaderRx<TKey, TValue>
         });
     }
 
-    public IDisposable ListenAll()
+    public async ValueTask<IDisposable> ListenAllValues()
     {
-        Interlocked.Increment(ref _activeListeners);
+        var newActiveListeners = Interlocked.Increment(ref _activeValueListeners);
+
         var subscription = Disposable.Create(() =>
         {
             // Decrement counter and stop listening when no active listeners remain
-            if (Interlocked.Decrement(ref _activeListeners) == 0)
+            if (Interlocked.Decrement(ref _activeValueListeners) == 0)
             {
-                StopListeningAll();
+                StopListeningToAllValues();
             }
         });
-        StartListeningAll();
+        if (newActiveListeners == 1)
+        {
+            await StartListeningToAllValues();
+        }
         return subscription;
     }
-    private int _activeListeners = 0;
+    private volatile int _activeValueListeners = 0;
 
-    void OnItem(TKey key, Optional<TValue> value)
+    public IDisposable ListenAllKeys()
     {
-        Debug.WriteLine($"OnItem({key}, {value})");
+        var newActiveListeners = Interlocked.Increment(ref _activeKeyListeners);
+
+        var subscription = Disposable.Create(() =>
+        {
+            // Decrement counter and stop listening when no active listeners remain
+            if (Interlocked.Decrement(ref _activeKeyListeners) == 0)
+            {
+                StopListeningToAllKeys();
+            }
+        });
+        if (newActiveListeners == 1)
+        {
+            StartListeningToAllKeys();
+        }
+        return subscription;
+    }
+    private volatile int _activeKeyListeners = 0;
+
+    void OnValue(TKey key, Optional<TValue> value)
+    {
+        Logger?.LogInformation($"OnValue({key}, {value})");
         this.values.AddOrUpdate((key, value));
     }
 
@@ -380,7 +419,37 @@ public abstract class DirectoryReaderRx<TKey, TValue>
     IDisposable? listeningAllSubscription;
     IDisposable? listeningAll_KeysSubscription;
 
-    private void StartListeningAll()
+    private async ValueTask StartListeningToAllValues()
+    {
+        var toLoad = values.KeyValues.Where(kv => !kv.Value.optional.HasValue);
+
+        ValuesListeningToKeysSubscription = ListenAllKeys();
+
+        //if (toLoad.Any())
+        //{
+        //    await Task.WhenAll(toLoad.Select(x => TryGetValue(x.Key).AsTask()));
+        //}
+    }
+
+    //public ValueTask<Optional<TValue>> TryGetValue(TKey key)
+    //{
+    //    var result = values.Lookup(key);
+    //    Debug.WriteLine($"TryGetValue {key}: already has value: {result.HasValue}");
+
+    //    if (result.HasValue)
+    //    {
+    //        if (result.Value.optional.HasValue)
+    //        {
+    //            return ValueTask.FromResult(result.Value.optional);
+    //        }
+    //    }
+
+    //    throw new NotImplementedException();
+    //}
+
+    public bool IsListeningToValues => ValuesListeningToKeysSubscription != null;
+
+    private void StartListeningToAllKeys()
     {
         listeningAll_KeysSubscription = Keys.Connect().Subscribe();
 
@@ -397,7 +466,16 @@ public abstract class DirectoryReaderRx<TKey, TValue>
                             {
                                 var key = change.Key;
                                 su.AddOrUpdate((change.Key, GetValueObservable(change.Key)
-                                    .Subscribe(v => OnItem(key, v))));
+                                    .Subscribe(v => OnValue(key, v))));
+                                if (!values.Lookup(change.Key).HasValue)
+                                {
+                                    // Add an initial placeholder in the values collection, even though we haven't loaded the value yet. GetValueObservable should load it imminently.
+                                    values.AddOrUpdate((change.Key, Optional<TValue>.None));
+                                    if (IsListeningToValues)
+                                    {
+                                        // TODO: Queue load?
+                                    }
+                                }
                             }
                             break;
                         case ChangeReason.Remove:
@@ -422,7 +500,14 @@ public abstract class DirectoryReaderRx<TKey, TValue>
         });
     }
 
-    private void StopListeningAll()
+    IDisposable? ValuesListeningToKeysSubscription;
+    private void StopListeningToAllValues()
+    {
+        ValuesListeningToKeysSubscription?.Dispose();
+        ValuesListeningToKeysSubscription = null;
+    }
+
+    private void StopListeningToAllKeys()
     {
         listeningAll_KeysSubscription?.Dispose();
         listeningAll_KeysSubscription = null;

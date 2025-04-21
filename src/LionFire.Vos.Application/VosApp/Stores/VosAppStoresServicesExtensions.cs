@@ -11,6 +11,8 @@ using Microsoft.Extensions.Configuration;
 using System;
 using LionFire.FlexObjects;
 using LionFire.Hosting;
+using System.Runtime.InteropServices;
+using System.Diagnostics;
 
 namespace LionFire.Services
 {
@@ -124,11 +126,27 @@ namespace LionFire.Services
 
         public static IServiceCollection AddPlatformSpecificStores(this IServiceCollection services, AppInfo appInfo)
         {
-            services.AddWindowsStores(appInfo);
-#if TODO
-            services.AddLinuxStores(appInfo);
-            services.AddMacStores(appInfo);
-#endif
+            if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+            {
+                services.AddWindowsStores(appInfo);
+            }
+            else if (RuntimeInformation.IsOSPlatform(OSPlatform.Linux))
+            {
+                services.AddLinuxStores(appInfo);
+            }
+            else if (RuntimeInformation.IsOSPlatform(OSPlatform.OSX))
+            {
+                services.AddMacStores(appInfo);
+            }
+            else if (OperatingSystem.IsBrowser())
+            {
+                Debug.WriteLine("Running in a browser (Blazor WebAssembly)");
+            }
+            else
+            {
+                Debug.WriteLine("Running on an unknown platform");
+            }
+
             return services;
         }
 

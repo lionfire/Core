@@ -1,9 +1,11 @@
 ﻿using DynamicData.Kernel;
+using LionFire.Dependencies;
 using LionFire.ExtensionMethods.Poco.Getters;
 using LionFire.IO.Reactive.Filesystem;
 using LionFire.Persistence.Filesystemlike;
 using LionFire.Persistence.Persisters;
 using LionFire.Reactive.Persistence;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Resilience;
 using Polly;
 using Polly.Registry;
@@ -33,30 +35,69 @@ where TValue : notnull
 
     #region Lifecycle
 
-    public HjsonFsDirectoryReaderRx(DirectorySelector dir, DirectoryTypeOptions directoryTypeOptions, ResiliencePipelineProvider<string> resiliencePipelineProvider) : base(dir, directoryTypeOptions)
+    public HjsonFsDirectoryReaderRx(DirectorySelector dir, DirectoryTypeOptions directoryTypeOptions, ResiliencePipelineProvider<string> resiliencePipelineProvider, ILogger<HjsonFsDirectoryReaderRx<TKey, TValue>> logger) : base(dir, directoryTypeOptions, logger, deferInit: true)
     {
         ResiliencePipelineProvider = resiliencePipelineProvider ?? throw new ArgumentNullException();
         retryOnFileChange_Slow = ResiliencePipelineProvider.GetPipeline(FilesystemRetryPolicy.OnFileChange.Slow) ?? throw new ArgumentNullException();
 
+        _ = Initialize();
     }
 
     #endregion
 
     protected override IObservable<TValue?> CreateValueObservable(TKey key)
     {
+        Logger?.LogInformation("CreateValueObservable {0}", key);
         var filePath = GetFilePath(key);
 
         return Observable.Create<TValue?>(observer =>
         {
-            Console.WriteLine("Listening to " + filePath);
+            var watcher = new FileSystemWatcher(Path.GetDirectoryName(filePath) ?? "", Path.GetFileName(filePath) ?? throw new ArgumentNullException("key => " + nameof(filePath)))
+            {
+                NotifyFilter = NotifyFilters.LastWrite | NotifyFilters.FileName | NotifyFilters.Size
+            };
+
+            FileSystemEventHandler onChangedOrCreated = async (s, e) =>
+            {
+                //if (e.ChangeType == WatcherChangeTypes.Changed
+                //|| e.ChangeType == WatcherChangeTypes.Created
+                //)
+                //{
+                try
+                {
+                    var sw = Stopwatch.StartNew();
+                    var value = await ReadFromFile(filePath);
+                    Logger?.LogInformation("Listening to {0}  ...loaded changes in {1}ms", filePath, sw.ElapsedMilliseconds);
+                    observer.OnNext(value.HasValue ? value.Value : default);
+                }
+                catch (Exception ex)
+                {
+                    observer.OnError(ex);
+                }
+                //}
+            };
+            FileSystemEventHandler onDeleted = (s, e) =>
+            {
+                observer.OnNext(default);
+            };
+
+            watcher.Changed += onChangedOrCreated;
+            watcher.Created += onChangedOrCreated;
+            watcher.Deleted += onDeleted;
+            watcher.EnableRaisingEvents = true;
+
+            // Initial load
             _ = Task.Run(async () =>
             {
 
                 if (File.Exists(filePath))
                 {
+                    Logger?.LogInformation($"Listening to {filePath}");
                     try
                     {
+                        var sw = Stopwatch.StartNew();
                         var value = await ReadFromFile(filePath);
+                        Logger?.LogInformation($"Listening to {filePath}  ...loaded in {sw.ElapsedMilliseconds}ms");
                         observer.OnNext(value.HasValue ? value.Value : default);
                     }
                     catch (Exception ex)
@@ -65,58 +106,34 @@ where TValue : notnull
                         //return Disposable.Empty; // Early exit on error
                     }
                 }
-            });
-
-            var watcher = new FileSystemWatcher(Path.GetDirectoryName(filePath) ?? "", Path.GetFileName(filePath) ?? throw new ArgumentNullException("key => " + nameof(filePath)))
-            {
-                NotifyFilter = NotifyFilters.LastWrite | NotifyFilters.FileName | NotifyFilters.Size
-            };
-
-            FileSystemEventHandler onChanged = async (s, e) =>
-            {
-                if (e.ChangeType == WatcherChangeTypes.Changed 
-                || e.ChangeType == WatcherChangeTypes.Created 
-                || e.ChangeType == WatcherChangeTypes.Deleted)
+                else
                 {
-                    try
-                    {
-                        var value = await ReadFromFile(filePath);
-                        observer.OnNext(value.HasValue ? value.Value : default);
-                    }
-                    catch (Exception ex)
-                    {
-                        observer.OnError(ex);
-                    }
+                    Logger?.LogInformation($"Listening to {filePath}, but it does not exist");
                 }
-            };
-
-            watcher.Changed += onChanged;
-            watcher.Created += onChanged;
-            watcher.Deleted += onChanged;
-            watcher.EnableRaisingEvents = true;
+            });
 
             return Disposable.Create(() =>
             {
-                Debug.WriteLine("Stopping listening to " + filePath);
+                Logger?.LogInformation($"Stopping listening to {filePath}");
 
                 watcher.EnableRaisingEvents = false;
-                watcher.Changed -= onChanged;
-                watcher.Created -= onChanged;
-                watcher.Deleted -= onChanged;
+                watcher.Changed -= onChangedOrCreated;
+                watcher.Created -= onChangedOrCreated;
+                watcher.Deleted -= onDeleted;
                 watcher.Dispose();
             });
         });
     }
     protected override async ValueTask<Optional<TValue>> ReadFromFile(string filePath)
     {
-        if(retryOnFileChange_Slow == null)
+        if (retryOnFileChange_Slow == null)
         {
             throw new ObjectDisposedException(""); // REVIEW - how can this happen?
         }
 
         var bytes = await retryOnFileChange_Slow.ExecuteAsync(async context =>
         {
-            Debug.WriteLine("Reading " + filePath);
+            Logger?.LogInformation("Reading " + filePath);
             // TODO: File Exists check only after ReadAllBytesAsync fails (with what exception?)
 
             if (!File.Exists(filePath)) return null; // TODO Async
