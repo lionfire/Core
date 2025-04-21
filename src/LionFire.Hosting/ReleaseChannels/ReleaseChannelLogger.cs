@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.Configuration;
+﻿using LionFire.Deployment;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using System.Threading;
@@ -11,7 +12,17 @@ public class ReleaseChannelLogger(ILogger<ReleaseChannelLogger> logger, IConfigu
 {
     public Task StartAsync(CancellationToken cancellationToken)
     {
-        logger.LogInformation($"Release channel: {configuration["releaseChannel"]}");
+        var id = configuration["ReleaseChannel"];
+
+        var releaseChannel = ReleaseChannels.TryParse(id);
+        if (releaseChannel == null)
+        {
+            logger.LogInformation($"Release channel: \"{configuration["ReleaseChannel"]}\"");
+        }
+        else
+        {
+            logger.LogInformation($"Release channel: {releaseChannel}");
+        }
         return Task.CompletedTask;
     }
 

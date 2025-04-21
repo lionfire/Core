@@ -8,9 +8,9 @@ namespace LionFire.Deployment
     {
         public int Compare(string? x, string? y)
         {
-            if (DefaultReleaseChannels.Dictionary.TryGetValue(x, out var xRC) &&
-            DefaultReleaseChannels.Dictionary.TryGetValue(y, out var yRC)) {
-                return xRC.precedence == yRC.precedence ? 0 : (xRC.precedence > yRC.precedence) ? 1 : -1;
+            if (ReleaseChannels.Dictionary.TryGetValue(x, out var xRC) &&
+            ReleaseChannels.Dictionary.TryGetValue(y, out var yRC)) {
+                return xRC.Precedence == yRC.Precedence ? 0 : (xRC.Precedence > yRC.Precedence) ? 1 : -1;
             }
             return 0;
         }

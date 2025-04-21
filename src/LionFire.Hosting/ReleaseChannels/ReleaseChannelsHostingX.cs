@@ -68,6 +68,8 @@ public static class ReleaseChannelsHostingX
         return hostBuilder;
     }
 
+    
+
     static string configDirFromEnv => Environment.GetEnvironmentVariable($"DOTNET_ConfigDir");
     static string configDir => configDirFromEnv ?? Environment.CurrentDirectory;
 
