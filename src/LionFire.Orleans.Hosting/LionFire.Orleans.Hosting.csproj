@@ -7,6 +7,13 @@
 	</PropertyGroup>
 
 	<ItemGroup>
+	  <None Remove="SQL\Postgres\PostgreSQL-Clustering.sql" />
+	  <None Remove="SQL\Postgres\PostgreSQL-Main.sql" />
+	  <None Remove="SQL\Postgres\PostgreSQL-Persistence.sql" />
+	  <None Remove="SQL\Postgres\PostgreSQL-Reminders.sql" />
+	</ItemGroup>
+
+	<ItemGroup>
 		<FrameworkReference Include="Microsoft.AspNetCore.App" />
 	</ItemGroup>
 
@@ -14,6 +21,7 @@
 		<PackageReference Include="Microsoft.Orleans.Clustering.Consul" />
 		<PackageReference Include="Microsoft.Orleans.Clustering.Redis" />
 		<PackageReference Include="Microsoft.Orleans.Server" />
+		<PackageReference Include="Npgsql" />
 		<PackageReference Include="OrleansDashboard" />
 
 	</ItemGroup>
@@ -36,6 +44,13 @@
 
 	<ItemGroup>
 	  <Orleans_CodeGenInputs Remove="Hosting\ClusterDiscovery.cs" />
+	</ItemGroup>
+
+	<ItemGroup>
+	  <EmbeddedResource Include="SQL\Postgres\PostgreSQL-Clustering.sql" />
+	  <EmbeddedResource Include="SQL\Postgres\PostgreSQL-Main.sql" />
+	  <EmbeddedResource Include="SQL\Postgres\PostgreSQL-Persistence.sql" />
+	  <EmbeddedResource Include="SQL\Postgres\PostgreSQL-Reminders.sql" />
 	</ItemGroup>
 
 </Project>

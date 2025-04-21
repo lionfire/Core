@@ -72,9 +72,9 @@ public class LionFireSiloConfigurator
             //result = result.Substring(0, result.IndexOf(','));
             //result = result.Replace(".Silo", "");
 
-            //var releaseChannel = Configuration["releaseChannel"] ?? DefaultReleaseChannels.Prod.Id;
+            //var releaseChannel = Configuration["ReleaseChannel"] ?? ReleaseChannels.Prod.Id;
             
-            //if (!string.IsNullOrWhiteSpace(releaseChannel) && releaseChannel != DefaultReleaseChannels.Prod.Id)
+            //if (!string.IsNullOrWhiteSpace(releaseChannel) && releaseChannel != ReleaseChannels.Prod.Id)
             //{
             //    result += "-" + releaseChannel;
             //}

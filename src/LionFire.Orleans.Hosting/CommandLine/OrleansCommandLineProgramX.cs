@@ -5,6 +5,7 @@ using System.CommandLine;
 
 namespace LionFire.Hosting;
 
+
 public static class OrleansCommandLineProgramX
 {
     public static IEnumerable<Option> GlobalOptions
