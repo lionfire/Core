@@ -78,7 +78,15 @@ public class WebHostConfig : HasPortsConfigBase, IHasConfigLocation, IWebHostCon
 
     #region HTTPS
 
-    public bool DisableTransportSecurityRequirement { get; set; }
+    /// <summary>
+    /// If true, allows OIDC login on http: (only recommended for localhost development.)
+    /// 
+    /// TODO: 
+    /// null interpretation:
+    /// - Default to true if ReleaseChannel == "local"
+    /// - else default to false
+    /// </summary>
+    public bool? DisableTransportSecurityRequirement { get; set; }
 
     public bool Https { get; set; }
     public string? HttpsInterface { get; set; } = "localhost";

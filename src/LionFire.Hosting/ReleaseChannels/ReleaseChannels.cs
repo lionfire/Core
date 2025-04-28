@@ -39,8 +39,10 @@ public static class ReleaseChannels
 
     public static ReleaseChannel? TryParse(string? id)
     {
+        id = id?.ToKebabCase();
+
         if (id == null) return null;
-        if (Dictionary.TryGetValue(id, out ReleaseChannel? value)) return value;
+        //if (Dictionary.TryGetValue(id, out ReleaseChannel? value)) return value;
         if (KebabDictionary.TryGetValue(id, out ReleaseChannel? value2)) return value2;
 
         return null;

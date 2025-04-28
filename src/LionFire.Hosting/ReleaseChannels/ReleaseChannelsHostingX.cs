@@ -1,5 +1,4 @@
-﻿using LionFire.Configuration.ReleaseChannels;
-using LionFire.Deployment;
+﻿using LionFire.Deployment;
 using LionFire.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -38,7 +37,7 @@ public static class ReleaseChannelsHostingX
         var value = hostBuilder.Configuration[name];
         return value;
     }
-
+        
     public static IHostApplicationBuilder ReleaseChannel(this IHostApplicationBuilder hostBuilder, bool reloadOnChange = true)
     {
         hostBuilder.Services.AddHostedService<ReleaseChannelLogger>();

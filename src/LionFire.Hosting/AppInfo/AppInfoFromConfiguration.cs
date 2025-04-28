@@ -34,7 +34,7 @@ public partial class AppInfoFromConfiguration // RENAME to be simpler
         Logger.LogInformation("AppInfoFromConfiguration.ApplicationNameOrFallback {ApplicationNameOrFallback}", ApplicationNameOrFallback(configuration));
         Logger.LogInformation("Environment: {Environment}", Environment(configuration));
         Logger.LogInformation("ContentRoot: {ContentRoot}", ContentRoot(configuration));
-        Logger.LogInformation("ReleaseChannel: {ReleaseChannel}", configuration[LionFire.Configuration.ReleaseChannels.ReleaseChannelKeys.ReleaseChannel]);
+        Logger.LogInformation("ReleaseChannel: {ReleaseChannel}", configuration[Deployment.ReleaseChannelKeys.ReleaseChannel]);
     }
 }
 
