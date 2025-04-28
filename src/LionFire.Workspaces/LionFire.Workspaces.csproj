@@ -18,6 +18,7 @@
 	<ItemGroup>
 	  <ProjectReference Include="..\LionFire.Reactive.Framework\LionFire.Reactive.Framework.csproj" />
 	  <ProjectReference Include="..\LionFire.Schemas.Filesystem\LionFire.Schemas.Filesystem.csproj" />
+	  <ProjectReference Include="..\LionFire.Structures\LionFire.Structures.csproj" />
 	  <ProjectReference Include="..\LionFire.Workspaces.Abstractions\LionFire.Workspaces.Abstractions.csproj" />
 	</ItemGroup>
 

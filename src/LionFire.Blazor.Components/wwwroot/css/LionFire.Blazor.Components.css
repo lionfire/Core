@@ -640,3 +640,15 @@ body.dark .mud-input-label-outlined {
     .lf-field .value {
         font-weight: 700;
     }
+
+
+/* text align */
+.text-align-right {
+    text-align: right !important;
+}
+.text-align-left {
+    text-align: left !important;
+}
+.text-align-center {
+    text-align: center !important;
+}

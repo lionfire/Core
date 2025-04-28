@@ -1,7 +1,6 @@
 ﻿using DynamicData;
+using LionFire.Execution;
 using LionFire.FlexObjects;
-using LionFire.IO.Reactive.Filesystem;
-using LionFire.Persistence.Filesystem;
 using LionFire.Reactive.Persistence;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -16,41 +15,6 @@ using System.Text;
 using System.Threading.Tasks;
 
 namespace LionFire.Workspaces.Services;
-
-public interface IWorkerStatus
-{
-    RunnerState RunnerState { get; }
-}
-
-public partial class WorkerStatus : ReactiveObject, IFlex, IWorkerStatus
-{
-    object? IFlex.FlexData { get; set; }
-
-    #region State
-
-    [Reactive]
-    private RunnerState _runnerState = RunnerState.Unspecified;
-
-    public IObservableList<object>? Faults => faults;
-    public SourceList<object> faults = new();
-
-    #endregion
-}
-
-public class DirectoryWorkspaceDocumentService<TValue, TValueVM, TRunner> : WorkspaceDocumentService<string, TValue, TValueVM, TRunner>
-    //where TKey : notnull
-    where TValue : notnull
-    where TValueVM : IEnablable
-    where TRunner : IRunner<TValue>
-{
-    static string dir = "C:\\ProgramData\\LionFire\\Trading\\Users";
-    public DirectoryWorkspaceDocumentService(IServiceProvider serviceProvider, ILogger<DirectoryWorkspaceDocumentService<TValue, TValueVM, TRunner>> logger) : base(serviceProvider, logger,
-        serviceProvider
-            .RegisterObservablesInDir<TValue>(new IO.Reactive.DirectoryReferenceSelector(new FileReference(dir)) { Recursive = true })(serviceProvider)
-        )
-    {
-    }
-}
 
 public abstract class WorkspaceDocumentService<TKey, TValue, TValueVM, TRunner> : IHostedService
 where TKey : notnull

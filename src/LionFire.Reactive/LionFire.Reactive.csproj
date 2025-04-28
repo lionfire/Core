@@ -10,6 +10,10 @@
 	<ItemGroup>
 		<PackageReference Include="DynamicData" />
 		<PackageReference Include="ReactiveUI" />
+		<PackageReference Include="ReactiveUI.SourceGenerators">
+		  <PrivateAssets>all</PrivateAssets>
+		  <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+		</PackageReference>
 	</ItemGroup>
 
 	<ItemGroup>

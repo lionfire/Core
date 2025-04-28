@@ -3,6 +3,7 @@ using LionFire.Workspaces;
 using LionFire.Workspaces.Services;
 using Microsoft.Extensions.DependencyInjection;
 using LionFire.IO.Reactive.Filesystem;
+using LionFire.Execution;
 
 namespace LionFire.Hosting;
 
