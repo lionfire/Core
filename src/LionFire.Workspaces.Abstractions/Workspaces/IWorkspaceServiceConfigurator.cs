@@ -9,5 +9,5 @@ namespace LionFire.Workspaces;
 
 public interface IWorkspaceServiceConfigurator
 {
-    ValueTask ConfigureWorkspaceServices(IServiceCollection services, UserWorkspacesService userWorkspacesService, string workspaceId);
+    ValueTask ConfigureWorkspaceServices(IServiceCollection services, UserWorkspacesService userWorkspacesService, string? workspaceId);
 }

@@ -19,7 +19,7 @@ public class WorkspaceTypesConfigurator : IWorkspaceServiceConfigurator
         ServiceProvider = serviceProvider;
     }
 
-    public async ValueTask ConfigureWorkspaceServices(IServiceCollection services, UserWorkspacesService userWorkspacesService, string workspaceId)
+    public async ValueTask ConfigureWorkspaceServices(IServiceCollection services, UserWorkspacesService userWorkspacesService, string? workspaceId)
     {
         if (userWorkspacesService.UserWorkspaces == null) return;
 

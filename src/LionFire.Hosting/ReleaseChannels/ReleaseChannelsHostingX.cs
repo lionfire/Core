@@ -39,8 +39,15 @@ public static class ReleaseChannelsHostingX
         return value;
     }
 
-    // DUPE: ReleaseChannel(IHostBuilder)
-    public static IHostApplicationBuilder ReleaseChannel(this IHostApplicationBuilder hostBuilder, bool reloadOnChange = true)
+    /// <summary>
+    /// If not set, default to:
+    /// - Test, if LionFireEnvironment.IsUnitTest
+    /// - Local, if DOTNET_ENVIRONMENT=Development
+    /// </summary>
+    /// <param name="hostBuilder"></param>
+    /// <param name="reloadOnChange"></param>
+    /// <returns></returns>
+    public static IHostApplicationBuilder ReleaseChannel(this IHostApplicationBuilder hostBuilder, bool reloadOnChange = true) // DUPE: ReleaseChannel(IHostBuilder)
     {
         hostBuilder.Services.AddHostedService<ReleaseChannelLogger>();
 
@@ -72,14 +79,6 @@ public static class ReleaseChannelsHostingX
         return hostBuilder;
     }
 
-    /// <summary>
-    /// If not set, default to:
-    /// - Test, if LionFireEnvironment.IsUnitTest
-    /// - Local, if DOTNET_ENVIRONMENT=Development
-    /// </summary>
-    /// <param name="hostBuilder"></param>
-    /// <param name="reloadOnChange"></param>
-    /// <returns></returns>
     public static IHostBuilder ReleaseChannel(this IHostBuilder hostBuilder, bool reloadOnChange = true) // DUPE: ReleaseChannel(IHostApplicationBuilder)
     {
         hostBuilder.ConfigureServices(s => s.AddHostedService<ReleaseChannelLogger>());
@@ -107,8 +106,6 @@ public static class ReleaseChannelsHostingX
 
         return hostBuilder;
     }
-
-
 
     static string configDirFromEnv => Environment.GetEnvironmentVariable($"DOTNET_ConfigDir");
     static string configDir => configDirFromEnv ?? Environment.CurrentDirectory;

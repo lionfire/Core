@@ -99,6 +99,6 @@ public partial class UserLayoutVM : ReactiveObject, IDisposable
     }
 
     #endregion
-    
+
     #endregion
 }

@@ -16,20 +16,46 @@ using System.Threading.Tasks;
 
 namespace LionFire.Workspaces.Services;
 
-public abstract class WorkspaceDocumentService<TKey, TValue, TValueVM, TRunner> : IHostedService
+public interface IWorkspaceDocumentRunner<TKey, TValue>
+{
+
+    Type RunnerType { get; }
+}
+
+public class WorkspaceDocumentRunner<TKey, TValue, TRunner> : IWorkspaceDocumentRunner<TKey, TValue>
+{
+    public Type RunnerType => typeof(TRunner);
+}
+
+
+public abstract class WorkspaceDocumentService<TKey, TValue /*,TValueVM, TRunner*/> : IHostedService
 where TKey : notnull
 where TValue : notnull
-where TValueVM : IEnablable
-where TRunner : IRunner<TValue>
+//where TValueVM : IEnablable
+//where TRunner : IRunner<TValue> // DEPRECATED - TRunner (use IWorkspaceDocumentRunner<TKey, TValue> instead, which allows 0 or more instead of exactly one)
 {
 
     public IObservableReaderWriter<TKey, TValue> Data { get; }
     public IServiceProvider ServiceProvider { get; }
     public ILogger Logger { get; }
+    public IEnumerable<IWorkspaceDocumentRunner<TKey, TValue>> RunnerServices { get; }
 
-    public WorkspaceDocumentService(IServiceProvider serviceProvider, ILogger logger, IObservableReaderWriter<TKey, TValue> data)
+    public WorkspaceDocumentService(IServiceProvider serviceProvider, ILogger logger, IObservableReaderWriter<TKey, TValue> data
+        )
     {
         ServiceProvider = serviceProvider;
+
+        RunnerServices = ServiceProvider.GetRequiredService<IEnumerable<IWorkspaceDocumentRunner<TKey, TValue>>>();
+        if (RunnerServices.Any()) { runners2 = [.. Enumerable.Range(0, RunnerServices.Count()).Select(_ => new ConcurrentDictionary<TKey, IObserver<TValue>>())]; }
+
+        foreach (var runnerService in RunnerServices)
+        {
+            if (!runnerService.RunnerType.IsAssignableTo(typeof(IObserver<TValue>)))
+            {
+                throw new ArgumentException($"RunnerType {runnerService.RunnerType} must implement IObserver<{typeof(TValue).FullName}>");
+            }
+        }
+
         Logger = logger;
         Data = data;
 
@@ -71,7 +97,8 @@ where TRunner : IRunner<TValue>
         return Task.CompletedTask;
     }
 
-    ConcurrentDictionary<TKey, TRunner> runners = new();
+    //ConcurrentDictionary<TKey, TRunner> runners = new();
+    List<ConcurrentDictionary<TKey, IObserver<TValue>>> runners2 = new();
 
     private async ValueTask OnValue(DynamicData.IChangeSet<DynamicData.Kernel.Optional<TValue>, TKey> changeSet)
     {
@@ -98,10 +125,19 @@ where TRunner : IRunner<TValue>
 
             void onValue(TKey k, TValue v)
             {
-                var runner = runners.GetOrAdd(k, _ => ActivatorUtilities.CreateInstance<TRunner>(ServiceProvider));
-                Logger.LogInformation($"onValue: {change.Reason.ToString()} {(change.Current.HasValue ? change.Current.Value : null)}");
-                runner.OnNext(v);
+                foreach (var runnerService in RunnerServices.Select((value, i) => new { i, value }))
+                {
+                    var runner = runners2[runnerService.i].GetOrAdd(k, _ => (IObserver<TValue>)ActivatorUtilities.CreateInstance(ServiceProvider, runnerService.value.RunnerType));
+                    Logger.LogInformation($"onValue: {change.Reason.ToString()} {(change.Current.HasValue ? change.Current.Value : null)}");
+                    runner.OnNext(v);
+                }
 
+                // OLD
+                //{
+                //    var runner = runners.GetOrAdd(k, _ => ActivatorUtilities.CreateInstance<TRunner>(ServiceProvider));
+                //    Logger.LogInformation($"onValue: {change.Reason.ToString()} {(change.Current.HasValue ? change.Current.Value : null)}");
+                //    runner.OnNext(v);
+                //}
             }
         }
         if (tasks != null) await Task.WhenAll(tasks);

@@ -15,10 +15,12 @@ using System.Reactive.Linq;
 using LionFire.IO.Reactive.Filesystem;
 using LionFire.IO.Reactive;
 using LionFire.Blazor.Components;
+using LionFire.FlexObjects;
 
 namespace LionFire.Workspaces.UI;
 
 public partial class WorkspaceLayoutVM : UserLayoutVM
+    //, IFlex
 {
     #region Dependencies (some of them)
 
@@ -57,6 +59,12 @@ public partial class WorkspaceLayoutVM : UserLayoutVM
     }
 
     protected override bool DeferPostConstructor => true;
+
+    #endregion
+
+    #region State
+
+    //object? IFlex.FlexData { get; set; }
 
     #endregion
 
@@ -126,7 +134,6 @@ public partial class WorkspaceLayoutVM : UserLayoutVM
     private string? _workspaceId;
 
 
-
     public string EffectiveWorkspaceName => WorkspaceId ?? "Anonymous";
 
     private async ValueTask OnWorkspaceChanged()
@@ -149,7 +156,7 @@ public partial class WorkspaceLayoutVM : UserLayoutVM
         WorkspaceServices = services.BuildServiceProvider();
     }
 
-    protected virtual async ValueTask ConfigureWorkspaceServices(IServiceCollection services, string workspaceId)
+    protected virtual async ValueTask ConfigureWorkspaceServices(IServiceCollection services, string? workspaceId)
     {
         if (WorkspacesDir != null)
         {
@@ -165,4 +172,6 @@ public partial class WorkspaceLayoutVM : UserLayoutVM
 
     #endregion
 
+
+    
 }

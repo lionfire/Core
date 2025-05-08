@@ -137,6 +137,11 @@ public abstract class DirectoryReaderRx<TKey, TValue>
     {
         Debug.WriteLine("Keys subscribe: " + Dir.Path);
 
+        if (!System.IO.Directory.Exists(Dir.Path))
+        {
+            System.IO.Directory.CreateDirectory(Dir.Path);
+        }
+
         keysWatcher = new FileSystemWatcher(Dir.Path)
         {
             NotifyFilter = NotifyFilters.FileName | NotifyFilters.LastWrite,

@@ -26,7 +26,7 @@ public class DisposableBaseViewModel : ReactiveObject, IDisposable
         NestedViewModelSubscriptions = new Dictionary<string, IDisposable>();
     }
 
-    protected T RaiseAndSetNestedViewModelIfChanged<T>(
+    protected T? RaiseAndSetNestedViewModelIfChanged<T>(
         ref T nestedViewModel,
         T newValue,
         [CallerMemberName] string propertyName = null)

@@ -9,7 +9,7 @@
     <div class="value">
         @if (Workspaces != null)
         {
-            <MudSelect Label="Workspace" T="string" @bind-Value="CurrentWorkspace" Variant="Variant.Filled" Style="width: 100%">
+            <MudSelect Label="Workspace" T="string" @bind-Value="internalSelectedId" Variant="Variant.Filled" Style="width: 100%">
                 @foreach (var key in Workspaces.Keys.Keys)
                 {
                     <MudSelectItem Value="@key">@key</MudSelectItem>
@@ -18,7 +18,7 @@
         }
         else
         {
-            <text>(Workspaces not available) @Workspace</text>
+            <text>(Workspaces not available) @SelectedId</text>
         }
     </div>
 
@@ -30,26 +30,25 @@
     public IServiceProvider? UserServices { get; set; }
 
     [Parameter]
-    public string? Workspace { get; set; }
+    public string? SelectedId { get; set; }
+    [Parameter]
+    public EventCallback<string?> SelectedIdChanged { get; set; }
 
     [Parameter]
     public WorkspaceLayoutVM? VM { get; set; }
 
-    [Parameter]
-    // public EventCallback<string> WorkspaceChanged { get; set; }
-    public EventCallback<string?> WorkspaceChanged { get; set; }
 
     IObservableReaderWriter<string, Workspace>? Workspaces;
 
-    private string? CurrentWorkspace
+    private string? internalSelectedId
     {
         get => currentWorkspace;
         set
         {
             if (currentWorkspace == value) return;
             currentWorkspace = value;
-            Workspace = value;
-            Task.Run(async () => await InvokeAsync(async () => await WorkspaceChanged.InvokeAsync(currentWorkspace)));
+            // SelectedId = value; // FIXME - setting Parameter!
+            Task.Run(async () => await InvokeAsync(async () => await SelectedIdChanged.InvokeAsync(currentWorkspace)));
         }
     }
     private string? currentWorkspace;
@@ -62,13 +61,13 @@
 
     protected override async Task OnParametersSetAsync()
     {
-        if (Workspace != null)
+        if (SelectedId != null)
         {
-            CurrentWorkspace = Workspace;
+            internalSelectedId = SelectedId;
         }
         else if (Workspaces != null && Workspaces.Keys.Count != 0)
         {
-            _ = Task.Run(() => InvokeAsync(() => CurrentWorkspace = Workspaces.Keys.Keys.First()));
+            _ = Task.Run(() => InvokeAsync(() => internalSelectedId = Workspaces.Keys.Keys.First()));
 
             // if (CurrentWorkspaceChanged.HasDelegate)
             // {

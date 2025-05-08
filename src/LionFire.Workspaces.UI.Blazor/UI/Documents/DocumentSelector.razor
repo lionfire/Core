@@ -1,0 +1,92 @@
+﻿@typeparam TDocument where TDocument : notnull
+
+@using LionFire.Blazor.Components
+@using LionFire.Reactive.Persistence
+
+@using Microsoft.Extensions.DependencyInjection
+
+<div class="lf-field" style="min-width: 20em;">
+    @* <div class="label">Document</div> *@
+
+    <div class="value">
+        @if (Documents != null)
+        {
+            <MudSelect Label="Document" T="string" @bind-Value="internalSelectedId" Variant="Variant.Filled" Style="width: 100%">
+                @foreach (var key in Documents.Keys.Keys)
+                {
+                    <MudSelectItem Value="@key">@key</MudSelectItem>
+                }
+            </MudSelect>
+        }
+        else
+        {
+            <text>(Documents not available) @SelectedId</text>
+        }
+    </div>
+
+</div>
+
+@code {
+
+    [CascadingParameter(Name = "UserServices")]
+    public IServiceProvider? UserServices { get; set; }
+    [CascadingParameter(Name = "WorkspaceServices")]
+    public IServiceProvider? WorkspaceServices { get; set; }
+
+    [Parameter]
+    public string? SelectedId { get; set; }
+
+    [Parameter]
+    public EventCallback<string?> SelectedIdChanged { get; set; }
+
+    [Parameter]
+    public WorkspaceLayoutVM? VM { get; set; }
+
+    #region State
+
+    IObservableReaderWriter<string, TDocument>? Documents;
+
+    #endregion
+
+    private string? internalSelectedId
+    {
+        get => currentDocument;
+        set
+        {
+            if (currentDocument == value) return;
+            currentDocument = value;
+            // SelectedId = value; // FIXME - setting Parameter!
+            Task.Run(async () => await InvokeAsync(async () => await SelectedIdChanged.InvokeAsync(currentDocument)));
+        }
+    }
+    private string? currentDocument;
+
+    // protected override void OnInitialized()
+    // {
+    //     base.OnInitialized();
+        
+    // }
+
+    protected override async Task OnParametersSetAsync()
+    {
+        Documents = VM?.WorkspaceServices?.GetService<IObservableReaderWriter<string, TDocument>>();
+
+        if (SelectedId != null)
+        {
+            internalSelectedId = SelectedId;
+        }
+        else if (Documents != null && Documents.Keys.Count != 0)
+        {
+            _ = Task.Run(() => InvokeAsync(() => internalSelectedId = Documents.Keys.Keys.First()));
+
+            // if (CurrentDocumentChanged.HasDelegate)
+            // {
+            //     await CurrentDocumentChanged.InvokeAsync(CurrentDocument);
+            // }
+        } 
+        await base.OnParametersSetAsync();
+    }
+
+
+
+}

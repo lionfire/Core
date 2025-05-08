@@ -3,6 +3,8 @@ using LionFire.AspNetCore;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Diagnostics.HealthChecks;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Hosting.Server;
+using Microsoft.AspNetCore.Hosting.Server.Features;
 using Microsoft.AspNetCore.Hosting.StaticWebAssets;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.Configuration;
@@ -31,6 +33,16 @@ public static class WebHostFrameworkStartupInitializer
                 services
                      .AddHealthChecksUI(setupSettings: setup =>
                      {
+                         setup.ConfigureApiEndpointHttpclient((services, client) =>
+                         {
+                             var f = services.GetRequiredService<Microsoft.AspNetCore.Hosting.Server.IServer>().Features.Get<IServerAddressesFeature>();
+
+                             var first = f.Addresses.FirstOrDefault();
+                             if (first != null)
+                             {
+                                 client.BaseAddress = new Uri(first);
+                             }
+                         });
                          setup.AddHealthCheckEndpoint("self-detail", $"/health/detail");
                      })
                      //.AddSqliteStorage("Data Source=HealthCheckHistory.sqlite3")
