@@ -122,7 +122,7 @@ public static class DefaultsX
                 // REVIEW: releaseChannel is set to test, but this lets us change releaseChannel to something else while still using settings for testing
                 if (isTest) c.AddJsonFile("appsettings.test.json", optional: true, reloadOnChange: false);
 
-                c.AddEnvironmentVariables(prefix: "LionFire__");
+                c.AddEnvironmentVariables(prefix: "LionFire__");  // REVIEW: Deprecate in favor of DOTNET_?
 
             });
 
