@@ -13,7 +13,7 @@ namespace LionFire.Execution
                 var attrs = pi.GetCustomAttributes<RequiredToEnterStateAttribute>();
                 if (attrs.Where(a => a.State == state).Any())
                 {
-                    ctx.PropertyNotSet(pi);
+                    ctx.PropertyNotNull(pi);
                 }
             }
             return ctx;

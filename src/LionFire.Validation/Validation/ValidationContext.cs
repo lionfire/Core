@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 using System.Threading.Tasks;
 
 namespace LionFire.Validation;
@@ -26,9 +27,15 @@ public static class IValidationExtensions
     /// <returns>Null if no reasons</returns>
     public static string FailReasons(this ValidationContext validation, string separator = null)
     {
+        return validation.Valid ? "" : validation.ToString();
+
+        // OLD - OPTIMIZE: use StringBuilder
         if (separator == null) separator = Environment.NewLine;
         if (validation.Issues == null || !validation.Issues.Any()) return null;
-        return validation.Issues.Select(i => i.Message).Aggregate((x, y) => x + Environment.NewLine + y);
+        return validation.Issues.Select(i => i.Message).Aggregate((x, y) => x 
+        + Environment.NewLine
+        + Environment.NewLine
+        + y);
     }
 }
 //public struct LazyValidation : IValidation
@@ -89,8 +96,24 @@ public struct ValidationContext // : IValidation // RENAME to ValidationOperatio
         issues.Add(issue);
         return this;
     }
-  
+
     #endregion
+
+    public override string ToString()
+    {
+        if (issues == null || issues.Count == 0) return "Valid";
+
+        var sb = new StringBuilder();
+        sb.AppendLine($"{issues.Count} validation issues:");
+        sb.AppendLine();
+        foreach (var issue in issues)
+        {
+            sb.AppendLine(issue.ToString());
+            sb.AppendLine();
+        }
+
+        return sb.ToString();
+    }
 }
 
 //public static class ValidationContextExtensions

@@ -1,11 +1,11 @@
 ﻿using System;
 using System.Linq;
 using System.Reflection;
-using LionFire.Extensions;
 
 namespace LionFire.Validation;
 
-public static class CommonValidateExtensions
+// REVIEW: Merge with ValidateX, or find a better way to organize them
+public static class ValidateX2
 { 
 
     public static ValidationContext MemberNonNull(this ValidationContext ctx, object val, string memberName)
@@ -49,7 +49,8 @@ public static class CommonValidateExtensions
         return context.Valid;
     }
 
-    public static ValidationContext PropertyNotNull(this ValidationContext ctx, string propertyName, object propertyValue = null)
+#nullable enable
+    public static ValidationContext PropertyNotNull(this ValidationContext ctx, string propertyName, object? propertyValue = null)
     {
         if (propertyValue == null)
         {
@@ -61,32 +62,15 @@ public static class CommonValidateExtensions
         }
         return ctx;
     }
-    public static ValidationContext PropertyNotSet(this ValidationContext ctx, PropertyInfo pi, object obj = null)
+    public static ValidationContext PropertyNotNull(this ValidationContext ctx, PropertyInfo propertyInfo)
     {
-        if ((obj ?? ctx.Object).IsDefaultValue(pi))
-        {
-            ctx.AddIssue(new ValidationIssue
-            {
-                Kind = ValidationIssueKind.PropertyNotSet,
-                VariableName = pi.Name,
-            });
-        }
-        return ctx;
-    }
-    public static ValidationContext PropertyNonDefault<T>(this ValidationContext ctx, string propertyName, T value)
-    {
-        if (value.IsDefaultValue())
-        {
-            ctx.AddIssue(new ValidationIssue
-            {
-                Kind = ValidationIssueKind.PropertyNotSet,
-                VariableName = propertyName,
-            });
-        }
-        return ctx;
+        var propertyValue = propertyInfo.GetValue(ctx.Object);
+        return ctx.PropertyNotNull(propertyInfo.Name, propertyValue);
     }
 
-    public static void ValidateMethods(this ValidationContext ctx, object obj = null)
+    
+
+    public static void ValidateMethods(this ValidationContext ctx, object? obj = null)
     {
         if (obj == null) { obj = ctx.Object; }
         if (obj == null) { throw new ArgumentNullException("obj == null and ctx.Object == null"); }

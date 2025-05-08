@@ -25,7 +25,7 @@ namespace LionFire.Validation
         public object Kind { get; set; }
 
         /// <summary>
-        /// Set for PropertyNotSet, FieldNotSet, MemberNotSet, ArgumentNotSet
+        /// Set for PropertyNotDefault, FieldNotSet, MemberNotSet, ArgumentNotSet
         /// </summary>
         public string VariableName { get; set; }
 

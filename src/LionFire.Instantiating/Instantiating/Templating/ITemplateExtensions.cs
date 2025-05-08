@@ -1,5 +1,6 @@
 ﻿using LionFire.Applications.Hosting;
 using LionFire.Dependencies;
+using LionFire.ExtensionMethods.Validation;
 using LionFire.Validation;
 using Microsoft.Extensions.DependencyInjection;
 using System;
