@@ -136,7 +136,7 @@ public partial class WorkspaceLayoutVM : UserLayoutVM
 
     public string EffectiveWorkspaceName => WorkspaceId ?? "Anonymous";
 
-    private async ValueTask OnWorkspaceChanged()
+    protected virtual async ValueTask OnWorkspaceChanged()
     {
         await DoConfigureWorkspaceServices();
     }

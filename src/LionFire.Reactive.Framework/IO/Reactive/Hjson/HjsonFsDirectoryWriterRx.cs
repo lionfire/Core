@@ -83,11 +83,22 @@ where TValue : notnull
             .Subscribe(async _ => await WriteToFile(filePath, (TValue)source));
     }
 
+    #region Write
+
     public ValueTask Write(TKey key, TValue value)
     {
         var filePath = GetFilePath(key);
         return WriteToFile(filePath, value);
     }
+    private async ValueTask WriteToFile(string filePath, TValue value)
+    {
+        await CreateDirIfMissing();
+        var bytes = HjsonSerialization.Serialize(value);
+        await File.WriteAllBytesAsync(filePath, bytes).ConfigureAwait(false);
+    }
+
+    #endregion
+
     public async ValueTask<bool> Remove(TKey key)
     {
         var filePath = GetFilePath(key);
@@ -121,12 +132,7 @@ where TValue : notnull
         directoryExists = true;
     }
 
-    private async ValueTask WriteToFile(string filePath, TValue value)
-    {
-        await CreateDirIfMissing();
-        var bytes = HjsonSerialization.Serialize(value);
-        await File.WriteAllBytesAsync(filePath, bytes).ConfigureAwait(false);
-    }
+
 }
 
 public interface IDictionaryProvider

@@ -9,7 +9,7 @@ namespace LionFire.ExtensionMethods.Validation;
 public static class ValidateObjectX
 {
     /// <summary>
-    /// Create a ValidationContext for the object.
+    /// Create a ValidationContext for the object (or use the ValidationContext if the object is a ValidationContext.)
     /// If the object is IValidatable, Validate will be invoked.
     /// </summary>
     /// <param name="obj"></param>
@@ -17,11 +17,18 @@ public static class ValidateObjectX
     /// <returns></returns>
     public static ValidationContext Validate(this object obj, object validationKind = null)
     {
-        var context = new ValidationContext() { Object = obj, ValidationKind = validationKind };
-
-        if (obj is IValidatable validatable)
+        ValidationContext context;
+        if (obj is ValidationContext existingContext)
         {
-            context = validatable.ValidateThis(context);
+            context = existingContext;
+        }
+        else
+        {
+            context = new ValidationContext() { Object = obj, ValidationKind = validationKind };
+            if (obj is IValidatable validatable)
+            {
+                context = validatable.ValidateThis(context);
+            }
         }
 
         return context;

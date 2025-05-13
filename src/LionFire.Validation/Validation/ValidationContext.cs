@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -32,7 +33,7 @@ public static class IValidationExtensions
         // OLD - OPTIMIZE: use StringBuilder
         if (separator == null) separator = Environment.NewLine;
         if (validation.Issues == null || !validation.Issues.Any()) return null;
-        return validation.Issues.Select(i => i.Message).Aggregate((x, y) => x 
+        return validation.Issues.Select(i => i.Message).Aggregate((x, y) => x
         + Environment.NewLine
         + Environment.NewLine
         + y);
@@ -99,6 +100,23 @@ public struct ValidationContext // : IValidation // RENAME to ValidationOperatio
 
     #endregion
 
+#nullable enable
+    public ValidationContext Validate(IValidatable validatable, [CallerMemberName] string? name = null)
+    {
+        if (validatable == null)
+        {
+            AddIssue(new("Required member missing: " + name));
+            //throw new ArgumentNullException(nameof(validatable)); // Validation exception instead of throwing
+        }
+        else
+        {
+            validatable.ValidateThis(this);
+        }
+        return this;
+    }
+
+    #region Misc
+
     public override string ToString()
     {
         if (issues == null || issues.Count == 0) return "Valid";
@@ -114,6 +132,8 @@ public struct ValidationContext // : IValidation // RENAME to ValidationOperatio
 
         return sb.ToString();
     }
+
+    #endregion
 }
 
 //public static class ValidationContextExtensions

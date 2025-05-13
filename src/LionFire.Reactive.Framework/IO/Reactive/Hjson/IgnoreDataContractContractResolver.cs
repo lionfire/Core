@@ -8,7 +8,9 @@ using System.Runtime.Serialization;
 namespace LionFire.IO.Reactive.Hjson;
 
 /// <summary>
-/// DataContractAttribute infects derived classes, requiring [DataMember].  This resolver eliminates this problem.
+/// -  DataContractAttribute infects derived classes, requiring [DataMember].  This resolver eliminates this problem.
+/// - Ignore STJ JsonIgnoreAttribute
+/// - Ignore LionFire.IgnoreAttribute
 /// </summary>
 /// <remarks>
 /// Inspired by https://stackoverflow.com/a/39300347/208304
@@ -21,7 +23,7 @@ namespace LionFire.IO.Reactive.Hjson;
 /// </remarks>
 public class IgnoreDataContractContractResolver : DefaultContractResolver
 {
- 
+
     protected override JsonObjectContract CreateObjectContract(Type objectType)
     {
         var contract = base.CreateObjectContract(objectType);
@@ -59,6 +61,22 @@ public class IgnoreDataContractContractResolver : DefaultContractResolver
             }
         }
         #endregion
+    }
+
+
+    protected override JsonProperty CreateProperty(MemberInfo member, MemberSerialization memberSerialization)
+    {
+        JsonProperty property = base.CreateProperty(member, memberSerialization);
+
+        if (
+            member.GetCustomAttribute<System.Text.Json.Serialization.JsonIgnoreAttribute>() != null
+            || member.GetCustomAttribute<LionFire.IgnoreAttribute>() != null
+            )
+        {
+            property.ShouldSerialize = instance => false;
+        }
+
+        return property;
     }
 
 }

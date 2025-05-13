@@ -11,6 +11,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.FileProviders;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Logging;
 using MudBlazor.Services;
 
 namespace LionFire.Hosting;
@@ -30,20 +31,44 @@ public static class WebHostFrameworkStartupInitializer
 
             if (o.HealthChecksUI)
             {
+                //services.AddHostedService<HealthCheckUrlSetter>();
+
                 services
                      .AddHealthChecksUI(setupSettings: setup =>
                      {
-                         setup.ConfigureApiEndpointHttpclient((services, client) =>
-                         {
-                             var f = services.GetRequiredService<Microsoft.AspNetCore.Hosting.Server.IServer>().Features.Get<IServerAddressesFeature>();
+                         //setup.ConfigureApiEndpointHttpclient((services, client) =>
+                         //{
+                         //    var logger = services.GetService<ILogger<WebFrameworkConfig>>();
 
-                             var first = f.Addresses.FirstOrDefault();
-                             if (first != null)
+                         //    var f = services.GetRequiredService<Microsoft.AspNetCore.Hosting.Server.IServer>().Features.Get<IServerAddressesFeature>();
+
+                         //    var first = f.Addresses.FirstOrDefault();
+                         //    if (first != null)
+                         //    {
+                         //        logger?.LogInformation("HealthChecksUI endpoint: {0}", first);
+                         //        first = first.Replace("0.0.0.0", "127.0.0.1");
+                         //        logger?.LogInformation("HealthChecksUI effective endpoint: {0}", first);
+                         //        client.BaseAddress = new Uri(first);
+                         //    }
+                         //    else
+                         //    {
+                         //        logger?.LogWarning("HealthChecksUI endpoint could not be determined.");
+                         //    }
+                         //});
+                         
+                         string? urlPrefix = o.HealthCheckUrlPrefix;
+                         if (urlPrefix == null)
+                         {
+                             if (o.Http)
                              {
-                                 client.BaseAddress = new Uri(first);
+                                 urlPrefix = $"http://localhost:{o.HttpPort}/";
                              }
-                         });
-                         setup.AddHealthCheckEndpoint("self-detail", $"/health/detail");
+                             else if (o.Https)
+                             {
+                                 urlPrefix = $"https://localhost:{o.HttpsPort}/";
+                             }
+                         }
+                         setup.AddHealthCheckEndpoint("self-detail", urlPrefix + "health/detail");
                      })
                      //.AddSqliteStorage("Data Source=HealthCheckHistory.sqlite3")
                      .AddInMemoryStorage()

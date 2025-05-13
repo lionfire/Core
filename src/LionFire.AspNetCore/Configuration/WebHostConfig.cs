@@ -60,6 +60,11 @@ public class WebHostConfig : HasPortsConfigBase, IHasConfigLocation, IWebHostCon
 
     public bool HasAnyInterfaces => Http || Https;
 
+    /// <summary>
+    /// http://localhost:1234/
+    /// </summary>
+    public string? HealthCheckUrlPrefix { get; set; }
+
     #region HTTP
 
     public bool Http { get; set; }

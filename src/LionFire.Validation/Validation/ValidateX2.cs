@@ -6,7 +6,7 @@ namespace LionFire.Validation;
 
 // REVIEW: Merge with ValidateX, or find a better way to organize them
 public static class ValidateX2
-{ 
+{
 
     public static ValidationContext MemberNonNull(this ValidationContext ctx, object val, string memberName)
     {
@@ -50,6 +50,19 @@ public static class ValidateX2
     }
 
 #nullable enable
+    public static ValidationContext PropertyNotNullOrEmptyString(this ValidationContext ctx, string propertyName, string? propertyValue = null)
+    {
+        if (string.IsNullOrWhiteSpace(propertyValue))
+        {
+            ctx.AddIssue(new ValidationIssue
+            {
+                Kind = ValidationIssueKind.PropertyNotSet,
+                VariableName = propertyName,
+            });
+        }
+        return ctx;
+    }
+
     public static ValidationContext PropertyNotNull(this ValidationContext ctx, string propertyName, object? propertyValue = null)
     {
         if (propertyValue == null)
@@ -68,7 +81,7 @@ public static class ValidateX2
         return ctx.PropertyNotNull(propertyInfo.Name, propertyValue);
     }
 
-    
+
 
     public static void ValidateMethods(this ValidationContext ctx, object? obj = null)
     {
