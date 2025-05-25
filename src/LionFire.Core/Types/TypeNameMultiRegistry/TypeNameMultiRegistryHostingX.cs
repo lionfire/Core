@@ -39,4 +39,33 @@ public static class TypeNameMultiRegistryHostingX
         });
         return services;
     }
+
+    //public static IServiceCollection AddTypeNameMultiRegistry<T>(this IServiceCollection services, string? serviceKey = null
+    //)
+    //{
+    //    serviceKey ??= typeof(T).FullName;
+    //    services.AddKeyedSingleton<ITypeNameMultiRegistry, TypeNameMultiRegistry>(serviceKey);
+
+    //    services.PostConfigure<TypeNameMultiRegistryOptions>(options =>
+    //    {
+    //        if (options.AutoRegisterFullNames || options.AutoRegisterNames)
+    //        {
+    //            foreach (var registry in options.Registries.Where(kvp => kvp.Key != TypeNameRegistryNames.FullName && kvp.Key != TypeNameRegistryNames.Name).Select(kvp => kvp.Value).ToArray())
+    //            {
+    //                foreach (var kvp in registry.TypeNames)
+    //                {
+    //                    if (options.AutoRegisterFullNames)
+    //                    {
+    //                        options[TypeNameRegistryNames.FullName].RegisterFullName(kvp.Key);
+    //                    }
+    //                    if (options.AutoRegisterNames)
+    //                    {
+    //                        options[TypeNameRegistryNames.Name].RegisterName(kvp.Key);
+    //                    }
+    //                }
+    //            }
+    //        }
+    //    });
+    //    return services;
+    //}
 }

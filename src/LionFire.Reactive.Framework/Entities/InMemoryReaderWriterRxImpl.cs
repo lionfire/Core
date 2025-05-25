@@ -5,6 +5,7 @@ using LionFire.IO.Reactive;
 using ReactiveUI;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Reactive.Subjects;
 
 namespace LionFire.Reactive.Persistence;
 
@@ -15,6 +16,8 @@ internal class InMemoryReaderWriterRxImpl<TKey, TValue>
     where TKey : notnull
     where TValue : notnull
 {
+    #region Lifecycle
+
     public InMemoryReaderWriterRxImpl()
     {
         //KeyedItems = keys.ToObservableChangeSet()
@@ -25,14 +28,21 @@ internal class InMemoryReaderWriterRxImpl<TKey, TValue>
         //    .AsObservableCache()
         //    ;
     }
+    public virtual void Dispose()
+    {
+        writeOperations?.Dispose();
+        writeOperations = null;
+    }
+
+    #endregion
 
     #region State
 
     public IObservableCache<TKey, TKey> Keys => keys.AsObservableCache();
     private readonly SourceCache<TKey, TKey> keys = new(k => k);
 
-
     #endregion
+
     public override IObservableCache<Optional<TValue>, TKey> ObservableCache => Values;
 
     #region Write
@@ -84,6 +94,13 @@ internal class InMemoryReaderWriterRxImpl<TKey, TValue>
 
     #endregion
 
+    #region Events
+
+    public IObservable<WriteOperation<TKey, TValue>> WriteOperations => writeOperations;
+
+    private  Subject<WriteOperation<TKey, TValue>>? writeOperations = new Subject<WriteOperation<TKey, TValue>>();
+
+    #endregion
 }
 
 

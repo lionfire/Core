@@ -12,6 +12,7 @@ using LionFire.Reactive;
 using LionFire.Reactive.Persistence;
 using LionFire.Reflection;
 using LionFire.Structures.Keys;
+using LionFire.UI;
 using Microsoft.AspNetCore.Components;
 using Microsoft.CodeAnalysis.VisualBasic.Syntax;
 using System.Linq.Expressions;
@@ -175,6 +176,10 @@ public partial class AsyncVMSourceCacheView<TKey, TValue, TValueVM>
 
     #endregion
 
+    [Parameter]
+    public Func<PropertyInfo, bool>? IsAutoColumn { get; set; }
+    public Func<PropertyInfo, bool> EffectiveIsAutoColumn => IsAutoColumn ?? AutoColumnUtils.DefaultIsAutoColumn;
+
     #endregion
 
     #region Refs
@@ -297,7 +302,7 @@ public partial class AsyncVMSourceCacheView<TKey, TValue, TValueVM>
     {
         var properties = typeof(TValueVM).GetProperties();
 
-        foreach (var prop in properties)
+        foreach (var prop in properties.Where(EffectiveIsAutoColumn))
         {
             MudDataGridUtilities.BuildPropertyColumn<TValueVM, TValue>(builder, prop);
 
@@ -311,7 +316,7 @@ public partial class AsyncVMSourceCacheView<TKey, TValue, TValueVM>
             //}
         }
         properties = typeof(TValue).GetProperties();
-        foreach (var prop in properties)
+        foreach (var prop in properties.Where(EffectiveIsAutoColumn))
         {
             MudDataGridUtilities.BuildPropertyColumn<TValueVM, TValue>(builder, prop, "Value");
             //    if (prop.PropertyType == typeof(string))
@@ -332,10 +337,10 @@ public partial class AsyncVMSourceCacheView<TKey, TValue, TValueVM>
             <PropertyColumn Property="p => p.Name" />
         */
 
-        static void NewMethod(Microsoft.AspNetCore.Components.Rendering.RenderTreeBuilder builder, System.Reflection.PropertyInfo prop, string? subProperty = null)
-        {
+        //static void NewMethod(Microsoft.AspNetCore.Components.Rendering.RenderTreeBuilder builder, System.Reflection.PropertyInfo prop, string? subProperty = null)
+        //{
 
-        }
+        //}
     };
 
 

@@ -26,7 +26,11 @@ public static class HjsonSerialization
                 settings = new JsonSerializerSettings
                 {
                     TypeNameHandling = TypeNameHandling.Objects,
-                    Converters = [new SourceCacheConverter(), new ParsableSlimConverter()],
+                    Converters = [
+                        new SourceCacheConverter(),
+                        new SourceCacheSetConverter(),
+                        new ParsableSlimConverter()
+                        ],
                     //ContractResolver = new CustomSystemTextJsonIgnoreResolver(),
 
                     //ContractResolver = new CamelCasePropertyNamesContractResolver()
@@ -71,15 +75,22 @@ public static class HjsonSerialization
 
 public static class IObservableCacheX
 {
-    public static object UnwrapValueTuple(object oc, Type keyType, Type valueTupleType)
+    public static object SetToList(object observableCache)
+    {
+        var itemsProperty = observableCache.GetType().GetProperty("Keys")!;
+        var items = (System.Collections.IEnumerable)itemsProperty.GetValue(observableCache)!;
+        return items;
+    }
+
+    public static object UnwrapValueTuple(object observableCache, Type keyType, Type valueTupleType)
     {
         var valueType = valueTupleType.GetGenericArguments()[1];
 
         var dictType = typeof(Dictionary<,>).MakeGenericType(keyType, valueType);
         var dict = Activator.CreateInstance(dictType)!;
-        var addMethod = dictType.GetMethod("Add", new[] { keyType, valueType })!;
-        var itemsProperty = oc.GetType().GetProperty("KeyValues")!;
-        var items = (System.Collections.IEnumerable) itemsProperty.GetValue(oc)!;
+        var addMethod = dictType.GetMethod("Add", new[] { keyType, valueType })!; // REVIEW - omit type parameters?
+        var itemsProperty = observableCache.GetType().GetProperty("KeyValues")!;
+        var items = (System.Collections.IEnumerable)itemsProperty.GetValue(observableCache)!;
 
         //var valueTupleType = typeof(ValueTuple<,>).MakeGenericType(keyType, valueType);
         var valueItem2 = valueTupleType.GetField("Item2")!;
@@ -110,6 +121,17 @@ public static class IObservableCacheX
         return dict;
     }
 
+    public static SourceCache<TKey, TKey> ToSetSourceCache<TKey>(this IReadOnlyList<TKey> list)
+        where TKey : notnull
+    {
+        var cache = new SourceCache<TKey, TKey>(x => x);
+        cache.Edit(u =>
+        {
+            u.AddOrUpdate(list);
+        });
+        return cache;
+    }
+
     public static SourceCache<(TKey, TValue), TKey> ToKeyTaggedSourceCache<TKey, TValue>(this IReadOnlyDictionary<TKey, TValue> dict)
         where TKey : notnull
         where TValue : notnull
@@ -118,9 +140,9 @@ public static class IObservableCacheX
         cache.Edit(u =>
         {
             u.AddOrUpdate(dict.Select(kvp => (kvp.Key, kvp.Value)));
-            //foreach (var kvp in dict)
+            //foreach (var item in list)
             //{
-            //    var tuple = (kvp.Key, kvp.Value);
+            //    var tuple = (item.Key, item.Value);
             //    u.AddOrUpdate(tuple);
             //}
         });
@@ -128,6 +150,61 @@ public static class IObservableCacheX
     }
 
 }
+
+public class SourceCacheSetConverter : JsonConverter
+{
+    public override bool CanConvert(Type objectType)
+    {
+        var r = objectType.IsGenericType
+            && objectType.GetGenericTypeDefinition() == typeof(SourceCache<,>);
+        if (!r) return false;
+
+        return objectType.GetGenericArguments()[0] == objectType.GetGenericArguments()[1];
+    }
+
+    public override void WriteJson(JsonWriter writer, object? value, JsonSerializer serializer)
+    {
+        if (value == null)
+        {
+            writer.WriteNull();
+            return;
+        }
+
+        var sourceCacheType = value.GetType();
+        var list = IObservableCacheX.SetToList(value);
+        serializer.Serialize(writer, list);
+    }
+
+    public override object? ReadJson(JsonReader reader, Type objectType, object existingValue, JsonSerializer serializer)
+    {
+        if (reader.TokenType == JsonToken.Null) { return null; }
+
+        var keyType = objectType.GetGenericArguments()[1];
+
+        var listType = typeof(List<>).MakeGenericType(keyType);
+        var list = serializer.Deserialize(reader, listType);
+        if (list == null) { return null; }
+
+        var methodInfo = typeof(IObservableCacheX)
+            .GetMethod(nameof(IObservableCacheX.ToSetSourceCache), BindingFlags.Static | BindingFlags.Public)
+            ?.MakeGenericMethod(keyType)!;
+        var cache = methodInfo.Invoke(null, [list]);
+
+        return cache;
+    }
+
+    private static object CreateKeySelector(Type keyType, Type valueType)
+    {
+        // Use Linq to create a key selector for a ValueTuple<TKey, TValue>
+        var keySelectorType = typeof(Func<,>).MakeGenericType(valueType, keyType);
+        var keySelector = Expression.Lambda(
+            Expression.Property(Expression.Parameter(valueType, "x"), "Item1"),
+            Expression.Parameter(valueType, "x")
+        );
+        return keySelector.Compile();
+    }
+}
+
 
 
 public class SourceCacheConverter : JsonConverter
@@ -170,35 +247,35 @@ public class SourceCacheConverter : JsonConverter
         //}
 
         //// Get the IEnumerable<KeyValuePair<TKey, TValue>>
-        //var dictionary = keyValuesProperty.GetValue(value);
+        //var list = keyValuesProperty.GetValue(value);
 
         var dictionary = IObservableCacheX.UnwrapValueTuple(value, keyType, valueType);
 
-        //if (dictionary == null)
+        //if (list == null)
         //{
         //    writer.WriteNull();
         //    return;
         //}
 
-        //// Convert to dictionary using reflection
-        //var dictionaryType = typeof(Dictionary<,>).MakeGenericType(keyType, valueType);
-        //var dictionary = Activator.CreateInstance(dictionaryType);
+        //// Convert to list using reflection
+        //var listType = typeof(Dictionary<,>).MakeGenericType(keyType, valueType);
+        //var list = Activator.CreateInstance(listType);
 
-        //// Use LINQ to populate dictionary (ToDictionary equivalent)
+        //// Use LINQ to populate list (ToDictionary equivalent)
         //var kvpType = typeof(KeyValuePair<,>).MakeGenericType(keyType, valueType);
         //var keyProperty = kvpType.GetProperty("Key");
         //var valueProperty = kvpType.GetProperty("Value");
-        //var addMethod = dictionaryType.GetMethod("Add");
+        //var addMethod = listType.GetMethod("Add");
 
-        //foreach (var item in (IEnumerable<object>)dictionary)
+        //foreach (var item in (IEnumerable<object>)list)
         //{
         //    var key = keyProperty.GetValue(item);
         //    var valueTuple = valueProperty.GetValue(item);
-        //    addMethod.Invoke(dictionary, new[] { key, valueTuple });
+        //    addMethod.Invoke(list, new[] { key, valueTuple });
         //}
 
-        // Serialize the dictionary
-        //serializer.Serialize(writer, dictionary);
+        // Serialize the list
+        //serializer.Serialize(writer, list);
         serializer.Serialize(writer, dictionary);
     }
 
@@ -238,7 +315,7 @@ public class SourceCacheConverter : JsonConverter
 
 public class ParsableSlimConverter : JsonConverter
 {
-    
+
     public override bool CanConvert(Type objectType)
     {
         // Check if the type implements IParsableSlim<T> for some T

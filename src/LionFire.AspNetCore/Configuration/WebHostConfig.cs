@@ -125,7 +125,9 @@ public class WebHostConfig : HasPortsConfigBase, IHasConfigLocation, IWebHostCon
     public virtual bool RequiresAuth => true;
     public virtual bool RequiresBlazorInteractiveServer => BlazorInteractiveServer;
 
-    public virtual bool RequiresControllers => false;
+    public virtual bool WebAuth => false;
+
+    public virtual bool RequiresControllers => WebAuth;
     public virtual bool RequiresStaticFiles => RequiresBlazorInteractiveServer;
 
     public virtual bool RequiresMvc => false;

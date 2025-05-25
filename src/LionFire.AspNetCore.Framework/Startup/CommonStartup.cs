@@ -12,6 +12,8 @@ namespace LionFire.AspNetCore;
 public class CommonStartup<TConfig>
     where TConfig : WebFrameworkConfig//, new()
 {
+    public virtual bool DefaultAuthentication => true;
+
     public IConfiguration Configuration { get; }
 
     public CommonStartup(IConfiguration configuration)
@@ -23,9 +25,11 @@ public class CommonStartup<TConfig>
 
     public virtual void ConfigureServices(IServiceCollection services)
     {
-        services.AddForOptions(GetConfig());
+        var config = GetConfig();
+        services.AddForOptions(config);
 
         services.AddHostedService<WebHostConfigLogger<TConfig>>();
+        if (DefaultAuthentication) { services.TryAddDefaultAuthentication(config); }
 
     }
 

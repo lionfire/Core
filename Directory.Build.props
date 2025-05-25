@@ -18,7 +18,7 @@
 		<VersionSuffix>alpha</VersionSuffix>
 			
 		<Authors>Jared Thirsk</Authors>
-		<Copyright>2010-2023 Jared Thirsk</Copyright>
+		<Copyright>2010-2025 Jared Thirsk</Copyright>
 		<Company>LionFire Games</Company>
 		<RepositoryUrl>https://github.com/lionfire/Core</RepositoryUrl>
 		<PackageLicenseExpression>MIT</PackageLicenseExpression>
@@ -36,10 +36,12 @@
     <!--<BaseIntermediateOutputPath>$(MSBuildThisFileDirectory)..\bin\$(MSBuildProjectName)\</BaseIntermediateOutputPath>
     <BaseOutputPath Condition=" '$(BaseOutputPath)' == '' ">$(MSBuildThisFileDirectory)..\bin\$(MSBuildProjectName)\</BaseOutputPath>-->
 
+    <!--<BaseIntermediateOutputPath>$(BuildRoot)\obj\$(Configuration)\$(PlatformTarget)\$(MSBuildProjectName)\$(TargetFramework)\</BaseIntermediateOutputPath>-->
     <BaseIntermediateOutputPath>$(BuildRoot)\obj\$(Configuration)\$(PlatformTarget)\$(MSBuildProjectName)\</BaseIntermediateOutputPath>
 
 		
     <BaseOutputPath>$(BuildRoot)\bin\$(Configuration)\$(PlatformTarget)\$(MSBuildProjectName)\</BaseOutputPath>
+    <!--<BaseOutputPath>$(BuildRoot)\bin\$(Configuration)\$(PlatformTarget)\$(MSBuildProjectName)\$(TargetFramework)\</BaseOutputPath>-->
 		<!--<OutputPath>$(BaseOutputPath)</OutputPath>-->
 		<!--<MSBuildProjectExtensionsPath>$(BuildRoot)\obj-buildext\$(Configuration)\$(Platform)\$(MSBuildProjectName)\</MSBuildProjectExtensionsPath>-->
 		<!--<MSBuildProjectExtensionsPath>z:\build\obj\$(MSBuildProjectName)\</MSBuildProjectExtensionsPath>-->

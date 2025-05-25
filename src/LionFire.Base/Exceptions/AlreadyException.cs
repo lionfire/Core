@@ -13,9 +13,11 @@ namespace LionFire
         public AlreadyException() { }
         public AlreadyException(string message) : base(message) { }
         public AlreadyException(string message, Exception inner) : base(message, inner) { }
-        protected AlreadyException(
-          System.Runtime.Serialization.SerializationInfo info,
-          System.Runtime.Serialization.StreamingContext context)
-            : base(info, context) { }
+
+        // Obsolete
+        //protected AlreadyException(
+        //  System.Runtime.Serialization.SerializationInfo info,
+        //  System.Runtime.Serialization.StreamingContext context)
+        //    : base(info, context) { }
     }
 }

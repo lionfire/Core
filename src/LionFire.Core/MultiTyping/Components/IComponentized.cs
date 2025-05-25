@@ -2,5 +2,5 @@
 
 public interface IComponentized
 {
-    T TryGetComponent<T>() where T : class;
+    T? TryGetComponent<T>() where T : class;
 }

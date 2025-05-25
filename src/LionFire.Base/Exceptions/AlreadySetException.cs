@@ -13,8 +13,10 @@ public class AlreadySetException : AlreadyException
     public AlreadySetException() : base(DefaultMessage) { }
     public AlreadySetException(string message) : base(message) { }
     public AlreadySetException(string message, Exception inner) : base(message, inner) { }
-    protected AlreadySetException(
-      System.Runtime.Serialization.SerializationInfo info,
-      System.Runtime.Serialization.StreamingContext context)
-        : base(info, context) { }
+
+    // Obsolete
+    //protected AlreadySetException(
+    //  System.Runtime.Serialization.SerializationInfo info,
+    //  System.Runtime.Serialization.StreamingContext context)
+    //    : base(info, context) { }
 }

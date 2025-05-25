@@ -27,7 +27,7 @@ namespace LionFire.ExtensionMethods.Copying
 
             AssignFrom_(me, other, assignmentMode);
         }
-        public static void AssignFrom<T>(this T me, T other, AssignmentMode assignmentMode)
+        public static void AssignFrom<T>(this T me, T other, AssignmentMode assignmentMode = AssignmentMode.Unspecified)
         {
             if (other == null)
             {
@@ -384,13 +384,13 @@ namespace LionFire.ExtensionMethods.Copying
                         // REVIEW - CloneIfCloneable otherwise DeepCopy?  What if user wants CloneOrShallowCopy?
                         for (int i = 0; i < myArray.Length; i++)
                         {
-                            copy.SetValue(myArray.GetValue(i).Copy(), i);
+                            copy.SetValue(myArray.GetValue(i)?.Copy(), i);
                         }
                         break;
                     case AssignmentMode.DeepCopy:
                         for (int i = 0; i < myArray.Length; i++)
                         {
-                            copy.SetValue(myArray.GetValue(i).DeepCopy(), i);
+                            copy.SetValue(myArray.GetValue(i)?.DeepCopy(), i);
                         }
                         break;
                     default:
@@ -411,10 +411,21 @@ namespace LionFire.ExtensionMethods.Copying
 
         // Move to generic extension method?
         //private static void AssignFrom_(Type T, object me, object other, bool useICloneableIfAvailable = false) // Move to generic extension method?
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="me"></param>
+        /// <param name="other"></param>
+        /// <param name="assignmentMode">Defaults to DeepCopy</param>
         private static void AssignFrom_(
             //Type T, 
-            object me, object other, AssignmentMode assignmentMode = AssignmentMode.DeepCopy)
+            object me, object other, AssignmentMode assignmentMode = AssignmentMode.Unspecified)
         {
+            if ((assignmentMode == AssignmentMode.Unspecified)) 
+            {
+                assignmentMode = AssignmentMode.DeepCopy;
+            }
+
             if (me.GetType().IsArray)
             {
                 AssignArrayFrom((Array)me, (Array)other, assignmentMode);
@@ -426,33 +437,24 @@ namespace LionFire.ExtensionMethods.Copying
             //me.AssignPropertiesFrom(other);
 
             Type T = me.GetType();
-            foreach (PropertyInfo mi in T.GetProperties())
+            foreach (PropertyInfo mi in T.GetProperties(BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic))
             {
-                if (!mi.CanRead || !mi.CanWrite)
-                {
-                    continue;
-                }
+                if (!mi.CanRead || !mi.CanWrite) { continue; }
+                if (mi.GetIndexParameters().Length > 0) { continue; }
 
-                if (mi.GetIndexParameters().Length > 0)
-                {
-                    continue;
-                }
-#if NET35
-                if (mi.GetGetMethod().IsStatic) continue;
-#else
-                if (mi.GetMethod.IsStatic)
-                {
-                    continue;
-                }
-#endif
+//#if NET35
+//                if (mi.GetGetMethod().IsStatic) continue;
+//#else
+//                if (mi.GetMethod!.IsStatic)
+//                {
+//                    continue;
+//                }
+//#endif
 
                 AssignmentMode miMode = CopyFromExtensions.GetAssignmentMode(mi, assignmentMode);
-                if (miMode == AssignmentMode.Ignore)
-                {
-                    continue;
-                }
+                if (miMode == AssignmentMode.Ignore) { continue; }
 
-                object val = mi.GetValue(other, null);
+                object? val = mi.GetValue(other, null);
 
                 //if (GetAssignmentValue(mi, other, useICloneableIfAvailable, ref val))
                 if (CopyFromExtensions.GetAssignmentValue(mi, other, miMode, ref val))
@@ -474,25 +476,15 @@ namespace LionFire.ExtensionMethods.Copying
 
             #region TODO: Use/merge with AssignFieldsFrom?
 
-            foreach (FieldInfo mi in T.GetFields())
+            foreach (FieldInfo mi in T.GetFields(BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic))
             {
                 //if (mi.IsInitOnly) continue;
-                if (mi.IsLiteral)
-                {
-                    continue;
-                }
-
-                if (mi.IsStatic)
-                {
-                    continue;
-                }
+                if (mi.IsLiteral) { continue; }
+                //if (mi.IsStatic) { continue; }
                 //if (mi.GetCustomAttribute<AssignIgnoreAttribute>() != null) continue;
 
                 AssignmentMode miMode = CopyFromExtensions.GetAssignmentMode(mi, assignmentMode);
-                if (miMode == AssignmentMode.Ignore)
-                {
-                    continue;
-                }
+                if (miMode == AssignmentMode.Ignore) { continue; }
 
                 //var attr = mi.GetCustomAttribute<AssignmentAttribute>();
                 //if (attr != null && attr.AssignmentMode == AssignmentMode.Ignore) continue;
@@ -508,7 +500,7 @@ namespace LionFire.ExtensionMethods.Copying
                 //    }
                 //}
 
-                object val = mi.GetValue(other);
+                object? val = mi.GetValue(other);
 
                 //if (GetAssignmentValue(mi, other, useICloneableIfAvailable, ref val))
                 if (CopyFromExtensions.GetAssignmentValue(mi, other, miMode, ref val))

@@ -1,5 +1,6 @@
 ﻿using DynamicData.Kernel;
 using LionFire.Dependencies;
+using LionFire.ExtensionMethods.Copying;
 using LionFire.ExtensionMethods.Poco.Getters;
 using LionFire.IO.Reactive.Filesystem;
 using LionFire.Persistence.Filesystemlike;
@@ -66,8 +67,18 @@ where TValue : notnull
                 try
                 {
                     var sw = Stopwatch.StartNew();
+
+                    var existingValue = this.ObservableCache.Lookup(key);
+
                     var value = await ReadFromFile(filePath);
                     Logger?.LogInformation("Listening to {0}  ...loaded changes in {1}ms", filePath, sw.ElapsedMilliseconds);
+
+                    if (existingValue.HasValue && value.HasValue)
+                    {
+                        existingValue.Value.AssignFrom(value.Value, Copying.AssignmentMode.Assign);
+                        value = existingValue.Value;
+                    }
+
                     observer.OnNext(value.HasValue ? value.Value : default);
                 }
                 catch (Exception ex)

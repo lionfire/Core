@@ -28,6 +28,7 @@
     <ProjectReference Include="..\LionFire.Persistence.Filesystem\LionFire.Persistence.Filesystem.csproj" />
     <ProjectReference Include="..\LionFire.Persistence\LionFire.Data.Persisters.csproj" />
     <ProjectReference Include="..\LionFire.Reactive\LionFire.Reactive.csproj" />
+    <ProjectReference Include="..\LionFire.Vos.Schemas\LionFire.Vos.Schemas.csproj" />
   </ItemGroup>
 
 </Project>

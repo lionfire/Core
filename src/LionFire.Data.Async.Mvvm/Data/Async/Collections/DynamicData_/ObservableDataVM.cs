@@ -65,6 +65,8 @@ public partial class ObservableDataVM<TKey, TValue, TValueVM> : ReactiveObject
 
     #region Reader and Writer
 
+    public bool CanWrite => DataWriter != null;
+
     /// <summary>
     /// Set via Reader
     /// </summary>

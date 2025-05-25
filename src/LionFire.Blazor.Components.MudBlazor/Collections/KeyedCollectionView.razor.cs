@@ -1,21 +1,23 @@
 #nullable enable
 
-using Microsoft.AspNetCore.Components;
-using LionFire.Structures.Keys;
-using LionFire.Reflection;
-using LionFire.Reactive;
-using LionFire.Data.Async.Gets;
-using static MudBlazor.CategoryTypes;
-using DynamicData.Binding;
-using LionFire.ExtensionMethods;
-using LionFire.Mvvm;
-using LionFire.Data.Mvvm;
-using LionFire.FlexObjects;
-using System.Linq.Expressions;
-using Microsoft.CodeAnalysis.VisualBasic.Syntax;
 using DynamicData;
+using DynamicData.Binding;
+using LionFire.Data.Async.Gets;
 using LionFire.Data.Collections;
+using LionFire.Data.Mvvm;
+using LionFire.ExtensionMethods;
+using LionFire.FlexObjects;
+using LionFire.Mvvm;
+using LionFire.Reactive;
+using LionFire.Reflection;
+using LionFire.Structures.Keys;
+using LionFire.UI;
+using Microsoft.AspNetCore.Components;
+using Microsoft.CodeAnalysis.VisualBasic.Syntax;
 using Orleans.Runtime;
+using System.Linq.Expressions;
+using System.Reflection;
+using static MudBlazor.CategoryTypes;
 
 namespace LionFire.Blazor.Components;
 
@@ -178,6 +180,10 @@ public partial class KeyedCollectionView<TKey, TValue, TValueVM>
 
     #endregion
 
+    [Parameter]
+    public Func<PropertyInfo, bool>? IsAutoColumn { get; set; }
+    public Func<PropertyInfo, bool> EffectiveIsAutoColumn => IsAutoColumn ?? AutoColumnUtils.DefaultIsAutoColumn;
+
     #endregion
 
     #region Refs
@@ -301,7 +307,7 @@ public partial class KeyedCollectionView<TKey, TValue, TValueVM>
     {
         var properties = typeof(TValueVM).GetProperties();
 
-        foreach (var prop in properties)
+        foreach (var prop in properties.Where(EffectiveIsAutoColumn))
         {
             MudDataGridUtilities.BuildPropertyColumn<TValueVM, TValue>(builder, prop);
 
@@ -315,7 +321,7 @@ public partial class KeyedCollectionView<TKey, TValue, TValueVM>
             //}
         }
         properties = typeof(TValue).GetProperties();
-        foreach (var prop in properties)
+        foreach (var prop in properties.Where(EffectiveIsAutoColumn))
         {
             MudDataGridUtilities.BuildPropertyColumn<TValueVM, TValue>(builder, prop, "Value");
             //    if (prop.PropertyType == typeof(string))
@@ -336,11 +342,7 @@ public partial class KeyedCollectionView<TKey, TValue, TValueVM>
             <PropertyColumn Property="p => p.Name" />
         */
 
-        static void NewMethod(Microsoft.AspNetCore.Components.Rendering.RenderTreeBuilder builder, System.Reflection.PropertyInfo prop, string? subProperty = null)
-        {
-
-        }
-    };
+        };
 
 
     protected override void OnInitialized()

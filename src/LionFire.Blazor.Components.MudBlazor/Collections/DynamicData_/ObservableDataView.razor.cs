@@ -1,23 +1,26 @@
 #nullable enable
 
-using Microsoft.AspNetCore.Components;
-using LionFire.Structures.Keys;
-using LionFire.Reflection;
-using LionFire.Reactive;
-using LionFire.Data.Async.Gets;
-using static MudBlazor.CategoryTypes;
-using DynamicData.Binding;
-using LionFire.ExtensionMethods;
-using LionFire.Mvvm;
-using LionFire.Data.Mvvm;
-using LionFire.FlexObjects;
-using System.Linq.Expressions;
-using Microsoft.CodeAnalysis.VisualBasic.Syntax;
 using DynamicData;
-using LionFire.Data.Collections;
-using Orleans.Runtime;
-using LionFire.Reactive.Persistence;
+using DynamicData.Binding;
 using DynamicData.Kernel;
+using LionFire.Data.Async.Gets;
+using LionFire.Data.Collections;
+using LionFire.Data.Mvvm;
+using LionFire.ExtensionMethods;
+using LionFire.FlexObjects;
+using LionFire.Mvvm;
+using LionFire.Reactive;
+using LionFire.Reactive.Persistence;
+using LionFire.Reflection;
+using LionFire.Structures.Keys;
+using LionFire.UI;
+using Microsoft.AspNetCore.Components;
+using Microsoft.CodeAnalysis.VisualBasic.Syntax;
+using Microsoft.Extensions.DependencyInjection;
+using Orleans.Runtime;
+using System.Linq.Expressions;
+using System.Reflection;
+using static MudBlazor.CategoryTypes;
 
 namespace LionFire.Blazor.Components;
 
@@ -60,6 +63,9 @@ public partial class ObservableDataView<TKey, TValue, TValueVM>
 
     #region Parameters
 
+    //public ObservableDataViewVM<TKey, TValue>? ViewModel { get; set; }
+
+
     #region Items
 
     ///// <summary>
@@ -100,19 +106,28 @@ public partial class ObservableDataView<TKey, TValue, TValueVM>
     [Parameter]
     public Func<TKey, Optional<TValue>, TValueVM>? VMFactory { get; set; }
 
+    [Parameter]
+    public IServiceProvider? DataServiceProvider { get; set; }
+    public IServiceProvider EffectiveDataServiceProvider => AmbientDataServices ?? DataServiceProvider ?? ServiceProvider;
+
+    [CascadingParameter(Name = "AmbientDataServices")]
+    public IServiceProvider? AmbientDataServices { get; set; }
+
     /// <summary>
     /// If writable, supply IObservableReaderWriter here
     /// </summary>
     [Parameter]
     public IObservableReader<TKey, TValue>? Data { get; set; }
 
-    public IObservableReader<TKey, TValue>? EffectiveData { get; private set; }
-    public IObservableReaderWriter<TKey, TValue>? EffectiveDataWriter { get; private set; }
+    //public IObservableReader<TKey, TValue>? EffectiveData { get; private set; }
+    //public IObservableReaderWriter<TKey, TValue>? EffectiveDataWriter { get; private set; }
+
+    IObservableReaderWriter<TKey, TValue>? FallbackReaderWriter => EffectiveDataServiceProvider.GetService<IObservableReaderWriter<TKey, TValue>>();
+    IObservableReader<TKey, TValue>? FallbackReader => EffectiveDataServiceProvider.GetService<IObservableReader<TKey, TValue>>();
+
 
     [Parameter]
     public TimeSpan? PollDelay { get; set; }
-
-
 
     //#region Derived
 
@@ -242,6 +257,10 @@ public partial class ObservableDataView<TKey, TValue, TValueVM>
 
     #endregion
 
+    [Parameter]
+    public Func<PropertyInfo, bool>? IsAutoColumn { get; set; }
+    public Func<PropertyInfo, bool> EffectiveIsAutoColumn => IsAutoColumn ?? AutoColumnUtils.DefaultIsAutoColumn;
+
     #endregion
 
     #region Refs
@@ -250,57 +269,58 @@ public partial class ObservableDataView<TKey, TValue, TValueVM>
 
     #endregion
 
+
     #region Lifecycle
 
     public ObservableDataView()
     {
         this.WhenActivated(disposableRegistration =>
-        {
-            if (ViewModel == null) throw new ArgumentNullException(nameof(ViewModel));
-            ViewModel.PropertyChanged += ViewModel_PropertyChanged; // No Memory leak
+      {
+          if (ViewModel == null) throw new ArgumentNullException(nameof(ViewModel));
+          ViewModel.PropertyChanged += ViewModel_PropertyChanged; // No Memory leak
 
 
-            //#if true // TODO: How to bind [Parameter] to ViewModel?  Set in OnParametersSetAsync?
-            //            this.WhenAnyValue(v => v.Items)
-            //                .BindTo(ViewModel, vm => vm.Value)
-            //                .DisposeWith(disposableRegistration);
-            //#else
-            //            this.Bind(ViewModel,
-            //                    viewModel => viewModel.Value,
-            //                    view => view.Items)
-            //                .DisposeWith(disposableRegistration);
-            //#endif
+          //#if true // TODO: How to bind [Parameter] to ViewModel?  Set in OnParametersSetAsync?
+          //            this.WhenAnyValue(v => v.Items)
+          //                .BindTo(ViewModel, vm => vm.Value)
+          //                .DisposeWith(disposableRegistration);
+          //#else
+          //            this.Bind(ViewModel,
+          //                    viewModel => viewModel.Value,
+          //                    view => view.Items)
+          //                .DisposeWith(disposableRegistration);
+          //#endif
 
-            // I think this should work too?
-            //this.OneWayBind(ViewModel,
-            //        viewModel => viewModel.ValueVMs, // REVIEW Nullability: Source
-            //        view => view.Children
-            //        //,
-            //        //vmToViewConverter: vm => vm?.Select(kvp => kvp.Value),
-            //        //viewToVmConverter: v => null
-            //        )
-            //    .DisposeWith(disposableRegistration);
-
-
-            //this.WhenAnyValue(v => v.ViewModel.ValueVMCollections)
-            //    .ToProperty(this, nameof(ChildrenCollections))
-            //    //viewModel => viewModel.ValueVMCollections,
-            //    //view => view.ChildrenCollections)
-            //    //.DisposeWith(disposableRegistration)
-            //    ;
-
-            // sample
-            //this.BindCommand(ViewModel,
-            //    viewModel => viewModel.OpenPage,
-            //    view => view.OpenButton)
-            //.DisposeWith(disposableRegistration);
+          // I think this should work too?
+          //this.OneWayBind(ViewModel,
+          //        viewModel => viewModel.ValueVMs, // REVIEW Nullability: Source
+          //        view => view.Children
+          //        //,
+          //        //vmToViewConverter: vm => vm?.Select(kvp => kvp.Value),
+          //        //viewToVmConverter: v => null
+          //        )
+          //    .DisposeWith(disposableRegistration);
 
 
-            //this.OneWayBind(ViewModel,
-            //        viewModel => viewModel.Test,
-            //        view => view.Test)
-            //    .DisposeWith(disposableRegistration);
-        });
+          //this.WhenAnyValue(v => v.ViewModel.ValueVMCollections)
+          //    .ToProperty(this, nameof(ChildrenCollections))
+          //    //viewModel => viewModel.ValueVMCollections,
+          //    //view => view.ChildrenCollections)
+          //    //.DisposeWith(disposableRegistration)
+          //    ;
+
+          // sample
+          //this.BindCommand(ViewModel,
+          //    viewModel => viewModel.OpenPage,
+          //    view => view.OpenButton)
+          //.DisposeWith(disposableRegistration);
+
+
+          //this.OneWayBind(ViewModel,
+          //        viewModel => viewModel.Test,
+          //        view => view.Test)
+          //    .DisposeWith(disposableRegistration);
+      });
     }
 
     IDisposable? itemsSubscription = null;
@@ -308,15 +328,18 @@ public partial class ObservableDataView<TKey, TValue, TValueVM>
     {
         await base.OnParametersSetAsync();
 
-        ViewModel!.AllowedEditModes = AllowedEditModes;
-        ViewModel!.CreatableTypes = CreatableTypes ?? [];
-        ViewModel!.CanCreateValueType = CanCreateValueType;
-
-
         ArgumentNullException.ThrowIfNull(ViewModel);
+        ViewModel.AllowedEditModes = AllowedEditModes;
+        ViewModel.CreatableTypes = CreatableTypes ?? [];
+        ViewModel.CanCreateValueType = CanCreateValueType;
+        ViewModel.VMFactory = VMFactory;
 
-        ViewModel!.VMFactory = VMFactory;
-        ViewModel!.Data = Data;
+        //FallbackReaderWriter ??= ServiceProvider.GetService<IObservableReaderWriter<string, TValue>>();
+        //FallbackReader ??= ServiceProvider.GetService<IObservableReader<string, TValue>>();
+
+        //public IObservableReader<string, TValue>? Data { get; set; }
+
+        ViewModel!.Data ??= Data ?? FallbackReaderWriter ?? FallbackReader;
 
         ViewModel.ItemsChanged.Subscribe(_ => InvokeAsync(StateHasChanged));
         //ViewModel.WhenAnyValue(vm => vm.Items).Subscribe(items => // MOVE this as an IObservable to VM class
@@ -385,11 +408,13 @@ public partial class ObservableDataView<TKey, TValue, TValueVM>
         //#pragma warning restore BL0005 // Component parameter should not be set outside of its component.
     }
 
+
+
     private RenderFragment CreateColumns => builder =>
     {
         var properties = typeof(TValueVM).GetProperties();
 
-        foreach (var prop in properties)
+        foreach (var prop in properties.Where(EffectiveIsAutoColumn))
         {
             MudDataGridUtilities.BuildPropertyColumn<TValueVM, TValue>(builder, prop);
 
@@ -403,7 +428,7 @@ public partial class ObservableDataView<TKey, TValue, TValueVM>
             //}
         }
         properties = typeof(TValue).GetProperties();
-        foreach (var prop in properties)
+        foreach (var prop in properties.Where(EffectiveIsAutoColumn))
         {
             MudDataGridUtilities.BuildPropertyColumn<TValueVM, TValue>(builder, prop, "Value");
             //    if (prop.PropertyType == typeof(string))
@@ -424,10 +449,10 @@ public partial class ObservableDataView<TKey, TValue, TValueVM>
             <PropertyColumn Property="p => p.Name" />
         */
 
-        static void NewMethod(Microsoft.AspNetCore.Components.Rendering.RenderTreeBuilder builder, System.Reflection.PropertyInfo prop, string? subProperty = null)
-        {
+        //static void NewMethod(Microsoft.AspNetCore.Components.Rendering.RenderTreeBuilder builder, System.Reflection.PropertyInfo prop, string? subProperty = null)
+        //{
 
-        }
+        //}
     };
 
     protected override void OnInitialized()

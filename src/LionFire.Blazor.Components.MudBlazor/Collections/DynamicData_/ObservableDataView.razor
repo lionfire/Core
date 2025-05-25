@@ -16,31 +16,27 @@
     {
         if (ViewModel is ICreatesAsyncVM<TValue> createsValue)
         {
-            <MudMenu Class="" Label="Add" Icon="@Icons.Material.Filled.Add" Variant="Variant.Outlined" Color="Color.Success"
-                     Dense
-                     AnchorOrigin="Origin.BottomLeft">
-                @foreach (var t in ViewModel!.CreatableTypes)
-                {
-                    <MudMenuItem OnClick=@(() => createsValue.Create.Execute(t).Subscribe())>
-                        @DisplayNameUtilsX.DisplayNameForType(t)
-                    </MudMenuItem>
-                }
-            </MudMenu>
+            @if (ViewModel.CreatableTypes.Count() > 1)
+            {
+                <MudMenu Label="Add..." Class="Add" Icon="@Icons.Material.Outlined.Add" Variant="Variant.Outlined" Color="Color.Success"
+                         Dense
+                         AnchorOrigin="Origin.BottomLeft">
+                    @foreach (var t in ViewModel!.CreatableTypes)
+                    {
+                        <MudMenuItem OnClick=@(() => createsValue.Create.Execute(t).Subscribe())>
+                            @DisplayNameUtilsX.DisplayNameForType(t)
+                        </MudMenuItem>
+                    }
+                </MudMenu>
+            } else
+            {
+                <MudButton Label="Add" Class="Add"
+                           OnClick=@(() => createsValue.Create.Execute(ViewModel.CreatableTypes.FirstOrDefault(typeof(TValue))).Subscribe())
+                    Icon="@Icons.Material.Filled.Add" Variant="Variant.Outlined" Color="Color.Success"/>
+            }
         }
+    }
 
-        @* TODO:  *@
-        @* @if (ViewModel.Create != null && ViewModel.CanCreate)
-    {
-    <MudMenu Class="" Label="Add" Icon="@Icons.Material.Filled.Add" Variant="Variant.Outlined" Color="Color.Success" Dense AnchorOrigin="Origin.BottomLeft">
-    @foreach (var t in CreatableTypes)
-    {
-    <MudMenuItem OnClick="@(e => OnCreate(t))">
-    @DisplayNameUtilsX.DisplayNameForType(t)
-    </MudMenuItem>
-    }
-    </MudMenu>
-    } *@
-    }
     <MudToggleIconButton Icon="@Icons.Material.Outlined.Edit" ToggledIcon="@Icons.Material.Filled.ModeEdit" @bind-Toggled="IsEditing" ToggledVariant="@Variant.Filled" ToggledColor="@Color.Primary" />
 
     <MudToggleIconButton Icon="@Icons.Material.Outlined.DeleteForever" ToggledIcon="@Icons.Material.Filled.DeleteForever" @bind-Toggled="@ViewModel!.ShowDeleteColumn" ToggledVariant="@Variant.Filled" ToggledColor="@Color.Error" />

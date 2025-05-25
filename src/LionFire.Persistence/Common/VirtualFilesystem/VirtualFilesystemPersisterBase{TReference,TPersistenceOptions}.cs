@@ -1,5 +1,4 @@
-﻿#nullable enable
-using LionFire.Dependencies;
+﻿using LionFire.Dependencies;
 using LionFire.Persistence;
 using LionFire.Persistence.FilesystemFacade;
 using LionFire.Referencing;
@@ -85,21 +84,21 @@ public abstract partial class VirtualFilesystemPersisterBase<TReference, TPersis
         this.optionsMonitor = options;
         ItemKindIdentifier = itemKindIdentifier;
 
-        l = Log.Get(this.GetType().FullName);
+        l = Log.Get(this.GetType().FullName!);
     }
 
     #endregion
 
     #region List
 
-    public Task<IGetResult<IEnumerable<IListing<object>>>> List(IReferencable<TReference> referencable, ListFilter? filter = null)
-        => List<object>(referencable.Reference, filter);
-    public Task<IGetResult<IEnumerable<IListing<T>>>> List<T>(IReferencable<TReference> referencable, ListFilter? filter = null)
-                => List<T>(referencable.Reference, filter);
+    public Task<IGetResult<IEnumerable<IListing<object>>>> List(IReferencable<TReference> referenceable, ListFilter? filter = null)
+        => List<object>(referenceable.Reference, filter);
+    public Task<IGetResult<IEnumerable<IListing<T>>>> List<T>(IReferencable<TReference> referenceable, ListFilter? filter = null)
+                => List<T>(referenceable.Reference, filter);
 
     private object List(Type type, TReference reference, ListFilter? filter = null)
     {
-        return listMethodInfo.MakeGenericMethod(type).Invoke(this, new object?[] { reference, filter })!;
+        return listMethodInfo.MakeGenericMethod(type).Invoke(this, [reference, filter])!;
     }
     private static MethodInfo listMethodInfo = typeof(VirtualFilesystemPersisterBase<TReference, TPersistenceOptions>)
     //private static MethodInfo listMethodInfo = typeof(FilesystemlikePersistence<,>).MakeGenericType(typeof(TReference), typeof(TPersistenceOptions))
@@ -142,7 +141,7 @@ public abstract partial class VirtualFilesystemPersisterBase<TReference, TPersis
             List<IListing<T>>? children = null;
             if (await VirtualFilesystem.DirectoryExists(path).ConfigureAwait(false))
             {
-                children = new List<IListing<T>>();
+                children = [];
 
                 bool showFile = filter == null || filter.Flags == ItemFlags.None || filter.Flags.HasFlag(ItemFlags.File) || !filter.Flags.HasFlag(ItemFlags.Directory);
                 bool showDir = filter == null || filter.Flags == ItemFlags.None || filter.Flags.HasFlag(ItemFlags.Directory) || !filter.Flags.HasFlag(ItemFlags.File);
@@ -943,10 +942,10 @@ public abstract partial class VirtualFilesystemPersisterBase<TReference, TPersis
 
     // REVIEW: Should this be moved to an outside mechanism?
 
-    public virtual Task<ITransferResult> DeleteReferencable<T>(IReferencable<TReference> referencable) // Unwrap IReferencable
+    public virtual Task<ITransferResult> DeleteReferencable<T>(IReferencable<TReference> referenceable) // Unwrap IReferenceable
         => (PersistenceOptions.VerifyExistsAsTypeBeforeDelete
-            ? VerifyExistsAsTypeAndDelete<T>(referencable.Reference.Path)
-            : Delete(referencable.Reference.Path).DeleteResultToPersistenceResult());
+            ? VerifyExistsAsTypeAndDelete<T>(referenceable.Reference.Path)
+            : Delete(referenceable.Reference.Path).DeleteResultToPersistenceResult());
 
 
     public virtual Task<ITransferResult> Delete<T>(TReference reference) // Unwrap IReference, (optional Verify)

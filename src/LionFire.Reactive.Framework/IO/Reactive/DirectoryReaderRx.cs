@@ -31,8 +31,6 @@ public abstract class DirectoryReaderRx<TKey, TValue>
     protected abstract IDirectoryAsync Directory { get; }
     protected abstract string Extension { get; }
 
-    //private static ILogger? Logger => logger ??= DependencyContext.Current?.GetService<ILogger<DirectoryReaderRx<TKey, TValue>>>();
-    //private static ILogger? logger;
     protected ILogger Logger { get; }
 
     #region Parameters
@@ -44,13 +42,15 @@ public abstract class DirectoryReaderRx<TKey, TValue>
     #region Derived
 
     //DirectoryTypeOptions? IHas<DirectoryTypeOptions>.Object => DirectoryTypeOptions;
-    public IFileExtensionConvention ExtensionConvention => DirectoryTypeOptions.ExtensionConvention;
+    public IFileExtensionConvention? ExtensionConvention => DirectoryTypeOptions.ExtensionConvention;
 
     /// <summary>
     /// Without leading dot
     /// </summary>
-    protected virtual string SecondExtension => ExtensionConvention.FileExtensionForType(typeof(TValue));
+    protected virtual string? SecondExtension => ExtensionConvention?.FileExtensionForType(typeof(TValue));
+
     #endregion
+
     #endregion
 
     #region Lifecycle
@@ -399,8 +399,15 @@ public abstract class DirectoryReaderRx<TKey, TValue>
 
     void OnValue(TKey key, Optional<TValue> value)
     {
-        Logger?.LogInformation($"OnValue({key}, {value})");
-        this.values.AddOrUpdate((key, value));
+        if (IsPendingWrite(key))
+        {
+            Logger?.LogInformation($"[OnValue] Self-generated change detected for '{key}': {value}");
+        }
+        else
+        {
+            Logger?.LogInformation($"[OnValue] Initial load or external change detected for '{key}': {value}");
+            this.values.AddOrUpdate((key, value));
+        }
     }
 
     public IObservable<TValue?>? GetValueObservableIfExists(TKey key)

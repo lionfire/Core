@@ -1,6 +1,5 @@
 ﻿<!--<Project >-->
 	<Project Sdk="Microsoft.NET.Sdk">
-		<!--<Import Project="Sdk.props" Sdk="Microsoft.NET.Sdk/1.0.0" />-->
 	<PropertyGroup>
 		<TargetFrameworks>netstandard2.0;net9.0</TargetFrameworks>
 		<VersionSuffix></VersionSuffix>
@@ -10,13 +9,12 @@
 		<RepositoryUrl>https://github.com/lionfire/Core</RepositoryUrl>
 		<PackageTags>BCL extensions utility</PackageTags>
 		<Description>Simple extensions and additions to .NET Base Class Library (BCL) classes.</Description>
-		<Configurations>Debug;Release</Configurations>
 		<!--<Nullable>enable</Nullable>-->
 		<!--<WarningsAsErrors>Nullable</WarningsAsErrors>-->
 
-<!--TODO: put TargetFramework back in everywhere, in Directory.Build.props, because it is needed when targeting multiple frameworks-->
-		<BaseOutputPath>$(BuildRoot)\bin\$(Configuration)\$(PlatformTarget)\$(MSBuildProjectName)\$(TargetFramework)\</BaseOutputPath>
-		<BaseIntermediateOutputPath>$(BuildRoot)\obj\$(Configuration)\$(PlatformTarget)\$(MSBuildProjectName)\$(TargetFramework)\</BaseIntermediateOutputPath>
+<!--TODO DONE: put TargetFramework back in everywhere, in Directory.Build.props, because it is needed when targeting multiple frameworks-->
+		<!--<BaseOutputPath>$(BuildRoot)\bin\$(Configuration)\$(PlatformTarget)\$(MSBuildProjectName)\$(TargetFramework)\</BaseOutputPath>-->
+		<!--<BaseIntermediateOutputPath>$(BuildRoot)\obj\$(Configuration)\$(PlatformTarget)\$(MSBuildProjectName)\$(TargetFramework)\</BaseIntermediateOutputPath>-->
 	</PropertyGroup>
 
 	<ItemGroup>

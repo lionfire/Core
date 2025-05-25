@@ -3,6 +3,8 @@ using System.Reflection;
 
 namespace LionFire.Types;
 
+public class TypeNameMultiRegistryOptions<T> : TypeNameMultiRegistryOptions { }
+
 public class TypeNameMultiRegistryOptions
 {
     public bool AutoRegisterFullNames { get; set; }

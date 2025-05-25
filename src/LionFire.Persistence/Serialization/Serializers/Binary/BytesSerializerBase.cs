@@ -16,7 +16,7 @@ namespace LionFire.Serialization
             | SerializationFlags.Deserialize
             | SerializationFlags.Serialize;
 
-        public override DeserializationResult<T> ToObject<T>(byte[] bytes, Lazy<PersistenceOperation> operation = null, PersistenceContext context = null)
+        public override DeserializationResult<T> ToObject<T>(byte[] bytes, Lazy<PersistenceOperation>? operation = null, PersistenceContext? context = null)
             => typeof(T) != typeof(byte[])
             ? DeserializationResult<T>.NotSupported
             : (T)(object)bytes; // HARDCAST
@@ -52,7 +52,7 @@ namespace LionFire.Serialization
         public float PassScore { get; set; } = 10f;
         public float FailScore { get; set; } = -10f;
 
-        public float ScoreForStrategy(SerializationStrategyPreference preference, Lazy<PersistenceOperation> operation = null, PersistenceContext context = null, ScoringAttempt scoringAttempt = null)
+        public float ScoreForStrategy(SerializationStrategyPreference preference, Lazy<PersistenceOperation>? operation = null, PersistenceContext? context = null, ScoringAttempt? scoringAttempt = null)
             => operation.Value.Type == typeof(byte[]) ? PassScore : FailScore;
     }
 }

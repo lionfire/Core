@@ -85,7 +85,7 @@ namespace LionFire.ExtensionMethods.Copying
         internal static bool GetAssignmentValue(MemberInfo mi, object other,
             AssignmentMode assignmentMode,
             //bool useICloneableIfAvailable, 
-            ref object val)
+            ref object? val)
         {
             var attr2 = mi.GetCustomAttribute<IgnoreAttribute>();
             if (attr2 != null && (attr2.Ignore & LionSerializeContext.Copy) != LionSerializeContext.None) return false;

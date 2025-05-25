@@ -1,6 +1,7 @@
 ﻿using DynamicData;
 using DynamicData.Kernel;
 using ReactiveUI;
+using System.Reactive.Subjects;
 
 namespace LionFire.Reactive.Persistence;
 
@@ -22,6 +23,12 @@ public class ObservableReaderWriterFromComponents<TKey, TValue> : IObservableRea
     {
         Read = r;
         Write = w;
+    }
+
+    public void Dispose()
+    {
+        (Read as IDisposable)?.Dispose();
+        Write.Dispose();
     }
     #endregion
 
@@ -64,5 +71,11 @@ public class ObservableReaderWriterFromComponents<TKey, TValue> : IObservableRea
         return Write.Synchronize(source, key, options);
     }
 
+    #region Events
+
+    public IObservable<WriteOperation<TKey, TValue>> WriteOperations => Write.WriteOperations;
+
+    #endregion
+    
     #endregion
 }

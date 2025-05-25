@@ -16,9 +16,10 @@ namespace LionFire
         public DetailException(string message) : base(message) { }
         public DetailException(object fault, string message) : base(message) { Detail = fault; }
         public DetailException(string message, Exception inner) : base(message, inner) { }
-        protected DetailException(
-          System.Runtime.Serialization.SerializationInfo info,
-          System.Runtime.Serialization.StreamingContext context) : base(info, context) { }
+        // Obsolete
+        //protected DetailException(
+        //  System.Runtime.Serialization.SerializationInfo info,
+        //  System.Runtime.Serialization.StreamingContext context) : base(info, context) { }
     }
 
 }

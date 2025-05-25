@@ -10,6 +10,7 @@ public partial class AutoRefreshButton
     public int Count = 0;
     #region Parameters
 
+    // FIXME: should be auto property
     [Parameter]
     public bool Auto
     {
@@ -52,7 +53,7 @@ public partial class AutoRefreshButton
             return sb.ToString();
         }
     }
-    Stopwatch LastRefreshElapsed;
+    Stopwatch? LastRefreshElapsed;
 
     #region Initialization
 
