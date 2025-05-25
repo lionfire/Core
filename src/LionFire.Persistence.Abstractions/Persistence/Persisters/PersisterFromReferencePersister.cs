@@ -18,25 +18,25 @@ public class PersisterFromReferencePersister<TReference> : IPersister<TReference
         Persister = persister;
     }
 
-    public Task<ITransferResult> Create<TValue>(IReferencable<TReference> referencable, TValue value)
+    public Task<ITransferResult> Create<TValue>(IReferenceable<TReference> referencable, TValue value)
         => Persister.Create(referencable.Reference, value);
 
-    public Task<ITransferResult> Exists<TValue>(IReferencable<TReference> referencable)
+    public Task<ITransferResult> Exists<TValue>(IReferenceable<TReference> referencable)
         => Persister.Exists<TValue>(referencable.Reference);
 
-    public Task<IGetResult<TValue>> Retrieve<TValue>(IReferencable<TReference> referencable, RetrieveOptions? options = null)
+    public Task<IGetResult<TValue>> Retrieve<TValue>(IReferenceable<TReference> referencable, RetrieveOptions? options = null)
         => Persister.Retrieve<TValue>(referencable.Reference, options);
 
-    public Task<ITransferResult> Update<TValue>(IReferencable<TReference> referencable, TValue value)
+    public Task<ITransferResult> Update<TValue>(IReferenceable<TReference> referencable, TValue value)
         => Persister.Update(referencable.Reference, value);
 
-    public Task<ITransferResult> Upsert<TValue>(IReferencable<TReference> referencable, TValue value)
+    public Task<ITransferResult> Upsert<TValue>(IReferenceable<TReference> referencable, TValue value)
         => Persister.Upsert(referencable.Reference, value);
 
-    public Task<ITransferResult> DeleteReferencable(IReferencable<TReference> referencable)
+    public Task<ITransferResult> DeleteReferenceable(IReferenceable<TReference> referencable)
         => Persister.Delete(referencable.Reference);
 
-    public Task<IGetResult<IEnumerable<IListing<T>>>> List<T>(IReferencable<TReference> referencable, ListFilter? filter = null)
+    public Task<IGetResult<IEnumerable<IListing<T>>>> List<T>(IReferenceable<TReference> referencable, ListFilter? filter = null)
         => Persister.List<T>(referencable.Reference, filter);
     //public Task<IEnumerable<string>> List(string path, ListFilter? filter = null) => Persister.List(path, filter);
 }

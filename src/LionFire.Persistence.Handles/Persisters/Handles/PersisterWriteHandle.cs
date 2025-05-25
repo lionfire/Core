@@ -21,13 +21,13 @@ namespace LionFire.Persistence.Persisters
     public  class PersisterWriteHandle<TPersisterReference, TValue, TPersister, TReference> 
         : WriteHandle<TReference, TValue>
         , IPersisterHandle<TPersisterReference, TPersister>
-        , IReferencable<TPersisterReference>
+        , IReferenceable<TPersisterReference>
         //where TValue : class
         where TReference : IReference<TValue>
         where TPersister : IPersister<TPersisterReference>
         where TPersisterReference : IReference
     {
-        TPersisterReference IReferencable<TPersisterReference>.Reference => (TPersisterReference)(object)Reference; // HARDCAST
+        TPersisterReference IReferenceable<TPersisterReference>.Reference => (TPersisterReference)(object)Reference; // HARDCAST
 
         protected PersisterWriteHandle() { }
 
@@ -46,6 +46,6 @@ namespace LionFire.Persistence.Persisters
 
         protected override async Task<ITransferResult> UpsertImpl() => await Persister.Upsert(this, StagedValue);
 
-        protected override async Task<ITransferResult> DeleteImpl() => await Persister.DeleteReferencable(this);
+        protected override async Task<ITransferResult> DeleteImpl() => await Persister.DeleteReferenceable(this);
     }
 }

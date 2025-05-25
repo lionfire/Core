@@ -18,7 +18,7 @@ namespace LionFire.Persistence.Persisters
         /// <param name="referencable"></param>
         /// <param name="filter"></param>
         /// <returns></returns>
-        Task<IEnumerable<string>> List<TChildValue>(IPersister<TReference> persister, IReferencable<TReference> referencable, ListFilter? filter = null)
+        Task<IEnumerable<string>> List<TChildValue>(IPersister<TReference> persister, IReferenceable<TReference> referencable, ListFilter? filter = null)
             => List(typeof(TChildValue), persister, referencable, filter);
 #endif
 
@@ -29,6 +29,6 @@ namespace LionFire.Persistence.Persisters
         /// <param name="referencable"></param>
         /// <param name="filter"></param>
         /// <returns></returns>
-        Task<IEnumerable<IListing<T>>> List<T>(IPersister<TReference> persister, IReferencable<TReference> referencable, ListFilter? filter = null);
+        Task<IEnumerable<IListing<T>>> List<T>(IPersister<TReference> persister, IReferenceable<TReference> referencable, ListFilter? filter = null);
     }
 }

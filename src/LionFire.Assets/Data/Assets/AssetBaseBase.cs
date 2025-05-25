@@ -25,7 +25,7 @@ namespace LionFire.Assets
     /// AssetPath (Key), TreatAsType, Reference
     /// </remarks>
     /// <typeparam name="TValue"></typeparam>
-    public abstract class AssetBaseBase<TValue> : IKeyed, INotifyPropertyChanged, IAsset<TValue>, IReferencableValueType, INotifyReferenceDeserialized<AssetReference<TValue>>
+    public abstract class AssetBaseBase<TValue> : IKeyed, INotifyPropertyChanged, IAsset<TValue>, IReferenceableValueType, INotifyReferenceDeserialized<AssetReference<TValue>>
     {
         public Type TreatAsType => typeof(TValue);
 
@@ -61,9 +61,9 @@ namespace LionFire.Assets
             }
         }
         protected AssetReference<TValue> reference;
-        IAssetReference IReferencable<IAssetReference>.Reference => reference;
+        IAssetReference IReferenceable<IAssetReference>.Reference => reference;
 
-        IReference IReferencable.Reference => Reference;
+        IReference IReferenceable.Reference => Reference;
 
         #region Construction
 

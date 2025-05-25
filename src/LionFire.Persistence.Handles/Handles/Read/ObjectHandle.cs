@@ -24,7 +24,7 @@ public class ObjectHandle<TValue> : ReadHandleBase<NamedReference<TValue>, TValu
 {
     #region Identity
 
-    IReference<TValue> IReferencableAsValueType<TValue>.Reference => Reference;
+    IReference<TValue> IReferenceableAsValueType<TValue>.Reference => Reference;
 
     string IKeyed<string>.Key => Reference?.Key;
 

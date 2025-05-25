@@ -91,9 +91,9 @@ public abstract partial class VirtualFilesystemPersisterBase<TReference, TPersis
 
     #region List
 
-    public Task<IGetResult<IEnumerable<IListing<object>>>> List(IReferencable<TReference> referenceable, ListFilter? filter = null)
+    public Task<IGetResult<IEnumerable<IListing<object>>>> List(IReferenceable<TReference> referenceable, ListFilter? filter = null)
         => List<object>(referenceable.Reference, filter);
-    public Task<IGetResult<IEnumerable<IListing<T>>>> List<T>(IReferencable<TReference> referenceable, ListFilter? filter = null)
+    public Task<IGetResult<IEnumerable<IListing<T>>>> List<T>(IReferenceable<TReference> referenceable, ListFilter? filter = null)
                 => List<T>(referenceable.Reference, filter);
 
     private object List(Type type, TReference reference, ListFilter? filter = null)
@@ -276,7 +276,7 @@ public abstract partial class VirtualFilesystemPersisterBase<TReference, TPersis
 
     #region Create
 
-    public async Task<ITransferResult> Create<TValue>(IReferencable<TReference> referencable, TValue value)
+    public async Task<ITransferResult> Create<TValue>(IReferenceable<TReference> referencable, TValue value)
         => await Write(referencable.Reference, value, ReplaceMode.Create).ConfigureAwait(false);
 
     #endregion
@@ -285,7 +285,7 @@ public abstract partial class VirtualFilesystemPersisterBase<TReference, TPersis
 
     #region Exists
 
-    public async Task<ITransferResult> Exists<TValue>(IReferencable<TReference> referencable)
+    public async Task<ITransferResult> Exists<TValue>(IReferenceable<TReference> referencable)
         => await Exists(referencable.Reference.Path) ? ExistsResult.Found : ExistsResult.NotFound;
     public async Task<ITransferResult> Exists<TValue>(TReference reference)
         => await Exists(reference.Path) ? ExistsResult.Found : ExistsResult.NotFound;
@@ -294,7 +294,7 @@ public abstract partial class VirtualFilesystemPersisterBase<TReference, TPersis
 
     #region Retrieve
 
-    public Task<IGetResult<TValue>> Retrieve<TValue>(IReferencable<TReference> referencable, RetrieveOptions? options = null)  // Unwrap IReferencable
+    public Task<IGetResult<TValue>> Retrieve<TValue>(IReferenceable<TReference> referencable, RetrieveOptions? options = null)  // Unwrap IReferenceable
         => Retrieve<TValue>(referencable.Reference, options);
 
     // REVIEW - Yikes this is ugly.  OPTIMIZE?  Use non-generic methods?
@@ -928,10 +928,10 @@ public abstract partial class VirtualFilesystemPersisterBase<TReference, TPersis
 
     #region Update
 
-    public async Task<ITransferResult> Update<TValue>(IReferencable<TReference> referencable, TValue value)
+    public async Task<ITransferResult> Update<TValue>(IReferenceable<TReference> referencable, TValue value)
         => await Write(referencable.Reference.Path, value, ReplaceMode.Update).ConfigureAwait(false);
 
-    public async Task<ITransferResult> Upsert<TValue>(IReferencable<TReference> referencable, TValue value)
+    public async Task<ITransferResult> Upsert<TValue>(IReferenceable<TReference> referencable, TValue value)
         => await Write(referencable.Reference.Path, value, ReplaceMode.Upsert).ConfigureAwait(false);
 
     #endregion
@@ -942,7 +942,7 @@ public abstract partial class VirtualFilesystemPersisterBase<TReference, TPersis
 
     // REVIEW: Should this be moved to an outside mechanism?
 
-    public virtual Task<ITransferResult> DeleteReferencable<T>(IReferencable<TReference> referenceable) // Unwrap IReferenceable
+    public virtual Task<ITransferResult> DeleteReferenceable<T>(IReferenceable<TReference> referenceable) // Unwrap IReferenceable
         => (PersistenceOptions.VerifyExistsAsTypeBeforeDelete
             ? VerifyExistsAsTypeAndDelete<T>(referenceable.Reference.Path)
             : Delete(referenceable.Reference.Path).DeleteResultToPersistenceResult());
@@ -969,7 +969,7 @@ public abstract partial class VirtualFilesystemPersisterBase<TReference, TPersis
     #endregion
 
     // TODO: Resolve ambiguous methods between this and TReference
-    public virtual Task<ITransferResult> DeleteReferencable(IReferencable<TReference> referencable) 
+    public virtual Task<ITransferResult> DeleteReferenceable(IReferenceable<TReference> referencable) 
         => (PersistenceOptions.VerifyExistsBeforeDelete
             ? VerifyExistsAndDelete(referencable.Reference.Path)
             : Delete(referencable.Reference.Path).DeleteResultToPersistenceResult());

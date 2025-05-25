@@ -12,7 +12,7 @@
 
 
 //    public class DynamicTreeNode : IReadonlyMultiTyped, IDirectory,
-//        IReferencable, IHasHandle
+//        IReferenceable, IHasHandle
 //    {
 
 //        #region Construction

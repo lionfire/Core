@@ -19,8 +19,8 @@ namespace LionFire.Vos
 {
     //public static class IReferenceableTreeHandleExtensions
     //{
-    //    public static H<T1> ToHandle<T1>(this IReferencable r, params string[] subpathChunks) where T1 : class => r.Reference.GetChildSubpath(subpathChunks).ToHandle<T1>();
-    //    public static H<T1> ToHandle<T1>(this IReferencable r, IEnumerable<string> subpathChunks) where T1 : class => r.Reference.GetChildSubpath(subpathChunks).ToHandle<T1>();
+    //    public static H<T1> ToHandle<T1>(this IReferenceable r, params string[] subpathChunks) where T1 : class => r.Reference.GetChildSubpath(subpathChunks).ToHandle<T1>();
+    //    public static H<T1> ToHandle<T1>(this IReferenceable r, IEnumerable<string> subpathChunks) where T1 : class => r.Reference.GetChildSubpath(subpathChunks).ToHandle<T1>();
     //}
 
     // OPTIMIZE - (Here and VobHandle)  Create Reference on demand?  Store the reference path in Vob, instead of VobReference?  Generate VobReference on demand?  or is this an app specific thing?
@@ -111,7 +111,7 @@ namespace LionFire.Vos
 
         //public IWriteHandleBase<THandle> GetWriteHandleFromSubPath<THandle>(IEnumerable<string> subpathChunks) => Vob[subpathChunks].GetWriteHandle<THandle>();
 
-        //// Move this to IReferencable extensions?
+        //// Move this to IReferenceable extensions?
 
         //public H<T1> ToHandle<T1>(params string[] subpathChunks) where T1 : class => Reference.GetChildSubpath(subpathChunks).ToHandle<T1>();
         //public H<T1> ToHandle<T1>(IEnumerable<string> subpathChunks) where T1 : class => Reference.GetChildSubpath(subpathChunks).ToHandle<T1>();

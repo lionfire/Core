@@ -2,18 +2,18 @@
 
 namespace LionFire.Referencing
 {
-    public struct ReferenceWrapper2<TReference> : IReferencable<TReference>
+    public struct ReferenceWrapper2<TReference> : IReferenceable<TReference>
         where TReference : IReference
     {
         public TReference Reference { get; }
-        IReference IReferencable.Reference => Reference;
-        //IReference IReferencable<IReference>.Reference => Reference;
+        IReference IReferenceable.Reference => Reference;
+        //IReference IReferenceable<IReference>.Reference => Reference;
 
         public ReferenceWrapper2(TReference reference) { Reference = reference; }
 
         public override bool Equals(object? obj)
         {
-            if (obj is IReferencable<TReference> referencable)
+            if (obj is IReferenceable<TReference> referencable)
             {
                 return Reference.Equals(referencable.Reference);
             }
@@ -33,17 +33,17 @@ namespace LionFire.Referencing
         public override string ToString() => Reference?.ToString() ?? "(null)";
     }
 
-    //public struct ReferenceWrapper<TReference> : IReferencable<TReference>, IReferencable
+    //public struct ReferenceWrapper<TReference> : IReferenceable<TReference>, IReferenceable
     //    where TReference : IReference
     //{
     //    public TReference Reference { get; }
-    //    IReference IReferencable.Reference => Reference;
+    //    IReference IReferenceable.Reference => Reference;
 
     //    public ReferenceWrapper(TReference reference) { Reference = reference; }
 
     //    public override bool Equals(object obj)
     //    {
-    //        if (obj is IReferencable referencable)
+    //        if (obj is IReferenceable referencable)
     //        {
     //            return Reference.Equals(referencable.Reference);
     //        }

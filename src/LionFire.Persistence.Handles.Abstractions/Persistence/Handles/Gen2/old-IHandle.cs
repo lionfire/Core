@@ -9,7 +9,7 @@ namespace LionFire.Persistence
     // TODO REFACTOR - try (again?) to replace this with IReadHandle<object>?
 
     [Obsolete("Use H<T>")] // TODO
-    public interface IHandle : IChangeableReferencable,
+    public interface IHandle : IChangeableReferenceable,
         IHandlePersistence,  // Move this to extension methods?
         IHasHandle,
 #if AOT

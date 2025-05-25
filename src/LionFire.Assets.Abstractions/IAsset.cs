@@ -9,7 +9,7 @@ namespace LionFire.Assets
     /// <summary>
     /// Used to point to IAsset&lt;TValue&gt; instances when TValue is unknown.
     /// </summary>
-    public interface IAsset : IAssetPathAware, IReferencable<IAssetReference>, ITreatAsType { }
+    public interface IAsset : IAssetPathAware, IReferenceable<IAssetReference>, ITreatAsType { }
 
     /// <summary>
     /// An IAsset&lt;TValue&gt; is a type of object that is aware of its own AssetPath and TValue type, and therefore has all the info it needs

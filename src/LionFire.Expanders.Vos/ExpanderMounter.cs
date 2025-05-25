@@ -146,7 +146,7 @@ public class ExpanderMounter : IParentable<IVob>
     {
         using var activity = ActivitySource.StartActivity("Scan");
         activity?.SetTag("HandlerVob", args.HandlerVob?.Path);
-        activity?.SetTag("Reference", args.Referencable?.Reference.ToString());
+        activity?.SetTag("Reference", args.Referenceable?.Reference.ToString());
         activity?.SetTag("PersisterType", args.Persister?.GetType().Name);
 
         bool mountedSomething = false;
@@ -200,7 +200,7 @@ public class ExpanderMounter : IParentable<IVob>
         ArgumentNullException.ThrowIfNull(vob);
         bool mountedSomething = false;
 
-        IReferencable<IVobReference> referencable = vob.Reference;
+        IReferenceable<IVobReference> referencable = vob.Reference;
         ExpansionMountStates? states = null;
 
         IsInArchiveScanD.Value ??= new();

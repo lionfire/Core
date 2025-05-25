@@ -13,7 +13,7 @@ using System.Text;
 namespace LionFire.Assets;
 
 
-public interface IAssetReadHandle : IReferencable<IAssetReference>, IReadHandle
+public interface IAssetReadHandle : IReferenceable<IAssetReference>, IReadHandle
 {
 }
 public interface IHRAsset : IAssetReadHandle // PORTINGGUIDE IHRAsset > RAsset
@@ -21,7 +21,7 @@ public interface IHRAsset : IAssetReadHandle // PORTINGGUIDE IHRAsset > RAsset
     // PORTINGGUIDE - Type > TreatAsType
 } // TEMP TOPORT
 
-//public class ReferencableConverter : JsonConverter
+//public class ReferenceableConverter : JsonConverter
 //{
 //    public override bool CanConvert(Type objectType)
 //        => objectType.IsConstructedGenericType && objectType.GetGenericTypeDefinition() == typeof(RAsset<>);
@@ -33,7 +33,7 @@ public interface IHRAsset : IAssetReadHandle // PORTINGGUIDE IHRAsset > RAsset
 //    }
 //    public override void WriteJson(JsonWriter writer, object value, JsonSerializer serializer)
 //    {
-//        writer.WriteValue((IReferencable) value )
+//        writer.WriteValue((IReferenceable) value )
 //    }
 //}
 
@@ -64,7 +64,7 @@ public class RAsset<TValue> : ReadHandlePassthrough<TValue, IAssetReference<TVal
     private static AssetReference<TValue> ThrowNoAssetReference() => throw new ArgumentException($"Could not get AssetReference<{typeof(TValue).FullName}> from asset");
 
     public static implicit operator RAsset<TValue>(string assetPath) => assetPath == default ? default : new RAsset<TValue> { Reference = new AssetReference<TValue>(assetPath) };
-    public static implicit operator RAsset<TValue>(TValue asset) => Object.Equals(asset, default(TValue)) ? default : new RAsset<TValue> { Reference = (asset as IReferencable)?.Reference as AssetReference<TValue> /*?? ThrowNoAssetReference()*/, Value = asset }; // TODO: Serialize object if AssetReference is null?
+    public static implicit operator RAsset<TValue>(TValue asset) => Object.Equals(asset, default(TValue)) ? default : new RAsset<TValue> { Reference = (asset as IReferenceable)?.Reference as AssetReference<TValue> /*?? ThrowNoAssetReference()*/, Value = asset }; // TODO: Serialize object if AssetReference is null?
     
     public static implicit operator RAsset<TValue>(RWAsset<TValue> asset) => asset == null ? null : new RAsset<TValue>(asset.ReadWriteHandle); // TOFLYWEIGHT
     public static implicit operator AssetReference<TValue>(RAsset<TValue> asset) => asset == null ? null : asset.Reference;
@@ -76,7 +76,7 @@ public class RAsset<TValue> : ReadHandlePassthrough<TValue, IAssetReference<TVal
 
     public string AssetPath => Reference?.Path;
     public new AssetReference<TValue> Reference { get => (AssetReference<TValue>)base.Reference; set => base.Reference = value; }
-    IAssetReference IReferencable<IAssetReference>.Reference => Reference;
+    IAssetReference IReferenceable<IAssetReference>.Reference => Reference;
 
     public static RAsset<TValue> Get(string assetPath)
         => assetPath;

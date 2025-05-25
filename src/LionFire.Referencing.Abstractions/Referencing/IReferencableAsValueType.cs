@@ -1,6 +1,6 @@
 ﻿namespace LionFire.Referencing
 {
-    public interface IReferencableAsValueType<out TValue> : IReferencable  // REVIEW
+    public interface IReferenceableAsValueType<out TValue> : IReferenceable  // REVIEW
     {
         new IReference<TValue> Reference { get; }
     }

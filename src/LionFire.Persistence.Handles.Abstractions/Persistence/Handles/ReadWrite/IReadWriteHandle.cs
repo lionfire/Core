@@ -23,7 +23,7 @@ public interface IReadWriteHandle : IReadHandle, IWriteHandle { }
 /// </summary>
 /// <typeparam name="T"></typeparam>
 public interface IReadWriteHandle<T> 
-    : IReadHandle<T>, IWriteHandle<T>, IReadWriteHandleBase<T>, IReadWriteHandle, IReferencableAsValueType<T>
+    : IReadHandle<T>, IWriteHandle<T>, IReadWriteHandleBase<T>, IReadWriteHandle, IReferenceableAsValueType<T>
     //, IWritableLazilyGets<T> // Where did this go?
 {
 

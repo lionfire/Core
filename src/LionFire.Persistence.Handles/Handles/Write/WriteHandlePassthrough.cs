@@ -14,7 +14,7 @@ namespace LionFire.Persistence.Handles;
 /// </summary>
 /// <typeparam name="TValue"></typeparam>
 /// <typeparam name="TReference"></typeparam>
-public class WriteHandlePassthrough<TValue, TReference> : IWriteHandle<TValue>, IReferencable<TReference>
+public class WriteHandlePassthrough<TValue, TReference> : IWriteHandle<TValue>, IReferenceable<TReference>
     where TReference : IReference
 {
     public TReference Reference { get; set; }
@@ -31,7 +31,7 @@ public class WriteHandlePassthrough<TValue, TReference> : IWriteHandle<TValue>, 
 
     public Type Type => WriteHandle.Type;
 
-    IReference IReferencable.Reference => WriteHandle.Reference;
+    IReference IReferenceable.Reference => WriteHandle.Reference;
 
     public PersistenceFlags Flags => WriteHandle.Flags;
 

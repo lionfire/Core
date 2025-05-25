@@ -30,11 +30,11 @@ public class CurriedPersister<TReference, TOverlayableReference> : IPersister<TR
         this.BaseReference = baseReference;
     }
 
-    public Task<ITransferResult> Exists<TValue>(IReferencable<TReference> referencable) => Persister.Exists<TValue>(BaseReference.AddRight(referencable.Reference));
-    public Task<IGetResult<TValue>> Retrieve<TValue>(IReferencable<TReference> referencable, RetrieveOptions? options = null) => Persister.Retrieve<TValue>(BaseReference.AddRight(referencable.Reference), options);
-    public Task<ITransferResult> Create<TValue>(IReferencable<TReference> referencable, TValue value) => Persister.Create(BaseReference.AddRight(referencable.Reference), value);
-    public Task<ITransferResult> Update<TValue>(IReferencable<TReference> referencable, TValue value) => Persister.Update(BaseReference.AddRight(referencable.Reference), value);
-    public Task<ITransferResult> Upsert<TValue>(IReferencable<TReference> referencable, TValue value) => Persister.Upsert(BaseReference.AddRight(referencable.Reference), value);
-    public Task<ITransferResult> DeleteReferencable(IReferencable<TReference> referencable) => Persister.DeleteReferencable(BaseReference.AddRight(referencable.Reference));
-    public Task<IGetResult<IEnumerable<IListing<T>>>> List<T>(IReferencable<TReference> referencable, ListFilter? filter = null) => Persister.List<T>(referencable, filter);
+    public Task<ITransferResult> Exists<TValue>(IReferenceable<TReference> referencable) => Persister.Exists<TValue>(BaseReference.AddRight(referencable.Reference));
+    public Task<IGetResult<TValue>> Retrieve<TValue>(IReferenceable<TReference> referencable, RetrieveOptions? options = null) => Persister.Retrieve<TValue>(BaseReference.AddRight(referencable.Reference), options);
+    public Task<ITransferResult> Create<TValue>(IReferenceable<TReference> referencable, TValue value) => Persister.Create(BaseReference.AddRight(referencable.Reference), value);
+    public Task<ITransferResult> Update<TValue>(IReferenceable<TReference> referencable, TValue value) => Persister.Update(BaseReference.AddRight(referencable.Reference), value);
+    public Task<ITransferResult> Upsert<TValue>(IReferenceable<TReference> referencable, TValue value) => Persister.Upsert(BaseReference.AddRight(referencable.Reference), value);
+    public Task<ITransferResult> DeleteReferenceable(IReferenceable<TReference> referencable) => Persister.DeleteReferenceable(BaseReference.AddRight(referencable.Reference));
+    public Task<IGetResult<IEnumerable<IListing<T>>>> List<T>(IReferenceable<TReference> referencable, ListFilter? filter = null) => Persister.List<T>(referencable, filter);
 }

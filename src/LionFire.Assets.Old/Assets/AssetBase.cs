@@ -89,7 +89,7 @@ namespace LionFire.Assets
         #region IReadHandle pass thru, 
         // only needed for AOT, for implicit assignment to HAsset???
 #if AOT
-		IReference IReferencable.Reference { get { return ReadHandle==null?null:ReadHandle.Reference; } }
+		IReference IReferenceable.Reference { get { return ReadHandle==null?null:ReadHandle.Reference; } }
         object IReadHandle.Object { get { return this; } } // or ReadHandle.Object
         bool IReadHandle.HasObject { get { return true; } }
 #endif

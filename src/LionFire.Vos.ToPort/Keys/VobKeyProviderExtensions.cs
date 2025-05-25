@@ -36,7 +36,7 @@ namespace LionFire.Vos
             throw new NotImplementedException();
         }
 
-        public static object GenerateNonReferencableKey(this Vob vob)
+        public static object GenerateNonReferenceableKey(this Vob vob)
         {
             throw new NotImplementedException();
         }

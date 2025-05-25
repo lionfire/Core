@@ -9,7 +9,7 @@ public class BeforeReadEventArgs
     public IVob Vob;
     public IVob HandlerVob;
     public Type ResultType;
-    public IReferencable<IVobReference> Referencable;
+    public IReferenceable<IVobReference> Referenceable;
     public HashSet<string>? Flags;
 }
 

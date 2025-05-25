@@ -36,14 +36,14 @@ public class CouchDBSerializingPersister : SerializingPersisterBase<CouchDBPersi
 
     #region Read
 
-    public Task<ITransferResult> Exists<TValue>(IReferencable<ICouchDBReference> referencable) => throw new NotImplementedException();
-    public Task<IGetResult<TValue>> Retrieve<TValue>(IReferencable<ICouchDBReference> referencable) => throw new NotImplementedException();
+    public Task<ITransferResult> Exists<TValue>(IReferenceable<ICouchDBReference> referencable) => throw new NotImplementedException();
+    public Task<IGetResult<TValue>> Retrieve<TValue>(IReferenceable<ICouchDBReference> referencable) => throw new NotImplementedException();
 
     #endregion
 
     #region Write
 
-    public async Task<ITransferResult> Create<TValue>(IReferencable<ICouchDBReference> referencable, TValue value)
+    public async Task<ITransferResult> Create<TValue>(IReferenceable<ICouchDBReference> referencable, TValue value)
     {        var r = referencable.Reference;
         var client = this.connectionForReference(r).MyCouchClient;
 
@@ -57,11 +57,11 @@ public class CouchDBSerializingPersister : SerializingPersisterBase<CouchDBPersi
         return TransferResult.Success;
     }
 
-    public Task<ITransferResult> Update<TValue>(IReferencable<ICouchDBReference> referencable, TValue value)
+    public Task<ITransferResult> Update<TValue>(IReferenceable<ICouchDBReference> referencable, TValue value)
     {
         throw new NotImplementedException();
     }
-    public async Task<ITransferResult> Upsert<TValue>(IReferencable<ICouchDBReference> referencable, TValue value)
+    public async Task<ITransferResult> Upsert<TValue>(IReferenceable<ICouchDBReference> referencable, TValue value)
     {
         var r = referencable.Reference;
         var client = this.connectionForReference(r).MyCouchClient;
@@ -86,19 +86,19 @@ public class CouchDBSerializingPersister : SerializingPersisterBase<CouchDBPersi
 
     #region Delete
 
-    public Task<ITransferResult> DeleteReferencable(IReferencable<ICouchDBReference> referencable) => throw new NotImplementedException();
+    public Task<ITransferResult> DeleteReferenceable(IReferenceable<ICouchDBReference> referencable) => throw new NotImplementedException();
 
     #endregion
 
-    public Task<IGetResult<IEnumerable<string>>> List(IReferencable<ICouchDBReference> referencable, ListFilter filter = null) => throw new NotImplementedException();
-    public Task<IGetResult<IEnumerable<Listing<T>>>> List<T>(IReferencable<ICouchDBReference> referencable, ListFilter filter = null) => throw new NotImplementedException();
+    public Task<IGetResult<IEnumerable<string>>> List(IReferenceable<ICouchDBReference> referencable, ListFilter filter = null) => throw new NotImplementedException();
+    public Task<IGetResult<IEnumerable<Listing<T>>>> List<T>(IReferenceable<ICouchDBReference> referencable, ListFilter filter = null) => throw new NotImplementedException();
 
-    public Task<IGetResult<TValue>> Retrieve<TValue>(IReferencable<ICouchDBReference> referencable, RetrieveOptions options = null)
+    public Task<IGetResult<TValue>> Retrieve<TValue>(IReferenceable<ICouchDBReference> referencable, RetrieveOptions options = null)
     {
         throw new NotImplementedException();
     }
 
-    Task<IGetResult<IEnumerable<IListing<T>>>> IListPersister<ICouchDBReference>.List<T>(IReferencable<ICouchDBReference> referencable, ListFilter filter)
+    Task<IGetResult<IEnumerable<IListing<T>>>> IListPersister<ICouchDBReference>.List<T>(IReferenceable<ICouchDBReference> referencable, ListFilter filter)
     {
         throw new NotImplementedException();
     }

@@ -895,7 +895,7 @@ namespace LionFire.Vos
     //}
 
     //public class MapBase : Vobo<Map>
-    //, IReferencable, IHasHandle
+    //, IReferenceable, IHasHandle
     //{
     //AssetBase assetBase; // UNNEEDED?
     //public AssetID ID { get { return assetBase.ID; } set { assetBase.ID = value; } } // UNNEEDED?

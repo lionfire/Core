@@ -29,25 +29,25 @@ namespace LionFire.Persistence.RegisteredObjects
 
         public NamedObjectsByType ObjectRegistry { get; set; }
 
-        public Task<ITransferResult> Create<TValue>(IReferencable<NamedObjectReference> referencable, TValue value)
+        public Task<ITransferResult> Create<TValue>(IReferenceable<NamedObjectReference> referencable, TValue value)
         {
             return Task.FromResult<ITransferResult>(ObjectRegistry.TryAdd(value, referencable.Reference.Path)
                 ? PersistenceResult.Success
                 : PersistenceResult.FailAndFound);
         }
 
-        public Task<ITransferResult> Delete(IReferencable<NamedObjectReference> referencable) => throw new NotImplementedException();
-        public Task<ITransferResult> Exists<TValue>(IReferencable<NamedObjectReference> referencable) => throw new NotImplementedException();
-        public Task<IGetResult<TValue>> Retrieve<TValue>(IReferencable<NamedObjectReference> referencable) => throw new NotImplementedException();
-        public Task<ITransferResult> Update<TValue>(IReferencable<NamedObjectReference> referencable, TValue value) => throw new NotImplementedException();
-        public Task<ITransferResult> Upsert<TValue>(IReferencable<NamedObjectReference> referencable, TValue value) => throw new NotImplementedException();
+        public Task<ITransferResult> Delete(IReferenceable<NamedObjectReference> referencable) => throw new NotImplementedException();
+        public Task<ITransferResult> Exists<TValue>(IReferenceable<NamedObjectReference> referencable) => throw new NotImplementedException();
+        public Task<IGetResult<TValue>> Retrieve<TValue>(IReferenceable<NamedObjectReference> referencable) => throw new NotImplementedException();
+        public Task<ITransferResult> Update<TValue>(IReferenceable<NamedObjectReference> referencable, TValue value) => throw new NotImplementedException();
+        public Task<ITransferResult> Upsert<TValue>(IReferenceable<NamedObjectReference> referencable, TValue value) => throw new NotImplementedException();
     }
 
     public class RegisteredObjectPersister : IReadPersister<RegisteredObjectReference>
     {
 
-        public Task<ITransferResult> Exists<TValue>(IReferencable<RegisteredObjectReference> referencable) => throw new NotImplementedException();
-        public Task<IGetResult<TValue>> Retrieve<TValue>(IReferencable<RegisteredObjectReference> referencable) => throw new NotImplementedException();
+        public Task<ITransferResult> Exists<TValue>(IReferenceable<RegisteredObjectReference> referencable) => throw new NotImplementedException();
+        public Task<IGetResult<TValue>> Retrieve<TValue>(IReferenceable<RegisteredObjectReference> referencable) => throw new NotImplementedException();
     }
 }
 #endif

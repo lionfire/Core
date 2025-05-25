@@ -10,7 +10,7 @@ public interface IFileReference<out TValue> : IFileReference
 {
 }
 
-public class FileReference : FileReference<object>, IReferencable<FileReference>
+public class FileReference : FileReference<object>, IReferenceable<FileReference>
 {
     public FileReference Reference => this;
 

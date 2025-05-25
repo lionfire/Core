@@ -9,7 +9,7 @@ namespace LionFire.ObjectBus
     /// </summary>
     /// <typeparam name="T"></typeparam>
     public abstract class MutableHandleBase<T> : HandleBase<T>
-            , IChangeableReferencable
+            , IChangeableReferenceable
             , IFreezable
             where T : class
     {
@@ -20,7 +20,7 @@ namespace LionFire.ObjectBus
             ReferenceChangedForFrom?.Invoke(this, oldReference);
         }
 
-        public event Action<IChangeableReferencable, IReference> ReferenceChangedForFrom;
+        public event Action<IChangeableReferenceable, IReference> ReferenceChangedForFrom;
 
 #endregion
 

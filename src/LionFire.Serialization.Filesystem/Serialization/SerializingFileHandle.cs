@@ -17,7 +17,7 @@ namespace LionFire.Serialization
     /// </summary>
     /// <typeparam name="T"></typeparam>
     public class SerializingFileHandle<T> : HLocalFileBase<T>
-        //, IReferencable, IChangeableReferencable
+        //, IReferenceable, IChangeableReferenceable
         where T : class
     {
 

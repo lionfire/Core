@@ -30,17 +30,17 @@ public class RetrieveOptions
 public interface IReadPersister<in TReference>
     where TReference : IReference
 {
-    Task<ITransferResult> Exists<TValue>(IReferencable<TReference> referencable);
-    Task<IGetResult<TValue>> Retrieve<TValue>(IReferencable<TReference> referencable, RetrieveOptions? options = null);
+    Task<ITransferResult> Exists<TValue>(IReferenceable<TReference> referencable);
+    Task<IGetResult<TValue>> Retrieve<TValue>(IReferenceable<TReference> referencable, RetrieveOptions? options = null);
 }
 
 
 //public static class IReadPersisterExtensions
 //{
-//    // TODO: Extension methods for IReferencable > IReference?
-//    Task<ITransferResult> Exists<TValue>(IReferencable<TReference> referencable)=>
-//    Task<IGetResult<TValue>> Retrieve<TValue>(IReferencable<TReference> referencable)=>
+//    // TODO: Extension methods for IReferenceable > IReference?
+//    Task<ITransferResult> Exists<TValue>(IReferenceable<TReference> referencable)=>
+//    Task<IGetResult<TValue>> Retrieve<TValue>(IReferenceable<TReference> referencable)=>
 
-//    Task<IGetResult<IEnumerable<string>>> List(IReferencable<TReference> referencable, ListFilter? filter = null)=>
+//    Task<IGetResult<IEnumerable<string>>> List(IReferenceable<TReference> referencable, ListFilter? filter = null)=>
 
 //}

@@ -14,8 +14,8 @@ namespace LionFire.Vos;
 
 public interface IVob :
     //IReadOnlyMultiTyped, 
-    IReferencable,
-    IReferencable<IVobReference>,
+    IReferenceable,
+    IReferenceable<IVobReference>,
     IEnumerable<IVob>, // Does not trigger a Retrieve (IO) operation -- it is just the child Vobs currently tracked
     IFlex,
     IAcquires,

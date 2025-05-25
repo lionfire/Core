@@ -180,7 +180,7 @@ public class HeadlessPhysicsProcessor : EntityProcessor<PhysicsComponent, Physic
             gameSystems.Add(physicsSystem);
         }
 
-        ((IReferencable)physicsSystem).AddReference();
+        ((IReferenceable)physicsSystem).AddReference();
 
          Simulation = physicsSystem.Create(this);
 
@@ -192,7 +192,7 @@ public class HeadlessPhysicsProcessor : EntityProcessor<PhysicsComponent, Physic
         if (physicsSystem != null)
         {
             physicsSystem.Release(this);
-            ((IReferencable)physicsSystem).Release();
+            ((IReferenceable)physicsSystem).Release();
         }
     }
 

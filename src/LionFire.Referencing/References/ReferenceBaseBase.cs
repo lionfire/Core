@@ -32,14 +32,14 @@ namespace LionFire.Referencing
 
     public abstract class ReferenceBaseBase<ConcreteType>
         : ICloneableReference
-        , IReferencable<ConcreteType>
+        , IReferenceable<ConcreteType>
         where ConcreteType : ReferenceBaseBase<ConcreteType>, IReference
     {
         
 
-        IReference IReferencable.Reference => (ConcreteType)this;
+        IReference IReferenceable.Reference => (ConcreteType)this;
 
-        ConcreteType IReferencable<ConcreteType>.Reference => (ConcreteType)this;
+        ConcreteType IReferenceable<ConcreteType>.Reference => (ConcreteType)this;
         IReference ICloneableReference.Clone() => Clone();
         public virtual ConcreteType Clone()
         {

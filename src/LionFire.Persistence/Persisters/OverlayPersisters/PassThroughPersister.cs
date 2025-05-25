@@ -23,7 +23,7 @@ namespace LionFire.Persistence.Persisters
         where TReference : IReference
         where TOptions : PersistenceOptions
         where TUnderlyingPersister : class, IPersister<TUnderlyingReference>
-        where TUnderlyingReference : IReference, IReferencable<TUnderlyingReference>
+        where TUnderlyingReference : IReference, IReferenceable<TUnderlyingReference>
     {
 
         public abstract TUnderlyingReference TranslateReferenceForRead(TReference reference);
@@ -54,17 +54,17 @@ namespace LionFire.Persistence.Persisters
         protected virtual TUnderlyingPersister GetUnderlyingPersister(TReference reference) => default;
 
 
-        public Task<ITransferResult> Create<TValue>(IReferencable<TReference> referencable, TValue value)
+        public Task<ITransferResult> Create<TValue>(IReferenceable<TReference> referencable, TValue value)
             => GetUnderlyingPersister(referencable.Reference).Create(TranslateReferenceForWrite(referencable.Reference), value);
 
-        public Task<ITransferResult> DeleteReferencable(IReferencable<TReference> referencable)
-           => GetUnderlyingPersister(referencable.Reference).DeleteReferencable(TranslateReferenceForWrite(referencable.Reference));
-        public Task<ITransferResult> Exists<TValue>(IReferencable<TReference> referencable)
+        public Task<ITransferResult> DeleteReferenceable(IReferenceable<TReference> referencable)
+           => GetUnderlyingPersister(referencable.Reference).DeleteReferenceable(TranslateReferenceForWrite(referencable.Reference));
+        public Task<ITransferResult> Exists<TValue>(IReferenceable<TReference> referencable)
           => GetUnderlyingPersister(referencable.Reference).Exists<TValue>(TranslateReferenceForRead(referencable.Reference));
-        public Task<IGetResult<IEnumerable<IListing<T>>>> List<T>(IReferencable<TReference> referencable, ListFilter filter = null)
+        public Task<IGetResult<IEnumerable<IListing<T>>>> List<T>(IReferenceable<TReference> referencable, ListFilter filter = null)
           => GetUnderlyingPersister(referencable.Reference).List<T>(TranslateReferenceForRead(referencable.Reference), filter);
 
-        public async Task<IGetResult<TValue>> Retrieve<TValue>(IReferencable<TReference> referencable, RetrieveOptions? options = null)
+        public async Task<IGetResult<TValue>> Retrieve<TValue>(IReferenceable<TReference> referencable, RetrieveOptions? options = null)
         {
             var result = await GetUnderlyingPersister(referencable.Reference).Retrieve<TValue>(TranslateReferenceForRead(referencable.Reference), options).ConfigureAwait(false);
 
@@ -80,9 +80,9 @@ namespace LionFire.Persistence.Persisters
             return result;
         }
 
-        public Task<ITransferResult> Update<TValue>(IReferencable<TReference> referencable, TValue value)
+        public Task<ITransferResult> Update<TValue>(IReferenceable<TReference> referencable, TValue value)
         => GetUnderlyingPersister(referencable.Reference).Update(TranslateReferenceForWrite(referencable.Reference), value);
-        public Task<ITransferResult> Upsert<TValue>(IReferencable<TReference> referencable, TValue value)
+        public Task<ITransferResult> Upsert<TValue>(IReferenceable<TReference> referencable, TValue value)
          => GetUnderlyingPersister(referencable.Reference).Upsert(TranslateReferenceForWrite(referencable.Reference), value);
     }
 }

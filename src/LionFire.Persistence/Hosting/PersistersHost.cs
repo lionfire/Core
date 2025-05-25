@@ -45,7 +45,7 @@ public static class PersistersHost
                           .Configure<ObjectHandleProviderOptions>(c =>
                           {
                               c.AutoRegister = true;
-                              c.CheckIReferencable = true;
+                              c.CheckIReferenceable = true;
                               c.ReuseHandles = true;
                           })
                           .AddSingleton(serviceProvider => serviceProvider.GetRequiredService<IOptionsMonitor<ObjectHandleProviderOptions>>().CurrentValue)

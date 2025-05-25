@@ -29,7 +29,7 @@ public interface IReadHandle<out T>
     , IGetter<T>
     , IDetects
     //, IDetects<T> // TODO?
-    , IReferencableAsValueType<T>
+    , IReferenceableAsValueType<T>
 // , INotifyChanged<T>
 //, INotifyingWrapper<T>
 //IReadHandleEvents<T>,

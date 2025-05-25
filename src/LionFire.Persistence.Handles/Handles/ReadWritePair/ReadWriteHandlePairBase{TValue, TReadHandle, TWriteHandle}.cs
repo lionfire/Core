@@ -41,7 +41,7 @@ public class ReadWriteHandlePairBase<TReference, TValue, TReadHandle, TWriteHand
 
     [SetOnce]
     public TReference Reference { get => Key; set => Key = value; }
-    IReference IReferencable.Reference => Key;
+    IReference IReferenceable.Reference => Key;
 
     #endregion
 

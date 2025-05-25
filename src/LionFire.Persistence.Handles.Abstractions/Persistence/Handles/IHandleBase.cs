@@ -3,7 +3,7 @@ using System;
 
 namespace LionFire.Persistence.Handles;
 
-public interface IHandleBase : IReferencable, IPersists
+public interface IHandleBase : IReferenceable, IPersists
 {
     Type Type { get; }
 }

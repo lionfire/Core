@@ -22,12 +22,12 @@ public interface IVobReference<out TValue> : IVobReference, IReference<TValue>
 
 
 
-public interface IVobExtensionReference : IReference, IReferencable<IVobExtensionReference>, IPersisterReference
+public interface IVobExtensionReference : IReference, IReferenceable<IVobExtensionReference>, IPersisterReference
 {
     IVobReference VobReference { get; set; }
 }
 
-public interface IVobReference : IReference, ITypedReference, IReferencable<IVobReference>, IPersisterReference
+public interface IVobReference : IReference, ITypedReference, IReferenceable<IVobReference>, IPersisterReference
 {
     IVobReference<T> ForType<T>();
 

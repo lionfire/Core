@@ -14,7 +14,7 @@ namespace LionFire.Assets
     /// REVIEW - Need to have AssetType, to support multiple concrete types for a common base type?
     /// </summary>
 	//public interface IAssetBase 
-        //: IReferencable 
+        //: IReferenceable 
         // Was IHRAsset
     //{
         //string AssetSubPath { get; }

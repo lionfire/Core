@@ -31,7 +31,7 @@ public class NullReadHandle<TValue> : IReadHandle<TValue>
 
 
     public IReference Reference => default;
-    IReference<TValue> IReferencableAsValueType<TValue>.Reference => default;
+    IReference<TValue> IReferenceableAsValueType<TValue>.Reference => default;
 
 
     public PersistenceFlags Flags => PersistenceFlags.UpToDate;

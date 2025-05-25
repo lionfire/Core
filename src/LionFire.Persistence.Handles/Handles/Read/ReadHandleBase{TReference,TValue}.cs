@@ -65,7 +65,7 @@ namespace LionFire.Persistence.Handles
 
     // MOVED to base class, moved both generic type parameters there too
 //    public abstract class ReadHandleBase<TReference, TValue> : ReadHandleBase<TValue>
-//        , IReferencable<IReference>
+//        , IReferenceable<IReference>
 //        where TReference : IReference
 //        //where TValue : class
 //    {
@@ -83,7 +83,7 @@ namespace LionFire.Persistence.Handles
 //            }
 //        }
 
-//        IReference IReferencable<IReference>.Reference => base.Reference;
+//        IReference IReferenceable<IReference>.Reference => base.Reference;
 
 //        #region Construction
 

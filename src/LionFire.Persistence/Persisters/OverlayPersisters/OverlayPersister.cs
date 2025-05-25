@@ -29,12 +29,12 @@ namespace LionFire.Persistence.Persisters
         {
         }
 
-        public Task<ITransferResult> Create<TValue>(IReferencable<TReference> referencable, TValue value) => throw new System.NotImplementedException();
-        public Task<ITransferResult> DeleteReferencable(IReferencable<TReference> referencable) => throw new System.NotImplementedException();
-        public Task<ITransferResult> Exists<TValue>(IReferencable<TReference> referencable) => throw new System.NotImplementedException();
-        public Task<IGetResult<IEnumerable<IListing<T>>>> List<T>(IReferencable<TReference> referencable, ListFilter filter = null) => throw new System.NotImplementedException();
-        public Task<IGetResult<TValue>> Retrieve<TValue>(IReferencable<TReference> referencable, RetrieveOptions? options = null) => throw new System.NotImplementedException();
-        public Task<ITransferResult> Update<TValue>(IReferencable<TReference> referencable, TValue value) => throw new System.NotImplementedException();
-        public Task<ITransferResult> Upsert<TValue>(IReferencable<TReference> referencable, TValue value) => throw new System.NotImplementedException();
+        public Task<ITransferResult> Create<TValue>(IReferenceable<TReference> referencable, TValue value) => throw new System.NotImplementedException();
+        public Task<ITransferResult> DeleteReferenceable(IReferenceable<TReference> referencable) => throw new System.NotImplementedException();
+        public Task<ITransferResult> Exists<TValue>(IReferenceable<TReference> referencable) => throw new System.NotImplementedException();
+        public Task<IGetResult<IEnumerable<IListing<T>>>> List<T>(IReferenceable<TReference> referencable, ListFilter filter = null) => throw new System.NotImplementedException();
+        public Task<IGetResult<TValue>> Retrieve<TValue>(IReferenceable<TReference> referencable, RetrieveOptions? options = null) => throw new System.NotImplementedException();
+        public Task<ITransferResult> Update<TValue>(IReferenceable<TReference> referencable, TValue value) => throw new System.NotImplementedException();
+        public Task<ITransferResult> Upsert<TValue>(IReferenceable<TReference> referencable, TValue value) => throw new System.NotImplementedException();
     }
 }

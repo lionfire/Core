@@ -252,7 +252,7 @@ namespace LionFire.ObjectBus
         {
         }
 
-        public OBusHandle(IReferencable referencable, ObjectType obj = null, bool freezeObjectIfProvided = true)
+        public OBusHandle(IReferenceable referencable, ObjectType obj = null, bool freezeObjectIfProvided = true)
             : base(referencable, obj, freezeObjectIfProvided)
         {
             IReference reference = referencable.Reference;
@@ -292,7 +292,7 @@ namespace LionFire.ObjectBus
                 {
                     if (value.Type == null)
                     {
-                        //IChangeableReferencable cr = reference as IChangeableReferencable;
+                        //IChangeableReferenceable cr = reference as IChangeableReferenceable;
                         //if (cr != null)
                         //{
                         //    cr.Type = typeof(T);

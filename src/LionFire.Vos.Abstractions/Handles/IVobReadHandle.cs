@@ -7,7 +7,7 @@ namespace LionFire.Vos
     public interface IVobReadHandle : IVobReadHandle<object> // RENAME to VR?
     {
     }
-    public interface IVobReadHandle<out T> : IReadHandleBase<T>, IReferencable<IVobReference> // RENAME to VR?
+    public interface IVobReadHandle<out T> : IReadHandleBase<T>, IReferenceable<IVobReference> // RENAME to VR?
     {
         IVob Vob { get; }
         Type Type { get; } // REVIEW

@@ -16,8 +16,8 @@ namespace LionFire.Persistence.Handles;
 /// <seealso cref="ReadHandle{TValue}"/>
 public abstract class ReadHandleBase<TReference, TValue> 
     : GetterWithEvents<TReference, TValue>, IReadHandleBase<TValue>
-    , IReferencable<IReference>
-    , IReferencableAsValueType<TValue>
+    , IReferenceable<IReference>
+    , IReferenceableAsValueType<TValue>
     , IKeyed<string>
     where TReference : IReference<TValue>
     //, IReadHandleInvariant<TValue>
@@ -28,10 +28,10 @@ public abstract class ReadHandleBase<TReference, TValue>
 
     //protected virtual bool IsAllowedReferenceType(Type type) => true;
 
-    IReference IReferencable<IReference>.Reference => Reference;
-    IReference<TValue> IReferencableAsValueType<TValue>.Reference => Reference;
+    IReference IReferenceable<IReference>.Reference => Reference;
+    IReference<TValue> IReferenceableAsValueType<TValue>.Reference => Reference;
 
-    IReference IReferencable.Reference => Reference;
+    IReference IReferenceable.Reference => Reference;
 
     [SetOnce]
     public TReference Reference

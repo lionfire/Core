@@ -119,13 +119,13 @@ public static partial class ReferenceToReadWriteHandleExtensions
 
     #region Existing
 
-    public static IReadWriteHandle GetExistingReadWriteHandle(this IReferencable referencable)
+    public static IReadWriteHandle GetExistingReadWriteHandle(this IReferenceable referencable)
     {
         if (referencable.Reference == null) { return null; }
         Type referenceValueType = null;
 
         {
-            if (referencable is IReferencableValueType rvt) { referenceValueType = rvt.ReferenceValueType ?? throw new ArgumentNullException($"{typeof(IReferencableValueType).Name}.{nameof(rvt.ReferenceValueType)}"); }
+            if (referencable is IReferenceableValueType rvt) { referenceValueType = rvt.ReferenceValueType ?? throw new ArgumentNullException($"{typeof(IReferenceableValueType).Name}.{nameof(rvt.ReferenceValueType)}"); }
 
             if (referencable.Reference is ITypedReference tr)
             {
@@ -133,7 +133,7 @@ public static partial class ReferenceToReadWriteHandleExtensions
             }
         }
 
-        if (referenceValueType == null) { throw new ArgumentException($"{nameof(referencable)} must implement IReferencableValueType, or its Reference must implement ITypedReference."); } // ENH: scan the object for IReadWriteHandle<TValue>
+        if (referenceValueType == null) { throw new ArgumentException($"{nameof(referencable)} must implement IReferenceableValueType, or its Reference must implement ITypedReference."); } // ENH: scan the object for IReadWriteHandle<TValue>
 
         if (referencable is IHasReadWriteHandle ihrwh)
         {

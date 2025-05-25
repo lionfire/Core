@@ -31,16 +31,16 @@ public abstract class WriteHandleBase2<TReference, TValue>
     , IDeletable
     , ISets<TValue>
     , IStagesSet<TValue>
-    , IReferencable<TReference>
+    , IReferenceable<TReference>
     , INotifyWrappedValueChanged
     , INotifyWrappedValueReplaced
-    , IReferencableAsValueType<TValue>
+    , IReferenceableAsValueType<TValue>
     where TReference : IReference<TValue>
 {
     public Type Type => typeof(TValue);
     public IReference Reference => Key;
-    TReference IReferencable<TReference>.Reference => Key;
-    IReference<TValue> IReferencableAsValueType<TValue>.Reference => Key;
+    TReference IReferenceable<TReference>.Reference => Key;
+    IReference<TValue> IReferenceableAsValueType<TValue>.Reference => Key;
 
     #region Construction
 
@@ -378,17 +378,17 @@ public abstract class WriteHandleBase<TReference, TValue>
     , IDeletable
     , ISetter<TValue>
     , IStagesSet<TValue>
-    , IReferencable<TReference>
+    , IReferenceable<TReference>
     , INotifyWrappedValueChanged
     , INotifyWrappedValueReplaced
-    , IReferencableAsValueType<TValue>
+    , IReferenceableAsValueType<TValue>
     where TReference : IReference<TValue>
 {
 
     public Type Type => typeof(TValue);
     public IReference Reference => Key;
-    TReference IReferencable<TReference>.Reference => Key;
-    IReference<TValue> IReferencableAsValueType<TValue>.Reference => Key;
+    TReference IReferenceable<TReference>.Reference => Key;
+    IReference<TValue> IReferenceableAsValueType<TValue>.Reference => Key;
 
     #region Construction
 

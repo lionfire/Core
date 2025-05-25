@@ -5,9 +5,9 @@ using LionFire.Referencing;
 
 namespace LionFire.Persistence
 {
-    public interface IIdReadWriteHandle<TValue> : IIdReadWriteHandle, IReferencable<IIdReference<TValue>> { }
+    public interface IIdReadWriteHandle<TValue> : IIdReadWriteHandle, IReferenceable<IIdReference<TValue>> { }
 
-    public interface IIdReadWriteHandle : IReferencable<IIdReference>, IReadWriteHandle, IIdReadHandle
+    public interface IIdReadWriteHandle : IReferenceable<IIdReference>, IReadWriteHandle, IIdReadHandle
     {
     }
 
@@ -36,7 +36,7 @@ namespace LionFire.Persistence
 
         public string IdPath => Reference.Path;
         public new IdReference<TValue> Reference { get => (IdReference<TValue>)base.Reference; set => base.Reference = value; }
-        IIdReference IReferencable<IIdReference>.Reference => Reference;
+        IIdReference IReferenceable<IIdReference>.Reference => Reference;
 
 
     }

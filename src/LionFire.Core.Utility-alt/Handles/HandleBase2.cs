@@ -21,7 +21,7 @@ namespace LionFire.ObjectBus
     public abstract class MinimalHandleBase<ObjectType> : IHandle<ObjectType>
         , IHandlePersistence
         , ITreeHandle
-        , IChangeableReferencable
+        , IChangeableReferenceable
         where ObjectType : class
     {
         #region Construction
@@ -67,7 +67,7 @@ namespace LionFire.ObjectBus
             if (typeof(ObjectType) == typeof(object)) { l.LogTrace("HandleBase2<object>: " + this.ToString()); }
         }
 
-        public MinimalHandleBase(IReferencable referencable, ObjectType obj = null, bool freezeObjectIfProvided = true)
+        public MinimalHandleBase(IReferenceable referencable, ObjectType obj = null, bool freezeObjectIfProvided = true)
             : this(obj, freezeObjectIfProvided)
         {
             IReference reference = referencable.Reference;
@@ -108,7 +108,7 @@ namespace LionFire.ObjectBus
             if (ev != null) ev(this, oldReference);
         }
 
-        public event Action<IChangeableReferencable, IReference> ReferenceChangedForFrom;
+        public event Action<IChangeableReferenceable, IReference> ReferenceChangedForFrom;
 
         #endregion
 
@@ -980,7 +980,7 @@ namespace LionFire.ObjectBus
         {
             if (_object != null)
             {
-                IReferencable referenceable = _object as IReferencable;
+                IReferenceable referenceable = _object as IReferenceable;
                 if (referenceable != null)
                 {
                     if (Reference == null)

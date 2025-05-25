@@ -75,7 +75,7 @@ namespace LionFire.Referencing
             if (typeof(ObjectType) == typeof(object)) { l.Trace("HandleBase2<object>: " + this.ToString()); }
         }
 
-        public HandleBase2(IReferencable referencable, ObjectType obj = null, bool freezeObjectIfProvided = true)
+        public HandleBase2(IReferenceable referencable, ObjectType obj = null, bool freezeObjectIfProvided = true)
             : this(obj, freezeObjectIfProvided)
         {
             IReference reference = referencable.Reference;
@@ -916,7 +916,7 @@ namespace LionFire.Referencing
         {
             if (_object != null)
             {
-                IReferencable referenceable = _object as IReferencable;
+                IReferenceable referenceable = _object as IReferenceable;
                 if (referenceable != null)
                 {
                     if (Reference == null)
@@ -1512,7 +1512,7 @@ namespace LionFire.ObjectBus
     /// </summary>
     /// <typeparam name="T"></typeparam>
     public abstract class HandleBase<T> : HandleBase2<T>
-        , IChangeableReferencable
+        , IChangeableReferenceable
         , IFreezable
         where T : class//, new()
     {
@@ -1534,7 +1534,7 @@ namespace LionFire.ObjectBus
         {
         }
 
-        public HandleBase(IReferencable referencable, T obj = null, bool freezeObjectIfProvided = true)
+        public HandleBase(IReferenceable referencable, T obj = null, bool freezeObjectIfProvided = true)
             : base(referencable, obj, freezeObjectIfProvided)
         {
             IReference reference = referencable.Reference;
@@ -1571,7 +1571,7 @@ namespace LionFire.ObjectBus
                 {
                     if (value.Type == null)
                     {
-                        //IChangeableReferencable cr = reference as IChangeableReferencable;
+                        //IChangeableReferenceable cr = reference as IChangeableReferenceable;
                         //if (cr != null)
                         //{
                         //    cr.Type = typeof(T);

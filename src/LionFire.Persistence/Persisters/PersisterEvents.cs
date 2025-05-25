@@ -40,9 +40,9 @@ public class RetrieveContext<TReference> : IRetrieveContext
     public bool IsListing => ListingType != null;
     public Type? ListingType { get; set; }
 
-    public IReferencable<TReference> Referencable { get; set; }
+    public IReferenceable<TReference> Referenceable { get; set; }
 
-    public TReference? Reference { get => reference ?? Referencable.Reference; set => reference = value; }
+    public TReference? Reference { get => reference ?? Referenceable.Reference; set => reference = value; }
     private TReference? reference;
 
     IReference? IRetrieveContext.Reference => Reference;

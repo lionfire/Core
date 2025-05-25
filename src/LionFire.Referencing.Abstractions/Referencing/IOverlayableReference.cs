@@ -16,15 +16,15 @@ namespace LionFire.Referencing
         AllowOverride = 1 << 2,
     }
 
-    public interface IOverlayableReference<TReference> : IReferencable<TReference>
+    public interface IOverlayableReference<TReference> : IReferenceable<TReference>
         where TReference : IReference
     {
         ReferenceOverlayMode OverlayMode { get; }
 
-        IReferencable<TReference> AddLeft(IReference reference);
-        IReferencable<TReference> AddRight(IReference reference);
-        IReferencable<TReference> PopLeft(IReference reference);
-        IReferencable<TReference> PopRight(IReference reference);
+        IReferenceable<TReference> AddLeft(IReference reference);
+        IReferenceable<TReference> AddRight(IReference reference);
+        IReferenceable<TReference> PopLeft(IReference reference);
+        IReferenceable<TReference> PopRight(IReference reference);
         int Count { get; }
     }
 

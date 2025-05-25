@@ -19,8 +19,8 @@ namespace LionFire.Vos
         public static IVob? GetVob(this IVobReference vobReference, IHas<IVos>? hasRootManager = null) 
             => GetRootManagerOrThrow(hasRootManager).Get(vobReference.Persister)?[vobReference.PathChunks];
 
-        public static IVob? ReferencableToVob(this IReferencable<VobReference> vosReferencable, IHas<IVos>? hasRootManager = null) 
-            => GetRootManagerOrThrow(hasRootManager).Get(vosReferencable.Reference.Persister)?[vosReferencable.Reference.PathChunks];
+        public static IVob? ReferenceableToVob(this IReferenceable<VobReference> vosReferenceable, IHas<IVos>? hasRootManager = null) 
+            => GetRootManagerOrThrow(hasRootManager).Get(vosReferenceable.Reference.Persister)?[vosReferenceable.Reference.PathChunks];
 
         /// <summary>
         /// 

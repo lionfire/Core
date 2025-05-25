@@ -362,37 +362,37 @@ public class SharpZipLibExpander : ExpanderPersister, ISupportsFileExtensions, I
         throw new NotImplementedException();
     }
 
-    public Task<ITransferResult> Exists<TValue>(IReferencable<IExpansionReference> referencable)
+    public Task<ITransferResult> Exists<TValue>(IReferenceable<IExpansionReference> referencable)
     {
         throw new NotImplementedException();
     }
 
-    public Task<IGetResult<TValue>> Retrieve<TValue>(IReferencable<IExpansionReference> referencable, RetrieveOptions? options = null)
+    public Task<IGetResult<TValue>> Retrieve<TValue>(IReferenceable<IExpansionReference> referencable, RetrieveOptions? options = null)
     {
         throw new NotImplementedException();
     }
 
-    public Task<ITransferResult> Create<TValue>(IReferencable<IExpansionReference> referencable, TValue value)
+    public Task<ITransferResult> Create<TValue>(IReferenceable<IExpansionReference> referencable, TValue value)
     {
         throw new NotImplementedException();
     }
 
-    public Task<ITransferResult> Update<TValue>(IReferencable<IExpansionReference> referencable, TValue value)
+    public Task<ITransferResult> Update<TValue>(IReferenceable<IExpansionReference> referencable, TValue value)
     {
         throw new NotImplementedException();
     }
 
-    public Task<ITransferResult> Upsert<TValue>(IReferencable<IExpansionReference> referencable, TValue value)
+    public Task<ITransferResult> Upsert<TValue>(IReferenceable<IExpansionReference> referencable, TValue value)
     {
         throw new NotImplementedException();
     }
 
-    public Task<ITransferResult> DeleteReferencable(IReferencable<IExpansionReference> referencable)
+    public Task<ITransferResult> DeleteReferenceable(IReferenceable<IExpansionReference> referencable)
     {
         throw new NotImplementedException();
     }
 
-    public Task<IGetResult<IEnumerable<IListing<T>>>> List<T>(IReferencable<IExpansionReference> referencable, ListFilter? filter = null)
+    public Task<IGetResult<IEnumerable<IListing<T>>>> List<T>(IReferenceable<IExpansionReference> referencable, ListFilter? filter = null)
     {
         throw new NotImplementedException();
     }

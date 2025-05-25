@@ -7,7 +7,7 @@ namespace LionFire.Persistence.Handles
         where TValue : class
     {
         public static implicit operator R<TValue>(string uri) => new R<TValue> { Reference = uri.ToReference<TValue>() };
-        public static implicit operator R<TValue>(TValue value) => new R<TValue> { Reference = (value as IReferencableAsValueType<TValue>)?.Reference, Value = value };
+        public static implicit operator R<TValue>(TValue value) => new R<TValue> { Reference = (value as IReferenceableAsValueType<TValue>)?.Reference, Value = value };
     }
 
     public class R<TValue, TReference> : ReadHandlePassthrough<TValue, TReference>
@@ -19,12 +19,12 @@ namespace LionFire.Persistence.Handles
         public static implicit operator R<TValue, TReference>(string uri) 
             => new R<TValue, TReference> { Reference = uri.ToReferenceType<TReference>() };
         //public static implicit operator R<TValue, TReference>(TValue value) 
-        //=> new R<TValue, TReference> { Reference = ((IReferencable<TReference>)value).Reference, Value = value };
+        //=> new R<TValue, TReference> { Reference = ((IReferenceable<TReference>)value).Reference, Value = value };
 
 
         public static implicit operator R<TValue, TReference>(TValue value)
         {
-            if(value is IReferencable<TReference> referencable)
+            if(value is IReferenceable<TReference> referencable)
             {
                 return new R<TValue, TReference> { Reference = referencable.Reference, Value = value };
             }

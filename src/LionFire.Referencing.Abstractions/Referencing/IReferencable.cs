@@ -5,12 +5,12 @@ namespace LionFire.Referencing
     /// <summary>
     /// If the reference can change, expose IChangeableReference.
     /// </summary>
-    public interface IReferencable
+    public interface IReferenceable
     {
         IReference Reference { get; }
     }
 
-    public interface IReferencableValueType : IReferencable
+    public interface IReferenceableValueType : IReferenceable
     {
         Type ReferenceValueType { get; }
 

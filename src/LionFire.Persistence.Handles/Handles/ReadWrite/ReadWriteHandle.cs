@@ -37,7 +37,7 @@ namespace LionFire.Persistence.Handles
     public abstract class ReadWriteHandle<TReference, TValue>
         : ReadWriteHandleBase<TReference, TValue>
         , IReadWriteHandle<TValue>
-        , IReferencable<TReference>
+        , IReferenceable<TReference>
         , IReadWriteHandle // RECENTCHANGE - added, okay?
         , INotifyingHandleInternal<TValue>
         where TReference : IReference<TValue>

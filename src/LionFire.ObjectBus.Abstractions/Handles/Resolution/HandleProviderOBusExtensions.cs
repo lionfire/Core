@@ -40,7 +40,7 @@ namespace LionFire.ObjectBus
         public static RH<T> GetReadHandle<T>(this IReference reference/*, T obj = default(T)*/) => reference.GetOBus().GetReadHandle<T>(reference);
         public static RH<T> ObjectToReadHandle<T>(this T obj) => throw new NotImplementedException("FUTURE: if obj != null, create a NamedObjectHandle and assign a random key");
 
-        //      public static H<T> ToHandle<T>(this IReferencable referencable, T obj = null)
+        //      public static H<T> ToHandle<T>(this IReferenceable referencable, T obj = null)
         //          where T : class//, new()
         //      {
         //          return HandleProvider<T>.GetHandle(referencable.Reference, obj);
@@ -63,7 +63,7 @@ namespace LionFire.ObjectBus
         //            return HandleFactory<T>.CreateHandle(reference);
         //        }
         //#endif
-        //        public static H ToHandle(this IReferencable referencable)
+        //        public static H ToHandle(this IReferenceable referencable)
         //        {
         //            return HandleProvider.GetHandle(referencable.Reference);
         //        }

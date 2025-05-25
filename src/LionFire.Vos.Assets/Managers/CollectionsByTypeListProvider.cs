@@ -17,9 +17,9 @@ namespace LionFire.Vos.Collections.ByType
         /// <param name="referencable"></param>
         /// <param name="filter"></param>
         /// <returns></returns>
-        public Task<IEnumerable<IListing<T>>> List<T>(IPersister<VobReference> persister, IReferencable<VobReference> referencable, ListFilter filter = null)
+        public Task<IEnumerable<IListing<T>>> List<T>(IPersister<VobReference> persister, IReferenceable<VobReference> referencable, ListFilter filter = null)
         {
-            var vob = referencable.ReferencableToVob();
+            var vob = referencable.ReferenceableToVob();
 
             var manager = vob.TryGetNextVobNode<ICollectionsByTypeManager>(minDepth: 1, maxDepth: 1)?.Value;
 

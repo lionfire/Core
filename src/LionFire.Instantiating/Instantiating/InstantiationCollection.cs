@@ -126,7 +126,7 @@ namespace LionFire.Instantiating
         {
             // REVIEW - EXPERIMENTAL, 
             // TODO FIXME - need to read from this list at instantiation time
-            var referencable = template as IReferencable;
+            var referencable = template as IReferenceable;
             if (referencable == null || referencable.Reference == null)
             {
                 Templates ??= new List<ITemplate>();

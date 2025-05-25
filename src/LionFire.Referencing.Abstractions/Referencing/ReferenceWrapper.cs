@@ -5,7 +5,7 @@ namespace LionFire.Referencing
     
 
 
-    //public struct ReferenceWrapper : IReferencable, IReferencable<IReference>
+    //public struct ReferenceWrapper : IReferenceable, IReferenceable<IReference>
     //{
     //    public IReference Reference { get; }
 
@@ -13,7 +13,7 @@ namespace LionFire.Referencing
 
     //    public override bool Equals(object obj)
     //    {
-    //        if (obj is IReferencable referencable)
+    //        if (obj is IReferenceable referencable)
     //        {
     //            return Reference.Equals(referencable.Reference);
     //        }

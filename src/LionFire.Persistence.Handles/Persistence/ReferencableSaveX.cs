@@ -12,10 +12,10 @@ using LionFire.Data.Async.Sets;
 
 namespace LionFire.ExtensionMethods.Persistence; // REVIEW - change namespace to LionFire.ExtensionMethods.Data?
 
-public static class ReferencableSaveExtensions
+public static class ReferenceableSaveExtensions
 {        
     public static async Task<ITransferResult> Save<T>(this T referencable)
-      where T : IReferencable
+      where T : IReferenceable
     {
         if(referencable is IReadWriteHandle rwh)
         {
@@ -32,11 +32,11 @@ public static class ReferencableSaveExtensions
     }
 
     public static async Task<ITransferResult> TrySave<T>(this T referencable)
-        where T : IReferencable
+        where T : IReferenceable
     {
         if (typeof(T).IsInterface)
         {
-            return await ((Task<ITransferResult>)typeof(ReferencableSaveExtensions).GetMethod(nameof(TrySave)).MakeGenericMethod(referencable.GetType()).Invoke(null, new object[] { referencable })).ConfigureAwait(false);
+            return await ((Task<ITransferResult>)typeof(ReferenceableSaveExtensions).GetMethod(nameof(TrySave)).MakeGenericMethod(referencable.GetType()).Invoke(null, new object[] { referencable })).ConfigureAwait(false);
         }
 
         ISetter puts = referencable.GetExistingReadWriteHandle();
@@ -74,7 +74,7 @@ public static class ReferencableSaveExtensions
     }
 
     public static async Task<T> Saved<T>(this T referencable)
-       where T : IReferencable
+       where T : IReferenceable
     {
         await referencable.Save().ConfigureAwait(false);
         return referencable;

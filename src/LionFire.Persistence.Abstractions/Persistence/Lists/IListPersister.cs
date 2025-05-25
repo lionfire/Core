@@ -15,7 +15,7 @@ public interface IListPersister<in TReference>
     /// <param name="referenceable"></param>
     /// <param name="filter"></param>
     /// <returns></returns>
-    Task<IGetResult<IEnumerable<IListing<T>>>> List<T>(IReferencable<TReference> referenceable, ListFilter? filter = null);
+    Task<IGetResult<IEnumerable<IListing<T>>>> List<T>(IReferenceable<TReference> referenceable, ListFilter? filter = null);
 }
 
 // TODO
@@ -23,7 +23,7 @@ public interface IObservableListPersister<in TReference>
     where TReference : IReference
 {
     // REVIEW: consider replacing filter with standard Rx api
-    IObservableCache<IListing<T>, string> GetObservableList<T>(IReferencable<TReference> referenceable, ListFilter? filter = null)
+    IObservableCache<IListing<T>, string> GetObservableList<T>(IReferenceable<TReference> referenceable, ListFilter? filter = null)
         where T : notnull;
 }
 

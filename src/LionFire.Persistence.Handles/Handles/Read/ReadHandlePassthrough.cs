@@ -18,7 +18,7 @@ namespace LionFire.Persistence.Handles;
 /// <typeparam name="TReference"></typeparam>
 public class ReadHandlePassthrough<TValue, TReference>
     : IReadHandle<TValue>
-    , IReferencable<TReference>
+    , IReferenceable<TReference>
     , IHasReadHandle<TValue>
     where TReference : IReference<TValue>
     where TValue : class
@@ -39,7 +39,7 @@ public class ReadHandlePassthrough<TValue, TReference>
     }
     private TReference? reference;
 
-    IReference<TValue> IReferencableAsValueType<TValue>.Reference => Reference;
+    IReference<TValue> IReferenceableAsValueType<TValue>.Reference => Reference;
 
     #endregion
 
@@ -62,7 +62,7 @@ public class ReadHandlePassthrough<TValue, TReference>
 
     public Type? Type => ReadHandle?.Type ?? (Reference as ITypedReference)?.Type ?? typeof(TValue);
 
-    IReference IReferencable.Reference => ReadHandle.Reference;
+    IReference IReferenceable.Reference => ReadHandle.Reference;
 
     public string? Key => ReadHandle?.Key;
 

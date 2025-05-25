@@ -38,7 +38,7 @@ namespace LionFire.ObjectBus
                 {
                     if (value.Type == null)
                     {
-                        //IChangeableReferencable cr = reference as IChangeableReferencable;
+                        //IChangeableReferenceable cr = reference as IChangeableReferenceable;
                         //if (cr != null)
                         //{
                         //    cr.Type = typeof(T);

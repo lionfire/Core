@@ -85,7 +85,7 @@ public class VosPersister : SerializingPersisterBase<VosPersisterOptions>, IPers
 
     static AsyncLocal<List<IMount>> RetrieveOpMounts = new();
 
-    public async IAsyncEnumerable<IGetResult<TValue>> RetrieveBatches<TValue>(IReferencable<IVobReference> referencable, RetrieveOptions? options = null)
+    public async IAsyncEnumerable<IGetResult<TValue>> RetrieveBatches<TValue>(IReferenceable<IVobReference> referencable, RetrieveOptions? options = null)
     {
         var finishAfterReturningFirstFound = (options ?? RetrieveOptions.Default).ReturnFirstFound;
 
@@ -168,7 +168,7 @@ public class VosPersister : SerializingPersisterBase<VosPersisterOptions>, IPers
             {
                 Vob = vob,
                 ResultType = typeof(TValue),
-                Referencable = referencable,
+                Referenceable = referencable,
                 ListingType = listingItemType,
                 Persister = this,
             };
@@ -185,7 +185,7 @@ public class VosPersister : SerializingPersisterBase<VosPersisterOptions>, IPers
             {
                 Vob = vob,
                 ResultType = typeof(TValue),
-                Referencable = referencable,
+                Referenceable = referencable,
                 Persister = this,
             };
 
@@ -195,7 +195,7 @@ public class VosPersister : SerializingPersisterBase<VosPersisterOptions>, IPers
                 await handlers.Item1.Raise(blea).ConfigureAwait(false);
             }
         }
-        //await OnBeforeRetrieve(new VosRetrieveContext { Persister = this, Vob = vob, ListingType = listingItemType, Referencable = referencable });
+        //await OnBeforeRetrieve(new VosRetrieveContext { Persister = this, Vob = vob, ListingType = listingItemType, Referenceable = referencable });
 
         var (vobMountsNode, mounts) = GetMounts();
 
@@ -362,7 +362,7 @@ public class VosPersister : SerializingPersisterBase<VosPersisterOptions>, IPers
                 {
                     Vob = vob,
                     ResultType = typeof(TValue),
-                    Referencable = referencable,
+                    Referenceable = referencable,
                     Persister = this,
                     FoundMore = false, // (Output)
                 };
@@ -420,7 +420,7 @@ public class VosPersister : SerializingPersisterBase<VosPersisterOptions>, IPers
 
     #region IReadPersister
 
-    public Task<ITransferResult> Exists<TValue>(IReferencable<IVobReference> referencable)
+    public Task<ITransferResult> Exists<TValue>(IReferenceable<IVobReference> referencable)
     {
         ExistsC.IncrementWithContext();
         throw new System.NotImplementedException();
@@ -432,7 +432,7 @@ public class VosPersister : SerializingPersisterBase<VosPersisterOptions>, IPers
 
     public static Type? GetMetadataListingItemType<TValue>() => GetMetadataListingType<TValue>()?.GetGenericArguments()[0];
 
-    protected async Task<IGetResult<TValue>> RetrieveWithAggregation<TValue>(IReferencable<IVobReference> referencable, RetrieveOptions? options = null)
+    protected async Task<IGetResult<TValue>> RetrieveWithAggregation<TValue>(IReferenceable<IVobReference> referencable, RetrieveOptions? options = null)
     {
         RetrieveResult<TValue> aggregatedResult = new RetrieveResult<TValue>();
         List<IGetResult<TValue>> childResults = null;
@@ -568,7 +568,7 @@ public class VosPersister : SerializingPersisterBase<VosPersisterOptions>, IPers
     }
     #endregion
 
-    public async Task<IGetResult<TValue>> Retrieve<TValue>(IReferencable<IVobReference> referencable, RetrieveOptions? options = null)
+    public async Task<IGetResult<TValue>> Retrieve<TValue>(IReferenceable<IVobReference> referencable, RetrieveOptions? options = null)
     {
         if (CanAggregateType<TValue>()) { return await RetrieveWithAggregation<TValue>(referencable).ConfigureAwait(false); }
 
@@ -635,9 +635,9 @@ public class VosPersister : SerializingPersisterBase<VosPersisterOptions>, IPers
 
     #region IWritePersister
 
-    public Task<ITransferResult> Create<TValue>(IReferencable<IVobReference> referencable, TValue value) => throw new System.NotImplementedException();
-    public Task<ITransferResult> Update<TValue>(IReferencable<IVobReference> referencable, TValue value) => throw new System.NotImplementedException();
-    public async Task<ITransferResult> Upsert<TValue>(IReferencable<IVobReference> referencable, TValue value)
+    public Task<ITransferResult> Create<TValue>(IReferenceable<IVobReference> referencable, TValue value) => throw new System.NotImplementedException();
+    public Task<ITransferResult> Update<TValue>(IReferenceable<IVobReference> referencable, TValue value) => throw new System.NotImplementedException();
+    public async Task<ITransferResult> Upsert<TValue>(IReferenceable<IVobReference> referencable, TValue value)
     {
         //l.Trace($"{ReplaceMode.Upsert.DescriptionString()} {value?.GetType().Name} {ReplaceMode.Upsert.ToArrow()} {referencable.Reference}");
 
@@ -678,7 +678,7 @@ public class VosPersister : SerializingPersisterBase<VosPersisterOptions>, IPers
         l.Trace($"{result.Flags}: {ReplaceMode.Upsert.DescriptionString()} {value?.GetType().Name} {ReplaceMode.Upsert.ToArrow()} {referencable.Reference} via {result.ResolvedVia}");
         return result;
     }
-    public Task<ITransferResult> DeleteReferencable(IReferencable<IVobReference> referencable)
+    public Task<ITransferResult> DeleteReferenceable(IReferenceable<IVobReference> referencable)
     {
         l.Trace($"Delete xx> {referencable.Reference}");
         throw new System.NotImplementedException();
@@ -690,7 +690,7 @@ public class VosPersister : SerializingPersisterBase<VosPersisterOptions>, IPers
 
     // TODO - use a single overload, with null defaulting ListOptions
 
-    //public async Task<IGetResult<IEnumerable<IListing<TValue>>>> List<TValue>(IReferencable<IVobReference> referencable)
+    //public async Task<IGetResult<IEnumerable<IListing<TValue>>>> List<TValue>(IReferenceable<IVobReference> referencable)
     //{
     //    throw new NotSupportedException();
     //    ListC.IncrementWithContext();
@@ -714,7 +714,7 @@ public class VosPersister : SerializingPersisterBase<VosPersisterOptions>, IPers
     //    return consolidatedResult;
     //}
 
-    public async Task<IGetResult<IEnumerable<IListing<TValue>>>> List<TValue>(IReferencable<IVobReference> referencable, ListFilter filter = null)
+    public async Task<IGetResult<IEnumerable<IListing<TValue>>>> List<TValue>(IReferenceable<IVobReference> referencable, ListFilter filter = null)
     {
         l.Trace($"List ...> {referencable.Reference}");
 

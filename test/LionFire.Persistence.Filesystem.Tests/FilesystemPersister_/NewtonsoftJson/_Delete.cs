@@ -80,7 +80,7 @@ namespace FilesystemPersister_
                     File.WriteAllText(path, TestClass1.ExpectedNewtonsoftJson);
                     Assert.True(File.Exists(path));
 
-                    var persistenceResult = await ServiceLocator.Get<FilesystemPersister>().DeleteReferencable((IReferencable<FileReference>)path.ToFileReference());
+                    var persistenceResult = await ServiceLocator.Get<FilesystemPersister>().DeleteReferenceable((IReferenceable<FileReference>)path.ToFileReference());
 
                     Assert.True(persistenceResult.IsSuccess());
                     Assert.True(persistenceResult.IsFound());

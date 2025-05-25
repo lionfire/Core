@@ -14,7 +14,7 @@ public abstract class AutoExtensionPersister<TReference, TOptions, TUnderlyingRe
       where TReference : IReference
     where TOptions : PersistenceOptions
     where TUnderlyingPersister : class, IPersister<TUnderlyingReference>
-    where TUnderlyingReference : IReference, IReferencable<TUnderlyingReference>
+    where TUnderlyingReference : IReference, IReferenceable<TUnderlyingReference>
 {
 
     public AutoExtensionPersister(SerializationOptions serializationOptions) : base(serializationOptions) { }

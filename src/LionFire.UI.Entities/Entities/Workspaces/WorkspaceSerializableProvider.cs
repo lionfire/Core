@@ -4,7 +4,7 @@ using System.Collections.Generic;
 
 namespace LionFire.UI.Workspaces
 {
-//#error NEXT: Way to save/load things that have (ISerializableStrategy<T> or ISerializableProvider<T> or object) and IReferencable
+//#error NEXT: Way to save/load things that have (ISerializableStrategy<T> or ISerializableProvider<T> or object) and IReferenceable
     
 //    /// <summary>
 //    /// 
@@ -12,7 +12,7 @@ namespace LionFire.UI.Workspaces
 //    public static class ObjectPersister
 //    {
 //        PersistenceResult<T> Upsert<T>(T r)
-//            where T : IReferencable
+//            where T : IReferenceable
 //            => r.GetReadWriteHandle
 //    }
 

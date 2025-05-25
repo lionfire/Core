@@ -11,14 +11,14 @@ namespace LionFire.Referencing
         public abstract ReferenceOverlayMode OverlayMode { get; }
 
         public abstract TReference Reference { get; }
-        IReference IReferencable.Reference => Reference;
+        IReference IReferenceable.Reference => Reference;
 
         public abstract int Count { get; }
 
-        public virtual IReferencable<TReference> AddLeft(IReference reference) => throw new NotSupportedException();
-        public virtual IReferencable<TReference> AddRight(IReference reference) => throw new NotSupportedException();
-        public virtual IReferencable<TReference> PopLeft(IReference reference) => throw new NotSupportedException();
-        public virtual IReferencable<TReference> PopRight(IReference reference) => throw new NotSupportedException();
+        public virtual IReferenceable<TReference> AddLeft(IReference reference) => throw new NotSupportedException();
+        public virtual IReferenceable<TReference> AddRight(IReference reference) => throw new NotSupportedException();
+        public virtual IReferenceable<TReference> PopLeft(IReference reference) => throw new NotSupportedException();
+        public virtual IReferenceable<TReference> PopRight(IReference reference) => throw new NotSupportedException();
 
     }
 

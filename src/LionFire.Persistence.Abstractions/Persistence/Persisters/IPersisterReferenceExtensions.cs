@@ -15,7 +15,7 @@ public static class IPersisterReferenceExtensions
 
     public static Task<ITransferResult> Delete<TReference, TValue>(this IPersister<TReference> persister, TReference reference) 
         where TReference : IReference
-        => persister.DeleteReferencable(new ReferenceWrapper2<TReference>(reference));
+        => persister.DeleteReferenceable(new ReferenceWrapper2<TReference>(reference));
 
     public static Task<ITransferResult> Exists<TReference, TValue>(this IPersister<TReference> persister, TReference reference) 
         where TReference : IReference

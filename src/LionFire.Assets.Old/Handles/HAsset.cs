@@ -56,7 +56,7 @@ namespace LionFire.Assets
         //#endif
         IHAsset<AssetType>
         , INotifyPropertyChanged
-        //, IChangeableReferencable // FUTURE
+        //, IChangeableReferenceable // FUTURE
      where AssetType : class
     {
 
@@ -238,7 +238,7 @@ namespace LionFire.Assets
 
         #region Derived
 
-        #region IReferencable
+        #region IReferenceable
 
         public IReference Reference => AssetReference;
 
@@ -944,12 +944,12 @@ namespace LionFire.Assets
     public class HRAsset<AssetType>
         : IReadHandle<AssetType>
         , IAssetNameReadHandle
-        , IReferencable
-        //, IChangeableReferencable // FUTURE
+        , IReferenceable
+        //, IChangeableReferenceable // FUTURE
     where AssetType : class
     {
 
-    #region IReferencable
+    #region IReferenceable
 
         public IReference Reference
         {

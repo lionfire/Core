@@ -26,7 +26,7 @@ namespace LionFire.Referencing
         {
         }
 
-        public Handle(IReferencable referencable, T obj = null) : base(referencable, obj)
+        public Handle(IReferenceable referencable, T obj = null) : base(referencable, obj)
         {
         }
 

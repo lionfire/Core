@@ -127,7 +127,7 @@ namespace LionFire.Vos
                                //CachingChildren<Vob>,
                                //IHasHandle,
                                //H, // TODO - make this a smarter handle.  The object might be a dynamically created MultiTyped for complex scenarios
-        IReferencable
+        IReferenceable
 #if AOT
 		IParented
 #else
@@ -297,7 +297,7 @@ namespace LionFire.Vos
 
 
         public IVobReference Reference => VobReference;
-        IReference IReferencable.Reference // TODO MEMORYOPTIMIZE: I think a base class has an IReference field
+        IReference IReferenceable.Reference // TODO MEMORYOPTIMIZE: I think a base class has an IReference field
         {
             get => VobReference;
             //set

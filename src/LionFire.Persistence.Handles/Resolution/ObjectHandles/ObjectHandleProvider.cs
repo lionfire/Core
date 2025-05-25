@@ -8,7 +8,7 @@ namespace LionFire.Persistence.Handles
 
     /// <summary>
     /// For an object:
-    ///  - If it implements IReferencable, do IReferencable.Reference.GetReadHandle{TValue}, otherwise
+    ///  - If it implements IReferenceable, do IReferenceable.Reference.GetReadHandle{TValue}, otherwise
     ///  - (if enabled) Check for an existing ObjectHandle for this object, and return it
     ///  - Create and (if enabled) register an ObjectHandle for the object.
     /// </summary>
@@ -28,7 +28,7 @@ namespace LionFire.Persistence.Handles
 
         protected override IReadHandle<TValue> CreateReadHandle<TValue>(TValue obj)
         {
-            if (Options.CheckIReferencable && obj is IReferencable referencable)
+            if (Options.CheckIReferenceable && obj is IReferenceable referencable)
             {
                 foreach (var r in readHandleProviders.OfType<IPreresolvableReadHandleProvider>())
                 {

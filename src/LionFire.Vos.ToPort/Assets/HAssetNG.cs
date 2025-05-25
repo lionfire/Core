@@ -75,7 +75,7 @@ namespace LionFire.Assets
             }
         }
 
-#region IReferencable
+#region IReferenceable
 
         public IReference Reference
         {

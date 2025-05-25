@@ -10,6 +10,6 @@ namespace LionFire.Vos
     {
         public static implicit operator HVob<TValue>(VobReference<TValue> reference) => new HVob<TValue> { Reference = reference };
         public static implicit operator HVob<TValue>(string vosPath) => new HVob<TValue> { Reference = vosPath };
-        public static implicit operator HVob<TValue>(TValue value) => new HVob<TValue> { Reference = (value as IReferencable<VobReference<TValue>>)?.Reference, Value = value };
+        public static implicit operator HVob<TValue>(TValue value) => new HVob<TValue> { Reference = (value as IReferenceable<VobReference<TValue>>)?.Reference, Value = value };
     }
 }

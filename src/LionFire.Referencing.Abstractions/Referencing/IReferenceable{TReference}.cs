@@ -4,8 +4,8 @@ using System.Text;
 
 namespace LionFire.Referencing
 {
-    // If inheriting this, also consider inheriting from IReferencable
-    public interface IReferencable<out TReference> : IReferencable // REVIEW - IReferencable?  Helps for Save().  Having it separate results in ambiguous resolution of Reference.
+    // If inheriting this, also consider inheriting from IReferenceable
+    public interface IReferenceable<out TReference> : IReferenceable // REVIEW - IReferenceable?  Helps for Save().  Having it separate results in ambiguous resolution of Reference.
         where TReference : IReference
     {
         new TReference Reference { get; }

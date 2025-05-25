@@ -14,6 +14,6 @@ public class BaseFileReference : BaseReference<FileReference>
 
     public override int Count => 1;
 
-    public override IReferencable<FileReference> AddRight(IReference right) 
+    public override IReferenceable<FileReference> AddRight(IReference right) 
         => new FileReference(LionPath.Combine(reference.Path, right.Path));
 }

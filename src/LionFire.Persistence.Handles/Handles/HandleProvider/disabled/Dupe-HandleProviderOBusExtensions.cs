@@ -85,7 +85,7 @@
 //        public static H<object> ToHandle(this IReference reference, object obj = null) => reference.GetOBase().ToHandle<object>(reference);
 //        public static H<TValue> ToHandle<TValue>(this IReference reference, object obj = null) => reference.GetOBase().ToHandle<object>(reference);
 
-//        //      public static H<TValue> ToHandle<TValue>(this IReferencable referencable, TValue obj = null)
+//        //      public static H<TValue> ToHandle<TValue>(this IReferenceable referencable, TValue obj = null)
 //        //          where TValue : class//, new()
 //        //      {
 //        //          return HandleProvider<TValue>.ToHandle(referencable.Reference, obj);
@@ -108,7 +108,7 @@
 //        //            return HandleFactory<TValue>.CreateHandle(reference);
 //        //        }
 //        //#endif
-//        //        public static H ToHandle(this IReferencable referencable)
+//        //        public static H ToHandle(this IReferenceable referencable)
 //        //        {
 //        //            return HandleProvider.ToHandle(referencable.Reference);
 //        //        }

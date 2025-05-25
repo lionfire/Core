@@ -21,7 +21,7 @@ namespace LionFire.Vos
     //    //HandleBase<T>, 
     //    //IHandle<T>, 
     //    //IFreezable, 
-    //    //IChangeableReferencable
+    //    //IChangeableReferenceable
     //    where T : Vob
     //    where ChildType__ : CachingHandleBase<T, ChildType__>
     //    //, IHandle
@@ -47,7 +47,7 @@ namespace LionFire.Vos
     //    //    CacheChildren = true;
     //    //}
 
-    //    //public CachingHandleBase(IReferencable referencable, T obj = null, bool freezeObjectIfProvided = true)
+    //    //public CachingHandleBase(IReferenceable referencable, T obj = null, bool freezeObjectIfProvided = true)
     //    //    : base(referencable, obj, freezeObjectIfProvided)
     //    //{
     //    //    CacheChildren = true;

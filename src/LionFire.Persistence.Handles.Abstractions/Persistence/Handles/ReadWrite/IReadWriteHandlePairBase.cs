@@ -29,7 +29,7 @@ ensures deep clone
 IComparable
 */
 
-    public interface IReadWriteHandlePairBase<T, out TReadHandle, out TWriteHandle> : IReferencable
+    public interface IReadWriteHandlePairBase<T, out TReadHandle, out TWriteHandle> : IReferenceable
         where TReadHandle : IReadHandleBase<T>
         where TWriteHandle : IWriteHandleBase<T>
     {

@@ -79,7 +79,7 @@ namespace LionFire.Vos
             get { return vob.HasObject; }
         }
 
-        public event Action<IChangeableReferencable> ReferenceChanged
+        public event Action<IChangeableReferenceable> ReferenceChanged
         {
             add { vob.ReferenceChanged += value; }
             remove { vob.ReferenceChanged -= value; }

@@ -28,7 +28,7 @@ namespace LionFire.Referencing
 
             foreach (var component in collection.OfType<IGetter<object>>().ToArray())
             {
-                if (component.Value == null) throw new ReferencedValueNotFoundException(component as IReferencable);
+                if (component.Value == null) throw new ReferencedValueNotFoundException(component as IReferenceable);
                 try
                 {
                     collection.Remove(component);

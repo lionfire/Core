@@ -12,7 +12,7 @@ namespace LionFire.ObjectBus
     {
         // TODO: Add other OBus methods?
 
-        //public static H<T> CreateHandle(this IReferencable referenceable)
+        //public static H<T> CreateHandle(this IReferenceable referenceable)
         //{
         //    throw new NotImplementedException("How to do this?  Previous implementation: create a plain Handle class");
         //    //return new Handle(referenceable.Reference, referenceable);
@@ -24,7 +24,7 @@ namespace LionFire.ObjectBus
         /// </summary>
         /// <param name="referencable"></param>
         /// <returns></returns>
-        public static Task<IEnumerable<string>> List<T>(this IReferencable referencable) => referencable.Reference.List<T>();
+        public static Task<IEnumerable<string>> List<T>(this IReferenceable referencable) => referencable.Reference.List<T>();
 
     }
 }
