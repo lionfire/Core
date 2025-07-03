@@ -145,9 +145,12 @@ public abstract class DirectoryReaderRx<TKey, TValue>
         keysWatcher = new FileSystemWatcher(Dir.Path)
         {
             NotifyFilter = NotifyFilters.FileName | NotifyFilters.LastWrite,
-            Filter = $"*.{SecondExtension}{Extension}",
+            //Filter = $"*.{SecondExtension}{Extension}",
             IncludeSubdirectories = Dir.Recursive,
         };
+
+        keysWatcher.Filters.Add($"*.{SecondExtension}{Extension}");
+        keysWatcher.Filters.Add($"{SecondExtension}{Extension}");
 
         keysWatcher.Created += OnFileCreated;
         keysWatcher.Deleted += OnFileDeleted;
@@ -531,7 +534,8 @@ public abstract class DirectoryReaderRx<TKey, TValue>
         listenToAllListeners.Clear();
     }
 
-    protected string GetFilePath(TKey key) => Path.Combine(Dir.Path ?? throw new ArgumentNullException(), $"{key}.{SecondExtension}{Extension}");
+    protected string GetKeyedFilePath(TKey key) => Path.Combine(Dir.Path ?? throw new ArgumentNullException(), $"{key}.{SecondExtension}{Extension}");
+    protected string GetDefaultFilePath(TKey key) => Path.Combine(Dir.Path ?? throw new ArgumentNullException(), key.ToString()!, $"{SecondExtension}{Extension}");
 
     protected abstract ValueTask<Optional<TValue>> ReadFromFile(string filePath);
 

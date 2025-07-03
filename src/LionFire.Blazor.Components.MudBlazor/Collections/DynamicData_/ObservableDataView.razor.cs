@@ -143,12 +143,15 @@ public partial class ObservableDataView<TKey, TValue, TValueVM>
 
     #region Context Menu
 
-    MudMenu _contextMenu;
+    MudMenu? _contextMenu;
     private TValueVM? _contextRow;
     private async Task OpenMenuContent(DataGridRowClickEventArgs<TValueVM> args)
     {
         _contextRow = args.Item;
-        await _contextMenu.OpenMenuAsync(args.MouseEventArgs);
+        if (_contextMenu != null)
+        {
+            await _contextMenu.OpenMenuAsync(args.MouseEventArgs);
+        }
     }
 
     #endregion
@@ -165,6 +168,8 @@ public partial class ObservableDataView<TKey, TValue, TValueVM>
     public RenderFragment<TValueVM>? ContextMenu { get; set; }
 
     [Parameter]
+    public RenderFragment? EditingColumns { get; set; }
+    [Parameter]
     public RenderFragment? Columns { get; set; }
 
     #endregion
@@ -173,7 +178,7 @@ public partial class ObservableDataView<TKey, TValue, TValueVM>
 
     #region ViewModelOptions 
 
-    public VMOptions ViewModelOptions { get; set; }
+    public VMOptions? ViewModelOptions { get; set; }
 
     #region Derived
 
@@ -257,15 +262,25 @@ public partial class ObservableDataView<TKey, TValue, TValueVM>
 
     #endregion
 
+    #region Automatic Columns
+
+    // TODO: REFACTOR this to be usable in other MudDataGrid components
+
     [Parameter]
     public Func<PropertyInfo, bool>? IsAutoColumn { get; set; }
     public Func<PropertyInfo, bool> EffectiveIsAutoColumn => IsAutoColumn ?? AutoColumnUtils.DefaultIsAutoColumn;
+
+    [Parameter]
+    public Func<PropertyInfo, bool>? IsAutoEditColumn { get; set; }
+    public Func<PropertyInfo, bool> EffectiveIsAutoEditColumn => IsAutoEditColumn ?? AutoColumnUtils.DefaultIsAutoEditColumn;
+
+    #endregion
 
     #endregion
 
     #region Refs
 
-    public MudDataGrid<TValueVM> MudDataGrid { get; set; }
+    public MudDataGrid<TValueVM>? MudDataGrid { get; set; }
 
     #endregion
 
@@ -409,8 +424,9 @@ public partial class ObservableDataView<TKey, TValue, TValueVM>
     }
 
 
+    private RenderFragment AutoEditColumns => AutoColumns;
 
-    private RenderFragment CreateColumns => builder =>
+    private RenderFragment AutoColumns => builder =>
     {
         var properties = typeof(TValueVM).GetProperties();
 
@@ -569,7 +585,10 @@ public partial class ObservableDataView<TKey, TValue, TValueVM>
     void RowClicked(DataGridRowClickEventArgs<TValueVM> args)
     {
         //_events.Insert(0, $"Event = RowClick, Index = {args.RowIndex}, Data = {System.Text.Json.JsonSerializer.Serialize(args.Item)}");
+        RowClick?.Invoke(this, args);
     }
+    [Parameter]
+    public EventHandler<DataGridRowClickEventArgs<TValueVM>>? RowClick { get; set; }
 
     #endregion
 

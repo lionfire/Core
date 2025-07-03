@@ -6,6 +6,7 @@ using LionFire.IO.Reactive.Filesystem;
 using LionFire.Persistence.Filesystemlike;
 using LionFire.Persistence.Persisters;
 using LionFire.Reactive.Persistence;
+using LionFire.Vos.Schemas;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Resilience;
 using Polly;
@@ -48,11 +49,26 @@ where TValue : notnull
 
     protected override IObservable<TValue?> CreateValueObservable(TKey key)
     {
-        Logger?.LogInformation("CreateValueObservable {0}", key);
-        var filePath = GetFilePath(key);
+        Logger?.LogInformation("{0} CreateValueObservable for key {1}", Dir.Path, key);
+
+        var schemaFlags = VosSchema.Flags<TValue>();
 
         return Observable.Create<TValue?>(observer =>
         {
+            var keyedFilePath = GetKeyedFilePath(key);
+            var defaultFilePath = GetDefaultFilePath(key);
+
+            string filePath = schemaFlags.HasFlag(VosFlags.PreferDirectory) ? defaultFilePath : keyedFilePath;
+
+            if (!File.Exists(filePath))
+            {
+                var otherPath = schemaFlags.HasFlag(VosFlags.PreferDirectory) ? keyedFilePath : defaultFilePath;
+                if (File.Exists(otherPath))
+                {
+                    filePath = otherPath;
+                }
+            }
+
             var watcher = new FileSystemWatcher(Path.GetDirectoryName(filePath) ?? "", Path.GetFileName(filePath) ?? throw new ArgumentNullException("key => " + nameof(filePath)))
             {
                 NotifyFilter = NotifyFilters.LastWrite | NotifyFilters.FileName | NotifyFilters.Size

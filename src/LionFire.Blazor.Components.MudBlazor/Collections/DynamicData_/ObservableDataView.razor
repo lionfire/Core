@@ -28,11 +28,12 @@
                         </MudMenuItem>
                     }
                 </MudMenu>
-            } else
+            }
+            else
             {
                 <MudButton Label="Add" Class="Add"
                            OnClick=@(() => createsValue.Create.Execute(ViewModel.CreatableTypes.FirstOrDefault(typeof(TValue))).Subscribe())
-                    Icon="@Icons.Material.Filled.Add" Variant="Variant.Outlined" Color="Color.Success"/>
+                           Icon="@Icons.Material.Filled.Add" Variant="Variant.Outlined" Color="Color.Success" />
             }
         }
     }
@@ -69,6 +70,7 @@ else if (ViewModel!.Items != null)
     <MudDataGrid @ref="MudDataGrid"
                  T="TValueVM"
                  EditMode="EditMode"
+                 Hover
                  Items="@ViewModel!.Items.Items"
                  SortMode="SortMode.Multiple"
                  ShowFilterIcons=false
@@ -81,13 +83,31 @@ else if (ViewModel!.Items != null)
         @* EditMode="@(_isCellEditMode? DataGridEditMode.Cell: DataGridEditMode.Form)" *@
         @* Columns="@(Columns ?? CreateColumns)" *@
         <Columns>
-            @if (Columns != null)
+            @if (IsEditing)
             {
-                @Columns
+                if (EditingColumns != null)
+                {
+                    @AutoEditColumns
+                }
+                else if (Columns != null)
+                {
+                    @Columns
+                }
+                else
+                {
+                    @AutoColumns
+                }
             }
             else
             {
-                @CreateColumns
+                if (Columns != null)
+                {
+                    @Columns
+                }
+                else
+                {
+                    @AutoColumns
+                }
             }
             @if (!ReadOnly && !IsEditing && ViewModel!.CanDelete && ViewModel!.ShowDeleteColumn)
             {

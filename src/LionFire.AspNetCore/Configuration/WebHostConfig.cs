@@ -143,6 +143,7 @@ public class WebHostConfig : HasPortsConfigBase, IHasConfigLocation, IWebHostCon
     /// Flag the application can set to globally enable user-interactive UI
     /// </summary>
     public bool WebUI { get; set; }
+    public virtual bool RequiresWebUI => false;
 
     #region Blazor
 
@@ -159,7 +160,7 @@ public class WebHostConfig : HasPortsConfigBase, IHasConfigLocation, IWebHostCon
 
     #region Derived
 
-    public virtual bool HasAnyWebUI => RequiresBlazorInteractiveServer || WebUI;
+    public virtual bool HasAnyWebUI => RequiresBlazorInteractiveServer || RequiresWebUI || WebUI;
     public virtual bool HasAnyFeatures => HasAnyWebUI || RequiresMvc || RequiresControllers || RequiresStaticFiles || RequiresRazorPages || RequiresBlazorInteractiveServer;
 
     #endregion

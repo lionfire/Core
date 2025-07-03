@@ -3,21 +3,20 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace LionFire
-{
-    /// <summary>
-    /// Indicates that the requested operation has already been completed.
-    /// </summary>
-    public class AlreadyException : Exception
-    {
-        public AlreadyException() { }
-        public AlreadyException(string message) : base(message) { }
-        public AlreadyException(string message, Exception inner) : base(message, inner) { }
+namespace LionFire;
 
-        // Obsolete
-        //protected AlreadyException(
-        //  System.Runtime.Serialization.SerializationInfo info,
-        //  System.Runtime.Serialization.StreamingContext context)
-        //    : base(info, context) { }
-    }
+/// <summary>
+/// Indicates that the requested operation has already been completed.
+/// </summary>
+public class AlreadyException : Exception
+{
+    public AlreadyException() { }
+    public AlreadyException(string message) : base(message) { }
+    public AlreadyException(string message, Exception inner) : base(message, inner) { }
+
+    // Obsolete
+    //protected AlreadyException(
+    //  System.Runtime.Serialization.SerializationInfo info,
+    //  System.Runtime.Serialization.StreamingContext context)
+    //    : base(info, context) { }
 }

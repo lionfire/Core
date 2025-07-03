@@ -29,4 +29,8 @@
     <ProjectReference Include="..\LionFire.Workspaces.UI\LionFire.Workspaces.UI.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="wwwroot\" />
+  </ItemGroup>
+
 </Project>

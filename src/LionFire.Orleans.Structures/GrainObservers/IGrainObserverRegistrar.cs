@@ -52,9 +52,13 @@ public class GrainObserverEx<TGrainObserver> : IGrainObserver, IAsyncDisposable
         Timeout = timeout;
         GrainObserverRegistrar = grainObserverRegistrar;
 
-        var renewTime = Timeout < TimeSpan.FromMilliseconds(2000)
-                ? Timeout * 0.5
-                : Timeout * 0.8;
+        var renewTime = Timeout switch
+        {
+            var t when t > TimeSpan.FromMinutes(5) => Timeout - TimeSpan.FromSeconds(65),
+            var t when t < TimeSpan.FromMilliseconds(2000) => Timeout * 0.5,
+            _ => Timeout * 0.8
+        };
+
 
         Task.Run(async () =>
         {

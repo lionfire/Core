@@ -5,6 +5,12 @@ using System.Reactive.Subjects;
 
 namespace LionFire.Execution;
 
+/// <summary>
+/// TValue represents the runtime configuration for something that can be started and stopped.
+/// This Runner will start and stop based on IsEnabled(TValue), and will notify the runner changes to configuration.
+/// </summary>
+/// <typeparam name="TValue"></typeparam>
+/// <typeparam name="TRunner"></typeparam>
 public abstract class Runner<TValue, TRunner>
     : IRunner<TValue>
     , IDisposable

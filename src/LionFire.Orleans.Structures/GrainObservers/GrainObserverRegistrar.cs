@@ -268,8 +268,8 @@ public class InMemoryGrainObserverRegistrar<TGrainObserver>
     #region Configuration
 
     public ValueTask<TimeSpan> RegistrationTimeout() => ValueTask.FromResult(registrationTimeout);
-    //public TimeSpan registrationTimeout => TimeSpan.FromMinutes(10); // REVIEW: public with camel case?
-    public TimeSpan registrationTimeout => TimeSpan.FromSeconds(20); // REVIEW: public with camel case?
+    public TimeSpan registrationTimeout => TimeSpan.FromMinutes(10); // REVIEW: public with camel case?
+    //public TimeSpan registrationTimeout => TimeSpan.FromSeconds(20); // REVIEW: public with camel case?
 
     #endregion
 

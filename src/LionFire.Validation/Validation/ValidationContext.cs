@@ -101,9 +101,13 @@ public struct ValidationContext // : IValidation // RENAME to ValidationOperatio
     #endregion
 
 #nullable enable
-    public ValidationContext Validate(IValidatable validatable, [CallerMemberName] string? name = null)
+    public ValidationContext ValidateOptional(IValidatable? validatable, [CallerMemberName] string? name = null)
     {
-        if (validatable == null)
+        return Validate(validatable, name, required: false);
+    }
+    public ValidationContext Validate(IValidatable? validatable, [CallerMemberName] string? name = null, bool required = true)
+    {
+        if (validatable == null && required)
         {
             AddIssue(new("Required member missing: " + name));
             //throw new ArgumentNullException(nameof(validatable)); // Validation exception instead of throwing

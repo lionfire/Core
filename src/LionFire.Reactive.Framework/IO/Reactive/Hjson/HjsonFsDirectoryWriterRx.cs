@@ -205,7 +205,7 @@ where TValue : notnull
         });
     }
 
-    const string HjsonExtension = ".json";
+    const string HjsonExtension = ".hjson";
 
 
     private string GetFilePath(TKey key)

@@ -13,6 +13,7 @@ public class DirectorySelector
     public bool Recursive { get; set; }
     //public int RecursionDepth { get; set; } = 1; // FUTURE
 
+    public override string ToString() => Recursive ? Path + "/**" : Path;
 }
 
 

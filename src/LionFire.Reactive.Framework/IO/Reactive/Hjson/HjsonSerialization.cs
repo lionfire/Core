@@ -25,6 +25,7 @@ public static class HjsonSerialization
             {
                 settings = new JsonSerializerSettings
                 {
+                    DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate,
                     TypeNameHandling = TypeNameHandling.Objects,
                     Converters = [
                         new SourceCacheConverter(),
@@ -175,7 +176,7 @@ public class SourceCacheSetConverter : JsonConverter
         serializer.Serialize(writer, list);
     }
 
-    public override object? ReadJson(JsonReader reader, Type objectType, object existingValue, JsonSerializer serializer)
+    public override object? ReadJson(JsonReader reader, Type objectType, object? existingValue, JsonSerializer serializer)
     {
         if (reader.TokenType == JsonToken.Null) { return null; }
 
@@ -216,13 +217,40 @@ public class SourceCacheConverter : JsonConverter
             && objectType.GetGenericTypeDefinition() == typeof(SourceCache<,>);
         if (!r) return false;
 
+        var mode = GetValueMode(objectType);
+        return mode != ValueMode.Unspecified;
+
+        //var valueType = objectType.GetGenericArguments()[0];
+
+        //// valueType must be ValueTuple<TKey,>
+        //return valueType.IsGenericType
+        //    && valueType.GetGenericTypeDefinition() == typeof(ValueTuple<,>)
+        //    && valueType.GetGenericArguments()[0] == objectType.GetGenericArguments()[1] // TKey
+        //    ;
+    }
+
+    public enum ValueMode
+    {
+        Unspecified,
+        ValueTuple,
+        //IParsableSlim,
+    }
+    public static ValueMode GetValueMode(Type objectType)
+    {
         var valueType = objectType.GetGenericArguments()[0];
 
         // valueType must be ValueTuple<TKey,>
-        return valueType.IsGenericType
+        if (valueType.IsGenericType
             && valueType.GetGenericTypeDefinition() == typeof(ValueTuple<,>)
             && valueType.GetGenericArguments()[0] == objectType.GetGenericArguments()[1] // TKey
-            ;
+           )
+            return ValueMode.ValueTuple;
+
+        //if (typeof(IParsableSlim<>).IsAssignableFrom(valueType))
+        //{
+        //    return ValueMode.IParsableSlim;
+        //}
+        return ValueMode.Unspecified;
     }
 
 
@@ -234,10 +262,27 @@ public class SourceCacheConverter : JsonConverter
             return;
         }
 
-        // Get the generic type arguments
+        var mode = GetValueMode(value.GetType());
+
         var sourceCacheType = value.GetType();
         var valueType = sourceCacheType.GetGenericArguments()[0];
         var keyType = sourceCacheType.GetGenericArguments()[1];
+
+        switch (mode)
+        {
+            case ValueMode.Unspecified:
+                break;
+            case ValueMode.ValueTuple:
+                var dictionary = IObservableCacheX.UnwrapValueTuple(value, keyType, valueType);
+                serializer.Serialize(writer, dictionary);
+                break;
+            //case ValueMode.IParsableSlim:
+                //break;
+            default:
+                break;
+        }
+
+        // Get the generic type arguments
 
         //// Access the Items property to get key-value pairs
         //var keyValuesProperty = sourceCacheType.GetProperty("KeyValues");
@@ -249,7 +294,6 @@ public class SourceCacheConverter : JsonConverter
         //// Get the IEnumerable<KeyValuePair<TKey, TValue>>
         //var list = keyValuesProperty.GetValue(value);
 
-        var dictionary = IObservableCacheX.UnwrapValueTuple(value, keyType, valueType);
 
         //if (list == null)
         //{
@@ -276,7 +320,6 @@ public class SourceCacheConverter : JsonConverter
 
         // Serialize the list
         //serializer.Serialize(writer, list);
-        serializer.Serialize(writer, dictionary);
     }
 
     public override object? ReadJson(JsonReader reader, Type objectType, object existingValue, JsonSerializer serializer)

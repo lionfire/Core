@@ -9,6 +9,13 @@ namespace LionFire.UI;
 
 public class AutoColumnUtils
 {
+    public static bool DefaultIsAutoEditColumn(PropertyInfo propertyInfo)
+    {
+        if(!propertyInfo.CanWrite) return false;
+
+        return DefaultIsAutoColumn(propertyInfo);
+    }
+
     public static bool DefaultIsAutoColumn(PropertyInfo propertyInfo)
     {
         var typeName = propertyInfo.PropertyType.FullName!;

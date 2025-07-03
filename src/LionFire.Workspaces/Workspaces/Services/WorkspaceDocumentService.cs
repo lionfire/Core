@@ -16,17 +16,6 @@ using System.Threading.Tasks;
 
 namespace LionFire.Workspaces.Services;
 
-public interface IWorkspaceDocumentRunner<TKey, TValue>
-{
-
-    Type RunnerType { get; }
-}
-
-public class WorkspaceDocumentRunner<TKey, TValue, TRunner> : IWorkspaceDocumentRunner<TKey, TValue>
-{
-    public Type RunnerType => typeof(TRunner);
-}
-
 
 public abstract class WorkspaceDocumentService<TKey, TValue /*,TValueVM, TRunner*/> : IHostedService
 where TKey : notnull

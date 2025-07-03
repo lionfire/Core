@@ -50,6 +50,7 @@ public class TypeRegistry
         fullNames.Add(fullName, type);
 
         var name = type.Name;
+        name = name.Split('`')[0];
 
         if (conflictingNames.ContainsKey(name))
         {

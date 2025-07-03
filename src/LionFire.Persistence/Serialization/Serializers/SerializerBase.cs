@@ -39,20 +39,20 @@ namespace LionFire.Serialization
                 //    }
                 //}
 
-                HasToString = typeof(T).GetMethod("ToString", new Type[] { typeof(object), typeof(Lazy<PersistenceOperation>), typeof(PersistenceContext) }).DeclaringType != typeof(SerializerBase<T>);
-                HasToBytes = typeof(T).GetMethod("ToBytes", System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.Public).DeclaringType != typeof(SerializerBase<T>);
-                HasToStream = typeof(T).GetMethod("ToStream", System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.Public).DeclaringType != typeof(SerializerBase<T>);
+                HasToString = typeof(T).GetMethod("ToString", [typeof(object), typeof(Lazy<PersistenceOperation>), typeof(PersistenceContext)])!.DeclaringType != typeof(SerializerBase<T>);
+                HasToBytes = typeof(T)!.GetMethod("ToBytes", System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.Public)!.DeclaringType != typeof(SerializerBase<T>);
+                HasToStream = typeof(T)!.GetMethod("ToStream", System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.Public)!.DeclaringType != typeof(SerializerBase<T>);
 
-                HasFromString = typeof(T).GetMethod("ToObject", new Type[] { typeof(string), typeof(Lazy<PersistenceOperation>), typeof(PersistenceContext) }).DeclaringType != typeof(SerializerBase<T>);
-                HasFromBytes = typeof(T).GetMethod("ToObject", new Type[] { typeof(byte[]), typeof(Lazy<PersistenceOperation>), typeof(PersistenceContext) }).DeclaringType != typeof(SerializerBase<T>);
-                HasFromStream = typeof(T).GetMethod("ToObject", new Type[] { typeof(Stream), typeof(Lazy<PersistenceOperation>), typeof(PersistenceContext) }).DeclaringType != typeof(SerializerBase<T>);
+                HasFromString = typeof(T).GetMethod("ToObject", new Type[] { typeof(string), typeof(Lazy<PersistenceOperation>), typeof(PersistenceContext) })!.DeclaringType != typeof(SerializerBase<T>);
+                HasFromBytes = typeof(T).GetMethod("ToObject", new Type[] { typeof(byte[]), typeof(Lazy<PersistenceOperation>), typeof(PersistenceContext) })!.DeclaringType != typeof(SerializerBase<T>);
+                HasFromStream = typeof(T).GetMethod("ToObject", new Type[] { typeof(Stream), typeof(Lazy<PersistenceOperation>), typeof(PersistenceContext) })!.DeclaringType != typeof(SerializerBase<T>);
             }
         }
 
         #endregion
 
-        public virtual IEnumerable<ISerializeScorer> SerializeScorers => Enumerable.Empty<ISerializeScorer>();
-        public virtual IEnumerable<IDeserializeScorer> DeserializeScorers => Enumerable.Empty<IDeserializeScorer>();
+        public virtual IEnumerable<ISerializeScorer> SerializeScorers => [];
+        public virtual IEnumerable<IDeserializeScorer> DeserializeScorers => [];
 
 
         public virtual IEnumerable<SerializationFormat> Formats { get { yield return DefaultFormat; } }
@@ -76,7 +76,7 @@ namespace LionFire.Serialization
 
         #endregion
 
-        public virtual IEnumerable<Type> SerializationOptionsTypes => Enumerable.Empty<Type>();
+        public virtual IEnumerable<Type> SerializationOptionsTypes => [];
 
         public bool ImplementsToString => SerializerBaseReflectionInfo<ConcreteType>.HasToString;
         public bool ImplementsToStream => SerializerBaseReflectionInfo<ConcreteType>.HasToStream;
