@@ -4,6 +4,7 @@ using Microsoft.Extensions.Options;
 using System.IO;
 using System.Linq;
 using System.Reflection;
+using System.Reflection.PortableExecutable;
 using System.Text;
 using System.Threading;
 
@@ -30,9 +31,9 @@ public class AssemblyVersionLogger(ILogger<AssemblyVersionLogger> logger, IOptio
     {
         var sb = new StringBuilder();
 
-        var rootAsssembly = options.CurrentValue.RootAssembly ?? Assembly.GetEntryAssembly();
+        var rootAssembly = options.CurrentValue.RootAssembly ?? Assembly.GetEntryAssembly();
 
-        if (rootAsssembly == null)
+        if (rootAssembly == null)
         {
             logger.LogWarning("RootAssembly is null");
             return;
@@ -41,7 +42,7 @@ public class AssemblyVersionLogger(ILogger<AssemblyVersionLogger> logger, IOptio
 
         SortedList<DateTime, Assembly> list = new();
 
-        Recurse(rootAsssembly, list);
+        Recurse(rootAssembly, list);
 
         if (list.Count > 0)
         {
@@ -116,6 +117,21 @@ public class AssemblyVersionLogger(ILogger<AssemblyVersionLogger> logger, IOptio
         }
         sb.AppendLine($"{assembly.GetName().Name.PadRight(50)} {assembly.GetName().Version.ToString().PadRight(12)} {(lastModified?.ToString() ?? "unknown date")}");
     }
+
+    //public static Version? GetAssemblyVersionFromFile(string assemblyPath)
+    //{
+    //    using var stream = File.OpenRead(assemblyPath);
+    //    using var peReader = new PEReader(stream);
+    //    var mdReader = peReader.GetMetadataReader();
+
+    //    var assemblyDef = mdReader.GetAssemblyDefinition();
+    //    return new Version(
+    //        assemblyDef.Version.Major,
+    //        assemblyDef.Version.Minor,
+    //        assemblyDef.Version.Build,
+    //        assemblyDef.Version.Revision
+    //    );
+    //}
 
 
     public Task StartAsync(CancellationToken cancellationToken)

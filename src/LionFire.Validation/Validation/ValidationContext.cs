@@ -61,7 +61,7 @@ public static class Validate
     }
 }
 
-public struct ValidationContext // : IValidation // RENAME to ValidationOperation?
+public struct ValidationContext // : IValidation // RENAME to ValidationOperation to differentiate from the type in System.ComponentModel.DataAnnotations?
 {
     #region Construction
 
