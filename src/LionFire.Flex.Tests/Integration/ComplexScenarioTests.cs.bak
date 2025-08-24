@@ -1,0 +1,377 @@
+using FluentAssertions;
+using LionFire.FlexObjects;
+using LionFire.FlexObjects.Tests.Fixtures;
+using Xunit;
+
+namespace LionFire.FlexObjects.Tests.Integration;
+
+public class ComplexScenarioTests
+{
+    [Fact]
+    public void ComplexObjectGraph_WithNestedFlexObjects_WorksCorrectly()
+    {
+        // Arrange
+        var rootFlex = new FlexObject();
+        var personFlex = new FlexObject();
+        var addressFlex = new FlexObject();
+
+        var person = new TestPerson { Name = "John", Age = 30 };
+        var address = new TestAddress { Street = "123 Main St", City = "Anytown", ZipCode = "12345" };
+        var product = new TestProduct { Name = "Widget", Price = 29.99m, InStock = true };
+
+        // Act - Build complex object graph
+        addressFlex.Add(address);
+        personFlex.Add(person);
+        personFlex.Add(addressFlex);
+        
+        rootFlex.Add(personFlex);
+        rootFlex.Add(product);
+        rootFlex.Add("Root level string");
+
+        // Assert - Verify all components are accessible
+        var retrievedPerson = rootFlex.Query<FlexObject>()?.Query<TestPerson>();
+        retrievedPerson.Should().BeEquivalentTo(person);
+
+        var retrievedAddress = rootFlex.Query<FlexObject>()?.Query<FlexObject>()?.Query<TestAddress>();
+        retrievedAddress.Should().BeEquivalentTo(address);
+
+        var retrievedProduct = rootFlex.Query<TestProduct>();
+        retrievedProduct.Should().BeEquivalentTo(product);
+
+        var retrievedString = rootFlex.Query<string>();
+        retrievedString.Should().Be("Root level string");
+    }
+
+    [Fact]
+    public void FlexWithMetadata_ComplexMetadataStructure_WorksCorrectly()
+    {
+        // Arrange
+        var flex = new FlexObject();
+        var person = FlexTestHelpers.CreateDefaultPerson();
+        
+        // Act - Add data and complex metadata
+        flex.Add(person);
+        
+        var meta = flex.Meta();
+        meta.Add("Created", DateTime.Now);
+        meta.Add("Version", "1.0");
+        meta.Add("Tags", new[] { "test", "person", "data" });
+        
+        var nestedMeta = meta.Meta();
+        nestedMeta.Add("NestedInfo", "This is metadata about metadata");
+
+        // Assert
+        flex.Query<TestPerson>().Should().BeEquivalentTo(person);
+        
+        meta.Query<DateTime>().Should().BeCloseTo(DateTime.Now, TimeSpan.FromSeconds(1));
+        meta.Query<string>().Should().Be("1.0");
+        meta.Query<string[]>().Should().BeEquivalentTo(new[] { "test", "person", "data" });
+        
+        nestedMeta.Query<string>().Should().Be("This is metadata about metadata");
+    }
+
+    [Fact]
+    public void FlexDictionary_WithComplexValues_WorksCorrectly()
+    {
+        // Arrange
+        var flexDict = new FlexDictionary<string>();
+        var users = new[]
+        {
+            new TestPerson { Name = "Alice", Age = 25 },
+            new TestPerson { Name = "Bob", Age = 30 },
+            new TestPerson { Name = "Charlie", Age = 35 }
+        };
+
+        // Act - Add complex data to dictionary
+        foreach (var user in users)
+        {
+            var userKey = user.Name.ToLower();
+            flexDict.Add(userKey, user);
+            flexDict.Add(userKey, new TestAddress { 
+                Street = $"{user.Age} User St", 
+                City = "UserVille", 
+                ZipCode = user.Age.ToString().PadLeft(5, '0') 
+            });
+            flexDict.Add(userKey, $"User {user.Name} is {user.Age} years old");
+        }
+
+        // Assert - Verify all data is accessible
+        foreach (var user in users)
+        {
+            var userKey = user.Name.ToLower();
+            var userFlex = flexDict.QueryFlex(userKey);
+            userFlex.Should().NotBeNull();
+
+            var retrievedUser = userFlex!.Query<TestPerson>();
+            retrievedUser.Should().BeEquivalentTo(user);
+
+            var retrievedAddress = userFlex.Query<TestAddress>();
+            retrievedAddress.Should().NotBeNull();
+            retrievedAddress!.Street.Should().Be($"{user.Age} User St");
+
+            var retrievedDescription = userFlex.Query<string>();
+            retrievedDescription.Should().Be($"User {user.Name} is {user.Age} years old");
+        }
+    }
+
+    [Fact]
+    public void SingleTypeFlexObject_WithComplexConstraints_EnforcesTypeCorrectly()
+    {
+        // Arrange
+        var singleTypeFlex = new SingleTypeFlexObject<TestPerson>();
+        var person1 = new TestPerson { Name = "Original", Age = 25 };
+        var person2 = new TestPerson { Name = "Replacement", Age = 30 };
+
+        // Act & Assert - Can set compatible types
+        singleTypeFlex.FlexData = person1;
+        singleTypeFlex.FlexData.Should().BeSameAs(person1);
+
+        singleTypeFlex.FlexData = person2;
+        singleTypeFlex.FlexData.Should().BeSameAs(person2);
+
+        singleTypeFlex.FlexData = null;
+        singleTypeFlex.FlexData.Should().BeNull();
+
+        // Act & Assert - Cannot set incompatible types
+        var action1 = () => singleTypeFlex.FlexData = "string";
+        action1.Should().Throw<InvalidCastException>();
+
+        var action2 = () => singleTypeFlex.FlexData = 42;
+        action2.Should().Throw<InvalidCastException>();
+    }
+
+    [Fact]
+    public void FlexOptions_WithComplexConfiguration_AffectsBehavior()
+    {
+        // Arrange
+        var flex = new FlexObject();
+        var options = flex.Options(createIfMissing: true);
+        options!.SingleType = typeof(TestPerson);
+
+        // Act & Assert - IsSingleTyped should be true
+        flex.IsSingleTyped().Should().BeTrue();
+
+        // The specific behavior depends on how the options are used in the implementation
+        // This test documents the current API structure
+        options.IsSingleType.Should().BeTrue();
+        options.SingleType.Should().Be(typeof(TestPerson));
+    }
+
+    [Fact]
+    public void FactoryPattern_WithComplexCreation_WorksCorrectly()
+    {
+        // Arrange
+        var flex = new FlexObject();
+        var callCount = 0;
+
+        Func<TestPerson> complexFactory = () =>
+        {
+            callCount++;
+            return new TestPerson
+            {
+                Name = $"Generated User {callCount}",
+                Age = 20 + callCount,
+                Address = new TestAddress
+                {
+                    Street = $"{callCount} Generated Ave",
+                    City = "FactoryTown",
+                    ZipCode = callCount.ToString().PadLeft(5, '0')
+                }
+            };
+        };
+
+        // Act
+        var person1 = flex.GetOrCreate(createFactory: complexFactory);
+        var person2 = flex.GetOrCreate(createFactory: complexFactory); // Should get same instance
+
+        // Assert
+        callCount.Should().Be(1, "Factory should only be called once");
+        person1.Should().BeSameAs(person2);
+        person1.Name.Should().Be("Generated User 1");
+        person1.Age.Should().Be(21);
+        person1.Address.Should().NotBeNull();
+        person1.Address!.Street.Should().Be("1 Generated Ave");
+    }
+
+    [Fact]
+    public void MultiTypeStorage_WithListsAndSingleValues_WorksCorrectly()
+    {
+        // Arrange
+        var flex = new FlexObject();
+
+        // Act - Add multiple items of same type to create list
+        var person1 = new TestPerson { Name = "Person1", Age = 25 };
+        var person2 = new TestPerson { Name = "Person2", Age = 30 };
+        var person3 = new TestPerson { Name = "Person3", Age = 35 };
+
+        flex.Add(person1);
+        flex.Add(person2);
+        flex.Add(person3);
+
+        // Add single items of different types
+        flex.Add("Single String");
+        flex.Add(42);
+        flex.Add(3.14);
+
+        // Assert - Should have created a list for persons
+        flex.FlexData.Should().BeOfType<List<TestPerson>>();
+        var personList = (List<TestPerson>)flex.FlexData!;
+        personList.Should().HaveCount(3);
+        personList.Should().Contain(person1);
+        personList.Should().Contain(person2);
+        personList.Should().Contain(person3);
+
+        // Other types should be accessible through FlexTypeDictionary or similar mechanism
+        // The exact behavior depends on implementation details
+    }
+
+    [Fact]
+    public void DefaultTypeFlexObject_WithInheritance_WorksCorrectly()
+    {
+        // Arrange
+        var baseFlex = new DefaultTypeFlexObject<TestPerson>();
+        var person = FlexTestHelpers.CreateDefaultPerson();
+
+        // Act
+        baseFlex.PrimaryValue = person;
+        baseFlex.Add("Additional string");
+        baseFlex.Add(new TestProduct { Name = "Product", Price = 19.99m });
+
+        // Assert
+        baseFlex.PrimaryValue.Should().BeSameAs(person);
+        baseFlex.DefaultType.Should().Be(typeof(TestPerson));
+
+        // Should still function as a regular FlexObject for additional data
+        var retrievedString = baseFlex.Query<string>();
+        retrievedString.Should().Be("Additional string");
+
+        var retrievedProduct = baseFlex.Query<TestProduct>();
+        retrievedProduct.Should().NotBeNull();
+        retrievedProduct!.Price.Should().Be(19.99m);
+    }
+
+    [Fact]
+    public void PerformanceScenario_LargeNumberOfOperations_PerformsAdequately()
+    {
+        // Arrange
+        var flex = new FlexObject();
+        var sw = System.Diagnostics.Stopwatch.StartNew();
+        const int operationCount = 1000;
+
+        // Act - Perform many operations
+        for (int i = 0; i < operationCount; i++)
+        {
+            flex.Add($"String{i}");
+            flex.GetOrCreate<List<string>>();
+            flex.Query<string>();
+            flex.Meta().Add($"MetaString{i}");
+            flex.IsEmpty();
+        }
+
+        sw.Stop();
+
+        // Assert - Should complete in reasonable time (this is a basic performance check)
+        sw.ElapsedMilliseconds.Should().BeLessThan(5000, "Operations should complete quickly");
+        flex.FlexData.Should().NotBeNull();
+    }
+
+    [Fact]
+    public void KeyedOperations_ComplexKeyedData_WorksCorrectly()
+    {
+        // Arrange
+        var flex = new FlexObject();
+        var configData = new Dictionary<string, object>
+        {
+            { "connectionString", "Server=localhost;Database=test" },
+            { "timeout", 30 },
+            { "retryCount", 3 },
+            { "enableLogging", true },
+            { "features", new[] { "feature1", "feature2", "feature3" } }
+        };
+
+        // Act - Add keyed data
+        foreach (var kvp in configData)
+        {
+            switch (kvp.Value)
+            {
+                case string s:
+                    flex.Add(kvp.Key, s);
+                    break;
+                case int i:
+                    flex.Add(kvp.Key, i);
+                    break;
+                case bool b:
+                    flex.Add(kvp.Key, b);
+                    break;
+                case string[] arr:
+                    flex.Add(kvp.Key, arr);
+                    break;
+            }
+        }
+
+        // Assert - All keyed data should be retrievable
+        flex.GetOrCreate<string>("connectionString").Should().Be("Server=localhost;Database=test");
+        flex.GetOrCreate<int>("timeout").Should().Be(30);
+        flex.GetOrCreate<int>("retryCount").Should().Be(3);
+        flex.GetOrCreate<bool>("enableLogging").Should().BeTrue();
+        flex.GetOrCreate<string[]>("features").Should().BeEquivalentTo(new[] { "feature1", "feature2", "feature3" });
+    }
+
+    [Fact]
+    public void RealWorldScenario_UserProfileWithPreferences_WorksCorrectly()
+    {
+        // Arrange - Simulate a user profile system
+        var userProfileFlex = new FlexObject();
+        
+        var user = new TestPerson 
+        { 
+            Name = "Jane Doe", 
+            Age = 28,
+            Address = new TestAddress 
+            { 
+                Street = "456 Oak Ave", 
+                City = "Springfield", 
+                ZipCode = "54321" 
+            }
+        };
+
+        var preferences = new Dictionary<string, object>
+        {
+            { "theme", "dark" },
+            { "language", "en-US" },
+            { "notifications", true },
+            { "fontSize", 14 }
+        };
+
+        // Act - Build user profile
+        userProfileFlex.Add(user);
+        
+        foreach (var pref in preferences)
+        {
+            userProfileFlex.Add($"pref_{pref.Key}", pref.Value);
+        }
+
+        // Add metadata
+        var meta = userProfileFlex.Meta();
+        meta.Add("lastLogin", DateTime.Now);
+        meta.Add("loginCount", 42);
+        meta.Add("accountType", "premium");
+
+        // Assert - Everything should be accessible
+        var retrievedUser = userProfileFlex.Query<TestPerson>();
+        retrievedUser.Should().BeEquivalentTo(user);
+
+        userProfileFlex.GetOrCreate<string>("pref_theme").Should().Be("dark");
+        userProfileFlex.GetOrCreate<string>("pref_language").Should().Be("en-US");
+        userProfileFlex.GetOrCreate<bool>("pref_notifications").Should().BeTrue();
+        userProfileFlex.GetOrCreate<int>("pref_fontSize").Should().Be(14);
+
+        meta.Query<DateTime>().Should().BeCloseTo(DateTime.Now, TimeSpan.FromSeconds(1));
+        meta.Query<int>().Should().Be(42);
+        meta.Query<string>().Should().Be("premium");
+
+        // Profile should not be empty
+        userProfileFlex.IsEmpty().Should().BeFalse();
+        meta.IsEmpty().Should().BeFalse();
+    }
+}

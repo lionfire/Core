@@ -1,0 +1,372 @@
+using FluentAssertions;
+using LionFire.FlexObjects;
+using LionFire.FlexObjects.Tests.Fixtures;
+using System.Collections.Concurrent;
+using Xunit;
+
+namespace LionFire.FlexObjects.Tests.Integration;
+
+public class ThreadSafetyTests
+{
+    [Fact]
+    public async Task GetOrCreate_ConcurrentAccess_CreatesOnlyOnce()
+    {
+        // Arrange
+        var flex = new FlexObject();
+        var results = new ConcurrentBag<TestPerson>();
+        var tasks = new List<Task>();
+
+        // Act - Multiple threads try to GetOrCreate the same type
+        for (int i = 0; i < 10; i++)
+        {
+            tasks.Add(Task.Run(() =>
+            {
+                var result = flex.GetOrCreate<TestPerson>();
+                results.Add(result);
+            }));
+        }
+
+        await Task.WhenAll(tasks);
+
+        // Assert - All results should be the same instance
+        results.Should().HaveCount(10);
+        var first = results.First();
+        results.Should().AllBe(first);
+    }
+
+    [Fact]
+    public async Task GetOrCreate_ConcurrentAccessWithFactory_UsesFactoryOnlyOnce()
+    {
+        // Arrange
+        var flex = new FlexObject();
+        var factoryCallCount = 0;
+        var results = new ConcurrentBag<TestPerson>();
+        var tasks = new List<Task>();
+
+        Func<TestPerson> factory = () =>
+        {
+            Interlocked.Increment(ref factoryCallCount);
+            return new TestPerson { Name = "Factory Created", Age = factoryCallCount };
+        };
+
+        // Act
+        for (int i = 0; i < 10; i++)
+        {
+            tasks.Add(Task.Run(() =>
+            {
+                var result = flex.GetOrCreate(createFactory: factory);
+                results.Add(result);
+            }));
+        }
+
+        await Task.WhenAll(tasks);
+
+        // Assert
+        factoryCallCount.Should().Be(1, "Factory should only be called once");
+        results.Should().HaveCount(10);
+        var first = results.First();
+        results.Should().AllBe(first);
+        first.Age.Should().Be(1, "Should use the result from the single factory call");
+    }
+
+    [Fact]
+    public async Task FlexDictionary_ConcurrentAccess_ThreadSafe()
+    {
+        // Arrange
+        var flexDict = new FlexDictionary<string>();
+        var results = new ConcurrentDictionary<string, IFlex>();
+        var tasks = new List<Task>();
+
+        // Act - Multiple threads accessing same keys
+        var keys = Enumerable.Range(0, 20).Select(i => $"key{i}").ToArray();
+        
+        foreach (var key in keys)
+        {
+            tasks.Add(Task.Run(() =>
+            {
+                var flex = flexDict.GetFlex(key);
+                results.TryAdd(key, flex);
+            }));
+        }
+
+        await Task.WhenAll(tasks);
+
+        // Assert
+        results.Should().HaveCount(20);
+        foreach (var key in keys)
+        {
+            results.Should().ContainKey(key);
+            flexDict.QueryFlex(key).Should().BeSameAs(results[key]);
+        }
+    }
+
+    [Fact]
+    public async Task Add_ConcurrentAddDifferentTypes_ThreadSafe()
+    {
+        // Arrange
+        var flex = new FlexObject();
+        var tasks = new List<Task>();
+        var exceptions = new ConcurrentBag<Exception>();
+
+        // Act - Add different types concurrently
+        for (int i = 0; i < 10; i++)
+        {
+            int index = i; // Capture for closure
+            tasks.Add(Task.Run(() =>
+            {
+                try
+                {
+                    switch (index % 3)
+                    {
+                        case 0:
+                            flex.Add(new TestPerson { Name = $"Person{index}", Age = index });
+                            break;
+                        case 1:
+                            flex.Add($"String{index}");
+                            break;
+                        case 2:
+                            flex.Add(index);
+                            break;
+                    }
+                }
+                catch (Exception ex)
+                {
+                    exceptions.Add(ex);
+                }
+            }));
+        }
+
+        await Task.WhenAll(tasks);
+
+        // Assert
+        exceptions.Should().BeEmpty("No exceptions should occur during concurrent adds");
+        flex.FlexData.Should().NotBeNull("Flex should contain data after concurrent additions");
+    }
+
+    [Fact]
+    public async Task Meta_ConcurrentAccess_ReturnsSameInstance()
+    {
+        // Arrange
+        var flex = new FlexObject();
+        var results = new ConcurrentBag<IFlex>();
+        var tasks = new List<Task>();
+
+        // Act
+        for (int i = 0; i < 10; i++)
+        {
+            tasks.Add(Task.Run(() =>
+            {
+                var meta = flex.Meta();
+                results.Add(meta);
+            }));
+        }
+
+        await Task.WhenAll(tasks);
+
+        // Assert
+        results.Should().HaveCount(10);
+        var first = results.First();
+        results.Should().AllBe(first, "All Meta() calls should return the same instance");
+    }
+
+    [Fact]
+    public async Task Query_ConcurrentAccess_ThreadSafe()
+    {
+        // Arrange
+        var flex = new FlexObject();
+        var person = FlexTestHelpers.CreateDefaultPerson();
+        flex.Add(person);
+
+        var results = new ConcurrentBag<TestPerson?>();
+        var tasks = new List<Task>();
+
+        // Act - Multiple threads querying the same type
+        for (int i = 0; i < 20; i++)
+        {
+            tasks.Add(Task.Run(() =>
+            {
+                var result = flex.Query<TestPerson>();
+                results.Add(result);
+            }));
+        }
+
+        await Task.WhenAll(tasks);
+
+        // Assert
+        results.Should().HaveCount(20);
+        results.Should().AllBe(person);
+    }
+
+    [Fact]
+    public async Task SetExclusive_ConcurrentAccess_OnlyOneSucceeds()
+    {
+        // Arrange
+        var flex = new FlexObject();
+        var successCount = 0;
+        var exceptions = new ConcurrentBag<Exception>();
+        var tasks = new List<Task>();
+
+        // Act - Multiple threads trying to set exclusively
+        for (int i = 0; i < 10; i++)
+        {
+            int index = i;
+            tasks.Add(Task.Run(() =>
+            {
+                try
+                {
+                    var person = new TestPerson { Name = $"Person{index}", Age = index };
+                    flex.SetExclusive(person, allowReplace: false);
+                    Interlocked.Increment(ref successCount);
+                }
+                catch (AlreadySetException)
+                {
+                    // Expected for all but one thread
+                }
+                catch (Exception ex)
+                {
+                    exceptions.Add(ex);
+                }
+            }));
+        }
+
+        await Task.WhenAll(tasks);
+
+        // Assert
+        successCount.Should().Be(1, "Only one thread should succeed in setting exclusively");
+        exceptions.Should().BeEmpty("Only AlreadySetException should be thrown");
+        flex.Query<TestPerson>().Should().NotBeNull("One person should be set");
+    }
+
+    [Fact]
+    public async Task FlexDictionary_ConcurrentAddToSameKey_ThreadSafe()
+    {
+        // Arrange
+        var flexDict = new FlexDictionary<string>();
+        var key = "sharedKey";
+        var tasks = new List<Task>();
+        var exceptions = new ConcurrentBag<Exception>();
+
+        // Act - Multiple threads adding to the same key
+        for (int i = 0; i < 20; i++)
+        {
+            int index = i;
+            tasks.Add(Task.Run(() =>
+            {
+                try
+                {
+                    flexDict.Add(key, $"Value{index}");
+                }
+                catch (Exception ex)
+                {
+                    exceptions.Add(ex);
+                }
+            }));
+        }
+
+        await Task.WhenAll(tasks);
+
+        // Assert
+        exceptions.Should().BeEmpty("No exceptions should occur");
+        flexDict.Values.Should().HaveCount(1, "Only one flex should be created for the key");
+        var flex = flexDict.QueryFlex(key);
+        flex.Should().NotBeNull();
+        // The flex should contain multiple strings in some form (as a list or single value)
+    }
+
+    [Fact]
+    public async Task GlobalFlexMetaDictionary_ConcurrentAccess_ThreadSafe()
+    {
+        // Arrange
+        var flexObjects = Enumerable.Range(0, 10).Select(_ => new FlexObject()).ToArray();
+        var tasks = new List<Task>();
+        var metaResults = new ConcurrentDictionary<FlexObject, IFlex>();
+
+        // Act - Access meta for multiple flex objects concurrently
+        foreach (var flex in flexObjects)
+        {
+            tasks.Add(Task.Run(() =>
+            {
+                var meta = flex.Meta();
+                metaResults.TryAdd(flex, meta);
+            }));
+        }
+
+        // Also test concurrent access to the same flex object's meta
+        var sharedFlex = new FlexObject();
+        var sharedMetaResults = new ConcurrentBag<IFlex>();
+        
+        for (int i = 0; i < 10; i++)
+        {
+            tasks.Add(Task.Run(() =>
+            {
+                var meta = sharedFlex.Meta();
+                sharedMetaResults.Add(meta);
+            }));
+        }
+
+        await Task.WhenAll(tasks);
+
+        // Assert
+        metaResults.Should().HaveCount(10);
+        foreach (var flex in flexObjects)
+        {
+            metaResults.Should().ContainKey(flex);
+        }
+
+        sharedMetaResults.Should().HaveCount(10);
+        var firstSharedMeta = sharedMetaResults.First();
+        sharedMetaResults.Should().AllBe(firstSharedMeta);
+    }
+
+    [Fact]
+    public async Task ComplexConcurrentScenario_MultipleOperations_ThreadSafe()
+    {
+        // Arrange
+        var flex = new FlexObject();
+        var tasks = new List<Task>();
+        var exceptions = new ConcurrentBag<Exception>();
+
+        // Act - Mix of different concurrent operations
+        for (int i = 0; i < 50; i++)
+        {
+            int index = i;
+            tasks.Add(Task.Run(async () =>
+            {
+                try
+                {
+                    await Task.Delay(Random.Shared.Next(1, 5)); // Add some randomness
+
+                    switch (index % 5)
+                    {
+                        case 0:
+                            flex.GetOrCreate<TestPerson>();
+                            break;
+                        case 1:
+                            flex.Add($"String{index}");
+                            break;
+                        case 2:
+                            flex.Query<string>();
+                            break;
+                        case 3:
+                            var meta = flex.Meta();
+                            meta.Add($"MetaString{index}");
+                            break;
+                        case 4:
+                            flex.IsEmpty();
+                            break;
+                    }
+                }
+                catch (Exception ex)
+                {
+                    exceptions.Add(ex);
+                }
+            }));
+        }
+
+        await Task.WhenAll(tasks);
+
+        // Assert
+        exceptions.Should().BeEmpty("Complex concurrent operations should not throw exceptions");
+        flex.Should().NotBeNull();
+    }
+}
