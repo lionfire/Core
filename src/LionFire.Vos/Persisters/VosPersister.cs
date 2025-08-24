@@ -32,7 +32,7 @@ public class VosPersister : SerializingPersisterBase<VosPersisterOptions>, IPers
 {
     #region Dependencies
 
-    IServiceProvider ServiceProvider => Root?.GetServiceProvider();
+    IServiceProvider? ServiceProvider => Root?.GetServiceProvider();
 
     #region Root
 
@@ -44,7 +44,7 @@ public class VosPersister : SerializingPersisterBase<VosPersisterOptions>, IPers
 
     #region Configuration
 
-    public VosPersisterOptions VosPersisterOptions { get; init; }
+    public VosPersisterOptions? VosPersisterOptions { get; init; }
 
     #endregion
 
@@ -176,7 +176,10 @@ public class VosPersister : SerializingPersisterBase<VosPersisterOptions>, IPers
             foreach (var handlers in vob.GetAcquireEnumerator2<IVob, Handlers<BeforeListEventArgs>>())
             {
                 blea.HandlerVob = handlers.Item2;
-                await handlers.Item1.Raise(blea).ConfigureAwait(false);
+                if (handlers.Item1 != null)
+                {
+                    await handlers.Item1.Raise(blea).ConfigureAwait(false);
+                }
             }
         }
         else
@@ -192,7 +195,10 @@ public class VosPersister : SerializingPersisterBase<VosPersisterOptions>, IPers
             foreach (var handlers in vob.GetAcquireEnumerator2<IVob, Handlers<BeforeRetrieveEventArgs>>())
             {
                 blea.HandlerVob = handlers.Item2;
-                await handlers.Item1.Raise(blea).ConfigureAwait(false);
+                if (handlers.Item1 != null)
+                {
+                    await handlers.Item1.Raise(blea).ConfigureAwait(false);
+                }
             }
         }
         //await OnBeforeRetrieve(new VosRetrieveContext { Persister = this, Vob = vob, ListingType = listingItemType, Referenceable = referencable });
@@ -311,7 +317,7 @@ public class VosPersister : SerializingPersisterBase<VosPersisterOptions>, IPers
                 if (typeof(TValue) != typeof(object) && childResult.HasValue)
                 {
                     var childType = childResult.Value?.GetType();
-                    if (!childType.IsAssignableTo(typeof(TValue)))
+                    if (childType != null && !childType.IsAssignableTo(typeof(TValue)))
                     {
                         Trace.WriteLine($"Child {rh.Reference.Path} does not match type filter: {typeof(TValue).FullName}");
                         continue;
@@ -369,9 +375,12 @@ public class VosPersister : SerializingPersisterBase<VosPersisterOptions>, IPers
 
                 foreach (var handlers in vob.GetAcquireEnumerator2<IVob, Handlers<AfterNotFoundEventArgs>>())
                 {
-                    //oldVobMounts ??= vobMountsNode;
+                    //oldVobMounts ??= vobMounts;
                     eventArgs.HandlerVob = handlers.Item2;
-                    await handlers.Item1.Raise(eventArgs).ConfigureAwait(false);
+                    if (handlers.Item1 != null)
+                    {
+                        await handlers.Item1.Raise(eventArgs).ConfigureAwait(false);
+                    }
                 }
                 detectedMountsChange |= eventArgs.FoundMore;
             }
@@ -714,7 +723,7 @@ public class VosPersister : SerializingPersisterBase<VosPersisterOptions>, IPers
     //    return consolidatedResult;
     //}
 
-    public async Task<IGetResult<IEnumerable<IListing<TValue>>>> List<TValue>(IReferenceable<IVobReference> referencable, ListFilter filter = null)
+    public async Task<IGetResult<IEnumerable<IListing<TValue>>>> List<TValue>(IReferenceable<IVobReference> referencable, ListFilter? filter = null)
     {
         l.Trace($"List ...> {referencable.Reference}");
 
