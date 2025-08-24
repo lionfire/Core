@@ -6,7 +6,7 @@ namespace LionFire.FlexObjects
 {
     public class FlexOptions
     {
-        public Type SingleType { get; set; }
+        public Type? SingleType { get; set; }
         public bool IsSingleType => SingleType != null;
     }
 }

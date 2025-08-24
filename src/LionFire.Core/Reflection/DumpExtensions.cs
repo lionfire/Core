@@ -7,7 +7,7 @@ namespace LionFire.ExtensionMethods.Dumping
 {
     public static class DumpExtensions
     {
-        public static StringBuilder Dump(this object obj, StringBuilder sb = null)
+        public static StringBuilder Dump(this object obj, StringBuilder? sb = null)
         {
             sb ??= new StringBuilder();
 
@@ -15,7 +15,7 @@ namespace LionFire.ExtensionMethods.Dumping
 
             return sb;
         }
-        public static StringBuilder DumpHeader(this string header, string underline = "=", int marginBottom = 1, StringBuilder sb = null) 
+        public static StringBuilder DumpHeader(this string header, string underline = "=", int marginBottom = 1, StringBuilder? sb = null) 
         {
             sb ??= new StringBuilder();
             sb.AppendLine(header);
@@ -28,7 +28,7 @@ namespace LionFire.ExtensionMethods.Dumping
             for (int i = marginBottom; i > 0; i--) sb.AppendLine();
             return sb;
         }
-        public static StringBuilder DumpProperties(this object obj, string header = null, bool ignoreDefaultValues = true, string bullet = " - ", string equals = " = ", string underline = "-", StringBuilder sb = null)
+        public static StringBuilder DumpProperties(this object obj, string? header = null, bool ignoreDefaultValues = true, string bullet = " - ", string equals = " = ", string underline = "-", StringBuilder? sb = null)
         {
             sb ??= new StringBuilder();
             if (header != null) {
@@ -42,7 +42,7 @@ namespace LionFire.ExtensionMethods.Dumping
                 if(pi.GetMethod.GetParameters().Length > 0) { continue; }
                 var val = pi.GetValue(obj);
                 if (ignoreDefaultValues) {
-                    object defaultVal = pi.PropertyType.IsValueType ? Activator.CreateInstance(pi.PropertyType) : null;
+                    object? defaultVal = pi.PropertyType.IsValueType ? Activator.CreateInstance(pi.PropertyType) : null;
                     if (val == defaultVal) continue;
                 }
                 sb.Append(bullet);
@@ -57,7 +57,7 @@ namespace LionFire.ExtensionMethods.Dumping
             return sb;
         }
 
-        public static StringBuilder DumpList<T>(this IEnumerable<T> list, string header = null, Func<T, string> displayFunc = null, StringBuilder sb = null)
+        public static StringBuilder DumpList<T>(this IEnumerable<T> list, string? header = null, Func<T, string>? displayFunc = null, StringBuilder? sb = null)
         {
             sb ??= new StringBuilder();
             if (header != null) {

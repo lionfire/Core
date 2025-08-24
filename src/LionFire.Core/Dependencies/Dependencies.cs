@@ -11,8 +11,8 @@ namespace LionFire
     {
         private const bool CreateIfMissingDefault = false;
 
-        public static object GetService(Type serviceType, IServiceProvider serviceProvider = null) => DependencyContext.Current.GetService(serviceType, serviceProvider);
-        public static T GetService<T>(IServiceProvider serviceProvider = null) => (T)DependencyContext.Current.GetService(typeof(T), serviceProvider);
+        public static object GetService(Type serviceType, IServiceProvider? serviceProvider = null) => DependencyContext.Current.GetService(serviceType, serviceProvider);
+        public static T GetService<T>(IServiceProvider? serviceProvider = null) => (T)DependencyContext.Current.GetService(typeof(T), serviceProvider);
 
         //public static object GetServiceOrSingleton(Type serviceType, IServiceProvider serviceProvider = null, bool createIfMissing = CreateIfMissingDefault) 
         //    => DependencyContext.Current.GetServiceOrSingleton(serviceType, serviceProvider, createIfMissing);

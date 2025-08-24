@@ -10,6 +10,7 @@ namespace LionFire.FlexObjects
     /// </summary>
     /// <typeparam name="TKey"></typeparam>
     public class FlexDictionary<TKey> : IHasFlexDictionary<TKey>
+        where TKey : notnull
     {
         public ConcurrentDictionary<TKey, IFlex> Values { get; } = new ConcurrentDictionary<TKey, IFlex>();
 
@@ -18,9 +19,9 @@ namespace LionFire.FlexObjects
         private Func<TKey, IFlex> factory = _ => new FlexObject();
 
         public IFlex GetFlex(TKey key) => Values.GetOrAdd(key, factory);
-        public IFlex QueryFlex(TKey key)
+        public IFlex? QueryFlex(TKey key)
         {
-            if (Values.TryGetValue(key, out IFlex existing)) return existing;
+            if (Values.TryGetValue(key, out IFlex? existing)) return existing;
             return null;
         }
 

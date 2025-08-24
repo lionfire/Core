@@ -113,7 +113,7 @@ namespace LionFire.ExtensionMethods.Copying
 
         public static object AssignNonNullPropertiesFrom(this object me, object other) => AssignPropertiesFrom(me, other, (m, o, pi) => pi.GetValue(o) != null);
 
-        public static object AssignPropertiesFrom(this object me, object other, Func<object, object, PropertyInfo, bool> filter = null)
+        public static object AssignPropertiesFrom(this object me, object other, Func<object, object, PropertyInfo, bool>? filter = null)
         {
             Type myType = me.GetType();
             Type otherType = other.GetType();
@@ -121,7 +121,7 @@ namespace LionFire.ExtensionMethods.Copying
 
             foreach (PropertyInfo otherMethodInfo in otherType.GetProperties())
             {
-                if (!filter(me, other, otherMethodInfo)) continue;
+                if (filter != null && !filter(me, other, otherMethodInfo)) continue;
                 me.AssignPropertyFrom(other, otherMethodInfo);
             }
             return me;

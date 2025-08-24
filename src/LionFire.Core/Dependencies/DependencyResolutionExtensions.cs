@@ -53,7 +53,7 @@ namespace LionFire.Dependencies
             //    unresolvedDependencies = results.Count > 0 ? results : UnsatisfiedDependencies.Resolved;
             //    return results.Count == 0;
         }
-        public static void ResolveDependencies(this object obj, IServiceProvider serviceProvider = null)
+        public static void ResolveDependencies(this object obj, IServiceProvider? serviceProvider = null)
         {
             ValidationContext vc = new ValidationContext();
 
@@ -61,7 +61,7 @@ namespace LionFire.Dependencies
             obj.TryResolveDependencies(ref vc, serviceProvider);
             vc.EnsureValid();
         }
-        public static bool TryResolveDependencies(this object obj, out UnsatisfiedDependencies unresolvedDependencies, IServiceProvider serviceProvider = null)
+        public static bool TryResolveDependencies(this object obj, out UnsatisfiedDependencies unresolvedDependencies, IServiceProvider? serviceProvider = null)
         {
             if (serviceProvider == null)
             {
@@ -69,7 +69,7 @@ namespace LionFire.Dependencies
             }
             return _ResolveDependencies(obj, out unresolvedDependencies, serviceProvider, true);
         }
-        public static ValidationContext TryResolveDependencies(this object obj, ref ValidationContext vc, IServiceProvider serviceProvider = null)
+        public static ValidationContext TryResolveDependencies(this object obj, ref ValidationContext vc, IServiceProvider? serviceProvider = null)
         {
             if (serviceProvider == null)
             {
@@ -134,7 +134,7 @@ namespace LionFire.Dependencies
 
         #region Resolve Set
 
-        public static Task<Dictionary<object, UnsatisfiedDependencies>> TryResolveDependencies(this IEnumerable<object> objects, IServiceProvider serviceProvider = null)
+        public static Task<Dictionary<object, UnsatisfiedDependencies>?> TryResolveDependencies(this IEnumerable<object> objects, IServiceProvider? serviceProvider = null)
         {
             int lastCount = int.MaxValue;
             var remaining = new List<object>(objects);

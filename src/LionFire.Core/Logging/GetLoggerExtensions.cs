@@ -18,12 +18,12 @@ namespace LionFire.Extensions.Logging
         public static Func<string, MSLogger> GetLoggerMethod;
 
         private static MSLogger NullLogger => Microsoft.Extensions.Logging.Abstractions.NullLogger.Instance;
-        public static MSLogger GetLogger(this Type type, string name = null, bool isEnabled = true)
+        public static MSLogger GetLogger(this Type type, string? name = null, bool isEnabled = true)
         {
             return GetLogger((object)null, type.Name, isEnabled);
         }
 
-        public static MSLogger GetLogger(this object obj, string name = null, bool isEnabled = true)
+        public static MSLogger GetLogger(this object obj, string? name = null, bool isEnabled = true)
         {
             try
             {

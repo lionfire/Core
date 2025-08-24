@@ -11,7 +11,7 @@ public class AutoRetryContext
     public bool ThrowLastExceptionOnFail = true;
     public int DefaultMillisecondsBetweenAttempts = 150;
 
-    public Predicate<Exception> AllowException;
+    public Predicate<Exception>? AllowException;
 
     #region Static
 
@@ -29,7 +29,7 @@ public class AutoRetryContext
 
 
 #if !AOT
-    public async Task<TResult> AutoRetry<TResult>(Func<TResult> action, int maxRetries = int.MinValue, bool? throwLastExceptionOnFail = null, int millisecondsBetweenAttempts = int.MinValue, Predicate<Exception> allowException = null)
+    public async Task<TResult> AutoRetry<TResult>(Func<TResult> action, int maxRetries = int.MinValue, bool? throwLastExceptionOnFail = null, int millisecondsBetweenAttempts = int.MinValue, Predicate<Exception>? allowException = null)
 #else
 		[AotReplacement]
     public static object AutoRetry(this Func<object> action, int maxRetries = DefaultMaxRetries, bool throwLastExceptionOnFail = ThrowLastExceptionOnFail, int millisecondsBetweenAttempts = DefaultMillisecondsBetweenAttempts)
@@ -43,7 +43,7 @@ public class AutoRetryContext
     }
 
 #if !AOT
-    public async Task AutoRetry(Action action, int maxRetries = int.MinValue, bool? throwLastExceptionOnFail = null, int millisecondsBetweenAttempts = int.MinValue, Predicate<Exception> allowException = null)
+    public async Task AutoRetry(Action action, int maxRetries = int.MinValue, bool? throwLastExceptionOnFail = null, int millisecondsBetweenAttempts = int.MinValue, Predicate<Exception>? allowException = null)
 #else
 		[AotReplacement]
     public static object AutoRetry(this Func<object> action, int maxRetries = DefaultMaxRetries, bool throwLastExceptionOnFail = ThrowLastExceptionOnFail, int millisecondsBetweenAttempts = DefaultMillisecondsBetweenAttempts)

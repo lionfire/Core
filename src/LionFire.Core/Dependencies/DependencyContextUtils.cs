@@ -11,10 +11,10 @@ namespace LionFire.Dependencies
     {
         private static readonly char PathSeparator = '/';
 
-        public static T AsTypeInPathOrDefault<T>(this string path, DependencyContext context = null)
+        public static T AsTypeInPathOrDefault<T>(this string path, DependencyContext? context = null)
             where T : class
         {
-            return AsTypeInPath<T>(path, context = null) ?? ManualSingleton<T>.GuaranteedInstance;
+            return AsTypeInPath<T>(path, context) ?? ManualSingleton<T>.GuaranteedInstance;
         }
 
         /// <summary>
@@ -27,7 +27,7 @@ namespace LionFire.Dependencies
         /// <param name="path"></param>
         /// <param name="context"></param>
         /// <returns></returns>
-        public static T AsTypeInPath<T>(this string path, DependencyContext context = null)
+        public static T AsTypeInPath<T>(this string path, DependencyContext? context = null)
             where T : class
         {
             context ??= DependencyContext.Current;

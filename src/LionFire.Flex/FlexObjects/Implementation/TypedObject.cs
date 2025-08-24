@@ -9,9 +9,9 @@ namespace LionFire.FlexObjects
     public class TypedObject<T> : ITypedObject
     {
         public Type Type => typeof(T);
-        public T Object { get; set; }
+        public T? Object { get; set; }
 
-        object ITypedObject.Object => Object;
+        object? ITypedObject.Object => Object;
     }
 
 }

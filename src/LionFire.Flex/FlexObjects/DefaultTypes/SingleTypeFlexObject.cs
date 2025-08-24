@@ -20,7 +20,7 @@ namespace LionFire.FlexObjects
         }
 
         public Type DefaultType => typeof(T);
-        public T PrimaryValue { get; set; }
-        public object FlexData { get => PrimaryValue; set => PrimaryValue = (T)value; }
+        public T? PrimaryValue { get; set; }
+        public object? FlexData { get => PrimaryValue; set => PrimaryValue = (T?)value; }
     }
 }

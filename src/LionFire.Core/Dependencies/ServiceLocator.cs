@@ -47,7 +47,7 @@ namespace LionFire.Dependencies
 
         #region Get
 
-        public static TInterface Get<TInterface, TImplementation>(Func<TInterface> singletonFactory = null)
+        public static TInterface Get<TInterface, TImplementation>(Func<TInterface>? singletonFactory = null)
             where TInterface : class
             where TImplementation : class, TInterface
         {
@@ -64,11 +64,11 @@ namespace LionFire.Dependencies
         //public static TInterface Get<TInterface>()
         //    where TInterface : class
         //    => Get<TInterface, TInterface>();
-        public static TInterface GetRequired<TInterface>(IServiceProvider serviceProvider = null)
+        public static TInterface GetRequired<TInterface>(IServiceProvider? serviceProvider = null)
            where TInterface : class
            => Get<TInterface>(serviceProvider) ?? throw new DependencyMissingException($"{typeof(TInterface).FullName}");
 
-        public static TInterface Get<TInterface>(IServiceProvider serviceProvider = null)
+        public static TInterface Get<TInterface>(IServiceProvider? serviceProvider = null)
            where TInterface : class
            => serviceProvider != null ? serviceProvider.GetService<TInterface>() : Get<TInterface, TInterface>();
 
@@ -76,7 +76,7 @@ namespace LionFire.Dependencies
                   where TInterface : class
                   => Get<TInterface, TInterface>(singletonFactory: singletonFactory);
 
-        public static TReturnValue Get<TReturnValue>(Type interfaceType, IServiceProvider serviceProvider = null)
+        public static TReturnValue Get<TReturnValue>(Type interfaceType, IServiceProvider? serviceProvider = null)
             where TReturnValue : class
             => serviceProvider != null
             ? (TReturnValue)serviceProvider.GetService(interfaceType)
@@ -97,7 +97,7 @@ namespace LionFire.Dependencies
 
         #region TryGet
 
-        public static TInterface TryGet<TInterface>(Func<TInterface> singletonFactory = null, bool tryCreateIfMissing = false)
+        public static TInterface TryGet<TInterface>(Func<TInterface>? singletonFactory = null, bool tryCreateIfMissing = false)
         where TInterface : class
             => TryGet<TInterface, TInterface>(singletonFactory: singletonFactory, tryCreateIfMissing: tryCreateIfMissing);
 
@@ -111,7 +111,7 @@ namespace LionFire.Dependencies
         /// <param name="singletonFactory"></param>
         /// <param name="dependencyContext">Defaults to DependencyContext.Current</param>
         /// <returns></returns>
-        public static object GetServiceOrSingleton(Type interfaceType, IServiceProvider serviceProvider = null, bool createIfMissing = true, Type concreteType = null, Func<object> singletonFactory = null, DependencyContext dependencyContext = null, bool useDependencyContextServiceProviderForCreate = true)
+        public static object GetServiceOrSingleton(Type interfaceType, IServiceProvider? serviceProvider = null, bool createIfMissing = true, Type? concreteType = null, Func<object>? singletonFactory = null, DependencyContext? dependencyContext = null, bool useDependencyContextServiceProviderForCreate = true)
         {
             dependencyContext ??= DependencyContext.Current;
 
@@ -162,7 +162,7 @@ namespace LionFire.Dependencies
         /// <param name="singletonFactory"></param>
         /// <param name="tryCreateIfMissing">Will only be attempted if DependencyLocatorConfiguration.UseSingletons is true</param>
         /// <returns></returns>
-        public static TInterface TryGet<TInterface, TImplementation>(Func<TInterface> singletonFactory = null, bool tryCreateIfMissing = false)
+        public static TInterface TryGet<TInterface, TImplementation>(Func<TInterface>? singletonFactory = null, bool tryCreateIfMissing = false)
         where TInterface : class
         where TImplementation : class, TInterface
         {

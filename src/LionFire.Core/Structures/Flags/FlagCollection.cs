@@ -291,9 +291,9 @@ namespace LionFire.Structures
             return !nonZero.Any() ? "" : nonZero.Select(f => f.ToString()).Aggregate((x, y) => x + Flag.SeparatorWithSpace + y);
         }
 
-        public override bool Equals(object obj)
+        public override bool Equals(object? obj)
         {
-            FlagCollection other = obj as FlagCollection;
+            FlagCollection? other = obj as FlagCollection;
             if (other == null) return false;
             return this.CanonicalFlagsString == other.CanonicalFlagsString;
         }

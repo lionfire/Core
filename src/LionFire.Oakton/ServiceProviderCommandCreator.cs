@@ -18,7 +18,7 @@ namespace LionFire.Oakton
         {
             if (ServiceProvider == null)
             {
-                return (IOaktonCommand)Activator.CreateInstance(commandType);
+                return (IOaktonCommand)Activator.CreateInstance(commandType)!;
             }
             else
             {
@@ -26,6 +26,6 @@ namespace LionFire.Oakton
             }
         }
 
-        public object CreateModel(Type modelType) => ServiceProvider?.GetRequiredService(modelType) ?? Activator.CreateInstance(modelType);
+        public object CreateModel(Type modelType) => ServiceProvider?.GetRequiredService(modelType) ?? Activator.CreateInstance(modelType)!;
     }
 }

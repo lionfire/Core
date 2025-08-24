@@ -32,18 +32,17 @@ public static class IFlexExtensions
 
     #region Options
 
-    public static FlexOptions Options(this IFlex flex, bool createIfMissing = false)
+    public static FlexOptions? Options(this IFlex flex, bool createIfMissing = false)
     {
         // TODO REFACTOR - change API philosophy ? --> Get(createIfMissing: createIfMissing);
         if (createIfMissing)
         {
-            flex.Meta().AsTypeOrCreateDefault<FlexOptions>();
+            return flex.Meta().AsTypeOrCreateDefault<FlexOptions>();
         }
         else
         {
-            flex.Meta().GetOrCreate<FlexOptions>();
+            return flex.Meta().GetOrCreate<FlexOptions>();
         }
-        return null;
     }
 
     #endregion
@@ -66,7 +65,7 @@ public static class IFlexExtensions
 
     #region Single typing
 
-    public static Type SingleValueType(this IFlex flex /*, FUTURE? bool considerCollections = false */)
+    public static Type? SingleValueType(this IFlex flex /*, FUTURE? bool considerCollections = false */)
     {
         if (flex.FlexData == null) return null;
         if (flex.FlexData is ITypedObject to) return to.Type;
@@ -85,7 +84,7 @@ public static class IFlexExtensions
         return flex.SingleValueType() != typeof(IFlexImplementation);
     }
 
-    public static object SingleValueOrDefault(this IFlex flex)
+    public static object? SingleValueOrDefault(this IFlex flex)
     {
         if (flex.FlexData is ITypedObject to) return to.Object;
         if (IsFlexImplementationType(flex.FlexData?.GetType())) return null;
@@ -99,7 +98,7 @@ public static class IFlexExtensions
 
     #region Implementation
 
-    public static bool IsFlexImplementationType(this IFlex flex) => flex.FlexData.GetType().IsFlexImplementationType();
+    public static bool IsFlexImplementationType(this IFlex flex) => flex.FlexData?.GetType().IsFlexImplementationType() ?? false;
     public static bool IsFlexImplementationType(this object obj) => obj.GetType().IsFlexImplementationType();
     public static bool IsFlexImplementationType(this Type t)
     {
@@ -241,7 +240,7 @@ public static class IFlexExtensions
 
     #region Convenience / Backporting
 
-    public static T AsTypeOrCreateDefault<T>(this IFlex flex, Func<T> factory = null) => flex.GetOrCreate(createFactory: factory);
+    public static T AsTypeOrCreateDefault<T>(this IFlex flex, Func<T>? factory = null) => flex.GetOrCreate(createFactory: factory);
 
     #endregion
 
@@ -259,7 +258,7 @@ public static class IFlexExtensions
     /// <param name="throwOnFail">Set to true to ensure Set always succeeds in setting the value, otherwise an Exception is thrown.</param>
     /// <param name="onlyReplaceSameType"></param>
     /// <returns>True if an existing value was replaced, false if not.</returns>
-    public static bool SetExclusive<T>(this IFlex flex, T value, string name = null, bool allowReplace = false, bool throwOnFail = false, bool onlyReplaceSameType = true)
+    public static bool SetExclusive<T>(this IFlex flex, T value, string? name = null, bool allowReplace = false, bool throwOnFail = false, bool onlyReplaceSameType = true)
     {
         if (name != null) throw new NotImplementedException(nameof(name));
         var valueType = typeof(T) != typeof(object) ? typeof(T) : value?.GetType();
@@ -433,6 +432,7 @@ public static class IFlexExtensions
 
         if (flex.FlexData == null)
         {
+            // TODO: REVIEW: what if obj is null?
             flex.FlexData = effectiveObject;
         }
         else
@@ -443,7 +443,11 @@ public static class IFlexExtensions
                 // 3rd (or later) item of list
                 if (OnExistingList(existingList)) { existingList.Add(obj); }
             }
-            else if (flex.FlexData is T existingItem)
+            //else if (flex.FlexData is TypedObject<T> existingItem)
+            //{
+
+            //}
+            else if (flex.FlexData is T existingItem) // TODO FIXME - I think we need to support TypedObject<T> here too
             {
                 bool followThrough = true;
                 if (!allowMultipleOfSameType)
@@ -526,7 +530,7 @@ public static class IFlexExtensions
                 }
                 else
                 {
-                    ftd.Add(typeof(T), obj);
+                    if (obj != null) ftd.Add(typeof(T), obj);
                 }
             }
             else
@@ -536,7 +540,7 @@ public static class IFlexExtensions
                 dict.Add(flex.FlexData);
 
                 // TODO - this will fail if both objects resolve to the same type
-                dict.Add(obj);
+                if (obj != null) dict.Add(obj);
 
                 flex.FlexData = dict;
             }

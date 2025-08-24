@@ -4,12 +4,12 @@ namespace LionFire.FlexObjects;
 
 public partial class Flex : IFlex
 {
-    public object FlexData { get; set; }
+    public object? FlexData { get; set; }
 }
 
 public partial class Flex
 {
-    private static MethodInfo addMethod = typeof(IFlexExtensions).GetMethod("Add");
+    private static MethodInfo addMethod = typeof(IFlexExtensions).GetMethod("Add")!;
 
     public static IFlex Create(params object[] components)
     {

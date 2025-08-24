@@ -5,6 +5,6 @@ namespace LionFire.FlexObjects
     public class DefaultTypeFlexObject<T> : FlexObject, IFlexWithDefaultType<T>
     {
         public Type DefaultType => typeof(T);
-        public T PrimaryValue { get; set; }
+        public T? PrimaryValue { get; set; }
     }
 }
