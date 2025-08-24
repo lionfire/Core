@@ -229,7 +229,6 @@ namespace LionFire.Serialization
 			object result = Deserialize(path, serializer, typeof(T));
 			return (T) result;
 		}
-		[AotReplacement]
 		public static object Deserialize(string path, LionSerializer serializer, Type T)
 		{
             object result = null;

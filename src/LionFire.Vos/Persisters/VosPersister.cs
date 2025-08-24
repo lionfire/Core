@@ -211,7 +211,7 @@ public class VosPersister : SerializingPersisterBase<VosPersisterOptions>, IPers
             var vobMountsNode = vob.GetOrAddNextVobNode<VobMounts>();
             var vobMounts = vobMountsNode.Value;
             //var vobMountsNode = IVobInternalsVobNodeExtensions.GetOrAddNextVobNode<VobMounts>(vob);
-            IEnumerable<IMount> mounts = null;
+            IEnumerable<IMount>? mounts = null;
 
             if (vobMounts.Vob.Key == oldVobMounts?.Vob.Key)
             {
@@ -444,7 +444,7 @@ public class VosPersister : SerializingPersisterBase<VosPersisterOptions>, IPers
     protected async Task<IGetResult<TValue>> RetrieveWithAggregation<TValue>(IReferenceable<IVobReference> referencable, RetrieveOptions? options = null)
     {
         RetrieveResult<TValue> aggregatedResult = new RetrieveResult<TValue>();
-        List<IGetResult<TValue>> childResults = null;
+        List<IGetResult<TValue>>? childResults = null;
 
         var aggregationItemType = WrapperUtils<TValue>.GetInnermostEnumerableItemType;
         if (aggregationItemType == null) throw new ArgumentException("Aggregation not supported for type: " + typeof(TValue).FullName);

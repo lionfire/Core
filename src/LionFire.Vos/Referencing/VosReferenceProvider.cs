@@ -9,7 +9,7 @@ public class VobReferenceProvider : ReferenceProviderBase<VobReference>
 {
     public override string UriScheme => "vos";
 
-    public override (VobReference reference, string error) TryGetReference(string path)
+    public override (VobReference reference, string? error) TryGetReference(string path)
         => (new VobReference(path), null);
 }
 
@@ -32,7 +32,12 @@ public class TypedVobReferenceProvider : TypedReferenceProviderBase<VobReference
         var path = uriObj.AbsolutePath;
 
         var ctor = typeof(VobReference<>).MakeGenericType(valueType).GetConstructor(new Type[] { typeof(string) });
-        return ((TReference)ctor.Invoke(new object[] { path }),null);
+        if (ctor == null) return (default!, "No suitable constructor found");
+        
+        var instance = ctor.Invoke(new object[] { path });
+        if (instance == null) return (default!, "Failed to create instance");
+        
+        return ((TReference)instance, null);
 
         //return ((TReference)Activator.CreateInstance(referenceType, uriObj.AbsolutePath), null);
 

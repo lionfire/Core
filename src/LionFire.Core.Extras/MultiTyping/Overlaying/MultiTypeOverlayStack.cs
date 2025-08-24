@@ -77,7 +77,6 @@ Singleton<IntComparer>.Instance
 #endif
 
 
-        [AotReplacement]
         public object AsType(Type T)
         {
 #if AOT
@@ -138,7 +137,6 @@ Singleton<IntComparer>.Instance
             return results;
         }
 #endif
-        [AotReplacement]
         public IEnumerable<object> OfType(Type T)
         {
             var results = new List<object>();

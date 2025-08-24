@@ -71,10 +71,9 @@ namespace LionFire.Vos
 #endif
         }
         
-        [AotReplacement]
         public object AsType(Type T) => AllLayersOfType(T).FirstOrDefault();
 
-        [AotReplacement] // TODO - support this in Rewriter
+        // TODO - support this in Rewriter
         public IEnumerable<object> AllLayersOfType(Type T)
         {
             throw new NotImplementedException("TOPORT");

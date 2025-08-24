@@ -10,7 +10,6 @@ namespace LionFire.Vos
     public partial class Vob
     {
         
-        [AotReplacement]
         public object AsTypeOrCreate(Type type) => throw new NotImplementedException("Vob.AsTypeOrCreate");
 
         //#region IReadOnlyMultiTyped OLD
