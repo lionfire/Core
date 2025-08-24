@@ -11,8 +11,8 @@ namespace LionFire.Hosting.CommandLine;
 
 public class LionFireCommandLineOptions
 {
-    public Dictionary<string, object?> Options { get; set; }
-    public InvocationContext InvocationContext { get; internal set; }
+    public Dictionary<string, object?> Options { get; set; } = new();
+    public InvocationContext? InvocationContext { get; internal set; }
 
     public T As<T>() where T : new()
     {
@@ -68,12 +68,11 @@ public abstract class BuilderBuilderBase<TBuilder> : IHostingBuilderBuilder<TBui
     public IReadOnlyList<Action<HostingBuilderBuilderContext, TBuilder>> Initializers => initializers;
 
 
-    protected List<Action<HostingBuilderBuilderContext, TBuilder>> initializers;
+    protected List<Action<HostingBuilderBuilderContext, TBuilder>> initializers = new();
     public void AddInitializer(Action<HostingBuilderBuilderContext, TBuilder> initializer)
     {
-        if (initializers == null)
+        if (Command != null && Program != null)
         {
-            initializers = new();
             Command.SetHandler(Program.Handler);
         }
         initializers.Add(initializer);

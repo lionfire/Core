@@ -9,6 +9,7 @@ public interface IKeyedListG<TKey, TItem>
     : IListBaseG<TItem>
     , IAsyncKeyedCollectionBase<TKey, TItem>
     , IGrainObservableAsyncObservableG<ChangeSet<TItem, TKey>>
+    where TItem : notnull
     where TKey : notnull
 {
 }

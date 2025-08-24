@@ -53,7 +53,7 @@ public class DynamicServiceProvider : IServiceCollection, IServiceProvider
 
     #region (public) Methods
 
-    public object GetService(Type serviceType)
+    public object? GetService(Type serviceType)
     {
         if (singletonInstances.ContainsKey(serviceType))
         {

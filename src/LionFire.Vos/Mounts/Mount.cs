@@ -28,20 +28,20 @@ public class Mount : IMount,
 
     public IVobMountOptions Options { get; }
 
-    IMount IParented<IMount>.Parent => Options?.UpstreamMount;
+    IMount? IParented<IMount>.Parent => Options?.UpstreamMount;
 
     #endregion
 
     #region Construction
 
-    public Mount(IVob vob, IReference targetReference, IVobMountOptions mountOptions = null)
+    public Mount(IVob vob, IReference targetReference, IVobMountOptions? mountOptions = null)
     {
         MountPoint = vob ?? throw new ArgumentNullException($"{nameof(vob)}");
         Target = targetReference;
         this.Options = mountOptions ?? VobMountOptions.Default;
     }
 
-    public Mount(IVob vob, IVob target, IVobMountOptions mountOptions = null)
+    public Mount(IVob vob, IVob target, IVobMountOptions? mountOptions = null)
         : this(vob, target.Reference, mountOptions)
     {
     }
@@ -77,7 +77,7 @@ public class Mount : IMount,
     }
     private bool isEnabled;
 
-    public event Action<bool> IsEnabledChanged;
+    public event Action<bool>? IsEnabledChanged;
 
     #endregion
 

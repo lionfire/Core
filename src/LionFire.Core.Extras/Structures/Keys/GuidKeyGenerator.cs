@@ -1,4 +1,5 @@
-﻿using System;
+﻿#nullable enable
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.CompilerServices;
@@ -13,8 +14,9 @@ public class GuidKeyGenerator<TKey> : IKeyGenerator<TKey>
 {
     ConditionalWeakTable<object, TKey> cwt = new();
 
-    public (bool success, TKey? key) TryGetKey(object obj)
+    public (bool success, TKey? key) TryGetKey(object? obj)
     {
+        if (obj == null) return (false, null);
         return (true, cwt.GetValue(obj, _ =>
         {
             var guid = Guid.NewGuid();

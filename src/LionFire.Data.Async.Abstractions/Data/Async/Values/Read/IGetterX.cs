@@ -27,7 +27,7 @@ public static class IGetterX
         }
     }
 
-    public static async Task<T> GetValue<T>(this IStatelessGetter<T> resolves)
+    public static async Task<T?> GetValue<T>(this IStatelessGetter<T> resolves)
     {
         if (resolves is IGetter<T> lazilyResolves)
         {

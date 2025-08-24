@@ -26,6 +26,7 @@ public struct Change_Surrogate<TItem, TKey>
 
 [RegisterConverter]
 public sealed class Change_SurrogateConverter<TItem, TKey> : IConverter<Change<TItem, TKey>, Change_Surrogate<TItem, TKey>>
+    where TItem : notnull
     where TKey : notnull
 {
     public Change<TItem, TKey> ConvertFromSurrogate(in Change_Surrogate<TItem, TKey> surrogate) 

@@ -70,7 +70,9 @@ public static class IGetterXExplicit
         if (lazilyGets is ILazyDetector<T> ld) return (await ld.TryGetExistsWithValue().ConfigureAwait(false)).Exists<T>();
 
         var queryValue = lazilyGets.QueryGetResult();
-        return queryValue.Exists<T>();
+        if (queryValue.Flags.HasFlag(TransferResultFlags.Found)) {
+            return queryValue.Exists<T>();
+        }
 
         if (lazilyGets is IDetects d) return await d.Exists().ConfigureAwait(false);
 

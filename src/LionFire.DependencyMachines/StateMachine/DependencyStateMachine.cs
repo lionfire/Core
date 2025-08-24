@@ -194,7 +194,7 @@ public partial class DependencyStateMachine : IDependencyStateMachine
     public IEnumerable<int> StopStageLog => stopStageLog ?? Enumerable.Empty<int>();
 
 
-    private List<int> stopStageLog; // TODO DEPRECATE this - let people do it via events if they want it.
+    private List<int>? stopStageLog; // TODO DEPRECATE this - let people do it via events if they want it.
 
     public void Dump()
     {
@@ -456,12 +456,12 @@ public partial class DependencyStateMachine : IDependencyStateMachine
 
     #region Events
 
-    public event Action<IParticipant> Starting;
-    public event Action<IParticipant> Started;
-    public event Action<string> StartedStage;
-    public event Action<string> StoppedStage;
-    public event Action<IParticipant> Stopping;
-    public event Action<IParticipant, bool /* initialRegistration */> Stopped;
+    public event Action<IParticipant>? Starting;
+    public event Action<IParticipant>? Started;
+    public event Action<string>? StartedStage;
+    public event Action<string>? StoppedStage;
+    public event Action<IParticipant>? Stopping;
+    public event Action<IParticipant, bool /* initialRegistration */>? Stopped;
 
     #endregion
     #region (Private) Methods

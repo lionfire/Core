@@ -10,5 +10,6 @@ namespace LionFire.Orleans_.Collections;
 public interface IListG<TItem>
     : IListBaseG<TItem>
     , IGrainObservableAsyncObservableG<ChangeSet<TItem>>
+    where TItem : notnull
 {
 }

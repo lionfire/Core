@@ -12,6 +12,7 @@ public struct Optional_Surrogate<TValue>
 
 [RegisterConverter]
 public sealed class Optional_SurrogateConverter<TValue> : IConverter<Optional<TValue>, Optional_Surrogate<TValue>>
+    where TValue : notnull
 {
     public Optional<TValue> ConvertFromSurrogate(in Optional_Surrogate<TValue> surrogate)
         => surrogate.HasValue ? Optional.Some(surrogate.Value) : Optional.None<TValue>();

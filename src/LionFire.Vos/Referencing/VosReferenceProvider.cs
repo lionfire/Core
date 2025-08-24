@@ -1,4 +1,5 @@
-﻿using LionFire.Referencing;
+﻿#nullable enable
+using LionFire.Referencing;
 using System.Collections.Generic;
 using System.IO;
 
