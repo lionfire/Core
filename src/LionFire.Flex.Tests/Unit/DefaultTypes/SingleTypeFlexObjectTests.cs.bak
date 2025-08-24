@@ -1,0 +1,288 @@
+using FluentAssertions;
+using LionFire.FlexObjects;
+using LionFire.FlexObjects.Tests.Fixtures;
+using Xunit;
+
+namespace LionFire.FlexObjects.Tests.Unit.DefaultTypes;
+
+public class SingleTypeFlexObjectTests
+{
+    [Fact]
+    public void Constructor_Default_PropertiesSetCorrectly()
+    {
+        // Arrange & Act
+        var flex = new SingleTypeFlexObject<TestPerson>();
+
+        // Assert
+        flex.DefaultType.Should().Be(typeof(TestPerson));
+        flex.PrimaryValue.Should().BeNull();
+        flex.FlexData.Should().BeNull();
+    }
+
+    [Fact]
+    public void Constructor_WithValue_InitializesCorrectly()
+    {
+        // Arrange
+        var person = FlexTestHelpers.CreateDefaultPerson();
+
+        // Act
+        var flex = new SingleTypeFlexObject<TestPerson>(person);
+
+        // Assert
+        flex.PrimaryValue.Should().BeSameAs(person);
+        flex.FlexData.Should().BeSameAs(person);
+    }
+
+    [Fact]
+    public void Constructor_WithValueType_InitializesCorrectly()
+    {
+        // Arrange
+        var value = 42;
+
+        // Act
+        var flex = new SingleTypeFlexObject<int>(value);
+
+        // Assert
+        flex.PrimaryValue.Should().Be(value);
+        flex.FlexData.Should().Be(value);
+    }
+
+    [Fact]
+    public void FlexData_GetReturnsValue_SetUpdatesValue()
+    {
+        // Arrange
+        var flex = new SingleTypeFlexObject<string>();
+        var testValue = "test string";
+
+        // Act
+        flex.FlexData = testValue;
+
+        // Assert
+        flex.FlexData.Should().Be(testValue);
+        flex.PrimaryValue.Should().Be(testValue);
+    }
+
+    [Fact]
+    public void PrimaryValue_GetReturnsValue_SetUpdatesFlexData()
+    {
+        // Arrange
+        var flex = new SingleTypeFlexObject<TestPerson>();
+        var person = FlexTestHelpers.CreateDefaultPerson();
+
+        // Act
+        flex.PrimaryValue = person;
+
+        // Assert
+        flex.PrimaryValue.Should().BeSameAs(person);
+        flex.FlexData.Should().BeSameAs(person);
+    }
+
+    [Fact]
+    public void FlexData_AndPrimaryValue_AreAlwaysSynchronized()
+    {
+        // Arrange
+        var flex = new SingleTypeFlexObject<int>();
+
+        // Act & Assert - Set via FlexData
+        flex.FlexData = 42;
+        flex.PrimaryValue.Should().Be(42);
+        flex.FlexData.Should().Be(42);
+
+        // Act & Assert - Set via PrimaryValue
+        flex.PrimaryValue = 100;
+        flex.PrimaryValue.Should().Be(100);
+        flex.FlexData.Should().Be(100);
+    }
+
+    [Fact]
+    public void DefaultType_ReturnsCorrectGenericType()
+    {
+        // Arrange & Act
+        var stringFlex = new SingleTypeFlexObject<string>();
+        var intFlex = new SingleTypeFlexObject<int>();
+        var personFlex = new SingleTypeFlexObject<TestPerson>();
+
+        // Assert
+        stringFlex.DefaultType.Should().Be(typeof(string));
+        intFlex.DefaultType.Should().Be(typeof(int));
+        personFlex.DefaultType.Should().Be(typeof(TestPerson));
+    }
+
+    [Fact]
+    public void FlexData_SetToIncompatibleType_ThrowsInvalidCastException()
+    {
+        // Arrange
+        var flex = new SingleTypeFlexObject<string>();
+
+        // Act & Assert
+        var action = () => flex.FlexData = 42; // int instead of string
+        action.Should().Throw<InvalidCastException>();
+    }
+
+    [Fact]
+    public void FlexData_SetToNull_SetsToNull()
+    {
+        // Arrange
+        var flex = new SingleTypeFlexObject<TestPerson>();
+        var person = FlexTestHelpers.CreateDefaultPerson();
+        flex.FlexData = person;
+
+        // Act
+        flex.FlexData = null;
+
+        // Assert
+        flex.FlexData.Should().BeNull();
+        flex.PrimaryValue.Should().BeNull();
+    }
+
+    [Fact]
+    public void ImplementsAllRequiredInterfaces()
+    {
+        // Arrange & Act
+        var flex = new SingleTypeFlexObject<TestPerson>();
+
+        // Assert
+        flex.Should().BeAssignableTo<IFlex>();
+        flex.Should().BeAssignableTo<IFlexWithDefaultType>();
+        flex.Should().BeAssignableTo<IFlexWithDefaultType<TestPerson>>();
+        flex.Should().BeAssignableTo<ISingleTypeFlex>();
+    }
+
+    [Fact]
+    public void DefaultType_IsReadOnly()
+    {
+        // Arrange
+        var flex = new SingleTypeFlexObject<TestPerson>();
+
+        // Act & Assert
+        flex.DefaultType.Should().Be(typeof(TestPerson));
+        
+        // Verify DefaultType property is read-only
+        typeof(SingleTypeFlexObject<TestPerson>)
+            .GetProperty(nameof(SingleTypeFlexObject<TestPerson>.DefaultType))!
+            .CanWrite.Should().BeFalse();
+    }
+
+    [Fact]
+    public void FlexData_WithNullableType_HandlesNullCorrectly()
+    {
+        // Arrange
+        var flex = new SingleTypeFlexObject<int?>();
+
+        // Act
+        flex.FlexData = null;
+
+        // Assert
+        flex.FlexData.Should().BeNull();
+        flex.PrimaryValue.Should().BeNull();
+
+        // Act - Set to value
+        flex.FlexData = 42;
+
+        // Assert
+        flex.FlexData.Should().Be(42);
+        flex.PrimaryValue.Should().Be(42);
+    }
+
+    [Theory]
+    [InlineData("test")]
+    [InlineData("")]
+    [InlineData(null)]
+    public void SingleTypeFlexObject_String_HandlesAllStringValues(string? value)
+    {
+        // Arrange
+        var flex = new SingleTypeFlexObject<string?>();
+
+        // Act
+        flex.FlexData = value;
+
+        // Assert
+        flex.FlexData.Should().Be(value);
+        flex.PrimaryValue.Should().Be(value);
+    }
+
+    [Theory]
+    [InlineData(0)]
+    [InlineData(42)]
+    [InlineData(-1)]
+    [InlineData(int.MaxValue)]
+    [InlineData(int.MinValue)]
+    public void SingleTypeFlexObject_Int_HandlesAllIntValues(int value)
+    {
+        // Arrange
+        var flex = new SingleTypeFlexObject<int>(value);
+
+        // Act & Assert
+        flex.FlexData.Should().Be(value);
+        flex.PrimaryValue.Should().Be(value);
+    }
+
+    [Fact]
+    public void SingleTypeFlexObject_WithComplexType_PreservesReferenceEquality()
+    {
+        // Arrange
+        var person = new TestPerson { Name = "Test", Age = 30 };
+        var flex = new SingleTypeFlexObject<TestPerson>();
+
+        // Act
+        flex.PrimaryValue = person;
+
+        // Assert
+        flex.PrimaryValue.Should().BeSameAs(person);
+        flex.FlexData.Should().BeSameAs(person);
+        
+        // Verify properties are preserved
+        ((TestPerson)flex.FlexData!).Name.Should().Be("Test");
+        ((TestPerson)flex.FlexData!).Age.Should().Be(30);
+    }
+
+    [Fact]
+    public void SingleTypeFlexObject_WithValueType_PreservesValue()
+    {
+        // Arrange
+        var structValue = new TestStruct { Value = 100, Text = "test struct" };
+        var flex = new SingleTypeFlexObject<TestStruct>();
+
+        // Act
+        flex.PrimaryValue = structValue;
+
+        // Assert
+        flex.PrimaryValue.Should().Be(structValue);
+        flex.FlexData.Should().Be(structValue);
+        
+        // Verify struct properties
+        ((TestStruct)flex.FlexData!).Value.Should().Be(100);
+        ((TestStruct)flex.FlexData!).Text.Should().Be("test struct");
+    }
+
+    [Fact]
+    public void FlexData_SetToValidSubtype_WorksCorrectly()
+    {
+        // Arrange
+        var flex = new SingleTypeFlexObject<object>();
+        var testValue = "this is a string, which is an object";
+
+        // Act
+        flex.FlexData = testValue;
+
+        // Assert
+        flex.FlexData.Should().Be(testValue);
+        flex.PrimaryValue.Should().Be(testValue);
+    }
+
+    [Fact]
+    public void ISingleTypeFlex_CanBeIdentified()
+    {
+        // Arrange
+        var flex = new SingleTypeFlexObject<TestPerson>();
+
+        // Act & Assert
+        (flex is ISingleTypeFlex).Should().BeTrue();
+        
+        // This can be used by IFlexExtensions.IsSingleTyped() method
+        if (flex is ISingleTypeFlex singleTypeFlex)
+        {
+            singleTypeFlex.Should().BeSameAs(flex);
+        }
+    }
+}

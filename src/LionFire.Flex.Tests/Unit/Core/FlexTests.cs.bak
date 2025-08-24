@@ -1,0 +1,199 @@
+using FluentAssertions;
+using LionFire.FlexObjects;
+using LionFire.FlexObjects.Tests.Fixtures;
+using Xunit;
+
+namespace LionFire.FlexObjects.Tests.Unit.Core;
+
+public class FlexTests
+{
+    [Fact]
+    public void Create_WithNoComponents_CreatesEmptyFlex()
+    {
+        // Arrange & Act
+        var flex = Flex.Create();
+
+        // Assert
+        flex.Should().NotBeNull();
+        flex.Should().BeOfType<Flex>();
+        FlexTestHelpers.AssertFlexEmpty(flex);
+    }
+
+    [Fact]
+    public void Create_WithSingleComponent_AddsComponent()
+    {
+        // Arrange
+        var testString = "Hello World";
+
+        // Act
+        var flex = Flex.Create(testString);
+
+        // Assert
+        flex.Should().NotBeNull();
+        FlexTestHelpers.AssertFlexNotEmpty(flex);
+        var retrievedString = flex.GetOrCreate<string>();
+        retrievedString.Should().Be(testString);
+    }
+
+    [Fact]
+    public void Create_WithMultipleComponents_AddsAllComponents()
+    {
+        // Arrange
+        var person = FlexTestHelpers.CreateDefaultPerson();
+        var product = FlexTestHelpers.CreateDefaultProduct();
+        var testService = new TestService();
+
+        // Act
+        var flex = Flex.Create(person, product, testService);
+
+        // Assert
+        flex.Should().NotBeNull();
+        FlexTestHelpers.AssertFlexNotEmpty(flex);
+        
+        // Verify all components are accessible
+        var retrievedPerson = flex.GetOrCreate<TestPerson>();
+        retrievedPerson.Should().BeEquivalentTo(person);
+        
+        var retrievedProduct = flex.GetOrCreate<TestProduct>();
+        retrievedProduct.Should().BeEquivalentTo(product);
+        
+        var retrievedService = flex.GetOrCreate<TestService>();
+        retrievedService.Should().BeSameAs(testService);
+    }
+
+    [Fact]
+    public void Create_WithDifferentTypes_HandlesVariousTypes()
+    {
+        // Arrange
+        var stringValue = "test";
+        var intValue = 42;
+        var doubleValue = 3.14;
+        var boolValue = true;
+        var dateTimeValue = new DateTime(2023, 1, 1);
+
+        // Act
+        var flex = Flex.Create(stringValue, intValue, doubleValue, boolValue, dateTimeValue);
+
+        // Assert
+        flex.Should().NotBeNull();
+        flex.GetOrCreate<string>().Should().Be(stringValue);
+        flex.GetOrCreate<int>().Should().Be(intValue);
+        flex.GetOrCreate<double>().Should().Be(doubleValue);
+        flex.GetOrCreate<bool>().Should().Be(boolValue);
+        flex.GetOrCreate<DateTime>().Should().Be(dateTimeValue);
+    }
+
+    [Fact]
+    public void Create_WithNullComponent_HandlesNullGracefully()
+    {
+        // Arrange & Act
+        var flex = Flex.Create(null!);
+
+        // Assert
+        flex.Should().NotBeNull();
+        // The behavior with null components depends on the implementation
+        // This test verifies it doesn't throw an exception
+    }
+
+    [Fact]
+    public void Create_WithDuplicateTypes_HandlesCorrectly()
+    {
+        // Arrange
+        var firstString = "first";
+        var secondString = "second";
+
+        // Act
+        var flex = Flex.Create(firstString, secondString);
+
+        // Assert
+        flex.Should().NotBeNull();
+        // The behavior with duplicate types depends on the implementation
+        // This test documents the current behavior
+        var retrievedString = flex.GetOrCreate<string>();
+        retrievedString.Should().BeOneOf(firstString, secondString);
+    }
+
+    [Fact]
+    public void Create_WithComplexObjects_StoresCorrectly()
+    {
+        // Arrange
+        var person = new TestPerson 
+        { 
+            Name = "Alice", 
+            Age = 25,
+            Address = new TestAddress 
+            { 
+                Street = "456 Oak Ave", 
+                City = "Springfield", 
+                ZipCode = "67890" 
+            }
+        };
+        var record = new TestRecord("RecordValue", 100);
+
+        // Act
+        var flex = Flex.Create(person, record);
+
+        // Assert
+        flex.Should().NotBeNull();
+        
+        var retrievedPerson = flex.GetOrCreate<TestPerson>();
+        retrievedPerson.Should().BeEquivalentTo(person);
+        retrievedPerson.Address.Should().NotBeNull();
+        retrievedPerson.Address!.City.Should().Be("Springfield");
+        
+        var retrievedRecord = flex.GetOrCreate<TestRecord>();
+        retrievedRecord.Should().Be(record);
+        retrievedRecord.Value.Should().Be("RecordValue");
+        retrievedRecord.Number.Should().Be(100);
+    }
+
+    [Fact]
+    public void Create_WithInterface_WorksCorrectly()
+    {
+        // Arrange
+        ITestService service = new TestService();
+
+        // Act
+        var flex = Flex.Create(service);
+
+        // Assert
+        flex.Should().NotBeNull();
+        var retrievedService = flex.GetOrCreate<ITestService>();
+        retrievedService.Should().BeSameAs(service);
+        retrievedService.GetMessage().Should().Be("Test message");
+    }
+
+    [Fact]
+    public void Create_WithValueTypes_HandlesCorrectly()
+    {
+        // Arrange
+        var structValue = new TestStruct { Value = 42, Text = "test" };
+        var intValue = 100;
+
+        // Act
+        var flex = Flex.Create(structValue, intValue);
+
+        // Assert
+        flex.Should().NotBeNull();
+        var retrievedStruct = flex.GetOrCreate<TestStruct>();
+        retrievedStruct.Value.Should().Be(42);
+        retrievedStruct.Text.Should().Be("test");
+        
+        var retrievedInt = flex.GetOrCreate<int>();
+        retrievedInt.Should().Be(100);
+    }
+
+    [Fact]
+    public void FlexData_PropertyAccessible()
+    {
+        // Arrange
+        var flex = new Flex();
+        var testData = "test data";
+
+        // Act
+        flex.FlexData = testData;
+
+        // Assert
+        flex.FlexData.Should().Be(testData);
+    }
+}

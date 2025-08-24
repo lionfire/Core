@@ -1,0 +1,84 @@
+using FluentAssertions;
+using LionFire.FlexObjects;
+using LionFire.FlexObjects.Tests.Fixtures;
+using Xunit;
+
+namespace LionFire.FlexObjects.Tests.Unit.Options;
+
+public class FlexOptionsTests
+{
+    [Fact]
+    public void Constructor_DefaultValues_PropertiesSetCorrectly()
+    {
+        // Arrange & Act
+        var options = new FlexOptions();
+
+        // Assert
+        options.SingleType.Should().BeNull();
+        options.IsSingleType.Should().BeFalse();
+    }
+
+    [Fact]
+    public void SingleType_SetToType_UpdatesIsSingleType()
+    {
+        // Arrange
+        var options = new FlexOptions();
+
+        // Act
+        options.SingleType = typeof(TestPerson);
+
+        // Assert
+        options.SingleType.Should().Be(typeof(TestPerson));
+        options.IsSingleType.Should().BeTrue();
+    }
+
+    [Fact]
+    public void SingleType_SetToNull_UpdatesIsSingleType()
+    {
+        // Arrange
+        var options = new FlexOptions { SingleType = typeof(TestPerson) };
+
+        // Act
+        options.SingleType = null;
+
+        // Assert
+        options.SingleType.Should().BeNull();
+        options.IsSingleType.Should().BeFalse();
+    }
+
+    [Theory]
+    [InlineData(typeof(string))]
+    [InlineData(typeof(int))]
+    [InlineData(typeof(TestPerson))]
+    [InlineData(typeof(TestProduct))]
+    public void SingleType_WithVariousTypes_StoresCorrectly(Type type)
+    {
+        // Arrange
+        var options = new FlexOptions();
+
+        // Act
+        options.SingleType = type;
+
+        // Assert
+        options.SingleType.Should().Be(type);
+        options.IsSingleType.Should().BeTrue();
+    }
+
+    [Fact]
+    public void IsSingleType_ReadOnlyProperty_ReflectsSingleTypeState()
+    {
+        // Arrange
+        var options = new FlexOptions();
+
+        // Act & Assert - Initially false
+        options.IsSingleType.Should().BeFalse();
+
+        // Act & Assert - After setting type
+        options.SingleType = typeof(string);
+        options.IsSingleType.Should().BeTrue();
+
+        // Act & Assert - After clearing type
+        options.SingleType = null;
+        options.IsSingleType.Should().BeFalse();
+    }
+}

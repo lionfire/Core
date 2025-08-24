@@ -1,0 +1,109 @@
+using FluentAssertions;
+using LionFire.FlexObjects;
+using LionFire.FlexObjects.Tests.Fixtures;
+using Xunit;
+
+namespace LionFire.FlexObjects.Tests.Unit.Core;
+
+public class IFlexTests
+{
+    [Fact]
+    public void FlexData_GetSet_WorksCorrectly()
+    {
+        // Arrange
+        var flex = new TestFlexObject();
+        var testData = FlexTestHelpers.CreateDefaultPerson();
+
+        // Act
+        flex.FlexData = testData;
+
+        // Assert
+        flex.FlexData.Should().BeSameAs(testData);
+    }
+
+    [Fact]
+    public void FlexData_InitialValue_IsNull()
+    {
+        // Arrange & Act
+        var flex = new TestFlexObject();
+
+        // Assert
+        flex.FlexData.Should().BeNull();
+    }
+
+    [Theory]
+    [InlineData("test string")]
+    [InlineData(42)]
+    [InlineData(3.14)]
+    [InlineData(true)]
+    public void FlexData_CanStoreVariousTypes(object value)
+    {
+        // Arrange
+        var flex = new TestFlexObject();
+
+        // Act
+        flex.FlexData = value;
+
+        // Assert
+        flex.FlexData.Should().Be(value);
+        flex.FlexData.Should().BeOfType(value.GetType());
+    }
+
+    [Fact]
+    public void FlexData_CanStoreNull()
+    {
+        // Arrange
+        var flex = new TestFlexObject();
+        flex.FlexData = "initial value";
+
+        // Act
+        flex.FlexData = null;
+
+        // Assert
+        flex.FlexData.Should().BeNull();
+    }
+
+    [Fact]
+    public void FlexData_CanStoreComplexObjects()
+    {
+        // Arrange
+        var flex = new TestFlexObject();
+        var person = FlexTestHelpers.CreateDefaultPerson();
+
+        // Act
+        flex.FlexData = person;
+
+        // Assert
+        flex.FlexData.Should().BeSameAs(person);
+        var retrievedPerson = flex.FlexData as TestPerson;
+        retrievedPerson.Should().NotBeNull();
+        retrievedPerson!.Name.Should().Be(TestConstants.DefaultPersonName);
+        retrievedPerson.Age.Should().Be(TestConstants.DefaultPersonAge);
+    }
+
+    [Fact]
+    public void IFlexWithMeta_HasMetaProperty()
+    {
+        // Arrange & Act
+        var flexWithMeta = new TestFlexWithMeta();
+
+        // Assert
+        flexWithMeta.Meta.Should().NotBeNull();
+        flexWithMeta.Meta.Should().BeAssignableTo<IFlex>();
+    }
+
+    [Fact]
+    public void IFlexWithMeta_MetaProperty_CanBeSet()
+    {
+        // Arrange
+        var flexWithMeta = new TestFlexWithMeta();
+        var newMeta = new FlexObject("meta data");
+
+        // Act
+        flexWithMeta.Meta = newMeta;
+
+        // Assert
+        flexWithMeta.Meta.Should().BeSameAs(newMeta);
+        flexWithMeta.Meta.FlexData.Should().Be("meta data");
+    }
+}

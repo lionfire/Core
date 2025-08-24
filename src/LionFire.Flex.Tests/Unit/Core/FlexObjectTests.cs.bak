@@ -1,0 +1,157 @@
+using FluentAssertions;
+using LionFire.FlexObjects;
+using LionFire.FlexObjects.Tests.Fixtures;
+using Xunit;
+
+namespace LionFire.FlexObjects.Tests.Unit.Core;
+
+public class FlexObjectTests
+{
+    [Fact]
+    public void Constructor_Default_CreatesEmptyFlex()
+    {
+        // Arrange & Act
+        var flex = new FlexObject();
+
+        // Assert
+        flex.FlexData.Should().BeNull();
+        flex.ToString().Should().Be("(null)");
+        FlexTestHelpers.AssertFlexEmpty(flex);
+    }
+
+    [Theory]
+    [MemberData(nameof(FlexTestHelpers.GetVariousTypeObjects), MemberType = typeof(FlexTestHelpers))]
+    public void Constructor_WithValue_StoresValue(object value)
+    {
+        // Arrange & Act
+        var flex = new FlexObject(value);
+
+        // Assert
+        flex.FlexData.Should().Be(value);
+        flex.ToString().Should().Be(value.ToString());
+        FlexTestHelpers.AssertFlexNotEmpty(flex);
+    }
+
+    [Fact]
+    public void Constructor_WithNull_StoresNull()
+    {
+        // Arrange & Act
+        var flex = new FlexObject(null);
+
+        // Assert
+        flex.FlexData.Should().BeNull();
+        flex.ToString().Should().Be("(null)");
+    }
+
+    [Fact]
+    public void ToString_WithNullFlexData_ReturnsNullString()
+    {
+        // Arrange
+        var flex = new FlexObject();
+
+        // Act
+        var result = flex.ToString();
+
+        // Assert
+        result.Should().Be("(null)");
+    }
+
+    [Fact]
+    public void ToString_WithStringValue_ReturnsStringValue()
+    {
+        // Arrange
+        var testString = "Hello, World!";
+        var flex = new FlexObject(testString);
+
+        // Act
+        var result = flex.ToString();
+
+        // Assert
+        result.Should().Be(testString);
+    }
+
+    [Fact]
+    public void ToString_WithNumericValue_ReturnsNumericString()
+    {
+        // Arrange
+        var testNumber = 42;
+        var flex = new FlexObject(testNumber);
+
+        // Act
+        var result = flex.ToString();
+
+        // Assert
+        result.Should().Be("42");
+    }
+
+    [Fact]
+    public void ToString_WithComplexObject_ReturnsObjectToString()
+    {
+        // Arrange
+        var person = FlexTestHelpers.CreateDefaultPerson();
+        var flex = new FlexObject(person);
+
+        // Act
+        var result = flex.ToString();
+
+        // Assert
+        result.Should().Be(person.ToString());
+        result.Should().NotBeNullOrEmpty();
+    }
+
+    [Fact]
+    public void ToString_WithObjectThatReturnsNull_ReturnsEmptyString()
+    {
+        // Arrange
+        var objectWithNullToString = new TestObjectWithNullToString();
+        var flex = new FlexObject(objectWithNullToString);
+
+        // Act
+        var result = flex.ToString();
+
+        // Assert
+        result.Should().Be("");
+    }
+
+    [Fact]
+    public void FlexData_SetAndGet_WorksCorrectly()
+    {
+        // Arrange
+        var flex = new FlexObject();
+        var testData = new { Name = "Test", Value = 123 };
+
+        // Act
+        flex.FlexData = testData;
+
+        // Assert
+        flex.FlexData.Should().BeSameAs(testData);
+    }
+
+    [Fact]
+    public void FlexData_CanBeChangedMultipleTimes()
+    {
+        // Arrange
+        var flex = new FlexObject("initial");
+
+        // Act & Assert - First change
+        flex.FlexData = 42;
+        flex.FlexData.Should().Be(42);
+        flex.ToString().Should().Be("42");
+
+        // Act & Assert - Second change
+        var person = FlexTestHelpers.CreateDefaultPerson();
+        flex.FlexData = person;
+        flex.FlexData.Should().BeSameAs(person);
+        flex.ToString().Should().Be(person.ToString());
+
+        // Act & Assert - Third change to null
+        flex.FlexData = null;
+        flex.FlexData.Should().BeNull();
+        flex.ToString().Should().Be("(null)");
+    }
+
+    private class TestObjectWithNullToString
+    {
+        public override string? ToString() => null;
+    }
+}

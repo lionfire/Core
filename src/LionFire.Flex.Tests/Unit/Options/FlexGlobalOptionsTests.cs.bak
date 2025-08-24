@@ -1,0 +1,247 @@
+using FluentAssertions;
+using LionFire.FlexObjects;
+using LionFire.FlexObjects.Tests.Fixtures;
+using Xunit;
+
+namespace LionFire.FlexObjects.Tests.Unit.Options;
+
+public class FlexGlobalOptionsTests
+{
+    [Fact]
+    public void DefaultCreateFactory_DefaultImplementation_CreatesInstances()
+    {
+        // Arrange
+        var originalFactory = FlexGlobalOptions.DefaultCreateFactory;
+
+        try
+        {
+            // Act
+            var stringInstance = FlexGlobalOptions.DefaultCreateFactory(typeof(string));
+            var personInstance = FlexGlobalOptions.DefaultCreateFactory(typeof(TestPerson));
+
+            // Assert
+            stringInstance.Should().BeOfType<string>();
+            stringInstance.Should().Be(string.Empty);
+            
+            personInstance.Should().BeOfType<TestPerson>();
+            personInstance.Should().NotBeNull();
+        }
+        finally
+        {
+            // Cleanup - Restore original factory
+            FlexGlobalOptions.DefaultCreateFactory = originalFactory;
+        }
+    }
+
+    [Fact]
+    public void DefaultCreateFactory_CanBeCustomized()
+    {
+        // Arrange
+        var originalFactory = FlexGlobalOptions.DefaultCreateFactory;
+        var customPerson = new TestPerson { Name = "Custom", Age = 99 };
+
+        try
+        {
+            FlexGlobalOptions.DefaultCreateFactory = type =>
+            {
+                if (type == typeof(TestPerson))
+                    return customPerson;
+                return Activator.CreateInstance(type) ?? throw new InvalidOperationException($"Failed to create {type}");
+            };
+
+            // Act
+            var result = FlexGlobalOptions.DefaultCreateFactory(typeof(TestPerson));
+
+            // Assert
+            result.Should().BeSameAs(customPerson);
+        }
+        finally
+        {
+            // Cleanup
+            FlexGlobalOptions.DefaultCreateFactory = originalFactory;
+        }
+    }
+
+    [Fact]
+    public void DefaultCreateFactory_WithInvalidType_ThrowsException()
+    {
+        // Arrange
+        var originalFactory = FlexGlobalOptions.DefaultCreateFactory;
+
+        try
+        {
+            // Act & Assert
+            var action = () => FlexGlobalOptions.DefaultCreateFactory(typeof(ITestService));
+            action.Should().Throw<InvalidOperationException>()
+                  .WithMessage("Failed to create instance of*");
+        }
+        finally
+        {
+            // Cleanup
+            FlexGlobalOptions.DefaultCreateFactory = originalFactory;
+        }
+    }
+
+    [Fact]
+    public void DefaultCreateWithOptionsFactory_DefaultImplementation_CreatesInstances()
+    {
+        // Arrange
+        var originalFactory = FlexGlobalOptions.DefaultCreateWithOptionsFactory;
+
+        try
+        {
+            var args = new object[] { "TestName", 30 };
+
+            // Act
+            var stringInstance = FlexGlobalOptions.DefaultCreateWithOptionsFactory(typeof(string), new object[] { "test".ToCharArray() });
+
+            // Assert
+            stringInstance.Should().BeOfType<string>();
+            stringInstance.Should().Be("test");
+        }
+        finally
+        {
+            // Cleanup
+            FlexGlobalOptions.DefaultCreateWithOptionsFactory = originalFactory;
+        }
+    }
+
+    [Fact]
+    public void DefaultCreateWithOptionsFactory_CanBeCustomized()
+    {
+        // Arrange
+        var originalFactory = FlexGlobalOptions.DefaultCreateWithOptionsFactory;
+        var customProduct = FlexTestHelpers.CreateDefaultProduct();
+
+        try
+        {
+            FlexGlobalOptions.DefaultCreateWithOptionsFactory = (type, args) =>
+            {
+                if (type == typeof(TestProduct))
+                    return customProduct;
+                return Activator.CreateInstance(type, args) ?? throw new InvalidOperationException($"Failed to create {type}");
+            };
+
+            // Act
+            var result = FlexGlobalOptions.DefaultCreateWithOptionsFactory(typeof(TestProduct), new object[0]);
+
+            // Assert
+            result.Should().BeSameAs(customProduct);
+        }
+        finally
+        {
+            // Cleanup
+            FlexGlobalOptions.DefaultCreateWithOptionsFactory = originalFactory;
+        }
+    }
+
+    [Fact]
+    public void DefaultCreateWithOptionsFactory_WithInvalidTypeAndArgs_ThrowsException()
+    {
+        // Arrange
+        var originalFactory = FlexGlobalOptions.DefaultCreateWithOptionsFactory;
+
+        try
+        {
+            // Act & Assert
+            var action = () => FlexGlobalOptions.DefaultCreateWithOptionsFactory(typeof(ITestService), new object[0]);
+            action.Should().Throw<InvalidOperationException>()
+                  .WithMessage("Failed to create instance of*");
+        }
+        finally
+        {
+            // Cleanup
+            FlexGlobalOptions.DefaultCreateWithOptionsFactory = originalFactory;
+        }
+    }
+
+    [Fact]
+    public void DefaultFactories_AreNotNull_Initially()
+    {
+        // Act & Assert
+        FlexGlobalOptions.DefaultCreateFactory.Should().NotBeNull();
+        FlexGlobalOptions.DefaultCreateWithOptionsFactory.Should().NotBeNull();
+    }
+
+    [Fact]
+    public void DefaultCreateFactory_WithSimpleTypes_CreatesCorrectly()
+    {
+        // Arrange
+        var originalFactory = FlexGlobalOptions.DefaultCreateFactory;
+
+        try
+        {
+            // Act & Assert
+            var intInstance = FlexGlobalOptions.DefaultCreateFactory(typeof(int));
+            intInstance.Should().BeOfType<int>().And.Be(0);
+
+            var boolInstance = FlexGlobalOptions.DefaultCreateFactory(typeof(bool));
+            boolInstance.Should().BeOfType<bool>().And.Be(false);
+
+            var dateTimeInstance = FlexGlobalOptions.DefaultCreateFactory(typeof(DateTime));
+            dateTimeInstance.Should().BeOfType<DateTime>().And.Be(default(DateTime));
+
+            var listInstance = FlexGlobalOptions.DefaultCreateFactory(typeof(List<int>));
+            listInstance.Should().BeOfType<List<int>>().And.BeAssignableTo<IList<int>>();
+        }
+        finally
+        {
+            // Cleanup
+            FlexGlobalOptions.DefaultCreateFactory = originalFactory;
+        }
+    }
+
+    [Fact]
+    public void DefaultCreateWithOptionsFactory_WithParameterizedConstructor_CreatesCorrectly()
+    {
+        // Arrange
+        var originalFactory = FlexGlobalOptions.DefaultCreateWithOptionsFactory;
+
+        try
+        {
+            var args = new object[] { "test string" };
+
+            // Act
+            var stringInstance = FlexGlobalOptions.DefaultCreateWithOptionsFactory(typeof(string), args);
+
+            // Assert
+            stringInstance.Should().BeOfType<string>();
+        }
+        finally
+        {
+            // Cleanup
+            FlexGlobalOptions.DefaultCreateWithOptionsFactory = originalFactory;
+        }
+    }
+
+    [Fact]
+    public void DefaultFactories_CanBeSetToNull_AndRestored()
+    {
+        // Arrange
+        var originalCreateFactory = FlexGlobalOptions.DefaultCreateFactory;
+        var originalCreateWithOptionsFactory = FlexGlobalOptions.DefaultCreateWithOptionsFactory;
+
+        try
+        {
+            // Act - Set to custom implementations
+            FlexGlobalOptions.DefaultCreateFactory = _ => new TestPerson();
+            FlexGlobalOptions.DefaultCreateWithOptionsFactory = (_, __) => new TestProduct();
+
+            // Assert
+            FlexGlobalOptions.DefaultCreateFactory.Should().NotBeSameAs(originalCreateFactory);
+            FlexGlobalOptions.DefaultCreateWithOptionsFactory.Should().NotBeSameAs(originalCreateWithOptionsFactory);
+
+            var result1 = FlexGlobalOptions.DefaultCreateFactory(typeof(string));
+            result1.Should().BeOfType<TestPerson>();
+
+            var result2 = FlexGlobalOptions.DefaultCreateWithOptionsFactory(typeof(int), new object[0]);
+            result2.Should().BeOfType<TestProduct>();
+        }
+        finally
+        {
+            // Cleanup - Restore originals
+            FlexGlobalOptions.DefaultCreateFactory = originalCreateFactory;
+            FlexGlobalOptions.DefaultCreateWithOptionsFactory = originalCreateWithOptionsFactory;
+        }
+    }
+}

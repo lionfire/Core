@@ -1,0 +1,310 @@
+using FluentAssertions;
+using LionFire.FlexObjects;
+using LionFire.FlexObjects.Tests.Fixtures;
+using System.Collections.Concurrent;
+using Xunit;
+
+namespace LionFire.FlexObjects.Tests.Unit.Dictionaries;
+
+public class FlexDictionaryTests
+{
+    [Fact]
+    public void Constructor_CreatesEmptyDictionary()
+    {
+        // Arrange & Act
+        var flexDict = new FlexDictionary<string>();
+
+        // Assert
+        flexDict.Values.Should().NotBeNull();
+        flexDict.Values.Should().BeEmpty();
+        flexDict.FlexDictionary.Should().BeSameAs(flexDict);
+    }
+
+    [Fact]
+    public void GetFlex_WithNewKey_CreatesNewFlexObject()
+    {
+        // Arrange
+        var flexDict = new FlexDictionary<string>();
+        var key = "testKey";
+
+        // Act
+        var flex = flexDict.GetFlex(key);
+
+        // Assert
+        flex.Should().NotBeNull();
+        flex.Should().BeOfType<FlexObject>();
+        FlexTestHelpers.AssertFlexEmpty(flex);
+        flexDict.Values.Should().ContainKey(key);
+        flexDict.Values[key].Should().BeSameAs(flex);
+    }
+
+    [Fact]
+    public void GetFlex_WithExistingKey_ReturnsSameFlexObject()
+    {
+        // Arrange
+        var flexDict = new FlexDictionary<string>();
+        var key = "testKey";
+
+        // Act
+        var flex1 = flexDict.GetFlex(key);
+        var flex2 = flexDict.GetFlex(key);
+
+        // Assert
+        flex1.Should().BeSameAs(flex2);
+        flexDict.Values.Should().HaveCount(1);
+    }
+
+    [Fact]
+    public void QueryFlex_WithNonExistentKey_ReturnsNull()
+    {
+        // Arrange
+        var flexDict = new FlexDictionary<string>();
+        var key = "nonExistentKey";
+
+        // Act
+        var result = flexDict.QueryFlex(key);
+
+        // Assert
+        result.Should().BeNull();
+        flexDict.Values.Should().BeEmpty();
+    }
+
+    [Fact]
+    public void QueryFlex_WithExistingKey_ReturnsFlexObject()
+    {
+        // Arrange
+        var flexDict = new FlexDictionary<string>();
+        var key = "testKey";
+        var originalFlex = flexDict.GetFlex(key);
+
+        // Act
+        var queriedFlex = flexDict.QueryFlex(key);
+
+        // Assert
+        queriedFlex.Should().BeSameAs(originalFlex);
+        queriedFlex.Should().NotBeNull();
+    }
+
+    [Fact]
+    public void Add_AddsValueToFlexAtKey()
+    {
+        // Arrange
+        var flexDict = new FlexDictionary<string>();
+        var key = "testKey";
+        var person = FlexTestHelpers.CreateDefaultPerson();
+
+        // Act
+        flexDict.Add(key, person);
+
+        // Assert
+        var flex = flexDict.QueryFlex(key);
+        flex.Should().NotBeNull();
+        var retrievedPerson = flex!.Query<TestPerson>();
+        retrievedPerson.Should().BeEquivalentTo(person);
+    }
+
+    [Theory]
+    [InlineData("key1", "value1")]
+    [InlineData("key2", 42)]
+    [InlineData("key3", 3.14)]
+    [InlineData("key4", true)]
+    public void Add_WithVariousTypes_StoresCorrectly(string key, object value)
+    {
+        // Arrange
+        var flexDict = new FlexDictionary<string>();
+
+        // Act
+        flexDict.Add(key, value);
+
+        // Assert
+        var flex = flexDict.QueryFlex(key);
+        flex.Should().NotBeNull();
+        flex!.FlexData.Should().BeOfType(value.GetType());
+        // Note: The actual retrieval depends on the Add<T> implementation in IFlexExtensions
+    }
+
+    [Fact]
+    public void Add_MultipleDifferentKeys_CreatesMultipleFlexObjects()
+    {
+        // Arrange
+        var flexDict = new FlexDictionary<string>();
+        var person = FlexTestHelpers.CreateDefaultPerson();
+        var product = FlexTestHelpers.CreateDefaultProduct();
+
+        // Act
+        flexDict.Add("person", person);
+        flexDict.Add("product", product);
+
+        // Assert
+        flexDict.Values.Should().HaveCount(2);
+        flexDict.Values.Should().ContainKeys("person", "product");
+        
+        var personFlex = flexDict.QueryFlex("person");
+        var productFlex = flexDict.QueryFlex("product");
+        
+        personFlex.Should().NotBeSameAs(productFlex);
+        personFlex!.Query<TestPerson>().Should().BeEquivalentTo(person);
+        productFlex!.Query<TestProduct>().Should().BeEquivalentTo(product);
+    }
+
+    [Fact]
+    public void Add_SameKeyDifferentValues_AddsToSameFlex()
+    {
+        // Arrange
+        var flexDict = new FlexDictionary<string>();
+        var key = "testKey";
+        var person = FlexTestHelpers.CreateDefaultPerson();
+        var product = FlexTestHelpers.CreateDefaultProduct();
+
+        // Act
+        flexDict.Add(key, person);
+        flexDict.Add(key, product);
+
+        // Assert
+        flexDict.Values.Should().HaveCount(1);
+        var flex = flexDict.QueryFlex(key);
+        flex.Should().NotBeNull();
+        
+        // Both values should be accessible from the same flex
+        flex!.Query<TestPerson>().Should().BeEquivalentTo(person);
+        flex.Query<TestProduct>().Should().BeEquivalentTo(product);
+    }
+
+    [Fact]
+    public void GetFlex_ConcurrentAccess_ThreadSafe()
+    {
+        // Arrange
+        var flexDict = new FlexDictionary<string>();
+        var tasks = new List<Task<IFlex>>();
+        var key = "concurrentKey";
+
+        // Act - Create multiple concurrent tasks that try to get the same key
+        for (int i = 0; i < 10; i++)
+        {
+            tasks.Add(Task.Run(() => flexDict.GetFlex(key)));
+        }
+
+        var results = Task.WhenAll(tasks).Result;
+
+        // Assert - All tasks should return the same instance
+        results.Should().AllBe(results[0]);
+        flexDict.Values.Should().HaveCount(1);
+    }
+
+    [Fact]
+    public void Add_ConcurrentAccess_ThreadSafe()
+    {
+        // Arrange
+        var flexDict = new FlexDictionary<string>();
+        var tasks = new List<Task>();
+
+        // Act - Add values concurrently to different keys
+        for (int i = 0; i < 10; i++)
+        {
+            int index = i; // Capture for closure
+            tasks.Add(Task.Run(() => flexDict.Add($"key{index}", $"value{index}")));
+        }
+
+        Task.WaitAll(tasks.ToArray());
+
+        // Assert
+        flexDict.Values.Should().HaveCount(10);
+        for (int i = 0; i < 10; i++)
+        {
+            flexDict.Values.Should().ContainKey($"key{i}");
+        }
+    }
+
+    [Fact]
+    public void Values_IsConcurrentDictionary()
+    {
+        // Arrange
+        var flexDict = new FlexDictionary<string>();
+
+        // Act & Assert
+        flexDict.Values.Should().BeOfType<ConcurrentDictionary<string, IFlex>>();
+    }
+
+    [Fact]
+    public void FlexDictionary_PropertyReturnsItself()
+    {
+        // Arrange
+        var flexDict = new FlexDictionary<string>();
+
+        // Act
+        var result = ((IHasFlexDictionary<string>)flexDict).FlexDictionary;
+
+        // Assert
+        result.Should().BeSameAs(flexDict);
+    }
+
+    [Fact]
+    public void GetFlex_WithIntegerKey_WorksCorrectly()
+    {
+        // Arrange
+        var flexDict = new FlexDictionary<int>();
+        var key = 42;
+
+        // Act
+        var flex = flexDict.GetFlex(key);
+
+        // Assert
+        flex.Should().NotBeNull();
+        flexDict.Values.Should().ContainKey(key);
+    }
+
+    [Fact]
+    public void GetFlex_WithCustomObjectKey_WorksCorrectly()
+    {
+        // Arrange
+        var flexDict = new FlexDictionary<TestRecord>();
+        var key = new TestRecord("keyValue", 123);
+
+        // Act
+        var flex = flexDict.GetFlex(key);
+
+        // Assert
+        flex.Should().NotBeNull();
+        flexDict.Values.Should().ContainKey(key);
+    }
+
+    [Fact]
+    public void Add_WithNullValue_HandlesGracefully()
+    {
+        // Arrange
+        var flexDict = new FlexDictionary<string>();
+        var key = "nullKey";
+
+        // Act
+        flexDict.Add<string?>(key, null);
+
+        // Assert
+        var flex = flexDict.QueryFlex(key);
+        flex.Should().NotBeNull();
+        // The behavior with null values depends on the Add<T> implementation
+    }
+
+    [Fact]
+    public void QueryFlex_AfterAddingMultipleItems_ReturnsCorrectFlex()
+    {
+        // Arrange
+        var flexDict = new FlexDictionary<string>();
+        var keys = new[] { "key1", "key2", "key3" };
+        var values = new[] { "value1", "value2", "value3" };
+
+        // Act
+        for (int i = 0; i < keys.Length; i++)
+        {
+            flexDict.Add(keys[i], values[i]);
+        }
+
+        // Assert
+        for (int i = 0; i < keys.Length; i++)
+        {
+            var flex = flexDict.QueryFlex(keys[i]);
+            flex.Should().NotBeNull();
+        }
+        
+        flexDict.Values.Should().HaveCount(3);
+    }
+}

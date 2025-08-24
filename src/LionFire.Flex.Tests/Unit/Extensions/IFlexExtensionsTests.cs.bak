@@ -1,0 +1,536 @@
+using FluentAssertions;
+using LionFire.FlexObjects;
+using LionFire.FlexObjects.Tests.Fixtures;
+using Xunit;
+
+namespace LionFire.FlexObjects.Tests.Unit.Extensions;
+
+public class IFlexExtensionsTests
+{
+    #region Meta Tests
+
+    [Fact]
+    public void Meta_WithStandardFlex_CreatesMetadata()
+    {
+        // Arrange
+        var flex = new FlexObject();
+
+        // Act
+        var meta = flex.Meta();
+
+        // Assert
+        meta.Should().NotBeNull();
+        meta.Should().BeAssignableTo<IFlex>();
+    }
+
+    [Fact]
+    public void Meta_WithIFlexWithMeta_UsesExistingMeta()
+    {
+        // Arrange
+        var flexWithMeta = new TestFlexWithMeta();
+        var expectedMeta = new FlexObject("existing meta");
+        flexWithMeta.Meta = expectedMeta;
+
+        // Act
+        var meta = flexWithMeta.Meta();
+
+        // Assert
+        meta.Should().BeSameAs(expectedMeta);
+        meta.FlexData.Should().Be("existing meta");
+    }
+
+    [Fact]
+    public void Meta_MultipleCalls_ReturnsSameInstance()
+    {
+        // Arrange
+        var flex = new FlexObject();
+
+        // Act
+        var meta1 = flex.Meta();
+        var meta2 = flex.Meta();
+
+        // Assert
+        meta1.Should().BeSameAs(meta2);
+    }
+
+    #endregion
+
+    #region IsEmpty Tests
+
+    [Fact]
+    public void IsEmpty_WithNullFlexData_ReturnsTrue()
+    {
+        // Arrange
+        var flex = new FlexObject();
+
+        // Act & Assert
+        flex.IsEmpty().Should().BeTrue();
+    }
+
+    [Fact]
+    public void IsEmpty_WithNonNullFlexData_ReturnsFalse()
+    {
+        // Arrange
+        var flex = new FlexObject("data");
+
+        // Act & Assert
+        flex.IsEmpty().Should().BeFalse();
+    }
+
+    #endregion
+
+    #region Type System Tests
+
+    [Fact]
+    public void SingleValueType_WithNullFlexData_ReturnsNull()
+    {
+        // Arrange
+        var flex = new FlexObject();
+
+        // Act
+        var type = flex.SingleValueType();
+
+        // Assert
+        type.Should().BeNull();
+    }
+
+    [Theory]
+    [InlineData("test", typeof(string))]
+    [InlineData(42, typeof(int))]
+    [InlineData(3.14, typeof(double))]
+    [InlineData(true, typeof(bool))]
+    public void SingleValueType_WithDirectValue_ReturnsCorrectType(object value, Type expectedType)
+    {
+        // Arrange
+        var flex = new FlexObject(value);
+
+        // Act
+        var type = flex.SingleValueType();
+
+        // Assert
+        type.Should().Be(expectedType);
+    }
+
+    [Fact]
+    public void IsSingleValue_WithNonImplementationType_ReturnsTrue()
+    {
+        // Arrange
+        var flex = new FlexObject("test");
+
+        // Act & Assert
+        flex.IsSingleValue().Should().BeTrue();
+    }
+
+    [Fact]
+    public void SingleValueOrDefault_WithDirectValue_ReturnsValue()
+    {
+        // Arrange
+        var testValue = "test value";
+        var flex = new FlexObject(testValue);
+
+        // Act
+        var result = flex.SingleValueOrDefault();
+
+        // Assert
+        result.Should().Be(testValue);
+    }
+
+    [Fact]
+    public void SingleValueOrDefault_WithNullFlexData_ReturnsNull()
+    {
+        // Arrange
+        var flex = new FlexObject();
+
+        // Act
+        var result = flex.SingleValueOrDefault();
+
+        // Assert
+        result.Should().BeNull();
+    }
+
+    #endregion
+
+    #region GetOrCreate Tests
+
+    [Fact]
+    public void GetOrCreate_WithExistingValue_ReturnsExistingValue()
+    {
+        // Arrange
+        var flex = new FlexObject();
+        var person = FlexTestHelpers.CreateDefaultPerson();
+        flex.Add(person);
+
+        // Act
+        var result = flex.GetOrCreate<TestPerson>();
+
+        // Assert
+        result.Should().BeEquivalentTo(person);
+    }
+
+    [Fact]
+    public void GetOrCreate_WithNoExistingValue_CreatesNewValue()
+    {
+        // Arrange
+        var flex = new FlexObject();
+
+        // Act
+        var result = flex.GetOrCreate<TestPerson>();
+
+        // Assert
+        result.Should().NotBeNull();
+        result.Should().BeOfType<TestPerson>();
+    }
+
+    [Fact]
+    public void GetOrCreate_WithCustomFactory_UsesFactory()
+    {
+        // Arrange
+        var flex = new FlexObject();
+        var expectedPerson = new TestPerson { Name = "Custom", Age = 99 };
+
+        // Act
+        var result = flex.GetOrCreate(() => expectedPerson);
+
+        // Assert
+        result.Should().BeSameAs(expectedPerson);
+    }
+
+    [Fact]
+    public void GetOrCreate_ConcurrentCalls_CreatesOnlyOnce()
+    {
+        // Arrange
+        var flex = new FlexObject();
+
+        // Act
+        var result1 = flex.GetOrCreate<TestPerson>();
+        var result2 = flex.GetOrCreate<TestPerson>();
+
+        // Assert
+        result1.Should().BeSameAs(result2);
+    }
+
+    #endregion
+
+    #region Query Tests
+
+    [Fact]
+    public void Query_WithExistingValue_ReturnsValue()
+    {
+        // Arrange
+        var testValue = "test string";
+        var flex = new FlexObject(testValue);
+
+        // Act
+        var result = flex.Query<string>();
+
+        // Assert
+        result.Should().Be(testValue);
+    }
+
+    [Fact]
+    public void Query_WithNonExistingValue_ReturnsDefault()
+    {
+        // Arrange
+        var flex = new FlexObject();
+
+        // Act
+        var result = flex.Query<TestPerson>();
+
+        // Assert
+        result.Should().BeNull();
+    }
+
+    [Fact]
+    public void Query_OutParameter_WithExistingValue_ReturnsTrueAndValue()
+    {
+        // Arrange
+        var testValue = 42;
+        var flex = new FlexObject(testValue);
+
+        // Act
+        var found = flex.Query<int>(out var result);
+
+        // Assert
+        found.Should().BeTrue();
+        result.Should().Be(testValue);
+    }
+
+    [Fact]
+    public void Query_OutParameter_WithNonExistingValue_ReturnsFalseAndDefault()
+    {
+        // Arrange
+        var flex = new FlexObject();
+
+        // Act
+        var found = flex.Query<TestPerson>(out var result);
+
+        // Assert
+        found.Should().BeFalse();
+        result.Should().BeNull();
+    }
+
+    #endregion
+
+    #region Add Tests
+
+    [Fact]
+    public void Add_ToEmptyFlex_AddsValue()
+    {
+        // Arrange
+        var flex = new FlexObject();
+        var person = FlexTestHelpers.CreateDefaultPerson();
+
+        // Act
+        flex.Add(person);
+
+        // Assert
+        var retrieved = flex.Query<TestPerson>();
+        retrieved.Should().BeEquivalentTo(person);
+    }
+
+    [Fact]
+    public void Add_MultipleOfSameType_CreatesListWhenAllowed()
+    {
+        // Arrange
+        var flex = new FlexObject();
+        var person1 = new TestPerson { Name = "Alice", Age = 30 };
+        var person2 = new TestPerson { Name = "Bob", Age = 25 };
+
+        // Act
+        flex.Add(person1, allowMultipleOfSameType: true);
+        flex.Add(person2, allowMultipleOfSameType: true);
+
+        // Assert
+        flex.FlexData.Should().BeOfType<List<TestPerson>>();
+        var list = (List<TestPerson>)flex.FlexData!;
+        list.Should().HaveCount(2);
+        list.Should().Contain(person1);
+        list.Should().Contain(person2);
+    }
+
+    [Fact]
+    public void Add_MultipleOfSameType_ThrowsWhenNotAllowed()
+    {
+        // Arrange
+        var flex = new FlexObject();
+        var person1 = FlexTestHelpers.CreateDefaultPerson();
+        var person2 = new TestPerson { Name = "Different", Age = 99 };
+        flex.Add(person1);
+
+        // Act & Assert
+        var action = () => flex.Add(person2, allowMultipleOfSameType: false);
+        action.Should().Throw<AlreadySetException>();
+    }
+
+    [Fact]
+    public void AddSingle_WithExistingType_ThrowsException()
+    {
+        // Arrange
+        var flex = new FlexObject();
+        var person1 = FlexTestHelpers.CreateDefaultPerson();
+        var person2 = new TestPerson { Name = "Different", Age = 99 };
+        flex.Add(person1);
+
+        // Act & Assert
+        var action = () => flex.AddSingle(person2);
+        action.Should().Throw<AlreadySetException>();
+    }
+
+    [Fact]
+    public void AddRange_WithMultipleObjects_AddsAllObjects()
+    {
+        // Arrange
+        var flex = new FlexObject();
+        var persons = new[]
+        {
+            new TestPerson { Name = "Alice", Age = 30 },
+            new TestPerson { Name = "Bob", Age = 25 },
+            new TestPerson { Name = "Charlie", Age = 35 }
+        };
+
+        // Act
+        flex.AddRange(persons);
+
+        // Assert
+        flex.FlexData.Should().BeOfType<List<TestPerson>>();
+        var list = (List<TestPerson>)flex.FlexData!;
+        list.Should().HaveCount(3);
+        list.Should().BeEquivalentTo(persons);
+    }
+
+    #endregion
+
+    #region Set Tests
+
+    [Fact]
+    public void Set_ReplacesExistingValue()
+    {
+        // Arrange
+        var flex = new FlexObject();
+        var person1 = new TestPerson { Name = "Original", Age = 30 };
+        var person2 = new TestPerson { Name = "Replacement", Age = 25 };
+        flex.Add(person1);
+
+        // Act
+        flex.Set(person2);
+
+        // Assert
+        var result = flex.Query<TestPerson>();
+        result.Should().BeEquivalentTo(person2);
+        result!.Name.Should().Be("Replacement");
+    }
+
+    [Fact]
+    public void AddOrReplace_WithExisting_ReplacesValue()
+    {
+        // Arrange
+        var flex = new FlexObject();
+        var person1 = new TestPerson { Name = "Original", Age = 30 };
+        var person2 = new TestPerson { Name = "Replacement", Age = 25 };
+        flex.Add(person1);
+
+        // Act
+        flex.AddOrReplace(person2);
+
+        // Assert
+        var result = flex.Query<TestPerson>();
+        result.Should().BeEquivalentTo(person2);
+    }
+
+    #endregion
+
+    #region Keyed Add/Set Tests
+
+    [Fact]
+    public void Add_WithKey_StoresInDictionary()
+    {
+        // Arrange
+        var flex = new FlexObject();
+        var person = FlexTestHelpers.CreateDefaultPerson();
+
+        // Act
+        flex.Add("primary", person);
+
+        // Assert
+        var result = flex.GetOrCreate<TestPerson>("primary");
+        result.Should().BeEquivalentTo(person);
+    }
+
+    [Fact]
+    public void Set_WithKey_ReplacesInDictionary()
+    {
+        // Arrange
+        var flex = new FlexObject();
+        var person1 = new TestPerson { Name = "Original", Age = 30 };
+        var person2 = new TestPerson { Name = "Replacement", Age = 25 };
+        flex.Add("key", person1);
+
+        // Act
+        flex.Set("key", person2);
+
+        // Assert
+        var result = flex.GetOrCreate<TestPerson>("key");
+        result.Should().BeEquivalentTo(person2);
+    }
+
+    [Fact]
+    public void Add_WithKeyTwice_ThrowsException()
+    {
+        // Arrange
+        var flex = new FlexObject();
+        var person1 = FlexTestHelpers.CreateDefaultPerson();
+        var person2 = new TestPerson { Name = "Different", Age = 99 };
+        flex.Add("key", person1);
+
+        // Act & Assert
+        var action = () => flex.Add("key", person2);
+        action.Should().Throw<AlreadySetException>();
+    }
+
+    #endregion
+
+    #region SetExclusive Tests
+
+    [Fact]
+    public void SetExclusive_OnEmptyFlex_SetsValue()
+    {
+        // Arrange
+        var flex = new FlexObject();
+        var person = FlexTestHelpers.CreateDefaultPerson();
+
+        // Act
+        var wasReplaced = flex.SetExclusive(person);
+
+        // Assert
+        wasReplaced.Should().BeFalse();
+        var result = flex.Query<TestPerson>();
+        result.Should().BeEquivalentTo(person);
+    }
+
+    [Fact]
+    public void SetExclusive_WithExistingValue_ThrowsWhenNotAllowed()
+    {
+        // Arrange
+        var flex = new FlexObject();
+        var person1 = FlexTestHelpers.CreateDefaultPerson();
+        var person2 = new TestPerson { Name = "Different", Age = 99 };
+        flex.SetExclusive(person1);
+
+        // Act & Assert
+        var action = () => flex.SetExclusive(person2, allowReplace: false);
+        action.Should().Throw<AlreadySetException>();
+    }
+
+    [Fact]
+    public void SetExclusive_WithExistingValue_ReplacesWhenAllowed()
+    {
+        // Arrange
+        var flex = new FlexObject();
+        var person1 = FlexTestHelpers.CreateDefaultPerson();
+        var person2 = new TestPerson { Name = "Different", Age = 99 };
+        flex.SetExclusive(person1);
+
+        // Act
+        var wasReplaced = flex.SetExclusive(person2, allowReplace: true, onlyReplaceSameType: false);
+
+        // Assert
+        wasReplaced.Should().BeTrue();
+        var result = flex.Query<TestPerson>();
+        result.Should().BeEquivalentTo(person2);
+    }
+
+    #endregion
+
+    #region AsTypeOrCreateDefault Tests
+
+    [Fact]
+    public void AsTypeOrCreateDefault_WithExistingValue_ReturnsExisting()
+    {
+        // Arrange
+        var flex = new FlexObject();
+        var person = FlexTestHelpers.CreateDefaultPerson();
+        flex.Add(person);
+
+        // Act
+        var result = flex.AsTypeOrCreateDefault<TestPerson>();
+
+        // Assert
+        result.Should().BeEquivalentTo(person);
+    }
+
+    [Fact]
+    public void AsTypeOrCreateDefault_WithFactory_UsesFactory()
+    {
+        // Arrange
+        var flex = new FlexObject();
+        var customPerson = new TestPerson { Name = "Factory", Age = 123 };
+
+        // Act
+        var result = flex.AsTypeOrCreateDefault(() => customPerson);
+
+        // Assert
+        result.Should().BeSameAs(customPerson);
+    }
+
+    #endregion
+}

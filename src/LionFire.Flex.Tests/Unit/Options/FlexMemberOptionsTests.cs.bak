@@ -1,0 +1,77 @@
+using FluentAssertions;
+using LionFire.FlexObjects;
+using Xunit;
+
+namespace LionFire.FlexObjects.Tests.Unit.Options;
+
+public class FlexMemberOptionsTests
+{
+    [Fact]
+    public void Constructor_DefaultValues_PropertiesSetCorrectly()
+    {
+        // Arrange & Act
+        var options = new FlexMemberOptions();
+
+        // Assert
+        options.AllowMultiple.Should().BeFalse();
+    }
+
+    [Fact]
+    public void AllowMultiple_CanBeSetToTrue()
+    {
+        // Arrange
+        var options = new FlexMemberOptions();
+
+        // Act
+        options.AllowMultiple = true;
+
+        // Assert
+        options.AllowMultiple.Should().BeTrue();
+    }
+
+    [Fact]
+    public void AllowMultiple_CanBeSetToFalse()
+    {
+        // Arrange
+        var options = new FlexMemberOptions { AllowMultiple = true };
+
+        // Act
+        options.AllowMultiple = false;
+
+        // Assert
+        options.AllowMultiple.Should().BeFalse();
+    }
+
+    [Theory]
+    [InlineData(true)]
+    [InlineData(false)]
+    public void AllowMultiple_SetAndGet_WorksCorrectly(bool value)
+    {
+        // Arrange
+        var options = new FlexMemberOptions();
+
+        // Act
+        options.AllowMultiple = value;
+
+        // Assert
+        options.AllowMultiple.Should().Be(value);
+    }
+
+    [Fact]
+    public void AllowMultiple_ToggleValue_WorksCorrectly()
+    {
+        // Arrange
+        var options = new FlexMemberOptions();
+        var initialValue = options.AllowMultiple;
+
+        // Act
+        options.AllowMultiple = !initialValue;
+        var newValue = options.AllowMultiple;
+        options.AllowMultiple = !newValue;
+        var finalValue = options.AllowMultiple;
+
+        // Assert
+        newValue.Should().NotBe(initialValue);
+        finalValue.Should().Be(initialValue);
+    }
+}
