@@ -33,7 +33,7 @@ public static class IGetterX_ToTriage
     /// </summary>
     public static bool IsResolutionExpensive(this IGetter getter) => getter is IGetterEx ar && ar.IsResolutionExpensive();
 
-    public static async Task<T> GetValueAsync<T>(this IStatelessGetter<T> resolves)
+    public static async Task<T?> GetValueAsync<T>(this IStatelessGetter<T> resolves)
     {
         var result = await resolves.Get().ConfigureAwait(false);
         if (result.IsSuccess != true) throw new TransferException("Resolve failed: " + result.ToString());

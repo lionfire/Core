@@ -30,7 +30,7 @@ public struct SetResult<TValue> : ISetResult<TValue>
 
     public override string ToString()
     {
-        return $"SetResult: {(IsSuccess.HasValue ? "(?)" : (IsSuccess.Value ? "success" : "FAIL"))} - {Flags}";
+        return $"SetResult: {(!IsSuccess.HasValue ? "(?)" : (IsSuccess.Value ? "success" : "FAIL"))} - {Flags}";
     }
 }
 public static class SetResultX

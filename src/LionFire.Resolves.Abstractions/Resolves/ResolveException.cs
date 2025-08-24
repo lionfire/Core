@@ -16,5 +16,5 @@ public class ResolveException : Exception
     }
     public ResolveException(string message, Exception inner) : base(message, inner) { }
 
-    public IGetResult Result { get; }
+    public IGetResult? Result { get; }
 }

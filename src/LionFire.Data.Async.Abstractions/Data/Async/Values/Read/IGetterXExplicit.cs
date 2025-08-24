@@ -33,7 +33,7 @@ public static class IGetterXExplicit
     public static async Task<IGetResult<object>> GetUnknownType(this IGetter retrieves)
     {
         var retrievesInterface = retrieves.GetType().GetInterfaces().Where(t => t.IsGenericType && t.GetGenericTypeDefinition() == typeof(IStatelessGetter<>)).Single();
-        return (await ((ITask<IGetResult<object>>)retrievesInterface.GetMethod(nameof(IStatelessGetter<object>.Get)).Invoke(retrieves, null)).ConfigureAwait(false));
+        return (await ((ITask<IGetResult<object>>)retrievesInterface.GetMethod(nameof(IStatelessGetter<object>.Get))!.Invoke(retrieves, null)!).ConfigureAwait(false));
     }
 
     /////// <summary>
@@ -70,7 +70,7 @@ public static class IGetterXExplicit
         if (lazilyGets is ILazyDetector<T> ld) return (await ld.TryGetExistsWithValue().ConfigureAwait(false)).Exists<T>();
 
         var queryValue = lazilyGets.QueryGetResult();
-        if (queryValue != null) return queryValue.Exists<T>();
+        return queryValue.Exists<T>();
 
         if (lazilyGets is IDetects d) return await d.Exists().ConfigureAwait(false);
 

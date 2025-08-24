@@ -22,7 +22,7 @@ public static class ILazyGetterX
     public static async Task<bool> TryEnsureHasValue<T>(this IGetter<T> lazilyResolves)
         => (await lazilyResolves.GetIfNeeded().ConfigureAwait(false)).HasValue;
 
-    public static async Task<T> GetIfNeeded<T>(this IGetter<T> lazilyResolves)
+    public static async Task<T?> GetIfNeeded<T>(this IGetter<T> lazilyResolves)
     {
         var result = await lazilyResolves.GetIfNeeded().ConfigureAwait(false);
         if (result.IsSuccess == false) throw result.ToException();
@@ -33,7 +33,7 @@ public static class ILazyGetterX
         return result.Value;
     }
 
-    public static async Task<T> GetNonDefaultValue<T>(this IGetter<T> lazilyResolves)
+    public static async Task<T?> GetNonDefaultValue<T>(this IGetter<T> lazilyResolves)
         where T : class
     {
         var result = await lazilyResolves.GetIfNeeded().ConfigureAwait(false);
@@ -49,7 +49,7 @@ public static class ILazyGetterX
         return result;
     }
 
-    public static async Task<T> GetValueOrDefault<T>(this IGetter<T> lazilyResolves)
+    public static async Task<T?> GetValueOrDefault<T>(this IGetter<T> lazilyResolves)
     {
         var result = await lazilyResolves.GetIfNeeded().ConfigureAwait(false);
 #if SanityChecks
@@ -74,14 +74,14 @@ public static class ILazyGetterX
     {
         var genericInterface = lazilyResolves.GetLazilyGetsValueType();
         return (await ((ITask<IGetResult<object>>)
-            genericInterface.GetMethod(nameof(IGetter<object>.GetIfNeeded)).Invoke(lazilyResolves, null)).ConfigureAwait(false));
+            genericInterface.GetMethod(nameof(IGetter<object>.GetIfNeeded))!.Invoke(lazilyResolves, null)!).ConfigureAwait(false));
     }
 
     public static async ITask<IGetResult<object>> QueryValue(this ILazyGetter lazilyResolves)
     {
         var genericInterface = lazilyResolves.GetLazilyGetsValueType();
         return (await ((ITask<IGetResult<object>>)
-            genericInterface.GetMethod(nameof(IGetter<object>.QueryGetResult)).Invoke(lazilyResolves, null)).ConfigureAwait(false));
+            genericInterface.GetMethod(nameof(IGetter<object>.QueryGetResult))!.Invoke(lazilyResolves, null)!).ConfigureAwait(false));
     }
 
     #endregion

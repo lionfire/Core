@@ -37,7 +37,7 @@ public static class IGetterX
         var result = await resolves.Get().ConfigureAwait(false);
         if (result.IsSuccess == true)
         {
-            return result.Value;
+            return result.Value!; // REVIEW nullability
         }
         else
         {

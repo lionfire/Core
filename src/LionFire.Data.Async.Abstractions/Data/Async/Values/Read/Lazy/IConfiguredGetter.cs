@@ -12,5 +12,5 @@ public interface IConfiguredGetter : IGetter
 
 public interface IConfigurableGetter : IConfiguredGetter
 {
-    GetterOptions GetterOptions { get; set; }
+    new GetterOptions GetterOptions { get; set; }
 }
