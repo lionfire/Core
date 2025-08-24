@@ -266,7 +266,7 @@ namespace LionFire.Serialization
                     }
                     else
                     {
-                        throw ioe;
+                        throw;
                     }
                 }
 

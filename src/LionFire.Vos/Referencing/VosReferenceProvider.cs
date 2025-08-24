@@ -21,7 +21,7 @@ public class TypedVobReferenceProvider : TypedReferenceProviderBase<VobReference
     {
         if (!typeof(TReference).IsGenericType || typeof(TReference).GetGenericTypeDefinition() != typeof(IReference<>))
         {
-            return (default, $"{nameof(TReference)} must be IReference<TValue>");
+            return (default!, $"{nameof(TReference)} must be IReference<TValue>");
         }
 
         var valueType = typeof(TReference).GetGenericArguments().Single();

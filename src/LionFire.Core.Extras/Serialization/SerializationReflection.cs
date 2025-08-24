@@ -41,7 +41,7 @@ namespace LionFire.Serialization
                 foreach (FieldInfo mi in type.GetFields(MemberBindingFlags))
                 {
                     if (!SerializeReadOnly && mi.IsInitOnly) continue;
-                    if (mi.IsNotSerialized) continue;
+                    if (mi.GetCustomAttribute<NonSerializedAttribute>() != null) continue;
 
                     tsi.FieldInfos.Add(mi);
                 }

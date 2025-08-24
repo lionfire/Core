@@ -345,8 +345,11 @@ public class VosPersister : SerializingPersisterBase<VosPersisterOptions>, IPers
             }
         }
 
-        bool MountsEqual(IEnumerable<IMount> left, IEnumerable<IMount> right)
+        bool MountsEqual(IEnumerable<IMount>? left, IEnumerable<IMount>? right)
         {
+            if (left == null && right == null) return true;
+            if (left == null || right == null) return false;
+            
             if (left.Count() != right.Count()) return false;
 
             var rightEnumerator = right.GetEnumerator();
@@ -414,10 +417,13 @@ public class VosPersister : SerializingPersisterBase<VosPersisterOptions>, IPers
             l.Trace($"{resultForNoChildResults}: {vob.Path}");
 
             var sb = new StringBuilder($"[retrieve  {referencable.Reference.Path}({typeof(TValue).Name})] NO CHILD f:[{resultForNoChildResults.Flags}]" + Environment.NewLine);
-            foreach (var mount in mounts)
+            if (mounts != null)
             {
-                sb.Append(" - ");
-                sb.AppendLine(mount.ToString());
+                foreach (var mount in mounts)
+                {
+                    sb.Append(" - ");
+                    sb.AppendLine(mount.ToString());
+                }
             }
             l.Trace(sb.ToString());
             l.Trace($"[retrieve {referencable.Reference.Path}({typeof(TValue).Name})] End. V:{vobMountsNode.ReadMountsVersion} #:{vobMountsNode.RankedEffectiveReadMounts.Count()}");
@@ -463,7 +469,7 @@ public class VosPersister : SerializingPersisterBase<VosPersisterOptions>, IPers
             if (childResult.Flags.HasFlag(TransferResultFlags.Success)) { aggregatedResult.Flags |= TransferResultFlags.Success; }
             if (childResult.Flags.HasFlag(TransferResultFlags.Found)) { aggregatedResult.Flags |= TransferResultFlags.Found; }
 
-            if (childResult.HasValue) { aggregator.Aggregate(childResult.Value); }
+            if (childResult.HasValue && childResult.Value != null) { aggregator.Aggregate(childResult.Value); }
         }
 
         if (!aggregatedResult.Flags.HasFlag(TransferResultFlags.Found)) { aggregatedResult.Flags |= TransferResultFlags.NotFound; }
@@ -490,7 +496,15 @@ public class VosPersister : SerializingPersisterBase<VosPersisterOptions>, IPers
     private static class ListAggregator
     {
         public static IListAggregator<TValue> Create<TValue>()
-            => (IListAggregator<TValue>)Activator.CreateInstance(typeof(WrappedEnumerableAggregator<,>).MakeGenericType(typeof(TValue), GetMetadataListingType<TValue>()));
+        {
+            var listingType = GetMetadataListingType<TValue>();
+            if (listingType == null) 
+                throw new InvalidOperationException($"Unable to determine listing type for {typeof(TValue).FullName}");
+            
+            var aggregatorType = typeof(WrappedEnumerableAggregator<,>).MakeGenericType(typeof(TValue), listingType);
+            var instance = Activator.CreateInstance(aggregatorType);
+            return (IListAggregator<TValue>)(instance ?? throw new InvalidOperationException($"Failed to create aggregator instance for type {aggregatorType.FullName}"));
+        }
     }
 
     private class WrappedEnumerableAggregator<TValue, TItem> : IListAggregator<TValue>
@@ -500,7 +514,11 @@ public class VosPersister : SerializingPersisterBase<VosPersisterOptions>, IPers
         public void Aggregate(TValue value)
         {
             aggregatedItems ??= new();
-            aggregatedItems.AddRange(WrapperUtils<TValue>.GetEnumerable<TItem>(value));
+            var enumerable = WrapperUtils<TValue>.GetEnumerable<TItem>(value);
+            if (enumerable != null)
+            {
+                aggregatedItems.AddRange(enumerable);
+            }
         }
 
         public TValue GetValue() => WrapperUtils<TValue>.Wrap(aggregatedItems);
@@ -572,7 +590,8 @@ public class VosPersister : SerializingPersisterBase<VosPersisterOptions>, IPers
         public static T Wrap<TInner>(TInner value)
         {
             // ENH: If there isn't a ctor that takes a single parameter of type TInner, create using default constructor, and set via IWriteWrapper<TInner>
-            return (T)Activator.CreateInstance(typeof(T), value);
+            var instance = Activator.CreateInstance(typeof(T), value);
+            return (T)(instance ?? throw new InvalidOperationException($"Failed to create wrapper instance of type {typeof(T).FullName}"));
         }
     }
     #endregion
@@ -663,7 +682,7 @@ public class VosPersister : SerializingPersisterBase<VosPersisterOptions>, IPers
                 var relativePathChunks = vob.PathElements.Skip(mount.VobDepth);
                 var effectiveReference = !relativePathChunks.Any() ? mount.Target : mount.Target.GetChildSubpath(relativePathChunks);
 
-                var wh = effectiveReference.GetWriteHandle<TValue>(serviceProvider: ServiceProvider);
+                var wh = effectiveReference.GetWriteHandle<TValue>(serviceProvider: ServiceProvider!);
 
                 wh.Value = value;
                 var childResult = (await wh.Set().ConfigureAwait(false));
@@ -728,8 +747,8 @@ public class VosPersister : SerializingPersisterBase<VosPersisterOptions>, IPers
         l.Trace($"List ...> {referencable.Reference}");
 
         var retrieveResult = await RetrieveWithAggregation<Metadata<IEnumerable<IListing<TValue>>>>(referencable).ConfigureAwait(false);
-        var result = retrieveResult.IsSuccess()
-            ? RetrieveResult<IEnumerable<IListing<TValue>>>.Success(retrieveResult.Value.Value)
+        var result = retrieveResult.IsSuccess() && retrieveResult.Value?.Value != null
+            ? RetrieveResult<IEnumerable<IListing<TValue>>>.Success(retrieveResult.Value.Value!)
             : new RetrieveResult<IEnumerable<IListing<TValue>>> { Flags = retrieveResult.Flags, Error = (retrieveResult as IErrorResult)?.Error };
         l.Trace(result.ToString());
         return result;
