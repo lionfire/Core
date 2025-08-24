@@ -223,9 +223,9 @@ public partial class LionFireEnvironment
         /// \\Users\{username}  (missing drive letter?)
         /// </summary>
         public static string? HomeDir
-                => Environment.GetEnvironmentVariable("HOME")
-                    ?? Environment.GetEnvironmentVariable("USERPROFILE")
-                    ?? Environment.GetEnvironmentVariable("HOMEPATH")
+                => SEnvironment.GetEnvironmentVariable("HOME")
+                    ?? SEnvironment.GetEnvironmentVariable("USERPROFILE")
+                    ?? SEnvironment.GetEnvironmentVariable("HOMEPATH")
                     ;
 
         #region User

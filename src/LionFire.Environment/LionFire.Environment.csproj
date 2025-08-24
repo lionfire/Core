@@ -14,9 +14,10 @@
     <Configurations>Debug;Release</Configurations>
   </PropertyGroup>
 
-  <!--<ItemGroup>
-    <PackageReference Include="Microsoft.Extensions.PlatformAbstractions" />
-  </ItemGroup>-->
+  <ItemGroup>
+    <PackageReference Include="Microsoft.Extensions.Configuration" />
+    <PackageReference Include="Microsoft.Extensions.Configuration.FileExtensions" />
+  </ItemGroup>
 
   <ItemGroup Condition=" '$(TargetFramework)' == 'net462' ">
     <Reference Include="System" />
