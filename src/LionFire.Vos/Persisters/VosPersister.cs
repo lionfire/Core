@@ -747,7 +747,7 @@ public class VosPersister : SerializingPersisterBase<VosPersisterOptions>, IPers
         l.Trace($"List ...> {referencable.Reference}");
 
         var retrieveResult = await RetrieveWithAggregation<Metadata<IEnumerable<IListing<TValue>>>>(referencable).ConfigureAwait(false);
-        var result = retrieveResult.IsSuccess() && retrieveResult.Value?.Value != null
+        var result = retrieveResult.IsSuccess() && retrieveResult.Value.Value != null
             ? RetrieveResult<IEnumerable<IListing<TValue>>>.Success(retrieveResult.Value.Value!)
             : new RetrieveResult<IEnumerable<IListing<TValue>>> { Flags = retrieveResult.Flags, Error = (retrieveResult as IErrorResult)?.Error };
         l.Trace(result.ToString());
