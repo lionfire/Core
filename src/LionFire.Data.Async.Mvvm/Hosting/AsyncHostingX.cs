@@ -13,9 +13,17 @@ public static class AsyncHostingX
     public static IServiceCollection AddAsyncDataMvvm(this IServiceCollection services)
     {
         return services
-            .AddSingleton(typeof(AsyncKeyedCollectionVM<,,>))
-            .AddSingleton(typeof(AsyncKeyedVMCollectionVM<,,>))
-            .AddSingleton(typeof(ObservableDataVM<,,>))
+            .AddTransient(typeof(AsyncKeyedCollectionVM<,,>))
+            .AddTransient(typeof(AsyncKeyedVMCollectionVM<,,>))
             ;
     }
+
+    public static IServiceCollection AddReactivePersistenceMvvm(this IServiceCollection services)
+        => services
+            .AddTransient(typeof(ObservableDataVM<,,>))
+            .AddTransient(typeof(ObservableReaderVM<,,>))
+            .AddTransient(typeof(ObservableReaderItemVM<,,>))
+            .AddTransient(typeof(ObservableReaderWriterVM<,,>))
+            .AddTransient(typeof(ObservableReaderWriterItemVM<,,>))
+            ;
 }
