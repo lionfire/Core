@@ -79,7 +79,17 @@ public class AppInfo
         }
     }
 
-    public string FullAppId => OrgDomain.Split('.').Reverse().Concat(AppId.Split('.')).Aggregate((x, y) => $"{x}.{y}");
+    //public string FullAppId => OrgDomain.Split('.').Reverse().Concat(AppId.Split('.')).Aggregate((x, y) => $"{x}.{y}");
+    public string FullAppId
+    {
+        get
+        {
+            var orgParts = (OrgDomain ?? "").Split('.', StringSplitOptions.RemoveEmptyEntries);
+            var appParts = (AppId ?? "").Split('.', StringSplitOptions.RemoveEmptyEntries);
+            var seq = System.Linq.Enumerable.Reverse(orgParts).Concat(appParts);
+            return string.Join('.', seq);
+        }
+    }
 
     #region Identity Properties
 
@@ -137,14 +147,20 @@ public class AppInfo
     //}
     //private string? defaultAppId;
 
-    public static string? ReverseDomain(string? domain) => domain?.Split('.').Reverse().Aggregate((x, y) => $"{x}.{y}");
+    public static string? ReverseDomain(string? domain)
+    {
+        if (domain == null) return null;
+        var parts = domain.Split('.', StringSplitOptions.RemoveEmptyEntries);
+        if (parts.Length == 0) return string.Empty;
+        return string.Join('.', System.Linq.Enumerable.Reverse(parts));
+    }
 
     public string? AppDomainReverse
     {
-        get => appDomainReverse ?? DefaultAppDomainReverse;
-        set => appDomainReverse = value;
+        get => appDomainreverse ?? DefaultAppDomainReverse;
+        set => appDomainreverse = value;
     }
-    private string? appDomainReverse;
+    private string? appDomainreverse;
 
     protected string? DefaultAppDomain
     {
@@ -189,21 +205,21 @@ public class AppInfo
 
             //            if (defaultAppKey == null && AppName != null)
             //            {
-            //#if false // reverse
-            //                if (OrgDomain != null)
-            //                {
-            //                    defaultAppKey = OrgDomain.Split('.').Reverse().Aggregate((x, y) => $"{x}.{y}") + "." + AppName;
-            //                }
-            //                else if(OrgName != null)
-            //                {
-            //                    return appKey ?? $"{OrgName}.{AppName.Replace(" ", "")}";
-            //                }
-            //#else
-            //                if (OrgDomain != null) { defaultAppKey = DefaultAppDomain; }
-            //                else if (OrgName != null) { return appName ?? ($"{AppName.Replace(" ", "")}.{OrgName}"); }
-            //#endif
-            //}
-            //return defaultAppKey;
+    //#if false // reverse
+    //                if (OrgDomain != null)
+    //                {
+    //                    defaultAppKey = OrgDomain.Split('.').Reverse().Aggregate((x, y) => $"{x}.{y}") + "." + AppName;
+    //                }
+    //                else if(OrgName != null)
+    //                {
+    //                    return appKey ?? $"{OrgName}.{AppName.Replace(" ", "")}";
+    //                }
+    //#else
+    //                if (OrgDomain != null) { defaultAppKey = DefaultAppDomain; }
+    //                else if (OrgName != null) { return appName ?? ($"{AppName.Replace(" ", "")}.{OrgName}"); }
+    //#endif
+    //}
+    //return defaultAppKey;
         }
     }
     private string? defaultAppKey;
