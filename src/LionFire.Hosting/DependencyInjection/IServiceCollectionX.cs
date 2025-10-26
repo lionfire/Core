@@ -129,8 +129,9 @@ public static class IServiceCollectionX
     //}
 
     public static IServiceCollection TryAddEnumerableSingleton<TService, TImplementation>(this IServiceCollection services, TImplementation instance)
+        where TImplementation : TService
     {
-        services.TryAddEnumerable(ServiceDescriptor.Describe(typeof(TService), typeof(TImplementation), ServiceLifetime.Singleton));
+        services.TryAddEnumerable(new ServiceDescriptor(typeof(TService), instance ?? throw new ArgumentNullException(nameof(instance))));
         return services;
     }
 
