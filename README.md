@@ -1,10 +1,28 @@
 
 # LionFire.Core Repository
 
-Ambitious set of mini-frameworks being developed for other LionFire packages, mostly targeting .NET 7.0+ (with some deprecated parts in .NET Framework 4.8 and netstandard2.0.)  I plan to drop .NET 7 for 8 once one of my needs for .NET 7 disappears, (Spotware cTrader).
+Ambitious set of mini-frameworks being developed for other LionFire packages, mostly targeting .NET 9.0+ (with some deprecated parts in .NET Framework 4.8 and netstandard2.0).
 
-Docs: https://lionfire.readthedocs.io
-Home: https://open.lionfire.software
+**External Docs**: https://lionfire.readthedocs.io (older)
+**Home**: https://open.lionfire.software
+
+---
+
+## 📚 Documentation
+
+**Comprehensive documentation is now available!** Over 20,000 lines covering async data access, MVVM patterns, Blazor UI components, and workspace architecture.
+
+### Quick Start Guides
+- **[Blazor UI Development](docs/ui/README.md)** - Building reactive Blazor apps ⭐ START HERE
+- **[Async Data Access](docs/data/async/README.md)** - IGetter, ISetter, IValue patterns
+- **[MVVM Patterns](docs/mvvm/README.md)** - ViewModels and reactive binding
+- **[Workspace System](docs/architecture/workspaces/README.md)** - Multi-workspace applications
+
+### Complete Documentation Index
+📖 **[docs/README.md](docs/README.md)** - Full documentation navigation and index
+
+
+---
 
 # Status
 
