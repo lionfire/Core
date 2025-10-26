@@ -87,19 +87,41 @@ public partial class WorkspaceLayoutVM : UserLayoutVM
         {
             // EXTENSIBILITY: Consider allowing configurability of default location through another IReference type (e.g. Vos) instead of direct filesystem access, though maybe this is what we want in this case:
 
+            Debug.WriteLine($"[WorkspaceLayoutVM] orgDataDir: {orgDataDir}");
+            Debug.WriteLine($"[WorkspaceLayoutVM] AppInfo.OrgDir: {AppInfo.OrgDir}");
+            Debug.WriteLine($"[WorkspaceLayoutVM] AppInfo.EffectiveDataDirName: {AppInfo.EffectiveDataDirName}");
+            Debug.WriteLine($"[WorkspaceLayoutVM] EffectiveUserName: {EffectiveUserName}");
+
             string? appDataDir;
             if (orgDataDir == null) { appDataDir = null; }
             else { appDataDir = Path.Combine(orgDataDir, AppInfo.EffectiveDataDirName!); }
+
+            Debug.WriteLine($"[WorkspaceLayoutVM] appDataDir: {appDataDir}");
 
             string? usersDataDir;
             if (appDataDir == null) usersDataDir = null;
             else usersDataDir = Path.Combine(appDataDir, "Users");
 
+            Debug.WriteLine($"[WorkspaceLayoutVM] usersDataDir: {usersDataDir}");
+
             string? userDir;
             if (usersDataDir == null) userDir = null;
             else userDir = Path.Combine(usersDataDir, EffectiveUserName);
 
-            if (userDir != null) { userWorkspacesService.UserWorkspacesDir = Path.Combine(userDir, "Workspaces"); }
+            Debug.WriteLine($"[WorkspaceLayoutVM] userDir: {userDir}");
+
+            if (userDir != null) {
+                userWorkspacesService.UserWorkspacesDir = Path.Combine(userDir, "Workspaces");
+                Debug.WriteLine($"[WorkspaceLayoutVM] Set UserWorkspacesDir to: {userWorkspacesService.UserWorkspacesDir}");
+            }
+            else
+            {
+                Debug.WriteLine($"[WorkspaceLayoutVM] WARNING: userDir is null, cannot set UserWorkspacesDir");
+            }
+        }
+        else
+        {
+            Debug.WriteLine($"[WorkspaceLayoutVM] Skipping workspace dir setup because UserWorkspaces is already set: {userWorkspacesService.UserWorkspaces}");
         }
 
         if (userWorkspacesService.UserWorkspaces != null)
@@ -158,13 +180,21 @@ public partial class WorkspaceLayoutVM : UserLayoutVM
 
     protected virtual async ValueTask ConfigureWorkspaceServices(IServiceCollection services, string? workspaceId)
     {
+        Debug.WriteLine($"[WorkspaceLayoutVM.ConfigureWorkspaceServices] WorkspacesDir: {WorkspacesDir}, workspaceId: {workspaceId}");
+        Debug.WriteLine($"[WorkspaceLayoutVM.ConfigureWorkspaceServices] WorkspaceServiceConfigurators count: {WorkspaceServiceConfigurators.Count()}");
+
         if (WorkspacesDir != null)
         {
             var r = new FileReference(WorkspacesDir);
             foreach (var s in WorkspaceServiceConfigurators)
             {
+                Debug.WriteLine($"[WorkspaceLayoutVM.ConfigureWorkspaceServices] Calling configurator: {s.GetType().Name}");
                 await s.ConfigureWorkspaceServices(services, userWorkspacesService, workspaceId);
             }
+        }
+        else
+        {
+            Debug.WriteLine($"[WorkspaceLayoutVM.ConfigureWorkspaceServices] WARNING: WorkspacesDir is null, skipping workspace service configuration");
         }
     }
 
