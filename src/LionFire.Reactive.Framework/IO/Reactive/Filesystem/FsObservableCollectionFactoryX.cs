@@ -13,14 +13,14 @@ namespace LionFire.IO.Reactive.Filesystem;
 
 public static class FsObservableCollectionFactoryX
 {
-    public static IServiceCollection RegisterObservablesInSubDirForType<TValue>(this IServiceCollection services, IServiceProvider serviceProvider, IReference parentDir, string? entitySubdir = null, bool recursive = true, bool autosave = true)
+    public static IServiceCollection RegisterObservablesInSubDirForType<TValue>(this IServiceCollection services, IServiceProvider serviceProvider, IReference parentDir, string? entitySubdir = null, bool recursive = true, bool autosave = true, int recursionDepth = int.MaxValue)
         where TValue : notnull
     {
         var pluralTypeName = typeof(TValue).GetPluralName();
         entitySubdir ??= pluralTypeName;
 
         var valuesDir = entitySubdir.Length == 0 ? parentDir : parentDir.GetChildSubpath(entitySubdir);
-        var valuesDirSelector = new LionFire.IO.Reactive.DirectoryReferenceSelector(valuesDir) { Recursive = recursive };
+        var valuesDirSelector = new LionFire.IO.Reactive.DirectoryReferenceSelector(valuesDir) { Recursive = recursive, RecursionDepth = recursionDepth };
 
         services.RegisterObservablesInDir<TValue>(serviceProvider, valuesDirSelector, autosave: autosave);
 
@@ -45,6 +45,7 @@ public static class FsObservableCollectionFactoryX
             {
                 // FUTURE: Clone any future properties automatically
                 Recursive = valuesDirReferenceSelector.Recursive,
+                RecursionDepth = valuesDirReferenceSelector.RecursionDepth,
             };
 
             DirectoryTypeOptions DirectoryTypeOptions;

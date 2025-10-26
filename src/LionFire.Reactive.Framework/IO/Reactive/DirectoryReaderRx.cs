@@ -176,12 +176,32 @@ public abstract class DirectoryReaderRx<TKey, TValue>
     }
 
 
+    /// <summary>
+    /// Check if a file path is within the allowed recursion depth
+    /// </summary>
+    private bool IsWithinRecursionDepth(string fullPath)
+    {
+        if (!Dir.Recursive || Dir.RecursionDepth >= int.MaxValue)
+        {
+            return true; // No depth limit
+        }
+
+        return GetRelativeDepth(fullPath, Dir.Path) <= Dir.RecursionDepth;
+    }
+
     // REVIEW - REFACTOR into GetKeyForNameAndPath? How is this different?  No subdir support?
     private Optional<TKey> KeysWatcher_GetKeyFromFileName(string fileName, string fullPath)
-        => GetKeyForNameAndPath(
+    {
+        if (!IsWithinRecursionDepth(fullPath))
+        {
+            return Optional.None<TKey>();
+        }
+
+        return GetKeyForNameAndPath(
            Path.GetFileNameWithoutExtension(
                Path.GetFileNameWithoutExtension(fileName))!,
            fullPath);
+    }
 
     private void OnFileCreated(object sender, FileSystemEventArgs e)
     {
@@ -284,6 +304,24 @@ public abstract class DirectoryReaderRx<TKey, TValue>
         //throw new NotImplementedException();
     };
 
+    /// <summary>
+    /// Calculate the depth of a file path relative to a base directory.
+    /// Returns 0 for files in the base directory, 1 for files in immediate subdirectories, etc.
+    /// </summary>
+    private int GetRelativeDepth(string filePath, string basePath)
+    {
+        var fileDir = Path.GetDirectoryName(filePath) ?? "";
+        var relativePath = Path.GetRelativePath(basePath, fileDir);
+
+        if (relativePath == ".")
+        {
+            return 0; // File is in the base directory
+        }
+
+        // Count directory separators to determine depth
+        return relativePath.Split(new[] { Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar }, StringSplitOptions.RemoveEmptyEntries).Length;
+    }
+
     const bool AllowSingleFileAndMultiMode = true;
 
     public string RootDirName { get; set; } = "(root)";
@@ -292,6 +330,8 @@ public abstract class DirectoryReaderRx<TKey, TValue>
 
     protected async ValueTask LoadKeys()
     {
+        Logger?.LogTrace($"[LoadKeys] Starting for {Dir.Path}, Recursive={Dir.Recursive}, RecursionDepth={Dir.RecursionDepth}");
+
         await Task.Run(async () =>
         {
             var namelessDocumentFile = SecondExtension + Extension;
@@ -299,12 +339,33 @@ public abstract class DirectoryReaderRx<TKey, TValue>
 
             if (await Directory.ExistsAsync(Dir.Path).ConfigureAwait(false))
             {
+                Logger?.LogTrace($"[LoadKeys] Directory exists: {Dir.Path}");
                 var dirName = Path.GetDirectoryName(Dir.Path) ?? RootDirName;
 
                 var o = new EnumerationOptions { RecurseSubdirectories = Dir.Recursive };
                 var filesT = Directory.GetFilesAsync(Dir.Path, "*." + SecondExtension + Extension, o).ConfigureAwait(false);
                 var files2 = await Directory.GetFilesAsync(Dir.Path, SecondExtension + Extension, o).ConfigureAwait(false);
                 var files = (await filesT).Concat(files2);
+
+                Logger?.LogTrace($"[LoadKeys] Found {files.Count()} files before filtering");
+
+                // Filter by recursion depth if specified
+                if (Dir.Recursive && Dir.RecursionDepth < int.MaxValue)
+                {
+                    var allFiles = files.ToArray();
+                    Logger?.LogTrace($"[RecursionDepth Filter] Found {allFiles.Length} files total before depth filtering (depth limit: {Dir.RecursionDepth})");
+                    files = allFiles.Where(f =>
+                    {
+                        var depth = GetRelativeDepth(f, Dir.Path);
+                        var included = depth <= Dir.RecursionDepth;
+                        if (!included)
+                        {
+                            Logger?.LogTrace($"[RecursionDepth Filter] Excluding file at depth {depth}: {f}");
+                        }
+                        return included;
+                    }).ToArray();
+                    Logger?.LogTrace($"[RecursionDepth Filter] {files.Count()} files remaining after depth filtering");
+                }
 
                 bool isStringKey = typeof(TKey) == typeof(string);
 
@@ -330,6 +391,7 @@ public abstract class DirectoryReaderRx<TKey, TValue>
 #endif
                 if (multiMode)
                 {
+                    Logger?.LogTrace($"[LoadKeys] Processing {files.Count()} files in multiMode");
                     foreach (var file in files)
                     {
                         var fileDir = Path.GetDirectoryName(file) ?? "";
@@ -340,15 +402,24 @@ public abstract class DirectoryReaderRx<TKey, TValue>
                         if (withoutExt == SecondExtension)
                         {
                             var key = GetKeyForNameAndPath(subDirsWithoutRoot, file);
-                            if (key.HasValue) { keys.AddOrUpdate(key.Value); }
+                            if (key.HasValue)
+                            {
+                                Logger?.LogTrace($"[LoadKeys] Adding key from subdir: {key.Value}");
+                                keys.AddOrUpdate(key.Value);
+                            }
                         }
                         else
                         {
                             var nameFromFileName = Path.GetFileNameWithoutExtension(withoutExt);
                             var key = GetKeyForNameAndPath(Path.Combine(subDirsWithoutRoot, nameFromFileName), file);
-                            if (key.HasValue) { keys.AddOrUpdate(key.Value); }
+                            if (key.HasValue)
+                            {
+                                Logger?.LogTrace($"[LoadKeys] Adding key from filename: {key.Value}");
+                                keys.AddOrUpdate(key.Value);
+                            }
                         }
                     }
+                    Logger?.LogTrace($"[LoadKeys] Completed. Total keys in cache: {keys.Count}");
                 }
             }
 
@@ -404,11 +475,11 @@ public abstract class DirectoryReaderRx<TKey, TValue>
     {
         if (IsPendingWrite(key))
         {
-            Logger?.LogInformation($"[OnValue] Self-generated change detected for '{key}': {value}");
+            Logger?.LogTrace($"[OnValue] Self-generated change detected for '{key}': {value}");
         }
         else
         {
-            Logger?.LogInformation($"[OnValue] Initial load or external change detected for '{key}': {value}");
+            Logger?.LogTrace($"[OnValue] Initial load or external change detected for '{key}': {value}");
             this.values.AddOrUpdate((key, value));
         }
     }

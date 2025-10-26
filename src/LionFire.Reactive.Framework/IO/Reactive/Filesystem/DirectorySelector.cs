@@ -11,7 +11,7 @@ public class DirectorySelector
 
     public string Path { get; set; }
     public bool Recursive { get; set; }
-    //public int RecursionDepth { get; set; } = 1; // FUTURE
+    public int RecursionDepth { get; set; } = int.MaxValue;
 
     public override string ToString() => Recursive ? Path + "/**" : Path;
 }
@@ -24,7 +24,7 @@ public class DirectoryReferenceSelector
 
     public IReference Path { get; set; }
     public bool Recursive { get; set; }
-    //public int RecursionDepth { get; set; } = 1; // FUTURE
+    public int RecursionDepth { get; set; } = int.MaxValue;
 
 }
 public static class DirectoryReferenceSelectorX
