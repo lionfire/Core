@@ -1,0 +1,1 @@
+../../../docs/architecture/workspaces/service-scoping.md

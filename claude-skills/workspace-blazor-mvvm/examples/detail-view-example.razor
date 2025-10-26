@@ -1,0 +1,195 @@
+@page "/bots/{BotId}"
+
+@using LionFire.Mvvm
+@using LionFire.Trading.Automation
+@using LionFire.Reactive.Persistence
+@using Microsoft.Extensions.DependencyInjection
+@using Microsoft.Extensions.Logging
+
+@inject ILogger<Bot> Logger
+@inject IServiceProvider ServiceProvider
+@inject NavigationManager NavigationManager
+
+<!--
+    Example: Workspace Document Detail View using Manual VM Pattern
+
+    This demonstrates manual service resolution and VM creation for single-item views.
+    Required because workspace services are scoped, not in root DI container.
+-->
+
+<MudContainer MaxWidth="MaxWidth.Large" Class="pa-6">
+    <!-- Header with back button -->
+    <MudStack Row AlignItems="AlignItems.Center" Class="mb-4">
+        <MudIconButton Icon="@Icons.Material.Filled.ArrowBack"
+                       Href="/bots"
+                       Size="Size.Large" />
+        <MudText Typo="Typo.h3">Bot: @BotId</MudText>
+    </MudStack>
+
+    @if (VM?.Value != null)
+    {
+        <!-- Main content - bind to VM.Value properties -->
+        <MudPaper Class="pa-6">
+            <MudStack Spacing="4">
+                <MudTextField @bind-Value="VM.Value.Name"
+                              Label="Bot Name"
+                              Variant="Variant.Outlined" />
+
+                <MudTextField @bind-Value="VM.Value.Description"
+                              Label="Description"
+                              Lines="3"
+                              Variant="Variant.Outlined" />
+
+                <MudTextField @bind-Value="VM.Value.Comments"
+                              Label="Comments"
+                              Lines="2"
+                              Variant="Variant.Outlined" />
+
+                <MudDivider />
+
+                <MudTextField @bind-Value="VM.Value.Exchange"
+                              Label="Exchange"
+                              Variant="Variant.Outlined" />
+
+                <MudTextField @bind-Value="VM.Value.Symbol"
+                              Label="Symbol"
+                              Variant="Variant.Outlined" />
+
+                <MudSwitch @bind-Value="VM.Value.Enabled"
+                           Label="Enabled"
+                           Color="Color.Primary" />
+
+                <MudDivider />
+
+                <!-- Actions -->
+                <MudStack Row Spacing="2">
+                    <MudButton OnClick="Save"
+                               Color="Color.Primary"
+                               Variant="Variant.Filled"
+                               StartIcon="@Icons.Material.Filled.Save">
+                        Save
+                    </MudButton>
+
+                    <MudButton Href="/bots"
+                               Variant="Variant.Outlined">
+                        Cancel
+                    </MudButton>
+                </MudStack>
+            </MudStack>
+        </MudPaper>
+    }
+    else if (VM != null)
+    {
+        <!-- Loading state -->
+        <MudPaper Class="pa-6">
+            <MudStack AlignItems="AlignItems.Center" Spacing="4">
+                <MudProgressCircular Indeterminate="true" Size="Size.Large" />
+                <MudText>Loading bot...</MudText>
+            </MudStack>
+        </MudPaper>
+    }
+    else
+    {
+        <!-- Error state -->
+        <MudAlert Severity="Severity.Error">
+            Unable to load bot services. Ensure:
+            <ul>
+                <li>Workspace layout provides WorkspaceServices</li>
+                <li>BotEntity registered with AddWorkspaceChildType</li>
+                <li>Workspace configurators have run</li>
+            </ul>
+        </MudAlert>
+    }
+</MudContainer>
+
+@code {
+    #region Parameters
+
+    [Parameter]
+    public string? BotId { get; set; }
+
+    /// <summary>
+    /// CRITICAL: WorkspaceServices provides workspace-scoped IObservableReader/Writer
+    /// These services are NOT in the root DI container!
+    /// Must be provided via CascadingParameter by workspace layout.
+    /// </summary>
+    [CascadingParameter(Name = "WorkspaceServices")]
+    public IServiceProvider? WorkspaceServices { get; set; }
+
+    #endregion
+
+    #region State
+
+    private ObservableReaderWriterItemVM<string, BotEntity, BotVM>? VM { get; set; }
+
+    #endregion
+
+    #region Lifecycle
+
+    protected override async Task OnParametersSetAsync()
+    {
+        // PATTERN: Try workspace services first, fall back to root for development
+        var effectiveServices = WorkspaceServices ?? ServiceProvider;
+
+        if (WorkspaceServices == null)
+        {
+            Logger.LogWarning(
+                "WorkspaceServices cascading parameter not found. " +
+                "Falling back to root ServiceProvider. " +
+                "For production, this page should be within workspace layout."
+            );
+        }
+
+        // PATTERN: Resolve reader/writer from workspace services
+        var reader = effectiveServices.GetService<IObservableReader<string, BotEntity>>();
+        var writer = effectiveServices.GetService<IObservableWriter<string, BotEntity>>();
+
+        if (reader == null || writer == null)
+        {
+            Logger.LogError(
+                "Bot persistence services not registered. " +
+                "Reader: {ReaderAvailable}, Writer: {WriterAvailable}, " +
+                "Source: {ServiceSource}",
+                reader != null,
+                writer != null,
+                WorkspaceServices != null ? "Workspace" : "Root"
+            );
+
+            Logger.LogError(
+                "Ensure: 1) Workspace layout is used, " +
+                "2) Configurators have run, " +
+                "3) AddWorkspaceChildType<BotEntity>() was called"
+            );
+            return;
+        }
+
+        Logger.LogInformation(
+            "Loaded Bot persistence services from {ServiceSource}",
+            WorkspaceServices != null ? "Workspace" : "Root"
+        );
+
+        // PATTERN: Create VM manually with workspace-scoped services
+        VM = new ObservableReaderWriterItemVM<string, BotEntity, BotVM>(reader, writer);
+        VM.Id = BotId;  // Setting Id triggers automatic load
+
+        await base.OnParametersSetAsync();
+    }
+
+    #endregion
+
+    #region Actions
+
+    private async Task Save()
+    {
+        if (VM?.Value != null)
+        {
+            // PATTERN: Call VM.Write() to persist changes
+            await VM.Write();
+
+            Logger.LogInformation("Saved bot {BotId}", BotId);
+            // Optional: Show snackbar notification
+        }
+    }
+
+    #endregion
+}

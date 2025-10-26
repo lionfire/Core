@@ -1,0 +1,1 @@
+../../../docs/ui/blazor-mvvm-patterns.md

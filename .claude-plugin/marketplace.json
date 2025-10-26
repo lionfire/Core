@@ -1,0 +1,22 @@
+{
+  "name": "lionfire-core",
+  "owner": {
+    "name": "LionFire",
+    "email": "noreply@lionfire.ca"
+  },
+  "metadata": {
+    "description": "LionFire.Core framework skills for workspace-scoped MVVM, reactive data patterns, and Blazor integration",
+    "version": "1.0.0"
+  },
+  "plugins": [
+    {
+      "name": "lionfire-core-patterns",
+      "description": "Essential patterns for LionFire.Core including workspace-scoped MVVM, ObservableDataView component usage, reactive Blazor integration, and workspace service scoping",
+      "source": "./claude-skills",
+      "strict": false,
+      "skills": [
+        "./workspace-blazor-mvvm"
+      ]
+    }
+  ]
+}
