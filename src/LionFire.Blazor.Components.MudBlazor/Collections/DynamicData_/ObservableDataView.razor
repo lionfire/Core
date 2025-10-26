@@ -31,9 +31,11 @@
             }
             else
             {
-                <MudButton Label="Add" Class="Add"
+                <MudButton Class="Add"
                            OnClick=@(() => createsValue.Create.Execute(ViewModel.CreatableTypes.FirstOrDefault(typeof(TValue))).Subscribe())
-                           Icon="@Icons.Material.Filled.Add" Variant="Variant.Outlined" Color="Color.Success" />
+                           StartIcon="@Icons.Material.Filled.Add" Variant="Variant.Outlined" Color="Color.Success">
+                    Add
+                </MudButton>
             }
         }
     }
