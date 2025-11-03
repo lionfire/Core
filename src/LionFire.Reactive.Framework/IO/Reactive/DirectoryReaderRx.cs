@@ -197,10 +197,24 @@ public abstract class DirectoryReaderRx<TKey, TValue>
             return Optional.None<TKey>();
         }
 
-        return GetKeyForNameAndPath(
-           Path.GetFileNameWithoutExtension(
-               Path.GetFileNameWithoutExtension(fileName))!,
-           fullPath);
+        // Extract key using the same logic as LoadKeys() to support subdirectories
+        var fileDir = Path.GetDirectoryName(fullPath) ?? "";
+        fileDir = fileDir.Replace('\\', '/');
+        var subDirsWithoutRoot = fileDir.Replace(Dir.Path, "").TrimStart(Path.DirectorySeparatorChar).TrimStart(Path.AltDirectorySeparatorChar);
+
+        var withoutExt = Path.GetFileNameWithoutExtension(fileName);
+        if (withoutExt == SecondExtension)
+        {
+            // File is in subdirectory like "~New~XXX/portfolio.hjson" - use subdirectory name as key
+            return GetKeyForNameAndPath(subDirsWithoutRoot, fullPath);
+        }
+        else
+        {
+            // File is flat like "P1.portfolio.hjson" - use filename as key
+            var nameFromFileName = Path.GetFileNameWithoutExtension(withoutExt);
+            var key = GetKeyForNameAndPath(Path.Combine(subDirsWithoutRoot, nameFromFileName), fullPath);
+            return key;
+        }
     }
 
     private void OnFileCreated(object sender, FileSystemEventArgs e)
