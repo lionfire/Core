@@ -4,6 +4,7 @@ using LionFire.Reactive.Persistence;
 using LionFire.Vos.Schemas;
 using Microsoft.Extensions.Options;
 using ReactiveUI;
+using System.Diagnostics;
 using System.IO;
 using System.Reactive.Linq;
 using System.Reactive.Subjects;
@@ -176,10 +177,12 @@ where TValue : notnull
     public ValueTask Write(TKey key, TValue value)
     {
         var filePath = GetFilePath(key);
+        Debug.WriteLine($"[HjsonFsDirectoryWriterRx.Write] key={key}, filePath={filePath}");
         return WriteToFile(key, filePath, value);
     }
     private async ValueTask WriteToFile(TKey key, string filePath, TValue value)
     {
+        Debug.WriteLine($"[HjsonFsDirectoryWriterRx.WriteToFile] Creating dir for key={key}, EffectiveDir={EffectiveDir(key)}");
         await CreateDirIfMissing(key);
         var bytes = HjsonSerialization.Serialize(value);
         await File.WriteAllBytesAsync(filePath, bytes).ConfigureAwait(false);
