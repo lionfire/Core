@@ -64,14 +64,23 @@ public partial class ObservableReaderItemVM<TKey, TValue, TValueVM> : ReactiveOb
         {
             listenSubscription?.Dispose();
             Value = default;
-            IsLoading = true;
+
             if (id != null)
             {
-                listenSubscription = data.GetValueObservableIfExists(id).Subscribe(v =>
+                IsLoading = true;
+                var valueObservable  = data.GetValueObservableIfExists(id);
+                if (valueObservable != null)
                 {
-                    Value = v;
+                    listenSubscription = valueObservable.Subscribe(v =>
+                    {
+                        Value = v;
+                        IsLoading = false;
+                    });
+                } else
+                {
+                    Debug.WriteLine("TODO: Why doesn't valueObservable exist?");
                     IsLoading = false;
-                });
+                }
             }
         });
     }
