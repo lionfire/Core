@@ -2,6 +2,7 @@
 @using LionFire.Reactive.Persistence
 
 @using Microsoft.Extensions.DependencyInjection
+@using System.Diagnostics
 
 <div class="lf-field" style="min-width: 20em;">
     @* <div class="label">Workspace</div> *@
@@ -48,7 +49,18 @@
             if (currentWorkspace == value) return;
             currentWorkspace = value;
             // SelectedId = value; // FIXME - setting Parameter!
-            Task.Run(async () => await InvokeAsync(async () => await SelectedIdChanged.InvokeAsync(currentWorkspace)));
+            Task.Run(async () => await InvokeAsync(async () =>
+            {
+                try
+                {
+                    await SelectedIdChanged.InvokeAsync(currentWorkspace);
+                }
+                catch (Exception ex)
+                {
+                    Debug.WriteLine($"Error invoking SelectedIdChanged: {ex}");
+                }
+            }
+        ));
         }
     }
     private string? currentWorkspace;
