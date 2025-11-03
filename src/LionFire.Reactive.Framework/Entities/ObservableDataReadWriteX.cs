@@ -84,10 +84,16 @@ public static class ObservableDataReadWriteX
                     if (typeof(TValue).IsAssignableTo(typeof(IReactiveNotifyPropertyChanged<IReactiveObject>)))
                     {
                         var reactiveValue = (IReactiveNotifyPropertyChanged<IReactiveObject>)v;
+                        var capturedKey = change.Key;
 
                         var valueChangesSubscription = reactiveValue.Changed.Subscribe(e =>
                         {
-                            Task.Run(async () => await writer.Write(change.Key, v));
+                            Debug.WriteLine($"[AutosaveValueChanges] Property changed for key '{capturedKey}', property: {e.PropertyName}");
+                            Task.Run(async () =>
+                            {
+                                Debug.WriteLine($"[AutosaveValueChanges] Writing to key '{capturedKey}'");
+                                await writer.Write(capturedKey, v);
+                            });
                         });
                         subscriptions.AddOrUpdate(change.Key, valueChangesSubscription, (k, _) => valueChangesSubscription);
                     }
