@@ -1,0 +1,141 @@
+@page "/inline-selector"
+
+<PageTitle>InlineSelector Component</PageTitle>
+
+<MudText Typo="Typo.h3" GutterBottom="true">InlineSelector Component Examples</MudText>
+
+<MudText Class="mb-4">
+    The InlineSelector component provides a flexible way to display selectable items inline with support for favorites,
+    dropdown view, and item creation.
+</MudText>
+
+<MudPaper Class="pa-4 mb-4">
+    <MudText Typo="Typo.h5" GutterBottom="true">Example 1: Simple Usage with String Items</MudText>
+    <MudText Typo="Typo.body2" Class="mb-2">Basic inline selector with string values:</MudText>
+
+    <div class="mb-4">
+        <InlineSelector TItem="string"
+                        Items="@workspaceNames"
+                        SelectedItem="@selectedWorkspace"
+                        SelectedItemChanged="@OnWorkspaceChanged" />
+    </div>
+
+    <MudAlert Severity="Severity.Info" Dense="true">
+        Selected: <strong>@selectedWorkspace</strong>
+    </MudAlert>
+</MudPaper>
+
+<MudPaper Class="pa-4 mb-4">
+    <MudText Typo="Typo.h5" GutterBottom="true">Example 2: With Favorites and Dropdown</MudText>
+    <MudText Typo="Typo.body2" Class="mb-2">
+        Only favorite items shown inline. Hover to see dropdown with all items and toggle favorites.
+        Click the + button to create new items.
+    </MudText>
+
+    <div class="mb-4">
+        <InlineSelector TItem="WorkspaceInfo"
+                        Items="@workspaces"
+                        SelectedItem="@selectedWorkspaceInfo"
+                        SelectedItemChanged="@OnWorkspaceInfoChanged"
+                        ItemTemplate="@workspaceTemplate"
+                        FavoriteFunc="@((w) => w.IsFavorite)"
+                        SetFavoriteFunc="@ToggleFavorite"
+                        ShowDropdown="true"
+                        CreateFunc="@CreateNewWorkspace" />
+    </div>
+
+    <MudAlert Severity="Severity.Info" Dense="true">
+        Selected: <strong>@(selectedWorkspaceInfo?.Name ?? "None")</strong>
+    </MudAlert>
+</MudPaper>
+
+<MudPaper Class="pa-4 mb-4">
+    <MudText Typo="Typo.h5" GutterBottom="true">Example 3: Custom Styling</MudText>
+    <MudText Typo="Typo.body2" Class="mb-2">With custom container styling:</MudText>
+
+    <div class="mb-4">
+        <InlineSelector TItem="string"
+                        Items="@workspaceNames"
+                        SelectedItem="@selectedWorkspace"
+                        SelectedItemChanged="@OnWorkspaceChanged"
+                        ContainerStyle="background-color: rgba(0,0,0,0.05); padding: 12px; border-radius: 8px;" />
+    </div>
+</MudPaper>
+
+<MudPaper Class="pa-4">
+    <MudText Typo="Typo.h6" GutterBottom="true">Features</MudText>
+    <MudList T="string" Dense="true">
+        <MudListItem T="string" Icon="@Icons.Material.Filled.Check">Inline display of items with filled style for selected item</MudListItem>
+        <MudListItem T="string" Icon="@Icons.Material.Filled.Check">Transparent background for unselected items</MudListItem>
+        <MudListItem T="string" Icon="@Icons.Material.Filled.Check">Optional favorites filtering</MudListItem>
+        <MudListItem T="string" Icon="@Icons.Material.Filled.Check">Optional dropdown to view all items</MudListItem>
+        <MudListItem T="string" Icon="@Icons.Material.Filled.Check">Optional creation button</MudListItem>
+        <MudListItem T="string" Icon="@Icons.Material.Filled.Check">Custom item templates</MudListItem>
+        <MudListItem T="string" Icon="@Icons.Material.Filled.Check">Custom container styling</MudListItem>
+    </MudList>
+</MudPaper>
+
+@code {
+    // Example 1: Simple string-based workspaces
+    private List<string> workspaceNames = new() { "Development", "Staging", "Production" };
+    private string selectedWorkspace = "Development";
+
+    private async Task OnWorkspaceChanged(string workspace)
+    {
+        selectedWorkspace = workspace;
+        await Task.CompletedTask;
+    }
+
+    // Example 2: Complex workspace objects with favorites
+    public class WorkspaceInfo
+    {
+        public string Id { get; set; } = string.Empty;
+        public string Name { get; set; } = string.Empty;
+        public bool IsFavorite { get; set; }
+    }
+
+    private List<WorkspaceInfo> workspaces = new()
+    {
+        new() { Id = "dev", Name = "Development", IsFavorite = true },
+        new() { Id = "staging", Name = "Staging", IsFavorite = true },
+        new() { Id = "prod", Name = "Production", IsFavorite = false },
+        new() { Id = "test", Name = "Testing", IsFavorite = false },
+    };
+
+    private WorkspaceInfo? selectedWorkspaceInfo;
+
+    private RenderFragment<WorkspaceInfo> workspaceTemplate = (workspace) => __builder =>
+    {
+        <MudText Typo="Typo.button">@workspace.Name</MudText>
+    };
+
+    protected override void OnInitialized()
+    {
+        selectedWorkspaceInfo = workspaces.FirstOrDefault(w => w.IsFavorite);
+    }
+
+    private async Task OnWorkspaceInfoChanged(WorkspaceInfo workspace)
+    {
+        selectedWorkspaceInfo = workspace;
+        await Task.CompletedTask;
+    }
+
+    private async Task ToggleFavorite(WorkspaceInfo workspace)
+    {
+        workspace.IsFavorite = !workspace.IsFavorite;
+        await Task.CompletedTask;
+    }
+
+    private async Task CreateNewWorkspace()
+    {
+        var newId = $"workspace{workspaces.Count + 1}";
+        var newWorkspace = new WorkspaceInfo
+        {
+            Id = newId,
+            Name = $"Workspace {workspaces.Count + 1}",
+            IsFavorite = false
+        };
+        workspaces.Add(newWorkspace);
+        await Task.CompletedTask;
+    }
+}
