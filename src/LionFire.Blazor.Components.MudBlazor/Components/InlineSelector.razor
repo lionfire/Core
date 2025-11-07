@@ -1,0 +1,433 @@
+@typeparam TItem
+@using System.Linq
+
+@namespace LionFire.Blazor.Components.MudBlazor_
+
+<div class="inline-selector-container"
+     @onmouseenter="OnMouseEnter"
+     @onmouseleave="OnMouseLeave"
+     style="@($"display: inline-flex !important; flex-direction: row !important; flex-wrap: nowrap !important; align-items: flex-start !important; {ContainerStyle}")">
+
+    <div class="inline-selector-items" style="@GetItemsContainerStyle()">
+        @foreach (var item in DisplayedItems)
+        {
+            var isSelected = EqualityComparer<TItem>.Default.Equals(item, SelectedItem);
+            var itemIndex = Items.ToList().IndexOf(item);
+            var itemColor = GetItemColor(item, itemIndex);
+            var itemContent = GetItemContent(item);
+
+            @if (Size == InlineSelectorSize.Square)
+            {
+                <MudButton
+                    Variant="@(isSelected ? Variant.Filled : Variant.Outlined)"
+                    Color="@Color.Default"
+                    OnClick="@(() => OnItemSelected(item))"
+                    Class="@GetItemClass(isSelected)"
+                    Style="@GetItemStyle(isSelected, itemColor)">
+                </MudButton>
+            }
+            else if (Size == InlineSelectorSize.Abbreviated || Size == InlineSelectorSize.SingleLetter)
+            {
+                <MudButton
+                    Variant="@(isSelected ? Variant.Filled : Variant.Text)"
+                    Color="@(isSelected && SelectedItemColor == null ? Color.Primary : Color.Default)"
+                    OnClick="@(() => OnItemSelected(item))"
+                    Size="@GetMudButtonSize()"
+                    Class="@GetItemClass(isSelected)"
+                    Style="@GetItemStyle(isSelected, itemColor)">
+                    @itemContent
+                </MudButton>
+            }
+            else
+            {
+                <MudButton
+                    Variant="@(isSelected ? Variant.Filled : Variant.Text)"
+                    Color="@(isSelected && SelectedItemColor == null ? Color.Primary : Color.Default)"
+                    OnClick="@(() => OnItemSelected(item))"
+                    Size="@GetMudButtonSize()"
+                    Class="@GetItemClass(isSelected)"
+                    Style="@GetItemStyle(isSelected, itemColor)">
+                    @ItemTemplate(item)
+                </MudButton>
+            }
+        }
+    </div>
+
+    <div class="inline-selector-actions" style="display: flex !important; flex-direction: column !important; flex-shrink: 0 !important; gap: 2px; margin-left: 8px;">
+        @if (CreateFunc != null)
+        {
+            <MudIconButton
+                Icon="@Icons.Material.Filled.Add"
+                OnClick="@OnCreateClicked"
+                Size="@GetActionButtonSize()"
+                Class="inline-selector-create-button"
+                Color="Color.Primary"
+                Style="@($"visibility: {(isHovering ? "visible" : "hidden")}")" />
+        }
+
+        @if (ShowDropdown)
+        {
+            <MudIconButton
+                Icon="@Icons.Material.Filled.ArrowDropDown"
+                OnClick="@(() => dropdownOpen = !dropdownOpen)"
+                Size="@GetActionButtonSize()"
+                Class="inline-selector-dropdown-button"
+                Style="@($"visibility: {(isHovering ? "visible" : "hidden")}")" />
+        }
+    </div>
+</div>
+
+@if (ShowDropdown && dropdownOpen)
+{
+    <MudPopover Open="@dropdownOpen"
+                Fixed="false"
+                Class="inline-selector-popover"
+                AnchorOrigin="Origin.BottomLeft">
+        <div class="inline-selector-dropdown">
+            @foreach (var item in AllItems)
+            {
+                var isSelected = EqualityComparer<TItem>.Default.Equals(item, SelectedItem);
+                <div class="inline-selector-dropdown-item" style="display: flex !important; flex-direction: row !important; flex-wrap: nowrap !important; align-items: center !important;">
+                    <MudButton
+                        Variant="@(isSelected ? Variant.Filled : Variant.Text)"
+                        Color="@(isSelected ? Color.Primary : Color.Default)"
+                        OnClick="@(() => { OnItemSelected(item); dropdownOpen = false; })"
+                        Style="justify-content: flex-start;">
+                        @ItemTemplate(item)
+                    </MudButton>
+
+                    @if (FavoriteFunc != null)
+                    {
+                        var isFavorite = FavoriteFunc(item);
+                        <MudSpacer />
+                        <MudIconButton
+                            Icon="@(isFavorite ? Icons.Material.Filled.Star : Icons.Material.Outlined.StarBorder)"
+                            OnClick="@(() => OnToggleFavorite(item))"
+                            Size="MudBlazor.Size.Small"
+                            Color="@(isFavorite ? Color.Warning : Color.Default)"
+                            Disabled="@(SetFavoriteFunc == null)" />
+                    }
+                </div>
+            }
+        </div>
+    </MudPopover>
+}
+
+@code {
+    [Parameter]
+    public IEnumerable<TItem> Items { get; set; } = Enumerable.Empty<TItem>();
+
+    [Parameter]
+    public TItem? SelectedItem { get; set; }
+
+    [Parameter]
+    public EventCallback<TItem> SelectedItemChanged { get; set; }
+
+    [Parameter]
+    public RenderFragment<TItem> ItemTemplate { get; set; } = item => builder => builder.AddContent(0, item?.ToString());
+
+    [Parameter]
+    public Func<TItem, bool>? FavoriteFunc { get; set; }
+
+    [Parameter]
+    public Func<TItem, Task>? SetFavoriteFunc { get; set; }
+
+    [Parameter]
+    public bool ShowDropdown { get; set; }
+
+    [Parameter]
+    public Func<Task>? CreateFunc { get; set; }
+
+    [Parameter]
+    public string? ContainerStyle { get; set; }
+
+    [Parameter]
+    public InlineSelectorSize Size { get; set; } = InlineSelectorSize.Medium;
+
+    [Parameter]
+    public int AbbreviatedMaxLength { get; set; } = 3;
+
+    [Parameter]
+    public Func<TItem, string>? ItemTextFunc { get; set; }
+
+    [Parameter]
+    public Func<TItem, MudBlazor.Color>? ItemColorSource { get; set; }
+
+    [Parameter]
+    public MudBlazor.Color? SelectedItemColor { get; set; }
+
+    [Parameter]
+    public string? ItemMinWidth { get; set; }
+
+    [Parameter]
+    public string? ItemMinHeight { get; set; }
+
+    [Parameter]
+    public int? MaxRows { get; set; }
+
+    private bool isHovering;
+    private bool dropdownOpen;
+
+    private static readonly MudBlazor.Color[] DefaultColors = new[]
+    {
+        MudBlazor.Color.Primary,
+        MudBlazor.Color.Secondary,
+        MudBlazor.Color.Tertiary,
+        MudBlazor.Color.Info,
+        MudBlazor.Color.Success,
+        MudBlazor.Color.Warning,
+        MudBlazor.Color.Error,
+        MudBlazor.Color.Dark
+    };
+
+    private IEnumerable<TItem> DisplayedItems
+    {
+        get
+        {
+            if (FavoriteFunc == null)
+                return Items;
+
+            var favorites = Items.Where(FavoriteFunc).ToList();
+
+            // If there's a selected item and it's not a favorite, include it
+            if (SelectedItem != null && !FavoriteFunc(SelectedItem))
+            {
+                favorites.Add(SelectedItem);
+            }
+
+            return favorites;
+        }
+    }
+
+    private IEnumerable<TItem> AllItems => Items;
+
+    private void OnMouseEnter()
+    {
+        isHovering = true;
+    }
+
+    private void OnMouseLeave()
+    {
+        isHovering = false;
+    }
+
+    private async Task OnItemSelected(TItem item)
+    {
+        if (!EqualityComparer<TItem>.Default.Equals(SelectedItem, item))
+        {
+            SelectedItem = item;
+            await SelectedItemChanged.InvokeAsync(item);
+        }
+    }
+
+    private async Task OnToggleFavorite(TItem item)
+    {
+        if (SetFavoriteFunc != null)
+        {
+            await SetFavoriteFunc(item);
+            StateHasChanged();
+        }
+    }
+
+    private async Task OnCreateClicked()
+    {
+        if (CreateFunc != null)
+        {
+            await CreateFunc();
+        }
+    }
+
+    private MudBlazor.Color GetItemColor(TItem item, int index)
+    {
+        if (ItemColorSource != null)
+        {
+            return ItemColorSource(item);
+        }
+
+        // Rotate through default colors
+        return DefaultColors[index % DefaultColors.Length];
+    }
+
+    private string GetItemContent(TItem item)
+    {
+        // Get text from ItemTextFunc if provided, otherwise use ToString
+        var fullText = ItemTextFunc != null ? ItemTextFunc(item) : item?.ToString() ?? "";
+
+        return Size switch
+        {
+            InlineSelectorSize.Abbreviated => fullText.Length > AbbreviatedMaxLength
+                ? fullText.Substring(0, AbbreviatedMaxLength)
+                : fullText,
+            InlineSelectorSize.SingleLetter => fullText.Length > 0 ? fullText.Substring(0, 1) : "",
+            InlineSelectorSize.Square => "",
+            _ => fullText
+        };
+    }
+
+    private MudBlazor.Size GetMudButtonSize()
+    {
+        return Size switch
+        {
+            InlineSelectorSize.Large => MudBlazor.Size.Large,
+            InlineSelectorSize.Small => MudBlazor.Size.Small,
+            InlineSelectorSize.Compact => MudBlazor.Size.Small,
+            InlineSelectorSize.Abbreviated => MudBlazor.Size.Small,
+            InlineSelectorSize.SingleLetter => MudBlazor.Size.Small,
+            _ => MudBlazor.Size.Medium
+        };
+    }
+
+    private MudBlazor.Size GetActionButtonSize()
+    {
+        return Size switch
+        {
+            InlineSelectorSize.Large => MudBlazor.Size.Medium,
+            InlineSelectorSize.Small or InlineSelectorSize.Compact or
+            InlineSelectorSize.Abbreviated or InlineSelectorSize.SingleLetter => MudBlazor.Size.Small,
+            _ => MudBlazor.Size.Small
+        };
+    }
+
+    private string GetItemClass(bool isSelected)
+    {
+        var baseClass = isSelected ? "inline-selector-item-selected" : "inline-selector-item";
+        var sizeClass = Size switch
+        {
+            InlineSelectorSize.Compact => "inline-selector-compact",
+            InlineSelectorSize.Square => "inline-selector-square",
+            _ => ""
+        };
+
+        return $"{baseClass} {sizeClass}".Trim();
+    }
+
+    private string GetItemStyle(bool isSelected, MudBlazor.Color color)
+    {
+        var styles = new List<string>();
+
+        // Base margin and padding based on size
+        var (margin, padding) = Size switch
+        {
+            InlineSelectorSize.Large => ("4px", "12px 24px"),
+            InlineSelectorSize.Small => ("2px", "6px 12px"),
+            InlineSelectorSize.Compact => ("1px", "4px 8px"),
+            InlineSelectorSize.Abbreviated => ("1px", "0 0.2rem"),
+            InlineSelectorSize.SingleLetter => ("1px", "0 0.2rem"),
+            InlineSelectorSize.Square => ("2px", "0"),
+            _ => ("2px", "8px 16px")
+        };
+
+        styles.Add($"margin: {margin}");
+        styles.Add($"padding: {padding}");
+
+        // Min-width: 0 for compact sizes
+        if (Size == InlineSelectorSize.Abbreviated ||
+            Size == InlineSelectorSize.SingleLetter ||
+            Size == InlineSelectorSize.Square)
+        {
+            styles.Add("min-width: 0");
+        }
+
+        // Custom min-width and min-height if specified
+        if (!string.IsNullOrEmpty(ItemMinWidth))
+        {
+            styles.Add($"min-width: {ItemMinWidth}");
+        }
+
+        if (!string.IsNullOrEmpty(ItemMinHeight))
+        {
+            styles.Add($"min-height: {ItemMinHeight}");
+        }
+
+        // Background color for selected items or square mode
+        if (isSelected && SelectedItemColor != null)
+        {
+            var colorValue = GetColorValue(SelectedItemColor.Value);
+            styles.Add($"background-color: {colorValue}");
+            styles.Add("color: white");
+        }
+        else if (Size == InlineSelectorSize.Square)
+        {
+            var colorValue = GetColorValue(color);
+            styles.Add($"background-color: {colorValue}");
+
+            // Only set default sizes if custom sizes aren't specified
+            if (string.IsNullOrEmpty(ItemMinWidth))
+            {
+                styles.Add("width: 32px");
+            }
+            if (string.IsNullOrEmpty(ItemMinHeight))
+            {
+                styles.Add("height: 32px");
+            }
+
+            if (isSelected)
+            {
+                styles.Add("border: 2px solid white");
+                styles.Add("box-shadow: 0 0 0 2px rgba(0,0,0,0.2)");
+            }
+        }
+        else if (!isSelected)
+        {
+            styles.Add("background: transparent");
+            styles.Add("border: none");
+        }
+
+        // Square size specifics
+        if (Size == InlineSelectorSize.Square)
+        {
+            styles.Add("border-radius: 4px");
+        }
+
+        return string.Join("; ", styles);
+    }
+
+    private string GetItemsContainerStyle()
+    {
+        var styles = new List<string>
+        {
+            "display: flex !important",
+            "flex-direction: row !important",
+            "flex-wrap: wrap",
+            "gap: 4px"
+        };
+
+        if (MaxRows.HasValue && MaxRows.Value > 0)
+        {
+            // Calculate approximate row height based on size
+            var rowHeight = Size switch
+            {
+                InlineSelectorSize.Large => 48,
+                InlineSelectorSize.Small => 32,
+                InlineSelectorSize.Compact => 28,
+                InlineSelectorSize.Abbreviated => 32,
+                InlineSelectorSize.SingleLetter => 32,
+                InlineSelectorSize.Square => 36,
+                _ => 40  // Medium
+            };
+
+            var gap = 4; // match the gap in flexbox
+            var maxHeight = (rowHeight * MaxRows.Value) + (gap * (MaxRows.Value - 1));
+            styles.Add($"max-height: {maxHeight}px");
+            styles.Add("overflow-y: auto");
+        }
+
+        return string.Join("; ", styles);
+    }
+
+    private string GetColorValue(MudBlazor.Color color)
+    {
+        return color switch
+        {
+            MudBlazor.Color.Primary => "var(--mud-palette-primary)",
+            MudBlazor.Color.Secondary => "var(--mud-palette-secondary)",
+            MudBlazor.Color.Tertiary => "var(--mud-palette-tertiary)",
+            MudBlazor.Color.Info => "var(--mud-palette-info)",
+            MudBlazor.Color.Success => "var(--mud-palette-success)",
+            MudBlazor.Color.Warning => "var(--mud-palette-warning)",
+            MudBlazor.Color.Error => "var(--mud-palette-error)",
+            MudBlazor.Color.Dark => "var(--mud-palette-dark)",
+            _ => "var(--mud-palette-primary)"
+        };
+    }
+}

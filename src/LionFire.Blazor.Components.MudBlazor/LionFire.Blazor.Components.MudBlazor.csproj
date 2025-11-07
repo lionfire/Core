@@ -17,7 +17,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <!--<PackageReference Include="LiveSharp" />-->
     <PackageReference Include="Microsoft.AspNetCore.Components.Web" />
     <PackageReference Include="MudBlazor" />
     <PackageReference Include="Radzen.Blazor" />
