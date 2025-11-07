@@ -155,6 +155,40 @@
     </div>
 </MudPaper>
 
+<MudPaper Class="pa-4 mb-4">
+    <MudText Typo="Typo.h5" GutterBottom="true">Example 6: Max Rows</MudText>
+    <MudText Typo="Typo.body2" Class="mb-2">Limit items to a maximum number of rows with scrollable overflow:</MudText>
+
+    <MudStack Spacing="4">
+        <div>
+            <MudText Typo="Typo.subtitle2" Class="mb-2">MaxRows = 2:</MudText>
+            <InlineSelector TItem="string"
+                            Items="@manyWorkspaces"
+                            SelectedItem="@selectedManyWorkspace"
+                            SelectedItemChanged="@OnManyWorkspaceChanged"
+                            MaxRows="2" />
+        </div>
+
+        <div>
+            <MudText Typo="Typo.subtitle2" Class="mb-2">MaxRows = 3 with Small Size:</MudText>
+            <InlineSelector TItem="string"
+                            Items="@manyWorkspaces"
+                            SelectedItem="@selectedManyWorkspace"
+                            SelectedItemChanged="@OnManyWorkspaceChanged"
+                            Size="InlineSelectorSize.Small"
+                            MaxRows="3" />
+        </div>
+
+        <div>
+            <MudText Typo="Typo.subtitle2" Class="mb-2">No MaxRows (default - wraps naturally):</MudText>
+            <InlineSelector TItem="string"
+                            Items="@manyWorkspaces"
+                            SelectedItem="@selectedManyWorkspace"
+                            SelectedItemChanged="@OnManyWorkspaceChanged" />
+        </div>
+    </MudStack>
+</MudPaper>
+
 <MudPaper Class="pa-4">
     <MudText Typo="Typo.h6" GutterBottom="true">Features</MudText>
     <MudList T="string" Dense="true">
@@ -166,6 +200,7 @@
         <MudListItem T="string" Icon="@Icons.Material.Filled.Check">Optional creation button</MudListItem>
         <MudListItem T="string" Icon="@Icons.Material.Filled.Check">Custom colors with automatic rotation</MudListItem>
         <MudListItem T="string" Icon="@Icons.Material.Filled.Check">Custom item templates</MudListItem>
+        <MudListItem T="string" Icon="@Icons.Material.Filled.Check">MaxRows parameter to limit vertical space with scrolling</MudListItem>
     </MudList>
 </MudPaper>
 
@@ -173,6 +208,15 @@
     // Example 1: Simple string-based workspaces
     private List<string> workspaceNames = new() { "Development", "Staging", "Production" };
     private string selectedWorkspace = "Development";
+
+    // Example 6: Many workspaces for MaxRows demo
+    private List<string> manyWorkspaces = new()
+    {
+        "Development", "Staging", "Production", "Testing", "QA",
+        "UAT", "Demo", "Preview", "Integration", "Performance",
+        "Sandbox", "Training", "Backup", "Archive"
+    };
+    private string selectedManyWorkspace = "Development";
 
     private async Task OnWorkspaceChanged(string workspace)
     {
@@ -261,6 +305,12 @@
     private async Task OnColoredWorkspaceChanged(ColoredWorkspace workspace)
     {
         selectedColoredWorkspace = workspace;
+        await Task.CompletedTask;
+    }
+
+    private async Task OnManyWorkspaceChanged(string workspace)
+    {
+        selectedManyWorkspace = workspace;
         await Task.CompletedTask;
     }
 }

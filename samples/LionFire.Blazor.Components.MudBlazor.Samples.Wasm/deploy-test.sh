@@ -1,0 +1,26 @@
+#!/bin/bash
+
+echo "Publishing Blazor WASM app..."
+dotnet publish -c Release
+
+echo ""
+echo "Build complete! Published to: bin/Release/net9.0/publish/wwwroot"
+echo ""
+echo "To test the static deployment, run one of these commands:"
+echo ""
+echo "Option 1 - Using npx http-server:"
+echo "  cd bin/Release/net9.0/publish/wwwroot"
+echo "  npx http-server -p 8080"
+echo ""
+echo "Option 2 - Using Python:"
+echo "  cd bin/Release/net9.0/publish/wwwroot"
+echo "  python -m http.server 8080"
+echo ""
+echo "Option 3 - Using dotnet serve (recommended for SPA routing):"
+echo "  dotnet tool install -g dotnet-serve"
+echo "  cd bin/Release/net9.0/publish/wwwroot"
+echo "  dotnet serve -p 8080 --fallback-file index.html"
+echo ""
+echo "Then open http://localhost:8080 in your browser"
+echo ""
+echo "Note: The --fallback-file flag enables SPA routing so URLs like /inline-selector work correctly"

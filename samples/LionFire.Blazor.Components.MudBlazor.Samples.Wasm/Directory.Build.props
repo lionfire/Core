@@ -1,0 +1,27 @@
+<Project>
+  <!-- This file overrides the parent Directory.Build.props for Blazor WASM samples -->
+  <!-- We need standard output paths so the Blazor SDK can properly copy wwwroot files -->
+
+  <PropertyGroup>
+    <!-- Prevent automatic import of parent Directory.Build.props -->
+    <ImportDirectoryBuildProps>false</ImportDirectoryBuildProps>
+
+    <Configurations>Debug;Release</Configurations>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <PlatformTarget Condition=" '$(PlatformTarget)' == '' ">AnyCPU</PlatformTarget>
+
+    <!-- Debugging settings -->
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>portable</DebugType>
+
+    <!-- This is a sample, not a library -->
+    <IsPackable>false</IsPackable>
+    <GeneratePackageOnBuild>false</GeneratePackageOnBuild>
+
+    <!-- Use standard output paths (not custom paths from parent) -->
+    <!-- This is critical for Blazor WASM wwwroot file copying to work -->
+
+    <LangVersion>latest</LangVersion>
+  </PropertyGroup>
+
+</Project>

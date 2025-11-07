@@ -1,22 +1,21 @@
-<Project Sdk="Microsoft.NET.Sdk.Web">
+<Project Sdk="Microsoft.NET.Sdk.Razor">
 
   <PropertyGroup>
     <TargetFramework>net9.0</TargetFramework>
-    <RootNamespace>LionFire.Blazor.Components.MudBlazor_.Samples</RootNamespace>
+    <RootNamespace>LionFire.Blazor.Components.MudBlazor_.Samples.Client</RootNamespace>
     <Nullable>enable</Nullable>
     <Configurations>Debug;Release</Configurations>
     <IsPackable>false</IsPackable>
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly" />
     <PackageReference Include="Microsoft.AspNetCore.Components.Web" />
-    <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.Server" />
     <PackageReference Include="MudBlazor" />
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\..\src\LionFire.Blazor.Components.MudBlazor\LionFire.Blazor.Components.MudBlazor.csproj" />
-    <ProjectReference Include="..\LionFire.Blazor.Components.MudBlazor.Samples.Client\LionFire.Blazor.Components.MudBlazor.Samples.Client.csproj" />
   </ItemGroup>
 
 </Project>
